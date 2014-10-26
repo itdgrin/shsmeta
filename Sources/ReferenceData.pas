@@ -3,7 +3,8 @@ unit ReferenceData;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, fFrameRates;
+  Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, Vcl.Dialogs,
+  fFrameRates;
 
 type
   TFormReferenceData = class(TForm)
@@ -43,13 +44,6 @@ type
 
   public
     FrameRates: TFrameRates;
-
-  end;
-
-  // Класс потока
-  TThreadQuery = class(TThread)
-  protected
-    procedure Execute; override;
   end;
 
 var
@@ -72,22 +66,6 @@ var
 
   // ---------------------------------------------------------------------------------------------------------------------
 
-  // Процедура выполнения потока
-procedure TThreadQuery.Execute;
-begin
-  FormWaiting.Show;
-
-  FormReferenceData.FrameRates.ReceivingAll;
-  FramePriceMaterials.ReceivingAll;
-  FramePriceMechanizms.ReceivingAll;
-  FrameEquipments.ReceivingAll;
-  FrameOXROPR.ReceivingAll;
-  // FrameWinterPrices.FillingTree;
-  FrameSSR.ReceivingAll;
-
-  FormWaiting.Close;
-  FormMain.PanelCover.Visible := False;
-end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -120,8 +98,6 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 constructor TFormReferenceData.Create(AOwner: TComponent; const vDataBase: Char; const vPriceColumn: Boolean);
-var
-  Thread: TThreadQuery;
 begin
   inherited Create(AOwner);
 
@@ -142,7 +118,6 @@ begin
   Caption := FormNameReferenceData;
 
   // ----------------------------------------
-
   FrameRates := TFrameRates.Create(Self, vDataBase, False);
   FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
   FramePriceMechanizms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
@@ -151,11 +126,19 @@ begin
   FrameWinterPrices := TFrameWinterPrice.Create(FormReferenceData);
   FrameSSR := TFrameSSR.Create(FormReferenceData);
 
-  Thread := TThreadQuery.Create(False); // Cоздаём экземпляр потока
-  Thread.Priority := tpHighest;
-  Thread.Resume;
+  FormWaiting.Show;
+  Application.ProcessMessages;
 
-  // ----------------------------------------
+  FrameRates.ReceivingAll;
+  FramePriceMaterials.ReceivingAll;
+  FramePriceMechanizms.ReceivingAll;
+  FrameEquipments.ReceivingAll;
+  FrameOXROPR.ReceivingAll;
+  // FrameWinterPrices.FillingTree;
+  FrameSSR.ReceivingAll;
+
+  FormWaiting.Close;
+  FormMain.PanelCover.Visible := False;
 
   FormMain.CreateButtonOpenWindow(CaptionButtonReferenceData, HintButtonReferenceData,
     FormMain.ShowReferenceData);
@@ -256,6 +239,7 @@ begin
       Align := alClient;
       Visible := False;
     end;
+
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
