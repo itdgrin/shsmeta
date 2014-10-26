@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{BBFCAF54-D0A4-414E-84E0-582D937B7A42}</ProjectGuid>
         <MainSource>Smeta.dpr</MainSource>
-        <ProjectVersion>15.1</ProjectVersion>
+        <ProjectVersion>15.3</ProjectVersion>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <AppType>Application</AppType>
