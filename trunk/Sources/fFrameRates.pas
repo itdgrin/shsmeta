@@ -814,7 +814,7 @@ begin
   // ----------------------------------
 
   // бшбндхл нуп х ноп х окюм опхашкх
-  with ADOQueryTemp do
+ { with ADOQueryTemp do
   begin
     Active := False;
     SQL.Clear;
@@ -857,7 +857,7 @@ begin
       end;
       Next;
     end;
-  end;
+  end;    }
 
   // ----------------------------------------
 

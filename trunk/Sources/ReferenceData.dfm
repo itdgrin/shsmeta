@@ -12,7 +12,6 @@ object FormReferenceData: TFormReferenceData
   Font.Style = []
   FormStyle = fsMDIChild
   OldCreateOrder = False
-  Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
   OnDestroy = FormDestroy
