@@ -245,7 +245,7 @@ begin
         ParamByName('m1').AsInteger := ComboBoxMonth.ItemIndex + 1;
       end;
       Active := True;
-
+      FetchAll;
       ReceivingSearch('');
     end;
 

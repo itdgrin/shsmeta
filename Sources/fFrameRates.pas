@@ -370,6 +370,7 @@ begin
       SQL.Clear;
       SQL.Add(StrQuery);
       Active := True;
+      FetchAll;
     end;
 
     VST.RootNodeCount := ADOQueryNormativ.RecordCount;
@@ -1341,8 +1342,8 @@ begin
       First;
       while not Eof do
       begin
-        if (ADOQueryNormativ.FieldByName('NumberNormative').AsString > FieldByName('s').AsVariant) and
-          (ADOQueryNormativ.FieldByName('NumberNormative').AsString < FieldByName('po').AsVariant) then
+        if (ADOQueryNormativ.FieldByName('NumberNormative').AsString >= FieldByName('s').AsVariant) and
+          (ADOQueryNormativ.FieldByName('NumberNormative').AsString <= FieldByName('po').AsVariant) then
         begin
           EditWinterPrice.Text := FieldByName('num').AsVariant + ' ' + FieldByName('name').AsVariant;
           Break;

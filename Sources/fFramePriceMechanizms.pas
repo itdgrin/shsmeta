@@ -210,6 +210,7 @@ begin
       SQL.Clear;
       SQL.Add(StrQuery);
       Active := True;
+      FetchAll;
 
       ReceivingSearch('');
     end;

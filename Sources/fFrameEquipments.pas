@@ -143,6 +143,7 @@ begin
       SQL.Clear;
       SQL.Add(StrQuery);
       Active := True;
+      FetchAll;
     end;
 
     VST.RootNodeCount := ADOQuery.RecordCount;
