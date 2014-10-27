@@ -17,7 +17,6 @@ object FormWaiting: TFormWaiting
   FormStyle = fsStayOnTop
   OldCreateOrder = False
   Position = poScreenCenter
-  OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -45,10 +44,12 @@ object FormWaiting: TFormWaiting
     ParentFont = False
     WordWrap = True
   end
-  object Image: TImage
-    Left = 46
-    Top = 20
+  object JvGIFAnimator1: TJvGIFAnimator
+    Left = 42
+    Top = 24
     Width = 208
     Height = 13
+    AsyncDrawing = True
+    Animate = True
   end
 end
