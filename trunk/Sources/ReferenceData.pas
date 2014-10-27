@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, Vcl.Dialogs,
-  fFrameRates;
+  fFrameRates, fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments,
+  fFrameOXROPR, fFrameWinterPrice, fFrameSSR;
 
 type
   TFormReferenceData = class(TForm)
@@ -25,7 +26,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
 
     procedure HideAllFrames;
 
@@ -44,6 +44,12 @@ type
 
   public
     FrameRates: TFrameRates;
+    FramePriceMaterials: TFramePriceMaterial;
+    FramePriceMechanizms: TFramePriceMechanizm;
+    FrameEquipments: TFrameEquipment;
+    FrameOXROPR: TFrameOXROPR;
+    FrameWinterPrices: TFrameWinterPrice;
+    FrameSSR: TFrameSSR;
   end;
 
 var
@@ -51,21 +57,9 @@ var
 
 implementation
 
-uses Main, Waiting, fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments, fFrameOXROPR,
-  fFrameWinterPrice, fFrameSSR;
+uses Main, Waiting;
 
 {$R *.dfm}
-
-var
-  FramePriceMaterials: TFramePriceMaterial;
-  FramePriceMechanizms: TFramePriceMechanizm;
-  FrameEquipments: TFrameEquipment;
-  FrameOXROPR: TFrameOXROPR;
-  FrameWinterPrices: TFrameWinterPrice;
-  FrameSSR: TFrameSSR;
-
-  // ---------------------------------------------------------------------------------------------------------------------
-
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -119,12 +113,39 @@ begin
 
   // ----------------------------------------
   FrameRates := TFrameRates.Create(Self, vDataBase, False);
+  FrameRates.Parent := Self;
+  FrameRates.Align := alClient;
+  FrameRates.Visible := True;
+
   FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
+  FramePriceMaterials.Parent := Self;
+  FramePriceMaterials.Align := alClient;
+  FramePriceMaterials.Visible := False;
+
   FramePriceMechanizms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
-  FrameEquipments := TFrameEquipment.Create(FormReferenceData, vDataBase, False);
-  FrameOXROPR := TFrameOXROPR.Create(FormReferenceData);
-  FrameWinterPrices := TFrameWinterPrice.Create(FormReferenceData);
-  FrameSSR := TFrameSSR.Create(FormReferenceData);
+  FramePriceMechanizms.Parent := Self;
+  FramePriceMechanizms.Align := alClient;
+  FramePriceMechanizms.Visible := False;
+
+  FrameEquipments := TFrameEquipment.Create(Self, vDataBase, False);
+  FrameEquipments.Parent := Self;
+  FrameEquipments.Align := alClient;
+  FrameEquipments.Visible := False;
+
+  FrameOXROPR := TFrameOXROPR.Create(Self);
+  FrameOXROPR.Parent := Self;
+  FrameOXROPR.Align := alClient;
+  FrameOXROPR.Visible := False;
+
+  FrameWinterPrices := TFrameWinterPrice.Create(Self);
+  FrameWinterPrices.Parent := Self;
+  FrameWinterPrices.Align := alClient;
+  FrameWinterPrices.Visible := False;
+
+  FrameSSR := TFrameSSR.Create(Self);
+  FrameSSR.Parent := Self;
+  FrameSSR.Align := alClient;
+  FrameSSR.Visible := False;
 
   FormWaiting.Show;
   Application.ProcessMessages;
@@ -149,14 +170,6 @@ end;
 procedure TFormReferenceData.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
-
-  FrameRates.Destroy;
-  FramePriceMaterials.Destroy;
-  FramePriceMechanizms.Destroy;
-  FrameEquipments.Destroy;
-  FrameOXROPR.Destroy;
-  FrameWinterPrices.Destroy;
-  FrameSSR.Destroy;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -178,68 +191,6 @@ begin
 
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButtonReferenceData);
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormReferenceData.FormPaint(Sender: TObject);
-begin
-  with FrameRates do
-    if Parent = nil then
-    begin
-      Parent := FormReferenceData;
-      Align := alClient;
-      Visible := True;
-    end;
-
-  with FramePriceMaterials do
-    if Parent = nil then
-    begin
-      Parent := FormReferenceData;
-      Align := alClient;
-      Visible := False;
-    end;
-
-  with FramePriceMechanizms do
-    if Parent = nil then
-    begin
-      Parent := FormReferenceData;
-      Align := alClient;
-      Visible := False;
-    end;
-
-  with FrameEquipments do
-    if Parent = nil then
-    begin
-      Parent := FormReferenceData;
-      Align := alClient;
-      Visible := False;
-    end;
-
-  with FrameOXROPR do
-    if Parent = nil then
-    begin
-      Parent := FormReferenceData;
-      Align := alClient;
-      Visible := False;
-    end;
-
-  with FrameWinterPrices do
-    if Parent = nil then
-    begin
-      Parent := FormReferenceData;
-      Align := alClient;
-      Visible := False;
-    end;
-
-  with FrameSSR do
-    if Parent = nil then
-    begin
-      Parent := FormReferenceData;
-      Align := alClient;
-      Visible := False;
-    end;
-
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
