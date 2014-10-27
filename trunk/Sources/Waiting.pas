@@ -3,19 +3,17 @@ unit Waiting;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls, gifImg;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, StdCtrls, gifImg, JvExControls, JvAnimatedImage, JvGIFCtrl;
 
 type
   TFormWaiting = class(TForm)
     Shape1: TShape;
     Label1: TLabel;
-    Image: TImage;
+    JvGIFAnimator1: TJvGIFAnimator;
 
     procedure FormCreate(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-
   private
-    Gif: TGIFImage;
 
   public
 
@@ -34,23 +32,11 @@ procedure TFormWaiting.FormCreate(Sender: TObject);
 var
   FileName: String;
 begin
-  Gif := TGIFImage.Create;
-
   // Расположение файла
   FileName := ExtractFilePath(Application.ExeName) + 'Settings\Waiting.gif';
 
   // Если файл существует, открываем его
   if FileExists(FileName) then
-    Gif.LoadFromFile(FileName);
-
-  Gif.Animate := True;
-
-  Image.Picture.Assign(Gif);
+    JvGIFAnimator1.Image.LoadFromFile(FileName);
 end;
-
-procedure TFormWaiting.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  FreeAndNil(Gif);
-end;
-
 end.
