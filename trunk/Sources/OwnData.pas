@@ -3,7 +3,8 @@ unit OwnData;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls;
+  Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, fFrameRates,
+  fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments;
 
 type
   TFormOwnData = class(TForm)
@@ -20,7 +21,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
 
     procedure HideAllFrames;
 
@@ -32,12 +32,11 @@ type
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
-  end;
-
-  // Класс потока
-  TThreadQuery = class(TThread)
-  protected
-    procedure Execute; override;
+  public
+    FrameRates: TFrameRates;
+    FramePriceMaterials: TFramePriceMaterial;
+    FramePriceMechanisms: TFramePriceMechanizm;
+    FrameEquipments: TFrameEquipment;
   end;
 
 var
@@ -45,31 +44,9 @@ var
 
 implementation
 
-uses Main, Waiting, fFrameRates, fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments;
+uses Main, Waiting;
 
 {$R *.dfm}
-
-var
-  FrameRates: TFrameRates;
-  FramePriceMaterials: TFramePriceMaterial;
-  FramePriceMechanisms: TFramePriceMechanizm;
-  FrameEquipments: TFrameEquipment;
-
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  // Процедура выполнения потока
-procedure TThreadQuery.Execute;
-begin
-  FormWaiting.Show;
-
-  FrameRates.ReceivingAll;
-  FramePriceMaterials.ReceivingAll;
-  FramePriceMechanisms.ReceivingAll;
-  FrameEquipments.ReceivingAll;
-
-  FormWaiting.Close;
-  FormMain.PanelCover.Visible := False;
-end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -99,8 +76,6 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 constructor TFormOwnData.Create(AOwner: TComponent; const vDataBase: Char; const vPriceColumn: Boolean);
-var
-  Thread: TThreadQuery;
 begin
   inherited Create(AOwner);
 
@@ -123,13 +98,35 @@ begin
   // ----------------------------------------
 
   FrameRates := TFrameRates.Create(Self, vDataBase, False);
-  FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
-  FramePriceMechanisms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
-  FrameEquipments := TFrameEquipment.Create(FormOwnData, vDataBase, False);
+  FrameRates.Parent := Self;
+  FrameRates.Align := alClient;
+  FrameRates.Visible := True;
 
-  Thread := TThreadQuery.Create(False); // Cоздаём экземпляр потока
-  Thread.Priority := tpHighest;
-  Thread.Resume;
+  FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
+  FramePriceMaterials.Parent := Self;
+  FramePriceMaterials.Align := alClient;
+  FramePriceMaterials.Visible := False;
+
+  FramePriceMechanisms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
+  FramePriceMechanisms.Parent := Self;
+  FramePriceMechanisms.Align := alClient;
+  FramePriceMechanisms.Visible := False;
+
+  FrameEquipments := TFrameEquipment.Create(Self, vDataBase, False);
+  FrameEquipments.Parent := Self;
+  FrameEquipments.Align := alClient;
+  FrameEquipments.Visible := False;
+
+  FormWaiting.Show;
+  Application.ProcessMessages;
+
+  FrameRates.ReceivingAll;
+  FramePriceMaterials.ReceivingAll;
+  FramePriceMechanisms.ReceivingAll;
+  FrameEquipments.ReceivingAll;
+
+  FormWaiting.Close;
+  FormMain.PanelCover.Visible := False;
 
   // ----------------------------------------
 
@@ -141,11 +138,6 @@ end;
 procedure TFormOwnData.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
-
-  FrameRates.Destroy;
-  FramePriceMaterials.Destroy;
-  FramePriceMechanisms.Destroy;
-  FrameEquipments.Destroy;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -167,43 +159,6 @@ begin
 
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButtonOwnData);
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormOwnData.FormPaint(Sender: TObject);
-begin
-  with FrameRates do
-    if Parent = nil then
-    begin
-      Parent := FormOwnData;
-      Align := alClient;
-      Visible := True;
-    end;
-
-  with FramePriceMaterials do
-    if Parent = nil then
-    begin
-      Parent := FormOwnData;
-      Align := alClient;
-      Visible := False;
-    end;
-
-  with FramePriceMechanisms do
-    if Parent = nil then
-    begin
-      Parent := FormOwnData;
-      Align := alClient;
-      Visible := False;
-    end;
-
-  with FrameEquipments do
-    if Parent = nil then
-    begin
-      Parent := FormOwnData;
-      Align := alClient;
-      Visible := False;
-    end;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

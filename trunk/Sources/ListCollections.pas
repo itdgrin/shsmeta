@@ -66,12 +66,6 @@ type
     Open: Boolean;
   end;
 
-  // Класс потока
-  TThreadQuery = class(TThread)
-  protected
-    procedure Execute; override;
-  end;
-
 var
   FormListCollections: TFormListCollections;
 
@@ -83,69 +77,6 @@ const
   FormCaption = 'Перечень сборников';
 
 {$R *.dfm}
-
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  // Процедура выполнения потока
-procedure TThreadQuery.Execute;
-begin
-  FormMain.PanelCover.Visible := True;
-  FormWaiting.Show;
-
-  with FormListCollections.ADOQuerySbornik do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT * FROM sbornik ORDER BY 1;');
-    Active := True;
-  end;
-
-  with FormListCollections.ADOQueryRazdel do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT DISTINCT sbornik_id, razd_id, razd_name, razd_caption FROM razdel ' +
-      'WHERE not razd_name = "" ORDER BY 1, 2;');
-    Active := True;
-  end;
-
-  with FormListCollections.ADOQueryPodrazdel do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT sbornik_id, razd_id, podrazd_id, podrazd_name, podrazd_caption FROM razdel ' +
-      'WHERE podrazd_id > 0 ORDER BY 1, 2, 3;');
-    Active := True;
-  end;
-
-  with FormListCollections.ADOQueryTable do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT sbornik_id, razd_id, podrazd_id, tab_id, tab_name, tab_caption, page FROM tab ' +
-      'ORDER BY 1, 2, 3, 4;');
-    Active := True;
-  end;
-
-  with FormListCollections do
-  begin
-    Sbornik;
-    // Caption := Caption + ' - ' + IntToStr(GetTickCount - t);
-    ExpandNodes;
-
-    ADOQuerySbornik.Active := False;
-    ADOQueryRazdel.Active := False;
-    ADOQueryPodrazdel.Active := False;
-    ADOQueryTable.Active := False;
-  end;
-
-  FormWaiting.Close;
-  FormMain.PanelCover.Visible := False;
-
-  FormListCollections.Left := FormMain.Left + (FormMain.Width - FormListCollections.Width) div 2;;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormListCollections.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -701,8 +632,6 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormListCollections.Filling(const vRateNum: string);
-var
-  Thread: TThreadQuery;
 begin
   RateNum := vRateNum;
 
@@ -714,6 +643,7 @@ begin
 
   FormMain.PanelCover.Visible := True;
   FormWaiting.Show;
+  Application.ProcessMessages;
 
   with FormListCollections.ADOQuerySbornik do
   begin
@@ -765,6 +695,8 @@ begin
   FormMain.PanelCover.Visible := False;
 
   Application.ProcessMessages;
+
+  //FormListCollections.Left := FormMain.Left + (FormMain.Width - FormListCollections.Width) div 2;;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

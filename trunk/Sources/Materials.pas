@@ -3,7 +3,7 @@ unit Materials;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, ExtCtrls;
+  Windows, Messages, Classes, Controls, Forms, ExtCtrls, fFramePriceMaterials;
 
 type
   TFormMaterials = class(TForm)
@@ -14,18 +14,15 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
 
   private
     AllowReplacement: Boolean; // Разрешено/запрещено заменять неучтённые метериалы из фрейма
 
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
-  end;
 
-  // Класс потока
-  TThreadQuery = class(TThread)
-  protected
-    procedure Execute; override;
+  public
+    FramePriceMaterials: TFramePriceMaterial;
+
   end;
 
 var
@@ -33,25 +30,9 @@ var
 
 implementation
 
-uses Main, Waiting, fFramePriceMaterials, CalculationEstimate;
+uses Main, Waiting, CalculationEstimate;
 
 {$R *.dfm}
-
-var
-  FramePriceMaterials: TFramePriceMaterial;
-
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  // Процедура выполнения потока
-procedure TThreadQuery.Execute;
-begin
-  FormWaiting.Show;
-  FramePriceMaterials.ReceivingAll;
-  FormWaiting.Close;
-  FormMain.PanelCover.Visible := False;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormMaterials.WMSysCommand(var Msg: TMessage);
 begin
@@ -78,8 +59,6 @@ end;
 
 constructor TFormMaterials.Create(AOwner: TComponent; const vDataBase: Char;
   const vPriceColumn, vAllowAddition, vAllowReplacement: Boolean);
-var
-  Thread: TThreadQuery;
 begin
   inherited Create(AOwner);
 
@@ -104,11 +83,17 @@ begin
   AllowReplacement := vAllowReplacement;
 
   FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, vAllowAddition, vAllowReplacement);
+  FramePriceMaterials.Parent := Self;
+  FramePriceMaterials.Align := alClient;
+  FramePriceMaterials.Visible := true;
 
-  Thread := TThreadQuery.Create(False); // Cоздаём экземпляр потока
-  Thread.Priority := tpHighest;
-  Thread.Resume;
+  FormWaiting.Show;
+  Application.ProcessMessages;
 
+  FramePriceMaterials.ReceivingAll;
+
+  FormWaiting.Close;
+  FormMain.PanelCover.Visible := False;
   // ----------------------------------------
 
   // Создаём кнопку от этого окна (на главной форме внизу)
@@ -134,8 +119,6 @@ procedure TFormMaterials.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
 
-  FramePriceMaterials.Destroy;
-
   if AllowReplacement then
   begin
     FormMain.PanelCover.Visible := True;
@@ -153,19 +136,5 @@ begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButtonReplacementMaterials);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormMaterials.FormPaint(Sender: TObject);
-begin
-  with FramePriceMaterials do
-    if Parent = nil then
-    begin
-      Parent := Self;
-      Align := alClient;
-    end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.

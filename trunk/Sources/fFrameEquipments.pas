@@ -98,7 +98,6 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
-
 constructor TFrameEquipment.Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean);
 begin
   inherited Create(AOwner);

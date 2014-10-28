@@ -16,7 +16,6 @@ object FormPricesReferenceData: TFormPricesReferenceData
   OnActivate = FormActivate
   OnClose = FormClose
   OnDestroy = FormDestroy
-  OnPaint = FormPaint
   PixelsPerInch = 96
   TextHeight = 13
   object PanelPrices: TPanel

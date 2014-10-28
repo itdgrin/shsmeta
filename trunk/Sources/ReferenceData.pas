@@ -155,7 +155,7 @@ begin
   FramePriceMechanizms.ReceivingAll;
   FrameEquipments.ReceivingAll;
   FrameOXROPR.ReceivingAll;
-  // FrameWinterPrices.FillingTree;
+  //FrameWinterPrices.FillingTree;
   FrameSSR.ReceivingAll;
 
   FormWaiting.Close;

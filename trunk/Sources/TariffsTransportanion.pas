@@ -3,7 +3,8 @@ unit TariffsTransportanion;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, ExtCtrls;
+  Windows, Messages, Classes, Controls, Forms, ExtCtrls,
+  fFramePriceTransportations;
 
 type
   TFormTariffsTransportation = class(TForm)
@@ -12,17 +13,12 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
 
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
+  public
+    FramePriceTransportation: TFramePriceTransportations;
 
-  end;
-
-  // Класс потока
-  TQueryDatabase = class(TThread)
-  protected
-    procedure Execute; override;
   end;
 
 var
@@ -30,23 +26,9 @@ var
 
 implementation
 
-uses Main, Waiting, fFramePriceTransportations;
+uses Main, Waiting;
 
 {$R *.dfm}
-
-var
-  FramePriceTransportation: TFramePriceTransportations;
-
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  // Процедура выполнения потока
-procedure TQueryDatabase.Execute;
-begin
-  FormWaiting.Show;
-  FramePriceTransportation.ReceivingAll;
-  FormWaiting.Close;
-  FormMain.PanelCover.Visible := False;
-end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -76,8 +58,6 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormTariffsTransportation.FormCreate(Sender: TObject);
-var
-  Query: TQueryDatabase;
 begin
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
@@ -90,13 +70,17 @@ begin
 
   // ----------------------------------------
 
-  FramePriceTransportation := TFramePriceTransportations.Create(FormTariffsTransportation);
+  FramePriceTransportation := TFramePriceTransportations.Create(Self);
+  FramePriceTransportation.Parent := Self;
   FramePriceTransportation.Align := alClient;
 
-  Query := TQueryDatabase.Create(False); // Cоздаём экземпляр потока
-  Query.Priority := tpHighest;
-  Query.Resume;
+  FormWaiting.Show;
+  Application.ProcessMessages;
 
+  FramePriceTransportation.ReceivingAll;
+
+  FormWaiting.Close;
+  FormMain.PanelCover.Visible := False;
   // ----------------------------------------
 
   // Создаём кнопку от этого окна (на главной форме внизу)
@@ -121,8 +105,6 @@ end;
 procedure TFormTariffsTransportation.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
-
-  FramePriceTransportation.Destroy;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -134,15 +116,5 @@ begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButtonPriceTransportation);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTariffsTransportation.FormPaint(Sender: TObject);
-begin
-  if Parent = nil then
-    FramePriceTransportation.Parent := FormTariffsTransportation;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.

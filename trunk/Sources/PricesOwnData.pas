@@ -3,7 +3,9 @@ unit PricesOwnData;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls;
+  Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls,
+  fFramePriceMaterials, fFramePriceMechanizms, fFramePriceTransportations,
+  fFramePriceDumps;
 
 type
   TFormPricesOwnData = class(TForm)
@@ -22,7 +24,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
 
     procedure HideAllFrames;
 
@@ -34,12 +35,12 @@ type
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
-  end;
+  public
+    FramePriceMaterials: TFramePriceMaterial;
+    FramePriceMechanizms: TFramePriceMechanizm;
+    FramePriceTransportations: TFramePriceTransportations;
+    FramePriceDumps: TFramePriceDumps;
 
-  // Класс потока
-  TThreadQuery = class(TThread)
-  protected
-    procedure Execute; override;
   end;
 
 var
@@ -47,31 +48,9 @@ var
 
 implementation
 
-uses Main, Waiting, fFramePriceMaterials, fFramePriceMechanizms, fFramePriceTransportations, fFramePriceDumps;
+uses Main, Waiting;
 
 {$R *.dfm}
-
-var
-  FramePriceMaterials: TFramePriceMaterial;
-  FramePriceMechanizms: TFramePriceMechanizm;
-  FramePriceTransportations: TFramePriceTransportations;
-  FramePriceDumps: TFramePriceDumps;
-
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  // Процедура выполнения потока
-procedure TThreadQuery.Execute;
-begin
-  FormWaiting.Show;
-
-  FramePriceMaterials.ReceivingAll;
-  FramePriceMechanizms.ReceivingAll;
-  FramePriceTransportations.ReceivingAll;
-  FramePriceDumps.ReceivingAll;
-
-  FormWaiting.Close;
-  FormMain.PanelCover.Visible := False;
-end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -101,8 +80,6 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 constructor TFormPricesOwnData.Create(AOwner: TComponent; const vDataBase: Char; const vPriceColumn: Boolean);
-var
-  Thread: TThreadQuery;
 begin
   inherited Create(AOwner);
 
@@ -125,13 +102,35 @@ begin
   // ----------------------------------------
 
   FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
-  FramePriceMechanizms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
-  FramePriceTransportations := TFramePriceTransportations.Create(FormPricesOwnData);
-  FramePriceDumps := TFramePriceDumps.Create(FormPricesOwnData);
+  FramePriceMaterials.Parent := Self;
+  FramePriceMaterials.align := alClient;
+  FramePriceMaterials.Visible := True;
 
-  Thread := TThreadQuery.Create(False); // Cоздаём экземпляр потока
-  Thread.Priority := tpHighest;
-  Thread.Resume;
+  FramePriceMechanizms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
+  FramePriceMechanizms.Parent := Self;
+  FramePriceMechanizms.align := alClient;
+  FramePriceMechanizms.Visible := False;
+
+  FramePriceTransportations := TFramePriceTransportations.Create(Self);
+  FramePriceTransportations.Parent := Self;
+  FramePriceTransportations.align := alClient;
+  FramePriceTransportations.Visible := False;
+
+  FramePriceDumps := TFramePriceDumps.Create(Self);
+  FramePriceDumps.Parent := Self;
+  FramePriceDumps.align := alClient;
+  FramePriceDumps.Visible := False;
+
+  FormWaiting.Show;
+  Application.ProcessMessages;
+
+  FramePriceMaterials.ReceivingAll;
+  FramePriceMechanizms.ReceivingAll;
+  FramePriceTransportations.ReceivingAll;
+  FramePriceDumps.ReceivingAll;
+
+  FormWaiting.Close;
+  FormMain.PanelCover.Visible := False;
 
   // ----------------------------------------
 
@@ -144,11 +143,6 @@ end;
 procedure TFormPricesOwnData.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
-
-  FramePriceMaterials.Destroy;
-  FramePriceMechanizms.Destroy;
-  FramePriceTransportations.Destroy;
-  FramePriceDumps.Destroy;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -170,43 +164,6 @@ begin
 
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButtonPricesOwnData);
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormPricesOwnData.FormPaint(Sender: TObject);
-begin
-  with FramePriceMaterials do
-    if Parent = nil then
-    begin
-      Parent := FormPricesOwnData;
-      align := alClient;
-      Visible := True;
-    end;
-
-  with FramePriceMechanizms do
-    if Parent = nil then
-    begin
-      Parent := FormPricesOwnData;
-      align := alClient;
-      Visible := False;
-    end;
-
-  with FramePriceTransportations do
-    if Parent = nil then
-    begin
-      Parent := FormPricesOwnData;
-      align := alClient;
-      Visible := False;
-    end;
-
-  with FramePriceDumps do
-    if Parent = nil then
-    begin
-      Parent := FormPricesOwnData;
-      align := alClient;
-      Visible := False;
-    end;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

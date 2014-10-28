@@ -3,7 +3,8 @@ unit TariffsMechanism;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, ExtCtrls, AppEvnts, SysUtils;
+  Windows, Messages, Classes, Controls, Forms, ExtCtrls, AppEvnts, SysUtils,
+  fFramePriceMechanizms;
 
 type
   TFormTariffsMechanism = class(TForm)
@@ -12,17 +13,13 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
 
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
-  end;
+  public
+    FramePriceMechanizm: TFramePriceMechanizm;
 
-  // Класс потока
-  TQueryMechanizms = class(TThread)
-  protected
-    procedure Execute; override;
   end;
 
 var
@@ -30,25 +27,9 @@ var
 
 implementation
 
-uses Main, Waiting, fFramePriceMechanizms;
+uses Main, Waiting;
 
 {$R *.dfm}
-
-var
-  FramePriceMechanizm: TFramePriceMechanizm;
-
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  // Процедура выполнения потока
-procedure TQueryMechanizms.Execute;
-begin
-  FormWaiting.Show;
-  FramePriceMechanizm.ReceivingAll;
-  FormWaiting.Close;
-  FormMain.PanelCover.Visible := False;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormTariffsMechanism.WMSysCommand(var Msg: TMessage);
 begin
@@ -76,8 +57,6 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormTariffsMechanism.FormCreate(Sender: TObject);
-var
-  Query: TQueryMechanizms;
 begin
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
@@ -90,11 +69,16 @@ begin
 
   // ----------------------------------------
 
-  // FramePriceMechanizm := TFramePriceMechanizm.Create(FormTariffsMechanism);
+  FramePriceMechanizm := TFramePriceMechanizm.Create(Self, 'g', True, True);
+  FramePriceMechanizm.Parent := Self;
 
-  Query := TQueryMechanizms.Create(False); // Cоздаём экземпляр потока
-  Query.Priority := tpHighest;
-  Query.Resume;
+  FormWaiting.Show;
+  Application.ProcessMessages;
+
+  FramePriceMechanizm.ReceivingAll;
+
+  FormWaiting.Close;
+  FormMain.PanelCover.Visible := False;
 
   // ----------------------------------------
 
@@ -120,8 +104,6 @@ end;
 procedure TFormTariffsMechanism.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
-
-  FramePriceMechanizm.Destroy;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -133,15 +115,5 @@ begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButtonPriceMechanizms);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTariffsMechanism.FormPaint(Sender: TObject);
-begin
-  if FramePriceMechanizm.Parent = nil then
-    FramePriceMechanizm.Parent := FormTariffsMechanism;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.
