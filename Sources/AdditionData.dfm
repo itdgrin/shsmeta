@@ -17,7 +17,6 @@ object FormAdditionData: TFormAdditionData
   OnActivate = FormActivate
   OnClose = FormClose
   OnDestroy = FormDestroy
-  OnPaint = FormPaint
   PixelsPerInch = 96
   TextHeight = 13
   object PanelTopMenu: TPanel

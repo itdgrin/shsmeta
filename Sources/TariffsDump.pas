@@ -3,7 +3,7 @@ unit TariffsDump;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, ExtCtrls;
+  Windows, Messages, Classes, Controls, Forms, ExtCtrls, fFramePriceDumps;
 
 type
   TFormTariffsDump = class(TForm)
@@ -12,17 +12,13 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
 
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
-  end;
+  public
+    FramePriceDump: TFramePriceDumps;
 
-  // Класс потока
-  TQueryDatabase = class(TThread)
-  protected
-    procedure Execute; override;
   end;
 
 var
@@ -30,25 +26,9 @@ var
 
 implementation
 
-uses Main, Waiting, fFramePriceDumps;
+uses Main, Waiting;
 
 {$R *.dfm}
-
-var
-  FramePriceDump: TFramePriceDumps;
-
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  // Процедура выполнения потока
-procedure TQueryDatabase.Execute;
-begin
-  FormWaiting.Show;
-  FramePriceDump.ReceivingAll;
-  FormWaiting.Close;
-  FormMain.PanelCover.Visible := False;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormTariffsDump.WMSysCommand(var Msg: TMessage);
 begin
@@ -76,8 +56,6 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormTariffsDump.FormCreate(Sender: TObject);
-var
-  Query: TQueryDatabase;
 begin
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
@@ -90,12 +68,18 @@ begin
 
   // ----------------------------------------
 
-  FramePriceDump := TFramePriceDumps.Create(FormTariffsDump);
+  FramePriceDump := TFramePriceDumps.Create(Self);
+  FramePriceDump.Parent := Self;
   FramePriceDump.Align := alClient;
+  FramePriceDump.Visible := true;
 
-  Query := TQueryDatabase.Create(False); // Cоздаём экземпляр потока
-  Query.Priority := tpHighest;
-  Query.Resume;
+  FormWaiting.Show;
+  Application.ProcessMessages;
+
+  FramePriceDump.ReceivingAll;
+
+  FormWaiting.Close;
+  FormMain.PanelCover.Visible := False;
 
   // ----------------------------------------
 
@@ -120,8 +104,6 @@ end;
 procedure TFormTariffsDump.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
-
-  FramePriceDump.Destroy;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -133,15 +115,5 @@ begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButtonPriceDumps);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTariffsDump.FormPaint(Sender: TObject);
-begin
-  if Parent = nil then
-    FramePriceDump.Parent := FormTariffsDump;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.

@@ -358,7 +358,8 @@ var
 begin
   StrQuery :=
     'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative", norm_caption as "CaptionNormativ", '
-    + 'sbornik_id, razd_id, tab_id FROM normativ' + DataBase + ' ORDER BY NumberNormative ASC;';
+    + 'sbornik_id, razd_id, tab_id FROM normativ' + DataBase +
+    ' ORDER BY NumberNormative ASC;';
 
   try
     if ADOQueryNormativ.Active then
@@ -370,12 +371,16 @@ begin
       SQL.Clear;
       SQL.Add(StrQuery);
       Active := True;
-      FetchAll;
     end;
 
+    ADOQueryNormativ.FetchOptions.RecordCountMode := cmTotal; //Узнаем реальное кол-вл записей
     VST.RootNodeCount := ADOQueryNormativ.RecordCount;
     VST.Selected[VST.GetFirst] := True;
     VST.FocusedNode := VST.GetFirst;
+    FrameStatusBar.InsertText(0, IntToStr(ADOQueryNormativ.RecordCount));
+    if ADOQueryNormativ.RecordCount = 0 then FrameStatusBar.InsertText(1, '-1');
+
+    ADOQueryNormativ.FetchOptions.RecordCountMode := cmVisible;
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -1127,10 +1132,9 @@ begin
   end
   else
   begin
+    VST.RootNodeCount := ADOQueryNormativ.RecordCount;
     VST.Selected[VST.GetFirst] := True;
     VST.FocusedNode := VST.GetFirst;
-
-    VST.RootNodeCount := ADOQueryNormativ.RecordCount;
   end;
 
   FrameStatusBar.InsertText(0, IntToStr(ADOQueryNormativ.RecordCount));

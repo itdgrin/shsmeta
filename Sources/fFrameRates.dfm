@@ -671,6 +671,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evRecordCountMode]
     Left = 36
     Top = 24
   end
@@ -699,7 +700,7 @@
     Enabled = False
     Interval = 400
     OnTimer = tmrFilterTimer
-    Left = 40
-    Top = 72
+    Left = 32
+    Top = 96
   end
 end

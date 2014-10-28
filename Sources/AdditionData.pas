@@ -3,8 +3,9 @@ unit AdditionData;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, ExtCtrls, Buttons, StdCtrls, SysUtils, fFrameRates,
-  Main, Waiting, fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments, CalculationEstimate;
+  Windows, Messages, Classes, Controls, Forms, ExtCtrls, Buttons, StdCtrls,
+  SysUtils, fFrameRates, Main, Waiting, fFramePriceMaterials,
+  fFramePriceMechanizms, fFrameEquipments, CalculationEstimate;
 
 type
   TFormAdditionData = class(TForm)
@@ -21,7 +22,6 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
 
     procedure HideAllFrames;
 
@@ -40,39 +40,12 @@ type
     FrameEquipment: TFrameEquipment;
   end;
 
-  // Класс потока
-  TThreadQuery = class(TThread)
-  protected
-    procedure Execute; override;
-  end;
-
 var
   FormAdditionData: TFormAdditionData;
 
 implementation
 
 {$R *.dfm}
-{ R
-  var
-
-  FramePriceMaterial: TFramePriceMaterial;
-  FramePriceMechanizm: TFramePriceMechanizm;
-  FrameEquipment: TFrameEquipment;
-}
-
-// Процедура выполнения потока
-procedure TThreadQuery.Execute;
-begin
-  FormWaiting.Show;
-  // R FormAdditionData*
-  FormAdditionData.FrameRates.ReceivingAll;
-  FormAdditionData.FramePriceMaterial.ReceivingAll;
-  FormAdditionData.FramePriceMechanizm.ReceivingAll;
-  FormAdditionData.FrameEquipment.ReceivingAll;
-
-  FormWaiting.Close;
-  FormMain.PanelCover.Visible := False;
-end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -102,13 +75,8 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 constructor TFormAdditionData.Create(AOwner: TComponent; const vDataBase: Char);
-var
-  Thread: TThreadQuery;
 begin
-  // Открываем окно ожидания
-  FormWaiting.Show;
-  Application.ProcessMessages;
-  // R inherited Create(AOwner);
+
   inherited Create(AOwner);
 
   // ----------------------------------------
@@ -126,28 +94,42 @@ begin
 
   // ----------------------------------------
 
-  FrameRates := TFrameRates.Create(FormAdditionData, vDataBase, True);
-  FramePriceMaterial := TFramePriceMaterial.Create(FormAdditionData, vDataBase, True, True, False);
-  FramePriceMechanizm := TFramePriceMechanizm.Create(FormAdditionData, vDataBase, True, True);
-  FrameEquipment := TFrameEquipment.Create(FormAdditionData, vDataBase, True);
+  FrameRates := TFrameRates.Create(Self, vDataBase, True);
+  FrameRates.Parent := Self;
+  FrameRates.Align := alClient;
+  FrameRates.Visible := True;
 
+  FramePriceMaterial := TFramePriceMaterial.Create(Self, vDataBase, True, True, False);
+  FramePriceMaterial.Parent := Self;
+  FramePriceMaterial.Align := alClient;
+  FramePriceMaterial.Visible := False;
+
+  FramePriceMechanizm := TFramePriceMechanizm.Create(Self, vDataBase, True, True);
+  FramePriceMechanizm.Parent := Self;
+  FramePriceMechanizm.Align := alClient;
+  FramePriceMechanizm.Visible := False;
+
+  FrameEquipment := TFrameEquipment.Create(Self, vDataBase, True);
+  FrameEquipment.Parent := Self;
+  FrameEquipment.Align := alClient;
+  FrameEquipment.Visible := False;
+
+ // Открываем окно ожидания
+  FormWaiting.Show;
+  Application.ProcessMessages;
+
+    // R FormAdditionData*
   FrameRates.ReceivingAll;
-  Application.ProcessMessages;
-  // FramePriceMaterial.ReceivingAll;  //Опитимизировать загрузку
-  // Application.ProcessMessages;
+  FramePriceMaterial.ReceivingAll;
   FramePriceMechanizm.ReceivingAll;
-  Application.ProcessMessages;
   FrameEquipment.ReceivingAll;
-  Application.ProcessMessages;
 
+  FormWaiting.Close;
   FormMain.PanelCover.Visible := False;
 
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButtonAdditionData, HintButtonAdditionData,
     FormMain.ShowAdditionData);
-  // Закрываем окно ожидания
-  FormWaiting.Close;
-  Application.ProcessMessages;
 end;
 
 procedure TFormAdditionData.FormActivate(Sender: TObject);
@@ -164,11 +146,6 @@ procedure TFormAdditionData.FormClose(Sender: TObject; var Action: TCloseAction)
 begin
   Action := caFree;
 
-  FrameRates.Destroy;
-  FramePriceMaterial.Destroy;
-  FramePriceMechanizm.Destroy;
-  FrameEquipment.Destroy;
-
   FormMain.PanelCover.Visible := True;
   FormCalculationEstimate.WindowState := wsMaximized;
   FormMain.PanelCover.Visible := False;
@@ -179,44 +156,6 @@ begin
   FormAdditionData := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButtonAdditionData);
-end;
-
-procedure TFormAdditionData.FormPaint(Sender: TObject);
-begin
-  with FramePriceMaterial do
-    if Parent = nil then
-    begin
-      Parent := FormAdditionData;
-      Align := alClient;
-      Visible := False;
-    end;
-
-  with FramePriceMechanizm do
-    if Parent = nil then
-    begin
-      Parent := FormAdditionData;
-      Align := alClient;
-      Visible := False;
-    end;
-
-  with FrameEquipment do
-    if Parent = nil then
-    begin
-      Parent := FormAdditionData;
-      Align := alClient;
-      Visible := False;
-    end;
-
-  with FrameRates do
-    if Parent = nil then
-    begin
-      Parent := FormAdditionData;
-      Align := alClient;
-      Visible := True;
-
-      SetFocus;
-      VST.SetFocus;
-    end;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
