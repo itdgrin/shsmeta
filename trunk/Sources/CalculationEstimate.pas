@@ -1312,7 +1312,7 @@ begin
 
     OutputDataToTable;
 
-    // R StringGridRates.Repaint;
+    StringGridRates.Repaint;
     StringGridMaterials.Repaint;
   except
     on E: Exception do
@@ -2473,7 +2473,9 @@ end;
 
 procedure TFormCalculationEstimate.StringGridRightClick(Sender: TObject);
 begin
-  if Name = 'StringGridMaterials' then
+  with (Sender as TStringGrid) do
+  begin
+    if Name = 'StringGridMaterials' then
     try
       IdInMat := 0;
       MatId := 0;
@@ -2532,7 +2534,7 @@ begin
         MessageBox(0, PChar('При получении идентификационных данных материала возникла ошибка:' + sLineBreak +
           sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
-
+  end;
   // ----------------------------------------
 
   with (Sender as TStringGrid) do
