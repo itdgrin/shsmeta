@@ -213,49 +213,36 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameOXROPR.ReceivingAll;
-var
-  StrQuery: string;
 begin
-  try
-    if ADOQuery.Active then
-      Exit;
+  if ADOQuery.Active then
+    Exit;
 
-    StrQuery := 'SELECT id as "Id", stroj_id as "IdStroj", number as "Number", name as "NameWork", p1 as "P1", ' +
-      'p2 as "P2" FROM objdetail ORDER BY number ASC';
-
-    with ADOQuery do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add(StrQuery);
-      Active := True;
-    end;
-
-    ReceivingSearch('IdStroj = ' + IntToStr(DBLookupComboBoxTypeWork.KeyValue));
-
-    VST.RootNodeCount := ADOQuery.RecordCount;
-    VST.Selected[VST.GetFirst] := True;
-    VST.FocusedNode := VST.GetFirst;
-
-    FrameStatusBar.InsertText(1, IntToStr(1));
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message), CaptionFrame,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  ReceivingSearch('stroj_id = ' + IntToStr(DBLookupComboBoxTypeWork.KeyValue));
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameOXROPR.ReceivingSearch(vStr: String);
+var
+  StrQuery: string;
+  WhereStr: string;
 begin
-  ADOQuery.Filtered := False;
-  ADOQuery.Filter := vStr;
+  if vStr <> '' then WhereStr := ' where ' + vStr
+  else WhereStr := '';
 
-  if vStr = '' then
-    ADOQuery.Filtered := False
-  else
-    ADOQuery.Filtered := True;
+  StrQuery := 'SELECT id as "Id", stroj_id as "IdStroj", number as "Number", ' +
+    'name as "NameWork", p1 as "P1", p2 as "P2" ' +
+    'FROM objdetail' + WhereStr + ' ORDER BY number ASC';
+
+  with ADOQuery do
+  begin
+    Active := False;
+    SQL.Clear;
+    SQL.Add(StrQuery);
+    Active := True;
+  end;
+
+  ADOQuery.FetchOptions.RecordCountMode := cmTotal;
 
   if ADOQuery.RecordCount <= 0 then
   begin
@@ -267,7 +254,6 @@ begin
   else
   begin
     VST.RootNodeCount := ADOQuery.RecordCount;
-
     VST.Selected[VST.GetFirst] := True;
     VST.FocusedNode := VST.GetFirst;
 
@@ -275,13 +261,15 @@ begin
   end;
 
   FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount));
+
+  ADOQuery.FetchOptions.RecordCountMode := cmVisible;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameOXROPR.DBLookupComboBoxTypeWorkClick(Sender: TObject);
 begin
-  ReceivingSearch('IdStroj = ' + IntToStr((Sender as TDBLookupComboBox).KeyValue));
+  ReceivingSearch('stroj_id = ' + IntToStr((Sender as TDBLookupComboBox).KeyValue));
 
   VST.Repaint;
 end;
@@ -290,7 +278,7 @@ end;
 
 procedure TFrameOXROPR.FrameEnter(Sender: TObject);
 begin
-  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount)); // Количество записей
+  FrameStatusBar.InsertText(0, IntToStr(VST.RootNodeCount)); // Количество записей
 
   if ADOQuery.RecordCount > 0 then
     FrameStatusBar.InsertText(1, IntToStr(VST.FocusedNode.Index + 1)) // Номер выделенной записи
@@ -342,7 +330,7 @@ end;
 procedure TFrameOXROPR.RadioButtonClick(Sender: TObject);
 begin
   FillingTypeWork;
-  ReceivingSearch('IdStroj = ' + IntToStr(DBLookupComboBoxTypeWork.KeyValue));
+  ReceivingSearch('stroj_id = ' + IntToStr(DBLookupComboBoxTypeWork.KeyValue));
 
   VST.Repaint;
 end;
@@ -438,8 +426,8 @@ begin
 
   // Выводим название в Memo под таблицей
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) then
-    Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node))
+  then Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
   Memo.Text := ADOQuery.FieldByName('NameWork').AsVariant;
