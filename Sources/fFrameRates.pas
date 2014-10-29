@@ -353,39 +353,8 @@ begin
 end;
 
 procedure TFrameRates.ReceivingAll;
-var
-  StrQuery: string;
 begin
-  StrQuery :=
-    'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative", norm_caption as "CaptionNormativ", '
-    + 'sbornik_id, razd_id, tab_id FROM normativ' + DataBase +
-    ' ORDER BY NumberNormative ASC;';
-
-  try
-    if ADOQueryNormativ.Active then
-      Exit;
-
-    with ADOQueryNormativ do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add(StrQuery);
-      Active := True;
-    end;
-
-    ADOQueryNormativ.FetchOptions.RecordCountMode := cmTotal; //Узнаем реальное кол-вл записей
-    VST.RootNodeCount := ADOQueryNormativ.RecordCount;
-    VST.Selected[VST.GetFirst] := True;
-    VST.FocusedNode := VST.GetFirst;
-    FrameStatusBar.InsertText(0, IntToStr(ADOQueryNormativ.RecordCount));
-    if ADOQueryNormativ.RecordCount = 0 then FrameStatusBar.InsertText(1, '-1');
-
-    ADOQueryNormativ.FetchOptions.RecordCountMode := cmVisible;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
-        CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  ReceivingSearch('');
 end;
 
 procedure TFrameRates.SpeedButtonShowHideRightPanelClick(Sender: TObject);
@@ -534,7 +503,7 @@ end;
 procedure TFrameRates.tmrFilterTimer(Sender: TObject);
 begin
   tmrFilter.Enabled := False;
-  ReceivingSearch(FilteredString(EditRate.Text, 'NumberNormative'));
+  ReceivingSearch(FilteredString(EditRate.Text, 'norm_num'));
 end;
 
 procedure TFrameRates.VSTDblClick(Sender: TObject);
@@ -567,6 +536,8 @@ var
   i: Integer;
   IdNormative: String;
 begin
+  if not Assigned(Node) then exit;
+
   ADOQueryNormativ.RecNo := Node.Index + 1;
 
   IdNormative := ADOQueryNormativ.FieldByName('IdNormative').AsVariant; // Получаем Id норматива
@@ -1043,6 +1014,9 @@ begin
     if (Key = '-') and (Text <> '') then
       if ((Text[Length(Text)] < '0') or (Text[Length(Text)] > '9')) then
         Key := #0;
+
+  //Аптибип
+  if key = #13 then key := #0;
 end;
 
 procedure TFrameRates.EditSearchNormativeEnter(Sender: TObject);
@@ -1095,7 +1069,7 @@ begin
     StringSearch := '';
 
     for i := 0 to CountWords - 1 do
-      StringSearch := StringSearch + 'CaptionNormativ LIKE ''%' + Words[i] + '%'' and ';
+      StringSearch := StringSearch + 'norm_caption LIKE ''%' + Words[i] + '%'' and ';
 
     Delete(StringSearch, Length(StringSearch) - 4, 5);
 
@@ -1108,39 +1082,58 @@ begin
 
     ReceivingSearch('');
   end;
+  //Антибип
+  if key = #13 then key := #0;
 end;
 
 procedure TFrameRates.ReceivingSearch(vStr: string);
+var
+  QueryStr: string;
+  WhereStr: string;
 begin
-  with ADOQueryNormativ do
-  begin
-    Filtered := False;
-
-    if vStr <> '' then
+  try
+    with ADOQueryNormativ do
     begin
-      Filter := vStr;
-      Filtered := True;
+      Active := False;
+      SQL.Clear;
+      if vStr <> '' then WhereStr := ' where ' + vStr
+      else WhereStr := '';
+      QueryStr :=
+        'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
+        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id FROM ' +
+        'normativ' + DataBase + WhereStr + ' ORDER BY NumberNormative ASC;';
+
+      SQL.Add(QueryStr);
+      Active := True;
     end;
+
+    ADOQueryNormativ.FetchOptions.RecordCountMode := cmTotal;
+
+    if ADOQueryNormativ.RecordCount <= 0 then
+    begin
+      VST.RootNodeCount := 1;
+      VST.ClearSelection;
+
+      FrameStatusBar.InsertText(1, '-1');
+    end
+    else
+    begin
+      VST.RootNodeCount := ADOQueryNormativ.RecordCount;
+      VST.Selected[VST.GetFirst] := True;
+      VST.FocusedNode := VST.GetFirst;
+    end;
+
+    FrameStatusBar.InsertText(0, IntToStr(ADOQueryNormativ.RecordCount));
+
+    if ADOQueryNormativ.RecordCount > 0 then
+      VSTFocusChanged(VST, VST.FocusedNode, VST.FocusedColumn);
+
+    ADOQueryNormativ.FetchOptions.RecordCountMode := cmVisible;
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+        CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  if ADOQueryNormativ.RecordCount <= 0 then
-  begin
-    VST.RootNodeCount := 1;
-    VST.ClearSelection;
-
-    FrameStatusBar.InsertText(1, '-1');
-  end
-  else
-  begin
-    VST.RootNodeCount := ADOQueryNormativ.RecordCount;
-    VST.Selected[VST.GetFirst] := True;
-    VST.FocusedNode := VST.GetFirst;
-  end;
-
-  FrameStatusBar.InsertText(0, IntToStr(ADOQueryNormativ.RecordCount));
-
-  if ADOQueryNormativ.RecordCount > 0 then
-    VSTFocusChanged(VST, VST.FocusedNode, VST.FocusedColumn);
 end;
 
 procedure TFrameRates.ShowHidePanels(Sender: TObject);
@@ -1334,27 +1327,40 @@ begin
 end;
 
 procedure TFrameRates.GetWinterPrice;
+var s, s1, s2 : string;
 begin
   try
     with ADOQueryTemp do
     begin
       Active := False;
+      s := ADOQueryNormativ.FieldByName('NumberNormative').AsString;
       SQL.Clear;
-      SQL.Add('SELECT num, name, s, po FROM znormativs;');
+      SQL.Add('SELECT num, name, s, po, DATE_BEG FROM znormativs where ' +
+        '((s <= ''' + s + ''') and (po >= ''' + s +
+        ''')) order by DATE_BEG desc;');
       Active := True;
 
-      First;
+      {First; //Использовалось для отладки
       while not Eof do
       begin
-        if (ADOQueryNormativ.FieldByName('NumberNormative').AsString >= FieldByName('s').AsVariant) and
-          (ADOQueryNormativ.FieldByName('NumberNormative').AsString <= FieldByName('po').AsVariant) then
+        s1 := FieldByName('s').AsString;
+        s2 := FieldByName('po').AsString;
+        if (s >= s1) and
+          (s <= s2) then
         begin
-          EditWinterPrice.Text := FieldByName('num').AsVariant + ' ' + FieldByName('name').AsVariant;
+          EditWinterPrice.Text := FieldByName('num').AsString + ' ' +
+            FieldByName('name').AsString;
           Break;
         end;
 
         Next;
-      end;
+      end; }
+
+
+      if not Eof then
+        EditWinterPrice.Text := FieldByName('num').AsVariant + ' ' +
+          FieldByName('name').AsVariant;
+
     end;
   except
     on E: Exception do

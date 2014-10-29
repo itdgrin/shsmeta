@@ -124,52 +124,36 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameEquipment.ReceivingAll;
-var
-  StrQuery: string;
 begin
   StrQuickSearch := '';
-
-  try
-    if ADOQuery.Active then
-      Exit;
-
-    StrQuery := 'SELECT id as "Id", device_id as "Id", device_code1 as "Code", name as "Name", ' +
-      'units.unit_name as "Unit" FROM devices, units WHERE devices.unit = units.unit_id ORDER BY device_code1, name ASC';
-
-    with ADOQuery do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add(StrQuery);
-      Active := True;
-      FetchAll;
-    end;
-
-    VST.RootNodeCount := ADOQuery.RecordCount;
-    VST.Selected[VST.GetFirst] := True;
-    VST.FocusedNode := VST.GetFirst;
-
-    FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount));
-    FrameStatusBar.InsertText(1, IntToStr(1));
-    FrameStatusBar.InsertText(2, '');
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message), CaptionFrame,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  ReceivingSearch('');
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameEquipment.ReceivingSearch(vStr: String);
+var
+  WhereStr: string;
+  StrQuery: string;
 begin
-  ADOQuery.Filtered := False;
-  ADOQuery.Filter := vStr;
+  if vStr <> '' then WhereStr := ' and ' + vStr
+  else vStr := '';
 
-  if vStr = '' then
-    ADOQuery.Filtered := False
-  else
-    ADOQuery.Filtered := True;
+  StrQuery :=
+    'SELECT id as "Idd", device_id as "Id", device_code1 as "Code", ' +
+    'name as "Name", units.unit_name as "Unit" FROM devices, units ' +
+    'WHERE (devices.unit = units.unit_id)' + WhereStr +
+    ' ORDER BY device_code1, name ASC';
+
+  with ADOQuery do
+  begin
+    Active := False;
+    SQL.Clear;
+    SQL.Add(StrQuery);
+    Active := True;
+  end;
+
+  ADOQuery.FetchOptions.RecordCountMode := cmTotal;
 
   if ADOQuery.RecordCount <= 0 then
   begin
@@ -189,6 +173,8 @@ begin
   end;
 
   FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount));
+
+  ADOQuery.FetchOptions.RecordCountMode := cmVisible;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -211,13 +197,16 @@ begin
       Text := '';
       ReceivingSearch('');
     end;
+
+  //Антибип
+  if key = #13 then key := #0;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameEquipment.FrameEnter(Sender: TObject);
 begin
-  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount)); // Количество записей
+  FrameStatusBar.InsertText(0, IntToStr(VST.RootNodeCount)); // Количество записей
 
   if ADOQuery.RecordCount > 0 then
     FrameStatusBar.InsertText(1, IntToStr(VST.FocusedNode.Index + 1)) // Номер выделенной записи
@@ -338,7 +327,7 @@ begin
       vNameUnit := ADOQuery.FieldByName('Unit').AsVariant;
       vDescription := ADOQuery.FieldByName('Name').AsVariant;
       vTypeAddData := '4';
-      vid := ADOQuery.FieldByName('Id').AsVariant;
+      vId := ADOQuery.FieldByName('Id').AsVariant;
 
       FormCalculationEstimate.AddRowToTableRates(FieldRates);
     end;
@@ -395,8 +384,8 @@ begin
 
   // Выводим название в Memo под таблицей
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) then
-    Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node))
+  then Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
   Memo.Text := ADOQuery.FieldByName('Name').AsVariant;

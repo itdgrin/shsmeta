@@ -191,37 +191,9 @@ begin
 
       StrFilterData := 'year = ' + ComboBoxYear.Text + ' and monat = ' +
         IntToStr(ComboBoxMonth.ItemIndex + 1);
-
-      StrQuery :=
-        'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", cast(mech_name as char(1024)) as "Name", '
-        + 'unit_name as "Unit", coast1 "PriceVAT", coast2 as "PriceNotVAT", monat, year ' +
-        'FROM mechanizm, units, mechanizmcoast' + DataBase +
-        ' WHERE mechanizm.unit_id = units.unit_id and mechanizm.mechanizm_id = mechanizmcoast' + DataBase +
-        '.mechanizm_id ORDER BY mech_code, mech_name ASC' + ';'
-    end
-    else
-      StrQuery :=
-        'SELECT mechanizm_id as "Id", mech_code as "Code", cast(mech_name as char(1024)) as "Name", ' +
-        'unit_name as "Unit" FROM mechanizm, units WHERE mechanizm.unit_id = units.unit_id ORDER BY mech_code, mech_name ASC;';
-
-    with ADOQuery do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add(StrQuery);
-      Active := True;
-      FetchAll;
-
-      ReceivingSearch('');
     end;
 
-    VST.RootNodeCount := ADOQuery.RecordCount;
-    VST.Selected[VST.GetFirst] := True;
-    VST.FocusedNode := VST.GetFirst;
-
-    FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount));
-    FrameStatusBar.InsertText(1, IntToStr(1));
-    FrameStatusBar.InsertText(2, '');
+    ReceivingSearch('');
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -232,36 +204,72 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFramePriceMechanizm.ReceivingSearch(vStr: String);
+var
+  WhereStr: string;
+  FilterStr, StrQuery: string;
 begin
-  ADOQuery.Filtered := False;
-
   if (StrFilterData <> '') and (vStr <> '') then
-    ADOQuery.Filter := StrFilterData + ' and ' + vStr
+    FilterStr := StrFilterData + ' and ' + vStr
   else if StrFilterData = '' then
-    ADOQuery.Filter := vStr
+    FilterStr := vStr
   else if vStr = '' then
-    ADOQuery.Filter := StrFilterData;
+    FilterStr := StrFilterData;
 
-  ADOQuery.Filtered := True;
+  if FilterStr <> '' then WhereStr := ' and ' + FilterStr
+  else WhereStr := '';
 
-  if ADOQuery.RecordCount <= 0 then
-  begin
-    VST.RootNodeCount := 1;
-    VST.ClearSelection;
+  try
+    if PriceColumn then
+      StrQuery :=
+        'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
+        'cast(mech_name as char(1024)) as "Name", unit_name as "Unit", ' +
+        'coast1 "PriceVAT", coast2 as "PriceNotVAT", monat, year ' +
+        'FROM mechanizm, units, mechanizmcoast' + DataBase +
+        ' WHERE (mechanizm.unit_id = units.unit_id) and ' +
+        '(mechanizm.mechanizm_id = mechanizmcoast' + DataBase + '.mechanizm_id)' +
+        WhereStr + ' ORDER BY mech_code, mech_name ASC' + ';'
+    else
+      StrQuery :=
+        'SELECT mechanizm_id as "Id", mech_code as "Code", ' +
+        'cast(mech_name as char(1024)) as "Name", unit_name as "Unit" ' +
+        'FROM mechanizm, units WHERE (mechanizm.unit_id = units.unit_id)' +
+        WhereStr + ' ORDER BY mech_code, mech_name ASC;';
 
-    FrameStatusBar.InsertText(1, '-1');
-  end
-  else
-  begin
-    VST.RootNodeCount := ADOQuery.RecordCount;
+    with ADOQuery do
+    begin
+      Active := False;
+      SQL.Clear;
+      SQL.Add(StrQuery);
+      Active := True;
+    end;
 
-    VST.Selected[VST.GetFirst] := True;
-    VST.FocusedNode := VST.GetFirst;
+    ADOQuery.FetchOptions.RecordCountMode := cmTotal;
 
-    FrameStatusBar.InsertText(1, '1');
+    if ADOQuery.RecordCount <= 0 then
+    begin
+      VST.RootNodeCount := 1;
+      VST.ClearSelection;
+
+      FrameStatusBar.InsertText(1, '-1');
+    end
+    else
+    begin
+      VST.RootNodeCount := ADOQuery.RecordCount;
+
+      VST.Selected[VST.GetFirst] := True;
+      VST.FocusedNode := VST.GetFirst;
+
+      FrameStatusBar.InsertText(1, '1');
+    end;
+
+    FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount));
+
+    ADOQuery.FetchOptions.RecordCountMode := cmVisible;
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+        CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount));
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -278,13 +286,16 @@ procedure TFramePriceMechanizm.EditSearchKeyPress(Sender: TObject; var Key: Char
 begin
   with (Sender as TEdit) do
     if (Key = #13) and (Text <> '') then // Если нажата клавиша "Enter" и строка поиска не пуста
-      ReceivingSearch(FilteredString(Text, 'Name'))
+      ReceivingSearch(FilteredString(Text, 'mech_name'))
     else if (Key = #27) or ((Key = #13) and (Text = '')) then
     // Нажата клавиша ESC, или Enter и строка поиска пуста
     begin
       Text := '';
       ReceivingSearch('');
     end;
+
+  //Антибип
+  if key = #13 then key := #0;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -296,7 +307,7 @@ begin
   if not ADOQuery.Active then
     Exit;
 
-  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount)); // Количество записей
+  FrameStatusBar.InsertText(0, IntToStr(VST.RootNodeCount));
 
   if ADOQuery.RecordCount > 0 then
     FrameStatusBar.InsertText(1, IntToStr(VST.FocusedNode.Index + 1)) // Номер выделенной записи
@@ -478,8 +489,8 @@ begin
 
   // Выводим название в Memo под таблицей
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) then
-    Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node))
+  then Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
   Memo.Text := ADOQuery.FieldByName('Name').AsVariant;
