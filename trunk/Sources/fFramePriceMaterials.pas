@@ -175,8 +175,6 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFramePriceMaterial.ReceivingAll;
-var
-  StrQuery: string;
 begin
   StrQuickSearch := '';
 
@@ -218,21 +216,58 @@ begin
       ComboBoxYear.ItemIndex := 2012 - ADOQueryTemp.FieldByName('year').AsInteger;
 
       StrFilterData := '';
+    end;
 
+    ReceivingSearch('');
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+        CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+procedure TFramePriceMaterial.ReceivingSearch(vStr: String);
+var
+  WhereStr: string;
+  FilterStr, StrQuery: string;
+begin
+  if (StrFilterData <> '') and (vStr <> '') then
+    FilterStr := StrFilterData + ' and ' + vStr
+  else if StrFilterData = '' then
+    FilterStr := vStr
+  else if vStr = '' then
+    FilterStr := StrFilterData;
+
+  if FilterStr <> '' then WhereStr := ' and ' + FilterStr
+  else WhereStr := '';
+
+  try
+
+    if PriceColumn then
       StrQuery :=
-        'SELECT material.material_id as "MatId", mat_code as "Code", cast(mat_name as char(1024)) as "Name", '
-        + 'unit_name as "Unit", units.unit_id as "UnitId", coast1_1 "PriceVAT1", coast1_2 as "PriceNotVAT1", '
-        + 'coast2_1 "PriceVAT2", coast2_2 as "PriceNotVAT2", coast3_1 "PriceVAT3", coast3_2 as "PriceNotVAT3", '
-        + 'coast4_1 "PriceVAT4", coast4_2 as "PriceNotVAT4", coast5_1 "PriceVAT5", coast5_2 as "PriceNotVAT5", '
-        + 'coast6_1 "PriceVAT6", coast6_2 as "PriceNotVAT6", coast7_1 "PriceVAT7", coast7_2 as "PriceNotVAT7", '
-        + 'year, monat FROM material, units, materialcoast' + DataBase +
-        ' WHERE material.unit_id = units.unit_id and material.material_id = materialcoast' + DataBase +
-        '.material_id and not mat_code like "П%" AND year=:y1 and monat=:m1 ORDER BY mat_code, mat_name ASC;';
-    end
+          'SELECT material.material_id as "MatId", mat_code as "Code", ' +
+          'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
+          'units.unit_id as "UnitId", coast1_1 as "PriceVAT1", ' +
+          'coast1_2 as "PriceNotVAT1", coast2_1 "PriceVAT2", ' +
+          'coast2_2 as "PriceNotVAT2", coast3_1 as "PriceVAT3", ' +
+          'coast3_2 as "PriceNotVAT3", coast4_1 "PriceVAT4", ' +
+          'coast4_2 as "PriceNotVAT4", coast5_1 as "PriceVAT5", ' +
+          'coast5_2 as "PriceNotVAT5", coast6_1 "PriceVAT6", ' +
+          'coast6_2 as "PriceNotVAT6", coast7_1 as "PriceVAT7", ' +
+          'coast7_2 as "PriceNotVAT7", year, monat FROM material, units, ' +
+          'materialcoast' + DataBase + ' WHERE (material.unit_id = units.unit_id) ' +
+          'and (material.material_id = materialcoast' + DataBase + '.material_id) ' +
+          'and (not mat_code like "П%") and (year=:y1) and (monat=:m1)' + WhereStr +
+          ' ORDER BY mat_code, mat_name ASC;'
     else
-      StrQuery := 'SELECT material_id as "Id", mat_code as "Code", cast(mat_name as char(1024)) as "Name", ' +
-        'unit_name as "Unit" FROM material, units WHERE material.unit_id = units.unit_id and not mat_code LIKE "П%" '
-        + 'ORDER BY mat_code, mat_name ASC;';
+      StrQuery :=
+          'SELECT material_id as "MatId", mat_code as "Code", ' +
+          'cast(mat_name as char(1024)) as "Name", unit_name as "Unit" ' +
+          'FROM material, units WHERE (material.unit_id = units.unit_id) ' +
+          'and (not mat_code LIKE "П%")' + WhereStr +
+          ' ORDER BY mat_code, mat_name ASC;';
 
     with ADOQuery do
     begin
@@ -245,57 +280,33 @@ begin
         ParamByName('m1').AsInteger := ComboBoxMonth.ItemIndex + 1;
       end;
       Active := True;
-      FetchAll;
-      ReceivingSearch('');
     end;
 
-    VST.RootNodeCount := ADOQuery.RecordCount;
-    VST.Selected[VST.GetFirst] := True;
-    VST.FocusedNode := VST.GetFirst;
+    ADOQuery.FetchOptions.RecordCountMode := cmTotal;
+    if ADOQuery.RecordCount <= 0 then
+    begin
+      VST.RootNodeCount := 1;
+      VST.ClearSelection;
 
+      FrameStatusBar.InsertText(1, '-1');
+    end
+    else
+    begin
+      VST.RootNodeCount := ADOQuery.RecordCount;
+      VST.Selected[VST.GetFirst] := True;
+      VST.FocusedNode := VST.GetFirst;
+
+      FrameStatusBar.InsertText(1, '1');
+    end;
     FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount));
-    FrameStatusBar.InsertText(1, IntToStr(1));
-    FrameStatusBar.InsertText(2, '');
+
+    ADOQuery.FetchOptions.RecordCountMode := cmVisible;
+
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
-        CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak +
+        sLineBreak + E.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFramePriceMaterial.ReceivingSearch(vStr: String);
-begin
-  ADOQuery.Filtered := False;
-
-  if (StrFilterData <> '') and (vStr <> '') then
-    ADOQuery.Filter := StrFilterData + ' and ' + vStr
-  else if StrFilterData = '' then
-    ADOQuery.Filter := vStr
-  else if vStr = '' then
-    ADOQuery.Filter := StrFilterData;
-
-  ADOQuery.Filtered := True;
-
-  if ADOQuery.RecordCount <= 0 then
-  begin
-    VST.RootNodeCount := 1;
-    VST.ClearSelection;
-
-    FrameStatusBar.InsertText(1, '-1');
-  end
-  else
-  begin
-    VST.RootNodeCount := ADOQuery.RecordCount;
-
-    VST.Selected[VST.GetFirst] := True;
-    VST.FocusedNode := VST.GetFirst;
-
-    FrameStatusBar.InsertText(1, '1');
-  end;
-
-  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount));
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -312,13 +323,16 @@ procedure TFramePriceMaterial.EditSearch1KeyPress(Sender: TObject; var Key: Char
 begin
   with (Sender as TEdit) do
     if (Key = #13) and (Text <> '') then // Если нажата клавиша "Enter" и строка поиска не пуста
-      ReceivingSearch(FilteredString(Text, 'Name'))
+      ReceivingSearch(FilteredString(Text, 'mat_name'))
     else if (Key = #27) or ((Key = #13) and (Text = '')) then
     // Нажата клавиша ESC, или Enter и строка поиска пуста
     begin
       Text := '';
       ReceivingSearch('');
     end;
+
+  //Антибип
+  if key = #13 then key := #0;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -330,7 +344,7 @@ begin
   if not ADOQuery.Active then
     Exit;
 
-  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount)); // Количество записей
+  FrameStatusBar.InsertText(0, IntToStr(VST.RootNodeCount));
 
   if ADOQuery.RecordCount > 0 then
     FrameStatusBar.InsertText(1, IntToStr(VST.FocusedNode.Index + 1)) // Номер выделенной записи
@@ -514,8 +528,8 @@ begin
 
   // Выводим название в Memo под таблицей
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) then
-    Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node))
+  then Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
   Memo.Text := ADOQuery.FieldByName('Name').AsVariant;

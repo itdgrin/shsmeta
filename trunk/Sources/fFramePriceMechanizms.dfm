@@ -93,6 +93,7 @@ object FramePriceMechanizm: TFramePriceMechanizm
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
         OnKeyPress = VSTKeyPress
+        ExplicitLeft = -3
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]
