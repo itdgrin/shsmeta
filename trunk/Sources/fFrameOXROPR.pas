@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   DBCtrls, VirtualTrees, fFrameStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, SmetaClasses;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -15,7 +15,7 @@ type
   end;
 
 type
-  TFrameOXROPR = class(TFrame)
+  TFrameOXROPR = class(TSmetaFrame)
     DataSourceTypeWork: TDataSource;
 
     PopupMenu: TPopupMenu;
@@ -49,13 +49,9 @@ type
     ADOQueryTypeWork: TFDQuery;
     ADOQuery: TFDQuery;
 
-    constructor Create(AOwner: TComponent);
-
     procedure FillingTypeWork;
     procedure FillingResolution;
-    procedure ReceivingAll;
     procedure ReceivingSearch(vStr: String);
-
     procedure DBLookupComboBoxTypeWorkClick(Sender: TObject);
 
     procedure FrameEnter(Sender: TObject);
@@ -77,7 +73,9 @@ type
     procedure VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
     procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: string);
-
+  public
+     procedure ReceivingAll; override;
+     constructor Create(AOwner: TComponent);
   end;
 
 implementation
@@ -214,10 +212,8 @@ end;
 
 procedure TFrameOXROPR.ReceivingAll;
 begin
-  if ADOQuery.Active then
-    Exit;
-
   ReceivingSearch('stroj_id = ' + IntToStr(DBLookupComboBoxTypeWork.KeyValue));
+  fLoaded := true;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

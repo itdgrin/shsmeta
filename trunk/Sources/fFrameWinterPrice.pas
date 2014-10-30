@@ -6,10 +6,10 @@ uses
   Windows, SysUtils, Classes, Controls, Forms, StdCtrls, Grids, ExtCtrls, DB, Menus, ComCtrls,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client, Masks, SmetaClasses;
 
 type
-  TFrameWinterPrice = class(TFrame)
+  TFrameWinterPrice = class(TSmetaFrame)
     PanelRight: TPanel;
     GroupBox1: TGroupBox;
     LabelCoef: TLabel;
@@ -35,8 +35,6 @@ type
     ADOQueryTemp2: TFDQuery;
     ADOQueryTemp1: TFDQuery;
 
-    constructor Create(AOwner: TComponent);
-
     procedure SettingTable;
     procedure FillingTree;
 
@@ -52,7 +50,9 @@ type
     procedure StringGridNormativesMouseMove(Sender: TObject; Shift: TShiftState; x, Y: Integer);
 
     procedure TreeViewChanging(Sender: TObject; Node: TTreeNode; var AllowChange: Boolean);
-
+  public
+     procedure ReceivingAll; override;
+     constructor Create(AOwner: TComponent);
   end;
 
 implementation
@@ -113,126 +113,94 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
+procedure TFrameWinterPrice.ReceivingAll;
+begin
+  FillingTree;
+  fLoaded := true;
+end;
 
 procedure TFrameWinterPrice.FillingTree;
 var
-  NameTable: String;
-  i1, i2, i3: Integer;
-  Num1, Num2: String;
-  CountRecord: Integer;
+  i1, i2: Integer;
+  Num, LastNum: String;
   StrQuery: string;
+  NLevel : integer;
 begin
   try
     if not ADOQueryTable.Active then
+    begin
       with ADOQueryTable do
       begin
+        //Сделано допущение что поле INTERVAL_ID сортирует num
         Active := False;
-        StrQuery := 'SELECT DISTINCT num, name FROM znormativs' { + FMEndTables } + ';';
-        SQL.Clear;
-        SQL.Add(StrQuery);
-        Active := True;
-
-        CountRecord := 0;
-        // FrameProgressBar.SetMinMax(1, RecordCount);
-
-        // ----------------------------------------
-
-        // FrameProgressBar.Visible := True;
-
-        Active := False;
-        StrQuery := 'SELECT num, name FROM znormativs' { + FMEndTables } + ' WHERE not num LIKE "%.%" ORDER BY id;';
+        StrQuery := 'SELECT DISTINCT INTERVAL_ID, num, name FROM znormativs ' +
+          'order by INTERVAL_ID;';
         SQL.Clear;
         SQL.Add(StrQuery);
         Active := True;
 
         First;
 
+        i1 := -1;
+        i2 := -1;
+        LastNum := '';
+
         while not Eof do
         begin
-          i1 := TreeView.Items.Add(Nil, FieldByName('num').AsVariant + '. ' + FieldByName('name').AsVariant)
-            .AbsoluteIndex;
+          //Определяем уровень ноды
+          Num := FieldByName('num').AsString;
 
-          // ----- ВТОРОЙ УРОВЕНЬ
-
-          with ADOQueryTemp1 do
+          if LastNum = Num then
           begin
-            Active := False;
-            SQL.Clear;
-
-            Num1 := ADOQueryTable.FieldByName('num').AsVariant;
-
-            StrQuery := 'SELECT num, name, s FROM znormativs' { + FMEndTables } + ' WHERE num LIKE "' + Num1 +
-              '.%" and not num LIKE "%.%.%" GROUP BY name ORDER BY num';
-
-            SQL.Add(StrQuery);
-            Active := True;
-
-            First;
-
-            while not Eof do
-            begin
-              i2 := TreeView.Items.AddChild(TreeView.Items.Item[i1], FieldByName('num').AsVariant + '. ' +
-                FieldByName('Name').AsVariant).AbsoluteIndex;
-
-              // ----- ТРЕТИЙ УРОВЕНЬ
-
-              if ADOQueryTemp1.FieldByName('s').AsVariant = '' then
-              begin
-                with ADOQueryTemp2 do
-                begin
-                  Active := False;
-                  SQL.Clear;
-
-                  Num2 := ADOQueryTemp1.FieldByName('num').AsVariant;
-
-                  StrQuery := 'SELECT num, name FROM znormativs' { + FMEndTables } + ' WHERE num LIKE "' + Num2 +
-                    '.%" GROUP BY name ORDER BY num';
-
-                  SQL.Add(StrQuery);
-                  Active := True;
-
-                  First;
-
-                  while not Eof do
-                  begin
-                    TreeView.Items.AddChild(TreeView.Items.Item[i2], FieldByName('num').AsVariant + '. ' +
-                      FieldByName('Name').AsVariant).AbsoluteIndex;
-
-                    Next;
-
-                    Inc(CountRecord);
-                    // FrameProgressBar.IncPosition(CountRecord);
-                    Application.ProcessMessages;
-                  end;
-                end;
-              end;
-
-              // ----- ТРЕТИЙ УРОВЕНЬ
-
-              Next;
-
-              Inc(CountRecord);
-              // FrameProgressBar.IncPosition(CountRecord);
-              Application.ProcessMessages;
-            end;
+            Next;
+            Continue;
           end;
 
-          // ----- ВТОРОЙ УРОВЕНЬ
+          LastNum := Num;
+
+          if MatchesMask(num, '*.*.*') then NLevel := 3
+          else if MatchesMask(num, '*.*') then NLevel := 2
+          else NLevel := 1;
+
+
+          if NLevel = 1 then
+          begin
+            i1 := TreeView.Items.Add(Nil, Num + '. ' +
+              FieldByName('name').AsString).AbsoluteIndex;
+            i2 := -1;
+          end;
+
+          if NLevel = 2 then
+          begin
+            if i1 = -1 then  //Все косяки в бд игнорируются
+            begin
+              Next;
+              continue;
+            end;
+
+            i2 := TreeView.Items.AddChild(TreeView.Items.Item[i1], num + '. ' +
+              FieldByName('Name').AsString).AbsoluteIndex;
+          end;
+
+          if NLevel = 3 then
+          begin
+            if (i2 = -1) then
+            begin
+              Next;
+              continue;
+            end;
+
+            TreeView.Items.AddChild(TreeView.Items.Item[i2], num + '. ' +
+              FieldByName('Name').AsVariant).AbsoluteIndex;
+          end;
 
           Next;
-
-          Inc(CountRecord);
-          // FrameProgressBar.IncPosition(CountRecord);
-          Application.ProcessMessages;
         end;
-
-        // FrameProgressBar.Visible := False;
       end;
+    end;
   except
     on E: Exception do
     begin
-      // FrameProgressBar.Visible := False;
-
       MessageBox(0, PChar('При выводе данных в дерево возникла ошибка:' + sLineBreak + E.Message), CaptionFrame,
         MB_ICONERROR + MB_OK + mb_TaskModal);
     end;

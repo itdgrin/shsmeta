@@ -7,7 +7,7 @@ uses
   DBGrids, Grids,
   ExtCtrls, DB, VirtualTrees, fFrameStatusBar, Menus, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, SmetaClasses;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -16,7 +16,7 @@ type
   end;
 
 type
-  TFrameRates = class(TFrame)
+  TFrameRates = class(TSmetaFrame)
     PanelRates: TPanel;
     SplitterLeft: TSplitter;
     ImageSplitterLeft: TImage;
@@ -81,11 +81,9 @@ type
     ADOQueryTemp: TFDQuery;
     tmrFilter: TTimer;
 
-    constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean);
     procedure FrameResize(Sender: TObject);
 
     procedure SettingTable;
-    procedure ReceivingAll;
     procedure ReceivingSearch(vStr: string);
 
     procedure StringGridNCClick(Sender: TObject);
@@ -145,6 +143,9 @@ type
     AllowAddition: Boolean; // Разрешено/запрещено добавлять записи из фрейма
 
     Group1, Group2, Group3, Group4: Integer;
+  public
+    procedure ReceivingAll; override;
+    constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean) ;
 
   end;
 
@@ -355,6 +356,7 @@ end;
 procedure TFrameRates.ReceivingAll;
 begin
   ReceivingSearch('');
+  fLoaded := true;
 end;
 
 procedure TFrameRates.SpeedButtonShowHideRightPanelClick(Sender: TObject);
@@ -791,50 +793,23 @@ begin
   // ----------------------------------
 
   // ВЫВОДИМ ОХР И ОПР И ПЛАН ПРИБЫЛИ
- { with ADOQueryTemp do
+  with ADOQueryTemp do
   begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT number, name FROM objdetail WHERE stroj_id = (SELECT stroj_id FROM objcards ' +
-      'WHERE obj_id = :obj_id) ORDER BY number;');
-    ParamByName('obj_id').Value := FormCalculationEstimate.GetIdObject;
-    Active := True;
-
-    First;
-    i := 1;
-
-    ComboBoxOXROPR.Items.Clear;
-
-    while not Eof do
-    begin
-      ComboBoxOXROPR.Items.Add(IntToStr(i) + '. ' + FieldByName('name').AsVariant);
-      Inc(i);
-      Next;
-    end;
-
-    ComboBoxOXROPR.ItemIndex := 0;
-
-    // ----------------------------------
+    ComboBoxOXROPR.ItemIndex := -1;
 
     Active := False;
     SQL.Clear;
-    StrQuery := 'SELECT work_id, s, po FROM onormativs;';
+    StrQuery := 'SELECT work_id, s, po FROM onormativs where ((s <= "' +
+      ADOQueryNormativ.FieldByName('NumberNormative').AsString +
+      '") and (po >= "' +
+      ADOQueryNormativ.FieldByName('NumberNormative').AsString + '"));';
     SQL.Add(StrQuery);
     Active := True;
+    // Сделано допущение, что идут work_id по порядку от еденицы
+    if not Eof then
+      ComboBoxOXROPR.ItemIndex := FieldByName('work_id').AsVariant - 1;
 
-    First;
-
-    while not Eof do
-    begin
-      if (ADOQueryNormativ.FieldByName('NumberNormative').AsString > FieldByName('s').AsVariant) and
-        (ADOQueryNormativ.FieldByName('NumberNormative').AsString < FieldByName('po').AsVariant) then
-      begin
-        ComboBoxOXROPR.ItemIndex := FieldByName('work_id').AsVariant - 1;
-        Break;
-      end;
-      Next;
-    end;
-  end;    }
+  end;
 
   // ----------------------------------------
 
@@ -1092,6 +1067,24 @@ var
   WhereStr: string;
 begin
   try
+    with ADOQueryTemp do
+    begin
+      Active := False;
+      SQL.Clear;
+      SQL.Add('SELECT work_id, work_name FROM objworks ORDER BY work_id;');
+      Active := True;
+
+      First;;
+
+      ComboBoxOXROPR.Items.Clear;
+
+      while not Eof do
+      begin
+        ComboBoxOXROPR.Items.Add(Fields[0].AsString + '. ' + Fields[1].AsString);
+        Next;
+      end;
+    end;
+
     with ADOQueryNormativ do
     begin
       Active := False;
