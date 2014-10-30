@@ -89,7 +89,8 @@ uses
   CardAct in 'CardAct.pas' {FormCardAct},
   Tools in 'Tools.pas',
   Vcl.Themes,
-  Vcl.Styles;
+  Vcl.Styles,
+  KC6Journal in 'KC6Journal.pas' {fKC6Journal};
 
 var
   H: Thandle;
