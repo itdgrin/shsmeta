@@ -90,7 +90,8 @@ uses
   Tools in 'Tools.pas',
   Vcl.Themes,
   Vcl.Styles,
-  KC6Journal in 'KC6Journal.pas' {fKC6Journal};
+  KC6Journal in 'KC6Journal.pas' {fKC6Journal},
+  SmetaClasses in 'SmetaClasses.pas';
 
 var
   H: Thandle;

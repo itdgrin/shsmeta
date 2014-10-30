@@ -366,6 +366,7 @@
             <Form>fKC6Journal</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="SmetaClasses.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
