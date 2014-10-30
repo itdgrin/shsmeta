@@ -291,6 +291,10 @@
         end
       end
     end
+    object N61: TMenuItem
+      Caption = #1046#1091#1088#1085#1072#1083' '#1050#1057'-6'
+      OnClick = N61Click
+    end
   end
   object TimerCover: TTimer
     Enabled = False

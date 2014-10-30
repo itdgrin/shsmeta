@@ -362,6 +362,10 @@
             <Form>FormCardAct</Form>
         </DCCReference>
         <DCCReference Include="Tools.pas"/>
+        <DCCReference Include="KC6Journal.pas">
+            <Form>fKC6Journal</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
