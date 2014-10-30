@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, Vcl.Dialogs,
   fFrameRates, fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments,
-  fFrameOXROPR, fFrameWinterPrice, fFrameSSR;
+  fFrameOXROPR, fFrameWinterPrice, fFrameSSR, SmetaClasses;
 
 type
   TFormReferenceData = class(TForm)
@@ -29,13 +29,8 @@ type
 
     procedure HideAllFrames;
 
-    procedure SpeedButtonRatesClick(Sender: TObject);
-    procedure SpeedButtonMaterialsClick(Sender: TObject);
-    procedure SpeedButtonMechanizmsClick(Sender: TObject);
-    procedure SpeedButtonEquipmentsClick(Sender: TObject);
-    procedure SpeedButtonOXROPRClick(Sender: TObject);
-    procedure SpeedButtonWinterPricesClick(Sender: TObject);
-    procedure SpeedButtonSSRClick(Sender: TObject);
+    procedure SpeedButtonClick(Sender: TObject);
+
     function GetLeftIndentForFormSborniks(): Integer;
     function GetTopIndentForFormSborniks(): Integer;
 
@@ -116,49 +111,51 @@ begin
   FrameRates.Parent := Self;
   FrameRates.Align := alClient;
   FrameRates.Visible := True;
+  SpeedButtonRates.Tag := Integer(FrameRates);
 
   FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
   FramePriceMaterials.Parent := Self;
   FramePriceMaterials.Align := alClient;
   FramePriceMaterials.Visible := False;
+  SpeedButtonMaterials.Tag := Integer(FramePriceMaterials);
 
   FramePriceMechanizms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
   FramePriceMechanizms.Parent := Self;
   FramePriceMechanizms.Align := alClient;
   FramePriceMechanizms.Visible := False;
+  SpeedButtonMechanizms.Tag := Integer(FramePriceMechanizms);
 
   FrameEquipments := TFrameEquipment.Create(Self, vDataBase, False);
   FrameEquipments.Parent := Self;
   FrameEquipments.Align := alClient;
   FrameEquipments.Visible := False;
+  SpeedButtonEquipments.Tag := Integer(FrameEquipments);
 
   FrameOXROPR := TFrameOXROPR.Create(Self);
   FrameOXROPR.Parent := Self;
   FrameOXROPR.Align := alClient;
   FrameOXROPR.Visible := False;
+  SpeedButtonOXROPR.Tag := Integer(FrameOXROPR);
 
   FrameWinterPrices := TFrameWinterPrice.Create(Self);
   FrameWinterPrices.Parent := Self;
   FrameWinterPrices.Align := alClient;
   FrameWinterPrices.Visible := False;
+  SpeedButtonWinterPrices.Tag := Integer(FrameWinterPrices);
 
   FrameSSR := TFrameSSR.Create(Self);
   FrameSSR.Parent := Self;
   FrameSSR.Align := alClient;
   FrameSSR.Visible := False;
+  SpeedButtonSSR.Tag := Integer(FrameSSR);
 
   FormWaiting.Show;
   Application.ProcessMessages;
-
+  try
   FrameRates.ReceivingAll;
-  FramePriceMaterials.ReceivingAll;
-  FramePriceMechanizms.ReceivingAll;
-  FrameEquipments.ReceivingAll;
-  FrameOXROPR.ReceivingAll;
-  //FrameWinterPrices.FillingTree;
-  FrameSSR.ReceivingAll;
-
-  FormWaiting.Close;
+  finally
+    FormWaiting.Close;
+  end;
   FormMain.PanelCover.Visible := False;
 
   FormMain.CreateButtonOpenWindow(CaptionButtonReferenceData, HintButtonReferenceData,
@@ -208,90 +205,26 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormReferenceData.SpeedButtonRatesClick(Sender: TObject);
+procedure TFormReferenceData.SpeedButtonClick(Sender: TObject);
 begin
   HideAllFrames;
 
-  with FrameRates do
+  if not Assigned(TSmetaFrame((Sender as TComponent).Tag)) then exit;
+
+
+  with TSmetaFrame((Sender as TComponent).Tag) do
   begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
+    if not Loaded then
+    begin
+      FormWaiting.Show;
+      Application.ProcessMessages;
+      try
+        ReceivingAll;
+      finally
+        FormWaiting.Close;
+      end;
+    end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormReferenceData.SpeedButtonMaterialsClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FramePriceMaterials do
-  begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormReferenceData.SpeedButtonMechanizmsClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FramePriceMechanizms do
-  begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormReferenceData.SpeedButtonEquipmentsClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FrameEquipments do
-  begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormReferenceData.SpeedButtonOXROPRClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FrameOXROPR do
-  begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormReferenceData.SpeedButtonWinterPricesClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FrameWinterPrices do
-  begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormReferenceData.SpeedButtonSSRClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FrameSSR do
-  begin
     Visible := True;
     SetFocus;
   end;

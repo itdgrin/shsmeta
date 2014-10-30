@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   VirtualTrees, fFrameStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, SmetaClasses;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -15,7 +15,7 @@ type
   end;
 
 type
-  TFrameEquipment = class(TFrame)
+  TFrameEquipment = class(TSmetaFrame)
 
     PopupMenu: TPopupMenu;
     CopyCell: TMenuItem;
@@ -38,9 +38,6 @@ type
     SpeedButtonShowHide: TSpeedButton;
     ADOQuery: TFDQuery;
 
-    constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean);
-
-    procedure ReceivingAll;
     procedure ReceivingSearch(vStr: String);
 
     procedure EditSearchEnter(Sender: TObject);
@@ -73,7 +70,9 @@ type
 
     DataBase: Char; // Справочные или собственные данные
     AllowAddition: Boolean; // Разрешено/запрещено добавлять записи из фрейма
-
+  public
+    procedure ReceivingAll; override;
+    constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean);
   end;
 
 implementation
@@ -127,6 +126,7 @@ procedure TFrameEquipment.ReceivingAll;
 begin
   StrQuickSearch := '';
   ReceivingSearch('');
+  fLoaded := true;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Controls, Forms, Variants, StdCtrls, Grids, Buttons, ExtCtrls, DB, Menus, Clipbrd,
   Graphics, fFrameStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client, SmetaClasses;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -15,7 +15,7 @@ type
   end;
 
 type
-  TFrameSSR = class(TFrame)
+  TFrameSSR = class(TSmetaFrame)
 
     CopyCell: TMenuItem;
     SSRSearch: TMenuItem;
@@ -49,11 +49,8 @@ type
     StringGrid2: TStringGrid;
     ADOQuery: TFDQuery;
 
-    constructor Create(AOwner: TComponent);
-
     procedure SettingTable;
     procedure SettingTable2;
-    procedure ReceivingAll;
     procedure ReceivingAll2;
     procedure ReceivingSearch(vStr: String);
     procedure FillingTable(const AQ: TFDQuery; const SG: TStringGrid);
@@ -91,7 +88,9 @@ type
     NomColumn: Integer;
 
     AllowUseFilter: Boolean; // Блокировка фильтрации в ADOQuery
-
+  public
+     procedure ReceivingAll; override;
+     constructor Create(AOwner: TComponent);
   end;
 
 implementation
@@ -232,6 +231,8 @@ begin
 
   StringGrid.Align := alClient;
   StringGrid.Visible := True;
+
+  fLoaded := true;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

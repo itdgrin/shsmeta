@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   VirtualTrees, fFrameStatusBar, DateUtils, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, SmetaClasses;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -15,8 +15,7 @@ type
   end;
 
 type
-  TFramePriceMaterial = class(TFrame)
-
+  TFramePriceMaterial = class(TSmetaFrame)
     PopupMenu: TPopupMenu;
     CopyCell: TMenuItem;
     PriceMaterialSearch: TMenuItem;
@@ -49,10 +48,6 @@ type
     ADOQuery: TFDQuery;
     ADOQueryTemp: TFDQuery;
 
-    constructor Create(AOwner: TComponent; const vDataBase: Char;
-      const vPriceColumn, vAllowAddition, vAllowReplacement: Boolean);
-
-    procedure ReceivingAll;
     procedure ReceivingSearch(vStr: String);
 
     procedure EditSearch1Enter(Sender: TObject);
@@ -93,6 +88,10 @@ type
 
     StrFilterData: string; // Фильтрация данных по месяцу и году
     RegionColumn: string; // Номер столбца с ценами в зависимости от выбранного региона
+  public
+    procedure ReceivingAll; override;
+    constructor Create(AOwner: TComponent; const vDataBase: Char;
+      const vPriceColumn, vAllowAddition, vAllowReplacement: Boolean);
   end;
 
 implementation
@@ -224,6 +223,7 @@ begin
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
         CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+  fLoaded := true;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
