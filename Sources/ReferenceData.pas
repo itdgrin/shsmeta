@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, Vcl.Dialogs,
   fFrameRates, fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments,
-  fFrameOXROPR, fFrameWinterPrice, fFrameSSR, SmetaClasses;
+  fFrameOXROPR, fFrameWinterPrice, fFrameSSR, fFrameSmeta;
 
 type
   TFormReferenceData = class(TForm)

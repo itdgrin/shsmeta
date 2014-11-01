@@ -1,18 +1,12 @@
-object FrameWinterPrice: TFrameWinterPrice
-  Left = 0
-  Top = 0
+inherited FrameWinterPrice: TFrameWinterPrice
   Width = 557
   Height = 325
   DoubleBuffered = True
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Style = []
   ParentBackground = False
   ParentDoubleBuffered = False
   ParentFont = False
-  TabOrder = 0
+  ExplicitWidth = 557
+  ExplicitHeight = 325
   object PanelRight: TPanel
     Left = 317
     Top = 0

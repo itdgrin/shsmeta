@@ -1,21 +1,15 @@
-object FramePriceMechanizm: TFramePriceMechanizm
-  Left = 0
-  Top = 0
+inherited FramePriceMechanizm: TFramePriceMechanizm
   Width = 488
   Height = 335
   DoubleBuffered = True
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Style = []
   ParentBackground = False
   ParentDoubleBuffered = False
   ParentFont = False
-  TabOrder = 0
   OnEnter = FrameEnter
   OnExit = FrameExit
   OnResize = FrameResize
+  ExplicitWidth = 488
+  ExplicitHeight = 335
   object Panel: TPanel
     Left = 0
     Top = 0
@@ -93,7 +87,6 @@ object FramePriceMechanizm: TFramePriceMechanizm
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
         OnKeyPress = VSTKeyPress
-        ExplicitLeft = -3
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]

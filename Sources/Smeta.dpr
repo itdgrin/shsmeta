@@ -41,6 +41,7 @@ uses
   OwnData in 'OwnData.pas' {FormOwnData},
   fFrameProgressBar in 'fFrameProgressBar.pas' {FrameProgressBar: TFrame},
   DrawingTables in 'DrawingTables.pas',
+  fFrameSmeta in 'fFrameSmeta.pas' {SmetaFrame: TFrame},
   fFrameStatusBar in 'fFrameStatusBar.pas' {FrameStatusBar: TFrame},
   fFrameEquipments in 'fFrameEquipments.pas' {FrameEquipment: TFrame},
   fFrameOXROPR in 'fFrameOXROPR.pas' {FrameOXROPR: TFrame},
@@ -90,8 +91,7 @@ uses
   Tools in 'Tools.pas',
   Vcl.Themes,
   Vcl.Styles,
-  KC6Journal in 'KC6Journal.pas' {fKC6Journal},
-  SmetaClasses in 'SmetaClasses.pas';
+  KC6Journal in 'KC6Journal.pas' {fKC6Journal};
 
 var
   H: Thandle;
