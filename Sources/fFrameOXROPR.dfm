@@ -208,6 +208,7 @@ inherited FrameOXROPR: TFrameOXROPR
         Height = 21
         Style = csDropDownList
         TabOrder = 4
+        OnChange = ComboBoxResolutionChange
       end
       object DBLookupComboBoxTypeWork: TDBLookupComboBox
         Left = 279
@@ -263,15 +264,15 @@ inherited FrameOXROPR: TFrameOXROPR
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 264
-    Top = 72
+    Left = 216
+    Top = 104
   end
   object ADOQueryTypeWork: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 136
-    Top = 72
+    Left = 128
+    Top = 104
   end
   object ADOQuery: TFDQuery
     Connection = DM.Connect

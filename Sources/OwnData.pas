@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, fFrameRates,
-  fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments;
+  fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments, fFrameSmeta;
 
 type
   TFormOwnData = class(TForm)
@@ -24,10 +24,7 @@ type
 
     procedure HideAllFrames;
 
-    procedure SpeedButtonRatesClick(Sender: TObject);
-    procedure SpeedButtonMaterialsClick(Sender: TObject);
-    procedure SpeedButtonMechanizmsClick(Sender: TObject);
-    procedure SpeedButtonEquipmentsClick(Sender: TObject);
+    procedure SpeedButtonClick(Sender: TObject);
 
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -101,34 +98,34 @@ begin
   FrameRates.Parent := Self;
   FrameRates.Align := alClient;
   FrameRates.Visible := True;
+  SpeedButtonRates.Tag := Integer(FrameRates);
 
   FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
   FramePriceMaterials.Parent := Self;
   FramePriceMaterials.Align := alClient;
   FramePriceMaterials.Visible := False;
+  SpeedButtonMaterials.Tag := Integer(FramePriceMaterials);
 
   FramePriceMechanisms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
   FramePriceMechanisms.Parent := Self;
   FramePriceMechanisms.Align := alClient;
   FramePriceMechanisms.Visible := False;
+  SpeedButtonMechanisms.Tag := Integer(FramePriceMechanisms);
 
   FrameEquipments := TFrameEquipment.Create(Self, vDataBase, False);
   FrameEquipments.Parent := Self;
   FrameEquipments.Align := alClient;
   FrameEquipments.Visible := False;
+  SpeedButtonEquipments.Tag := Integer(FrameEquipments);
 
   FormWaiting.Show;
   Application.ProcessMessages;
-
+  try
   FrameRates.ReceivingAll;
-  FramePriceMaterials.ReceivingAll;
-  FramePriceMechanisms.ReceivingAll;
-  FrameEquipments.ReceivingAll;
-
-  FormWaiting.Close;
+  finally
+    FormWaiting.Close;
+  end;
   FormMain.PanelCover.Visible := False;
-
-  // ----------------------------------------
 
   FormMain.CreateButtonOpenWindow(CaptionButtonOwnData, HintButtonOwnData, FormMain.ShowOwnData);
 end;
@@ -171,53 +168,26 @@ begin
   FrameEquipments.Visible := False;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormOwnData.SpeedButtonRatesClick(Sender: TObject);
+procedure TFormOwnData.SpeedButtonClick(Sender: TObject);
 begin
   HideAllFrames;
 
-  with FrameRates do
+  if not Assigned(TSmetaFrame((Sender as TComponent).Tag)) then exit;
+
+
+  with TSmetaFrame((Sender as TComponent).Tag) do
   begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
+    if not Loaded then
+    begin
+      FormWaiting.Show;
+      Application.ProcessMessages;
+      try
+        ReceivingAll;
+      finally
+        FormWaiting.Close;
+      end;
+    end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormOwnData.SpeedButtonMaterialsClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FramePriceMaterials do
-  begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormOwnData.SpeedButtonMechanizmsClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FramePriceMechanisms do
-  begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormOwnData.SpeedButtonEquipmentsClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FrameEquipments do
-  begin
     Visible := True;
     SetFocus;
   end;
