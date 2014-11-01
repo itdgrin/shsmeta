@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Controls, Forms, Variants, StdCtrls, Grids, Buttons, ExtCtrls, DB, Menus, Clipbrd,
   Graphics, fFrameStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, SmetaClasses;
+  FireDAC.Comp.Client, fFrameSmeta;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)

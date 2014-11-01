@@ -205,6 +205,10 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="DrawingTables.pas"/>
+        <DCCReference Include="fFrameSmeta.pas">
+            <Form>SmetaFrame</Form>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
         <DCCReference Include="fFrameStatusBar.pas">
             <Form>FrameStatusBar</Form>
             <DesignClass>TFrame</DesignClass>
@@ -364,9 +368,7 @@
         <DCCReference Include="Tools.pas"/>
         <DCCReference Include="KC6Journal.pas">
             <Form>fKC6Journal</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="SmetaClasses.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

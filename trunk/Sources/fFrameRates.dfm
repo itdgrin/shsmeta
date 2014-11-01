@@ -1,4 +1,4 @@
-﻿object FrameRates: TFrameRates
+﻿inherited FrameRates: TFrameRates
   Left = 0
   Top = 0
   Width = 754
