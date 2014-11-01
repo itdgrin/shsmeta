@@ -51,7 +51,7 @@ type
 
     procedure FillingTypeWork;
     procedure FillingResolution;
-    procedure ReceivingSearch(vStr: String);
+    procedure ReceivingSearch;
     procedure DBLookupComboBoxTypeWorkClick(Sender: TObject);
 
     procedure FrameEnter(Sender: TObject);
@@ -73,9 +73,12 @@ type
     procedure VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
     procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: string);
+    procedure ComboBoxResolutionChange(Sender: TObject);
   public
+     MaisCodeList: TStringList;
      procedure ReceivingAll; override;
      constructor Create(AOwner: TComponent);
+     destructor Destroy; override;
   end;
 
 implementation
@@ -96,7 +99,11 @@ begin
   // inherited;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+destructor TFrameOXROPR.Destroy;
+begin
+  MaisCodeList.Free;
+  inherited;
+end;
 
 constructor TFrameOXROPR.Create(AOwner: TComponent);
 begin
@@ -116,6 +123,7 @@ begin
   end;
 
   // ----------------------------------------
+  MaisCodeList := TStringList.Create;
 
   FillingTypeWork;
   FillingResolution;
@@ -136,7 +144,8 @@ begin
     else
       IdRegion := 2;
 
-    StrQuery := 'SELECT * FROM objstroj WHERE obj_region = ' + IntToStr(IdRegion);
+    StrQuery := 'SELECT * FROM objstroj WHERE obj_region = ' +
+      IntToStr(IdRegion) + ' order by stroj_id';
 
     with ADOQueryTypeWork do
     begin
@@ -146,26 +155,12 @@ begin
       Active := True;
     end;
 
-    // Ќаходим минимальный Id типа строительства
-    with DataSourceTypeWork.DataSet do
-    begin
-      First;
-      IdRegion := FieldByName('stroj_id').AsVariant;
-      Next;
-
-      while Eof do
-        if IdRegion < FieldByName('stroj_id').AsVariant then
-          IdRegion := FieldByName('stroj_id').AsVariant;
-
-      Next;
-    end;
-
     with DBLookupComboBoxTypeWork do
     begin
       ListSource := DataSourceTypeWork;
       ListField := 'name';
       KeyField := 'stroj_id';
-      KeyValue := IdRegion;
+      KeyValue := ADOQueryTypeWork.FieldByName('stroj_id').AsInteger;
     end;
   except
     on E: Exception do
@@ -181,7 +176,7 @@ var
   StrQuery: string;
 begin
   try
-    StrQuery := 'SELECT * FROM mais ORDER BY comment;';
+    StrQuery := 'SELECT * FROM mais ORDER BY mais_id;';
 
     with ADOQueryTemp do
     begin
@@ -195,7 +190,8 @@ begin
 
       while not Eof do
       begin
-        ComboBoxResolution.Items.Add(FieldByName('comment').AsVariant);
+        ComboBoxResolution.Items.Add(FieldByName('comment').AsString);
+        MaisCodeList.Add(FieldByName('mais_id').AsString);
         Next;
       end;
     end;
@@ -212,23 +208,26 @@ end;
 
 procedure TFrameOXROPR.ReceivingAll;
 begin
-  ReceivingSearch('stroj_id = ' + IntToStr(DBLookupComboBoxTypeWork.KeyValue));
+  ReceivingSearch;
   fLoaded := true;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameOXROPR.ReceivingSearch(vStr: String);
+procedure TFrameOXROPR.ReceivingSearch;
 var
   StrQuery: string;
   WhereStr: string;
+  colP1, colP2: string;
 begin
-  if vStr <> '' then WhereStr := ' where ' + vStr
-  else WhereStr := '';
+  WhereStr := ' where MAIS_ID = ' + MaisCodeList[ComboBoxResolution.ItemIndex];
 
-  StrQuery := 'SELECT id as "Id", stroj_id as "IdStroj", number as "Number", ' +
-    'name as "NameWork", p1 as "P1", p2 as "P2" ' +
-    'FROM objdetail' + WhereStr + ' ORDER BY number ASC';
+  colP1 := ADOQueryTypeWork.FieldByName('COL1NAME').AsString;
+  colP2 := ADOQueryTypeWork.FieldByName('COL2NAME').AsString;
+
+  StrQuery := 'SELECT number as "Number", (SELECT WORK_NAME FROM objworks ' +
+    'WHERE WORK_ID = number) as "NameWork", ' + colP1 + ' as "P1", ' + colP2 +
+    ' as "P2" FROM objdetailex' + WhereStr + ' ORDER BY number ASC';
 
   with ADOQuery do
   begin
@@ -265,7 +264,7 @@ end;
 
 procedure TFrameOXROPR.DBLookupComboBoxTypeWorkClick(Sender: TObject);
 begin
-  ReceivingSearch('stroj_id = ' + IntToStr((Sender as TDBLookupComboBox).KeyValue));
+  ReceivingSearch;
 
   VST.Repaint;
 end;
@@ -326,12 +325,20 @@ end;
 procedure TFrameOXROPR.RadioButtonClick(Sender: TObject);
 begin
   FillingTypeWork;
-  ReceivingSearch('stroj_id = ' + IntToStr(DBLookupComboBoxTypeWork.KeyValue));
+  ReceivingSearch;
 
   VST.Repaint;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
+
+procedure TFrameOXROPR.ComboBoxResolutionChange(Sender: TObject);
+begin
+  inherited;
+  ReceivingSearch;
+
+  VST.Repaint;
+end;
 
 procedure TFrameOXROPR.CopyCellClick(Sender: TObject);
 var

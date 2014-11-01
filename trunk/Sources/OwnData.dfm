@@ -38,7 +38,7 @@ object FormOwnData: TFormOwnData
       Height = 25
       GroupIndex = 1
       Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
-      OnClick = SpeedButtonMaterialsClick
+      OnClick = SpeedButtonClick
     end
     object SpeedButtonMechanisms: TSpeedButton
       Left = 243
@@ -47,7 +47,7 @@ object FormOwnData: TFormOwnData
       Height = 25
       GroupIndex = 1
       Caption = #1052#1077#1093#1072#1085#1080#1079#1084#1099
-      OnClick = SpeedButtonMechanizmsClick
+      OnClick = SpeedButtonClick
     end
     object SpeedButtonEquipments: TSpeedButton
       Left = 364
@@ -56,7 +56,7 @@ object FormOwnData: TFormOwnData
       Height = 25
       GroupIndex = 1
       Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
-      OnClick = SpeedButtonEquipmentsClick
+      OnClick = SpeedButtonClick
     end
     object SpeedButtonRates: TSpeedButton
       Left = 1
@@ -66,7 +66,7 @@ object FormOwnData: TFormOwnData
       GroupIndex = 1
       Down = True
       Caption = #1056#1072#1089#1094#1077#1085#1082#1080
-      OnClick = SpeedButtonRatesClick
+      OnClick = SpeedButtonClick
     end
   end
 end
