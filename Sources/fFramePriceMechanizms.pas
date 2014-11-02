@@ -3,11 +3,11 @@ unit fFramePriceMechanizms;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
-
-  VirtualTrees, fFrameStatusBar, DateUtils, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
-  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
+  Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons,
+  ExtCtrls, Menus, Clipbrd, DB, VirtualTrees, fFrameStatusBar, DateUtils,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
+  FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async,
+  FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -170,6 +170,7 @@ end;
 procedure TFramePriceMechanizm.ReceivingAll;
 var
   StrQuery: string;
+  Year, Month, Day: Word;
 begin
   StrQuickSearch := '';
 
@@ -179,18 +180,33 @@ begin
 
     if PriceColumn then
     begin
-      ADOQueryTemp.Active := False;
-      ADOQueryTemp.SQL.Clear;
-      ADOQueryTemp.SQL.Add('SELECT stavka.monat, stavka.year'#13 +
-        'FROM smetasourcedata, stavka WHERE smetasourcedata.sm_id=:sm_id and smetasourcedata.stavka_id=stavka.stavka_id;');
-      ADOQueryTemp.ParamByName('sm_id').Value := FormCalculationEstimate.GetIdEstimate;
-      ADOQueryTemp.Active := True;
+      DecodeDate(Date, Year, Month, Day);
+      if Assigned(FormCalculationEstimate) then
+      begin
+        try
+          ADOQueryTemp.Active := False;
+          ADOQueryTemp.SQL.Clear;
+          ADOQueryTemp.SQL.Add('SELECT stavka.monat, stavka.year'#13 +
+            'FROM smetasourcedata, stavka WHERE smetasourcedata.sm_id=:sm_id and smetasourcedata.stavka_id=stavka.stavka_id;');
+          ADOQueryTemp.ParamByName('sm_id').Value := FormCalculationEstimate.GetIdEstimate;
+          ADOQueryTemp.Active := True;
 
-      ComboBoxMonth.ItemIndex := ADOQueryTemp.FieldByName('monat').AsVariant - 1;
-      ComboBoxYear.ItemIndex := 2012 - ADOQueryTemp.FieldByName('year').AsInteger;
+          ComboBoxMonth.ItemIndex := ADOQueryTemp.FieldByName('monat').AsVariant - 1;
+          ComboBoxYear.ItemIndex := 2012 - ADOQueryTemp.FieldByName('year').AsInteger;
+        except
+          on E: Exception do
+            MessageBox(0, PChar('При получении номера региона возникла ошибка:' + sLineBreak + sLineBreak +
+              E.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
+        end
+      end
+      else
+      begin
+        ComboBoxMonth.ItemIndex := Month - 1;
+        ComboBoxYear.ItemIndex := Year - 2012;
+      end;
 
       StrFilterData := 'year = ' + ComboBoxYear.Text + ' and monat = ' +
-        IntToStr(ComboBoxMonth.ItemIndex + 1);
+            IntToStr(ComboBoxMonth.ItemIndex + 1);
     end;
 
     ReceivingSearch('');
@@ -216,7 +232,8 @@ begin
   else if vStr = '' then
     FilterStr := StrFilterData;
 
-  if FilterStr <> '' then WhereStr := ' and ' + FilterStr
+  if FilterStr <> '' then
+    WhereStr := ' and ' + FilterStr
   else WhereStr := '';
 
   try

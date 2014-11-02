@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   VirtualTrees, fFrameStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -15,7 +15,7 @@ type
   end;
 
 type
-  TFramePriceDumps = class(TFrame)
+  TFramePriceDumps = class(TSmetaFrame)
 
     PopupMenu: TPopupMenu;
     CopyCell: TMenuItem;
@@ -38,9 +38,6 @@ type
     SpeedButtonShowHide: TSpeedButton;
     ADOQuery: TFDQuery;
 
-    constructor Create(AOwner: TComponent);
-
-    procedure ReceivingAll;
     procedure ReceivingSearch(vStr: String);
 
     procedure EditSearchEnter(Sender: TObject);
@@ -69,7 +66,9 @@ type
   private
     StrQuickSearch: String[20];
     NomColumn: Integer;
-
+  public
+    procedure ReceivingAll; override;
+    constructor Create(AOwner: TComponent);
   end;
 
 implementation
@@ -148,6 +147,7 @@ begin
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message), CaptionFrame,
         MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+  fLoaded := true;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -293,8 +293,9 @@ procedure TFramePriceDumps.VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCan
 var
   CellText: string;
 begin
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) then
-    Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or
+    (not Assigned(Node))
+  then Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
 
@@ -373,8 +374,9 @@ begin
 
   // Выводим название в Memo под таблицей
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) then
-    Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or
+    (not Assigned(Node))
+  then Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
   Memo.Text := ADOQuery.FieldByName('Name').AsVariant;
@@ -463,7 +465,5 @@ begin
     ReceivingSearch('');
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.

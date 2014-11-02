@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls,
   fFramePriceMaterials, fFramePriceMechanizms, fFramePriceTransportations,
-  fFramePriceDumps;
+  fFramePriceDumps, fFrameSmeta;
 
 type
   TFormPricesOwnData = class(TForm)
@@ -27,10 +27,7 @@ type
 
     procedure HideAllFrames;
 
-    procedure SpeedButtonMaterialsClick(Sender: TObject);
-    procedure SpeedButtonMechanizmsClick(Sender: TObject);
-    procedure SpeedButtonPriceTransportationClick(Sender: TObject);
-    procedure SpeedButtonPriceDumpsClick(Sender: TObject);
+    procedure SpeedButtonClick(Sender: TObject);
 
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -105,31 +102,29 @@ begin
   FramePriceMaterials.Parent := Self;
   FramePriceMaterials.align := alClient;
   FramePriceMaterials.Visible := True;
+  SpeedButtonPriceMaterials.Tag := Integer(FramePriceMaterials);
 
   FramePriceMechanizms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
   FramePriceMechanizms.Parent := Self;
   FramePriceMechanizms.align := alClient;
   FramePriceMechanizms.Visible := False;
+  SpeedButtonPriceMechanizms.Tag := Integer(FramePriceMechanizms);
 
   FramePriceTransportations := TFramePriceTransportations.Create(Self);
   FramePriceTransportations.Parent := Self;
   FramePriceTransportations.align := alClient;
   FramePriceTransportations.Visible := False;
+  SpeedButtonPriceTransportation.Tag := Integer(FramePriceTransportations);
 
   FramePriceDumps := TFramePriceDumps.Create(Self);
   FramePriceDumps.Parent := Self;
   FramePriceDumps.align := alClient;
   FramePriceDumps.Visible := False;
+  SpeedButtonPriceDumps.Tag := Integer(FramePriceDumps);
 
-  FormWaiting.Show;
-  Application.ProcessMessages;
+  SpeedButtonClick(SpeedButtonPriceMaterials);
+  FramePriceMaterials.Visible := True;
 
-  FramePriceMaterials.ReceivingAll;
-  FramePriceMechanizms.ReceivingAll;
-  FramePriceTransportations.ReceivingAll;
-  FramePriceDumps.ReceivingAll;
-
-  FormWaiting.Close;
   FormMain.PanelCover.Visible := False;
 
   // ----------------------------------------
@@ -176,58 +171,32 @@ begin
   FramePriceDumps.Visible := False;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormPricesOwnData.SpeedButtonMaterialsClick(Sender: TObject);
+procedure TFormPricesOwnData.SpeedButtonClick(Sender: TObject);
 begin
   HideAllFrames;
 
-  with FramePriceMaterials do
+  if not Assigned(TSmetaFrame((Sender as TComponent).Tag)) then exit;
+
+
+  with TSmetaFrame((Sender as TComponent).Tag) do
   begin
-    Visible := True;
-    SetFocus;
+    if not Loaded then
+    begin
+      FormWaiting.Show;
+      Application.ProcessMessages;
+      try
+        ReceivingAll;
+      finally
+        FormWaiting.Close;
+      end;
+    end;
+
+    if (Self as TControl).Visible then
+    begin
+      Visible := True;
+      SetFocus;
+    end;
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormPricesOwnData.SpeedButtonMechanizmsClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FramePriceMechanizms do
-  begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormPricesOwnData.SpeedButtonPriceTransportationClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FramePriceTransportations do
-  begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormPricesOwnData.SpeedButtonPriceDumpsClick(Sender: TObject);
-begin
-  HideAllFrames;
-
-  with FramePriceDumps do
-  begin
-    Visible := True;
-    SetFocus;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.

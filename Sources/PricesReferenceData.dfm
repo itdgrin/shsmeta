@@ -48,7 +48,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
       GroupIndex = 1
       Down = True
       Caption = #1062#1077#1085#1099' '#1085#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1099
-      OnClick = SpeedButtonMaterialsClick
+      OnClick = SpeedButtonClick
     end
     object SpeedButtonPriceMechanizms: TSpeedButton
       Left = 243
@@ -57,7 +57,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
       Height = 25
       GroupIndex = 1
       Caption = #1062#1077#1085#1099' '#1085#1072' '#1084#1077#1093#1072#1085#1080#1079#1084#1099
-      OnClick = SpeedButtonMechanizmsClick
+      OnClick = SpeedButtonClick
     end
     object SpeedButtonPriceTransportation: TSpeedButton
       Left = 364
@@ -66,7 +66,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
       Height = 25
       GroupIndex = 1
       Caption = #1058#1072#1088'. '#1087#1086' '#1075#1088#1091#1079#1086#1087#1077#1088#1077#1074#1086#1079'.'
-      OnClick = SpeedButtonPriceTransportationClick
+      OnClick = SpeedButtonClick
     end
     object SpeedButtonPriceDumps: TSpeedButton
       Left = 485
@@ -75,7 +75,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
       Height = 25
       GroupIndex = 1
       Caption = #1058#1072#1088#1080#1092#1099' '#1087#1086' '#1089#1074#1072#1083#1082#1072#1084
-      OnClick = SpeedButtonPriceDumpsClick
+      OnClick = SpeedButtonClick
     end
     object SpeedButtonIndex: TSpeedButton
       Left = 606

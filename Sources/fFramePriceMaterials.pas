@@ -86,7 +86,6 @@ type
     AllowAddition: Boolean; // Разрешено/запрещено добавлять записи из фрейма
     AllowReplacement: Boolean; // Разрешено/запрещено заменять неучтённые метериалы из фрейма
 
-    StrFilterData: string; // Фильтрация данных по месяцу и году
     RegionColumn: string; // Номер столбца с ценами в зависимости от выбранного региона
   public
     procedure ReceivingAll; override;
@@ -128,8 +127,6 @@ begin
   PriceColumn := vPriceColumn;
   AllowAddition := vAllowAddition;
   AllowReplacement := vAllowReplacement;
-
-  StrFilterData := '';
 
   if not PriceColumn then
   begin
@@ -174,7 +171,9 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFramePriceMaterial.ReceivingAll;
+var Year, Month, Day: Word;
 begin
+
   StrQuickSearch := '';
 
   try
@@ -183,6 +182,7 @@ begin
 
     if PriceColumn then
     begin
+      DecodeDate(Date, Year, Month, Day);
       if Assigned(FormCalculationEstimate) then
         try
           with ADOQuery do
@@ -195,6 +195,17 @@ begin
 
             RegionColumn := IntToStr(FieldByName('region_id').AsInteger); // Получение номера региона
             ComboBoxRegion.ItemIndex := StrToInt(RegionColumn) - 1;
+
+            ADOQueryTemp.Active := False;
+            ADOQueryTemp.SQL.Clear;
+            ADOQueryTemp.SQL.Add('SELECT stavka.monat, stavka.year'#13 +
+              'FROM smetasourcedata, stavka WHERE smetasourcedata.sm_id=:sm_id and smetasourcedata.stavka_id=stavka.stavka_id;');
+            ADOQueryTemp.ParamByName('sm_id').Value := FormCalculationEstimate.GetIdEstimate;
+            ADOQueryTemp.Active := True;
+
+            ComboBoxMonth.ItemIndex := ADOQueryTemp.FieldByName('monat').AsVariant - 1;
+            //Опасная конструкция, может быть источником ошибок
+            ComboBoxYear.ItemIndex := ADOQueryTemp.FieldByName('year').AsInteger - 2012;
           end;
         except
           on E: Exception do
@@ -202,19 +213,12 @@ begin
               E.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
         end
       else
+      begin
         RegionColumn := IntToStr(ComboBoxRegion.ItemIndex + 1);
-
-      ADOQueryTemp.Active := False;
-      ADOQueryTemp.SQL.Clear;
-      ADOQueryTemp.SQL.Add('SELECT stavka.monat, stavka.year'#13 +
-        'FROM smetasourcedata, stavka WHERE smetasourcedata.sm_id=:sm_id and smetasourcedata.stavka_id=stavka.stavka_id;');
-      ADOQueryTemp.ParamByName('sm_id').Value := FormCalculationEstimate.GetIdEstimate;
-      ADOQueryTemp.Active := True;
-
-      ComboBoxMonth.ItemIndex := ADOQueryTemp.FieldByName('monat').AsVariant - 1;
-      ComboBoxYear.ItemIndex := 2012 - ADOQueryTemp.FieldByName('year').AsInteger;
-
-      StrFilterData := '';
+        //Ставит текущую дату
+        ComboBoxMonth.ItemIndex := Month - 1;
+        ComboBoxYear.ItemIndex := Year - 2012;
+      end;
     end;
 
     ReceivingSearch('');
@@ -231,16 +235,9 @@ end;
 procedure TFramePriceMaterial.ReceivingSearch(vStr: String);
 var
   WhereStr: string;
-  FilterStr, StrQuery: string;
+  StrQuery: string;
 begin
-  if (StrFilterData <> '') and (vStr <> '') then
-    FilterStr := StrFilterData + ' and ' + vStr
-  else if StrFilterData = '' then
-    FilterStr := vStr
-  else if vStr = '' then
-    FilterStr := StrFilterData;
-
-  if FilterStr <> '' then WhereStr := ' and ' + FilterStr
+  if vStr <> '' then WhereStr := ' and ' + vStr
   else WhereStr := '';
 
   try
@@ -628,7 +625,6 @@ end;
 
 procedure TFramePriceMaterial.ComboBoxMonthYearChange(Sender: TObject);
 begin
-  StrFilterData := '';
   ADOQuery.ParamByName('y1').AsInteger := StrToInt(ComboBoxYear.Text);
   ADOQuery.ParamByName('m1').AsInteger := ComboBoxMonth.ItemIndex + 1;
   ADOQuery.Active := False;
