@@ -835,13 +835,6 @@ end;
 
 procedure TFormMain.HRRPricesOwnDataClick(Sender: TObject);
 begin
-  if not Assigned(FormCalculationEstimate) then
-  begin
-    MessageBox(0, PChar('Cначала надо выбрать смету.'), FormNameMain,
-      MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-    Exit;
-  end;
-
   if (not Assigned(FormPricesOwnData)) then
     FormPricesOwnData := TFormPricesOwnData.Create(Self, 's', True);
 end;

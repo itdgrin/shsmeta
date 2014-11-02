@@ -97,7 +97,7 @@ begin
   FrameRates := TFrameRates.Create(Self, vDataBase, False);
   FrameRates.Parent := Self;
   FrameRates.Align := alClient;
-  FrameRates.Visible := True;
+  FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
 
   FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
@@ -118,13 +118,8 @@ begin
   FrameEquipments.Visible := False;
   SpeedButtonEquipments.Tag := Integer(FrameEquipments);
 
-  FormWaiting.Show;
-  Application.ProcessMessages;
-  try
-  FrameRates.ReceivingAll;
-  finally
-    FormWaiting.Close;
-  end;
+  SpeedButtonClick(SpeedButtonRates);
+  FrameRates.Visible := True;
   FormMain.PanelCover.Visible := False;
 
   FormMain.CreateButtonOpenWindow(CaptionButtonOwnData, HintButtonOwnData, FormMain.ShowOwnData);
@@ -188,8 +183,11 @@ begin
       end;
     end;
 
-    Visible := True;
-    SetFocus;
+    if (Self as TControl).Visible then
+    begin
+      Visible := True;
+      SetFocus;
+    end;
   end;
 end;
 

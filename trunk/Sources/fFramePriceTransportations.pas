@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   VirtualTrees, fFrameStatusBar, DateUtils, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -15,7 +15,7 @@ type
   end;
 
 type
-  TFramePriceTransportations = class(TFrame)
+  TFramePriceTransportations = class(TSmetaFrame)
 
     PopupMenu: TPopupMenu;
     CopyCell: TMenuItem;
@@ -42,9 +42,6 @@ type
     ComboBoxMonth: TComboBox;
     ADOQuery: TFDQuery;
 
-    constructor Create(AOwner: TComponent);
-
-    procedure ReceivingAll;
     procedure ReceivingSearch(vStr: String);
 
     procedure EditSearchEnter(Sender: TObject);
@@ -72,12 +69,14 @@ type
 
   private
     StrFilterData: string; // Фильтрация данных по месяцу и году
-
+  public
+    procedure ReceivingAll; override;
+    constructor Create(AOwner: TComponent);
   end;
 
 implementation
 
-uses DrawingTables, DataModule;
+uses DrawingTables, DataModule, CalculationEstimate;
 
 {$R *.dfm}
 
@@ -123,64 +122,79 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFramePriceTransportations.ReceivingAll;
-var
-  StrQuery: string;
 begin
   try
     if ADOQuery.Active then
       Exit;
 
-    ComboBoxMonth.ItemIndex := MonthOf(Now) - 1;
-
-    case YearOf(Now) of
-      2012:
-        ComboBoxYear.ItemIndex := 0;
-      2013:
-        ComboBoxYear.ItemIndex := 1;
-      2014:
-        ComboBoxYear.ItemIndex := 2;
-    end;
-
-    StrFilterData := 'year = ' + ComboBoxYear.Text + ' and monat = ' + IntToStr(ComboBoxMonth.ItemIndex + 1);
-
-    StrQuery := 'SELECT * FROM transfercargo;';
-
-    with ADOQuery do
+    if Assigned(FormCalculationEstimate) then
     begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add(StrQuery);
-      Active := True;
+      try
+        ADOQuery.Active := False;
+        ADOQuery.SQL.Clear;
+        ADOQuery.SQL.Add('SELECT stavka.monat, stavka.year'#13 +
+          'FROM smetasourcedata, stavka WHERE smetasourcedata.sm_id=:sm_id and smetasourcedata.stavka_id=stavka.stavka_id;');
+        ADOQuery.ParamByName('sm_id').Value := FormCalculationEstimate.GetIdEstimate;
+        ADOQuery.Active := True;
 
-      ReceivingSearch('');
+        ComboBoxMonth.ItemIndex := ADOQuery.FieldByName('monat').AsVariant - 1;
+          //Опасная конструкция, может быть источником ошибок
+        ComboBoxYear.ItemIndex := ADOQuery.FieldByName('year').AsInteger - 2012;
+      except
+        on E: Exception do
+          MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak +
+            E.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
+      end;
+    end
+    else
+    begin
+      //Ставит текущую дату
+      ComboBoxMonth.ItemIndex := MonthOf(Now) - 1;
+      ComboBoxYear.ItemIndex := YearOf(Now) - 2012;
     end;
 
-    VST.RootNodeCount := ADOQuery.RecordCount;
-    VST.Selected[VST.GetFirst] := True;
-    VST.FocusedNode := VST.GetFirst;
+    StrFilterData := '(year = ' + ComboBoxYear.Text +
+      ') and (monat = ' + IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
 
-    FrameStatusBar.InsertText(1, IntToStr(1));
+    ReceivingSearch('');
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message), CaptionFrame,
         MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+
+  fLoaded := true;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFramePriceTransportations.ReceivingSearch(vStr: String);
+var
+  WhereStr: string;
+  FilterStr, StrQuery: string;
 begin
-  ADOQuery.Filtered := False;
-
+  FilterStr := '';
   if (StrFilterData <> '') and (vStr <> '') then
-    ADOQuery.Filter := StrFilterData + ' and ' + vStr
+    FilterStr := StrFilterData + ' and (' + vStr + ')'
   else if StrFilterData = '' then
-    ADOQuery.Filter := vStr
+    FilterStr := vStr
   else if vStr = '' then
-    ADOQuery.Filter := StrFilterData;
+    FilterStr := StrFilterData;
 
-  ADOQuery.Filtered := True;
+  if FilterStr <> '' then WhereStr := ' where ' + FilterStr
+  else WhereStr := '';
+
+
+  StrQuery := 'SELECT * FROM transfercargo' + WhereStr + ';';
+
+  with ADOQuery do
+  begin
+    Active := False;
+    SQL.Clear;
+    SQL.Add(StrQuery);
+    Active := True;
+    FetchAll;
+  end;
 
   if ADOQuery.RecordCount <= 0 then
   begin
@@ -192,7 +206,6 @@ begin
   else
   begin
     VST.RootNodeCount := ADOQuery.RecordCount;
-
     VST.Selected[VST.GetFirst] := True;
     VST.FocusedNode := VST.GetFirst;
 
@@ -233,7 +246,7 @@ begin
   if not ADOQuery.Active then
     Exit;
 
-  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount)); // Количество записей
+  FrameStatusBar.InsertText(0, IntToStr(VST.RootNodeCount)); // Количество записей
 
   if ADOQuery.RecordCount > 0 then
     FrameStatusBar.InsertText(1, IntToStr(VST.FocusedNode.Index + 1)) // Номер выделенной записи
@@ -323,8 +336,9 @@ procedure TFramePriceTransportations.VSTAfterCellPaint(Sender: TBaseVirtualTree;
 var
   CellText: string;
 begin
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) then
-    Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or
+    (not Assigned(Node))
+  then Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
 
@@ -379,8 +393,9 @@ begin
 
   // Выводим название в Memo под таблицей
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) then
-    Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or
+    (not Assigned(Node))
+  then Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
   Memo.Text := ADOQuery.FieldByName('distance').AsVariant;
@@ -454,7 +469,8 @@ end;
 
 procedure TFramePriceTransportations.ComboBoxMonthYearChange(Sender: TObject);
 begin
-  StrFilterData := 'year = ' + ComboBoxYear.Text + ' and monat = ' + IntToStr(ComboBoxMonth.ItemIndex + 1);
+  StrFilterData := '(year = ' + ComboBoxYear.Text +
+    ') and (monat = ' + IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
 
   EditSearch.Text := '';
   FrameStatusBar.InsertText(2, '-1');

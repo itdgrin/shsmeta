@@ -87,7 +87,7 @@ object FormReferenceData: TFormReferenceData
       OnClick = SpeedButtonClick
     end
     object SpeedButtonSSR: TSpeedButton
-      Left = 732
+      Left = 727
       Top = 1
       Width = 120
       Height = 25
