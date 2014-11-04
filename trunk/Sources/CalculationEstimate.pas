@@ -2241,9 +2241,13 @@ end;
 
 procedure TFormCalculationEstimate.AddRate(RateNumber: String; Count: Double);
 var
+  i : integer;
   FieldRates: TFieldRates;
   vIdRate, vMaxIdRate: Integer;
   vNormRas: Double;
+  Month1, Year1: integer;
+  PriceVAT, PriceNoVAT: string;
+  SQL1, SQL2 : string;
 begin
   // Ищем введёный норматив, если такого норматива нет, выдаём сообщение и выходим
   // иначе получаем его Id и продолжаем выполнение
@@ -2311,10 +2315,65 @@ begin
     UpdateTableCardMaterialTemp;
     with ADOQueryTemp do
     begin
+      {
       Active := False;
       SQL.Clear;
       SQL.Add('CALL GetMaterialsAll(' + IntToStr(IdObject) + ', ' + IntToStr(IdEstimate) + ', ' +
         IntToStr(vIdRate) + ');');
+      Active := True;
+      }
+      Active := False;
+      SQL.Clear;
+      SQL.Add('SELECT year,monat FROM stavka WHERE stavka_id = ' +
+        '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' +
+        IntToStr(IdEstimate) + ')');
+      Active := True;
+      if not Eof then
+      begin
+        Month1 := FieldByName('monat').AsInteger;
+        Year1 := FieldByName('year').AsInteger;
+      end;
+
+      Active := False;
+      SQL.Clear;
+      SQL.Add('SELECT region_id FROM objcards WHERE obj_id = ' + IntToStr(IdObject));
+      Active := True;
+      if not Eof then
+      begin
+        PriceVAT := 'coast' + FieldByName('region_id').AsString + '_2';
+        PriceNoVAT := 'coast' + FieldByName('region_id').AsString + '_1';
+      end;
+
+      Active := False;
+      SQL.Clear;
+      sql1 := '(SELECT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
+        'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
+        'TMat.unit_id as "UnitId", mat_name as "MatName", NULL as "PriceVAT", ' +
+        'NULL as "PriceNoVAT", ' +
+        '(SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate) +
+        ') as "PercentTransport" FROM units, ' +
+        '(SELECT * FROM material WHERE mat_code LIKE "П%") TMat, ' +
+        '(SELECT material_id, norm_ras FROM materialnorm WHERE ' +
+        'normativ_id = ' + IntToStr(vIdRate) + ') TMatNorm ' +
+        'WHERE TMat.material_id = TMatNorm.material_id and ' +
+        'TMat.unit_id = units.unit_id ORDER BY 1)';
+
+      sql2 := '(SELECT material.material_id as "MatId", material.mat_code as "MatCode", ' +
+        'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
+        'material.unit_id as "UnitId", material.mat_name as "MatName", ' + PriceVAT +
+        ' as "PriceVAT", ' + PriceNoVAT + ' as "PriceNoVAT", ' +
+        '(SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate) +
+        ') as "PercentTransport" FROM material, units, ' +
+        '(SELECT material_id, norm_ras FROM materialnorm where ' +
+        'normativ_id = ' + IntToStr(vIdRate) + ') TMatNorm, ' +
+        '(SELECT material_id, ' + PriceVAT +', ' + PriceNoVAT +
+        ' FROM materialcoastg WHERE monat = ' + IntToStr(Month1) +
+        ' and year = ' + IntToStr(Year1) + ') TMatCoast WHERE ' +
+        'material.material_id = TMatNorm.material_id and ' +
+        'material.material_id = TMatCoast.material_id and ' +
+        'material.unit_id = units.unit_id ORDER BY 1)';
+
+      SQL.Add(sql1 + ' union ' + sql2 + ';');
       Active := True;
 
       Filtered := False;
