@@ -156,27 +156,27 @@ begin
       Cells[1, i] := FieldByName('Name').AsVariant;
 
       if FieldByName('Salary').AsVariant <> Null then
-        Cells[2, i] := FloatToStr(FieldByName('Salary').AsVariant)
+        Cells[2, i] := MyFloatToStr(FieldByName('Salary').AsVariant)
       else
         Cells[2, i] := '0';
 
       if FieldByName('ExploitationCars').AsVariant <> Null then
-        Cells[3, i] := FloatToStr(FieldByName('ExploitationCars').AsVariant)
+        Cells[3, i] := MyFloatToStr(FieldByName('ExploitationCars').AsVariant)
       else
         Cells[3, i] := '0';
 
       if FieldByName('MaterialResources').AsVariant <> Null then
-        Cells[4, i] := FloatToStr(FieldByName('MaterialResources').AsVariant)
+        Cells[4, i] := MyFloatToStr(FieldByName('MaterialResources').AsVariant)
       else
         Cells[4, i] := '0';
 
       if FieldByName('WorkBuilders').AsVariant <> Null then
-        Cells[5, i] := FloatToStr(FieldByName('WorkBuilders').AsVariant)
+        Cells[5, i] := MyFloatToStr(FieldByName('WorkBuilders').AsVariant)
       else
         Cells[5, i] := '0';
 
       if FieldByName('WorkMachinist').AsVariant <> Null then
-        Cells[6, i] := FloatToStr(FieldByName('WorkMachinist').AsVariant)
+        Cells[6, i] := MyFloatToStr(FieldByName('WorkMachinist').AsVariant)
       else
         Cells[6, i] := '0';
 

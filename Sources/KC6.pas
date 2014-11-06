@@ -123,20 +123,6 @@ uses Main, DataModule, DrawingTables, CalculationEstimate, Tools;
 
 {$R *.dfm}
 
-function UpdateDecimalSeparator(const s: string): string;
-begin
-  Result := s;
-  case FormatSettings.DecimalSeparator of
-    ',':
-      if (Pos('.', s) <> 0) then
-        Result[Pos('.', s)] := FormatSettings.DecimalSeparator;
-    '.':
-      if (Pos(',', s) <> 0) then
-        Result[Pos(',', s)] := FormatSettings.DecimalSeparator;
-
-  end;
-end;
-
 { TSplitter }
 procedure TSplitter.Paint();
 begin
@@ -212,15 +198,12 @@ var
   i: Integer;
 begin
   // Вычисляем остаток
-  ds := FormatSettings.DecimalSeparator;
-  FormatSettings.DecimalSeparator := '.';
   for i := 1 to StringGridDataEstimates.RowCount do
   begin
-    StringGridDataEstimates.Cells[6, i] := FloatToStr(StrToFloatDef(StringGridDataEstimates.Cells[2, i], 0) -
-      StrToFloatDef(StringGridDataEstimates.Cells[4, i], 0) -
-      StrToFloatDef(StringGridDataEstimates.Cells[5, i], 0));
+    StringGridDataEstimates.Cells[6, i] := MyFloatToStr(MyStrToFloatDef(StringGridDataEstimates.Cells[2, i], 0) -
+      MyStrToFloatDef(StringGridDataEstimates.Cells[4, i], 0) -
+      MyStrToFloatDef(StringGridDataEstimates.Cells[5, i], 0));
   end;
-  FormatSettings.DecimalSeparator := ds;
 end;
 
 procedure TFormKC6.RepaintImagesForSplitters();
@@ -252,7 +235,7 @@ begin
         if (Cells[10, i] = '1') and (Cells[8, i] <> '') then
         begin
           CopyToAct(StrToInt(Cells[7, i]), StrToInt(Cells[8, i]), StrToInt(Cells[9, i]),
-            StrToFloatDef(Cells[5, i], 0));
+            MyStrToFloatDef(Cells[5, i], 0));
           // ShowMessage(Cells[7, i] + Cells[8, i] + Cells[9, i]);
         end;
   end;
@@ -434,8 +417,7 @@ var
   i: Integer;
   ds: Char;
 begin
-  ds := FormatSettings.DecimalSeparator;
-  FormatSettings.DecimalSeparator := '.';
+
   // Процедура выделения строчки для редактируемого акта
   with StringGridDataEstimates do
     for i := 1 to RowCount - 1 do
@@ -443,10 +425,9 @@ begin
       begin
         Cells[10, i] := '1';
         Cells[11, i] := '1';
-        Cells[5, i] := FloatToStr(cnt);
-        Cells[4, i] := FloatToStr(StrToFloatDef(Cells[4, i], 0) - cnt);
+        Cells[5, i] := MyFloatToStr(cnt);
+        Cells[4, i] := MyFloatToStr(MyStrToFloatDef(Cells[4, i], 0) - cnt);
       end;
-  FormatSettings.DecimalSeparator := ds;
 end;
 
 procedure TFormKC6.SetEstimateSelection;
@@ -614,9 +595,9 @@ begin
 
       if (ACol > 0) and (ARow > 0) and (ARow <> Row) and (Cells[5, ARow] <> '') then
 
-        if (StrToFloat(UpdateDecimalSeparator(Cells[5, ARow])) >
-          StrToFloat(UpdateDecimalSeparator(Cells[2, ARow]))) or
-          (StrToFloat(UpdateDecimalSeparator(Cells[2, ARow])) < 0) then
+        if (MyStrToFloat(Cells[5, ARow]) >
+          MyStrToFloat(Cells[2, ARow])) or
+          (MyStrToFloat(Cells[2, ARow]) < 0) then
         // "Процентовка" > "Количество", или Количество < 0
         begin
           Canvas.Brush.Color := RGB(225, 128, 131);
@@ -712,8 +693,6 @@ var
   ds: Char;
 begin
   try
-    ds := FormatSettings.DecimalSeparator;
-    FormatSettings.DecimalSeparator := '.';
     with ADOQueryDataEstimate do
     begin
       Active := False;
@@ -742,12 +721,12 @@ begin
                   Inc(nom);
                   Cells[0, nom] := IntToStr(nom);
                   Cells[1, nom] := FieldByName('rate_code').AsString;
-                  Cells[2, nom] := FloatToStr(FieldByName('rate_count').AsFloat);
+                  Cells[2, nom] := MyFloatToStr(FieldByName('rate_count').AsFloat);
                   Cells[3, nom] := FieldByName('rate_unit').AsString;
-                  Cells[4, nom] := FloatToStr(FieldByName('cntDone').AsFloat);
+                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
                   Cells[5, nom] := '0';
-                  Cells[6, nom] := FloatToStr(FieldByName('rate_count').AsFloat - FieldByName('cntDone')
-                    .AsFloat - StrToFloatDef(Cells[5, nom], 0));
+                  Cells[6, nom] := MyFloatToStr(FieldByName('rate_count').AsFloat - FieldByName('cntDone')
+                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
                   Cells[7, nom] := IntToStr(ADOQueryDataEstimate.FieldByName('id_estimate').AsInteger);
                   Cells[8, nom] := '1';
                   Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
@@ -782,12 +761,12 @@ begin
                   begin
                     Cells[0, nom] := IntToStr(nom);
                     Cells[1, nom] := Indent + FieldByName('mat_code').AsString;
-                    Cells[2, nom] := FloatToStr(FieldByName('mat_count').AsFloat);
+                    Cells[2, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat);
                     Cells[3, nom] := FieldByName('mat_unit').AsString;
-                    Cells[4, nom] := FloatToStr(FieldByName('cntDone').AsFloat);
+                    Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
                     Cells[5, nom] := '0';
-                    Cells[6, nom] := FloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
-                      .AsFloat - StrToFloatDef(Cells[5, nom], 0));
+                    Cells[6, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
+                      .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
                     Cells[7, nom] := IntToStr(ADOQueryDataEstimate.FieldByName('id_estimate').AsInteger);
                     Cells[8, nom] := '2';
                     Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
@@ -814,12 +793,12 @@ begin
                   begin
                     Cells[0, nom] := IntToStr(nom);
                     Cells[1, nom] := FieldByName('mat_code').AsString;
-                    Cells[2, nom] := FloatToStr(FieldByName('mat_count').AsFloat);
+                    Cells[2, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat);
                     Cells[3, nom] := FieldByName('mat_unit').AsString;
-                    Cells[4, nom] := FloatToStr(FieldByName('cntDone').AsFloat);
+                    Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
                     Cells[5, nom] := '0';
-                    Cells[6, nom] := FloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
-                      .AsFloat - StrToFloatDef(Cells[5, nom], 0));
+                    Cells[6, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
+                      .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
                     Cells[7, nom] := IntToStr(ADOQueryDataEstimate.FieldByName('id_estimate').AsInteger);
                     Cells[8, nom] := '2';
                     Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
@@ -851,12 +830,12 @@ begin
                   Inc(nom);
                   Cells[0, nom] := IntToStr(nom);
                   Cells[1, nom] := FieldByName('mat_code').AsString;
-                  Cells[2, nom] := FloatToStr(FieldByName('mat_count').AsFloat);
+                  Cells[2, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat);
                   Cells[3, nom] := FieldByName('mat_unit').AsString;
-                  Cells[4, nom] := FloatToStr(FieldByName('cntDone').AsFloat);
+                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
                   Cells[5, nom] := '0';
-                  Cells[6, nom] := FloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
-                    .AsFloat - StrToFloatDef(Cells[5, nom], 0));
+                  Cells[6, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
+                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
                   Cells[7, nom] := IntToStr(ADOQueryDataEstimate.FieldByName('id_estimate').AsInteger);
                   Cells[8, nom] := '2';
                   Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
@@ -884,12 +863,12 @@ begin
                   Inc(nom);
                   Cells[0, nom] := IntToStr(nom);
                   Cells[1, nom] := FieldByName('mech_code').AsString;
-                  Cells[2, nom] := FloatToStr(FieldByName('mech_count').AsFloat);
+                  Cells[2, nom] := MyFloatToStr(FieldByName('mech_count').AsFloat);
                   Cells[3, nom] := FieldByName('mech_unit').AsString;
-                  Cells[4, nom] := FloatToStr(FieldByName('cntDone').AsFloat);
+                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
                   Cells[5, nom] := '0';
-                  Cells[6, nom] := FloatToStr(FieldByName('mech_count').AsFloat - FieldByName('cntDone')
-                    .AsFloat - StrToFloatDef(Cells[5, nom], 0));
+                  Cells[6, nom] := MyFloatToStr(FieldByName('mech_count').AsFloat - FieldByName('cntDone')
+                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
                   Cells[7, nom] := IntToStr(ADOQueryDataEstimate.FieldByName('id_estimate').AsInteger);
                   Cells[8, nom] := '3';
                   Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
@@ -909,13 +888,11 @@ begin
         Next;
       end;
     end;
-    FormatSettings.DecimalSeparator := ds;
   except
     on E: Exception do
     begin
       MessageBox(0, PChar('При выводе данных всех смет текущего объекта возникла ошибка:' + sLineBreak +
         sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-      FormatSettings.DecimalSeparator := ds;
     end;
   end;
 end;
@@ -947,30 +924,27 @@ var
   fl: Boolean;
 begin
   fl := False;
-  ds := FormatSettings.DecimalSeparator;
   with StringGridDataEstimates do
   begin
-    FormatSettings.DecimalSeparator := '.';
     Enabled := False;
     for i := 1 to RowCount - 1 do
       if Cells[10, i] = '1' then
       begin
         fl := True;
-        Cells[5, i] := FloatToStr((EditKoef.Value / 100) * (StrToFloatDef(Cells[2, i],
-          0) - StrToFloatDef(Cells[4, i], 0)));
-        Cells[6, i] := FloatToStr(StrToFloatDef(Cells[2, i], 0) - StrToFloatDef(Cells[4, i], 0) -
-          StrToFloatDef(Cells[5, i], 0));
+        Cells[5, i] := MyFloatToStr((EditKoef.Value / 100) * (MyStrToFloatDef(Cells[2, i],
+          0) - MyStrToFloatDef(Cells[4, i], 0)));
+        Cells[6, i] := MyFloatToStr(MyStrToFloatDef(Cells[2, i], 0) - MyStrToFloatDef(Cells[4, i], 0) -
+          MyStrToFloatDef(Cells[5, i], 0));
       end;
     // Высчитываем на текущей строке
     if not fl then
     begin
-      Cells[5, Row] := FloatToStr((EditKoef.Value / 100) * (StrToFloatDef(Cells[2, Row],
-        0) - StrToFloatDef(Cells[4, Row], 0)));
-      Cells[6, Row] := FloatToStr(StrToFloatDef(Cells[2, Row], 0) - StrToFloatDef(Cells[4, Row], 0) -
-        StrToFloatDef(Cells[5, Row], 0));
+      Cells[5, Row] := MyFloatToStr((EditKoef.Value / 100) * (MyStrToFloatDef(Cells[2, Row],
+        0) - MyStrToFloatDef(Cells[4, Row], 0)));
+      Cells[6, Row] := MyFloatToStr(MyStrToFloatDef(Cells[2, Row], 0) - MyStrToFloatDef(Cells[4, Row], 0) -
+        MyStrToFloatDef(Cells[5, Row], 0));
     end;
 
-    FormatSettings.DecimalSeparator := ds;
     Enabled := True;
   end;
 end;

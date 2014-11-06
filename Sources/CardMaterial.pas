@@ -143,24 +143,19 @@ begin
       Memo.Text := FieldByName('mat_name').AsString;
 
       f := FieldByName('mat_norma').AsFloat;
-      FormatSettings.DecimalSeparator := '.';
-      Cells[0, 1] := FloatToStr(f);
-      FormatSettings.DecimalSeparator := ',';
+
+      Cells[0, 1] := MyFloatToStr(f);
 
       Cells[1, 1] := FieldByName('mat_unit').AsString;
       Cells[2, 1] := IntToStr(FieldByName('coast_no_nds').AsInteger);
 
       f := FieldByName('nds').AsFloat;
-      FormatSettings.DecimalSeparator := '.';
-      Cells[3, 1] := FloatToStr(f);
-      FormatSettings.DecimalSeparator := ',';
+      Cells[3, 1] := MyFloatToStr(f);
 
       Cells[4, 1] := IntToStr(FieldByName('coast_nds').AsInteger);
 
       f := FieldByName('coef_tr_zatr').AsFloat;
-      FormatSettings.DecimalSeparator := '.';
-      Cells[5, 1] := FloatToStr(f);
-      FormatSettings.DecimalSeparator := ',';
+      Cells[5, 1] := MyFloatToStr(f);
     end;
   except
     on E: Exception do
