@@ -1,16 +1,10 @@
 ﻿inherited FrameRates: TFrameRates
-  Left = 0
-  Top = 0
   Width = 754
   Height = 463
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Style = []
   ParentFont = False
-  TabOrder = 0
   OnResize = FrameResize
+  ExplicitWidth = 754
+  ExplicitHeight = 463
   object PanelRates: TPanel
     Left = 0
     Top = 0

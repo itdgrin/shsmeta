@@ -333,9 +333,9 @@ begin
           Cells[1, i] := FieldByName('s').AsVariant;
           Cells[2, i] := FieldByName('po').AsVariant;
           Cells[3, i] := IntToStr(FieldByName('Id').AsVariant);
-          Cells[4, i] := FloatToStr(FieldByName('Coef').AsVariant);
-          Cells[5, i] := FloatToStr(FieldByName('CoefZP').AsVariant);
-          Cells[6, i] := FloatToStr(FieldByName('CoefZPMach').AsVariant);
+          Cells[4, i] := MyFloatToStr(FieldByName('Coef').AsVariant);
+          Cells[5, i] := MyFloatToStr(FieldByName('CoefZP').AsVariant);
+          Cells[6, i] := MyFloatToStr(FieldByName('CoefZPMach').AsVariant);
 
           EditCoef.Text := Cells[4, Row];
           EditCoefZP.Text := Cells[5, Row];

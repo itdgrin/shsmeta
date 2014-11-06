@@ -1583,9 +1583,7 @@ begin
       begin
         PMEdit.Enabled := True;
 
-        FormatSettings.DecimalSeparator := '.';
-        CountFromRate := StrToFloat(StringGridRates.Cells[2, StringGridRates.Row]);
-        FormatSettings.DecimalSeparator := ',';
+        CountFromRate := MyStrToFloat(StringGridRates.Cells[2, StringGridRates.Row]);
 
         SpeedButtonDescription.Enabled := True;
         SpeedButtonMaterials.Enabled := True;
@@ -1624,15 +1622,15 @@ begin
         // ----------------------------------------
 
         // Средний разряд рабочих-строителей
-        EditCategory.Text := FloatToStr(GetRankBuilders(IntToStr(RateId)));
+        EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(RateId)));
 
         // Разраты труда рабочих-строителей
         StringGridCalculations.Cells[11, CountCoef + 2] :=
-          FormMain.MyFloatToStr(GetWorkCostBuilders(IntToStr(RateId)));
+          MyFloatToStr(GetWorkCostBuilders(IntToStr(RateId)));
 
         // Затраты труда машинистов
         StringGridCalculations.Cells[12, CountCoef + 2] :=
-          FormMain.MyFloatToStr(GetWorkCostMachinists(IntToStr(RateId)));
+          MyFloatToStr(GetWorkCostMachinists(IntToStr(RateId)));
 
         SetIndexOXROPR(StringGridRates.Cells[1, StringGridRates.Row]);
 
@@ -1680,16 +1678,16 @@ begin
         // -----------------------------------------
 
         // Средний разряд рабочих-строителей
-        EditCategory.Text := FloatToStr(GetRankBuilders(IntToStr(RateId)));
+        EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(RateId)));
 
         // Разраты труда рабочих-строителей
         StringGridCalculations.Cells[11, CountCoef + 2] :=
-          FormMain.MyFloatToStr(GetWorkCostBuilders(IntToStr(RateId)));
+          MyFloatToStr(GetWorkCostBuilders(IntToStr(RateId)));
 
-        EditCategory.Text := FormMain.MyFloatToStr(GetWorkCostBuilders(IntToStr(RateId)));
+        EditCategory.Text := MyFloatToStr(GetWorkCostBuilders(IntToStr(RateId)));
 
         // Затраты труда машинистов
-        // StringGridCalculations.Cells[12, CountCoef + 2] := FloatToStr(GetWorkCostMachinists(IdNormativ));
+        // StringGridCalculations.Cells[12, CountCoef + 2] := MyFloatToStr(GetWorkCostMachinists(IdNormativ));
 
         SetIndexOXROPR(StringGridRates.Cells[1, StringGridRates.Row]);
 
@@ -1721,14 +1719,14 @@ begin
         // -----------------------------------------
 
         // Средний разряд рабочих-строителей
-        // EditCategory.Text := FloatToStr(GetRankBuilders(IdNormativ));
+        // EditCategory.Text := MyFloatToStr(GetRankBuilders(IdNormativ));
 
         // Разраты труда рабочих-строителей
-        // StringGridCalculations.Cells[11, CountCoef + 2] := FloatToStr(GetWorkCostBuilders(IdNormativ));
+        // StringGridCalculations.Cells[11, CountCoef + 2] := MyFloatToStr(GetWorkCostBuilders(IdNormativ));
 
         // Затраты труда машинистов
         StringGridCalculations.Cells[12, CountCoef + 2] :=
-          FormMain.MyFloatToStr(GetWorkCostMachinists(IntToStr(RateId)));
+          MyFloatToStr(GetWorkCostMachinists(IntToStr(RateId)));
 
         SetIndexOXROPR(StringGridRates.Cells[1, StringGridRates.Row]);
 
@@ -1890,12 +1888,12 @@ begin
 
         with StringGridCalculations do
         begin
-          Cells[5, RowCount - 1] := FloatToStr(StrToInt(Cells[5, RowCount - 2]) * Count);
+          Cells[5, RowCount - 1] := MyFloatToStr(StrToInt(Cells[5, RowCount - 2]) * Count);
           Cells[7, RowCount - 1] := Cells[5, RowCount - 1];
           Cells[10, RowCount - 1] := Cells[5, RowCount - 1];
         end;
       end;
-    9, 10:
+    19, 10:
       begin
         PopupMenuCoefAddSet.Enabled := False;
         PopupMenuCoefDeleteSet.Enabled := False;
@@ -1932,15 +1930,15 @@ begin
 
         with StringGridCalculations do
         begin
-          Cells[2, CountCoef + 2] := CurrToStr(RoundTo(TwoValuesSalary.ForOne, PS.RoundTo * -1));
-          Cells[2, CountCoef + 3] := CurrToStr(RoundTo(TwoValuesSalary.ForCount, PS.RoundTo * -1));
+          Cells[2, CountCoef + 2] := MyCurrToStr(RoundTo(TwoValuesSalary.ForOne, PS.RoundTo * -1));
+          Cells[2, CountCoef + 3] := MyCurrToStr(RoundTo(TwoValuesSalary.ForCount, PS.RoundTo * -1));
 
-          Cells[3, CountCoef + 2] := CurrToStr(RoundTo(TwoValuesEMiM.ForOne, PS.RoundTo * -1));
-          Cells[3, CountCoef + 3] := CurrToStr(RoundTo(TwoValuesEMiM.ForCount, PS.RoundTo * -1));
+          Cells[3, CountCoef + 2] := MyCurrToStr(RoundTo(TwoValuesEMiM.ForOne, PS.RoundTo * -1));
+          Cells[3, CountCoef + 3] := MyCurrToStr(RoundTo(TwoValuesEMiM.ForCount, PS.RoundTo * -1));
 
-          Cells[7, CountCoef + 2] := CurrToStr(RoundTo(TwoValuesSalary.ForOne + TwoValuesEMiM.ForOne,
+          Cells[7, CountCoef + 2] := MyCurrToStr(RoundTo(TwoValuesSalary.ForOne + TwoValuesEMiM.ForOne,
             PS.RoundTo * -1));
-          Cells[7, CountCoef + 3] := CurrToStr(RoundTo(TwoValuesSalary.ForCount + TwoValuesEMiM.ForCount,
+          Cells[7, CountCoef + 3] := MyCurrToStr(RoundTo(TwoValuesSalary.ForCount + TwoValuesEMiM.ForCount,
             PS.RoundTo * -1));
         end;
       end;
@@ -2198,7 +2196,7 @@ begin
   with StringGridRates do
     if (Col = 1) and (Key = #13) then // Выбрана ячейка "№ норматива"
     begin
-      AddRate(Cells[1, Row], StrToFloatdef(Cells[2, Row], 0));
+      AddRate(Cells[1, Row], MyStrToFloatdef(Cells[2, Row], 0));
     end
     else if Col = 2 then
     // Выбрана ячейка "Количество"
@@ -2221,7 +2219,7 @@ begin
           // -->Обновление кол-ва
           ADOQueryTemp.SQL.Text := 'UPDATE card_rate_temp set rate_count=:RC WHERE ID=:ID;';
           ADOQueryTemp.ParamByName('ID').AsInteger := StrToInt(Cells[6, Row]);
-          ADOQueryTemp.ParamByName('RC').AsFloat := StrToFloat(Cells[2, Row]);
+          ADOQueryTemp.ParamByName('RC').AsFloat := MyStrToFloat(Cells[2, Row]);
           ADOQueryTemp.ExecSQL;
           // <--
         end;
@@ -2230,7 +2228,7 @@ begin
           // -->Обновление кол-ва
           ADOQueryTemp.SQL.Text := 'UPDATE materialcard_temp set mat_count=:RC WHERE ID=:ID;';
           ADOQueryTemp.ParamByName('ID').AsInteger := StrToInt(Cells[6, Row]);
-          ADOQueryTemp.ParamByName('RC').AsFloat := StrToFloat(Cells[2, Row]);
+          ADOQueryTemp.ParamByName('RC').AsFloat := MyStrToFloat(Cells[2, Row]);
           ADOQueryTemp.ExecSQL;
           // <--
         end;
@@ -2393,9 +2391,7 @@ begin
           FieldByName('MAT_CODE').AsString := ADOQueryTemp.FieldByName('MatCode').AsString;
           FieldByName('MAT_NAME').AsString := ADOQueryTemp.FieldByName('MatName').AsString;
 
-          FormatSettings.DecimalSeparator := '.';
-          vNormRas := StrToFloatdef(ADOQueryTemp.FieldByName('MatNorm').AsString, 0);
-          FormatSettings.DecimalSeparator := ',';
+          vNormRas := MyStrToFloatDef(ADOQueryTemp.FieldByName('MatNorm').AsString,0);
 
           FieldByName('MAT_NORMA').AsFloat := vNormRas;
           FieldByName('MAT_UNIT').AsString := ADOQueryTemp.FieldByName('MatUnit').AsString;
@@ -2428,9 +2424,7 @@ begin
           FieldByName('MAT_CODE').Value := ADOQueryTemp.FieldByName('MatCode').AsVariant;
           FieldByName('MAT_NAME').AsString := ADOQueryTemp.FieldByName('MatName').AsString;
 
-          FormatSettings.DecimalSeparator := '.';
-          vNormRas := StrToFloatdef(ADOQueryTemp.FieldByName('MatNorm').AsString, 0);
-          FormatSettings.DecimalSeparator := ',';
+          vNormRas := MyStrToFloatDef(ADOQueryTemp.FieldByName('MatNorm').AsString,0);
 
           FieldByName('MAT_NORMA').AsFloat := vNormRas;
           FieldByName('MAT_UNIT').AsString := ADOQueryTemp.FieldByName('MatUnit').AsString;
@@ -2494,9 +2488,7 @@ begin
           FieldByName('MECH_CODE').AsString := ADOQueryTemp.FieldByName('MechCode').AsString;
           FieldByName('MECH_NAME').AsString := ADOQueryTemp.FieldByName('MechName').AsString;
 
-          FormatSettings.DecimalSeparator := '.';
-          vNormRas := StrToFloatdef(ADOQueryTemp.FieldByName('MechNorm').AsString, 0);
-          FormatSettings.DecimalSeparator := ',';
+          vNormRas := MyStrToFloatDef(ADOQueryTemp.FieldByName('MechNorm').AsString, 0);
 
           FieldByName('MECH_NORMA').AsFloat := vNormRas;
 
@@ -2523,11 +2515,14 @@ begin
 
   OutputDataToTable;
 
+
   with StringGridRates do
   begin
     Col := 2;
     SetFocus;
   end;
+
+  StringGridRatesClick(StringGridRates);
 end;
 
 procedure TFormCalculationEstimate.StringGridRightClick(Sender: TObject);
@@ -3220,23 +3215,19 @@ begin
       Cells[0, i] := IntToStr(Nom);
       Cells[1, i] := FieldByName('mat_code').AsVariant; // MatCode
       f := FieldByName('mat_norma').AsFloat;
-      FormatSettings.DecimalSeparator := '.';
-      Cells[2, i] := FloatToStr(f); // MatNorm
-      FormatSettings.DecimalSeparator := ',';
+      Cells[2, i] := MyFloatToStr(f); // MatNorm
       Cells[3, i] := FieldByName('mat_unit').AsString; // MatUnit
-      Cells[4, i] := FloatToStr(CountFromRate);
+      Cells[4, i] := MyFloatToStr(CountFromRate);
       // StringGridRates.Cells[2, StringGridRates.Row];
 
       try
-        FormatSettings.DecimalSeparator := '.';
-        f := StrToFloatdef(Cells[2, i], 0);
-        FormatSettings.DecimalSeparator := ',';
+        f := MyStrToFloatDef(Cells[2, i], 0);
 
-        Cells[4, i] := FloatToStr(StrToFloatdef(Cells[4, i], 0) * f);
+        Cells[4, i] := MyFloatToStr(MyStrToFloatDef(Cells[4, i], 0) * f);
 
         for kf := 1 to CountCoef do
-          Cells[4, i] := FloatToStr(StrToFloat(Cells[4, i]) *
-            StrToFloat(StringGridCalculations.Cells[5, kf]));
+          Cells[4, i] := MyFloatToStr(MyStrToFloat(Cells[4, i]) *
+            MyStrToFloat(StringGridCalculations.Cells[5, kf]));
       except
         on E: Exception do
           MessageBox(0, PChar('Ошибка при вычислении поля «' + Cells[4, 0] + '», в таблице материалов:' +
@@ -3245,7 +3236,7 @@ begin
 
       // -----------------------------------------
 
-      Cells[5, i] := FloatToStr(FieldByName('coef_tr_zatr').AsFloat);
+      Cells[5, i] := MyFloatToStr(FieldByName('coef_tr_zatr').AsFloat);
 
       // -----------------------------------------
 
@@ -3262,14 +3253,14 @@ begin
         Cells[7, i] := Price;
 
         try
-          Cells[8, i] := IntToStr(Round(StrToInt(Cells[7, i]) * StrToFloat(Cells[4, i])));
+          Cells[8, i] := IntToStr(Round(StrToInt(Cells[7, i]) * MyStrToFloat(Cells[4, i])));
         except
           on E: Exception do
             MessageBox(0, PChar('Ошибка при вычислении поля «' + Cells[8, 0] + '», в таблице материалов:' +
               sLineBreak + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
 
-        Cells[9, i] := FloatToStr(RoundTo(StrToInt(Cells[8, i]) * StrToFloat(Cells[5, i]), PS.RoundTo * -1));
+        Cells[9, i] := MyFloatToStr(RoundTo(StrToInt(Cells[8, i]) * MyStrToFloat(Cells[5, i]), PS.RoundTo * -1));
       end
       else
       begin
@@ -3366,24 +3357,20 @@ begin
       Cells[1, Nom] := FieldByName('mech_code').AsVariant;
 
       f := FieldByName('mech_norma').AsFloat;
-      FormatSettings.DecimalSeparator := '.';
-      Cells[2, Nom] := FloatToStr(f);
-      FormatSettings.DecimalSeparator := ',';
 
+      Cells[2, Nom] := MyFloatToStr(f);
       Cells[3, Nom] := FieldByName('mech_unit').AsVariant;
-      Cells[4, Nom] := FloatToStr(CountFromRate);
+      Cells[4, Nom] := MyFloatToStr(CountFromRate);
       // StringGridRates.Cells[2, StringGridRates.Row];
 
       try
-        FormatSettings.DecimalSeparator := '.';
-        f := StrToFloat(Cells[2, Nom]);
-        FormatSettings.DecimalSeparator := ',';
+        f := MyStrToFloat(Cells[2, Nom]);
 
-        Cells[4, Nom] := FloatToStr(StrToFloatdef(Cells[4, Nom], 0) * f);
+        Cells[4, Nom] := MyFloatToStr(MyStrToFloatdef(Cells[4, Nom], 0) * f);
 
         for kf := 1 to CountCoef do
-          Cells[4, Nom] := FloatToStr(StrToFloat(Cells[4, Nom]) *
-            StrToFloat(StringGridCalculations.Cells[3, kf]));
+          Cells[4, Nom] := MyFloatToStr(MyStrToFloat(Cells[4, Nom]) *
+            MyStrToFloat(StringGridCalculations.Cells[3, kf]));
       except
         on E: Exception do
           MessageBox(0, PChar('Ошибка при вычислении поля «' + Cells[4, 0] + '», в таблице механизмов:' +
@@ -3411,7 +3398,7 @@ begin
         Cells[6, Nom] := Price;
 
         try
-          Cells[7, Nom] := IntToStr(Round(StrToInt(Cells[6, Nom]) * StrToFloat(Cells[4, Nom])));
+          Cells[7, Nom] := IntToStr(Round(StrToInt(Cells[6, Nom]) * MyStrToFloat(Cells[4, Nom])));
         except
           on E: Exception do
             MessageBox(0, PChar('Ошибка при вычислении поля «' + Cells[7, 0] + '», в таблице материалов:' +
@@ -3629,8 +3616,8 @@ begin
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
   with StringGridCalculations do
   begin
-    Cells[3, CountCoef + 2] := CurrToStr(TwoValues.ForOne);
-    Cells[3, CountCoef + 3] := CurrToStr(TwoValues.ForCount);
+    Cells[3, CountCoef + 2] := MyCurrToStr(TwoValues.ForOne);
+    Cells[3, CountCoef + 3] := MyCurrToStr(TwoValues.ForCount);
   end;
 
   CalculationSalaryMachinist;
@@ -3643,8 +3630,8 @@ begin
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЗП)
   with StringGridCalculations do
   begin
-    Cells[2, CountCoef + 2] := CurrToStr(TwoValues.ForOne);
-    Cells[2, CountCoef + 3] := CurrToStr(TwoValues.ForCount);
+    Cells[2, CountCoef + 2] := MyCurrToStr(TwoValues.ForOne);
+    Cells[2, CountCoef + 3] := MyCurrToStr(TwoValues.ForCount);
   end;
 
   // Стоимость
@@ -3704,8 +3691,8 @@ begin
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЗП)
   with StringGridCalculations do
   begin
-    Cells[2, CountCoef + 2] := CurrToStr(TwoValues.ForOne);
-    Cells[2, CountCoef + 3] := CurrToStr(TwoValues.ForCount);
+    Cells[2, CountCoef + 2] := MyCurrToStr(TwoValues.ForOne);
+    Cells[2, CountCoef + 3] := MyCurrToStr(TwoValues.ForCount);
   end;
 
   // Стоимость
@@ -3752,8 +3739,8 @@ begin
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
   with StringGridCalculations do
   begin
-    Cells[3, CountCoef + 2] := CurrToStr(TwoValues.ForOne);
-    Cells[3, CountCoef + 3] := CurrToStr(TwoValues.ForCount);
+    Cells[3, CountCoef + 2] := MyCurrToStr(TwoValues.ForOne);
+    Cells[3, CountCoef + 3] := MyCurrToStr(TwoValues.ForCount);
   end;
 
   CalculationSalaryMachinist;
@@ -3766,8 +3753,8 @@ begin
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЗП)
   with StringGridCalculations do
   begin
-    // Cells[2, CountCoef + 2] := CurrToStr(TwoValues.ForOne);
-    // Cells[2, CountCoef + 3] := CurrToStr(TwoValues.ForCount);
+    // Cells[2, CountCoef + 2] := MyCurrToStr(TwoValues.ForOne);
+    // Cells[2, CountCoef + 3] := MyCurrToStr(TwoValues.ForCount);
 
     Cells[2, CountCoef + 2] := '0';
     Cells[2, CountCoef + 3] := '0';
@@ -3806,10 +3793,10 @@ begin
       for i := 1 to RowCount - 1 do
         if StringGridMaterials.Cells[0, i] <> '' then
         begin
-          vCount := StrToFloat(Cells[4, i]);
+          vCount := MyStrToFloat(Cells[4, i]);
 
           if (Cells[10, i] <> '') then
-            Cells[11, i] := FloatToStr(RoundTo(StrToInt(Cells[10, i]) * vCount, PS.RoundTo * -1))
+            Cells[11, i] := MyFloatToStr(RoundTo(StrToInt(Cells[10, i]) * vCount, PS.RoundTo * -1))
           else
             Cells[11, i] := '';
         end;
@@ -3829,10 +3816,10 @@ begin
     try
       for i := 1 to RowCount - 1 do
       begin
-        vCount := StrToFloat(Cells[4, i]);
+        vCount := MyStrToFloat(Cells[4, i]);
 
         if Cells[8, i] <> '' then
-          Cells[9, i] := FloatToStr(RoundTo(StrToInt(Cells[8, i]) * vCount, PS.RoundTo * -1))
+          Cells[9, i] := MyFloatToStr(RoundTo(StrToInt(Cells[8, i]) * vCount, PS.RoundTo * -1))
         else
           Cells[9, i] := '';
       end;
@@ -3858,7 +3845,7 @@ begin
   try
     // Количество из ЛЕВОЙ таблицы
     with StringGridRates do
-      Count := CountFromRate; // StrToFloat(Cells[2, Row]);
+      Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
 
     TZ := GetWorkCostBuilders(vIdNormativ) * Count;
     // Затраты труда рабочий * количество
@@ -3868,13 +3855,13 @@ begin
     for i := 1 to CountCoef + 1 do
       with StringGridCalculations do
       begin
-        TZ := TZ * StrToFloat(Cells[2, i]);
-        TZ1 := TZ1 * StrToFloat(Cells[2, i]);
+        TZ := TZ * MyStrToFloat(Cells[2, i]);
+        TZ1 := TZ1 * MyStrToFloat(Cells[2, i]);
       end;
 
     // -----------------------------------------
 
-    EditCategory.Text := FloatToStr(GetRankBuilders(vIdNormativ));
+    EditCategory.Text := MyFloatToStr(GetRankBuilders(vIdNormativ));
 
     // Получаем межразрядный коэффициент
     if EditCategory.Text <> '0' then
@@ -3971,7 +3958,7 @@ begin
 
     // Количество из ЛЕВОЙ таблицы
     with StringGridRates do
-      Count := CountFromRate; // StrToFloat(Cells[2, Row]);
+      Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
 
     Nom := -1;
 
@@ -3985,32 +3972,27 @@ begin
         with StringGridMaterials do
         begin
           s := Cells[2, i];
-
-          FormatSettings.DecimalSeparator := '.';
-
-          MR[Nom] := Count * StrToFloat(s); // Кол-во * норма расхода
-          MR1[Nom] := StrToFloat(s); // 1 * норма расхода
-
-          FormatSettings.DecimalSeparator := ',';
+          MR[Nom] := Count * MyStrToFloat(s); // Кол-во * норма расхода
+          MR1[Nom] := MyStrToFloat(s); // 1 * норма расхода
         end;
 
         // Умножение на столбец коэффициентов (МР)
         for j := 1 to CountCoef + 1 do
           with StringGridCalculations do
           begin
-            MR[Nom] := MR[Nom] * StrToFloat(Cells[5, j]);
-            MR1[Nom] := MR1[Nom] * StrToFloat(Cells[5, j]);
+            MR[Nom] := MR[Nom] * MyStrToFloat(Cells[5, j]);
+            MR1[Nom] := MR1[Nom] * MyStrToFloat(Cells[5, j]);
           end;
 
         // Что получилось умножаем на справочную цену
         with StringGridMaterials do
         begin
-          MR[Nom] := MR[Nom] * StrToFloatdef(Cells[7, i], 0);
-          MR1[Nom] := MR1[Nom] * StrToFloatdef(Cells[7, i], 0);
+          MR[Nom] := MR[Nom] * MyStrToFloatdef(Cells[7, i], 0);
+          MR1[Nom] := MR1[Nom] * MyStrToFloatdef(Cells[7, i], 0);
         end;
 
         with StringGridMaterials do
-          Cells[6, i] := FloatToStr(StrToFloat(Cells[5, i]) * MR[i] / 100)
+          Cells[6, i] := MyFloatToStr(MyStrToFloat(Cells[5, i]) * MR[i] / 100)
       end;
 
     // -----------------------------------------
@@ -4032,8 +4014,8 @@ begin
     // Вставляем данные в НИЖНЮЮ таблицу в колонку (МР)
     with StringGridCalculations do
     begin
-      Cells[5, CountCoef + 3] := CurrToStr(RoundTo(Res, PS.RoundTo * -1));
-      Cells[5, CountCoef + 2] := CurrToStr(RoundTo(Res1, PS.RoundTo * -1));
+      Cells[5, CountCoef + 3] := MyCurrToStr(RoundTo(Res, PS.RoundTo * -1));
+      Cells[5, CountCoef + 2] := MyCurrToStr(RoundTo(Res1, PS.RoundTo * -1));
     end;
   except
     on E: Exception do
@@ -4065,9 +4047,9 @@ begin
 
     with StringGridCalculations do
     begin
-      Cells[6, CountCoef + 2] := FloatToStr(RoundTo(StrToFloatdef(Cells[5, CountCoef + 2], 0) * Percent / 100,
+      Cells[6, CountCoef + 2] := MyFloatToStr(RoundTo(MyStrToFloatdef(Cells[5, CountCoef + 2], 0) * Percent / 100,
         PS.RoundTo * -1));
-      Cells[6, CountCoef + 3] := FloatToStr(RoundTo(StrToFloatdef(Cells[5, CountCoef + 3], 0) * Percent / 100,
+      Cells[6, CountCoef + 3] := MyFloatToStr(RoundTo(MyStrToFloatdef(Cells[5, CountCoef + 3], 0) * Percent / 100,
         PS.RoundTo * -1));
     end;
   except
@@ -4090,14 +4072,11 @@ begin
         + vIdMechanizm + ';');
       Active := True;
 
-      FormatSettings.DecimalSeparator := '.';
-
       if FieldByName('norm_ras').AsVariant <> Null then
-        Result := FieldByName('norm_ras').AsVariant
+        Result := MyStrToFloat(FieldByName('norm_ras').AsString)
       else
         Result := 0;
 
-      FormatSettings.DecimalSeparator := ',';
     end;
   except
     on E: Exception do
@@ -4118,14 +4097,10 @@ begin
         + vIdMechanizm + ';');
       Active := True;
 
-      FormatSettings.DecimalSeparator := '.';
-
       if FieldByName('norm_ras').AsVariant <> Null then
-        Result := FieldByName('norm_ras').AsVariant
+        Result := MyStrToFloat(FieldByName('norm_ras').AsString)
       else
         Result := 0;
-
-      FormatSettings.DecimalSeparator := ',';
     end;
   except
     on E: Exception do
@@ -4182,7 +4157,7 @@ begin
 
     // Количество из ЛЕВОЙ таблицы
     with StringGridRates do
-      Count := CountFromRate; // StrToFloat(Cells[2, Row]);
+      Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
 
     for i := 0 to CountMechanizm - 1 do
     begin
@@ -4195,15 +4170,15 @@ begin
       for j := 1 to CountCoef + 1 do
         with StringGridCalculations do
         begin
-          EMiM[i] := EMiM[i] * StrToFloat(Cells[5, j]);
-          EMiM1[i] := EMiM1[i] * StrToFloat(Cells[5, j]);
+          EMiM[i] := EMiM[i] * MyStrToFloat(Cells[5, j]);
+          EMiM1[i] := EMiM1[i] * MyStrToFloat(Cells[5, j]);
         end;
 
       with StringGridMechanizms do
         if Cells[8, i + 1] = '' then
           Coast := GetCoastMechanizm(IdMechanizm[i])
         else
-          Coast := StrToFloat(Cells[8, i + 1]);
+          Coast := MyStrToFloat(Cells[8, i + 1]);
 
       // Что получилось умножаем на справочную цену
       EMiM[i] := EMiM[i] * Coast;
@@ -4258,7 +4233,7 @@ begin
 
     // Количество из ЛЕВОЙ таблицы
     with StringGridRates do
-      Count := CountFromRate; // StrToFloat(Cells[2, Row]);
+      Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
 
     Res := 0;
     Res1 := 0;
@@ -4270,16 +4245,16 @@ begin
         s := Cells[2, i + 1];
         s[Pos('.', s)] := ',';
 
-        EMiM[i] := Count * StrToFloat(s);
-        EMiM1[i] := StrToFloat(s);
+        EMiM[i] := Count * MyStrToFloat(s);
+        EMiM1[i] := MyStrToFloat(s);
       end;
 
       // Умножение на столбец коэффициентов (ЭМиМ)
       for j := 1 to CountCoef + 1 do
         with StringGridCalculations do
         begin
-          EMiM[i] := EMiM[i] * StrToFloat(Cells[5, j]);
-          EMiM1[i] := EMiM1[i] * StrToFloat(Cells[5, j]);
+          EMiM[i] := EMiM[i] * MyStrToFloat(Cells[5, j]);
+          EMiM1[i] := EMiM1[i] * MyStrToFloat(Cells[5, j]);
         end;
 
       with StringGridMechanizms do
@@ -4289,7 +4264,7 @@ begin
         Res1 := Res1 + (FirstSalary * EMiM1[i]);
 
         with StringGridMechanizms do
-          Cells[5, i + 1] := FloatToStr(FirstSalary * Count);
+          Cells[5, i + 1] := MyFloatToStr(FirstSalary * Count);
       end;
     end;
 
@@ -4298,8 +4273,8 @@ begin
     // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
     with StringGridCalculations do
     begin
-      Cells[4, CountCoef + 3] := CurrToStr(RoundTo(Res, PS.RoundTo * -1));
-      Cells[4, CountCoef + 2] := CurrToStr(RoundTo(Res1, PS.RoundTo * -1));
+      Cells[4, CountCoef + 3] := MyCurrToStr(RoundTo(Res, PS.RoundTo * -1));
+      Cells[4, CountCoef + 2] := MyCurrToStr(RoundTo(Res1, PS.RoundTo * -1));
     end;
   except
     on E: Exception do
@@ -4315,12 +4290,12 @@ begin
     with StringGridCalculations do
     begin
       Cells[7, CountCoef + 2] :=
-        FloatToStr(RoundTo(StrToFloat(Cells[2, CountCoef + 2]) + StrToCurr(Cells[3, CountCoef + 2]) +
-        StrToCurr(Cells[5, CountCoef + 2]) + StrToCurr(Cells[6, CountCoef + 2]), PS.RoundTo * -1));
+        MyFloatToStr(RoundTo(MyStrToFloat(Cells[2, CountCoef + 2]) + MyStrToCurr(Cells[3, CountCoef + 2]) +
+        MyStrToCurr(Cells[5, CountCoef + 2]) + MyStrToCurr(Cells[6, CountCoef + 2]), PS.RoundTo * -1));
 
       Cells[7, CountCoef + 3] :=
-        FloatToStr(RoundTo(StrToFloat(Cells[2, CountCoef + 3]) + StrToCurr(Cells[3, CountCoef + 3]) +
-        StrToCurr(Cells[5, CountCoef + 3]) + StrToCurr(Cells[6, CountCoef + 3]), PS.RoundTo * -1));
+        MyFloatToStr(RoundTo(MyStrToFloat(Cells[2, CountCoef + 3]) + MyStrToCurr(Cells[3, CountCoef + 3]) +
+        MyStrToCurr(Cells[5, CountCoef + 3]) + MyStrToCurr(Cells[6, CountCoef + 3]), PS.RoundTo * -1));
     end;
   except
     on E: Exception do
@@ -4339,14 +4314,14 @@ begin
       // Если общий % зимнего удорожания есть в таблице, тогда считаем
       if Cells[8, CountCoef + 2] <> '' then
       begin
-        OXROPR := StrToCurr(Cells[2, CountCoef + 3]); // ЗП
-        OXROPR := OXROPR + StrToCurr(Cells[4, CountCoef + 3]); // ЗП + ЗП маш.
+        OXROPR := MyStrToCurr(Cells[2, CountCoef + 3]); // ЗП
+        OXROPR := OXROPR + MyStrToCurr(Cells[4, CountCoef + 3]); // ЗП + ЗП маш.
 
         // (ЗП + ЗП маш.) * % в этом столбце
-        OXROPR := OXROPR * StrToCurr(Cells[8, CountCoef + 2]) / 100;
+        OXROPR := OXROPR * MyStrToCurr(Cells[8, CountCoef + 2]) / 100;
 
         // Вставляем данные в НИЖНЮЮ таблицу в колонку (ОХР и ОПР)
-        Cells[8, CountCoef + 3] := FloatToStr(RoundTo(OXROPR, PS.RoundTo * -1));
+        Cells[8, CountCoef + 3] := MyFloatToStr(RoundTo(OXROPR, PS.RoundTo * -1));
       end
       else
       begin
@@ -4370,15 +4345,15 @@ begin
       // Если % Плана прибыли есть в таблице, тогда считаем
       if Cells[9, CountCoef + 2] <> '' then
       begin
-        PlanProfit := StrToCurr(Cells[2, CountCoef + 3]); // ЗП
-        PlanProfit := PlanProfit + StrToCurr(Cells[4, CountCoef + 3]);
+        PlanProfit := MyStrToCurr(Cells[2, CountCoef + 3]); // ЗП
+        PlanProfit := PlanProfit + MyStrToCurr(Cells[4, CountCoef + 3]);
         // ЗП + ЗП маш.
 
         // (ЗП + ЗП маш.) * % в этом столбце
-        PlanProfit := PlanProfit * StrToCurr(Cells[9, CountCoef + 2]) / 100;
+        PlanProfit := PlanProfit * MyStrToCurr(Cells[9, CountCoef + 2]) / 100;
 
         // Вставляем данные в НИЖНЮЮ таблицу в колонку (План прибыли)
-        Cells[9, CountCoef + 3] := FloatToStr(RoundTo(PlanProfit, PS.RoundTo * -1));
+        Cells[9, CountCoef + 3] := MyFloatToStr(RoundTo(PlanProfit, PS.RoundTo * -1));
       end
       else
       begin
@@ -4400,16 +4375,16 @@ var
   Str: string;
 begin
   try
-    OXROPR := StrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]); // ЗП
-    OXROPR := OXROPR / StrToCurr(StringGridCalculations.Cells[8, CountCoef + 1]); // ЗП / Кф по приказам
-    OXROPR := OXROPR + StrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]);
+    OXROPR := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]); // ЗП
+    OXROPR := OXROPR / MyStrToCurr(StringGridCalculations.Cells[8, CountCoef + 1]); // ЗП / Кф по приказам
+    OXROPR := OXROPR + MyStrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]);
     // (ЗП / Кф по приказам) + ЗП маш.
 
-    PlanProfit := StrToCurr(StringGridCalculations.Cells[2, CountCoef + 2]);
+    PlanProfit := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 2]);
     // ЗП
-    PlanProfit := PlanProfit / StrToFloat(StringGridCalculations.Cells[8, CountCoef + 1]);
+    PlanProfit := PlanProfit / MyStrToFloat(StringGridCalculations.Cells[8, CountCoef + 1]);
     // ЗП / Кф по приказам
-    PlanProfit := PlanProfit + StrToFloat(StringGridCalculations.Cells[4, CountCoef + 2]);
+    PlanProfit := PlanProfit + MyStrToFloat(StringGridCalculations.Cells[4, CountCoef + 2]);
     // (ЗП / Кф по приказам) + ЗП маш.
 
     // -----------------------------------------
@@ -4420,8 +4395,8 @@ begin
       begin
         for i := 1 to CountCoef + 1 do
         begin
-          OXROPR := OXROPR * StrToCurr(Cells[8, i]);
-          PlanProfit := PlanProfit * StrToCurr(Cells[8, i]);
+          OXROPR := OXROPR * MyStrToCurr(Cells[8, i]);
+          PlanProfit := PlanProfit * MyStrToCurr(Cells[8, i]);
         end;
 
         Str := Cells[8, CountCoef + 2];
@@ -4429,8 +4404,8 @@ begin
           Str := '0';
 
         // Делим на 100, так как умножаем на %
-        OXROPR := OXROPR * StrToCurr(Str) / 100;
-        PlanProfit := PlanProfit * StrToCurr(Str) / 100;
+        OXROPR := OXROPR * MyStrToCurr(Str) / 100;
+        PlanProfit := PlanProfit * MyStrToCurr(Str) / 100;
       end;
     except
       on E: Exception do
@@ -4443,8 +4418,8 @@ begin
     // Вставляем данные в НИЖНЮЮ таблицу в колонку (Ст. с ОХР и ОПР)
     with StringGridCalculations do
     begin
-      Cells[10, CountCoef + 3] := CurrToStr(RoundTo(OXROPR, PS.RoundTo * -1));
-      Cells[10, CountCoef + 2] := CurrToStr(RoundTo(PlanProfit, PS.RoundTo * -1));;
+      Cells[10, CountCoef + 3] := MyCurrToStr(RoundTo(OXROPR, PS.RoundTo * -1));
+      Cells[10, CountCoef + 2] := MyCurrToStr(RoundTo(PlanProfit, PS.RoundTo * -1));;
     end;
   except
     on E: Exception do
@@ -4459,16 +4434,16 @@ var
   WinterPrice: Currency;
 begin
   try
-    WinterPrice := StrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]);
+    WinterPrice := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]);
     // ЗП
-    WinterPrice := WinterPrice + StrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]); // ЗП + ЗП маш.
+    WinterPrice := WinterPrice + MyStrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]); // ЗП + ЗП маш.
 
     // (ЗП + ЗП маш.) * Общий процент зимнего удорожания
-    WinterPrice := WinterPrice * StrToCurr(StringGridCalculations.Cells[13, CountCoef + 2]) / 100;
+    WinterPrice := WinterPrice * MyStrToCurr(StringGridCalculations.Cells[13, CountCoef + 2]) / 100;
 
     // Вставляем данные в НИЖНЮЮ таблицу в колонку (Зим. удорож.)
     with StringGridCalculations do
-      Cells[13, CountCoef + 3] := CurrToStr(RoundTo(WinterPrice, PS.RoundTo * -1));
+      Cells[13, CountCoef + 3] := MyCurrToStr(RoundTo(WinterPrice, PS.RoundTo * -1));
   except
     on E: Exception do
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[13,
@@ -4482,16 +4457,16 @@ var
   SalaryWinterPrice: Currency;
 begin
   try
-    SalaryWinterPrice := StrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]); // ЗП
-    SalaryWinterPrice := SalaryWinterPrice + StrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]);
+    SalaryWinterPrice := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]); // ЗП
+    SalaryWinterPrice := SalaryWinterPrice + MyStrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]);
     // ЗП + ЗП маш.
 
     // (ЗП + ЗП маш.) * Общий процент зимнего удорожания
-    SalaryWinterPrice := SalaryWinterPrice * StrToCurr(StringGridCalculations.Cells[14, CountCoef + 2]) / 100;
+    SalaryWinterPrice := SalaryWinterPrice * MyStrToCurr(StringGridCalculations.Cells[14, CountCoef + 2]) / 100;
 
     // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЗП в зим. удорож.)
     with StringGridCalculations do
-      Cells[14, CountCoef + 3] := CurrToStr(RoundTo(SalaryWinterPrice, PS.RoundTo * -1));
+      Cells[14, CountCoef + 3] := MyCurrToStr(RoundTo(SalaryWinterPrice, PS.RoundTo * -1));
   except
     on E: Exception do
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[14,
@@ -4505,19 +4480,15 @@ var
   Work: Currency;
 begin
   try
-    FormatSettings.DecimalSeparator := '.';
-
-    Work := StrToCurr(StringGridCalculations.Cells[11, CountCoef + 2]); // Труд
+    Work := MyStrToCurr(StringGridCalculations.Cells[11, CountCoef + 2]); // Труд
 
     Work := Work * CountFromRate;
-    // StrToCurr( StringGridRates.Cells[2, StringGridRates.Row] );
+    // MyStrToCurr( StringGridRates.Cells[2, StringGridRates.Row] );
     // Труд * Кол-во
 
     // Вставляем данные в НИЖНЮЮ таблицу в колонку (Труд)
     with StringGridCalculations do
-      Cells[11, CountCoef + 3] := CurrToStr(RoundTo(Work, PS.RoundTo * -1));
-
-    FormatSettings.DecimalSeparator := ',';
+      Cells[11, CountCoef + 3] := MyCurrToStr(RoundTo(Work, PS.RoundTo * -1));
   except
     on E: Exception do
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[11,
@@ -4531,20 +4502,16 @@ var
   WorkMachinist: Currency;
 begin
   try
-    FormatSettings.DecimalSeparator := '.';
-
-    WorkMachinist := StrToCurr(StringGridCalculations.Cells[12, CountCoef + 2]);
+    WorkMachinist := MyStrToCurr(StringGridCalculations.Cells[12, CountCoef + 2]);
     // Труд
 
     WorkMachinist := WorkMachinist * CountFromRate;
-    // StrToCurr(StringGridRates.Cells[2, StringGridRates.Row]);
+    // MyStrToCurr(StringGridRates.Cells[2, StringGridRates.Row]);
     // Труд * Кол-во
 
     // Вставляем данные в НИЖНЮЮ таблицу в колонку (Труд маш.)
     with StringGridCalculations do
-      Cells[12, CountCoef + 3] := CurrToStr(RoundTo(WorkMachinist, PS.RoundTo * -1));
-
-    FormatSettings.DecimalSeparator := ',';
+      Cells[12, CountCoef + 3] := MyCurrToStr(RoundTo(WorkMachinist, PS.RoundTo * -1));
   except
     on E: Exception do
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[2,
@@ -4860,12 +4827,12 @@ begin
     with StringGridCalculations do
     begin
       if FieldByName('OXRandOPR').AsVariant <> Null then
-        Cells[8, CountCoef + 2] := FloatToStr(FieldByName('OXRandOPR').AsVariant)
+        Cells[8, CountCoef + 2] := MyFloatToStr(FieldByName('OXRandOPR').AsVariant)
       else
         Cells[8, CountCoef + 2] := '0';
 
       if FieldByName('PlannedProfit').AsVariant <> Null then
-        Cells[9, CountCoef + 2] := FloatToStr(FieldByName('PlannedProfit').AsVariant)
+        Cells[9, CountCoef + 2] := MyFloatToStr(FieldByName('PlannedProfit').AsVariant)
       else
         Cells[9, CountCoef + 2] := '0';
     end;
@@ -4894,8 +4861,8 @@ begin
         begin
           EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
 
-          StringGridCalculations.Cells[13, CountCoef + 2] := FloatToStr(FieldByName('Coef').AsVariant);
-          StringGridCalculations.Cells[14, CountCoef + 2] := FloatToStr(FieldByName('CoefZP').AsVariant);
+          StringGridCalculations.Cells[13, CountCoef + 2] := MyFloatToStr(FieldByName('Coef').AsVariant);
+          StringGridCalculations.Cells[14, CountCoef + 2] := MyFloatToStr(FieldByName('CoefZP').AsVariant);
 
           Break;
         end;
@@ -4972,9 +4939,7 @@ begin
         Cells[2, NumRow] := ''
       else
       begin
-        FormatSettings.DecimalSeparator := '.';
-        Cells[2, NumRow] := vCount;
-        FormatSettings.DecimalSeparator := ',';
+        Cells[2, NumRow] := MyFloatToStr(Real(vCount));
       end;
 
       if vNameUnit = Null then
@@ -5436,18 +5401,14 @@ begin
       set_drawings := '"' + FieldByName('set_drawings').AsString + '"';
       stavka_id := '"' + IntToStr(FieldByName('stavka_id').AsInteger) + '"';
 
-      FormatSettings.DecimalSeparator := '.';
-
-      COEF_TR_ZATR := '"' + FloatToStr(FieldByName('coef_tr_zatr').AsFloat) + '"';
-      coef_tr_obor := '"' + FloatToStr(FieldByName('coef_tr_obor').AsFloat) + '"';
-      k40 := '"' + FloatToStr(FieldByName('k40').AsFloat) + '"';
-      k41 := '"' + FloatToStr(FieldByName('k41').AsFloat) + '"';
-      k31 := '"' + FloatToStr(FieldByName('k31').AsFloat) + '"';
-      k32 := '"' + FloatToStr(FieldByName('k32').AsFloat) + '"';
-      k33 := '"' + FloatToStr(FieldByName('k33').AsFloat) + '"';
-      k34 := '"' + FloatToStr(FieldByName('k34').AsFloat) + '"';
-
-      FormatSettings.DecimalSeparator := ',';
+      COEF_TR_ZATR := '"' + MyFloatToStr(FieldByName('coef_tr_zatr').AsFloat) + '"';
+      coef_tr_obor := '"' + MyFloatToStr(FieldByName('coef_tr_obor').AsFloat) + '"';
+      k40 := '"' + MyFloatToStr(FieldByName('k40').AsFloat) + '"';
+      k41 := '"' + MyFloatToStr(FieldByName('k41').AsFloat) + '"';
+      k31 := '"' + MyFloatToStr(FieldByName('k31').AsFloat) + '"';
+      k32 := '"' + MyFloatToStr(FieldByName('k32').AsFloat) + '"';
+      k33 := '"' + MyFloatToStr(FieldByName('k33').AsFloat) + '"';
+      k34 := '"' + MyFloatToStr(FieldByName('k34').AsFloat) + '"';
 
       NDS := '"' + IntToStr(FieldByName('nds').AsInteger) + '"';
       dump_id := '"' + IntToStr(FieldByName('dump_id').AsInteger) + '"';

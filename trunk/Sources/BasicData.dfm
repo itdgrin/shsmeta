@@ -371,6 +371,7 @@ object FormBasicData: TFormBasicData
     TabOrder = 18
   end
   object DataSourceDump: TDataSource
+    DataSet = ADOQueryDump
     Left = 200
     Top = 280
   end

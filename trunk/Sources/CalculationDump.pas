@@ -386,17 +386,17 @@ begin
   if vUnit = 24 then // ì3
     with StringGrid do
     begin
-      Cells[1, 4] := FloatToStr(RoundTo(StrToInt(Cells[1, 2]) * StrToInt(EditCount.Text) * 1000 /
+      Cells[1, 4] := MyFloatToStr(RoundTo(StrToInt(Cells[1, 2]) * StrToInt(EditCount.Text) * 1000 /
         StrToInt(EditMass.Text), PS.RoundTo * -1));
 
-      Cells[1, 5] := FloatToStr(RoundTo(StrToInt(Cells[1, 3]) * StrToInt(EditCount.Text) * 1000 /
+      Cells[1, 5] := MyFloatToStr(RoundTo(StrToInt(Cells[1, 3]) * StrToInt(EditCount.Text) * 1000 /
         StrToInt(EditMass.Text), PS.RoundTo * -1));
     end
   else if vUnit = 27 then // ò
     with StringGrid do
     begin
-      Cells[1, 4] := FloatToStr(StrToInt(Cells[1, 2]) * StrToInt(EditCount.Text));
-      Cells[1, 5] := FloatToStr(StrToInt(Cells[1, 3]) * StrToInt(EditCount.Text));
+      Cells[1, 4] := MyFloatToStr(StrToInt(Cells[1, 2]) * StrToInt(EditCount.Text));
+      Cells[1, 5] := MyFloatToStr(StrToInt(Cells[1, 3]) * StrToInt(EditCount.Text));
     end;
 end;
 

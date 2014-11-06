@@ -113,17 +113,17 @@ begin
     First;
     PercentTransportCity := FieldByName('percent_transport').AsVariant;
     PopupMenuPercentTransportCity.Caption := FieldByName('region').AsVariant + ' - ' +
-      FloatToStr(PercentTransportCity) + '%';
+      MyFloatToStr(PercentTransportCity) + '%';
 
     Next;
     PercentTransportVillage := FieldByName('percent_transport').AsVariant;
     PopupMenuPercentTransportVillage.Caption := FieldByName('region').AsVariant + ' - ' +
-      FloatToStr(PercentTransportVillage) + '%';
+      MyFloatToStr(PercentTransportVillage) + '%';
 
     Next;
     PercentTransportMinsk := FieldByName('percent_transport').AsVariant;
     PopupMenuPercentTransportMinsk.Caption := FieldByName('region').AsVariant + ' - ' +
-      FloatToStr(PercentTransportMinsk) + '%';
+      MyFloatToStr(PercentTransportMinsk) + '%';
   end;
 
   // ----------------------------------------
@@ -137,17 +137,15 @@ begin
     ParamByName('sm_id').Value := IdEstimate;
     Active := True;
 
-    FormatSettings.DecimalSeparator := '.';
-    EditPercentTransport.Text := FloatToStr(FieldByName('coef_tr_zatr').AsFloat);
-    EditPercentTransportEquipment.Text := FloatToStr(FieldByName('coef_tr_obor').AsFloat);
-    EditK40.Text := FloatToStr(FieldByName('K40').AsFloat);
-    EditK41.Text := FloatToStr(FieldByName('K41').AsFloat);
-    EditK31.Text := FloatToStr(FieldByName('K31').AsFloat);
-    EditK32.Text := FloatToStr(FieldByName('K32').AsFloat);
-    EditK33.Text := FloatToStr(FieldByName('K33').AsFloat);
-    EditK34.Text := FloatToStr(FieldByName('K34').AsFloat);
-    FormatSettings.DecimalSeparator := ',';
-
+    EditPercentTransport.Text := MyFloatToStr(FieldByName('coef_tr_zatr').AsFloat);
+    EditPercentTransportEquipment.Text := MyFloatToStr(FieldByName('coef_tr_obor').AsFloat);
+    EditK40.Text := MyFloatToStr(FieldByName('K40').AsFloat);
+    EditK41.Text := MyFloatToStr(FieldByName('K41').AsFloat);
+    EditK31.Text := MyFloatToStr(FieldByName('K31').AsFloat);
+    EditK32.Text := MyFloatToStr(FieldByName('K32').AsFloat);
+    EditK33.Text := MyFloatToStr(FieldByName('K33').AsFloat);
+    EditK34.Text := MyFloatToStr(FieldByName('K34').AsFloat);
+    
     ComboBoxVAT.ItemIndex := FieldByName('nds').AsVariant;
 
     IdStavka := FieldByName('stavka_id').AsVariant;
@@ -246,11 +244,11 @@ begin
   with EditPercentTransport do
     case (Sender as TMenuItem).Tag of
       1:
-        Text := FloatToStr(PercentTransportCity);
+        Text := MyFloatToStr(PercentTransportCity);
       2:
-        Text := FloatToStr(PercentTransportVillage);
+        Text := MyFloatToStr(PercentTransportVillage);
       3:
-        Text := FloatToStr(PercentTransportMinsk);
+        Text := MyFloatToStr(PercentTransportMinsk);
     end;
 end;
 

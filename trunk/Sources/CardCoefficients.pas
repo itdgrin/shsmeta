@@ -107,13 +107,11 @@ begin
 
       with StringGrid do
       begin
-        FormatSettings.DecimalSeparator := '.';
-        Cells[1, 0] := FloatToStr(FieldByName('osn_zp').AsFloat);
-        Cells[1, 1] := FloatToStr(FieldByName('eksp_mach').AsFloat);
-        Cells[1, 2] := FloatToStr(FieldByName('mat_res').AsFloat);
-        Cells[1, 3] := FloatToStr(FieldByName('work_pers').AsFloat);
-        Cells[1, 4] := FloatToStr(FieldByName('work_mach').AsFloat);
-        FormatSettings.DecimalSeparator := ',';
+        Cells[1, 0] := MyFloatToStr(FieldByName('osn_zp').AsFloat);
+        Cells[1, 1] := MyFloatToStr(FieldByName('eksp_mach').AsFloat);
+        Cells[1, 2] := MyFloatToStr(FieldByName('mat_res').AsFloat);
+        Cells[1, 3] := MyFloatToStr(FieldByName('work_pers').AsFloat);
+        Cells[1, 4] := MyFloatToStr(FieldByName('work_mach').AsFloat);
       end;
 
       Active := False;

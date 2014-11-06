@@ -69,7 +69,7 @@ begin
         + 's_raz_rab = :s_raz_rab WHERE id = :id;');
 
       ParamByName('rate_unit').Value := Cells[1, 1];
-      ParamByName('rate_count').Value := StrToFloat(Cells[1, 2]);
+      ParamByName('rate_count').Value := MyStrToFloat(Cells[1, 2]);
 
       ParamByName('b_zp_rab').Value := StrToInt(Cells[1, 3]);
       ParamByName('b_eksp_mach').Value := StrToInt(Cells[1, 4]);
