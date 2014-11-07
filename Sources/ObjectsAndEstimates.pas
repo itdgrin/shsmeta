@@ -159,7 +159,7 @@ type
 
   public
     ActReadOnly: Boolean;
-
+    function getCurObject: Integer;
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
@@ -286,6 +286,11 @@ begin
 
   FormMain.TimerCover.Enabled := True;
   // Запускаем таймер который скроет панель после отображения формы
+end;
+
+function TFormObjectsAndEstimates.getCurObject: Integer;
+begin
+  Result := IdObject;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
