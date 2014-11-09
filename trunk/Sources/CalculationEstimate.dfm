@@ -1422,26 +1422,6 @@
               20
               20)
           end
-          object StringGridMechanizms: TStringGrid
-            Left = 0
-            Top = 35
-            Width = 482
-            Height = 30
-            Align = alTop
-            DefaultRowHeight = 20
-            RowCount = 2
-            Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goThumbTracking]
-            PopupMenu = PopupMenuMechanizms
-            TabOrder = 1
-            OnClick = StringGridRightClick
-            OnDrawCell = StringGridRightDrawCell
-            OnKeyPress = StringGridKeyPress
-            OnMouseLeave = StringGridMouseLeaveRight
-            OnMouseMove = StringGridMouseMoveRight
-            RowHeights = (
-              20
-              20)
-          end
           object StringGridEquipments: TStringGrid
             Left = 0
             Top = 70
@@ -1452,11 +1432,17 @@
             RowCount = 2
             Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goThumbTracking]
             PopupMenu = PopupMenuEquipments
-            TabOrder = 2
+            TabOrder = 1
             OnClick = StringGridRightClick
             OnDrawCell = StringGridRightDrawCell
             OnMouseLeave = StringGridMouseLeaveRight
             OnMouseMove = StringGridMouseMoveRight
+            ColWidths = (
+              64
+              64
+              64
+              64
+              64)
             RowHeights = (
               20
               20)
@@ -1470,11 +1456,34 @@
             DefaultRowHeight = 20
             RowCount = 2
             Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goThumbTracking]
-            TabOrder = 3
+            TabOrder = 2
             OnClick = StringGridRightClick
             OnDrawCell = StringGridRightDrawCell
             OnMouseLeave = StringGridMouseLeaveRight
             OnMouseMove = StringGridMouseMoveRight
+          end
+          object StringGridMechanizms: TStringGrid
+            Left = 0
+            Top = 35
+            Width = 482
+            Height = 30
+            Align = alTop
+            DefaultRowHeight = 20
+            DefaultDrawing = False
+            RowCount = 2
+            Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goThumbTracking]
+            PopupMenu = PopupMenuMechanizms
+            TabOrder = 3
+            OnClick = StringGridRightClick
+            OnDrawCell = StringGridRightDrawCell
+            OnKeyPress = StringGridKeyPress
+            OnMouseLeave = StringGridMouseLeaveRight
+            OnMouseMove = StringGridMouseMoveRight
+            ExplicitLeft = 1
+            ExplicitTop = 69
+            RowHeights = (
+              20
+              20)
           end
         end
       end
