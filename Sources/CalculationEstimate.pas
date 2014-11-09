@@ -505,6 +505,9 @@ type
 
     IdInMech: Integer; // Поле Id в таблице mechanizmcard
     MechId: Integer; // Id механизма
+    MechFromRate: Boolean; // Является ли механизма ВЫНЕСЕННЫМ из расценки
+    MechIdForAllocate: Integer;
+    // Поле Id в таблице механизма, для выделения строк жирным
 
   public
     Act: Boolean;
@@ -2239,6 +2242,7 @@ begin
     end;
 end;
 
+//Добавление расценки в смету
 procedure TFormCalculationEstimate.AddRate(RateNumber: String; Count: Double);
 var
   i : integer;
@@ -2706,7 +2710,7 @@ begin
     FreeAndNil(CB);
   end;
 end;
-
+//Удаление чего-либо из сметы
 procedure TFormCalculationEstimate.PMDeleteClick(Sender: TObject);
 begin
   if (TypeData = 0) then
@@ -2770,8 +2774,21 @@ begin
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       3: // Механизм
-        begin
+        try
+          with ADOQueryTemp do
+          begin
+            Active := False;
+            SQL.Clear;
+            SQL.Add('CALL DeleteMechanism(:id);');
+            ParamByName('id').Value := IdInMech;
+            ExecSQL;
+          end;
 
+          OutputDataToTable;
+        except
+          on E: Exception do
+            MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak +
+              E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
     end;
 
@@ -3112,6 +3129,16 @@ begin
 
     StringGridCalculations.Cells[6, CountCoef + 2] := '0';
     StringGridCalculations.Cells[6, CountCoef + 3] := '0';
+
+    //В случае если в таблице нет материалов, добавляется одна пустая строка
+    if StringGridMaterials.RowCount = 1 then
+      StringGridMaterials.RowCount := StringGridMaterials.RowCount + 1;
+
+    with StringGridMaterials do
+    begin
+      FixedCols := 1;
+      FixedRows := 1;
+    end;
 
     Exit;
   end;
@@ -5080,6 +5107,7 @@ end;
 
 procedure TFormCalculationEstimate.OpenAllData;
 begin
+  GetMonthYearCalculationEstimate;
   GetSourceData; // Выводим информациию об исходных данных сметы
   GetStateCoefOrdersInRate;
   // Получаем состояние коэффициента по приказам (применять / не применять)
@@ -5110,11 +5138,13 @@ begin
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
+  // Заполнение таблицы расценок
   OutputDataToTable;
-
+  //Выбор расценки, инициирует заполнение остальныхз таблиц
   StringGridRatesClick(StringGridRates);
 end;
 
+//Заполнение таблицы расценок
 procedure TFormCalculationEstimate.OutputDataToTable;
 var
   FieldRates: TFieldRates;
@@ -5134,7 +5164,7 @@ begin
   CountRowRates := 1;
 
   // ----------------------------------------
-
+  //Открывает сременные таблицы с данными по смете(акту)
   UpdateTableDataTemp;
   UpdateTableCardRatesTemp;
   UpdateTableCardMaterialTemp;
@@ -5530,7 +5560,7 @@ begin
       ColWidths[14] := -1;
     end;
 end;
-
+//Замена неучтенного материала в смете
 procedure TFormCalculationEstimate.ReplacementMaterial(const vIdMat: Integer);
 begin
   try
@@ -5947,7 +5977,7 @@ begin
       end;
   end;
 end;
-
+//Добавление материала к смете
 procedure TFormCalculationEstimate.AddMaterial(const vMatId: Integer);
 begin
   try
@@ -5968,7 +5998,7 @@ begin
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
-
+//Добавление механизма к смете
 procedure TFormCalculationEstimate.AddMechanizm(const vMechId, vMonth, vYear: Integer);
 begin
   try
