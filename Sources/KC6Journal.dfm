@@ -19,7 +19,7 @@ object fKC6Journal: TfKC6Journal
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
-  object pgc1: TPageControl
+  object pgcPage: TPageControl
     Left = 0
     Top = 57
     Width = 745
@@ -29,7 +29,7 @@ object fKC6Journal: TfKC6Journal
     MultiLine = True
     TabOrder = 0
     TabPosition = tpLeft
-    OnChange = pgc1Change
+    OnChange = pgcPageChange
     object ts1: TTabSheet
       Caption = #1055#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084
       object spl1: TSplitter
@@ -68,6 +68,7 @@ object fKC6Journal: TfKC6Journal
         Indent = 19
         Align = alTop
         TabOrder = 0
+        OnClick = JvDBTreeView1Click
         RowSelect = True
         Mirror = False
       end
@@ -154,6 +155,28 @@ object fKC6Journal: TfKC6Journal
     object ts2: TTabSheet
       Caption = #1055#1086' '#1055#1058#1052
       ImageIndex = 1
+      object dbgrd3: TDBGrid
+        Left = 0
+        Top = 0
+        Width = 717
+        Height = 335
+        Align = alClient
+        DataSource = dsPTM
+        DrawingStyle = gdsClassic
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        ParentFont = False
+        TabOrder = 0
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+      end
     end
   end
   object pnl1: TPanel
@@ -310,7 +333,6 @@ object fKC6Journal: TfKC6Journal
     end
   end
   object qrTreeData: TFDQuery
-    AfterScroll = qrTreeDataAfterScroll
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
     DetailFields = 'OBJ_ID'
@@ -353,7 +375,6 @@ object fKC6Journal: TfKC6Journal
     Top = 64
   end
   object qrData: TFDQuery
-    AfterOpen = qrDataAfterOpen
     MasterSource = dsTreeData
     MasterFields = 'SM_ID'
     DetailFields = 'SM_ID'
@@ -550,5 +571,61 @@ object fKC6Journal: TfKC6Journal
     DataSet = qrObject
     Left = 56
     Top = 1
+  end
+  object qrPTM: TFDQuery
+    MasterSource = dsObject
+    MasterFields = 'OBJ_ID'
+    DetailFields = 'OBJ_ID'
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    SQL.Strings = (
+      'SELECT SM_ID, SM_TYPE, OBJ_ID, NAME as NAME, DATE, SM_NUMBER  '
+      'FROM smetasourcedata'
+      'WHERE SM_TYPE=2 AND '
+      '      OBJ_ID=:OBJ_ID'
+      'UNION ALL'
+      
+        'SELECT CONCAT((PARENT_LOCAL_ID+PARENT_PTM_ID), SM_ID) AS SM_ID, ' +
+        'SM_TYPE, OBJ_ID, NAME as NAME, DATE, SM_NUMBER  '
+      'FROM smetasourcedata'
+      'WHERE SM_TYPE=1 AND '
+      '      OBJ_ID=:OBJ_ID'
+      'UNION ALL'
+      'SELECT CONCAT('
+      
+        '(SELECT (s1.PARENT_LOCAL_ID+s1.PARENT_PTM_ID) FROM smetasourceda' +
+        'ta s1 WHERE s1.SM_ID=(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID)), '
+      
+        '(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID), s2.SM_ID) AS SM_ID, s2.SM' +
+        '_TYPE, s2.OBJ_ID, s2.NAME as NAME, s2.DATE, s2.SM_NUMBER  '
+      'FROM smetasourcedata s2'
+      'WHERE s2.SM_TYPE=3 AND '
+      '      s2.OBJ_ID=:OBJ_ID'
+      'ORDER BY 1')
+    Left = 201
+    Top = 136
+    ParamData = <
+      item
+        Name = 'OBJ_ID'
+        DataType = ftAutoInc
+        ParamType = ptInput
+        Size = 4
+        Value = 36
+      end>
+  end
+  object dsPTM: TDataSource
+    DataSet = qrPTM
+    Left = 232
+    Top = 136
   end
 end

@@ -12,7 +12,7 @@ uses
 
 type
   TfKC6Journal = class(TForm)
-    pgc1: TPageControl;
+    pgcPage: TPageControl;
     ts1: TTabSheet;
     ts2: TTabSheet;
     pnl1: TPanel;
@@ -40,16 +40,18 @@ type
     qrObject: TFDQuery;
     dsObject: TDataSource;
     dblkcbbNAME: TDBLookupComboBox;
+    dbgrd3: TDBGrid;
+    qrPTM: TFDQuery;
+    dsPTM: TDataSource;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure rbRatesClick(Sender: TObject);
-    procedure pgc1Change(Sender: TObject);
+    procedure pgcPageChange(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure cbbFromMonthChange(Sender: TObject);
     procedure qrObjectAfterScroll(DataSet: TDataSet);
-    procedure qrDataAfterOpen(DataSet: TDataSet);
-    procedure qrTreeDataAfterScroll(DataSet: TDataSet);
+    procedure JvDBTreeView1Click(Sender: TObject);
   private
     procedure UpdateNumPP;
   public
@@ -76,9 +78,9 @@ var
   rateFields, rateMatFields, matFields, rateCNT, rateMatCNT, matCNT, rateCNTDone, rateMatCNTDone,
     matCNTDone, rateCNTOut, rateMatCNTOut, matCNTOut: string;
 
-  procedure addCol(const fieldName, titleCaption: String; const Width: Integer);
+  procedure addCol(const Grid: TDBGrid; fieldName, titleCaption: String; const Width: Integer);
   begin
-    col := dbgrd1.Columns.Add;
+    col := Grid.Columns.Add;
     col.Title.Caption := titleCaption;
     col.Title.Alignment := taCenter;
     col.Width := Width;
@@ -86,17 +88,29 @@ var
   end;
 
 begin
-  FormWaiting.Show;
+  //FormWaiting.Show;
   try
-    dbgrd1.Columns.Clear;
+    qrData.DisableControls;
+
     // Добавляем основные колонки в таблицу
-    addCol('ITERATOR', '№пп', 30);
-    addCol('CODE', 'Обоснование', 80);
-    addCol('NAME', 'Наименование', 250);
-    addCol('CNT', 'Кол-во', 60);
-    addCol('UNIT', 'Ед. изм.', 50);
-    addCol('CntDone', 'Выполнено', 80);
-    addCol('CntOut', 'Остаток', 80);
+    dbgrd1.Columns.Clear;
+    addCol(dbgrd1, 'ITERATOR', '№пп', 30);
+    addCol(dbgrd1, 'CODE', 'Обоснование', 80);
+    addCol(dbgrd1, 'NAME', 'Наименование', 250);
+    addCol(dbgrd1, 'CNT', 'Кол-во', 60);
+    addCol(dbgrd1, 'UNIT', 'Ед. изм.', 50);
+    addCol(dbgrd1, 'CntDone', 'Выполнено', 80);
+    addCol(dbgrd1, 'CntOut', 'Остаток', 80);
+
+    dbgrd3.Columns.Clear;
+    addCol(dbgrd3, '', '№пп', 30);
+    addCol(dbgrd3, 'SM_NUMBER', 'Обоснование', 80);
+    addCol(dbgrd3, 'NAME', 'Наименование', 250);
+    addCol(dbgrd3, '', 'Кол-во', 60);
+    addCol(dbgrd3, '', 'Ед. изм.', 50);
+    addCol(dbgrd3, '', 'Стоимость', 80);
+    addCol(dbgrd3, '', 'Выполнено', 80);
+    addCol(dbgrd3, '', 'Остаток', 80);
     month := cbbFromMonth.ItemIndex + 1;
     year := seFromYear.Value;
     rateFields := '';
@@ -139,10 +153,12 @@ begin
       cbbToMonth.ItemIndex + 1 do
     begin
       // Создаем новую колонку для месяца в таблице
-      addCol('M' + IntToStr(month) + 'Y' + IntToStr(year),
+      addCol(dbgrd1, 'M' + IntToStr(month) + 'Y' + IntToStr(year),
         AnsiUpperCase(FormatDateTime('mmmm yyyy', StrToDate('01.' + IntToStr(month) + '.' +
         IntToStr(year)))), 80);
-
+      addCol(dbgrd3, 'M' + IntToStr(month) + 'Y' + IntToStr(year),
+        AnsiUpperCase(FormatDateTime('mmmm yyyy', StrToDate('01.' + IntToStr(month) + '.' +
+        IntToStr(year)))), 80);
       case cbbMode.ItemIndex of
         BY_COUNT:
           begin
@@ -259,11 +275,12 @@ begin
     '/* МЕХАНИЗМЫ */'#13 +
     'ORDER BY 1,2';
     qrData.Active := True;
-
     while not qrData.Active do
      Application.ProcessMessages;
   finally
-     FormWaiting.Close;
+    UpdateNumPP;
+    qrData.EnableControls;
+    //FormWaiting.Close;
   end;
 end;
 
@@ -278,9 +295,12 @@ begin
   seToYear.Value := YearOf(Now);
   LoadDBGridSettings(dbgrd1);
   LoadDBGridSettings(dbgrd2);
+  LoadDBGridSettings(dbgrd3);
   qrObject.Active := True;
   qrTreeData.Active := True;
+  qrPTM.Active := True;
   qrDetail.Active := True;
+  pgcPage.ActivePageIndex := 0;
 end;
 
 procedure TfKC6Journal.FormDestroy(Sender: TObject);
@@ -293,20 +313,20 @@ begin
   FixDBGridColumnsWidth(dbgrd2);
 end;
 
+procedure TfKC6Journal.JvDBTreeView1Click(Sender: TObject);
+begin
+  UpdateNumPP;
+end;
+
 procedure TfKC6Journal.LocateObject(Object_ID: Integer);
 begin
   dblkcbbNAME.KeyValue := Object_ID;
 end;
 
-procedure TfKC6Journal.pgc1Change(Sender: TObject);
+procedure TfKC6Journal.pgcPageChange(Sender: TObject);
 begin
-  rbRates.Checked := pgc1.ActivePageIndex = 0;
-  rbPTM.Checked := pgc1.ActivePageIndex = 1;
-end;
-
-procedure TfKC6Journal.qrDataAfterOpen(DataSet: TDataSet);
-begin
-  UpdateNumPP;
+  rbRates.Checked := pgcPage.ActivePageIndex = 0;
+  rbPTM.Checked := pgcPage.ActivePageIndex = 1;
 end;
 
 procedure TfKC6Journal.qrObjectAfterScroll(DataSet: TDataSet);
@@ -330,23 +350,20 @@ begin
   seToYear.OnChange := e;
 end;
 
-procedure TfKC6Journal.qrTreeDataAfterScroll(DataSet: TDataSet);
-begin
-  UpdateNumPP;
-end;
-
 procedure TfKC6Journal.rbRatesClick(Sender: TObject);
 begin
   if rbRates.Checked then
-    pgc1.ActivePageIndex := 0
+    pgcPage.ActivePageIndex := 0
   else
-    pgc1.ActivePageIndex := 1;
+    pgcPage.ActivePageIndex := 1;
 end;
 
 procedure TfKC6Journal.UpdateNumPP;
 var
   NumPP: Integer;
 begin
+  if (not qrData.Active) or (qrData.IsEmpty) then
+    Exit;
   // Устанавливаем №пп
   qrData.DisableControls;
   NumPP := 0;
