@@ -181,7 +181,6 @@ type
     SplitterRight1: TSplitter;
     SplitterRight2: TSplitter;
     StringGridMaterials: TStringGrid;
-    StringGridMechanizms: TStringGrid;
     StringGridEquipments: TStringGrid;
     StringGridDescription: TStringGrid;
     ImageNoData: TImage;
@@ -246,6 +245,7 @@ type
     ADOQueryMaterialCard: TFDQuery;
     ADOQueryMechanizmCard: TFDQuery;
     Memo1: TMemo;
+    StringGridMechanizms: TStringGrid;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -2105,7 +2105,9 @@ begin
   end
   else // Если учтёный С-шка
   begin
-    PMMatEdit.Enabled := True;
+    if IdInMat = 0 then PMMatEdit.Enabled := False  //Если строка элемент шапки
+    else PMMatEdit.Enabled := True;
+
     PMMatResources.Enabled := True;
     PMMatReplace.Enabled := False;
   end;
@@ -2540,6 +2542,8 @@ begin
       MatFromRate := False;
 
       MatIdForAllocate := 0;
+
+      if StringGridMaterials.Cells[14, StringGridMaterials.Row] = '' then exit;
 
       with ADOQueryTemp do
       begin
@@ -3170,6 +3174,9 @@ begin
     end;
 
   // -----------------------------------------
+  //В случае если в таблице нет материалов, добавляется одна пустая строка
+  if StringGridMaterials.RowCount = 1 then
+    StringGridMaterials.RowCount := StringGridMaterials.RowCount + 1;
 
   with StringGridMaterials do
   begin
@@ -5531,10 +5538,11 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL MaterialReplacement(:IdCardRate, :IdReplaced, :IdMat);');
+      SQL.Add('CALL MaterialReplacement(:IdCardRate, :IdReplaced, :IdMat, :IdEstimate);');
       ParamByName('IdCardRate').Value := IdInRate;
       ParamByName('IdReplaced').Value := IdInMat;
       ParamByName('IdMat').Value := vIdMat;
+      ParamByName('IdEstimate').Value := IdEstimate;
       ExecSQL;
     end;
 
