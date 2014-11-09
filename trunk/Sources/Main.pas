@@ -746,7 +746,7 @@ procedure TFormMain.N61Click(Sender: TObject);
 begin
   if (not Assigned(fKC6Journal)) then
     fKC6Journal := TfKC6Journal.Create(Self);
-  fKC6Journal.LocateObject(FormObjectsAndEstimates.getCurObject);
+  //fKC6Journal.LocateObject(FormObjectsAndEstimates.getCurObject);
   fKC6Journal.Show;
 end;
 

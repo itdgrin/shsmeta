@@ -615,7 +615,7 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
-
+//Открытие сметы
 procedure TFormObjectsAndEstimates.TreeViewDblClick(Sender: TObject);
 begin
   // Открываем форму ожидания
@@ -636,9 +636,9 @@ begin
 
     SetIdObject(IdObject);
     SetIdEstimate(IdEstimate);
-    GetMonthYearCalculationEstimate;
-
+    //Создание временных таблиц
     CreateTempTables;
+    //Заполненя временных таблиц, заполнение формы
     OpenAllData;
   end;
 
@@ -1281,4 +1281,3 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 end.
-
