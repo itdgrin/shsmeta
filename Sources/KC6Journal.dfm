@@ -531,25 +531,92 @@ object fKC6Journal: TfKC6Journal
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     SQL.Strings = (
+      '/* '#1056#1040#1057#1062#1045#1053#1050#1048' */'
+      'SELECT '
+      '  ID_ESTIMATE,'
+      '  ID_TYPE_DATA,'
+      '  RATE_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  COALESCE(RATE_COUNT, 0) AS CNT /* '#1050#1086#1083'-'#1074#1086' */'
+      'FROM '
+      '  data_estimate, card_rate_act'
+      'WHERE '
+      'data_estimate.ID_TYPE_DATA = 1 AND'
+      'card_rate_act.ID = data_estimate.ID_TABLES AND'
+      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
-        'SELECT (OBJ_ID*-1) as SM_ID, 0 as SM_TYPE, OBJ_ID, FULL_NAME as ' +
-        'NAME,0 as PARENT'
-      'FROM objcards '
+        ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PAREN' +
+        'T_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' *' +
+        '/'
+      
+        ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PAREN' +
+        'T_LOCAL_ID + PARENT_PTM_ID) IN '
+      
+        '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + P' +
+        'ARENT_PTM_ID) = :SM_ID))'
+      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
+      ')'
       'UNION ALL'
+      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042' '#1056#1040#1057#1062#1045#1053#1050#1045'*/'
+      'SELECT '
+      '  ID_ESTIMATE,'
+      '  ID_TYPE_DATA,'
+      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  COALESCE(MAT_COUNT, 0) AS CNT /* '#1050#1086#1083'-'#1074#1086' */'
+      'FROM '
+      '  data_estimate, card_rate_act, materialcard_act'
+      'WHERE '
+      'data_estimate.ID_TYPE_DATA = 1 AND'
+      'card_rate_act.ID = data_estimate.ID_TABLES AND'
+      'materialcard_act.ID_CARD_RATE = card_rate_act.ID AND'
+      'materialcard_act.CONSIDERED = 0 AND'
+      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
-        'NAME, (CAST(OBJ_ID as SIGNED)*-1) as PARENT  '
-      'FROM smetasourcedata'
-      'WHERE SM_TYPE=2'
+        ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PAREN' +
+        'T_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' *' +
+        '/'
+      
+        ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PAREN' +
+        'T_LOCAL_ID + PARENT_PTM_ID) IN '
+      
+        '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + P' +
+        'ARENT_PTM_ID) = :SM_ID))'
+      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
+      ')'
       'UNION ALL'
+      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067'*/'
+      'SELECT '
+      '  ID_ESTIMATE,'
+      '  ID_TYPE_DATA,'
+      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  COALESCE(MAT_COUNT, 0) AS CNT /* '#1050#1086#1083'-'#1074#1086' */'
+      'FROM '
+      '  data_estimate, materialcard_act'
+      'WHERE '
+      'data_estimate.ID_TYPE_DATA = 2 AND'
+      'materialcard_act.ID = data_estimate.ID_TABLES AND'
+      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
-        'NAME, (PARENT_LOCAL_ID+PARENT_PTM_ID) as PARENT  '
-      'FROM smetasourcedata'
-      'WHERE SM_TYPE<>2'
-      'ORDER BY NAME')
+        ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PAREN' +
+        'T_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' *' +
+        '/'
+      
+        ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PAREN' +
+        'T_LOCAL_ID + PARENT_PTM_ID) IN '
+      
+        '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + P' +
+        'ARENT_PTM_ID) = :SM_ID))'
+      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
+      ')'
+      '/* '#1052#1045#1061#1040#1053#1048#1047#1052#1067' */')
     Left = 25
     Top = 336
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '298'
+      end>
   end
   object dsDetail: TDataSource
     DataSet = qrDetail
