@@ -1418,8 +1418,6 @@
             OnKeyPress = StringGridKeyPress
             OnMouseLeave = StringGridMouseLeaveRight
             OnMouseMove = StringGridMouseMoveRight
-            ExplicitLeft = 1
-            ExplicitTop = -1
             RowHeights = (
               20
               20)

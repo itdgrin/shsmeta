@@ -1489,6 +1489,7 @@ begin
   PanelHint.Visible := False;
 end;
 
+//Выбор строки в таблице расценок
 procedure TFormCalculationEstimate.StringGridRatesClick(Sender: TObject);
 var
   i: Integer;
@@ -1503,7 +1504,8 @@ begin
     with (Sender as TStringGrid) do
       // Если активна ячейка "Количество", и в текущей строке есть данные
       // или активна ячейка "№ норматива", и в текущей строке нет данных
-      if ((Col = 2) and (Cells[0, Row] <> '')) or ((Col = 1) and (Cells[0, Row] = '')) then
+      if ((Col = 2) and (Cells[0, Row] <> '')) or
+         ((Col = 1) and (Cells[0, Row] = '')) then
         Options := Options + [goEditing] // разрешаем редактирование
       else
         Options := Options - [goEditing]; // запрещаем редактирование
@@ -1566,9 +1568,6 @@ begin
   PopupMenuCoefAddSet.Enabled := True;
   PopupMenuCoefDeleteSet.Enabled := True;
 
-  // -----------------------------------------
-  GetMonthYearCalculationEstimate;
-
   CalcPrice := '00';
 
   // -----------------------------------------
@@ -1577,7 +1576,7 @@ begin
   PMReplace.Enabled := False;
   PMEdit.Enabled := False;
 
-  GetInfoAboutData;
+  GetInfoAboutData; //подгружает информацию по выбранной строке
 
   // РАЗВЁРТЫВАНИЕ ВЫБРАННОЙ РАСЦЕНКИ В ТАБЛИЦАХ СПРАВА
 
@@ -1590,6 +1589,8 @@ begin
 
         SpeedButtonDescription.Enabled := True;
         SpeedButtonMaterials.Enabled := True;
+        SpeedButtonMaterials.Down := True;
+
         SpeedButtonMechanisms.Enabled := True;
         SpeedButtonEquipments.Enabled := True;
         SpeedButtonModeTables.Enabled := True;
@@ -1649,6 +1650,8 @@ begin
         Calculation;
 
         CalcPrice := '11';
+        //Нажимаем на кнопку материалов, для отображения таблицы материалов
+        SpeedButtonMaterialsClick(SpeedButtonMaterials);
       end;
     1: // МАТЕРИАЛ
       begin
@@ -1705,6 +1708,8 @@ begin
         CalculationMaterial;
 
         CalcPrice := '10';
+        //Нажимаем на кнопку материалов, для отображения таблицы материалов
+        SpeedButtonMaterialsClick(SpeedButtonMaterials);
       end;
     2: // МЕХАНИЗМ
       begin
@@ -1744,6 +1749,9 @@ begin
         CalculationMechanizm;
 
         CalcPrice := '01';
+
+        //Нажимаем на кнопку механизмов, для отображения таблицы механизмов
+        SpeedButtonMechanismsClick(SpeedButtonMechanisms);
       end;
     3: // ОБОРУДОВАНИЕ
       begin
@@ -2547,6 +2555,9 @@ begin
 
       MatIdForAllocate := 0;
 
+      //На случай если таблица тустая и фокус стоит на шапке таблицы
+      if StringGridMaterials.Row = 0 then exit;
+
       if StringGridMaterials.Cells[14, StringGridMaterials.Row] = '' then exit;
 
       with ADOQueryTemp do
@@ -3129,16 +3140,13 @@ begin
 
     StringGridCalculations.Cells[6, CountCoef + 2] := '0';
     StringGridCalculations.Cells[6, CountCoef + 3] := '0';
-
-    //В случае если в таблице нет материалов, добавляется одна пустая строка
-    if StringGridMaterials.RowCount = 1 then
-      StringGridMaterials.RowCount := StringGridMaterials.RowCount + 1;
-
-    with StringGridMaterials do
-    begin
-      FixedCols := 1;
-      FixedRows := 1;
-    end;
+    //В случае если в таблице нет материалов, не создается фиксирпованная область таблицы
+    if StringGridMaterials.RowCount > 1 then
+      with StringGridMaterials  do
+      begin
+        FixedCols := 1;
+        FixedRows := 1;
+      end;
 
     Exit;
   end;
@@ -3201,15 +3209,13 @@ begin
     end;
 
   // -----------------------------------------
-  //В случае если в таблице нет материалов, добавляется одна пустая строка
-  if StringGridMaterials.RowCount = 1 then
-    StringGridMaterials.RowCount := StringGridMaterials.RowCount + 1;
-
-  with StringGridMaterials do
-  begin
-    FixedCols := 1;
-    FixedRows := 1;
-  end;
+  //В случае если в таблице нет материалов, не создается фиксирпованная область таблицы
+  if StringGridMaterials.RowCount > 1 then
+    with StringGridMaterials do
+    begin
+      FixedCols := 1;
+      FixedRows := 1;
+    end;
 end;
 
 procedure TFormCalculationEstimate.FillingMaterials(const AQ: TFDQuery; const vGroup: Char);
@@ -3905,8 +3911,9 @@ begin
         SQL.Clear;
         SQL.Add('SELECT coef FROM category WHERE value = "' + EditCategory.Text + '";');
         Active := True;
-
-        MRCoef := FieldByName('coef').AsVariant;
+        if RecordCount > 0 then
+          MRCoef := FieldByName('coef').AsVariant
+        else MRCoef := 0;
       end
     else
       MRCoef := 0;
@@ -5829,6 +5836,9 @@ begin
   MatIdForAllocate := 0;
 
   IdInMech := 0;
+  MechId := 0;
+  MechFromRate := False;
+  MechIdForAllocate := 0;
 
   case TypeData of
     1: // Расценка
@@ -5941,10 +5951,11 @@ begin
           // ----------------------------------------
 
           if vIdCardRate = 0 then
-            Str := 'SELECT id as IdInMech, mech_id FROM mechanizmcard_temp WHERE id = :id;'
+            Str := 'SELECT id as IdInMech, mech_id, from_rate FROM mechanizmcard_temp ' +
+              'WHERE id = :id;'
           else
             Str := 'SELECT mechanizmcard_temp.id as IdInMech, mech_id, card_rate_temp.id as IdInRate, ' +
-              'rate_id, rate_code FROM mechanizmcard_temp, card_rate_temp ' +
+              'rate_id, rate_code, from_rate FROM mechanizmcard_temp, card_rate_temp ' +
               'WHERE mechanizmcard_temp.id = :id and id_card_rate = card_rate_temp.id;';
 
           // ----------------------------------------
@@ -5960,8 +5971,15 @@ begin
           IdInMech := FieldByName('IdInMech').AsInteger;
           MechId := FieldByName('mech_id').AsInteger;
 
+          if FieldByName('from_rate').AsInteger = 1 then
+          // Если Механизм ВЫНЕСЕН из расценки
+          begin
+            MechFromRate := True;
+            MechIdForAllocate := FieldByName('IdInMech').AsInteger;
+          end;
+
           if vIdCardRate > 0 then
-          // Если материал из расценки, а не просто добавлен, получаем данные о самой расценке
+          // Если Механизм из расценки, а не просто добавлен, получаем данные о самой расценке
           begin
             IdInRate := FieldByName('IdInRate').AsInteger;;
             RateId := FieldByName('rate_id').AsInteger;
@@ -5977,6 +5995,7 @@ begin
       end;
   end;
 end;
+
 //Добавление материала к смете
 procedure TFormCalculationEstimate.AddMaterial(const vMatId: Integer);
 begin

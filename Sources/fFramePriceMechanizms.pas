@@ -192,7 +192,7 @@ begin
           ADOQueryTemp.Active := True;
 
           ComboBoxMonth.ItemIndex := ADOQueryTemp.FieldByName('monat').AsVariant - 1;
-          ComboBoxYear.ItemIndex := 2012 - ADOQueryTemp.FieldByName('year').AsInteger;
+          ComboBoxYear.ItemIndex := ADOQueryTemp.FieldByName('year').AsInteger - 2012;
         except
           on E: Exception do
             MessageBox(0, PChar('При получении номера региона возникла ошибка:' + sLineBreak + sLineBreak +
