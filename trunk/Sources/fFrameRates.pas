@@ -795,7 +795,7 @@ begin
   // ВЫВОДИМ ОХР И ОПР И ПЛАН ПРИБЫЛИ
   with ADOQueryTemp do
   begin
-    ComboBoxOXROPR.ItemIndex := -1;
+    ComboBoxOXROPR.ItemIndex := 0;
 
     Active := False;
     SQL.Clear;
@@ -808,7 +808,6 @@ begin
     // Сделано допущение, что идут work_id по порядку от еденицы
     if not Eof then
       ComboBoxOXROPR.ItemIndex := FieldByName('work_id').AsVariant - 1;
-
   end;
 
   // ----------------------------------------

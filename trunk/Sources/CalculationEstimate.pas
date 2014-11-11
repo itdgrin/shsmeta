@@ -458,7 +458,11 @@ type
     procedure AddMaterial(const vMatId: Integer);
     procedure AddMechanizm(const vMechId, vMonth, vYear: Integer);
     function AllocateMaterial(const vIdInMat: Integer): Boolean;
+    function AllocateMechanizm(const vIdInMech: Integer): Boolean;
     function CrossOutMaterial(const vIdInMat: Integer): Boolean;
+    function CrossOutMechanizm(const vIdInMech: Integer): Boolean;
+
+    procedure PMMechFromRatesClick(Sender: TObject);
   private
     ActReadOnly: Boolean;
     CountRowRates: Integer;
@@ -473,7 +477,7 @@ type
     MonthEstimate: Integer;
     YearEstimate: Integer;
 
-    VisibleRightTables: String;
+    VisibleRightTables: String; //Настройка отобаржения нужной таблицы справа
 
     WCWinterPrice: Integer;
     WCSalaryWinterPrice: Integer;
@@ -505,6 +509,7 @@ type
 
     IdInMech: Integer; // Поле Id в таблице mechanizmcard
     MechId: Integer; // Id механизма
+    MechIdCardRate: Integer; // Поле id_card_rate в таблице mechanizmcard
     MechFromRate: Boolean; // Является ли механизма ВЫНЕСЕННЫМ из расценки
     MechIdForAllocate: Integer;
     // Поле Id в таблице механизма, для выделения строк жирным
@@ -609,8 +614,11 @@ begin
   IdEstimate := 0;
   Act := False;
 
-  VisibleRightTables := '1000';
-  SettingVisibleRightTables;
+  if VisibleRightTables <> '1000' then
+  begin
+    VisibleRightTables := '1000';
+    SettingVisibleRightTables;
+  end;
 
   ShowHint := True;
 
@@ -880,43 +888,52 @@ begin
 end;
 
 procedure TFormCalculationEstimate.SpeedButtonMaterialsClick(Sender: TObject);
+var s : string;
 begin
   TestOnNoData(StringGridMaterials);
 
-  if SpeedButtonModeTables.Tag = 0 then
-    VisibleRightTables := '1000'
-  else
-    VisibleRightTables := '1110';
+  if SpeedButtonModeTables.Tag = 0 then s := '1000'
+  else s := '1110';
 
-  SettingVisibleRightTables;
+  if s <> VisibleRightTables then
+  begin
+    VisibleRightTables := s;
+    SettingVisibleRightTables;
+  end;
 
   StringGridRightClick(StringGridMaterials);
 end;
 
 procedure TFormCalculationEstimate.SpeedButtonMechanismsClick(Sender: TObject);
+var s : string;
 begin
   TestOnNoData(StringGridMechanizms);
 
-  if SpeedButtonModeTables.Tag = 0 then
-    VisibleRightTables := '0100'
-  else
-    VisibleRightTables := '1110';
+  if SpeedButtonModeTables.Tag = 0 then s := '0100'
+  else s := '1110';
 
-  SettingVisibleRightTables;
+  if s <> VisibleRightTables then
+  begin
+    VisibleRightTables := s;
+    SettingVisibleRightTables;
+  end;
 
   StringGridRightClick(StringGridMechanizms);
 end;
 
 procedure TFormCalculationEstimate.SpeedButtonEquipmentsClick(Sender: TObject);
+var s : string;
 begin
   TestOnNoData(StringGridEquipments);
 
-  if SpeedButtonModeTables.Tag = 0 then
-    VisibleRightTables := '0010'
-  else
-    VisibleRightTables := '1110';
+  if SpeedButtonModeTables.Tag = 0 then s := '0010'
+  else s := '1110';
 
-  SettingVisibleRightTables;
+  if s <> VisibleRightTables then
+  begin
+    VisibleRightTables := s;
+    SettingVisibleRightTables;
+  end;
 
   StringGridRightClick(StringGridEquipments);
 end;
@@ -925,9 +942,11 @@ procedure TFormCalculationEstimate.SpeedButtonDescriptionClick(Sender: TObject);
 begin
   TestOnNoData(StringGridDescription);
 
-  VisibleRightTables := '0001';
-
-  SettingVisibleRightTables;
+  if VisibleRightTables <> '0001' then
+  begin
+    VisibleRightTables := '0001';
+    SettingVisibleRightTables;
+  end;
 
   StringGridRightClick(StringGridDescription);
 end;
@@ -1324,6 +1343,29 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.PMMechFromRatesClick(Sender: TObject);
+begin
+  try
+    with ADOQueryTemp do
+    begin
+      Active := False;
+      SQL.Clear;
+      SQL.Add('UPDATE mechanizmcard_temp SET from_rate = 1 WHERE id = :id;');
+      ParamByName('id').Value := IdInMech;
+      ExecSQL;
+    end;
+
+    OutputDataToTable;
+
+    StringGridRates.Repaint;
+    StringGridMechanizms.Repaint;
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При вынесении механизма из расценки возникла ошибка:' + sLineBreak + sLineBreak +
+        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
+
 procedure TFormCalculationEstimate.PopupMenuCoefColumnsClick(Sender: TObject);
 begin
   FormColumns.SetNameTable('TableCalculations');
@@ -1497,43 +1539,30 @@ var
   VAT, vClass, Distance, More, Mass, IdDump, Count: Integer;
   TwoValuesSalary, TwoValuesEMiM: TTwoValues;
   CalcPrice: string[2];
+
+  SGR : TStringGrid; //переменная дублирует StringGridRates, добавлена для краткости
+  BtnChange: boolean; //Признак изменения выбраной кнопки
 begin
   PanelHint.Visible := False;
+  SGR := TStringGrid(Sender);
+
   // РАЗРЕШАЕМ/ЗАПРЕЩАЕМ РЕДАКТИРОВАНИЕ В ЯЧЕЙКЕ
-  if (Sender.ClassName = 'TStringGrid') then
-    with (Sender as TStringGrid) do
-      // Если активна ячейка "Количество", и в текущей строке есть данные
-      // или активна ячейка "№ норматива", и в текущей строке нет данных
-      if ((Col = 2) and (Cells[0, Row] <> '')) or
-         ((Col = 1) and (Cells[0, Row] = '')) then
-        Options := Options + [goEditing] // разрешаем редактирование
-      else
-        Options := Options - [goEditing]; // запрещаем редактирование
+  // Если активна ячейка "Количество", и в текущей строке есть данные
+  // или активна ячейка "№ норматива", и в текущей строке нет данных
+  if ((SGR.Col = 2) and (SGR.Cells[0, SGR.Row] <> '')) or
+     ((SGR.Col = 1) and (SGR.Cells[0, SGR.Row] = '')) then
+    SGR.Options := SGR.Options + [goEditing] // разрешаем редактирование
+  else
+    SGR.Options := SGR.Options - [goEditing]; // запрещаем редактирование
 
-  // -----------------------------------------
-
-  Memo1.Text := StringGridRates.Cells[4, StringGridRates.Row];
-  // Rates.FieldByName('DESCR').AsString; // R SGRatesCells[4, Row];
-
-  // -----------------------------------------
+  //Пишем название расценки(или материала.....) в мемо под таблицей
+  Memo1.Text := SGR.Cells[4, SGR.Row];
 
   // Изменение типа данных в выпадающем списке
-  with (Sender as TStringGrid) do
-    if Cells[5, Row] <> '' then
-      ComboBoxTypeData.ItemIndex := StrToInt(Cells[5, Row]) - 1
-    else
-      ComboBoxTypeData.ItemIndex := -1;
-
-  // -----------------------------------------
-
-  SpeedButtonDescription.Enabled := False;
-  SpeedButtonMaterials.Enabled := False;
-  SpeedButtonMechanisms.Enabled := False;
-  SpeedButtonEquipments.Enabled := False;
-  SpeedButtonModeTables.Enabled := False;
-
-  PanelClientRight.Visible := False;
-  PanelNoData.Visible := True;
+  if SGR.Cells[5, SGR.Row] <> '' then
+    ComboBoxTypeData.ItemIndex := StrToInt(SGR.Cells[5, SGR.Row]) - 1
+  else
+    ComboBoxTypeData.ItemIndex := -1;
 
   // -----------------------------------------
 
@@ -1579,39 +1608,28 @@ begin
   GetInfoAboutData; //подгружает информацию по выбранной строке
 
   // РАЗВЁРТЫВАНИЕ ВЫБРАННОЙ РАСЦЕНКИ В ТАБЛИЦАХ СПРАВА
-
+  BtnChange := false;
   case ComboBoxTypeData.ItemIndex of
     0: // РАСЦЕНКА
       begin
         PMEdit.Enabled := True;
 
-        CountFromRate := MyStrToFloat(StringGridRates.Cells[2, StringGridRates.Row]);
+        CountFromRate := MyStrToFloat(SGR.Cells[2, StringGridRates.Row]);
 
-        SpeedButtonDescription.Enabled := True;
+        //настройка кнопочек свержу справа, для расценок всегда выбирается "материалы"
         SpeedButtonMaterials.Enabled := True;
-        SpeedButtonMaterials.Down := True;
-
         SpeedButtonMechanisms.Enabled := True;
         SpeedButtonEquipments.Enabled := True;
+        SpeedButtonDescription.Enabled := True;
         SpeedButtonModeTables.Enabled := True;
 
-        PanelClientRight.Visible := True;
-        PanelNoData.Visible := False;
-
-        // -----------------------------------------
-
+        //Заполнение таблиц справа
         FillingTableMaterials(IntToStr(IdInRate), '0');
         FillingTableMechanizm(IntToStr(IdInRate), '0');
         FillingTableDescription(IntToStr(RateId));
 
-        // SpeedButtonMaterials.Down := True;
-        // SpeedButtonMaterialsClick(SpeedButtonMaterials);
-
-        // -----------------------------------------
-
         // Проверка, если активна таблица в которой нет данных,
         // показываем пустую панель с картинкой
-
         if SpeedButtonMaterials.Down then
           TestOnNoData(StringGridMaterials)
         else if SpeedButtonMechanisms.Down then
@@ -1620,10 +1638,10 @@ begin
           TestOnNoData(StringGridEquipments)
         else
           TestOnNoData(StringGridDescription);
-
-        StringGridMaterials.Repaint;
-
         // ----------------------------------------
+
+        //Перерисовка нужна, что-бы убрать жирный шрифт с ранее выбранной строки
+        SGR.Repaint;
 
         // Средний разряд рабочих-строителей
         EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(RateId)));
@@ -1636,52 +1654,52 @@ begin
         StringGridCalculations.Cells[12, CountCoef + 2] :=
           MyFloatToStr(GetWorkCostMachinists(IntToStr(RateId)));
 
-        SetIndexOXROPR(StringGridRates.Cells[1, StringGridRates.Row]);
+        SetIndexOXROPR(SGR.Cells[1, SGR.Row]);
 
         // Получаем значения ОХР и ОПР и план прибыли
         GetValuesOXROPR;
 
         // Запоняем строку зимнего удорожания
-        FillingWinterPrice(StringGridRates.Cells[1, StringGridRates.Row]);
-
-        // if StringGridMaterials.RowCount > 1 then
-        // StringGridMaterials.Row := 2;
+        FillingWinterPrice(SGR.Cells[1, SGR.Row]);
 
         Calculation;
 
         CalcPrice := '11';
-        //Нажимаем на кнопку материалов, для отображения таблицы материалов
-        SpeedButtonMaterialsClick(SpeedButtonMaterials);
       end;
     1: // МАТЕРИАЛ
       begin
         SpeedButtonMaterials.Enabled := True;
+        if not SpeedButtonMaterials.Down then BtnChange := true;
         SpeedButtonMaterials.Down := True;
+
+        SpeedButtonDescription.Enabled := False;
+        SpeedButtonMechanisms.Enabled := False;
+        SpeedButtonEquipments.Enabled := False;
+        SpeedButtonModeTables.Enabled := False;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
 
-        with (Sender as TStringGrid) do
-        begin
-          if MatIdCardRate = 0 then
-            FillingTableMaterials('', IntToStr(MatId))
-          else
+        if MatIdCardRate = 0 then //Отдельный материал
+          FillingTableMaterials('', IntToStr(MatId))
+        else
+        begin //Неучтенный материал в расценке
+          if not MatConsidered then
           begin
-            if not MatConsidered then
-            begin
-              PMReplace.Enabled := True;
-              PMDelete.Enabled := False;
-            end
-            else
-              PMEdit.Enabled := True;
+            PMReplace.Enabled := True;
+            PMDelete.Enabled := False;
+          end
+          else
+            PMEdit.Enabled := True;
 
-            StringGridMaterials.Repaint;
-            Repaint;
-            FillingTableMaterials(IntToStr(MatIdCardRate), '0');
-          end;
+          FillingTableMaterials(IntToStr(MatIdCardRate), '0');
         end;
 
-        // -----------------------------------------
+        //Нажимаем на кнопку материалов, для отображения таблицы материалов
+        if BtnChange then SpeedButtonMaterialsClick(SpeedButtonMaterials);
+
+        //Перерисовка нужна, что-бы убрать жирный шрифт с ранее выбранной строки
+        SGR.Repaint;
 
         // Средний разряд рабочих-строителей
         EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(RateId)));
@@ -1695,7 +1713,7 @@ begin
         // Затраты труда машинистов
         // StringGridCalculations.Cells[12, CountCoef + 2] := MyFloatToStr(GetWorkCostMachinists(IdNormativ));
 
-        SetIndexOXROPR(StringGridRates.Cells[1, StringGridRates.Row]);
+        SetIndexOXROPR(SGR.Cells[1, SGR.Row]);
 
         // Получаем значения ОХР и ОПР и план прибыли
         GetValuesOXROPR;
@@ -1703,28 +1721,32 @@ begin
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(RateCode);
 
-        // -------------------------------------
-
         CalculationMaterial;
 
         CalcPrice := '10';
-        //Нажимаем на кнопку материалов, для отображения таблицы материалов
-        SpeedButtonMaterialsClick(SpeedButtonMaterials);
       end;
     2: // МЕХАНИЗМ
       begin
         SpeedButtonMechanisms.Enabled := True;
+        if not SpeedButtonMechanisms.Down then BtnChange := true;
         SpeedButtonMechanisms.Down := True;
+
+        SpeedButtonMaterials.Enabled := False;
+        SpeedButtonDescription.Enabled := False;
+        SpeedButtonEquipments.Enabled := False;
+        SpeedButtonModeTables.Enabled := False;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
 
-        // -----------------------------------------
-
+        //Заполнение таблицы механизмов
         FillingTableMechanizm('', IntToStr(MechId));
-        // FillingTableMechanizm(IntToStr(RateId), '0');
 
-        // -----------------------------------------
+        //Нажимаем на кнопку механизмов, для отображения таблицы механизмов
+        if BtnChange then SpeedButtonMechanismsClick(SpeedButtonMechanisms);
+
+        //Перерисовка нужна, что-бы убрать жирный шрифт с ранее выбранной строки
+        SGR.Repaint;
 
         // Средний разряд рабочих-строителей
         // EditCategory.Text := MyFloatToStr(GetRankBuilders(IdNormativ));
@@ -1736,7 +1758,7 @@ begin
         StringGridCalculations.Cells[12, CountCoef + 2] :=
           MyFloatToStr(GetWorkCostMachinists(IntToStr(RateId)));
 
-        SetIndexOXROPR(StringGridRates.Cells[1, StringGridRates.Row]);
+        SetIndexOXROPR(SGR.Cells[1, SGR.Row]);
 
         // Получаем значения ОХР и ОПР и план прибыли
         GetValuesOXROPR;
@@ -1749,9 +1771,6 @@ begin
         CalculationMechanizm;
 
         CalcPrice := '01';
-
-        //Нажимаем на кнопку механизмов, для отображения таблицы механизмов
-        SpeedButtonMechanismsClick(SpeedButtonMechanisms);
       end;
     3: // ОБОРУДОВАНИЕ
       begin
@@ -2147,7 +2166,12 @@ begin
       Canvas.Font.Color := PS.FontRows;
     end;
 
-    Canvas.Font.Style := Canvas.Font.Style - [fsbold];
+    //Выделенная строка рисуется жирным шрифтом
+    if (Row = ARow) then
+      Canvas.Font.Style := Canvas.Font.Style + [fsbold]
+    else
+      Canvas.Font.Style := Canvas.Font.Style - [fsbold];
+
     Canvas.FillRect(Rect);
     Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
 
@@ -2181,6 +2205,14 @@ begin
     if Cells[5, ARow] = '2' then // Если строка с материалом
       // Выделение жирным шрифтом НЕУЧТЁННЫХ материалов, ЗАМЕНЯЮЩИХ материалов которые, и ВЫНЕСЕННЫХ из расценки материалов
       if AllocateMaterial(StrToInt(Cells[6, ARow])) then
+      begin
+        Canvas.Font.Style := Canvas.Font.Style + [fsbold];
+        Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
+      end;
+
+    if Cells[5, ARow] = '3' then // Если строка с механизмом
+      // Выделение жирным ВЫНЕСЕННЫХ из расценки механизмы
+      if AllocateMechanizm(StrToInt(Cells[6, ARow])) then
       begin
         Canvas.Font.Style := Canvas.Font.Style + [fsbold];
         Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
@@ -2607,6 +2639,50 @@ begin
         MessageBox(0, PChar('При получении идентификационных данных материала возникла ошибка:' + sLineBreak +
           sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
+
+    if Name = 'StringGridMechanizms' then
+    try
+      IdInMech := 0;
+      MechId := 0;
+      MechIdCardRate := 0;
+      MechFromRate := False;
+      MechIdForAllocate := 0;
+
+      //На случай если таблица тустая и фокус стоит на шапке таблицы
+      if StringGridMechanizms.Row = 0 then exit;
+
+      if StringGridMechanizms.Cells[12, StringGridMechanizms.Row] = '' then exit;
+
+      with ADOQueryTemp do
+      begin
+        Active := False;
+        SQL.Clear;
+        SQL.Add('SELECT id, mech_id, id_card_rate, from_rate ' +
+          'FROM mechanizmcard_temp WHERE id = :id;');
+        ParamByName('id').Value :=
+          StrToInt(StringGridMechanizms.Cells[12, StringGridMechanizms.Row]);
+        Active := True;
+
+        // ----------------------------------------
+
+        IdInMech := FieldByName('id').AsInteger;
+        MechId := FieldByName('mech_id').AsInteger;
+        MechIdCardRate := FieldByName('id_card_rate').AsInteger;
+
+        if FieldByName('from_rate').AsInteger = 1 then
+        // Если материал ВЫНЕСЕН из расценки
+        begin
+          MechFromRate := True;
+          MechIdForAllocate := FieldByName('id').AsInteger;
+        end;
+
+        Active := False;
+      end;
+    except
+      on E: Exception do
+        MessageBox(0, PChar('При получении идентификационных данных механизма возникла ошибка:' + sLineBreak +
+          sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+    end;
   end;
   // ----------------------------------------
 
@@ -2620,8 +2696,6 @@ begin
         Options := Options + [goEditing] // разрешаем редактирование
       else
         Options := Options - [goEditing]; // запрещаем редактирование
-
-      StringGridRates.Repaint;
     end;
 
     if Name = 'StringGridMechanizms' then
@@ -2629,6 +2703,9 @@ begin
         Options := Options + [goEditing] // разрешаем редактирование
       else
         Options := Options - [goEditing]; // запрещаем редактирование
+
+    //Для отображения связи левой и провой таблицы
+    StringGridRates.Repaint;
   end;
 
   // ----------------------------------------
@@ -2646,8 +2723,7 @@ begin
 
   // -----------------------------------------
 
-  with Sender as TStringGrid do
-    Repaint;
+  with Sender as TStringGrid do Repaint;
 end;
 
 procedure TFormCalculationEstimate.PMAddRatMatMechEquipOwnClick(Sender: TObject);
@@ -3048,6 +3124,28 @@ begin
         end;
 
         if CrossOutMaterial(StrToInt(Cells[14, ARow])) then
+        // Подстветка ВЫНЕСЕННЫХ за расценку материалов
+        begin
+          Canvas.Font.Style := Canvas.Font.Style + [fsStrikeOut];
+          Canvas.FillRect(Rect);
+          Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
+        end;
+      end;
+    end;
+
+    if (Name = 'StringGridMechanizms') then
+    begin
+      if (Cells[12, ARow] <> '') and (ARow > 0) then
+      // Если строка не шапка и в поле с Id есть данные
+      begin
+        if AllocateMechanizm(StrToInt(Cells[12, ARow])) then
+        // Подстветка механизма
+        begin
+          Canvas.Font.Style := Canvas.Font.Style + [fsbold];
+          Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
+        end;
+
+        if CrossOutMechanizm(StrToInt(Cells[12, ARow])) then
         // Подстветка ВЫНЕСЕННЫХ за расценку материалов
         begin
           Canvas.Font.Style := Canvas.Font.Style + [fsStrikeOut];
@@ -4603,15 +4701,15 @@ begin
   SplitterRight1.Visible := False;
   SplitterRight2.Visible := False;
 
-  StringGridMaterials.Align := alNone;
-  StringGridMechanizms.Align := alNone;
-  StringGridEquipments.Align := alNone;
-  StringGridDescription.Align := alNone;
-
   StringGridMaterials.Visible := False;
   StringGridMechanizms.Visible := False;
   StringGridEquipments.Visible := False;
   StringGridDescription.Visible := False;
+
+  StringGridMaterials.Align := alNone;
+  StringGridMechanizms.Align := alNone;
+  StringGridEquipments.Align := alNone;
+  StringGridDescription.Align := alNone;
 
   ImageSplitterRight1.Visible := False;
   ImageSplitterRight2.Visible := False;
@@ -5017,6 +5115,7 @@ begin
   FormMain.AutoWidthColumn(StringGridRates, 3);
 end;
 
+//Проверка, что таблица является пустой(если пустая показывается картинка нет данных)
 procedure TFormCalculationEstimate.TestOnNoData(SG: TStringGrid);
 begin
   // if SG.Cells[0, 1] = '' then
@@ -5207,8 +5306,6 @@ begin
                 AddRowToTableRates(FieldRates);
               end;
 
-              // ----------
-
               with ADOQueryMaterialCard do
               begin
                 // Выводим все неучтённые материалы которые не были заменены
@@ -5290,6 +5387,34 @@ begin
                   Next;
                 end;
               end;
+
+              with ADOQueryMechanizmCard do
+              begin
+                // Выводим вынесенные из расценки механизмов
+                Filtered := False;
+                Filter := 'id_card_rate = ' + IntToStr(ADOQueryCardRates.FieldByName('id').AsInteger) +
+                  ' and from_rate = 1';
+                Filtered := True;
+
+                First;
+
+                while not Eof do
+                begin
+                  with FieldRates do
+                  begin
+                    vRow := '0';
+                    vNumber := FieldByName('mech_code').AsString;
+                    vCount := FieldByName('mech_count').AsFloat;
+                    vNameUnit := FieldByName('mech_unit').AsString;
+                    vDescription := FieldByName('mech_name').AsString;
+                    vTypeAddData := 3;
+                    vId := FieldByName('id').AsInteger;
+                  end;
+                  AddRowToTableRates(FieldRates);
+
+                  Next;
+                end;
+              end;
             except
               on E: Exception do
                 MessageBox(0, PChar('При выводе расценки в таблицу данных возникла ошибка:' + sLineBreak +
@@ -5327,7 +5452,7 @@ begin
               begin
                 i := RecordCount;
                 Filtered := False;
-                Filter := 'id = ' + IntToStr(qrData.FieldByName('id_tables').AsInteger);;
+                Filter := 'id = ' + IntToStr(qrData.FieldByName('id_tables').AsInteger);
                 Filtered := True;
 
                 with FieldRates do
@@ -5837,6 +5962,7 @@ begin
 
   IdInMech := 0;
   MechId := 0;
+  MechIdCardRate := 0;
   MechFromRate := False;
   MechIdForAllocate := 0;
 
@@ -5951,11 +6077,11 @@ begin
           // ----------------------------------------
 
           if vIdCardRate = 0 then
-            Str := 'SELECT id as IdInMech, mech_id, from_rate FROM mechanizmcard_temp ' +
+            Str := 'SELECT id as IdInMech, mech_id, from_rate, id_card_rate FROM mechanizmcard_temp ' +
               'WHERE id = :id;'
           else
             Str := 'SELECT mechanizmcard_temp.id as IdInMech, mech_id, card_rate_temp.id as IdInRate, ' +
-              'rate_id, rate_code, from_rate FROM mechanizmcard_temp, card_rate_temp ' +
+              'rate_id, rate_code, from_rate, id_card_rate FROM mechanizmcard_temp, card_rate_temp ' +
               'WHERE mechanizmcard_temp.id = :id and id_card_rate = card_rate_temp.id;';
 
           // ----------------------------------------
@@ -5970,6 +6096,7 @@ begin
 
           IdInMech := FieldByName('IdInMech').AsInteger;
           MechId := FieldByName('mech_id').AsInteger;
+          MechIdCardRate := FieldByName('id_card_rate').AsInteger;
 
           if FieldByName('from_rate').AsInteger = 1 then
           // Если Механизм ВЫНЕСЕН из расценки
@@ -6041,6 +6168,20 @@ begin
   end;
 end;
 
+function TFormCalculationEstimate.AllocateMechanizm(const vIdInMech: Integer): Boolean;
+begin
+  Result := False;
+  // Нет маханизма для выделения
+  if MechIdForAllocate = 0 then exit;
+
+  // Если vt[fybpv является вынесенным за расценку, то выделеям его в таблицах
+  if MechFromRate and (vIdInMech = MechIdForAllocate) then
+  begin
+    Result := True;
+    Exit;
+  end;
+end;
+
 function TFormCalculationEstimate.AllocateMaterial(const vIdInMat: Integer): Boolean;
 begin
   try
@@ -6100,6 +6241,30 @@ begin
   except
     on E: Exception do
       MessageBox(0, PChar('При зачёркивании вынесенного материала возникла ошибка:' + sLineBreak + sLineBreak
+        + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
+
+function TFormCalculationEstimate.CrossOutMechanizm(const vIdInMech: Integer): Boolean;
+begin
+  Result := False;
+  try
+    with ADOQueryTemp do
+    begin
+      Active := False;
+      SQL.Clear;
+      SQL.Add('SELECT from_rate FROM mechanizmcard_temp WHERE id = :id;');
+      ParamByName('id').AsInteger := vIdInMech;
+      Active := True;
+      if ADOQueryTemp.RecordCount > 0 then
+        if (ADOQueryTemp.FieldByName('from_rate').Value = 1) then
+          Result := True
+        else
+          Result := False;
+    end;
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При зачёркивании вынесенного механизма возникла ошибка:' + sLineBreak + sLineBreak
         + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;

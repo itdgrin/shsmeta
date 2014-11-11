@@ -1479,6 +1479,12 @@
             OnKeyPress = StringGridKeyPress
             OnMouseLeave = StringGridMouseLeaveRight
             OnMouseMove = StringGridMouseMoveRight
+            ColWidths = (
+              64
+              64
+              64
+              64
+              64)
             RowHeights = (
               20
               20)
@@ -2462,7 +2468,7 @@
     Top = 152
     object PMMechFromRates: TMenuItem
       Caption = #1042#1099#1085#1077#1089#1090#1080' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091
-      OnClick = PMMatFromRatesClick
+      OnClick = PMMechFromRatesClick
     end
     object PMMechColumns: TMenuItem
       Caption = #1050#1086#1083#1086#1085#1082#1080
