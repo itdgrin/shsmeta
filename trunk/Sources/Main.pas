@@ -318,11 +318,11 @@ var
   PS: TProgramSettings;
   FMEndTables: Char;
 
-  function MyFloatToStr(Value: Extended): string;
-  function MyStrToFloat(Value: string): Extended;
-  function MyStrToFloatDef(Value: string; DefRes: Extended): Extended;
-  function MyCurrToStr(Value: Currency): string;
-  function MyStrToCurr(Value: string): Currency;
+function MyFloatToStr(Value: Extended): string;
+function MyStrToFloat(Value: string): Extended;
+function MyStrToFloatDef(Value: string; DefRes: Extended): Extended;
+function MyCurrToStr(Value: Currency): string;
+function MyStrToCurr(Value: string): Currency;
 
 implementation
 
@@ -746,7 +746,8 @@ procedure TFormMain.N61Click(Sender: TObject);
 begin
   if (not Assigned(fKC6Journal)) then
     fKC6Journal := TfKC6Journal.Create(Self);
-  fKC6Journal.LocateObject(FormObjectsAndEstimates.getCurObject);
+  if Assigned(FormObjectsAndEstimates) then
+    fKC6Journal.LocateObject(FormObjectsAndEstimates.getCurObject);
   fKC6Journal.Show;
 end;
 
@@ -1133,7 +1134,8 @@ begin
 end;
 
 function MyFloatToStr(Value: Extended): string;
-var  DS: Char;
+var
+  DS: Char;
 begin
   DS := FormatSettings.DecimalSeparator;
   try
@@ -1145,7 +1147,8 @@ begin
 end;
 
 function MyStrToFloat(Value: string): Extended;
-var  DS: Char;
+var
+  DS: Char;
 begin
   DS := FormatSettings.DecimalSeparator;
   try
@@ -1161,7 +1164,8 @@ begin
 end;
 
 function MyCurrToStr(Value: Currency): string;
-var  DS: Char;
+var
+  DS: Char;
 begin
   DS := FormatSettings.DecimalSeparator;
   try
@@ -1173,7 +1177,8 @@ begin
 end;
 
 function MyStrToCurr(Value: string): Currency;
-var  DS: Char;
+var
+  DS: Char;
 begin
   DS := FormatSettings.DecimalSeparator;
   try
@@ -1189,7 +1194,8 @@ begin
 end;
 
 function MyStrToFloatDef(Value: string; DefRes: Extended): Extended;
-var  DS: Char;
+var
+  DS: Char;
 begin
   DS := FormatSettings.DecimalSeparator;
   try
