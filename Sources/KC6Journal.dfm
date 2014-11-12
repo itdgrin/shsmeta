@@ -52,7 +52,7 @@ object fKC6Journal: TfKC6Journal
         ExplicitTop = 281
         ExplicitWidth = 591
       end
-      object JvDBTreeView1: TJvDBTreeView
+      object tvEstimates: TJvDBTreeView
         Left = 0
         Top = 0
         Width = 717
@@ -68,7 +68,7 @@ object fKC6Journal: TfKC6Journal
         Indent = 19
         Align = alTop
         TabOrder = 0
-        OnClick = JvDBTreeView1Click
+        OnClick = tvEstimatesClick
         RowSelect = True
         Mirror = False
       end
@@ -464,7 +464,46 @@ object fKC6Journal: TfKC6Journal
       'data_estimate.ID_TYPE_DATA = 1 AND'
       'card_rate.ID = data_estimate.ID_TABLES AND'
       'materialcard.ID_CARD_RATE = card_rate.ID AND'
-      '(materialcard.CONSIDERED = 0 OR materialcard.FROM_RATE = 1)AND'
+      'materialcard.CONSIDERED = 0 AND'
+      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
+        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
+        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
+        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
+      
+        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
+        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
+      ')'
+      ''
+      'UNION ALL'
+      ''
+      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042#1067#1053#1045#1057#1045#1053#1053#1067#1045' '#1047#1040' '#1056#1040#1057#1062#1045#1053#1050#1059'*/'
+      'SELECT '
+      '  ID_ESTIMATE,'
+      '  2 as ID_TYPE_DATA,'
+      '  materialcard.ID AS ID_TABLES,'
+      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      
+        '  COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id' +
+        '=data_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
+      
+        '  COALESCE((COALESCE(MAT_COUNT, 0) - COALESCE((SELECT SUM(MAT_CO' +
+        'UNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)' +
+        '), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
+      'FROM '
+      '  data_estimate, card_rate, materialcard'
+      'WHERE '
+      'data_estimate.ID_TYPE_DATA = 1 AND'
+      'card_rate.ID = data_estimate.ID_TABLES AND'
+      'materialcard.ID_CARD_RATE = card_rate.ID AND'
+      'materialcard.FROM_RATE = 1 AND'
       '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +

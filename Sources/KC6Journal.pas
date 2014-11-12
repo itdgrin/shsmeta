@@ -22,7 +22,7 @@ type
     cbbMode: TComboBox;
     rbRates: TRadioButton;
     rbPTM: TRadioButton;
-    JvDBTreeView1: TJvDBTreeView;
+    tvEstimates: TJvDBTreeView;
     qrTreeData: TFDQuery;
     dsTreeData: TDataSource;
     spl1: TSplitter;
@@ -56,7 +56,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure cbbFromMonthChange(Sender: TObject);
     procedure qrObjectAfterScroll(DataSet: TDataSet);
-    procedure JvDBTreeView1Click(Sender: TObject);
+    procedure tvEstimatesClick(Sender: TObject);
     procedure qrDetailCalcFields(DataSet: TDataSet);
   private
     procedure UpdateNumPP;
@@ -278,7 +278,35 @@ begin
     'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
     'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
     'materialcard.ID_CARD_RATE = card_rate.ID AND'#13 +
-    '(materialcard.CONSIDERED = 0 OR materialcard.FROM_RATE = 1) AND'#13 +
+    'materialcard.CONSIDERED = 0 AND'#13 +
+    '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
+    ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+    ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
+    '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
+    ' ) /* ПТМ уровень */'#13 +
+    ')'#13 +
+    'UNION ALL'#13 +
+    '/* МАТЕРИАЛЫ, ВЫНЕСЕННЫЕ ЗА РАСЦЕНКУ*/'#13 +
+    'SELECT'#13 +
+    '  ID_ESTIMATE,'#13 +
+    '  2 AS ID_TYPE_DATA,'#13 +
+    '  1 AS INCITERATOR,'#13 +
+    '  0 AS ITERATOR,'#13 +
+    '  materialcard.ID AS ID_TABLES,'#13 +
+    '  MAT_CODE AS CODE, /* Обоснование*/'#13 +
+    '  MAT_NAME AS NAME, /* Наименование */'#13 +
+    '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
+    rateMatCNT +
+    rateMatCNTDone +
+    rateMatCNTOut +
+    rateMatFields +
+    'FROM'#13 +
+    '  data_estimate, card_rate, materialcard'#13 +
+    'WHERE'#13 +
+    'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
+    'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
+    'materialcard.ID_CARD_RATE = card_rate.ID AND'#13 +
+    'materialcard.FROM_RATE = 1 AND'#13 +
     '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
     ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
     ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
@@ -395,7 +423,7 @@ begin
   FixDBGridColumnsWidth(dbgrd2);
 end;
 
-procedure TfKC6Journal.JvDBTreeView1Click(Sender: TObject);
+procedure TfKC6Journal.tvEstimatesClick(Sender: TObject);
 begin
   UpdateNumPP;
 end;
