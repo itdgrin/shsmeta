@@ -91,7 +91,9 @@ uses
   Tools in 'Tools.pas',
   Vcl.Themes,
   Vcl.Styles,
-  KC6Journal in 'KC6Journal.pas' {fKC6Journal};
+  KC6Journal in 'KC6Journal.pas' {fKC6Journal},
+  CalculationEstimateSummaryCalculations in 'CalculationEstimateSummaryCalculations.pas' {frCalculationEstimateSummaryCalculations: TFrame},
+  CalculationEstimateSSR in 'CalculationEstimateSSR.pas' {frCalculationEstimateSSR: TFrame};
 
 var
   H: Thandle;

@@ -87,15 +87,7 @@ type
     LabelOXROPR: TLabel;
     ComboBoxOXROPR: TComboBox;
     PanelSSR: TPanel;
-    Splitter5: TSplitter;
-    PanelTop: TPanel;
-    Label8: TLabel;
-    Label9: TLabel;
-    Edit10: TEdit;
-    Memo3: TMemo;
-    DBGrid5: TDBGrid;
     PanelSummaryCalculations: TPanel;
-    DBGridButtonSummaryCalculation: TDBGrid;
     PanelData: TPanel;
     Label1: TLabel;
     Label6: TLabel;
