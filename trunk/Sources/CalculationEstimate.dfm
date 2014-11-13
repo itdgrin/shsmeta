@@ -45,8 +45,8 @@
       OnClick = SpeedButtonLocalEstimateClick
     end
     object SpeedButtonSummaryCalculation: TSpeedButton
-      Left = 157
-      Top = 1
+      Left = 154
+      Top = 2
       Width = 150
       Height = 25
       GroupIndex = 1
@@ -1646,8 +1646,8 @@
       Height = 53
       Align = alClient
       TabOrder = 0
-      ExplicitLeft = -350
-      ExplicitTop = -289
+      ExplicitWidth = 100
+      ExplicitHeight = 53
       inherited dbgrdButtonSummaryCalculation: TDBGrid
         Width = 100
         Height = 53
@@ -1952,30 +1952,34 @@
     Caption = 'PanelSSR'
     ParentBackground = False
     TabOrder = 3
-    inline frSSR1: TfrCalculationEstimateSSR
+    inline frSSR: TfrCalculationEstimateSSR
       Left = 0
       Top = 0
       Width = 95
       Height = 53
       Align = alClient
       TabOrder = 0
-      ExplicitLeft = -499
-      ExplicitTop = -331
+      ExplicitWidth = 95
+      ExplicitHeight = 53
       inherited pnlSSR: TPanel
         Width = 95
         Height = 53
+        ExplicitWidth = 95
+        ExplicitHeight = 53
         inherited spl1: TSplitter
           Width = 95
+          ExplicitWidth = 95
         end
         inherited pnlTop: TPanel
           Width = 95
+          ExplicitWidth = 95
           inherited edt1: TEdit
             Width = 0
-            ExplicitWidth = 461
+            ExplicitWidth = 0
           end
           inherited mmo1: TMemo
             Width = 0
-            ExplicitWidth = 424
+            ExplicitWidth = 0
           end
         end
         inherited dbgrd1: TDBGrid
