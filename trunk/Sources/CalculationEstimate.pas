@@ -9,7 +9,8 @@ uses
   IniFiles, ImgList, Clipbrd, Math, pngimage, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls,
+  CalculationEstimateSSR, CalculationEstimateSummaryCalculations;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -238,6 +239,8 @@ type
     ADOQueryMechanizmCard: TFDQuery;
     Memo1: TMemo;
     StringGridMechanizms: TStringGrid;
+    frSummaryCalculations: TfrCalculationEstimateSummaryCalculations;
+    frSSR1: TfrCalculationEstimateSSR;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -807,7 +810,7 @@ begin
     PanelSummaryCalculations.Visible := True;
     PanelSSR.Visible := False;
 
-    // -----------------------------------------
+     // -----------------------------------------
 
     // Õ¿—“–Œ… ¿ ¬»ƒ»ÃŒ—“» Õ»∆Õ»’ œ¿Õ≈À≈… —  ÕŒœ ¿Ã»
 

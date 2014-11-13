@@ -34,7 +34,6 @@
     ParentCtl3D = False
     TabOrder = 0
     OnResize = PanelTopMenuResize
-    ExplicitWidth = 951
     object SpeedButtonLocalEstimate: TSpeedButton
       Left = 1
       Top = 1
@@ -55,8 +54,8 @@
       OnClick = SpeedButtonSummaryCalculationClick
     end
     object SpeedButtonSSR: TSpeedButton
-      Left = 313
-      Top = 1
+      Left = 308
+      Top = 2
       Width = 150
       Height = 25
       GroupIndex = 1
@@ -145,7 +144,6 @@
     ParentBackground = False
     TabOrder = 1
     Visible = False
-    ExplicitWidth = 951
     object PanelButtonsLocalEstimate: TPanel
       Left = 0
       Top = 0
@@ -1633,14 +1631,28 @@
     end
   end
   object PanelSummaryCalculations: TPanel
-    Left = 157
-    Top = 6
+    Left = 290
+    Top = 108
     Width = 100
-    Height = 15
+    Height = 53
     BevelOuter = bvNone
     Caption = 'PanelSummaryCalculations'
     ParentBackground = False
     TabOrder = 4
+    inline frSummaryCalculations: TfrCalculationEstimateSummaryCalculations
+      Left = 0
+      Top = 0
+      Width = 100
+      Height = 53
+      Align = alClient
+      TabOrder = 0
+      ExplicitLeft = -350
+      ExplicitTop = -289
+      inherited dbgrdButtonSummaryCalculation: TDBGrid
+        Width = 100
+        Height = 53
+      end
+    end
   end
   object PanelData: TPanel
     Left = 0
@@ -1651,7 +1663,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 5
-    ExplicitWidth = 951
     DesignSize = (
       921
       25)
@@ -1712,7 +1723,6 @@
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 2
-      ExplicitWidth = 423
     end
     object PanelCalculationYesNo: TPanel
       Tag = 1
@@ -1727,7 +1737,6 @@
       ParentBackground = False
       TabOrder = 3
       OnClick = PanelCalculationYesNoClick
-      ExplicitLeft = 807
     end
   end
   object PanelEstimate: TPanel
@@ -1739,7 +1748,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 6
-    ExplicitWidth = 951
     DesignSize = (
       921
       25)
@@ -1785,7 +1793,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 155
     end
   end
   object PanelObject: TPanel
@@ -1798,7 +1805,6 @@
     ParentBackground = False
     TabOrder = 7
     OnResize = PanelObjectResize
-    ExplicitWidth = 951
     DesignSize = (
       921
       25)
@@ -1862,7 +1868,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 155
     end
     object EditNumberContract: TEdit
       Left = 665
@@ -1873,7 +1878,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 1
-      ExplicitLeft = 695
     end
     object EditDateContract: TEdit
       Left = 848
@@ -1884,7 +1888,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 2
-      ExplicitLeft = 878
     end
   end
   object PanelHint: TPanel
@@ -1941,18 +1944,49 @@
     end
   end
   object PanelSSR: TPanel
-    Left = 324
-    Top = 8
-    Width = 77
-    Height = 13
+    Left = 407
+    Top = 108
+    Width = 95
+    Height = 53
     BevelOuter = bvNone
     Caption = 'PanelSSR'
     ParentBackground = False
     TabOrder = 3
+    inline frSSR1: TfrCalculationEstimateSSR
+      Left = 0
+      Top = 0
+      Width = 95
+      Height = 53
+      Align = alClient
+      TabOrder = 0
+      ExplicitLeft = -499
+      ExplicitTop = -331
+      inherited pnlSSR: TPanel
+        Width = 95
+        Height = 53
+        inherited spl1: TSplitter
+          Width = 95
+        end
+        inherited pnlTop: TPanel
+          Width = 95
+          inherited edt1: TEdit
+            Width = 0
+            ExplicitWidth = 461
+          end
+          inherited mmo1: TMemo
+            Width = 0
+            ExplicitWidth = 424
+          end
+        end
+        inherited dbgrd1: TDBGrid
+          Width = 95
+        end
+      end
+    end
   end
   object PopupMenuButtonSummaryCalculation: TPopupMenu
-    Left = 328
-    Top = 160
+    Left = 256
+    Top = 152
     object N1: TMenuItem
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072
     end
@@ -1966,8 +2000,8 @@
   end
   object PopupMenuSSRButtonAdd: TPopupMenu
     MenuAnimation = [maBottomToTop]
-    Left = 336
-    Top = 104
+    Left = 168
+    Top = 120
     object N4: TMenuItem
       Caption = #1054#1073#1098#1077#1082#1090
     end
@@ -1977,8 +2011,8 @@
   end
   object PopupMenuSSRButtonTax: TPopupMenu
     MenuAnimation = [maBottomToTop]
-    Left = 336
-    Top = 136
+    Left = 240
+    Top = 104
     object N6: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     end
@@ -1988,7 +2022,7 @@
   end
   object PopupMenuTableLeft: TPopupMenu
     OnPopup = PopupMenuTableLeftPopup
-    Left = 40
+    Left = 24
     Top = 112
     object PMAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
@@ -2178,8 +2212,8 @@
   end
   object PopupMenuMaterials: TPopupMenu
     OnPopup = PopupMenuMaterialsPopup
-    Left = 168
-    Top = 104
+    Left = 96
+    Top = 96
     object PMMatEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMMatEditClick
@@ -2237,7 +2271,7 @@
   end
   object PopupMenuCoef: TPopupMenu
     OnPopup = PopupMenuCoefPopup
-    Left = 40
+    Left = 24
     Top = 160
     object PopupMenuCoefCopy: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
@@ -2267,8 +2301,8 @@
     end
   end
   object PopupMenuMechanizms: TPopupMenu
-    Left = 168
-    Top = 152
+    Left = 88
+    Top = 144
     object PMMechFromRates: TMenuItem
       Caption = #1042#1099#1085#1077#1089#1090#1080' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091
       OnClick = PMMechFromRatesClick
@@ -2279,8 +2313,8 @@
     end
   end
   object PopupMenuEquipments: TPopupMenu
-    Left = 168
-    Top = 200
+    Left = 160
+    Top = 168
     object PMEqFromRates: TMenuItem
       Caption = #1042#1099#1085#1077#1089#1090#1080' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091
       OnClick = PMMatFromRatesClick
