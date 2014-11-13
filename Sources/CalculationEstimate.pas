@@ -240,7 +240,7 @@ type
     Memo1: TMemo;
     StringGridMechanizms: TStringGrid;
     frSummaryCalculations: TfrCalculationEstimateSummaryCalculations;
-    frSSR1: TfrCalculationEstimateSSR;
+    frSSR: TfrCalculationEstimateSSR;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -810,6 +810,9 @@ begin
     PanelSummaryCalculations.Visible := True;
     PanelSSR.Visible := False;
 
+    //Инициализация заполнения фрейма данными
+    frSummaryCalculations.LoadData(IdEstimate);
+
      // -----------------------------------------
 
     // НАСТРОЙКА ВИДИМОСТИ НИЖНИХ ПАНЕЛЕЙ С КНОПКАМИ
@@ -869,6 +872,9 @@ begin
     PanelButtonsLocalEstimate.Visible := False;
     PanelButtonsSummaryCalculations.Visible := False;
     PanelButtonsSSR.Visible := True;
+
+    //Инициализация заполнения фрейма данными
+    frSSR.LoadData(IdEstimate);
 
     PanelButtonsSSR.Align := alClient;
 
