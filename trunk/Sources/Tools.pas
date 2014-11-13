@@ -10,6 +10,7 @@ procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
 
 implementation
 
+//Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
 const
   MIN_WHIDTH = 10;
@@ -55,6 +56,7 @@ begin
   end;
 end;
 
+//Установка стиля таблицы из формы настроек
 procedure LoadDBGridSettings(const DBGrid: TDBGrid);
 begin
   DBGrid.FixedColor := PS.BackgroundHead;
@@ -94,6 +96,7 @@ begin
   }
 end;
 
+//Процедури рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
 var
   DrawFlags: integer;

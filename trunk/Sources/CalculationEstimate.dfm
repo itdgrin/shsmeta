@@ -3,7 +3,7 @@
   Top = 0
   Caption = #1057#1084#1077#1090#1072
   ClientHeight = 564
-  ClientWidth = 951
+  ClientWidth = 921
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -25,7 +25,7 @@
   object PanelTopMenu: TPanel
     Left = 0
     Top = 0
-    Width = 951
+    Width = 921
     Height = 27
     Align = alTop
     BevelOuter = bvNone
@@ -34,6 +34,7 @@
     ParentCtl3D = False
     TabOrder = 0
     OnResize = PanelTopMenuResize
+    ExplicitWidth = 951
     object SpeedButtonLocalEstimate: TSpeedButton
       Left = 1
       Top = 1
@@ -138,12 +139,13 @@
   object PanelBottomButtons: TPanel
     Left = 0
     Top = 535
-    Width = 951
+    Width = 921
     Height = 29
     Align = alBottom
     ParentBackground = False
     TabOrder = 1
     Visible = False
+    ExplicitWidth = 951
     object PanelButtonsLocalEstimate: TPanel
       Left = 0
       Top = 0
@@ -1630,245 +1632,28 @@
       end
     end
   end
-  object PanelSSR: TPanel
-    Left = 1000
-    Top = 250
-    Width = 912
-    Height = 250
-    BevelOuter = bvNone
-    ParentBackground = False
-    TabOrder = 3
-    object Splitter5: TSplitter
-      Left = 0
-      Top = 65
-      Width = 912
-      Height = 5
-      Cursor = crVSplit
-      Align = alTop
-    end
-    object PanelTop: TPanel
-      Left = 0
-      Top = 0
-      Width = 912
-      Height = 65
-      Align = alTop
-      BevelOuter = bvNone
-      ParentBackground = False
-      TabOrder = 0
-      DesignSize = (
-        912
-        65)
-      object Label8: TLabel
-        Left = 8
-        Top = 6
-        Width = 115
-        Height = 13
-        Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1089#1090#1088#1086#1082#1080':'
-      end
-      object Label9: TLabel
-        Left = 8
-        Top = 39
-        Width = 152
-        Height = 13
-        Anchors = [akLeft]
-        Caption = #1060#1086#1088#1084#1091#1083#1072' '#1076#1083#1103' '#1088#1072#1089#1095#1105#1090#1072' '#1089#1090#1088#1086#1082#1080':'
-      end
-      object Edit10: TEdit
-        Left = 129
-        Top = 2
-        Width = 779
-        Height = 21
-        Anchors = [akLeft, akTop, akRight]
-        TabOrder = 0
-      end
-      object Memo3: TMemo
-        Left = 166
-        Top = 29
-        Width = 742
-        Height = 35
-        Anchors = [akLeft, akTop, akRight, akBottom]
-        TabOrder = 1
-      end
-    end
-    object DBGrid5: TDBGrid
-      Left = 0
-      Top = 70
-      Width = 912
-      Height = 180
-      Align = alClient
-      TabOrder = 1
-      TitleFont.Charset = DEFAULT_CHARSET
-      TitleFont.Color = clWindowText
-      TitleFont.Height = -11
-      TitleFont.Name = 'Tahoma'
-      TitleFont.Style = []
-      Columns = <
-        item
-          Expanded = False
-          Title.Caption = #8470' '#1089#1090#1088#1086#1082#1080
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = '%(R)'
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1050#1092
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1050#1092
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #8470
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1047#1072#1088#1087#1083#1072#1090#1072
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1069#1052#1080#1052
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1074' '#1090'.'#1095'.'#1079#1072#1088'. '#1084#1072#1096'.'
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1054#1061#1056' '#1080' '#1054#1055#1056
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1055#1083#1072#1085' '#1087#1088#1080#1073#1099#1083#1080
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
-          Visible = True
-        end>
-    end
-  end
   object PanelSummaryCalculations: TPanel
-    Left = 1000
-    Top = 250
-    Width = 912
-    Height = 200
+    Left = 157
+    Top = 6
+    Width = 100
+    Height = 15
     BevelOuter = bvNone
+    Caption = 'PanelSummaryCalculations'
     ParentBackground = False
     TabOrder = 4
-    object DBGridButtonSummaryCalculation: TDBGrid
-      Left = 0
-      Top = 0
-      Width = 912
-      Height = 200
-      Align = alClient
-      PopupMenu = PopupMenuButtonSummaryCalculation
-      TabOrder = 0
-      TitleFont.Charset = DEFAULT_CHARSET
-      TitleFont.Color = clWindowText
-      TitleFont.Height = -11
-      TitleFont.Name = 'Tahoma'
-      TitleFont.Style = []
-      Columns = <
-        item
-          Expanded = False
-          Title.Caption = #1058#1080#1087
-          Visible = True
-        end
-        item
-          Expanded = False
-          Width = 60
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1053#1086#1084#1077#1088' '#1080' '#1085#1072#1079#1074#1072#1085#1080#1077
-          Width = 100
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1054#1073#1098#1105#1084' '#1055#1058#1052
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1042#1089#1077#1075#1086
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1047#1072#1088#1087#1083#1072#1090#1072
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1058#1088#1091#1076#1086#1105#1084#1082#1086#1089#1090#1100
-          Width = 100
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1069#1052#1080#1052
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1069#1055' '#1084#1072#1096'.'
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1052#1072#1090#1077#1088#1080#1072#1083
-          Width = 100
-          Visible = True
-        end
-        item
-          Expanded = False
-          Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-          Width = 100
-          Visible = True
-        end>
-    end
   end
   object PanelData: TPanel
     Left = 0
     Top = 77
-    Width = 951
+    Width = 921
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 5
+    ExplicitWidth = 951
     DesignSize = (
-      951
+      921
       25)
     object Label1: TLabel
       Left = 8
@@ -1923,14 +1708,15 @@
     object Edit4: TEdit
       Left = 378
       Top = 2
-      Width = 423
+      Width = 393
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 2
+      ExplicitWidth = 423
     end
     object PanelCalculationYesNo: TPanel
       Tag = 1
-      Left = 807
+      Left = 777
       Top = 1
       Width = 137
       Height = 23
@@ -1941,19 +1727,21 @@
       ParentBackground = False
       TabOrder = 3
       OnClick = PanelCalculationYesNoClick
+      ExplicitLeft = 807
     end
   end
   object PanelEstimate: TPanel
     Left = 0
     Top = 52
-    Width = 951
+    Width = 921
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 6
+    ExplicitWidth = 951
     DesignSize = (
-      951
+      921
       25)
     object LabelEstimate: TLabel
       Left = 17
@@ -1991,26 +1779,28 @@
     object EditNameEstimate: TEdit
       Left = 125
       Top = 2
-      Width = 155
+      Width = 125
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
+      ExplicitWidth = 155
     end
   end
   object PanelObject: TPanel
     Left = 0
     Top = 27
-    Width = 951
+    Width = 921
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 7
     OnResize = PanelObjectResize
+    ExplicitWidth = 951
     DesignSize = (
-      951
+      921
       25)
     object LabelObject: TLabel
       Left = 8
@@ -2032,7 +1822,7 @@
       OnMouseLeave = LabelMouseLeave
     end
     object LabelNumberContract: TLabel
-      Left = 621
+      Left = 591
       Top = 6
       Width = 68
       Height = 13
@@ -2041,7 +1831,7 @@
       ExplicitLeft = 614
     end
     object LabelDateContract: TLabel
-      Left = 791
+      Left = 761
       Top = 6
       Width = 81
       Height = 13
@@ -2066,15 +1856,16 @@
     object EditNameObject: TEdit
       Left = 125
       Top = 2
-      Width = 155
+      Width = 125
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
+      ExplicitWidth = 155
     end
     object EditNumberContract: TEdit
-      Left = 695
+      Left = 665
       Top = 2
       Width = 90
       Height = 21
@@ -2082,9 +1873,10 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 1
+      ExplicitLeft = 695
     end
     object EditDateContract: TEdit
-      Left = 878
+      Left = 848
       Top = 2
       Width = 70
       Height = 21
@@ -2092,6 +1884,7 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 2
+      ExplicitLeft = 878
     end
   end
   object PanelHint: TPanel
@@ -2146,6 +1939,16 @@
       Shape = bsTopLine
       ExplicitTop = 0
     end
+  end
+  object PanelSSR: TPanel
+    Left = 324
+    Top = 8
+    Width = 77
+    Height = 13
+    BevelOuter = bvNone
+    Caption = 'PanelSSR'
+    ParentBackground = False
+    TabOrder = 3
   end
   object PopupMenuButtonSummaryCalculation: TPopupMenu
     Left = 328
