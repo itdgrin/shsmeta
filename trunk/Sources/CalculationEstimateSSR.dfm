@@ -13,10 +13,6 @@ object frCalculationEstimateSSR: TfrCalculationEstimateSSR
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 0
-    ExplicitLeft = -592
-    ExplicitTop = -10
-    ExplicitWidth = 912
-    ExplicitHeight = 250
     object spl1: TSplitter
       Left = 0
       Top = 65
@@ -35,8 +31,6 @@ object frCalculationEstimateSSR: TfrCalculationEstimateSSR
       BevelOuter = bvNone
       ParentBackground = False
       TabOrder = 0
-      ExplicitTop = 10
-      ExplicitWidth = 912
       DesignSize = (
         594
         65)
@@ -62,7 +56,6 @@ object frCalculationEstimateSSR: TfrCalculationEstimateSSR
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 0
-        ExplicitWidth = 779
       end
       object mmo1: TMemo
         Left = 166
@@ -71,7 +64,6 @@ object frCalculationEstimateSSR: TfrCalculationEstimateSSR
         Height = 35
         Anchors = [akLeft, akTop, akRight, akBottom]
         TabOrder = 1
-        ExplicitWidth = 742
       end
     end
     object dbgrd1: TDBGrid

@@ -12,11 +12,22 @@ type
   private
     { Private declarations }
   public
-    { Public declarations }
+    function LoadData(const Args: Variant): Boolean;
   end;
 
 implementation
 
 {$R *.dfm}
+{ TfrCalculationEstimateSummaryCalculations }
+
+function TfrCalculationEstimateSummaryCalculations.LoadData(const Args: Variant): Boolean;
+begin
+  Result := True;
+  try
+
+  except
+    Result := False;
+  end;
+end;
 
 end.
