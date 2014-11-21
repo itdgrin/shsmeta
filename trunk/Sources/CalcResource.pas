@@ -6,7 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls;
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
+  Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid;
 
 type
   TfCalcResource = class(TForm)
@@ -25,6 +26,28 @@ type
     lbl3: TLabel;
     lbl4: TLabel;
     lbl5: TLabel;
+    pnlMatTop: TPanel;
+    lbl6: TLabel;
+    cbbFromMonth: TComboBox;
+    seFromYear: TSpinEdit;
+    chk1: TCheckBox;
+    edt1: TEdit;
+    edt2: TEdit;
+    pmMat: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    cbb1: TComboBox;
+    pnlMatClient: TPanel;
+    pnlMatFooter: TPanel;
+    JvDBGrid2: TJvDBGrid;
+    pnlMatBott: TPanel;
+    JvDBGrid1: TJvDBGrid;
+    dbmmo1: TDBMemo;
+    spl1: TSplitter;
+    spl2: TSplitter;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
