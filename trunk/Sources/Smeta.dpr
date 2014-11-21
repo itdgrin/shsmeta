@@ -93,7 +93,8 @@ uses
   Vcl.Styles,
   KC6Journal in 'KC6Journal.pas' {fKC6Journal},
   CalculationEstimateSummaryCalculations in 'CalculationEstimateSummaryCalculations.pas' {frCalculationEstimateSummaryCalculations: TFrame},
-  CalculationEstimateSSR in 'CalculationEstimateSSR.pas' {frCalculationEstimateSSR: TFrame};
+  CalculationEstimateSSR in 'CalculationEstimateSSR.pas' {frCalculationEstimateSSR: TFrame},
+  CalcResource in 'CalcResource.pas' {fCalcResource};
 
 var
   H: Thandle;

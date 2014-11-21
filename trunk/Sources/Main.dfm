@@ -3,7 +3,7 @@
   Top = 0
   Caption = #1056#1072#1089#1095#1105#1090' '#1089#1084#1077#1090#1099
   ClientHeight = 461
-  ClientWidth = 848
+  ClientWidth = 593
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,7 +24,7 @@
   object PanelOpenWindows: TPanel
     Left = 0
     Top = 434
-    Width = 848
+    Width = 593
     Height = 27
     Hint = #1055#1072#1085#1077#1083#1100' '#1086#1090#1082#1088#1099#1090#1099#1093' '#1086#1082#1086#1085
     Align = alBottom
@@ -38,7 +38,7 @@
   object PanelCover: TPanel
     Left = 0
     Top = 0
-    Width = 848
+    Width = 593
     Height = 434
     Align = alClient
     BevelOuter = bvNone
@@ -294,6 +294,10 @@
     object N61: TMenuItem
       Caption = #1046#1091#1088#1085#1072#1083' '#1050#1057'-6'
       OnClick = N61Click
+    end
+    object N2: TMenuItem
+      Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074
+      OnClick = N2Click
     end
   end
   object TimerCover: TTimer

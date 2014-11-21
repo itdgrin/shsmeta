@@ -74,6 +74,7 @@ type
     MenuListsÑategoriesObjects: TMenuItem;
     MenuListsSeparator: TMenuItem;
     N61: TMenuItem;
+    N2: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -165,6 +166,7 @@ type
     procedure MenuListsIndexesChangeCostClick(Sender: TObject);
     procedure MenuListsÑategoriesObjectsClick(Sender: TObject);
     procedure N61Click(Sender: TObject);
+    procedure N2Click(Sender: TObject);
 
   private
     CountOpenWindows: Integer;
@@ -331,7 +333,7 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump, Tariff
   HelpC5, CatalogSSR, OXRandOPR, WinterPrice, DataTransfer, CardPTM, CalculationSettings,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData, PricesReferenceData,
   AdditionData, Materials, PartsEstimates, SetCoefficients, Organizations, SectionsEstimates, TypesWorks,
-  TypesActs, IndexesChangeCost, CategoriesObjects, KC6Journal;
+  TypesActs, IndexesChangeCost, CategoriesObjects, KC6Journal, CalcResource;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -705,6 +707,15 @@ begin
 
   // Çàêðûâàåì ôîðìó îæèäàíèÿ
   FormWaiting.Close;
+end;
+
+procedure TFormMain.N2Click(Sender: TObject);
+begin
+  if (not Assigned(fCalcResource)) then
+    fCalcResource := TfCalcResource.Create(Self);
+  if Assigned(FormObjectsAndEstimates) then
+    fCalcResource.LocateObject(FormObjectsAndEstimates.getCurObject);
+  fCalcResource.Show;
 end;
 
 procedure TFormMain.N13Click(Sender: TObject);
