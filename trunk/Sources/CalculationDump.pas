@@ -118,7 +118,7 @@ begin
     // vClas := EditMass.Text;
   end;
 
-  FormCalculationEstimate.AddRowToTableRates(FieldRates);
+ // FormCalculationEstimate.AddRowToTableRates(FieldRates);
 
   Close;
 end;
