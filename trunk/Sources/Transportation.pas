@@ -109,7 +109,7 @@ begin
     // vClas := StringGrid.Row;
   end;
 
-  FormCalculationEstimate.AddRowToTableRates(FieldRates);
+ // FormCalculationEstimate.AddRowToTableRates(FieldRates);
 
   Close;
 end;
