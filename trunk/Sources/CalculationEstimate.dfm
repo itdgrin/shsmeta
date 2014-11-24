@@ -430,11 +430,12 @@
         AutoSize = True
       end
       object SplitterCenter: TSplitter
-        Left = 425
+        Left = 361
         Top = 25
         Width = 5
         Height = 199
-        ExplicitHeight = 204
+        ExplicitLeft = 407
+        ExplicitTop = 29
       end
       object PanelTopClient: TPanel
         Left = 0
@@ -539,14 +540,13 @@
       object PanelClientLeft: TPanel
         Left = 0
         Top = 25
-        Width = 425
+        Width = 361
         Height = 199
         Align = alLeft
         BevelOuter = bvNone
         ParentBackground = False
         ShowCaption = False
         TabOrder = 1
-        OnResize = PanelClientLeftResize
         object ImageSplitterLeft: TImage
           Left = 313
           Top = 40
@@ -558,66 +558,86 @@
         object SplitterLeft: TSplitter
           Left = 0
           Top = 155
-          Width = 425
+          Width = 361
           Height = 5
           Cursor = crVSplit
           Align = alBottom
           ResizeStyle = rsUpdate
-          OnMoved = SplitterLeftMoved
           ExplicitTop = 108
+          ExplicitWidth = 425
         end
-        object StringGridRates: TStringGrid
+        object Memo1: TMemo
+          Left = 0
+          Top = 160
+          Width = 361
+          Height = 39
+          Align = alBottom
+          Lines.Strings = (
+            'Memo1')
+          TabOrder = 0
+        end
+        object dbgrdRates: TDBGrid
           Left = 0
           Top = 0
-          Width = 425
+          Width = 361
           Height = 155
           Align = alClient
-          DefaultRowHeight = 20
-          DefaultDrawing = False
+          DataSource = dsRates
+          DrawingStyle = gdsClassic
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goThumbTracking]
           ParentFont = False
           PopupMenu = PopupMenuTableLeft
-          TabOrder = 0
-          OnClick = StringGridRatesClick
-          OnDrawCell = StringGridRatesDrawCell
-          OnEnter = StringGridRatesEnter
-          OnKeyDown = StringGridRatesKeyDown
-          OnKeyPress = StringGridRatesKeyPress
-          OnMouseLeave = StringGridMouseLeaveRight
-          OnMouseMove = StringGridMouseMoveRight
-          ColWidths = (
-            66
-            71
-            64
-            64
-            64)
-          RowHeights = (
-            20
-            20
-            20
-            20
-            20)
-        end
-        object Memo1: TMemo
-          Left = 0
-          Top = 160
-          Width = 425
-          Height = 39
-          Align = alBottom
-          Lines.Strings = (
-            'Memo1')
           TabOrder = 1
+          TitleFont.Charset = DEFAULT_CHARSET
+          TitleFont.Color = clWindowText
+          TitleFont.Height = -11
+          TitleFont.Name = 'Tahoma'
+          TitleFont.Style = []
+          OnDrawColumnCell = dbgrdRatesDrawColumnCell
+          Columns = <
+            item
+              Expanded = False
+              FieldName = 'NUM'
+              ReadOnly = True
+              Title.Alignment = taCenter
+              Title.Caption = #8470' '#1087'/'#1087
+              Width = 40
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'CODE'
+              Title.Alignment = taCenter
+              Title.Caption = #8470' '#1085#1086#1088#1084#1072#1090#1080#1074#1072
+              Width = 120
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'COUNT'
+              Title.Alignment = taCenter
+              Title.Caption = #1050#1086#1083'-'#1074#1086
+              Width = 60
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'UNIT'
+              Title.Alignment = taCenter
+              Title.Caption = #1045#1076'. '#1080#1079#1084'.'
+              Width = 70
+              Visible = True
+            end>
         end
       end
       object PanelNoData: TPanel
-        Left = 430
+        Left = 366
         Top = 25
-        Width = 482
+        Width = 546
         Height = 199
         Align = alClient
         BevelOuter = bvNone
@@ -627,7 +647,7 @@
         object ShapeNoData: TShape
           Left = 0
           Top = 0
-          Width = 482
+          Width = 546
           Height = 199
           Align = alClient
           Brush.Color = clWindow
@@ -1310,9 +1330,9 @@
         end
       end
       object PanelClientRight: TPanel
-        Left = 430
+        Left = 366
         Top = 25
-        Width = 482
+        Width = 546
         Height = 199
         Align = alClient
         Alignment = taRightJustify
@@ -1338,27 +1358,30 @@
         object SplitterRightMemo: TSplitter
           Left = 0
           Top = 149
-          Width = 482
+          Width = 546
           Height = 5
           Cursor = crVSplit
           Align = alBottom
           ResizeStyle = rsUpdate
-          ExplicitTop = 0
+          ExplicitTop = 164
         end
         object MemoRight: TMemo
           Left = 0
           Top = 154
-          Width = 482
+          Width = 546
           Height = 45
           Align = alBottom
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 0
+          OnChange = MemoRightChange
+          OnExit = MemoRightExit
+          ExplicitTop = 152
         end
         object PanelClientRightTables: TPanel
           Left = 0
           Top = 0
-          Width = 482
+          Width = 546
           Height = 149
           Align = alClient
           BevelOuter = bvNone
@@ -1367,6 +1390,7 @@
           ShowCaption = False
           TabOrder = 1
           OnResize = PanelClientRightTablesResize
+          ExplicitHeight = 156
           object ImageSplitterRight1: TImage
             Left = 208
             Top = 97
@@ -1385,109 +1409,541 @@
           end
           object SplitterRight1: TSplitter
             Left = 0
-            Top = 30
-            Width = 482
+            Top = 49
+            Width = 546
             Height = 5
             Cursor = crVSplit
             Align = alTop
             ResizeStyle = rsUpdate
+            ExplicitTop = 30
+            ExplicitWidth = 482
           end
           object SplitterRight2: TSplitter
             Left = 0
-            Top = 65
-            Width = 482
+            Top = 100
+            Width = 546
             Height = 5
             Cursor = crVSplit
             Align = alTop
             ResizeStyle = rsUpdate
-          end
-          object StringGridMaterials: TStringGrid
-            Left = 0
-            Top = 0
-            Width = 482
-            Height = 30
-            Align = alTop
-            DefaultRowHeight = 20
-            DefaultDrawing = False
-            RowCount = 2
-            Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goThumbTracking]
-            PopupMenu = PopupMenuMaterials
-            TabOrder = 0
-            OnClick = StringGridRightClick
-            OnDrawCell = StringGridRightDrawCell
-            OnKeyPress = StringGridKeyPress
-            OnMouseLeave = StringGridMouseLeaveRight
-            OnMouseMove = StringGridMouseMoveRight
-            RowHeights = (
-              20
-              20)
+            ExplicitTop = 65
+            ExplicitWidth = 482
           end
           object StringGridEquipments: TStringGrid
             Left = 0
-            Top = 70
-            Width = 482
-            Height = 30
+            Top = 105
+            Width = 546
+            Height = 24
             Align = alTop
             DefaultRowHeight = 20
             RowCount = 2
             Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goThumbTracking]
             PopupMenu = PopupMenuEquipments
+            TabOrder = 0
+            ColWidths = (
+              64
+              64
+              64
+              64
+              64)
+            RowHeights = (
+              20
+              20)
+          end
+          object dbgrdDescription: TDBGrid
+            Left = 0
+            Top = 129
+            Width = 546
+            Height = 20
+            Align = alTop
+            DataSource = dsDescription
+            DrawingStyle = gdsClassic
             TabOrder = 1
-            OnClick = StringGridRightClick
-            OnDrawCell = StringGridRightDrawCell
-            OnMouseLeave = StringGridMouseLeaveRight
-            OnMouseMove = StringGridMouseMoveRight
-            ColWidths = (
-              64
-              64
-              64
-              64
-              64)
-            RowHeights = (
-              20
-              20)
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = dbgrdDescriptionDrawColumnCell
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'work'
+                Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1089#1086#1089#1090#1072#1074#1072' '#1088#1072#1073#1086#1090
+                Width = 200
+                Visible = True
+              end>
           end
-          object StringGridDescription: TStringGrid
+          object dbgrdMechanizm: TJvDBGrid
             Left = 0
-            Top = 100
-            Width = 482
-            Height = 30
+            Top = 54
+            Width = 546
+            Height = 46
             Align = alTop
-            DefaultRowHeight = 20
-            RowCount = 2
-            Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goThumbTracking]
-            TabOrder = 2
-            OnClick = StringGridRightClick
-            OnDrawCell = StringGridRightDrawCell
-            OnMouseLeave = StringGridMouseLeaveRight
-            OnMouseMove = StringGridMouseMoveRight
-          end
-          object StringGridMechanizms: TStringGrid
-            Left = 0
-            Top = 35
-            Width = 482
-            Height = 30
-            Align = alTop
-            DefaultRowHeight = 20
+            Ctl3D = False
+            DataSource = dsMechanizm
             DefaultDrawing = False
-            RowCount = 2
-            Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goColMoving, goThumbTracking]
+            DrawingStyle = gdsClassic
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentCtl3D = False
+            ParentFont = False
             PopupMenu = PopupMenuMechanizms
+            TabOrder = 2
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = dbgrdMechanizmDrawColumnCell
+            OnExit = dbgrdMechanizmExit
+            AutoAppend = False
+            AutoSort = False
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            CanDelete = False
+            EditControls = <>
+            AutoSizeRows = False
+            RowsHeight = 17
+            TitleRowHeight = 30
+            WordWrap = True
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'NUM'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #8470
+                Width = 25
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MECH_CODE'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1076
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MECH_NORMA'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1086#1088#1084#1072' '#1088#1072#1089#1093#1086#1076#1072
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MECH_UNIT'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1045#1076'. '#1080#1079#1084'.'
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MECH_COUNT'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1083'-'#1074#1086' '#1089' '#1082#1086#1101#1092'.'
+                Width = 60
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'ZP_MACH_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057')   '#1089' '#1053#1044#1057', p.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'ZP_MACH_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'COAST_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = '   '#1062#1077#1085#1072' ('#1057')    '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'COAST_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1062#1077#1085#1072' ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PRICE_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1057')      '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PRICE_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1044#1057', %'
+                Width = 35
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FZP_MACH_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1060')   '#1089' '#1053#1044#1057', p.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FZP_MACH_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1060')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FCOAST_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = '  '#1062#1077#1085#1072' ('#1060')    '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FCOAST_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1062#1077#1085#1072' ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FPRICE_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1060')     '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FPRICE_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1057#1090#1086#1080#1084'. ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'RENT_PRICE_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1072#1088#1077#1085#1076'.  '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'RENT_PRICE_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1072#1088#1077#1085#1076'.  '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'RENT_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = '     '#1053#1044#1057'      '#1072#1088#1077#1085#1076'., %'
+                Width = 65
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PROC_PODR'
+                Title.Alignment = taCenter
+                Title.Caption = #1055#1086#1076#1088'., %'
+                Width = 40
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PROC_ZAC'
+                Title.Alignment = taCenter
+                Title.Caption = #1047#1072#1082'., %'
+                Width = 40
+                Visible = True
+              end>
+          end
+          object dbgrdMaterial: TJvDBGrid
+            Left = 0
+            Top = 0
+            Width = 546
+            Height = 49
+            Align = alTop
+            Color = clWhite
+            Ctl3D = False
+            DataSource = dsMaterial
+            DefaultDrawing = False
+            DrawingStyle = gdsClassic
+            ParentCtl3D = False
+            PopupMenu = PopupMenuMaterials
             TabOrder = 3
-            OnClick = StringGridRightClick
-            OnDrawCell = StringGridRightDrawCell
-            OnKeyPress = StringGridKeyPress
-            OnMouseLeave = StringGridMouseLeaveRight
-            OnMouseMove = StringGridMouseMoveRight
-            ColWidths = (
-              64
-              64
-              64
-              64
-              64)
-            RowHeights = (
-              20
-              20)
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = dbgrdMaterialDrawColumnCell
+            OnExit = dbgrdMaterialExit
+            AutoAppend = False
+            AutoSort = False
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            CanDelete = False
+            EditControls = <>
+            AutoSizeRows = False
+            RowsHeight = 17
+            TitleRowHeight = 30
+            WordWrap = True
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'NUM'
+                Title.Alignment = taCenter
+                Title.Caption = #8470
+                Width = 25
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MAT_CODE'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1076
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MAT_NORMA'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1086#1088#1084#1072' '#1088#1072#1089#1093#1086#1076#1072
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MAT_UNIT'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1045#1076'. '#1080#1079#1084'.'
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MAT_COUNT'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1083'-'#1074#1086' '#1089' '#1082#1086#1101#1092'.'
+                Width = 60
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PROC_TRANSP'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1086#1088#1084#1072' '#1090#1088'. '#1088#1072#1089#1093'., %'
+                Width = 60
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'COAST_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = '   '#1062#1077#1085#1072' ('#1057')    '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'COAST_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1062#1077#1085#1072' ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANS_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057')  '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PRICE_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1057')      '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PRICE_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1044#1057', %'
+                Width = 35
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FCOAST_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = '  '#1062#1077#1085#1072' ('#1060')    '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FCOAST_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1062#1077#1085#1072' ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FTRANSP_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060')  '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FTRANSP_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FPRICE_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1060')     '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FPRICE_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1057#1090#1086#1080#1084'. ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MAT_PROC_PODR'
+                Title.Alignment = taCenter
+                Title.Caption = #1052#1072#1090'. '#1087#1086#1076#1088', %'
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MAT_PROC_ZA'#1057
+                Title.Alignment = taCenter
+                Title.Caption = #1052#1072#1090'. '#1079#1072#1082', %'
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_PROC_PODR'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089'. '#1087#1086#1076#1088', %'
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_PROC_ZAC'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089'. '#1079#1072#1082', %'
+                Width = 50
+                Visible = True
+              end>
           end
         end
       end
@@ -1574,8 +2030,6 @@
         PopupMenu = PopupMenuCoef
         ShowHint = False
         TabOrder = 1
-        OnMouseLeave = StringGridMouseLeaveRight
-        OnMouseMove = StringGridMouseMoveRight
         ColWidths = (
           64
           64
@@ -1656,7 +2110,7 @@
   end
   object PanelData: TPanel
     Left = 0
-    Top = 77
+    Top = 52
     Width = 921
     Height = 25
     Align = alTop
@@ -1741,7 +2195,7 @@
   end
   object PanelEstimate: TPanel
     Left = 0
-    Top = 52
+    Top = 77
     Width = 921
     Height = 25
     Align = alTop
@@ -1890,59 +2344,6 @@
       TabOrder = 2
     end
   end
-  object PanelHint: TPanel
-    Left = 508
-    Top = 108
-    Width = 113
-    Height = 21
-    BevelOuter = bvNone
-    Caption = 'PanelHint'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
-    TabOrder = 8
-    Visible = False
-    object Bevel1: TBevel
-      Left = 0
-      Top = 0
-      Width = 113
-      Height = 1
-      Align = alTop
-      Shape = bsTopLine
-    end
-    object Bevel2: TBevel
-      Left = 0
-      Top = 1
-      Width = 5
-      Height = 19
-      Align = alLeft
-      Shape = bsLeftLine
-      ExplicitTop = 0
-      ExplicitHeight = 113
-    end
-    object Bevel3: TBevel
-      Left = 111
-      Top = 1
-      Width = 2
-      Height = 19
-      Align = alRight
-      Shape = bsRightLine
-      Style = bsRaised
-      ExplicitLeft = 112
-    end
-    object Bevel4: TBevel
-      Left = 0
-      Top = 20
-      Width = 113
-      Height = 1
-      Align = alBottom
-      Shape = bsTopLine
-      ExplicitTop = 0
-    end
-  end
   object PanelSSR: TPanel
     Left = 407
     Top = 108
@@ -1987,6 +2388,13 @@
         end
       end
     end
+  end
+  object HeaderControl1: THeaderControl
+    Left = 0
+    Top = 102
+    Width = 921
+    Height = 17
+    Sections = <>
   end
   object PopupMenuButtonSummaryCalculation: TPopupMenu
     Left = 256
@@ -2104,14 +2512,6 @@
         end
       end
     end
-    object PopupMenuTableLeftCopy: TMenuItem
-      Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
-      OnClick = PopupMenuTableLeftCopyClick
-    end
-    object PopupMenuTableLeftInsert: TMenuItem
-      Caption = #1042#1089#1090#1072#1074#1080#1090#1100
-      OnClick = PopupMenuTableLeftInsertClick
-    end
     object PMDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       OnClick = PMDeleteClick
@@ -2203,10 +2603,11 @@
     end
     object N22: TMenuItem
       Caption = '-'
+      Visible = False
     end
     object StringGridRatesColumns: TMenuItem
       Caption = #1050#1086#1083#1086#1085#1082#1080
-      OnClick = StringGridRatesColumnsClick
+      Visible = False
     end
     object PMCoefOrders: TMenuItem
       Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1087#1086' '#1087#1088#1080#1082#1072#1079#1072#1084
@@ -2222,24 +2623,12 @@
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMMatEditClick
     end
+    object N10: TMenuItem
+      Caption = '-'
+    end
     object PMMatFromRates: TMenuItem
       Caption = #1042#1099#1085#1077#1089#1090#1080' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091
       OnClick = PMMatFromRatesClick
-    end
-    object PMMatColumns: TMenuItem
-      Caption = #1050#1086#1083#1086#1085#1082#1080
-      OnClick = PMMatColumnsClick
-    end
-    object PMMatResources: TMenuItem
-      Caption = #1056#1077#1089#1091#1088#1089#1099
-      object PMMatResourcesSettings: TMenuItem
-        Caption = #1053#1072#1089#1090#1088#1086#1080#1090#1100
-        OnClick = PMMatResourcesSettingsClick
-      end
-      object PMMatResourcesDelete: TMenuItem
-        Caption = #1059#1076#1072#1083#1080#1090#1100
-        OnClick = PMMatResourcesDeleteClick
-      end
     end
     object PMMatReplace: TMenuItem
       Caption = #1047#1072#1084#1077#1085#1080#1090#1100' '#1084#1072#1090#1077#1088#1080#1072#1083
@@ -2305,15 +2694,19 @@
     end
   end
   object PopupMenuMechanizms: TPopupMenu
+    OnPopup = PopupMenuMechanizmsPopup
     Left = 88
     Top = 144
+    object PMMechEdit: TMenuItem
+      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      OnClick = PMMechEditClick
+    end
+    object N8: TMenuItem
+      Caption = '-'
+    end
     object PMMechFromRates: TMenuItem
       Caption = #1042#1099#1085#1077#1089#1090#1080' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091
       OnClick = PMMechFromRatesClick
-    end
-    object PMMechColumns: TMenuItem
-      Caption = #1050#1086#1083#1086#1085#1082#1080
-      OnClick = PMMatColumnsClick
     end
   end
   object PopupMenuEquipments: TPopupMenu
@@ -2325,42 +2718,1003 @@
     end
     object PMEqColumns: TMenuItem
       Caption = #1050#1086#1083#1086#1085#1082#1080
-      OnClick = PMMatColumnsClick
     end
   end
-  object qrData: TFDQuery
+  object qrDescription: TFDQuery
+    BeforeInsert = qrMechanizmBeforeInsert
+    AfterScroll = qrDescriptionAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 632
-    Top = 104
+    SQL.Strings = (
+      
+        'SELECT cast(sostav_name as char(1024)) as "work" FROM sostav, no' +
+        'rmativg '
+      
+        '  WHERE normativg.tab_id = sostav.tab_id and normativg.normativ_' +
+        'id = :IdNorm'
+      '  ORDER BY sostav_name ASC;')
+    Left = 616
+    Top = 80
+    ParamData = <
+      item
+        Name = 'IDNORM'
+        DataType = ftInteger
+        ParamType = ptInput
+        Size = 10
+        Value = 12
+      end>
+    object qrDescriptionwork: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'work'
+      Origin = 'work'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 1024
+    end
   end
-  object ADOQueryCardRates: TFDQuery
+  object qrTemp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 632
-    Top = 152
+    Left = 760
+    Top = 136
   end
-  object ADOQueryTemp: TFDQuery
+  object qrTemp1: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 888
-    Top = 96
+    Left = 752
+    Top = 88
   end
-  object ADOQueryMaterialCard: TFDQuery
+  object qrRates: TFDQuery
+    BeforeInsert = qrRatesBeforeInsert
+    BeforePost = qrRatesBeforePost
+    BeforeScroll = qrRatesBeforeScroll
+    AfterScroll = qrRatesAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 784
-    Top = 96
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtUInt32
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtUInt64
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtInt64
+        TargetDataType = dtInt32
+      end>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.CountUpdatedRecords = False
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      '/*'#1056#1072#1089#1094#1077#1085#1082#1080'*/'
+      'SELECT estim.ID as DID, rate.ID as RID, 0 as MID, 0 as MEID, '
+      
+        '       rate.ID as IID, estim.ID_TYPE_DATA as TYPE_DATA, rate.RAT' +
+        'E_ID as IDID,'
+      '       rate.RATE_CODE as CODE, rate.RATE_COUNT as COUNT,'
+      '       rate.RATE_UNIT as UNIT, rate.RATE_CAPTION as CAPTION,'
+      
+        '       0 as CONSIDERED, 0 as REPLACED, rate.ID as ID_CARD_RATE, ' +
+        '0 as ID_REPLACED,'
+      '       0 as FROM_RATE, 0 as SCROLL, 0 as NUM,'
+      
+        '       rate.RATE_ID as RATEIDINRATE, rate.RATE_CODE as CODEINRAT' +
+        'E,'
+      '       rate.RATE_COUNT as COUNTFORCALC, 0 as STYPE'
+      'FROM data_estimate as estim '
+      'JOIN card_rate as rate ON estim.ID_TABLES = rate.ID      '
+      'WHERE (estim.ID_TYPE_DATA = 1) and (estim.ID_ESTIMATE = 309)'
+      ''
+      'UNION ALL '
+      '/*'#1053#1077#1091#1095#1090#1077#1085#1085#1099#1077' '#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1082#1086#1090#1086#1088#1099#1077' '#1085#1077' '#1073#1099#1083#1080' '#1079#1072#1084#1077#1085#1077#1085#1099'*/'
+      
+        'SELECT estim.ID as DID, rate.ID as RID, mat.ID as MID, 0 as MEID' +
+        ', '
+      '       mat.ID as IID, 2 as TYPE_DATA, mat.MAT_ID as IDID,'
+      '       mat.MAT_CODE as CODE, mat.MAT_COUNT as COUNT,'
+      '       mat.MAT_UNIT as UNIT, mat.MAT_NAME as CAPTION,'
+      '       mat.CONSIDERED as CONSIDERED, mat.REPLACED as REPLACED,  '
+      
+        '       mat.ID_CARD_RATE as ID_CARD_RATE, mat.ID_REPLACED as ID_R' +
+        'EPLACED,'
+      '       mat.FROM_RATE as FROM_RATE, 0 as SCROLL, 0 as NUM,'
+      
+        '       rate.RATE_ID as RATEIDINRATE, rate.RATE_CODE as CODEINRAT' +
+        'E,'
+      '       rate.RATE_COUNT as COUNTFORCALC, 1 as STYPE'
+      'FROM card_rate as rate '
+      'JOIN data_estimate as estim ON rate.ID = estim.ID_TABLES'
+      'LEFT JOIN materialcard as mat ON rate.ID = mat.ID_CARD_RATE     '
+      'WHERE (mat.CONSIDERED = 0) and (mat.REPLACED = 0) and      '
+      '      (estim.ID_TYPE_DATA = 1) and (estim.ID_ESTIMATE = 309)'
+      ''
+      'UNION ALL '
+      '/*'#1047#1072#1084#1077#1085#1103#1102#1097#1080#1077' '#1084#1072#1090#1077#1088#1080#1072#1083#1099'*/'
+      
+        'SELECT estim.ID as DID, rate.ID as RID, mat.ID as MID, 0 as MEID' +
+        ', '
+      '       mat.ID as IID, 2 as TYPE_DATA, mat.MAT_ID as IDID,'
+      '       mat.MAT_CODE as CODE, mat.MAT_COUNT as COUNT,'
+      '       mat.MAT_UNIT as UNIT, mat.MAT_NAME as CAPTION,'
+      '       mat.CONSIDERED as CONSIDERED, mat.REPLACED as REPLACED,  '
+      
+        '       mat.ID_CARD_RATE as ID_CARD_RATE, mat.ID_REPLACED as ID_R' +
+        'EPLACED,'
+      '       mat.FROM_RATE as FROM_RATE, 0 as SCROLL, 0 as NUM,'
+      
+        '       rate.RATE_ID as RATEIDINRATE, rate.RATE_CODE as CODEINRAT' +
+        'E,'
+      '       mat.MAT_COUNT as COUNTFORCALC, 2 as STYPE'
+      'FROM card_rate as rate '
+      'JOIN data_estimate as estim ON rate.ID = estim.ID_TABLES'
+      'LEFT JOIN materialcard as mat ON rate.ID = mat.ID_CARD_RATE     '
+      'WHERE (mat.CONSIDERED = 1) and (mat.ID_REPLACED > 0) and     '
+      '      (estim.ID_TYPE_DATA = 1) and (estim.ID_ESTIMATE = 309)'
+      ''
+      'UNION ALL '
+      '/*'#1042#1099#1085#1077#1089#1077#1085#1085#1099#1077' '#1080#1079' '#1088#1072#1089#1094#1077#1085#1082#1080' '#1084#1072#1090#1077#1088#1080#1072#1083#1099'*/'
+      
+        'SELECT estim.ID as DID, rate.ID as RID, mat.ID as MID, 0 as MEID' +
+        ', '
+      '       mat.ID as IID, 2 as TYPE_DATA, mat.MAT_ID as IDID,'
+      '       mat.MAT_CODE as CODE, mat.MAT_COUNT as COUNT,'
+      '       mat.MAT_UNIT as UNIT, mat.MAT_NAME as CAPTION,'
+      '       mat.CONSIDERED as CONSIDERED, mat.REPLACED as REPLACED,  '
+      
+        '       mat.ID_CARD_RATE as ID_CARD_RATE, mat.ID_REPLACED as ID_R' +
+        'EPLACED,'
+      '       mat.FROM_RATE as FROM_RATE, 0 as SCROLL, 0 as NUM,'
+      
+        '       rate.RATE_ID as RATEIDINRATE, rate.RATE_CODE as CODEINRAT' +
+        'E,'
+      '       mat.MAT_COUNT as COUNTFORCALC, 3 as STYPE'
+      'FROM card_rate as rate '
+      'JOIN data_estimate as estim ON rate.ID = estim.ID_TABLES'
+      'LEFT JOIN materialcard as mat ON rate.ID = mat.ID_CARD_RATE     '
+      'WHERE (mat.FROM_RATE = 1) and (estim.ID_TYPE_DATA = 1) and '
+      '      (estim.ID_ESTIMATE = 309)'
+      ''
+      'UNION ALL '
+      '/*'#1042#1099#1085#1077#1089#1077#1085#1085#1099#1077' '#1080#1079' '#1088#1072#1089#1094#1077#1085#1082#1080' '#1084#1077#1093#1072#1085#1080#1079#1084#1099'*/'
+      
+        'SELECT estim.ID as DID, rate.ID as RID, 0 as MID, mech.ID as MEI' +
+        'D, '
+      '       mech.ID as IID, 3 as TYPE_DATA, mech.MECH_ID as IDID,'
+      '       mech.MECH_CODE as CODE, mech.MECH_COUNT as COUNT,'
+      '       mech.MECH_UNIT as UNIT, mech.MECH_NAME as CAPTION,'
+      '       0 as CONSIDERED, 0 as REPLACED,  '
+      '       mech.ID_CARD_RATE as ID_CARD_RATE, 0 as ID_REPLACED,'
+      '       mech.FROM_RATE as FROM_RATE, 0 as SCROLL, 0 as NUM,'
+      
+        '       rate.RATE_ID as RATEIDINRATE, rate.RATE_CODE as CODEINRAT' +
+        'E,'
+      '       mech.MECH_COUNT as COUNTFORCALC, 4 as STYPE'
+      'FROM card_rate as rate '
+      'JOIN data_estimate as estim ON rate.ID = estim.ID_TABLES'
+      
+        'LEFT JOIN mechanizmcard as mech ON rate.ID = mech.ID_CARD_RATE  ' +
+        '   '
+      'WHERE (mech.FROM_RATE = 1) and (estim.ID_TYPE_DATA = 1) and '
+      '      (estim.ID_ESTIMATE = 309)'
+      ''
+      'UNION ALL '
+      '/*'#1052#1072#1090#1077#1088#1080#1072#1083#1099'*/'
+      'SELECT estim.ID as DID, 0 as RID, mat.ID as MID, 0 as MEID, '
+      
+        '       mat.ID as IID, estim.ID_TYPE_DATA as TYPE_DATA, mat.MAT_I' +
+        'D as IDID,'
+      '       mat.MAT_CODE as CODE, mat.MAT_COUNT as COUNT,'
+      '       mat.MAT_UNIT as UNIT, mat.MAT_NAME as CAPTION,'
+      '       mat.CONSIDERED as CONSIDERED, mat.REPLACED as REPLACED,  '
+      
+        '       mat.ID_CARD_RATE as ID_CARD_RATE, mat.ID_REPLACED as ID_R' +
+        'EPLACED,'
+      '       mat.FROM_RATE as FROM_RATE, 0 as SCROLL, 0 as NUM,'
+      '       0 as RATEIDINRATE, 0 as CODEINRATE,'
+      '       mat.MAT_COUNT as COUNTFORCALC, 0 as STYPE'
+      'FROM data_estimate as estim '
+      'JOIN materialcard as mat ON estim.ID_TABLES = mat.ID '
+      'WHERE (estim.ID_TYPE_DATA = 2) and (estim.ID_ESTIMATE = 309)'
+      ''
+      'UNION ALL '
+      '/*M'#1077#1093#1072#1085#1080#1079#1084#1099'*/'
+      'SELECT estim.ID as DID, 0 as RID, 0 as MID, mech.ID as MEID, '
+      
+        '       mech.ID as IID, estim.ID_TYPE_DATA as TYPE_DATA, mech.MEC' +
+        'H_ID as IDID,'
+      '       mech.MECH_CODE as CODE, mech.MECH_COUNT as COUNT,'
+      '       mech.MECH_UNIT as UNIT, mech.MECH_NAME as CAPTION,'
+      '       0 as CONSIDERED, 0 as REPLACED,  '
+      '       mech.ID_CARD_RATE as ID_CARD_RATE, 0 as ID_REPLACED,'
+      '       mech.FROM_RATE as FROM_RATE, 0 as SCROLL, 0 as NUM,'
+      '       0 as RATEIDINRATE, 0 as CODEINRATE,'
+      '       mech.MECH_COUNT as COUNTFORCALC, 0 as STYPE'
+      'FROM data_estimate as estim'
+      'JOIN mechanizmcard as mech ON estim.ID_TABLES = mech.ID '
+      'WHERE (estim.ID_TYPE_DATA = 3) and (estim.ID_ESTIMATE = 309)'
+      ''
+      'ORDER BY DID, RID, FROM_RATE, MID, MEID '
+      ''
+      '')
+    Left = 512
+    Top = 80
+    object qrRatesDID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'DID'
+      Origin = 'DID'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesRID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'RID'
+      Origin = 'RID'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesMID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'MID'
+      Origin = 'MID'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesMEID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'MEID'
+      Origin = 'MEID'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesIID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'IID'
+      Origin = 'IID'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesTYPE_DATA: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'TYPE_DATA'
+      Origin = 'TYPE_DATA'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesIDID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'IDID'
+      Origin = 'IDID'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesCODE: TStringField
+      AutoGenerateValue = arDefault
+      DisplayWidth = 30
+      FieldName = 'CODE'
+      Origin = 'CODE'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 30
+    end
+    object qrRatesCOUNT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'COUNT'
+      Origin = 'COUNT'
+      ProviderFlags = []
+      OnChange = qrRatesCOUNTChange
+      DisplayFormat = '####0.####'
+      EditFormat = '####0.####'
+    end
+    object qrRatesUNIT: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'UNIT'
+      Origin = 'UNIT'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 100
+    end
+    object qrRatesCAPTION: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CAPTION'
+      Origin = 'CAPTION'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
+    object qrRatesCONSIDERED: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'CONSIDERED'
+      Origin = 'CONSIDERED'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesREPLACED: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPLACED'
+      Origin = 'REPLACED'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesID_CARD_RATE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_CARD_RATE'
+      Origin = 'ID_CARD_RATE'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesID_REPLACED: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_REPLACED'
+      Origin = 'ID_REPLACED'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesFROM_RATE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FROM_RATE'
+      Origin = 'FROM_RATE'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesSCROLL: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'SCROLL'
+      Origin = 'SCROLL'
+      ProviderFlags = []
+    end
+    object qrRatesNUM: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'NUM'
+      Origin = 'NUM'
+      ProviderFlags = []
+    end
+    object qrRatesRATEIDINRATE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'RATEIDINRATE'
+      Origin = 'RATEIDINRATE'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesCODEINRATE: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CODEINRATE'
+      Origin = 'CODEINRATE'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+    object qrRatesCOUNTFORCALC: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'COUNTFORCALC'
+      Origin = 'COUNTFORCALC'
+      ProviderFlags = []
+    end
+    object qrRatesSTYPE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'STYPE'
+      Origin = 'STYPE'
+      ProviderFlags = []
+    end
   end
-  object ADOQueryMechanizmCard: TFDQuery
+  object dsRates: TDataSource
+    DataSet = qrRates
+    Left = 552
+    Top = 80
+  end
+  object dsDescription: TDataSource
+    DataSet = qrDescription
+    Left = 672
+    Top = 80
+  end
+  object qrMechanizm: TFDQuery
+    BeforeInsert = qrMechanizmBeforeInsert
+    BeforeScroll = qrMechanizmBeforeScroll
+    AfterScroll = qrMechanizmAfterScroll
+    OnCalcFields = qrMechanizmCalcFields
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 784
-    Top = 144
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtUInt32
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtUInt64
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtInt64
+        TargetDataType = dtInt32
+      end>
+    SQL.Strings = (
+      '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
+      
+        'SELECT *, 0 as SCROLL, 0 as NUM, 0 as TITLE, 0 as SRTYPE FROM me' +
+        'chanizmcard'
+      
+        'WHERE ((:Type = 0) and (ID = :IDValue)) or ((:Type = 1) and (ID_' +
+        'CARD_RATE = :IDValue)) ORDER BY ID;')
+    Left = 616
+    Top = 126
+    ParamData = <
+      item
+        Name = 'TYPE'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 0
+      end
+      item
+        Name = 'IDVALUE'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 48
+      end>
+    object qrMechanizmID: TFDAutoIncField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
+    end
+    object qrMechanizmID_CARD_RATE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_CARD_RATE'
+      Origin = 'ID_CARD_RATE'
+    end
+    object qrMechanizmBD_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'BD_ID'
+      Origin = 'BD_ID'
+    end
+    object qrMechanizmMECH_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_ID'
+      Origin = 'MECH_ID'
+    end
+    object qrMechanizmMECH_CODE: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_CODE'
+      Origin = 'MECH_CODE'
+      Size = 15
+    end
+    object qrMechanizmMECH_NAME: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_NAME'
+      Origin = 'MECH_NAME'
+      Size = 32767
+    end
+    object qrMechanizmMECH_NORMA: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_NORMA'
+      Origin = 'MECH_NORMA'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmMECH_COUNT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_COUNT'
+      Origin = 'MECH_COUNT'
+      OnChange = MechRowChange
+      currency = True
+    end
+    object qrMechanizmMECH_UNIT: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_UNIT'
+      Origin = 'MECH_UNIT'
+      Size = 100
+    end
+    object qrMechanizmCOAST_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NO_NDS'
+      Origin = 'COAST_NO_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmCOAST_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NDS'
+      Origin = 'COAST_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmZP_MACH_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ZP_MACH_NO_NDS'
+      Origin = 'ZP_MACH_NO_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmZP_MACH_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ZP_MACH_NDS'
+      Origin = 'ZP_MACH_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmMECH_PRICE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_PRICE'
+      Origin = 'MECH_PRICE'
+    end
+    object qrMechanizmMECH_ACTIVE: TShortintField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_ACTIVE'
+      Origin = 'MECH_ACTIVE'
+    end
+    object qrMechanizmDOC_DATE: TDateField
+      AutoGenerateValue = arDefault
+      FieldName = 'DOC_DATE'
+      Origin = 'DOC_DATE'
+    end
+    object qrMechanizmDOC_NUM: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DOC_NUM'
+      Origin = 'DOC_NUM'
+      Size = 50
+    end
+    object qrMechanizmFROM_RATE: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'FROM_RATE'
+      Origin = 'FROM_RATE'
+    end
+    object qrMechanizmFCOAST_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FCOAST_NO_NDS'
+      Origin = 'FCOAST_NO_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmFCOAST_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FCOAST_NDS'
+      Origin = 'FCOAST_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmPRICE_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NO_NDS'
+      Origin = 'PRICE_NO_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmPRICE_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NDS'
+      Origin = 'PRICE_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmFPRICE_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NO_NDS'
+      Origin = 'FPRICE_NO_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmFPRICE_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NDS'
+      Origin = 'FPRICE_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmRENT_PRICE_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'RENT_PRICE_NO_NDS'
+      Origin = 'RENT_PRICE_NO_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmRENT_PRICE_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'RENT_PRICE_NDS'
+      Origin = 'RENT_PRICE_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmRENT_COAST_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'RENT_COAST_NO_NDS'
+      Origin = 'RENT_COAST_NO_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmRENT_COAST_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'RENT_COAST_NDS'
+      Origin = 'RENT_COAST_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmRENT_COUNT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'RENT_COUNT'
+      Origin = 'RENT_COUNT'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmMECH_KOEF: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_KOEF'
+      Origin = 'MECH_KOEF'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmNUM: TIntegerField
+      FieldKind = fkCalculated
+      FieldName = 'NUM'
+      Calculated = True
+    end
+    object qrMechanizmMECH_SUM_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_SUM_NO_NDS'
+      Origin = 'MECH_SUM_NO_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmMECH_SUM_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_SUM_NDS'
+      Origin = 'MECH_SUM_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmSCROLL: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'SCROLL'
+      Origin = 'SCROLL'
+      ProviderFlags = []
+    end
+    object qrMechanizmFZP_MACH_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FZP_MACH_NO_NDS'
+      Origin = 'FZP_MACH_NO_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmFZP_MACH_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FZP_MACH_NDS'
+      Origin = 'FZP_MACH_NDS'
+      OnChange = MechRowChange
+    end
+    object qrMechanizmNDS: TSmallintField
+      DisplayWidth = 3
+      FieldName = 'NDS'
+      OnChange = MechRowChange
+      DisplayFormat = '##0'
+      EditFormat = '##0'
+    end
+    object qrMechanizmRENT_NDS: TSmallintField
+      DisplayWidth = 3
+      FieldName = 'RENT_NDS'
+      OnChange = MechRowChange
+      DisplayFormat = '##0'
+      EditFormat = '##0'
+    end
+    object qrMechanizmPROC_PODR: TSmallintField
+      DisplayWidth = 3
+      FieldName = 'PROC_PODR'
+      OnChange = MechRowChange
+      DisplayFormat = '##0'
+      EditFormat = '##0'
+    end
+    object qrMechanizmPROC_ZAC: TSmallintField
+      DisplayWidth = 3
+      FieldName = 'PROC_ZAC'
+      OnChange = MechRowChange
+      DisplayFormat = '##0'
+      EditFormat = '##0'
+    end
+  end
+  object dsMechanizm: TDataSource
+    DataSet = qrMechanizm
+    Left = 672
+    Top = 128
+  end
+  object qrMaterial: TFDQuery
+    BeforeInsert = qrMechanizmBeforeInsert
+    BeforeScroll = qrMaterialBeforeScroll
+    AfterScroll = qrMaterialAfterScroll
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtUInt16
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtUInt32
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtInt64
+        TargetDataType = dtInt32
+      end>
+    SQL.Strings = (
+      
+        'SELECT *, 0 as NUM, 0 as SCROLL, 0 as TITLE FROM materialcard WH' +
+        'ERE ((:Type = 0) and (ID = :IDValue)) or ((:Type = 1) and (ID_CA' +
+        'RD_RATE = :IDValue)) ORDER BY ID;')
+    Left = 512
+    Top = 128
+    ParamData = <
+      item
+        Name = 'TYPE'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 1
+      end
+      item
+        Name = 'IDVALUE'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 13
+      end>
+    object qrMaterialID: TFDAutoIncField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
+    end
+    object qrMaterialBD_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'BD_ID'
+      Origin = 'BD_ID'
+    end
+    object qrMaterialID_CARD_RATE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_CARD_RATE'
+      Origin = 'ID_CARD_RATE'
+    end
+    object qrMaterialID_REPLACED: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_REPLACED'
+      Origin = 'ID_REPLACED'
+    end
+    object qrMaterialCONSIDERED: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'CONSIDERED'
+      Origin = 'CONSIDERED'
+    end
+    object qrMaterialREPLACED: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPLACED'
+      Origin = 'REPLACED'
+    end
+    object qrMaterialFROM_RATE: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'FROM_RATE'
+      Origin = 'FROM_RATE'
+    end
+    object qrMaterialMAT_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_ID'
+      Origin = 'MAT_ID'
+    end
+    object qrMaterialMAT_CODE: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_CODE'
+      Origin = 'MAT_CODE'
+      Size = 15
+    end
+    object qrMaterialMAT_NAME: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_NAME'
+      Origin = 'MAT_NAME'
+      Size = 32767
+    end
+    object qrMaterialMAT_NORMA: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_NORMA'
+      Origin = 'MAT_NORMA'
+      OnChange = MatRowChange
+    end
+    object qrMaterialMAT_COUNT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_COUNT'
+      Origin = 'MAT_COUNT'
+    end
+    object qrMaterialMAT_UNIT: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_UNIT'
+      Origin = 'MAT_UNIT'
+      Size = 100
+    end
+    object qrMaterialMAT_KOEF: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_KOEF'
+      Origin = 'MAT_KOEF'
+      OnChange = MatRowChange
+    end
+    object qrMaterialMAT_SUM_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_SUM_NO_NDS'
+      Origin = 'MAT_SUM_NO_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialMAT_SUM_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_SUM_NDS'
+      Origin = 'MAT_SUM_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialCOAST_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NO_NDS'
+      Origin = 'COAST_NO_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialCOAST_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NDS'
+      Origin = 'COAST_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialPROC_TRANSP: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'PROC_TRANSP'
+      Origin = 'PROC_TRANSP'
+      OnChange = MatRowChange
+    end
+    object qrMaterialTRANSP_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_NO_NDS'
+      Origin = 'TRANSP_NO_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialTRANS_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANS_NDS'
+      Origin = 'TRANS_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialPRICE_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NO_NDS'
+      Origin = 'PRICE_NO_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialPRICE_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NDS'
+      Origin = 'PRICE_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialNDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'NDS'
+      Origin = 'NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialFCOAST_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FCOAST_NO_NDS'
+      Origin = 'FCOAST_NO_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialFCOAST_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FCOAST_NDS'
+      Origin = 'FCOAST_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialFTRANSP_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FTRANSP_NO_NDS'
+      Origin = 'FTRANSP_NO_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialFTRANSP_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FTRANSP_NDS'
+      Origin = 'FTRANSP_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialFPRICE_NO_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NO_NDS'
+      Origin = 'FPRICE_NO_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialFPRICE_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NDS'
+      Origin = 'FPRICE_NDS'
+      OnChange = MatRowChange
+    end
+    object qrMaterialMAT_ACTIVE: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_ACTIVE'
+      Origin = 'MAT_ACTIVE'
+    end
+    object qrMaterialSTATE_MATERIAL: TShortintField
+      AutoGenerateValue = arDefault
+      FieldName = 'STATE_MATERIAL'
+      Origin = 'STATE_MATERIAL'
+    end
+    object qrMaterialSTATE_TRANSPORT: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'STATE_TRANSPORT'
+      Origin = 'STATE_TRANSPORT'
+    end
+    object qrMaterialDOC_DATE: TDateField
+      AutoGenerateValue = arDefault
+      FieldName = 'DOC_DATE'
+      Origin = 'DOC_DATE'
+    end
+    object qrMaterialDOC_NUM: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DOC_NUM'
+      Origin = 'DOC_NUM'
+      Size = 50
+    end
+    object qrMaterialMAT_PROC_ZAС: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_PROC_ZA'#1057
+      Origin = '`MAT_PROC_ZA'#1057'`'
+      OnChange = MatRowChange
+    end
+    object qrMaterialMAT_PROC_PODR: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_PROC_PODR'
+      Origin = 'MAT_PROC_PODR'
+      OnChange = MatRowChange
+    end
+    object qrMaterialTRANSP_PROC_ZAC: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_PROC_ZAC'
+      Origin = 'TRANSP_PROC_ZAC'
+      OnChange = MatRowChange
+    end
+    object qrMaterialTRANSP_PROC_PODR: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_PROC_PODR'
+      Origin = 'TRANSP_PROC_PODR'
+      OnChange = MatRowChange
+    end
+    object qrMaterialNUM: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'NUM'
+      Origin = 'NUM'
+      ProviderFlags = []
+    end
+    object qrMaterialSCROLL: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'SCROLL'
+      Origin = 'SCROLL'
+      ProviderFlags = []
+    end
+    object qrMaterialTITLE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'TITLE'
+      Origin = 'TITLE'
+      ProviderFlags = []
+      ReadOnly = True
+    end
+  end
+  object dsMaterial: TDataSource
+    DataSet = qrMaterial
+    Left = 552
+    Top = 128
   end
 end
