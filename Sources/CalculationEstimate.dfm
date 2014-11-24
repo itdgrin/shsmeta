@@ -1376,7 +1376,6 @@
           TabOrder = 0
           OnChange = MemoRightChange
           OnExit = MemoRightExit
-          ExplicitTop = 152
         end
         object PanelClientRightTables: TPanel
           Left = 0
@@ -1390,7 +1389,6 @@
           ShowCaption = False
           TabOrder = 1
           OnResize = PanelClientRightTablesResize
-          ExplicitHeight = 156
           object ImageSplitterRight1: TImage
             Left = 208
             Top = 97

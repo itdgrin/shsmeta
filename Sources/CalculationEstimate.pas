@@ -1775,10 +1775,19 @@ begin
     qrMechanizm.First;
     while not qrMechanizm.Eof do
     begin
+      //Вынесенные из расценки не пересчитываюся
+      if (qrMechanizmFROM_RATE.AsInteger = 1) and
+         (qrRatesMEID.AsInteger = 0) then
+      begin
+        qrMechanizm.Next;
+        Continue;
+      end;
+
       qrMechanizm.Edit;
       ReCalcRowMech;
       qrMechanizm.Post;
       //UpdateRowMech;
+
       qrMechanizm.Next;
     end;
     qrMechanizm.RecNo := RecNo;
@@ -1854,12 +1863,54 @@ end;
 //Обновляет строку в БД материала
 procedure TFormCalculationEstimate.UpdateRowMat;
 begin
-
+  with qrTemp do
+  begin
+    Active := False;
+    SQL.Clear;
+    SQL.Add('UPDATE materialcard_temp SET MAT_NORMA = :MAT_NORMA, ' +
+      'MAT_COUNT = :MAT_COUNT, COAST_NO_NDS = :COAST_NO_NDS, ' +
+      'COAST_NDS = :COAST_NDS, NDS = :NDS, PROC_TRANSP = :PROC_TRANSP, ' +
+      'TRANSP_NO_NDS = :TRANSP_NO_NDS, TRANS_NDS = :TRANS_NDS, ' +
+      'PRICE_NO_NDS = :PRICE_NO_NDS, PRICE_NDS = :PRICE_NDS, ' +
+      'FCOAST_NO_NDS = :FCOAST_NO_NDS, FCOAST_NDS = :FCOAST_NDS, ' +
+      'FTRANSP_NO_NDS = :FTRANSP_NO_NDS, FTRANSP_NDS = :FTRANSP_NDS, ' +
+      'FPRICE_NO_NDS = :FPRICE_NO_NDS, FPRICE_NDS = :FPRICE_NDS, ' +
+      'MAT_PROC_ZAС = :MAT_PROC_ZAС, MAT_PROC_PODR = :MAT_PROC_PODR, ' +
+      'TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC, TRANSP_PROC_PODR = :TRANSP_PROC_PODR, ' +
+      'MAT_KOEF = :MAT_KOEF, MAT_SUM_NO_NDS = :MAT_SUM_NO_NDS, ' +
+      'MAT_SUM_NDS = :MAT_SUM_NDS WHERE id = :id;');
+    ParamByName('MAT_NORMA').Value := qrMaterialMAT_NORMA.Value;
+    ParamByName('MAT_COUNT').Value := qrMaterialMAT_COUNT.Value;
+    ParamByName('COAST_NO_NDS').Value := qrMaterialCOAST_NO_NDS.Value;
+    ParamByName('COAST_NDS').Value := qrMaterialCOAST_NDS.Value;
+    ParamByName('NDS').Value := qrMaterialNDS.Value;
+    ParamByName('PROC_TRANSP').Value := qrMaterialPROC_TRANSP.Value;
+    ParamByName('TRANSP_NO_NDS').Value := qrMaterialTRANSP_NO_NDS.Value;
+    ParamByName('TRANS_NDS').Value := qrMaterialTRANS_NDS.Value;
+    ParamByName('PRICE_NO_NDS').Value := qrMaterialPRICE_NO_NDS.Value;
+    ParamByName('PRICE_NDS').Value := qrMaterialPRICE_NDS.Value;
+    ParamByName('FCOAST_NO_NDS').Value := qrMaterialFCOAST_NO_NDS.Value;
+    ParamByName('FCOAST_NDS').Value := qrMaterialFCOAST_NDS.Value;
+    ParamByName('FTRANSP_NO_NDS').Value := qrMaterialFTRANSP_NO_NDS.Value;
+    ParamByName('FTRANSP_NDS').Value := qrMaterialFTRANSP_NDS.Value;
+    ParamByName('FPRICE_NO_NDS').Value := qrMaterialFPRICE_NO_NDS.Value;
+    ParamByName('FPRICE_NDS').Value := qrMaterialFPRICE_NDS.Value;
+    ParamByName('MAT_PROC_ZAС').Value := qrMaterialMAT_PROC_ZAС.Value;
+    ParamByName('MAT_PROC_PODR').Value := qrMaterialMAT_PROC_PODR.Value;
+    ParamByName('TRANSP_PROC_ZAC').Value := qrMaterialTRANSP_PROC_ZAC.Value;
+    ParamByName('TRANSP_PROC_PODR').Value := qrMaterialTRANSP_PROC_PODR.Value;
+    ParamByName('MAT_KOEF').Value := qrMaterialMAT_KOEF.Value;
+    ParamByName('MAT_SUM_NO_NDS').Value := qrMaterialMAT_SUM_NO_NDS.Value;
+    ParamByName('MAT_SUM_NDS').Value := qrMaterialMAT_SUM_NDS.Value;
+    ParamByName('id').Value := qrMaterialID.Value;
+    ExecSQL;
+  end;
 end;
 
 //Пересчет всех материала
 procedure TFormCalculationEstimate.ReCalcAllMat;
 var RecNo: integer;
+    s: string;
 begin
   if not qrMaterial.Active then exit;
 
@@ -1871,10 +1922,20 @@ begin
     qrMaterial.First;
     while not qrMaterial.Eof do
     begin
+      //Вынесенные из расценки не пересчитываюся и игнорируются заголовки и неучтеные
+      if ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesMID.AsInteger = 0)) or
+         (qrMaterialTITLE.AsInteger > 0) or
+          CheckMatUnAccountingMatirials then
+      begin
+        qrMaterial.Next;
+        continue;
+      end;
+
       qrMaterial.Edit;
       ReCalcRowMat;
       qrMaterial.Post;
       UpdateRowMat;
+
       qrMaterial.Next;
     end;
     qrMaterial.RecNo := RecNo;
@@ -1967,12 +2028,13 @@ begin
     Sender.AsInteger := 0;
     exit;
   end;
+
   //Обновляем каунт для расчета
   RecNo := qrRates.RecNo;
   RCount := Sender.AsFloat;
   qrRatesCOUNTFORCALC.AsFloat := RCount;
   qrRates.Post;
-  //Для раценки обновляем COUNTFORCALC и у неучтенных материалов
+  //Для раценки обновляем COUNTFORCALC и у неучтенных или заменяющих материалов
   if qrRatesTYPE_DATA.AsInteger = 1 then
   begin
     qrRates.Tag := 1; //Блокирует обработчики событий датасета
@@ -1981,7 +2043,7 @@ begin
     if not qrRates.Eof then qrRates.Next;
     while not qrRates.Eof do
     begin
-      if CheckMatUnAccountingRates then
+      if CheckMatINRates then
       begin
         qrRates.Edit;
         qrRatesCOUNTFORCALC.AsFloat := RCount;
@@ -2337,6 +2399,11 @@ begin
   PMDelete.Enabled := True;
   PMReplace.Enabled := False;
   PMEdit.Enabled := False;
+
+  //При смене строки в таблице расценок все датасеты закрываются
+  qrMaterial.Active := false;
+  qrMechanizm.Active := false;
+  qrDescription.Active := false;
 
   // РАЗВЁРТЫВАНИЕ ВЫБРАННОЙ РАСЦЕНКИ В ТАБЛИЦАХ СПРАВА
   BtnChange := false;
