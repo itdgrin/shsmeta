@@ -10,7 +10,8 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls,
-  CalculationEstimateSSR, CalculationEstimateSummaryCalculations;
+  CalculationEstimateSSR, CalculationEstimateSummaryCalculations, JvExDBGrids,
+  JvDBGrid;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -22,6 +23,8 @@ type
     ForOne: Currency;
     ForCount: Currency;
   end;
+
+  TCustomDBGridCracker = class(TCustomDBGrid);
 
   TFieldRates = record
     vRow: Variant;
@@ -112,20 +115,16 @@ type
     N6: TMenuItem;
     N7: TMenuItem;
     ButtonTechnicalPart: TButton;
-    StringGridRates: TStringGrid;
     PopupMenuTableLeft: TPopupMenu;
     PMAdd: TMenuItem;
-    PopupMenuTableLeftCopy: TMenuItem;
     PMDelete: TMenuItem;
     PopupMenuTableLeftTechnicalPart: TMenuItem;
-    PopupMenuTableLeftInsert: TMenuItem;
     N20: TMenuItem;
     ModeData: TMenuItem;
     Normal: TMenuItem;
     Extended: TMenuItem;
     N22: TMenuItem;
     PopupMenuMaterials: TPopupMenu;
-    PMMatColumns: TMenuItem;
     StringGridCalculations: TStringGrid;
     PopupMenuCoef: TPopupMenu;
     PopupMenuCoefAddSet: TMenuItem;
@@ -158,10 +157,7 @@ type
     PopupMenuTableLeftTechnicalPart6: TMenuItem;
     SpeedButtonEquipments: TSpeedButton;
     BevelTopMenu: TBevel;
-    PMMatResourcesSettings: TMenuItem;
     SpeedButtonModeTables: TSpeedButton;
-    PMMatResources: TMenuItem;
-    PMMatResourcesDelete: TMenuItem;
     PanelNoData: TPanel;
     ShapeNoData: TShape;
     PanelClientRight: TPanel;
@@ -173,9 +169,7 @@ type
     ImageSplitterRight2: TImage;
     SplitterRight1: TSplitter;
     SplitterRight2: TSplitter;
-    StringGridMaterials: TStringGrid;
     StringGridEquipments: TStringGrid;
-    StringGridDescription: TStringGrid;
     ImageNoData: TImage;
     LabelNoData1: TLabel;
     LabelNoData2: TLabel;
@@ -189,15 +183,9 @@ type
     PMMatFromRates: TMenuItem;
     PopupMenuMechanizms: TPopupMenu;
     PMMechFromRates: TMenuItem;
-    PMMechColumns: TMenuItem;
     PopupMenuEquipments: TPopupMenu;
     PMEqFromRates: TMenuItem;
     PMEqColumns: TMenuItem;
-    PanelHint: TPanel;
-    Bevel1: TBevel;
-    Bevel2: TBevel;
-    Bevel3: TBevel;
-    Bevel4: TBevel;
     PMMatReplace: TMenuItem;
     PMMatReplaceNumber: TMenuItem;
     PMMatReplaceTable: TMenuItem;
@@ -232,15 +220,132 @@ type
     LabelCategory: TLabel;
     EditCategory: TEdit;
     Button4: TButton;
-    qrData: TFDQuery;
-    ADOQueryCardRates: TFDQuery;
-    ADOQueryTemp: TFDQuery;
-    ADOQueryMaterialCard: TFDQuery;
-    ADOQueryMechanizmCard: TFDQuery;
+    qrDescription: TFDQuery;
+    qrTemp: TFDQuery;
+    qrTemp1: TFDQuery;
     Memo1: TMemo;
-    StringGridMechanizms: TStringGrid;
     frSummaryCalculations: TfrCalculationEstimateSummaryCalculations;
     frSSR: TfrCalculationEstimateSSR;
+    qrRates: TFDQuery;
+    dsRates: TDataSource;
+    dbgrdRates: TDBGrid;
+    dbgrdDescription: TDBGrid;
+    dsDescription: TDataSource;
+    qrRatesDID: TIntegerField;
+    qrRatesRID: TIntegerField;
+    qrRatesMID: TIntegerField;
+    qrRatesMEID: TIntegerField;
+    qrRatesIID: TIntegerField;
+    qrRatesTYPE_DATA: TIntegerField;
+    qrRatesIDID: TIntegerField;
+    qrRatesCODE: TStringField;
+    qrRatesCOUNT: TFloatField;
+    qrRatesUNIT: TStringField;
+    qrRatesCAPTION: TStringField;
+    qrRatesCONSIDERED: TIntegerField;
+    qrRatesREPLACED: TIntegerField;
+    qrRatesID_CARD_RATE: TIntegerField;
+    qrRatesID_REPLACED: TIntegerField;
+    qrRatesFROM_RATE: TIntegerField;
+    qrRatesSCROLL: TIntegerField;
+    qrRatesNUM: TIntegerField;
+    qrRatesRATEIDINRATE: TIntegerField;
+    qrRatesCODEINRATE: TStringField;
+    qrMechanizm: TFDQuery;
+    dsMechanizm: TDataSource;
+    qrDescriptionwork: TStringField;
+    qrMechanizmID: TFDAutoIncField;
+    qrMechanizmID_CARD_RATE: TIntegerField;
+    qrMechanizmBD_ID: TIntegerField;
+    qrMechanizmMECH_ID: TIntegerField;
+    qrMechanizmMECH_CODE: TStringField;
+    qrMechanizmMECH_NAME: TStringField;
+    qrMechanizmMECH_NORMA: TFloatField;
+    qrMechanizmMECH_COUNT: TFloatField;
+    qrMechanizmMECH_UNIT: TStringField;
+    qrMechanizmCOAST_NO_NDS: TIntegerField;
+    qrMechanizmCOAST_NDS: TIntegerField;
+    qrMechanizmZP_MACH_NO_NDS: TIntegerField;
+    qrMechanizmZP_MACH_NDS: TIntegerField;
+    qrMechanizmMECH_PRICE: TIntegerField;
+    qrMechanizmMECH_ACTIVE: TShortintField;
+    qrMechanizmDOC_DATE: TDateField;
+    qrMechanizmDOC_NUM: TStringField;
+    qrMechanizmFROM_RATE: TByteField;
+    qrMechanizmFCOAST_NO_NDS: TIntegerField;
+    qrMechanizmFCOAST_NDS: TIntegerField;
+    qrMechanizmPRICE_NO_NDS: TIntegerField;
+    qrMechanizmPRICE_NDS: TIntegerField;
+    qrMechanizmFPRICE_NO_NDS: TIntegerField;
+    qrMechanizmFPRICE_NDS: TIntegerField;
+    qrMechanizmRENT_PRICE_NO_NDS: TIntegerField;
+    qrMechanizmRENT_PRICE_NDS: TIntegerField;
+    qrMechanizmRENT_COAST_NO_NDS: TIntegerField;
+    qrMechanizmRENT_COAST_NDS: TIntegerField;
+    qrMechanizmRENT_COUNT: TFloatField;
+    qrMechanizmMECH_KOEF: TFloatField;
+    qrMechanizmNUM: TIntegerField;
+    qrMechanizmMECH_SUM_NO_NDS: TIntegerField;
+    qrMechanizmMECH_SUM_NDS: TIntegerField;
+    HeaderControl1: THeaderControl;
+    N8: TMenuItem;
+    qrMechanizmSCROLL: TIntegerField;
+    qrRatesCOUNTFORCALC: TFloatField;
+    PMMechEdit: TMenuItem;
+    qrMechanizmFZP_MACH_NO_NDS: TIntegerField;
+    qrMechanizmFZP_MACH_NDS: TIntegerField;
+    dbgrdMechanizm: TJvDBGrid;
+    qrMechanizmNDS: TSmallintField;
+    qrMechanizmRENT_NDS: TSmallintField;
+    qrMechanizmPROC_PODR: TSmallintField;
+    qrMechanizmPROC_ZAC: TSmallintField;
+    qrMaterial: TFDQuery;
+    dsMaterial: TDataSource;
+    dbgrdMaterial: TJvDBGrid;
+    qrMaterialID: TFDAutoIncField;
+    qrMaterialBD_ID: TIntegerField;
+    qrMaterialID_CARD_RATE: TIntegerField;
+    qrMaterialID_REPLACED: TIntegerField;
+    qrMaterialCONSIDERED: TByteField;
+    qrMaterialREPLACED: TByteField;
+    qrMaterialFROM_RATE: TByteField;
+    qrMaterialMAT_ID: TIntegerField;
+    qrMaterialMAT_CODE: TStringField;
+    qrMaterialMAT_NAME: TStringField;
+    qrMaterialMAT_NORMA: TFloatField;
+    qrMaterialMAT_COUNT: TFloatField;
+    qrMaterialMAT_UNIT: TStringField;
+    qrMaterialMAT_SUM_NO_NDS: TIntegerField;
+    qrMaterialMAT_SUM_NDS: TIntegerField;
+    qrMaterialCOAST_NO_NDS: TIntegerField;
+    qrMaterialCOAST_NDS: TIntegerField;
+    qrMaterialTRANSP_NO_NDS: TIntegerField;
+    qrMaterialTRANS_NDS: TIntegerField;
+    qrMaterialPRICE_NO_NDS: TIntegerField;
+    qrMaterialPRICE_NDS: TIntegerField;
+    qrMaterialNDS: TIntegerField;
+    qrMaterialFCOAST_NO_NDS: TIntegerField;
+    qrMaterialFCOAST_NDS: TIntegerField;
+    qrMaterialFTRANSP_NO_NDS: TIntegerField;
+    qrMaterialFTRANSP_NDS: TIntegerField;
+    qrMaterialFPRICE_NO_NDS: TIntegerField;
+    qrMaterialFPRICE_NDS: TIntegerField;
+    qrMaterialMAT_ACTIVE: TByteField;
+    qrMaterialSTATE_MATERIAL: TShortintField;
+    qrMaterialSTATE_TRANSPORT: TByteField;
+    qrMaterialDOC_DATE: TDateField;
+    qrMaterialDOC_NUM: TStringField;
+    qrMaterialMAT_PROC_ZAС: TIntegerField;
+    qrMaterialMAT_PROC_PODR: TIntegerField;
+    qrMaterialTRANSP_PROC_ZAC: TIntegerField;
+    qrMaterialTRANSP_PROC_PODR: TIntegerField;
+    qrMaterialNUM: TIntegerField;
+    qrMaterialSCROLL: TIntegerField;
+    qrMaterialTITLE: TIntegerField;
+    qrMaterialPROC_TRANSP: TFloatField;
+    N10: TMenuItem;
+    qrRatesSTYPE: TIntegerField;
+    qrMaterialMAT_KOEF: TFloatField;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -271,39 +376,25 @@ type
     procedure PopupMenuCoefAddSetClick(Sender: TObject);
     procedure PopupMenuCoefDeleteSetClick(Sender: TObject);
 
-    // PopupMenu
-    procedure StringGridRatesColumnsClick(Sender: TObject);
-    procedure PMMatColumnsClick(Sender: TObject);
 
     // Верхние правые кнопки
     procedure SpeedButtonDescriptionClick(Sender: TObject);
     procedure SpeedButtonMaterialsClick(Sender: TObject);
     procedure SpeedButtonMechanismsClick(Sender: TObject);
 
-    // Левая таблица
-    procedure StringGridRatesClick(Sender: TObject);
-    procedure StringGridRatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure StringGridRatesKeyPress(Sender: TObject; var Key: Char);
-
-    // Правая таблица
-    procedure StringGridRightClick(Sender: TObject);
-    procedure StringGridRightDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-      State: TGridDrawState);
+    //Заполнаяет таблицы справа исходя из выбранной строки в таблице расценок
+    procedure GridRatesRowSellect;
 
     // Вывод значений во ВСЕ правые таблицы
-    procedure FillingTableMaterials(const vIdCardRate, vIdMat: string);
-    procedure FillingMaterials(const AQ: TFDQuery; const vGroup: Char);
-    procedure FillingTableMechanizm(const vIdCardRate, vIdMech: string);
-    procedure FillingMechanizm;
-    procedure FillingTableDescription(const vIdNormativ: string);
+    procedure FillingTableMaterials(const vIdCardRate, vIdMat: Integer);
+    procedure FillingTableMechanizm(const vIdCardRate, vIdMech: integer);
+    procedure FillingTableDescription(const vIdNormativ: integer);
 
     procedure Calculation;
 
     procedure CalculationMaterial;
-    procedure CalculationColumnPriceMaterial;
 
     procedure CalculationMechanizm;
-    procedure CalculationColumnPriceMechanizm;
 
     // Вывод значений в нижнюю таблицу
     procedure FillingCoeffBottomTable;
@@ -371,9 +462,6 @@ type
     // Расчёт Труд маш.
     procedure CalculationWorkMachinist; // +++
 
-    // Показ всплывающей подсказки в таблицах StringGrid
-    procedure ShowHintInTables(const SG: TStringGrid; const vCol, vRow: Integer);
-
     procedure EstimateBasicDataClick(Sender: TObject);
     procedure LabelObjectClick(Sender: TObject);
     procedure LabelEstimateClick(Sender: TObject);
@@ -383,7 +471,6 @@ type
     procedure PanelObjectResize(Sender: TObject);
     procedure ComboBoxOXROPRChange(Sender: TObject);
     procedure Panel1Resize(Sender: TObject);
-    procedure StringGridRatesEnter(Sender: TObject);
     procedure PanelTopMenuResize(Sender: TObject);
     procedure SettingVisibleRightTables;
     procedure PanelClientRightTablesResize(Sender: TObject);
@@ -392,9 +479,6 @@ type
     procedure SettingTablesFromFile(SG: TStringGrid);
     procedure ClearTable(SG: TStringGrid);
     procedure GetMonthYearCalculationEstimate;
-    procedure PanelClientLeftResize(Sender: TObject);
-    procedure PMMatResourcesSettingsClick(Sender: TObject);
-    procedure PMMatResourcesDeleteClick(Sender: TObject);
     procedure FillingOXROPR;
     procedure GetSourceData;
     procedure SetIndexOXROPR(vNumber: string);
@@ -404,27 +488,19 @@ type
     procedure PMDeleteClick(Sender: TObject);
     procedure PanelNoDataResize(Sender: TObject);
     procedure TestOnNoData(SG: TStringGrid);
-    procedure PopupMenuTableLeftCopyClick(Sender: TObject);
-    procedure PopupMenuTableLeftInsertClick(Sender: TObject);
-    procedure StringGridKeyPress(Sender: TObject; var Key: Char);
+    procedure TestOnNoDataNew(ADataSet: TDataSet);
     procedure PopupMenuRatesAdd(Sender: TObject);
     procedure PMMatFromRatesClick(Sender: TObject);
-    procedure StringGridMouseLeaveRight(Sender: TObject);
-    procedure StringGridMouseMoveRight(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure TestFromRates(const SG: TStringGrid; const vCol, vRow: Integer);
     procedure CopyEstimate;
     procedure VisibleColumnsWinterPrice(Value: Boolean);
-    procedure StringGridRatesDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-      State: TGridDrawState);
     procedure ReplacementNumber(Sender: TObject);
     procedure ReplacementMaterial(const vIdMat: Integer);
-    procedure NumerationRates;
 
     procedure PMMatReplaceTableClick(Sender: TObject);
     procedure ShowFormAdditionData(const vDataBase: Char);
     procedure PMAddRatMatMechEquipRefClick(Sender: TObject);
     procedure PMAddRatMatMechEquipOwnClick(Sender: TObject);
-    procedure PMMatEditClick(Sender: TObject);
 
     function GetPriceMaterial(): Variant;
     procedure PMEditClick(Sender: TObject);
@@ -439,28 +515,45 @@ type
     procedure PopupMenuCoefOrdersClick(Sender: TObject);
     procedure PopupMenuCoefPopup(Sender: TObject);
     procedure PanelTableBottomResize(Sender: TObject);
-    procedure SplitterLeftMoved(Sender: TObject);
     procedure Button4Click(Sender: TObject);
 
-    procedure UpdateTableDataTemp;
-    procedure UpdateTableCardRatesTemp;
-    procedure UpdateTableCardMechanizmTemp;
-    procedure UpdateTableCardMaterialTemp;
-
-    procedure GetInfoAboutData;
-    procedure OutputDataToTable;
+    procedure OutputDataToTable(aState: integer); //Заполнение таблицы расценок
 
     procedure AddMaterial(const vMatId: Integer);
     procedure AddMechanizm(const vMechId, vMonth, vYear: Integer);
-    function AllocateMaterial(const vIdInMat: Integer): Boolean;
-    function AllocateMechanizm(const vIdInMech: Integer): Boolean;
-    function CrossOutMaterial(const vIdInMat: Integer): Boolean;
-    function CrossOutMechanizm(const vIdInMech: Integer): Boolean;
 
     procedure PMMechFromRatesClick(Sender: TObject);
+    procedure dbgrdRatesDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure qrRatesBeforeScroll(DataSet: TDataSet);
+    procedure qrRatesAfterScroll(DataSet: TDataSet);
+    procedure qrRatesCOUNTChange(Sender: TField);
+    procedure dbgrdDescriptionDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure qrDescriptionAfterScroll(DataSet: TDataSet);
+    procedure qrMechanizmBeforeInsert(DataSet: TDataSet);
+    procedure qrMechanizmAfterScroll(DataSet: TDataSet);
+    procedure qrMechanizmCalcFields(DataSet: TDataSet);
+    procedure qrRatesBeforeInsert(DataSet: TDataSet);
+    procedure dbgrdMechanizmDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure PMMechEditClick(Sender: TObject);
+    procedure qrMechanizmBeforeScroll(DataSet: TDataSet);
+    procedure MechRowChange(Sender: TField);
+    procedure MatRowChange(Sender: TField);
+    procedure dbgrdMechanizmExit(Sender: TObject);
+    procedure PopupMenuMechanizmsPopup(Sender: TObject);
+    procedure qrRatesBeforePost(DataSet: TDataSet);
+    procedure MemoRightExit(Sender: TObject);
+    procedure MemoRightChange(Sender: TObject);
+    procedure qrMaterialBeforeScroll(DataSet: TDataSet);
+    procedure qrMaterialAfterScroll(DataSet: TDataSet);
+    procedure dbgrdMaterialDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure PMMatEditClick(Sender: TObject);
+    procedure dbgrdMaterialExit(Sender: TObject);
   private
     ActReadOnly: Boolean;
-    CountRowRates: Integer;
 
     CountCoef: Integer;
     RowCoefDefault: Boolean;
@@ -468,6 +561,7 @@ type
 
     IdObject: Integer;
     IdEstimate: Integer;
+    NDSEstimate: boolean; //Расчет  с НДС или без
 
     MonthEstimate: Integer;
     YearEstimate: Integer;
@@ -486,22 +580,6 @@ type
     TypeData: Integer;
     // Тип данных: 0-Строка ввода данных,1-Расценка, 2-Материала, 3-Механизм, 4-Оборудование
 
-    IdInRate: Integer; // Поле Id в таблице card_rate
-    RateId: Integer; // Id расценки
-    RateCode: string; // Код расценки
-
-    IdInMat: Integer; // Поле Id в таблице materialcard
-    MatId: Integer; // Id материала
-    MatIdCardRate: Integer; // Поле id_card_rate в таблице material_card
-    MatIdReplaced: Integer;
-    // Если не равно 0, то является ЗАМЕНЯЮЩИМ неучтённый материал
-    MatReplaced: Boolean;
-    // Был ли неучтённый материал заменён другим материалом
-    MatConsidered: Boolean; // УЧТЁННЫЙ материал
-    MatFromRate: Boolean; // Является ли материал ВЫНЕСЕННЫМ из расценки
-    MatIdForAllocate: Integer;
-    // Поле Id в таблице материалов, для выделения строк жирным
-
     IdInMech: Integer; // Поле Id в таблице mechanizmcard
     MechId: Integer; // Id механизма
     MechIdCardRate: Integer; // Поле id_card_rate в таблице mechanizmcard
@@ -509,6 +587,38 @@ type
     MechIdForAllocate: Integer;
     // Поле Id в таблице механизма, для выделения строк жирным
 
+    //Флаги пересчета по правым таблицам, исключает зацикливание в обработчиках ОnChange;
+    ReCalcMech, ReCalcMat: boolean;
+    //ID замененного материала который надо подсветить
+    IdReplasedMat: integer;
+    //ID заменяющего материала который надо подсветить
+    IdReplasingMat: integer;
+
+    //Изменяет внешний вид таблиц в зависимости от НДС
+    procedure ChangeGrigNDSStyle(aNDS: boolean);
+    //проверка что материал неучтеный в таблице расценок
+    function CheckMatUnAccountingRates: boolean;
+    //проверяет что материал внутри расценки (неучтеный или заменяющий)
+    function CheckMatINRates: boolean;
+
+    //проверка что материал неучтеный в таблице материалов
+    function CheckMatUnAccountingMatirials: boolean;
+
+    procedure ReCalcRowMat; //Пересчет одного материала
+    procedure UpdateRowMat; //Обновляет строку в БД материала
+    procedure ReCalcAllMat; //Пересчет всех материала
+    function CheckMatReadOnly: boolean; //Проверят можно ли редактировать данную строку
+    procedure SetMatReadOnly(AValue: boolean); //Устанавливает режим редактирования
+    procedure SetMatEditMode; //включение режима расширенного редактирования материалов
+    procedure SetMatNoEditMode; //отключение режима расширенного редактирования механизмов
+
+    procedure ReCalcRowMech; //Пересчет одного механизма
+    procedure UpdateRowMech; //Обновляет строку в БД механизмов
+    procedure ReCalcAllMech; //Пересчет всех механизмов
+    function CheckMechReadOnly: boolean; //Проверят можно ли редактировать данную строку
+    procedure SetMechReadOnly(AValue: boolean); //Устанавливает режим редактирования
+    procedure SetMechEditMode; //включение режима расширенного редактирования механизма
+    procedure SetMechNoEditMode; //отключение режима расширенного редактирования механизма
   public
     Act: Boolean;
     IdAct: Integer;
@@ -520,12 +630,12 @@ type
     function GetIdObject: Integer;
     procedure SetIdEstimate(const Value: Integer);
     function GetIdEstimate: Integer;
-    function GetIdRate: Integer;
     function GetMonth: Integer;
     function GetYear: Integer;
     procedure AddRowToTableRates(FieldRates: TFieldRates);
     procedure CreateTempTables;
     procedure OpenAllData;
+    procedure Wheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 
   protected
     procedure CreateParams(var Params: TCreateParams); override;
@@ -548,7 +658,7 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
   CalculationDump, SaveEstimate,
   ReplacementMaterial, Materials, AdditionData, CardMaterial, CardDataEstimate,
   ListCollections, CoefficientOrders, KC6,
-  CardAct;
+  CardAct, Tools;
 
 {$R *.dfm}
 
@@ -557,6 +667,18 @@ procedure TSplitter.Paint();
 begin
   // inherited;
   FormCalculationEstimate.RepaintImagesForSplitters();
+end;
+
+procedure TFormCalculationEstimate.Wheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+  with TDBGrid(Sender) do
+  begin
+    if Assigned(DataSource) then
+     if Assigned(DataSource.DataSet)then
+       if DataSource.DataSet.Active then
+         DataSource.DataSet.MoveBy(-1*Sign(WheelDelta));
+  end;
+  Handled := True;
 end;
 
 procedure TFormCalculationEstimate.WMSysCommand(var Msg: TMessage);
@@ -666,41 +788,35 @@ begin
 
   // -----------------------------------------
 
-  PanelClientLeft.Width := (FormMain.ClientWidth - 5) div 3;
+  PanelClientLeft.Width := 2 * ((FormMain.ClientWidth - 5) div 7);
 
   StringGridCalculations.Constraints.MinHeight := 50;
   PanelClientLeft.Constraints.MinWidth := 30;
   Memo1.Constraints.MinHeight := 45;
   MemoRight.Constraints.MinHeight := 45;
-  StringGridMaterials.Constraints.MinHeight := 50;
 
   // -----------------------------------------
 
   FillingOXROPR;
 
-  SettingTablesFromFile(StringGridRates);
-  SettingTablesFromFile(StringGridMaterials);
-  SettingTablesFromFile(StringGridMechanizms);
-  // SettingTablesFromFile(StringGridEquipments);
-  SettingTablesFromFile(StringGridDescription);
   SettingTablesFromFile(StringGridCalculations);
 
   FillingCoeffBottomTable; // Заполняем строки с коэффициентами
-
-  CountRowRates := 1;
-  // Номер строки с которой начинаем вносить записи, а так же количество записей в левой таблице
 
   ConfirmCloseForm := True;
 
   CountCoef := 1;
   RowCoefDefault := True;
-
-  // -----------------------------------------
-
   // Высота панели с нижней таблицей
   PanelTableBottom.Height := 110 + PanelBottom.Height;
 
-  // -----------------------------------------
+  //Установка стиля DBGrid таблицы
+  LoadDBGridSettings(dbgrdRates);
+  LoadDBGridSettings(dbgrdMaterial);
+  LoadDBGridSettings(dbgrdMechanizm);
+  LoadDBGridSettings(dbgrdDescription);
+
+ // TCustomDbGridCracker(dbgrdRates).OnMouseWheel:=Wheel;
 
   FormMain.CreateButtonOpenWindow(CaptionButtonCalculationEstimate, HintButtonCalculationEstimate,
     FormMain.ShowCalculationEstimate);
@@ -710,17 +826,10 @@ procedure TFormCalculationEstimate.FormShow(Sender: TObject);
 begin
   SettingVisibleRightTables;
 
-  // R Открытие новой таблицы (вместо стринггрида)
-  // R Rates.ParamByName('').AsInteger:=1;
-  // R Rates.ParamByName('').AsInteger:=2;
-  // R Rates.Active := True;
-  // Устанавливаем фокус
-  // R GridRates.SetFocus;
-  StringGridRates.SetFocus;
+  dbgrdRates.SetFocus;
 
   FormMain.TimerCover.Enabled := True;
   // Запускаем таймер который скроет панель после отображения формы
-
 end;
 
 procedure TFormCalculationEstimate.FormActivate(Sender: TObject);
@@ -841,11 +950,6 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.SplitterLeftMoved(Sender: TObject);
-begin
-  FormMain.AutoWidthColumn(StringGridRates, 3);
-end;
-
 procedure TFormCalculationEstimate.SpeedButtonSSRClick(Sender: TObject);
 begin
   if SpeedButtonSSR.Tag = 0 then
@@ -891,7 +995,7 @@ end;
 procedure TFormCalculationEstimate.SpeedButtonMaterialsClick(Sender: TObject);
 var s : string;
 begin
-  TestOnNoData(StringGridMaterials);
+  TestOnNoDataNew(qrMaterial);
 
   if SpeedButtonModeTables.Tag = 0 then s := '1000'
   else s := '1110';
@@ -902,13 +1006,13 @@ begin
     SettingVisibleRightTables;
   end;
 
-  StringGridRightClick(StringGridMaterials);
+  if qrMaterial.Active then qrMaterial.First;
 end;
 
 procedure TFormCalculationEstimate.SpeedButtonMechanismsClick(Sender: TObject);
 var s : string;
 begin
-  TestOnNoData(StringGridMechanizms);
+  TestOnNoDataNew(qrMechanizm);
 
   if SpeedButtonModeTables.Tag = 0 then s := '0100'
   else s := '1110';
@@ -918,8 +1022,7 @@ begin
     VisibleRightTables := s;
     SettingVisibleRightTables;
   end;
-
-  StringGridRightClick(StringGridMechanizms);
+  if qrMechanizm.Active then qrMechanizm.First;
 end;
 
 procedure TFormCalculationEstimate.SpeedButtonEquipmentsClick(Sender: TObject);
@@ -936,40 +1039,48 @@ begin
     SettingVisibleRightTables;
   end;
 
-  StringGridRightClick(StringGridEquipments);
 end;
 
 procedure TFormCalculationEstimate.SpeedButtonDescriptionClick(Sender: TObject);
 begin
-  TestOnNoData(StringGridDescription);
+  TestOnNoDataNew(qrDescription);
 
   if VisibleRightTables <> '0001' then
   begin
     VisibleRightTables := '0001';
     SettingVisibleRightTables;
   end;
-
-  StringGridRightClick(StringGridDescription);
+  if qrDescription.Active then qrDescription.First;
 end;
 
 procedure TFormCalculationEstimate.SpeedButtonModeTablesClick(Sender: TObject);
+var s : string;
 begin
   with SpeedButtonModeTables do
   begin
     Glyph.Assign(nil);
 
-    if Tag = 1 then
+    if Tag = 0 then
     begin
-      Tag := 0;
+      Tag := 1;
       Hint := 'Режим показа таблиц: материалы, механизмы, оборудования';
-      DM.ImageListModeTables.GetBitmap(0, SpeedButtonModeTables.Glyph);
+      DM.ImageListModeTables.GetBitmap(1, SpeedButtonModeTables.Glyph);
+      s := '1110';
     end
     else
     begin
-      Tag := 1;
+      Tag := 0;
       Hint := 'Режим одной таблицы';
-      DM.ImageListModeTables.GetBitmap(1, SpeedButtonModeTables.Glyph);
+      DM.ImageListModeTables.GetBitmap(0, SpeedButtonModeTables.Glyph);
+      s := '1000';
+      if SpeedButtonMechanisms.Down then s := '0100';
+      if SpeedButtonEquipments.Down then s := '0010';
     end;
+  end;
+  if not SpeedButtonDescription.Down then
+  begin
+    VisibleRightTables := s;
+    SettingVisibleRightTables;
   end;
 end;
 
@@ -1000,30 +1111,23 @@ begin
     end;
 end;
 
-procedure TFormCalculationEstimate.PanelClientLeftResize(Sender: TObject);
-begin
-  FormMain.AutoWidthColumn(StringGridRates, 3);
-end;
-
 procedure TFormCalculationEstimate.PanelClientRightTablesResize(Sender: TObject);
 var
   H: Integer;
 begin
   if VisibleRightTables = '0001' then
   begin
-    FormMain.AutoWidthColumn(StringGridDescription, 1);
+    dbgrdDescription.Columns[0].Width := dbgrdDescription.Width - 50;
   end
   else if VisibleRightTables = '1110' then
   begin
-    H := PanelClientRightTables.Height - SplitterRight1.Height - SplitterRight2.Height;
+    H := PanelClientRightTables.Height - SplitterRight1.Height -
+      SplitterRight2.Height;
 
-    StringGridMaterials.Height := H div 3;
-    StringGridMechanizms.Height := StringGridMaterials.Height;
-    StringGridEquipments.Height := StringGridMaterials.Height;
+    dbgrdMaterial.Height := H div 3;
+    dbgrdMechanizm.Height := dbgrdMaterial.Height;
+    StringGridEquipments.Height := dbgrdMaterial.Height;
   end;
-
-  if VisibleRightTables[1] = '1' then
-    FormMain.AutoWidthColumn(StringGridMaterials, 1);
 end;
 
 procedure TFormCalculationEstimate.PanelNoDataResize(Sender: TObject);
@@ -1159,8 +1263,7 @@ var
   FirstChar: Char;
   Path: String;
 begin
-  with StringGridRates do
-    NumberNormativ := Cells[1, Row];
+  NumberNormativ := qrRates.FieldByName('CODE').AsString;
 
   // В условии - русские символы, в переменной NumberNormativ - английские
   if (NumberNormativ > 'Е121-1-1') and (NumberNormativ < 'Е121-137-1') then
@@ -1235,6 +1338,696 @@ begin
   ShellExecute(FormCalculationEstimate.Handle, nil, PChar(Path), nil, nil, SW_SHOWMAXIMIZED);
 end;
 
+procedure TFormCalculationEstimate.qrDescriptionAfterScroll(DataSet: TDataSet);
+begin
+  if SpeedButtonDescription.Down then
+    MemoRight.Text := qrDescription.FieldByName('work').AsString;
+end;
+
+//Проверят можно ли редактировать данную строку
+function TFormCalculationEstimate.CheckMechReadOnly: boolean;
+begin
+  Result := false;
+  if (qrMechanizmFROM_RATE.AsInteger = 1) and not (qrRatesMEID.AsInteger > 0)
+  then Result := true;
+end;
+
+procedure TFormCalculationEstimate.SetMechReadOnly(AValue: boolean); //Устанавливает режим редактирования
+begin
+  dbgrdMechanizm.ReadOnly := AValue;
+end;
+
+//Проверят можно ли редактировать данную строку
+function TFormCalculationEstimate.CheckMatReadOnly: boolean;
+begin
+  Result := false;
+    //Вынесенные из расценки
+  if ((qrMaterialFROM_RATE.AsInteger = 1) and not (qrRatesMID.AsInteger > 0))
+     or
+     //Неучтеные материалы
+     (CheckMatUnAccountingMatirials)
+  then Result := true;
+end;
+
+//Устанавливает режим редактирования
+procedure TFormCalculationEstimate.SetMatReadOnly(AValue: boolean);
+begin
+  dbgrdMaterial.ReadOnly := AValue;
+end;
+
+//включение режима расширенного редактирования материалов
+procedure TFormCalculationEstimate.SetMatEditMode;
+begin
+  if CheckMatReadOnly then exit;
+  dbgrdMaterial.Columns[2].ReadOnly := false; //Норма
+  dbgrdMaterial.Columns[5].ReadOnly := false; //% транспорта
+  dbgrdMaterial.Columns[6].ReadOnly := false; //Расценка
+  dbgrdMaterial.Columns[7].ReadOnly := false; //Расценка
+  dbgrdMaterial.Columns[12].ReadOnly := false; //НДС
+  MemoRight.Color := $00AFFEFC;
+  MemoRight.ReadOnly := false;
+  qrMaterial.Tag := 1;
+end;
+
+//отключение режима расширенного редактирования материалов
+procedure TFormCalculationEstimate.SetMatNoEditMode;
+begin
+  if qrMaterial.Tag = 1 then
+  begin
+    dbgrdMaterial.Columns[2].ReadOnly := true; //Норма
+    dbgrdMaterial.Columns[5].ReadOnly := true; //% транспорта
+    dbgrdMaterial.Columns[6].ReadOnly := true; //Расценка
+    dbgrdMaterial.Columns[7].ReadOnly := true; //Расценка
+    dbgrdMaterial.Columns[12].ReadOnly := true; //НДС
+    MemoRight.Color := clWindow;
+    MemoRight.ReadOnly := true;
+    qrMaterial.Tag := 0;
+  end;
+end;
+
+procedure TFormCalculationEstimate.qrMaterialAfterScroll(DataSet: TDataSet);
+begin
+  if not ReCalcMat then
+  begin
+    if qrMaterialTITLE.AsInteger > 0 then
+      if dbgrdMaterial.Tag > qrMaterial.RecNo then qrMaterial.Prior
+      else qrMaterial.Next;
+
+    SetMatReadOnly(CheckMatReadOnly);
+    dbgrdRates.Repaint;
+
+    IdReplasedMat := qrMaterialID_REPLACED.AsInteger;
+    IdReplasingMat := qrMaterialID.AsInteger;
+
+    DataSet.Edit;
+    qrMaterialSCROLL.AsInteger := 1;
+    DataSet.Post;
+
+    if SpeedButtonMaterials.Down then
+      MemoRight.Text := qrMaterialMAT_NAME.AsString;
+  end;
+end;
+
+procedure TFormCalculationEstimate.qrMaterialBeforeScroll(DataSet: TDataSet);
+begin
+  if not ReCalcMat then
+  begin
+    //Предыдущее рекно используется для определния направления движения по таблице
+    dbgrdMaterial.Tag := qrMaterial.RecNo;
+
+    DataSet.Edit;
+    qrMaterialSCROLL.AsInteger := 0;
+    DataSet.Post;
+
+    //закрытие открытой на редактирование строки
+    SetMatNoEditMode;
+  end;
+end;
+
+
+procedure TFormCalculationEstimate.MatRowChange(Sender: TField);
+begin
+  if Sender.IsNull then
+  begin
+    Sender.AsInteger := 0;
+    exit;
+  end;
+
+  if not ReCalcMat then
+  begin
+    ReCalcMat := true;
+    //Пересчет по строке механизма
+    try
+      //Индивидуальное поведение для конкретных полей
+      if Sender.FieldName = 'MAT_PROC_PODR' then
+      begin
+        if qrMaterialMAT_PROC_PODR.AsInteger > 100 then
+          qrMaterialMAT_PROC_PODR.AsInteger := 100;
+
+        if qrMaterialMAT_PROC_PODR.AsInteger < 0 then
+          qrMaterialMAT_PROC_PODR.AsInteger := 0;
+
+        qrMaterialMAT_PROC_ZAС.AsInteger := 100 - qrMaterialMAT_PROC_PODR.AsInteger;
+      end;
+
+      if Sender.FieldName = 'MAT_PROC_ZAС' then
+      begin
+        if qrMaterialMAT_PROC_ZAС.AsInteger > 100 then
+          qrMaterialMAT_PROC_ZAС.AsInteger := 100;
+
+        if qrMaterialMAT_PROC_ZAС.AsInteger < 0 then
+          qrMaterialMAT_PROC_ZAС.AsInteger := 0;
+
+        qrMaterialMAT_PROC_PODR.AsInteger := 100 -
+          qrMaterialMAT_PROC_ZAС.AsInteger;
+      end;
+
+      if Sender.FieldName = 'TRANSP_PROC_PODR' then
+      begin
+        if qrMaterialTRANSP_PROC_PODR.AsInteger > 100 then
+          qrMaterialTRANSP_PROC_PODR.AsInteger := 100;
+
+        if qrMaterialTRANSP_PROC_PODR.AsInteger < 0 then
+          qrMaterialTRANSP_PROC_PODR.AsInteger := 0;
+
+        qrMaterialTRANSP_PROC_ZAC.AsInteger := 100 -
+          qrMaterialTRANSP_PROC_PODR.AsInteger;
+      end;
+
+      if Sender.FieldName = 'TRANSP_PROC_ZAC' then
+      begin
+        if qrMaterialTRANSP_PROC_ZAC.AsInteger > 100 then
+          qrMaterialTRANSP_PROC_ZAC.AsInteger := 100;
+
+        if qrMaterialTRANSP_PROC_ZAC.AsInteger < 0 then
+          qrMaterialTRANSP_PROC_ZAC.AsInteger := 0;
+
+        qrMaterialTRANSP_PROC_PODR.AsInteger := 100 -
+          qrMaterialTRANSP_PROC_ZAC.AsInteger;
+      end;
+
+      //Пересчет по строке механизма
+      ReCalcRowMat;
+      //После изменения ячейки строка пересчитывается и фиксируется
+      qrMaterial.Post;
+      //Сохраняем в базе
+      UpdateRowMat;
+    finally
+      ReCalcMat := false;
+    end;
+  end;
+end;
+
+procedure TFormCalculationEstimate.qrMechanizmAfterScroll(DataSet: TDataSet);
+begin
+  if not ReCalcMech then
+  begin
+    SetMechReadOnly(CheckMechReadOnly);
+    dbgrdRates.Repaint;
+
+    DataSet.Edit;
+    qrMechanizmSCROLL.AsInteger := 1;
+    DataSet.Post;
+
+    if SpeedButtonMechanisms.Down then
+      MemoRight.Text := qrMechanizmMECH_NAME.AsString;
+  end;
+end;
+
+procedure TFormCalculationEstimate.qrMechanizmBeforeInsert(DataSet: TDataSet);
+begin
+  Abort; //Запрет добавления новой строки в правых таблицах
+end;
+
+procedure TFormCalculationEstimate.qrMechanizmBeforeScroll(DataSet: TDataSet);
+begin
+  if not ReCalcMech then
+  begin
+
+    DataSet.Edit;
+    qrMechanizmSCROLL.AsInteger := 0;
+    DataSet.Post;
+    //закрытие открытой на редактирование строки
+    SetMechNoEditMode;
+  end;
+end;
+
+procedure TFormCalculationEstimate.qrMechanizmCalcFields(DataSet: TDataSet);
+begin
+  //Поле нумерации для таблицы механизмов
+  if DataSet.Bof then qrMechanizmNUM.AsInteger := 1
+  else qrMechanizmNUM.AsInteger := DataSet.RecNo;
+end;
+
+
+//Исключает ввод null в числовые поля таблицы сметы
+procedure TFormCalculationEstimate.MechRowChange(Sender: TField);
+begin
+  if Sender.IsNull then
+  begin
+    Sender.AsInteger := 0;
+    exit;
+  end;
+
+  if not ReCalcMech then
+  begin
+    ReCalcMech := true;
+    //Пересчет по строке механизма
+    try
+      //Индивидуальное поведение для конкретных полей
+      if Sender.FieldName = 'PROC_PODR' then
+      begin
+        if qrMechanizmPROC_PODR.AsInteger > 100 then
+          qrMechanizmPROC_PODR.AsInteger := 100;
+
+        if qrMechanizmPROC_PODR.AsInteger < 0 then
+          qrMechanizmPROC_PODR.AsInteger := 0;
+
+        qrMechanizmPROC_ZAC.AsInteger := 100 - qrMechanizmPROC_PODR.AsInteger;
+      end;
+
+      if Sender.FieldName = 'PROC_ZAC' then
+      begin
+        if qrMechanizmPROC_ZAC.AsInteger > 100 then
+          qrMechanizmPROC_ZAC.AsInteger := 100;
+
+        if qrMechanizmPROC_ZAC.AsInteger < 0 then
+          qrMechanizmPROC_ZAC.AsInteger := 0;
+
+        qrMechanizmPROC_PODR.AsInteger := 100 - qrMechanizmPROC_ZAC.AsInteger;
+      end;
+      //Пересчет по строке механизма
+      ReCalcRowMech;
+      //После изменения ячейки строка пересчитывается и фиксируется
+      qrMechanizm.Post;
+      //Сохраняем в базе( не требуется так как qrMechanizm напрямую связан таблицей механизмов )
+      //UpdateRowMech;
+    finally
+      ReCalcMech := false;
+    end;
+  end;
+end;
+
+procedure TFormCalculationEstimate.MemoRightChange(Sender: TObject);
+begin
+  if not MemoRight.ReadOnly then
+  begin
+    if SpeedButtonMechanisms.Down then MemoRight.Tag := 3;
+
+    //Редактирует название механизма, материала....
+    //оочень много лишних sql
+    case MemoRight.Tag of
+      2:;
+      3:
+      begin
+        qrMechanizm.Edit;
+        qrMechanizmMECH_NAME.AsString := MemoRight.Text;
+        qrMechanizm.Post;
+
+        {qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set ' +
+          'MECH_NAME=:MECH_NAME WHERE ID=:ID;';
+        qrTemp.ParamByName('ID').AsInteger := qrMechanizmID.AsInteger;
+        qrTemp.ParamByName('MECH_NAME').AsString := MemoRight.Text;
+        qrTemp.ExecSQL;  }
+      end;
+    end;
+  end;
+end;
+
+procedure TFormCalculationEstimate.MemoRightExit(Sender: TObject);
+begin
+  case MemoRight.Tag of
+  3:
+    if not Assigned(FormCalculationEstimate.ActiveControl) or
+      (FormCalculationEstimate.ActiveControl.Name <> 'dbgrdMechanizm') then
+      SetMechNoEditMode;
+  end;
+
+  MemoRight.Tag := 0;
+end;
+
+//Пересчитывает данные по строке в таблице механизмов
+procedure TFormCalculationEstimate.ReCalcRowMech;
+begin
+  qrMechanizmMECH_COUNT.AsFloat :=
+    qrMechanizmMECH_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat *
+    qrMechanizmMECH_KOEF.AsFloat;
+
+  qrMechanizmPRICE_NO_NDS.AsInteger :=
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NO_NDS.AsInteger) +
+    qrMechanizmZP_MACH_NO_NDS.AsInteger;
+
+  qrMechanizmPRICE_NDS.AsInteger :=
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NDS.AsInteger) +
+    qrMechanizmZP_MACH_NDS.AsInteger;
+
+  //%НДС забит жестко 20%
+  if NDSEstimate then
+  begin
+    qrMechanizmFCOAST_NO_NDS.AsInteger :=
+      Round(qrMechanizmFCOAST_NDS.AsInteger /
+      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+
+    qrMechanizmFZP_MACH_NO_NDS.AsInteger :=
+      Round(qrMechanizmFZP_MACH_NDS.AsInteger /
+      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+
+    qrMechanizmRENT_PRICE_NO_NDS.AsInteger :=
+      Round(qrMechanizmRENT_PRICE_NDS.AsInteger /
+      (1.000000 + 0.010000 * qrMechanizmRENT_NDS.AsInteger));
+  end
+  else
+  begin
+    qrMechanizmFCOAST_NDS.AsInteger :=
+      Round(qrMechanizmFCOAST_NO_NDS.AsInteger *
+      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+
+    qrMechanizmFZP_MACH_NDS.AsInteger :=
+      Round(qrMechanizmFZP_MACH_NO_NDS.AsInteger *
+      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+
+    qrMechanizmRENT_PRICE_NDS.AsInteger :=
+      Round(qrMechanizmRENT_PRICE_NO_NDS.AsInteger *
+      (1.000000 + 0.010000 * qrMechanizmRENT_NDS.AsInteger));
+  end;
+
+  qrMechanizmFPRICE_NO_NDS.AsInteger :=
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFCOAST_NO_NDS.AsInteger) +
+    qrMechanizmFZP_MACH_NO_NDS.AsInteger;
+
+  qrMechanizmFPRICE_NDS.AsInteger :=
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFCOAST_NDS.AsInteger) +
+    qrMechanizmFZP_MACH_NDS.AsInteger;
+
+  //Если заданы фактич. используем их, если нет то сметные
+  if qrMechanizmFPRICE_NO_NDS.AsInteger > 0 then
+  begin
+    qrMechanizmMECH_SUM_NO_NDS.AsInteger :=
+      qrMechanizmFPRICE_NO_NDS.AsInteger + qrMechanizmRENT_PRICE_NO_NDS.AsInteger;
+    qrMechanizmMECH_SUM_NDS.AsInteger :=
+      qrMechanizmFPRICE_NDS.AsInteger + qrMechanizmRENT_PRICE_NDS.AsInteger;
+  end
+  else
+  begin
+    qrMechanizmMECH_SUM_NO_NDS.AsInteger :=
+      qrMechanizmPRICE_NO_NDS.AsInteger + qrMechanizmRENT_PRICE_NO_NDS.AsInteger;
+    qrMechanizmMECH_SUM_NDS.AsInteger :=
+      qrMechanizmPRICE_NDS.AsInteger + qrMechanizmRENT_PRICE_NDS.AsInteger;
+  end;
+end;
+
+//Обновляет данные в БД по стороке механизмов
+procedure TFormCalculationEstimate.UpdateRowMech;
+begin
+  with qrTemp do
+  begin
+    Active := False;
+    SQL.Clear;
+    SQL.Add('UPDATE mechanizmcard_temp SET MECH_NORMA = :MECH_NORMA, ' +
+      'MECH_COUNT = :MECH_COUNT, COAST_NO_NDS = :COAST_NO_NDS, ' +
+      'COAST_NDS = :COAST_NDS, NDS = :NDS, ZP_MACH_NO_NDS = :ZP_MACH_NO_NDS, ' +
+      'ZP_MACH_NDS = :ZP_MACH_NDS, FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
+      'FCOAST_NDS = :FCOAST_NDS, PRICE_NO_NDS = :PRICE_NO_NDS, PRICE_NDS = :PRICE_NDS, ' +
+      'FPRICE_NO_NDS = :FPRICE_NO_NDS, FPRICE_NDS = :FPRICE_NDS, ' +
+      'RENT_PRICE_NO_NDS = :RENT_PRICE_NO_NDS, RENT_PRICE_NDS = :RENT_PRICE_NDS, ' +
+      'RENT_NDS = :RENT_NDS, RENT_COAST_NO_NDS = :RENT_COAST_NO_NDS, ' +
+      'RENT_COAST_NDS = :RENT_COAST_NDS, RENT_COUNT = :RENT_COUNT, ' +
+      'MECH_KOEF = :MECH_KOEF, MECH_SUM_NO_NDS = :MECH_SUM_NO_NDS, ' +
+      'MECH_SUM_NDS = :MECH_SUM_NDS WHERE id = :id;');
+    ParamByName('MECH_NORMA').Value := qrMechanizmMECH_NORMA.Value;
+    ParamByName('MECH_COUNT').Value := qrMechanizmMECH_COUNT.Value;
+    ParamByName('COAST_NO_NDS').Value := qrMechanizmCOAST_NO_NDS.Value;
+    ParamByName('COAST_NDS').Value := qrMechanizmCOAST_NDS.Value;
+    ParamByName('NDS').Value := qrMechanizmNDS.Value;
+    ParamByName('ZP_MACH_NO_NDS').Value := qrMechanizmZP_MACH_NO_NDS.Value;
+    ParamByName('ZP_MACH_NDS').Value := qrMechanizmZP_MACH_NDS.Value;
+    ParamByName('FCOAST_NO_NDS').Value := qrMechanizmFCOAST_NO_NDS.Value;
+    ParamByName('FCOAST_NDS').Value := qrMechanizmFCOAST_NDS.Value;
+    ParamByName('PRICE_NO_NDS').Value := qrMechanizmPRICE_NO_NDS.Value;
+    ParamByName('PRICE_NDS').Value := qrMechanizmPRICE_NDS.Value;
+    ParamByName('FPRICE_NO_NDS').Value := qrMechanizmFPRICE_NO_NDS.Value;
+    ParamByName('FPRICE_NDS').Value := qrMechanizmFPRICE_NDS.Value;
+    ParamByName('RENT_PRICE_NO_NDS').Value := qrMechanizmRENT_PRICE_NO_NDS.Value;
+    ParamByName('RENT_PRICE_NDS').Value := qrMechanizmRENT_PRICE_NDS.Value;
+    ParamByName('RENT_NDS').Value := qrMechanizmRENT_NDS.Value;
+    ParamByName('RENT_COAST_NO_NDS').Value := qrMechanizmRENT_COAST_NO_NDS.Value;
+    ParamByName('RENT_COAST_NDS').Value := qrMechanizmRENT_COAST_NDS.Value;
+    ParamByName('RENT_COUNT').Value := qrMechanizmRENT_COUNT.Value;
+    ParamByName('MECH_KOEF').Value := qrMechanizmMECH_KOEF.Value;
+    ParamByName('MECH_SUM_NO_NDS').Value := qrMechanizmMECH_SUM_NO_NDS.Value;
+    ParamByName('MECH_SUM_NDS').Value := qrMechanizmMECH_SUM_NDS.Value;
+    ParamByName('id').Value := qrMechanizmID.Value;
+    ExecSQL;
+  end;
+end;
+
+//Пересчитывает все строки в таблице механизмов
+procedure TFormCalculationEstimate.ReCalcAllMech;
+var RecNo: integer;
+begin
+  if not qrMechanizm.Active then exit;
+
+  RecNo := qrMechanizm.RecNo;
+  ReCalcMech := true;
+  //Пересчет по строке механизма
+  try
+    qrMechanizm.DisableControls;
+    qrMechanizm.First;
+    while not qrMechanizm.Eof do
+    begin
+      qrMechanizm.Edit;
+      ReCalcRowMech;
+      qrMechanizm.Post;
+      //UpdateRowMech;
+      qrMechanizm.Next;
+    end;
+    qrMechanizm.RecNo := RecNo;
+  finally
+    ReCalcMech := false;
+    qrMechanizm.EnableControls;
+  end;
+end;
+
+//Пересчет одного материала
+procedure TFormCalculationEstimate.ReCalcRowMat;
+begin
+  qrMaterialMAT_COUNT.AsFloat :=
+    qrMaterialMAT_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat *
+    qrMaterialMAT_KOEF.AsFloat;
+
+  qrMaterialTRANSP_NO_NDS.AsInteger :=
+    Round(qrMaterialPROC_TRANSP.AsFloat * qrMaterialCOAST_NO_NDS.AsInteger);
+
+  qrMaterialTRANS_NDS.AsInteger :=
+    Round(qrMaterialPROC_TRANSP.AsFloat * qrMaterialCOAST_NDS.AsInteger);
+
+  qrMaterialPRICE_NO_NDS.AsInteger :=
+    Round(qrMaterialMAT_COUNT.AsFloat * qrMaterialCOAST_NO_NDS.AsInteger) +
+    qrMaterialTRANSP_NO_NDS.AsInteger;
+
+  qrMaterialPRICE_NDS.AsInteger :=
+    Round(qrMaterialMAT_COUNT.AsFloat * qrMaterialCOAST_NDS.AsInteger) +
+    qrMaterialTRANS_NDS.AsInteger;
+
+  if NDSEstimate then
+  begin
+    qrMaterialFCOAST_NO_NDS.AsInteger :=
+      Round(qrMaterialFCOAST_NDS.AsInteger /
+      (1.000000 + 0.010000 * qrMaterialNDS.AsInteger));
+
+    qrMaterialFTRANSP_NO_NDS.AsInteger :=
+      Round(qrMaterialFTRANSP_NDS.AsInteger /
+      (1.000000 + 0.010000 * qrMaterialNDS.AsInteger));
+  end
+  else
+  begin
+    qrMaterialFCOAST_NDS.AsInteger :=
+      Round(qrMaterialFCOAST_NO_NDS.AsInteger *
+      (1.000000 + 0.010000 * qrMaterialNDS.AsInteger));
+
+    qrMaterialFTRANSP_NDS.AsInteger :=
+      Round(qrMaterialFTRANSP_NO_NDS.AsInteger *
+      (1.000000 + 0.010000 * qrMaterialNDS.AsInteger));
+  end;
+
+  qrMaterialFPRICE_NO_NDS.AsInteger :=
+    Round(qrMaterialMAT_COUNT.AsFloat * qrMaterialFCOAST_NO_NDS.AsInteger) +
+    qrMaterialFTRANSP_NO_NDS.AsInteger;
+
+  qrMaterialFPRICE_NDS.AsInteger :=
+    Round(qrMaterialMAT_COUNT.AsFloat * qrMaterialFCOAST_NDS.AsInteger) +
+    qrMaterialFTRANSP_NDS.AsInteger;
+
+  //Если заданы фактич. используем их, если нет то сметные
+  if qrMaterialFPRICE_NO_NDS.AsInteger > 0 then
+  begin
+    qrMaterialMAT_SUM_NO_NDS.AsInteger := qrMaterialFPRICE_NO_NDS.AsInteger;
+    qrMaterialMAT_SUM_NDS.AsInteger := qrMaterialFPRICE_NDS.AsInteger;
+  end
+  else
+  begin
+    qrMaterialMAT_SUM_NO_NDS.AsInteger := qrMaterialPRICE_NO_NDS.AsInteger;
+    qrMaterialMAT_SUM_NDS.AsInteger := qrMaterialPRICE_NDS.AsInteger;
+  end;
+end;
+
+//Обновляет строку в БД материала
+procedure TFormCalculationEstimate.UpdateRowMat;
+begin
+
+end;
+
+//Пересчет всех материала
+procedure TFormCalculationEstimate.ReCalcAllMat;
+var RecNo: integer;
+begin
+  if not qrMaterial.Active then exit;
+
+  RecNo := qrMaterial.RecNo;
+  ReCalcMat := true;
+  //Пересчет по строке материала
+  try
+    qrMaterial.DisableControls;
+    qrMaterial.First;
+    while not qrMaterial.Eof do
+    begin
+      qrMaterial.Edit;
+      ReCalcRowMat;
+      qrMaterial.Post;
+      UpdateRowMat;
+      qrMaterial.Next;
+    end;
+    qrMaterial.RecNo := RecNo;
+  finally
+    ReCalcMat := false;
+    qrMaterial.EnableControls;
+  end;
+end;
+
+//Проверка на неучтеный материал или заменяющий
+function TFormCalculationEstimate.CheckMatUnAccountingRates: boolean;
+begin
+  Result := ((qrRatesMID.AsInteger > 0) and
+             (qrRatesCONSIDERED.AsInteger = 0) and
+             (qrRatesREPLACED.AsInteger = 0));
+end;
+
+function TFormCalculationEstimate.CheckMatINRates: boolean;
+begin
+   Result := CheckMatUnAccountingRates or
+             ((qrRatesMID.AsInteger > 0) and
+              (qrRatesID_REPLACED.AsInteger > 0));
+end;
+
+//проверка что материал неучтеный в таблице материалов
+function TFormCalculationEstimate.CheckMatUnAccountingMatirials: boolean;
+begin
+  Result := qrMaterialCONSIDERED.AsInteger = 0;
+end;
+
+procedure TFormCalculationEstimate.qrRatesAfterScroll(DataSet: TDataSet);
+begin
+  if qrRates.Tag <> 1 then
+  begin
+    qrRatesCOUNT.ReadOnly := DataSet.Eof;
+    qrRatesCODE.ReadOnly := not DataSet.Eof;
+    if DataSet.Eof then
+    begin
+      qrMaterial.Active := false;
+      qrMechanizm.Active := false;
+      qrDescription.Active := false;
+      TestOnNoDataNew(qrMaterial);
+      exit;
+    end;
+
+    //Устанавливаем еденичку для выделения строки жирным в dbgrdRates
+    DataSet.Edit;
+    //Запрешает редактировать кол-во для неучтенных и заменяющих метериалов
+    qrRatesCOUNT.ReadOnly := CheckMatINRates;
+
+    qrRatesSCROLL.AsInteger := 1;
+    DataSet.Post;
+
+    GridRatesRowSellect;
+  end;
+end;
+
+procedure TFormCalculationEstimate.qrRatesBeforeInsert(DataSet: TDataSet);
+begin
+  if not DataSet.Eof then abort;
+end;
+
+procedure TFormCalculationEstimate.qrRatesBeforePost(DataSet: TDataSet);
+begin
+  if DataSet.State in [dsInsert] then
+  begin
+    DataSet.Cancel;
+    abort;
+  end;
+end;
+
+procedure TFormCalculationEstimate.qrRatesBeforeScroll(DataSet: TDataSet);
+begin
+  if qrRates.Tag <> 1 then
+  begin
+    if DataSet.Eof then exit;
+
+    DataSet.Edit;
+    qrRatesSCROLL.AsInteger := 0;
+    DataSet.Post;
+  end;
+end;
+
+procedure TFormCalculationEstimate.qrRatesCOUNTChange(Sender: TField);
+var RCount: real;
+    RecNo: integer;
+begin
+  if Sender.IsNull then
+  begin
+    Sender.AsInteger := 0;
+    exit;
+  end;
+  //Обновляем каунт для расчета
+  RecNo := qrRates.RecNo;
+  RCount := Sender.AsFloat;
+  qrRatesCOUNTFORCALC.AsFloat := RCount;
+  qrRates.Post;
+  //Для раценки обновляем COUNTFORCALC и у неучтенных материалов
+  if qrRatesTYPE_DATA.AsInteger = 1 then
+  begin
+    qrRates.Tag := 1; //Блокирует обработчики событий датасета
+    qrRates.DisableControls;
+    try
+    if not qrRates.Eof then qrRates.Next;
+    while not qrRates.Eof do
+    begin
+      if CheckMatUnAccountingRates then
+      begin
+        qrRates.Edit;
+        qrRatesCOUNTFORCALC.AsFloat := RCount;
+        qrRates.Post;
+      end
+      else Break; //так как датасет отсортирован
+      qrRates.Next;
+    end;
+    qrRates.RecNo := RecNo;
+    finally
+      qrRates.Tag := 0;
+      qrRates.EnableControls
+    end;
+  end;
+
+  case qrRatesTYPE_DATA.AsInteger of
+  1:
+  begin
+    qrTemp.SQL.Text := 'UPDATE card_rate_temp set rate_count=:RC WHERE ID=:ID;';
+    qrTemp.ParamByName('ID').AsInteger := qrRatesRID.AsInteger;
+    qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+    qrTemp.ExecSQL;
+  end;
+  2:
+  begin
+    qrTemp.SQL.Text := 'UPDATE materialcard_temp set mat_count=:RC WHERE ID=:ID;';
+    qrTemp.ParamByName('ID').AsInteger := qrRatesMID.AsInteger;
+    qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+    qrTemp.ExecSQL;
+  end;
+  3:
+  begin
+    qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set mech_count=:RC WHERE ID=:ID;';
+    qrTemp.ParamByName('ID').AsInteger := qrRatesMEID.AsInteger;
+    qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+    qrTemp.ExecSQL;
+  end;
+  else
+  begin
+    showmessage('Запрос обновления не реализован!');
+  end;
+  end;
+  ReCalcAllMat;
+  ReCalcAllMech;
+end;
+
 procedure TFormCalculationEstimate.N3Click(Sender: TObject);
 begin
   FormSummaryCalculationSettings.ShowModal;
@@ -1242,7 +2035,7 @@ end;
 
 procedure TFormCalculationEstimate.PMCoefOrdersClick(Sender: TObject);
 begin
-  FormCoefficientOrders.ShowForm(IdEstimate, RateId, 0);
+  //FormCoefficientOrders.ShowForm(IdEstimate, RateId, 0);
   GetStateCoefOrdersInRate;
 end;
 
@@ -1297,69 +2090,79 @@ begin
   FormReplacementMaterial.ShowModal;
 end;
 
-procedure TFormCalculationEstimate.PMMatResourcesSettingsClick(Sender: TObject);
+procedure TFormCalculationEstimate.PMMatEditClick(Sender: TObject);
 begin
-  with FormPercentClientContractor, StringGridMaterials do
-  begin
-    StrPercent := Cells[ColCount - 1, Row];
-    ShowModal;
-  end;
-
-  with StringGridMaterials do
-  begin
-    Cells[ColCount - 1, Row] := FormPercentClientContractor.StrPercent;
-    Repaint;
-  end;
-end;
-
-procedure TFormCalculationEstimate.PMMatResourcesDeleteClick(Sender: TObject);
-begin
-  with StringGridMaterials do
-  begin
-    Cells[ColCount - 1, Row] := '';
-    Repaint;
-  end;
+  SetMatEditMode;
 end;
 
 procedure TFormCalculationEstimate.PMMatFromRatesClick(Sender: TObject);
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
       SQL.Add('UPDATE materialcard_temp SET from_rate = 1 WHERE id = :id;');
-      ParamByName('id').Value := IdInMat;
+      ParamByName('id').Value := qrMaterialID.AsInteger;
       ExecSQL;
     end;
 
-    OutputDataToTable;
-
-    StringGridRates.Repaint;
-    StringGridMaterials.Repaint;
+    OutputDataToTable(0);
   except
     on E: Exception do
       MessageBox(0, PChar('При вынесении материала из расценки возникла ошибка:' + sLineBreak + sLineBreak +
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
+//Открытие строчки механизмов на редактирование
+procedure TFormCalculationEstimate.PMMechEditClick(Sender: TObject);
+begin
+  SetMechEditMode;
+end;
+//включение режима расширенного редактирования механизма
+procedure TFormCalculationEstimate.SetMechEditMode;
+begin
+  if CheckMechReadOnly then exit;
+  dbgrdMechanizm.Columns[2].ReadOnly := false; //Норма
+  dbgrdMechanizm.Columns[5].ReadOnly := false; //ЗП машиниста
+  dbgrdMechanizm.Columns[6].ReadOnly := false; //ЗП машиниста
+  dbgrdMechanizm.Columns[7].ReadOnly := false; //Расценка
+  dbgrdMechanizm.Columns[8].ReadOnly := false; //Расценка
+  dbgrdMechanizm.Columns[11].ReadOnly := false; //НДС
+  MemoRight.Color := $00AFFEFC;
+  MemoRight.ReadOnly := false;
+  qrMechanizm.Tag := 1;
+end;
+//отключение режима расширенного редактирования механизма
+procedure TFormCalculationEstimate.SetMechNoEditMode;
+begin
+  if qrMechanizm.Tag = 1 then
+  begin
+    dbgrdMechanizm.Columns[2].ReadOnly := true; //Норма
+    dbgrdMechanizm.Columns[5].ReadOnly := true; //ЗП машиниста
+    dbgrdMechanizm.Columns[6].ReadOnly := true; //ЗП машиниста
+    dbgrdMechanizm.Columns[7].ReadOnly := true; //Расценка
+    dbgrdMechanizm.Columns[8].ReadOnly := true; //Расценка
+    dbgrdMechanizm.Columns[11].ReadOnly := true; //НДС
+    MemoRight.Color := clWindow;
+    MemoRight.ReadOnly := true;
+    qrMechanizm.Tag := 0;
+  end;
+end;
 
 procedure TFormCalculationEstimate.PMMechFromRatesClick(Sender: TObject);
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
       SQL.Add('UPDATE mechanizmcard_temp SET from_rate = 1 WHERE id = :id;');
-      ParamByName('id').Value := IdInMech;
+      ParamByName('id').Value := qrMechanizmID.Value;
       ExecSQL;
     end;
 
-    OutputDataToTable;
-
-    StringGridRates.Repaint;
-    StringGridMechanizms.Repaint;
+    OutputDataToTable(0);
   except
     on E: Exception do
       MessageBox(0, PChar('При вынесении механизма из расценки возникла ошибка:' + sLineBreak + sLineBreak +
@@ -1449,7 +2252,7 @@ begin
         FormCardAct.ShowModal
       else if not ActReadOnly then
         try
-          with ADOQueryTemp do
+          with qrTemp do
           begin
             Active := False;
             SQL.Clear;
@@ -1462,11 +2265,10 @@ begin
             MessageBox(0, PChar('При сохранении данных акта возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
-      // CanClose := False; // УДАЛИТЬ
     end
     else
       try
-        with ADOQueryTemp do
+        with qrTemp do
         begin
           Active := False;
           SQL.Clear;
@@ -1484,100 +2286,32 @@ begin
     FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(FormMain);
 end;
 
-procedure TFormCalculationEstimate.StringGridKeyPress(Sender: TObject; var Key: Char);
-begin
-  if Key = #13 then
-  begin
-    if SpeedButtonMaterials.Down then
-    begin
-      CalculationMaterial;
-      CalculationColumnPriceMaterial;
-    end
-    else if SpeedButtonMechanisms.Down then
-    begin
-      CalculationMechanizm;
-      CalculationColumnPriceMechanizm;
-    end;
-
-    with Sender as TStringGrid do
-      Repaint;
-
-    Exit;
-  end;
-
-  if not(Key in ['0' .. '9', #8, '.', ',']) then
-    Key := #0;
-
-  with Sender as TStringGrid do
-    Repaint;
-end;
-
-procedure TFormCalculationEstimate.StringGridMouseMoveRight(Sender: TObject; Shift: TShiftState;
-  X, Y: Integer);
-var
-  SG: TStringGrid;
-  vCol, vRow: Integer;
-begin
-  SG := (Sender as TStringGrid);
-
-  with SG do
-    MouseToCell(X, Y, vCol, vRow);
-
-  ShowHintInTables(SG, vCol, vRow);
-  TestFromRates(SG, vCol, vRow);
-end;
-
-procedure TFormCalculationEstimate.StringGridMouseLeaveRight(Sender: TObject);
-begin
-  PanelHint.Visible := False;
-end;
-
-//Выбор строки в таблице расценок
-procedure TFormCalculationEstimate.StringGridRatesClick(Sender: TObject);
+procedure TFormCalculationEstimate.GridRatesRowSellect;
 var
   i: Integer;
   vIdNormativ: string;
   VAT, vClass, Distance, More, Mass, IdDump, Count: Integer;
   TwoValuesSalary, TwoValuesEMiM: TTwoValues;
   CalcPrice: string[2];
-
-  SGR : TStringGrid; //переменная дублирует StringGridRates, добавлена для краткости
   BtnChange: boolean; //Признак изменения выбраной кнопки
 begin
-  PanelHint.Visible := False;
-  SGR := TStringGrid(Sender);
-
-  // РАЗРЕШАЕМ/ЗАПРЕЩАЕМ РЕДАКТИРОВАНИЕ В ЯЧЕЙКЕ
-  // Если активна ячейка "Количество", и в текущей строке есть данные
-  // или активна ячейка "№ норматива", и в текущей строке нет данных
-  if ((SGR.Col = 2) and (SGR.Cells[0, SGR.Row] <> '')) or
-     ((SGR.Col = 1) and (SGR.Cells[0, SGR.Row] = '')) then
-    SGR.Options := SGR.Options + [goEditing] // разрешаем редактирование
-  else
-    SGR.Options := SGR.Options - [goEditing]; // запрещаем редактирование
-
   //Пишем название расценки(или материала.....) в мемо под таблицей
-  Memo1.Text := SGR.Cells[4, SGR.Row];
+  Memo1.Text := qrRatesCAPTION.AsString;
 
   // Изменение типа данных в выпадающем списке
-  if SGR.Cells[5, SGR.Row] <> '' then
-    ComboBoxTypeData.ItemIndex := StrToInt(SGR.Cells[5, SGR.Row]) - 1
+  if qrRatesTYPE_DATA.AsInteger > 0 then
+    ComboBoxTypeData.ItemIndex :=
+      qrRatesTYPE_DATA.AsInteger - 1
   else
     ComboBoxTypeData.ItemIndex := -1;
-
-  // -----------------------------------------
 
   // Средний разряд рабочих-строителей
   EditCategory.Text := '';
   EditWinterPrice.Text := '';
-
   // Разраты труда рабочих-строителей
   StringGridCalculations.Cells[11, CountCoef + 2] := '';
-
   // Затраты труда машинистов
   StringGridCalculations.Cells[12, CountCoef + 2] := '';
-
-  // -----------------------------------------
 
   // Очищаем 2 последние строки в таблице расчёта
   StringGridCalculations.Enabled := False;
@@ -1590,8 +2324,8 @@ begin
   // Заполняем в таблице расчёта второй столбец
   with StringGridCalculations do
   begin
-    Cells[1, RowCount - 2] := StringGridRates.Cells[3, StringGridRates.Row];
-    Cells[1, RowCount - 1] := StringGridRates.Cells[2, StringGridRates.Row];
+    Cells[1, RowCount - 2] := qrRatesUNIT.AsString;
+    Cells[1, RowCount - 1] := qrRatesCOUNT.AsString;
   end;
   StringGridCalculations.Enabled := True;
 
@@ -1600,13 +2334,9 @@ begin
 
   CalcPrice := '00';
 
-  // -----------------------------------------
-
   PMDelete.Enabled := True;
   PMReplace.Enabled := False;
   PMEdit.Enabled := False;
-
-  GetInfoAboutData; //подгружает информацию по выбранной строке
 
   // РАЗВЁРТЫВАНИЕ ВЫБРАННОЙ РАСЦЕНКИ В ТАБЛИЦАХ СПРАВА
   BtnChange := false;
@@ -1615,53 +2345,48 @@ begin
       begin
         PMEdit.Enabled := True;
 
-        CountFromRate := MyStrToFloat(SGR.Cells[2, StringGridRates.Row]);
-
         //настройка кнопочек свержу справа, для расценок всегда выбирается "материалы"
         SpeedButtonMaterials.Enabled := True;
         SpeedButtonMechanisms.Enabled := True;
         SpeedButtonEquipments.Enabled := True;
         SpeedButtonDescription.Enabled := True;
-        SpeedButtonModeTables.Enabled := True;
 
         //Заполнение таблиц справа
-        FillingTableMaterials(IntToStr(IdInRate), '0');
-        FillingTableMechanizm(IntToStr(IdInRate), '0');
-        FillingTableDescription(IntToStr(RateId));
+        FillingTableMaterials(qrRatesRID.AsInteger, 0);
+        FillingTableMechanizm(qrRatesRID.AsInteger, 0);
+        FillingTableDescription(qrRatesIDID.AsInteger);
 
         // Проверка, если активна таблица в которой нет данных,
         // показываем пустую панель с картинкой
         if SpeedButtonMaterials.Down then
-          TestOnNoData(StringGridMaterials)
+          TestOnNoDataNEW(qrMaterial)
         else if SpeedButtonMechanisms.Down then
-          TestOnNoData(StringGridMechanizms)
+          TestOnNoDataNew(qrMechanizm)
         else if SpeedButtonEquipments.Down then
           TestOnNoData(StringGridEquipments)
         else
-          TestOnNoData(StringGridDescription);
+          TestOnNoDataNew(qrDescription);
         // ----------------------------------------
 
-        //Перерисовка нужна, что-бы убрать жирный шрифт с ранее выбранной строки
-        SGR.Repaint;
-
         // Средний разряд рабочих-строителей
-        EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(RateId)));
+        EditCategory.Text :=
+          MyFloatToStr(GetRankBuilders(IntToStr(qrRatesIDID.AsInteger)));
 
         // Разраты труда рабочих-строителей
         StringGridCalculations.Cells[11, CountCoef + 2] :=
-          MyFloatToStr(GetWorkCostBuilders(IntToStr(RateId)));
+          MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesIDID.AsInteger)));
 
         // Затраты труда машинистов
         StringGridCalculations.Cells[12, CountCoef + 2] :=
-          MyFloatToStr(GetWorkCostMachinists(IntToStr(RateId)));
+          MyFloatToStr(GetWorkCostMachinists(IntToStr(qrRatesIDID.AsInteger)));
 
-        SetIndexOXROPR(SGR.Cells[1, SGR.Row]);
+        SetIndexOXROPR(qrRatesCODE.AsString);
 
         // Получаем значения ОХР и ОПР и план прибыли
         GetValuesOXROPR;
 
         // Запоняем строку зимнего удорожания
-        FillingWinterPrice(SGR.Cells[1, SGR.Row]);
+        FillingWinterPrice(qrRatesCODEINRATE.AsString);
 
         Calculation;
 
@@ -1676,51 +2401,49 @@ begin
         SpeedButtonDescription.Enabled := False;
         SpeedButtonMechanisms.Enabled := False;
         SpeedButtonEquipments.Enabled := False;
-        SpeedButtonModeTables.Enabled := False;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
-
-        if MatIdCardRate = 0 then //Отдельный материал
-          FillingTableMaterials('', IntToStr(MatId))
-        else
-        begin //Неучтенный материал в расценке
-          if not MatConsidered then
+        //Отдельный материал и вынесенные
+        if ((qrRatesFROM_RATE.AsInteger > 0) and
+            (qrRatesID_CARD_RATE.AsInteger > 0)) or
+           (qrRatesID_CARD_RATE.AsInteger = 0) then
+        begin
+          FillingTableMaterials(0, qrRatesMID.AsInteger);
+          // Вынесеный
+          if qrRatesID_CARD_RATE.AsInteger > 0 then
           begin
             PMReplace.Enabled := True;
             PMDelete.Enabled := False;
-          end
-          else
-            PMEdit.Enabled := True;
-
-          FillingTableMaterials(IntToStr(MatIdCardRate), '0');
+          end;
+        end
+        else
+        begin //Заменяющие неучтенный материал в расценке
+          FillingTableMaterials(qrRatesID_CARD_RATE.AsInteger, 0);
+          PMEdit.Enabled := True;
         end;
 
         //Нажимаем на кнопку материалов, для отображения таблицы материалов
         if BtnChange then SpeedButtonMaterialsClick(SpeedButtonMaterials);
 
-        //Перерисовка нужна, что-бы убрать жирный шрифт с ранее выбранной строки
-        SGR.Repaint;
-
         // Средний разряд рабочих-строителей
-        EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(RateId)));
+        EditCategory.Text :=
+          MyFloatToStr(GetRankBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
 
         // Разраты труда рабочих-строителей
         StringGridCalculations.Cells[11, CountCoef + 2] :=
-          MyFloatToStr(GetWorkCostBuilders(IntToStr(RateId)));
+          MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
 
-        EditCategory.Text := MyFloatToStr(GetWorkCostBuilders(IntToStr(RateId)));
+        EditCategory.Text :=
+          MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
 
-        // Затраты труда машинистов
-        // StringGridCalculations.Cells[12, CountCoef + 2] := MyFloatToStr(GetWorkCostMachinists(IdNormativ));
-
-        SetIndexOXROPR(SGR.Cells[1, SGR.Row]);
+        SetIndexOXROPR(qrRatesCODE.AsString);
 
         // Получаем значения ОХР и ОПР и план прибыли
         GetValuesOXROPR;
 
         // Запоняем строку зимнего удорожания
-        FillingWinterPrice(RateCode);
+        FillingWinterPrice(qrRatesCODEINRATE.AsString);
 
         CalculationMaterial;
 
@@ -1735,37 +2458,27 @@ begin
         SpeedButtonMaterials.Enabled := False;
         SpeedButtonDescription.Enabled := False;
         SpeedButtonEquipments.Enabled := False;
-        SpeedButtonModeTables.Enabled := False;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
 
         //Заполнение таблицы механизмов
-        FillingTableMechanizm('', IntToStr(MechId));
+        FillingTableMechanizm(0, qrRatesMEID.AsInteger);
 
         //Нажимаем на кнопку механизмов, для отображения таблицы механизмов
         if BtnChange then SpeedButtonMechanismsClick(SpeedButtonMechanisms);
 
-        //Перерисовка нужна, что-бы убрать жирный шрифт с ранее выбранной строки
-        SGR.Repaint;
-
-        // Средний разряд рабочих-строителей
-        // EditCategory.Text := MyFloatToStr(GetRankBuilders(IdNormativ));
-
-        // Разраты труда рабочих-строителей
-        // StringGridCalculations.Cells[11, CountCoef + 2] := MyFloatToStr(GetWorkCostBuilders(IdNormativ));
-
         // Затраты труда машинистов
         StringGridCalculations.Cells[12, CountCoef + 2] :=
-          MyFloatToStr(GetWorkCostMachinists(IntToStr(RateId)));
+          MyFloatToStr(GetWorkCostMachinists(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
 
-        SetIndexOXROPR(SGR.Cells[1, SGR.Row]);
+        SetIndexOXROPR(qrRatesCODE.AsString);
 
         // Получаем значения ОХР и ОПР и план прибыли
         GetValuesOXROPR;
 
         // Запоняем строку зимнего удорожания
-        FillingWinterPrice(RateCode);
+        FillingWinterPrice(qrRatesCODEINRATE.AsString);
 
         // -------------------------------------
 
@@ -1777,7 +2490,8 @@ begin
       begin
 
       end;
-    4, 5, 6, 7: // ПЕРЕВОЗКА ГРУЗОВ/МУСОРА САМОСВАЛАМИ С310/С311
+  end;
+    {4, 5, 6, 7: // ПЕРЕВОЗКА ГРУЗОВ/МУСОРА САМОСВАЛАМИ С310/С311
       begin
         with StringGridRates do
         begin
@@ -1796,7 +2510,7 @@ begin
         // -----------------------------------------
 
         try
-          with ADOQueryTemp do
+          with qrTemp do
           begin
             Active := False;
             SQL.Clear;
@@ -1814,7 +2528,7 @@ begin
         // -----------------------------------------
 
         try
-          with ADOQueryTemp do
+          with qrTemp do
           begin
             Active := False;
             SQL.Clear;
@@ -1867,7 +2581,7 @@ begin
     8:
       begin
         try
-          with ADOQueryTemp do
+          with qrTemp do
           begin
             Active := False;
             SQL.Clear;
@@ -1890,7 +2604,7 @@ begin
         // -----------------------------------------
 
         try
-          with ADOQueryTemp do
+          with qrTemp do
           begin
             Active := False;
             SQL.Clear;
@@ -1973,13 +2687,13 @@ begin
             PS.RoundTo * -1));
         end;
       end;
-  end;
+  end; }
 
-  if CalcPrice[1] = '1' then
+  {if CalcPrice[1] = '1' then
     CalculationColumnPriceMaterial;
 
   if CalcPrice[2] = '1' then
-    CalculationColumnPriceMechanizm;
+    CalculationColumnPriceMechanizm; }
 end;
 
 function TFormCalculationEstimate.GetCountCoef(): Integer;
@@ -2015,11 +2729,6 @@ end;
 function TFormCalculationEstimate.GetIdEstimate: Integer;
 begin
   Result := IdEstimate;
-end;
-
-function TFormCalculationEstimate.GetIdRate: Integer;
-begin
-  Result := RateId;
 end;
 
 function TFormCalculationEstimate.GetMonth: Integer;
@@ -2095,12 +2804,12 @@ begin
     Dec(CountCoef);
   end;
 
-  StringGridRatesClick(StringGridRates);
+  GridRatesRowSellect;
 end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefOrdersClick(Sender: TObject);
 begin
-  FormCoefficientOrders.ShowForm(IdEstimate, RateId, 0);
+  //FormCoefficientOrders.ShowForm(IdEstimate, RateId, 0);
   GetStateCoefOrdersInRate;
 end;
 
@@ -2109,178 +2818,21 @@ begin
   GetStateCoefOrdersInEstimate;
 end;
 
+//вид всплывающего меню материалов
 procedure TFormCalculationEstimate.PopupMenuMaterialsPopup(Sender: TObject);
 begin
-  PMMatFromRates.Enabled := False;
-
-  with (StringGridMaterials) do
-    if (Pos('С', Cells[1, Row]) = 1) then
-      if not MatFromRate then
-      begin
-        PMMatFromRates.Enabled := True;
-        // PMMatFromRates.Caption := 'Внести в расценку';
-        // PMMatFromRates.Tag := 0;
-      end
-      else
-      begin
-        // PMMatFromRates.Caption := 'Вынести за расценку';
-        // PMMatFromRates.Tag := 1;
-      end;
-
-  if Pos('П', StringGridMaterials.Cells[1, StringGridMaterials.Row]) = 1 then
-  // Если выделен неучтённый (П-ешка)
-  begin
-    PMMatEdit.Enabled := False;
-    PMMatResources.Enabled := False;
-    PMMatReplace.Enabled := True;
-  end
-  else // Если учтёный С-шка
-  begin
-    if IdInMat = 0 then PMMatEdit.Enabled := False  //Если строка элемент шапки
-    else PMMatEdit.Enabled := True;
-
-    PMMatResources.Enabled := True;
-    PMMatReplace.Enabled := False;
-  end;
+  PMMatEdit.Enabled := not CheckMatReadOnly;
+  PMMatReplace.Enabled := CheckMatUnAccountingMatirials;
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and
+    (qrRatesMID.AsInteger = 0);
 end;
 
-procedure TFormCalculationEstimate.StringGridRatesColumnsClick(Sender: TObject);
+//Настройка вида всплывающего меню таблицы механизмов
+procedure TFormCalculationEstimate.PopupMenuMechanizmsPopup(Sender: TObject);
 begin
-  FormColumns.SetNameTable('StringGridRates');
-  FormColumns.ShowModal;
-end;
-
-procedure TFormCalculationEstimate.StringGridRatesDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-  State: TGridDrawState);
-begin
-  with Sender as TStringGrid do
-  begin
-    // Прорисовка шапки таблицы
-    if (ARow = 0) or (ACol = 0) then
-    begin
-      Canvas.Brush.Color := PS.BackgroundHead;
-      Canvas.Font.Color := PS.FontHead;
-    end
-    else // Прорисовка всех остальных строк
-    begin
-      Canvas.Brush.Color := PS.BackgroundRows;
-      Canvas.Font.Color := PS.FontRows;
-    end;
-
-    //Выделенная строка рисуется жирным шрифтом
-    if (Row = ARow) then
-      Canvas.Font.Style := Canvas.Font.Style + [fsbold]
-    else
-      Canvas.Font.Style := Canvas.Font.Style - [fsbold];
-
-    Canvas.FillRect(Rect);
-    Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-
-    // ----------------------------------------
-
-    // Если таблица в фокусе и строка не равна первой строке
-    if Focused and (Row = ARow) and (Row > 0) and (ACol > 0) then
-    begin
-      if gdFocused in State then // Ячейка в фокусе
-      begin
-        Canvas.Brush.Color := PS.BackgroundSelectCell;
-        Canvas.Font.Color := PS.FontSelectCell;
-      end;
-
-      Canvas.FillRect(Rect);
-      Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, Row]);
-    end;
-
-    // ----------------------------------------
-
-    // Выделение цветом неучтённых материалов расценки
-    if Pos(Indent, Cells[1, ARow]) > 0 then
-    begin
-      Canvas.Font.Color := clGray;
-      Canvas.FillRect(Rect);
-      Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-    end;
-
-    // ----------------------------------------
-
-    if Cells[5, ARow] = '2' then // Если строка с материалом
-      // Выделение жирным шрифтом НЕУЧТЁННЫХ материалов, ЗАМЕНЯЮЩИХ материалов которые, и ВЫНЕСЕННЫХ из расценки материалов
-      if AllocateMaterial(StrToInt(Cells[6, ARow])) then
-      begin
-        Canvas.Font.Style := Canvas.Font.Style + [fsbold];
-        Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-      end;
-
-    if Cells[5, ARow] = '3' then // Если строка с механизмом
-      // Выделение жирным ВЫНЕСЕННЫХ из расценки механизмы
-      if AllocateMechanizm(StrToInt(Cells[6, ARow])) then
-      begin
-        Canvas.Font.Style := Canvas.Font.Style + [fsbold];
-        Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-      end;
-  end;
-end;
-
-procedure TFormCalculationEstimate.StringGridRatesEnter(Sender: TObject);
-var
-  KeyState: TKeyboardState;
-begin
-  LoadKeyboardLayout('00000419', KLF_ACTIVATE); // Русский
-  // LoadKeyboardLayout('00000409', KLF_ACTIVATE); // Английский
-end;
-
-procedure TFormCalculationEstimate.StringGridRatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  // Запрещаем переход курсора на невидимые ячейки
-  with (Sender as TStringGrid) do
-    if (ColWidths[Col + 1] = -1) and (Key = Ord(#39)) then
-      Key := Ord(#0);
-end;
-
-procedure TFormCalculationEstimate.StringGridRatesKeyPress(Sender: TObject; var Key: Char);
-begin
-  with StringGridRates do
-    if (Col = 1) and (Key = #13) then // Выбрана ячейка "№ норматива"
-    begin
-      AddRate(Cells[1, Row], MyStrToFloatdef(Cells[2, Row], 0));
-    end
-    else if Col = 2 then
-    // Выбрана ячейка "Количество"
-    begin
-      if not(Key in ['0' .. '9', #8, #13, ',', '.', '-']) then
-        Key := #0;
-
-      if Key = ',' then
-        Key := '.';
-
-      with StringGridRates do
-        if Cells[Col, Row] = '' then
-          Cells[Col, Row] := '0';
-
-      // Обновляем данные в правой таблице
-      if Key = #13 then
-      begin
-        if Cells[5, Row] = '1' then
-        begin
-          // -->Обновление кол-ва
-          ADOQueryTemp.SQL.Text := 'UPDATE card_rate_temp set rate_count=:RC WHERE ID=:ID;';
-          ADOQueryTemp.ParamByName('ID').AsInteger := StrToInt(Cells[6, Row]);
-          ADOQueryTemp.ParamByName('RC').AsFloat := MyStrToFloat(Cells[2, Row]);
-          ADOQueryTemp.ExecSQL;
-          // <--
-        end;
-        if Cells[5, Row] = '2' then
-        begin
-          // -->Обновление кол-ва
-          ADOQueryTemp.SQL.Text := 'UPDATE materialcard_temp set mat_count=:RC WHERE ID=:ID;';
-          ADOQueryTemp.ParamByName('ID').AsInteger := StrToInt(Cells[6, Row]);
-          ADOQueryTemp.ParamByName('RC').AsFloat := MyStrToFloat(Cells[2, Row]);
-          ADOQueryTemp.ExecSQL;
-          // <--
-        end;
-        StringGridRatesClick(Sender);
-      end;
-    end;
+  PMMechEdit.Enabled := not CheckMechReadOnly;
+  PMMechFromRates.Enabled := (not CheckMechReadOnly) and
+    (qrRatesMEID.AsInteger = 0);
 end;
 
 //Добавление расценки в смету
@@ -2297,7 +2849,7 @@ begin
   // Ищем введёный норматив, если такого норматива нет, выдаём сообщение и выходим
   // иначе получаем его Id и продолжаем выполнение
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -2307,10 +2859,8 @@ begin
 
       if RecordCount <= 0 then
       begin
-        if MessageBox(0, PChar('Расценка с указанным номером не была найдена!' + sLineBreak +
-          'Очистить поле с введённой расценкой?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal)
-          = mrYes then
-          StringGridRates.Cells[1, StringGridRates.Row] := '';
+        MessageBox(0, 'Расценка с указанным номером не была найдена!',
+          CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
 
         Exit;
       end;
@@ -2323,11 +2873,9 @@ begin
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  // -----------------------------------------
-
   // Добавляем найденную расценку во временную таблицу card_rate_temp
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -2338,10 +2886,7 @@ begin
       ExecSQL;
     end;
 
-    UpdateTableDataTemp;
-    UpdateTableCardRatesTemp;
-
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -2357,8 +2902,7 @@ begin
 
   // Заносим во временную таблицу materialcard_temp материалы находящиеся в расценке
   try
-    UpdateTableCardMaterialTemp;
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       {
       Active := False;
@@ -2429,26 +2973,25 @@ begin
 
       while not Eof do
       begin
-        with ADOQueryMaterialCard do
-        begin
-          Insert;
-          FieldByName('BD_ID').AsInteger := 1;
-          FieldByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
-          FieldByName('MAT_ID').AsInteger := ADOQueryTemp.FieldByName('MatId').AsInteger;
-          FieldByName('MAT_CODE').AsString := ADOQueryTemp.FieldByName('MatCode').AsString;
-          FieldByName('MAT_NAME').AsString := ADOQueryTemp.FieldByName('MatName').AsString;
-
-          vNormRas := MyStrToFloatDef(ADOQueryTemp.FieldByName('MatNorm').AsString,0);
-
-          FieldByName('MAT_NORMA').AsFloat := vNormRas;
-          FieldByName('MAT_UNIT').AsString := ADOQueryTemp.FieldByName('MatUnit').AsString;
-          FieldByName('COAST_NO_NDS').AsCurrency := ADOQueryTemp.FieldByName('PriceNoVAT').AsCurrency;
-          FieldByName('COAST_NDS').AsCurrency := ADOQueryTemp.FieldByName('PriceVAT').AsCurrency;
-          FieldByName('NDS').AsFloat := 0;
-          FieldByName('COEF_TR_ZATR').AsFloat := ADOQueryTemp.FieldByName('PercentTransport').AsFloat;
-          Refresh;
-          //Post;
-        end;
+        qrTemp1.Active := false;
+        qrTemp1.SQL.Text := 'Insert into materialcard_temp (BD_ID, ID_CARD_RATE, MAT_ID, ' +
+          'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, NDS, ' +
+          'PROC_TRANSP) values (:BD_ID, :ID_CARD_RATE, :MAT_ID, ' +
+          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
+          ':COAST_NDS, :NDS, :PROC_TRANSP)';
+        qrTemp1.ParamByName('BD_ID').AsInteger := 1;
+        qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
+        qrTemp1.ParamByName('MAT_ID').AsInteger := FieldByName('MatId').AsInteger;
+        qrTemp1.ParamByName('MAT_CODE').AsString := FieldByName('MatCode').AsString;
+        qrTemp1.ParamByName('MAT_NAME').AsString := FieldByName('MatName').AsString;
+        vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString,0);
+        qrTemp1.ParamByName('MAT_NORMA').AsFloat := vNormRas;
+        qrTemp1.ParamByName('MAT_UNIT').AsString := FieldByName('MatUnit').AsString;
+        qrTemp1.ParamByName('COAST_NO_NDS').AsInteger := FieldByName('PriceNoVAT').AsInteger;
+        qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('PriceVAT').AsInteger;
+        qrTemp1.ParamByName('NDS').AsInteger := 20;
+        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := FieldByName('PercentTransport').AsFloat;
+        qrTemp1.ExecSQL;
 
         Next;
       end;
@@ -2461,28 +3004,26 @@ begin
 
       while not Eof do
       begin
-        with ADOQueryMaterialCard do
-        begin
-          Insert;
-          FieldByName('BD_ID').AsInteger := 1;
-          FieldByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
-          FieldByName('CONSIDERED').AsInteger := 0;
-          FieldByName('MAT_ID').AsInteger := ADOQueryTemp.FieldByName('MatId').AsVariant;
-          FieldByName('MAT_CODE').Value := ADOQueryTemp.FieldByName('MatCode').AsVariant;
-          FieldByName('MAT_NAME').AsString := ADOQueryTemp.FieldByName('MatName').AsString;
-
-          vNormRas := MyStrToFloatDef(ADOQueryTemp.FieldByName('MatNorm').AsString,0);
-
-          FieldByName('MAT_NORMA').AsFloat := vNormRas;
-          FieldByName('MAT_UNIT').AsString := ADOQueryTemp.FieldByName('MatUnit').AsString;
-          FieldByName('COAST_NO_NDS').AsCurrency := ADOQueryTemp.FieldByName('PriceNoVAT').AsCurrency;
-          FieldByName('COAST_NDS').AsCurrency := ADOQueryTemp.FieldByName('PriceVAT').AsCurrency;
-          FieldByName('NDS').AsFloat := 0;
-          FieldByName('COEF_TR_ZATR').AsFloat := ADOQueryTemp.FieldByName('PercentTransport').AsFloat;
-
-          Refresh;
-          //Post;
-        end;
+        qrTemp1.Active := false;
+        qrTemp1.SQL.Text := 'Insert into materialcard_temp (BD_ID, ID_CARD_RATE, CONSIDERED, MAT_ID, ' +
+          'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, NDS, ' +
+          'PROC_TRANSP) values (:BD_ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
+          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
+          ':COAST_NDS, :NDS, :PROC_TRANSP)';
+        qrTemp1.ParamByName('BD_ID').AsInteger := 1;
+        qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
+        qrTemp1.ParamByName('CONSIDERED').AsInteger := 0;
+        qrTemp1.ParamByName('MAT_ID').AsInteger := FieldByName('MatId').AsInteger;
+        qrTemp1.ParamByName('MAT_CODE').AsString := FieldByName('MatCode').AsString;
+        qrTemp1.ParamByName('MAT_NAME').AsString := FieldByName('MatName').AsString;
+        vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString,0);
+        qrTemp1.ParamByName('MAT_NORMA').AsFloat := vNormRas;
+        qrTemp1.ParamByName('MAT_UNIT').AsString := FieldByName('MatUnit').AsString;
+        qrTemp1.ParamByName('COAST_NO_NDS').AsInteger := FieldByName('PriceNoVAT').AsInteger;
+        qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('PriceVAT').AsInteger;
+        qrTemp1.ParamByName('NDS').AsInteger := 20;
+        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := FieldByName('PercentTransport').AsFloat;
+        qrTemp1.ExecSQL;
 
         Next;
       end;
@@ -2502,15 +3043,7 @@ begin
 
   // Заносим во временную таблицу mechanizmcard_temp механизмы находящиеся в расценке
   try
-    with ADOQueryMechanizmCard do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT * FROM mechanizmcard_temp;');
-      Active := True;
-    end;
-
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -2525,29 +3058,26 @@ begin
 
       while not Eof do
       begin
-        with ADOQueryMechanizmCard do
-        begin
-          Insert;
-
-          FieldByName('BD_ID').AsInteger := 1;
-          FieldByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
-          FieldByName('MECH_ID').AsInteger := ADOQueryTemp.FieldByName('MechId').AsInteger;
-          FieldByName('MECH_CODE').AsString := ADOQueryTemp.FieldByName('MechCode').AsString;
-          FieldByName('MECH_NAME').AsString := ADOQueryTemp.FieldByName('MechName').AsString;
-
-          vNormRas := MyStrToFloatDef(ADOQueryTemp.FieldByName('MechNorm').AsString, 0);
-
-          FieldByName('MECH_NORMA').AsFloat := vNormRas;
-
-          FieldByName('MECH_UNIT').AsString := ADOQueryTemp.FieldByName('Unit').AsString;
-          FieldByName('COAST_NO_NDS').AsInteger := ADOQueryTemp.FieldByName('CoastNoVAT').AsInteger;
-          FieldByName('COAST_NDS').AsInteger := ADOQueryTemp.FieldByName('CoastVAT').AsInteger;
-          FieldByName('NDS').AsFloat := 0;
-          FieldByName('ZP_MACH_NO_NDS').AsInteger := ADOQueryTemp.FieldByName('SalaryNoVAT').AsInteger;
-          FieldByName('ZP_MACH_NDS').AsInteger := ADOQueryTemp.FieldByName('SalaryVAT').AsInteger;
-
-          Post;
-        end;
+        qrTemp1.Active := false;
+        qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (BD_ID, ID_CARD_RATE, ' +
+          'MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, MECH_UNIT, COAST_NO_NDS, ' +
+          'COAST_NDS, NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS) values (:BD_ID, :ID_CARD_RATE, ' +
+          ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
+          ':COAST_NDS, :NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS)';
+        qrTemp1.ParamByName('BD_ID').AsInteger := 1;
+        qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
+        qrTemp1.ParamByName('MECH_ID').AsInteger := FieldByName('MechId').AsInteger;
+        qrTemp1.ParamByName('MECH_CODE').AsString := FieldByName('MechCode').AsString;
+        qrTemp1.ParamByName('MECH_NAME').AsString := FieldByName('MechName').AsString;
+        vNormRas := MyStrToFloatDef(FieldByName('MechNorm').AsString, 0);
+        qrTemp1.ParamByName('MECH_NORMA').AsFloat := vNormRas;
+        qrTemp1.ParamByName('MECH_UNIT').AsString := FieldByName('Unit').AsString;
+        qrTemp1.ParamByName('COAST_NO_NDS').AsInteger := FieldByName('CoastNoVAT').AsInteger;
+        qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('CoastVAT').AsInteger;
+        qrTemp1.ParamByName('NDS').AsInteger := 20;
+        qrTemp1.ParamByName('ZP_MACH_NO_NDS').AsInteger := FieldByName('SalaryNoVAT').AsInteger;
+        qrTemp1.ParamByName('ZP_MACH_NDS').AsInteger := FieldByName('SalaryVAT').AsInteger;
+        qrTemp1.ExecSQL;
 
         Next;
       end;
@@ -2560,171 +3090,7 @@ begin
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  OutputDataToTable;
-
-
-  with StringGridRates do
-  begin
-    Col := 2;
-    SetFocus;
-  end;
-
-  StringGridRatesClick(StringGridRates);
-end;
-
-procedure TFormCalculationEstimate.StringGridRightClick(Sender: TObject);
-begin
-  with (Sender as TStringGrid) do
-  begin
-    if Name = 'StringGridMaterials' then
-    try
-      IdInMat := 0;
-      MatId := 0;
-      MatIdCardRate := 0;
-      MatIdReplaced := 0;
-      MatConsidered := True;
-      MatReplaced := False;
-      MatFromRate := False;
-
-      MatIdForAllocate := 0;
-
-      //На случай если таблица тустая и фокус стоит на шапке таблицы
-      if StringGridMaterials.Row = 0 then exit;
-
-      if StringGridMaterials.Cells[14, StringGridMaterials.Row] = '' then exit;
-
-      with ADOQueryTemp do
-      begin
-        Active := False;
-        SQL.Clear;
-        SQL.Add('SELECT id, mat_id, id_card_rate, id_replaced, considered, replaced, from_rate ' +
-          'FROM materialcard_temp WHERE id = :id;');
-        ParamByName('id').Value := StrToInt(StringGridMaterials.Cells[14, StringGridMaterials.Row]);
-        Active := True;
-
-        // ----------------------------------------
-
-        IdInMat := FieldByName('id').AsInteger;
-        MatId := FieldByName('mat_id').AsInteger;
-        MatIdCardRate := FieldByName('id_card_rate').AsInteger;
-        // Id из таблицы расценки
-        MatIdReplaced := FieldByName('id_replaced').AsInteger;
-        // Id в табл. мат., какой мат. был заменён этим мат.
-
-        if MatIdReplaced > 0 then
-          MatIdForAllocate := MatIdReplaced;
-
-        if FieldByName('considered').AsInteger = 0 then
-        // Если выделен НЕУЧТЁННЫЙ материал
-        begin
-          MatConsidered := False; // Материал является НЕУЧТЁННЫМ
-          MatIdForAllocate := FieldByName('id').AsInteger;
-          if FieldByName('replaced').AsInteger = 1 then
-            // Если НЕУЧТЁННЫЙ материал был заменён на другой
-            MatReplaced := True;
-        end;
-
-        if FieldByName('from_rate').AsInteger = 1 then
-        // Если материал ВЫНЕСЕН из расценки
-        begin
-          MatFromRate := True;
-          MatIdForAllocate := FieldByName('id').AsInteger;
-        end;
-
-        // ----------------------------------------
-
-        Active := False;
-      end;
-    except
-      on E: Exception do
-        MessageBox(0, PChar('При получении идентификационных данных материала возникла ошибка:' + sLineBreak +
-          sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
-
-    if Name = 'StringGridMechanizms' then
-    try
-      IdInMech := 0;
-      MechId := 0;
-      MechIdCardRate := 0;
-      MechFromRate := False;
-      MechIdForAllocate := 0;
-
-      //На случай если таблица тустая и фокус стоит на шапке таблицы
-      if StringGridMechanizms.Row = 0 then exit;
-
-      if StringGridMechanizms.Cells[12, StringGridMechanizms.Row] = '' then exit;
-
-      with ADOQueryTemp do
-      begin
-        Active := False;
-        SQL.Clear;
-        SQL.Add('SELECT id, mech_id, id_card_rate, from_rate ' +
-          'FROM mechanizmcard_temp WHERE id = :id;');
-        ParamByName('id').Value :=
-          StrToInt(StringGridMechanizms.Cells[12, StringGridMechanizms.Row]);
-        Active := True;
-
-        // ----------------------------------------
-
-        IdInMech := FieldByName('id').AsInteger;
-        MechId := FieldByName('mech_id').AsInteger;
-        MechIdCardRate := FieldByName('id_card_rate').AsInteger;
-
-        if FieldByName('from_rate').AsInteger = 1 then
-        // Если материал ВЫНЕСЕН из расценки
-        begin
-          MechFromRate := True;
-          MechIdForAllocate := FieldByName('id').AsInteger;
-        end;
-
-        Active := False;
-      end;
-    except
-      on E: Exception do
-        MessageBox(0, PChar('При получении идентификационных данных механизма возникла ошибка:' + sLineBreak +
-          sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
-  end;
-  // ----------------------------------------
-
-  with (Sender as TStringGrid) do
-  begin
-    // РАЗРЕШАЕМ/ЗАПРЕЩАЕМ РЕДАКТИРОВАНИЕ В ЯЧЕЙКЕ
-
-    if Name = 'StringGridMaterials' then
-    begin
-      if (Col = 10) then
-        Options := Options + [goEditing] // разрешаем редактирование
-      else
-        Options := Options - [goEditing]; // запрещаем редактирование
-    end;
-
-    if Name = 'StringGridMechanizms' then
-      if (Col = 7) then
-        Options := Options + [goEditing] // разрешаем редактирование
-      else
-        Options := Options - [goEditing]; // запрещаем редактирование
-
-    //Для отображения связи левой и провой таблицы
-    StringGridRates.Repaint;
-  end;
-
-  // ----------------------------------------
-
-  // Выводим описание дынных в Memo под таблицей
-  with (Sender as TStringGrid), MemoRight do
-  begin
-    if SpeedButtonDescription.Down then
-      Text := Cells[1, Row]
-    else if SpeedButtonMaterials.Down then
-      Text := (Sender as TStringGrid).Cells[ColCount - 2, Row]
-    else if SpeedButtonMechanisms.Down then
-      Text := (Sender as TStringGrid).Cells[ColCount - 3, Row];
-  end;
-
-  // -----------------------------------------
-
-  with Sender as TStringGrid do Repaint;
+  OutputDataToTable(0);
 end;
 
 procedure TFormCalculationEstimate.PMAddRatMatMechEquipOwnClick(Sender: TObject);
@@ -2737,108 +3103,58 @@ begin
   ShowFormAdditionData('g');
 end;
 
-procedure TFormCalculationEstimate.PMMatColumnsClick(Sender: TObject);
-begin
-  if ComboBoxTypeData.ItemIndex = 0 then
-  begin
-    if StringGridMaterials.Focused then
-      FormColumns.SetNameTable('TablePriceMaterials')
-    else if StringGridMechanizms.Focused then
-      FormColumns.SetNameTable('TablePriceMechanizms')
-    else if StringGridEquipments.Focused then
-      FormColumns.SetNameTable('TablePriceEquipments')
-    else if StringGridDescription.Focused then
-      FormColumns.SetNameTable('TablePriceDescription');
-
-    FormColumns.ShowModal;
-  end;
-end;
-
-procedure TFormCalculationEstimate.PMMatEditClick(Sender: TObject);
-begin
-  FormCardMaterial.ShowForm(IdInMat);
-  UpdateTableCardMaterialTemp;
-  FillingTableMaterials(IntToStr(IdInRate), '0');
-end;
-
 procedure TFormCalculationEstimate.PMEditClick(Sender: TObject);
 begin
-  case StrToInt(StringGridRates.Cells[5, StringGridRates.Row]) of
+  case qrRates.FieldByName('TYPE_DATA').AsInteger of
     1: // Расценка
       begin
-        FormCardDataEstimate.ShowForm(IdInRate);
-        UpdateTableCardRatesTemp;
-        OutputDataToTable;
+        FormCardDataEstimate.ShowForm(qrRates.FieldByName('RID').AsInteger);
+        //  UpdateTableCardRatesTemp;
+        OutputDataToTable(0);
       end;
     2: // Материал
       begin
-        FormCardMaterial.ShowForm(IdInMat);
-        UpdateTableCardMaterialTemp;
-        FillingTableMaterials(IntToStr(IdInRate), '0');
+        FormCardMaterial.ShowForm(qrRates.FieldByName('MID').AsInteger);
+        //UpdateTableCardMaterialTemp;
+
+       // FillingTableMaterials(IntToStr(IdInRate), '0');
       end;
   end;
 end;
 
-procedure TFormCalculationEstimate.PopupMenuTableLeftCopyClick(Sender: TObject);
-var
-  i: Integer;
-  Str: string;
-  CB: TClipboard;
-begin
-  Str := '';
-
-  with StringGridRates do
-    for i := 1 to ColCount - 1 do
-      Str := Str + Cells[i, Row] + #9;
-
-  try
-    CB := TClipboard.Create;
-    CB.AsText := Str;
-  finally
-    FreeAndNil(CB);
-  end;
-end;
 //Удаление чего-либо из сметы
 procedure TFormCalculationEstimate.PMDeleteClick(Sender: TObject);
 begin
-  if (TypeData = 0) then
-  begin
-    MessageBox(0, PChar('Нельзя удалить строку предназначенную для ввода данных!'), CaptionForm,
-      MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-    Exit;
-  end
-  else if MessageBox(0, PChar('Вы действительно хотите удалить ' + IntToStr(StringGridRates.Row) +
-    ' строку?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+  if MessageBox(0, PChar('Вы действительно хотите удалить ' +
+    qrRates.FieldByName('CODE').AsString + '?'),
+    CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
     Exit;
 
   if Act then
   begin
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
       SQL.Add('CALL DeleteDataFromAct(:IdTypeData, :Id);');
-      ParamByName('IdTypeData').Value := TypeData;
-      ParamByName('Id').Value := IdInRate;
+      ParamByName('IdTypeData').Value := qrRatesTYPE_DATA.AsInteger;
+      ParamByName('Id').Value := qrRatesRID.AsInteger;
       ExecSQL;
     end;
 
-    OutputDataToTable;
   end
   else
-    case TypeData of
+    case qrRatesTYPE_DATA.AsInteger of
       1: // Расценка
         try
-          with ADOQueryTemp do
+          with qrTemp do
           begin
             Active := False;
             SQL.Clear;
             SQL.Add('CALL DeleteRate(:id);');
-            ParamByName('id').Value := IdInRate;
+            ParamByName('id').Value := qrRatesRID.AsInteger;
             ExecSQL;
           end;
-
-          OutputDataToTable;
         except
           on E: Exception do
             MessageBox(0, PChar('При удалении расценки возникла ошибка:' + sLineBreak + sLineBreak +
@@ -2846,16 +3162,15 @@ begin
         end;
       2: // Материал
         try
-          with ADOQueryTemp do
+          with qrTemp do
           begin
             Active := False;
             SQL.Clear;
             SQL.Add('CALL DeleteMaterial(:id);');
-            ParamByName('id').Value := IdInMat;
+            ParamByName('id').Value := qrRatesMID.AsInteger;
             ExecSQL;
           end;
 
-          OutputDataToTable;
         except
           on E: Exception do
             MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak +
@@ -2863,85 +3178,35 @@ begin
         end;
       3: // Механизм
         try
-          with ADOQueryTemp do
+          with qrTemp do
           begin
             Active := False;
             SQL.Clear;
             SQL.Add('CALL DeleteMechanism(:id);');
-            ParamByName('id').Value := IdInMech;
+            ParamByName('id').Value := qrRatesMEID.AsInteger;
             ExecSQL;
           end;
 
-          OutputDataToTable;
         except
           on E: Exception do
             MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
     end;
-
-  NumerationRates;
-
-  StringGridRatesClick(StringGridRates);
-
-  FormMain.AutoWidthColumn(StringGridRates, 3);
-end;
-
-procedure TFormCalculationEstimate.PopupMenuTableLeftInsertClick(Sender: TObject);
-var
-  CB: TClipboard;
-  s: string;
-  c, r, P: Integer;
-begin
-  try
-    CB := TClipboard.Create;
-    s := CB.AsText;
-  finally
-    FreeAndNil(CB);
-  end;
-
-  with StringGridRates do
-  begin
-    RowCount := RowCount + 1;
-
-    r := RowCount - 2;
-
-    while r > Row do
-    begin
-      for c := 0 to ColCount - 1 do
-        if c = 0 then
-          Cells[c, r] := IntToStr(StrToInt(Cells[c, r - 1]) + 1)
-        else
-          Cells[c, r] := Cells[c, r - 1];
-
-      Dec(r);
-    end;
-
-    Cells[0, Row] := IntToStr(Row);
-
-    for c := 1 to ColCount - 1 do
-    begin
-      P := Pos(#9, s);
-      Cells[c, Row] := Copy(s, 1, P - 1);
-      Delete(s, 1, P);
-    end;
-  end;
-
-  Inc(CountRowRates);
-
-  FormMain.AutoWidthColumn(StringGridRates, 3);
+  OutputDataToTable(0);
 end;
 
 procedure TFormCalculationEstimate.PopupMenuTableLeftPopup(Sender: TObject);
 begin
-  GetStateCoefOrdersInEstimate;
+  //Нельзя удалить неучтенный материал из таблицы расценок
+  PMDelete.Enabled := not(CheckMatUnAccountingRates);
 end;
 
 procedure TFormCalculationEstimate.PopupMenuRatesAdd(Sender: TObject);
 var
   FieldRates: TFieldRates;
 begin
-  case (Sender as TMenuItem).Tag of
+  {case (Sender as TMenuItem).Tag of
     5, 6, 7, 8:
       with FormTransportation do
       begin
@@ -2990,172 +3255,8 @@ begin
           VisibleColumnsWinterPrice(Checked);
           end;
         }
-      end;
-  end;
-end;
-
-procedure TFormCalculationEstimate.StringGridRightDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-  State: TGridDrawState);
-var
-  Str: string;
-begin
-  with Sender as TStringGrid do
-  begin
-    // Прорисовка шапки таблицы
-    if (ARow = 0) or (ACol = 0) then
-    begin
-      Canvas.Brush.Color := PS.BackgroundHead;
-      Canvas.Font.Color := PS.FontHead;
-    end
-    else // Прорисовка всех остальных строк
-    begin
-      Canvas.Brush.Color := PS.BackgroundRows;
-      Canvas.Font.Color := PS.FontRows;
-    end;
-
-    Canvas.Font.Style := Canvas.Font.Style - [fsbold];
-    Canvas.Font.Style := Canvas.Font.Style - [fsStrikeOut];
-    Canvas.FillRect(Rect);
-    Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-
-    // ----------------------------------------
-
-    // Если таблица в фокусе и строка не равна первой строке
-    if Focused and (Row = ARow) and (Row > 0) and (ACol > 0) then
-    begin
-      if gdFocused in State then // Ячейка в фокусе
-      begin
-        Canvas.Brush.Color := PS.BackgroundSelectCell;
-        Canvas.Font.Color := PS.FontSelectCell;
-      end;
-
-      Canvas.FillRect(Rect);
-      Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, Row]);
-    end;
-
-    // -----------------------------------------
-
-    if Cells[ACol, ARow] = 'Не считается' then
-    begin
-      Canvas.Brush.Color := RGB(255, 191, 191);
-      Canvas.FillRect(Rect);
-      Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-    end
-    else if Cells[ACol, ARow] = 'Нет цены' then
-    begin
-      Canvas.Brush.Color := RGB(255, 255, 191);
-      Canvas.FillRect(Rect);
-      Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-    end
-    else if ((Cells[ACol, 0] = 'Стоим. (смет.)') or (Cells[ACol, 0] = 'Стоим. (фактич.)')) and (ARow > 0) then
-    begin
-      Canvas.Brush.Color := RGB(191, 255, 202);
-      Canvas.FillRect(Rect);
-      Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-    end;
-
-    // -----------------------------------------
-
-    // Выеделение цветом взависимости от процентного соотношения
-    // материал подрядчика или заказчика
-    {
-      Str := Cells[ColCount - 1, ARow];
-
-      if (Name = 'StringGridMaterials') and (Str > '') and (ARow > 0) then
-      begin
-      if (ACol in [5, 6, 12]) then
-      if (GetTrClient(Str) = 100) then
-      Canvas.Font.Color := clRed
-      else if (GetTrContractor(Str) < 100) then
-      Canvas.Font.Color := RGB(37, 50, 220);
-
-      if (ACol >= 7) and (ACol <= 11) then
-      if (GetMatClient(Str) = 100) then
-      Canvas.Font.Color := clRed
-      else if (GetMatContractor(Str) < 100) then
-      Canvas.Font.Color := RGB(37, 50, 220);
-
-      Canvas.FillRect(Rect);
-      Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-      end;
-    }
-    // -----------------------------------------
-
-    // Выеделение цветом цены
-
-    if (Name = 'StringGridMaterials') and (ACol = 7) and (ARow > 0) then
-      if Cells[10, ARow] <> '' then
-      begin
-        Canvas.Font.Color := clGray;
-        Canvas.FillRect(Rect);
-        Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-      end;
-
-    if (Name = 'StringGridMechanizms') and (ACol = 6) and (ARow > 0) then
-      if Cells[7, ARow] <> '' then
-      begin
-        Canvas.Font.Color := clGray;
-        Canvas.FillRect(Rect);
-        Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-      end;
-
-    // -----------------------------------------
-
-    if (Name = 'StringGridMaterials') then
-    begin
-      // Группировка учтёнyых и неучтёнyых материалов в таблице
-      if Cells[0, ARow] = '' then
-      begin
-        Canvas.Brush.Color := RGB(106, 116, 157);
-        Rect.Right := Rect.Right + 1;
-        Canvas.FillRect(Rect);
-        Canvas.Font.Color := clWhite;
-        Canvas.Font.Style := Canvas.Font.Style + [fsbold];
-        Canvas.TextOut(Rect.Left + 1, Rect.Top + 2, Cells[ACol, ARow]);
-      end;
-
-      if (Cells[14, ARow] <> '') and (ARow > 0) then
-      // Если строка не шапка и в поле с Id есть данные
-      begin
-        if AllocateMaterial(StrToInt(Cells[14, ARow])) then
-        // Подстветка НЕУЧТЁННЫХ и ЗАМЕНЯЮЩИХ материалов
-        begin
-          Canvas.Font.Style := Canvas.Font.Style + [fsbold];
-          Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-        end;
-
-        if CrossOutMaterial(StrToInt(Cells[14, ARow])) then
-        // Подстветка ВЫНЕСЕННЫХ за расценку материалов
-        begin
-          Canvas.Font.Style := Canvas.Font.Style + [fsStrikeOut];
-          Canvas.FillRect(Rect);
-          Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-        end;
-      end;
-    end;
-
-    if (Name = 'StringGridMechanizms') then
-    begin
-      if (Cells[12, ARow] <> '') and (ARow > 0) then
-      // Если строка не шапка и в поле с Id есть данные
-      begin
-        if AllocateMechanizm(StrToInt(Cells[12, ARow])) then
-        // Подстветка механизма
-        begin
-          Canvas.Font.Style := Canvas.Font.Style + [fsbold];
-          Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-        end;
-
-        if CrossOutMechanizm(StrToInt(Cells[12, ARow])) then
-        // Подстветка ВЫНЕСЕННЫХ за расценку материалов
-        begin
-          Canvas.Font.Style := Canvas.Font.Style + [fsStrikeOut];
-          Canvas.FillRect(Rect);
-          Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Cells[ACol, ARow]);
-        end;
-      end;
-    end;
-  end;
+{      end;
+  end;    }
 end;
 
 procedure TFormCalculationEstimate.EstimateBasicDataClick(Sender: TObject);
@@ -3198,7 +3299,7 @@ begin
   FormBasicData.ShowForm(IdObject, IdEstimate);
   GetSourceData;
   GetStateCoefOrdersInRate;
-  StringGridRatesClick(StringGridRates);
+  GridRatesRowSellect;
 end;
 
 procedure TFormCalculationEstimate.LabelMouseEnter(Sender: TObject);
@@ -3226,382 +3327,81 @@ begin
   Calculation;
 end;
 
-procedure TFormCalculationEstimate.FillingTableMaterials(const vIdCardRate, vIdMat: string);
+//Открытие датасета таблицы материалов
+procedure TFormCalculationEstimate.FillingTableMaterials(const vIdCardRate, vIdMat: integer);
+var fType, fID, i: integer;
 begin
-  ClearTable(StringGridMaterials);
-
-  // -----------------------------------------
-
-  if ADOQueryMaterialCard.RecordCount = 0 then
+  if vIdMat > 0 then
   begin
-    StringGridCalculations.Cells[5, CountCoef + 2] := '0';
-    StringGridCalculations.Cells[5, CountCoef + 3] := '0';
-
-    StringGridCalculations.Cells[6, CountCoef + 2] := '0';
-    StringGridCalculations.Cells[6, CountCoef + 3] := '0';
-    //В случае если в таблице нет материалов, не создается фиксирпованная область таблицы
-    if StringGridMaterials.RowCount > 1 then
-      with StringGridMaterials  do
-      begin
-        FixedCols := 1;
-        FixedRows := 1;
-      end;
-
-    Exit;
+    fType := 0;
+    fID := vIdMat;
+  end
+  else
+  begin
+    fType := 1;
+    fID := vIdCardRate;
   end;
 
-  // -----------------------------------------
-
-  if vIdMat <> '0' then // ОДИН МАТЕРИАЛ
-    with ADOQueryMaterialCard do
+  qrMaterial.DisableControls;
+  ReCalcMat := true;
+  qrMaterialNUM.ReadOnly := false;
+  //Открытие датасета для заполнения таблицы материалов
+  qrMaterial.Active := false;
+  //Заполняет materials_temp
+  qrMaterial.SQL.Text := 'call GetMaterials(' + IntToStr(fType) + ',' +
+    IntToStr(fID) + ')';
+  qrMaterial.ExecSQL;
+  //Открывает materials_temp
+  qrMaterial.SQL.Text := 'SELECT * FROM materials_temp ORDER BY SRTYPE, TITLE DESC, ID';
+  qrMaterial.Active := true;
+  i := 0;
+  //Нумерация строк, внутри подгрупп
+  while not qrMaterial.Eof do
+  begin
+    if (qrMaterial.FieldByName('TITLE').AsInteger > 0) then
     begin
-      Filtered := False;
-      Filter := 'mat_id = ' + vIdMat;
-      Filtered := True;
-
-      if RecordCount > 0 then
-        FillingMaterials(ADOQueryMaterialCard, ' ');
-    end
-  else // МНОГО МАТЕРИАЛОВ
-    with ADOQueryMaterialCard do
-    begin
-      // Учтённые материалы
-
-      Filtered := False;
-      //Filter := 'considered = 1 and id_replaced = 0';
-      Filter := 'id_card_rate = ' + vIdCardRate + ' and considered = 1 and id_replaced = 0';
-
-      Filtered := True;
-
-      if RecordCount > 0 then
-        FillingMaterials(ADOQueryMaterialCard, 'S');
-
-      // --------------------
-
-      // Неучтённые материалы
-
-      Filtered := False;
-      //Filter := 'considered = 0';
-      Filter := 'id_card_rate = ' + vIdCardRate + ' and considered = 0';
-
-      Filtered := True;
-
-      if RecordCount > 0 then
-        FillingMaterials(ADOQueryMaterialCard, 'P');
-
-      // --------------------
-
-      // Заменяющие (П-ешки) материалы
-
-      Filtered := False;
-      //Filter := 'considered = 1 and id_replaced > 0';
-      Filter := 'id_card_rate = ' + vIdCardRate + ' and considered = 1 and id_replaced > 0';
-      Filtered := True;
-
-      if RecordCount > 0 then
-        FillingMaterials(ADOQueryMaterialCard, 'Z');
-
-      // --------------------
-
-      Filtered := False;
-      Filter := '';
+      i := 0;
+      qrMaterial.Next;
     end;
+    inc(i);
+    qrMaterial.Edit;
+    qrMaterial.FieldByName('NUM').AsInteger := i;
+    qrMaterial.Post;
 
-  // -----------------------------------------
-  //В случае если в таблице нет материалов, не создается фиксирпованная область таблицы
-  if StringGridMaterials.RowCount > 1 then
-    with StringGridMaterials do
-    begin
-      FixedCols := 1;
-      FixedRows := 1;
-    end;
+    qrMaterial.Next;
+  end;
+  qrMaterialNUM.ReadOnly := true;
+  ReCalcMat := false;
+  qrMaterial.First;
+  qrMaterial.EnableControls;
 end;
 
-procedure TFormCalculationEstimate.FillingMaterials(const AQ: TFDQuery; const vGroup: Char);
-var
-  i, Nom: Integer;
-  Price: Variant;
-  f: Double;
-  kf: Integer;
-  NameGroup: string;
+procedure TFormCalculationEstimate.FillingTableMechanizm(const vIdCardRate, vIdMech: integer);
+var i : integer;
 begin
-  if vGroup = 'S' then
-    NameGroup := 'Учтённые'
-  else if vGroup = 'P' then
-    NameGroup := 'Неучтённые';
 
-  if vGroup <> ' ' then
-    with StringGridMaterials do
-    begin
-      RowCount := RowCount + 1;
-      Cells[1, RowCount - 1] := NameGroup;
-    end;
-
-  // -----------------------------------------
-
-  with StringGridMaterials, AQ do
+  qrMechanizm.Active := false;
+  if vIdMech > 0 then
   begin
-    Nom := 1;
-
-    First; // Становимся на первую запись в наборе данных
-
-    // Пока есть данные в наборе данных, выводим их в таблицу
-    while not Eof do
-    begin
-      RowCount := RowCount + 1;
-      i := RowCount - 1;
-
-      Cells[0, i] := IntToStr(Nom);
-      Cells[1, i] := FieldByName('mat_code').AsVariant; // MatCode
-      f := FieldByName('mat_norma').AsFloat;
-      Cells[2, i] := MyFloatToStr(f); // MatNorm
-      Cells[3, i] := FieldByName('mat_unit').AsString; // MatUnit
-      Cells[4, i] := MyFloatToStr(CountFromRate);
-      // StringGridRates.Cells[2, StringGridRates.Row];
-
-      try
-        f := MyStrToFloatDef(Cells[2, i], 0);
-
-        Cells[4, i] := MyFloatToStr(MyStrToFloatDef(Cells[4, i], 0) * f);
-
-        for kf := 1 to CountCoef do
-          Cells[4, i] := MyFloatToStr(MyStrToFloat(Cells[4, i]) *
-            MyStrToFloat(StringGridCalculations.Cells[5, kf]));
-      except
-        on E: Exception do
-          MessageBox(0, PChar('Ошибка при вычислении поля «' + Cells[4, 0] + '», в таблице материалов:' +
-            sLineBreak + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-      end;
-
-      // -----------------------------------------
-
-      Cells[5, i] := MyFloatToStr(FieldByName('coef_tr_zatr').AsFloat);
-
-      // -----------------------------------------
-
-      Cells[6, i] := '';
-
-      // -----------------------------------------
-
-      // Получаем цену без НДС
-      Price := GetPriceMaterial;
-
-      if Price <> Null then
-      begin
-        // Цена есть
-        Cells[7, i] := Price;
-
-        try
-          Cells[8, i] := IntToStr(Round(StrToInt(Cells[7, i]) * MyStrToFloat(Cells[4, i])));
-        except
-          on E: Exception do
-            MessageBox(0, PChar('Ошибка при вычислении поля «' + Cells[8, 0] + '», в таблице материалов:' +
-              sLineBreak + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-        end;
-
-        Cells[9, i] := MyFloatToStr(RoundTo(StrToInt(Cells[8, i]) * MyStrToFloat(Cells[5, i]), PS.RoundTo * -1));
-      end
-      else
-      begin
-        // Цены нет
-        Cells[7, i] := 'Нет цены';
-        Cells[8, i] := 'Не считается';
-      end;
-
-      // -----------------------------------------
-
-      Cells[10, i] := '';
-      Cells[11, i] := '';
-      Cells[12, i] := '';
-      Cells[13, i] := FieldByName('mat_name').AsVariant; // MatName
-      Cells[14, i] := FieldByName('id').AsVariant; // MatId
-      Cells[15, i] := '';
-      Cells[16, i] := '';
-
-      Next; // Переход на следующую запись в наборе данных
-      Inc(Nom);
-    end;
+    qrMechanizm.ParamByName('Type').asInteger := 0;
+    qrMechanizm.ParamByName('IDValue').asInteger := vIdMech;
+  end
+  else
+  begin
+    qrMechanizm.ParamByName('Type').asInteger := 1;
+    qrMechanizm.ParamByName('IDValue').asInteger := vIdCardRate;
   end;
+  qrMechanizm.Active := true;
 end;
 
-procedure TFormCalculationEstimate.FillingTableMechanizm(const vIdCardRate, vIdMech: string);
-var
-  i: Integer;
+procedure TFormCalculationEstimate.FillingTableDescription(const vIdNormativ: integer);
+var i: integer;
 begin
-  ClearTable(StringGridMechanizms);
-
-  // -----------------------------------------
-
-  if vIdMech <> '0' then // ОДИН МЕХАНИЗМ
-    with ADOQueryMechanizmCard do
-    begin
-      Filtered := False;
-      Filter := 'mech_id = ' + vIdMech;
-      Filtered := True;
-
-      if RecordCount > 0 then
-        FillingMechanizm;
-    end
-  else // МНОГО МЕХАНИЗМОВ
-    with ADOQueryMechanizmCard do
-    begin
-      Filtered := False;
-      Filter := 'id_card_rate = ' + vIdCardRate;
-      Filtered := True;
-
-      i := RecordCount;
-
-      if RecordCount > 0 then
-        FillingMechanizm;
-    end;
-
-  // -----------------------------------------
-
-  with ADOQueryMechanizmCard do
-  begin
-    Filtered := False;
-    Filter := '';
-  end;
-
-  // -----------------------------------------
-
-  with StringGridMechanizms do
-  begin
-    FixedCols := 1;
-    if RowCount > 1 then
-      FixedRows := 1;
-  end;
-end;
-
-procedure TFormCalculationEstimate.FillingMechanizm;
-var
-  Nom: Integer;
-  Price: Variant;
-  f: Double;
-  kf: Integer;
-begin
-  // Выводим полученные данные в ПРАВУЮ таблицу StringGrid
-  with ADOQueryMechanizmCard, StringGridMechanizms do
-  begin
-    Nom := 1; // Номер заполняемой строки в таблице
-
-    First; // Становимся на первую запись в наборе данных
-
-    // Пока есть данные в наборе данных, выводим их в таблицу
-    while not Eof do
-    begin
-      RowCount := RowCount + 1;
-
-      Cells[0, Nom] := IntToStr(Nom);
-      Cells[1, Nom] := FieldByName('mech_code').AsVariant;
-
-      f := FieldByName('mech_norma').AsFloat;
-
-      Cells[2, Nom] := MyFloatToStr(f);
-      Cells[3, Nom] := FieldByName('mech_unit').AsVariant;
-      Cells[4, Nom] := MyFloatToStr(CountFromRate);
-      // StringGridRates.Cells[2, StringGridRates.Row];
-
-      try
-        f := MyStrToFloat(Cells[2, Nom]);
-
-        Cells[4, Nom] := MyFloatToStr(MyStrToFloatdef(Cells[4, Nom], 0) * f);
-
-        for kf := 1 to CountCoef do
-          Cells[4, Nom] := MyFloatToStr(MyStrToFloat(Cells[4, Nom]) *
-            MyStrToFloat(StringGridCalculations.Cells[3, kf]));
-      except
-        on E: Exception do
-          MessageBox(0, PChar('Ошибка при вычислении поля «' + Cells[4, 0] + '», в таблице механизмов:' +
-            sLineBreak + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-      end;
-
-      // -----------------------------------------
-
-      // Получаем зарплату машиниста
-      Price := FieldByName('zp_mach_nds').AsVariant;
-
-      if Price <> Null then
-        Cells[5, Nom] := Price // Цена есть
-      else
-        Cells[5, Nom] := 'Нет цены'; // Цены нет
-
-      // -----------------------------------------
-
-      // Получаем сметную цену
-      Price := FieldByName('coast_nds').AsVariant;
-
-      if Price <> Null then
-      begin
-        // Цена есть
-        Cells[6, Nom] := Price;
-
-        try
-          Cells[7, Nom] := IntToStr(Round(StrToInt(Cells[6, Nom]) * MyStrToFloat(Cells[4, Nom])));
-        except
-          on E: Exception do
-            MessageBox(0, PChar('Ошибка при вычислении поля «' + Cells[7, 0] + '», в таблице материалов:' +
-              sLineBreak + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-        end;
-      end
-      else
-      begin
-        // Цены нет
-        Cells[6, Nom] := 'Нет цены';
-        Cells[7, Nom] := 'Не считается';
-      end;
-
-      // -----------------------------------------
-
-      Cells[8, Nom] := '';
-      Cells[9, Nom] := '';
-      Cells[10, Nom] := '';
-      Cells[11, Nom] := FieldByName('mech_name').AsVariant;
-      Cells[12, Nom] := FieldByName('id').AsVariant;
-      Cells[13, Nom] := '';
-
-      Inc(Nom);
-      Next; // Переход на следующую запись в наборе данных
-    end;
-  end;
-end;
-
-procedure TFormCalculationEstimate.FillingTableDescription(const vIdNormativ: string);
-var
-  i: Integer;
-begin
-  ClearTable(StringGridDescription);
-
-  // -----------------------------------------
-
-  with ADOQueryTemp do
+  with qrDescription do
   begin
     Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT cast(sostav_name as char(1024)) as "work" FROM sostav, normativg ' +
-      'WHERE normativg.tab_id = sostav.tab_id and normativg.normativ_id = ' + vIdNormativ +
-      ' ORDER BY sostav_name ASC;');
+    ParamByName('IdNorm').AsInteger := vIdNormativ;
     Active := True;
-  end;
-
-  // Выводим полученные данные в таблицу StringGrid
-  with ADOQueryTemp, StringGridDescription do
-  begin
-    i := 1; // Номер заполняемой строки в StringGrid
-
-    First; // Становимся на первую запись в наборе данных
-
-    StringGridDescription.RowCount := RecordCount + 1;
-
-    // Пока есть данные в наборе данных, выводим их в StringGrid
-    while not Eof do
-    begin
-      Cells[0, i] := IntToStr(i);
-      Cells[1, i] := Fields.Fields[0].AsString;
-
-      Next;
-      Inc(i);
-    end;
   end;
 end;
 
@@ -3664,14 +3464,14 @@ begin
 
   RowCoefDefault := False;
 
-  StringGridRatesClick(StringGridRates);
+  GridRatesRowSellect
 end;
 
 function TFormCalculationEstimate.GetRankBuilders(const vIdNormativ: string): Double;
 begin
   // Средний разряд рабочих-строителей
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -3694,7 +3494,7 @@ function TFormCalculationEstimate.GetWorkCostBuilders(const vIdNormativ: string)
 begin
   // Разраты труда рабочих-строителей
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -3717,7 +3517,7 @@ function TFormCalculationEstimate.GetWorkCostMachinists(const vIdNormativ: strin
 begin
   // Затраты труда машинистов
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -3738,7 +3538,7 @@ end;
 
 procedure TFormCalculationEstimate.Calculation;
 begin
-  with ADOQueryMaterialCard do
+ { with ADOQueryMaterialCard do
   begin
     Filtered := False;
     Filter := 'id_replaced = 0 and mat_code LIKE ''С%''';
@@ -3801,7 +3601,7 @@ begin
   begin
     Filtered := False;
     Filter := '';
-  end;
+  end;                 }
 end;
 
 procedure TFormCalculationEstimate.CalculationMaterial;
@@ -3825,7 +3625,7 @@ begin
   end;
 
   // Рассчитываем ЗП (заработную плату)
-  TwoValues := CalculationSalary(IntToStr(RateId));
+  //TwoValues := CalculationSalary(IntToStr(RateId));
 
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЗП)
   with StringGridCalculations do
@@ -3873,7 +3673,7 @@ begin
     Cells[6, CountCoef + 3] := '0';
   end;
 
-  TwoValues := CalculationEMiM(IntToStr(RateId));
+  //TwoValues := CalculationEMiM(IntToStr(RateId));
 
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
   with StringGridCalculations do
@@ -3922,53 +3722,6 @@ begin
   CalculationWorkMachinist;
 end;
 
-procedure TFormCalculationEstimate.CalculationColumnPriceMaterial;
-var
-  i, Nom: Integer;
-  vCount: Double;
-begin
-  with StringGridMaterials do
-    try
-      for i := 1 to RowCount - 1 do
-        if StringGridMaterials.Cells[0, i] <> '' then
-        begin
-          vCount := MyStrToFloat(Cells[4, i]);
-
-          if (Cells[10, i] <> '') then
-            Cells[11, i] := MyFloatToStr(RoundTo(StrToInt(Cells[10, i]) * vCount, PS.RoundTo * -1))
-          else
-            Cells[11, i] := '';
-        end;
-    except
-      on E: Exception do
-        MessageBox(0, PChar('Ошибка при вычислении поля «' + Cells[11, 0] + '», в таблице материалов:' +
-          sLineBreak + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
-end;
-
-procedure TFormCalculationEstimate.CalculationColumnPriceMechanizm;
-var
-  i: Integer;
-  vCount: Double;
-begin
-  with StringGridMechanizms do
-    try
-      for i := 1 to RowCount - 1 do
-      begin
-        vCount := MyStrToFloat(Cells[4, i]);
-
-        if Cells[8, i] <> '' then
-          Cells[9, i] := MyFloatToStr(RoundTo(StrToInt(Cells[8, i]) * vCount, PS.RoundTo * -1))
-        else
-          Cells[9, i] := '';
-      end;
-    except
-      on E: Exception do
-        MessageBox(0, PChar('Ошибка при вычислении поля «' + Cells[7, 0] + '», в таблице механизмов:' +
-          sLineBreak + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
-end;
-
 function TFormCalculationEstimate.CalculationSalary(const vIdNormativ: string): TTwoValues;
 var
   TZ, TZ1: Double;
@@ -3983,8 +3736,7 @@ var
 begin
   try
     // Количество из ЛЕВОЙ таблицы
-    with StringGridRates do
-      Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
+    Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
 
     TZ := GetWorkCostBuilders(vIdNormativ) * Count;
     // Затраты труда рабочий * количество
@@ -4004,7 +3756,7 @@ begin
 
     // Получаем межразрядный коэффициент
     if EditCategory.Text <> '0' then
-      with ADOQueryTemp do
+      with qrTemp do
       begin
         Active := False;
         SQL.Clear;
@@ -4019,7 +3771,7 @@ begin
 
     // -----------------------------------------
 
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -4078,7 +3830,7 @@ var
   Res, Res1: Double;
   s: String;
 begin
-  try
+ { try
     if ADOQueryMaterialCard.RecordCount = 0 then
     begin
       StringGridCalculations.Cells[5, CountCoef + 2] := '0';
@@ -4097,8 +3849,7 @@ begin
     Res1 := 0;
 
     // Количество из ЛЕВОЙ таблицы
-    with StringGridRates do
-      Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
+    Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
 
     Nom := -1;
 
@@ -4162,7 +3913,7 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[5,
         0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  end;}
 end;
 
 procedure TFormCalculationEstimate.CalculationPercentTransport;
@@ -4171,7 +3922,7 @@ var
   Str: string;
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -4204,7 +3955,7 @@ function TFormCalculationEstimate.GetNormMechanizm(const vIdNormativ, vIdMechani
 begin
   // Норма расхода по механизму
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -4229,7 +3980,7 @@ function TFormCalculationEstimate.GetPriceMechanizm(const vIdNormativ, vIdMechan
 begin
   // Цена по механизму
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -4258,10 +4009,10 @@ var
   Res, Res1, NormRas, Count, Coast: Double;
   TW: TTwoValues;
 begin
-  try
+  {try
     // Получаем все Id механизмов в расценке
     try
-      with ADOQueryTemp do
+      with qrTemp do
       begin
         Active := False;
         SQL.Clear;
@@ -4296,8 +4047,7 @@ begin
     Res1 := 0;
 
     // Количество из ЛЕВОЙ таблицы
-    with StringGridRates do
-      Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
+    Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
 
     for i := 0 to CountMechanizm - 1 do
     begin
@@ -4350,7 +4100,7 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[3,
         0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  end;}
 end;
 
 procedure TFormCalculationEstimate.CalculationSalaryMachinist;
@@ -4363,7 +4113,7 @@ var
   Res, Res1: Double;
   s: string;
 begin
-  try
+  {try
     // Количество материалов в расценке
     CountMechanizm := StringGridMechanizms.RowCount - 1;
 
@@ -4372,8 +4122,7 @@ begin
     SetLength(EMiM1, CountMechanizm);
 
     // Количество из ЛЕВОЙ таблицы
-    with StringGridRates do
-      Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
+    Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
 
     Res := 0;
     Res1 := 0;
@@ -4421,12 +4170,12 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[4,
         0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  end;}
 end;
 
 procedure TFormCalculationEstimate.CalculationCost;
 begin
-  try
+  {try
     with StringGridCalculations do
     begin
       Cells[7, CountCoef + 2] :=
@@ -4442,7 +4191,7 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[7,
         0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  end; }
 end;
 
 procedure TFormCalculationEstimate.CalculationOXROPR;
@@ -4455,7 +4204,7 @@ begin
       if Cells[8, CountCoef + 2] <> '' then
       begin
         OXROPR := MyStrToCurr(Cells[2, CountCoef + 3]); // ЗП
-        OXROPR := OXROPR + MyStrToCurr(Cells[4, CountCoef + 3]); // ЗП + ЗП маш.
+     //   OXROPR := OXROPR + MyStrToCurr(Cells[4, CountCoef + 3]); // ЗП + ЗП маш.
 
         // (ЗП + ЗП маш.) * % в этом столбце
         OXROPR := OXROPR * MyStrToCurr(Cells[8, CountCoef + 2]) / 100;
@@ -4480,13 +4229,13 @@ procedure TFormCalculationEstimate.CalculationPlanProfit;
 var
   PlanProfit: Double;
 begin
-  try
+  {try
     with StringGridCalculations do
       // Если % Плана прибыли есть в таблице, тогда считаем
       if Cells[9, CountCoef + 2] <> '' then
       begin
         PlanProfit := MyStrToCurr(Cells[2, CountCoef + 3]); // ЗП
-        PlanProfit := PlanProfit + MyStrToCurr(Cells[4, CountCoef + 3]);
+   //     PlanProfit := PlanProfit + MyStrToCurr(Cells[4, CountCoef + 3]);
         // ЗП + ЗП маш.
 
         // (ЗП + ЗП маш.) * % в этом столбце
@@ -4505,7 +4254,7 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[9,
         0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  end;  }
 end;
 
 procedure TFormCalculationEstimate.CalculationCostOXROPR;
@@ -4514,7 +4263,7 @@ var
   i: Integer;
   Str: string;
 begin
-  try
+{  try
     OXROPR := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]); // ЗП
     OXROPR := OXROPR / MyStrToCurr(StringGridCalculations.Cells[8, CountCoef + 1]); // ЗП / Кф по приказам
     OXROPR := OXROPR + MyStrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]);
@@ -4566,14 +4315,14 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[10,
         0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  end; }
 end;
 
 procedure TFormCalculationEstimate.CalculationWinterPrice;
 var
   WinterPrice: Currency;
 begin
-  try
+  {try
     WinterPrice := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]);
     // ЗП
     WinterPrice := WinterPrice + MyStrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]); // ЗП + ЗП маш.
@@ -4589,14 +4338,14 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[13,
         0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  end; }
 end;
 
 procedure TFormCalculationEstimate.CalculationSalaryWinterPrice;
 var
   SalaryWinterPrice: Currency;
 begin
-  try
+{  try
     SalaryWinterPrice := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]); // ЗП
     SalaryWinterPrice := SalaryWinterPrice + MyStrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]);
     // ЗП + ЗП маш.
@@ -4612,14 +4361,14 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[14,
         0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  end;  }
 end;
 
 procedure TFormCalculationEstimate.CalculationWork;
 var
   Work: Currency;
 begin
-  try
+ { try
     Work := MyStrToCurr(StringGridCalculations.Cells[11, CountCoef + 2]); // Труд
 
     Work := Work * CountFromRate;
@@ -4634,14 +4383,14 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[11,
         0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  end;   }
 end;
 
 procedure TFormCalculationEstimate.CalculationWorkMachinist;
 var
   WorkMachinist: Currency;
 begin
-  try
+ { try
     WorkMachinist := MyStrToCurr(StringGridCalculations.Cells[12, CountCoef + 2]);
     // Труд
 
@@ -4657,41 +4406,7 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[2,
         0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-end;
-
-procedure TFormCalculationEstimate.ShowHintInTables(const SG: TStringGrid; const vCol, vRow: Integer);
-var
-  Point: TPoint;
-begin
-  if not PS.ShowHint then
-    Exit;
-
-  if (vCol = -1) or (vRow = -1) or (not ShowHint) then
-  begin
-    PanelHint.Visible := False;
-    Exit;
-  end;
-
-  PanelHint.Caption := SG.Cells[vCol, vRow];
-
-  if PanelHint.Caption <> '' then
-  begin
-    PanelHint.Visible := True
-  end
-  else
-  begin
-    PanelHint.Visible := False;
-    Exit;
-  end;
-
-  PanelHint.Width := Canvas.TextWidth(PanelHint.Caption) + 20;
-
-  GetCursorPos(Point);
-  Point := ScreenToClient(Point);
-
-  PanelHint.Left := Point.X + 12;
-  PanelHint.Top := Point.Y + 20;
+  end; }
 end;
 
 procedure TFormCalculationEstimate.SettingVisibleRightTables;
@@ -4702,28 +4417,28 @@ begin
   SplitterRight1.Visible := False;
   SplitterRight2.Visible := False;
 
-  StringGridMaterials.Visible := False;
-  StringGridMechanizms.Visible := False;
+  dbgrdMaterial.Visible := False;
   StringGridEquipments.Visible := False;
-  StringGridDescription.Visible := False;
+  dbgrdMechanizm.Visible := False;
+  dbgrdDescription.Visible := False;
 
-  StringGridMaterials.Align := alNone;
-  StringGridMechanizms.Align := alNone;
+  dbgrdMaterial.Align := alNone;
   StringGridEquipments.Align := alNone;
-  StringGridDescription.Align := alNone;
+  dbgrdDescription.Align := alNone;
+  dbgrdMechanizm.Align := alNone;
 
   ImageSplitterRight1.Visible := False;
   ImageSplitterRight2.Visible := False;
 
   if VisibleRightTables = '1000' then
   begin
-    StringGridMaterials.Align := alClient;
-    StringGridMaterials.Visible := True;
+    dbgrdMaterial.Align := alClient;
+    dbgrdMaterial.Visible := True;
   end
   else if VisibleRightTables = '0100' then
   begin
-    StringGridMechanizms.Align := alClient;
-    StringGridMechanizms.Visible := True;
+    dbgrdMechanizm.Align := alClient;
+    dbgrdMechanizm.Visible := True;
   end
   else if VisibleRightTables = '0010' then
   begin
@@ -4732,22 +4447,23 @@ begin
   end
   else if VisibleRightTables = '0001' then
   begin
-    StringGridDescription.Align := alClient;
-    StringGridDescription.Visible := True;
+    dbgrdDescription.Align := alClient;
+    dbgrdDescription.Visible := True;
+    dbgrdDescription.Columns[0].Width := dbgrdDescription.Width - 50;
   end
   else if VisibleRightTables = '1110' then
   begin
-    StringGridMaterials.Align := alTop;
+    dbgrdMaterial.Align := alTop;
     SplitterRight1.Align := alTop;
 
     StringGridEquipments.Align := alBottom;
     SplitterRight2.Align := alTop;
     SplitterRight2.Align := alBottom;
 
-    StringGridMechanizms.Align := alClient;
+    dbgrdMechanizm.Align := alClient;
 
-    StringGridMaterials.Visible := True;
-    StringGridMechanizms.Visible := True;
+    dbgrdMaterial.Visible := True;
+    dbgrdMechanizm.Visible := True;
     StringGridEquipments.Visible := True;
 
     SplitterRight1.Visible := True;
@@ -4837,7 +4553,7 @@ end;
 procedure TFormCalculationEstimate.GetMonthYearCalculationEstimate;
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -4861,7 +4577,7 @@ var
   i: Integer;
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -4893,25 +4609,34 @@ end;
 procedure TFormCalculationEstimate.GetSourceData;
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT monat, year, nds FROM stavka, smetasourcedata ' +
         'WHERE stavka.stavka_id = smetasourcedata.stavka_id and sm_id = :sm_id;');
-      ADOQueryTemp.ParamByName('sm_id').Value := IdEstimate;
+      qrTemp.ParamByName('sm_id').Value := IdEstimate;
       Active := True;
 
       EditMonth.Text := FormatDateTime('mmmm yyyy года.',
-        StrToDate('01.' + ADOQueryTemp.FieldByName('monat').AsString + '.' + ADOQueryTemp.FieldByName('year')
-        .AsString));
+        StrToDate('01.' + qrTemp.FieldByName('monat').AsString + '.' +
+        qrTemp.FieldByName('year').AsString));
 
       if FieldByName('nds').Value then
-        EditVAT.Text := 'c НДС'
+      begin
+        EditVAT.Text := 'c НДС';
+        NDSEstimate := true;
+      end
       else
+      begin
         EditVAT.Text := 'без НДС';
+        NDSEstimate := false;
+      end;
       Active := False;
     end;
+    //Исходя от того, используется НДС или нет настраивает внешний вид таблиц справа
+    ChangeGrigNDSStyle(NDSEstimate);
+
   except
     on E: Exception do
       MessageBox(0, PChar('При получении исходных данных возникла ошибка:' + sLineBreak + sLineBreak +
@@ -4919,10 +4644,52 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.ChangeGrigNDSStyle(aNDS: boolean);
+begin
+  with dbgrdMaterial do
+  begin
+    //в зависимости от ндс скрывает одни и показывает другие калонки
+    Columns[6].Visible := aNDS; //цена смет
+    Columns[8].Visible := aNDS; //Трансп смет
+    Columns[10].Visible := aNDS; //Стоим смет
+    Columns[13].Visible := aNDS; //цена факт
+    Columns[15].Visible := aNDS; //Трансп факт
+    Columns[17].Visible := aNDS; //стоим факт
+
+    Columns[7].Visible := not aNDS;
+    Columns[9].Visible := not aNDS;
+    Columns[11].Visible := not aNDS;
+    Columns[14].Visible := not aNDS;
+    Columns[16].Visible := not aNDS;
+    Columns[18].Visible := not aNDS;
+  end;
+
+  with dbgrdMechanizm do
+  begin
+    //в зависимости от ндс скрывает одни и показывает другие калонки
+    Columns[5].Visible := aNDS; //зп маш смет
+    Columns[7].Visible := aNDS; //цена смет
+    Columns[9].Visible := aNDS; //стоим смет
+    Columns[12].Visible := aNDS; //зп маш факт
+    Columns[14].Visible := aNDS; //цена факт
+    Columns[16].Visible := aNDS; //стоим факт
+    Columns[18].Visible := aNDS; //аренда
+
+    Columns[6].Visible := not aNDS;
+    Columns[8].Visible := not aNDS;
+    Columns[10].Visible := not aNDS;
+    Columns[13].Visible := not aNDS;
+    Columns[15].Visible := not aNDS;
+    Columns[17].Visible := not aNDS;
+    Columns[19].Visible := not aNDS;
+  end;
+
+end;
+
 procedure TFormCalculationEstimate.SetIndexOXROPR(vNumber: String);
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -4954,7 +4721,7 @@ end;
 
 procedure TFormCalculationEstimate.GetValuesOXROPR;
 begin
-  with ADOQueryTemp do
+  with qrTemp do
   begin
     Active := False;
     SQL.Clear;
@@ -4982,7 +4749,7 @@ end;
 procedure TFormCalculationEstimate.FillingWinterPrice(vNumber: string);
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -5017,103 +4784,26 @@ begin
   end;
 end;
 
+ //Кусок кода оставлен, что-бы потом решить, что делать с журналом 6кс
 procedure TFormCalculationEstimate.AddRowToTableRates(FieldRates: TFieldRates);
-var
-  c, r, NumRow: Integer;
 begin
   // Выделяем строчку в КС-6
   if Act and FormKC6.Showing then
     FormKC6.SelectDataEstimates(FieldRates.vTypeAddData, FieldRates.vId, FieldRates.vCount);
+end;
 
-  NumRow := CountRowRates;
-
-  with StringGridRates do
+procedure TFormCalculationEstimate.TestOnNoDataNew(ADataSet: TDataSet);
+begin
+  if not ADataSet.Active or ADataSet.IsEmpty then
   begin
-    Cells[0, NumRow] := '';
-    Cells[1, NumRow] := '';
-    Cells[2, NumRow] := '';
-    Cells[3, NumRow] := '';
-    Cells[4, NumRow] := '';
-    Cells[5, NumRow] := '';
-    Cells[6, NumRow] := '';
-
-    RowCount := RowCount + 1;
-
-    if FieldRates.vRow <> '0' then
-    // Проверяем надо ли сдвигаем строки вниз, или вставляем вниз таблицы
-    begin
-      r := RowCount - 2;
-
-      // -------------------------------------
-
-      // Сдвигаем все строки на одну вниз, включая выделенную
-      while r > FieldRates.vRow do
-      begin
-        for c := 0 to ColCount - 1 do
-          if (c = 0)
-          { and (Pos('П', Cells[0, r]) <> 1) } then
-            // см. процедуру удаления строки
-            Cells[c, r] := IntToStr(StrToInt(Cells[c, r - 1]) + 1)
-          else
-            Cells[c, r] := Cells[c, r - 1];
-
-        Dec(r);
-      end;
-
-      for c := 0 to ColCount - 1 do
-        Cells[c, r] := '';
-
-      // -------------------------------------
-
-      NumRow := FieldRates.vRow;
-      Cells[0, NumRow] := IntToStr(NumRow);
-    end
-    else
-      Cells[0, NumRow] := IntToStr(CountRowRates);
-
-    with FieldRates do
-    begin
-      Cells[1, NumRow] := vNumber;
-
-      if vCount = Null then
-        Cells[2, NumRow] := ''
-      else
-      begin
-        Cells[2, NumRow] := MyFloatToStr(Real(vCount));
-      end;
-
-      if vNameUnit = Null then
-        Cells[3, NumRow] := ''
-      else
-        Cells[3, NumRow] := vNameUnit;
-
-      if vDescription = Null then
-        Cells[4, NumRow] := ''
-      else
-        Cells[4, NumRow] := vDescription;
-
-      Cells[5, NumRow] := vTypeAddData;
-      Cells[6, NumRow] := vId;
-    end;
-  end;
-
-  NumRow := NumRow + 1;
-  with StringGridRates do
+    PanelClientRight.Visible := False;
+    PanelNoData.Visible := True;
+  end
+  else
   begin
-    Cells[0, NumRow] := '';
-    Cells[1, NumRow] := '';
-    Cells[2, NumRow] := '';
-    Cells[3, NumRow] := '';
-    Cells[4, NumRow] := '';
-    Cells[5, NumRow] := '';
-    Cells[6, NumRow] := '';
+    PanelClientRight.Visible := True;
+    PanelNoData.Visible := False;
   end;
-
-  NumerationRates;
-
-  Inc(CountRowRates);
-
-  FormMain.AutoWidthColumn(StringGridRates, 3);
 end;
 
 //Проверка, что таблица является пустой(если пустая показывается картинка нет данных)
@@ -5135,7 +4825,7 @@ end;
 function TFormCalculationEstimate.GetSalaryMachinist(const vIdMechanizm: Integer): Currency;
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -5164,7 +4854,7 @@ function TFormCalculationEstimate.GetCoastMechanizm(const vIdMechanizm: Integer)
 begin
   // Цена использования (аренды, работы) механизма
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -5199,7 +4889,7 @@ begin
     Str := 'CALL CreateTempTables(1);'; // Данные сметы
 
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       SQL.Clear;
       SQL.Add(Str);
@@ -5220,7 +4910,7 @@ begin
   // Получаем состояние коэффициента по приказам (применять / не применять)
 
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -5246,268 +4936,47 @@ begin
   end;
 
   // Заполнение таблицы расценок
-  OutputDataToTable;
-  //Выбор расценки, инициирует заполнение остальныхз таблиц
-  StringGridRatesClick(StringGridRates);
+  OutputDataToTable(0);
 end;
 
 //Заполнение таблицы расценок
-procedure TFormCalculationEstimate.OutputDataToTable;
+procedure TFormCalculationEstimate.OutputDataToTable(aState: integer);
 var
   FieldRates: TFieldRates;
   i: Integer;
+  Str: string;
 begin
-  with StringGridRates do
+  if Act then
+    Str := 'data_act_temp'
+  else
+    Str := 'data_estimate_temp';
+
+  qrRates.DisableControls;
+  //Открытие датасета для заполнения GridRates
+  qrRates.Tag := 1; //Что-бы отключить события по скролу у датасета
+  qrRates.Active := false;
+  //Заполняет rates_temp
+  qrRates.SQL.Text := 'call GetRates(''' + Str + ''',' + IntToStr(IdEstimate) + ')';
+  qrRates.ExecSQL;
+  //Открывает rates_temp
+  qrRates.SQL.Text := 'SELECT * FROM rates_temp ORDER BY DID, RID, STYPE, MID, MEID';
+  qrRates.Active := true;
+  i := 0;
+  while not qrRates.Eof do
   begin
-    Cells[0, 1] := '';
-    Cells[1, 1] := '';
-    Cells[2, 1] := '';
-    Cells[3, 1] := '';
-    Cells[4, 1] := '';
-    Cells[5, 1] := '';
-    Cells[6, 1] := '';
-    RowCount := 2;
+    if not CheckMatINRates then inc(i);
+    qrRates.Edit;
+    qrRates.FieldByName('NUM').AsInteger := i;
+    qrRates.Post;
+
+    qrRates.Next;
   end;
-  CountRowRates := 1;
+  qrRates.Tag := 0;
 
-  // ----------------------------------------
-  //Открывает сременные таблицы с данными по смете(акту)
-  UpdateTableDataTemp;
-  UpdateTableCardRatesTemp;
-  UpdateTableCardMaterialTemp;
-  UpdateTableCardMechanizmTemp;
+  qrRates.First; //обязательно надо что-бы произошел скрол
+  if aState = 1 then qrRates.Last;
 
-  try
-    with qrData do
-    begin
-      // ShowMessage(IntToStr(ADOQueryData.RecordCount));
-      First;
-
-      while not Eof do
-      begin
-        case FieldByName('id_type_data').AsInteger of
-          1: // Выводим расценку
-            try
-              with ADOQueryCardRates do
-              begin
-                Filtered := False;
-                Filter := 'id = ' + IntToStr(qrData.FieldByName('id_tables').AsInteger);
-                Filtered := True;
-
-                with FieldRates do
-                begin
-                  vRow := '0';
-                  vNumber := FieldByName('rate_code').AsString;
-                  vCount := FieldByName('rate_count').AsFloat;
-                  vNameUnit := FieldByName('rate_unit').AsString;
-                  vDescription := FieldByName('rate_caption').AsString;
-                  vTypeAddData := 1;
-                  vId := FieldByName('id').AsInteger;
-                end;
-                AddRowToTableRates(FieldRates);
-              end;
-
-              with ADOQueryMaterialCard do
-              begin
-                // Выводим все неучтённые материалы которые не были заменены
-                Filtered := False;
-                Filter := 'id_card_rate = ' + IntToStr(ADOQueryCardRates.FieldByName('id').AsInteger) +
-                  ' and considered = 0 and replaced = 0';
-                Filtered := True;
-
-                First;
-
-                while not Eof do
-                begin
-                  with FieldRates do
-                  begin
-                    vRow := '0';
-                    vNumber := Indent + FieldByName('mat_code').AsString;
-                    vCount := FieldByName('mat_count').AsFloat;
-                    vNameUnit := FieldByName('mat_unit').AsString;
-                    vDescription := FieldByName('mat_name').AsString;
-                    vTypeAddData := 2;
-                    vId := FieldByName('id').AsInteger;
-                  end;
-                  AddRowToTableRates(FieldRates);
-
-                  Next;
-                end;
-
-                // ----------------------------------------
-
-                // Выводим все заменяющие материалы, т.е. материалы которыми были заменены неучтённые
-                Filtered := False;
-                Filter := 'id_card_rate = ' + IntToStr(ADOQueryCardRates.FieldByName('id').AsInteger) +
-                  ' and considered = 1 and id_replaced > 0';
-                Filtered := True;
-
-                First;
-
-                while not Eof do
-                begin
-                  with FieldRates do
-                  begin
-                    vRow := '0';
-                    vNumber := FieldByName('mat_code').AsString;
-                    vCount := FieldByName('mat_count').AsFloat;
-                    vNameUnit := FieldByName('mat_unit').AsString;
-                    vDescription := FieldByName('mat_name').AsString;
-                    vTypeAddData := 2;
-                    vId := FieldByName('id').AsInteger;
-                  end;
-                  AddRowToTableRates(FieldRates);
-
-                  Next;
-                end;
-
-                // ----------------------------------------
-
-                // Выводим вынесенные из расценки материалы
-                Filtered := False;
-                Filter := 'id_card_rate = ' + IntToStr(ADOQueryCardRates.FieldByName('id').AsInteger) +
-                  ' and from_rate = 1';
-                Filtered := True;
-
-                First;
-
-                while not Eof do
-                begin
-                  with FieldRates do
-                  begin
-                    vRow := '0';
-                    vNumber := FieldByName('mat_code').AsString;
-                    vCount := FieldByName('mat_count').AsFloat;
-                    vNameUnit := FieldByName('mat_unit').AsString;
-                    vDescription := FieldByName('mat_name').AsString;
-                    vTypeAddData := 2;
-                    vId := FieldByName('id').AsInteger;
-                  end;
-                  AddRowToTableRates(FieldRates);
-
-                  Next;
-                end;
-              end;
-
-              with ADOQueryMechanizmCard do
-              begin
-                // Выводим вынесенные из расценки механизмов
-                Filtered := False;
-                Filter := 'id_card_rate = ' + IntToStr(ADOQueryCardRates.FieldByName('id').AsInteger) +
-                  ' and from_rate = 1';
-                Filtered := True;
-
-                First;
-
-                while not Eof do
-                begin
-                  with FieldRates do
-                  begin
-                    vRow := '0';
-                    vNumber := FieldByName('mech_code').AsString;
-                    vCount := FieldByName('mech_count').AsFloat;
-                    vNameUnit := FieldByName('mech_unit').AsString;
-                    vDescription := FieldByName('mech_name').AsString;
-                    vTypeAddData := 3;
-                    vId := FieldByName('id').AsInteger;
-                  end;
-                  AddRowToTableRates(FieldRates);
-
-                  Next;
-                end;
-              end;
-            except
-              on E: Exception do
-                MessageBox(0, PChar('При выводе расценки в таблицу данных возникла ошибка:' + sLineBreak +
-                  sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-            end;
-          2: // Выводим материал
-            try
-              with ADOQueryMaterialCard do
-              begin
-
-                Filtered := False;
-                Filter := 'id = ' + IntToStr(qrData.FieldByName('id_tables').AsInteger);
-                Filtered := True;
-
-                with FieldRates do
-                begin
-                  vRow := '0';
-                  vNumber := FieldByName('mat_code').AsString;
-                  vCount := FieldByName('mat_count').AsFloat;
-                  vNameUnit := FieldByName('mat_unit').AsString;
-                  vDescription := FieldByName('mat_name').AsString;
-                  vTypeAddData := 2;
-                  vId := FieldByName('id').AsInteger;
-                end;
-                AddRowToTableRates(FieldRates);
-              end;
-            except
-              on E: Exception do
-                MessageBox(0, PChar('При выводе материала в таблицу данных возникла ошибка:' + sLineBreak +
-                  sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-            end;
-          3: // Выводим механизм
-            try
-              with ADOQueryMechanizmCard do
-              begin
-                i := RecordCount;
-                Filtered := False;
-                Filter := 'id = ' + IntToStr(qrData.FieldByName('id_tables').AsInteger);
-                Filtered := True;
-
-                with FieldRates do
-                begin
-                  vRow := '0';
-                  vNumber := FieldByName('mech_code').AsString;
-                  vCount := FieldByName('mech_count').AsFloat;
-                  vNameUnit := FieldByName('mech_unit').AsString;
-                  vDescription := FieldByName('mech_name').AsString;
-                  vTypeAddData := 3;
-                  vId := FieldByName('id').AsInteger;
-                end;
-                AddRowToTableRates(FieldRates);
-              end;
-            except
-              on E: Exception do
-                MessageBox(0, PChar('При выводе механизма в таблицу данных возникла ошибка:' + sLineBreak +
-                  sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-            end;
-          4: // Выводим оборудования
-            begin
-
-            end;
-        end;
-
-        Next;
-      end;
-
-      with ADOQueryCardRates do
-      begin
-        // Close;
-        Filtered := False;
-        Filter := '';
-      end;
-
-      with ADOQueryMaterialCard do
-      begin
-        // Close;
-        Filtered := False;
-        Filter := '';
-      end;
-
-      with ADOQueryMechanizmCard do
-      begin
-        // Close;
-        Filtered := False;
-        Filter := '';
-      end;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При открытии всех данных расценки возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  qrRates.EnableControls;
 end;
 
 procedure TFormCalculationEstimate.TestFromRates(const SG: TStringGrid; const vCol, vRow: Integer);
@@ -5535,7 +5004,7 @@ var
   sIdEstimate, sNumberRow, sNumberNorm, sCountNorm, sUnitName, sDescription, sTypeData, sIdNorm,
     sDistanceCount, sClassMass: string;
 begin
-  with FormSaveEstimate do
+  {with FormSaveEstimate do
   begin
     iIdEstimate := IdEstimate;
     ShowModal;
@@ -5550,7 +5019,7 @@ begin
   end;
 
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -5654,7 +5123,7 @@ begin
           sClassMass := '"' + Cells[8, i] + '"';
       end;
 
-      with ADOQueryTemp do
+      with qrTemp do
       begin
         Active := False;
         SQL.Clear;
@@ -5670,7 +5139,7 @@ begin
     on E: Exception do
       MessageBox(0, PChar('При сохранении расценок копии сметы возникла ошибка:' + sLineBreak + sLineBreak +
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  end;    }
 end;
 
 procedure TFormCalculationEstimate.VisibleColumnsWinterPrice(Value: Boolean);
@@ -5697,55 +5166,25 @@ end;
 procedure TFormCalculationEstimate.ReplacementMaterial(const vIdMat: Integer);
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL MaterialReplacement(:IdCardRate, :IdReplaced, :IdMat, :IdEstimate);');
-      ParamByName('IdCardRate').Value := IdInRate;
-      ParamByName('IdReplaced').Value := IdInMat;
-      ParamByName('IdMat').Value := vIdMat;
+      SQL.Add('CALL ReplacedMaterial(:IdEstimate, :IdCardRate, :IdReplaced, :IdMat);');
       ParamByName('IdEstimate').Value := IdEstimate;
+      ParamByName('IdCardRate').Value := qrMaterialID_CARD_RATE.AsInteger;
+      ParamByName('IdReplaced').Value := qrMaterialID.AsInteger;
+      ParamByName('IdMat').Value := vIdMat;
+
       ExecSQL;
     end;
 
-    OutputDataToTable;
+    OutputDataToTable(0);
   except
     on E: Exception do
       MessageBox(0, PChar('При замене неучтённого материала возникла ошибка:' + sLineBreak + sLineBreak +
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-end;
-
-procedure TFormCalculationEstimate.NumerationRates;
-var
-  r, Nom, LowStr: Integer;
-  Str: String;
-begin
-  Nom := 1;
-  LowStr := 1;
-  // Low(Str); // Cамое низкое значение типа string (с которого начинается первый символ в строке)
-
-  with StringGridRates do
-    for r := 1 to RowCount - 2 do
-    begin
-      Str := Cells[1, r];
-
-      if (Pos(Indent, Str) = 0) then
-      // Расценка Е-шка, или материл, механизм, оборудование
-      begin
-        Cells[0, r] := IntToStr(Nom);
-        Inc(Nom);
-      end
-      else if Pos(Indent + 'П', Str) = LowStr then
-        // Неучтённый материал П-шка
-        Cells[0, r] := Cells[0, r - 1]
-      else if Pos('С', Str) = LowStr then // Заменённый материал С-шка
-      begin
-        Cells[0, r] := IntToStr(Nom);
-        Inc(Nom);
-      end;
-    end;
 end;
 
 procedure TFormCalculationEstimate.ShowFormAdditionData(const vDataBase: Char);
@@ -5811,7 +5250,7 @@ end;
 
 function TFormCalculationEstimate.GetPriceMaterial(): Variant;
 begin
-  with ADOQueryTemp do
+  {with qrTemp do
   begin
     Active := False;
     SQL.Clear;
@@ -5824,7 +5263,7 @@ begin
       1:
         Result := ADOQueryMaterialCard.FieldByName('coast_nds').AsVariant;
     end;
-  end;
+  end; }
 end;
 
 procedure TFormCalculationEstimate.GetStateCoefOrdersInEstimate;
@@ -5835,7 +5274,7 @@ begin
     PMCoefOrders.Enabled := False;
     PopupMenuCoefOrders.Enabled := False;
 
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -5861,7 +5300,7 @@ begin
   // Получаем флаг состояния коэффициента по приказам (применять или не применять)
 
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -5881,254 +5320,12 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.UpdateTableDataTemp;
-var
-  Str: string;
-begin
-  if Act then
-    Str := 'data_act_temp'
-  else
-    Str := 'data_estimate_temp';
-
-  with qrData do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT * FROM ' + Str + ' ORDER BY 1;');
-    Active := True;
-  end;
-end;
-
-procedure TFormCalculationEstimate.UpdateTableCardRatesTemp;
-begin
-  with ADOQueryCardRates do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT * FROM card_rate_temp ORDER BY 1;');
-    Active := True;
-  end;
-end;
-
-procedure TFormCalculationEstimate.UpdateTableCardMaterialTemp;
-begin
-  with ADOQueryMaterialCard do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT * FROM materialcard_temp ORDER BY 1;');
-    Active := True;
-  end;
-end;
-
-procedure TFormCalculationEstimate.UpdateTableCardMechanizmTemp;
-begin
-  with ADOQueryMechanizmCard do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT * FROM mechanizmcard_temp ORDER BY 1;');
-    Active := True;
-  end;
-end;
-
-procedure TFormCalculationEstimate.GetInfoAboutData;
-var
-  vIdCardRate: Integer;
-  Str: string;
-begin
-  // Получаем тип данных строки в таблице
-  with StringGridRates do
-    if Cells[5, Row] = '' then
-      TypeData := 0
-    else
-      TypeData := StrToInt(Cells[5, Row]);
-
-  if TypeData = 0 then
-    // Если выделена строка для ввода данных, то прекращаем выполнение
-    Exit;
-
-  IdInRate := 0;
-  RateId := 0;
-  RateCode := '';
-
-  IdInMat := 0;
-  MatId := 0;
-  MatIdCardRate := 0;
-  MatIdReplaced := 0;
-  MatReplaced := False;
-  MatConsidered := True;
-  MatFromRate := False;
-  MatIdForAllocate := 0;
-
-  IdInMech := 0;
-  MechId := 0;
-  MechIdCardRate := 0;
-  MechFromRate := False;
-  MechIdForAllocate := 0;
-
-  case TypeData of
-    1: // Расценка
-      try
-        with ADOQueryTemp do
-        begin
-          Active := False;
-          SQL.Clear;
-          SQL.Add('SELECT id, rate_id, rate_code FROM card_rate_temp WHERE id = :id;');
-          ParamByName('id').Value := StrToInt(StringGridRates.Cells[6, StringGridRates.Row]);
-          Active := True;
-
-          IdInRate := FieldByName('id').AsInteger;
-          RateId := FieldByName('rate_id').AsInteger;
-          RateCode := FieldByName('rate_code').AsString;
-
-          Active := False;
-        end;
-      except
-        on E: Exception do
-          MessageBox(0, PChar('При получениb идентификационных данных расценки возникла ошибка:' + sLineBreak
-            + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-      end;
-    2: // Материал
-      try
-        with ADOQueryTemp do
-        begin
-          Active := False;
-          SQL.Clear;
-          SQL.Add('SELECT id_card_rate FROM materialcard_temp WHERE id = :id;');
-          ParamByName('id').Value := StrToInt(StringGridRates.Cells[6, StringGridRates.Row]);
-          Active := True;
-          vIdCardRate := FieldByName('id_card_rate').AsInteger;
-
-          // ----------------------------------------
-
-          if vIdCardRate = 0 then
-            Str := 'SELECT id as IdInMat, mat_id, id_card_rate, id_replaced, considered, replaced, from_rate '
-              + 'FROM materialcard_temp WHERE id = :id;'
-          else
-            Str := 'SELECT materialcard_temp.id as IdInMat, mat_id, id_card_rate, id_replaced, replaced, ' +
-              'considered, from_rate, card_rate_temp.id as IdInRate, rate_id, rate_code ' +
-              'FROM materialcard_temp, card_rate_temp ' +
-              'WHERE materialcard_temp.id = :id and id_card_rate = card_rate_temp.id;';
-
-          // ----------------------------------------
-
-          Active := False;
-          SQL.Clear;
-          SQL.Add(Str);
-          ParamByName('id').Value := StrToInt(StringGridRates.Cells[6, StringGridRates.Row]);
-          Active := True;
-
-          // ----------------------------------------
-
-          IdInMat := FieldByName('IdInMat').AsInteger;
-          MatId := FieldByName('mat_id').AsInteger;
-          MatIdCardRate := FieldByName('id_card_rate').AsInteger;
-          // Id из таблицы расценки
-          MatIdReplaced := FieldByName('id_replaced').AsInteger;
-          // Id в табл. мат., какой мат. был заменён этим мат.
-
-          if MatIdReplaced > 0 then // Если это заменяющий НЕУЧТЁННЫЙ материал
-            MatIdForAllocate := MatIdReplaced;
-          // Получаем его Id в таблице материалов для выделения
-
-          if FieldByName('considered').AsInteger = 0 then
-          // Если выделен НЕУЧТЁННЫЙ материал
-          begin
-            MatConsidered := False; // Материал является НЕУЧТЁННЫМ
-            MatIdForAllocate := FieldByName('IdInMat').AsInteger;
-            if FieldByName('replaced').AsInteger = 1 then
-              // Если НЕУЧТЁННЫЙ материал был заменён на другой
-              MatReplaced := True;
-          end;
-
-          if FieldByName('from_rate').AsInteger = 1 then
-          // Если материал ВЫНЕСЕН из расценки
-          begin
-            MatFromRate := True;
-            MatIdForAllocate := FieldByName('IdInMat').AsInteger;
-          end;
-
-          if vIdCardRate > 0 then
-          // Если материал из расценки, а не просто добавлен, получаем данные о самой расценке
-          begin
-            IdInRate := FieldByName('IdInRate').AsInteger;;
-            RateId := FieldByName('rate_id').AsInteger;
-            RateCode := FieldByName('rate_code').AsString;
-          end;
-
-          Active := False;
-        end;
-      except
-        on E: Exception do
-          MessageBox(0, PChar('При получении идентификационных данных материала возникла ошибка:' + sLineBreak
-            + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-      end;
-    3: // Механизм
-      try
-        with ADOQueryTemp do
-        begin
-          Active := False;
-          SQL.Clear;
-          SQL.Add('SELECT id_card_rate FROM mechanizmcard_temp WHERE id = :id;');
-          ParamByName('id').Value := StrToInt(StringGridRates.Cells[6, StringGridRates.Row]);
-          Active := True;
-          vIdCardRate := FieldByName('id_card_rate').AsInteger;
-
-          // ----------------------------------------
-
-          if vIdCardRate = 0 then
-            Str := 'SELECT id as IdInMech, mech_id, from_rate, id_card_rate FROM mechanizmcard_temp ' +
-              'WHERE id = :id;'
-          else
-            Str := 'SELECT mechanizmcard_temp.id as IdInMech, mech_id, card_rate_temp.id as IdInRate, ' +
-              'rate_id, rate_code, from_rate, id_card_rate FROM mechanizmcard_temp, card_rate_temp ' +
-              'WHERE mechanizmcard_temp.id = :id and id_card_rate = card_rate_temp.id;';
-
-          // ----------------------------------------
-
-          Active := False;
-          SQL.Clear;
-          SQL.Add(Str);
-          ParamByName('id').Value := StrToInt(StringGridRates.Cells[6, StringGridRates.Row]);
-          Active := True;
-
-          // ----------------------------------------
-
-          IdInMech := FieldByName('IdInMech').AsInteger;
-          MechId := FieldByName('mech_id').AsInteger;
-          MechIdCardRate := FieldByName('id_card_rate').AsInteger;
-
-          if FieldByName('from_rate').AsInteger = 1 then
-          // Если Механизм ВЫНЕСЕН из расценки
-          begin
-            MechFromRate := True;
-            MechIdForAllocate := FieldByName('IdInMech').AsInteger;
-          end;
-
-          if vIdCardRate > 0 then
-          // Если Механизм из расценки, а не просто добавлен, получаем данные о самой расценке
-          begin
-            IdInRate := FieldByName('IdInRate').AsInteger;;
-            RateId := FieldByName('rate_id').AsInteger;
-            RateCode := FieldByName('rate_code').AsString;
-          end;
-
-          Active := False;
-        end;
-      except
-        on E: Exception do
-          MessageBox(0, PChar('При получения идентификационных данных механизма возникла ошибка:' + sLineBreak
-            + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-      end;
-  end;
-end;
 
 //Добавление материала к смете
 procedure TFormCalculationEstimate.AddMaterial(const vMatId: Integer);
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -6138,7 +5335,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable;
+    OutputDataToTable(0);
   except
     on E: Exception do
       MessageBox(0, PChar('При добавлении материала возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -6149,7 +5346,7 @@ end;
 procedure TFormCalculationEstimate.AddMechanizm(const vMechId, vMonth, vYear: Integer);
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -6161,7 +5358,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable;
+    OutputDataToTable(0);
   except
     on E: Exception do
       MessageBox(0, PChar('При добавлении механизма возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -6169,105 +5366,244 @@ begin
   end;
 end;
 
-function TFormCalculationEstimate.AllocateMechanizm(const vIdInMech: Integer): Boolean;
+procedure TFormCalculationEstimate.dbgrdDescriptionDrawColumnCell(
+  Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
 begin
-  Result := False;
-  // Нет маханизма для выделения
-  if MechIdForAllocate = 0 then exit;
+  with  dbgrdDescription.Canvas do
+	begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+    if gdFocused in State then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+    end;
 
-  // Если vt[fybpv является вынесенным за расценку, то выделеям его в таблицах
-  if MechFromRate and (vIdInMech = MechIdForAllocate) then
-  begin
-    Result := True;
-    Exit;
-  end;
+		FillRect(Rect);
+    TextOut(Rect.Left + 2, Rect.Top + 2, Column.Field.AsString);
+	end;
 end;
 
-function TFormCalculationEstimate.AllocateMaterial(const vIdInMat: Integer): Boolean;
+procedure TFormCalculationEstimate.dbgrdMaterialDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+var str: string;
 begin
-  try
-    with ADOQueryTemp do
+  //Порядок строчек очень важен для данной процедуры
+  with  dbgrdMaterial.Canvas do
+	begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    //Подсветка поля код (для красоты)
+    if Column.Index = 1 then Brush.Color := $00F0F0FF;
+
+    //Подсветка полей стоимости
+    if Column.Index in [10,11,17,18] then
     begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT considered, id_replaced FROM materialcard_temp WHERE id = :id;');
-      ParamByName('id').Value := vIdInMat;
-      Active := True;
+      //Та стоимость которая используется в расчете подсвечивается берюзовым
+      //другая серым
+      if (Column.Index in [10,11]) then
+        if (qrMaterialFCOAST_NO_NDS.AsInteger > 0) then
+          Brush.Color := $00DDDDDD
+        else Brush.Color := $00FBFEBC;
 
-      // Нет материала для выделения
-      if MatIdForAllocate = 0 then
-      begin
-        Result := False;
-        Exit;
-      end;
-
-      // Если материал является вынесенным за расценку, то выделеям его в таблицах
-      if MatFromRate and (vIdInMat = MatIdForAllocate) then
-      begin
-        Result := True;
-        Exit;
-      end;
-
-      // Если выделен неучтённый или заменяющий матер., то выделяем неучтённый матер. и все материалы его заменяющие
-      if ((vIdInMat = MatIdForAllocate) and (FieldByName('considered').AsInteger = 0)) or
-        (MatIdForAllocate = FieldByName('id_replaced').AsInteger) then
-        Result := True
-      else
-        Result := False;
+      if (Column.Index in [17,18]) then
+        if (qrMaterialFCOAST_NO_NDS.AsInteger > 0) then
+            Brush.Color := $00FBFEBC
+        else Brush.Color := $00DDDDDD;
     end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При выделении связанных материалов возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+
+    //Подсветка красным пустых значений
+    if (Column.Index in [2, 5, 6, 7]) and (Column.Field.AsFloat = 0) then
+    begin
+      Brush.Color := $008080FF;
+    end;
+
+    if qrMaterialSCROLL.AsInteger = 1 then
+    begin
+      Font.Style := Font.Style + [fsbold];
+      //Все поля открытые для редактирования подсвечиваются желтеньким
+      if not Column.ReadOnly then Brush.Color := $00AFFEFC
+    end;
+
+    //Зачеркиваем вынесеные из расцеки материалы
+    if (qrMaterialFROM_RATE.AsInteger = 1) and
+        not (qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+    begin
+      Font.Style := Font.Style + [fsStrikeOut];
+      Brush.Color := $00DDDDDD
+    end;
+
+    //Выделяем заменяющий материал из расцеки материалы
+    if (qrMaterialID_REPLACED.AsInteger > 0) and
+       (qrMaterialFROM_RATE.AsInteger = 0) and
+       (qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+    begin
+      Font.Style := Font.Style + [fsbold];
+    end;
+
+    //Выделение замененного или заменяющего материала
+    if (IdReplasedMat = qrMaterialID.AsInteger) or
+       (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) then
+      Font.Style := Font.Style + [fsbold];
+
+    //никакой цветовой подсветки для неучтеных
+    if CheckMatUnAccountingMatirials then
+      Brush.Color := PS.BackgroundRows;
+
+    //Подсветка синим подшапок таблицы
+    if qrMaterialTITLE.AsInteger > 0 then
+    begin
+      Brush.Color := clNavy;
+      Font.Color := clWhite;
+      Font.Style := Font.Style + [fsbold];
+      if Column.Index = 1 then str := Column.Field.AsString
+      else str := '';
+    end
+    else str := Column.Field.AsString;
+
+    if gdFocused in State then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+    end;
+
+		FillRect(Rect);
+    if Column.Alignment = taRightJustify then
+      TextOut(Rect.Right - 2 - TextWidth(str), Rect.Top + 2, str)
+    else
+     TextOut(Rect.Left + 2, Rect.Top + 2, str);
+	end;
 end;
 
-function TFormCalculationEstimate.CrossOutMaterial(const vIdInMat: Integer): Boolean;
+procedure TFormCalculationEstimate.dbgrdMaterialExit(Sender: TObject);
 begin
-  Result := False;
-  try
-    with ADOQueryTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT from_rate FROM materialcard_temp WHERE id = :id;');
-      ParamByName('id').AsInteger := vIdInMat;
-      Active := True;
-      if ADOQueryTemp.RecordCount > 0 then
-        if (ADOQueryTemp.FieldByName('from_rate').Value = 1) then
-          Result := True
-        else
-          Result := False;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При зачёркивании вынесенного материала возникла ошибка:' + sLineBreak + sLineBreak
-        + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  if not Assigned(FormCalculationEstimate.ActiveControl) or
+    (FormCalculationEstimate.ActiveControl.Name <> 'MemoRight') then
+    SetMatNoEditMode;
 end;
 
-function TFormCalculationEstimate.CrossOutMechanizm(const vIdInMech: Integer): Boolean;
+procedure TFormCalculationEstimate.dbgrdMechanizmDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
-  Result := False;
-  try
-    with ADOQueryTemp do
+  with  dbgrdMechanizm.Canvas do
+	begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    //Подсветка поля код (для красоты)
+    if Column.Index = 1 then Brush.Color := $00F0F0FF;
+
+    //Подсветка полей стоимости
+    if Column.Index in [9,10,16,17] then
     begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT from_rate FROM mechanizmcard_temp WHERE id = :id;');
-      ParamByName('id').AsInteger := vIdInMech;
-      Active := True;
-      if ADOQueryTemp.RecordCount > 0 then
-        if (ADOQueryTemp.FieldByName('from_rate').Value = 1) then
-          Result := True
-        else
-          Result := False;
+      //Та стоимость которая используется в расчете подсвечивается берюзовым
+      //другая серым
+      if (Column.Index in [9,10]) then
+        if (qrMechanizmFCOAST_NO_NDS.AsInteger > 0) then
+          Brush.Color := $00DDDDDD
+        else Brush.Color := $00FBFEBC;
+
+      if (Column.Index in [16,17]) then
+        if (qrMechanizmFCOAST_NO_NDS.AsInteger > 0) then
+            Brush.Color := $00FBFEBC
+        else Brush.Color := $00DDDDDD;
     end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При зачёркивании вынесенного механизма возникла ошибка:' + sLineBreak + sLineBreak
-        + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+
+    //Подсветка красным пустых значений
+    if (Column.Index in [2, 7, 8]) and (Column.Field.AsFloat = 0) then
+    begin
+      Brush.Color := $008080FF;
+    end;
+
+    if qrMechanizmSCROLL.AsInteger = 1 then
+    begin
+      Font.Style := Font.Style + [fsbold];
+      //Все поля открытые для редактирования подсвечиваются желтеньким
+      if not Column.ReadOnly then Brush.Color := $00AFFEFC
+    end;
+
+    //Зачеркиваем вынесеные из расцеки механизмы
+    if (qrMechanizmFROM_RATE.AsInteger = 1) and
+        not (qrRatesMEID.AsInteger > 0) then
+    begin
+      Font.Style := Font.Style + [fsStrikeOut];
+      Brush.Color := $00DDDDDD
+    end;
+
+    if gdFocused in State then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+    end;
+
+		FillRect(Rect);
+    if Column.Alignment = taRightJustify then
+      TextOut(Rect.Right - 2 - TextWidth(Column.Field.AsString),
+        Rect.Top + 2, Column.Field.AsString)
+    else
+     TextOut(Rect.Left + 2, Rect.Top + 2, Column.Field.AsString);
+	end;
+end;
+
+procedure TFormCalculationEstimate.dbgrdMechanizmExit(Sender: TObject);
+begin
+  if not Assigned(FormCalculationEstimate.ActiveControl) or
+    (FormCalculationEstimate.ActiveControl.Name <> 'MemoRight') then
+    SetMechNoEditMode;
+end;
+
+procedure TFormCalculationEstimate.dbgrdRatesDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+var j : integer;
+    sdvig: string;
+begin
+  j := 2;
+	with  dbgrdRates.Canvas do
+	begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+    if gdFocused in State then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+    end;
+
+    if qrRatesSCROLL.AsInteger = 1 then
+    begin
+      Font.Style := Font.Style + [fsbold];
+      j := 3;
+    end;
+
+    //Подсветка вынесенного и заменяющего материала за расценку материала
+    //Вынесение за расценку имеет приоритет над заменой
+    if SpeedButtonMaterials.Down and qrMaterial.Active then
+    begin
+      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and
+         (qrRatesFROM_RATE.AsInteger = 1) then
+        Font.Style := Font.Style + [fsbold];
+    end;
+
+    //Подсветка вынесенного за расценку механизма
+    if SpeedButtonMechanisms.Down and qrMechanizm.Active then
+    begin
+      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger)
+         and (qrRatesFROM_RATE.AsInteger = 1) then
+        Font.Style := Font.Style + [fsbold];
+    end;
+
+    // Выделение цветом неучтённых материалов расценки и заменяющих их
+    if CheckMatINRates then
+    begin
+      Font.Color := clGray;
+      if Column.Index = 1 then sdvig := Indent;
+    end else sdvig := '';
+
+		FillRect(Rect);
+
+    TextOut(Rect.Left + j, Rect.Top + 2, sdvig + Column.Field.AsString);
+	end;
 end;
 
 end.
