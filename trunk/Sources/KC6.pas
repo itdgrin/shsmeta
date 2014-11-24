@@ -240,7 +240,7 @@ begin
         end;
   end;
 
-  FormCalculationEstimate.OutputDataToTable;
+  FormCalculationEstimate.OutputDataToTable(0);
 end;
 
 procedure TFormKC6.ButtonCancelClick(Sender: TObject);
