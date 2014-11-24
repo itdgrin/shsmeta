@@ -329,7 +329,7 @@ begin
       vTypeAddData := '4';
       vId := ADOQuery.FieldByName('Id').AsVariant;
 
-      FormCalculationEstimate.AddRowToTableRates(FieldRates);
+    //  FormCalculationEstimate.AddRowToTableRates(FieldRates);
     end;
 end;
 
