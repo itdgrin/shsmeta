@@ -509,9 +509,8 @@ begin
 end;
 
 procedure TFrameRates.VSTDblClick(Sender: TObject);
-var
-  FieldRates: TFieldRates;
 begin
+  //Если разрешено добавлять данные из фрейма
   if AllowAddition then
     FormCalculationEstimate.AddRate(EditJustification.Text, 0);
 end;
