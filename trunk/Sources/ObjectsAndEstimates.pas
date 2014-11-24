@@ -1277,6 +1277,12 @@ begin
       MessageBox(0, PChar('При выводе актов возникла ошибка:' + sLineBreak + sLineBreak + E.message),
         PWideChar(caption), MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
-end;
 
+end;
+<<<<<<< .mine
 end.
+=======
+>>>>>>> .r53
+
+
+
