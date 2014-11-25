@@ -16,6 +16,7 @@ object fCalcResource: TfCalcResource
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object pnlTop: TPanel
@@ -59,10 +60,6 @@ object fCalcResource: TfCalcResource
     OnChange = pgc1Change
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 213
       object lbl2: TLabel
         Left = 0
         Top = 0
@@ -200,12 +197,14 @@ object fCalcResource: TfCalcResource
           Caption = 'pnlMatSumFooter'
           TabOrder = 0
         end
-        object JvDBGrid2: TJvDBGrid
+        object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
           Height = 152
           Align = alClient
+          DataSource = dsMaterialData
+          DrawingStyle = gdsClassic
           PopupMenu = pmMat
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
@@ -219,6 +218,69 @@ object fCalcResource: TfCalcResource
           EditControls = <>
           RowsHeight = 17
           TitleRowHeight = 17
+          WordWrap = True
+          WordWrapAllFields = True
+          Columns = <
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1050#1086#1076
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1045#1076'. '#1080#1079#1084'.'
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1050#1086#1083'-'#1074#1086
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1062#1077#1085#1072
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1053#1072#1082#1083'. '#8470
+              Visible = True
+            end>
         end
       end
       object pnlMatBott: TPanel
@@ -239,13 +301,14 @@ object fCalcResource: TfCalcResource
           ExplicitTop = 1
           ExplicitWidth = 129
         end
-        object JvDBGrid1: TJvDBGrid
+        object grMaterialBott: TJvDBGrid
           Left = 1
           Top = 25
           Width = 606
           Height = 40
           Align = alBottom
           Constraints.MinHeight = 40
+          DrawingStyle = gdsClassic
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -258,6 +321,37 @@ object fCalcResource: TfCalcResource
           EditControls = <>
           RowsHeight = 17
           TitleRowHeight = 17
+          Columns = <
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #8470#1087#1087
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1054#1073#1098#1077#1084' '#1088#1072#1073#1086#1090
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1056#1072#1089#1093#1086#1076
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Alignment = taCenter
+              Title.Caption = #1062#1077#1085#1072
+              Visible = True
+            end>
         end
         object dbmmo1: TDBMemo
           Left = 1
@@ -273,10 +367,6 @@ object fCalcResource: TfCalcResource
     object ts3: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 213
       object lbl3: TLabel
         Left = 0
         Top = 0
@@ -294,10 +384,6 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 213
       object lbl4: TLabel
         Left = 0
         Top = 0
@@ -315,10 +401,6 @@ object fCalcResource: TfCalcResource
     object ts5: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072#1088#1087#1083#1072#1090#1099
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 213
       object lbl5: TLabel
         Left = 0
         Top = 0
@@ -367,5 +449,197 @@ object fCalcResource: TfCalcResource
     object N5: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
     end
+  end
+  object qrMaterialData: TFDQuery
+    MasterFields = 'SM_ID'
+    DetailFields = 'SM_ID'
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      '/* '#1056#1040#1057#1062#1045#1053#1050#1048' */'
+      'SELECT '
+      '  ID_ESTIMATE,'
+      '  ID_TYPE_DATA,'
+      '  card_rate.ID as ID_TABLES,'
+      '  RATE_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  RATE_CAPTION AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  RATE_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  COALESCE(RATE_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      
+        '  COALESCE((SELECT SUM(RATE_COUNT) FROM card_rate_act where id=d' +
+        'ata_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
+      
+        '  COALESCE((COALESCE(RATE_COUNT, 0) - COALESCE((SELECT SUM(RATE_' +
+        'COUNT) FROM card_rate_act where id=data_estimate.ID_TABLES), 0))' +
+        ', 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
+      'FROM '
+      '  data_estimate, card_rate'
+      'WHERE '
+      'data_estimate.ID_TYPE_DATA = 1 AND'
+      'card_rate.ID = data_estimate.ID_TABLES AND'
+      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
+        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
+        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
+        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
+      
+        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
+        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
+      ')'
+      ''
+      'UNION ALL'
+      ''
+      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042' '#1056#1040#1057#1062#1045#1053#1050#1045'*/'
+      'SELECT '
+      '  ID_ESTIMATE,'
+      '  ID_TYPE_DATA,'
+      '  materialcard.ID AS ID_TABLES,'
+      '  CONCAT('#39'    '#39', MAT_CODE) AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      
+        '  COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id' +
+        '=data_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
+      
+        '  COALESCE((COALESCE(MAT_COUNT, 0) - COALESCE((SELECT SUM(MAT_CO' +
+        'UNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)' +
+        '), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
+      'FROM '
+      '  data_estimate, card_rate, materialcard'
+      'WHERE '
+      'data_estimate.ID_TYPE_DATA = 1 AND'
+      'card_rate.ID = data_estimate.ID_TABLES AND'
+      'materialcard.ID_CARD_RATE = card_rate.ID AND'
+      'materialcard.CONSIDERED = 0 AND'
+      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
+        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
+        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
+        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
+      
+        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
+        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
+      ')'
+      ''
+      'UNION ALL'
+      ''
+      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042#1067#1053#1045#1057#1045#1053#1053#1067#1045' '#1047#1040' '#1056#1040#1057#1062#1045#1053#1050#1059'*/'
+      'SELECT '
+      '  ID_ESTIMATE,'
+      '  2 as ID_TYPE_DATA,'
+      '  materialcard.ID AS ID_TABLES,'
+      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      
+        '  COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id' +
+        '=data_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
+      
+        '  COALESCE((COALESCE(MAT_COUNT, 0) - COALESCE((SELECT SUM(MAT_CO' +
+        'UNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)' +
+        '), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
+      'FROM '
+      '  data_estimate, card_rate, materialcard'
+      'WHERE '
+      'data_estimate.ID_TYPE_DATA = 1 AND'
+      'card_rate.ID = data_estimate.ID_TABLES AND'
+      'materialcard.ID_CARD_RATE = card_rate.ID AND'
+      'materialcard.FROM_RATE = 1 AND'
+      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
+        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
+        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
+        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
+      
+        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
+        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
+      ')'
+      ''
+      'UNION ALL'
+      ''
+      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067'*/'
+      'SELECT '
+      '  ID_ESTIMATE,'
+      '  ID_TYPE_DATA,'
+      '  materialcard.ID AS ID_TABLES,'
+      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      
+        '  COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id' +
+        '=data_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
+      
+        '  COALESCE((COALESCE(MAT_COUNT, 0) - COALESCE((SELECT SUM(MAT_CO' +
+        'UNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)' +
+        '), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
+      'FROM '
+      '  data_estimate, materialcard'
+      'WHERE '
+      'data_estimate.ID_TYPE_DATA = 2 AND'
+      'materialcard.ID = data_estimate.ID_TABLES AND'
+      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
+        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
+        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
+        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
+      
+        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
+        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
+      ')'
+      '/* '#1052#1045#1061#1040#1053#1048#1047#1052#1067' */'
+      'ORDER BY 1,2'
+      '')
+    Left = 64
+    Top = 160
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftLongWord
+        ParamType = ptInput
+        Size = 4
+        Value = 298
+      end>
+  end
+  object dsMaterialData: TDataSource
+    DataSet = qrMaterialData
+    Left = 136
+    Top = 160
   end
 end

@@ -42,16 +42,19 @@ type
     cbb1: TComboBox;
     pnlMatClient: TPanel;
     pnlMatFooter: TPanel;
-    JvDBGrid2: TJvDBGrid;
+    grMaterial: TJvDBGrid;
     pnlMatBott: TPanel;
-    JvDBGrid1: TJvDBGrid;
+    grMaterialBott: TJvDBGrid;
     dbmmo1: TDBMemo;
     spl1: TSplitter;
     spl2: TSplitter;
+    qrMaterialData: TFDQuery;
+    dsMaterialData: TDataSource;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgc1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
   public
     procedure LocateObject(Object_ID: Integer);
@@ -72,11 +75,19 @@ end;
 procedure TfCalcResource.FormCreate(Sender: TObject);
 begin
   CloseOpen(qrObject);
+  LoadDBGridSettings(grMaterial);
+  LoadDBGridSettings(grMaterialBott);
 end;
 
 procedure TfCalcResource.FormDestroy(Sender: TObject);
 begin
   fCalcResource := nil;
+end;
+
+procedure TfCalcResource.FormResize(Sender: TObject);
+begin
+  FixDBGridColumnsWidth(grMaterial);
+  FixDBGridColumnsWidth(grMaterialBott);
 end;
 
 procedure TfCalcResource.LocateObject(Object_ID: Integer);
