@@ -2100,7 +2100,7 @@
       TabOrder = 0
       ExplicitWidth = 100
       ExplicitHeight = 53
-      inherited dbgrdButtonSummaryCalculation: TDBGrid
+      inherited dbgrdSummaryCalculation: TDBGrid
         Width = 100
         Height = 53
       end
