@@ -2,26 +2,38 @@ unit Tools;
 
 interface
 
-uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client;
+uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, System.Variants;
 
-//Пропорциональная автоширина колонок в таблице
+// Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
-//Установка стиля таблицы из формы настроек
+// Установка стиля таблицы из формы настроек
 procedure LoadDBGridSettings(const DBGrid: TDBGrid);
-//Процедура рисования чекбокса на гриде
+// Процедура рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
-//Процедура переоткрытия запроса TFDQuery
+// Процедура переоткрытия запроса TFDQuery
 procedure CloseOpen(const Query: TFDQuery);
 
 implementation
 
 procedure CloseOpen(const Query: TFDQuery);
+var
+  Key: Variant;
 begin
-  Query.Active := False;
-  Query.Active := True;
+  Query.DisableControls;
+  try
+    Key := Null;
+    if Query.Active then
+      Key := Query.Fields[0].Value;
+    Query.Active := False;
+    Query.Active := True;
+    if Key <> Null then
+      Query.Locate(Query.Fields[0].FieldName, Key, []);
+  finally
+    Query.EnableControls;
+  end;
 end;
 
-//Пропорциональная автоширина колонок в таблице
+// Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
 const
   MIN_WHIDTH = 10;
@@ -67,7 +79,7 @@ begin
   end;
 end;
 
-//Установка стиля таблицы из формы настроек
+// Установка стиля таблицы из формы настроек
 procedure LoadDBGridSettings(const DBGrid: TDBGrid);
 begin
   DBGrid.FixedColor := PS.BackgroundHead;
@@ -107,7 +119,7 @@ begin
   }
 end;
 
-//Процедури рисования чекбокса на гриде
+// Процедури рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
 var
   DrawFlags: integer;
