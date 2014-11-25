@@ -23,39 +23,89 @@ type
     ts4: TTabSheet;
     ts5: TTabSheet;
     lbl2: TLabel;
-    lbl3: TLabel;
-    lbl4: TLabel;
     lbl5: TLabel;
     pnlMatTop: TPanel;
     lbl6: TLabel;
     cbbFromMonth: TComboBox;
     seFromYear: TSpinEdit;
     chk1: TCheckBox;
-    edt1: TEdit;
-    edt2: TEdit;
+    edtMatCodeFilter: TEdit;
+    edtMatNameFilter: TEdit;
     pmMat: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
     N4: TMenuItem;
     N5: TMenuItem;
-    cbb1: TComboBox;
+    cbbMatNDS: TComboBox;
     pnlMatClient: TPanel;
     pnlMatFooter: TPanel;
     grMaterial: TJvDBGrid;
     pnlMatBott: TPanel;
     grMaterialBott: TJvDBGrid;
-    dbmmo1: TDBMemo;
+    dbmmoNAME: TDBMemo;
     spl1: TSplitter;
     spl2: TSplitter;
     qrMaterialData: TFDQuery;
     dsMaterialData: TDataSource;
+    pnlMechClient: TPanel;
+    pnl2: TPanel;
+    grMech: TJvDBGrid;
+    pnlMechBott: TPanel;
+    spl3: TSplitter;
+    grMechBott: TJvDBGrid;
+    dbmmoNAME1: TDBMemo;
+    spl4: TSplitter;
+    pnlMechTop: TPanel;
+    lbl3: TLabel;
+    cbb1: TComboBox;
+    se1: TSpinEdit;
+    chk2: TCheckBox;
+    edtMechCodeFilter: TEdit;
+    edtMechNameFilter: TEdit;
+    cbbMechNDS: TComboBox;
+    pmMech: TPopupMenu;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
+    qrMechData: TFDQuery;
+    dsMechData: TDataSource;
+    spl5: TSplitter;
+    pnl1: TPanel;
+    lbl4: TLabel;
+    cbb2: TComboBox;
+    se2: TSpinEdit;
+    chk3: TCheckBox;
+    edt1: TEdit;
+    edt2: TEdit;
+    cbb3: TComboBox;
+    pnl3: TPanel;
+    pnl4: TPanel;
+    JvDBGrid1: TJvDBGrid;
+    pnl5: TPanel;
+    spl6: TSplitter;
+    JvDBGrid2: TJvDBGrid;
+    dbmmoNAME2: TDBMemo;
+    pm1: TPopupMenu;
+    MenuItem6: TMenuItem;
+    MenuItem7: TMenuItem;
+    MenuItem8: TMenuItem;
+    MenuItem9: TMenuItem;
+    MenuItem10: TMenuItem;
+    qr1: TFDQuery;
+    ds1: TDataSource;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgc1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormResize(Sender: TObject);
     procedure FormActivate(Sender: TObject);
+    procedure edtMatCodeFilterChange(Sender: TObject);
+    procedure edtMatCodeFilterClick(Sender: TObject);
+    procedure cbbMatNDSChange(Sender: TObject);
+    procedure edtMechCodeFilterChange(Sender: TObject);
+    procedure cbbMechNDSChange(Sender: TObject);
   private
   public
     procedure LocateObject(Object_ID: Integer);
@@ -69,6 +119,41 @@ implementation
 {$R *.dfm}
 
 uses Main;
+
+procedure TfCalcResource.cbbMatNDSChange(Sender: TObject);
+begin
+  qrMaterialData.ParamByName('NDS').AsInteger := cbbMatNDS.ItemIndex;
+  CloseOpen(qrMaterialData);
+end;
+
+procedure TfCalcResource.cbbMechNDSChange(Sender: TObject);
+begin
+  qrMechData.ParamByName('NDS').AsInteger := cbbMechNDS.ItemIndex;
+  CloseOpen(qrMechData);
+end;
+
+procedure TfCalcResource.edtMechCodeFilterChange(Sender: TObject);
+begin
+  qrMechData.Filtered := False;
+  qrMechData.Filter := 'CODE LIKE ''%' + edtMechCodeFilter.Text + '%'' AND NAME LIKE ''%' +
+    edtMechNameFilter.Text + '%''';
+  // + ' AND NDS=' + IntToStr(cbbMechNDS.ItemIndex); //возможно, неверное решение с НДС
+  qrMechData.Filtered := True;
+end;
+
+procedure TfCalcResource.edtMatCodeFilterChange(Sender: TObject);
+begin
+  qrMaterialData.Filtered := False;
+  qrMaterialData.Filter := 'CODE LIKE ''%' + edtMatCodeFilter.Text + '%'' AND NAME LIKE ''%' +
+    edtMatNameFilter.Text + '%''';
+  // + ' AND NDS=' + IntToStr(cbbMatNDS.ItemIndex); //возможно, неверное решение с НДС
+  qrMaterialData.Filtered := True;
+end;
+
+procedure TfCalcResource.edtMatCodeFilterClick(Sender: TObject);
+begin
+  (Sender as TEdit).SelectAll;
+end;
 
 procedure TfCalcResource.FormActivate(Sender: TObject);
 begin
@@ -91,6 +176,10 @@ begin
   CloseOpen(qrObject);
   LoadDBGridSettings(grMaterial);
   LoadDBGridSettings(grMaterialBott);
+  LoadDBGridSettings(grMech);
+  LoadDBGridSettings(grMechBott);
+  LoadDBGridSettings(JvDBGrid1);
+  LoadDBGridSettings(JvDBGrid2);
 end;
 
 procedure TfCalcResource.FormDestroy(Sender: TObject);
@@ -98,12 +187,6 @@ begin
   fCalcResource := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(Caption);
-end;
-
-procedure TfCalcResource.FormResize(Sender: TObject);
-begin
-  FixDBGridColumnsWidth(grMaterial);
-  FixDBGridColumnsWidth(grMaterialBott);
 end;
 
 procedure TfCalcResource.LocateObject(Object_ID: Integer);
@@ -123,10 +206,10 @@ begin
       CloseOpen(qrMaterialData);
     // Расчет механизмов
     2:
-      ;
+      CloseOpen(qrMechData);
     // Расчет оборудования
     3:
-      ;
+      CloseOpen(qr1);
     // Расчет з\п
     4:
       ;

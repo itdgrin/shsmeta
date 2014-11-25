@@ -151,8 +151,8 @@ begin
       BY_COST:
         begin
           rateCNT := '  COALESCE(RATE_SUM, 0) AS CNT, /* Кол-во */'#13;
-          rateMatCNT := '  COALESCE(MAT_SUM, 0) AS CNT, /* Кол-во */'#13;
-          matCNT := '  COALESCE(MAT_SUM, 0) AS CNT, /* Кол-во */'#13;
+          rateMatCNT := '  COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) AS CNT, /* Кол-во */'#13;
+          matCNT := '  COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) AS CNT, /* Кол-во */'#13;
           rateCNTDone :=
             '  COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
           rateMatCNTDone :=
@@ -162,9 +162,9 @@ begin
           rateCNTOut :=
             '  COALESCE((COALESCE(RATE_SUM, 0) - COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
           rateMatCNTOut :=
-            '  COALESCE((COALESCE(MAT_SUM, 0) - COALESCE((SELECT SUM(MAT_SUM) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
+            '  COALESCE((COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) - COALESCE((SELECT SUM(MAT_SUM) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
           matCNTOut :=
-            '  COALESCE((COALESCE(MAT_SUM, 0) - COALESCE((SELECT SUM(MAT_SUM) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
+            '  COALESCE((COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) - COALESCE((SELECT SUM(MAT_SUM) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
         end;
     end;
     // изменение периода
