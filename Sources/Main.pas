@@ -346,7 +346,7 @@ begin
   Height := Screen.Height;
 
   FMEndTables := 'g';
-  //Локальная установка разделителя
+  // Локальная установка разделителя
   FormatSettings.DecimalSeparator := '.';
 
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
