@@ -13,6 +13,7 @@ object fKC6Journal: TfKC6Journal
   FormStyle = fsMDIChild
   OldCreateOrder = False
   Visible = True
+  OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -763,9 +764,9 @@ object fKC6Journal: TfKC6Journal
         'ERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estim' +
         'ate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
       
-        'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard W' +
-        'HERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_e' +
-        'stimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
+        'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialca' +
+        'rd WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = da' +
+        'ta_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
       '(0)) AS PTM_COST, '
       
         '/*'#1042#1067#1055#1054#1051#1053#1045#1053#1054' '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084' + '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084' + '#1057 +
@@ -785,9 +786,9 @@ object fKC6Journal: TfKC6Journal
         'HERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_esti' +
         'mate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
       
-        'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard W' +
-        'HERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_e' +
-        'stimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
+        'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialca' +
+        'rd WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = da' +
+        'ta_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
       
         '(0))-(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_es' +
         'timate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id' +
