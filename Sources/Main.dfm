@@ -3,7 +3,7 @@
   Top = 0
   Caption = #1056#1072#1089#1095#1105#1090' '#1089#1084#1077#1090#1099
   ClientHeight = 461
-  ClientWidth = 593
+  ClientWidth = 657
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,7 +24,7 @@
   object PanelOpenWindows: TPanel
     Left = 0
     Top = 434
-    Width = 593
+    Width = 657
     Height = 27
     Hint = #1055#1072#1085#1077#1083#1100' '#1086#1090#1082#1088#1099#1090#1099#1093' '#1086#1082#1086#1085
     Align = alBottom
@@ -34,16 +34,18 @@
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
+    ExplicitWidth = 593
   end
   object PanelCover: TPanel
     Left = 0
     Top = 0
-    Width = 593
+    Width = 657
     Height = 434
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
     Visible = False
+    ExplicitWidth = 593
   end
   object MainMenu: TMainMenu
     Left = 32

@@ -2,13 +2,24 @@ unit Tools;
 
 interface
 
-uses DBGrids, Main, Graphics, Windows;
+uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client;
 
+//Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
+//Установка стиля таблицы из формы настроек
 procedure LoadDBGridSettings(const DBGrid: TDBGrid);
+//Процедура рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
+//Процедура переоткрытия запроса TFDQuery
+procedure CloseOpen(const Query: TFDQuery);
 
 implementation
+
+procedure CloseOpen(const Query: TFDQuery);
+begin
+  Query.Active := False;
+  Query.Active := True;
+end;
 
 //Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
