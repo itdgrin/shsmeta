@@ -162,6 +162,10 @@ object fKC6Journal: TfKC6Journal
     object ts2: TTabSheet
       Caption = #1055#1086' '#1055#1058#1052
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object dbgrdPTM: TDBGrid
         Left = 0
         Top = 0

@@ -96,6 +96,8 @@ end;
 procedure TfCalcResource.FormDestroy(Sender: TObject);
 begin
   fCalcResource := nil;
+  // Удаляем кнопку от этого окна (на главной форме внизу)
+  FormMain.DeleteButtonCloseWindow(Caption);
 end;
 
 procedure TfCalcResource.FormResize(Sender: TObject);
@@ -118,7 +120,7 @@ begin
       ;
     // Расчет материалов
     1:
-      ;
+      CloseOpen(qrMaterialData);
     // Расчет механизмов
     2:
       ;

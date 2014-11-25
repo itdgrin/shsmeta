@@ -61,10 +61,6 @@ object fCalcResource: TfCalcResource
     OnChange = pgc1Change
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl2: TLabel
         Left = 0
         Top = 0
@@ -302,7 +298,7 @@ object fCalcResource: TfCalcResource
           Width = 606
           Height = 3
           Cursor = crVSplit
-          Align = alBottom
+          Align = alTop
           ExplicitTop = 1
           ExplicitWidth = 129
         end
@@ -311,7 +307,7 @@ object fCalcResource: TfCalcResource
           Top = 25
           Width = 606
           Height = 40
-          Align = alBottom
+          Align = alClient
           Constraints.MinHeight = 40
           DrawingStyle = gdsClassic
           TabOrder = 0
@@ -363,8 +359,9 @@ object fCalcResource: TfCalcResource
           Top = 1
           Width = 606
           Height = 21
-          Align = alClient
+          Align = alTop
           Constraints.MinHeight = 21
+          ScrollBars = ssVertical
           TabOrder = 1
         end
       end
@@ -372,10 +369,6 @@ object fCalcResource: TfCalcResource
     object ts3: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl3: TLabel
         Left = 0
         Top = 0
@@ -393,10 +386,6 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl4: TLabel
         Left = 0
         Top = 0
@@ -414,10 +403,6 @@ object fCalcResource: TfCalcResource
     object ts5: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072#1088#1087#1083#1072#1090#1099
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl5: TLabel
         Left = 0
         Top = 0
@@ -468,8 +453,8 @@ object fCalcResource: TfCalcResource
     end
   end
   object qrMaterialData: TFDQuery
-    MasterFields = 'SM_ID'
-    DetailFields = 'SM_ID'
+    MasterSource = dsObject
+    MasterFields = 'OBJ_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -491,43 +476,6 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      '/* '#1056#1040#1057#1062#1045#1053#1050#1048' */'
-      'SELECT '
-      '  ID_ESTIMATE,'
-      '  ID_TYPE_DATA,'
-      '  card_rate.ID as ID_TABLES,'
-      '  RATE_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  RATE_CAPTION AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  RATE_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(RATE_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
-      
-        '  COALESCE((SELECT SUM(RATE_COUNT) FROM card_rate_act where id=d' +
-        'ata_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
-      
-        '  COALESCE((COALESCE(RATE_COUNT, 0) - COALESCE((SELECT SUM(RATE_' +
-        'COUNT) FROM card_rate_act where id=data_estimate.ID_TABLES), 0))' +
-        ', 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
-      'FROM '
-      '  data_estimate, card_rate'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 1 AND'
-      'card_rate.ID = data_estimate.ID_TABLES AND'
-      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
-        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      ''
-      'UNION ALL'
-      ''
       '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042' '#1056#1040#1057#1062#1045#1053#1050#1045'*/'
       'SELECT '
       '  ID_ESTIMATE,'
@@ -545,23 +493,24 @@ object fCalcResource: TfCalcResource
         'UNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)' +
         '), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
       'FROM '
-      '  data_estimate, card_rate, materialcard'
+      '  data_estimate, card_rate, materialcard, estim'
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 1 AND'
       'card_rate.ID = data_estimate.ID_TABLES AND'
       'materialcard.ID_CARD_RATE = card_rate.ID AND'
       'materialcard.CONSIDERED = 0 AND'
-      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      'estim.OBJ_ID=:OBJ_ID AND '
+      '((ID_ESTIMATE = estim.SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
-        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
+        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
         '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
       
         '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
       ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
       ')'
       ''
@@ -584,23 +533,24 @@ object fCalcResource: TfCalcResource
         'UNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)' +
         '), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
       'FROM '
-      '  data_estimate, card_rate, materialcard'
+      '  data_estimate, card_rate, materialcard, estim'
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 1 AND'
       'card_rate.ID = data_estimate.ID_TABLES AND'
       'materialcard.ID_CARD_RATE = card_rate.ID AND'
       'materialcard.FROM_RATE = 1 AND'
-      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      'estim.OBJ_ID=:OBJ_ID AND '
+      '((ID_ESTIMATE = estim.SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
-        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
+        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
         '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
       
         '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
       ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
       ')'
       ''
@@ -623,40 +573,39 @@ object fCalcResource: TfCalcResource
         'UNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)' +
         '), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
       'FROM '
-      '  data_estimate, materialcard'
+      '  data_estimate, materialcard, estim'
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 2 AND'
       'materialcard.ID = data_estimate.ID_TABLES AND'
-      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      'estim.OBJ_ID=:OBJ_ID AND '
+      '((ID_ESTIMATE = estim.SM_ID) OR  /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
-        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
+        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
         '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
       
         '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
       ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
       ')'
-      '/* '#1052#1045#1061#1040#1053#1048#1047#1052#1067' */'
       'ORDER BY 1,2'
       '')
     Left = 64
     Top = 160
     ParamData = <
       item
-        Name = 'SM_ID'
-        DataType = ftLongWord
+        Name = 'OBJ_ID'
+        DataType = ftString
         ParamType = ptInput
-        Size = 4
-        Value = 298
+        Value = '36'
       end>
   end
   object dsMaterialData: TDataSource
     DataSet = qrMaterialData
-    Left = 136
+    Left = 96
     Top = 160
   end
 end
