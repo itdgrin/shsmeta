@@ -920,7 +920,7 @@ begin
     PanelSSR.Visible := False;
 
     //Инициализация заполнения фрейма данными
-    frSummaryCalculations.LoadData(IdEstimate);
+    frSummaryCalculations.LoadData(IdObject);
 
      // -----------------------------------------
 
@@ -978,7 +978,7 @@ begin
     PanelButtonsSSR.Visible := True;
 
     //Инициализация заполнения фрейма данными
-    frSSR.LoadData(IdEstimate);
+    frSSR.LoadData(IdObject);
 
     PanelButtonsSSR.Align := alClient;
 
