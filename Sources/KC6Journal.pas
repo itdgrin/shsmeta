@@ -58,6 +58,7 @@ type
     procedure qrObjectAfterScroll(DataSet: TDataSet);
     procedure tvEstimatesClick(Sender: TObject);
     procedure qrDetailCalcFields(DataSet: TDataSet);
+    procedure FormActivate(Sender: TObject);
   private
     procedure UpdateNumPP;
   public
@@ -75,7 +76,7 @@ implementation
 
 {$R *.dfm}
 
-uses Waiting;
+uses Waiting, Main;
 
 procedure TfKC6Journal.cbbFromMonthChange(Sender: TObject);
 var
@@ -368,7 +369,7 @@ begin
     '(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID), s2.SM_ID) AS SM_ID, s2.SM_TYPE, s2.NAME as NAME, CONCAT('' - '', s2.SM_NUMBER) as SM_NUMBER, SM_ID as ID,'#13 +
     '/*Стоимость по расценкам + Стоимость по материалам + Стоимость по материалам, вынсенным за расценку*/'#13 +
     '(COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate WHERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-    'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
+    'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialcard WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
     '(0)) AS PTM_COST,'#13 +
     '/*ВЫПОЛНЕНО Стоимость по расценкам + Стоимость по материалам + Стоимость по материалам, вынсенным за расценку*/'#13 +
     '(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_estimate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
@@ -376,7 +377,7 @@ begin
     '(0)) AS PTM_COST_DONE,'#13 +
     '/* ОСТАТОК */'#13 +
     '((COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate WHERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-    'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
+    'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialcard WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
     '(0))-(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_estimate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
     'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard_act WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
     '(0))) AS PTM_COST_OUT'#13 +
@@ -395,6 +396,15 @@ begin
   end;
 end;
 
+procedure TfKC6Journal.FormActivate(Sender: TObject);
+begin
+  // Если нажата клавиша Ctrl и выбираем форму, то делаем
+  // каскадирование с переносом этой формы на передний план
+  FormMain.CascadeForActiveWindow;
+  // Делаем нажатой кнопку активной формы (на главной форме внизу)
+  FormMain.SelectButtonActiveWindow(Caption);
+end;
+
 procedure TfKC6Journal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
@@ -402,6 +412,8 @@ end;
 
 procedure TfKC6Journal.FormCreate(Sender: TObject);
 begin
+  // Создаём кнопку от этого окна (на главной форме внизу)
+  FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N61Click);
   cbbToMonth.ItemIndex := MonthOf(Now) - 1;
   seToYear.Value := YearOf(Now);
   LoadDBGridSettings(dbgrdData);

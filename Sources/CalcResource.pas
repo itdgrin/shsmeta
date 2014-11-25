@@ -55,6 +55,7 @@ type
     procedure pgc1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
   private
   public
     procedure LocateObject(Object_ID: Integer);
@@ -67,6 +68,17 @@ implementation
 
 {$R *.dfm}
 
+uses Main;
+
+procedure TfCalcResource.FormActivate(Sender: TObject);
+begin
+  // Если нажата клавиша Ctrl и выбираем форму, то делаем
+  // каскадирование с переносом этой формы на передний план
+  FormMain.CascadeForActiveWindow;
+  // Делаем нажатой кнопку активной формы (на главной форме внизу)
+  FormMain.SelectButtonActiveWindow(Caption);
+end;
+
 procedure TfCalcResource.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
@@ -74,6 +86,8 @@ end;
 
 procedure TfCalcResource.FormCreate(Sender: TObject);
 begin
+  // Создаём кнопку от этого окна (на главной форме внизу)
+  FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N2Click);
   CloseOpen(qrObject);
   LoadDBGridSettings(grMaterial);
   LoadDBGridSettings(grMaterialBott);

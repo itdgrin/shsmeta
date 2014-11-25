@@ -170,7 +170,7 @@ type
 
   private
     CountOpenWindows: Integer;
-    ButtonsWindows: array [0 .. 9] of TSpeedButton;
+    ButtonsWindows: array [0 .. 11] of TSpeedButton;
 
   public
     procedure AutoWidthColumn(SG: TStringGrid; Nom: Integer);
