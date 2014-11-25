@@ -231,7 +231,6 @@ begin
         Inc(month);
     end;
     // Собираем общий запрос
-    qrData.Active := False;
     qrData.SQL.Text :=
     '/* РАСЦЕНКИ */'#13 +
     'SELECT'#13 +
@@ -342,11 +341,9 @@ begin
     ')'#13 +
     '/* МЕХАНИЗМЫ */'#13 +
     'ORDER BY 1,2';
-    qrData.Active := True;
+    CloseOpen(qrData);
 
     //Собираем запрос по ПТМ
-    qrPTM.Active := False;
-
     qrPTM.SQL.Text :=
     '/* Объектные */'#13 +
     'SELECT SM_ID, SM_TYPE, NAME as NAME, SM_NUMBER, SM_ID as ID, (NULL) AS PTM_COST, (NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT'#13 +
@@ -386,7 +383,7 @@ begin
     'WHERE s2.SM_TYPE=3 AND'#13 +
     '      s2.OBJ_ID=:OBJ_ID'#13 +
     'ORDER BY 1,4,5';
-    qrPTM.Active := True;
+    CloseOpen(qrPTM);
 
   finally
     UpdateNumPP;
@@ -428,6 +425,8 @@ end;
 procedure TfKC6Journal.FormDestroy(Sender: TObject);
 begin
   fKC6Journal := nil;
+  // Удаляем кнопку от этого окна (на главной форме внизу)
+  FormMain.DeleteButtonCloseWindow(Caption);
 end;
 
 procedure TfKC6Journal.FormResize(Sender: TObject);

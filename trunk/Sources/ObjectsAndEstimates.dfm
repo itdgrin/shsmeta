@@ -305,6 +305,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         Height = 100
         Align = alClient
         DataSource = DataSourceObjects
+        DrawingStyle = gdsClassic
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         PopupMenu = PopupMenuObjects
         ReadOnly = True
@@ -318,46 +319,55 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'IdObject'
+            Title.Alignment = taCenter
             Visible = False
           end
           item
             Expanded = False
             FieldName = 'IdIstFin'
+            Title.Alignment = taCenter
             Visible = False
           end
           item
             Expanded = False
             FieldName = 'IdClient'
+            Title.Alignment = taCenter
             Visible = False
           end
           item
             Expanded = False
             FieldName = 'IdContractor'
+            Title.Alignment = taCenter
             Visible = False
           end
           item
             Expanded = False
             FieldName = 'IdCategory'
+            Title.Alignment = taCenter
             Visible = False
           end
           item
             Expanded = False
             FieldName = 'IdRegion'
+            Title.Alignment = taCenter
             Visible = False
           end
           item
             Expanded = False
             FieldName = 'IdBasePrice'
+            Title.Alignment = taCenter
             Visible = False
           end
           item
             Expanded = False
             FieldName = 'IdOXROPR'
+            Title.Alignment = taCenter
             Visible = False
           end
           item
             Expanded = False
             FieldName = 'NumberObject'
+            Title.Alignment = taCenter
             Title.Caption = #8470' '#1086#1073#1098#1077#1082#1090#1072
             Width = 65
             Visible = True
@@ -365,6 +375,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'CodeObject'
+            Title.Alignment = taCenter
             Title.Caption = #1064#1080#1092#1088' '#1086#1073#1098#1077#1082#1090#1072
             Width = 85
             Visible = True
@@ -372,6 +383,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'NumberContract'
+            Title.Alignment = taCenter
             Title.Caption = #1053#1086#1084#1077#1088' '#1076#1086#1075#1086#1074#1086#1088#1072
             Width = 90
             Visible = True
@@ -379,6 +391,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'DateContract'
+            Title.Alignment = taCenter
             Title.Caption = #1044#1072#1090#1072' '#1076#1086#1075#1086#1074#1086#1088#1072
             Width = 80
             Visible = True
@@ -386,6 +399,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'ListAgreements'
+            Title.Alignment = taCenter
             Title.Caption = #1057#1087#1080#1089#1086#1082' '#1076#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1093' '#1089#1086#1075#1083#1072#1096#1077#1085#1080#1081
             Width = 200
             Visible = True
@@ -393,6 +407,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'FullName'
+            Title.Alignment = taCenter
             Title.Caption = #1055#1086#1083#1085#1086#1077' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1086#1073#1098#1077#1082#1090#1072
             Width = 250
             Visible = True
@@ -400,6 +415,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'Name'
+            Title.Alignment = taCenter
             Title.Caption = #1050#1088#1072#1090#1082#1086#1077' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1086#1073#1098#1077#1082#1090#1072
             Width = 170
             Visible = True
@@ -407,6 +423,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'BeginConstruction'
+            Title.Alignment = taCenter
             Title.Caption = #1053#1072#1095#1072#1083#1086' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072
             Width = 120
             Visible = True
@@ -414,6 +431,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'TermConstruction'
+            Title.Alignment = taCenter
             Title.Caption = #1057#1088#1086#1082' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072
             Width = 120
             Visible = True
@@ -421,6 +439,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'NameIstFin'
+            Title.Alignment = taCenter
             Title.Caption = #1048#1089#1090#1086#1095#1085#1080#1082' '#1092#1080#1085#1072#1085#1089#1080#1088#1086#1074#1072#1085#1080#1103
             Width = 150
             Visible = True
@@ -428,6 +447,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'NameClient'
+            Title.Alignment = taCenter
             Title.Caption = #1047#1072#1082#1072#1079#1095#1080#1082
             Width = 150
             Visible = True
@@ -435,6 +455,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'NameContractor'
+            Title.Alignment = taCenter
             Title.Caption = #1043#1077#1085#1087#1086#1076#1088#1103#1076#1095#1080#1082
             Width = 150
             Visible = True
@@ -442,6 +463,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'NameCategory'
+            Title.Alignment = taCenter
             Title.Caption = #1050#1072#1090#1077#1075#1086#1088#1080#1103' '#1086#1073#1098#1077#1082#1090#1072
             Width = 200
             Visible = True
@@ -449,6 +471,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'VAT'
+            Title.Alignment = taCenter
             Title.Caption = #1057'/'#1073#1077#1079' '#1053#1044#1057
             Width = 60
             Visible = True
@@ -456,6 +479,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'NameRegion'
+            Title.Alignment = taCenter
             Title.Caption = #1056#1077#1075#1080#1086#1085
             Width = 150
             Visible = True
@@ -463,6 +487,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'BasePrice'
+            Title.Alignment = taCenter
             Title.Caption = #1041#1072#1079#1072' '#1088#1072#1089#1094#1077#1085#1086#1082
             Width = 100
             Visible = True
@@ -470,6 +495,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'OXROPR'
+            Title.Alignment = taCenter
             Title.Caption = #1058#1080#1087' '#1054#1061#1056' '#1080' '#1054#1055#1056' '
             Width = 150
             Visible = True
@@ -557,6 +583,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           OnBeforeCellPaint = VSTBeforeCellPaint
           OnFocusChanged = VSTFocusChanged
           OnGetText = VSTGetText
+          ExplicitLeft = 6
+          ExplicitTop = 1
           Columns = <
             item
               Position = 0

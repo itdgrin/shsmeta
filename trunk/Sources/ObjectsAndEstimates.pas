@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Grids, Menus,
   DB, DBGrids, StdCtrls, ComCtrls, VirtualTrees, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -174,7 +174,6 @@ uses Main, DataModule, CardObject, CardEstimate, CalculationEstimate, Waiting,
   BasicData, DrawingTables, KC6;
 
 {$R *.dfm}
-// ---------------------------------------------------------------------------------------------------------------------
 
 { TSplitter }
 procedure TSplitter.Paint();
@@ -182,8 +181,6 @@ begin
   // inherited;
   FormObjectsAndEstimates.ResizeImagesForSplitters;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.WMSysCommand(var Msg: TMessage);
 begin
@@ -209,8 +206,6 @@ begin
     inherited;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.ResizeImagesForSplitters;
 begin
   ImageSplitterCenter.Top := SplitterCenter.Top;
@@ -221,10 +216,9 @@ begin
     (SplitterBottomCenter.Height - ImageSplitterBottomCenter.Height) div 2;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.FormCreate(Sender: TObject);
 begin
+  LoadDBGridSettings(DBGridObjects);
   FormMain.PanelCover.Visible := True;
 
   // -----------------------------------------
@@ -278,8 +272,6 @@ begin
     FormMain.ShowObjectsAndEstimates);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.FormShow(Sender: TObject);
 begin
   DBGridObjects.SetFocus; // Устанавливаем фокус
@@ -293,14 +285,10 @@ begin
   Result := IdObject;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.FormResize(Sender: TObject);
 begin
   PanelObjects.Height := (ClientHeight - SplitterCenter.Height) div 2;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.FormActivate(Sender: TObject);
 begin
@@ -312,14 +300,10 @@ begin
   FormMain.SelectButtonActiveWindow(CaptionButtonObjectsAndEstimates);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.FormDestroy(Sender: TObject);
 begin
@@ -328,8 +312,6 @@ begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButtonObjectsAndEstimates);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsAddClick(Sender: TObject);
 begin
@@ -341,8 +323,6 @@ begin
   // Устанавливаем фокус
   DBGridObjects.SetFocus;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsEditClick(Sender: TObject);
 begin
@@ -398,8 +378,6 @@ begin
   // Устанавливаем фокус
   DBGridObjects.SetFocus;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsDeleteClick(Sender: TObject);
 var
@@ -459,8 +437,6 @@ begin
     FillingTableEstimates;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.PopupMenuObjectsColumnsClick(Sender: TObject);
 begin
   with PopupMenuObjectsColumns do
@@ -469,8 +445,6 @@ begin
     PanelSelectedColumns.Visible := Checked;
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.RunQueryForEstimateObject;
 begin
@@ -488,8 +462,6 @@ begin
     Active := True;
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.RunQueryForEstimatelocal;
 var
@@ -513,8 +485,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.RunQueryForEstimatePTM;
 var
   vId: Integer;
@@ -537,8 +507,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.ADOQueryObjectsAfterScroll(DataSet: TDataSet);
 begin
   IdObject := DataSet.FieldByName('IdObject').AsVariant;
@@ -546,8 +514,6 @@ begin
 
   FillingTableEstimates;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.PanelBottomResize(Sender: TObject);
 begin
@@ -558,8 +524,6 @@ procedure TFormObjectsAndEstimates.PanelActsResize(Sender: TObject);
 begin
   // FormMain.AutoWidthColumn(StringGridActs, 0);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.ButtonCancelClick(Sender: TObject);
 begin
@@ -587,8 +551,6 @@ begin
   SelectedColumns(False);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.CheckBoxColumnsClick(Sender: TObject);
 var
   Nom: Integer;
@@ -601,8 +563,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.TreeViewChange(Sender: TObject; Node: TTreeNode);
 var
   i: Integer;
@@ -614,8 +574,7 @@ begin
   FillingActs;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-//Открытие сметы
+// Открытие сметы
 procedure TFormObjectsAndEstimates.TreeViewDblClick(Sender: TObject);
 begin
   // Открываем форму ожидания
@@ -636,9 +595,9 @@ begin
 
     SetIdObject(IdObject);
     SetIdEstimate(IdEstimate);
-    //Создание временных таблиц
+    // Создание временных таблиц
     CreateTempTables;
-    //Заполненя временных таблиц, заполнение формы
+    // Заполненя временных таблиц, заполнение формы
     OpenAllData;
   end;
 
@@ -649,8 +608,6 @@ begin
 
   Close;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas;
   Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
@@ -676,16 +633,12 @@ begin
   VSTAfterCellPaintDefault(Sender, TargetCanvas, Node, Column, CellRect, CellText);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas;
   Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect;
   var ContentRect: TRect);
 begin
   VSTBeforeCellPaintDefault(Sender, TargetCanvas, Node, Column, CellPaintMode, CellRect, ContentRect);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.VSTDblClick(Sender: TObject);
 begin
@@ -722,8 +675,6 @@ begin
   FormKC6.MyShow(IdObject);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex);
 begin
@@ -735,8 +686,6 @@ begin
   ADOQueryActs.RecNo := Node.Index + 1;
   IDAct := ADOQueryActs.FieldByName('id').AsInteger;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
@@ -779,8 +728,6 @@ begin
         MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.GetTypeEstimate;
 begin
@@ -849,14 +796,10 @@ begin
   ActReadOnly := False;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.PMActsAddClick(Sender: TObject);
 begin
   OpenAct(0);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.PMActsDeleteClick(Sender: TObject);
 begin
@@ -881,14 +824,10 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.PMActsEditClick(Sender: TObject);
 begin
   OpenAct(FormObjectsAndEstimates.IDAct);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.PMActsPopup(Sender: TObject);
 begin
@@ -925,7 +864,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
 function TFormObjectsAndEstimates.GetNumberEstimate(): string;
 begin
   try
@@ -946,28 +884,20 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.PMEstimateExpandClick(Sender: TObject);
 begin
   TreeView.FullExpand;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.PMEstimateExpandSelectedClick(Sender: TObject);
 begin
   TreeView.Selected.Expand(True);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.PMEstimateCollapseClick(Sender: TObject);
 begin
   TreeView.FullCollapse;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.FillingTableObjects;
 var
@@ -1006,16 +936,12 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.FillingTableEstimates;
 var
   l1, l2, l3: Integer;
 begin
   TreeView.Items.Clear;
-
   // НАЧАЛО вывода ОБЪЕКТЫХ смет
-
   RunQueryForEstimateObject;
 
   with ADOQueryEstimateObject do
@@ -1026,9 +952,7 @@ begin
       l1 := TreeView.Items.Add(Nil, FieldByName('NumberEstimate').AsVariant + ' ' +
         FieldByName('NameEstimate').AsVariant).AbsoluteIndex;
       TreeView.Items.Item[l1].Data := Pointer(FieldByName('IdEstimate').AsInteger);
-
       // ---------- НАЧАЛО вывода ЛОКАЛЬНЫХ смет
-
       RunQueryForEstimatelocal;
 
       with ADOQueryEstimateLocal do
@@ -1039,9 +963,7 @@ begin
           l2 := TreeView.Items.AddChild(TreeView.Items.Item[l1], FieldByName('NumberEstimate').AsVariant + ' '
             + FieldByName('NameEstimate').AsVariant).AbsoluteIndex;
           TreeView.Items.Item[l2].Data := Pointer(FieldByName('IdEstimate').AsInteger);
-
           // -------------------- НАЧАЛО вывода смет ПТМ
-
           RunQueryForEstimatePTM;
 
           with ADOQueryEstimatePTM do
@@ -1056,23 +978,16 @@ begin
               Next;
             end;
           end;
-
           // -------------------- КОНЕЦ вывода смет ПТМ
-
           Next;
         end;
       end;
-
       // ---------- КОНЕЦ вывода ЛОКАЛЬНЫХ смет
-
       Next;
     end;
   end;
-
   // КОНЕЦ вывода ОБЪЕКТЫХ смет
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.PopupMenuEstimatesAddClick(Sender: TObject);
 var
@@ -1082,14 +997,10 @@ begin
   FormCardEstimate.ShowForm(IdObject, IdEstimate, (Sender as TMenuItem).Tag, TreeView);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.PMEstimatesBasicDataClick(Sender: TObject);
 begin
   FormBasicData.ShowForm(IdObject, IdEstimate);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.PMEstimatesDeleteClick(Sender: TObject);
 var
@@ -1135,8 +1046,6 @@ begin
   TreeView.Selected.Delete;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.PMEstimatesEditClick(Sender: TObject);
 begin
   with FormCardEstimate, ADOQueryTemp do
@@ -1174,8 +1083,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.PopupMenuEstimatesPopup(Sender: TObject);
 begin
   PMEstimatesEdit.Enabled := False;
@@ -1208,8 +1115,6 @@ begin
   else if TypeEstimate = 1 then
     PMEstimatesAddPTM.Enabled := True;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormObjectsAndEstimates.StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
   State: TGridDrawState);
@@ -1249,8 +1154,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormObjectsAndEstimates.FillingActs;
 begin
   try
@@ -1279,7 +1182,5 @@ begin
   end;
 
 end;
+
 end.
-
-
-
