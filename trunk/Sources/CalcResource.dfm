@@ -45,7 +45,6 @@ object fCalcResource: TfCalcResource
       ListField = 'NAME'
       ListSource = dsObject
       TabOrder = 0
-      ExplicitWidth = 688
     end
   end
   object pgc1: TPageControl
@@ -57,10 +56,12 @@ object fCalcResource: TfCalcResource
     Align = alClient
     MultiLine = True
     TabOrder = 1
-    ExplicitTop = 41
-    ExplicitHeight = 241
+    OnChange = pgc1Change
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 213
       object lbl2: TLabel
         Left = 0
@@ -79,7 +80,6 @@ object fCalcResource: TfCalcResource
     object ts2: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
       ImageIndex = 1
-      ExplicitHeight = 213
       object spl2: TSplitter
         Left = 0
         Top = 233
@@ -191,10 +191,6 @@ object fCalcResource: TfCalcResource
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
-        ExplicitLeft = 144
-        ExplicitTop = 88
-        ExplicitWidth = 449
-        ExplicitHeight = 113
         object pnlMatFooter: TPanel
           Left = 0
           Top = 152
@@ -203,7 +199,6 @@ object fCalcResource: TfCalcResource
           Align = alBottom
           Caption = 'pnlMatSumFooter'
           TabOrder = 0
-          ExplicitTop = 122
         end
         object JvDBGrid2: TJvDBGrid
           Left = 0
@@ -234,7 +229,6 @@ object fCalcResource: TfCalcResource
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
-        ExplicitTop = 302
         object spl1: TSplitter
           Left = 1
           Top = 22
@@ -273,14 +267,15 @@ object fCalcResource: TfCalcResource
           Align = alClient
           Constraints.MinHeight = 21
           TabOrder = 1
-          ExplicitTop = 32
-          ExplicitHeight = 26
         end
       end
     end
     object ts3: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 213
       object lbl3: TLabel
         Left = 0
@@ -299,6 +294,9 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 213
       object lbl4: TLabel
         Left = 0
@@ -317,6 +315,9 @@ object fCalcResource: TfCalcResource
     object ts5: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072#1088#1087#1083#1072#1090#1099
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 213
       object lbl5: TLabel
         Left = 0

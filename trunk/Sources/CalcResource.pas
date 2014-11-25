@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
-  Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid;
+  Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools;
 
 type
   TfCalcResource = class(TForm)
@@ -50,6 +50,7 @@ type
     spl2: TSplitter;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
+    procedure pgc1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
   public
@@ -70,7 +71,7 @@ end;
 
 procedure TfCalcResource.FormCreate(Sender: TObject);
 begin
-  qrObject.Active := True;
+  CloseOpen(qrObject);
 end;
 
 procedure TfCalcResource.FormDestroy(Sender: TObject);
@@ -82,6 +83,27 @@ procedure TfCalcResource.LocateObject(Object_ID: Integer);
 begin
   dblkcbbNAME.KeyValue := Object_ID;
   pgc1.ActivePageIndex := 0;
+end;
+
+procedure TfCalcResource.pgc1Change(Sender: TObject);
+begin
+  case pgc1.ActivePageIndex of
+    // Расчет стоимости
+    0:
+      ;
+    // Расчет материалов
+    1:
+      ;
+    // Расчет механизмов
+    2:
+      ;
+    // Расчет оборудования
+    3:
+      ;
+    // Расчет з\п
+    4:
+      ;
+  end;
 end;
 
 end.
