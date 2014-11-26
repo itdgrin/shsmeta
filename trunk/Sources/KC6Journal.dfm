@@ -384,7 +384,6 @@ object fKC6Journal: TfKC6Journal
   object qrData: TFDQuery
     MasterSource = dsTreeData
     MasterFields = 'SM_ID'
-    DetailFields = 'SM_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -555,7 +554,43 @@ object fKC6Journal: TfKC6Journal
         'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
       ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
       ')'
+      ''
+      'UNION ALL'
+      ''
       '/* '#1052#1045#1061#1040#1053#1048#1047#1052#1067' */'
+      'SELECT '
+      '  ID_ESTIMATE,'
+      '  ID_TYPE_DATA,'
+      '  mechanizmcard.ID AS ID_TABLES,'
+      '  MECH_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  MECH_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  MECH_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  COALESCE(MECH_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      
+        '  COALESCE((SELECT SUM(MECH_COUNT) FROM mechanizmcard_act where ' +
+        'id=data_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
+      
+        '  COALESCE((COALESCE(MECH_COUNT, 0) - COALESCE((SELECT SUM(MECH_' +
+        'COUNT) FROM mechanizmcard_act where id=data_estimate.ID_TABLES),' +
+        ' 0)), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
+      'FROM '
+      '  data_estimate, mechanizmcard'
+      'WHERE '
+      'data_estimate.ID_TYPE_DATA = 3 AND'
+      'mechanizmcard.ID = data_estimate.ID_TABLES AND'
+      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
+        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
+        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+      
+        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
+        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
+      
+        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
+        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
+      ')'
       'ORDER BY 1,2'
       '')
     Left = 24
@@ -566,7 +601,7 @@ object fKC6Journal: TfKC6Journal
         DataType = ftLongWord
         ParamType = ptInput
         Size = 4
-        Value = 298
+        Value = 310
       end>
   end
   object dsData: TDataSource

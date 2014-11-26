@@ -93,6 +93,7 @@ object fCalcResource: TfCalcResource
         Width = 608
         Height = 57
         Align = alTop
+        BevelOuter = bvNone
         TabOrder = 0
         DesignSize = (
           608
@@ -231,7 +232,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 58
+              Width = 27
               Visible = True
             end
             item
@@ -239,15 +240,16 @@ object fCalcResource: TfCalcResource
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = 58
+              Width = 112
               Visible = True
             end
             item
+              Alignment = taCenter
               Expanded = False
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 58
+              Width = 14
               Visible = True
             end
             item
@@ -255,7 +257,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 58
+              Width = 15
               Visible = True
             end
             item
@@ -263,7 +265,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 58
+              Width = 64
               Visible = True
             end
             item
@@ -271,7 +273,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-              Width = 58
+              Width = 64
               Visible = True
             end
             item
@@ -279,7 +281,6 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = 58
               Visible = True
             end
             item
@@ -287,7 +288,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 58
+              Width = 64
               Visible = True
             end
             item
@@ -295,7 +296,6 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 58
               Visible = True
             end
             item
@@ -303,7 +303,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 60
+              Width = 94
               Visible = True
             end>
         end
@@ -436,6 +436,7 @@ object fCalcResource: TfCalcResource
           Align = alClient
           DataSource = dsMechData
           DrawingStyle = gdsClassic
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           PopupMenu = pmMech
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
@@ -458,7 +459,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 58
+              Width = 38
               Visible = True
             end
             item
@@ -466,15 +467,16 @@ object fCalcResource: TfCalcResource
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = 58
+              Width = 128
               Visible = True
             end
             item
+              Alignment = taCenter
               Expanded = False
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 58
+              Width = 25
               Visible = True
             end
             item
@@ -482,7 +484,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 58
+              Width = 22
               Visible = True
             end
             item
@@ -490,7 +492,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 58
+              Width = 91
               Visible = True
             end
             item
@@ -498,39 +500,21 @@ object fCalcResource: TfCalcResource
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-              Width = 58
+              Width = 91
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
-              Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = 58
+              Title.Caption = #1047#1072#1088#1087#1083'. '#1084#1072#1096'.'
+              Width = 91
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'TRANSP'
               Title.Alignment = taCenter
-              Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 58
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'DOC_DATE'
-              Title.Alignment = taCenter
-              Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 58
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'DOC_NUM'
-              Title.Alignment = taCenter
-              Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 60
+              Title.Caption = #1057#1090'-'#1089#1090#1100' '#1079#1072#1088#1087#1083#1072#1090#1099
+              Width = 98
               Visible = True
             end>
         end
@@ -630,6 +614,7 @@ object fCalcResource: TfCalcResource
         Width = 608
         Height = 57
         Align = alTop
+        BevelOuter = bvNone
         TabOrder = 2
         DesignSize = (
           608
@@ -739,6 +724,7 @@ object fCalcResource: TfCalcResource
         Width = 608
         Height = 57
         Align = alTop
+        BevelOuter = bvNone
         TabOrder = 0
         DesignSize = (
           608
@@ -888,6 +874,7 @@ object fCalcResource: TfCalcResource
               Visible = True
             end
             item
+              Alignment = taCenter
               Expanded = False
               FieldName = 'UNIT'
               Title.Alignment = taCenter
@@ -1248,6 +1235,135 @@ object fCalcResource: TfCalcResource
         ParamType = ptInput
         Value = '36'
       end>
+    object qrMaterialDataID_ESTIMATE: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_ESTIMATE'
+      Origin = 'ID_ESTIMATE'
+      ProviderFlags = []
+    end
+    object qrMaterialDataID_TYPE_DATA: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_TYPE_DATA'
+      Origin = 'ID_TYPE_DATA'
+      ProviderFlags = []
+    end
+    object qrMaterialDataID_TABLES: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_TABLES'
+      Origin = 'ID_TABLES'
+      ProviderFlags = []
+    end
+    object qrMaterialDataOBJ_ID: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'OBJ_ID'
+      Origin = 'OBJ_ID'
+      ProviderFlags = []
+    end
+    object qrMaterialDataCODE: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CODE'
+      Origin = 'CODE'
+      ProviderFlags = []
+      Size = 15
+    end
+    object qrMaterialDataNAME: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      Size = 32767
+    end
+    object qrMaterialDataUNIT: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'UNIT'
+      Origin = 'UNIT'
+      ProviderFlags = []
+      Size = 100
+    end
+    object qrMaterialDataCNT: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'CNT'
+      Origin = 'CNT'
+      ProviderFlags = []
+      Precision = 10
+      Size = 5
+    end
+    object qrMaterialDataDOC_DATE: TDateField
+      AutoGenerateValue = arDefault
+      FieldName = 'DOC_DATE'
+      Origin = 'DOC_DATE'
+      ProviderFlags = []
+    end
+    object qrMaterialDataDOC_NUM: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DOC_NUM'
+      Origin = 'DOC_NUM'
+      ProviderFlags = []
+      Size = 50
+    end
+    object qrMaterialDataPROC_TRANSP: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'PROC_TRANSP'
+      Origin = 'PROC_TRANSP'
+      ProviderFlags = []
+    end
+    object qrMaterialDataCOAST: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST'
+      Origin = 'COAST'
+      ProviderFlags = []
+      DisplayFormat = '### ### ### ### ###'
+    end
+    object qrMaterialDataPRICE: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE'
+      Origin = 'PRICE'
+      ProviderFlags = []
+      DisplayFormat = '### ### ### ### ###'
+    end
+    object qrMaterialDataTRANSP: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP'
+      Origin = 'TRANSP'
+      ProviderFlags = []
+      DisplayFormat = '### ### ### ### ###'
+    end
+    object qrMaterialDataCOAST_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NDS'
+      Origin = 'COAST_NDS'
+      ProviderFlags = []
+    end
+    object qrMaterialDataCOAST_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NO_NDS'
+      Origin = 'COAST_NO_NDS'
+      ProviderFlags = []
+    end
+    object qrMaterialDataPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NDS'
+      Origin = 'PRICE_NDS'
+      ProviderFlags = []
+    end
+    object qrMaterialDataPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NO_NDS'
+      Origin = 'PRICE_NO_NDS'
+      ProviderFlags = []
+    end
+    object qrMaterialDataTRANSP_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_NDS'
+      Origin = 'TRANSP_NDS'
+      ProviderFlags = []
+    end
+    object qrMaterialDataTRANSP_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_NO_NDS'
+      Origin = 'TRANSP_NO_NDS'
+      ProviderFlags = []
+    end
   end
   object dsMaterialData: TDataSource
     DataSet = qrMaterialData
@@ -1302,138 +1418,54 @@ object fCalcResource: TfCalcResource
       '  ID_ESTIMATE,'
       '  ID_TYPE_DATA,'
       '  mechanizmcard.ID AS ID_TABLES,'
-      '  estim.NDS AS NDS, /* '#1053#1044#1057'*/'
+      '  smetasourcedata.OBJ_ID,'
       '  MECH_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
       '  MECH_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
       '  MECH_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
       '  COALESCE(MECH_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       ''
       '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM /*,  '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
+      '  DOC_NUM, /*  '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
       '  /* PROC_TRANSP,  % '#1090#1088#1072#1085#1089#1087'. */'
       ''
       
-        '  /*IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOA' +
-        'ST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */' +
-        ' '
+        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
+        '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
       
-        '  /*IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FPRI' +
-        'CE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089 +
-        #1090#1100' */ '
+        '  IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FPRICE' +
+        '_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100 +
+        ' */ '
       
-        '  /*IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF(FT' +
-        'RANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090 +
-        #1088#1072#1085#1089#1087'. */ '
+        '  /* IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF(F' +
+        'TRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* ' +
+        #1090#1088#1072#1085#1089#1087'. */ '
       ''
       
-        '  /*IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077 +
-        #1085#1072' '#1089' '#1053#1044#1057' */'
+        '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
+        ' '#1089' '#1053#1044#1057' */'
       
-        '  /*IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS) AS COAST_N' +
-        'O_NDS, /* '#1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057' */'
+        '  IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS) AS COAST_NO_' +
+        'NDS, /* '#1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057' */'
       
-        '  /*IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS) AS PRICE_NDS, /* '#1057#1090 +
-        #1086#1080#1084#1086#1089#1090#1100' '#1089' '#1053#1044#1057' */'
+        '  IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS) AS PRICE_NDS, /* '#1057#1090#1086#1080 +
+        #1084#1086#1089#1090#1100' '#1089' '#1053#1044#1057' */'
       
-        '  /*IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_N' +
-        'O_NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
+        '  IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_NO_' +
+        'NDS /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
       
-        '  /*IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS, /*' +
-        ' '#1090#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
+        '  /* IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS,  ' +
+        #1090#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
       
-        '  /*IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRAN' +
-        'SP_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
+        '  /* IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRA' +
+        'NSP_NO_NDS  '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
       'FROM '
-      '  data_estimate, card_rate, mechanizmcard, estim'
+      '  data_estimate, card_rate, mechanizmcard, smetasourcedata'
       'WHERE '
+      'smetasourcedata.OBJ_ID=:OBJ_ID AND  '
+      'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID AND '
       'data_estimate.ID_TYPE_DATA = 1 AND'
       'card_rate.ID = data_estimate.ID_TABLES AND'
-      'mechanizmcard.ID_CARD_RATE = card_rate.ID AND'
-      '/* mechanizmcard.CONSIDERED = 0 AND */'
-      'estim.OBJ_ID=:OBJ_ID AND '
-      '((ID_ESTIMATE = estim.SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
-        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      ''
-      'UNION ALL'
-      ''
-      '/* '#1052#1077#1093#1072#1085#1080#1079#1084#1099' '#1042#1067#1053#1045#1057#1045#1053#1053#1067#1045' '#1047#1040' '#1056#1040#1057#1062#1045#1053#1050#1059'*/'
-      'SELECT '
-      '  ID_ESTIMATE,'
-      '  2 as ID_TYPE_DATA,'
-      '  mechanizmcard.ID AS ID_TABLES,'
-      '  estim.NDS AS NDS, /* '#1053#1044#1057'*/'
-      '  MECH_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MECH_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MECH_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(MECH_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
-      ''
-      '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM /*,  '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  /* PROC_TRANSP,  % '#1090#1088#1072#1085#1089#1087'. */'
-      ''
-      
-        '  /*IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOA' +
-        'ST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */' +
-        ' '
-      
-        '  /*IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FPRI' +
-        'CE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089 +
-        #1090#1100' */ '
-      
-        '  /*IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF(FT' +
-        'RANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090 +
-        #1088#1072#1085#1089#1087'. */ '
-      ''
-      
-        '  /*IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077 +
-        #1085#1072' '#1089' '#1053#1044#1057' */'
-      
-        '  /*IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS) AS COAST_N' +
-        'O_NDS, /* '#1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  /*IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS) AS PRICE_NDS, /* '#1057#1090 +
-        #1086#1080#1084#1086#1089#1090#1100' '#1089' '#1053#1044#1057' */'
-      
-        '  /*IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_N' +
-        'O_NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  /*IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS, /*' +
-        ' '#1090#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
-      
-        '  /*IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRAN' +
-        'SP_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
-      'FROM '
-      '  data_estimate, card_rate, mechanizmcard, estim'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 1 AND'
-      'card_rate.ID = data_estimate.ID_TABLES AND'
-      'mechanizmcard.ID_CARD_RATE = card_rate.ID AND'
-      'mechanizmcard.FROM_RATE = 1 AND'
-      'estim.OBJ_ID=:OBJ_ID AND '
-      '((ID_ESTIMATE = estim.SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
-        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
+      'mechanizmcard.ID_CARD_RATE = card_rate.ID'
       ''
       'UNION ALL'
       ''
@@ -1442,76 +1474,173 @@ object fCalcResource: TfCalcResource
       '  ID_ESTIMATE,'
       '  ID_TYPE_DATA,'
       '  mechanizmcard.ID AS ID_TABLES,'
-      '  estim.NDS AS NDS, /* '#1053#1044#1057'*/'
+      '  smetasourcedata.OBJ_ID,'
       '  MECH_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
       '  MECH_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
       '  MECH_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
       '  COALESCE(MECH_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       ''
       '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM /*,  '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  /* PROC_TRANSP,  % '#1090#1088#1072#1085#1089#1087'. */'
+      '  DOC_NUM, /*  '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
+      '  /* PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
       ''
       
-        '  /*IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOA' +
-        'ST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */' +
-        ' '
+        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
+        '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
       
-        '  /*IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FPRI' +
-        'CE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089 +
-        #1090#1100' */ '
+        '  IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FPRICE' +
+        '_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100 +
+        ' */ '
       
-        '  /*IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF(FT' +
-        'RANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090 +
-        #1088#1072#1085#1089#1087'. */ '
+        '  /* IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF(F' +
+        'TRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP,  '#1090#1088 +
+        #1072#1085#1089#1087'. */ '
       ''
       
-        '  /*IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077 +
-        #1085#1072' '#1089' '#1053#1044#1057' */'
+        '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
+        ' '#1089' '#1053#1044#1057' */'
       
-        '  /*IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS) AS COAST_N' +
-        'O_NDS, /* '#1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057' */'
+        '  IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS) AS COAST_NO_' +
+        'NDS, /* '#1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057' */'
       
-        '  /*IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS) AS PRICE_NDS, /* '#1057#1090 +
-        #1086#1080#1084#1086#1089#1090#1100' '#1089' '#1053#1044#1057' */'
+        '  IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS) AS PRICE_NDS, /* '#1057#1090#1086#1080 +
+        #1084#1086#1089#1090#1100' '#1089' '#1053#1044#1057' */'
       
-        '  /*IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_N' +
-        'O_NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
+        '  IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_NO_' +
+        'NDS /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
       
-        '  /*IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS, /*' +
-        ' '#1090#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
+        '  /* IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS,  ' +
+        #1090#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
       
-        '  /*IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRAN' +
-        'SP_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
+        '  /* IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRA' +
+        'NSP_NO_NDS  '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
       'FROM '
-      '  data_estimate, mechanizmcard, estim'
+      '  data_estimate, mechanizmcard, smetasourcedata'
       'WHERE '
-      'data_estimate.ID_TYPE_DATA = 2 AND'
+      'data_estimate.ID_TYPE_DATA = 3 AND'
       'mechanizmcard.ID = data_estimate.ID_TABLES AND'
-      'estim.OBJ_ID=:OBJ_ID AND '
-      '((ID_ESTIMATE = estim.SM_ID) OR  /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
-        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      'ORDER BY 1,2')
+      'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
+      'ORDER BY 5')
     Left = 99
     Top = 168
     ParamData = <
       item
+        Name = 'NDS'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '1'
+      end
+      item
         Name = 'OBJ_ID'
         DataType = ftString
         ParamType = ptInput
-        Value = '38'
+        Value = '36'
       end>
+    object qrMechDataID_ESTIMATE: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_ESTIMATE'
+      Origin = 'ID_ESTIMATE'
+      ProviderFlags = []
+    end
+    object qrMechDataID_TYPE_DATA: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_TYPE_DATA'
+      Origin = 'ID_TYPE_DATA'
+      ProviderFlags = []
+    end
+    object qrMechDataID_TABLES: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_TABLES'
+      Origin = 'ID_TABLES'
+      ProviderFlags = []
+    end
+    object qrMechDataOBJ_ID: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'OBJ_ID'
+      Origin = 'OBJ_ID'
+      ProviderFlags = []
+    end
+    object qrMechDataCODE: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CODE'
+      Origin = 'CODE'
+      ProviderFlags = []
+      Size = 15
+    end
+    object qrMechDataNAME: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NAME'
+      Origin = 'NAME'
+      ProviderFlags = []
+      Size = 32767
+    end
+    object qrMechDataUNIT: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'UNIT'
+      Origin = 'UNIT'
+      ProviderFlags = []
+      Size = 100
+    end
+    object qrMechDataCNT: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'CNT'
+      Origin = 'CNT'
+      ProviderFlags = []
+      Precision = 10
+      Size = 5
+    end
+    object qrMechDataDOC_DATE: TDateField
+      AutoGenerateValue = arDefault
+      FieldName = 'DOC_DATE'
+      Origin = 'DOC_DATE'
+      ProviderFlags = []
+    end
+    object qrMechDataDOC_NUM: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DOC_NUM'
+      Origin = 'DOC_NUM'
+      ProviderFlags = []
+      Size = 50
+    end
+    object qrMechDataCOAST: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST'
+      Origin = 'COAST'
+      ProviderFlags = []
+      DisplayFormat = '### ### ### ### ###'
+    end
+    object qrMechDataPRICE: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE'
+      Origin = 'PRICE'
+      ProviderFlags = []
+      DisplayFormat = '### ### ### ### ###'
+    end
+    object qrMechDataCOAST_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NDS'
+      Origin = 'COAST_NDS'
+      ProviderFlags = []
+    end
+    object qrMechDataCOAST_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NO_NDS'
+      Origin = 'COAST_NO_NDS'
+      ProviderFlags = []
+    end
+    object qrMechDataPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NDS'
+      Origin = 'PRICE_NDS'
+      ProviderFlags = []
+    end
+    object qrMechDataPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NO_NDS'
+      Origin = 'PRICE_NO_NDS'
+      ProviderFlags = []
+    end
   end
   object dsMechData: TDataSource
     DataSet = qrMechData
