@@ -2,7 +2,7 @@ unit Tools;
 
 interface
 
-uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, System.Variants, Vcl.Forms;
+uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms;
 
 // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
@@ -14,15 +14,15 @@ procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
 procedure CloseOpen(const Query: TFDQuery);
 // Процедура загрузки стилей всех таблиц на форме
 procedure LoadDBGridsSettings(const aForm: TForm);
-// Функция проверки TFDQuery на активность и пустоту
-function CheckQrActiveEmpty(const Query: TFDQuery): boolean;
+// Функция проверки TDataSet на активность и пустоту
+function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;
 
 implementation
 
-function CheckQrActiveEmpty(const Query: TFDQuery): boolean;
+function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;
 begin
   Result := True;
-  if not Query.Active or Query.IsEmpty then
+  if not ADataSet.Active or ADataSet.IsEmpty then
     Result := False;
 end;
 
