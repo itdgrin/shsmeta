@@ -208,6 +208,7 @@ object fCalcResource: TfCalcResource
           Align = alClient
           DataSource = dsMaterialData
           DrawingStyle = gdsClassic
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           PopupMenu = pmMat
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
@@ -1098,6 +1099,7 @@ object fCalcResource: TfCalcResource
   object qrMaterialData: TFDQuery
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
+    DetailFields = 'OBJ_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1119,12 +1121,13 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042' '#1056#1040#1057#1062#1045#1053#1050#1045'*/'
+      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042'\'#1047#1040' '#1056#1040#1057#1062#1045#1053#1050#1045'*/'
       'SELECT '
       '  ID_ESTIMATE,'
       '  ID_TYPE_DATA,'
       '  materialcard.ID AS ID_TABLES,'
-      '  estim.NDS AS NDS, /* '#1053#1044#1057'*/'
+      '  smetasourcedata.OBJ_ID,'
+      ''
       '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
       '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
       '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
@@ -1135,17 +1138,16 @@ object fCalcResource: TfCalcResource
       '  PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
       ''
       
-        '  IF(estim.NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(F' +
-        'COAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072 +
+        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
+        '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
+      
+        '  IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FPRICE' +
+        '_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100 +
         ' */ '
       
-        '  IF(estim.NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(F' +
-        'PRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' */ '
-      
-        '  IF(estim.NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF' +
-        '(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /' +
-        '* '#1090#1088#1072#1085#1089#1087'. */ '
+        '  IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF(FTRA' +
+        'NSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090#1088#1072 +
+        #1085#1089#1087'. */ '
       ''
       
         '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
@@ -1166,96 +1168,13 @@ object fCalcResource: TfCalcResource
         '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
         '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
       'FROM '
-      '  data_estimate, card_rate, materialcard, estim'
+      '  smetasourcedata, data_estimate, card_rate, materialcard'
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 1 AND'
       'card_rate.ID = data_estimate.ID_TABLES AND'
       'materialcard.ID_CARD_RATE = card_rate.ID AND'
-      'materialcard.CONSIDERED = 0 AND'
-      'estim.OBJ_ID=:OBJ_ID AND '
-      '((ID_ESTIMATE = estim.SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
-        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      ''
-      'UNION ALL'
-      ''
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042#1067#1053#1045#1057#1045#1053#1053#1067#1045' '#1047#1040' '#1056#1040#1057#1062#1045#1053#1050#1059'*/'
-      'SELECT '
-      '  ID_ESTIMATE,'
-      '  2 as ID_TYPE_DATA,'
-      '  materialcard.ID AS ID_TABLES,'
-      '  estim.NDS AS NDS, /* '#1053#1044#1057'*/'
-      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
-      ''
-      '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
-      ''
-      
-        '  IF(estim.NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(F' +
-        'COAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072 +
-        ' */ '
-      
-        '  IF(estim.NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(F' +
-        'PRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' */ '
-      
-        '  IF(estim.NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF' +
-        '(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /' +
-        '* '#1090#1088#1072#1085#1089#1087'. */'
-      ''
-      
-        '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
-        ' '#1089' '#1053#1044#1057' */'
-      
-        '  IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS) AS COAST_NO_' +
-        'NDS, /* '#1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS) AS PRICE_NDS, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' '#1089' '#1053#1044#1057' */'
-      
-        '  IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_NO_' +
-        'NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS, /* '#1090 +
-        #1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
-      
-        '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
-        '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
-      'FROM '
-      '  data_estimate, card_rate, materialcard, estim'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 1 AND'
-      'card_rate.ID = data_estimate.ID_TABLES AND'
-      'materialcard.ID_CARD_RATE = card_rate.ID AND'
-      'materialcard.FROM_RATE = 1 AND'
-      'estim.OBJ_ID=:OBJ_ID AND '
-      '((ID_ESTIMATE = estim.SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
-        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
+      'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
       ''
       'UNION ALL'
       ''
@@ -1264,7 +1183,8 @@ object fCalcResource: TfCalcResource
       '  ID_ESTIMATE,'
       '  ID_TYPE_DATA,'
       '  materialcard.ID AS ID_TABLES,'
-      '  estim.NDS AS NDS, /* '#1053#1044#1057'*/'
+      '  smetasourcedata.OBJ_ID,'
+      ''
       '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
       '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
       '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
@@ -1275,17 +1195,16 @@ object fCalcResource: TfCalcResource
       '  PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
       ''
       
-        '  IF(estim.NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(F' +
-        'COAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072 +
+        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
+        '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
+      
+        '  IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FPRICE' +
+        '_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100 +
         ' */ '
       
-        '  IF(estim.NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(F' +
-        'PRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' */ '
-      
-        '  IF(estim.NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF' +
-        '(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /' +
-        '* '#1090#1088#1072#1085#1089#1087'. */'
+        '  IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF(FTRA' +
+        'NSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090#1088#1072 +
+        #1085#1089#1087'. */'
       ''
       
         '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
@@ -1306,33 +1225,28 @@ object fCalcResource: TfCalcResource
         '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
         '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
       'FROM '
-      '  data_estimate, materialcard, estim'
+      '  smetasourcedata, data_estimate, materialcard'
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 2 AND'
       'materialcard.ID = data_estimate.ID_TABLES AND'
-      'estim.OBJ_ID=:OBJ_ID AND '
-      '((ID_ESTIMATE = estim.SM_ID) OR  /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
-        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      'ORDER BY 1,2')
+      'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
+      ''
+      'ORDER BY 5')
     Left = 27
     Top = 168
     ParamData = <
       item
+        Name = 'NDS'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '1'
+      end
+      item
         Name = 'OBJ_ID'
         DataType = ftString
         ParamType = ptInput
-        Value = '38'
+        Value = '36'
       end>
   end
   object dsMaterialData: TDataSource
