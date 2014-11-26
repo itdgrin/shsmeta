@@ -82,8 +82,8 @@ procedure TfKC6Journal.cbbFromMonthChange(Sender: TObject);
 var
   year, month, i: Integer;
   col: TColumn;
-  rateFields, rateMatFields, matFields, rateCNT, rateMatCNT, matCNT, rateCNTDone, rateMatCNTDone,
-    matCNTDone, rateCNTOut, rateMatCNTOut, matCNTOut, PTMFields, PTMFieldsEmpty: string;
+  rateFields, matFields, mechFields, rateCNT, matCNT, mechCNT, rateCNTDone,
+    matCNTDone, mechCNTDone, rateCNTOut, matCNTOut, mechCNTOut, PTMFields, PTMFieldsEmpty: string;
 
   procedure addCol(const Grid: TDBGrid; fieldName, titleCaption: String; const Width: Integer);
   begin
@@ -124,8 +124,8 @@ begin
     year := seFromYear.Value;
 
     rateFields := '';
-    rateMatFields := '';
     matFields := '';
+    mechFields := '';
     PTMFields := '';
     PTMFieldsEmpty := '';
 
@@ -133,38 +133,42 @@ begin
       BY_COUNT:
         begin
           rateCNT := '  COALESCE(RATE_COUNT, 0) AS CNT, /* Кол-во */'#13;
-          rateMatCNT := '  COALESCE(MAT_COUNT, 0) AS CNT, /* Кол-во */'#13;
           matCNT := '  COALESCE(MAT_COUNT, 0) AS CNT, /* Кол-во */'#13;
+          mechCNT := '  COALESCE(MECH_COUNT, 0) AS CNT, /* Кол-во */'#13;
+
           rateCNTDone :=
             '  COALESCE((SELECT SUM(RATE_COUNT) FROM card_rate_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
-          rateMatCNTDone :=
-            '  COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
           matCNTDone :=
             '  COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
+          mechCNTDone :=
+            '  COALESCE((SELECT SUM(MECH_COUNT) FROM mechanizmcard_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
+
           rateCNTOut :=
             '  COALESCE((COALESCE(RATE_COUNT, 0) - COALESCE((SELECT SUM(RATE_COUNT) FROM card_rate_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
-          rateMatCNTOut :=
-            '  COALESCE((COALESCE(MAT_COUNT, 0) - COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
           matCNTOut :=
             '  COALESCE((COALESCE(MAT_COUNT, 0) - COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
+          mechCNTOut :=
+            '  COALESCE((COALESCE(MECH_COUNT, 0) - COALESCE((SELECT SUM(MECH_COUNT) FROM mechanizmcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
         end;
       BY_COST:
         begin
           rateCNT := '  COALESCE(RATE_SUM, 0) AS CNT, /* Кол-во */'#13;
-          rateMatCNT := '  COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) AS CNT, /* Кол-во */'#13;
           matCNT := '  COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) AS CNT, /* Кол-во */'#13;
+          mechCNT := '  COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) AS CNT, /* Кол-во */'#13;
+
           rateCNTDone :=
             '  COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
-          rateMatCNTDone :=
-            '  COALESCE((SELECT SUM(MAT_SUM) FROM materialcard_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
           matCNTDone :=
             '  COALESCE((SELECT SUM(MAT_SUM) FROM materialcard_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
+          mechCNTDone :=
+            '  COALESCE((SELECT SUM(MECH_SUM) FROM mechanizmcard_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
+
           rateCNTOut :=
             '  COALESCE((COALESCE(RATE_SUM, 0) - COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
-          rateMatCNTOut :=
-            '  COALESCE((COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) - COALESCE((SELECT SUM(MAT_SUM) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
           matCNTOut :=
             '  COALESCE((COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) - COALESCE((SELECT SUM(MAT_SUM) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
+          mechCNTOut :=
+            '  COALESCE((COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) - COALESCE((SELECT SUM(MECH_SUM) FROM mechanizmcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
         end;
     end;
     // изменение периода
@@ -185,8 +189,10 @@ begin
         ', ((SELECT SUM(RATE_SUM) FROM card_rate_act, card_acts, data_estimate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data_estimate.ID_TABLES AND card_acts.ID=card_rate_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
         + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ' AND ID_ESTIMATE = SM_ID)' +
         ' + (SELECT SUM(MAT_SUM) FROM materialcard_act, card_acts, data_estimate where data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=materialcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
-        + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ' AND ID_ESTIMATE = SM_ID)) AS M' +
-        IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
+        + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ' AND ID_ESTIMATE = SM_ID)' +
+        ' + (SELECT SUM(MECH_SUM) FROM mechanizmcard_act, card_acts, data_estimate where data_estimate.ID_TYPE_DATA = 3 AND mechanizmcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=mechanizmcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
+        + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ' AND ID_ESTIMATE = SM_ID)' +
+        ') AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
 
       case cbbMode.ItemIndex of
         BY_COUNT:
@@ -195,12 +201,12 @@ begin
               ', (SELECT SUM(RATE_COUNT) FROM card_rate_act, card_acts where card_rate_act.id=data_estimate.ID_TABLES AND card_acts.ID=card_rate_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
               + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
               IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
-            rateMatFields := rateMatFields +
+            matFields := matFields +
               ', (SELECT SUM(MAT_COUNT) FROM materialcard_act, card_acts where materialcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=materialcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
               + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
               IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
-            matFields := matFields +
-              ', (SELECT SUM(MAT_COUNT) FROM materialcard_act, card_acts where materialcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=materialcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
+            mechFields := mechFields +
+              ', (SELECT SUM(MECH_COUNT) FROM mechanizmcard_act, card_acts where mechanizmcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=mechanizmcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
               + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
               IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
           end;
@@ -210,12 +216,12 @@ begin
               ', (SELECT SUM(RATE_SUM) FROM card_rate_act, card_acts where card_rate_act.id=data_estimate.ID_TABLES AND card_acts.ID=card_rate_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
               + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
               IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
-            rateMatFields := rateMatFields +
+            matFields := matFields +
               ', (SELECT SUM(MAT_SUM) FROM materialcard_act, card_acts where materialcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=materialcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
               + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
               IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
-            matFields := matFields +
-              ', (SELECT SUM(MAT_SUM) FROM materialcard_act, card_acts where materialcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=materialcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
+            mechFields := mechFields +
+              ', (SELECT SUM(MECH_SUM) FROM mechanizmcard_act, card_acts where mechanizmcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=mechanizmcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
               + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
               IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
           end;
@@ -268,10 +274,10 @@ begin
     '  CONCAT(''    '', MAT_CODE) AS CODE, /* Обоснование*/'#13 +
     '  MAT_NAME AS NAME, /* Наименование */'#13 +
     '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
-    rateMatCNT +
-    rateMatCNTDone +
-    rateMatCNTOut +
-    rateMatFields +
+    matCNT +
+    matCNTDone +
+    matCNTOut +
+    matFields +
     'FROM'#13 +
     '  data_estimate, card_rate, materialcard'#13 +
     'WHERE'#13 +
@@ -296,10 +302,10 @@ begin
     '  MAT_CODE AS CODE, /* Обоснование*/'#13 +
     '  MAT_NAME AS NAME, /* Наименование */'#13 +
     '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
-    rateMatCNT +
-    rateMatCNTDone +
-    rateMatCNTOut +
-    rateMatFields +
+    matCNT +
+    matCNTDone +
+    matCNTOut +
+    matFields +
     'FROM'#13 +
     '  data_estimate, card_rate, materialcard'#13 +
     'WHERE'#13 +
@@ -339,7 +345,32 @@ begin
     '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
     ' ) /* ПТМ уровень */'#13 +
     ')'#13 +
+    'UNION ALL'#13 +
     '/* МЕХАНИЗМЫ */'#13 +
+    'SELECT'#13 +
+    '  ID_ESTIMATE,'#13 +
+    '  ID_TYPE_DATA,'#13 +
+    '  1 AS INCITERATOR,'#13 +
+    '  0 AS ITERATOR,'#13 +
+    '  mechanizmcard.ID AS ID_TABLES,'#13 +
+    '  MECH_CODE AS CODE, /* Обоснование*/'#13 +
+    '  MECH_NAME AS NAME, /* Наименование */'#13 +
+    '  MECH_UNIT AS UNIT, /* Ед. измерения */'#13 +
+    mechCNT +
+    mechCNTDone +
+    mechCNTOut +
+    mechFields +
+    'FROM'#13 +
+    '  data_estimate, mechanizmcard'#13 +
+    'WHERE'#13 +
+    'data_estimate.ID_TYPE_DATA = 3 AND'#13 +
+    'mechanizmcard.ID = data_estimate.ID_TABLES AND'#13 +
+    '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
+    ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+    ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE (s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN'#13 +
+    '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID))'#13 +
+    ' ) /* ПТМ уровень */'#13 +
+    ')'#13 +
     'ORDER BY 1,2';
     CloseOpen(qrData);
 

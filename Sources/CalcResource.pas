@@ -96,6 +96,42 @@ type
     MenuItem10: TMenuItem;
     qr1: TFDQuery;
     ds1: TDataSource;
+    qrMaterialDataID_ESTIMATE: TLongWordField;
+    qrMaterialDataID_TYPE_DATA: TLongWordField;
+    qrMaterialDataID_TABLES: TLongWordField;
+    qrMaterialDataOBJ_ID: TLongWordField;
+    qrMaterialDataCODE: TStringField;
+    qrMaterialDataNAME: TStringField;
+    qrMaterialDataUNIT: TStringField;
+    qrMaterialDataCNT: TFMTBCDField;
+    qrMaterialDataDOC_DATE: TDateField;
+    qrMaterialDataDOC_NUM: TStringField;
+    qrMaterialDataPROC_TRANSP: TFloatField;
+    qrMaterialDataCOAST: TLargeintField;
+    qrMaterialDataPRICE: TLargeintField;
+    qrMaterialDataTRANSP: TLargeintField;
+    qrMaterialDataCOAST_NDS: TLargeintField;
+    qrMaterialDataCOAST_NO_NDS: TLargeintField;
+    qrMaterialDataPRICE_NDS: TLargeintField;
+    qrMaterialDataPRICE_NO_NDS: TLargeintField;
+    qrMaterialDataTRANSP_NDS: TLargeintField;
+    qrMaterialDataTRANSP_NO_NDS: TLargeintField;
+    qrMechDataID_ESTIMATE: TLongWordField;
+    qrMechDataID_TYPE_DATA: TLongWordField;
+    qrMechDataID_TABLES: TLongWordField;
+    qrMechDataOBJ_ID: TLongWordField;
+    qrMechDataCODE: TStringField;
+    qrMechDataNAME: TStringField;
+    qrMechDataUNIT: TStringField;
+    qrMechDataCNT: TFMTBCDField;
+    qrMechDataDOC_DATE: TDateField;
+    qrMechDataDOC_NUM: TStringField;
+    qrMechDataCOAST: TLargeintField;
+    qrMechDataPRICE: TLargeintField;
+    qrMechDataCOAST_NDS: TLargeintField;
+    qrMechDataCOAST_NO_NDS: TLargeintField;
+    qrMechDataPRICE_NDS: TLargeintField;
+    qrMechDataPRICE_NO_NDS: TLargeintField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgc1Change(Sender: TObject);
@@ -135,8 +171,8 @@ end;
 procedure TfCalcResource.edtMechCodeFilterChange(Sender: TObject);
 begin
   qrMechData.Filtered := False;
-  qrMechData.Filter := 'CODE LIKE ''%' + edtMechCodeFilter.Text + '%'' AND NAME LIKE ''%' +
-    edtMechNameFilter.Text + '%''';
+  qrMechData.Filter := 'Upper(CODE) LIKE ''%' + AnsiUpperCase(edtMechCodeFilter.Text) +
+    '%'' AND Upper(NAME) LIKE ''%' + AnsiUpperCase(edtMechNameFilter.Text) + '%''';
   // + ' AND NDS=' + IntToStr(cbbMechNDS.ItemIndex); //возможно, неверное решение с НДС
   qrMechData.Filtered := True;
 end;
@@ -144,8 +180,8 @@ end;
 procedure TfCalcResource.edtMatCodeFilterChange(Sender: TObject);
 begin
   qrMaterialData.Filtered := False;
-  qrMaterialData.Filter := 'CODE LIKE ''%' + edtMatCodeFilter.Text + '%'' AND NAME LIKE ''%' +
-    edtMatNameFilter.Text + '%''';
+  qrMaterialData.Filter := 'Upper(CODE) LIKE ''%' + AnsiUpperCase(edtMatCodeFilter.Text) +
+    '%'' AND Upper(NAME) LIKE ''%' + AnsiUpperCase(edtMatNameFilter.Text) + '%''';
   // + ' AND NDS=' + IntToStr(cbbMatNDS.ItemIndex); //возможно, неверное решение с НДС
   qrMaterialData.Filtered := True;
 end;
