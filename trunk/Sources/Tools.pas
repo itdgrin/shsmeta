@@ -42,7 +42,7 @@ begin
   Query.DisableControls;
   try
     Key := Null;
-    if Query.Active then
+    if CheckQrActiveEmpty(Query) then
       Key := Query.Fields[0].Value;
     Query.Active := False;
     Query.Active := True;
