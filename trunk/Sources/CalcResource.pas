@@ -180,6 +180,7 @@ begin
   LoadDBGridSettings(grMechBott);
   LoadDBGridSettings(JvDBGrid1);
   LoadDBGridSettings(JvDBGrid2);
+  // LoadDBGridsSettings(fCalcResource);
 end;
 
 procedure TfCalcResource.FormDestroy(Sender: TObject);

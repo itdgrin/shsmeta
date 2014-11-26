@@ -53,7 +53,7 @@ object fCalcResource: TfCalcResource
     Top = 32
     Width = 616
     Height = 330
-    ActivePage = ts1
+    ActivePage = ts2
     Align = alClient
     MultiLine = True
     TabOrder = 1
@@ -400,7 +400,6 @@ object fCalcResource: TfCalcResource
     object ts3: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       ImageIndex = 2
-      ExplicitLeft = 8
       object spl4: TSplitter
         Left = 0
         Top = 233
@@ -427,7 +426,6 @@ object fCalcResource: TfCalcResource
           Align = alBottom
           Caption = #1048#1090#1086#1075#1086':'
           TabOrder = 0
-          ExplicitTop = 278
         end
         object grMech: TJvDBGrid
           Left = 0
@@ -632,7 +630,6 @@ object fCalcResource: TfCalcResource
         Height = 57
         Align = alTop
         TabOrder = 2
-        ExplicitTop = 8
         DesignSize = (
           608
           57)
@@ -727,12 +724,13 @@ object fCalcResource: TfCalcResource
       ImageIndex = 3
       object spl5: TSplitter
         Left = 0
-        Top = 299
+        Top = 233
         Width = 608
         Height = 3
         Cursor = crVSplit
         Align = alBottom
-        ExplicitTop = 0
+        ExplicitLeft = 3
+        ExplicitTop = 225
       end
       object pnl1: TPanel
         Left = 0
@@ -838,8 +836,6 @@ object fCalcResource: TfCalcResource
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
-        ExplicitTop = 3
-        ExplicitHeight = 230
         object pnl4: TPanel
           Left = 0
           Top = 152
@@ -958,12 +954,13 @@ object fCalcResource: TfCalcResource
       end
       object pnl5: TPanel
         Left = 0
-        Top = 233
+        Top = 236
         Width = 608
         Height = 66
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
+        ExplicitTop = 233
         object spl6: TSplitter
           Left = 1
           Top = 22

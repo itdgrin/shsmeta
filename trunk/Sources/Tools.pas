@@ -2,7 +2,7 @@ unit Tools;
 
 interface
 
-uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, System.Variants;
+uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, System.Variants, Vcl.Forms;
 
 // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
@@ -12,8 +12,28 @@ procedure LoadDBGridSettings(const DBGrid: TDBGrid);
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
 // Процедура переоткрытия запроса TFDQuery
 procedure CloseOpen(const Query: TFDQuery);
+// Процедура загрузки стилей всех таблиц на форме
+procedure LoadDBGridsSettings(const aForm: TForm);
+// Функция проверки TFDQuery на активность и пустоту
+function CheckQrActiveEmpty(const Query: TFDQuery): boolean;
 
 implementation
+
+function CheckQrActiveEmpty(const Query: TFDQuery): boolean;
+begin
+  Result := True;
+  if not Query.Active or Query.IsEmpty then
+    Result := False;
+end;
+
+procedure LoadDBGridsSettings(const aForm: TForm);
+var
+  i: Integer;
+begin
+  for i := 0 to aForm.ComponentCount do
+    if (aForm.Components[i].ClassName = 'TDBGrid') or (aForm.Components[i].ClassName = 'TJvDBGrid') then
+      LoadDBGridSettings((aForm.Components[i] as TDBGrid));
+end;
 
 procedure CloseOpen(const Query: TFDQuery);
 var
@@ -38,10 +58,10 @@ procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
 const
   MIN_WHIDTH = 10;
 var
-  i: integer;
-  TotWidth: integer;
-  VarWidth: integer;
-  ResizableColumnCount: integer;
+  i: Integer;
+  TotWidth: Integer;
+  VarWidth: Integer;
+  ResizableColumnCount: Integer;
   AColumn: TColumn;
 begin
   TotWidth := 0;
@@ -122,7 +142,7 @@ end;
 // Процедури рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
 var
-  DrawFlags: integer;
+  DrawFlags: Integer;
 begin
   Canvas.TextRect(Rect, Rect.Left + 1, Rect.Top + 1, ' ');
   DrawFrameControl(Canvas.Handle, Rect, DFC_BUTTON, DFCS_BUTTONPUSH or DFCS_ADJUSTRECT);
