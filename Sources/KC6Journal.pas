@@ -489,7 +489,7 @@ procedure TfKC6Journal.UpdateNumPP;
 var
   NumPP: Integer;
 begin
-  if (not qrData.Active) or (qrData.IsEmpty) then
+  if not CheckQrActiveEmpty(qrData) then
     Exit;
   // Устанавливаем №пп
   qrData.DisableControls;
