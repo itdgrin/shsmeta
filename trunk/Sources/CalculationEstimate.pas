@@ -384,8 +384,9 @@ type
 
     //Заполнаяет таблицы справа исходя из выбранной строки в таблице расценок
     procedure GridRatesRowSellect;
-
-    // Вывод значений во ВСЕ правые таблицы
+    //Открытие нужных датасетов для выбранной строки в таблице расценок
+    procedure GridRatesRowLoad;
+    // Открытие датасетов для таблиц справа
     procedure FillingTableMaterials(const vIdCardRate, vIdMat: Integer);
     procedure FillingTableMechanizm(const vIdCardRate, vIdMech: integer);
     procedure FillingTableDescription(const vIdNormativ: integer);
@@ -995,7 +996,7 @@ begin
   begin
     VisibleRightTables := s;
     SettingVisibleRightTables;
-    if qrMaterial.Active then qrMaterial.First;
+    if CheckQrActiveEmpty(qrMaterial) then qrMaterial.First;
   end;
 end;
 
@@ -1011,7 +1012,7 @@ begin
   begin
     VisibleRightTables := s;
     SettingVisibleRightTables;
-    if qrMechanizm.Active then qrMechanizm.First;
+    if CheckQrActiveEmpty(qrMechanizm) then qrMechanizm.First;
   end;
 end;
 
@@ -1039,7 +1040,7 @@ begin
   begin
     VisibleRightTables := '0001';
     SettingVisibleRightTables;
-    if qrDescription.Active then qrDescription.First;
+    if CheckQrActiveEmpty(qrDescription) then qrDescription.First;
   end;
 end;
 
@@ -1330,10 +1331,10 @@ end;
 
 procedure TFormCalculationEstimate.qrDescriptionAfterScroll(DataSet: TDataSet);
 begin
-  if qrDescription.IsEmpty then exit;
+  if not CheckQrActiveEmpty(DataSet) then exit;
 
   if SpeedButtonDescription.Down then
-    MemoRight.Text := qrDescription.FieldByName('work').AsString;
+    MemoRight.Text := qrDescriptionwork.AsString;
 end;
 
 //Проверят можно ли редактировать данную строку
@@ -1402,7 +1403,7 @@ end;
 procedure TFormCalculationEstimate.qrMaterialAfterScroll(DataSet: TDataSet);
 begin
   //На всякий случай, что-бы избежать глюков
-  if qrMaterial.IsEmpty then exit;
+  if not CheckQrActiveEmpty(qrMaterial) then exit;
 
   if not ReCalcMat then
   begin
@@ -1427,7 +1428,7 @@ end;
 
 procedure TFormCalculationEstimate.qrMaterialBeforeScroll(DataSet: TDataSet);
 begin
-  if qrMaterial.IsEmpty then exit;
+  if not CheckQrActiveEmpty(qrMaterial) then exit;
 
   if not ReCalcMat then
   begin
@@ -1519,7 +1520,7 @@ end;
 
 procedure TFormCalculationEstimate.qrMechanizmAfterScroll(DataSet: TDataSet);
 begin
-  if qrMechanizm.IsEmpty then exit;
+  if not CheckQrActiveEmpty(qrMechanizm) then exit;
 
   if not ReCalcMech then
   begin
@@ -1542,7 +1543,7 @@ end;
 
 procedure TFormCalculationEstimate.qrMechanizmBeforeScroll(DataSet: TDataSet);
 begin
-  if qrMechanizm.IsEmpty then exit;
+  if not CheckQrActiveEmpty(qrMechanizm) then exit;
 
   if not ReCalcMech then
   begin
@@ -1983,19 +1984,19 @@ end;
 
 procedure TFormCalculationEstimate.qrRatesAfterScroll(DataSet: TDataSet);
 begin
-  //Вне зависимости от режима, все зависящие от qrRates
-  //при смене строки закрываются, что-бы исключить случайный пересчет оставщегося
-  //открытым датасета по данным другой расценки
-  qrMaterial.Active := false;
-  qrMechanizm.Active := false;
-  qrDescription.Active := false;
-
   //На всякий случай, что-бы избежать глюков
-  if qrRates.IsEmpty then exit;
+  if not CheckQrActiveEmpty(qrRates) then exit;
 
   //Блокирует лишние действия, если в цикле выполняется работа с qrRates
   if qrRates.Tag <> 1 then
   begin
+    //Вне зависимости от режима, все зависящие от qrRates
+    //при смене строки закрываются, что-бы исключить случайный пересчет оставщегося
+    //открытым датасета по данным другой расценки
+    qrMaterial.Active := false;
+    qrMechanizm.Active := false;
+    qrDescription.Active := false;
+
     //в режиме добавления строки редактируется код, а не количество
     qrRatesCOUNT.ReadOnly := DataSet.Eof;
     qrRatesCODE.ReadOnly := not DataSet.Eof;
@@ -2039,7 +2040,7 @@ end;
 procedure TFormCalculationEstimate.qrRatesBeforeScroll(DataSet: TDataSet);
 begin
   //На всякий случай, что-бы избежать глюков
-  if qrRates.IsEmpty then exit;
+  if not CheckQrActiveEmpty(qrRates) then exit;
 
   if qrRates.Tag <> 1 then
   begin
@@ -2118,12 +2119,14 @@ begin
     showmessage('Запрос обновления не реализован!');
   end;
   end;
+  //Пересчитывает все величины по данной строке
   ReCalcRowRates;
 end;
 
 //пересчитывает все относящееся к строке в таблице расценок
 procedure TFormCalculationEstimate.ReCalcRowRates;
 begin
+  //Если по данной строке чего-то нет, то этот датасет будет закрыт
   ReCalcAllMat;
   ReCalcAllMech;
 end;
@@ -2388,6 +2391,36 @@ begin
     FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(FormMain);
 end;
 
+procedure TFormCalculationEstimate.GridRatesRowLoad;
+begin
+  case qrRatesTYPE_DATA.AsInteger of
+    1: // РАСЦЕНКА
+    begin
+      //Заполнение таблиц справа
+      FillingTableMaterials(qrRatesRID.AsInteger, 0);
+      FillingTableMechanizm(qrRatesRID.AsInteger, 0);
+      FillingTableDescription(qrRatesIDID.AsInteger);
+    end;
+    2: // МАТЕРИАЛ
+    begin
+      //Заменяющие неучтенный материал в расценке
+      if CheckMatINRates then
+      begin
+          FillingTableMaterials(qrRatesID_CARD_RATE.AsInteger, 0);
+      end
+      else
+      begin //Отдельный материал и вынесенные
+          FillingTableMaterials(0, qrRatesMID.AsInteger);
+      end;
+    end;
+    3: // МЕХАНИЗМ
+    begin
+      //Заполнение таблицы механизмов
+      FillingTableMechanizm(0, qrRatesMEID.AsInteger);
+    end;
+  end;
+end;
+
 procedure TFormCalculationEstimate.GridRatesRowSellect;
 var
   i: Integer;
@@ -2440,23 +2473,21 @@ begin
   PMReplace.Enabled := False;
   PMEdit.Enabled := False;
 
+  //Загрузка необходимых данных по строке в таблице расценок
+  GridRatesRowLoad;
   // РАЗВЁРТЫВАНИЕ ВЫБРАННОЙ РАСЦЕНКИ В ТАБЛИЦАХ СПРАВА
   BtnChange := false;
-  case ComboBoxTypeData.ItemIndex of
-    0: // РАСЦЕНКА
+  case qrRatesTYPE_DATA.AsInteger of
+    1: // РАСЦЕНКА
       begin
         PMEdit.Enabled := True;
 
         //настройка кнопочек свержу справа, для расценок всегда выбирается "материалы"
         SpeedButtonMaterials.Enabled := True;
         SpeedButtonMechanisms.Enabled := True;
-        SpeedButtonEquipments.Enabled := True;
         SpeedButtonDescription.Enabled := True;
 
-        //Заполнение таблиц справа
-        FillingTableMaterials(qrRatesRID.AsInteger, 0);
-        FillingTableMechanizm(qrRatesRID.AsInteger, 0);
-        FillingTableDescription(qrRatesIDID.AsInteger);
+        SpeedButtonEquipments.Enabled := false;
 
         // Проверка, если активна таблица в которой нет данных,
         // показываем пустую панель с картинкой
@@ -2464,8 +2495,6 @@ begin
           TestOnNoDataNEW(qrMaterial)
         else if SpeedButtonMechanisms.Down then
           TestOnNoDataNew(qrMechanizm)
-        else if SpeedButtonEquipments.Down then
-          TestOnNoData(StringGridEquipments)
         else
           TestOnNoDataNew(qrDescription);
         // ----------------------------------------
@@ -2494,7 +2523,7 @@ begin
 
         CalcPrice := '11';
       end;
-    1: // МАТЕРИАЛ
+    2: // МАТЕРИАЛ
       begin
         SpeedButtonMaterials.Enabled := True;
         if not SpeedButtonMaterials.Down then BtnChange := true;
@@ -2506,23 +2535,18 @@ begin
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
-        //Отдельный материал и вынесенные
-        if ((qrRatesFROM_RATE.AsInteger > 0) and
-            (qrRatesID_CARD_RATE.AsInteger > 0)) or
-           (qrRatesID_CARD_RATE.AsInteger = 0) then
+
+        if CheckMatINRates then //Заменяющие неучтенный материал в расценке
         begin
-          FillingTableMaterials(0, qrRatesMID.AsInteger);
-          // Вынесеный
+          PMEdit.Enabled := True;
+        end
+        else
+        begin   //вынесенные материалы
           if qrRatesID_CARD_RATE.AsInteger > 0 then
           begin
             PMReplace.Enabled := True;
             PMDelete.Enabled := False;
           end;
-        end
-        else
-        begin //Заменяющие неучтенный материал в расценке
-          FillingTableMaterials(qrRatesID_CARD_RATE.AsInteger, 0);
-          PMEdit.Enabled := True;
         end;
 
         //Нажимаем на кнопку материалов, для отображения таблицы материалов
@@ -2551,7 +2575,7 @@ begin
 
         CalcPrice := '10';
       end;
-    2: // МЕХАНИЗМ
+    3: // МЕХАНИЗМ
       begin
         SpeedButtonMechanisms.Enabled := True;
         if not SpeedButtonMechanisms.Down then BtnChange := true;
@@ -2563,9 +2587,6 @@ begin
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
-
-        //Заполнение таблицы механизмов
-        FillingTableMechanizm(0, qrRatesMEID.AsInteger);
 
         //Нажимаем на кнопку механизмов, для отображения таблицы механизмов
         if BtnChange then SpeedButtonMechanismsClick(SpeedButtonMechanisms);
@@ -2588,7 +2609,7 @@ begin
 
         CalcPrice := '01';
       end;
-    3: // ОБОРУДОВАНИЕ
+    4: // ОБОРУДОВАНИЕ
       begin
 
       end;
@@ -4901,7 +4922,7 @@ end;
 
 procedure TFormCalculationEstimate.TestOnNoDataNew(ADataSet: TDataSet);
 begin
-  if not ADataSet.Active or ADataSet.IsEmpty then
+  if not CheckQrActiveEmpty(ADataSet) then
   begin
     PanelClientRight.Visible := False;
     PanelNoData.Visible := True;
