@@ -274,12 +274,6 @@ type
     qrMechanizmPRICE_NDS: TIntegerField;
     qrMechanizmFPRICE_NO_NDS: TIntegerField;
     qrMechanizmFPRICE_NDS: TIntegerField;
-    qrMechanizmRENT_PRICE_NO_NDS: TIntegerField;
-    qrMechanizmRENT_PRICE_NDS: TIntegerField;
-    qrMechanizmRENT_COAST_NO_NDS: TIntegerField;
-    qrMechanizmRENT_COAST_NDS: TIntegerField;
-    qrMechanizmRENT_COUNT: TFloatField;
-    qrMechanizmMECH_KOEF: TFloatField;
     qrMechanizmNUM: TIntegerField;
     qrMechanizmMECH_SUM_NO_NDS: TIntegerField;
     qrMechanizmMECH_SUM_NDS: TIntegerField;
@@ -292,7 +286,6 @@ type
     qrMechanizmFZP_MACH_NDS: TIntegerField;
     dbgrdMechanizm: TJvDBGrid;
     qrMechanizmNDS: TSmallintField;
-    qrMechanizmRENT_NDS: TSmallintField;
     qrMechanizmPROC_PODR: TSmallintField;
     qrMechanizmPROC_ZAC: TSmallintField;
     qrMaterial: TFDQuery;
@@ -372,6 +365,16 @@ type
     qrDevicesPROC_ZAC: TWordField;
     PopupMenuDevices: TPopupMenu;
     PMDevEdit: TMenuItem;
+    qrMechanizmMECH_KOLVO: TFloatField;
+    qrMechanizmMECH_ZPSUM_NO_NDS: TIntegerField;
+    qrMechanizmMECH_ZPSUM_NDS: TIntegerField;
+    qrMechanizmZPPRICE_NO_NDS: TIntegerField;
+    qrMechanizmZPPRICE_NDS: TIntegerField;
+    qrMechanizmFZPPRICE_NO_NDS: TIntegerField;
+    qrMechanizmFZPPRICE_NDS: TIntegerField;
+    qrMechanizmNORMATIV: TFloatField;
+    qrMechanizmNORM_TRYD: TFloatField;
+    qrMechanizmTERYDOZATR: TFloatField;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1837,10 +1840,6 @@ begin
     qrMechanizmFZP_MACH_NO_NDS.AsInteger :=
       Round(qrMechanizmFZP_MACH_NDS.AsInteger /
       (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
-
-    qrMechanizmRENT_PRICE_NO_NDS.AsInteger :=
-      Round(qrMechanizmRENT_PRICE_NDS.AsInteger /
-      (1.000000 + 0.010000 * qrMechanizmRENT_NDS.AsInteger));
   end
   else
   begin
@@ -1851,10 +1850,6 @@ begin
     qrMechanizmFZP_MACH_NDS.AsInteger :=
       Round(qrMechanizmFZP_MACH_NO_NDS.AsInteger *
       (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
-
-    qrMechanizmRENT_PRICE_NDS.AsInteger :=
-      Round(qrMechanizmRENT_PRICE_NO_NDS.AsInteger *
-      (1.000000 + 0.010000 * qrMechanizmRENT_NDS.AsInteger));
   end;
 
   qrMechanizmFPRICE_NO_NDS.AsInteger :=
@@ -1869,16 +1864,16 @@ begin
   if qrMechanizmFPRICE_NO_NDS.AsInteger > 0 then
   begin
     qrMechanizmMECH_SUM_NO_NDS.AsInteger :=
-      qrMechanizmFPRICE_NO_NDS.AsInteger + qrMechanizmRENT_PRICE_NO_NDS.AsInteger;
+      qrMechanizmFPRICE_NO_NDS.AsInteger;
     qrMechanizmMECH_SUM_NDS.AsInteger :=
-      qrMechanizmFPRICE_NDS.AsInteger + qrMechanizmRENT_PRICE_NDS.AsInteger;
+      qrMechanizmFPRICE_NDS.AsInteger;
   end
   else
   begin
     qrMechanizmMECH_SUM_NO_NDS.AsInteger :=
-      qrMechanizmPRICE_NO_NDS.AsInteger + qrMechanizmRENT_PRICE_NO_NDS.AsInteger;
+      qrMechanizmPRICE_NO_NDS.AsInteger;
     qrMechanizmMECH_SUM_NDS.AsInteger :=
-      qrMechanizmPRICE_NDS.AsInteger + qrMechanizmRENT_PRICE_NDS.AsInteger;
+      qrMechanizmPRICE_NDS.AsInteger;
   end;
 end;
 
@@ -1895,10 +1890,7 @@ begin
       'ZP_MACH_NDS = :ZP_MACH_NDS, FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
       'FCOAST_NDS = :FCOAST_NDS, PRICE_NO_NDS = :PRICE_NO_NDS, PRICE_NDS = :PRICE_NDS, ' +
       'FPRICE_NO_NDS = :FPRICE_NO_NDS, FPRICE_NDS = :FPRICE_NDS, ' +
-      'RENT_PRICE_NO_NDS = :RENT_PRICE_NO_NDS, RENT_PRICE_NDS = :RENT_PRICE_NDS, ' +
-      'RENT_NDS = :RENT_NDS, RENT_COAST_NO_NDS = :RENT_COAST_NO_NDS, ' +
-      'RENT_COAST_NDS = :RENT_COAST_NDS, RENT_COUNT = :RENT_COUNT, ' +
-      'MECH_KOEF = :MECH_KOEF, MECH_SUM_NO_NDS = :MECH_SUM_NO_NDS, ' +
+      'MECH_SUM_NO_NDS = :MECH_SUM_NO_NDS, ' +
       'MECH_SUM_NDS = :MECH_SUM_NDS WHERE id = :id;');
     ParamByName('MECH_NORMA').Value := qrMechanizmMECH_NORMA.Value;
     ParamByName('MECH_COUNT').Value := qrMechanizmMECH_COUNT.Value;
@@ -1913,13 +1905,6 @@ begin
     ParamByName('PRICE_NDS').Value := qrMechanizmPRICE_NDS.Value;
     ParamByName('FPRICE_NO_NDS').Value := qrMechanizmFPRICE_NO_NDS.Value;
     ParamByName('FPRICE_NDS').Value := qrMechanizmFPRICE_NDS.Value;
-    ParamByName('RENT_PRICE_NO_NDS').Value := qrMechanizmRENT_PRICE_NO_NDS.Value;
-    ParamByName('RENT_PRICE_NDS').Value := qrMechanizmRENT_PRICE_NDS.Value;
-    ParamByName('RENT_NDS').Value := qrMechanizmRENT_NDS.Value;
-    ParamByName('RENT_COAST_NO_NDS').Value := qrMechanizmRENT_COAST_NO_NDS.Value;
-    ParamByName('RENT_COAST_NDS').Value := qrMechanizmRENT_COAST_NDS.Value;
-    ParamByName('RENT_COUNT').Value := qrMechanizmRENT_COUNT.Value;
-    ParamByName('MECH_KOEF').Value := qrMechanizmMECH_KOEF.Value;
     ParamByName('MECH_SUM_NO_NDS').Value := qrMechanizmMECH_SUM_NO_NDS.Value;
     ParamByName('MECH_SUM_NDS').Value := qrMechanizmMECH_SUM_NDS.Value;
     ParamByName('id').Value := qrMechanizmID.Value;
@@ -5065,21 +5050,23 @@ begin
   with dbgrdMechanizm do
   begin
     //в зависимости от ндс скрывает одни и показывает другие калонки
-    Columns[5].Visible := aNDS; //зп маш смет
-    Columns[7].Visible := aNDS; //цена смет
-    Columns[9].Visible := aNDS; //стоим смет
-    Columns[12].Visible := aNDS; //зп маш факт
-    Columns[14].Visible := aNDS; //цена факт
-    Columns[16].Visible := aNDS; //стоим факт
-    Columns[18].Visible := aNDS; //аренда
+    Columns[5].Visible := aNDS;
+    Columns[7].Visible := aNDS;
+    Columns[9].Visible := aNDS;
+    Columns[11].Visible := aNDS;
+    Columns[14].Visible := aNDS;
+    Columns[16].Visible := aNDS;
+    Columns[18].Visible := aNDS;
+    Columns[20].Visible := aNDS;
 
     Columns[6].Visible := not aNDS;
     Columns[8].Visible := not aNDS;
     Columns[10].Visible := not aNDS;
-    Columns[13].Visible := not aNDS;
+    Columns[12].Visible := not aNDS;
     Columns[15].Visible := not aNDS;
     Columns[17].Visible := not aNDS;
     Columns[19].Visible := not aNDS;
+    Columns[21].Visible := not aNDS;
   end;
 
   with dbgrdDevices do
@@ -5958,7 +5945,7 @@ begin
     //Подсветка поля код (для красоты)
     if Column.Index = 1 then Brush.Color := $00F0F0FF;
 
-    //Подсветка полей стоимости
+    {//Подсветка полей стоимости
     if Column.Index in [9,10,16,17] then
     begin
       //Та стоимость которая используется в расчете подсвечивается берюзовым
@@ -5978,7 +5965,7 @@ begin
     if (Column.Index in [2, 7, 8]) and (Column.Field.AsFloat = 0) then
     begin
       Brush.Color := $008080FF;
-    end;
+    end; }
 
     if qrMechanizmSCROLL.AsInteger = 1 then
     begin
