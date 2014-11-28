@@ -315,22 +315,10 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameEquipment.VSTDblClick(Sender: TObject);
-var
-  FieldRates: TFieldRates;
 begin
+  //Если разрешено добавлять данные из фрейма
   if AllowAddition then
-    with FieldRates do
-    begin
-      vRow := '0';
-      vNumber := ADOQuery.FieldByName('Code').AsVariant;
-      vCount := '0';
-      vNameUnit := ADOQuery.FieldByName('Unit').AsVariant;
-      vDescription := ADOQuery.FieldByName('Name').AsVariant;
-      vTypeAddData := '4';
-      vId := ADOQuery.FieldByName('Id').AsVariant;
-
-    //  FormCalculationEstimate.AddRowToTableRates(FieldRates);
-    end;
+    FormCalculationEstimate.AddDevice(ADOQuery.FieldByName('Id').AsInteger);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

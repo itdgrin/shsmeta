@@ -169,7 +169,6 @@ type
     ImageSplitterRight2: TImage;
     SplitterRight1: TSplitter;
     SplitterRight2: TSplitter;
-    StringGridEquipments: TStringGrid;
     ImageNoData: TImage;
     LabelNoData1: TLabel;
     LabelNoData2: TLabel;
@@ -183,9 +182,6 @@ type
     PMMatFromRates: TMenuItem;
     PopupMenuMechanizms: TPopupMenu;
     PMMechFromRates: TMenuItem;
-    PopupMenuEquipments: TPopupMenu;
-    PMEqFromRates: TMenuItem;
-    PMEqColumns: TMenuItem;
     PMMatReplace: TMenuItem;
     PMMatReplaceNumber: TMenuItem;
     PMMatReplaceTable: TMenuItem;
@@ -346,6 +342,36 @@ type
     N10: TMenuItem;
     qrRatesSTYPE: TIntegerField;
     qrMaterialMAT_KOEF: TFloatField;
+    qrRatesDEID: TIntegerField;
+    qrDevices: TFDQuery;
+    dsDevices: TDataSource;
+    qrDevicesID: TFDAutoIncField;
+    qrDevicesBD_ID: TWordField;
+    qrDevicesDEVICE_ID: TIntegerField;
+    qrDevicesDEVICE_ACTIVE: TShortintField;
+    qrDevicesDEVICE_CODE: TStringField;
+    qrDevicesDEVICE_NAME: TStringField;
+    qrDevicesDEVICE_COUNT: TFloatField;
+    qrDevicesDEVICE_UNIT: TStringField;
+    qrDevicesDEVICE_SUM_NDS: TIntegerField;
+    qrDevicesDEVICE_SUM_NO_NDS: TIntegerField;
+    qrDevicesFCOAST_NO_NDS: TIntegerField;
+    qrDevicesFCOAST_NDS: TIntegerField;
+    qrDevicesNDS: TWordField;
+    qrDevicesFPRICE_NDS: TIntegerField;
+    qrDevicesFPRICE_NO_NDS: TIntegerField;
+    qrDevicesVALUE: TIntegerField;
+    qrDevicesCOEF: TBCDField;
+    qrDevicesDOC_DATE: TDateField;
+    qrDevicesDOC_NUM: TStringField;
+    qrDevicesFACEMAN: TStringField;
+    qrDevicesSCROLL: TIntegerField;
+    qrDevicesNUM: TIntegerField;
+    dbgrdDevices: TJvDBGrid;
+    qrDevicesPROC_PODR: TWordField;
+    qrDevicesPROC_ZAC: TWordField;
+    PopupMenuDevices: TPopupMenu;
+    PMDevEdit: TMenuItem;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -369,7 +395,6 @@ type
     procedure ButtonSRRNewClick(Sender: TObject);
     procedure PopupMenuCoefColumnsClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure AddRate(RateNumber: String; Count: Double);
     procedure PopupMenuTableLeftTechnicalPartClick(Sender: TObject);
 
     // Пунткты выпадающего меню в нижней таблице
@@ -389,6 +414,7 @@ type
     // Открытие датасетов для таблиц справа
     procedure FillingTableMaterials(const vIdCardRate, vIdMat: Integer);
     procedure FillingTableMechanizm(const vIdCardRate, vIdMech: integer);
+    procedure FillingTableDevises(const vIdDev: integer);
     procedure FillingTableDescription(const vIdNormativ: integer);
 
     procedure Calculation;
@@ -492,7 +518,6 @@ type
     procedure TestOnNoDataNew(ADataSet: TDataSet);
     procedure PopupMenuRatesAdd(Sender: TObject);
     procedure PMMatFromRatesClick(Sender: TObject);
-    procedure TestFromRates(const SG: TStringGrid; const vCol, vRow: Integer);
     procedure CopyEstimate;
     procedure VisibleColumnsWinterPrice(Value: Boolean);
     procedure ReplacementNumber(Sender: TObject);
@@ -520,8 +545,10 @@ type
 
     procedure OutputDataToTable(aState: integer); //Заполнение таблицы расценок
 
+    procedure AddRate(RateNumber: String; Count: Double);
     procedure AddMaterial(const vMatId: Integer);
     procedure AddMechanizm(const vMechId, vMonth, vYear: Integer);
+    procedure AddDevice(const vEquipId: Integer);
 
     procedure PMMechFromRatesClick(Sender: TObject);
     procedure dbgrdRatesDrawColumnCell(Sender: TObject; const Rect: TRect;
@@ -553,6 +580,14 @@ type
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure PMMatEditClick(Sender: TObject);
     procedure dbgrdMaterialExit(Sender: TObject);
+    procedure qrDevicesCalcFields(DataSet: TDataSet);
+    procedure dbgrdDevicesDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure qrDevicesBeforeScroll(DataSet: TDataSet);
+    procedure qrDevicesAfterScroll(DataSet: TDataSet);
+    procedure PMDevEditClick(Sender: TObject);
+    procedure DevRowChange(Sender: TField);
+    procedure dbgrdDevicesExit(Sender: TObject);
   private
     ActReadOnly: Boolean;
 
@@ -577,7 +612,7 @@ type
     DataBase: Char;
 
     //Флаги пересчета по правым таблицам, исключает зацикливание в обработчиках ОnChange;
-    ReCalcMech, ReCalcMat: boolean;
+    ReCalcMech, ReCalcMat, ReCalcDev: boolean;
     //ID замененного материала который надо подсветить
     IdReplasedMat: integer;
     //ID заменяющего материала который надо подсветить
@@ -611,6 +646,12 @@ type
     procedure SetMechReadOnly(AValue: boolean); //Устанавливает режим редактирования
     procedure SetMechEditMode; //включение режима расширенного редактирования механизма
     procedure SetMechNoEditMode; //отключение режима расширенного редактирования механизма
+
+    procedure ReCalcRowDev; //Пересчет одного оборудование
+    procedure UpdateRowDev; //Обновляет строку в БД оборудование
+    procedure ReCalcAllDev; //Пересчет всех оборудование
+    procedure SetDevEditMode; //включение режима расширенного редактирования оборудования
+    procedure SetDevNoEditMode; //отключение режима расширенного редактирования оборудования
   public
     Act: Boolean;
     IdAct: Integer;
@@ -806,6 +847,7 @@ begin
   LoadDBGridSettings(dbgrdRates);
   LoadDBGridSettings(dbgrdMaterial);
   LoadDBGridSettings(dbgrdMechanizm);
+  LoadDBGridSettings(dbgrdDevices);
   LoadDBGridSettings(dbgrdDescription);
 
  // TCustomDbGridCracker(dbgrdRates).OnMouseWheel:=Wheel;
@@ -1019,7 +1061,7 @@ end;
 procedure TFormCalculationEstimate.SpeedButtonEquipmentsClick(Sender: TObject);
 var s : string;
 begin
-  TestOnNoData(StringGridEquipments);
+  TestOnNoDataNew(qrDevices);
 
   if SpeedButtonModeTables.Tag = 0 then s := '0010'
   else s := '1110';
@@ -1028,6 +1070,7 @@ begin
   begin
     VisibleRightTables := s;
     SettingVisibleRightTables;
+    if CheckQrActiveEmpty(qrDevices) then qrDevices.First;
   end;
 
 end;
@@ -1117,7 +1160,7 @@ begin
 
     dbgrdMaterial.Height := H div 3;
     dbgrdMechanizm.Height := dbgrdMaterial.Height;
-    StringGridEquipments.Height := dbgrdMaterial.Height;
+    dbgrdDevices.Height := dbgrdMaterial.Height;
   end;
 end;
 
@@ -1337,6 +1380,90 @@ begin
     MemoRight.Text := qrDescriptionwork.AsString;
 end;
 
+procedure TFormCalculationEstimate.qrDevicesAfterScroll(DataSet: TDataSet);
+begin
+  if not CheckQrActiveEmpty(DataSet) then exit;
+
+  if not ReCalcDev then
+  begin
+    DataSet.Edit;
+    qrDevicesSCROLL.AsInteger := 1;
+    DataSet.Post;
+
+    if SpeedButtonEquipments.Down then
+      MemoRight.Text := qrDevicesDEVICE_NAME.AsString;
+  end;
+end;
+
+procedure TFormCalculationEstimate.qrDevicesBeforeScroll(DataSet: TDataSet);
+begin
+  if not CheckQrActiveEmpty(DataSet) then exit;
+
+  if not ReCalcDev then
+  begin
+    DataSet.Edit;
+    qrDevicesSCROLL.AsInteger := 0;
+    DataSet.Post;
+
+    //закрытие открытой на редактирование строки
+    SetDevNoEditMode;
+  end;
+end;
+
+procedure TFormCalculationEstimate.qrDevicesCalcFields(DataSet: TDataSet);
+begin
+  //Поле нумерации для таблицы оборудования
+  if DataSet.Bof then qrDevicesNUM.AsInteger := 1
+  else qrDevicesNUM.AsInteger := DataSet.RecNo;
+end;
+
+procedure TFormCalculationEstimate.DevRowChange(Sender: TField);
+begin
+  if Sender.IsNull then
+  begin
+    Sender.AsInteger := 0;
+    exit;
+  end;
+
+  if not ReCalcDev then
+  begin
+    ReCalcDev := true;
+    //Пересчет по строке оборудования
+    try
+      //Индивидуальное поведение для конкретных полей
+      if Sender.FieldName = 'PROC_PODR' then
+      begin
+        if qrDevicesPROC_PODR.AsInteger > 100 then
+          qrDevicesPROC_PODR.AsInteger := 100;
+
+        if qrDevicesPROC_PODR.AsInteger < 0 then
+          qrDevicesPROC_PODR.AsInteger := 0;
+
+        qrDevicesPROC_ZAC.AsInteger := 100 - qrDevicesPROC_PODR.AsInteger;
+      end;
+
+      if Sender.FieldName = 'PROC_ZAC' then
+      begin
+        if qrDevicesPROC_ZAC.AsInteger > 100 then
+          qrDevicesPROC_ZAC.AsInteger := 100;
+
+        if qrDevicesPROC_ZAC.AsInteger < 0 then
+          qrDevicesPROC_ZAC.AsInteger := 0;
+
+        qrDevicesPROC_PODR.AsInteger := 100 - qrDevicesPROC_ZAC.AsInteger;
+      end;
+      //Пересчет по строке оборуд
+      ReCalcRowDev;
+      //После изменения ячейки строка пересчитывается и фиксируется
+      qrDevices.Post;
+      //Сохраняем в базе( не требуется так как qrDevices напрямую связан таблицей оборудования)
+      //UpdateRowDev;
+    finally
+      ReCalcDev := false;
+    end;
+  end;
+end;
+
 //Проверят можно ли редактировать данную строку
 function TFormCalculationEstimate.CheckMechReadOnly: boolean;
 begin
@@ -1366,6 +1493,28 @@ end;
 procedure TFormCalculationEstimate.SetMatReadOnly(AValue: boolean);
 begin
   dbgrdMaterial.ReadOnly := AValue;
+end;
+
+//включение режима расширенного редактирования оборудования
+procedure TFormCalculationEstimate.SetDevEditMode;
+begin
+  dbgrdDevices.Columns[4].ReadOnly := false; //НДС
+  MemoRight.Color := $00AFFEFC;
+  MemoRight.ReadOnly := false;
+  MemoRight.Tag := 4; // Type_Data
+  qrDevices.Tag := 1;
+end;
+
+procedure TFormCalculationEstimate.SetDevNoEditMode;
+begin
+  if qrDevices.Tag = 1 then
+  begin
+    dbgrdDevices.Columns[4].ReadOnly := true; //НДС
+    MemoRight.Color := clWindow;
+    MemoRight.ReadOnly := true;
+    MemoRight.Tag := 0;
+    qrMaterial.Tag := 0;
+  end;
 end;
 
 //включение режима расширенного редактирования материалов
@@ -1403,7 +1552,7 @@ end;
 procedure TFormCalculationEstimate.qrMaterialAfterScroll(DataSet: TDataSet);
 begin
   //На всякий случай, что-бы избежать глюков
-  if not CheckQrActiveEmpty(qrMaterial) then exit;
+  if not CheckQrActiveEmpty(DataSet) then exit;
 
   if not ReCalcMat then
   begin
@@ -1428,7 +1577,7 @@ end;
 
 procedure TFormCalculationEstimate.qrMaterialBeforeScroll(DataSet: TDataSet);
 begin
-  if not CheckQrActiveEmpty(qrMaterial) then exit;
+  if not CheckQrActiveEmpty(DataSet) then exit;
 
   if not ReCalcMat then
   begin
@@ -1520,7 +1669,7 @@ end;
 
 procedure TFormCalculationEstimate.qrMechanizmAfterScroll(DataSet: TDataSet);
 begin
-  if not CheckQrActiveEmpty(qrMechanizm) then exit;
+  if not CheckQrActiveEmpty(DataSet) then exit;
 
   if not ReCalcMech then
   begin
@@ -1543,7 +1692,7 @@ end;
 
 procedure TFormCalculationEstimate.qrMechanizmBeforeScroll(DataSet: TDataSet);
 begin
-  if not CheckQrActiveEmpty(qrMechanizm) then exit;
+  if not CheckQrActiveEmpty(DataSet) then exit;
 
   if not ReCalcMech then
   begin
@@ -1635,12 +1784,12 @@ begin
         qrMechanizm.Edit;
         qrMechanizmMECH_NAME.AsString := MemoRight.Text;
         qrMechanizm.Post;
-
-        {qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set ' +
-          'MECH_NAME=:MECH_NAME WHERE ID=:ID;';
-        qrTemp.ParamByName('ID').AsInteger := qrMechanizmID.AsInteger;
-        qrTemp.ParamByName('MECH_NAME').AsString := MemoRight.Text;
-        qrTemp.ExecSQL;  }
+      end;
+      4:
+      begin
+        qrDevices.Edit;
+        qrDevicesDEVICE_NAME.AsString := MemoRight.Text;
+        qrDevices.Post;
       end;
     end;
   end;
@@ -1657,6 +1806,10 @@ begin
     if not Assigned(FormCalculationEstimate.ActiveControl) or
       (FormCalculationEstimate.ActiveControl.Name <> 'dbgrdMechanizm') then
       SetMechNoEditMode;
+  4:
+    if not Assigned(FormCalculationEstimate.ActiveControl) or
+      (FormCalculationEstimate.ActiveControl.Name <> 'dbgrdMechanizm') then
+      SetDevNoEditMode;
   end;
 end;
 
@@ -1664,8 +1817,7 @@ end;
 procedure TFormCalculationEstimate.ReCalcRowMech;
 begin
   qrMechanizmMECH_COUNT.AsFloat :=
-    qrMechanizmMECH_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat *
-    qrMechanizmMECH_KOEF.AsFloat;
+    qrMechanizmMECH_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat;
 
   qrMechanizmPRICE_NO_NDS.AsInteger :=
     Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NO_NDS.AsInteger) +
@@ -1817,8 +1969,7 @@ begin
   //Для пересчета должна быть открыт датасет qrRates, возможно это зря и надо
   //Кол-во сохранять вместе с материалами (механизмами...)
   qrMaterialMAT_COUNT.AsFloat :=
-    qrMaterialMAT_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat *
-    qrMaterialMAT_KOEF.AsFloat;
+    qrMaterialMAT_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat;
 
   qrMaterialTRANSP_NO_NDS.AsInteger :=
     Round(qrMaterialPROC_TRANSP.AsFloat * qrMaterialCOAST_NO_NDS.AsInteger);
@@ -1961,6 +2112,71 @@ begin
   end;
 end;
 
+//Пересчет одного оборудование
+procedure TFormCalculationEstimate.ReCalcRowDev;
+begin
+  //Для пересчета должна быть открыт датасет qrRates, возможно это зря и надо
+  //Кол-во сохранять вместе с материалами (механизмами...)
+  qrDevicesDEVICE_COUNT.AsFloat := qrRatesCOUNTFORCALC.AsFloat;
+
+  if NDSEstimate then
+  begin
+    qrDevicesFCOAST_NO_NDS.AsInteger :=
+      Round(qrDevicesFCOAST_NDS.AsInteger /
+      (1.000000 + 0.010000 * qrDevicesNDS.AsInteger));
+  end
+  else
+  begin
+    qrDevicesFCOAST_NDS.AsInteger :=
+      Round(qrDevicesFCOAST_NO_NDS.AsInteger *
+      (1.000000 + 0.010000 * qrDevicesNDS.AsInteger));
+  end;
+
+  qrDevicesFPRICE_NO_NDS.AsInteger :=
+    Round(qrDevicesDEVICE_COUNT.AsFloat * qrDevicesFCOAST_NO_NDS.AsInteger);
+
+  qrDevicesFPRICE_NDS.AsInteger :=
+    Round(qrDevicesDEVICE_COUNT.AsFloat * qrDevicesFCOAST_NDS.AsInteger);
+
+  qrDevicesDEVICE_SUM_NO_NDS.AsInteger := qrDevicesFPRICE_NO_NDS.AsInteger;
+  qrDevicesDEVICE_SUM_NDS.AsInteger := qrDevicesFPRICE_NDS.AsInteger;
+end;
+
+//Обновляет строку в БД оборудование
+procedure TFormCalculationEstimate.UpdateRowDev;
+begin
+  //Не реализовано, так как UpdateRowDev низде не используется
+end;
+
+//Пересчет всех оборудование
+procedure TFormCalculationEstimate.ReCalcAllDev;
+var RecNo: integer;
+    s: string;
+begin
+  if not qrDevices.Active then exit;
+
+  RecNo := qrDevices.RecNo;
+  ReCalcDev := true;
+  //Пересчет по строке оборудования
+  try
+    qrDevices.DisableControls;
+    qrDevices.First;
+    while not qrDevices.Eof do
+    begin
+      qrDevices.Edit;
+      ReCalcRowDev;
+      qrDevices.Post;
+      //UpdateRowDev;
+
+      qrDevices.Next;
+    end;
+    qrDevices.RecNo := RecNo;
+  finally
+    ReCalcDev := false;
+    qrDevices.EnableControls;
+  end;
+end;
+
 //Проверка на неучтеный материал или заменяющий
 function TFormCalculationEstimate.CheckMatUnAccountingRates: boolean;
 begin
@@ -1995,6 +2211,7 @@ begin
     //открытым датасета по данным другой расценки
     qrMaterial.Active := false;
     qrMechanizm.Active := false;
+    qrDevices.Active := false;
     qrDescription.Active := false;
 
     //в режиме добавления строки редактируется код, а не количество
@@ -2114,6 +2331,13 @@ begin
     qrTemp.ParamByName('RC').AsFloat := Sender.Value;
     qrTemp.ExecSQL;
   end;
+  4:
+  begin
+    qrTemp.SQL.Text := 'UPDATE devicescard_temp set device_count=:RC WHERE ID=:ID;';
+    qrTemp.ParamByName('ID').AsInteger := qrRatesDEID.AsInteger;
+    qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+    qrTemp.ExecSQL;
+  end
   else
   begin
     showmessage('Запрос обновления не реализован!');
@@ -2129,6 +2353,7 @@ begin
   //Если по данной строке чего-то нет, то этот датасет будет закрыт
   ReCalcAllMat;
   ReCalcAllMech;
+  ReCalcAllDev;
 end;
 
 procedure TFormCalculationEstimate.N3Click(Sender: TObject);
@@ -2418,6 +2643,11 @@ begin
       //Заполнение таблицы механизмов
       FillingTableMechanizm(0, qrRatesMEID.AsInteger);
     end;
+    4: // Оборудование
+    begin
+      //Заполнение таблицы Оборудования
+      FillingTableDevises(qrRatesDEID.AsInteger);
+    end;
   end;
 end;
 
@@ -2611,7 +2841,19 @@ begin
       end;
     4: // ОБОРУДОВАНИЕ
       begin
+        SpeedButtonEquipments.Enabled := True;
+        if not SpeedButtonEquipments.Down then BtnChange := true;
+        SpeedButtonEquipments.Down := True;
 
+        SpeedButtonMaterials.Enabled := False;
+        SpeedButtonDescription.Enabled := False;
+        SpeedButtonMechanisms.Enabled := False;
+
+        PanelClientRight.Visible := True;
+        PanelNoData.Visible := False;
+
+        //Нажимаем на кнопку оборудования, для отображения таблицы оборудования
+        if BtnChange then SpeedButtonEquipmentsClick(SpeedButtonEquipments);
       end;
   end;
     {4, 5, 6, 7: // ПЕРЕВОЗКА ГРУЗОВ/МУСОРА САМОСВАЛАМИ С310/С311
@@ -3315,8 +3557,29 @@ begin
             MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
+      4: //Оборудование
+        try
+          with qrTemp do
+          begin
+            Active := False;
+            SQL.Clear;
+            SQL.Add('CALL DeleteDevice(:id);');
+            ParamByName('id').Value := qrRatesDEID.AsInteger;
+            ExecSQL;
+          end;
+
+        except
+          on E: Exception do
+            MessageBox(0, PChar('При удалении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
+              E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        end;
     end;
   OutputDataToTable(0);
+end;
+
+procedure TFormCalculationEstimate.PMDevEditClick(Sender: TObject);
+begin
+  SetDevEditMode;
 end;
 
 procedure TFormCalculationEstimate.PopupMenuTableLeftPopup(Sender: TObject);
@@ -3498,6 +3761,13 @@ begin
   qrMaterial.First;
   qrMaterial.EnableControls;
   dbgrdMaterial.Repaint;
+end;
+
+procedure TFormCalculationEstimate.FillingTableDevises(const vIdDev: integer);
+begin
+  qrDevices.Active := false;
+  qrDevices.ParamByName('IDValue').asInteger := vIdDev;
+  qrDevices.Active := true;
 end;
 
 procedure TFormCalculationEstimate.FillingTableMechanizm(const vIdCardRate, vIdMech: integer);
@@ -4546,12 +4816,12 @@ begin
   SplitterRight2.Visible := False;
 
   dbgrdMaterial.Visible := False;
-  StringGridEquipments.Visible := False;
+  dbgrdDevices.Visible := False;
   dbgrdMechanizm.Visible := False;
   dbgrdDescription.Visible := False;
 
   dbgrdMaterial.Align := alNone;
-  StringGridEquipments.Align := alNone;
+  dbgrdDevices.Align := alNone;
   dbgrdDescription.Align := alNone;
   dbgrdMechanizm.Align := alNone;
 
@@ -4570,8 +4840,8 @@ begin
   end
   else if VisibleRightTables = '0010' then
   begin
-    StringGridEquipments.Align := alClient;
-    StringGridEquipments.Visible := True;
+    dbgrdDevices.Align := alClient;
+    dbgrdDevices.Visible := True;
   end
   else if VisibleRightTables = '0001' then
   begin
@@ -4584,7 +4854,7 @@ begin
     dbgrdMaterial.Align := alTop;
     SplitterRight1.Align := alTop;
 
-    StringGridEquipments.Align := alBottom;
+    dbgrdDevices.Align := alBottom;
     SplitterRight2.Align := alTop;
     SplitterRight2.Align := alBottom;
 
@@ -4592,7 +4862,7 @@ begin
 
     dbgrdMaterial.Visible := True;
     dbgrdMechanizm.Visible := True;
-    StringGridEquipments.Visible := True;
+    dbgrdDevices.Visible := True;
 
     SplitterRight1.Visible := True;
     SplitterRight2.Visible := True;
@@ -4810,6 +5080,16 @@ begin
     Columns[15].Visible := not aNDS;
     Columns[17].Visible := not aNDS;
     Columns[19].Visible := not aNDS;
+  end;
+
+  with dbgrdDevices do
+  begin
+    //в зависимости от ндс скрывает одни и показывает другие калонки
+    Columns[5].Visible := aNDS; //цена факт
+    Columns[7].Visible := aNDS; //стоим факт
+
+    Columns[6].Visible := not aNDS;
+    Columns[8].Visible := not aNDS;
   end;
 
 end;
@@ -5107,21 +5387,6 @@ begin
   if aState = 1 then qrRates.Last;
   qrRates.EnableControls;
   dbgrdRates.Repaint;
-end;
-
-procedure TFormCalculationEstimate.TestFromRates(const SG: TStringGrid; const vCol, vRow: Integer);
-begin
-  if (vCol = -1) or (vRow = -1) then
-    Exit;
-
-  PMMechFromRates.Enabled := True;
-  PMEqFromRates.Enabled := True;
-
-  with SG do
-    if SpeedButtonMechanisms.Down then
-      PMMechFromRates.Enabled := not(Cells[13, vRow] = '0')
-    else if SpeedButtonEquipments.Down then
-      PMEqFromRates.Enabled := not(Cells[2, vRow] = '0');
 end;
 
 procedure TFormCalculationEstimate.CopyEstimate;
@@ -5450,6 +5715,27 @@ begin
   end;
 end;
 
+//Добавление оборудования к смете
+procedure TFormCalculationEstimate.AddDevice(const vEquipId: Integer);
+begin
+  try
+    with qrTemp do
+    begin
+      Active := False;
+      SQL.Clear;
+      SQL.Add('CALL AddDevice(:IdEstimate, :IdDev);');
+      ParamByName('IdEstimate').Value := IdEstimate;
+      ParamByName('IdDev').Value := vEquipId;
+      ExecSQL;
+    end;
+
+    OutputDataToTable(0);
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
 
 //Добавление материала к смете
 procedure TFormCalculationEstimate.AddMaterial(const vMatId: Integer);
@@ -5472,6 +5758,7 @@ begin
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
+
 //Добавление механизма к смете
 procedure TFormCalculationEstimate.AddMechanizm(const vMechId, vMonth, vYear: Integer);
 begin
@@ -5513,6 +5800,52 @@ begin
 		FillRect(Rect);
     TextOut(Rect.Left + 2, Rect.Top + 2, Column.Field.AsString);
 	end;
+end;
+
+procedure TFormCalculationEstimate.dbgrdDevicesDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  with  dbgrdDevices.Canvas do
+	begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    //Подсветка поля код (для красоты)
+    if Column.Index = 1 then Brush.Color := $00F0F0FF;
+
+    //Подсветка полей стоимости
+    if Column.Index in [7,8] then
+    begin
+      Brush.Color := $00FBFEBC;
+    end;
+
+    if qrDevicesSCROLL.AsInteger = 1 then
+    begin
+      Font.Style := Font.Style + [fsbold];
+      //Все поля открытые для редактирования подсвечиваются желтеньким
+      if not Column.ReadOnly then Brush.Color := $00AFFEFC
+    end;
+
+    if gdFocused in State then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+    end;
+
+		FillRect(Rect);
+    if Column.Alignment = taRightJustify then
+      TextOut(Rect.Right - 2 - TextWidth(Column.Field.AsString),
+        Rect.Top + 2, Column.Field.AsString)
+    else
+     TextOut(Rect.Left + 2, Rect.Top + 2, Column.Field.AsString);
+	end;
+end;
+
+procedure TFormCalculationEstimate.dbgrdDevicesExit(Sender: TObject);
+begin
+  if not Assigned(FormCalculationEstimate.ActiveControl) or
+    (FormCalculationEstimate.ActiveControl.Name <> 'MemoRight') then
+    SetDevNoEditMode;
 end;
 
 procedure TFormCalculationEstimate.dbgrdMaterialDrawColumnCell(Sender: TObject;
