@@ -570,10 +570,10 @@ begin
     IFile := OpenFileSettingsAndGetCountColumns;
 
     if Value then
-      with FormCalculationEstimate.StringGridCalculations, IFile do
-        ColWidths[Nom - 1] := ReadInteger(NameTable, ColumnWidth + IntToStr(Nom), 100)
+      with FormCalculationEstimate.dbgrdCalculations, IFile do
+        Columns[Nom - 1].Width := ReadInteger(NameTable, ColumnWidth + IntToStr(Nom), 100)
     else
-      FormCalculationEstimate.StringGridCalculations.ColWidths[Nom - 1] := -1;
+      FormCalculationEstimate.dbgrdCalculations.Columns[Nom - 1].Width  := -1;
 
     IFile.WriteBool(NameTable, ColumnVisible + IntToStr(Nom), Value);
     (FindComponent('CheckBoxSGC' + IntToStr(Nom)) as TCheckBox).Checked := Value;
@@ -596,9 +596,9 @@ begin
     begin
       (FindComponent('CheckBoxSGC' + IntToStr(i)) as TCheckBox).Checked := True;
 
-      with FormCalculationEstimate.StringGridCalculations, IFile do
+      with FormCalculationEstimate.dbgrdCalculations, IFile do
       begin
-        ColWidths[i - 1] := ReadInteger(NameTable, ColumnWidth + IntToStr(i), 100);
+        Columns[i - 1].Width := ReadInteger(NameTable, ColumnWidth + IntToStr(i), 100);
 
         WriteBool(NameTable, ColumnVisible + IntToStr(i), True);
       end;
@@ -621,7 +621,7 @@ begin
     for i := 1 to CountColumns do
     begin
       (FindComponent('CheckBoxSGC' + IntToStr(i)) as TCheckBox).Checked := False;
-      FormCalculationEstimate.StringGridCalculations.ColWidths[i - 1] := -1;
+      FormCalculationEstimate.dbgrdCalculations.Columns[i - 1].Width := -1;
       IFile.WriteBool(NameTable, ColumnVisible + IntToStr(i), False);
     end;
 
@@ -654,22 +654,21 @@ begin
 
     for i := 1 to CountColumns do
       with (FindComponent('CheckBoxSGC' + IntToStr(i)) as TCheckBox), IDefaultFile,
-        FormCalculationEstimate.StringGridCalculations do
+        FormCalculationEstimate.dbgrdCalculations do
       begin
         ColWidth := IDefaultFile.ReadInteger(NameTable, ColumnWidth + IntToStr(i), 100);
         IFile.WriteInteger(NameTable, ColumnWidth + IntToStr(i), ColWidth);
 
         Caption := ReadString(NameTable, ColumnName + IntToStr(i), 'Нет названия!');
         IFile.WriteString(NameTable, ColumnName + IntToStr(i), Caption);
-        Cells[i - 1, 0] := Caption;
 
         Checked := ReadBool(NameTable, ColumnVisible + IntToStr(i), True);
         IFile.WriteBool(NameTable, ColumnVisible + IntToStr(i), Checked);
 
         if Checked then
-          ColWidths[i - 1] := ColWidth
+          Columns[i - 1].Width := ColWidth
         else
-          ColWidths[i - 1] := -1;
+          Columns[i - 1].Width := -1;
       end;
 
   finally

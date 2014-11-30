@@ -172,13 +172,13 @@ object FormCoefficients: TFormCoefficients
   object DataSourceTable: TDataSource
     DataSet = ADOQueryTable
     Left = 120
-    Top = 48
+    Top = 112
   end
   object ADOQueryTable: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 52
-    Top = 56
+    Left = 36
+    Top = 112
   end
 end
