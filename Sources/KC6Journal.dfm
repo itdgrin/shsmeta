@@ -31,6 +31,7 @@ object fKC6Journal: TfKC6Journal
     TabOrder = 0
     TabPosition = tpLeft
     OnChange = pgcPageChange
+    ExplicitTop = 58
     object ts1: TTabSheet
       Caption = #1055#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084
       object spl1: TSplitter
@@ -342,7 +343,6 @@ object fKC6Journal: TfKC6Journal
   object qrTreeData: TFDQuery
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
-    DetailFields = 'OBJ_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -370,10 +370,10 @@ object fKC6Journal: TfKC6Journal
     ParamData = <
       item
         Name = 'OBJ_ID'
-        DataType = ftAutoInc
+        DataType = ftInteger
         ParamType = ptInput
-        Size = 4
-        Value = 39
+        Size = 10
+        Value = Null
       end>
   end
   object dsTreeData: TDataSource
@@ -745,7 +745,6 @@ object fKC6Journal: TfKC6Journal
   object qrPTM: TFDQuery
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
-    DetailFields = 'OBJ_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write

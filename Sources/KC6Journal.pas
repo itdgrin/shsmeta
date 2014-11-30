@@ -55,11 +55,12 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure cbbFromMonthChange(Sender: TObject);
-    procedure qrObjectAfterScroll(DataSet: TDataSet);
     procedure tvEstimatesClick(Sender: TObject);
     procedure qrDetailCalcFields(DataSet: TDataSet);
     procedure FormActivate(Sender: TObject);
+    procedure qrObjectAfterScroll(DataSet: TDataSet);
   private
+    SkipReload: Boolean;
     procedure UpdateNumPP;
   public
     procedure LocateObject(Object_ID: Integer);
@@ -96,6 +97,8 @@ var
 
 begin
   //FormWaiting.Show;
+  if SkipReload then
+    Exit;
   try
     qrData.DisableControls;
     qrPTM.DisableControls;
@@ -237,184 +240,196 @@ begin
         Inc(month);
     end;
     // Собираем общий запрос
-    qrData.SQL.Text :=
-    '/* РАСЦЕНКИ */'#13 +
-    'SELECT'#13 +
-    '  ID_ESTIMATE,'#13 +
-    '  ID_TYPE_DATA,'#13 +
-    '  1 AS INCITERATOR,'#13 +
-    '  0 AS ITERATOR,'#13 +
-    '  card_rate.ID AS ID_TABLES,'#13 +
-    '  RATE_CODE AS CODE, /* Обоснование*/'#13 +
-    '  RATE_CAPTION AS NAME, /* Наименование */'#13 +
-    '  RATE_UNIT AS UNIT, /* Ед. измерения */'#13 +
-    rateCNT +
-    rateCNTDone +
-    rateCNTOut +
-    rateFields +
-    'FROM'#13 +
-    '  data_estimate, card_rate'#13 +
-    'WHERE'#13 +
-    'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
-    'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
-    '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-    ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-    ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
-    '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
-    ' ) /* ПТМ уровень */'#13 +
-    ')'#13 +
-    'UNION ALL'#13 +
-    '/* МАТЕРИАЛЫ В РАСЦЕНКЕ*/'#13 +
-    'SELECT'#13 +
-    '  ID_ESTIMATE,'#13 +
-    '  ID_TYPE_DATA,'#13 +
-    '  0 AS INCITERATOR,'#13 +
-    '  0 AS ITERATOR,'#13 +
-    '  materialcard.ID AS ID_TABLES,'#13 +
-    '  CONCAT(''    '', MAT_CODE) AS CODE, /* Обоснование*/'#13 +
-    '  MAT_NAME AS NAME, /* Наименование */'#13 +
-    '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
-    matCNT +
-    matCNTDone +
-    matCNTOut +
-    matFields +
-    'FROM'#13 +
-    '  data_estimate, card_rate, materialcard'#13 +
-    'WHERE'#13 +
-    'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
-    'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
-    'materialcard.ID_CARD_RATE = card_rate.ID AND'#13 +
-    'materialcard.CONSIDERED = 0 AND'#13 +
-    '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-    ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-    ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
-    '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
-    ' ) /* ПТМ уровень */'#13 +
-    ')'#13 +
-    'UNION ALL'#13 +
-    '/* МАТЕРИАЛЫ, ВЫНЕСЕННЫЕ ЗА РАСЦЕНКУ*/'#13 +
-    'SELECT'#13 +
-    '  ID_ESTIMATE,'#13 +
-    '  2 AS ID_TYPE_DATA,'#13 +
-    '  1 AS INCITERATOR,'#13 +
-    '  0 AS ITERATOR,'#13 +
-    '  materialcard.ID AS ID_TABLES,'#13 +
-    '  MAT_CODE AS CODE, /* Обоснование*/'#13 +
-    '  MAT_NAME AS NAME, /* Наименование */'#13 +
-    '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
-    matCNT +
-    matCNTDone +
-    matCNTOut +
-    matFields +
-    'FROM'#13 +
-    '  data_estimate, card_rate, materialcard'#13 +
-    'WHERE'#13 +
-    'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
-    'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
-    'materialcard.ID_CARD_RATE = card_rate.ID AND'#13 +
-    'materialcard.FROM_RATE = 1 AND'#13 +
-    '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-    ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-    ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
-    '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
-    ' ) /* ПТМ уровень */'#13 +
-    ')'#13 +
-    'UNION ALL'#13 +
-    '/* МАТЕРИАЛЫ*/'#13 +
-    'SELECT'#13 +
-    '  ID_ESTIMATE,'#13 +
-    '  ID_TYPE_DATA,'#13 +
-    '  1 AS INCITERATOR,'#13 +
-    '  0 AS ITERATOR,'#13 +
-    '  materialcard.ID AS ID_TABLES,'#13 +
-    '  MAT_CODE AS CODE, /* Обоснование*/'#13 +
-    '  MAT_NAME AS NAME, /* Наименование */'#13 +
-    '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
-    matCNT +
-    matCNTDone +
-    matCNTOut +
-    matFields +
-    'FROM'#13 +
-    '  data_estimate, materialcard'#13 +
-    'WHERE'#13 +
-    'data_estimate.ID_TYPE_DATA = 2 AND'#13 +
-    'materialcard.ID = data_estimate.ID_TABLES AND'#13 +
-    '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-    ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-    ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
-    '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
-    ' ) /* ПТМ уровень */'#13 +
-    ')'#13 +
-    'UNION ALL'#13 +
-    '/* МЕХАНИЗМЫ */'#13 +
-    'SELECT'#13 +
-    '  ID_ESTIMATE,'#13 +
-    '  ID_TYPE_DATA,'#13 +
-    '  1 AS INCITERATOR,'#13 +
-    '  0 AS ITERATOR,'#13 +
-    '  mechanizmcard.ID AS ID_TABLES,'#13 +
-    '  MECH_CODE AS CODE, /* Обоснование*/'#13 +
-    '  MECH_NAME AS NAME, /* Наименование */'#13 +
-    '  MECH_UNIT AS UNIT, /* Ед. измерения */'#13 +
-    mechCNT +
-    mechCNTDone +
-    mechCNTOut +
-    mechFields +
-    'FROM'#13 +
-    '  data_estimate, mechanizmcard'#13 +
-    'WHERE'#13 +
-    'data_estimate.ID_TYPE_DATA = 3 AND'#13 +
-    'mechanizmcard.ID = data_estimate.ID_TABLES AND'#13 +
-    '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-    ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-    ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE (s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN'#13 +
-    '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID))'#13 +
-    ' ) /* ПТМ уровень */'#13 +
-    ')'#13 +
-    'ORDER BY 1,2';
-    CloseOpen(qrData);
+    if pgcPage.ActivePageIndex = 0 then
+    try
+      qrData.Active := False;
+      qrData.SQL.Text :=
+      '/* РАСЦЕНКИ */'#13 +
+      'SELECT'#13 +
+      '  ID_ESTIMATE,'#13 +
+      '  ID_TYPE_DATA,'#13 +
+      '  1 AS INCITERATOR,'#13 +
+      '  0 AS ITERATOR,'#13 +
+      '  card_rate.ID AS ID_TABLES,'#13 +
+      '  RATE_CODE AS CODE, /* Обоснование*/'#13 +
+      '  RATE_CAPTION AS NAME, /* Наименование */'#13 +
+      '  RATE_UNIT AS UNIT, /* Ед. измерения */'#13 +
+      rateCNT +
+      rateCNTDone +
+      rateCNTOut +
+      rateFields +
+      'FROM'#13 +
+      '  data_estimate, card_rate'#13 +
+      'WHERE'#13 +
+      'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
+      'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
+      '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
+      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
+      ' ) /* ПТМ уровень */'#13 +
+      ')'#13 +
+      'UNION ALL'#13 +
+      '/* МАТЕРИАЛЫ В РАСЦЕНКЕ*/'#13 +
+      'SELECT'#13 +
+      '  ID_ESTIMATE,'#13 +
+      '  ID_TYPE_DATA,'#13 +
+      '  0 AS INCITERATOR,'#13 +
+      '  0 AS ITERATOR,'#13 +
+      '  materialcard.ID AS ID_TABLES,'#13 +
+      '  CONCAT(''    '', MAT_CODE) AS CODE, /* Обоснование*/'#13 +
+      '  MAT_NAME AS NAME, /* Наименование */'#13 +
+      '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
+      matCNT +
+      matCNTDone +
+      matCNTOut +
+      matFields +
+      'FROM'#13 +
+      '  data_estimate, card_rate, materialcard'#13 +
+      'WHERE'#13 +
+      'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
+      'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
+      'materialcard.ID_CARD_RATE = card_rate.ID AND'#13 +
+      'materialcard.CONSIDERED = 0 AND'#13 +
+      '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
+      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
+      ' ) /* ПТМ уровень */'#13 +
+      ')'#13 +
+      'UNION ALL'#13 +
+      '/* МАТЕРИАЛЫ, ВЫНЕСЕННЫЕ ЗА РАСЦЕНКУ*/'#13 +
+      'SELECT'#13 +
+      '  ID_ESTIMATE,'#13 +
+      '  2 AS ID_TYPE_DATA,'#13 +
+      '  1 AS INCITERATOR,'#13 +
+      '  0 AS ITERATOR,'#13 +
+      '  materialcard.ID AS ID_TABLES,'#13 +
+      '  MAT_CODE AS CODE, /* Обоснование*/'#13 +
+      '  MAT_NAME AS NAME, /* Наименование */'#13 +
+      '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
+      matCNT +
+      matCNTDone +
+      matCNTOut +
+      matFields +
+      'FROM'#13 +
+      '  data_estimate, card_rate, materialcard'#13 +
+      'WHERE'#13 +
+      'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
+      'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
+      'materialcard.ID_CARD_RATE = card_rate.ID AND'#13 +
+      'materialcard.FROM_RATE = 1 AND'#13 +
+      '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
+      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
+      ' ) /* ПТМ уровень */'#13 +
+      ')'#13 +
+      'UNION ALL'#13 +
+      '/* МАТЕРИАЛЫ*/'#13 +
+      'SELECT'#13 +
+      '  ID_ESTIMATE,'#13 +
+      '  ID_TYPE_DATA,'#13 +
+      '  1 AS INCITERATOR,'#13 +
+      '  0 AS ITERATOR,'#13 +
+      '  materialcard.ID AS ID_TABLES,'#13 +
+      '  MAT_CODE AS CODE, /* Обоснование*/'#13 +
+      '  MAT_NAME AS NAME, /* Наименование */'#13 +
+      '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
+      matCNT +
+      matCNTDone +
+      matCNTOut +
+      matFields +
+      'FROM'#13 +
+      '  data_estimate, materialcard'#13 +
+      'WHERE'#13 +
+      'data_estimate.ID_TYPE_DATA = 2 AND'#13 +
+      'materialcard.ID = data_estimate.ID_TABLES AND'#13 +
+      '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
+      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
+      ' ) /* ПТМ уровень */'#13 +
+      ')'#13 +
+      'UNION ALL'#13 +
+      '/* МЕХАНИЗМЫ */'#13 +
+      'SELECT'#13 +
+      '  ID_ESTIMATE,'#13 +
+      '  ID_TYPE_DATA,'#13 +
+      '  1 AS INCITERATOR,'#13 +
+      '  0 AS ITERATOR,'#13 +
+      '  mechanizmcard.ID AS ID_TABLES,'#13 +
+      '  MECH_CODE AS CODE, /* Обоснование*/'#13 +
+      '  MECH_NAME AS NAME, /* Наименование */'#13 +
+      '  MECH_UNIT AS UNIT, /* Ед. измерения */'#13 +
+      mechCNT +
+      mechCNTDone +
+      mechCNTOut +
+      mechFields +
+      'FROM'#13 +
+      '  data_estimate, mechanizmcard'#13 +
+      'WHERE'#13 +
+      'data_estimate.ID_TYPE_DATA = 3 AND'#13 +
+      'mechanizmcard.ID = data_estimate.ID_TABLES AND'#13 +
+      '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE (s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN'#13 +
+      '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID))'#13 +
+      ' ) /* ПТМ уровень */'#13 +
+      ')'#13 +
+      'ORDER BY 1,2';
+      qrData.Active := True;
+    except
+      ShowMessage('Ошибка получения данных по расценкам!');
+    end;
 
     //Собираем запрос по ПТМ
-    qrPTM.SQL.Text :=
-    '/* Объектные */'#13 +
-    'SELECT SM_ID, SM_TYPE, NAME as NAME, SM_NUMBER, SM_ID as ID, (NULL) AS PTM_COST, (NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT'#13 +
-    PTMFieldsEmpty +
-    'FROM smetasourcedata'#13 +
-    'WHERE SM_TYPE=2 AND'#13 +
-    '      OBJ_ID=:OBJ_ID'#13 +
-    'UNION ALL'#13 +
-    '/* Локальные */'#13 +
-    'SELECT CONCAT((PARENT_LOCAL_ID+PARENT_PTM_ID), SM_ID) AS SM_ID, SM_TYPE, NAME as NAME, SM_NUMBER, SM_ID as ID, (NULL) AS PTM_COST,'#13 +
-    '(NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT'#13 +
-    PTMFieldsEmpty +
-    'FROM smetasourcedata'#13 +
-    'WHERE SM_TYPE=1 AND'#13 +
-    '      OBJ_ID=:OBJ_ID'#13 +
-    'UNION ALL'#13 +
-    '/* ПТМ */'#13 +
-    'SELECT CONCAT('#13 +
-    '(SELECT (s1.PARENT_LOCAL_ID+s1.PARENT_PTM_ID) FROM smetasourcedata s1 WHERE s1.SM_ID=(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID)),'#13 +
-    '(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID), s2.SM_ID) AS SM_ID, s2.SM_TYPE, s2.NAME as NAME, CONCAT('' - '', s2.SM_NUMBER) as SM_NUMBER, SM_ID as ID,'#13 +
-    '/*Стоимость по расценкам + Стоимость по материалам + Стоимость по материалам, вынсенным за расценку*/'#13 +
-    '(COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate WHERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-    'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialcard WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-    '(0)) AS PTM_COST,'#13 +
-    '/*ВЫПОЛНЕНО Стоимость по расценкам + Стоимость по материалам + Стоимость по материалам, вынсенным за расценку*/'#13 +
-    '(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_estimate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-    'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard_act WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-    '(0)) AS PTM_COST_DONE,'#13 +
-    '/* ОСТАТОК */'#13 +
-    '((COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate WHERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-    'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialcard WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-    '(0))-(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_estimate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-    'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard_act WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-    '(0))) AS PTM_COST_OUT'#13 +
-    PTMFields +
-    'FROM smetasourcedata s2'#13 +
-    'WHERE s2.SM_TYPE=3 AND'#13 +
-    '      s2.OBJ_ID=:OBJ_ID'#13 +
-    'ORDER BY 1,4,5';
-    CloseOpen(qrPTM);
+    if pgcPage.ActivePageIndex = 1 then
+    try
+      qrPTM.Active := False;
+      qrPTM.SQL.Text :=
+      '/* Объектные */'#13 +
+      'SELECT SM_ID, SM_TYPE, NAME as NAME, SM_NUMBER, SM_ID as ID, (NULL) AS PTM_COST, (NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT'#13 +
+      PTMFieldsEmpty +
+      'FROM smetasourcedata'#13 +
+      'WHERE SM_TYPE=2 AND'#13 +
+      '      OBJ_ID=:OBJ_ID'#13 +
+      'UNION ALL'#13 +
+      '/* Локальные */'#13 +
+      'SELECT CONCAT((PARENT_LOCAL_ID+PARENT_PTM_ID), SM_ID) AS SM_ID, SM_TYPE, NAME as NAME, SM_NUMBER, SM_ID as ID, (NULL) AS PTM_COST,'#13 +
+      '(NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT'#13 +
+      PTMFieldsEmpty +
+      'FROM smetasourcedata'#13 +
+      'WHERE SM_TYPE=1 AND'#13 +
+      '      OBJ_ID=:OBJ_ID'#13 +
+      'UNION ALL'#13 +
+      '/* ПТМ */'#13 +
+      'SELECT CONCAT('#13 +
+      '(SELECT (s1.PARENT_LOCAL_ID+s1.PARENT_PTM_ID) FROM smetasourcedata s1 WHERE s1.SM_ID=(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID)),'#13 +
+      '(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID), s2.SM_ID) AS SM_ID, s2.SM_TYPE, s2.NAME as NAME, CONCAT('' - '', s2.SM_NUMBER) as SM_NUMBER, SM_ID as ID,'#13 +
+      '/*Стоимость по расценкам + Стоимость по материалам + Стоимость по материалам, вынсенным за расценку*/'#13 +
+      '(COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate WHERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
+      'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialcard WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
+      '(0)) AS PTM_COST,'#13 +
+      '/*ВЫПОЛНЕНО Стоимость по расценкам + Стоимость по материалам + Стоимость по материалам, вынсенным за расценку*/'#13 +
+      '(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_estimate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
+      'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard_act WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
+      '(0)) AS PTM_COST_DONE,'#13 +
+      '/* ОСТАТОК */'#13 +
+      '((COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate WHERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
+      'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialcard WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
+      '(0))-(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_estimate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
+      'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard_act WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
+      '(0))) AS PTM_COST_OUT'#13 +
+      PTMFields +
+      'FROM smetasourcedata s2'#13 +
+      'WHERE s2.SM_TYPE=3 AND'#13 +
+      '      s2.OBJ_ID=:OBJ_ID'#13 +
+      'ORDER BY 1,4,5';
+      qrPTM.Active := True;
+    except
+      ShowMessage('Ошибка получения данных по ПТМ!');
+    end;
 
   finally
     UpdateNumPP;
@@ -442,14 +457,20 @@ procedure TfKC6Journal.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N61Click);
-  cbbToMonth.ItemIndex := MonthOf(Now) - 1;
-  seToYear.Value := YearOf(Now);
-  LoadDBGridSettings(dbgrdData);
-  LoadDBGridSettings(dbgrd2);
-  LoadDBGridSettings(dbgrdPTM);
+
   qrObject.Active := True;
   qrTreeData.Active := True;
   qrDetail.Active := True;
+  
+  SkipReload := True;
+  cbbToMonth.ItemIndex := MonthOf(Now) - 1;
+  seToYear.Value := YearOf(Now);
+  SkipReload := False;
+  
+  LoadDBGridSettings(dbgrdData);
+  LoadDBGridSettings(dbgrd2);
+  LoadDBGridSettings(dbgrdPTM);
+  
   pgcPage.ActivePageIndex := 0;
 end;
 
@@ -480,6 +501,7 @@ begin
   rbRates.Checked := pgcPage.ActivePageIndex = 0;
   rbPTM.Checked := pgcPage.ActivePageIndex = 1;
   cbbMode.Visible := pgcPage.ActivePageIndex = 0;
+  cbbFromMonthChange(Sender);
 end;
 
 procedure TfKC6Journal.qrDetailCalcFields(DataSet: TDataSet);
@@ -488,24 +510,12 @@ begin
 end;
 
 procedure TfKC6Journal.qrObjectAfterScroll(DataSet: TDataSet);
-var
-  e: TNotifyEvent;
 begin
-  e := cbbFromMonth.OnChange;
-  cbbFromMonth.OnChange := nil;
-  seFromYear.OnChange := nil;
-  cbbToMonth.OnChange := nil;
-  seToYear.OnChange := nil;
-
+  SkipReload := True;
   cbbFromMonth.ItemIndex := MonthOf(qrObject.FieldByName('date').AsDateTime) - 1;
   seFromYear.Value := YearOf(qrObject.FieldByName('date').AsDateTime);
-
+  SkipReload := False;
   cbbFromMonthChange(Self);
-
-  cbbFromMonth.OnChange := e;
-  seFromYear.OnChange := e;
-  cbbToMonth.OnChange := e;
-  seToYear.OnChange := e;
 end;
 
 procedure TfKC6Journal.rbRatesClick(Sender: TObject);
@@ -514,6 +524,7 @@ begin
     pgcPage.ActivePageIndex := 0
   else
     pgcPage.ActivePageIndex := 1;
+  cbbFromMonthChange(Self);   
 end;
 
 procedure TfKC6Journal.UpdateNumPP;
