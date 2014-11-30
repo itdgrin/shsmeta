@@ -19,6 +19,7 @@
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -2071,7 +2072,129 @@
       BevelOuter = bvNone
       ParentBackground = False
       TabOrder = 1
-      OnResize = PanelTableBottomResize
+      object dbgrdCalculations: TDBGrid
+        Left = 0
+        Top = 0
+        Width = 912
+        Height = 45
+        Align = alClient
+        DataSource = dsCalculations
+        DrawingStyle = gdsClassic
+        Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        PopupMenu = PopupMenuCoef
+        TabOrder = 2
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'NAME'
+            Title.Alignment = taCenter
+            Title.Caption = ' '
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'CNT'
+            Title.Alignment = taCenter
+            Title.Caption = #1050#1086#1083'-'#1074#1086
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ZP'
+            Title.Alignment = taCenter
+            Title.Caption = #1047#1055
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'EMiM'
+            Title.Alignment = taCenter
+            Title.Caption = #1069#1052#1080#1052
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ZP_MASH'
+            Title.Alignment = taCenter
+            Title.Caption = #1047#1055' '#1084#1072#1096'.'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MR'
+            Title.Alignment = taCenter
+            Title.Caption = #1052#1056
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'TRANSP'
+            Title.Alignment = taCenter
+            Title.Caption = #1058#1088#1072#1085#1089#1087'.'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'STOIM'
+            Title.Alignment = taCenter
+            Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'OHROPR'
+            Title.Alignment = taCenter
+            Title.Caption = #1054#1061#1056' '#1080' '#1054#1055#1056
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'PLAN_PRIB'
+            Title.Alignment = taCenter
+            Title.Caption = #1055#1083#1072#1085' '#1087#1088#1080#1073'.'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ST_OHROPR'
+            Title.Alignment = taCenter
+            Title.Caption = #1057#1090'. '#1089' '#1054#1061#1056' '#1080' '#1054#1055#1056
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'TRUD'
+            Title.Alignment = taCenter
+            Title.Caption = #1058#1088#1091#1076
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'TRUD_MASH'
+            Title.Alignment = taCenter
+            Title.Caption = #1058#1088#1091#1076' '#1084#1072#1096'.'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ZIM_UDOR'
+            Title.Alignment = taCenter
+            Title.Caption = #1047#1080#1084'. '#1091#1076#1086#1088'.'
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ZP_ZIM_UDOR'
+            Title.Alignment = taCenter
+            Title.Caption = #1047#1055' '#1074' '#1079#1080#1084'. '#1091#1076#1086#1088'.'
+            Visible = True
+          end>
+      end
       object PanelBottom: TPanel
         Left = 0
         Top = 45
@@ -2131,12 +2254,12 @@
           TabOrder = 3
         end
       end
-      object StringGridCalculations: TStringGrid
-        Left = 0
-        Top = 0
-        Width = 912
-        Height = 45
-        Align = alClient
+      object StringGridCalculations_del: TStringGrid
+        Left = 15
+        Top = 6
+        Width = 46
+        Height = 43
+        Align = alCustom
         DefaultRowHeight = 20
         FixedCols = 0
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goColMoving, goRowSelect, goThumbTracking]
@@ -2144,9 +2267,10 @@
         PopupMenu = PopupMenuCoef
         ShowHint = False
         TabOrder = 1
+        Visible = False
         ColWidths = (
           64
-          64
+          69
           64
           64
           64)
@@ -2778,13 +2902,15 @@
   end
   object PopupMenuCoef: TPopupMenu
     OnPopup = PopupMenuCoefPopup
-    Left = 16
-    Top = 136
+    Left = 232
+    Top = 432
     object PopupMenuCoefCopy: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
+      Visible = False
     end
     object PopupMenuCoefSeparator1: TMenuItem
       Caption = '-'
+      Visible = False
     end
     object PopupMenuCoefAddSet: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1085#1072#1073#1086#1088' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074
@@ -2801,9 +2927,11 @@
     end
     object PopupMenuCoefSeparator2: TMenuItem
       Caption = '-'
+      Visible = False
     end
     object PopupMenuCoefColumns: TMenuItem
       Caption = #1050#1086#1083#1086#1085#1082#1080
+      Visible = False
       OnClick = PopupMenuCoefColumnsClick
     end
   end
@@ -3226,6 +3354,12 @@
       FieldName = 'DEID'
       Origin = 'DEID'
       ProviderFlags = []
+    end
+    object qrRatesESTIMATE_ID: TIntegerField
+      FieldName = 'ESTIMATE_ID'
+    end
+    object qrRatesOWNER_ID: TIntegerField
+      FieldName = 'OWNER_ID'
     end
   end
   object dsRates: TDataSource
@@ -4032,5 +4166,300 @@
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMDevEditClick
     end
+  end
+  object qrCalculations: TFDQuery
+    MasterSource = dsRates
+    MasterFields = 'ESTIMATE_ID;OWNER_ID;COUNT'
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      
+        'SELECT (0) AS ID, ('#39#1050#1086#1101'-'#1090'. ('#1086#1073#1097#1080#1081' '#1089#1084#1077#1090#1085#1099#1081')'#39') AS NAME, (null) AS ' +
+        'CNT /* '#1050#1086#1083'-'#1074#1086' */,'
+      'COEF_TR_ZATR AS ZP, /* % '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1085#1099#1093' '#1079#1072#1090#1088#1072#1090' '#1080' '#1069#1057#1056' */'
+      'COEF_TR_OBOR AS EMiM, /* % '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072' '#1080' '#1079#1089#1088' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103' */'
+      
+        'K40 AS MR, /* '#1050'-'#1092' '#1082' '#1079#1072#1088#1087#1083#1072#1090#1077' '#1085#1072' '#1082#1072#1084#1077#1085#1085#1099#1077' '#1088#1072#1073#1086#1090#1099' ('#1087#1088#1080#1082'. '#8470'350) '#1050'40' +
+        ' */'
+      
+        'K41 AS TRUD, /* '#1050'-'#1092' '#1082' '#1079#1072#1088#1087#1083#1072#1090#1077' '#1085#1072' '#1073#1077#1090#1086#1085#1085#1099#1077' '#1080' '#1096#1090#1091#1082#1072#1090#1091#1088#1085#1099#1077' '#1088#1072#1073#1086#1090#1099'"' +
+        ' ('#1087#1088#1080#1082'. '#8470'350) '#1050'41 */'
+      '1 AS TRUD_MASH, '
+      '1 AS ZP_MASH, '
+      'K33 AS TRANSP, /* '#1050'-'#1092' '#1082' '#1074#1088#1077#1084#1077#1085#1085#1099#1084' ('#1087#1088#1080#1082'. '#8470'270) '#1050'33 */'
+      '1 AS STOIM, '
+      
+        'K31 AS OHROPR, /* '#1054#1061#1056' '#1080' '#1054#1055#1056' */ /* '#1050'-'#1092' '#1082' '#1054#1061#1056' '#1080' '#1054#1055#1056' ('#1087#1088#1080#1082'. '#8470'270) '#1050 +
+        '31 */'
+      
+        'K32 AS PLAN_PRIB, /* '#1055#1083#1072#1085' '#1087#1088#1080#1073'. */ /* '#1050'-'#1092' '#1082' '#1087#1083#1072#1085#1086#1074#1086#1081' '#1087#1088#1080#1073#1099#1083#1080' ('#1087#1088 +
+        #1080#1082'. '#8470'270) '#1050'32 */'
+      '1 AS ST_OHROPR, /* '#1057#1090'. '#1089' '#1054#1061#1056' '#1080' '#1054#1055#1056' */'
+      
+        'K34 AS ZIM_UDOR, /* '#1047#1080#1084'. '#1091#1076#1086#1088'. */ /* '#1050'-'#1092' '#1082' '#1079#1080#1084#1085#1080#1084' ('#1087#1088#1080#1082'. '#8470'270) '#1050 +
+        '34 */'
+      '1 AS ZP_ZIM_UDOR /* '#1047#1055' '#1074' '#1079#1080#1084'. '#1091#1076#1086#1088'. */'
+      'FROM smetasourcedata'
+      'WHERE smetasourcedata.sm_id = :estimate_ID'
+      ''
+      'UNION ALL'
+      ' '
+      
+        'SELECT calculation_coef_id AS ID, COEF_NAME AS NAME, (null) AS C' +
+        'NT /* '#1050#1086#1083'-'#1074#1086' */,'
+      'OSN_ZP AS ZP, /* '#1047#1055' */'
+      'EKSP_MACH AS EMiM, /* '#1069#1052#1080#1052' */'
+      'MAT_RES AS MR, /* '#1052#1056' */'
+      'WORK_PERS AS TRUD, /* '#1058#1088#1091#1076' */'
+      'WORK_MACH AS TRUD_MASH, /* '#1058#1088#1091#1076' '#1084#1072#1096'. */'
+      '1 AS ZP_MASH, /* '#1047#1055' '#1084#1072#1096'. */'
+      '1 AS TRANSP, /* '#1058#1088#1072#1085#1089#1087'. */'
+      '1 AS STOIM, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */'
+      '1 AS OHROPR, /* '#1054#1061#1056' '#1080' '#1054#1055#1056' */'
+      '1 AS PLAN_PRIB, /* '#1055#1083#1072#1085' '#1087#1088#1080#1073'. */'
+      '1 AS ST_OHROPR, /* '#1057#1090'. '#1089' '#1054#1061#1056' '#1080' '#1054#1055#1056' */'
+      '1 AS ZIM_UDOR, /* '#1047#1080#1084'. '#1091#1076#1086#1088'. */'
+      '1 AS ZP_ZIM_UDOR /* '#1047#1055' '#1074' '#1079#1080#1084'. '#1091#1076#1086#1088'. */'
+      'FROM calculation_coef_temp'
+      'WHERE id_owner = :owner_ID'
+      ''
+      'UNION ALL'
+      ' '
+      
+        'SELECT (0) AS ID, ('#39#1062#1077#1085#1072' '#1079#1072' 1 '#1077#1076'.'#39') AS NAME, (null) AS CNT /* '#1050#1086 +
+        #1083'-'#1074#1086' */,'
+      ':ZP_ONE AS ZP, /* '#1047#1055' */'
+      ':EMiM_ONE AS EMiM, /* '#1069#1052#1080#1052' */'
+      ':MR_ONE AS MR, /* '#1052#1056' */'
+      ':TRUD_ONE AS TRUD, /* '#1058#1088#1091#1076' */'
+      ':TRUD_MASH_ONE AS TRUD_MASH, /* '#1058#1088#1091#1076' '#1084#1072#1096'. */'
+      ':ZP_MASH_ONE AS ZP_MASH, /* '#1047#1055' '#1084#1072#1096'. */'
+      ':TRANSP_ONE AS TRANSP, /* '#1058#1088#1072#1085#1089#1087'. */'
+      ':STOIM_ONE AS STOIM, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */'
+      ':OHROPR_ONE AS OHROPR, /* '#1054#1061#1056' '#1080' '#1054#1055#1056' */'
+      ':PLAN_PRIB_ONE AS PLAN_PRIB, /* '#1055#1083#1072#1085' '#1087#1088#1080#1073'. */'
+      ':ST_OHROPR_ONE AS ST_OHROPR, /* '#1057#1090'. '#1089' '#1054#1061#1056' '#1080' '#1054#1055#1056' */'
+      ':ZIM_UDOR_ONE AS ZIM_UDOR, /* '#1047#1080#1084'. '#1091#1076#1086#1088'. */'
+      ':ZP_ZIM_UDOR_ONE AS ZP_ZIM_UDOR /* '#1047#1055' '#1074' '#1079#1080#1084'. '#1091#1076#1086#1088'. */'
+      ''
+      'UNION ALL'
+      ' '
+      
+        'SELECT (0) AS ID, ('#39#1057#1090#1086#1080#1084#1086#1089#1090#1100#39') AS NAME, (:COUNT) AS CNT /* '#1050#1086#1083'-' +
+        #1074#1086' */,'
+      ':ZP_TWO AS ZP, /* '#1047#1055' */'
+      ':EMiM_TWO AS EMiM, /* '#1069#1052#1080#1052' */'
+      ':MR_TWO AS MR, /* '#1052#1056' */'
+      ':TRUD_TWO AS TRUD, /* '#1058#1088#1091#1076' */'
+      ':TRUD_MASH_TWO AS TRUD_MASH, /* '#1058#1088#1091#1076' '#1084#1072#1096'. */'
+      ':ZP_MASH_TWO AS ZP_MASH, /* '#1047#1055' '#1084#1072#1096'. */'
+      ':TRANSP_TWO AS TRANSP, /* '#1058#1088#1072#1085#1089#1087'. */'
+      ':STOIM_TWO AS STOIM, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */'
+      ':OHROPR_TWO AS OHROPR, /* '#1054#1061#1056' '#1080' '#1054#1055#1056' */'
+      ':PLAN_PRIB_TWO AS PLAN_PRIB, /* '#1055#1083#1072#1085' '#1087#1088#1080#1073'. */'
+      ':ST_OHROPR_TWO AS ST_OHROPR, /* '#1057#1090'. '#1089' '#1054#1061#1056' '#1080' '#1054#1055#1056' */'
+      ':ZIM_UDOR_TWO AS ZIM_UDOR, /* '#1047#1080#1084'. '#1091#1076#1086#1088'. */'
+      ':ZP_ZIM_UDOR_TWO AS ZP_ZIM_UDOR /* '#1047#1055' '#1074' '#1079#1080#1084'. '#1091#1076#1086#1088'. */'
+      '')
+    Left = 315
+    Top = 432
+    ParamData = <
+      item
+        Name = 'ESTIMATE_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 309
+      end
+      item
+        Name = 'OWNER_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 25
+      end
+      item
+        Name = 'ZP_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'EMIM_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'MR_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'TRUD_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'TRUD_MASH_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ZP_MASH_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'TRANSP_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'STOIM_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'OHROPR_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'PLAN_PRIB_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ST_OHROPR_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ZIM_UDOR_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ZP_ZIM_UDOR_ONE'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'COUNT'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ZP_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'EMIM_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'MR_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'TRUD_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'TRUD_MASH_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ZP_MASH_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'TRANSP_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'STOIM_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'OHROPR_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'PLAN_PRIB_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ST_OHROPR_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ZIM_UDOR_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ZP_ZIM_UDOR_TWO'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object dsCalculations: TDataSource
+    DataSet = qrCalculations
+    Left = 380
+    Top = 432
   end
 end

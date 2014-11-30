@@ -53,7 +53,7 @@ object fCalcResource: TfCalcResource
     Top = 32
     Width = 616
     Height = 330
-    ActivePage = ts2
+    ActivePage = ts4
     Align = alClient
     MultiLine = True
     TabOrder = 1
@@ -209,7 +209,7 @@ object fCalcResource: TfCalcResource
           Align = alClient
           DataSource = dsMaterialData
           DrawingStyle = gdsClassic
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           PopupMenu = pmMat
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
@@ -217,6 +217,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -232,7 +233,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 27
+              Width = 23
               Visible = True
             end
             item
@@ -240,7 +241,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = 112
+              Width = 92
               Visible = True
             end
             item
@@ -249,7 +250,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 14
+              Width = 28
               Visible = True
             end
             item
@@ -257,7 +258,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 15
+              Width = 26
               Visible = True
             end
             item
@@ -265,7 +266,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 64
+              Width = 76
               Visible = True
             end
             item
@@ -273,7 +274,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-              Width = 64
+              Width = 76
               Visible = True
             end
             item
@@ -281,6 +282,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
+              Width = 53
               Visible = True
             end
             item
@@ -288,7 +290,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 64
+              Width = 76
               Visible = True
             end
             item
@@ -296,6 +298,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
+              Width = 53
               Visible = True
             end
             item
@@ -303,7 +306,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 94
+              Width = 79
               Visible = True
             end>
         end
@@ -436,7 +439,7 @@ object fCalcResource: TfCalcResource
           Align = alClient
           DataSource = dsMechData
           DrawingStyle = gdsClassic
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           PopupMenu = pmMech
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
@@ -444,6 +447,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -838,15 +842,17 @@ object fCalcResource: TfCalcResource
           Width = 608
           Height = 152
           Align = alClient
-          DataSource = dsMechData
+          DataSource = dsDevices
           DrawingStyle = gdsClassic
-          PopupMenu = pmMech
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
+          PopupMenu = pmDevice
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -948,7 +954,6 @@ object fCalcResource: TfCalcResource
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
-        ExplicitTop = 233
         object spl6: TSplitter
           Left = 1
           Top = 22
@@ -1025,7 +1030,7 @@ object fCalcResource: TfCalcResource
           Align = alTop
           Constraints.MinHeight = 21
           DataField = 'NAME'
-          DataSource = dsMechData
+          DataSource = dsDevices
           ScrollBars = ssVertical
           TabOrder = 1
         end
@@ -1392,6 +1397,7 @@ object fCalcResource: TfCalcResource
   object qrMechData: TFDQuery
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
+    DetailFields = 'OBJ_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1647,7 +1653,7 @@ object fCalcResource: TfCalcResource
     Left = 99
     Top = 216
   end
-  object pm1: TPopupMenu
+  object pmDevice: TPopupMenu
     Left = 156
     Top = 128
     object MenuItem6: TMenuItem
@@ -1666,7 +1672,7 @@ object fCalcResource: TfCalcResource
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
     end
   end
-  object qr1: TFDQuery
+  object qrDevices: TFDQuery
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
     Connection = DM.Connect
@@ -1690,215 +1696,69 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042' '#1056#1040#1057#1062#1045#1053#1050#1045'*/'
+      '/* '#1054#1041#1054#1056#1059#1044#1054#1042#1040#1053#1048#1045' */'
       'SELECT '
       '  ID_ESTIMATE,'
       '  ID_TYPE_DATA,'
-      '  materialcard.ID AS ID_TABLES,'
-      '  estim.NDS AS NDS, /* '#1053#1044#1057'*/'
-      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      '  devicescard.ID AS ID_TABLES,'
+      '  smetasourcedata.OBJ_ID,'
+      ''
+      '  DEVICE_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  DEVICE_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  DEVICE_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  COALESCE(DEVICE_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       ''
       '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
       '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
+      '  /* PROC_TRANSP,  % '#1090#1088#1072#1085#1089#1087'. */'
       ''
       
-        '  IF(estim.NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(F' +
-        'COAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072 +
-        ' */ '
+        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, 0), IF(FCOAST_NO_NDS<' +
+        '>0, FCOAST_NO_NDS, 0)) AS COAST, /* '#1062#1077#1085#1072' */ '
       
-        '  IF(estim.NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(F' +
-        'PRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' */ '
+        '  IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, 0), IF(FPRICE_NO_NDS<' +
+        '>0, FPRICE_NO_NDS, 0)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
       
-        '  IF(estim.NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF' +
-        '(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /' +
-        '* '#1090#1088#1072#1085#1089#1087'. */ '
+        '  /* IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF(F' +
+        'TRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP,  '#1090#1088 +
+        #1072#1085#1089#1087'. */'
       ''
       
-        '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
-        ' '#1089' '#1053#1044#1057' */'
+        '  IF(FCOAST_NDS<>0, FCOAST_NDS, 0) AS COAST_NDS, /* '#1062#1077#1085#1072' '#1089' '#1053#1044#1057' *' +
+        '/'
       
-        '  IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS) AS COAST_NO_' +
-        'NDS, /* '#1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057' */'
+        '  IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, 0) AS COAST_NO_NDS, /* '#1062#1077#1085 +
+        #1072' '#1073#1077#1079' '#1053#1044#1057' */'
       
-        '  IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS) AS PRICE_NDS, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' '#1089' '#1053#1044#1057' */'
+        '  IF(FPRICE_NDS<>0, FPRICE_NDS, 0) AS PRICE_NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1089' ' +
+        #1053#1044#1057' */'
       
-        '  IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_NO_' +
-        'NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
+        '  IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, 0) AS PRICE_NO_NDS /* '#1057#1090#1086#1080 +
+        #1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
       
-        '  IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS, /* '#1090 +
-        #1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
+        '  /* IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS,  ' +
+        #1090#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
       
-        '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
-        '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
+        '  /* IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRA' +
+        'NSP_NO_NDS '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
       'FROM '
-      '  data_estimate, card_rate, materialcard, estim'
+      '  smetasourcedata, data_estimate, devicescard'
       'WHERE '
-      'data_estimate.ID_TYPE_DATA = 1 AND'
-      'card_rate.ID = data_estimate.ID_TABLES AND'
-      'materialcard.ID_CARD_RATE = card_rate.ID AND'
-      'materialcard.CONSIDERED = 0 AND'
-      'estim.OBJ_ID=:OBJ_ID AND '
-      '((ID_ESTIMATE = estim.SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
-        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
+      'data_estimate.ID_TYPE_DATA = 4 AND'
+      'devicescard.ID = data_estimate.ID_TABLES AND'
+      'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
       ''
-      'UNION ALL'
-      ''
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042#1067#1053#1045#1057#1045#1053#1053#1067#1045' '#1047#1040' '#1056#1040#1057#1062#1045#1053#1050#1059'*/'
-      'SELECT '
-      '  ID_ESTIMATE,'
-      '  2 as ID_TYPE_DATA,'
-      '  materialcard.ID AS ID_TABLES,'
-      '  estim.NDS AS NDS, /* '#1053#1044#1057'*/'
-      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
-      ''
-      '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
-      ''
-      
-        '  IF(estim.NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(F' +
-        'COAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072 +
-        ' */ '
-      
-        '  IF(estim.NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(F' +
-        'PRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' */ '
-      
-        '  IF(estim.NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF' +
-        '(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /' +
-        '* '#1090#1088#1072#1085#1089#1087'. */'
-      ''
-      
-        '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
-        ' '#1089' '#1053#1044#1057' */'
-      
-        '  IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS) AS COAST_NO_' +
-        'NDS, /* '#1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS) AS PRICE_NDS, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' '#1089' '#1053#1044#1057' */'
-      
-        '  IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_NO_' +
-        'NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS, /* '#1090 +
-        #1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
-      
-        '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
-        '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
-      'FROM '
-      '  data_estimate, card_rate, materialcard, estim'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 1 AND'
-      'card_rate.ID = data_estimate.ID_TABLES AND'
-      'materialcard.ID_CARD_RATE = card_rate.ID AND'
-      'materialcard.FROM_RATE = 1 AND'
-      'estim.OBJ_ID=:OBJ_ID AND '
-      '((ID_ESTIMATE = estim.SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
-        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      ''
-      'UNION ALL'
-      ''
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067'*/'
-      'SELECT '
-      '  ID_ESTIMATE,'
-      '  ID_TYPE_DATA,'
-      '  materialcard.ID AS ID_TABLES,'
-      '  estim.NDS AS NDS, /* '#1053#1044#1057'*/'
-      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
-      ''
-      '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
-      ''
-      
-        '  IF(estim.NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(F' +
-        'COAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072 +
-        ' */ '
-      
-        '  IF(estim.NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(F' +
-        'PRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' */ '
-      
-        '  IF(estim.NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF' +
-        '(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /' +
-        '* '#1090#1088#1072#1085#1089#1087'. */'
-      ''
-      
-        '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
-        ' '#1089' '#1053#1044#1057' */'
-      
-        '  IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS) AS COAST_NO_' +
-        'NDS, /* '#1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS) AS PRICE_NDS, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' '#1089' '#1053#1044#1057' */'
-      
-        '  IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_NO_' +
-        'NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS, /* '#1090 +
-        #1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
-      
-        '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
-        '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
-      'FROM '
-      '  data_estimate, materialcard, estim'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 2 AND'
-      'materialcard.ID = data_estimate.ID_TABLES AND'
-      'estim.OBJ_ID=:OBJ_ID AND '
-      '((ID_ESTIMATE = estim.SM_ID) OR  /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = estim.SM_ID)) OR /* '#1051#1086 +
-        #1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = estim.SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      'ORDER BY 1,2')
+      'ORDER BY 5')
     Left = 155
     Top = 168
     ParamData = <
+      item
+        Name = 'NDS'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '1'
+      end
       item
         Name = 'OBJ_ID'
         DataType = ftString
@@ -1906,8 +1766,8 @@ object fCalcResource: TfCalcResource
         Value = '38'
       end>
   end
-  object ds1: TDataSource
-    DataSet = qr1
+  object dsDevices: TDataSource
+    DataSet = qrDevices
     Left = 155
     Top = 216
   end

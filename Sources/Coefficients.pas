@@ -62,7 +62,6 @@ implementation
 uses DataModule, Main, CalculationEstimate;
 
 {$R *.dfm}
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCoefficients.FormCreate(Sender: TObject);
 begin
@@ -91,8 +90,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCoefficients.FormShow(Sender: TObject);
 
 begin
@@ -112,21 +109,15 @@ begin
   FillingFieldsCoefficients;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCoefficients.StringGridTableClick(Sender: TObject);
 begin
   FillingFieldsCoefficients;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCoefficients.StringGridTableDblClick(Sender: TObject);
 begin
   ButtonAddClick(ButtonAdd);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCoefficients.FillingTable;
 var
@@ -139,7 +130,8 @@ begin
     Active := False;
     SQL.Clear;
 
-    StrQuery := 'SELECT coef_id as "Id", coef_name as "Name", osn_zp as "Salary", eksp_mach as "ExploitationCars", ' +
+    StrQuery :=
+      'SELECT coef_id as "Id", coef_name as "Name", osn_zp as "Salary", eksp_mach as "ExploitationCars", ' +
       'mat_res as "MaterialResources", work_pers as "WorkBuilders", work_mach as "WorkMachinist" FROM coef ORDER BY Name;';
 
     SQL.Add(StrQuery);
@@ -188,8 +180,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCoefficients.FillingFieldsCoefficients;
 begin
   with StringGridTable do
@@ -202,8 +192,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCoefficients.ButtonAddClick(Sender: TObject);
 begin
   if FormCalculationEstimate.GetCountCoef = 5 then
@@ -213,16 +201,12 @@ begin
     Close;
   end
   else
-    FormCalculationEstimate.FillingTableSetCoef;
+    FormCalculationEstimate.AddCoefToRate(StrToInt(StringGridTable.Cells[7, StringGridTable.Row]));
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCoefficients.ButtonCancelClick(Sender: TObject);
 begin
   Close;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.

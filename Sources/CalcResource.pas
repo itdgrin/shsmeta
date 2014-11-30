@@ -88,14 +88,14 @@ type
     spl6: TSplitter;
     JvDBGrid2: TJvDBGrid;
     dbmmoNAME2: TDBMemo;
-    pm1: TPopupMenu;
+    pmDevice: TPopupMenu;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
     MenuItem8: TMenuItem;
     MenuItem9: TMenuItem;
     MenuItem10: TMenuItem;
-    qr1: TFDQuery;
-    ds1: TDataSource;
+    qrDevices: TFDQuery;
+    dsDevices: TDataSource;
     qrMaterialDataID_ESTIMATE: TLongWordField;
     qrMaterialDataID_TYPE_DATA: TLongWordField;
     qrMaterialDataID_TABLES: TLongWordField;
@@ -246,7 +246,7 @@ begin
       CloseOpen(qrMechData);
     // Расчет оборудования
     3:
-      CloseOpen(qr1);
+      CloseOpen(qrDevices);
     // Расчет з\п
     4:
       ;
