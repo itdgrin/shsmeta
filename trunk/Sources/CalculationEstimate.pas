@@ -1765,7 +1765,7 @@ begin
       // После изменения ячейки строка пересчитывается и фиксируется
       qrMechanizm.Post;
       // Сохраняем в базе( не требуется так как qrMechanizm напрямую связан таблицей механизмов )
-     // UpdateRowMech;
+      // UpdateRowMech;
     finally
       ReCalcMech := False;
     end;
@@ -1827,49 +1827,42 @@ end;
 procedure TFormCalculationEstimate.ReCalcRowMech;
 begin
   if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
-    qrMechanizmMECH_COUNT.AsFloat :=
-      qrMechanizmMECH_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat
-  else qrMechanizmMECH_COUNT.AsFloat := qrRatesCOUNTFORCALC.AsFloat;
+    qrMechanizmMECH_COUNT.AsFloat := qrMechanizmMECH_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat
+  else
+    qrMechanizmMECH_COUNT.AsFloat := qrRatesCOUNTFORCALC.AsFloat;
 
   qrMechanizmPRICE_NO_NDS.AsInteger :=
     Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NO_NDS.AsInteger);
 
-  qrMechanizmPRICE_NDS.AsInteger :=
-    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NDS.AsInteger);
+  qrMechanizmPRICE_NDS.AsInteger := Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NDS.AsInteger);
 
   qrMechanizmZPPRICE_NO_NDS.AsInteger :=
     Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmZP_MACH_NO_NDS.AsInteger);
 
-  qrMechanizmZPPRICE_NDS.AsInteger :=
-    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmZP_MACH_NDS.AsInteger);
+  qrMechanizmZPPRICE_NDS.AsInteger := Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmZP_MACH_NDS.AsInteger);
 
   // %НДС забит жестко 20%
   if NDSEstimate then
   begin
     qrMechanizmFCOAST_NO_NDS.AsInteger :=
-      Round(qrMechanizmFCOAST_NDS.AsInteger /
-      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+      Round(qrMechanizmFCOAST_NDS.AsInteger / (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
 
     qrMechanizmFZP_MACH_NO_NDS.AsInteger :=
-      Round(qrMechanizmFZP_MACH_NDS.AsInteger /
-      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+      Round(qrMechanizmFZP_MACH_NDS.AsInteger / (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
   end
   else
   begin
     qrMechanizmFCOAST_NDS.AsInteger :=
-      Round(qrMechanizmFCOAST_NO_NDS.AsInteger *
-      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+      Round(qrMechanizmFCOAST_NO_NDS.AsInteger * (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
 
     qrMechanizmFZP_MACH_NDS.AsInteger :=
-      Round(qrMechanizmFZP_MACH_NO_NDS.AsInteger *
-      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+      Round(qrMechanizmFZP_MACH_NO_NDS.AsInteger * (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
   end;
 
   qrMechanizmFPRICE_NO_NDS.AsInteger :=
     Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFCOAST_NO_NDS.AsInteger);
 
-  qrMechanizmFPRICE_NDS.AsInteger :=
-    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFCOAST_NDS.AsInteger);
+  qrMechanizmFPRICE_NDS.AsInteger := Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFCOAST_NDS.AsInteger);
 
   qrMechanizmFZPPRICE_NO_NDS.AsInteger :=
     Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFZP_MACH_NO_NDS.AsInteger);
@@ -1974,7 +1967,7 @@ begin
       qrMechanizm.Edit;
       ReCalcRowMech;
       qrMechanizm.Post;
-      //UpdateRowMech;
+      // UpdateRowMech;
 
       qrMechanizm.Next;
     end;
@@ -1991,9 +1984,9 @@ begin
   // Для пересчета должна быть открыт датасет qrRates, возможно это зря и надо
   // Кол-во сохранять вместе с материалами (механизмами...)
   if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
-    qrMaterialMAT_COUNT.AsFloat :=
-      qrMaterialMAT_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat
-  else qrMaterialMAT_COUNT.AsFloat := qrRatesCOUNTFORCALC.AsFloat;
+    qrMaterialMAT_COUNT.AsFloat := qrMaterialMAT_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat
+  else
+    qrMaterialMAT_COUNT.AsFloat := qrRatesCOUNTFORCALC.AsFloat;
 
   qrMaterialTRANSP_NO_NDS.AsInteger :=
     Round(qrMaterialPROC_TRANSP.AsFloat * qrMaterialCOAST_NO_NDS.AsInteger);
@@ -2249,7 +2242,7 @@ begin
     DataSet.Post;
     // заполняет таблицы справа
     GridRatesRowSellect;
-    //тут глюк CloseOpen(qrCalculations);
+    // тут глюк CloseOpen(qrCalculations);
   end;
 end;
 
@@ -3735,8 +3728,9 @@ begin
   ReCalcMat := False;
 
   if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
-    dbgrdMaterial.Columns[2].Visible := true
-  else dbgrdMaterial.Columns[2].Visible := false;
+    dbgrdMaterial.Columns[2].Visible := True
+  else
+    dbgrdMaterial.Columns[2].Visible := False;
 
   qrMaterial.First;
   qrMaterial.EnableControls;
@@ -3769,8 +3763,9 @@ begin
   qrMechanizm.Active := True;
 
   if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
-    dbgrdMechanizm.Columns[2].Visible := true
-  else dbgrdMechanizm.Columns[2].Visible := false;
+    dbgrdMechanizm.Columns[2].Visible := True
+  else
+    dbgrdMechanizm.Columns[2].Visible := False;
 end;
 
 procedure TFormCalculationEstimate.FillingTableDescription(const vIdNormativ: Integer);
@@ -5332,9 +5327,19 @@ begin
   qrRates.Tag := 1; // Что-бы отключить события по скролу у датасета
   qrRates.Active := False;
   // Заполняет rates_temp
-  qrRates.SQL.Text := 'call GetRates(:pr1, :pr2)';
+  qrRates.SQL.Text := 'call GetRates(:pr1, :pr2, :fn)';
   qrRates.ParamByName('pr1').Value := Str;
-  qrRates.ParamByName('pr2').Value := IdEstimate;
+  if Act then
+  begin
+    qrRates.ParamByName('pr2').Value := IdAct;
+    qrRates.ParamByName('fn').Value := 'ID_ACT';
+  end
+  else
+  begin
+    qrRates.ParamByName('pr2').Value := IdEstimate;
+    qrRates.ParamByName('fn').Value := 'ID_ESTIMATE';
+  end;
+
   qrRates.ExecSQL;
   // Открывает rates_temp
   qrRates.SQL.Text := 'SELECT * FROM rates_temp ORDER BY DID, RID, STYPE, MID, MEID';
@@ -5956,36 +5961,40 @@ begin
     if Column.Index = 1 then
       Brush.Color := $00F0F0FF;
 
-    //Подсветка полей стоимости
-    if Column.Index in [7,8,11,12,16,17,20,21] then
+    // Подсветка полей стоимости
+    if Column.Index in [7, 8, 11, 12, 16, 17, 20, 21] then
     begin
-      //Та стоимость которая используется в расчете подсвечивается берюзовым
-      //другая серым
-      if (Column.Index in [7,8]) then
-      if (qrMechanizmFPRICE_NO_NDS.AsInteger > 0) then
-      Brush.Color := $00DDDDDD
-      else Brush.Color := $00FBFEBC;
+      // Та стоимость которая используется в расчете подсвечивается берюзовым
+      // другая серым
+      if (Column.Index in [7, 8]) then
+        if (qrMechanizmFPRICE_NO_NDS.AsInteger > 0) then
+          Brush.Color := $00DDDDDD
+        else
+          Brush.Color := $00FBFEBC;
 
-      if (Column.Index in [16,17]) then
-      if (qrMechanizmFPRICE_NO_NDS.AsInteger > 0) then
-      Brush.Color := $00FBFEBC
-      else Brush.Color := $00DDDDDD;
+      if (Column.Index in [16, 17]) then
+        if (qrMechanizmFPRICE_NO_NDS.AsInteger > 0) then
+          Brush.Color := $00FBFEBC
+        else
+          Brush.Color := $00DDDDDD;
 
-      if (Column.Index in [11,12]) then
-      if (qrMechanizmFZPPRICE_NO_NDS.AsInteger > 0) then
-      Brush.Color := $00DDDDDD
-      else Brush.Color := $00FBFEBC;
+      if (Column.Index in [11, 12]) then
+        if (qrMechanizmFZPPRICE_NO_NDS.AsInteger > 0) then
+          Brush.Color := $00DDDDDD
+        else
+          Brush.Color := $00FBFEBC;
 
-      if (Column.Index in [20,21]) then
-      if (qrMechanizmFZPPRICE_NO_NDS.AsInteger > 0) then
-      Brush.Color := $00FBFEBC
-      else Brush.Color := $00DDDDDD;
+      if (Column.Index in [20, 21]) then
+        if (qrMechanizmFZPPRICE_NO_NDS.AsInteger > 0) then
+          Brush.Color := $00FBFEBC
+        else
+          Brush.Color := $00DDDDDD;
     end;
 
-    //Подсветка красным пустых значений
+    // Подсветка красным пустых значений
     if (Column.Index in [2, 5, 6]) and (Column.Field.AsFloat = 0) then
     begin
-    Brush.Color := $008080FF;
+      Brush.Color := $008080FF;
     end;
 
     if qrMechanizmSCROLL.AsInteger = 1 then
