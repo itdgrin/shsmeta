@@ -583,7 +583,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           OnBeforeCellPaint = VSTBeforeCellPaint
           OnFocusChanged = VSTFocusChanged
           OnGetText = VSTGetText
-          ExplicitLeft = 6
+          ExplicitLeft = 1
           ExplicitTop = 1
           Columns = <
             item
