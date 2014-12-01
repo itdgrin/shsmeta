@@ -365,7 +365,6 @@ type
     qrDevicesPROC_ZAC: TWordField;
     PopupMenuDevices: TPopupMenu;
     PMDevEdit: TMenuItem;
-    qrMechanizmMECH_KOLVO: TFloatField;
     qrMechanizmMECH_ZPSUM_NO_NDS: TIntegerField;
     qrMechanizmMECH_ZPSUM_NDS: TIntegerField;
     qrMechanizmZPPRICE_NO_NDS: TIntegerField;
@@ -1766,7 +1765,7 @@ begin
       // После изменения ячейки строка пересчитывается и фиксируется
       qrMechanizm.Post;
       // Сохраняем в базе( не требуется так как qrMechanizm напрямую связан таблицей механизмов )
-      // UpdateRowMech;
+     // UpdateRowMech;
     finally
       ReCalcMech := False;
     end;
@@ -1827,39 +1826,56 @@ end;
 // Пересчитывает данные по строке в таблице механизмов
 procedure TFormCalculationEstimate.ReCalcRowMech;
 begin
-  qrMechanizmMECH_COUNT.AsFloat := qrMechanizmMECH_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat;
+  if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
+    qrMechanizmMECH_COUNT.AsFloat :=
+      qrMechanizmMECH_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat
+  else qrMechanizmMECH_COUNT.AsFloat := qrRatesCOUNTFORCALC.AsFloat;
 
   qrMechanizmPRICE_NO_NDS.AsInteger :=
-    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NO_NDS.AsInteger) +
-    qrMechanizmZP_MACH_NO_NDS.AsInteger;
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NO_NDS.AsInteger);
 
-  qrMechanizmPRICE_NDS.AsInteger := Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NDS.AsInteger) +
-    qrMechanizmZP_MACH_NDS.AsInteger;
+  qrMechanizmPRICE_NDS.AsInteger :=
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NDS.AsInteger);
+
+  qrMechanizmZPPRICE_NO_NDS.AsInteger :=
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmZP_MACH_NO_NDS.AsInteger);
+
+  qrMechanizmZPPRICE_NDS.AsInteger :=
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmZP_MACH_NDS.AsInteger);
 
   // %НДС забит жестко 20%
   if NDSEstimate then
   begin
     qrMechanizmFCOAST_NO_NDS.AsInteger :=
-      Round(qrMechanizmFCOAST_NDS.AsInteger / (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+      Round(qrMechanizmFCOAST_NDS.AsInteger /
+      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
 
     qrMechanizmFZP_MACH_NO_NDS.AsInteger :=
-      Round(qrMechanizmFZP_MACH_NDS.AsInteger / (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+      Round(qrMechanizmFZP_MACH_NDS.AsInteger /
+      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
   end
   else
   begin
     qrMechanizmFCOAST_NDS.AsInteger :=
-      Round(qrMechanizmFCOAST_NO_NDS.AsInteger * (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+      Round(qrMechanizmFCOAST_NO_NDS.AsInteger *
+      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
 
     qrMechanizmFZP_MACH_NDS.AsInteger :=
-      Round(qrMechanizmFZP_MACH_NO_NDS.AsInteger * (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+      Round(qrMechanizmFZP_MACH_NO_NDS.AsInteger *
+      (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
   end;
 
   qrMechanizmFPRICE_NO_NDS.AsInteger :=
-    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFCOAST_NO_NDS.AsInteger) +
-    qrMechanizmFZP_MACH_NO_NDS.AsInteger;
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFCOAST_NO_NDS.AsInteger);
 
-  qrMechanizmFPRICE_NDS.AsInteger := Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFCOAST_NDS.AsInteger) +
-    qrMechanizmFZP_MACH_NDS.AsInteger;
+  qrMechanizmFPRICE_NDS.AsInteger :=
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFCOAST_NDS.AsInteger);
+
+  qrMechanizmFZPPRICE_NO_NDS.AsInteger :=
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFZP_MACH_NO_NDS.AsInteger);
+
+  qrMechanizmFZPPRICE_NDS.AsInteger :=
+    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFZP_MACH_NDS.AsInteger);
 
   // Если заданы фактич. используем их, если нет то сметные
   if qrMechanizmFPRICE_NO_NDS.AsInteger > 0 then
@@ -1871,6 +1887,17 @@ begin
   begin
     qrMechanizmMECH_SUM_NO_NDS.AsInteger := qrMechanizmPRICE_NO_NDS.AsInteger;
     qrMechanizmMECH_SUM_NDS.AsInteger := qrMechanizmPRICE_NDS.AsInteger;
+  end;
+
+  if qrMechanizmFZPPRICE_NO_NDS.AsInteger > 0 then
+  begin
+    qrMechanizmMECH_ZPSUM_NO_NDS.AsInteger := qrMechanizmFZPPRICE_NO_NDS.AsInteger;
+    qrMechanizmMECH_ZPSUM_NDS.AsInteger := qrMechanizmFZPPRICE_NDS.AsInteger;
+  end
+  else
+  begin
+    qrMechanizmMECH_ZPSUM_NO_NDS.AsInteger := qrMechanizmZPPRICE_NO_NDS.AsInteger;
+    qrMechanizmMECH_ZPSUM_NDS.AsInteger := qrMechanizmZPPRICE_NDS.AsInteger;
   end;
 end;
 
@@ -1887,7 +1914,11 @@ begin
       'ZP_MACH_NDS = :ZP_MACH_NDS, FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
       'FCOAST_NDS = :FCOAST_NDS, PRICE_NO_NDS = :PRICE_NO_NDS, PRICE_NDS = :PRICE_NDS, ' +
       'FPRICE_NO_NDS = :FPRICE_NO_NDS, FPRICE_NDS = :FPRICE_NDS, ' + 'MECH_SUM_NO_NDS = :MECH_SUM_NO_NDS, ' +
-      'MECH_SUM_NDS = :MECH_SUM_NDS WHERE id = :id;');
+      'MECH_SUM_NDS = :MECH_SUM_NDS, ZPPRICE_NO_NDS = :ZPPRICE_NO_NDS, ' +
+      'ZPPRICE_NDS = :ZPPRICE_NDS, FZPPRICE_NO_NDS = :FZPPRICE_NO_NDS, ' +
+      'FZPPRICE_NDS = :FZPPRICE_NDS, MECH_ZPSUM_NO_NDS = :MECH_ZPSUM_NO_NDS, ' +
+      'MECH_ZPSUM_NDS = :MECH_ZPSUM_NDS, NORMATIV = :NORMATIV, ' +
+      'NORM_TRYD = :NORM_TRYD, TERYDOZATR = :TERYDOZATR WHERE id = :id;');
     ParamByName('MECH_NORMA').Value := qrMechanizmMECH_NORMA.Value;
     ParamByName('MECH_COUNT').Value := qrMechanizmMECH_COUNT.Value;
     ParamByName('COAST_NO_NDS').Value := qrMechanizmCOAST_NO_NDS.Value;
@@ -1903,6 +1934,15 @@ begin
     ParamByName('FPRICE_NDS').Value := qrMechanizmFPRICE_NDS.Value;
     ParamByName('MECH_SUM_NO_NDS').Value := qrMechanizmMECH_SUM_NO_NDS.Value;
     ParamByName('MECH_SUM_NDS').Value := qrMechanizmMECH_SUM_NDS.Value;
+    ParamByName('ZPPRICE_NO_NDS').Value := qrMechanizmZPPRICE_NO_NDS.Value;
+    ParamByName('ZPPRICE_NDS').Value := qrMechanizmZPPRICE_NDS.Value;
+    ParamByName('FZPPRICE_NO_NDS').Value := qrMechanizmFZPPRICE_NO_NDS.Value;
+    ParamByName('FZPPRICE_NDS').Value := qrMechanizmFZPPRICE_NDS.Value;
+    ParamByName('MECH_ZPSUM_NO_NDS').Value := qrMechanizmMECH_ZPSUM_NO_NDS.Value;
+    ParamByName('MECH_ZPSUM_NDS').Value := qrMechanizmMECH_ZPSUM_NDS.Value;
+    ParamByName('NORMATIV').Value := qrMechanizmNORMATIV.Value;
+    ParamByName('NORM_TRYD').Value := qrMechanizmNORM_TRYD.Value;
+    ParamByName('TERYDOZATR').Value := qrMechanizmTERYDOZATR.Value;
     ParamByName('id').Value := qrMechanizmID.Value;
     ExecSQL;
   end;
@@ -1934,7 +1974,7 @@ begin
       qrMechanizm.Edit;
       ReCalcRowMech;
       qrMechanizm.Post;
-      // UpdateRowMech;
+      //UpdateRowMech;
 
       qrMechanizm.Next;
     end;
@@ -1950,7 +1990,10 @@ procedure TFormCalculationEstimate.ReCalcRowMat;
 begin
   // Для пересчета должна быть открыт датасет qrRates, возможно это зря и надо
   // Кол-во сохранять вместе с материалами (механизмами...)
-  qrMaterialMAT_COUNT.AsFloat := qrMaterialMAT_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat;
+  if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
+    qrMaterialMAT_COUNT.AsFloat :=
+      qrMaterialMAT_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat
+  else qrMaterialMAT_COUNT.AsFloat := qrRatesCOUNTFORCALC.AsFloat;
 
   qrMaterialTRANSP_NO_NDS.AsInteger :=
     Round(qrMaterialPROC_TRANSP.AsFloat * qrMaterialCOAST_NO_NDS.AsInteger);
@@ -2168,10 +2211,6 @@ end;
 
 procedure TFormCalculationEstimate.qrRatesAfterScroll(DataSet: TDataSet);
 begin
-  // На всякий случай, что-бы избежать глюков
-  if not CheckQrActiveEmpty(qrRates) then
-    Exit;
-
   // Блокирует лишние действия, если в цикле выполняется работа с qrRates
   if qrRates.Tag <> 1 then
   begin
@@ -2182,6 +2221,10 @@ begin
     qrMechanizm.Active := False;
     qrDevices.Active := False;
     qrDescription.Active := False;
+
+    // На всякий случай, что-бы избежать глюков
+    if not CheckQrActiveEmpty(qrRates) then
+      Exit;
 
     // в режиме добавления строки редактируется код, а не количество
     qrRatesCOUNT.ReadOnly := DataSet.Eof;
@@ -2433,9 +2476,10 @@ begin
   dbgrdMechanizm.Columns[2].ReadOnly := False; // Норма
   dbgrdMechanizm.Columns[5].ReadOnly := False; // ЗП машиниста
   dbgrdMechanizm.Columns[6].ReadOnly := False; // ЗП машиниста
-  dbgrdMechanizm.Columns[7].ReadOnly := False; // Расценка
-  dbgrdMechanizm.Columns[8].ReadOnly := False; // Расценка
-  dbgrdMechanizm.Columns[11].ReadOnly := False; // НДС
+  dbgrdMechanizm.Columns[9].ReadOnly := False; // Расценка
+  dbgrdMechanizm.Columns[10].ReadOnly := False; // Расценка
+  dbgrdMechanizm.Columns[13].ReadOnly := False; // НДС
+  dbgrdMechanizm.Columns[22].ReadOnly := False; // норматив
   MemoRight.Color := $00AFFEFC;
   MemoRight.ReadOnly := False;
   MemoRight.Tag := 3;
@@ -2450,9 +2494,10 @@ begin
     dbgrdMechanizm.Columns[2].ReadOnly := True; // Норма
     dbgrdMechanizm.Columns[5].ReadOnly := True; // ЗП машиниста
     dbgrdMechanizm.Columns[6].ReadOnly := True; // ЗП машиниста
-    dbgrdMechanizm.Columns[7].ReadOnly := True; // Расценка
-    dbgrdMechanizm.Columns[8].ReadOnly := True; // Расценка
-    dbgrdMechanizm.Columns[11].ReadOnly := True; // НДС
+    dbgrdMechanizm.Columns[9].ReadOnly := True; // Расценка
+    dbgrdMechanizm.Columns[10].ReadOnly := True; // Расценка
+    dbgrdMechanizm.Columns[13].ReadOnly := True; // НДС
+    dbgrdMechanizm.Columns[22].ReadOnly := True; // норматив
     MemoRight.Color := clWindow;
     MemoRight.ReadOnly := True;
     MemoRight.Tag := 0;
@@ -2675,17 +2720,28 @@ begin
         SpeedButtonMaterials.Enabled := True;
         SpeedButtonMechanisms.Enabled := True;
         SpeedButtonDescription.Enabled := True;
-
         SpeedButtonEquipments.Enabled := False;
 
-        // Проверка, если активна таблица в которой нет данных,
-        // показываем пустую панель с картинкой
-        if SpeedButtonMaterials.Down then
-          TestOnNoDataNew(qrMaterial)
-        else if SpeedButtonMechanisms.Down then
-          TestOnNoDataNew(qrMechanizm)
+        if SpeedButtonEquipments.Down then
+        begin
+          BtnChange := True;
+          SpeedButtonMaterials.Down := True;
+        end;
+
+        // Нажимаем на кнопку материалов, для отображения таблицы материалов
+        if BtnChange then
+          SpeedButtonMaterialsClick(SpeedButtonMaterials)
         else
-          TestOnNoDataNew(qrDescription);
+        begin
+          // Проверка, если активна таблица в которой нет данных,
+          // показываем пустую панель с картинкой
+          if SpeedButtonMaterials.Down then
+            TestOnNoDataNew(qrMaterial)
+          else if SpeedButtonMechanisms.Down then
+            TestOnNoDataNew(qrMechanizm)
+          else
+            TestOnNoDataNew(qrDescription);
+        end;
         // ----------------------------------------
 
         // Средний разряд рабочих-строителей
@@ -3654,6 +3710,8 @@ begin
   // Заполняет materials_temp
   qrMaterial.SQL.Text := 'call GetMaterials(' + IntToStr(fType) + ',' + IntToStr(fID) + ')';
   qrMaterial.ExecSQL;
+
+  qrMaterial.Active := False;
   // Открывает materials_temp
   qrMaterial.SQL.Text := 'SELECT * FROM materials_temp ORDER BY SRTYPE, TITLE DESC, ID';
   qrMaterial.Active := True;
@@ -3675,6 +3733,11 @@ begin
   end;
   qrMaterialNUM.ReadOnly := True;
   ReCalcMat := False;
+
+  if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
+    dbgrdMaterial.Columns[2].Visible := true
+  else dbgrdMaterial.Columns[2].Visible := false;
+
   qrMaterial.First;
   qrMaterial.EnableControls;
   dbgrdMaterial.Repaint;
@@ -3704,6 +3767,10 @@ begin
     qrMechanizm.ParamByName('IDValue').AsInteger := vIdCardRate;
   end;
   qrMechanizm.Active := True;
+
+  if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
+    dbgrdMechanizm.Columns[2].Visible := true
+  else dbgrdMechanizm.Columns[2].Visible := false;
 end;
 
 procedure TFormCalculationEstimate.FillingTableDescription(const vIdNormativ: Integer);
@@ -3729,8 +3796,8 @@ begin
       SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 1;');
       Active := True;
 
-      if FieldByName('norma').AsVariant <> Null then
-        Result := FieldByName('norma').AsVariant
+      if FieldByName('norma').Value <> Null then
+        Result := FieldByName('norma').AsFloat
       else
         Result := 0;
     end;
@@ -5261,7 +5328,6 @@ begin
   else
     Str := 'data_estimate_temp';
 
-  qrRates.DisableControls;
   // Открытие датасета для заполнения GridRates
   qrRates.Tag := 1; // Что-бы отключить события по скролу у датасета
   qrRates.Active := False;
@@ -5290,13 +5356,12 @@ begin
     qrRates.EnableControls;
   end;
   qrRates.Tag := 0;
+  qrRates.First; // обязательно надо что-бы произошел скрол
   // Подключаем нижеюю таблицу с коэфф.
   CloseOpen(qrCalculations);
-  qrRates.First; // обязательно надо что-бы произошел скрол
+
   if aState = 1 then
     qrRates.Last;
-  qrRates.EnableControls;
-  dbgrdRates.Repaint;
 end;
 
 procedure TFormCalculationEstimate.CopyEstimate;
@@ -5891,12 +5956,12 @@ begin
     if Column.Index = 1 then
       Brush.Color := $00F0F0FF;
 
-    { //Подсветка полей стоимости
-      if Column.Index in [9,10,16,17] then
-      begin
+    //Подсветка полей стоимости
+    if Column.Index in [7,8,11,12,16,17,20,21] then
+    begin
       //Та стоимость которая используется в расчете подсвечивается берюзовым
       //другая серым
-      if (Column.Index in [9,10]) then
+      if (Column.Index in [7,8]) then
       if (qrMechanizmFPRICE_NO_NDS.AsInteger > 0) then
       Brush.Color := $00DDDDDD
       else Brush.Color := $00FBFEBC;
@@ -5905,13 +5970,23 @@ begin
       if (qrMechanizmFPRICE_NO_NDS.AsInteger > 0) then
       Brush.Color := $00FBFEBC
       else Brush.Color := $00DDDDDD;
-      end;
 
-      //Подсветка красным пустых значений
-      if (Column.Index in [2, 7, 8]) and (Column.Field.AsFloat = 0) then
-      begin
-      Brush.Color := $008080FF;
-      end; }
+      if (Column.Index in [11,12]) then
+      if (qrMechanizmFZPPRICE_NO_NDS.AsInteger > 0) then
+      Brush.Color := $00DDDDDD
+      else Brush.Color := $00FBFEBC;
+
+      if (Column.Index in [20,21]) then
+      if (qrMechanizmFZPPRICE_NO_NDS.AsInteger > 0) then
+      Brush.Color := $00FBFEBC
+      else Brush.Color := $00DDDDDD;
+    end;
+
+    //Подсветка красным пустых значений
+    if (Column.Index in [2, 5, 6]) and (Column.Field.AsFloat = 0) then
+    begin
+    Brush.Color := $008080FF;
+    end;
 
     if qrMechanizmSCROLL.AsInteger = 1 then
     begin

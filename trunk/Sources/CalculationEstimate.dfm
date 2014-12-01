@@ -1529,10 +1529,10 @@
               end
               item
                 Expanded = False
-                FieldName = 'MECH_KOLVO'
+                FieldName = 'MECH_COUNT'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1050#1086#1083'-'#1074#1086' '
+                Title.Caption = #1050#1086#1083'-'#1074#1086
                 Width = 60
                 Visible = True
               end
@@ -1577,7 +1577,7 @@
                 FieldName = 'ZP_MACH_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = ' '#1053#1086#1088#1084#1072' '#1047#1055' ('#1057')   '#1089' '#1053#1044#1057', p.'
                 Width = 70
                 Visible = True
               end
@@ -1586,18 +1586,26 @@
                 FieldName = 'ZP_MACH_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = ' '#1053#1086#1088#1084#1072' '#1047#1055' ('#1057')  '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 70
                 Visible = True
               end
               item
                 Expanded = False
                 FieldName = 'ZPPRICE_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057')   '#1089' '#1053#1044#1057', p.'
+                Width = 80
                 Visible = True
               end
               item
                 Expanded = False
                 FieldName = 'ZPPRICE_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Width = 80
                 Visible = True
               end
               item
@@ -1628,18 +1636,26 @@
               item
                 Expanded = False
                 FieldName = 'FPRICE_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1057')      '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 80
                 Visible = True
               end
               item
                 Expanded = False
                 FieldName = 'FPRICE_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 80
                 Visible = True
               end
               item
                 Expanded = False
                 FieldName = 'FZP_MACH_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1060')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = ' '#1053#1086#1088#1084#1072' '#1047#1055' ('#1060')   '#1089' '#1053#1044#1057', p.'
                 Width = 70
                 Visible = True
               end
@@ -1647,18 +1663,53 @@
                 Expanded = False
                 FieldName = 'FZP_MACH_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1060')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = ' '#1053#1086#1088#1084#1072' '#1047#1055' ('#1060')  '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 70
                 Visible = True
               end
               item
                 Expanded = False
                 FieldName = 'FZPPRICE_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1060')   '#1089' '#1053#1044#1057', p.'
+                Width = 80
                 Visible = True
               end
               item
                 Expanded = False
                 FieldName = 'FZPPRICE_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1060')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'NORMATIV'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1086#1088#1084#1072#1090#1080#1074
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'NORM_TRYD'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1086#1088#1084'. '#1090#1088#1091#1076
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TERYDOZATR'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099
+                Width = 80
                 Visible = True
               end
               item
@@ -1675,21 +1726,6 @@
                 Title.Alignment = taCenter
                 Title.Caption = #1047#1072#1082'., %'
                 Width = 40
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'NORMATIV'
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'NORM_TRYD'
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'TERYDOZATR'
                 Visible = True
               end>
           end
@@ -3405,7 +3441,7 @@
       end>
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
-      'SELECT *, 0 as SCROLL, 0 as NUM FROM mechanizmcard'
+      'SELECT *, 0 as SCROLL, 0 as NUM FROM mechanizmcard_temp'
       
         'WHERE ((:Type = 0) and (ID = :IDValue)) or ((:Type = 1) and (ID_' +
         'CARD_RATE = :IDValue)) ORDER BY ID;')
@@ -3470,11 +3506,6 @@
       OnChange = MechRowChange
       currency = True
     end
-    object qrMechanizmMECH_KOLVO: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_KOLVO'
-      Origin = 'MECH_KOLVO'
-    end
     object qrMechanizmMECH_UNIT: TStringField
       AutoGenerateValue = arDefault
       FieldName = 'MECH_UNIT'
@@ -3497,11 +3528,13 @@
       AutoGenerateValue = arDefault
       FieldName = 'MECH_ZPSUM_NO_NDS'
       Origin = 'MECH_ZPSUM_NO_NDS'
+      OnChange = MechRowChange
     end
     object qrMechanizmMECH_ZPSUM_NDS: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'MECH_ZPSUM_NDS'
       Origin = 'MECH_ZPSUM_NDS'
+      OnChange = MechRowChange
     end
     object qrMechanizmCOAST_NO_NDS: TIntegerField
       AutoGenerateValue = arDefault
@@ -3543,11 +3576,13 @@
       AutoGenerateValue = arDefault
       FieldName = 'ZPPRICE_NO_NDS'
       Origin = 'ZPPRICE_NO_NDS'
+      OnChange = MechRowChange
     end
     object qrMechanizmZPPRICE_NDS: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'ZPPRICE_NDS'
       Origin = 'ZPPRICE_NDS'
+      OnChange = MechRowChange
     end
     object qrMechanizmMECH_PRICE: TIntegerField
       AutoGenerateValue = arDefault
@@ -3615,11 +3650,13 @@
       AutoGenerateValue = arDefault
       FieldName = 'FZPPRICE_NO_NDS'
       Origin = 'FZPPRICE_NO_NDS'
+      OnChange = MechRowChange
     end
     object qrMechanizmFZPPRICE_NDS: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'FZPPRICE_NDS'
       Origin = 'FZPPRICE_NDS'
+      OnChange = MechRowChange
     end
     object qrMechanizmNUM: TIntegerField
       FieldKind = fkCalculated
@@ -3657,16 +3694,19 @@
       AutoGenerateValue = arDefault
       FieldName = 'NORMATIV'
       Origin = 'NORMATIV'
+      OnChange = MechRowChange
     end
     object qrMechanizmNORM_TRYD: TFloatField
       AutoGenerateValue = arDefault
       FieldName = 'NORM_TRYD'
       Origin = 'NORM_TRYD'
+      OnChange = MechRowChange
     end
     object qrMechanizmTERYDOZATR: TFloatField
       AutoGenerateValue = arDefault
       FieldName = 'TERYDOZATR'
       Origin = 'TERYDOZATR'
+      OnChange = MechRowChange
     end
   end
   object dsMechanizm: TDataSource
@@ -4185,6 +4225,10 @@
       item
         SourceDataType = dtByteString
         TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
       end>
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.UpdateChangedFields = False
@@ -4192,8 +4236,8 @@
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       
-        'SELECT (0) AS ID, ('#39#1050#1086#1101'-'#1090'. ('#1086#1073#1097#1080#1081' '#1089#1084#1077#1090#1085#1099#1081')'#39') AS NAME, (null) AS ' +
-        'CNT /* '#1050#1086#1083'-'#1074#1086' */,'
+        'SELECT (0) AS ID, ('#39#1050#1086#1101'-'#1090'. ('#1086#1073#1097#1080#1081' '#1089#1084#1077#1090#1085#1099#1081')'#39') AS NAME, 0.0 AS CNT' +
+        ' /* '#1050#1086#1083'-'#1074#1086' */,'
       'COEF_TR_ZATR AS ZP, /* % '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1085#1099#1093' '#1079#1072#1090#1088#1072#1090' '#1080' '#1069#1057#1056' */'
       'COEF_TR_OBOR AS EMiM, /* % '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072' '#1080' '#1079#1089#1088' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103' */'
       
