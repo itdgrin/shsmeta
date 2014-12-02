@@ -1835,7 +1835,7 @@
               end
               item
                 Expanded = False
-                FieldName = 'TRANS_NDS'
+                FieldName = 'TRANSP_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057')  '#1089' '#1053#1044#1057', '#1088'.'
@@ -3432,16 +3432,12 @@
         TargetDataType = dtInt32
       end
       item
-        SourceDataType = dtUInt64
-        TargetDataType = dtInt32
-      end
-      item
-        SourceDataType = dtInt64
+        SourceDataType = dtBCD
         TargetDataType = dtInt32
       end>
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
-      'SELECT *, 0 as SCROLL, 0 as NUM FROM mechanizmcard_temp'
+      'SELECT *, 0.0 as SCROLL, 0.0 as NUM FROM mechanizmcard_temp'
       
         'WHERE ((:Type = 0) and (ID = :IDValue)) or ((:Type = 1) and (ID_' +
         'CARD_RATE = :IDValue)) ORDER BY ID;')
@@ -3512,30 +3508,6 @@
       Origin = 'MECH_UNIT'
       Size = 100
     end
-    object qrMechanizmMECH_SUM_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_SUM_NO_NDS'
-      Origin = 'MECH_SUM_NO_NDS'
-      OnChange = MechRowChange
-    end
-    object qrMechanizmMECH_SUM_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_SUM_NDS'
-      Origin = 'MECH_SUM_NDS'
-      OnChange = MechRowChange
-    end
-    object qrMechanizmMECH_ZPSUM_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_ZPSUM_NO_NDS'
-      Origin = 'MECH_ZPSUM_NO_NDS'
-      OnChange = MechRowChange
-    end
-    object qrMechanizmMECH_ZPSUM_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_ZPSUM_NDS'
-      Origin = 'MECH_ZPSUM_NDS'
-      OnChange = MechRowChange
-    end
     object qrMechanizmCOAST_NO_NDS: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'COAST_NO_NDS'
@@ -3548,18 +3520,6 @@
       Origin = 'COAST_NDS'
       OnChange = MechRowChange
     end
-    object qrMechanizmPRICE_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NO_NDS'
-      Origin = 'PRICE_NO_NDS'
-      OnChange = MechRowChange
-    end
-    object qrMechanizmPRICE_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NDS'
-      Origin = 'PRICE_NDS'
-      OnChange = MechRowChange
-    end
     object qrMechanizmZP_MACH_NO_NDS: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'ZP_MACH_NO_NDS'
@@ -3570,18 +3530,6 @@
       AutoGenerateValue = arDefault
       FieldName = 'ZP_MACH_NDS'
       Origin = 'ZP_MACH_NDS'
-      OnChange = MechRowChange
-    end
-    object qrMechanizmZPPRICE_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'ZPPRICE_NO_NDS'
-      Origin = 'ZPPRICE_NO_NDS'
-      OnChange = MechRowChange
-    end
-    object qrMechanizmZPPRICE_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'ZPPRICE_NDS'
-      Origin = 'ZPPRICE_NDS'
       OnChange = MechRowChange
     end
     object qrMechanizmMECH_PRICE: TIntegerField
@@ -3622,18 +3570,6 @@
       Origin = 'FCOAST_NDS'
       OnChange = MechRowChange
     end
-    object qrMechanizmFPRICE_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'FPRICE_NO_NDS'
-      Origin = 'FPRICE_NO_NDS'
-      OnChange = MechRowChange
-    end
-    object qrMechanizmFPRICE_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'FPRICE_NDS'
-      Origin = 'FPRICE_NDS'
-      OnChange = MechRowChange
-    end
     object qrMechanizmFZP_MACH_NO_NDS: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'FZP_MACH_NO_NDS'
@@ -3645,29 +3581,6 @@
       FieldName = 'FZP_MACH_NDS'
       Origin = 'FZP_MACH_NDS'
       OnChange = MechRowChange
-    end
-    object qrMechanizmFZPPRICE_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'FZPPRICE_NO_NDS'
-      Origin = 'FZPPRICE_NO_NDS'
-      OnChange = MechRowChange
-    end
-    object qrMechanizmFZPPRICE_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'FZPPRICE_NDS'
-      Origin = 'FZPPRICE_NDS'
-      OnChange = MechRowChange
-    end
-    object qrMechanizmNUM: TIntegerField
-      FieldKind = fkCalculated
-      FieldName = 'NUM'
-      Calculated = True
-    end
-    object qrMechanizmSCROLL: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'SCROLL'
-      Origin = 'SCROLL'
-      ProviderFlags = []
     end
     object qrMechanizmNDS: TSmallintField
       DisplayWidth = 3
@@ -3708,6 +3621,78 @@
       Origin = 'TERYDOZATR'
       OnChange = MechRowChange
     end
+    object qrMechanizmMECH_SUM_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_SUM_NO_NDS'
+      Origin = 'MECH_SUM_NO_NDS'
+    end
+    object qrMechanizmMECH_SUM_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_SUM_NDS'
+      Origin = 'MECH_SUM_NDS'
+    end
+    object qrMechanizmMECH_ZPSUM_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_ZPSUM_NO_NDS'
+      Origin = 'MECH_ZPSUM_NO_NDS'
+    end
+    object qrMechanizmMECH_ZPSUM_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'MECH_ZPSUM_NDS'
+      Origin = 'MECH_ZPSUM_NDS'
+    end
+    object qrMechanizmPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NO_NDS'
+      Origin = 'PRICE_NO_NDS'
+    end
+    object qrMechanizmPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NDS'
+      Origin = 'PRICE_NDS'
+    end
+    object qrMechanizmZPPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'ZPPRICE_NO_NDS'
+      Origin = 'ZPPRICE_NO_NDS'
+    end
+    object qrMechanizmZPPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'ZPPRICE_NDS'
+      Origin = 'ZPPRICE_NDS'
+    end
+    object qrMechanizmFPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NO_NDS'
+      Origin = 'FPRICE_NO_NDS'
+    end
+    object qrMechanizmFPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NDS'
+      Origin = 'FPRICE_NDS'
+    end
+    object qrMechanizmFZPPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'FZPPRICE_NO_NDS'
+      Origin = 'FZPPRICE_NO_NDS'
+    end
+    object qrMechanizmFZPPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'FZPPRICE_NDS'
+      Origin = 'FZPPRICE_NDS'
+    end
+    object qrMechanizmSCROLL: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'SCROLL'
+      Origin = 'SCROLL'
+      ProviderFlags = []
+    end
+    object qrMechanizmNUM: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'NUM'
+      Origin = 'NUM'
+      ProviderFlags = []
+    end
   end
   object dsMechanizm: TDataSource
     DataSet = qrMechanizm
@@ -3738,10 +3723,6 @@
       end
       item
         SourceDataType = dtUInt32
-        TargetDataType = dtInt32
-      end
-      item
-        SourceDataType = dtInt64
         TargetDataType = dtInt32
       end>
     SQL.Strings = (
@@ -3795,15 +3776,15 @@
       FieldName = 'REPLACED'
       Origin = 'REPLACED'
     end
-    object qrMaterialFROM_RATE: TByteField
-      AutoGenerateValue = arDefault
-      FieldName = 'FROM_RATE'
-      Origin = 'FROM_RATE'
-    end
     object qrMaterialMAT_ID: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'MAT_ID'
       Origin = 'MAT_ID'
+    end
+    object qrMaterialFROM_RATE: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'FROM_RATE'
+      Origin = 'FROM_RATE'
     end
     object qrMaterialMAT_NAME: TStringField
       AutoGenerateValue = arDefault
@@ -3840,18 +3821,6 @@
       Origin = 'MAT_KOEF'
       OnChange = MatRowChange
     end
-    object qrMaterialMAT_SUM_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'MAT_SUM_NO_NDS'
-      Origin = 'MAT_SUM_NO_NDS'
-      OnChange = MatRowChange
-    end
-    object qrMaterialMAT_SUM_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'MAT_SUM_NDS'
-      Origin = 'MAT_SUM_NDS'
-      OnChange = MatRowChange
-    end
     object qrMaterialCOAST_NO_NDS: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'COAST_NO_NDS'
@@ -3874,24 +3843,6 @@
       AutoGenerateValue = arDefault
       FieldName = 'TRANSP_NO_NDS'
       Origin = 'TRANSP_NO_NDS'
-      OnChange = MatRowChange
-    end
-    object qrMaterialTRANS_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'TRANS_NDS'
-      Origin = 'TRANS_NDS'
-      OnChange = MatRowChange
-    end
-    object qrMaterialPRICE_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NO_NDS'
-      Origin = 'PRICE_NO_NDS'
-      OnChange = MatRowChange
-    end
-    object qrMaterialPRICE_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NDS'
-      Origin = 'PRICE_NDS'
       OnChange = MatRowChange
     end
     object qrMaterialNDS: TIntegerField
@@ -3922,18 +3873,6 @@
       AutoGenerateValue = arDefault
       FieldName = 'FTRANSP_NDS'
       Origin = 'FTRANSP_NDS'
-      OnChange = MatRowChange
-    end
-    object qrMaterialFPRICE_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'FPRICE_NO_NDS'
-      Origin = 'FPRICE_NO_NDS'
-      OnChange = MatRowChange
-    end
-    object qrMaterialFPRICE_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'FPRICE_NDS'
-      Origin = 'FPRICE_NDS'
       OnChange = MatRowChange
     end
     object qrMaterialMAT_ACTIVE: TByteField
@@ -4004,6 +3943,51 @@
       Origin = 'TITLE'
       ProviderFlags = []
       ReadOnly = True
+    end
+    object qrMaterialMAT_SUM_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_SUM_NO_NDS'
+      Origin = 'MAT_SUM_NO_NDS'
+    end
+    object qrMaterialMAT_SUM_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_SUM_NDS'
+      Origin = 'MAT_SUM_NDS'
+    end
+    object qrMaterialMAT_TRANSP_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_TRANSP_NO_NDS'
+      Origin = 'MAT_TRANSP_NO_NDS'
+    end
+    object qrMaterialMAT_TRANSP_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'MAT_TRANSP_NDS'
+      Origin = 'MAT_TRANSP_NDS'
+    end
+    object qrMaterialPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NO_NDS'
+      Origin = 'PRICE_NO_NDS'
+    end
+    object qrMaterialPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NDS'
+      Origin = 'PRICE_NDS'
+    end
+    object qrMaterialFPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NO_NDS'
+      Origin = 'FPRICE_NO_NDS'
+    end
+    object qrMaterialFPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NDS'
+      Origin = 'FPRICE_NDS'
+    end
+    object qrMaterialTRANSP_NDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_NDS'
+      Origin = 'TRANSP_NDS'
     end
   end
   object dsMaterial: TDataSource

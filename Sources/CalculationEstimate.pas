@@ -270,16 +270,8 @@ type
     qrMechanizmFROM_RATE: TByteField;
     qrMechanizmFCOAST_NO_NDS: TIntegerField;
     qrMechanizmFCOAST_NDS: TIntegerField;
-    qrMechanizmPRICE_NO_NDS: TIntegerField;
-    qrMechanizmPRICE_NDS: TIntegerField;
-    qrMechanizmFPRICE_NO_NDS: TIntegerField;
-    qrMechanizmFPRICE_NDS: TIntegerField;
-    qrMechanizmNUM: TIntegerField;
-    qrMechanizmMECH_SUM_NO_NDS: TIntegerField;
-    qrMechanizmMECH_SUM_NDS: TIntegerField;
     HeaderControl1: THeaderControl;
     N8: TMenuItem;
-    qrMechanizmSCROLL: TIntegerField;
     qrRatesCOUNTFORCALC: TFloatField;
     PMMechEdit: TMenuItem;
     qrMechanizmFZP_MACH_NO_NDS: TIntegerField;
@@ -304,21 +296,14 @@ type
     qrMaterialMAT_NORMA: TFloatField;
     qrMaterialMAT_COUNT: TFloatField;
     qrMaterialMAT_UNIT: TStringField;
-    qrMaterialMAT_SUM_NO_NDS: TIntegerField;
-    qrMaterialMAT_SUM_NDS: TIntegerField;
     qrMaterialCOAST_NO_NDS: TIntegerField;
     qrMaterialCOAST_NDS: TIntegerField;
     qrMaterialTRANSP_NO_NDS: TIntegerField;
-    qrMaterialTRANS_NDS: TIntegerField;
-    qrMaterialPRICE_NO_NDS: TIntegerField;
-    qrMaterialPRICE_NDS: TIntegerField;
     qrMaterialNDS: TIntegerField;
     qrMaterialFCOAST_NO_NDS: TIntegerField;
     qrMaterialFCOAST_NDS: TIntegerField;
     qrMaterialFTRANSP_NO_NDS: TIntegerField;
     qrMaterialFTRANSP_NDS: TIntegerField;
-    qrMaterialFPRICE_NO_NDS: TIntegerField;
-    qrMaterialFPRICE_NDS: TIntegerField;
     qrMaterialMAT_ACTIVE: TByteField;
     qrMaterialSTATE_MATERIAL: TShortintField;
     qrMaterialSTATE_TRANSPORT: TByteField;
@@ -365,12 +350,6 @@ type
     qrDevicesPROC_ZAC: TWordField;
     PopupMenuDevices: TPopupMenu;
     PMDevEdit: TMenuItem;
-    qrMechanizmMECH_ZPSUM_NO_NDS: TIntegerField;
-    qrMechanizmMECH_ZPSUM_NDS: TIntegerField;
-    qrMechanizmZPPRICE_NO_NDS: TIntegerField;
-    qrMechanizmZPPRICE_NDS: TIntegerField;
-    qrMechanizmFZPPRICE_NO_NDS: TIntegerField;
-    qrMechanizmFZPPRICE_NDS: TIntegerField;
     qrMechanizmNORMATIV: TFloatField;
     qrMechanizmNORM_TRYD: TFloatField;
     qrMechanizmTERYDOZATR: TFloatField;
@@ -379,6 +358,29 @@ type
     dsCalculations: TDataSource;
     qrRatesESTIMATE_ID: TIntegerField;
     qrRatesOWNER_ID: TIntegerField;
+    qrMaterialMAT_SUM_NO_NDS: TLargeintField;
+    qrMaterialMAT_SUM_NDS: TLargeintField;
+    qrMaterialMAT_TRANSP_NO_NDS: TLargeintField;
+    qrMaterialMAT_TRANSP_NDS: TLargeintField;
+    qrMaterialPRICE_NO_NDS: TLargeintField;
+    qrMaterialPRICE_NDS: TLargeintField;
+    qrMaterialFPRICE_NO_NDS: TLargeintField;
+    qrMaterialFPRICE_NDS: TLargeintField;
+    qrMaterialTRANSP_NDS: TIntegerField;
+    qrMechanizmMECH_SUM_NO_NDS: TLargeintField;
+    qrMechanizmMECH_SUM_NDS: TLargeintField;
+    qrMechanizmMECH_ZPSUM_NO_NDS: TLargeintField;
+    qrMechanizmMECH_ZPSUM_NDS: TLargeintField;
+    qrMechanizmPRICE_NO_NDS: TLargeintField;
+    qrMechanizmPRICE_NDS: TLargeintField;
+    qrMechanizmZPPRICE_NO_NDS: TLargeintField;
+    qrMechanizmZPPRICE_NDS: TLargeintField;
+    qrMechanizmFPRICE_NO_NDS: TLargeintField;
+    qrMechanizmFPRICE_NDS: TLargeintField;
+    qrMechanizmFZPPRICE_NO_NDS: TLargeintField;
+    qrMechanizmFZPPRICE_NDS: TLargeintField;
+    qrMechanizmSCROLL: TIntegerField;
+    qrMechanizmNUM: TIntegerField;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -629,7 +631,6 @@ type
     function CheckMatUnAccountingMatirials: Boolean;
 
     procedure ReCalcRowMat; // Пересчет одного материала
-    procedure UpdateRowMat; // Обновляет строку в БД материала
     procedure ReCalcAllMat; // Пересчет всех материала
     function CheckMatReadOnly: Boolean; // Проверят можно ли редактировать данную строку
     procedure SetMatReadOnly(AValue: Boolean); // Устанавливает режим редактирования
@@ -637,7 +638,6 @@ type
     procedure SetMatNoEditMode; // отключение режима расширенного редактирования механизмов
 
     procedure ReCalcRowMech; // Пересчет одного механизма
-    procedure UpdateRowMech; // Обновляет строку в БД механизмов
     procedure ReCalcAllMech; // Пересчет всех механизмов
     function CheckMechReadOnly: Boolean; // Проверят можно ли редактировать данную строку
     procedure SetMechReadOnly(AValue: Boolean); // Устанавливает режим редактирования
@@ -770,6 +770,8 @@ begin
     VisibleRightTables := '1000';
     SettingVisibleRightTables;
   end;
+
+  VisibleRightTables := '';
 
   ShowHint := True;
 
@@ -1605,6 +1607,16 @@ begin
   end;
 end;
 
+function NDSToNoNDS(aValue: Int64; aNDS: integer): int64;
+begin
+  Result := Round(aValue / (1.000000 + 0.010000 * aNDS));
+end;
+
+function NoNDSToNDS(aValue: Int64; aNDS: integer): int64;
+begin
+ Result := Round(aValue * (1.000000 + 0.010000 * aNDS));
+end;
+
 procedure TFormCalculationEstimate.MatRowChange(Sender: TField);
 begin
   if Sender.IsNull then
@@ -1619,56 +1631,77 @@ begin
     // Пересчет по строке механизма
     try
       // Индивидуальное поведение для конкретных полей
-      if Sender.FieldName = 'MAT_PROC_PODR' then
+      if (Sender.FieldName = 'MAT_PROC_PODR') or
+        (Sender.FieldName = 'MAT_PROC_ZAС') or
+        (Sender.FieldName = 'TRANSP_PROC_PODR') or
+        (Sender.FieldName = 'TRANSP_PROC_ZAC') then
       begin
-        if qrMaterialMAT_PROC_PODR.AsInteger > 100 then
-          qrMaterialMAT_PROC_PODR.AsInteger := 100;
+        if Sender.AsInteger > 100 then
+          Sender.AsInteger := 100;
 
-        if qrMaterialMAT_PROC_PODR.AsInteger < 0 then
-          qrMaterialMAT_PROC_PODR.AsInteger := 0;
+        if Sender.AsInteger < 0 then
+          Sender.AsInteger := 0;
 
-        qrMaterialMAT_PROC_ZAС.AsInteger := 100 - qrMaterialMAT_PROC_PODR.AsInteger;
+        if Sender.FieldName = 'MAT_PROC_PODR' then
+          qrMaterialMAT_PROC_ZAС.AsInteger := 100 - qrMaterialMAT_PROC_PODR.AsInteger;
+        if Sender.FieldName = 'MAT_PROC_PODR' then
+          qrMaterialMAT_PROC_PODR.AsInteger := 100 - qrMaterialMAT_PROC_ZAС.AsInteger;
+        if Sender.FieldName = 'TRANSP_PROC_PODR' then
+          qrMaterialTRANSP_PROC_ZAC.AsInteger := 100 - qrMaterialTRANSP_PROC_PODR.AsInteger;
+        if Sender.FieldName = 'TRANSP_PROC_ZAC' then
+          qrMaterialTRANSP_PROC_PODR.AsInteger := 100 - qrMaterialTRANSP_PROC_ZAC.AsInteger;
       end;
-
-      if Sender.FieldName = 'MAT_PROC_ZAС' then
+      // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
+      if NDSEstimate then
       begin
-        if qrMaterialMAT_PROC_ZAС.AsInteger > 100 then
-          qrMaterialMAT_PROC_ZAС.AsInteger := 100;
-
-        if qrMaterialMAT_PROC_ZAС.AsInteger < 0 then
-          qrMaterialMAT_PROC_ZAС.AsInteger := 0;
-
-        qrMaterialMAT_PROC_PODR.AsInteger := 100 - qrMaterialMAT_PROC_ZAС.AsInteger;
-      end;
-
-      if Sender.FieldName = 'TRANSP_PROC_PODR' then
+        qrMaterialCOAST_NO_NDS.AsLargeInt :=
+          NDSToNoNDS(qrMaterialCOAST_NDS.AsLargeInt, qrMaterialNDS.AsInteger);
+        qrMaterialFCOAST_NO_NDS.AsLargeInt :=
+          NDSToNoNDS(qrMaterialFCOAST_NDS.AsLargeInt, qrMaterialNDS.AsInteger);
+        qrMaterialFTRANSP_NO_NDS.AsLargeInt :=
+          NDSToNoNDS(qrMaterialFTRANSP_NDS.AsLargeInt, qrMaterialNDS.AsInteger);
+      end
+      else
       begin
-        if qrMaterialTRANSP_PROC_PODR.AsInteger > 100 then
-          qrMaterialTRANSP_PROC_PODR.AsInteger := 100;
-
-        if qrMaterialTRANSP_PROC_PODR.AsInteger < 0 then
-          qrMaterialTRANSP_PROC_PODR.AsInteger := 0;
-
-        qrMaterialTRANSP_PROC_ZAC.AsInteger := 100 - qrMaterialTRANSP_PROC_PODR.AsInteger;
+        qrMaterialCOAST_NDS.AsLargeInt :=
+          NoNDSToNDS(qrMaterialCOAST_NO_NDS.AsLargeInt, qrMaterialNDS.AsInteger);
+        qrMaterialFCOAST_NDS.AsLargeInt :=
+          NoNDSToNDS(qrMaterialFCOAST_NO_NDS.AsLargeInt, qrMaterialNDS.AsInteger);
+        qrMaterialFTRANSP_NDS.AsLargeInt :=
+          NoNDSToNDS(qrMaterialFTRANSP_NO_NDS.AsLargeInt, qrMaterialNDS.AsInteger);
       end;
-
-      if Sender.FieldName = 'TRANSP_PROC_ZAC' then
-      begin
-        if qrMaterialTRANSP_PROC_ZAC.AsInteger > 100 then
-          qrMaterialTRANSP_PROC_ZAC.AsInteger := 100;
-
-        if qrMaterialTRANSP_PROC_ZAC.AsInteger < 0 then
-          qrMaterialTRANSP_PROC_ZAC.AsInteger := 0;
-
-        qrMaterialTRANSP_PROC_PODR.AsInteger := 100 - qrMaterialTRANSP_PROC_ZAC.AsInteger;
-      end;
-
-      // Пересчет по строке механизма
-      ReCalcRowMat;
-      // После изменения ячейки строка пересчитывается и фиксируется
+      // После изменения ячейки фиксируется
       qrMaterial.Post;
-      // Сохраняем в базе
-      UpdateRowMat;
+
+      //Обновление в базе (так как датасет не связан с базой напрямую)
+      with qrTemp do
+      begin
+        Active := False;
+        SQL.Clear;
+        SQL.Add('UPDATE materialcard_temp SET COAST_NO_NDS = :COAST_NO_NDS, ' +
+          'COAST_NDS = :COAST_NDS, FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
+          'FCOAST_NDS = :FCOAST_NDS, FTRANSP_NO_NDS = :FTRANSP_NO_NDS, ' +
+          'FTRANSP_NDS = :FTRANSP_NDS, MAT_PROC_ZAС = :MAT_PROC_ZAС, ' +
+          'MAT_PROC_PODR = :MAT_PROC_PODR, TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC, ' +
+          'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, ' +
+          Sender.FieldName + ' = :AA' + Sender.FieldName + ' WHERE id = :id;');
+        ParamByName('COAST_NO_NDS').Value := qrMaterialCOAST_NO_NDS.Value;
+        ParamByName('COAST_NDS').Value := qrMaterialCOAST_NDS.Value;
+        ParamByName('FCOAST_NO_NDS').Value := qrMaterialFCOAST_NO_NDS.Value;
+        ParamByName('FCOAST_NDS').Value := qrMaterialFCOAST_NDS.Value;
+        ParamByName('FTRANSP_NO_NDS').Value := qrMaterialFTRANSP_NO_NDS.Value;
+        ParamByName('FTRANSP_NDS').Value := qrMaterialFTRANSP_NDS.Value;
+        ParamByName('MAT_PROC_ZAС').Value := qrMaterialMAT_PROC_ZAС.Value;
+        ParamByName('MAT_PROC_PODR').Value := qrMaterialMAT_PROC_PODR.Value;
+        ParamByName('TRANSP_PROC_ZAC').Value := qrMaterialTRANSP_PROC_ZAC.Value;
+        ParamByName('TRANSP_PROC_PODR').Value := qrMaterialTRANSP_PROC_PODR.Value;
+        ParamByName('AA' + Sender.FieldName).Value := Sender.Value;
+        ParamByName('id').Value := qrMaterialID.Value;
+        ExecSQL;
+      end;
+
+      // Пересчет по строке материала
+      ReCalcRowMat;
     finally
       ReCalcMat := False;
     end;
@@ -1739,33 +1772,46 @@ begin
     // Пересчет по строке механизма
     try
       // Индивидуальное поведение для конкретных полей
-      if Sender.FieldName = 'PROC_PODR' then
+      if (Sender.FieldName = 'PROC_PODR') or
+         (Sender.FieldName = 'PROC_ZAC') then
       begin
-        if qrMechanizmPROC_PODR.AsInteger > 100 then
-          qrMechanizmPROC_PODR.AsInteger := 100;
-
-        if qrMechanizmPROC_PODR.AsInteger < 0 then
-          qrMechanizmPROC_PODR.AsInteger := 0;
-
-        qrMechanizmPROC_ZAC.AsInteger := 100 - qrMechanizmPROC_PODR.AsInteger;
+        if Sender.AsInteger > 100 then Sender.AsInteger := 100;
+        if Sender.AsInteger < 0 then Sender.AsInteger := 0;
+        if (Sender.FieldName = 'PROC_PODR') then
+          qrMechanizmPROC_ZAC.AsInteger := 100 - qrMechanizmPROC_PODR.AsInteger;
+        if (Sender.FieldName = 'PROC_ZAC') then
+          qrMechanizmPROC_PODR.AsInteger := 100 - qrMechanizmPROC_ZAC.AsInteger;
       end;
 
-      if Sender.FieldName = 'PROC_ZAC' then
+      // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
+      if NDSEstimate then
       begin
-        if qrMechanizmPROC_ZAC.AsInteger > 100 then
-          qrMechanizmPROC_ZAC.AsInteger := 100;
-
-        if qrMechanizmPROC_ZAC.AsInteger < 0 then
-          qrMechanizmPROC_ZAC.AsInteger := 0;
-
-        qrMechanizmPROC_PODR.AsInteger := 100 - qrMechanizmPROC_ZAC.AsInteger;
+        qrMechanizmCOAST_NO_NDS.AsLargeInt :=
+          NDSToNoNDS(qrMechanizmCOAST_NDS.AsLargeInt, qrMechanizmNDS.AsInteger);
+        qrMechanizmFCOAST_NO_NDS.AsLargeInt :=
+          NDSToNoNDS(qrMechanizmFCOAST_NDS.AsLargeInt, qrMechanizmNDS.AsInteger);
+        qrMechanizmZP_MACH_NO_NDS.AsLargeInt :=
+          NDSToNoNDS(qrMechanizmZP_MACH_NDS.AsLargeInt, qrMechanizmNDS.AsInteger);
+        qrMechanizmFZP_MACH_NO_NDS.AsLargeInt :=
+          NDSToNoNDS(qrMechanizmFZP_MACH_NDS.AsLargeInt, qrMechanizmNDS.AsInteger);
+      end
+      else
+      begin
+        qrMechanizmCOAST_NDS.AsLargeInt :=
+          NoNDSToNDS(qrMechanizmCOAST_NO_NDS.AsLargeInt, qrMechanizmNDS.AsInteger);
+        qrMechanizmFCOAST_NDS.AsLargeInt :=
+          NoNDSToNDS(qrMechanizmFCOAST_NO_NDS.AsLargeInt, qrMechanizmNDS.AsInteger);
+        qrMechanizmZP_MACH_NDS.AsLargeInt :=
+          NoNDSToNDS(qrMechanizmZP_MACH_NO_NDS.AsLargeInt, qrMechanizmNDS.AsInteger);
+        qrMechanizmFZP_MACH_NDS.AsLargeInt :=
+          NoNDSToNDS(qrMechanizmFZP_MACH_NO_NDS.AsLargeInt, qrMechanizmNDS.AsInteger);
       end;
+
+      // После изменения ячейки строка фиксируется
+      qrMechanizm.Post;
+
       // Пересчет по строке механизма
       ReCalcRowMech;
-      // После изменения ячейки строка пересчитывается и фиксируется
-      qrMechanizm.Post;
-      // Сохраняем в базе( не требуется так как qrMechanizm напрямую связан таблицей механизмов )
-      // UpdateRowMech;
     finally
       ReCalcMech := False;
     end;
@@ -1826,119 +1872,31 @@ end;
 // Пересчитывает данные по строке в таблице механизмов
 procedure TFormCalculationEstimate.ReCalcRowMech;
 begin
-  if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
-    qrMechanizmMECH_COUNT.AsFloat := qrMechanizmMECH_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat
-  else
-    qrMechanizmMECH_COUNT.AsFloat := qrRatesCOUNTFORCALC.AsFloat;
-
-  qrMechanizmPRICE_NO_NDS.AsInteger :=
-    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NO_NDS.AsInteger);
-
-  qrMechanizmPRICE_NDS.AsInteger := Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmCOAST_NDS.AsInteger);
-
-  qrMechanizmZPPRICE_NO_NDS.AsInteger :=
-    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmZP_MACH_NO_NDS.AsInteger);
-
-  qrMechanizmZPPRICE_NDS.AsInteger := Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmZP_MACH_NDS.AsInteger);
-
-  // %НДС забит жестко 20%
-  if NDSEstimate then
+  qrTemp.Active := false;
+  qrTemp.SQL.Text := 'CALL CalcMech(:id);';
+  qrTemp.ParamByName('id').Value := qrMechanizmID.AsInteger;
+  qrTemp.Active := true;
+  if not qrTemp.IsEmpty then
   begin
-    qrMechanizmFCOAST_NO_NDS.AsInteger :=
-      Round(qrMechanizmFCOAST_NDS.AsInteger / (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
-
-    qrMechanizmFZP_MACH_NO_NDS.AsInteger :=
-      Round(qrMechanizmFZP_MACH_NDS.AsInteger / (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
-  end
-  else
-  begin
-    qrMechanizmFCOAST_NDS.AsInteger :=
-      Round(qrMechanizmFCOAST_NO_NDS.AsInteger * (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
-
-    qrMechanizmFZP_MACH_NDS.AsInteger :=
-      Round(qrMechanizmFZP_MACH_NO_NDS.AsInteger * (1.000000 + 0.010000 * qrMechanizmNDS.AsInteger));
+    qrMechanizm.Edit;
+    qrMechanizmMECH_COUNT.AsFloat := qrTemp.FieldByName('MECH_COUNT').AsFloat;
+    qrMechanizmPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('PRICE_NO_NDS').AsLargeInt;
+    qrMechanizmPRICE_NDS.AsLargeInt := qrTemp.FieldByName('PRICE_NDS').AsLargeInt;
+    qrMechanizmZPPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('ZPPRICE_NO_NDS').AsLargeInt;
+    qrMechanizmZPPRICE_NDS.AsLargeInt := qrTemp.FieldByName('ZPPRICE_NDS').AsLargeInt;
+    qrMechanizmFPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NO_NDS').AsLargeInt;
+    qrMechanizmFPRICE_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NDS').AsLargeInt;
+    qrMechanizmFZPPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('FZPPRICE_NO_NDS').AsLargeInt;
+    qrMechanizmFZPPRICE_NDS.AsLargeInt := qrTemp.FieldByName('FZPPRICE_NDS').AsLargeInt;
+    qrMechanizmMECH_SUM_NO_NDS.AsLargeInt := qrTemp.FieldByName('MECH_SUM_NO_NDS').AsLargeInt;
+    qrMechanizmMECH_SUM_NDS.AsLargeInt := qrTemp.FieldByName('MECH_SUM_NDS').AsLargeInt;
+    qrMechanizmMECH_ZPSUM_NO_NDS.AsLargeInt := qrTemp.FieldByName('MECH_ZPSUM_NO_NDS').AsLargeInt;
+    qrMechanizmMECH_ZPSUM_NDS.AsLargeInt := qrTemp.FieldByName('MECH_ZPSUM_NDS').AsLargeInt;
+    qrMechanizmNORM_TRYD.AsFloat := qrTemp.FieldByName('NORM_TRYD').AsFloat;
+    qrMechanizmTERYDOZATR.AsFloat := qrTemp.FieldByName('TERYDOZATR').AsFloat;
+    qrMechanizm.Post;
   end;
-
-  qrMechanizmFPRICE_NO_NDS.AsInteger :=
-    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFCOAST_NO_NDS.AsInteger);
-
-  qrMechanizmFPRICE_NDS.AsInteger := Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFCOAST_NDS.AsInteger);
-
-  qrMechanizmFZPPRICE_NO_NDS.AsInteger :=
-    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFZP_MACH_NO_NDS.AsInteger);
-
-  qrMechanizmFZPPRICE_NDS.AsInteger :=
-    Round(qrMechanizmMECH_COUNT.AsFloat * qrMechanizmFZP_MACH_NDS.AsInteger);
-
-  // Если заданы фактич. используем их, если нет то сметные
-  if qrMechanizmFPRICE_NO_NDS.AsInteger > 0 then
-  begin
-    qrMechanizmMECH_SUM_NO_NDS.AsInteger := qrMechanizmFPRICE_NO_NDS.AsInteger;
-    qrMechanizmMECH_SUM_NDS.AsInteger := qrMechanizmFPRICE_NDS.AsInteger;
-  end
-  else
-  begin
-    qrMechanizmMECH_SUM_NO_NDS.AsInteger := qrMechanizmPRICE_NO_NDS.AsInteger;
-    qrMechanizmMECH_SUM_NDS.AsInteger := qrMechanizmPRICE_NDS.AsInteger;
-  end;
-
-  if qrMechanizmFZPPRICE_NO_NDS.AsInteger > 0 then
-  begin
-    qrMechanizmMECH_ZPSUM_NO_NDS.AsInteger := qrMechanizmFZPPRICE_NO_NDS.AsInteger;
-    qrMechanizmMECH_ZPSUM_NDS.AsInteger := qrMechanizmFZPPRICE_NDS.AsInteger;
-  end
-  else
-  begin
-    qrMechanizmMECH_ZPSUM_NO_NDS.AsInteger := qrMechanizmZPPRICE_NO_NDS.AsInteger;
-    qrMechanizmMECH_ZPSUM_NDS.AsInteger := qrMechanizmZPPRICE_NDS.AsInteger;
-  end;
-end;
-
-// Обновляет данные в БД по стороке механизмов
-procedure TFormCalculationEstimate.UpdateRowMech;
-begin
-  with qrTemp do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('UPDATE mechanizmcard_temp SET MECH_NORMA = :MECH_NORMA, ' +
-      'MECH_COUNT = :MECH_COUNT, COAST_NO_NDS = :COAST_NO_NDS, ' +
-      'COAST_NDS = :COAST_NDS, NDS = :NDS, ZP_MACH_NO_NDS = :ZP_MACH_NO_NDS, ' +
-      'ZP_MACH_NDS = :ZP_MACH_NDS, FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
-      'FCOAST_NDS = :FCOAST_NDS, PRICE_NO_NDS = :PRICE_NO_NDS, PRICE_NDS = :PRICE_NDS, ' +
-      'FPRICE_NO_NDS = :FPRICE_NO_NDS, FPRICE_NDS = :FPRICE_NDS, ' + 'MECH_SUM_NO_NDS = :MECH_SUM_NO_NDS, ' +
-      'MECH_SUM_NDS = :MECH_SUM_NDS, ZPPRICE_NO_NDS = :ZPPRICE_NO_NDS, ' +
-      'ZPPRICE_NDS = :ZPPRICE_NDS, FZPPRICE_NO_NDS = :FZPPRICE_NO_NDS, ' +
-      'FZPPRICE_NDS = :FZPPRICE_NDS, MECH_ZPSUM_NO_NDS = :MECH_ZPSUM_NO_NDS, ' +
-      'MECH_ZPSUM_NDS = :MECH_ZPSUM_NDS, NORMATIV = :NORMATIV, ' +
-      'NORM_TRYD = :NORM_TRYD, TERYDOZATR = :TERYDOZATR WHERE id = :id;');
-    ParamByName('MECH_NORMA').Value := qrMechanizmMECH_NORMA.Value;
-    ParamByName('MECH_COUNT').Value := qrMechanizmMECH_COUNT.Value;
-    ParamByName('COAST_NO_NDS').Value := qrMechanizmCOAST_NO_NDS.Value;
-    ParamByName('COAST_NDS').Value := qrMechanizmCOAST_NDS.Value;
-    ParamByName('NDS').Value := qrMechanizmNDS.Value;
-    ParamByName('ZP_MACH_NO_NDS').Value := qrMechanizmZP_MACH_NO_NDS.Value;
-    ParamByName('ZP_MACH_NDS').Value := qrMechanizmZP_MACH_NDS.Value;
-    ParamByName('FCOAST_NO_NDS').Value := qrMechanizmFCOAST_NO_NDS.Value;
-    ParamByName('FCOAST_NDS').Value := qrMechanizmFCOAST_NDS.Value;
-    ParamByName('PRICE_NO_NDS').Value := qrMechanizmPRICE_NO_NDS.Value;
-    ParamByName('PRICE_NDS').Value := qrMechanizmPRICE_NDS.Value;
-    ParamByName('FPRICE_NO_NDS').Value := qrMechanizmFPRICE_NO_NDS.Value;
-    ParamByName('FPRICE_NDS').Value := qrMechanizmFPRICE_NDS.Value;
-    ParamByName('MECH_SUM_NO_NDS').Value := qrMechanizmMECH_SUM_NO_NDS.Value;
-    ParamByName('MECH_SUM_NDS').Value := qrMechanizmMECH_SUM_NDS.Value;
-    ParamByName('ZPPRICE_NO_NDS').Value := qrMechanizmZPPRICE_NO_NDS.Value;
-    ParamByName('ZPPRICE_NDS').Value := qrMechanizmZPPRICE_NDS.Value;
-    ParamByName('FZPPRICE_NO_NDS').Value := qrMechanizmFZPPRICE_NO_NDS.Value;
-    ParamByName('FZPPRICE_NDS').Value := qrMechanizmFZPPRICE_NDS.Value;
-    ParamByName('MECH_ZPSUM_NO_NDS').Value := qrMechanizmMECH_ZPSUM_NO_NDS.Value;
-    ParamByName('MECH_ZPSUM_NDS').Value := qrMechanizmMECH_ZPSUM_NDS.Value;
-    ParamByName('NORMATIV').Value := qrMechanizmNORMATIV.Value;
-    ParamByName('NORM_TRYD').Value := qrMechanizmNORM_TRYD.Value;
-    ParamByName('TERYDOZATR').Value := qrMechanizmTERYDOZATR.Value;
-    ParamByName('id').Value := qrMechanizmID.Value;
-    ExecSQL;
-  end;
+  qrTemp.Active := false;
 end;
 
 // Пересчитывает все строки в таблице механизмов
@@ -1963,12 +1921,7 @@ begin
         qrMechanizm.Next;
         Continue;
       end;
-
-      qrMechanizm.Edit;
       ReCalcRowMech;
-      qrMechanizm.Post;
-      // UpdateRowMech;
-
       qrMechanizm.Next;
     end;
     qrMechanizm.RecNo := RecNo;
@@ -1981,105 +1934,27 @@ end;
 // Пересчет одного материала
 procedure TFormCalculationEstimate.ReCalcRowMat;
 begin
-  // Для пересчета должна быть открыт датасет qrRates, возможно это зря и надо
-  // Кол-во сохранять вместе с материалами (механизмами...)
-  if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
-    qrMaterialMAT_COUNT.AsFloat := qrMaterialMAT_NORMA.AsFloat * qrRatesCOUNTFORCALC.AsFloat
-  else
-    qrMaterialMAT_COUNT.AsFloat := qrRatesCOUNTFORCALC.AsFloat;
-
-  qrMaterialTRANSP_NO_NDS.AsInteger :=
-    Round(qrMaterialPROC_TRANSP.AsFloat * qrMaterialCOAST_NO_NDS.AsInteger);
-
-  qrMaterialTRANS_NDS.AsInteger := Round(qrMaterialPROC_TRANSP.AsFloat * qrMaterialCOAST_NDS.AsInteger);
-
-  qrMaterialPRICE_NO_NDS.AsInteger := Round(qrMaterialMAT_COUNT.AsFloat * qrMaterialCOAST_NO_NDS.AsInteger) +
-    qrMaterialTRANSP_NO_NDS.AsInteger;
-
-  qrMaterialPRICE_NDS.AsInteger := Round(qrMaterialMAT_COUNT.AsFloat * qrMaterialCOAST_NDS.AsInteger) +
-    qrMaterialTRANS_NDS.AsInteger;
-
-  if NDSEstimate then
+  qrTemp.Active := false;
+  qrTemp.SQL.Text := 'CALL CalcMat(:id);';
+  qrTemp.ParamByName('id').Value := qrMaterialID.AsInteger;
+  qrTemp.Active := true;
+  if not qrTemp.IsEmpty then
   begin
-    qrMaterialFCOAST_NO_NDS.AsInteger :=
-      Round(qrMaterialFCOAST_NDS.AsInteger / (1.000000 + 0.010000 * qrMaterialNDS.AsInteger));
-
-    qrMaterialFTRANSP_NO_NDS.AsInteger :=
-      Round(qrMaterialFTRANSP_NDS.AsInteger / (1.000000 + 0.010000 * qrMaterialNDS.AsInteger));
-  end
-  else
-  begin
-    qrMaterialFCOAST_NDS.AsInteger :=
-      Round(qrMaterialFCOAST_NO_NDS.AsInteger * (1.000000 + 0.010000 * qrMaterialNDS.AsInteger));
-
-    qrMaterialFTRANSP_NDS.AsInteger :=
-      Round(qrMaterialFTRANSP_NO_NDS.AsInteger * (1.000000 + 0.010000 * qrMaterialNDS.AsInteger));
+    qrMaterial.Edit;
+    qrMaterialMAT_COUNT.AsFloat := qrTemp.FieldByName('MAT_COUNT').AsFloat;
+    qrMaterialTRANSP_NO_NDS.AsInteger := qrTemp.FieldByName('TRANSP_NO_NDS').AsInteger;
+    qrMaterialTRANSP_NDS.AsInteger := qrTemp.FieldByName('TRANSP_NDS').AsInteger;
+    qrMaterialPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('PRICE_NO_NDS').AsLargeInt;
+    qrMaterialPRICE_NDS.AsLargeInt := qrTemp.FieldByName('PRICE_NDS').AsLargeInt;
+    qrMaterialFPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NO_NDS').AsLargeInt;
+    qrMaterialFPRICE_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NDS').AsLargeInt;
+    qrMaterialMAT_SUM_NO_NDS.AsLargeInt := qrTemp.FieldByName('MAT_SUM_NO_NDS').AsLargeInt;
+    qrMaterialMAT_SUM_NDS.AsLargeInt := qrTemp.FieldByName('MAT_SUM_NDS').AsLargeInt;
+    qrMaterialMAT_TRANSP_NO_NDS.AsLargeInt := qrTemp.FieldByName('MAT_TRANSP_NO_NDS').AsLargeInt;
+    qrMaterialMAT_TRANSP_NDS.AsLargeInt := qrTemp.FieldByName('MAT_TRANSP_NDS').AsLargeInt;
+    qrMaterial.Post;
   end;
-
-  qrMaterialFPRICE_NO_NDS.AsInteger := Round(qrMaterialMAT_COUNT.AsFloat * qrMaterialFCOAST_NO_NDS.AsInteger)
-    + qrMaterialFTRANSP_NO_NDS.AsInteger;
-
-  qrMaterialFPRICE_NDS.AsInteger := Round(qrMaterialMAT_COUNT.AsFloat * qrMaterialFCOAST_NDS.AsInteger) +
-    qrMaterialFTRANSP_NDS.AsInteger;
-
-  // Если заданы фактич. используем их, если нет то сметные
-  if qrMaterialFPRICE_NO_NDS.AsInteger > 0 then
-  begin
-    qrMaterialMAT_SUM_NO_NDS.AsInteger := qrMaterialFPRICE_NO_NDS.AsInteger;
-    qrMaterialMAT_SUM_NDS.AsInteger := qrMaterialFPRICE_NDS.AsInteger;
-  end
-  else
-  begin
-    qrMaterialMAT_SUM_NO_NDS.AsInteger := qrMaterialPRICE_NO_NDS.AsInteger;
-    qrMaterialMAT_SUM_NDS.AsInteger := qrMaterialPRICE_NDS.AsInteger;
-  end;
-end;
-
-// Обновляет строку в БД материала
-procedure TFormCalculationEstimate.UpdateRowMat;
-begin
-  with qrTemp do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('UPDATE materialcard_temp SET MAT_NORMA = :MAT_NORMA, ' +
-      'MAT_COUNT = :MAT_COUNT, COAST_NO_NDS = :COAST_NO_NDS, ' +
-      'COAST_NDS = :COAST_NDS, NDS = :NDS, PROC_TRANSP = :PROC_TRANSP, ' +
-      'TRANSP_NO_NDS = :TRANSP_NO_NDS, TRANS_NDS = :TRANS_NDS, ' +
-      'PRICE_NO_NDS = :PRICE_NO_NDS, PRICE_NDS = :PRICE_NDS, ' +
-      'FCOAST_NO_NDS = :FCOAST_NO_NDS, FCOAST_NDS = :FCOAST_NDS, ' +
-      'FTRANSP_NO_NDS = :FTRANSP_NO_NDS, FTRANSP_NDS = :FTRANSP_NDS, ' +
-      'FPRICE_NO_NDS = :FPRICE_NO_NDS, FPRICE_NDS = :FPRICE_NDS, ' +
-      'MAT_PROC_ZAС = :MAT_PROC_ZAС, MAT_PROC_PODR = :MAT_PROC_PODR, ' +
-      'TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC, TRANSP_PROC_PODR = :TRANSP_PROC_PODR, ' +
-      'MAT_KOEF = :MAT_KOEF, MAT_SUM_NO_NDS = :MAT_SUM_NO_NDS, ' +
-      'MAT_SUM_NDS = :MAT_SUM_NDS WHERE id = :id;');
-    ParamByName('MAT_NORMA').Value := qrMaterialMAT_NORMA.Value;
-    ParamByName('MAT_COUNT').Value := qrMaterialMAT_COUNT.Value;
-    ParamByName('COAST_NO_NDS').Value := qrMaterialCOAST_NO_NDS.Value;
-    ParamByName('COAST_NDS').Value := qrMaterialCOAST_NDS.Value;
-    ParamByName('NDS').Value := qrMaterialNDS.Value;
-    ParamByName('PROC_TRANSP').Value := qrMaterialPROC_TRANSP.Value;
-    ParamByName('TRANSP_NO_NDS').Value := qrMaterialTRANSP_NO_NDS.Value;
-    ParamByName('TRANS_NDS').Value := qrMaterialTRANS_NDS.Value;
-    ParamByName('PRICE_NO_NDS').Value := qrMaterialPRICE_NO_NDS.Value;
-    ParamByName('PRICE_NDS').Value := qrMaterialPRICE_NDS.Value;
-    ParamByName('FCOAST_NO_NDS').Value := qrMaterialFCOAST_NO_NDS.Value;
-    ParamByName('FCOAST_NDS').Value := qrMaterialFCOAST_NDS.Value;
-    ParamByName('FTRANSP_NO_NDS').Value := qrMaterialFTRANSP_NO_NDS.Value;
-    ParamByName('FTRANSP_NDS').Value := qrMaterialFTRANSP_NDS.Value;
-    ParamByName('FPRICE_NO_NDS').Value := qrMaterialFPRICE_NO_NDS.Value;
-    ParamByName('FPRICE_NDS').Value := qrMaterialFPRICE_NDS.Value;
-    ParamByName('MAT_PROC_ZAС').Value := qrMaterialMAT_PROC_ZAС.Value;
-    ParamByName('MAT_PROC_PODR').Value := qrMaterialMAT_PROC_PODR.Value;
-    ParamByName('TRANSP_PROC_ZAC').Value := qrMaterialTRANSP_PROC_ZAC.Value;
-    ParamByName('TRANSP_PROC_PODR').Value := qrMaterialTRANSP_PROC_PODR.Value;
-    ParamByName('MAT_KOEF').Value := qrMaterialMAT_KOEF.Value;
-    ParamByName('MAT_SUM_NO_NDS').Value := qrMaterialMAT_SUM_NO_NDS.Value;
-    ParamByName('MAT_SUM_NDS').Value := qrMaterialMAT_SUM_NDS.Value;
-    ParamByName('id').Value := qrMaterialID.Value;
-    ExecSQL;
-  end;
+  qrTemp.Active := false;
 end;
 
 // Пересчет всех материала
@@ -2106,12 +1981,7 @@ begin
         qrMaterial.Next;
         Continue;
       end;
-
-      qrMaterial.Edit;
       ReCalcRowMat;
-      qrMaterial.Post;
-      UpdateRowMat;
-
       qrMaterial.Next;
     end;
     qrMaterial.RecNo := RecNo;
@@ -2715,27 +2585,14 @@ begin
         SpeedButtonDescription.Enabled := True;
         SpeedButtonEquipments.Enabled := False;
 
-        if SpeedButtonEquipments.Down then
-        begin
-          BtnChange := True;
-          SpeedButtonMaterials.Down := True;
-        end;
+        if SpeedButtonMaterials.Down or SpeedButtonEquipments.Down then
+          SpeedButtonMaterialsClick(SpeedButtonMaterials);
 
-        // Нажимаем на кнопку материалов, для отображения таблицы материалов
-        if BtnChange then
-          SpeedButtonMaterialsClick(SpeedButtonMaterials)
-        else
-        begin
-          // Проверка, если активна таблица в которой нет данных,
-          // показываем пустую панель с картинкой
-          if SpeedButtonMaterials.Down then
-            TestOnNoDataNew(qrMaterial)
-          else if SpeedButtonMechanisms.Down then
-            TestOnNoDataNew(qrMechanizm)
-          else
-            TestOnNoDataNew(qrDescription);
-        end;
-        // ----------------------------------------
+        if SpeedButtonMechanisms.Down then
+          SpeedButtonMechanismsClick(SpeedButtonMechanisms);
+
+        if SpeedButtonDescription.Down then
+          SpeedButtonDescriptionClick(SpeedButtonDescription);
 
         // Средний разряд рабочих-строителей
         EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesIDID.AsInteger)));
@@ -2767,10 +2624,7 @@ begin
     2: // МАТЕРИАЛ
       begin
         SpeedButtonMaterials.Enabled := True;
-        if not SpeedButtonMaterials.Down then
-          BtnChange := True;
         SpeedButtonMaterials.Down := True;
-
         SpeedButtonDescription.Enabled := False;
         SpeedButtonMechanisms.Enabled := False;
         SpeedButtonEquipments.Enabled := False;
@@ -2792,8 +2646,7 @@ begin
         end;
 
         // Нажимаем на кнопку материалов, для отображения таблицы материалов
-        if BtnChange then
-          SpeedButtonMaterialsClick(SpeedButtonMaterials);
+        SpeedButtonMaterialsClick(SpeedButtonMaterials);
 
         // Средний разряд рабочих-строителей
         EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
@@ -2821,8 +2674,6 @@ begin
     3: // МЕХАНИЗМ
       begin
         SpeedButtonMechanisms.Enabled := True;
-        if not SpeedButtonMechanisms.Down then
-          BtnChange := True;
         SpeedButtonMechanisms.Down := True;
 
         SpeedButtonMaterials.Enabled := False;
@@ -2833,8 +2684,7 @@ begin
         PanelNoData.Visible := False;
 
         // Нажимаем на кнопку механизмов, для отображения таблицы механизмов
-        if BtnChange then
-          SpeedButtonMechanismsClick(SpeedButtonMechanisms);
+        SpeedButtonMechanismsClick(SpeedButtonMechanisms);
 
         // Затраты труда машинистов
         qrCalculations.ParamByName('trud_mash_two').AsFloat :=
@@ -2859,8 +2709,7 @@ begin
     4: // ОБОРУДОВАНИЕ
       begin
         SpeedButtonEquipments.Enabled := True;
-        if not SpeedButtonEquipments.Down then
-          BtnChange := True;
+        BtnChange := True;
         SpeedButtonEquipments.Down := True;
 
         SpeedButtonMaterials.Enabled := False;
@@ -2871,8 +2720,7 @@ begin
         PanelNoData.Visible := False;
 
         // Нажимаем на кнопку оборудования, для отображения таблицы оборудования
-        if BtnChange then
-          SpeedButtonEquipmentsClick(SpeedButtonEquipments);
+        SpeedButtonEquipmentsClick(SpeedButtonEquipments);
       end;
   end;
   { 4, 5, 6, 7: // ПЕРЕВОЗКА ГРУЗОВ/МУСОРА САМОСВАЛАМИ С310/С311
