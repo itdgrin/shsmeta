@@ -3037,6 +3037,7 @@
   object qrRates: TFDQuery
     BeforeInsert = qrRatesBeforeInsert
     BeforePost = qrRatesBeforePost
+    AfterPost = qrRatesAfterPost
     BeforeScroll = qrRatesBeforeScroll
     AfterScroll = qrRatesAfterScroll
     Connection = DM.Connect
@@ -3410,6 +3411,7 @@
   end
   object qrMechanizm: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
+    AfterPost = qrRatesAfterPost
     BeforeScroll = qrMechanizmBeforeScroll
     AfterScroll = qrMechanizmAfterScroll
     OnCalcFields = qrMechanizmCalcFields
@@ -3701,6 +3703,7 @@
   end
   object qrMaterial: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
+    AfterPost = qrRatesAfterPost
     BeforeScroll = qrMaterialBeforeScroll
     AfterScroll = qrMaterialAfterScroll
     Connection = DM.Connect
@@ -3997,6 +4000,7 @@
   end
   object qrDevices: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
+    AfterPost = qrRatesAfterPost
     BeforeScroll = qrDevicesBeforeScroll
     AfterScroll = qrDevicesAfterScroll
     OnCalcFields = qrDevicesCalcFields

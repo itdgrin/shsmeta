@@ -589,6 +589,7 @@ type
     procedure DevRowChange(Sender: TField);
     procedure dbgrdDevicesExit(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure qrRatesAfterPost(DataSet: TDataSet);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -2070,6 +2071,11 @@ end;
 function TFormCalculationEstimate.CheckMatUnAccountingMatirials: Boolean;
 begin
   Result := qrMaterialCONSIDERED.AsInteger = 0;
+end;
+
+procedure TFormCalculationEstimate.qrRatesAfterPost(DataSet: TDataSet);
+begin
+  CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.qrRatesAfterScroll(DataSet: TDataSet);
