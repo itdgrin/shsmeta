@@ -2598,14 +2598,14 @@ begin
         EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesIDID.AsInteger)));
 
         // Разраты труда рабочих-строителей
-        qrCalculations.ParamByName('trud_two').AsFloat :=
-          GetWorkCostBuilders(IntToStr(qrRatesIDID.AsInteger));
+        //qrCalculations.ParamByName('trud_two').AsFloat :=
+         // GetWorkCostBuilders(IntToStr(qrRatesIDID.AsInteger));
         // R StringGridCalculations.Cells[11, CountCoef + 2] :=
         // R  MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesIDID.AsInteger)));
 
         // Затраты труда машинистов
-        qrCalculations.ParamByName('trud_mash_two').AsFloat :=
-          GetWorkCostMachinists(IntToStr(qrRatesIDID.AsInteger));
+        //qrCalculations.ParamByName('trud_mash_two').AsFloat :=
+        //  GetWorkCostMachinists(IntToStr(qrRatesIDID.AsInteger));
         // R StringGridCalculations.Cells[12, CountCoef + 2] :=
         // R  MyFloatToStr(GetWorkCostMachinists(IntToStr(qrRatesIDID.AsInteger)));
 
@@ -2652,8 +2652,8 @@ begin
         EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
 
         // Разраты труда рабочих-строителей
-        qrCalculations.ParamByName('trud_two').AsFloat :=
-          GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger));
+        //qrCalculations.ParamByName('trud_two').AsFloat :=
+        //  GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger));
         // R StringGridCalculations.Cells[11, CountCoef + 2] :=
         // R   MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
 
@@ -2687,8 +2687,8 @@ begin
         SpeedButtonMechanismsClick(SpeedButtonMechanisms);
 
         // Затраты труда машинистов
-        qrCalculations.ParamByName('trud_mash_two').AsFloat :=
-          GetWorkCostMachinists(IntToStr(qrRatesRATEIDINRATE.AsInteger));
+        //qrCalculations.ParamByName('trud_mash_two').AsFloat :=
+         // GetWorkCostMachinists(IntToStr(qrRatesRATEIDINRATE.AsInteger));
         // R StringGridCalculations.Cells[12, CountCoef + 2] :=
         // R  MyFloatToStr(GetWorkCostMachinists(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
 
@@ -2931,7 +2931,7 @@ end;
 function TFormCalculationEstimate.GetCountCoef(): Integer;
 begin
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'SELECT COUNT(*) AS CNT FROM calculation_coef_temp where id_estimate=:id_estimate';
+  qrTemp.SQL.Text := 'SELECT COUNT(*) AS CNT FROM calculation_coef_temp where id_estimate=:id_estimate and id_owner=:id_owner';
   qrTemp.ParamByName('id_estimate').AsInteger := qrRatesESTIMATE_ID.AsInteger;
   qrTemp.ParamByName('id_owner').AsInteger := qrRatesOWNER_ID.AsInteger;
   qrTemp.Active := True;
@@ -3772,8 +3772,8 @@ begin
   CalculationPercentTransport;
 
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
-  qrCalculations.ParamByName('emim_one').AsFloat := 0;
-  qrCalculations.ParamByName('emim_two').AsFloat := 0;
+  //qrCalculations.ParamByName('emim_one').AsFloat := 0;
+  //qrCalculations.ParamByName('emim_two').AsFloat := 0;
   { R
     with StringGridCalculations do
     begin
@@ -3784,8 +3784,8 @@ begin
 
   // CalculationSalaryMachinist;
   // ЗП маш.
-  qrCalculations.ParamByName('zp_mash_one').AsFloat := 0;
-  qrCalculations.ParamByName('zp_mash_two').AsFloat := 0;
+  //qrCalculations.ParamByName('zp_mash_one').AsFloat := 0;
+  //qrCalculations.ParamByName('zp_mash_two').AsFloat := 0;
   { R
     with StringGridCalculations do
     begin
@@ -3798,8 +3798,8 @@ begin
   // TwoValues := CalculationSalary(IntToStr(RateId));
 
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЗП)
-  qrCalculations.ParamByName('zp_one').AsFloat := TwoValues.ForOne;
-  qrCalculations.ParamByName('zp_two').AsFloat := TwoValues.ForCount;
+  //qrCalculations.ParamByName('zp_one').AsFloat := TwoValues.ForOne;
+  //qrCalculations.ParamByName('zp_two').AsFloat := TwoValues.ForCount;
   { R
     with StringGridCalculations do
     begin
@@ -3834,8 +3834,8 @@ end;
 procedure TFormCalculationEstimate.CalculationMechanizm;
 begin
   // CalculationMR;
-  qrCalculations.ParamByName('mr_one').AsFloat := 0;
-  qrCalculations.ParamByName('mr_two').AsFloat := 0;
+  //qrCalculations.ParamByName('mr_one').AsFloat := 0;
+  //qrCalculations.ParamByName('mr_two').AsFloat := 0;
   { R
     with StringGridCalculations do
     begin
@@ -3845,8 +3845,8 @@ begin
   }
 
   // CalculationPercentTransport;
-  qrCalculations.ParamByName('transp_one').AsFloat := 0;
-  qrCalculations.ParamByName('transp_two').AsFloat := 0;
+  //qrCalculations.ParamByName('transp_one').AsFloat := 0;
+  //qrCalculations.ParamByName('transp_two').AsFloat := 0;
   { R
     with StringGridCalculations do
     begin
@@ -3858,8 +3858,8 @@ begin
   // TwoValues := CalculationEMiM(IntToStr(RateId));
 
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
-  qrCalculations.ParamByName('emim_one').AsFloat := TwoValues.ForOne;
-  qrCalculations.ParamByName('emim_two').AsFloat := TwoValues.ForCount;
+  //qrCalculations.ParamByName('emim_one').AsFloat := TwoValues.ForOne;
+  //qrCalculations.ParamByName('emim_two').AsFloat := TwoValues.ForCount;
   { R
     with StringGridCalculations do
     begin
@@ -3876,8 +3876,8 @@ begin
   // TwoValues := CalculationSalary(IdNormativ);
 
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЗП)
-  qrCalculations.ParamByName('zp_one').AsFloat := 0;
-  qrCalculations.ParamByName('zp_two').AsFloat := 0;
+  //qrCalculations.ParamByName('zp_one').AsFloat := 0;
+  //qrCalculations.ParamByName('zp_two').AsFloat := 0;
   { R
     with StringGridCalculations do
     begin
@@ -3934,7 +3934,7 @@ begin
     TZ1 := GetWorkCostBuilders(vIdNormativ); // Затраты труда рабочий * 1
 
     // Умножение на столбец коэффициентов (ЗП)
-    key := qrCalculations.RecNo;
+    {key := qrCalculations.RecNo;
     qrCalculations.DisableControls;
     try
       qrCalculations.First;
@@ -3947,7 +3947,7 @@ begin
     finally
       qrCalculations.RecNo := key;
       qrCalculations.EnableControls;
-    end;
+    end;   }
 
     // -----------------------------------------
 
@@ -4143,11 +4143,11 @@ begin
       Cells[6, CountCoef + 3] :=
       MyFloatToStr(RoundTo(MyStrToFloatDef(Cells[5, CountCoef + 3], 0) * Percent / 100, PS.RoundTo * -1));
       end;
-    }
+    }   {
     qrCalculations.ParamByName('transp_one').AsFloat :=
       RoundTo(qrCalculations.ParamByName('mr_one').AsFloat * Percent / 100, PS.RoundTo * -1);
     qrCalculations.ParamByName('transp_two').AsFloat :=
-      RoundTo(qrCalculations.ParamByName('mr_two').AsFloat * Percent / 100, PS.RoundTo * -1);
+      RoundTo(qrCalculations.ParamByName('mr_two').AsFloat * Percent / 100, PS.RoundTo * -1); }
   except
     on E: Exception do
       MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' + sLineBreak + sLineBreak +
@@ -4402,6 +4402,7 @@ procedure TFormCalculationEstimate.CalculationOXROPR;
 var
   OXROPR: Double;
 begin
+{
   try
     // Если общий % зимнего удорожания есть в таблице, тогда считаем
     // R if Cells[8, CountCoef + 2] <> '' then
@@ -4420,11 +4421,11 @@ begin
       qrCalculations.ParamByName('ohropr_two').AsFloat := RoundTo(OXROPR, PS.RoundTo * -1);
     end
     else
-    begin
+    begin       }
       { R
         Cells[8, CountCoef + 2] := 'Нет';
         Cells[8, CountCoef + 3] := 'Нет';
-      }
+      } {
       qrCalculations.ParamByName('ohropr_one').Value := Null;
       qrCalculations.ParamByName('ohropr_two').Value := Null;
     end;
@@ -4433,6 +4434,7 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «ОХРиОПР' + '», в таблице вычислений:' + sLineBreak +
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+         }
 end;
 
 procedure TFormCalculationEstimate.CalculationPlanProfit;
@@ -4947,17 +4949,17 @@ begin
 
     if FieldByName('OXRandOPR').AsVariant <> Null then
       // R Cells[8, CountCoef + 2] := MyFloatToStr(FieldByName('OXRandOPR').AsVariant)
-      qrCalculations.ParamByName('ohropr_one').Value := FieldByName('OXRandOPR').AsVariant
+      //qrCalculations.ParamByName('ohropr_one').Value := FieldByName('OXRandOPR').AsVariant
     else
       // R Cells[8, CountCoef + 2] := '0';
-      qrCalculations.ParamByName('ohropr_one').AsFloat := 0;
+      //qrCalculations.ParamByName('ohropr_one').AsFloat := 0;
 
     if FieldByName('PlannedProfit').AsVariant <> Null then
       // R Cells[9, CountCoef + 2] := MyFloatToStr(FieldByName('PlannedProfit').AsVariant)
-      qrCalculations.ParamByName('plan_prib_one').AsFloat := FieldByName('PlannedProfit').AsVariant
+      //qrCalculations.ParamByName('plan_prib_one').AsFloat := FieldByName('PlannedProfit').AsVariant
     else
       // R Cells[9, CountCoef + 2] := '0';
-      qrCalculations.ParamByName('plan_prib_one').AsFloat := 0;
+      //qrCalculations.ParamByName('plan_prib_one').AsFloat := 0;
   end;
 end;
 
@@ -4977,8 +4979,8 @@ begin
         StringGridCalculations.Cells[13, CountCoef + 2] := '0';
         StringGridCalculations.Cells[14, CountCoef + 2] := '0';
       }
-      qrCalculations.ParamByName('zim_udor_one').AsFloat := 0;
-      qrCalculations.ParamByName('zp_zim_udor_one').AsFloat := 0;
+      //qrCalculations.ParamByName('zim_udor_one').AsFloat := 0;
+      //qrCalculations.ParamByName('zp_zim_udor_one').AsFloat := 0;
 
       while not Eof do
       begin
@@ -4989,8 +4991,8 @@ begin
             StringGridCalculations.Cells[13, CountCoef + 2] := MyFloatToStr(FieldByName('Coef').AsVariant);
             StringGridCalculations.Cells[14, CountCoef + 2] := MyFloatToStr(FieldByName('CoefZP').AsVariant);
           }
-          qrCalculations.ParamByName('zim_udor_one').AsFloat := FieldByName('Coef').AsVariant;
-          qrCalculations.ParamByName('zp_zim_udor_one').AsFloat := FieldByName('CoefZP').AsVariant;
+          //qrCalculations.ParamByName('zim_udor_one').AsFloat := FieldByName('Coef').AsVariant;
+          //qrCalculations.ParamByName('zp_zim_udor_one').AsFloat := FieldByName('CoefZP').AsVariant;
           Break;
         end;
 
