@@ -587,7 +587,6 @@ type
     procedure DevRowChange(Sender: TField);
     procedure dbgrdDevicesExit(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure qrRatesAfterPost(DataSet: TDataSet);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -1897,6 +1896,7 @@ begin
     qrMechanizm.Post;
   end;
   qrTemp.Active := false;
+  CloseOpen(qrCalculations);
 end;
 
 // Пересчет одного материала
@@ -1924,6 +1924,7 @@ begin
     qrMaterial.Post;
   end;
   qrTemp.Active := false;
+  CloseOpen(qrCalculations);
 end;
 
 // Пересчет одного оборудование
@@ -1944,6 +1945,7 @@ begin
     qrDevices.Post;
   end;
   qrTemp.Active := false;
+  CloseOpen(qrCalculations);
 end;
 
 // Проверка на неучтеный материал или заменяющий
@@ -1962,11 +1964,6 @@ end;
 function TFormCalculationEstimate.CheckMatUnAccountingMatirials: Boolean;
 begin
   Result := qrMaterialCONSIDERED.AsInteger = 0;
-end;
-
-procedure TFormCalculationEstimate.qrRatesAfterPost(DataSet: TDataSet);
-begin
-  CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.qrRatesAfterScroll(DataSet: TDataSet);
@@ -2141,6 +2138,8 @@ begin
   qrTemp.ExecSQL; }
 
   GridRatesRowLoad;
+
+  CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.N3Click(Sender: TObject);
