@@ -331,20 +331,12 @@ type
     qrDevicesDEVICE_NAME: TStringField;
     qrDevicesDEVICE_COUNT: TFloatField;
     qrDevicesDEVICE_UNIT: TStringField;
-    qrDevicesDEVICE_SUM_NDS: TIntegerField;
-    qrDevicesDEVICE_SUM_NO_NDS: TIntegerField;
     qrDevicesFCOAST_NO_NDS: TIntegerField;
     qrDevicesFCOAST_NDS: TIntegerField;
     qrDevicesNDS: TWordField;
-    qrDevicesFPRICE_NDS: TIntegerField;
-    qrDevicesFPRICE_NO_NDS: TIntegerField;
-    qrDevicesVALUE: TIntegerField;
-    qrDevicesCOEF: TBCDField;
     qrDevicesDOC_DATE: TDateField;
     qrDevicesDOC_NUM: TStringField;
     qrDevicesFACEMAN: TStringField;
-    qrDevicesSCROLL: TIntegerField;
-    qrDevicesNUM: TIntegerField;
     dbgrdDevices: TJvDBGrid;
     qrDevicesPROC_PODR: TWordField;
     qrDevicesPROC_ZAC: TWordField;
@@ -381,6 +373,12 @@ type
     qrMechanizmFZPPRICE_NDS: TLargeintField;
     qrMechanizmSCROLL: TIntegerField;
     qrMechanizmNUM: TIntegerField;
+    qrDevicesDEVICE_SUM_NDS: TLargeintField;
+    qrDevicesDEVICE_SUM_NO_NDS: TLargeintField;
+    qrDevicesFPRICE_NDS: TLargeintField;
+    qrDevicesFPRICE_NO_NDS: TLargeintField;
+    qrDevicesSCROLL: TIntegerField;
+    qrDevicesNUM: TIntegerField;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -632,22 +630,18 @@ type
     function CheckMatUnAccountingMatirials: Boolean;
 
     procedure ReCalcRowMat; // Пересчет одного материала
-    procedure ReCalcAllMat; // Пересчет всех материала
     function CheckMatReadOnly: Boolean; // Проверят можно ли редактировать данную строку
     procedure SetMatReadOnly(AValue: Boolean); // Устанавливает режим редактирования
     procedure SetMatEditMode; // включение режима расширенного редактирования материалов
     procedure SetMatNoEditMode; // отключение режима расширенного редактирования механизмов
 
     procedure ReCalcRowMech; // Пересчет одного механизма
-    procedure ReCalcAllMech; // Пересчет всех механизмов
     function CheckMechReadOnly: Boolean; // Проверят можно ли редактировать данную строку
     procedure SetMechReadOnly(AValue: Boolean); // Устанавливает режим редактирования
     procedure SetMechEditMode; // включение режима расширенного редактирования механизма
     procedure SetMechNoEditMode; // отключение режима расширенного редактирования механизма
 
     procedure ReCalcRowDev; // Пересчет одного оборудование
-    procedure UpdateRowDev; // Обновляет строку в БД оборудование
-    procedure ReCalcAllDev; // Пересчет всех оборудование
     procedure SetDevEditMode; // включение режима расширенного редактирования оборудования
     procedure SetDevNoEditMode; // отключение режима расширенного редактирования оборудования
   public
@@ -695,6 +689,16 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
   CardAct, Tools;
 
 {$R *.dfm}
+
+function NDSToNoNDS(aValue: Int64; aNDS: integer): int64;
+begin
+  Result := Round(aValue / (1.000000 + 0.010000 * aNDS));
+end;
+
+function NoNDSToNDS(aValue: Int64; aNDS: integer): int64;
+begin
+ Result := Round(aValue * (1.000000 + 0.010000 * aNDS));
+end;
 
 { TSplitter }
 procedure TSplitter.Paint();
@@ -1442,33 +1446,37 @@ begin
     // Пересчет по строке оборудования
     try
       // Индивидуальное поведение для конкретных полей
-      if Sender.FieldName = 'PROC_PODR' then
+      if (Sender.FieldName = 'PROC_PODR') or
+         (Sender.FieldName = 'PROC_ZAC') then
       begin
-        if qrDevicesPROC_PODR.AsInteger > 100 then
-          qrDevicesPROC_PODR.AsInteger := 100;
+        if Sender.AsInteger > 100 then
+          Sender.AsInteger := 100;
 
-        if qrDevicesPROC_PODR.AsInteger < 0 then
-          qrDevicesPROC_PODR.AsInteger := 0;
+        if Sender.AsInteger < 0 then
+          Sender.AsInteger := 0;
 
-        qrDevicesPROC_ZAC.AsInteger := 100 - qrDevicesPROC_PODR.AsInteger;
+        if (Sender.FieldName = 'PROC_PODR') then
+          qrDevicesPROC_ZAC.AsInteger := 100 - qrDevicesPROC_PODR.AsInteger;
+
+        if (Sender.FieldName = 'PROC_ZAC') then
+          qrDevicesPROC_PODR.AsInteger := 100 - qrDevicesPROC_ZAC.AsInteger;
       end;
 
-      if Sender.FieldName = 'PROC_ZAC' then
+      if NDSEstimate then
       begin
-        if qrDevicesPROC_ZAC.AsInteger > 100 then
-          qrDevicesPROC_ZAC.AsInteger := 100;
-
-        if qrDevicesPROC_ZAC.AsInteger < 0 then
-          qrDevicesPROC_ZAC.AsInteger := 0;
-
-        qrDevicesPROC_PODR.AsInteger := 100 - qrDevicesPROC_ZAC.AsInteger;
+        qrDevicesFCOAST_NO_NDS.AsInteger :=
+           NDSToNoNDS(qrDevicesFCOAST_NDS.AsInteger, qrDevicesNDS.AsInteger);
+      end
+      else
+      begin
+        qrDevicesFCOAST_NDS.AsInteger :=
+          NoNDSToNDS(qrDevicesFCOAST_NO_NDS.AsInteger, qrDevicesNDS.AsInteger);
       end;
+      // После изменения ячейки строка фиксируется
+      qrDevices.Post;
+
       // Пересчет по строке оборуд
       ReCalcRowDev;
-      // После изменения ячейки строка пересчитывается и фиксируется
-      qrDevices.Post;
-      // Сохраняем в базе( не требуется так как qrDevices напрямую связан таблицей оборудования)
-      // UpdateRowDev;
     finally
       ReCalcDev := False;
     end;
@@ -1606,16 +1614,6 @@ begin
     // закрытие открытой на редактирование строки
     SetMatNoEditMode;
   end;
-end;
-
-function NDSToNoNDS(aValue: Int64; aNDS: integer): int64;
-begin
-  Result := Round(aValue / (1.000000 + 0.010000 * aNDS));
-end;
-
-function NoNDSToNDS(aValue: Int64; aNDS: integer): int64;
-begin
- Result := Round(aValue * (1.000000 + 0.010000 * aNDS));
 end;
 
 procedure TFormCalculationEstimate.MatRowChange(Sender: TField);
@@ -1865,7 +1863,7 @@ begin
         SetMechNoEditMode;
     4:
       if not Assigned(FormCalculationEstimate.ActiveControl) or
-        (FormCalculationEstimate.ActiveControl.Name <> 'dbgrdMechanizm') then
+        (FormCalculationEstimate.ActiveControl.Name <> 'dbgrdDevices') then
         SetDevNoEditMode;
   end;
 end;
@@ -1874,8 +1872,9 @@ end;
 procedure TFormCalculationEstimate.ReCalcRowMech;
 begin
   qrTemp.Active := false;
-  qrTemp.SQL.Text := 'CALL CalcMech(:id);';
+  qrTemp.SQL.Text := 'CALL CalcMech(:id, :getdata);';
   qrTemp.ParamByName('id').Value := qrMechanizmID.AsInteger;
+  qrTemp.ParamByName('getdata').Value := 1;
   qrTemp.Active := true;
   if not qrTemp.IsEmpty then
   begin
@@ -1900,44 +1899,13 @@ begin
   qrTemp.Active := false;
 end;
 
-// Пересчитывает все строки в таблице механизмов
-procedure TFormCalculationEstimate.ReCalcAllMech;
-var
-  RecNo: Integer;
-begin
-  if not qrMechanizm.Active then
-    Exit;
-
-  RecNo := qrMechanizm.RecNo;
-  ReCalcMech := True;
-  // Пересчет по строке механизма
-  try
-    qrMechanizm.DisableControls;
-    qrMechanizm.First;
-    while not qrMechanizm.Eof do
-    begin
-      // Вынесенные из расценки не пересчитываюся
-      if (qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesMEID.AsInteger = 0) then
-      begin
-        qrMechanizm.Next;
-        Continue;
-      end;
-      ReCalcRowMech;
-      qrMechanizm.Next;
-    end;
-    qrMechanizm.RecNo := RecNo;
-  finally
-    ReCalcMech := False;
-    qrMechanizm.EnableControls;
-  end;
-end;
-
 // Пересчет одного материала
 procedure TFormCalculationEstimate.ReCalcRowMat;
 begin
   qrTemp.Active := false;
-  qrTemp.SQL.Text := 'CALL CalcMat(:id);';
+  qrTemp.SQL.Text := 'CALL CalcMat(:id, :getdata);';
   qrTemp.ParamByName('id').Value := qrMaterialID.AsInteger;
+  qrTemp.ParamByName('getdata').Value := 1;
   qrTemp.Active := true;
   if not qrTemp.IsEmpty then
   begin
@@ -1958,101 +1926,24 @@ begin
   qrTemp.Active := false;
 end;
 
-// Пересчет всех материала
-procedure TFormCalculationEstimate.ReCalcAllMat;
-var
-  RecNo: Integer;
-  s: string;
-begin
-  if not qrMaterial.Active then
-    Exit;
-
-  RecNo := qrMaterial.RecNo;
-  ReCalcMat := True;
-  // Пересчет по строке материала
-  try
-    qrMaterial.DisableControls;
-    qrMaterial.First;
-    while not qrMaterial.Eof do
-    begin
-      // Вынесенные из расценки не пересчитываюся и игнорируются заголовки и неучтеные
-      if ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesMID.AsInteger = 0)) or
-        (qrMaterialTITLE.AsInteger > 0) or CheckMatUnAccountingMatirials then
-      begin
-        qrMaterial.Next;
-        Continue;
-      end;
-      ReCalcRowMat;
-      qrMaterial.Next;
-    end;
-    qrMaterial.RecNo := RecNo;
-  finally
-    ReCalcMat := False;
-    qrMaterial.EnableControls;
-  end;
-end;
-
 // Пересчет одного оборудование
 procedure TFormCalculationEstimate.ReCalcRowDev;
 begin
-  // Для пересчета должна быть открыт датасет qrRates, возможно это зря и надо
-  // Кол-во сохранять вместе с материалами (механизмами...)
-  qrDevicesDEVICE_COUNT.AsFloat := qrRatesCOUNTFORCALC.AsFloat;
-
-  if NDSEstimate then
+  qrTemp.Active := false;
+  qrTemp.SQL.Text := 'CALL CalcDevice(:id, :getdata);';
+  qrTemp.ParamByName('id').Value := qrDevicesID.AsInteger;
+  qrTemp.ParamByName('getdata').Value := 1;
+  qrTemp.Active := true;
+  if not qrTemp.IsEmpty then
   begin
-    qrDevicesFCOAST_NO_NDS.AsInteger :=
-      Round(qrDevicesFCOAST_NDS.AsInteger / (1.000000 + 0.010000 * qrDevicesNDS.AsInteger));
-  end
-  else
-  begin
-    qrDevicesFCOAST_NDS.AsInteger :=
-      Round(qrDevicesFCOAST_NO_NDS.AsInteger * (1.000000 + 0.010000 * qrDevicesNDS.AsInteger));
+    qrDevices.Edit;
+    qrDevicesFPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NO_NDS').AsLargeInt;
+    qrDevicesFPRICE_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NDS').AsLargeInt;
+    qrDevicesDEVICE_SUM_NO_NDS.AsLargeInt := qrTemp.FieldByName('DEVICE_SUM_NO_NDS').AsLargeInt;
+    qrDevicesDEVICE_SUM_NDS.AsLargeInt := qrTemp.FieldByName('DEVICE_SUM_NDS').AsLargeInt;
+    qrDevices.Post;
   end;
-
-  qrDevicesFPRICE_NO_NDS.AsInteger := Round(qrDevicesDEVICE_COUNT.AsFloat * qrDevicesFCOAST_NO_NDS.AsInteger);
-
-  qrDevicesFPRICE_NDS.AsInteger := Round(qrDevicesDEVICE_COUNT.AsFloat * qrDevicesFCOAST_NDS.AsInteger);
-
-  qrDevicesDEVICE_SUM_NO_NDS.AsInteger := qrDevicesFPRICE_NO_NDS.AsInteger;
-  qrDevicesDEVICE_SUM_NDS.AsInteger := qrDevicesFPRICE_NDS.AsInteger;
-end;
-
-// Обновляет строку в БД оборудование
-procedure TFormCalculationEstimate.UpdateRowDev;
-begin
-  // Не реализовано, так как UpdateRowDev низде не используется
-end;
-
-// Пересчет всех оборудование
-procedure TFormCalculationEstimate.ReCalcAllDev;
-var
-  RecNo: Integer;
-  s: string;
-begin
-  if not qrDevices.Active then
-    Exit;
-
-  RecNo := qrDevices.RecNo;
-  ReCalcDev := True;
-  // Пересчет по строке оборудования
-  try
-    qrDevices.DisableControls;
-    qrDevices.First;
-    while not qrDevices.Eof do
-    begin
-      qrDevices.Edit;
-      ReCalcRowDev;
-      qrDevices.Post;
-      // UpdateRowDev;
-
-      qrDevices.Next;
-    end;
-    qrDevices.RecNo := RecNo;
-  finally
-    ReCalcDev := False;
-    qrDevices.EnableControls;
-  end;
+  qrTemp.Active := false;
 end;
 
 // Проверка на неучтеный материал или заменяющий
@@ -2238,10 +2129,18 @@ end;
 // пересчитывает все относящееся к строке в таблице расценок
 procedure TFormCalculationEstimate.ReCalcRowRates;
 begin
-  // Если по данной строке чего-то нет, то этот датасет будет закрыт
-  ReCalcAllMat;
-  ReCalcAllMech;
-  ReCalcAllDev;
+  qrTemp.Active := false;
+  qrTemp.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE);';
+  qrTemp.ParamByName('ID').AsInteger := qrRatesIID.AsInteger;
+  qrTemp.ParamByName('TYPE').AsInteger := qrRatesTYPE_DATA.AsInteger;
+  qrTemp.ExecSQL;
+
+  {qrTemp.Active := false;
+  qrTemp.SQL.Text := 'CALL CalcRate(:ID);';
+  qrTemp.ParamByName('ID').AsInteger := qrRatesIID.AsInteger;
+  qrTemp.ExecSQL; }
+
+  GridRatesRowLoad;
 end;
 
 procedure TFormCalculationEstimate.N3Click(Sender: TObject);

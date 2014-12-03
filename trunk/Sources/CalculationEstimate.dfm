@@ -1577,7 +1577,7 @@
                 FieldName = 'ZP_MACH_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1053#1086#1088#1084#1072' '#1047#1055' ('#1057')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057')   '#1089' '#1053#1044#1057', p.'
                 Width = 70
                 Visible = True
               end
@@ -1586,7 +1586,7 @@
                 FieldName = 'ZP_MACH_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1053#1086#1088#1084#1072' '#1047#1055' ('#1057')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057')  '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 70
                 Visible = True
               end
@@ -1638,7 +1638,7 @@
                 FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1057')      '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1060')      '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1647,7 +1647,7 @@
                 FieldName = 'FPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1655,7 +1655,7 @@
                 Expanded = False
                 FieldName = 'FZP_MACH_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1053#1086#1088#1084#1072' '#1047#1055' ('#1060')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1060')   '#1089' '#1053#1044#1057', p.'
                 Width = 70
                 Visible = True
               end
@@ -1663,7 +1663,7 @@
                 Expanded = False
                 FieldName = 'FZP_MACH_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1053#1086#1088#1084#1072' '#1047#1055' ('#1060')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1060')  '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 70
                 Visible = True
               end
@@ -1906,7 +1906,7 @@
                 Expanded = False
                 FieldName = 'FTRANSP_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2476,6 +2476,7 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 6
+    ExplicitLeft = 3
     DesignSize = (
       921
       25)
@@ -3439,7 +3440,7 @@
       end>
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
-      'SELECT *, 0.0 as SCROLL, 0.0 as NUM FROM mechanizmcard_temp'
+      'SELECT *, 0.0 as SCROLL FROM mechanizmcard_temp'
       
         'WHERE ((:Type = 0) and (ID = :IDValue)) or ((:Type = 1) and (ID_' +
         'CARD_RATE = :IDValue)) ORDER BY ID;')
@@ -3691,9 +3692,11 @@
     end
     object qrMechanizmNUM: TIntegerField
       AutoGenerateValue = arDefault
+      FieldKind = fkCalculated
       FieldName = 'NUM'
       Origin = 'NUM'
       ProviderFlags = []
+      Calculated = True
     end
   end
   object dsMechanizm: TDataSource
@@ -4023,18 +4026,14 @@
         TargetDataType = dtInt32
       end
       item
-        SourceDataType = dtUInt64
-        TargetDataType = dtInt32
-      end
-      item
-        SourceDataType = dtInt64
+        SourceDataType = dtBCD
         TargetDataType = dtInt32
       end>
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
       
-        'SELECT *, 0 as SCROLL, 0 as NUM  FROM devicescard_temp WHERE (ID' +
-        ' = :IDValue) ORDER BY ID;')
+        'SELECT *, 0.0 as SCROLL FROM devicescard_temp WHERE (ID = :IDVal' +
+        'ue) ORDER BY ID;')
     Left = 728
     Top = 128
     ParamData = <
@@ -4088,16 +4087,6 @@
       FieldName = 'DEVICE_UNIT'
       Origin = 'DEVICE_UNIT'
     end
-    object qrDevicesDEVICE_SUM_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'DEVICE_SUM_NDS'
-      Origin = 'DEVICE_SUM_NDS'
-    end
-    object qrDevicesDEVICE_SUM_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'DEVICE_SUM_NO_NDS'
-      Origin = 'DEVICE_SUM_NO_NDS'
-    end
     object qrDevicesFCOAST_NO_NDS: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'FCOAST_NO_NDS'
@@ -4116,28 +4105,6 @@
       Origin = 'NDS'
       OnChange = DevRowChange
     end
-    object qrDevicesFPRICE_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'FPRICE_NDS'
-      Origin = 'FPRICE_NDS'
-    end
-    object qrDevicesFPRICE_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'FPRICE_NO_NDS'
-      Origin = 'FPRICE_NO_NDS'
-    end
-    object qrDevicesVALUE: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'VALUE'
-      Origin = 'VALUE'
-    end
-    object qrDevicesCOEF: TBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'COEF'
-      Origin = 'COEF'
-      Precision = 5
-      Size = 2
-    end
     object qrDevicesDOC_DATE: TDateField
       AutoGenerateValue = arDefault
       FieldName = 'DOC_DATE'
@@ -4155,6 +4122,38 @@
       Origin = 'FACEMAN'
       Size = 50
     end
+    object qrDevicesPROC_PODR: TWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'PROC_PODR'
+      Origin = 'PROC_PODR'
+      OnChange = DevRowChange
+    end
+    object qrDevicesPROC_ZAC: TWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'PROC_ZAC'
+      Origin = 'PROC_ZAC'
+      OnChange = DevRowChange
+    end
+    object qrDevicesDEVICE_SUM_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'DEVICE_SUM_NDS'
+      Origin = 'DEVICE_SUM_NDS'
+    end
+    object qrDevicesDEVICE_SUM_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'DEVICE_SUM_NO_NDS'
+      Origin = 'DEVICE_SUM_NO_NDS'
+    end
+    object qrDevicesFPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NDS'
+      Origin = 'FPRICE_NDS'
+    end
+    object qrDevicesFPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NO_NDS'
+      Origin = 'FPRICE_NO_NDS'
+    end
     object qrDevicesSCROLL: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'SCROLL'
@@ -4168,18 +4167,6 @@
       Origin = 'NUM'
       ProviderFlags = []
       Calculated = True
-    end
-    object qrDevicesPROC_PODR: TWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'PROC_PODR'
-      Origin = 'PROC_PODR'
-      OnChange = DevRowChange
-    end
-    object qrDevicesPROC_ZAC: TWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'PROC_ZAC'
-      Origin = 'PROC_ZAC'
-      OnChange = DevRowChange
     end
   end
   object dsDevices: TDataSource
