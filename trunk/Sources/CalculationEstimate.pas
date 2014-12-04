@@ -379,6 +379,10 @@ type
     qrDevicesFPRICE_NO_NDS: TLargeintField;
     qrDevicesSCROLL: TIntegerField;
     qrDevicesNUM: TIntegerField;
+    qrDevicesDEVICE_TRANSP_NO_NDS: TLargeintField;
+    qrDevicesDEVICE_TRANSP_NDS: TLargeintField;
+    qrDevicesTRANSP_PROC_PODR: TWordField;
+    qrDevicesTRANSP_PROC_ZAC: TWordField;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1446,7 +1450,9 @@ begin
     try
       // Индивидуальное поведение для конкретных полей
       if (Sender.FieldName = 'PROC_PODR') or
-         (Sender.FieldName = 'PROC_ZAC') then
+         (Sender.FieldName = 'PROC_ZAC') or
+         (Sender.FieldName = 'TRANSP_PROC_PODR') or
+         (Sender.FieldName = 'TRANSP_PROC_ZAC') then
       begin
         if Sender.AsInteger > 100 then
           Sender.AsInteger := 100;
@@ -1459,17 +1465,27 @@ begin
 
         if (Sender.FieldName = 'PROC_ZAC') then
           qrDevicesPROC_PODR.AsInteger := 100 - qrDevicesPROC_ZAC.AsInteger;
+
+        if (Sender.FieldName = 'TRANSP_PROC_PODR') then
+          qrDevicesTRANSP_PROC_ZAC.AsInteger := 100 - qrDevicesTRANSP_PROC_PODR.AsInteger;
+
+        if (Sender.FieldName = 'TRANSP_PROC_ZAC') then
+          qrDevicesTRANSP_PROC_PODR.AsInteger := 100 - qrDevicesTRANSP_PROC_ZAC.AsInteger;
       end;
 
       if NDSEstimate then
       begin
         qrDevicesFCOAST_NO_NDS.AsInteger :=
            NDSToNoNDS(qrDevicesFCOAST_NDS.AsInteger, qrDevicesNDS.AsInteger);
+        qrDevicesDEVICE_TRANSP_NO_NDS.AsInteger :=
+           NDSToNoNDS(qrDevicesDEVICE_TRANSP_NDS.AsInteger, qrDevicesNDS.AsInteger);
       end
       else
       begin
         qrDevicesFCOAST_NDS.AsInteger :=
           NoNDSToNDS(qrDevicesFCOAST_NO_NDS.AsInteger, qrDevicesNDS.AsInteger);
+        qrDevicesDEVICE_TRANSP_NDS.AsLargeInt :=
+          NoNDSToNDS(qrDevicesDEVICE_TRANSP_NO_NDS.AsLargeInt, qrDevicesNDS.AsInteger);
       end;
       // После изменения ячейки строка фиксируется
       qrDevices.Post;
@@ -2131,11 +2147,6 @@ begin
   qrTemp.ParamByName('ID').AsInteger := qrRatesIID.AsInteger;
   qrTemp.ParamByName('TYPE').AsInteger := qrRatesTYPE_DATA.AsInteger;
   qrTemp.ExecSQL;
-
-  {qrTemp.Active := false;
-  qrTemp.SQL.Text := 'CALL CalcRate(:ID);';
-  qrTemp.ParamByName('ID').AsInteger := qrRatesIID.AsInteger;
-  qrTemp.ExecSQL; }
 
   GridRatesRowLoad;
 
@@ -4798,10 +4809,12 @@ begin
   begin
     // в зависимости от ндс скрывает одни и показывает другие калонки
     Columns[5].Visible := aNDS; // цена факт
-    Columns[7].Visible := aNDS; // стоим факт
+    Columns[7].Visible := aNDS; // Трансп
+    Columns[9].Visible := aNDS; // стоим факт
 
     Columns[6].Visible := not aNDS;
     Columns[8].Visible := not aNDS;
+    Columns[10].Visible := not aNDS;
   end;
 
 end;
@@ -5565,7 +5578,7 @@ begin
       Brush.Color := $00F0F0FF;
 
     // Подсветка полей стоимости
-    if Column.Index in [7, 8] then
+    if Column.Index in [9, 10] then
     begin
       Brush.Color := $00FBFEBC;
     end;
