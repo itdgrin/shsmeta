@@ -2846,9 +2846,10 @@ end;
 function TFormCalculationEstimate.GetCountCoef(): Integer;
 begin
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'SELECT COUNT(*) AS CNT FROM calculation_coef_temp where id_estimate=:id_estimate and id_owner=:id_owner';
+  qrTemp.SQL.Text := 'SELECT COUNT(*) AS CNT FROM calculation_coef_temp where id_estimate=:id_estimate and id_owner=:id_owner and id_type_data=:id_type_data';
   qrTemp.ParamByName('id_estimate').AsInteger := qrRatesESTIMATE_ID.AsInteger;
   qrTemp.ParamByName('id_owner').AsInteger := qrRatesOWNER_ID.AsInteger;
+  qrTemp.ParamByName('id_type_data').AsInteger := qrRatesTYPE_DATA.AsInteger;
   qrTemp.Active := True;
   Result := qrTemp.FieldByName('CNT').AsInteger;
   qrTemp.Active := False;
@@ -5469,11 +5470,12 @@ procedure TFormCalculationEstimate.AddCoefToRate(coef_id: Integer);
 begin
   qrTemp.Active := False;
   qrTemp.SQL.Text :=
-    'INSERT INTO calculation_coef_temp(id_estimate,id_owner,id_coef,COEF_NAME,COEF_VALUE,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH)'#13
-    + 'SELECT :id_estimate, :id_owner, coef_id,COEF_NAME,COEF_VALUE,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH'#13
+    'INSERT INTO calculation_coef_temp(id_estimate,id_type_data,id_owner,id_coef,COEF_NAME,COEF_VALUE,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH)'#13
+    + 'SELECT :id_estimate, :id_type_data, :id_owner, coef_id,COEF_NAME,COEF_VALUE,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH'#13
     + 'FROM coef WHERE coef.coef_id=:coef_id';
   qrTemp.ParamByName('id_estimate').AsInteger := IdEstimate;
   qrTemp.ParamByName('id_owner').AsInteger := qrRates.FieldByName('owner_id').AsInteger;
+  qrTemp.ParamByName('id_type_data').AsInteger := qrRatesTYPE_DATA.AsInteger;
   qrTemp.ParamByName('coef_id').AsInteger := coef_id;
   qrTemp.ExecSQL;
   CloseOpen(qrCalculations);
