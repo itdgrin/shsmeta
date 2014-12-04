@@ -1578,7 +1578,7 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057')   '#1089' '#1053#1044#1057', p.'
-                Width = 70
+                Width = 75
                 Visible = True
               end
               item
@@ -1587,7 +1587,7 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057')  '#1073#1077#1079' '#1053#1044#1057', p.'
-                Width = 70
+                Width = 75
                 Visible = True
               end
               item
@@ -1656,7 +1656,7 @@
                 FieldName = 'FZP_MACH_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1060')   '#1089' '#1053#1044#1057', p.'
-                Width = 70
+                Width = 75
                 Visible = True
               end
               item
@@ -1664,7 +1664,7 @@
                 FieldName = 'FZP_MACH_NO_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1060')  '#1073#1077#1079' '#1053#1044#1057', p.'
-                Width = 70
+                Width = 75
                 Visible = True
               end
               item
@@ -2063,6 +2063,22 @@
               end
               item
                 Expanded = False
+                FieldName = 'DEVICE_TRANSP_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060')  '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'DEVICE_TRANSP_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
                 FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
@@ -2083,16 +2099,32 @@
                 Expanded = False
                 FieldName = 'PROC_PODR'
                 Title.Alignment = taCenter
-                Title.Caption = #1055#1086#1076#1088'., %'
-                Width = 40
+                Title.Caption = #1054#1073'. '#1087#1086#1076#1088', %'
+                Width = 50
                 Visible = True
               end
               item
                 Expanded = False
                 FieldName = 'PROC_ZAC'
                 Title.Alignment = taCenter
-                Title.Caption = #1047#1072#1082'., %'
-                Width = 40
+                Title.Caption = #1054#1073'. '#1079#1072#1082'., %'
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_PROC_PODR'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089'. '#1087#1086#1076#1088', %'
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_PROC_ZAC'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089'. '#1079#1072#1082', %'
+                Width = 50
                 Visible = True
               end>
           end
@@ -4129,6 +4161,18 @@
       Origin = 'PROC_ZAC'
       OnChange = DevRowChange
     end
+    object qrDevicesTRANSP_PROC_ZAC: TWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_PROC_ZAC'
+      Origin = 'TRANSP_PROC_ZAC'
+      OnChange = DevRowChange
+    end
+    object qrDevicesTRANSP_PROC_PODR: TWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_PROC_PODR'
+      Origin = 'TRANSP_PROC_PODR'
+      OnChange = DevRowChange
+    end
     object qrDevicesDEVICE_SUM_NDS: TLargeintField
       AutoGenerateValue = arDefault
       FieldName = 'DEVICE_SUM_NDS'
@@ -4148,6 +4192,18 @@
       AutoGenerateValue = arDefault
       FieldName = 'FPRICE_NO_NDS'
       Origin = 'FPRICE_NO_NDS'
+    end
+    object qrDevicesDEVICE_TRANSP_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'DEVICE_TRANSP_NO_NDS'
+      Origin = 'DEVICE_TRANSP_NO_NDS'
+      OnChange = DevRowChange
+    end
+    object qrDevicesDEVICE_TRANSP_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'DEVICE_TRANSP_NDS'
+      Origin = 'DEVICE_TRANSP_NDS'
+      OnChange = DevRowChange
     end
     object qrDevicesSCROLL: TIntegerField
       AutoGenerateValue = arDefault
