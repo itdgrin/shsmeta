@@ -58,6 +58,8 @@ type
     ADOQueryDump: TFDQuery;
     ADOQueryRegionDump: TFDQuery;
     ADOQueryTemp: TFDQuery;
+    lbl1: TLabel;
+    edtKZP: TEdit;
 
     procedure FormShow(Sender: TObject);
 
@@ -70,6 +72,7 @@ type
     procedure GetValueCoefOrders;
     // Получаем флаг состояния (применять/ не применять) коэффициента по приказам
     procedure SetValueCoefOrders;
+    procedure lbl1Click(Sender: TObject);
     // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
 
   private
@@ -132,7 +135,7 @@ begin
   begin
     Active := False;
     SQL.Clear;
-    SQL.Add('SELECT coef_tr_zatr, coef_tr_obor, k40, k41, k31, k32, k33, k34, nds, stavka_id, date, dump_id '
+    SQL.Add('SELECT coef_tr_zatr, coef_tr_obor, k40, k41, k31, k32, k33, k34, nds, kzp, stavka_id, date, dump_id '
       + 'FROM smetasourcedata WHERE sm_id = :sm_id;');
     ParamByName('sm_id').Value := IdEstimate;
     Active := True;
@@ -145,7 +148,8 @@ begin
     EditK32.Text := MyFloatToStr(FieldByName('K32').AsFloat);
     EditK33.Text := MyFloatToStr(FieldByName('K33').AsFloat);
     EditK34.Text := MyFloatToStr(FieldByName('K34').AsFloat);
-    
+    edtKZP.Text := MyFloatToStr(FieldByName('kzp').AsFloat);
+
     ComboBoxVAT.ItemIndex := FieldByName('nds').AsVariant;
 
     IdStavka := FieldByName('stavka_id').AsVariant;
@@ -278,7 +282,7 @@ begin
       SQL.Clear;
       SQL.Add('UPDATE smetasourcedata SET stavka_id = :stavka_id, coef_tr_zatr = :coef_tr_zatr, ' +
         'coef_tr_obor = :coef_tr_obor, k40 = :k40, k41 = :k41, k31 = :k31, k32 = :k32, k33 = :k33, k34 = :k34, '
-        + 'nds = :nds, dump_id = :dump_id WHERE sm_id = :sm_id;');
+        + 'nds = :nds, dump_id = :dump_id, kzp = :kzp WHERE sm_id = :sm_id;');
 
       ParamByName('stavka_id').Value := IdStavka;
       ParamByName('coef_tr_zatr').Value := EditPercentTransport.Text;
@@ -289,6 +293,7 @@ begin
       ParamByName('k32').Value := EditK32.Text;
       ParamByName('k33').Value := EditK33.Text;
       ParamByName('k34').Value := EditK34.Text;
+      ParamByName('kzp').Value := edtKZP.Text;
       ParamByName('nds').Value := ComboBoxVAT.ItemIndex;
       ParamByName('dump_id').Value := DBLookupComboBoxDump.KeyValue;
       ParamByName('sm_id').Value := IdEstimate;
@@ -384,6 +389,11 @@ begin
         RadioGroupCoefOrders.ItemIndex := 0;
     end;
   end;
+end;
+
+procedure TFormBasicData.lbl1Click(Sender: TObject);
+begin
+
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -4,7 +4,7 @@ object FormBasicData: TFormBasicData
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
-  ClientHeight = 558
+  ClientHeight = 577
   ClientWidth = 327
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,7 +16,7 @@ object FormBasicData: TFormBasicData
   OnShow = FormShow
   DesignSize = (
     327
-    558)
+    577)
   PixelsPerInch = 96
   TextHeight = 13
   object LabelPercentTransportEquipment: TLabel
@@ -28,7 +28,7 @@ object FormBasicData: TFormBasicData
   end
   object LabelK40: TLabel
     Left = 8
-    Top = 224
+    Top = 241
     Width = 190
     Height = 26
     Caption = #1050'-'#1092' '#1082' '#1079#1072#1088#1087#1083#1072#1090#1077' '#1085#1072' '#1082#1072#1084#1077#1085#1085#1099#1077' '#1088#1072#1073#1086#1090#1099' ('#1087#1088#1080#1082'. '#8470'350) '#1050'40:'
@@ -36,28 +36,28 @@ object FormBasicData: TFormBasicData
   end
   object LabelK31: TLabel
     Left = 8
-    Top = 304
+    Top = 321
     Width = 183
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1054#1061#1056' '#1080' '#1054#1055#1056' ('#1087#1088#1080#1082'. '#8470'270) '#1050'31:'
   end
   object LabelK32: TLabel
     Left = 8
-    Top = 331
+    Top = 348
     Width = 225
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1087#1083#1072#1085#1086#1074#1086#1081' '#1087#1088#1080#1073#1099#1083#1080' ('#1087#1088#1080#1082'. '#8470'270) '#1050'32:'
   end
   object LabelK33: TLabel
     Left = 8
-    Top = 358
+    Top = 375
     Width = 186
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1074#1088#1077#1084#1077#1085#1085#1099#1084' ('#1087#1088#1080#1082'. '#8470'270) '#1050'33:'
   end
   object LabelK34: TLabel
     Left = 8
-    Top = 385
+    Top = 402
     Width = 165
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1079#1080#1084#1085#1080#1084' ('#1087#1088#1080#1082'. '#8470'270) '#1050'34:'
@@ -121,7 +121,7 @@ object FormBasicData: TFormBasicData
   end
   object Bevel2: TBevel
     Left = 0
-    Top = 517
+    Top = 536
     Width = 327
     Height = 41
     Align = alBottom
@@ -149,7 +149,7 @@ object FormBasicData: TFormBasicData
   end
   object LabelK41: TLabel
     Left = 8
-    Top = 264
+    Top = 281
     Width = 214
     Height = 26
     Caption = 
@@ -159,7 +159,7 @@ object FormBasicData: TFormBasicData
   end
   object Bevel5: TBevel
     Left = 8
-    Top = 409
+    Top = 426
     Width = 311
     Height = 7
     Anchors = [akLeft, akTop, akRight]
@@ -167,10 +167,19 @@ object FormBasicData: TFormBasicData
   end
   object LabelDump: TLabel
     Left = 8
-    Top = 419
+    Top = 436
     Width = 149
     Height = 13
     Caption = #1052#1077#1089#1090#1086' '#1079#1072#1093#1086#1088#1086#1085#1077#1085#1080#1103' '#1086#1090#1093#1086#1076#1086#1074':'
+  end
+  object lbl1: TLabel
+    Left = 8
+    Top = 224
+    Width = 183
+    Height = 13
+    Caption = #1050'-'#1092' '#1082' '#1079#1072#1088#1087#1083#1072#1090#1077' ('#1075#1086#1089#1091#1076#1072#1088#1089#1090#1074#1077#1085#1085#1099#1081'):'
+    WordWrap = True
+    OnClick = lbl1Click
   end
   object EditPercentTransportEquipment: TEdit
     Left = 239
@@ -181,38 +190,38 @@ object FormBasicData: TFormBasicData
   end
   object EditK41: TEdit
     Left = 239
-    Top = 274
-    Width = 80
-    Height = 21
-    TabOrder = 6
-  end
-  object EditK31: TEdit
-    Left = 239
-    Top = 301
+    Top = 291
     Width = 80
     Height = 21
     TabOrder = 7
   end
-  object EditK32: TEdit
+  object EditK31: TEdit
     Left = 239
-    Top = 328
+    Top = 318
     Width = 80
     Height = 21
     TabOrder = 8
   end
-  object EditK33: TEdit
+  object EditK32: TEdit
     Left = 239
-    Top = 355
+    Top = 345
     Width = 80
     Height = 21
     TabOrder = 9
   end
-  object EditK34: TEdit
+  object EditK33: TEdit
     Left = 239
-    Top = 382
+    Top = 372
     Width = 80
     Height = 21
     TabOrder = 10
+  end
+  object EditK34: TEdit
+    Left = 239
+    Top = 399
+    Width = 80
+    Height = 21
+    TabOrder = 11
   end
   object EditPercentTransport: TEdit
     Left = 239
@@ -236,7 +245,7 @@ object FormBasicData: TFormBasicData
     TabStop = False
     Color = 14802912
     ReadOnly = True
-    TabOrder = 13
+    TabOrder = 14
   end
   object EditRateMachinist: TEdit
     Left = 239
@@ -246,7 +255,7 @@ object FormBasicData: TFormBasicData
     TabStop = False
     Color = 14802912
     ReadOnly = True
-    TabOrder = 14
+    TabOrder = 15
   end
   object EditRegion: TEdit
     Left = 239
@@ -256,7 +265,7 @@ object FormBasicData: TFormBasicData
     TabStop = False
     Color = 14802912
     ReadOnly = True
-    TabOrder = 15
+    TabOrder = 16
   end
   object ComboBoxVAT: TComboBox
     Left = 239
@@ -273,24 +282,26 @@ object FormBasicData: TFormBasicData
   end
   object ButtonSave: TButton
     Left = 113
-    Top = 525
+    Top = 544
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Default = True
-    TabOrder = 11
+    TabOrder = 12
     OnClick = ButtonSaveClick
+    ExplicitTop = 525
   end
   object ButtonCancel: TButton
     Left = 219
-    Top = 525
+    Top = 544
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 12
+    TabOrder = 13
     OnClick = ButtonCancelClick
+    ExplicitTop = 525
   end
   object ComboBoxMonth: TComboBox
     Left = 167
@@ -337,29 +348,29 @@ object FormBasicData: TFormBasicData
   end
   object EditK40: TEdit
     Left = 239
-    Top = 234
+    Top = 251
     Width = 80
     Height = 21
-    TabOrder = 5
+    TabOrder = 6
   end
   object DBLookupComboBoxDump: TDBLookupComboBox
     Left = 8
-    Top = 443
+    Top = 460
     Width = 311
     Height = 21
-    TabOrder = 16
+    TabOrder = 17
   end
   object DBLookupComboBoxRegionDump: TDBLookupComboBox
     Left = 163
-    Top = 416
+    Top = 433
     Width = 156
     Height = 21
-    TabOrder = 17
+    TabOrder = 18
     OnClick = DBLookupComboBoxRegionDumpClick
   end
   object RadioGroupCoefOrders: TRadioGroup
     Left = 8
-    Top = 470
+    Top = 487
     Width = 311
     Height = 42
     Caption = #1042' '#1082#1072#1082#1080#1093' '#1088#1072#1089#1094#1077#1085#1082#1072#1093' '#1087#1088#1080#1084#1077#1085#1103#1090#1100' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090
@@ -368,16 +379,23 @@ object FormBasicData: TFormBasicData
     Items.Strings = (
       #1042#1086' '#1074#1089#1077#1093
       #1053#1080#1075#1076#1077)
-    TabOrder = 18
+    TabOrder = 19
+  end
+  object edtKZP: TEdit
+    Left = 239
+    Top = 224
+    Width = 80
+    Height = 21
+    TabOrder = 5
   end
   object DataSourceDump: TDataSource
     DataSet = ADOQueryDump
     Left = 200
-    Top = 280
+    Top = 297
   end
   object PopupMenuPercentTransport: TPopupMenu
     Left = 200
-    Top = 360
+    Top = 377
     object PopupMenuPercentTransportCity: TMenuItem
       Tag = 1
       Caption = #1043#1086#1088#1086#1076
@@ -396,15 +414,15 @@ object FormBasicData: TFormBasicData
   end
   object DataSourceRegionDump: TDataSource
     DataSet = ADOQueryRegionDump
-    Left = 200
-    Top = 184
+    Left = 144
+    Top = 152
   end
   object ADOQueryDump: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 201
-    Top = 232
+    Top = 249
   end
   object ADOQueryRegionDump: TFDQuery
     Connection = DM.Connect
