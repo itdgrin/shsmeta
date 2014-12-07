@@ -15,194 +15,349 @@ type
     LabelJustification: TLabel;
     EditJustificationNumber: TEdit;
     EditJustification: TEdit;
-    PanelBottom: TPanel;
-    PanelCenter: TPanel;
     PanelMemo: TPanel;
-    PanelTable: TPanel;
-    StringGrid: TStringGrid;
     ButtonCancel: TButton;
     ButtonSave: TButton;
     Panel2: TPanel;
     LabelND: TLabel;
-    Memo: TMemo;
     DBLookupComboBoxND: TDBLookupComboBox;
     DataSourceND: TDataSource;
     Panel3: TPanel;
-    LabelCount: TLabel;
-    EditCount: TEdit;
-    LabelMass: TLabel;
-    EditMass: TEdit;
     ADOQueryND: TFDQuery;
-    ADOQueryTemp: TFDQuery;
+    Memo: TMemo;
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
+    edtDumpUnit: TEdit;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    edtCoastNDS: TEdit;
+    edtCoastNoNDS: TEdit;
+    Label5: TLabel;
+    edtNDS: TEdit;
+    GroupBox2: TGroupBox;
+    Label6: TLabel;
+    cmbUnit: TComboBox;
+    LabelMass: TLabel;
+    edtYDW: TEdit;
+    LabelCount: TLabel;
+    edtCount: TEdit;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    edtPriceNoNDS: TEdit;
+    edtPriceNDS: TEdit;
+    qrTemp: TFDQuery;
 
-    procedure StringGridClick(Sender: TObject);
-    procedure StringGridEnter(Sender: TObject);
-    procedure StringGridExit(Sender: TObject);
-    procedure StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
-    procedure SettingsTable;
     procedure CalculationCost;
     procedure FillingComboBox;
     procedure DBLookupComboBoxNDClick(Sender: TObject);
     procedure EditKeyPress(Sender: TObject; var Key: Char);
-    procedure EditCountChange(Sender: TObject);
-    procedure EditMassChange(Sender: TObject);
+    procedure edtCountChange(Sender: TObject);
+    procedure edtYDWChange(Sender: TObject);
+    procedure cmbUnitChange(Sender: TObject);
+    procedure edtCoastNoNDSChange(Sender: TObject);
+    procedure edtCoastNDSChange(Sender: TObject);
+    procedure edtNDSChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
 
   private
     StrQuery: String; // Строка для формирования запроса
-    vUnit: Integer;
-    IdDump: Integer;
+    Unit_Type: byte;
+    EstMonth, EstYear, EstDumpId: integer;
+    ChangeCoast: boolean;
 
+    DumpCount, MCount, Ydw: extended;
+    CoastNoNds, CoastNds, Nds: integer;
+
+    procedure GetEstimateInfo(aIdEstimate: integer);
+    procedure LoadDumpInfo(aIdDump: integer);
   public
-
+    IdEstimate: Integer; //ID сметы в которой свалка
+    IdDump: Integer; // ID свалки в смете
+    InsMode: boolean; //признак вставкисвалки  в смету
+    IsSaved: boolean;
   end;
 
 const
   CaptionForm = 'Расчёт свалки';
 
-var
-  FormCalculationDump: TFormCalculationDump;
+//Вызов окна свалок. InsMode - признак вставкисвалки  в смету
+function GetDumpForm(IdEstimate, IdDump: Integer; InsMode: boolean): boolean;
 
 implementation
 
 uses Main, DataModule, CalculationEstimate;
 
 {$R *.dfm}
-// ---------------------------------------------------------------------------------------------------------------------
+
+function GetDumpForm(IdEstimate, IdDump: Integer; InsMode: boolean): boolean;
+var FormDump: TFormCalculationDump;
+begin
+  Result := false;
+  FormDump := TFormCalculationDump.Create(nil);
+  try
+    FormDump.IdEstimate := IdEstimate;
+    FormDump.IdDump := IdDump;
+    FormDump.InsMode := InsMode;
+    FormDump.IsSaved := false;
+    FormDump.ShowModal;
+    Result := FormDump.IsSaved;
+  finally
+    FormDump.Free;
+  end;
+end;
+
+//Подгружает необходимую информацию из сметы
+procedure TFormCalculationDump.GetEstimateInfo(aIdEstimate: integer);
+begin
+  try
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := 'SELECT dump_id FROM smetasourcedata WHERE sm_id = ' +
+      IntToStr(aIdEstimate) + ';';
+    qrTemp.Active := True;
+    EstDumpId := qrTemp.FieldByName('dump_id').AsInteger;
+    qrTemp.Active := False;
+
+    qrTemp.SQL.Text := 'SELECT monat as "Month", year as "Year" FROM stavka WHERE ' +
+      'stavka_id = (SELECT stavka_id From smetasourcedata '
+      + 'WHERE sm_id = ' + IntToStr(aIdEstimate) + ');';
+    qrTemp.Active := True;
+    EstMonth := qrTemp.FieldByName('Month').AsInteger;
+    EstYear := qrTemp.FieldByName('Year').AsInteger;
+    qrTemp.Active := False;
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При получении данных по смете возникла ошибка:' +
+        sLineBreak + sLineBreak + E.Message), CaptionForm,
+        MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
+
+procedure TFormCalculationDump.LoadDumpInfo(aIdDump: integer);
+begin
+    try
+      qrTemp.Active := False;
+      qrTemp.SQL.Text := ';';
+      qrTemp.Active := True;
+      qrTemp.Active := False;
+    except
+      on E: Exception do
+        MessageBox(0, PChar('При получении данных по свалке ошибка:' +
+        sLineBreak + sLineBreak + E.Message), CaptionForm,
+        MB_ICONERROR + MB_OK + mb_TaskModal);
+    end;
+end;
 
 procedure TFormCalculationDump.ButtonCancelClick(Sender: TObject);
 begin
   Close;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCalculationDump.ButtonSaveClick(Sender: TObject);
-var
-  Count: Double;
-  FieldRates: TFieldRates;
 begin
-  if (vUnit = 24) and ((EditCount.Text = '') or (EditMass.Text = '')) then
+  if InsMode then
   begin
-    MessageBox(0, PChar('Поле «Количество» или «Удельный вес» не заполнено!' + sLineBreak + sLineBreak +
-      'Заполните указанные поля и повторите добавление.'), CaptionForm, MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := 'Insert into dumpcard_temp (DUMP_NAME,DUMP_CODE_JUST,' +
+      'DUMP_JUST,DUMP_UNIT, ' +
+      'DUMP_COUNT,DUMP_TYPE,DUMP_SUM_NDS,DUMP_SUM_NO_NDS,COAST_NO_NDS,COAST_NDS,' +
+      'WORK_UNIT,WORK_TYPE,WORK_COUNT,WORK_YDW,NDS,PRICE_NDS,PRICE_NO_NDS) values (' +
+      ':DUMP_NAME,:DUMP_CODE_JUST,:DUMP_JUST,:DUMP_UNIT, ' +
+      ':DUMP_COUNT,:DUMP_TYPE,:DUMP_SUM_NDS,:DUMP_SUM_NO_NDS,:COAST_NO_NDS,:COAST_NDS,' +
+      ':WORK_UNIT,:WORK_TYPE,:WORK_COUNT,:WORK_YDW,:NDS,:PRICE_NDS,:PRICE_NO_NDS)';
+    qrTemp.ParamByName('DUMP_NAME').Value := DBLookupComboBoxND.Text;
+    qrTemp.ParamByName('DUMP_CODE_JUST').Value := EditJustificationNumber.Text;
+    qrTemp.ParamByName('DUMP_JUST').Value := EditJustification.Text;
+    qrTemp.ParamByName('DUMP_UNIT').Value := edtDumpUnit.Text;
+    qrTemp.ParamByName('DUMP_COUNT').Value := DumpCount;
+    qrTemp.ParamByName('DUMP_TYPE').Value := Unit_Type;
+    qrTemp.ParamByName('DUMP_SUM_NDS').Value := StrToInt64(edtPriceNDS.Text);;
+    qrTemp.ParamByName('DUMP_SUM_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('COAST_NO_NDS').Value := CoastNoNds;
+    qrTemp.ParamByName('COAST_NDS').Value := CoastNds;
+    qrTemp.ParamByName('WORK_UNIT').Value := cmbUnit.Text;
+    qrTemp.ParamByName('WORK_TYPE').Value := cmbUnit.ItemIndex;
+    qrTemp.ParamByName('WORK_COUNT').Value := MCount;
+    qrTemp.ParamByName('WORK_YDW').Value := Ydw;
+    qrTemp.ParamByName('NDS').Value := Nds;
+    qrTemp.ParamByName('PRICE_NDS').Value := StrToInt64(edtPriceNDS.Text);
+    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
 
-    Exit;
+    qrTemp.ExecSQL;
+
+    qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
+      '(id_estimate, id_type_data, id_tables) VALUE ' +
+      '(' + IntToStr(IdEstimate) + ', 5, (SELECT max(id) FROM dumpcard_temp));';
+
+    qrTemp.ExecSQL;
   end
-  else if (vUnit = 27) and (EditCount.Text = '') then
+  else
   begin
-    MessageBox(0, PChar('Поле «Количество» не заполнено!' + sLineBreak + sLineBreak +
-      'Заполните указанное поле и повторите добавление.'), CaptionForm, MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := 'Update dumpcard_temp set DUMP_NAME = :DUMP_NAME, ' +
+      'DUMP_CODE_JUST = :DUMP_CODE_JUST, DUMP_JUST = :DUMP_JUST, ' +
+      'DUMP_UNIT = :DUMP_UNIT, DUMP_COUNT = :DUMP_COUNT, DUMP_TYPE = :DUMP_TYPE, ' +
+      'DUMP_SUM_NDS = :DUMP_SUM_NDS, DUMP_SUM_NO_NDS = :DUMP_SUM_NO_NDS, ' +
+      'COAST_NO_NDS = :COAST_NO_NDS, COAST_NDS = :COAST_NDS,' +
+      'WORK_UNIT = :WORK_UNIT, WORK_TYPE = :WORK_TYPE, WORK_COUNT = :WORK_COUNT, ' +
+      'WORK_YDW = :WORK_YDW, NDS = :NDS, PRICE_NDS = :PRICE_NDS, ' +
+      'PRICE_NO_NDS = :PRICE_NO_NDS where ID = :ID';
+    qrTemp.ParamByName('DUMP_NAME').Value := DBLookupComboBoxND.Text;
+    qrTemp.ParamByName('DUMP_CODE_JUST').Value := EditJustificationNumber.Text;
+    qrTemp.ParamByName('DUMP_JUST').Value := EditJustification.Text;
+    qrTemp.ParamByName('DUMP_UNIT').Value := edtDumpUnit.Text;
+    qrTemp.ParamByName('DUMP_COUNT').Value := DumpCount;
+    qrTemp.ParamByName('DUMP_TYPE').Value := Unit_Type;
+    qrTemp.ParamByName('DUMP_SUM_NDS').Value := StrToInt64(edtPriceNDS.Text);;
+    qrTemp.ParamByName('DUMP_SUM_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('COAST_NO_NDS').Value := CoastNoNds;
+    qrTemp.ParamByName('COAST_NDS').Value := CoastNds;
+    qrTemp.ParamByName('WORK_UNIT').Value := cmbUnit.Text;
+    qrTemp.ParamByName('WORK_TYPE').Value := cmbUnit.ItemIndex;
+    qrTemp.ParamByName('WORK_COUNT').Value := MCount;
+    qrTemp.ParamByName('WORK_YDW').Value := Ydw;
+    qrTemp.ParamByName('NDS').Value := Nds;
+    qrTemp.ParamByName('PRICE_NDS').Value := StrToInt64(edtPriceNDS.Text);
+    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('ID').Value := IdDump;
 
-    Exit;
+    qrTemp.ExecSQL;
   end;
-
-  if vUnit = 24 then
-    Count := StrToInt(EditCount.Text) * 1000 / StrToInt(EditMass.Text)
-  else if vUnit = 27 then
-    Count := StrToInt(EditCount.Text);
-
-  with FieldRates do
-  begin
-    vRow := 0;
-    vNumber := EditJustificationNumber.Text;
-    vCount := RoundTo(Count, -2);
-    vNameUnit := StringGrid.Cells[1, 1];;
-    vDescription := EditJustification.Text;
-    vTypeAddData := 9;
-    vId := IdDump;
-    // vDistance := EditCount.Text;
-    // vClas := EditMass.Text;
-  end;
-
- // FormCalculationEstimate.AddRowToTableRates(FieldRates);
-
-  Close;
+  IsSaved := true;
+  ButtonCancelClick(Sender);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCalculationDump.DBLookupComboBoxNDClick(Sender: TObject);
+var vID: integer;
+    te: TDateTime;
 begin
-  with (Sender as TDBLookupComboBox) do
-    Memo.Text := 'Плата за прием и захоронение отходов (строительного мусора). ' + Text + '.';
+  //Если выборается новая свалка текстовка обновляется
+  EditJustificationNumber.Text := 'БС999-9901';
+  EditJustification.Text := 'Плата за прием и захоронение отходов (строительного мусора).';
 
-  IdDump := (Sender as TDBLookupComboBox).KeyValue;
+  Memo.Text := EditJustification.Text + ' ' + DBLookupComboBoxND.Text + '.';
 
-  // -----------------------------------------
+  vID := (Sender as TDBLookupComboBox).KeyValue;
 
   try
-    with ADOQueryTemp do
-    begin
-      Active := False;
-      SQL.Clear;
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := 'SELECT coast1, coast2 FROM ' +
+      'dumpcoast WHERE ' +
+      '(dump_id = :ID) and (DATE_BEG >= :date1) and (DATE_BEG <= :date2);';
 
-      StrQuery := 'SELECT dump_id, coast1, coast2 FROM dumpcoast WHERE dump_id = ' + IntToStr(IdDump) + ';';
+    qrTemp.ParamByName('ID').Value := vID;
+    te := EncodeDate(EstYear, EstMonth, 1);
+    qrTemp.ParamByName('date1').Value := te;
+    te := IncMonth(te) - 1;
+    qrTemp.ParamByName('date2').Value := te;
 
-      SQL.Add(StrQuery);
-      Active := True;
+    qrTemp.Active := True;
+    edtDumpUnit.Text := ADOQueryND.FieldByName('unit_name').AsString;
+    if ADOQueryND.FieldByName('unit_id').AsInteger = 24 then
+      Unit_Type := 1 else Unit_Type := 0;
 
-      with StringGrid do
-      begin
-        Cells[1, 2] := FieldByName('coast1').AsVariant;
-        Cells[1, 3] := FieldByName('coast2').AsVariant;
-      end;
-    end;
+    edtYDW.Enabled := Unit_Type <> cmbUnit.ItemIndex;
+
+    edtCoastNoNDS.Text := IntToStr(qrTemp.FieldByName('coast1').AsInteger);
+    edtCoastNDS.Text := IntToStr(qrTemp.FieldByName('coast2').AsInteger);
+    edtNDS.Text := '20';
   except
     on E: Exception do
       MessageBox(0, PChar('При получении цен по свалке возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  // -----------------------------------------
-
-  try
-    with ADOQueryTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-
-      StrQuery := 'SELECT unit_name, dump.unit_id FROM dump, units WHERE dump.unit_id = units.unit_id and dump_id = ' +
-        IntToStr(IdDump);
-
-      SQL.Add(StrQuery);
-      Active := True;
-
-      with StringGrid do
-        Cells[1, 1] := FieldByName('unit_name').AsVariant;
-
-      vUnit := FieldByName('unit_id').AsVariant;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При получении единицы измерения возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-
   CalculationCost;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+procedure TFormCalculationDump.edtCoastNDSChange(Sender: TObject);
+var i, nds: integer;
+begin
+  if not ChangeCoast then
+  begin
+    ChangeCoast := true;
+    try
+      if trim(edtCoastNDS.Text) = '' then i := 0
+      else i := StrToInt(edtCoastNDS.Text);
 
-procedure TFormCalculationDump.EditCountChange(Sender: TObject);
+      if trim(edtNDS.Text) = '' then nds := 0
+      else nds := StrToInt(edtNDS.Text);
+
+      edtCoastNoNDS.Text := IntToStr(NDSToNoNDS(i, nds));
+      CalculationCost;
+    finally
+      ChangeCoast := false;
+    end;
+  end;
+end;
+
+procedure TFormCalculationDump.edtCoastNoNDSChange(Sender: TObject);
+var i, nds: integer;
+begin
+  if not ChangeCoast then
+  begin
+    ChangeCoast := true;
+    try
+      if trim(edtCoastNoNDS.Text) = '' then i := 0
+      else i := StrToInt(edtCoastNoNDS.Text);
+
+      if trim(edtNDS.Text) = '' then nds := 0
+      else nds := StrToInt(edtNDS.Text);
+
+      edtCoastNDS.Text := IntToStr(NoNDSToNDS(i, nds));
+      CalculationCost;
+    finally
+      ChangeCoast := false;
+    end;
+  end;
+end;
+
+procedure TFormCalculationDump.edtCountChange(Sender: TObject);
 begin
   CalculationCost;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+procedure TFormCalculationDump.edtNDSChange(Sender: TObject);
+var i, cost: integer;
+begin
+  if not ChangeCoast then
+  begin
+    ChangeCoast := true;
+    try
+      if trim(edtNDS.Text) = '' then i := 0
+      else i := StrToInt(edtNDS.Text);
+
+      if trim(edtCoastNoNDS.Text) = '' then cost := 0
+      else cost := StrToInt(edtCoastNoNDS.Text);
+
+      edtCoastNDS.Text := IntToStr(NoNDSToNDS(cost, i));
+      CalculationCost;
+    finally
+      ChangeCoast := false;
+    end;
+  end;
+end;
+
 
 procedure TFormCalculationDump.EditKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not(Key in ['0' .. '9', #8]) then // Не цифра и не BackSpace
+  if not(Key in ['0' .. '9','.', #8]) then // Не цифра и не BackSpace
     Key := #0;
+
+  if Key = '.' then
+  begin
+    if pos('.',(Sender as TEdit).Text) > 0 then Key := #0;
+    if (Sender as TEdit).Text = '' then Key := #0;
+  end;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormCalculationDump.EditMassChange(Sender: TObject);
+procedure TFormCalculationDump.edtYDWChange(Sender: TObject);
 begin
   CalculationCost;
 end;
@@ -211,115 +366,34 @@ end;
 
 procedure TFormCalculationDump.FormCreate(Sender: TObject);
 begin
-  SettingsTable;
+  ChangeCoast := false;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCalculationDump.FormShow(Sender: TObject);
 begin
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
 
-  EditCount.Text := '';
-  EditMass.Text := '';
-
   FillingComboBox;
+  GetEstimateInfo(IdEstimate);
 
-  DBLookupComboBoxNDClick(DBLookupComboBoxND);
-
-  DBLookupComboBoxND.SetFocus;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormCalculationDump.StringGridClick(Sender: TObject);
-begin
-  with (Sender as TStringGrid) do
-    Repaint;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormCalculationDump.StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-  State: TGridDrawState);
-begin
-  // Так как свойство таблицы DefaultDrawing отключено (иначе ячейка таблицы будет обведена пунктирной линией)
-  // необходимо самому прорисовывать шапку и все строки таблицы
-  with (Sender as TStringGrid) do
+  //Если идет первичная вставка, то устанавливается свалка по умолчания
+  if InsMode then
   begin
-    // Прорисовка шапки таблицы
-    if (ARow = 0) { or (ACol = 0) } then
-    begin
-      Canvas.Brush.Color := PS.BackgroundHead;
-      Canvas.Font.Color := PS.FontHead;
-    end
-    else // Прорисовка всех остальных строк
-    begin
-      Canvas.Brush.Color := PS.BackgroundRows;
-      Canvas.Font.Color := PS.FontRows;
-    end;
-
-    Canvas.FillRect(Rect);
-    Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-
-    // Если таблица в фокусе и строка не равна первой строке
-    if { Focused and } (Row = ARow) { and (ACol > 0) } then
-    begin
-      Canvas.Brush.Color := PS.BackgroundSelectRow;
-      Canvas.Font.Color := PS.FontSelectRow;
-
-      Canvas.FillRect(Rect);
-      Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, Row]);
-    end;
+    DBLookupComboBoxND.KeyValue := EstDumpId;
+    DBLookupComboBoxNDClick(DBLookupComboBoxND);
+    DBLookupComboBoxND.SetFocus;
+    cmbUnit.ItemIndex := Unit_Type;
+    edtYDW.Enabled := Unit_Type <> cmbUnit.ItemIndex;
+    edtCount.Text := '0';
+    edtYDW.Text := '0';
+  end
+  else
+  begin
+    LoadDumpInfo(IdDump);
+    ButtonSave.Caption := 'Сохранить';
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormCalculationDump.StringGridEnter(Sender: TObject);
-begin
-  with (Sender as TStringGrid) do
-    Repaint;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormCalculationDump.StringGridExit(Sender: TObject);
-begin
-  with (Sender as TStringGrid) do
-    Repaint;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormCalculationDump.SettingsTable;
-begin
-  with StringGrid do
-  begin
-    ColCount := 2;
-    RowCount := 6;
-
-    FixedCols := 0;
-    FixedRows := 1;
-
-    Cells[0, 0] := 'Показатель';
-    Cells[1, 0] := 'Значение';
-
-    Cells[0, 1] := 'Ед. изм.';
-    Cells[0, 2] := 'Цена без НДС, руб';
-    Cells[0, 3] := 'Цена с НДС, руб';
-    Cells[0, 4] := 'Стоимость без НДС, руб';
-    Cells[0, 5] := 'Стоимость с НДС, руб';
-
-    ColWidths[0] := 140;
-    ColWidths[1] := 80;
-
-    PanelTable.Width := ColWidths[0] + ColWidths[1] + 1;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCalculationDump.FillingComboBox;
 begin
@@ -328,7 +402,9 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT dump_id, dump_name FROM dump ORDER BY dump_name ASC;');
+      SQL.Add('SELECT dump_id, dump_name, dump.UNIT_ID as UNIT_ID, ' +
+        'units.UNIT_NAME as UNIT_NAME FROM dump, units where ' +
+        'dump.UNIT_ID = units.UNIT_ID ORDER BY dump_name ASC;');
       Active := True;
     end;
 
@@ -343,63 +419,64 @@ begin
       MessageBox(0, PChar('При получении списка свалок возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  // -----------------------------------------
-
-  try
-    with ADOQueryTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-
-      StrQuery := 'SELECT dump_id FROM smetasourcedata WHERE sm_id = ' +
-        IntToStr(FormCalculationEstimate.GetIdEstimate) + ';';
-
-      SQL.Add(StrQuery);
-      Active := True;
-
-      with DBLookupComboBoxND do
-        KeyValue := FieldByName('dump_id').AsVariant;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При получении Id свалки возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCalculationDump.CalculationCost;
 begin
-  if ((vUnit = 24) and ((EditCount.Text = '') or (EditMass.Text = ''))) or ((vUnit = 27) and (EditCount.Text = '')) then
+  if trim(edtCount.Text) = '' then MCount := 0
+  else
   begin
-    with StringGrid do
+    if edtCount.Text[length(edtCount.Text)] = '.' then
     begin
-      Cells[1, 4] := '';
-      Cells[1, 5] := '';
-    end;
-
-    Exit;
+      MCount := StrToFloat(copy(edtCount.Text,1,length(edtCount.Text) - 1));
+    end
+    else MCount := StrToFloat(edtCount.Text);
   end;
 
-  if vUnit = 24 then // м3
-    with StringGrid do
+  if trim(edtYDW.Text) = '' then ydw := 0
+  else
+  begin
+    if edtYDW.Text[length(edtYDW.Text)] = '.' then
     begin
-      Cells[1, 4] := MyFloatToStr(RoundTo(StrToInt(Cells[1, 2]) * StrToInt(EditCount.Text) * 1000 /
-        StrToInt(EditMass.Text), PS.RoundTo * -1));
-
-      Cells[1, 5] := MyFloatToStr(RoundTo(StrToInt(Cells[1, 3]) * StrToInt(EditCount.Text) * 1000 /
-        StrToInt(EditMass.Text), PS.RoundTo * -1));
+      Ydw := StrToFloat(copy(edtYDW.Text,1,length(edtYDW.Text) - 1));
     end
-  else if vUnit = 27 then // т
-    with StringGrid do
+    else Ydw := StrToFloat(edtYDW.Text);
+  end;
+
+  if trim(edtCoastNoNDS.Text) = '' then CoastNoNds := 0
+  else CoastNoNds := StrToInt(edtCoastNoNDS.Text);
+
+  if trim(edtCoastNDS.Text) = '' then CoastNds := 0
+  else CoastNds := StrToInt(edtCoastNDS.Text);
+
+  if trim(edtNDS.Text) = '' then Nds := 0
+  else Nds := StrToInt(edtNDS.Text);
+
+  if Unit_Type = cmbUnit.ItemIndex then
+    DumpCount := MCount
+  else
+  begin
+    if Unit_Type = 0 then
     begin
-      Cells[1, 4] := MyFloatToStr(StrToInt(Cells[1, 2]) * StrToInt(EditCount.Text));
-      Cells[1, 5] := MyFloatToStr(StrToInt(Cells[1, 3]) * StrToInt(EditCount.Text));
+      DumpCount := (MCount * Ydw) / 1000;
     end;
+
+    if Unit_Type = 1 then
+    begin
+      if Ydw <> 0 then
+        DumpCount := (MCount * 1000) / Ydw
+      else DumpCount := 0;
+    end;
+  end;
+
+  edtPriceNoNDS.Text := IntToStr(Round(DumpCount * CoastNoNds));
+  edtPriceNDS.Text := IntToStr(Round(DumpCount * CoastNds));
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+procedure TFormCalculationDump.cmbUnitChange(Sender: TObject);
+begin
+  edtYDW.Enabled := Unit_Type <> cmbUnit.ItemIndex;
+  CalculationCost;
+end;
 
 end.

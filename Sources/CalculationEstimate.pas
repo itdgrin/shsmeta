@@ -174,7 +174,7 @@ type
     LabelNoData2: TLabel;
     PMAddAdditionTransportationС310: TMenuItem;
     PMAddAdditionTransportationС311: TMenuItem;
-    PMAddAdditionLandfilling: TMenuItem;
+    PMAddDump: TMenuItem;
     PMAddAdditionHeatingE18: TMenuItem;
     PMAddAdditionHeatingE20: TMenuItem;
     PMAddAdditionWinterPrice: TMenuItem;
@@ -382,8 +382,7 @@ type
     qrDevicesDEVICE_TRANSP_NDS: TLargeintField;
     qrDevicesTRANSP_PROC_PODR: TWordField;
     qrDevicesTRANSP_PROC_ZAC: TWordField;
-    dbmmoCAPTION: TDBMemo;
-
+	qrRatesDUID: TIntegerField;	dbmmoCAPTION: TDBMemo;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -591,6 +590,7 @@ type
     procedure DevRowChange(Sender: TField);
     procedure dbgrdDevicesExit(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure PMAddDumpClick(Sender: TObject);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -680,6 +680,9 @@ type
 var
   FormCalculationEstimate: TFormCalculationEstimate;
   TwoValues: TTwoValues;
+
+  function NDSToNoNDS(aValue: Int64; aNDS: integer): int64;
+  function NoNDSToNDS(aValue: Int64; aNDS: integer): int64;
 
 implementation
 
@@ -2128,6 +2131,13 @@ begin
         qrTemp.ParamByName('ID').AsInteger := qrRatesDEID.AsInteger;
         qrTemp.ParamByName('RC').AsFloat := Sender.Value;
         qrTemp.ExecSQL;
+      end;
+    5:
+      begin
+        qrTemp.SQL.Text := 'UPDATE dumpcard_temp set WORK_COUNT = :RC WHERE ID=:ID;';
+        qrTemp.ParamByName('ID').AsInteger := qrRatesDUID.AsInteger;
+        qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+        qrTemp.ExecSQL;
       end
   else
     begin
@@ -2462,9 +2472,6 @@ var
   CalcPrice: string[2];
   BtnChange: Boolean; // Признак изменения выбраной кнопки
 begin
-  // Пишем название расценки(или материала.....) в мемо под таблицей
-  //R Memo1.Text := qrRatesCAPTION.AsString;
-
   // Изменение типа данных в выпадающем списке
   if qrRatesTYPE_DATA.AsInteger > 0 then
     ComboBoxTypeData.ItemIndex := qrRatesTYPE_DATA.AsInteger - 1
@@ -3188,6 +3195,14 @@ begin
   OutputDataToTable(0);
 end;
 
+procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
+begin
+  if GetDumpForm(IdEstimate, -1, true) then
+  begin
+    OutputDataToTable(0);
+  end;
+end;
+
 procedure TFormCalculationEstimate.PMAddRatMatMechEquipOwnClick(Sender: TObject);
 begin
   ShowFormAdditionData('s');
@@ -3302,7 +3317,23 @@ begin
             MessageBox(0, PChar('При удалении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
-    end;
+      5: // Оборудование
+        try
+          with qrTemp do
+          begin
+            Active := False;
+            SQL.Clear;
+            SQL.Add('CALL DeleteDump(:id);');
+            ParamByName('id').Value := qrRatesDUID.AsInteger;
+            ExecSQL;
+          end;
+
+        except
+          on E: Exception do
+            MessageBox(0, PChar('При удалении свалки возникла ошибка:' + sLineBreak + sLineBreak +
+              E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        end;
+      end;
   OutputDataToTable(0);
 end;
 
@@ -5130,10 +5161,13 @@ begin
   qrRates.Tag := 0;
   qrRates.First; // обязательно надо что-бы произошел скрол
   // Подключаем нижеюю таблицу с коэфф.
+
   CloseOpen(qrCalculations);
 
-  if aState = 1 then
+  if aState = 1 then //Не работает, так как выставляется флаг BOF
+  begin
     qrRates.Last;
+  end;
 end;
 
 procedure TFormCalculationEstimate.CopyEstimate;

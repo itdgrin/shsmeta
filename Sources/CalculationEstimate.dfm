@@ -2374,7 +2374,7 @@
       end
       object ComboBoxOXROPR: TComboBox
         Left = 122
-        Top = 2
+        Top = 3
         Width = 107
         Height = 21
         AutoComplete = False
@@ -2745,7 +2745,7 @@
   object PopupMenuTableLeft: TPopupMenu
     OnPopup = PopupMenuTableLeftPopup
     Left = 24
-    Top = 96
+    Top = 112
     object PMAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       object PMAddRatMatMechEquip: TMenuItem
@@ -2790,10 +2790,10 @@
             end
           end
         end
-        object PMAddAdditionLandfilling: TMenuItem
+        object PMAddDump: TMenuItem
           Tag = 9
           Caption = #1055#1088#1080#1105#1084' '#1080' '#1079#1072#1093#1086#1088#1086#1085#1077#1085#1080#1077' '#1086#1090#1093#1086#1076#1086#1074' '#1041#1057'999-9901'
-          OnClick = PopupMenuRatesAdd
+          OnClick = PMAddDumpClick
         end
         object PMAddAdditionHeating: TMenuItem
           Caption = #1055#1091#1089#1082' '#1080' '#1088#1077#1075#1091#1083#1080#1088#1086#1074#1082#1072' '#1086#1090#1086#1087#1083#1077#1085#1080#1103
@@ -3293,6 +3293,17 @@
       ProviderFlags = []
       ReadOnly = True
     end
+    object qrRatesDEID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'DEID'
+      Origin = 'DEID'
+      ProviderFlags = []
+    end
+    object qrRatesDUID: TIntegerField
+      FieldName = 'DUID'
+      ProviderFlags = []
+      ReadOnly = True
+    end
     object qrRatesIID: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'IID'
@@ -3419,12 +3430,6 @@
       AutoGenerateValue = arDefault
       FieldName = 'STYPE'
       Origin = 'STYPE'
-      ProviderFlags = []
-    end
-    object qrRatesDEID: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'DEID'
-      Origin = 'DEID'
       ProviderFlags = []
     end
     object qrRatesESTIMATE_ID: TIntegerField
