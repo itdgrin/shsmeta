@@ -219,7 +219,6 @@ type
     qrDescription: TFDQuery;
     qrTemp: TFDQuery;
     qrTemp1: TFDQuery;
-    Memo1: TMemo;
     frSummaryCalculations: TfrCalculationEstimateSummaryCalculations;
     frSSR: TfrCalculationEstimateSSR;
     qrRates: TFDQuery;
@@ -383,6 +382,7 @@ type
     qrDevicesDEVICE_TRANSP_NDS: TLargeintField;
     qrDevicesTRANSP_PROC_PODR: TWordField;
     qrDevicesTRANSP_PROC_ZAC: TWordField;
+    dbmmoCAPTION: TDBMemo;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -836,7 +836,7 @@ begin
 
   dbgrdCalculations.Constraints.MinHeight := 50;
   PanelClientLeft.Constraints.MinWidth := 30;
-  Memo1.Constraints.MinHeight := 45;
+  dbmmoCAPTION.Constraints.MinHeight := 45;
   MemoRight.Constraints.MinHeight := 45;
 
   // -----------------------------------------
@@ -2022,7 +2022,6 @@ begin
     DataSet.Post;
     // заполняет таблицы справа
     GridRatesRowSellect;
-    // тут глюк CloseOpen(qrCalculations);
   end;
 end;
 
@@ -2464,7 +2463,7 @@ var
   BtnChange: Boolean; // Признак изменения выбраной кнопки
 begin
   // Пишем название расценки(или материала.....) в мемо под таблицей
-  Memo1.Text := qrRatesCAPTION.AsString;
+  //R Memo1.Text := qrRatesCAPTION.AsString;
 
   // Изменение типа данных в выпадающем списке
   if qrRatesTYPE_DATA.AsInteger > 0 then
@@ -2514,7 +2513,7 @@ begin
 
         // Разраты труда рабочих-строителей
         //qrCalculations.ParamByName('trud_two').AsFloat :=
-         // GetWorkCostBuilders(IntToStr(qrRatesIDID.AsInteger));
+        //  GetWorkCostBuilders(IntToStr(qrRatesIDID.AsInteger));
         // R StringGridCalculations.Cells[11, CountCoef + 2] :=
         // R  MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesIDID.AsInteger)));
 
