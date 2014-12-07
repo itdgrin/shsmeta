@@ -568,14 +568,6 @@
           ExplicitTop = 108
           ExplicitWidth = 425
         end
-        object Memo1: TMemo
-          Left = 0
-          Top = 160
-          Width = 361
-          Height = 39
-          Align = alBottom
-          TabOrder = 0
-        end
         object dbgrdRates: TDBGrid
           Left = 0
           Top = 0
@@ -591,7 +583,7 @@
           Font.Style = []
           ParentFont = False
           PopupMenu = PopupMenuTableLeft
-          TabOrder = 1
+          TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
@@ -632,6 +624,18 @@
               Width = 70
               Visible = True
             end>
+        end
+        object dbmmoCAPTION: TDBMemo
+          Left = 0
+          Top = 160
+          Width = 361
+          Height = 39
+          Align = alBottom
+          DataField = 'CAPTION'
+          DataSource = dsRates
+          ReadOnly = True
+          ScrollBars = ssVertical
+          TabOrder = 1
         end
       end
       object PanelNoData: TPanel
