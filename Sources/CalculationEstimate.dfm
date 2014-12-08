@@ -2293,6 +2293,7 @@
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'CNT'
             Title.Alignment = taCenter
@@ -4388,6 +4389,10 @@
       item
         SourceDataType = dtBCD
         TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtBlob
+        TargetDataType = dtAnsiString
       end>
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.UpdateChangedFields = False
@@ -4467,6 +4472,7 @@
       FieldName = 'ID'
       Origin = 'ID'
       ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
     end
     object qrDumpDUMP_NAME: TStringField
       AutoGenerateValue = arDefault

@@ -36,7 +36,6 @@ uses
   ObjectsAndEstimates in 'ObjectsAndEstimates.pas' {FormObjectsAndEstimates},
   PercentClientContractor in 'PercentClientContractor.pas' {FormPercentClientContractor},
   Transportation in 'Transportation.pas' {FormTransportation},
-  CalculationDump in 'CalculationDump.pas' {FormCalculationDump},
   SaveEstimate in 'SaveEstimate.pas' {FormSaveEstimate},
   OwnData in 'OwnData.pas' {FormOwnData},
   fFrameProgressBar in 'fFrameProgressBar.pas' {FrameProgressBar: TFrame},
@@ -94,7 +93,8 @@ uses
   KC6Journal in 'KC6Journal.pas' {fKC6Journal},
   CalculationEstimateSummaryCalculations in 'CalculationEstimateSummaryCalculations.pas' {frCalculationEstimateSummaryCalculations: TFrame},
   CalculationEstimateSSR in 'CalculationEstimateSSR.pas' {frCalculationEstimateSSR: TFrame},
-  CalcResource in 'CalcResource.pas' {fCalcResource};
+  CalcResource in 'CalcResource.pas' {fCalcResource},
+  CalculationDump in 'CalculationDump.pas' {FormCalculationDump};
 
 var
   H: Thandle;
@@ -134,7 +134,6 @@ begin
   Application.CreateForm(TFormCardEstimate, FormCardEstimate);
   Application.CreateForm(TFormPercentClientContractor, FormPercentClientContractor);
   Application.CreateForm(TFormTransportation, FormTransportation);
-  Application.CreateForm(TFormCalculationDump, FormCalculationDump);
   Application.CreateForm(TFormSaveEstimate, FormSaveEstimate);
   Application.CreateForm(TFormReplacementMaterial, FormReplacementMaterial);
   Application.CreateForm(TFormCardMaterial, FormCardMaterial);
