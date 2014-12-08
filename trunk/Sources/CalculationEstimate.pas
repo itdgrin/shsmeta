@@ -884,8 +884,6 @@ begin
 
   FillingOXROPR;
 
-  // R SettingTablesFromFile(StringGridCalculations);
-
   ConfirmCloseForm := True;
 
   RowCoefDefault := True;
@@ -902,8 +900,8 @@ begin
   LoadDBGridSettings(dbgrdCalculations);
 
   // TCustomDbGridCracker(dbgrdRates).OnMouseWheel:=Wheel;
-
-  FormMain.CreateButtonOpenWindow(CaptionButtonCalculationEstimate, HintButtonCalculationEstimate,
+  if not Act then
+  FormMain.CreateButtonOpenWindow('Расчет сметы', 'Расчет сметы',
     FormMain.ShowCalculationEstimate);
 end;
 
