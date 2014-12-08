@@ -383,6 +383,37 @@ type
     qrDevicesTRANSP_PROC_PODR: TWordField;
     qrDevicesTRANSP_PROC_ZAC: TWordField;
 	qrRatesDUID: TIntegerField;	dbmmoCAPTION: TDBMemo;
+    qrDump: TFDQuery;
+    dsDump: TDataSource;
+    SpeedButtonDump: TSpeedButton;
+    dbgrdDump: TJvDBGrid;
+    qrDumpID: TFDAutoIncField;
+    qrDumpDUMP_NAME: TStringField;
+    qrDumpDUMP_CODE_JUST: TStringField;
+    qrDumpDUMP_JUST: TStringField;
+    qrDumpDUMP_UNIT: TStringField;
+    qrDumpDUMP_TYPE: TByteField;
+    qrDumpDUMP_SUM_NDS: TLargeintField;
+    qrDumpDUMP_SUM_NO_NDS: TLargeintField;
+    qrDumpCOAST_NO_NDS: TLongWordField;
+    qrDumpCOAST_NDS: TLongWordField;
+    qrDumpWORK_UNIT: TStringField;
+    qrDumpWORK_TYPE: TByteField;
+    qrDumpNDS: TIntegerField;
+    qrDumpPRICE_NDS: TLargeintField;
+    qrDumpPRICE_NO_NDS: TLargeintField;
+    qrDumpFCOAST_NDS: TLongWordField;
+    qrDumpFCOAST_NO_NDS: TLongWordField;
+    qrDumpFPRICE_NDS: TLargeintField;
+    qrDumpFPRICE_NO_NDS: TLargeintField;
+    qrDumpNUM: TIntegerField;
+    PopupMenuDump: TPopupMenu;
+    PMDumpEdit: TMenuItem;
+    qrDumpDUMP_ID: TLongWordField;
+    qrDumpDUMP_COUNT: TFloatField;
+    qrDumpWORK_COUNT: TFloatField;
+    qrDumpWORK_YDW: TFloatField;
+    qrDumpSCROLL: TLargeintField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -424,6 +455,7 @@ type
     procedure FillingTableMaterials(const vIdCardRate, vIdMat: Integer);
     procedure FillingTableMechanizm(const vIdCardRate, vIdMech: Integer);
     procedure FillingTableDevises(const vIdDev: Integer);
+    procedure FillingTableDump(const vIdDump: Integer);
     procedure FillingTableDescription(const vIdNormativ: Integer);
 
     procedure Calculation;
@@ -506,7 +538,6 @@ type
     procedure PanelClientRightTablesResize(Sender: TObject);
     procedure SpeedButtonEquipmentsClick(Sender: TObject);
     procedure SpeedButtonModeTablesClick(Sender: TObject);
-    procedure SettingTablesFromFile(SG: TStringGrid);
     procedure GetMonthYearCalculationEstimate;
     procedure FillingOXROPR;
     procedure GetSourceData;
@@ -591,6 +622,13 @@ type
     procedure dbgrdDevicesExit(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure PMAddDumpClick(Sender: TObject);
+    procedure SpeedButtonDumpClick(Sender: TObject);
+    procedure qrDumpCalcFields(DataSet: TDataSet);
+    procedure qrDumpAfterScroll(DataSet: TDataSet);
+    procedure qrDumpBeforeScroll(DataSet: TDataSet);
+    procedure PMDumpEditClick(Sender: TObject);
+    procedure dbgrdDumpDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -776,9 +814,9 @@ begin
   IdEstimate := 0;
   Act := False;
 
-  if VisibleRightTables <> '1000' then
+  if VisibleRightTables <> '10000' then
   begin
-    VisibleRightTables := '1000';
+    VisibleRightTables := '10000';
     SettingVisibleRightTables;
   end;
 
@@ -860,6 +898,7 @@ begin
   LoadDBGridSettings(dbgrdMechanizm);
   LoadDBGridSettings(dbgrdDevices);
   LoadDBGridSettings(dbgrdDescription);
+  LoadDBGridSettings(dbgrdDump);
   LoadDBGridSettings(dbgrdCalculations);
 
   // TCustomDbGridCracker(dbgrdRates).OnMouseWheel:=Wheel;
@@ -1050,9 +1089,9 @@ begin
   TestOnNoDataNew(qrMaterial);
 
   if SpeedButtonModeTables.Tag = 0 then
-    s := '1000'
+    s := '10000'
   else
-    s := '1110';
+    s := '11100';
 
   if s <> VisibleRightTables then
   begin
@@ -1070,9 +1109,9 @@ begin
   TestOnNoDataNew(qrMechanizm);
 
   if SpeedButtonModeTables.Tag = 0 then
-    s := '0100'
+    s := '01000'
   else
-    s := '1110';
+    s := '11100';
 
   if s <> VisibleRightTables then
   begin
@@ -1090,9 +1129,9 @@ begin
   TestOnNoDataNew(qrDevices);
 
   if SpeedButtonModeTables.Tag = 0 then
-    s := '0010'
+    s := '00100'
   else
-    s := '1110';
+    s := '11100';
 
   if s <> VisibleRightTables then
   begin
@@ -1108,12 +1147,25 @@ procedure TFormCalculationEstimate.SpeedButtonDescriptionClick(Sender: TObject);
 begin
   TestOnNoDataNew(qrDescription);
 
-  if VisibleRightTables <> '0001' then
+  if VisibleRightTables <> '00010' then
   begin
-    VisibleRightTables := '0001';
+    VisibleRightTables := '00010';
     SettingVisibleRightTables;
     if CheckQrActiveEmpty(qrDescription) then
       qrDescription.First;
+  end;
+end;
+
+procedure TFormCalculationEstimate.SpeedButtonDumpClick(Sender: TObject);
+begin
+  TestOnNoDataNew(qrDump);
+
+  if VisibleRightTables <> '00001' then
+  begin
+    VisibleRightTables := '00001';
+    SettingVisibleRightTables;
+    if CheckQrActiveEmpty(qrDump) then
+      qrDump.First;
   end;
 end;
 
@@ -1130,18 +1182,18 @@ begin
       Tag := 1;
       Hint := 'Режим показа таблиц: материалы, механизмы, оборудования';
       DM.ImageListModeTables.GetBitmap(1, SpeedButtonModeTables.Glyph);
-      s := '1110';
+      s := '11100';
     end
     else
     begin
       Tag := 0;
       Hint := 'Режим одной таблицы';
       DM.ImageListModeTables.GetBitmap(0, SpeedButtonModeTables.Glyph);
-      s := '1000';
+      s := '10000';
       if SpeedButtonMechanisms.Down then
-        s := '0100';
+        s := '01000';
       if SpeedButtonEquipments.Down then
-        s := '0010';
+        s := '00100';
     end;
   end;
   if not SpeedButtonDescription.Down then
@@ -1182,11 +1234,11 @@ procedure TFormCalculationEstimate.PanelClientRightTablesResize(Sender: TObject)
 var
   H: Integer;
 begin
-  if VisibleRightTables = '0001' then
+  if VisibleRightTables = '00010' then
   begin
     dbgrdDescription.Columns[0].Width := dbgrdDescription.Width - 50;
   end
-  else if VisibleRightTables = '1110' then
+  else if VisibleRightTables = '11100' then
   begin
     H := PanelClientRightTables.Height - SplitterRight1.Height - SplitterRight2.Height;
 
@@ -1245,22 +1297,27 @@ begin
 
   // -----------------------------------------
 
-  WidthButton := ((Sender as TPanel).Width div 2 - 30 - OffsetCenter - SpeedButtonModeTables.Width) div 4;
+  WidthButton := 80;
+  //((Sender as TPanel).Width div 2 - 30 - OffsetCenter - SpeedButtonModeTables.Width) div 4;
   // 24 = 6 * 5 (расстояния: между 4 и 5, 5 и 6, 6 и 7, 7 и 8, и до конца формы)
 
   SpeedButtonMaterials.Left := BevelTopMenu.Left + OffsetCenter;
   SpeedButtonMaterials.Width := WidthButton;
 
-  SpeedButtonMechanisms.Left := SpeedButtonMaterials.Left + SpeedButtonMaterials.Width + 6;
+  SpeedButtonMechanisms.Left := SpeedButtonMaterials.Left + SpeedButtonMaterials.Width + 3;
   SpeedButtonMechanisms.Width := WidthButton;
 
-  SpeedButtonEquipments.Left := SpeedButtonMechanisms.Left + SpeedButtonMaterials.Width + 6;
+  SpeedButtonEquipments.Left := SpeedButtonMechanisms.Left + SpeedButtonMaterials.Width + 3;
   SpeedButtonEquipments.Width := WidthButton;
 
-  SpeedButtonDescription.Left := SpeedButtonEquipments.Left + SpeedButtonEquipments.Width + 6;
+  SpeedButtonDescription.Left := SpeedButtonEquipments.Left + SpeedButtonEquipments.Width + 3;
   SpeedButtonDescription.Width := WidthButton;
 
-  SpeedButtonModeTables.Left := SpeedButtonDescription.Left + SpeedButtonDescription.Width + 6;
+  SpeedButtonDump.Left := SpeedButtonDescription.Left + SpeedButtonDescription.Width + 3;
+  SpeedButtonDump.Width := WidthButton;
+
+  //Не используется пока
+  SpeedButtonModeTables.Left := SpeedButtonDump.Left + SpeedButtonDump.Width + 3;
 end;
 
 // Делаем кнопки правой панели верхнего меню неактивными
@@ -1436,6 +1493,38 @@ begin
     qrDevicesNUM.AsInteger := 1
   else
     qrDevicesNUM.AsInteger := DataSet.RecNo;
+end;
+
+procedure TFormCalculationEstimate.qrDumpAfterScroll(DataSet: TDataSet);
+begin
+  if not CheckQrActiveEmpty(DataSet) then
+    Exit;
+
+  DataSet.Edit;
+  qrDumpSCROLL.AsInteger := 1;
+  DataSet.Post;
+
+  if SpeedButtonDump.Down then
+    MemoRight.Text := qrDumpDUMP_NAME.AsString;
+end;
+
+procedure TFormCalculationEstimate.qrDumpBeforeScroll(DataSet: TDataSet);
+begin
+  if not CheckQrActiveEmpty(DataSet) then
+    Exit;
+
+  DataSet.Edit;
+  qrDumpSCROLL.AsInteger := 0;
+  DataSet.Post;
+end;
+
+procedure TFormCalculationEstimate.qrDumpCalcFields(DataSet: TDataSet);
+begin
+  // Поле нумерации для таблицы свалок
+  if DataSet.Bof then
+    qrDumpNUM.AsInteger := 1
+  else
+    qrDumpNUM.AsInteger := DataSet.RecNo;
 end;
 
 procedure TFormCalculationEstimate.DevRowChange(Sender: TField);
@@ -1996,10 +2085,11 @@ begin
     qrMaterial.Active := False;
     qrMechanizm.Active := False;
     qrDevices.Active := False;
+    qrDump.Active := False;
     qrDescription.Active := False;
 
     // На всякий случай, что-бы избежать глюков
-    if not CheckQrActiveEmpty(qrRates) then
+    if not qrRates.Active then
       Exit;
 
     // в режиме добавления строки редактируется код, а не количество
@@ -2013,6 +2103,7 @@ begin
       SpeedButtonMechanisms.Enabled := False;
       SpeedButtonEquipments.Enabled := False;
       SpeedButtonDescription.Enabled := False;
+      SpeedButtonDump.Enabled := False;
       TestOnNoDataNew(qrMaterial);
       Exit;
     end;
@@ -2460,6 +2551,11 @@ begin
         // Заполнение таблицы Оборудования
         FillingTableDevises(qrRatesDEID.AsInteger);
       end;
+    5: // Свалки
+      begin
+        // Заполнение таблицы свалок
+        FillingTableDump(qrRatesDUID.AsInteger);
+      end;
   end;
 end;
 
@@ -2505,8 +2601,11 @@ begin
         SpeedButtonMechanisms.Enabled := True;
         SpeedButtonDescription.Enabled := True;
         SpeedButtonEquipments.Enabled := False;
+        SpeedButtonDump.Enabled := False;
 
-        if SpeedButtonMaterials.Down or SpeedButtonEquipments.Down then
+        if SpeedButtonMaterials.Down or SpeedButtonEquipments.Down or
+          SpeedButtonDump.Down
+        then
           SpeedButtonMaterialsClick(SpeedButtonMaterials);
 
         if SpeedButtonMechanisms.Down then
@@ -2549,6 +2648,7 @@ begin
         SpeedButtonDescription.Enabled := False;
         SpeedButtonMechanisms.Enabled := False;
         SpeedButtonEquipments.Enabled := False;
+        SpeedButtonDump.Enabled := False;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
@@ -2600,6 +2700,7 @@ begin
         SpeedButtonMaterials.Enabled := False;
         SpeedButtonDescription.Enabled := False;
         SpeedButtonEquipments.Enabled := False;
+        SpeedButtonDump.Enabled := False;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
@@ -2636,12 +2737,30 @@ begin
         SpeedButtonMaterials.Enabled := False;
         SpeedButtonDescription.Enabled := False;
         SpeedButtonMechanisms.Enabled := False;
+        SpeedButtonDump.Enabled := False;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
 
         // Нажимаем на кнопку оборудования, для отображения таблицы оборудования
         SpeedButtonEquipmentsClick(SpeedButtonEquipments);
+      end;
+    5: // Свалки
+      begin
+        SpeedButtonDump.Enabled := True;
+        BtnChange := True;
+        SpeedButtonDump.Down := True;
+
+        SpeedButtonMaterials.Enabled := False;
+        SpeedButtonDescription.Enabled := False;
+        SpeedButtonMechanisms.Enabled := False;
+        SpeedButtonEquipments.Enabled := False;
+
+        PanelClientRight.Visible := True;
+        PanelNoData.Visible := False;
+
+        // Нажимаем на кнопку свалок, для отображения таблицы свалок
+        SpeedButtonDumpClick(SpeedButtonDump);
       end;
   end;
   { 4, 5, 6, 7: // ПЕРЕВОЗКА ГРУЗОВ/МУСОРА САМОСВАЛАМИ С310/С311
@@ -3342,6 +3461,14 @@ begin
   SetDevEditMode;
 end;
 
+procedure TFormCalculationEstimate.PMDumpEditClick(Sender: TObject);
+begin
+  if GetDumpForm(IdEstimate, qrDumpID.AsInteger, false) then
+  begin
+    OutputDataToTable(0);
+  end;
+end;
+
 procedure TFormCalculationEstimate.PopupMenuTableLeftPopup(Sender: TObject);
 begin
   // Нельзя удалить неучтенный материал из таблицы расценок
@@ -3536,6 +3663,13 @@ begin
   qrDevices.Active := False;
   qrDevices.ParamByName('IDValue').AsInteger := vIdDev;
   qrDevices.Active := True;
+end;
+
+procedure TFormCalculationEstimate.FillingTableDump(const vIdDump: Integer);
+begin
+  qrDump.Active := False;
+  qrDump.ParamByName('IDValue').AsInteger := vIdDump;
+  qrDump.Active := True;
 end;
 
 procedure TFormCalculationEstimate.FillingTableMechanizm(const vIdCardRate, vIdMech: Integer);
@@ -4584,37 +4718,44 @@ begin
   dbgrdDevices.Visible := False;
   dbgrdMechanizm.Visible := False;
   dbgrdDescription.Visible := False;
+  dbgrdDump.Visible := False;
 
   dbgrdMaterial.Align := alNone;
   dbgrdDevices.Align := alNone;
   dbgrdDescription.Align := alNone;
   dbgrdMechanizm.Align := alNone;
+  dbgrdDump.Align := alNone;
 
   ImageSplitterRight1.Visible := False;
   ImageSplitterRight2.Visible := False;
 
-  if VisibleRightTables = '1000' then
+  if VisibleRightTables = '10000' then
   begin
     dbgrdMaterial.Align := alClient;
     dbgrdMaterial.Visible := True;
   end
-  else if VisibleRightTables = '0100' then
+  else if VisibleRightTables = '01000' then
   begin
     dbgrdMechanizm.Align := alClient;
     dbgrdMechanizm.Visible := True;
   end
-  else if VisibleRightTables = '0010' then
+  else if VisibleRightTables = '00100' then
   begin
     dbgrdDevices.Align := alClient;
     dbgrdDevices.Visible := True;
   end
-  else if VisibleRightTables = '0001' then
+  else if VisibleRightTables = '00010' then
   begin
     dbgrdDescription.Align := alClient;
     dbgrdDescription.Visible := True;
     dbgrdDescription.Columns[0].Width := dbgrdDescription.Width - 50;
   end
-  else if VisibleRightTables = '1110' then
+  else if VisibleRightTables = '00001' then
+  begin
+    dbgrdDump.Align := alClient;
+    dbgrdDump.Visible := True;
+  end
+  else if VisibleRightTables = '11100' then
   begin
     dbgrdMaterial.Align := alTop;
     SplitterRight1.Align := alTop;
@@ -4637,68 +4778,6 @@ begin
   end;
 
   PanelClientRightTablesResize(PanelClientRightTables);
-end;
-
-procedure TFormCalculationEstimate.SettingTablesFromFile(SG: TStringGrid);
-var
-  i: Integer;
-  Path: string;
-  IFile: TIniFile;
-  NameSection: string;
-begin
-  if SG.Name = 'StringGridRates' then
-    NameSection := 'TableNormativs'
-  else if SG.Name = 'StringGridMaterials' then
-    NameSection := 'TablePriceMaterials'
-  else if SG.Name = 'StringGridMechanizms' then
-    NameSection := 'TablePriceMechanizms'
-  else if SG.Name = 'StringGridEquipments' then
-    NameSection := 'TablePriceEquipments'
-  else if SG.Name = 'StringGridDescription' then
-    NameSection := 'TablePriceDescription'
-  else if SG.Name = 'StringGridCalculations' then
-    NameSection := 'TableCalculations';
-
-  try
-    try
-      Path := ExtractFilePath(Application.ExeName) + FileSettingsTables;
-      IFile := TIniFile.Create(Path);
-
-      with SG, IFile do
-      begin
-        ColCount := ReadInteger(NameSection, ColumnCount, 0);
-        i := ColCount;
-        RowCount := ReadInteger(NameSection, RowsCount, 2);
-
-        FixedCols := 1;
-        FixedRows := 1;
-
-        for i := 1 to ColCount do
-        begin
-          Cells[i - 1, 0] := ReadString(NameSection, ColumnName + IntToStr(i), 'Нет названия');
-          // Название колонки
-
-          // Если колонка видима (не скрыта) в файле настроек
-          if ReadBool(NameSection, ColumnVisible + IntToStr(i), False) then
-            // Считываем и устанавливаем её ширину
-            ColWidths[i - 1] := ReadInteger(NameSection, ColumnWidth + IntToStr(i), 100)
-          else
-            // Если скрыта, скрываем колонку
-            ColWidths[i - 1] := -1;
-        end;
-
-        if RowCount > 2 then
-          for i := 1 to RowCount do
-            Cells[0, i] := ReadString(NameSection, RowName + IntToStr(i), 'Нет названия'); // Название строки
-      end;
-    except
-      on E: Exception do
-        MessageBox(0, PChar('При настройке таблицы «' + SG.Name + '» возникла ошибка:' + sLineBreak +
-          sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
-  finally
-    FreeAndNil(IFile);
-  end;
 end;
 
 procedure TFormCalculationEstimate.GetMonthYearCalculationEstimate;
@@ -4848,6 +4927,15 @@ begin
     Columns[10].Visible := not aNDS;
   end;
 
+  with dbgrdDump do
+  begin
+    // в зависимости от ндс скрывает одни и показывает другие калонки
+    Columns[6].Visible := aNDS; // цена факт
+    Columns[8].Visible := aNDS; // стоим факт
+
+    Columns[7].Visible := not aNDS;
+    Columns[9].Visible := not aNDS;
+  end;
 end;
 
 procedure TFormCalculationEstimate.SetIndexOXROPR(vNumber: String);
@@ -5645,6 +5733,43 @@ begin
   if not Assigned(FormCalculationEstimate.ActiveControl) or
     (FormCalculationEstimate.ActiveControl.Name <> 'MemoRight') then
     SetDevNoEditMode;
+end;
+
+procedure TFormCalculationEstimate.dbgrdDumpDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  with dbgrdDump.Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Подсветка поля код (для красоты)
+    if Column.Index = 1 then
+      Brush.Color := $00F0F0FF;
+
+    // Подсветка полей стоимости
+    if Column.Index in [8, 9] then
+    begin
+      Brush.Color := $00FBFEBC;
+    end;
+
+    if qrDevicesSCROLL.AsInteger = 1 then
+    begin
+      Font.Style := Font.Style + [fsbold];
+    end;
+
+    if gdFocused in State then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+    end;
+
+    FillRect(Rect);
+    if Column.Alignment = taRightJustify then
+      TextOut(Rect.Right - 2 - TextWidth(Column.Field.AsString), Rect.Top + 2, Column.Field.AsString)
+    else
+      TextOut(Rect.Left + 2, Rect.Top + 2, Column.Field.AsString);
+  end;
 end;
 
 procedure TFormCalculationEstimate.dbgrdMaterialDrawColumnCell(Sender: TObject; const Rect: TRect;

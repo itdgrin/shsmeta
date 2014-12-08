@@ -65,7 +65,6 @@ type
     procedure FormCreate(Sender: TObject);
 
   private
-    StrQuery: String; // Строка для формирования запроса
     Unit_Type: byte;
     EstMonth, EstYear, EstDumpId: integer;
     ChangeCoast: boolean;
@@ -141,8 +140,25 @@ procedure TFormCalculationDump.LoadDumpInfo(aIdDump: integer);
 begin
     try
       qrTemp.Active := False;
-      qrTemp.SQL.Text := ';';
+      qrTemp.SQL.Text := 'SELECT * FROM dumpcard_temp WHERE (ID = ' +
+        IntToStr(aIdDump) + ');';
       qrTemp.Active := True;
+
+      EditJustificationNumber.Text := qrTemp.FieldByName('DUMP_CODE_JUST').AsString;
+      EditJustification.Text := qrTemp.FieldByName('DUMP_JUST').AsString;
+      DBLookupComboBoxND.KeyValue := qrTemp.FieldByName('DUMP_ID').AsInteger;
+      edtDumpUnit.Text := qrTemp.FieldByName('DUMP_UNIT').AsString;
+      Unit_Type := qrTemp.FieldByName('DUMP_TYPE').AsInteger;
+      edtCoastNDS.Text := qrTemp.FieldByName('COAST_NDS').AsString;
+      edtCoastNoNDS.Text := qrTemp.FieldByName('COAST_NO_NDS').AsString;
+      edtNDS.Text := qrTemp.FieldByName('NDS').AsString;
+      cmbUnit.ItemIndex := qrTemp.FieldByName('WORK_TYPE').AsInteger;
+      edtCount.Text := qrTemp.FieldByName('WORK_COUNT').AsString;
+      edtYDW.Text := qrTemp.FieldByName('WORK_YDW').AsString;
+      edtPriceNoNDS.Text := qrTemp.FieldByName('DUMP_SUM_NO_NDS').AsString;
+      edtPriceNDS.Text := qrTemp.FieldByName('DUMP_SUM_NDS').AsString;
+
+      Memo.Text := EditJustification.Text + ' ' + DBLookupComboBoxND.Text + '.';
       qrTemp.Active := False;
     except
       on E: Exception do
@@ -162,13 +178,14 @@ begin
   if InsMode then
   begin
     qrTemp.Active := False;
-    qrTemp.SQL.Text := 'Insert into dumpcard_temp (DUMP_NAME,DUMP_CODE_JUST,' +
+    qrTemp.SQL.Text := 'Insert into dumpcard_temp (DUMP_ID, DUMP_NAME,DUMP_CODE_JUST,' +
       'DUMP_JUST,DUMP_UNIT, ' +
       'DUMP_COUNT,DUMP_TYPE,DUMP_SUM_NDS,DUMP_SUM_NO_NDS,COAST_NO_NDS,COAST_NDS,' +
       'WORK_UNIT,WORK_TYPE,WORK_COUNT,WORK_YDW,NDS,PRICE_NDS,PRICE_NO_NDS) values (' +
-      ':DUMP_NAME,:DUMP_CODE_JUST,:DUMP_JUST,:DUMP_UNIT, ' +
+      ':DUMP_ID,:DUMP_NAME,:DUMP_CODE_JUST,:DUMP_JUST,:DUMP_UNIT, ' +
       ':DUMP_COUNT,:DUMP_TYPE,:DUMP_SUM_NDS,:DUMP_SUM_NO_NDS,:COAST_NO_NDS,:COAST_NDS,' +
       ':WORK_UNIT,:WORK_TYPE,:WORK_COUNT,:WORK_YDW,:NDS,:PRICE_NDS,:PRICE_NO_NDS)';
+    qrTemp.ParamByName('DUMP_ID').Value := DBLookupComboBoxND.KeyValue;
     qrTemp.ParamByName('DUMP_NAME').Value := DBLookupComboBoxND.Text;
     qrTemp.ParamByName('DUMP_CODE_JUST').Value := EditJustificationNumber.Text;
     qrTemp.ParamByName('DUMP_JUST').Value := EditJustification.Text;
@@ -198,7 +215,7 @@ begin
   else
   begin
     qrTemp.Active := False;
-    qrTemp.SQL.Text := 'Update dumpcard_temp set DUMP_NAME = :DUMP_NAME, ' +
+    qrTemp.SQL.Text := 'Update dumpcard_temp set DUMP_ID = :DUMP_ID, DUMP_NAME = :DUMP_NAME, ' +
       'DUMP_CODE_JUST = :DUMP_CODE_JUST, DUMP_JUST = :DUMP_JUST, ' +
       'DUMP_UNIT = :DUMP_UNIT, DUMP_COUNT = :DUMP_COUNT, DUMP_TYPE = :DUMP_TYPE, ' +
       'DUMP_SUM_NDS = :DUMP_SUM_NDS, DUMP_SUM_NO_NDS = :DUMP_SUM_NO_NDS, ' +
@@ -206,6 +223,7 @@ begin
       'WORK_UNIT = :WORK_UNIT, WORK_TYPE = :WORK_TYPE, WORK_COUNT = :WORK_COUNT, ' +
       'WORK_YDW = :WORK_YDW, NDS = :NDS, PRICE_NDS = :PRICE_NDS, ' +
       'PRICE_NO_NDS = :PRICE_NO_NDS where ID = :ID';
+    qrTemp.ParamByName('DUMP_ID').Value := DBLookupComboBoxND.KeyValue;
     qrTemp.ParamByName('DUMP_NAME').Value := DBLookupComboBoxND.Text;
     qrTemp.ParamByName('DUMP_CODE_JUST').Value := EditJustificationNumber.Text;
     qrTemp.ParamByName('DUMP_JUST').Value := EditJustification.Text;
