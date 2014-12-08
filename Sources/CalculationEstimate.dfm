@@ -64,9 +64,9 @@
       OnClick = SpeedButtonSSRClick
     end
     object SpeedButtonDescription: TSpeedButton
-      Left = 787
+      Left = 712
       Top = 1
-      Width = 100
+      Width = 80
       Height = 25
       Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
@@ -79,7 +79,7 @@
     object SpeedButtonMaterials: TSpeedButton
       Left = 469
       Top = 1
-      Width = 100
+      Width = 80
       Height = 25
       Hint = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
@@ -91,9 +91,9 @@
       OnClick = SpeedButtonMaterialsClick
     end
     object SpeedButtonMechanisms: TSpeedButton
-      Left = 575
-      Top = 2
-      Width = 100
+      Left = 550
+      Top = 1
+      Width = 80
       Height = 25
       Hint = #1052#1077#1093#1072#1085#1080#1079#1084#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
@@ -104,13 +104,13 @@
       OnClick = SpeedButtonMechanismsClick
     end
     object SpeedButtonEquipments: TSpeedButton
-      Left = 681
+      Left = 631
       Top = 1
-      Width = 100
+      Width = 80
       Height = 25
       Hint = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
-      Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
+      Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
       Enabled = False
       ParentShowHint = False
       ShowHint = True
@@ -135,6 +135,19 @@
       ShowHint = True
       Transparent = False
       OnClick = SpeedButtonModeTablesClick
+    end
+    object SpeedButtonDump: TSpeedButton
+      Left = 793
+      Top = 1
+      Width = 80
+      Height = 25
+      Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
+      GroupIndex = 2
+      Caption = #1057#1074#1072#1083#1082#1080
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = SpeedButtonDumpClick
     end
   end
   object PanelBottomButtons: TPanel
@@ -1411,7 +1424,7 @@
           end
           object SplitterRight1: TSplitter
             Left = 0
-            Top = 49
+            Top = 24
             Width = 546
             Height = 5
             Cursor = crVSplit
@@ -1422,7 +1435,7 @@
           end
           object SplitterRight2: TSplitter
             Left = 0
-            Top = 100
+            Top = 51
             Width = 546
             Height = 5
             Cursor = crVSplit
@@ -1433,7 +1446,7 @@
           end
           object dbgrdDescription: TDBGrid
             Left = 0
-            Top = 151
+            Top = 81
             Width = 546
             Height = 20
             Align = alTop
@@ -1457,9 +1470,9 @@
           end
           object dbgrdMechanizm: TJvDBGrid
             Left = 0
-            Top = 54
+            Top = 29
             Width = 546
-            Height = 46
+            Height = 22
             Align = alTop
             Ctl3D = False
             DataSource = dsMechanizm
@@ -1737,7 +1750,7 @@
             Left = 0
             Top = 0
             Width = 546
-            Height = 49
+            Height = 24
             Align = alTop
             Color = clWhite
             Ctl3D = False
@@ -1967,9 +1980,9 @@
           end
           object dbgrdDevices: TJvDBGrid
             Left = 0
-            Top = 105
+            Top = 56
             Width = 546
-            Height = 46
+            Height = 25
             Align = alTop
             Ctl3D = False
             DataSource = dsDevices
@@ -2129,6 +2142,117 @@
                 Title.Alignment = taCenter
                 Title.Caption = #1058#1088#1072#1085#1089'. '#1079#1072#1082', %'
                 Width = 50
+                Visible = True
+              end>
+          end
+          object dbgrdDump: TJvDBGrid
+            Left = 0
+            Top = 101
+            Width = 546
+            Height = 37
+            Align = alTop
+            DataSource = dsDump
+            DefaultDrawing = False
+            DrawingStyle = gdsClassic
+            PopupMenu = PopupMenuDump
+            ReadOnly = True
+            TabOrder = 4
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = dbgrdDumpDrawColumnCell
+            AutoAppend = False
+            AutoSort = False
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            CanDelete = False
+            EditControls = <>
+            AutoSizeRows = False
+            RowsHeight = 17
+            TitleRowHeight = 30
+            WordWrap = True
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'NUM'
+                Title.Alignment = taCenter
+                Title.Caption = #8470
+                Width = 25
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'DUMP_CODE_JUST'
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1076
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'DUMP_UNIT'
+                Title.Alignment = taCenter
+                Title.Caption = #1045#1076'. '#1080#1079#1084'.'
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'WORK_YDW'
+                Title.Alignment = taCenter
+                Title.Caption = #1059#1076'. '#1074#1077#1089', '#1082#1075'/'#1084'3'
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'DUMP_COUNT'
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1083'-'#1074#1086
+                Width = 60
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1044#1057', %'
+                Width = 35
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'COAST_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = '     '#1062#1077#1085#1072' '#1079#1072' '#1077#1076'.     '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 75
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'COAST_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1062#1077#1085#1072' '#1079#1072' '#1077#1076'.  '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 75
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PRICE_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = '    '#1057#1090#1086#1080#1084'.      '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PRICE_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = '    '#1057#1090#1086#1080#1084'.     '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 80
                 Visible = True
               end>
           end
@@ -2707,8 +2831,8 @@
     Sections = <>
   end
   object PopupMenuButtonSummaryCalculation: TPopupMenu
-    Left = 256
-    Top = 152
+    Left = 248
+    Top = 160
     object N1: TMenuItem
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072
     end
@@ -2723,7 +2847,7 @@
   object PopupMenuSSRButtonAdd: TPopupMenu
     MenuAnimation = [maBottomToTop]
     Left = 168
-    Top = 152
+    Top = 144
     object N4: TMenuItem
       Caption = #1054#1073#1098#1077#1082#1090
     end
@@ -2733,8 +2857,8 @@
   end
   object PopupMenuSSRButtonTax: TPopupMenu
     MenuAnimation = [maBottomToTop]
-    Left = 240
-    Top = 104
+    Left = 248
+    Top = 112
     object N6: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     end
@@ -4297,5 +4421,191 @@
     DataSet = qrCalculations
     Left = 380
     Top = 432
+  end
+  object qrDump: TFDQuery
+    BeforeInsert = qrMechanizmBeforeInsert
+    BeforeScroll = qrDumpBeforeScroll
+    AfterScroll = qrDumpAfterScroll
+    OnCalcFields = qrDumpCalcFields
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtUInt16
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
+      end>
+    SQL.Strings = (
+      '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
+      
+        'SELECT *, 0 as SCROLL FROM dumpcard_temp WHERE (ID = :IDValue) O' +
+        'RDER BY ID;')
+    Left = 832
+    Top = 85
+    ParamData = <
+      item
+        Name = 'IDVALUE'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 11
+      end>
+    object qrDumpID: TFDAutoIncField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInWhere, pfInKey]
+    end
+    object qrDumpDUMP_NAME: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DUMP_NAME'
+      Origin = 'DUMP_NAME'
+      Size = 100
+    end
+    object qrDumpDUMP_CODE_JUST: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DUMP_CODE_JUST'
+      Origin = 'DUMP_CODE_JUST'
+      Size = 30
+    end
+    object qrDumpDUMP_JUST: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DUMP_JUST'
+      Origin = 'DUMP_JUST'
+      Size = 100
+    end
+    object qrDumpDUMP_UNIT: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DUMP_UNIT'
+      Origin = 'DUMP_UNIT'
+      Size = 30
+    end
+    object qrDumpDUMP_TYPE: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'DUMP_TYPE'
+      Origin = 'DUMP_TYPE'
+    end
+    object qrDumpDUMP_SUM_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'DUMP_SUM_NDS'
+      Origin = 'DUMP_SUM_NDS'
+    end
+    object qrDumpDUMP_SUM_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'DUMP_SUM_NO_NDS'
+      Origin = 'DUMP_SUM_NO_NDS'
+    end
+    object qrDumpCOAST_NO_NDS: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NO_NDS'
+      Origin = 'COAST_NO_NDS'
+    end
+    object qrDumpCOAST_NDS: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NDS'
+      Origin = 'COAST_NDS'
+    end
+    object qrDumpWORK_UNIT: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'WORK_UNIT'
+      Origin = 'WORK_UNIT'
+      Size = 30
+    end
+    object qrDumpWORK_TYPE: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'WORK_TYPE'
+      Origin = 'WORK_TYPE'
+    end
+    object qrDumpNDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'NDS'
+      Origin = 'NDS'
+    end
+    object qrDumpPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NDS'
+      Origin = 'PRICE_NDS'
+    end
+    object qrDumpPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NO_NDS'
+      Origin = 'PRICE_NO_NDS'
+    end
+    object qrDumpFCOAST_NDS: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'FCOAST_NDS'
+      Origin = 'FCOAST_NDS'
+    end
+    object qrDumpFCOAST_NO_NDS: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'FCOAST_NO_NDS'
+      Origin = 'FCOAST_NO_NDS'
+    end
+    object qrDumpFPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NDS'
+      Origin = 'FPRICE_NDS'
+    end
+    object qrDumpFPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NO_NDS'
+      Origin = 'FPRICE_NO_NDS'
+    end
+    object qrDumpNUM: TIntegerField
+      FieldKind = fkCalculated
+      FieldName = 'NUM'
+      Calculated = True
+    end
+    object qrDumpDUMP_ID: TLongWordField
+      FieldName = 'DUMP_ID'
+      Origin = 'DUMP_ID'
+      Required = True
+    end
+    object qrDumpDUMP_COUNT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'DUMP_COUNT'
+      Origin = 'DUMP_COUNT'
+    end
+    object qrDumpWORK_COUNT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'WORK_COUNT'
+      Origin = 'WORK_COUNT'
+    end
+    object qrDumpWORK_YDW: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'WORK_YDW'
+      Origin = 'WORK_YDW'
+    end
+    object qrDumpSCROLL: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'SCROLL'
+      Origin = 'SCROLL'
+      ProviderFlags = []
+    end
+  end
+  object dsDump: TDataSource
+    DataSet = qrDump
+    Left = 880
+    Top = 85
+  end
+  object PopupMenuDump: TPopupMenu
+    Left = 96
+    Top = 264
+    object PMDumpEdit: TMenuItem
+      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      OnClick = PMDumpEditClick
+    end
   end
 end

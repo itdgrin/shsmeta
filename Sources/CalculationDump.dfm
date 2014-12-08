@@ -27,7 +27,7 @@ object FormCalculationDump: TFormCalculationDump
     Height = 41
     Align = alBottom
     Shape = bsTopLine
-    ExplicitTop = 259
+    ExplicitTop = 247
   end
   object Panel1: TPanel
     Left = 0
@@ -81,7 +81,6 @@ object FormCalculationDump: TFormCalculationDump
     ParentBackground = False
     ShowCaption = False
     TabOrder = 1
-    ExplicitTop = 200
     object Memo: TMemo
       Left = 0
       Top = 0
@@ -91,8 +90,6 @@ object FormCalculationDump: TFormCalculationDump
       Lines.Strings = (
         'Memo')
       TabOrder = 0
-      ExplicitTop = 144
-      ExplicitHeight = 34
     end
   end
   object ButtonCancel: TButton
@@ -104,7 +101,6 @@ object FormCalculationDump: TFormCalculationDump
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 3
     OnClick = ButtonCancelClick
-    ExplicitTop = 266
   end
   object ButtonSave: TButton
     Left = 474
@@ -116,7 +112,6 @@ object FormCalculationDump: TFormCalculationDump
     Default = True
     TabOrder = 2
     OnClick = ButtonSaveClick
-    ExplicitTop = 266
   end
   object Panel2: TPanel
     Left = 0
@@ -163,8 +158,6 @@ object FormCalculationDump: TFormCalculationDump
     ShowCaption = False
     TabOrder = 5
     TabStop = True
-    ExplicitTop = 50
-    ExplicitHeight = 151
     object Label7: TLabel
       Left = 10
       Top = 102
@@ -181,7 +174,7 @@ object FormCalculationDump: TFormCalculationDump
     object Label8: TLabel
       Left = 351
       Top = 102
-      Width = 67
+      Width = 69
       Height = 19
       Caption = #1089' '#1053#1044#1057', '#1088':'
       Font.Charset = DEFAULT_CHARSET
