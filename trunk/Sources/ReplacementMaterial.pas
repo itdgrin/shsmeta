@@ -28,9 +28,6 @@ type
 
   end;
 
-var
-  FormReplacementMaterial: TFormReplacementMaterial;
-
 implementation
 
 uses Main, DataModule, CalculationEstimate;
