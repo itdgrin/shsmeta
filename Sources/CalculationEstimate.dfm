@@ -1374,7 +1374,7 @@
         end
         object SplitterRightMemo: TSplitter
           Left = 0
-          Top = 149
+          Top = 155
           Width = 546
           Height = 5
           Cursor = crVSplit
@@ -1384,21 +1384,22 @@
         end
         object MemoRight: TMemo
           Left = 0
-          Top = 154
+          Top = 160
           Width = 546
-          Height = 45
+          Height = 39
           Align = alBottom
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 0
           OnChange = MemoRightChange
           OnExit = MemoRightExit
+          ExplicitTop = 159
         end
         object PanelClientRightTables: TPanel
           Left = 0
           Top = 0
           Width = 546
-          Height = 149
+          Height = 155
           Align = alClient
           BevelOuter = bvNone
           Caption = 'PanelClientRightTables'
@@ -1406,6 +1407,7 @@
           ShowCaption = False
           TabOrder = 1
           OnResize = PanelClientRightTablesResize
+          ExplicitHeight = 149
           object ImageSplitterRight1: TImage
             Left = 208
             Top = 97
@@ -2932,9 +2934,6 @@
             Caption = #1056#1072#1089#1094#1077#1085#1082#1080' '#1045'20'
             OnClick = PopupMenuRatesAdd
           end
-        end
-        object PMAddAdditionDumps: TMenuItem
-          Caption = #1057#1074#1072#1083#1082#1080
         end
         object PMAddAdditionWinterPrice: TMenuItem
           Tag = 12
