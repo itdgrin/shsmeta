@@ -581,28 +581,43 @@
           ExplicitTop = 108
           ExplicitWidth = 425
         end
-        object dbgrdRates: TDBGrid
+        object dbmmoCAPTION: TDBMemo
+          Left = 0
+          Top = 160
+          Width = 361
+          Height = 39
+          Align = alBottom
+          DataField = 'CAPTION'
+          DataSource = dsRates
+          ReadOnly = True
+          ScrollBars = ssVertical
+          TabOrder = 0
+        end
+        object dbgrdRates: TJvDBGrid
           Left = 0
           Top = 0
           Width = 361
           Height = 155
           Align = alClient
           DataSource = dsRates
+          DefaultDrawing = False
           DrawingStyle = gdsClassic
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          PopupMenu = PopupMenuTableLeft
-          TabOrder = 0
+          TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
-          OnDrawColumnCell = dbgrdRatesDrawColumnCell
+          OnDrawColumnCell = dbgrdRates12DrawColumnCell
+          AutoSort = False
+          SelectColumnsDialogStrings.Caption = 'Select columns'
+          SelectColumnsDialogStrings.OK = '&OK'
+          SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+          CanDelete = False
+          EditControls = <>
+          AutoSizeRows = False
+          RowsHeight = 17
+          TitleRowHeight = 17
           Columns = <
             item
               Expanded = False
@@ -637,18 +652,6 @@
               Width = 70
               Visible = True
             end>
-        end
-        object dbmmoCAPTION: TDBMemo
-          Left = 0
-          Top = 160
-          Width = 361
-          Height = 39
-          Align = alBottom
-          DataField = 'CAPTION'
-          DataSource = dsRates
-          ReadOnly = True
-          ScrollBars = ssVertical
-          TabOrder = 1
         end
       end
       object PanelNoData: TPanel
@@ -1393,7 +1396,6 @@
           TabOrder = 0
           OnChange = MemoRightChange
           OnExit = MemoRightExit
-          ExplicitTop = 159
         end
         object PanelClientRightTables: TPanel
           Left = 0
@@ -1407,7 +1409,8 @@
           ShowCaption = False
           TabOrder = 1
           OnResize = PanelClientRightTablesResize
-          ExplicitHeight = 149
+          ExplicitLeft = 1
+          ExplicitTop = -1
           object ImageSplitterRight1: TImage
             Left = 208
             Top = 97
@@ -1446,30 +1449,6 @@
             ExplicitTop = 65
             ExplicitWidth = 482
           end
-          object dbgrdDescription: TDBGrid
-            Left = 0
-            Top = 81
-            Width = 546
-            Height = 20
-            Align = alTop
-            DataSource = dsDescription
-            DrawingStyle = gdsClassic
-            TabOrder = 0
-            TitleFont.Charset = DEFAULT_CHARSET
-            TitleFont.Color = clWindowText
-            TitleFont.Height = -11
-            TitleFont.Name = 'Tahoma'
-            TitleFont.Style = []
-            OnDrawColumnCell = dbgrdDescriptionDrawColumnCell
-            Columns = <
-              item
-                Expanded = False
-                FieldName = 'work'
-                Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1089#1086#1089#1090#1072#1074#1072' '#1088#1072#1073#1086#1090
-                Width = 200
-                Visible = True
-              end>
-          end
           object dbgrdMechanizm: TJvDBGrid
             Left = 0
             Top = 29
@@ -1488,7 +1467,7 @@
             ParentCtl3D = False
             ParentFont = False
             PopupMenu = PopupMenuMechanizms
-            TabOrder = 1
+            TabOrder = 0
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -1761,7 +1740,7 @@
             DrawingStyle = gdsClassic
             ParentCtl3D = False
             PopupMenu = PopupMenuMaterials
-            TabOrder = 2
+            TabOrder = 1
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -1997,7 +1976,7 @@
             ParentCtl3D = False
             ParentFont = False
             PopupMenu = PopupMenuDevices
-            TabOrder = 3
+            TabOrder = 2
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -2149,7 +2128,7 @@
           end
           object dbgrdDump: TJvDBGrid
             Left = 0
-            Top = 101
+            Top = 109
             Width = 546
             Height = 37
             Align = alTop
@@ -2158,7 +2137,7 @@
             DrawingStyle = gdsClassic
             PopupMenu = PopupMenuDump
             ReadOnly = True
-            TabOrder = 4
+            TabOrder = 3
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -2255,6 +2234,41 @@
                 Title.Alignment = taCenter
                 Title.Caption = '    '#1057#1090#1086#1080#1084'.     '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
+                Visible = True
+              end>
+          end
+          object dbgrdDescription: TJvDBGrid
+            Left = 0
+            Top = 81
+            Width = 546
+            Height = 28
+            Align = alTop
+            DataSource = dsDescription
+            DefaultDrawing = False
+            DrawingStyle = gdsClassic
+            TabOrder = 4
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = dbgrdDescription1DrawColumnCell
+            AutoAppend = False
+            AutoSort = False
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            CanDelete = False
+            EditControls = <>
+            AutoSizeRows = False
+            RowsHeight = 17
+            TitleRowHeight = 17
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'work'
+                Title.Alignment = taCenter
+                Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1089#1086#1089#1090#1072#1074#1072' '#1088#1072#1073#1086#1090
                 Visible = True
               end>
           end
@@ -3197,7 +3211,6 @@
   object qrRates: TFDQuery
     BeforeInsert = qrRatesBeforeInsert
     BeforePost = qrRatesBeforePost
-    BeforeScroll = qrRatesBeforeScroll
     AfterScroll = qrRatesAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
@@ -4428,7 +4441,6 @@
   end
   object qrDump: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
-    BeforeScroll = qrDumpBeforeScroll
     AfterScroll = qrDumpAfterScroll
     OnCalcFields = qrDumpCalcFields
     Connection = DM.Connect

@@ -222,8 +222,6 @@ type
     frSSR: TfrCalculationEstimateSSR;
     qrRates: TFDQuery;
     dsRates: TDataSource;
-    dbgrdRates: TDBGrid;
-    dbgrdDescription: TDBGrid;
     dsDescription: TDataSource;
     qrRatesDID: TIntegerField;
     qrRatesRID: TIntegerField;
@@ -413,6 +411,8 @@ type
     qrDumpWORK_COUNT: TFloatField;
     qrDumpWORK_YDW: TFloatField;
     qrDumpSCROLL: TLargeintField;
+    dbgrdDescription: TJvDBGrid;
+    dbgrdRates: TJvDBGrid;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -582,12 +582,11 @@ type
     procedure AddDevice(const vEquipId: Integer);
 
     procedure PMMechFromRatesClick(Sender: TObject);
-    procedure dbgrdRatesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+    procedure dbgrdRates12DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
-    procedure qrRatesBeforeScroll(DataSet: TDataSet);
     procedure qrRatesAfterScroll(DataSet: TDataSet);
     procedure qrRatesCOUNTChange(Sender: TField);
-    procedure dbgrdDescriptionDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+    procedure dbgrdDescription1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
     procedure qrDescriptionAfterScroll(DataSet: TDataSet);
     procedure qrMechanizmBeforeInsert(DataSet: TDataSet);
@@ -624,7 +623,6 @@ type
     procedure SpeedButtonDumpClick(Sender: TObject);
     procedure qrDumpCalcFields(DataSet: TDataSet);
     procedure qrDumpAfterScroll(DataSet: TDataSet);
-    procedure qrDumpBeforeScroll(DataSet: TDataSet);
     procedure PMDumpEditClick(Sender: TObject);
     procedure dbgrdDumpDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
@@ -1099,7 +1097,11 @@ begin
     VisibleRightTables := s;
     SettingVisibleRightTables;
     if CheckQrActiveEmpty(qrMaterial) then
+    begin
       qrMaterial.First;
+      if (qrMaterial.FieldByName('TITLE').AsInteger > 0) then
+        qrMaterial.Next;
+    end;
   end;
 end;
 
@@ -1462,10 +1464,6 @@ begin
 
   if not ReCalcDev then
   begin
-    DataSet.Edit;
-    qrDevicesSCROLL.AsInteger := 1;
-    DataSet.Post;
-
     if SpeedButtonEquipments.Down then
       MemoRight.Text := qrDevicesDEVICE_NAME.AsString;
   end;
@@ -1478,10 +1476,6 @@ begin
 
   if not ReCalcDev then
   begin
-    DataSet.Edit;
-    qrDevicesSCROLL.AsInteger := 0;
-    DataSet.Post;
-
     // закрытие открытой на редактирование строки
     SetDevNoEditMode;
   end;
@@ -1501,22 +1495,8 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  DataSet.Edit;
-  qrDumpSCROLL.AsInteger := 1;
-  DataSet.Post;
-
   if SpeedButtonDump.Down then
     MemoRight.Text := qrDumpDUMP_NAME.AsString;
-end;
-
-procedure TFormCalculationEstimate.qrDumpBeforeScroll(DataSet: TDataSet);
-begin
-  if not CheckQrActiveEmpty(DataSet) then
-    Exit;
-
-  DataSet.Edit;
-  qrDumpSCROLL.AsInteger := 0;
-  DataSet.Post;
 end;
 
 procedure TFormCalculationEstimate.qrDumpCalcFields(DataSet: TDataSet);
@@ -1685,20 +1665,18 @@ begin
   if not ReCalcMat then
   begin
     if qrMaterialTITLE.AsInteger > 0 then
+    begin
       if dbgrdMaterial.Tag > qrMaterial.RecNo then
         qrMaterial.Prior
       else
         qrMaterial.Next;
+    end;
 
     SetMatReadOnly(CheckMatReadOnly);
     dbgrdRates.Repaint;
 
     IdReplasedMat := qrMaterialID_REPLACED.AsInteger;
     IdReplasingMat := qrMaterialID.AsInteger;
-
-    DataSet.Edit;
-    qrMaterialSCROLL.AsInteger := 1;
-    DataSet.Post;
 
     if SpeedButtonMaterials.Down then
       MemoRight.Text := qrMaterialMAT_NAME.AsString;
@@ -1714,10 +1692,6 @@ begin
   begin
     // ѕредыдущее рекно используетс€ дл€ определни€ направлени€ движени€ по таблице
     dbgrdMaterial.Tag := qrMaterial.RecNo;
-
-    DataSet.Edit;
-    qrMaterialSCROLL.AsInteger := 0;
-    DataSet.Post;
 
     // закрытие открытой на редактирование строки
     SetMatNoEditMode;
@@ -1825,10 +1799,6 @@ begin
     SetMechReadOnly(CheckMechReadOnly);
     dbgrdRates.Repaint;
 
-    DataSet.Edit;
-    qrMechanizmSCROLL.AsInteger := 1;
-    DataSet.Post;
-
     if SpeedButtonMechanisms.Down then
       MemoRight.Text := qrMechanizmMECH_NAME.AsString;
   end;
@@ -1846,10 +1816,6 @@ begin
 
   if not ReCalcMech then
   begin
-
-    DataSet.Edit;
-    qrMechanizmSCROLL.AsInteger := 0;
-    DataSet.Post;
     // закрытие открытой на редактирование строки
     SetMechNoEditMode;
   end;
@@ -2109,12 +2075,8 @@ begin
       Exit;
     end;
 
-    DataSet.Edit;
     // «апрешает редактировать кол-во дл€ неучтенных и замен€ющих метериалов
     qrRatesCOUNT.ReadOnly := CheckMatINRates;
-    // ”станавливаем еденичку дл€ выделени€ строки жирным в dbgrdRates
-    qrRatesSCROLL.AsInteger := 1;
-    DataSet.Post;
     // заполн€ет таблицы справа
     GridRatesRowSellect;
   end;
@@ -2132,23 +2094,6 @@ begin
   begin
     DataSet.Cancel;
     Abort;
-  end;
-end;
-
-procedure TFormCalculationEstimate.qrRatesBeforeScroll(DataSet: TDataSet);
-begin
-  // Ќа вс€кий случай, что-бы избежать глюков
-  if not CheckQrActiveEmpty(qrRates) then
-    Exit;
-
-  if qrRates.Tag <> 1 then
-  begin
-    if DataSet.Eof then
-      Exit;
-
-    DataSet.Edit;
-    qrRatesSCROLL.AsInteger := 0;
-    DataSet.Post;
   end;
 end;
 
@@ -3496,6 +3441,7 @@ procedure TFormCalculationEstimate.PopupMenuRatesAdd(Sender: TObject);
 var
   FieldRates: TFieldRates;
 begin
+  //FormTransportation
   { case (Sender as TMenuItem).Tag of
     5, 6, 7, 8:
     with FormTransportation do
@@ -3671,8 +3617,10 @@ begin
     dbgrdMaterial.Columns[2].Visible := False;
 
   qrMaterial.First;
+  if (qrMaterial.FieldByName('TITLE').AsInteger > 0) then
+    qrMaterial.Next;
+
   qrMaterial.EnableControls;
-  dbgrdMaterial.Repaint;
 end;
 
 procedure TFormCalculationEstimate.FillingTableDevises(const vIdDev: Integer);
@@ -5706,7 +5654,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.dbgrdDescriptionDrawColumnCell(Sender: TObject; const Rect: TRect;
+procedure TFormCalculationEstimate.dbgrdDescription1DrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
   with dbgrdDescription.Canvas do
@@ -5717,6 +5665,11 @@ begin
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;
+    end;
+
+    if dbgrdDescription.Row = qrDescription.RecNo then
+    begin
+      Font.Style := Font.Style + [fsbold];
     end;
 
     FillRect(Rect);
@@ -5742,7 +5695,7 @@ begin
       Brush.Color := $00FBFEBC;
     end;
 
-    if qrDevicesSCROLL.AsInteger = 1 then
+    if dbgrdDevices.Row = qrDevices.RecNo then
     begin
       Font.Style := Font.Style + [fsbold];
       // ¬се пол€ открытые дл€ редактировани€ подсвечиваютс€ желтеньким
@@ -5789,7 +5742,7 @@ begin
       Brush.Color := $00FBFEBC;
     end;
 
-    if qrDevicesSCROLL.AsInteger = 1 then
+    if dbgrdDump.Row = qrDump.RecNo then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
@@ -5847,7 +5800,7 @@ begin
       Brush.Color := $008080FF;
     end;
 
-    if qrMaterialSCROLL.AsInteger = 1 then
+    if dbgrdMaterial.Row = qrMaterial.RecNo then
     begin
       Font.Style := Font.Style + [fsbold];
       // ¬се пол€ открытые дл€ редактировани€ подсвечиваютс€ желтеньким
@@ -5960,7 +5913,7 @@ begin
       Brush.Color := $008080FF;
     end;
 
-    if qrMechanizmSCROLL.AsInteger = 1 then
+    if dbgrdMechanizm.Row = qrMechanizm.RecNo then
     begin
       Font.Style := Font.Style + [fsbold];
       // ¬се пол€ открытые дл€ редактировани€ подсвечиваютс€ желтеньким
@@ -5996,7 +5949,7 @@ begin
     SetMechNoEditMode;
 end;
 
-procedure TFormCalculationEstimate.dbgrdRatesDrawColumnCell(Sender: TObject; const Rect: TRect;
+procedure TFormCalculationEstimate.dbgrdRates12DrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 var
   j: Integer;
@@ -6013,10 +5966,9 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    if qrRatesSCROLL.AsInteger = 1 then
+    if dbgrdRates.Row =  qrRates.RecNo then
     begin
       Font.Style := Font.Style + [fsbold];
-      j := 3;
     end;
 
     // ѕодсветка вынесенного и замен€ющего материала за расценку материала
