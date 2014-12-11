@@ -94,7 +94,9 @@ uses
   CalculationEstimateSummaryCalculations in 'CalculationEstimateSummaryCalculations.pas' {frCalculationEstimateSummaryCalculations: TFrame},
   CalculationEstimateSSR in 'CalculationEstimateSSR.pas' {frCalculationEstimateSSR: TFrame},
   CalcResource in 'CalcResource.pas' {fCalcResource},
-  CalculationDump in 'CalculationDump.pas' {FormCalculationDump};
+  CalculationDump in 'CalculationDump.pas' {FormCalculationDump},
+  CalcKomandir in 'CalcKomandir.pas' {fCalcKomandir},
+  UniDict in 'UniDict.pas' {fUniDict};
 
 var
   H: Thandle;
@@ -135,7 +137,6 @@ begin
   Application.CreateForm(TFormPercentClientContractor, FormPercentClientContractor);
   Application.CreateForm(TFormTransportation, FormTransportation);
   Application.CreateForm(TFormSaveEstimate, FormSaveEstimate);
-  Application.CreateForm(TFormReplacementMaterial, FormReplacementMaterial);
   Application.CreateForm(TFormCardMaterial, FormCardMaterial);
   Application.CreateForm(TFormCardDataEstimate, FormCardDataEstimate);
   Application.CreateForm(TFormListCollections, FormListCollections);
