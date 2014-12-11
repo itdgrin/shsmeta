@@ -75,6 +75,9 @@ type
     MenuListsSeparator: TMenuItem;
     N61: TMenuItem;
     N2: TMenuItem;
+    N6: TMenuItem;
+    N7: TMenuItem;
+    N8: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -167,6 +170,8 @@ type
     procedure MenuLists—ategoriesObjectsClick(Sender: TObject);
     procedure N61Click(Sender: TObject);
     procedure N2Click(Sender: TObject);
+    procedure N6Click(Sender: TObject);
+    procedure N8Click(Sender: TObject);
 
   private
     CountOpenWindows: Integer;
@@ -333,7 +338,7 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump, Tariff
   HelpC5, CatalogSSR, OXRandOPR, WinterPrice, DataTransfer, CardPTM, CalculationSettings,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData, PricesReferenceData,
   AdditionData, Materials, PartsEstimates, SetCoefficients, Organizations, SectionsEstimates, TypesWorks,
-  TypesActs, IndexesChangeCost, CategoriesObjects, KC6Journal, CalcResource;
+  TypesActs, IndexesChangeCost, CategoriesObjects, KC6Journal, CalcResource, CalcKomandir, UniDict;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -762,6 +767,21 @@ begin
   if Assigned(FormObjectsAndEstimates) then
     fKC6Journal.LocateObject(FormObjectsAndEstimates.getCurObject);
   fKC6Journal.Show;
+end;
+
+procedure TFormMain.N6Click(Sender: TObject);
+begin
+  if (not Assigned(fCalcKomandir)) then
+    fCalcKomandir := TfCalcKomandir.Create(Self);
+
+  fCalcKomandir.Show;
+end;
+
+procedure TFormMain.N8Click(Sender: TObject);
+begin
+  if (not Assigned(fUniDict)) then
+    fUniDict := TfUniDict.Create(Self);
+  fUniDict.Show;
 end;
 
 procedure TFormMain.N14Click(Sender: TObject);
