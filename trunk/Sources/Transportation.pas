@@ -15,409 +15,530 @@ type
     LabelJustification: TLabel;
     EditJustification: TEdit;
     Bevel1: TBevel;
-    PanelTable: TPanel;
-    StringGrid: TStringGrid;
-    ButtonAdd: TButton;
     ButtonCancel: TButton;
-    PanelMemo: TPanel;
-    Memo: TMemo;
     Panel2: TPanel;
     LabelDistance: TLabel;
-    LabelCount: TLabel;
     EditDistance: TEdit;
-    EditMass: TEdit;
-    PanelCenter: TPanel;
     PanelBottom: TPanel;
-    LabelCostNoVAT: TLabel;
-    EditCostNoVAT: TEdit;
-    LabelCostVAT: TLabel;
-    EditCostVAT: TEdit;
-    ADOQueryTemp: TFDQuery;
+    qrTemp: TFDQuery;
+    Label7: TLabel;
+    Label9: TLabel;
+    edtPriceNoNDS: TEdit;
+    Label8: TLabel;
+    edtPriceNDS: TEdit;
+    GroupBox1: TGroupBox;
+    Label6: TLabel;
+    cmbUnit: TComboBox;
+    Label1: TLabel;
+    edtCount: TEdit;
+    LabelMass: TLabel;
+    edtYDW: TEdit;
+    Label2: TLabel;
+    cmbClass: TComboBox;
+    Label4: TLabel;
+    Label3: TLabel;
+    Label5: TLabel;
+    edtCoastNoNDS: TEdit;
+    edtCoastNDS: TEdit;
+    Label10: TLabel;
+    edtNDS: TEdit;
+    Bevel2: TBevel;
+    ButtonAdd: TButton;
 
     procedure FormShow(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure ButtonCancelClick(Sender: TObject);
-    procedure StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
-    procedure StringGridRepaint(Sender: TObject);
-    procedure StringGridExit(Sender: TObject);
-    procedure StringGridClick(Sender: TObject);
-    procedure ButtonAddClick(Sender: TObject);
     procedure EditKeyPress(Sender: TObject; var Key: Char);
-    procedure SettingsTable;
-    procedure FillingTable;
-    procedure ClearTable;
+    procedure cmbUnitChange(Sender: TObject);
+    procedure CalculationTransp;
+    procedure GetCoast;
+    procedure edtCountChange(Sender: TObject);
+    procedure edtNDSChange(Sender: TObject);
+    procedure edtCoastNDSChange(Sender: TObject);
+    procedure edtCoastNoNDSChange(Sender: TObject);
     procedure EditDistanceChange(Sender: TObject);
-    procedure StringGridDblClick(Sender: TObject);
-    procedure CalculationCost;
-    procedure EditMassChange(Sender: TObject);
+    procedure ButtonAddClick(Sender: TObject);
 
   private
-    StrQuery: String; // Строка для формирования запроса
-    MonthEstimate: Integer;
-    YearEstimate: Integer;
-    IdRow: Integer;
-
+    EstMonth, EstYear : integer;
+    ChangeCoast: boolean;
+    JustNumber: string;
+    TranspCount, CCount, Ydw: extended;
+    CoastNoNds, CoastNds, Nds: integer;
+    Distance: Integer;
+    procedure GetEstimateInfo(aIdEstimate: integer);
+    procedure LoadTranspInfo(aIdTransp: integer);
   public
-    procedure SetIdRow(const vId: Integer);
+    IdEstimate: Integer; //ID сметы в которой транспорт
+    IdTransp: Integer; // ID транспорта в смете
+    TranspType: Integer;
+    InsMode: boolean; //признак вставкисвалки
+    IsSaved: boolean;
   end;
 
 const
   CaptionForm = 'Перевозка грузов';
 
-var
-  FormTransportation: TFormTransportation;
+//Вызов окна транспорта. InsMode - признак вставкисвалки  в смету
+function GetTranspForm(IdEstimate, IdTransp, TranspType: Integer;
+  InsMode: boolean): boolean;
 
 implementation
 
 uses Main, CalculationEstimate, DataModule;
 
 {$R *.dfm}
-// ---------------------------------------------------------------------------------------------------------------------
+
+function GetTranspForm(IdEstimate, IdTransp, TranspType: Integer;
+  InsMode: boolean): boolean;
+var FormTransp: TFormTransportation;
+begin
+  Result := false;
+  FormTransp := TFormTransportation.Create(nil);
+  try
+    FormTransp.IdEstimate := IdEstimate;
+    FormTransp.IdTransp := IdTransp;
+    FormTransp.InsMode := InsMode;
+    FormTransp.TranspType := TranspType;
+    FormTransp.IsSaved := false;
+    FormTransp.ShowModal;
+    Result := FormTransp.IsSaved;
+  finally
+    FormTransp.Free;
+  end;
+end;
+
+procedure TFormTransportation.CalculationTransp;
+begin
+    if trim(edtCount.Text) = '' then CCount := 0
+  else
+  begin
+    if edtCount.Text[length(edtCount.Text)] = '.' then
+    begin
+      CCount := StrToFloat(copy(edtCount.Text,1,length(edtCount.Text) - 1));
+    end
+    else CCount := StrToFloat(edtCount.Text);
+  end;
+
+  if trim(edtYDW.Text) = '' then Ydw := 0
+  else
+  begin
+    if edtYDW.Text[length(edtYDW.Text)] = '.' then
+    begin
+      Ydw := StrToFloat(copy(edtYDW.Text,1,length(edtYDW.Text) - 1));
+    end
+    else Ydw := StrToFloat(edtYDW.Text);
+  end;
+
+  if trim(EditDistance.Text) = '' then Distance := 0
+  else Distance := StrToInt(EditDistance.Text);
+
+  if trim(edtCoastNoNDS.Text) = '' then CoastNoNds := 0
+  else CoastNoNds := StrToInt(edtCoastNoNDS.Text);
+
+  if trim(edtCoastNDS.Text) = '' then CoastNds := 0
+  else CoastNds := StrToInt(edtCoastNDS.Text);
+
+  if trim(edtNDS.Text) = '' then Nds := 0
+  else Nds := StrToInt(edtNDS.Text);
+
+  if 0 = cmbUnit.ItemIndex then
+    TranspCount := CCount
+  else
+    TranspCount := (CCount * Ydw) / 1000;
+
+  edtPriceNoNDS.Text := IntToStr(Round(TranspCount * CoastNoNds));
+  edtPriceNDS.Text := IntToStr(Round(TranspCount * CoastNds));
+end;
+
+procedure TFormTransportation.ButtonAddClick(Sender: TObject);
+begin
+  if InsMode then
+  begin
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := 'Insert into transpcard_temp (TRANSP_TYPE,TRANSP_CODE_JUST,' +
+      'TRANSP_JUST,TRANSP_COUNT,TRANSP_DIST,TRANSP_SUM_NDS,TRANSP_SUM_NO_NDS,' +
+      'COAST_NO_NDS,COAST_NDS,CARG_CLASS,CARG_UNIT,CARG_TYPE,CARG_COUNT,CARG_YDW,' +
+      'NDS,PRICE_NDS,PRICE_NO_NDS) values (' +
+      ':TRANSP_TYPE,:TRANSP_CODE_JUST,' +
+      ':TRANSP_JUST,:TRANSP_COUNT,:TRANSP_DIST,:TRANSP_SUM_NDS,:TRANSP_SUM_NO_NDS,' +
+      ':COAST_NO_NDS,:COAST_NDS,:CARG_CLASS,:CARG_UNIT,:CARG_TYPE,:CARG_COUNT,:CARG_YDW,' +
+      ':NDS,:PRICE_NDS,:PRICE_NO_NDS)';
+    qrTemp.ParamByName('TRANSP_TYPE').Value := TranspType;
+    qrTemp.ParamByName('TRANSP_CODE_JUST').Value := EditJustificationNumber.Text;
+    qrTemp.ParamByName('TRANSP_JUST').Value := EditJustification.Text;
+    qrTemp.ParamByName('TRANSP_COUNT').Value := TranspCount;
+    qrTemp.ParamByName('TRANSP_DIST').Value := Distance;
+    qrTemp.ParamByName('TRANSP_SUM_NDS').Value := StrToInt64(edtPriceNDS.Text);;
+    qrTemp.ParamByName('TRANSP_SUM_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('COAST_NO_NDS').Value := CoastNoNds;
+    qrTemp.ParamByName('COAST_NDS').Value := CoastNds;
+    qrTemp.ParamByName('CARG_CLASS').Value := cmbClass.ItemIndex;
+    qrTemp.ParamByName('CARG_UNIT').Value := cmbUnit.Text;
+    qrTemp.ParamByName('CARG_TYPE').Value := cmbUnit.ItemIndex;
+    qrTemp.ParamByName('CARG_COUNT').Value := CCount;
+    qrTemp.ParamByName('CARG_YDW').Value := Ydw;
+    qrTemp.ParamByName('NDS').Value := Nds;
+    qrTemp.ParamByName('PRICE_NDS').Value := StrToInt64(edtPriceNDS.Text);
+    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+
+    qrTemp.ExecSQL;
+
+    qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
+      '(id_estimate, id_type_data, id_tables) VALUE ' +
+      '(' + IntToStr(IdEstimate) + ', ' + IntToStr(TranspType) +
+      ', (SELECT max(id) FROM transpcard_temp));';
+
+    qrTemp.ExecSQL;
+  end
+  else
+  begin
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := 'Insert into transpcard_temp (TRANSP_TYPE=:TRANSP_TYPE,' +
+      'TRANSP_CODE_JUST=:TRANSP_CODE_JUST,TRANSP_JUST=:TRANSP_JUST,' +
+      'TRANSP_COUNT=:TRANSP_COUNT,TRANSP_DIST=:TRANSP_DIST,' +
+      'TRANSP_SUM_NDS=:TRANSP_SUM_NDS,TRANSP_SUM_NO_NDS=:TRANSP_SUM_NO_NDS,' +
+      'COAST_NO_NDS=:COAST_NO_NDS,COAST_NDS=:COAST_NDS,CARG_CLASS=:CARG_CLASS,' +
+      'CARG_UNIT=:CARG_UNIT,CARG_TYPE=:CARG_TYPE,CARG_COUNT=:CARG_COUNT,' +
+      'CARG_YDW=:CARG_YDW,NDS=:NDS,PRICE_NDS=:PRICE_NDS,' +
+      'PRICE_NO_NDS=:PRICE_NO_NDS where ID = :ID';
+    qrTemp.ParamByName('TRANSP_TYPE').Value := TranspType;
+    qrTemp.ParamByName('TRANSP_CODE_JUST').Value := EditJustificationNumber.Text;
+    qrTemp.ParamByName('TRANSP_JUST').Value := EditJustification.Text;
+    qrTemp.ParamByName('TRANSP_COUNT').Value := TranspCount;
+    qrTemp.ParamByName('TRANSP_DIST').Value := Distance;
+    qrTemp.ParamByName('TRANSP_SUM_NDS').Value := StrToInt64(edtPriceNDS.Text);;
+    qrTemp.ParamByName('TRANSP_SUM_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('COAST_NO_NDS').Value := CoastNoNds;
+    qrTemp.ParamByName('COAST_NDS').Value := CoastNds;
+    qrTemp.ParamByName('CARG_CLASS').Value := cmbClass.ItemIndex;
+    qrTemp.ParamByName('CARG_UNIT').Value := cmbUnit.Text;
+    qrTemp.ParamByName('CARG_TYPE').Value := cmbUnit.ItemIndex;
+    qrTemp.ParamByName('CARG_COUNT').Value := CCount;
+    qrTemp.ParamByName('CARG_YDW').Value := Ydw;
+    qrTemp.ParamByName('NDS').Value := Nds;
+    qrTemp.ParamByName('PRICE_NDS').Value := StrToInt64(edtPriceNDS.Text);
+    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('ID').Value := IdTransp;
+
+    qrTemp.ExecSQL;
+  end;
+  IsSaved := true;
+  ButtonCancelClick(Sender);
+end;
 
 procedure TFormTransportation.ButtonCancelClick(Sender: TObject);
 begin
   Close;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTransportation.ButtonAddClick(Sender: TObject);
-var
-  vName: string;
-  FieldRates: TFieldRates;
+procedure TFormTransportation.cmbUnitChange(Sender: TObject);
 begin
-  if (EditDistance.Text = '') or (EditMass.Text = '') then
-  begin
-    MessageBox(0, PChar('Поле «Расстояние» или «Масса» не заполнено!' + sLineBreak + sLineBreak +
-      'Заполните указанные поля и повторите добавление.'), CaptionForm, MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-
-    Exit;
-  end;
-
-  vName := EditJustificationNumber.Text + ' - ' + EditDistance.Text + '.' + IntToStr(StringGrid.Row);
-
-  with FieldRates do
-  begin
-    vRow := 0;
-    vNumber := vName;
-    vCount := EditMass.Text;
-    vNameUnit := 'т';
-    vDescription := EditJustification.Text;
-    vTypeAddData := IdRow;
-    vId := '';
-    // vDistance := EditDistance.Text;
-    // vClas := StringGrid.Row;
-  end;
-
- // FormCalculationEstimate.AddRowToTableRates(FieldRates);
-
-  Close;
+  edtYDW.Enabled := 0 <> cmbUnit.ItemIndex;
+  CalculationTransp;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+//Подгружает необходимую информацию из сметы
+procedure TFormTransportation.GetEstimateInfo(aIdEstimate: integer);
+begin
+  try
+    qrTemp.SQL.Text := 'SELECT monat as "Month", year as "Year" FROM stavka WHERE ' +
+      'stavka_id = (SELECT stavka_id From smetasourcedata '
+      + 'WHERE sm_id = ' + IntToStr(aIdEstimate) + ');';
+    qrTemp.Active := True;
+    EstMonth := qrTemp.FieldByName('Month').AsInteger;
+    EstYear := qrTemp.FieldByName('Year').AsInteger;
+    qrTemp.Active := False;
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При получении данных по смете возникла ошибка:' +
+        sLineBreak + sLineBreak + E.Message), CaptionForm,
+        MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
 
 procedure TFormTransportation.EditDistanceChange(Sender: TObject);
 begin
-  FillingTable;
+  if (EditDistance.Text <> '') and (StrToInt(EditDistance.Text) > 0) then
+    EditJustificationNumber.Text := JustNumber + '-' +
+      EditDistance.Text
+  else EditJustificationNumber.Text := EditDistance.Text;
 
-  CalculationCost;
+  GetCoast;
+  CalculationTransp;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormTransportation.EditKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not(Key in ['0' .. '9', #8]) then // Не цифра и не BackSpace
+  if not(Key in ['0' .. '9','.', #8]) then // Не цифра и не BackSpace
     Key := #0;
+
+  if Key = '.' then
+  begin
+    if pos('.',(Sender as TEdit).Text) > 0 then Key := #0;
+    if (Sender as TEdit).Text = '' then Key := #0;
+  end;
 end;
 
-procedure TFormTransportation.EditMassChange(Sender: TObject);
+
+procedure TFormTransportation.edtCoastNDSChange(Sender: TObject);
+var i, nds: integer;
 begin
-  CalculationCost;
+  if not ChangeCoast then
+  begin
+    ChangeCoast := true;
+    try
+      if trim(edtCoastNDS.Text) = '' then i := 0
+      else i := StrToInt(edtCoastNDS.Text);
+
+      if trim(edtNDS.Text) = '' then nds := 0
+      else nds := StrToInt(edtNDS.Text);
+
+      edtCoastNoNDS.Text := IntToStr(NDSToNoNDS(i, nds));
+      CalculationTransp;
+    finally
+      ChangeCoast := false;
+    end;
+  end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTransportation.FormCreate(Sender: TObject);
+procedure TFormTransportation.edtCoastNoNDSChange(Sender: TObject);
+var i, nds: integer;
 begin
-  SettingsTable;
+  if not ChangeCoast then
+  begin
+    ChangeCoast := true;
+    try
+      if trim(edtCoastNoNDS.Text) = '' then i := 0
+      else i := StrToInt(edtCoastNoNDS.Text);
+
+      if trim(edtNDS.Text) = '' then nds := 0
+      else nds := StrToInt(edtNDS.Text);
+
+      edtCoastNDS.Text := IntToStr(NoNDSToNDS(i, nds));
+      CalculationTransp;
+    finally
+      ChangeCoast := false;
+    end;
+  end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+procedure TFormTransportation.edtCountChange(Sender: TObject);
+begin
+  CalculationTransp;
+end;
+
+procedure TFormTransportation.edtNDSChange(Sender: TObject);
+var i, cost: integer;
+begin
+  if not ChangeCoast then
+  begin
+    ChangeCoast := true;
+    try
+      if trim(edtNDS.Text) = '' then i := 0
+      else i := StrToInt(edtNDS.Text);
+
+      if trim(edtCoastNoNDS.Text) = '' then cost := 0
+      else cost := StrToInt(edtCoastNoNDS.Text);
+
+      edtCoastNDS.Text := IntToStr(NoNDSToNDS(cost, i));
+      CalculationTransp;
+    finally
+      ChangeCoast := false;
+    end;
+  end;
+end;
 
 procedure TFormTransportation.FormShow(Sender: TObject);
 begin
-  Left := FormMain.Left + (FormMain.Width - Width) div 2;
-  Top := FormMain.Top + (FormMain.Height - Height) div 2;
+  GetEstimateInfo(IdEstimate);
 
-  with FormCalculationEstimate do
+  if InsMode then
   begin
-    MonthEstimate := GetMonth;
-    YearEstimate := GetYear;
+    case TranspType of
+      6:
+        begin
+          EditJustificationNumber.Text := 'C310';
+          EditJustification.Text := 'Перевозка грузов автомобилями – самосвалами C310';
+        end;
+      7:
+        begin
+          EditJustificationNumber.Text := 'C310';
+          EditJustification.Text := 'Перевозка мусора автомобилями – самосвалами C310';
+        end;
+      8:
+        begin
+          EditJustificationNumber.Text := 'C311';
+          EditJustification.Text := 'Перевозка грузов автомобилями – самосвалами C311';
+        end;
+      9:
+        begin
+          EditJustificationNumber.Text := 'C311';
+          EditJustification.Text := 'Перевозка мусора автомобилями - самосвалами C311';
+        end;
+      else raise Exception.Create('Неизвестный тип транспорта (' +
+        IntToStr(TranspType) + ')');
+    end;
+
+    edtYDW.Enabled := 0 <> cmbUnit.ItemIndex;
+    edtCount.Text := '0';
+    edtYDW.Text := '0';
+
+    if TranspType in [7,9] then cmbClass.Enabled := False;
+    CalculationTransp;
+  end
+  else
+  begin
+    LoadTranspInfo(IdTransp);
+    ButtonAdd.Caption := 'Сохранить';
   end;
 
-  case IdRow of
-    5:
-      begin
-        EditJustificationNumber.Text := 'C310';
-        EditJustification.Text := 'Перевозка грузов автомобилями – самосвалами C310';
-      end;
-    6:
-      begin
-        EditJustificationNumber.Text := 'C310';
-        EditJustification.Text := 'Перевозка мусора автомобилями – самосвалами C310';
-      end;
-    7:
-      begin
-        EditJustificationNumber.Text := 'C311';
-        EditJustification.Text := 'Перевозка грузов автомобилями – самосвалами C311';
-      end;
-    8:
-      begin
-        EditJustificationNumber.Text := 'C311';
-        EditJustification.Text := 'Перевозка мусора автомобилями - самосвалами C311';
-      end;
-  end;
-
-  ClearTable;
-
-  EditDistance.Text := '';
-  EditMass.Text := '';
-  EditCostNoVAT.Text := '';
-  EditCostVAT.Text := '';
+  if TranspType in [6,7] then JustNumber := 'C310';
+  if TranspType in [8,9] then JustNumber := 'C311';
 
   EditDistance.SetFocus;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTransportation.StringGridClick(Sender: TObject);
+procedure TFormTransportation.LoadTranspInfo(aIdTransp: integer);
 begin
-  with (Sender as TStringGrid) do
-    Repaint;
+  try
+      qrTemp.Active := False;
+      qrTemp.SQL.Text := 'SELECT * FROM transpcard_temp WHERE (ID = ' +
+        IntToStr(aIdTransp) + ');';
+      qrTemp.Active := True;
 
-  CalculationCost;
-end;
+      EditJustificationNumber.Text := qrTemp.FieldByName('TRANSP_CODE_JUST').AsString;
+      EditJustification.Text := qrTemp.FieldByName('TRANSP_JUST').AsString;
+      EditDistance.Text := qrTemp.FieldByName('TRANSP_DIST').AsString;
 
-// ---------------------------------------------------------------------------------------------------------------------
+      cmbClass.ItemIndex := qrTemp.FieldByName('CARG_CLASS').AsInteger;
+      cmbUnit.ItemIndex := qrTemp.FieldByName('CARG_TYPE').AsInteger;
+      edtCount.Text := qrTemp.FieldByName('CARG_COUNT').AsString;
+      edtYDW.Text := qrTemp.FieldByName('CARG_YDW').AsString;
+      edtCoastNDS.Text := qrTemp.FieldByName('COAST_NDS').AsString;
+      edtCoastNoNDS.Text := qrTemp.FieldByName('COAST_NO_NDS').AsString;
+      edtNDS.Text := qrTemp.FieldByName('NDS').AsString;
+      edtPriceNoNDS.Text := qrTemp.FieldByName('TRANSP_SUM_NO_NDS').AsString;
+      edtPriceNDS.Text := qrTemp.FieldByName('TRANSP_SUM_NDS').AsString;
 
-procedure TFormTransportation.StringGridDblClick(Sender: TObject);
-begin
-  ButtonAddClick(ButtonAdd);
-end;
+      TranspType := qrTemp.FieldByName('TRANSP_TYPE').AsInteger;
+      TranspCount := qrTemp.FieldByName('TRANSP_COUNT').AsFloat;
+      CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsInteger;
+      CoastNds := qrTemp.FieldByName('COAST_NDS').AsInteger;
+      Nds := qrTemp.FieldByName('NDS').AsInteger;
+      CCount := qrTemp.FieldByName('CARG_COUNT').AsFloat;
+      Ydw := qrTemp.FieldByName('CARG_YDW').AsFloat;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTransportation.StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-  State: TGridDrawState);
-begin
-  // Так как свойство таблицы DefaultDrawing отключено (иначе ячейка таблицы будет обведена пунктирной линией)
-  // необходимо самому прорисовывать шапку и все строки таблицы
-  with (Sender as TStringGrid) do
-  begin
-    // Прорисовка шапки таблицы
-    if (ARow = 0) or (ACol = 0) then
-    begin
-      Canvas.Brush.Color := PS.BackgroundHead;
-      Canvas.Font.Color := PS.FontHead;
-    end
-    else // Прорисовка всех остальных строк
-    begin
-      Canvas.Brush.Color := PS.BackgroundRows;
-      Canvas.Font.Color := PS.FontRows;
+      qrTemp.Active := False;
+    except
+      on E: Exception do
+        MessageBox(0, PChar('При получении данных по свалке ошибка:' +
+        sLineBreak + sLineBreak + E.Message), CaptionForm,
+        MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
-
-    Canvas.FillRect(Rect);
-    Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-
-    // Если таблица в фокусе и строка не равна первой строке
-    if { Focused and } (Row = ARow) and (ACol > 0) then
-    begin
-      Canvas.Brush.Color := PS.BackgroundSelectRow;
-      Canvas.Font.Color := PS.FontSelectRow;
-
-      Canvas.FillRect(Rect);
-      Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, Row]);
-    end;
-
-    if (ACol = 0) and (ARow > 0) then
-    begin
-      Canvas.FillRect(Rect);
-      Canvas.TextOut(Rect.Left + (ColWidths[0] - Canvas.TextWidth(Cells[ACol, ARow])) div 2, Rect.Top + 3,
-        Cells[ACol, ARow]);
-    end;
-  end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTransportation.StringGridRepaint(Sender: TObject);
-begin
-  with (Sender as TStringGrid) do
-    Repaint;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTransportation.StringGridExit(Sender: TObject);
-begin
-  with (Sender as TStringGrid) do
-    Repaint;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTransportation.SettingsTable;
-begin
-  with StringGrid do
-  begin
-    ColCount := 3;
-    RowCount := 5;
-
-    FixedCols := 1;
-    FixedRows := 1;
-
-    Cells[0, 0] := 'Класс груза';
-    Cells[1, 0] := 'Цена (1т./км.) без НДС, руб';
-    Cells[2, 0] := 'Цена (1т./км.) с НДС, руб';
-
-    Cells[0, 1] := 'I';
-    Cells[0, 2] := 'II';
-    Cells[0, 3] := 'III';
-    Cells[0, 4] := 'IV';
-
-    ColWidths[0] := 70;
-    ColWidths[1] := 150;
-    ColWidths[2] := 150;
-
-    PanelTable.Width := ColWidths[0] + ColWidths[1] + ColWidths[2] + 6 + 1;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTransportation.FillingTable;
+procedure TFormTransportation.GetCoast;
 var
   i: Integer;
-  Distance: Integer;
   More: Integer;
+  TabName, DistanceText, LikeText: string;
 begin
+  More := 0;
+  Distance := 0;
+  LikeText := '';
+  CoastNoNDS := 0;
+  CoastNDS := 0;
+  NDS := 20;
+
+  case TranspType of
+    6,7: TabName := 'transfercargo';
+    8,9: TabName := 'transfercargoboard';
+  end;
+
   if EditDistance.Text <> '' then
   begin
-    More := 0;
     Distance := StrToInt(EditDistance.Text);
+    DistanceText := EditDistance.Text;
 
-    if Distance > 50 then
+    if TranspType in [6,7] then
     begin
-      More := Distance - 50;
-      Distance := 50;
-    end;
-  end
-  else
-  begin
-    for i := 1 to 4 do
-      with StringGrid do
+      if Distance > 50 then
       begin
-        Cells[1, i] := '0';
-        Cells[2, i] := '0';
+        More := Distance - 50;
+        DistanceText := '50';
+        LikeText := '50 км';
       end;
+    end;
 
-    Exit;
+    if TranspType in [8,9] then
+    begin
+      if Distance > 100 then
+      begin
+        if (Distance mod 5) = 0 then
+          DistanceText := IntToStr(Distance - 4) + '-' + IntToStr(Distance)
+        else
+          DistanceText := IntToStr(Distance - (Distance mod 5) + 1) + '-' +
+            IntToStr(Distance + (5 - (Distance mod 5)));
+        if Distance > 200 then
+        begin
+          More := Distance - 200;
+          DistanceText := '196-200';
+          LikeText := '200 км';
+        end;
+      end;
+    end;
   end;
 
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
-      SQL.Clear;
-
-      StrQuery := 'SELECT * FROM transfercargo WHERE monat = ' + IntToStr(MonthEstimate) + ' and year = ' +
-        IntToStr(YearEstimate) + ' and distance = ' + IntToStr(Distance) + ';';
-
-      SQL.Add(StrQuery);
+      SQL.Text := 'SELECT * FROM ' + TabName + ' WHERE monat = ' + IntToStr(EstMonth) +
+        ' and year = ' + IntToStr(EstYear) + ' and distance = :dist;';
+      ParamByName('dist').Value := DistanceText;
       Active := True;
 
-      for i := 1 to 4 do
-        with StringGrid do
-        begin
-          Cells[1, i] := FieldByName('class' + IntToStr(i) + '_1').AsVariant;
-          Cells[2, i] := FieldByName('class' + IntToStr(i) + '_2').AsVariant;
-          Cells[3, i] := FieldByName('id').AsVariant;
-        end;
-
-      // -----------------------------------------
-
-      if More = 0 then
-        Exit;
+      if not IsEmpty then
+      begin
+        CoastNoNDS := FieldByName('class' +
+          IntToStr(cmbClass.ItemIndex + 1) + '_1').AsInteger;
+        CoastNDS := FieldByName('class' +
+          IntToStr(cmbClass.ItemIndex + 1) + '_2').AsInteger;
+      end;
 
       Active := False;
-      SQL.Clear;
 
-      StrQuery := 'SELECT * FROM transfercargo WHERE monat = ' + IntToStr(MonthEstimate) + ' and year = ' +
-        IntToStr(YearEstimate) + ' and distance LIKE "%>50%";';
+      if (More > 0) and (CoastNoNDS > 0) then
+      begin
+        SQL.Text := 'SELECT * FROM ' + TabName + ' WHERE monat = ' + IntToStr(EstMonth) +
+          ' and year = ' + IntToStr(EstYear) + ' and distance LIKE "%' + LikeText + '%";';
+        Active := True;
 
-      SQL.Add(StrQuery);
-      Active := True;
-
-      for i := 1 to 4 do
-        with StringGrid do
+        if not IsEmpty then
         begin
-          Cells[1, i] := IntToStr(FieldByName('class' + IntToStr(i) + '_1').AsInteger * More + StrToInt(Cells[1, i]));
-          Cells[2, i] := IntToStr(FieldByName('class' + IntToStr(i) + '_2').AsInteger * More + StrToInt(Cells[2, i]));
+          CoastNoNDS := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) +
+            '_1').AsInteger * More + CoastNoNDS;
+          CoastNDS := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) +
+            '_2').AsInteger * More + CoastNDS;
         end;
-
-      Active := False;
+        Active := False;
+      end;
     end;
   except
     on E: Exception do
     begin
-      ADOQueryTemp.Active := False;
+      qrTemp.Active := False;
 
       MessageBox(0, PChar('При получении цен по грузоперевозкам возникла ошибка:' + sLineBreak + sLineBreak +
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
   end;
+  ChangeCoast := true;
+  edtCoastNoNDS.Text := IntToStr(CoastNoNDS);
+  edtCoastNDS.Text := IntToStr(CoastNDS);
+  edtNDS.Text := IntToStr(NDS);
+  ChangeCoast := false;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTransportation.ClearTable;
-var
-  c, r: Integer;
-begin
-  with StringGrid do
-    for r := 1 to RowCount - 1 do
-      for c := 1 to ColCount - 1 do
-        Cells[c, r] := '';
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTransportation.CalculationCost;
-begin
-  if (EditDistance.Text = '') or (EditMass.Text = '') then
-  begin
-    EditCostNoVAT.Text := '';
-    EditCostVAT.Text := '';
-
-    Exit;
-  end;
-
-  with StringGrid do
-  begin
-    EditCostNoVAT.Text := IntToStr(StrToInt(Cells[1, Row]) * StrToInt(EditMass.Text));
-    EditCostVAT.Text := IntToStr(StrToInt(Cells[2, Row]) * StrToInt(EditMass.Text));
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormTransportation.SetIdRow(const vId: Integer);
-begin
-  IdRow := vId;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.
 

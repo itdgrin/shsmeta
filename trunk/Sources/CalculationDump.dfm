@@ -13,7 +13,6 @@ object FormCalculationDump: TFormCalculationDump
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
     582
@@ -267,7 +266,7 @@ object FormCalculationDump: TFormCalculationDump
         OnChange = edtCoastNoNDSChange
       end
       object edtNDS: TEdit
-        Left = 534
+        Left = 537
         Top = 16
         Width = 39
         Height = 21

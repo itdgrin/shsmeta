@@ -62,7 +62,6 @@ type
     procedure edtCoastNoNDSChange(Sender: TObject);
     procedure edtCoastNDSChange(Sender: TObject);
     procedure edtNDSChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
 
   private
     Unit_Type: byte;
@@ -157,6 +156,13 @@ begin
       edtYDW.Text := qrTemp.FieldByName('WORK_YDW').AsString;
       edtPriceNoNDS.Text := qrTemp.FieldByName('DUMP_SUM_NO_NDS').AsString;
       edtPriceNDS.Text := qrTemp.FieldByName('DUMP_SUM_NDS').AsString;
+
+      DumpCount := qrTemp.FieldByName('DUMP_COUNT').AsFloat;
+      CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsInteger;
+      CoastNds := qrTemp.FieldByName('COAST_NDS').AsInteger;
+      Nds := qrTemp.FieldByName('NDS').AsInteger;
+      MCount := qrTemp.FieldByName('WORK_COUNT').AsFloat;
+      Ydw := qrTemp.FieldByName('WORK_YDW').AsFloat;
 
       Memo.Text := EditJustification.Text + ' ' + DBLookupComboBoxND.Text + '.';
       qrTemp.Active := False;
@@ -381,11 +387,6 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormCalculationDump.FormCreate(Sender: TObject);
-begin
-  ChangeCoast := false;
-end;
 
 procedure TFormCalculationDump.FormShow(Sender: TObject);
 begin
