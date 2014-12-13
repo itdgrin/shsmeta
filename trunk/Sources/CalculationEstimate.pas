@@ -3349,7 +3349,6 @@ begin
       ParamByName('Id').Value := qrRatesRID.AsInteger;
       ExecSQL;
     end;
-
   end
   else
     case qrRatesTYPE_DATA.AsInteger of
@@ -3416,7 +3415,7 @@ begin
             MessageBox(0, PChar('При удалении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
-      5: // Оборудование
+      5: // Свалка
         try
           with qrTemp do
           begin
@@ -3426,10 +3425,24 @@ begin
             ParamByName('id').Value := qrRatesDUID.AsInteger;
             ExecSQL;
           end;
-
         except
           on E: Exception do
             MessageBox(0, PChar('При удалении свалки возникла ошибка:' + sLineBreak + sLineBreak +
+              E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        end;
+      6,7,8,9: // Транспорт
+        try
+          with qrTemp do
+          begin
+            Active := False;
+            SQL.Clear;
+            SQL.Add('CALL DeleteTransp(:id);');
+            ParamByName('id').Value := qrRatesTRID.AsInteger;
+            ExecSQL;
+          end;
+        except
+          on E: Exception do
+            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       end;
