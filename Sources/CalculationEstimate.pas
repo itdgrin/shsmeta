@@ -413,6 +413,7 @@ type
     qrDumpSCROLL: TLargeintField;
     dbgrdDescription: TJvDBGrid;
     dbgrdRates: TJvDBGrid;
+    qrRatesTRID: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -626,6 +627,7 @@ type
     procedure PMDumpEditClick(Sender: TObject);
     procedure dbgrdDumpDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure PMAddTranspClick(Sender: TObject);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -2175,6 +2177,13 @@ begin
         qrTemp.ParamByName('ID').AsInteger := qrRatesDUID.AsInteger;
         qrTemp.ParamByName('RC').AsFloat := Sender.Value;
         qrTemp.ExecSQL;
+      end;
+    6,7,8,9:
+      begin
+        qrTemp.SQL.Text := 'UPDATE transpcard_temp set CARG_COUNT = :RC WHERE ID=:ID;';
+        qrTemp.ParamByName('ID').AsInteger := qrRatesTRID.AsInteger;
+        qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+        qrTemp.ExecSQL;
       end
   else
     begin
@@ -3276,6 +3285,15 @@ begin
   OutputDataToTable(qrRates.RecordCount + 1);
 end;
 
+procedure TFormCalculationEstimate.PMAddTranspClick(
+  Sender: TObject);
+begin
+  if GetTranspForm(IdEstimate, -1, (Sender as TMenuItem).Tag, true) then
+  begin
+    OutputDataToTable(qrRates.RecordCount + 1);
+  end;
+end;
+
 procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
 begin
   if GetDumpForm(IdEstimate, -1, true) then
@@ -3443,12 +3461,7 @@ var
 begin
   //FormTransportation
   { case (Sender as TMenuItem).Tag of
-    5, 6, 7, 8:
-    with FormTransportation do
-    begin
-    SetIdRow((Sender as TMenuItem).Tag);
-    FormTransportation.ShowModal;
-    end;
+    
     9:
     FormCalculationDump.ShowModal;
     10:
