@@ -299,6 +299,7 @@ object FormTransportation: TFormTransportation
         Font.Style = []
         ParentFont = False
         TabOrder = 2
+        OnChange = edtCountChange
         OnKeyPress = EditKeyPress
       end
       object cmbClass: TComboBox

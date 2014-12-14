@@ -64,9 +64,9 @@
       OnClick = SpeedButtonSSRClick
     end
     object SpeedButtonDescription: TSpeedButton
-      Left = 712
+      Left = 667
       Top = 1
-      Width = 80
+      Width = 53
       Height = 25
       Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
@@ -77,9 +77,9 @@
       OnClick = SpeedButtonDescriptionClick
     end
     object SpeedButtonMaterials: TSpeedButton
-      Left = 469
+      Left = 472
       Top = 1
-      Width = 80
+      Width = 58
       Height = 25
       Hint = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
@@ -91,9 +91,9 @@
       OnClick = SpeedButtonMaterialsClick
     end
     object SpeedButtonMechanisms: TSpeedButton
-      Left = 550
+      Left = 534
       Top = 1
-      Width = 80
+      Width = 62
       Height = 25
       Hint = #1052#1077#1093#1072#1085#1080#1079#1084#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
@@ -104,9 +104,9 @@
       OnClick = SpeedButtonMechanismsClick
     end
     object SpeedButtonEquipments: TSpeedButton
-      Left = 631
+      Left = 600
       Top = 1
-      Width = 80
+      Width = 64
       Height = 25
       Hint = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
@@ -125,7 +125,7 @@
     end
     object SpeedButtonModeTables: TSpeedButton
       Left = 893
-      Top = 1
+      Top = -2
       Width = 28
       Height = 25
       Hint = #1056#1077#1078#1080#1084' '#1087#1086#1082#1072#1079#1072' '#1090#1072#1073#1083#1080#1094': '#1084#1072#1090#1077#1088#1080#1072#1083#1099', '#1084#1077#1093#1072#1085#1080#1079#1084#1099', '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
@@ -137,9 +137,9 @@
       OnClick = SpeedButtonModeTablesClick
     end
     object SpeedButtonDump: TSpeedButton
-      Left = 793
+      Left = 723
       Top = 1
-      Width = 80
+      Width = 47
       Height = 25
       Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
@@ -148,6 +148,32 @@
       ParentShowHint = False
       ShowHint = True
       OnClick = SpeedButtonDumpClick
+    end
+    object SpeedButtonTransp: TSpeedButton
+      Left = 774
+      Top = 1
+      Width = 47
+      Height = 25
+      Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
+      GroupIndex = 2
+      Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = SpeedButtonTranspClick
+    end
+    object SpeedButtonStartup: TSpeedButton
+      Left = 827
+      Top = 2
+      Width = 47
+      Height = 25
+      Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
+      GroupIndex = 2
+      Caption = #1056#1077#1075#1091#1083#1080#1088#1086#1074#1082#1072
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = SpeedButtonStartupClick
     end
   end
   object PanelBottomButtons: TPanel
@@ -1378,7 +1404,7 @@
         end
         object SplitterRightMemo: TSplitter
           Left = 0
-          Top = 155
+          Top = 179
           Width = 546
           Height = 5
           Cursor = crVSplit
@@ -1388,9 +1414,9 @@
         end
         object MemoRight: TMemo
           Left = 0
-          Top = 160
+          Top = 184
           Width = 546
-          Height = 39
+          Height = 15
           Align = alBottom
           ReadOnly = True
           ScrollBars = ssVertical
@@ -1402,7 +1428,7 @@
           Left = 0
           Top = 0
           Width = 546
-          Height = 155
+          Height = 179
           Align = alClient
           BevelOuter = bvNone
           Caption = 'PanelClientRightTables'
@@ -1410,6 +1436,7 @@
           ShowCaption = False
           TabOrder = 1
           OnResize = PanelClientRightTablesResize
+          ExplicitHeight = 155
           object ImageSplitterRight1: TImage
             Left = 208
             Top = 97
@@ -2127,14 +2154,14 @@
           end
           object dbgrdDump: TJvDBGrid
             Left = 0
-            Top = 109
+            Top = 99
             Width = 546
-            Height = 37
+            Height = 30
             Align = alTop
             DataSource = dsDump
             DefaultDrawing = False
             DrawingStyle = gdsClassic
-            PopupMenu = PopupMenuDump
+            PopupMenu = PopupMenuDumpTransp
             ReadOnly = True
             TabOrder = 3
             TitleFont.Charset = DEFAULT_CHARSET
@@ -2142,7 +2169,7 @@
             TitleFont.Height = -11
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
-            OnDrawColumnCell = dbgrdDumpDrawColumnCell
+            OnDrawColumnCell = dbgrdDevicesDrawColumnCell
             AutoAppend = False
             AutoSort = False
             SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -2207,7 +2234,7 @@
                 Expanded = False
                 FieldName = 'COAST_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '     '#1062#1077#1085#1072' '#1079#1072' '#1077#1076'.     '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '  '#1062#1077#1085#1072' '#1079#1072' '#1077#1076'.     '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 75
                 Visible = True
               end
@@ -2223,7 +2250,7 @@
                 Expanded = False
                 FieldName = 'PRICE_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '    '#1057#1090#1086#1080#1084'.      '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '    '#1057#1090#1086#1080#1084'.        '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -2240,7 +2267,7 @@
             Left = 0
             Top = 81
             Width = 546
-            Height = 28
+            Height = 18
             Align = alTop
             DataSource = dsDescription
             DefaultDrawing = False
@@ -2270,6 +2297,154 @@
                 Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1089#1086#1089#1090#1072#1074#1072' '#1088#1072#1073#1086#1090
                 Visible = True
               end>
+          end
+          object dbgrdTransp: TJvDBGrid
+            Left = 0
+            Top = 129
+            Width = 546
+            Height = 30
+            Align = alTop
+            DataSource = dsTransp
+            DefaultDrawing = False
+            DrawingStyle = gdsClassic
+            PopupMenu = PopupMenuDumpTransp
+            ReadOnly = True
+            TabOrder = 5
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = dbgrdDevicesDrawColumnCell
+            AutoAppend = False
+            AutoSort = False
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            CanDelete = False
+            EditControls = <>
+            AutoSizeRows = False
+            RowsHeight = 17
+            TitleRowHeight = 30
+            WordWrap = True
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'NUM'
+                Title.Alignment = taCenter
+                Title.Caption = #8470
+                Width = 25
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_CODE_JUST'
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1076
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_UNIT'
+                Title.Alignment = taCenter
+                Title.Caption = #1045#1076'. '#1080#1079#1084'.'
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'CLASS'
+                Title.Alignment = taCenter
+                Title.Caption = '  '#1050#1083#1072#1089#1089'  '#1075#1088#1091#1079#1072
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'CARG_YDW'
+                Title.Alignment = taCenter
+                Title.Caption = #1059#1076'. '#1074#1077#1089', '#1082#1075'/'#1084'3'
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_COUNT'
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1083'-'#1074#1086
+                Width = 60
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1044#1057', %'
+                Width = 35
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'COAST_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = '  '#1062#1077#1085#1072' '#1079#1072' '#1077#1076'.     '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 75
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'COAST_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1062#1077#1085#1072' '#1079#1072' '#1077#1076'.  '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 75
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PRICE_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = '    '#1057#1090#1086#1080#1084'.        '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PRICE_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = '    '#1057#1090#1086#1080#1084'.     '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end>
+          end
+          object dbgrdStartup: TJvDBGrid
+            Left = 0
+            Top = 159
+            Width = 546
+            Height = 30
+            Align = alTop
+            DataSource = dsStartup
+            DefaultDrawing = False
+            DrawingStyle = gdsClassic
+            ReadOnly = True
+            TabOrder = 6
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = dbgrdDevicesDrawColumnCell
+            AutoAppend = False
+            AutoSort = False
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            CanDelete = False
+            EditControls = <>
+            AutoSizeRows = False
+            RowsHeight = 17
+            TitleRowHeight = 30
+            WordWrap = True
           end
         end
       end
@@ -2940,22 +3115,20 @@
           object PMAddAdditionHeatingE18: TMenuItem
             Tag = 10
             Caption = #1056#1072#1089#1094#1077#1085#1082#1080' '#1045'18'
-            OnClick = PopupMenuRatesAdd
+            OnClick = PMAddAdditionHeatingE18Click
           end
           object PMAddAdditionHeatingE20: TMenuItem
             Tag = 11
             Caption = #1056#1072#1089#1094#1077#1085#1082#1080' '#1045'20'
-            OnClick = PopupMenuRatesAdd
+            OnClick = PMAddAdditionHeatingE18Click
           end
         end
         object PMAddAdditionWinterPrice: TMenuItem
           Tag = 12
           Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1079#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
-          OnClick = PopupMenuRatesAdd
         end
         object PopupMenuRatesAdd352: TMenuItem
           Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1082#1086#1101#1092'. '#1089#1086#1075#1083#1072#1089#1085#1086' '#1055#1088#1080#1082#1072#1079#1091' '#8470'352 '#1082' '#1074#1099#1076#1077#1083#1077#1085#1085#1099#1084' '#1089#1090#1088#1086#1082#1072#1084
-          OnClick = PopupMenuRatesAdd
         end
       end
     end
@@ -2965,7 +3138,6 @@
     end
     object PMEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
-      OnClick = PMEditClick
     end
     object N20: TMenuItem
       Caption = '-'
@@ -3197,15 +3369,15 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 784
-    Top = 80
+    Left = 232
+    Top = 288
   end
   object qrTemp1: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 728
-    Top = 80
+    Left = 280
+    Top = 288
   end
   object qrRates: TFDQuery
     BeforeInsert = qrRatesBeforeInsert
@@ -3585,7 +3757,7 @@
   end
   object dsDescription: TDataSource
     DataSet = qrDescription
-    Left = 672
+    Left = 656
     Top = 80
   end
   object qrMechanizm: TFDQuery
@@ -3878,8 +4050,8 @@
   end
   object dsMechanizm: TDataSource
     DataSet = qrMechanizm
-    Left = 672
-    Top = 128
+    Left = 656
+    Top = 126
   end
   object qrMaterial: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
@@ -4181,7 +4353,7 @@
     BeforeInsert = qrMechanizmBeforeInsert
     BeforeScroll = qrDevicesBeforeScroll
     AfterScroll = qrDevicesAfterScroll
-    OnCalcFields = qrDevicesCalcFields
+    OnCalcFields = qrMechanizmCalcFields
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -4209,7 +4381,7 @@
       
         'SELECT *, 0.0 as SCROLL FROM devicescard_temp WHERE (ID = :IDVal' +
         'ue) ORDER BY ID;')
-    Left = 728
+    Left = 712
     Top = 128
     ParamData = <
       item
@@ -4370,7 +4542,7 @@
   end
   object dsDevices: TDataSource
     DataSet = qrDevices
-    Left = 784
+    Left = 752
     Top = 128
   end
   object PopupMenuDevices: TPopupMenu
@@ -4444,7 +4616,7 @@
   object qrDump: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
     AfterScroll = qrDumpAfterScroll
-    OnCalcFields = qrDumpCalcFields
+    OnCalcFields = qrMechanizmCalcFields
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -4469,10 +4641,8 @@
       end>
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
-      
-        'SELECT *, 0 as SCROLL FROM dumpcard_temp WHERE (ID = :IDValue) O' +
-        'RDER BY ID;')
-    Left = 832
+      'SELECT * FROM dumpcard_temp WHERE (ID = :IDValue) ORDER BY ID;')
+    Left = 712
     Top = 85
     ParamData = <
       item
@@ -4607,24 +4777,235 @@
       FieldName = 'WORK_YDW'
       Origin = 'WORK_YDW'
     end
-    object qrDumpSCROLL: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'SCROLL'
-      Origin = 'SCROLL'
-      ProviderFlags = []
-    end
   end
   object dsDump: TDataSource
     DataSet = qrDump
-    Left = 880
+    Left = 752
     Top = 85
   end
-  object PopupMenuDump: TPopupMenu
+  object PopupMenuDumpTransp: TPopupMenu
     Left = 96
     Top = 264
     object PMDumpEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMDumpEditClick
     end
+  end
+  object qrTransp: TFDQuery
+    BeforeInsert = qrMechanizmBeforeInsert
+    AfterScroll = qrTranspAfterScroll
+    OnCalcFields = qrTranspCalcFields
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtUInt16
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end>
+    SQL.Strings = (
+      '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
+      
+        'SELECT *, '#39#1090#39' as TRANSP_UNIT FROM transpcard_temp WHERE (ID = :I' +
+        'DValue) ORDER BY ID;')
+    Left = 800
+    Top = 85
+    ParamData = <
+      item
+        Name = 'IDVALUE'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end>
+    object qrTranspID: TFDAutoIncField
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInWhere, pfInKey]
+    end
+    object qrTranspTRANSP_TYPE: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_TYPE'
+      Origin = 'TRANSP_TYPE'
+    end
+    object qrTranspTRANSP_CODE_JUST: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_CODE_JUST'
+      Origin = 'TRANSP_CODE_JUST'
+      Size = 30
+    end
+    object qrTranspTRANSP_JUST: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_JUST'
+      Origin = 'TRANSP_JUST'
+      Size = 100
+    end
+    object qrTranspTRANSP_COUNT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_COUNT'
+      Origin = 'TRANSP_COUNT'
+    end
+    object qrTranspTRANSP_DIST: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_DIST'
+      Origin = 'TRANSP_DIST'
+    end
+    object qrTranspTRANSP_SUM_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_SUM_NDS'
+      Origin = 'TRANSP_SUM_NDS'
+    end
+    object qrTranspTRANSP_SUM_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'TRANSP_SUM_NO_NDS'
+      Origin = 'TRANSP_SUM_NO_NDS'
+    end
+    object qrTranspCOAST_NO_NDS: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NO_NDS'
+      Origin = 'COAST_NO_NDS'
+    end
+    object qrTranspCOAST_NDS: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NDS'
+      Origin = 'COAST_NDS'
+    end
+    object qrTranspCARG_CLASS: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'CARG_CLASS'
+      Origin = 'CARG_CLASS'
+    end
+    object qrTranspCARG_UNIT: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'CARG_UNIT'
+      Origin = 'CARG_UNIT'
+      Size = 30
+    end
+    object qrTranspCARG_TYPE: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'CARG_TYPE'
+      Origin = 'CARG_TYPE'
+    end
+    object qrTranspCARG_COUNT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'CARG_COUNT'
+      Origin = 'CARG_COUNT'
+    end
+    object qrTranspCARG_YDW: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'CARG_YDW'
+      Origin = 'CARG_YDW'
+    end
+    object qrTranspNDS: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'NDS'
+      Origin = 'NDS'
+    end
+    object qrTranspPRICE_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NDS'
+      Origin = 'PRICE_NDS'
+    end
+    object qrTranspPRICE_NO_NDS: TLargeintField
+      AutoGenerateValue = arDefault
+      FieldName = 'PRICE_NO_NDS'
+      Origin = 'PRICE_NO_NDS'
+    end
+    object qrTranspNUM: TIntegerField
+      FieldKind = fkCalculated
+      FieldName = 'NUM'
+      Calculated = True
+    end
+    object qrTranspCLASS: TStringField
+      FieldKind = fkCalculated
+      FieldName = 'CLASS'
+      Calculated = True
+    end
+    object qrTranspTRANSP_UNIT: TStringField
+      FieldName = 'TRANSP_UNIT'
+    end
+  end
+  object qrStartup: TFDQuery
+    BeforeInsert = qrMechanizmBeforeInsert
+    AfterScroll = qrStartupAfterScroll
+    OnCalcFields = qrMechanizmCalcFields
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtUInt16
+        TargetDataType = dtInt32
+      end>
+    SQL.Strings = (
+      
+        'select RATE_CODE, RATE_CAPTION, RATE_COUNT, RATE_UNIT from card_' +
+        'rate_temp')
+    Left = 800
+    Top = 128
+    object qrStartupRATE_CODE: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'RATE_CODE'
+      Origin = 'RATE_CODE'
+    end
+    object qrStartupRATE_CAPTION: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'RATE_CAPTION'
+      Origin = 'RATE_CAPTION'
+      Size = 32767
+    end
+    object qrStartupRATE_COUNT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'RATE_COUNT'
+      Origin = 'RATE_COUNT'
+    end
+    object qrStartupRATE_UNIT: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'RATE_UNIT'
+      Origin = 'RATE_UNIT'
+      Size = 100
+    end
+    object qrStartupNUM: TIntegerField
+      FieldKind = fkCalculated
+      FieldName = 'NUM'
+      Calculated = True
+    end
+  end
+  object dsTransp: TDataSource
+    DataSet = qrTransp
+    Left = 840
+    Top = 85
+  end
+  object dsStartup: TDataSource
+    DataSet = qrStartup
+    Left = 840
+    Top = 128
   end
 end
