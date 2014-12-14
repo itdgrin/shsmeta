@@ -65,6 +65,7 @@ type
     TranspCount, CCount, Ydw: extended;
     CoastNoNds, CoastNds, Nds: integer;
     Distance: Integer;
+    Loading: boolean;
     procedure GetEstimateInfo(aIdEstimate: integer);
     procedure LoadTranspInfo(aIdTransp: integer);
   public
@@ -193,7 +194,7 @@ begin
   else
   begin
     qrTemp.Active := False;
-    qrTemp.SQL.Text := 'Insert into transpcard_temp (TRANSP_TYPE=:TRANSP_TYPE,' +
+    qrTemp.SQL.Text := 'Update transpcard_temp set TRANSP_TYPE=:TRANSP_TYPE,' +
       'TRANSP_CODE_JUST=:TRANSP_CODE_JUST,TRANSP_JUST=:TRANSP_JUST,' +
       'TRANSP_COUNT=:TRANSP_COUNT,TRANSP_DIST=:TRANSP_DIST,' +
       'TRANSP_SUM_NDS=:TRANSP_SUM_NDS,TRANSP_SUM_NO_NDS=:TRANSP_SUM_NO_NDS,' +
@@ -233,6 +234,8 @@ end;
 
 procedure TFormTransportation.cmbUnitChange(Sender: TObject);
 begin
+  if Loading then exit;
+
   edtYDW.Enabled := 0 <> cmbUnit.ItemIndex;
   CalculationTransp;
 end;
@@ -258,6 +261,8 @@ end;
 
 procedure TFormTransportation.EditDistanceChange(Sender: TObject);
 begin
+  if Loading then exit;
+
   if (EditDistance.Text <> '') and (StrToInt(EditDistance.Text) > 0) then
     EditJustificationNumber.Text := JustNumber + '-' +
       EditDistance.Text
@@ -283,6 +288,7 @@ end;
 procedure TFormTransportation.edtCoastNDSChange(Sender: TObject);
 var i, nds: integer;
 begin
+  if Loading then exit;
   if not ChangeCoast then
   begin
     ChangeCoast := true;
@@ -304,6 +310,7 @@ end;
 procedure TFormTransportation.edtCoastNoNDSChange(Sender: TObject);
 var i, nds: integer;
 begin
+  if Loading then exit;
   if not ChangeCoast then
   begin
     ChangeCoast := true;
@@ -324,12 +331,15 @@ end;
 
 procedure TFormTransportation.edtCountChange(Sender: TObject);
 begin
+  if Loading then exit;
   CalculationTransp;
 end;
 
 procedure TFormTransportation.edtNDSChange(Sender: TObject);
 var i, cost: integer;
 begin
+  if Loading then exit;
+
   if not ChangeCoast then
   begin
     ChangeCoast := true;
@@ -350,6 +360,7 @@ end;
 
 procedure TFormTransportation.FormShow(Sender: TObject);
 begin
+  Loading := false;
   GetEstimateInfo(IdEstimate);
 
   if InsMode then
@@ -399,7 +410,9 @@ begin
 end;
 
 procedure TFormTransportation.LoadTranspInfo(aIdTransp: integer);
+var i : integer;
 begin
+  Loading := true;
   try
       qrTemp.Active := False;
       qrTemp.SQL.Text := 'SELECT * FROM transpcard_temp WHERE (ID = ' +
@@ -409,7 +422,6 @@ begin
       EditJustificationNumber.Text := qrTemp.FieldByName('TRANSP_CODE_JUST').AsString;
       EditJustification.Text := qrTemp.FieldByName('TRANSP_JUST').AsString;
       EditDistance.Text := qrTemp.FieldByName('TRANSP_DIST').AsString;
-
       cmbClass.ItemIndex := qrTemp.FieldByName('CARG_CLASS').AsInteger;
       cmbUnit.ItemIndex := qrTemp.FieldByName('CARG_TYPE').AsInteger;
       edtCount.Text := qrTemp.FieldByName('CARG_COUNT').AsString;
@@ -429,12 +441,13 @@ begin
       Ydw := qrTemp.FieldByName('CARG_YDW').AsFloat;
 
       qrTemp.Active := False;
-    except
-      on E: Exception do
-        MessageBox(0, PChar('При получении данных по свалке ошибка:' +
-        sLineBreak + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При получении данных по свалке ошибка:' +
+      sLineBreak + sLineBreak + E.Message), CaptionForm,
+      MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+  Loading := false;
 end;
 
 procedure TFormTransportation.GetCoast;

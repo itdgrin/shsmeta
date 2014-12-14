@@ -70,6 +70,7 @@ type
 
     DumpCount, MCount, Ydw: extended;
     CoastNoNds, CoastNds, Nds: integer;
+    Loading: boolean;  //Что-бы не срабатывали ченджи при заполнении формы
 
     procedure GetEstimateInfo(aIdEstimate: integer);
     procedure LoadDumpInfo(aIdDump: integer);
@@ -137,6 +138,7 @@ end;
 
 procedure TFormCalculationDump.LoadDumpInfo(aIdDump: integer);
 begin
+    Loading := True;
     try
       qrTemp.Active := False;
       qrTemp.SQL.Text := 'SELECT * FROM dumpcard_temp WHERE (ID = ' +
@@ -172,6 +174,7 @@ begin
         sLineBreak + sLineBreak + E.Message), CaptionForm,
         MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
+    Loading := false;
 end;
 
 procedure TFormCalculationDump.ButtonCancelClick(Sender: TObject);
@@ -301,6 +304,7 @@ end;
 procedure TFormCalculationDump.edtCoastNDSChange(Sender: TObject);
 var i, nds: integer;
 begin
+  if Loading then exit;
   if not ChangeCoast then
   begin
     ChangeCoast := true;
@@ -322,6 +326,7 @@ end;
 procedure TFormCalculationDump.edtCoastNoNDSChange(Sender: TObject);
 var i, nds: integer;
 begin
+  if Loading then exit;
   if not ChangeCoast then
   begin
     ChangeCoast := true;
@@ -348,6 +353,7 @@ end;
 procedure TFormCalculationDump.edtNDSChange(Sender: TObject);
 var i, cost: integer;
 begin
+  if Loading then exit;
   if not ChangeCoast then
   begin
     ChangeCoast := true;
@@ -383,6 +389,7 @@ end;
 
 procedure TFormCalculationDump.edtYDWChange(Sender: TObject);
 begin
+  if Loading then exit;
   CalculationCost;
 end;
 
@@ -494,6 +501,7 @@ end;
 
 procedure TFormCalculationDump.cmbUnitChange(Sender: TObject);
 begin
+  if Loading then exit;
   edtYDW.Enabled := Unit_Type <> cmbUnit.ItemIndex;
   CalculationCost;
 end;
