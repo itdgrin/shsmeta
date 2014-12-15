@@ -23,17 +23,35 @@ type
     qrUniDict: TFDQuery;
     dsUniDict: TDataSource;
     dbmmoparam_description: TDBMemo;
-    se2: TSpinEdit;
+    seYear: TSpinEdit;
     lbl1: TLabel;
     lbl2: TLabel;
     dbedtcode: TDBEdit;
     lbl3: TLabel;
+    qrUniDictid_unidictparam: TFDAutoIncField;
+    strngfldUniDictcode: TStringField;
+    strngfldUniDictparam_name: TStringField;
+    strngfldUniDictparam_description: TStringField;
+    qrUniDictMONTH_1: TFloatField;
+    qrUniDictMONTH_2: TFloatField;
+    qrUniDictMONTH_3: TFloatField;
+    qrUniDictMONTH_4: TFloatField;
+    qrUniDictMONTH_5: TFloatField;
+    qrUniDictMONTH_6: TFloatField;
+    qrUniDictMONTH_7: TFloatField;
+    qrUniDictMONTH_8: TFloatField;
+    qrUniDictMONTH_9: TFloatField;
+    qrUniDictMONTH_10: TFloatField;
+    qrUniDictMONTH_11: TFloatField;
+    qrUniDictMONTH_12: TFloatField;
+    qrSetParamValue: TFDQuery;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btn6Click(Sender: TObject);
-    procedure se2Change(Sender: TObject);
+    procedure seYearChange(Sender: TObject);
+    procedure qrUniDictMONTHChange(Sender: TField);
   private
     { Private declarations }
   public
@@ -73,8 +91,8 @@ begin
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N8Click);
   LoadDBGridSettings(JvDBGrid1);
-  se2.Value := YearOf(Now);
-  se2Change(Sender);
+  seYear.Value := YearOf(Now);
+  seYearChange(Sender);
 end;
 
 procedure TfUniDict.FormDestroy(Sender: TObject);
@@ -84,9 +102,18 @@ begin
   FormMain.DeleteButtonCloseWindow(Caption);
 end;
 
-procedure TfUniDict.se2Change(Sender: TObject);
+procedure TfUniDict.qrUniDictMONTHChange(Sender: TField);
 begin
-  qrUniDict.ParamByName('year').AsInteger := se2.Value;
+  qrSetParamValue.ParamByName('inPARAM_CODE').AsString := dbedtcode.Text;
+  qrSetParamValue.ParamByName('inMONTH').AsInteger := Sender.Tag;
+  qrSetParamValue.ParamByName('inYEAR').AsInteger := seYear.Value;
+  qrSetParamValue.ParamByName('inValue').Value := Sender.Value;
+  qrSetParamValue.ExecSQL;
+end;
+
+procedure TfUniDict.seYearChange(Sender: TObject);
+begin
+  qrUniDict.ParamByName('year').AsInteger := seYear.Value;
   CloseOpen(qrUniDict);
 end;
 

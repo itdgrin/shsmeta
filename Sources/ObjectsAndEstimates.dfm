@@ -304,7 +304,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         Width = 705
         Height = 100
         Align = alClient
-        DataSource = DataSourceObjects
+        DataSource = dsObjects
         DrawingStyle = gdsClassic
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         PopupMenu = PopupMenuObjects
@@ -549,6 +549,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           TabOrder = 0
           OnChange = TreeViewChange
           OnDblClick = TreeViewDblClick
+          ExplicitLeft = -1
+          ExplicitTop = 1
         end
       end
       object PanelActs: TPanel
@@ -583,8 +585,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           OnBeforeCellPaint = VSTBeforeCellPaint
           OnFocusChanged = VSTFocusChanged
           OnGetText = VSTGetText
-          ExplicitLeft = 1
-          ExplicitTop = 1
           Columns = <
             item
               Position = 0
@@ -611,9 +611,9 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       end
     end
   end
-  object DataSourceObjects: TDataSource
-    DataSet = ADOQueryObjects
-    Left = 152
+  object dsObjects: TDataSource
+    DataSet = qrObjects
+    Left = 104
     Top = 192
   end
   object PopupMenuObjects: TPopupMenu
@@ -716,47 +716,100 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       OnClick = PMActsDeleteClick
     end
   end
-  object ADOQueryActs: TFDQuery
+  object qrActs: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 441
     Top = 344
   end
-  object ADOQueryEstimateObject: TFDQuery
+  object qrEstimateObject: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 65
     Top = 296
   end
-  object ADOQueryEstimateLocal: TFDQuery
+  object qrEstimateLocal: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 65
     Top = 344
   end
-  object ADOQueryEstimatePTM: TFDQuery
+  object qrEstimatePTM: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 65
     Top = 400
   end
-  object ADOQueryTemp: TFDQuery
+  object qrTmp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 273
     Top = 192
   end
-  object ADOQueryObjects: TFDQuery
-    AfterScroll = ADOQueryObjectsAfterScroll
+  object qrObjects: TFDQuery
+    AfterScroll = qrObjectsAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 57
+    SQL.Strings = (
+      'SELECT DISTINCT obj_id        AS "IdObject",'
+      '       objcards.fin_id        AS "IdIstFin",'
+      '       objcards.cust_id       AS "IdClient",'
+      '       objcards.general_id    AS "IdContractor",'
+      '       objcards.cat_id        AS "IdCategory",'
+      '       objcards.region_id     AS "IdRegion",'
+      '       objcards.base_norm_id  AS "IdBasePrice",'
+      '       objcards.stroj_id      AS "IdOXROPR",'
+      '       num                    AS "NumberObject",'
+      '       num_dog                AS "NumberContract",'
+      '       date_dog               AS "DateContract",'
+      '       agr_list               AS "ListAgreements",'
+      '       objcards.full_name     AS "FullName",'
+      '       objcards.name          AS "Name",'
+      '       beg_stroj              AS "BeginConstruction",'
+      '       srok_stroj             AS "TermConstruction",'
+      '       ('
+      '           SELECT DISTINCT NAME'
+      '           FROM   istfin'
+      '           WHERE  id = IdIstFin'
+      '       )                      AS "NameIstFin",'
+      '       ('
+      '           SELECT DISTINCT full_name'
+      '           FROM   clients'
+      '           WHERE  client_id = IdClient'
+      '       )                      AS "NameClient",'
+      '       ('
+      '           SELECT DISTINCT full_name'
+      '           FROM   clients'
+      '           WHERE  client_id = IdContractor'
+      '       )                      AS "NameContractor",'
+      '       objcategory.cat_name   AS "NameCategory",'
+      '       state_nds              AS "VAT",'
+      '       regions.region_name    AS "NameRegion",'
+      '       baseprices.base_name   AS "BasePrice",'
+      '       objstroj.name          AS "OXROPR",'
+      '       encrypt                AS "CodeObject",'
+      '       calc_econom            AS "CalculationEconom"'
+      'FROM   objcards,'
+      '       istfin,'
+      '       objcategory,'
+      '       regions,'
+      '       baseprices,'
+      '       objstroj'
+      'WHERE  objcards.cat_id = objcategory.cat_id'
+      '       AND objcards.region_id = regions.region_id'
+      '       AND objcards.base_norm_id = baseprices.base_id'
+      '       AND objcards.stroj_id = objstroj.stroj_id'
+      'ORDER BY'
+      '       num,'
+      '       num_dog,'
+      '       objcards.full_name     ASC')
+    Left = 49
     Top = 192
   end
 end
