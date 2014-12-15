@@ -16,21 +16,17 @@ type
 
 type
   TFormObjectsAndEstimates = class(TForm)
-
-    DataSourceObjects: TDataSource;
-
+    dsObjects: TDataSource;
     PanelMain: TPanel;
     PanelObjects: TPanel;
     PanelBottom: TPanel;
     PanelSelectedColumns: TPanel;
-
     PopupMenuObjects: TPopupMenu;
     PopupMenuObjectsAdd: TMenuItem;
     PopupMenuObjectsEdit: TMenuItem;
     PopupMenuObjectsDelete: TMenuItem;
     PopupMenuObjectsSeparator1: TMenuItem;
     PopupMenuObjectsColumns: TMenuItem;
-
     PopupMenuEstimates: TPopupMenu;
     PopupMenuEstimatesAdd: TMenuItem;
     PMEstimatesAddLocal: TMenuItem;
@@ -40,7 +36,6 @@ type
     PMEstimatesDelete: TMenuItem;
     PopupMenuEstimatesSeparator1: TMenuItem;
     PMEstimatesBasicData: TMenuItem;
-
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
@@ -58,15 +53,11 @@ type
     CheckBox15: TCheckBox;
     CheckBox16: TCheckBox;
     CheckBox17: TCheckBox;
-
     ButtonSelectAll: TButton;
     ButtonSelectNone: TButton;
     ButtonCancel: TButton;
-
     DBGridObjects: TDBGrid;
-
     Label1: TLabel;
-
     ImageSplitterCenter: TImage;
     SplitterCenter: TSplitter;
     ImageSplitterBottomCenter: TImage;
@@ -84,13 +75,12 @@ type
     PMEstimateExpandSelected: TMenuItem;
     VST: TVirtualStringTree;
     PMActsOpen: TMenuItem;
-    ADOQueryActs: TFDQuery;
-    ADOQueryEstimateObject: TFDQuery;
-    ADOQueryEstimateLocal: TFDQuery;
-    ADOQueryEstimatePTM: TFDQuery;
-    ADOQueryTemp: TFDQuery;
-    ADOQueryObjects: TFDQuery;
-
+    qrActs: TFDQuery;
+    qrEstimateObject: TFDQuery;
+    qrEstimateLocal: TFDQuery;
+    qrEstimatePTM: TFDQuery;
+    qrTmp: TFDQuery;
+    qrObjects: TFDQuery;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -98,23 +88,17 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-
     procedure PopupMenuObjectsAddClick(Sender: TObject);
     procedure PopupMenuObjectsEditClick(Sender: TObject);
     procedure PopupMenuObjectsDeleteClick(Sender: TObject);
     procedure PopupMenuObjectsColumnsClick(Sender: TObject);
-
     procedure RunQueryForEstimateObject;
     procedure RunQueryForEstimatelocal;
     procedure RunQueryForEstimatePTM;
-
-    procedure ADOQueryObjectsAfterScroll(DataSet: TDataSet);
-
+    procedure qrObjectsAfterScroll(DataSet: TDataSet);
     procedure PanelBottomResize(Sender: TObject);
-
     procedure FillingTableObjects;
     procedure FillingTableEstimates;
-
     procedure PopupMenuEstimatesAddClick(Sender: TObject);
     procedure PMEstimatesEditClick(Sender: TObject);
     procedure PMEstimatesDeleteClick(Sender: TObject);
@@ -151,18 +135,15 @@ type
     procedure OpenAct(const ActID: Integer);
   private
     StrQuery: String; // Строка для формирования запросов
-
     IdObject: Integer;
     IdEstimate: Integer;
     IDAct: Integer;
     TypeEstimate: Integer;
-
   public
     ActReadOnly: Boolean;
     function getCurObject: Integer;
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
-
   end;
 
 var
@@ -326,14 +307,14 @@ end;
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsEditClick(Sender: TObject);
 begin
-  if ADOQueryObjects.RecordCount <= 0 then
+  if qrObjects.RecordCount <= 0 then
   begin
     MessageBox(0, PChar('Нет объектов для редактирования!'), CaptionForm,
       MB_ICONINFORMATION + mb_OK + mb_TaskModal);
     Exit;
   end;
 
-  with FormCardObject, ADOQueryObjects do
+  with FormCardObject, qrObjects do
   begin
     // Заносим значения в поля редактирования
     EditNumberObject.Text := FieldByName('NumberObject').AsVariant;
@@ -384,14 +365,14 @@ var
   NumberObject: string;
   ResultDialog: Integer;
 begin
-  if ADOQueryObjects.RecordCount <= 0 then
+  if qrObjects.RecordCount <= 0 then
   begin
     MessageBox(0, PChar('Нет объектов для удаления!'), CaptionForm, MB_ICONINFORMATION + mb_OK +
       mb_TaskModal);
     Exit;
   end;
 
-  NumberObject := IntToStr(ADOQueryObjects.FieldByName('NumberObject').AsVariant);
+  NumberObject := IntToStr(qrObjects.FieldByName('NumberObject').AsVariant);
 
   ResultDialog := MessageBox(0, PChar('Вы действительно хотите удалить объект с номером: ' + NumberObject +
     sLineBreak + 'Внимание! Все сметы связанные с объектом будут удалены!' + sLineBreak + sLineBreak +
@@ -406,7 +387,7 @@ begin
   try
     StrQuery := 'DELETE FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';';
 
-    with ADOQueryTemp do
+    with qrTmp do
     begin
       Active := False;
       SQL.Clear;
@@ -416,7 +397,7 @@ begin
 
     StrQuery := 'DELETE FROM smetasourcedata WHERE obj_id = ' + IntToStr(IdObject) + ';';
 
-    with ADOQueryTemp do
+    with qrTmp do
     begin
       Active := False;
       SQL.Clear;
@@ -433,7 +414,7 @@ begin
 
   FillingTableObjects;
 
-  if ADOQueryObjects.RecordCount = 0 then
+  if qrObjects.RecordCount = 0 then
     FillingTableEstimates;
 end;
 
@@ -448,7 +429,7 @@ end;
 
 procedure TFormObjectsAndEstimates.RunQueryForEstimateObject;
 begin
-  with ADOQueryEstimateObject do
+  with qrEstimateObject do
   begin
     Active := False;
     SQL.Clear;
@@ -467,9 +448,9 @@ procedure TFormObjectsAndEstimates.RunQueryForEstimatelocal;
 var
   vId: Integer;
 begin
-  vId := ADOQueryEstimateObject.FieldByName('IdEstimate').AsInteger;
+  vId := qrEstimateObject.FieldByName('IdEstimate').AsInteger;
 
-  with ADOQueryEstimateLocal do
+  with qrEstimateLocal do
   begin
     Active := False;
     SQL.Clear;
@@ -489,9 +470,9 @@ procedure TFormObjectsAndEstimates.RunQueryForEstimatePTM;
 var
   vId: Integer;
 begin
-  vId := ADOQueryEstimateLocal.FieldByName('IdEstimate').AsInteger;
+  vId := qrEstimateLocal.FieldByName('IdEstimate').AsInteger;
 
-  with ADOQueryEstimatePTM do
+  with qrEstimatePTM do
   begin
     Active := False;
     SQL.Clear;
@@ -507,7 +488,7 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.ADOQueryObjectsAfterScroll(DataSet: TDataSet);
+procedure TFormObjectsAndEstimates.qrObjectsAfterScroll(DataSet: TDataSet);
 begin
   IdObject := DataSet.FieldByName('IdObject').AsVariant;
   IdEstimate := 0;
@@ -584,7 +565,7 @@ begin
   if (not Assigned(FormCalculationEstimate)) then
     FormCalculationEstimate := TFormCalculationEstimate.Create(FormMain);
 
-  with FormCalculationEstimate, ADOQueryObjects do
+  with FormCalculationEstimate, qrObjects do
   begin
     EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' + FieldByName('Name')
       .AsVariant;
@@ -614,20 +595,20 @@ procedure TFormObjectsAndEstimates.VSTAfterCellPaint(Sender: TBaseVirtualTree; T
 var
   CellText: string;
 begin
-  if not ADOQueryActs.Active or (ADOQueryActs.RecordCount <= 0) then
+  if not CheckQrActiveEmpty(qrActs) then
     Exit;
 
-  ADOQueryActs.RecNo := Node.Index + 1;
+  qrActs.RecNo := Node.Index + 1;
 
   case Column of
     0:
-      CellText := ADOQueryActs.FieldByName('name').AsVariant;
+      CellText := qrActs.FieldByName('name').AsVariant;
     1:
-      CellText := FormatDateTime('dd/mm/yyyy', ADOQueryActs.FieldByName('date').AsDateTime);
+      CellText := FormatDateTime('dd/mm/yyyy', qrActs.FieldByName('date').AsDateTime);
     2:
-      CellText := ADOQueryActs.FieldByName('description').AsVariant;
+      CellText := qrActs.FieldByName('description').AsVariant;
     3:
-      CellText := ADOQueryActs.FieldByName('cost').AsVariant;
+      CellText := qrActs.FieldByName('cost').AsVariant;
   end;
 
   VSTAfterCellPaintDefault(Sender, TargetCanvas, Node, Column, CellRect, CellText);
@@ -649,7 +630,7 @@ begin
   if (not Assigned(FormCalculationEstimate)) then
     FormCalculationEstimate := TFormCalculationEstimate.Create(FormMain);
 
-  with FormCalculationEstimate, ADOQueryObjects do
+  with FormCalculationEstimate, qrObjects do
   begin
     EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' + FieldByName('Name')
       .AsVariant;
@@ -680,21 +661,21 @@ procedure TFormObjectsAndEstimates.VSTFocusChanged(Sender: TBaseVirtualTree; Nod
 begin
   VSTFocusChangedDefault(Sender, Node, Column);
 
-  if not ADOQueryActs.Active or (ADOQueryActs.RecordCount <= 0) or (Node = nil) then
+  if not CheckQrActiveEmpty(qrActs) or (Node = nil) then
     Exit;
 
-  ADOQueryActs.RecNo := Node.Index + 1;
-  IDAct := ADOQueryActs.FieldByName('id').AsInteger;
+  qrActs.RecNo := Node.Index + 1;
+  IDAct := qrActs.FieldByName('id').AsInteger;
 end;
 
 procedure TFormObjectsAndEstimates.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 begin
   try
-    if not ADOQueryActs.Active then
+    if not qrActs.Active then
       Exit;
 
-    if (ADOQueryActs.RecordCount <= 0) then
+    if (qrActs.RecordCount <= 0) then
     begin
       case Column of
         0:
@@ -710,17 +691,17 @@ begin
       Exit;
     end;
 
-    ADOQueryActs.RecNo := Node.Index + 1;
+    qrActs.RecNo := Node.Index + 1;
 
     case Column of
       0:
-        CellText := ADOQueryActs.FieldByName('name').AsVariant;
+        CellText := qrActs.FieldByName('name').AsVariant;
       1:
-        CellText := FormatDateTime('dd/mm/yyyy', ADOQueryActs.FieldByName('date').AsDateTime);
+        CellText := FormatDateTime('dd/mm/yyyy', qrActs.FieldByName('date').AsDateTime);
       2:
-        CellText := ADOQueryActs.FieldByName('description').AsVariant;
+        CellText := qrActs.FieldByName('description').AsVariant;
       3:
-        CellText := ADOQueryActs.FieldByName('cost').AsVariant;
+        CellText := qrActs.FieldByName('cost').AsVariant;
     end;
   except
     on E: Exception do
@@ -732,7 +713,7 @@ end;
 procedure TFormObjectsAndEstimates.GetTypeEstimate;
 begin
   try
-    with ADOQueryTemp do
+    with qrTmp do
     begin
       Active := False;
       SQL.Clear;
@@ -766,7 +747,7 @@ begin
     FormKC6.MyShow(IdObject);
   end;
 
-  with FormCalculationEstimate, ADOQueryObjects do
+  with FormCalculationEstimate, qrObjects do
   begin
     EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' + FieldByName('Name')
       .AsVariant;
@@ -806,7 +787,7 @@ begin
   if MessageDlg('Удалить запись?', mtWarning, mbYesNo, 0) <> mrYes then
     Exit;
   try
-    with ADOQueryTemp do
+    with qrTmp do
     begin
       Active := False;
       SQL.Clear;
@@ -831,43 +812,17 @@ end;
 
 procedure TFormObjectsAndEstimates.PMActsPopup(Sender: TObject);
 begin
-  if (TreeView.Selected = nil) or (TypeEstimate <> 2) then
   // Если не выделена смета или выделена, но не объектная
-  begin
-    PMActsOpen.Enabled := False;
-    PMActsAdd.Enabled := False;
-    PMActsEdit.Enabled := False;
-    PMActsDelete.Enabled := False;
-  end
-  else
-  begin
-    PMActsOpen.Enabled := True;
-    PMActsAdd.Enabled := True;
-    PMActsEdit.Enabled := True;
-    PMActsDelete.Enabled := True;
-    {
-      PMActsAdd.Enabled := True;
-
-      if ADOQueryActs.RecordCount <= 0 then
-      begin
-      PMActsOpen.Enabled := True;
-      PMActsEdit.Enabled := True;
-      PMActsDelete.Enabled := True;
-      end
-      else
-      begin
-      PMActsOpen.Enabled := False;
-      PMActsEdit.Enabled := False;
-      PMActsDelete.Enabled := False;
-      end;
-    }
-  end;
+  PMActsOpen.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
+  PMActsAdd.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
+  PMActsEdit.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
+  PMActsDelete.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
 end;
 
 function TFormObjectsAndEstimates.GetNumberEstimate(): string;
 begin
   try
-    with ADOQueryTemp do
+    with qrTmp do
     begin
       Active := False;
       SQL.Clear;
@@ -904,30 +859,7 @@ var
   i: Integer;
 begin
   try
-    with ADOQueryObjects do
-    begin
-      Active := False;
-      SQL.Clear;
-
-      StrQuery :=
-        'SELECT distinct obj_id as "IdObject", objcards.fin_id as "IdIstFin", objcards.cust_id as "IdClient", '
-        + 'objcards.general_id as "IdContractor", objcards.cat_id as "IdCategory", objcards.region_id as "IdRegion", '
-        + 'objcards.base_norm_id as "IdBasePrice", objcards.stroj_id as "IdOXROPR", num as "NumberObject", ' +
-        'num_dog as "NumberContract", date_dog as "DateContract", agr_list as "ListAgreements", ' +
-        'objcards.full_name as "FullName", objcards.name as "Name", beg_stroj as "BeginConstruction", ' +
-        'srok_stroj as "TermConstruction", (SELECT DISTINCT name FROM istfin WHERE id = IdIstFin) as "NameIstFin", '
-        + '(SELECT DISTINCT full_name FROM clients WHERE client_id = IdClient) as "NameClient", ' +
-        '(SELECT DISTINCT full_name FROM clients WHERE client_id = IdContractor) as "NameContractor", ' +
-        'objcategory.cat_name as "NameCategory", state_nds as "VAT", regions.region_name as "NameRegion", ' +
-        'baseprices.base_name as "BasePrice", objstroj.name as "OXROPR", encrypt as "CodeObject", ' +
-        'calc_econom as "CalculationEconom" FROM objcards, istfin, objcategory, regions, baseprices, objstroj WHERE '
-        + 'objcards.cat_id = objcategory.cat_id and objcards.region_id = regions.region_id and ' +
-        'objcards.base_norm_id = baseprices.base_id and objcards.stroj_id = objstroj.stroj_id ORDER BY num, num_dog, '
-        + 'objcards.full_name ASC;';
-
-      SQL.Add(StrQuery);
-      Active := True;
-    end;
+    CloseOpen(qrObjects);
   except
     on E: Exception do
       MessageBox(0, PChar('Запрос на получение данных об объектах не был выполнен.' + sLineBreak +
@@ -943,8 +875,7 @@ begin
   TreeView.Items.Clear;
   // НАЧАЛО вывода ОБЪЕКТЫХ смет
   RunQueryForEstimateObject;
-
-  with ADOQueryEstimateObject do
+  with qrEstimateObject do
   begin
     First;
     while not Eof do
@@ -955,7 +886,7 @@ begin
       // ---------- НАЧАЛО вывода ЛОКАЛЬНЫХ смет
       RunQueryForEstimatelocal;
 
-      with ADOQueryEstimateLocal do
+      with qrEstimateLocal do
       begin
         First;
         while not Eof do
@@ -966,7 +897,7 @@ begin
           // -------------------- НАЧАЛО вывода смет ПТМ
           RunQueryForEstimatePTM;
 
-          with ADOQueryEstimatePTM do
+          with qrEstimatePTM do
           begin
             First;
             while not Eof do
@@ -1028,7 +959,7 @@ begin
   // ----------------------------------------
 
   try
-    with ADOQueryTemp do
+    with qrTmp do
     begin
       Active := False;
       SQL.Clear;
@@ -1157,7 +1088,7 @@ end;
 procedure TFormObjectsAndEstimates.FillingActs;
 begin
   try
-    with ADOQueryActs do
+    with qrActs do
     begin
       Active := False;
       SQL.Clear;
@@ -1165,13 +1096,13 @@ begin
       ParamByName('id_estimate_object').Value := IdEstimate;
       Active := True;
 
-      if ADOQueryActs.RecordCount <= 0 then
+      if qrActs.RecordCount <= 0 then
       begin
         VST.RootNodeCount := 1;
         Exit;
       end;
 
-      VST.RootNodeCount := ADOQueryActs.RecordCount;
+      VST.RootNodeCount := qrActs.RecordCount;
       VST.Selected[VST.GetFirst] := True;
       VST.FocusedNode := VST.GetFirst;
     end;
