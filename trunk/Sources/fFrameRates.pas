@@ -512,7 +512,7 @@ procedure TFrameRates.VSTDblClick(Sender: TObject);
 begin
   //Если разрешено добавлять данные из фрейма
   if AllowAddition then
-    FormCalculationEstimate.AddRate(EditJustification.Text, 0);
+    FormCalculationEstimate.AddRate(ADOQueryNormativ.FieldByName('IdNormative').AsInteger);
 end;
 
 procedure TFrameRates.VSTEnter(Sender: TObject);
