@@ -451,8 +451,7 @@ end;
 procedure TFramePriceMechanizm.VSTDblClick(Sender: TObject);
 begin
   if AllowAddition then
-    FormCalculationEstimate.AddMechanizm(ADOQuery.FieldByName('Id').AsInteger,
-      ADOQuery.FieldByName('monat').AsInteger, ADOQuery.FieldByName('year').AsInteger);
+    FormCalculationEstimate.AddMechanizm(ADOQuery.FieldByName('Id').AsInteger);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

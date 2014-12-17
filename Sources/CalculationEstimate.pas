@@ -11,12 +11,18 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls,
   CalculationEstimateSSR, CalculationEstimateSummaryCalculations, JvExDBGrids,
-  JvDBGrid;
+  JvDBGrid, JvDBUltimGrid;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
   private
     procedure Paint(); override;
+  end;
+
+  TMyDBGrid = class(TDBGrid)
+  public
+    property Row;
+    property TopRow;
   end;
 
   TTwoValues = record
@@ -610,9 +616,9 @@ type
 
     procedure OutputDataToTable(aRecNo: Integer); // Заполнение таблицы расценок
 
-    procedure AddRate(RateNumber: String; Count: Double);
+    procedure AddRate(const vRateId: Integer);
     procedure AddMaterial(const vMatId: Integer);
-    procedure AddMechanizm(const vMechId, vMonth, vYear: Integer);
+    procedure AddMechanizm(const vMechId: Integer);
     procedure AddDevice(const vEquipId: Integer);
 
     procedure PMMechFromRatesClick(Sender: TObject);
@@ -663,6 +669,7 @@ type
     procedure qrStartupAfterScroll(DataSet: TDataSet);
     procedure qrTranspCalcFields(DataSet: TDataSet);
     procedure PMAddAdditionHeatingE18Click(Sender: TObject);
+    procedure qrRatesCODEChange(Sender: TField);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -2153,6 +2160,112 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.qrRatesCODEChange(Sender: TField);
+var NewCode: string;
+    NewID: integer;
+begin
+  NewCode := AnsiUpperCase(qrRatesCODE.AsString);
+  dbgrdRates.EditorMode := false;
+  NewID := 0;
+
+  //Замена литинских на кирилические
+  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') then //E кирилическая и латинская
+  begin
+    if NewCode[1] = 'E' then NewCode[1] := 'Е';
+
+    qrTemp.Active := False;
+    qrTemp.SQL.Clear;
+    qrTemp.SQL.Add('SELECT normativ_id FROM normativg WHERE norm_num = :norm_num;');
+    qrTemp.ParamByName('norm_num').Value := NewCode;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      NewID := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+    if NewID = 0 then
+    begin
+      MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
+        MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+      exit;
+    end;
+
+    AddRate(NewID);
+    dbgrdRates.EditorMode := true;
+    exit;
+  end;
+
+  if (NewCode[1] = 'С') or (NewCode[1] = 'C') then //C кирилическая и латинская
+  begin
+    if NewCode[1] = 'C' then NewCode[1] := 'С';
+
+    qrTemp.Active := False;
+    qrTemp.SQL.Clear;
+    qrTemp.SQL.Add('SELECT MATERIAL_ID FROM material WHERE MAT_CODE = :CODE;');
+    qrTemp.ParamByName('CODE').Value := NewCode;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      NewID := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+    if NewID = 0 then
+    begin
+      MessageBox(0, 'Материал с указанным кодом не найден!', CaptionForm,
+        MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+      exit;
+    end;
+
+    AddMaterial(NewID);
+    dbgrdRates.EditorMode := true;
+    exit;
+  end;
+
+  if (NewCode[1] = 'М') or (NewCode[1] = 'M') then //M кирилическая и латинская
+  begin
+    if NewCode[1] = 'M' then NewCode[1] := 'М';
+
+    qrTemp.Active := False;
+    qrTemp.SQL.Clear;
+    qrTemp.SQL.Add('SELECT MECHANIZM_ID FROM mechanizm WHERE MECH_CODE = :CODE;');
+    qrTemp.ParamByName('CODE').Value := NewCode;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      NewID := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+    if NewID = 0 then
+    begin
+      MessageBox(0, 'Механизм с указанным кодом не найден!', CaptionForm,
+        MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+      exit;
+    end;
+
+    AddMechanizm(NewID);
+    dbgrdRates.EditorMode := true;
+    exit;
+  end;
+
+  if (NewCode[1] in ['0'..'9']) then
+  begin
+    qrTemp.Active := False;
+    qrTemp.SQL.Clear;
+    qrTemp.SQL.Add('SELECT DEVICE_ID FROM devices WHERE DEVICE_CODE1 = :CODE;');
+    qrTemp.ParamByName('CODE').Value := NewCode;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      NewID := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+    if NewID = 0 then
+    begin
+      MessageBox(0, 'Оборудование с указанным кодом не найден!', CaptionForm,
+        MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+      exit;
+    end;
+    AddDevice(NewID);
+    dbgrdRates.EditorMode := true;
+    exit;
+  end;
+
+  MessageBox(0, 'По указанному коду ничего не найдено!', CaptionForm,
+        MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+end;
+
 procedure TFormCalculationEstimate.qrRatesCOUNTChange(Sender: TField);
 var
   RCount: real;
@@ -2253,7 +2366,7 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  if SpeedButtonTransp.Down then
+  if SpeedButtonStartup.Down then
     MemoRight.Text := qrStartupRATE_CAPTION.AsString;
 end;
 
@@ -2933,42 +3046,16 @@ begin
 end;
 
 // Добавление расценки в смету
-procedure TFormCalculationEstimate.AddRate(RateNumber: String; Count: Double);
+procedure TFormCalculationEstimate.AddRate(const vRateId: Integer);
 var
   i: Integer;
   FieldRates: TFieldRates;
-  vIdRate, vMaxIdRate: Integer;
+  vMaxIdRate: Integer;
   vNormRas: Double;
   Month1, Year1: Integer;
   PriceVAT, PriceNoVAT: string;
   SQL1, SQL2: string;
 begin
-  // Ищем введёный норматив, если такого норматива нет, выдаём сообщение и выходим
-  // иначе получаем его Id и продолжаем выполнение
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT normativ_id FROM normativg WHERE norm_num = :norm_num;');
-      ParamByName('norm_num').Value := RateNumber;
-      Active := True;
-
-      if RecordCount <= 0 then
-      begin
-        MessageBox(0, 'Расценка с указанным номером не была найдена!', CaptionForm,
-          MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
-
-        Exit;
-      end;
-
-      vIdRate := FieldByName('normativ_id').AsVariant;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При поиске Id расценки возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
 
   // Добавляем найденную расценку во временную таблицу card_rate_temp
   try
@@ -2978,8 +3065,8 @@ begin
       SQL.Clear;
       SQL.Add('CALL AddRate(:id_estimate, :id_rate, :cnt);');
       ParamByName('id_estimate').Value := IdEstimate;
-      ParamByName('id_rate').Value := vIdRate;
-      ParamByName('cnt').AsFloat := Count;
+      ParamByName('id_rate').Value := vRateId;
+      ParamByName('cnt').AsFloat := 0;
       ExecSQL;
     end;
 
@@ -3036,7 +3123,7 @@ begin
         'TMat.unit_id as "UnitId", mat_name as "MatName", NULL as "PriceVAT", ' + 'NULL as "PriceNoVAT", ' +
         '(SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate) +
         ') as "PercentTransport" FROM units, ' + '(SELECT * FROM material WHERE mat_code LIKE "П%") TMat, ' +
-        '(SELECT material_id, norm_ras FROM materialnorm WHERE ' + 'normativ_id = ' + IntToStr(vIdRate) +
+        '(SELECT material_id, norm_ras FROM materialnorm WHERE ' + 'normativ_id = ' + IntToStr(vRateId) +
         ') TMatNorm ' + 'WHERE TMat.material_id = TMatNorm.material_id and ' +
         'TMat.unit_id = units.unit_id ORDER BY 1)';
 
@@ -3045,7 +3132,7 @@ begin
         'material.unit_id as "UnitId", material.mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' +
         PriceNoVAT + ' as "PriceNoVAT", ' + '(SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' +
         IntToStr(IdEstimate) + ') as "PercentTransport" FROM material, units, ' +
-        '(SELECT material_id, norm_ras FROM materialnorm where ' + 'normativ_id = ' + IntToStr(vIdRate) +
+        '(SELECT material_id, norm_ras FROM materialnorm where ' + 'normativ_id = ' + IntToStr(vRateId) +
         ') TMatNorm, ' + '(SELECT material_id, ' + PriceVAT + ', ' + PriceNoVAT +
         ' FROM materialcoastg WHERE monat = ' + IntToStr(Month1) + ' and year = ' + IntToStr(Year1) +
         ') TMatCoast WHERE ' + 'material.material_id = TMatNorm.material_id and ' +
@@ -3138,7 +3225,7 @@ begin
 
       ParamByName('IdObject').Value := IdObject;
       ParamByName('IdEstimate').Value := IdEstimate;
-      ParamByName('IdRate').Value := vIdRate;
+      ParamByName('IdRate').Value := vRateId;
 
       Active := True;
       First;
@@ -5565,7 +5652,7 @@ begin
 end;
 
 // Добавление механизма к смете
-procedure TFormCalculationEstimate.AddMechanizm(const vMechId, vMonth, vYear: Integer);
+procedure TFormCalculationEstimate.AddMechanizm(const vMechId: Integer);
 begin
   try
     with qrTemp do
@@ -5575,8 +5662,8 @@ begin
       SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, :Month, :Year);');
       ParamByName('IdEstimate').Value := IdEstimate;
       ParamByName('IdMech').Value := vMechId;
-      ParamByName('Month').Value := vMonth;
-      ParamByName('Year').Value := vYear;
+      ParamByName('Month').Value := MonthEstimate;
+      ParamByName('Year').Value := YearEstimate;
       ExecSQL;
     end;
 
@@ -5864,7 +5951,7 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    if dbgrdRates.Row =  qrRates.RecNo then
+    if dbgrdRates.Row = qrRates.RecNo then
     begin
       Font.Style := Font.Style + [fsbold];
     end;

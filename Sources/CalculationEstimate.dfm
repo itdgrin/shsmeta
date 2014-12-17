@@ -1436,7 +1436,6 @@
           ShowCaption = False
           TabOrder = 1
           OnResize = PanelClientRightTablesResize
-          ExplicitHeight = 155
           object ImageSplitterRight1: TImage
             Left = 208
             Top = 97
@@ -1993,6 +1992,7 @@
             Align = alTop
             Ctl3D = False
             DataSource = dsDevices
+            DefaultDrawing = False
             DrawingStyle = gdsClassic
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -2158,9 +2158,11 @@
             Width = 546
             Height = 30
             Align = alTop
+            Ctl3D = False
             DataSource = dsDump
             DefaultDrawing = False
             DrawingStyle = gdsClassic
+            ParentCtl3D = False
             PopupMenu = PopupMenuDumpTransp
             ReadOnly = True
             TabOrder = 3
@@ -2304,9 +2306,11 @@
             Width = 546
             Height = 30
             Align = alTop
+            Ctl3D = False
             DataSource = dsTransp
             DefaultDrawing = False
             DrawingStyle = gdsClassic
+            ParentCtl3D = False
             PopupMenu = PopupMenuDumpTransp
             ReadOnly = True
             TabOrder = 5
@@ -2421,11 +2425,13 @@
             Left = 0
             Top = 159
             Width = 546
-            Height = 30
+            Height = 16
             Align = alTop
+            Ctl3D = False
             DataSource = dsStartup
             DefaultDrawing = False
             DrawingStyle = gdsClassic
+            ParentCtl3D = False
             ReadOnly = True
             TabOrder = 6
             TitleFont.Charset = DEFAULT_CHARSET
@@ -2445,6 +2451,39 @@
             RowsHeight = 17
             TitleRowHeight = 30
             WordWrap = True
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'NUM'
+                Title.Alignment = taCenter
+                Title.Caption = #8470
+                Width = 25
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'RATE_CODE'
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1076
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'RATE_COUNT'
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1083'-'#1074#1086
+                Width = 60
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'RATE_UNIT'
+                Title.Alignment = taCenter
+                Title.Caption = #1045#1076'. '#1080#1079#1084'.'
+                Width = 50
+                Visible = True
+              end>
           end
         end
       end
@@ -3643,6 +3682,7 @@
       Origin = 'CODE'
       ProviderFlags = []
       ReadOnly = True
+      OnChange = qrRatesCODEChange
       Size = 30
     end
     object qrRatesCOUNT: TFloatField
@@ -4835,6 +4875,7 @@
       FieldName = 'ID'
       Origin = 'ID'
       ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
     end
     object qrTranspTRANSP_TYPE: TByteField
       AutoGenerateValue = arDefault
