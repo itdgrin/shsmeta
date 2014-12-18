@@ -4625,7 +4625,7 @@
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      'CALL CalcCalculation(:ESTIMATE_ID, :TYPE_DATA, :OWNER_ID)')
+      'CALL CalcCalculation(:ESTIMATE_ID, :TYPE_DATA, :OWNER_ID, 1)')
     Left = 315
     Top = 432
     ParamData = <

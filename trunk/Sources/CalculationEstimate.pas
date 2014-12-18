@@ -5204,6 +5204,10 @@ begin
   end;
 
   qrRates.ExecSQL;
+
+  qrTemp.SQL.Text := 'CALL CalcCalculationAll;';
+  qrTemp.ExecSQL;
+
   // Открывает rates_temp
   qrRates.SQL.Text := 'SELECT * FROM rates_temp ORDER BY DID, RID, STYPE, MID, MEID';
   qrRates.Active := True;
