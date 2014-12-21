@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, Classes, Controls, Forms, ExtCtrls, Buttons, StdCtrls,
   SysUtils, fFrameRates, Main, Waiting, fFramePriceMaterials,
-  fFramePriceMechanizms, fFrameEquipments, CalculationEstimate;
+  fFramePriceMechanizms, fFrameEquipments, CalculationEstimate, fFrameSmeta;
 
 type
   TFormAdditionData = class(TForm)
@@ -24,15 +24,9 @@ type
     procedure FormDestroy(Sender: TObject);
 
     procedure HideAllFrames;
-
-    procedure SpeedButtonRatesClick(Sender: TObject);
-    procedure SpeedButtonMaterialClick(Sender: TObject);
-    procedure SpeedButtonMechanizmClick(Sender: TObject);
-    procedure SpeedButtonEquipmentClick(Sender: TObject);
-
+    procedure SpeedButtonClick(Sender: TObject);
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
-
   public
     FrameRates: TFrameRates;
     FramePriceMaterial: TFramePriceMaterial;
@@ -97,36 +91,37 @@ begin
   FrameRates := TFrameRates.Create(Self, vDataBase, True);
   FrameRates.Parent := Self;
   FrameRates.Align := alClient;
-  FrameRates.Visible := True;
+  FrameRates.Visible := False;
+  SpeedButtonRates.Tag := Integer(FrameRates);
 
   FramePriceMaterial := TFramePriceMaterial.Create(Self, vDataBase, True, True, False);
   FramePriceMaterial.Parent := Self;
   FramePriceMaterial.Align := alClient;
   FramePriceMaterial.Visible := False;
+  SpeedButtonMaterial.Tag := Integer(FramePriceMaterial);
 
   FramePriceMechanizm := TFramePriceMechanizm.Create(Self, vDataBase, True, True);
   FramePriceMechanizm.Parent := Self;
   FramePriceMechanizm.Align := alClient;
   FramePriceMechanizm.Visible := False;
+  SpeedButtonMechanizm.Tag := Integer(FramePriceMechanizm);
 
   FrameEquipment := TFrameEquipment.Create(Self, vDataBase, True);
   FrameEquipment.Parent := Self;
   FrameEquipment.Align := alClient;
   FrameEquipment.Visible := False;
+  SpeedButtonEquipment.Tag := Integer(FrameEquipment);
 
- // Открываем окно ожидания
   FormWaiting.Show;
   Application.ProcessMessages;
+  try
+    SpeedButtonClick(SpeedButtonRates);
+  finally
+    FormWaiting.Close;
+  end;
+  FrameRates.Visible := true;
 
-    // R FormAdditionData*
-  FrameRates.ReceivingAll;
-  FramePriceMaterial.ReceivingAll;
-  FramePriceMechanizm.ReceivingAll;
-  FrameEquipment.ReceivingAll;
-
-  FormWaiting.Close;
   FormMain.PanelCover.Visible := False;
-
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButtonAdditionData, HintButtonAdditionData,
     FormMain.ShowAdditionData);
@@ -168,43 +163,32 @@ begin
   FrameEquipment.Visible := False;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormAdditionData.SpeedButtonRatesClick(Sender: TObject);
+procedure TFormAdditionData.SpeedButtonClick(Sender: TObject);
 begin
-  HideAllFrames;
-  FrameRates.Visible := True;
-  FrameRates.SetFocus;
+
+  if not Assigned(TSmetaFrame((Sender as TComponent).Tag)) then exit;
+
+  with TSmetaFrame((Sender as TComponent).Tag) do
+  begin
+    if not Loaded then
+    begin
+     // FormWaiting.Show;
+     // Application.ProcessMessages;
+     // try
+        ReceivingAll;
+     // finally
+     //   FormWaiting.Close;
+     // end;
+    end;
+    HideAllFrames;
+
+    if (Self as TControl).Visible then
+    begin
+      Visible := True;
+      SetFocus;
+    end;
+  end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormAdditionData.SpeedButtonMaterialClick(Sender: TObject);
-begin
-  HideAllFrames;
-  FramePriceMaterial.ReceivingAll;
-  FramePriceMaterial.Visible := True;
-  FramePriceMaterial.SetFocus;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormAdditionData.SpeedButtonMechanizmClick(Sender: TObject);
-begin
-  HideAllFrames;
-  FramePriceMechanizm.Visible := True;
-  FramePriceMechanizm.SetFocus;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormAdditionData.SpeedButtonEquipmentClick(Sender: TObject);
-begin
-  HideAllFrames;
-  FrameEquipment.Visible := True;
-  FrameEquipment.SetFocus;
-end;
-
 // ---------------------------------------------------------------------------------------------------------------------
 
 end.
