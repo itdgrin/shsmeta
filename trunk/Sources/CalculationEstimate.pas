@@ -21,8 +21,7 @@ type
 
   TMyDBGrid = class(TDBGrid)
   public
-    property Row;
-    property TopRow;
+    property DataLink;
   end;
 
   TTwoValues = record
@@ -670,6 +669,7 @@ type
     procedure qrTranspCalcFields(DataSet: TDataSet);
     procedure PMAddAdditionHeatingE18Click(Sender: TObject);
     procedure qrRatesCODEChange(Sender: TField);
+    procedure PMEditClick(Sender: TObject);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -2771,8 +2771,6 @@ begin
   case qrRatesTYPE_DATA.AsInteger of
     1: // РАСЦЕНКА
       begin
-        PMEdit.Enabled := True;
-
         // настройка кнопочек свержу справа, для расценок всегда выбирается "материалы"
         SpeedButtonMaterials.Enabled := True;
         SpeedButtonMechanisms.Enabled := True;
@@ -2794,7 +2792,8 @@ begin
           SpeedButtonDescriptionClick(SpeedButtonDescription);
 
         // Средний разряд рабочих-строителей
-        EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesIDID.AsInteger)));
+        EditCategory.Text :=
+          MyFloatToStr(GetRankBuilders(IntToStr(qrRatesIDID.AsInteger)));
 
         // Разраты труда рабочих-строителей
         //qrCalculations.ParamByName('trud_two').AsFloat :=
@@ -2828,25 +2827,19 @@ begin
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
 
-        if CheckMatINRates then // Заменяющие неучтенный материал в расценке
+        if CheckMatUnAccountingRates then //неучтенный материал в расценке
         begin
-          PMEdit.Enabled := True;
-        end
-        else
-        begin // вынесенные материалы
-          if qrRatesID_CARD_RATE.AsInteger > 0 then
-          begin
             PMReplace.Enabled := True;
             PMDelete.Enabled := False;
-          end;
         end;
 
         // Нажимаем на кнопку материалов, для отображения таблицы материалов
         SpeedButtonMaterialsClick(SpeedButtonMaterials);
 
         // Средний разряд рабочих-строителей
-        EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
-
+        if CheckMatINRates then
+          EditCategory.Text :=
+            MyFloatToStr(GetRankBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
         // Разраты труда рабочих-строителей
         //qrCalculations.ParamByName('trud_two').AsFloat :=
         //  GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger));
@@ -2861,7 +2854,8 @@ begin
         GetValuesOXROPR;
 
         // Запоняем строку зимнего удорожания
-        FillingWinterPrice(qrRatesCODEINRATE.AsString);
+        if CheckMatINRates then
+          FillingWinterPrice(qrRatesCODEINRATE.AsString);
 
         CalculationMaterial;
 
@@ -2912,6 +2906,7 @@ begin
       end;
     5: // Свалки
       begin
+        PMEdit.Enabled := True;
         SpeedButtonDump.Enabled := True;
         BtnChange := True;
         SpeedButtonDump.Down := True;
@@ -2924,6 +2919,7 @@ begin
       end;
     6,7,8,9: // Транспорт
       begin
+        PMEdit.Enabled := True;
         SpeedButtonTransp.Enabled := True;
         BtnChange := True;
         SpeedButtonTransp.Down := True;
@@ -3033,9 +3029,9 @@ end;
 // вид всплывающего меню материалов
 procedure TFormCalculationEstimate.PopupMenuMaterialsPopup(Sender: TObject);
 begin
-  PMMatEdit.Enabled := not CheckMatReadOnly;
-  PMMatReplace.Enabled := CheckMatUnAccountingMatirials;
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrRatesMID.AsInteger = 0);
+  PMMatEdit.Enabled := (not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0);
+  PMMatReplace.Enabled := CheckMatUnAccountingMatirials and (qrMaterialTITLE.AsInteger = 0);;
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0);
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -3049,11 +3045,11 @@ end;
 procedure TFormCalculationEstimate.AddRate(const vRateId: Integer);
 var
   i: Integer;
-  FieldRates: TFieldRates;
   vMaxIdRate: Integer;
   vNormRas: Double;
   Month1, Year1: Integer;
   PriceVAT, PriceNoVAT: string;
+  PercentTransport: Real;
   SQL1, SQL2: string;
 begin
 
@@ -3088,13 +3084,6 @@ begin
   try
     with qrTemp do
     begin
-      {
-        Active := False;
-        SQL.Clear;
-        SQL.Add('CALL GetMaterialsAll(' + IntToStr(IdObject) + ', ' + IntToStr(IdEstimate) + ', ' +
-        IntToStr(vIdRate) + ');');
-        Active := True;
-      }
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT year,monat FROM stavka WHERE stavka_id = ' +
@@ -3105,8 +3094,8 @@ begin
         Month1 := FieldByName('monat').AsInteger;
         Year1 := FieldByName('year').AsInteger;
       end;
-
       Active := False;
+
       SQL.Clear;
       SQL.Add('SELECT region_id FROM objcards WHERE obj_id = ' + IntToStr(IdObject));
       Active := True;
@@ -3115,30 +3104,27 @@ begin
         PriceVAT := 'coast' + FieldByName('region_id').AsString + '_2';
         PriceNoVAT := 'coast' + FieldByName('region_id').AsString + '_1';
       end;
-
       Active := False;
+
       SQL.Clear;
-      SQL1 := '(SELECT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
-        'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
-        'TMat.unit_id as "UnitId", mat_name as "MatName", NULL as "PriceVAT", ' + 'NULL as "PriceNoVAT", ' +
-        '(SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate) +
-        ') as "PercentTransport" FROM units, ' + '(SELECT * FROM material WHERE mat_code LIKE "П%") TMat, ' +
-        '(SELECT material_id, norm_ras FROM materialnorm WHERE ' + 'normativ_id = ' + IntToStr(vRateId) +
-        ') TMatNorm ' + 'WHERE TMat.material_id = TMatNorm.material_id and ' +
-        'TMat.unit_id = units.unit_id ORDER BY 1)';
+      SQL.Add('SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate));
+      Active := True;
+      if not Eof then PercentTransport := Fields[0].AsFloat;
+      Active := False;
 
-      SQL2 := '(SELECT material.material_id as "MatId", material.mat_code as "MatCode", ' +
+      SQL.Clear;
+      SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
         'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
-        'material.unit_id as "UnitId", material.mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' +
-        PriceNoVAT + ' as "PriceNoVAT", ' + '(SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' +
-        IntToStr(IdEstimate) + ') as "PercentTransport" FROM material, units, ' +
-        '(SELECT material_id, norm_ras FROM materialnorm where ' + 'normativ_id = ' + IntToStr(vRateId) +
-        ') TMatNorm, ' + '(SELECT material_id, ' + PriceVAT + ', ' + PriceNoVAT +
-        ' FROM materialcoastg WHERE monat = ' + IntToStr(Month1) + ' and year = ' + IntToStr(Year1) +
-        ') TMatCoast WHERE ' + 'material.material_id = TMatNorm.material_id and ' +
-        'material.material_id = TMatCoast.material_id and ' + 'material.unit_id = units.unit_id ORDER BY 1)';
-
-      SQL.Add(SQL1 + ' union ' + SQL2 + ';');
+        'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' +
+        PriceNoVAT + ' as "PriceNoVAT" ' +
+        'FROM materialnorm as TMatNorm ' +
+        'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
+        'JOIN units ON TMat.unit_id = units.unit_id ' +
+        'LEFT JOIN (select material_id, ' + PriceVAT + ', ' + PriceNoVAT +
+        ' from materialcoastg where (monat = ' + IntToStr(Month1) +
+        ') and (year = ' + IntToStr(Year1) + ')) as TMatCoast ' +
+        'ON TMatCoast.material_id = TMatNorm.material_id ' +
+        'WHERE (TMatNorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1';
       Active := True;
 
       Filtered := False;
@@ -3151,9 +3137,9 @@ begin
       begin
         qrTemp1.Active := False;
         qrTemp1.SQL.Text := 'Insert into materialcard_temp (BD_ID, ID_CARD_RATE, MAT_ID, ' +
-          'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, NDS, ' +
+          'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
           'PROC_TRANSP) values (:BD_ID, :ID_CARD_RATE, :MAT_ID, ' +
-          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :NDS, :PROC_TRANSP)';
+          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
         qrTemp1.ParamByName('BD_ID').AsInteger := 1;
         qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
         qrTemp1.ParamByName('MAT_ID').AsInteger := FieldByName('MatId').AsInteger;
@@ -3164,8 +3150,7 @@ begin
         qrTemp1.ParamByName('MAT_UNIT').AsString := FieldByName('MatUnit').AsString;
         qrTemp1.ParamByName('COAST_NO_NDS').AsInteger := FieldByName('PriceNoVAT').AsInteger;
         qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('PriceVAT').AsInteger;
-        qrTemp1.ParamByName('NDS').AsInteger := 20;
-        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := FieldByName('PercentTransport').AsFloat;
+        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PercentTransport;
         qrTemp1.ExecSQL;
 
         Next;
@@ -3181,9 +3166,9 @@ begin
       begin
         qrTemp1.Active := False;
         qrTemp1.SQL.Text := 'Insert into materialcard_temp (BD_ID, ID_CARD_RATE, CONSIDERED, MAT_ID, ' +
-          'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, NDS, ' +
+          'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
           'PROC_TRANSP) values (:BD_ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
-          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :NDS, :PROC_TRANSP)';
+          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
         qrTemp1.ParamByName('BD_ID').AsInteger := 1;
         qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
         qrTemp1.ParamByName('CONSIDERED').AsInteger := 0;
@@ -3195,8 +3180,7 @@ begin
         qrTemp1.ParamByName('MAT_UNIT').AsString := FieldByName('MatUnit').AsString;
         qrTemp1.ParamByName('COAST_NO_NDS').AsInteger := FieldByName('PriceNoVAT').AsInteger;
         qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('PriceVAT').AsInteger;
-        qrTemp1.ParamByName('NDS').AsInteger := 20;
-        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := FieldByName('PercentTransport').AsFloat;
+        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PercentTransport;
         qrTemp1.ExecSQL;
 
         Next;
@@ -3212,8 +3196,6 @@ begin
       MessageBox(0, PChar('При занесении материалов во временную таблицу возникла ошибка:' + sLineBreak +
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  // ----------------------------------------
 
   // Заносим во временную таблицу mechanizmcard_temp механизмы находящиеся в расценке
   try
@@ -3235,9 +3217,9 @@ begin
         qrTemp1.Active := False;
         qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (BD_ID, ID_CARD_RATE, ' +
           'MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, MECH_UNIT, COAST_NO_NDS, ' +
-          'COAST_NDS, NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS) values (:BD_ID, :ID_CARD_RATE, ' +
+          'COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS) values (:BD_ID, :ID_CARD_RATE, ' +
           ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
-          ':COAST_NDS, :NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS)';
+          ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS)';
         qrTemp1.ParamByName('BD_ID').AsInteger := 1;
         qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
         qrTemp1.ParamByName('MECH_ID').AsInteger := FieldByName('MechId').AsInteger;
@@ -3248,7 +3230,6 @@ begin
         qrTemp1.ParamByName('MECH_UNIT').AsString := FieldByName('Unit').AsString;
         qrTemp1.ParamByName('COAST_NO_NDS').AsInteger := FieldByName('CoastNoVAT').AsInteger;
         qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('CoastVAT').AsInteger;
-        qrTemp1.ParamByName('NDS').AsInteger := 20;
         qrTemp1.ParamByName('ZP_MACH_NO_NDS').AsInteger := FieldByName('SalaryNoVAT').AsInteger;
         qrTemp1.ParamByName('ZP_MACH_NDS').AsInteger := FieldByName('SalaryVAT').AsInteger;
         qrTemp1.ExecSQL;
@@ -3456,6 +3437,14 @@ begin
     if GetTranspForm(IdEstimate, qrTranspID.AsInteger,
       qrRatesTYPE_DATA.AsInteger,false) then
      OutputDataToTable(qrRates.RecNo);
+end;
+
+procedure TFormCalculationEstimate.PMEditClick(Sender: TObject);
+begin
+  case qrRatesTYPE_DATA.AsInteger of
+  5: PMDumpEditClick(nil);
+  6,7,8,9: PMDumpEditClick(nil);
+  end;
 end;
 
 procedure TFormCalculationEstimate.PopupMenuTableLeftPopup(Sender: TObject);
@@ -5264,7 +5253,7 @@ begin
   //Если положение курсора не изменилось выполняем скрол принудительно
   if qrRates.RecNo = i then qrRatesAfterScroll(qrRates);
 
-  CloseOpen(qrCalculations);
+  //CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.CopyEstimate;
@@ -5692,7 +5681,7 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    if dbgrdDescription.Row = qrDescription.RecNo then
+    if dbgrdDescription.Row = TMyDBGrid(dbgrdDescription).DataLink.ActiveRecord + 1 then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
@@ -5720,8 +5709,7 @@ begin
       Brush.Color := $00FBFEBC;
     end;
 
-    if (Sender as TJvDBGrid).Row =
-       (Sender as TJvDBGrid).DataSource.DataSet.RecNo then
+    if (Sender as TJvDBGrid).Row = TMyDBGrid(Sender).DataLink.ActiveRecord + 1 then
     begin
       Font.Style := Font.Style + [fsbold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
@@ -5789,7 +5777,7 @@ begin
       Brush.Color := $008080FF;
     end;
 
-    if dbgrdMaterial.Row = qrMaterial.RecNo then
+    if dbgrdMaterial.Row = TMyDBGrid(dbgrdMaterial).DataLink.ActiveRecord + 1 then
     begin
       Font.Style := Font.Style + [fsbold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
@@ -5902,7 +5890,7 @@ begin
       Brush.Color := $008080FF;
     end;
 
-    if dbgrdMechanizm.Row = qrMechanizm.RecNo then
+    if dbgrdMechanizm.Row = TMyDBGrid(dbgrdMechanizm).DataLink.ActiveRecord + 1 then
     begin
       Font.Style := Font.Style + [fsbold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
@@ -5955,7 +5943,7 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    if dbgrdRates.Row = qrRates.RecNo then
+    if dbgrdRates.Row = TMyDBGrid(dbgrdRates).DataLink.ActiveRecord + 1 then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
@@ -5978,7 +5966,7 @@ begin
     // Выделение цветом неучтённых материалов расценки и заменяющих их
     if CheckMatINRates then
     begin
-      Font.Color := clGray;
+      if CheckMatUnAccountingRates then Font.Color := clGray;
       if Column.Index = 1 then
         sdvig := Indent;
     end

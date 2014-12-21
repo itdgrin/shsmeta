@@ -44,7 +44,7 @@ object FormAdditionData: TFormAdditionData
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      OnClick = SpeedButtonRatesClick
+      OnClick = SpeedButtonClick
     end
     object SpeedButtonMaterial: TSpeedButton
       Left = 157
@@ -59,7 +59,7 @@ object FormAdditionData: TFormAdditionData
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      OnClick = SpeedButtonMaterialClick
+      OnClick = SpeedButtonClick
     end
     object SpeedButtonMechanizm: TSpeedButton
       Left = 313
@@ -74,7 +74,7 @@ object FormAdditionData: TFormAdditionData
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      OnClick = SpeedButtonMechanizmClick
+      OnClick = SpeedButtonClick
     end
     object SpeedButtonEquipment: TSpeedButton
       Left = 469
@@ -83,7 +83,7 @@ object FormAdditionData: TFormAdditionData
       Height = 25
       GroupIndex = 1
       Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
-      OnClick = SpeedButtonEquipmentClick
+      OnClick = SpeedButtonClick
     end
   end
 end
