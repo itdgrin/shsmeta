@@ -2438,8 +2438,18 @@ begin
       DataBase := 's';
   end;
 
-  RepIdRate := qrMaterialID_CARD_RATE.AsInteger;
-  RepIdMat := qrMaterialID.AsInteger;
+  case (Sender as TMenuItem).Tag of
+  1, 2:
+  begin
+    RepIdRate := qrMaterialID_CARD_RATE.AsInteger;
+    RepIdMat := qrMaterialID.AsInteger;
+  end;
+  11, 12:
+  begin
+    RepIdRate := qrRatesID_CARD_RATE.AsInteger;
+    RepIdMat := qrRatesMID.AsInteger;
+  end;
+  end;
 
   if (Assigned(FormMaterials)) then
   begin
@@ -2472,10 +2482,27 @@ var
 begin
   FormReplacementMaterial := TFormReplacementMaterial.Create(nil);
   try
-    RepIdRate := qrMaterialID_CARD_RATE.AsInteger;
-    RepIdMat := qrMaterialID.AsInteger;
+    case (Sender as TMenuItem).Tag of
+      1, 11:
+        DataBase := 'g';
+      2, 12:
+        DataBase := 's';
+    end;
 
-    FormReplacementMaterial.SetDataBase('g');
+    case (Sender as TMenuItem).Tag of
+    1, 2:
+    begin
+      RepIdRate := qrMaterialID_CARD_RATE.AsInteger;
+      RepIdMat := qrMaterialID.AsInteger;
+    end;
+    11, 12:
+    begin
+      RepIdRate := qrRatesID_CARD_RATE.AsInteger;
+      RepIdMat := qrRatesMID.AsInteger;
+    end;
+    end;
+
+    FormReplacementMaterial.SetDataBase(DataBase);
     FormReplacementMaterial.ShowModal;
   finally
     FormReplacementMaterial.Free;
