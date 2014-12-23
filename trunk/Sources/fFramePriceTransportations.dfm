@@ -190,22 +190,6 @@ inherited FramePriceTransportations: TFramePriceTransportations
         OnEnter = EditSearchEnter
         OnKeyPress = EditSearchKeyPress
       end
-      object ComboBoxYear: TComboBox
-        Left = 314
-        Top = 2
-        Width = 50
-        Height = 21
-        Anchors = [akTop, akRight]
-        TabOrder = 1
-        Text = '2012'
-        OnChange = ComboBoxMonthYearChange
-        Items.Strings = (
-          '2012'
-          '2013'
-          '2014'
-          '2015'
-          '2016')
-      end
       object ComboBoxMonth: TComboBox
         Left = 411
         Top = 2
@@ -213,7 +197,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
         Height = 21
         Anchors = [akTop, akRight]
         ItemIndex = 1
-        TabOrder = 2
+        TabOrder = 1
         Text = #1060#1077#1074#1088#1072#1083#1100
         OnChange = ComboBoxMonthYearChange
         Items.Strings = (
@@ -229,6 +213,19 @@ inherited FramePriceTransportations: TFramePriceTransportations
           #1054#1082#1090#1103#1073#1088#1100
           #1053#1086#1103#1073#1088#1100
           #1044#1077#1082#1072#1073#1088#1100)
+      end
+      object edtYear: TSpinEdit
+        Left = 311
+        Top = 2
+        Width = 55
+        Height = 22
+        Anchors = [akTop, akRight]
+        MaxLength = 4
+        MaxValue = 2050
+        MinValue = 1900
+        TabOrder = 2
+        Value = 2014
+        OnChange = ComboBoxMonthYearChange
       end
     end
     object PanelMemo: TPanel

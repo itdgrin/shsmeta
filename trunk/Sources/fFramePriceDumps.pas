@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   VirtualTrees, fFrameStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta, Vcl.Samples.Spin, System.DateUtils;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -37,6 +37,10 @@ type
     FrameStatusBar: TFrameStatusBar;
     SpeedButtonShowHide: TSpeedButton;
     ADOQuery: TFDQuery;
+    LabelYear: TLabel;
+    LabelMonth: TLabel;
+    ComboBoxMonth: TComboBox;
+    edtYear: TSpinEdit;
 
     procedure ReceivingSearch(vStr: String);
 
@@ -62,6 +66,8 @@ type
     procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: string);
     procedure VSTKeyPress(Sender: TObject; var Key: Char);
+    procedure edtYearChange(Sender: TObject);
+    procedure ComboBoxMonthChange(Sender: TObject);
 
   private
     StrQuickSearch: String[20];
@@ -73,7 +79,7 @@ type
 
 implementation
 
-uses DrawingTables, DataModule;
+uses DrawingTables, DataModule, CalculationEstimate;
 
 {$R *.dfm}
 
@@ -105,6 +111,18 @@ begin
   PanelMemo.Constraints.MinHeight := 35;
   SpeedButtonShowHide.Hint := 'Свернуть панель';
 
+  if Assigned(FormCalculationEstimate) then
+  begin
+    //Опасная конструкция, может быть источником ошибок
+    ComboBoxMonth.ItemIndex := FormCalculationEstimate.GetMonth - 1;
+    edtYear.Value := FormCalculationEstimate.GetYear;
+  end
+  else
+  begin
+    edtYear.Value := YearOf(Date);
+    ComboBoxMonth.ItemIndex := MonthOf(Date) - 1;
+  end;
+
   with DM do
   begin
     ImageListHorozontalDots.GetIcon(0, ImageSplitter.Picture.Icon);
@@ -116,25 +134,27 @@ end;
 
 procedure TFramePriceDumps.ReceivingAll;
 var
-  StrQuery: string;
+  te : TDateTime;
 begin
   StrQuickSearch := '';
 
   try
-    if ADOQuery.Active then
-      Exit;
+    ADOQuery.Active := False;
 
-    StrQuery := 'SELECT dump.dump_id, dump_name as "Name", coast1 as "PriceNotVAT", coast2 as "PriceVAT", ' +
-      'unit_name as "Unit", region_name as "NameRegion" FROM dump, units, dumpcoast, regions ' +
-      'WHERE dump.unit_id = units.unit_id and dump.dump_id = dumpcoast.dump_id and dump.region_id = regions.region_id';
+    ADOQuery.SQL.Text := 'SELECT dump.dump_id, dump_name as "Name", ' +
+      'coast1 as "PriceNotVAT", coast2 as "PriceVAT", ' +
+      'unit_name as "Unit", region_name as "NameRegion" ' +
+      'FROM dump JOIN units ON dump.unit_id = units.unit_id ' +
+      'JOIN regions ON dump.region_id = regions.region_id ' +
+      'LEFT JOIN dumpcoast ON dump.dump_id = dumpcoast.dump_id ' +
+      'WHERE (dumpcoast.DATE_BEG >= :date1) and (dumpcoast.DATE_BEG <= :date2);';
 
-    with ADOQuery do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add(StrQuery);
-      Active := True;
-    end;
+    te := EncodeDate(edtYear.Value, ComboBoxMonth.ItemIndex + 1, 1);
+    ADOQuery.ParamByName('date1').Value := te;
+    te := IncMonth(te) - 1;
+    ADOQuery.ParamByName('date2').Value := te;
+
+    ADOQuery.Active := True;
 
     VST.RootNodeCount := ADOQuery.RecordCount;
     VST.Selected[VST.GetFirst] := True;
@@ -204,6 +224,12 @@ begin
     end;
 end;
 
+procedure TFramePriceDumps.edtYearChange(Sender: TObject);
+begin
+  inherited;
+  ReceivingAll;
+end;
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFramePriceDumps.FrameEnter(Sender: TObject);
@@ -246,6 +272,12 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
+
+procedure TFramePriceDumps.ComboBoxMonthChange(Sender: TObject);
+begin
+  inherited;
+  ReceivingAll;
+end;
 
 procedure TFramePriceDumps.CopyCellClick(Sender: TObject);
 var
