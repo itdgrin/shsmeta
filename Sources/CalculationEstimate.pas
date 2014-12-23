@@ -5253,7 +5253,7 @@ begin
   //Если положение курсора не изменилось выполняем скрол принудительно
   if qrRates.RecNo = i then qrRatesAfterScroll(qrRates);
 
-  //CloseOpen(qrCalculations);
+  CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.CopyEstimate;

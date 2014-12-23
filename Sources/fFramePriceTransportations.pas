@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   VirtualTrees, fFrameStatusBar, DateUtils, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta, Vcl.Samples.Spin;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -37,10 +37,10 @@ type
     FrameStatusBar: TFrameStatusBar;
     SpeedButtonShowHide: TSpeedButton;
     LabelYear: TLabel;
-    ComboBoxYear: TComboBox;
     LabelMonth: TLabel;
     ComboBoxMonth: TComboBox;
     ADOQuery: TFDQuery;
+    edtYear: TSpinEdit;
 
     procedure ReceivingSearch(vStr: String);
 
@@ -129,31 +129,18 @@ begin
 
     if Assigned(FormCalculationEstimate) then
     begin
-      try
-        ADOQuery.Active := False;
-        ADOQuery.SQL.Clear;
-        ADOQuery.SQL.Add('SELECT stavka.monat, stavka.year'#13 +
-          'FROM smetasourcedata, stavka WHERE smetasourcedata.sm_id=:sm_id and smetasourcedata.stavka_id=stavka.stavka_id;');
-        ADOQuery.ParamByName('sm_id').Value := FormCalculationEstimate.GetIdEstimate;
-        ADOQuery.Active := True;
-
-        ComboBoxMonth.ItemIndex := ADOQuery.FieldByName('monat').AsVariant - 1;
-          //Опасная конструкция, может быть источником ошибок
-        ComboBoxYear.ItemIndex := ADOQuery.FieldByName('year').AsInteger - 2012;
-      except
-        on E: Exception do
-          MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak +
-            E.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
-      end;
+      //Опасная конструкция, может быть источником ошибок
+      ComboBoxMonth.ItemIndex := FormCalculationEstimate.GetMonth - 1;
+      edtYear.Value := FormCalculationEstimate.GetYear;
     end
     else
     begin
       //Ставит текущую дату
       ComboBoxMonth.ItemIndex := MonthOf(Now) - 1;
-      ComboBoxYear.ItemIndex := YearOf(Now) - 2012;
+      edtYear.Value := YearOf(Now);
     end;
 
-    StrFilterData := '(year = ' + ComboBoxYear.Text +
+    StrFilterData := '(year = ' + IntToStr(edtYear.Value) +
       ') and (monat = ' + IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
 
     ReceivingSearch('');
@@ -469,7 +456,7 @@ end;
 
 procedure TFramePriceTransportations.ComboBoxMonthYearChange(Sender: TObject);
 begin
-  StrFilterData := '(year = ' + ComboBoxYear.Text +
+  StrFilterData := '(year = ' + IntToStr(edtYear.Value) +
     ') and (monat = ' + IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
 
   EditSearch.Text := '';
