@@ -1,4 +1,4 @@
-object fCalcKomandir: TfCalcKomandir
+object fCalcTravel: TfCalcTravel
   Left = 0
   Top = 0
   Caption = #1056#1072#1089#1095#1077#1090' '#1082#1086#1084#1072#1085#1076#1080#1088#1086#1074#1086#1095#1085#1099#1093
@@ -106,13 +106,13 @@ object fCalcKomandir: TfCalcKomandir
     ParentFont = False
     TabOrder = 2
   end
-  object btn1: TBitBtn
+  object btnExit: TBitBtn
     Left = 353
     Top = 321
     Width = 91
     Height = 25
     Anchors = [akRight, akBottom]
-    Caption = #1054#1090#1084#1077#1085#1072
+    Caption = #1047#1072#1082#1088#1099#1090#1100
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -120,9 +120,9 @@ object fCalcKomandir: TfCalcKomandir
     Font.Style = []
     ParentFont = False
     TabOrder = 3
-    OnClick = btn1Click
+    OnClick = btnExitClick
   end
-  object btn2: TBitBtn
+  object btnSave: TBitBtn
     Left = 256
     Top = 321
     Width = 91
@@ -136,7 +136,7 @@ object fCalcKomandir: TfCalcKomandir
     Font.Style = []
     ParentFont = False
     TabOrder = 4
-    OnClick = btn2Click
+    OnClick = btnSaveClick
   end
   object JvDBGrid1: TJvDBGrid
     Left = 8
@@ -170,11 +170,6 @@ object fCalcKomandir: TfCalcKomandir
       item
         Expanded = False
         FieldName = 'NUMPP'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #8470' '#1087#1087
         Width = 34
@@ -183,11 +178,6 @@ object fCalcKomandir: TfCalcKomandir
       item
         Expanded = False
         FieldName = 'NAIMEN'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1079#1072#1090#1088#1072#1090
         Width = 211
@@ -196,11 +186,6 @@ object fCalcKomandir: TfCalcKomandir
       item
         Expanded = False
         FieldName = 'CALC'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1056#1072#1089#1095#1077#1090
         Width = 92
@@ -209,11 +194,6 @@ object fCalcKomandir: TfCalcKomandir
       item
         Expanded = False
         FieldName = 'TOTAL'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
         Width = 91

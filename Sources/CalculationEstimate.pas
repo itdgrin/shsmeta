@@ -948,7 +948,7 @@ begin
 
   // TCustomDbGridCracker(dbgrdRates).OnMouseWheel:=Wheel;
   if not Act then
-  FormMain.CreateButtonOpenWindow('Расчет сметы', 'Расчет сметы',
+  FormMain.CreateButtonOpenWindow(Caption, Caption,
     FormMain.ShowCalculationEstimate);
 end;
 
@@ -988,7 +988,7 @@ begin
   FormCalculationEstimate := nil;
 
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(CaptionButtonCalculationEstimate);
+  FormMain.DeleteButtonCloseWindow(Caption);
 end;
 
 procedure TFormCalculationEstimate.FormResize(Sender: TObject);

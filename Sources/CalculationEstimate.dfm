@@ -1,7 +1,7 @@
 ﻿object FormCalculationEstimate: TFormCalculationEstimate
   Left = 0
   Top = 0
-  Caption = #1057#1084#1077#1090#1072
+  Caption = #1057#1084#1077#1090#1085#1099#1081' '#1088#1072#1089#1095#1077#1090
   ClientHeight = 564
   ClientWidth = 921
   Color = clBtnFace
