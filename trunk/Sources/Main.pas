@@ -338,7 +338,7 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump, Tariff
   HelpC5, CatalogSSR, OXRandOPR, WinterPrice, DataTransfer, CardPTM, CalculationSettings,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData, PricesReferenceData,
   AdditionData, Materials, PartsEstimates, SetCoefficients, Organizations, SectionsEstimates, TypesWorks,
-  TypesActs, IndexesChangeCost, CategoriesObjects, KC6Journal, CalcResource, CalcKomandir, UniDict;
+  TypesActs, IndexesChangeCost, CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -771,10 +771,11 @@ end;
 
 procedure TFormMain.N6Click(Sender: TObject);
 begin
-  if (not Assigned(fCalcKomandir)) then
-    fCalcKomandir := TfCalcKomandir.Create(Self);
-
-  fCalcKomandir.Show;
+  if (not Assigned(fTravelList)) then
+    fTravelList := TfTravelList.Create(Self);
+  if Assigned(FormObjectsAndEstimates) then
+    fTravelList.LocateObject(FormObjectsAndEstimates.getCurObject);
+  fTravelList.Show;
 end;
 
 procedure TFormMain.N8Click(Sender: TObject);

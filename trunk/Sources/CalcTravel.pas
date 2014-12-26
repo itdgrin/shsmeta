@@ -1,4 +1,4 @@
-unit CalcKomandir;
+unit CalcTravel;
 
 interface
 
@@ -10,15 +10,15 @@ uses
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
-  TfCalcKomandir = class(TForm)
+  TfCalcTravel = class(TForm)
     lbl1: TLabel;
     dbedt1: TDBEdit;
     dbedt2: TDBEdit;
     lbl3: TLabel;
     dbedt3: TDBEdit;
     lbl4: TLabel;
-    btn1: TBitBtn;
-    btn2: TBitBtn;
+    btnExit: TBitBtn;
+    btnSave: TBitBtn;
     JvDBGrid1: TJvDBGrid;
     dsCalcKomandir: TDataSource;
     qrCalcKomandir: TFDQuery;
@@ -26,34 +26,35 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure btn1Click(Sender: TObject);
-    procedure btn2Click(Sender: TObject);
+    procedure btnExitClick(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
   private
     { Private declarations }
   public
-    { Public declarations }
+    ID_ACT: Integer;
+    ID_TRAVEL: Integer;
   end;
 
 var
-  fCalcKomandir: TfCalcKomandir;
+  fCalcTravel: TfCalcTravel;
 
 implementation
 
 {$R *.dfm}
 
-uses Main;
+uses Main, TravelList;
 
-procedure TfCalcKomandir.btn1Click(Sender: TObject);
+procedure TfCalcTravel.btnExitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TfCalcKomandir.btn2Click(Sender: TObject);
+procedure TfCalcTravel.btnSaveClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TfCalcKomandir.FormActivate(Sender: TObject);
+procedure TfCalcTravel.FormActivate(Sender: TObject);
 begin
   // Если нажата клавиша Ctrl и выбираем форму, то делаем
   // каскадирование с переносом этой формы на передний план
@@ -62,22 +63,22 @@ begin
   FormMain.SelectButtonActiveWindow(Caption);
 end;
 
-procedure TfCalcKomandir.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TfCalcTravel.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
 end;
 
-procedure TfCalcKomandir.FormCreate(Sender: TObject);
+procedure TfCalcTravel.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N6Click);
+  FormMain.CreateButtonOpenWindow(Caption, Caption, fTravelList.btnAddClick);
   LoadDBGridSettings(JvDBGrid1);
   CloseOpen(qrCalcKomandir);
 end;
 
-procedure TfCalcKomandir.FormDestroy(Sender: TObject);
+procedure TfCalcTravel.FormDestroy(Sender: TObject);
 begin
-  fCalcKomandir := nil;
+  Self := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(Caption);
 end;
