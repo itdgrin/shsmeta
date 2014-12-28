@@ -549,8 +549,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           TabOrder = 0
           OnChange = TreeViewChange
           OnDblClick = TreeViewDblClick
-          ExplicitLeft = -1
-          ExplicitTop = 1
         end
       end
       object PanelActs: TPanel

@@ -979,7 +979,7 @@ end;
 
 procedure TFormObjectsAndEstimates.PMEstimatesEditClick(Sender: TObject);
 begin
-  with FormCardEstimate, ADOQueryTemp do
+  with FormCardEstimate, qrTemp do
   begin
     Active := False;
     SQL.Clear;

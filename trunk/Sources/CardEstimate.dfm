@@ -335,11 +335,11 @@ object FormCardEstimate: TFormCardEstimate
       OnChange = ComboBoxChange
     end
   end
-  object ADOQueryTemp: TFDQuery
+  object qrTemp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 33
+    Left = 25
     Top = 200
   end
 end

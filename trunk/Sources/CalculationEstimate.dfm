@@ -636,6 +636,7 @@
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = dbgrdRates12DrawColumnCell
+          OnKeyDown = dbgrdRatesKeyDown
           AutoSort = False
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -3420,7 +3421,6 @@
     Top = 288
   end
   object qrRates: TFDQuery
-    BeforeInsert = qrRatesBeforeInsert
     BeforePost = qrRatesBeforePost
     AfterScroll = qrRatesAfterScroll
     Connection = DM.Connect
@@ -5049,5 +5049,12 @@
     DataSet = qrStartup
     Left = 840
     Top = 128
+  end
+  object tmRate: TTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = tmRateTimer
+    Left = 16
+    Top = 265
   end
 end
