@@ -49,7 +49,7 @@ type
     PanelTypeWork: TPanel;
     LabelTypeWork: TLabel;
     ComboBoxTypeWork: TComboBox;
-    ADOQueryTemp: TFDQuery;
+    qrTemp: TFDQuery;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -285,7 +285,7 @@ begin
   vMonth := '1'; // сдюкхрэ йнцдю асдср дюммше дкъ дюр
   vYear := '2012'; // сдюкхрэ йнцдю асдср дюммше дкъ дюр
 
-  with ADOQueryTemp do
+  with qrTemp do
   begin
     try
       Active := False;
@@ -426,7 +426,7 @@ begin
 
   try
 
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -537,7 +537,7 @@ var
 begin
   if (TypeEstimate = 1) or (TypeEstimate = 3) then
     try
-      with ADOQueryTemp do
+      with qrTemp do
       begin
         Active := False;
         SQL.Clear;
@@ -559,7 +559,7 @@ begin
     1:
       begin
         try
-          with ADOQueryTemp do
+          with qrTemp do
           begin
             Active := False;
             SQL.Clear;
@@ -587,7 +587,7 @@ begin
     2: // назейрмюъ ЯЛЕРЮ
       begin
         try
-          with ADOQueryTemp do
+          with qrTemp do
           begin
             Active := False;
             SQL.Clear;
@@ -661,7 +661,7 @@ end;
 function TFormCardEstimate.GetIdNewEstimate: Integer;
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -684,7 +684,7 @@ begin
   ComboBoxPart.Items.Clear;
 
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -716,7 +716,7 @@ begin
   ComboBoxSection.Items.Clear;
 
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -750,7 +750,7 @@ begin
   ComboBoxTypeWork.Items.Add('');
 
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;

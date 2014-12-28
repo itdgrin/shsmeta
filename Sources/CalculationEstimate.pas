@@ -452,6 +452,7 @@ type
     dbgrdStartup: TJvDBGrid;
     qrTranspCLASS: TStringField;
     qrTranspTRANSP_UNIT: TStringField;
+    tmRate: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -631,7 +632,6 @@ type
     procedure qrMechanizmBeforeInsert(DataSet: TDataSet);
     procedure qrMechanizmAfterScroll(DataSet: TDataSet);
     procedure qrMechanizmCalcFields(DataSet: TDataSet);
-    procedure qrRatesBeforeInsert(DataSet: TDataSet);
     procedure dbgrdMechanizmDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
     procedure PMMechEditClick(Sender: TObject);
@@ -670,6 +670,9 @@ type
     procedure PMAddAdditionHeatingE18Click(Sender: TObject);
     procedure qrRatesCODEChange(Sender: TField);
     procedure PMEditClick(Sender: TObject);
+    procedure tmRateTimer(Sender: TObject);
+    procedure dbgrdRatesKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -2104,51 +2107,14 @@ begin
   Result := qrMaterialCONSIDERED.AsInteger = 0;
 end;
 
+//ƒл€ того что-бы скрол по таблице был быстрым обработка скрола происходит с задержкой
 procedure TFormCalculationEstimate.qrRatesAfterScroll(DataSet: TDataSet);
 begin
-  // Ѕлокирует лишние действи€, если в цикле выполн€етс€ работа с qrRates
   if qrRates.Tag <> 1 then
   begin
-    // ¬не зависимости от режима, все завис€щие от qrRates
-    // при смене строки закрываютс€, что-бы исключить случайный пересчет оставщегос€
-    // открытым датасета по данным другой расценки
-    qrMaterial.Active := False;
-    qrMechanizm.Active := False;
-    qrDevices.Active := False;
-    qrDump.Active := False;
-    qrTransp.Active := False;
-    qrStartup.Active := False;
-    qrDescription.Active := False;
-
-    // Ќа вс€кий случай, что-бы избежать глюков
-    if not qrRates.Active then
-      Exit;
-
-    // в режиме добавлени€ строки редактируетс€ код, а не количество
-    qrRatesCOUNT.ReadOnly := DataSet.Eof;
-    qrRatesCODE.ReadOnly := not DataSet.Eof;
-
-    // ≈сли нет расценок, гасим все кнопки, вешаем панель нет данных
-    if DataSet.Eof then
-    begin
-      BottomTopMenuEnabled(False);
-      TestOnNoDataNew(qrMaterial);
-      Exit;
-    end;
-    // «апрешает редактировать кол-во дл€ неучтенных и замен€ющих метериалов
-    qrRatesCOUNT.ReadOnly := CheckMatINRates;
-    if qrRatesTYPE_DATA.AsInteger in [10,11] then
-      qrRatesCOUNT.ReadOnly := true;
-
-    // заполн€ет таблицы справа
-    GridRatesRowSellect;
+    tmRate.Enabled := False;
+    tmRate.Enabled := true;
   end;
-end;
-
-procedure TFormCalculationEstimate.qrRatesBeforeInsert(DataSet: TDataSet);
-begin
-  if not DataSet.Eof then
-    Abort;
 end;
 
 procedure TFormCalculationEstimate.qrRatesBeforePost(DataSet: TDataSet);
@@ -2169,7 +2135,7 @@ begin
   NewID := 0;
 
   //«амена литинских на кирилические
-  if (NewCode[1] = '≈') or (NewCode[1] = 'E') then //E кирилическа€ и латинска€
+  if (NewCode[1] = '≈') or (NewCode[1] = 'E') or (NewCode[1] = '÷') then //E кирилическа€ и латинска€
   begin
     if NewCode[1] = 'E' then NewCode[1] := '≈';
 
@@ -2184,7 +2150,7 @@ begin
     if NewID = 0 then
     begin
       MessageBox(0, '–асценка с указанным кодом не найдена!', CaptionForm,
-        MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
       exit;
     end;
 
@@ -2208,7 +2174,7 @@ begin
     if NewID = 0 then
     begin
       MessageBox(0, 'ћатериал с указанным кодом не найден!', CaptionForm,
-        MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
       exit;
     end;
 
@@ -2232,7 +2198,7 @@ begin
     if NewID = 0 then
     begin
       MessageBox(0, 'ћеханизм с указанным кодом не найден!', CaptionForm,
-        MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
       exit;
     end;
 
@@ -2254,7 +2220,7 @@ begin
     if NewID = 0 then
     begin
       MessageBox(0, 'ќборудование с указанным кодом не найден!', CaptionForm,
-        MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
       exit;
     end;
     AddDevice(NewID);
@@ -2263,7 +2229,7 @@ begin
   end;
 
   MessageBox(0, 'ѕо указанному коду ничего не найдено!', CaptionForm,
-        MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
 end;
 
 procedure TFormCalculationEstimate.qrRatesCOUNTChange(Sender: TField);
@@ -5056,6 +5022,52 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.tmRateTimer(Sender: TObject);
+begin
+  tmRate.Enabled := False;
+  // Ѕлокирует лишние действи€, если в цикле выполн€етс€ работа с qrRates
+
+  // ¬не зависимости от режима, все завис€щие от qrRates
+  // при смене строки закрываютс€, что-бы исключить случайный пересчет оставщегос€
+  // открытым датасета по данным другой расценки
+  qrMaterial.Active := False;
+  qrMechanizm.Active := False;
+  qrDevices.Active := False;
+  qrDump.Active := False;
+  qrTransp.Active := False;
+  qrStartup.Active := False;
+  qrDescription.Active := False;
+
+  // Ќа вс€кий случай, что-бы избежать глюков
+  if not qrRates.Active then
+    Exit;
+
+  if qrRates.State in [dsInsert] then
+  begin
+    // в режиме добавлени€ строки редактируетс€ код, а не количество
+    qrRatesCOUNT.ReadOnly := true;
+    qrRatesCODE.ReadOnly := false;
+
+    // ≈сли нет расценок, гасим все кнопки, вешаем панель нет данных
+    if qrRates.Eof then
+    begin
+      BottomTopMenuEnabled(False);
+      TestOnNoDataNew(qrMaterial);
+      Exit;
+    end;
+  end;
+
+  qrRatesCODE.ReadOnly := true;
+  // «апрешает редактировать кол-во дл€ неучтенных и замен€ющих метериалов
+  qrRatesCOUNT.ReadOnly := CheckMatINRates;
+  if qrRatesTYPE_DATA.AsInteger in [10,11] then
+    qrRatesCOUNT.ReadOnly := true;
+
+  // заполн€ет таблицы справа
+  GridRatesRowSellect;
+
+end;
+
 // ѕроверка, что таблица €вл€етс€ пустой(если пуста€ показываетс€ картинка нет данных)
 procedure TFormCalculationEstimate.TestOnNoData(SG: TStringGrid);
 begin
@@ -6004,6 +6016,13 @@ begin
 
     TextOut(Rect.Left + j, Rect.Top + 2, sdvig + Column.Field.AsString);
   end;
+end;
+
+//«апрет инсерта
+procedure TFormCalculationEstimate.dbgrdRatesKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if Key = 45 then Key := 0;
 end;
 
 end.
