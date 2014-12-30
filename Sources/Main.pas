@@ -32,7 +32,6 @@ type
     HelpRegistration: TMenuItem;
     HelpSite: TMenuItem;
     MenuService: TMenuItem;
-    ServiceOptions: TMenuItem;
     ServiceBackup: TMenuItem;
     ServiceRecovery: TMenuItem;
     ServiceUpdate: TMenuItem;
@@ -78,6 +77,7 @@ type
     N6: TMenuItem;
     N7: TMenuItem;
     N8: TMenuItem;
+    Flvbybcnhbhjdfybt1: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -779,7 +779,13 @@ begin
 end;
 
 procedure TFormMain.N8Click(Sender: TObject);
+var
+  s: string;
 begin
+  s := InputBox('—правочник ежемес€чных величин', '”кажите пароль:', '');
+  if s <> '1' then
+    Exit;
+
   if (not Assigned(fUniDict)) then
     fUniDict := TfUniDict.Create(Self);
   fUniDict.Show;
