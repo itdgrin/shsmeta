@@ -79,8 +79,6 @@ object fTravelList: TfTravelList
     Height = 32
     Align = alTop
     TabOrder = 1
-    ExplicitLeft = -198
-    ExplicitWidth = 616
     DesignSize = (
       418
       32)
@@ -101,7 +99,6 @@ object fTravelList: TfTravelList
       ListField = 'NAME'
       ListSource = dsObject
       TabOrder = 0
-      ExplicitWidth = 554
     end
   end
   object pnl1: TPanel
