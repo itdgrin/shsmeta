@@ -15,7 +15,7 @@ type
     dbedt1: TDBEdit;
     dbedt2: TDBEdit;
     lbl3: TLabel;
-    dbedt3: TDBEdit;
+    dbedtNAME: TDBEdit;
     lbl4: TLabel;
     btnExit: TBitBtn;
     btnSave: TBitBtn;
@@ -28,6 +28,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure btnExitClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
+    procedure qrCalcKomandirAfterPost(DataSet: TDataSet);
+    procedure JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
   public
@@ -78,9 +80,29 @@ end;
 
 procedure TfCalcTravel.FormDestroy(Sender: TObject);
 begin
-  Self := nil;
+  fCalcTravel := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(Caption);
+end;
+
+procedure TfCalcTravel.JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
+begin
+  if (Ord(Key) = VK_RETURN) and (qrCalcKomandir.State = dsEdit) then
+    qrCalcKomandir.Post;
+end;
+
+procedure TfCalcTravel.qrCalcKomandirAfterPost(DataSet: TDataSet);
+begin
+  if qrCalcKomandir.FieldByName('NUMPP').AsString = '08' then
+  begin
+    qrCalcKomandir.ParamByName('STOIM_KM').AsInteger := qrCalcKomandir.FieldByName('CALC').AsInteger;
+    CloseOpen(qrCalcKomandir);
+  end;
+  if qrCalcKomandir.FieldByName('NUMPP').AsString = '09' then
+  begin
+    qrCalcKomandir.ParamByName('KM').AsInteger := qrCalcKomandir.FieldByName('CALC').AsInteger;
+    CloseOpen(qrCalcKomandir);
+  end;
 end;
 
 end.

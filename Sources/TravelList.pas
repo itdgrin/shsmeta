@@ -45,8 +45,6 @@ implementation
 uses CalcTravel;
 
 procedure TfTravelList.btnAddClick(Sender: TObject);
-var
-  CalcTravel: TfCalcTravel;
 begin
   if (not Assigned(fCalcTravel)) then
     fCalcTravel := TfCalcTravel.Create(Self);
