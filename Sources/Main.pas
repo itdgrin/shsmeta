@@ -77,7 +77,7 @@ type
     N6: TMenuItem;
     N7: TMenuItem;
     N8: TMenuItem;
-    Flvbybcnhbhjdfybt1: TMenuItem;
+    Administator: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
