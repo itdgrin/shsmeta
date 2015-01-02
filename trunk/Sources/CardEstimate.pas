@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, DB,
   ComCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client, DateUtils;
 
 type
   TFormCardEstimate = class(TForm)
@@ -198,7 +198,7 @@ begin
   end;
 
   // ----------------------------------------
-
+ {
   str := ComboBoxPart.Text;
   Delete(str, 1, Pos('.', str) + 1);
 
@@ -213,7 +213,7 @@ begin
   Delete(str, 1, Pos('.', str) + 1);
 
   EditNameEstimate.Text := EditNameEstimate.Text + str;
-
+  }
   // ----------------------------------------
 
   CreateNumberEstimate;
@@ -276,14 +276,10 @@ var
 begin
   CountWarning := 0;
 
-  // DateTimeToString(DateCompose, 'yyyy-mm-dd', Now);
+  DateTimeToString(DateCompose, 'yyyy-mm-dd', Now);
 
-  // vMonth := IntToStr(MonthOf(Now));
-  // vYear := IntToStr(YearOf(Now));
-
-  DateCompose := '2012-01-01'; // ÓÄÀËÈÒÜ ÊÎÃÄÀ ÁÓÄÓÒ ÄÀÍÍÛÅ ÄËß ÄÀÒ
-  vMonth := '1'; // ÓÄÀËÈÒÜ ÊÎÃÄÀ ÁÓÄÓÒ ÄÀÍÍÛÅ ÄËß ÄÀÒ
-  vYear := '2012'; // ÓÄÀËÈÒÜ ÊÎÃÄÀ ÁÓÄÓÒ ÄÀÍÍÛÅ ÄËß ÄÀÒ
+  vMonth := IntToStr(MonthOf(Now));
+  vYear := IntToStr(YearOf(Now));
 
   with qrTemp do
   begin
@@ -315,7 +311,8 @@ begin
       SQL.Add(StrQuery);
       Active := True;
 
-      IdStavka := FieldByName('IdStavka').AsVariant;
+      IdStavka := IntToStr(FieldByName('IdStavka').AsInteger);
+
     except
       on E: Exception do
         MessageBox(0, PChar('Ïğè çàïğîñå ID ÑÒÀÂÊÈ âîçíèêëà îøèáêà:' + sLineBreak + E.Message),
@@ -512,7 +509,7 @@ begin
   EditNumberEstimate.Text := EditNumberEstimate.Text + str;
 
   // ----------------------------------------
-
+ {
   str := ComboBoxPart.Text;
   Delete(str, 1, Pos('.', str) + 1);
 
@@ -526,7 +523,7 @@ begin
   str := ComboBoxTypeWork.Text;
   Delete(str, 1, Pos('.', str) + 1);
 
-  EditNameEstimate.Text := EditNameEstimate.Text + str;
+  EditNameEstimate.Text := EditNameEstimate.Text + str;}
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
