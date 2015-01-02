@@ -2098,7 +2098,10 @@ end;
 
 function TFormCalculationEstimate.CheckMatINRates: Boolean;
 begin
-  Result := CheckMatUnAccountingRates or ((qrRatesMID.AsInteger > 0) and (qrRatesID_REPLACED.AsInteger > 0));
+  Result := CheckMatUnAccountingRates or
+    ((qrRatesMID.AsInteger > 0)
+      and (qrRatesID_REPLACED.AsInteger > 0)
+      and (qrRatesFROM_RATE.AsInteger = 0));
 end;
 
 // проверка что материал неучтеный в таблице материалов
@@ -3042,8 +3045,10 @@ var
   vNormRas: Double;
   Month1, Year1: Integer;
   PriceVAT, PriceNoVAT: string;
-  PercentTransport: Real;
+  PT, PercentTransport: Real;
   SQL1, SQL2: string;
+  ZonaId: integer;
+  SCode: string;
 begin
 
   // Добавляем найденную расценку во временную таблицу card_rate_temp
@@ -3099,6 +3104,15 @@ begin
       end;
       Active := False;
 
+      ZonaId := 0;
+      SQL.Clear;
+      SQL.Add('SELECT obj_region FROM objstroj WHERE ' +
+        'stroj_id = (SELECT stroj_id FROM objcards WHERE ' +
+          'obj_id = ' + IntToStr(IdObject) + ')');
+      Active := True;
+      if not Eof then ZonaId := Fields[0].AsInteger;
+      Active := False;
+
       SQL.Clear;
       SQL.Add('SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate));
       Active := True;
@@ -3128,7 +3142,22 @@ begin
 
       while not Eof do
       begin
+        //Получение процента транспорта для материала
         qrTemp1.Active := False;
+        SCode := FieldByName('MatCode').AsString;
+        SCode := copy(SCode, 1, pos('-',SCode) - 1) + ',';
+        PT := 0;
+        if ZonaId > 0 then
+        begin
+          qrTemp1.SQL.Clear;
+          qrTemp1.SQL.Add('SELECT Transp' + IntToStr(ZonaId) +
+            ' FROM materialtransp WHERE LOCATE(''' + SCode + ''', codestr)');
+          qrTemp1.Active := True;
+          if not qrTemp1.Eof then PT := qrTemp1.Fields[0].AsFloat;
+          qrTemp1.Active := False;
+        end;
+        if PT = 0 then PT := PercentTransport;
+
         qrTemp1.SQL.Text := 'Insert into materialcard_temp (BD_ID, ID_CARD_RATE, MAT_ID, ' +
           'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
           'PROC_TRANSP) values (:BD_ID, :ID_CARD_RATE, :MAT_ID, ' +
@@ -3143,7 +3172,7 @@ begin
         qrTemp1.ParamByName('MAT_UNIT').AsString := FieldByName('MatUnit').AsString;
         qrTemp1.ParamByName('COAST_NO_NDS').AsInteger := FieldByName('PriceNoVAT').AsInteger;
         qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('PriceVAT').AsInteger;
-        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PercentTransport;
+        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
         qrTemp1.ExecSQL;
 
         Next;
@@ -3173,7 +3202,7 @@ begin
         qrTemp1.ParamByName('MAT_UNIT').AsString := FieldByName('MatUnit').AsString;
         qrTemp1.ParamByName('COAST_NO_NDS').AsInteger := FieldByName('PriceNoVAT').AsInteger;
         qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('PriceVAT').AsInteger;
-        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PercentTransport;
+        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := 0;
         qrTemp1.ExecSQL;
 
         Next;
