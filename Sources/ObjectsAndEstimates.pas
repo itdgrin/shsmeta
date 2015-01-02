@@ -979,38 +979,33 @@ end;
 
 procedure TFormObjectsAndEstimates.PMEstimatesEditClick(Sender: TObject);
 begin
-  with FormCardEstimate, qrTemp do
+  with FormCardEstimate do
   begin
-    Active := False;
-    SQL.Clear;
+    qrTmp.Active := False;
 
-    StrQuery := 'SELECT sm_id as "IdEstimate", obj_id as "IdObject", smetasourcedata.name as "NameEstimate", '
+    qrTmp.SQL.Text := 'SELECT sm_id as "IdEstimate", obj_id as "IdObject", smetasourcedata.name as "NameEstimate", '
       + 'sm_number as "NumberEstimate", preparer as "Compose", post_preparer as "PostCompose", examiner as "Checked", '
       + 'post_examiner as "PostChecked", set_drawings as "SetDrawing", chapter as "NumberChapter", ' +
       'row_number as "NumberRow" FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate);
-
-    SQL.Add(StrQuery);
-    Active := True;
+    qrTmp.Active := True;
 
     ClearAllFields;
 
-    if FieldByName('NumberChapter').AsVariant <> Null then
-      EditNumberChapter.Text := FieldByName('NumberChapter').AsVariant;
+    EditNumberChapter.Text := qrTmp.FieldByName('NumberChapter').AsString;
 
-    if FieldByName('NumberRow').AsVariant <> Null then
-      EditNumberRow.Text := FieldByName('NumberRow').AsVariant;
+    EditNumberRow.Text := qrTmp.FieldByName('NumberRow').AsString;
 
-    EditNumberEstimate.Text := FieldByName('NumberEstimate').AsVariant;
-    EditNameEstimate.Text := FieldByName('NameEstimate').AsVariant;
-    EditCompose.Text := FieldByName('Compose').AsVariant;
-    EditPostCompose.Text := FieldByName('PostCompose').AsVariant;
-    EditChecked.Text := FieldByName('Checked').AsVariant;
-    EditPostChecked.Text := FieldByName('PostChecked').AsVariant;
-    EditSetDrawing.Text := FieldByName('SetDrawing').AsVariant;
+    EditNumberEstimate.Text := qrTmp.FieldByName('NumberEstimate').AsString;
+    EditNameEstimate.Text := qrTmp.FieldByName('NameEstimate').AsString;
+    EditCompose.Text := qrTmp.FieldByName('Compose').AsString;
+    EditPostCompose.Text := qrTmp.FieldByName('PostCompose').AsString;
+    EditChecked.Text := qrTmp.FieldByName('Checked').AsVariant;
+    EditPostChecked.Text := qrTmp.FieldByName('PostChecked').AsString;
+    EditSetDrawing.Text := qrTmp.FieldByName('SetDrawing').AsString;
 
     EditingRecord(True);
 
-    FormCardEstimate.ShowForm(IdObject, IdEstimate, -1, TreeView);
+    FormCardEstimate.ShowForm(IdObject, IdEstimate, TypeEstimate, TreeView);
   end;
 end;
 

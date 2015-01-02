@@ -186,42 +186,42 @@ object FormBasicData: TFormBasicData
     Top = 184
     Width = 80
     Height = 21
-    TabOrder = 4
+    TabOrder = 3
   end
   object EditK41: TEdit
     Left = 239
     Top = 291
     Width = 80
     Height = 21
-    TabOrder = 7
+    TabOrder = 6
   end
   object EditK31: TEdit
     Left = 239
     Top = 318
     Width = 80
     Height = 21
-    TabOrder = 8
+    TabOrder = 7
   end
   object EditK32: TEdit
     Left = 239
     Top = 345
     Width = 80
     Height = 21
-    TabOrder = 9
+    TabOrder = 8
   end
   object EditK33: TEdit
     Left = 239
     Top = 372
     Width = 80
     Height = 21
-    TabOrder = 10
+    TabOrder = 9
   end
   object EditK34: TEdit
     Left = 239
     Top = 399
     Width = 80
     Height = 21
-    TabOrder = 11
+    TabOrder = 10
   end
   object EditPercentTransport: TEdit
     Left = 239
@@ -235,7 +235,7 @@ object FormBasicData: TFormBasicData
     PopupMenu = PopupMenuPercentTransport
     ReadOnly = True
     ShowHint = True
-    TabOrder = 3
+    TabOrder = 2
   end
   object EditRateWorker: TEdit
     Left = 239
@@ -245,7 +245,7 @@ object FormBasicData: TFormBasicData
     TabStop = False
     Color = 14802912
     ReadOnly = True
-    TabOrder = 14
+    TabOrder = 13
   end
   object EditRateMachinist: TEdit
     Left = 239
@@ -255,7 +255,7 @@ object FormBasicData: TFormBasicData
     TabStop = False
     Color = 14802912
     ReadOnly = True
-    TabOrder = 15
+    TabOrder = 14
   end
   object EditRegion: TEdit
     Left = 239
@@ -265,7 +265,7 @@ object FormBasicData: TFormBasicData
     TabStop = False
     Color = 14802912
     ReadOnly = True
-    TabOrder = 16
+    TabOrder = 15
   end
   object ComboBoxVAT: TComboBox
     Left = 239
@@ -274,7 +274,7 @@ object FormBasicData: TFormBasicData
     Height = 21
     Style = csDropDownList
     ItemIndex = 0
-    TabOrder = 2
+    TabOrder = 1
     Text = #1073#1077#1079' '#1053#1044#1057
     Items.Strings = (
       #1073#1077#1079' '#1053#1044#1057
@@ -288,9 +288,8 @@ object FormBasicData: TFormBasicData
     Anchors = [akRight, akBottom]
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Default = True
-    TabOrder = 12
+    TabOrder = 11
     OnClick = ButtonSaveClick
-    ExplicitTop = 525
   end
   object ButtonCancel: TButton
     Left = 219
@@ -299,9 +298,8 @@ object FormBasicData: TFormBasicData
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 13
+    TabOrder = 12
     OnClick = ButtonCancelClick
-    ExplicitTop = 525
   end
   object ComboBoxMonth: TComboBox
     Left = 167
@@ -327,45 +325,26 @@ object FormBasicData: TFormBasicData
       #1053#1086#1103#1073#1088#1100
       #1044#1077#1082#1072#1073#1088#1100)
   end
-  object ComboBoxYear: TComboBox
-    Left = 261
-    Top = 8
-    Width = 58
-    Height = 21
-    Style = csDropDownList
-    ItemIndex = 0
-    TabOrder = 1
-    Text = '2012'
-    OnChange = ComboBoxMonthORYearChange
-    Items.Strings = (
-      '2012'
-      '2013'
-      '2014'
-      '2015'
-      '2016'
-      '2017'
-      '2018')
-  end
   object EditK40: TEdit
     Left = 239
     Top = 251
     Width = 80
     Height = 21
-    TabOrder = 6
+    TabOrder = 5
   end
   object DBLookupComboBoxDump: TDBLookupComboBox
     Left = 8
     Top = 460
     Width = 311
     Height = 21
-    TabOrder = 17
+    TabOrder = 16
   end
   object DBLookupComboBoxRegionDump: TDBLookupComboBox
     Left = 163
     Top = 433
     Width = 156
     Height = 21
-    TabOrder = 18
+    TabOrder = 17
     OnClick = DBLookupComboBoxRegionDumpClick
   end
   object RadioGroupCoefOrders: TRadioGroup
@@ -379,14 +358,27 @@ object FormBasicData: TFormBasicData
     Items.Strings = (
       #1042#1086' '#1074#1089#1077#1093
       #1053#1080#1075#1076#1077)
-    TabOrder = 19
+    TabOrder = 18
   end
   object edtKZP: TEdit
     Left = 239
     Top = 224
     Width = 80
     Height = 21
-    TabOrder = 5
+    TabOrder = 4
+  end
+  object edtYear: TSpinEdit
+    Left = 264
+    Top = 8
+    Width = 55
+    Height = 22
+    Anchors = [akTop, akRight]
+    MaxLength = 4
+    MaxValue = 2050
+    MinValue = 1900
+    TabOrder = 19
+    Value = 2014
+    OnChange = ComboBoxMonthORYearChange
   end
   object DataSourceDump: TDataSource
     DataSet = ADOQueryDump

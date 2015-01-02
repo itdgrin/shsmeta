@@ -7,7 +7,7 @@ uses
   ExtCtrls, DB,
   DateUtils, DBCtrls, Menus, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Samples.Spin;
 
 type
   TFormBasicData = class(TForm)
@@ -38,7 +38,6 @@ type
     ButtonSave: TButton;
     ButtonCancel: TButton;
     ComboBoxMonth: TComboBox;
-    ComboBoxYear: TComboBox;
     EditK40: TEdit;
     Bevel2: TBevel;
     Bevel3: TBevel;
@@ -60,6 +59,7 @@ type
     ADOQueryTemp: TFDQuery;
     lbl1: TLabel;
     edtKZP: TEdit;
+    edtYear: TSpinEdit;
 
     procedure FormShow(Sender: TObject);
 
@@ -167,8 +167,8 @@ begin
     ParamByName('stavka_id').Value := IdStavka;
     Active := True;
 
-    ComboBoxMonth.ItemIndex := FieldByName('monat').AsVariant - 1;
-    ComboBoxYear.ItemIndex := 2012 - FieldByName('year').AsInteger;
+    ComboBoxMonth.ItemIndex := FieldByName('monat').AsInteger - 1;
+    edtYear.Value := FieldByName('year').AsInteger;
 
     // ----------------------------------------
 
@@ -178,9 +178,11 @@ begin
     ParamByName('stavka_id').Value := IdStavka;
     Active := True;
 
-    EditRateWorker.Text := FieldByName('stavka_m_rab').AsVariant;
-    EditRateMachinist.Text := FieldByName('stavka_m_mach').AsVariant;
-
+    if not Eof then
+    begin
+      EditRateWorker.Text := FieldByName('stavka_m_rab').AsVariant;
+      EditRateMachinist.Text := FieldByName('stavka_m_mach').AsVariant;
+    end;
     // ----------------------------------------
 
     Active := False;
@@ -268,7 +270,7 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT stavka_id FROM stavka WHERE year = :year and monat = :monat;');
-      ParamByName('year').Value := StrToInt(ComboBoxYear.Text);
+      ParamByName('year').Value := edtYear.Value;
       ParamByName('monat').Value := ComboBoxMonth.ItemIndex + 1;
       Active := True;
       IdStavka := FieldByName('stavka_id').AsInteger;
@@ -324,9 +326,11 @@ procedure TFormBasicData.ComboBoxMonthORYearChange(Sender: TObject);
 var
   vYear, vMonth: String;
 begin
+  EditRateWorker.Text := '';
+  EditRateMachinist.Text := '';
 
   vMonth := IntToStr(ComboBoxMonth.ItemIndex + 1);
-  vYear := ComboBoxYear.Text;
+  vYear := IntToStr(edtYear.Value);
 
   with ADOQueryTemp do
   begin
@@ -335,9 +339,11 @@ begin
     SQL.Add('SELECT stavka_m_rab as "RateWorker", stavka_m_mach as "RateMachinist" FROM stavka WHERE year = '
       + vYear + ' and monat = ' + vMonth + ';');
     Active := True;
-
-    EditRateWorker.Text := FieldByName('RateWorker').AsVariant;
-    EditRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
+    if not eof then
+    begin
+      EditRateWorker.Text := FieldByName('RateWorker').AsVariant;
+      EditRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
+    end;
   end;
 end;
 
