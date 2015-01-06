@@ -20,15 +20,15 @@ type
     btnExit: TBitBtn;
     btnSave: TBitBtn;
     JvDBGrid1: TJvDBGrid;
-    dsCalcKomandir: TDataSource;
-    qrCalcKomandir: TFDQuery;
+    dsqrCalcTravel: TDataSource;
+    qrCalcTravel: TFDQuery;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnExitClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
-    procedure qrCalcKomandirAfterPost(DataSet: TDataSet);
+    procedure qrCalcTravelAfterPost(DataSet: TDataSet);
     procedure JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
@@ -75,7 +75,7 @@ begin
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, fTravelList.btnAddClick);
   LoadDBGridSettings(JvDBGrid1);
-  CloseOpen(qrCalcKomandir);
+  CloseOpen(qrCalcTravel);
 end;
 
 procedure TfCalcTravel.FormDestroy(Sender: TObject);
@@ -87,21 +87,21 @@ end;
 
 procedure TfCalcTravel.JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Ord(Key) = VK_RETURN) and (qrCalcKomandir.State = dsEdit) then
-    qrCalcKomandir.Post;
+  if (Ord(Key) = VK_RETURN) and (qrCalcTravel.State = dsEdit) then
+    qrCalcTravel.Post;
 end;
 
-procedure TfCalcTravel.qrCalcKomandirAfterPost(DataSet: TDataSet);
+procedure TfCalcTravel.qrCalcTravelAfterPost(DataSet: TDataSet);
 begin
-  if qrCalcKomandir.FieldByName('NUMPP').AsString = '08' then
+  if qrCalcTravel.FieldByName('NUMPP').AsString = '08' then
   begin
-    qrCalcKomandir.ParamByName('STOIM_KM').AsInteger := qrCalcKomandir.FieldByName('CALC').AsInteger;
-    CloseOpen(qrCalcKomandir);
+    qrCalcTravel.ParamByName('STOIM_KM').AsInteger := qrCalcTravel.FieldByName('CALC').AsInteger;
+    CloseOpen(qrCalcTravel);
   end;
-  if qrCalcKomandir.FieldByName('NUMPP').AsString = '09' then
+  if qrCalcTravel.FieldByName('NUMPP').AsString = '09' then
   begin
-    qrCalcKomandir.ParamByName('KM').AsInteger := qrCalcKomandir.FieldByName('CALC').AsInteger;
-    CloseOpen(qrCalcKomandir);
+    qrCalcTravel.ParamByName('KM').AsInteger := qrCalcTravel.FieldByName('CALC').AsInteger;
+    CloseOpen(qrCalcTravel);
   end;
 end;
 
