@@ -146,7 +146,7 @@ object fCalcTravel: TfCalcTravel
     Width = 436
     Height = 226
     Anchors = [akLeft, akTop, akRight, akBottom]
-    DataSource = dsCalcKomandir
+    DataSource = dsqrCalcTravel
     DrawingStyle = gdsClassic
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -203,13 +203,13 @@ object fCalcTravel: TfCalcTravel
         Visible = True
       end>
   end
-  object dsCalcKomandir: TDataSource
-    DataSet = qrCalcKomandir
+  object dsqrCalcTravel: TDataSource
+    DataSet = qrCalcTravel
     Left = 36
     Top = 150
   end
-  object qrCalcKomandir: TFDQuery
-    AfterPost = qrCalcKomandirAfterPost
+  object qrCalcTravel: TFDQuery
+    AfterPost = qrCalcTravelAfterPost
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -234,253 +234,22 @@ object fCalcTravel: TfCalcTravel
         SourceDataType = dtBlob
         TargetDataType = dtAnsiString
       end>
-    FormatOptions.FmtDisplayNumeric = '### ### ### ###.##'
+    FormatOptions.FmtDisplayNumeric = '### ### ### ###.###'
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      'SELECT ('#39'01'#39') AS NUMPP,'
-      '       (null) AS NAIMEN,'
-      '       (null) AS CALC,'
-      '       (null) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'02'#39') AS NUMPP,'
-      
-        '       ('#39#1048'CXO'#1044'H'#1067'E '#1044'AHH'#1067'E '#1044#1051#1071' PAC'#1063'ETA '#1050'OMAH'#1044#1048'POBO'#1063'H'#1067'X PACXO'#1044'OB:'#39')' +
-        ' AS NAIMEN,'
-      '       (null) AS CALC,'
-      '       (null) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'06'#39') AS NUMPP,'
-      '       ('#39'C'#1091#1090#1086#1095#1085#1099#1077' '#1074' '#1090#1077#1082#1091#1097#1080#1093' '#1094#1077#1085#1072#1093' ('#1088#1091#1073')'#39') AS NAIMEN,'
-      '       (FN_getParamValue('#39'SUTKI_KOMANDIR'#39', 1, 2014)) AS CALC,'
-      '       (FN_getParamValue('#39'SUTKI_KOMANDIR'#39', 1, 2014)) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'07'#39') AS NUMPP,'
-      '       ('#39#1050#1074#1072#1088#1090#1080#1088#1085#1099#1077' '#1074' '#1090#1077#1082#1091#1097#1080#1093' '#1094#1077#1085#1072#1093' ('#1088#1091#1073')'#39') AS NAIMEN,'
-      '       (FN_getParamValue('#39'HOUSING_KOMANDIR'#39', 1, 2014)) AS CALC,'
-      '       (FN_getParamValue('#39'HOUSING_KOMANDIR'#39', 1, 2014)) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'08'#39') AS NUMPP,'
-      
-        '       ('#39'C'#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1088#1086#1077#1079#1076#1072' '#1074' '#1086#1076#1085#1091' '#1089#1090#1086#1088#1086#1085#1091'  '#1074' '#1090#1077#1082#1091#1097#1080#1093' '#1094#1077#1085#1072#1093' ('#1088#1091#1073'.' +
-        ' '#1085#1072' 1 '#1082#1084')'#39') AS NAIMEN,'
-      '       (:STOIM_KM) AS CALC,'
-      '       ((null) ) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'09'#39') AS NUMPP,'
-      '       ('#39'P'#1072#1089#1089#1090#1086#1103#1085#1080#1077' '#1076#1086' '#1086#1073#1098#1077#1082#1090#1072'  ('#1082#1084')'#39') AS NAIMEN,'
-      '       (:KM) AS CALC,'
-      '       ((null) ) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'10'#39') AS NUMPP,'
-      '       ('#39#1055#1088#1086#1076#1086#1083#1078#1080#1090#1077#1083#1100#1085#1086#1089#1090#1100' '#1088#1072#1073#1086#1095#1077#1075#1086' '#1076#1085#1103'  ('#1095#1072#1089')'#39') AS NAIMEN,'
-      '       (8) AS CALC,'
-      '       (8) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'11'#39') AS NUMPP,'
-      '       ('#39#1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1088#1072#1073#1086#1095#1080#1093' '#1076#1085#1077#1081' '#1074' '#1084#1077#1089#1103#1094#1077'  ('#1076#1085#1077#1081')'#39') AS NAIMEN,'
-      
-        '       (FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)) AS' +
-        ' CALC,'
-      
-        '       (FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)) AS' +
-        ' TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'12'#39') AS NUMPP,'
-      
-        '       ('#39#1050#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1072#1083#1077#1085#1076#1072#1088#1085#1099#1093' '#1076#1085#1077#1081' '#1074' '#1084#1077#1089#1103#1094#1077' ('#1076#1085#1077#1081')'#39') AS NAIMEN' +
-        ','
-      '       (FN_getParamValue('#39'CUNT_DAY_IN_MONTH'#39', 1, 2014)) AS CALC,'
-      '       (FN_getParamValue('#39'CUNT_DAY_IN_MONTH'#39', 1, 2014)) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'13'#39') AS NUMPP,'
-      
-        '       ('#39'---------------------------------------------'#39') AS NAIM' +
-        'EN,'
-      '       (null) AS CALC,'
-      '       (null) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'14'#39') AS NUMPP,'
-      '       ('#39'H'#1086#1088#1084#1072#1090#1080#1074#1085#1072#1103' '#1090#1088#1091#1076#1086#1077#1084#1082#1086#1089#1090#1100' '#1088#1072#1073#1086#1090' ('#1095#1077#1083'-'#1076#1085')'#39') AS NAIMEN,'
-      '       (CONCAT('#39'(141+19+'#39', '
-      '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_OBHOZ'#39', 1, 2014),'
-      '        '#39'/1000*'#39', '
-      
-        '        (SELECT S_OHROPR FROM smetasourcedata WHERE SM_ID=:ID_AC' +
-        'T),'
-      '        '#39'+'#39','
-      '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014),'
-      '        '#39'/1000*'#39','
-      '        (SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT),'
-      '        '#39'+0.035/1000*'#39','
-      '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014),'
-      '        '#39'*0)/8'#39
-      '       )'
-      '       ) AS CALC,'
-      
-        '       ((141+19+FN_getParamValue('#39'K_SUM1000_TO_TRUD_OBHOZ'#39', 1, 2' +
-        '014)/1000*(SELECT S_OHROPR FROM smetasourcedata WHERE SM_ID=:ID_' +
-        'ACT)+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)' +
-        ' AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'15'#39') AS NUMPP,'
-      
-        '       ('#39'---------------------------------------------'#39') AS NAIM' +
-        'EN,'
-      '       (null) AS CALC,'
-      '       (null) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'22'#39') AS NUMPP,'
-      '       ('#39'PAC'#1063'ET  B TE'#1050#1059#1065#1048'X '#1062'EHAX'#39') AS NAIMEN,'
-      '       (null) AS CALC,'
-      '       (null) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'23'#39') AS NUMPP,'
-      '       ('#39'C'#1091#1090#1086#1095#1085#1099#1077#39') AS NAIMEN,'
-      
-        '       (CONCAT(FN_getParamValue('#39'SUTKI_KOMANDIR'#39', 1, 2014), '#39'*'#39',' +
-        ' ((141+19+FN_getParamValue('#39'K_SUM1000_TO_TRUD_OBHOZ'#39', 1, 2014)/1' +
-        '000*(SELECT S_OHROPR FROM smetasourcedata WHERE SM_ID=:ID_ACT)+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)' +
-        ', '#39'/'#39' , FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014),'#39'*'#39 +
-        ', FN_getParamValue('#39'CUNT_DAY_IN_MONTH'#39', 1, 2014))) AS CALC,'
-      
-        '       (FN_getParamValue('#39'SUTKI_KOMANDIR'#39', 1, 2014)*((141+19+FN_' +
-        'getParamValue('#39'K_SUM1000_TO_TRUD_OBHOZ'#39', 1, 2014)/1000*(SELECT S' +
-        '_OHROPR FROM smetasourcedata WHERE SM_ID=:ID_ACT)+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)' +
-        '/FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)*FN_getPara' +
-        'mValue('#39'CUNT_DAY_IN_MONTH'#39', 1, 2014)) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'24'#39') AS NUMPP,'
-      '       ('#39#1050#1074#1072#1088#1090#1080#1088#1085#1099#1077#39') AS NAIMEN,'
-      
-        '       (CONCAT(FN_getParamValue('#39'HOUSING_KOMANDIR'#39', 1, 2014), '#39'*' +
-        #39', ((141+19+FN_getParamValue('#39'K_SUM1000_TO_TRUD_OBHOZ'#39', 1, 2014)' +
-        '/1000*(SELECT S_OHROPR FROM smetasourcedata WHERE SM_ID=:ID_ACT)' +
-        '+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)' +
-        ', '#39'/'#39' , FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014),'#39'*'#39 +
-        ', FN_getParamValue('#39'CUNT_DAY_IN_MONTH'#39', 1, 2014))) AS CALC,'
-      
-        '       (FN_getParamValue('#39'HOUSING_KOMANDIR'#39', 1, 2014)*((141+19+F' +
-        'N_getParamValue('#39'K_SUM1000_TO_TRUD_OBHOZ'#39', 1, 2014)/1000*(SELECT' +
-        ' S_OHROPR FROM smetasourcedata WHERE SM_ID=:ID_ACT)+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)' +
-        '/FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)*FN_getPara' +
-        'mValue('#39'CUNT_DAY_IN_MONTH'#39', 1, 2014)) AS TOTAL'
-      'UNION ALL'
-      'SELECT ('#39'25'#39') AS NUMPP,'
-      '       ('#39'P'#1072#1089#1093#1086#1076#1099' '#1085#1072' '#1087#1088#1086#1077#1079#1076' ('#1090#1091#1076#1072' '#1080' '#1086#1073#1088#1072#1090#1085#1086')'#39') AS NAIMEN,'
-      
-        '       (CONCAT(:STOIM_KM, '#39'*'#39', :KM ,'#39'*'#39',        ((141+19+FN_getP' +
-        'aramValue('#39'K_SUM1000_TO_TRUD_OBHOZ'#39', 1, 2014)/1000*(SELECT S_OHR' +
-        'OPR FROM smetasourcedata WHERE SM_ID=:ID_ACT)+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)'
-      
-        '        , '#39'/'#39', FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 20' +
-        '14),  '#39'*2'#39')) AS CALC,'
-      
-        '       (:STOIM_KM*:KM*((141+19+FN_getParamValue('#39'K_SUM1000_TO_TR' +
-        'UD_OBHOZ'#39', 1, 2014)/1000*(SELECT S_OHROPR FROM smetasourcedata W' +
-        'HERE SM_ID=:ID_ACT)+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)' +
-        '/FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)*2) AS TOTA' +
-        'L'
-      'UNION ALL'
-      'SELECT ('#39'26'#39') AS NUMPP,'
-      
-        '       ('#39#1048'TO'#1043'O '#1082#1086#1084#1072#1085#1076#1080#1088#1086#1074#1086#1095#1085#1099#1093' '#1088#1072#1089#1093#1086#1076#1086#1074' '#1074' '#1090#1077#1082#1091#1097#1080#1093' '#1094#1077#1085#1072#1093#39') AS NAI' +
-        'MEN,'
-      
-        '       CONCAT((FN_getParamValue('#39'SUTKI_KOMANDIR'#39', 1, 2014)*((141' +
-        '+19+FN_getParamValue('#39'K_SUM1000_TO_TRUD_OBHOZ'#39', 1, 2014)/1000*(S' +
-        'ELECT S_OHROPR FROM smetasourcedata WHERE SM_ID=:ID_ACT)+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)' +
-        '/FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)*FN_getPara' +
-        'mValue('#39'CUNT_DAY_IN_MONTH'#39', 1, 2014)),'#39'+'#39','
-      
-        '(FN_getParamValue('#39'HOUSING_KOMANDIR'#39', 1, 2014)*((141+19+FN_getPa' +
-        'ramValue('#39'K_SUM1000_TO_TRUD_OBHOZ'#39', 1, 2014)/1000*(SELECT S_OHRO' +
-        'PR FROM smetasourcedata WHERE SM_ID=:ID_ACT)+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)' +
-        '/FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)*FN_getPara' +
-        'mValue('#39'CUNT_DAY_IN_MONTH'#39', 1, 2014)),'#39'+'#39', (0*00*00000/FN_getPar' +
-        'amValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)*2)) AS CALC,'
-      
-        '       ((FN_getParamValue('#39'SUTKI_KOMANDIR'#39', 1, 2014)*((141+19+FN' +
-        '_getParamValue('#39'K_SUM1000_TO_TRUD_OBHOZ'#39', 1, 2014)/1000*(SELECT ' +
-        'S_OHROPR FROM smetasourcedata WHERE SM_ID=:ID_ACT)+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)' +
-        '/FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)*FN_getPara' +
-        'mValue('#39'CUNT_DAY_IN_MONTH'#39', 1, 2014))+(FN_getParamValue('#39'HOUSING' +
-        '_KOMANDIR'#39', 1, 2014)*((141+19+FN_getParamValue('#39'K_SUM1000_TO_TRU' +
-        'D_OBHOZ'#39', 1, 2014)/1000*(SELECT S_OHROPR FROM smetasourcedata WH' +
-        'ERE SM_ID=:ID_ACT)+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)' +
-        '/FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)*FN_getPara' +
-        'mValue('#39'CUNT_DAY_IN_MONTH'#39', 1, 2014))+ (0*00*00000/FN_getParamVa' +
-        'lue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)*2)+'
-      
-        '(:STOIM_KM*:KM*((141+19+FN_getParamValue('#39'K_SUM1000_TO_TRUD_OBHO' +
-        'Z'#39', 1, 2014)/1000*(SELECT S_OHROPR FROM smetasourcedata WHERE SM' +
-        '_ID=:ID_ACT)+'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_VREM'#39', 1, 2014)/1000' +
-        '*(SELECT 0 FROM smetasourcedata WHERE SM_ID=:ID_ACT)+0.035/1000*'
-      
-        '        FN_getParamValue('#39'K_SUM1000_TO_TRUD_ZIM'#39', 1, 2014)*0)/8)' +
-        '/FN_getParamValue('#39'COUNT_WORK_DAY_IN_MONTH'#39', 1, 2014)*2)) AS TOT' +
-        'AL')
+      'CALL CalcTravel(:ID_ACT, :STOIM_KM, :KM);')
     Left = 35
     Top = 94
     ParamData = <
+      item
+        Name = 'ID_ACT'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 310
+      end
       item
         Name = 'STOIM_KM'
         DataType = ftInteger
@@ -492,12 +261,6 @@ object fCalcTravel: TfCalcTravel
         DataType = ftInteger
         ParamType = ptInput
         Value = 0
-      end
-      item
-        Name = 'ID_ACT'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = 310
       end>
   end
 end

@@ -3809,7 +3809,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4101,7 +4101,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4398,7 +4398,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4621,6 +4621,7 @@
         SourceDataType = dtBlob
         TargetDataType = dtAnsiString
       end>
+    FormatOptions.FmtDisplayNumeric = '### ### ### ##0.###'
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False
@@ -4661,7 +4662,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4839,7 +4840,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4987,7 +4988,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
