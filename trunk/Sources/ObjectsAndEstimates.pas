@@ -701,7 +701,7 @@ begin
       2:
         CellText := qrActs.FieldByName('description').AsVariant;
       3:
-        CellText := qrActs.FieldByName('cost').AsVariant;
+        CellText := qrActs.FieldByName('cost').AsString;
     end;
   except
     on E: Exception do
@@ -1087,7 +1087,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT * FROM card_acts WHERE id_estimate_object = :id_estimate_object;');
+      SQL.Add('SELECT card_acts.*, ifnull(card_acts.s_stoim, 0) as cost FROM card_acts WHERE id_estimate_object = :id_estimate_object;');
       ParamByName('id_estimate_object').Value := IdEstimate;
       Active := True;
 

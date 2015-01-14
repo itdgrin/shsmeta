@@ -200,8 +200,8 @@ begin
   // Вычисляем остаток
   for i := 1 to StringGridDataEstimates.RowCount do
   begin
-    StringGridDataEstimates.Cells[6, i] := MyFloatToStr(MyStrToFloatDef(StringGridDataEstimates.Cells[2, i], 0) -
-      MyStrToFloatDef(StringGridDataEstimates.Cells[4, i], 0) -
+    StringGridDataEstimates.Cells[6, i] := MyFloatToStr(MyStrToFloatDef(StringGridDataEstimates.Cells[2, i],
+      0) - MyStrToFloatDef(StringGridDataEstimates.Cells[4, i], 0) -
       MyStrToFloatDef(StringGridDataEstimates.Cells[5, i], 0));
   end;
 end;
@@ -229,6 +229,14 @@ begin
     ADOQueryTemp.SQL.Text := 'delete from materialcard_temp;';
     ADOQueryTemp.ExecSQL;
     ADOQueryTemp.SQL.Text := 'delete from mechanizmcard_temp;';
+    ADOQueryTemp.ExecSQL;
+    ADOQueryTemp.SQL.Text := 'delete from devicescard_temp;';
+    ADOQueryTemp.ExecSQL;
+    ADOQueryTemp.SQL.Text := 'delete from dumpcard_temp;';
+    ADOQueryTemp.ExecSQL;
+    ADOQueryTemp.SQL.Text := 'delete from transpcard_temp;';
+    ADOQueryTemp.ExecSQL;
+    ADOQueryTemp.SQL.Text := 'delete from calculation_coef_temp;';
     ADOQueryTemp.ExecSQL;
     with StringGridDataEstimates do
       for i := 1 to RowCount - 1 do
@@ -595,9 +603,8 @@ begin
 
       if (ACol > 0) and (ARow > 0) and (ARow <> Row) and (Cells[5, ARow] <> '') then
 
-        if (MyStrToFloat(Cells[5, ARow]) >
-          MyStrToFloat(Cells[2, ARow])) or
-          (MyStrToFloat(Cells[2, ARow]) < 0) then
+        if (MyStrToFloat(Cells[5, ARow]) > MyStrToFloat(Cells[2, ARow])) or (MyStrToFloat(Cells[2, ARow]) < 0)
+        then
         // "Процентовка" > "Количество", или Количество < 0
         begin
           Canvas.Brush.Color := RGB(225, 128, 131);
