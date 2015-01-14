@@ -327,28 +327,28 @@ object FormKC6: TFormKC6
       end
     end
   end
-  object ADOQueryTemp: TFDQuery
+  object qrTemp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 33
     Top = 32
   end
-  object ADOQObjectEstimates: TFDQuery
+  object qrObjectEstimates: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 129
     Top = 32
   end
-  object ADOQLocalEstimates: TFDQuery
+  object qrLocalEstimates: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 241
     Top = 32
   end
-  object ADOQPTMEstimates: TFDQuery
+  object qrPTMEstimates: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -357,28 +357,28 @@ object FormKC6: TFormKC6
     Left = 361
     Top = 32
   end
-  object ADOQueryDataEstimate: TFDQuery
+  object qrDataEstimate: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 89
     Top = 168
   end
-  object ADOQueryCardRates: TFDQuery
+  object qrCardRates: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 89
     Top = 224
   end
-  object ADOQueryMaterialCard: TFDQuery
+  object qrMaterialCard: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 225
     Top = 168
   end
-  object ADOQueryMechanizmCard: TFDQuery
+  object qrMechanizmCard: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
