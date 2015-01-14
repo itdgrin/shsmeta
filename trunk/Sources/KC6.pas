@@ -39,14 +39,14 @@ type
 
     PanelBottom: TPanel;
     ImageSplitterBottom: TImage;
-    ADOQueryTemp: TFDQuery;
-    ADOQObjectEstimates: TFDQuery;
-    ADOQLocalEstimates: TFDQuery;
-    ADOQPTMEstimates: TFDQuery;
-    ADOQueryDataEstimate: TFDQuery;
-    ADOQueryCardRates: TFDQuery;
-    ADOQueryMaterialCard: TFDQuery;
-    ADOQueryMechanizmCard: TFDQuery;
+    qrTemp: TFDQuery;
+    qrObjectEstimates: TFDQuery;
+    qrLocalEstimates: TFDQuery;
+    qrPTMEstimates: TFDQuery;
+    qrDataEstimate: TFDQuery;
+    qrCardRates: TFDQuery;
+    qrMaterialCard: TFDQuery;
+    qrMechanizmCard: TFDQuery;
     Label1: TLabel;
     EditKoef: TSpinEdit;
     qrOtherActs: TFDQuery;
@@ -222,22 +222,22 @@ begin
   if MessageBox(0, PChar('Перенести выделенные данные в акт?'), PWideChar(Caption),
     MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mryes then
   begin
-    ADOQueryTemp.SQL.Text := 'delete from data_act_temp;';
-    ADOQueryTemp.ExecSQL;
-    ADOQueryTemp.SQL.Text := 'delete from card_rate_temp;';
-    ADOQueryTemp.ExecSQL;
-    ADOQueryTemp.SQL.Text := 'delete from materialcard_temp;';
-    ADOQueryTemp.ExecSQL;
-    ADOQueryTemp.SQL.Text := 'delete from mechanizmcard_temp;';
-    ADOQueryTemp.ExecSQL;
-    ADOQueryTemp.SQL.Text := 'delete from devicescard_temp;';
-    ADOQueryTemp.ExecSQL;
-    ADOQueryTemp.SQL.Text := 'delete from dumpcard_temp;';
-    ADOQueryTemp.ExecSQL;
-    ADOQueryTemp.SQL.Text := 'delete from transpcard_temp;';
-    ADOQueryTemp.ExecSQL;
-    ADOQueryTemp.SQL.Text := 'delete from calculation_coef_temp;';
-    ADOQueryTemp.ExecSQL;
+    qrTemp.SQL.Text := 'delete from data_act_temp;';
+    qrTemp.ExecSQL;
+    qrTemp.SQL.Text := 'delete from card_rate_temp;';
+    qrTemp.ExecSQL;
+    qrTemp.SQL.Text := 'delete from materialcard_temp;';
+    qrTemp.ExecSQL;
+    qrTemp.SQL.Text := 'delete from mechanizmcard_temp;';
+    qrTemp.ExecSQL;
+    qrTemp.SQL.Text := 'delete from devicescard_temp;';
+    qrTemp.ExecSQL;
+    qrTemp.SQL.Text := 'delete from dumpcard_temp;';
+    qrTemp.ExecSQL;
+    qrTemp.SQL.Text := 'delete from transpcard_temp;';
+    qrTemp.ExecSQL;
+    qrTemp.SQL.Text := 'delete from calculation_coef_temp;';
+    qrTemp.ExecSQL;
     with StringGridDataEstimates do
       for i := 1 to RowCount - 1 do
         if (Cells[10, i] = '1') and (Cells[8, i] <> '') then
@@ -259,7 +259,7 @@ end;
 procedure TFormKC6.GetNameObject;
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       Active := False;
       SQL.Clear;
@@ -284,7 +284,7 @@ end;
 
 procedure TFormKC6.QueryObjectEstimates;
 begin
-  with ADOQObjectEstimates do
+  with qrObjectEstimates do
   begin
     Active := False;
     SQL.Clear;
@@ -297,13 +297,13 @@ end;
 
 procedure TFormKC6.QueryLocalEstimates;
 begin
-  with ADOQLocalEstimates do
+  with qrLocalEstimates do
   begin
     Active := False;
     SQL.Clear;
     SQL.Add('SELECT * FROM smetasourcedata WHERE sm_type = 1 and parent_local_id = :parent_local_id and ' +
       'obj_id = :obj_id ORDER BY sm_number');
-    ParamByName('parent_local_id').Value := ADOQObjectEstimates.FieldByName('sm_id').AsInteger;
+    ParamByName('parent_local_id').Value := qrObjectEstimates.FieldByName('sm_id').AsInteger;
     ParamByName('obj_id').Value := IdObject;
     Active := True;
     First;
@@ -312,13 +312,13 @@ end;
 
 procedure TFormKC6.QueryPTMEstimates;
 begin
-  with ADOQPTMEstimates do
+  with qrPTMEstimates do
   begin
     Active := False;
     SQL.Clear;
     SQL.Add('SELECT * FROM smetasourcedata WHERE sm_type = 3 and parent_ptm_id = :parent_ptm_id and ' +
       'obj_id = :obj_id ORDER BY sm_number');
-    ParamByName('parent_ptm_id').Value := ADOQLocalEstimates.FieldByName('sm_id').AsInteger;
+    ParamByName('parent_ptm_id').Value := qrLocalEstimates.FieldByName('sm_id').AsInteger;
     ParamByName('obj_id').Value := IdObject;
     Active := True;
     First;
@@ -335,7 +335,7 @@ begin
 
   QueryObjectEstimates;
 
-  with ADOQObjectEstimates do
+  with qrObjectEstimates do
     while not Eof do
     begin
       n1 := TreeView.Items.Add(Nil, FieldByName('sm_number').AsString + ' ' + FieldByName('name').AsString)
@@ -353,12 +353,9 @@ begin
         Cells[10, nom] := '0';
       end;
       FillingDataEstimate(FieldByName('sm_id').AsInteger);
-
       // ---------- НАЧАЛО вывода ЛОКАЛЬНЫХ смет
-
       QueryLocalEstimates;
-
-      with ADOQLocalEstimates do
+      with qrLocalEstimates do
         while not Eof do
         begin
           n2 := TreeView.Items.AddChild(TreeView.Items.Item[n1], FieldByName('sm_number').AsString + ' ' +
@@ -377,12 +374,10 @@ begin
             Cells[10, nom] := '0';
           end;
           FillingDataEstimate(FieldByName('sm_id').AsInteger);
-
           // -------------------- НАЧАЛО вывода смет ПТМ
-
           QueryPTMEstimates;
 
-          with ADOQPTMEstimates do
+          with qrPTMEstimates do
             while not Eof do
             begin
               n3 := TreeView.Items.AddChild(TreeView.Items.Item[n2], FieldByName('sm_number').AsString + ' ' +
@@ -400,23 +395,16 @@ begin
                 Cells[10, nom] := '0';
               end;
               FillingDataEstimate(FieldByName('sm_id').AsInteger);
-
               Next;
             end;
-
           // -------------------- КОНЕЦ вывода смет ПТМ
-
           Next;
         end;
-
       // ---------- КОНЕЦ вывода ЛОКАЛЬНЫХ смет
-
       Next;
     end;
   // КОНЕЦ вывода ОБЪЕКТЫХ смет
-
   TreeView.FullExpand;
-
   StringGridDataEstimates.RowCount := nom + 1;
 end;
 
@@ -700,7 +688,7 @@ var
   ds: Char;
 begin
   try
-    with ADOQueryDataEstimate do
+    with qrDataEstimate do
     begin
       Active := False;
       SQL.Clear;
@@ -715,12 +703,12 @@ begin
         case FieldByName('id_type_data').AsInteger of
           1: // Выводим расценку
             try
-              with ADOQueryCardRates do
+              with qrCardRates do
               begin
                 Active := False;
                 SQL.Clear;
                 SQL.Add('SELECT card_rate.*, (select sum(rate_count) from card_rate_act where id=:id) as cntDone FROM card_rate WHERE id = :id;');
-                ParamByName('id').Value := ADOQueryDataEstimate.FieldByName('id_tables').AsInteger;
+                ParamByName('id').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
                 Active := True;
 
                 with StringGridDataEstimates do
@@ -734,7 +722,7 @@ begin
                   Cells[5, nom] := '0';
                   Cells[6, nom] := MyFloatToStr(FieldByName('rate_count').AsFloat - FieldByName('cntDone')
                     .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                  Cells[7, nom] := IntToStr(ADOQueryDataEstimate.FieldByName('id_estimate').AsInteger);
+                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
                   Cells[8, nom] := '1';
                   Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
                   Cells[10, nom] := '0';
@@ -743,19 +731,19 @@ begin
 
               // ----------------------------------------
 
-              with ADOQueryMaterialCard do
+              with qrMaterialCard do
               begin
                 Active := False;
                 SQL.Clear;
                 SQL.Add('SELECT materialcard.*, (select sum(materialcard_act.mat_count) from materialcard_act where id_card_rate=:id_card_rate and materialcard_act.id=materialcard.id) as cntDone FROM materialcard WHERE id_card_rate = :id_card_rate ORDER BY 1;');
-                ParamByName('id_card_rate').Value := ADOQueryCardRates.FieldByName('id').AsInteger;
+                ParamByName('id_card_rate').Value := qrCardRates.FieldByName('id').AsInteger;
                 Active := True;
 
                 // --------------------
 
                 // Выводим все неучтённые материалы которые не были заменены
                 Filtered := False;
-                Filter := 'id_card_rate = ' + IntToStr(ADOQueryCardRates.FieldByName('id').AsInteger) +
+                Filter := 'id_card_rate = ' + IntToStr(qrCardRates.FieldByName('id').AsInteger) +
                   ' and considered = 0 and replaced = 0';
                 Filtered := True;
 
@@ -774,7 +762,7 @@ begin
                     Cells[5, nom] := '0';
                     Cells[6, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
                       .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                    Cells[7, nom] := IntToStr(ADOQueryDataEstimate.FieldByName('id_estimate').AsInteger);
+                    Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
                     Cells[8, nom] := '2';
                     Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
                     Cells[10, nom] := '0';
@@ -787,7 +775,7 @@ begin
 
                 // Выводим все заменяющие материалы, т.е. материалы которыми были заменены неучтённые
                 Filtered := False;
-                Filter := 'id_card_rate = ' + IntToStr(ADOQueryCardRates.FieldByName('id').AsInteger) +
+                Filter := 'id_card_rate = ' + IntToStr(qrCardRates.FieldByName('id').AsInteger) +
                   ' and considered = 1 and id_replaced > 0';
                 Filtered := True;
 
@@ -806,7 +794,7 @@ begin
                     Cells[5, nom] := '0';
                     Cells[6, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
                       .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                    Cells[7, nom] := IntToStr(ADOQueryDataEstimate.FieldByName('id_estimate').AsInteger);
+                    Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
                     Cells[8, nom] := '2';
                     Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
                     Cells[10, nom] := '0';
@@ -824,12 +812,12 @@ begin
             end;
           2: // Выводим материал
             try
-              with ADOQueryMaterialCard do
+              with qrMaterialCard do
               begin
                 Active := False;
                 SQL.Clear;
                 SQL.Add('SELECT materialcard.*, (select sum(materialcard_act.mat_count) from materialcard_act where materialcard_act.id=:id1) as cntDone FROM materialcard WHERE id = :id1;');
-                ParamByName('id1').Value := ADOQueryDataEstimate.FieldByName('id_tables').AsInteger;
+                ParamByName('id1').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
                 Active := True;
 
                 with StringGridDataEstimates do
@@ -843,7 +831,7 @@ begin
                   Cells[5, nom] := '0';
                   Cells[6, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
                     .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                  Cells[7, nom] := IntToStr(ADOQueryDataEstimate.FieldByName('id_estimate').AsInteger);
+                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
                   Cells[8, nom] := '2';
                   Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
                   Cells[10, nom] := '0';
@@ -857,12 +845,12 @@ begin
           3:
             // Выводим механизм
             try
-              with ADOQueryMechanizmCard do
+              with qrMechanizmCard do
               begin
                 Active := False;
                 SQL.Clear;
                 SQL.Add('SELECT mechanizmcard.*, (select sum(mechanizmcard_act.mech_count) from mechanizmcard_act where mechanizmcard_act.id=:id) as cntDone FROM mechanizmcard WHERE id = :id;');
-                ParamByName('id').Value := ADOQueryDataEstimate.FieldByName('id_tables').AsInteger;
+                ParamByName('id').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
                 Active := True;
 
                 with StringGridDataEstimates do
@@ -876,7 +864,7 @@ begin
                   Cells[5, nom] := '0';
                   Cells[6, nom] := MyFloatToStr(FieldByName('mech_count').AsFloat - FieldByName('cntDone')
                     .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                  Cells[7, nom] := IntToStr(ADOQueryDataEstimate.FieldByName('id_estimate').AsInteger);
+                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
                   Cells[8, nom] := '3';
                   Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
                   Cells[10, nom] := '0';
@@ -889,6 +877,18 @@ begin
             end;
           4:
             // Выводим оборудование
+            begin
+            end;
+          5:
+            // Выводим вывоз мусора
+            begin
+            end;
+          6, 7, 8, 9:
+            // Выводим транспортировку
+            begin
+            end;
+          10, 11:
+            // Выводим Е18 и Е20
             begin
             end;
         end;
@@ -907,7 +907,7 @@ end;
 procedure TFormKC6.CopyToAct(const vIdEstimate, vIdTypeData, vIdTables: Integer; const vCnt: Double);
 begin
   try
-    with ADOQueryTemp do
+    with qrTemp do
     begin
       SQL.Clear;
       SQL.Add('CALL DataToAct(:IdEstimate, :IdTypeData, :IdTables, :cnt);');
