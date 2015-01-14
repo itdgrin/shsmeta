@@ -842,8 +842,7 @@ begin
                 MessageBox(0, PChar('При выводе материала в таблицу возникла ошибка:' + sLineBreak +
                   sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
             end;
-          3:
-            // Выводим механизм
+          3: // Выводим механизм
             try
               with qrMechanizmCard do
               begin
@@ -875,21 +874,137 @@ begin
                 MessageBox(0, PChar('При выводе материала в таблицу возникла ошибка:' + sLineBreak +
                   sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
             end;
-          4:
-            // Выводим оборудование
-            begin
+          4: // Выводим оборудование
+            try
+              with qrTemp do
+              begin
+                Active := False;
+                SQL.Clear;
+                SQL.Add('SELECT devicescard.*, (select sum(devicescard_act.DEVICE_COUNT) from devicescard_act where devicescard_act.id=:id) as cntDone FROM devicescard WHERE id = :id;');
+                ParamByName('id').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
+                Active := True;
+
+                with StringGridDataEstimates do
+                begin
+                  Inc(nom);
+                  Cells[0, nom] := IntToStr(nom);
+                  Cells[1, nom] := FieldByName('DEVICE_CODE').AsString;
+                  Cells[2, nom] := MyFloatToStr(FieldByName('DEVICE_COUNT').AsFloat);
+                  Cells[3, nom] := FieldByName('DEVICE_UNIT').AsString;
+                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
+                  Cells[5, nom] := '0';
+                  Cells[6, nom] := MyFloatToStr(FieldByName('DEVICE_COUNT').AsFloat - FieldByName('cntDone')
+                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
+                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
+                  Cells[8, nom] := '4';
+                  Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
+                  Cells[10, nom] := '0';
+                end;
+              end;
+            except
+              on E: Exception do
+                MessageBox(0, PChar('При выводе оборудования в таблицу возникла ошибка:' + sLineBreak +
+                  sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
             end;
-          5:
-            // Выводим вывоз мусора
-            begin
+          5: // Выводим вывоз мусора
+            try
+              with qrTemp do
+              begin
+                Active := False;
+                SQL.Clear;
+                SQL.Add('SELECT dumpcard.*, (select sum(dumpcard_act.DUMP_COUNT) from dumpcard_act where dumpcard_act.id=:id) as cntDone FROM dumpcard WHERE id = :id;');
+                ParamByName('id').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
+                Active := True;
+
+                with StringGridDataEstimates do
+                begin
+                  Inc(nom);
+                  Cells[0, nom] := IntToStr(nom);
+                  Cells[1, nom] := FieldByName('DUMP_CODE').AsString;
+                  Cells[2, nom] := MyFloatToStr(FieldByName('DUMP_COUNT').AsFloat);
+                  Cells[3, nom] := FieldByName('DUMP_UNIT').AsString;
+                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
+                  Cells[5, nom] := '0';
+                  Cells[6, nom] := MyFloatToStr(FieldByName('DUMP_COUNT').AsFloat - FieldByName('cntDone')
+                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
+                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
+                  Cells[8, nom] := '5';
+                  Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
+                  Cells[10, nom] := '0';
+                end;
+              end;
+            except
+              on E: Exception do
+                MessageBox(0, PChar('При выводе оборудования в таблицу возникла ошибка:' + sLineBreak +
+                  sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
             end;
-          6, 7, 8, 9:
-            // Выводим транспортировку
-            begin
+          6, 7, 8, 9: // Выводим транспортировку
+            try
+              with qrTemp do
+              begin
+                Active := False;
+                SQL.Clear;
+                SQL.Add('SELECT transpcard.*, (select sum(transpcard_act.TRANSP_COUNT) from transpcard_act where transpcard_act.id=:id) as cntDone FROM transpcard WHERE id = :id;');
+                ParamByName('id').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
+                Active := True;
+
+                with StringGridDataEstimates do
+                begin
+                  Inc(nom);
+                  Cells[0, nom] := IntToStr(nom);
+                  Cells[1, nom] := FieldByName('TRANSP_CODE_JUST').AsString;
+                  Cells[2, nom] := MyFloatToStr(FieldByName('TRANSP_COUNT').AsFloat);
+                  Cells[3, nom] := FieldByName('CARG_UNIT').AsString;
+                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
+                  Cells[5, nom] := '0';
+                  Cells[6, nom] := MyFloatToStr(FieldByName('TRANSP_COUNT').AsFloat - FieldByName('cntDone')
+                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
+                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
+                  Cells[8, nom] := FieldByName('TRANSP_TYPE').AsString;
+                  Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
+                  Cells[10, nom] := '0';
+                end;
+              end;
+            except
+              on E: Exception do
+                MessageBox(0, PChar('При выводе оборудования в таблицу возникла ошибка:' + sLineBreak +
+                  sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
             end;
-          10, 11:
-            // Выводим Е18 и Е20
+          10: // Выводим Е18
             begin
+              with StringGridDataEstimates do
+              begin
+                Inc(nom);
+                Cells[0, nom] := IntToStr(nom);
+                Cells[1, nom] := 'Е18';
+                Cells[2, nom] := '0'; // исправить
+                Cells[3, nom] := '';
+                Cells[4, nom] := ''; // исправить кол-во
+                Cells[5, nom] := '0';
+                Cells[6, nom] := '0';
+                Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
+                Cells[8, nom] := '10';
+                Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
+                Cells[10, nom] := '0';
+              end;
+            end;
+          11: // Выводим Е20
+            begin
+              with StringGridDataEstimates do
+              begin
+                Inc(nom);
+                Cells[0, nom] := IntToStr(nom);
+                Cells[1, nom] := 'Е20';
+                Cells[2, nom] := '0'; // исправить
+                Cells[3, nom] := '';
+                Cells[4, nom] := '0'; // исправить кол-во
+                Cells[5, nom] := '0';
+                Cells[6, nom] := '0';
+                Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
+                Cells[8, nom] := '11';
+                Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
+                Cells[10, nom] := '0';
+              end;
             end;
         end;
         Next;
