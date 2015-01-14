@@ -920,7 +920,7 @@ begin
                 begin
                   Inc(nom);
                   Cells[0, nom] := IntToStr(nom);
-                  Cells[1, nom] := FieldByName('DUMP_CODE').AsString;
+                  Cells[1, nom] := FieldByName('DUMP_CODE_JUST').AsString;
                   Cells[2, nom] := MyFloatToStr(FieldByName('DUMP_COUNT').AsFloat);
                   Cells[3, nom] := FieldByName('DUMP_UNIT').AsString;
                   Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
