@@ -453,6 +453,7 @@ type
     qrTranspCLASS: TStringField;
     qrTranspTRANSP_UNIT: TStringField;
     tmRate: TTimer;
+    qrRatesSORTID: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -2320,7 +2321,18 @@ begin
         qrTemp.ParamByName('ID').AsInteger := qrRatesTRID.AsInteger;
         qrTemp.ParamByName('RC').AsFloat := Sender.Value;
         qrTemp.ExecSQL;
-      end
+      end;
+     10,11:
+     begin
+        if Act then
+          qrTemp.SQL.Text := 'UPDATE data_act_temp set E1820_COUNT = :RC WHERE ID=:ID;'
+        else
+          qrTemp.SQL.Text := 'UPDATE data_estimate_temp set E1820_COUNT = :RC WHERE ID=:ID;';
+
+        qrTemp.ParamByName('ID').AsInteger := qrRatesDID.AsInteger;
+        qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+        qrTemp.ExecSQL;
+     end
   else
     begin
       showmessage('Запрос обновления не реализован!');
@@ -2490,6 +2502,14 @@ begin
     begin
       Active := False;
       SQL.Clear;
+      SQL.Add('INSERT INTO data_estimate_temp (id_estimate, id_type_data, id_tables) ' +
+        'VALUE (:id_estimate, :id_type_data, :id_tables);');
+      ParamByName('id_estimate').Value := IdEstimate;
+      ParamByName('id_type_data').Value := 2;
+      ParamByName('id_tables').Value := qrMaterialID.AsInteger;
+      ExecSQL;
+
+      SQL.Clear;
       SQL.Add('UPDATE materialcard_temp SET from_rate = 1 WHERE id = :id;');
       ParamByName('id').Value := qrMaterialID.AsInteger;
       ExecSQL;
@@ -2552,6 +2572,14 @@ begin
     with qrTemp do
     begin
       Active := False;
+      SQL.Clear;
+      SQL.Add('INSERT INTO data_estimate_temp (id_estimate, id_type_data, id_tables) ' +
+        'VALUE (:id_estimate, :id_type_data, :id_tables);');
+      ParamByName('id_estimate').Value := IdEstimate;
+      ParamByName('id_type_data').Value := 3;
+      ParamByName('id_tables').Value := qrMechanizmID.Value;
+      ExecSQL;
+
       SQL.Clear;
       SQL.Add('UPDATE mechanizmcard_temp SET from_rate = 1 WHERE id = :id;');
       ParamByName('id').Value := qrMechanizmID.Value;
@@ -5089,8 +5117,10 @@ begin
   qrRatesCODE.ReadOnly := true;
   // Запрешает редактировать кол-во для неучтенных и заменяющих метериалов
   qrRatesCOUNT.ReadOnly := CheckMatINRates;
-  if qrRatesTYPE_DATA.AsInteger in [10,11] then
-    qrRatesCOUNT.ReadOnly := true;
+
+  //E18-20 - теперь можно вводить кол-во
+   //RatesTYPE_DATA.AsInteger in [10,11] then
+   // qrRatesCOUNT.ReadOnly := true;
 
   // заполняет таблицы справа
   GridRatesRowSellect;
@@ -5238,7 +5268,7 @@ var
   Str: string;
   Count: integer;
 begin
-  if Act then
+  if Act then //Именно в нижнем регистре, это важно для процедуры
     Str := 'data_act_temp'
   else
     Str := 'data_estimate_temp';
@@ -5263,7 +5293,7 @@ begin
   qrRates.ExecSQL;
 
   // Открывает rates_temp
-  qrRates.SQL.Text := 'SELECT * FROM rates_temp ORDER BY DID, RID, STYPE, MID, MEID';
+  qrRates.SQL.Text := 'SELECT * FROM rates_temp ORDER BY SORTID, RID, STYPE, MID, MEID';
   qrRates.Active := True;
   i := 0;
   Count := 0;
