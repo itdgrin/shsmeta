@@ -3790,6 +3790,9 @@
     object qrRatesOWNER_ID: TIntegerField
       FieldName = 'OWNER_ID'
     end
+    object qrRatesSORTID: TIntegerField
+      FieldName = 'SORTID'
+    end
   end
   object dsRates: TDataSource
     DataSet = qrRates
