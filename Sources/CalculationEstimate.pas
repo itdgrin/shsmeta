@@ -701,6 +701,7 @@ type
     IdReplasedMat: Integer;
     // ID заменяющего материала который надо подсветить
     IdReplasingMat: Integer;
+    IsUnAcc: boolean;
 
     //Используются в процессе замены материала
     RepIdRate: integer;
@@ -1726,6 +1727,7 @@ begin
 end;
 
 procedure TFormCalculationEstimate.qrMaterialAfterScroll(DataSet: TDataSet);
+var flag: boolean;
 begin
   // На всякий случай, что-бы избежать глюков
   if not CheckQrActiveEmpty(DataSet) then
@@ -1744,11 +1746,22 @@ begin
     SetMatReadOnly(CheckMatReadOnly);
     dbgrdRates.Repaint;
 
+    flag := false;
+
+    if ((qrMaterialID_REPLACED.AsInteger = 0) and (IdReplasedMat > 0)) or
+       (IsUnAcc and (not CheckMatUnAccountingMatirials)) then
+      flag := true;
+
     IdReplasedMat := qrMaterialID_REPLACED.AsInteger;
     IdReplasingMat := qrMaterialID.AsInteger;
+    IsUnAcc := CheckMatUnAccountingMatirials;
 
     if SpeedButtonMaterials.Down then
       MemoRight.Text := qrMaterialMAT_NAME.AsString;
+
+    //Для красоты отрисовки
+    if CheckMatUnAccountingMatirials or (IdReplasedMat > 0) or flag then
+      dbgrdMaterial.Repaint;
   end;
 end;
 
@@ -5881,21 +5894,24 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+    if (qrMaterialFROM_RATE.AsInteger = 1) and
+       not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
     end;
 
-    // Выделяем заменяющий материал из расцеки материалы
-    if (qrMaterialID_REPLACED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0) and
-      (qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
-    begin
+    //Подсветка замененного материяла (подсветка П-шки)
+    if (IdReplasedMat > 0) and
+       (qrMaterialID.AsInteger = IdReplasedMat) then
       Font.Style := Font.Style + [fsbold];
-    end;
 
-    // Выделение замененного или заменяющего материала
-    if (IdReplasedMat = qrMaterialID.AsInteger) or (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) then
+    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+      Font.Style := Font.Style + [fsbold];
+
+    //Подсветка замененяющего материала
+    if (qrMaterialFROM_RATE.AsInteger = 0) and
+       (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) then
       Font.Style := Font.Style + [fsbold];
 
     // никакой цветовой подсветки для неучтеных
@@ -6047,14 +6063,14 @@ begin
     // Вынесение за расценку имеет приоритет над заменой
     if SpeedButtonMaterials.Down and qrMaterial.Active then
     begin
-      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (qrRatesFROM_RATE.AsInteger = 1) then
+      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
         Font.Style := Font.Style + [fsbold];
     end;
 
     // Подсветка вынесенного за расценку механизма
     if SpeedButtonMechanisms.Down and qrMechanizm.Active then
     begin
-      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) and (qrRatesFROM_RATE.AsInteger = 1) then
+      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) then
         Font.Style := Font.Style + [fsbold];
     end;
 
