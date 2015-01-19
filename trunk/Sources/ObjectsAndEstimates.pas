@@ -344,6 +344,7 @@ begin
     SetVAT(FieldByName('VAT').AsVariant);
     SetBasePrice(FieldByName('IdBasePrice').AsVariant);
     SetTypeOXR(FieldByName('IdOXROPR').AsVariant);
+    SetMAIS(FieldByName('IdMAIS').AsVariant);
 
     // ID выделенной записи
     SetIdSelectRow(Fields[0].AsVariant);

@@ -763,6 +763,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       '       objcards.region_id     AS "IdRegion",'
       '       objcards.base_norm_id  AS "IdBasePrice",'
       '       objcards.stroj_id      AS "IdOXROPR",'
+      '       objcards.mais_id       AS "IdMAIS",'
       '       num                    AS "NumberObject",'
       '       num_dog                AS "NumberContract",'
       '       date_dog               AS "DateContract",'
