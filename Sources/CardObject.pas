@@ -76,7 +76,11 @@ type
     ADOQueryBP: TFDQuery;
     ADOQueryTO: TFDQuery;
     ADOQueryR: TFDQuery;
-    ADOQueryZP: TFDQuery; procedure FormCreate(Sender: TObject);
+    ADOQueryZP: TFDQuery;
+    GroupBox1: TGroupBox;
+    DBLookupComboBoxMAIS: TDBLookupComboBox;
+    ADOQueryMAIS: TFDQuery;
+    DataSourceMAIS: TDataSource; procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -97,6 +101,7 @@ type
     procedure SetVAT(const Value: Integer);
     procedure SetBasePrice(const Value: Integer);
     procedure SetTypeOXR(const Value: Integer);
+    procedure SetMAIS(const Value: Integer);
 
     procedure SetColorDefaultToFields;
     procedure ClearAllFields;
@@ -121,6 +126,7 @@ type
     VAT: Integer;
     BasePrice: Integer;
     TypeOXR: Integer;
+    MAIS: Integer;
 
     // ---------------------------------------
 
@@ -378,6 +384,27 @@ begin
         MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
+  try
+    with ADOQueryMAIS do
+    begin
+      Active := False;
+      SQL.Clear;
+      SQL.Add('SELECT * FROM mais;');
+      Active := True;
+    end;
+
+    with DBLookupComboBoxMAIS do
+    begin
+      ListSource := DataSourceMAIS;
+      ListField := 'NAME';
+      KeyField := 'MAIS_ID';
+    end;
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При запросе списка МАИСов возникла ошибка:' + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+
   // -----------------------------------------
 
   // Выставляем начальные значения в выпадающих списках
@@ -390,6 +417,7 @@ begin
     DBLookupComboBoxRegion.KeyValue := Region;
     ComboBoxVAT.ItemIndex := VAT;
     DBLookupComboBoxBasePrices.KeyValue := BasePrice;
+    DBLookupComboBoxMAIS.KeyValue := MAIS;
 
     try
       with ADOQueryDifferent do
@@ -474,6 +502,10 @@ begin
   ValueColor := DBLookupComboBoxTypeOXR.Color;
   DBLookupComboBoxTypeOXR.Color := clWindow;
   DBLookupComboBoxTypeOXR.Color := ValueColor;
+
+  ValueColor := DBLookupComboBoxMAIS.Color;
+  DBLookupComboBoxMAIS.Color := clWindow;
+  DBLookupComboBoxMAIS.Color := ValueColor;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -499,7 +531,7 @@ end;
 
 procedure TFormCardObject.ButtonSaveClick(Sender: TObject);
 var
-  NumberObject, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18: string;
+  NumberObject, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19: string;
   CountField: Integer;
 begin
   CountField := 0;
@@ -652,6 +684,15 @@ begin
       Inc(CountField);
     end;
 
+  with DBLookupComboBoxMAIS do
+  if KeyValue <> Null then
+      v19 := KeyValue
+    else
+    begin
+      Color := ColorWarningField;
+      Inc(CountField);
+    end;
+
   // Расчёт хоз. способом
   if CheckBoxCalculationEconom.Checked then
     v18 := '1'
@@ -681,14 +722,14 @@ begin
           '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
           '", srok_stroj = ' + v8 + ', ' + ' fin_id = ' + v9 + ', cust_id = ' + v10 + ', general_id = ' + v11 +
           ', cat_id = "' + v12 + '", state_nds = "' + v13 + '", region_id = "' + v14 + '", base_norm_id = "' + v15 +
-          '", stroj_id = "' + v16 + '", encrypt = "' + v17 + '", calc_econom = "' + v18 + '" WHERE obj_id = "' +
+          '", stroj_id = "' + v16 + '", encrypt = "' + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 + '" WHERE obj_id = "' +
           IntToStr(IdObject) + '";')
       else
         SQL.Add('INSERT INTO objcards (num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, ' +
-          ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt, calc_econom) ' +
+          ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt, calc_econom, MAIS_ID) ' +
           'VALUE ("' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 + '", "' + v7
           + '", ' + v8 + ', ' + v9 + ', ' + v10 + ', ' + v11 + ', "' + v12 + '", "' + v13 + '", "' + v14 + '", "' + v15
-          + '", "' + v16 + '", "' + v17 + '", "' + v18 + '");');
+          + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 + '");');
 
       ExecSQL;
     end;
@@ -770,6 +811,10 @@ begin
   TypeOXR := Value;
 end;
 
+procedure TFormCardObject.SetMAIS(const Value: Integer);
+begin
+  MAIS := Value;
+end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardObject.SetColorDefaultToFields;
@@ -787,6 +832,7 @@ begin
   DBLookupComboBoxZonePrices.Color := clWindow;
   DBLookupComboBoxBasePrices.Color := clWindow;
   DBLookupComboBoxTypeOXR.Color := clWindow;
+  DBLookupComboBoxMAIS.Color := clWindow;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -809,6 +855,7 @@ begin
   DBLookupComboBoxZonePrices.KeyValue := Null;
   DBLookupComboBoxBasePrices.KeyValue := Null;
   DBLookupComboBoxTypeOXR.KeyValue := Null;
+  DBLookupComboBoxMAIS.KeyValue := Null;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -818,7 +865,8 @@ var
   IdRegion: Integer;
   IdCategory: Integer;
 begin
-  if (DBLookupComboBoxCategoryObject.KeyValue = Null) or (DBLookupComboBoxZonePrices.KeyValue = Null) then
+  if (DBLookupComboBoxCategoryObject.KeyValue = Null) or
+     (DBLookupComboBoxZonePrices.KeyValue = Null) then
     Exit;
 
   // -----------------------------------------
