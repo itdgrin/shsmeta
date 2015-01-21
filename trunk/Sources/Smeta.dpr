@@ -3,6 +3,7 @@ program Smeta;
 uses
   Forms,
   Windows,
+  DataModule in 'DataModule.pas' {DM: TDataModule},
   Main in 'Main.pas' {FormMain},
   TariffsSalary in 'TariffsSalary.pas' {FormTariffsSalary},
   TariffsMechanism in 'TariffsMechanism.pas' {FormTariffsMechanism},
@@ -11,7 +12,6 @@ uses
   About in 'About.pas' {FormAbout},
   CalculationEstimate in 'CalculationEstimate.pas' {FormCalculationEstimate},
   ConnectDatabase in 'ConnectDatabase.pas' {FormConnectDatabase},
-  DataModule in 'DataModule.pas' {DM: TDataModule},
   CardObject in 'CardObject.pas' {FormCardObject},
   ProgramSettings in 'ProgramSettings.pas' {FormProgramSettings},
   Login in 'Login.pas' {FormLogin},
@@ -95,8 +95,8 @@ uses
   CalculationEstimateSSR in 'CalculationEstimateSSR.pas' {frCalculationEstimateSSR: TFrame},
   CalcResource in 'CalcResource.pas' {fCalcResource},
   CalculationDump in 'CalculationDump.pas' {FormCalculationDump},
-  CalcKomandir in 'CalcKomandir.pas' {fCalcKomandir},
-  UniDict in 'UniDict.pas' {fUniDict};
+  UniDict in 'UniDict.pas' {fUniDict},
+  UpdateModule in 'UpdateModule.pas';
 
 var
   H: Thandle;
@@ -118,10 +118,10 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.Title := 'Смета';
+  Application.CreateForm(TDM, DM);
   Application.CreateForm(TFormMain, FormMain);
   Application.CreateForm(TFormAbout, FormAbout);
   Application.CreateForm(TFormConnectDatabase, FormConnectDatabase);
-  Application.CreateForm(TDM, DM);
   Application.CreateForm(TFormCardObject, FormCardObject);
   Application.CreateForm(TFormProgramSettings, FormProgramSettings);
   Application.CreateForm(TFormLogin, FormLogin);
@@ -135,7 +135,6 @@ begin
   Application.CreateForm(TFormBasicData, FormBasicData);
   Application.CreateForm(TFormCardEstimate, FormCardEstimate);
   Application.CreateForm(TFormPercentClientContractor, FormPercentClientContractor);
-  Application.CreateForm(TFormTransportation, FormTransportation);
   Application.CreateForm(TFormSaveEstimate, FormSaveEstimate);
   Application.CreateForm(TFormCardMaterial, FormCardMaterial);
   Application.CreateForm(TFormCardDataEstimate, FormCardDataEstimate);

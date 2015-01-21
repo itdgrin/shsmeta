@@ -25,7 +25,7 @@ type
     Write: TFDTransaction;
     FDPhysMySQLDriverLink1: TFDPhysMySQLDriverLink;
     FDGUIxWaitCursor1: TFDGUIxWaitCursor;
-    ADOQueryDifferentQuery: TFDQuery;
+    qrDifferent: TFDQuery;
     procedure ADOConnectionAfterConnect(Sender: TObject);
 
   private

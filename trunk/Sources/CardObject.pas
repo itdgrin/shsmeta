@@ -712,7 +712,7 @@ begin
   // -----------------------------------------
 
   try
-    with DM.ADOQueryDifferentQuery do
+    with DM.qrDifferent do
     begin
       Active := False;
       SQL.Clear;

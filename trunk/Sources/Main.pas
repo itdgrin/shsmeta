@@ -3,9 +3,9 @@ unit Main;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Menus,
-  ComCtrls,
-  ToolWin, StdCtrls, Buttons, DBGrids, ShellAPI, DateUtils, IniFiles, Grids;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
+  ShellAPI, DateUtils, IniFiles, Grids, UpdateModule;
 
 type
   TFormMain = class(TForm)
@@ -177,6 +177,7 @@ type
     CountOpenWindows: Integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
 
+    procedure GetSystemInfo;
   public
     procedure AutoWidthColumn(SG: TStringGrid; Nom: Integer);
   end;
@@ -325,6 +326,10 @@ var
   PS: TProgramSettings;
   FMEndTables: Char;
 
+  CurVersion: TVersion; // текущая версия приложения и БД
+  ClientName: string;   // Имя клиета
+  SendReport: boolean;  // Необходимость отправлять отчет об ошибках обновления
+
 function MyFloatToStr(Value: Extended): string;
 function MyStrToFloat(Value: string): Extended;
 function MyStrToFloatDef(Value: string; DefRes: Extended): Extended;
@@ -333,18 +338,55 @@ function MyStrToCurr(Value: string): Currency;
 
 implementation
 
-uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump, TariffsIndex, About,
-  CalculationEstimate, ConnectDatabase, CardObject, DataModule, Login, Waiting, ActC6, WorkSchedule, HelpC3,
-  HelpC5, CatalogSSR, OXRandOPR, WinterPrice, DataTransfer, CardPTM, CalculationSettings,
-  ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData, PricesReferenceData,
-  AdditionData, Materials, PartsEstimates, SetCoefficients, Organizations, SectionsEstimates, TypesWorks,
-  TypesActs, IndexesChangeCost, CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList;
+uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
+  TariffsIndex, About, CalculationEstimate, ConnectDatabase, CardObject,
+  DataModule, Login, Waiting, ActC6, WorkSchedule, HelpC3, HelpC5, CatalogSSR,
+  OXRandOPR, WinterPrice, DataTransfer, CardPTM, CalculationSettings,
+  ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
+  PricesReferenceData, AdditionData, Materials, PartsEstimates, SetCoefficients,
+  Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
+  CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
 
+//Загрузка системной информации из smeta.ini и текущей версии приложения
+procedure TFormMain.GetSystemInfo;
+var ini: TIniFile;
+begin
+  ini := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+  if not ini.SectionExists('system') then
+  begin
+    ini.WriteInteger('system', 'version', 0);
+    ini.WriteString('system', 'clientname', '');
+    ini.WriteBool('system', 'sendreport', false);
+  end;
+  CurVersion.App := ini.ReadInteger('system', 'version', 0);
+  ClientName := ini.ReadString('system', 'clientname', '');
+  SendReport := ini.ReadBool('system', 'sendreport', false);
+
+  DM.qrDifferent.Active := false;
+
+  DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionref WHERE (execresult > 0)';
+  DM.qrDifferent.Active := True;
+  if not DM.qrDifferent.Eof then
+    CurVersion.RefDB := DM.qrDifferent.Fields[0].AsInteger;
+  DM.qrDifferent.Active := False;
+
+  DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionuser WHERE (execresult > 0)';
+  DM.qrDifferent.Active := True;
+  if not DM.qrDifferent.Eof then
+    CurVersion.UserDB := DM.qrDifferent.Fields[0].AsInteger;
+  DM.qrDifferent.Active := False;
+end;
+
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  CurVersion.App := 0;
+  CurVersion.RefDB := 0;
+  CurVersion.UserDB := 0;
+  GetSystemInfo;
+
   CountOpenWindows := 0;
 
   Width := Screen.Width;
