@@ -413,7 +413,6 @@ var
   i: Integer;
   ds: Char;
 begin
-
   // Процедура выделения строчки для редактируемого акта
   with StringGridDataEstimates do
     for i := 1 to RowCount - 1 do
@@ -977,11 +976,12 @@ begin
                 Inc(nom);
                 Cells[0, nom] := IntToStr(nom);
                 Cells[1, nom] := 'Е18';
-                Cells[2, nom] := '0'; // исправить
+                Cells[2, nom] := MyFloatToStr(qrDataEstimate.FieldByName('E1820_COUNT').AsFloat);
                 Cells[3, nom] := '';
-                Cells[4, nom] := ''; // исправить кол-во
+                Cells[4, nom] := '0'; // исправить кол-во
                 Cells[5, nom] := '0';
-                Cells[6, nom] := '0';
+                Cells[6, nom] := MyFloatToStr(qrDataEstimate.FieldByName('E1820_COUNT').AsFloat - 0 -
+                  MyStrToFloatDef(Cells[5, nom], 0)); // исправить
                 Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
                 Cells[8, nom] := '10';
                 Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
@@ -995,11 +995,12 @@ begin
                 Inc(nom);
                 Cells[0, nom] := IntToStr(nom);
                 Cells[1, nom] := 'Е20';
-                Cells[2, nom] := '0'; // исправить
+                Cells[2, nom] := MyFloatToStr(qrDataEstimate.FieldByName('E1820_COUNT').AsFloat);
                 Cells[3, nom] := '';
                 Cells[4, nom] := '0'; // исправить кол-во
                 Cells[5, nom] := '0';
-                Cells[6, nom] := '0';
+                Cells[6, nom] := MyFloatToStr(qrDataEstimate.FieldByName('E1820_COUNT').AsFloat - 0 -
+                  MyStrToFloatDef(Cells[5, nom], 0)); // исправить
                 Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
                 Cells[8, nom] := '11';
                 Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);

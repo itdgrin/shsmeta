@@ -28,6 +28,7 @@ object fTravelList: TfTravelList
     Width = 402
     Height = 195
     Anchors = [akLeft, akTop, akRight, akBottom]
+    DataSource = dsTravel
     DrawingStyle = gdsClassic
     TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET
@@ -52,6 +53,7 @@ object fTravelList: TfTravelList
       end
       item
         Expanded = False
+        FieldName = 'NAME'
         Title.Alignment = taCenter
         Title.Caption = #1040#1082#1090
         Width = 96
@@ -59,6 +61,7 @@ object fTravelList: TfTravelList
       end
       item
         Expanded = False
+        FieldName = 'travel_date'
         Title.Alignment = taCenter
         Title.Caption = #1044#1072#1090#1072
         Width = 96
@@ -66,6 +69,7 @@ object fTravelList: TfTravelList
       end
       item
         Expanded = False
+        FieldName = 'travel_summ'
         Title.Alignment = taCenter
         Title.Caption = #1057#1091#1084#1084#1072
         Width = 94
@@ -165,5 +169,66 @@ object fTravelList: TfTravelList
     DataSet = qrObject
     Left = 56
     Top = 1
+  end
+  object qrTravel: TFDQuery
+    MasterSource = dsObject
+    MasterFields = 'OBJ_ID'
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    SQL.Strings = (
+      'SELECT '
+      '  `travel_id`,'
+      '  `id_act`,'
+      '  `travel_date`,'
+      '  `travel_summ`,'
+      '  `card_acts`.`NAME`'
+      'FROM '
+      '  `travel`, `card_acts`, `smetasourcedata`'
+      
+        'WHERE `card_acts`.`ID`=`id_act` AND `ID_ESTIMATE_OBJECT`=`SM_ID`' +
+        ' AND `OBJ_ID`=:OBJ_ID;')
+    Left = 25
+    Top = 96
+    ParamData = <
+      item
+        Name = 'OBJ_ID'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end>
+  end
+  object dsTravel: TDataSource
+    DataSet = qrTravel
+    Left = 72
+    Top = 96
+  end
+  object qrActList: TFDQuery
+    MasterSource = dsObject
+    MasterFields = 'OBJ_ID'
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    SQL.Strings = (
+      'SELECT '
+      '  `card_acts`.`ID`,'
+      '  `card_acts`.`NAME`'
+      'FROM '
+      '  `card_acts`, `smetasourcedata`'
+      'WHERE `ID_ESTIMATE_OBJECT`=`SM_ID` AND `OBJ_ID`=:OBJ_ID;')
+    Left = 233
+    Top = 96
+    ParamData = <
+      item
+        Name = 'OBJ_ID'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end>
+  end
+  object dsActList: TDataSource
+    DataSet = qrActList
+    Left = 280
+    Top = 96
   end
 end

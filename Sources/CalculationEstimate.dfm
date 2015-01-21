@@ -2508,7 +2508,7 @@
         DrawingStyle = gdsClassic
         Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         PopupMenu = PopupMenuCoef
-        TabOrder = 2
+        TabOrder = 1
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
@@ -2680,27 +2680,6 @@
           ReadOnly = True
           TabOrder = 3
         end
-      end
-      object StringGridCalculations_del: TStringGrid
-        Left = 15
-        Top = 6
-        Width = 46
-        Height = 43
-        Align = alCustom
-        DefaultRowHeight = 20
-        FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goColMoving, goRowSelect, goThumbTracking]
-        ParentShowHint = False
-        PopupMenu = PopupMenuCoef
-        ShowHint = False
-        TabOrder = 1
-        Visible = False
-        ColWidths = (
-          64
-          69
-          64
-          64
-          64)
       end
     end
     object Panel1: TPanel

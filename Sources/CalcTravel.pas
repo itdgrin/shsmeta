@@ -12,7 +12,6 @@ uses
 type
   TfCalcTravel = class(TForm)
     lbl1: TLabel;
-    dbedt1: TDBEdit;
     dbedt2: TDBEdit;
     lbl3: TLabel;
     dbedtNAME: TDBEdit;
@@ -22,6 +21,7 @@ type
     JvDBGrid1: TJvDBGrid;
     dsqrCalcTravel: TDataSource;
     qrCalcTravel: TFDQuery;
+    dblkcbbNAME: TDBLookupComboBox;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -30,6 +30,7 @@ type
     procedure btnSaveClick(Sender: TObject);
     procedure qrCalcTravelAfterPost(DataSet: TDataSet);
     procedure JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
+    procedure dblkcbbNAMEClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -54,6 +55,11 @@ end;
 procedure TfCalcTravel.btnSaveClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TfCalcTravel.dblkcbbNAMEClick(Sender: TObject);
+begin
+  CloseOpen(qrCalcTravel);
 end;
 
 procedure TfCalcTravel.FormActivate(Sender: TObject);
