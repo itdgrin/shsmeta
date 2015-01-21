@@ -72,6 +72,7 @@ begin
   if (not Assigned(fCalcTravel)) then
     fCalcTravel := TfCalcTravel.Create(Self);
 
+  qrTravel.Edit;
   fCalcTravel.ID_ACT := 0;
   fCalcTravel.ID_TRAVEL := 0;
 

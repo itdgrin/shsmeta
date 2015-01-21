@@ -600,8 +600,6 @@ type
     procedure ShowFormAdditionData(const vDataBase: Char);
     procedure PMAddRatMatMechEquipRefClick(Sender: TObject);
     procedure PMAddRatMatMechEquipOwnClick(Sender: TObject);
-
-    function GetPriceMaterial(): Variant;
     procedure PopupMenuMaterialsPopup(Sender: TObject);
 
     procedure PMCoefOrdersClick(Sender: TObject);
@@ -4794,12 +4792,12 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT monat as "Month", year as "Year" FROM stavka WHERE stavka_id = (SELECT stavka_id From smetasourcedata '
+      SQL.Add('SELECT IFNULL(monat, 0) as "Month", IFNULL(year, 0) as "Year" FROM stavka WHERE stavka_id = (SELECT stavka_id From smetasourcedata '
         + 'WHERE sm_id = ' + IntToStr(IdEstimate) + ');');
       Active := True;
 
-      MonthEstimate := FieldByName('Month').AsVariant;
-      YearEstimate := FieldByName('Year').AsVariant;
+      MonthEstimate := FieldByName('Month').AsInteger;
+      YearEstimate := FieldByName('Year').AsInteger;
       Active := False;
     end;
   except
@@ -5564,24 +5562,6 @@ begin
     Left := BorderLeft + FormLeft;
   end;
   FormMain.PanelCover.Visible := False;
-end;
-
-function TFormCalculationEstimate.GetPriceMaterial(): Variant;
-begin
-  { with qrTemp do
-    begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT state_nds FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';');
-    Active := True;
-
-    case FieldByName('state_nds').AsVariant of
-    0:
-    Result := ADOQueryMaterialCard.FieldByName('coast_no_nds').AsVariant;
-    1:
-    Result := ADOQueryMaterialCard.FieldByName('coast_nds').AsVariant;
-    end;
-    end; }
 end;
 
 procedure TFormCalculationEstimate.GetStateCoefOrdersInEstimate;
