@@ -49,11 +49,13 @@ uses Main, TravelList;
 
 procedure TfCalcTravel.btnExitClick(Sender: TObject);
 begin
+  fTravelList.qrTravel.Cancel;
   Close;
 end;
 
 procedure TfCalcTravel.btnSaveClick(Sender: TObject);
 begin
+  fTravelList.qrTravel.Post;
   Close;
 end;
 

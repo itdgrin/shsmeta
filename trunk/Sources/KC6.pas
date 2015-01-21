@@ -200,9 +200,10 @@ begin
   // Вычисляем остаток
   for i := 1 to StringGridDataEstimates.RowCount do
   begin
-    StringGridDataEstimates.Cells[6, i] := MyFloatToStr(MyStrToFloatDef(StringGridDataEstimates.Cells[2, i],
-      0) - MyStrToFloatDef(StringGridDataEstimates.Cells[4, i], 0) -
-      MyStrToFloatDef(StringGridDataEstimates.Cells[5, i], 0));
+    if StringGridDataEstimates.Cells[9, i] <> '0' then
+      StringGridDataEstimates.Cells[6, i] := MyFloatToStr(MyStrToFloatDef(StringGridDataEstimates.Cells[2, i],
+        0) - MyStrToFloatDef(StringGridDataEstimates.Cells[4, i], 0) -
+        MyStrToFloatDef(StringGridDataEstimates.Cells[5, i], 0));
   end;
 end;
 
