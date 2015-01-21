@@ -22,6 +22,10 @@ type
     btnEdit: TButton;
     btnAdd: TButton;
     btnClose: TButton;
+    qrTravel: TFDQuery;
+    dsTravel: TDataSource;
+    qrActList: TFDQuery;
+    dsActList: TDataSource;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -48,6 +52,9 @@ procedure TfTravelList.btnAddClick(Sender: TObject);
 begin
   if (not Assigned(fCalcTravel)) then
     fCalcTravel := TfCalcTravel.Create(Self);
+
+  qrTravel.Append;
+  qrTravel.FieldByName('travel_date').AsDateTime := Now;
 
   fCalcTravel.ID_ACT := 0;
   fCalcTravel.ID_TRAVEL := 0;
@@ -90,6 +97,8 @@ begin
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N6Click);
   CloseOpen(qrObject);
+  CloseOpen(qrActList);
+  CloseOpen(qrTravel);
   LoadDBGridSettings(JvDBGrid1);
 end;
 

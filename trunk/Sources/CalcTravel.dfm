@@ -62,21 +62,6 @@ object fCalcTravel: TfCalcTravel
     Font.Style = []
     ParentFont = False
   end
-  object dbedt1: TDBEdit
-    Left = 62
-    Top = 35
-    Width = 382
-    Height = 21
-    Anchors = [akLeft, akTop, akRight]
-    Enabled = False
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 0
-  end
   object dbedt2: TDBEdit
     Left = 62
     Top = 294
@@ -89,7 +74,7 @@ object fCalcTravel: TfCalcTravel
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 1
+    TabOrder = 0
   end
   object dbedtNAME: TDBEdit
     Left = 62
@@ -106,7 +91,7 @@ object fCalcTravel: TfCalcTravel
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 1
   end
   object btnExit: TBitBtn
     Left = 353
@@ -121,7 +106,7 @@ object fCalcTravel: TfCalcTravel
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 2
     OnClick = btnExitClick
   end
   object btnSave: TBitBtn
@@ -137,7 +122,7 @@ object fCalcTravel: TfCalcTravel
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 3
     OnClick = btnSaveClick
   end
   object JvDBGrid1: TJvDBGrid
@@ -155,7 +140,7 @@ object fCalcTravel: TfCalcTravel
     Font.Style = []
     Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 4
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
@@ -203,6 +188,20 @@ object fCalcTravel: TfCalcTravel
         Visible = True
       end>
   end
+  object dblkcbbNAME: TDBLookupComboBox
+    Left = 62
+    Top = 35
+    Width = 382
+    Height = 21
+    Anchors = [akLeft, akTop, akRight]
+    DataField = 'id_act'
+    DataSource = fTravelList.dsTravel
+    KeyField = 'ID'
+    ListField = 'NAME'
+    ListSource = fTravelList.dsActList
+    TabOrder = 5
+    OnClick = dblkcbbNAMEClick
+  end
   object dsqrCalcTravel: TDataSource
     DataSet = qrCalcTravel
     Left = 36
@@ -210,6 +209,8 @@ object fCalcTravel: TfCalcTravel
   end
   object qrCalcTravel: TFDQuery
     AfterPost = qrCalcTravelAfterPost
+    MasterSource = fTravelList.dsActList
+    MasterFields = 'ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -240,15 +241,13 @@ object fCalcTravel: TfCalcTravel
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      'CALL CalcTravel(:ID_ACT, :STOIM_KM, :KM);')
+      'CALL CalcTravel(:ID, :STOIM_KM, :KM);')
     Left = 35
     Top = 94
     ParamData = <
       item
-        Name = 'ID_ACT'
-        DataType = ftInteger
+        Name = 'ID'
         ParamType = ptInput
-        Value = 310
       end
       item
         Name = 'STOIM_KM'
