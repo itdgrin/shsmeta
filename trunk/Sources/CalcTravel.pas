@@ -61,6 +61,7 @@ end;
 
 procedure TfCalcTravel.dblkcbbNAMEClick(Sender: TObject);
 begin
+  qrCalcTravel.ParamByName('ID_ACT').Value := dblkcbbNAME.KeyValue;
   CloseOpen(qrCalcTravel);
 end;
 

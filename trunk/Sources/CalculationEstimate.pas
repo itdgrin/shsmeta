@@ -518,9 +518,6 @@ type
     // Расчёт ЗП (заработной платы)
     function CalculationSalary(const vIdNormativ: string): TTwoValues;
 
-    // Расчёт МР (материальные ресурсы)
-    procedure CalculationMR;
-
     // Расчёт % транспорта
     procedure CalculationPercentTransport; // +++
 
@@ -3838,8 +3835,6 @@ end;
 
 procedure TFormCalculationEstimate.CalculationMaterial;
 begin
-  CalculationMR;
-
   CalculationPercentTransport;
 
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
@@ -4089,101 +4084,6 @@ begin
       MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' + sLineBreak + sLineBreak +
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-end;
-
-procedure TFormCalculationEstimate.CalculationMR;
-var
-  MR, MR1: array of Double;
-  CountMaterial: Integer;
-  i, j, Nom: Integer;
-  Count: Double;
-  Res, Res1: Double;
-  s: String;
-begin
-  { try
-    if ADOQueryMaterialCard.RecordCount = 0 then
-    begin
-    StringGridCalculations.Cells[5, CountCoef + 2] := '0';
-    StringGridCalculations.Cells[5, CountCoef + 3] := '0';
-    Exit;
-    end;
-
-    // Количество УЧТЁННЫХ материалов в расценке
-    CountMaterial := ADOQueryMaterialCard.RecordCount;
-
-    // Выделяем память
-    SetLength(MR, CountMaterial);
-    SetLength(MR1, CountMaterial);
-
-    Res := 0;
-    Res1 := 0;
-
-    // Количество из ЛЕВОЙ таблицы
-    Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
-
-    Nom := -1;
-
-    // Пробегаемся по учтённым материалам
-    for i := 1 to CountMaterial + 1 do
-    // + 1 так как первая строка это строка с текстом группы "Учтённые"
-    if StringGridMaterials.Cells[0, i] <> '' then
-    begin
-    Inc(Nom);
-
-    with StringGridMaterials do
-    begin
-    s := Cells[2, i];
-    MR[Nom] := Count * MyStrToFloat(s); // Кол-во * норма расхода
-    MR1[Nom] := MyStrToFloat(s); // 1 * норма расхода
-    end;
-
-    // Умножение на столбец коэффициентов (МР)
-    for j := 1 to CountCoef + 1 do
-    with StringGridCalculations do
-    begin
-    MR[Nom] := MR[Nom] * MyStrToFloat(Cells[5, j]);
-    MR1[Nom] := MR1[Nom] * MyStrToFloat(Cells[5, j]);
-    end;
-
-    // Что получилось умножаем на справочную цену
-    with StringGridMaterials do
-    begin
-    MR[Nom] := MR[Nom] * MyStrToFloatdef(Cells[7, i], 0);
-    MR1[Nom] := MR1[Nom] * MyStrToFloatdef(Cells[7, i], 0);
-    end;
-
-    with StringGridMaterials do
-    Cells[6, i] := MyFloatToStr(MyStrToFloat(Cells[5, i]) * MR[i] / 100)
-    end;
-
-    // -----------------------------------------
-
-    if CountMaterial > 0 then
-    begin
-    Res := MR[0];
-    Res1 := MR1[0];
-
-    for i := 1 to CountMaterial - 1 do
-    begin
-    Res := Res + MR[i];
-    Res1 := Res1 + MR1[i];
-    end;
-    end;
-
-    // -----------------------------------------
-
-    // Вставляем данные в НИЖНЮЮ таблицу в колонку (МР)
-    with StringGridCalculations do
-    begin
-    Cells[5, CountCoef + 3] := MyCurrToStr(RoundTo(Res, PS.RoundTo * -1));
-    Cells[5, CountCoef + 2] := MyCurrToStr(RoundTo(Res1, PS.RoundTo * -1));
-    end;
-    except
-    on E: Exception do
-    MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[5,
-    0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-    MB_ICONERROR + MB_OK + mb_TaskModal);
-    end; }
 end;
 
 procedure TFormCalculationEstimate.CalculationPercentTransport;
@@ -4848,7 +4748,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT monat, year, nds FROM stavka, smetasourcedata ' +
+      SQL.Add('SELECT IFNULL(monat,0) as monat, IFNULL(year,0) as year, nds FROM stavka, smetasourcedata ' +
         'WHERE stavka.stavka_id = smetasourcedata.stavka_id and sm_id = :sm_id;');
       qrTemp.ParamByName('sm_id').Value := IdEstimate;
       Active := True;
@@ -5161,10 +5061,10 @@ procedure TFormCalculationEstimate.CreateTempTables;
 var
   Str: string;
 begin
-  if Act then
+  { if Act then
     Str := 'CALL CreateTempTables(2);' // Данные акта
-  else
-    Str := 'CALL CreateTempTables(1);'; // Данные сметы
+    else }
+  Str := 'CALL CreateTempTables(1);'; // Данные сметы
 
   try
     with qrTemp do
@@ -5234,20 +5134,26 @@ begin
   qrRates.Tag := 1; // Что-бы отключить события по скролу у датасета
   qrRates.Active := False;
   // Заполняет rates_temp
-  qrRates.SQL.Text := 'call GetRates(:pr1, :pr2, :fn)';
-  qrRates.ParamByName('pr1').Value := Str;
+  qrRates.SQL.Text := 'CALL GetRates(:DATATAB, :EAID, :fn);';
+  qrRates.ParamByName('DATATAB').Value := Str;
   if Act then
   begin
-    qrRates.ParamByName('pr2').Value := IdAct;
+    qrRates.ParamByName('EAID').Value := IdAct;
     qrRates.ParamByName('fn').Value := 'ID_ACT';
   end
   else
   begin
-    qrRates.ParamByName('pr2').Value := IdEstimate;
+    qrRates.ParamByName('EAID').Value := IdEstimate;
     qrRates.ParamByName('fn').Value := 'ID_ESTIMATE';
   end;
 
-  qrRates.ExecSQL;
+  try
+    qrRates.ExecSQL;
+  except
+    qrTemp.SQL.Text := 'SELECT @sql as QR;';
+    qrTemp.Active := True;
+    showmessage(qrTemp.FieldByName('QR').AsString);
+  end;
 
   // Открывает rates_temp
   qrRates.SQL.Text := 'SELECT * FROM rates_temp ORDER BY SORTID, RID, STYPE, MID, MEID';

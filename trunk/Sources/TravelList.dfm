@@ -123,6 +123,7 @@ object fTravelList: TfTravelList
       Anchors = [akLeft, akBottom]
       Caption = #1059#1076#1072#1083#1080#1090#1100
       TabOrder = 0
+      OnClick = btnDelClick
     end
     object btnEdit: TButton
       Left = 83

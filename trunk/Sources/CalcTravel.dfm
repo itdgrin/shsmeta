@@ -209,8 +209,6 @@ object fCalcTravel: TfCalcTravel
   end
   object qrCalcTravel: TFDQuery
     AfterPost = qrCalcTravelAfterPost
-    MasterSource = fTravelList.dsActList
-    MasterFields = 'ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -241,13 +239,15 @@ object fCalcTravel: TfCalcTravel
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      'CALL CalcTravel(:ID, :STOIM_KM, :KM);')
+      'CALL CalcTravel(:ID_ACT, :STOIM_KM, :KM);')
     Left = 35
     Top = 94
     ParamData = <
       item
-        Name = 'ID'
+        Name = 'ID_ACT'
+        DataType = ftString
         ParamType = ptInput
+        Value = '0'
       end
       item
         Name = 'STOIM_KM'

@@ -33,6 +33,7 @@ type
     procedure btnAddClick(Sender: TObject);
     procedure btnEditClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
+    procedure btnDelClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -65,6 +66,11 @@ end;
 procedure TfTravelList.btnCloseClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TfTravelList.btnDelClick(Sender: TObject);
+begin
+  qrTravel.Delete;
 end;
 
 procedure TfTravelList.btnEditClick(Sender: TObject);
