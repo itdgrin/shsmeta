@@ -4280,8 +4280,8 @@
     end
     object qrMaterialMAT_PROC_ZAС: TIntegerField
       AutoGenerateValue = arDefault
-      FieldName = 'MAT_PROC_ZA'#1057
-      Origin = '`MAT_PROC_ZA'#1057'`'
+      FieldName = 'MAT_PROC_ZAC'
+      Origin = 'MAT_PROC_ZAC'
       OnChange = MatRowChange
     end
     object qrMaterialMAT_PROC_PODR: TIntegerField
@@ -4421,7 +4421,6 @@
     end
     object qrDevicesBD_ID: TWordField
       FieldName = 'BD_ID'
-      LookupDataSet = DM.ADOQueryDifferentQuery
       Origin = 'BD_ID'
       Required = True
     end
