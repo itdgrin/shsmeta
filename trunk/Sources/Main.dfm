@@ -151,6 +151,7 @@
       end
       object ServiceUpdate: TMenuItem
         Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1055#1054
+        OnClick = ServiceUpdateClick
       end
       object ServiceAssistant: TMenuItem
         Caption = #1055#1088#1086#1075#1088#1072#1084#1084#1099'-'#1087#1086#1084#1086#1097#1085#1080#1082#1080

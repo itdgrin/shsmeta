@@ -4,10 +4,13 @@ interface
 
 uses
   System.Classes, System.SysUtils, DateUtils, Vcl.Dialogs, SyncObjs,
-  Winapi.Windows;
+  Winapi.Windows, Winapi.Messages;
 
 const
-  GetVersionInterval = 10000;
+  //Интервал времени через который происходит опрос сервака
+  GetVersionInterval = 20000;
+
+  WM_SHOW_SPLASH = WM_USER + 1;
 
 type
   TVersion = record
@@ -17,15 +20,16 @@ type
   end;
   PVersion = ^TVersion;
 
-  TNewVersion = record
+ { TNewVersion = record
     DB: integer;
     DBPath: ShortString;
   end;
   TNewVersionList = array of TNewVersion;
+  }
 
   TServiceResponse = class(TPersistent)
   private
-    fUpdeteStatys: byte;
+    {fUpdeteStatys: byte;
     fUpVersion: TVersion;
     fCount: integer;
     fNewVersions: TNewVersionList;
@@ -33,97 +37,82 @@ type
     procedure SetNewVersions(AIndex: Integer; ANewVersion: TNewVersion);
     procedure SortNewVersions;
     procedure Add(ANewVersion: TNewVersion);
-    procedure Delete(AIndex: Integer);
+    procedure Delete(AIndex: Integer); }
   public
     procedure Assign(Source: TPersistent); override;
-    procedure Clear;
+    {procedure Clear;
     constructor Create;
     destructor Destroy; override;
 
     property UpdeteStatys: byte read fUpdeteStatys write fUpdeteStatys;
     property UpVersion: TVersion read fUpVersion write fUpVersion;
     property Count: integer read fCount write fCount;
-    property NewVersions[Index: Integer]: TNewVersion read GetNewVersions write SetNewVersions;
+    property NewVersions[Index: Integer]: TNewVersion read GetNewVersions write SetNewVersions;}
   end;
 
 type
   TUpdateThread = class(TThread)
   private
-    FVersion : TVersion; //Текушая версия программы
+    FCurVersion : TVersion; //Текушая версия программы
     FMainHandle: HWND;
 
+    FUREvent, FTermEvent: TEvent;
     FVersionCS: TCriticalSection;
     FServiceResponse: TServiceResponse; //Ответ службы
 
-    FUserRequestCS: TCriticalSection;
-    FUserRequest: boolean; //Запрос обновлений пользователем
-
-    LastGetVersion : TDateTime;
+    function GetServiceResponse: TServiceResponse;
     procedure GetVersion; //Отправляет запрос на получение версии на серверее
     //Показать всплывающее окно о наличии обновлений
     procedure ShowSplash;
-    function GetServiceResponse: TServiceResponse;
-    function GetUserRequest: boolean;
-    procedure SetUserRequest(AValue: boolean);
     { Private declarations }
   protected
     procedure Execute; override;
   public
     property ServiceResponse: TServiceResponse read GetServiceResponse;
-    property UserRequest: boolean read GetUserRequest write SetUserRequest;
-
-    constructor Create(CreateSuspended: Boolean; AVersion: TVersion;
-      AMainHandle: HWND); overload;
+    procedure UserRequest;
+    procedure Terminate;
+    constructor Create(AVersion: TVersion; AMainHandle: HWND); overload;
     destructor Destroy; override;
   end;
 
 implementation
-//uses Unit2;
 
 { UpdateThread }
 
-constructor TUpdateThread.Create(CreateSuspended: Boolean; AVersion: TVersion;
+constructor TUpdateThread.Create(AVersion: TVersion;
   AMainHandle: HWND);
 begin
-  LastGetVersion := 0;
-  FVersion := AVersion;
+  inherited Create(true);
+
+  FCurVersion := AVersion;
   FMainHandle := AMainHandle;
 
-  FUserRequestCS := TCriticalSection.Create;
-  FUserRequest := false;
-
+  FUREvent := TEvent.Create(nil, true, false, '');
+  FTermEvent := TEvent.Create(nil, true, false, '');
   FVersionCS := TCriticalSection.Create;
   FServiceResponse := TServiceResponse.Create;
 
-  inherited Create(CreateSuspended);
+  Priority :=  tpLower;
+  Resume;
 end;
 
 destructor TUpdateThread.Destroy;
 begin
   FServiceResponse.Free;
   FVersionCS.Free;
-  FUserRequestCS.Free;
+  FUREvent.Free;
+  FTermEvent.Free;
   inherited;
 end;
 
-function TUpdateThread.GetUserRequest: boolean;
+procedure TUpdateThread.UserRequest;
 begin
-  FUserRequestCS.Enter;
-  try
-    Result := FUserRequest;
-  finally
-    FUserRequestCS.Leave;
-  end;
+  FUREvent.SetEvent;
 end;
-
-procedure TUpdateThread.SetUserRequest(AValue: boolean);
+procedure TUpdateThread.Terminate;
 begin
-  FUserRequestCS.Enter;
-  try
-    FUserRequest := AValue;
-  finally
-    FUserRequestCS.Leave;
-  end;
+  inherited Terminate;
+  FTermEvent.SetEvent;
 end;
 
 function TUpdateThread.GetServiceResponse: TServiceResponse;
@@ -142,9 +131,8 @@ end;
 procedure TUpdateThread.GetVersion;
 var NewVersion : TVersion;
     Temp1: TVersion;
-    Temp2: TNewVersion;
 begin
-  FVersionCS.Enter;
+ { FVersionCS.Enter;
   try
     FServiceResponse.Clear;
 
@@ -168,7 +156,8 @@ begin
   then ShowSplash;
 
   LastGetVersion := Now;
-  if UserRequest then UserRequest := false;
+  if UserRequest then UserRequest := false;    }
+  FUREvent.ResetEvent;
 end;
 
 procedure TUpdateThread.ShowSplash;
@@ -177,16 +166,14 @@ begin
 end;
 
 procedure TUpdateThread.Execute;
+var Handles: array [0..1] of THandle;
 begin
+  Handles[0] := FUREvent.Handle;
+  Handles[1] := FTermEvent.Handle;
   while not Terminated do
   begin
-    sleep(2000);
-
-    if (LastGetVersion = 0) or
-       (IncMillisecond(LastGetVersion,GetVersionInterval) < Now) or
-       UserRequest
-    then GetVersion;
-
+    GetVersion;
+    WaitForMultipleObjectsEx(2, @Handles[0], false, GetVersionInterval, False);
   end;
 end;
 
@@ -194,7 +181,7 @@ end;
 procedure TServiceResponse.Assign(Source: TPersistent);
 var i : integer;
 begin
-  if Source is TServiceResponse then
+  {if Source is TServiceResponse then
   begin
     fUpdeteStatys := (Source as TServiceResponse).fUpdeteStatys;
     fUpVersion := (Source as TServiceResponse).fUpVersion;
@@ -203,11 +190,11 @@ begin
     for i := 0 to fCount - 1 do
       fNewVersions[i] := (Source as TServiceResponse).fNewVersions[i];
     Exit;
-  end;
+  end;               }
 
   inherited Assign(Source);
 end;
-
+{
 procedure TServiceResponse.Clear;
 begin
   fUpdeteStatys := 0;
@@ -276,6 +263,6 @@ begin
         fNewVersions[i] := fNewVersions[j];
         fNewVersions[j] := Temp;
       end;
-end;
+end; }
 
 end.
