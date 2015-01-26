@@ -172,10 +172,12 @@ type
     procedure N2Click(Sender: TObject);
     procedure N6Click(Sender: TObject);
     procedure N8Click(Sender: TObject);
+    procedure ServiceUpdateClick(Sender: TObject);
 
   private
     CountOpenWindows: Integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
+    fUpdateThread : TUpdateThread; //Нить проверки обновлений
 
     procedure GetSystemInfo;
   public
@@ -385,7 +387,7 @@ begin
   CurVersion.App := 0;
   CurVersion.RefDB := 0;
   CurVersion.UserDB := 0;
-  GetSystemInfo;
+ // GetSystemInfo;
 
   CountOpenWindows := 0;
 
@@ -397,6 +399,8 @@ begin
   FormatSettings.DecimalSeparator := '.';
 
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
+  //Запуск ниточки для мониторигра обновлений
+ // fUpdateThread := TUpdateThread.Create(CurVersion, Self.Handle);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -660,6 +664,11 @@ end;
 procedure TFormMain.ServiceSettingsClick(Sender: TObject);
 begin
   FormProgramSettings.ShowModal;
+end;
+
+procedure TFormMain.ServiceUpdateClick(Sender: TObject);
+begin
+ // fUpdateThread.UserRequest;
 end;
 
 procedure TFormMain.TimerCoverTimer(Sender: TObject);
@@ -1053,6 +1062,10 @@ procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   WindowsCloseClick(nil);
   DM.Connect.Connected := False;
+{  fUpdateThread.Terminate;
+  fUpdateThread.WaitFor;
+  fUpdateThread.Free;
+  }
 end;
 
 procedure TFormMain.HelpAboutClick(Sender: TObject);
