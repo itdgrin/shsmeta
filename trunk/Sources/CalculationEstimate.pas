@@ -5894,14 +5894,16 @@ begin
     // Вынесение за расценку имеет приоритет над заменой
     if SpeedButtonMaterials.Down and qrMaterial.Active then
     begin
-      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and
+        (qrRatesMID.AsInteger > 0) then
         Font.Style := Font.Style + [fsbold];
     end;
 
     // Подсветка вынесенного за расценку механизма
     if SpeedButtonMechanisms.Down and qrMechanizm.Active then
     begin
-      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) then
+      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) and
+        (qrRatesMEID.AsInteger > 0) then
         Font.Style := Font.Style + [fsbold];
     end;
 
