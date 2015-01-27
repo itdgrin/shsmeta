@@ -4280,7 +4280,7 @@
     end
     object qrMaterialMAT_PROC_ZAС: TIntegerField
       AutoGenerateValue = arDefault
-      FieldName = 'MAT_PROC_ZA'#1057
+      FieldName = 'MAT_PROC_ZAC'
       Origin = 'MAT_PROC_ZAC'
       OnChange = MatRowChange
     end
