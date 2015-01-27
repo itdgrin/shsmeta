@@ -287,12 +287,16 @@ begin
       Active := False;
       SQL.Clear;
 
-      StrQuery := 'SELECT state_nds as "VAT" FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';';
+      StrQuery := 'SELECT state_nds as "VAT", BEG_STROJ FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';';
 
       SQL.Add(StrQuery);
       Active := True;
 
       VAT := FieldByName('VAT').AsVariant;
+      //При создании сметы дата для расценок проставляетсся как у объекта
+      DateTimeToString(DateCompose, 'yyyy-mm-dd', FieldByName('VAT').AsDateTime);
+      vMonth := IntToStr(MonthOf(FieldByName('VAT').AsDateTime));
+      vYear := IntToStr(YearOf(FieldByName('VAT').AsDateTime));
     except
       on E: Exception do
         MessageBox(0, PChar('При запросе НДС возникла ошибка:' + sLineBreak + E.Message), PWideChar(Caption),

@@ -163,18 +163,7 @@ begin
 
     Active := False;
     SQL.Clear;
-    SQL.Add('SELECT monat, year FROM stavka WHERE stavka_id = :stavka_id;');
-    ParamByName('stavka_id').Value := IdStavka;
-    Active := True;
-
-    ComboBoxMonth.ItemIndex := FieldByName('monat').AsInteger - 1;
-    edtYear.Value := FieldByName('year').AsInteger;
-
-    // ----------------------------------------
-
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT stavka_m_rab, stavka_m_mach FROM stavka WHERE stavka_id = :stavka_id;');
+    SQL.Add('SELECT monat, year, stavka_m_rab, stavka_m_mach FROM stavka WHERE stavka_id = :stavka_id;');
     ParamByName('stavka_id').Value := IdStavka;
     Active := True;
 
@@ -182,6 +171,8 @@ begin
     begin
       EditRateWorker.Text := FieldByName('stavka_m_rab').AsVariant;
       EditRateMachinist.Text := FieldByName('stavka_m_mach').AsVariant;
+      ComboBoxMonth.ItemIndex := FieldByName('monat').AsInteger - 1;
+      edtYear.Value := FieldByName('year').AsInteger;
     end;
     // ----------------------------------------
 
@@ -265,6 +256,7 @@ var
   IdStavka: Integer;
 begin
   try
+    IdStavka := -1;
     with ADOQueryTemp do
     begin
       Active := False;
@@ -275,6 +267,13 @@ begin
       Active := True;
       IdStavka := FieldByName('stavka_id').AsInteger;
     end;
+
+    if IdStavka <= 0 then
+    begin
+      Showmessage('ƒл€ выбраных значений мас€ца и года расценки отсутствуют');
+      exit;
+    end;
+
 
     // -----------------------------------------
 
