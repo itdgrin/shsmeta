@@ -1783,7 +1783,7 @@ begin
     // Пересчет по строке механизма
     try
       // Индивидуальное поведение для конкретных полей
-      if (Sender.FieldName = 'MAT_PROC_PODR') or (Sender.FieldName = 'MAT_PROC_ZAС') or
+      if (Sender.FieldName = 'MAT_PROC_PODR') or (Sender.FieldName = 'MAT_PROC_ZAC') or
         (Sender.FieldName = 'TRANSP_PROC_PODR') or (Sender.FieldName = 'TRANSP_PROC_ZAC') then
       begin
         if Sender.AsInteger > 100 then
