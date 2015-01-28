@@ -570,7 +570,7 @@
         end
         object Button4: TButton
           Left = 731
-          Top = 0
+          Top = -2
           Width = 85
           Height = 25
           Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
@@ -1962,7 +1962,7 @@
               end
               item
                 Expanded = False
-                FieldName = 'MAT_PROC_ZA'#1057
+                FieldName = 'MAT_PROC_ZAC'
                 Title.Alignment = taCenter
                 Title.Caption = #1052#1072#1090'. '#1079#1072#1082', %'
                 Width = 50
