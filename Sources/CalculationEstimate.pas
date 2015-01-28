@@ -309,7 +309,7 @@ type
     qrMaterialSTATE_TRANSPORT: TByteField;
     qrMaterialDOC_DATE: TDateField;
     qrMaterialDOC_NUM: TStringField;
-    qrMaterialMAT_PROC_ZAÑ: TIntegerField;
+    qrMaterialMAT_PROC_ZAC: TIntegerField;
     qrMaterialMAT_PROC_PODR: TIntegerField;
     qrMaterialTRANSP_PROC_ZAC: TIntegerField;
     qrMaterialTRANSP_PROC_PODR: TIntegerField;
@@ -1793,9 +1793,9 @@ begin
           Sender.AsInteger := 0;
 
         if Sender.FieldName = 'MAT_PROC_PODR' then
-          qrMaterialMAT_PROC_ZAÑ.AsInteger := 100 - qrMaterialMAT_PROC_PODR.AsInteger;
+          qrMaterialMAT_PROC_ZAC.AsInteger := 100 - qrMaterialMAT_PROC_PODR.AsInteger;
         if Sender.FieldName = 'MAT_PROC_PODR' then
-          qrMaterialMAT_PROC_PODR.AsInteger := 100 - qrMaterialMAT_PROC_ZAÑ.AsInteger;
+          qrMaterialMAT_PROC_PODR.AsInteger := 100 - qrMaterialMAT_PROC_ZAC.AsInteger;
         if Sender.FieldName = 'TRANSP_PROC_PODR' then
           qrMaterialTRANSP_PROC_ZAC.AsInteger := 100 - qrMaterialTRANSP_PROC_PODR.AsInteger;
         if Sender.FieldName = 'TRANSP_PROC_ZAC' then
@@ -1831,7 +1831,7 @@ begin
         SQL.Add('UPDATE materialcard_temp SET COAST_NO_NDS = :COAST_NO_NDS, ' +
           'COAST_NDS = :COAST_NDS, FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
           'FCOAST_NDS = :FCOAST_NDS, FTRANSP_NO_NDS = :FTRANSP_NO_NDS, ' +
-          'FTRANSP_NDS = :FTRANSP_NDS, MAT_PROC_ZAÑ = :MAT_PROC_ZAÑ, ' +
+          'FTRANSP_NDS = :FTRANSP_NDS, MAT_PROC_ZAC = :MAT_PROC_ZAC, ' +
           'MAT_PROC_PODR = :MAT_PROC_PODR, TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC, ' +
           'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, ' + Sender.FieldName + ' = :AA' + Sender.FieldName +
           ' WHERE id = :id;');
@@ -1841,7 +1841,7 @@ begin
         ParamByName('FCOAST_NDS').Value := qrMaterialFCOAST_NDS.Value;
         ParamByName('FTRANSP_NO_NDS').Value := qrMaterialFTRANSP_NO_NDS.Value;
         ParamByName('FTRANSP_NDS').Value := qrMaterialFTRANSP_NDS.Value;
-        ParamByName('MAT_PROC_ZAÑ').Value := qrMaterialMAT_PROC_ZAÑ.Value;
+        ParamByName('MAT_PROC_ZAC').Value := qrMaterialMAT_PROC_ZAC.Value;
         ParamByName('MAT_PROC_PODR').Value := qrMaterialMAT_PROC_PODR.Value;
         ParamByName('TRANSP_PROC_ZAC').Value := qrMaterialTRANSP_PROC_ZAC.Value;
         ParamByName('TRANSP_PROC_PODR').Value := qrMaterialTRANSP_PROC_PODR.Value;
