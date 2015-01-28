@@ -1794,7 +1794,7 @@ begin
 
         if Sender.FieldName = 'MAT_PROC_PODR' then
           qrMaterialMAT_PROC_ZAC.AsInteger := 100 - qrMaterialMAT_PROC_PODR.AsInteger;
-        if Sender.FieldName = 'MAT_PROC_PODR' then
+        if Sender.FieldName = 'MAT_PROC_ZAC' then
           qrMaterialMAT_PROC_PODR.AsInteger := 100 - qrMaterialMAT_PROC_ZAC.AsInteger;
         if Sender.FieldName = 'TRANSP_PROC_PODR' then
           qrMaterialTRANSP_PROC_ZAC.AsInteger := 100 - qrMaterialTRANSP_PROC_PODR.AsInteger;
