@@ -5749,6 +5749,7 @@ begin
     if CheckMatUnAccountingMatirials then
       Brush.Color := PS.BackgroundRows;
 
+    Str := '';
     // Подсветка синим подшапок таблицы
     if qrMaterialTITLE.AsInteger > 0 then
     begin
@@ -5756,12 +5757,14 @@ begin
       Font.Color := clWhite;
       Font.Style := Font.Style + [fsbold];
       if Column.Index = 1 then
-        Str := Column.Field.AsString
-      else
-        Str := '';
+        if assigned(Column.Field) then
+          Str := Column.Field.AsString;
     end
     else
-      Str := Column.Field.AsString;
+    begin
+      if assigned(Column.Field) then
+        Str := Column.Field.AsString;
+    end;
 
     if gdFocused in State then // Ячейка в фокусе
     begin
