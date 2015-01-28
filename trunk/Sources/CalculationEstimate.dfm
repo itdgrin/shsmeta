@@ -4278,7 +4278,7 @@
       Origin = 'DOC_NUM'
       Size = 50
     end
-    object qrMaterialMAT_PROC_ZAС: TIntegerField
+    object qrMaterialMAT_PROC_ZAC: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'MAT_PROC_ZAC'
       Origin = 'MAT_PROC_ZAC'
