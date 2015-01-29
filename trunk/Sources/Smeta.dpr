@@ -95,8 +95,11 @@ uses
   CalculationEstimateSSR in 'CalculationEstimateSSR.pas' {frCalculationEstimateSSR: TFrame},
   CalcResource in 'CalcResource.pas' {fCalcResource},
   CalculationDump in 'CalculationDump.pas' {FormCalculationDump},
+  CalcTravel in 'CalcTravel.pas' {fCalcTravel},
   UniDict in 'UniDict.pas' {fUniDict},
-  UpdateModule in 'UpdateModule.pas';
+  UpdateModule in 'UpdateModule.pas',
+  TravelList in 'TravelList.pas' {fTravelList},
+  CardPTM in 'CardPTM.pas' {FormCardPTM};
 
 var
   H: Thandle;
@@ -153,6 +156,7 @@ begin
   Application.CreateForm(TFormCoefficientOrders, FormCoefficientOrders);
   Application.CreateForm(TFormKC6, FormKC6);
   Application.CreateForm(TFormCardAct, FormCardAct);
+  Application.CreateForm(TFormCardPTM, FormCardPTM);
   Application.Run;
 
 end.
