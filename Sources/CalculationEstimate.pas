@@ -3050,7 +3050,9 @@ procedure TFormCalculationEstimate.PopupMenuMaterialsPopup(Sender: TObject);
 begin
   PMMatEdit.Enabled := (not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0);
   PMMatReplace.Enabled := CheckMatUnAccountingMatirials and (qrMaterialTITLE.AsInteger = 0);;
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0);
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and
+    (qrMaterialTITLE.AsInteger = 0) and
+    (qrMaterialFROM_RATE.AsInteger = 0);
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов

@@ -3,8 +3,8 @@ unit UpdateModule;
 interface
 
 uses
-  System.Classes, System.SysUtils, DateUtils, Vcl.Dialogs, SyncObjs,
-  Winapi.Windows, Winapi.Messages;
+  System.Classes, System.SysUtils, DateUtils, Vcl.Forms, SyncObjs,
+  Winapi.Windows, Winapi.Messages, IdHTTP, XMLIntf, XMLDoc,  ActiveX;
 
 const
   //»нтервал времени через который происходит опрос сервака
@@ -13,6 +13,32 @@ const
   WM_SHOW_SPLASH = WM_USER + 1;
 
 type
+  TLogFile = class(TObject)
+  private
+    { Private declarations }
+    FFile: TextFile;
+    FActive: boolean;
+    FFileName: string;
+    FFullName: string;
+    FKeepOpened: boolean;
+    FFileDir: string;
+
+    procedure SetFileName(const Value: string);
+    procedure SetKeepOpened(const Value: boolean);
+    procedure SetFileDir(const Value: string);
+    function GetLogFileName: String;
+  protected
+    { Protected declarations }
+  public
+    { Public declarations }
+    destructor Destroy; override;
+    procedure Add(AText: string; ATag: string = '');
+    property Active: boolean read FActive write FActive;
+    property FileName: string read FFileName write SetFileName;
+    property KeepOpened: boolean read FKeepOpened write SetKeepOpened;
+    property FileDir: string read FFileDir write SetFileDir;
+  end;
+
   TVersion = record
     App: integer;
     RefDB: integer;
@@ -40,11 +66,11 @@ type
     procedure Delete(AIndex: Integer); }
   public
     procedure Assign(Source: TPersistent); override;
-    {procedure Clear;
+    procedure Clear;
     constructor Create;
     destructor Destroy; override;
 
-    property UpdeteStatys: byte read fUpdeteStatys write fUpdeteStatys;
+   { property UpdeteStatys: byte read fUpdeteStatys write fUpdeteStatys;
     property UpVersion: TVersion read fUpVersion write fUpVersion;
     property Count: integer read fCount write fCount;
     property NewVersions[Index: Integer]: TNewVersion read GetNewVersions write SetNewVersions;}
@@ -55,6 +81,7 @@ type
   private
     FCurVersion : TVersion; //“екуша€ верси€ программы
     FMainHandle: HWND;
+    FLogFile: TLogFile;
 
     FUREvent, FTermEvent: TEvent;
     FVersionCS: TCriticalSection;
@@ -62,6 +89,10 @@ type
 
     function GetServiceResponse: TServiceResponse;
     procedure GetVersion; //ќтправл€ет запрос на получение версии на серверее
+    procedure ParsXMLResult(const AStrimPage: TMemoryStream;
+      var ASResponse: TServiceResponse);
+
+    procedure GetLogName;
     //ѕоказать всплывающее окно о наличии обновлений
     procedure ShowSplash;
     { Private declarations }
@@ -77,15 +108,96 @@ type
 
 implementation
 
+{ TLogFile }
+
+function TLogFile.GetLogFileName: String;
+begin
+  Result:= FileDir + FileName;
+end;
+
+procedure TLogFile.Add(AText: string; ATag: string);
+var
+  fname, lMessage: string;
+begin
+  if not Active then exit;
+
+  fname:= GetLogFileName;
+
+  if not KeepOpened then
+  begin
+    AssignFile(FFile, fname);
+    if FileExists(fname) then
+      Append(FFile)
+    else
+      Rewrite(FFile);
+  end
+  else
+    if fname <> FFullName then
+    begin
+      CloseFile(FFile);
+      FFullName:= fname;
+      AssignFile(FFile, fname);
+      if FileExists(fname) then
+        Append(FFile)
+      else
+        Rewrite(FFile);
+    end;
+
+  lMessage := '[' + DateToStr(Date);
+  if ATag <> '' then lMessage:= lMessage + ' : '+ ATag;
+  lMessage := lMessage + ']';
+  lMessage:= lMessage + ' ' + AText;
+
+  writeln(FFile, lMessage);
+
+  if not KeepOpened then CloseFile(FFile);
+end;
+
+procedure TLogFile.SetFileName(const Value: string);
+begin
+  FFileName := Value;
+end;
+
+procedure TLogFile.SetKeepOpened(const Value: boolean);
+begin
+  FKeepOpened := Value;
+end;
+
+destructor TLogFile.Destroy;
+begin
+  if KeepOpened then CloseFile(FFile);
+  inherited;
+end;
+
+procedure TLogFile.SetFileDir(const Value: string);
+begin
+  FFileDir:= Value;
+  if FFileDir <> '' then
+  begin
+    ForceDirectories(FFileDir);
+    FFileDir := IncludeTrailingPathDelimiter(FFileDir);
+  end;
+end;
+
 { UpdateThread }
+
+procedure TUpdateThread.GetLogName;
+begin
+  FLogFile.FileDir := ExtractFilePath(Application.ExeName) + 'logs';
+  FLogFile.FileName := 'update.log';
+end;
 
 constructor TUpdateThread.Create(AVersion: TVersion;
   AMainHandle: HWND);
 begin
   inherited Create(true);
 
+  //“екуща€ верси€ приложени€;
   FCurVersion := AVersion;
   FMainHandle := AMainHandle;
+
+  FLogFile := TLogFile.Create;
+  FLogFile.Active := true;
 
   FUREvent := TEvent.Create(nil, true, false, '');
   FTermEvent := TEvent.Create(nil, true, false, '');
@@ -109,6 +221,7 @@ procedure TUpdateThread.UserRequest;
 begin
   FUREvent.SetEvent;
 end;
+
 procedure TUpdateThread.Terminate;
 begin
   inherited Terminate;
@@ -128,36 +241,69 @@ begin
   end;
 end;
 
+procedure TUpdateThread.ParsXMLResult(const AStrimPage: TMemoryStream;
+      var ASResponse: TServiceResponse);
+var XML : IXMLDocument;
+    CatNode, AppNode, UsNode : IXMLNode;
+
+begin
+  ASResponse.Clear;
+  XML := TXMLDocument.Create(nil);
+  try
+    try
+      //XML.LoadFromStream(AStrimPage);
+      XML.LoadFromXML('d:\get_xml.xml');
+
+    except
+      on e: Exception do
+      begin
+        FLogFile.Add(e.ClassName + ': ' + e.Message, 'pars XML mode');
+      end;
+    end;
+  finally
+    XML := nil;
+  end;
+end;
+
 procedure TUpdateThread.GetVersion;
 var NewVersion : TVersion;
-    Temp1: TVersion;
+    HTTP: TIdHTTP;
+    StrimPage: TMemoryStream;
+    SResponse: TServiceResponse;
 begin
- { FVersionCS.Enter;
+  //—нимаем сигнальное состо€ние порверки по требованию если оно установлено
+  if FUREvent.WaitFor(0) = wrSignaled then
+    FUREvent.ResetEvent;
+
+  HTTP := TIdHTTP.Create(nil);
+  StrimPage := TMemoryStream.Create;
+  SResponse := TServiceResponse.Create;
   try
-    FServiceResponse.Clear;
+    try
+      HTTP.HandleRedirects := true;
+      HTTP.Request.UserAgent:='Mozilla/5.0 (Windows NT 6.1) '+
+        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36';
+      HTTP.Request.Accept:='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+      HTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
+      HTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
 
-    FServiceResponse.fUpdeteStatys := 1;
-    Temp1.RefDB := 3;
-    FServiceResponse.fUpVersion := Temp1;
-    Temp2.DB := 3;
-    FServiceResponse.Add(Temp2);
-    Temp2.DB := 1;
-    FServiceResponse.Add(Temp2);
-    Temp2.DB := 2;
-    FServiceResponse.Add(Temp2);
+     { HTTP.Get('http://nocode.by:12115/gen/get_xml.xml?' +
+        'user_version=' + IntToStr(FCurVersion.UserDB) + '&' +
+        'app_version' + IntToStr(FCurVersion.App) + '&' +
+        'catalog_version=' + IntToStr(FCurVersion.RefDB), StrimPage);}
 
-    NewVersion := FServiceResponse.fUpVersion;
+      ParsXMLResult(StrimPage, SResponse);
+    except
+      on e: Exception do
+      begin
+        FLogFile.Add(e.ClassName + ': ' + e.Message, 'get version mode');
+      end;
+    end;
   finally
-    FVersionCS.Leave;
+    SResponse.Free;
+    HTTP.Free;
+    StrimPage.Free;
   end;
-
-  if (NewVersion.RefDB > FVersion.RefDB) or
-      UserRequest
-  then ShowSplash;
-
-  LastGetVersion := Now;
-  if UserRequest then UserRequest := false;    }
-  FUREvent.ResetEvent;
 end;
 
 procedure TUpdateThread.ShowSplash;
@@ -168,12 +314,26 @@ end;
 procedure TUpdateThread.Execute;
 var Handles: array [0..1] of THandle;
 begin
-  Handles[0] := FUREvent.Handle;
-  Handles[1] := FTermEvent.Handle;
-  while not Terminated do
-  begin
-    GetVersion;
-    WaitForMultipleObjectsEx(2, @Handles[0], false, GetVersionInterval, False);
+  Synchronize(GetLogName);
+  FLogFile.Active := true;
+  try
+    CoInitializeEx(nil, COINIT_APARTMENTTHREADED or COINIT_DISABLE_OLE1DDE);
+    try
+      Handles[0] := FUREvent.Handle;
+      Handles[1] := FTermEvent.Handle;
+      while not Terminated do
+      begin
+        GetVersion;
+        WaitForMultipleObjectsEx(2, @Handles[0], false, GetVersionInterval, False);
+      end;
+    finally
+        CoUninitialize;
+    end;
+  except
+    on e: Exception do
+    begin
+      FLogFile.Add(e.ClassName + ': ' + e.Message, 'execute mode');
+    end;
   end;
 end;
 
@@ -194,13 +354,13 @@ begin
 
   inherited Assign(Source);
 end;
-{
+
 procedure TServiceResponse.Clear;
 begin
-  fUpdeteStatys := 0;
+ { fUpdeteStatys := 0;
   fUpVersion.RefDB := 0;
   fCount := 0;
-  SetLength(fNewVersions, fCount);
+  SetLength(fNewVersions, fCount); }
 end;
 
 constructor TServiceResponse.Create;
@@ -211,11 +371,12 @@ end;
 
 destructor TServiceResponse.Destroy;
 begin
-  fCount := 0;
-  SetLength(fNewVersions, fCount);
+ { fCount := 0;
+  SetLength(fNewVersions, fCount);      }
   inherited;
 end;
 
+{
 procedure TServiceResponse.Delete(AIndex: Integer);
 var i : integer;
 begin
