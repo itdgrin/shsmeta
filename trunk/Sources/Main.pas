@@ -178,7 +178,7 @@ type
     CountOpenWindows: Integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
     fUpdateThread : TUpdateThread; //Нить проверки обновлений
-
+    SystemInfoResult: boolean;
     procedure GetSystemInfo;
   public
     procedure AutoWidthColumn(SG: TStringGrid; Nom: Integer);
@@ -331,6 +331,7 @@ var
   CurVersion: TVersion; // текущая версия приложения и БД
   ClientName: string;   // Имя клиета
   SendReport: boolean;  // Необходимость отправлять отчет об ошибках обновления
+  DebugMode: boolean; //Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
 function MyFloatToStr(Value: Extended): string;
 function MyStrToFloat(Value: string): Extended;
@@ -362,10 +363,12 @@ begin
     ini.WriteInteger('system', 'version', 0);
     ini.WriteString('system', 'clientname', '');
     ini.WriteBool('system', 'sendreport', false);
+    ini.WriteBool('system', 'debugmode', true);
   end;
   CurVersion.App := ini.ReadInteger('system', 'version', 0);
   ClientName := ini.ReadString('system', 'clientname', '');
   SendReport := ini.ReadBool('system', 'sendreport', false);
+  DebugMode := ini.ReadBool('system', 'debugmode', true);
 
   DM.qrDifferent.Active := false;
 
@@ -387,7 +390,15 @@ begin
   CurVersion.App := 0;
   CurVersion.RefDB := 0;
   CurVersion.UserDB := 0;
- // GetSystemInfo;
+
+  SystemInfoResult := false;
+  try
+    GetSystemInfo;
+    SystemInfoResult := true;
+  except
+    on e: exception do
+      showmessage('Ошибка инициализации системы: ' + e.Message);
+  end;
 
   CountOpenWindows := 0;
 
@@ -400,7 +411,15 @@ begin
 
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
   //Запуск ниточки для мониторигра обновлений
- // fUpdateThread := TUpdateThread.Create(CurVersion, Self.Handle);
+  if SystemInfoResult and not DebugMode then
+    fUpdateThread := TUpdateThread.Create(CurVersion, Self.Handle)
+  else
+  begin
+    if not SystemInfoResult then
+      showmessage('Обновления недоступны.');
+    fUpdateThread := nil;
+    ServiceUpdate.Enabled := false;
+  end;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -668,7 +687,8 @@ end;
 
 procedure TFormMain.ServiceUpdateClick(Sender: TObject);
 begin
- // fUpdateThread.UserRequest;
+  if Assigned(fUpdateThread) then
+    fUpdateThread.UserRequest;
 end;
 
 procedure TFormMain.TimerCoverTimer(Sender: TObject);
