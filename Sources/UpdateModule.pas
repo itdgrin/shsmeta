@@ -41,69 +41,99 @@ type
 
   TVersion = record
     App: integer;
-    RefDB: integer;
-    UserDB: integer;
+    Catalog: integer;
+    User: integer;
   end;
-  PVersion = ^TVersion;
 
- { TNewVersion = record
-    DB: integer;
-    DBPath: ShortString;
+  TNewVersion = record
+    Version: integer;
+    Url: ShortString;
   end;
   TNewVersionList = array of TNewVersion;
-  }
 
   TServiceResponse = class(TPersistent)
   private
-    {fUpdeteStatys: byte;
-    fUpVersion: TVersion;
-    fCount: integer;
-    fNewVersions: TNewVersionList;
-    function GetNewVersions(AIndex: Integer): TNewVersion;
-    procedure SetNewVersions(AIndex: Integer; ANewVersion: TNewVersion);
-    procedure SortNewVersions;
-    procedure Add(ANewVersion: TNewVersion);
-    procedure Delete(AIndex: Integer); }
+    //0 - нет обновлений
+    //1 - есть обновления
+    FUpdeteStatys: byte;
+
+    FAppCount,
+    FCatalogCount,
+    FUserCount: integer;
+
+    FAppList,
+    FCatalogList,
+    FUserList: TNewVersionList;
+
+    function GetAppList(AIndex: Integer): TNewVersion;
+    function GetCatalogList(AIndex: Integer): TNewVersion;
+    function GetUserList(AIndex: Integer): TNewVersion;
+
+    procedure SetAppList(AIndex: Integer; const AValue: TNewVersion);
+    procedure SetCatalogList(AIndex: Integer; const AValue: TNewVersion);
+    procedure SetUserList(AIndex: Integer; const AValue: TNewVersion);
+
+    function GetAppVersion: integer;
+    function GetCatalogVersion: integer;
+    function GetUserVersion: integer;
   public
     procedure Assign(Source: TPersistent); override;
     procedure Clear;
     constructor Create;
     destructor Destroy; override;
 
-   { property UpdeteStatys: byte read fUpdeteStatys write fUpdeteStatys;
-    property UpVersion: TVersion read fUpVersion write fUpVersion;
-    property Count: integer read fCount write fCount;
-    property NewVersions[Index: Integer]: TNewVersion read GetNewVersions write SetNewVersions;}
+    property UpdeteStatys: byte read fUpdeteStatys write fUpdeteStatys;
+
+    property AppVersion: integer read GetAppVersion;
+    property CatalogVersion: integer read GetCatalogVersion;
+    property UserVersion: integer read GetUserVersion;
+
+    property AppCount: integer read FAppCount;
+    property CatalogCount: integer read FCatalogCount;
+    property UserCount: integer read FUserCount;
+
+    property AppList[Index: Integer]: TNewVersion read GetAppList write SetAppList;
+    property CatalogList[Index: Integer]: TNewVersion read GetCatalogList write SetCatalogList;
+    property UserList[Index: Integer]: TNewVersion read GetUserList write SetUserList;
+
+    function AddApp(const ANewVersion: TNewVersion): integer;
+    function AddCatalog(const ANewVersion: TNewVersion): integer;
+    function AddUser(const ANewVersion: TNewVersion): integer;
   end;
 
-type
   TUpdateThread = class(TThread)
   private
     FCurVersion : TVersion; //Текушая версия программы
+    FCurVersionCS: TCriticalSection;
+
     FMainHandle: HWND;
     FLogFile: TLogFile;
 
     FUREvent, FTermEvent: TEvent;
-    FVersionCS: TCriticalSection;
-    FServiceResponse: TServiceResponse; //Ответ службы
 
-    function GetServiceResponse: TServiceResponse;
+    FResponseCS: TCriticalSection;
+    FResponse: TServiceResponse; //Ответ службы
+
+    FUserBlok: boolean; //Блокировка пользователем (не надо меня беспокоить)
+    FUserBlokCS: TCriticalSection;
+
+    function GetResponse: TServiceResponse;
     procedure GetVersion; //Отправляет запрос на получение версии на серверее
     procedure ParsXMLResult(const AStrimPage: TMemoryStream;
       var ASResponse: TServiceResponse);
 
     procedure GetLogName;
-    //Показать всплывающее окно о наличии обновлений
-    procedure ShowSplash;
     { Private declarations }
   protected
     procedure Execute; override;
   public
-    property ServiceResponse: TServiceResponse read GetServiceResponse;
+    property Response: TServiceResponse read GetResponse;
     procedure UserRequest;
     procedure Terminate;
     constructor Create(AVersion: TVersion; AMainHandle: HWND); overload;
     destructor Destroy; override;
+    procedure UserBlok;
+    procedure SetCurVersion(AVersion: TVersion);
   end;
 
 implementation
@@ -194,6 +224,8 @@ begin
 
   //Текущая версия приложения;
   FCurVersion := AVersion;
+  FCurVersionCS := TCriticalSection.Create;
+
   FMainHandle := AMainHandle;
 
   FLogFile := TLogFile.Create;
@@ -201,8 +233,12 @@ begin
 
   FUREvent := TEvent.Create(nil, true, false, '');
   FTermEvent := TEvent.Create(nil, true, false, '');
-  FVersionCS := TCriticalSection.Create;
-  FServiceResponse := TServiceResponse.Create;
+
+  FResponseCS := TCriticalSection.Create;
+  FResponse := TServiceResponse.Create;
+
+  FUserBlok := False;
+  FUserBlokCS := TCriticalSection.Create;
 
   Priority :=  tpLower;
   Resume;
@@ -210,8 +246,10 @@ end;
 
 destructor TUpdateThread.Destroy;
 begin
-  FServiceResponse.Free;
-  FVersionCS.Free;
+  FResponse.Free;
+  FResponseCS.Free;
+  FCurVersionCS.Free;
+  FUserBlokCS.Free;
   FUREvent.Free;
   FTermEvent.Free;
   inherited;
@@ -228,31 +266,146 @@ begin
   FTermEvent.SetEvent;
 end;
 
-function TUpdateThread.GetServiceResponse: TServiceResponse;
+procedure TUpdateThread.SetCurVersion(AVersion: TVersion);
+begin
+  FCurVersionCS.Enter;
+  try
+    FCurVersion.App := AVersion.App;
+    FCurVersion.Catalog := AVersion.Catalog;
+    FCurVersion.User := AVersion.User;
+  finally
+    FCurVersionCS.Leave;
+  end;
+end;
+
+function TUpdateThread.GetResponse: TServiceResponse;
 var r : TServiceResponse;
 begin
-  FVersionCS.Enter;
+  FResponseCS.Enter;
   try
     r := TServiceResponse.Create;
-    r.Assign(FServiceResponse);
+    r.Assign(FResponse);
     Result := r;
   finally
-    FVersionCS.Leave;
+    FResponseCS.Leave;
+  end;
+end;
+
+procedure TUpdateThread.UserBlok;
+begin
+  FUserBlokCS.Enter;
+  try
+    FUserBlok := True;
+  finally
+    FUserBlokCS.Leave;
   end;
 end;
 
 procedure TUpdateThread.ParsXMLResult(const AStrimPage: TMemoryStream;
       var ASResponse: TServiceResponse);
 var XML : IXMLDocument;
-    CatNode, AppNode, UsNode : IXMLNode;
-
+    TempNode, TempNode1, CatNode, UsNode, AppNode: IXMLNode;
+    i, j: Integer;
+    TempNV: TNewVersion;
+    Resp: TServiceResponse;
 begin
-  ASResponse.Clear;
+  FResponseCS.Enter;
+  try
+    ASResponse.Clear;
+  finally
+    FResponseCS.Leave;
+  end;
+
   XML := TXMLDocument.Create(nil);
+  Resp := TServiceResponse.Create;
   try
     try
       //XML.LoadFromStream(AStrimPage);
-      XML.LoadFromXML('d:\get_xml.xml');
+      XML.LoadFromFile('d:\get_xml.xml');
+      TempNode := XML.ChildNodes.FindNode('updates');
+      if TempNode = nil then
+        raise Exception.Create('Не найдена нода <updates>');
+      CatNode := TempNode.ChildNodes.FindNode('catalog_updates');
+      if CatNode = nil then
+        raise Exception.Create('Не найдена нода <catalog_updates>');
+      UsNode := TempNode.ChildNodes.FindNode('user_updates');
+      if UsNode = nil then
+        raise Exception.Create('Не найдена нода <user_updates>');
+      AppNode := TempNode.ChildNodes.FindNode('app_updates');
+      if AppNode = nil then
+        raise Exception.Create('Не найдена нода <app_updates>');
+
+      TempNode := nil;
+      TempNode := AppNode.ChildNodes.FindNode('available');
+      if TempNode = nil then
+        raise Exception.Create('Не найдена нода <app_updates><available>');
+      if TempNode.Text = 'yes' then
+      begin
+        ASResponse.UpdeteStatys := 1;
+        for i := 0 to AppNode.ChildNodes.Count - 1 do
+        begin
+          if AppNode.ChildNodes[i].NodeName = 'update' then
+          begin
+            TempNode1 := AppNode.ChildNodes.Get(i);
+            TempNV.Version := StrToInt(TempNode1.ChildNodes.FindNode('version').Text);
+            TempNV.Url := TempNode1.ChildNodes.FindNode('url').Text;
+            Resp.AddApp(TempNV);
+            TempNode1 := nil;
+          end;
+        end;
+      end;
+
+      TempNode := nil;
+      TempNode := CatNode.ChildNodes.FindNode('available');
+      if TempNode = nil then
+        raise Exception.Create('Не найдена нода <catalog_updates><available>');
+      if TempNode.Text = 'yes' then
+      begin
+        ASResponse.UpdeteStatys := 1;
+        for i := 0 to CatNode.ChildNodes.Count - 1 do
+        begin
+          if CatNode.ChildNodes[i].NodeName = 'update' then
+          begin
+            TempNode1 := CatNode.ChildNodes.Get(i);
+            TempNV.Version := StrToInt(TempNode1.ChildNodes.FindNode('version').Text);
+            TempNV.Url := TempNode1.ChildNodes.FindNode('url').Text;
+            j := Resp.AddCatalog(TempNV);
+            TempNV := Resp.CatalogList[j];
+            TempNV.Url := 'sdf';
+            TempNV := Resp.CatalogList[j];
+            TempNV.Url := 'sdf';
+            TempNode1 := nil;
+          end;
+        end;
+      end;
+
+      TempNode := nil;
+      TempNode := UsNode.ChildNodes.FindNode('available');
+      if TempNode = nil then
+        raise Exception.Create('Не найдена нода <user_updates><available>');
+      if TempNode.Text = 'yes' then
+      begin
+        ASResponse.UpdeteStatys := 1;
+        for i := 0 to UsNode.ChildNodes.Count - 1 do
+        begin
+          if UsNode.ChildNodes[i].NodeName = 'update' then
+          begin
+            TempNode1 := UsNode.ChildNodes.Get(i);
+            TempNV.Version := StrToInt(TempNode1.ChildNodes.FindNode('version').Text);
+            TempNV.Url := TempNode1.ChildNodes.FindNode('url').Text;
+            Resp.AddUser(TempNV);
+            TempNode1 := nil;
+          end;
+        end;
+      end;
+      TempNode := nil;
+
+      FResponseCS.Enter;
+      try
+        ASResponse.Assign(Resp);
+      finally
+        FResponseCS.Leave;
+      end;
 
     except
       on e: Exception do
@@ -261,6 +414,7 @@ begin
       end;
     end;
   finally
+    Resp.Free;
     XML := nil;
   end;
 end;
@@ -269,15 +423,19 @@ procedure TUpdateThread.GetVersion;
 var NewVersion : TVersion;
     HTTP: TIdHTTP;
     StrimPage: TMemoryStream;
-    SResponse: TServiceResponse;
 begin
   //Снимаем сигнальное состояние порверки по требованию если оно установлено
   if FUREvent.WaitFor(0) = wrSignaled then
+  begin
+    FUserBlok := False;
     FUREvent.ResetEvent;
+  end;
+
+  //Если пользователь запретил, запроса не происходит
+  if FUserBlok then exit;
 
   HTTP := TIdHTTP.Create(nil);
   StrimPage := TMemoryStream.Create;
-  SResponse := TServiceResponse.Create;
   try
     try
       HTTP.HandleRedirects := true;
@@ -292,7 +450,20 @@ begin
         'app_version' + IntToStr(FCurVersion.App) + '&' +
         'catalog_version=' + IntToStr(FCurVersion.RefDB), StrimPage);}
 
-      ParsXMLResult(StrimPage, SResponse);
+      ParsXMLResult(StrimPage, FResponse);
+
+      FCurVersionCS.Enter;
+      FResponseCS.Enter;
+      try
+        if (FCurVersion.App <> FResponse.AppVersion) or
+           (FCurVersion.Catalog <> FResponse.CatalogVersion) or
+           (FCurVersion.User <> FResponse.UserVersion) then
+           PostMessage(FMainHandle, WM_SHOW_SPLASH, 0, 0);
+      finally
+        FResponseCS.Leave;
+        FCurVersionCS.Leave;
+      end;
+
     except
       on e: Exception do
       begin
@@ -300,15 +471,9 @@ begin
       end;
     end;
   finally
-    SResponse.Free;
     HTTP.Free;
     StrimPage.Free;
   end;
-end;
-
-procedure TUpdateThread.ShowSplash;
-begin
-//  SendMessage(FMainHandle, WM_SHOW_SPLASH, 0, 0); //Будет ожидать действий пользователя
 end;
 
 procedure TUpdateThread.Execute;
@@ -341,26 +506,48 @@ end;
 procedure TServiceResponse.Assign(Source: TPersistent);
 var i : integer;
 begin
-  {if Source is TServiceResponse then
+  if Source is TServiceResponse then
   begin
-    fUpdeteStatys := (Source as TServiceResponse).fUpdeteStatys;
-    fUpVersion := (Source as TServiceResponse).fUpVersion;
-    fCount := (Source as TServiceResponse).fCount;
-    SetLength(fNewVersions, fCount);
-    for i := 0 to fCount - 1 do
-      fNewVersions[i] := (Source as TServiceResponse).fNewVersions[i];
+    FUpdeteStatys := (Source as TServiceResponse).fUpdeteStatys;
+
+    FAppCount := (Source as TServiceResponse).FAppCount;
+    SetLength(FAppList, FAppCount);
+    for i := 0 to FAppCount - 1 do
+    begin
+      FAppList[i].Version := (Source as TServiceResponse).FAppList[i].Version;
+      FAppList[i].Url := (Source as TServiceResponse).FAppList[i].Url;
+    end;
+
+    FCatalogCount := (Source as TServiceResponse).FCatalogCount;
+    SetLength(FCatalogList, FCatalogCount);
+    for i := 0 to FCatalogCount - 1 do
+    begin
+      FCatalogList[i].Version := (Source as TServiceResponse).FCatalogList[i].Version;
+      FCatalogList[i].Url := (Source as TServiceResponse).FCatalogList[i].Url;
+    end;
+
+    FUserCount := (Source as TServiceResponse).FUserCount;
+    SetLength(FUserList, FUserCount);
+    for i := 0 to FUserCount - 1 do
+    begin
+      FUserList[i].Version := (Source as TServiceResponse).FUserList[i].Version;
+      FUserList[i].Url := (Source as TServiceResponse).FUserList[i].Url;
+    end;
     Exit;
-  end;               }
+  end;
 
   inherited Assign(Source);
 end;
 
 procedure TServiceResponse.Clear;
 begin
- { fUpdeteStatys := 0;
-  fUpVersion.RefDB := 0;
-  fCount := 0;
-  SetLength(fNewVersions, fCount); }
+  FAppCount := 0;
+  FCatalogCount := 0;
+  FUserCount := 0;
+
+  SetLength(FAppList, FAppCount);
+  SetLength(FCatalogList, FCatalogCount);
+  SetLength(FUserList, FUserCount);
 end;
 
 constructor TServiceResponse.Create;
@@ -371,59 +558,111 @@ end;
 
 destructor TServiceResponse.Destroy;
 begin
- { fCount := 0;
-  SetLength(fNewVersions, fCount);      }
+  clear;
   inherited;
 end;
 
-{
-procedure TServiceResponse.Delete(AIndex: Integer);
-var i : integer;
+function TServiceResponse.GetAppList(AIndex: Integer): TNewVersion;
 begin
-  if (AIndex < 0) or (AIndex >= fCount) then
+  if (AIndex < 0) or (AIndex >= FAppCount) then
     raise Exception.Create(format('List index out of bounds (%d)',[AIndex]));
-  for i := AIndex + 1 to FCount - 1 do
-    fNewVersions[i - 1] := fNewVersions[i];
-  dec(fCount);
-  SetLength(fNewVersions, fCount);
+  Result := FAppList[AIndex];
 end;
 
-function TServiceResponse.GetNewVersions(AIndex: Integer): TNewVersion;
+function TServiceResponse.GetCatalogList(AIndex: Integer): TNewVersion;
 begin
-  if (AIndex < 0) or (AIndex >= fCount) then
+  if (AIndex < 0) or (AIndex >= FCatalogCount) then
     raise Exception.Create(format('List index out of bounds (%d)',[AIndex]));
-  Result := fNewVersions[AIndex];
+  Result := FCatalogList[AIndex];
 end;
 
-procedure TServiceResponse.SetNewVersions(AIndex: Integer;
-  ANewVersion: TNewVersion);
+function TServiceResponse.GetUserList(AIndex: Integer): TNewVersion;
 begin
-  if (AIndex < 0) or (AIndex >= fCount) then
+  if (AIndex < 0) or (AIndex >= FUserCount) then
     raise Exception.Create(format('List index out of bounds (%d)',[AIndex]));
-  fNewVersions[AIndex] := ANewVersion;
+  Result := FUserList[AIndex];
 end;
 
-procedure TServiceResponse.Add(ANewVersion: TNewVersion);
+function TServiceResponse.AddApp(const ANewVersion: TNewVersion): integer;
 begin
-  inc(fCount);
-  SetLength(fNewVersions, fCount);
-  fNewVersions[fCount - 1] := ANewVersion;
-  SortNewVersions;
+  Result := -1;
+  inc(FAppCount);
+  SetLength(FAppList, FAppCount);
+  Result := FAppCount - 1;
+  FAppList[Result].Version := ANewVersion.Version;
+  FAppList[Result].Url := ANewVersion.Url;
+
 end;
 
-//Работать будет если версии все валидные
-procedure TServiceResponse.SortNewVersions;
-var i, j: integer;
-    Temp: TNewVersion;
+function TServiceResponse.AddCatalog(const ANewVersion: TNewVersion): integer;
 begin
-  for i := 0 to fCount - 2 do
-    for j := i + 1 to fCount - 1 do
-      if (fNewVersions[i].DB > fNewVersions[j].DB) then
-      begin
-        Temp := fNewVersions[i];
-        fNewVersions[i] := fNewVersions[j];
-        fNewVersions[j] := Temp;
-      end;
-end; }
+  Result := -1;
+  inc(FCatalogCount);
+  SetLength(FCatalogList, FCatalogCount);
+  Result := FCatalogCount - 1;
+  FCatalogList[Result].Version := ANewVersion.Version;
+  FCatalogList[Result].Url := ANewVersion.Url;
+end;
+
+function TServiceResponse.AddUser(const ANewVersion: TNewVersion): integer;
+begin
+  Result := -1;
+  inc(FUserCount);
+  SetLength(FUserList, FUserCount);
+  Result := FUserCount - 1;
+  FUserList[Result].Version := ANewVersion.Version;
+  FUserList[Result].Url := ANewVersion.Url;
+end;
+
+function TServiceResponse.GetAppVersion: integer;
+var i: integer;
+begin
+  Result := 0;
+  for i := 0 to FAppCount - 1 do
+      if Result < FAppList[i].Version then
+        Result := FAppList[i].Version;
+end;
+
+function TServiceResponse.GetCatalogVersion: integer;
+var i: integer;
+begin
+  Result := 0;
+  for i := 0 to FCatalogCount - 1 do
+      if Result < FCatalogList[i].Version then
+        Result := FCatalogList[i].Version;
+end;
+
+function TServiceResponse.GetUserVersion: integer;
+var i: integer;
+begin
+  Result := 0;
+  for i := 0 to FUserCount - 1 do
+      if Result < FUserList[i].Version then
+        Result := FUserList[i].Version;
+end;
+
+procedure TServiceResponse.SetAppList(AIndex: Integer; const AValue: TNewVersion);
+begin
+  if (AIndex < 0) or (AIndex >= FAppCount) then
+    raise Exception.Create(format('List index out of bounds (%d)',[AIndex]));
+  FAppList[AIndex].Version := AValue.Version;
+  FAppList[AIndex].Url := AValue.Url;
+end;
+
+procedure TServiceResponse.SetCatalogList(AIndex: Integer; const AValue: TNewVersion);
+begin
+  if (AIndex < 0) or (AIndex >= FCatalogCount) then
+    raise Exception.Create(format('List index out of bounds (%d)',[AIndex]));
+  FCatalogList[AIndex].Version := AValue.Version;
+  FCatalogList[AIndex].Url := AValue.Url;
+end;
+
+procedure TServiceResponse.SetUserList(AIndex: Integer; const AValue: TNewVersion);
+begin
+  if (AIndex < 0) or (AIndex >= FUserCount) then
+    raise Exception.Create(format('List index out of bounds (%d)',[AIndex]));
+  FUserList[AIndex].Version := AValue.Version;
+  FUserList[AIndex].Url := AValue.Url;
+end;
 
 end.
