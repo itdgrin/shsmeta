@@ -453,7 +453,7 @@ type
     qrTranspCLASS: TStringField;
     qrTranspTRANSP_UNIT: TStringField;
     tmRate: TTimer;
-    qrRatesSORTID: TIntegerField;
+    strngfldRatesSORTID: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -5136,7 +5136,7 @@ begin
   qrRates.Tag := 1; // Что-бы отключить события по скролу у датасета
   qrRates.Active := False;
   // Заполняет rates_temp
-  qrRates.SQL.Text := 'CALL GetRates(:DATATAB, :EAID, :fn);';
+  qrRates.SQL.Text := 'CALL GetRates(:DATATAB, :EAID, :fn, '''');';
   qrRates.ParamByName('DATATAB').Value := Str;
   if Act then
   begin

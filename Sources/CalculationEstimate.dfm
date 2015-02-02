@@ -3769,8 +3769,9 @@
     object qrRatesOWNER_ID: TIntegerField
       FieldName = 'OWNER_ID'
     end
-    object qrRatesSORTID: TIntegerField
+    object strngfldRatesSORTID: TStringField
       FieldName = 'SORTID'
+      Size = 100
     end
   end
   object dsRates: TDataSource
