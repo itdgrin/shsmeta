@@ -3657,13 +3657,13 @@
     end
     object qrRatesCODE: TStringField
       AutoGenerateValue = arDefault
-      DisplayWidth = 30
+      DisplayWidth = 200
       FieldName = 'CODE'
       Origin = 'CODE'
       ProviderFlags = []
       ReadOnly = True
       OnChange = qrRatesCODEChange
-      Size = 30
+      Size = 200
     end
     object qrRatesCOUNT: TFloatField
       AutoGenerateValue = arDefault
