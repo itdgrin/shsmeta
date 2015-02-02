@@ -2143,10 +2143,17 @@ begin
   NewID := 0;
 
   // Замена литинских на кирилические
-  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'Ц') then // E кирилическая и латинская
+  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'Ц') or
+    (NewCode[1] = 'T') or (NewCode[1] = 'W') then // E кирилическая и латинская
   begin
     if NewCode[1] = 'E' then
       NewCode[1] := 'Е';
+
+    if NewCode[1] = 'T' then
+      NewCode[1] := 'Е';
+
+    if NewCode[1] = 'W' then
+      NewCode[1] := 'Ц';
 
     qrTemp.Active := False;
     qrTemp.SQL.Clear;
@@ -2193,9 +2200,12 @@ begin
     Exit;
   end;
 
-  if (NewCode[1] = 'М') or (NewCode[1] = 'M') then // M кирилическая и латинская
+  if (NewCode[1] = 'М') or (NewCode[1] = 'M') or (NewCode[1] = 'V') then // M кирилическая и латинская
   begin
     if NewCode[1] = 'M' then
+      NewCode[1] := 'М';
+
+    if NewCode[1] = 'V' then
       NewCode[1] := 'М';
 
     qrTemp.Active := False;

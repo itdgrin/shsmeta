@@ -180,6 +180,7 @@ type
     fUpdateThread : TUpdateThread; //Нить проверки обновлений
     SystemInfoResult: boolean;
     procedure GetSystemInfo;
+    procedure OnUpdate(var Message: TMessage); message WM_SHOW_SPLASH;
   public
     procedure AutoWidthColumn(SG: TStringGrid; Nom: Integer);
   end;
@@ -353,6 +354,18 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
 
+//Уведомление о доступности новых обновлений
+procedure TFormMain.OnUpdate(var Message: TMessage);
+var Resp: TServiceResponse;
+begin
+  Resp := fUpdateThread.Response;
+  try
+    showmessage('ky');
+  finally
+    Resp.Free;
+  end;
+end;
+
 //Загрузка системной информации из smeta.ini и текущей версии приложения
 procedure TFormMain.GetSystemInfo;
 var ini: TIniFile;
@@ -371,34 +384,26 @@ begin
   DebugMode := ini.ReadBool('system', 'debugmode', true);
 
   DM.qrDifferent.Active := false;
-
   DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionref WHERE (execresult > 0)';
   DM.qrDifferent.Active := True;
   if not DM.qrDifferent.Eof then
-    CurVersion.RefDB := DM.qrDifferent.Fields[0].AsInteger;
+    CurVersion.Catalog := DM.qrDifferent.Fields[0].AsInteger;
   DM.qrDifferent.Active := False;
 
   DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionuser WHERE (execresult > 0)';
   DM.qrDifferent.Active := True;
   if not DM.qrDifferent.Eof then
-    CurVersion.UserDB := DM.qrDifferent.Fields[0].AsInteger;
+    CurVersion.User := DM.qrDifferent.Fields[0].AsInteger;
   DM.qrDifferent.Active := False;
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
   CurVersion.App := 0;
-  CurVersion.RefDB := 0;
-  CurVersion.UserDB := 0;
+  CurVersion.Catalog := 0;
+  CurVersion.User := 0;
 
   SystemInfoResult := false;
-  try
-    GetSystemInfo;
-    SystemInfoResult := true;
-  except
-    on e: exception do
-      showmessage('Ошибка инициализации системы: ' + e.Message);
-  end;
 
   CountOpenWindows := 0;
 
@@ -410,6 +415,20 @@ begin
   FormatSettings.DecimalSeparator := '.';
 
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
+end;
+
+procedure TFormMain.FormShow(Sender: TObject);
+begin
+  // FormConnectDatabase.ShowModal;
+
+  try
+    GetSystemInfo;
+    SystemInfoResult := true;
+  except
+    on e: exception do
+      showmessage('Ошибка инициализации системы: ' + e.Message);
+  end;
+
   //Запуск ниточки для мониторигра обновлений
   if SystemInfoResult and not DebugMode then
     fUpdateThread := TUpdateThread.Create(CurVersion, Self.Handle)
@@ -420,6 +439,11 @@ begin
     fUpdateThread := nil;
     ServiceUpdate.Enabled := false;
   end;
+
+  PanelCover.Visible := True;
+
+  if (not Assigned(FormObjectsAndEstimates)) then
+    FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1082,25 +1106,17 @@ procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   WindowsCloseClick(nil);
   DM.Connect.Connected := False;
-{  fUpdateThread.Terminate;
-  fUpdateThread.WaitFor;
-  fUpdateThread.Free;
-  }
+  if Assigned(fUpdateThread) then
+  begin
+    fUpdateThread.Terminate;
+    fUpdateThread.WaitFor;
+    fUpdateThread.Free;
+  end;
 end;
 
 procedure TFormMain.HelpAboutClick(Sender: TObject);
 begin
   FormAbout.ShowModal;
-end;
-
-procedure TFormMain.FormShow(Sender: TObject);
-begin
-  // FormConnectDatabase.ShowModal;
-
-  PanelCover.Visible := True;
-
-  if (not Assigned(FormObjectsAndEstimates)) then
-    FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(Self);
 end;
 
 function ShiftDown: Boolean;
