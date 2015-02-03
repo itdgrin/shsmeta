@@ -670,6 +670,7 @@ procedure TFormMain.DeleteButtonCloseWindow(const CaptionButton: String);
 var
   i, y: Integer;
 begin
+  y := -1;
   for i := 0 to CountOpenWindows - 1 do
     if ButtonsWindows[i].Caption = CaptionButton then
     begin

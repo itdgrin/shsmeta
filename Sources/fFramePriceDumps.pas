@@ -480,13 +480,13 @@ begin
   if ((Key >= #1040) and (Key <= #1103)) or (Key = #1025) or (Key = #1105) or (Key = #32) or
     ((Key >= '0') and (Key <= '9')) or (Key = '-') then
   begin
-    NameColumn := NameVisibleColumns[NumCol]; // Название выделенного столбца
+    NameColumn := string(NameVisibleColumns[NumCol]); // Название выделенного столбца
 
-    StrQuickSearch := StrQuickSearch + Key; // Заносим символ в строку быстрого поиска
+    StrQuickSearch := StrQuickSearch + string(Key); // Заносим символ в строку быстрого поиска
 
-    FrameStatusBar.InsertText(2, StrQuickSearch);
+    FrameStatusBar.InsertText(2, string(StrQuickSearch));
 
-    ReceivingSearch(NameColumn + ' LIKE ''' + StrQuickSearch + '%''');
+    ReceivingSearch(NameColumn + ' LIKE ''' + string(StrQuickSearch) + '%''');
   end
   else if Key = #08 then // Если была нажата клавиша "Backspace"
   begin

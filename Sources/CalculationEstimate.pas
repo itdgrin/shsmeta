@@ -11,7 +11,7 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls,
   CalculationEstimateSSR, CalculationEstimateSummaryCalculations, JvExDBGrids,
-  JvDBGrid, JvDBUltimGrid;
+  JvDBGrid, JvDBUltimGrid, System.UITypes;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -533,23 +533,14 @@ type
     // Цена использования (аренды, работы) механизма
     function GetCoastMechanizm(const vIdMechanizm: Integer): Currency;
 
-    // Расчёт ЭМиМ (эксплуатация машин и механизмов)
-    function CalculationEMiM(const vIdNormativ: string): TTwoValues;
-
     // Расчёт ЗП машиниста (зарплата машиниста)
     procedure CalculationSalaryMachinist; // +++
-
-    // Стоимость
-    procedure CalculationCost; // +++
 
     // Расчёт ОХР и ОПР
     procedure CalculationOXROPR; // +++
 
     // Расчёт План прибыли
     procedure CalculationPlanProfit; // +++
-
-    // Расчёт ОХР и ОПР
-    procedure CalculationCostOXROPR; // +++
 
     // Расчёт зимнего удорожания
     procedure CalculationWinterPrice; // +++
@@ -670,7 +661,6 @@ type
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
-    NameRowCoefDefault: String;
 
     IdObject: Integer;
     IdEstimate: Integer;
@@ -2143,18 +2133,16 @@ begin
   NewID := 0;
 
   // Замена литинских на кирилические
-  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'Ц') or
-    (NewCode[1] = 'T') or (NewCode[1] = 'W') then // E кирилическая и латинская
+  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or (NewCode[1] = 'W') then // E кирилическая и латинская
   begin
-    if NewCode[1] = 'E' then
+    if (NewCode[1] = 'E') or (NewCode[1] = 'T') then
       NewCode[1] := 'Е';
-
-    if NewCode[1] = 'T' then
-      NewCode[1] := 'Е';
-
     if NewCode[1] = 'W' then
       NewCode[1] := 'Ц';
 
+
+    if NewCode[1] = 'W' then
+      NewCode[1] := 'Ц';
     qrTemp.Active := False;
     qrTemp.SQL.Clear;
     qrTemp.SQL.Add('SELECT normativ_id FROM normativg WHERE norm_num = :norm_num;');
@@ -2199,15 +2187,11 @@ begin
     dbgrdRates.EditorMode := True;
     Exit;
   end;
-
   if (NewCode[1] = 'М') or (NewCode[1] = 'M') or (NewCode[1] = 'V') then // M кирилическая и латинская
   begin
-    if NewCode[1] = 'M' then
-      NewCode[1] := 'М';
 
-    if NewCode[1] = 'V' then
+    if (NewCode[1] = 'M') or (NewCode[1] = 'V') then
       NewCode[1] := 'М';
-
     qrTemp.Active := False;
     qrTemp.SQL.Clear;
     qrTemp.SQL.Add('SELECT MECHANIZM_ID FROM mechanizm WHERE MECH_CODE = :CODE;');
@@ -2787,8 +2771,8 @@ procedure TFormCalculationEstimate.GridRatesRowSellect;
 var
   i: Integer;
   vIdNormativ: string;
-  VAT, vClass, Distance, More, Mass, IdDump, Count: Integer;
-  TwoValuesSalary, TwoValuesEMiM: TTwoValues;
+  {VAT, vClass, Distance, More, Mass, IdDump, Count: Integer; }
+  {TwoValuesSalary, TwoValuesEMiM: TTwoValues;}
   CalcPrice: string[2];
   BtnChange: Boolean; // Признак изменения выбраной кнопки
 begin
@@ -3030,9 +3014,6 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefDeleteSetClick(Sender: TObject);
-var
-  ResultDialog: Integer;
-  c, r: Integer;
 begin
   if MessageBox(0, PChar('Вы действительно хотите удалить ' + sLineBreak + 'выделенный набор коэффициентов?'),
     'Смета', MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) <> mrYes then
@@ -3886,15 +3867,9 @@ begin
     end;
   }
 
-  // Стоимость
-  CalculationCost;
-
   CalculationOXROPR;
 
   CalculationPlanProfit;
-
-  // Рассчитываем ОХР и ОПР
-  CalculationCostOXROPR; // +++
 
   // Рассчитываем Зимнее удорожание
   CalculationWinterPrice;
@@ -3967,15 +3942,9 @@ begin
     end;
   }
 
-  // Стоимость
-  CalculationCost;
-
   CalculationOXROPR;
 
   CalculationPlanProfit;
-
-  // Рассчитываем ОХР и ОПР
-  CalculationCostOXROPR; // +++
 
   // Рассчитываем Зимнее удорожание
   CalculationWinterPrice;
@@ -4187,109 +4156,6 @@ begin
   end;
 end;
 
-function TFormCalculationEstimate.CalculationEMiM(const vIdNormativ: string): TTwoValues;
-var
-  IdMechanizm: array of Integer;
-  EMiM, EMiM1: array of Double;
-  CountMechanizm: Integer;
-  i, j: Integer;
-  Res, Res1, NormRas, Count, Coast: Double;
-  TW: TTwoValues;
-begin
-  { try
-    // Получаем все Id механизмов в расценке
-    try
-    with qrTemp do
-    begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT mechanizm_id FROM mechanizmnorm WHERE normativ_id = ' + vIdNormativ + ';');
-    Active := True;
-
-    CountMechanizm := RecordCount;
-    SetLength(IdMechanizm, CountMechanizm);
-
-    i := 0;
-    First;
-
-    while not Eof do
-    begin
-    IdMechanizm[i] := FieldByName('mechanizm_id').AsVariant;
-    // Заносим их в массив
-    Inc(i);
-    Next;
-    end;
-    end;
-    except
-    on E: Exception do
-    MessageBox(0, PChar('При получении Id механизмов возникла ошибка:' + sLineBreak + sLineBreak +
-    E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
-
-    // Выделяем память
-    SetLength(EMiM, CountMechanizm);
-    SetLength(EMiM1, CountMechanizm);
-
-    Res := 0;
-    Res1 := 0;
-
-    // Количество из ЛЕВОЙ таблицы
-    Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
-
-    for i := 0 to CountMechanizm - 1 do
-    begin
-    NormRas := GetNormMechanizm(vIdNormativ, IntToStr(IdMechanizm[i]));
-
-    EMiM[i] := Count * NormRas; // Кол-во * норма расхода
-    EMiM1[i] := NormRas; // 1 * норма расхода
-
-    // Умножение на столбец коэффициентов (МР)
-    for j := 1 to CountCoef + 1 do
-    with StringGridCalculations do
-    begin
-    EMiM[i] := EMiM[i] * MyStrToFloat(Cells[5, j]);
-    EMiM1[i] := EMiM1[i] * MyStrToFloat(Cells[5, j]);
-    end;
-
-    with StringGridMechanizms do
-    if Cells[8, i + 1] = '' then
-    Coast := GetCoastMechanizm(IdMechanizm[i])
-    else
-    Coast := MyStrToFloat(Cells[8, i + 1]);
-
-    // Что получилось умножаем на справочную цену
-    EMiM[i] := EMiM[i] * Coast;
-    EMiM1[i] := EMiM1[i] * Coast;
-    end;
-
-    // -----------------------------------------
-
-    if CountMechanizm > 1 then
-    begin
-    Res := EMiM[0];
-    Res1 := EMiM1[0];
-
-    for i := 1 to CountMechanizm - 1 do
-    begin
-    Res := Res + EMiM[i];
-    Res1 := Res1 + EMiM1[i];
-    end;
-    end;
-
-    // -----------------------------------------
-
-    TW.ForOne := RoundTo(Res1, PS.RoundTo * -1);
-    TW.ForCount := RoundTo(Res, PS.RoundTo * -1);
-
-    Result := TW;
-    except
-    on E: Exception do
-    MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[3,
-    0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-    MB_ICONERROR + MB_OK + mb_TaskModal);
-    end; }
-end;
-
 procedure TFormCalculationEstimate.CalculationSalaryMachinist;
 var
   CountMechanizm: Integer;
@@ -4355,27 +4221,6 @@ begin
     except
     on E: Exception do
     MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[4,
-    0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-    MB_ICONERROR + MB_OK + mb_TaskModal);
-    end; }
-end;
-
-procedure TFormCalculationEstimate.CalculationCost;
-begin
-  { try
-    with StringGridCalculations do
-    begin
-    Cells[7, CountCoef + 2] :=
-    MyFloatToStr(RoundTo(MyStrToFloat(Cells[2, CountCoef + 2]) + MyStrToCurr(Cells[3, CountCoef + 2]) +
-    MyStrToCurr(Cells[5, CountCoef + 2]) + MyStrToCurr(Cells[6, CountCoef + 2]), PS.RoundTo * -1));
-
-    Cells[7, CountCoef + 3] :=
-    MyFloatToStr(RoundTo(MyStrToFloat(Cells[2, CountCoef + 3]) + MyStrToCurr(Cells[3, CountCoef + 3]) +
-    MyStrToCurr(Cells[5, CountCoef + 3]) + MyStrToCurr(Cells[6, CountCoef + 3]), PS.RoundTo * -1));
-    end;
-    except
-    on E: Exception do
-    MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[7,
     0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
     MB_ICONERROR + MB_OK + mb_TaskModal);
     end; }
@@ -4452,67 +4297,6 @@ begin
     end; }
 end;
 
-procedure TFormCalculationEstimate.CalculationCostOXROPR;
-var
-  OXROPR, PlanProfit: Currency;
-  i: Integer;
-  Str: string;
-begin
-  { try
-    OXROPR := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]); // ЗП
-    OXROPR := OXROPR / MyStrToCurr(StringGridCalculations.Cells[8, CountCoef + 1]); // ЗП / Кф по приказам
-    OXROPR := OXROPR + MyStrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]);
-    // (ЗП / Кф по приказам) + ЗП маш.
-
-    PlanProfit := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 2]);
-    // ЗП
-    PlanProfit := PlanProfit / MyStrToFloat(StringGridCalculations.Cells[8, CountCoef + 1]);
-    // ЗП / Кф по приказам
-    PlanProfit := PlanProfit + MyStrToFloat(StringGridCalculations.Cells[4, CountCoef + 2]);
-    // (ЗП / Кф по приказам) + ЗП маш.
-
-    // -----------------------------------------
-
-    // Умножение на столбец коэффициентов (ОХР и ОПР)
-    try
-    with StringGridCalculations do
-    begin
-    for i := 1 to CountCoef + 1 do
-    begin
-    OXROPR := OXROPR * MyStrToCurr(Cells[8, i]);
-    PlanProfit := PlanProfit * MyStrToCurr(Cells[8, i]);
-    end;
-
-    Str := Cells[8, CountCoef + 2];
-    if Str = '' then
-    Str := '0';
-
-    // Делим на 100, так как умножаем на %
-    OXROPR := OXROPR * MyStrToCurr(Str) / 100;
-    PlanProfit := PlanProfit * MyStrToCurr(Str) / 100;
-    end;
-    except
-    on E: Exception do
-    MessageBox(0, PChar('При получении числа из нижней таблицы возникла ошибка:' + sLineBreak + sLineBreak
-    + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
-
-    // -----------------------------------------
-
-    // Вставляем данные в НИЖНЮЮ таблицу в колонку (Ст. с ОХР и ОПР)
-    with StringGridCalculations do
-    begin
-    Cells[10, CountCoef + 3] := MyCurrToStr(RoundTo(OXROPR, PS.RoundTo * -1));
-    Cells[10, CountCoef + 2] := MyCurrToStr(RoundTo(PlanProfit, PS.RoundTo * -1));;
-    end;
-    except
-    on E: Exception do
-    MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[10,
-    0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-    MB_ICONERROR + MB_OK + mb_TaskModal);
-    end; }
-end;
-
 procedure TFormCalculationEstimate.CalculationWinterPrice;
 var
   WinterPrice: Currency;
@@ -4537,8 +4321,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.CalculationSalaryWinterPrice;
-var
-  SalaryWinterPrice: Currency;
+{var
+  SalaryWinterPrice: Currency; }
 begin
   { try
     SalaryWinterPrice := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]); // ЗП
@@ -4560,8 +4344,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.CalculationWork;
-var
-  Work: Currency;
+{var
+  Work: Currency; }
 begin
   { try
     Work := MyStrToCurr(StringGridCalculations.Cells[11, CountCoef + 2]); // Труд
@@ -5043,6 +4827,7 @@ end;
 function TFormCalculationEstimate.GetCoastMechanizm(const vIdMechanizm: Integer): Currency;
 begin
   // Цена использования (аренды, работы) механизма
+  Result := 0;
   try
     with qrTemp do
     begin
@@ -5132,7 +4917,7 @@ end;
 // Заполнение таблицы расценок
 procedure TFormCalculationEstimate.OutputDataToTable(aRecNo: Integer);
 var
-  FieldRates: TFieldRates;
+  {FieldRates: TFieldRates;}
   i: Integer;
   Str: string;
   Count: Integer;
@@ -5229,14 +5014,14 @@ begin
 end;
 
 procedure TFormCalculationEstimate.CopyEstimate;
-var
+{var
   sm_type, obj_id, name_estimate, date, sm_number, chapter, row_number, preparer, post_preparer, examiner,
     post_examiner, set_drawings, stavka_id, COEF_TR_ZATR, coef_tr_obor, k40, k41, k31, k32, k33, k34, NDS,
     dump_id: Variant;
 
   i, LastId: Integer;
   sIdEstimate, sNumberRow, sNumberNorm, sCountNorm, sUnitName, sDescription, sTypeData, sIdNorm,
-    sDistanceCount, sClassMass: string;
+    sDistanceCount, sClassMass: string; }
 begin
   { with FormSaveEstimate do
     begin
@@ -5423,7 +5208,7 @@ end;
 
 procedure TFormCalculationEstimate.ShowFormAdditionData(const vDataBase: Char);
 var
-  FormTop, FormLeft, BorderTop, BorderLeft: Integer;
+  {FormTop,} FormLeft, {BorderTop,} BorderLeft: Integer;
 begin
   if (Assigned(FormAdditionData)) then
   begin
