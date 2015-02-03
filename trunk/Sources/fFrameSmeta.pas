@@ -13,13 +13,12 @@ type
   public
     procedure ReceivingAll; Virtual; Abstract;
     property Loaded: boolean read fLoaded;
-    constructor Create(AOwner: TComponent) ;
+    constructor Create(AOwner: TComponent); override;
   end;
 
 implementation
 
 {$R *.dfm}
-
 { TSmetaFrame }
 
 constructor TSmetaFrame.Create(AOwner: TComponent);

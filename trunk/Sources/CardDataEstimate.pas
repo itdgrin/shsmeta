@@ -216,6 +216,7 @@ procedure TFormCardDataEstimate.StringGridDrawCell(Sender: TObject; ACol, ARow: 
 var
   TL: Integer;
 begin
+  TL := 0;
   // Так как свойство таблицы DefaultDrawing отключено (иначе ячейка таблицы будет обведена пунктирной линией)
   // необходимо самому прорисовывать шапку и все строки таблицы
   with (Sender as TStringGrid) do

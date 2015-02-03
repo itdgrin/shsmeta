@@ -52,7 +52,7 @@ type
     procedure TreeViewChanging(Sender: TObject; Node: TTreeNode; var AllowChange: Boolean);
   public
      procedure ReceivingAll; override;
-     constructor Create(AOwner: TComponent);
+     constructor Create(AOwner: TComponent); override;
   end;
 
 implementation

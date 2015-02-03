@@ -324,9 +324,8 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 function TFormCardPTM.GetIdPart(): Integer;
-var
-  i: Integer;
 begin
+  Result := 0;
   try
     with ADOQueryTemp do
     begin
@@ -335,9 +334,8 @@ begin
       SQL.Add('SELECT id FROM parts_estimates ORDER BY code, name LIMIT ' + IntToStr(ComboBoxPart.ItemIndex)
         + ', 1;');
       Active := True;
-      i := FieldByName('id').AsInteger;
+      Result := FieldByName('id').AsInteger;
       Active := False;
-      Result := i;
     end;
   except
     on E: Exception do
@@ -349,9 +347,8 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 function TFormCardPTM.GetIdSection(): Integer;
-var
-  i: Integer;
 begin
+  Result := 0;
   try
     with ADOQueryTemp do
     begin
@@ -360,9 +357,8 @@ begin
       SQL.Add('SELECT id FROM sections_estimates ORDER BY code, name LIMIT ' +
         IntToStr(ComboBoxSection.ItemIndex) + ', 1;');
       Active := True;
-      i := FieldByName('id').AsInteger;
+      Result := FieldByName('id').AsInteger;
       Active := False;
-      Result := i;
     end;
   except
     on E: Exception do
@@ -374,9 +370,8 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 function TFormCardPTM.GetIdTypeWork(): Integer;
-var
-  i: Integer;
 begin
+  Result := 0;
   try
     with ADOQueryTemp do
     begin
@@ -385,9 +380,8 @@ begin
       SQL.Add('SELECT id FROM types_works ORDER BY code, name LIMIT ' + IntToStr(ComboBoxTypeWork.ItemIndex)
         + ', 1;');
       Active := True;
-      i := FieldByName('id').AsInteger;
+      Result := FieldByName('id').AsInteger;
       Active := False;
-      Result := i;
     end;
   except
     on E: Exception do

@@ -10,7 +10,7 @@ uses
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -70,11 +70,11 @@ type
     procedure ComboBoxMonthChange(Sender: TObject);
 
   private
-    StrQuickSearch: String[20];
+    StrQuickSearch: String;
     NomColumn: Integer;
   public
     procedure ReceivingAll; override;
-    constructor Create(AOwner: TComponent);
+    constructor Create(AOwner: TComponent); override;
   end;
 
 implementation

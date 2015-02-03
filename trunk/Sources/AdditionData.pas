@@ -17,7 +17,7 @@ type
     SpeedButtonMechanizm: TSpeedButton;
     SpeedButtonEquipment: TSpeedButton;
 
-    constructor Create(AOwner: TComponent; const vDataBase: Char);
+    constructor Create(AOwner: TComponent; const vDataBase: Char); reintroduce;
 
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);

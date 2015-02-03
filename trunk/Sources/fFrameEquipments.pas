@@ -10,7 +10,7 @@ uses
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -60,19 +60,19 @@ type
     procedure VSTEnter(Sender: TObject);
     procedure VSTExit(Sender: TObject);
     procedure VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
-    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
-      var CellText: string);
+    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: string);
     procedure VSTKeyPress(Sender: TObject; var Key: Char);
 
   private
-    StrQuickSearch: String[20];
+    StrQuickSearch: String;
     NomColumn: Integer;
 
     DataBase: Char; // Справочные или собственные данные
     AllowAddition: Boolean; // Разрешено/запрещено добавлять записи из фрейма
   public
     procedure ReceivingAll; override;
-    constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean);
+    constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean); reintroduce;
   end;
 
 implementation
@@ -86,7 +86,7 @@ const
   CaptionFrame = 'Фрейм «Оборудования»';
 
   // Массив содержащий названия всех видимых столбцов таблицы
-  NameVisibleColumns: array [1 .. 2] of String[12] = ('device_code1', 'name');
+  NameVisibleColumns: array [1 .. 2] of String = ('device_code1', 'name');
 
   // ---------------------------------------------------------------------------------------------------------------------
 
@@ -136,21 +136,21 @@ var
   WhereStr: string;
   StrQuery: string;
 begin
-  if vStr <> '' then WhereStr := ' and ' + vStr
-  else vStr := '';
+  if vStr <> '' then
+    WhereStr := ' and ' + vStr
+  else
+    vStr := '';
 
-  StrQuery :=
-    'SELECT id as "Idd", device_id as "Id", device_code1 as "Code", ' +
-    'name as "Name", units.unit_name as "Unit" FROM devices, units ' +
-    'WHERE (devices.unit = units.unit_id)' + WhereStr +
-    ' ORDER BY device_code1, name ASC';
+  StrQuery := 'SELECT id as "Idd", device_id as "Id", device_code1 as "Code", ' +
+    'name as "Name", units.unit_name as "Unit" FROM devices, units ' + 'WHERE (devices.unit = units.unit_id)'
+    + WhereStr + ' ORDER BY device_code1, name ASC';
 
   with ADOQuery do
   begin
     Active := False;
     SQL.Clear;
     SQL.Add(StrQuery);
-    Active := True;
+    Active := true;
   end;
 
   ADOQuery.FetchOptions.RecordCountMode := cmTotal;
@@ -166,7 +166,7 @@ begin
   begin
     VST.RootNodeCount := ADOQuery.RecordCount;
 
-    VST.Selected[VST.GetFirst] := True;
+    VST.Selected[VST.GetFirst] := true;
     VST.FocusedNode := VST.GetFirst;
 
     FrameStatusBar.InsertText(1, '1');
@@ -192,14 +192,16 @@ begin
   with (Sender as TEdit) do
     if (Key = #13) and (Text <> '') then // Если нажата клавиша "Enter" и строка поиска не пуста
       ReceivingSearch(FilteredString(Text, 'Name'))
-    else if (Key = #27) or ((Key = #13) and (Text = '')) then // Нажата клавиша ESC, или Enter и строка поиска пуста
+    else if (Key = #27) or ((Key = #13) and (Text = '')) then
+    // Нажата клавиша ESC, или Enter и строка поиска пуста
     begin
       Text := '';
       ReceivingSearch('');
     end;
 
-  //Антибип
-  if key = #13 then key := #0;
+  // Антибип
+  if Key = #13 then
+    Key := #0;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -282,8 +284,8 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameEquipment.VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-  Column: TColumnIndex; CellRect: TRect);
+procedure TFrameEquipment.VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas;
+  Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
 var
   CellText: string;
 begin
@@ -306,8 +308,9 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameEquipment.VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-  Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
+procedure TFrameEquipment.VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas;
+  Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect;
+  var ContentRect: TRect);
 begin
   VSTBeforeCellPaintDefault(Sender, TargetCanvas, Node, Column, CellPaintMode, CellRect, ContentRect);
 end;
@@ -316,7 +319,7 @@ end;
 
 procedure TFrameEquipment.VSTDblClick(Sender: TObject);
 begin
-  //Если разрешено добавлять данные из фрейма
+  // Если разрешено добавлять данные из фрейма
   if AllowAddition then
     FormCalculationEstimate.AddDevice(ADOQuery.FieldByName('Id').AsInteger);
 end;
@@ -372,8 +375,8 @@ begin
 
   // Выводим название в Memo под таблицей
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node))
-  then Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node)) then
+    Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
   Memo.Text := ADOQuery.FieldByName('Name').AsVariant;

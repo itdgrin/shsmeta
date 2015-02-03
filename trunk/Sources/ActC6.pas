@@ -8,7 +8,7 @@ uses
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 

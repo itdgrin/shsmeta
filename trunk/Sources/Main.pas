@@ -153,8 +153,6 @@ type
     procedure ReadSettingsFromFile(PathFile: String);
     procedure WriteSettingsToFile(PathFile: String);
     procedure FileSaveAsClick(Sender: TObject);
-
-    function FormsMaximize(): Boolean;
     procedure HRRReferenceDataClick(Sender: TObject);
     procedure HRROwnDataClick(Sender: TObject);
     procedure HRRPricesReferenceDataClick(Sender: TObject);
@@ -1258,11 +1256,6 @@ begin
 
     ColWidths[Nom] := CalcWidth;
   end;
-end;
-
-function TFormMain.FormsMaximize(): Boolean;
-begin
-  // Result := bFormsMaximize;
 end;
 
 function MyFloatToStr(Value: Extended): string;

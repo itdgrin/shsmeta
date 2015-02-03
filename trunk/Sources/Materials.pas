@@ -9,7 +9,7 @@ type
   TFormMaterials = class(TForm)
 
     constructor Create(AOwner: TComponent; const vDataBase: Char;
-      const vPriceColumn, vAllowAddition, vAllowReplacement: Boolean); overload;
+      const vPriceColumn, vAllowAddition, vAllowReplacement: Boolean); reintroduce;
 
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);

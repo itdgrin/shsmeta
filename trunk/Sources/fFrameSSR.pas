@@ -3,14 +3,15 @@ unit fFrameSSR;
 interface
 
 uses
-  Windows, SysUtils, Classes, Controls, Forms, Variants, StdCtrls, Grids, Buttons, ExtCtrls, DB, Menus, Clipbrd,
+  Windows, SysUtils, Classes, Controls, Forms, Variants, StdCtrls, Grids, Buttons, ExtCtrls, DB, Menus,
+  Clipbrd,
   Graphics, fFrameStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, fFrameSmeta;
+  FireDAC.Comp.Client, fFrameSmeta, System.UITypes;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -84,13 +85,13 @@ type
 
   private
     StrQuery: String; // Для формирования строки запроса к БД
-    StrQuickSearch: String[20];
+    StrQuickSearch: String;
     NomColumn: Integer;
 
     AllowUseFilter: Boolean; // Блокировка фильтрации в ADOQuery
   public
-     procedure ReceivingAll; override;
-     constructor Create(AOwner: TComponent);
+    procedure ReceivingAll; override;
+    constructor Create(AOwner: TComponent); override;
   end;
 
 implementation
@@ -104,7 +105,7 @@ const
   CaptionFrame = 'Фрейм «Справочники ССР»';
 
   // Массив содержащий названия всех видимых столбцов таблицы
-  NameVisibleColumns: array [1 .. 2] of String[20] = ('Code', 'Name');
+  NameVisibleColumns: array [1 .. 2] of String = ('Code', 'Name');
 
   // ---------------------------------------------------------------------------------------------------------------------
 
@@ -206,9 +207,8 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameSSR.ReceivingAll;
-var
-  NameTable: string;
-
+{ var
+  NameTable: string; }
 begin
   StrQuickSearch := '';
 
@@ -232,7 +232,7 @@ begin
   StringGrid.Align := alClient;
   StringGrid.Visible := True;
 
-  fLoaded := true;
+  fLoaded := True;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -330,7 +330,7 @@ begin
     SG.RowCount := AQ.RecordCount + 1;
 
     AQ.First;
-
+    nom := 0;
     with AQ do
       while not Eof do
       begin
@@ -513,8 +513,8 @@ begin
     ComboBox.ItemIndex := 0;
   except
     on E: Exception do
-      MessageBox(0, PChar('При заполнении выпадающего списка возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
-        CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При заполнении выпадающего списка возникла ошибка:' + sLineBreak + sLineBreak +
+        E.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -621,7 +621,8 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameSSR.StringGrid2DrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
+procedure TFrameSSR.StringGrid2DrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
+  State: TGridDrawState);
 begin
   StringGridDrawCellDefault(Sender, ACol, ARow, Rect, State);
 end;
@@ -691,7 +692,8 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameSSR.StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
+procedure TFrameSSR.StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
+  State: TGridDrawState);
 var
   WT: Integer;
 begin
@@ -745,7 +747,8 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameSSR.StringGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TFrameSSR.StringGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
+  X, Y: Integer);
 begin
   (Sender as TStringGrid).Repaint;
 end;

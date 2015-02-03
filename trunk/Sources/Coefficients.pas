@@ -123,7 +123,7 @@ procedure TFormCoefficients.FillingTable;
 var
   i: Integer;
   StrQuery: String;
-  CoefValue: Double;
+  { CoefValue: Double; }
 begin
   with ADOQueryTable, DataSourceTable, StringGridTable do
   begin

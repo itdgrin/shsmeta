@@ -19,7 +19,7 @@ type
     SpeedButtonPriceDumps: TSpeedButton;
     SpeedButtonIndex: TSpeedButton;
 
-    constructor Create(AOwner: TComponent; const vDataBase: Char; const vPriceColumn: Boolean);
+    constructor Create(AOwner: TComponent; const vDataBase: Char; const vPriceColumn: Boolean); reintroduce;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);

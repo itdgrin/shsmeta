@@ -11,7 +11,7 @@ uses
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -77,7 +77,7 @@ type
     procedure ComboBoxMonthYearChange(Sender: TObject);
 
   private
-    StrQuickSearch: String[20];
+    StrQuickSearch: String;
     NomColumn: Integer;
 
     DataBase: Char; // Справочные или собственные данные
@@ -88,7 +88,7 @@ type
   public
     procedure ReceivingAll; override;
     constructor Create(AOwner: TComponent; const vDataBase: Char;
-      const vPriceColumn, vAllowAddition: Boolean);
+      const vPriceColumn, vAllowAddition: Boolean); reintroduce;
   end;
 
 implementation
@@ -102,7 +102,7 @@ const
   CaptionFrame = 'Фрейм «Цены на механизмы»';
 
   // Массив содержащий названия всех видимых столбцов таблицы
-  NameVisibleColumns: array [1 .. 2] of String[9] = ('mech_code', 'mech_name');
+  NameVisibleColumns: array [1 .. 2] of String = ('mech_code', 'mech_name');
 
   // ---------------------------------------------------------------------------------------------------------------------
 
@@ -169,7 +169,7 @@ end;
 
 procedure TFramePriceMechanizm.ReceivingAll;
 var
-  StrQuery: string;
+  { StrQuery: string; }
   Year, Month, Day: Word;
 begin
   StrQuickSearch := '';
@@ -206,7 +206,7 @@ begin
       end;
 
       StrFilterData := 'year = ' + ComboBoxYear.Text + ' and monat = ' +
-            IntToStr(ComboBoxMonth.ItemIndex + 1);
+        IntToStr(ComboBoxMonth.ItemIndex + 1);
     end;
 
     ReceivingSearch('');
@@ -215,7 +215,7 @@ begin
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
         CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-  fLoaded := true;
+  fLoaded := True;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -234,24 +234,22 @@ begin
 
   if FilterStr <> '' then
     WhereStr := ' and ' + FilterStr
-  else WhereStr := '';
+  else
+    WhereStr := '';
 
   try
     if PriceColumn then
-      StrQuery :=
-        'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
+      StrQuery := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
         'cast(mech_name as char(1024)) as "Name", unit_name as "Unit", ' +
-        'coast1 "PriceVAT", coast2 as "PriceNotVAT", monat, year ' +
-        'FROM mechanizm, units, mechanizmcoast' + DataBase +
-        ' WHERE (mechanizm.unit_id = units.unit_id) and ' +
-        '(mechanizm.mechanizm_id = mechanizmcoast' + DataBase + '.mechanizm_id)' +
-        WhereStr + ' ORDER BY mech_code, mech_name ASC' + ';'
+        'coast1 "PriceVAT", coast2 as "PriceNotVAT", monat, year ' + 'FROM mechanizm, units, mechanizmcoast' +
+        DataBase + ' WHERE (mechanizm.unit_id = units.unit_id) and ' +
+        '(mechanizm.mechanizm_id = mechanizmcoast' + DataBase + '.mechanizm_id)' + WhereStr +
+        ' ORDER BY mech_code, mech_name ASC' + ';'
     else
-      StrQuery :=
-        'SELECT mechanizm_id as "Id", mech_code as "Code", ' +
+      StrQuery := 'SELECT mechanizm_id as "Id", mech_code as "Code", ' +
         'cast(mech_name as char(1024)) as "Name", unit_name as "Unit" ' +
-        'FROM mechanizm, units WHERE (mechanizm.unit_id = units.unit_id)' +
-        WhereStr + ' ORDER BY mech_code, mech_name ASC;';
+        'FROM mechanizm, units WHERE (mechanizm.unit_id = units.unit_id)' + WhereStr +
+        ' ORDER BY mech_code, mech_name ASC;';
 
     with ADOQuery do
     begin
@@ -312,8 +310,9 @@ begin
       ReceivingSearch('');
     end;
 
-  //Антибип
-  if key = #13 then key := #0;
+  // Антибип
+  if Key = #13 then
+    Key := #0;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -506,8 +505,8 @@ begin
 
   // Выводим название в Memo под таблицей
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node))
-  then Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node)) then
+    Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
   Memo.Text := ADOQuery.FieldByName('Name').AsVariant;
