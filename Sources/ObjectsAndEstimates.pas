@@ -6,11 +6,11 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Grids, Menus,
   DB, DBGrids, StdCtrls, ComCtrls, VirtualTrees, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -536,7 +536,7 @@ end;
 procedure TFormObjectsAndEstimates.CheckBoxColumnsClick(Sender: TObject);
 var
   Nom: Integer;
-  Visual: Boolean;
+  { Visual: Boolean; }
 begin
   with (Sender as TCheckBox) do
   begin
@@ -546,8 +546,8 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.TreeViewChange(Sender: TObject; Node: TTreeNode);
-var
-  i: Integer;
+{ var
+  i: Integer; }
 begin
   IdEstimate := Integer(TreeView.Selected.Data);
 
@@ -856,8 +856,8 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.FillingTableObjects;
-var
-  i: Integer;
+{var
+  i: Integer;}
 begin
   try
     CloseOpen(qrObjects);
@@ -922,8 +922,8 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.PopupMenuEstimatesAddClick(Sender: TObject);
-var
-  Node: TTreeNode;
+{var
+  Node: TTreeNode;}
 begin
   // (Sender as TMenuItem).Tag - Устанавливаем тип сметы (1-локальная, 2-объектная, 3-ПТМ)
   FormCardEstimate.ShowForm(IdObject, IdEstimate, (Sender as TMenuItem).Tag, TreeView);
@@ -936,7 +936,7 @@ end;
 
 procedure TFormObjectsAndEstimates.PMEstimatesDeleteClick(Sender: TObject);
 var
-  NumberEstimate, StrIdEstimate, StrIdRates, TextWarning: String;
+  NumberEstimate, {StrIdEstimate, StrIdRates,} TextWarning: String;
 begin
   NumberEstimate := GetNumberEstimate;
 
@@ -984,8 +984,9 @@ begin
   begin
     qrTmp.Active := False;
 
-    qrTmp.SQL.Text := 'SELECT sm_id as "IdEstimate", obj_id as "IdObject", smetasourcedata.name as "NameEstimate", '
-      + 'sm_number as "NumberEstimate", preparer as "Compose", post_preparer as "PostCompose", examiner as "Checked", '
+    qrTmp.SQL.Text :=
+      'SELECT sm_id as "IdEstimate", obj_id as "IdObject", smetasourcedata.name as "NameEstimate", ' +
+      'sm_number as "NumberEstimate", preparer as "Compose", post_preparer as "PostCompose", examiner as "Checked", '
       + 'post_examiner as "PostChecked", set_drawings as "SetDrawing", chapter as "NumberChapter", ' +
       'row_number as "NumberRow" FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate);
     qrTmp.Active := True;
@@ -1045,8 +1046,8 @@ end;
 
 procedure TFormObjectsAndEstimates.StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
   State: TGridDrawState);
-var
-  i: Integer;
+{var
+  i: Integer;}
 begin
   // Так как свойство таблицы DefaultDrawing отключено (иначе ячейка таблицы будет обведена пунктирной линией)
   // необходимо самому прорисовывать шапку и все строки таблицы

@@ -277,10 +277,10 @@ begin
     // Открываем файл настроек и получаем количество столбцов
     IFile := OpenFileSettingsAndGetCountColumns;
 
-   { if Value then
+    { if Value then
       FormCalculationEstimate.StringGridRates.ColWidths[Nom - 1] :=
-        IFile.ReadInteger(NameTable, ColumnWidth + IntToStr(Nom), 100)
-    else
+      IFile.ReadInteger(NameTable, ColumnWidth + IntToStr(Nom), 100)
+      else
       FormCalculationEstimate.StringGridRates.ColWidths[Nom - 1] := -1;
     }
     IFile.WriteBool(NameTable, ColumnVisible + IntToStr(Nom), Value);
@@ -304,7 +304,7 @@ begin
     begin
       (FindComponent('CheckBoxSGL' + IntToStr(i)) as TCheckBox).Checked := True;
 
-     { FormCalculationEstimate.StringGridRates.ColWidths[i - 1] :=
+      { FormCalculationEstimate.StringGridRates.ColWidths[i - 1] :=
         IFile.ReadInteger(NameTable, ColumnWidth + IntToStr(i), 100);
       }
       IFile.WriteBool(NameTable, ColumnVisible + IntToStr(i), True);
@@ -327,7 +327,7 @@ begin
     for i := 1 to CountColumns do
     begin
       (FindComponent('CheckBoxSGL' + IntToStr(i)) as TCheckBox).Checked := False;
-     // FormCalculationEstimate.StringGridRates.ColWidths[i - 1] := -1;
+      // FormCalculationEstimate.StringGridRates.ColWidths[i - 1] := -1;
       IFile.WriteBool(NameTable, ColumnVisible + IntToStr(i), False);
     end;
 
@@ -338,10 +338,10 @@ end;
 
 procedure TFormColumns.ButtonSGLDefaultClick(Sender: TObject);
 var
-  i: Integer;
+  { i: Integer; }
   Path: String;
   IDefaultFile, IFile: TIniFile;
-  ColWidth: Integer;
+  { ColWidth: Integer; }
 begin
   try
     // Получаем путь до файла
@@ -358,24 +358,24 @@ begin
     // Открываем файл
     IFile := TIniFile.Create(Path);
 
-   { for i := 1 to CountColumns do
+    { for i := 1 to CountColumns do
       with (FindComponent('CheckBoxSGL' + IntToStr(i)) as TCheckBox), IDefaultFile,
-        FormCalculationEstimate.StringGridRates do
+      FormCalculationEstimate.StringGridRates do
       begin
-        ColWidth := IDefaultFile.ReadInteger(NameTable, ColumnWidth + IntToStr(i), 100);
-        IFile.WriteInteger(NameTable, ColumnWidth + IntToStr(i), ColWidth);
+      ColWidth := IDefaultFile.ReadInteger(NameTable, ColumnWidth + IntToStr(i), 100);
+      IFile.WriteInteger(NameTable, ColumnWidth + IntToStr(i), ColWidth);
 
-        Caption := ReadString(NameTable, ColumnName + IntToStr(i), 'Нет названия!');
-        IFile.WriteString(NameTable, ColumnName + IntToStr(i), Caption);
-        Cells[i - 1, 0] := Caption;
+      Caption := ReadString(NameTable, ColumnName + IntToStr(i), 'Нет названия!');
+      IFile.WriteString(NameTable, ColumnName + IntToStr(i), Caption);
+      Cells[i - 1, 0] := Caption;
 
-        Checked := ReadBool(NameTable, ColumnVisible + IntToStr(i), True);
-        IFile.WriteBool(NameTable, ColumnVisible + IntToStr(i), Checked);
+      Checked := ReadBool(NameTable, ColumnVisible + IntToStr(i), True);
+      IFile.WriteBool(NameTable, ColumnVisible + IntToStr(i), Checked);
 
-        if Checked then
-          ColWidths[i - 1] := ColWidth
-        else
-          ColWidths[i - 1] := -1;
+      if Checked then
+      ColWidths[i - 1] := ColWidth
+      else
+      ColWidths[i - 1] := -1;
       end;
     }
   finally
@@ -389,7 +389,7 @@ end;
 procedure TFormColumns.SettingsCheckBoxSGR;
 var
   i: Integer;
-  NameColumn: String;
+  { NameColumn: String; }
   IFile: TIniFile;
 begin
   try
@@ -459,8 +459,8 @@ begin
     begin
       (FindComponent('CheckBoxSGR' + IntToStr(i)) as TCheckBox).Checked := True;
 
-     // with FormCalculationEstimate.StringGridMaterials, IFile do
-     //   ColWidths[i - 1] := ReadInteger(NameTable, ColumnWidth + IntToStr(i), 100);
+      // with FormCalculationEstimate.StringGridMaterials, IFile do
+      // ColWidths[i - 1] := ReadInteger(NameTable, ColumnWidth + IntToStr(i), 100);
     end;
 
   finally
@@ -480,7 +480,7 @@ begin
     for i := 1 to CountColumns do
     begin
       (FindComponent('CheckBoxSGR' + IntToStr(i)) as TCheckBox).Checked := False;
-     // FormCalculationEstimate.StringGridMaterials.ColWidths[i - 1] := -1;
+      // FormCalculationEstimate.StringGridMaterials.ColWidths[i - 1] := -1;
     end;
 
   finally
@@ -573,7 +573,7 @@ begin
       with FormCalculationEstimate.dbgrdCalculations, IFile do
         Columns[Nom - 1].Width := ReadInteger(NameTable, ColumnWidth + IntToStr(Nom), 100)
     else
-      FormCalculationEstimate.dbgrdCalculations.Columns[Nom - 1].Width  := -1;
+      FormCalculationEstimate.dbgrdCalculations.Columns[Nom - 1].Width := -1;
 
     IFile.WriteBool(NameTable, ColumnVisible + IntToStr(Nom), Value);
     (FindComponent('CheckBoxSGC' + IntToStr(Nom)) as TCheckBox).Checked := Value;

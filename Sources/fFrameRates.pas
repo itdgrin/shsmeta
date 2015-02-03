@@ -4,14 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, Buttons,
-  DBGrids, Grids,
+  DBGrids, Grids, System.UITypes,
   ExtCtrls, DB, VirtualTrees, fFrameStatusBar, Menus, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -137,7 +137,7 @@ type
   private
     StrQuery: String; // Для формирования строки запроса к БД
 
-    StrQuickSearch: String[20];
+    { StrQuickSearch: String[20]; }
 
     DataBase: Char; // Справочные или собственные данные
     AllowAddition: Boolean; // Разрешено/запрещено добавлять записи из фрейма
@@ -145,7 +145,7 @@ type
     Group1, Group2, Group3, Group4: Integer;
   public
     procedure ReceivingAll; override;
-    constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean) ;
+    constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean); reintroduce;
 
   end;
 
@@ -375,8 +375,8 @@ begin
     else
     begin
       Tag := 1;
-      PanelRight.Visible := True;
-      SplitterRight.Visible := True;
+      PanelRight.Visible := true;
+      SplitterRight.Visible := true;
       SpeedButtonShowHideRightPanel.Hint := 'Свернуть панель';
       DM.ImageListArrowsRight.GetBitmap(0, SpeedButtonShowHideRightPanel.Glyph);
     end;
@@ -510,7 +510,7 @@ end;
 
 procedure TFrameRates.VSTDblClick(Sender: TObject);
 begin
-  //Если разрешено добавлять данные из фрейма
+  // Если разрешено добавлять данные из фрейма
   if AllowAddition then
     FormCalculationEstimate.AddRate(ADOQueryNormativ.FieldByName('IdNormative').AsInteger);
 end;
@@ -518,7 +518,7 @@ end;
 procedure TFrameRates.VSTEnter(Sender: TObject);
 begin
   FrameStatusBar.InsertText(2, '-1'); // Поиск по столбцу есть
-  //R EditRate.Text := '';
+  // R EditRate.Text := '';
 
   // ----------------------------------------
 
@@ -529,7 +529,7 @@ end;
 procedure TFrameRates.VSTExit(Sender: TObject);
 begin
   FrameStatusBar.InsertText(2, '');
-  //R EditRate.Text := '';
+  // R EditRate.Text := '';
 end;
 
 procedure TFrameRates.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
@@ -537,7 +537,8 @@ var
   i: Integer;
   IdNormative: String;
 begin
-  if not Assigned(Node) then exit;
+  if not Assigned(Node) then
+    exit;
 
   ADOQueryNormativ.RecNo := Node.Index + 1;
 
@@ -558,7 +559,7 @@ begin
     Active := False;
     SQL.Clear;
     SQL.Add(StrQuery);
-    Active := True;
+    Active := true;
 
     MemoDescription.Clear;
     MemoDescription.Lines.Add(FieldByName('CaptionNormative').AsString);
@@ -579,7 +580,7 @@ begin
       IdNormative + ';';
 
     SQL.Add(StrQuery);
-    Active := True;
+    Active := true;
 
     First;
     i := 1;
@@ -621,7 +622,7 @@ begin
       'and mechanizmnorm.normativ_id = ' + IdNormative + ';';
 
     SQL.Add(StrQuery);
-    Active := True;
+    Active := true;
   end;
 
   // Выводим полученные данные в таблицу StringGrid
@@ -668,7 +669,7 @@ begin
       'and materialnorm.normativ_id = ' + IdNormative + ';';
 
     SQL.Add(StrQuery);
-    Active := True;
+    Active := true;
   end;
 
   // Выводим полученные данные в таблицу StringGrid
@@ -682,7 +683,7 @@ begin
 
     Filtered := False;
     Filter := 'mat_code LIKE ''С%''';
-    Filtered := True;
+    Filtered := true;
 
     Cells[1, Group2] := 'Материалы учтённые';
 
@@ -714,7 +715,7 @@ begin
 
     Filtered := False;
     Filter := 'mat_code LIKE ''П%''';
-    Filtered := True;
+    Filtered := true;
 
     Cells[1, Group3] := 'Материалы неучтённые';
 
@@ -738,7 +739,7 @@ begin
 
     Filtered := False;
     Filter := '';
-    Filtered := True;
+    Filtered := true;
   end;
 
   // -----------------------------------------
@@ -755,7 +756,7 @@ begin
       'WHERE normativwork.work_id = works.work_id and normativwork.normativ_id = ' + IdNormative + ';';
 
     SQL.Add(StrQuery);
-    Active := True;
+    Active := true;
   end;
 
   // Выводим полученные данные в таблицу StringGrid
@@ -798,12 +799,11 @@ begin
 
     Active := False;
     SQL.Clear;
-    StrQuery := 'SELECT work_id, s, po FROM onormativs where ((s <= "' +
-      ADOQueryNormativ.FieldByName('NumberNormative').AsString +
-      '") and (po >= "' +
-      ADOQueryNormativ.FieldByName('NumberNormative').AsString + '"));';
+    StrQuery := 'SELECT work_id, s, po FROM onormativs where ((s <= "' + ADOQueryNormativ.FieldByName
+      ('NumberNormative').AsString + '") and (po >= "' + ADOQueryNormativ.FieldByName('NumberNormative')
+      .AsString + '"));';
     SQL.Add(StrQuery);
-    Active := True;
+    Active := true;
     // Сделано допущение, что идут work_id по порядку от еденицы
     if not Eof then
       ComboBoxOXROPR.ItemIndex := FieldByName('work_id').AsVariant - 1;
@@ -818,7 +818,7 @@ procedure TFrameRates.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; C
   TextType: TVSTTextType; var CellText: string);
 begin
   if not ADOQueryNormativ.Active then
-    Exit;
+    exit;
 
   if (ADOQueryNormativ.RecordCount <= 0) then
   begin
@@ -833,7 +833,7 @@ begin
         CellText := '';
     end;
 
-    Exit;
+    exit;
   end;
 
   if Column > 0 then
@@ -861,13 +861,13 @@ begin
     ((Key >= '0') and (Key <= '9'))) then
   begin
     Key := #0;
-    Exit;
+    exit;
   end;
 
   if (vCode = 27) then
   begin
     EditRate.Text := '';
-    Exit;
+    exit;
   end;
 
   // Ввод цифры не первым символом
@@ -888,44 +888,44 @@ begin
       if ((Text[Length(Text)] < '0') or (Text[Length(Text)] > '9')) then
         Key := #0;
 
-  if vCode=VK_BACK then
-    EditRate.Text := Copy(EditRate.Text, 0, Length(EditRate.Text)-1)
+  if vCode = VK_BACK then
+    EditRate.Text := Copy(EditRate.Text, 0, Length(EditRate.Text) - 1)
   else
-    EditRate.Text:=EditRate.Text + Key;
- { // Разрешаем ввод русских смиволов (unicode) + символ "пробел" + цифры
-  // Большие: А-Я = 1040-1071, Ё = 1025, Малые: а-я = 1072-1103, ё = 1105
-  if ((Key >= #1040) and (Key <= #1103)) or (Key = #1025) or (Key = #1105) or (Key = #32) or
+    EditRate.Text := EditRate.Text + Key;
+  { // Разрешаем ввод русских смиволов (unicode) + символ "пробел" + цифры
+    // Большие: А-Я = 1040-1071, Ё = 1025, Малые: а-я = 1072-1103, ё = 1105
+    if ((Key >= #1040) and (Key <= #1103)) or (Key = #1025) or (Key = #1105) or (Key = #32) or
     ((Key >= '0') and (Key <= '9')) or (Key = '-') then
-  begin
+    begin
     StrQuickSearch := StrQuickSearch + Key; // Заносим символ в строку быстрого поиска
 
     FrameStatusBar.InsertText(2, StrQuickSearch);
     EditRate.Text := StrQuickSearch;
 
     ReceivingSearch('NumberNormative' + ' LIKE ''' + StrQuickSearch + '%''');
-  end
-  else if Key = #27 then // Если была нажата клавиша "Esc"
-  begin
+    end
+    else if Key = #27 then // Если была нажата клавиша "Esc"
+    begin
     StrQuickSearch := ''; // Очищаем строку быстрого поиска
 
     FrameStatusBar.InsertText(2, StrQuickSearch);
     EditRate.Text := StrQuickSearch;
 
     ReceivingSearch('');
-  end
-  else if Key = #08 then // Если была нажата клавиша "Backspace"
-  begin
+    end
+    else if Key = #08 then // Если была нажата клавиша "Backspace"
+    begin
     Delete(StrQuickSearch, Length(StrQuickSearch), 1);
 
     FrameStatusBar.InsertText(2, StrQuickSearch);
     EditRate.Text := StrQuickSearch;
 
     if StrQuickSearch <> '' then
-      ReceivingSearch('NumberNormative' + ' LIKE ''' + StrQuickSearch + '%''')
+    ReceivingSearch('NumberNormative' + ' LIKE ''' + StrQuickSearch + '%''')
     else
-      ReceivingSearch('');
-  end
-  else Key := #0;  }
+    ReceivingSearch('');
+    end
+    else Key := #0; }
 end;
 
 procedure TFrameRates.VSTResize(Sender: TObject);
@@ -944,7 +944,7 @@ end;
 procedure TFrameRates.EditRateChange(Sender: TObject);
 begin
   tmrFilter.Enabled := False;
-  tmrFilter.Enabled := True;
+  tmrFilter.Enabled := true;
 end;
 
 procedure TFrameRates.EditRateKeyPress(Sender: TObject; var Key: Char);
@@ -961,13 +961,13 @@ begin
     ((Key >= '0') and (Key <= '9'))) then
   begin
     Key := #0;
-    Exit;
+    exit;
   end;
 
   if (vCode = 27) then
   begin
     (Sender as TEdit).Text := '';
-    Exit;
+    exit;
   end;
 
   // Ввод цифры не первым символом
@@ -988,8 +988,9 @@ begin
       if ((Text[Length(Text)] < '0') or (Text[Length(Text)] > '9')) then
         Key := #0;
 
-  //Аптибип
-  if key = #13 then key := #0;
+  // Аптибип
+  if Key = #13 then
+    Key := #0;
 end;
 
 procedure TFrameRates.EditSearchNormativeEnter(Sender: TObject);
@@ -1055,8 +1056,9 @@ begin
 
     ReceivingSearch('');
   end;
-  //Антибип
-  if key = #13 then key := #0;
+  // Антибип
+  if Key = #13 then
+    Key := #0;
 end;
 
 procedure TFrameRates.ReceivingSearch(vStr: string);
@@ -1070,7 +1072,7 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT work_id, work_name FROM objworks ORDER BY work_id;');
-      Active := True;
+      Active := true;
 
       First;;
 
@@ -1087,15 +1089,16 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      if vStr <> '' then WhereStr := ' where ' + vStr
-      else WhereStr := '';
-      QueryStr :=
-        'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
-        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id FROM ' +
-        'normativ' + DataBase + WhereStr + ' ORDER BY NumberNormative ASC;';
+      if vStr <> '' then
+        WhereStr := ' where ' + vStr
+      else
+        WhereStr := '';
+      QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
+        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id FROM ' + 'normativ' + DataBase +
+        WhereStr + ' ORDER BY NumberNormative ASC;';
 
       SQL.Add(QueryStr);
-      Active := True;
+      Active := true;
     end;
 
     ADOQueryNormativ.FetchOptions.RecordCountMode := cmTotal;
@@ -1110,7 +1113,7 @@ begin
     else
     begin
       VST.RootNodeCount := ADOQueryNormativ.RecordCount;
-      VST.Selected[VST.GetFirst] := True;
+      VST.Selected[VST.GetFirst] := true;
       VST.FocusedNode := VST.GetFirst;
     end;
 
@@ -1171,21 +1174,21 @@ begin
 
   // ЕСЛИ ОТКРЫТА ТОЛЬКО ОДНА ИЗ ТРЁХ ПАНЕЛЕЙ
 
-  if (P1 = True) and (P2 = False) and (P3 = False) then
+  if (P1 = true) and (P2 = False) and (P3 = False) then
   begin
-    PanelNormСonsumption.Visible := True;
+    PanelNormСonsumption.Visible := true;
     PanelNormСonsumption.Align := alClient;
   end;
 
-  if (P1 = False) and (P2 = True) and (P3 = False) then
+  if (P1 = False) and (P2 = true) and (P3 = False) then
   begin
-    PanelStructureWorks.Visible := True;
+    PanelStructureWorks.Visible := true;
     PanelStructureWorks.Align := alClient;
   end;
 
-  if (P1 = False) and (P2 = False) and (P3 = True) then
+  if (P1 = False) and (P2 = False) and (P3 = true) then
   begin
-    PanelChangesAdditions.Visible := True;
+    PanelChangesAdditions.Visible := true;
     PanelChangesAdditions.Align := alClient;
   end;
 
@@ -1193,78 +1196,78 @@ begin
 
   // ЕСЛИ ОТКРЫТЫ ЛЮБЫЕ ДВЕ ИЗ ТРЁХ ПАНЕЛЕЙ
 
-  if (P1 = True) and (P2 = True) and (P3 = False) then
+  if (P1 = true) and (P2 = true) and (P3 = False) then
   begin
-    PanelStructureWorks.Visible := True;
+    PanelStructureWorks.Visible := true;
     PanelStructureWorks.Align := alBottom;
 
-    Splitter2.Visible := True;
+    Splitter2.Visible := true;
     Splitter2.Align := alNone;
     Splitter2.Align := alBottom;
 
-    PanelNormСonsumption.Visible := True;
+    PanelNormСonsumption.Visible := true;
     PanelNormСonsumption.Align := alClient;
 
-    ImageSplitter2.Visible := True;
+    ImageSplitter2.Visible := true;
   end;
 
-  if (P1 = False) and (P2 = True) and (P3 = True) then
+  if (P1 = False) and (P2 = true) and (P3 = true) then
   begin
-    PanelChangesAdditions.Visible := True;
+    PanelChangesAdditions.Visible := true;
     PanelChangesAdditions.Align := alBottom;
 
-    Splitter2.Visible := True;
+    Splitter2.Visible := true;
     Splitter2.Align := alNone;
     Splitter2.Align := alBottom;
 
-    PanelStructureWorks.Visible := True;
+    PanelStructureWorks.Visible := true;
     PanelStructureWorks.Align := alClient;
 
-    ImageSplitter2.Visible := True;
+    ImageSplitter2.Visible := true;
   end;
 
-  if (P1 = True) and (P2 = False) and (P3 = True) then
+  if (P1 = true) and (P2 = False) and (P3 = true) then
   begin
-    PanelChangesAdditions.Visible := True;
+    PanelChangesAdditions.Visible := true;
     PanelChangesAdditions.Align := alBottom;
 
-    Splitter2.Visible := True;
+    Splitter2.Visible := true;
     Splitter2.Align := alNone;
     Splitter2.Align := alBottom;
 
-    PanelNormСonsumption.Visible := True;
+    PanelNormСonsumption.Visible := true;
     PanelNormСonsumption.Align := alClient;
 
-    ImageSplitter2.Visible := True;
+    ImageSplitter2.Visible := true;
   end;
 
   // ----------------------------------------
 
   // ЕСЛИ ОТКРЫТЫ ВСЕ ТРИ ПАНЕЛИ
 
-  if (P1 = True) and (P2 = True) and (P3 = True) then
+  if (P1 = true) and (P2 = true) and (P3 = true) then
   begin
-    PanelNormСonsumption.Visible := True;
+    PanelNormСonsumption.Visible := true;
     PanelNormСonsumption.Align := alTop;
 
-    Splitter1.Visible := True;
+    Splitter1.Visible := true;
     // Размещаем сплиттер ниже панели, иначе сплиттер привязывается к верхнему краю
     Splitter1.Top := PanelNormСonsumption.Top + PanelNormСonsumption.Height + 10;
     Splitter1.Align := alTop;
 
-    PanelChangesAdditions.Visible := True;
+    PanelChangesAdditions.Visible := true;
     PanelChangesAdditions.Align := alBottom;
 
-    Splitter2.Visible := True;
+    Splitter2.Visible := true;
     // Размещаем сплиттер выше панели, иначе сплиттер привязывается к нижнему краю
     Splitter2.Top := PanelChangesAdditions.Top - 10;
     Splitter2.Align := alBottom;
 
-    PanelStructureWorks.Visible := True;
+    PanelStructureWorks.Visible := true;
     PanelStructureWorks.Align := alClient;
 
-    ImageSplitter1.Visible := True;
-    ImageSplitter2.Visible := True;
+    ImageSplitter1.Visible := true;
+    ImageSplitter2.Visible := true;
   end;
 end;
 
@@ -1276,7 +1279,7 @@ begin
     SQL.Clear;
     SQL.Add('SELECT sbornik_name, sbornik_caption FROM sbornik WHERE sbornik_id = ' +
       '(SELECT sbornik_id FROM normativg WHERE normativ_id = ' + IdRate + ');');
-    Active := True;
+    Active := true;
 
     EditCollection.Text := FieldByName('sbornik_name').AsString + ' ' +
       FieldByName('sbornik_caption').AsString;
@@ -1285,14 +1288,14 @@ begin
 end;
 
 procedure TFrameRates.FilteredRates(const vStr: string);
-var
-  i: Integer;
+{ var
+  i: Integer; }
 begin
   with ADOQueryNormativ do
   begin
     Filtered := False;
     Filter := vStr;
-    Filtered := True;
+    Filtered := true;
   end;
 
   try
@@ -1318,7 +1321,8 @@ begin
 end;
 
 procedure TFrameRates.GetWinterPrice;
-var s, s1, s2 : string;
+var
+  s { , s1, s2 } : string;
 begin
   try
     with ADOQueryTemp do
@@ -1326,31 +1330,28 @@ begin
       Active := False;
       s := ADOQueryNormativ.FieldByName('NumberNormative').AsString;
       SQL.Clear;
-      SQL.Add('SELECT num, name, s, po, DATE_BEG FROM znormativs where ' +
-        '((s <= ''' + s + ''') and (po >= ''' + s +
-        ''')) order by DATE_BEG desc;');
-      Active := True;
+      SQL.Add('SELECT num, name, s, po, DATE_BEG FROM znormativs where ' + '((s <= ''' + s +
+        ''') and (po >= ''' + s + ''')) order by DATE_BEG desc;');
+      Active := true;
 
-      {First; //Использовалось для отладки
-      while not Eof do
-      begin
+      { First; //Использовалось для отладки
+        while not Eof do
+        begin
         s1 := FieldByName('s').AsString;
         s2 := FieldByName('po').AsString;
         if (s >= s1) and
-          (s <= s2) then
+        (s <= s2) then
         begin
-          EditWinterPrice.Text := FieldByName('num').AsString + ' ' +
-            FieldByName('name').AsString;
-          Break;
+        EditWinterPrice.Text := FieldByName('num').AsString + ' ' +
+        FieldByName('name').AsString;
+        Break;
         end;
 
         Next;
-      end; }
-
+        end; }
 
       if not Eof then
-        EditWinterPrice.Text := FieldByName('num').AsVariant + ' ' +
-          FieldByName('name').AsVariant;
+        EditWinterPrice.Text := FieldByName('num').AsVariant + ' ' + FieldByName('name').AsVariant;
 
     end;
   except

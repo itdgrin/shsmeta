@@ -3,7 +3,8 @@ unit TariffsIndex;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, Grids, DBGrids, StdCtrls, Buttons,
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, Grids, DBGrids,
+  StdCtrls, Buttons,
   ExtCtrls, Menus, Clipbrd, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client;
@@ -46,7 +47,8 @@ type
     procedure DBGridKeyPress(Sender: TObject; var Key: Char);
     procedure DBGridMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
       var Handled: Boolean);
-    procedure DBGridMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
+    procedure DBGridMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint;
+      var Handled: Boolean);
     procedure DBGridMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
 
     procedure SetWidthColumns(const Column1: Integer; const Column2: Integer; const Column3: Integer;
@@ -66,7 +68,7 @@ type
     QuickSearch: String; // Строка быстрого поиска
 
     // Массив строк для быстрого поиска (для каждого столбца)
-    StringQuickSearch: array [1 .. ColumnsInTable] of String[20];
+    StringQuickSearch: array [1 .. ColumnsInTable] of String;
 
   public
 
@@ -95,10 +97,10 @@ const
   Query = 'SELECT ' + RenameColumns + ' FROM indexs';
 
   // Массив содержащий названия всех видимых столбцов
-  NameColumns: array [1 .. ColumnsInTable] of String[11] = ('i_statistic', 'i_rost', 'date_beg');
+  NameColumns: array [1 .. ColumnsInTable] of String = ('i_statistic', 'i_rost', 'date_beg');
 
   // Массив содержащий русские названия всех видимых столбцов
-  RusNameColumns: array [1 .. ColumnsInTable] of String[21] = ('Статистический индекс', 'Рост', 'Дата');
+  RusNameColumns: array [1 .. ColumnsInTable] of String = ('Статистический индекс', 'Рост', 'Дата');
 
   OrderBy = 'date_beg ASC';
 
@@ -153,7 +155,8 @@ begin
 
   // Устанавливаем начальную ширину столбцов в таблице
   // и номер активного столбца
-  SetWidthColumns(FormMain.ClientWidth div 3 - 16, FormMain.ClientWidth div 3 - 16, FormMain.ClientWidth div 3 - 16, 1);
+  SetWidthColumns(FormMain.ClientWidth div 3 - 16, FormMain.ClientWidth div 3 - 16,
+    FormMain.ClientWidth div 3 - 16, 1);
   WidthColumnsToDBGrid(DBGrid);
 
   // -----------------------------------------
@@ -224,8 +227,8 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Перерисовка ячеек таблицы
-procedure TFormTariffsIndex.DBGridDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
-  State: TGridDrawState);
+procedure TFormTariffsIndex.DBGridDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
 begin
   if DBGrid.DataSource.DataSet.Fields.Fields[0].AsInteger = IdSelectRecord then
     if gdFocused in State then // Ячейка имеет фокус
@@ -246,7 +249,7 @@ end;
 
 procedure TFormTariffsIndex.EditSearchKeyPress(Sender: TObject; var Key: Char);
 var
-  SelectedColumn, CountWords, i, k: Integer;
+  {SelectedColumn,} CountWords, i, k: Integer;
   StringSearch: String;
   Words: array of String;
 begin
@@ -258,7 +261,7 @@ begin
   if (Key = #13) and (EditSearch.Text <> '') and (EditSearch.Text <> ' ') then
   begin
     // Получаем номер выделенного столбца в таблице
-    SelectedColumn := DBGrid.SelectedIndex;
+    {SelectedColumn := DBGrid.SelectedIndex;}
 
     // Получаем введённую пользователем строку поиска
     StringSearch := EditSearch.Text;
@@ -416,8 +419,8 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormTariffsIndex.DBGridMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
-  var Handled: Boolean);
+procedure TFormTariffsIndex.DBGridMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer;
+  MousePos: TPoint; var Handled: Boolean);
 begin
   if DBGrid.SelectedIndex > 1 then
   begin
@@ -505,8 +508,8 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormTariffsIndex.SetWidthColumns(const Column1: Integer; const Column2: Integer; const Column3: Integer;
-  const SelIndex: Integer);
+procedure TFormTariffsIndex.SetWidthColumns(const Column1: Integer; const Column2: Integer;
+  const Column3: Integer; const SelIndex: Integer);
 begin
   WidthColumns.Column1 := Column1;
   WidthColumns.Column2 := Column2;

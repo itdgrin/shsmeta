@@ -2,7 +2,8 @@ unit Tools;
 
 interface
 
-uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms;
+uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
+  System.Classes;
 
 // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
@@ -65,7 +66,6 @@ var
   AColumn: TColumn;
 begin
   TotWidth := 0;
-  VarWidth := 0;
   ResizableColumnCount := 0;
 
   for i := 0 to -1 + DBGrid.Columns.Count do

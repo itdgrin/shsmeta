@@ -21,7 +21,7 @@ type
     SpeedButtonSSR: TSpeedButton;
     SpeedButtonAlgorithmsCalculation: TSpeedButton;
 
-    constructor Create(AOwner: TComponent; const vDataBase: Char; const vPriceColumn: Boolean);
+    constructor Create(AOwner: TComponent; const vDataBase: Char; const vPriceColumn: Boolean); reintroduce;
 
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
@@ -59,9 +59,6 @@ uses Main, Waiting;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormReferenceData.WMSysCommand(var Msg: TMessage);
-var
-  WS: TWindowState;
-  i: Integer;
 begin
   // SC_MAXIMIZE - Разворачивание формы во весь экран
   // SC_RESTORE - Сворачивание формы в окно

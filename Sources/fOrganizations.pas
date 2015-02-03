@@ -27,7 +27,7 @@ type
     ADOQueryTemp: TFDQuery;
     ADOQuery: TFDQuery;
 
-    constructor Create(AOwner: TComponent);
+    constructor Create(AOwner: TComponent); Override;
 
     procedure TableFilling;
 
@@ -143,7 +143,7 @@ procedure TFrameOrganizations.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PV
 begin
   VSTFocusChangedDefault(Sender, Node, Column);
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (ADOQuery.RecordCount <> VST.RootNodeCount) then
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (Cardinal(ADOQuery.RecordCount) <> VST.RootNodeCount) then
     Exit;
 
   ADOQuery.RecNo := Node.Index + 1;

@@ -265,7 +265,8 @@ begin
       ParamByName('year').Value := edtYear.Value;
       ParamByName('monat').Value := ComboBoxMonth.ItemIndex + 1;
       Active := True;
-      IdStavka := FieldByName('stavka_id').AsInteger;
+      if not Eof then
+        IdStavka := FieldByName('stavka_id').AsInteger;
     end;
 
     if IdStavka <= 0 then
@@ -338,7 +339,7 @@ begin
     SQL.Add('SELECT stavka_m_rab as "RateWorker", stavka_m_mach as "RateMachinist" FROM stavka WHERE year = '
       + vYear + ' and monat = ' + vMonth + ';');
     Active := True;
-    if not eof then
+    if not Eof then
     begin
       EditRateWorker.Text := FieldByName('RateWorker').AsVariant;
       EditRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
@@ -402,8 +403,6 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormBasicData.SetValueCoefOrders;
-var
-  NameTable: string;
 begin
   // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
   try

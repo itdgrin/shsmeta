@@ -143,8 +143,8 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardEstimate.FormShow(Sender: TObject);
-var
-  str: string;
+{ var
+  str: string; }
 begin
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
@@ -198,21 +198,21 @@ begin
   end;
 
   // ----------------------------------------
- {
-  str := ComboBoxPart.Text;
-  Delete(str, 1, Pos('.', str) + 1);
+  {
+    str := ComboBoxPart.Text;
+    Delete(str, 1, Pos('.', str) + 1);
 
-  EditNameEstimate.Text := str;
+    EditNameEstimate.Text := str;
 
-  str := ComboBoxSection.Text;
-  Delete(str, 1, Pos('.', str) + 1);
+    str := ComboBoxSection.Text;
+    Delete(str, 1, Pos('.', str) + 1);
 
-  EditNameEstimate.Text := EditNameEstimate.Text + str;
+    EditNameEstimate.Text := EditNameEstimate.Text + str;
 
-  str := ComboBoxTypeWork.Text;
-  Delete(str, 1, Pos('.', str) + 1);
+    str := ComboBoxTypeWork.Text;
+    Delete(str, 1, Pos('.', str) + 1);
 
-  EditNameEstimate.Text := EditNameEstimate.Text + str;
+    EditNameEstimate.Text := EditNameEstimate.Text + str;
   }
   // ----------------------------------------
 
@@ -287,13 +287,14 @@ begin
       Active := False;
       SQL.Clear;
 
-      StrQuery := 'SELECT state_nds as "VAT", BEG_STROJ FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';';
+      StrQuery := 'SELECT state_nds as "VAT", BEG_STROJ FROM objcards WHERE obj_id = ' +
+        IntToStr(IdObject) + ';';
 
       SQL.Add(StrQuery);
       Active := True;
 
       VAT := FieldByName('VAT').AsVariant;
-      //При создании сметы дата для расценок проставляетсся как у объекта
+      // При создании сметы дата для расценок проставляетсся как у объекта
       DateTimeToString(DateCompose, 'yyyy-mm-dd', FieldByName('VAT').AsDateTime);
       vMonth := IntToStr(MonthOf(FieldByName('VAT').AsDateTime));
       vYear := IntToStr(YearOf(FieldByName('VAT').AsDateTime));
@@ -457,6 +458,7 @@ begin
         TreeView.Selected.Text := EditNumberEstimate.Text + ' ' + EditNameEstimate.Text
       else
       begin
+        Node := nil;
         // Если добавляем, то вставляем узел сметы в дерево и присваиваем ему Id
         case TypeEstimate of
           1, 3:
@@ -465,9 +467,11 @@ begin
           2:
             Node := TreeView.Items.Add(Nil, EditNumberEstimate.Text + ' ' + EditNameEstimate.Text);
         end;
-
-        Node.Data := Pointer(GetIdNewEstimate); // Присваиваем Id
-        Node.Selected := True; // Выделяем вставленную смету
+        if Node <> nil then
+        begin
+          Node.Data := Pointer(GetIdNewEstimate); // Присваиваем Id
+          Node.Selected := True; // Выделяем вставленную смету
+        end;
       end;
     end;
 
@@ -513,21 +517,21 @@ begin
   EditNumberEstimate.Text := EditNumberEstimate.Text + str;
 
   // ----------------------------------------
- {
-  str := ComboBoxPart.Text;
-  Delete(str, 1, Pos('.', str) + 1);
+  {
+    str := ComboBoxPart.Text;
+    Delete(str, 1, Pos('.', str) + 1);
 
-  EditNameEstimate.Text := str;
+    EditNameEstimate.Text := str;
 
-  str := ComboBoxSection.Text;
-  Delete(str, 1, Pos('.', str) + 1);
+    str := ComboBoxSection.Text;
+    Delete(str, 1, Pos('.', str) + 1);
 
-  EditNameEstimate.Text := EditNameEstimate.Text + str;
+    EditNameEstimate.Text := EditNameEstimate.Text + str;
 
-  str := ComboBoxTypeWork.Text;
-  Delete(str, 1, Pos('.', str) + 1);
+    str := ComboBoxTypeWork.Text;
+    Delete(str, 1, Pos('.', str) + 1);
 
-  EditNameEstimate.Text := EditNameEstimate.Text + str;}
+    EditNameEstimate.Text := EditNameEstimate.Text + str; }
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -661,6 +665,7 @@ end;
 
 function TFormCardEstimate.GetIdNewEstimate: Integer;
 begin
+  Result := 0;
   try
     with qrTemp do
     begin

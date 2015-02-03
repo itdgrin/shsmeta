@@ -10,7 +10,7 @@ uses
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -62,8 +62,8 @@ type
       Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
     procedure VSTEnter(Sender: TObject);
     procedure VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
-    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
-      var CellText: string);
+    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: string);
 
     procedure ComboBoxMonthYearChange(Sender: TObject);
 
@@ -71,7 +71,7 @@ type
     StrFilterData: string; // Фильтрация данных по месяцу и году
   public
     procedure ReceivingAll; override;
-    constructor Create(AOwner: TComponent);
+    constructor Create(AOwner: TComponent); override;
   end;
 
 implementation
@@ -129,25 +129,25 @@ begin
 
     if Assigned(FormCalculationEstimate) then
     begin
-      //Опасная конструкция, может быть источником ошибок
+      // Опасная конструкция, может быть источником ошибок
       ComboBoxMonth.ItemIndex := FormCalculationEstimate.GetMonth - 1;
       edtYear.Value := FormCalculationEstimate.GetYear;
     end
     else
     begin
-      //Ставит текущую дату
+      // Ставит текущую дату
       ComboBoxMonth.ItemIndex := MonthOf(Now) - 1;
       edtYear.Value := YearOf(Now);
     end;
 
-    StrFilterData := '(year = ' + IntToStr(edtYear.Value) +
-      ') and (monat = ' + IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
+    StrFilterData := '(year = ' + IntToStr(edtYear.Value) + ') and (monat = ' +
+      IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
 
     ReceivingSearch('');
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message), CaptionFrame,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+        CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   fLoaded := true;
@@ -168,9 +168,10 @@ begin
   else if vStr = '' then
     FilterStr := StrFilterData;
 
-  if FilterStr <> '' then WhereStr := ' where ' + FilterStr
-  else WhereStr := '';
-
+  if FilterStr <> '' then
+    WhereStr := ' where ' + FilterStr
+  else
+    WhereStr := '';
 
   StrQuery := 'SELECT * FROM transfercargo' + WhereStr + ';';
 
@@ -179,7 +180,7 @@ begin
     Active := False;
     SQL.Clear;
     SQL.Add(StrQuery);
-    Active := True;
+    Active := true;
     FetchAll;
   end;
 
@@ -193,7 +194,7 @@ begin
   else
   begin
     VST.RootNodeCount := ADOQuery.RecordCount;
-    VST.Selected[VST.GetFirst] := True;
+    VST.Selected[VST.GetFirst] := true;
     VST.FocusedNode := VST.GetFirst;
 
     FrameStatusBar.InsertText(1, '1');
@@ -217,7 +218,8 @@ begin
   with (Sender as TEdit) do
     if (Key = #13) and (Text <> '') then // Если нажата клавиша "Enter" и строка поиска не пуста
       ReceivingSearch(FilteredString(Text, 'distance'))
-    else if (Key = #27) or ((Key = #13) and (Text = '')) then // Нажата клавиша ESC, или Enter и строка поиска пуста
+    else if (Key = #27) or ((Key = #13) and (Text = '')) then
+    // Нажата клавиша ESC, или Enter и строка поиска пуста
     begin
       Text := '';
       ReceivingSearch('');
@@ -323,9 +325,8 @@ procedure TFramePriceTransportations.VSTAfterCellPaint(Sender: TBaseVirtualTree;
 var
   CellText: string;
 begin
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or
-    (not Assigned(Node))
-  then Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node)) then
+    Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
 
@@ -356,7 +357,8 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFramePriceTransportations.VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas;
-  Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
+  Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect;
+  var ContentRect: TRect);
 begin
   VSTBeforeCellPaintDefault(Sender, TargetCanvas, Node, Column, CellPaintMode, CellRect, ContentRect);
 end;
@@ -380,9 +382,8 @@ begin
 
   // Выводим название в Memo под таблицей
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or
-    (not Assigned(Node))
-  then Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node)) then
+    Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
   Memo.Text := ADOQuery.FieldByName('distance').AsVariant;
@@ -391,8 +392,8 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFramePriceTransportations.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-  TextType: TVSTTextType; var CellText: string);
+procedure TFramePriceTransportations.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 begin
   if not ADOQuery.Active then
     Exit;
@@ -456,8 +457,8 @@ end;
 
 procedure TFramePriceTransportations.ComboBoxMonthYearChange(Sender: TObject);
 begin
-  StrFilterData := '(year = ' + IntToStr(edtYear.Value) +
-    ') and (monat = ' + IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
+  StrFilterData := '(year = ' + IntToStr(edtYear.Value) + ') and (monat = ' +
+    IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
 
   EditSearch.Text := '';
   FrameStatusBar.InsertText(2, '-1');

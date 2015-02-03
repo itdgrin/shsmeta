@@ -10,7 +10,7 @@ uses
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -78,7 +78,7 @@ type
     procedure ComboBoxRegionChange(Sender: TObject);
 
   private
-    StrQuickSearch: String[20];
+    StrQuickSearch: String;
     NomColumn: Integer;
 
     DataBase: Char; // Справочные или собственные данные
@@ -90,7 +90,7 @@ type
   public
     procedure ReceivingAll; override;
     constructor Create(AOwner: TComponent; const vDataBase: Char;
-      const vPriceColumn, vAllowAddition, vAllowReplacement: Boolean);
+      const vPriceColumn, vAllowAddition, vAllowReplacement: Boolean); reintroduce;
   end;
 
 implementation
@@ -171,7 +171,8 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFramePriceMaterial.ReceivingAll;
-var Year, Month, Day: Word;
+var
+  Year, Month, Day: Word;
 begin
 
   StrQuickSearch := '';
@@ -204,7 +205,7 @@ begin
             ADOQueryTemp.Active := True;
 
             ComboBoxMonth.ItemIndex := ADOQueryTemp.FieldByName('monat').AsVariant - 1;
-            //Опасная конструкция, может быть источником ошибок
+            // Опасная конструкция, может быть источником ошибок
             ComboBoxYear.ItemIndex := ADOQueryTemp.FieldByName('year').AsInteger - 2012;
           end;
         except
@@ -215,7 +216,7 @@ begin
       else
       begin
         RegionColumn := IntToStr(ComboBoxRegion.ItemIndex + 1);
-        //Ставит текущую дату
+        // Ставит текущую дату
         ComboBoxMonth.ItemIndex := Month - 1;
         ComboBoxYear.ItemIndex := Year - 2012;
       end;
@@ -227,7 +228,7 @@ begin
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
         CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-  fLoaded := true;
+  fLoaded := True;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -237,34 +238,32 @@ var
   WhereStr: string;
   StrQuery: string;
 begin
-  if vStr <> '' then WhereStr := ' and ' + vStr
-  else WhereStr := '';
+  if vStr <> '' then
+    WhereStr := ' and ' + vStr
+  else
+    WhereStr := '';
 
   try
 
     if PriceColumn then
-      StrQuery :=
-          'SELECT material.material_id as "MatId", mat_code as "Code", ' +
-          'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
-          'units.unit_id as "UnitId", coast1_1 as "PriceVAT1", ' +
-          'coast1_2 as "PriceNotVAT1", coast2_1 "PriceVAT2", ' +
-          'coast2_2 as "PriceNotVAT2", coast3_1 as "PriceVAT3", ' +
-          'coast3_2 as "PriceNotVAT3", coast4_1 "PriceVAT4", ' +
-          'coast4_2 as "PriceNotVAT4", coast5_1 as "PriceVAT5", ' +
-          'coast5_2 as "PriceNotVAT5", coast6_1 "PriceVAT6", ' +
-          'coast6_2 as "PriceNotVAT6", coast7_1 as "PriceVAT7", ' +
-          'coast7_2 as "PriceNotVAT7", year, monat FROM material, units, ' +
-          'materialcoast' + DataBase + ' WHERE (material.unit_id = units.unit_id) ' +
-          'and (material.material_id = materialcoast' + DataBase + '.material_id) ' +
-          'and (not mat_code like "П%") and (year=:y1) and (monat=:m1)' + WhereStr +
-          ' ORDER BY mat_code, mat_name ASC;'
+      StrQuery := 'SELECT material.material_id as "MatId", mat_code as "Code", ' +
+        'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
+        'units.unit_id as "UnitId", coast1_1 as "PriceVAT1", ' +
+        'coast1_2 as "PriceNotVAT1", coast2_1 "PriceVAT2", ' +
+        'coast2_2 as "PriceNotVAT2", coast3_1 as "PriceVAT3", ' +
+        'coast3_2 as "PriceNotVAT3", coast4_1 "PriceVAT4", ' +
+        'coast4_2 as "PriceNotVAT4", coast5_1 as "PriceVAT5", ' +
+        'coast5_2 as "PriceNotVAT5", coast6_1 "PriceVAT6", ' +
+        'coast6_2 as "PriceNotVAT6", coast7_1 as "PriceVAT7", ' +
+        'coast7_2 as "PriceNotVAT7", year, monat FROM material, units, ' + 'materialcoast' + DataBase +
+        ' WHERE (material.unit_id = units.unit_id) ' + 'and (material.material_id = materialcoast' + DataBase
+        + '.material_id) ' + 'and (not mat_code like "П%") and (year=:y1) and (monat=:m1)' + WhereStr +
+        ' ORDER BY mat_code, mat_name ASC;'
     else
-      StrQuery :=
-          'SELECT material_id as "MatId", mat_code as "Code", ' +
-          'cast(mat_name as char(1024)) as "Name", unit_name as "Unit" ' +
-          'FROM material, units WHERE (material.unit_id = units.unit_id) ' +
-          'and (not mat_code LIKE "П%")' + WhereStr +
-          ' ORDER BY mat_code, mat_name ASC;';
+      StrQuery := 'SELECT material_id as "MatId", mat_code as "Code", ' +
+        'cast(mat_name as char(1024)) as "Name", unit_name as "Unit" ' +
+        'FROM material, units WHERE (material.unit_id = units.unit_id) ' + 'and (not mat_code LIKE "П%")' +
+        WhereStr + ' ORDER BY mat_code, mat_name ASC;';
 
     with ADOQuery do
     begin
@@ -301,8 +300,8 @@ begin
 
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak +
-        sLineBreak + E.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+        CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -328,8 +327,9 @@ begin
       ReceivingSearch('');
     end;
 
-  //Антибип
-  if key = #13 then key := #0;
+  // Антибип
+  if Key = #13 then
+    Key := #0;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -525,8 +525,8 @@ begin
 
   // Выводим название в Memo под таблицей
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node))
-  then Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node)) then
+    Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
   Memo.Text := ADOQuery.FieldByName('Name').AsVariant;
@@ -601,7 +601,7 @@ begin
   if ((Key >= #1040) and (Key <= #1103)) or (Key = #1025) or (Key = #1105) or (Key = #32) or
     ((Key >= '0') and (Key <= '9')) or (Key = '-') then
   begin
-    NameColumn := NameVisibleColumns[NumCol]; // Название выделенного столбца
+    NameColumn := string(NameVisibleColumns[NumCol]); // Название выделенного столбца
 
     StrQuickSearch := StrQuickSearch + Key; // Заносим символ в строку быстрого поиска
 

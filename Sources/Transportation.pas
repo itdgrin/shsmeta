@@ -3,7 +3,8 @@ unit Transportation;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, Grids, ExtCtrls, DB,
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, Grids,
+  ExtCtrls, DB,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client;
@@ -59,29 +60,28 @@ type
     procedure ButtonAddClick(Sender: TObject);
 
   private
-    EstMonth, EstYear : integer;
+    EstMonth, EstYear: integer;
     ChangeCoast: boolean;
     JustNumber: string;
     TranspCount, CCount, Ydw: extended;
     CoastNoNds, CoastNds, Nds: integer;
-    Distance: Integer;
+    Distance: integer;
     Loading: boolean;
     procedure GetEstimateInfo(aIdEstimate: integer);
     procedure LoadTranspInfo(aIdTransp: integer);
   public
-    IdEstimate: Integer; //ID сметы в которой транспорт
-    IdTransp: Integer; // ID транспорта в смете
-    TranspType: Integer;
-    InsMode: boolean; //признак вставкисвалки
+    IdEstimate: integer; // ID сметы в которой транспорт
+    IdTransp: integer; // ID транспорта в смете
+    TranspType: integer;
+    InsMode: boolean; // признак вставкисвалки
     IsSaved: boolean;
   end;
 
 const
   CaptionForm = 'Перевозка грузов';
 
-//Вызов окна транспорта. InsMode - признак вставкисвалки  в смету
-function GetTranspForm(IdEstimate, IdTransp, TranspType: Integer;
-  InsMode: boolean): boolean;
+  // Вызов окна транспорта. InsMode - признак вставкисвалки  в смету
+function GetTranspForm(IdEstimate, IdTransp, TranspType: integer; InsMode: boolean): boolean;
 
 implementation
 
@@ -89,11 +89,11 @@ uses Main, CalculationEstimate, DataModule;
 
 {$R *.dfm}
 
-function GetTranspForm(IdEstimate, IdTransp, TranspType: Integer;
-  InsMode: boolean): boolean;
-var FormTransp: TFormTransportation;
+function GetTranspForm(IdEstimate, IdTransp, TranspType: integer; InsMode: boolean): boolean;
+var
+  FormTransp: TFormTransportation;
 begin
-  Result := false;
+  //Result := false;
   FormTransp := TFormTransportation.Create(nil);
   try
     FormTransp.IdEstimate := IdEstimate;
@@ -110,37 +110,49 @@ end;
 
 procedure TFormTransportation.CalculationTransp;
 begin
-    if trim(edtCount.Text) = '' then CCount := 0
+  if trim(edtCount.Text) = '' then
+    CCount := 0
   else
   begin
     if edtCount.Text[length(edtCount.Text)] = '.' then
     begin
-      CCount := StrToFloat(copy(edtCount.Text,1,length(edtCount.Text) - 1));
+      CCount := StrToFloat(copy(edtCount.Text, 1, length(edtCount.Text) - 1));
     end
-    else CCount := StrToFloat(edtCount.Text);
+    else
+      CCount := StrToFloat(edtCount.Text);
   end;
 
-  if trim(edtYDW.Text) = '' then Ydw := 0
+  if trim(edtYDW.Text) = '' then
+    Ydw := 0
   else
   begin
     if edtYDW.Text[length(edtYDW.Text)] = '.' then
     begin
-      Ydw := StrToFloat(copy(edtYDW.Text,1,length(edtYDW.Text) - 1));
+      Ydw := StrToFloat(copy(edtYDW.Text, 1, length(edtYDW.Text) - 1));
     end
-    else Ydw := StrToFloat(edtYDW.Text);
+    else
+      Ydw := StrToFloat(edtYDW.Text);
   end;
 
-  if trim(EditDistance.Text) = '' then Distance := 0
-  else Distance := StrToInt(EditDistance.Text);
+  if trim(EditDistance.Text) = '' then
+    Distance := 0
+  else
+    Distance := StrToInt(EditDistance.Text);
 
-  if trim(edtCoastNoNDS.Text) = '' then CoastNoNds := 0
-  else CoastNoNds := StrToInt(edtCoastNoNDS.Text);
+  if trim(edtCoastNoNDS.Text) = '' then
+    CoastNoNds := 0
+  else
+    CoastNoNds := StrToInt(edtCoastNoNDS.Text);
 
-  if trim(edtCoastNDS.Text) = '' then CoastNds := 0
-  else CoastNds := StrToInt(edtCoastNDS.Text);
+  if trim(edtCoastNDS.Text) = '' then
+    CoastNds := 0
+  else
+    CoastNds := StrToInt(edtCoastNDS.Text);
 
-  if trim(edtNDS.Text) = '' then Nds := 0
-  else Nds := StrToInt(edtNDS.Text);
+  if trim(edtNDS.Text) = '' then
+    Nds := 0
+  else
+    Nds := StrToInt(edtNDS.Text);
 
   if 0 = cmbUnit.ItemIndex then
     TranspCount := CCount
@@ -155,12 +167,11 @@ procedure TFormTransportation.ButtonAddClick(Sender: TObject);
 begin
   if InsMode then
   begin
-    qrTemp.Active := False;
+    qrTemp.Active := false;
     qrTemp.SQL.Text := 'Insert into transpcard_temp (TRANSP_TYPE,TRANSP_CODE_JUST,' +
       'TRANSP_JUST,TRANSP_COUNT,TRANSP_DIST,TRANSP_SUM_NDS,TRANSP_SUM_NO_NDS,' +
       'COAST_NO_NDS,COAST_NDS,CARG_CLASS,CARG_UNIT,CARG_TYPE,CARG_COUNT,CARG_YDW,' +
-      'NDS,PRICE_NDS,PRICE_NO_NDS) values (' +
-      ':TRANSP_TYPE,:TRANSP_CODE_JUST,' +
+      'NDS,PRICE_NDS,PRICE_NO_NDS) values (' + ':TRANSP_TYPE,:TRANSP_CODE_JUST,' +
       ':TRANSP_JUST,:TRANSP_COUNT,:TRANSP_DIST,:TRANSP_SUM_NDS,:TRANSP_SUM_NO_NDS,' +
       ':COAST_NO_NDS,:COAST_NDS,:CARG_CLASS,:CARG_UNIT,:CARG_TYPE,:CARG_COUNT,:CARG_YDW,' +
       ':NDS,:PRICE_NDS,:PRICE_NO_NDS)';
@@ -184,24 +195,21 @@ begin
 
     qrTemp.ExecSQL;
 
-    qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
-      '(id_estimate, id_type_data, id_tables) VALUE ' +
-      '(' + IntToStr(IdEstimate) + ', ' + IntToStr(TranspType) +
-      ', (SELECT max(id) FROM transpcard_temp));';
+    qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' + '(id_estimate, id_type_data, id_tables) VALUE ' +
+      '(' + IntToStr(IdEstimate) + ', ' + IntToStr(TranspType) + ', (SELECT max(id) FROM transpcard_temp));';
 
     qrTemp.ExecSQL;
   end
   else
   begin
-    qrTemp.Active := False;
+    qrTemp.Active := false;
     qrTemp.SQL.Text := 'Update transpcard_temp set TRANSP_TYPE=:TRANSP_TYPE,' +
       'TRANSP_CODE_JUST=:TRANSP_CODE_JUST,TRANSP_JUST=:TRANSP_JUST,' +
       'TRANSP_COUNT=:TRANSP_COUNT,TRANSP_DIST=:TRANSP_DIST,' +
       'TRANSP_SUM_NDS=:TRANSP_SUM_NDS,TRANSP_SUM_NO_NDS=:TRANSP_SUM_NO_NDS,' +
       'COAST_NO_NDS=:COAST_NO_NDS,COAST_NDS=:COAST_NDS,CARG_CLASS=:CARG_CLASS,' +
       'CARG_UNIT=:CARG_UNIT,CARG_TYPE=:CARG_TYPE,CARG_COUNT=:CARG_COUNT,' +
-      'CARG_YDW=:CARG_YDW,NDS=:NDS,PRICE_NDS=:PRICE_NDS,' +
-      'PRICE_NO_NDS=:PRICE_NO_NDS where ID = :ID';
+      'CARG_YDW=:CARG_YDW,NDS=:NDS,PRICE_NDS=:PRICE_NDS,' + 'PRICE_NO_NDS=:PRICE_NO_NDS where ID = :ID';
     qrTemp.ParamByName('TRANSP_TYPE').Value := TranspType;
     qrTemp.ParamByName('TRANSP_CODE_JUST').Value := EditJustificationNumber.Text;
     qrTemp.ParamByName('TRANSP_JUST').Value := EditJustification.Text;
@@ -234,39 +242,39 @@ end;
 
 procedure TFormTransportation.cmbUnitChange(Sender: TObject);
 begin
-  if Loading then exit;
+  if Loading then
+    exit;
 
   edtYDW.Enabled := 0 <> cmbUnit.ItemIndex;
   CalculationTransp;
 end;
 
-//Подгружает необходимую информацию из сметы
+// Подгружает необходимую информацию из сметы
 procedure TFormTransportation.GetEstimateInfo(aIdEstimate: integer);
 begin
   try
     qrTemp.SQL.Text := 'SELECT monat as "Month", year as "Year" FROM stavka WHERE ' +
-      'stavka_id = (SELECT stavka_id From smetasourcedata '
-      + 'WHERE sm_id = ' + IntToStr(aIdEstimate) + ');';
-    qrTemp.Active := True;
+      'stavka_id = (SELECT stavka_id From smetasourcedata ' + 'WHERE sm_id = ' + IntToStr(aIdEstimate) + ');';
+    qrTemp.Active := true;
     EstMonth := qrTemp.FieldByName('Month').AsInteger;
     EstYear := qrTemp.FieldByName('Year').AsInteger;
-    qrTemp.Active := False;
+    qrTemp.Active := false;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении данных по смете возникла ошибка:' +
-        sLineBreak + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении данных по смете возникла ошибка:' + sLineBreak + sLineBreak +
+        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
 procedure TFormTransportation.EditDistanceChange(Sender: TObject);
 begin
-  if Loading then exit;
+  if Loading then
+    exit;
 
   if (EditDistance.Text <> '') and (StrToInt(EditDistance.Text) > 0) then
-    EditJustificationNumber.Text := JustNumber + '-' +
-      EditDistance.Text
-  else EditJustificationNumber.Text := EditDistance.Text;
+    EditJustificationNumber.Text := JustNumber + '-' + EditDistance.Text
+  else
+    EditJustificationNumber.Text := EditDistance.Text;
 
   GetCoast;
   CalculationTransp;
@@ -274,32 +282,39 @@ end;
 
 procedure TFormTransportation.EditKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not(Key in ['0' .. '9','.', #8]) then // Не цифра и не BackSpace
+  if not CharInSet(Key, ['0' .. '9', '.', #8]) then // Не цифра и не BackSpace
     Key := #0;
 
   if Key = '.' then
   begin
-    if pos('.',(Sender as TEdit).Text) > 0 then Key := #0;
-    if (Sender as TEdit).Text = '' then Key := #0;
+    if pos('.', (Sender as TEdit).Text) > 0 then
+      Key := #0;
+    if (Sender as TEdit).Text = '' then
+      Key := #0;
   end;
 end;
 
-
 procedure TFormTransportation.edtCoastNDSChange(Sender: TObject);
-var i, nds: integer;
+var
+  i, Nds: integer;
 begin
-  if Loading then exit;
+  if Loading then
+    exit;
   if not ChangeCoast then
   begin
     ChangeCoast := true;
     try
-      if trim(edtCoastNDS.Text) = '' then i := 0
-      else i := StrToInt(edtCoastNDS.Text);
+      if trim(edtCoastNDS.Text) = '' then
+        i := 0
+      else
+        i := StrToInt(edtCoastNDS.Text);
 
-      if trim(edtNDS.Text) = '' then nds := 0
-      else nds := StrToInt(edtNDS.Text);
+      if trim(edtNDS.Text) = '' then
+        Nds := 0
+      else
+        Nds := StrToInt(edtNDS.Text);
 
-      edtCoastNoNDS.Text := IntToStr(NDSToNoNDS(i, nds));
+      edtCoastNoNDS.Text := IntToStr(NDSToNoNDS(i, Nds));
       CalculationTransp;
     finally
       ChangeCoast := false;
@@ -308,20 +323,26 @@ begin
 end;
 
 procedure TFormTransportation.edtCoastNoNDSChange(Sender: TObject);
-var i, nds: integer;
+var
+  i, Nds: integer;
 begin
-  if Loading then exit;
+  if Loading then
+    exit;
   if not ChangeCoast then
   begin
     ChangeCoast := true;
     try
-      if trim(edtCoastNoNDS.Text) = '' then i := 0
-      else i := StrToInt(edtCoastNoNDS.Text);
+      if trim(edtCoastNoNDS.Text) = '' then
+        i := 0
+      else
+        i := StrToInt(edtCoastNoNDS.Text);
 
-      if trim(edtNDS.Text) = '' then nds := 0
-      else nds := StrToInt(edtNDS.Text);
+      if trim(edtNDS.Text) = '' then
+        Nds := 0
+      else
+        Nds := StrToInt(edtNDS.Text);
 
-      edtCoastNDS.Text := IntToStr(NoNDSToNDS(i, nds));
+      edtCoastNDS.Text := IntToStr(NoNDSToNDS(i, Nds));
       CalculationTransp;
     finally
       ChangeCoast := false;
@@ -331,24 +352,31 @@ end;
 
 procedure TFormTransportation.edtCountChange(Sender: TObject);
 begin
-  if Loading then exit;
+  if Loading then
+    exit;
   CalculationTransp;
 end;
 
 procedure TFormTransportation.edtNDSChange(Sender: TObject);
-var i, cost: integer;
+var
+  i, cost: integer;
 begin
-  if Loading then exit;
+  if Loading then
+    exit;
 
   if not ChangeCoast then
   begin
     ChangeCoast := true;
     try
-      if trim(edtNDS.Text) = '' then i := 0
-      else i := StrToInt(edtNDS.Text);
+      if trim(edtNDS.Text) = '' then
+        i := 0
+      else
+        i := StrToInt(edtNDS.Text);
 
-      if trim(edtCoastNoNDS.Text) = '' then cost := 0
-      else cost := StrToInt(edtCoastNoNDS.Text);
+      if trim(edtCoastNoNDS.Text) = '' then
+        cost := 0
+      else
+        cost := StrToInt(edtCoastNoNDS.Text);
 
       edtCoastNDS.Text := IntToStr(NoNDSToNDS(cost, i));
       CalculationTransp;
@@ -386,15 +414,16 @@ begin
           EditJustificationNumber.Text := 'C311';
           EditJustification.Text := 'Перевозка мусора автомобилями - самосвалами C311';
         end;
-      else raise Exception.Create('Неизвестный тип транспорта (' +
-        IntToStr(TranspType) + ')');
+    else
+      raise Exception.Create('Неизвестный тип транспорта (' + IntToStr(TranspType) + ')');
     end;
 
     edtYDW.Enabled := 0 <> cmbUnit.ItemIndex;
     edtCount.Text := '0';
     edtYDW.Text := '0';
 
-    if TranspType in [7,9] then cmbClass.Enabled := False;
+    if TranspType in [7, 9] then
+      cmbClass.Enabled := false;
     CalculationTransp;
   end
   else
@@ -403,69 +432,71 @@ begin
     ButtonAdd.Caption := 'Сохранить';
   end;
 
-  if TranspType in [6,7] then JustNumber := 'C310';
-  if TranspType in [8,9] then JustNumber := 'C311';
+  if TranspType in [6, 7] then
+    JustNumber := 'C310';
+  if TranspType in [8, 9] then
+    JustNumber := 'C311';
 
   EditDistance.SetFocus;
 end;
 
 procedure TFormTransportation.LoadTranspInfo(aIdTransp: integer);
-var i : integer;
+{ var i : integer; }
 begin
   Loading := true;
   try
-      qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT * FROM transpcard_temp WHERE (ID = ' +
-        IntToStr(aIdTransp) + ');';
-      qrTemp.Active := True;
+    qrTemp.Active := false;
+    qrTemp.SQL.Text := 'SELECT * FROM transpcard_temp WHERE (ID = ' + IntToStr(aIdTransp) + ');';
+    qrTemp.Active := true;
 
-      EditJustificationNumber.Text := qrTemp.FieldByName('TRANSP_CODE_JUST').AsString;
-      EditJustification.Text := qrTemp.FieldByName('TRANSP_JUST').AsString;
-      EditDistance.Text := qrTemp.FieldByName('TRANSP_DIST').AsString;
-      cmbClass.ItemIndex := qrTemp.FieldByName('CARG_CLASS').AsInteger;
-      cmbUnit.ItemIndex := qrTemp.FieldByName('CARG_TYPE').AsInteger;
-      edtCount.Text := qrTemp.FieldByName('CARG_COUNT').AsString;
-      edtYDW.Text := qrTemp.FieldByName('CARG_YDW').AsString;
-      edtCoastNDS.Text := qrTemp.FieldByName('COAST_NDS').AsString;
-      edtCoastNoNDS.Text := qrTemp.FieldByName('COAST_NO_NDS').AsString;
-      edtNDS.Text := qrTemp.FieldByName('NDS').AsString;
-      edtPriceNoNDS.Text := qrTemp.FieldByName('TRANSP_SUM_NO_NDS').AsString;
-      edtPriceNDS.Text := qrTemp.FieldByName('TRANSP_SUM_NDS').AsString;
+    EditJustificationNumber.Text := qrTemp.FieldByName('TRANSP_CODE_JUST').AsString;
+    EditJustification.Text := qrTemp.FieldByName('TRANSP_JUST').AsString;
+    EditDistance.Text := qrTemp.FieldByName('TRANSP_DIST').AsString;
+    cmbClass.ItemIndex := qrTemp.FieldByName('CARG_CLASS').AsInteger;
+    cmbUnit.ItemIndex := qrTemp.FieldByName('CARG_TYPE').AsInteger;
+    edtCount.Text := qrTemp.FieldByName('CARG_COUNT').AsString;
+    edtYDW.Text := qrTemp.FieldByName('CARG_YDW').AsString;
+    edtCoastNDS.Text := qrTemp.FieldByName('COAST_NDS').AsString;
+    edtCoastNoNDS.Text := qrTemp.FieldByName('COAST_NO_NDS').AsString;
+    edtNDS.Text := qrTemp.FieldByName('NDS').AsString;
+    edtPriceNoNDS.Text := qrTemp.FieldByName('TRANSP_SUM_NO_NDS').AsString;
+    edtPriceNDS.Text := qrTemp.FieldByName('TRANSP_SUM_NDS').AsString;
 
-      TranspType := qrTemp.FieldByName('TRANSP_TYPE').AsInteger;
-      TranspCount := qrTemp.FieldByName('TRANSP_COUNT').AsFloat;
-      CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsInteger;
-      CoastNds := qrTemp.FieldByName('COAST_NDS').AsInteger;
-      Nds := qrTemp.FieldByName('NDS').AsInteger;
-      CCount := qrTemp.FieldByName('CARG_COUNT').AsFloat;
-      Ydw := qrTemp.FieldByName('CARG_YDW').AsFloat;
+    TranspType := qrTemp.FieldByName('TRANSP_TYPE').AsInteger;
+    TranspCount := qrTemp.FieldByName('TRANSP_COUNT').AsFloat;
+    CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsInteger;
+    CoastNds := qrTemp.FieldByName('COAST_NDS').AsInteger;
+    Nds := qrTemp.FieldByName('NDS').AsInteger;
+    CCount := qrTemp.FieldByName('CARG_COUNT').AsFloat;
+    Ydw := qrTemp.FieldByName('CARG_YDW').AsFloat;
 
-      qrTemp.Active := False;
+    qrTemp.Active := false;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении данных по свалке ошибка:' +
-      sLineBreak + sLineBreak + E.Message), CaptionForm,
-      MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении данных по свалке ошибка:' + sLineBreak + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
   Loading := false;
 end;
 
 procedure TFormTransportation.GetCoast;
 var
-  i: Integer;
-  More: Integer;
+  { i: Integer; }
+  More: integer;
   TabName, DistanceText, LikeText: string;
 begin
   More := 0;
   Distance := 0;
   LikeText := '';
-  CoastNoNDS := 0;
-  CoastNDS := 0;
-  NDS := 20;
+  CoastNoNds := 0;
+  CoastNds := 0;
+  Nds := 20;
 
   case TranspType of
-    6,7: TabName := 'transfercargo';
-    8,9: TabName := 'transfercargoboard';
+    6, 7:
+      TabName := 'transfercargo';
+    8, 9:
+      TabName := 'transfercargoboard';
   end;
 
   if EditDistance.Text <> '' then
@@ -473,7 +504,7 @@ begin
     Distance := StrToInt(EditDistance.Text);
     DistanceText := EditDistance.Text;
 
-    if TranspType in [6,7] then
+    if TranspType in [6, 7] then
     begin
       if Distance > 50 then
       begin
@@ -483,7 +514,7 @@ begin
       end;
     end;
 
-    if TranspType in [8,9] then
+    if TranspType in [8, 9] then
     begin
       if Distance > 100 then
       begin
@@ -505,53 +536,50 @@ begin
   try
     with qrTemp do
     begin
-      Active := False;
-      SQL.Text := 'SELECT * FROM ' + TabName + ' WHERE monat = ' + IntToStr(EstMonth) +
-        ' and year = ' + IntToStr(EstYear) + ' and distance = :dist;';
+      Active := false;
+      SQL.Text := 'SELECT * FROM ' + TabName + ' WHERE monat = ' + IntToStr(EstMonth) + ' and year = ' +
+        IntToStr(EstYear) + ' and distance = :dist;';
       ParamByName('dist').Value := DistanceText;
-      Active := True;
+      Active := true;
 
       if not IsEmpty then
       begin
-        CoastNoNDS := FieldByName('class' +
-          IntToStr(cmbClass.ItemIndex + 1) + '_1').AsInteger;
-        CoastNDS := FieldByName('class' +
-          IntToStr(cmbClass.ItemIndex + 1) + '_2').AsInteger;
+        CoastNoNds := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) + '_1').AsInteger;
+        CoastNds := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) + '_2').AsInteger;
       end;
 
-      Active := False;
+      Active := false;
 
-      if (More > 0) and (CoastNoNDS > 0) then
+      if (More > 0) and (CoastNoNds > 0) then
       begin
-        SQL.Text := 'SELECT * FROM ' + TabName + ' WHERE monat = ' + IntToStr(EstMonth) +
-          ' and year = ' + IntToStr(EstYear) + ' and distance LIKE "%' + LikeText + '%";';
-        Active := True;
+        SQL.Text := 'SELECT * FROM ' + TabName + ' WHERE monat = ' + IntToStr(EstMonth) + ' and year = ' +
+          IntToStr(EstYear) + ' and distance LIKE "%' + LikeText + '%";';
+        Active := true;
 
         if not IsEmpty then
         begin
-          CoastNoNDS := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) +
-            '_1').AsInteger * More + CoastNoNDS;
-          CoastNDS := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) +
-            '_2').AsInteger * More + CoastNDS;
+          CoastNoNds := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) + '_1').AsInteger * More +
+            CoastNoNds;
+          CoastNds := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) + '_2').AsInteger * More
+            + CoastNds;
         end;
-        Active := False;
+        Active := false;
       end;
     end;
   except
     on E: Exception do
     begin
-      qrTemp.Active := False;
+      qrTemp.Active := false;
 
       MessageBox(0, PChar('При получении цен по грузоперевозкам возникла ошибка:' + sLineBreak + sLineBreak +
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
   end;
   ChangeCoast := true;
-  edtCoastNoNDS.Text := IntToStr(CoastNoNDS);
-  edtCoastNDS.Text := IntToStr(CoastNDS);
-  edtNDS.Text := IntToStr(NDS);
+  edtCoastNoNDS.Text := IntToStr(CoastNoNds);
+  edtCoastNDS.Text := IntToStr(CoastNds);
+  edtNDS.Text := IntToStr(Nds);
   ChangeCoast := false;
 end;
 
 end.
-

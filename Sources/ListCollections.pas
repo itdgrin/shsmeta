@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls, ComCtrls, DB, ShellAPI, Menus,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client, System.Types;
 
 type
   TFormListCollections = class(TForm)
@@ -696,7 +696,7 @@ begin
 
   Application.ProcessMessages;
 
-  //FormListCollections.Left := FormMain.Left + (FormMain.Width - FormListCollections.Width) div 2;;
+  // FormListCollections.Left := FormMain.Left + (FormMain.Width - FormListCollections.Width) div 2;;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

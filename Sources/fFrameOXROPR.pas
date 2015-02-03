@@ -10,7 +10,7 @@ uses
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -71,14 +71,14 @@ type
       Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
     procedure VSTEnter(Sender: TObject);
     procedure VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
-    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
-      var CellText: string);
+    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: string);
     procedure ComboBoxResolutionChange(Sender: TObject);
   public
-     MaisCodeList: TStringList;
-     procedure ReceivingAll; override;
-     constructor Create(AOwner: TComponent);
-     destructor Destroy; override;
+    MaisCodeList: TStringList;
+    procedure ReceivingAll; override;
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -144,8 +144,7 @@ begin
     else
       IdRegion := 2;
 
-    StrQuery := 'SELECT * FROM objstroj WHERE obj_region = ' +
-      IntToStr(IdRegion) + ' order by stroj_id';
+    StrQuery := 'SELECT * FROM objstroj WHERE obj_region = ' + IntToStr(IdRegion) + ' order by stroj_id';
 
     with ADOQueryTypeWork do
     begin
@@ -199,8 +198,9 @@ begin
     ComboBoxResolution.ItemIndex := 0;
   except
     on E: Exception do
-      MessageBox(0, PChar('При заполнении выпадающего списка ' + sLineBreak + '«Постановления» возникла ошибка:' +
-        sLineBreak + sLineBreak + E.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При заполнении выпадающего списка ' + sLineBreak +
+        '«Постановления» возникла ошибка:' + sLineBreak + sLineBreak + E.Message), CaptionFrame,
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -209,7 +209,7 @@ end;
 procedure TFrameOXROPR.ReceivingAll;
 begin
   ReceivingSearch;
-  fLoaded := true;
+  fLoaded := True;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -226,8 +226,8 @@ begin
   colP2 := ADOQueryTypeWork.FieldByName('COL2NAME').AsString;
 
   StrQuery := 'SELECT number as "Number", (SELECT WORK_NAME FROM objworks ' +
-    'WHERE WORK_ID = number) as "NameWork", ' + colP1 + ' as "P1", ' + colP2 +
-    ' as "P2" FROM objdetailex' + WhereStr + ' ORDER BY number ASC';
+    'WHERE WORK_ID = number) as "NameWork", ' + colP1 + ' as "P1", ' + colP2 + ' as "P2" FROM objdetailex' +
+    WhereStr + ' ORDER BY number ASC';
 
   with ADOQuery do
   begin
@@ -429,8 +429,8 @@ begin
 
   // Выводим название в Memo под таблицей
 
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node))
-  then Exit;
+  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node)) then
+    Exit;
 
   ADOQuery.RecNo := Node.Index + 1;
   Memo.Text := ADOQuery.FieldByName('NameWork').AsVariant;

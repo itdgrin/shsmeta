@@ -7,11 +7,11 @@ uses
   Controls, DB, SysUtils, Messages, Menus, Variants, Windows, Graphics, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  Vcl.Samples.Spin, Vcl.Mask;
+  Vcl.Samples.Spin, Vcl.Mask, System.UITypes;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -194,7 +194,7 @@ end;
 
 procedure TFormKC6.RecalcOutCount;
 var
-  ds: Char;
+  {ds: Char;}
   i: Integer;
 begin
   // Вычисляем остаток
@@ -412,7 +412,7 @@ end;
 procedure TFormKC6.SelectDataEstimates(const idTypeData, IdTables: Integer; const cnt: Double);
 var
   i: Integer;
-  ds: Char;
+  {ds: Char;}
 begin
   // Процедура выделения строчки для редактируемого акта
   with StringGridDataEstimates do
@@ -634,7 +634,7 @@ begin
   begin
     if Col = 5 then // Выбран столбец "Процентовка"
     begin
-      if not(Key in ['0' .. '9', #8, #13, ',', '.']) then
+      if not CharInSet(Key, ['0' .. '9', #8, #13, ',', '.']) then
         Key := #0;
 
       if Key = ',' then
@@ -1044,7 +1044,7 @@ end;
 procedure TFormKC6.EditKoefChange(Sender: TObject);
 var
   i: Integer;
-  ds: Char;
+  {ds: Char;}
   fl: Boolean;
 begin
   fl := False;

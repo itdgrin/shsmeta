@@ -42,6 +42,10 @@ object FormCalculationSettings: TFormCalculationSettings
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = #1054#1089#1085#1086#1074#1085#1099#1077
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox1: TGroupBox
         Left = 5
         Top = 5

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls,
-  Buttons;
+  Buttons, System.UITypes;
 
 type
   TFormPercentClientContractor = class(TForm)
@@ -125,7 +125,7 @@ var
   i: Integer;
   c: Char;
 begin
-  if not(Key in ['0' .. '9', #8]) then // Не цифра и не BackSpace
+  if not CharInSet(Key, ['0' .. '9', #8]) then // Не цифра и не BackSpace
     Key := #0
   else if Key <> #8 then
   begin

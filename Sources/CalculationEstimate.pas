@@ -11,11 +11,11 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls,
   CalculationEstimateSSR, CalculationEstimateSummaryCalculations, JvExDBGrids,
-  JvDBGrid, JvDBUltimGrid, System.UITypes;
+  JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -516,10 +516,7 @@ type
     function GetWorkCostMachinists(const vIdNormativ: string): Double;
 
     // Расчёт ЗП (заработной платы)
-    function CalculationSalary(const vIdNormativ: string): TTwoValues;
-
-    // Расчёт % транспорта
-    procedure CalculationPercentTransport; // +++
+    function CalculationSalary(const vIdNormativ: string): TTwoValues; // +++
 
     // Норма расхода по механизму
     function GetNormMechanizm(const vIdNormativ, vIdMechanizm: string): Double;
@@ -536,23 +533,8 @@ type
     // Расчёт ЗП машиниста (зарплата машиниста)
     procedure CalculationSalaryMachinist; // +++
 
-    // Расчёт ОХР и ОПР
-    procedure CalculationOXROPR; // +++
-
-    // Расчёт План прибыли
-    procedure CalculationPlanProfit; // +++
-
-    // Расчёт зимнего удорожания
-    procedure CalculationWinterPrice; // +++
-
     // Расчёт ЗП в зимнем удорожании
     procedure CalculationSalaryWinterPrice; // +++
-
-    // Расчёт Труд
-    procedure CalculationWork; // +++
-
-    // Расчёт Труд маш.
-    procedure CalculationWorkMachinist; // +++
 
     procedure EstimateBasicDataClick(Sender: TObject);
     procedure LabelObjectClick(Sender: TObject);
@@ -822,10 +804,10 @@ begin
 end;
 
 procedure TFormCalculationEstimate.FormCreate(Sender: TObject);
-var
+{ var
   i: Integer;
   Path: string;
-  IFile: TIniFile;
+  IFile: TIniFile; }
 begin
   FormMain.PanelCover.Visible := True; // Показываем панель на главной форме
 
@@ -2133,13 +2115,13 @@ begin
   NewID := 0;
 
   // Замена литинских на кирилические
-  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or (NewCode[1] = 'W') then // E кирилическая и латинская
+  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or (NewCode[1] = 'W')
+  then // E кирилическая и латинская
   begin
     if (NewCode[1] = 'E') or (NewCode[1] = 'T') then
       NewCode[1] := 'Е';
     if NewCode[1] = 'W' then
       NewCode[1] := 'Ц';
-
 
     if NewCode[1] = 'W' then
       NewCode[1] := 'Ц';
@@ -2212,7 +2194,7 @@ begin
     Exit;
   end;
 
-  if (NewCode[1] in ['0' .. '9']) then
+  if CharInSet(NewCode[1], ['0' .. '9']) then
   begin
     qrTemp.Active := False;
     qrTemp.SQL.Clear;
@@ -2659,13 +2641,13 @@ end;
 
 procedure TFormCalculationEstimate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var
-  DialogResult, i: Integer;
+  DialogResult { , i } : Integer;
 begin
   // Если уже спрашивали о закрытии окна, и окно было зактрыто, больше не выводим это сообщение
   // пока эта форма не будет создана заново, в резельтате чего ConfirmCloseForm будет установлено в True
   if not ConfirmCloseForm then
     Exit;
-
+  DialogResult := mrNone;
   // Флаг, сигнализирующий о том спрашивать или не спрашивать при закрытиии формы
   ConfirmCloseForm := False;
 
@@ -2769,12 +2751,12 @@ end;
 
 procedure TFormCalculationEstimate.GridRatesRowSellect;
 var
-  i: Integer;
-  vIdNormativ: string;
-  {VAT, vClass, Distance, More, Mass, IdDump, Count: Integer; }
-  {TwoValuesSalary, TwoValuesEMiM: TTwoValues;}
+  { i: Integer;
+    vIdNormativ: string; }
+  { VAT, vClass, Distance, More, Mass, IdDump, Count: Integer; }
+  { TwoValuesSalary, TwoValuesEMiM: TTwoValues; }
   CalcPrice: string[2];
-  BtnChange: Boolean; // Признак изменения выбраной кнопки
+  //BtnChange: Boolean; // Признак изменения выбраной кнопки
 begin
   // Изменение типа данных в выпадающем списке
   if qrRatesTYPE_DATA.AsInteger > 0 then
@@ -2798,7 +2780,7 @@ begin
   // Загрузка необходимых данных по строке в таблице расценок
   GridRatesRowLoad;
   // РАЗВЁРТЫВАНИЕ ВЫБРАННОЙ РАСЦЕНКИ В ТАБЛИЦАХ СПРАВА
-  BtnChange := False;
+  //BtnChange := False;
   // Гасит все правые кнопки
   BottomTopMenuEnabled(False);
   case qrRatesTYPE_DATA.AsInteger of
@@ -2824,18 +2806,6 @@ begin
 
         // Средний разряд рабочих-строителей
         EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesIDID.AsInteger)));
-
-        // Разраты труда рабочих-строителей
-        // qrCalculations.ParamByName('trud_two').AsFloat :=
-        // GetWorkCostBuilders(IntToStr(qrRatesIDID.AsInteger));
-        // R StringGridCalculations.Cells[11, CountCoef + 2] :=
-        // R  MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesIDID.AsInteger)));
-
-        // Затраты труда машинистов
-        // qrCalculations.ParamByName('trud_mash_two').AsFloat :=
-        // GetWorkCostMachinists(IntToStr(qrRatesIDID.AsInteger));
-        // R StringGridCalculations.Cells[12, CountCoef + 2] :=
-        // R  MyFloatToStr(GetWorkCostMachinists(IntToStr(qrRatesIDID.AsInteger)));
 
         SetIndexOXROPR(qrRatesCODE.AsString);
 
@@ -2907,7 +2877,7 @@ begin
     4: // ОБОРУДОВАНИЕ
       begin
         SpeedButtonEquipments.Enabled := True;
-        BtnChange := True;
+        //BtnChange := True;
         SpeedButtonEquipments.Down := True;
 
         PanelClientRight.Visible := True;
@@ -2920,7 +2890,7 @@ begin
       begin
         PMEdit.Enabled := True;
         SpeedButtonDump.Enabled := True;
-        BtnChange := True;
+        //BtnChange := True;
         SpeedButtonDump.Down := True;
 
         PanelClientRight.Visible := True;
@@ -2933,7 +2903,7 @@ begin
       begin
         PMEdit.Enabled := True;
         SpeedButtonTransp.Enabled := True;
-        BtnChange := True;
+        //BtnChange := True;
         SpeedButtonTransp.Down := True;
 
         PanelClientRight.Visible := True;
@@ -2944,7 +2914,7 @@ begin
     10, 11: // Пуск и регулировка
       begin
         SpeedButtonStartup.Enabled := True;
-        BtnChange := True;
+        //BtnChange := True;
         SpeedButtonStartup.Down := True;
 
         PanelClientRight.Visible := True;
@@ -3041,8 +3011,7 @@ procedure TFormCalculationEstimate.PopupMenuMaterialsPopup(Sender: TObject);
 begin
   PMMatEdit.Enabled := (not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0);
   PMMatReplace.Enabled := CheckMatUnAccountingMatirials and (qrMaterialTITLE.AsInteger = 0);;
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and
-    (qrMaterialTITLE.AsInteger = 0) and
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0) and
     (qrMaterialFROM_RATE.AsInteger = 0);
 end;
 
@@ -3056,13 +3025,13 @@ end;
 // Добавление расценки в смету
 procedure TFormCalculationEstimate.AddRate(const vRateId: Integer);
 var
-  i: Integer;
+  { i: Integer; }
   vMaxIdRate: Integer;
   vNormRas: Double;
   Month1, Year1: Integer;
   PriceVAT, PriceNoVAT: string;
   PT, PercentTransport: real;
-  SQL1, SQL2: string;
+  { SQL1, SQL2: string; }
   ZonaId: Integer;
   SCode: string;
 begin
@@ -3090,8 +3059,11 @@ begin
     end;
   except
     on E: Exception do
+    begin
       MessageBox(0, PChar('При добавлении расценки во временную таблицу возникла ошибка:' + sLineBreak +
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      Exit;
+    end;
   end;
 
   // Заносим во временную таблицу materialcard_temp материалы находящиеся в расценке
@@ -3103,11 +3075,8 @@ begin
       SQL.Add('SELECT year,monat FROM stavka WHERE stavka_id = ' +
         '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate) + ')');
       Active := True;
-      if not Eof then
-      begin
-        Month1 := FieldByName('monat').AsInteger;
-        Year1 := FieldByName('year').AsInteger;
-      end;
+      Month1 := FieldByName('monat').AsInteger;
+      Year1 := FieldByName('year').AsInteger;
       Active := False;
 
       SQL.Clear;
@@ -3132,8 +3101,7 @@ begin
       SQL.Clear;
       SQL.Add('SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate));
       Active := True;
-      if not Eof then
-        PercentTransport := Fields[0].AsFloat;
+      PercentTransport := Fields[0].AsFloat;
       Active := False;
 
       SQL.Clear;
@@ -3654,8 +3622,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.FillingTableMechanizm(const vIdCardRate, vIdMech: Integer);
-var
-  i: Integer;
+{ var
+  i: Integer; }
 begin
 
   qrMechanizm.Active := False;
@@ -3678,8 +3646,6 @@ begin
 end;
 
 procedure TFormCalculationEstimate.FillingTableDescription(const vIdNormativ: Integer);
-var
-  i: Integer;
 begin
   with qrDescription do
   begin
@@ -3691,6 +3657,7 @@ end;
 
 function TFormCalculationEstimate.GetRankBuilders(const vIdNormativ: string): Double;
 begin
+  Result := 0;
   // Средний разряд рабочих-строителей
   try
     with qrTemp do
@@ -3701,9 +3668,7 @@ begin
       Active := True;
 
       if FieldByName('norma').Value <> Null then
-        Result := FieldByName('norma').AsFloat
-      else
-        Result := 0;
+        Result := FieldByName('norma').AsFloat;
     end;
   except
     on E: Exception do
@@ -3714,6 +3679,7 @@ end;
 
 function TFormCalculationEstimate.GetWorkCostBuilders(const vIdNormativ: string): Double;
 begin
+  Result := 0;
   // Разраты труда рабочих-строителей
   try
     with qrTemp do
@@ -3724,9 +3690,7 @@ begin
       Active := True;
 
       if FieldByName('norma').AsVariant <> Null then
-        Result := FieldByName('norma').AsVariant
-      else
-        Result := 0;
+        Result := FieldByName('norma').AsVariant;
     end;
   except
     on E: Exception do
@@ -3737,6 +3701,7 @@ end;
 
 function TFormCalculationEstimate.GetWorkCostMachinists(const vIdNormativ: string): Double;
 begin
+  Result := 0;
   // Затраты труда машинистов
   try
     with qrTemp do
@@ -3747,9 +3712,7 @@ begin
       Active := True;
 
       if FieldByName('norma').AsVariant <> Null then
-        Result := FieldByName('norma').AsVariant
-      else
-        Result := 0;
+        Result := FieldByName('norma').AsVariant;
     end;
   except
     on E: Exception do
@@ -3828,8 +3791,6 @@ end;
 
 procedure TFormCalculationEstimate.CalculationMaterial;
 begin
-  CalculationPercentTransport;
-
   // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
   // qrCalculations.ParamByName('emim_one').AsFloat := 0;
   // qrCalculations.ParamByName('emim_two').AsFloat := 0;
@@ -3867,21 +3828,8 @@ begin
     end;
   }
 
-  CalculationOXROPR;
-
-  CalculationPlanProfit;
-
-  // Рассчитываем Зимнее удорожание
-  CalculationWinterPrice;
-
   // Рассчитываем Зарплату в зимнем удорожание
   CalculationSalaryWinterPrice;
-
-  // Рассчитываем Труд
-  CalculationWork;
-
-  // Рассчитываем Труд машиниста
-  // CalculationWorkMachinist;
 end;
 
 procedure TFormCalculationEstimate.CalculationMechanizm;
@@ -3942,35 +3890,22 @@ begin
     end;
   }
 
-  CalculationOXROPR;
-
-  CalculationPlanProfit;
-
-  // Рассчитываем Зимнее удорожание
-  CalculationWinterPrice;
-
   // Рассчитываем Зарплату в зимнем удорожание
   CalculationSalaryWinterPrice;
-
-  // Рассчитываем Труд
-  // CalculationWork;
-
-  // Рассчитываем Труд машиниста
-  CalculationWorkMachinist;
 end;
 
 function TFormCalculationEstimate.CalculationSalary(const vIdNormativ: string): TTwoValues;
 var
   TZ, TZ1: Double;
-  CountMaterial: Integer;
+  { CountMaterial: Integer; }
   Count: Double;
-  i: Integer;
+  { i: Integer; }
   MRCoef: Double;
   IdRegion: Integer;
   RateWorker: Double;
   TW: TTwoValues;
   StrQuery: string;
-  Key: Integer;
+  { Key: Integer; }
 begin
   try
     // Количество из ЛЕВОЙ таблицы
@@ -4067,48 +4002,9 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.CalculationPercentTransport;
-var
-  Percent: Double;
-  Str: string;
-begin
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('CALL GetPercentTransport(' + IntToStr(IdObject) + ');');
-      Active := True;
-
-      if RecordCount > 0 then
-        Percent := FieldByName('PercentTransport').AsVariant
-        // Получаем % транспортных затрат
-      else
-        Percent := 0;
-    end;
-
-    { R
-      with StringGridCalculations do
-      begin
-      Cells[6, CountCoef + 2] :=
-      MyFloatToStr(RoundTo(MyStrToFloatDef(Cells[5, CountCoef + 2], 0) * Percent / 100, PS.RoundTo * -1));
-      Cells[6, CountCoef + 3] :=
-      MyFloatToStr(RoundTo(MyStrToFloatDef(Cells[5, CountCoef + 3], 0) * Percent / 100, PS.RoundTo * -1));
-      end;
-    }   {
-      qrCalculations.ParamByName('transp_one').AsFloat :=
-      RoundTo(qrCalculations.ParamByName('mr_one').AsFloat * Percent / 100, PS.RoundTo * -1);
-      qrCalculations.ParamByName('transp_two').AsFloat :=
-      RoundTo(qrCalculations.ParamByName('mr_two').AsFloat * Percent / 100, PS.RoundTo * -1); }
-  except
-    on E: Exception do
-      MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' + sLineBreak + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-end;
-
 function TFormCalculationEstimate.GetNormMechanizm(const vIdNormativ, vIdMechanizm: string): Double;
 begin
+  Result := 0;
   // Норма расхода по механизму
   try
     with qrTemp do
@@ -4121,9 +4017,6 @@ begin
 
       if FieldByName('norm_ras').AsVariant <> Null then
         Result := MyStrToFloat(FieldByName('norm_ras').AsString)
-      else
-        Result := 0;
-
     end;
   except
     on E: Exception do
@@ -4134,6 +4027,7 @@ end;
 
 function TFormCalculationEstimate.GetPriceMechanizm(const vIdNormativ, vIdMechanizm: string): Currency;
 begin
+  Result := 0;
   // Цена по механизму
   try
     with qrTemp do
@@ -4146,8 +4040,6 @@ begin
 
       if FieldByName('norm_ras').AsVariant <> Null then
         Result := MyStrToFloat(FieldByName('norm_ras').AsString)
-      else
-        Result := 0;
     end;
   except
     on E: Exception do
@@ -4157,14 +4049,14 @@ begin
 end;
 
 procedure TFormCalculationEstimate.CalculationSalaryMachinist;
-var
+{ var
   CountMechanizm: Integer;
   i, j: Integer;
   Count: Double;
   EMiM, EMiM1: array of Double;
   FirstSalary: Double;
   Res, Res1: Double;
-  s: string;
+  s: string; }
 begin
   { try
     // Количество материалов в расценке
@@ -4226,102 +4118,8 @@ begin
     end; }
 end;
 
-procedure TFormCalculationEstimate.CalculationOXROPR;
-var
-  OXROPR: Double;
-begin
-  {
-    try
-    // Если общий % зимнего удорожания есть в таблице, тогда считаем
-    // R if Cells[8, CountCoef + 2] <> '' then
-    if qrCalculations.ParamByName('ohropr_one').Value <> Null then
-    begin
-    // R OXROPR := MyStrToCurr(Cells[2, CountCoef + 3]); // ЗП
-    OXROPR := qrCalculations.ParamByName('count').AsInteger;
-    // OXROPR := OXROPR + MyStrToCurr(Cells[4, CountCoef + 3]); // ЗП + ЗП маш.
-
-    // (ЗП + ЗП маш.) * % в этом столбце
-    // R OXROPR := OXROPR * MyStrToCurr(Cells[8, CountCoef + 2]) / 100;
-    OXROPR := OXROPR * qrCalculations.ParamByName('ohropr_one').AsFloat / 100;
-
-    // Вставляем данные в НИЖНЮЮ таблицу в колонку (ОХР и ОПР)
-    // R Cells[8, CountCoef + 3] := MyFloatToStr(RoundTo(OXROPR, PS.RoundTo * -1));
-    qrCalculations.ParamByName('ohropr_two').AsFloat := RoundTo(OXROPR, PS.RoundTo * -1);
-    end
-    else
-    begin }
-  { R
-    Cells[8, CountCoef + 2] := 'Нет';
-    Cells[8, CountCoef + 3] := 'Нет';
-  } {
-    qrCalculations.ParamByName('ohropr_one').Value := Null;
-    qrCalculations.ParamByName('ohropr_two').Value := Null;
-    end;
-    except
-    on E: Exception do
-    MessageBox(0, PChar('Ошибка при вычислении «ОХРиОПР' + '», в таблице вычислений:' + sLineBreak +
-    sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
-  }
-end;
-
-procedure TFormCalculationEstimate.CalculationPlanProfit;
-var
-  PlanProfit: Double;
-begin
-  { try
-    with StringGridCalculations do
-    // Если % Плана прибыли есть в таблице, тогда считаем
-    if Cells[9, CountCoef + 2] <> '' then
-    begin
-    PlanProfit := MyStrToCurr(Cells[2, CountCoef + 3]); // ЗП
-    //     PlanProfit := PlanProfit + MyStrToCurr(Cells[4, CountCoef + 3]);
-    // ЗП + ЗП маш.
-
-    // (ЗП + ЗП маш.) * % в этом столбце
-    PlanProfit := PlanProfit * MyStrToCurr(Cells[9, CountCoef + 2]) / 100;
-
-    // Вставляем данные в НИЖНЮЮ таблицу в колонку (План прибыли)
-    Cells[9, CountCoef + 3] := MyFloatToStr(RoundTo(PlanProfit, PS.RoundTo * -1));
-    end
-    else
-    begin
-    Cells[9, CountCoef + 2] := 'Нет';
-    Cells[9, CountCoef + 3] := 'Нет';
-    end;
-    except
-    on E: Exception do
-    MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[9,
-    0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-    MB_ICONERROR + MB_OK + mb_TaskModal);
-    end; }
-end;
-
-procedure TFormCalculationEstimate.CalculationWinterPrice;
-var
-  WinterPrice: Currency;
-begin
-  { try
-    WinterPrice := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]);
-    // ЗП
-    WinterPrice := WinterPrice + MyStrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]); // ЗП + ЗП маш.
-
-    // (ЗП + ЗП маш.) * Общий процент зимнего удорожания
-    WinterPrice := WinterPrice * MyStrToCurr(StringGridCalculations.Cells[13, CountCoef + 2]) / 100;
-
-    // Вставляем данные в НИЖНЮЮ таблицу в колонку (Зим. удорож.)
-    with StringGridCalculations do
-    Cells[13, CountCoef + 3] := MyCurrToStr(RoundTo(WinterPrice, PS.RoundTo * -1));
-    except
-    on E: Exception do
-    MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[13,
-    0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-    MB_ICONERROR + MB_OK + mb_TaskModal);
-    end; }
-end;
-
 procedure TFormCalculationEstimate.CalculationSalaryWinterPrice;
-{var
+{ var
   SalaryWinterPrice: Currency; }
 begin
   { try
@@ -4338,51 +4136,6 @@ begin
     except
     on E: Exception do
     MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[14,
-    0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-    MB_ICONERROR + MB_OK + mb_TaskModal);
-    end; }
-end;
-
-procedure TFormCalculationEstimate.CalculationWork;
-{var
-  Work: Currency; }
-begin
-  { try
-    Work := MyStrToCurr(StringGridCalculations.Cells[11, CountCoef + 2]); // Труд
-
-    Work := Work * CountFromRate;
-    // MyStrToCurr( StringGridRates.Cells[2, StringGridRates.Row] );
-    // Труд * Кол-во
-
-    // Вставляем данные в НИЖНЮЮ таблицу в колонку (Труд)
-    with StringGridCalculations do
-    Cells[11, CountCoef + 3] := MyCurrToStr(RoundTo(Work, PS.RoundTo * -1));
-    except
-    on E: Exception do
-    MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[11,
-    0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-    MB_ICONERROR + MB_OK + mb_TaskModal);
-    end; }
-end;
-
-procedure TFormCalculationEstimate.CalculationWorkMachinist;
-var
-  WorkMachinist: Currency;
-begin
-  { try
-    WorkMachinist := MyStrToCurr(StringGridCalculations.Cells[12, CountCoef + 2]);
-    // Труд
-
-    WorkMachinist := WorkMachinist * CountFromRate;
-    // MyStrToCurr(StringGridRates.Cells[2, StringGridRates.Row]);
-    // Труд * Кол-во
-
-    // Вставляем данные в НИЖНЮЮ таблицу в колонку (Труд маш.)
-    with StringGridCalculations do
-    Cells[12, CountCoef + 3] := MyCurrToStr(RoundTo(WorkMachinist, PS.RoundTo * -1));
-    except
-    on E: Exception do
-    MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[2,
     0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
     MB_ICONERROR + MB_OK + mb_TaskModal);
     end; }
@@ -4798,6 +4551,7 @@ end;
 
 function TFormCalculationEstimate.GetSalaryMachinist(const vIdMechanizm: Integer): Currency;
 begin
+  Result := 0;
   try
     with qrTemp do
     begin
@@ -4810,9 +4564,7 @@ begin
 
       Active := True;
 
-      if FieldByName('Salary').AsVariant = Null then
-        Result := 0
-      else
+      if FieldByName('Salary').AsVariant <> Null then
         Result := FieldByName('Salary').AsVariant;
 
       Active := False;
@@ -4840,9 +4592,7 @@ begin
 
       Active := True;
 
-      if FieldByName('Coast').AsVariant = Null then
-        Result := 0
-      else
+      if FieldByName('Coast').AsVariant <> Null then
         Result := FieldByName('Coast').AsVariant;
 
       Active := False;
@@ -4917,7 +4667,7 @@ end;
 // Заполнение таблицы расценок
 procedure TFormCalculationEstimate.OutputDataToTable(aRecNo: Integer);
 var
-  {FieldRates: TFieldRates;}
+  { FieldRates: TFieldRates; }
   i: Integer;
   Str: string;
   Count: Integer;
@@ -5014,14 +4764,14 @@ begin
 end;
 
 procedure TFormCalculationEstimate.CopyEstimate;
-{var
+{ var
   sm_type, obj_id, name_estimate, date, sm_number, chapter, row_number, preparer, post_preparer, examiner,
-    post_examiner, set_drawings, stavka_id, COEF_TR_ZATR, coef_tr_obor, k40, k41, k31, k32, k33, k34, NDS,
-    dump_id: Variant;
+  post_examiner, set_drawings, stavka_id, COEF_TR_ZATR, coef_tr_obor, k40, k41, k31, k32, k33, k34, NDS,
+  dump_id: Variant;
 
   i, LastId: Integer;
   sIdEstimate, sNumberRow, sNumberNorm, sCountNorm, sUnitName, sDescription, sTypeData, sIdNorm,
-    sDistanceCount, sClassMass: string; }
+  sDistanceCount, sClassMass: string; }
 begin
   { with FormSaveEstimate do
     begin
@@ -5208,7 +4958,7 @@ end;
 
 procedure TFormCalculationEstimate.ShowFormAdditionData(const vDataBase: Char);
 var
-  {FormTop,} FormLeft, {BorderTop,} BorderLeft: Integer;
+  { FormTop, } FormLeft, { BorderTop, } BorderLeft: Integer;
 begin
   if (Assigned(FormAdditionData)) then
   begin
@@ -5554,12 +5304,12 @@ begin
       Font.Color := clWhite;
       Font.Style := Font.Style + [fsbold];
       if Column.Index = 1 then
-        if assigned(Column.Field) then
+        if Assigned(Column.Field) then
           Str := Column.Field.AsString;
     end
     else
     begin
-      if assigned(Column.Field) then
+      if Assigned(Column.Field) then
         Str := Column.Field.AsString;
     end;
 
@@ -5694,16 +5444,14 @@ begin
     // Вынесение за расценку имеет приоритет над заменой
     if SpeedButtonMaterials.Down and qrMaterial.Active then
     begin
-      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and
-        (qrRatesMID.AsInteger > 0) then
+      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (qrRatesMID.AsInteger > 0) then
         Font.Style := Font.Style + [fsbold];
     end;
 
     // Подсветка вынесенного за расценку механизма
     if SpeedButtonMechanisms.Down and qrMechanizm.Active then
     begin
-      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) and
-        (qrRatesMEID.AsInteger > 0) then
+      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) and (qrRatesMEID.AsInteger > 0) then
         Font.Style := Font.Style + [fsbold];
     end;
 

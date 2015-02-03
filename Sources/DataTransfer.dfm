@@ -71,7 +71,7 @@ object FormDataTransfer: TFormDataTransfer
     end
     object Button4: TButton
       Left = 351
-      Top = 1
+      Top = 6
       Width = 110
       Height = 25
       Caption = #1059#1076#1072#1083#1080#1090#1100
