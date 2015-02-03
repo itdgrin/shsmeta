@@ -42,6 +42,10 @@ object FormProgramSettings: TFormProgramSettings
     object TabSheet3: TTabSheet
       Caption = #1058#1072#1073#1083#1080#1094#1099
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         624
         323)

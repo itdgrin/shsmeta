@@ -377,7 +377,7 @@ begin
     SelectedColumn := DBGrid.SelectedIndex;
 
     // Заносим строку поиска в строку соотвествующего столбца
-    StringQuickSearch[SelectedColumn] := StringQuickSearch[SelectedColumn] + Key;
+    StringQuickSearch[SelectedColumn] := StringQuickSearch[SelectedColumn] + string(Key);
 
     // Заносим первоначальный запрос
     StringQuery := Query + ' WHERE ';

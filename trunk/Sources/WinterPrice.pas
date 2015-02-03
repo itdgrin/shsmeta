@@ -10,7 +10,7 @@ uses
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
-  private
+  public
     procedure Paint(); override;
   end;
 
@@ -321,7 +321,7 @@ end;
 
 procedure TFormWinterPrice.FillingTree;
 var
-  i1, i2, i2_1, i3: Integer;
+  i1, i2: Integer;
   Num1, Num2: String;
 begin
   try
