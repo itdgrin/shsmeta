@@ -3,7 +3,7 @@ unit Tools;
 interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
-  System.Classes;
+  System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes;
 
 // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
@@ -17,8 +17,59 @@ procedure CloseOpen(const Query: TFDQuery);
 procedure LoadDBGridsSettings(const aForm: TForm);
 // Функция проверки TDataSet на активность и пустоту
 function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;
+// Функция вычисления формулы из строки !!!РАБОТАЕТ ЧЕРЕЗ OLE EXCEL - в дальнейшем переписать!
+function CalcFormula(const AFormula: string): Variant;
 
 implementation
+
+function CalcFormula(const AFormula: string): Variant;
+var
+  Res: Variant;
+  flNoError: boolean;
+  f: string;
+
+  procedure Formula(Formula_Text: string; var Formula_Val: Variant; var flag1: boolean);
+  var
+    E, Sheet, MyCell: Variant;
+  begin
+    flag1 := False;
+    if Formula_Text[1] <> '=' then
+      Formula_Text := '=' + Formula_Text;
+    try
+      // Если Excel загружен, то подключиться к нему
+      E := GetActiveOLEObject('Excel.Application');
+    except
+      // Иначе Создать объект MS Excel
+      E := CreateOLEObject('Excel.Application');
+    end;
+    E.WorkBooks.Add; // Добавить книгу MS Excel
+    Sheet := E.Sheets.Item[1]; // Перейти на первую страницу книги
+    MyCell := Sheet.Cells[1, 1]; // Определить ячейку для занесения формулы
+    MyCell.Value := Formula_Text; // Заносим формулу
+    Formula_Val := MyCell.Value; // Вычисляем формулу
+    if (VarIsFloat(Formula_Val) = False) or (VarIsNumeric(Formula_Val) = False) then
+    begin
+      MessageDlg('Внимание! Ошибка в формуле: ', mtWarning, [mbOk], 0, mbOk);
+      flag1 := False;
+    end
+    else
+      flag1 := True; // расчет выполнен правильно, без ошибок
+    E.DisplayAlerts := False;
+    try
+      E.Quit; // Выйти из созданного Excel
+      E := UnAssigned; // Освободить память
+    except
+    end;
+  end;
+
+begin
+  Result := Null;
+  f := AnsiUpperCase(AFormula);
+  StringReplace(f, ',', '.', [rfReplaceAll]);
+  Formula(Trim(f), Res, flNoError);
+  if flNoError then
+    Result := Res;
+end;
 
 function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;
 begin
