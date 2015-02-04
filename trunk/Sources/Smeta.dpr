@@ -102,14 +102,15 @@ uses
   CardPTM in 'CardPTM.pas' {FormCardPTM},
   fUpdate in 'fUpdate.pas' {UpdateForm};
 
-var
-  H: Thandle;
+//var
+  //H: Thandle;
 
 {$R *.res}
 
 begin
   // Ћюба€ уникальна€ строка котора€ будет только в нашем приложении
-  H := CreateMutex(nil, True, '5q7b3g1p0b5n3x6v9e6s');
+  //H :=
+  CreateMutex(nil, True, '5q7b3g1p0b5n3x6v9e6s');
 
   // ѕровер€ем не запущено ли приложение
   if GetLastError = ERROR_ALREADY_EXISTS then
