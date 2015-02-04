@@ -78,6 +78,7 @@ type
     N7: TMenuItem;
     N8: TMenuItem;
     Administator: TMenuItem;
+    N10: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -171,6 +172,7 @@ type
     procedure N6Click(Sender: TObject);
     procedure N8Click(Sender: TObject);
     procedure ServiceUpdateClick(Sender: TObject);
+    procedure N10Click(Sender: TObject);
 
   private
     CountOpenWindows: Integer;
@@ -210,7 +212,6 @@ const
   ProgramsRemoteControl = 'Programs remote control';
   AmmyyAdmin = 'AA_v3.exe';
   AeroAdmin = 'AeroAdmin.exe';
-
   // -----------------------------------------
 
   { SettingsTables.ini }
@@ -347,7 +348,7 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
   PricesReferenceData, AdditionData, Materials, PartsEstimates, SetCoefficients,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
-  CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList;
+  CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList, Tools;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -817,6 +818,11 @@ begin
   if Assigned(FormObjectsAndEstimates) then
     fCalcResource.LocateObject(FormObjectsAndEstimates.getCurObject);
   fCalcResource.Show;
+end;
+
+procedure TFormMain.N10Click(Sender: TObject);
+begin
+  ShowMessage('1/43+2*3-8.5=' + VarToStrDef(calcFormula('=1/43+2*3-8.5'), 'NULL'));
 end;
 
 procedure TFormMain.N13Click(Sender: TObject);
