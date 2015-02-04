@@ -640,6 +640,14 @@ type
     procedure PMEditClick(Sender: TObject);
     procedure tmRateTimer(Sender: TObject);
     procedure dbgrdRatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure dbgrdMechanizmKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure dbgrdMaterialKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure dbgrdDumpKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure dbgrdDevicesKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -1619,9 +1627,10 @@ function TFormCalculationEstimate.CheckMatReadOnly: Boolean;
 begin
   Result := False;
   // Вынесенные из расценки
-  if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger > 0)) or
+  if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger > 0))
+     { or
   // Неучтеные материалы
-    (CheckMatUnAccountingMatirials) then
+    (CheckMatUnAccountingMatirials) } then
     Result := True;
 end;
 
@@ -3009,9 +3018,15 @@ end;
 // вид всплывающего меню материалов
 procedure TFormCalculationEstimate.PopupMenuMaterialsPopup(Sender: TObject);
 begin
-  PMMatEdit.Enabled := (not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0);
-  PMMatReplace.Enabled := CheckMatUnAccountingMatirials and (qrMaterialTITLE.AsInteger = 0);;
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0) and
+  PMMatEdit.Enabled := (not CheckMatReadOnly) and
+    (qrMaterialTITLE.AsInteger = 0);
+
+  PMMatReplace.Enabled := CheckMatUnAccountingMatirials and
+    (qrMaterialTITLE.AsInteger = 0);
+
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and
+    (not CheckMatUnAccountingMatirials) and
+    (qrMaterialTITLE.AsInteger = 0) and
     (qrMaterialFROM_RATE.AsInteger = 0);
 end;
 
@@ -5227,6 +5242,21 @@ begin
     SetDevNoEditMode;
 end;
 
+procedure TFormCalculationEstimate.dbgrdDevicesKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  //45 - Insert
+  if (Key = 45) then
+    PMDevEditClick(Sender);
+end;
+
+procedure TFormCalculationEstimate.dbgrdDumpKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (Key = 45) then
+    PMDumpEditClick(Sender);
+end;
+
 procedure TFormCalculationEstimate.dbgrdMaterialDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 var
@@ -5292,9 +5322,9 @@ begin
     if (qrMaterialFROM_RATE.AsInteger = 0) and (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) then
       Font.Style := Font.Style + [fsbold];
 
-    // никакой цветовой подсветки для неучтеных
+   { // никакой цветовой подсветки для неучтеных
     if CheckMatUnAccountingMatirials then
-      Brush.Color := PS.BackgroundRows;
+      Brush.Color := PS.BackgroundRows;         }
 
     Str := '';
     // Подсветка синим подшапок таблицы
@@ -5332,6 +5362,16 @@ begin
   if not Assigned(FormCalculationEstimate.ActiveControl) or
     (FormCalculationEstimate.ActiveControl.Name <> 'MemoRight') then
     SetMatNoEditMode;
+end;
+
+procedure TFormCalculationEstimate.dbgrdMaterialKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  //45 - Insert
+  //Исловие аналогично условаю в PopupMenuMaterialsPopup
+  if (Key = 45) and ((not CheckMatReadOnly) and
+    (qrMaterialTITLE.AsInteger = 0)) then
+    PMMatEditClick(Sender);
 end;
 
 procedure TFormCalculationEstimate.dbgrdMechanizmDrawColumnCell(Sender: TObject; const Rect: TRect;
@@ -5416,6 +5456,15 @@ begin
   if not Assigned(FormCalculationEstimate.ActiveControl) or
     (FormCalculationEstimate.ActiveControl.Name <> 'MemoRight') then
     SetMechNoEditMode;
+end;
+
+procedure TFormCalculationEstimate.dbgrdMechanizmKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  //45 - Insert
+  //Исловие аналогично условаю в PopupMenuMechanizmsPopup
+  if (Key = 45) and (not CheckMechReadOnly) then
+    PMMechEditClick(Sender);
 end;
 
 procedure TFormCalculationEstimate.dbgrdRates12DrawColumnCell(Sender: TObject; const Rect: TRect;

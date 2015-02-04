@@ -407,6 +407,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="CardPTM.pas">
             <Form>FormCardPTM</Form>
+        </DCCReference>
+        <DCCReference Include="fUpdate.pas">
+            <Form>UpdateForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

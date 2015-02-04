@@ -3,11 +3,13 @@ unit Main;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Classes, Windows, Messages, SysUtils, Variants, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
-  ShellAPI, DateUtils, IniFiles, Grids, UpdateModule;
+  ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, Vcl.Imaging.pngimage;
 
 type
+  TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
+
   TFormMain = class(TForm)
     MainMenu: TMainMenu;
     MenuHelp: TMenuItem;
@@ -78,7 +80,12 @@ type
     N7: TMenuItem;
     N8: TMenuItem;
     Administator: TMenuItem;
+    UpdatePanel: TPanel;
     N10: TMenuItem;
+    Image1: TImage;
+    Label1: TLabel;
+    TimerUpdate: TTimer;
+    LabelDot: TLabel;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -172,15 +179,28 @@ type
     procedure N6Click(Sender: TObject);
     procedure N8Click(Sender: TObject);
     procedure ServiceUpdateClick(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure UpdatePanelMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure TimerUpdateTimer(Sender: TObject);
     procedure N10Click(Sender: TObject);
 
   private
     CountOpenWindows: Integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
-    fUpdateThread : TUpdateThread; //Нить проверки обновлений
+    FUpdateThread : TUpdateThread; //Нить проверки обновлений
     SystemInfoResult: boolean;
+    LastResp: TServiceResponse;
+
+    CurVersion: TVersion; // текущая версия приложения и БД
+    ClientName: string;   // Имя клиета
+    SendReport: boolean;  // Необходимость отправлять отчет об ошибках обновления
+    DebugMode: boolean; //Режим отладки приложения (блокирует некоторай функционал во время его отладки)
+
     procedure GetSystemInfo;
     procedure OnUpdate(var Message: TMessage); message WM_SHOW_SPLASH;
+    procedure ShowSplashForm(const AResp: TServiceResponse);
+    procedure ShowUpdateForm(const AResp: TServiceResponse);
   public
     procedure AutoWidthColumn(SG: TStringGrid; Nom: Integer);
   end;
@@ -323,15 +343,15 @@ const
   HintButtonSetCoefficients = 'Окно наборов коэффициентов';
   HintButtonOrganizations = 'Окно организаций';
 
+const
+  LWA_ALPHA = $2;
+  LWA_COLORKEY = $1;
+  WS_EX_LAYERED = $80000;
+
 var
   FormMain: TFormMain;
   PS: TProgramSettings;
   FMEndTables: Char;
-
-  CurVersion: TVersion; // текущая версия приложения и БД
-  ClientName: string;   // Имя клиета
-  SendReport: boolean;  // Необходимость отправлять отчет об ошибках обновления
-  DebugMode: boolean; //Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
 function MyFloatToStr(Value: Extended): string;
 function MyStrToFloat(Value: string): Extended;
@@ -348,18 +368,45 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
   PricesReferenceData, AdditionData, Materials, PartsEstimates, SetCoefficients,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
-  CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList, Tools;
+  CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
+  Tools, fUpdate;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
+procedure TFormMain.ShowSplashForm(const AResp: TServiceResponse);
+begin
+  UpdatePanel.Left := ClientWidth - UpdatePanel.Width;
+  UpdatePanel.Top := PanelOpenWindows.Top - UpdatePanel.Height;
+  UpdatePanel.Visible := true;
+  TimerUpdate.Enabled := UpdatePanel.Visible;
+end;
+
+procedure TFormMain.ShowUpdateForm(const AResp: TServiceResponse);
+var UPForm: TUpdateForm;
+begin
+  UPForm := TUpdateForm.Create(nil);
+  try
+    UPForm.ShowModal;
+  finally
+    UPForm.Free;
+  end;
+end;
 
 //Уведомление о доступности новых обновлений
 procedure TFormMain.OnUpdate(var Message: TMessage);
 var Resp: TServiceResponse;
 begin
+  UpdatePanel.Visible := False;
+  TimerUpdate.Enabled := UpdatePanel.Visible;
   Resp := fUpdateThread.Response;
   try
-    showmessage('ky');
+    Resp.Assign(FUpdateThread.Response);
+
+    if not Resp.UserRequest then
+      ShowSplashForm(Resp)
+    else
+      ShowUpdateForm(Resp);
+
   finally
     Resp.Free;
   end;
@@ -414,6 +461,15 @@ begin
   FormatSettings.DecimalSeparator := '.';
 
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
+end;
+
+procedure TFormMain.FormResize(Sender: TObject);
+begin
+  if UpdatePanel.Visible then
+  begin
+    UpdatePanel.Left := ClientWidth - UpdatePanel.Width;
+    UpdatePanel.Top := PanelOpenWindows.Top - UpdatePanel.Height;
+  end;
 end;
 
 procedure TFormMain.FormShow(Sender: TObject);
@@ -719,6 +775,25 @@ procedure TFormMain.TimerCoverTimer(Sender: TObject);
 begin
   (Sender as TTimer).Enabled := False;
   PanelCover.Visible := False;
+end;
+
+procedure TFormMain.TimerUpdateTimer(Sender: TObject);
+var i : integer;
+begin
+  LabelDot.Caption := '';
+  for i := 1 to TimerUpdate.Tag do
+    LabelDot.Caption := LabelDot.Caption + '.';
+  if TimerUpdate.Tag >= 3 then
+    TimerUpdate.Tag := 0
+  else TimerUpdate.Tag := TimerUpdate.Tag + 1;
+end;
+
+// Скрытие панели обновлений
+procedure TFormMain.UpdatePanelMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  UpdatePanel.Visible := False;
+  TimerUpdate.Enabled := UpdatePanel.Visible;
 end;
 
 procedure TFormMain.TariffsTransportationClick(Sender: TObject);
