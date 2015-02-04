@@ -640,6 +640,7 @@ type
     procedure PMEditClick(Sender: TObject);
     procedure tmRateTimer(Sender: TObject);
     procedure dbgrdRatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdMechanizmKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure dbgrdMaterialKeyDown(Sender: TObject; var Key: Word;
@@ -966,6 +967,12 @@ begin
 
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(Caption);
+end;
+
+procedure TFormCalculationEstimate.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (dbgrdRates.SelectedField = qrRatesCOUNT) and (Key = Ord('=')) then
+    ShowMessage('!');
 end;
 
 procedure TFormCalculationEstimate.FormResize(Sender: TObject);
@@ -2765,7 +2772,7 @@ var
   { VAT, vClass, Distance, More, Mass, IdDump, Count: Integer; }
   { TwoValuesSalary, TwoValuesEMiM: TTwoValues; }
   CalcPrice: string[2];
-  //BtnChange: Boolean; // Признак изменения выбраной кнопки
+  // BtnChange: Boolean; // Признак изменения выбраной кнопки
 begin
   // Изменение типа данных в выпадающем списке
   if qrRatesTYPE_DATA.AsInteger > 0 then
@@ -2789,7 +2796,7 @@ begin
   // Загрузка необходимых данных по строке в таблице расценок
   GridRatesRowLoad;
   // РАЗВЁРТЫВАНИЕ ВЫБРАННОЙ РАСЦЕНКИ В ТАБЛИЦАХ СПРАВА
-  //BtnChange := False;
+  // BtnChange := False;
   // Гасит все правые кнопки
   BottomTopMenuEnabled(False);
   case qrRatesTYPE_DATA.AsInteger of
@@ -2886,7 +2893,7 @@ begin
     4: // ОБОРУДОВАНИЕ
       begin
         SpeedButtonEquipments.Enabled := True;
-        //BtnChange := True;
+        // BtnChange := True;
         SpeedButtonEquipments.Down := True;
 
         PanelClientRight.Visible := True;
@@ -2899,7 +2906,7 @@ begin
       begin
         PMEdit.Enabled := True;
         SpeedButtonDump.Enabled := True;
-        //BtnChange := True;
+        // BtnChange := True;
         SpeedButtonDump.Down := True;
 
         PanelClientRight.Visible := True;
@@ -2912,7 +2919,7 @@ begin
       begin
         PMEdit.Enabled := True;
         SpeedButtonTransp.Enabled := True;
-        //BtnChange := True;
+        // BtnChange := True;
         SpeedButtonTransp.Down := True;
 
         PanelClientRight.Visible := True;
@@ -2923,7 +2930,7 @@ begin
     10, 11: // Пуск и регулировка
       begin
         SpeedButtonStartup.Enabled := True;
-        //BtnChange := True;
+        // BtnChange := True;
         SpeedButtonStartup.Down := True;
 
         PanelClientRight.Visible := True;
