@@ -8,7 +8,7 @@ uses
 
 const
   //»нтервал времени через который происходит опрос сервака
-  GetVersionInterval = 20000;
+  GetVersionInterval = 1200000;
 
   WM_SHOW_SPLASH = WM_USER + 1;
 
@@ -65,6 +65,8 @@ type
     FCatalogList,
     FUserList: TNewVersionList;
 
+    FUserRequest: boolean;
+
     function GetAppList(AIndex: Integer): TNewVersion;
     function GetCatalogList(AIndex: Integer): TNewVersion;
     function GetUserList(AIndex: Integer): TNewVersion;
@@ -82,7 +84,8 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    property UpdeteStatys: byte read fUpdeteStatys write fUpdeteStatys;
+    property UserRequest: boolean read FUserRequest write FUserRequest;
+    property UpdeteStatys: byte read FUpdeteStatys write FUpdeteStatys;
 
     property AppVersion: integer read GetAppVersion;
     property CatalogVersion: integer read GetCatalogVersion;
@@ -116,6 +119,9 @@ type
 
     FUserBlok: boolean; //Ѕлокировка пользователем (не надо мен€ беспокоить)
     FUserBlokCS: TCriticalSection;
+
+    //«апрос версии инициирован пользователем
+    FUserRequest: boolean;
 
     function GetResponse: TServiceResponse;
     procedure GetVersion; //ќтправл€ет запрос на получение версии на серверее
@@ -309,19 +315,12 @@ var XML : IXMLDocument;
     TempNV: TNewVersion;
     Resp: TServiceResponse;
 begin
-  FResponseCS.Enter;
-  try
-    ASResponse.Clear;
-  finally
-    FResponseCS.Leave;
-  end;
-
   XML := TXMLDocument.Create(nil);
   Resp := TServiceResponse.Create;
   try
     try
-      //XML.LoadFromStream(AStrimPage);
-      XML.LoadFromFile('d:\get_xml.xml');
+      XML.LoadFromStream(AStrimPage);
+      //XML.LoadFromFile('d:\get_xml.xml');
       TempNode := XML.ChildNodes.FindNode('updates');
       if TempNode = nil then
         raise Exception.Create('Ќе найдена нода <updates>');
@@ -369,11 +368,7 @@ begin
             TempNode1 := CatNode.ChildNodes.Get(i);
             TempNV.Version := StrToInt(TempNode1.ChildNodes.FindNode('version').Text);
             TempNV.Url := TempNode1.ChildNodes.FindNode('url').Text;
-            j := Resp.AddCatalog(TempNV);
-            TempNV := Resp.CatalogList[j];
-            TempNV.Url := 'sdf';
-            TempNV := Resp.CatalogList[j];
-            TempNV.Url := 'sdf';
+            Resp.AddCatalog(TempNV);
             TempNode1 := nil;
           end;
         end;
@@ -424,11 +419,20 @@ var NewVersion : TVersion;
     HTTP: TIdHTTP;
     StrimPage: TMemoryStream;
 begin
+  FResponseCS.Enter;
+  try
+    FResponse.Clear;
+  finally
+    FResponseCS.Leave;
+  end;
+
+  FUserRequest := false;
   //—нимаем сигнальное состо€ние порверки по требованию если оно установлено
   if FUREvent.WaitFor(0) = wrSignaled then
   begin
     FUserBlok := False;
     FUREvent.ResetEvent;
+    FUserRequest := true;
   end;
 
   //≈сли пользователь запретил, запроса не происходит
@@ -445,24 +449,12 @@ begin
       HTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
       HTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
 
-     { HTTP.Get('http://nocode.by:12115/gen/get_xml.xml?' +
-        'user_version=' + IntToStr(FCurVersion.UserDB) + '&' +
-        'app_version' + IntToStr(FCurVersion.App) + '&' +
-        'catalog_version=' + IntToStr(FCurVersion.RefDB), StrimPage);}
+      HTTP.Get('http://nocode.by:12115/gen/get_xml.xml?' +
+        'user_version=' + IntToStr(FCurVersion.User) + '&' +
+        'app_version=' + IntToStr(FCurVersion.App) + '&' +
+        'catalog_version=' + IntToStr(FCurVersion.Catalog), StrimPage);
 
       ParsXMLResult(StrimPage, FResponse);
-
-      FCurVersionCS.Enter;
-      FResponseCS.Enter;
-      try
-        if (FCurVersion.App <> FResponse.AppVersion) or
-           (FCurVersion.Catalog <> FResponse.CatalogVersion) or
-           (FCurVersion.User <> FResponse.UserVersion) then
-           PostMessage(FMainHandle, WM_SHOW_SPLASH, 0, 0);
-      finally
-        FResponseCS.Leave;
-        FCurVersionCS.Leave;
-      end;
 
     except
       on e: Exception do
@@ -473,6 +465,20 @@ begin
   finally
     HTTP.Free;
     StrimPage.Free;
+  end;
+
+  FCurVersionCS.Enter;
+  FResponseCS.Enter;
+  try
+    FResponse.UserRequest := FUserRequest;
+    if (FCurVersion.App < FResponse.AppVersion) or
+       (FCurVersion.Catalog < FResponse.CatalogVersion) or
+       (FCurVersion.User < FResponse.UserVersion) or
+       FUserRequest then
+       PostMessage(FMainHandle, WM_SHOW_SPLASH, 0, 0);
+  finally
+    FResponseCS.Leave;
+    FCurVersionCS.Leave;
   end;
 end;
 
@@ -508,6 +514,8 @@ var i : integer;
 begin
   if Source is TServiceResponse then
   begin
+    FUserRequest := (Source as TServiceResponse).FUserRequest;
+
     FUpdeteStatys := (Source as TServiceResponse).fUpdeteStatys;
 
     FAppCount := (Source as TServiceResponse).FAppCount;

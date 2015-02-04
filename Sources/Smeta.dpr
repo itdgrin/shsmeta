@@ -99,7 +99,8 @@ uses
   UniDict in 'UniDict.pas' {fUniDict},
   UpdateModule in 'UpdateModule.pas',
   TravelList in 'TravelList.pas' {fTravelList},
-  CardPTM in 'CardPTM.pas' {FormCardPTM};
+  CardPTM in 'CardPTM.pas' {FormCardPTM},
+  fUpdate in 'fUpdate.pas' {UpdateForm};
 
 var
   H: Thandle;

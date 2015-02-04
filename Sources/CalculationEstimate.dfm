@@ -1501,6 +1501,7 @@
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdMechanizmDrawColumnCell
             OnExit = dbgrdMechanizmExit
+            OnKeyDown = dbgrdMechanizmKeyDown
             AutoAppend = False
             AutoSort = False
             BevelInner = bvNone
@@ -1774,6 +1775,7 @@
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdMaterialDrawColumnCell
             OnExit = dbgrdMaterialExit
+            OnKeyDown = dbgrdMaterialKeyDown
             AutoAppend = False
             AutoSort = False
             SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -2011,6 +2013,7 @@
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
             OnExit = dbgrdDevicesExit
+            OnKeyDown = dbgrdDevicesKeyDown
             AutoAppend = False
             AutoSort = False
             BevelInner = bvNone
@@ -2173,6 +2176,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
+            OnKeyDown = dbgrdDumpKeyDown
             AutoAppend = False
             AutoSort = False
             SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -2321,6 +2325,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
+            OnKeyDown = dbgrdDumpKeyDown
             AutoAppend = False
             AutoSort = False
             SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -3259,6 +3264,7 @@
     Left = 96
     Top = 96
     object PMMatEdit: TMenuItem
+      AutoHotkeys = maAutomatic
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMMatEditClick
     end
