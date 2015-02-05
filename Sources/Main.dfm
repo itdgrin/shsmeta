@@ -242,7 +242,6 @@
     BevelOuter = bvNone
     TabOrder = 1
     Visible = False
-    ExplicitTop = -6
   end
   object MainMenu: TMainMenu
     Left = 32

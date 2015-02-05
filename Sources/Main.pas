@@ -180,45 +180,44 @@ type
     procedure N8Click(Sender: TObject);
     procedure ServiceUpdateClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure UpdatePanelMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure UpdatePanelMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure TimerUpdateTimer(Sender: TObject);
     procedure N10Click(Sender: TObject);
 
   private
-    CountOpenWindows: Integer;
+    CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
-    FUpdateThread : TUpdateThread; //Нить проверки обновлений
+    FUpdateThread: TUpdateThread; // Нить проверки обновлений
     SystemInfoResult: boolean;
     LastResp: TServiceResponse;
 
     CurVersion: TVersion; // текущая версия приложения и БД
-    ClientName: string;   // Имя клиета
-    SendReport: boolean;  // Необходимость отправлять отчет об ошибках обновления
-    DebugMode: boolean; //Режим отладки приложения (блокирует некоторай функционал во время его отладки)
+    ClientName: string; // Имя клиета
+    SendReport: boolean; // Необходимость отправлять отчет об ошибках обновления
+    DebugMode: boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
     procedure GetSystemInfo;
     procedure OnUpdate(var Message: TMessage); message WM_SHOW_SPLASH;
     procedure ShowSplashForm(const AResp: TServiceResponse);
     procedure ShowUpdateForm(const AResp: TServiceResponse);
   public
-    procedure AutoWidthColumn(SG: TStringGrid; Nom: Integer);
+    procedure AutoWidthColumn(SG: TStringGrid; Nom: integer);
   end;
 
   TProgramSettings = record
-    BackgroundHead: Integer;
-    FontHead: Integer;
-    BackgroundRows: Integer;
-    FontRows: Integer;
-    BackgroundSelectRow: Integer;
-    FontSelectRow: Integer;
-    BackgroundSelectCell: Integer;
-    FontSelectCell: Integer;
-    SelectRowUnfocusedTable: Integer;
+    BackgroundHead: integer;
+    FontHead: integer;
+    BackgroundRows: integer;
+    FontRows: integer;
+    BackgroundSelectRow: integer;
+    FontSelectRow: integer;
+    BackgroundSelectCell: integer;
+    FontSelectCell: integer;
+    SelectRowUnfocusedTable: integer;
 
-    RoundTo: Integer; // Округлять числа до vRoundTo знаков после запятой
+    RoundTo: integer; // Округлять числа до vRoundTo знаков после запятой
 
-    ShowHint: Boolean;
+    ShowHint: boolean;
   end;
 
 const
@@ -369,9 +368,10 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
   PricesReferenceData, AdditionData, Materials, PartsEstimates, SetCoefficients,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
-  Tools, fUpdate;
+  Tools, fUpdate, EditExpression;
 
 {$R *.dfm}
+
 // ---------------------------------------------------------------------------------------------------------------------
 procedure TFormMain.ShowSplashForm(const AResp: TServiceResponse);
 begin
@@ -382,7 +382,8 @@ begin
 end;
 
 procedure TFormMain.ShowUpdateForm(const AResp: TServiceResponse);
-var UPForm: TUpdateForm;
+var
+  UPForm: TUpdateForm;
 begin
   UPForm := TUpdateForm.Create(nil);
   try
@@ -392,13 +393,14 @@ begin
   end;
 end;
 
-//Уведомление о доступности новых обновлений
+// Уведомление о доступности новых обновлений
 procedure TFormMain.OnUpdate(var Message: TMessage);
-var Resp: TServiceResponse;
+var
+  Resp: TServiceResponse;
 begin
   UpdatePanel.Visible := False;
   TimerUpdate.Enabled := UpdatePanel.Visible;
-  Resp := fUpdateThread.Response;
+  Resp := FUpdateThread.Response;
   try
     Resp.Assign(FUpdateThread.Response);
 
@@ -412,32 +414,33 @@ begin
   end;
 end;
 
-//Загрузка системной информации из smeta.ini и текущей версии приложения
+// Загрузка системной информации из smeta.ini и текущей версии приложения
 procedure TFormMain.GetSystemInfo;
-var ini: TIniFile;
+var
+  ini: TIniFile;
 begin
   ini := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
   if not ini.SectionExists('system') then
   begin
     ini.WriteInteger('system', 'version', 0);
     ini.WriteString('system', 'clientname', '');
-    ini.WriteBool('system', 'sendreport', false);
+    ini.WriteBool('system', 'sendreport', False);
     ini.WriteBool('system', 'debugmode', true);
   end;
   CurVersion.App := ini.ReadInteger('system', 'version', 0);
   ClientName := ini.ReadString('system', 'clientname', '');
-  SendReport := ini.ReadBool('system', 'sendreport', false);
+  SendReport := ini.ReadBool('system', 'sendreport', False);
   DebugMode := ini.ReadBool('system', 'debugmode', true);
 
-  DM.qrDifferent.Active := false;
+  DM.qrDifferent.Active := False;
   DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionref WHERE (execresult > 0)';
-  DM.qrDifferent.Active := True;
+  DM.qrDifferent.Active := true;
   if not DM.qrDifferent.Eof then
     CurVersion.Catalog := DM.qrDifferent.Fields[0].AsInteger;
   DM.qrDifferent.Active := False;
 
   DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionuser WHERE (execresult > 0)';
-  DM.qrDifferent.Active := True;
+  DM.qrDifferent.Active := true;
   if not DM.qrDifferent.Eof then
     CurVersion.User := DM.qrDifferent.Fields[0].AsInteger;
   DM.qrDifferent.Active := False;
@@ -449,7 +452,7 @@ begin
   CurVersion.Catalog := 0;
   CurVersion.User := 0;
 
-  SystemInfoResult := false;
+  SystemInfoResult := False;
 
   CountOpenWindows := 0;
 
@@ -484,18 +487,18 @@ begin
       showmessage('Ошибка инициализации системы: ' + e.Message);
   end;
 
-  //Запуск ниточки для мониторигра обновлений
+  // Запуск ниточки для мониторигра обновлений
   if SystemInfoResult and not DebugMode then
-    fUpdateThread := TUpdateThread.Create(CurVersion, Self.Handle)
+    FUpdateThread := TUpdateThread.Create(CurVersion, Self.Handle)
   else
   begin
     if not SystemInfoResult then
       showmessage('Обновления недоступны.');
-    fUpdateThread := nil;
-    ServiceUpdate.Enabled := false;
+    FUpdateThread := nil;
+    ServiceUpdate.Enabled := False;
   end;
 
-  PanelCover.Visible := True;
+  PanelCover.Visible := true;
 
   if (not Assigned(FormObjectsAndEstimates)) then
     FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(Self);
@@ -505,7 +508,7 @@ end;
 
 procedure TFormMain.ShowTariffsTransportation(Sender: TObject);
 begin
-  PanelCover.Visible := True;
+  PanelCover.Visible := true;
 
   if FormTariffsTransportation.WindowState = wsMinimized then
     FormTariffsTransportation.WindowState := wsNormal;
@@ -536,7 +539,7 @@ end;
 
 procedure TFormMain.ShowTariffsMechanism(Sender: TObject);
 begin
-  PanelCover.Visible := True;
+  PanelCover.Visible := true;
 
   if FormTariffsMechanism.WindowState = wsMinimized then
     FormTariffsMechanism.WindowState := wsNormal;
@@ -550,7 +553,7 @@ end;
 
 procedure TFormMain.ShowTariffsDump(Sender: TObject);
 begin
-  PanelCover.Visible := True;
+  PanelCover.Visible := true;
 
   if FormTariffsDump.WindowState = wsMinimized then
     FormTariffsDump.WindowState := wsNormal;
@@ -571,7 +574,7 @@ end;
 
 procedure TFormMain.ShowCalculationEstimate(Sender: TObject);
 begin
-  PanelCover.Visible := True;
+  PanelCover.Visible := true;
 
   if FormCalculationEstimate.WindowState = wsMinimized then
     FormCalculationEstimate.WindowState := wsNormal;
@@ -655,7 +658,7 @@ end;
 
 procedure TFormMain.ShowObjectsAndEstimates(Sender: TObject);
 begin
-  PanelCover.Visible := True;
+  PanelCover.Visible := true;
 
   if FormObjectsAndEstimates.WindowState = wsMinimized then
     FormObjectsAndEstimates.WindowState := wsNormal;
@@ -712,8 +715,8 @@ begin
     Top := 1;
     Caption := CaptionButton;
     GroupIndex := 1;
-    Down := True;
-    ShowHint := True;
+    Down := true;
+    ShowHint := true;
     Hint := HintButton;
     OnClick := ClickEvent;
   end;
@@ -723,26 +726,26 @@ end;
 
 procedure TFormMain.DeleteButtonCloseWindow(const CaptionButton: String);
 var
-  i, y: Integer;
+  i, Y: integer;
 begin
-  y := -1;
+  Y := -1;
   for i := 0 to CountOpenWindows - 1 do
     if ButtonsWindows[i].Caption = CaptionButton then
     begin
-      y := i;
+      Y := i;
       Break;
     end;
 
-  if y <> i then // Нет кнопки с таким названием
+  if Y <> i then // Нет кнопки с таким названием
     Exit;
 
   // ButtonsWindows[y].Destroy;
-  FreeAndNil(ButtonsWindows[y]);
+  FreeAndNil(ButtonsWindows[Y]);
 
-  while y < CountOpenWindows - 1 do
+  while Y < CountOpenWindows - 1 do
   begin
-    ButtonsWindows[y] := ButtonsWindows[y + 1];
-    Inc(y);
+    ButtonsWindows[Y] := ButtonsWindows[Y + 1];
+    Inc(Y);
   end;
 
   Dec(CountOpenWindows);
@@ -750,12 +753,12 @@ end;
 
 procedure TFormMain.SelectButtonActiveWindow(const CaptionButton: String);
 var
-  i: Integer;
+  i: integer;
 begin
   for i := 0 to CountOpenWindows - 1 do
     if ButtonsWindows[i].Caption = CaptionButton then
     begin
-      ButtonsWindows[i].Down := True;
+      ButtonsWindows[i].Down := true;
       Exit;
     end;
 end;
@@ -767,8 +770,8 @@ end;
 
 procedure TFormMain.ServiceUpdateClick(Sender: TObject);
 begin
-  if Assigned(fUpdateThread) then
-    fUpdateThread.UserRequest;
+  if Assigned(FUpdateThread) then
+    FUpdateThread.UserRequest;
 end;
 
 procedure TFormMain.TimerCoverTimer(Sender: TObject);
@@ -778,19 +781,21 @@ begin
 end;
 
 procedure TFormMain.TimerUpdateTimer(Sender: TObject);
-var i : integer;
+var
+  i: integer;
 begin
   LabelDot.Caption := '';
   for i := 1 to TimerUpdate.Tag do
     LabelDot.Caption := LabelDot.Caption + '.';
   if TimerUpdate.Tag >= 3 then
     TimerUpdate.Tag := 0
-  else TimerUpdate.Tag := TimerUpdate.Tag + 1;
+  else
+    TimerUpdate.Tag := TimerUpdate.Tag + 1;
 end;
 
 // Скрытие панели обновлений
-procedure TFormMain.UpdatePanelMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TFormMain.UpdatePanelMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
+  X, Y: integer);
 begin
   UpdatePanel.Visible := False;
   TimerUpdate.Enabled := UpdatePanel.Visible;
@@ -798,7 +803,7 @@ end;
 
 procedure TFormMain.TariffsTransportationClick(Sender: TObject);
 begin
-  PanelCover.Visible := True;
+  PanelCover.Visible := true;
 
   if (not Assigned(FormTariffsTransportation)) then
     FormTariffsTransportation := TFormTariffsTransportation.Create(Self);
@@ -826,7 +831,7 @@ begin
     Exit;
   end;
 
-  PanelCover.Visible := True;
+  PanelCover.Visible := true;
 
   if (not Assigned(FormTariffsMechanism)) then
     FormTariffsMechanism := TFormTariffsMechanism.Create(Self);
@@ -834,7 +839,7 @@ end;
 
 procedure TFormMain.TariffsDumpClick(Sender: TObject);
 begin
-  PanelCover.Visible := True;
+  PanelCover.Visible := true;
 
   if (not Assigned(FormTariffsDump)) then
     FormTariffsDump := TFormTariffsDump.Create(Self);
@@ -897,7 +902,7 @@ end;
 
 procedure TFormMain.N10Click(Sender: TObject);
 begin
-  ShowMessage('1/43+2*3-8.5=' + VarToStrDef(calcFormula('=1/43+2*3-8.5'), 'NULL'));
+  ShowMessage(VarToStr(ShowEditExpression));
 end;
 
 procedure TFormMain.N13Click(Sender: TObject);
@@ -1051,13 +1056,13 @@ end;
 procedure TFormMain.HRRPricesReferenceDataClick(Sender: TObject);
 begin
   if (not Assigned(FormPricesReferenceData)) then
-    FormPricesReferenceData := TFormPricesReferenceData.Create(Self, 'g', True);
+    FormPricesReferenceData := TFormPricesReferenceData.Create(Self, 'g', true);
 end;
 
 procedure TFormMain.HRRPricesOwnDataClick(Sender: TObject);
 begin
   if (not Assigned(FormPricesOwnData)) then
-    FormPricesOwnData := TFormPricesOwnData.Create(Self, 's', True);
+    FormPricesOwnData := TFormPricesOwnData.Create(Self, 's', true);
 end;
 
 procedure TFormMain.OXRandOPRgClick(Sender: TObject);
@@ -1117,7 +1122,7 @@ end;
 // По каскадом
 procedure TFormMain.WindowsCascadeClick(Sender: TObject);
 begin
-  FormMain.PanelCover.Visible := True; // Показываем панель на главной форме
+  FormMain.PanelCover.Visible := true; // Показываем панель на главной форме
   Cascade;
   FormMain.PanelCover.Visible := False; // Скрываем панель на главной форме
 end;
@@ -1125,7 +1130,7 @@ end;
 // Свернуть все
 procedure TFormMain.WindowsMinimizeClick(Sender: TObject);
 var
-  i: Integer;
+  i: integer;
 begin
   for i := 0 to MDIChildCount - 1 do
     MDIChildren[i].WindowState := wsMinimized;
@@ -1136,7 +1141,7 @@ end;
 // Развернуть все
 procedure TFormMain.WindowsExpandClick(Sender: TObject);
 var
-  i: Integer;
+  i: integer;
 begin
   for i := 0 to MDIChildCount - 1 do
     MDIChildren[i].WindowState := wsNormal;
@@ -1145,7 +1150,7 @@ end;
 // Закрыть все
 procedure TFormMain.WindowsCloseClick(Sender: TObject);
 var
-  i: Integer;
+  i: integer;
 begin
   for i := 0 to MDIChildCount - 1 do
     MDIChildren[i].Close;
@@ -1186,11 +1191,11 @@ procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   WindowsCloseClick(nil);
   DM.Connect.Connected := False;
-  if Assigned(fUpdateThread) then
+  if Assigned(FUpdateThread) then
   begin
-    fUpdateThread.Terminate;
-    fUpdateThread.WaitFor;
-    fUpdateThread.Free;
+    FUpdateThread.Terminate;
+    FUpdateThread.WaitFor;
+    FUpdateThread.Free;
   end;
 end;
 
@@ -1199,7 +1204,7 @@ begin
   FormAbout.ShowModal;
 end;
 
-function ShiftDown: Boolean;
+function ShiftDown: boolean;
 var
   State: TKeyboardState;
 begin
@@ -1207,7 +1212,7 @@ begin
   Result := ((State[vk_Shift] and 128) <> 0);
 end;
 
-function CtrlDown: Boolean;
+function CtrlDown: boolean;
 var
   State: TKeyboardState;
 begin
@@ -1215,7 +1220,7 @@ begin
   Result := ((State[vk_Control] and 128) <> 0);
 end;
 
-function AltDown: Boolean;
+function AltDown: boolean;
 var
   State: TKeyboardState;
 begin
@@ -1225,7 +1230,7 @@ end;
 
 procedure TFormMain.CascadeForActiveWindow();
 begin
-  if (MDIChildCount > 1) and (CtrlDown = True) then
+  if (MDIChildCount > 1) and (CtrlDown = true) then
     Cascade;
 end;
 
@@ -1250,7 +1255,7 @@ begin
 
       PS.RoundTo := ReadInteger('Round', vRoundTo, 0);
 
-      PS.ShowHint := ReadBool('ShowHint', vShowHint, True);
+      PS.ShowHint := ReadBool('ShowHint', vShowHint, true);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -1308,11 +1313,11 @@ begin
   ShellExecute(Handle, nil, PChar(Path), nil, nil, SW_RESTORE);
 end;
 
-procedure TFormMain.AutoWidthColumn(SG: TStringGrid; Nom: Integer);
+procedure TFormMain.AutoWidthColumn(SG: TStringGrid; Nom: integer);
 var
-  i: Integer;
-  CalcWidth: Integer;
-  ColNotVisible: Integer;
+  i: integer;
+  CalcWidth: integer;
+  ColNotVisible: integer;
 begin
   ColNotVisible := 0;
 

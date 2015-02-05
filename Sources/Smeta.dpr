@@ -100,7 +100,8 @@ uses
   UpdateModule in 'UpdateModule.pas',
   TravelList in 'TravelList.pas' {fTravelList},
   CardPTM in 'CardPTM.pas' {FormCardPTM},
-  fUpdate in 'fUpdate.pas' {UpdateForm};
+  fUpdate in 'fUpdate.pas' {UpdateForm},
+  EditExpression in 'EditExpression.pas' {fEditExpression};
 
 //var
   //H: Thandle;
