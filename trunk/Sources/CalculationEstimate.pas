@@ -11,7 +11,7 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls,
   CalculationEstimateSSR, CalculationEstimateSummaryCalculations, JvExDBGrids,
-  JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types;
+  JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -641,14 +641,10 @@ type
     procedure tmRateTimer(Sender: TObject);
     procedure dbgrdRatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure dbgrdMechanizmKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-    procedure dbgrdMaterialKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-    procedure dbgrdDumpKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-    procedure dbgrdDevicesKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure dbgrdMechanizmKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure dbgrdMaterialKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure dbgrdDumpKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure dbgrdDevicesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -970,9 +966,24 @@ begin
 end;
 
 procedure TFormCalculationEstimate.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+var
+  res: Variant;
 begin
-  if (dbgrdRates.SelectedField = qrRatesCOUNT) and (Key = Ord('=')) then
-    ShowMessage('!');
+  case Key of
+    vkEqual:
+      begin
+        // Если пытамся ввести формулу в таблицу слева
+        if CheckQrActiveEmpty(qrRates) and (ActiveControl = dbgrdRates) and
+          (dbgrdRates.SelectedField = qrRatesCOUNT) then
+        begin
+          res := ShowEditExpression;
+          if VarIsNull(res) then
+            Exit;
+          qrRates.Edit;
+          qrRatesCOUNT.Value := res;
+        end;
+      end;
+  end;
 end;
 
 procedure TFormCalculationEstimate.FormResize(Sender: TObject);
@@ -1635,8 +1646,8 @@ begin
   Result := False;
   // Вынесенные из расценки
   if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger > 0))
-     { or
-  // Неучтеные материалы
+  { or
+    // Неучтеные материалы
     (CheckMatUnAccountingMatirials) } then
     Result := True;
 end;
@@ -2334,7 +2345,7 @@ begin
       end
   else
     begin
-      showmessage('Запрос обновления не реализован!');
+      ShowMessage('Запрос обновления не реализован!');
     end;
   end;
   // Пересчитывает все величины по данной строке
@@ -3025,16 +3036,12 @@ end;
 // вид всплывающего меню материалов
 procedure TFormCalculationEstimate.PopupMenuMaterialsPopup(Sender: TObject);
 begin
-  PMMatEdit.Enabled := (not CheckMatReadOnly) and
-    (qrMaterialTITLE.AsInteger = 0);
+  PMMatEdit.Enabled := (not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0);
 
-  PMMatReplace.Enabled := CheckMatUnAccountingMatirials and
-    (qrMaterialTITLE.AsInteger = 0);
+  PMMatReplace.Enabled := CheckMatUnAccountingMatirials and (qrMaterialTITLE.AsInteger = 0);
 
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and
-    (not CheckMatUnAccountingMatirials) and
-    (qrMaterialTITLE.AsInteger = 0) and
-    (qrMaterialFROM_RATE.AsInteger = 0);
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (not CheckMatUnAccountingMatirials) and
+    (qrMaterialTITLE.AsInteger = 0) and (qrMaterialFROM_RATE.AsInteger = 0);
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -4721,7 +4728,7 @@ begin
   except
     qrTemp.SQL.Text := 'SELECT @sql as QR;';
     qrTemp.Active := True;
-    showmessage(qrTemp.FieldByName('QR').AsString);
+    ShowMessage(qrTemp.FieldByName('QR').AsString);
   end;
 
   // Открывает rates_temp
@@ -5249,16 +5256,14 @@ begin
     SetDevNoEditMode;
 end;
 
-procedure TFormCalculationEstimate.dbgrdDevicesKeyDown(Sender: TObject;
-  var Key: Word; Shift: TShiftState);
+procedure TFormCalculationEstimate.dbgrdDevicesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  //45 - Insert
+  // 45 - Insert
   if (Key = 45) then
     PMDevEditClick(Sender);
 end;
 
-procedure TFormCalculationEstimate.dbgrdDumpKeyDown(Sender: TObject;
-  var Key: Word; Shift: TShiftState);
+procedure TFormCalculationEstimate.dbgrdDumpKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if (Key = 45) then
     PMDumpEditClick(Sender);
@@ -5329,9 +5334,9 @@ begin
     if (qrMaterialFROM_RATE.AsInteger = 0) and (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) then
       Font.Style := Font.Style + [fsbold];
 
-   { // никакой цветовой подсветки для неучтеных
-    if CheckMatUnAccountingMatirials then
-      Brush.Color := PS.BackgroundRows;         }
+    { // никакой цветовой подсветки для неучтеных
+      if CheckMatUnAccountingMatirials then
+      Brush.Color := PS.BackgroundRows; }
 
     Str := '';
     // Подсветка синим подшапок таблицы
@@ -5371,13 +5376,11 @@ begin
     SetMatNoEditMode;
 end;
 
-procedure TFormCalculationEstimate.dbgrdMaterialKeyDown(Sender: TObject;
-  var Key: Word; Shift: TShiftState);
+procedure TFormCalculationEstimate.dbgrdMaterialKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  //45 - Insert
-  //Исловие аналогично условаю в PopupMenuMaterialsPopup
-  if (Key = 45) and ((not CheckMatReadOnly) and
-    (qrMaterialTITLE.AsInteger = 0)) then
+  // 45 - Insert
+  // Исловие аналогично условаю в PopupMenuMaterialsPopup
+  if (Key = 45) and ((not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0)) then
     PMMatEditClick(Sender);
 end;
 
@@ -5465,11 +5468,10 @@ begin
     SetMechNoEditMode;
 end;
 
-procedure TFormCalculationEstimate.dbgrdMechanizmKeyDown(Sender: TObject;
-  var Key: Word; Shift: TShiftState);
+procedure TFormCalculationEstimate.dbgrdMechanizmKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  //45 - Insert
-  //Исловие аналогично условаю в PopupMenuMechanizmsPopup
+  // 45 - Insert
+  // Исловие аналогично условаю в PopupMenuMechanizmsPopup
   if (Key = 45) and (not CheckMechReadOnly) then
     PMMechEditClick(Sender);
 end;

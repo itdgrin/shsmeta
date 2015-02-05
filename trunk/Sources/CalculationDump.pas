@@ -375,7 +375,7 @@ end;
 
 procedure TFormCalculationDump.EditKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not(Key in ['0' .. '9','.', #8]) then // Не цифра и не BackSpace
+  if not CharInSet(Key, ['0' .. '9','.', #8]) then // Не цифра и не BackSpace
     Key := #0;
 
   if Key = '.' then

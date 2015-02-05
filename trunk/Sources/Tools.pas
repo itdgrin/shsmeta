@@ -3,7 +3,7 @@ unit Tools;
 interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
-  System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes;
+  System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression;
 
 // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
@@ -64,7 +64,7 @@ var
 
 begin
   Result := Null;
-  f := AnsiUpperCase(AFormula);
+  f := AnsiUpperCase(ShowEditExpression);
   StringReplace(f, ',', '.', [rfReplaceAll]);
   Formula(Trim(f), Res, flNoError);
   if flNoError then
