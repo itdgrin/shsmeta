@@ -24,7 +24,7 @@ type
     { Public declarations }
   end;
 
-function ShowEditExpression: Variant;
+function ShowEditExpression(const AFormula: string = ''): Variant;
 
 var
   fEditExpression: TfEditExpression;
@@ -37,7 +37,7 @@ uses Tools;
 
 {$R *.dfm}
 
-function ShowEditExpression: Variant;
+function ShowEditExpression(const AFormula: string = ''): Variant;
 var
   res: Variant;
   flNoError: boolean;
@@ -80,7 +80,9 @@ begin
   Result := Null;
   try
     fEditExpression := TfEditExpression.Create(nil);
-    if (fEditExpression.ShowModal = mrOk) and (trim(fEditExpression.edtFormula.Text) <> '') then
+    if Trim(AFormula) <> '' then
+      fEditExpression.edtFormula.Text := Trim(AFormula);
+    if (fEditExpression.ShowModal = mrOk) and (Trim(fEditExpression.edtFormula.Text) <> '') then
     begin
       Formula(StringReplace(fEditExpression.edtFormula.Text, ',', '.', [rfReplaceAll]), res, flNoError);
       if flNoError then
