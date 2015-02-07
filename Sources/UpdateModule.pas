@@ -320,7 +320,7 @@ begin
   try
     try
       XML.LoadFromStream(AStrimPage);
-      //XML.LoadFromFile('d:\get_xml.xml');
+
       TempNode := XML.ChildNodes.FindNode('updates');
       if TempNode = nil then
         raise Exception.Create('Не найдена нода <updates>');
@@ -340,7 +340,7 @@ begin
         raise Exception.Create('Не найдена нода <app_updates><available>');
       if TempNode.Text = 'yes' then
       begin
-        ASResponse.UpdeteStatys := 1;
+        Resp.UpdeteStatys := 1;
         for i := 0 to AppNode.ChildNodes.Count - 1 do
         begin
           if AppNode.ChildNodes[i].NodeName = 'update' then
@@ -360,7 +360,7 @@ begin
         raise Exception.Create('Не найдена нода <catalog_updates><available>');
       if TempNode.Text = 'yes' then
       begin
-        ASResponse.UpdeteStatys := 1;
+        Resp.UpdeteStatys := 1;
         for i := 0 to CatNode.ChildNodes.Count - 1 do
         begin
           if CatNode.ChildNodes[i].NodeName = 'update' then
@@ -380,7 +380,7 @@ begin
         raise Exception.Create('Не найдена нода <user_updates><available>');
       if TempNode.Text = 'yes' then
       begin
-        ASResponse.UpdeteStatys := 1;
+        Resp.UpdeteStatys := 1;
         for i := 0 to UsNode.ChildNodes.Count - 1 do
         begin
           if UsNode.ChildNodes[i].NodeName = 'update' then
@@ -449,11 +449,11 @@ begin
       HTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
       HTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
 
-      HTTP.Get('http://nocode.by:12115/gen/get_xml.xml?' +
+      {HTTP.Get('http://nocode.by:12115/gen/get_xml.xml?' +
         'user_version=' + IntToStr(FCurVersion.User) + '&' +
         'app_version=' + IntToStr(FCurVersion.App) + '&' +
-        'catalog_version=' + IntToStr(FCurVersion.Catalog), StrimPage);
-
+        'catalog_version=' + IntToStr(FCurVersion.Catalog), StrimPage);    }
+      StrimPage.LoadFromFile('d:\get_xml.xml');
       ParsXMLResult(StrimPage, FResponse);
 
     except
@@ -515,8 +515,7 @@ begin
   if Source is TServiceResponse then
   begin
     FUserRequest := (Source as TServiceResponse).FUserRequest;
-
-    FUpdeteStatys := (Source as TServiceResponse).fUpdeteStatys;
+    FUpdeteStatys := (Source as TServiceResponse).FUpdeteStatys;
 
     FAppCount := (Source as TServiceResponse).FAppCount;
     SetLength(FAppList, FAppCount);

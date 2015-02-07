@@ -638,6 +638,7 @@
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = dbgrdRates12DrawColumnCell
+          OnEnter = dbgrdRatesEnter
           OnKeyDown = dbgrdRatesKeyDown
           AutoSort = False
           SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -1502,6 +1503,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdMechanizmDrawColumnCell
+            OnEnter = dbgrdRatesEnter
             OnExit = dbgrdMechanizmExit
             OnKeyDown = dbgrdMechanizmKeyDown
             AutoAppend = False
@@ -1776,6 +1778,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdMaterialDrawColumnCell
+            OnEnter = dbgrdRatesEnter
             OnExit = dbgrdMaterialExit
             OnKeyDown = dbgrdMaterialKeyDown
             AutoAppend = False
@@ -2014,6 +2017,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
+            OnEnter = dbgrdRatesEnter
             OnExit = dbgrdDevicesExit
             OnKeyDown = dbgrdDevicesKeyDown
             AutoAppend = False
@@ -2178,6 +2182,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
+            OnEnter = dbgrdRatesEnter
             OnKeyDown = dbgrdDumpKeyDown
             AutoAppend = False
             AutoSort = False
@@ -2288,6 +2293,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDescription1DrawColumnCell
+            OnEnter = dbgrdRatesEnter
             AutoAppend = False
             AutoSort = False
             SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -2327,6 +2333,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
+            OnEnter = dbgrdRatesEnter
             OnKeyDown = dbgrdDumpKeyDown
             AutoAppend = False
             AutoSort = False
@@ -2448,6 +2455,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
+            OnEnter = dbgrdRatesEnter
             AutoAppend = False
             AutoSort = False
             SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -2721,7 +2729,6 @@
         AutoComplete = False
         Style = csDropDownList
         TabOrder = 0
-        OnChange = ComboBoxOXROPRChange
       end
       object EditWinterPrice: TEdit
         Left = 822
@@ -4194,6 +4201,7 @@
       AutoGenerateValue = arDefault
       FieldName = 'MAT_COUNT'
       Origin = 'MAT_COUNT'
+      OnChange = MatRowChange
     end
     object qrMaterialMAT_UNIT: TStringField
       AutoGenerateValue = arDefault

@@ -387,6 +387,7 @@ var
 begin
   UPForm := TUpdateForm.Create(nil);
   try
+    UPForm.SetVersion(CurVersion, AResp);
     UPForm.ShowModal;
   finally
     UPForm.Free;
