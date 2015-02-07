@@ -3,7 +3,7 @@ object UpdateForm: TUpdateForm
   Top = 0
   BorderStyle = bsDialog
   Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
-  ClientHeight = 316
+  ClientHeight = 397
   ClientWidth = 344
   Color = clBtnFace
   DefaultMonitor = dmMainForm
@@ -21,7 +21,7 @@ object UpdateForm: TUpdateForm
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
-    Top = 273
+    Top = 354
     Width = 344
     Height = 43
     Align = alBottom
@@ -262,94 +262,11 @@ object UpdateForm: TUpdateForm
       Stretch = True
     end
   end
-  object Panel3: TPanel
-    Left = 0
-    Top = 91
-    Width = 344
-    Height = 182
-    Align = alClient
-    BorderStyle = bsSingle
-    Color = clWindow
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentBackground = False
-    ParentFont = False
-    TabOrder = 2
-    object Label6: TLabel
-      Left = 10
-      Top = 16
-      Width = 213
-      Height = 16
-      Caption = #1044#1086#1089#1090#1091#1087#1085#1072' '#1085#1086#1074#1072#1103' '#1074#1077#1088#1089#1080#1103' '#1087#1088#1086#1075#1088#1072#1084#1084#1099':'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-    end
-    object lbNewAppVersion: TLabel
-      Left = 229
-      Top = 16
-      Width = 24
-      Height = 16
-      Caption = '146'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object lbNewDBVersion: TLabel
-      Left = 240
-      Top = 38
-      Width = 28
-      Height = 16
-      Caption = '24.5'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object Label9: TLabel
-      Left = 10
-      Top = 38
-      Width = 224
-      Height = 16
-      Caption = #1044#1086#1089#1090#1091#1087#1085#1072' '#1085#1086#1074#1072#1103' '#1074#1077#1088#1089#1080#1103' '#1073#1072#1079#1099' '#1076#1072#1085#1085#1099#1093':'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-    end
-    object ProcMemo: TMemo
-      Left = 212
-      Top = 117
-      Width = 123
-      Height = 57
-      BorderStyle = bsNone
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 0
-    end
-  end
   object Panel4: TPanel
     Left = 0
     Top = 50
     Width = 344
-    Height = 41
+    Height = 55
     Align = alTop
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -357,10 +274,10 @@ object UpdateForm: TUpdateForm
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 2
     object Label2: TLabel
-      Left = 10
-      Top = 4
+      Left = 5
+      Top = 5
       Width = 145
       Height = 13
       Caption = #1058#1077#1082#1091#1097#1072#1103' '#1074#1077#1088#1089#1080#1103' '#1087#1088#1086#1075#1088#1072#1084#1084#1099':'
@@ -371,38 +288,87 @@ object UpdateForm: TUpdateForm
       Font.Style = []
       ParentFont = False
     end
+    object Label3: TLabel
+      Left = 75
+      Top = 21
+      Width = 75
+      Height = 13
+      Caption = #1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1086#1074':'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
     object Label4: TLabel
-      Left = 84
-      Top = 23
-      Width = 71
+      Left = 13
+      Top = 36
+      Width = 137
       Height = 13
-      Caption = #1073#1072#1079#1099' '#1076#1072#1085#1085#1099#1093':'
-    end
-    object lbAppVersion: TLabel
-      Left = 161
-      Top = 4
-      Width = 21
-      Height = 13
-      Caption = '145'
+      Caption = #1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1100#1089#1082#1080#1093' '#1090#1072#1073#1083#1080#1094':'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
+      Font.Style = []
       ParentFont = False
     end
-    object lbDBVersion: TLabel
-      Left = 161
-      Top = 23
-      Width = 24
-      Height = 13
-      Caption = '24.4'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
+  end
+  object Panel3: TPanel
+    Left = 0
+    Top = 312
+    Width = 344
+    Height = 42
+    Align = alBottom
+    TabOrder = 3
+    Visible = False
+    object ProgressBar1: TProgressBar
+      Left = 5
+      Top = 6
+      Width = 331
+      Height = 30
+      TabOrder = 0
     end
+  end
+  object Memo1: TMemo
+    Left = 0
+    Top = 105
+    Width = 344
+    Height = 207
+    Align = alClient
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    Lines.Strings = (
+      'Memo1')
+    ParentFont = False
+    TabOrder = 4
+  end
+  object IdHTTP1: TIdHTTP
+    OnWork = IdHTTP1Work
+    OnWorkBegin = IdHTTP1WorkBegin
+    OnWorkEnd = IdHTTP1WorkEnd
+    AllowCookies = True
+    ProxyParams.BasicAuthentication = False
+    ProxyParams.ProxyPort = 0
+    Request.ContentLength = -1
+    Request.ContentRangeEnd = -1
+    Request.ContentRangeStart = -1
+    Request.ContentRangeInstanceLength = -1
+    Request.Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+    Request.BasicAuthentication = False
+    Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
+    Request.Ranges.Units = 'bytes'
+    Request.Ranges = <>
+    HTTPOptions = [hoForceEncodeParams]
+    Left = 224
+    Top = 120
+  end
+  object IdAntiFreeze1: TIdAntiFreeze
+    Left = 280
+    Top = 120
   end
 end

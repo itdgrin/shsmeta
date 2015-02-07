@@ -5,45 +5,46 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.pngimage, Vcl.ExtCtrls,
-  Vcl.StdCtrls, UpdateModule;
+  Vcl.StdCtrls, UpdateModule, Vcl.ComCtrls, IdAntiFreezeBase, Vcl.IdAntiFreeze,
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP;
 
 type
   TUpdateForm = class(TForm)
     Panel1: TPanel;
     Panel2: TPanel;
-    Panel3: TPanel;
     Label1: TLabel;
     Image1: TImage;
     btnUpdate: TButton;
     btnCancel: TButton;
     btnOk: TButton;
-    Label6: TLabel;
-    lbNewAppVersion: TLabel;
-    lbNewDBVersion: TLabel;
-    Label9: TLabel;
     Panel4: TPanel;
     Label2: TLabel;
+    Panel3: TPanel;
+    ProgressBar1: TProgressBar;
+    Memo1: TMemo;
+    Label3: TLabel;
     Label4: TLabel;
-    lbAppVersion: TLabel;
-    lbDBVersion: TLabel;
-    ProcMemo: TMemo;
+    IdHTTP1: TIdHTTP;
+    IdAntiFreeze1: TIdAntiFreeze;
     procedure btnCancelClick(Sender: TObject);
     procedure btnUpdateClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure IdHTTP1WorkBegin(ASender: TObject; AWorkMode: TWorkMode;
+      AWorkCountMax: Int64);
+    procedure IdHTTP1WorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+    procedure IdHTTP1Work(ASender: TObject; AWorkMode: TWorkMode;
+      AWorkCount: Int64);
   private
-    fVersion: TVersion; //Текущая версия приложения
-    fSR: TServiceResponse;
-    fNoUpdate: boolean; //Отказ пользователя обновиться
-    fInUpdateProc: boolean; //Обновление в процессе
+    FCurVersion: TVersion; //Текущая версия приложения
+    FSR: TServiceResponse;
     procedure SetButtonStyle;
     { Private declarations }
   public
     //Устанавливает версии но не изменяет внешний вид
-    procedure SetVersion(AVersion: TVersion; AServiceResponse: TServiceResponse);
-    property NoUpdate : boolean read fNoUpdate;
+    procedure SetVersion(const AVersion: TVersion; const AServiceResponse: TServiceResponse);
     { Public declarations }
   end;
 
@@ -53,99 +54,66 @@ implementation
 
 {$R *.dfm}
 
-procedure TUpdateForm.SetVersion(AVersion: TVersion; AServiceResponse: TServiceResponse);
+procedure TUpdateForm.SetVersion(const AVersion: TVersion;
+  const AServiceResponse: TServiceResponse);
 begin
-  {if Assigned(fSR) then fSR.Free;
-  fVersion := AVersion;
-  fSR := AServiceResponse;   }
+  FSR.Assign(AServiceResponse);
+  FCurVersion.App := AVersion.App;
+  FCurVersion.Catalog := AVersion.Catalog;
+  FCurVersion.User := AVersion.User;
 end;
 
 //Устанавливает внешний вид окна обновления
 procedure TUpdateForm.SetButtonStyle;
 var Style : integer;
 begin
-  {if fInUpdateProc then exit;
+  //Текущая версия
+  label2.Caption := 'Текущая версия программы: ' + IntToStr(FCurVersion.App);
+  label3.Caption := 'справочников: ' + IntToStr(FCurVersion.Catalog);
+  label4.Caption := 'пользовательских таблиц: ' + IntToStr(FCurVersion.User);
 
-  if Self.Tag  = 0 then //Внешний вид при уведомлении
-  begin
-    ProcMemo.Visible := false;
-
-    Label6.Caption := 'Доступна новая версия программы:';
-    Label9.Caption := 'Доступна новая версия базы данных:';
-    //lbAppVersion.Caption := IntToStr(fVersion.App);
-    lbDBVersion.Caption := IntToStr(fVersion.RefDB);
-
-    if not Assigned(fSR) then
+  //Вид нижних кнопочек
+  case FSR.UpdeteStatys of
+    1:  //Обновления есть
     begin
-      Label6.Caption := 'Данные о обновлениях недоступны.';
-      lbNewAppVersion.Visible := False;
-      lbNewDBVersion.Visible := False;
-      Label9.Visible := False;
-      Style := 1;
-    end
-    else
+      btnUpdate.Visible := true;
+      btnCancel.Visible := true;
+      btnOk.Visible := false;
+      btnCancel.Left := Panel1.Width - btnCancel.Width - 8;
+      btnUpdate.Left := btnCancel.Left - btnUpdate.Width - 8;
+    end;
+    else //Обновлений нет
     begin
-      //lbNewAppVersion.Caption := IntToStr(fSR.UpVersion.App);
-      lbNewDBVersion.Caption := IntToStr(fSR.UpVersion.RefDB);
+      btnUpdate.Visible := false;
+      btnCancel.Visible := false;
+      btnOk.Visible := true;
+      btnOk.Left := Panel1.Width - btnOk.Width - 8;
+    end;
+  end;
 
-      lbNewAppVersion.Visible := True;
-      Label6.Visible := True;
-      lbNewDBVersion.Visible := True;
-      Label9.Visible := True;
+  memo1.Lines.Clear;
+  //Текстовка в мемо
+  case FSR.UpdeteStatys of
+    1:  //Обновления есть
+    begin
+      Memo1.Lines.Add('Доступны новые обновления на сервере:');
 
-      {if (fVersion.DB < fSR.UpVersion.DB) or (fVersion.App < fSR.UpVersion.App) then
-      begin //Есть обновления
-        if not(fVersion.App < fSR.UpVersion.App) then
-        begin
-          lbNewAppVersion.Visible := False;
-          Label6.Visible := False;
-        end;
-        if (fVersion.App < fSR.UpVersion.App) then
-        begin
-          if not Label6.Visible then
-          begin
-            lbNewDBVersion.Top := Label6.top;
-            Label9.Top := Label6.top;
-          end;
-        end
-        else
-        begin
-          lbNewDBVersion.Visible := False;
-          Label9.Visible := False;
-        end;
-        Style := 0;
-      end
-      else
-      begin //Обновлений нет
-        Label6.Caption := 'Доступных обновлений нет. У вас последняя версия.';
-        lbNewAppVersion.Visible := False;
-        lbNewDBVersion.Visible := False;
-        Label9.Visible := False;
-        Style := 1;
-      end; }
-   { end;
-    case Style of
-        0:
-        begin
-          btnUpdate.Visible := true;
-          btnCancel.Visible := true;
-          btnOk.Visible := false;
-          btnCancel.Left := Panel1.Width - btnCancel.Width - 8;
-          btnUpdate.Left := btnCancel.Left - btnUpdate.Width - 8;
-        end;
-        else
-        begin
-          btnUpdate.Visible := false;
-          btnCancel.Visible := false;
-          btnOk.Visible := true;
-          btnOk.Left := Panel1.Width - btnOk.Width - 8;
-        end;
-      end;
-  end
-  else //Внешний вид процессе одновления
-  begin
+      if FCurVersion.App < FSR.AppVersion then
+        Memo1.Lines.Add('верся приложения :' + IntToStr(FSR.AppVersion));
 
-  end;}
+      if FCurVersion.Catalog < FSR.CatalogVersion then
+        Memo1.Lines.Add('верся справочников :' +
+          IntToStr(FSR.CatalogVersion));
+
+      if FCurVersion.User < FSR.UserVersion then
+        Memo1.Lines.Add('верся пользовательских таблиц :' +
+          IntToStr(FSR.UserVersion));
+    end;
+    else //Обновлений нет
+    begin
+      Memo1.Lines.Add('На сервере новых обновлений нет.');
+    end;
+  end;
 
 end;
 
@@ -156,31 +124,55 @@ end;
 
 procedure TUpdateForm.btnCancelClick(Sender: TObject);
 begin
-  fNoUpdate := true;
   close;
 end;
 
 procedure TUpdateForm.btnUpdateClick(Sender: TObject);
 begin
-  fInUpdateProc := true;
   close;
 end;
 
 procedure TUpdateForm.FormCreate(Sender: TObject);
 begin
-{  fVersion.RefDB := 0;
-  fSR := nil;
-  fInUpdateProc := false;   }
+  FCurVersion.App := 0;
+  FCurVersion.Catalog := 0;
+  FCurVersion.User := 0;
+  FSR := TServiceResponse.Create;
 end;
 
 procedure TUpdateForm.FormDestroy(Sender: TObject);
 begin
-  {if Assigned(fSR) then fSR.Free;   }
+  FreeAndNil(FSR);
 end;
 
 procedure TUpdateForm.FormShow(Sender: TObject);
 begin
-  {SetButtonStyle;  }
+  SetButtonStyle;
+end;
+
+procedure TUpdateForm.IdHTTP1Work(ASender: TObject; AWorkMode: TWorkMode;
+  AWorkCount: Int64);
+begin
+  if AWorkMode = wmRead then
+    ProgressBar1.Position := AWorkCount div 100;
+
+end;
+
+procedure TUpdateForm.IdHTTP1WorkBegin(ASender: TObject; AWorkMode: TWorkMode;
+  AWorkCountMax: Int64);
+begin
+  if AWorkMode = wmRead then
+  begin
+    Panel3.Visible := True;
+    ProgressBar1.Position := 0;
+    ProgressBar1.Max := AWorkCountMax div 100;
+  end;
+end;
+
+procedure TUpdateForm.IdHTTP1WorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+begin
+  Panel3.Visible := False;
+  ProgressBar1.Position := 0;
 end;
 
 end.

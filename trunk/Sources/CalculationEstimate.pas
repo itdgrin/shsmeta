@@ -500,12 +500,6 @@ type
     procedure FillingTableStartup(const vStType: Integer);
     procedure FillingTableDescription(const vIdNormativ: Integer);
 
-    procedure Calculation;
-
-    procedure CalculationMaterial;
-
-    procedure CalculationMechanizm;
-
     // Средний разряд рабочих-строителей
     function GetRankBuilders(const vIdNormativ: string): Double;
 
@@ -530,12 +524,6 @@ type
     // Цена использования (аренды, работы) механизма
     function GetCoastMechanizm(const vIdMechanizm: Integer): Currency;
 
-    // Расчёт ЗП машиниста (зарплата машиниста)
-    procedure CalculationSalaryMachinist; // +++
-
-    // Расчёт ЗП в зимнем удорожании
-    procedure CalculationSalaryWinterPrice; // +++
-
     procedure EstimateBasicDataClick(Sender: TObject);
     procedure LabelObjectClick(Sender: TObject);
     procedure LabelEstimateClick(Sender: TObject);
@@ -543,7 +531,6 @@ type
     procedure LabelMouseEnter(Sender: TObject);
     procedure LabelMouseLeave(Sender: TObject);
     procedure PanelObjectResize(Sender: TObject);
-    procedure ComboBoxOXROPRChange(Sender: TObject);
     procedure Panel1Resize(Sender: TObject);
     procedure PanelTopMenuResize(Sender: TObject);
     procedure SettingVisibleRightTables;
@@ -645,6 +632,7 @@ type
     procedure dbgrdMaterialKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdDumpKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdDevicesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure dbgrdRatesEnter(Sender: TObject);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -676,6 +664,8 @@ type
     // Используются в процессе замены материала
     RepIdRate: Integer;
     RepIdMat: Integer;
+
+    LastEntegGrd: TJvDBGrid;
 
     // пересчитывает все относящееся к строке в таблице расценок
     procedure ReCalcRowRates;
@@ -1686,6 +1676,7 @@ begin
   if CheckMatReadOnly then
     Exit;
   dbgrdMaterial.Columns[2].ReadOnly := False; // Норма
+  dbgrdMaterial.Columns[4].ReadOnly := False; // Кол-во
   dbgrdMaterial.Columns[5].ReadOnly := False; // % транспорта
   dbgrdMaterial.Columns[6].ReadOnly := False; // Расценка
   dbgrdMaterial.Columns[7].ReadOnly := False; // Расценка
@@ -1702,6 +1693,7 @@ begin
   if qrMaterial.Tag = 1 then
   begin
     dbgrdMaterial.Columns[2].ReadOnly := True; // Норма
+    dbgrdMaterial.Columns[4].ReadOnly := True; // Кол-во
     dbgrdMaterial.Columns[5].ReadOnly := True; // % транспорта
     dbgrdMaterial.Columns[6].ReadOnly := True; // Расценка
     dbgrdMaterial.Columns[7].ReadOnly := True; // Расценка
@@ -1769,6 +1761,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.MatRowChange(Sender: TField);
+var CField: string;
+    CValue: variant;
 begin
   if Sender.IsNull then
   begin
@@ -1781,7 +1775,25 @@ begin
     ReCalcMat := True;
     // Пересчет по строке механизма
     try
-      // Индивидуальное поведение для конкретных полей
+      //Если изменяется кол-во, пересчитывается норма
+      if (Sender.FieldName = 'MAT_COUNT') then
+      begin
+        if qrRatesCOUNTFORCALC.Value <> 0 then
+          qrMaterialMAT_NORMA.Value :=
+            round((Sender.AsFloat / qrRatesCOUNTFORCALC.AsFloat) * 1000.0) / 1000.0
+        else
+          qrMaterialMAT_NORMA.Value := 0;
+
+        CField := 'MAT_NORMA';
+        CValue := qrMaterialMAT_NORMA.Value;
+      end
+      else
+      begin
+        CField := Sender.FieldName;
+        CValue :=  Sender.Value;
+      end;
+
+      //Индивидуальное поведение для конкретных полей
       if (Sender.FieldName = 'MAT_PROC_PODR') or (Sender.FieldName = 'MAT_PROC_ZAC') or
         (Sender.FieldName = 'TRANSP_PROC_PODR') or (Sender.FieldName = 'TRANSP_PROC_ZAC') then
       begin
@@ -1832,7 +1844,7 @@ begin
           'FCOAST_NDS = :FCOAST_NDS, FTRANSP_NO_NDS = :FTRANSP_NO_NDS, ' +
           'FTRANSP_NDS = :FTRANSP_NDS, MAT_PROC_ZAC = :MAT_PROC_ZAC, ' +
           'MAT_PROC_PODR = :MAT_PROC_PODR, TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC, ' +
-          'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, ' + Sender.FieldName + ' = :AA' + Sender.FieldName +
+          'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, ' + CField + ' = :AA' + CField +
           ' WHERE id = :id;');
         ParamByName('COAST_NO_NDS').Value := qrMaterialCOAST_NO_NDS.Value;
         ParamByName('COAST_NDS').Value := qrMaterialCOAST_NDS.Value;
@@ -1844,7 +1856,7 @@ begin
         ParamByName('MAT_PROC_PODR').Value := qrMaterialMAT_PROC_PODR.Value;
         ParamByName('TRANSP_PROC_ZAC').Value := qrMaterialTRANSP_PROC_ZAC.Value;
         ParamByName('TRANSP_PROC_PODR').Value := qrMaterialTRANSP_PROC_PODR.Value;
-        ParamByName('AA' + Sender.FieldName).Value := Sender.Value;
+        ParamByName('AA' + CField).Value := CValue;
         ParamByName('id').Value := qrMaterialID.Value;
         ExecSQL;
       end;
@@ -1914,6 +1926,16 @@ begin
     ReCalcMech := True;
     // Пересчет по строке механизма
     try
+      //Если изменяется кол-во, пересчитывается норма
+      if (Sender.FieldName = 'MECH_COUNT') then
+      begin
+        if qrRatesCOUNTFORCALC.Value <> 0 then
+          qrMechanizmMECH_NORMA.Value :=
+            round((Sender.AsFloat / qrRatesCOUNTFORCALC.AsFloat) * 1000.0) / 1000.0
+        else
+          qrMechanizmMECH_NORMA.Value := 0;
+      end;
+
       // Индивидуальное поведение для конкретных полей
       if (Sender.FieldName = 'PROC_PODR') or (Sender.FieldName = 'PROC_ZAC') then
       begin
@@ -2418,6 +2440,7 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMMatReplaceTableClick(Sender: TObject);
+var k: Char;
 begin
   {
     Описание (Sender as TMenuItem).Tag
@@ -2467,6 +2490,14 @@ begin
   // 4 - это двухпиксельная рамка по мериметру, появляется у MDIMain формы
 
   FormMaterials := TFormMaterials.Create(Self, DataBase, True, False, True);
+
+  //Сразу выполняет поиск по названия заменяемого материала
+ { FormMaterials.FramePriceMaterials.EditSearch.Text :=
+      qrMaterialMAT_NAME.AsString;
+  k := #13;
+  FormMaterials.FramePriceMaterials.EditSearch1KeyPress(
+    FormMaterials.FramePriceMaterials.EditSearch, k);    } //очень медленно
+
   FormMaterials.WindowState := wsNormal;
   FormMaterials.Left := (FormMain.ClientWidth div 2) - 4;
   FormMaterials.Top := Top;
@@ -2553,6 +2584,7 @@ begin
   if CheckMechReadOnly then
     Exit;
   dbgrdMechanizm.Columns[2].ReadOnly := False; // Норма
+  dbgrdMechanizm.Columns[4].ReadOnly := False; // Кол-во
   dbgrdMechanizm.Columns[5].ReadOnly := False; // ЗП машиниста
   dbgrdMechanizm.Columns[6].ReadOnly := False; // ЗП машиниста
   dbgrdMechanizm.Columns[9].ReadOnly := False; // Расценка
@@ -2571,6 +2603,7 @@ begin
   if qrMechanizm.Tag = 1 then
   begin
     dbgrdMechanizm.Columns[2].ReadOnly := True; // Норма
+    dbgrdMechanizm.Columns[4].ReadOnly := True; // Кол-во
     dbgrdMechanizm.Columns[5].ReadOnly := True; // ЗП машиниста
     dbgrdMechanizm.Columns[6].ReadOnly := True; // ЗП машиниста
     dbgrdMechanizm.Columns[9].ReadOnly := True; // Расценка
@@ -2839,8 +2872,6 @@ begin
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(qrRatesCODEINRATE.AsString);
 
-        Calculation;
-
         CalcPrice := '11';
       end;
     2: // МАТЕРИАЛ
@@ -2877,8 +2908,6 @@ begin
         if CheckMatINRates then
           FillingWinterPrice(qrRatesCODEINRATE.AsString);
 
-        CalculationMaterial;
-
         CalcPrice := '10';
       end;
     3: // МЕХАНИЗМ
@@ -2896,8 +2925,6 @@ begin
 
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(qrRatesCODEINRATE.AsString);
-
-        CalculationMechanizm;
 
         CalcPrice := '01';
       end;
@@ -3548,12 +3575,6 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.ComboBoxOXROPRChange(Sender: TObject);
-begin
-  // Пересчитываем все значения
-  Calculation;
-end;
-
 // Открытие датасета таблицы материалов
 procedure TFormCalculationEstimate.FillingTableMaterials(const vIdCardRate, vIdMat: Integer);
 var
@@ -3600,7 +3621,6 @@ begin
     qrMaterial.Next;
   end;
   qrMaterialNUM.ReadOnly := True;
-  ReCalcMat := False;
 
   if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
     dbgrdMaterial.Columns[2].Visible := True
@@ -3611,6 +3631,7 @@ begin
   if (qrMaterial.FieldByName('TITLE').AsInteger > 0) then
     qrMaterial.Next;
 
+  ReCalcMat := False;
   qrMaterial.EnableControls;
 end;
 
@@ -3748,179 +3769,6 @@ begin
       MessageBox(0, PChar('При получении значения "ЗТ машинистов" возникла ошибка:' + sLineBreak + sLineBreak
         + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-end;
-
-procedure TFormCalculationEstimate.Calculation;
-begin
-  { with ADOQueryMaterialCard do
-    begin
-    Filtered := False;
-    Filter := 'id_replaced = 0 and mat_code LIKE ''С%''';
-    Filtered := True;
-    end;
-
-    // -------------------------------------
-
-    CalculationMR;
-    CalculationPercentTransport;
-
-    TwoValues := CalculationEMiM(IntToStr(RateId));
-
-    // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
-    with StringGridCalculations do
-    begin
-    Cells[3, CountCoef + 2] := MyCurrToStr(TwoValues.ForOne);
-    Cells[3, CountCoef + 3] := MyCurrToStr(TwoValues.ForCount);
-    end;
-
-    CalculationSalaryMachinist;
-
-    // -------------------------------------
-
-    // Рассчитываем ЗП (заработную плату)
-    TwoValues := CalculationSalary(IntToStr(RateId));
-
-    // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЗП)
-    with StringGridCalculations do
-    begin
-    Cells[2, CountCoef + 2] := MyCurrToStr(TwoValues.ForOne);
-    Cells[2, CountCoef + 3] := MyCurrToStr(TwoValues.ForCount);
-    end;
-
-    // Стоимость
-    CalculationCost;
-
-    CalculationOXROPR;
-
-    CalculationPlanProfit;
-
-    // Рассчитываем ОХР и ОПР
-    CalculationCostOXROPR; // +++
-
-    // Рассчитываем Зимнее удорожание
-    CalculationWinterPrice;
-
-    // Рассчитываем Зарплату в зимнем удорожание
-    CalculationSalaryWinterPrice;
-
-    // Рассчитываем Труд
-    CalculationWork;
-
-    // Рассчитываем Труд машиниста
-    CalculationWorkMachinist;
-
-    // -------------------------------------
-
-    with ADOQueryMaterialCard do
-    begin
-    Filtered := False;
-    Filter := '';
-    end; }
-end;
-
-procedure TFormCalculationEstimate.CalculationMaterial;
-begin
-  // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
-  // qrCalculations.ParamByName('emim_one').AsFloat := 0;
-  // qrCalculations.ParamByName('emim_two').AsFloat := 0;
-  { R
-    with StringGridCalculations do
-    begin
-    Cells[3, CountCoef + 2] := '0';
-    Cells[3, CountCoef + 3] := '0';
-    end;
-  }
-
-  // CalculationSalaryMachinist;
-  // ЗП маш.
-  // qrCalculations.ParamByName('zp_mash_one').AsFloat := 0;
-  // qrCalculations.ParamByName('zp_mash_two').AsFloat := 0;
-  { R
-    with StringGridCalculations do
-    begin
-    Cells[4, CountCoef + 2] := '0';
-    Cells[4, CountCoef + 3] := '0';
-    end;
-  }
-
-  // Рассчитываем ЗП (заработную плату)
-  // TwoValues := CalculationSalary(IntToStr(RateId));
-
-  // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЗП)
-  // qrCalculations.ParamByName('zp_one').AsFloat := TwoValues.ForOne;
-  // qrCalculations.ParamByName('zp_two').AsFloat := TwoValues.ForCount;
-  { R
-    with StringGridCalculations do
-    begin
-    Cells[2, CountCoef + 2] := MyCurrToStr(TwoValues.ForOne);
-    Cells[2, CountCoef + 3] := MyCurrToStr(TwoValues.ForCount);
-    end;
-  }
-
-  // Рассчитываем Зарплату в зимнем удорожание
-  CalculationSalaryWinterPrice;
-end;
-
-procedure TFormCalculationEstimate.CalculationMechanizm;
-begin
-  // CalculationMR;
-  // qrCalculations.ParamByName('mr_one').AsFloat := 0;
-  // qrCalculations.ParamByName('mr_two').AsFloat := 0;
-  { R
-    with StringGridCalculations do
-    begin
-    Cells[5, CountCoef + 2] := '0';
-    Cells[5, CountCoef + 3] := '0';
-    end;
-  }
-
-  // CalculationPercentTransport;
-  // qrCalculations.ParamByName('transp_one').AsFloat := 0;
-  // qrCalculations.ParamByName('transp_two').AsFloat := 0;
-  { R
-    with StringGridCalculations do
-    begin
-    Cells[6, CountCoef + 2] := '0';
-    Cells[6, CountCoef + 3] := '0';
-    end;
-  }
-
-  // TwoValues := CalculationEMiM(IntToStr(RateId));
-
-  // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
-  // qrCalculations.ParamByName('emim_one').AsFloat := TwoValues.ForOne;
-  // qrCalculations.ParamByName('emim_two').AsFloat := TwoValues.ForCount;
-  { R
-    with StringGridCalculations do
-    begin
-    Cells[3, CountCoef + 2] := MyCurrToStr(TwoValues.ForOne);
-    Cells[3, CountCoef + 3] := MyCurrToStr(TwoValues.ForCount);
-    end;
-  }
-
-  CalculationSalaryMachinist;
-
-  // -------------------------------------
-
-  // Рассчитываем ЗП (заработную плату)
-  // TwoValues := CalculationSalary(IdNormativ);
-
-  // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЗП)
-  // qrCalculations.ParamByName('zp_one').AsFloat := 0;
-  // qrCalculations.ParamByName('zp_two').AsFloat := 0;
-  { R
-    with StringGridCalculations do
-    begin
-    // Cells[2, CountCoef + 2] := MyCurrToStr(TwoValues.ForOne);
-    // Cells[2, CountCoef + 3] := MyCurrToStr(TwoValues.ForCount);
-
-    Cells[2, CountCoef + 2] := '0';
-    Cells[2, CountCoef + 3] := '0';
-    end;
-  }
-
-  // Рассчитываем Зарплату в зимнем удорожание
-  CalculationSalaryWinterPrice;
 end;
 
 function TFormCalculationEstimate.CalculationSalary(const vIdNormativ: string): TTwoValues;
@@ -4075,99 +3923,6 @@ begin
       MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' + sLineBreak +
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-end;
-
-procedure TFormCalculationEstimate.CalculationSalaryMachinist;
-{ var
-  CountMechanizm: Integer;
-  i, j: Integer;
-  Count: Double;
-  EMiM, EMiM1: array of Double;
-  FirstSalary: Double;
-  Res, Res1: Double;
-  s: string; }
-begin
-  { try
-    // Количество материалов в расценке
-    CountMechanizm := StringGridMechanizms.RowCount - 1;
-
-    // Выделяем память
-    SetLength(EMiM, CountMechanizm);
-    SetLength(EMiM1, CountMechanizm);
-
-    // Количество из ЛЕВОЙ таблицы
-    Count := CountFromRate; // MyStrToFloat(Cells[2, Row]);
-
-    Res := 0;
-    Res1 := 0;
-
-    for i := 0 to CountMechanizm - 1 do
-    begin
-    with StringGridMechanizms do
-    begin
-    s := Cells[2, i + 1];
-    s[Pos('.', s)] := ',';
-
-    EMiM[i] := Count * MyStrToFloat(s);
-    EMiM1[i] := MyStrToFloat(s);
-    end;
-
-    // Умножение на столбец коэффициентов (ЭМиМ)
-    for j := 1 to CountCoef + 1 do
-    with StringGridCalculations do
-    begin
-    EMiM[i] := EMiM[i] * MyStrToFloat(Cells[5, j]);
-    EMiM1[i] := EMiM1[i] * MyStrToFloat(Cells[5, j]);
-    end;
-
-    with StringGridMechanizms do
-    begin
-    FirstSalary := GetSalaryMachinist(StrToInt(Cells[12, i + 1]));
-    Res := Res + (FirstSalary * EMiM[i]);
-    Res1 := Res1 + (FirstSalary * EMiM1[i]);
-
-    with StringGridMechanizms do
-    Cells[5, i + 1] := MyFloatToStr(FirstSalary * Count);
-    end;
-    end;
-
-    // -----------------------------------------
-
-    // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЭМиМ)
-    with StringGridCalculations do
-    begin
-    Cells[4, CountCoef + 3] := MyCurrToStr(RoundTo(Res, PS.RoundTo * -1));
-    Cells[4, CountCoef + 2] := MyCurrToStr(RoundTo(Res1, PS.RoundTo * -1));
-    end;
-    except
-    on E: Exception do
-    MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[4,
-    0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-    MB_ICONERROR + MB_OK + mb_TaskModal);
-    end; }
-end;
-
-procedure TFormCalculationEstimate.CalculationSalaryWinterPrice;
-{ var
-  SalaryWinterPrice: Currency; }
-begin
-  { try
-    SalaryWinterPrice := MyStrToCurr(StringGridCalculations.Cells[2, CountCoef + 3]); // ЗП
-    SalaryWinterPrice := SalaryWinterPrice + MyStrToCurr(StringGridCalculations.Cells[4, CountCoef + 3]);
-    // ЗП + ЗП маш.
-
-    // (ЗП + ЗП маш.) * Общий процент зимнего удорожания
-    SalaryWinterPrice := SalaryWinterPrice * MyStrToCurr(StringGridCalculations.Cells[14, CountCoef + 2]) / 100;
-
-    // Вставляем данные в НИЖНЮЮ таблицу в колонку (ЗП в зим. удорож.)
-    with StringGridCalculations do
-    Cells[14, CountCoef + 3] := MyCurrToStr(RoundTo(SalaryWinterPrice, PS.RoundTo * -1));
-    except
-    on E: Exception do
-    MessageBox(0, PChar('Ошибка при вычислении «' + StringGridCalculations.Cells[14,
-    0] + '», в таблице вычислений:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-    MB_ICONERROR + MB_OK + mb_TaskModal);
-    end; }
 end;
 
 procedure TFormCalculationEstimate.SettingVisibleRightTables;
@@ -4559,7 +4314,6 @@ begin
 
   // заполняет таблицы справа
   GridRatesRowSellect;
-
 end;
 
 // Проверка, что таблица является пустой(если пустая показывается картинка нет данных)
@@ -4744,7 +4498,7 @@ begin
     while not qrRates.Eof do
     begin
       inc(Count);
-      if not CheckMatINRates then
+  //    if not CheckMatINRates then
         inc(i);
 
       if qrRatesTYPE_DATA.AsInteger = 10 then
@@ -5199,7 +4953,8 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    if dbgrdDescription.Row = TMyDBGrid(dbgrdDescription).DataLink.ActiveRecord + 1 then
+    if (dbgrdDescription.Row = TMyDBGrid(dbgrdDescription).DataLink.ActiveRecord + 1)
+      and (dbgrdDescription = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
@@ -5227,7 +4982,8 @@ begin
       Brush.Color := $00FBFEBC;
     end;
 
-    if (Sender as TJvDBGrid).Row = TMyDBGrid(Sender).DataLink.ActiveRecord + 1 then
+    if ((Sender as TJvDBGrid).Row = TMyDBGrid(Sender).DataLink.ActiveRecord + 1) and
+      (TJvDBGrid(Sender) = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
@@ -5308,7 +5064,8 @@ begin
       Brush.Color := $008080FF;
     end;
 
-    if dbgrdMaterial.Row = TMyDBGrid(dbgrdMaterial).DataLink.ActiveRecord + 1 then
+    if (dbgrdMaterial.Row = TMyDBGrid(dbgrdMaterial).DataLink.ActiveRecord + 1) and
+      (dbgrdMaterial = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
@@ -5317,21 +5074,27 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+    if (qrMaterialFROM_RATE.AsInteger = 1) and
+      not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) then
+    if (IdReplasedMat > 0) and
+      (qrMaterialID.AsInteger = IdReplasedMat) and
+      (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
-    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and
+      (dbgrdRates = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMaterialFROM_RATE.AsInteger = 0) and (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) then
+    if (qrMaterialFROM_RATE.AsInteger = 0) and
+      (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
+      (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     { // никакой цветовой подсветки для неучтеных
@@ -5432,7 +5195,8 @@ begin
       Brush.Color := $008080FF;
     end;
 
-    if dbgrdMechanizm.Row = TMyDBGrid(dbgrdMechanizm).DataLink.ActiveRecord + 1 then
+    if (dbgrdMechanizm.Row = TMyDBGrid(dbgrdMechanizm).DataLink.ActiveRecord + 1)
+      and (dbgrdMechanizm = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
@@ -5493,23 +5257,29 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    if dbgrdRates.Row = TMyDBGrid(dbgrdRates).DataLink.ActiveRecord + 1 then
+    //Подсвечивается жирным только если есть фокус
+    if (dbgrdRates.Row = TMyDBGrid(dbgrdRates).DataLink.ActiveRecord + 1) and
+      (dbgrdRates = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
 
     // Подсветка вынесенного и заменяющего материала за расценку материала
     // Вынесение за расценку имеет приоритет над заменой
-    if SpeedButtonMaterials.Down and qrMaterial.Active then
+    if SpeedButtonMaterials.Down and qrMaterial.Active and
+      (dbgrdMaterial = LastEntegGrd) then
     begin
-      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (qrRatesMID.AsInteger > 0) then
+      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and
+        (qrRatesMID.AsInteger > 0) then
         Font.Style := Font.Style + [fsbold];
     end;
 
     // Подсветка вынесенного за расценку механизма
-    if SpeedButtonMechanisms.Down and qrMechanizm.Active then
+    if SpeedButtonMechanisms.Down and qrMechanizm.Active and
+      (dbgrdMechanizm = LastEntegGrd) then
     begin
-      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) and (qrRatesMEID.AsInteger > 0) then
+      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) and
+        (qrRatesMEID.AsInteger > 0) then
         Font.Style := Font.Style + [fsbold];
     end;
 
@@ -5528,6 +5298,20 @@ begin
 
     TextOut(Rect.Left + j, Rect.Top + 2, sdvig + Column.Field.AsString);
   end;
+end;
+
+procedure TFormCalculationEstimate.dbgrdRatesEnter(Sender: TObject);
+begin
+  LastEntegGrd := TJvDBGrid(Sender);
+
+  dbgrdRates.Repaint;
+  dbgrdMechanizm.Repaint;
+  dbgrdMaterial.Repaint;
+  dbgrdDevices.Repaint;
+  dbgrdDump.Repaint;
+  dbgrdTransp.Repaint;
+  dbgrdStartup.Repaint;
+  dbgrdDescription.Repaint;
 end;
 
 // Запрет инсерта
