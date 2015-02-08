@@ -124,7 +124,6 @@ type
     PMAdd: TMenuItem;
     PMDelete: TMenuItem;
     PopupMenuTableLeftTechnicalPart: TMenuItem;
-    N20: TMenuItem;
     ModeData: TMenuItem;
     Normal: TMenuItem;
     Extended: TMenuItem;
@@ -199,16 +198,9 @@ type
     PMAddAdditionTransportationС310Trash: TMenuItem;
     PMAddAdditionTransportationС311Cargo: TMenuItem;
     PMAddAdditionTransportationС311Trash: TMenuItem;
-    PMReplace: TMenuItem;
     N9: TMenuItem;
-    PMReplaceNumber: TMenuItem;
-    PMReplaceTable: TMenuItem;
     PMMatReplaceTableRef: TMenuItem;
     PMMatReplaceTableOwn: TMenuItem;
-    PMReplaceTableRef: TMenuItem;
-    PMReplaceTableOwn: TMenuItem;
-    PMReplaceNumberRef: TMenuItem;
-    PMReplaceNumberOwn: TMenuItem;
     PMMatReplaceNumberRef: TMenuItem;
     PMMatReplaceNumberOwn: TMenuItem;
     PMMatEdit: TMenuItem;
@@ -670,6 +662,11 @@ type
     // пересчитывает все относящееся к строке в таблице расценок
     procedure ReCalcRowRates;
 
+    // Обновляет кол-во у заменяющих материалов в расценке
+    procedure GridRatesUpdateCount;
+    // Обновляет кол-во по одной строке
+    procedure UpdateMatCountInGridRate(AMId: Integer; AMCount: Real);
+
     // Изменяет внешний вид таблиц в зависимости от НДС
     procedure ChangeGrigNDSStyle(aNDS: Boolean);
     // проверка что материал неучтеный в таблице расценок
@@ -680,13 +677,13 @@ type
     // проверка что материал неучтеный в таблице материалов
     function CheckMatUnAccountingMatirials: Boolean;
 
-    procedure ReCalcRowMat; // Пересчет одного материала
+    procedure ReCalcRowMat(ACType: byte); // Пересчет одного материала
     function CheckMatReadOnly: Boolean; // Проверят можно ли редактировать данную строку
     procedure SetMatReadOnly(AValue: Boolean); // Устанавливает режим редактирования
     procedure SetMatEditMode; // включение режима расширенного редактирования материалов
     procedure SetMatNoEditMode; // отключение режима расширенного редактирования механизмов
 
-    procedure ReCalcRowMech; // Пересчет одного механизма
+    procedure ReCalcRowMech(ACType: byte); // Пересчет одного механизма
     function CheckMechReadOnly: Boolean; // Проверят можно ли редактировать данную строку
     procedure SetMechReadOnly(AValue: Boolean); // Устанавливает режим редактирования
     procedure SetMechEditMode; // включение режима расширенного редактирования механизма
@@ -1636,9 +1633,9 @@ begin
   Result := False;
   // Вынесенные из расценки
   if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger > 0))
-  { or
-    // Неучтеные материалы
-    (CheckMatUnAccountingMatirials) } then
+      or  //или замененный
+     (qrMaterialREPLACED.AsInteger = 1)
+      or (qrMaterialTITLE.AsInteger > 0) then
     Result := True;
 end;
 
@@ -1763,6 +1760,7 @@ end;
 procedure TFormCalculationEstimate.MatRowChange(Sender: TField);
 var CField: string;
     CValue: variant;
+    CType: byte;
 begin
   if Sender.IsNull then
   begin
@@ -1773,25 +1771,14 @@ begin
   if not ReCalcMat then
   begin
     ReCalcMat := True;
-    // Пересчет по строке механизма
+    // Пересчет по строке материала
     try
-      //Если изменяется кол-во, пересчитывается норма
-      if (Sender.FieldName = 'MAT_COUNT') then
-      begin
-        if qrRatesCOUNTFORCALC.Value <> 0 then
-          qrMaterialMAT_NORMA.Value :=
-            round((Sender.AsFloat / qrRatesCOUNTFORCALC.AsFloat) * 1000.0) / 1000.0
-        else
-          qrMaterialMAT_NORMA.Value := 0;
+      CField := Sender.FieldName;
+      CValue :=  Sender.Value;
+      CType := 0;
 
-        CField := 'MAT_NORMA';
-        CValue := qrMaterialMAT_NORMA.Value;
-      end
-      else
-      begin
-        CField := Sender.FieldName;
-        CValue :=  Sender.Value;
-      end;
+      if (CField = 'MAT_COUNT') then
+        CType := 1;
 
       //Индивидуальное поведение для конкретных полей
       if (Sender.FieldName = 'MAT_PROC_PODR') or (Sender.FieldName = 'MAT_PROC_ZAC') or
@@ -1862,7 +1849,7 @@ begin
       end;
 
       // Пересчет по строке материала
-      ReCalcRowMat;
+      ReCalcRowMat(CType);
     finally
       ReCalcMat := False;
     end;
@@ -1914,6 +1901,7 @@ end;
 
 // Исключает ввод null в числовые поля таблицы сметы
 procedure TFormCalculationEstimate.MechRowChange(Sender: TField);
+var CType: Byte;
 begin
   if Sender.IsNull then
   begin
@@ -1926,15 +1914,9 @@ begin
     ReCalcMech := True;
     // Пересчет по строке механизма
     try
-      //Если изменяется кол-во, пересчитывается норма
+      CType := 0;
       if (Sender.FieldName = 'MECH_COUNT') then
-      begin
-        if qrRatesCOUNTFORCALC.Value <> 0 then
-          qrMechanizmMECH_NORMA.Value :=
-            round((Sender.AsFloat / qrRatesCOUNTFORCALC.AsFloat) * 1000.0) / 1000.0
-        else
-          qrMechanizmMECH_NORMA.Value := 0;
-      end;
+        CType := 1;
 
       // Индивидуальное поведение для конкретных полей
       if (Sender.FieldName = 'PROC_PODR') or (Sender.FieldName = 'PROC_ZAC') then
@@ -1977,7 +1959,7 @@ begin
       qrMechanizm.Post;
 
       // Пересчет по строке механизма
-      ReCalcRowMech;
+      ReCalcRowMech(CType);
     finally
       ReCalcMech := False;
     end;
@@ -2036,16 +2018,18 @@ begin
 end;
 
 // Пересчитывает данные по строке в таблице механизмов
-procedure TFormCalculationEstimate.ReCalcRowMech;
+procedure TFormCalculationEstimate.ReCalcRowMech(ACType: byte);
 begin
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'CALL CalcMech(:id, :getdata);';
+  qrTemp.SQL.Text := 'CALL CalcMech(:id, :getdata, :ctype);';
   qrTemp.ParamByName('id').Value := qrMechanizmID.AsInteger;
   qrTemp.ParamByName('getdata').Value := 1;
+  qrTemp.ParamByName('ctype').Value := ACType;
   qrTemp.Active := True;
   if not qrTemp.IsEmpty then
   begin
     qrMechanizm.Edit;
+    qrMechanizmMECH_NORMA.AsFloat := qrTemp.FieldByName('MECH_NORMA').AsFloat;
     qrMechanizmMECH_COUNT.AsFloat := qrTemp.FieldByName('MECH_COUNT').AsFloat;
     qrMechanizmPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('PRICE_NO_NDS').AsLargeInt;
     qrMechanizmPRICE_NDS.AsLargeInt := qrTemp.FieldByName('PRICE_NDS').AsLargeInt;
@@ -2068,16 +2052,18 @@ begin
 end;
 
 // Пересчет одного материала
-procedure TFormCalculationEstimate.ReCalcRowMat;
+procedure TFormCalculationEstimate.ReCalcRowMat(ACType: byte);
 begin
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'CALL CalcMat(:id, :getdata);';
+  qrTemp.SQL.Text := 'CALL CalcMat(:id, :getdata, :ctype);';
   qrTemp.ParamByName('id').Value := qrMaterialID.AsInteger;
   qrTemp.ParamByName('getdata').Value := 1;
+  qrTemp.ParamByName('ctype').Value := ACType;
   qrTemp.Active := True;
   if not qrTemp.IsEmpty then
   begin
     qrMaterial.Edit;
+    qrMaterialMAT_NORMA.AsFloat := qrTemp.FieldByName('MAT_NORMA').AsFloat;
     qrMaterialMAT_COUNT.AsFloat := qrTemp.FieldByName('MAT_COUNT').AsFloat;
     qrMaterialTRANSP_NO_NDS.AsInteger := qrTemp.FieldByName('TRANSP_NO_NDS').AsInteger;
     qrMaterialTRANSP_NDS.AsInteger := qrTemp.FieldByName('TRANSP_NDS').AsInteger;
@@ -2092,6 +2078,10 @@ begin
     qrMaterial.Post;
   end;
   qrTemp.Active := False;
+
+  if qrMaterialID_REPLACED.AsInteger > 0 then
+    UpdateMatCountInGridRate(qrMaterialID.AsInteger, qrMaterialMAT_COUNT.AsFloat);
+
   CloseOpen(qrCalculations);
 end;
 
@@ -2279,99 +2269,105 @@ begin
     Exit;
   end;
 
-  // Обновляем каунт для расчета
-  RecNo := qrRates.RecNo;
-  RCount := Sender.AsFloat;
-  qrRatesCOUNTFORCALC.AsFloat := RCount;
-  qrRates.Post;
-  // Для раценки обновляем COUNTFORCALC и у неучтенных или заменяющих материалов
-  if qrRatesTYPE_DATA.AsInteger = 1 then
+  if qrRates.Tag <> 1 then
   begin
-    qrRates.Tag := 1; // Блокирует обработчики событий датасета
-    qrRates.DisableControls;
-    try
-      if not qrRates.Eof then
-        qrRates.Next;
-      while not qrRates.Eof do
-      begin
-        if CheckMatINRates then
-        begin
-          qrRates.Edit;
-          qrRatesCOUNTFORCALC.AsFloat := RCount;
-          qrRates.Post;
-        end
-        else
-          Break; // так как датасет отсортирован
-        qrRates.Next;
-      end;
-      qrRates.RecNo := RecNo;
-    finally
-      qrRates.Tag := 0;
-      qrRates.EnableControls
-    end;
-  end;
+    // Обновляем каунт для расчета
+    RecNo := qrRates.RecNo;
+    RCount := Sender.AsFloat;
 
-  case qrRatesTYPE_DATA.AsInteger of
-    1:
-      begin
-        qrTemp.SQL.Text := 'UPDATE card_rate_temp set rate_count=:RC WHERE ID=:ID;';
-        qrTemp.ParamByName('ID').AsInteger := qrRatesRID.AsInteger;
-        qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-        qrTemp.ExecSQL;
-      end;
-    2:
-      begin
-        qrTemp.SQL.Text := 'UPDATE materialcard_temp set mat_count=:RC WHERE ID=:ID;';
-        qrTemp.ParamByName('ID').AsInteger := qrRatesMID.AsInteger;
-        qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-        qrTemp.ExecSQL;
-      end;
-    3:
-      begin
-        qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set mech_count=:RC WHERE ID=:ID;';
-        qrTemp.ParamByName('ID').AsInteger := qrRatesMEID.AsInteger;
-        qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-        qrTemp.ExecSQL;
-      end;
-    4:
-      begin
-        qrTemp.SQL.Text := 'UPDATE devicescard_temp set device_count=:RC WHERE ID=:ID;';
-        qrTemp.ParamByName('ID').AsInteger := qrRatesDEID.AsInteger;
-        qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-        qrTemp.ExecSQL;
-      end;
-    5:
-      begin
-        qrTemp.SQL.Text := 'UPDATE dumpcard_temp set WORK_COUNT = :RC WHERE ID=:ID;';
-        qrTemp.ParamByName('ID').AsInteger := qrRatesDUID.AsInteger;
-        qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-        qrTemp.ExecSQL;
-      end;
-    6, 7, 8, 9:
-      begin
-        qrTemp.SQL.Text := 'UPDATE transpcard_temp set CARG_COUNT = :RC WHERE ID=:ID;';
-        qrTemp.ParamByName('ID').AsInteger := qrRatesTRID.AsInteger;
-        qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-        qrTemp.ExecSQL;
-      end;
-    10, 11:
-      begin
-        if Act then
-          qrTemp.SQL.Text := 'UPDATE data_act_temp set E1820_COUNT = :RC WHERE ID=:ID;'
-        else
-          qrTemp.SQL.Text := 'UPDATE data_estimate_temp set E1820_COUNT = :RC WHERE ID=:ID;';
+    if not CheckMatINRates then
+      qrRatesCOUNTFORCALC.AsFloat := RCount;
 
-        qrTemp.ParamByName('ID').AsInteger := qrRatesDID.AsInteger;
-        qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-        qrTemp.ExecSQL;
-      end
-  else
+    qrRates.Post;
+    // Для раценки обновляем COUNTFORCALC и у неучтенных или заменяющих материалов
+    if qrRatesTYPE_DATA.AsInteger = 1 then
     begin
-      ShowMessage('Запрос обновления не реализован!');
+      qrRates.Tag := 1; // Блокирует обработчики событий датасета
+      qrRates.DisableControls;
+      try
+        if not qrRates.Eof then
+          qrRates.Next;
+        while not qrRates.Eof do
+        begin
+          if CheckMatINRates then
+          begin
+            qrRates.Edit;
+            qrRatesCOUNTFORCALC.AsFloat := RCount;
+            qrRates.Post;
+          end
+          else
+            Break; // так как датасет отсортирован
+          qrRates.Next;
+        end;
+        qrRates.RecNo := RecNo;
+      finally
+        qrRates.Tag := 0;
+        qrRates.EnableControls
+      end;
     end;
+
+    case qrRatesTYPE_DATA.AsInteger of
+      1:
+        begin
+          qrTemp.SQL.Text := 'UPDATE card_rate_temp set rate_count=:RC WHERE ID=:ID;';
+          qrTemp.ParamByName('ID').AsInteger := qrRatesRID.AsInteger;
+          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+          qrTemp.ExecSQL;
+        end;
+      2:
+        begin
+          qrTemp.SQL.Text := 'UPDATE materialcard_temp set mat_count=:RC WHERE ID=:ID;';
+          qrTemp.ParamByName('ID').AsInteger := qrRatesMID.AsInteger;
+          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+          qrTemp.ExecSQL;
+        end;
+      3:
+        begin
+          qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set mech_count=:RC WHERE ID=:ID;';
+          qrTemp.ParamByName('ID').AsInteger := qrRatesMEID.AsInteger;
+          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+          qrTemp.ExecSQL;
+        end;
+      4:
+        begin
+          qrTemp.SQL.Text := 'UPDATE devicescard_temp set device_count=:RC WHERE ID=:ID;';
+          qrTemp.ParamByName('ID').AsInteger := qrRatesDEID.AsInteger;
+          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+          qrTemp.ExecSQL;
+        end;
+      5:
+        begin
+          qrTemp.SQL.Text := 'UPDATE dumpcard_temp set WORK_COUNT = :RC WHERE ID=:ID;';
+          qrTemp.ParamByName('ID').AsInteger := qrRatesDUID.AsInteger;
+          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+          qrTemp.ExecSQL;
+        end;
+      6, 7, 8, 9:
+        begin
+          qrTemp.SQL.Text := 'UPDATE transpcard_temp set CARG_COUNT = :RC WHERE ID=:ID;';
+          qrTemp.ParamByName('ID').AsInteger := qrRatesTRID.AsInteger;
+          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+          qrTemp.ExecSQL;
+        end;
+      10, 11:
+        begin
+          if Act then
+            qrTemp.SQL.Text := 'UPDATE data_act_temp set E1820_COUNT = :RC WHERE ID=:ID;'
+          else
+            qrTemp.SQL.Text := 'UPDATE data_estimate_temp set E1820_COUNT = :RC WHERE ID=:ID;';
+
+          qrTemp.ParamByName('ID').AsInteger := qrRatesDID.AsInteger;
+          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+          qrTemp.ExecSQL;
+        end
+    else
+      begin
+        ShowMessage('Запрос обновления не реализован!');
+      end;
+    end;
+    // Пересчитывает все величины по данной строке
+    ReCalcRowRates;
   end;
-  // Пересчитывает все величины по данной строке
-  ReCalcRowRates;
 end;
 
 procedure TFormCalculationEstimate.qrStartupAfterScroll(DataSet: TDataSet);
@@ -2423,9 +2419,88 @@ begin
   qrTemp.ParamByName('TYPE').AsInteger := qrRatesTYPE_DATA.AsInteger;
   qrTemp.ExecSQL;
 
+  //Для расценок обновляется кол-во у заменяющих материалов
+  if qrRatesTYPE_DATA.AsInteger = 1 then
+    GridRatesUpdateCount;
+
   GridRatesRowLoad;
 
   CloseOpen(qrCalculations);
+end;
+
+procedure TFormCalculationEstimate.GridRatesUpdateCount;
+var RecNo: Integer;
+    NewCount: Real;
+begin
+  RecNo := qrRates.RecNo;
+  // Для раценки обновляем COUNTFORCALC и у неучтенных или заменяющих материалов
+  if qrRatesTYPE_DATA.AsInteger = 1 then
+  begin
+    qrRates.Tag := 1; // Блокирует обработчики событий датасета
+    qrRates.DisableControls;
+    try
+      if not qrRates.Eof then
+        qrRates.Next;
+
+      qrTemp.Active := False;
+
+      while not qrRates.Eof do
+      begin
+        if CheckMatINRates then
+        begin
+          NewCount := 0;
+          qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp ' +
+            'WHERE ID = ' + IntToStr(qrRatesMID.AsInteger);
+          qrTemp.Active := True;
+          if not qrTemp.Eof then
+            NewCount := qrTemp.Fields[0].AsFloat;
+          qrTemp.Active := False;
+
+          qrRates.Edit;
+          qrRatesCOUNT.AsFloat := NewCount;
+          qrRates.Post;
+        end
+        else
+          Break; // так как датасет отсортирован
+        qrRates.Next;
+      end;
+      qrRates.RecNo := RecNo;
+    finally
+      qrRates.Tag := 0;
+      qrRates.EnableControls
+    end;
+  end;
+end;
+
+procedure TFormCalculationEstimate.UpdateMatCountInGridRate(AMId: Integer; AMCount: Real);
+var RecNo: Integer;
+begin
+  RecNo := qrRates.RecNo;
+  // Для раценки обновляем COUNTFORCALC и у неучтенных или заменяющих материалов
+
+  qrRates.Tag := 1; // Блокирует обработчики событий датасета
+  qrRates.DisableControls;
+  try
+    qrRates.First;
+
+    while not qrRates.Eof do
+    begin
+      if qrRatesMID.AsInteger = AMId then
+      begin
+        qrRates.Edit;
+        qrRatesCOUNT.AsFloat := AMCount;
+        qrRates.Post;
+        Break;
+      end;
+
+      qrRates.Next;
+    end;
+    qrRates.RecNo := RecNo;
+  finally
+    qrRates.Tag := 0;
+    qrRates.EnableControls
+  end;
+
 end;
 
 procedure TFormCalculationEstimate.N3Click(Sender: TObject);
@@ -2834,7 +2909,6 @@ begin
   CalcPrice := '00';
 
   PMDelete.Enabled := True;
-  PMReplace.Enabled := False;
   PMEdit.Enabled := False;
 
   // Загрузка необходимых данных по строке в таблице расценок
@@ -2884,7 +2958,6 @@ begin
 
         if CheckMatUnAccountingRates then // неучтенный материал в расценке
         begin
-          PMReplace.Enabled := True;
           PMDelete.Enabled := False;
         end;
 
@@ -3063,12 +3136,15 @@ end;
 // вид всплывающего меню материалов
 procedure TFormCalculationEstimate.PopupMenuMaterialsPopup(Sender: TObject);
 begin
-  PMMatEdit.Enabled := (not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0);
+  PMMatEdit.Enabled := not CheckMatReadOnly;
 
-  PMMatReplace.Enabled := CheckMatUnAccountingMatirials and (qrMaterialTITLE.AsInteger = 0);
+  PMMatReplace.Enabled := (qrMaterialFROM_RATE.AsInteger = 0) //В расценка
+    and (qrMaterialTITLE.AsInteger = 0)  //не загоровок
+    and (qrMaterialID_REPLACED.AsInteger = 0);  //не заменяющуй
 
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (not CheckMatUnAccountingMatirials) and
-    (qrMaterialTITLE.AsInteger = 0) and (qrMaterialFROM_RATE.AsInteger = 0);
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and
+    (not CheckMatUnAccountingMatirials)
+    and (qrMaterialFROM_RATE.AsInteger = 0);
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -4304,9 +4380,8 @@ begin
     end;
   end;
 
+  //Можно редактировать кол-во для любой строки (раньше было нетак)
   qrRatesCODE.ReadOnly := True;
-  // Запрешает редактировать кол-во для неучтенных и заменяющих метериалов
-  qrRatesCOUNT.ReadOnly := CheckMatINRates;
 
   // E18-20 - теперь можно вводить кол-во
   // RatesTYPE_DATA.AsInteger in [10,11] then
@@ -5078,6 +5153,12 @@ begin
       not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
+      Brush.Color := $00DDDDDD
+    end;
+
+    // подсвечиваем замененный материал
+    if (qrMaterialREPLACED.AsInteger = 1) then
+    begin
       Brush.Color := $00DDDDDD
     end;
 
