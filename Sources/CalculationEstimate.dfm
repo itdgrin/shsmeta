@@ -1769,7 +1769,13 @@
             DataSource = dsMaterial
             DefaultDrawing = False
             DrawingStyle = gdsClassic
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
             ParentCtl3D = False
+            ParentFont = False
             PopupMenu = PopupMenuMaterials
             TabOrder = 1
             TitleFont.Charset = DEFAULT_CHARSET
@@ -3172,40 +3178,6 @@
     object PMEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMEditClick
-    end
-    object N20: TMenuItem
-      Caption = '-'
-    end
-    object PMReplace: TMenuItem
-      Caption = #1047#1072#1084#1077#1085#1080#1090#1100' '#1084#1072#1090#1077#1088#1080#1072#1083
-      object PMReplaceNumber: TMenuItem
-        Tag = 2
-        Caption = #1047#1072#1084#1077#1085#1072' '#1087#1086' '#1082#1086#1076#1091
-        object PMReplaceNumberRef: TMenuItem
-          Tag = 11
-          Caption = #1048#1079' '#1089#1087#1088#1072#1074#1086#1095#1085#1086#1081' '#1041#1044
-          OnClick = ReplacementNumber
-        end
-        object PMReplaceNumberOwn: TMenuItem
-          Tag = 12
-          Caption = #1048#1079' '#1089#1086#1073#1089#1090#1074#1077#1085#1085#1086#1081' '#1041#1044
-          OnClick = ReplacementNumber
-        end
-      end
-      object PMReplaceTable: TMenuItem
-        Tag = 2
-        Caption = #1047#1072#1084#1077#1085#1072' '#1080#1079' '#1090#1072#1073#1083#1080#1094#1099
-        object PMReplaceTableRef: TMenuItem
-          Tag = 11
-          Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1086#1081
-          OnClick = PMMatReplaceTableClick
-        end
-        object PMReplaceTableOwn: TMenuItem
-          Tag = 12
-          Caption = #1057#1086#1073#1089#1090#1074#1077#1085#1085#1086#1081
-          OnClick = PMMatReplaceTableClick
-        end
-      end
     end
     object N9: TMenuItem
       Caption = '-'
