@@ -147,6 +147,13 @@ object fCardAct: TfCardAct
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end>
     SQL.Strings = (
       'select * from card_acts'
       'where id=:id')
@@ -157,7 +164,7 @@ object fCardAct: TfCardAct
         Name = 'ID'
         DataType = ftInteger
         ParamType = ptInput
-        Value = Null
+        Value = 0
       end>
   end
   object dsAct: TDataSource

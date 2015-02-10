@@ -210,6 +210,13 @@ object fTravelList: TfTravelList
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end>
     SQL.Strings = (
       'SELECT '
       '  `card_acts`.`ID`,'
