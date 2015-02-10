@@ -1632,10 +1632,8 @@ function TFormCalculationEstimate.CheckMatReadOnly: Boolean;
 begin
   Result := False;
   // Вынесенные из расценки
-  if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger > 0))
-      or  //или замененный
-     (qrMaterialREPLACED.AsInteger = 1)
-      or (qrMaterialTITLE.AsInteger > 0) then
+  if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger > 0)) or // или замененный
+    (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0) then
     Result := True;
 end;
 
@@ -1758,9 +1756,10 @@ begin
 end;
 
 procedure TFormCalculationEstimate.MatRowChange(Sender: TField);
-var CField: string;
-    CValue: variant;
-    CType: byte;
+var
+  CField: string;
+  CValue: Variant;
+  CType: byte;
 begin
   if Sender.IsNull then
   begin
@@ -1774,13 +1773,13 @@ begin
     // Пересчет по строке материала
     try
       CField := Sender.FieldName;
-      CValue :=  Sender.Value;
+      CValue := Sender.Value;
       CType := 0;
 
       if (CField = 'MAT_COUNT') then
         CType := 1;
 
-      //Индивидуальное поведение для конкретных полей
+      // Индивидуальное поведение для конкретных полей
       if (Sender.FieldName = 'MAT_PROC_PODR') or (Sender.FieldName = 'MAT_PROC_ZAC') or
         (Sender.FieldName = 'TRANSP_PROC_PODR') or (Sender.FieldName = 'TRANSP_PROC_ZAC') then
       begin
@@ -1831,8 +1830,7 @@ begin
           'FCOAST_NDS = :FCOAST_NDS, FTRANSP_NO_NDS = :FTRANSP_NO_NDS, ' +
           'FTRANSP_NDS = :FTRANSP_NDS, MAT_PROC_ZAC = :MAT_PROC_ZAC, ' +
           'MAT_PROC_PODR = :MAT_PROC_PODR, TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC, ' +
-          'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, ' + CField + ' = :AA' + CField +
-          ' WHERE id = :id;');
+          'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, ' + CField + ' = :AA' + CField + ' WHERE id = :id;');
         ParamByName('COAST_NO_NDS').Value := qrMaterialCOAST_NO_NDS.Value;
         ParamByName('COAST_NDS').Value := qrMaterialCOAST_NDS.Value;
         ParamByName('FCOAST_NO_NDS').Value := qrMaterialFCOAST_NO_NDS.Value;
@@ -1901,7 +1899,8 @@ end;
 
 // Исключает ввод null в числовые поля таблицы сметы
 procedure TFormCalculationEstimate.MechRowChange(Sender: TField);
-var CType: Byte;
+var
+  CType: byte;
 begin
   if Sender.IsNull then
   begin
@@ -2260,7 +2259,7 @@ end;
 
 procedure TFormCalculationEstimate.qrRatesCOUNTChange(Sender: TField);
 var
-  RCount: real;
+  RCount: Real;
   RecNo: Integer;
 begin
   if Sender.IsNull then
@@ -2419,7 +2418,7 @@ begin
   qrTemp.ParamByName('TYPE').AsInteger := qrRatesTYPE_DATA.AsInteger;
   qrTemp.ExecSQL;
 
-  //Для расценок обновляется кол-во у заменяющих материалов
+  // Для расценок обновляется кол-во у заменяющих материалов
   if qrRatesTYPE_DATA.AsInteger = 1 then
     GridRatesUpdateCount;
 
@@ -2429,8 +2428,9 @@ begin
 end;
 
 procedure TFormCalculationEstimate.GridRatesUpdateCount;
-var RecNo: Integer;
-    NewCount: Real;
+var
+  RecNo: Integer;
+  NewCount: Real;
 begin
   RecNo := qrRates.RecNo;
   // Для раценки обновляем COUNTFORCALC и у неучтенных или заменяющих материалов
@@ -2449,8 +2449,8 @@ begin
         if CheckMatINRates then
         begin
           NewCount := 0;
-          qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp ' +
-            'WHERE ID = ' + IntToStr(qrRatesMID.AsInteger);
+          qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp ' + 'WHERE ID = ' +
+            IntToStr(qrRatesMID.AsInteger);
           qrTemp.Active := True;
           if not qrTemp.Eof then
             NewCount := qrTemp.Fields[0].AsFloat;
@@ -2473,7 +2473,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.UpdateMatCountInGridRate(AMId: Integer; AMCount: Real);
-var RecNo: Integer;
+var
+  RecNo: Integer;
 begin
   RecNo := qrRates.RecNo;
   // Для раценки обновляем COUNTFORCALC и у неучтенных или заменяющих материалов
@@ -2515,7 +2516,7 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMMatReplaceTableClick(Sender: TObject);
-var k: Char;
+// var k: Char;
 begin
   {
     Описание (Sender as TMenuItem).Tag
@@ -2566,12 +2567,12 @@ begin
 
   FormMaterials := TFormMaterials.Create(Self, DataBase, True, False, True);
 
-  //Сразу выполняет поиск по названия заменяемого материала
- { FormMaterials.FramePriceMaterials.EditSearch.Text :=
-      qrMaterialMAT_NAME.AsString;
-  k := #13;
-  FormMaterials.FramePriceMaterials.EditSearch1KeyPress(
-    FormMaterials.FramePriceMaterials.EditSearch, k);    } //очень медленно
+  // Сразу выполняет поиск по названия заменяемого материала
+  { FormMaterials.FramePriceMaterials.EditSearch.Text :=
+    qrMaterialMAT_NAME.AsString;
+    k := #13;
+    FormMaterials.FramePriceMaterials.EditSearch1KeyPress(
+    FormMaterials.FramePriceMaterials.EditSearch, k); } // очень медленно
 
   FormMaterials.WindowState := wsNormal;
   FormMaterials.Left := (FormMain.ClientWidth div 2) - 4;
@@ -2777,6 +2778,7 @@ end;
 procedure TFormCalculationEstimate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var
   DialogResult { , i } : Integer;
+  FormCardAct: TfCardAct;
 begin
   // Если уже спрашивали о закрытии окна, и окно было зактрыто, больше не выводим это сообщение
   // пока эта форма не будет создана заново, в резельтате чего ConfirmCloseForm будет установлено в True
@@ -2799,7 +2801,11 @@ begin
     if Act then
     begin
       if IdAct = 0 then
-        FormCardAct.ShowModal
+      begin
+        FormCardAct := TfCardAct.Create(Self);
+        FormCardAct.Kind := kdInsert;
+        FormCardAct.ShowModal;
+      end
       else if not ActReadOnly then
         try
           with qrTemp do
@@ -3138,13 +3144,12 @@ procedure TFormCalculationEstimate.PopupMenuMaterialsPopup(Sender: TObject);
 begin
   PMMatEdit.Enabled := not CheckMatReadOnly;
 
-  PMMatReplace.Enabled := (qrMaterialFROM_RATE.AsInteger = 0) //В расценка
-    and (qrMaterialTITLE.AsInteger = 0)  //не загоровок
-    and (qrMaterialID_REPLACED.AsInteger = 0);  //не заменяющуй
+  PMMatReplace.Enabled := (qrMaterialFROM_RATE.AsInteger = 0) // В расценка
+    and (qrMaterialTITLE.AsInteger = 0) // не загоровок
+    and (qrMaterialID_REPLACED.AsInteger = 0); // не заменяющуй
 
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and
-    (not CheckMatUnAccountingMatirials)
-    and (qrMaterialFROM_RATE.AsInteger = 0);
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (not CheckMatUnAccountingMatirials) and
+    (qrMaterialFROM_RATE.AsInteger = 0);
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -3162,7 +3167,7 @@ var
   vNormRas: Double;
   Month1, Year1: Integer;
   PriceVAT, PriceNoVAT: string;
-  PT, PercentTransport: real;
+  PT, PercentTransport: Real;
   { SQL1, SQL2: string; }
   ZonaId: Integer;
   SCode: string;
@@ -4380,7 +4385,7 @@ begin
     end;
   end;
 
-  //Можно редактировать кол-во для любой строки (раньше было нетак)
+  // Можно редактировать кол-во для любой строки (раньше было нетак)
   qrRatesCODE.ReadOnly := True;
 
   // E18-20 - теперь можно вводить кол-во
@@ -4573,8 +4578,8 @@ begin
     while not qrRates.Eof do
     begin
       inc(Count);
-  //    if not CheckMatINRates then
-        inc(i);
+      // if not CheckMatINRates then
+      inc(i);
 
       if qrRatesTYPE_DATA.AsInteger = 10 then
         PMAddAdditionHeatingE18.Enabled := False;
@@ -5028,8 +5033,8 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    if (dbgrdDescription.Row = TMyDBGrid(dbgrdDescription).DataLink.ActiveRecord + 1)
-      and (dbgrdDescription = LastEntegGrd) then
+    if (dbgrdDescription.Row = TMyDBGrid(dbgrdDescription).DataLink.ActiveRecord + 1) and
+      (dbgrdDescription = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
@@ -5149,8 +5154,7 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.AsInteger = 1) and
-      not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+    if (qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
@@ -5163,18 +5167,15 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and
-      (qrMaterialID.AsInteger = IdReplasedMat) and
-      (dbgrdMaterial = LastEntegGrd) then
+    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd)
+    then
       Font.Style := Font.Style + [fsbold];
 
-    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and
-      (dbgrdRates = LastEntegGrd) then
+    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (dbgrdRates = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMaterialFROM_RATE.AsInteger = 0) and
-      (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
+    if (qrMaterialFROM_RATE.AsInteger = 0) and (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
@@ -5276,8 +5277,8 @@ begin
       Brush.Color := $008080FF;
     end;
 
-    if (dbgrdMechanizm.Row = TMyDBGrid(dbgrdMechanizm).DataLink.ActiveRecord + 1)
-      and (dbgrdMechanizm = LastEntegGrd) then
+    if (dbgrdMechanizm.Row = TMyDBGrid(dbgrdMechanizm).DataLink.ActiveRecord + 1) and
+      (dbgrdMechanizm = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
@@ -5338,29 +5339,24 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    //Подсвечивается жирным только если есть фокус
-    if (dbgrdRates.Row = TMyDBGrid(dbgrdRates).DataLink.ActiveRecord + 1) and
-      (dbgrdRates = LastEntegGrd) then
+    // Подсвечивается жирным только если есть фокус
+    if (dbgrdRates.Row = TMyDBGrid(dbgrdRates).DataLink.ActiveRecord + 1) and (dbgrdRates = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
 
     // Подсветка вынесенного и заменяющего материала за расценку материала
     // Вынесение за расценку имеет приоритет над заменой
-    if SpeedButtonMaterials.Down and qrMaterial.Active and
-      (dbgrdMaterial = LastEntegGrd) then
+    if SpeedButtonMaterials.Down and qrMaterial.Active and (dbgrdMaterial = LastEntegGrd) then
     begin
-      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and
-        (qrRatesMID.AsInteger > 0) then
+      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (qrRatesMID.AsInteger > 0) then
         Font.Style := Font.Style + [fsbold];
     end;
 
     // Подсветка вынесенного за расценку механизма
-    if SpeedButtonMechanisms.Down and qrMechanizm.Active and
-      (dbgrdMechanizm = LastEntegGrd) then
+    if SpeedButtonMechanisms.Down and qrMechanizm.Active and (dbgrdMechanizm = LastEntegGrd) then
     begin
-      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) and
-        (qrRatesMEID.AsInteger > 0) then
+      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) and (qrRatesMEID.AsInteger > 0) then
         Font.Style := Font.Style + [fsbold];
     end;
 

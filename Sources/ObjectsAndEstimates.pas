@@ -81,6 +81,7 @@ type
     qrEstimatePTM: TFDQuery;
     qrTmp: TFDQuery;
     qrObjects: TFDQuery;
+    N2: TMenuItem;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -133,6 +134,7 @@ type
     procedure PMActsEditClick(Sender: TObject);
     procedure PMActsOpenClick(Sender: TObject);
     procedure OpenAct(const ActID: Integer);
+    procedure N2Click(Sender: TObject);
   private
     StrQuery: String; // Строка для формирования запросов
     IdObject: Integer;
@@ -152,7 +154,7 @@ var
 implementation
 
 uses Main, DataModule, CardObject, CardEstimate, CalculationEstimate, Waiting,
-  BasicData, DrawingTables, KC6;
+  BasicData, DrawingTables, KC6, CardAct;
 
 {$R *.dfm}
 
@@ -731,6 +733,16 @@ begin
   end;
 end;
 
+procedure TFormObjectsAndEstimates.N2Click(Sender: TObject);
+var
+  f: TfCardAct;
+begin
+  f := TfCardAct.Create(nil);
+  f.Kind := kdEdit;
+  f.id := IDAct;
+  f.ShowModal;
+end;
+
 procedure TFormObjectsAndEstimates.OpenAct(const ActID: Integer);
 begin
   // Открываем форму ожидания
@@ -856,8 +868,8 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.FillingTableObjects;
-{var
-  i: Integer;}
+{ var
+  i: Integer; }
 begin
   try
     CloseOpen(qrObjects);
@@ -922,8 +934,8 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.PopupMenuEstimatesAddClick(Sender: TObject);
-{var
-  Node: TTreeNode;}
+{ var
+  Node: TTreeNode; }
 begin
   // (Sender as TMenuItem).Tag - Устанавливаем тип сметы (1-локальная, 2-объектная, 3-ПТМ)
   FormCardEstimate.ShowForm(IdObject, IdEstimate, (Sender as TMenuItem).Tag, TreeView);
@@ -936,7 +948,7 @@ end;
 
 procedure TFormObjectsAndEstimates.PMEstimatesDeleteClick(Sender: TObject);
 var
-  NumberEstimate, {StrIdEstimate, StrIdRates,} TextWarning: String;
+  NumberEstimate, { StrIdEstimate, StrIdRates, } TextWarning: String;
 begin
   NumberEstimate := GetNumberEstimate;
 
@@ -1046,8 +1058,8 @@ end;
 
 procedure TFormObjectsAndEstimates.StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
   State: TGridDrawState);
-{var
-  i: Integer;}
+{ var
+  i: Integer; }
 begin
   // Так как свойство таблицы DefaultDrawing отключено (иначе ячейка таблицы будет обведена пунктирной линией)
   // необходимо самому прорисовывать шапку и все строки таблицы
