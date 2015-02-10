@@ -162,9 +162,7 @@ object fCardAct: TfCardAct
     ParamData = <
       item
         Name = 'ID'
-        DataType = ftInteger
         ParamType = ptInput
-        Value = 0
       end>
   end
   object dsAct: TDataSource
