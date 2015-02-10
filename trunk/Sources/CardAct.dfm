@@ -1,4 +1,4 @@
-object FormCardAct: TFormCardAct
+object fCardAct: TfCardAct
   Left = 0
   Top = 0
   BiDiMode = bdLeftToRight
@@ -16,6 +16,7 @@ object FormCardAct: TFormCardAct
   Font.Style = []
   OldCreateOrder = False
   ParentBiDiMode = False
+  OnClose = FormClose
   OnShow = FormShow
   DesignSize = (
     392
@@ -29,9 +30,7 @@ object FormCardAct: TFormCardAct
     Height = 41
     Align = alBottom
     Shape = bsTopLine
-    ExplicitLeft = -175
-    ExplicitTop = 110
-    ExplicitWidth = 604
+    ExplicitTop = 106
   end
   object ButtonSave: TButton
     Left = 178
@@ -71,14 +70,15 @@ object FormCardAct: TFormCardAct
       Height = 13
       Caption = #1044#1072#1090#1072' '#1089#1086#1089#1090#1072#1074#1083#1077#1085#1080#1103':'
     end
-    object EditDate: TEdit
+    object edDate: TJvDBDateEdit
       Left = 109
       Top = 2
-      Width = 280
+      Width = 97
       Height = 21
-      TabStop = False
-      Color = 14802912
-      ReadOnly = True
+      DataField = 'DATE'
+      DataSource = dsAct
+      CheckOnExit = True
+      ShowNullDate = False
       TabOrder = 0
     end
   end
@@ -99,12 +99,13 @@ object FormCardAct: TFormCardAct
       Height = 13
       Caption = #1054#1087#1080#1089#1072#1085#1080#1077':'
     end
-    object MemoDescription: TMemo
+    object dbmmoDESCRIPTION: TDBMemo
       Left = 65
       Top = 4
-      Width = 325
-      Height = 46
-      ScrollBars = ssVertical
+      Width = 319
+      Height = 45
+      DataField = 'DESCRIPTION'
+      DataSource = dsAct
       TabOrder = 0
     end
   end
@@ -125,19 +126,43 @@ object FormCardAct: TFormCardAct
       Height = 13
       Caption = #1053#1072#1079#1074#1072#1085#1080#1077':'
     end
-    object EditName: TEdit
+    object dbedtNAME: TDBEdit
       Left = 65
       Top = 2
-      Width = 324
+      Width = 319
       Height = 21
+      DataField = 'NAME'
+      DataSource = dsAct
       TabOrder = 0
     end
   end
-  object ADOQueryTemp: TFDQuery
+  object qrTemp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 28
-    Top = 88
+    Left = 12
+    Top = 96
+  end
+  object qrAct: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    SQL.Strings = (
+      'select * from card_acts'
+      'where id=:id')
+    Left = 84
+    Top = 96
+    ParamData = <
+      item
+        Name = 'ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object dsAct: TDataSource
+    DataSet = qrAct
+    Left = 120
+    Top = 96
   end
 end

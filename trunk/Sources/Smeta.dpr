@@ -86,7 +86,7 @@ uses
   CardSectionsEstimates in 'CardSectionsEstimates.pas' {FormCardSectionsEstimates},
   CardTypesWorks in 'CardTypesWorks.pas' {FormCardTypesWorks},
   CoefficientOrders in 'CoefficientOrders.pas' {FormCoefficientOrders},
-  CardAct in 'CardAct.pas' {FormCardAct},
+  CardAct in 'CardAct.pas' {fCardAct},
   Tools in 'Tools.pas',
   Vcl.Themes,
   Vcl.Styles,
@@ -158,7 +158,6 @@ begin
   Application.CreateForm(TFormCardTypesWorks, FormCardTypesWorks);
   Application.CreateForm(TFormCoefficientOrders, FormCoefficientOrders);
   Application.CreateForm(TFormKC6, FormKC6);
-  Application.CreateForm(TFormCardAct, FormCardAct);
   Application.CreateForm(TFormCardPTM, FormCardPTM);
   Application.Run;
 

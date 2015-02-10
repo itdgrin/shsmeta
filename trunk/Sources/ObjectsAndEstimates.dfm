@@ -713,6 +713,10 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1059#1076#1072#1083#1080#1090#1100
       OnClick = PMActsDeleteClick
     end
+    object N2: TMenuItem
+      Caption = #1057#1074#1086#1081#1089#1090#1074#1072
+      OnClick = N2Click
+    end
   end
   object qrActs: TFDQuery
     Connection = DM.Connect

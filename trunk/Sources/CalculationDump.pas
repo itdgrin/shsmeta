@@ -96,7 +96,7 @@ uses Main, DataModule, CalculationEstimate;
 function GetDumpForm(IdEstimate, IdDump: Integer; InsMode: boolean): boolean;
 var FormDump: TFormCalculationDump;
 begin
-  Result := false;
+  //Result := false;
   FormDump := TFormCalculationDump.Create(nil);
   try
     FormDump.IdEstimate := IdEstimate;
