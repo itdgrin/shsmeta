@@ -60,7 +60,7 @@ begin
           keybd_event(VK_CAPITAL, 0, 0, 0);
           keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
         end;
-
+        CloseOpen(qrAct);
         qrTemp.Active := False;
         qrTemp.SQL.Text :=
           'SELECT COUNT(*) AS CNT from card_acts WHERE id_estimate_object=:id_estimate_object;';
