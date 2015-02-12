@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Grids, Menus,
   DB, DBGrids, StdCtrls, ComCtrls, VirtualTrees, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes, JvExDBGrids, JvDBGrid;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -56,7 +56,7 @@ type
     ButtonSelectAll: TButton;
     ButtonSelectNone: TButton;
     ButtonCancel: TButton;
-    DBGridObjects: TDBGrid;
+    dbgrdObjects: TDBGrid;
     Label1: TLabel;
     ImageSplitterCenter: TImage;
     SplitterCenter: TSplitter;
@@ -73,15 +73,16 @@ type
     PMEstimateCollapse: TMenuItem;
     TreeView: TTreeView;
     PMEstimateExpandSelected: TMenuItem;
-    VST: TVirtualStringTree;
     PMActsOpen: TMenuItem;
-    qrActs: TFDQuery;
+    qrActsEx: TFDQuery;
     qrEstimateObject: TFDQuery;
     qrEstimateLocal: TFDQuery;
     qrEstimatePTM: TFDQuery;
     qrTmp: TFDQuery;
     qrObjects: TFDQuery;
-    N2: TMenuItem;
+    pmActProperty: TMenuItem;
+    dsActs: TDataSource;
+    grActs: TJvDBGrid;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -110,7 +111,6 @@ type
     procedure SelectedColumns(Value: Boolean);
     procedure PMEstimatesBasicDataClick(Sender: TObject);
     procedure StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
-    procedure PanelActsResize(Sender: TObject);
     procedure PMEstimateExpandClick(Sender: TObject);
     procedure PMEstimateCollapseClick(Sender: TObject);
     procedure TreeViewChange(Sender: TObject; Node: TTreeNode);
@@ -120,13 +120,6 @@ type
     procedure TreeViewDblClick(Sender: TObject);
     procedure PMEstimateExpandSelectedClick(Sender: TObject);
     procedure PMActsAddClick(Sender: TObject);
-    procedure VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-      Column: TColumnIndex; CellRect: TRect);
-    procedure VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-      Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
-    procedure VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
-    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-      TextType: TVSTTextType; var CellText: string);
     procedure FillingActs;
     procedure VSTDblClick(Sender: TObject);
     procedure PMActsPopup(Sender: TObject);
@@ -134,7 +127,8 @@ type
     procedure PMActsEditClick(Sender: TObject);
     procedure PMActsOpenClick(Sender: TObject);
     procedure OpenAct(const ActID: Integer);
-    procedure N2Click(Sender: TObject);
+    procedure pmActPropertyClick(Sender: TObject);
+    procedure qrActsExAfterOpen(DataSet: TDataSet);
   private
     StrQuery: String; // Строка для формирования запросов
     IdObject: Integer;
@@ -201,28 +195,19 @@ end;
 
 procedure TFormObjectsAndEstimates.FormCreate(Sender: TObject);
 begin
-  LoadDBGridSettings(DBGridObjects);
+  LoadDBGridSettings(dbgrdObjects);
   FormMain.PanelCover.Visible := True;
-
-  // -----------------------------------------
-
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
   ClientHeight := FormMain.ClientHeight div 2;
   Top := 10;
   // (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION)) * -1;
   Left := 10; // GetSystemMetrics(SM_CXFRAME) * -1;
-
   WindowState := wsMaximized;
-
   // -----------------------------------------
-
   PanelSelectedColumns.Visible := False;
-
   // -----------------------------------------
-
   // ЗАГРУЖАЕМ ИЗОБРАЖЕНИЯ ДЛЯ СПЛИТТЕРОВ
-
   with DM.ImageListHorozontalDots do
   begin
     GetIcon(0, ImageSplitterCenter.Picture.Icon);
@@ -233,22 +218,14 @@ begin
     GetIcon(0, ImageSplitterBottomCenter.Picture.Icon);
   end;
 
-  // -----------------------------------------
-
   // Делим экран на 2 равные части для таблиц объектов и смет
   PanelObjects.Height := (FormMain.ClientHeight - FormMain.PanelOpenWindows.Height -
     SplitterCenter.Height) div 2;
 
-  // -----------------------------------------
-
   // Выводим данные в таблицу объектов
   FillingTableObjects;
-
   IdEstimate := 0;
-
-  VSTSetting(VST); // НАСТРАИВАЕМ ЦВЕТА
-
-  // -----------------------------------------
+  LoadDBGridSettings(grActs);
 
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButtonObjectsAndEstimates, HintButtonObjectsAndEstimates,
@@ -257,7 +234,7 @@ end;
 
 procedure TFormObjectsAndEstimates.FormShow(Sender: TObject);
 begin
-  DBGridObjects.SetFocus; // Устанавливаем фокус
+  dbgrdObjects.SetFocus; // Устанавливаем фокус
 
   FormMain.TimerCover.Enabled := True;
   // Запускаем таймер который скроет панель после отображения формы
@@ -291,7 +268,6 @@ end;
 procedure TFormObjectsAndEstimates.FormDestroy(Sender: TObject);
 begin
   FormObjectsAndEstimates := nil;
-
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButtonObjectsAndEstimates);
 end;
@@ -304,7 +280,7 @@ begin
   FillingTableObjects;
 
   // Устанавливаем фокус
-  DBGridObjects.SetFocus;
+  dbgrdObjects.SetFocus;
 end;
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsEditClick(Sender: TObject);
@@ -360,7 +336,7 @@ begin
   FillingTableObjects;
 
   // Устанавливаем фокус
-  DBGridObjects.SetFocus;
+  dbgrdObjects.SetFocus;
 end;
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsDeleteClick(Sender: TObject);
@@ -385,7 +361,7 @@ begin
     Exit;
 
   // Устанавливаем фокус
-  DBGridObjects.SetFocus;
+  dbgrdObjects.SetFocus;
 
   try
     StrQuery := 'DELETE FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';';
@@ -491,6 +467,11 @@ begin
   end;
 end;
 
+procedure TFormObjectsAndEstimates.qrActsExAfterOpen(DataSet: TDataSet);
+begin
+  IDAct := qrActsEx.FieldByName('id').AsInteger;
+end;
+
 procedure TFormObjectsAndEstimates.qrObjectsAfterScroll(DataSet: TDataSet);
 begin
   IdObject := DataSet.FieldByName('IdObject').AsVariant;
@@ -502,11 +483,6 @@ end;
 procedure TFormObjectsAndEstimates.PanelBottomResize(Sender: TObject);
 begin
   PanelEstimates.Width := ((Sender as TPanel).Width - SplitterBottomCenter.Width) div 2;
-end;
-
-procedure TFormObjectsAndEstimates.PanelActsResize(Sender: TObject);
-begin
-  // FormMain.AutoWidthColumn(StringGridActs, 0);
 end;
 
 procedure TFormObjectsAndEstimates.ButtonCancelClick(Sender: TObject);
@@ -521,7 +497,7 @@ begin
   for i := 1 to 17 do
   begin
     (FindComponent('CheckBox' + IntToStr(i)) as TCheckBox).Checked := Value;
-    DBGridObjects.Columns[i + 7].Visible := Value;
+    dbgrdObjects.Columns[i + 7].Visible := Value;
   end;
 end;
 
@@ -543,7 +519,7 @@ begin
   with (Sender as TCheckBox) do
   begin
     Nom := StrToInt(Copy(Name, 9, Length(Name) - 8));
-    DBGridObjects.Columns[Nom + 7].Visible := Checked;
+    dbgrdObjects.Columns[Nom + 7].Visible := Checked;
   end;
 end;
 
@@ -593,37 +569,6 @@ begin
   Close;
 end;
 
-procedure TFormObjectsAndEstimates.VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas;
-  Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
-var
-  CellText: string;
-begin
-  if not CheckQrActiveEmpty(qrActs) then
-    Exit;
-
-  qrActs.RecNo := Node.Index + 1;
-
-  case Column of
-    0:
-      CellText := qrActs.FieldByName('name').AsVariant;
-    1:
-      CellText := FormatDateTime('dd/mm/yyyy', qrActs.FieldByName('date').AsDateTime);
-    2:
-      CellText := qrActs.FieldByName('description').AsVariant;
-    3:
-      CellText := qrActs.FieldByName('cost').AsVariant;
-  end;
-
-  VSTAfterCellPaintDefault(Sender, TargetCanvas, Node, Column, CellRect, CellText);
-end;
-
-procedure TFormObjectsAndEstimates.VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas;
-  Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect;
-  var ContentRect: TRect);
-begin
-  VSTBeforeCellPaintDefault(Sender, TargetCanvas, Node, Column, CellPaintMode, CellRect, ContentRect);
-end;
-
 procedure TFormObjectsAndEstimates.VSTDblClick(Sender: TObject);
 begin
   // Открываем форму ожидания
@@ -659,60 +604,6 @@ begin
   FormKC6.MyShow(IdObject);
 end;
 
-procedure TFormObjectsAndEstimates.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode;
-  Column: TColumnIndex);
-begin
-  VSTFocusChangedDefault(Sender, Node, Column);
-
-  if not CheckQrActiveEmpty(qrActs) or (Node = nil) then
-    Exit;
-
-  qrActs.RecNo := Node.Index + 1;
-  IDAct := qrActs.FieldByName('id').AsInteger;
-end;
-
-procedure TFormObjectsAndEstimates.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-  Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-begin
-  try
-    if not qrActs.Active then
-      Exit;
-
-    if (qrActs.RecordCount <= 0) then
-    begin
-      case Column of
-        0:
-          CellText := 'Актов не найдено!';
-        1:
-          CellText := '';
-        2:
-          CellText := '';
-        3:
-          CellText := '';
-      end;
-
-      Exit;
-    end;
-
-    qrActs.RecNo := Node.Index + 1;
-
-    case Column of
-      0:
-        CellText := qrActs.FieldByName('name').AsVariant;
-      1:
-        CellText := FormatDateTime('dd/mm/yyyy', qrActs.FieldByName('date').AsDateTime);
-      2:
-        CellText := qrActs.FieldByName('description').AsVariant;
-      3:
-        CellText := qrActs.FieldByName('cost').AsString;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('Событие VSTGetText:' + sLineBreak + sLineBreak + E.message), PWideChar(caption),
-        MB_ICONERROR + mb_OK + mb_TaskModal);
-  end;
-end;
-
 procedure TFormObjectsAndEstimates.GetTypeEstimate;
 begin
   try
@@ -733,7 +624,7 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.N2Click(Sender: TObject);
+procedure TFormObjectsAndEstimates.pmActPropertyClick(Sender: TObject);
 var
   f: TfCardAct;
 begin
@@ -830,6 +721,7 @@ begin
   PMActsAdd.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
   PMActsEdit.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
   PMActsDelete.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
+  pmActProperty.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
 end;
 
 function TFormObjectsAndEstimates.GetNumberEstimate(): string;
@@ -1096,31 +988,8 @@ end;
 
 procedure TFormObjectsAndEstimates.FillingActs;
 begin
-  try
-    with qrActs do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT card_acts.*, ifnull(card_acts.s_stoim, 0) as cost FROM card_acts WHERE id_estimate_object = :id_estimate_object;');
-      ParamByName('id_estimate_object').Value := IdEstimate;
-      Active := True;
-
-      if qrActs.RecordCount <= 0 then
-      begin
-        VST.RootNodeCount := 1;
-        Exit;
-      end;
-
-      VST.RootNodeCount := qrActs.RecordCount;
-      VST.Selected[VST.GetFirst] := True;
-      VST.FocusedNode := VST.GetFirst;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При выводе актов возникла ошибка:' + sLineBreak + sLineBreak + E.message),
-        PWideChar(caption), MB_ICONERROR + mb_OK + mb_TaskModal);
-  end;
-
+  qrActsEx.ParamByName('sm_id').AsInteger := IdEstimate;
+  CloseOpen(qrActsEx);
 end;
 
 end.

@@ -82,7 +82,7 @@ end;
 procedure TfCalcTravel.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(Caption, Caption, fTravelList.btnAddClick);
+  //FormMain.CreateButtonOpenWindow(Caption, Caption, fTravelList.qrTravelNewRecord(fTravelList.qrTravel));
   LoadDBGridSettings(JvDBGrid1);
   CloseOpen(qrCalcTravel);
 end;
