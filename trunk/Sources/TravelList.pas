@@ -18,22 +18,19 @@ type
     lbl1: TLabel;
     dblkcbbNAME: TDBLookupComboBox;
     pnl1: TPanel;
-    btnDel: TButton;
-    btnEdit: TButton;
-    btnAdd: TButton;
     btnClose: TButton;
     qrTravel: TFDQuery;
     dsTravel: TDataSource;
     qrActList: TFDQuery;
     dsActList: TDataSource;
+    dbnvgr1: TDBNavigator;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure btnAddClick(Sender: TObject);
-    procedure btnEditClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
-    procedure btnDelClick(Sender: TObject);
+    procedure qrTravelNewRecord(DataSet: TDataSet);
+    procedure qrTravelBeforeEdit(DataSet: TDataSet);
   private
     { Private declarations }
   public
@@ -49,40 +46,9 @@ implementation
 
 uses CalcTravel;
 
-procedure TfTravelList.btnAddClick(Sender: TObject);
-begin
-  if (not Assigned(fCalcTravel)) then
-    fCalcTravel := TfCalcTravel.Create(Self);
-
-  qrTravel.Append;
-  qrTravel.FieldByName('travel_date').AsDateTime := Now;
-
-  fCalcTravel.ID_ACT := 0;
-  fCalcTravel.ID_TRAVEL := 0;
-
-  fCalcTravel.Show;
-end;
-
 procedure TfTravelList.btnCloseClick(Sender: TObject);
 begin
   Close;
-end;
-
-procedure TfTravelList.btnDelClick(Sender: TObject);
-begin
-  qrTravel.Delete;
-end;
-
-procedure TfTravelList.btnEditClick(Sender: TObject);
-begin
-  if (not Assigned(fCalcTravel)) then
-    fCalcTravel := TfCalcTravel.Create(Self);
-
-  qrTravel.Edit;
-  fCalcTravel.ID_ACT := 0;
-  fCalcTravel.ID_TRAVEL := 0;
-
-  fCalcTravel.Show;
 end;
 
 procedure TfTravelList.FormActivate(Sender: TObject);
@@ -119,6 +85,30 @@ end;
 procedure TfTravelList.LocateObject(Object_ID: Integer);
 begin
   dblkcbbNAME.KeyValue := Object_ID;
+end;
+
+procedure TfTravelList.qrTravelBeforeEdit(DataSet: TDataSet);
+begin
+  if (not Assigned(fCalcTravel)) then
+    fCalcTravel := TfCalcTravel.Create(Self);
+
+  fCalcTravel.ID_ACT := 0;
+  fCalcTravel.ID_TRAVEL := 0;
+
+  fCalcTravel.Show;
+end;
+
+procedure TfTravelList.qrTravelNewRecord(DataSet: TDataSet);
+begin
+  if (not Assigned(fCalcTravel)) then
+    fCalcTravel := TfCalcTravel.Create(Self);
+
+  qrTravel.FieldByName('travel_date').AsDateTime := Now;
+
+  fCalcTravel.ID_ACT := 0;
+  fCalcTravel.ID_TRAVEL := 0;
+
+  fCalcTravel.Show;
 end;
 
 end.

@@ -81,11 +81,11 @@
         <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
         <PostBuildEvent><![CDATA[upload.bat
 $(PostBuildEvent)]]></PostBuildEvent>
         <DCC_Optimize>true</DCC_Optimize>
-        <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Build>0</VerInfo_Build>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
@@ -440,7 +440,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     <VersionInfo Name="MajorVer">1</VersionInfo>
                     <VersionInfo Name="MinorVer">0</VersionInfo>
                     <VersionInfo Name="Release">0</VersionInfo>
-                    <VersionInfo Name="Build">6492</VersionInfo>
+                    <VersionInfo Name="Build">6499</VersionInfo>
                     <VersionInfo Name="Debug">True</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -452,7 +452,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Расчёт сметы</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">1.0.0.6492</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.6499</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">Estimate</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">© 2013 Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks"/>

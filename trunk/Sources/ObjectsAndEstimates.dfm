@@ -298,7 +298,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       ParentBackground = False
       ShowCaption = False
       TabOrder = 0
-      object DBGridObjects: TDBGrid
+      object dbgrdObjects: TDBGrid
         Left = 0
         Top = 0
         Width = 705
@@ -560,51 +560,54 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         BevelOuter = bvNone
         ParentBackground = False
         TabOrder = 1
-        OnResize = PanelActsResize
-        object VST: TVirtualStringTree
+        object grActs: TJvDBGrid
           Left = 0
           Top = 0
           Width = 336
           Height = 180
           Align = alClient
-          Header.AutoSizeIndex = -1
-          Header.Font.Charset = DEFAULT_CHARSET
-          Header.Font.Color = clWindowText
-          Header.Font.Height = -11
-          Header.Font.Name = 'Tahoma'
-          Header.Font.Style = []
-          Header.Options = [hoVisible]
+          DataSource = dsActs
+          DrawingStyle = gdsClassic
+          Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           PopupMenu = PMActs
           TabOrder = 0
-          TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
-          TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-          TreeOptions.SelectionOptions = [toExtendedFocus]
-          OnAfterCellPaint = VSTAfterCellPaint
-          OnBeforeCellPaint = VSTBeforeCellPaint
-          OnFocusChanged = VSTFocusChanged
-          OnGetText = VSTGetText
+          TitleFont.Charset = DEFAULT_CHARSET
+          TitleFont.Color = clWindowText
+          TitleFont.Height = -11
+          TitleFont.Name = 'Tahoma'
+          TitleFont.Style = []
+          AutoSizeColumns = True
+          SelectColumnsDialogStrings.Caption = 'Select columns'
+          SelectColumnsDialogStrings.OK = '&OK'
+          SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+          EditControls = <>
+          RowsHeight = 17
+          TitleRowHeight = 17
           Columns = <
             item
-              Position = 0
-              Width = 150
-              WideText = #1053#1072#1079#1074#1072#1085#1080#1077' '#1072#1082#1090#1072
+              Expanded = False
+              FieldName = 'NAME'
+              Title.Alignment = taCenter
+              Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1072#1082#1090#1072
+              Width = 114
+              Visible = True
             end
             item
-              Position = 1
-              Width = 100
-              WideText = #1044#1072#1090#1072
+              Expanded = False
+              FieldName = 'DATE'
+              Title.Alignment = taCenter
+              Title.Caption = #1044#1072#1090#1072
+              Width = 41
+              Visible = True
             end
             item
-              Position = 2
-              Width = 100
-              WideText = #1054#1087#1080#1089#1072#1085#1080#1077
-            end
-            item
-              Position = 3
-              Width = 115
-              WideText = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+              Expanded = False
+              FieldName = 'DESCRIPTION'
+              Title.Alignment = taCenter
+              Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077
+              Width = 174
+              Visible = True
             end>
-          WideDefaultText = 'node'
         end
       end
     end
@@ -695,8 +698,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   end
   object PMActs: TPopupMenu
     OnPopup = PMActsPopup
-    Left = 496
-    Top = 344
+    Left = 456
+    Top = 384
     object PMActsOpen: TMenuItem
       Caption = #1054#1090#1082#1088#1099#1090#1100
       OnClick = PMActsOpenClick
@@ -713,17 +716,38 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1059#1076#1072#1083#1080#1090#1100
       OnClick = PMActsDeleteClick
     end
-    object N2: TMenuItem
+    object pmActProperty: TMenuItem
       Caption = #1057#1074#1086#1081#1089#1090#1074#1072
-      OnClick = N2Click
+      OnClick = pmActPropertyClick
     end
   end
-  object qrActs: TFDQuery
+  object qrActsEx: TFDQuery
+    AfterOpen = qrActsExAfterOpen
+    AfterScroll = qrActsExAfterOpen
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 441
-    Top = 344
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end>
+    SQL.Strings = (
+      'SELECT *'
+      'FROM '
+      '  card_acts'
+      'WHERE ID_ESTIMATE_OBJECT = :SM_ID')
+    Left = 393
+    Top = 384
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
   end
   object qrEstimateObject: TFDQuery
     Connection = DM.Connect
@@ -814,5 +838,10 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       '       objcards.full_name     ASC')
     Left = 49
     Top = 192
+  end
+  object dsActs: TDataSource
+    DataSet = qrActsEx
+    Left = 425
+    Top = 384
   end
 end

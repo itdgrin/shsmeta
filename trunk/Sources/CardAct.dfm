@@ -17,6 +17,7 @@ object fCardAct: TfCardAct
   OldCreateOrder = False
   ParentBiDiMode = False
   OnClose = FormClose
+  OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
     392
@@ -80,6 +81,7 @@ object fCardAct: TfCardAct
       CheckOnExit = True
       ShowNullDate = False
       TabOrder = 0
+      OnChange = edDateChange
     end
   end
   object PanelDescription: TPanel
@@ -134,6 +136,7 @@ object fCardAct: TfCardAct
       DataField = 'NAME'
       DataSource = dsAct
       TabOrder = 0
+      OnChange = dbedtNAMEChange
     end
   end
   object qrTemp: TFDQuery
@@ -162,7 +165,9 @@ object fCardAct: TfCardAct
     ParamData = <
       item
         Name = 'ID'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end>
   end
   object dsAct: TDataSource

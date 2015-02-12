@@ -30,6 +30,11 @@ type
     procedure ButtonCloseClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+    procedure edDateChange(Sender: TObject);
+    procedure dbedtNAMEChange(Sender: TObject);
+  private
+    cnt: Integer;
   public
     Kind: TKindForm;
     id: Integer;
@@ -46,20 +51,18 @@ begin
   Action := caFree;
 end;
 
-procedure TfCardAct.FormShow(Sender: TObject);
-var
-  cnt: Integer;
+procedure TfCardAct.FormCreate(Sender: TObject);
 begin
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
+end;
+
+procedure TfCardAct.FormShow(Sender: TObject);
+begin
   case Kind of
     kdInsert:
       begin
-        if (GetKeyState(VK_CAPITAL) and $01) <> 0 then // Если нажат CapsLock
-        begin
-          keybd_event(VK_CAPITAL, 0, 0, 0);
-          keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
-        end;
+        qrAct.ParamByName('id').AsInteger := 0;
         CloseOpen(qrAct);
         qrTemp.Active := False;
         qrTemp.SQL.Text :=
@@ -69,11 +72,11 @@ begin
         cnt := qrTemp.FieldByName('CNT').AsInteger + 1;
         qrTemp.Active := False;
 
-        edDate.Date := Now();
-        dbedtNAME.Text := 'Акт№' + IntToStr(cnt) + 'от' + DateToStr(Now) + 'для' +
-          FormCalculationEstimate.EditNameObject.Text;
-
-        dbmmoDESCRIPTION.Text := dbedtNAME.Text;
+        qrAct.Insert;
+        qrAct.FieldByName('DATE').AsDateTime := Now();
+        qrAct.FieldByName('NAME').AsString := 'Акт№' + IntToStr(cnt) + 'от' + qrAct.FieldByName('DATE')
+          .AsString + 'для' + FormCalculationEstimate.EditNameObject.Text;
+        qrAct.FieldByName('DESCRIPTION').AsString := dbedtNAME.Text;
         dbedtNAME.SetFocus;
       end;
     kdEdit:
@@ -93,6 +96,8 @@ begin
           'Выйти без сохранения акта?'), PWideChar(Caption), MB_ICONWARNING + MB_YESNO + mb_TaskModal) = mryes
         then
         begin
+          if qrAct.State in [dsEdit, dsInsert] then
+            qrAct.Cancel;
           FormCalculationEstimate.ConfirmCloseForm := False;
           FormCalculationEstimate.Close;
           Close;
@@ -100,6 +105,8 @@ begin
       end;
     kdEdit:
       begin
+        if qrAct.State in [dsEdit, dsInsert] then
+          qrAct.Cancel;
         Close;
       end;
   end;
@@ -122,6 +129,8 @@ begin
             ParamByName('description').Value := dbmmoDESCRIPTION.Text;
             ParamByName('date').AsDate := edDate.Date;
             ExecSQL;
+            if qrAct.State in [dsInsert] then
+              qrAct.Cancel;
             SQL.Clear;
             SQL.Add('CALL SaveDataAct((SELECT last_insert_id()));');
             ExecSQL;
@@ -142,6 +151,21 @@ begin
         Close;
       end;
   end;
+end;
+
+procedure TfCardAct.dbedtNAMEChange(Sender: TObject);
+begin
+  if not CheckQrActiveEmpty(qrAct) or (Kind <> kdInsert) then
+    Exit;
+  qrAct.FieldByName('DESCRIPTION').AsString := dbedtNAME.Text;
+end;
+
+procedure TfCardAct.edDateChange(Sender: TObject);
+begin
+  if not CheckQrActiveEmpty(qrAct) or (Kind <> kdInsert) then
+    Exit;
+  qrAct.FieldByName('NAME').AsString := 'Акт№' + IntToStr(cnt) + 'от' + qrAct.FieldByName('DATE').AsString +
+    'для' + FormCalculationEstimate.EditNameObject.Text;
 end;
 
 end.
