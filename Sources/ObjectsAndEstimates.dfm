@@ -646,7 +646,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   object PopupMenuEstimates: TPopupMenu
     OnPopup = PopupMenuEstimatesPopup
     Left = 208
-    Top = 344
+    Top = 328
     object PopupMenuEstimatesAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       object PMEstimatesAddLocal: TMenuItem
