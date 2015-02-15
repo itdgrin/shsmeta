@@ -54,7 +54,8 @@ begin
   frxReport.LoadFromFile(FileReportPath + 'frZP_OBJ.fr3');
 
   qrTMP.SQL.Text := 'SELECT CONCAT(oc.NUM, " ", oc.NAME) as Name, IFNULL(s.MONAT, 0) as Month, IFNULL(s.YEAR, 0) as Year,'#13#10 +
-                    '       IF(oc.REGION_ID = 7, s.STAVKA_M_RAB, s.STAVKA_RB_RAB) as Tarif'#13#10 +
+                    '       IF(oc.REGION_ID = 7, s.STAVKA_M_RAB, s.STAVKA_RB_RAB) as Tarif,'#13#10 +
+                    '       ssd.PREPARER, ssd.POST_PREPARER, ssd.EXAMINER, ssd.POST_EXAMINER'#13#10 +
                     'FROM smetasourcedata as ssd'#13#10 +
                     'LEFT JOIN objcards as oc ON oc.OBJ_ID = ssd.OBJ_ID'#13#10 +
                     'LEFT JOIN stavka as s ON s.STAVKA_ID = ssd.STAVKA_ID'#13#10 +
@@ -65,13 +66,18 @@ begin
   qrZP_OBJ.SQL.Text := 'call smeta.Report_ZP_OBJ(:SM_ID, :MONTH, :YEAR)';
   qrZP_OBJ.ParamByName('SM_ID').AsInteger := SM_ID;
   qrZP_OBJ.ParamByName('MONTH').AsInteger := qrTMP.FieldByName('Month').AsInteger;
-  qrZP_OBJ.ParamByName('YEAR').AsInteger := qrTMP.FieldByName('Year').AsInteger;;
+  qrZP_OBJ.ParamByName('YEAR').AsInteger := qrTMP.FieldByName('Year').AsInteger;
   CloseOpen(qrZP_OBJ);
 
   frxReport.Script.Variables['sm_obj_name'] := AnsiUpperCase(qrTMP.FieldByName('Name').AsString);
   frxReport.Script.Variables['sm_date_dog'] := '1 ' + AnsiUpperCase(arraymes[qrTMP.FieldByName('Month').AsInteger, 2]) +
                                                ' ' + IntToStr(qrTMP.FieldByName('Year').AsInteger) + ' ã.';
   frxReport.Script.Variables['sm_tarif'] := FormatFloat('#,##0', qrTMP.FieldByName('Tarif').AsFloat);
+
+  frxReport.Script.Variables['preparer'] := qrTMP.FieldByName('preparer').AsString;
+  frxReport.Script.Variables['post_preparer'] := qrTMP.FieldByName('post_preparer').AsString;
+  frxReport.Script.Variables['examiner'] := qrTMP.FieldByName('examiner').AsString;
+  frxReport.Script.Variables['post_examiner'] := qrTMP.FieldByName('post_examiner').AsString;
 
   frxReport.PrepareReport;
   try
