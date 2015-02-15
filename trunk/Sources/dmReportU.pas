@@ -54,10 +54,11 @@ begin
   frxReport.LoadFromFile(FileReportPath + 'frZP_OBJ.fr3');
 
   qrTMP.SQL.Text := 'SELECT CONCAT(oc.NUM, " ", oc.NAME) as Name, IFNULL(s.MONAT, 0) as Month, IFNULL(s.YEAR, 0) as Year,'#13#10 +
-                    '       IF(oc.REGION_ID = 7, s.STAVKA_M_RAB, s.STAVKA_RB_RAB) as Tarif,'#13#10 +
+                    '       IF(os.OBJ_REGION = 3, s.STAVKA_M_RAB, s.STAVKA_RB_RAB) as Tarif,'#13#10 +
                     '       ssd.PREPARER, ssd.POST_PREPARER, ssd.EXAMINER, ssd.POST_EXAMINER'#13#10 +
                     'FROM smetasourcedata as ssd'#13#10 +
                     'LEFT JOIN objcards as oc ON oc.OBJ_ID = ssd.OBJ_ID'#13#10 +
+                    'LEFT JOIN objstroj as os ON os.STROJ_ID = oc.STROJ_ID'#13#10 +
                     'LEFT JOIN stavka as s ON s.STAVKA_ID = ssd.STAVKA_ID'#13#10 +
                     'WHERE ssd.SM_ID = :SM_ID';
   qrTMP.ParamByName('SM_ID').AsInteger := SM_ID;
@@ -79,8 +80,8 @@ begin
   frxReport.Script.Variables['examiner'] := qrTMP.FieldByName('examiner').AsString;
   frxReport.Script.Variables['post_examiner'] := qrTMP.FieldByName('post_examiner').AsString;
 
-  frxReport.PrepareReport;
   try
+    frxReport.PrepareReport;
     frxReport.ShowPreparedReport;
   except
     ShowMessage('Ошибка при формировании отчета');
