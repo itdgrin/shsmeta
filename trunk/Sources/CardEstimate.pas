@@ -588,6 +588,7 @@ begin
           Delete(str, 1, 1);
 
         EditNumberEstimate.Text := NumberEstimate + '.' + IntToStr(StrToInt(str) + 1);
+        EditNameEstimate.Text := 'Локальная смета №' + IntToStr(StrToInt(str) + 1);
       end;
     2: // ОБЪЕКТНАЯ смета
       begin
@@ -616,6 +617,7 @@ begin
           Delete(str, 1, 1);
 
         EditNumberEstimate.Text := IntToStr(StrToInt(str) + 1);
+        EditNameEstimate.Text := 'Объектная смета №' + IntToStr(StrToInt(str) + 1);
       end;
     3: // ПТМ смета
       begin
