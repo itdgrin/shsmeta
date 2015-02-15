@@ -1,4 +1,4 @@
-unit Main;
+Unit Main;
 
 interface
 
@@ -86,6 +86,8 @@ type
     Label1: TLabel;
     TimerUpdate: TTimer;
     LabelDot: TLabel;
+    N11: TMenuItem;
+    mnZP_OBJ: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -183,6 +185,7 @@ type
     procedure UpdatePanelMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure TimerUpdateTimer(Sender: TObject);
     procedure N10Click(Sender: TObject);
+    procedure mnZP_OBJClick(Sender: TObject);
 
   private
     CountOpenWindows: integer;
@@ -195,6 +198,8 @@ type
     ClientName: string; // Имя клиета
     SendReport: boolean; // Необходимость отправлять отчет об ошибках обновления
     DebugMode: boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
+
+    FileReportPath: string; // путь к папке с отчетами(дабы не захламлять датамодуль лишними модулями)
 
     procedure GetSystemInfo;
     procedure OnUpdate(var Message: TMessage); message WM_SHOW_SPLASH;
@@ -368,7 +373,7 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
   PricesReferenceData, AdditionData, Materials, PartsEstimates, SetCoefficients,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
-  Tools, fUpdate, EditExpression;
+  Tools, fUpdate, EditExpression, dmReportU;
 
 {$R *.dfm}
 
@@ -465,6 +470,13 @@ begin
   FormatSettings.DecimalSeparator := '.';
 
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
+
+  // путь к папке с отчетами (Вадим)
+  {$IFDEF DEBUG}
+  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName)) - 12) + 'Reports\';
+  {$ELSE}
+  FileReportPath := ExtractFilePath(Application.ExeName) + 'Reports\';
+  {$ENDIF}
 end;
 
 procedure TFormMain.FormResize(Sender: TObject);
@@ -993,6 +1005,18 @@ begin
     FormSetCoefficients := TFormSetCoefficients.Create(FormMain)
   else
     FormSetCoefficients.Show;
+end;
+
+// вызов отчета (Вадим)
+procedure TFormMain.mnZP_OBJClick(Sender: TObject);
+begin
+  Screen.Cursor := crSQLWait;
+  try
+    if FormObjectsAndEstimates.TreeView.Selected.Level = 0 then
+      dmReportF.Report_ZP_OBJ(Integer(FormObjectsAndEstimates.TreeView.Selected.Data), FileReportPath);
+  finally
+    Screen.Cursor := crDefault;
+  end;
 end;
 
 procedure TFormMain.MenuListsTypesActsClick(Sender: TObject);

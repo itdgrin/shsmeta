@@ -101,7 +101,8 @@ uses
   TravelList in 'TravelList.pas' {fTravelList},
   CardPTM in 'CardPTM.pas' {FormCardPTM},
   fUpdate in 'fUpdate.pas' {UpdateForm},
-  EditExpression in 'EditExpression.pas' {fEditExpression};
+  EditExpression in 'EditExpression.pas' {fEditExpression},
+  dmReportU in 'dmReportU.pas' {dmReportF: TDataModule};
 
 //var
   //H: Thandle;
@@ -159,6 +160,7 @@ begin
   Application.CreateForm(TFormCoefficientOrders, FormCoefficientOrders);
   Application.CreateForm(TFormKC6, FormKC6);
   Application.CreateForm(TFormCardPTM, FormCardPTM);
+  Application.CreateForm(TdmReportF, dmReportF);
   Application.Run;
 
 end.
