@@ -1012,8 +1012,13 @@ procedure TFormMain.mnZP_OBJClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if FormObjectsAndEstimates.TreeView.Selected.Level = 0 then
-      dmReportF.Report_ZP_OBJ(Integer(FormObjectsAndEstimates.TreeView.Selected.Data), FileReportPath);
+    if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        ShowMessage('Не выбрана смета');
+        Exit;
+      end;
+
+    dmReportF.Report_ZP_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
   finally
     Screen.Cursor := crDefault;
   end;

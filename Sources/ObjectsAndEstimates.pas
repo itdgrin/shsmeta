@@ -132,11 +132,11 @@ type
   private
     StrQuery: String; // Строка для формирования запросов
     IdObject: Integer;
-    IdEstimate: Integer;
     IDAct: Integer;
     TypeEstimate: Integer;
   public
     ActReadOnly: Boolean;
+    IdEstimate: Integer;
     function getCurObject: Integer;
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;

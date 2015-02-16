@@ -38,7 +38,7 @@ object dmReportF: TdmReportF
     PrintOptions.Printer = 'Default'
     PrintOptions.PrintOnSheet = 0
     ReportOptions.CreateDate = 42048.002529965300000000
-    ReportOptions.LastChange = 42050.727586296300000000
+    ReportOptions.LastChange = 42050.934493819440000000
     ScriptLanguage = 'PascalScript'
     StoreInDFM = False
     Left = 16
