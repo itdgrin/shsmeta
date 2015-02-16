@@ -522,7 +522,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         AutoSize = True
       end
       object SplitterBottomCenter: TSplitter
-        Left = 364
+        Left = 330
         Top = 0
         Width = 5
         Height = 180
@@ -532,7 +532,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       object PanelEstimates: TPanel
         Left = 0
         Top = 0
-        Width = 364
+        Width = 330
         Height = 180
         Align = alLeft
         BevelOuter = bvNone
@@ -541,7 +541,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         object tvEstimates: TJvDBTreeView
           Left = 0
           Top = 0
-          Width = 364
+          Width = 330
           Height = 180
           DataSource = dsTreeData
           MasterField = 'SM_ID'
@@ -558,25 +558,26 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           PopupMenu = PopupMenuEstimates
           RowSelect = True
           Mirror = False
-          ExplicitLeft = 159
+          ExplicitLeft = -1
           ExplicitTop = 1
-          ExplicitWidth = 204
-          ExplicitHeight = 176
+          ExplicitWidth = 350
         end
       end
       object PanelActs: TPanel
-        Left = 369
+        Left = 335
         Top = 0
-        Width = 336
+        Width = 370
         Height = 180
         Align = alClient
         BevelOuter = bvNone
         ParentBackground = False
         TabOrder = 1
+        ExplicitLeft = 369
+        ExplicitWidth = 336
         object grActs: TJvDBGrid
           Left = 0
           Top = 0
-          Width = 336
+          Width = 370
           Height = 180
           Align = alClient
           DataSource = dsActs
@@ -602,7 +603,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1072#1082#1090#1072
-              Width = 114
+              Width = 126
               Visible = True
             end
             item
@@ -610,7 +611,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
               FieldName = 'DATE'
               Title.Alignment = taCenter
               Title.Caption = #1044#1072#1090#1072
-              Width = 41
+              Width = 45
               Visible = True
             end
             item
@@ -618,7 +619,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
               FieldName = 'DESCRIPTION'
               Title.Alignment = taCenter
               Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077
-              Width = 174
+              Width = 192
               Visible = True
             end>
         end

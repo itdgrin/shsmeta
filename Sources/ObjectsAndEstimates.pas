@@ -113,7 +113,6 @@ type
     procedure PopupMenuEstimatesPopup(Sender: TObject);
     procedure PMEstimateExpandSelectedClick(Sender: TObject);
     procedure PMActsAddClick(Sender: TObject);
-    procedure FillingActs;
     procedure VSTDblClick(Sender: TObject);
     procedure PMActsPopup(Sender: TObject);
     procedure PMActsDeleteClick(Sender: TObject);
@@ -467,17 +466,17 @@ end;
 // Открытие сметы
 procedure TFormObjectsAndEstimates.VSTDblClick(Sender: TObject);
 begin
- { // Открываем форму ожидания
-  FormWaiting.Show;
-  Application.ProcessMessages;
+  { // Открываем форму ожидания
+    FormWaiting.Show;
+    Application.ProcessMessages;
 
-  if (not Assigned(FormCalculationEstimate)) then
+    if (not Assigned(FormCalculationEstimate)) then
     FormCalculationEstimate := TFormCalculationEstimate.Create(FormMain);
 
-  with FormCalculationEstimate, qrObjects do
-  begin
+    with FormCalculationEstimate, qrObjects do
+    begin
     EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' + FieldByName('Name')
-      .AsVariant;
+    .AsVariant;
     EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
     EditDateContract.Text := FieldByName('DateContract').AsVariant;
 
@@ -490,14 +489,14 @@ begin
 
     CreateTempTables;
     OpenAllData;
-  end;
+    end;
 
-  // Закрываем форму ожидания
-  FormWaiting.Close;
-  Close;
+    // Закрываем форму ожидания
+    FormWaiting.Close;
+    Close;
 
-  FormKC6.caption := 'Выборка данных';
-  FormKC6.MyShow(IdObject);    }
+    FormKC6.caption := 'Выборка данных';
+    FormKC6.MyShow(IdObject); }
 end;
 
 procedure TFormObjectsAndEstimates.pmActPropertyClick(Sender: TObject);
@@ -575,8 +574,6 @@ begin
       ParamByName('IdAct').Value := IDAct;
       ExecSQL;
       Active := False;
-
-      FillingActs;
     end;
   except
     on E: Exception do
@@ -637,8 +634,6 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.FillingTableObjects;
-{ var
-  i: Integer; }
 begin
   try
     CloseOpen(qrObjects);
@@ -651,8 +646,6 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.PopupMenuEstimatesAddClick(Sender: TObject);
-{ var
-  Node: TTreeNode; }
 begin
   // (Sender as TMenuItem).Tag - Устанавливаем тип сметы (1-локальная, 2-объектная, 3-ПТМ)
   FormCardEstimate.ShowForm(IdObject, IdEstimate, (Sender as TMenuItem).Tag);
@@ -837,12 +830,6 @@ begin
   FormWaiting.Close;
 
   Close;
-end;
-
-procedure TFormObjectsAndEstimates.FillingActs;
-begin
-  // qrActsEx.ParamByName('sm_id').AsInteger := IdEstimate;
-  // CloseOpen(qrActsEx);
 end;
 
 end.
