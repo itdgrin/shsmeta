@@ -6,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Grids, Menus,
   DB, DBGrids, StdCtrls, ComCtrls, VirtualTrees, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes, JvExDBGrids, JvDBGrid;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes, JvExDBGrids, JvDBGrid, JvExComCtrls,
+  JvDBTreeView;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -71,18 +72,17 @@ type
     N1: TMenuItem;
     PMEstimateExpand: TMenuItem;
     PMEstimateCollapse: TMenuItem;
-    TreeView: TTreeView;
     PMEstimateExpandSelected: TMenuItem;
     PMActsOpen: TMenuItem;
     qrActsEx: TFDQuery;
-    qrEstimateObject: TFDQuery;
-    qrEstimateLocal: TFDQuery;
-    qrEstimatePTM: TFDQuery;
     qrTmp: TFDQuery;
     qrObjects: TFDQuery;
     pmActProperty: TMenuItem;
     dsActs: TDataSource;
     grActs: TJvDBGrid;
+    dsTreeData: TDataSource;
+    qrTreeData: TFDQuery;
+    tvEstimates: TJvDBTreeView;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -94,13 +94,9 @@ type
     procedure PopupMenuObjectsEditClick(Sender: TObject);
     procedure PopupMenuObjectsDeleteClick(Sender: TObject);
     procedure PopupMenuObjectsColumnsClick(Sender: TObject);
-    procedure RunQueryForEstimateObject;
-    procedure RunQueryForEstimatelocal;
-    procedure RunQueryForEstimatePTM;
     procedure qrObjectsAfterScroll(DataSet: TDataSet);
     procedure PanelBottomResize(Sender: TObject);
     procedure FillingTableObjects;
-    procedure FillingTableEstimates;
     procedure PopupMenuEstimatesAddClick(Sender: TObject);
     procedure PMEstimatesEditClick(Sender: TObject);
     procedure PMEstimatesDeleteClick(Sender: TObject);
@@ -113,11 +109,8 @@ type
     procedure StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
     procedure PMEstimateExpandClick(Sender: TObject);
     procedure PMEstimateCollapseClick(Sender: TObject);
-    procedure TreeViewChange(Sender: TObject; Node: TTreeNode);
-    procedure GetTypeEstimate;
     function GetNumberEstimate(): string;
     procedure PopupMenuEstimatesPopup(Sender: TObject);
-    procedure TreeViewDblClick(Sender: TObject);
     procedure PMEstimateExpandSelectedClick(Sender: TObject);
     procedure PMActsAddClick(Sender: TObject);
     procedure FillingActs;
@@ -129,6 +122,9 @@ type
     procedure OpenAct(const ActID: Integer);
     procedure pmActPropertyClick(Sender: TObject);
     procedure qrActsExAfterOpen(DataSet: TDataSet);
+    procedure qrTreeDataAfterOpen(DataSet: TDataSet);
+    procedure qrObjectsAfterOpen(DataSet: TDataSet);
+    procedure tvEstimatesDblClick(Sender: TObject);
   private
     StrQuery: String; // Строка для формирования запросов
     IdObject: Integer;
@@ -196,6 +192,7 @@ end;
 procedure TFormObjectsAndEstimates.FormCreate(Sender: TObject);
 begin
   LoadDBGridSettings(dbgrdObjects);
+  LoadDBGridSettings(grActs);
   FormMain.PanelCover.Visible := True;
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
@@ -225,7 +222,6 @@ begin
   // Выводим данные в таблицу объектов
   FillingTableObjects;
   IdEstimate := 0;
-  LoadDBGridSettings(grActs);
 
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButtonObjectsAndEstimates, HintButtonObjectsAndEstimates,
@@ -235,7 +231,6 @@ end;
 procedure TFormObjectsAndEstimates.FormShow(Sender: TObject);
 begin
   dbgrdObjects.SetFocus; // Устанавливаем фокус
-
   FormMain.TimerCover.Enabled := True;
   // Запускаем таймер который скроет панель после отображения формы
 end;
@@ -392,9 +387,6 @@ begin
   end;
 
   FillingTableObjects;
-
-  if qrObjects.RecordCount = 0 then
-    FillingTableEstimates;
 end;
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsColumnsClick(Sender: TObject);
@@ -406,78 +398,27 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.RunQueryForEstimateObject;
-begin
-  with qrEstimateObject do
-  begin
-    Active := False;
-    SQL.Clear;
-
-    StrQuery := 'SELECT smetasourcedata.sm_id as "IdEstimate", typesm.sm_type as "TypeEstimate", ' +
-      'typesm.name as "TypeEstimate", sm_number as "NumberEstimate", smetasourcedata.name as "NameEstimate" '
-      + 'FROM smetasourcedata, typesm ' + 'WHERE smetasourcedata.sm_type = typesm.sm_type and obj_id = ' +
-      IntToStr(IdObject) + ' and smetasourcedata.sm_type = 2 ORDER BY sm_number';
-
-    SQL.Add(StrQuery);
-    Active := True;
-  end;
-end;
-
-procedure TFormObjectsAndEstimates.RunQueryForEstimatelocal;
-var
-  vId: Integer;
-begin
-  vId := qrEstimateObject.FieldByName('IdEstimate').AsInteger;
-
-  with qrEstimateLocal do
-  begin
-    Active := False;
-    SQL.Clear;
-
-    StrQuery := 'SELECT smetasourcedata.sm_id as "IdEstimate", typesm.sm_type as "TypeEstimate", ' +
-      'typesm.name as "TypeEstimate", sm_number as "NumberEstimate", smetasourcedata.name as "NameEstimate" '
-      + 'FROM smetasourcedata, typesm ' + 'WHERE smetasourcedata.sm_type = typesm.sm_type and obj_id = ' +
-      IntToStr(IdObject) + ' and smetasourcedata.sm_type = 1 and parent_local_id = ' + IntToStr(vId) +
-      ' ORDER BY sm_number;';
-
-    SQL.Add(StrQuery);
-    Active := True;
-  end;
-end;
-
-procedure TFormObjectsAndEstimates.RunQueryForEstimatePTM;
-var
-  vId: Integer;
-begin
-  vId := qrEstimateLocal.FieldByName('IdEstimate').AsInteger;
-
-  with qrEstimatePTM do
-  begin
-    Active := False;
-    SQL.Clear;
-
-    StrQuery := 'SELECT smetasourcedata.sm_id as "IdEstimate", typesm.sm_type as "TypeEstimate", ' +
-      'typesm.name as "TypeEstimate", sm_number as "NumberEstimate", smetasourcedata.name as "NameEstimate" '
-      + 'FROM smetasourcedata, typesm ' + 'WHERE smetasourcedata.sm_type = typesm.sm_type and obj_id = ' +
-      IntToStr(IdObject) + ' and smetasourcedata.sm_type = 3 and parent_ptm_id = ' + IntToStr(vId) +
-      ' ORDER BY sm_number;';
-
-    SQL.Add(StrQuery);
-    Active := True;
-  end;
-end;
-
 procedure TFormObjectsAndEstimates.qrActsExAfterOpen(DataSet: TDataSet);
 begin
   IDAct := qrActsEx.FieldByName('id').AsInteger;
 end;
 
+procedure TFormObjectsAndEstimates.qrObjectsAfterOpen(DataSet: TDataSet);
+begin
+  CloseOpen(qrTreeData);
+  CloseOpen(qrActsEx);
+end;
+
 procedure TFormObjectsAndEstimates.qrObjectsAfterScroll(DataSet: TDataSet);
 begin
   IdObject := DataSet.FieldByName('IdObject').AsVariant;
-  IdEstimate := 0;
+end;
 
-  FillingTableEstimates;
+procedure TFormObjectsAndEstimates.qrTreeDataAfterOpen(DataSet: TDataSet);
+begin
+  if not CheckQrActiveEmpty(qrTreeData) then
+    Exit;
+  IdEstimate := Integer(qrTreeData.FieldByName('SM_ID').AsInteger);
 end;
 
 procedure TFormObjectsAndEstimates.PanelBottomResize(Sender: TObject);
@@ -523,55 +464,10 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.TreeViewChange(Sender: TObject; Node: TTreeNode);
-{ var
-  i: Integer; }
-begin
-  IdEstimate := Integer(TreeView.Selected.Data);
-
-  GetTypeEstimate;
-
-  FillingActs;
-end;
-
 // Открытие сметы
-procedure TFormObjectsAndEstimates.TreeViewDblClick(Sender: TObject);
-begin
-  // Открываем форму ожидания
-  FormWaiting.Show;
-  Application.ProcessMessages;
-
-  if (not Assigned(FormCalculationEstimate)) then
-    FormCalculationEstimate := TFormCalculationEstimate.Create(FormMain);
-
-  with FormCalculationEstimate, qrObjects do
-  begin
-    EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' + FieldByName('Name')
-      .AsVariant;
-    EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
-    EditDateContract.Text := FieldByName('DateContract').AsVariant;
-
-    EditNameEstimate.Text := TreeView.Selected.Text;
-
-    SetIdObject(IdObject);
-    SetIdEstimate(IdEstimate);
-    // Создание временных таблиц
-    CreateTempTables;
-    // Заполненя временных таблиц, заполнение формы
-    OpenAllData;
-  end;
-
-  // FormCalculationEstimate.Show;
-
-  // Закрываем форму ожидания
-  FormWaiting.Close;
-
-  Close;
-end;
-
 procedure TFormObjectsAndEstimates.VSTDblClick(Sender: TObject);
 begin
-  // Открываем форму ожидания
+ { // Открываем форму ожидания
   FormWaiting.Show;
   Application.ProcessMessages;
 
@@ -585,7 +481,7 @@ begin
     EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
     EditDateContract.Text := FieldByName('DateContract').AsVariant;
 
-    EditNameEstimate.Text := TreeView.Selected.Text;
+    EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
 
     SetIdObject(IdObject);
     SetIdEstimate(IdEstimate);
@@ -601,27 +497,7 @@ begin
   Close;
 
   FormKC6.caption := 'Выборка данных';
-  FormKC6.MyShow(IdObject);
-end;
-
-procedure TFormObjectsAndEstimates.GetTypeEstimate;
-begin
-  try
-    with qrTmp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT sm_type FROM smetasourcedata WHERE sm_id = :sm_id;');
-      ParamByName('sm_id').Value := IdEstimate;
-      Active := True;
-
-      TypeEstimate := FieldByName('sm_type').AsInteger;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При получении типа сметы возникла ошибка:' + sLineBreak + sLineBreak + E.message),
-        PWideChar(caption), MB_ICONERROR + mb_OK + mb_TaskModal);
-  end;
+  FormKC6.MyShow(IdObject);    }
 end;
 
 procedure TFormObjectsAndEstimates.pmActPropertyClick(Sender: TObject);
@@ -658,7 +534,7 @@ begin
     EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
     EditDateContract.Text := FieldByName('DateContract').AsVariant;
 
-    EditNameEstimate.Text := TreeView.Selected.Text;
+    EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
 
     SetIdObject(IdObject);
     SetIdEstimate(IdEstimate);
@@ -716,12 +592,13 @@ end;
 
 procedure TFormObjectsAndEstimates.PMActsPopup(Sender: TObject);
 begin
+  TypeEstimate := qrTreeData.FieldByName('SM_TYPE').AsInteger;
   // Если не выделена смета или выделена, но не объектная
-  PMActsOpen.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
-  PMActsAdd.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
-  PMActsEdit.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
-  PMActsDelete.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
-  pmActProperty.Enabled := not((TreeView.Selected = nil) or (TypeEstimate <> 2));
+  PMActsOpen.Enabled := not((qrTreeData.IsEmpty) or (TypeEstimate <> 2));
+  PMActsAdd.Enabled := not((qrTreeData.IsEmpty) or (TypeEstimate <> 2));
+  PMActsEdit.Enabled := not((qrTreeData.IsEmpty) or (TypeEstimate <> 2));
+  PMActsDelete.Enabled := not((qrTreeData.IsEmpty) or (TypeEstimate <> 2));
+  pmActProperty.Enabled := not((qrTreeData.IsEmpty) or (TypeEstimate <> 2));
 end;
 
 function TFormObjectsAndEstimates.GetNumberEstimate(): string;
@@ -746,17 +623,17 @@ end;
 
 procedure TFormObjectsAndEstimates.PMEstimateExpandClick(Sender: TObject);
 begin
-  TreeView.FullExpand;
+  tvEstimates.FullExpand;
 end;
 
 procedure TFormObjectsAndEstimates.PMEstimateExpandSelectedClick(Sender: TObject);
 begin
-  TreeView.Selected.Expand(True);
+  tvEstimates.Selected.Expand(True);
 end;
 
 procedure TFormObjectsAndEstimates.PMEstimateCollapseClick(Sender: TObject);
 begin
-  TreeView.FullCollapse;
+  tvEstimates.FullCollapse;
 end;
 
 procedure TFormObjectsAndEstimates.FillingTableObjects;
@@ -773,64 +650,12 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.FillingTableEstimates;
-var
-  l1, l2, l3: Integer;
-begin
-  TreeView.Items.Clear;
-  // НАЧАЛО вывода ОБЪЕКТЫХ смет
-  RunQueryForEstimateObject;
-  with qrEstimateObject do
-  begin
-    First;
-    while not Eof do
-    begin
-      l1 := TreeView.Items.Add(Nil, FieldByName('NumberEstimate').AsVariant + ' ' +
-        FieldByName('NameEstimate').AsVariant).AbsoluteIndex;
-      TreeView.Items.Item[l1].Data := Pointer(FieldByName('IdEstimate').AsInteger);
-      // ---------- НАЧАЛО вывода ЛОКАЛЬНЫХ смет
-      RunQueryForEstimatelocal;
-
-      with qrEstimateLocal do
-      begin
-        First;
-        while not Eof do
-        begin
-          l2 := TreeView.Items.AddChild(TreeView.Items.Item[l1], FieldByName('NumberEstimate').AsVariant + ' '
-            + FieldByName('NameEstimate').AsVariant).AbsoluteIndex;
-          TreeView.Items.Item[l2].Data := Pointer(FieldByName('IdEstimate').AsInteger);
-          // -------------------- НАЧАЛО вывода смет ПТМ
-          RunQueryForEstimatePTM;
-
-          with qrEstimatePTM do
-          begin
-            First;
-            while not Eof do
-            begin
-              l3 := TreeView.Items.AddChild(TreeView.Items.Item[l2], FieldByName('NumberEstimate').AsVariant +
-                ' ' + FieldByName('NameEstimate').AsVariant).AbsoluteIndex;
-              TreeView.Items.Item[l3].Data := Pointer(FieldByName('IdEstimate').AsInteger);
-
-              Next;
-            end;
-          end;
-          // -------------------- КОНЕЦ вывода смет ПТМ
-          Next;
-        end;
-      end;
-      // ---------- КОНЕЦ вывода ЛОКАЛЬНЫХ смет
-      Next;
-    end;
-  end;
-  // КОНЕЦ вывода ОБЪЕКТЫХ смет
-end;
-
 procedure TFormObjectsAndEstimates.PopupMenuEstimatesAddClick(Sender: TObject);
 { var
   Node: TTreeNode; }
 begin
   // (Sender as TMenuItem).Tag - Устанавливаем тип сметы (1-локальная, 2-объектная, 3-ПТМ)
-  FormCardEstimate.ShowForm(IdObject, IdEstimate, (Sender as TMenuItem).Tag, TreeView);
+  FormCardEstimate.ShowForm(IdObject, IdEstimate, (Sender as TMenuItem).Tag);
 end;
 
 procedure TFormObjectsAndEstimates.PMEstimatesBasicDataClick(Sender: TObject);
@@ -861,8 +686,6 @@ begin
   then
     Exit;
 
-  // ----------------------------------------
-
   try
     with qrTmp do
     begin
@@ -878,8 +701,6 @@ begin
       MessageBox(0, PChar('При удалении сметы возникла ошибка:' + sLineBreak + E.message), PWideChar(caption),
         MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
-
-  TreeView.Selected.Delete;
 end;
 
 procedure TFormObjectsAndEstimates.PMEstimatesEditClick(Sender: TObject);
@@ -911,7 +732,7 @@ begin
 
     EditingRecord(True);
 
-    FormCardEstimate.ShowForm(IdObject, IdEstimate, TypeEstimate, TreeView);
+    FormCardEstimate.ShowForm(IdObject, IdEstimate, TypeEstimate);
   end;
 end;
 
@@ -927,7 +748,7 @@ begin
   PMEstimatesAddLocal.Enabled := False;
   PMEstimatesAddPTM.Enabled := False;
 
-  if TreeView.Items.Count = 0 then
+  if qrTreeData.IsEmpty then
   begin
     PMEstimatesAddObject.Enabled := True;
     Exit;
@@ -950,8 +771,6 @@ end;
 
 procedure TFormObjectsAndEstimates.StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
   State: TGridDrawState);
-{ var
-  i: Integer; }
 begin
   // Так как свойство таблицы DefaultDrawing отключено (иначе ячейка таблицы будет обведена пунктирной линией)
   // необходимо самому прорисовывать шапку и все строки таблицы
@@ -986,10 +805,44 @@ begin
   end;
 end;
 
+procedure TFormObjectsAndEstimates.tvEstimatesDblClick(Sender: TObject);
+begin
+  // Открываем форму ожидания
+  FormWaiting.Show;
+  Application.ProcessMessages;
+
+  if (not Assigned(FormCalculationEstimate)) then
+    FormCalculationEstimate := TFormCalculationEstimate.Create(FormMain);
+
+  with FormCalculationEstimate, qrObjects do
+  begin
+    EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' + FieldByName('Name')
+      .AsVariant;
+    EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
+    EditDateContract.Text := FieldByName('DateContract').AsVariant;
+
+    EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
+
+    SetIdObject(IdObject);
+    SetIdEstimate(IdEstimate);
+    // Создание временных таблиц
+    CreateTempTables;
+    // Заполненя временных таблиц, заполнение формы
+    OpenAllData;
+  end;
+
+  // FormCalculationEstimate.Show;
+
+  // Закрываем форму ожидания
+  FormWaiting.Close;
+
+  Close;
+end;
+
 procedure TFormObjectsAndEstimates.FillingActs;
 begin
-  qrActsEx.ParamByName('sm_id').AsInteger := IdEstimate;
-  CloseOpen(qrActsEx);
+  // qrActsEx.ParamByName('sm_id').AsInteger := IdEstimate;
+  // CloseOpen(qrActsEx);
 end;
 
 end.

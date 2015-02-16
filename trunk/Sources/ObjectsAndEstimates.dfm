@@ -538,17 +538,30 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         BevelOuter = bvNone
         ParentBackground = False
         TabOrder = 0
-        object TreeView: TTreeView
+        object tvEstimates: TJvDBTreeView
           Left = 0
           Top = 0
           Width = 364
           Height = 180
-          Align = alClient
+          DataSource = dsTreeData
+          MasterField = 'SM_ID'
+          DetailField = 'PARENT'
+          ItemField = 'NAME'
+          StartMasterValue = '0'
+          UseFilter = True
+          PersistentNode = True
+          ReadOnly = True
           Indent = 19
-          PopupMenu = PopupMenuEstimates
+          Align = alClient
           TabOrder = 0
-          OnChange = TreeViewChange
-          OnDblClick = TreeViewDblClick
+          OnDblClick = tvEstimatesDblClick
+          PopupMenu = PopupMenuEstimates
+          RowSelect = True
+          Mirror = False
+          ExplicitLeft = 159
+          ExplicitTop = 1
+          ExplicitWidth = 204
+          ExplicitHeight = 176
         end
       end
       object PanelActs: TPanel
@@ -645,8 +658,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   end
   object PopupMenuEstimates: TPopupMenu
     OnPopup = PopupMenuEstimatesPopup
-    Left = 208
-    Top = 328
+    Left = 256
+    Top = 400
     object PopupMenuEstimatesAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       object PMEstimatesAddLocal: TMenuItem
@@ -724,6 +737,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   object qrActsEx: TFDQuery
     AfterOpen = qrActsExAfterOpen
     AfterScroll = qrActsExAfterOpen
+    MasterSource = dsTreeData
+    MasterFields = 'SM_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -749,27 +764,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         Value = Null
       end>
   end
-  object qrEstimateObject: TFDQuery
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    Left = 65
-    Top = 296
-  end
-  object qrEstimateLocal: TFDQuery
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    Left = 65
-    Top = 344
-  end
-  object qrEstimatePTM: TFDQuery
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    Left = 65
-    Top = 400
-  end
   object qrTmp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
@@ -778,6 +772,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     Top = 192
   end
   object qrObjects: TFDQuery
+    AfterOpen = qrObjectsAfterOpen
     AfterScroll = qrObjectsAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
@@ -821,7 +816,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       '       baseprices.base_name   AS "BasePrice",'
       '       objstroj.name          AS "OXROPR",'
       '       encrypt                AS "CodeObject",'
-      '       calc_econom            AS "CalculationEconom"'
+      '       calc_econom            AS "CalculationEconom",'
+      '       obj_id'
       'FROM   objcards,'
       '       istfin,'
       '       objcategory,'
@@ -843,5 +839,48 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     DataSet = qrActsEx
     Left = 425
     Top = 384
+  end
+  object dsTreeData: TDataSource
+    DataSet = qrTreeData
+    Left = 216
+    Top = 400
+  end
+  object qrTreeData: TFDQuery
+    AfterOpen = qrTreeDataAfterOpen
+    AfterScroll = qrTreeDataAfterOpen
+    MasterSource = dsObjects
+    MasterFields = 'obj_id'
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    SQL.Strings = (
+      
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
+        'NAME,'
+      '       0 as PARENT  '
+      'FROM smetasourcedata'
+      'WHERE SM_TYPE=2 AND '
+      '      OBJ_ID=:OBJ_ID'
+      'UNION ALL'
+      
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
+        'NAME,'
+      '       (PARENT_LOCAL_ID+PARENT_PTM_ID) as PARENT  '
+      'FROM smetasourcedata'
+      'WHERE SM_TYPE<>2 AND '
+      '      OBJ_ID=:OBJ_ID'
+      'ORDER BY NAME')
+    Left = 177
+    Top = 400
+    ParamData = <
+      item
+        Name = 'OBJ_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Size = 10
+        Value = Null
+      end>
   end
 end
