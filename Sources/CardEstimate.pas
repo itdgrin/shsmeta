@@ -54,7 +54,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
 
-    procedure ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer; const vTreeView: TTreeView);
+    procedure ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer);
     procedure ClearAllFields;
     procedure CreateNumberEstimate;
     procedure ButtonCloseClick(Sender: TObject);
@@ -76,8 +76,6 @@ type
     IdObject: Integer;
     IdEstimate: Integer;
     TypeEstimate: Integer;
-    TreeView: TTreeView;
-
   public
 
   end;
@@ -221,14 +219,11 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormCardEstimate.ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer;
-  const vTreeView: TTreeView);
+procedure TFormCardEstimate.ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer);
 begin
   IdObject := vIdObject;
   IdEstimate := vIdEstimate;
   TypeEstimate := vTypeEstimate;
-  TreeView := vTreeView;
-
   ShowModal;
 end;
 
@@ -287,8 +282,7 @@ begin
       Active := False;
       SQL.Clear;
 
-      StrQuery := 'SELECT state_nds, BEG_STROJ FROM objcards WHERE obj_id = ' +
-        IntToStr(IdObject) + ';';
+      StrQuery := 'SELECT state_nds, BEG_STROJ FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';';
 
       SQL.Add(StrQuery);
       Active := True;
@@ -452,27 +446,6 @@ begin
 
       SQL.Add(StrQuery);
       ExecSQL;
-
-      if Editing then
-        // Если редактировали, то просто меняем название узла в дереве, остальные изменения не видны в дереве
-        TreeView.Selected.Text := EditNumberEstimate.Text + ' ' + EditNameEstimate.Text
-      else
-      begin
-        Node := nil;
-        // Если добавляем, то вставляем узел сметы в дерево и присваиваем ему Id
-        case TypeEstimate of
-          1, 3:
-            Node := TreeView.Items.AddChild(TreeView.Selected, EditNumberEstimate.Text + ' ' +
-              EditNameEstimate.Text);
-          2:
-            Node := TreeView.Items.Add(Nil, EditNumberEstimate.Text + ' ' + EditNameEstimate.Text);
-        end;
-        if Node <> nil then
-        begin
-          Node.Data := Pointer(GetIdNewEstimate); // Присваиваем Id
-          Node.Selected := True; // Выделяем вставленную смету
-        end;
-      end;
     end;
 
     ButtonSave.Tag := 1;
@@ -517,21 +490,20 @@ begin
   EditNumberEstimate.Text := EditNumberEstimate.Text + str;
 
   // ----------------------------------------
-  {
-    str := ComboBoxPart.Text;
-    Delete(str, 1, Pos('.', str) + 1);
+  str := ComboBoxPart.Text;
+  Delete(str, 1, Pos('.', str) + 1);
 
-    EditNameEstimate.Text := str;
+  EditNameEstimate.Text := str;
 
-    str := ComboBoxSection.Text;
-    Delete(str, 1, Pos('.', str) + 1);
+  str := ComboBoxSection.Text;
+  Delete(str, 1, Pos('.', str) + 1);
 
-    EditNameEstimate.Text := EditNameEstimate.Text + str;
+  EditNameEstimate.Text := EditNameEstimate.Text + str;
 
-    str := ComboBoxTypeWork.Text;
-    Delete(str, 1, Pos('.', str) + 1);
+  str := ComboBoxTypeWork.Text;
+  Delete(str, 1, Pos('.', str) + 1);
 
-    EditNameEstimate.Text := EditNameEstimate.Text + str; }
+  EditNameEstimate.Text := EditNameEstimate.Text + str;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -659,6 +631,7 @@ begin
           str := '0';
 
         EditNumberEstimate.Text := EditNumberEstimate.Text + str;
+        ComboBoxChange(nil);
       end;
   end;
 end;
@@ -713,8 +686,6 @@ begin
       MessageBox(0, PChar('При получении списка всех частей возникла ошибка:' + sLineBreak + sLineBreak +
         E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  ComboBoxPart.ItemIndex := 1;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -746,8 +717,6 @@ begin
       MessageBox(0, PChar('При получении списка всех разделов возникла ошибка:' + sLineBreak + sLineBreak +
         E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  ComboBoxSection.ItemIndex := 5;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -780,8 +749,6 @@ begin
       MessageBox(0, PChar('При получении списка всех видов работ возникла ошибка:' + sLineBreak + sLineBreak +
         E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  ComboBoxTypeWork.ItemIndex := 6;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

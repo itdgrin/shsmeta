@@ -267,7 +267,7 @@ object FormCardEstimate: TFormCardEstimate
     object ComboBoxPart: TComboBox
       Tag = 1
       Left = 68
-      Top = 2
+      Top = 4
       Width = 533
       Height = 21
       Anchors = [akLeft, akTop, akRight]

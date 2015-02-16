@@ -956,20 +956,23 @@ procedure TFormCalculationEstimate.FormKeyDown(Sender: TObject; var Key: Word; S
 var
   res: Variant;
 begin
-  case Key of
-    vkEqual:
-      begin
-        // Если пытамся ввести формулу в таблицу слева
-        if CheckQrActiveEmpty(qrRates) and (ActiveControl = dbgrdRates) and
-          (dbgrdRates.SelectedField = qrRatesCOUNT) then
+  if Shift = [] then
+  begin
+    case Key of
+      vkEqual:
         begin
-          res := ShowEditExpression;
-          if VarIsNull(res) then
-            Exit;
-          qrRates.Edit;
-          qrRatesCOUNT.Value := res;
+          // Если пытамся ввести формулу в таблицу слева
+          if CheckQrActiveEmpty(qrRates) and (ActiveControl = dbgrdRates) and
+            (dbgrdRates.SelectedField = qrRatesCOUNT) then
+          begin
+            res := ShowEditExpression;
+            if VarIsNull(res) then
+              Exit;
+            qrRates.Edit;
+            qrRatesCOUNT.Value := res;
+          end;
         end;
-      end;
+    end;
   end;
 end;
 
@@ -5395,6 +5398,8 @@ end;
 procedure TFormCalculationEstimate.dbgrdRatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = 45 then
+    Key := 0;
+  if Shift = [ssShift] then
     Key := 0;
 end;
 

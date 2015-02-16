@@ -31,7 +31,6 @@ object fKC6Journal: TfKC6Journal
     TabOrder = 0
     TabPosition = tpLeft
     OnChange = pgcPageChange
-    ExplicitTop = 58
     object ts1: TTabSheet
       Caption = #1055#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084
       object spl1: TSplitter
@@ -73,6 +72,7 @@ object fKC6Journal: TfKC6Journal
         OnClick = tvEstimatesClick
         RowSelect = True
         Mirror = False
+        ExplicitTop = 2
       end
       object dbgrd2: TDBGrid
         Left = 0
