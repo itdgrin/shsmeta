@@ -128,7 +128,7 @@ type
     StrQuery: String; // Строка для формирования запросов
     IdObject: Integer;
     IDAct: Integer;
-    TypeEstimate: Integer;
+    // TypeEstimate: Integer;
   public
     ActReadOnly: Boolean;
     IdEstimate: Integer;
@@ -588,6 +588,8 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.PMActsPopup(Sender: TObject);
+var
+  TypeEstimate: Integer;
 begin
   TypeEstimate := qrTreeData.FieldByName('SM_TYPE').AsInteger;
   // Если не выделена смета или выделена, но не объектная
@@ -649,6 +651,7 @@ procedure TFormObjectsAndEstimates.PopupMenuEstimatesAddClick(Sender: TObject);
 begin
   // (Sender as TMenuItem).Tag - Устанавливаем тип сметы (1-локальная, 2-объектная, 3-ПТМ)
   FormCardEstimate.ShowForm(IdObject, IdEstimate, (Sender as TMenuItem).Tag);
+  CloseOpen(qrTreeData);
 end;
 
 procedure TFormObjectsAndEstimates.PMEstimatesBasicDataClick(Sender: TObject);
@@ -662,7 +665,7 @@ var
 begin
   NumberEstimate := GetNumberEstimate;
 
-  case TypeEstimate of
+  case qrTreeData.FieldByName('SM_TYPE').AsInteger of
     1:
       TextWarning := 'Вы пытаетесь удалить ЛОКАЛЬНУЮ смету с номером: ' + NumberEstimate + sLineBreak +
         'Вместе с ней будут удалены все разделы ПТМ которые с ней связаны!' + sLineBreak + sLineBreak +
@@ -688,6 +691,7 @@ begin
       ParamByName('IdEstimate').Value := IdEstimate;
       ExecSQL;
       Active := False;
+      CloseOpen(qrTreeData);
     end;
   except
     on E: Exception do
@@ -725,7 +729,7 @@ begin
 
     EditingRecord(True);
 
-    FormCardEstimate.ShowForm(IdObject, IdEstimate, TypeEstimate);
+    FormCardEstimate.ShowForm(IdObject, IdEstimate, qrTreeData.FieldByName('SM_TYPE').AsInteger);
   end;
 end;
 
@@ -753,12 +757,12 @@ begin
   PMEstimateExpand.Enabled := True;
   PMEstimateCollapse.Enabled := True;
 
-  if TypeEstimate = 2 then
+  if qrTreeData.FieldByName('SM_TYPE').AsInteger = 2 then
   begin
     PMEstimatesAddObject.Enabled := True;
     PMEstimatesAddLocal.Enabled := True;
   end
-  else if TypeEstimate = 1 then
+  else if qrTreeData.FieldByName('SM_TYPE').AsInteger = 1 then
     PMEstimatesAddPTM.Enabled := True;
 end;
 
