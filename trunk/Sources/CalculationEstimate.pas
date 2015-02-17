@@ -625,6 +625,7 @@ type
     procedure dbgrdDumpKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdDevicesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdRatesEnter(Sender: TObject);
+    procedure qrRatesAfterPost(DataSet: TDataSet);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -2128,6 +2129,11 @@ begin
 end;
 
 // Для того что-бы скрол по таблице был быстрым обработка скрола происходит с задержкой
+procedure TFormCalculationEstimate.qrRatesAfterPost(DataSet: TDataSet);
+begin
+  qrRatesCOUNT.ReadOnly := False;
+end;
+
 procedure TFormCalculationEstimate.qrRatesAfterScroll(DataSet: TDataSet);
 begin
   if qrRates.Tag <> 1 then
@@ -5398,8 +5404,6 @@ end;
 procedure TFormCalculationEstimate.dbgrdRatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = 45 then
-    Key := 0;
-  if Shift = [ssShift] then
     Key := 0;
 end;
 

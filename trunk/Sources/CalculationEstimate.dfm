@@ -3388,6 +3388,7 @@
   end
   object qrRates: TFDQuery
     BeforePost = qrRatesBeforePost
+    AfterPost = qrRatesAfterPost
     AfterScroll = qrRatesAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read

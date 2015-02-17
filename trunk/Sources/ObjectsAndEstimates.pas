@@ -7,7 +7,7 @@ uses
   DB, DBGrids, StdCtrls, ComCtrls, VirtualTrees, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes, JvExDBGrids, JvDBGrid, JvExComCtrls,
-  JvDBTreeView;
+  JvDBTreeView, Vcl.Buttons, JvHint, JvComponentBase;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -124,10 +124,12 @@ type
     procedure qrTreeDataAfterOpen(DataSet: TDataSet);
     procedure qrObjectsAfterOpen(DataSet: TDataSet);
     procedure tvEstimatesDblClick(Sender: TObject);
+    procedure grActsMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
   private
     StrQuery: String; // Строка для формирования запросов
     IdObject: Integer;
     IDAct: Integer;
+    RAHint1: TJvHint;
     // TypeEstimate: Integer;
   public
     ActReadOnly: Boolean;
@@ -190,6 +192,7 @@ end;
 
 procedure TFormObjectsAndEstimates.FormCreate(Sender: TObject);
 begin
+  RAHint1 := TJvHint.Create(Self);
   LoadDBGridSettings(dbgrdObjects);
   LoadDBGridSettings(grActs);
   FormMain.PanelCover.Visible := True;
@@ -620,6 +623,18 @@ begin
   end;
 end;
 
+procedure TFormObjectsAndEstimates.grActsMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+var
+  G : TGridCoord;
+  R : TRect;
+begin
+  TDrawGrid(Sender as TDBGrid).MouseToCell(X, Y, G.X, G.Y);
+
+  R := TDrawGrid(Sender as TDBGrid).CellRect(G.X, G.Y);
+  OffsetRect(R, (Sender as TDBGrid).ClientOrigin.X, (Sender as TDBGrid).ClientOrigin.Y);
+  RAHint1.ActivateHint(R, Format('X: %d, Y: %d, %s', [G.X, G.Y, 'Подсказка']));
+end;
+
 procedure TFormObjectsAndEstimates.PMEstimateExpandClick(Sender: TObject);
 begin
   tvEstimates.FullExpand;
@@ -730,6 +745,8 @@ begin
     EditingRecord(True);
 
     FormCardEstimate.ShowForm(IdObject, IdEstimate, qrTreeData.FieldByName('SM_TYPE').AsInteger);
+    CloseOpen(qrTreeData);
+    tvEstimates.Selected.Text := qrTreeData.FieldByName('NAME').AsString;
   end;
 end;
 
