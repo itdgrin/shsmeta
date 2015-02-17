@@ -551,6 +551,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           UseFilter = True
           PersistentNode = True
           ReadOnly = True
+          DragMode = dmAutomatic
+          HideSelection = False
           Indent = 19
           Align = alClient
           TabOrder = 0
@@ -560,7 +562,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           Mirror = False
           ExplicitLeft = -1
           ExplicitTop = 1
-          ExplicitWidth = 350
         end
       end
       object PanelActs: TPanel
@@ -572,8 +573,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         BevelOuter = bvNone
         ParentBackground = False
         TabOrder = 1
-        ExplicitLeft = 369
-        ExplicitWidth = 336
         object grActs: TJvDBGrid
           Left = 0
           Top = 0
@@ -590,6 +589,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          OnMouseMove = grActsMouseMove
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
