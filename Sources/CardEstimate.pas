@@ -37,9 +37,8 @@ type
     EditSetDrawing: TEdit;
 
     Bevel: TBevel;
-
-    ButtonSave: TButton;
-    ButtonClose: TButton;
+    btnSave: TButton;
+    btnClose: TButton;
     PanelPart: TPanel;
     LabelPart: TLabel;
     ComboBoxPart: TComboBox;
@@ -57,8 +56,8 @@ type
     procedure ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer);
     procedure ClearAllFields;
     procedure CreateNumberEstimate;
-    procedure ButtonCloseClick(Sender: TObject);
-    procedure ButtonSaveClick(Sender: TObject);
+    procedure btnCloseClick(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure EditingRecord(const Value: Boolean);
@@ -111,7 +110,7 @@ end;
 
 procedure TFormCardEstimate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  if ButtonSave.Tag = 0 then
+  if btnSave.Tag = 0 then
     if MessageBox(0, PChar('Закрыть окно без сохранения?'), PWideChar(Caption),
       MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
       CanClose := True
@@ -133,7 +132,7 @@ begin
 
   Caption := PWideChar(Caption);
 
-  ButtonSave.Tag := 0;
+  btnSave.Tag := 0;
 
   Editing := False;
 end;
@@ -149,7 +148,7 @@ begin
 
   EditNumberChapter.SetFocus; // Устанавливаем фокус
 
-  ButtonSave.Tag := 0;
+  btnSave.Tag := 0;
 
   if not Editing then
     ClearAllFields; // Очистка полей формы
@@ -227,23 +226,17 @@ begin
   ShowModal;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCardEstimate.EditingRecord(const Value: Boolean);
 begin
   Editing := True;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormCardEstimate.ButtonCloseClick(Sender: TObject);
+procedure TFormCardEstimate.btnCloseClick(Sender: TObject);
 begin
   Close;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormCardEstimate.ButtonSaveClick(Sender: TObject);
+procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
 var
   CountWarning: Integer;
 
@@ -448,7 +441,7 @@ begin
       ExecSQL;
     end;
 
-    ButtonSave.Tag := 1;
+    btnSave.Tag := 1;
     Close;
   except
     on E: Exception do
@@ -471,8 +464,6 @@ begin
   EditPostChecked.Text := '';
   EditSetDrawing.Text := '';
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardEstimate.ComboBoxChange(Sender: TObject);
 var
@@ -505,8 +496,6 @@ begin
 
   EditNameEstimate.Text := EditNameEstimate.Text + str;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardEstimate.CreateNumberEstimate;
 var
@@ -636,8 +625,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 function TFormCardEstimate.GetIdNewEstimate: Integer;
 begin
   Result := 0;
@@ -657,8 +644,6 @@ begin
         E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardEstimate.GetParts;
 begin
@@ -687,8 +672,6 @@ begin
         E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardEstimate.GetSections;
 begin
@@ -719,8 +702,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCardEstimate.GetTypeWorks;
 begin
   ComboBoxTypeWork.Items.Clear;
@@ -750,7 +731,5 @@ begin
         E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.

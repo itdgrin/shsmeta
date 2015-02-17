@@ -218,7 +218,7 @@ object FormCardEstimate: TFormCardEstimate
       TabOrder = 0
     end
   end
-  object ButtonSave: TButton
+  object btnSave: TButton
     Left = 390
     Top = 220
     Width = 100
@@ -233,9 +233,9 @@ object FormCardEstimate: TFormCardEstimate
     Font.Style = []
     ParentFont = False
     TabOrder = 5
-    OnClick = ButtonSaveClick
+    OnClick = btnSaveClick
   end
-  object ButtonClose: TButton
+  object btnClose: TButton
     Left = 496
     Top = 220
     Width = 100
@@ -243,7 +243,7 @@ object FormCardEstimate: TFormCardEstimate
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 6
-    OnClick = ButtonCloseClick
+    OnClick = btnCloseClick
   end
   object PanelPart: TPanel
     Left = 0
