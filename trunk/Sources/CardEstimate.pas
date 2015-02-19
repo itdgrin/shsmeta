@@ -49,7 +49,6 @@ type
     LabelTypeWork: TLabel;
     ComboBoxTypeWork: TComboBox;
     qrTemp: TFDQuery;
-    dbedtNAME: TDBEdit;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -85,7 +84,7 @@ var
 
 implementation
 
-uses Main, DataModule, ObjectsAndEstimates;
+uses Main, DataModule, ObjectsAndEstimates, BasicData;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -225,7 +224,8 @@ begin
   IdObject := vIdObject;
   IdEstimate := vIdEstimate;
   TypeEstimate := vTypeEstimate;
-  ShowModal;
+  if ShowModal = mrOk then
+    FormBasicData.ShowForm(IdObject, IdEstimate);
 end;
 
 procedure TFormCardEstimate.EditingRecord(const Value: Boolean);
@@ -326,7 +326,7 @@ begin
       SQL.Add(StrQuery);
       Active := True;
 
-      PercentTransport := FieldByName('PercentTransport').asstring;
+      PercentTransport := FieldByName('PercentTransport').AsString;
       ReplaceDecimal(PercentTransport, ',', '.');
       PercentTransportEquipment := '1';
     except
@@ -416,13 +416,20 @@ begin
     begin
       Active := False;
       SQL.Clear;
-
+      btnSave.Tag := 1;
       if Editing then
+      begin
         StrQuery := 'UPDATE smetasourcedata SET name = ' + NameEstimate + ', chapter = ' + NumberChapter +
           ', row_number = ' + NumberRow + ', preparer = ' + Compose + ', ' + 'post_preparer = ' + PostCompose
           + ', examiner = ' + Checked + ', post_examiner = ' + PostChecked + ', set_drawings = ' + SetDrawing
-          + ',sm_number = "' + EditNumberEstimate.Text + '"' + ' WHERE sm_id = ' + IntToStr(IdEstimate) + ';'
+          + ',sm_number = "' + EditNumberEstimate.Text + '"' + ' WHERE sm_id = ' + IntToStr(IdEstimate) + ';';
+        SQL.Add(StrQuery);
+        ExecSQL;
+
+        ModalResult := mrCancel;
+      end
       else
+      begin
         StrQuery :=
           'INSERT INTO smetasourcedata (sm_type, obj_id, parent_local_id, parent_ptm_id, name, date, sm_number, '
           + 'chapter, row_number, preparer, post_preparer, examiner, post_examiner, set_drawings, k40, k41, k31, k32, '
@@ -433,13 +440,15 @@ begin
           ', ' + PostChecked + ', ' + SetDrawing + ', "' + K40 + '", "' + K41 + '", "' + K31 + '", "' + K32 +
           '", "' + K33 + '", "' + K34 + '", "' + PercentTransport + '", "' + PercentTransportEquipment +
           '", "' + VAT + '", "' + IdStavka + '");';
-
-      SQL.Add(StrQuery);
-      ExecSQL;
+        SQL.Add(StrQuery);
+        ExecSQL;
+        SQL.Text := 'select LAST_INSERT_ID() as ID';
+        Active := True;
+        IdEstimate := FieldByName('ID').AsInteger;
+        Active := False;
+        ModalResult := mrOk;
+      end;
     end;
-
-    btnSave.Tag := 1;
-    Close;
   except
     on E: Exception do
     begin
@@ -657,7 +666,7 @@ begin
 
       while not Eof do
       begin
-        ComboBoxPart.Items.Add(IntToStr(FieldByName('code').AsInteger) + '. ' + FieldByName('name').asstring);
+        ComboBoxPart.Items.Add(IntToStr(FieldByName('code').AsInteger) + '. ' + FieldByName('name').AsString);
         Next;
       end;
 
@@ -686,7 +695,7 @@ begin
       while not Eof do
       begin
         ComboBoxSection.Items.Add(IntToStr(FieldByName('code').AsInteger) + '. ' + FieldByName('name')
-          .asstring);
+          .AsString);
         Next;
       end;
 
@@ -716,7 +725,7 @@ begin
       while not Eof do
       begin
         ComboBoxTypeWork.Items.Add(IntToStr(FieldByName('code').AsInteger) + '. ' + FieldByName('name')
-          .asstring);
+          .AsString);
         Next;
       end;
 

@@ -56,7 +56,7 @@ type
     DataSourceRegionDump: TDataSource;
     ADOQueryDump: TFDQuery;
     ADOQueryRegionDump: TFDQuery;
-    ADOQueryTemp: TFDQuery;
+    qrTMP: TFDQuery;
     lbl1: TLabel;
     edtKZP: TEdit;
     edtYear: TSpinEdit;
@@ -73,6 +73,8 @@ type
     // Получаем флаг состояния (применять/ не применять) коэффициента по приказам
     procedure SetValueCoefOrders;
     procedure lbl1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
 
   private
@@ -96,17 +98,57 @@ uses Main, DataModule, CalculationEstimate;
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
 
+procedure TFormBasicData.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+var
+  IdStavka: Integer;
+begin
+  CanClose := False;
+  IdStavka := -1;
+  with qrTMP do
+  begin
+    Active := False;
+    SQL.Clear;
+    SQL.Add('SELECT stavka_id FROM stavka WHERE year = :year and monat = :monat;');
+    ParamByName('year').Value := edtYear.Value;
+    ParamByName('monat').Value := ComboBoxMonth.ItemIndex + 1;
+    Active := True;
+    if not Eof then
+      IdStavka := FieldByName('stavka_id').AsInteger;
+  end;
+
+  with qrTMP do
+  begin
+    Active := False;
+    SQL.Clear;
+    SQL.Add('SELECT stavka_id FROM smetasourcedata WHERE sm_id = :sm_id;');
+    ParamByName('sm_id').Value := IdEstimate;
+    Active := True;
+    IdStavka := FieldByName('stavka_id').AsInteger;
+    Active := False;
+  end;
+
+  if IdStavka <= 0 then
+  begin
+    MessageDlg('Для выбраных значений масяца и года расценки отсутствуют!'#13 +
+      'Укажите месяц и год расценок.', mtError, [mbOK], 0);
+    CanClose := False;
+    exit;
+  end;
+  CanClose := True;
+end;
+
+procedure TFormBasicData.FormCreate(Sender: TObject);
+begin
+  Left := FormMain.Left + (FormMain.Width - Width) div 2;
+  Top := FormMain.Top + (FormMain.Height - Height) div 2;
+end;
+
 procedure TFormBasicData.FormShow(Sender: TObject);
 var
   IdStavka: String;
   vDate: TDate;
 begin
-  Left := FormMain.Left + (FormMain.Width - Width) div 2;
-  Top := FormMain.Top + (FormMain.Height - Height) div 2;
-
-  // ----------------------------------------
-
-  with ADOQueryTemp do
+  with qrTMP do
   begin
     Active := False;
     SQL.Clear;
@@ -131,7 +173,7 @@ begin
 
   // ----------------------------------------
 
-  with ADOQueryTemp do
+  with qrTMP do
   begin
     Active := False;
     SQL.Clear;
@@ -153,11 +195,11 @@ begin
     ComboBoxVAT.ItemIndex := FieldByName('nds').AsVariant;
 
     IdStavka := FieldByName('stavka_id').AsVariant;
-    vDate := FieldByName('date').AsDateTime;
-
     IdDump := FieldByName('dump_id').AsVariant;
 
+    vDate := Now;
     ComboBoxMonth.ItemIndex := MonthOf(vDate) - 1;
+    edtYear.Value := YearOf(vDate);
 
     // ----------------------------------------
 
@@ -257,7 +299,7 @@ var
 begin
   try
     IdStavka := -1;
-    with ADOQueryTemp do
+    with qrTMP do
     begin
       Active := False;
       SQL.Clear;
@@ -271,14 +313,12 @@ begin
 
     if IdStavka <= 0 then
     begin
-      Showmessage('Для выбраных значений масяца и года расценки отсутствуют');
+      MessageDlg('Для выбраных значений масяца и года расценки отсутствуют!'#13 +
+        'Укажите месяц и год расценок.', mtError, [mbOK], 0);
       exit;
     end;
 
-
-    // -----------------------------------------
-
-    with ADOQueryTemp do
+    with qrTMP do
     begin
       Active := False;
       SQL.Clear;
@@ -332,7 +372,7 @@ begin
   vMonth := IntToStr(ComboBoxMonth.ItemIndex + 1);
   vYear := IntToStr(edtYear.Value);
 
-  with ADOQueryTemp do
+  with qrTMP do
   begin
     Active := False;
     SQL.Clear;
@@ -376,7 +416,7 @@ procedure TFormBasicData.GetValueCoefOrders;
 begin
   // Получаем флаг состояния (применять/ не применять) коэффициента по приказам
 
-  with ADOQueryTemp do
+  with qrTMP do
   begin
     Active := False;
     SQL.Clear;
@@ -406,7 +446,7 @@ procedure TFormBasicData.SetValueCoefOrders;
 begin
   // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
   try
-    with ADOQueryTemp do
+    with qrTMP do
     begin
       Active := False;
       SQL.Clear;

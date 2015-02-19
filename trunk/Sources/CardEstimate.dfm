@@ -85,15 +85,6 @@ object FormCardEstimate: TFormCardEstimate
       ReadOnly = True
       TabOrder = 2
     end
-    object dbedtNAME: TDBEdit
-      Left = 118
-      Top = 2
-      Width = 65
-      Height = 21
-      DataField = 'NAME'
-      DataSource = FormObjectsAndEstimates.dsTreeData
-      TabOrder = 3
-    end
   end
   object Panel2: TPanel
     Left = 0

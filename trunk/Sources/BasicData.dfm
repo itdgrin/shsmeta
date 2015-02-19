@@ -13,6 +13,8 @@ object FormBasicData: TFormBasicData
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
     327
@@ -423,7 +425,7 @@ object FormBasicData: TFormBasicData
     Left = 201
     Top = 144
   end
-  object ADOQueryTemp: TFDQuery
+  object qrTMP: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
