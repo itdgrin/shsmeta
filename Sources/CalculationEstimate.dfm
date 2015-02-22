@@ -4188,18 +4188,6 @@
       Origin = 'MAT_KOEF'
       OnChange = MatRowChange
     end
-    object qrMaterialCOAST_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST_NO_NDS'
-      Origin = 'COAST_NO_NDS'
-      OnChange = MatRowChange
-    end
-    object qrMaterialCOAST_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST_NDS'
-      Origin = 'COAST_NDS'
-      OnChange = MatRowChange
-    end
     object qrMaterialPROC_TRANSP: TFloatField
       AutoGenerateValue = arDefault
       FieldName = 'PROC_TRANSP'
@@ -4355,6 +4343,22 @@
       AutoGenerateValue = arDefault
       FieldName = 'TRANSP_NDS'
       Origin = 'TRANSP_NDS'
+    end
+    object qrMaterialCOAST_NO_NDS: TBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NO_NDS'
+      Origin = 'COAST_NO_NDS'
+      OnChange = MatRowChange
+      Precision = 20
+      Size = 2
+    end
+    object qrMaterialCOAST_NDS: TBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'COAST_NDS'
+      Origin = 'COAST_NDS'
+      OnChange = MatRowChange
+      Precision = 20
+      Size = 2
     end
   end
   object dsMaterial: TDataSource

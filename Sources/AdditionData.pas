@@ -40,7 +40,6 @@ var
 implementation
 
 {$R *.dfm}
-
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormAdditionData.WMSysCommand(var Msg: TMessage);
@@ -69,11 +68,10 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 constructor TFormAdditionData.Create(AOwner: TComponent; const vDataBase: Char);
+Var
+  FormLeft, BorderLeft: Integer;
 begin
-
   inherited Create(AOwner);
-
-  // ----------------------------------------
 
   FormMain.PanelCover.Visible := True;
 
@@ -119,7 +117,7 @@ begin
   finally
     FormWaiting.Close;
   end;
-  FrameRates.Visible := true;
+  FrameRates.Visible := True;
 
   FormMain.PanelCover.Visible := False;
   // Создаём кнопку от этого окна (на главной форме внизу)
@@ -166,19 +164,20 @@ end;
 procedure TFormAdditionData.SpeedButtonClick(Sender: TObject);
 begin
 
-  if not Assigned(TSmetaFrame((Sender as TComponent).Tag)) then exit;
+  if not Assigned(TSmetaFrame((Sender as TComponent).Tag)) then
+    exit;
 
   with TSmetaFrame((Sender as TComponent).Tag) do
   begin
     if not Loaded then
     begin
-     // FormWaiting.Show;
-     // Application.ProcessMessages;
-     // try
-        ReceivingAll;
-     // finally
-     //   FormWaiting.Close;
-     // end;
+      // FormWaiting.Show;
+      // Application.ProcessMessages;
+      // try
+      ReceivingAll;
+      // finally
+      // FormWaiting.Close;
+      // end;
     end;
     HideAllFrames;
 

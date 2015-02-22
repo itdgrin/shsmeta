@@ -738,7 +738,7 @@ begin
     EditNameEstimate.Text := qrTmp.FieldByName('NameEstimate').AsString;
     EditCompose.Text := qrTmp.FieldByName('Compose').AsString;
     EditPostCompose.Text := qrTmp.FieldByName('PostCompose').AsString;
-    EditChecked.Text := qrTmp.FieldByName('Checked').AsVariant;
+    EditChecked.Text := qrTmp.FieldByName('Checked').AsString;
     EditPostChecked.Text := qrTmp.FieldByName('PostChecked').AsString;
     EditSetDrawing.Text := qrTmp.FieldByName('SetDrawing').AsString;
 
