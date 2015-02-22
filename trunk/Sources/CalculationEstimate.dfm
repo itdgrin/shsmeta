@@ -4344,21 +4344,17 @@
       FieldName = 'TRANSP_NDS'
       Origin = 'TRANSP_NDS'
     end
-    object qrMaterialCOAST_NO_NDS: TBCDField
+    object qrMaterialCOAST_NO_NDS: TFloatField
       AutoGenerateValue = arDefault
       FieldName = 'COAST_NO_NDS'
       Origin = 'COAST_NO_NDS'
       OnChange = MatRowChange
-      Precision = 20
-      Size = 2
     end
-    object qrMaterialCOAST_NDS: TBCDField
+    object qrMaterialCOAST_NDS: TFloatField
       AutoGenerateValue = arDefault
       FieldName = 'COAST_NDS'
       Origin = 'COAST_NDS'
       OnChange = MatRowChange
-      Precision = 20
-      Size = 2
     end
   end
   object dsMaterial: TDataSource
