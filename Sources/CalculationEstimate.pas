@@ -444,8 +444,8 @@ type
     qrTranspTRANSP_UNIT: TStringField;
     tmRate: TTimer;
     strngfldRatesSORTID: TStringField;
-    qrMaterialCOAST_NO_NDS: TBCDField;
-    qrMaterialCOAST_NDS: TBCDField;
+    qrMaterialCOAST_NO_NDS: TFloatField;
+    qrMaterialCOAST_NDS: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
