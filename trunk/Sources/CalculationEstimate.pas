@@ -288,8 +288,6 @@ type
     qrMaterialMAT_NORMA: TFloatField;
     qrMaterialMAT_COUNT: TFloatField;
     qrMaterialMAT_UNIT: TStringField;
-    qrMaterialCOAST_NO_NDS: TIntegerField;
-    qrMaterialCOAST_NDS: TIntegerField;
     qrMaterialTRANSP_NO_NDS: TIntegerField;
     qrMaterialNDS: TIntegerField;
     qrMaterialFCOAST_NO_NDS: TIntegerField;
@@ -446,6 +444,8 @@ type
     qrTranspTRANSP_UNIT: TStringField;
     tmRate: TTimer;
     strngfldRatesSORTID: TStringField;
+    qrMaterialCOAST_NO_NDS: TBCDField;
+    qrMaterialCOAST_NDS: TBCDField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -4860,33 +4860,26 @@ begin
   begin
     // Расстояние сверху до формы с данными (внутри формы FormCalculationEstimate)
     // FormTop := PanelLocalEstimate.Top + PanelTopClient.Height;
-
     // Расстояние сверху до начала координат формы FormCalculationEstimate (внутри формы FormMain)
     // BorderTop := FormCalculationEstimate.Top;
-
     Top := FormCalculationEstimate.Top;
-
     // Расстояние слева до формы с данными (внутри формы FormCalculationEstimate)
     FormLeft := SplitterCenter.Left + SplitterCenter.Width;
-
     // Расстояние слева до начала координат формы FormCalculationEstimate (внутри формы FormMain)
     BorderLeft := FormCalculationEstimate.Left +
       (FormCalculationEstimate.Width - FormCalculationEstimate.ClientWidth) div 2;
-
     // Left := BorderLeft + FormLeft;
-
     Width := FormCalculationEstimate.ClientWidth - FormLeft +
       (FormCalculationEstimate.Width - FormCalculationEstimate.ClientWidth) div 2;
-
     // Шапка + высота клиентской область формы
     Height := GetSystemMetrics(SM_CYCAPTION) + FormCalculationEstimate.ClientHeight;
-
     // Отнимаем высоту нижней панели с кнопками
     Height := Height - 27;
-
     Left := BorderLeft + FormLeft;
+    Application.ProcessMessages;
   end;
   FormMain.PanelCover.Visible := False;
+  Application.ProcessMessages;
 end;
 
 procedure TFormCalculationEstimate.GetStateCoefOrdersInEstimate;
