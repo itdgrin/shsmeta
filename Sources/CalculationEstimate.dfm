@@ -3287,6 +3287,10 @@
         end
       end
     end
+    object PMMatDelete: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = PMMatDeleteClick
+    end
   end
   object PopupMenuCoef: TPopupMenu
     OnPopup = PopupMenuCoefPopup
@@ -4344,17 +4348,14 @@
       FieldName = 'TRANSP_NDS'
       Origin = 'TRANSP_NDS'
     end
-    object qrMaterialCOAST_NO_NDS: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST_NO_NDS'
-      Origin = 'COAST_NO_NDS'
-      OnChange = MatRowChange
+    object qrMaterialCONS_REPLASED: TByteField
+      FieldName = 'CONS_REPLASED'
     end
-    object qrMaterialCOAST_NDS: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMaterialCOAST_NO_NDS: TIntegerField
+      FieldName = 'COAST_NO_NDS'
+    end
+    object qrMaterialCOAST_NDS: TIntegerField
       FieldName = 'COAST_NDS'
-      Origin = 'COAST_NDS'
-      OnChange = MatRowChange
     end
   end
   object dsMaterial: TDataSource

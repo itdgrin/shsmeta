@@ -12,6 +12,7 @@ const
 
   WM_SHOW_SPLASH = WM_USER + 1;
 
+  UpdateServ = 'http://31.130.201.132:3000';
 type
   TLogFile = class(TObject)
   private
@@ -48,6 +49,7 @@ type
   TNewVersion = record
     Version: integer;
     Url: ShortString;
+    Comment: ShortString;
   end;
   TNewVersionList = array of TNewVersion;
 
@@ -341,17 +343,10 @@ begin
       if TempNode.Text = 'yes' then
       begin
         Resp.UpdeteStatys := 1;
-        for i := 0 to AppNode.ChildNodes.Count - 1 do
-        begin
-          if AppNode.ChildNodes[i].NodeName = 'update' then
-          begin
-            TempNode1 := AppNode.ChildNodes.Get(i);
-            TempNV.Version := StrToInt(TempNode1.ChildNodes.FindNode('version').Text);
-            TempNV.Url := TempNode1.ChildNodes.FindNode('url').Text;
-            Resp.AddApp(TempNV);
-            TempNode1 := nil;
-          end;
-        end;
+        TempNV.Version := StrToInt(AppNode.ChildNodes.FindNode('version').Text);
+        TempNV.Url := AppNode.ChildNodes.FindNode('url').Text;
+        Resp.AddApp(TempNV);
+        TempNode1 := nil;
       end;
 
       TempNode := nil;
@@ -368,6 +363,7 @@ begin
             TempNode1 := CatNode.ChildNodes.Get(i);
             TempNV.Version := StrToInt(TempNode1.ChildNodes.FindNode('version').Text);
             TempNV.Url := TempNode1.ChildNodes.FindNode('url').Text;
+            TempNV.Comment := TempNode1.ChildNodes.FindNode('comment').Text;
             Resp.AddCatalog(TempNV);
             TempNode1 := nil;
           end;
@@ -388,6 +384,7 @@ begin
             TempNode1 := UsNode.ChildNodes.Get(i);
             TempNV.Version := StrToInt(TempNode1.ChildNodes.FindNode('version').Text);
             TempNV.Url := TempNode1.ChildNodes.FindNode('url').Text;
+            TempNV.Comment := TempNode1.ChildNodes.FindNode('comment').Text;
             Resp.AddUser(TempNV);
             TempNode1 := nil;
           end;
@@ -449,11 +446,11 @@ begin
       HTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
       HTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
 
-      {HTTP.Get('http://nocode.by:12115/gen/get_xml.xml?' +
+      HTTP.Get(UpdateServ + '/gen/get_xml.xml?' +
         'user_version=' + IntToStr(FCurVersion.User) + '&' +
         'app_version=' + IntToStr(FCurVersion.App) + '&' +
-        'catalog_version=' + IntToStr(FCurVersion.Catalog), StrimPage);    }
-      StrimPage.LoadFromFile('d:\get_xml.xml');
+        'catalog_version=' + IntToStr(FCurVersion.Catalog), StrimPage);
+
       ParsXMLResult(StrimPage, FResponse);
 
     except
@@ -523,6 +520,7 @@ begin
     begin
       FAppList[i].Version := (Source as TServiceResponse).FAppList[i].Version;
       FAppList[i].Url := (Source as TServiceResponse).FAppList[i].Url;
+      FAppList[i].Comment := (Source as TServiceResponse).FAppList[i].Comment;
     end;
 
     FCatalogCount := (Source as TServiceResponse).FCatalogCount;
@@ -531,6 +529,7 @@ begin
     begin
       FCatalogList[i].Version := (Source as TServiceResponse).FCatalogList[i].Version;
       FCatalogList[i].Url := (Source as TServiceResponse).FCatalogList[i].Url;
+      FCatalogList[i].Comment := (Source as TServiceResponse).FCatalogList[i].Comment;
     end;
 
     FUserCount := (Source as TServiceResponse).FUserCount;
@@ -539,6 +538,7 @@ begin
     begin
       FUserList[i].Version := (Source as TServiceResponse).FUserList[i].Version;
       FUserList[i].Url := (Source as TServiceResponse).FUserList[i].Url;
+      FUserList[i].Comment := (Source as TServiceResponse).FUserList[i].Comment;
     end;
     Exit;
   end;
@@ -598,7 +598,7 @@ begin
   Result := FAppCount - 1;
   FAppList[Result].Version := ANewVersion.Version;
   FAppList[Result].Url := ANewVersion.Url;
-
+  FAppList[Result].Comment := ANewVersion.Comment;
 end;
 
 function TServiceResponse.AddCatalog(const ANewVersion: TNewVersion): integer;
@@ -609,6 +609,7 @@ begin
   Result := FCatalogCount - 1;
   FCatalogList[Result].Version := ANewVersion.Version;
   FCatalogList[Result].Url := ANewVersion.Url;
+  FCatalogList[Result].Comment := ANewVersion.Comment;
 end;
 
 function TServiceResponse.AddUser(const ANewVersion: TNewVersion): integer;
@@ -619,6 +620,7 @@ begin
   Result := FUserCount - 1;
   FUserList[Result].Version := ANewVersion.Version;
   FUserList[Result].Url := ANewVersion.Url;
+  FUserList[Result].Comment := ANewVersion.Comment;
 end;
 
 function TServiceResponse.GetAppVersion: integer;

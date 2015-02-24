@@ -444,8 +444,10 @@ type
     qrTranspTRANSP_UNIT: TStringField;
     tmRate: TTimer;
     strngfldRatesSORTID: TStringField;
-    qrMaterialCOAST_NO_NDS: TFloatField;
-    qrMaterialCOAST_NDS: TFloatField;
+    qrMaterialCONS_REPLASED: TByteField;
+    qrMaterialCOAST_NO_NDS: TIntegerField;
+    qrMaterialCOAST_NDS: TIntegerField;
+    PMMatDelete: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -626,6 +628,7 @@ type
     procedure dbgrdDevicesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdRatesEnter(Sender: TObject);
     procedure qrRatesAfterPost(DataSet: TDataSet);
+    procedure PMMatDeleteClick(Sender: TObject);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -2624,6 +2627,32 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.PMMatDeleteClick(Sender: TObject);
+begin
+  if MessageBox(0, PChar('Вы действительно хотите удалить ' +
+    qrMaterialMAT_CODE.AsString + '?'), CaptionForm,
+    MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+    Exit;
+
+  try
+    with qrTemp do
+    begin
+      Active := False;
+      SQL.Clear;
+      SQL.Add('CALL DeleteMaterial(:id);');
+      ParamByName('id').Value := qrMaterialID.AsInteger;
+      ExecSQL;
+    end;
+
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak +
+        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+
+  OutputDataToTable(qrRates.RecNo);
+end;
+
 procedure TFormCalculationEstimate.PMMatEditClick(Sender: TObject);
 begin
   SetMatEditMode;
@@ -3159,6 +3188,8 @@ begin
 
   PMMatFromRates.Enabled := (not CheckMatReadOnly) and (not CheckMatUnAccountingMatirials) and
     (qrMaterialFROM_RATE.AsInteger = 0);
+
+  PMMatDelete.Enabled := (qrMaterialID_REPLACED.AsInteger > 0);
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -3256,7 +3287,8 @@ begin
         'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
         ' as "PriceNoVAT" ' + 'FROM materialnorm as TMatNorm ' +
         'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
-        'JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN (select material_id, ' + PriceVAT + ', ' +
+        'JOIN units ON TMat.unit_id = units.unit_id ' +
+        'LEFT JOIN (select material_id, ' + PriceVAT + ', ' +
         PriceNoVAT + ' from materialcoastg where (monat = ' + IntToStr(Month1) + ') and (year = ' +
         IntToStr(Year1) + ')) as TMatCoast ' + 'ON TMatCoast.material_id = TMatNorm.material_id ' +
         'WHERE (TMatNorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1';
