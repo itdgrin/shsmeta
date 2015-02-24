@@ -3,10 +3,16 @@ unit fUpdate;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.pngimage, Vcl.ExtCtrls,
   Vcl.StdCtrls, UpdateModule, Vcl.ComCtrls, IdAntiFreezeBase, Vcl.IdAntiFreeze,
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP;
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, ZipForge,
+  Data.DB, FireDAC.Stan.Intf, FireDAC.Comp.Script, FireDAC.UI.Intf, FireDAC.Stan.Async,
+  FireDAC.Comp.ScriptCommands, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.SysUtils,
+  IniFiles, IdMessage, IdSSLOpenSSL, IdMessageClient, IdSMTPBase, IdSMTP,
+  IdAttachmentFile, IdExplicitTLSClientServerBase;
 
 type
   TUpdateForm = class(TForm)
@@ -24,35 +30,401 @@ type
     Memo1: TMemo;
     Label3: TLabel;
     Label4: TLabel;
-    IdHTTP1: TIdHTTP;
+    HTTP: TIdHTTP;
     IdAntiFreeze1: TIdAntiFreeze;
+    ZipForge1: TZipForge;
+    SQLScript: TFDScript;
+    qrTemp: TFDQuery;
     procedure btnCancelClick(Sender: TObject);
     procedure btnUpdateClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure IdHTTP1WorkBegin(ASender: TObject; AWorkMode: TWorkMode;
+    procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCountMax: Int64);
-    procedure IdHTTP1WorkEnd(ASender: TObject; AWorkMode: TWorkMode);
-    procedure IdHTTP1Work(ASender: TObject; AWorkMode: TWorkMode;
+    procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+    procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCount: Int64);
+    procedure SQLScriptError(ASender: TObject; const AInitiator: IFDStanObject;
+      var AException: Exception);
+    procedure SQLScriptBeforeExecute(Sender: TObject);
+    procedure SQLScriptAfterExecute(Sender: TObject);
+    procedure SQLScriptProgress(Sender: TObject);
   private
     FCurVersion: TVersion; //Текущая версия приложения
     FSR: TServiceResponse;
+    StopUpdate: boolean;
+    SqlErrorList: TStringList;
+
+    ClientName: string; // Имя клиета
+    SendReport: boolean; // Необходимость отправлять отчет об ошибках обновления
+
     procedure SetButtonStyle;
+    procedure StartUpdate;
+    procedure LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
+    function ExecSqlScript(ADirName: string; AUpdate: TNewVersion; AType: byte): Boolean;
+    procedure SendErrorReport;
     { Private declarations }
   public
     //Устанавливает версии но не изменяет внешний вид
-    procedure SetVersion(const AVersion: TVersion; const AServiceResponse: TServiceResponse);
+    procedure SetVersion(const AVersion: TVersion;
+      const AServiceResponse: TServiceResponse);
     { Public declarations }
   end;
 
 var UpdateForm : TUpdateForm;
 
 implementation
+uses DataModule;
 
 {$R *.dfm}
+
+function KillDir (Dir: string): boolean;
+var
+  Sr: TSearchRec;
+  procedure FileSetReadOnly(const FileName: string; const SAttr: boolean);
+  var At: Integer;
+  begin
+       At:= FileGetAttr(FileName);
+       if At and faReadOnly <> 0 then
+       begin
+            if not SAttr then FileSetAttr(FileName, At - faReadOnly);
+       end
+       else if SAttr then FileSetAttr(FileName, At + faReadOnly);
+  end;
+begin
+  Dir := ExcludeTrailingPathDelimiter(Dir);
+
+  if FindFirst(Dir + '\*.*', faDirectory + faHidden + faSysFile +
+    faReadonly + faArchive, Sr) = 0 then
+    repeat
+      if (Sr.Name = '.') or (Sr.Name = '..') then continue;
+      if (Sr.Attr and faDirectory <> faDirectory) then
+      begin
+            FileSetReadOnly(Dir + '\' + sr.Name, false);
+            DeleteFile(Dir + '\' + sr.Name);
+      end
+      else
+        KillDir(Dir + '\' + sr.Name);
+    until FindNext(sr) <> 0;
+  FindClose(sr);
+  RemoveDir(Dir);
+  KillDir := DirectoryExists(Dir);
+end;
+
+procedure TUpdateForm.SendErrorReport;
+var i : integer;
+    Msg : TIdMessage;
+    SMTP : TIdSMTP;
+    SSLIOHandler : TIdSSLIOHandlerSocketOpenSSL;
+begin
+  Msg := TIdMessage.Create;
+  SMTP := TIdSMTP.Create;
+  SSLIOHandler := TIdSSLIOHandlerSocketOpenSSL.Create;
+  try
+    try
+      if ClientName = '' then
+        raise Exception.Create('Отчет не отправлен. Не указано имя клиента.');
+
+      SSLIOHandler.SSLOptions.Method := sslvSSLv3;
+      SMTP.IOHandler := SSLIOHandler;
+      SMTP.HeloName := 'Smeta';
+
+      SMTP.Host := 'smtp.gmail.com';
+      SMTP.Port := 465;
+
+      SMTP.AuthType := satDefault;
+      SMTP.Username := 'smetareport';
+      SMTP.Password := 'smeta1234';
+
+      SMTP.UseTLS := utUseImplicitTLS;
+
+      SMTP.Connect;
+
+      Msg.From.Address := 'smetareport@gmail.com';
+      Msg.From.Name := ClientName;
+      Msg.Recipients.EMailAddresses := 'd_grin@mail.ru';
+      Msg.Subject := 'Отчет об ошибках обновления';
+      for i := 0 to SqlErrorList.Count - 1 do
+        Msg.Body.Add(SqlErrorList[i] + '<br>');
+
+     //Без вложений
+      Msg.IsEncoded:=false;
+      Msg.ContentType := 'text/html; charset=UTF-8;';
+
+      SMTP.Send(Msg);
+      SMTP.Disconnect;
+    except
+      on e : Exception do
+      begin
+        //Сохранить ошибку в лог
+        raise e;
+      end;
+    end;
+  finally
+    Msg.Free;
+    SMTP.Free;
+    SSLIOHandler.Free;
+  end;
+end;
+
+procedure TUpdateForm.LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
+var LoadPath, UpdName: string;
+    MStream: TMemoryStream;
+    AppResult: Boolean;
+begin
+  LoadPath := ExtractFilePath(Application.ExeName) + 'Updates\';
+  UpdName := copy(AUpdate.Url, 1, Pos('?',AUpdate.Url) - 1);
+  UpdName := StringReplace(UpdName, '/','\', [rfReplaceAll]);
+  UpdName := ExtractFileName(UpdName);
+
+  Case AType of
+  0:LoadPath := LoadPath + 'cat' + IntToStr(AUpdate.Version) + '\';
+  1:LoadPath := LoadPath + 'user' + IntToStr(AUpdate.Version) + '\';
+  2:LoadPath := LoadPath + 'app' + IntToStr(AUpdate.Version) + '\';
+  End;
+  ForceDirectories(LoadPath);
+
+  Memo1.Lines.Add('Обновление ' + IntToStr(AUpdate.Version) + ': ' + AUpdate.Comment);
+
+  MStream := TMemoryStream.Create;
+  try
+    try
+      HTTP.HandleRedirects := true;
+      HTTP.Request.UserAgent:='Mozilla/5.0 (Windows NT 6.1) '+
+        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36';
+      HTTP.Request.Accept:='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+      HTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
+      HTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
+
+      Memo1.Lines.Add('Загрузка обновления');
+      HTTP.Get(UpdateServ + AUpdate.Url, MStream);
+      MStream.SaveToFile(LoadPath + UpdName);
+
+      Memo1.Lines.Add('Распаковка обновления');
+      ZipForge1.BaseDir := LoadPath;
+      ZipForge1.Options.OverwriteMode := omAlways;
+      ZipForge1.FileName := LoadPath + UpdName;
+      ZipForge1.OpenArchive;
+      ZipForge1.ExtractFiles('*.*');
+      ZipForge1.CloseArchive;
+
+      DeleteFile(LoadPath + UpdName);
+
+      if AType in [0,1] then
+      begin
+        Memo1.Lines.Add('Установка обновления');
+        if not ExecSqlScript(LoadPath, AUpdate, AType) then
+        begin
+          Memo1.Lines.Add('Не удалось выполнить скрипт обновления!');
+          //Если установлен флаг отправляется отчет об ошибках
+          if SendReport then
+          begin
+            Memo1.Lines.Add('Отправка отчета об ошибках в техподдержку');
+            if (AType = 0) then
+              SqlErrorList.Insert(0, 'Обновление справочников №' +
+                IntToStr(AUpdate.Version))
+            else
+              SqlErrorList.Insert(0, 'Обновление пользовательских таблиц №' +
+                IntToStr(AUpdate.Version));
+            SendErrorReport;
+            raise Exception.Create('');
+          end;
+        end;
+      end
+      else
+       // AppResult := UpdateApplication;
+    except
+      on e: Exception do
+      begin
+        StopUpdate := True;
+        Memo1.Lines.Add(e.Message);
+        Memo1.Lines.Add('');
+        Memo1.Lines.Add('Обновление завершилось ошибкой!');
+      end;
+    end;
+  finally
+    MStream.Free;
+  end;
+
+  //После завершения обновлений папки с SQL скриптами удалются
+  if (AType in [0,1]) or
+    ((AType = 2) and AppResult) then
+    KillDir(LoadPath);
+end;
+
+function TUpdateForm.ExecSqlScript(ADirName: string;
+  AUpdate: TNewVersion; AType: byte): Boolean;
+var TmpSR: TSearchRec;
+    found,
+    ScriptCount,
+    ScriptNo: integer;
+    ScriptResult: boolean;
+    VersTabName: string;
+begin
+  ScriptCount := 0;
+  ScriptNo := 0;
+  Result := True;
+
+  if AType = 0 then
+    VersTabName := 'versionref'
+  else
+    VersTabName := 'versionuser';
+
+  //Вычисляем общее кол-во скриптов в папке
+  found := FindFirst(ADirName + '*.sql', faAnyFile, TmpSR);
+  try
+    while (found = 0) do
+    begin
+      inc(ScriptCount);
+      found := FindNext(TmpSR);
+    end;
+  finally
+    FindClose(TmpSR);
+  end;
+
+  if (ScriptCount > 0) then
+  begin
+    found := FindFirst(ADirName + '*.sql', faAnyFile, TmpSR);
+    try
+      while (found = 0) do
+      begin
+        inc(ScriptNo);
+
+        //Проверка выполняется для случая когда одно обновление содержит несколько
+        //скриптов
+        ScriptResult := False;
+        qrTemp.SQL.Text := 'Select SCRIPTNAME from ' + VersTabName +
+          ' where (VERSION = ' + IntToStr(AUpdate.Version) +
+          ') and (SCRIPTNAME = ''' + TmpSR.name +
+          ''') and (EXECRESULT = 1)';
+        qrTemp.Active := True;
+        if not qrTemp.Eof then
+          ScriptResult := True;
+        qrTemp.Active := False;
+
+        //Если это скрипт уже выполнялся то он будет пропущен
+        if ScriptResult then
+        begin
+          found := FindNext(TmpSR);
+          Continue;
+        end;
+
+        SqlScript.SQLScriptFileName := ADirName + TmpSR.name;
+        SqlScript.ExecuteFile(SqlScript.SQLScriptFileName);
+        ScriptResult := (SqlScript.TotalErrors = 0) and (SqlErrorList.Count = 0);
+
+        qrTemp.SQL.Text := 'INSERT INTO ' + VersTabName +
+          ' (VERSION,SCRIPTNAME,EXECTIME,EXECRESULT,ERRORCOUNT,ERRORTEXT,COMMENT,' +
+          'SCRIPTCOUNT,SCRIPTNO) VALUES (:VERSION,:SCRIPTNAME,:EXECTIME,:EXECRESULT,' +
+          ':ERRORCOUNT,:ERRORTEXT,:COMMENT,:SCRIPTCOUNT,:SCRIPTNO)';
+        qrTemp.ParamByName('VERSION').Value := AUpdate.Version;
+        qrTemp.ParamByName('SCRIPTNAME').Value := TmpSR.name;
+        qrTemp.ParamByName('EXECTIME').Value := Now;
+        qrTemp.ParamByName('EXECRESULT').Value := byte(ScriptResult);
+        qrTemp.ParamByName('ERRORCOUNT').Value := SqlErrorList.Count;
+        qrTemp.ParamByName('ERRORTEXT').Value := copy(SqlErrorList.Text, 1, 250);
+        qrTemp.ParamByName('COMMENT').Value := AUpdate.Comment;
+        qrTemp.ParamByName('SCRIPTCOUNT').Value := ScriptCount;
+        qrTemp.ParamByName('SCRIPTNO').Value := ScriptNo;
+        qrTemp.ExecSQL;
+
+        //Если выполнение скрипта прошло с ошибками, то обновление завершается
+        if not ScriptResult then
+        begin
+          Result := False;
+          Exit;
+        end;
+
+        found := FindNext(TmpSR);
+      end;
+    finally
+      FindClose(TmpSR);
+    end;
+  end
+  else
+  begin
+    //Если обновление не содержит скриптов оно зашитывается как выполненое
+    ScriptResult := True;
+    qrTemp.SQL.Text := 'INSERT INTO ' + VersTabName +
+      ' (VERSION,SCRIPTNAME,EXECTIME,EXECRESULT,ERRORCOUNT,ERRORTEXT,COMMENT,' +
+      'SCRIPTCOUNT,SCRIPTNO) VALUES (:VERSION,:SCRIPTNAME,:EXECTIME,:EXECRESULT,' +
+      ':ERRORCOUNT,:ERRORTEXT,:COMMENT,:SCRIPTCOUNT,:SCRIPTNO)';
+    qrTemp.ParamByName('VERSION').Value := AUpdate.Version;
+    qrTemp.ParamByName('SCRIPTNAME').Value := '';
+    qrTemp.ParamByName('EXECTIME').Value := Now;
+    qrTemp.ParamByName('EXECRESULT').Value := byte(ScriptResult);
+    qrTemp.ParamByName('ERRORCOUNT').Value := SqlErrorList.Count;
+    qrTemp.ParamByName('ERRORTEXT').Value := copy(SqlErrorList.Text, 1, 250);
+    qrTemp.ParamByName('COMMENT').Value := AUpdate.Comment;
+    qrTemp.ParamByName('SCRIPTCOUNT').Value := ScriptCount;
+    qrTemp.ParamByName('SCRIPTNO').Value := ScriptNo;
+    qrTemp.ExecSQL;
+  end;
+end;
+
+procedure TUpdateForm.StartUpdate;
+var i: integer;
+begin
+  //Перед началом обновлений папка полностью очищается
+  KillDir(ExtractFilePath(Application.ExeName) + 'Updates');
+  ForceDirectories(ExtractFilePath(Application.ExeName) + 'Updates');
+  Memo1.Lines.Clear;
+  Memo1.Lines.Add('Начало процесса обновления:');
+  StopUpdate := False;
+  SqlErrorList.Clear;
+  SqlScript.Tag := integer(SqlErrorList);
+
+  if FSR.CatalogCount > 0 then
+  begin
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('Обновление справочников');
+
+    for i := 0 to FSR.CatalogCount - 1 do
+    begin
+      LoadAndSetUpdate(FSR.CatalogList[i], 0);
+      if StopUpdate then
+        Break;
+    end;
+    if StopUpdate then
+      Exit;
+
+    Memo1.Lines.Add('Справочники обновлены');
+  end;
+
+
+  for i := 0 to FSR.UserCount - 1 do
+  begin
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('Обновление пользовательских таблиц');
+
+    LoadAndSetUpdate(FSR.UserList[i], 1);
+    if StopUpdate then
+      Break;
+
+    Memo1.Lines.Add('Пользовательские таблицы обновлены');
+  end;
+  if StopUpdate then
+    Exit;
+
+  for i := 0 to FSR.AppCount - 1 do
+  begin
+    Memo1.Lines.Add('');
+    Memo1.Lines.Add('Обновление приложения');
+
+    LoadAndSetUpdate(FSR.AppList[i], 2);
+    if StopUpdate then
+      Break;
+
+    Memo1.Lines.Add('Приложение обновлено');
+  end;
+  if StopUpdate then
+    Exit;
+
+  Memo1.Lines.Add('');
+  Memo1.Lines.Add('Обновление прошло успешно!');
+end;
 
 procedure TUpdateForm.SetVersion(const AVersion: TVersion;
   const AServiceResponse: TServiceResponse);
@@ -61,6 +433,34 @@ begin
   FCurVersion.App := AVersion.App;
   FCurVersion.Catalog := AVersion.Catalog;
   FCurVersion.User := AVersion.User;
+end;
+
+//Возникающие во время выполнения скрипта исключения заносятся в SqlErrorList
+procedure TUpdateForm.SQLScriptAfterExecute(Sender: TObject);
+begin
+  ProgressBar1.Visible := False;
+end;
+
+procedure TUpdateForm.SQLScriptBeforeExecute(Sender: TObject);
+begin
+  ProgressBar1.Style := pbstMarquee;
+  ProgressBar1.Visible := True;
+end;
+
+procedure TUpdateForm.SQLScriptError(ASender: TObject;
+  const AInitiator: IFDStanObject; var AException: Exception);
+begin
+  if SQLScript.Tag > 0 then
+  begin
+    TStringList(SQLScript.Tag).Add(
+      ExtractFileName(SQLScript.SQLScriptFileName) + ': ' + AException.Message);
+    Abort;
+  end;
+end;
+
+procedure TUpdateForm.SQLScriptProgress(Sender: TObject);
+begin
+  Application.ProcessMessages;
 end;
 
 //Устанавливает внешний вид окна обновления
@@ -114,7 +514,6 @@ begin
       Memo1.Lines.Add('На сервере новых обновлений нет.');
     end;
   end;
-
 end;
 
 procedure TUpdateForm.btnOkClick(Sender: TObject);
@@ -129,7 +528,13 @@ end;
 
 procedure TUpdateForm.btnUpdateClick(Sender: TObject);
 begin
-  close;
+  btnUpdate.Enabled := False;
+  StartUpdate;
+
+  btnUpdate.Visible := false;
+  btnCancel.Visible := false;
+  btnOk.Visible := true;
+  btnOk.Left := Panel1.Width - btnOk.Width - 8;
 end;
 
 procedure TUpdateForm.FormCreate(Sender: TObject);
@@ -138,19 +543,30 @@ begin
   FCurVersion.Catalog := 0;
   FCurVersion.User := 0;
   FSR := TServiceResponse.Create;
+  SqlErrorList := TStringList.Create;
 end;
 
 procedure TUpdateForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FSR);
+  FreeAndNil(SqlErrorList);
 end;
 
 procedure TUpdateForm.FormShow(Sender: TObject);
+var
+  ini: TIniFile;
 begin
+  ini := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+  try
+    ClientName := ini.ReadString('system', 'clientname', '');
+    SendReport := ini.ReadBool('system', 'sendreport', False);
+  finally
+    FreeAndNil(ini);
+  end;
   SetButtonStyle;
 end;
 
-procedure TUpdateForm.IdHTTP1Work(ASender: TObject; AWorkMode: TWorkMode;
+procedure TUpdateForm.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
   AWorkCount: Int64);
 begin
   if AWorkMode = wmRead then
@@ -158,20 +574,21 @@ begin
 
 end;
 
-procedure TUpdateForm.IdHTTP1WorkBegin(ASender: TObject; AWorkMode: TWorkMode;
+procedure TUpdateForm.HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
   AWorkCountMax: Int64);
 begin
   if AWorkMode = wmRead then
   begin
-    Panel3.Visible := True;
+    ProgressBar1.Style := pbstNormal;
+    ProgressBar1.Visible := True;
     ProgressBar1.Position := 0;
     ProgressBar1.Max := AWorkCountMax div 100;
   end;
 end;
 
-procedure TUpdateForm.IdHTTP1WorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+procedure TUpdateForm.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-  Panel3.Visible := False;
+  ProgressBar1.Visible := False;
   ProgressBar1.Position := 0;
 end;
 

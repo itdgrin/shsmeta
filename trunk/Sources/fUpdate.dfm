@@ -1,10 +1,10 @@
 object UpdateForm: TUpdateForm
-  Left = 0
-  Top = 0
+  Left = 313
+  Top = 89
   BorderStyle = bsDialog
   Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
   ClientHeight = 397
-  ClientWidth = 344
+  ClientWidth = 343
   Color = clBtnFace
   DefaultMonitor = dmMainForm
   Font.Charset = DEFAULT_CHARSET
@@ -13,7 +13,7 @@ object UpdateForm: TUpdateForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poOwnerFormCenter
+  Position = poDesigned
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -22,7 +22,7 @@ object UpdateForm: TUpdateForm
   object Panel1: TPanel
     Left = 0
     Top = 354
-    Width = 344
+    Width = 343
     Height = 43
     Align = alBottom
     Font.Charset = DEFAULT_CHARSET
@@ -81,7 +81,7 @@ object UpdateForm: TUpdateForm
   object Panel2: TPanel
     Left = 0
     Top = 0
-    Width = 344
+    Width = 343
     Height = 50
     Align = alTop
     Color = clHighlight
@@ -265,7 +265,7 @@ object UpdateForm: TUpdateForm
   object Panel4: TPanel
     Left = 0
     Top = 50
-    Width = 344
+    Width = 343
     Height = 55
     Align = alTop
     Font.Charset = DEFAULT_CHARSET
@@ -317,25 +317,27 @@ object UpdateForm: TUpdateForm
   end
   object Panel3: TPanel
     Left = 0
-    Top = 312
-    Width = 344
-    Height = 42
+    Top = 336
+    Width = 343
+    Height = 18
     Align = alBottom
     TabOrder = 3
-    Visible = False
     object ProgressBar1: TProgressBar
-      Left = 5
-      Top = 6
-      Width = 331
-      Height = 30
+      Left = 1
+      Top = 1
+      Width = 341
+      Height = 16
+      Align = alClient
+      MarqueeInterval = 30
       TabOrder = 0
+      Visible = False
     end
   end
   object Memo1: TMemo
     Left = 0
     Top = 105
-    Width = 344
-    Height = 207
+    Width = 343
+    Height = 231
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -345,12 +347,13 @@ object UpdateForm: TUpdateForm
     Lines.Strings = (
       'Memo1')
     ParentFont = False
+    ScrollBars = ssVertical
     TabOrder = 4
   end
-  object IdHTTP1: TIdHTTP
-    OnWork = IdHTTP1Work
-    OnWorkBegin = IdHTTP1WorkBegin
-    OnWorkEnd = IdHTTP1WorkEnd
+  object HTTP: TIdHTTP
+    OnWork = HTTPWork
+    OnWorkBegin = HTTPWorkBegin
+    OnWorkEnd = HTTPWorkEnd
     AllowCookies = True
     ProxyParams.BasicAuthentication = False
     ProxyParams.ProxyPort = 0
@@ -368,7 +371,46 @@ object UpdateForm: TUpdateForm
     Top = 120
   end
   object IdAntiFreeze1: TIdAntiFreeze
-    Left = 280
+    Left = 272
     Top = 120
+  end
+  object ZipForge1: TZipForge
+    ExtractCorruptedFiles = False
+    CompressionLevel = clFastest
+    CompressionMode = 1
+    CurrentVersion = '6.50 '
+    SpanningMode = smNone
+    SpanningOptions.AdvancedNaming = False
+    SpanningOptions.FirstVolumeSize = 0
+    SpanningOptions.VolumeSize = vsAutoDetect
+    SpanningOptions.CustomVolumeSize = 65536
+    Options.FlushBuffers = True
+    Options.OEMFileNames = True
+    InMemory = False
+    Zip64Mode = zmDisabled
+    UnicodeFilenames = False
+    EncryptionMethod = caPkzipClassic
+    Left = 176
+    Top = 120
+  end
+  object SQLScript: TFDScript
+    SQLScripts = <>
+    Connection = DM.Connect
+    Transaction = DM.Write
+    Params = <>
+    Macros = <>
+    OnProgress = SQLScriptProgress
+    OnError = SQLScriptError
+    BeforeExecute = SQLScriptBeforeExecute
+    AfterExecute = SQLScriptAfterExecute
+    Left = 176
+    Top = 184
+  end
+  object qrTemp: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    Left = 232
+    Top = 184
   end
 end

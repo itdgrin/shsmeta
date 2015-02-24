@@ -195,8 +195,6 @@ type
     LastResp: TServiceResponse;
 
     CurVersion: TVersion; // текущая версия приложения и БД
-    ClientName: string; // Имя клиета
-    SendReport: boolean; // Необходимость отправлять отчет об ошибках обновления
     DebugMode: boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
     FileReportPath: string; // путь к папке с отчетами(дабы не захламлять датамодуль лишними модулями)
@@ -394,6 +392,7 @@ begin
   try
     UPForm.SetVersion(CurVersion, AResp);
     UPForm.ShowModal;
+    GetSystemInfo;
   finally
     UPForm.Free;
   end;
@@ -426,26 +425,29 @@ var
   ini: TIniFile;
 begin
   ini := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
-  if not ini.SectionExists('system') then
-  begin
-    ini.WriteInteger('system', 'version', 0);
-    ini.WriteString('system', 'clientname', '');
-    ini.WriteBool('system', 'sendreport', False);
-    ini.WriteBool('system', 'debugmode', true);
+  try
+    if not ini.SectionExists('system') then
+    begin
+      ini.WriteInteger('system', 'version', 0);
+      ini.WriteString('system', 'clientname', '');
+      ini.WriteBool('system', 'sendreport', False);
+      ini.WriteBool('system', 'debugmode', true);
+    end;
+    CurVersion.App := ini.ReadInteger('system', 'version', 0);
+    DebugMode := ini.ReadBool('system', 'debugmode', true);
+  finally
+    FreeAndNil(ini);
   end;
-  CurVersion.App := ini.ReadInteger('system', 'version', 0);
-  ClientName := ini.ReadString('system', 'clientname', '');
-  SendReport := ini.ReadBool('system', 'sendreport', False);
-  DebugMode := ini.ReadBool('system', 'debugmode', true);
-
   DM.qrDifferent.Active := False;
-  DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionref WHERE (execresult > 0)';
+  DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionref WHERE ' +
+    '(execresult > 0) and (SCRIPTCOUNT = SCRIPTNO)';
   DM.qrDifferent.Active := true;
   if not DM.qrDifferent.Eof then
     CurVersion.Catalog := DM.qrDifferent.Fields[0].AsInteger;
   DM.qrDifferent.Active := False;
 
-  DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionuser WHERE (execresult > 0)';
+  DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionuser WHERE ' +
+    '(execresult > 0) and (SCRIPTCOUNT = SCRIPTNO)';
   DM.qrDifferent.Active := true;
   if not DM.qrDifferent.Eof then
     CurVersion.User := DM.qrDifferent.Fields[0].AsInteger;
@@ -491,7 +493,6 @@ end;
 procedure TFormMain.FormShow(Sender: TObject);
 begin
   // FormConnectDatabase.ShowModal;
-
   try
     GetSystemInfo;
     SystemInfoResult := true;
