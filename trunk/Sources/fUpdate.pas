@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.pngimage, Vcl.ExtCtrls,
+  System.IOUtils, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.pngimage, Vcl.ExtCtrls,
   Vcl.StdCtrls, UpdateModule, Vcl.ComCtrls, IdAntiFreezeBase, Vcl.IdAntiFreeze,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, ZipForge,
   Data.DB, FireDAC.Stan.Intf, FireDAC.Comp.Script, FireDAC.UI.Intf, FireDAC.Stan.Async,
@@ -65,6 +65,7 @@ type
     procedure LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
     function ExecSqlScript(ADirName: string; AUpdate: TNewVersion; AType: byte): Boolean;
     procedure SendErrorReport;
+    function UpdateApp(const AUpdatePath: string): Boolean;
     { Private declarations }
   public
     //Устанавливает версии но не изменяет внешний вид
@@ -73,7 +74,11 @@ type
     { Public declarations }
   end;
 
-var UpdateForm : TUpdateForm;
+var
+  //Флаг необходимости запустить Updater по завершению программы
+  StartUpdater: Boolean = False;
+  //Путь к папке с обновлениями приложения
+  UpdatePath: string;
 
 implementation
 uses DataModule;
@@ -144,7 +149,7 @@ begin
 
       Msg.From.Address := 'smetareport@gmail.com';
       Msg.From.Name := ClientName;
-      Msg.Recipients.EMailAddresses := 'd_grin@mail.ru';
+      Msg.Recipients.EMailAddresses := SupportMail;
       Msg.Subject := 'Отчет об ошибках обновления';
       for i := 0 to SqlErrorList.Count - 1 do
         Msg.Body.Add(SqlErrorList[i] + '<br>');
@@ -198,11 +203,12 @@ begin
       HTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
       HTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
 
-      Memo1.Lines.Add('Загрузка обновления');
+      Memo1.Lines.Add('Загрузка...');
       HTTP.Get(UpdateServ + AUpdate.Url, MStream);
       MStream.SaveToFile(LoadPath + UpdName);
+      Memo1.Lines[Memo1.Lines.Count - 1] := 'Загружено успешно';
 
-      Memo1.Lines.Add('Распаковка обновления');
+      Memo1.Lines.Add('Распаковка...');
       ZipForge1.BaseDir := LoadPath;
       ZipForge1.Options.OverwriteMode := omAlways;
       ZipForge1.FileName := LoadPath + UpdName;
@@ -211,13 +217,14 @@ begin
       ZipForge1.CloseArchive;
 
       DeleteFile(LoadPath + UpdName);
+      Memo1.Lines[Memo1.Lines.Count - 1] := 'Распаковано успешно';
 
       if AType in [0,1] then
       begin
-        Memo1.Lines.Add('Установка обновления');
+        Memo1.Lines.Add('Установка...');
         if not ExecSqlScript(LoadPath, AUpdate, AType) then
         begin
-          Memo1.Lines.Add('Не удалось выполнить скрипт обновления!');
+          Memo1.Lines.Add('Не удалось выполнить скрипт!');
           //Если установлен флаг отправляется отчет об ошибках
           if SendReport then
           begin
@@ -232,9 +239,10 @@ begin
             raise Exception.Create('');
           end;
         end;
+        Memo1.Lines[Memo1.Lines.Count - 1] := 'Установлено успешно';
       end
       else
-       // AppResult := UpdateApplication;
+       StartUpdater := UpdateApp(LoadPath);
     except
       on e: Exception do
       begin
@@ -252,6 +260,12 @@ begin
   if (AType in [0,1]) or
     ((AType = 2) and AppResult) then
     KillDir(LoadPath);
+end;
+
+function TUpdateForm.UpdateApp(const AUpdatePath: string): Boolean;
+begin
+  UpdatePath := AUpdatePath;
+  Result := not TDirectory.IsEmpty(AUpdatePath);
 end;
 
 function TUpdateForm.ExecSqlScript(ADirName: string;
@@ -367,6 +381,9 @@ end;
 procedure TUpdateForm.StartUpdate;
 var i: integer;
 begin
+  StartUpdater := False;
+  UpdatePath := '';
+
   //Перед началом обновлений папка полностью очищается
   KillDir(ExtractFilePath(Application.ExeName) + 'Updates');
   ForceDirectories(ExtractFilePath(Application.ExeName) + 'Updates');
@@ -379,7 +396,7 @@ begin
   if FSR.CatalogCount > 0 then
   begin
     Memo1.Lines.Add('');
-    Memo1.Lines.Add('Обновление справочников');
+    Memo1.Lines.Add('***Обновление справочников***');
 
     for i := 0 to FSR.CatalogCount - 1 do
     begin
@@ -390,20 +407,20 @@ begin
     if StopUpdate then
       Exit;
 
-    Memo1.Lines.Add('Справочники обновлены');
+    Memo1.Lines.Add('***Справочники обновлены***');
   end;
 
 
   for i := 0 to FSR.UserCount - 1 do
   begin
     Memo1.Lines.Add('');
-    Memo1.Lines.Add('Обновление пользовательских таблиц');
+    Memo1.Lines.Add('***Обновление пользовательских таблиц***');
 
     LoadAndSetUpdate(FSR.UserList[i], 1);
     if StopUpdate then
       Break;
 
-    Memo1.Lines.Add('Пользовательские таблицы обновлены');
+    Memo1.Lines.Add('***Пользовательские таблицы обновлены***');
   end;
   if StopUpdate then
     Exit;
@@ -411,18 +428,20 @@ begin
   for i := 0 to FSR.AppCount - 1 do
   begin
     Memo1.Lines.Add('');
-    Memo1.Lines.Add('Обновление приложения');
+    Memo1.Lines.Add('***Обновление приложения***');
 
     LoadAndSetUpdate(FSR.AppList[i], 2);
     if StopUpdate then
       Break;
 
-    Memo1.Lines.Add('Приложение обновлено');
+    Memo1.Lines.Add('***Приложение обновлено***');
   end;
   if StopUpdate then
     Exit;
 
   Memo1.Lines.Add('');
+  if StartUpdater then
+    Memo1.Lines.Add('Обновление завершится после перезапуска программы!');
   Memo1.Lines.Add('Обновление прошло успешно!');
 end;
 
