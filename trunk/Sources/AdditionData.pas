@@ -68,8 +68,6 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 constructor TFormAdditionData.Create(AOwner: TComponent; const vDataBase: Char);
-Var
-  FormLeft, BorderLeft: Integer;
 begin
   inherited Create(AOwner);
 

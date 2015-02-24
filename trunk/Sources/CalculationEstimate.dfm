@@ -4351,11 +4351,17 @@
     object qrMaterialCONS_REPLASED: TByteField
       FieldName = 'CONS_REPLASED'
     end
-    object qrMaterialCOAST_NO_NDS: TIntegerField
+    object qrMaterialCOAST_NO_NDS: TFloatField
+      AutoGenerateValue = arDefault
       FieldName = 'COAST_NO_NDS'
+      Origin = 'COAST_NO_NDS'
+      OnChange = MatRowChange
     end
-    object qrMaterialCOAST_NDS: TIntegerField
+    object qrMaterialCOAST_NDS: TFloatField
+      AutoGenerateValue = arDefault
       FieldName = 'COAST_NDS'
+      Origin = 'COAST_NDS'
+      OnChange = MatRowChange
     end
   end
   object dsMaterial: TDataSource
