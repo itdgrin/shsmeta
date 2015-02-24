@@ -260,7 +260,7 @@ var
   SetDrawing: String;
   IdParentLocal: Integer;
 
-  Node: TTreeNode;
+  //Node: TTreeNode;
 
 begin
   CountWarning := 0;

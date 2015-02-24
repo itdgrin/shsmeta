@@ -445,9 +445,9 @@ type
     tmRate: TTimer;
     strngfldRatesSORTID: TStringField;
     qrMaterialCONS_REPLASED: TByteField;
-    qrMaterialCOAST_NO_NDS: TIntegerField;
-    qrMaterialCOAST_NDS: TIntegerField;
     PMMatDelete: TMenuItem;
+    qrMaterialCOAST_NO_NDS: TFloatField;
+    qrMaterialCOAST_NDS: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
