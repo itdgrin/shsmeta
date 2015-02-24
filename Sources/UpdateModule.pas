@@ -13,6 +13,8 @@ const
   WM_SHOW_SPLASH = WM_USER + 1;
 
   UpdateServ = 'http://31.130.201.132:3000';
+  SupportMail = 'd_grin@mail.ru';
+
 type
   TLogFile = class(TObject)
   private
@@ -468,6 +470,7 @@ begin
   FResponseCS.Enter;
   try
     FResponse.UserRequest := FUserRequest;
+    //Если FUserRequest = True по сообщение будет отправлено в любом случае
     if (FCurVersion.App < FResponse.AppVersion) or
        (FCurVersion.Catalog < FResponse.CatalogVersion) or
        (FCurVersion.User < FResponse.UserVersion) or

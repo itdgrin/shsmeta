@@ -379,21 +379,17 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="CalculationEstimateSummaryCalculations.pas">
             <Form>frCalculationEstimateSummaryCalculations</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="CalculationEstimateSSR.pas">
             <Form>frCalculationEstimateSSR</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="CalcResource.pas">
             <Form>fCalcResource</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="CalculationDump.pas">
             <Form>FormCalculationDump</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="CalcTravel.pas">
             <Form>fCalcTravel</Form>
@@ -410,15 +406,12 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="fUpdate.pas">
             <Form>UpdateForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="EditExpression.pas">
             <Form>fEditExpression</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="dmReportU.pas">
             <Form>dmReportF</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <BuildConfiguration Include="Release">

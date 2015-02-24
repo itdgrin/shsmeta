@@ -3,6 +3,7 @@ program Smeta;
 uses
   Forms,
   Windows,
+  ShellAPI,
   DataModule in 'DataModule.pas' {DM: TDataModule},
   Main in 'Main.pas' {FormMain},
   TariffsSalary in 'TariffsSalary.pas' {FormTariffsSalary},
@@ -104,14 +105,10 @@ uses
   EditExpression in 'EditExpression.pas' {fEditExpression},
   dmReportU in 'dmReportU.pas' {dmReportF: TDataModule};
 
-//var
-  //H: Thandle;
 
 {$R *.res}
-
 begin
   // Ћюба€ уникальна€ строка котора€ будет только в нашем приложении
-  //H :=
   CreateMutex(nil, True, '5q7b3g1p0b5n3x6v9e6s');
 
   // ѕровер€ем не запущено ли приложение
@@ -163,4 +160,7 @@ begin
   Application.CreateForm(TdmReportF, dmReportF);
   Application.Run;
 
+  //«апуск Updater дл€ завершени€ обновлени€ приложени€
+  if StartUpdater then
+    ShellExecute(0,'open', Pchar('Updater.exe'), Pchar(UpdatePath), nil ,SW_HIDE);
 end.
