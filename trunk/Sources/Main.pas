@@ -1200,7 +1200,7 @@ end;
 
 procedure TFormMain.FileSaveAsClick(Sender: TObject);
 begin
-  FormCalculationEstimate.CopyEstimate;
+  //FormCalculationEstimate.CopyEstimate;
 end;
 
 procedure TFormMain.MenuConnectDatabaseClick(Sender: TObject);
