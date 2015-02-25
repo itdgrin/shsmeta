@@ -2740,7 +2740,7 @@
       object dblkcbbOXROPR: TDBLookupComboBox
         Left = 122
         Top = 3
-        Width = 145
+        Width = 206
         Height = 21
         DropDownRows = 10
         KeyField = 'work_id'
@@ -5039,6 +5039,7 @@
     Top = 265
   end
   object qrOXROPR: TFDQuery
+    MasterSource = dsRates
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -5073,7 +5074,7 @@
     SQL.Strings = (
       
         'SELECT work_id, work_name as "NameWork" FROM objworks ORDER BY w' +
-        'ork_id')
+        'ork_name')
     Left = 240
     Top = 392
   end

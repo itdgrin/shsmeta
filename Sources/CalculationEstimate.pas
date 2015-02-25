@@ -2134,6 +2134,7 @@ end;
 
 procedure TFormCalculationEstimate.qrRatesAfterScroll(DataSet: TDataSet);
 begin
+  Panel1.Visible := qrRatesTYPE_DATA.Value = 1;
   if qrRates.Tag <> 1 then
   begin
     tmRate.Enabled := False;
