@@ -2742,6 +2742,8 @@
         Top = 3
         Width = 206
         Height = 21
+        DataField = 'WORK_ID'
+        DataSource = dsRates
         DropDownRows = 10
         KeyField = 'work_id'
         ListField = 'NameWork'
@@ -3766,6 +3768,10 @@
     object strngfldRatesSORTID: TStringField
       FieldName = 'SORTID'
       Size = 100
+    end
+    object qrRatesWORK_ID: TIntegerField
+      FieldName = 'WORK_ID'
+      OnChange = qrRatesWORK_IDChange
     end
   end
   object dsRates: TDataSource
@@ -5039,7 +5045,6 @@
     Top = 265
   end
   object qrOXROPR: TFDQuery
-    MasterSource = dsRates
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write

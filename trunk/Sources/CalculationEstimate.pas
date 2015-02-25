@@ -450,6 +450,7 @@ type
     qrOXROPR: TFDQuery;
     dblkcbbOXROPR: TDBLookupComboBox;
     dsOXROPR: TDataSource;
+    qrRatesWORK_ID: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -628,6 +629,7 @@ type
     procedure dbgrdRatesEnter(Sender: TObject);
     procedure qrRatesAfterPost(DataSet: TDataSet);
     procedure PMMatDeleteClick(Sender: TObject);
+    procedure qrRatesWORK_IDChange(Sender: TField);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -2375,6 +2377,15 @@ begin
     // Пересчитывает все величины по данной строке
     ReCalcRowRates;
   end;
+end;
+
+procedure TFormCalculationEstimate.qrRatesWORK_IDChange(Sender: TField);
+begin
+  qrTemp.SQL.Text := 'UPDATE card_rate_temp SET WORK_ID = :p1 WHERE ID = :p2';
+  qrTemp.ParamByName('p1').AsInteger := qrRatesWORK_ID.Value;
+  qrTemp.ParamByName('p2').AsInteger := qrRatesOWNER_ID.Value;
+  qrTemp.ExecSQL;
+  CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.qrStartupAfterScroll(DataSet: TDataSet);
