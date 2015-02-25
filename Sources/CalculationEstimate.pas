@@ -94,7 +94,6 @@ type
     Edit14: TEdit;
     Panel1: TPanel;
     LabelOXROPR: TLabel;
-    ComboBoxOXROPR: TComboBox;
     PanelSSR: TPanel;
     PanelSummaryCalculations: TPanel;
     PanelData: TPanel;
@@ -448,6 +447,9 @@ type
     PMMatDelete: TMenuItem;
     qrMaterialCOAST_NO_NDS: TFloatField;
     qrMaterialCOAST_NDS: TFloatField;
+    qrOXROPR: TFDQuery;
+    dblkcbbOXROPR: TDBLookupComboBox;
+    dsOXROPR: TDataSource;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -532,9 +534,7 @@ type
     procedure SpeedButtonEquipmentsClick(Sender: TObject);
     procedure SpeedButtonModeTablesClick(Sender: TObject);
     procedure GetMonthYearCalculationEstimate;
-    procedure FillingOXROPR;
     procedure GetSourceData;
-    procedure SetIndexOXROPR(vNumber: string);
     procedure FillingWinterPrice(vNumber: string);
 
     procedure PMDeleteClick(Sender: TObject);
@@ -542,7 +542,6 @@ type
     procedure TestOnNoData(SG: TStringGrid);
     procedure TestOnNoDataNew(ADataSet: TDataSet);
     procedure PMMatFromRatesClick(Sender: TObject);
-    procedure CopyEstimate;
     procedure VisibleColumnsWinterPrice(Value: Boolean);
     procedure ReplacementNumber(Sender: TObject);
     procedure ReplacementMaterial(const vIdMat: Integer);
@@ -890,10 +889,6 @@ begin
   PanelClientLeft.Constraints.MinWidth := 30;
   dbmmoCAPTION.Constraints.MinHeight := 45;
   MemoRight.Constraints.MinHeight := 45;
-
-  // -----------------------------------------
-
-  FillingOXROPR;
 
   ConfirmCloseForm := True;
 
@@ -1269,9 +1264,9 @@ end;
 
 procedure TFormCalculationEstimate.Panel1Resize(Sender: TObject);
 begin
-  ComboBoxOXROPR.Width := (Sender as TPanel).Width div 2 - ComboBoxOXROPR.Left - 3;
+  dblkcbbOXROPR.Width := (Sender as TPanel).Width div 2 - dblkcbbOXROPR.Left - 3;
 
-  LabelWinterPrice.Left := ComboBoxOXROPR.Left + ComboBoxOXROPR.Width + 6;
+  LabelWinterPrice.Left := dblkcbbOXROPR.Left + dblkcbbOXROPR.Width + 6;
 
   EditWinterPrice.Left := LabelWinterPrice.Left + LabelWinterPrice.Width + 6;
   EditWinterPrice.Width := (Sender as TPanel).Width - EditWinterPrice.Left - 6;
@@ -2629,8 +2624,7 @@ end;
 
 procedure TFormCalculationEstimate.PMMatDeleteClick(Sender: TObject);
 begin
-  if MessageBox(0, PChar('Вы действительно хотите удалить ' +
-    qrMaterialMAT_CODE.AsString + '?'), CaptionForm,
+  if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrMaterialMAT_CODE.AsString + '?'), CaptionForm,
     MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
     Exit;
 
@@ -2646,8 +2640,8 @@ begin
 
   except
     on E: Exception do
-      MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   OutputDataToTable(qrRates.RecNo);
@@ -2985,8 +2979,6 @@ begin
         // Средний разряд рабочих-строителей
         EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesIDID.AsInteger)));
 
-        SetIndexOXROPR(qrRatesCODE.AsString);
-
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(qrRatesCODEINRATE.AsString);
 
@@ -3019,8 +3011,6 @@ begin
 
         EditCategory.Text := MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
 
-        SetIndexOXROPR(qrRatesCODE.AsString);
-
         // Запоняем строку зимнего удорожания
         if CheckMatINRates then
           FillingWinterPrice(qrRatesCODEINRATE.AsString);
@@ -3037,8 +3027,6 @@ begin
 
         // Нажимаем на кнопку механизмов, для отображения таблицы механизмов
         SpeedButtonMechanismsClick(SpeedButtonMechanisms);
-
-        SetIndexOXROPR(qrRatesCODE.AsString);
 
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(qrRatesCODEINRATE.AsString);
@@ -3287,8 +3275,7 @@ begin
         'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
         ' as "PriceNoVAT" ' + 'FROM materialnorm as TMatNorm ' +
         'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
-        'JOIN units ON TMat.unit_id = units.unit_id ' +
-        'LEFT JOIN (select material_id, ' + PriceVAT + ', ' +
+        'JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN (select material_id, ' + PriceVAT + ', ' +
         PriceNoVAT + ' from materialcoastg where (monat = ' + IntToStr(Month1) + ') and (year = ' +
         IntToStr(Year1) + ')) as TMatCoast ' + 'ON TMatCoast.material_id = TMatNorm.material_id ' +
         'WHERE (TMatNorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1';
@@ -4162,40 +4149,6 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.FillingOXROPR;
-var
-  i: Integer;
-begin
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT work_id, work_name as "NameWork" FROM objworks ORDER BY work_id;');
-      Active := True;
-
-      First;
-      i := 1;
-      ComboBoxOXROPR.Items.Clear;
-
-      while not Eof do
-      begin
-        ComboBoxOXROPR.Items.Add(IntToStr(i) + '. ' + FieldByName('NameWork').AsVariant);
-
-        inc(i);
-        Next;
-      end;
-
-      ComboBoxOXROPR.ItemIndex := 0;
-      Active := False;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При заполнении выпадающего списка "ОХР и ОПР и пл. приб." возникла ошибка:' +
-        sLineBreak + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-end;
-
 procedure TFormCalculationEstimate.GetSourceData;
 begin
   try
@@ -4305,39 +4258,6 @@ begin
 
     Columns[8].Visible := not aNDS;
     Columns[10].Visible := not aNDS;
-  end;
-end;
-
-procedure TFormCalculationEstimate.SetIndexOXROPR(vNumber: String);
-begin
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT work_id as "IdWork", s as "From", po as "On" FROM onormativs;');
-      Active := True;
-
-      First;
-
-      ComboBoxOXROPR.ItemIndex := 0;
-
-      while not Eof do
-      begin
-        if (vNumber > FieldByName('From').AsVariant) and (vNumber < FieldByName('On').AsVariant) then
-        begin
-          ComboBoxOXROPR.ItemIndex := FieldByName('IdWork').AsVariant - 1;
-          Break;
-        end;
-
-        Next;
-      end;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При установке начального значения в выпадающем списке' + sLineBreak +
-        '"ОХР и ОПР и пл. приб." возникла ошибка:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4566,6 +4486,9 @@ begin
 
   // Заполнение таблицы расценок
   OutputDataToTable(0);
+
+  if not qrOXROPR.Active then
+    qrOXROPR.Active := True;
 end;
 
 // Заполнение таблицы расценок
@@ -4665,154 +4588,6 @@ begin
     qrRatesAfterScroll(qrRates);
 
   CloseOpen(qrCalculations);
-end;
-
-procedure TFormCalculationEstimate.CopyEstimate;
-{ var
-  sm_type, obj_id, name_estimate, date, sm_number, chapter, row_number, preparer, post_preparer, examiner,
-  post_examiner, set_drawings, stavka_id, COEF_TR_ZATR, coef_tr_obor, k40, k41, k31, k32, k33, k34, NDS,
-  dump_id: Variant;
-
-  i, LastId: Integer;
-  sIdEstimate, sNumberRow, sNumberNorm, sCountNorm, sUnitName, sDescription, sTypeData, sIdNorm,
-  sDistanceCount, sClassMass: string; }
-begin
-  { with FormSaveEstimate do
-    begin
-    iIdEstimate := IdEstimate;
-    ShowModal;
-
-    if bSaveEstimate then
-    begin
-    sm_number := '"' + EditNumberEstimate.Text + '"';
-    name_estimate := '"' + EditNameEstimate.Text + '"';
-    end
-    else
-    Exit;
-    end;
-
-    try
-    with qrTemp do
-    begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT * FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate));
-    Active := True;
-
-    sm_type := '"' + IntToStr(FieldByName('sm_type').AsInteger) + '"';
-    obj_id := '"' + IntToStr(FieldByName('obj_id').AsInteger) + '"';
-    // name_estimate := '"копия ' + FieldByName('name').AsString + '"';
-    date := '"' + DateToStr(FieldByName('date').AsDateTime) + '"';
-    // sm_number := '"' + FieldByName('sm_number').AsString + '"';
-    chapter := '"' + FieldByName('chapter').AsString + '"';
-    row_number := '"' + IntToStr(FieldByName('row_number').AsInteger) + '"';
-    preparer := '"' + FieldByName('preparer').AsString + '"';
-    post_preparer := '"' + FieldByName('post_preparer').AsString + '"';
-    examiner := '"' + FieldByName('examiner').AsString + '"';
-    post_examiner := '"' + FieldByName('post_examiner').AsString + '"';
-    set_drawings := '"' + FieldByName('set_drawings').AsString + '"';
-    stavka_id := '"' + IntToStr(FieldByName('stavka_id').AsInteger) + '"';
-
-    COEF_TR_ZATR := '"' + MyFloatToStr(FieldByName('coef_tr_zatr').AsFloat) + '"';
-    coef_tr_obor := '"' + MyFloatToStr(FieldByName('coef_tr_obor').AsFloat) + '"';
-    k40 := '"' + MyFloatToStr(FieldByName('k40').AsFloat) + '"';
-    k41 := '"' + MyFloatToStr(FieldByName('k41').AsFloat) + '"';
-    k31 := '"' + MyFloatToStr(FieldByName('k31').AsFloat) + '"';
-    k32 := '"' + MyFloatToStr(FieldByName('k32').AsFloat) + '"';
-    k33 := '"' + MyFloatToStr(FieldByName('k33').AsFloat) + '"';
-    k34 := '"' + MyFloatToStr(FieldByName('k34').AsFloat) + '"';
-
-    NDS := '"' + IntToStr(FieldByName('nds').AsInteger) + '"';
-    dump_id := '"' + IntToStr(FieldByName('dump_id').AsInteger) + '"';
-
-    // ----------------------------------------
-
-    Active := False;
-    SQL.Clear;
-    SQL.Add('INSERT INTO smetasourcedata (sm_type, obj_id, name, date, sm_number, chapter, row_number, preparer, '
-    + 'post_preparer, examiner, post_examiner, set_drawings, stavka_id, coef_tr_zatr, coef_tr_obor, k40, k41, k31, '
-    + 'k32, k33, k34, nds, dump_id) Value(' + sm_type + ', ' + obj_id + ', ' + name_estimate + ', ' + date
-    + ', ' + sm_number + ', ' + chapter + ', ' + row_number + ', ' + preparer + ', ' + post_preparer +
-    ', ' + examiner + ', ' + post_examiner + ', ' + set_drawings + ', ' + stavka_id + ', ' + COEF_TR_ZATR
-    + ', ' + coef_tr_obor + ', ' + k40 + ', ' + k41 + ', ' + k31 + ', ' + k32 + ', ' + k33 + ', ' + k34 +
-    ', ' + NDS + ', ' + dump_id + ');');
-    ExecSQL;
-
-    // ----------------------------------------
-
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT LAST_INSERT_ID() as "last_id";');
-    // Id последней добавл. записи текущего подключения к БД
-    Active := True;
-
-    sIdEstimate := FieldByName('last_id').AsVariant;
-    end;
-    except
-    on E: Exception do
-    begin
-    MessageBox(0, PChar('При сохранении копии сметы возникла ошибка:' + sLineBreak + E.Message),
-    CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
-    end;
-
-    try
-    for i := 1 to StringGridRates.RowCount - 2 do
-    begin
-    with StringGridRates do
-    begin
-    sNumberRow := Cells[0, i];
-    sNumberNorm := Cells[1, i];
-    sCountNorm := Cells[2, i];
-
-    if Pos(',', sCountNorm) > 0 then
-    sCountNorm[Pos(',', sCountNorm)] := '.';
-
-    if Cells[3, i] = '' then
-    sUnitName := 'NULL'
-    else
-    sUnitName := '"' + Cells[3, i] + '"';
-
-    if Cells[4, i] = '' then
-    sDescription := 'NULL'
-    else
-    sDescription := '"' + Cells[4, i] + '"';
-
-    sTypeData := Cells[5, i];
-
-    if Cells[6, i] = '' then
-    sIdNorm := 'NULL'
-    else
-    sIdNorm := '"' + Cells[6, i] + '"';
-
-    if Cells[7, i] = '' then
-    sDistanceCount := 'NULL'
-    else
-    sDistanceCount := '"' + Cells[7, i] + '"';
-
-    if Cells[8, i] = '' then
-    sClassMass := 'NULL'
-    else
-    sClassMass := '"' + Cells[8, i] + '"';
-    end;
-
-    with qrTemp do
-    begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('INSERT INTO rates (id_estimate, number_row, number_norm, count_norm, unit_name, description,'
-    + ' type_data, id_norm, distance_count, class_mass) VALUE ("' + sIdEstimate + '", "' + sNumberRow +
-    '", "' + sNumberNorm + '", "' + sCountNorm + '", ' + sUnitName + ', ' + sDescription + ', "' +
-    sTypeData + '", ' + sIdNorm + ', ' + sDistanceCount + ', ' + sClassMass + ');');
-
-    ExecSQL;
-    end;
-    end;
-    except
-    on E: Exception do
-    MessageBox(0, PChar('При сохранении расценок копии сметы возникла ошибка:' + sLineBreak + sLineBreak +
-    E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-    end; }
 end;
 
 procedure TFormCalculationEstimate.VisibleColumnsWinterPrice(Value: Boolean);

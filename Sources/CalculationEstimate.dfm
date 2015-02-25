@@ -2727,15 +2727,6 @@
         Height = 13
         Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077' '#1085#1072':'
       end
-      object ComboBoxOXROPR: TComboBox
-        Left = 122
-        Top = 3
-        Width = 107
-        Height = 21
-        AutoComplete = False
-        Style = csDropDownList
-        TabOrder = 0
-      end
       object EditWinterPrice: TEdit
         Left = 822
         Top = 2
@@ -2744,6 +2735,17 @@
         TabStop = False
         Color = 14802912
         ReadOnly = True
+        TabOrder = 0
+      end
+      object dblkcbbOXROPR: TDBLookupComboBox
+        Left = 122
+        Top = 3
+        Width = 145
+        Height = 21
+        DropDownRows = 10
+        KeyField = 'work_id'
+        ListField = 'NameWork'
+        ListSource = dsOXROPR
         TabOrder = 1
       end
     end
@@ -5035,5 +5037,49 @@
     OnTimer = tmRateTimer
     Left = 16
     Top = 265
+  end
+  object qrOXROPR: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtUInt32
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtUInt64
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtInt64
+        TargetDataType = dtInt32
+      end>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.CountUpdatedRecords = False
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      
+        'SELECT work_id, work_name as "NameWork" FROM objworks ORDER BY w' +
+        'ork_id')
+    Left = 240
+    Top = 392
+  end
+  object dsOXROPR: TDataSource
+    DataSet = qrOXROPR
+    Left = 272
+    Top = 392
   end
 end
