@@ -107,9 +107,10 @@ uses
 
 
 {$R *.res}
+var MHandle: THandle;
 begin
   // Ћюба€ уникальна€ строка котора€ будет только в нашем приложении
-  CreateMutex(nil, True, '5q7b3g1p0b5n3x6v9e6s');
+  MHandle := CreateMutex(nil, False, '5q7b3g1p0b5n3x6v9e6s');
 
   // ѕровер€ем не запущено ли приложение
   if GetLastError = ERROR_ALREADY_EXISTS then
@@ -162,5 +163,9 @@ begin
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€
   if StartUpdater then
-    ShellExecute(0,'open', Pchar('Updater.exe'), Pchar(UpdatePath), nil ,SW_HIDE);
+    ShellExecute(0,'open', Pchar(UpdaterName),
+      Pchar(UpdatePath + ' ' + NewAppVersion), nil ,SW_HIDE);
+
+  ReleaseMutex(MHandle);
+  CloseHandle(MHandle);
 end.
