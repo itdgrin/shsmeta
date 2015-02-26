@@ -198,14 +198,14 @@ type
     SystemInfoResult: boolean;
     LastResp: TServiceResponse;
 
-    CurVersion: TVersion; // текущая версия приложения и БД
+    FCurVersion: TVersion; // текущая версия приложения и БД
     DebugMode: boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
     FileReportPath: string; // путь к папке с отчетами(дабы не захламлять датамодуль лишними модулями)
 
     procedure GetSystemInfo;
-    procedure OnUpdate(var Message: TMessage); message WM_SHOW_SPLASH;
-    procedure ShowSplashForm(const AResp: TServiceResponse);
+    procedure OnUpdate(var Mes: TMessage); message WM_SHOW_SPLASH;
+    procedure ShowSplashForm;
     procedure ShowUpdateForm(const AResp: TServiceResponse);
   public
     procedure AutoWidthColumn(SG: TStringGrid; Nom: integer);
@@ -380,7 +380,7 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
 {$R *.dfm}
 
 // ---------------------------------------------------------------------------------------------------------------------
-procedure TFormMain.ShowSplashForm(const AResp: TServiceResponse);
+procedure TFormMain.ShowSplashForm;
 begin
   UpdatePanel.Left := ClientWidth - UpdatePanel.Width;
   UpdatePanel.Top := PanelOpenWindows.Top - UpdatePanel.Height;
@@ -394,7 +394,7 @@ var
 begin
   UPForm := TUpdateForm.Create(nil);
   try
-    UPForm.SetVersion(CurVersion, AResp);
+    UPForm.SetVersion(FCurVersion, AResp);
     UPForm.ShowModal;
     GetSystemInfo;
   finally
@@ -403,21 +403,20 @@ begin
 end;
 
 // Уведомление о доступности новых обновлений
-procedure TFormMain.OnUpdate(var Message: TMessage);
+procedure TFormMain.OnUpdate(var Mes: TMessage);
 var
   Resp: TServiceResponse;
 begin
   UpdatePanel.Visible := False;
   TimerUpdate.Enabled := UpdatePanel.Visible;
-  Resp := FUpdateThread.Response;
+  Resp := TServiceResponse.Create;
   try
-    Resp.Assign(FUpdateThread.Response);
+    Resp.Assign(TServiceResponse(Mes.LParam));
 
     if not Resp.UserRequest then
-      ShowSplashForm(Resp)
+      ShowSplashForm
     else
       ShowUpdateForm(Resp);
-
   finally
     Resp.Free;
   end;
@@ -437,7 +436,7 @@ begin
       ini.WriteBool('system', 'sendreport', False);
       ini.WriteBool('system', 'debugmode', true);
     end;
-    CurVersion.App := ini.ReadInteger('system', 'version', 0);
+    FCurVersion.App := ini.ReadInteger('system', 'version', 0);
     DebugMode := ini.ReadBool('system', 'debugmode', true);
   finally
     FreeAndNil(ini);
@@ -447,22 +446,20 @@ begin
     '(execresult > 0) and (SCRIPTCOUNT = SCRIPTNO)';
   DM.qrDifferent.Active := true;
   if not DM.qrDifferent.Eof then
-    CurVersion.Catalog := DM.qrDifferent.Fields[0].AsInteger;
+    FCurVersion.Catalog := DM.qrDifferent.Fields[0].AsInteger;
   DM.qrDifferent.Active := False;
 
   DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionuser WHERE ' +
     '(execresult > 0) and (SCRIPTCOUNT = SCRIPTNO)';
   DM.qrDifferent.Active := true;
   if not DM.qrDifferent.Eof then
-    CurVersion.User := DM.qrDifferent.Fields[0].AsInteger;
+    FCurVersion.User := DM.qrDifferent.Fields[0].AsInteger;
   DM.qrDifferent.Active := False;
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  CurVersion.App := 0;
-  CurVersion.Catalog := 0;
-  CurVersion.User := 0;
+  FCurVersion.Clear;
 
   SystemInfoResult := False;
 
@@ -507,7 +504,7 @@ begin
 
   // Запуск ниточки для мониторигра обновлений
   if SystemInfoResult and not DebugMode then
-    FUpdateThread := TUpdateThread.Create(CurVersion, Self.Handle)
+    FUpdateThread := TUpdateThread.Create(FCurVersion, Self.Handle)
   else
   begin
     if not SystemInfoResult then

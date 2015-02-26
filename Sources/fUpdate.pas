@@ -12,7 +12,10 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.SysUtils,
   IniFiles, IdMessage, IdSSLOpenSSL, IdMessageClient, IdSMTPBase, IdSMTP,
-  IdAttachmentFile, IdExplicitTLSClientServerBase;
+  IdAttachmentFile, IdExplicitTLSClientServerBase, ShellAPI;
+
+const
+  UpdaterName = 'SmUpd.exe';
 
 type
   TUpdateForm = class(TForm)
@@ -32,10 +35,10 @@ type
     Label4: TLabel;
     HTTP: TIdHTTP;
     IdAntiFreeze1: TIdAntiFreeze;
-    ZipForge1: TZipForge;
+    ZipForge: TZipForge;
     SQLScript: TFDScript;
     qrTemp: TFDQuery;
-    procedure btnCancelClick(Sender: TObject);
+    btnIterrupt: TButton;
     procedure btnUpdateClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
@@ -51,21 +54,26 @@ type
     procedure SQLScriptBeforeExecute(Sender: TObject);
     procedure SQLScriptAfterExecute(Sender: TObject);
     procedure SQLScriptProgress(Sender: TObject);
+    procedure btnIterruptClick(Sender: TObject);
   private
     FCurVersion: TVersion; //Текущая версия приложения
     FSR: TServiceResponse;
-    StopUpdate: boolean;
     SqlErrorList: TStringList;
 
-    ClientName: string; // Имя клиета
-    SendReport: boolean; // Необходимость отправлять отчет об ошибках обновления
+    FClientName: string; // Имя клиета
+    FSendReport: boolean; // Необходимость отправлять отчет об ошибках обновления
 
-    procedure SetButtonStyle;
+    FStopUpdateProc: Boolean;
+
+    procedure ShowUpdateStatys;
     procedure StartUpdate;
     procedure LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
     function ExecSqlScript(ADirName: string; AUpdate: TNewVersion; AType: byte): Boolean;
     procedure SendErrorReport;
     function UpdateApp(const AUpdatePath: string): Boolean;
+    procedure ShowStatys(const AStatysStr: string; AType: byte = 0);
+    procedure SetButtonStyle(AStyle: Integer);
+    function CheckStopUpdate: Boolean;
     { Private declarations }
   public
     //Устанавливает версии но не изменяет внешний вид
@@ -75,47 +83,28 @@ type
   end;
 
 var
+  //Глобальные переменные обеспечивающие выполнение обновлений
   //Флаг необходимости запустить Updater по завершению программы
   StartUpdater: Boolean = False;
   //Путь к папке с обновлениями приложения
-  UpdatePath: string;
+  UpdatePath,
+  NewAppVersion: string;
 
 implementation
 uses DataModule;
 
 {$R *.dfm}
 
-function KillDir (Dir: string): boolean;
+//Удаление директории с содержимым
+procedure KillDir(const ADirName: string);
 var
-  Sr: TSearchRec;
-  procedure FileSetReadOnly(const FileName: string; const SAttr: boolean);
-  var At: Integer;
-  begin
-       At:= FileGetAttr(FileName);
-       if At and faReadOnly <> 0 then
-       begin
-            if not SAttr then FileSetAttr(FileName, At - faReadOnly);
-       end
-       else if SAttr then FileSetAttr(FileName, At + faReadOnly);
-  end;
+  FileFolderOperation: TSHFileOpStruct;
 begin
-  Dir := ExcludeTrailingPathDelimiter(Dir);
-
-  if FindFirst(Dir + '\*.*', faDirectory + faHidden + faSysFile +
-    faReadonly + faArchive, Sr) = 0 then
-    repeat
-      if (Sr.Name = '.') or (Sr.Name = '..') then continue;
-      if (Sr.Attr and faDirectory <> faDirectory) then
-      begin
-            FileSetReadOnly(Dir + '\' + sr.Name, false);
-            DeleteFile(Dir + '\' + sr.Name);
-      end
-      else
-        KillDir(Dir + '\' + sr.Name);
-    until FindNext(sr) <> 0;
-  FindClose(sr);
-  RemoveDir(Dir);
-  KillDir := DirectoryExists(Dir);
+  FillChar(FileFolderOperation, SizeOf(FileFolderOperation), 0);
+  FileFolderOperation.wFunc := FO_DELETE;
+  FileFolderOperation.pFrom := PChar(ExcludeTrailingPathDelimiter(ADirName) + #0);
+  FileFolderOperation.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
+  SHFileOperation(FileFolderOperation);
 end;
 
 procedure TUpdateForm.SendErrorReport;
@@ -129,7 +118,7 @@ begin
   SSLIOHandler := TIdSSLIOHandlerSocketOpenSSL.Create;
   try
     try
-      if ClientName = '' then
+      if FClientName = '' then
         raise Exception.Create('Отчет не отправлен. Не указано имя клиента.');
 
       SSLIOHandler.SSLOptions.Method := sslvSSLv3;
@@ -148,7 +137,7 @@ begin
       SMTP.Connect;
 
       Msg.From.Address := 'smetareport@gmail.com';
-      Msg.From.Name := ClientName;
+      Msg.From.Name := FClientName;
       Msg.Recipients.EMailAddresses := SupportMail;
       Msg.Subject := 'Отчет об ошибках обновления';
       for i := 0 to SqlErrorList.Count - 1 do
@@ -174,6 +163,15 @@ begin
   end;
 end;
 
+procedure TUpdateForm.ShowStatys(const AStatysStr: string; AType: byte = 0);
+begin
+  if AType = 0 then
+    Memo1.Lines.Add(AStatysStr)
+  else
+    if Memo1.Lines.Count > 0 then
+      Memo1.Lines[Memo1.Lines.Count - 1] := AStatysStr;
+end;
+
 procedure TUpdateForm.LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
 var LoadPath, UpdName: string;
     MStream: TMemoryStream;
@@ -191,7 +189,7 @@ begin
   End;
   ForceDirectories(LoadPath);
 
-  Memo1.Lines.Add('Обновление ' + IntToStr(AUpdate.Version) + ': ' + AUpdate.Comment);
+  ShowStatys('Обновление ' + IntToStr(AUpdate.Version) + ': ' + AUpdate.Comment);
 
   MStream := TMemoryStream.Create;
   try
@@ -203,32 +201,38 @@ begin
       HTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
       HTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
 
-      Memo1.Lines.Add('Загрузка...');
+      ShowStatys('Загрузка...');
       HTTP.Get(UpdateServ + AUpdate.Url, MStream);
       MStream.SaveToFile(LoadPath + UpdName);
-      Memo1.Lines[Memo1.Lines.Count - 1] := 'Загружено успешно';
+      ShowStatys('Загружено успешно', 1);
 
-      Memo1.Lines.Add('Распаковка...');
-      ZipForge1.BaseDir := LoadPath;
-      ZipForge1.Options.OverwriteMode := omAlways;
-      ZipForge1.FileName := LoadPath + UpdName;
-      ZipForge1.OpenArchive;
-      ZipForge1.ExtractFiles('*.*');
-      ZipForge1.CloseArchive;
+      if CheckStopUpdate then
+        Exit;
+
+      ShowStatys('Распаковка...');
+      ZipForge.BaseDir := LoadPath;
+      ZipForge.Options.OverwriteMode := omAlways;
+      ZipForge.FileName := LoadPath + UpdName;
+      ZipForge.OpenArchive;
+      ZipForge.ExtractFiles('*.*');
+      ZipForge.CloseArchive;
 
       DeleteFile(LoadPath + UpdName);
-      Memo1.Lines[Memo1.Lines.Count - 1] := 'Распаковано успешно';
+      ShowStatys('Распаковано успешно', 1);
+
+      if CheckStopUpdate then
+        Exit;
 
       if AType in [0,1] then
       begin
-        Memo1.Lines.Add('Установка...');
+        ShowStatys('Установка...');
         if not ExecSqlScript(LoadPath, AUpdate, AType) then
         begin
-          Memo1.Lines.Add('Не удалось выполнить скрипт!');
+          ShowStatys('Не удалось выполнить скрипт!');
           //Если установлен флаг отправляется отчет об ошибках
-          if SendReport then
+          if FSendReport then
           begin
-            Memo1.Lines.Add('Отправка отчета об ошибках в техподдержку');
+            ShowStatys('Отправка отчета об ошибках в техподдержку');
             if (AType = 0) then
               SqlErrorList.Insert(0, 'Обновление справочников №' +
                 IntToStr(AUpdate.Version))
@@ -239,32 +243,40 @@ begin
             raise Exception.Create('');
           end;
         end;
-        Memo1.Lines[Memo1.Lines.Count - 1] := 'Установлено успешно';
+        ShowStatys('Установлено успешно', 1);
       end
       else
+      begin
        StartUpdater := UpdateApp(LoadPath);
+       NewAppVersion := IntToStr(AUpdate.Version);
+      end;
     except
       on e: Exception do
       begin
-        StopUpdate := True;
-        Memo1.Lines.Add(e.Message);
-        Memo1.Lines.Add('');
-        Memo1.Lines.Add('Обновление завершилось ошибкой!');
+        FStopUpdateProc := True;
+        ShowStatys(e.Message);
+        ShowStatys('');
+        ShowStatys('Обновление завершилось ошибкой!');
       end;
     end;
   finally
     MStream.Free;
+    //После завершения обновлений папки с SQL скриптами удалются
+    if (AType in [0,1]) or
+      ((AType = 2) and not StartUpdater) then
+      KillDir(LoadPath);
   end;
-
-  //После завершения обновлений папки с SQL скриптами удалются
-  if (AType in [0,1]) or
-    ((AType = 2) and AppResult) then
-    KillDir(LoadPath);
 end;
 
 function TUpdateForm.UpdateApp(const AUpdatePath: string): Boolean;
 begin
   UpdatePath := AUpdatePath;
+  if TFile.Exists(UpdatePath + UpdaterName) then
+  begin
+    TFile.Copy(UpdatePath + UpdaterName,
+      ExtractFilePath(Application.ExeName) + UpdaterName, True);
+    TFile.Delete(UpdatePath + UpdaterName);
+  end;
   Result := not TDirectory.IsEmpty(AUpdatePath);
 end;
 
@@ -378,80 +390,108 @@ begin
   end;
 end;
 
+function TUpdateForm.CheckStopUpdate: Boolean;
+begin
+   Application.ProcessMessages;
+   Result := FStopUpdateProc;
+end;
+
 procedure TUpdateForm.StartUpdate;
 var i: integer;
 begin
   StartUpdater := False;
   UpdatePath := '';
+  FStopUpdateProc := False;
+  NewAppVersion := IntToStr(FCurVersion.App);
 
   //Перед началом обновлений папка полностью очищается
   KillDir(ExtractFilePath(Application.ExeName) + 'Updates');
   ForceDirectories(ExtractFilePath(Application.ExeName) + 'Updates');
   Memo1.Lines.Clear;
-  Memo1.Lines.Add('Начало процесса обновления:');
-  StopUpdate := False;
+  ShowStatys('Начало процесса обновления:');
   SqlErrorList.Clear;
   SqlScript.Tag := integer(SqlErrorList);
 
   if FSR.CatalogCount > 0 then
   begin
-    Memo1.Lines.Add('');
-    Memo1.Lines.Add('***Обновление справочников***');
+    ShowStatys('');
+    ShowStatys('***Обновление справочников***');
 
     for i := 0 to FSR.CatalogCount - 1 do
     begin
-      LoadAndSetUpdate(FSR.CatalogList[i], 0);
-      if StopUpdate then
+      if CheckStopUpdate then
         Break;
+      LoadAndSetUpdate(FSR.CatalogList[i], 0);
     end;
-    if StopUpdate then
+    if FStopUpdateProc then
+    begin
+      ShowStatys('');
+      ShowStatys('Обновление прервано!');
       Exit;
+    end;
 
-    Memo1.Lines.Add('***Справочники обновлены***');
+    ShowStatys('***Справочники обновлены***');
   end;
 
-
-  for i := 0 to FSR.UserCount - 1 do
+  if FSR.UserCount > 0 then
   begin
-    Memo1.Lines.Add('');
-    Memo1.Lines.Add('***Обновление пользовательских таблиц***');
+    ShowStatys('');
+    ShowStatys('***Обновление пользовательских таблиц***');
 
-    LoadAndSetUpdate(FSR.UserList[i], 1);
-    if StopUpdate then
-      Break;
+    for i := 0 to FSR.UserCount - 1 do
+    begin
+      if CheckStopUpdate then
+        Break;
+      LoadAndSetUpdate(FSR.UserList[i], 1);
+    end;
 
-    Memo1.Lines.Add('***Пользовательские таблицы обновлены***');
+    if FStopUpdateProc then
+    begin
+      ShowStatys('');
+      ShowStatys('Обновление прервано!');
+      Exit;
+    end;
+
+    ShowStatys('***Пользовательские таблицы обновлены***');
   end;
-  if StopUpdate then
-    Exit;
 
-  for i := 0 to FSR.AppCount - 1 do
+  if FSR.AppCount > 0 then
   begin
-    Memo1.Lines.Add('');
-    Memo1.Lines.Add('***Обновление приложения***');
+    ShowStatys('');
+    ShowStatys('***Обновление приложения***');
 
-    LoadAndSetUpdate(FSR.AppList[i], 2);
-    if StopUpdate then
-      Break;
+    for i := 0 to FSR.AppCount - 1 do
+    begin
+      if CheckStopUpdate then
+        Break;
+      LoadAndSetUpdate(FSR.AppList[i], 2);
+    end;
 
-    Memo1.Lines.Add('***Приложение обновлено***');
+    if FStopUpdateProc then
+    begin
+      ShowStatys('');
+      ShowStatys('Обновление прервано!');
+      Exit;
+    end;
+    if not StartUpdater then
+      ShowStatys('***Приложение обновлено***');
   end;
-  if StopUpdate then
-    Exit;
 
-  Memo1.Lines.Add('');
   if StartUpdater then
-    Memo1.Lines.Add('Обновление завершится после перезапуска программы!');
-  Memo1.Lines.Add('Обновление прошло успешно!');
+  begin
+    ShowStatys('');
+    ShowStatys('Для завершения обновления нужен перезапуск программы!');
+  end;
+
+  ShowStatys('');
+  ShowStatys('Обновление прошло успешно!');
 end;
 
 procedure TUpdateForm.SetVersion(const AVersion: TVersion;
   const AServiceResponse: TServiceResponse);
 begin
   FSR.Assign(AServiceResponse);
-  FCurVersion.App := AVersion.App;
-  FCurVersion.Catalog := AVersion.Catalog;
-  FCurVersion.User := AVersion.User;
+  FCurVersion.Assign(AVersion);
 end;
 
 //Возникающие во время выполнения скрипта исключения заносятся в SqlErrorList
@@ -482,8 +522,44 @@ begin
   Application.ProcessMessages;
 end;
 
+procedure TUpdateForm.SetButtonStyle(AStyle: Integer);
+begin
+  btnUpdate.Width := 100;
+  btnCancel.Width := 75;
+  btnOk.Width := 75;
+  btnIterrupt.Width := 100;
+  //Вид нижних кнопочек
+  case AStyle of
+    1:  //Обновления есть
+    begin
+      btnUpdate.Visible := True;
+      btnCancel.Visible := True;
+      btnOk.Visible := False;
+      btnIterrupt.Visible := False;
+      btnCancel.Left := Panel1.Width - btnCancel.Width - 8;
+      btnUpdate.Left := btnCancel.Left - btnUpdate.Width - 8;
+    end;
+    2:  //Прерывание обновления
+    begin
+      btnUpdate.Visible := False;
+      btnCancel.Visible := False;
+      btnOk.Visible := False;
+      btnIterrupt.Visible := True;
+      btnIterrupt.Left := Panel1.Width - btnIterrupt.Width - 8;
+    end;
+    else //Обновлений нет
+    begin
+      btnUpdate.Visible := False;
+      btnCancel.Visible := False;
+      btnOk.Visible := True;
+      btnIterrupt.Visible := False;
+      btnOk.Left := Panel1.Width - btnOk.Width - 8;
+    end;
+  end;
+end;
+
 //Устанавливает внешний вид окна обновления
-procedure TUpdateForm.SetButtonStyle;
+procedure TUpdateForm.ShowUpdateStatys;
 var Style : integer;
 begin
   //Текущая версия
@@ -492,47 +568,36 @@ begin
   label4.Caption := 'пользовательских таблиц: ' + IntToStr(FCurVersion.User);
 
   //Вид нижних кнопочек
-  case FSR.UpdeteStatys of
-    1:  //Обновления есть
-    begin
-      btnUpdate.Visible := true;
-      btnCancel.Visible := true;
-      btnOk.Visible := false;
-      btnCancel.Left := Panel1.Width - btnCancel.Width - 8;
-      btnUpdate.Left := btnCancel.Left - btnUpdate.Width - 8;
-    end;
-    else //Обновлений нет
-    begin
-      btnUpdate.Visible := false;
-      btnCancel.Visible := false;
-      btnOk.Visible := true;
-      btnOk.Left := Panel1.Width - btnOk.Width - 8;
-    end;
-  end;
+  SetButtonStyle(FSR.UpdeteStatys);
 
   memo1.Lines.Clear;
   //Текстовка в мемо
   case FSR.UpdeteStatys of
     1:  //Обновления есть
     begin
-      Memo1.Lines.Add('Доступны новые обновления на сервере:');
+      ShowStatys('Доступны новые обновления на сервере:');
 
       if FCurVersion.App < FSR.AppVersion then
-        Memo1.Lines.Add('верся приложения :' + IntToStr(FSR.AppVersion));
+        ShowStatys('верся приложения :' + IntToStr(FSR.AppVersion));
 
       if FCurVersion.Catalog < FSR.CatalogVersion then
-        Memo1.Lines.Add('верся справочников :' +
+        ShowStatys('верся справочников :' +
           IntToStr(FSR.CatalogVersion));
 
       if FCurVersion.User < FSR.UserVersion then
-        Memo1.Lines.Add('верся пользовательских таблиц :' +
+        ShowStatys('верся пользовательских таблиц :' +
           IntToStr(FSR.UserVersion));
     end;
     else //Обновлений нет
     begin
-      Memo1.Lines.Add('На сервере новых обновлений нет.');
+      ShowStatys('На сервере новых обновлений нет.');
     end;
   end;
+end;
+
+procedure TUpdateForm.btnIterruptClick(Sender: TObject);
+begin
+  FStopUpdateProc := True;
 end;
 
 procedure TUpdateForm.btnOkClick(Sender: TObject);
@@ -540,27 +605,17 @@ begin
   close;
 end;
 
-procedure TUpdateForm.btnCancelClick(Sender: TObject);
-begin
-  close;
-end;
-
 procedure TUpdateForm.btnUpdateClick(Sender: TObject);
 begin
-  btnUpdate.Enabled := False;
+  SetButtonStyle(2);
+  Application.ProcessMessages;
   StartUpdate;
-
-  btnUpdate.Visible := false;
-  btnCancel.Visible := false;
-  btnOk.Visible := true;
-  btnOk.Left := Panel1.Width - btnOk.Width - 8;
+  SetButtonStyle(0);
 end;
 
 procedure TUpdateForm.FormCreate(Sender: TObject);
 begin
-  FCurVersion.App := 0;
-  FCurVersion.Catalog := 0;
-  FCurVersion.User := 0;
+  FCurVersion.Clear;
   FSR := TServiceResponse.Create;
   SqlErrorList := TStringList.Create;
 end;
@@ -577,12 +632,12 @@ var
 begin
   ini := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
   try
-    ClientName := ini.ReadString('system', 'clientname', '');
-    SendReport := ini.ReadBool('system', 'sendreport', False);
+    FClientName := ini.ReadString('system', 'clientname', '');
+    FSendReport := ini.ReadBool('system', 'sendreport', False);
   finally
     FreeAndNil(ini);
   end;
-  SetButtonStyle;
+ ShowUpdateStatys;
 end;
 
 procedure TUpdateForm.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;

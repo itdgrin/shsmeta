@@ -12,7 +12,9 @@ const
 
   WM_SHOW_SPLASH = WM_USER + 1;
 
+  //Адрес сервера обновления
   UpdateServ = 'http://31.130.201.132:3000';
+  //Адрес почты техподдержки
   SupportMail = 'd_grin@mail.ru';
 
 type
@@ -46,6 +48,8 @@ type
     App: integer;
     Catalog: integer;
     User: integer;
+    procedure Clear;
+    procedure Assign(const AVersion: TVersion);
   end;
 
   TNewVersion = record
@@ -118,7 +122,6 @@ type
 
     FUREvent, FTermEvent: TEvent;
 
-    FResponseCS: TCriticalSection;
     FResponse: TServiceResponse; //Ответ службы
 
     FUserBlok: boolean; //Блокировка пользователем (не надо меня беспокоить)
@@ -127,7 +130,6 @@ type
     //Запрос версии инициирован пользователем
     FUserRequest: boolean;
 
-    function GetResponse: TServiceResponse;
     procedure GetVersion; //Отправляет запрос на получение версии на серверее
     procedure ParsXMLResult(const AStrimPage: TMemoryStream;
       var ASResponse: TServiceResponse);
@@ -137,7 +139,6 @@ type
   protected
     procedure Execute; override;
   public
-    property Response: TServiceResponse read GetResponse;
     procedure UserRequest;
     procedure Terminate;
     constructor Create(AVersion: TVersion; AMainHandle: HWND); overload;
@@ -147,6 +148,21 @@ type
   end;
 
 implementation
+
+{ TVersion }
+procedure TVersion.Clear;
+begin
+  App := 0;
+  Catalog := 0;
+  User := 0;
+end;
+
+procedure TVersion.Assign(const AVersion: TVersion);
+begin
+  App := AVersion.App;
+  Catalog := AVersion.Catalog;
+  User := AVersion.User;
+end;
 
 { TLogFile }
 
@@ -244,7 +260,6 @@ begin
   FUREvent := TEvent.Create(nil, true, false, '');
   FTermEvent := TEvent.Create(nil, true, false, '');
 
-  FResponseCS := TCriticalSection.Create;
   FResponse := TServiceResponse.Create;
 
   FUserBlok := False;
@@ -257,7 +272,6 @@ end;
 destructor TUpdateThread.Destroy;
 begin
   FResponse.Free;
-  FResponseCS.Free;
   FCurVersionCS.Free;
   FUserBlokCS.Free;
   FUREvent.Free;
@@ -285,19 +299,6 @@ begin
     FCurVersion.User := AVersion.User;
   finally
     FCurVersionCS.Leave;
-  end;
-end;
-
-function TUpdateThread.GetResponse: TServiceResponse;
-var r : TServiceResponse;
-begin
-  FResponseCS.Enter;
-  try
-    r := TServiceResponse.Create;
-    r.Assign(FResponse);
-    Result := r;
-  finally
-    FResponseCS.Leave;
   end;
 end;
 
@@ -394,13 +395,7 @@ begin
       end;
       TempNode := nil;
 
-      FResponseCS.Enter;
-      try
-        ASResponse.Assign(Resp);
-      finally
-        FResponseCS.Leave;
-      end;
-
+     ASResponse.Assign(Resp);
     except
       on e: Exception do
       begin
@@ -418,12 +413,7 @@ var NewVersion : TVersion;
     HTTP: TIdHTTP;
     StrimPage: TMemoryStream;
 begin
-  FResponseCS.Enter;
-  try
-    FResponse.Clear;
-  finally
-    FResponseCS.Leave;
-  end;
+  FResponse.Clear;
 
   FUserRequest := false;
   //Снимаем сигнальное состояние порверки по требованию если оно установлено
@@ -467,7 +457,6 @@ begin
   end;
 
   FCurVersionCS.Enter;
-  FResponseCS.Enter;
   try
     FResponse.UserRequest := FUserRequest;
     //Если FUserRequest = True по сообщение будет отправлено в любом случае
@@ -475,9 +464,8 @@ begin
        (FCurVersion.Catalog < FResponse.CatalogVersion) or
        (FCurVersion.User < FResponse.UserVersion) or
        FUserRequest then
-       PostMessage(FMainHandle, WM_SHOW_SPLASH, 0, 0);
+       SendMessage(FMainHandle, WM_SHOW_SPLASH, 0, LParam(FResponse));
   finally
-    FResponseCS.Leave;
     FCurVersionCS.Leave;
   end;
 end;

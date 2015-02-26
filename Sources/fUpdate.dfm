@@ -33,9 +33,9 @@ object UpdateForm: TUpdateForm
     ParentFont = False
     TabOrder = 0
     object btnUpdate: TButton
-      Left = 38
-      Top = 8
-      Width = 122
+      Left = 136
+      Top = 6
+      Width = 66
       Height = 27
       Caption = #1054#1073#1085#1086#1074#1080#1090#1100
       Font.Charset = DEFAULT_CHARSET
@@ -48,9 +48,9 @@ object UpdateForm: TUpdateForm
       OnClick = btnUpdateClick
     end
     object btnCancel: TButton
-      Left = 166
-      Top = 8
-      Width = 82
+      Left = 208
+      Top = 6
+      Width = 66
       Height = 27
       Caption = #1054#1090#1084#1077#1085#1080#1090#1100
       Font.Charset = DEFAULT_CHARSET
@@ -60,12 +60,12 @@ object UpdateForm: TUpdateForm
       Font.Style = []
       ParentFont = False
       TabOrder = 1
-      OnClick = btnCancelClick
+      OnClick = btnOkClick
     end
     object btnOk: TButton
-      Left = 254
-      Top = 8
-      Width = 82
+      Left = 280
+      Top = 6
+      Width = 56
       Height = 27
       Caption = 'OK'
       Font.Charset = DEFAULT_CHARSET
@@ -76,6 +76,15 @@ object UpdateForm: TUpdateForm
       ParentFont = False
       TabOrder = 2
       OnClick = btnOkClick
+    end
+    object btnIterrupt: TButton
+      Left = 55
+      Top = 6
+      Width = 75
+      Height = 27
+      Caption = #1055#1088#1077#1088#1074#1072#1090#1100
+      TabOrder = 3
+      OnClick = btnIterruptClick
     end
   end
   object Panel2: TPanel
@@ -339,6 +348,7 @@ object UpdateForm: TUpdateForm
     Width = 343
     Height = 231
     Align = alClient
+    DoubleBuffered = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -347,6 +357,7 @@ object UpdateForm: TUpdateForm
     Lines.Strings = (
       #1054#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1079#1072#1074#1077#1088#1096#1080#1090#1089#1103' '#1087#1086#1089#1083#1077' '#1087#1077#1088#1077#1079#1072#1087#1091#1089#1082#1072' '
       #1087#1088#1086#1075#1088#1072#1084#1084#1099'!')
+    ParentDoubleBuffered = False
     ParentFont = False
     ScrollBars = ssVertical
     TabOrder = 4
@@ -375,7 +386,7 @@ object UpdateForm: TUpdateForm
     Left = 272
     Top = 120
   end
-  object ZipForge1: TZipForge
+  object ZipForge: TZipForge
     ExtractCorruptedFiles = False
     CompressionLevel = clFastest
     CompressionMode = 1
