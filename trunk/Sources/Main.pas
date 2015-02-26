@@ -88,6 +88,8 @@ type
     LabelDot: TLabel;
     N11: TMenuItem;
     mnZP_OBJ: TMenuItem;
+    mnZP_OBJ_AKT: TMenuItem;
+    mnRASX_ACT: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -186,6 +188,8 @@ type
     procedure TimerUpdateTimer(Sender: TObject);
     procedure N10Click(Sender: TObject);
     procedure mnZP_OBJClick(Sender: TObject);
+    procedure mnZP_OBJ_AKTClick(Sender: TObject);
+    procedure mnRASX_ACTClick(Sender: TObject);
 
   private
     CountOpenWindows: integer;
@@ -919,6 +923,20 @@ begin
   ShowMessage(VarToStr(ShowEditExpression));
 end;
 
+//
+procedure TFormMain.mnRASX_ACTClick(Sender: TObject);
+begin
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+      begin
+        dmReportF.Report_RASX_MAT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
+      end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+
 procedure TFormMain.N13Click(Sender: TObject);
 begin
   FormCardPTM.Show;
@@ -1008,7 +1026,7 @@ begin
     FormSetCoefficients.Show;
 end;
 
-// גûחמג מעקועא (Âאהטל)
+// --> גûחמגû מעקועמג (Âאהטל)
 procedure TFormMain.mnZP_OBJClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
@@ -1024,6 +1042,20 @@ begin
     Screen.Cursor := crDefault;
   end;
 end;
+
+procedure TFormMain.mnZP_OBJ_AKTClick(Sender: TObject);
+begin
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+      begin
+        dmReportF.Report_ZP_OBJ_ACT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
+      end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+// <-- גûחמגû מעקועמג (Âאהטל)
 
 procedure TFormMain.MenuListsTypesActsClick(Sender: TObject);
 begin
