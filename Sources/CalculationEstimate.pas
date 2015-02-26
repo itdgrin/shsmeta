@@ -49,9 +49,9 @@ type
     SpeedButtonLocalEstimate: TSpeedButton;
     SpeedButtonSummaryCalculation: TSpeedButton;
     SpeedButtonSSR: TSpeedButton;
-    SpeedButtonDescription: TSpeedButton;
-    SpeedButtonMaterials: TSpeedButton;
-    SpeedButtonMechanisms: TSpeedButton;
+    btnDescription: TSpeedButton;
+    btnMaterials: TSpeedButton;
+    btnMechanisms: TSpeedButton;
 
     // ---------------------------
 
@@ -157,7 +157,7 @@ type
     PopupMenuTableLeftTechnicalPart4: TMenuItem;
     PopupMenuTableLeftTechnicalPart5: TMenuItem;
     PopupMenuTableLeftTechnicalPart6: TMenuItem;
-    SpeedButtonEquipments: TSpeedButton;
+    btnEquipments: TSpeedButton;
     BevelTopMenu: TBevel;
     SpeedButtonModeTables: TSpeedButton;
     PanelNoData: TPanel;
@@ -376,7 +376,7 @@ type
     dbmmoCAPTION: TDBMemo;
     qrDump: TFDQuery;
     dsDump: TDataSource;
-    SpeedButtonDump: TSpeedButton;
+    btnDump: TSpeedButton;
     dbgrdDump: TJvDBGrid;
     qrDumpID: TFDAutoIncField;
     qrDumpDUMP_NAME: TStringField;
@@ -407,8 +407,8 @@ type
     dbgrdDescription: TJvDBGrid;
     dbgrdRates: TJvDBGrid;
     qrRatesTRID: TIntegerField;
-    SpeedButtonTransp: TSpeedButton;
-    SpeedButtonStartup: TSpeedButton;
+    btnTransp: TSpeedButton;
+    btnStartup: TSpeedButton;
     qrTransp: TFDQuery;
     qrStartup: TFDQuery;
     dsTransp: TDataSource;
@@ -451,6 +451,7 @@ type
     dblkcbbOXROPR: TDBLookupComboBox;
     dsOXROPR: TDataSource;
     qrRatesWORK_ID: TIntegerField;
+    btn1: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -480,9 +481,9 @@ type
     procedure PopupMenuCoefDeleteSetClick(Sender: TObject);
 
     // Верхние правые кнопки
-    procedure SpeedButtonDescriptionClick(Sender: TObject);
-    procedure SpeedButtonMaterialsClick(Sender: TObject);
-    procedure SpeedButtonMechanismsClick(Sender: TObject);
+    procedure btnDescriptionClick(Sender: TObject);
+    procedure btnMaterialsClick(Sender: TObject);
+    procedure btnMechanismsClick(Sender: TObject);
 
     // Заполнаяет таблицы справа исходя из выбранной строки в таблице расценок
     procedure GridRatesRowSellect;
@@ -532,7 +533,7 @@ type
     procedure PanelTopMenuResize(Sender: TObject);
     procedure SettingVisibleRightTables;
     procedure PanelClientRightTablesResize(Sender: TObject);
-    procedure SpeedButtonEquipmentsClick(Sender: TObject);
+    procedure btnEquipmentsClick(Sender: TObject);
     procedure SpeedButtonModeTablesClick(Sender: TObject);
     procedure GetMonthYearCalculationEstimate;
     procedure GetSourceData;
@@ -607,12 +608,12 @@ type
     procedure dbgrdDevicesExit(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure PMAddDumpClick(Sender: TObject);
-    procedure SpeedButtonDumpClick(Sender: TObject);
+    procedure btnDumpClick(Sender: TObject);
     procedure qrDumpAfterScroll(DataSet: TDataSet);
     procedure PMDumpEditClick(Sender: TObject);
     procedure PMAddTranspClick(Sender: TObject);
-    procedure SpeedButtonTranspClick(Sender: TObject);
-    procedure SpeedButtonStartupClick(Sender: TObject);
+    procedure btnTranspClick(Sender: TObject);
+    procedure btnStartupClick(Sender: TObject);
     procedure qrTranspAfterScroll(DataSet: TDataSet);
     procedure qrStartupAfterScroll(DataSet: TDataSet);
     procedure qrTranspCalcFields(DataSet: TDataSet);
@@ -630,6 +631,7 @@ type
     procedure qrRatesAfterPost(DataSet: TDataSet);
     procedure PMMatDeleteClick(Sender: TObject);
     procedure qrRatesWORK_IDChange(Sender: TField);
+    procedure btn1Click(Sender: TObject);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -997,8 +999,6 @@ begin
     PanelSummaryCalculations.Visible := False;
     PanelSSR.Visible := False;
 
-    // -----------------------------------------
-
     // НАСТРОЙКА ВИДИМОСТИ НИЖНИХ ПАНЕЛЕЙ С КНОПКАМИ
 
     PanelButtonsLocalEstimate.Align := alNone;
@@ -1010,8 +1010,6 @@ begin
     PanelButtonsSSR.Visible := False;
 
     PanelButtonsLocalEstimate.Align := alClient;
-
-    // -----------------------------------------
 
     // Делаем кнопки верхнего правого меню активными
     BottomTopMenuEnabled(True);
@@ -1071,7 +1069,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.SpeedButtonTranspClick(Sender: TObject);
+procedure TFormCalculationEstimate.btnTranspClick(Sender: TObject);
 begin
   TestOnNoDataNew(qrTransp);
 
@@ -1126,7 +1124,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.SpeedButtonStartupClick(Sender: TObject);
+procedure TFormCalculationEstimate.btnStartupClick(Sender: TObject);
 begin
   TestOnNoDataNew(qrStartup);
 
@@ -1139,7 +1137,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.SpeedButtonMaterialsClick(Sender: TObject);
+procedure TFormCalculationEstimate.btnMaterialsClick(Sender: TObject);
 var
   s: string;
 begin
@@ -1163,7 +1161,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.SpeedButtonMechanismsClick(Sender: TObject);
+procedure TFormCalculationEstimate.btnMechanismsClick(Sender: TObject);
 var
   s: string;
 begin
@@ -1183,7 +1181,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.SpeedButtonEquipmentsClick(Sender: TObject);
+procedure TFormCalculationEstimate.btnEquipmentsClick(Sender: TObject);
 var
   s: string;
 begin
@@ -1204,7 +1202,16 @@ begin
 
 end;
 
-procedure TFormCalculationEstimate.SpeedButtonDescriptionClick(Sender: TObject);
+procedure TFormCalculationEstimate.btn1Click(Sender: TObject);
+begin
+  qrTemp.SQL.Text := 'CALL UpdateSmetaCosts(:IDESTIMATE);';
+  qrTemp.ParamByName('IDESTIMATE').AsInteger := IdEstimate;
+  qrTemp.ExecSQL;
+  qrRatesAfterScroll(qrRates);
+  CloseOpen(qrCalculations);
+end;
+
+procedure TFormCalculationEstimate.btnDescriptionClick(Sender: TObject);
 begin
   TestOnNoDataNew(qrDescription);
 
@@ -1217,7 +1224,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.SpeedButtonDumpClick(Sender: TObject);
+procedure TFormCalculationEstimate.btnDumpClick(Sender: TObject);
 begin
   TestOnNoDataNew(qrDump);
 
@@ -1251,13 +1258,13 @@ begin
       Hint := 'Режим одной таблицы';
       DM.ImageListModeTables.GetBitmap(0, SpeedButtonModeTables.Glyph);
       s := '1000000';
-      if SpeedButtonMechanisms.Down then
+      if btnMechanisms.Down then
         s := '0100000';
-      if SpeedButtonEquipments.Down then
+      if btnEquipments.Down then
         s := '0010000';
     end;
   end;
-  if not SpeedButtonDescription.Down then
+  if not btnDescription.Down then
   begin
     VisibleRightTables := s;
     SettingVisibleRightTables;
@@ -1362,29 +1369,29 @@ begin
   // ((Sender as TPanel).Width div 2 - 30 - OffsetCenter - SpeedButtonModeTables.Width) div 4;
   // 24 = 6 * 5 (расстояния: между 4 и 5, 5 и 6, 6 и 7, 7 и 8, и до конца формы)
 
-  SpeedButtonMaterials.Left := BevelTopMenu.Left + OffsetCenter;
-  SpeedButtonMaterials.Width := WidthButton;
+  btnMaterials.Left := BevelTopMenu.Left + OffsetCenter;
+  btnMaterials.Width := WidthButton;
 
-  SpeedButtonMechanisms.Left := SpeedButtonMaterials.Left + SpeedButtonMaterials.Width + 3;
-  SpeedButtonMechanisms.Width := WidthButton;
+  btnMechanisms.Left := btnMaterials.Left + btnMaterials.Width + 3;
+  btnMechanisms.Width := WidthButton;
 
-  SpeedButtonEquipments.Left := SpeedButtonMechanisms.Left + SpeedButtonMaterials.Width + 3;
-  SpeedButtonEquipments.Width := WidthButton;
+  btnEquipments.Left := btnMechanisms.Left + btnMaterials.Width + 3;
+  btnEquipments.Width := WidthButton;
 
-  SpeedButtonDescription.Left := SpeedButtonEquipments.Left + SpeedButtonEquipments.Width + 3;
-  SpeedButtonDescription.Width := WidthButton;
+  btnDescription.Left := btnEquipments.Left + btnEquipments.Width + 3;
+  btnDescription.Width := WidthButton;
 
-  SpeedButtonDump.Left := SpeedButtonDescription.Left + SpeedButtonDescription.Width + 3;
-  SpeedButtonDump.Width := WidthButton;
+  btnDump.Left := btnDescription.Left + btnDescription.Width + 3;
+  btnDump.Width := WidthButton;
 
-  SpeedButtonTransp.Left := SpeedButtonDump.Left + SpeedButtonDump.Width + 3;
-  SpeedButtonTransp.Width := WidthButton;
+  btnTransp.Left := btnDump.Left + btnDump.Width + 3;
+  btnTransp.Width := WidthButton;
 
-  SpeedButtonStartup.Left := SpeedButtonTransp.Left + SpeedButtonTransp.Width + 3;
-  SpeedButtonStartup.Width := WidthButton;
+  btnStartup.Left := btnTransp.Left + btnTransp.Width + 3;
+  btnStartup.Width := WidthButton;
 
   // Не используется пока
-  SpeedButtonModeTables.Left := SpeedButtonStartup.Left + SpeedButtonStartup.Width + 3;
+  SpeedButtonModeTables.Left := btnStartup.Left + btnStartup.Width + 3;
 
   MemoRight.Height := dbmmoCAPTION.Height;
 end;
@@ -1392,13 +1399,13 @@ end;
 // Делаем кнопки правой панели верхнего меню неактивными
 procedure TFormCalculationEstimate.BottomTopMenuEnabled(const Value: Boolean);
 begin
-  SpeedButtonDescription.Enabled := Value;
-  SpeedButtonMaterials.Enabled := Value;
-  SpeedButtonMechanisms.Enabled := Value;
-  SpeedButtonEquipments.Enabled := Value;
-  SpeedButtonDump.Enabled := Value;
-  SpeedButtonTransp.Enabled := Value;
-  SpeedButtonStartup.Enabled := Value;
+  btnDescription.Enabled := Value;
+  btnMaterials.Enabled := Value;
+  btnMechanisms.Enabled := Value;
+  btnEquipments.Enabled := Value;
+  btnDump.Enabled := Value;
+  btnTransp.Enabled := Value;
+  btnStartup.Enabled := Value;
 end;
 
 // Перерисовка изображений для сплиттеров
@@ -1522,7 +1529,7 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  if SpeedButtonDescription.Down then
+  if btnDescription.Down then
     MemoRight.Text := qrDescriptionwork.AsString;
 end;
 
@@ -1533,7 +1540,7 @@ begin
 
   if not ReCalcDev then
   begin
-    if SpeedButtonEquipments.Down then
+    if btnEquipments.Down then
       MemoRight.Text := qrDevicesDEVICE_NAME.AsString;
   end;
 end;
@@ -1555,7 +1562,7 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  if SpeedButtonDump.Down then
+  if btnDump.Down then
     MemoRight.Text := qrDumpDUMP_NAME.AsString;
 end;
 
@@ -1735,7 +1742,7 @@ begin
     IdReplasingMat := qrMaterialID.AsInteger;
     IsUnAcc := CheckMatUnAccountingMatirials;
 
-    if SpeedButtonMaterials.Down then
+    if btnMaterials.Down then
       MemoRight.Text := qrMaterialMAT_NAME.AsString;
 
     // Для красоты отрисовки
@@ -1868,7 +1875,7 @@ begin
     SetMechReadOnly(CheckMechReadOnly);
     dbgrdRates.Repaint;
 
-    if SpeedButtonMechanisms.Down then
+    if btnMechanisms.Down then
       MemoRight.Text := qrMechanizmMECH_NAME.AsString;
   end;
 end;
@@ -2393,7 +2400,7 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  if SpeedButtonStartup.Down then
+  if btnStartup.Down then
     MemoRight.Text := qrStartupRATE_CAPTION.AsString;
 end;
 
@@ -2402,7 +2409,7 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  if SpeedButtonTransp.Down then
+  if btnTransp.Down then
     MemoRight.Text := qrTranspTRANSP_JUST.AsString;
 end;
 
@@ -2971,22 +2978,22 @@ begin
     1: // РАСЦЕНКА
       begin
         // настройка кнопочек свержу справа, для расценок всегда выбирается "материалы"
-        SpeedButtonMaterials.Enabled := True;
-        SpeedButtonMechanisms.Enabled := True;
-        SpeedButtonDescription.Enabled := True;
+        btnMaterials.Enabled := True;
+        btnMechanisms.Enabled := True;
+        btnDescription.Enabled := True;
 
-        if SpeedButtonMaterials.Down or SpeedButtonEquipments.Down or SpeedButtonDump.Down or
-          SpeedButtonTransp.Down or SpeedButtonStartup.Down then
+        if btnMaterials.Down or btnEquipments.Down or btnDump.Down or btnTransp.Down or
+          btnStartup.Down then
         begin
-          SpeedButtonMaterials.Down := True;
-          SpeedButtonMaterialsClick(SpeedButtonMaterials);
+          btnMaterials.Down := True;
+          btnMaterialsClick(btnMaterials);
         end;
 
-        if SpeedButtonMechanisms.Down then
-          SpeedButtonMechanismsClick(SpeedButtonMechanisms);
+        if btnMechanisms.Down then
+          btnMechanismsClick(btnMechanisms);
 
-        if SpeedButtonDescription.Down then
-          SpeedButtonDescriptionClick(SpeedButtonDescription);
+        if btnDescription.Down then
+          btnDescriptionClick(btnDescription);
 
         // Средний разряд рабочих-строителей
         EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesIDID.AsInteger)));
@@ -2998,8 +3005,8 @@ begin
       end;
     2: // МАТЕРИАЛ
       begin
-        SpeedButtonMaterials.Enabled := True;
-        SpeedButtonMaterials.Down := True;
+        btnMaterials.Enabled := True;
+        btnMaterials.Down := True;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
@@ -3010,7 +3017,7 @@ begin
         end;
 
         // Нажимаем на кнопку материалов, для отображения таблицы материалов
-        SpeedButtonMaterialsClick(SpeedButtonMaterials);
+        btnMaterialsClick(btnMaterials);
 
         // Средний разряд рабочих-строителей
         if CheckMatINRates then
@@ -3031,14 +3038,14 @@ begin
       end;
     3: // МЕХАНИЗМ
       begin
-        SpeedButtonMechanisms.Enabled := True;
-        SpeedButtonMechanisms.Down := True;
+        btnMechanisms.Enabled := True;
+        btnMechanisms.Down := True;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
 
         // Нажимаем на кнопку механизмов, для отображения таблицы механизмов
-        SpeedButtonMechanismsClick(SpeedButtonMechanisms);
+        btnMechanismsClick(btnMechanisms);
 
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(qrRatesCODEINRATE.AsString);
@@ -3047,51 +3054,51 @@ begin
       end;
     4: // ОБОРУДОВАНИЕ
       begin
-        SpeedButtonEquipments.Enabled := True;
+        btnEquipments.Enabled := True;
         // BtnChange := True;
-        SpeedButtonEquipments.Down := True;
+        btnEquipments.Down := True;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
 
         // Нажимаем на кнопку оборудования, для отображения таблицы оборудования
-        SpeedButtonEquipmentsClick(SpeedButtonEquipments);
+        btnEquipmentsClick(btnEquipments);
       end;
     5: // Свалки
       begin
         PMEdit.Enabled := True;
-        SpeedButtonDump.Enabled := True;
+        btnDump.Enabled := True;
         // BtnChange := True;
-        SpeedButtonDump.Down := True;
+        btnDump.Down := True;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
 
         // Нажимаем на кнопку свалок, для отображения таблицы свалок
-        SpeedButtonDumpClick(SpeedButtonDump);
+        btnDumpClick(btnDump);
       end;
     6, 7, 8, 9: // Транспорт
       begin
         PMEdit.Enabled := True;
-        SpeedButtonTransp.Enabled := True;
+        btnTransp.Enabled := True;
         // BtnChange := True;
-        SpeedButtonTransp.Down := True;
+        btnTransp.Down := True;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
 
-        SpeedButtonTranspClick(SpeedButtonTransp);
+        btnTranspClick(btnTransp);
       end;
     10, 11: // Пуск и регулировка
       begin
-        SpeedButtonStartup.Enabled := True;
+        btnStartup.Enabled := True;
         // BtnChange := True;
-        SpeedButtonStartup.Down := True;
+        btnStartup.Down := True;
 
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
 
-        SpeedButtonStartupClick(SpeedButtonStartup);
+        btnStartupClick(btnStartup);
       end;
   end;
 end;
@@ -5168,14 +5175,14 @@ begin
 
     // Подсветка вынесенного и заменяющего материала за расценку материала
     // Вынесение за расценку имеет приоритет над заменой
-    if SpeedButtonMaterials.Down and qrMaterial.Active and (dbgrdMaterial = LastEntegGrd) then
+    if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = LastEntegGrd) then
     begin
       if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (qrRatesMID.AsInteger > 0) then
         Font.Style := Font.Style + [fsbold];
     end;
 
     // Подсветка вынесенного за расценку механизма
-    if SpeedButtonMechanisms.Down and qrMechanizm.Active and (dbgrdMechanizm = LastEntegGrd) then
+    if btnMechanisms.Down and qrMechanizm.Active and (dbgrdMechanizm = LastEntegGrd) then
     begin
       if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) and (qrRatesMEID.AsInteger > 0) then
         Font.Style := Font.Style + [fsbold];
