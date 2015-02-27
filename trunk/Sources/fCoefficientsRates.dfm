@@ -1,8 +1,9 @@
-object FrameCoefficientsRates: TFrameCoefficientsRates
+object FrameCoefficientsRates_TODEL: TFrameCoefficientsRates_TODEL
   Left = 0
   Top = 0
   Width = 600
   Height = 400
+  Hint = ' - '#1059#1044#1040#1051#1048#1058#1068
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -128,7 +129,6 @@ object FrameCoefficientsRates: TFrameCoefficientsRates
     OnFocusChanged = VSTFocusChanged
     OnGetText = VSTGetText
     OnResize = VSTResize
-    ExplicitLeft = 2
     Columns = <
       item
         Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]

@@ -9,7 +9,7 @@ uses
   FireDAC.Comp.Client;
 
 type
-  TFrameCoefficientsRates = class(TFrame)
+  TFrameCoefficientsRates_TODEL = class(TFrame)
 
     VST: TVirtualStringTree;
 
@@ -61,7 +61,7 @@ const
 
   // ---------------------------------------------------------------------------------------------------------------------
 
-constructor TFrameCoefficientsRates.Create(AOwner: TComponent);
+constructor TFrameCoefficientsRates_TODEL.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
@@ -71,7 +71,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameCoefficientsRates.TableFilling;
+procedure TFrameCoefficientsRates_TODEL.TableFilling;
 begin
   try
     with ADOQuery do
@@ -94,7 +94,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameCoefficientsRates.VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
+procedure TFrameCoefficientsRates_TODEL.VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
   Column: TColumnIndex; CellRect: TRect);
 var
   CellText: string;
@@ -114,7 +114,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameCoefficientsRates.VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas;
+procedure TFrameCoefficientsRates_TODEL.VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas;
   Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
 begin
   VSTBeforeCellPaintDefault(Sender, TargetCanvas, Node, Column, CellPaintMode, CellRect, ContentRect);
@@ -122,7 +122,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameCoefficientsRates.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
+procedure TFrameCoefficientsRates_TODEL.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
 begin
   VSTFocusChangedDefault(Sender, Node, Column);
 
@@ -154,7 +154,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameCoefficientsRates.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+procedure TFrameCoefficientsRates_TODEL.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
 begin
   if not ADOQuery.Active then
@@ -187,14 +187,14 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameCoefficientsRates.VSTResize(Sender: TObject);
+procedure TFrameCoefficientsRates_TODEL.VSTResize(Sender: TObject);
 begin
   AutoWidthColumn(VST, 1);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameCoefficientsRates.PMAddClick(Sender: TObject);
+procedure TFrameCoefficientsRates_TODEL.PMAddClick(Sender: TObject);
 begin
   FormCardCoefficients.ShowForm(-1, ADOQueryTemp);
   TableFilling;
@@ -202,7 +202,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameCoefficientsRates.PMEditClick(Sender: TObject);
+procedure TFrameCoefficientsRates_TODEL.PMEditClick(Sender: TObject);
 begin
   FormCardCoefficients.ShowForm(ADOQuery.FieldByName('coef_id').AsInteger, ADOQueryTemp);
   TableFilling;
@@ -210,7 +210,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFrameCoefficientsRates.PMDeleteClick(Sender: TObject);
+procedure TFrameCoefficientsRates_TODEL.PMDeleteClick(Sender: TObject);
 begin
   if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) then
   begin

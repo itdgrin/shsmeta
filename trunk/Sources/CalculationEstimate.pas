@@ -744,7 +744,7 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
   CalculationDump, SaveEstimate,
   ReplacementMaterial, Materials, AdditionData, CardMaterial, CardDataEstimate,
   ListCollections, CoefficientOrders, KC6,
-  CardAct, Tools;
+  CardAct, Tools, Coef;
 
 {$R *.dfm}
 
@@ -3158,7 +3158,7 @@ end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefAddSetClick(Sender: TObject);
 begin
-  FormCoefficients.ShowModal;
+  fCoefficients.ShowModal;
 end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefDeleteSetClick(Sender: TObject);

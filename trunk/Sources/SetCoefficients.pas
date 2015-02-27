@@ -27,7 +27,7 @@ implementation
 uses Main, fCoefficientsRates;
 
 var
-  FrameCoefficientsRates: TFrameCoefficientsRates;
+  FrameCoefficientsRates: TFrameCoefficientsRates_TODEL;
 
 {$R *.dfm}
 
@@ -73,7 +73,7 @@ begin
 
   Panel.Align := alClient;
 
-  FrameCoefficientsRates := TFrameCoefficientsRates.Create(Self);
+  FrameCoefficientsRates := TFrameCoefficientsRates_TODEL.Create(Self);
   with FrameCoefficientsRates do
   begin
     Parent := Panel;

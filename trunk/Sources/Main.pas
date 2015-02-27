@@ -475,11 +475,12 @@ begin
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   // путь к папке с отчетами (Вадим)
-  {$IFDEF DEBUG}
-  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName)) - 12) + 'Reports\';
-  {$ELSE}
+{$IFDEF DEBUG}
+  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
+    - 12) + 'Reports\';
+{$ELSE}
   FileReportPath := ExtractFilePath(Application.ExeName) + 'Reports\';
-  {$ENDIF}
+{$ENDIF}
 end;
 
 procedure TFormMain.FormResize(Sender: TObject);
@@ -1034,10 +1035,10 @@ begin
   Screen.Cursor := crSQLWait;
   try
     if FormObjectsAndEstimates.IdEstimate = 0 then
-      begin
-        ShowMessage('Не выбрана смета');
-        Exit;
-      end;
+    begin
+      showmessage('Не выбрана смета');
+      Exit;
+    end;
 
     dmReportF.Report_ZP_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
   finally
@@ -1239,7 +1240,7 @@ end;
 
 procedure TFormMain.FileSaveAsClick(Sender: TObject);
 begin
-  //FormCalculationEstimate.CopyEstimate;
+  // FormCalculationEstimate.CopyEstimate;
 end;
 
 procedure TFormMain.MenuConnectDatabaseClick(Sender: TObject);

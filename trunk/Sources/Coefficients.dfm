@@ -3,7 +3,7 @@ object FormCoefficients: TFormCoefficients
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
+  Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099' - '#1059#1044#1040#1051#1048#1058#1068
   ClientHeight = 418
   ClientWidth = 644
   Color = clBtnFace
