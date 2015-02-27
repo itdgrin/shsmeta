@@ -16,6 +16,9 @@ const
   UpdateServ = 'http://31.130.201.132:3000';
   //Адрес почты техподдержки
   SupportMail = 'd_grin@mail.ru';
+  //Настройки файла лагирования
+  LogDirName = 'logs';
+  LogFileName = 'update.log';
 
 type
   TLogFile = class(TObject)
@@ -54,8 +57,8 @@ type
 
   TNewVersion = record
     Version: integer;
-    Url: ShortString;
-    Comment: ShortString;
+    Url: string;
+    Comment: string;
   end;
   TNewVersionList = array of TNewVersion;
 
@@ -239,8 +242,9 @@ end;
 
 procedure TUpdateThread.GetLogName;
 begin
-  FLogFile.FileDir := ExtractFilePath(Application.ExeName) + 'logs';
-  FLogFile.FileName := 'update.log';
+  //В принципе обращаться к Application в потоке некрасиво
+  FLogFile.FileDir := ExtractFilePath(Application.ExeName) + LogDirName;
+  FLogFile.FileName := LogFileName;
 end;
 
 constructor TUpdateThread.Create(AVersion: TVersion;
@@ -271,11 +275,12 @@ end;
 
 destructor TUpdateThread.Destroy;
 begin
-  FResponse.Free;
-  FCurVersionCS.Free;
-  FUserBlokCS.Free;
-  FUREvent.Free;
-  FTermEvent.Free;
+  FreeAndNil(FResponse);
+  FreeAndNil(FCurVersionCS);
+  FreeAndNil(FUserBlokCS);
+  FreeAndNil(FUREvent);
+  FreeAndNil(FTermEvent);
+  FreeAndNil(FLogFile);
   inherited;
 end;
 
@@ -399,7 +404,7 @@ begin
     except
       on e: Exception do
       begin
-        FLogFile.Add(e.ClassName + ': ' + e.Message, 'pars XML mode');
+        FLogFile.Add(e.ClassName + ': ' + e.Message, 'Update Thread (pars XML mode)');
       end;
     end;
   finally
@@ -448,7 +453,7 @@ begin
     except
       on e: Exception do
       begin
-        FLogFile.Add(e.ClassName + ': ' + e.Message, 'get version mode');
+        FLogFile.Add(e.ClassName + ': ' + e.Message, 'Update Thread (get version mode)');
       end;
     end;
   finally
@@ -491,7 +496,7 @@ begin
   except
     on e: Exception do
     begin
-      FLogFile.Add(e.ClassName + ': ' + e.Message, 'execute mode');
+      FLogFile.Add(e.ClassName + ': ' + e.Message, 'Update Thread (execute mode)');
     end;
   end;
 end;

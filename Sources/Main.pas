@@ -196,7 +196,6 @@ type
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
     FUpdateThread: TUpdateThread; // Нить проверки обновлений
     SystemInfoResult: boolean;
-    LastResp: TServiceResponse;
 
     FCurVersion: TVersion; // текущая версия приложения и БД
     DebugMode: boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)

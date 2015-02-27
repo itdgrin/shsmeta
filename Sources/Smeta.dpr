@@ -1,5 +1,7 @@
 program Smeta;
 
+{$SETPEFlAGS $0001}
+
 uses
   Forms,
   Windows,
