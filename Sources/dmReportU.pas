@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Dialogs, Tools, DateUtils,
-  frxExportRTF, frxExportHTML, frxExportPDF;
+  frxExportRTF, frxExportHTML, frxExportPDF, frxExportText;
 
 type
   TdmReportF = class(TDataModule)
@@ -27,6 +27,7 @@ type
     frxPDFExport1: TfrxPDFExport;
     frxHTMLExport1: TfrxHTMLExport;
     frxRTFExport1: TfrxRTFExport;
+    frxSimpleTextExport1: TfrxSimpleTextExport;
   private
     { Private declarations }
   public

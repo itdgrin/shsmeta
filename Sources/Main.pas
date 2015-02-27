@@ -920,13 +920,18 @@ begin
   ShowMessage(VarToStr(ShowEditExpression));
 end;
 
-//
+// Расход материалов по акту
 procedure TFormMain.mnRASX_ACTClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
       begin
+        if FormObjectsAndEstimates.qrActsEx.IsEmpty then
+          begin
+            ShowMessage('Не выбран акт');
+            Exit;
+          end;
         dmReportF.Report_RASX_MAT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
       end;
   finally
@@ -1046,6 +1051,11 @@ begin
   try
     if Assigned(FormObjectsAndEstimates) then
       begin
+        if FormObjectsAndEstimates.qrActsEx.IsEmpty then
+          begin
+            ShowMessage('Не выбран акт');
+            Exit;
+          end;
         dmReportF.Report_ZP_OBJ_ACT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
       end;
   finally

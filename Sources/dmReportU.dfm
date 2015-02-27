@@ -37,8 +37,8 @@ object dmReportF: TdmReportF
     PreviewOptions.Zoom = 1.000000000000000000
     PrintOptions.Printer = 'Default'
     PrintOptions.PrintOnSheet = 0
-    ReportOptions.CreateDate = 42057.633543206000000000
-    ReportOptions.LastChange = 42061.070975057870000000
+    ReportOptions.CreateDate = 42048.002529965300000000
+    ReportOptions.LastChange = 42061.086144398150000000
     ScriptLanguage = 'PascalScript'
     StoreInDFM = False
     Left = 16
@@ -143,8 +143,10 @@ object dmReportF: TdmReportF
         'D`'
       '         '#9#9'      and nw.`WORK_ID` = 1 '
       'left join `category` as c on c.`VALUE` * 10 = nw.`NORMA` * 10 '
-      '                         and c.`MONAT` = :MONTH'
-      #9#9'         and c.`YEAR` = :YEAR'#9#9#9#9#9#9#9'   '
+      
+        '                         AND IFNULL(c.`DATE_BEG`, CONVERT('#39'1900-' +
+        '01-01'#39', DATE)) <= CONVERT(CONCAT(:YEAR,'#39'-'#39',:MONTH,'#39'-01'#39'), DATE) ' +
+        '   '
       ''
       'where da.`ID_ACT` = :ID_ACT and da.`ID_TYPE_DATA` = 1'
       'order by OBJ_NAME, LOCAL_NAME, PTM_NAME, RATE_CAPTION')
@@ -155,19 +157,19 @@ object dmReportF: TdmReportF
         Name = 'ID_ACT'
         DataType = ftString
         ParamType = ptInput
-        Value = '8'
-      end
-      item
-        Name = 'MONTH'
-        DataType = ftString
-        ParamType = ptInput
-        Value = '4'
+        Value = '10'
       end
       item
         Name = 'YEAR'
         DataType = ftString
         ParamType = ptInput
         Value = '2014'
+      end
+      item
+        Name = 'MONTH'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '4'
       end>
   end
   object qrRASX_MAT: TFDQuery
@@ -337,5 +339,17 @@ object dmReportF: TdmReportF
     AutoSize = False
     Left = 992
     Top = 160
+  end
+  object frxSimpleTextExport1: TfrxSimpleTextExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    DataOnly = False
+    Frames = False
+    EmptyLines = False
+    OEMCodepage = False
+    DeleteEmptyColumns = True
+    Left = 984
+    Top = 216
   end
 end
