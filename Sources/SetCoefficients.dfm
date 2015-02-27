@@ -1,7 +1,7 @@
 object FormSetCoefficients: TFormSetCoefficients
   Left = 0
   Top = 0
-  Caption = 'FormSetCoefficients'
+  Caption = ' - '#1059#1044#1040#1051#1048#1058#1068
   ClientHeight = 366
   ClientWidth = 592
   Color = clBtnFace

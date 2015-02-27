@@ -71,7 +71,7 @@ uses
   fSectionsEstimates in 'fSectionsEstimates.pas' {FrameSectionsEstimates: TFrame},
   fTypesWorks in 'fTypesWorks.pas' {FrameTypesWorks: TFrame},
   SetCoefficients in 'SetCoefficients.pas' {FormSetCoefficients},
-  fCoefficientsRates in 'fCoefficientsRates.pas' {FrameCoefficientsRates: TFrame},
+  fCoefficientsRates in 'fCoefficientsRates.pas' {FrameCoefficientsRates_TODEL: TFrame},
   Organizations in 'Organizations.pas' {FormOrganizations},
   fOrganizations in 'fOrganizations.pas' {FrameOrganizations: TFrame},
   SectionsEstimates in 'SectionsEstimates.pas' {FormSectionsEstimates},
@@ -103,8 +103,8 @@ uses
   CardPTM in 'CardPTM.pas' {FormCardPTM},
   fUpdate in 'fUpdate.pas' {UpdateForm},
   EditExpression in 'EditExpression.pas' {fEditExpression},
-  dmReportU in 'dmReportU.pas' {dmReportF: TDataModule};
-
+  dmReportU in 'dmReportU.pas' {dmReportF: TDataModule},
+  Coef in 'Coef.pas' {fCoefficients};
 
 {$R *.res}
 var MHandle: THandle;
@@ -159,6 +159,7 @@ begin
   Application.CreateForm(TFormKC6, FormKC6);
   Application.CreateForm(TFormCardPTM, FormCardPTM);
   Application.CreateForm(TdmReportF, dmReportF);
+  Application.CreateForm(TfCoefficients, fCoefficients);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€
