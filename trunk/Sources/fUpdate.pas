@@ -63,7 +63,10 @@ type
     FClientName: string; // Имя клиета
     FSendReport: boolean; // Необходимость отправлять отчет об ошибках обновления
 
-    FStopUpdateProc: Boolean;
+    FStopUpdateProc,
+    FErrorUpdateProc: Boolean;
+
+    FLogFile: TLogFile;
 
     procedure ShowUpdateStatys;
     procedure StartUpdate;
@@ -73,7 +76,7 @@ type
     function UpdateApp(const AUpdatePath: string): Boolean;
     procedure ShowStatys(const AStatysStr: string; AType: byte = 0);
     procedure SetButtonStyle(AStyle: Integer);
-    function CheckStopUpdate: Boolean;
+    function CheckUpdateProc: Boolean;
     { Private declarations }
   public
     //Устанавливает версии но не изменяет внешний вид
@@ -151,10 +154,7 @@ begin
       SMTP.Disconnect;
     except
       on e : Exception do
-      begin
-        //Сохранить ошибку в лог
-        raise e;
-      end;
+        ShowStatys(e.Message);
     end;
   finally
     Msg.Free;
@@ -175,7 +175,6 @@ end;
 procedure TUpdateForm.LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
 var LoadPath, UpdName: string;
     MStream: TMemoryStream;
-    AppResult: Boolean;
 begin
   LoadPath := ExtractFilePath(Application.ExeName) + 'Updates\';
   UpdName := copy(AUpdate.Url, 1, Pos('?',AUpdate.Url) - 1);
@@ -206,7 +205,7 @@ begin
       MStream.SaveToFile(LoadPath + UpdName);
       ShowStatys('Загружено успешно', 1);
 
-      if CheckStopUpdate then
+      if CheckUpdateProc then
         Exit;
 
       ShowStatys('Распаковка...');
@@ -220,29 +219,16 @@ begin
       DeleteFile(LoadPath + UpdName);
       ShowStatys('Распаковано успешно', 1);
 
-      if CheckStopUpdate then
+      if CheckUpdateProc then
         Exit;
 
       if AType in [0,1] then
       begin
         ShowStatys('Установка...');
+
         if not ExecSqlScript(LoadPath, AUpdate, AType) then
-        begin
-          ShowStatys('Не удалось выполнить скрипт!');
-          //Если установлен флаг отправляется отчет об ошибках
-          if FSendReport then
-          begin
-            ShowStatys('Отправка отчета об ошибках в техподдержку');
-            if (AType = 0) then
-              SqlErrorList.Insert(0, 'Обновление справочников №' +
-                IntToStr(AUpdate.Version))
-            else
-              SqlErrorList.Insert(0, 'Обновление пользовательских таблиц №' +
-                IntToStr(AUpdate.Version));
-            SendErrorReport;
-            raise Exception.Create('');
-          end;
-        end;
+          raise Exception.Create('Не удалось выполнить скрипт!');
+
         ShowStatys('Установлено успешно', 1);
       end
       else
@@ -253,8 +239,29 @@ begin
     except
       on e: Exception do
       begin
-        FStopUpdateProc := True;
+        FLogFile.Add(e.ClassName + ': ' + e.Message,
+          'Update Form (Type=' + IntToStr(Atype) +
+          '; Vers=' + IntToStr(AUpdate.Version) + ')');
+        FErrorUpdateProc := True;
         ShowStatys(e.Message);
+
+        SqlErrorList.Insert(0, e.Message);
+        //Если установлен флаг отправляется отчет об ошибках
+        if FSendReport then
+        begin
+          ShowStatys('Отправка отчета об ошибках в техподдержку');
+          case AType of
+          0: SqlErrorList.Insert(0, 'Обновление справочников №' +
+            IntToStr(AUpdate.Version));
+          1: SqlErrorList.Insert(0, 'Обновление пользовательских таблиц №' +
+              IntToStr(AUpdate.Version));
+          2: SqlErrorList.Insert(0, 'Обновление приложения №' +
+              IntToStr(AUpdate.Version));
+          end;
+
+          SendErrorReport;
+        end;
+
         ShowStatys('');
         ShowStatys('Обновление завершилось ошибкой!');
       end;
@@ -390,10 +397,10 @@ begin
   end;
 end;
 
-function TUpdateForm.CheckStopUpdate: Boolean;
+function TUpdateForm.CheckUpdateProc: Boolean;
 begin
    Application.ProcessMessages;
-   Result := FStopUpdateProc;
+   Result := FStopUpdateProc or FErrorUpdateProc;
 end;
 
 procedure TUpdateForm.StartUpdate;
@@ -402,6 +409,7 @@ begin
   StartUpdater := False;
   UpdatePath := '';
   FStopUpdateProc := False;
+  FErrorUpdateProc := False;
   NewAppVersion := IntToStr(FCurVersion.App);
 
   //Перед началом обновлений папка полностью очищается
@@ -419,14 +427,17 @@ begin
 
     for i := 0 to FSR.CatalogCount - 1 do
     begin
-      if CheckStopUpdate then
+      if CheckUpdateProc then
         Break;
       LoadAndSetUpdate(FSR.CatalogList[i], 0);
     end;
-    if FStopUpdateProc then
+    if CheckUpdateProc then
     begin
-      ShowStatys('');
-      ShowStatys('Обновление прервано!');
+      if FStopUpdateProc then
+      begin
+        ShowStatys('');
+        ShowStatys('Обновление прервано!');
+      end;
       Exit;
     end;
 
@@ -440,15 +451,18 @@ begin
 
     for i := 0 to FSR.UserCount - 1 do
     begin
-      if CheckStopUpdate then
+      if CheckUpdateProc then
         Break;
       LoadAndSetUpdate(FSR.UserList[i], 1);
     end;
 
-    if FStopUpdateProc then
+    if CheckUpdateProc then
     begin
-      ShowStatys('');
-      ShowStatys('Обновление прервано!');
+      if FStopUpdateProc then
+      begin
+        ShowStatys('');
+        ShowStatys('Обновление прервано!');
+      end;
       Exit;
     end;
 
@@ -458,23 +472,27 @@ begin
   if FSR.AppCount > 0 then
   begin
     ShowStatys('');
-    ShowStatys('***Обновление приложения***');
+    ShowStatys('***Обновление программы***');
 
     for i := 0 to FSR.AppCount - 1 do
     begin
-      if CheckStopUpdate then
+      if CheckUpdateProc then
         Break;
       LoadAndSetUpdate(FSR.AppList[i], 2);
     end;
 
-    if FStopUpdateProc then
+    if CheckUpdateProc then
     begin
-      ShowStatys('');
-      ShowStatys('Обновление прервано!');
+      if FStopUpdateProc then
+      begin
+        ShowStatys('');
+        ShowStatys('Обновление прервано!');
+      end;
       Exit;
     end;
+
     if not StartUpdater then
-      ShowStatys('***Приложение обновлено***');
+      ShowStatys('***Программа обновлена***');
   end;
 
   if StartUpdater then
@@ -560,7 +578,6 @@ end;
 
 //Устанавливает внешний вид окна обновления
 procedure TUpdateForm.ShowUpdateStatys;
-var Style : integer;
 begin
   //Текущая версия
   label2.Caption := 'Текущая версия программы: ' + IntToStr(FCurVersion.App);
@@ -578,7 +595,7 @@ begin
       ShowStatys('Доступны новые обновления на сервере:');
 
       if FCurVersion.App < FSR.AppVersion then
-        ShowStatys('верся приложения :' + IntToStr(FSR.AppVersion));
+        ShowStatys('верся программы :' + IntToStr(FSR.AppVersion));
 
       if FCurVersion.Catalog < FSR.CatalogVersion then
         ShowStatys('верся справочников :' +
@@ -618,12 +635,18 @@ begin
   FCurVersion.Clear;
   FSR := TServiceResponse.Create;
   SqlErrorList := TStringList.Create;
+
+  FLogFile := TLogFile.Create;
+  FLogFile.Active := true;
+  FLogFile.FileDir := ExtractFilePath(Application.ExeName) + LogDirName;
+  FLogFile.FileName := LogFileName;
 end;
 
 procedure TUpdateForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FSR);
   FreeAndNil(SqlErrorList);
+  FreeAndNil(FLogFile);
 end;
 
 procedure TUpdateForm.FormShow(Sender: TObject);
