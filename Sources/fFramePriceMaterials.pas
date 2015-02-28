@@ -6,7 +6,8 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   VirtualTrees, fFrameStatusBar, DateUtils, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta,
+  system.AnsiStrings,dialogs ;  //vk
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -237,6 +238,10 @@ procedure TFramePriceMaterial.ReceivingSearch(vStr: String);
 var
   WhereStr: string;
   StrQuery: string;
+  t:TStringList;             //vk
+  i:integer;                 //vk
+  poisk,param1:string;       //vk
+  region_id:integer;         //vk
 begin
   if vStr <> '' then
     WhereStr := ' and ' + vStr
@@ -244,8 +249,25 @@ begin
     WhereStr := '';
 
   try
+    //vk
+    poisk:=EditSearch.Text ;
 
+    poisk:=EditSearch.Text ;
+    t:=TStringList.create;
+    t.text:=stringReplace(poisk,' ',#13#10,[rfReplaceAll]);
+    param1 :='';
+    poisk  :='';
+    for i := 0 to t.Count-1 do
+    begin
+       poisk  := poisk+' UPPER(TRIM(material.mat_name))  LIKE  ''%'+UPPERCASE(TRIM(t[i]))+'%'' or';    //vk
+       param1 := param1+'(UPPER(TRIM(material.mat_name)) LIKE "%'  +UPPERCASE(TRIM(t[i]))+'%" )+';
+    end;
+    poisk  := LeftStr(poisk, length(poisk)-3);
+    param1 := LeftStr(param1,length(param1)-1);
+    //vk
     if PriceColumn then
+    begin
+    if EditSearch.Text ='' then
       StrQuery := 'SELECT material.material_id as "MatId", mat_code as "Code", ' +
         'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
         'units.unit_id as "UnitId", coast1_1 as "PriceVAT1", ' +
@@ -260,10 +282,39 @@ begin
         + '.material_id) ' + 'and (not mat_code like "Ï%") and (year=:y1) and (monat=:m1)' + WhereStr +
         ' ORDER BY mat_code, mat_name ASC;'
     else
-      StrQuery := 'SELECT material_id as "MatId", mat_code as "Code", ' +
+        StrQuery := 'SELECT material.material_id as "MatId", mat_code as "Code", ' +
+        'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
+        ' (' +param1+ ') as ORDER_F, '+
+        'units.unit_id as "UnitId", coast1_1 as "PriceVAT1", ' +
+        'coast1_2 as "PriceNotVAT1", coast2_1 "PriceVAT2", ' +
+        'coast2_2 as "PriceNotVAT2", coast3_1 as "PriceVAT3", ' +
+        'coast3_2 as "PriceNotVAT3", coast4_1 "PriceVAT4", ' +
+        'coast4_2 as "PriceNotVAT4", coast5_1 as "PriceVAT5", ' +
+        'coast5_2 as "PriceNotVAT5", coast6_1 "PriceVAT6", ' +
+        'coast6_2 as "PriceNotVAT6", coast7_1 as "PriceVAT7", ' +
+        'coast7_2 as "PriceNotVAT7", year, monat FROM material, units, ' + 'materialcoast' + DataBase +
+        ' WHERE (material.unit_id = units.unit_id) ' + 'and (material.material_id = materialcoast' + DataBase
+        + '.material_id) ' + 'and (not mat_code like "Ï%") and (year=:y1) and (monat=:m1)' + WhereStr +
+        ' and (' +poisk+') ORDER BY ORDER_F DESC, mat_code, mat_name ASC;'
+    end
+    else
+    begin
+        if EditSearch.Text ='' then
+        StrQuery := 'SELECT material_id as "MatId", mat_code as "Code", ' +
         'cast(mat_name as char(1024)) as "Name", unit_name as "Unit" ' +
         'FROM material, units WHERE (material.unit_id = units.unit_id) ' + 'and (not mat_code LIKE "Ï%")' +
-        WhereStr + ' ORDER BY mat_code, mat_name ASC;';
+        WhereStr + ' ORDER BY mat_code, mat_name ASC;'
+        else
+       //vk
+        StrQuery := 'SELECT material_id as "MatId", mat_code as "Code", ' +
+        'cast(mat_name as char(1024)) as "Name", unit_name as "Unit" ,'+
+        ' (' +param1+ ') as ORDER_F '+
+        'FROM material, units WHERE (material.unit_id = units.unit_id) ' + 'and (not mat_code LIKE "Ï%")' +
+        WhereStr +' and (' +poisk+') ORDER BY ORDER_F DESC,mat_code, mat_name ASC;';
+        //vk
+    end;
+
+
 
     with ADOQuery do
     begin
