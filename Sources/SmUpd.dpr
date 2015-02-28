@@ -10,6 +10,7 @@ uses
   ShellAPI,
   IniFiles;
 
+
 var MHandle: THandle;
     i: integer;
     TmpFiles: TStringDynArray;
