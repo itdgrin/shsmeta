@@ -38,7 +38,7 @@ object dmReportF: TdmReportF
     PrintOptions.Printer = 'Default'
     PrintOptions.PrintOnSheet = 0
     ReportOptions.CreateDate = 42048.002529965300000000
-    ReportOptions.LastChange = 42061.086144398150000000
+    ReportOptions.LastChange = 42063.602486608800000000
     ScriptLanguage = 'PascalScript'
     StoreInDFM = False
     Left = 16
@@ -326,16 +326,20 @@ object dmReportF: TdmReportF
     Top = 160
   end
   object frxRTFExport1: TfrxRTFExport
+    FileName = 'test.rtf'
     UseFileCache = True
+    DefaultPath = '..\Doc\'
     ShowProgress = True
     OverwritePrompt = True
     DataOnly = False
     PictureType = gpPNG
+    ExportPageBreaks = False
+    ExportPictures = False
     OpenAfterExport = True
     Wysiwyg = True
     Creator = 'FastReport'
     SuppressPageHeadersFooters = True
-    HeaderFooterMode = hfPrint
+    HeaderFooterMode = hfText
     AutoSize = False
     Left = 992
     Top = 160
