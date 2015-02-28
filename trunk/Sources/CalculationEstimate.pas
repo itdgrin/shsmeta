@@ -637,7 +637,6 @@ type
     RowCoefDefault: Boolean;
 
     IdObject: Integer;
-    IdEstimate: Integer;
     NDSEstimate: Boolean; // Расчет  с НДС или без
 
     MonthEstimate: Integer;
@@ -702,6 +701,7 @@ type
   public
     Act: Boolean;
     IdAct: Integer;
+    IdEstimate: Integer;
     // CountCoef : Integer;
     ConfirmCloseForm: Boolean;
     function GetCountCoef(): Integer;

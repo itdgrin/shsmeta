@@ -1033,13 +1033,27 @@ procedure TFormMain.mnZP_OBJClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if FormObjectsAndEstimates.IdEstimate = 0 then
-    begin
-      showmessage('Не выбрана смета');
-      Exit;
-    end;
-
-    dmReportF.Report_ZP_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+    if Assigned(FormObjectsAndEstimates) then
+      begin
+        if FormObjectsAndEstimates.IdEstimate = 0 then
+          begin
+            ShowMessage('Не выбрана смета');
+            Exit;
+          end;
+        dmReportF.Report_ZP_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      end
+    else
+      begin
+        if Assigned(FormCalculationEstimate) then
+          begin
+            if FormCalculationEstimate.IdEstimate = 0 then
+              begin
+                ShowMessage('Не выбрана смета');
+                Exit;
+              end;
+            dmReportF.Report_ZP_OBJ(FormCalculationEstimate.IdEstimate, FileReportPath);
+          end;
+      end;
   finally
     Screen.Cursor := crDefault;
   end;
