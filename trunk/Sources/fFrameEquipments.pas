@@ -6,7 +6,8 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   VirtualTrees, fFrameStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta,
+  system.AnsiStrings,dialogs ;  //vk
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -135,15 +136,43 @@ procedure TFrameEquipment.ReceivingSearch(vStr: String);
 var
   WhereStr: string;
   StrQuery: string;
+  t:TStringList;             //vk
+  i:integer;                 //vk
+  poisk,param1:string;       //vk
+  region_id:integer;         //vk
 begin
-  if vStr <> '' then
-    WhereStr := ' and ' + vStr
-  else
-    vStr := '';
+    if vStr <> '' then
+      WhereStr := ' and ' + vStr
+    else
+     vStr := '';
 
-  StrQuery := 'SELECT id as "Idd", device_id as "Id", device_code1 as "Code", ' +
+
+   //vk
+    poisk:=EditSearch.Text ;
+
+    poisk:=EditSearch.Text ;
+    t:=TStringList.create;
+    t.text:=stringReplace(poisk,' ',#13#10,[rfReplaceAll]);
+    param1 :='';
+    poisk  :='';
+    for i := 0 to t.Count-1 do
+    begin
+       poisk  := poisk+'  UPPER(TRIM(devices.name)) LIKE  ''%'+UPPERCASE(TRIM(t[i]))+'%'' or';    //vk
+       param1 := param1+'(UPPER(TRIM(devices.name)) LIKE "%'  +UPPERCASE(TRIM(t[i]))+'%" )+';
+    end;
+    poisk  := LeftStr(poisk, length(poisk)-3);
+    param1 := LeftStr(param1,length(param1)-1);
+    //vk
+    if EditSearch.Text ='' then
+    StrQuery := 'SELECT id as "Idd", device_id as "Id", device_code1 as "Code", ' +
     'name as "Name", units.unit_name as "Unit" FROM devices, units ' + 'WHERE (devices.unit = units.unit_id)'
-    + WhereStr + ' ORDER BY device_code1, name ASC';
+    + WhereStr + ' ORDER BY device_code1, name ASC'
+    else
+    StrQuery := 'SELECT id as "Idd", device_id as "Id", device_code1 as "Code", ' +
+    'name as "Name", units.unit_name as "Unit",'+
+    ' (' +param1+ ') as ORDER_F '+
+    'FROM devices, units ' + 'WHERE (devices.unit = units.unit_id)'
+    + WhereStr + ' and (' +poisk+ ') ORDER BY device_code1, name ASC' ;
 
   with ADOQuery do
   begin
