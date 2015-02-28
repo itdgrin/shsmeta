@@ -7,7 +7,8 @@ uses
   ExtCtrls, Menus, Clipbrd, DB, VirtualTrees, fFrameStatusBar, DateUtils,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async,
-  FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
+  FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta,
+  system.AnsiStrings,dialogs ;//vk
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -224,6 +225,11 @@ procedure TFramePriceMechanizm.ReceivingSearch(vStr: String);
 var
   WhereStr: string;
   FilterStr, StrQuery: string;
+  t:TStringList;            //vk
+  i:integer;                //vk
+  poisk,param1:string;      //vk
+  region_id:integer;        //vk
+
 begin
   if (StrFilterData <> '') and (vStr <> '') then
     FilterStr := StrFilterData + ' and ' + vStr
@@ -238,19 +244,60 @@ begin
     WhereStr := '';
 
   try
+    //vk
+    poisk:=EditSearch.Text ;
+    t:=TStringList.create;
+    t.text:=stringReplace(poisk,' ',#13#10,[rfReplaceAll]);
+    param1 :='';
+    poisk  :='';
+    for i := 0 to t.Count-1 do
+    begin
+       poisk  := poisk+' UPPER(TRIM(mechanizm.mech_name))  LIKE  ''%'+UPPERCASE(TRIM(t[i]))+'%'' or';    //vk
+       param1 := param1+'(UPPER(TRIM(mechanizm.mech_name)) LIKE "%'  +UPPERCASE(TRIM(t[i]))+'%" )+';
+    end;
+    poisk  := LeftStr(poisk, length(poisk)-3);
+    param1 := LeftStr(param1,length(param1)-1);
+    //vk
+
+
     if PriceColumn then
-      StrQuery := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
+    begin
+    if EditSearch.Text ='' then
+        StrQuery := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
         'cast(mech_name as char(1024)) as "Name", unit_name as "Unit", ' +
-        'coast1 "PriceVAT", coast2 as "PriceNotVAT", monat, year ' + 'FROM mechanizm, units, mechanizmcoast' +
+        'coast1 as "PriceVAT", coast2 as "PriceNotVAT", monat, year ' + 'FROM mechanizm, units, mechanizmcoast' +
         DataBase + ' WHERE (mechanizm.unit_id = units.unit_id) and ' +
         '(mechanizm.mechanizm_id = mechanizmcoast' + DataBase + '.mechanizm_id)' + WhereStr +
-        ' ORDER BY mech_code, mech_name ASC' + ';'
+        ' ORDER BY mech_code, mech_name ASC' + ' ;'
+     else
+      //vk
+      StrQuery:= 'SELECT   mechanizm.mechanizm_id as "Id",mechanizm.mech_code as "Code",cast(mech_name as char(1024)) as "Name",units.unit_name as "Unit",'+
+                 ' coast1 as "PriceVAT", coast2 as "PriceNotVAT", monat, year, '+
+                 ' (' +param1+ ') as ORDER_F '+
+                 ' FROM  mechanizm '+
+                 ' left  join  units on mechanizm.unit_id = units.unit_id' +
+                 ' LEFT OUTER JOIN mechanizmcoast' + DataBase + '  ON mechanizmcoast' + DataBase + '.mechanizm_id = mechanizm.mechanizm_id'+
+                 ' WHERE '+poisk+' ORDER BY ORDER_F DESC, mech_name LIMIT 20';
+      //vk
+
+    end
     else
-      StrQuery := 'SELECT mechanizm_id as "Id", mech_code as "Code", ' +
+    begin
+     //vk
+     if EditSearch.Text ='' then
+     StrQuery := 'SELECT mechanizm_id as "Id", mech_code as "Code", ' +
         'cast(mech_name as char(1024)) as "Name", unit_name as "Unit" ' +
         'FROM mechanizm, units WHERE (mechanizm.unit_id = units.unit_id)' + WhereStr +
-        ' ORDER BY mech_code, mech_name ASC;';
-
+        ' ORDER BY mech_code, mech_name ASC ;'
+     else
+     StrQuery:= ' SELECT mechanizm.mechanizm_id as "Id",mech_code as "Code",cast(mech_name as char(1024)) as "Name",units.unit_name as "Unit",'+
+                ' (' +param1+ ') as ORDER_F '+
+                ' FROM  mechanizm '+
+                ' left  join  units on mechanizm.unit_id = units.unit_id' +
+                ' WHERE '+poisk+' ORDER BY ORDER_F DESC, mech_name LIMIT  20;';
+     //vk
+    end;
+    vst.Visible:=false;
     with ADOQuery do
     begin
       Active := False;
@@ -286,6 +333,7 @@ begin
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
         CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+  vst.Visible:=true;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -302,7 +350,11 @@ procedure TFramePriceMechanizm.EditSearchKeyPress(Sender: TObject; var Key: Char
 begin
   with (Sender as TEdit) do
     if (Key = #13) and (Text <> '') then // Если нажата клавиша "Enter" и строка поиска не пуста
-      ReceivingSearch(FilteredString(Text, 'mech_name'))
+    begin
+      ReceivingSearch(FilteredString(Text, 'mech_name')) ;
+      EditSearch.SelStart :=0;
+      EditSearch.SelLength:=Length(Text);
+    end
     else if (Key = #27) or ((Key = #13) and (Text = '')) then
     // Нажата клавиша ESC, или Enter и строка поиска пуста
     begin
@@ -319,6 +371,7 @@ end;
 
 procedure TFramePriceMechanizm.FrameEnter(Sender: TObject);
 begin
+
   EditSearch.SetFocus;
 
   if not ADOQuery.Active then
