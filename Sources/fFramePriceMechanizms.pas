@@ -277,7 +277,7 @@ begin
                  ' FROM  mechanizm '+
                  ' left  join  units on mechanizm.unit_id = units.unit_id' +
                  ' LEFT OUTER JOIN mechanizmcoast' + DataBase + '  ON mechanizmcoast' + DataBase + '.mechanizm_id = mechanizm.mechanizm_id'+
-                 ' WHERE '+poisk+' ORDER BY ORDER_F DESC, mech_name LIMIT 20';
+                 ' WHERE '+poisk+' ORDER BY ORDER_F DESC, mech_name ;';
       //vk
 
     end
@@ -294,7 +294,7 @@ begin
                 ' (' +param1+ ') as ORDER_F '+
                 ' FROM  mechanizm '+
                 ' left  join  units on mechanizm.unit_id = units.unit_id' +
-                ' WHERE '+poisk+' ORDER BY ORDER_F DESC, mech_name LIMIT  20;';
+                ' WHERE '+poisk+' ORDER BY ORDER_F DESC, mech_name ;';
      //vk
     end;
     vst.Visible:=false;
