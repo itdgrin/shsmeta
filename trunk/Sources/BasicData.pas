@@ -39,7 +39,7 @@ type
     LabelK41: TLabel;
     Bevel5: TBevel;
     LabelDump: TLabel;
-    DBLookupComboBoxDump: TDBLookupComboBox;
+    dblkcbbDump: TDBLookupComboBox;
     DBLookupComboBoxRegionDump: TDBLookupComboBox;
     dsDump: TDataSource;
     pmTransport: TPopupMenu;
@@ -71,6 +71,10 @@ type
     dsMAIS: TDataSource;
     dblkcbbMAIS: TDBLookupComboBox;
     lbl5: TLabel;
+    bvl1: TBevel;
+    qrSmeta: TFDQuery;
+    dsSmeta: TDataSource;
+    updSmeta: TFDUpdateSQL;
 
     procedure FormShow(Sender: TObject);
 
@@ -104,7 +108,7 @@ var
 
 implementation
 
-uses Main, DataModule, CalculationEstimate;
+uses Main, DataModule, CalculationEstimate, Tools;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -114,18 +118,7 @@ var
   IdStavka: Integer;
 begin
   CanClose := False;
-  IdStavka := -1;
-  with qrTMP do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT stavka_id FROM stavka WHERE year = :year and monat = :monat;');
-    ParamByName('year').Value := edtYear.Value;
-    ParamByName('monat').Value := ComboBoxMonth.ItemIndex + 1;
-    Active := True;
-    if not Eof then
-      IdStavka := FieldByName('stavka_id').AsInteger;
-  end;
+  //IdStavka := -1;
 
   with qrTMP do
   begin
@@ -152,6 +145,7 @@ procedure TFormBasicData.FormCreate(Sender: TObject);
 begin
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
+  CloseOpen(qrMAIS);
 end;
 
 procedure TFormBasicData.FormShow(Sender: TObject);
@@ -159,6 +153,9 @@ var
   IdStavka: String;
   vDate: TDate;
 begin
+  qrSmeta.ParamByName('IdEstimate').AsInteger := IdEstimate;
+  CloseOpen(qrSmeta);
+
   with qrTMP do
   begin
     Active := False;
@@ -309,6 +306,9 @@ var
   IdStavka: Integer;
 begin
   try
+    if qrSmeta.State in [dsEdit, dsInsert] then
+      qrSmeta.Post;
+
     IdStavka := -1;
     with qrTMP do
     begin
@@ -348,7 +348,7 @@ begin
       ParamByName('k34').Value := EditK34.Text;
       ParamByName('kzp').Value := edtKZP.Text;
       ParamByName('nds').Value := ComboBoxVAT.ItemIndex;
-      ParamByName('dump_id').Value := DBLookupComboBoxDump.KeyValue;
+      ParamByName('dump_id').Value := dblkcbbDump.KeyValue;
       ParamByName('sm_id').Value := IdEstimate;
 
       ExecSQL;
@@ -402,7 +402,7 @@ end;
 
 procedure TFormBasicData.DBLookupComboBoxRegionDumpClick(Sender: TObject);
 begin
-  with qrDump, DBLookupComboBoxDump do
+  with qrDump, dblkcbbDump do
   begin
     Active := False;
     SQL.Clear;

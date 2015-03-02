@@ -241,7 +241,6 @@ var
   t:TStringList;             //vk
   i:integer;                 //vk
   poisk,param1:string;       //vk
-  region_id:integer;         //vk
 begin
   if vStr <> '' then
     WhereStr := ' and ' + vStr
@@ -262,8 +261,8 @@ begin
        poisk  := poisk+' UPPER(TRIM(material.mat_name))  LIKE  ''%'+UPPERCASE(TRIM(t[i]))+'%'' or';    //vk
        param1 := param1+'(UPPER(TRIM(material.mat_name)) LIKE "%'  +UPPERCASE(TRIM(t[i]))+'%" )+';
     end;
-    poisk  := LeftStr(poisk, length(poisk)-3);
-    param1 := LeftStr(param1,length(param1)-1);
+    poisk  := string(LeftStr(AnsiString(poisk), length(poisk)-3));
+    param1 := string(LeftStr(AnsiString(param1),length(param1)-1));
     //vk
     if PriceColumn then
     begin
