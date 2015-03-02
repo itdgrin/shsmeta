@@ -10,7 +10,6 @@ uses
   ShellAPI,
   IniFiles;
 
-
 var MHandle: THandle;
     i: integer;
     TmpFiles: TStringDynArray;
@@ -77,8 +76,8 @@ begin
             Append(TxFile)
           else
             Rewrite(TxFile);
-          writeln(TxFile, '[' + DateToStr(Date) + ' : ' +
-            ExtractFileName(ParamStr(0)) + '] ' +
+          writeln(TxFile, '[' + DateToStr(Date) + ' : SmUpd (' +
+            ExtractFileName(ParamStr(0)) + ')] ' +
             e.ClassName + ': ' + e.Message);
           CloseFile(TxFile);
         end;

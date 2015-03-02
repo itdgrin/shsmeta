@@ -5,7 +5,8 @@ interface
 uses
   Classes, Windows, Messages, SysUtils, Variants, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
-  ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, Vcl.Imaging.pngimage;
+  ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, ArhivModule,
+  Vcl.Imaging.pngimage;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
@@ -190,6 +191,7 @@ type
     procedure mnZP_OBJClick(Sender: TObject);
     procedure mnZP_OBJ_AKTClick(Sender: TObject);
     procedure mnRASX_ACTClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
 
   private
     CountOpenWindows: integer;
@@ -201,6 +203,8 @@ type
     DebugMode: boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
     FileReportPath: string; // путь к папке с отчетами(дабы не захламлять датамодуль лишними модулями)
+    //Объект отвечает за создание бэкапов и их восстановление
+    Arhiv: TBaseAppArhiv;
 
     procedure GetSystemInfo;
     procedure OnUpdate(var Mes: TMessage); message WM_SHOW_SPLASH;
@@ -473,6 +477,9 @@ begin
 
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
+  //Объект для управления архивом
+  Arhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName) + ArhivLocalDir);
+ // Arhiv.CreateNewArhiv;
   // путь к папке с отчетами (Вадим)
 {$IFDEF DEBUG}
   FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
@@ -480,6 +487,17 @@ begin
 {$ELSE}
   FileReportPath := ExtractFilePath(Application.ExeName) + 'Reports\';
 {$ENDIF}
+end;
+
+procedure TFormMain.FormDestroy(Sender: TObject);
+begin
+  if Assigned(FUpdateThread) then
+  begin //Выполнить Terminate обязательно так как он переопределен
+    FUpdateThread.Terminate;
+    FUpdateThread.WaitFor;
+    FreeAndNil(FUpdateThread);
+  end;
+  FreeAndNil(Arhiv);
 end;
 
 procedure TFormMain.FormResize(Sender: TObject);
@@ -1046,12 +1064,12 @@ begin
       begin
         if Assigned(FormCalculationEstimate) then
           begin
-            if FormCalculationEstimate.IdEstimate = 0 then
+            if FormCalculationEstimate.GetIdEstimate = 0 then
               begin
                 ShowMessage('Не выбрана смета');
                 Exit;
               end;
-            dmReportF.Report_ZP_OBJ(FormCalculationEstimate.IdEstimate, FileReportPath);
+            dmReportF.Report_ZP_OBJ(FormCalculationEstimate.GetIdEstimate, FileReportPath);
           end;
       end;
   finally
@@ -1275,12 +1293,6 @@ procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   WindowsCloseClick(nil);
   DM.Connect.Connected := False;
-  if Assigned(FUpdateThread) then
-  begin
-    FUpdateThread.Terminate;
-    FUpdateThread.WaitFor;
-    FUpdateThread.Free;
-  end;
 end;
 
 procedure TFormMain.HelpAboutClick(Sender: TObject);

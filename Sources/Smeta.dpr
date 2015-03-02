@@ -106,7 +106,8 @@ uses
   fUpdate in 'fUpdate.pas' {UpdateForm},
   EditExpression in 'EditExpression.pas' {fEditExpression},
   dmReportU in 'dmReportU.pas' {dmReportF: TDataModule},
-  Coef in 'Coef.pas' {fCoefficients};
+  Coef in 'Coef.pas' {fCoefficients},
+  ArhivModule in 'ArhivModule.pas';
 
 {$R *.res}
 var MHandle: THandle;
