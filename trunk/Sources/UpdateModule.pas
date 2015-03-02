@@ -323,7 +323,7 @@ procedure TUpdateThread.ParsXMLResult(const AStrimPage: TMemoryStream;
       var ASResponse: TServiceResponse);
 var XML : IXMLDocument;
     TempNode, TempNode1, CatNode, UsNode, AppNode: IXMLNode;
-    i, j: Integer;
+    i: Integer;
     TempNV: TNewVersion;
     Resp: TServiceResponse;
 begin
@@ -416,8 +416,7 @@ begin
 end;
 
 procedure TUpdateThread.GetVersion;
-var NewVersion : TVersion;
-    HTTP: TIdHTTP;
+var HTTP: TIdHTTP;
     StrimPage: TMemoryStream;
 begin
   FResponse.Clear;
@@ -590,7 +589,6 @@ end;
 
 function TServiceResponse.AddApp(const ANewVersion: TNewVersion): integer;
 begin
-  Result := -1;
   inc(FAppCount);
   SetLength(FAppList, FAppCount);
   Result := FAppCount - 1;
@@ -601,7 +599,6 @@ end;
 
 function TServiceResponse.AddCatalog(const ANewVersion: TNewVersion): integer;
 begin
-  Result := -1;
   inc(FCatalogCount);
   SetLength(FCatalogList, FCatalogCount);
   Result := FCatalogCount - 1;
@@ -612,7 +609,6 @@ end;
 
 function TServiceResponse.AddUser(const ANewVersion: TNewVersion): integer;
 begin
-  Result := -1;
   inc(FUserCount);
   SetLength(FUserList, FUserCount);
   Result := FUserCount - 1;
