@@ -5,7 +5,7 @@ object FormBasicData: TFormBasicData
   BorderStyle = bsSingle
   Caption = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
   ClientHeight = 592
-  ClientWidth = 325
+  ClientWidth = 675
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,7 +17,7 @@ object FormBasicData: TFormBasicData
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
-    325
+    675
     592)
   PixelsPerInch = 96
   TextHeight = 13
@@ -93,7 +93,7 @@ object FormBasicData: TFormBasicData
   object Bevel1: TBevel
     Left = 8
     Top = 121
-    Width = 309
+    Width = 659
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
@@ -102,7 +102,7 @@ object FormBasicData: TFormBasicData
   object Bevel2: TBevel
     Left = 0
     Top = 551
-    Width = 325
+    Width = 675
     Height = 41
     Align = alBottom
     Shape = bsTopLine
@@ -112,7 +112,7 @@ object FormBasicData: TFormBasicData
   object Bevel3: TBevel
     Left = 8
     Top = 158
-    Width = 309
+    Width = 659
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
@@ -121,7 +121,7 @@ object FormBasicData: TFormBasicData
   object Bevel4: TBevel
     Left = 8
     Top = 35
-    Width = 309
+    Width = 659
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
@@ -140,7 +140,7 @@ object FormBasicData: TFormBasicData
   object Bevel5: TBevel
     Left = 8
     Top = 442
-    Width = 309
+    Width = 659
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
@@ -174,7 +174,7 @@ object FormBasicData: TFormBasicData
     Top = 363
     Width = 211
     Height = 13
-    Caption = #1050'-'#1092' '#1082' '#1079#1080#1084#1085#1080#1084' ('#1087#1088#1080#1082'. '#8470'270) '#1050'35. '#1063#1072#1089#1090#1100' 1:'
+    Caption = #1050'-'#1092' '#1082' '#1079#1080#1084#1085#1080#1084' ('#1087#1088#1080#1082'. '#8470'270) '#1050'35. '#1063#1072#1089#1090#1100' 2:'
   end
   object lbl4: TLabel
     Left = 8
@@ -189,6 +189,15 @@ object FormBasicData: TFormBasicData
     Width = 33
     Height = 13
     Caption = #1052#1040#1048#1057':'
+  end
+  object bvl1: TBevel
+    Left = 8
+    Top = 409
+    Width = 659
+    Height = 7
+    Anchors = [akLeft, akTop, akRight]
+    Shape = bsTopLine
+    ExplicitWidth = 309
   end
   object pnl1: TPanel
     Left = 325
@@ -299,7 +308,6 @@ object FormBasicData: TFormBasicData
     Top = 96
     Width = 80
     Height = 21
-    TabStop = False
     TabOrder = 11
   end
   object EditRegion: TEdit
@@ -326,7 +334,7 @@ object FormBasicData: TFormBasicData
       #1089' '#1053#1044#1057)
   end
   object ButtonSave: TButton
-    Left = 111
+    Left = 461
     Top = 559
     Width = 100
     Height = 25
@@ -339,7 +347,7 @@ object FormBasicData: TFormBasicData
     ExplicitTop = 544
   end
   object ButtonCancel: TButton
-    Left = 217
+    Left = 567
     Top = 559
     Width = 100
     Height = 25
@@ -347,8 +355,6 @@ object FormBasicData: TFormBasicData
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 10
     OnClick = ButtonCancelClick
-    ExplicitLeft = 219
-    ExplicitTop = 544
   end
   object ComboBoxMonth: TComboBox
     Left = 167
@@ -374,7 +380,7 @@ object FormBasicData: TFormBasicData
       #1053#1086#1103#1073#1088#1100
       #1044#1077#1082#1072#1073#1088#1100)
   end
-  object DBLookupComboBoxDump: TDBLookupComboBox
+  object dblkcbbDump: TDBLookupComboBox
     Left = 8
     Top = 476
     Width = 311
@@ -410,7 +416,7 @@ object FormBasicData: TFormBasicData
     TabOrder = 3
   end
   object edtYear: TSpinEdit
-    Left = 262
+    Left = 612
     Top = 8
     Width = 55
     Height = 22
@@ -449,7 +455,9 @@ object FormBasicData: TFormBasicData
     Top = 414
     Width = 201
     Height = 21
-    KeyField = 'ID'
+    DataField = 'exMAIS_ID'
+    DataSource = dsSmeta
+    KeyField = 'MAIS_ID'
     ListField = 'NAME'
     ListSource = dsMAIS
     TabOrder = 21
@@ -480,7 +488,8 @@ object FormBasicData: TFormBasicData
   end
   object DataSourceRegionDump: TDataSource
     DataSet = ADOQueryRegionDump
-    Left = 40
+    Left = 120
+    Top = 472
   end
   object qrDump: TFDQuery
     Connection = DM.Connect
@@ -493,7 +502,8 @@ object FormBasicData: TFormBasicData
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 1
+    Left = 89
+    Top = 472
   end
   object qrTMP: TFDQuery
     Connection = DM.Connect
@@ -517,5 +527,47 @@ object FormBasicData: TFormBasicData
     DataSet = qrMAIS
     Left = 216
     Top = 409
+  end
+  object qrSmeta: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    UpdateOptions.AssignedValues = [uvCheckReadOnly, uvUpdateNonBaseFields]
+    UpdateOptions.UpdateNonBaseFields = True
+    UpdateOptions.UpdateTableName = 'smeta.smetasourcedata'
+    UpdateOptions.KeyFields = 'SM_ID'
+    UpdateObject = updSmeta
+    SQL.Strings = (
+      
+        'SELECT smetasourcedata.*, IFNULL(smetasourcedata.MAIS_ID, objcar' +
+        'ds.MAIS_ID) AS exMAIS_ID '
+      'FROM smetasourcedata, objcards'
+      
+        'WHERE sm_id = :IdEstimate AND objcards.obj_id = smetasourcedata.' +
+        'OBJ_ID')
+    Left = 57
+    Top = 145
+    ParamData = <
+      item
+        Name = 'IDESTIMATE'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 0
+      end>
+  end
+  object dsSmeta: TDataSource
+    DataSet = qrSmeta
+    Left = 88
+    Top = 145
+  end
+  object updSmeta: TFDUpdateSQL
+    Connection = DM.Connect
+    ModifySQL.Strings = (
+      'UPDATE smetasourcedata SET'
+      'MAIS_ID = :exMAIS_ID'
+      'WHERE smetasourcedata.sm_id = :sm_id')
+    Left = 56
+    Top = 184
   end
 end

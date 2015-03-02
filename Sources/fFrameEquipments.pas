@@ -139,7 +139,7 @@ var
   t:TStringList;             //vk
   i:integer;                 //vk
   poisk,param1:string;       //vk
-  region_id:integer;         //vk
+  //region_id:integer;         //vk
 begin
     if vStr <> '' then
       WhereStr := ' and ' + vStr
@@ -160,8 +160,8 @@ begin
        poisk  := poisk+'  UPPER(TRIM(devices.name)) LIKE  ''%'+UPPERCASE(TRIM(t[i]))+'%'' or';    //vk
        param1 := param1+'(UPPER(TRIM(devices.name)) LIKE "%'  +UPPERCASE(TRIM(t[i]))+'%" )+';
     end;
-    poisk  := LeftStr(poisk, length(poisk)-3);
-    param1 := LeftStr(param1,length(param1)-1);
+    poisk  := string(LeftStr(AnsiString(poisk), length(poisk)-3));
+    param1 := string(LeftStr(AnsiString(param1),length(param1)-1));
     //vk
     if EditSearch.Text ='' then
     StrQuery := 'SELECT id as "Idd", device_id as "Id", device_code1 as "Code", ' +

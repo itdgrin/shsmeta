@@ -560,8 +560,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           PopupMenu = PopupMenuEstimates
           RowSelect = True
           Mirror = False
-          ExplicitLeft = -1
-          ExplicitTop = 1
         end
       end
       object PanelActs: TPanel
@@ -860,7 +858,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       
         'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
         'NAME,'
-      '       0 as PARENT  '
+      '       PARENT_ID as PARENT  '
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2 AND '
       '      OBJ_ID=:OBJ_ID'
@@ -868,7 +866,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       
         'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
         'NAME,'
-      '       (PARENT_LOCAL_ID+PARENT_PTM_ID) as PARENT  '
+      '       PARENT_ID as PARENT  '
       'FROM smetasourcedata'
       'WHERE SM_TYPE<>2 AND '
       '      OBJ_ID=:OBJ_ID'

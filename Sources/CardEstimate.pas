@@ -431,10 +431,10 @@ begin
       else
       begin
         SQL.Text :=
-          'INSERT INTO smetasourcedata (sm_type, obj_id, parent_local_id, parent_ptm_id, name, date, sm_number, '
+          'INSERT INTO smetasourcedata (sm_type, obj_id, parent_id, name, date, sm_number, '
           + 'chapter, row_number, preparer, post_preparer, examiner, post_examiner, set_drawings, k40, k41, k31, k32, '
           + 'k33, k34, coef_tr_zatr, coef_tr_obor, nds, stavka_id) Value("' + IntToStr(TypeEstimate) + '", "'
-          + IntToStr(IdObject) + '", GetParentLocal(' + IntToStr(IdParentLocal) + '), GetParentPTM(' +
+          + IntToStr(IdObject) + '", GetParentLocal(' + IntToStr(IdParentLocal) + ')+GetParentPTM(' +
           IntToStr(IdEstimate) + '), ' + NameEstimate + ', "' + DateCompose + '", "' + EditNumberEstimate.Text
           + '", ' + NumberChapter + ', ' + NumberRow + ', ' + Compose + ', ' + PostCompose + ', ' + Checked +
           ', ' + PostChecked + ', ' + SetDrawing + ', "' + K40 + '", "' + K41 + '", "' + K31 + '", "' + K32 +
