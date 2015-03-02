@@ -17,8 +17,9 @@ const
   //Адрес почты техподдержки
   SupportMail = 'd_grin@mail.ru';
   //Настройки файла лагирования
-  LogDirName = 'logs';
-  LogFileName = 'update.log';
+  LogFileName = 'Logs\update.log';
+  //Название софтины для перезаписи приложения
+  UpdaterName = 'SmUpd.exe';
 
 type
   TLogFile = class(TObject)
@@ -243,8 +244,9 @@ end;
 procedure TUpdateThread.GetLogName;
 begin
   //В принципе обращаться к Application в потоке некрасиво
-  FLogFile.FileDir := ExtractFilePath(Application.ExeName) + LogDirName;
-  FLogFile.FileName := LogFileName;
+  FLogFile.FileDir :=
+    ExtractFileDir(ExtractFilePath(Application.ExeName) + LogFileName);
+  FLogFile.FileName := ExtractFileName(LogFileName);
 end;
 
 constructor TUpdateThread.Create(AVersion: TVersion;

@@ -12,10 +12,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.SysUtils,
   IniFiles, IdMessage, IdSSLOpenSSL, IdMessageClient, IdSMTPBase, IdSMTP,
-  IdAttachmentFile, IdExplicitTLSClientServerBase, ShellAPI;
-
-const
-  UpdaterName = 'SmUpd.exe';
+  IdAttachmentFile, IdExplicitTLSClientServerBase, Tools;
 
 type
   TUpdateForm = class(TForm)
@@ -97,18 +94,6 @@ implementation
 uses DataModule;
 
 {$R *.dfm}
-
-//Удаление директории с содержимым
-procedure KillDir(const ADirName: string);
-var
-  FileFolderOperation: TSHFileOpStruct;
-begin
-  FillChar(FileFolderOperation, SizeOf(FileFolderOperation), 0);
-  FileFolderOperation.wFunc := FO_DELETE;
-  FileFolderOperation.pFrom := PChar(ExcludeTrailingPathDelimiter(ADirName) + #0);
-  FileFolderOperation.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
-  SHFileOperation(FileFolderOperation);
-end;
 
 procedure TUpdateForm.SendErrorReport;
 var i : integer;
@@ -638,8 +623,8 @@ begin
 
   FLogFile := TLogFile.Create;
   FLogFile.Active := true;
-  FLogFile.FileDir := ExtractFilePath(Application.ExeName) + LogDirName;
-  FLogFile.FileName := LogFileName;
+  FLogFile.FileDir := ExtractFileDir(ExtractFilePath(Application.ExeName) + LogFileName);
+  FLogFile.FileName := ExtractFileName(LogFileName);
 end;
 
 procedure TUpdateForm.FormDestroy(Sender: TObject);

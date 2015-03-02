@@ -663,7 +663,12 @@ type
     RepIdRate: Integer;
     RepIdMat: Integer;
 
+    //ѕоследн€€ таблица в которой был фокус, используетс€ дл€ отрисовки
     LastEntegGrd: TJvDBGrid;
+
+    IdAct: Integer;
+    //ID отображаемой сметы
+    IdEstimate: Integer;
 
     // пересчитывает все относ€щеес€ к строке в таблице расценок
     procedure ReCalcRowRates;
@@ -700,9 +705,7 @@ type
     procedure SetDevNoEditMode; // отключение режима расширенного редактировани€ оборудовани€
   public
     Act: Boolean;
-    IdAct: Integer;
-    IdEstimate: Integer;
-    // CountCoef : Integer;
+
     ConfirmCloseForm: Boolean;
     function GetCountCoef(): Integer;
     procedure AddCoefToRate(coef_id: Integer);
@@ -4861,7 +4864,8 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    if (dbgrdDescription.Row = TMyDBGrid(dbgrdDescription).DataLink.ActiveRecord + 1) and
+    if Assigned(TMyDBGrid(dbgrdDescription).DataLink) and
+      (dbgrdDescription.Row = TMyDBGrid(dbgrdDescription).DataLink.ActiveRecord + 1) and
       (dbgrdDescription = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
@@ -4890,7 +4894,8 @@ begin
       Brush.Color := $00FBFEBC;
     end;
 
-    if ((Sender as TJvDBGrid).Row = TMyDBGrid(Sender).DataLink.ActiveRecord + 1) and
+    if Assigned(TMyDBGrid(Sender).DataLink) and
+      ((Sender as TJvDBGrid).Row = TMyDBGrid(Sender).DataLink.ActiveRecord + 1) and
       (TJvDBGrid(Sender) = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
@@ -4972,7 +4977,8 @@ begin
       Brush.Color := $008080FF;
     end;
 
-    if (dbgrdMaterial.Row = TMyDBGrid(dbgrdMaterial).DataLink.ActiveRecord + 1) and
+    if Assigned(TMyDBGrid(dbgrdMaterial).DataLink) and
+      (dbgrdMaterial.Row = TMyDBGrid(dbgrdMaterial).DataLink.ActiveRecord + 1) and
       (dbgrdMaterial = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
@@ -4982,7 +4988,8 @@ begin
     end;
 
     // «ачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+    if (qrMaterialFROM_RATE.AsInteger = 1) and
+      not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
@@ -4995,15 +5002,18 @@ begin
     end;
 
     // ѕодсветка замененного матери€ла (подсветка ѕ-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd)
+    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and
+      (dbgrdMaterial = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
-    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (dbgrdRates = LastEntegGrd) then
+    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and
+      (dbgrdRates = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // ѕодсветка заменен€ющего материала
-    if (qrMaterialFROM_RATE.AsInteger = 0) and (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
+    if (qrMaterialFROM_RATE.AsInteger = 0) and
+      (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
@@ -5105,7 +5115,8 @@ begin
       Brush.Color := $008080FF;
     end;
 
-    if (dbgrdMechanizm.Row = TMyDBGrid(dbgrdMechanizm).DataLink.ActiveRecord + 1) and
+    if Assigned(TMyDBGrid(dbgrdMechanizm).DataLink) and
+      (dbgrdMechanizm.Row = TMyDBGrid(dbgrdMechanizm).DataLink.ActiveRecord + 1) and
       (dbgrdMechanizm = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
@@ -5168,7 +5179,9 @@ begin
     end;
 
     // ѕодсвечиваетс€ жирным только если есть фокус
-    if (dbgrdRates.Row = TMyDBGrid(dbgrdRates).DataLink.ActiveRecord + 1) and (dbgrdRates = LastEntegGrd) then
+    if Assigned(TMyDBGrid(dbgrdRates).DataLink) and
+      (dbgrdRates.Row = TMyDBGrid(dbgrdRates).DataLink.ActiveRecord + 1) and
+      (dbgrdRates = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
     end;

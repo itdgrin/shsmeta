@@ -3,7 +3,8 @@ unit Tools;
 interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
-  System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression;
+  System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
+  ShellAPI;
 
 // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
@@ -19,8 +20,54 @@ procedure LoadDBGridsSettings(const aForm: TForm);
 function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;
 // Функция вычисления формулы из строки !!!РАБОТАЕТ ЧЕРЕЗ OLE EXCEL - в дальнейшем переписать!
 function CalcFormula(const AFormula: string): Variant;
+//Удаление директории с содержимым !!!!Использовать остородно!!!!!
+procedure KillDir(const ADirName: string);
+//Запускает процесс и ждет его завершения
+function WinExecAndWait(ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
+  var AWaitResult: DWord; var AExitCode: Cardinal): boolean;
 
 implementation
+
+
+//Запускает приложение и ожидает его завершения
+function WinExecAndWait(ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
+  var AWaitResult: DWord; var AExitCode: Cardinal): boolean;
+var ProcInf: TProcessInformation;
+    Start: TStartupInfo;
+begin
+    FillChar(Start, SizeOf(TStartupInfo), 0);
+    with Start do
+    begin
+        cb := SizeOf(TStartupInfo);
+        dwFlags := STARTF_USESHOWWINDOW;
+        wShowWindow := CmdShow;
+    end;
+
+    Result := CreateProcess(nil, ACmdLine, nil, nil,
+      False, NORMAL_PRIORITY_CLASS, nil, nil, Start, ProcInf);
+
+    if ATimeOut=0 then
+      AWaitResult := WaitForSingleObject(ProcInf.hProcess, INFINITE)
+    else
+      AWaitResult := WaitForSingleObject(ProcInf.hProcess, ATimeout);
+
+    GetExitCodeProcess(ProcInf.hProcess, AExitCode);
+    TerminateProcess(ProcInf.hProcess, 0);
+    CloseHandle(ProcInf.hProcess);
+end;
+
+
+//Удаление директории с содержимым
+procedure KillDir(const ADirName: string);
+var
+  FileFolderOperation: TSHFileOpStruct;
+begin
+  FillChar(FileFolderOperation, SizeOf(FileFolderOperation), 0);
+  FileFolderOperation.wFunc := FO_DELETE;
+  FileFolderOperation.pFrom := PChar(ExcludeTrailingPathDelimiter(ADirName) + #0);
+  FileFolderOperation.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
+  SHFileOperation(FileFolderOperation);
+end;
 
 function CalcFormula(const AFormula: string): Variant;
 var
