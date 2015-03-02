@@ -663,11 +663,11 @@ type
     RepIdRate: Integer;
     RepIdMat: Integer;
 
-    //ѕоследн€€ таблица в которой был фокус, используетс€ дл€ отрисовки
+    // ѕоследн€€ таблица в которой был фокус, используетс€ дл€ отрисовки
     LastEntegGrd: TJvDBGrid;
 
     IdAct: Integer;
-    //ID отображаемой сметы
+    // ID отображаемой сметы
     IdEstimate: Integer;
 
     // пересчитывает все относ€щеес€ к строке в таблице расценок
@@ -742,7 +742,7 @@ function NoNDSToNDS(AValue: Int64; aNDS: Integer): Int64;
 implementation
 
 uses Main, DataModule, Columns, SignatureSSR, Waiting,
-  SummaryCalculationSettings, DataTransfer, Coefficients,
+  SummaryCalculationSettings, DataTransfer,
   BasicData, ObjectsAndEstimates, PercentClientContractor, Transportation,
   CalculationDump, SaveEstimate,
   ReplacementMaterial, Materials, AdditionData, CardMaterial, CardDataEstimate,
@@ -2985,8 +2985,7 @@ begin
         btnMechanisms.Enabled := True;
         btnDescription.Enabled := True;
 
-        if btnMaterials.Down or btnEquipments.Down or btnDump.Down or btnTransp.Down or
-          btnStartup.Down then
+        if btnMaterials.Down or btnEquipments.Down or btnDump.Down or btnTransp.Down or btnStartup.Down then
         begin
           btnMaterials.Down := True;
           btnMaterialsClick(btnMaterials);
@@ -4988,8 +4987,7 @@ begin
     end;
 
     // «ачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.AsInteger = 1) and
-      not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+    if (qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
@@ -5002,18 +5000,15 @@ begin
     end;
 
     // ѕодсветка замененного матери€ла (подсветка ѕ-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and
-      (dbgrdMaterial = LastEntegGrd)
+    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
-    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and
-      (dbgrdRates = LastEntegGrd) then
+    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (dbgrdRates = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // ѕодсветка заменен€ющего материала
-    if (qrMaterialFROM_RATE.AsInteger = 0) and
-      (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
+    if (qrMaterialFROM_RATE.AsInteger = 0) and (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
@@ -5180,8 +5175,7 @@ begin
 
     // ѕодсвечиваетс€ жирным только если есть фокус
     if Assigned(TMyDBGrid(dbgrdRates).DataLink) and
-      (dbgrdRates.Row = TMyDBGrid(dbgrdRates).DataLink.ActiveRecord + 1) and
-      (dbgrdRates = LastEntegGrd) then
+      (dbgrdRates.Row = TMyDBGrid(dbgrdRates).DataLink.ActiveRecord + 1) and (dbgrdRates = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
     end;

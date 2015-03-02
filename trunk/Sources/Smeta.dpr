@@ -33,7 +33,6 @@ uses
   SummaryCalculationSettings in 'SummaryCalculationSettings.pas' {FormSummaryCalculationSettings},
   DataTransfer in 'DataTransfer.pas' {FormDataTransfer},
   CalculationSettings in 'CalculationSettings.pas' {FormCalculationSettings},
-  Coefficients in 'Coefficients.pas' {FormCoefficients},
   BasicData in 'BasicData.pas' {FormBasicData},
   CardEstimate in 'CardEstimate.pas' {FormCardEstimate},
   ObjectsAndEstimates in 'ObjectsAndEstimates.pas' {FormObjectsAndEstimates},
@@ -72,8 +71,6 @@ uses
   fPartsEstimates in 'fPartsEstimates.pas' {FramePartsEstimates: TFrame},
   fSectionsEstimates in 'fSectionsEstimates.pas' {FrameSectionsEstimates: TFrame},
   fTypesWorks in 'fTypesWorks.pas' {FrameTypesWorks: TFrame},
-  SetCoefficients in 'SetCoefficients.pas' {FormSetCoefficients},
-  fCoefficientsRates in 'fCoefficientsRates.pas' {FrameCoefficientsRates_TODEL: TFrame},
   Organizations in 'Organizations.pas' {FormOrganizations},
   fOrganizations in 'fOrganizations.pas' {FrameOrganizations: TFrame},
   SectionsEstimates in 'SectionsEstimates.pas' {FormSectionsEstimates},
@@ -81,7 +78,6 @@ uses
   TypesActs in 'TypesActs.pas' {FormTypesActs},
   IndexesChangeCost in 'IndexesChangeCost.pas' {FormIndexesChangeCost},
   CategoriesObjects in 'CategoriesObjects.pas' {FormCategoriesObjects},
-  CardCoefficients in 'CardCoefficients.pas' {FormCardCoefficients},
   CardTypesActs in 'CardTypesActs.pas' {FormCardTypesActs},
   CardIndexesChangeCost in 'CardIndexesChangeCost.pas' {FormCardIndexesChangeCost},
   CardCategoriesObjects in 'CardCategoriesObjects.pas' {FormCardCategoriesObjects},
@@ -139,7 +135,6 @@ begin
   Application.CreateForm(TFormSignatureSSR, FormSignatureSSR);
   Application.CreateForm(TFormSummaryCalculationSettings, FormSummaryCalculationSettings);
   Application.CreateForm(TFormCalculationSettings, FormCalculationSettings);
-  Application.CreateForm(TFormCoefficients, FormCoefficients);
   Application.CreateForm(TFormBasicData, FormBasicData);
   Application.CreateForm(TFormCardEstimate, FormCardEstimate);
   Application.CreateForm(TFormPercentClientContractor, FormPercentClientContractor);
@@ -148,7 +143,6 @@ begin
   Application.CreateForm(TFormCardDataEstimate, FormCardDataEstimate);
   Application.CreateForm(TFormListCollections, FormListCollections);
   Application.CreateForm(TFormCardOrganization, FormCardOrganization);
-  Application.CreateForm(TFormCardCoefficients, FormCardCoefficients);
   Application.CreateForm(TFormTypesActs, FormTypesActs);
   Application.CreateForm(TFormCardTypesActs, FormCardTypesActs);
   Application.CreateForm(TFormCardIndexesChangeCost, FormCardIndexesChangeCost);

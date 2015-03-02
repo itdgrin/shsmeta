@@ -26,7 +26,8 @@ object fCoefficients: TfCoefficients
     Anchors = [akLeft, akTop, akRight, akBottom]
     DataSource = dsCoef
     DrawingStyle = gdsClassic
-    Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    PopupMenu = pm1
     TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
@@ -103,7 +104,6 @@ object fCoefficients: TfCoefficients
     Height = 35
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 1
-    ExplicitWidth = 403
     DesignSize = (
       531
       35)
@@ -116,14 +116,14 @@ object fCoefficients: TfCoefficients
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 0
       OnClick = btnCloseClick
-      ExplicitLeft = 322
     end
     object dbnvgr1: TDBNavigator
       Left = 5
       Top = 4
-      Width = 220
+      Width = 216
       Height = 25
       DataSource = dsCoef
+      VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbDelete, nbEdit, nbPost, nbCancel]
       Hints.Strings = (
         #1053#1072' '#1087#1077#1088#1074#1091#1102' '#1079#1072#1087#1080#1089#1100
         #1055#1088#1077#1076#1099#1076#1091#1097#1072#1103' '#1079#1072#1087#1080#1089#1100
@@ -148,13 +148,17 @@ object fCoefficients: TfCoefficients
       Width = 77
       Height = 25
       Anchors = [akRight, akBottom]
-      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      Caption = #1042' '#1088#1072#1089#1094#1077#1085#1082#1091
       Default = True
       TabOrder = 2
       OnClick = btnAddClick
     end
   end
   object qrCoef: TFDQuery
+    BeforeEdit = qrCoefNewRecord
+    AfterPost = qrCoefAfterPost
+    AfterCancel = qrCoefAfterPost
+    OnNewRecord = qrCoefNewRecord
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -171,5 +175,28 @@ object fCoefficients: TfCoefficients
     DataSet = qrCoef
     Left = 72
     Top = 66
+  end
+  object pm1: TPopupMenu
+    Left = 112
+    Top = 64
+    object N5: TMenuItem
+      Caption = #1042' '#1088#1072#1089#1094#1077#1085#1082#1091
+      OnClick = btnAddClick
+    end
+    object N4: TMenuItem
+      Caption = '-'
+    end
+    object N1: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      OnClick = N1Click
+    end
+    object N2: TMenuItem
+      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      OnClick = N2Click
+    end
+    object N3: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = N3Click
+    end
   end
 end

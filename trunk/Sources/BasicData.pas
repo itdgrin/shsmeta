@@ -4,8 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ComCtrls,
-  ExtCtrls, DB,
-  DateUtils, DBCtrls, Menus, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  ExtCtrls, DB, DateUtils, DBCtrls, Menus, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Samples.Spin, System.UITypes;
 
@@ -15,7 +14,6 @@ type
     LabelK31: TLabel;
     LabelK32: TLabel;
     LabelK33: TLabel;
-    LabelK34: TLabel;
     EditPercentTransportEquipment: TEdit;
     EditK41: TEdit;
     EditK31: TEdit;
@@ -61,8 +59,6 @@ type
     lblPercentTransport: TLabel;
     lblK: TLabel;
     edtK40: TEdit;
-    edt1: TEdit;
-    lbl2: TLabel;
     edt2: TEdit;
     lbl3: TLabel;
     edt3: TEdit;
@@ -75,6 +71,7 @@ type
     qrSmeta: TFDQuery;
     dsSmeta: TDataSource;
     updSmeta: TFDUpdateSQL;
+    lbl2: TLabel;
 
     procedure FormShow(Sender: TObject);
 
@@ -87,7 +84,6 @@ type
     procedure GetValueCoefOrders;
     // Получаем флаг состояния (применять/ не применять) коэффициента по приказам
     procedure SetValueCoefOrders;
-    procedure lbl1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
@@ -100,7 +96,6 @@ type
     PercentTransportCity: Double;
     PercentTransportVillage: Double;
     PercentTransportMinsk: Double;
-
   end;
 
 var
@@ -111,14 +106,13 @@ implementation
 uses Main, DataModule, CalculationEstimate, Tools;
 
 {$R *.dfm}
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormBasicData.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var
   IdStavka: Integer;
 begin
   CanClose := False;
-  //IdStavka := -1;
+  IdStavka := -1;
 
   with qrTMP do
   begin
@@ -127,7 +121,8 @@ begin
     SQL.Add('SELECT stavka_id FROM smetasourcedata WHERE sm_id = :sm_id;');
     ParamByName('sm_id').Value := IdEstimate;
     Active := True;
-    IdStavka := FieldByName('stavka_id').AsInteger;
+    if not Eof then
+      IdStavka := FieldByName('stavka_id').AsInteger;
     Active := False;
   end;
 
@@ -274,8 +269,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormBasicData.ShowForm(const vIdObject, vIdEstimate: Integer);
 begin
   IdObject := vIdObject;
@@ -283,8 +276,6 @@ begin
 
   ShowModal;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormBasicData.PopupMenuPercentTransportMinskClick(Sender: TObject);
 begin
@@ -298,8 +289,6 @@ begin
         Text := MyFloatToStr(PercentTransportMinsk);
     end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormBasicData.ButtonSaveClick(Sender: TObject);
 var
@@ -364,41 +353,43 @@ begin
   Close;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormBasicData.ButtonCancelClick(Sender: TObject);
 begin
   Close;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormBasicData.ComboBoxMonthORYearChange(Sender: TObject);
 var
   vYear, vMonth: String;
 begin
-  EditRateWorker.Text := '';
-  edtRateMachinist.Text := '';
+  { EditRateWorker.Text := '';
+    edtRateMachinist.Text := '';
 
-  vMonth := IntToStr(ComboBoxMonth.ItemIndex + 1);
-  vYear := IntToStr(edtYear.Value);
+    vMonth := IntToStr(ComboBoxMonth.ItemIndex + 1);
+    vYear := IntToStr(edtYear.Value);
 
-  with qrTMP do
-  begin
+    with qrTMP do
+    begin
     Active := False;
     SQL.Clear;
     SQL.Add('SELECT stavka_m_rab as "RateWorker", stavka_m_mach as "RateMachinist" FROM stavka WHERE year = '
-      + vYear + ' and monat = ' + vMonth + ';');
+    + vYear + ' and monat = ' + vMonth + ';');
     Active := True;
     if not Eof then
     begin
-      EditRateWorker.Text := FieldByName('RateWorker').AsVariant;
-      edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
+    EditRateWorker.Text := FieldByName('RateWorker').AsVariant;
+    edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
     end;
-  end;
-end;
+    end; }
 
-// ---------------------------------------------------------------------------------------------------------------------
+  qrTMP.Active := False;
+  qrTMP.SQL.Text := 'SELECT stavka_id FROM stavka WHERE year = ' + IntToStr(edtYear.Value) + ' and monat = ' +
+    IntToStr(ComboBoxMonth.ItemIndex + 1) + ';';
+  qrTMP.Active := True;
+  qrSmeta.Edit;
+  qrSmeta.FieldByName('STAVKA_ID').Value := qrTMP.FieldByName('STAVKA_ID').Value;
+  qrSmeta.Post;
+end;
 
 procedure TFormBasicData.DBLookupComboBoxRegionDumpClick(Sender: TObject);
 begin
@@ -420,8 +411,6 @@ begin
       KeyValue := IdDump;
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormBasicData.GetValueCoefOrders;
 begin
@@ -445,13 +434,6 @@ begin
     end;
   end;
 end;
-
-procedure TFormBasicData.lbl1Click(Sender: TObject);
-begin
-
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormBasicData.SetValueCoefOrders;
 begin
@@ -481,7 +463,5 @@ begin
         + sLineBreak + E.Message), 'Исходные данные', MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.

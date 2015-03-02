@@ -184,9 +184,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="CalculationSettings.pas">
             <Form>FormCalculationSettings</Form>
         </DCCReference>
-        <DCCReference Include="Coefficients.pas">
-            <Form>FormCoefficients</Form>
-        </DCCReference>
         <DCCReference Include="BasicData.pas">
             <Form>FormBasicData</Form>
         </DCCReference>
@@ -317,13 +314,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>FrameTypesWorks</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="SetCoefficients.pas">
-            <Form>FormSetCoefficients</Form>
-        </DCCReference>
-        <DCCReference Include="fCoefficientsRates.pas">
-            <Form>FrameCoefficientsRates_TODEL</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="Organizations.pas">
             <Form>FormOrganizations</Form>
         </DCCReference>
@@ -345,9 +335,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="CategoriesObjects.pas">
             <Form>FormCategoriesObjects</Form>
-        </DCCReference>
-        <DCCReference Include="CardCoefficients.pas">
-            <Form>FormCardCoefficients</Form>
         </DCCReference>
         <DCCReference Include="CardTypesActs.pas">
             <Form>FormCardTypesActs</Form>
@@ -450,7 +437,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     <VersionInfo Name="MajorVer">1</VersionInfo>
                     <VersionInfo Name="MinorVer">0</VersionInfo>
                     <VersionInfo Name="Release">0</VersionInfo>
-                    <VersionInfo Name="Build">6506</VersionInfo>
+                    <VersionInfo Name="Build">6525</VersionInfo>
                     <VersionInfo Name="Debug">True</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -462,7 +449,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Расчёт сметы</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">1.0.0.6506</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.6525</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">Estimate</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">© 2013 Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks"/>

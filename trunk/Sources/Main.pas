@@ -187,7 +187,6 @@ type
     procedure FormResize(Sender: TObject);
     procedure UpdatePanelMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure TimerUpdateTimer(Sender: TObject);
-    procedure N10Click(Sender: TObject);
     procedure mnZP_OBJClick(Sender: TObject);
     procedure mnZP_OBJ_AKTClick(Sender: TObject);
     procedure mnRASX_ACTClick(Sender: TObject);
@@ -203,7 +202,7 @@ type
     DebugMode: boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
     FileReportPath: string; // путь к папке с отчетами(дабы не захламлять датамодуль лишними модулями)
-    //Объект отвечает за создание бэкапов и их восстановление
+    // Объект отвечает за создание бэкапов и их восстановление
     Arhiv: TBaseAppArhiv;
 
     procedure GetSystemInfo;
@@ -375,10 +374,10 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
   DataModule, Login, Waiting, ActC6, WorkSchedule, HelpC3, HelpC5, CatalogSSR,
   OXRandOPR, WinterPrice, DataTransfer, CardPTM, CalculationSettings,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
-  PricesReferenceData, AdditionData, Materials, PartsEstimates, SetCoefficients,
+  PricesReferenceData, AdditionData, Materials, PartsEstimates,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
-  Tools, fUpdate, EditExpression, dmReportU;
+  Tools, fUpdate, EditExpression, dmReportU, Coef;
 
 {$R *.dfm}
 
@@ -477,9 +476,9 @@ begin
 
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
-  //Объект для управления архивом
+  // Объект для управления архивом
   Arhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName) + ArhivLocalDir);
- // Arhiv.CreateNewArhiv;
+  // Arhiv.CreateNewArhiv;
   // путь к папке с отчетами (Вадим)
 {$IFDEF DEBUG}
   FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
@@ -492,7 +491,7 @@ end;
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
   if Assigned(FUpdateThread) then
-  begin //Выполнить Terminate обязательно так как он переопределен
+  begin // Выполнить Terminate обязательно так как он переопределен
     FUpdateThread.Terminate;
     FUpdateThread.WaitFor;
     FreeAndNil(FUpdateThread);
@@ -661,7 +660,7 @@ end;
 
 procedure TFormMain.ShowSetCoefficients(Sender: TObject);
 begin
-  FormSetCoefficients.Show;
+  fCoefficients.Show;
 end;
 
 procedure TFormMain.ShowOrganizations(Sender: TObject);
@@ -933,25 +932,20 @@ begin
   fCalcResource.Show;
 end;
 
-procedure TFormMain.N10Click(Sender: TObject);
-begin
-  ShowMessage(VarToStr(ShowEditExpression));
-end;
-
 // Расход материалов по акту
 procedure TFormMain.mnRASX_ACTClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.qrActsEx.IsEmpty then
       begin
-        if FormObjectsAndEstimates.qrActsEx.IsEmpty then
-          begin
-            ShowMessage('Не выбран акт');
-            Exit;
-          end;
-        dmReportF.Report_RASX_MAT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
+        showmessage('Не выбран акт');
+        Exit;
       end;
+      dmReportF.Report_RASX_MAT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
+    end;
   finally
     Screen.Cursor := crDefault;
   end;
@@ -1040,10 +1034,7 @@ end;
 
 procedure TFormMain.MenuSetCoefficientsClick(Sender: TObject);
 begin
-  if (not Assigned(FormSetCoefficients)) then
-    FormSetCoefficients := TFormSetCoefficients.Create(FormMain)
-  else
-    FormSetCoefficients.Show;
+  fCoefficients.Show;
 end;
 
 // --> вызовы отчетов (Вадим)
@@ -1052,26 +1043,26 @@ begin
   Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        if FormObjectsAndEstimates.IdEstimate = 0 then
-          begin
-            ShowMessage('Не выбрана смета');
-            Exit;
-          end;
-        dmReportF.Report_ZP_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
-      end
-    else
-      begin
-        if Assigned(FormCalculationEstimate) then
-          begin
-            if FormCalculationEstimate.GetIdEstimate = 0 then
-              begin
-                ShowMessage('Не выбрана смета');
-                Exit;
-              end;
-            dmReportF.Report_ZP_OBJ(FormCalculationEstimate.GetIdEstimate, FileReportPath);
-          end;
+        showmessage('Не выбрана смета');
+        Exit;
       end;
+      dmReportF.Report_ZP_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+        dmReportF.Report_ZP_OBJ(FormCalculationEstimate.GetIdEstimate, FileReportPath);
+      end;
+    end;
   finally
     Screen.Cursor := crDefault;
   end;
@@ -1082,14 +1073,15 @@ begin
   Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.qrActsEx.IsEmpty then
       begin
-        if FormObjectsAndEstimates.qrActsEx.IsEmpty then
-          begin
-            ShowMessage('Не выбран акт');
-            Exit;
-          end;
-        dmReportF.Report_ZP_OBJ_ACT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
+        showmessage('Не выбран акт');
+        Exit;
       end;
+      dmReportF.Report_ZP_OBJ_ACT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger,
+        FileReportPath);
+    end;
   finally
     Screen.Cursor := crDefault;
   end;
