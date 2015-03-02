@@ -12,7 +12,6 @@ uses
 type
   TFormBasicData = class(TForm)
     LabelPercentTransportEquipment: TLabel;
-    LabelK40: TLabel;
     LabelK31: TLabel;
     LabelK32: TLabel;
     LabelK33: TLabel;
@@ -23,13 +22,9 @@ type
     EditK32: TEdit;
     EditK33: TEdit;
     EditK34: TEdit;
-    LabelPercentTransport: TLabel;
-    EditPercentTransport: TEdit;
     LabelEstimateForDate: TLabel;
     LabelRateWorker: TLabel;
     EditRateWorker: TEdit;
-    LabelRateMachinist: TLabel;
-    EditRateMachinist: TEdit;
     LabelRegion: TLabel;
     EditRegion: TEdit;
     LabelVAT: TLabel;
@@ -38,7 +33,6 @@ type
     ButtonSave: TButton;
     ButtonCancel: TButton;
     ComboBoxMonth: TComboBox;
-    EditK40: TEdit;
     Bevel2: TBevel;
     Bevel3: TBevel;
     Bevel4: TBevel;
@@ -47,19 +41,36 @@ type
     LabelDump: TLabel;
     DBLookupComboBoxDump: TDBLookupComboBox;
     DBLookupComboBoxRegionDump: TDBLookupComboBox;
-    DataSourceDump: TDataSource;
-    PopupMenuPercentTransport: TPopupMenu;
+    dsDump: TDataSource;
+    pmTransport: TPopupMenu;
     PopupMenuPercentTransportCity: TMenuItem;
     PopupMenuPercentTransportVillage: TMenuItem;
     PopupMenuPercentTransportMinsk: TMenuItem;
     RadioGroupCoefOrders: TRadioGroup;
     DataSourceRegionDump: TDataSource;
-    ADOQueryDump: TFDQuery;
+    qrDump: TFDQuery;
     ADOQueryRegionDump: TFDQuery;
     qrTMP: TFDQuery;
     lbl1: TLabel;
     edtKZP: TEdit;
     edtYear: TSpinEdit;
+    pnl1: TPanel;
+    lblRateMachinist: TLabel;
+    edtRateMachinist: TEdit;
+    edtPercentTransport: TEdit;
+    lblPercentTransport: TLabel;
+    lblK: TLabel;
+    edtK40: TEdit;
+    edt1: TEdit;
+    lbl2: TLabel;
+    edt2: TEdit;
+    lbl3: TLabel;
+    edt3: TEdit;
+    lbl4: TLabel;
+    qrMAIS: TFDQuery;
+    dsMAIS: TDataSource;
+    dblkcbbMAIS: TDBLookupComboBox;
+    lbl5: TLabel;
 
     procedure FormShow(Sender: TObject);
 
@@ -182,9 +193,9 @@ begin
     ParamByName('sm_id').Value := IdEstimate;
     Active := True;
 
-    EditPercentTransport.Text := MyFloatToStr(FieldByName('coef_tr_zatr').AsFloat);
+    edtPercentTransport.Text := MyFloatToStr(FieldByName('coef_tr_zatr').AsFloat);
     EditPercentTransportEquipment.Text := MyFloatToStr(FieldByName('coef_tr_obor').AsFloat);
-    EditK40.Text := MyFloatToStr(FieldByName('K40').AsFloat);
+    edtK40.Text := MyFloatToStr(FieldByName('K40').AsFloat);
     EditK41.Text := MyFloatToStr(FieldByName('K41').AsFloat);
     EditK31.Text := MyFloatToStr(FieldByName('K31').AsFloat);
     EditK32.Text := MyFloatToStr(FieldByName('K32').AsFloat);
@@ -212,7 +223,7 @@ begin
     if not Eof then
     begin
       EditRateWorker.Text := FieldByName('stavka_m_rab').AsVariant;
-      EditRateMachinist.Text := FieldByName('stavka_m_mach').AsVariant;
+      edtRateMachinist.Text := FieldByName('stavka_m_mach').AsVariant;
       ComboBoxMonth.ItemIndex := FieldByName('monat').AsInteger - 1;
       edtYear.Value := FieldByName('year').AsInteger;
     end;
@@ -280,7 +291,7 @@ end;
 
 procedure TFormBasicData.PopupMenuPercentTransportMinskClick(Sender: TObject);
 begin
-  with EditPercentTransport do
+  with edtPercentTransport do
     case (Sender as TMenuItem).Tag of
       1:
         Text := MyFloatToStr(PercentTransportCity);
@@ -327,9 +338,9 @@ begin
         + 'nds = :nds, dump_id = :dump_id, kzp = :kzp WHERE sm_id = :sm_id;');
 
       ParamByName('stavka_id').Value := IdStavka;
-      ParamByName('coef_tr_zatr').Value := EditPercentTransport.Text;
+      ParamByName('coef_tr_zatr').Value := edtPercentTransport.Text;
       ParamByName('coef_tr_obor').Value := EditPercentTransportEquipment.Text;
-      ParamByName('k40').Value := EditK40.Text;
+      ParamByName('k40').Value := edtK40.Text;
       ParamByName('k41').Value := EditK41.Text;
       ParamByName('k31').Value := EditK31.Text;
       ParamByName('k32').Value := EditK32.Text;
@@ -367,7 +378,7 @@ var
   vYear, vMonth: String;
 begin
   EditRateWorker.Text := '';
-  EditRateMachinist.Text := '';
+  edtRateMachinist.Text := '';
 
   vMonth := IntToStr(ComboBoxMonth.ItemIndex + 1);
   vYear := IntToStr(edtYear.Value);
@@ -382,7 +393,7 @@ begin
     if not Eof then
     begin
       EditRateWorker.Text := FieldByName('RateWorker').AsVariant;
-      EditRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
+      edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
     end;
   end;
 end;
@@ -391,7 +402,7 @@ end;
 
 procedure TFormBasicData.DBLookupComboBoxRegionDumpClick(Sender: TObject);
 begin
-  with ADOQueryDump, DBLookupComboBoxDump do
+  with qrDump, DBLookupComboBoxDump do
   begin
     Active := False;
     SQL.Clear;
@@ -399,7 +410,7 @@ begin
     ParamByName('region_id').Value := DBLookupComboBoxRegionDump.KeyValue;
     Active := True;
 
-    ListSource := DataSourceDump;
+    ListSource := dsDump;
     ListField := 'dump_name';
     KeyField := 'dump_id';
 
