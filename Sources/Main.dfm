@@ -510,7 +510,6 @@
       end
       object N10: TMenuItem
         Caption = #1058#1077#1089#1090' '#1089#1095#1077#1090' '#1092#1086#1088#1084#1091#1083#1099
-        OnClick = N10Click
       end
     end
     object N11: TMenuItem
