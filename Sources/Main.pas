@@ -91,6 +91,11 @@ type
     mnZP_OBJ: TMenuItem;
     mnZP_OBJ_AKT: TMenuItem;
     mnRASX_ACT: TMenuItem;
+    PMAddNewBackup: TMenuItem;
+    N18: TMenuItem;
+    PMRestoreBackup: TMenuItem;
+    PMDeleteBackup: TMenuItem;
+    PMRestoreOldBackup: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -191,6 +196,10 @@ type
     procedure mnZP_OBJ_AKTClick(Sender: TObject);
     procedure mnRASX_ACTClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure PMAddNewBackupClick(Sender: TObject);
+    procedure ServiceBackupClick(Sender: TObject);
+    procedure PMRestoreBackupClick(Sender: TObject);
+    procedure PMDeleteBackupClick(Sender: TObject);
 
   private
     CountOpenWindows: integer;
@@ -477,8 +486,9 @@ begin
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   // Объект для управления архивом
-  Arhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName) + ArhivLocalDir);
-  // Arhiv.CreateNewArhiv;
+  Arhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName),
+    ExtractFilePath(Application.ExeName) + ArhivLocalDir);
+
   // путь к папке с отчетами (Вадим)
 {$IFDEF DEBUG}
   FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
@@ -793,6 +803,63 @@ begin
       ButtonsWindows[i].Down := true;
       Exit;
     end;
+end;
+
+procedure TFormMain.ServiceBackupClick(Sender: TObject);
+var i: Integer;
+  Mi,
+  TmpMi,
+  TmpMi2: TMenuItem;
+  TmpStr: string;
+  TmpList: TStringList;
+
+  y,m,d: Word;
+  t: Extended;
+
+begin
+  Mi := TMenuItem(Sender);
+  //Первые 3и пункта существуют всегда, остальные добавляются при необходимости
+  for i := 3 to Mi.Count - 1 do
+    Mi.Delete(3);
+
+  //PMRestoreOldBackup
+
+  TmpList := TStringList.Create;
+  try
+    for i := Low(Arhiv.ArhFiles) to High(Arhiv.ArhFiles) do
+    begin
+      TmpMi := TMenuItem.Create(mi);
+      TmpStr := ExtractFileName(Arhiv.ArhFiles[i]);
+      TmpStr := StringReplace(TmpStr, '_arh.zip', '', [rfIgnoreCase]);
+      TmpStr := StringReplace(TmpStr, '_', #13#10, [rfReplaceAll]);
+      TmpList.Text := TmpStr;
+
+      try
+        y := StrToInt(TmpList[0]);
+        m := StrToInt(TmpList[1]);
+        d := StrToInt(TmpList[2]);
+        t := EncodeDate(y, m, d);
+        t := t + (StrToInt(TmpList[3]))/10000;
+        TmpMi.Caption := DateTimeToStr(t);
+      except
+        TmpMi.Caption := ExtractFileName(Arhiv.ArhFiles[i]);
+      end;
+
+      TmpMi2 := TMenuItem.Create(TmpMi);
+      TmpMi2.Caption := 'Восстановить';
+      TmpMi2.OnClick := PMRestoreBackupClick;
+      TmpMi.Add(TmpMi2);
+      TmpMi2 := TMenuItem.Create(TmpMi);
+      TmpMi2.Caption := 'Удалить';
+      TmpMi2.OnClick := PMDeleteBackupClick;
+      TmpMi.Add(TmpMi2);
+      TmpMi.Tag := Integer(Arhiv.ArhFiles[i]);
+      mi.Add(TmpMi);
+    end;
+
+  finally
+    FreeAndNil(TmpList);
+  end;
 end;
 
 procedure TFormMain.ServiceSettingsClick(Sender: TObject);
@@ -1172,6 +1239,38 @@ begin
 
   // Закрываем форму ожидания
   FormWaiting.Close;
+end;
+
+procedure TFormMain.PMAddNewBackupClick(Sender: TObject);
+var i: Integer;
+begin
+  if (MessageBox(Self.Handle,
+    PChar('Создать резервную копию?'),
+    'Резервное копировани',
+    MB_YESNO + MB_ICONQUESTION) = IDYES) then
+  begin
+    //Максимуи 3и копии, что-бы не забивать место
+    for i := 2 to High(Arhiv.ArhFiles) do
+      Arhiv.DeleteArhiv(Arhiv.ArhFiles[i]);
+    Arhiv.CreateNewArhiv;
+  end;
+end;
+
+procedure TFormMain.PMDeleteBackupClick(Sender: TObject);
+var Mi: TMenuItem;
+begin
+  Mi := TMenuItem(Sender);
+  if (MessageBox(Self.Handle,
+    PChar('Удалить резервную копию от ' +
+      StringReplace(Mi.Parent.Caption, '&', '', [rfReplaceAll]) + '?'),
+    'Резервное копировани',
+    MB_YESNO + MB_ICONQUESTION) = IDYES) then
+    Arhiv.DeleteArhiv(string(Mi.Parent.Tag));
+end;
+
+procedure TFormMain.PMRestoreBackupClick(Sender: TObject);
+begin
+  beep;
 end;
 
 procedure TFormMain.N16Click(Sender: TObject);

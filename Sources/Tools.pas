@@ -23,15 +23,15 @@ function CalcFormula(const AFormula: string): Variant;
 //Удаление директории с содержимым !!!!Использовать остородно!!!!!
 procedure KillDir(const ADirName: string);
 //Запускает процесс и ждет его завершения
-function WinExecAndWait(ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
-  var AWaitResult: DWord; var AExitCode: Cardinal): boolean;
+function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
+  var AWaitResult: DWord): boolean;
 
 implementation
 
 
 //Запускает приложение и ожидает его завершения
-function WinExecAndWait(ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
-  var AWaitResult: DWord; var AExitCode: Cardinal): boolean;
+function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
+  var AWaitResult: DWord): boolean;
 var ProcInf: TProcessInformation;
     Start: TStartupInfo;
 begin
@@ -40,10 +40,10 @@ begin
     begin
         cb := SizeOf(TStartupInfo);
         dwFlags := STARTF_USESHOWWINDOW;
-        wShowWindow := CmdShow;
+        wShowWindow :=  ACmdShow;
     end;
 
-    Result := CreateProcess(nil, ACmdLine, nil, nil,
+    Result := CreateProcess(AAppName, ACmdLine, nil, nil,
       False, NORMAL_PRIORITY_CLASS, nil, nil, Start, ProcInf);
 
     if ATimeOut=0 then
@@ -51,7 +51,6 @@ begin
     else
       AWaitResult := WaitForSingleObject(ProcInf.hProcess, ATimeout);
 
-    GetExitCodeProcess(ProcInf.hProcess, AExitCode);
     TerminateProcess(ProcInf.hProcess, 0);
     CloseHandle(ProcInf.hProcess);
 end;
