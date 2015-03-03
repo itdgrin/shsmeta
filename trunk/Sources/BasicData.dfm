@@ -514,6 +514,7 @@ object FormBasicData: TFormBasicData
     Top = 382
   end
   object qrSmeta: TFDQuery
+    Active = True
     AutoCalcFields = False
     Connection = DM.Connect
     Transaction = DM.Read

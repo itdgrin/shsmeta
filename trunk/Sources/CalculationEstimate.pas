@@ -4177,23 +4177,27 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT IFNULL(monat,0) as monat, IFNULL(year,0) as year, nds FROM stavka, smetasourcedata ' +
-        'WHERE stavka.stavka_id = smetasourcedata.stavka_id and sm_id = :sm_id;');
+      SQL.Add('SELECT IFNULL(monat,0) as monat, IFNULL(year,0) as year, nds FROM smetasourcedata ' +
+        'left outer join stavka on stavka.stavka_id = smetasourcedata.stavka_id WHERE sm_id = :sm_id;');
       qrTemp.ParamByName('sm_id').Value := IdEstimate;
       Active := True;
 
-      EditMonth.Text := FormatDateTime('mmmm yyyy года.',
-        StrToDate('01.' + qrTemp.FieldByName('monat').AsString + '.' + qrTemp.FieldByName('year').AsString));
+      if not Eof then
+      begin
+        EditMonth.Text := FormatDateTime('mmmm yyyy года.',
+          StrToDate('01.' + qrTemp.FieldByName('monat').AsString + '.' + qrTemp.FieldByName('year')
+          .AsString));
 
-      if FieldByName('nds').Value then
-      begin
-        EditVAT.Text := 'c НДС';
-        NDSEstimate := True;
-      end
-      else
-      begin
-        EditVAT.Text := 'без НДС';
-        NDSEstimate := False;
+        if FieldByName('nds').Value then
+        begin
+          EditVAT.Text := 'c НДС';
+          NDSEstimate := True;
+        end
+        else
+        begin
+          EditVAT.Text := 'без НДС';
+          NDSEstimate := False;
+        end;
       end;
       Active := False;
     end;

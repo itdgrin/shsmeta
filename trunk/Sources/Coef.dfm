@@ -48,52 +48,52 @@ object fCoefficients: TfCoefficients
         FieldName = 'coef_name'
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-        Width = 289
+        Width = 245
         Visible = True
       end
       item
-        Alignment = taCenter
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'osn_zp'
         Title.Alignment = taCenter
         Title.Caption = #1047#1055
-        Width = 36
+        Width = 55
         Visible = True
       end
       item
-        Alignment = taCenter
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'eksp_mach'
         Title.Alignment = taCenter
         Title.Caption = #1069#1052#1080#1052
-        Width = 40
+        Width = 55
         Visible = True
       end
       item
-        Alignment = taCenter
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'mat_res'
         Title.Alignment = taCenter
         Title.Caption = #1052#1056
-        Width = 46
+        Width = 55
         Visible = True
       end
       item
-        Alignment = taCenter
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'work_pers'
         Title.Alignment = taCenter
         Title.Caption = #1058#1047' '#1088#1072#1073'.'
-        Width = 52
+        Width = 55
         Visible = True
       end
       item
-        Alignment = taCenter
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'work_mach'
         Title.Alignment = taCenter
         Title.Caption = #1058#1047' '#1084#1072#1096'.'
-        Width = 58
+        Width = 56
         Visible = True
       end>
   end
@@ -123,7 +123,7 @@ object fCoefficients: TfCoefficients
       Width = 216
       Height = 25
       DataSource = dsCoef
-      VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbDelete, nbEdit, nbPost, nbCancel]
+      VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbInsert, nbDelete, nbEdit, nbPost, nbCancel]
       Hints.Strings = (
         #1053#1072' '#1087#1077#1088#1074#1091#1102' '#1079#1072#1087#1080#1089#1100
         #1055#1088#1077#1076#1099#1076#1091#1097#1072#1103' '#1079#1072#1087#1080#1089#1100
@@ -162,6 +162,8 @@ object fCoefficients: TfCoefficients
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
+    FormatOptions.FmtDisplayNumeric = '#0.00'
     SQL.Strings = (
       
         'SELECT coef_id, coef_name, osn_zp, eksp_mach, mat_res, work_pers' +

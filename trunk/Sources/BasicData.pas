@@ -362,33 +362,34 @@ procedure TFormBasicData.ComboBoxMonthORYearChange(Sender: TObject);
 var
   vYear, vMonth: String;
 begin
-  { EditRateWorker.Text := '';
-    edtRateMachinist.Text := '';
+  EditRateWorker.Text := '';
+  edtRateMachinist.Text := '';
 
-    vMonth := IntToStr(ComboBoxMonth.ItemIndex + 1);
-    vYear := IntToStr(edtYear.Value);
+  vMonth := IntToStr(ComboBoxMonth.ItemIndex + 1);
+  vYear := IntToStr(edtYear.Value);
 
-    with qrTMP do
-    begin
+  with qrTMP do
+  begin
     Active := False;
     SQL.Clear;
     SQL.Add('SELECT stavka_m_rab as "RateWorker", stavka_m_mach as "RateMachinist" FROM stavka WHERE year = '
-    + vYear + ' and monat = ' + vMonth + ';');
+      + vYear + ' and monat = ' + vMonth + ';');
     Active := True;
     if not Eof then
     begin
-    EditRateWorker.Text := FieldByName('RateWorker').AsVariant;
-    edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
+      EditRateWorker.Text := FieldByName('RateWorker').AsVariant;
+      edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
     end;
-    end; }
-
-  qrTMP.Active := False;
-  qrTMP.SQL.Text := 'SELECT stavka_id FROM stavka WHERE year = ' + IntToStr(edtYear.Value) + ' and monat = ' +
+  end;
+  {
+    qrTMP.Active := False;
+    qrTMP.SQL.Text := 'SELECT stavka_id FROM stavka WHERE year = ' + IntToStr(edtYear.Value) + ' and monat = ' +
     IntToStr(ComboBoxMonth.ItemIndex + 1) + ';';
-  qrTMP.Active := True;
-  qrSmeta.Edit;
-  qrSmeta.FieldByName('STAVKA_ID').Value := qrTMP.FieldByName('STAVKA_ID').Value;
-  qrSmeta.Post;
+    qrTMP.Active := True;
+    qrSmeta.Edit;
+    qrSmeta.FieldByName('STAVKA_ID').Value := qrTMP.FieldByName('STAVKA_ID').Value;
+    qrSmeta.Post;
+  }
 end;
 
 procedure TFormBasicData.DBLookupComboBoxRegionDumpClick(Sender: TObject);
