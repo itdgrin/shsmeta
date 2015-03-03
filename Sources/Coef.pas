@@ -53,6 +53,9 @@ begin
   if not SelectEnabled then
     Exit;
 
+  if qrCoef.State in [dsEdit, dsInsert] then
+    qrCoef.Post;
+
   if FormCalculationEstimate.GetCountCoef = 5 then
   begin
     MessageBox(0, PChar('Уже добавлено 5 наборов коэффициентов!' + sLineBreak + sLineBreak +
