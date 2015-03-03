@@ -547,6 +547,13 @@
         OnClick = mnRASX_ACTClick
       end
     end
+    object vk1: TMenuItem
+      Caption = #1056#1072#1089#1095#1077#1090' '#1079#1080#1084#1085#1077#1075#1086' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1103
+      object vk2: TMenuItem
+        Caption = #1056#1072#1089#1095#1077#1090' '#1079#1080#1084#1085#1077#1075#1086' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1103
+        OnClick = vk2Click
+      end
+    end
   end
   object TimerCover: TTimer
     Enabled = False
