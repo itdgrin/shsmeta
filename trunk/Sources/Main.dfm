@@ -344,6 +344,26 @@
       end
       object ServiceBackup: TMenuItem
         Caption = #1056#1077#1079#1077#1088#1074#1085#1086#1077' '#1082#1086#1087#1080#1088#1086#1074#1072#1085#1080#1077
+        OnClick = ServiceBackupClick
+        object PMAddNewBackup: TMenuItem
+          Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1082#1086#1087#1080#1102
+          OnClick = PMAddNewBackupClick
+        end
+        object N18: TMenuItem
+          Caption = '-'
+        end
+        object PMRestoreOldBackup: TMenuItem
+          Caption = 'PMRestoreOldBackup'
+          Visible = False
+          object PMRestoreBackup: TMenuItem
+            Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+            OnClick = PMRestoreBackupClick
+          end
+          object PMDeleteBackup: TMenuItem
+            Caption = #1059#1076#1072#1083#1080#1090#1100
+            OnClick = PMDeleteBackupClick
+          end
+        end
       end
       object ServiceRecovery: TMenuItem
         Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1083#1077#1085#1080#1077' ('#1072#1076#1084')'

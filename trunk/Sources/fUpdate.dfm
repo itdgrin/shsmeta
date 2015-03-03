@@ -83,6 +83,12 @@ object UpdateForm: TUpdateForm
       Width = 75
       Height = 27
       Caption = #1055#1088#1077#1088#1074#1072#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 3
       OnClick = btnIterruptClick
     end
