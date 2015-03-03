@@ -28,6 +28,9 @@ type
     frxHTMLExport1: TfrxHTMLExport;
     frxRTFExport1: TfrxRTFExport;
     frxSimpleTextExport1: TfrxSimpleTextExport;
+    frxWRS_OBJ: TfrxDBDataset;
+    qWRS_OBJ: TFDQuery;
+    frxReport1: TfrxReport;
   private
     { Private declarations }
   public
@@ -35,6 +38,7 @@ type
     procedure Report_ZP_OBJ(SM_ID: integer; FileReportPath: string);
     procedure Report_ZP_OBJ_ACT(ID_ACT: integer; FileReportPath: string);
     procedure Report_RASX_MAT(ID_ACT: integer; FileReportPath: string);
+    procedure Report_WINTER_RS_OBJ(SM_ID: integer; FileReportPath: string);
   end;
 
 const arraymes: array[1..12, 1..2] of string = (('январь',   'январ€'),
@@ -60,6 +64,68 @@ implementation
 {$R *.dfm}
 
 Uses DataModule;
+
+
+ procedure TdmReportF.Report_WINTER_RS_OBJ(SM_ID: integer; FileReportPath: string);
+var
+  SM_ID_0: integer;
+begin
+frxReport.LoadFromFile(FileReportPath + 'frWinter_RS_OBJ.fr3');
+
+   qWRS_OBJ.SQL.Text:=
+  ' SELECT 	DE.id_estimate,'+
+  ' DE.ZP           as zp,'+
+  ' round(DE.ZP_MASH,0)      as ZP_MASH,'+
+  ' DE.Zim_udor     as Zim_udor,'+
+  ' DE.ZP_ZIM_UDOR  as ZP_ZIM_UDOR,'+
+  ' SSx.KZP         as KZP,'+
+  ' CR.RATE_CODE    as RATE_CODE,'+
+  ' CR.RATE_CAPTION as RATE_CAPTION,'+
+  ' CR.RATE_COUNT   as RATE_COUNT,'+
+  ' CR.RATE_UNIT    as RATE_UNIT,'+
+  ' ssx.NAME1       as NAME1 ,'+
+  ' round(if(SSx.KZP>0,DE.zp/SSx.KZP,0),0)     as zp_rab,'+
+  ' round(if(SSx.KZP>0,ZP_MASH/RATE_COUNT,0),0) as v_mash,'+
+  ' round(if(SSx.KZP*RATE_COUNT>0,DE.zp/(SSx.KZP*RATE_COUNT),0),0) as v_rab'+
+  ' FROM data_estimate AS DE'+
+  ' LEFT JOIN card_rate as CR ON DE.id_tables = CR.id'+
+  ' left join'+
+  ' (SELECT  ssd.SM_ID,0 as SM_VID,ssd.KZP, "" as NAME1'+
+  ' FROM smetasourcedata ssd'+
+  ' WHERE ssd.SM_ID = '+inttostr(SM_ID)+
+  ' AND ssd.SM_TYPE = 2'+
+  ' UNION '+
+  ' SELECT ssd_local.SM_ID, 1 as SM_VID,ssd_local.KZP, CONCAT(ssd_local.SM_NUMBER, " ",  ssd_local.NAME) as NAME1'+
+  ' FROM smetasourcedata ssd_local'+
+  ' JOIN smetasourcedata ssd ON ssd.SM_ID = ssd_local.PARENT_ID'+
+  ' AND ssd.SM_TYPE = 2'+
+  ' WHERE ssd_local.PARENT_ID = '+inttostr(SM_ID)+
+  ' AND ssd_local.SM_TYPE = 1'+
+  ' UNION'+
+  ' SELECT ssd_ptm.SM_ID,2 as SM_VID,ssd_ptm.KZP, CONCAT(ssd_local.SM_NUMBER, " ",  ssd_local.NAME) as NAME1'+
+  ' FROM smetasourcedata ssd_ptm'+
+  ' JOIN smetasourcedata ssd_local ON ssd_local.SM_ID = ssd_ptm.PARENT_ID'+
+  ' AND ssd_local.SM_TYPE = 1'+
+  ' AND ssd_local.PARENT_ID = '+inttostr(SM_ID)+
+  ' JOIN smetasourcedata ssd ON ssd.SM_ID = ssd_local.PARENT_ID '+
+  ' AND ssd.SM_TYPE = 2'+
+  ' WHERE ssd_ptm.SM_TYPE = 3'+
+  ' ORDER BY SM_VID) as ssx on ssx.sm_id = DE.ID_ESTIMATE'+
+  ' where zim_udor+ZP_ZIM_UDOR>0' ;
+
+
+   CloseOpen(qWRS_OBJ);
+
+  try
+    frxReport.PrepareReport;
+    frxReport.ShowPreparedReport;
+  except
+    ShowMessage('ќшибка при формировании отчета');
+  end;
+
+  qrTMP.Close;
+end;
+
 
 // отчет –асчет стоимости заработной платы рабочих строителей (¬адим)
 procedure TdmReportF.Report_ZP_OBJ(SM_ID: integer; FileReportPath: string);
