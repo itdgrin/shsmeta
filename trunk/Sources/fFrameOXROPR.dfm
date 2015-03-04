@@ -113,6 +113,62 @@ inherited FrameOXROPR: TFrameOXROPR
           end>
         WideDefaultText = 'node'
       end
+      object JvDBGrid1: TJvDBGrid
+        Left = 0
+        Top = 0
+        Width = 548
+        Height = 236
+        Align = alClient
+        DataSource = ds1
+        Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        TabOrder = 1
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+        AutoAppend = False
+        AutoSizeColumns = True
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'Number'
+            Title.Alignment = taCenter
+            Title.Caption = #1050#1086#1076
+            Width = 58
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'NameWork'
+            Title.Alignment = taCenter
+            Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1088#1072#1073#1086#1090#1099
+            Width = 292
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'P1'
+            Title.Alignment = taCenter
+            Title.Caption = '% '#1085#1072#1082#1083#1072#1076#1085#1099#1093
+            Width = 87
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'P2'
+            Title.Alignment = taCenter
+            Title.Caption = '% '#1087#1083#1072#1085#1086#1074#1099#1093
+            Width = 91
+            Visible = True
+          end>
+      end
     end
     object PanelMemo: TPanel
       Left = 0
@@ -278,7 +334,13 @@ inherited FrameOXROPR: TFrameOXROPR
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
     Left = 24
     Top = 32
+  end
+  object ds1: TDataSource
+    DataSet = ADOQuery
+    Left = 24
+    Top = 73
   end
 end

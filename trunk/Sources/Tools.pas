@@ -4,7 +4,7 @@ interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
-  ShellAPI;
+  ShellAPI, Vcl.Grids;
 
 // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
@@ -12,7 +12,7 @@ procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
 procedure LoadDBGridSettings(const DBGrid: TDBGrid);
 // Процедура рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
-// Процедура переоткрытия запроса TFDQuery
+// Процедура переоткрытия запроса TFDQuery с локейтом на значение Поля[0]
 procedure CloseOpen(const Query: TFDQuery);
 // Процедура загрузки стилей всех таблиц на форме
 procedure LoadDBGridsSettings(const aForm: TForm);
@@ -20,43 +20,42 @@ procedure LoadDBGridsSettings(const aForm: TForm);
 function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;
 // Функция вычисления формулы из строки !!!РАБОТАЕТ ЧЕРЕЗ OLE EXCEL - в дальнейшем переписать!
 function CalcFormula(const AFormula: string): Variant;
-//Удаление директории с содержимым !!!!Использовать остородно!!!!!
+// Удаление директории с содержимым !!!!Использовать остородно!!!!!
 procedure KillDir(const ADirName: string);
-//Запускает процесс и ждет его завершения
+// Запускает процесс и ждет его завершения
 function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
   var AWaitResult: DWord): boolean;
 
 implementation
 
-
-//Запускает приложение и ожидает его завершения
+// Запускает приложение и ожидает его завершения
 function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
   var AWaitResult: DWord): boolean;
-var ProcInf: TProcessInformation;
-    Start: TStartupInfo;
+var
+  ProcInf: TProcessInformation;
+  Start: TStartupInfo;
 begin
-    FillChar(Start, SizeOf(TStartupInfo), 0);
-    with Start do
-    begin
-        cb := SizeOf(TStartupInfo);
-        dwFlags := STARTF_USESHOWWINDOW;
-        wShowWindow :=  ACmdShow;
-    end;
+  FillChar(Start, SizeOf(TStartupInfo), 0);
+  with Start do
+  begin
+    cb := SizeOf(TStartupInfo);
+    dwFlags := STARTF_USESHOWWINDOW;
+    wShowWindow := ACmdShow;
+  end;
 
-    Result := CreateProcess(AAppName, ACmdLine, nil, nil,
-      False, NORMAL_PRIORITY_CLASS, nil, nil, Start, ProcInf);
+  Result := CreateProcess(AAppName, ACmdLine, nil, nil, False, NORMAL_PRIORITY_CLASS, nil, nil,
+    Start, ProcInf);
 
-    if ATimeOut=0 then
-      AWaitResult := WaitForSingleObject(ProcInf.hProcess, INFINITE)
-    else
-      AWaitResult := WaitForSingleObject(ProcInf.hProcess, ATimeout);
+  if ATimeout = 0 then
+    AWaitResult := WaitForSingleObject(ProcInf.hProcess, INFINITE)
+  else
+    AWaitResult := WaitForSingleObject(ProcInf.hProcess, ATimeout);
 
-    TerminateProcess(ProcInf.hProcess, 0);
-    CloseHandle(ProcInf.hProcess);
+  TerminateProcess(ProcInf.hProcess, 0);
+  CloseHandle(ProcInf.hProcess);
 end;
 
-
-//Удаление директории с содержимым
+// Удаление директории с содержимым
 procedure KillDir(const ADirName: string);
 var
   FileFolderOperation: TSHFileOpStruct;
@@ -199,6 +198,7 @@ end;
 // Установка стиля таблицы из формы настроек
 procedure LoadDBGridSettings(const DBGrid: TDBGrid);
 begin
+  DBGrid.DrawingStyle := gdsClassic;
   DBGrid.FixedColor := PS.BackgroundHead;
   DBGrid.TitleFont.Color := PS.FontHead;
   DBGrid.Color := PS.BackgroundRows;
