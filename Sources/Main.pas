@@ -82,7 +82,6 @@ type
     N8: TMenuItem;
     Administator: TMenuItem;
     UpdatePanel: TPanel;
-    N10: TMenuItem;
     Image1: TImage;
     Label1: TLabel;
     TimerUpdate: TTimer;

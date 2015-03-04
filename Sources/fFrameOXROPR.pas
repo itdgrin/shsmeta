@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   DBCtrls, VirtualTrees, fFrameStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -48,6 +48,8 @@ type
     ADOQueryTemp: TFDQuery;
     ADOQueryTypeWork: TFDQuery;
     ADOQuery: TFDQuery;
+    JvDBGrid1: TJvDBGrid;
+    ds1: TDataSource;
 
     procedure FillingTypeWork;
     procedure FillingResolution;
@@ -83,7 +85,7 @@ type
 
 implementation
 
-uses DrawingTables, DataModule;
+uses DrawingTables, DataModule, Tools;
 
 {$R *.dfm}
 
@@ -110,7 +112,7 @@ begin
   inherited Create(AOwner);
 
   // ----------------------------------------
-
+  LoadDBGridSettings(JvDBGrid1);
   VSTSetting(VST); // Õ¿—“–¿»¬¿≈Ã ÷¬≈“¿
 
   PanelMemo.Constraints.MinHeight := 35;
@@ -175,7 +177,7 @@ var
   StrQuery: string;
 begin
   try
-    StrQuery := 'SELECT * FROM mais ORDER BY mais_id;';
+    StrQuery := 'SELECT * FROM mais ORDER BY `NAME`;';
 
     with ADOQueryTemp do
     begin

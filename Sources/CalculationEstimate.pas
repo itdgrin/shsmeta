@@ -823,8 +823,7 @@ begin
   Left := 10; // GetSystemMetrics(SM_CXFRAME) * -1;
 
   WindowState := wsMaximized;
-  Caption := FormNameCalculationEstimate;
-
+  Caption := FormNameCalculationEstimate + ' - Разрешено редактирование документа';
   // -----------------------------------------
 
   IdObject := 0;
@@ -916,7 +915,7 @@ begin
 
   // TCustomDbGridCracker(dbgrdRates).OnMouseWheel:=Wheel;
   if not Act then
-    FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.ShowCalculationEstimate);
+    FormMain.CreateButtonOpenWindow(FormNameCalculationEstimate, FormNameCalculationEstimate, FormMain.ShowCalculationEstimate);
 end;
 
 procedure TFormCalculationEstimate.FormShow(Sender: TObject);
@@ -941,21 +940,14 @@ end;
 
 procedure TFormCalculationEstimate.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  // Проверяем не нажата ли кнопка CapsLock
-  if (GetKeyState(VK_CAPITAL) and $01) <> 0 then
-  begin
-    keybd_event(VK_CAPITAL, 0, 0, 0);
-    keybd_event(VK_CAPITAL, 0, KEYEVENTF_KEYUP, 0);
-  end;
   Action := caFree;
 end;
 
 procedure TFormCalculationEstimate.FormDestroy(Sender: TObject);
 begin
   FormCalculationEstimate := nil;
-
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(Caption);
+  FormMain.DeleteButtonCloseWindow(FormNameCalculationEstimate);
 end;
 
 procedure TFormCalculationEstimate.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -1292,12 +1284,16 @@ begin
       Tag := 0;
       Color := clRed;
       Caption := 'Расчёты запрещены';
+      FormCalculationEstimate.Caption := FormNameCalculationEstimate +
+        ' - Запрещено редактирование документа';
     end
     else
     begin
       Tag := 1;
       Color := clLime;
       Caption := 'Расчёты разрешены';
+      FormCalculationEstimate.Caption := FormNameCalculationEstimate +
+        ' - Разрешено редактирование документа';
     end;
 end;
 
@@ -2831,18 +2827,12 @@ end;
 
 procedure TFormCalculationEstimate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var
-  DialogResult { , i } : Integer;
+  DialogResult: Integer;
   FormCardAct: TfCardAct;
 begin
-  // Если уже спрашивали о закрытии окна, и окно было зактрыто, больше не выводим это сообщение
-  // пока эта форма не будет создана заново, в резельтате чего ConfirmCloseForm будет установлено в True
-  if not ConfirmCloseForm then
-    Exit;
   DialogResult := mrNone;
-  // Флаг, сигнализирующий о том спрашивать или не спрашивать при закрытиии формы
-  ConfirmCloseForm := False;
 
-  if (not ActReadOnly) then
+  if (not ActReadOnly) and (PanelCalculationYesNo.Tag = 1) then
     DialogResult := MessageBox(0, PChar('Сохранить сделанные изменения перед закрытием окна?'), 'Смета',
       MB_ICONINFORMATION + MB_YESNOCANCEL + mb_TaskModal);
 
@@ -2850,8 +2840,10 @@ begin
   begin
     ConfirmCloseForm := True;
     CanClose := False;
-  end
-  else if DialogResult = mrYes then
+    Exit;
+  end;
+
+  if DialogResult = mrYes then
     if Act then
     begin
       if IdAct = 0 then
@@ -2894,6 +2886,7 @@ begin
 
   if (not Assigned(FormObjectsAndEstimates)) then
     FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(FormMain);
+  CanClose := True;
 end;
 
 procedure TFormCalculationEstimate.GridRatesRowLoad;
@@ -5235,6 +5228,8 @@ procedure TFormCalculationEstimate.dbgrdRatesKeyDown(Sender: TObject; var Key: W
 begin
   if Key = 45 then
     Key := 0;
+
+  dbgrdRates.ReadOnly := PanelCalculationYesNo.Tag = 0;
 end;
 
 end.
