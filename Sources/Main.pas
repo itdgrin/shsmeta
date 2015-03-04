@@ -472,6 +472,14 @@ end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  // путь к папке с отчетами (Вадим)
+{$IFDEF DEBUG}
+  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1,
+                         Length(ExtractFilePath(Application.ExeName)) - 12) + 'Reports\';
+{$ELSE}
+  FileReportPath := ExtractFilePath(Application.ExeName) + 'Reports\';
+{$ENDIF}
+
   FCurVersion.Clear;
 
   SystemInfoResult := False;
@@ -490,14 +498,6 @@ begin
   // Объект для управления архивом
   Arhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName),
     ExtractFilePath(Application.ExeName) + ArhivLocalDir);
-
-  // путь к папке с отчетами (Вадим)
-{$IFDEF DEBUG}
-  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
-    - 12) + 'Reports\';
-{$ELSE}
-  FileReportPath := ExtractFilePath(Application.ExeName) + 'Reports\';
-{$ENDIF}
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);

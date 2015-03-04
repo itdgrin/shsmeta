@@ -1,29 +1,26 @@
 object dmReportF: TdmReportF
   OldCreateOrder = False
-  Height = 677
-  Width = 1052
+  Height = 689
+  Width = 1069
   object frxZP_OBJ: TfrxDBDataset
     UserName = 'frxZP_OBJ'
     CloseDataSource = True
     FieldAliases.Strings = (
-      'OUT_npp=OUT_npp'
-      'OUT_sm_vid=OUT_sm_vid'
-      'OUT_sm_name=OUT_sm_name'
-      'OUT_rate_code=OUT_rate_code'
-      'OUT_rate_caption=OUT_rate_caption'
-      'OUT_rate_unit=OUT_rate_unit'
-      'OUT_trud_ed=OUT_trud_ed'
-      'OUT_norma=OUT_norma'
-      'OUT_k_trud=OUT_k_trud'
-      'OUT_zp_ed=OUT_zp_ed'
-      'OUT_rate_count=OUT_rate_count'
-      'OUT_trud=OUT_trud'
-      'OUT_coef=OUT_coef'
-      'OUT_k_zp=OUT_k_zp'
-      'OUT_zp=OUT_zp'
-      'OUT_name_o=OUT_name_o'
-      'OUT_name_l=OUT_name_l'
-      'OUT_name_p=OUT_name_p')
+      'OBJECT_NAME=OBJECT_NAME'
+      'LOCAL_NAME=LOCAL_NAME'
+      'PTM_NAME=PTM_NAME'
+      'RATE_CODE=RATE_CODE'
+      'RATE_CAPTION=RATE_CAPTION'
+      'RATE_UNIT=RATE_UNIT'
+      'RATE_COUNT=RATE_COUNT'
+      'TRUD_ED=TRUD_ED'
+      'TRUD=TRUD'
+      'NORMA=NORMA'
+      'COEF=COEF'
+      'K_TRUD=K_TRUD'
+      'K_ZP=K_ZP'
+      'ZP_ED=ZP_ED'
+      'ZP=ZP')
     DataSet = qrZP_OBJ
     BCDToCurrency = False
     Left = 16
@@ -38,7 +35,7 @@ object dmReportF: TdmReportF
     PrintOptions.Printer = 'Default'
     PrintOptions.PrintOnSheet = 0
     ReportOptions.CreateDate = 42048.002529965300000000
-    ReportOptions.LastChange = 42066.940764317130000000
+    ReportOptions.LastChange = 42068.032230567130000000
     ScriptLanguage = 'PascalScript'
     StoreInDFM = False
     Left = 16
@@ -50,9 +47,79 @@ object dmReportF: TdmReportF
     Transaction = trReportRead
     UpdateTransaction = trReportWrite
     SQL.Strings = (
-      'call smeta.Report_ZP_OBJ(315, 5, 2014)')
+      
+        'select CONCAT(`ssd`.`SM_NUMBER`, " ", `ssd`.`NAME`) as `OBJECT_N' +
+        'AME`,'
+      
+        '       CONCAT(`ssd1`.`SM_NUMBER`, " ", `ssd1`.`NAME`) as `LOCAL_' +
+        'NAME`,'
+      
+        '       CONCAT(`ssd2`.`SM_NUMBER`, " ", `ssd2`.`NAME`) as `PTM_NA' +
+        'ME`,'
+      '       `cr`.`RATE_CODE`,'
+      '       UCASE(`cr`.`RATE_CAPTION`) `RATE_CAPTION`,'
+      '       `cr`.`RATE_UNIT`,'
+      '       `cr`.`RATE_COUNT`,'
+      
+        '       `de`.`TRUD` / IF(IFNULL(`cr`.`RATE_COUNT`, 1) = 0, 1, IFN' +
+        'ULL(`cr`.`RATE_COUNT`, 1)) `TRUD_ED`,'
+      '       `de`.`TRUD`,'
+      '       `nw`.`NORMA`,'
+      
+        '       IF(IFNULL(`c`.`COEF`, 0) = 0, "F", TRIM(TRAILING "0" FROM' +
+        ' CONVERT(`c`.`COEF`, CHAR(8)))) `COEF`,'
+      '       `de`.`K_TRUD`,'
+      '       `de`.`K_ZP`,'
+      
+        '       `de`.`ZP` / IF(IFNULL(`cr`.`RATE_COUNT`, 1) = 0, 1, IFNUL' +
+        'L(`cr`.`RATE_COUNT`, 1)) `ZP_ED`,'
+      '       `de`.`ZP`'#9'   '
+      'from `smetasourcedata` `ssd`'
+      
+        'inner join `smetasourcedata` `ssd1` on `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      '                                   and `ssd1`.`SM_TYPE` = 1'
+      
+        'inner join `smetasourcedata` `ssd2` on `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      '                                   and `ssd2`.`SM_TYPE` = 3'
+      
+        'inner join `data_estimate` `de` on `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID`'
+      '                               and `de`.`ID_TYPE_DATA` = 1'
+      'inner join `card_rate` `cr` on `cr`.`ID` = `de`.`ID_TABLES`'
+      
+        'left join `normativwork` `nw` on `nw`.`NORMATIV_ID` = `cr`.`RATE' +
+        '_ID`'
+      '                             and `nw`.`WORK_ID` = 1'
+      'left join `category` `c` on `c`.`VALUE` * 10 = `nw`.`NORMA` * 10'
+      
+        '                        and `c`.`DATE_BEG` <= CONVERT(CONCAT(:YE' +
+        'AR, '#39'-'#39', :MONTH, '#39'-01'#39'), DATE)'
+      'where `ssd`.`SM_ID` = :SM_ID'
+      '  and `ssd`.`SM_TYPE` = 2  '
+      'order by `OBJECT_NAME`, `LOCAL_NAME`, `PTM_NAME`, `RATE_CODE`')
     Left = 16
     Top = 112
+    ParamData = <
+      item
+        Name = 'YEAR'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '2014'
+      end
+      item
+        Name = 'MONTH'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '4'
+      end
+      item
+        Name = 'SM_ID'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '344'
+      end>
   end
   object trReportRead: TFDTransaction
     Options.ReadOnly = True
@@ -106,50 +173,67 @@ object dmReportF: TdmReportF
     Transaction = trReportRead
     UpdateTransaction = trReportWrite
     SQL.Strings = (
+      'select `cra`.`RATE_ID`, '
       
-        'select cra.`RATE_ID`, ssd0.`NAME` as OBJ_NAME, ssd1.`NAME` as LO' +
-        'CAL_NAME, ssd2.`NAME` as PTM_NAME, '
+        '       CONCAT(`ssd0`.`SM_NUMBER`, " ", `ssd0`.`NAME`) `OBJ_NAME`' +
+        ', '
       
-        '       cra.`RATE_CODE`, UCASE(cra.`RATE_CAPTION`) as RATE_CAPTIO' +
-        'N, cra.`RATE_UNIT`, cra.`RATE_COUNT`, '
+        '       CONCAT(`ssd1`.`SM_NUMBER`, " ", `ssd1`.`NAME`) `LOCAL_NAM' +
+        'E`, '
       
-        #9'   da.`K_TRUD`, IFNULL(da.`TRUD`, 0) as TRUD, da.`ZP`, da.`K_ZP' +
-        '`, nw.`NORMA`,'
+        '       CONCAT(`ssd2`.`SM_NUMBER`, " ", `ssd2`.`NAME`) `PTM_NAME`' +
+        ', '
+      '       `cra`.`RATE_CODE`, '
+      '       UCASE(`cra`.`RATE_CAPTION`) `RATE_CAPTION`, '
+      '       `cra`.`RATE_UNIT`, '
+      '       `cra`.`RATE_COUNT`, '
+      '       `da`.`K_TRUD`, '
+      '       IFNULL(`da`.`TRUD`, 0) `TRUD`, '
+      '       `da`.`ZP`, '
+      '       `da`.`K_ZP`, '
+      '       `nw`.`NORMA`,'
       
-        #9'   CAST(IF(IFNULL(c.`COEF`, 0) = 0, "F", TRIM(TRAILING '#39'0'#39' FROM' +
-        ' c.`COEF`)) as CHAR(10)) as COEF,'
+        '       IF(IFNULL(`c`.`COEF`, 0) = 0, "F", TRIM(TRAILING "0" FROM' +
+        ' CONVERT(`c`.`COEF`, CHAR(8)))) `COEF`,'
       
-        #9'   da.`TRUD` / IF(IFNULL(cra.`RATE_COUNT`, 1) = 0, 1, IFNULL(cr' +
-        'a.`RATE_COUNT`, 1)) as TRUD_ED, '
+        '      `da`.`TRUD` / IF(IFNULL(`cra`.`RATE_COUNT`, 1) = 0, 1, IFN' +
+        'ULL(`cra`.`RATE_COUNT`, 1)) `TRUD_ED`, '
       
-        #9'   da.`ZP` / IF(IFNULL(cra.`RATE_COUNT`, 1) = 0, 1, IFNULL(cra.' +
-        '`RATE_COUNT`, 1)) as ZP_ED'
+        '      `da`.`ZP` / IF(IFNULL(`cra`.`RATE_COUNT`, 1) = 0, 1, IFNUL' +
+        'L(`cra`.`RATE_COUNT`, 1)) `ZP_ED`'
       #9'   '
-      'from `data_act` as da'
+      'from `data_act` `da`'
+      
+        'inner join `card_rate_act` `cra` on `cra`.`ID` = `da`.`ID_TABLES' +
+        '` '
+      '                               and `cra`.`ID_ACT` = :ID_ACT'
+      
+        'inner join `smetasourcedata` `ssd2` on `ssd2`.`SM_ID` = `da`.`ID' +
+        '_ESTIMATE`'
+      '                                   and `ssd2`.`SM_TYPE` = 3'
+      
+        'inner join `smetasourcedata` `ssd1` on `ssd1`.`SM_ID` = `ssd2`.`' +
+        'PARENT_ID`'
+      '                                   and `ssd1`.`SM_TYPE` = 1'
+      
+        'inner join `smetasourcedata` `ssd0` on `ssd0`.`SM_ID` = `ssd1`.`' +
+        'PARENT_ID`'
+      '                                   and `ssd0`.`SM_TYPE` = 2'
+      
+        'left join `normativwork` `nw` on `nw`.`NORMATIV_ID` = `cra`.`RAT' +
+        'E_ID`'
+      '                 '#9#9'     and `nw`.`WORK_ID` = 1 '
+      
+        'left join `category` `c` on `c`.`VALUE` * 10 = `nw`.`NORMA` * 10' +
+        ' '
+      
+        '                        and IFNULL(`c`.`DATE_BEG`, CONVERT('#39'1900' +
+        '-01-01'#39', DATE)) <= CONVERT(CONCAT(:YEAR,'#39'-'#39',:MONTH,'#39'-01'#39'), DATE)' +
+        '    '
       ''
-      'left join `card_rate_act` as cra on cra.`ID` = da.`ID_TABLES` '
-      '                                and cra.`ID_ACT` = :ID_ACT'
-      
-        'left join `smetasourcedata` as ssd2 on ssd2.`SM_ID` = da.`ID_EST' +
-        'IMATE`'
-      
-        'left join `smetasourcedata` as ssd1 on ssd1.`SM_ID` = ssd2.`PARE' +
-        'NT_PTM_ID`'
-      
-        'left join `smetasourcedata` as ssd0 on ssd0.`SM_ID` = ssd1.`PARE' +
-        'NT_LOCAL_ID`'
-      
-        'left join `normativwork` as nw on nw.`NORMATIV_ID` = cra.`RATE_I' +
-        'D`'
-      '         '#9#9'      and nw.`WORK_ID` = 1 '
-      'left join `category` as c on c.`VALUE` * 10 = nw.`NORMA` * 10 '
-      
-        '                         AND IFNULL(c.`DATE_BEG`, CONVERT('#39'1900-' +
-        '01-01'#39', DATE)) <= CONVERT(CONCAT(:YEAR,'#39'-'#39',:MONTH,'#39'-01'#39'), DATE) ' +
-        '   '
-      ''
-      'where da.`ID_ACT` = :ID_ACT and da.`ID_TYPE_DATA` = 1'
-      'order by OBJ_NAME, LOCAL_NAME, PTM_NAME, RATE_CAPTION')
+      'where `da`.`ID_ACT` = :ID_ACT '
+      '  and `da`.`ID_TYPE_DATA` = 1'
+      'order by `OBJ_NAME`, `LOCAL_NAME`, `PTM_NAME`, `RATE_CODE`')
     Left = 88
     Top = 112
     ParamData = <
@@ -308,8 +392,8 @@ object dmReportF: TdmReportF
     FitWindow = False
     CenterWindow = True
     PrintScaling = False
-    Left = 920
-    Top = 160
+    Left = 984
+    Top = 384
   end
   object frxHTMLExport1: TfrxHTMLExport
     UseFileCache = True
@@ -322,8 +406,8 @@ object dmReportF: TdmReportF
     EmptyLines = True
     Print = False
     PictureType = gpPNG
-    Left = 840
-    Top = 160
+    Left = 984
+    Top = 272
   end
   object frxRTFExport1: TfrxRTFExport
     FileName = 'test.rtf'
@@ -341,8 +425,8 @@ object dmReportF: TdmReportF
     SuppressPageHeadersFooters = True
     HeaderFooterMode = hfText
     AutoSize = False
-    Left = 992
-    Top = 160
+    Left = 984
+    Top = 328
   end
   object frxSimpleTextExport1: TfrxSimpleTextExport
     UseFileCache = True
@@ -372,8 +456,8 @@ object dmReportF: TdmReportF
       'v_mash=v_mash')
     DataSet = qWRS_OBJ
     BCDToCurrency = False
-    Left = 56
-    Top = 208
+    Left = 24
+    Top = 184
   end
   object qWRS_OBJ: TFDQuery
     AutoCalcFields = False
@@ -382,8 +466,8 @@ object dmReportF: TdmReportF
     UpdateTransaction = trReportWrite
     SQL.Strings = (
       '')
-    Left = 56
-    Top = 264
+    Left = 24
+    Top = 240
   end
   object frxReport1: TfrxReport
     Version = '4.13.2'
