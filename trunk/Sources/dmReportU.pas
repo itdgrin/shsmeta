@@ -30,7 +30,8 @@ type
     frxSimpleTextExport1: TfrxSimpleTextExport;
     frxWRS_OBJ: TfrxDBDataset;
     qWRS_OBJ: TFDQuery;
-    frxReport1: TfrxReport;
+    frxRSMO_OBJ: TfrxDBDataset;
+    qRSMO_OBJ: TFDQuery;
   private
     { Private declarations }
   public
@@ -39,6 +40,7 @@ type
     procedure Report_ZP_OBJ_ACT(ID_ACT: integer; FileReportPath: string);
     procedure Report_RASX_MAT(ID_ACT: integer; FileReportPath: string);
     procedure Report_WINTER_RS_OBJ(SM_ID: integer; FileReportPath: string);
+    procedure Report_RSMO_OBJ(SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
   end;
 
 const arraymes: array[1..12, 1..2] of string = (('Январь',   'Января'),
@@ -65,7 +67,7 @@ implementation
 
 Uses DataModule;
 
-
+ // vk зимнее удорожание
  procedure TdmReportF.Report_WINTER_RS_OBJ(SM_ID: integer; FileReportPath: string);
 var
   SM_ID_0: integer;
@@ -126,6 +128,77 @@ frxReport.LoadFromFile(FileReportPath + 'frWinter_RS_OBJ.fr3');
   qrTMP.Close;
 end;
 
+// vk Расчет стоимости материалов по объекту
+ procedure TdmReportF.Report_RSMO_OBJ(SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
+var
+  SM_ID_0: integer;
+begin
+frxReport.LoadFromFile(FileReportPath + 'frRSMO_OBJ.fr3');
+
+
+qrTMP.SQL.Text :=  'select 	CONCAT(`oc`.`NUM`, " ", `oc`.`NAME`) `NAME`,'#13#10 +
+                  '		IFNULL(`s`.`MONAT`, 0) `MONTH`,'#13#10 +
+                  '		IFNULL(`s`.`YEAR`, 0) `YEAR`'#13#10 +
+                  'from `smetasourcedata` as `ssd`'#13#10 +
+                  'inner join`objcards` `oc` on `oc`.`OBJ_ID` = `ssd`.`OBJ_ID`'#13#10 +
+                  'inner join `objstroj` `os` on `os`.`STROJ_ID` = `oc`.`STROJ_ID`'#13#10 +
+                  'inner join `stavka` `s` on `s`.`STAVKA_ID` = `ssd`.`STAVKA_ID`'#13#10 +
+                  'where (:SM_ID is null or `ssd`.`SM_ID` = :SM_ID) and (:OBJ_ID is null or `ssd`.`OBJ_ID` = :OBJ_ID)'#13#10 ;
+
+with qrTMP.ParamByName('SM_ID') do begin
+DataType := ftInteger;
+Clear;
+end;
+with qrTMP.ParamByName('OBJ_ID') do begin
+DataType := ftInteger;
+Clear;
+end;
+//qrTMP.ParamByName('ID_ACT').AsInteger := ID_ACT;
+CloseOpen(qrTMP);
+
+qRSMO_OBJ.SQL.Text:=
+' select '#13#10 +
+'     `Mat_code`,'#13#10 +
+'     `mat_name`,'#13#10 +
+'     `mat_unit`,'#13#10 +
+'     sum(`mat_count`) as `mat_count`,'#13#10 +
+'     `coast_no_nds` 	 as `coast_no_nds` ,'#13#10 +
+'     sum(`MAT_SUM_NO_NDS`) as `MAT_SUM_NO_NDS`,'#13#10 +
+'     `proc_transp`as `proc_transp`,'#13#10 +
+'     sum(`TRANSP_NO_NDS`)  as `coast_transp`'#13#10 +
+' from materialcard '#13#10 +
+' left join  card_rate on card_rate.id = materialcard.ID_CARD_RATE'#13#10 +
+' left join  data_estimate on ID_TABLES = card_rate.id'#13#10 +
+' left join  smetasourcedata on  smetasourcedata.sm_id = data_estimate.ID_ESTIMATE '#13#10 +
+' where `materialcard`.`CONSIDERED` = 1 and  (:SM_ID is null or `smetasourcedata`.`SM_ID` = :SM_ID) and (:OBJ_ID is null or `smetasourcedata`.`OBJ_ID` = :OBJ_ID)'#13#10 +
+' group by  `mat_code`,`mat_name`,`mat_unit`,`coast_no_nds`,`proc_transp`'#13#10 +
+' order by `mat_code`' ;
+
+  with qRSMO_OBJ.ParamByName('SM_ID') do begin
+  DataType := ftInteger;
+  Clear;
+  end;
+  with qRSMO_OBJ.ParamByName('OBJ_ID') do begin
+  DataType := ftInteger;
+  Clear;
+  end;
+
+  if SM_ID>0  then  qRSMO_OBJ.ParamByName('SM_ID').AsInteger  := SM_ID;
+  if OBJ_ID>0 then  qRSMO_OBJ.ParamByName('OBJ_ID').AsInteger := OBJ_ID;
+  CloseOpen(qRSMO_OBJ);
+
+  frxReport.Script.Variables['sm_obj_name'] := AnsiUpperCase(qrTMP.FieldByName('NAME').AsString);
+  frxReport.Script.Variables['sm_date_dog'] := '1 ' + AnsiUpperCase(arraymes[qrTMP.FieldByName('MONTH').AsInteger, 2]) +
+   ' ' + IntToStr(qrTMP.FieldByName('YEAR').AsInteger) + ' г.';
+  try
+    frxReport.PrepareReport;
+    frxReport.ShowPreparedReport;
+  except
+    ShowMessage('Ошибка при формировании отчета');
+  end;
+
+
+end;
 
 // отчет Расчет стоимости заработной платы рабочих строителей (Вадим)
 procedure TdmReportF.Report_ZP_OBJ(SM_ID: integer; FileReportPath: string);
