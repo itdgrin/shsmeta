@@ -40,7 +40,7 @@ type
     procedure Report_ZP_OBJ_ACT(ID_ACT: integer; FileReportPath: string);
     procedure Report_RASX_MAT(ID_ACT: integer; FileReportPath: string);
     procedure Report_WINTER_RS_OBJ(SM_ID: integer; FileReportPath: string);
-    procedure Report_RSMO_OBJ(SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
+    procedure Report_RSMO_OBJ(with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
   end;
 
 const arraymes: array[1..12, 1..2] of string = (('январь',   'январ€'),
@@ -129,12 +129,13 @@ frxReport.LoadFromFile(FileReportPath + 'frWinter_RS_OBJ.fr3');
 end;
 
 // vk –асчет стоимости материалов по объекту
- procedure TdmReportF.Report_RSMO_OBJ(SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
+ procedure TdmReportF.Report_RSMO_OBJ(with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
 var
   SM_ID_0: integer;
 begin
-frxReport.LoadFromFile(FileReportPath + 'frRSMO_OBJ.fr3');
 
+if with_nds = 0 then frxReport.LoadFromFile(FileReportPath + 'frRSMO_OBJ.fr3');
+if with_nds = 1 then frxReport.LoadFromFile(FileReportPath + 'frRSMO_NDS_OBJ.fr3');
 
 qrTMP.SQL.Text :=  'select 	CONCAT(`oc`.`NUM`, " ", `oc`.`NAME`) `NAME`,'#13#10 +
                   '		IFNULL(`s`.`MONAT`, 0) `MONTH`,'#13#10 +
@@ -165,7 +166,11 @@ qRSMO_OBJ.SQL.Text:=
 '     `coast_no_nds` 	 as `coast_no_nds` ,'#13#10 +
 '     sum(`MAT_SUM_NO_NDS`) as `MAT_SUM_NO_NDS`,'#13#10 +
 '     `proc_transp`as `proc_transp`,'#13#10 +
-'     sum(`TRANSP_NO_NDS`)  as `coast_transp`'#13#10 +
+'     sum(`TRANSP_NO_NDS`)  as `coast_transp`,'#13#10 +
+'     `materialcard`.`NDS`,'#13#10 +
+'     sum(`MAT_SUM_NO_NDS`*(1+`materialcard`.`NDS`/100)) as `NDS_RUB`,'#13#10 +
+'     sum(`TRANSP_NDS`)  as `transp_nds`,'#13#10 +
+'     sum(`MAT_SUM_NDS`) as `MAT_SUM_NDS`'#13#10 +
 ' from materialcard '#13#10 +
 ' left join  card_rate on card_rate.id = materialcard.ID_CARD_RATE'#13#10 +
 ' left join  data_estimate on ID_TABLES = card_rate.id'#13#10 +

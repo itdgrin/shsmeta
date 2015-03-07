@@ -480,7 +480,11 @@ object dmReportF: TdmReportF
       'coast_no_nds=coast_no_nds'
       'mat_sum_no_nds=mat_sum_no_nds'
       'proc_transp=proc_transp'
-      'coast_transp=coast_transp')
+      'coast_transp=coast_transp'
+      'nds=nds'
+      'nds_rub=nds_rub'
+      'transp_nds=transp_nds'
+      'mat_sum_nds=mat_sum_nds')
     DataSet = qRSMO_OBJ
     BCDToCurrency = False
     Left = 104
