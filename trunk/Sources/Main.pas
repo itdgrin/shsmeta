@@ -97,6 +97,7 @@ type
     PMRestoreOldBackup: TMenuItem;
     vk1: TMenuItem;
     vk2: TMenuItem;
+    vk3: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -202,6 +203,7 @@ type
     procedure PMRestoreBackupClick(Sender: TObject);
     procedure PMDeleteBackupClick(Sender: TObject);
     procedure vk2Click(Sender: TObject);
+    procedure vk3Click(Sender: TObject);
 
   private
     CountOpenWindows: integer;
@@ -1046,6 +1048,39 @@ begin
         Exit;
       end;
       dmReportF.Report_RASX_MAT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+
+procedure TFormMain.vk3Click(Sender: TObject);
+begin
+
+//dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_RSMO_OBJ(FormObjectsAndEstimates.IdEstimate,0, FileReportPath);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+
+        dmReportF.Report_RSMO_OBJ(0,FormCalculationEstimate.GetIdObject, FileReportPath);
+      end;
     end;
   finally
     Screen.Cursor := crDefault;
