@@ -498,4 +498,32 @@ object dmReportF: TdmReportF
     Left = 104
     Top = 288
   end
+  object qRSMEH_OBJ: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    Left = 200
+    Top = 288
+  end
+  object frxRSMEH_OBJ: TfrxDBDataset
+    UserName = 'frxRSMEH_OBJ'
+    CloseDataSource = True
+    FieldAliases.Strings = (
+      'mech_code=mech_code'
+      'mech_name=mech_name'
+      'mech_unit=mech_unit'
+      'mech_count=mech_count'
+      'coast_no_nds=coast_no_nds'
+      'sum_no_nds=sum_no_nds'
+      'zp_sum_no_nds=zp_sum_no_nds'
+      'nds=nds'
+      'zp_mach_no_nds=zp_mach_no_nds'
+      'nds_rub=nds_rub'
+      'sum_nds=sum_nds')
+    DataSet = qRSMEH_OBJ
+    BCDToCurrency = False
+    Left = 200
+    Top = 240
+  end
 end
