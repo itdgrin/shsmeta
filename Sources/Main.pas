@@ -99,6 +99,8 @@ type
     vk2: TMenuItem;
     vk3: TMenuItem;
     vk4: TMenuItem;
+    vk5: TMenuItem;
+    vk6: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -206,6 +208,8 @@ type
     procedure vk2Click(Sender: TObject);
     procedure vk3Click(Sender: TObject);
     procedure vk4Click(Sender: TObject);
+    procedure vk5Click(Sender: TObject);
+    procedure vk6Click(Sender: TObject);
 
   private
     CountOpenWindows: integer;
@@ -1119,6 +1123,43 @@ begin
   finally
     Screen.Cursor := crDefault;
   end;
+end;
+
+procedure TFormMain.vk5Click(Sender: TObject);
+begin
+  // vk Расчет стоимости механизмов без НДС по объекту
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_RSMEH_OBJ(0,FormObjectsAndEstimates.IdEstimate,0, FileReportPath);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+
+        dmReportF.Report_RSMEH_OBJ(0,0,FormCalculationEstimate.GetIdObject, FileReportPath);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+
+procedure TFormMain.vk6Click(Sender: TObject);
+begin
+//vk - Расчет стоимости оборудования по объекту
 end;
 
 procedure TFormMain.N13Click(Sender: TObject);
