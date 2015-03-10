@@ -6,6 +6,9 @@ uses
   Forms,
   Windows,
   ShellAPI,
+  Dialogs,
+  System.SysUtils,
+  System.IOUtils,
   DataModule in 'DataModule.pas' {DM: TDataModule},
   Main in 'Main.pas' {FormMain},
   TariffsSalary in 'TariffsSalary.pas' {FormTariffsSalary},
@@ -17,7 +20,6 @@ uses
   ConnectDatabase in 'ConnectDatabase.pas' {FormConnectDatabase},
   CardObject in 'CardObject.pas' {FormCardObject},
   ProgramSettings in 'ProgramSettings.pas' {FormProgramSettings},
-  Login in 'Login.pas' {FormLogin},
   Waiting in 'Waiting.pas' {FormWaiting},
   KC6 in 'KC6.pas' {FormKC6},
   ActC6 in 'ActC6.pas' {FormActC6},
@@ -87,8 +89,6 @@ uses
   CoefficientOrders in 'CoefficientOrders.pas' {FormCoefficientOrders},
   CardAct in 'CardAct.pas' {fCardAct},
   Tools in 'Tools.pas',
-  Vcl.Themes,
-  Vcl.Styles,
   KC6Journal in 'KC6Journal.pas' {fKC6Journal},
   CalculationEstimateSummaryCalculations in 'CalculationEstimateSummaryCalculations.pas' {frCalculationEstimateSummaryCalculations: TFrame},
   CalculationEstimateSSR in 'CalculationEstimateSSR.pas' {frCalculationEstimateSSR: TFrame},
@@ -103,13 +103,15 @@ uses
   EditExpression in 'EditExpression.pas' {fEditExpression},
   dmReportU in 'dmReportU.pas' {dmReportF: TDataModule},
   Coef in 'Coef.pas' {fCoefficients},
-  ArhivModule in 'ArhivModule.pas';
+  ArhivModule in 'ArhivModule.pas',
+  GlobsAndConst in 'GlobsAndConst.pas';
 
 {$R *.res}
 var MHandle: THandle;
+    PrmStr: string;
 begin
   // Любая уникальная строка которая будет только в нашем приложении
-  MHandle := CreateMutex(nil, False, '5q7b3g1p0b5n3x6v9e6s');
+  MHandle := CreateMutex(nil, True, '5q7b3g1p0b5n3x6v9e6s');
 
   // Проверяем не запущено ли приложение
   if GetLastError = ERROR_ALREADY_EXISTS then
@@ -124,11 +126,7 @@ begin
   Application.Title := 'Смета';
   Application.CreateForm(TDM, DM);
   Application.CreateForm(TFormMain, FormMain);
-  Application.CreateForm(TFormAbout, FormAbout);
-  Application.CreateForm(TFormConnectDatabase, FormConnectDatabase);
   Application.CreateForm(TFormCardObject, FormCardObject);
-  Application.CreateForm(TFormProgramSettings, FormProgramSettings);
-  Application.CreateForm(TFormLogin, FormLogin);
   Application.CreateForm(TFormWaiting, FormWaiting);
   Application.CreateForm(TFormRequisites, FormRequisites);
   Application.CreateForm(TFormColumns, FormColumns);
@@ -160,9 +158,26 @@ begin
   Application.Run;
 
   //Запуск Updater для завершения обновления приложения
-  if StartUpdater then
-    ShellExecute(0,'open', Pchar(UpdaterName),
-      Pchar(UpdatePath + ' ' + NewAppVersion), nil ,SW_HIDE);
+  if G_STARTUPDATER > 0 then
+  begin
+    //Формируем строку параметров
+    PrmStr := ' ';
+    case G_STARTUPDATER of
+      1: PrmStr := PrmStr + C_UPD_UPDATE + ' ';
+      2: PrmStr := PrmStr + C_UPD_RESTOR + ' ';
+      else
+        exit;
+    end;
+    PrmStr := PrmStr + C_UPD_PATH + '="' + G_UPDPATH + '" '; //Путь
+    if G_NEWAPPVERS > 0 then  //Версия после обновления
+      PrmStr := PrmStr + C_UPD_VERS + '=' + IntToStr(G_NEWAPPVERS) + ' ';
+    if G_STARTAPP then //Запуск приложения после того как апдейтер отработает
+      PrmStr := PrmStr + C_UPD_START + ' ';
+
+    ShellExecute(0,'open',
+      PChar(ExtractFilePath(Application.ExeName) + C_UPDATERNAME),
+      Pchar(PrmStr), nil ,SW_HIDE);
+  end;
 
   ReleaseMutex(MHandle);
   CloseHandle(MHandle);

@@ -137,9 +137,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="ProgramSettings.pas">
             <Form>FormProgramSettings</Form>
         </DCCReference>
-        <DCCReference Include="Login.pas">
-            <Form>FormLogin</Form>
-        </DCCReference>
         <DCCReference Include="Waiting.pas">
             <Form>FormWaiting</Form>
         </DCCReference>
@@ -367,21 +364,17 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="CalculationEstimateSummaryCalculations.pas">
             <Form>frCalculationEstimateSummaryCalculations</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="CalculationEstimateSSR.pas">
             <Form>frCalculationEstimateSSR</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="CalcResource.pas">
             <Form>fCalcResource</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="CalculationDump.pas">
             <Form>FormCalculationDump</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="CalcTravel.pas">
             <Form>fCalcTravel</Form>
@@ -398,22 +391,19 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="fUpdate.pas">
             <Form>UpdateForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="EditExpression.pas">
             <Form>fEditExpression</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="dmReportU.pas">
             <Form>dmReportF</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="Coef.pas">
             <Form>fCoefficients</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="ArhivModule.pas"/>
+        <DCCReference Include="GlobsAndConst.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

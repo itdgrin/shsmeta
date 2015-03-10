@@ -26,9 +26,6 @@ type
     { Public declarations }
   end;
 
-var
-  FormConnectDatabase: TFormConnectDatabase;
-
 implementation
 
 uses Main, DataModule;

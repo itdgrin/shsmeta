@@ -12,7 +12,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.SysUtils,
   IniFiles, IdMessage, IdSSLOpenSSL, IdMessageClient, IdSMTPBase, IdSMTP,
-  IdAttachmentFile, IdExplicitTLSClientServerBase, Tools;
+  IdAttachmentFile, IdExplicitTLSClientServerBase, Tools, GlobsAndConst, ArhivModule;
 
 type
   TUpdateForm = class(TForm)
@@ -65,6 +65,8 @@ type
 
     FLogFile: TLogFile;
 
+    FArhiv: TBaseAppArhiv;
+
     procedure ShowUpdateStatys;
     procedure StartUpdate;
     procedure LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
@@ -79,21 +81,20 @@ type
     //Устанавливает версии но не изменяет внешний вид
     procedure SetVersion(const AVersion: TVersion;
       const AServiceResponse: TServiceResponse);
+
+    procedure SetArhiv(const AArhiv: TBaseAppArhiv);
     { Public declarations }
   end;
-
-var
-  //Глобальные переменные обеспечивающие выполнение обновлений
-  //Флаг необходимости запустить Updater по завершению программы
-  StartUpdater: Boolean = False;
-  //Путь к папке с обновлениями приложения
-  UpdatePath,
-  NewAppVersion: string;
 
 implementation
 uses DataModule;
 
 {$R *.dfm}
+
+procedure TUpdateForm.SetArhiv(const AArhiv: TBaseAppArhiv);
+begin
+  FArhiv := AArhiv;
+end;
 
 procedure TUpdateForm.SendErrorReport;
 var i : integer;
@@ -126,7 +127,7 @@ begin
 
       Msg.From.Address := 'smetareport@gmail.com';
       Msg.From.Name := FClientName;
-      Msg.Recipients.EMailAddresses := SupportMail;
+      Msg.Recipients.EMailAddresses := C_SUPPORTMAIL;
       Msg.Subject := 'Отчет об ошибках обновления';
       for i := 0 to SqlErrorList.Count - 1 do
         Msg.Body.Add(SqlErrorList[i] + '<br>');
@@ -161,7 +162,7 @@ procedure TUpdateForm.LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
 var LoadPath, UpdName: string;
     MStream: TMemoryStream;
 begin
-  LoadPath := ExtractFilePath(Application.ExeName) + 'Updates\';
+  LoadPath := ExtractFilePath(Application.ExeName) + C_UPDATEDIR;
   UpdName := copy(AUpdate.Url, 1, Pos('?',AUpdate.Url) - 1);
   UpdName := StringReplace(UpdName, '/','\', [rfReplaceAll]);
   UpdName := ExtractFileName(UpdName);
@@ -186,7 +187,7 @@ begin
       HTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
 
       ShowStatys('Загрузка...');
-      HTTP.Get(UpdateServ + AUpdate.Url, MStream);
+      HTTP.Get(C_UPDATESERV + AUpdate.Url, MStream);
       MStream.SaveToFile(LoadPath + UpdName);
       ShowStatys('Загружено успешно', 1);
 
@@ -218,8 +219,9 @@ begin
       end
       else
       begin
-       StartUpdater := UpdateApp(LoadPath);
-       NewAppVersion := IntToStr(AUpdate.Version);
+        if UpdateApp(LoadPath) then
+          G_STARTUPDATER := 1;
+        G_NEWAPPVERS := AUpdate.Version;
       end;
     except
       on e: Exception do
@@ -255,19 +257,19 @@ begin
     MStream.Free;
     //После завершения обновлений папки с SQL скриптами удалются
     if (AType in [0,1]) or
-      ((AType = 2) and not StartUpdater) then
+      ((AType = 2) and (G_STARTUPDATER = 0)) then
       KillDir(LoadPath);
   end;
 end;
 
 function TUpdateForm.UpdateApp(const AUpdatePath: string): Boolean;
 begin
-  UpdatePath := AUpdatePath;
-  if TFile.Exists(UpdatePath + UpdaterName) then
+  G_UPDPATH := AUpdatePath;
+  if TFile.Exists(G_UPDPATH + C_UPDATERNAME) then
   begin
-    TFile.Copy(UpdatePath + UpdaterName,
-      ExtractFilePath(Application.ExeName) + UpdaterName, True);
-    TFile.Delete(UpdatePath + UpdaterName);
+    TFile.Copy(G_UPDPATH + C_UPDATERNAME,
+      ExtractFilePath(Application.ExeName) + C_UPDATERNAME, True);
+    TFile.Delete(G_UPDPATH + C_UPDATERNAME);
   end;
   Result := not TDirectory.IsEmpty(AUpdatePath);
 end;
@@ -391,11 +393,30 @@ end;
 procedure TUpdateForm.StartUpdate;
 var i: integer;
 begin
-  StartUpdater := False;
-  UpdatePath := '';
+  G_STARTUPDATER := 0;
+  G_UPDPATH := '';
+  G_NEWAPPVERS := FCurVersion.App;
+  G_STARTAPP := False;
+
   FStopUpdateProc := False;
   FErrorUpdateProc := False;
-  NewAppVersion := IntToStr(FCurVersion.App);
+
+  if Assigned(FArhiv) then
+  //Если последний архив старше 2х дней создается новый архив
+    if not ((Length(FArhiv.ArhFiles) > 0) and
+       ((Now - FArhiv.GetArhivTime(FArhiv.ArhFiles[0])) < 2)) then
+    begin
+      ShowStatys('Создание резервной копии');
+      ProgressBar1.Style := pbstMarquee;
+      ProgressBar1.Visible := True;
+
+      //Максимуи C_ARHCOUNT копии, что-бы не забивать место
+      for i := C_ARHCOUNT - 1 to High(FArhiv.ArhFiles) do
+        FArhiv.DeleteArhiv(FArhiv.ArhFiles[i]);
+      FArhiv.CreateNewArhiv();
+
+      ProgressBar1.Visible := False;
+    end;
 
   //Перед началом обновлений папка полностью очищается
   KillDir(ExtractFilePath(Application.ExeName) + 'Updates');
@@ -476,11 +497,11 @@ begin
       Exit;
     end;
 
-    if not StartUpdater then
+    if (G_STARTUPDATER = 0) then
       ShowStatys('***Программа обновлена***');
   end;
 
-  if StartUpdater then
+  if (G_STARTUPDATER > 0) then
   begin
     ShowStatys('');
     ShowStatys('Для завершения обновления нужен перезапуск программы!');
@@ -623,8 +644,8 @@ begin
 
   FLogFile := TLogFile.Create;
   FLogFile.Active := true;
-  FLogFile.FileDir := ExtractFileDir(ExtractFilePath(Application.ExeName) + LogFileName);
-  FLogFile.FileName := ExtractFileName(LogFileName);
+  FLogFile.FileDir := ExtractFilePath(Application.ExeName) + C_LOGDIR;
+  FLogFile.FileName := C_UPDATELOG;
 end;
 
 procedure TUpdateForm.FormDestroy(Sender: TObject);

@@ -2,8 +2,8 @@
   Left = 0
   Top = 0
   Caption = #1056#1072#1089#1095#1105#1090' '#1089#1084#1077#1090#1099
-  ClientHeight = 461
-  ClientWidth = 657
+  ClientHeight = 487
+  ClientWidth = 668
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -222,8 +222,8 @@
   end
   object PanelOpenWindows: TPanel
     Left = 0
-    Top = 434
-    Width = 657
+    Top = 460
+    Width = 668
     Height = 27
     Hint = #1055#1072#1085#1077#1083#1100' '#1086#1090#1082#1088#1099#1090#1099#1093' '#1086#1082#1086#1085
     Align = alBottom
@@ -237,8 +237,8 @@
   object PanelCover: TPanel
     Left = 0
     Top = 0
-    Width = 657
-    Height = 434
+    Width = 668
+    Height = 460
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
@@ -336,7 +336,6 @@
       object MenuConnectDatabase: TMenuItem
         Caption = #1055#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077' '#1082' MySQL '#1089#1077#1088#1074#1077#1088#1091
         Enabled = False
-        OnClick = MenuConnectDatabaseClick
       end
       object ServiceSettings: TMenuItem
         Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080

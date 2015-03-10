@@ -72,9 +72,6 @@ type
 const
   CaptionForm = 'Настройки программы';
 
-var
-  FormProgramSettings: TFormProgramSettings;
-
 implementation
 
 uses Main;

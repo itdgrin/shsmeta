@@ -4,22 +4,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, DateUtils, Vcl.Forms, SyncObjs,
-  Winapi.Windows, Winapi.Messages, IdHTTP, XMLIntf, XMLDoc,  ActiveX;
-
-const
-  //Интервал времени через который происходит опрос сервака
-  GetVersionInterval = 1200000;
-
-  WM_SHOW_SPLASH = WM_USER + 1;
-
-  //Адрес сервера обновления
-  UpdateServ = 'http://31.130.201.132:3000';
-  //Адрес почты техподдержки
-  SupportMail = 'd_grin@mail.ru';
-  //Настройки файла лагирования
-  LogFileName = 'Logs\update.log';
-  //Название софтины для перезаписи приложения
-  UpdaterName = 'SmUpd.exe';
+  Winapi.Windows, IdHTTP, XMLIntf, XMLDoc,  ActiveX, GlobsAndConst;
 
 type
   TLogFile = class(TObject)
@@ -244,9 +229,8 @@ end;
 procedure TUpdateThread.GetLogName;
 begin
   //В принципе обращаться к Application в потоке некрасиво
-  FLogFile.FileDir :=
-    ExtractFileDir(ExtractFilePath(Application.ExeName) + LogFileName);
-  FLogFile.FileName := ExtractFileName(LogFileName);
+  FLogFile.FileDir := ExtractFilePath(Application.ExeName) + C_LOGDIR;
+  FLogFile.FileName := C_UPDATELOG;
 end;
 
 constructor TUpdateThread.Create(AVersion: TVersion;
@@ -444,7 +428,7 @@ begin
       HTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
       HTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
 
-      HTTP.Get(UpdateServ + '/gen/get_xml.xml?' +
+      HTTP.Get(C_UPDATESERV + '/gen/get_xml.xml?' +
         'user_version=' + IntToStr(FCurVersion.User) + '&' +
         'app_version=' + IntToStr(FCurVersion.App) + '&' +
         'catalog_version=' + IntToStr(FCurVersion.Catalog), StrimPage);
@@ -489,7 +473,7 @@ begin
       while not Terminated do
       begin
         GetVersion;
-        WaitForMultipleObjectsEx(2, @Handles[0], false, GetVersionInterval, False);
+        WaitForMultipleObjectsEx(2, @Handles[0], false, C_GETVERSINTERVAL, False);
       end;
     finally
         CoUninitialize;
