@@ -47,7 +47,12 @@ begin
     Start, ProcInf);
 
   if ATimeout = 0 then
-    AWaitResult := WaitForSingleObject(ProcInf.hProcess, INFINITE)
+    repeat
+    begin
+      AWaitResult := WaitForSingleObject(ProcInf.hProcess, 2000);
+      Application.ProcessMessages;
+    end;
+    until AWaitResult <> WAIT_TIMEOUT
   else
     AWaitResult := WaitForSingleObject(ProcInf.hProcess, ATimeout);
 

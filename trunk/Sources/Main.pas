@@ -6,7 +6,7 @@ uses
   Classes, Windows, Messages, SysUtils, Variants, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
   ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, ArhivModule,
-  Vcl.Imaging.pngimage, Data.DB;
+  Data.DB, GlobsAndConst, Vcl.Imaging.pngimage;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
@@ -120,7 +120,6 @@ type
 
     procedure HelpAboutClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure MenuConnectDatabaseClick(Sender: TObject);
     procedure EditOriginalDataClick(Sender: TObject);
 
     procedure CascadeForActiveWindow();
@@ -221,8 +220,9 @@ type
     DebugMode: boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
     FileReportPath: string; // путь к папке с отчетами(дабы не захламлять датамодуль лишними модулями)
+
     // Объект отвечает за создание бэкапов и их восстановление
-    Arhiv: TBaseAppArhiv;
+    FArhiv: TBaseAppArhiv;
 
     procedure GetSystemInfo;
     procedure OnUpdate(var Mes: TMessage); message WM_SHOW_SPLASH;
@@ -416,6 +416,8 @@ begin
   UPForm := TUpdateForm.Create(nil);
   try
     UPForm.SetVersion(FCurVersion, AResp);
+    UPForm.SetArhiv(FArhiv);
+
     UPForm.ShowModal;
     GetSystemInfo;
   finally
@@ -504,19 +506,28 @@ begin
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   // Объект для управления архивом
-  Arhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName),
-    ExtractFilePath(Application.ExeName) + ArhivLocalDir);
+  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName),
+    ExtractFilePath(Application.ExeName) + C_ARHDIR);
+
+  // путь к папке с отчетами (Вадим)
+{$IFDEF DEBUG}
+  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
+    - 12) + C_REPORTDIR;
+{$ELSE}
+  FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
+{$ENDIF}
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
+  DM.Connect.Connected := False;
   if Assigned(FUpdateThread) then
   begin // Выполнить Terminate обязательно так как он переопределен
     FUpdateThread.Terminate;
     FUpdateThread.WaitFor;
     FreeAndNil(FUpdateThread);
   end;
-  FreeAndNil(Arhiv);
+  FreeAndNil(FArhiv);
 end;
 
 procedure TFormMain.FormResize(Sender: TObject);
@@ -530,7 +541,6 @@ end;
 
 procedure TFormMain.FormShow(Sender: TObject);
 begin
-  // FormConnectDatabase.ShowModal;
   try
     GetSystemInfo;
     SystemInfoResult := true;
@@ -820,39 +830,30 @@ var i: Integer;
   Mi,
   TmpMi,
   TmpMi2: TMenuItem;
-  TmpStr: string;
-  TmpList: TStringList;
-
-  y,m,d: Word;
-  t: Extended;
-
 begin
   Mi := TMenuItem(Sender);
   //Первые 3и пункта существуют всегда, остальные добавляются при необходимости
   for i := 3 to Mi.Count - 1 do
     Mi.Delete(3);
 
-  //PMRestoreOldBackup
+  //Если надо перезапустить нечего по архивам лазить
+  if G_STARTUPDATER > 0 then
+  begin
+    PMAddNewBackup.Enabled := False;
+    exit;
+  end
+  else
+    PMAddNewBackup.Enabled := True;
 
-  TmpList := TStringList.Create;
-  try
-    for i := Low(Arhiv.ArhFiles) to High(Arhiv.ArhFiles) do
+
+    for i := Low(FArhiv.ArhFiles) to High(FArhiv.ArhFiles) do
     begin
       TmpMi := TMenuItem.Create(mi);
-      TmpStr := ExtractFileName(Arhiv.ArhFiles[i]);
-      TmpStr := StringReplace(TmpStr, '_arh.zip', '', [rfIgnoreCase]);
-      TmpStr := StringReplace(TmpStr, '_', #13#10, [rfReplaceAll]);
-      TmpList.Text := TmpStr;
 
       try
-        y := StrToInt(TmpList[0]);
-        m := StrToInt(TmpList[1]);
-        d := StrToInt(TmpList[2]);
-        t := EncodeDate(y, m, d);
-        t := t + (StrToInt(TmpList[3]))/10000;
-        TmpMi.Caption := DateTimeToStr(t);
+        TmpMi.Caption := DateTimeToStr(FArhiv.GetArhivTime(FArhiv.ArhFiles[i]));
       except
-        TmpMi.Caption := ExtractFileName(Arhiv.ArhFiles[i]);
+        TmpMi.Caption := ExtractFileName(FArhiv.ArhFiles[i]);
       end;
 
       TmpMi2 := TMenuItem.Create(TmpMi);
@@ -863,18 +864,20 @@ begin
       TmpMi2.Caption := 'Удалить';
       TmpMi2.OnClick := PMDeleteBackupClick;
       TmpMi.Add(TmpMi2);
-      TmpMi.Tag := Integer(Arhiv.ArhFiles[i]);
+      TmpMi.Tag := Integer(FArhiv.ArhFiles[i]);
       mi.Add(TmpMi);
     end;
-
-  finally
-    FreeAndNil(TmpList);
-  end;
 end;
 
 procedure TFormMain.ServiceSettingsClick(Sender: TObject);
+var FormProgramSettings: TFormProgramSettings;
 begin
-  FormProgramSettings.ShowModal;
+  FormProgramSettings := TFormProgramSettings.Create(nil);
+  try
+    FormProgramSettings.ShowModal;
+  finally
+    FreeAndNil(FormProgramSettings);
+  end;
 end;
 
 procedure TFormMain.ServiceUpdateClick(Sender: TObject);
@@ -1390,13 +1393,21 @@ var i: Integer;
 begin
   if (MessageBox(Self.Handle,
     PChar('Создать резервную копию?'),
-    'Резервное копировани',
+    'Резервное копирование',
     MB_YESNO + MB_ICONQUESTION) = IDYES) then
   begin
-    //Максимуи 3и копии, что-бы не забивать место
-    for i := 2 to High(Arhiv.ArhFiles) do
-      Arhiv.DeleteArhiv(Arhiv.ArhFiles[i]);
-    Arhiv.CreateNewArhiv;
+    FormMain.PanelCover.Visible := True;
+    FormWaiting.Show;
+    Application.ProcessMessages;
+    try
+      //Максимуи C_ARHCOUNT копии, что-бы не забивать место
+      for i := C_ARHCOUNT - 1 to High(FArhiv.ArhFiles) do
+        FArhiv.DeleteArhiv(FArhiv.ArhFiles[i]);
+      FArhiv.CreateNewArhiv;
+    finally
+      FormWaiting.Close;
+      FormMain.PanelCover.Visible := False;
+    end;
   end;
 end;
 
@@ -1407,14 +1418,33 @@ begin
   if (MessageBox(Self.Handle,
     PChar('Удалить резервную копию от ' +
       StringReplace(Mi.Parent.Caption, '&', '', [rfReplaceAll]) + '?'),
-    'Резервное копировани',
+    'Резервное копирование',
     MB_YESNO + MB_ICONQUESTION) = IDYES) then
-    Arhiv.DeleteArhiv(string(Mi.Parent.Tag));
+    FArhiv.DeleteArhiv(string(Mi.Parent.Tag));
 end;
 
 procedure TFormMain.PMRestoreBackupClick(Sender: TObject);
+var Mi: TMenuItem;
 begin
-  beep;
+  Mi := TMenuItem(Sender);
+  if (MessageBox(Self.Handle,
+    PChar('Восстановить из резервной копии от ' +
+      StringReplace(Mi.Parent.Caption, '&', '', [rfReplaceAll]) + '?' +
+      #13#10 + 'Внимание, все данные внесенные после создания данной копии, будут утеряны!'),
+    'Резервное копирование',
+    MB_YESNO + MB_ICONQUESTION) = IDYES) then
+  begin
+    FormMain.PanelCover.Visible := True;
+    FormWaiting.Show;
+    Application.ProcessMessages;
+    try
+      FArhiv.RestoreArhiv(string(Mi.Parent.Tag));
+      Close;
+    except
+      FormWaiting.Close;
+      FormMain.PanelCover.Visible := False;
+    end;
+  end;
 end;
 
 procedure TFormMain.N16Click(Sender: TObject);
@@ -1509,11 +1539,6 @@ begin
   // FormCalculationEstimate.CopyEstimate;
 end;
 
-procedure TFormMain.MenuConnectDatabaseClick(Sender: TObject);
-begin
-  FormConnectDatabase.ShowModal;
-end;
-
 procedure TFormMain.CalculationSettingsClick(Sender: TObject);
 begin
   FormCalculationSettings.Show;
@@ -1531,8 +1556,14 @@ begin
 end;
 
 procedure TFormMain.HelpAboutClick(Sender: TObject);
+var FormAbout: TFormAbout;
 begin
-  FormAbout.ShowModal;
+  FormAbout := TFormAbout.Create(nil);
+  try
+    FormAbout.ShowModal;
+  finally
+    FreeAndNil(FormAbout);
+  end;
 end;
 
 function ShiftDown: boolean;

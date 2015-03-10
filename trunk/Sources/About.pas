@@ -17,9 +17,6 @@ type
     { Public declarations }
   end;
 
-var
-  FormAbout: TFormAbout;
-
 implementation
 
 uses Main;
