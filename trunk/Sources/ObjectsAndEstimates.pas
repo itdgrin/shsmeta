@@ -625,8 +625,8 @@ end;
 
 procedure TFormObjectsAndEstimates.grActsMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 var
-  G : TGridCoord;
-  R : TRect;
+  G: TGridCoord;
+  R: TRect;
 begin
   TDrawGrid(Sender as TDBGrid).MouseToCell(X, Y, G.X, G.Y);
 
@@ -671,7 +671,8 @@ end;
 
 procedure TFormObjectsAndEstimates.PMEstimatesBasicDataClick(Sender: TObject);
 begin
-  FormBasicData.ShowForm(IdObject, IdEstimate);
+  if (IdEstimate > 0) and (IdObject > 0) then
+    FormBasicData.ShowForm(IdObject, IdEstimate);
 end;
 
 procedure TFormObjectsAndEstimates.PMEstimatesDeleteClick(Sender: TObject);

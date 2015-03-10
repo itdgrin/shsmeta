@@ -335,6 +335,7 @@ inherited FrameOXROPR: TFrameOXROPR
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
+    FormatOptions.FmtDisplayNumeric = '0.000'
     Left = 24
     Top = 32
   end

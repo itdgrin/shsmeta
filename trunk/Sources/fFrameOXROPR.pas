@@ -139,8 +139,12 @@ var
   IdRegion: Integer;
 begin
   try
+    ADOQuery.FormatOptions.FmtDisplayNumeric := '0.000';
     if RadioButtonMinsk.Checked then
-      IdRegion := 3
+    begin
+      IdRegion := 3;
+      ADOQuery.FormatOptions.FmtDisplayNumeric := '0.0000';
+    end
     else if RadioButtonCity.Checked then
       IdRegion := 1
     else

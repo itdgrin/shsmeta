@@ -4,8 +4,8 @@ object FormBasicData: TFormBasicData
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
-  ClientHeight = 566
-  ClientWidth = 325
+  ClientHeight = 547
+  ClientWidth = 324
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,34 +17,34 @@ object FormBasicData: TFormBasicData
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
-    325
-    566)
+    324
+    547)
   PixelsPerInch = 96
   TextHeight = 13
   object LabelPercentTransportEquipment: TLabel
     Left = 8
-    Top = 134
+    Top = 111
     Width = 181
     Height = 13
     Caption = '% '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072' '#1080' '#1079#1089#1088' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103':'
   end
   object LabelK31: TLabel
     Left = 8
-    Top = 228
+    Top = 184
     Width = 183
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1054#1061#1056' '#1080' '#1054#1055#1056' ('#1087#1088#1080#1082'. '#8470'270) '#1050'31:'
   end
   object LabelK32: TLabel
     Left = 8
-    Top = 255
+    Top = 207
     Width = 225
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1087#1083#1072#1085#1086#1074#1086#1081' '#1087#1088#1080#1073#1099#1083#1080' ('#1087#1088#1080#1082'. '#8470'270) '#1050'32:'
   end
   object LabelK33: TLabel
     Left = 8
-    Top = 282
+    Top = 230
     Width = 186
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1074#1088#1077#1084#1077#1085#1085#1099#1084' ('#1087#1088#1080#1082'. '#8470'270) '#1050'33:'
@@ -58,14 +58,14 @@ object FormBasicData: TFormBasicData
   end
   object LabelRateWorker: TLabel
     Left = 8
-    Top = 99
+    Top = 84
     Width = 160
     Height = 13
     Caption = #1057#1090#1072#1074#1082#1072' '#1088#1072#1073#1086#1095#1077#1075#1086' 4-'#1075#1086' '#1088#1072#1079#1088#1103#1076#1072':'
   end
   object LabelRegion: TLabel
     Left = 8
-    Top = 45
+    Top = 39
     Width = 163
     Height = 13
     Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1094#1077#1085#1099' '#1087#1086' '#1088#1077#1075#1080#1086#1085#1091':'
@@ -78,24 +78,24 @@ object FormBasicData: TFormBasicData
   end
   object LabelVAT: TLabel
     Left = 8
-    Top = 72
+    Top = 61
     Width = 173
     Height = 13
     Caption = #1062#1077#1085#1099' '#1085#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1080' '#1084#1077#1093#1072#1085#1080#1079#1084#1099':'
   end
   object Bevel1: TBevel
     Left = 8
-    Top = 121
-    Width = 309
+    Top = 104
+    Width = 308
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
-    ExplicitWidth = 696
+    ExplicitWidth = 309
   end
   object Bevel2: TBevel
     Left = 0
-    Top = 525
-    Width = 325
+    Top = 506
+    Width = 324
     Height = 41
     Align = alBottom
     Shape = bsTopLine
@@ -104,25 +104,25 @@ object FormBasicData: TFormBasicData
   end
   object Bevel3: TBevel
     Left = 8
-    Top = 158
-    Width = 309
+    Top = 131
+    Width = 308
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
-    ExplicitWidth = 696
+    ExplicitWidth = 309
   end
   object Bevel4: TBevel
     Left = 8
-    Top = 35
-    Width = 309
+    Top = 32
+    Width = 308
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
-    ExplicitWidth = 303
+    ExplicitWidth = 309
   end
   object LabelK41: TLabel
     Left = 8
-    Top = 188
+    Top = 154
     Width = 214
     Height = 26
     Caption = 
@@ -132,22 +132,23 @@ object FormBasicData: TFormBasicData
   end
   object Bevel5: TBevel
     Left = 8
-    Top = 415
-    Width = 309
+    Top = 352
+    Width = 308
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
+    ExplicitWidth = 309
   end
   object LabelDump: TLabel
     Left = 8
-    Top = 425
+    Top = 362
     Width = 149
     Height = 13
     Caption = #1052#1077#1089#1090#1086' '#1079#1072#1093#1086#1088#1086#1085#1077#1085#1080#1103' '#1086#1090#1093#1086#1076#1086#1074':'
   end
   object lbl1: TLabel
     Left = 8
-    Top = 171
+    Top = 135
     Width = 183
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1079#1072#1088#1087#1083#1072#1090#1077' ('#1075#1086#1089#1091#1076#1072#1088#1089#1090#1074#1077#1085#1085#1099#1081'):'
@@ -155,36 +156,37 @@ object FormBasicData: TFormBasicData
   end
   object lbl3: TLabel
     Left = 8
-    Top = 336
+    Top = 278
     Width = 211
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1079#1080#1084#1085#1080#1084' ('#1087#1088#1080#1082'. '#8470'270) '#1050'35. '#1063#1072#1089#1090#1100' 2:'
   end
   object lbl4: TLabel
     Left = 8
-    Top = 363
+    Top = 298
     Width = 73
     Height = 13
     Caption = #1048#1085#1076#1077#1082#1089' '#1088#1086#1089#1090#1072':'
   end
   object lbl5: TLabel
     Left = 8
-    Top = 392
+    Top = 329
     Width = 33
     Height = 13
     Caption = #1052#1040#1048#1057':'
   end
   object bvl1: TBevel
     Left = 8
-    Top = 382
-    Width = 309
+    Top = 319
+    Width = 308
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
+    ExplicitWidth = 309
   end
   object lbl2: TLabel
     Left = 8
-    Top = 309
+    Top = 253
     Width = 211
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1079#1080#1084#1085#1080#1084' ('#1087#1088#1080#1082'. '#8470'270) '#1050'34. '#1063#1072#1089#1090#1100' 1:'
@@ -253,56 +255,49 @@ object FormBasicData: TFormBasicData
   end
   object EditPercentTransportEquipment: TEdit
     Left = 239
-    Top = 131
+    Top = 108
     Width = 80
     Height = 21
     TabOrder = 6
   end
   object EditK41: TEdit
     Left = 239
-    Top = 198
+    Top = 158
     Width = 80
     Height = 21
     TabOrder = 8
   end
   object EditK31: TEdit
     Left = 239
-    Top = 225
+    Top = 181
     Width = 80
     Height = 21
     TabOrder = 9
   end
   object EditK32: TEdit
     Left = 239
-    Top = 252
+    Top = 204
     Width = 80
     Height = 21
     TabOrder = 10
   end
   object EditK33: TEdit
     Left = 239
-    Top = 279
+    Top = 227
     Width = 80
     Height = 21
     TabOrder = 11
   end
   object EditK34: TEdit
     Left = 239
-    Top = 306
+    Top = 250
     Width = 80
     Height = 21
     TabOrder = 12
   end
-  object EditRateWorker: TEdit
-    Left = 239
-    Top = 96
-    Width = 80
-    Height = 21
-    TabOrder = 5
-  end
   object EditRegion: TEdit
     Left = 239
-    Top = 42
+    Top = 36
     Width = 80
     Height = 21
     TabStop = False
@@ -312,7 +307,7 @@ object FormBasicData: TFormBasicData
   end
   object ComboBoxVAT: TComboBox
     Left = 239
-    Top = 69
+    Top = 58
     Width = 80
     Height = 21
     Style = csDropDownList
@@ -324,8 +319,8 @@ object FormBasicData: TFormBasicData
       #1089' '#1053#1044#1057)
   end
   object ButtonSave: TButton
-    Left = 111
-    Top = 533
+    Left = 110
+    Top = 514
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
@@ -333,20 +328,20 @@ object FormBasicData: TFormBasicData
     Default = True
     TabOrder = 19
     OnClick = ButtonSaveClick
-    ExplicitLeft = 113
-    ExplicitTop = 544
+    ExplicitLeft = 111
+    ExplicitTop = 533
   end
   object ButtonCancel: TButton
-    Left = 217
-    Top = 533
+    Left = 216
+    Top = 514
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 20
     OnClick = ButtonCancelClick
-    ExplicitLeft = 567
-    ExplicitTop = 559
+    ExplicitLeft = 217
+    ExplicitTop = 533
   end
   object ComboBoxMonth: TComboBox
     Left = 167
@@ -374,14 +369,14 @@ object FormBasicData: TFormBasicData
   end
   object dblkcbbDump: TDBLookupComboBox
     Left = 8
-    Top = 449
+    Top = 386
     Width = 311
     Height = 21
     TabOrder = 17
   end
   object DBLookupComboBoxRegionDump: TDBLookupComboBox
     Left = 163
-    Top = 422
+    Top = 359
     Width = 156
     Height = 21
     TabOrder = 16
@@ -389,7 +384,7 @@ object FormBasicData: TFormBasicData
   end
   object RadioGroupCoefOrders: TRadioGroup
     Left = 8
-    Top = 476
+    Top = 409
     Width = 311
     Height = 42
     Caption = #1042' '#1082#1072#1082#1080#1093' '#1088#1072#1089#1094#1077#1085#1082#1072#1093' '#1087#1088#1080#1084#1077#1085#1103#1090#1100' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090
@@ -402,13 +397,13 @@ object FormBasicData: TFormBasicData
   end
   object edtKZP: TEdit
     Left = 239
-    Top = 171
+    Top = 135
     Width = 80
     Height = 21
     TabOrder = 7
   end
   object edtYear: TSpinEdit
-    Left = 262
+    Left = 261
     Top = 8
     Width = 55
     Height = 22
@@ -419,25 +414,11 @@ object FormBasicData: TFormBasicData
     TabOrder = 1
     Value = 2014
     OnChange = ComboBoxMonthORYearChange
-    ExplicitLeft = 264
-  end
-  object edt2: TEdit
-    Left = 239
-    Top = 333
-    Width = 80
-    Height = 21
-    TabOrder = 13
-  end
-  object edt3: TEdit
-    Left = 239
-    Top = 360
-    Width = 80
-    Height = 21
-    TabOrder = 14
+    ExplicitLeft = 262
   end
   object dblkcbbMAIS: TDBLookupComboBox
     Left = 118
-    Top = 389
+    Top = 326
     Width = 201
     Height = 21
     DataField = 'exMAIS_ID'
@@ -447,14 +428,96 @@ object FormBasicData: TFormBasicData
     ListSource = dsMAIS
     TabOrder = 15
   end
+  object dbedtgrowth_index: TDBEdit
+    Left = 239
+    Top = 295
+    Width = 80
+    Height = 21
+    DataField = 'growth_index'
+    DataSource = dsSmeta
+    TabOrder = 14
+  end
+  object dbedtK35: TDBEdit
+    Left = 239
+    Top = 272
+    Width = 80
+    Height = 21
+    DataField = 'K35'
+    DataSource = dsSmeta
+    TabOrder = 13
+  end
+  object dbedtEditRateWorker: TDBEdit
+    Left = 239
+    Top = 81
+    Width = 80
+    Height = 21
+    DataField = 'STAVKA_RAB'
+    DataSource = dsSmeta
+    TabOrder = 5
+  end
+  object dbchkAPPLY_LOW_COEF_OHROPR_FLAG: TDBCheckBox
+    Left = 8
+    Top = 451
+    Width = 183
+    Height = 17
+    Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1087#1086#1085#1080#1078#1072#1102#1097#1080#1077' '#1082#1086#1101#1092'.:'
+    DataField = 'APPLY_LOW_COEF_OHROPR_FLAG'
+    DataSource = dsSmeta
+    TabOrder = 21
+    ValueChecked = '1'
+    ValueUnchecked = '0'
+    OnClick = dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick
+  end
+  object pnlLowCoef: TPanel
+    Left = 8
+    Top = 472
+    Width = 310
+    Height = 28
+    Anchors = [akLeft, akRight, akBottom]
+    BevelOuter = bvNone
+    TabOrder = 22
+    ExplicitWidth = 311
+    object lbl6: TLabel
+      Left = 6
+      Top = 7
+      Width = 57
+      Height = 13
+      Caption = #1054#1061#1056' '#1080' '#1054#1055#1056':'
+    end
+    object lbl7: TLabel
+      Left = 143
+      Top = 7
+      Width = 80
+      Height = 13
+      Caption = #1055#1083#1072#1085'. '#1087#1088#1080#1073#1099#1083#1100':'
+    end
+    object dbedtK_LOW_OHROPR: TDBEdit
+      Left = 69
+      Top = 4
+      Width = 68
+      Height = 21
+      DataField = 'K_LOW_OHROPR'
+      DataSource = dsSmeta
+      TabOrder = 0
+    end
+    object dbedtK_LOW_PLAN_PRIB: TDBEdit
+      Left = 231
+      Top = 4
+      Width = 74
+      Height = 21
+      DataField = 'K_LOW_PLAN_PRIB'
+      DataSource = dsSmeta
+      TabOrder = 1
+    end
+  end
   object dsDump: TDataSource
     DataSet = qrDump
-    Left = 200
-    Top = 204
+    Left = 224
+    Top = 357
   end
   object pmTransport: TPopupMenu
-    Left = 200
-    Top = 284
+    Left = 72
+    Top = 4
     object PopupMenuPercentTransportCity: TMenuItem
       Tag = 1
       Caption = #1043#1086#1088#1086#1076
@@ -474,31 +537,33 @@ object FormBasicData: TFormBasicData
   object DataSourceRegionDump: TDataSource
     DataSet = ADOQueryRegionDump
     Left = 120
-    Top = 445
+    Top = 382
   end
   object qrDump: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 201
-    Top = 156
+    Left = 257
+    Top = 358
   end
   object ADOQueryRegionDump: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 89
-    Top = 445
+    Top = 382
   end
   object qrTMP: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 201
-    Top = 40
+    Top = 34
   end
   object qrMAIS: TFDQuery
     AutoCalcFields = False
+    MasterSource = dsSmeta
+    MasterFields = 'exMAIS_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -506,16 +571,16 @@ object FormBasicData: TFormBasicData
       'SELECT * FROM mais'
       'ORDER BY `NAME`')
     Left = 185
-    Top = 382
+    Top = 319
   end
   object dsMAIS: TDataSource
     DataSet = qrMAIS
     Left = 216
-    Top = 382
+    Top = 319
   end
   object qrSmeta: TFDQuery
-    Active = True
     AutoCalcFields = False
+    AfterOpen = qrSmetaAfterOpen
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -524,7 +589,6 @@ object FormBasicData: TFormBasicData
     UpdateOptions.EnableInsert = False
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
-    UpdateObject = updSmeta
     SQL.Strings = (
       
         'SELECT smetasourcedata.*, IFNULL(smetasourcedata.MAIS_ID, objcar' +
@@ -533,8 +597,7 @@ object FormBasicData: TFormBasicData
       
         'WHERE sm_id = :IdEstimate AND objcards.obj_id = smetasourcedata.' +
         'OBJ_ID')
-    Left = 57
-    Top = 145
+    Left = 1
     ParamData = <
       item
         Name = 'IDESTIMATE'
@@ -545,17 +608,6 @@ object FormBasicData: TFormBasicData
   end
   object dsSmeta: TDataSource
     DataSet = qrSmeta
-    Left = 88
-    Top = 145
-  end
-  object updSmeta: TFDUpdateSQL
-    Connection = DM.Connect
-    ModifySQL.Strings = (
-      'UPDATE smetasourcedata SET'
-      'MAIS_ID = :exMAIS_ID,'
-      'STAVKA_ID = :STAVKA_ID'
-      'WHERE smetasourcedata.sm_id = :sm_id')
-    Left = 56
-    Top = 184
+    Left = 40
   end
 end
