@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ComCtrls,
   ExtCtrls, DB, DateUtils, DBCtrls, Menus, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Samples.Spin, System.UITypes;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Samples.Spin, System.UITypes, Vcl.Mask;
 
 type
   TFormBasicData = class(TForm)
@@ -22,7 +22,6 @@ type
     EditK34: TEdit;
     LabelEstimateForDate: TLabel;
     LabelRateWorker: TLabel;
-    EditRateWorker: TEdit;
     LabelRegion: TLabel;
     EditRegion: TEdit;
     LabelVAT: TLabel;
@@ -59,9 +58,7 @@ type
     lblPercentTransport: TLabel;
     lblK: TLabel;
     edtK40: TEdit;
-    edt2: TEdit;
     lbl3: TLabel;
-    edt3: TEdit;
     lbl4: TLabel;
     qrMAIS: TFDQuery;
     dsMAIS: TDataSource;
@@ -70,8 +67,16 @@ type
     bvl1: TBevel;
     qrSmeta: TFDQuery;
     dsSmeta: TDataSource;
-    updSmeta: TFDUpdateSQL;
     lbl2: TLabel;
+    dbedtgrowth_index: TDBEdit;
+    dbedtK35: TDBEdit;
+    dbedtEditRateWorker: TDBEdit;
+    dbchkAPPLY_LOW_COEF_OHROPR_FLAG: TDBCheckBox;
+    pnlLowCoef: TPanel;
+    lbl6: TLabel;
+    dbedtK_LOW_OHROPR: TDBEdit;
+    lbl7: TLabel;
+    dbedtK_LOW_PLAN_PRIB: TDBEdit;
 
     procedure FormShow(Sender: TObject);
 
@@ -81,11 +86,10 @@ type
     procedure ComboBoxMonthORYearChange(Sender: TObject);
     procedure DBLookupComboBoxRegionDumpClick(Sender: TObject);
     procedure PopupMenuPercentTransportMinskClick(Sender: TObject);
-    procedure GetValueCoefOrders;
-    // Получаем флаг состояния (применять/ не применять) коэффициента по приказам
-    procedure SetValueCoefOrders;
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
+    procedure qrSmetaAfterOpen(DataSet: TDataSet);
     // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
 
   private
@@ -150,6 +154,7 @@ var
 begin
   qrSmeta.ParamByName('IdEstimate').AsInteger := IdEstimate;
   CloseOpen(qrSmeta);
+  CloseOpen(qrMAIS);
 
   with qrTMP do
   begin
@@ -180,10 +185,19 @@ begin
   begin
     Active := False;
     SQL.Clear;
-    SQL.Add('SELECT coef_tr_zatr, coef_tr_obor, k40, k41, k31, k32, k33, k34, nds, kzp, stavka_id, date, dump_id '
+    SQL.Add('SELECT coef_tr_zatr, coef_tr_obor, k40, k41, k31, k32, k33, k34, nds, kzp, stavka_id, date, dump_id, coef_orders '
       + 'FROM smetasourcedata WHERE sm_id = :sm_id;');
     ParamByName('sm_id').Value := IdEstimate;
     Active := True;
+
+    case FieldByName('coef_orders').AsInteger of
+      - 1:
+        RadioGroupCoefOrders.ItemIndex := 2;
+      0:
+        RadioGroupCoefOrders.ItemIndex := 1;
+      1:
+        RadioGroupCoefOrders.ItemIndex := 0;
+    end;
 
     edtPercentTransport.Text := MyFloatToStr(FieldByName('coef_tr_zatr').AsFloat);
     EditPercentTransportEquipment.Text := MyFloatToStr(FieldByName('coef_tr_obor').AsFloat);
@@ -214,10 +228,15 @@ begin
 
     if not Eof then
     begin
-      EditRateWorker.Text := FieldByName('stavka_m_rab').AsVariant;
-      edtRateMachinist.Text := FieldByName('stavka_m_mach').AsVariant;
+      edtYear.OnChange := nil;
+      ComboBoxMonth.OnChange := nil;
       ComboBoxMonth.ItemIndex := FieldByName('monat').AsInteger - 1;
       edtYear.Value := FieldByName('year').AsInteger;
+      if VarIsNull(qrSmeta.FieldByName('STAVKA_RAB').Value) then
+        dbedtEditRateWorker.Text := FieldByName('stavka_m_rab').AsVariant;
+      edtRateMachinist.Text := FieldByName('stavka_m_mach').AsVariant;
+      edtYear.OnChange := ComboBoxMonthORYearChange;
+      ComboBoxMonth.OnChange := ComboBoxMonthORYearChange;
     end;
     // ----------------------------------------
 
@@ -262,10 +281,6 @@ begin
       DBLookupComboBoxRegionDump.KeyValue := ADOQueryRegionDump.FieldByName('region_id').AsVariant;
 
     DBLookupComboBoxRegionDumpClick(DBLookupComboBoxRegionDump);
-
-    // ----------------------------------------
-
-    GetValueCoefOrders; // Получаем значение коэффициента по приказам
   end;
 end;
 
@@ -290,13 +305,22 @@ begin
     end;
 end;
 
+procedure TFormBasicData.qrSmetaAfterOpen(DataSet: TDataSet);
+begin
+  pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
+  if pnlLowCoef.Visible then
+    Height := 575
+  else
+    Height := 575 - pnlLowCoef.Height;
+end;
+
 procedure TFormBasicData.ButtonSaveClick(Sender: TObject);
 var
   IdStavka: Integer;
 begin
   try
-    if qrSmeta.State in [dsEdit, dsInsert] then
-      qrSmeta.Post;
+    { if qrSmeta.State in [dsEdit, dsInsert] then
+      qrSmeta.Post; }
 
     IdStavka := -1;
     with qrTMP do
@@ -322,9 +346,10 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('UPDATE smetasourcedata SET stavka_id = :stavka_id, coef_tr_zatr = :coef_tr_zatr, ' +
-        'coef_tr_obor = :coef_tr_obor, k40 = :k40, k41 = :k41, k31 = :k31, k32 = :k32, k33 = :k33, k34 = :k34, '
-        + 'nds = :nds, dump_id = :dump_id, kzp = :kzp WHERE sm_id = :sm_id;');
+      SQL.Add('UPDATE smetasourcedata SET stavka_id = :stavka_id, coef_tr_zatr = :coef_tr_zatr, coef_orders=:coef_orders, '
+        + 'coef_tr_obor=:coef_tr_obor, k40=:k40, k41=:k41, k31=:k31, k32=:k32, k33=:k33, k34=:k34, growth_index=:growth_index, '
+        + 'K_LOW_OHROPR=:K_LOW_OHROPR, K_LOW_PLAN_PRIB=:K_LOW_PLAN_PRIB, APPLY_LOW_COEF_OHROPR_FLAG=:APPLY_LOW_COEF_OHROPR_FLAG, '
+        + 'nds=:nds, dump_id=:dump_id, kzp=:kzp, STAVKA_RAB=:STAVKA_RAB, MAIS_ID=:MAIS_ID, K35=:K35 WHERE sm_id = :sm_id;');
 
       ParamByName('stavka_id').Value := IdStavka;
       ParamByName('coef_tr_zatr').Value := edtPercentTransport.Text;
@@ -335,22 +360,35 @@ begin
       ParamByName('k32').Value := EditK32.Text;
       ParamByName('k33').Value := EditK33.Text;
       ParamByName('k34').Value := EditK34.Text;
+      ParamByName('K35').Value := dbedtK35.Text;
       ParamByName('kzp').Value := edtKZP.Text;
       ParamByName('nds').Value := ComboBoxVAT.ItemIndex;
       ParamByName('dump_id').Value := dblkcbbDump.KeyValue;
+      ParamByName('STAVKA_RAB').Value := qrSmeta.FieldByName('STAVKA_RAB').AsVariant;
+      ParamByName('K_LOW_OHROPR').Value := qrSmeta.FieldByName('K_LOW_OHROPR').Value;
+      ParamByName('K_LOW_PLAN_PRIB').Value := qrSmeta.FieldByName('K_LOW_PLAN_PRIB').Value;
+      ParamByName('APPLY_LOW_COEF_OHROPR_FLAG').AsInteger := qrSmeta.FieldByName('APPLY_LOW_COEF_OHROPR_FLAG')
+        .AsInteger;
+      ParamByName('MAIS_ID').Value := dblkcbbMAIS.KeyValue;
+      ParamByName('growth_index').Value := dbedtgrowth_index.Text;
+      case RadioGroupCoefOrders.ItemIndex of
+        0:
+          ParamByName('coef_orders').Value := 1;
+        1:
+          ParamByName('coef_orders').Value := 0;
+        2:
+          ParamByName('coef_orders').Value := -1;
+      end;
       ParamByName('sm_id').Value := IdEstimate;
 
       ExecSQL;
     end;
-
-    SetValueCoefOrders; // Примененять/не примененять коэффициент по приказам
+    Close;
   except
     on E: Exception do
       MessageBox(0, PChar('При сохранении данных возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
         'Исходные данные', MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  Close;
 end;
 
 procedure TFormBasicData.ButtonCancelClick(Sender: TObject);
@@ -362,7 +400,6 @@ procedure TFormBasicData.ComboBoxMonthORYearChange(Sender: TObject);
 var
   vYear, vMonth: String;
 begin
-  EditRateWorker.Text := '';
   edtRateMachinist.Text := '';
 
   vMonth := IntToStr(ComboBoxMonth.ItemIndex + 1);
@@ -377,7 +414,7 @@ begin
     Active := True;
     if not Eof then
     begin
-      EditRateWorker.Text := FieldByName('RateWorker').AsVariant;
+      qrSmeta.FieldByName('STAVKA_RAB').AsVariant := FieldByName('RateWorker').AsVariant;
       edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
     end;
   end;
@@ -390,6 +427,15 @@ begin
     qrSmeta.FieldByName('STAVKA_ID').Value := qrTMP.FieldByName('STAVKA_ID').Value;
     qrSmeta.Post;
   }
+end;
+
+procedure TFormBasicData.dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
+begin
+  pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
+  if pnlLowCoef.Visible then
+    Height := 575
+  else
+    Height := 575 - pnlLowCoef.Height;
 end;
 
 procedure TFormBasicData.DBLookupComboBoxRegionDumpClick(Sender: TObject);
@@ -410,58 +456,6 @@ begin
       KeyValue := FieldByName('dump_id').AsVariant
     else
       KeyValue := IdDump;
-  end;
-end;
-
-procedure TFormBasicData.GetValueCoefOrders;
-begin
-  // Получаем флаг состояния (применять/ не применять) коэффициента по приказам
-
-  with qrTMP do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT coef_orders FROM smetasourcedata WHERE sm_id = :sm_id;');
-    ParamByName('sm_id').Value := IdEstimate;
-    Active := True;
-
-    case FieldByName('coef_orders').AsInteger of
-      - 1:
-        RadioGroupCoefOrders.ItemIndex := 2;
-      0:
-        RadioGroupCoefOrders.ItemIndex := 1;
-      1:
-        RadioGroupCoefOrders.ItemIndex := 0;
-    end;
-  end;
-end;
-
-procedure TFormBasicData.SetValueCoefOrders;
-begin
-  // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
-  try
-    with qrTMP do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('UPDATE smetasourcedata SET coef_orders = :coef_orders WHERE sm_id = :sm_id;');
-      ParamByName('sm_id').Value := IdEstimate;
-
-      case RadioGroupCoefOrders.ItemIndex of
-        0:
-          ParamByName('coef_orders').Value := 1;
-        1:
-          ParamByName('coef_orders').Value := 0;
-        2:
-          ParamByName('coef_orders').Value := -1;
-      end;
-
-      ExecSQL;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При записи флага состояния коэффициента по приказам возникла ошибка:' + sLineBreak
-        + sLineBreak + E.Message), 'Исходные данные', MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
