@@ -101,6 +101,8 @@ type
     vk4: TMenuItem;
     vk5: TMenuItem;
     vk6: TMenuItem;
+    vk7: TMenuItem;
+    N10: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -209,6 +211,8 @@ type
     procedure vk4Click(Sender: TObject);
     procedure vk5Click(Sender: TObject);
     procedure vk6Click(Sender: TObject);
+    procedure vk7Click(Sender: TObject);
+    procedure N10Click(Sender: TObject);
 
   private
     CountOpenWindows: integer;
@@ -1163,6 +1167,48 @@ end;
 procedure TFormMain.vk6Click(Sender: TObject);
 begin
 //vk - Расчет стоимости оборудования по объекту
+end;
+
+procedure TFormMain.vk7Click(Sender: TObject);
+begin
+// vk ВЕДОМОСТЬ ОБЪЁМОВ И СТОИМОСТИ РАБОТ  вариант-1
+  Screen.Cursor := crSQLWait;
+  try
+
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+        dmReportF.Report_VED_OANDPWV1_OBJ(1,0,FormCalculationEstimate.GetIdObject, FileReportPath);
+      end;
+
+  finally
+   Screen.Cursor := crDefault;
+  end;
+end;
+
+procedure TFormMain.N10Click(Sender: TObject);
+begin
+  // vk ВЕДОМОСТЬ ОБЪЁМОВ И СТОИМОСТИ РАБОТ  вариант-1
+  Screen.Cursor := crSQLWait;
+  try
+
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+        dmReportF.Report_VED_OANDPWV1_OBJ(2,0,FormCalculationEstimate.GetIdObject, FileReportPath);
+      end;
+
+  finally
+   Screen.Cursor := crDefault;
+  end;
 end;
 
 procedure TFormMain.N13Click(Sender: TObject);
