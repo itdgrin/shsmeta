@@ -412,14 +412,14 @@ object FormBasicData: TFormBasicData
     OnChange = ComboBoxMonthORYearChange
   end
   object dblkcbbMAIS: TDBLookupComboBox
-    Left = 118
+    Left = 47
     Top = 326
-    Width = 201
+    Width = 272
     Height = 21
     DataField = 'exMAIS_ID'
     DataSource = dsSmeta
     KeyField = 'MAIS_ID'
-    ListField = 'NAME'
+    ListField = 'COMMENT'
     ListSource = dsMAIS
     TabOrder = 15
   end

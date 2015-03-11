@@ -271,6 +271,7 @@ end;
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsAddClick(Sender: TObject);
 begin
+  FormCardObject.SetIdSelectRow(0);
   FormCardObject.ShowModal;
 
   // Выводим данные в таблицу объектов

@@ -3,10 +3,11 @@ unit CardObject;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls,
+  ExtCtrls,
   DBCtrls, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client, Vcl.Mask;
 
 type
   TFormCardObject = class(TForm)
@@ -80,9 +81,18 @@ type
     GroupBox1: TGroupBox;
     DBLookupComboBoxMAIS: TDBLookupComboBox;
     ADOQueryMAIS: TFDQuery;
-    DataSourceMAIS: TDataSource; procedure FormCreate(Sender: TObject);
+    DataSourceMAIS: TDataSource;
+    grp1: TGroupBox;
+    lbl1: TLabel;
+    lbl2: TLabel;
+    lbl3: TLabel;
+    dbedtPER_TEPM_BUILD: TDBEdit;
+    dbedtPER_TEMP_BUILD_BACK: TDBEdit;
+    dbedtPER_CONTRACTOR: TDBEdit;
+    qrMain: TFDQuery;
+    dsMain: TDataSource;
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
@@ -142,10 +152,9 @@ var
 
 implementation
 
-uses Main, DataModule;
+uses Main, DataModule, Tools;
 
 {$R *.dfm}
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardObject.FormCreate(Sender: TObject);
 begin
@@ -162,12 +171,13 @@ begin
   Editing := False;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCardObject.FormShow(Sender: TObject);
 begin
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
+
+  qrMain.ParamByName('OBJ_ID').AsInteger := IdObject;
+  CloseOpen(qrMain);
 
   // Устанавливаем фокус
   if EditCodeObject.Focused then
@@ -182,8 +192,6 @@ begin
   // Очистка полей формы
   if not Editing then
     ClearAllFields;
-
-  // -----------------------------------------
 
   if not Editing then
     try
@@ -205,11 +213,9 @@ begin
       end;
     except
       on E: Exception do
-        MessageBox(0, PChar('При формировании НОМЕРА ОБЪЕКТА возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
-          MB_ICONERROR + MB_OK + mb_TaskModal);
+        MessageBox(0, PChar('При формировании НОМЕРА ОБЪЕКТА возникла ошибка:' + sLineBreak + E.Message),
+          CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
     end;;
-
-  // -----------------------------------------
 
   // ИСТОЧНИК ФИНАНСИРОВАНИЯ
 
@@ -230,11 +236,9 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе списка ИСТОЧНИКИ ФИНАНСИРОВАНИЯ возникла ошибка:' + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе списка ИСТОЧНИКИ ФИНАНСИРОВАНИЯ возникла ошибка:' + sLineBreak +
+        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  // -----------------------------------------
 
   // ЗАКАЗЧИК
 
@@ -255,11 +259,9 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе списка ЗАКАЗЧИКИ возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе списка ЗАКАЗЧИКИ возникла ошибка:' + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  // -----------------------------------------
 
   // ГЕНПОДРЯДЧИК
 
@@ -280,11 +282,9 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе списка ГЕНПОДРЯДЧИКИ возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе списка ГЕНПОДРЯДЧИКИ возникла ошибка:' + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  // -----------------------------------------
 
   // КАТЕГОРИЯ ОБЪЕКТА
 
@@ -309,8 +309,6 @@ begin
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  // -----------------------------------------
-
   // РЕГИОН
 
   try
@@ -330,11 +328,9 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе списка РЕГИОНОВ возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе списка РЕГИОНОВ возникла ошибка:' + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  // -----------------------------------------
 
   // БАЗА РАСЦЕНОК
 
@@ -355,11 +351,9 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе списка БАЗ РАСЦЕНОК возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе списка БАЗ РАСЦЕНОК возникла ошибка:' + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  // -----------------------------------------
 
   // ЗОНА РАСЦЕНОК
 
@@ -380,8 +374,8 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе списка ЗОН РАСЦЕНОК возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе списка ЗОН РАСЦЕНОК возникла ошибка:' + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   try
@@ -401,11 +395,9 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе списка МАИСов возникла ошибка:' + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе списка МАИСов возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-
-  // -----------------------------------------
 
   // Выставляем начальные значения в выпадающих списках
   if Editing then
@@ -431,8 +423,8 @@ begin
       DBLookupComboBoxZonePrices.KeyValue := DataSourceDifferent.DataSet.FieldByName('obj_region').AsVariant;
     except
       on E: Exception do
-        MessageBox(0, PChar('При установке значения в ЗОНЕ РАСЦЕНОК возникла ошибка:' + sLineBreak + E.Message),
-          CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        MessageBox(0, PChar('При установке значения в ЗОНЕ РАСЦЕНОК возникла ошибка:' + sLineBreak +
+          E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
 
     GetValueDBLookupComboBoxTypeOXR(nil);
@@ -441,93 +433,20 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormCardObject.FormPaint(Sender: TObject);
-var
-  ValueColor: TColor;
-begin
-  ValueColor := EditNumberObject.Color;
-  EditNumberObject.Color := clWindow;
-  EditNumberObject.Color := ValueColor;
-
-  ValueColor := EditCodeObject.Color;
-  EditCodeObject.Color := clWindow;
-  EditCodeObject.Color := ValueColor;
-
-  ValueColor := EditNumberContract.Color;
-  EditNumberContract.Color := clWindow;
-  EditNumberContract.Color := ValueColor;
-
-  ValueColor := EditShortDescription.Color;
-  EditShortDescription.Color := clWindow;
-  EditShortDescription.Color := ValueColor;
-
-  ValueColor := MemoFullDescription.Color;
-  MemoFullDescription.Color := clWindow;
-  MemoFullDescription.Color := ValueColor;
-
-  ValueColor := EditCountMonth.Color;
-  EditCountMonth.Color := clWindow;
-  EditCountMonth.Color := ValueColor;
-
-  ValueColor := DBLookupComboBoxSourseFinance.Color;
-  DBLookupComboBoxSourseFinance.Color := clWindow;
-  DBLookupComboBoxSourseFinance.Color := ValueColor;
-
-  ValueColor := DBLookupComboBoxClient.Color;
-  DBLookupComboBoxClient.Color := clWindow;
-  DBLookupComboBoxClient.Color := ValueColor;
-
-  ValueColor := DBLookupComboBoxContractor.Color;
-  DBLookupComboBoxContractor.Color := clWindow;
-  DBLookupComboBoxContractor.Color := ValueColor;
-
-  ValueColor := DBLookupComboBoxCategoryObject.Color;
-  DBLookupComboBoxCategoryObject.Color := clWindow;
-  DBLookupComboBoxCategoryObject.Color := ValueColor;
-
-  ValueColor := DBLookupComboBoxRegion.Color;
-  DBLookupComboBoxRegion.Color := clWindow;
-  DBLookupComboBoxRegion.Color := ValueColor;
-
-  ValueColor := DBLookupComboBoxZonePrices.Color;
-  DBLookupComboBoxZonePrices.Color := clWindow;
-  DBLookupComboBoxZonePrices.Color := ValueColor;
-
-  ValueColor := DBLookupComboBoxBasePrices.Color;
-  DBLookupComboBoxBasePrices.Color := clWindow;
-  DBLookupComboBoxBasePrices.Color := ValueColor;
-
-  ValueColor := DBLookupComboBoxTypeOXR.Color;
-  DBLookupComboBoxTypeOXR.Color := clWindow;
-  DBLookupComboBoxTypeOXR.Color := ValueColor;
-
-  ValueColor := DBLookupComboBoxMAIS.Color;
-  DBLookupComboBoxMAIS.Color := clWindow;
-  DBLookupComboBoxMAIS.Color := ValueColor;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCardObject.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   if ButtonSave.Tag = 0 then
-    if MessageBox(0, PChar('Закрыть окно без сохранения?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal)
-      = mrYes then
+    if MessageBox(0, PChar('Закрыть окно без сохранения?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO +
+      mb_TaskModal) = mrYes then
       CanClose := True
     else
       CanClose := False;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCardObject.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Editing := False;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardObject.ButtonSaveClick(Sender: TObject);
 var
@@ -535,14 +454,9 @@ var
   CountField: Integer;
 begin
   CountField := 0;
-
-  // -----------------------------------------
-
   // ПРОВЕРКА ЧТОБЫ НЕ БЫЛО ПУСТЫХ ЗНАЧЕНИЙ
 
   SetColorDefaultToFields;
-
-  // -----------------------------------------
 
   NumberObject := EditNumberObject.Text;
 
@@ -685,7 +599,7 @@ begin
     end;
 
   with DBLookupComboBoxMAIS do
-  if KeyValue <> Null then
+    if KeyValue <> Null then
       v19 := KeyValue
     else
     begin
@@ -699,8 +613,6 @@ begin
   else
     v18 := '0';
 
-  // -----------------------------------------
-
   if CountField > 0 then
   begin
     MessageBox(0, PChar('Вы заполнили не все поля!' + sLineBreak +
@@ -709,8 +621,6 @@ begin
     Exit;
   end;
 
-  // -----------------------------------------
-
   try
     with DM.qrDifferent do
     begin
@@ -718,39 +628,43 @@ begin
       SQL.Clear;
 
       if Editing then
-        SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = "' + v2 + '", date_dog = "' + v3 +
-          '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
-          '", srok_stroj = ' + v8 + ', ' + ' fin_id = ' + v9 + ', cust_id = ' + v10 + ', general_id = ' + v11 +
-          ', cat_id = "' + v12 + '", state_nds = "' + v13 + '", region_id = "' + v14 + '", base_norm_id = "' + v15 +
-          '", stroj_id = "' + v16 + '", encrypt = "' + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 + '" WHERE obj_id = "' +
-          IntToStr(IdObject) + '";')
+        SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = "' + v2 + '", date_dog = "' + v3
+          + '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
+          '", srok_stroj = ' + v8 + ', ' + ' fin_id = ' + v9 + ', cust_id = ' + v10 + ', general_id = ' + v11
+          + ', cat_id = "' + v12 + '", state_nds = "' + v13 + '", region_id = "' + v14 + '", base_norm_id = "'
+          + v15 + '", stroj_id = "' + v16 + '", encrypt = "' + v17 + '", calc_econom = "' + v18 +
+          '", MAIS_ID = "' + v19 +
+          '", PER_TEPM_BUILD=:PER_TEPM_BUILD, PER_CONTRACTOR=:PER_CONTRACTOR, PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK WHERE obj_id = "'
+          + IntToStr(IdObject) + '";')
       else
-        SQL.Add('INSERT INTO objcards (num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, ' +
-          ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt, calc_econom, MAIS_ID) ' +
-          'VALUE ("' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 + '", "' + v7
-          + '", ' + v8 + ', ' + v9 + ', ' + v10 + ', ' + v11 + ', "' + v12 + '", "' + v13 + '", "' + v14 + '", "' + v15
-          + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 + '");');
+        SQL.Add('INSERT INTO objcards (num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '
+          + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
+          ' calc_econom, MAIS_ID, PER_TEPM_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK) ' + 'VALUE ("' +
+          NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 + '", "' + v7 +
+          '", ' + v8 + ', ' + v9 + ', ' + v10 + ', ' + v11 + ', "' + v12 + '", "' + v13 + '", "' + v14 +
+          '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
+          '", :PER_TEPM_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK);');
 
+      ParamByName('PER_TEPM_BUILD').Value := qrMain.FieldByName('PER_TEPM_BUILD').Value;
+      ParamByName('PER_CONTRACTOR').Value := qrMain.FieldByName('PER_CONTRACTOR').Value;
+      ParamByName('PER_TEMP_BUILD_BACK').Value := qrMain.FieldByName('PER_TEMP_BUILD_BACK').Value;
       ExecSQL;
     end;
 
     ButtonSave.Tag := 1;
+    qrMain.Close;
     Close;
   except
     on E: Exception do
-      MessageBox(0, PChar('При сохранении данных возникла ошибка:' + sLineBreak + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При сохранении данных возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardObject.ButtonCancelClick(Sender: TObject);
 begin
   Close;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardObject.EditNumberObjectKeyPress(Sender: TObject; var Key: Char);
 begin
@@ -758,8 +672,6 @@ begin
     if (Key < '0') or (Key > '9') then // Запрещаем ввод символов кроме цифр
       Key := #0;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardObject.EditingRecord(const Value: Boolean);
 begin
@@ -815,7 +727,6 @@ procedure TFormCardObject.SetMAIS(const Value: Integer);
 begin
   MAIS := Value;
 end;
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardObject.SetColorDefaultToFields;
 begin
@@ -834,8 +745,6 @@ begin
   DBLookupComboBoxTypeOXR.Color := clWindow;
   DBLookupComboBoxMAIS.Color := clWindow;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardObject.ClearAllFields;
 begin
@@ -858,18 +767,13 @@ begin
   DBLookupComboBoxMAIS.KeyValue := Null;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCardObject.GetValueDBLookupComboBoxTypeOXR(Sender: TObject);
 var
   IdRegion: Integer;
   IdCategory: Integer;
 begin
-  if (DBLookupComboBoxCategoryObject.KeyValue = Null) or
-     (DBLookupComboBoxZonePrices.KeyValue = Null) then
+  if (DBLookupComboBoxCategoryObject.KeyValue = Null) or (DBLookupComboBoxZonePrices.KeyValue = Null) then
     Exit;
-
-  // -----------------------------------------
 
   // Тип ОХР и ОПР и План прибыли
 
@@ -894,11 +798,9 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе списка ОХР и ОПР возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе списка ОХР и ОПР возникла ошибка:' + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.
