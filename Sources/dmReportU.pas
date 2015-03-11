@@ -34,6 +34,8 @@ type
     qRSMO_OBJ: TFDQuery;
     qRSMEH_OBJ: TFDQuery;
     frxRSMEH_OBJ: TfrxDBDataset;
+    qVED_OANDPWV1: TFDQuery;
+    frxqVED_OANDPWV1: TfrxDBDataset;
   private
     { Private declarations }
   public
@@ -45,6 +47,7 @@ type
     procedure Report_RSMO_OBJ(  with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
     procedure Report_RSMEH_OBJ( with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
     procedure Report_RSDEV_OBJ( with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
+    procedure Report_VED_OANDPWV1_OBJ(xvar,with_nds,OBJ_ID: integer; FileReportPath: string); //ÂÅÄÎÌÎÑÒÜ ÎÁÚ¨ÌÎÂ È ÑÒÎÈÌÎÑÒÈ ÐÀÁÎÒ
   end;
 
 const arraymes: array[1..12, 1..2] of string = (('ßíâàðü',   'ßíâàðÿ'),
@@ -282,7 +285,7 @@ qRSMEH_OBJ.SQL.Text:=
 end;
 
 // vk Ðàñ÷åò ñòîèìîñòè îáîðóäîâàíèÿ ïî îáúåêòó
- procedure TdmReportF.Report_RSDEV_OBJ(with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
+procedure TdmReportF.Report_RSDEV_OBJ(with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
 begin
 
 if with_nds = 0 then frxReport.LoadFromFile(FileReportPath + 'frRSMEH_OBJ.fr3');
@@ -343,6 +346,95 @@ qRSMEH_OBJ.SQL.Text:=
   if SM_ID>0  then  qRSMEH_OBJ.ParamByName('SM_ID').AsInteger  := SM_ID;
   if OBJ_ID>0 then  qRSMEH_OBJ.ParamByName('OBJ_ID').AsInteger := OBJ_ID;
   CloseOpen(qRSMEH_OBJ);
+
+  frxReport.Script.Variables['sm_obj_name'] := AnsiUpperCase(qrTMP.FieldByName('NAME').AsString);
+  frxReport.Script.Variables['sm_date_dog'] := '1 ' + AnsiUpperCase(arraymes[qrTMP.FieldByName('MONTH').AsInteger, 2]) +
+   ' ' + IntToStr(qrTMP.FieldByName('YEAR').AsInteger) + ' ã.';
+  try
+    frxReport.PrepareReport;
+    frxReport.ShowPreparedReport;
+  except
+    ShowMessage('Îøèáêà ïðè ôîðìèðîâàíèè îò÷åòà');
+  end;
+
+
+end;
+
+// vk ÂÅÄÎÌÎÑÒÜ ÎÁÚ¨ÌÎÂ È ÑÒÎÈÌÎÑÒÈ ÐÀÁÎÒ âàðèàíò-1
+ procedure TdmReportF.Report_VED_OANDPWV1_OBJ(xvar,with_nds,OBJ_ID: integer; FileReportPath: string);
+begin
+
+//if with_nds = 0 then frxReport.LoadFromFile(FileReportPath + 'frRSMEH_OBJ.fr3');
+//if with_nds = 1 then frxReport.LoadFromFile(FileReportPath + 'frRSMEH_NDS_OBJ.fr3');
+
+if xvar = 1 then frxReport.LoadFromFile(FileReportPath + 'frOANDPWV1_OBJ.fr3');
+if xvar = 2 then frxReport.LoadFromFile(FileReportPath + 'frVOSR_OBJ.fr3');
+
+qrTMP.SQL.Text :=  'select 		`ssd`.`sm_id`,CONCAT(`oc`.`NUM`, " ", `oc`.`NAME`) `NAME`,'#13#10 +
+                  '		IFNULL(`s`.`MONAT`, 0) `MONTH`,'#13#10 +
+                  '		IFNULL(`s`.`YEAR`, 0) `YEAR`'#13#10 +
+                  'from `smetasourcedata` as `ssd`'#13#10 +
+                  'inner join`objcards` `oc` on `oc`.`OBJ_ID` = `ssd`.`OBJ_ID`'#13#10 +
+                  'inner join `objstroj` `os` on `os`.`STROJ_ID` = `oc`.`STROJ_ID`'#13#10 +
+                  'inner join `stavka` `s` on `s`.`STAVKA_ID` = `ssd`.`STAVKA_ID`'#13#10 +
+                  'where  (:OBJ_ID is null or `ssd`.`OBJ_ID` = :OBJ_ID)  and sm_type=2 '#13#10 ;
+
+qrTMP.ParamByName('OBJ_ID').AsInteger := OBJ_ID;
+CloseOpen(qrTMP);
+
+qVED_OANDPWV1.SQL.Text:=
+' SELECT'#13#10 +
+' smetasourcedata.sm_id,'#13#10 +
+' smetasourcedata.SM_NUMBER,'#13#10 +
+' NAME,'#13#10 +
+' NAME_O,'#13#10 +
+' NAME_L,'#13#10 +
+' SM_VID,'#13#10 +
+' S_TRUD,'#13#10 +
+' ROUND(S_ZP/100) as S_ZP,'#13#10 +
+' S_TRUD_MASH,'#13#10 +
+' ROUND(S_EMiM/1000) as S_EMiM,'#13#10 +
+' ROUND(S_ZP_MASH/1000) as S_ZP_MASH,'#13#10 +
+' ROUND(S_MR/1000) as S_MR,'#13#10 +
+' ROUND(S_TRANSP/1000) as S_TRANSP,'#13#10 +
+' ROUND(S_OHROPR/1000) as S_OHROPR,'#13#10 +
+' ROUND(S_ST_OHROPR/1000) as S_ST_OHROPR,'#13#10 +
+' ROUND(S_PLAN_PRIB/1000) as S_PLAN_PRIB,'#13#10 +
+' ROUND(S_STOIM/1000) as S_STOIM,'#13#10 +
+' PARENT_ID '#13#10 +
+' FROM smeta.smetasourcedata'#13#10 +
+' left join (SELECT  ssd.SM_ID, ssd.OBJ_ID, 0 as SM_VID,'#13#10 +
+' CONCAT(ssd.SM_NUMBER, " ",  ssd.NAME) as NAME_O, "" AS NAME_L '#13#10 +
+' FROM smetasourcedata ssd'#13#10 +
+' WHERE ssd.SM_ID = :SM_ID '#13#10 +
+' AND ssd.SM_TYPE = 2'#13#10 +
+' UNION'#13#10 +
+''#13#10 +
+'SELECT ssd_local.SM_ID, ssd_local.OBJ_ID, 1 as SM_VID,'#13#10 +
+'CONCAT(ssd.SM_NUMBER, " ",  ssd.NAME) as NAME_O, CONCAT(ssd_local.SM_NUMBER, " ",  ssd_local.NAME) as NAME_L'#13#10 +
+'FROM smetasourcedata ssd_local'#13#10 +
+'JOIN smetasourcedata ssd ON ssd.SM_ID = ssd_local.PARENT_ID'#13#10 +
+'				AND ssd.SM_TYPE = 2'#13#10 +
+'WHERE ssd_local.PARENT_ID = :SM_ID'#13#10 +
+'AND ssd_local.SM_TYPE = 1'#13#10 +
+'UNION'#13#10 +
+''#13#10 +
+'SELECT ssd_ptm.SM_ID, ssd_ptm.OBJ_ID,  2 as SM_VID, '#13#10 +
+'CONCAT(ssd.SM_NUMBER, " ",  ssd.NAME) as NAME_O, CONCAT(ssd_local.SM_NUMBER, " ",  ssd_local.NAME) as NAME_L'#13#10 +
+'FROM smetasourcedata ssd_ptm'#13#10 +
+'JOIN smetasourcedata ssd_local ON ssd_local.SM_ID = ssd_ptm.PARENT_ID '#13#10 +
+'					  AND ssd_local.SM_TYPE = 1'#13#10 +
+'					  AND ssd_local.PARENT_ID = :SM_ID'#13#10 +
+'JOIN smetasourcedata ssd ON ssd.SM_ID = ssd_local.PARENT_ID'#13#10 +
+'				AND ssd.SM_TYPE = 2'#13#10 +
+'WHERE ssd_ptm.SM_TYPE = 3'#13#10 +
+'ORDER BY SM_VID) as  cr_nam on cr_nam.sm_id = smetasourcedata.sm_id'#13#10 +
+'where sm_vid>1'#13#10 +
+'order by SM_ID,PARENT_ID' ;
+
+
+qVED_OANDPWV1.ParamByName('SM_ID').AsInteger := qrTMP.FieldByName('SM_ID').AsInteger ;
+CloseOpen(qVED_OANDPWV1);
 
   frxReport.Script.Variables['sm_obj_name'] := AnsiUpperCase(qrTMP.FieldByName('NAME').AsString);
   frxReport.Script.Variables['sm_date_dog'] := '1 ' + AnsiUpperCase(arraymes[qrTMP.FieldByName('MONTH').AsInteger, 2]) +

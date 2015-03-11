@@ -526,4 +526,38 @@ object dmReportF: TdmReportF
     Left = 200
     Top = 240
   end
+  object qVED_OANDPWV1: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    Left = 296
+    Top = 288
+  end
+  object frxqVED_OANDPWV1: TfrxDBDataset
+    UserName = 'frxqVED_OANDPWV1'
+    CloseDataSource = True
+    FieldAliases.Strings = (
+      'sm_number=sm_number'
+      'name=name'
+      'name_o=name_o'
+      'name_l=name_l'
+      'sm_vid=sm_vid'
+      's_trud=s_trud'
+      's_zp=s_zp'
+      's_trud_mash=s_trud_mash'
+      's_emim=s_emim'
+      's_zp_mash=s_zp_mash'
+      's_mr=s_mr'
+      's_transp=s_transp'
+      's_st_ohropr=s_st_ohropr'
+      's_plan_prib=s_plan_prib'
+      's_stoim=s_stoim'
+      'parent_id=parent_id'
+      'S_OHROPR=S_OHROPR')
+    DataSet = qVED_OANDPWV1
+    BCDToCurrency = False
+    Left = 296
+    Top = 240
+  end
 end
