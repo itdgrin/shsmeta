@@ -328,8 +328,6 @@ object FormBasicData: TFormBasicData
     Default = True
     TabOrder = 19
     OnClick = ButtonSaveClick
-    ExplicitLeft = 111
-    ExplicitTop = 533
   end
   object ButtonCancel: TButton
     Left = 216
@@ -340,8 +338,6 @@ object FormBasicData: TFormBasicData
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 20
     OnClick = ButtonCancelClick
-    ExplicitLeft = 217
-    ExplicitTop = 533
   end
   object ComboBoxMonth: TComboBox
     Left = 167
@@ -414,7 +410,6 @@ object FormBasicData: TFormBasicData
     TabOrder = 1
     Value = 2014
     OnChange = ComboBoxMonthORYearChange
-    ExplicitLeft = 262
   end
   object dblkcbbMAIS: TDBLookupComboBox
     Left = 118
@@ -458,9 +453,9 @@ object FormBasicData: TFormBasicData
   object dbchkAPPLY_LOW_COEF_OHROPR_FLAG: TDBCheckBox
     Left = 8
     Top = 451
-    Width = 183
+    Width = 308
     Height = 17
-    Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1087#1086#1085#1080#1078#1072#1102#1097#1080#1077' '#1082#1086#1101#1092'.:'
+    Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1087#1086#1085#1080#1078#1072#1102#1097#1080#1077' '#1082#1086#1101#1092' '#1082' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1087#1083#1072#1085'. '#1087#1088#1080#1073'.:'
     DataField = 'APPLY_LOW_COEF_OHROPR_FLAG'
     DataSource = dsSmeta
     TabOrder = 21
@@ -476,7 +471,6 @@ object FormBasicData: TFormBasicData
     Anchors = [akLeft, akRight, akBottom]
     BevelOuter = bvNone
     TabOrder = 22
-    ExplicitWidth = 311
     object lbl6: TLabel
       Left = 6
       Top = 7

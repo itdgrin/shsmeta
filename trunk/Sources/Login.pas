@@ -43,7 +43,7 @@ end;
 
 procedure TFormLogin.ButtonConnectClick(Sender: TObject);
 begin
-  FormConnectDatabase.ButtonConnectClick(nil);
+  //FormConnectDatabase.ButtonConnectClick(nil);
   Close;
 end;
 
