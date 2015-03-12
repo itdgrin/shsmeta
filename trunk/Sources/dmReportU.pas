@@ -8,7 +8,8 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Dialogs, Tools, DateUtils,
-  frxExportRTF, frxExportHTML, frxExportPDF, frxExportText;
+  frxExportRTF, frxExportHTML, frxExportPDF, frxExportText, FireDAC.UI.Intf,
+  FireDAC.VCLUI.Wait, FireDAC.Comp.UI;
 
 type
   TdmReportF = class(TDataModule)
@@ -36,11 +37,20 @@ type
     frxRSMEH_OBJ: TfrxDBDataset;
     qVED_OANDPWV1: TFDQuery;
     frxqVED_OANDPWV1: TfrxDBDataset;
+
     qVED_OBRAB_RASHRES_SMET: TFDQuery;
     frxVED_OBRAB_RASHRES_SMET: TfrxDBDataset;
-    frxReport1: TfrxReport;
-  private
-    { Private declarations }
+    frxReport1: TfrxReport;    
+    qrSMETA_OBJ_E: TFDQuery;
+    frxSMETA_OBJ_E: TfrxDBDataset;
+    qrSMETA_OBJ_MAT: TFDQuery;
+    frxSMETA_OBJ_MAT: TfrxDBDataset;
+    qrSMETA_OBJ_MEH: TFDQuery;
+    frxSMETA_OBJ_MEH: TfrxDBDataset;
+    qrSMETA_OBJ_DEV: TFDQuery;
+    frxSMETA_OBJ_DEV: TfrxDBDataset;
+    FDGUIxWaitCursor: TFDGUIxWaitCursor;  private
+   { Private declarations }
   public
     { Public declarations }
     procedure Report_ZP_OBJ(SM_ID: integer; FileReportPath: string);
@@ -52,6 +62,7 @@ type
     procedure Report_RSDEV_OBJ( with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
     procedure Report_VED_OANDPWV1_OBJ(xvar,with_nds,OBJ_ID: integer; FileReportPath: string);       //ВЕДОМОСТЬ ОБЪЁМОВ И СТОИМОСТИ РАБОТ
     procedure Report_VED_OBRAB_RASHRES_SMET_OBJ( SM_ID: integer;FileReportPath: string);            //Ведомость объемов работ и расхода ресурсов по смете
+    procedure Report_SMETA_OBJ_BUILD(SM_ID: integer; FileReportPath: string); // "СМЕТА по объекту строительства" v1.03
   end;
 
 const arraymes: array[1..12, 1..2] of string = (('Январь',   'Января'),
@@ -558,7 +569,7 @@ qVED_OBRAB_RASHRES_SMET.ParamByName('SM_ID').AsInteger := SM_ID ;
   end;
 end;
 
-// отчет Расчет стоимости заработной платы рабочих строителей (Вадим)
+// отчет Расчет стоимости заработной платы рабочих строителей (Вадим) v1.00
 procedure TdmReportF.Report_ZP_OBJ(SM_ID: integer; FileReportPath: string);
 var
   SM_ID_ROOT: integer;
@@ -622,7 +633,7 @@ begin
   qrTMP.Close;
 end;
 
-// отчет Расчет стоимости заработной платы рабочих строителей по акту (Вадим)
+// отчет Расчет стоимости заработной платы рабочих строителей по акту (Вадим)  v1.01
 procedure TdmReportF.Report_ZP_OBJ_ACT(ID_ACT: integer; FileReportPath: string);
 begin
   qrTMP.SQL.Text := 'select CONCAT(`oc`.`NUM`, " ", `oc`.`NAME`) `NAME`,'#13#10 +
@@ -665,7 +676,7 @@ begin
   qrTMP.Close;
 end;
 
-// отчет по расходу материалов по акту (Вадим)
+// отчет по расходу материалов по акту (Вадим) v1.02
 procedure TdmReportF.Report_RASX_MAT(ID_ACT: integer; FileReportPath: string);
 begin
   qrTMP.SQL.Text := 'SELECT CONCAT(`oc`.`NUM`, " ", `oc`.`NAME`) `NAME`,'#13#10 +
@@ -706,5 +717,82 @@ begin
 
   qrTMP.Close;
 end;
+
+// --> "СМЕТА по объекту строительства" v.1.03
+procedure TdmReportF.Report_SMETA_OBJ_BUILD(SM_ID: Integer; FileReportPath: string);
+var
+  SM_ID_ROOT: integer;
+begin
+  // поиск корня по ветке
+  qrTMP.SQL.Text := 'select IF(`ssd`.`PARENT_ID` = 0, `ssd`.`SM_ID`,'#13#10 +
+                    '          (select IF(`ssd1`.`PARENT_ID` = 0, `ssd1`.`SM_ID`,'#13#10 +
+                  	'                     (select IF(`ssd2`.`PARENT_ID` = 0, `ssd2`.`SM_ID`, NULL)'#13#10 +
+                    '                      from `smetasourcedata` `ssd2`'#13#10 +
+                    '               	  	 where `ssd2`.`SM_ID` = `ssd1`.`PARENT_ID`))'#13#10 +
+                    '     		  from `smetasourcedata` `ssd1`'#13#10 +
+		                '           where `ssd1`.`SM_ID` = `ssd`.`PARENT_ID`)) `SM_ID_ROOT`'#13#10 +
+                    'from `smetasourcedata` `ssd`'#13#10 +
+                    'where `ssd`.`SM_ID` = :SM_ID';
+
+  qrTMP.ParamByName('SM_ID').AsInteger := SM_ID;
+  CloseOpen(qrTMP);
+  SM_ID_ROOT := qrTMP.FieldByName('SM_ID_ROOT').AsInteger;
+
+  qrTMP.Close;
+  qrTMP.SQL.Text := 'select CONCAT(`oc`.`NUM`, '' '', `oc`.`NAME`) `NAME`,'#13#10 +
+                    '       IFNULL(`s`.`MONAT`, 0) `MONTH`,'#13#10 +
+                    '       IFNULL(`s`.`YEAR`, 0) `YEAR`,'#13#10 +
+                    '       IF(`os`.`OBJ_REGION` = 3, `s`.`STAVKA_M_RAB`, `s`.`STAVKA_RB_RAB`) `TARIF`,'#13#10 +
+                    '       `or`.`REGION`,'#13#10 +
+                    '       `ssd`.`PREPARER`,'#13#10 +
+                    '       `ssd`.`POST_PREPARER`,'#13#10 +
+                    '       `ssd`.`EXAMINER`,'#13#10 +
+                    '       `ssd`.`POST_EXAMINER`'#13#10 +
+                    'from `smetasourcedata` `ssd`'#13#10 +
+                    'inner join `stavka` `s` on `s`.`STAVKA_ID` = `ssd`.`STAVKA_ID`'#13#10 +
+                    'inner join `objcards` `oc` on `oc`.`OBJ_ID` = `ssd`.`OBJ_ID`'#13#10 +
+                    'inner join `objstroj` `os` on `os`.`STROJ_ID` = `oc`.`STROJ_ID`'#13#10 +
+                    'inner join `objregion` `or` on `or`.`OBJ_REGION_ID` = `os`.`OBJ_REGION`'#13#10 +
+                    'where `ssd`.`SM_ID` = :SM_ID';
+  qrTMP.ParamByName('SM_ID').AsInteger := SM_ID_ROOT;
+  CloseOpen(qrTMP);
+
+  qrSMETA_OBJ_E.ParamByName('SM_ID').AsInteger := SM_ID_ROOT;
+  CloseOpen(qrSMETA_OBJ_E);
+
+  qrSMETA_OBJ_MAT.ParamByName('SM_ID').AsInteger := SM_ID_ROOT;
+  CloseOpen(qrSMETA_OBJ_MAT);
+
+  qrSMETA_OBJ_MEH.ParamByName('SM_ID').AsInteger := SM_ID_ROOT;
+  CloseOpen(qrSMETA_OBJ_MEH);
+
+  qrSMETA_OBJ_DEV.ParamByName('SM_ID').AsInteger := SM_ID_ROOT;
+  CloseOpen(qrSMETA_OBJ_DEV);
+
+  frxReport.LoadFromFile(FileReportPath + 'frSMETA_OBJ_BUILD.fr3');
+
+  frxReport.Script.Variables['sm_obj_name'] := AnsiUpperCase(qrTMP.FieldByName('NAME').AsString);
+  frxReport.Script.Variables['date_sost'] := '1 ' + AnsiUpperCase(arraymes[qrTMP.FieldByName('MONTH').AsInteger, 2]) +
+                                               ' ' + qrTMP.FieldByName('YEAR').AsString + ' г.';
+  frxReport.Script.Variables['cust_name'] := ''; // ??
+  frxReport.Script.Variables['podr_name'] := ''; // ??
+  frxReport.Script.Variables['reg_build'] := qrTMP.FieldByName('REGION').AsString;
+  frxReport.Script.Variables['sm_tarif'] := FormatFloat('#,##0', qrTMP.FieldByName('TARIF').AsFloat);
+
+  frxReport.Script.Variables['preparer'] := qrTMP.FieldByName('PREPARER').AsString;
+  frxReport.Script.Variables['post_preparer'] := qrTMP.FieldByName('POST_PREPARER').AsString;
+  frxReport.Script.Variables['examiner'] := qrTMP.FieldByName('EXAMINER').AsString;
+  frxReport.Script.Variables['post_examiner'] := qrTMP.FieldByName('POST_EXAMINER').AsString;
+
+  try
+    frxReport.PrepareReport;
+    frxReport.ShowPreparedReport;
+  except
+    ShowMessage('Ошибка при формировании отчета');
+  end;
+
+  qrTMP.Close;
+end;
+// <-- "СМЕТА по объекту строительства" v.1.03
 
 end.
