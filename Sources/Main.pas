@@ -103,6 +103,7 @@ type
     vk6: TMenuItem;
     vk7: TMenuItem;
     N10: TMenuItem;
+    vk9: TMenuItem;
 
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
@@ -213,6 +214,7 @@ type
     procedure vk6Click(Sender: TObject);
     procedure vk7Click(Sender: TObject);
     procedure N10Click(Sender: TObject);
+    procedure vk9Click(Sender: TObject);
 
   private
     CountOpenWindows: integer;
@@ -1187,6 +1189,37 @@ begin
 
   finally
    Screen.Cursor := crDefault;
+  end;
+end;
+
+procedure TFormMain.vk9Click(Sender: TObject);
+begin
+ // vk Ведомость объемов работ и расхода ресурсов по смете
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ( FormObjectsAndEstimates.IdEstimate,FileReportPath);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+         dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ( FormCalculationEstimate.GetIdObject,FileReportPath);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
   end;
 end;
 
