@@ -35,7 +35,7 @@ object dmReportF: TdmReportF
     PrintOptions.Printer = 'Default'
     PrintOptions.PrintOnSheet = 0
     ReportOptions.CreateDate = 42048.002529965300000000
-    ReportOptions.LastChange = 42068.032230567130000000
+    ReportOptions.LastChange = 42076.085455335650000000
     ScriptLanguage = 'PascalScript'
     StoreInDFM = False
     Left = 16
@@ -415,6 +415,7 @@ object dmReportF: TdmReportF
     DefaultPath = '..\Doc\'
     ShowProgress = True
     OverwritePrompt = True
+    CreationTime = 42075.892391261570000000
     DataOnly = False
     PictureType = gpPNG
     ExportPageBreaks = False
@@ -1367,5 +1368,550 @@ object dmReportF: TdmReportF
         Condition = 'frxVED_OBRAB_RASHRES_SMET."name_o"'
       end
     end
+  end
+  object qrSMETA_OBJ_E: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    SQL.Strings = (
+      'SELECT '
+      #9'`de`.`NUM_ROW`,'
+      #9'CONCAT(`ssd`.`SM_NUMBER`, " ", `ssd`.`NAME`) `OBJECT_NAME`,'
+      #9'CONCAT(`ssd1`.`SM_NUMBER`, " ", `ssd1`.`NAME`) `LOCAL_NAME`,'
+      #9'CONCAT(`ssd2`.`SM_NUMBER`, " ", `ssd2`.`NAME`) `PTM_NAME`,'
+      #9'`cr`.`RATE_CODE`,'
+      #9'`cr`.`OHROPR`,'
+      #9'`cr`.`PLAN_PRIB`, '
+      #9'`nw`.`NORMA`,'
+      #9'`c`.`COEF`,'
+      '        `de`.`OHROPR` `SUM_OHROPR`,'
+      #9'`de`.`PLAN_PRIB` `SUM_PLAN_PRIB`,'
+      ''
+      
+        #9'IF(`de`.`ZP` = NULL, NULL, IF(`os`.`OBJ_REGION` = 3, `s`.`STAVK' +
+        'A_M_RAB`, `s`.`STAVKA_RB_RAB`)) `TARIF`,'
+      #9'`cr`.`RATE_CAPTION`,'
+      #9'`cr`.`RATE_COUNT`,'
+      #9'`cr`.`RATE_UNIT`,'
+      ''
+      
+        #9'`de`.`ZP` / IF(IFNULL(`cr`.`RATE_COUNT`, 0) = 0, 1, `cr`.`RATE_' +
+        'COUNT`) `ZP_ED`,'
+      #9'`de`.`ZP`,'
+      #9'`de`.`K_ZP`,'
+      #9
+      
+        #9'`de`.`TRUD_MASH` / IF(IFNULL(`cr`.`RATE_COUNT`, 0) = 0, 1, `cr`' +
+        '.`RATE_COUNT`) `TRUD_MASH_ED`,'
+      #9'`de`.`TRUD_MASH`,'
+      #9'`de`.`K_TRUD_MASH`,'
+      ''
+      
+        #9'`de`.`ZP_MASH` / IF(IFNULL(`cr`.`RATE_COUNT`, 0) = 0, 1, `cr`.`' +
+        'RATE_COUNT`) `ZP_MASH_ED`,'
+      #9'`de`.`ZP_MASH`,'
+      #9'`de`.`K_ZP_MASH`,'
+      ''
+      
+        #9'`de`.`MR` / IF(IFNULL(`cr`.`RATE_COUNT`, 0) = 0, 1, `cr`.`RATE_' +
+        'COUNT`) `MR_ED`,'
+      #9'`de`.`MR`,'
+      #9'`de`.`K_MR`,'
+      ''
+      
+        #9'`de`.`TRANSP` / IF(IFNULL(`cr`.`RATE_COUNT`, 0) = 0, 1, `cr`.`R' +
+        'ATE_COUNT`) `TRANSP_ED`,'
+      #9'`de`.`TRANSP`,'
+      #9'`de`.`K_TRANSP`,'
+      ''
+      
+        #9'`de`.`STOIM` / IF(IFNULL(`cr`.`RATE_COUNT`, 0) = 0, 1, `cr`.`RA' +
+        'TE_COUNT`) `STOIM_ED`,'
+      #9'`de`.`STOIM`, '
+      #9'`de`.`K_STOIM`,'
+      ''
+      '        0 `FROM_GROUP`'
+      ''
+      'FROM `smetasourcedata` `ssd`'
+      
+        'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      #9#9#9#9'   AND `ssd1`.`SM_TYPE` = 1'
+      
+        'INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      #9#9#9#9'   AND `ssd2`.`SM_TYPE` = 3 '
+      
+        'INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID` '
+      #9#9#9'       AND `de`.`ID_TYPE_DATA` = 1 '
+      'INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES`'
+      '/*'#1076#1083#1103' '#1088#1072#1079#1088#1103#1076#1072'*/'
+      
+        'INNER JOIN `normativwork` `nw` ON `nw`.`NORMATIV_ID` = `cr`.`RAT' +
+        'E_ID`'
+      #9'               '#9'      AND `nw`.`WORK_ID` = 1'
+      '/*'#1076#1083#1103' '#1090#1072#1088#1080#1092#1085#1086#1081' '#1089#1090#1072#1074#1082#1080' 4 '#1088#1072#1079#1088#1103#1076#1072'*/'
+      'INNER JOIN `stavka` `s` ON `s`.`STAVKA_ID` = `ssd2`.`STAVKA_ID`'
+      'INNER JOIN `objcards` `oc` ON `oc`.`OBJ_ID` = `ssd2`.`OBJ_ID`'
+      'INNER JOIN `objstroj` `os` ON `os`.`STROJ_ID` = `oc`.`STROJ_ID`'
+      '/*'#1076#1083#1103' '#1084#1077#1078#1088#1072#1079#1088#1103#1076#1085#1086#1075#1086' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1072'*/'
+      'LEFT JOIN `category` `c` ON `c`.`VALUE` * 10 = `nw`.`NORMA` * 10'
+      
+        #9#9#9'AND `c`.`DATE_BEG` <= CONVERT(CONCAT(`s`.`YEAR`, "-",`s`.`MON' +
+        'AT`, "-01"), DATE)'
+      'WHERE `ssd`.`SM_ID` = :SM_ID'
+      '  AND `ssd`.`SM_TYPE` = 2'
+      'ORDER BY `OBJECT_NAME`, '
+      '         `LOCAL_NAME`, '
+      '         `PTM_NAME`, '
+      '         `cr`.`RATE_CODE`')
+    Left = 376
+    Top = 112
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 344
+      end>
+  end
+  object frxSMETA_OBJ_E: TfrxDBDataset
+    UserName = 'frxSMETA_OBJ_E'
+    CloseDataSource = True
+    FieldAliases.Strings = (
+      'NUM_ROW=NUM_ROW'
+      'OBJECT_NAME=OBJECT_NAME'
+      'LOCAL_NAME=LOCAL_NAME'
+      'PTM_NAME=PTM_NAME'
+      'RATE_CODE=RATE_CODE'
+      'OHROPR=OHROPR'
+      'PLAN_PRIB=PLAN_PRIB'
+      'NORMA=NORMA'
+      'COEF=COEF'
+      'SUM_OHROPR=SUM_OHROPR'
+      'SUM_PLAN_PRIB=SUM_PLAN_PRIB'
+      'TARIF=TARIF'
+      'RATE_CAPTION=RATE_CAPTION'
+      'RATE_COUNT=RATE_COUNT'
+      'RATE_UNIT=RATE_UNIT'
+      'ZP_ED=ZP_ED'
+      'ZP=ZP'
+      'K_ZP=K_ZP'
+      'TRUD_MASH_ED=TRUD_MASH_ED'
+      'TRUD_MASH=TRUD_MASH'
+      'K_TRUD_MASH=K_TRUD_MASH'
+      'ZP_MASH_ED=ZP_MASH_ED'
+      'ZP_MASH=ZP_MASH'
+      'K_ZP_MASH=K_ZP_MASH'
+      'MR_ED=MR_ED'
+      'MR=MR'
+      'K_MR=K_MR'
+      'TRANSP_ED=TRANSP_ED'
+      'TRANSP=TRANSP'
+      'K_TRANSP=K_TRANSP'
+      'STOIM_ED=STOIM_ED'
+      'STOIM=STOIM'
+      'K_STOIM=K_STOIM'
+      'FROM_GROUP=FROM_GROUP')
+    DataSet = qrSMETA_OBJ_E
+    BCDToCurrency = False
+    Left = 376
+    Top = 56
+  end
+  object qrSMETA_OBJ_MAT: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    SQL.Strings = (
+      '/*explain*/'
+      'SELECT '#9
+      #9'`sm`.`MAT_CODE`,'
+      #9'`sm`.`MAT_NAME`,'
+      #9'`sm`.`MAT_UNIT`,'
+      #9'SUM(`sm`.`MAT_COUNT`) `MAT_COUNT`,'
+      #9'`sm`.`COAST_NO_NDS`,'
+      #9'SUM(`sm`.`PRICE_NO_NDS`) `PRICE_NO_NDS`,'
+      #9'`sm`.`PROC_TRANSP`,'
+      #9'SUM(`sm`.`TRANSP_NO_NDS`) `TRANSP_NO_NDS`,'
+      #9'`sm`.`TYPE_MT`,'
+      '        0 `FROM_GROUP`,'
+      '        `sm`.`TYPE_NAME`'
+      'FROM ('
+      ''
+      '/*'#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1072#1093'*/'
+      'SELECT'
+      #9'`mtc`.`MAT_CODE`,'
+      #9'UCASE(`mtc`.`MAT_NAME`) `MAT_NAME`,'
+      #9'`mtc`.`MAT_UNIT`,'
+      #9'`mtc`.`MAT_COUNT`,'
+      #9'`mtc`.`COAST_NO_NDS`,'
+      #9'`mtc`.`PRICE_NO_NDS`,'
+      #9'`mtc`.`PROC_TRANSP`,'
+      #9'`mtc`.`TRANSP_NO_NDS`,'
+      #9'0 `TYPE_MT`,'
+      '        '#39#1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072#39' `TYPE_NAME`'
+      ''
+      'FROM `smetasourcedata` `ssd`'
+      
+        'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      '                                   AND `ssd1`.`SM_TYPE` = 1'
+      
+        'INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      '                                   AND `ssd2`.`SM_TYPE` = 3 '
+      
+        'INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID` '
+      '                               AND `de`.`ID_TYPE_DATA` = 1'
+      'INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES`'
+      
+        'INNER JOIN `materialcard` `mtc` ON `mtc`.`ID_CARD_RATE` = `cr`.`' +
+        'ID`'
+      ''
+      'WHERE `ssd`.`SM_ID` = :SM_ID '
+      '  AND `ssd`.`SM_TYPE` = 2 '
+      '  '
+      'UNION '
+      ''
+      '/*'#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074#1085#1077' '#1088#1072#1089#1094#1077#1085#1086#1082'*/ '
+      'SELECT'
+      #9'`mtc`.`MAT_CODE`,'
+      #9'UCASE(`mtc`.`MAT_NAME`) `MAT_NAME`,'
+      #9'`mtc`.`MAT_UNIT`,'
+      #9'`mtc`.`MAT_COUNT`,'
+      #9'`mtc`.`COAST_NO_NDS`,'
+      #9'`mtc`.`PRICE_NO_NDS`,'
+      #9'`mtc`.`PROC_TRANSP`,'
+      #9'`mtc`.`TRANSP_NO_NDS`,'
+      #9'0 `TYPE_MT`,'
+      '        '#39#1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072#39' `TYPE_NAME`'
+      ''
+      'FROM `smetasourcedata` `ssd`'
+      
+        'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      '                                   AND `ssd1`.`SM_TYPE` = 1'
+      
+        'INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      '                                   AND `ssd2`.`SM_TYPE` = 3 '
+      
+        'INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID` '
+      '                               AND `de`.`ID_TYPE_DATA` = 2'
+      
+        'INNER JOIN `materialcard` `mtc` ON `mtc`.`ID` = `de`.`ID_TABLES`' +
+        ' '
+      #9#9#9'       AND `mtc`.`ID_CARD_RATE` = 0'
+      ''
+      'WHERE `ssd`.`SM_ID` = :SM_ID '
+      '  AND `ssd`.`SM_TYPE` = 2'
+      ''
+      'UNION'
+      ''
+      '/*'#1089#1074#1072#1083#1082#1072'*/   '
+      'SELECT'
+      #9'`dc`.`DUMP_CODE_JUST` `MAT_CODE`,'
+      #9'UCASE(`dc`.`DUMP_NAME`) `MAT_NAME`,'
+      #9'`dc`.`DUMP_UNIT` `MAT_UNIT`,'
+      #9'`dc`.`DUMP_COUNT` `MAT_COUNT`,'
+      #9'`dc`.`COAST_NDS` `COAST_NO_NDS`,'
+      #9'`dc`.`PRICE_NO_NDS` `PRICE_NO_NDS`,'
+      #9'0 `PROC_TRANSP`,'
+      #9'0 `TRANSP_NO_NDS`,'
+      #9'999 `TYPE_MT`,'
+      '        '#39#1057#1074#1072#1083#1082#1072#39' `TYPE_NAME`'
+      ''
+      'FROM `smetasourcedata` `ssd`'
+      
+        'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      '                                   AND `ssd1`.`SM_TYPE` = 1'
+      
+        'INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      '                                   AND `ssd2`.`SM_TYPE` = 3 '
+      
+        'INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID` '
+      '                               AND `de`.`ID_TYPE_DATA` = 5'
+      
+        'INNER JOIN `dumpcard` `dc` ON `dc`.`ID` = `de`.`ID_TABLES`      ' +
+        '                        '
+      ''
+      'WHERE `ssd`.`SM_ID` = :SM_ID'
+      '  AND `ssd`.`SM_TYPE` = 2  '
+      ') `sm`    '
+      'GROUP BY `sm`.`MAT_CODE`,'
+      #9' `sm`.`MAT_NAME`,'
+      #9' `sm`.`MAT_UNIT`,'
+      #9' `sm`.`COAST_NO_NDS`,'
+      #9' `sm`.`PROC_TRANSP`,'
+      #9' `sm`.`TYPE_MT`,'
+      '         `sm`.`TYPE_NAME`'
+      ''
+      'ORDER BY `sm`.`TYPE_MT`, '
+      '         `sm`.`MAT_CODE`')
+    Left = 456
+    Top = 112
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 344
+      end>
+  end
+  object frxSMETA_OBJ_MAT: TfrxDBDataset
+    UserName = 'frxSMETA_OBJ_MAT'
+    CloseDataSource = True
+    FieldAliases.Strings = (
+      'MAT_CODE=MAT_CODE'
+      'MAT_NAME=MAT_NAME'
+      'MAT_UNIT=MAT_UNIT'
+      'MAT_COUNT=MAT_COUNT'
+      'COAST_NO_NDS=COAST_NO_NDS'
+      'PRICE_NO_NDS=PRICE_NO_NDS'
+      'PROC_TRANSP=PROC_TRANSP'
+      'TRANSP_NO_NDS=TRANSP_NO_NDS'
+      'TYPE_MT=TYPE_MT'
+      'FROM_GROUP=FROM_GROUP'
+      'TYPE_NAME=TYPE_NAME')
+    DataSet = qrSMETA_OBJ_MAT
+    BCDToCurrency = False
+    Left = 456
+    Top = 56
+  end
+  object qrSMETA_OBJ_MEH: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    SQL.Strings = (
+      '/*explain*/'
+      'SELECT'
+      #9'`sm`.`MECH_CODE`,'
+      #9'`sm`.`MECH_NAME`,'
+      #9'`sm`.`MECH_UNIT`,'
+      #9'SUM(`sm`.`MECH_COUNT`) `MECH_COUNT`,'
+      #9'`sm`.`COAST_NO_NDS`,'
+      #9'SUM(`sm`.`PRICE_NO_NDS`) `PRICE_NO_NDS`,'
+      #9'`sm`.`ZP_MACH_NO_NDS`,'
+      #9'SUM(`sm`.`ZPPRICE_NO_NDS`) `ZPPRICE_NO_NDS`,'
+      '        0 `FROM_GROUP`,'
+      '        `sm`.`MT_TYPE`,'
+      '        `sm`.`TYPE_NAME` '
+      'FROM ('
+      '/*'#1084#1077#1093#1072#1085#1080#1079#1084#1099' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1072#1093'*/ '
+      'SELECT  '
+      #9'`mc`.`MECH_CODE`,'
+      #9'UCASE(`mc`.`MECH_NAME`) `MECH_NAME`,'
+      #9'`mc`.`MECH_UNIT`,'
+      #9'`mc`.`MECH_COUNT`,'
+      #9'`mc`.`COAST_NO_NDS`,'
+      #9'`mc`.`PRICE_NO_NDS`,'
+      #9'`mc`.`ZP_MACH_NO_NDS`,'
+      #9'`mc`.`ZPPRICE_NO_NDS`,'
+      '        0 `MT_TYPE`,'
+      '        '#39#1052#1077#1093#1072#1085#1080#1079#1084#1099' '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072#39' `TYPE_NAME` '
+      ''
+      'FROM `smetasourcedata` `ssd`'
+      
+        'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      '                                   AND `ssd1`.`SM_TYPE` = 1'
+      
+        'INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      '                                   AND `ssd2`.`SM_TYPE` = 3 '
+      
+        'INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID` '
+      '                               AND `de`.`ID_TYPE_DATA` = 1 '
+      'INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES`'
+      
+        'INNER JOIN `mechanizmcard` `mc` ON `mc`.`ID_CARD_RATE` = `cr`.`I' +
+        'D`'
+      ''
+      'WHERE `ssd`.`SM_ID` = :SM_ID'
+      '  AND `ssd`.`SM_TYPE` = 2'
+      '  '
+      'UNION'
+      ''
+      '/*'#1084#1077#1093#1072#1085#1080#1079#1084#1099' '#1074#1085#1077' '#1088#1072#1089#1094#1077#1085#1086#1082'*/ '
+      'SELECT '
+      ' '#9'`mc`.`MECH_CODE`,'
+      #9'UCASE(`mc`.`MECH_NAME`) `MECH_NAME`,'
+      #9'`mc`.`MECH_UNIT`,'
+      #9'`mc`.`MECH_COUNT`,'
+      #9'`mc`.`COAST_NO_NDS`,'
+      #9'`mc`.`PRICE_NO_NDS`,'
+      #9'`mc`.`ZP_MACH_NO_NDS`,'
+      #9'`mc`.`ZPPRICE_NO_NDS`,'
+      '        0 `MT_TYPE`,'
+      '        '#39#1052#1077#1093#1072#1085#1080#1079#1084#1099' '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072#39' `TYPE_NAME`'
+      ''
+      'FROM `smetasourcedata` `ssd`'
+      
+        'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      '                                   AND `ssd1`.`SM_TYPE` = 1'
+      
+        'INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      '                                   AND `ssd2`.`SM_TYPE` = 3 '
+      
+        'INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID` '
+      '                               AND `de`.`ID_TYPE_DATA` = 3 '
+      'INNER JOIN `mechanizmcard` `mc` ON `mc`.`ID` = `de`.`ID_TABLES`'
+      '                               AND `mc`.`ID_CARD_RATE` = 0'
+      ''
+      'WHERE `ssd`.`SM_ID` = :SM_ID'
+      '  AND `ssd`.`SM_TYPE` = 2'
+      ') `sm`  '
+      ''
+      'GROUP BY `sm`.`MECH_CODE`,'
+      #9' `sm`.`MECH_NAME`,'
+      #9' `sm`.`MECH_UNIT`,'
+      #9' `sm`.`COAST_NO_NDS`,'#9' '
+      #9' `sm`.`ZP_MACH_NO_NDS`,'
+      '         `sm`.`MT_TYPE`,'
+      '         `sm`.`TYPE_NAME` '
+      #9' '
+      'ORDER BY `sm`.`MT_TYPE`,'
+      '         `sm`.`MECH_CODE`')
+    Left = 536
+    Top = 112
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '344'
+      end>
+  end
+  object frxSMETA_OBJ_MEH: TfrxDBDataset
+    UserName = 'frxSMETA_OBJ_MEH'
+    CloseDataSource = True
+    FieldAliases.Strings = (
+      'MECH_CODE=MECH_CODE'
+      'MECH_NAME=MECH_NAME'
+      'MECH_UNIT=MECH_UNIT'
+      'MECH_COUNT=MECH_COUNT'
+      'COAST_NO_NDS=COAST_NO_NDS'
+      'PRICE_NO_NDS=PRICE_NO_NDS'
+      'ZP_MACH_NO_NDS=ZP_MACH_NO_NDS'
+      'ZPPRICE_NO_NDS=ZPPRICE_NO_NDS'
+      'FROM_GROUP=FROM_GROUP'
+      'MT_TYPE=MT_TYPE'
+      'TYPE_NAME=TYPE_NAME')
+    DataSet = qrSMETA_OBJ_MEH
+    BCDToCurrency = False
+    Left = 536
+    Top = 56
+  end
+  object qrSMETA_OBJ_DEV: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    SQL.Strings = (
+      '/*explain*/'
+      'SELECT'
+      #9'`sm`.`DEVICE_CODE`,'
+      #9'`sm`.`DEVICE_NAME`,'
+      #9'`sm`.`DEVICE_UNIT`,'
+      #9'SUM(`sm`.`DEVICE_COUNT`) `DEVICE_COUNT`,'
+      #9'`sm`.`FCOAST_NO_NDS`,'
+      #9'SUM(`sm`.`FPRICE_NO_NDS`) `FPRICE_NO_NDS`,'
+      #9'`sm`.`DEVICE_PROC_TRANSP`,'
+      #9'SUM(`sm`.`DEVICE_TRANSP_NO_NDS`) `DEVICE_TRANSP_NO_NDS`,'
+      '        0 `FROM_GROUP`,'
+      '        `sm`.`MT_TYPE`,'
+      '        `sm`.`TYPE_NAME`'
+      'FROM ('
+      '/*'#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077' '#1074#1085#1077' '#1088#1072#1089#1094#1077#1085#1086#1082'*/ '
+      'SELECT  '
+      #9'`dc`.`DEVICE_CODE`,'
+      #9'UCASE(`dc`.`DEVICE_NAME`) `DEVICE_NAME`,'
+      #9'`dc`.`DEVICE_UNIT`,'
+      #9'`dc`.`DEVICE_COUNT`,'
+      #9'`dc`.`FCOAST_NO_NDS`,'
+      #9'`dc`.`FPRICE_NO_NDS`,'
+      #9'0 `DEVICE_PROC_TRANSP`, '
+      #9'`dc`.`DEVICE_TRANSP_NO_NDS`,'
+      '        0 `MT_TYPE`,'
+      '        '#39#1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077' '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072#39' `TYPE_NAME`'
+      ''
+      'FROM `smetasourcedata` `ssd`'
+      
+        'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      '                                   AND `ssd1`.`SM_TYPE` = 1'
+      
+        'INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      '                                   AND `ssd2`.`SM_TYPE` = 3 '
+      
+        'INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID` '
+      '                               AND `de`.`ID_TYPE_DATA` = 4'
+      'INNER JOIN `devicescard` `dc` ON `dc`.`ID` = `de`.`ID_TABLES`'
+      ''
+      'WHERE `ssd`.`SM_ID` = :SM_ID'
+      '  AND `ssd`.`SM_TYPE` = 2'
+      ''
+      ') `sm`  '
+      ''
+      'GROUP BY `sm`.`DEVICE_CODE`,'
+      #9' `sm`.`DEVICE_NAME`,'
+      #9' `sm`.`DEVICE_UNIT`,'
+      #9' `sm`.`FCOAST_NO_NDS`,'#9' '
+      #9' `sm`.`DEVICE_PROC_TRANSP`,'
+      '         `sm`.`MT_TYPE`,'
+      #9' `sm`.`TYPE_NAME`'
+      ''
+      'ORDER BY `sm`.`MT_TYPE`,'
+      '         `sm`.`DEVICE_CODE`')
+    Left = 608
+    Top = 112
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '344'
+      end>
+  end
+  object frxSMETA_OBJ_DEV: TfrxDBDataset
+    UserName = 'frxSMETA_OBJ_DEV'
+    CloseDataSource = True
+    FieldAliases.Strings = (
+      'DEVICE_CODE=DEVICE_CODE'
+      'DEVICE_NAME=DEVICE_NAME'
+      'DEVICE_UNIT=DEVICE_UNIT'
+      'DEVICE_COUNT=DEVICE_COUNT'
+      'FCOAST_NO_NDS=FCOAST_NO_NDS'
+      'FPRICE_NO_NDS=FPRICE_NO_NDS'
+      'DEVICE_PROC_TRANSP=DEVICE_PROC_TRANSP'
+      'DEVICE_TRANSP_NO_NDS=DEVICE_TRANSP_NO_NDS'
+      'FROM_GROUP=FROM_GROUP'
+      'MT_TYPE=MT_TYPE'
+      'TYPE_NAME=TYPE_NAME')
+    DataSet = qrSMETA_OBJ_DEV
+    BCDToCurrency = False
+    Left = 608
+    Top = 56
+  end
+  object FDGUIxWaitCursor: TFDGUIxWaitCursor
+    Provider = 'Forms'
+    ScreenCursor = gcrDefault
+    Left = 832
+    Top = 16
   end
 end

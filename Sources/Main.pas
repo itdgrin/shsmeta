@@ -103,8 +103,8 @@ type
     vk6: TMenuItem;
     vk7: TMenuItem;
     N10: TMenuItem;
-    vk9: TMenuItem;
-
+	vk9: TMenuItem;    
+    mnREPORT_SMETA_OBJ_BUILD: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
@@ -214,8 +214,8 @@ type
     procedure vk6Click(Sender: TObject);
     procedure vk7Click(Sender: TObject);
     procedure N10Click(Sender: TObject);
-    procedure vk9Click(Sender: TObject);
-
+	procedure vk9Click(Sender: TObject);	
+    procedure mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -1068,6 +1068,38 @@ begin
     Screen.Cursor := crDefault;
   end;
 end;
+
+// --> "СМЕТА по объекту строительства" v.1.03
+procedure TFormMain.mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
+begin
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_SMETA_OBJ_BUILD(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+        dmReportF.Report_SMETA_OBJ_BUILD(FormCalculationEstimate.GetIdEstimate, FileReportPath);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+// <-- "СМЕТА по объекту строительства" v.1.03
 
 procedure TFormMain.vk3Click(Sender: TObject);
 begin
