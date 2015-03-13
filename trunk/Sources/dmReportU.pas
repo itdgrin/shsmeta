@@ -39,8 +39,7 @@ type
     frxqVED_OANDPWV1: TfrxDBDataset;
 
     qVED_OBRAB_RASHRES_SMET: TFDQuery;
-    frxVED_OBRAB_RASHRES_SMET: TfrxDBDataset;
-    frxReport1: TfrxReport;    
+    frxVED_OBRAB_RASHRES_SMET: TfrxDBDataset;    
     qrSMETA_OBJ_E: TFDQuery;
     frxSMETA_OBJ_E: TfrxDBDataset;
     qrSMETA_OBJ_MAT: TFDQuery;
@@ -661,10 +660,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' 0 as `sm_id2`,'#13#10 +
 ' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
 ' ""  as `name`,'#13#10 +
-' "" as `name_o`,'#13#10 +
+' `ssd2`.`name` as `name_o`,'#13#10 +
 ' `ssd2`.`name` as `name_l`,'#13#10 +
 ' "" as `sm_number`,'#13#10 +
-' "" as `sm_number1`,'#13#10 +
+' `ssd2`.`sm_number` as `sm_number1`,'#13#10 +
 ' `ssd2`.`sm_number` as `sm_number2`,'#13#10 +
 ' `mtc`.`MAT_CODE`,   '#13#10 +
 ' UCASE(`mtc`.`MAT_NAME`) as `MAT_NAME`,'#13#10 +
@@ -684,10 +683,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' 0 as `sm_id2`,'#13#10 +
 ' `ssd2`.`sm_id` as `sm_id3`, '#13#10 +
 ' "" as `name`,'#13#10 +
-' "" as `name_o`, '#13#10 +
+' `ssd2`.`name` as `name_o`, '#13#10 +
 ' `ssd2`.`name` as `name_l`,'#13#10 +
 ' "" as `sm_number`,'#13#10 +
-' "" as `sm_number1`,  '#13#10 +
+' `ssd2`.`sm_number` as `sm_number1`,  '#13#10 +
 ' `ssd2`.`sm_number` as `sm_number2`,'#13#10 +
 ' "1-1" as `MAT_CODE`,  '#13#10 +
 ' "«¿“–¿“€ “–”ƒ¿ –¿¡Œ◊»’-—“–Œ»“≈À≈…" as MAT_NAME, '#13#10 +
@@ -703,10 +702,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' 0 as `sm_id2`, '#13#10 +
 ' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
 ' ""  as `name`, '#13#10 +
-' ""  as `name_o`, '#13#10 +
+' `ssd2`.`name` as `name_o`, '#13#10 +
 ' `ssd2`.`name` as `name_l`, '#13#10 +
 ' "" as `sm_number`, '#13#10 +
-' "" as `sm_number1`,'#13#10 +
+' `ssd2`.`sm_number` as `sm_number1`,'#13#10 +
 ' `ssd2`.`sm_number` as `sm_number2`, '#13#10 +
 ' "1-3" as MAT_CODE, '#13#10 +
 ' "«¿“–¿“€ “–”ƒ¿ Ã¿ÿ»Õ»—“Œ¬" as `MAT_NAME`, '#13#10 +
@@ -722,10 +721,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' 0 as `sm_id2`,'#13#10 +
 ' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
 ' ""  as `name`, '#13#10 +
-' "" as `name_o`,'#13#10 +
+' `ssd2`.`name` as `name_o`,'#13#10 +
 ' `ssd2`.`name` as `name_l`,'#13#10 +
 ' "" as `sm_number`,'#13#10 +
-' "" as `sm_number1`,'#13#10 +
+' `ssd2`.`sm_number` as `sm_number1`,'#13#10 +
 ' `ssd2`.`sm_number` as `sm_number2`, '#13#10 +
 ' `mch`.`MECH_CODE` as `MAT_CODE`, '#13#10 +
 ' UCASE(`mch`.`MECH_NAME`) as `MAT_NAME`, '#13#10 +
