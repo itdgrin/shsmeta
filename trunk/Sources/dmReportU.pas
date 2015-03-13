@@ -61,7 +61,7 @@ type
     procedure Report_RSMEH_OBJ( with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
     procedure Report_RSDEV_OBJ( with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
     procedure Report_VED_OANDPWV1_OBJ(xvar,with_nds,OBJ_ID: integer; FileReportPath: string);       //ВЕДОМОСТЬ ОБЪЁМОВ И СТОИМОСТИ РАБОТ
-    procedure Report_VED_OBRAB_RASHRES_SMET_OBJ( SM_ID: integer;FileReportPath: string);            //Ведомость объемов работ и расхода ресурсов по смете
+    procedure Report_VED_OBRAB_RASHRES_SMET_OBJ( SM_ID: integer;FileReportPath: string);            //Ведомость объемов работ и расхода ресурсов по смете v1.02
     procedure Report_SMETA_OBJ_BUILD(SM_ID: integer; FileReportPath: string); // "СМЕТА по объекту строительства" v1.03
   end;
 
@@ -469,8 +469,14 @@ procedure TdmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ( SM_ID: integer;FileRepor
 begin
  frxReport.LoadFromFile(FileReportPath + 'frVED_OBRAB_RASHRES_SMET_OBJ.fr3');
 
- SM_ID:=344;
+ qrTMP.SQL.Text :=  'select `SM_TYPE`'#13#10 +
+                    'from `smetasourcedata` ssd'#13#10 +
+                    'where (`ssd`.`SM_ID` = :SM_ID)'#13#10 ;
 
+ qrTMP.ParamByName('SM_ID').AsInteger := SM_ID ;
+ CloseOpen(qrTMP);
+
+if qRTMP.FieldByName('SM_TYPE').AsInteger =2 then
 qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' SELECT * FROM '#13#10 +
 ' ('#13#10 +
@@ -558,6 +564,179 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' WHERE `ssd`.`SM_ID` =  :SM_ID   AND `ssd`.`SM_TYPE` = 2   '#13#10 +
 ' group by `sm_id3`,`MECH_CODE` ) sm  order by `sm_id2`,`sm_id3`,`MAT_CODE`;';
 
+
+
+if qRTMP.FieldByName('SM_TYPE').AsInteger =1 then
+qVED_OBRAB_RASHRES_SMET.SQL.Text:=
+' SELECT * FROM '#13#10 +
+' ('#13#10 +
+' SELECT'#13#10 +
+' 0  as `sm_id1`,'#13#10 +
+' `ssd1`.`sm_id` as `sm_id2`,'#13#10 +
+' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
+' ""  as `name`,'#13#10 +
+' `ssd1`.`name` as `name_o`,'#13#10 +
+' `ssd2`.`name` as `name_l`,'#13#10 +
+' "" as `sm_number`,'#13#10 +
+' `ssd1`.`sm_number` as `sm_number1`,'#13#10 +
+' `ssd2`.`sm_number` as `sm_number2`,'#13#10 +
+' `mtc`.`MAT_CODE`,   '#13#10 +
+' UCASE(`mtc`.`MAT_NAME`) as `MAT_NAME`,'#13#10 +
+' `mtc`.`MAT_UNIT`,'#13#10 +
+' sum(`mtc`.`MAT_COUNT`) as MAT_COUNT'#13#10 +
+' FROM `smetasourcedata` `ssd1`'#13#10 +
+' INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd1`.`SM_ID` AND `ssd2`.`SM_TYPE` = 3'#13#10 +
+' INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
+' INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES`'#13#10 +
+' INNER JOIN `materialcard` `mtc` ON `mtc`.`ID_CARD_RATE` = `cr`.`ID`'#13#10 +
+' WHERE `ssd1`.`SM_ID` = :SM_ID  AND `ssd1`.`SM_TYPE` = 1   '#13#10 +
+' group by `sm_id3`,`MAT_CODE` '#13#10 +
+' union'#13#10 +
+' SELECT'#13#10 +
+' 0  as `sm_id1`, '#13#10 +
+' `ssd1`.`sm_id` as `sm_id2`,'#13#10 +
+' `ssd2`.`sm_id` as `sm_id3`, '#13#10 +
+' "" as `name`,'#13#10 +
+' `ssd1`.`name` as `name_o`, '#13#10 +
+' `ssd2`.`name` as `name_l`,'#13#10 +
+' "" as `sm_number`,'#13#10 +
+' `ssd1`.`sm_number` as `sm_number1`,  '#13#10 +
+' `ssd2`.`sm_number` as `sm_number2`,'#13#10 +
+' "1-1" as `MAT_CODE`,  '#13#10 +
+' "ЗАТРАТЫ ТРУДА РАБОЧИХ-СТРОИТЕЛЕЙ" as MAT_NAME, '#13#10 +
+' "чел/ч" as `MAT_UNIT`,  '#13#10 +
+' `ssd2`.`s_trud` as `MAT_COUNT`'#13#10 +
+' FROM `smetasourcedata` `ssd1` '#13#10 +
+' inner JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd1`.`SM_ID`'#13#10 +
+' where `ssd1`.`sm_id`= :SM_ID '#13#10 +
+' union  '#13#10 +
+' SELECT '#13#10 +
+' 0  as `sm_id1`,'#13#10 +
+' `ssd1`.`sm_id` as `sm_id2`, '#13#10 +
+' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
+' ""  as `name`, '#13#10 +
+' `ssd1`.`name` as `name_o`, '#13#10 +
+' `ssd2`.`name` as `name_l`, '#13#10 +
+' "" as `sm_number`, '#13#10 +
+' `ssd1`.`sm_number` as `sm_number1`,'#13#10 +
+' `ssd2`.`sm_number` as `sm_number2`, '#13#10 +
+' "1-3" as MAT_CODE, '#13#10 +
+' "ЗАТРАТЫ ТРУДА МАШИНИСТОВ" as `MAT_NAME`, '#13#10 +
+' "чел/ч" as `MAT_UNIT`,'#13#10 +
+' ssd2.s_trud_mash as `MAT_COUNT` '#13#10 +
+' FROM `smetasourcedata` `ssd1`'#13#10 +
+' inner JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd1`.`SM_ID`'#13#10 +
+' where `ssd1`.`sm_id`= :SM_ID '#13#10 +
+' union  '#13#10 +
+' SELECT '#13#10 +
+' 0 as `sm_id1`, '#13#10 +
+' `ssd1`.`sm_id` as `sm_id2`,'#13#10 +
+' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
+' ""  as `name`, '#13#10 +
+' `ssd1`.`name` as `name_o`,'#13#10 +
+' `ssd2`.`name` as `name_l`,'#13#10 +
+' "" as `sm_number`,'#13#10 +
+' `ssd1`.`sm_number` as `sm_number1`,'#13#10 +
+' `ssd2`.`sm_number` as `sm_number2`, '#13#10 +
+' `mch`.`MECH_CODE` as `MAT_CODE`, '#13#10 +
+' UCASE(`mch`.`MECH_NAME`) as `MAT_NAME`, '#13#10 +
+' `mch`.`MECH_UNIT`,   '#13#10 +
+' sum(`mch`.`MECH_COUNT`) as `MAT_COUNT` '#13#10 +
+' FROM `smetasourcedata` `ssd1`'#13#10 +
+' INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd1`.`SM_ID` AND `ssd2`.`SM_TYPE` = 3  '#13#10 +
+' INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
+' INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES` '#13#10 +
+' INNER JOIN `mechanizmcard` `mch` ON `mch`.`ID_CARD_RATE` = `cr`.`ID` '#13#10 +
+' WHERE `ssd1`.`SM_ID` =  :SM_ID   AND `ssd1`.`SM_TYPE` = 1   '#13#10 +
+' group by `sm_id3`,`MECH_CODE` ) sm  order by `sm_id2`,`sm_id3`,`MAT_CODE`;';
+
+
+
+if qRTMP.FieldByName('SM_TYPE').AsInteger =3 then
+qVED_OBRAB_RASHRES_SMET.SQL.Text:=
+' SELECT * FROM '#13#10 +
+' ('#13#10 +
+' SELECT'#13#10 +
+' 0  as `sm_id1`,'#13#10 +
+' 0 as `sm_id2`,'#13#10 +
+' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
+' ""  as `name`,'#13#10 +
+' "" as `name_o`,'#13#10 +
+' `ssd2`.`name` as `name_l`,'#13#10 +
+' "" as `sm_number`,'#13#10 +
+' "" as `sm_number1`,'#13#10 +
+' `ssd2`.`sm_number` as `sm_number2`,'#13#10 +
+' `mtc`.`MAT_CODE`,   '#13#10 +
+' UCASE(`mtc`.`MAT_NAME`) as `MAT_NAME`,'#13#10 +
+' `mtc`.`MAT_UNIT`,'#13#10 +
+' sum(`mtc`.`MAT_COUNT`) as MAT_COUNT'#13#10 +
+' FROM `smetasourcedata` `ssd2`'#13#10 +
+' INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
+' INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES`'#13#10 +
+' INNER JOIN `materialcard` `mtc` ON `mtc`.`ID_CARD_RATE` = `cr`.`ID`'#13#10 +
+' WHERE `ssd2`.`SM_ID` = :SM_ID  AND `ssd2`.`SM_TYPE` = 3   '#13#10 +
+' group by `sm_id3`,`MAT_CODE` '#13#10 +
+
+' union'#13#10 +
+
+' SELECT'#13#10 +
+' 0  as `sm_id1`, '#13#10 +
+' 0 as `sm_id2`,'#13#10 +
+' `ssd2`.`sm_id` as `sm_id3`, '#13#10 +
+' "" as `name`,'#13#10 +
+' "" as `name_o`, '#13#10 +
+' `ssd2`.`name` as `name_l`,'#13#10 +
+' "" as `sm_number`,'#13#10 +
+' "" as `sm_number1`,  '#13#10 +
+' `ssd2`.`sm_number` as `sm_number2`,'#13#10 +
+' "1-1" as `MAT_CODE`,  '#13#10 +
+' "ЗАТРАТЫ ТРУДА РАБОЧИХ-СТРОИТЕЛЕЙ" as MAT_NAME, '#13#10 +
+' "чел/ч" as `MAT_UNIT`,  '#13#10 +
+' `ssd2`.`s_trud` as `MAT_COUNT`'#13#10 +
+' FROM `smetasourcedata` `ssd2` '#13#10 +
+' where `ssd2`.`sm_id`= :SM_ID '#13#10 +
+
+' union  '#13#10 +
+
+' SELECT '#13#10 +
+' 0  as `sm_id1`,'#13#10 +
+' 0 as `sm_id2`, '#13#10 +
+' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
+' ""  as `name`, '#13#10 +
+' ""  as `name_o`, '#13#10 +
+' `ssd2`.`name` as `name_l`, '#13#10 +
+' "" as `sm_number`, '#13#10 +
+' "" as `sm_number1`,'#13#10 +
+' `ssd2`.`sm_number` as `sm_number2`, '#13#10 +
+' "1-3" as MAT_CODE, '#13#10 +
+' "ЗАТРАТЫ ТРУДА МАШИНИСТОВ" as `MAT_NAME`, '#13#10 +
+' "чел/ч" as `MAT_UNIT`,'#13#10 +
+' ssd2.s_trud_mash as `MAT_COUNT` '#13#10 +
+' FROM `smetasourcedata` `ssd2`'#13#10 +
+' where `ssd2`.`sm_id`= :SM_ID '#13#10 +
+
+' union  '#13#10 +
+
+' SELECT '#13#10 +
+' 0 as `sm_id1`, '#13#10 +
+' 0 as `sm_id2`,'#13#10 +
+' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
+' ""  as `name`, '#13#10 +
+' "" as `name_o`,'#13#10 +
+' `ssd2`.`name` as `name_l`,'#13#10 +
+' "" as `sm_number`,'#13#10 +
+' "" as `sm_number1`,'#13#10 +
+' `ssd2`.`sm_number` as `sm_number2`, '#13#10 +
+' `mch`.`MECH_CODE` as `MAT_CODE`, '#13#10 +
+' UCASE(`mch`.`MECH_NAME`) as `MAT_NAME`, '#13#10 +
+' `mch`.`MECH_UNIT`,   '#13#10 +
+' sum(`mch`.`MECH_COUNT`) as `MAT_COUNT` '#13#10 +
+' FROM `smetasourcedata` `ssd2`'#13#10 +
+' INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
+' INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES` '#13#10 +
+' INNER JOIN `mechanizmcard` `mch` ON `mch`.`ID_CARD_RATE` = `cr`.`ID` '#13#10 +
+' WHERE `ssd2`.`SM_ID` =  :SM_ID   AND `ssd2`.`SM_TYPE` = 3   '#13#10 +
+' group by `sm_id3`,`MECH_CODE` ) sm  order by `sm_id2`,`sm_id3`,`MAT_CODE`;';
 qVED_OBRAB_RASHRES_SMET.ParamByName('SM_ID').AsInteger := SM_ID ;
  CloseOpen(qVED_OBRAB_RASHRES_SMET);
 
