@@ -31,8 +31,6 @@ type
     PopupMenuTreeViewExpandTrue: TMenuItem;
     PopupMenuTreeViewExpandFalse: TMenuItem;
     ADOQueryTable: TFDQuery;
-    ADOQueryTemp3: TFDQuery;
-    ADOQueryTemp2: TFDQuery;
     ADOQueryTemp1: TFDQuery;
 
     procedure SettingTable;

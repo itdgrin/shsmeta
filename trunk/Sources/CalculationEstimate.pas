@@ -4287,7 +4287,7 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT num as "Number", name as "Name", coef as "Coef", coef_zp as "CoefZP", s as "From", po as "On" '
-        + 'FROM znormativs;');
+        + 'FROM znormativs_ex, znormativs_detail WHERE znormativs_ex.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID;');
       Active := True;
       First;
       while not Eof do

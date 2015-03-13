@@ -104,7 +104,8 @@ uses
   dmReportU in 'dmReportU.pas' {dmReportF: TDataModule},
   Coef in 'Coef.pas' {fCoefficients},
   ArhivModule in 'ArhivModule.pas',
-  GlobsAndConst in 'GlobsAndConst.pas';
+  GlobsAndConst in 'GlobsAndConst.pas',
+  WinterPrise in 'WinterPrise.pas' {fWinterPrise};
 
 {$R *.res}
 var MHandle: THandle;
@@ -155,6 +156,7 @@ begin
   Application.CreateForm(TFormCardPTM, FormCardPTM);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
+  Application.CreateForm(TfWinterPrise, fWinterPrise);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€
