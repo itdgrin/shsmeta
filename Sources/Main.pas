@@ -105,6 +105,7 @@ type
     N10: TMenuItem;
 	vk9: TMenuItem;    
     mnREPORT_SMETA_OBJ_BUILD: TMenuItem;
+    N12: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
@@ -216,6 +217,7 @@ type
     procedure N10Click(Sender: TObject);
 	procedure vk9Click(Sender: TObject);	
     procedure mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
+    procedure N12Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -402,7 +404,7 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
   PricesReferenceData, AdditionData, Materials, PartsEstimates,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
-  Tools, fUpdate, EditExpression, dmReportU, Coef;
+  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrise;
 
 {$R *.dfm}
 
@@ -1274,6 +1276,11 @@ begin
   finally
    Screen.Cursor := crDefault;
   end;
+end;
+
+procedure TFormMain.N12Click(Sender: TObject);
+begin
+  fWinterPrise.Show;
 end;
 
 procedure TFormMain.N13Click(Sender: TObject);

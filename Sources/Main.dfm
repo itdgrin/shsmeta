@@ -323,6 +323,10 @@
         Caption = #1054#1088#1075#1072#1085#1080#1079#1072#1094#1080#1080
         OnClick = MenuOrganizationsClick
       end
+      object N12: TMenuItem
+        Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
+        OnClick = N12Click
+      end
     end
     object MenuService: TMenuItem
       Caption = #1057#1077#1088#1074#1080#1089

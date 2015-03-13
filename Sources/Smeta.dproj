@@ -404,6 +404,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="ArhivModule.pas"/>
         <DCCReference Include="GlobsAndConst.pas"/>
+        <DCCReference Include="WinterPrise.pas">
+            <Form>fWinterPrise</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

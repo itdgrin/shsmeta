@@ -201,20 +201,6 @@ inherited FrameWinterPrice: TFrameWinterPrice
     Left = 41
     Top = 64
   end
-  object ADOQueryTemp3: TFDQuery
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    Left = 41
-    Top = 224
-  end
-  object ADOQueryTemp2: TFDQuery
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    Left = 41
-    Top = 168
-  end
   object ADOQueryTemp1: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
