@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.ComCtrls, JvExComCtrls, JvDBTreeView, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Grids,
   Vcl.DBGrids, Vcl.StdCtrls, Vcl.Mask, Vcl.DBCtrls, JvExDBGrids, JvDBGrid, Vcl.ExtCtrls, Vcl.Buttons,
-  Vcl.Menus;
+  Vcl.Menus, Tools;
 
 type
   TfWinterPrise = class(TForm)
@@ -29,14 +29,18 @@ type
     btnClose: TBitBtn;
     btnSelect: TBitBtn;
     pm1: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure btnSelectClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
-    { Private declarations }
+
   public
-    { Public declarations }
+    OutValue: Integer;
+    Kind: TKindForm;
   end;
 
 var
@@ -44,7 +48,7 @@ var
 
 implementation
 
-uses DataModule, Tools;
+uses DataModule;
 
 {$R *.dfm}
 
@@ -55,20 +59,38 @@ end;
 
 procedure TfWinterPrise.btnSelectClick(Sender: TObject);
 begin
+  OutValue := 0;
   if Application.MessageBox('Вы действительно хотите заменить коэф. зимнего удорожания в выбранной расценке?',
     'Application.Title', MB_OKCANCEL + MB_ICONQUESTION + MB_TOPMOST) = IDOK then
   begin
-    Close;
+    OutValue := qrTreeData.FieldByName('ZNORMATIVS_ID').AsInteger;
+    ModalResult := mrOk;
   end;
+end;
+
+procedure TfWinterPrise.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Kind := kdNone;
 end;
 
 procedure TfWinterPrise.FormCreate(Sender: TObject);
 begin
+  Kind := kdNone;
   LoadDBGridSettings(JvDBGrid1);
 end;
 
 procedure TfWinterPrise.FormShow(Sender: TObject);
 begin
+  case Kind of
+    kdSelect:
+      begin
+        btnSelect.Visible := True;
+      end;
+  else
+    begin
+      btnSelect.Visible := False;
+    end;
+  end;
   CloseOpen(qrTreeData);
   CloseOpen(qrZnormativs_detail);
 end;

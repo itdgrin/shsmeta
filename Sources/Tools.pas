@@ -6,6 +6,10 @@ uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Vari
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
   ShellAPI, Vcl.Grids;
 
+//Общий тип классификации форм
+type
+  TKindForm = (kdNone, kdInsert, kdEdit, kdSelect);
+
 // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
 // Установка стиля таблицы из формы настроек
