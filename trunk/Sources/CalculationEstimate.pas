@@ -452,6 +452,10 @@ type
     dsOXROPR: TDataSource;
     qrRatesWORK_ID: TIntegerField;
     btn1: TSpeedButton;
+    pmWinterPrise: TPopupMenu;
+    nSelectWinterPrise: TMenuItem;
+    nWinterPriseSetDefault: TMenuItem;
+    qrRatesZNORMATIVS_ID: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -632,6 +636,8 @@ type
     procedure PMMatDeleteClick(Sender: TObject);
     procedure qrRatesWORK_IDChange(Sender: TField);
     procedure btn1Click(Sender: TObject);
+    procedure nSelectWinterPriseClick(Sender: TObject);
+    procedure nWinterPriseSetDefaultClick(Sender: TObject);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -747,7 +753,7 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
   CalculationDump, SaveEstimate,
   ReplacementMaterial, Materials, AdditionData, CardMaterial, CardDataEstimate,
   ListCollections, CoefficientOrders, KC6,
-  CardAct, Tools, Coef;
+  CardAct, Tools, Coef, WinterPrise;
 
 {$R *.dfm}
 
@@ -915,7 +921,8 @@ begin
 
   // TCustomDbGridCracker(dbgrdRates).OnMouseWheel:=Wheel;
   if not Act then
-    FormMain.CreateButtonOpenWindow(FormNameCalculationEstimate, FormNameCalculationEstimate, FormMain.ShowCalculationEstimate);
+    FormMain.CreateButtonOpenWindow(FormNameCalculationEstimate, FormNameCalculationEstimate,
+      FormMain.ShowCalculationEstimate);
 end;
 
 procedure TFormCalculationEstimate.FormShow(Sender: TObject);
@@ -2527,6 +2534,30 @@ begin
     qrRates.EnableControls
   end;
 
+end;
+
+procedure TFormCalculationEstimate.nSelectWinterPriseClick(Sender: TObject);
+begin
+  fWinterPrise.Kind := kdSelect;
+  if (fWinterPrise.ShowModal = mrOk) and (fWinterPrise.OutValue <> 0) then
+  begin
+    qrTemp.SQL.Text := 'UPDATE card_rate_temp SET ZNORMATIVS_ID=:ZNORMATIVS_ID WHERE ID=:ID';
+    qrTemp.ParamByName('ZNORMATIVS_ID').AsInteger := fWinterPrise.OutValue;
+    qrTemp.ParamByName('ID').AsInteger := qrRatesOWNER_ID.AsInteger;
+    qrTemp.ExecSQL;
+    qrRatesZNORMATIVS_ID.Value := fWinterPrise.OutValue;
+    FillingWinterPrice('');
+  end;
+end;
+
+procedure TFormCalculationEstimate.nWinterPriseSetDefaultClick(Sender: TObject);
+begin
+  if Application.MessageBox('Вы действительно хотите заменить коэф. зимнего удорожания в выбранной расценке?',
+    'Application.Title', MB_OKCANCEL + MB_ICONQUESTION + MB_TOPMOST) = IDOK then
+  begin
+    qrRatesZNORMATIVS_ID.Value := 0;
+    FillingWinterPrice(qrRatesCODEINRATE.AsString);
+  end;
 end;
 
 procedure TFormCalculationEstimate.N3Click(Sender: TObject);
@@ -4282,24 +4313,41 @@ end;
 procedure TFormCalculationEstimate.FillingWinterPrice(vNumber: string);
 begin
   try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT num as "Number", name as "Name", coef as "Coef", coef_zp as "CoefZP", s as "From", po as "On" '
-        + 'FROM znormativs_ex, znormativs_detail WHERE znormativs_ex.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID;');
-      Active := True;
-      First;
-      while not Eof do
+    if qrRatesZNORMATIVS_ID.AsInteger <> 0 then
+      with qrTemp do
       begin
-        if (vNumber > FieldByName('From').AsVariant) and (vNumber < FieldByName('On').AsVariant) then
+        Active := False;
+        SQL.Clear;
+        SQL.Add('SELECT znormativs_ex.ZNORMATIVS_ID, num as "Number", name as "Name" ' +
+          'FROM znormativs_ex WHERE znormativs_ex.ZNORMATIVS_ID=:ZNORMATIVS_ID LIMIT 1;');
+        ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesZNORMATIVS_ID.AsInteger;
+        Active := True;
+        EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
+      end
+    else
+      with qrTemp do
+      begin
+        Active := False;
+        SQL.Clear;
+        SQL.Add('SELECT znormativs_ex.ZNORMATIVS_ID, num as "Number", name as "Name", coef as "Coef", coef_zp as "CoefZP", s as "From", po as "On" '
+          + 'FROM znormativs_ex, znormativs_detail WHERE znormativs_ex.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID;');
+        Active := True;
+        First;
+        while not Eof do
         begin
-          EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
-          Break;
+          if (vNumber > FieldByName('From').AsVariant) and (vNumber < FieldByName('On').AsVariant) then
+          begin
+            EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
+            qrRatesZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
+            qrTemp.SQL.Text := 'UPDATE card_rate_temp SET ZNORMATIVS_ID=:ZNORMATIVS_ID WHERE ID=:ID';
+            qrTemp.ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesZNORMATIVS_ID.AsInteger;
+            qrTemp.ParamByName('ID').AsInteger := qrRatesOWNER_ID.AsInteger;
+            qrTemp.ExecSQL;
+            Break;
+          end;
+          Next;
         end;
-        Next;
       end;
-    end;
   except
     on E: Exception do
       MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' + sLineBreak +

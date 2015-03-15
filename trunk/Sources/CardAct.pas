@@ -5,11 +5,9 @@ interface
 uses Windows, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls, DB, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Mask,
-  JvExMask, JvToolEdit, JvDBControls, Vcl.DBCtrls;
+  JvExMask, JvToolEdit, JvDBControls, Vcl.DBCtrls, Tools;
 
 type
-  TKindForm = (kdInsert, kdEdit);
-
   TfCardAct = class(TForm)
     PanelDate: TPanel;
     PanelName: TPanel;
@@ -42,7 +40,7 @@ type
 
 implementation
 
-uses Main, DataModule, CalculationEstimate, Tools;
+uses Main, DataModule, CalculationEstimate;
 
 {$R *.dfm}
 

@@ -266,7 +266,11 @@ procedure TFormObjectsAndEstimates.FormDestroy(Sender: TObject);
 begin
   FormObjectsAndEstimates := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
+  try
   FormMain.DeleteButtonCloseWindow(CaptionButtonObjectsAndEstimates);
+  except
+
+  end;
 end;
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsAddClick(Sender: TObject);

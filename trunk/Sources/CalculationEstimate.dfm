@@ -2732,10 +2732,13 @@
         Top = 2
         Width = 81
         Height = 21
+        Cursor = crHandPoint
         TabStop = False
         Color = 14802912
+        PopupMenu = pmWinterPrise
         ReadOnly = True
         TabOrder = 0
+        OnClick = nSelectWinterPriseClick
       end
       object dblkcbbOXROPR: TDBLookupComboBox
         Left = 122
@@ -3459,6 +3462,8 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvDefaultParamDataType]
+    FormatOptions.DefaultParamDataType = ftBCD
     Left = 232
     Top = 288
   end
@@ -3476,7 +3481,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -3499,6 +3504,7 @@
         SourceDataType = dtInt64
         TargetDataType = dtInt32
       end>
+    FormatOptions.DefaultParamDataType = ftBCD
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.CountUpdatedRecords = False
     UpdateOptions.CheckRequired = False
@@ -3847,6 +3853,9 @@
     object qrRatesWORK_ID: TIntegerField
       FieldName = 'WORK_ID'
       OnChange = qrRatesWORK_IDChange
+    end
+    object qrRatesZNORMATIVS_ID: TIntegerField
+      FieldName = 'ZNORMATIVS_ID'
     end
   end
   object dsRates: TDataSource
@@ -5162,5 +5171,17 @@
     DataSet = qrOXROPR
     Left = 272
     Top = 392
+  end
+  object pmWinterPrise: TPopupMenu
+    Left = 648
+    Top = 400
+    object nSelectWinterPrise: TMenuItem
+      Caption = #1042#1099#1073#1088#1072#1090#1100' '#1080#1079' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
+      OnClick = nSelectWinterPriseClick
+    end
+    object nWinterPriseSetDefault: TMenuItem
+      Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1079#1085#1072#1095#1077#1085#1080#1077' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
+      OnClick = nWinterPriseSetDefaultClick
+    end
   end
 end

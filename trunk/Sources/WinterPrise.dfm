@@ -11,6 +11,7 @@ object fWinterPrise: TfWinterPrise
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
@@ -164,6 +165,7 @@ object fWinterPrise: TfWinterPrise
       Width = 75
       Height = 25
       Caption = #1042#1099#1073#1088#1072#1090#1100
+      ModalResult = 1
       TabOrder = 1
       OnClick = btnSelectClick
     end
@@ -184,7 +186,8 @@ object fWinterPrise: TfWinterPrise
       '  `PARENT_ID`,'
       '  CONCAT(`NUM`, " ", `NAME`) AS NAME_EX'
       'FROM '
-      '  `znormativs_ex`;')
+      '  `znormativs_ex`'
+      'ORDER BY `NUM`=0, -`NUM` DESC, `NUM`;')
     Left = 33
     Top = 18
   end
@@ -220,5 +223,11 @@ object fWinterPrise: TfWinterPrise
   object pm1: TPopupMenu
     Left = 32
     Top = 112
+    object N1: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+    end
+    object N2: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+    end
   end
 end
