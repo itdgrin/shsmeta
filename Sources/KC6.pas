@@ -302,7 +302,7 @@ begin
   begin
     Active := False;
     SQL.Clear;
-    SQL.Add('SELECT * FROM smetasourcedata WHERE sm_type = 1 and parent_local_id = :parent_local_id and ' +
+    SQL.Add('SELECT * FROM smetasourcedata WHERE sm_type = 1 and parent_id = :parent_local_id and ' +
       'obj_id = :obj_id ORDER BY sm_number');
     ParamByName('parent_local_id').Value := qrObjectEstimates.FieldByName('sm_id').AsInteger;
     ParamByName('obj_id').Value := IdObject;
@@ -317,7 +317,7 @@ begin
   begin
     Active := False;
     SQL.Clear;
-    SQL.Add('SELECT * FROM smetasourcedata WHERE sm_type = 3 and parent_ptm_id = :parent_ptm_id and ' +
+    SQL.Add('SELECT * FROM smetasourcedata WHERE sm_type = 3 and parent_id = :parent_ptm_id and ' +
       'obj_id = :obj_id ORDER BY sm_number');
     ParamByName('parent_ptm_id').Value := qrLocalEstimates.FieldByName('sm_id').AsInteger;
     ParamByName('obj_id').Value := IdObject;
@@ -740,7 +740,7 @@ begin
                 Active := True;
 
                 // --------------------
-
+                {
                 // Выводим все неучтённые материалы которые не были заменены
                 Filtered := False;
                 Filter := 'id_card_rate = ' + IntToStr(qrCardRates.FieldByName('id').AsInteger) +
@@ -770,7 +770,7 @@ begin
                   end;
                   Next;
                 end;
-
+                }
                 // ----------------------------------------
 
                 // Выводим все заменяющие материалы, т.е. материалы которыми были заменены неучтённые
