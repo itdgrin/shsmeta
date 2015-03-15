@@ -51,7 +51,7 @@ object FormKC6: TFormKC6
       41)
     object Button1: TButton
       Left = 437
-      Top = 8
+      Top = 6
       Width = 100
       Height = 25
       Anchors = [akRight, akBottom]

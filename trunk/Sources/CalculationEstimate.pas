@@ -4541,7 +4541,13 @@ begin
         ParamByName('IdEstimate').Value := IdEstimate;
       end;
 
-      ExecSQL;
+      try
+        ExecSQL;
+      except
+        qrTemp.SQL.Text := 'SELECT @sql as QR;';
+        qrTemp.Active := True;
+        ShowMessage(qrTemp.FieldByName('QR').AsString);
+      end;
       Active := False;
     end;
   except
