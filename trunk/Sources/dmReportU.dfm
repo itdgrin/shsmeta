@@ -35,7 +35,7 @@ object dmReportF: TdmReportF
     PrintOptions.Printer = 'Default'
     PrintOptions.PrintOnSheet = 0
     ReportOptions.CreateDate = 42048.002529965300000000
-    ReportOptions.LastChange = 42076.085455335650000000
+    ReportOptions.LastChange = 42079.059412719900000000
     ScriptLanguage = 'PascalScript'
     StoreInDFM = False
     Left = 16
@@ -271,7 +271,7 @@ object dmReportF: TdmReportF
       
         #9'   cra.`COEF_ORDERS`, IFNULL(mca.`MAT_NORMA`, 0) * IFNULL(cra.`' +
         'RATE_COUNT`, 0) as VAL, '
-      #9'   CONCAT(ssd.`SM_NUMBER`, " ", ssd.`NAME`) as PTM_NAME,'
+      #9'   CONCAT(ssd0.`SM_NUMBER`, " ", ssd0.`NAME`) as PTM_NAME,'
       #9'   CONCAT(ssd1.`SM_NUMBER`, " ", ssd1.`NAME`) as LOCAL_NAME,'
       ' '#9'   CONCAT(ssd2.`SM_NUMBER`, " ", ssd2.`NAME`) as OBJECT_NAME, '
       '           1 as TAB'
@@ -280,14 +280,16 @@ object dmReportF: TdmReportF
       'left join `card_rate_act` cra on cra.`ID_ACT` = mca.`ID_ACT`'
       'left join `data_estimate` da on da.`ID_TABLES` = cra.`ID`'
       
-        'left join `smetasourcedata` ssd on ssd.`SM_ID` = da.`ID_ESTIMATE' +
-        '`'
+        'inner join `smetasourcedata` `ssd2` on `ssd2`.`SM_ID` = `da`.`ID' +
+        '_ESTIMATE`'
+      '                                   and `ssd2`.`SM_TYPE` = 3'
       
-        'left join `smetasourcedata` ssd1 on ssd1.`SM_ID` = ssd.`PARENT_P' +
-        'TM_ID`'
+        'inner join `smetasourcedata` `ssd1` on `ssd1`.`SM_ID` = `ssd2`.`' +
+        'PARENT_ID`'
+      '                                   and `ssd1`.`SM_TYPE` = 1'
       
-        'left join `smetasourcedata` ssd2 on ssd2.`SM_ID` = ssd1.`PARENT_' +
-        'LOCAL_ID`'
+        'inner join `smetasourcedata` `ssd0` on `ssd0`.`SM_ID` = `ssd1`.`' +
+        'PARENT_ID`'
       ''
       'where mca.`ID_ACT` = :ID_ACT'
       '  and mca.`CONSIDERED` = 1'
@@ -627,6 +629,12 @@ object dmReportF: TdmReportF
       #9'`de`.`K_TRUD_MASH`,'
       ''
       
+        #9'`de`.`EMiM` / IF(IFNULL(`cr`.`RATE_COUNT`, 0) = 0, 1, `cr`.`RAT' +
+        'E_COUNT`) `EMiM_ED`,'
+      #9'`de`.`EMiM`,'
+      #9'`de`.`K_EMiM`,'
+      ''
+      
         #9'`de`.`ZP_MASH` / IF(IFNULL(`cr`.`RATE_COUNT`, 0) = 0, 1, `cr`.`' +
         'RATE_COUNT`) `ZP_MASH_ED`,'
       #9'`de`.`ZP_MASH`,'
@@ -721,6 +729,9 @@ object dmReportF: TdmReportF
       'TRUD_MASH_ED=TRUD_MASH_ED'
       'TRUD_MASH=TRUD_MASH'
       'K_TRUD_MASH=K_TRUD_MASH'
+      'EMiM_ED=EMiM_ED'
+      'EMiM=EMiM'
+      'K_EMiM=K_EMiM'
       'ZP_MASH_ED=ZP_MASH_ED'
       'ZP_MASH=ZP_MASH'
       'K_ZP_MASH=K_ZP_MASH'
@@ -756,20 +767,39 @@ object dmReportF: TdmReportF
       #9'`sm`.`PROC_TRANSP`,'
       #9'SUM(`sm`.`TRANSP_NO_NDS`) `TRANSP_NO_NDS`,'
       #9'`sm`.`TYPE_MT`,'
-      '        0 `FROM_GROUP`,'
-      '        `sm`.`TYPE_NAME`'
+      #9'`sm`.`TYPE_NAME`,'
+      '        0 `FROM_GROUP`'
       'FROM ('
-      ''
-      '/*'#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1072#1093'*/'
+      
+        '/* BEGIN ================================= '#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1072#1093 +
+        ' =========================================== BEGIN*/'
+      'SELECT '
+      #9'`mat_in_rate`.`MAT_CODE`,'
+      #9'`mat_in_rate`.`MAT_NAME`,'
+      #9'`mat_in_rate`.`MAT_UNIT`,'
+      #9'SUM(`mat_in_rate`.`MAT_COUNT`) `MAT_COUNT`,'
+      #9'`mat_in_rate`.`COAST_NO_NDS`,'
+      #9'SUM(`mat_in_rate`.`PRICE_NO_NDS`) `PRICE_NO_NDS`,'
+      #9'`mat_in_rate`.`PROC_TRANSP`,'
+      #9'SUM(`mat_in_rate`.`TRANSP_NO_NDS`) `TRANSP_NO_NDS`,'
+      #9'`mat_in_rate`.`TYPE_MT`,'
+      #9'`mat_in_rate`.`TYPE_NAME`        '
+      '      '
+      'FROM ('
+      '/*'#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1072#1093'('#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072')*/'
       'SELECT'
       #9'`mtc`.`MAT_CODE`,'
       #9'UCASE(`mtc`.`MAT_NAME`) `MAT_NAME`,'
       #9'`mtc`.`MAT_UNIT`,'
       #9'`mtc`.`MAT_COUNT`,'
       #9'`mtc`.`COAST_NO_NDS`,'
-      #9'`mtc`.`PRICE_NO_NDS`,'
+      
+        #9'(`mtc`.`PRICE_NO_NDS` * (`mtc`.`MAT_PROC_PODR` / 100)) `PRICE_N' +
+        'O_NDS`,'
       #9'`mtc`.`PROC_TRANSP`,'
-      #9'`mtc`.`TRANSP_NO_NDS`,'
+      
+        #9'(`mtc`.`TRANSP_NO_NDS` * (`mtc`.`TRANSP_PROC_PODR` / 100)) `TRA' +
+        'NSP_NO_NDS`,'
       #9'0 `TYPE_MT`,'
       '        '#39#1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072#39' `TYPE_NAME`'
       ''
@@ -791,21 +821,94 @@ object dmReportF: TdmReportF
         'INNER JOIN `materialcard` `mtc` ON `mtc`.`ID_CARD_RATE` = `cr`.`' +
         'ID`'
       ''
-      'WHERE `ssd`.`SM_ID` = :SM_ID '
-      '  AND `ssd`.`SM_TYPE` = 2 '
-      '  '
-      'UNION '
-      ''
-      '/*'#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074#1085#1077' '#1088#1072#1089#1094#1077#1085#1086#1082'*/ '
+      'WHERE `ssd`.`SM_ID` = :SM_ID'
+      '  AND `ssd`.`SM_TYPE` = 2'
+      
+        '  AND (`mtc`.`MAT_PROC_PODR` > 0 OR `mtc`.`TRANSP_PROC_PODR` > 0' +
+        ')'
+      ' '
+      ' UNION ALL'
+      '/*'#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1072#1093'('#1079#1072#1082#1072#1079#1095#1080#1082#1072')*/ '
       'SELECT'
       #9'`mtc`.`MAT_CODE`,'
       #9'UCASE(`mtc`.`MAT_NAME`) `MAT_NAME`,'
       #9'`mtc`.`MAT_UNIT`,'
       #9'`mtc`.`MAT_COUNT`,'
       #9'`mtc`.`COAST_NO_NDS`,'
-      #9'`mtc`.`PRICE_NO_NDS`,'
+      
+        #9'(`mtc`.`PRICE_NO_NDS` * (`mtc`.`MAT_PROC_ZAC` / 100)) `PRICE_NO' +
+        '_NDS`,'
       #9'`mtc`.`PROC_TRANSP`,'
-      #9'`mtc`.`TRANSP_NO_NDS`,'
+      
+        #9'(`mtc`.`TRANSP_NO_NDS` * (`mtc`.`TRANSP_PROC_ZAC` / 100)) `TRAN' +
+        'SP_NO_NDS`,'
+      #9'1 `TYPE_MT`,'
+      '        '#39#1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1079#1072#1082#1072#1079#1095#1080#1082#1072#39' `TYPE_NAME`'
+      ''
+      'FROM `smetasourcedata` `ssd`'
+      
+        'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      '                                   AND `ssd1`.`SM_TYPE` = 1'
+      
+        'INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      '                                   AND `ssd2`.`SM_TYPE` = 3 '
+      
+        'INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID` '
+      '                               AND `de`.`ID_TYPE_DATA` = 1'
+      'INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES`'
+      
+        'INNER JOIN `materialcard` `mtc` ON `mtc`.`ID_CARD_RATE` = `cr`.`' +
+        'ID`'
+      ''
+      'WHERE `ssd`.`SM_ID` = :SM_ID'
+      '  AND `ssd`.`SM_TYPE` = 2'
+      '  AND (`mtc`.`MAT_PROC_ZAC` > 0 OR `mtc`.`TRANSP_PROC_ZAC` > 0)'
+      ') `mat_in_rate`'
+      'GROUP BY '
+      #9'`mat_in_rate`.`MAT_CODE`,'
+      #9'`mat_in_rate`.`MAT_NAME`,'
+      #9'`mat_in_rate`.`MAT_UNIT`,'
+      #9'`mat_in_rate`.`COAST_NO_NDS`,'
+      #9'`mat_in_rate`.`PROC_TRANSP`,'
+      #9'`mat_in_rate`.`TYPE_MT`,'
+      #9'`mat_in_rate`.`TYPE_NAME`'
+      
+        '/* END   ================================= '#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1072#1093 +
+        ' ============================================ END*/'
+      'UNION ALL'
+      
+        '/* BEGIN ================================= '#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074#1085#1077' '#1088#1072#1089#1094#1077#1085#1086 +
+        #1082' =========================================== BEGIN*/'
+      'SELECT '
+      #9'`mat_out_rate`.`MAT_CODE`,'
+      #9'`mat_out_rate`.`MAT_NAME`,'
+      #9'`mat_out_rate`.`MAT_UNIT`,'
+      #9'SUM(`mat_out_rate`.`MAT_COUNT`) `MAT_COUNT`,'
+      #9'`mat_out_rate`.`COAST_NO_NDS`,'
+      #9'SUM(`mat_out_rate`.`PRICE_NO_NDS`) `PRICE_NO_NDS`,'
+      #9'`mat_out_rate`.`PROC_TRANSP`,'
+      #9'SUM(`mat_out_rate`.`TRANSP_NO_NDS`) `TRANSP_NO_NDS`,'
+      #9'`mat_out_rate`.`TYPE_MT`,'
+      #9'`mat_out_rate`.`TYPE_NAME`        '
+      '      '
+      'FROM ('
+      '/*'#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074#1085#1077' '#1088#1072#1089#1094#1077#1085#1086#1082'('#1087#1086#1076#1088#1103#1076#1095#1080#1082')*/ '
+      'SELECT'
+      #9'`mtc`.`MAT_CODE`,'
+      #9'UCASE(`mtc`.`MAT_NAME`) `MAT_NAME`,'
+      #9'`mtc`.`MAT_UNIT`,'
+      #9'`mtc`.`MAT_COUNT`,'
+      #9'`mtc`.`COAST_NO_NDS`,'
+      
+        #9'(`mtc`.`PRICE_NO_NDS` * (`mtc`.`MAT_PROC_PODR` / 100)) `PRICE_N' +
+        'O_NDS`,'
+      #9'`mtc`.`PROC_TRANSP`,'
+      
+        #9'(`mtc`.`TRANSP_NO_NDS` * (`mtc`.`TRANSP_PROC_PODR` / 100)) `TRA' +
+        'NSP_NO_NDS`,'
       #9'0 `TYPE_MT`,'
       '        '#39#1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072#39' `TYPE_NAME`'
       ''
@@ -827,12 +930,67 @@ object dmReportF: TdmReportF
         ' '
       #9#9#9'       AND `mtc`.`ID_CARD_RATE` = 0'
       ''
-      'WHERE `ssd`.`SM_ID` = :SM_ID '
+      'WHERE `ssd`.`SM_ID` = :SM_ID'
       '  AND `ssd`.`SM_TYPE` = 2'
+      
+        '  AND (`mtc`.`MAT_PROC_PODR` > 0 OR `mtc`.`TRANSP_PROC_PODR` > 0' +
+        ')  '
       ''
-      'UNION'
+      'UNION ALL'
+      '/*'#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074#1085#1077' '#1088#1072#1089#1094#1077#1085#1086#1082'('#1079#1072#1082#1072#1079#1095#1080#1082')*/ '
+      'SELECT'
+      #9'`mtc`.`MAT_CODE`,'
+      #9'UCASE(`mtc`.`MAT_NAME`) `MAT_NAME`,'
+      #9'`mtc`.`MAT_UNIT`,'
+      #9'`mtc`.`MAT_COUNT`,'
+      #9'`mtc`.`COAST_NO_NDS`,'#9
+      
+        #9'(`mtc`.`PRICE_NO_NDS` * (`mtc`.`MAT_PROC_ZAC` / 100)) `PRICE_NO' +
+        '_NDS`,'
+      #9'`mtc`.`PROC_TRANSP`,'
+      
+        #9'(`mtc`.`TRANSP_NO_NDS` * (`mtc`.`TRANSP_PROC_ZAC` / 100)) `TRAN' +
+        'SP_NO_NDS`,'
+      #9'1 `TYPE_MT`,'
+      '        '#39#1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1079#1072#1082#1072#1079#1095#1080#1082#1072#39' `TYPE_NAME`'
       ''
-      '/*'#1089#1074#1072#1083#1082#1072'*/   '
+      'FROM `smetasourcedata` `ssd`'
+      
+        'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      '                                   AND `ssd1`.`SM_TYPE` = 1'
+      
+        'INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      '                                   AND `ssd2`.`SM_TYPE` = 3 '
+      
+        'INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID` '
+      '                               AND `de`.`ID_TYPE_DATA` = 2'
+      
+        'INNER JOIN `materialcard` `mtc` ON `mtc`.`ID` = `de`.`ID_TABLES`' +
+        ' '
+      #9#9#9'       AND `mtc`.`ID_CARD_RATE` = 0'
+      ''
+      'WHERE `ssd`.`SM_ID` = :SM_ID'
+      '  AND `ssd`.`SM_TYPE` = 2'
+      '  AND (`mtc`.`MAT_PROC_ZAC` > 0 OR `mtc`.`TRANSP_PROC_ZAC` > 0)'
+      ') `mat_out_rate`'
+      'GROUP BY '
+      #9'`mat_out_rate`.`MAT_CODE`,'
+      #9'`mat_out_rate`.`MAT_NAME`,'
+      #9'`mat_out_rate`.`MAT_UNIT`,'
+      #9'`mat_out_rate`.`COAST_NO_NDS`,'
+      #9'`mat_out_rate`.`PROC_TRANSP`,'
+      #9'`mat_out_rate`.`TYPE_MT`,'
+      #9'`mat_out_rate`.`TYPE_NAME`'
+      
+        '/* END   ================================= '#1084#1072#1090#1077#1088#1080#1072#1083#1099' '#1074#1085#1077' '#1088#1072#1089#1094#1077#1085#1086 +
+        #1082' =========================================== END*/'
+      'UNION ALL'
+      
+        '/* BEGIN ================================= '#1089#1074#1072#1083#1082#1072' ==============' +
+        '=========================================== BEGIN*/'
       'SELECT'
       #9'`dc`.`DUMP_CODE_JUST` `MAT_CODE`,'
       #9'UCASE(`dc`.`DUMP_NAME`) `MAT_NAME`,'
@@ -844,8 +1002,8 @@ object dmReportF: TdmReportF
       #9'0 `TRANSP_NO_NDS`,'
       #9'999 `TYPE_MT`,'
       '        '#39#1057#1074#1072#1083#1082#1072#39' `TYPE_NAME`'
-      ''
       'FROM `smetasourcedata` `ssd`'
+      ''
       
         'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
         '`.`SM_ID` '
@@ -864,6 +1022,9 @@ object dmReportF: TdmReportF
       ''
       'WHERE `ssd`.`SM_ID` = :SM_ID'
       '  AND `ssd`.`SM_TYPE` = 2  '
+      
+        '/* END ==================================== '#1089#1074#1072#1083#1082#1072' =============' +
+        '============================================= END*/  '
       ') `sm`    '
       'GROUP BY `sm`.`MAT_CODE`,'
       #9' `sm`.`MAT_NAME`,'
@@ -996,7 +1157,7 @@ object dmReportF: TdmReportF
       ''
       'GROUP BY `sm`.`MECH_CODE`,'
       #9' `sm`.`MECH_NAME`,'
-      #9' `sm`.`MECH_UNIT`,'
+      #9' `sm`.`MECH_UNIT`,      '
       #9' `sm`.`COAST_NO_NDS`,'#9' '
       #9' `sm`.`ZP_MACH_NO_NDS`,'
       '         `sm`.`MT_TYPE`,'
@@ -1132,5 +1293,51 @@ object dmReportF: TdmReportF
     ScreenCursor = gcrDefault
     Left = 832
     Top = 16
+  end
+  object frxSMETA_OBJ_GraphC: TfrxDBDataset
+    UserName = 'frxSMETA_OBJ_GraphC'
+    CloseDataSource = True
+    FieldAliases.Strings = (
+      'NPP=NPP'
+      'NPP_DOC=NPP_DOC'
+      'ID_PARENT=ID_PARENT'
+      'ZATR_NAME=ZATR_NAME'
+      'ZATR_DOP_NAME=ZATR_DOP_NAME'
+      'ZATR_PERS=ZATR_PERS'
+      'ZATR_COAST=ZATR_COAST'
+      'GROUP_ID=GROUP_ID')
+    DataSet = qrSMETA_OBJ_GraphC
+    BCDToCurrency = False
+    Left = 704
+    Top = 56
+  end
+  object qrSMETA_OBJ_GraphC: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    SQL.Strings = (
+      'call Report_SMETA_OBJ_BUILD_GraphC(:SM_ID, :IN_MONTH, :IN_YEAR)')
+    Left = 704
+    Top = 112
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '344'
+      end
+      item
+        Name = 'IN_MONTH'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '4'
+      end
+      item
+        Name = 'IN_YEAR'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '2014'
+      end>
   end
 end
