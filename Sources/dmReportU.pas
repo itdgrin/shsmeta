@@ -48,8 +48,11 @@ type
     frxSMETA_OBJ_MEH: TfrxDBDataset;
     qrSMETA_OBJ_DEV: TFDQuery;
     frxSMETA_OBJ_DEV: TfrxDBDataset;
-    FDGUIxWaitCursor: TFDGUIxWaitCursor;  private
-   { Private declarations }
+    FDGUIxWaitCursor: TFDGUIxWaitCursor;
+    frxSMETA_OBJ_GraphC: TfrxDBDataset;
+    qrSMETA_OBJ_GraphC: TFDQuery;  private
+   { Private decla
+    FDQuery1: TFDQuery;rations }
   public
     { Public declarations }
     procedure Report_ZP_OBJ(SM_ID: integer; FileReportPath: string);
@@ -564,7 +567,6 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' group by `sm_id3`,`MECH_CODE` ) sm  order by `sm_id2`,`sm_id3`,`MAT_CODE`;';
 
 
-
 if qRTMP.FieldByName('SM_TYPE').AsInteger =1 then
 qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' SELECT * FROM '#13#10 +
@@ -820,7 +822,7 @@ begin
                     '       IF(`os`.`OBJ_REGION` = 3, `s`.`STAVKA_M_RAB`, `s`.`STAVKA_RB_RAB`) `TARIF`,'#13#10 +
                     '       `ca`.`NAME` `ACT_NAME`'#13#10 +
                     'from `smetasourcedata` as `ssd`'#13#10 +
-                    'inner `objcards` `oc` on `oc`.`OBJ_ID` = `ssd`.`OBJ_ID`'#13#10 +
+                    'inner join `objcards` `oc` on `oc`.`OBJ_ID` = `ssd`.`OBJ_ID`'#13#10 +
                     'inner join `objstroj` `os` on `os`.`STROJ_ID` = `oc`.`STROJ_ID`'#13#10 +
                     'inner join `stavka` `s` on `s`.`STAVKA_ID` = `ssd`.`STAVKA_ID`'#13#10 +
 	          				'inner join `card_acts` `ca` on `ca`.`ID_ESTIMATE_OBJECT` = `ssd`.`SM_ID`'#13#10 +
@@ -864,7 +866,7 @@ begin
                     '       `ca`.`NAME` `ACT_NAME`,'#13#10 +
                     '       `d`.`DUMP_NAME`'#13#10 +
                     'FROM `smetasourcedata` `ssd`'#13#10 +
-                    'inner jion `objcards` `oc` on `oc`.`OBJ_ID` = `ssd`.`OBJ_ID`'#13#10 +
+                    'inner join `objcards` `oc` on `oc`.`OBJ_ID` = `ssd`.`OBJ_ID`'#13#10 +
                     'inner join `objstroj` `os` on `os`.`STROJ_ID` = `oc`.`STROJ_ID`'#13#10 +
                     'inner join `stavka` `s` on `s`.`STAVKA_ID` = `ssd`.`STAVKA_ID`'#13#10 +
 	          				'inner join `card_acts` `ca` on `ca`.`ID_ESTIMATE_OBJECT` = `ssd`.`SM_ID`'#13#10 +
@@ -874,9 +876,7 @@ begin
   CloseOpen(qrTMP);
 
   qrRASX_MAT.ParamByName('ID_ACT').AsInteger := ID_ACT;
-  CloseOpen(qrRASX_MAT);
   qrRASX_MAT2.ParamByName('ID_ACT').AsInteger := ID_ACT;
-  CloseOpen(qrRASX_MAT);
 
   frxReport.LoadFromFile(FileReportPath + 'frRASX_MAT.fr3');
 
@@ -915,7 +915,7 @@ begin
   qrTMP.ParamByName('SM_ID').AsInteger := SM_ID;
   CloseOpen(qrTMP);
   SM_ID_ROOT := qrTMP.FieldByName('SM_ID_ROOT').AsInteger;
-
+  // берем инфу для шапки
   qrTMP.Close;
   qrTMP.SQL.Text := 'select CONCAT(`oc`.`NUM`, '' '', `oc`.`NAME`) `NAME`,'#13#10 +
                     '       IFNULL(`s`.`MONAT`, 0) `MONTH`,'#13#10 +
@@ -936,16 +936,10 @@ begin
   CloseOpen(qrTMP);
 
   qrSMETA_OBJ_E.ParamByName('SM_ID').AsInteger := SM_ID_ROOT;
-  CloseOpen(qrSMETA_OBJ_E);
-
   qrSMETA_OBJ_MAT.ParamByName('SM_ID').AsInteger := SM_ID_ROOT;
-  CloseOpen(qrSMETA_OBJ_MAT);
-
   qrSMETA_OBJ_MEH.ParamByName('SM_ID').AsInteger := SM_ID_ROOT;
-  CloseOpen(qrSMETA_OBJ_MEH);
-
   qrSMETA_OBJ_DEV.ParamByName('SM_ID').AsInteger := SM_ID_ROOT;
-  CloseOpen(qrSMETA_OBJ_DEV);
+  qrSMETA_OBJ_GraphC.ParamByName('SM_ID').AsInteger := SM_ID_ROOT;
 
   frxReport.LoadFromFile(FileReportPath + 'frSMETA_OBJ_BUILD.fr3');
 
