@@ -912,7 +912,9 @@ begin
                     '       `ssd`.`PREPARER`,'#13#10 +
                     '       `ssd`.`POST_PREPARER`,'#13#10 +
                     '       `ssd`.`EXAMINER`,'#13#10 +
-                    '       `ssd`.`POST_EXAMINER`'#13#10 +
+                    '       `ssd`.`POST_EXAMINER`,'#13#10 +
+                    '      	(SELECT `FULL_NAME` FROM `clients` WHERE `CLIENT_ID` = `oc`.`CUST_ID`) `CUSTOMER`,'#13#10 +
+                    '      	(SELECT `FULL_NAME` FROM `clients` WHERE `CLIENT_ID` = `oc`.`GENERAL_ID`) `GENERAL`'#13#10 +
                     'from `smetasourcedata` `ssd`'#13#10 +
                     'inner join `stavka` `s` on `s`.`STAVKA_ID` = `ssd`.`STAVKA_ID`'#13#10 +
                     'inner join `objcards` `oc` on `oc`.`OBJ_ID` = `ssd`.`OBJ_ID`'#13#10 +
@@ -933,8 +935,9 @@ begin
   frxReport.Script.Variables['sm_obj_name'] := AnsiUpperCase(qrTMP.FieldByName('NAME').AsString);
   frxReport.Script.Variables['date_sost'] := '1 ' + AnsiUpperCase(arraymes[qrTMP.FieldByName('MONTH').AsInteger, 2]) +
                                                ' ' + qrTMP.FieldByName('YEAR').AsString + ' ã.';
-  frxReport.Script.Variables['cust_name'] := ''; // ??
-  frxReport.Script.Variables['podr_name'] := ''; // ??
+  frxReport.Script.Variables['cust_name'] := qrTMP.FieldByName('CUSTOMER').AsString;
+  frxReport.Script.Variables['podr_name'] := qrTMP.FieldByName('GENERAL').AsString;
+
   frxReport.Script.Variables['reg_build'] := qrTMP.FieldByName('REGION').AsString;
   frxReport.Script.Variables['sm_tarif'] := FormatFloat('#,##0', qrTMP.FieldByName('TARIF').AsFloat);
 
