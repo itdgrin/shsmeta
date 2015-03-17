@@ -267,7 +267,7 @@ begin
   FormObjectsAndEstimates := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
   try
-  FormMain.DeleteButtonCloseWindow(CaptionButtonObjectsAndEstimates);
+    FormMain.DeleteButtonCloseWindow(CaptionButtonObjectsAndEstimates);
   except
 
   end;

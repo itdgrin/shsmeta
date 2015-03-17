@@ -67,19 +67,6 @@ type
     procedure Report_SMETA_OBJ_BUILD(SM_ID: integer; FileReportPath: string); // "СМЕТА по объекту строительства" v1.03
   end;
 
-const arraymes: array[1..12, 1..2] of string = (('Январь',   'Января'),
-                                                ('Февраль',  'Февраля'),
-                                                ('Март',     'Марта'),
-                                                ('Апрель',   'Апреля'),
-                                                ('Май',      'Мая'),
-                                                ('Июнь',     'Июня'),
-                                                ('Июль',     'Июля'),
-                                                ('Август',   'Августа'),
-                                                ('Сентябрь', 'Сентября'),
-                                                ('Октябрь',  'Октября'),
-                                                ('Ноябрь',   'Ноября'),
-                                                ('Декабрь',  'Декабря'));
-
 var
   dmReportF: TdmReportF;
 
@@ -89,7 +76,7 @@ implementation
 
 {$R *.dfm}
 
-Uses DataModule;
+Uses DataModule, GlobsAndConst;
 
  // vk зимнее удорожание
 procedure TdmReportF.Report_WINTER_RS_OBJ(SM_ID: integer; FileReportPath: string);

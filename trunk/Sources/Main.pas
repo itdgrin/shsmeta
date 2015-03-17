@@ -490,14 +490,6 @@ end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  // путь к папке с отчетами (Вадим)
-{$IFDEF DEBUG}
-  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1,
-                         Length(ExtractFilePath(Application.ExeName)) - 12) + 'Reports\';
-{$ELSE}
-  FileReportPath := ExtractFilePath(Application.ExeName) + 'Reports\';
-{$ENDIF}
-
   FCurVersion.Clear;
 
   SystemInfoResult := False;
@@ -519,8 +511,8 @@ begin
 
   // путь к папке с отчетами (Вадим)
 {$IFDEF DEBUG}
-  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
-    - 12) + C_REPORTDIR;
+  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1,
+    Length(ExtractFilePath(Application.ExeName)) - 12) + C_REPORTDIR;
 {$ELSE}
   FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
 {$ENDIF}
@@ -549,6 +541,22 @@ end;
 
 procedure TFormMain.FormShow(Sender: TObject);
 begin
+
+  try
+    if not DM.Connect.Connected then
+    begin
+      DM.Connect.Params.Text := G_CONNECTSTR;
+      DM.Connect.Connected := True;
+    end;
+  except
+    on e: exception do
+    begin
+      e.Message := 'Ошибка подключения к базе:' + sLineBreak + e.Message;
+      Application.ShowException(e);
+      Application.Terminate;
+    end;
+  end;
+
   try
     GetSystemInfo;
     SystemInfoResult := true;
@@ -806,11 +814,10 @@ begin
       Break;
     end;
 
-  if Y <> i then // Нет кнопки с таким названием
+  if (Y > -1) then // Нет кнопки с таким названием
     Exit;
 
-  // ButtonsWindows[y].Destroy;
-  FreeAndNil(ButtonsWindows[Y]);
+  ButtonsWindows[Y].Free;
 
   while Y < CountOpenWindows - 1 do
   begin

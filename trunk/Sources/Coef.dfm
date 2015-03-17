@@ -11,7 +11,6 @@ object fCoefficients: TfCoefficients
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
     547
