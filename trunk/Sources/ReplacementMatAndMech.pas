@@ -50,8 +50,6 @@ type
     Label2: TLabel;
     edtSourceCode: TEdit;
     Label3: TLabel;
-    edtSourceName: TEdit;
-    edtDestName: TEdit;
     Label6: TLabel;
     edtDestCode: TEdit;
     Label5: TLabel;
@@ -86,6 +84,9 @@ type
     LoadAnimator: TJvGIFAnimator;
     Label8: TLabel;
     ListSpr: TListView;
+    edtSourceName: TMemo;
+    edtDestName: TMemo;
+    FindTimer: TTimer;
     procedure btnCancelClick(Sender: TObject);
     procedure rgroupTypeClick(Sender: TObject);
     procedure edtDestCodeKeyPress(Sender: TObject; var Key: Char);
@@ -94,6 +95,15 @@ type
     procedure rgroupWhereClick(Sender: TObject);
     procedure qrEntrySELChange(Sender: TField);
     procedure qrEntryBeforeInsert(DataSet: TDataSet);
+    procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
+      State: TCustomDrawState; var DefaultDraw: Boolean);
+    procedure btnFindClick(Sender: TObject);
+    procedure btnSelectClick(Sender: TObject);
+    procedure ListSprSelectItem(Sender: TObject; Item: TListItem;
+      Selected: Boolean);
+    procedure edtFindChange(Sender: TObject);
+    procedure edtDestCodeChange(Sender: TObject);
+    procedure FindTimerTimer(Sender: TObject);
   private
     FCurType,
     FCurWhere: Byte;
@@ -108,6 +118,7 @@ type
     FRegionName: string;
 
     FSprArray: TSprArray;
+    FIndexes: array of Integer;
 
     FFlag: Boolean;
 
@@ -116,7 +127,7 @@ type
     procedure LoadEntry(AWhere: integer);
 
     procedure OnActivate(var Mes: TMessage); message WM_ONACTIVATE;
-    procedure FillSprList(AFindName, AFindCode: string);
+    procedure FillSprList(AFindStr: string);
 
     { Private declarations }
   public
@@ -139,15 +150,18 @@ begin
   LoadAnimator.Visible := False;
   LoadAnimator.Animate := False;
 
-  if Assigned(Exception(Mes.LParam)) then
-    raise Exception(Mes.LParam);
-
   ind := 0;
   SetLength(FSprArray, ind);
+  SetLength(FIndexes, ind);
 
-  if not Assigned(TDataSet(Mes.WParam)) then
+  //Если в потоке возникло исключение воспроизводим его
+  if Assigned(Exception(Mes.LParam)) or
+    not Assigned(TDataSet(Mes.WParam)) then
   begin
+    ListSpr.Items.Clear;
     ListSpr.Visible := True;
+    if Assigned(Exception(Mes.LParam)) then
+      raise Exception(Mes.LParam);
     Exit;
   end;
 
@@ -158,6 +172,10 @@ begin
     while not TmpDS.Eof do
     begin
       inc(ind);
+      //Для того что-бы не подвисало
+      if (ind mod 2000) = 0 then
+        Application.ProcessMessages;
+
       SetLength(FSprArray, ind);
       //не по именам для быстродействия
       //Id, Code, Name, Unit, PriceVAT, PriceNotVAT
@@ -173,30 +191,104 @@ begin
       TmpDS.Next;
     end;
   end;
-
-  FillSprList(edtFind.Text, '');
+  //Добавлено из-за Application.ProcessMessages выше
+  edtDestCodeChange(nil);
+  //Заполнение справочника
+  FillSprList(edtFind.Text);
 end;
 
-procedure TfrmReplacement.FillSprList(AFindName, AFindCode: string);
-var i: Integer;
-    Item: TListItem;
+procedure TfrmReplacement.FillSprList(AFindStr: string);
+var i, ind: Integer;
+    FindType: Byte;
 begin
- // ListSpr.Items.Count := Length(FSprArray);
-  for i := Low(FSprArray) to High(FSprArray) do
+  //Определяем тип поиска по имени или по коду
+  FindType := 0;
+  if (Length(AFindStr) > 0) then
   begin
-    Item := ListSpr.Items.Add;
-   // Item.Caption := FSprArray[i].Code;
-   { Item.SubItems.Add(FSprArray[i].Name);
-    Item.SubItems.Add(FSprArray[i].Unt);
-
-    if FFlag then
-    begin
-      Item.SubItems.Add(FloatToStr(FSprArray[i].CoastNDS));
-      Item.SubItems.Add(FloatToStr(FSprArray[i].CoactNoNDS));
-    end; }
+     FindType := 1;
+     if (Length(AFindStr) > 1) then
+     if FCurType = 0 then
+     begin
+      if (((AFindStr[1] = 'C') or (AFindStr[1] = 'c') or
+          (AFindStr[1] = 'С') or (AFindStr[1] = 'с')) and
+        CharInSet(AFindStr[2], ['1'..'9'])) then
+      begin
+        AFindStr[1] := 'С';
+        FindType := 2;
+      end;
+     end
+     else
+     begin
+      if (((AFindStr[1] = 'M') or (AFindStr[1] = 'm') or
+          (AFindStr[1] = 'М') or (AFindStr[1] = 'м')) and
+        CharInSet(AFindStr[2], ['1'..'9'])) then
+      begin
+        AFindStr[1] := 'М';
+        FindType := 2;
+      end;
+     end;
   end;
 
+  //Видимый список обновляется намного дольше
+  ListSpr.Visible :=  False;
+
+  ListSpr.Items.Clear;
+  ind := 0;
+  SetLength(FIndexes, ind);
+  for i := Low(FSprArray) to High(FSprArray) do
+  begin
+    case FindType of
+      1:
+        if Pos(AFindStr.ToLower, FSprArray[i].Name.ToLower) = 0 then
+          Continue;
+      2:
+        if Pos(AFindStr.ToLower, FSprArray[i].Code.ToLower) = 0 then
+          Continue;
+    end;
+    //Создаем пустые итемы, заполним их при отображении
+    ListSpr.Items.Add;
+    inc(ind);
+    SetLength(FIndexes, ind);
+    FIndexes[ind - 1] := i;
+  end;
+  btnFind.Enabled := True;
+  btnSelect.Enabled := True;
   ListSpr.Visible :=  True;
+  if (ListSpr.Items.Count > 0) then
+    ListSpr.ItemIndex := 0;
+end;
+
+procedure TfrmReplacement.FindTimerTimer(Sender: TObject);
+begin
+  btnFindClick(nil);
+  FindTimer.Enabled := False;
+end;
+
+procedure TfrmReplacement.ListSprCustomDrawItem(Sender: TCustomListView;
+  Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
+begin
+  Item.Caption := FSprArray[FIndexes[Item.Index]].Code;
+  Item.SubItems.Add(FSprArray[FIndexes[Item.Index]].Name);
+  Item.SubItems.Add(FSprArray[FIndexes[Item.Index]].Unt);
+
+  if FFlag then
+  begin
+    Item.SubItems.Add(FloatToStr(FSprArray[FIndexes[Item.Index]].CoastNDS));
+    Item.SubItems.Add(FloatToStr(FSprArray[FIndexes[Item.Index]].CoactNoNDS));
+  end;
+
+  DefaultDraw := True;
+end;
+
+procedure TfrmReplacement.ListSprSelectItem(Sender: TObject; Item: TListItem;
+  Selected: Boolean);
+begin
+  if Assigned(Item) then
+  begin
+    StatusBar1.Panels[0].Text := FSprArray[FIndexes[Item.Index]].Name;
+    StatusBar1.Panels[1].Text := '   ' +
+      IntToStr(Item.Index + 1) + '/' + IntToStr(Length(FIndexes));
+  end;
 end;
 
 constructor TfrmReplacement.Create(const AObjectID, AEstimateID, ARateID,
@@ -298,6 +390,14 @@ begin
   end;
 end;
 
+procedure TfrmReplacement.edtDestCodeChange(Sender: TObject);
+var i: Integer;
+begin
+  for i := Low(FSprArray) to High(FSprArray) do
+    if SameText(edtDestCode.Text, FSprArray[i].Code) then
+      edtDestName.Text := FSprArray[i].Name;
+end;
+
 procedure TfrmReplacement.edtDestCodeKeyPress(Sender: TObject; var Key: Char);
 begin
   if (Key = #3) or (Key = #$16) then //Копирование и  вставка
@@ -318,6 +418,12 @@ begin
     if not (CharInSet(Key, ['0'..'9', #8]) or (Key = 'М')) then
       Key := #0;
   end;
+end;
+
+procedure TfrmReplacement.edtFindChange(Sender: TObject);
+begin
+  FindTimer.Enabled := False;
+  FindTimer.Enabled := True;
 end;
 
 procedure TfrmReplacement.LoadRepInfo;
@@ -441,6 +547,20 @@ begin
   end;
 end;
 
+procedure TfrmReplacement.btnFindClick(Sender: TObject);
+begin
+  FillSprList(edtFind.Text);
+end;
+
+procedure TfrmReplacement.btnSelectClick(Sender: TObject);
+begin
+  if (ListSpr.ItemIndex > -1) then
+  begin
+    edtDestCode.Text := ListSpr.Items[ListSpr.ItemIndex].Caption;
+    edtDestName.Text := ListSpr.Items[ListSpr.ItemIndex].SubItems[0];
+  end;
+end;
+
 procedure TfrmReplacement.ChangeType(AType: byte);
 var TmpStr: string;
 begin
@@ -510,7 +630,10 @@ begin
   LoadAnimator.Visible := True;
   LoadAnimator.Animate := True;
   ListSpr.Visible := False;
-  ListSpr.Items.Clear;
+  btnFind.Enabled := False;
+  btnSelect.Enabled := False;
+  StatusBar1.Panels[0].Text := '';
+  StatusBar1.Panels[1].Text := '';
 
   //Вызов нити выполняющей запрос на данные справлчника
   TThreadQuery.Create(TmpStr, Handle);

@@ -65,6 +65,8 @@ object frmReplacement: TfrmReplacement
       Align = alClient
       Caption = ' '#1052#1072#1090#1077#1088#1080#1072#1083#1072': '
       TabOrder = 1
+      ExplicitLeft = 159
+      ExplicitTop = -4
       object Label2: TLabel
         Left = 13
         Top = 24
@@ -116,31 +118,14 @@ object frmReplacement: TfrmReplacement
         ReadOnly = True
         TabOrder = 0
       end
-      object edtSourceName: TEdit
-        Left = 227
-        Top = 21
-        Width = 390
-        Height = 21
-        Color = 14802912
-        ReadOnly = True
-        TabOrder = 1
-      end
-      object edtDestName: TEdit
-        Left = 227
-        Top = 71
-        Width = 390
-        Height = 21
-        Color = 14802912
-        ReadOnly = True
-        TabOrder = 2
-      end
       object edtDestCode: TEdit
         Left = 40
         Top = 71
         Width = 98
         Height = 21
         CharCase = ecUpperCase
-        TabOrder = 3
+        TabOrder = 1
+        OnChange = edtDestCodeChange
         OnKeyPress = edtDestCodeKeyPress
       end
       object edtCoeff: TEdit
@@ -148,9 +133,26 @@ object frmReplacement: TfrmReplacement
         Top = 98
         Width = 77
         Height = 21
-        TabOrder = 4
+        TabOrder = 2
         OnExit = edtCoeffExit
         OnKeyPress = edtCoeffKeyPress
+      end
+      object edtSourceName: TMemo
+        Left = 227
+        Top = 21
+        Width = 390
+        Height = 32
+        Color = 14802912
+        ReadOnly = True
+        TabOrder = 3
+      end
+      object edtDestName: TMemo
+        Left = 227
+        Top = 71
+        Width = 390
+        Height = 48
+        Color = 14802912
+        TabOrder = 4
       end
     end
   end
@@ -518,7 +520,7 @@ object frmReplacement: TfrmReplacement
         Height = 19
         Panels = <
           item
-            Width = 450
+            Width = 650
           end
           item
             Width = 100
@@ -544,6 +546,7 @@ object frmReplacement: TfrmReplacement
           Width = 393
           Height = 21
           TabOrder = 0
+          OnChange = edtFindChange
         end
         object btnFind: TButton
           Left = 535
@@ -553,6 +556,7 @@ object frmReplacement: TfrmReplacement
           Caption = #1055#1086#1080#1089#1082
           Enabled = False
           TabOrder = 1
+          OnClick = btnFindClick
         end
         object btnSelect: TButton
           Left = 672
@@ -562,6 +566,7 @@ object frmReplacement: TfrmReplacement
           Caption = #1042#1099#1073#1086#1088
           Enabled = False
           TabOrder = 2
+          OnClick = btnSelectClick
         end
       end
       object ListSpr: TListView
@@ -591,6 +596,8 @@ object frmReplacement: TfrmReplacement
             Caption = #1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088#1091#1073
             Width = 110
           end>
+        ColumnClick = False
+        DoubleBuffered = True
         GridLines = True
         Items.ItemData = {
           057C0000000300000000000000FFFFFFFFFFFFFFFF00000000FFFFFFFF000000
@@ -599,8 +606,11 @@ object frmReplacement: TfrmReplacement
           FFFFFF00000000FFFFFFFF000000000932003400340032003300330034003200
           3300}
         RowSelect = True
+        ParentDoubleBuffered = False
         TabOrder = 2
         ViewStyle = vsReport
+        OnCustomDrawItem = ListSprCustomDrawItem
+        OnSelectItem = ListSprSelectItem
       end
     end
   end
@@ -707,5 +717,12 @@ object frmReplacement: TfrmReplacement
     DataSet = qrEntry
     Left = 352
     Top = 185
+  end
+  object FindTimer: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = FindTimerTimer
+    Left = 458
+    Top = 336
   end
 end
