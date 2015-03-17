@@ -25,7 +25,6 @@ type
     N4: TMenuItem;
     N5: TMenuItem;
     procedure FormShow(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure btnAddClick(Sender: TObject);
     procedure N1Click(Sender: TObject);
@@ -71,14 +70,11 @@ begin
   Close;
 end;
 
-procedure TfCoefficients.FormCreate(Sender: TObject);
+procedure TfCoefficients.FormShow(Sender: TObject);
 begin
   CloseOpen(qrCoef);
   LoadDBGridSettings(grCoef);
-end;
 
-procedure TfCoefficients.FormShow(Sender: TObject);
-begin
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
 

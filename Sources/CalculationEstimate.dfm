@@ -3368,6 +3368,10 @@
           OnClick = PMMatReplaceTableClick
         end
       end
+      object N11: TMenuItem
+        Caption = #1058#1077#1089#1090
+        OnClick = N11Click
+      end
     end
     object PMMatDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
@@ -3423,6 +3427,10 @@
     object PMMechFromRates: TMenuItem
       Caption = #1042#1099#1085#1077#1089#1090#1080' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091
       OnClick = PMMechFromRatesClick
+    end
+    object N12: TMenuItem
+      Caption = #1058#1077#1089#1090
+      OnClick = N12Click
     end
   end
   object qrDescription: TFDQuery

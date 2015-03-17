@@ -33,7 +33,9 @@ uses  Tools, fUpdate;
 constructor TBaseAppArhiv.Create(const AAppPath, AArhivPath: string);
 begin
   if not TDirectory.Exists(AArhivPath) then
-    raise Exception.Create('Папки архива ''' +  AArhivPath + ''' не существует');
+  begin
+    TDirectory.CreateDirectory(AArhivPath);
+  end;
 
   inherited Create;
   FAppPath := IncludeTrailingPathDelimiter(AAppPath);
@@ -63,7 +65,6 @@ var TmpStr: string;
     TmpList: TStringList;
 
     y,m,d: Word;
-    t: Extended;
 begin
   TmpList := TStringList.Create;
   try

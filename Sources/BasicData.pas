@@ -144,7 +144,6 @@ procedure TFormBasicData.FormCreate(Sender: TObject);
 begin
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
-  CloseOpen(qrMAIS);
 end;
 
 procedure TFormBasicData.FormShow(Sender: TObject);

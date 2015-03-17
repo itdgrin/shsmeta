@@ -452,10 +452,13 @@ type
     dsOXROPR: TDataSource;
     qrRatesWORK_ID: TIntegerField;
     btn1: TSpeedButton;
+    N11: TMenuItem;
+
     pmWinterPrise: TPopupMenu;
     nSelectWinterPrise: TMenuItem;
     nWinterPriseSetDefault: TMenuItem;
     qrRatesZNORMATIVS_ID: TIntegerField;
+    N12: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -636,8 +639,10 @@ type
     procedure PMMatDeleteClick(Sender: TObject);
     procedure qrRatesWORK_IDChange(Sender: TField);
     procedure btn1Click(Sender: TObject);
+    procedure N11Click(Sender: TObject);
     procedure nSelectWinterPriseClick(Sender: TObject);
     procedure nWinterPriseSetDefaultClick(Sender: TObject);
+    procedure N12Click(Sender: TObject);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -753,7 +758,8 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
   CalculationDump, SaveEstimate,
   ReplacementMaterial, Materials, AdditionData, CardMaterial, CardDataEstimate,
   ListCollections, CoefficientOrders, KC6,
-  CardAct, Tools, Coef, WinterPrise;
+  CardAct, Tools, Coef, WinterPrise,
+  ReplacementMatAndMech;
 
 {$R *.dfm}
 
@@ -2149,7 +2155,6 @@ end;
 
 procedure TFormCalculationEstimate.qrRatesAfterScroll(DataSet: TDataSet);
 begin
-  Panel1.Visible := qrRatesTYPE_DATA.Value = 1;
   if qrRates.Tag <> 1 then
   begin
     tmRate.Enabled := False;
@@ -2535,6 +2540,29 @@ begin
   end;
 
 end;
+procedure TFormCalculationEstimate.N11Click(Sender: TObject);
+var frmReplace: TfrmReplacement;
+begin
+  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
+    qrRatesRID.AsInteger, qrMaterialID.AsInteger, 0);
+  try
+    frmReplace.ShowModal;
+  finally
+    FreeAndNil(frmReplace);
+  end;
+end;
+
+procedure TFormCalculationEstimate.N12Click(Sender: TObject);
+var frmReplace: TfrmReplacement;
+begin
+  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
+    qrRatesRID.AsInteger, qrMechanizmID.AsInteger, 1);
+  try
+    frmReplace.ShowModal;
+  finally
+    FreeAndNil(frmReplace);
+  end;
+end;
 
 procedure TFormCalculationEstimate.nSelectWinterPriseClick(Sender: TObject);
 begin
@@ -2572,7 +2600,7 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMMatReplaceTableClick(Sender: TObject);
-// var k: Char;
+var k: Char;
 begin
   {
     ќписание (Sender as TMenuItem).Tag
@@ -2624,11 +2652,11 @@ begin
   FormMaterials := TFormMaterials.Create(Self, DataBase, True, False, True);
 
   // —разу выполн€ет поиск по названи€ замен€емого материала
-  { FormMaterials.FramePriceMaterials.EditSearch.Text :=
+  FormMaterials.FramePriceMaterials.EditSearch.Text :=
     qrMaterialMAT_NAME.AsString;
-    k := #13;
-    FormMaterials.FramePriceMaterials.EditSearch1KeyPress(
-    FormMaterials.FramePriceMaterials.EditSearch, k); } // очень медленно
+  k := #13;
+  FormMaterials.FramePriceMaterials.EditSearch1KeyPress(
+  FormMaterials.FramePriceMaterials.EditSearch, k);  // очень медленно
 
   FormMaterials.WindowState := wsNormal;
   FormMaterials.Left := (FormMain.ClientWidth div 2) - 4;
@@ -4392,6 +4420,7 @@ begin
   qrTransp.Active := False;
   qrStartup.Active := False;
   qrDescription.Active := False;
+  Panel1.Visible := False;
 
   // Ќа вс€кий случай, что-бы избежать глюков
   if not qrRates.Active then
@@ -4412,12 +4441,9 @@ begin
     end;
   end;
 
-  // ћожно редактировать кол-во дл€ любой строки (раньше было нетак)
+  // ћожно редактировать кол-во дл€ любой строки
   qrRatesCODE.ReadOnly := True;
-
-  // E18-20 - теперь можно вводить кол-во
-  // RatesTYPE_DATA.AsInteger in [10,11] then
-  // qrRatesCOUNT.ReadOnly := true;
+  Panel1.Visible := (qrRatesTYPE_DATA.Value = 1);
 
   // заполн€ет таблицы справа
   GridRatesRowSellect;

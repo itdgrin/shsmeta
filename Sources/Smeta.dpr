@@ -105,7 +105,8 @@ uses
   Coef in 'Coef.pas' {fCoefficients},
   ArhivModule in 'ArhivModule.pas',
   GlobsAndConst in 'GlobsAndConst.pas',
-  WinterPrise in 'WinterPrise.pas' {fWinterPrise};
+  WinterPrise in 'WinterPrise.pas' {fWinterPrise},
+  ReplacementMatAndMech in 'ReplacementMatAndMech.pas' {frmReplacement};
 
 {$R *.res}
 var MHandle: THandle;
@@ -125,6 +126,7 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.Title := 'Смета';
+
   Application.CreateForm(TDM, DM);
   Application.CreateForm(TFormMain, FormMain);
   Application.CreateForm(TFormCardObject, FormCardObject);
@@ -160,15 +162,13 @@ begin
   Application.Run;
 
   //Запуск Updater для завершения обновления приложения
-  if G_STARTUPDATER > 0 then
+  if (G_STARTUPDATER in [1,2]) then
   begin
     //Формируем строку параметров
     PrmStr := ' ';
     case G_STARTUPDATER of
       1: PrmStr := PrmStr + C_UPD_UPDATE + ' ';
       2: PrmStr := PrmStr + C_UPD_RESTOR + ' ';
-      else
-        exit;
     end;
     PrmStr := PrmStr + C_UPD_PATH + '="' + G_UPDPATH + '" '; //Путь
     if G_NEWAPPVERS > 0 then  //Версия после обновления
@@ -178,7 +178,7 @@ begin
 
     ShellExecute(0,'open',
       PChar(ExtractFilePath(Application.ExeName) + C_UPDATERNAME),
-      Pchar(PrmStr), nil ,SW_HIDE);
+      PChar(PrmStr), nil ,SW_HIDE);
   end;
 
   ReleaseMutex(MHandle);

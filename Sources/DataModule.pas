@@ -26,7 +26,6 @@ type
     FDPhysMySQLDriverLink1: TFDPhysMySQLDriverLink;
     FDGUIxWaitCursor1: TFDGUIxWaitCursor;
     qrDifferent: TFDQuery;
-    procedure ADOConnectionAfterConnect(Sender: TObject);
 
   private
     { Private declarations }
@@ -39,21 +38,6 @@ var
 
 implementation
 
-uses ConnectDatabase, CalculationEstimate;
-
 {$R *.dfm}
-// ---------------------------------------------------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TDM.ADOConnectionAfterConnect(Sender: TObject);
-begin
-  // MessageBox(0, PChar('Соединение с сервером успешно установлено.'), 'Подключение к MySQL Server',
-  // MB_ICONINFORMATION + mb_OK + mb_TaskModal);
-
-  // FormConnectDatabase.Close;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.
