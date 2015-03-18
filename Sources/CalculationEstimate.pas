@@ -2575,6 +2575,7 @@ begin
     qrTemp.ExecSQL;
     qrRatesZNORMATIVS_ID.Value := fWinterPrise.OutValue;
     FillingWinterPrice('');
+    CloseOpen(qrCalculations);
   end;
 end;
 
@@ -2585,6 +2586,7 @@ begin
   begin
     qrRatesZNORMATIVS_ID.Value := 0;
     FillingWinterPrice(qrRatesCODEINRATE.AsString);
+    CloseOpen(qrCalculations);
   end;
 end;
 

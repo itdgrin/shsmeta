@@ -1330,8 +1330,8 @@ begin
       Active := False;
       s := ADOQueryNormativ.FieldByName('NumberNormative').AsString;
       SQL.Clear;
-      SQL.Add('SELECT num, name, s, po, DATE_BEG FROM znormativs where ' + '((s <= ''' + s +
-        ''') and (po >= ''' + s + ''')) order by DATE_BEG desc;');
+      SQL.Add('SELECT num, name, s, po FROM znormativs_ex, znormativs_detail WHERE znormativs_ex.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID AND ' + '((s <= ''' + s +
+        ''') and (po >= ''' + s + '''));');
       Active := true;
 
       { First; //Использовалось для отладки
