@@ -39,7 +39,7 @@
     OnResize = PanelTopMenuResize
     object SpeedButtonLocalEstimate: TSpeedButton
       Left = 1
-      Top = 1
+      Top = 2
       Width = 150
       Height = 25
       GroupIndex = 1
@@ -619,7 +619,7 @@
           DataSource = dsRates
           ReadOnly = True
           ScrollBars = ssVertical
-          TabOrder = 0
+          TabOrder = 1
         end
         object dbgrdRates: TJvDBGrid
           Left = 0
@@ -631,7 +631,7 @@
           DefaultDrawing = False
           DrawingStyle = gdsClassic
           PopupMenu = PopupMenuTableLeft
-          TabOrder = 1
+          TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
@@ -2529,7 +2529,7 @@
         DrawingStyle = gdsClassic
         Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         PopupMenu = PopupMenuCoef
-        TabOrder = 1
+        TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
@@ -2633,14 +2633,14 @@
             FieldName = 'ZIM_UDOR'
             Title.Alignment = taCenter
             Title.Caption = #1047#1080#1084'. '#1091#1076#1086#1088'.'
-            Visible = True
+            Visible = False
           end
           item
             Expanded = False
             FieldName = 'ZP_ZIM_UDOR'
             Title.Alignment = taCenter
             Title.Caption = #1047#1055' '#1074' '#1079#1080#1084'. '#1091#1076#1086#1088'.'
-            Visible = True
+            Visible = False
           end>
       end
       object PanelBottom: TPanel
@@ -2651,7 +2651,7 @@
         Align = alBottom
         BevelOuter = bvNone
         ParentBackground = False
-        TabOrder = 0
+        TabOrder = 1
         object Label10: TLabel
           Left = 6
           Top = 5
@@ -3244,12 +3244,9 @@
             OnClick = PMAddAdditionHeatingE18Click
           end
         end
-        object PMAddAdditionWinterPrice: TMenuItem
-          Tag = 12
-          Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1079#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
-        end
         object PopupMenuRatesAdd352: TMenuItem
           Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1082#1086#1101#1092'. '#1089#1086#1075#1083#1072#1089#1085#1086' '#1055#1088#1080#1082#1072#1079#1091' '#8470'352 '#1082' '#1074#1099#1076#1077#1083#1077#1085#1085#1099#1084' '#1089#1090#1088#1086#1082#1072#1084
+          OnClick = PopupMenuRatesAdd352Click
         end
       end
     end
@@ -3864,6 +3861,9 @@
     end
     object qrRatesZNORMATIVS_ID: TIntegerField
       FieldName = 'ZNORMATIVS_ID'
+    end
+    object qrRatesAPPLY_WINTERPRISE_FLAG: TIntegerField
+      FieldName = 'APPLY_WINTERPRISE_FLAG'
     end
   end
   object dsRates: TDataSource

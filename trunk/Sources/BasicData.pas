@@ -43,7 +43,6 @@ type
     PopupMenuPercentTransportCity: TMenuItem;
     PopupMenuPercentTransportVillage: TMenuItem;
     PopupMenuPercentTransportMinsk: TMenuItem;
-    RadioGroupCoefOrders: TRadioGroup;
     DataSourceRegionDump: TDataSource;
     qrDump: TFDQuery;
     ADOQueryRegionDump: TFDQuery;
@@ -77,6 +76,8 @@ type
     dbedtK_LOW_OHROPR: TDBEdit;
     lbl7: TLabel;
     dbedtK_LOW_PLAN_PRIB: TDBEdit;
+    dbchkcoef_orders: TDBCheckBox;
+    dbchkAPPLY_WINTERPRISE_FLAG: TDBCheckBox;
 
     procedure FormShow(Sender: TObject);
 
@@ -90,6 +91,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
     procedure qrSmetaAfterOpen(DataSet: TDataSet);
+    procedure dbedtEditRateWorkerEnter(Sender: TObject);
     // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
 
   private
@@ -188,15 +190,6 @@ begin
       + 'FROM smetasourcedata WHERE sm_id = :sm_id;');
     ParamByName('sm_id').Value := IdEstimate;
     Active := True;
-
-    case FieldByName('coef_orders').AsInteger of
-      - 1:
-        RadioGroupCoefOrders.ItemIndex := 2;
-      0:
-        RadioGroupCoefOrders.ItemIndex := 1;
-      1:
-        RadioGroupCoefOrders.ItemIndex := 0;
-    end;
 
     edtPercentTransport.Text := MyFloatToStr(FieldByName('coef_tr_zatr').AsFloat);
     EditPercentTransportEquipment.Text := MyFloatToStr(FieldByName('coef_tr_obor').AsFloat);
@@ -348,7 +341,8 @@ begin
       SQL.Add('UPDATE smetasourcedata SET stavka_id = :stavka_id, coef_tr_zatr = :coef_tr_zatr, coef_orders=:coef_orders, '
         + 'coef_tr_obor=:coef_tr_obor, k40=:k40, k41=:k41, k31=:k31, k32=:k32, k33=:k33, k34=:k34, growth_index=:growth_index, '
         + 'K_LOW_OHROPR=:K_LOW_OHROPR, K_LOW_PLAN_PRIB=:K_LOW_PLAN_PRIB, APPLY_LOW_COEF_OHROPR_FLAG=:APPLY_LOW_COEF_OHROPR_FLAG, '
-        + 'nds=:nds, dump_id=:dump_id, kzp=:kzp, STAVKA_RAB=:STAVKA_RAB, MAIS_ID=:MAIS_ID, K35=:K35 WHERE sm_id = :sm_id;');
+        + 'nds=:nds, dump_id=:dump_id, kzp=:kzp, STAVKA_RAB=:STAVKA_RAB, MAIS_ID=:MAIS_ID, K35=:K35, APPLY_WINTERPRISE_FLAG=:APPLY_WINTERPRISE_FLAG '
+        + 'WHERE sm_id = :sm_id;');
 
       ParamByName('stavka_id').Value := IdStavka;
       ParamByName('coef_tr_zatr').Value := edtPercentTransport.Text;
@@ -368,18 +362,16 @@ begin
       ParamByName('K_LOW_PLAN_PRIB').Value := qrSmeta.FieldByName('K_LOW_PLAN_PRIB').Value;
       ParamByName('APPLY_LOW_COEF_OHROPR_FLAG').AsInteger := qrSmeta.FieldByName('APPLY_LOW_COEF_OHROPR_FLAG')
         .AsInteger;
+      ParamByName('APPLY_WINTERPRISE_FLAG').AsInteger := qrSmeta.FieldByName('APPLY_WINTERPRISE_FLAG')
+        .AsInteger;
       ParamByName('MAIS_ID').Value := dblkcbbMAIS.KeyValue;
       ParamByName('growth_index').Value := dbedtgrowth_index.Text;
-      case RadioGroupCoefOrders.ItemIndex of
-        0:
-          ParamByName('coef_orders').Value := 1;
-        1:
-          ParamByName('coef_orders').Value := 0;
-        2:
-          ParamByName('coef_orders').Value := -1;
-      end;
+      ParamByName('coef_orders').Value := qrSmeta.FieldByName('coef_orders').AsInteger;
       ParamByName('sm_id').Value := IdEstimate;
-
+      ExecSQL;
+      // Обновляем все зависимые сметы до самого низкого уровня
+      SQL.Text := 'CALL `UPDATE_SMETASOURCEDATA_CHILD`(:sm_id);';
+      ParamByName('sm_id').Value := IdEstimate;
       ExecSQL;
     end;
     Close;
@@ -432,9 +424,14 @@ procedure TFormBasicData.dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
 begin
   pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
   if pnlLowCoef.Visible then
-    Height := 575
+    Height := 549
   else
-    Height := 575 - pnlLowCoef.Height;
+    Height := 549 - pnlLowCoef.Height;
+end;
+
+procedure TFormBasicData.dbedtEditRateWorkerEnter(Sender: TObject);
+begin
+  qrSmeta.FieldByName('STAVKA_RAB').Value := dbedtEditRateWorker.Text;
 end;
 
 procedure TFormBasicData.DBLookupComboBoxRegionDumpClick(Sender: TObject);
