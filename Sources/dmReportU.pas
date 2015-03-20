@@ -139,82 +139,85 @@ end;
 
 // vk Расчет стоимости материалов по объекту
 procedure TdmReportF.Report_RSMO_OBJ(with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
+var
+SM_ID_ROOT:integer;
 begin
+  // поиск корня по ветке
+  qrTMP.SQL.Text := 'select IF(`ssd`.`PARENT_ID` = 0, `ssd`.`SM_ID`,'#13#10 +
+                    '          (select IF(`ssd1`.`PARENT_ID` = 0, `ssd1`.`SM_ID`,'#13#10 +
+                  	'                     (select IF(`ssd2`.`PARENT_ID` = 0, `ssd2`.`SM_ID`, NULL)'#13#10 +
+                    '                      from `smetasourcedata` `ssd2`'#13#10 +
+                    '               	  	 where `ssd2`.`SM_ID` = `ssd1`.`PARENT_ID`))'#13#10 +
+                    '     		  from `smetasourcedata` `ssd1`'#13#10 +
+		                '           where `ssd1`.`SM_ID` = `ssd`.`PARENT_ID`)) `SM_ID_ROOT`'#13#10 +
+                    'from `smetasourcedata` `ssd`'#13#10 +
+                    'where `ssd`.`SM_ID` = :SM_ID';
+
+  qrTMP.ParamByName('SM_ID').AsInteger := SM_ID;
+  CloseOpen(qrTMP);
+  SM_ID_ROOT := qrTMP.FieldByName('SM_ID_ROOT').AsInteger;
+
+  qrTMP.Close;
 
 if with_nds = 0 then frxReport.LoadFromFile(FileReportPath + 'frRSMO_OBJ.fr3');
 if with_nds = 1 then frxReport.LoadFromFile(FileReportPath + 'frRSMO_NDS_OBJ.fr3');
 
-qrTMP.SQL.Text :=  'select 	CONCAT(`oc`.`NUM`, " ", `oc`.`NAME`) `NAME`,'#13#10 +
-                  '		IFNULL(`s`.`MONAT`, 0) `MONTH`,'#13#10 +
-                  '		IFNULL(`s`.`YEAR`, 0) `YEAR`'#13#10 +
-                  'from `smetasourcedata` as `ssd`'#13#10 +
-                  'inner join`objcards` `oc` on `oc`.`OBJ_ID` = `ssd`.`OBJ_ID`'#13#10 +
-                  'inner join `objstroj` `os` on `os`.`STROJ_ID` = `oc`.`STROJ_ID`'#13#10 +
-                  'inner join `stavka` `s` on `s`.`STAVKA_ID` = `ssd`.`STAVKA_ID`'#13#10 +
-                  'where (:SM_ID is null or `ssd`.`SM_ID` = :SM_ID) and (:OBJ_ID is null or `ssd`.`OBJ_ID` = :OBJ_ID)'#13#10 ;
+  qrTMP.SQL.Text :=  'select 	CONCAT(`oc`.`NUM`, " ", `oc`.`NAME`) `NAME`,'#13#10 +
+                    '		IFNULL(`s`.`MONAT`, 0) `MONTH`,'#13#10 +
+                    '		IFNULL(`s`.`YEAR`, 0) `YEAR`'#13#10 +
+                    'from `smetasourcedata` as `ssd`'#13#10 +
+                    'inner join`objcards` `oc` on `oc`.`OBJ_ID` = `ssd`.`OBJ_ID`'#13#10 +
+                    'inner join `objstroj` `os` on `os`.`STROJ_ID` = `oc`.`STROJ_ID`'#13#10 +
+                    'inner join `stavka` `s` on `s`.`STAVKA_ID` = `ssd`.`STAVKA_ID`'#13#10 +
+                    'where (:SM_ID is null or `ssd`.`SM_ID` = :SM_ID) and (:OBJ_ID is null or `ssd`.`OBJ_ID` = :OBJ_ID)'#13#10 ;
 
-with qrTMP.ParamByName('SM_ID') do begin
-DataType := ftInteger;
-Clear;
-end;
-with qrTMP.ParamByName('OBJ_ID') do begin
-DataType := ftInteger;
-Clear;
-end;
-//qrTMP.ParamByName('ID_ACT').AsInteger := ID_ACT;
-CloseOpen(qrTMP);
-
-qRSMO_OBJ.SQL.Text:=
-' select '#13#10 +
-'     `Mat_code`,'#13#10 +
-'     `mat_name`,'#13#10 +
-'     `mat_unit`,'#13#10 +
-'     sum(`mat_count`) as `mat_count`,'#13#10 +
-'     `coast_no_nds` 	 as `coast_no_nds` ,'#13#10 +
-'     sum(`MAT_SUM_NO_NDS`) as `MAT_SUM_NO_NDS`,'#13#10 +
-'     `proc_transp`as `proc_transp`,'#13#10 +
-'     sum(`TRANSP_NO_NDS`)  as `coast_transp`,'#13#10 +
-'     `materialcard`.`NDS`,'#13#10 +
-'     sum(`MAT_SUM_NO_NDS`*(1+`materialcard`.`NDS`/100)) as `NDS_RUB`,'#13#10 +
-'     sum(`TRANSP_NDS`)  as `transp_nds`,'#13#10 +
-'     sum(`MAT_SUM_NDS`) as `MAT_SUM_NDS`'#13#10 +
-' from materialcard '#13#10 +
-' left join  card_rate on card_rate.id = materialcard.ID_CARD_RATE'#13#10 +
-' left join  data_estimate on ID_TABLES = card_rate.id'#13#10 +
-' left join  smetasourcedata on  smetasourcedata.sm_id = data_estimate.ID_ESTIMATE '#13#10 +
-' where `materialcard`.`CONSIDERED` = 1 and  (:SM_ID is null or `smetasourcedata`.`SM_ID` = :SM_ID) and (:OBJ_ID is null or `smetasourcedata`.`OBJ_ID` = :OBJ_ID)'#13#10 +
-' group by  `mat_code`,`mat_name`,`mat_unit`,`coast_no_nds`,`proc_transp`'#13#10 +
-' order by `mat_code`' ;
-
-  with qRSMO_OBJ.ParamByName('SM_ID') do begin
+  with qrTMP.ParamByName('SM_ID') do begin
   DataType := ftInteger;
   Clear;
   end;
-  with qRSMO_OBJ.ParamByName('OBJ_ID') do begin
+  with qrTMP.ParamByName('OBJ_ID') do begin
   DataType := ftInteger;
   Clear;
   end;
 
-  if SM_ID>0  then  qRSMO_OBJ.ParamByName('SM_ID').AsInteger  := SM_ID;
-  if OBJ_ID>0 then  qRSMO_OBJ.ParamByName('OBJ_ID').AsInteger := OBJ_ID;
+  CloseOpen(qrTMP);
+
+
+  qRSMO_OBJ.ParamByName('SM_ID').AsInteger  := SM_ID_ROOT;
   CloseOpen(qRSMO_OBJ);
 
   frxReport.Script.Variables['sm_obj_name'] := AnsiUpperCase(qrTMP.FieldByName('NAME').AsString);
   frxReport.Script.Variables['sm_date_dog'] := '1 ' + AnsiUpperCase(arraymes[qrTMP.FieldByName('MONTH').AsInteger, 2]) +
-   ' ' + IntToStr(qrTMP.FieldByName('YEAR').AsInteger) + ' г.';
+  ' ' + IntToStr(qrTMP.FieldByName('YEAR').AsInteger) + ' г.';
   try
     frxReport.PrepareReport;
     frxReport.ShowPreparedReport;
   except
     ShowMessage('Ошибка при формировании отчета');
   end;
-
-
 end;
 
 // vk Расчет стоимости механизмов по объекту
  procedure TdmReportF.Report_RSMEH_OBJ(with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
+var
+SM_ID_ROOT:integer;
 begin
+  // поиск корня по ветке
+  qrTMP.SQL.Text := 'select IF(`ssd`.`PARENT_ID` = 0, `ssd`.`SM_ID`,'#13#10 +
+                    '          (select IF(`ssd1`.`PARENT_ID` = 0, `ssd1`.`SM_ID`,'#13#10 +
+                  	'                     (select IF(`ssd2`.`PARENT_ID` = 0, `ssd2`.`SM_ID`, NULL)'#13#10 +
+                    '                      from `smetasourcedata` `ssd2`'#13#10 +
+                    '               	  	 where `ssd2`.`SM_ID` = `ssd1`.`PARENT_ID`))'#13#10 +
+                    '     		  from `smetasourcedata` `ssd1`'#13#10 +
+		                '           where `ssd1`.`SM_ID` = `ssd`.`PARENT_ID`)) `SM_ID_ROOT`'#13#10 +
+                    'from `smetasourcedata` `ssd`'#13#10 +
+                    'where `ssd`.`SM_ID` = :SM_ID';
+
+  qrTMP.ParamByName('SM_ID').AsInteger := SM_ID;
+  CloseOpen(qrTMP);
+  SM_ID_ROOT := qrTMP.FieldByName('SM_ID_ROOT').AsInteger;
+
+  qrTMP.Close;
 
 if with_nds = 0 then frxReport.LoadFromFile(FileReportPath + 'frRSMEH_OBJ.fr3');
 if with_nds = 1 then frxReport.LoadFromFile(FileReportPath + 'frRSMEH_NDS_OBJ.fr3');
@@ -239,40 +242,8 @@ end;
 //qrTMP.ParamByName('ID_ACT').AsInteger := ID_ACT;
 CloseOpen(qrTMP);
 
-qRSMEH_OBJ.SQL.Text:=
-' select '#13#10 +
-'     `mech_code`,'#13#10 +
-'     `mech_name`,'#13#10 +
-'     `mech_unit`,'#13#10 +
-'     sum(`mech_count`) as `mech_count`,'#13#10 +
-'     `coast_no_nds` 	 as `coast_no_nds` ,'#13#10 +
-'     sum(`mech_SUM_NO_NDS`) as `SUM_NO_NDS`,'#13#10 +
-'     sum(`mech_ZPSUM_NO_NDS`) as `ZP_SUM_NO_NDS`,'#13#10 +
-'     `mechanizmcard`.`NDS`,'#13#10 +
-'     `mechanizmcard`.`ZP_MACH_NO_NDS`,'#13#10 +
-'     sum(`mech_SUM_NO_NDS`*(1+`mechanizmcard`.`NDS`/100)) as `NDS_RUB`,'#13#10 +
-'     sum(`mech_SUM_NDS`) as `SUM_NDS`'#13#10 +
-' from mechanizmcard '#13#10 +
-' left join  card_rate on card_rate.id = mechanizmcard.ID_CARD_RATE'#13#10 +
-' left join  data_estimate on ID_TABLES = card_rate.id'#13#10 +
-' left join  smetasourcedata on  smetasourcedata.sm_id = data_estimate.ID_ESTIMATE '#13#10 +
-' where (:SM_ID is null or `smetasourcedata`.`SM_ID` = :SM_ID) and (:OBJ_ID is null or `smetasourcedata`.`OBJ_ID` = :OBJ_ID)'#13#10 +
-' group by  `mech_code`,`mech_name`,`mech_unit`,`NDS`,`ZP_MACH_NO_NDS`'#13#10 +
-' order by `mech_code`' ;
 
-
-
-  with qRSMEH_OBJ.ParamByName('SM_ID') do begin
-  DataType := ftInteger;
-  Clear;
-  end;
-  with qRSMEH_OBJ.ParamByName('OBJ_ID') do begin
-  DataType := ftInteger;
-  Clear;
-  end;
-
-  if SM_ID>0  then  qRSMEH_OBJ.ParamByName('SM_ID').AsInteger  := SM_ID;
-  if OBJ_ID>0 then  qRSMEH_OBJ.ParamByName('OBJ_ID').AsInteger := OBJ_ID;
+  qRSMEH_OBJ.ParamByName('SM_ID').AsInteger  := SM_ID_ROOT;
   CloseOpen(qRSMEH_OBJ);
 
   frxReport.Script.Variables['sm_obj_name'] := AnsiUpperCase(qrTMP.FieldByName('NAME').AsString);
@@ -284,8 +255,6 @@ qRSMEH_OBJ.SQL.Text:=
   except
     ShowMessage('Ошибка при формировании отчета');
   end;
-
-
 end;
 
 // vk Расчет стоимости оборудования по объекту
@@ -554,6 +523,7 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' group by `sm_id3`,`MECH_CODE` ) sm  order by `sm_id2`,`sm_id3`,`MAT_CODE`;';
 
 
+
 if qRTMP.FieldByName('SM_TYPE').AsInteger =1 then
 qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' SELECT * FROM '#13#10 +
@@ -649,10 +619,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' 0 as `sm_id2`,'#13#10 +
 ' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
 ' ""  as `name`,'#13#10 +
-' `ssd2`.`name` as `name_o`,'#13#10 +
+' "" as `name_o`,'#13#10 +
 ' `ssd2`.`name` as `name_l`,'#13#10 +
 ' "" as `sm_number`,'#13#10 +
-' `ssd2`.`sm_number` as `sm_number1`,'#13#10 +
+' "" as `sm_number1`,'#13#10 +
 ' `ssd2`.`sm_number` as `sm_number2`,'#13#10 +
 ' `mtc`.`MAT_CODE`,   '#13#10 +
 ' UCASE(`mtc`.`MAT_NAME`) as `MAT_NAME`,'#13#10 +
@@ -672,10 +642,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' 0 as `sm_id2`,'#13#10 +
 ' `ssd2`.`sm_id` as `sm_id3`, '#13#10 +
 ' "" as `name`,'#13#10 +
-' `ssd2`.`name` as `name_o`, '#13#10 +
+' "" as `name_o`, '#13#10 +
 ' `ssd2`.`name` as `name_l`,'#13#10 +
 ' "" as `sm_number`,'#13#10 +
-' `ssd2`.`sm_number` as `sm_number1`,  '#13#10 +
+' "" as `sm_number1`,  '#13#10 +
 ' `ssd2`.`sm_number` as `sm_number2`,'#13#10 +
 ' "1-1" as `MAT_CODE`,  '#13#10 +
 ' "ЗАТРАТЫ ТРУДА РАБОЧИХ-СТРОИТЕЛЕЙ" as MAT_NAME, '#13#10 +
@@ -691,10 +661,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' 0 as `sm_id2`, '#13#10 +
 ' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
 ' ""  as `name`, '#13#10 +
-' `ssd2`.`name` as `name_o`, '#13#10 +
+' ""  as `name_o`, '#13#10 +
 ' `ssd2`.`name` as `name_l`, '#13#10 +
 ' "" as `sm_number`, '#13#10 +
-' `ssd2`.`sm_number` as `sm_number1`,'#13#10 +
+' "" as `sm_number1`,'#13#10 +
 ' `ssd2`.`sm_number` as `sm_number2`, '#13#10 +
 ' "1-3" as MAT_CODE, '#13#10 +
 ' "ЗАТРАТЫ ТРУДА МАШИНИСТОВ" as `MAT_NAME`, '#13#10 +
@@ -710,10 +680,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' 0 as `sm_id2`,'#13#10 +
 ' `ssd2`.`sm_id` as `sm_id3`,'#13#10 +
 ' ""  as `name`, '#13#10 +
-' `ssd2`.`name` as `name_o`,'#13#10 +
+' "" as `name_o`,'#13#10 +
 ' `ssd2`.`name` as `name_l`,'#13#10 +
 ' "" as `sm_number`,'#13#10 +
-' `ssd2`.`sm_number` as `sm_number1`,'#13#10 +
+' "" as `sm_number1`,'#13#10 +
 ' `ssd2`.`sm_number` as `sm_number2`, '#13#10 +
 ' `mch`.`MECH_CODE` as `MAT_CODE`, '#13#10 +
 ' UCASE(`mch`.`MECH_NAME`) as `MAT_NAME`, '#13#10 +
@@ -736,7 +706,7 @@ qVED_OBRAB_RASHRES_SMET.ParamByName('SM_ID').AsInteger := SM_ID ;
   end;
 end;
 
-// отчет Расчет стоимости заработной платы рабочих строителей (Вадим) v1.00
+// отчет Расчет стоимости заработной платы рабочих строителей (Вадим)
 procedure TdmReportF.Report_ZP_OBJ(SM_ID: integer; FileReportPath: string);
 var
   SM_ID_ROOT: integer;
