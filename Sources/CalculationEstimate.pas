@@ -179,7 +179,6 @@ type
     PMAddDump: TMenuItem;
     PMAddAdditionHeatingE18: TMenuItem;
     PMAddAdditionHeatingE20: TMenuItem;
-    PMAddAdditionWinterPrice: TMenuItem;
     PopupMenuRatesAdd352: TMenuItem;
     PMMatFromRates: TMenuItem;
     PopupMenuMechanizms: TPopupMenu;
@@ -459,6 +458,7 @@ type
     nWinterPriseSetDefault: TMenuItem;
     qrRatesZNORMATIVS_ID: TIntegerField;
     N12: TMenuItem;
+    qrRatesAPPLY_WINTERPRISE_FLAG: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -643,6 +643,7 @@ type
     procedure nSelectWinterPriseClick(Sender: TObject);
     procedure nWinterPriseSetDefaultClick(Sender: TObject);
     procedure N12Click(Sender: TObject);
+    procedure PopupMenuRatesAdd352Click(Sender: TObject);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -948,7 +949,7 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(CaptionButtonCalculationEstimate);
+  FormMain.SelectButtonActiveWindow(FormNameCalculationEstimate);
 end;
 
 procedure TFormCalculationEstimate.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -3262,6 +3263,11 @@ begin
   PMMechFromRates.Enabled := (not CheckMechReadOnly) and (qrRatesMEID.AsInteger = 0);
 end;
 
+procedure TFormCalculationEstimate.PopupMenuRatesAdd352Click(Sender: TObject);
+begin
+
+end;
+
 // Добавление расценки в смету
 procedure TFormCalculationEstimate.AddRate(const vRateId: Integer);
 var
@@ -4442,6 +4448,12 @@ begin
       Exit;
     end;
   end;
+
+  // Скрываем колонки зименого удорожания если не нужны
+  dbgrdCalculations.Columns[13].Visible := qrRatesAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
+  dbgrdCalculations.Columns[14].Visible := qrRatesAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
+  dbgrdCalculations.Columns[13].Width := 64;
+  dbgrdCalculations.Columns[14].Width := 64;
 
   // Можно редактировать кол-во для любой строки
   qrRatesCODE.ReadOnly := True;
