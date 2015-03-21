@@ -274,7 +274,6 @@ type
     dsMaterial: TDataSource;
     dbgrdMaterial: TJvDBGrid;
     qrMaterialID: TFDAutoIncField;
-    qrMaterialBD_ID: TIntegerField;
     qrMaterialID_CARD_RATE: TIntegerField;
     qrMaterialID_REPLACED: TIntegerField;
     qrMaterialCONSIDERED: TByteField;
@@ -639,10 +638,9 @@ type
     procedure PMMatDeleteClick(Sender: TObject);
     procedure qrRatesWORK_IDChange(Sender: TField);
     procedure btn1Click(Sender: TObject);
-    procedure N11Click(Sender: TObject);
+    procedure ReplacementClick(Sender: TObject);
     procedure nSelectWinterPriseClick(Sender: TObject);
     procedure nWinterPriseSetDefaultClick(Sender: TObject);
-    procedure N12Click(Sender: TObject);
     procedure PopupMenuRatesAdd352Click(Sender: TObject);
   private
     ActReadOnly: Boolean;
@@ -2541,25 +2539,24 @@ begin
   end;
 
 end;
-procedure TFormCalculationEstimate.N11Click(Sender: TObject);
+procedure TFormCalculationEstimate.ReplacementClick(Sender: TObject);
 var frmReplace: TfrmReplacement;
+    i: Integer;
 begin
-  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
-    qrRatesRID.AsInteger, qrMaterialID.AsInteger, 0);
+  if (TMenuItem(Sender).Tag = 1) then
+    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
+      qrMechanizmID.AsInteger, 1, True)
+  else
+    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
+      qrMaterialID.AsInteger, 0, True);
   try
-    frmReplace.ShowModal;
-  finally
-    FreeAndNil(frmReplace);
-  end;
-end;
+    if frmReplace.ShowModal = mrYes then
+    begin
+      for i := 0 to frmReplace.EstCount - 1 do
+      begin
 
-procedure TFormCalculationEstimate.N12Click(Sender: TObject);
-var frmReplace: TfrmReplacement;
-begin
-  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
-    qrRatesRID.AsInteger, qrMechanizmID.AsInteger, 1);
-  try
-    frmReplace.ShowModal;
+      end;
+    end;
   finally
     FreeAndNil(frmReplace);
   end;
@@ -5074,20 +5071,20 @@ begin
       Font.Style := Font.Style + [fsbold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
       if not Column.ReadOnly then
-        Brush.Color := $00AFFEFC
+        Brush.Color := $00AFFEFC;
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
     if (qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
-      Brush.Color := $00DDDDDD
+      Brush.Color := $00DDDDDD;
     end;
 
     // подсвечиваем замененный материал
     if (qrMaterialREPLACED.AsInteger = 1) then
     begin
-      Brush.Color := $00DDDDDD
+      Brush.Color := $00DDDDDD;
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
