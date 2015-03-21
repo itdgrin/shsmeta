@@ -3367,7 +3367,7 @@
       end
       object N11: TMenuItem
         Caption = #1058#1077#1089#1090
-        OnClick = N11Click
+        OnClick = ReplacementClick
       end
     end
     object PMMatDelete: TMenuItem
@@ -3426,8 +3426,8 @@
       OnClick = PMMechFromRatesClick
     end
     object N12: TMenuItem
+      Tag = 1
       Caption = #1058#1077#1089#1090
-      OnClick = N12Click
     end
   end
   object qrDescription: TFDQuery
@@ -4221,11 +4221,6 @@
       ProviderFlags = [pfInWhere, pfInKey]
       ReadOnly = True
     end
-    object qrMaterialBD_ID: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'BD_ID'
-      Origin = 'BD_ID'
-    end
     object qrMaterialID_CARD_RATE: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'ID_CARD_RATE'
@@ -4706,7 +4701,7 @@
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'CALL CalcCalculation(:ESTIMATE_ID, :TYPE_DATA, :OWNER_ID, 1)')
-    Left = 315
+    Left = 323
     Top = 432
     ParamData = <
       item
@@ -4730,7 +4725,7 @@
   end
   object dsCalculations: TDataSource
     DataSet = qrCalculations
-    Left = 380
+    Left = 396
     Top = 432
   end
   object qrDump: TFDQuery
