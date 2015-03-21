@@ -184,8 +184,6 @@ type
     PopupMenuMechanizms: TPopupMenu;
     PMMechFromRates: TMenuItem;
     PMMatReplace: TMenuItem;
-    PMMatReplaceNumber: TMenuItem;
-    PMMatReplaceTable: TMenuItem;
     PMAddAddition: TMenuItem;
     PMAddRatMatMechEquip: TMenuItem;
     PMAddRatMatMechEquipRef: TMenuItem;
@@ -197,10 +195,6 @@ type
     PMAddAdditionTransportationС311Cargo: TMenuItem;
     PMAddAdditionTransportationС311Trash: TMenuItem;
     N9: TMenuItem;
-    PMMatReplaceTableRef: TMenuItem;
-    PMMatReplaceTableOwn: TMenuItem;
-    PMMatReplaceNumberRef: TMenuItem;
-    PMMatReplaceNumberOwn: TMenuItem;
     PMMatEdit: TMenuItem;
     PMEdit: TMenuItem;
     PMCoefOrders: TMenuItem;
@@ -242,7 +236,6 @@ type
     qrDescriptionwork: TStringField;
     qrMechanizmID: TFDAutoIncField;
     qrMechanizmID_CARD_RATE: TIntegerField;
-    qrMechanizmBD_ID: TIntegerField;
     qrMechanizmMECH_ID: TIntegerField;
     qrMechanizmMECH_CODE: TStringField;
     qrMechanizmMECH_NAME: TStringField;
@@ -450,14 +443,16 @@ type
     dsOXROPR: TDataSource;
     qrRatesWORK_ID: TIntegerField;
     btn1: TSpeedButton;
-    N11: TMenuItem;
 
     pmWinterPrise: TPopupMenu;
     nSelectWinterPrise: TMenuItem;
     nWinterPriseSetDefault: TMenuItem;
     qrRatesZNORMATIVS_ID: TIntegerField;
-    N12: TMenuItem;
+    PMMechReplace: TMenuItem;
     qrRatesAPPLY_WINTERPRISE_FLAG: TIntegerField;
+    PMMechDelete: TMenuItem;
+    qrMechanizmID_REPLACED: TIntegerField;
+    qrMechanizmREPLACED: TByteField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -551,10 +546,7 @@ type
     procedure TestOnNoDataNew(ADataSet: TDataSet);
     procedure PMMatFromRatesClick(Sender: TObject);
     procedure VisibleColumnsWinterPrice(Value: Boolean);
-    procedure ReplacementNumber(Sender: TObject);
     procedure ReplacementMaterial(const vIdMat: Integer);
-
-    procedure PMMatReplaceTableClick(Sender: TObject);
     procedure ShowFormAdditionData(const vDataBase: Char);
     procedure PMAddRatMatMechEquipRefClick(Sender: TObject);
     procedure PMAddRatMatMechEquipOwnClick(Sender: TObject);
@@ -590,7 +582,6 @@ type
     procedure qrMechanizmCalcFields(DataSet: TDataSet);
     procedure dbgrdMechanizmDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
-    procedure PMMechEditClick(Sender: TObject);
     procedure qrMechanizmBeforeScroll(DataSet: TDataSet);
     procedure MechRowChange(Sender: TField);
     procedure MatRowChange(Sender: TField);
@@ -603,7 +594,7 @@ type
     procedure qrMaterialAfterScroll(DataSet: TDataSet);
     procedure dbgrdMaterialDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
-    procedure PMMatEditClick(Sender: TObject);
+    procedure PMMatMechEditClick(Sender: TObject);
     procedure dbgrdMaterialExit(Sender: TObject);
     procedure dbgrdDevicesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
@@ -642,6 +633,7 @@ type
     procedure nSelectWinterPriseClick(Sender: TObject);
     procedure nWinterPriseSetDefaultClick(Sender: TObject);
     procedure PopupMenuRatesAdd352Click(Sender: TObject);
+    procedure PMMechDeleteClick(Sender: TObject);
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -658,8 +650,6 @@ type
     WCSalaryWinterPrice: Integer;
 
     CountFromRate: Double;
-
-    DataBase: Char;
 
     // Флаги пересчета по правым таблицам, исключает зацикливание в обработчиках ОnChange;
     ReCalcMech, ReCalcMat, ReCalcDev: Boolean;
@@ -2542,20 +2532,41 @@ end;
 procedure TFormCalculationEstimate.ReplacementClick(Sender: TObject);
 var frmReplace: TfrmReplacement;
     i: Integer;
+    CurRate: Integer;
+    Flag: Boolean;
 begin
   if (TMenuItem(Sender).Tag = 1) then
+  begin
+    CurRate := qrMechanizmID_CARD_RATE.AsInteger;
     frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
       qrMechanizmID.AsInteger, 1, True)
+  end
   else
+  begin
+    CurRate := qrMaterialID_CARD_RATE.AsInteger;
     frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
       qrMaterialID.AsInteger, 0, True);
+  end;
+
   try
     if frmReplace.ShowModal = mrYes then
     begin
-      for i := 0 to frmReplace.EstCount - 1 do
+      qrTemp.Active := False;
+      Flag := False;
+      for i := 0 to frmReplace.RateCount - 1 do
       begin
-
+        if frmReplace.RateIDs[i] = CurRate then
+          Flag := True
+        else
+        begin
+          qrTemp.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, 1, :OWNER_ID, 0);';
+          qrTemp.ParamByName('ESTIMATE_ID').Value := qrRatesESTIMATE_ID.AsInteger;
+          qrTemp.ParamByName('OWNER_ID').Value := frmReplace.RateIDs[i];
+          qrTemp.ExecSQL;
+        end;
       end;
+      if Flag then
+        OutputDataToTable(qrRates.RecNo);
     end;
   finally
     FreeAndNil(frmReplace);
@@ -2599,106 +2610,6 @@ begin
   GetStateCoefOrdersInRate;
 end;
 
-procedure TFormCalculationEstimate.PMMatReplaceTableClick(Sender: TObject);
-var k: Char;
-begin
-  {
-    Описание (Sender as TMenuItem).Tag
-
-    Замена из таблицы:
-    Материалы - 1, 2
-    Расценки 11, 22
-
-    Справочные данные - 1, 11
-    Собственные данные - 2, 22
-  }
-
-  case (Sender as TMenuItem).Tag of
-    1, 11:
-      DataBase := 'g';
-    2, 12:
-      DataBase := 's';
-  end;
-
-  case (Sender as TMenuItem).Tag of
-    1, 2:
-      begin
-        RepIdRate := qrMaterialID_CARD_RATE.AsInteger;
-        RepIdMat := qrMaterialID.AsInteger;
-      end;
-    11, 12:
-      begin
-        RepIdRate := qrRatesID_CARD_RATE.AsInteger;
-        RepIdMat := qrRatesMID.AsInteger;
-      end;
-  end;
-
-  if (Assigned(FormMaterials)) then
-  begin
-    FormMaterials.Show;
-    Exit;
-  end;
-
-  FormMain.PanelCover.Visible := True;
-
-  WindowState := wsNormal;
-  Left := 0;
-  Top := 0;
-  Width := FormMain.ClientWidth - 4;
-  Height := FormMain.ClientHeight - FormMain.PanelOpenWindows.Height - 4;
-
-  // 4 - это двухпиксельная рамка по мериметру, появляется у MDIMain формы
-
-  FormMaterials := TFormMaterials.Create(Self, DataBase, True, False, True);
-
-  // Сразу выполняет поиск по названия заменяемого материала
-  FormMaterials.FramePriceMaterials.EditSearch.Text :=
-    qrMaterialMAT_NAME.AsString;
-  k := #13;
-  FormMaterials.FramePriceMaterials.EditSearch1KeyPress(
-  FormMaterials.FramePriceMaterials.EditSearch, k);  // очень медленно
-
-  FormMaterials.WindowState := wsNormal;
-  FormMaterials.Left := (FormMain.ClientWidth div 2) - 4;
-  FormMaterials.Top := Top;
-  FormMaterials.Width := FormMain.ClientWidth div 2;
-  FormMaterials.Height := FormMain.ClientHeight - FormMain.PanelOpenWindows.Height -
-    GetSystemMetrics(SM_CYBORDER) - PanelButtonsLocalEstimate.Height - 4;
-end;
-
-procedure TFormCalculationEstimate.ReplacementNumber(Sender: TObject);
-var
-  FormReplacementMaterial: TFormReplacementMaterial;
-begin
-  FormReplacementMaterial := TFormReplacementMaterial.Create(nil);
-  try
-    case (Sender as TMenuItem).Tag of
-      1, 11:
-        DataBase := 'g';
-      2, 12:
-        DataBase := 's';
-    end;
-
-    case (Sender as TMenuItem).Tag of
-      1, 2:
-        begin
-          RepIdRate := qrMaterialID_CARD_RATE.AsInteger;
-          RepIdMat := qrMaterialID.AsInteger;
-        end;
-      11, 12:
-        begin
-          RepIdRate := qrRatesID_CARD_RATE.AsInteger;
-          RepIdMat := qrRatesMID.AsInteger;
-        end;
-    end;
-
-    FormReplacementMaterial.SetDataBase(DataBase);
-    FormReplacementMaterial.ShowModal;
-  finally
-    FormReplacementMaterial.Free;
-  end;
-end;
-
 procedure TFormCalculationEstimate.PMMatDeleteClick(Sender: TObject);
 begin
   if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrMaterialMAT_CODE.AsString + '?'), CaptionForm,
@@ -2724,9 +2635,12 @@ begin
   OutputDataToTable(qrRates.RecNo);
 end;
 
-procedure TFormCalculationEstimate.PMMatEditClick(Sender: TObject);
+procedure TFormCalculationEstimate.PMMatMechEditClick(Sender: TObject);
 begin
-  SetMatEditMode;
+  if TMenuItem(Sender).Tag = 1 then
+    SetMechEditMode
+  else
+    SetMatEditMode;
 end;
 
 procedure TFormCalculationEstimate.PMMatFromRatesClick(Sender: TObject);
@@ -2758,9 +2672,31 @@ begin
 end;
 
 // Открытие строчки механизмов на редактирование
-procedure TFormCalculationEstimate.PMMechEditClick(Sender: TObject);
+procedure TFormCalculationEstimate.PMMechDeleteClick(Sender: TObject);
 begin
-  SetMechEditMode;
+  if MessageBox(0, PChar('Вы действительно хотите удалить ' +
+    qrMechanizmMECH_CODE.AsString + '?'), CaptionForm,
+    MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+    Exit;
+
+  try
+    with qrTemp do
+    begin
+      Active := False;
+      SQL.Clear;
+      SQL.Add('CALL DeleteMechanism(:id);');
+      ParamByName('id').Value := qrMechanizmID.AsInteger;
+      ExecSQL;
+    end;
+
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При удалении механизма возникла ошибка:' +
+        sLineBreak + sLineBreak + E.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+
+  OutputDataToTable(qrRates.RecNo);
 end;
 
 // включение режима расширенного редактирования механизма
@@ -3257,7 +3193,15 @@ end;
 procedure TFormCalculationEstimate.PopupMenuMechanizmsPopup(Sender: TObject);
 begin
   PMMechEdit.Enabled := not CheckMechReadOnly;
-  PMMechFromRates.Enabled := (not CheckMechReadOnly) and (qrRatesMEID.AsInteger = 0);
+
+  PMMechFromRates.Enabled := (not CheckMechReadOnly)
+    and (qrRatesMEID.AsInteger = 0);
+
+  PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) // В расценка
+    and (qrMechanizmID_REPLACED.AsInteger = 0)
+    and (qrRatesMEID.AsInteger = 0); // не заменяющуй
+
+  PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0);
 end;
 
 procedure TFormCalculationEstimate.PopupMenuRatesAdd352Click(Sender: TObject);
@@ -5146,8 +5090,9 @@ procedure TFormCalculationEstimate.dbgrdMaterialKeyDown(Sender: TObject; var Key
 begin
   // 45 - Insert
   // Исловие аналогично условаю в PopupMenuMaterialsPopup
-  if (Key = 45) and ((not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0)) then
-    PMMatEditClick(Sender);
+  if (Key = 45) and
+    ((not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0)) then
+    SetMatEditMode;
 end;
 
 procedure TFormCalculationEstimate.dbgrdMechanizmDrawColumnCell(Sender: TObject; const Rect: TRect;
@@ -5239,9 +5184,8 @@ end;
 procedure TFormCalculationEstimate.dbgrdMechanizmKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   // 45 - Insert
-  // Исловие аналогично условаю в PopupMenuMechanizmsPopup
   if (Key = 45) and (not CheckMechReadOnly) then
-    PMMechEditClick(Sender);
+    SetMechEditMode;
 end;
 
 procedure TFormCalculationEstimate.dbgrdRates12DrawColumnCell(Sender: TObject; const Rect: TRect;

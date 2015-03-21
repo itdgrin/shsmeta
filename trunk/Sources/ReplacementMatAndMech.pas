@@ -154,7 +154,7 @@ type
     //Для хинтов в стринг гриде
     FActRow: Integer;
 
-    FEstIDArray: array of Integer;
+    FRateIDArray: array of Integer;
 
     procedure ChangeType(AType: byte);
     procedure LoadObjEstInfo;
@@ -166,16 +166,16 @@ type
     procedure ShowDelRep(const AName: string; const AID: Integer;
       ADel: Boolean = False);
 
-    function GetEstCount: Integer;
-    function GetEstIDs(AIndex: Integer): Integer;
+    function GetRateCount: Integer;
+    function GetRateIDs(AIndex: Integer): Integer;
     { Private declarations }
   public
     constructor Create(const AObjectID, AEstimateID,
       AMatMechID: Integer; AType: Byte; ATemp: Boolean); reintroduce;
     destructor Destroy; override;
 
-    property EstCount: Integer read GetEstCount;
-    property EstIDs[AIndex: Integer] : Integer read GetEstIDs;
+    property RateCount: Integer read GetRateCount;
+    property RateIDs[AIndex: Integer] : Integer read GetRateIDs;
     { Public declarations }
   end;
 
@@ -632,25 +632,23 @@ begin
   inherited;
 end;
 
-function TfrmReplacement.GetEstCount: Integer;
+function TfrmReplacement.GetRateCount: Integer;
 begin
-  Result := Length(FEstIDArray);
+  Result := Length(FRateIDArray);
 end;
 
-function TfrmReplacement.GetEstIDs(AIndex: Integer): Integer;
+function TfrmReplacement.GetRateIDs(AIndex: Integer): Integer;
 begin
   if (AIndex < 0) or
-    (AIndex + 1 > Length(FEstIDArray)) then
+    (AIndex + 1 > Length(FRateIDArray)) then
     raise Exception.Create(Format(SListIndexError, [AIndex]));
-  Result := FEstIDArray[AIndex];
+  Result := FRateIDArray[AIndex];
 end;
 
 constructor TfrmReplacement.Create(const AObjectID, AEstimateID,
       AMatMechID: Integer; AType: Byte; ATemp: Boolean);
 begin
   inherited Create(nil);
-
-  SetLength(FEstIDArray, 0);
 
   grdRep.ColWidths[0] := 20;
   grdRep.ColWidths[1] := 100;
@@ -902,33 +900,53 @@ begin
   ind := 0;
   SetLength(IDArray, ind);
   SetLength(CoefArray, ind);
+  SetLength(FRateIDArray, ind);
+
+  for i := grdRep.FixedRows to grdRep.RowCount - 1 do
+    if (grdRep.Cells[4, i] <> '') then
+    begin
+      Inc(ind);
+      SetLength(IDArray, ind);
+      SetLength(CoefArray, ind);
+      IDArray[ind - 1] := grdRep.Cells[4, i].ToInteger;
+      CoefArray[ind - 1] := grdRep.Cells[3, i].ToDouble;
+    end;
+
+  if Length(IDArray) = 0 then
+  begin
+    if FCurType = 0 then
+      Showmessage('Не задано ни одного заменяющего материала!')
+    else
+      Showmessage('Не задано ни одного заменяющего механизма!');
+    Exit;
+  end;
 
   Screen.Cursor := crSQLWait;
   try
-    for i := grdRep.FixedRows to grdRep.RowCount - 1 do
-      if (grdRep.Cells[4, i] <> '') then
-      begin
-        Inc(ind);
-        SetLength(IDArray, ind);
-        SetLength(CoefArray, ind);
-        IDArray[ind - 1] := grdRep.Cells[4, i].ToInteger;
-        CoefArray[ind - 1] := grdRep.Cells[3, i].ToDouble;
-      end;
-
-    if Length(IDArray) = 0 then
-    begin
-      if FCurType = 0 then
-        Showmessage('Не задано ни одного заменяющего материала!')
-      else
-        Showmessage('Не задано ни одного заменяющего механизма!');
-      Exit;
-    end;
-
     for i := Low(FEntryArray) to High(FEntryArray) do
     begin
+      //Не отмеченные пропускаются
+      if not FEntryArray[i].Select then
+        Continue;
+
+      //Новые запронутые расценки запоминиаются для последующего пересчета
+      Flag := False;
+      for j := Low(FRateIDArray) to High(FRateIDArray) do
+        if FRateIDArray[j] = FEntryArray[i].RID then
+          Flag := True;
+
+      if not Flag then
+      begin
+        j := Length(FRateIDArray);
+        SetLength(FRateIDArray, j + 1);
+        FRateIDArray[j] := FEntryArray[i].RID;
+      end;
+
+      //Если ранее были замены, удаляются
       if FEntryArray[i].MRep then
         ShowDelRep('', FEntryArray[i].MID, True);
 
+      //Выполняются замены
       for j := Low(IDArray) to High(IDArray) do
       begin
         if FCurType = 0 then
