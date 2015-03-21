@@ -26,6 +26,7 @@ type
     FDPhysMySQLDriverLink1: TFDPhysMySQLDriverLink;
     FDGUIxWaitCursor1: TFDGUIxWaitCursor;
     qrDifferent: TFDQuery;
+    procedure DataModuleCreate(Sender: TObject);
 
   private
     { Private declarations }
@@ -39,5 +40,11 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TDM.DataModuleCreate(Sender: TObject);
+begin
+  //Для того, что-бы в дизайн тайме было подключение, а при запуске не было
+  Connect.Params.Clear;
+end;
 
 end.

@@ -3326,7 +3326,7 @@
     object PMMatEdit: TMenuItem
       AutoHotkeys = maAutomatic
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
-      OnClick = PMMatEditClick
+      OnClick = PMMatMechEditClick
     end
     object N10: TMenuItem
       Caption = '-'
@@ -3337,38 +3337,7 @@
     end
     object PMMatReplace: TMenuItem
       Caption = #1047#1072#1084#1077#1085#1080#1090#1100' '#1084#1072#1090#1077#1088#1080#1072#1083
-      object PMMatReplaceNumber: TMenuItem
-        Tag = 1
-        Caption = #1047#1072#1084#1077#1085#1072' '#1087#1086' '#1082#1086#1076#1091
-        object PMMatReplaceNumberRef: TMenuItem
-          Tag = 1
-          Caption = #1048#1079' '#1089#1087#1088#1072#1074#1086#1095#1085#1086#1081' '#1041#1044
-          OnClick = ReplacementNumber
-        end
-        object PMMatReplaceNumberOwn: TMenuItem
-          Tag = 2
-          Caption = #1048#1079' '#1089#1086#1073#1089#1090#1074#1077#1085#1085#1086#1081' '#1041#1044
-          OnClick = ReplacementNumber
-        end
-      end
-      object PMMatReplaceTable: TMenuItem
-        Tag = 1
-        Caption = #1047#1072#1084#1077#1085#1072' '#1080#1079' '#1090#1072#1073#1083#1080#1094#1099
-        object PMMatReplaceTableRef: TMenuItem
-          Tag = 1
-          Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1086#1081
-          OnClick = PMMatReplaceTableClick
-        end
-        object PMMatReplaceTableOwn: TMenuItem
-          Tag = 2
-          Caption = #1057#1086#1073#1089#1090#1074#1077#1085#1085#1086#1081
-          OnClick = PMMatReplaceTableClick
-        end
-      end
-      object N11: TMenuItem
-        Caption = #1058#1077#1089#1090
-        OnClick = ReplacementClick
-      end
+      OnClick = ReplacementClick
     end
     object PMMatDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
@@ -3415,8 +3384,9 @@
     Left = 88
     Top = 144
     object PMMechEdit: TMenuItem
+      Tag = 1
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
-      OnClick = PMMechEditClick
+      OnClick = PMMatMechEditClick
     end
     object N8: TMenuItem
       Caption = '-'
@@ -3425,9 +3395,14 @@
       Caption = #1042#1099#1085#1077#1089#1090#1080' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091
       OnClick = PMMechFromRatesClick
     end
-    object N12: TMenuItem
+    object PMMechReplace: TMenuItem
       Tag = 1
-      Caption = #1058#1077#1089#1090
+      Caption = #1047#1072#1084#1077#1085#1080#1090#1100' '#1084#1077#1093#1072#1085#1080#1079#1084
+      OnClick = ReplacementClick
+    end
+    object PMMechDelete: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = PMMechDeleteClick
     end
   end
   object qrDescription: TFDQuery
@@ -3935,11 +3910,6 @@
       FieldName = 'ID_CARD_RATE'
       Origin = 'ID_CARD_RATE'
     end
-    object qrMechanizmBD_ID: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'BD_ID'
-      Origin = 'BD_ID'
-    end
     object qrMechanizmMECH_ID: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'MECH_ID'
@@ -4162,6 +4132,16 @@
       Origin = 'NUM'
       ProviderFlags = []
       Calculated = True
+    end
+    object qrMechanizmID_REPLACED: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_REPLACED'
+      Origin = 'ID_REPLACED'
+    end
+    object qrMechanizmREPLACED: TByteField
+      AutoGenerateValue = arDefault
+      FieldName = 'REPLACED'
+      Origin = 'REPLACED'
     end
   end
   object dsMechanizm: TDataSource
