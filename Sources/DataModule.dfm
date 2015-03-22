@@ -1147,7 +1147,6 @@ object DM: TDM
       'TinyIntFormat=Integer'
       'DriverID=MySQL')
     FormatOptions.AssignedValues = [fvSortOptions, fvStrsTrim2Len]
-    Connected = True
     LoginPrompt = False
     Transaction = Read
     UpdateTransaction = Read

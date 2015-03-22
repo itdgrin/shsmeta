@@ -42,10 +42,9 @@ implementation
 
 constructor TDM.Create(AOwner: TComponent);
 begin
-  //Для того, что-бы в дизайн тайме было подключение, а при запуске не было
-  Connect.Connected := False;
-  Connect.Params.Clear;
   inherited;
+  //Для того, что-бы в дизайн тайме было подключение, а при запуске не было
+  Connect.Params.Clear;
 end;
 
 end.
