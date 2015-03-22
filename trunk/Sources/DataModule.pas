@@ -26,12 +26,11 @@ type
     FDPhysMySQLDriverLink1: TFDPhysMySQLDriverLink;
     FDGUIxWaitCursor1: TFDGUIxWaitCursor;
     qrDifferent: TFDQuery;
-    procedure DataModuleCreate(Sender: TObject);
 
   private
     { Private declarations }
   public
-    { Public declarations }
+    constructor Create(AOwner: TComponent); override;
   end;
 
 var
@@ -41,10 +40,12 @@ implementation
 
 {$R *.dfm}
 
-procedure TDM.DataModuleCreate(Sender: TObject);
+constructor TDM.Create(AOwner: TComponent);
 begin
   //Для того, что-бы в дизайн тайме было подключение, а при запуске не было
+  Connect.Connected := False;
   Connect.Params.Clear;
+  inherited;
 end;
 
 end.
