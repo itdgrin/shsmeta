@@ -135,7 +135,6 @@ type
 
     procedure ShowTariffsTransportation(Sender: TObject);
     procedure ShowTariffsSalary(Sender: TObject);
-    procedure ShowMaterials(Sender: TObject);
     procedure ShowTariffsMechanism(Sender: TObject);
     procedure ShowTariffsDump(Sender: TObject);
     procedure ShowTariffsIndex(Sender: TObject);
@@ -301,7 +300,6 @@ const
   // Названия форм
   FormNameMain = 'Расчёт сметы';
 
-  FormNameReplacementMaterial = 'Замена неучтённых материалов';
   FormNameCoefficientOrders = 'Коэффициент по приказам';
   FormNameCardOrganization = 'Карточка организации';
   FormNameCardCoefficients = 'Карточка коэффициентов';
@@ -330,7 +328,6 @@ const
   FormNamePricesOwnData = 'Цены по собственным данным';
   FormNamePricesReferenceData = 'Цены по справочным данным';
   FormNameAdditionData = 'Добавление данных';
-  FormNameReplacementMaterials = 'Замена материалов';
   FormNameCatalogs = 'Справочники';
   FormNamePartsEstimates = 'Части смет';
   FormNameSectionsEstimates = 'Разделы смет';
@@ -350,7 +347,6 @@ const
   CaptionButtonPricesOwnData = 'Цены по собств. данным';
   CaptionButtonPricesReferenceData = 'Цены по справоч. данным';
   CaptionButtonAdditionData = 'Добавление данных';
-  CaptionButtonReplacementMaterials = 'Замена материалов';
   CaptionButtonCatalogs = 'Справочники';
   CaptionButtonPartsEstimates = 'Части смет';
   CaptionButtonSectionsEstimates = 'Разделы смет';
@@ -370,7 +366,6 @@ const
   HintButtonPricesOwnData = 'Окно цены по собственным данным';
   HintButtonPricesReferenceData = 'Окно цены по справочным данным';
   HintButtonAdditionData = 'Окно добавления данных';
-  HintButtonReplacementMaterials = 'Окно замены материалов';
   HintButtonReplacementCatalogs = 'Окно справочников';
   HintButtonPartsEstimates = 'Окно частей смет';
   HintButtonSectionsEstimates = 'Окно разделов смет';
@@ -601,16 +596,6 @@ end;
 procedure TFormMain.ShowTariffsSalary(Sender: TObject);
 begin
   FormTariffsSalary.Show;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormMain.ShowMaterials(Sender: TObject);
-begin
-  if FormMaterials.WindowState = wsMinimized then
-    FormMaterials.WindowState := wsNormal;
-
-  FormMaterials.Show;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

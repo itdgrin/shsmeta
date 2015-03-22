@@ -546,7 +546,6 @@ type
     procedure TestOnNoDataNew(ADataSet: TDataSet);
     procedure PMMatFromRatesClick(Sender: TObject);
     procedure VisibleColumnsWinterPrice(Value: Boolean);
-    procedure ReplacementMaterial(const vIdMat: Integer);
     procedure ShowFormAdditionData(const vDataBase: Char);
     procedure PMAddRatMatMechEquipRefClick(Sender: TObject);
     procedure PMAddRatMatMechEquipOwnClick(Sender: TObject);
@@ -562,7 +561,7 @@ type
     procedure PopupMenuCoefPopup(Sender: TObject);
     procedure Button4Click(Sender: TObject);
 
-    procedure OutputDataToTable(aRecNo: Integer); // Заполнение таблицы расценок
+    procedure OutputDataToTable(ARecNo, AID, AType: Integer); // Заполнение таблицы расценок
 
     procedure AddRate(const vRateId: Integer);
     procedure AddMaterial(const vMatId: Integer);
@@ -659,10 +658,6 @@ type
     IdReplasingMat: Integer;
     IsUnAcc: Boolean;
 
-    // Используются в процессе замены материала
-    RepIdRate: Integer;
-    RepIdMat: Integer;
-
     // Последняя таблица в которой был фокус, используется для отрисовки
     LastEntegGrd: TJvDBGrid;
 
@@ -745,7 +740,7 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
   SummaryCalculationSettings, DataTransfer,
   BasicData, ObjectsAndEstimates, PercentClientContractor, Transportation,
   CalculationDump, SaveEstimate,
-  ReplacementMaterial, Materials, AdditionData, CardMaterial, CardDataEstimate,
+  Materials, AdditionData, CardMaterial, CardDataEstimate,
   ListCollections, CoefficientOrders, KC6,
   CardAct, Tools, Coef, WinterPrise,
   ReplacementMatAndMech;
@@ -2532,41 +2527,27 @@ end;
 procedure TFormCalculationEstimate.ReplacementClick(Sender: TObject);
 var frmReplace: TfrmReplacement;
     i: Integer;
-    CurRate: Integer;
-    Flag: Boolean;
 begin
   if (TMenuItem(Sender).Tag = 1) then
-  begin
-    CurRate := qrMechanizmID_CARD_RATE.AsInteger;
     frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
       qrMechanizmID.AsInteger, 1, True)
-  end
   else
-  begin
-    CurRate := qrMaterialID_CARD_RATE.AsInteger;
     frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
       qrMaterialID.AsInteger, 0, True);
-  end;
 
   try
-    if frmReplace.ShowModal = mrYes then
+    if (frmReplace.ShowModal = mrYes) then
     begin
       qrTemp.Active := False;
-      Flag := False;
       for i := 0 to frmReplace.RateCount - 1 do
       begin
-        if frmReplace.RateIDs[i] = CurRate then
-          Flag := True
-        else
-        begin
-          qrTemp.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, 1, :OWNER_ID, 0);';
-          qrTemp.ParamByName('ESTIMATE_ID').Value := qrRatesESTIMATE_ID.AsInteger;
-          qrTemp.ParamByName('OWNER_ID').Value := frmReplace.RateIDs[i];
-          qrTemp.ExecSQL;
-        end;
+        qrTemp.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, 1, :OWNER_ID, 0);';
+        qrTemp.ParamByName('ESTIMATE_ID').Value := qrRatesESTIMATE_ID.AsInteger;
+        qrTemp.ParamByName('OWNER_ID').Value := frmReplace.RateIDs[i];
+        qrTemp.ExecSQL;
       end;
-      if Flag then
-        OutputDataToTable(qrRates.RecNo);
+
+      OutputDataToTable(0, qrRatesIID.AsInteger, qrRatesTYPE_DATA.AsInteger);
     end;
   finally
     FreeAndNil(frmReplace);
@@ -2632,7 +2613,7 @@ begin
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  OutputDataToTable(qrRates.RecNo);
+  OutputDataToTable(0, qrRatesIID.AsInteger, qrRatesTYPE_DATA.AsInteger);
 end;
 
 procedure TFormCalculationEstimate.PMMatMechEditClick(Sender: TObject);
@@ -2663,7 +2644,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable(qrRates.RecNo);
+    OutputDataToTable(0, qrRatesIID.AsInteger, qrRatesTYPE_DATA.AsInteger);
   except
     on E: Exception do
       MessageBox(0, PChar('При вынесении материала из расценки возникла ошибка:' + sLineBreak + sLineBreak +
@@ -2696,7 +2677,7 @@ begin
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  OutputDataToTable(qrRates.RecNo);
+  OutputDataToTable(0, qrRatesIID.AsInteger, qrRatesTYPE_DATA.AsInteger);
 end;
 
 // включение режима расширенного редактирования механизма
@@ -2758,7 +2739,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable(qrRates.RecNo);
+    OutputDataToTable(0, qrRatesIID.AsInteger, qrRatesTYPE_DATA.AsInteger);
   except
     on E: Exception do
       MessageBox(0, PChar('При вынесении механизма из расценки возникла ошибка:' + sLineBreak + sLineBreak +
@@ -3438,14 +3419,14 @@ begin
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  OutputDataToTable(qrRates.RecordCount + 1);
+  OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
 end;
 
 procedure TFormCalculationEstimate.PMAddTranspClick(Sender: TObject);
 begin
   if GetTranspForm(IdEstimate, -1, (Sender as TMenuItem).Tag, True) then
   begin
-    OutputDataToTable(qrRates.RecordCount + 1);
+    OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
   end;
 end;
 
@@ -3458,14 +3439,14 @@ begin
   qrTemp.ParamByName('SType').AsInteger := (Sender as TComponent).Tag;
   qrTemp.ExecSQL;
 
-  OutputDataToTable(qrRates.RecordCount + 1);
+  OutputDataToTable(qrRates.RecordCount + 1, 0 ,0);
 end;
 
 procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
 begin
   if GetDumpForm(IdEstimate, -1, True) then
   begin
-    OutputDataToTable(qrRates.RecordCount + 1);
+    OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
   end;
 end;
 
@@ -3609,7 +3590,7 @@ begin
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
     end;
-  OutputDataToTable(qrRates.RecNo);
+  OutputDataToTable(qrRates.RecNo, 0, 0);
 end;
 
 procedure TFormCalculationEstimate.PMDevEditClick(Sender: TObject);
@@ -3622,11 +3603,11 @@ procedure TFormCalculationEstimate.PMDumpEditClick(Sender: TObject);
 begin
   if qrRatesTYPE_DATA.AsInteger = 5 then
     if GetDumpForm(IdEstimate, qrDumpID.AsInteger, False) then
-      OutputDataToTable(qrRates.RecNo);
+      OutputDataToTable(qrRates.RecNo, 0, 0);
 
   if qrRatesTYPE_DATA.AsInteger in [6, 7, 8, 9] then
     if GetTranspForm(IdEstimate, qrTranspID.AsInteger, qrRatesTYPE_DATA.AsInteger, False) then
-      OutputDataToTable(qrRates.RecNo);
+      OutputDataToTable(qrRates.RecNo, 0 , 0);
 end;
 
 procedure TFormCalculationEstimate.PMEditClick(Sender: TObject);
@@ -4538,14 +4519,14 @@ begin
   end;
 
   // Заполнение таблицы расценок
-  OutputDataToTable(0);
+  OutputDataToTable(0, 0, 0);
 
   if not qrOXROPR.Active then
     qrOXROPR.Active := True;
 end;
 
 // Заполнение таблицы расценок
-procedure TFormCalculationEstimate.OutputDataToTable(aRecNo: Integer);
+procedure TFormCalculationEstimate.OutputDataToTable(ARecNo, AID, AType: Integer);
 var
   { FieldRates: TFieldRates; }
   i: Integer;
@@ -4585,7 +4566,6 @@ begin
   // Открывает rates_temp
   qrRates.SQL.Text := 'SELECT * FROM rates_temp ORDER BY SORTID, RID, STYPE, MID, MEID';
   qrRates.Active := True;
-  i := 0;
   Count := 0;
   qrRates.DisableControls;
   // E18 и E20 - могут встречаться в смете только один раз
@@ -4595,8 +4575,6 @@ begin
     while not qrRates.Eof do
     begin
       inc(Count);
-      // if not CheckMatINRates then
-      inc(i);
 
       if qrRatesTYPE_DATA.AsInteger = 10 then
         PMAddAdditionHeatingE18.Enabled := False;
@@ -4605,11 +4583,12 @@ begin
         PMAddAdditionHeatingE20.Enabled := False;
 
       qrRates.Edit;
-      qrRatesNUM.AsInteger := i;
+      qrRatesNUM.AsInteger := Count;
       qrRates.Post;
 
       qrRates.Next;
     end;
+
     // Гасим флаг Eof
     if Count > 0 then
     begin
@@ -4660,31 +4639,6 @@ begin
 
     dbgrdCalculations.Columns[13].Width := -1;
     dbgrdCalculations.Columns[14].Width := -1;
-  end;
-end;
-
-// Замена неучтенного материала в смете
-procedure TFormCalculationEstimate.ReplacementMaterial(const vIdMat: Integer);
-begin
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('CALL ReplacedMaterial(:IdEstimate, :IdCardRate, :IdReplaced, :IdMat);');
-      ParamByName('IdEstimate').Value := IdEstimate;
-      ParamByName('IdCardRate').Value := RepIdRate;
-      ParamByName('IdReplaced').Value := RepIdMat;
-      ParamByName('IdMat').Value := vIdMat;
-
-      ExecSQL;
-    end;
-
-    OutputDataToTable(qrRates.RecNo);
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При замене неучтённого материала возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4828,7 +4782,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable(qrRates.RecordCount + 1);
+    OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
   except
     on E: Exception do
       MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
@@ -4850,7 +4804,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable(qrRates.RecordCount + 1);
+    OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
   except
     on E: Exception do
       MessageBox(0, PChar('При добавлении материала возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -4874,7 +4828,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable(qrRates.RecordCount + 1);
+    OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
   except
     on E: Exception do
       MessageBox(0, PChar('При добавлении механизма возникла ошибка:' + sLineBreak + sLineBreak + E.Message),

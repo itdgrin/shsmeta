@@ -255,9 +255,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="TariffsTransportanion.pas">
             <Form>FormTariffsTransportation</Form>
         </DCCReference>
-        <DCCReference Include="ReplacementMaterial.pas">
-            <Form>FormReplacementMaterial</Form>
-        </DCCReference>
         <DCCReference Include="ReferenceData.pas">
             <Form>FormReferenceData</Form>
         </DCCReference>
@@ -269,9 +266,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="AdditionData.pas">
             <Form>FormAdditionData</Form>
-        </DCCReference>
-        <DCCReference Include="Materials.pas">
-            <Form>FormMaterials</Form>
         </DCCReference>
         <DCCReference Include="CardMaterial.pas">
             <Form>FormCardMaterial</Form>
