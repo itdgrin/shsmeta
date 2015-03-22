@@ -249,7 +249,7 @@ begin
         end;
   end;
 
-  FormCalculationEstimate.OutputDataToTable(0);
+  FormCalculationEstimate.OutputDataToTable(0, 0, 0);
 end;
 
 procedure TFormKC6.ButtonCancelClick(Sender: TObject);

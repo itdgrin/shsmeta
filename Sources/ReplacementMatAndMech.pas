@@ -128,6 +128,7 @@ type
     procedure pmSelectRateClick(Sender: TObject);
     procedure pmShowRepClick(Sender: TObject);
     procedure btnReplaceClick(Sender: TObject);
+    procedure ListSprDblClick(Sender: TObject);
 
   private
     FCurType: Byte;
@@ -612,6 +613,11 @@ begin
     end;
   end;
   DefaultDraw := True;
+end;
+
+procedure TfrmReplacement.ListSprDblClick(Sender: TObject);
+begin
+  btnSelectClick(nil);
 end;
 
 procedure TfrmReplacement.ListSprSelectItem(Sender: TObject; Item: TListItem;

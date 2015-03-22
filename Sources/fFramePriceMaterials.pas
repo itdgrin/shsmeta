@@ -516,10 +516,7 @@ end;
 
 procedure TFramePriceMaterial.VSTDblClick(Sender: TObject);
 begin
-  if AllowReplacement then
-    FormCalculationEstimate.ReplacementMaterial(ADOQuery.FieldByName('MatId').AsInteger);
-
-  if AllowAddition then
+ if AllowAddition then
     FormCalculationEstimate.AddMaterial(ADOQuery.FieldByName('MatId').AsInteger);
 end;
 

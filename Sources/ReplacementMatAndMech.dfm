@@ -546,6 +546,7 @@ object frmReplacement: TfrmReplacement
         TabOrder = 2
         ViewStyle = vsReport
         OnCustomDrawItem = ListSprCustomDrawItem
+        OnDblClick = ListSprDblClick
         OnSelectItem = ListSprSelectItem
       end
     end
