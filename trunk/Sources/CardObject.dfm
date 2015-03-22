@@ -402,7 +402,6 @@ object FormCardObject: TFormCardObject
     Width = 218
     Height = 90
     Caption = #1056#1072#1089#1093#1086#1076#1099', %'
-    Enabled = False
     TabOrder = 16
     object lbl1: TLabel
       Left = 8
@@ -432,7 +431,6 @@ object FormCardObject: TFormCardObject
       Height = 21
       DataField = 'PER_TEPM_BUILD'
       DataSource = dsMain
-      Enabled = False
       PopupMenu = pm1
       TabOrder = 0
     end
@@ -443,7 +441,6 @@ object FormCardObject: TFormCardObject
       Height = 21
       DataField = 'PER_TEMP_BUILD_BACK'
       DataSource = dsMain
-      Enabled = False
       PopupMenu = pm1
       TabOrder = 1
     end
@@ -454,7 +451,6 @@ object FormCardObject: TFormCardObject
       Height = 21
       DataField = 'PER_CONTRACTOR'
       DataSource = dsMain
-      Enabled = False
       PopupMenu = pm1
       TabOrder = 2
     end
