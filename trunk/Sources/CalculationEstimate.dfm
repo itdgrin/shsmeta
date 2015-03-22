@@ -5227,110 +5227,84 @@
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      'select '
+      'SELECT '
       
         'CONCAT(IF(((sm.`SM_ID` = :ID_ESTIMATE) OR (sm.`PARENT_ID` = :ID_' +
         'ESTIMATE)), '#39#39', :ID_ESTIMATE), sm.`PARENT_ID`, sm.`SM_ID`, d.`ID' +
         '`) as SORT_ID,'
       'case d.`ID_TYPE_DATA` '
+      '  WHEN 1 THEN cr.`RATE_CODE`'
       
-        'WHEN 1 THEN (select `card_rate`.`RATE_CODE` from `card_rate` WHE' +
-        'RE `card_rate`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 2 THEN (select CONCAT(IF(`materialcard`.`ID_REPLACED` > 0, ' +
-        #39'   '#39', '#39#39'), `materialcard`.`MAT_CODE`) from `materialcard` WHERE' +
-        ' `materialcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 3 THEN (select `mechanizmcard`.`MECH_CODE` from `mechanizmc' +
-        'ard` WHERE `mechanizmcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 4 THEN (select `devicescard`.`DEVICE_CODE` from `devicescar' +
-        'd` WHERE `devicescard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 5 THEN (select `dumpcard`.`DUMP_CODE_JUST` from `dumpcard` ' +
-        'WHERE `dumpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 6 THEN (select `transpcard`.`TRANSP_CODE_JUST` from `transp' +
-        'card` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 7 THEN (select `transpcard`.`TRANSP_CODE_JUST` from `transp' +
-        'card` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 8 THEN (select `transpcard`.`TRANSP_CODE_JUST` from `transp' +
-        'card` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 9 THEN (select `transpcard`.`TRANSP_CODE_JUST` from `transp' +
-        'card` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      'WHEN 10 THEN ('#39#1045'18'#39')'
-      'WHEN 11 THEN ('#39#1045'20'#39')'
+        '  WHEN 2 THEN CONCAT(IF(mat.`ID_REPLACED` > 0, '#39'   '#39', '#39#39'), mat.`' +
+        'MAT_CODE`)'
+      '  WHEN 3 THEN mech.`MECH_CODE`'
+      '  WHEN 4 THEN dev.`DEVICE_CODE`'
+      '  WHEN 5 THEN dmp.`DUMP_CODE_JUST`'
+      '  WHEN 6 THEN tr.`TRANSP_CODE_JUST`'
+      '  WHEN 7 THEN tr.`TRANSP_CODE_JUST`'
+      '  WHEN 8 THEN tr.`TRANSP_CODE_JUST`'
+      '  WHEN 9 THEN tr.`TRANSP_CODE_JUST`'
+      '  WHEN 10 THEN ('#39#1045#1058'18'#39')'
+      '  WHEN 11 THEN ('#39#1045#1058'20'#39')'
       'END AS OBJ_NAME, '
       'case d.`ID_TYPE_DATA` '
-      
-        'WHEN 1 THEN (select `card_rate`.`RATE_COUNT` from `card_rate` WH' +
-        'ERE `card_rate`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 2 THEN (select `materialcard`.`MAT_COUNT` from `materialcar' +
-        'd` WHERE `materialcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 3 THEN (select `mechanizmcard`.`MECH_COUNT` from `mechanizm' +
-        'card` WHERE `mechanizmcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 4 THEN (select `devicescard`.`DEVICE_COUNT` from `devicesca' +
-        'rd` WHERE `devicescard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 5 THEN (select `dumpcard`.`DUMP_COUNT` from `dumpcard` WHER' +
-        'E `dumpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 6 THEN (select `transpcard`.`TRANSP_COUNT` from `transpcard' +
-        '` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 7 THEN (select `transpcard`.`TRANSP_COUNT` from `transpcard' +
-        '` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 8 THEN (select `transpcard`.`TRANSP_COUNT` from `transpcard' +
-        '` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 9 THEN (select `transpcard`.`TRANSP_COUNT` from `transpcard' +
-        '` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      'WHEN 10 THEN d.`E1820_COUNT`'
-      'WHEN 11 THEN d.`E1820_COUNT`'
+      '  WHEN 1 THEN cr.`RATE_COUNT`'
+      '  WHEN 2 THEN mat.`MAT_COUNT`'
+      '  WHEN 3 THEN mech.`MECH_COUNT`'
+      '  WHEN 4 THEN dev.`DEVICE_COUNT`'
+      '  WHEN 5 THEN dmp.`DUMP_COUNT`'
+      '  WHEN 6 THEN tr.`TRANSP_COUNT`'
+      '  WHEN 7 THEN tr.`TRANSP_COUNT`'
+      '  WHEN 8 THEN tr.`TRANSP_COUNT`'
+      '  WHEN 9 THEN tr.`TRANSP_COUNT`'
+      '  WHEN 10 THEN d.`E1820_COUNT`'
+      '  WHEN 11 THEN d.`E1820_COUNT`'
       'END AS OBJ_COUNT,'
       'case d.`ID_TYPE_DATA` '
-      
-        'WHEN 1 THEN (select `card_rate`.`RATE_UNIT` from `card_rate` WHE' +
-        'RE `card_rate`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 2 THEN (select `materialcard`.`MAT_UNIT` from `materialcard' +
-        '` WHERE `materialcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 3 THEN (select `mechanizmcard`.`MECH_UNIT` from `mechanizmc' +
-        'ard` WHERE `mechanizmcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 4 THEN (select `devicescard`.`DEVICE_UNIT` from `devicescar' +
-        'd` WHERE `devicescard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 5 THEN (select `dumpcard`.`DUMP_UNIT` from `dumpcard` WHERE' +
-        ' `dumpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 6 THEN (select `transpcard`.`CARG_UNIT` from `transpcard` W' +
-        'HERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 7 THEN (select `transpcard`.`CARG_UNIT` from `transpcard` W' +
-        'HERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 8 THEN (select `transpcard`.`CARG_UNIT` from `transpcard` W' +
-        'HERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      
-        'WHEN 9 THEN (select `transpcard`.`CARG_UNIT` from `transpcard` W' +
-        'HERE `transpcard`.`ID` = d.`ID_TABLES`)'
-      'WHEN 10 THEN ('#39#1096#1090'.'#39')'
-      'WHEN 11 THEN ('#39#1096#1090'.'#39')'
+      '  WHEN 1 THEN cr.`RATE_UNIT`'
+      '  WHEN 2 THEN mat.`MAT_UNIT`'
+      '  WHEN 3 THEN mech.`MECH_UNIT`'
+      '  WHEN 4 THEN dev.`DEVICE_UNIT`'
+      '  WHEN 5 THEN dmp.`DUMP_UNIT`'
+      '  WHEN 6 THEN tr.`CARG_UNIT`'
+      '  WHEN 7 THEN tr.`CARG_UNIT`'
+      '  WHEN 8 THEN tr.`CARG_UNIT`'
+      '  WHEN 9 THEN tr.`CARG_UNIT`'
+      '  WHEN 10 THEN ('#39#1096#1090'.'#39')'
+      '  WHEN 11 THEN ('#39#1096#1090'.'#39')'
       'END AS OBJ_UNIT, '
       'd.`ID_TYPE_DATA` as ID_TYPE_DATA,'
       'd.`ID` as DATA_ESTIMATE_OR_ACT_ID,'
       'd.`ID_TABLES` AS ID_TABLES,'
-      'sm.`SM_ID`'
-      'FROM `smetasourcedata` sm, `data_estimate` d'
+      'sm.`SM_ID`,'
+      'CASE d.`ID_TYPE_DATA` '
+      '  WHEN 1 THEN cr.`WORK_ID`'
+      '  ELSE NULL'
+      'END AS WORK_ID,'
+      'CASE d.`ID_TYPE_DATA` '
+      '  WHEN 1 THEN cr.`ZNORMATIVS_ID`'
+      '  ELSE NULL'
+      'END AS ZNORMATIVS_ID,'
+      'sm.`APPLY_WINTERPRISE_FLAG`'
+      'FROM `smetasourcedata` sm, `data_estimate_temp` d'
+      
+        'LEFT JOIN `card_rate_temp` cr ON d.`ID_TYPE_DATA` = 1 AND cr.`ID' +
+        '` = d.`ID_TABLES`'
+      
+        'LEFT JOIN `materialcard_temp` mat ON d.`ID_TYPE_DATA` = 2 AND ma' +
+        't.`ID` = d.`ID_TABLES`'
+      
+        'LEFT JOIN `mechanizmcard_temp` mech ON d.`ID_TYPE_DATA` = 3 AND ' +
+        'mech.`ID` = d.`ID_TABLES`'
+      
+        'LEFT JOIN `devicescard_temp` dev ON d.`ID_TYPE_DATA` = 4 AND dev' +
+        '.`ID` = d.`ID_TABLES`'
+      
+        'LEFT JOIN `dumpcard_temp` dmp ON d.`ID_TYPE_DATA` = 5 AND dmp.`I' +
+        'D` = d.`ID_TABLES`'
+      
+        'LEFT JOIN `transpcard_temp` tr ON d.`ID_TYPE_DATA` IN (6,7,8,9) ' +
+        'AND tr.`ID` = d.`ID_TABLES`'
       'WHERE sm.`SM_ID`=d.`ID_ESTIMATE` AND'
       '      ((sm.`SM_ID` = :ID_ESTIMATE) OR '
       '       (sm.`PARENT_ID` = :ID_ESTIMATE) OR'
@@ -5347,17 +5321,19 @@
         'CONCAT(sm.`SM_NUMBER`, '#39' '#39', sm.`NAME`) AS OBJ_NAME, sm.`S_STOIM`' +
         ' AS OBJ_COUNT, IF(sm.`S_STOIM` IS NULL, '#39#39', '#39#1088#1091#1073'.'#39') AS OBJ_UNIT,' +
         '(sm.`SM_TYPE` * -1) as ID_TYPE_DATA,'
-      'NULL AS DATA_ESTIMATE_OR_ACT_ID, NULL AS ID_TABLES, sm.`SM_ID`'
+      
+        'NULL AS DATA_ESTIMATE_OR_ACT_ID, NULL AS ID_TABLES, sm.`SM_ID`, ' +
+        'NULL AS WORK_ID, NULL AS ZNORMATIVS_ID, sm.`APPLY_WINTERPRISE_FL' +
+        'AG`'
       'FROM `smetasourcedata` sm'
-      'WHERE ((sm.`SM_ID` = :ID_ESTIMATE) OR '
-      '       (sm.`PARENT_ID` = :ID_ESTIMATE) OR'
+      'WHERE ((sm.`PARENT_ID` = :ID_ESTIMATE) OR'
       '       (sm.`PARENT_ID` IN '
       '        (SELECT `smetasourcedata`.`SM_ID` '
       '         FROM `smetasourcedata` '
       '         WHERE `smetasourcedata`.`PARENT_ID` = :ID_ESTIMATE)))'
       'ORDER BY SORT_ID')
-    Left = 352
-    Top = 80
+    Left = 224
+    Top = 216
     ParamData = <
       item
         Name = 'ID_ESTIMATE'
@@ -5368,7 +5344,7 @@
   end
   object dsRatesEx: TDataSource
     DataSet = qrRatesEx
-    Left = 392
-    Top = 80
+    Left = 256
+    Top = 216
   end
 end

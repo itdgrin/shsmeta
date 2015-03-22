@@ -2528,16 +2528,16 @@ begin
   end;
 
 end;
+
 procedure TFormCalculationEstimate.ReplacementClick(Sender: TObject);
-var frmReplace: TfrmReplacement;
-    i: Integer;
+var
+  frmReplace: TfrmReplacement;
+  i: Integer;
 begin
   if (TMenuItem(Sender).Tag = 1) then
-    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
-      qrMechanizmID.AsInteger, 1, True)
+    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, qrMechanizmID.AsInteger, 1, True)
   else
-    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
-      qrMaterialID.AsInteger, 0, True);
+    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, qrMaterialID.AsInteger, 0, True);
 
   try
     if (frmReplace.ShowModal = mrYes) then
@@ -2659,9 +2659,8 @@ end;
 // Открытие строчки механизмов на редактирование
 procedure TFormCalculationEstimate.PMMechDeleteClick(Sender: TObject);
 begin
-  if MessageBox(0, PChar('Вы действительно хотите удалить ' +
-    qrMechanizmMECH_CODE.AsString + '?'), CaptionForm,
-    MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+  if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrMechanizmMECH_CODE.AsString + '?'),
+    CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
     Exit;
 
   try
@@ -2676,8 +2675,7 @@ begin
 
   except
     on E: Exception do
-      MessageBox(0, PChar('При удалении механизма возникла ошибка:' +
-        sLineBreak + sLineBreak + E.Message),
+      MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
@@ -3179,12 +3177,10 @@ procedure TFormCalculationEstimate.PopupMenuMechanizmsPopup(Sender: TObject);
 begin
   PMMechEdit.Enabled := not CheckMechReadOnly;
 
-  PMMechFromRates.Enabled := (not CheckMechReadOnly)
-    and (qrRatesMEID.AsInteger = 0);
+  PMMechFromRates.Enabled := (not CheckMechReadOnly) and (qrRatesMEID.AsInteger = 0);
 
   PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) // В расценка
-    and (qrMechanizmID_REPLACED.AsInteger = 0)
-    and (qrRatesMEID.AsInteger = 0); // не заменяющуй
+    and (qrMechanizmID_REPLACED.AsInteger = 0) and (qrRatesMEID.AsInteger = 0); // не заменяющуй
 
   PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0);
 end;
@@ -3443,7 +3439,7 @@ begin
   qrTemp.ParamByName('SType').AsInteger := (Sender as TComponent).Tag;
   qrTemp.ExecSQL;
 
-  OutputDataToTable(qrRates.RecordCount + 1, 0 ,0);
+  OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
 end;
 
 procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
@@ -3611,7 +3607,7 @@ begin
 
   if qrRatesTYPE_DATA.AsInteger in [6, 7, 8, 9] then
     if GetTranspForm(IdEstimate, qrTranspID.AsInteger, qrRatesTYPE_DATA.AsInteger, False) then
-      OutputDataToTable(qrRates.RecNo, 0 , 0);
+      OutputDataToTable(qrRates.RecNo, 0, 0);
 end;
 
 procedure TFormCalculationEstimate.PMEditClick(Sender: TObject);
@@ -4354,7 +4350,6 @@ begin
   qrTransp.Active := False;
   qrStartup.Active := False;
   qrDescription.Active := False;
-  Panel1.Visible := False;
 
   // На всякий случай, что-бы избежать глюков
   if not qrRates.Active then
@@ -4380,6 +4375,7 @@ begin
   dbgrdCalculations.Columns[14].Visible := qrRatesAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   dbgrdCalculations.Columns[13].Width := 64;
   dbgrdCalculations.Columns[14].Width := 64;
+  FixDBGridColumnsWidth(dbgrdCalculations);
 
   // Можно редактировать кол-во для любой строки
   qrRatesCODE.ReadOnly := True;
@@ -4609,11 +4605,11 @@ begin
 
   i := qrRates.RecNo;
   // обязательно надо что-бы произошел скрол
-  if (Count >= aRecNo) and (aRecNo > 0) then
-    qrRates.RecNo := aRecNo
+  if (Count >= ARecNo) and (ARecNo > 0) then
+    qrRates.RecNo := ARecNo
   else
   begin
-    if (aRecNo > 0) and (Count > 0) then
+    if (ARecNo > 0) and (Count > 0) then
       qrRates.RecNo := Count
     else
       qrRates.First;
@@ -4623,8 +4619,10 @@ begin
   if qrRates.RecNo = i then
     qrRatesAfterScroll(qrRates);
 
-  CloseOpen(qrCalculations);
+  qrRatesEx.ParamByName('ID_ESTIMATE').AsInteger := IdEstimate;
   CloseOpen(qrRatesEx);
+
+  CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.VisibleColumnsWinterPrice(Value: Boolean);
@@ -5049,8 +5047,7 @@ procedure TFormCalculationEstimate.dbgrdMaterialKeyDown(Sender: TObject; var Key
 begin
   // 45 - Insert
   // Исловие аналогично условаю в PopupMenuMaterialsPopup
-  if (Key = 45) and
-    ((not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0)) then
+  if (Key = 45) and ((not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0)) then
     SetMatEditMode;
 end;
 
