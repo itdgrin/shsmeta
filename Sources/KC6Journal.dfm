@@ -72,7 +72,6 @@ object fKC6Journal: TfKC6Journal
         OnClick = tvEstimatesClick
         RowSelect = True
         Mirror = False
-        ExplicitTop = 2
       end
       object dbgrd2: TDBGrid
         Left = 0
@@ -360,7 +359,7 @@ object fKC6Journal: TfKC6Journal
       
         'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
         'NAME, DATE,'
-      '       (PARENT_LOCAL_ID+PARENT_PTM_ID) as PARENT  '
+      '       (PARENT_ID) as PARENT  '
       'FROM smetasourcedata'
       'WHERE SM_TYPE<>2 AND '
       '      OBJ_ID=:OBJ_ID'
@@ -771,9 +770,8 @@ object fKC6Journal: TfKC6Journal
       ''
       '/* '#1051#1086#1082#1072#1083#1100#1085#1099#1077' */'
       
-        'SELECT CONCAT((PARENT_LOCAL_ID+PARENT_PTM_ID), SM_ID) AS SM_ID, ' +
-        'SM_TYPE, NAME as NAME, SM_NUMBER, SM_ID as ID, (NULL) AS PTM_COS' +
-        'T, '
+        'SELECT CONCAT((PARENT_ID), SM_ID) AS SM_ID, SM_TYPE, NAME as NAM' +
+        'E, SM_NUMBER, SM_ID as ID, (NULL) AS PTM_COST, '
       '(NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT  '
       'FROM smetasourcedata'
       'WHERE SM_TYPE=1 AND '
@@ -784,12 +782,11 @@ object fKC6Journal: TfKC6Journal
       '/* '#1055#1058#1052' */'
       'SELECT CONCAT('
       
-        '(SELECT (s1.PARENT_LOCAL_ID+s1.PARENT_PTM_ID) FROM smetasourceda' +
-        'ta s1 WHERE s1.SM_ID=(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID)), '
+        '(SELECT (s1.PARENT_ID) FROM smetasourcedata s1 WHERE s1.SM_ID=(s' +
+        '2.PARENT_ID)), '
       
-        '(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID), s2.SM_ID) AS SM_ID, s2.SM' +
-        '_TYPE, s2.NAME as NAME, CONCAT('#39' - '#39', s2.SM_NUMBER) as SM_NUMBER' +
-        ', SM_ID as ID,'
+        '(s2.PARENT_ID), s2.SM_ID) AS SM_ID, s2.SM_TYPE, s2.NAME as NAME,' +
+        ' CONCAT('#39' - '#39', s2.SM_NUMBER) as SM_NUMBER, SM_ID as ID,'
       
         '/*'#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084' + '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084' + '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087 +
         #1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084', '#1074#1099#1085#1089#1077#1085#1085#1099#1084' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091'*/'

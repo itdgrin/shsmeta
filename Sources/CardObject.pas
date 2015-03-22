@@ -7,7 +7,7 @@ uses
   ExtCtrls,
   DBCtrls, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Vcl.Mask;
+  FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus;
 
 type
   TFormCardObject = class(TForm)
@@ -91,6 +91,8 @@ type
     dbedtPER_CONTRACTOR: TDBEdit;
     qrMain: TFDQuery;
     dsMain: TDataSource;
+    pm1: TPopupMenu;
+    N1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -117,6 +119,7 @@ type
     procedure ClearAllFields;
 
     procedure GetValueDBLookupComboBoxTypeOXR(Sender: TObject);
+    procedure N1Click(Sender: TObject);
 
   private
     Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
@@ -173,6 +176,11 @@ end;
 
 procedure TFormCardObject.FormShow(Sender: TObject);
 begin
+  grp1.Enabled := False;
+  dbedtPER_TEPM_BUILD.Enabled := False;
+  dbedtPER_TEMP_BUILD_BACK.Enabled := False;
+  dbedtPER_CONTRACTOR.Enabled := False;
+
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
 
@@ -801,6 +809,14 @@ begin
       MessageBox(0, PChar('При запросе списка ОХР и ОПР возникла ошибка:' + sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+end;
+
+procedure TFormCardObject.N1Click(Sender: TObject);
+begin
+  grp1.Enabled := True;
+  dbedtPER_TEPM_BUILD.Enabled := True;
+  dbedtPER_TEMP_BUILD_BACK.Enabled := True;
+  dbedtPER_CONTRACTOR.Enabled := True;
 end;
 
 end.

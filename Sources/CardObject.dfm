@@ -320,9 +320,8 @@ object FormCardObject: TFormCardObject
     Anchors = [akRight, akBottom]
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Default = True
-    TabOrder = 17
+    TabOrder = 18
     OnClick = ButtonSaveClick
-    ExplicitTop = 551
   end
   object ButtonCancel: TButton
     Left = 339
@@ -331,9 +330,8 @@ object FormCardObject: TFormCardObject
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 18
+    TabOrder = 19
     OnClick = ButtonCancelClick
-    ExplicitTop = 551
   end
   object GroupBoxVAT: TGroupBox
     Left = 338
@@ -381,6 +379,7 @@ object FormCardObject: TFormCardObject
     Height = 17
     Caption = #1056#1072#1089#1095#1105#1090' '#1093#1086#1079'. '#1089#1087#1086#1089#1086#1073#1086#1084
     TabOrder = 6
+    Visible = False
   end
   object GroupBox1: TGroupBox
     Left = 232
@@ -388,7 +387,7 @@ object FormCardObject: TFormCardObject
     Width = 217
     Height = 45
     Caption = #1052#1040#1048#1057':'
-    TabOrder = 16
+    TabOrder = 17
     object DBLookupComboBoxMAIS: TDBLookupComboBox
       Left = 8
       Top = 16
@@ -403,7 +402,8 @@ object FormCardObject: TFormCardObject
     Width = 218
     Height = 90
     Caption = #1056#1072#1089#1093#1086#1076#1099', %'
-    TabOrder = 19
+    Enabled = False
+    TabOrder = 16
     object lbl1: TLabel
       Left = 8
       Top = 17
@@ -432,6 +432,8 @@ object FormCardObject: TFormCardObject
       Height = 21
       DataField = 'PER_TEPM_BUILD'
       DataSource = dsMain
+      Enabled = False
+      PopupMenu = pm1
       TabOrder = 0
     end
     object dbedtPER_TEMP_BUILD_BACK: TDBEdit
@@ -441,6 +443,8 @@ object FormCardObject: TFormCardObject
       Height = 21
       DataField = 'PER_TEMP_BUILD_BACK'
       DataSource = dsMain
+      Enabled = False
+      PopupMenu = pm1
       TabOrder = 1
     end
     object dbedtPER_CONTRACTOR: TDBEdit
@@ -450,6 +454,8 @@ object FormCardObject: TFormCardObject
       Height = 21
       DataField = 'PER_CONTRACTOR'
       DataSource = dsMain
+      Enabled = False
+      PopupMenu = pm1
       TabOrder = 2
     end
   end
@@ -605,5 +611,13 @@ object FormCardObject: TFormCardObject
     DataSet = qrMain
     Left = 416
     Top = 485
+  end
+  object pm1: TPopupMenu
+    Left = 168
+    Top = 498
+    object N1: TMenuItem
+      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077
+      OnClick = N1Click
+    end
   end
 end
