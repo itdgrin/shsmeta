@@ -396,7 +396,7 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
   DataModule, Login, Waiting, ActC6, WorkSchedule, HelpC3, HelpC5, CatalogSSR,
   OXRandOPR, WinterPrice, DataTransfer, CardPTM, CalculationSettings,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
-  PricesReferenceData, AdditionData, Materials, PartsEstimates,
+  PricesReferenceData, AdditionData, PartsEstimates,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrise;

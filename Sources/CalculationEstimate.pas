@@ -453,6 +453,9 @@ type
     PMMechDelete: TMenuItem;
     qrMechanizmID_REPLACED: TIntegerField;
     qrMechanizmREPLACED: TByteField;
+    qrRatesEx: TFDQuery;
+    dsRatesEx: TDataSource;
+    JvDBGrid1: TJvDBGrid;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -740,7 +743,7 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
   SummaryCalculationSettings, DataTransfer,
   BasicData, ObjectsAndEstimates, PercentClientContractor, Transportation,
   CalculationDump, SaveEstimate,
-  Materials, AdditionData, CardMaterial, CardDataEstimate,
+  AdditionData, CardMaterial, CardDataEstimate,
   ListCollections, CoefficientOrders, KC6,
   CardAct, Tools, Coef, WinterPrise,
   ReplacementMatAndMech;
@@ -908,6 +911,7 @@ begin
   LoadDBGridSettings(dbgrdTransp);
   LoadDBGridSettings(dbgrdStartup);
   LoadDBGridSettings(dbgrdCalculations);
+  LoadDBGridSettings(JvDBGrid1);
 
   // TCustomDbGridCracker(dbgrdRates).OnMouseWheel:=Wheel;
   if not Act then
@@ -4620,6 +4624,7 @@ begin
     qrRatesAfterScroll(qrRates);
 
   CloseOpen(qrCalculations);
+  CloseOpen(qrRatesEx);
 end;
 
 procedure TFormCalculationEstimate.VisibleColumnsWinterPrice(Value: Boolean);
