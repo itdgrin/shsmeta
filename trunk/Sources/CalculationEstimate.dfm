@@ -185,7 +185,7 @@
     Height = 29
     Align = alBottom
     ParentBackground = False
-    TabOrder = 1
+    TabOrder = 8
     Visible = False
     object PanelButtonsLocalEstimate: TPanel
       Left = 0
@@ -293,7 +293,7 @@
       Height = 27
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 1
+      TabOrder = 2
       object ButtonSSRAdd: TButton
         Left = 3
         Top = 1
@@ -383,7 +383,7 @@
       Height = 27
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 2
+      TabOrder = 1
       object Button1: TButton
         Left = 3
         Top = 1
@@ -427,7 +427,7 @@
     Height = 324
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 2
+    TabOrder = 7
     object ImageSplitterBottom: TImage
       Left = 200
       Top = 365
@@ -511,7 +511,7 @@
           AutoComplete = False
           Style = csDropDownList
           Color = 8454143
-          TabOrder = 0
+          TabOrder = 1
           Items.Strings = (
             '1. '#1056#1072#1089#1094#1077#1085#1082#1072
             '2. '#1052#1072#1090#1077#1088#1080#1072#1083
@@ -533,7 +533,7 @@
           Alignment = taCenter
           Color = 8454016
           ReadOnly = True
-          TabOrder = 1
+          TabOrder = 2
           Text = #1044#1077#1081#1089#1090#1074#1091#1102#1097#1072#1103
         end
         object Edit2: TEdit
@@ -546,7 +546,7 @@
           BevelOuter = bvNone
           Color = 14802912
           ReadOnly = True
-          TabOrder = 2
+          TabOrder = 3
           Text = '01.03.2013'
         end
         object EditCoefOrders: TEdit
@@ -557,7 +557,7 @@
           Alignment = taCenter
           Color = 14802912
           ReadOnly = True
-          TabOrder = 3
+          TabOrder = 5
           Text = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1087#1086' '#1087#1088#1080#1082#1072#1079#1072#1084
         end
         object EditCategory: TEdit
@@ -576,7 +576,7 @@
           Width = 85
           Height = 24
           Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
-          TabOrder = 5
+          TabOrder = 0
           OnClick = Button4Click
         end
       end
@@ -590,6 +590,9 @@
         ParentBackground = False
         ShowCaption = False
         TabOrder = 1
+        DesignSize = (
+          361
+          199)
         object ImageSplitterLeft: TImage
           Left = 313
           Top = 40
@@ -619,7 +622,7 @@
           DataSource = dsRates
           ReadOnly = True
           ScrollBars = ssVertical
-          TabOrder = 1
+          TabOrder = 2
         end
         object dbgrdRates: TJvDBGrid
           Left = 0
@@ -684,6 +687,26 @@
               Visible = True
             end>
         end
+        object JvDBGrid1: TJvDBGrid
+          Left = 141
+          Top = 6
+          Width = 219
+          Height = 147
+          Anchors = [akLeft, akTop, akBottom]
+          DataSource = dsRatesEx
+          TabOrder = 1
+          TitleFont.Charset = DEFAULT_CHARSET
+          TitleFont.Color = clWindowText
+          TitleFont.Height = -11
+          TitleFont.Name = 'Tahoma'
+          TitleFont.Style = []
+          SelectColumnsDialogStrings.Caption = 'Select columns'
+          SelectColumnsDialogStrings.OK = '&OK'
+          SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+          EditControls = <>
+          RowsHeight = 17
+          TitleRowHeight = 17
+        end
       end
       object PanelNoData: TPanel
         Left = 366
@@ -693,7 +716,7 @@
         Align = alClient
         BevelOuter = bvNone
         ParentBackground = False
-        TabOrder = 2
+        TabOrder = 3
         OnResize = PanelNoDataResize
         object ShapeNoData: TShape
           Left = 0
@@ -1396,7 +1419,7 @@
         ParentBackground = False
         ParentFont = False
         ShowCaption = False
-        TabOrder = 3
+        TabOrder = 2
         Visible = False
         object ImageSplitterRightBottom: TImage
           Left = 312
@@ -1424,7 +1447,7 @@
           Align = alBottom
           ReadOnly = True
           ScrollBars = ssVertical
-          TabOrder = 0
+          TabOrder = 1
           OnChange = MemoRightChange
           OnExit = MemoRightExit
         end
@@ -1438,7 +1461,7 @@
           Caption = 'PanelClientRightTables'
           ParentBackground = False
           ShowCaption = False
-          TabOrder = 1
+          TabOrder = 0
           OnResize = PanelClientRightTablesResize
           object ImageSplitterRight1: TImage
             Left = 208
@@ -1496,7 +1519,7 @@
             ParentCtl3D = False
             ParentFont = False
             PopupMenu = PopupMenuMechanizms
-            TabOrder = 0
+            TabOrder = 1
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -1777,7 +1800,7 @@
             ParentCtl3D = False
             ParentFont = False
             PopupMenu = PopupMenuMaterials
-            TabOrder = 1
+            TabOrder = 0
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -2181,7 +2204,7 @@
             ParentCtl3D = False
             PopupMenu = PopupMenuDumpTransp
             ReadOnly = True
-            TabOrder = 3
+            TabOrder = 4
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -2292,7 +2315,7 @@
             DataSource = dsDescription
             DefaultDrawing = False
             DrawingStyle = gdsClassic
-            TabOrder = 4
+            TabOrder = 3
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -2518,7 +2541,7 @@
       Align = alBottom
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 1
+      TabOrder = 2
       object dbgrdCalculations: TDBGrid
         Left = 0
         Top = 0
@@ -2711,7 +2734,7 @@
       Align = alBottom
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 2
+      TabOrder = 1
       OnResize = Panel1Resize
       object LabelOXROPR: TLabel
         Left = 8
@@ -2763,7 +2786,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSummaryCalculations'
     ParentBackground = False
-    TabOrder = 4
+    TabOrder = 5
     inline frSummaryCalculations: TfrCalculationEstimateSummaryCalculations
       Left = 0
       Top = 0
@@ -2787,7 +2810,7 @@
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 5
+    TabOrder = 2
     DesignSize = (
       921
       25)
@@ -2826,7 +2849,7 @@
       BevelOuter = bvSpace
       Color = 8454143
       ReadOnly = True
-      TabOrder = 0
+      TabOrder = 2
       Text = #1073#1077#1079' '#1053#1044#1057
     end
     object EditMonth: TEdit
@@ -2847,7 +2870,7 @@
       Width = 393
       Height = 21
       Anchors = [akLeft, akTop, akRight]
-      TabOrder = 2
+      TabOrder = 3
     end
     object PanelCalculationYesNo: TPanel
       Tag = 1
@@ -2860,7 +2883,7 @@
       Caption = #1056#1072#1089#1095#1105#1090#1099' '#1088#1072#1079#1088#1077#1096#1077#1085#1099
       Color = 8454016
       ParentBackground = False
-      TabOrder = 3
+      TabOrder = 0
       OnClick = PanelCalculationYesNoClick
     end
   end
@@ -2872,7 +2895,7 @@
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 6
+    TabOrder = 3
     DesignSize = (
       921
       25)
@@ -3003,7 +3026,7 @@
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 7
+    TabOrder = 1
     OnResize = PanelObjectResize
     DesignSize = (
       921
@@ -3098,7 +3121,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSSR'
     ParentBackground = False
-    TabOrder = 3
+    TabOrder = 6
     inline frSSR: TfrCalculationEstimateSSR
       Left = 0
       Top = 0
@@ -5166,5 +5189,186 @@
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1079#1085#1072#1095#1077#1085#1080#1077' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
       OnClick = nWinterPriseSetDefaultClick
     end
+  end
+  object qrRatesEx: TFDQuery
+    BeforePost = qrRatesBeforePost
+    AfterPost = qrRatesAfterPost
+    AfterScroll = qrRatesAfterScroll
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtUInt32
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtUInt64
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtInt64
+        TargetDataType = dtInt32
+      end>
+    FormatOptions.DefaultParamDataType = ftBCD
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.CountUpdatedRecords = False
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      'select '
+      
+        'CONCAT(IF(((sm.`SM_ID` = :ID_ESTIMATE) OR (sm.`PARENT_ID` = :ID_' +
+        'ESTIMATE)), '#39#39', :ID_ESTIMATE), sm.`PARENT_ID`, sm.`SM_ID`, d.`ID' +
+        '`) as SORT_ID,'
+      'case d.`ID_TYPE_DATA` '
+      
+        'WHEN 1 THEN (select `card_rate`.`RATE_CODE` from `card_rate` WHE' +
+        'RE `card_rate`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 2 THEN (select CONCAT(IF(`materialcard`.`ID_REPLACED` > 0, ' +
+        #39'   '#39', '#39#39'), `materialcard`.`MAT_CODE`) from `materialcard` WHERE' +
+        ' `materialcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 3 THEN (select `mechanizmcard`.`MECH_CODE` from `mechanizmc' +
+        'ard` WHERE `mechanizmcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 4 THEN (select `devicescard`.`DEVICE_CODE` from `devicescar' +
+        'd` WHERE `devicescard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 5 THEN (select `dumpcard`.`DUMP_CODE_JUST` from `dumpcard` ' +
+        'WHERE `dumpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 6 THEN (select `transpcard`.`TRANSP_CODE_JUST` from `transp' +
+        'card` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 7 THEN (select `transpcard`.`TRANSP_CODE_JUST` from `transp' +
+        'card` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 8 THEN (select `transpcard`.`TRANSP_CODE_JUST` from `transp' +
+        'card` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 9 THEN (select `transpcard`.`TRANSP_CODE_JUST` from `transp' +
+        'card` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      'WHEN 10 THEN ('#39#1045'18'#39')'
+      'WHEN 11 THEN ('#39#1045'20'#39')'
+      'END AS OBJ_NAME, '
+      'case d.`ID_TYPE_DATA` '
+      
+        'WHEN 1 THEN (select `card_rate`.`RATE_COUNT` from `card_rate` WH' +
+        'ERE `card_rate`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 2 THEN (select `materialcard`.`MAT_COUNT` from `materialcar' +
+        'd` WHERE `materialcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 3 THEN (select `mechanizmcard`.`MECH_COUNT` from `mechanizm' +
+        'card` WHERE `mechanizmcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 4 THEN (select `devicescard`.`DEVICE_COUNT` from `devicesca' +
+        'rd` WHERE `devicescard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 5 THEN (select `dumpcard`.`DUMP_COUNT` from `dumpcard` WHER' +
+        'E `dumpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 6 THEN (select `transpcard`.`TRANSP_COUNT` from `transpcard' +
+        '` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 7 THEN (select `transpcard`.`TRANSP_COUNT` from `transpcard' +
+        '` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 8 THEN (select `transpcard`.`TRANSP_COUNT` from `transpcard' +
+        '` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 9 THEN (select `transpcard`.`TRANSP_COUNT` from `transpcard' +
+        '` WHERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      'WHEN 10 THEN d.`E1820_COUNT`'
+      'WHEN 11 THEN d.`E1820_COUNT`'
+      'END AS OBJ_COUNT,'
+      'case d.`ID_TYPE_DATA` '
+      
+        'WHEN 1 THEN (select `card_rate`.`RATE_UNIT` from `card_rate` WHE' +
+        'RE `card_rate`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 2 THEN (select `materialcard`.`MAT_UNIT` from `materialcard' +
+        '` WHERE `materialcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 3 THEN (select `mechanizmcard`.`MECH_UNIT` from `mechanizmc' +
+        'ard` WHERE `mechanizmcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 4 THEN (select `devicescard`.`DEVICE_UNIT` from `devicescar' +
+        'd` WHERE `devicescard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 5 THEN (select `dumpcard`.`DUMP_UNIT` from `dumpcard` WHERE' +
+        ' `dumpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 6 THEN (select `transpcard`.`CARG_UNIT` from `transpcard` W' +
+        'HERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 7 THEN (select `transpcard`.`CARG_UNIT` from `transpcard` W' +
+        'HERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 8 THEN (select `transpcard`.`CARG_UNIT` from `transpcard` W' +
+        'HERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      
+        'WHEN 9 THEN (select `transpcard`.`CARG_UNIT` from `transpcard` W' +
+        'HERE `transpcard`.`ID` = d.`ID_TABLES`)'
+      'WHEN 10 THEN ('#39#1096#1090'.'#39')'
+      'WHEN 11 THEN ('#39#1096#1090'.'#39')'
+      'END AS OBJ_UNIT, '
+      'd.`ID_TYPE_DATA` as ID_TYPE_DATA,'
+      'd.`ID` as DATA_ESTIMATE_OR_ACT_ID,'
+      'd.`ID_TABLES` AS ID_TABLES,'
+      'sm.`SM_ID`'
+      'FROM `smetasourcedata` sm, `data_estimate` d'
+      'WHERE sm.`SM_ID`=d.`ID_ESTIMATE` AND'
+      '      ((sm.`SM_ID` = :ID_ESTIMATE) OR '
+      '       (sm.`PARENT_ID` = :ID_ESTIMATE) OR'
+      '       (sm.`PARENT_ID` IN '
+      '        (SELECT `smetasourcedata`.`SM_ID` '
+      '         FROM `smetasourcedata` '
+      '         WHERE `smetasourcedata`.`PARENT_ID` = :ID_ESTIMATE)))'
+      'UNION ALL'
+      'select CONCAT('
+      
+        'IF(((sm.`SM_ID` = :ID_ESTIMATE) OR (sm.`PARENT_ID` = :ID_ESTIMAT' +
+        'E)), '#39#39', :ID_ESTIMATE), sm.`PARENT_ID`, sm.`SM_ID`) as SORT_ID,'
+      
+        'CONCAT(sm.`SM_NUMBER`, '#39' '#39', sm.`NAME`) AS OBJ_NAME, sm.`S_STOIM`' +
+        ' AS OBJ_COUNT, IF(sm.`S_STOIM` IS NULL, '#39#39', '#39#1088#1091#1073'.'#39') AS OBJ_UNIT,' +
+        '(sm.`SM_TYPE` * -1) as ID_TYPE_DATA,'
+      'NULL AS DATA_ESTIMATE_OR_ACT_ID, NULL AS ID_TABLES, sm.`SM_ID`'
+      'FROM `smetasourcedata` sm'
+      'WHERE ((sm.`SM_ID` = :ID_ESTIMATE) OR '
+      '       (sm.`PARENT_ID` = :ID_ESTIMATE) OR'
+      '       (sm.`PARENT_ID` IN '
+      '        (SELECT `smetasourcedata`.`SM_ID` '
+      '         FROM `smetasourcedata` '
+      '         WHERE `smetasourcedata`.`PARENT_ID` = :ID_ESTIMATE)))'
+      'ORDER BY SORT_ID')
+    Left = 352
+    Top = 80
+    ParamData = <
+      item
+        Name = 'ID_ESTIMATE'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 344
+      end>
+  end
+  object dsRatesEx: TDataSource
+    DataSet = qrRatesEx
+    Left = 392
+    Top = 80
   end
 end
