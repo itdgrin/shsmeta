@@ -176,10 +176,9 @@ end;
 
 procedure TFormCardObject.FormShow(Sender: TObject);
 begin
-  grp1.Enabled := False;
-  dbedtPER_TEPM_BUILD.Enabled := False;
-  dbedtPER_TEMP_BUILD_BACK.Enabled := False;
-  dbedtPER_CONTRACTOR.Enabled := False;
+  dbedtPER_TEPM_BUILD.ReadOnly := True;
+  dbedtPER_TEMP_BUILD_BACK.ReadOnly := True;
+  dbedtPER_CONTRACTOR.ReadOnly := True;
 
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
@@ -813,10 +812,9 @@ end;
 
 procedure TFormCardObject.N1Click(Sender: TObject);
 begin
-  grp1.Enabled := True;
-  dbedtPER_TEPM_BUILD.Enabled := True;
-  dbedtPER_TEMP_BUILD_BACK.Enabled := True;
-  dbedtPER_CONTRACTOR.Enabled := True;
+  dbedtPER_TEPM_BUILD.ReadOnly := False;
+  dbedtPER_TEMP_BUILD_BACK.ReadOnly := False;
+  dbedtPER_CONTRACTOR.ReadOnly := False;
 end;
 
 end.
