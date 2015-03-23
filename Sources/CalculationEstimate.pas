@@ -3310,11 +3310,10 @@ begin
         if PT = 0 then
           PT := PercentTransport;
 
-        qrTemp1.SQL.Text := 'Insert into materialcard_temp (BD_ID, ID_CARD_RATE, MAT_ID, ' +
+        qrTemp1.SQL.Text := 'Insert into materialcard_temp (ID_CARD_RATE, MAT_ID, ' +
           'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
-          'PROC_TRANSP) values (:BD_ID, :ID_CARD_RATE, :MAT_ID, ' +
+          'PROC_TRANSP) values (:ID_CARD_RATE, :MAT_ID, ' +
           ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
-        qrTemp1.ParamByName('BD_ID').AsInteger := 1;
         qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
         qrTemp1.ParamByName('MAT_ID').AsInteger := FieldByName('MatId').AsInteger;
         qrTemp1.ParamByName('MAT_CODE').AsString := FieldByName('MatCode').AsString;
@@ -3339,11 +3338,10 @@ begin
       while not Eof do
       begin
         qrTemp1.Active := False;
-        qrTemp1.SQL.Text := 'Insert into materialcard_temp (BD_ID, ID_CARD_RATE, CONSIDERED, MAT_ID, ' +
+        qrTemp1.SQL.Text := 'Insert into materialcard_temp (ID_CARD_RATE, CONSIDERED, MAT_ID, ' +
           'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
-          'PROC_TRANSP) values (:BD_ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
+          'PROC_TRANSP) values (:ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
           ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
-        qrTemp1.ParamByName('BD_ID').AsInteger := 1;
         qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
         qrTemp1.ParamByName('CONSIDERED').AsInteger := 0;
         qrTemp1.ParamByName('MAT_ID').AsInteger := FieldByName('MatId').AsInteger;
@@ -3389,12 +3387,11 @@ begin
       while not Eof do
       begin
         qrTemp1.Active := False;
-        qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (BD_ID, ID_CARD_RATE, ' +
+        qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (ID_CARD_RATE, ' +
           'MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, MECH_UNIT, COAST_NO_NDS, ' +
-          'COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS) values (:BD_ID, :ID_CARD_RATE, ' +
+          'COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS) values (:ID_CARD_RATE, ' +
           ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
           ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS)';
-        qrTemp1.ParamByName('BD_ID').AsInteger := 1;
         qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
         qrTemp1.ParamByName('MECH_ID').AsInteger := FieldByName('MechId').AsInteger;
         qrTemp1.ParamByName('MECH_CODE').AsString := FieldByName('MechCode').AsString;
