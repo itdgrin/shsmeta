@@ -189,14 +189,9 @@ begin
       PTMFieldsEmpty := PTMFieldsEmpty + ', (NULL) AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
 
       PTMFields := PTMFields +
-        ', ((SELECT SUM(RATE_SUM) FROM card_rate_act, card_acts, data_estimate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data_estimate.ID_TABLES AND card_acts.ID=card_rate_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
-        + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ' AND ID_ESTIMATE = SM_ID)' +
-        ' + (SELECT SUM(MAT_SUM) FROM materialcard_act, card_acts, data_estimate where data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=materialcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
-        + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ' AND ID_ESTIMATE = SM_ID)' +
-        ' + (SELECT SUM(MECH_SUM) FROM mechanizmcard_act, card_acts, data_estimate where data_estimate.ID_TYPE_DATA = 3 AND mechanizmcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=mechanizmcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
-        + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ' AND ID_ESTIMATE = SM_ID)' +
+        ', ROUND((SELECT SUM(data_act.STOIM) FROM data_act, card_acts where data_act.id_act=card_acts.id AND EXTRACT(MONTH FROM card_acts.DATE)='
+        + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ' AND data_act.ID_ESTIMATE = s2.SM_ID)' +
         ') AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
-
       case cbbMode.ItemIndex of
         BY_COUNT:
           begin
@@ -264,9 +259,9 @@ begin
       'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
       'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
       '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
-      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) IN'#13 +
+      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID))'#13 +
       ' ) /* ПТМ уровень */'#13 +
       ')'#13 +
       'UNION ALL'#13 +
@@ -292,9 +287,9 @@ begin
       'materialcard.ID_CARD_RATE = card_rate.ID AND'#13 +
       'materialcard.CONSIDERED = 0 AND'#13 +
       '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
-      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) IN'#13 +
+      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID))'#13 +
       ' ) /* ПТМ уровень */'#13 +
       ')'#13 +
       'UNION ALL'#13 +
@@ -320,9 +315,9 @@ begin
       'materialcard.ID_CARD_RATE = card_rate.ID AND'#13 +
       'materialcard.FROM_RATE = 1 AND'#13 +
       '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
-      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) IN'#13 +
+      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID))'#13 +
       ' ) /* ПТМ уровень */'#13 +
       ')'#13 +
       'UNION ALL'#13 +
@@ -346,9 +341,9 @@ begin
       'data_estimate.ID_TYPE_DATA = 2 AND'#13 +
       'materialcard.ID = data_estimate.ID_TABLES AND'#13 +
       '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) IN'#13 +
-      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_LOCAL_ID + PARENT_PTM_ID) = :SM_ID))'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) IN'#13 +
+      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID))'#13 +
       ' ) /* ПТМ уровень */'#13 +
       ')'#13 +
       'UNION ALL'#13 +
@@ -372,9 +367,9 @@ begin
       'data_estimate.ID_TYPE_DATA = 3 AND'#13 +
       'mechanizmcard.ID = data_estimate.ID_TABLES AND'#13 +
       '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE (s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN'#13 +
-      '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID))'#13 +
+      ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
+      ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE (s2.PARENT_ID) IN'#13 +
+      '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID) = :SM_ID))'#13 +
       ' ) /* ПТМ уровень */'#13 +
       ')'#13 +
       'ORDER BY 1,2';
@@ -396,31 +391,23 @@ begin
       '      OBJ_ID=:OBJ_ID'#13 +
       'UNION ALL'#13 +
       '/* Локальные */'#13 +
-      'SELECT CONCAT((PARENT_LOCAL_ID+PARENT_PTM_ID), SM_ID) AS SM_ID, SM_TYPE, NAME as NAME, SM_NUMBER, SM_ID as ID, (NULL) AS PTM_COST,'#13 +
+      'SELECT CONCAT((s.PARENT_ID), s.SM_ID) AS SM_ID, s.SM_TYPE, s.NAME as NAME, s.SM_NUMBER, s.SM_ID as ID, ROUND((SELECT SUM(s1.S_STOIM) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)) AS PTM_COST,'#13 +
       '(NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT'#13 +
       PTMFieldsEmpty +
-      'FROM smetasourcedata'#13 +
-      'WHERE SM_TYPE=1 AND'#13 +
-      '      OBJ_ID=:OBJ_ID'#13 +
+      'FROM smetasourcedata s'#13 +
+      'WHERE s.SM_TYPE=1 AND'#13 +
+      '      s.OBJ_ID=:OBJ_ID'#13 +
       'UNION ALL'#13 +
       '/* ПТМ */'#13 +
       'SELECT CONCAT('#13 +
-      '(SELECT (s1.PARENT_LOCAL_ID+s1.PARENT_PTM_ID) FROM smetasourcedata s1 WHERE s1.SM_ID=(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID)),'#13 +
-      '(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID), s2.SM_ID) AS SM_ID, s2.SM_TYPE, s2.NAME as NAME, CONCAT('' - '', s2.SM_NUMBER) as SM_NUMBER, SM_ID as ID,'#13 +
-      '/*Стоимость по расценкам + Стоимость по материалам + Стоимость по материалам, вынсенным за расценку*/'#13 +
-      '(COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate WHERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-      'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialcard WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-      '(0)) AS PTM_COST,'#13 +
-      '/*ВЫПОЛНЕНО Стоимость по расценкам + Стоимость по материалам + Стоимость по материалам, вынсенным за расценку*/'#13 +
-      '(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_estimate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-      'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard_act WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-      '(0)) AS PTM_COST_DONE,'#13 +
+      '(SELECT (s1.PARENT_ID) FROM smetasourcedata s1 WHERE s1.SM_ID=(s2.PARENT_ID)),'#13 +
+      '(s2.PARENT_ID), s2.SM_ID) AS SM_ID, s2.SM_TYPE, s2.NAME as NAME, CONCAT('' - '', s2.SM_NUMBER) as SM_NUMBER, SM_ID as ID,'#13 +
+      '/* Стоимость */'#13 +
+      'ROUND(s2.S_STOIM) AS PTM_COST,'#13 +
+      '/* ВЫПОЛНЕНО */'#13 +
+      'ROUND((SELECT SUM(data_act.STOIM) FROM data_act WHERE data_act.ID_ESTIMATE = s2.SM_ID)) AS PTM_COST_DONE,'#13 +
       '/* ОСТАТОК */'#13 +
-      '((COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate WHERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-      'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialcard WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-      '(0))-(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_estimate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-      'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard_act WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.ID = data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'#13 +
-      '(0))) AS PTM_COST_OUT'#13 +
+      '(0) AS PTM_COST_OUT'#13 +
       PTMFields +
       'FROM smetasourcedata s2'#13 +
       'WHERE s2.SM_TYPE=3 AND'#13 +

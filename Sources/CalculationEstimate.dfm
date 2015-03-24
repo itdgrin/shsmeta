@@ -689,7 +689,7 @@
         end
         object JvDBGrid1: TJvDBGrid
           Left = 141
-          Top = 6
+          Top = 7
           Width = 219
           Height = 147
           Anchors = [akLeft, akTop, akBottom]
@@ -700,6 +700,7 @@
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          Visible = False
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
