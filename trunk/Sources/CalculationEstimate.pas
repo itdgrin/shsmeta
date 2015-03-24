@@ -654,11 +654,19 @@ type
     CountFromRate: Double;
 
     // Флаги пересчета по правым таблицам, исключает зацикливание в обработчиках ОnChange;
-    ReCalcMech, ReCalcMat, ReCalcDev: Boolean;
+    ReCalcMech,
+    ReCalcMat,
+    ReCalcDev: Boolean;
     // ID замененного материала который надо подсветить
     IdReplasedMat: Integer;
     // ID заменяющего материала который надо подсветить
     IdReplasingMat: Integer;
+
+    // ID замененного механизма который надо подсветить
+    IdReplasedMech: Integer;
+    // ID заменяющего механизма который надо подсветить
+    IdReplasingMech: Integer;
+
     IsUnAcc: Boolean;
 
     // Последняя таблица в которой был фокус, используется для отрисовки
@@ -1629,7 +1637,9 @@ end;
 function TFormCalculationEstimate.CheckMechReadOnly: Boolean;
 begin
   Result := False;
-  if (qrMechanizmFROM_RATE.AsInteger = 1) and not(qrRatesMEID.AsInteger > 0) then
+  if ((qrMechanizmFROM_RATE.AsInteger = 1) and
+    not(qrRatesMEID.AsInteger > 0)) or
+    (qrMechanizmREPLACED.AsInteger = 1) then
     Result := True;
 end;
 
@@ -1866,6 +1876,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.qrMechanizmAfterScroll(DataSet: TDataSet);
+var
+  flag: Boolean;
 begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
@@ -1875,8 +1887,20 @@ begin
     SetMechReadOnly(CheckMechReadOnly);
     dbgrdRates.Repaint;
 
+    flag := False;
+
+    if (qrMechanizmID_REPLACED.AsInteger = 0) and (IdReplasedMech > 0) then
+      flag := True;
+
+    IdReplasedMech := qrMechanizmID_REPLACED.AsInteger;
+    IdReplasingMech := qrMechanizmID.AsInteger;
+
     if btnMechanisms.Down then
       MemoRight.Text := qrMechanizmMECH_NAME.AsString;
+
+    // Для красоты отрисовки
+    if(IdReplasedMech > 0) or flag then
+      dbgrdMechanizm.Repaint;
   end;
 end;
 
@@ -3166,10 +3190,12 @@ begin
     and (qrMaterialTITLE.AsInteger = 0) // не загоровок
     and (qrMaterialID_REPLACED.AsInteger = 0); // не заменяющуй
 
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (not CheckMatUnAccountingMatirials) and
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and
+    (not CheckMatUnAccountingMatirials) and
     (qrMaterialFROM_RATE.AsInteger = 0);
 
-  PMMatDelete.Enabled := (qrMaterialID_REPLACED.AsInteger > 0);
+  PMMatDelete.Enabled := (qrMaterialID_REPLACED.AsInteger > 0) and
+    (qrMaterialFROM_RATE.AsInteger = 0);
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -3177,12 +3203,16 @@ procedure TFormCalculationEstimate.PopupMenuMechanizmsPopup(Sender: TObject);
 begin
   PMMechEdit.Enabled := not CheckMechReadOnly;
 
-  PMMechFromRates.Enabled := (not CheckMechReadOnly) and (qrRatesMEID.AsInteger = 0);
+  PMMechFromRates.Enabled := (not CheckMechReadOnly) and
+    (qrRatesMEID.AsInteger = 0) and
+    (qrMechanizmREPLACED.AsInteger = 0);
 
-  PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) // В расценка
-    and (qrMechanizmID_REPLACED.AsInteger = 0) and (qrRatesMEID.AsInteger = 0); // не заменяющуй
+  PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) and
+    (qrMechanizmID_REPLACED.AsInteger = 0) and
+    (qrRatesMEID.AsInteger = 0); // не заменяющуй
 
-  PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0);
+  PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0) and
+    (qrMechanizmFROM_RATE.AsInteger = 0);
 end;
 
 procedure TFormCalculationEstimate.PopupMenuRatesAdd352Click(Sender: TObject);
@@ -4573,6 +4603,13 @@ begin
     begin
       inc(Count);
 
+      if (AID > 0) and (AType > 0) then
+      begin
+        if (qrRatesIID.AsInteger = AID) and
+          (qrRatesTYPE_DATA.AsInteger = AType) then
+          ARecNo := Count;
+      end;
+
       if qrRatesTYPE_DATA.AsInteger = 10 then
         PMAddAdditionHeatingE18.Enabled := False;
 
@@ -4973,7 +5010,8 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+    if (qrMaterialFROM_RATE.AsInteger = 1) and
+      not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD;
@@ -4986,15 +5024,18 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd)
+    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and
+      (dbgrdMaterial = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
-    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (dbgrdRates = LastEntegGrd) then
+    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and
+      (dbgrdRates = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMaterialFROM_RATE.AsInteger = 0) and (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
+    if (qrMaterialFROM_RATE.AsInteger = 0) and
+      (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
@@ -5112,6 +5153,25 @@ begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
     end;
+
+    // подсвечиваем замененный механизм
+    if (qrMechanizmREPLACED.AsInteger = 1) then
+    begin
+      Brush.Color := $00DDDDDD;
+    end;
+
+    // Подсветка замененного механизма
+    if (IdReplasedMech > 0) and (qrMechanizmID.AsInteger = IdReplasedMech) and
+      (dbgrdMechanizm = LastEntegGrd)
+    then
+      Font.Style := Font.Style + [fsbold];
+
+    // Подсветка замененяющего материала
+    if (qrMechanizmFROM_RATE.AsInteger = 0) and
+      (IdReplasingMech = qrMechanizmID_REPLACED.AsInteger) and
+      (dbgrdMechanizm = LastEntegGrd) then
+      Font.Style := Font.Style + [fsbold];
+
 
     if gdFocused in State then // Ячейка в фокусе
     begin
