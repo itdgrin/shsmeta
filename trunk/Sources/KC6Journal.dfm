@@ -28,7 +28,7 @@ object fKC6Journal: TfKC6Journal
     ActivePage = ts1
     Align = alClient
     MultiLine = True
-    TabOrder = 0
+    TabOrder = 1
     TabPosition = tpLeft
     OnChange = pgcPageChange
     object ts1: TTabSheet
@@ -88,7 +88,7 @@ object fKC6Journal: TfKC6Journal
         Font.Style = []
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 2
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
@@ -151,7 +151,7 @@ object fKC6Journal: TfKC6Journal
         Font.Style = []
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 1
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
@@ -192,7 +192,7 @@ object fKC6Journal: TfKC6Journal
     Width = 745
     Height = 57
     Align = alTop
-    TabOrder = 1
+    TabOrder = 0
     DesignSize = (
       745
       57)
@@ -225,7 +225,7 @@ object fKC6Journal: TfKC6Journal
       Style = csDropDownList
       Anchors = [akTop, akRight]
       ItemIndex = 0
-      TabOrder = 0
+      TabOrder = 5
       TabStop = False
       Text = #1082#1086#1083#1080#1095#1077#1089#1090#1074#1086
       OnChange = cbbFromMonthChange
@@ -241,7 +241,7 @@ object fKC6Journal: TfKC6Journal
       Anchors = [akTop, akRight]
       Caption = #1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084
       Checked = True
-      TabOrder = 1
+      TabOrder = 6
       TabStop = True
       OnClick = rbRatesClick
     end
@@ -252,7 +252,7 @@ object fKC6Journal: TfKC6Journal
       Height = 17
       Anchors = [akTop, akRight]
       Caption = #1087#1086' '#1055#1058#1052
-      TabOrder = 2
+      TabOrder = 7
       OnClick = rbRatesClick
     end
     object cbbFromMonth: TComboBox
@@ -263,7 +263,7 @@ object fKC6Journal: TfKC6Journal
       Style = csDropDownList
       DropDownCount = 12
       ItemIndex = 1
-      TabOrder = 3
+      TabOrder = 1
       Text = #1060#1077#1074#1088#1072#1083#1100
       OnChange = cbbFromMonthChange
       Items.Strings = (
@@ -288,7 +288,7 @@ object fKC6Journal: TfKC6Journal
       Style = csDropDownList
       DropDownCount = 12
       ItemIndex = 1
-      TabOrder = 4
+      TabOrder = 3
       Text = #1060#1077#1074#1088#1072#1083#1100
       OnChange = cbbFromMonthChange
       Items.Strings = (
@@ -312,7 +312,7 @@ object fKC6Journal: TfKC6Journal
       Height = 22
       MaxValue = 2100
       MinValue = 1900
-      TabOrder = 5
+      TabOrder = 2
       Value = 2014
       OnChange = cbbFromMonthChange
     end
@@ -323,7 +323,7 @@ object fKC6Journal: TfKC6Journal
       Height = 22
       MaxValue = 2100
       MinValue = 1900
-      TabOrder = 6
+      TabOrder = 4
       Value = 2014
       OnChange = cbbFromMonthChange
     end
@@ -336,7 +336,7 @@ object fKC6Journal: TfKC6Journal
       KeyField = 'OBJ_ID'
       ListField = 'NAME'
       ListSource = dsObject
-      TabOrder = 7
+      TabOrder = 0
     end
   end
   object qrTreeData: TFDQuery
@@ -428,14 +428,13 @@ object fKC6Journal: TfKC6Journal
       '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
-        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        '(s1.PARENT_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
+        '(s2.PARENT_ID) IN '
       
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID)' +
+        ' = :SM_ID))'
       ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
       ')'
       ''
@@ -467,14 +466,13 @@ object fKC6Journal: TfKC6Journal
       '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
-        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        '(s1.PARENT_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
+        '(s2.PARENT_ID) IN '
       
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID)' +
+        ' = :SM_ID))'
       ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
       ')'
       ''
@@ -506,14 +504,13 @@ object fKC6Journal: TfKC6Journal
       '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
-        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        '(s1.PARENT_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
+        '(s2.PARENT_ID) IN '
       
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID)' +
+        ' = :SM_ID))'
       ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
       ')'
       ''
@@ -543,14 +540,13 @@ object fKC6Journal: TfKC6Journal
       '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
-        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        '(s1.PARENT_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
+        '(s2.PARENT_ID) IN '
       
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID)' +
+        ' = :SM_ID))'
       ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
       ')'
       ''
@@ -580,14 +576,13 @@ object fKC6Journal: TfKC6Journal
       '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_LOCAL_ID + s1.PARENT_PTM_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085 +
-        #1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        '(s1.PARENT_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
       
         ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_LOCAL_ID + s2.PARENT_PTM_ID) IN '
+        '(s2.PARENT_ID) IN '
       
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_LOC' +
-        'AL_ID + s1.PARENT_PTM_ID) = :SM_ID))'
+        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID)' +
+        ' = :SM_ID))'
       ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
       ')'
       'ORDER BY 1,2'
@@ -600,7 +595,7 @@ object fKC6Journal: TfKC6Journal
         DataType = ftLongWord
         ParamType = ptInput
         Size = 4
-        Value = 310
+        Value = 344
       end>
   end
   object dsData: TDataSource
@@ -749,13 +744,14 @@ object fKC6Journal: TfKC6Journal
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
         SourceDataType = dtByteString
         TargetDataType = dtAnsiString
       end>
+    FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ###'
     SQL.Strings = (
       '/* '#1054#1073#1098#1077#1082#1090#1085#1099#1077' */'
       
@@ -770,12 +766,14 @@ object fKC6Journal: TfKC6Journal
       ''
       '/* '#1051#1086#1082#1072#1083#1100#1085#1099#1077' */'
       
-        'SELECT CONCAT((PARENT_ID), SM_ID) AS SM_ID, SM_TYPE, NAME as NAM' +
-        'E, SM_NUMBER, SM_ID as ID, (NULL) AS PTM_COST, '
+        'SELECT CONCAT((s.PARENT_ID), s.SM_ID) AS SM_ID, s.SM_TYPE, s.NAM' +
+        'E as NAME, s.SM_NUMBER, s.SM_ID as ID, (SELECT SUM(s1.S_STOIM) F' +
+        'ROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID) AS PTM_COST' +
+        ', '
       '(NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT  '
-      'FROM smetasourcedata'
-      'WHERE SM_TYPE=1 AND '
-      '      OBJ_ID=:OBJ_ID'
+      'FROM smetasourcedata s'
+      'WHERE s.SM_TYPE=1 AND '
+      '      s.OBJ_ID=:OBJ_ID'
       ''
       'UNION ALL'
       ''
@@ -787,48 +785,12 @@ object fKC6Journal: TfKC6Journal
       
         '(s2.PARENT_ID), s2.SM_ID) AS SM_ID, s2.SM_TYPE, s2.NAME as NAME,' +
         ' CONCAT('#39' - '#39', s2.SM_NUMBER) as SM_NUMBER, SM_ID as ID,'
-      
-        '/*'#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084' + '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084' + '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087 +
-        #1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084', '#1074#1099#1085#1089#1077#1085#1085#1099#1084' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091'*/'
-      
-        '(COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate WH' +
-        'ERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estim' +
-        'ate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
-      
-        'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialca' +
-        'rd WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = da' +
-        'ta_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
-      '(0)) AS PTM_COST, '
-      
-        '/*'#1042#1067#1055#1054#1051#1053#1045#1053#1054' '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084' + '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084' + '#1057 +
-        #1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084', '#1074#1099#1085#1089#1077#1085#1085#1099#1084' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091'*/'
-      
-        '(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_estimat' +
-        'e where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data' +
-        '_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
-      
-        'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard_a' +
-        'ct WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.ID ' +
-        '= data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
-      '(0)) AS PTM_COST_DONE,'
+      '/*'#1057#1090#1086#1080#1084#1086#1089#1090#1100'*/'
+      '(s2.S_STOIM) AS PTM_COST, '
+      '/*'#1042#1067#1055#1054#1051#1053#1045#1053#1054' */'
+      '(0) AS PTM_COST_DONE,'
       '/* '#1054#1057#1058#1040#1058#1054#1050' */'
-      
-        '((COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate W' +
-        'HERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_esti' +
-        'mate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
-      
-        'COALESCE((SELECT SUM(MAT_SUM_NDS) FROM data_estimate, materialca' +
-        'rd WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = da' +
-        'ta_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
-      
-        '(0))-(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_es' +
-        'timate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id' +
-        '=data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
-      
-        'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard_a' +
-        'ct WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.ID ' +
-        '= data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
-      '(0))) AS PTM_COST_OUT    '
+      '(0) AS PTM_COST_OUT    '
       'FROM smetasourcedata s2'
       'WHERE s2.SM_TYPE=3 AND '
       '      s2.OBJ_ID=:OBJ_ID'
@@ -841,7 +803,7 @@ object fKC6Journal: TfKC6Journal
         DataType = ftAutoInc
         ParamType = ptInput
         Size = 4
-        Value = 36
+        Value = 40
       end>
   end
   object dsPTM: TDataSource
