@@ -3,7 +3,7 @@ object fKC6Journal: TfKC6Journal
   Top = 0
   Caption = #1046#1091#1088#1085#1072#1083' '#1050#1057'-6'
   ClientHeight = 400
-  ClientWidth = 745
+  ClientWidth = 962
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,7 +23,7 @@ object fKC6Journal: TfKC6Journal
   object pgcPage: TPageControl
     Left = 0
     Top = 57
-    Width = 745
+    Width = 962
     Height = 343
     ActivePage = ts1
     Align = alClient
@@ -31,12 +31,15 @@ object fKC6Journal: TfKC6Journal
     TabOrder = 1
     TabPosition = tpLeft
     OnChange = pgcPageChange
+    ExplicitLeft = -8
+    ExplicitWidth = 965
     object ts1: TTabSheet
       Caption = #1055#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084
+      ExplicitWidth = 717
       object spl1: TSplitter
         Left = 0
         Top = 121
-        Width = 717
+        Width = 934
         Height = 3
         Cursor = crVSplit
         Align = alTop
@@ -45,7 +48,7 @@ object fKC6Journal: TfKC6Journal
       object spl2: TSplitter
         Left = 0
         Top = 272
-        Width = 717
+        Width = 934
         Height = 3
         Cursor = crVSplit
         Align = alBottom
@@ -56,7 +59,7 @@ object fKC6Journal: TfKC6Journal
       object tvEstimates: TJvDBTreeView
         Left = 0
         Top = 0
-        Width = 717
+        Width = 934
         Height = 121
         DataSource = dsTreeData
         MasterField = 'SM_ID'
@@ -72,11 +75,12 @@ object fKC6Journal: TfKC6Journal
         OnClick = tvEstimatesClick
         RowSelect = True
         Mirror = False
+        ExplicitWidth = 717
       end
       object dbgrd2: TDBGrid
         Left = 0
         Top = 275
-        Width = 717
+        Width = 934
         Height = 60
         Align = alBottom
         DataSource = dsDetail
@@ -105,7 +109,7 @@ object fKC6Journal: TfKC6Journal
           end
           item
             Expanded = False
-            FieldName = 'DATE'
+            FieldName = 'MONTHYEAR'
             Title.Alignment = taCenter
             Title.Caption = #1052#1077#1089#1103#1094
             Width = 81
@@ -139,7 +143,7 @@ object fKC6Journal: TfKC6Journal
       object dbgrdData: TDBGrid
         Left = 0
         Top = 124
-        Width = 717
+        Width = 934
         Height = 148
         Align = alClient
         DataSource = dsData
@@ -162,10 +166,11 @@ object fKC6Journal: TfKC6Journal
     object ts2: TTabSheet
       Caption = #1055#1086' '#1055#1058#1052
       ImageIndex = 1
+      ExplicitWidth = 717
       object dbgrdPTM: TDBGrid
         Left = 0
         Top = 0
-        Width = 717
+        Width = 934
         Height = 335
         Align = alClient
         DataSource = dsPTM
@@ -189,12 +194,13 @@ object fKC6Journal: TfKC6Journal
   object pnl1: TPanel
     Left = 0
     Top = 0
-    Width = 745
+    Width = 962
     Height = 57
     Align = alTop
     TabOrder = 0
+    ExplicitTop = -2
     DesignSize = (
-      745
+      962
       57)
     object lbl1: TLabel
       Left = 8
@@ -218,14 +224,14 @@ object fKC6Journal: TfKC6Journal
       Caption = #1087#1086
     end
     object cbbMode: TComboBox
-      Left = 658
+      Left = 723
       Top = 30
       Width = 83
       Height = 21
       Style = csDropDownList
       Anchors = [akTop, akRight]
       ItemIndex = 0
-      TabOrder = 5
+      TabOrder = 7
       TabStop = False
       Text = #1082#1086#1083#1080#1095#1077#1089#1090#1074#1086
       OnChange = cbbFromMonthChange
@@ -234,25 +240,25 @@ object fKC6Journal: TfKC6Journal
         #1089#1090#1086#1080#1084#1086#1089#1090#1100)
     end
     object rbRates: TRadioButton
-      Left = 494
+      Left = 812
       Top = 32
-      Width = 87
+      Width = 84
       Height = 17
       Anchors = [akTop, akRight]
       Caption = #1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084
       Checked = True
-      TabOrder = 6
+      TabOrder = 8
       TabStop = True
       OnClick = rbRatesClick
     end
     object rbPTM: TRadioButton
-      Left = 587
+      Left = 902
       Top = 32
-      Width = 65
+      Width = 56
       Height = 17
       Anchors = [akTop, akRight]
       Caption = #1087#1086' '#1055#1058#1052
-      TabOrder = 7
+      TabOrder = 9
       OnClick = rbRatesClick
     end
     object cbbFromMonth: TComboBox
@@ -263,7 +269,7 @@ object fKC6Journal: TfKC6Journal
       Style = csDropDownList
       DropDownCount = 12
       ItemIndex = 1
-      TabOrder = 1
+      TabOrder = 3
       Text = #1060#1077#1074#1088#1072#1083#1100
       OnChange = cbbFromMonthChange
       Items.Strings = (
@@ -288,7 +294,7 @@ object fKC6Journal: TfKC6Journal
       Style = csDropDownList
       DropDownCount = 12
       ItemIndex = 1
-      TabOrder = 3
+      TabOrder = 5
       Text = #1060#1077#1074#1088#1072#1083#1100
       OnChange = cbbFromMonthChange
       Items.Strings = (
@@ -312,7 +318,7 @@ object fKC6Journal: TfKC6Journal
       Height = 22
       MaxValue = 2100
       MinValue = 1900
-      TabOrder = 2
+      TabOrder = 4
       Value = 2014
       OnChange = cbbFromMonthChange
     end
@@ -323,20 +329,40 @@ object fKC6Journal: TfKC6Journal
       Height = 22
       MaxValue = 2100
       MinValue = 1900
-      TabOrder = 4
+      TabOrder = 6
       Value = 2014
       OnChange = cbbFromMonthChange
     end
     object dblkcbbNAME: TDBLookupComboBox
       Left = 53
       Top = 5
-      Width = 688
+      Width = 508
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       KeyField = 'OBJ_ID'
       ListField = 'NAME'
       ListSource = dsObject
       TabOrder = 0
+    end
+    object chkOHROPRPP: TCheckBox
+      Left = 567
+      Top = 7
+      Width = 226
+      Height = 17
+      Anchors = [akTop, akRight]
+      Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1089#1090#1086#1080#1084'. '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1087#1083#1072#1085'. '#1087#1088#1080#1073'.'
+      TabOrder = 1
+      OnClick = cbbFromMonthChange
+    end
+    object chkZimUdor: TCheckBox
+      Left = 799
+      Top = 7
+      Width = 162
+      Height = 17
+      Anchors = [akTop, akRight]
+      Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1089#1090#1086#1080#1084'. '#1079#1080#1084'. '#1091#1076#1086#1088'.'
+      TabOrder = 2
+      OnClick = cbbFromMonthChange
     end
   end
   object qrTreeData: TFDQuery
@@ -381,14 +407,12 @@ object fKC6Journal: TfKC6Journal
     Top = 64
   end
   object qrData: TFDQuery
-    MasterSource = dsTreeData
-    MasterFields = 'SM_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -399,203 +423,185 @@ object fKC6Journal: TfKC6Journal
         SourceDataType = dtByteString
         TargetDataType = dtAnsiString
       end>
+    FormatOptions.DefaultParamDataType = ftBCD
+    FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ##0.######'
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      '/* '#1056#1040#1057#1062#1045#1053#1050#1048' */'
       'SELECT '
-      '  ID_ESTIMATE,'
-      '  ID_TYPE_DATA,'
-      '  card_rate.ID as ID_TABLES,'
-      '  RATE_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  RATE_CAPTION AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  RATE_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(RATE_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       
-        '  COALESCE((SELECT SUM(RATE_COUNT) FROM card_rate_act where id=d' +
-        'ata_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
+        'CONCAT(IF(((sm.`SM_ID` = :SM_ID) OR (sm.`PARENT_ID` = :SM_ID)), ' +
+        #39#39', :SM_ID), sm.`PARENT_ID`, sm.`SM_ID`, d.`ID`) as SORT_ID,'
+      'CASE d.`ID_TYPE_DATA` '
+      '  WHEN 1 THEN cr.`RATE_CODE`'
+      '  WHEN 2 THEN mat.`MAT_CODE`'
+      '  WHEN 3 THEN mech.`MECH_CODE`'
+      '  WHEN 4 THEN dev.`DEVICE_CODE`'
+      '  WHEN 5 THEN dmp.`DUMP_CODE_JUST`'
+      '  WHEN 6 THEN tr.`TRANSP_CODE_JUST`'
+      '  WHEN 7 THEN tr.`TRANSP_CODE_JUST`'
+      '  WHEN 8 THEN tr.`TRANSP_CODE_JUST`'
+      '  WHEN 9 THEN tr.`TRANSP_CODE_JUST`'
+      '  WHEN 10 THEN ('#39#1045#1058'18'#39')'
+      '  WHEN 11 THEN ('#39#1045#1058'20'#39')'
+      'END AS OBJ_CODE, '
+      'CASE d.`ID_TYPE_DATA` '
+      '  WHEN 1 THEN cr.`RATE_CAPTION`'
+      '  WHEN 2 THEN mat.`MAT_NAME`'
+      '  WHEN 3 THEN mech.`MECH_NAME`'
+      '  WHEN 4 THEN dev.`DEVICE_NAME`'
+      '  WHEN 5 THEN dmp.`DUMP_NAME`'
+      '  WHEN 6 THEN tr.`TRANSP_JUST`'
+      '  WHEN 7 THEN tr.`TRANSP_JUST`'
+      '  WHEN 8 THEN tr.`TRANSP_JUST`'
+      '  WHEN 9 THEN tr.`TRANSP_JUST`'
+      '  WHEN 10 THEN ('#39#1045#1058'18'#39')'
+      '  WHEN 11 THEN ('#39#1045#1058'20'#39')'
+      'END AS OBJ_NAME, '
+      'IF(:BY_COUNT=1,'
+      'CASE d.`ID_TYPE_DATA` '
+      '  WHEN 1 THEN cr.`RATE_COUNT`'
+      '  WHEN 2 THEN mat.`MAT_COUNT`'
+      '  WHEN 3 THEN mech.`MECH_COUNT`'
+      '  WHEN 4 THEN dev.`DEVICE_COUNT`'
+      '  WHEN 5 THEN dmp.`DUMP_COUNT`'
+      '  WHEN 6 THEN tr.`TRANSP_COUNT`'
+      '  WHEN 7 THEN tr.`TRANSP_COUNT`'
+      '  WHEN 8 THEN tr.`TRANSP_COUNT`'
+      '  WHEN 9 THEN tr.`TRANSP_COUNT`'
+      '  WHEN 10 THEN d.`E1820_COUNT`'
+      '  WHEN 11 THEN d.`E1820_COUNT`'
       
-        '  COALESCE((COALESCE(RATE_COUNT, 0) - COALESCE((SELECT SUM(RATE_' +
-        'COUNT) FROM card_rate_act where id=data_estimate.ID_TABLES), 0))' +
-        ', 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
-      'FROM '
-      '  data_estimate, card_rate'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 1 AND'
-      'card_rate.ID = data_estimate.ID_TABLES AND'
-      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        'END, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`ST_OHROPR`, d.`STOIM`)+' +
+        'IF(:FL_INCL_WINTER=1, (d.`ZIM_UDOR` + d.`ZP_ZIM_UDOR`) * sm.`APP' +
+        'LY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'
+      'CASE d.`ID_TYPE_DATA` '
+      '  WHEN 1 THEN cr.`RATE_UNIT`'
+      '  WHEN 2 THEN mat.`MAT_UNIT`'
+      '  WHEN 3 THEN mech.`MECH_UNIT`'
+      '  WHEN 4 THEN dev.`DEVICE_UNIT`'
+      '  WHEN 5 THEN dmp.`DUMP_UNIT`'
+      '  WHEN 6 THEN tr.`CARG_UNIT`'
+      '  WHEN 7 THEN tr.`CARG_UNIT`'
+      '  WHEN 8 THEN tr.`CARG_UNIT`'
+      '  WHEN 9 THEN tr.`CARG_UNIT`'
+      '  WHEN 10 THEN ('#39#1096#1090'.'#39')'
+      '  WHEN 11 THEN ('#39#1096#1090'.'#39')'
+      'END AS OBJ_UNIT, '
+      'd.`ID_TYPE_DATA` as ID_TYPE_DATA,'
+      'd.`ID` as DATA_ESTIMATE_OR_ACT_ID,'
+      'd.`ID_TABLES` AS ID_TABLES,'
+      'sm.`SM_ID`'
+      'FROM `smetasourcedata` sm, `data_estimate` d'
       
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        'LEFT JOIN `card_rate` cr ON d.`ID_TYPE_DATA` = 1 AND cr.`ID` = d' +
+        '.`ID_TABLES`'
       
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_ID) IN '
+        'LEFT JOIN `materialcard` mat ON d.`ID_TYPE_DATA` = 2 AND mat.`ID' +
+        '` = d.`ID_TABLES`'
       
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID)' +
-        ' = :SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      ''
+        'LEFT JOIN `mechanizmcard` mech ON d.`ID_TYPE_DATA` = 3 AND mech.' +
+        '`ID` = d.`ID_TABLES`'
+      
+        'LEFT JOIN `devicescard` dev ON d.`ID_TYPE_DATA` = 4 AND dev.`ID`' +
+        ' = d.`ID_TABLES`'
+      
+        'LEFT JOIN `dumpcard` dmp ON d.`ID_TYPE_DATA` = 5 AND dmp.`ID` = ' +
+        'd.`ID_TABLES`'
+      
+        'LEFT JOIN `transpcard` tr ON d.`ID_TYPE_DATA` IN (6,7,8,9) AND t' +
+        'r.`ID` = d.`ID_TABLES`'
+      'WHERE sm.`SM_ID`=d.`ID_ESTIMATE` AND'
+      '      ((sm.`SM_ID` = :SM_ID) OR '
+      '       (sm.`PARENT_ID` = :SM_ID) OR'
+      '       (sm.`PARENT_ID` IN '
+      '        (SELECT `smetasourcedata`.`SM_ID` '
+      '         FROM `smetasourcedata` '
+      '         WHERE `smetasourcedata`.`PARENT_ID` = :SM_ID)))'
       'UNION ALL'
-      ''
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042' '#1056#1040#1057#1062#1045#1053#1050#1045'*/'
+      '/* '#1042#1099#1074#1086#1076#1080#1084' '#1079#1072#1084#1077#1085#1103#1102#1097#1080#1077' '#1084#1072#1090#1077#1088#1080#1072#1083#1099' */'
       'SELECT '
-      '  ID_ESTIMATE,'
-      '  ID_TYPE_DATA,'
-      '  materialcard.ID AS ID_TABLES,'
-      '  CONCAT('#39'    '#39', MAT_CODE) AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       
-        '  COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id' +
-        '=data_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
+        'CONCAT(IF(((sm.`SM_ID` = :SM_ID) OR (sm.`PARENT_ID` = :SM_ID)), ' +
+        #39#39', :SM_ID), sm.`PARENT_ID`, sm.`SM_ID`, d.`ID`, mat.`ID`) as SO' +
+        'RT_ID,'
+      'CONCAT('#39'   '#39', mat.`MAT_CODE`) AS OBJ_CODE, '
+      'mat.`MAT_NAME` AS OBJ_NAME,'
+      '/*'#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1076#1086#1089#1090#1072#1077#1090#1089#1103' '#1085#1077#1074#1077#1088#1085#1086'*/'
       
-        '  COALESCE((COALESCE(MAT_COUNT, 0) - COALESCE((SELECT SUM(MAT_CO' +
-        'UNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)' +
-        '), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
-      'FROM '
-      '  data_estimate, card_rate, materialcard'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 1 AND'
-      'card_rate.ID = data_estimate.ID_TABLES AND'
-      'materialcard.ID_CARD_RATE = card_rate.ID AND'
-      'materialcard.CONSIDERED = 0 AND'
-      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        'IF(:BY_COUNT=1, mat.`MAT_COUNT`, ROUND(IF(:FL_INCL_OHROPR_PLPR=1' +
+        ', d.`ST_OHROPR`, d.`STOIM`)+IF(:FL_INCL_WINTER=1, (d.`ZIM_UDOR` ' +
+        '+ d.`ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_' +
+        'COUNT, '
+      'mat.`MAT_UNIT` AS OBJ_UNIT, '
+      'd.`ID_TYPE_DATA` as ID_TYPE_DATA,'
+      'd.`ID` as DATA_ESTIMATE_OR_ACT_ID,'
+      'd.`ID_TABLES` AS ID_TABLES,'
+      'sm.`SM_ID`'
+      'FROM `smetasourcedata` sm, `data_estimate` d'
+      'JOIN `card_rate` cr ON cr.`ID` = d.`ID_TABLES`'
       
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID)' +
-        ' = :SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      ''
+        'JOIN `materialcard` mat ON cr.`ID` = d.`ID_TABLES` AND mat.`ID_C' +
+        'ARD_RATE` = d.`ID_TABLES` AND mat.`ID_REPLACED` > 0'
+      'WHERE sm.`SM_ID`=d.`ID_ESTIMATE` AND'
+      '      d.`ID_TYPE_DATA` = 1 AND'
+      '      ((sm.`SM_ID` = :SM_ID) OR '
+      '       (sm.`PARENT_ID` = :SM_ID) OR'
+      '       (sm.`PARENT_ID` IN '
+      '        (SELECT `smetasourcedata`.`SM_ID` '
+      '         FROM `smetasourcedata` '
+      '         WHERE `smetasourcedata`.`PARENT_ID` = :SM_ID)))'
       'UNION ALL'
-      ''
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042#1067#1053#1045#1057#1045#1053#1053#1067#1045' '#1047#1040' '#1056#1040#1057#1062#1045#1053#1050#1059'*/'
-      'SELECT '
-      '  ID_ESTIMATE,'
-      '  2 as ID_TYPE_DATA,'
-      '  materialcard.ID AS ID_TABLES,'
-      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      '/* '#1047#1072#1075#1086#1083#1086#1074#1082#1080' '#1088#1072#1079#1076#1077#1083#1086#1074' */'
+      'select CONCAT('
       
-        '  COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id' +
-        '=data_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
+        'IF(((sm.`SM_ID` = :SM_ID) OR (sm.`PARENT_ID` = :SM_ID)), '#39#39', :SM' +
+        '_ID), sm.`PARENT_ID`, sm.`SM_ID`) as SORT_ID,'
       
-        '  COALESCE((COALESCE(MAT_COUNT, 0) - COALESCE((SELECT SUM(MAT_CO' +
-        'UNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)' +
-        '), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
-      'FROM '
-      '  data_estimate, card_rate, materialcard'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 1 AND'
-      'card_rate.ID = data_estimate.ID_TABLES AND'
-      'materialcard.ID_CARD_RATE = card_rate.ID AND'
-      'materialcard.FROM_RATE = 1 AND'
-      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
+        'CONCAT(sm.`SM_NUMBER`, '#39' '#39', sm.`NAME`) AS OBJ_CODE, NULL AS OBJ_' +
+        'NAME, '
       
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID)' +
-        ' = :SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      ''
-      'UNION ALL'
-      ''
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067'*/'
-      'SELECT '
-      '  ID_ESTIMATE,'
-      '  ID_TYPE_DATA,'
-      '  materialcard.ID AS ID_TABLES,'
-      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
-      
-        '  COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id' +
-        '=data_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
-      
-        '  COALESCE((COALESCE(MAT_COUNT, 0) - COALESCE((SELECT SUM(MAT_CO' +
-        'UNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)' +
-        '), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
-      'FROM '
-      '  data_estimate, materialcard'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 2 AND'
-      'materialcard.ID = data_estimate.ID_TABLES AND'
-      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID)' +
-        ' = :SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      ''
-      'UNION ALL'
-      ''
-      '/* '#1052#1045#1061#1040#1053#1048#1047#1052#1067' */'
-      'SELECT '
-      '  ID_ESTIMATE,'
-      '  ID_TYPE_DATA,'
-      '  mechanizmcard.ID AS ID_TABLES,'
-      '  MECH_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MECH_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MECH_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(MECH_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
-      
-        '  COALESCE((SELECT SUM(MECH_COUNT) FROM mechanizmcard_act where ' +
-        'id=data_estimate.ID_TABLES), 0) AS CntDone, /* '#1042#1099#1087#1086#1083#1085#1077#1085#1086' */'
-      
-        '  COALESCE((COALESCE(MECH_COUNT, 0) - COALESCE((SELECT SUM(MECH_' +
-        'COUNT) FROM mechanizmcard_act where id=data_estimate.ID_TABLES),' +
-        ' 0)), 0) AS CntOut /* '#1054#1089#1090#1072#1090#1086#1082' */'
-      'FROM '
-      '  data_estimate, mechanizmcard'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 3 AND'
-      'mechanizmcard.ID = data_estimate.ID_TABLES AND'
-      '((ID_ESTIMATE = :SM_ID) OR /* '#1054#1073#1098#1077#1082#1090#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE ' +
-        '(s1.PARENT_ID) = :SM_ID)) OR /* '#1051#1086#1082#1072#1083#1100#1085#1099#1081' '#1091#1088#1086#1074#1077#1085#1100' */'
-      
-        ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE ' +
-        '(s2.PARENT_ID) IN '
-      
-        '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID)' +
-        ' = :SM_ID))'
-      ' ) /* '#1055#1058#1052' '#1091#1088#1086#1074#1077#1085#1100' */'
-      ')'
-      'ORDER BY 1,2'
-      '')
+        'IF(:BY_COUNT=1, NULL, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, sm.`S_ST_' +
+        'OHROPR`, sm.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (sm.`S_ZIM_UDOR` + ' +
+        'sm.`S_ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ' +
+        '_COUNT, '
+      'NULL AS OBJ_UNIT,(sm.`SM_TYPE` * -1) as ID_TYPE_DATA,'
+      'NULL AS DATA_ESTIMATE_OR_ACT_ID, NULL AS ID_TABLES, sm.`SM_ID`'
+      'FROM `smetasourcedata` sm'
+      'WHERE ((sm.`PARENT_ID` = :SM_ID) OR'
+      '       (sm.`PARENT_ID` IN '
+      '        (SELECT `smetasourcedata`.`SM_ID` '
+      '         FROM `smetasourcedata` '
+      '         WHERE `smetasourcedata`.`PARENT_ID` = :SM_ID)))'
+      'ORDER BY SORT_ID')
     Left = 24
     Top = 184
     ParamData = <
       item
         Name = 'SM_ID'
-        DataType = ftLongWord
+        DataType = ftInteger
         ParamType = ptInput
-        Size = 4
         Value = 344
+      end
+      item
+        Name = 'BY_COUNT'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 1
+      end
+      item
+        Name = 'FL_INCL_OHROPR_PLPR'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 1
+      end
+      item
+        Name = 'FL_INCL_WINTER'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 1
       end>
   end
   object dsData: TDataSource
@@ -610,18 +616,19 @@ object fKC6Journal: TfKC6Journal
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
         SourceDataType = dtMemo
         TargetDataType = dtAnsiString
       end>
+    FormatOptions.DefaultParamDataType = ftBCD
     SQL.Strings = (
       '/* '#1056#1040#1057#1062#1045#1053#1050#1048' */'
       'SELECT '
       '  Trim(card_acts.name) as docname,'
-      '  card_acts.DATE,'
+      '  card_acts.DATE AS MONTHYEAR,'
       '  card_rate_act.RATE_CODE as osnov,'
       '  card_rate_act.RATE_COUNT as cnt'
       'FROM '
@@ -636,7 +643,7 @@ object fKC6Journal: TfKC6Journal
       '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' */'
       'SELECT '
       '  Trim(card_acts.name) as docname,'
-      '  card_acts.DATE,'
+      '  card_acts.DATE AS MONTHYEAR,'
       '  materialcard_act.MAT_CODE as osnov,'
       '  materialcard_act.MAT_COUNT as cnt'
       'FROM '
@@ -651,7 +658,7 @@ object fKC6Journal: TfKC6Journal
       '/* '#1052#1045#1061#1040#1053#1048#1047#1052#1067' */'
       'SELECT '
       '  Trim(card_acts.name) as docname,'
-      '  card_acts.DATE,'
+      '  card_acts.DATE AS MONTHYEAR,'
       '  mechanizmcard_act.MECH_CODE as osnov,'
       '  mechanizmcard_act.MECH_COUNT as cnt'
       'FROM '
@@ -659,23 +666,21 @@ object fKC6Journal: TfKC6Journal
       'WHERE '
       ':ID_TYPE_DATA = 3 AND'
       'mechanizmcard_act.ID = :ID_TABLES AND'
-      'mechanizmcard_act.ID_ACT = card_acts.ID'
-      ''
-      '')
+      'mechanizmcard_act.ID_ACT = card_acts.ID')
     Left = 25
     Top = 336
     ParamData = <
       item
         Name = 'ID_TYPE_DATA'
-        DataType = ftString
+        DataType = ftInteger
         ParamType = ptInput
-        Value = '0'
+        Value = 0
       end
       item
         Name = 'ID_TABLES'
-        DataType = ftString
+        DataType = ftInteger
         ParamType = ptInput
-        Value = '0'
+        Value = 0
       end>
     object qrDetaildocname: TStringField
       AutoGenerateValue = arDefault
@@ -684,14 +689,6 @@ object fKC6Journal: TfKC6Journal
       ProviderFlags = []
       ReadOnly = True
       Size = 32767
-    end
-    object qrDetailDATE: TDateTimeField
-      AutoGenerateValue = arDefault
-      FieldName = 'DATE'
-      Origin = 'DATE'
-      ProviderFlags = []
-      ReadOnly = True
-      DisplayFormat = 'mmmm yyyy'
     end
     object qrDetailosnov: TStringField
       AutoGenerateValue = arDefault
@@ -713,6 +710,14 @@ object fKC6Journal: TfKC6Journal
       FieldKind = fkCalculated
       FieldName = 'Number'
       Calculated = True
+    end
+    object qrDetailMONTHYEAR: TDateField
+      AutoGenerateValue = arDefault
+      FieldName = 'MONTHYEAR'
+      Origin = 'MONTHYEAR'
+      ProviderFlags = []
+      ReadOnly = True
+      DisplayFormat = 'mmmm yyyy'
     end
   end
   object dsDetail: TDataSource
@@ -737,74 +742,22 @@ object fKC6Journal: TfKC6Journal
     Top = 1
   end
   object qrPTM: TFDQuery
-    MasterSource = dsObject
-    MasterFields = 'OBJ_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
         SourceDataType = dtByteString
         TargetDataType = dtAnsiString
       end>
+    FormatOptions.DefaultParamDataType = ftBCD
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ###'
-    SQL.Strings = (
-      '/* '#1054#1073#1098#1077#1082#1090#1085#1099#1077' */'
-      
-        'SELECT SM_ID, SM_TYPE, NAME as NAME, SM_NUMBER, SM_ID as ID, (NU' +
-        'LL) AS PTM_COST, (NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT' +
-        '      '
-      'FROM smetasourcedata'
-      'WHERE SM_TYPE=2 AND '
-      '      OBJ_ID=:OBJ_ID'
-      ''
-      'UNION ALL'
-      ''
-      '/* '#1051#1086#1082#1072#1083#1100#1085#1099#1077' */'
-      
-        'SELECT CONCAT((s.PARENT_ID), s.SM_ID) AS SM_ID, s.SM_TYPE, s.NAM' +
-        'E as NAME, s.SM_NUMBER, s.SM_ID as ID, (SELECT SUM(s1.S_STOIM) F' +
-        'ROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID) AS PTM_COST' +
-        ', '
-      '(NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT  '
-      'FROM smetasourcedata s'
-      'WHERE s.SM_TYPE=1 AND '
-      '      s.OBJ_ID=:OBJ_ID'
-      ''
-      'UNION ALL'
-      ''
-      '/* '#1055#1058#1052' */'
-      'SELECT CONCAT('
-      
-        '(SELECT (s1.PARENT_ID) FROM smetasourcedata s1 WHERE s1.SM_ID=(s' +
-        '2.PARENT_ID)), '
-      
-        '(s2.PARENT_ID), s2.SM_ID) AS SM_ID, s2.SM_TYPE, s2.NAME as NAME,' +
-        ' CONCAT('#39' - '#39', s2.SM_NUMBER) as SM_NUMBER, SM_ID as ID,'
-      '/*'#1057#1090#1086#1080#1084#1086#1089#1090#1100'*/'
-      '(s2.S_STOIM) AS PTM_COST, '
-      '/*'#1042#1067#1055#1054#1051#1053#1045#1053#1054' */'
-      '(0) AS PTM_COST_DONE,'
-      '/* '#1054#1057#1058#1040#1058#1054#1050' */'
-      '(0) AS PTM_COST_OUT    '
-      'FROM smetasourcedata s2'
-      'WHERE s2.SM_TYPE=3 AND '
-      '      s2.OBJ_ID=:OBJ_ID'
-      'ORDER BY 1,4,5')
     Left = 201
     Top = 136
-    ParamData = <
-      item
-        Name = 'OBJ_ID'
-        DataType = ftAutoInc
-        ParamType = ptInput
-        Size = 4
-        Value = 40
-      end>
   end
   object dsPTM: TDataSource
     DataSet = qrPTM

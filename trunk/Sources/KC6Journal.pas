@@ -44,10 +44,12 @@ type
     qrPTM: TFDQuery;
     dsPTM: TDataSource;
     qrDetaildocname: TStringField;
-    qrDetailDATE: TDateTimeField;
     qrDetailosnov: TStringField;
     qrDetailcnt: TFMTBCDField;
     qrDetailNumber: TIntegerField;
+    chkOHROPRPP: TCheckBox;
+    chkZimUdor: TCheckBox;
+    qrDetailMONTHYEAR: TDateField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure rbRatesClick(Sender: TObject);
@@ -97,31 +99,37 @@ var
 
 begin
   //FormWaiting.Show;
-  if SkipReload then
+  if SkipReload or (not CheckQrActiveEmpty(qrTreeData)) then
     Exit;
   try
     qrData.DisableControls;
     qrPTM.DisableControls;
 
     // Добавляем основные колонки в таблицу
-    dbgrdData.Columns.Clear;
-    addCol(dbgrdData, 'ITERATOR', '№пп', 30);
-    addCol(dbgrdData, 'CODE', 'Обоснование', 80);
-    addCol(dbgrdData, 'NAME', 'Наименование', 250);
-    addCol(dbgrdData, 'CNT', 'Кол-во', 60);
-    addCol(dbgrdData, 'UNIT', 'Ед. изм.', 50);
-    addCol(dbgrdData, 'CntDone', 'Выполнено', 80);
-    addCol(dbgrdData, 'CntOut', 'Остаток', 80);
+    if pgcPage.ActivePageIndex = 0 then
+    begin
+      dbgrdData.Columns.Clear;
+      addCol(dbgrdData, 'ITERATOR', '№пп', 30);
+      addCol(dbgrdData, 'OBJ_CODE', 'Обоснование', 80);
+      addCol(dbgrdData, 'OBJ_NAME', 'Наименование', 250);
+      addCol(dbgrdData, 'OBJ_COUNT', 'Кол-во', 60);
+      addCol(dbgrdData, 'OBJ_UNIT', 'Ед. изм.', 50);
+      addCol(dbgrdData, '', 'Выполнено', 80);
+      addCol(dbgrdData, '', 'Остаток', 80);
+    end;
 
-    dbgrdPTM.Columns.Clear;
-    addCol(dbgrdPTM, '', '№пп', 30);
-    addCol(dbgrdPTM, 'SM_NUMBER', 'Обоснование', 80);
-    addCol(dbgrdPTM, 'NAME', 'Наименование', 250);
-    addCol(dbgrdPTM, '', 'Кол-во', 60);
-    addCol(dbgrdPTM, '', 'Ед. изм.', 50);
-    addCol(dbgrdPTM, 'PTM_COST', 'Стоимость', 80);
-    addCol(dbgrdPTM, 'PTM_COST_DONE', 'Выполнено', 80);
-    addCol(dbgrdPTM, 'PTM_COST_OUT', 'Остаток', 80);
+    if pgcPage.ActivePageIndex = 1 then
+    begin
+      dbgrdPTM.Columns.Clear;
+      addCol(dbgrdPTM, '', '№пп', 30);
+      addCol(dbgrdPTM, 'SM_NUMBER', 'Обоснование', 80);
+      addCol(dbgrdPTM, 'NAME', 'Наименование', 250);
+      addCol(dbgrdPTM, '', 'Кол-во', 60);
+      addCol(dbgrdPTM, '', 'Ед. изм.', 50);
+      addCol(dbgrdPTM, 'PTM_COST', 'Стоимость', 80);
+      addCol(dbgrdPTM, 'PTM_COST_DONE', 'Выполнено', 80);
+      addCol(dbgrdPTM, 'PTM_COST_OUT', 'Остаток', 80);
+    end;
 
     month := cbbFromMonth.ItemIndex + 1;
     year := seFromYear.Value;
@@ -189,9 +197,11 @@ begin
       PTMFieldsEmpty := PTMFieldsEmpty + ', (NULL) AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
 
       PTMFields := PTMFields +
-        ', ROUND((SELECT SUM(data_act.STOIM) FROM data_act, card_acts where data_act.id_act=card_acts.id AND EXTRACT(MONTH FROM card_acts.DATE)='
+        ', ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_act.`ST_OHROPR`, data_act.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_act.`ZIM_UDOR` + data_act.`ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_act, card_acts' +
+        ' where data_act.id_act=card_acts.id AND EXTRACT(MONTH FROM card_acts.DATE)='
         + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ' AND data_act.ID_ESTIMATE = s2.SM_ID)' +
         ') AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
+
       case cbbMode.ItemIndex of
         BY_COUNT:
           begin
@@ -234,145 +244,153 @@ begin
       else
         Inc(month);
     end;
-    // Собираем общий запрос
+    // Собираем общий запрос по расценкам
     if pgcPage.ActivePageIndex = 0 then
     try
       qrData.Active := False;
       qrData.SQL.Text :=
-      '/* РАСЦЕНКИ */'#13 +
       'SELECT'#13 +
-      '  ID_ESTIMATE,'#13 +
-      '  ID_TYPE_DATA,'#13 +
-      '  1 AS INCITERATOR,'#13 +
-      '  0 AS ITERATOR,'#13 +
-      '  card_rate.ID AS ID_TABLES,'#13 +
-      '  RATE_CODE AS CODE, /* Обоснование*/'#13 +
-      '  RATE_CAPTION AS NAME, /* Наименование */'#13 +
-      '  RATE_UNIT AS UNIT, /* Ед. измерения */'#13 +
-      rateCNT +
-      rateCNTDone +
-      rateCNTOut +
-      rateFields +
-      'FROM'#13 +
-      '  data_estimate, card_rate'#13 +
-      'WHERE'#13 +
-      'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
-      'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
-      '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) IN'#13 +
-      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID))'#13 +
-      ' ) /* ПТМ уровень */'#13 +
-      ')'#13 +
+      'CONCAT(IF(((sm.`SM_ID` = :SM_ID) OR (sm.`PARENT_ID` = :SM_ID)), "", :SM_ID), sm.`PARENT_ID`, sm.`SM_ID`, d.`ID`) as SORT_ID,'#13 +
+      '1 AS INCITERATOR,'#13 +
+      '0 AS ITERATOR,'#13 +
+      'CASE d.`ID_TYPE_DATA`'#13 +
+      '  WHEN 1 THEN cr.`RATE_CODE`'#13 +
+      '  WHEN 2 THEN mat.`MAT_CODE`'#13 +
+      '  WHEN 3 THEN mech.`MECH_CODE`'#13 +
+      '  WHEN 4 THEN dev.`DEVICE_CODE`'#13 +
+      '  WHEN 5 THEN dmp.`DUMP_CODE_JUST`'#13 +
+      '  WHEN 6 THEN tr.`TRANSP_CODE_JUST`'#13 +
+      '  WHEN 7 THEN tr.`TRANSP_CODE_JUST`'#13 +
+      '  WHEN 8 THEN tr.`TRANSP_CODE_JUST`'#13 +
+      '  WHEN 9 THEN tr.`TRANSP_CODE_JUST`'#13 +
+      '  WHEN 10 THEN ("ЕТ18")'#13 +
+      '  WHEN 11 THEN ("ЕТ20")'#13 +
+      'END AS OBJ_CODE,'#13 +
+      'CASE d.`ID_TYPE_DATA`'#13 +
+      '  WHEN 1 THEN cr.`RATE_CAPTION`'#13 +
+      '  WHEN 2 THEN mat.`MAT_NAME`'#13 +
+      '  WHEN 3 THEN mech.`MECH_NAME`'#13 +
+      '  WHEN 4 THEN dev.`DEVICE_NAME`'#13 +
+      '  WHEN 5 THEN dmp.`DUMP_NAME`'#13 +
+      '  WHEN 6 THEN tr.`TRANSP_JUST`'#13 +
+      '  WHEN 7 THEN tr.`TRANSP_JUST`'#13 +
+      '  WHEN 8 THEN tr.`TRANSP_JUST`'#13 +
+      '  WHEN 9 THEN tr.`TRANSP_JUST`'#13 +
+      '  WHEN 10 THEN ("")'#13 +
+      '  WHEN 11 THEN ("")'#13 +
+      'END AS OBJ_NAME,'#13 +
+      'IF(:BY_COUNT=1,'#13 +
+      'CASE d.`ID_TYPE_DATA`'#13 +
+      '  WHEN 1 THEN cr.`RATE_COUNT`'#13 +
+      '  WHEN 2 THEN mat.`MAT_COUNT`'#13 +
+      '  WHEN 3 THEN mech.`MECH_COUNT`'#13 +
+      '  WHEN 4 THEN dev.`DEVICE_COUNT`'#13 +
+      '  WHEN 5 THEN dmp.`DUMP_COUNT`'#13 +
+      '  WHEN 6 THEN tr.`TRANSP_COUNT`'#13 +
+      '  WHEN 7 THEN tr.`TRANSP_COUNT`'#13 +
+      '  WHEN 8 THEN tr.`TRANSP_COUNT`'#13 +
+      '  WHEN 9 THEN tr.`TRANSP_COUNT`'#13 +
+      '  WHEN 10 THEN d.`E1820_COUNT`'#13 +
+      '  WHEN 11 THEN d.`E1820_COUNT`'#13 +
+      'END, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`ST_OHROPR`, d.`STOIM`)+IF(:FL_INCL_WINTER=1, (d.`ZIM_UDOR` + d.`ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      'CASE d.`ID_TYPE_DATA`'#13 +
+      '  WHEN 1 THEN cr.`RATE_UNIT`'#13 +
+      '  WHEN 2 THEN mat.`MAT_UNIT`'#13 +
+      '  WHEN 3 THEN mech.`MECH_UNIT`'#13 +
+      '  WHEN 4 THEN dev.`DEVICE_UNIT`'#13 +
+      '  WHEN 5 THEN dmp.`DUMP_UNIT`'#13 +
+      '  WHEN 6 THEN tr.`CARG_UNIT`'#13 +
+      '  WHEN 7 THEN tr.`CARG_UNIT`'#13 +
+      '  WHEN 8 THEN tr.`CARG_UNIT`'#13 +
+      '  WHEN 9 THEN tr.`CARG_UNIT`'#13 +
+      '  WHEN 10 THEN ("шт.")'#13 +
+      '  WHEN 11 THEN ("шт.")'#13 +
+      'END AS OBJ_UNIT,'#13 +
+      'd.`ID_TYPE_DATA` as ID_TYPE_DATA,'#13 +
+      'd.`ID` as DATA_ESTIMATE_OR_ACT_ID,'#13 +
+      'd.`ID_TABLES` AS ID_TABLES,'#13 +
+      'sm.`SM_ID`'#13 +
+      'FROM `smetasourcedata` sm, `data_estimate` d'#13 +
+      'LEFT JOIN `card_rate` cr ON d.`ID_TYPE_DATA` = 1 AND cr.`ID` = d.`ID_TABLES`'#13 +
+      'LEFT JOIN `materialcard` mat ON d.`ID_TYPE_DATA` = 2 AND mat.`ID` = d.`ID_TABLES`'#13 +
+      'LEFT JOIN `mechanizmcard` mech ON d.`ID_TYPE_DATA` = 3 AND mech.`ID` = d.`ID_TABLES`'#13 +
+      'LEFT JOIN `devicescard` dev ON d.`ID_TYPE_DATA` = 4 AND dev.`ID` = d.`ID_TABLES`'#13 +
+      'LEFT JOIN `dumpcard` dmp ON d.`ID_TYPE_DATA` = 5 AND dmp.`ID` = d.`ID_TABLES`'#13 +
+      'LEFT JOIN `transpcard` tr ON d.`ID_TYPE_DATA` IN (6,7,8,9) AND tr.`ID` = d.`ID_TABLES`'#13 +
+      'WHERE sm.`SM_ID`=d.`ID_ESTIMATE` AND'#13 +
+      '      ((sm.`SM_ID` = :SM_ID) OR'#13 +
+      '       (sm.`PARENT_ID` = :SM_ID) OR'#13 +
+      '       (sm.`PARENT_ID` IN'#13 +
+      '        (SELECT `smetasourcedata`.`SM_ID`'#13 +
+      '         FROM `smetasourcedata`'#13 +
+      '         WHERE `smetasourcedata`.`PARENT_ID` = :SM_ID)))'#13 +
       'UNION ALL'#13 +
-      '/* МАТЕРИАЛЫ В РАСЦЕНКЕ*/'#13 +
+      '/* Выводим заменяющие материалы */'#13 +
       'SELECT'#13 +
-      '  ID_ESTIMATE,'#13 +
-      '  ID_TYPE_DATA,'#13 +
-      '  0 AS INCITERATOR,'#13 +
-      '  0 AS ITERATOR,'#13 +
-      '  materialcard.ID AS ID_TABLES,'#13 +
-      '  CONCAT(''    '', MAT_CODE) AS CODE, /* Обоснование*/'#13 +
-      '  MAT_NAME AS NAME, /* Наименование */'#13 +
-      '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
-      matCNT +
-      matCNTDone +
-      matCNTOut +
-      matFields +
-      'FROM'#13 +
-      '  data_estimate, card_rate, materialcard'#13 +
-      'WHERE'#13 +
-      'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
-      'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
-      'materialcard.ID_CARD_RATE = card_rate.ID AND'#13 +
-      'materialcard.CONSIDERED = 0 AND'#13 +
-      '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) IN'#13 +
-      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID))'#13 +
-      ' ) /* ПТМ уровень */'#13 +
-      ')'#13 +
+      'CONCAT(IF(((sm.`SM_ID` = :SM_ID) OR (sm.`PARENT_ID` = :SM_ID)), "", :SM_ID), sm.`PARENT_ID`, sm.`SM_ID`, d.`ID`, mat.`ID`) as SORT_ID,'#13 +
+      '0 AS INCITERATOR,'#13 +
+      '0 AS ITERATOR,'#13 +
+      'CONCAT("   ", mat.`MAT_CODE`) AS OBJ_CODE,'#13 +
+      'mat.`MAT_NAME` AS OBJ_NAME,'#13 +
+      '/*Стоимость для заменяющих материалов достается пока неверно*/'#13 +
+      'IF(:BY_COUNT=1, mat.`MAT_COUNT`, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`ST_OHROPR`, d.`STOIM`)+IF(:FL_INCL_WINTER=1, (d.`ZIM_UDOR` + d.`ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      'mat.`MAT_UNIT` AS OBJ_UNIT,'#13 +
+      'd.`ID_TYPE_DATA` as ID_TYPE_DATA,'#13 +
+      'd.`ID` as DATA_ESTIMATE_OR_ACT_ID,'#13 +
+      'd.`ID_TABLES` AS ID_TABLES,'#13 +
+      'sm.`SM_ID`'#13 +
+      'FROM `smetasourcedata` sm, `data_estimate` d'#13 +
+      'JOIN `card_rate` cr ON cr.`ID` = d.`ID_TABLES`'#13 +
+      'JOIN `materialcard` mat ON cr.`ID` = d.`ID_TABLES` AND mat.`ID_CARD_RATE` = d.`ID_TABLES` AND mat.`ID_REPLACED` > 0'#13 +
+      'WHERE sm.`SM_ID`=d.`ID_ESTIMATE` AND'#13 +
+      '      d.`ID_TYPE_DATA` = 1 AND'#13 +
+      '      ((sm.`SM_ID` = :SM_ID) OR'#13 +
+      '       (sm.`PARENT_ID` = :SM_ID) OR'#13 +
+      '       (sm.`PARENT_ID` IN'#13 +
+      '        (SELECT `smetasourcedata`.`SM_ID`'#13 +
+      '         FROM `smetasourcedata`'#13 +
+      '         WHERE `smetasourcedata`.`PARENT_ID` = :SM_ID)))'#13 +
       'UNION ALL'#13 +
-      '/* МАТЕРИАЛЫ, ВЫНЕСЕННЫЕ ЗА РАСЦЕНКУ*/'#13 +
-      'SELECT'#13 +
-      '  ID_ESTIMATE,'#13 +
-      '  2 AS ID_TYPE_DATA,'#13 +
-      '  1 AS INCITERATOR,'#13 +
-      '  0 AS ITERATOR,'#13 +
-      '  materialcard.ID AS ID_TABLES,'#13 +
-      '  MAT_CODE AS CODE, /* Обоснование*/'#13 +
-      '  MAT_NAME AS NAME, /* Наименование */'#13 +
-      '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
-      matCNT +
-      matCNTDone +
-      matCNTOut +
-      matFields +
-      'FROM'#13 +
-      '  data_estimate, card_rate, materialcard'#13 +
-      'WHERE'#13 +
-      'data_estimate.ID_TYPE_DATA = 1 AND'#13 +
-      'card_rate.ID = data_estimate.ID_TABLES AND'#13 +
-      'materialcard.ID_CARD_RATE = card_rate.ID AND'#13 +
-      'materialcard.FROM_RATE = 1 AND'#13 +
-      '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) IN'#13 +
-      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID))'#13 +
-      ' ) /* ПТМ уровень */'#13 +
-      ')'#13 +
-      'UNION ALL'#13 +
-      '/* МАТЕРИАЛЫ*/'#13 +
-      'SELECT'#13 +
-      '  ID_ESTIMATE,'#13 +
-      '  ID_TYPE_DATA,'#13 +
-      '  1 AS INCITERATOR,'#13 +
-      '  0 AS ITERATOR,'#13 +
-      '  materialcard.ID AS ID_TABLES,'#13 +
-      '  MAT_CODE AS CODE, /* Обоснование*/'#13 +
-      '  MAT_NAME AS NAME, /* Наименование */'#13 +
-      '  MAT_UNIT AS UNIT, /* Ед. измерения */'#13 +
-      matCNT +
-      matCNTDone +
-      matCNTOut +
-      matFields +
-      'FROM'#13 +
-      '  data_estimate, materialcard'#13 +
-      'WHERE'#13 +
-      'data_estimate.ID_TYPE_DATA = 2 AND'#13 +
-      'materialcard.ID = data_estimate.ID_TABLES AND'#13 +
-      '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) IN'#13 +
-      '   (SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID) = :SM_ID))'#13 +
-      ' ) /* ПТМ уровень */'#13 +
-      ')'#13 +
-      'UNION ALL'#13 +
-      '/* МЕХАНИЗМЫ */'#13 +
-      'SELECT'#13 +
-      '  ID_ESTIMATE,'#13 +
-      '  ID_TYPE_DATA,'#13 +
-      '  1 AS INCITERATOR,'#13 +
-      '  0 AS ITERATOR,'#13 +
-      '  mechanizmcard.ID AS ID_TABLES,'#13 +
-      '  MECH_CODE AS CODE, /* Обоснование*/'#13 +
-      '  MECH_NAME AS NAME, /* Наименование */'#13 +
-      '  MECH_UNIT AS UNIT, /* Ед. измерения */'#13 +
-      mechCNT +
-      mechCNTDone +
-      mechCNTOut +
-      mechFields +
-      'FROM'#13 +
-      '  data_estimate, mechanizmcard'#13 +
-      'WHERE'#13 +
-      'data_estimate.ID_TYPE_DATA = 3 AND'#13 +
-      'mechanizmcard.ID = data_estimate.ID_TABLES AND'#13 +
-      '((ID_ESTIMATE = :SM_ID) OR /* Объектный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID) = :SM_ID)) OR /* Локальный уровень */'#13 +
-      ' (ID_ESTIMATE IN (SELECT s2.SM_ID FROM smetasourcedata s2 WHERE (s2.PARENT_ID) IN'#13 +
-      '   (SELECT s1.SM_ID FROM smetasourcedata s1 WHERE (s1.PARENT_ID) = :SM_ID))'#13 +
-      ' ) /* ПТМ уровень */'#13 +
-      ')'#13 +
-      'ORDER BY 1,2';
+      '/* Заголовки разделов */'#13 +
+      'select CONCAT('#13 +
+      'IF(((sm.`SM_ID` = :SM_ID) OR (sm.`PARENT_ID` = :SM_ID)), "", :SM_ID), sm.`PARENT_ID`, sm.`SM_ID`) as SORT_ID,'#13 +
+      '0 AS INCITERATOR,'#13 +
+      '0 AS ITERATOR,'#13 +
+      'CONCAT(sm.`SM_NUMBER`, " ", sm.`NAME`) AS OBJ_CODE, NULL AS OBJ_NAME,'#13 +
+      'IF(:BY_COUNT=1, NULL, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, sm.`S_ST_OHROPR`, sm.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (sm.`S_ZIM_UDOR` + sm.`S_ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      'NULL AS OBJ_UNIT,(sm.`SM_TYPE` * -1) as ID_TYPE_DATA,'#13 +
+      'NULL AS DATA_ESTIMATE_OR_ACT_ID, NULL AS ID_TABLES, sm.`SM_ID`'#13 +
+      'FROM `smetasourcedata` sm'#13 +
+      'WHERE ((sm.`PARENT_ID` = :SM_ID) OR'#13 +
+      '       (sm.`PARENT_ID` IN'#13 +
+      '        (SELECT `smetasourcedata`.`SM_ID`'#13 +
+      '         FROM `smetasourcedata`'#13 +
+      '         WHERE `smetasourcedata`.`PARENT_ID` = :SM_ID)))'#13 +
+      'ORDER BY SORT_ID';
+
+      qrData.ParamByName('SM_ID').AsInteger := qrTreeData.FieldByName('SM_ID').AsInteger;
+      case cbbMode.ItemIndex of
+        BY_COUNT: // по кол-ву
+        begin
+          qrData.ParamByName('BY_COUNT').AsInteger := 1;
+        end;
+        BY_COST: // по стоимости
+        begin
+          qrData.ParamByName('BY_COUNT').AsInteger := 0;
+
+          //Включать или нет стоимость зименого удорожания
+          if chkZimUdor.Checked then
+            qrData.ParamByName('FL_INCL_WINTER').AsInteger := 1
+          else
+            qrData.ParamByName('FL_INCL_WINTER').AsInteger := 0;
+
+          //Включать или нет стоимость ОХРиОПР и плановой прибыли
+          if chkOHROPRPP.Checked then
+            qrData.ParamByName('FL_INCL_OHROPR_PLPR').AsInteger := 1
+          else
+            qrData.ParamByName('FL_INCL_OHROPR_PLPR').AsInteger := 0;
+        end;
+      end;
       qrData.Active := True;
     except
       ShowMessage('Ошибка получения данных по расценкам!');
@@ -391,7 +409,8 @@ begin
       '      OBJ_ID=:OBJ_ID'#13 +
       'UNION ALL'#13 +
       '/* Локальные */'#13 +
-      'SELECT CONCAT((s.PARENT_ID), s.SM_ID) AS SM_ID, s.SM_TYPE, s.NAME as NAME, s.SM_NUMBER, s.SM_ID as ID, ROUND((SELECT SUM(s1.S_STOIM) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)) AS PTM_COST,'#13 +
+      'SELECT CONCAT((s.PARENT_ID), s.SM_ID) AS SM_ID, s.SM_TYPE, s.NAME as NAME, s.SM_NUMBER, s.SM_ID as ID,'#13 +
+      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, s1.`S_ST_OHROPR`, s1.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (s1.`S_ZIM_UDOR` + s1.`S_ZP_ZIM_UDOR`) * s1.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)) AS PTM_COST,'#13 +
       '(NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT'#13 +
       PTMFieldsEmpty +
       'FROM smetasourcedata s'#13 +
@@ -403,21 +422,36 @@ begin
       '(SELECT (s1.PARENT_ID) FROM smetasourcedata s1 WHERE s1.SM_ID=(s2.PARENT_ID)),'#13 +
       '(s2.PARENT_ID), s2.SM_ID) AS SM_ID, s2.SM_TYPE, s2.NAME as NAME, CONCAT('' - '', s2.SM_NUMBER) as SM_NUMBER, SM_ID as ID,'#13 +
       '/* Стоимость */'#13 +
-      'ROUND(s2.S_STOIM) AS PTM_COST,'#13 +
+      'ROUND(IF(:FL_INCL_OHROPR_PLPR=1, s2.`S_ST_OHROPR`, s2.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (s2.`S_ZIM_UDOR` + s2.`S_ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0)) AS PTM_COST,'#13 +
       '/* ВЫПОЛНЕНО */'#13 +
-      'ROUND((SELECT SUM(data_act.STOIM) FROM data_act WHERE data_act.ID_ESTIMATE = s2.SM_ID)) AS PTM_COST_DONE,'#13 +
+      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_act.`ST_OHROPR`, data_act.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_act.`ZIM_UDOR` + data_act.`ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
+        ' FROM data_act WHERE data_act.ID_ESTIMATE = s2.SM_ID)) AS PTM_COST_DONE,'#13 +
       '/* ОСТАТОК */'#13 +
-      '(0) AS PTM_COST_OUT'#13 +
+      'ROUND((IF(:FL_INCL_OHROPR_PLPR=1, s2.`S_ST_OHROPR`, s2.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (s2.`S_ZIM_UDOR` + s2.`S_ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
+        '-(SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_act.`ST_OHROPR`, data_act.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_act.`ZIM_UDOR` + data_act.`ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
+        ' FROM data_act WHERE data_act.ID_ESTIMATE = s2.SM_ID)) AS PTM_COST_OUT'#13 +
       PTMFields +
       'FROM smetasourcedata s2'#13 +
       'WHERE s2.SM_TYPE=3 AND'#13 +
       '      s2.OBJ_ID=:OBJ_ID'#13 +
       'ORDER BY 1,4,5';
+
+      qrPTM.ParamByName('OBJ_ID').AsInteger := qrObject.FieldByName('OBJ_ID').AsInteger;
+      //Включать или нет стоимость зименого удорожания
+      if chkZimUdor.Checked then
+        qrPTM.ParamByName('FL_INCL_WINTER').AsInteger := 1
+      else
+        qrPTM.ParamByName('FL_INCL_WINTER').AsInteger := 0;
+
+      //Включать или нет стоимость ОХРиОПР и плановой прибыли
+      if chkOHROPRPP.Checked then
+        qrPTM.ParamByName('FL_INCL_OHROPR_PLPR').AsInteger := 1
+      else
+        qrPTM.ParamByName('FL_INCL_OHROPR_PLPR').AsInteger := 0;
       qrPTM.Active := True;
     except
       ShowMessage('Ошибка получения данных по ПТМ!');
     end;
-
   finally
     UpdateNumPP;
     qrData.EnableControls;
@@ -475,6 +509,7 @@ end;
 
 procedure TfKC6Journal.tvEstimatesClick(Sender: TObject);
 begin
+  cbbFromMonthChange(Self);
   UpdateNumPP;
 end;
 
@@ -498,6 +533,8 @@ end;
 
 procedure TfKC6Journal.qrObjectAfterScroll(DataSet: TDataSet);
 begin
+  if not qrTreeData.Active then
+    Exit;
   SkipReload := True;
   cbbFromMonth.ItemIndex := MonthOf(qrObject.FieldByName('date').AsDateTime) - 1;
   seFromYear.Value := YearOf(qrObject.FieldByName('date').AsDateTime);
@@ -529,7 +566,9 @@ begin
     begin
       NumPP := NumPP + qrData.FieldByName('INCITERATOR').AsInteger;
       qrData.Edit;
-      qrData.FieldByName('ITERATOR').AsInteger := NumPP;
+      if qrData.FieldByName('ID_TYPE_DATA').AsInteger < 0 then
+        qrData.FieldByName('ITERATOR').Value := null
+      else qrData.FieldByName('ITERATOR').AsInteger := NumPP;
       qrData.Next;
     end;
   finally
