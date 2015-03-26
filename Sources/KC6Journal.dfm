@@ -477,6 +477,79 @@ object fKC6Journal: TfKC6Journal
         'END, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`ST_OHROPR`, d.`STOIM`)+' +
         'IF(:FL_INCL_WINTER=1, (d.`ZIM_UDOR` + d.`ZP_ZIM_UDOR`) * sm.`APP' +
         'LY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'
+      'IF(:BY_COUNT=1,'
+      'CASE d.`ID_TYPE_DATA`'
+      
+        '  WHEN 1 THEN (SELECT SUM(`card_rate_act`.`RATE_COUNT`) FROM `ca' +
+        'rd_rate_act`, `data_act` WHERE `card_rate_act`.`ID`=`data_act`.`' +
+        'ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `d' +
+        'ata_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=' +
+        'd.`ID_ESTIMATE`)'
+      
+        '  WHEN 2 THEN (SELECT SUM(`materialcard_act`.`MAT_COUNT`) FROM `' +
+        'materialcard_act`, `data_act` WHERE `materialcard_act`.`ID`=`dat' +
+        'a_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA' +
+        '` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ES' +
+        'TIMATE`=d.`ID_ESTIMATE`)'
+      
+        '  WHEN 3 THEN (SELECT SUM(`mechanizmcard_act`.`MECH_COUNT`) FROM' +
+        ' `mechanizmcard_act`, `data_act` WHERE `mechanizmcard_act`.`ID`=' +
+        '`data_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_' +
+        'DATA` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`I' +
+        'D_ESTIMATE`=d.`ID_ESTIMATE`)'
+      
+        '  WHEN 4 THEN (SELECT SUM(`devicescard_act`.`DEVICE_COUNT`) FROM' +
+        ' `devicescard_act`, `data_act` WHERE `devicescard_act`.`ID`=`dat' +
+        'a_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA' +
+        '` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ES' +
+        'TIMATE`=d.`ID_ESTIMATE`)'
+      
+        '  WHEN 5 THEN (SELECT SUM(`dumpcard_act`.`DUMP_COUNT`) FROM `dum' +
+        'pcard_act`, `data_act` WHERE `dumpcard_act`.`ID`=`data_act`.`ID_' +
+        'TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data' +
+        '_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`' +
+        'ID_ESTIMATE`)'
+      
+        '  WHEN 6 THEN (SELECT SUM(`transpcard_act`.`TRANSP_COUNT`) FROM ' +
+        '`transpcard_act`, `data_act` WHERE `transpcard_act`.`ID`=`data_a' +
+        'ct`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` A' +
+        'ND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIM' +
+        'ATE`=d.`ID_ESTIMATE`)'
+      
+        '  WHEN 7 THEN (SELECT SUM(`transpcard_act`.`TRANSP_COUNT`) FROM ' +
+        '`transpcard_act`, `data_act` WHERE `transpcard_act`.`ID`=`data_a' +
+        'ct`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` A' +
+        'ND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIM' +
+        'ATE`=d.`ID_ESTIMATE`)'
+      
+        '  WHEN 8 THEN (SELECT SUM(`transpcard_act`.`TRANSP_COUNT`) FROM ' +
+        '`transpcard_act`, `data_act` WHERE `transpcard_act`.`ID`=`data_a' +
+        'ct`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` A' +
+        'ND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIM' +
+        'ATE`=d.`ID_ESTIMATE`)'
+      
+        '  WHEN 9 THEN (SELECT SUM(`transpcard_act`.`TRANSP_COUNT`) FROM ' +
+        '`transpcard_act`, `data_act` WHERE `transpcard_act`.`ID`=`data_a' +
+        'ct`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` A' +
+        'ND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIM' +
+        'ATE`=d.`ID_ESTIMATE`)'
+      
+        '  WHEN 10 THEN (SELECT SUM(`data_act`.`E1820_COUNT`) FROM `data_' +
+        'act` WHERE `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_' +
+        'act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`I' +
+        'D_ESTIMATE`)'
+      
+        '  WHEN 11 THEN (SELECT SUM(`data_act`.`E1820_COUNT`) FROM `data_' +
+        'act` WHERE `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_' +
+        'act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`I' +
+        'D_ESTIMATE`)'
+      
+        'END, ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, `data_act`.`ST' +
+        '_OHROPR`, `data_act`.`STOIM`)+IF(:FL_INCL_WINTER=1, (`data_act`.' +
+        '`ZIM_UDOR` + `data_act`.`ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_F' +
+        'LAG`, 0.0)) FROM `data_act` WHERE d.`ID_TABLES`=`data_act`.`ID_T' +
+        'ABLES` AND d.`ID_TYPE_DATA`=`data_act`.`ID_TYPE_DATA` AND d.`ID_' +
+        'ESTIMATE`=`data_act`.`ID_ESTIMATE`))) AS OBJ_COUNT_DONE,'
       'CASE d.`ID_TYPE_DATA` '
       '  WHEN 1 THEN cr.`RATE_UNIT`'
       '  WHEN 2 THEN mat.`MAT_UNIT`'
