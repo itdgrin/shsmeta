@@ -85,8 +85,7 @@ procedure TfKC6Journal.cbbFromMonthChange(Sender: TObject);
 var
   year, month, i: Integer;
   col: TColumn;
-  rateFields, matFields, mechFields, rateCNT, matCNT, mechCNT, rateCNTDone,
-    matCNTDone, mechCNTDone, rateCNTOut, matCNTOut, mechCNTOut, PTMFields, PTMFieldsEmpty: string;
+  PTMFields, PTMFieldsEmpty, DATAFields, allCondition, DATAFieldsEmpty: string;
 
   procedure addCol(const Grid: TDBGrid; fieldName, titleCaption: String; const Width: Integer);
   begin
@@ -112,10 +111,10 @@ begin
       addCol(dbgrdData, 'ITERATOR', '№пп', 30);
       addCol(dbgrdData, 'OBJ_CODE', 'Обоснование', 80);
       addCol(dbgrdData, 'OBJ_NAME', 'Наименование', 250);
-      addCol(dbgrdData, 'OBJ_COUNT', 'Кол-во', 60);
+      addCol(dbgrdData, 'OBJ_COUNT', 'Кол-во', 80);
       addCol(dbgrdData, 'OBJ_UNIT', 'Ед. изм.', 50);
-      addCol(dbgrdData, '', 'Выполнено', 80);
-      addCol(dbgrdData, '', 'Остаток', 80);
+      addCol(dbgrdData, 'OBJ_COUNT_DONE', 'Выполнено', 80);
+      addCol(dbgrdData, 'OBJ_COUNT_OUT', 'Остаток', 80);
     end;
 
     if pgcPage.ActivePageIndex = 1 then
@@ -124,7 +123,7 @@ begin
       addCol(dbgrdPTM, '', '№пп', 30);
       addCol(dbgrdPTM, 'SM_NUMBER', 'Обоснование', 80);
       addCol(dbgrdPTM, 'NAME', 'Наименование', 250);
-      addCol(dbgrdPTM, '', 'Кол-во', 60);
+      addCol(dbgrdPTM, '', 'Кол-во', 80);
       addCol(dbgrdPTM, '', 'Ед. изм.', 50);
       addCol(dbgrdPTM, 'PTM_COST', 'Стоимость', 80);
       addCol(dbgrdPTM, 'PTM_COST_DONE', 'Выполнено', 80);
@@ -134,54 +133,11 @@ begin
     month := cbbFromMonth.ItemIndex + 1;
     year := seFromYear.Value;
 
-    rateFields := '';
-    matFields := '';
-    mechFields := '';
     PTMFields := '';
     PTMFieldsEmpty := '';
+    DATAFields := '';
+    DATAFieldsEmpty := '';
 
-    case cbbMode.ItemIndex of
-      BY_COUNT:
-        begin
-          rateCNT := '  COALESCE(RATE_COUNT, 0) AS CNT, /* Кол-во */'#13;
-          matCNT := '  COALESCE(MAT_COUNT, 0) AS CNT, /* Кол-во */'#13;
-          mechCNT := '  COALESCE(MECH_COUNT, 0) AS CNT, /* Кол-во */'#13;
-
-          rateCNTDone :=
-            '  COALESCE((SELECT SUM(RATE_COUNT) FROM card_rate_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
-          matCNTDone :=
-            '  COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
-          mechCNTDone :=
-            '  COALESCE((SELECT SUM(MECH_COUNT) FROM mechanizmcard_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
-
-          rateCNTOut :=
-            '  COALESCE((COALESCE(RATE_COUNT, 0) - COALESCE((SELECT SUM(RATE_COUNT) FROM card_rate_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
-          matCNTOut :=
-            '  COALESCE((COALESCE(MAT_COUNT, 0) - COALESCE((SELECT SUM(MAT_COUNT) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
-          mechCNTOut :=
-            '  COALESCE((COALESCE(MECH_COUNT, 0) - COALESCE((SELECT SUM(MECH_COUNT) FROM mechanizmcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
-        end;
-      BY_COST:
-        begin
-          rateCNT := '  COALESCE(RATE_SUM, 0) AS CNT, /* Кол-во */'#13;
-          matCNT := '  COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) AS CNT, /* Кол-во */'#13;
-          mechCNT := '  COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) AS CNT, /* Кол-во */'#13;
-
-          rateCNTDone :=
-            '  COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
-          matCNTDone :=
-            '  COALESCE((SELECT SUM(MAT_SUM) FROM materialcard_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
-          mechCNTDone :=
-            '  COALESCE((SELECT SUM(MECH_SUM) FROM mechanizmcard_act where id=data_estimate.ID_TABLES), 0) AS CntDone, /* Выполнено */'#13;
-
-          rateCNTOut :=
-            '  COALESCE((COALESCE(RATE_SUM, 0) - COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
-          matCNTOut :=
-            '  COALESCE((COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) - COALESCE((SELECT SUM(MAT_SUM) FROM materialcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
-          mechCNTOut :=
-            '  COALESCE((COALESCE(IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), 0) - COALESCE((SELECT SUM(MECH_SUM) FROM mechanizmcard_act where id=data_estimate.ID_TABLES), 0)), 0) AS CntOut /* Остаток */'#13;
-        end;
-    end;
     // изменение периода
     for i := seFromYear.Value * 12 + cbbFromMonth.ItemIndex + 1 to seToYear.Value * 12 +
       cbbToMonth.ItemIndex + 1 do
@@ -197,43 +153,33 @@ begin
       PTMFieldsEmpty := PTMFieldsEmpty + ', (NULL) AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
 
       PTMFields := PTMFields +
-        ', ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_act.`ST_OHROPR`, data_act.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_act.`ZIM_UDOR` + data_act.`ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_act, card_acts' +
+        ', ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_act.`STOIM` + IFNULL(data_act.`OHROPR`, 0) + IFNULL(data_act.`PLAN_PRIB`, 0), data_act.`STOIM`)+' +
+        'IF(:FL_INCL_WINTER=1, (IFNULL(data_act.`ZIM_UDOR`, 0) + IFNULL(data_act.`ZP_ZIM_UDOR`, 0)) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_act, card_acts' +
         ' where data_act.id_act=card_acts.id AND EXTRACT(MONTH FROM card_acts.DATE)='
         + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ' AND data_act.ID_ESTIMATE = s2.SM_ID)' +
         ') AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
 
-      case cbbMode.ItemIndex of
-        BY_COUNT:
-          begin
-            rateFields := rateFields +
-              ', (SELECT SUM(RATE_COUNT) FROM card_rate_act, card_acts where card_rate_act.id=data_estimate.ID_TABLES AND card_acts.ID=card_rate_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
-              + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
-              IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
-            matFields := matFields +
-              ', (SELECT SUM(MAT_COUNT) FROM materialcard_act, card_acts where materialcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=materialcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
-              + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
-              IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
-            mechFields := mechFields +
-              ', (SELECT SUM(MECH_COUNT) FROM mechanizmcard_act, card_acts where mechanizmcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=mechanizmcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
-              + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
-              IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
-          end;
-        BY_COST:
-          begin
-            rateFields := rateFields +
-              ', (SELECT SUM(RATE_SUM) FROM card_rate_act, card_acts where card_rate_act.id=data_estimate.ID_TABLES AND card_acts.ID=card_rate_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
-              + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
-              IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
-            matFields := matFields +
-              ', (SELECT SUM(MAT_SUM) FROM materialcard_act, card_acts where materialcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=materialcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
-              + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
-              IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
-            mechFields := mechFields +
-              ', (SELECT SUM(MECH_SUM) FROM mechanizmcard_act, card_acts where mechanizmcard_act.id=data_estimate.ID_TABLES AND card_acts.ID=mechanizmcard_act.ID_ACT AND EXTRACT(MONTH FROM card_acts.DATE)='
-              + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year) + ') AS M' +
-              IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
-          end;
-      end;
+
+      allCondition := ' da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE` AND card_acts.`ID`=da.`ID_ACT` AND EXTRACT(MONTH FROM card_acts.DATE)='
+        + IntToStr(month) + ' AND EXTRACT(YEAR FROM card_acts.DATE)=' + IntToStr(year);
+      DATAFields := DATAFields +
+        ', IF(:BY_COUNT=1,'#13 +
+        'CASE d.`ID_TYPE_DATA`'#13 +
+        '  WHEN 1 THEN (SELECT SUM(ca.`RATE_COUNT`) FROM `card_rate_act` ca, `data_act` da, card_acts WHERE ca.`ID`=da.`ID_TABLES` AND' + allCondition + ')'#13 +
+        '  WHEN 2 THEN (SELECT SUM(ma.`MAT_COUNT`) FROM `materialcard_act` ma, `data_act` da, card_acts WHERE ma.`ID`=da.`ID_TABLES` AND' + allCondition + ')'#13 +
+        '  WHEN 3 THEN (SELECT SUM(ma.`MECH_COUNT`) FROM `mechanizmcard_act` ma, `data_act` da, card_acts WHERE ma.`ID`=da.`ID_TABLES` AND' + allCondition + ')'#13 +
+        '  WHEN 4 THEN (SELECT SUM(dca.`DEVICE_COUNT`) FROM `devicescard_act` dca, `data_act` da, card_acts WHERE dca.`ID`=da.`ID_TABLES` AND' + allCondition + ')'#13 +
+        '  WHEN 5 THEN (SELECT SUM(dma.`DUMP_COUNT`) FROM `dumpcard_act` dma, `data_act` da, card_acts WHERE dma.`ID`=da.`ID_TABLES` AND' + allCondition + ')'#13 +
+        '  WHEN 6 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` da, card_acts WHERE ta.`ID`=da.`ID_TABLES` AND' + allCondition + ')'#13 +
+        '  WHEN 7 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` da, card_acts WHERE ta.`ID`=da.`ID_TABLES` AND' + allCondition + ')'#13 +
+        '  WHEN 8 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` da, card_acts WHERE ta.`ID`=da.`ID_TABLES` AND' + allCondition + ')'#13 +
+        '  WHEN 9 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` da, card_acts WHERE ta.`ID`=da.`ID_TABLES` AND' + allCondition + ')'#13 +
+        '  WHEN 10 THEN (SELECT SUM(da.`E1820_COUNT`) FROM `data_act` da, card_acts WHERE' + allCondition + ')'#13 +
+        '  WHEN 11 THEN (SELECT SUM(da.`E1820_COUNT`) FROM `data_act` da, card_acts WHERE' + allCondition + ')'#13 +
+        'END, '+
+        'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, da.`STOIM` + IFNULL(da.`OHROPR`, 0) + IFNULL(da.`PLAN_PRIB`, 0), da.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(da.`ZIM_UDOR`, 0) + IFNULL(da.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0)) ' +
+        'FROM `data_act` da, `card_acts` WHERE' + allCondition + '))) AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
+      DATAFieldsEmpty := DATAFieldsEmpty + ', (NULL) AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
 
       // Переход на следующий месяц
       if month = 12 then
@@ -244,6 +190,7 @@ begin
       else
         Inc(month);
     end;
+
     // Собираем общий запрос по расценкам
     if pgcPage.ActivePageIndex = 0 then
     try
@@ -279,6 +226,7 @@ begin
       '  WHEN 10 THEN ("")'#13 +
       '  WHEN 11 THEN ("")'#13 +
       'END AS OBJ_NAME,'#13 +
+      // Необходимо-->
       'IF(:BY_COUNT=1,'#13 +
       'CASE d.`ID_TYPE_DATA`'#13 +
       '  WHEN 1 THEN cr.`RATE_COUNT`'#13 +
@@ -292,7 +240,58 @@ begin
       '  WHEN 9 THEN tr.`TRANSP_COUNT`'#13 +
       '  WHEN 10 THEN d.`E1820_COUNT`'#13 +
       '  WHEN 11 THEN d.`E1820_COUNT`'#13 +
-      'END, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`ST_OHROPR`, d.`STOIM`)+IF(:FL_INCL_WINTER=1, (d.`ZIM_UDOR` + d.`ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      'END, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`STOIM` + IFNULL(d.`OHROPR`, 0) + IFNULL(d.`PLAN_PRIB`, 0), d.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(d.`ZIM_UDOR`, 0) + IFNULL(d.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      // <--Необходимо
+      // Выполнено-->
+      'IF(:BY_COUNT=1,'#13 +
+      'CASE d.`ID_TYPE_DATA`'#13 +
+      '  WHEN 1 THEN (SELECT SUM(ca.`RATE_COUNT`) FROM `card_rate_act` ca, `data_act` da WHERE ca.`ID`=da.`ID_TABLES` AND da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 2 THEN (SELECT SUM(ma.`MAT_COUNT`) FROM `materialcard_act` ma, `data_act` da WHERE ma.`ID`=da.`ID_TABLES` AND da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 3 THEN (SELECT SUM(ma.`MECH_COUNT`) FROM `mechanizmcard_act` ma, `data_act` da WHERE ma.`ID`=da.`ID_TABLES` AND da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 4 THEN (SELECT SUM(dca.`DEVICE_COUNT`) FROM `devicescard_act` dca, `data_act` da WHERE dca.`ID`=da.`ID_TABLES` AND da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 5 THEN (SELECT SUM(dma.`DUMP_COUNT`) FROM `dumpcard_act` dma, `data_act` da WHERE dma.`ID`=da.`ID_TABLES` AND da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 6 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` da WHERE ta.`ID`=da.`ID_TABLES` AND da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 7 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` da WHERE ta.`ID`=da.`ID_TABLES` AND da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 8 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` da WHERE ta.`ID`=da.`ID_TABLES` AND da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 9 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` da WHERE ta.`ID`=da.`ID_TABLES` AND da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 10 THEN (SELECT SUM(da.`E1820_COUNT`) FROM `data_act` da WHERE da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 11 THEN (SELECT SUM(da.`E1820_COUNT`) FROM `data_act` da WHERE da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      'END, '+
+      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, da.`STOIM` + IFNULL(da.`OHROPR`, 0) + IFNULL(da.`PLAN_PRIB`, 0), da.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(da.`ZIM_UDOR`, 0) + IFNULL(da.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0)) ' +
+      'FROM `data_act` da WHERE d.`ID_TABLES`=da.`ID_TABLES` AND d.`ID_TYPE_DATA`=da.`ID_TYPE_DATA` AND d.`ID_ESTIMATE`=da.`ID_ESTIMATE`))) AS OBJ_COUNT_DONE,'#13 +
+      // <--Выполнено
+      // Осталось-->
+      'IF(:BY_COUNT=1,'#13 +
+      'CASE d.`ID_TYPE_DATA`'#13 +
+      '  WHEN 1 THEN cr.`RATE_COUNT`'#13 +
+      '  WHEN 2 THEN mat.`MAT_COUNT`'#13 +
+      '  WHEN 3 THEN mech.`MECH_COUNT`'#13 +
+      '  WHEN 4 THEN dev.`DEVICE_COUNT`'#13 +
+      '  WHEN 5 THEN dmp.`DUMP_COUNT`'#13 +
+      '  WHEN 6 THEN tr.`TRANSP_COUNT`'#13 +
+      '  WHEN 7 THEN tr.`TRANSP_COUNT`'#13 +
+      '  WHEN 8 THEN tr.`TRANSP_COUNT`'#13 +
+      '  WHEN 9 THEN tr.`TRANSP_COUNT`'#13 +
+      '  WHEN 10 THEN d.`E1820_COUNT`'#13 +
+      '  WHEN 11 THEN d.`E1820_COUNT`'#13 +
+      'END, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`STOIM` + IFNULL(d.`OHROPR`, 0) + IFNULL(d.`PLAN_PRIB`, 0), d.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(d.`ZIM_UDOR`, 0) + IFNULL(d.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0)))-'#13 +
+      'IFNULL(IF(:BY_COUNT=1,'#13 +
+      'CASE d.`ID_TYPE_DATA`'#13 +
+      '  WHEN 1 THEN (SELECT SUM(ca.`RATE_COUNT`) FROM `card_rate_act` ca, `data_act` WHERE ca.`ID`=`data_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 2 THEN (SELECT SUM(ma.`MAT_COUNT`) FROM `materialcard_act` ma, `data_act` WHERE ma.`ID`=`data_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 3 THEN (SELECT SUM(ma.`MECH_COUNT`) FROM `mechanizmcard_act` ma, `data_act` WHERE ma.`ID`=`data_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 4 THEN (SELECT SUM(da.`DEVICE_COUNT`) FROM `devicescard_act` da, `data_act` WHERE da.`ID`=`data_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 5 THEN (SELECT SUM(da.`DUMP_COUNT`) FROM `dumpcard_act` da, `data_act` WHERE da.`ID`=`data_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 6 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` WHERE ta.`ID`=`data_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 7 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` WHERE ta.`ID`=`data_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 8 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` WHERE ta.`ID`=`data_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 9 THEN (SELECT SUM(ta.`TRANSP_COUNT`) FROM `transpcard_act` ta, `data_act` WHERE ta.`ID`=`data_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 10 THEN (SELECT SUM(da.`E1820_COUNT`) FROM `data_act` da WHERE da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      '  WHEN 11 THEN (SELECT SUM(da.`E1820_COUNT`) FROM `data_act` da WHERE da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND da.`ID_ESTIMATE`=d.`ID_ESTIMATE`)'#13 +
+      'END, '+
+      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, da.`STOIM` + IFNULL(da.`OHROPR`, 0) + IFNULL(da.`PLAN_PRIB`, 0), da.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(da.`ZIM_UDOR`, 0) + IFNULL(da.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0)) ' +
+      'FROM `data_act` da WHERE d.`ID_TABLES`=da.`ID_TABLES` AND d.`ID_TYPE_DATA`=da.`ID_TYPE_DATA` AND d.`ID_ESTIMATE`=da.`ID_ESTIMATE`))), 0) AS OBJ_COUNT_OUT,'#13 +
+      // <--Осталось
       'CASE d.`ID_TYPE_DATA`'#13 +
       '  WHEN 1 THEN cr.`RATE_UNIT`'#13 +
       '  WHEN 2 THEN mat.`MAT_UNIT`'#13 +
@@ -310,6 +309,7 @@ begin
       'd.`ID` as DATA_ESTIMATE_OR_ACT_ID,'#13 +
       'd.`ID_TABLES` AS ID_TABLES,'#13 +
       'sm.`SM_ID`'#13 +
+      DATAFields +
       'FROM `smetasourcedata` sm, `data_estimate` d'#13 +
       'LEFT JOIN `card_rate` cr ON d.`ID_TYPE_DATA` = 1 AND cr.`ID` = d.`ID_TABLES`'#13 +
       'LEFT JOIN `materialcard` mat ON d.`ID_TYPE_DATA` = 2 AND mat.`ID` = d.`ID_TABLES`'#13 +
@@ -333,12 +333,16 @@ begin
       'CONCAT("   ", mat.`MAT_CODE`) AS OBJ_CODE,'#13 +
       'mat.`MAT_NAME` AS OBJ_NAME,'#13 +
       '/*Стоимость для заменяющих материалов достается пока неверно*/'#13 +
-      'IF(:BY_COUNT=1, mat.`MAT_COUNT`, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`ST_OHROPR`, d.`STOIM`)+IF(:FL_INCL_WINTER=1, (d.`ZIM_UDOR` + d.`ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      'IF(:BY_COUNT=1, mat.`MAT_COUNT`, ' +
+      'ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`STOIM` + IFNULL(d.`OHROPR`, 0) + IFNULL(d.`PLAN_PRIB`, 0), d.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(d.`ZIM_UDOR`, 0) + IFNULL(d.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      'NULL AS OBJ_COUNT_DONE,'#13 +
+      'NULL AS OBJ_COUNT_OUT,'#13 +
       'mat.`MAT_UNIT` AS OBJ_UNIT,'#13 +
       'd.`ID_TYPE_DATA` as ID_TYPE_DATA,'#13 +
       'd.`ID` as DATA_ESTIMATE_OR_ACT_ID,'#13 +
       'd.`ID_TABLES` AS ID_TABLES,'#13 +
       'sm.`SM_ID`'#13 +
+      DATAFieldsEmpty +
       'FROM `smetasourcedata` sm, `data_estimate` d'#13 +
       'JOIN `card_rate` cr ON cr.`ID` = d.`ID_TABLES`'#13 +
       'JOIN `materialcard` mat ON cr.`ID` = d.`ID_TABLES` AND mat.`ID_CARD_RATE` = d.`ID_TABLES` AND mat.`ID_REPLACED` > 0'#13 +
@@ -357,9 +361,13 @@ begin
       '0 AS INCITERATOR,'#13 +
       '0 AS ITERATOR,'#13 +
       'CONCAT(sm.`SM_NUMBER`, " ", sm.`NAME`) AS OBJ_CODE, NULL AS OBJ_NAME,'#13 +
-      'IF(:BY_COUNT=1, NULL, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, sm.`S_ST_OHROPR`, sm.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (sm.`S_ZIM_UDOR` + sm.`S_ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      'IF(:BY_COUNT=1, NULL, ' +
+      'ROUND(IF(:FL_INCL_OHROPR_PLPR=1, sm.`S_STOIM` + IFNULL(sm.`S_OHROPR`, 0) + IFNULL(sm.`S_PLAN_PRIB`, 0), sm.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(sm.`S_ZIM_UDOR`, 0) + IFNULL(sm.`S_ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      'NULL AS OBJ_COUNT_DONE,'#13 +
+      'NULL AS OBJ_COUNT_OUT,'#13 +
       'NULL AS OBJ_UNIT,(sm.`SM_TYPE` * -1) as ID_TYPE_DATA,'#13 +
       'NULL AS DATA_ESTIMATE_OR_ACT_ID, NULL AS ID_TABLES, sm.`SM_ID`'#13 +
+      DATAFieldsEmpty +
       'FROM `smetasourcedata` sm'#13 +
       'WHERE ((sm.`PARENT_ID` = :SM_ID) OR'#13 +
       '       (sm.`PARENT_ID` IN'#13 +
@@ -410,7 +418,8 @@ begin
       'UNION ALL'#13 +
       '/* Локальные */'#13 +
       'SELECT CONCAT((s.PARENT_ID), s.SM_ID) AS SM_ID, s.SM_TYPE, s.NAME as NAME, s.SM_NUMBER, s.SM_ID as ID,'#13 +
-      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, s1.`S_ST_OHROPR`, s1.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (s1.`S_ZIM_UDOR` + s1.`S_ZP_ZIM_UDOR`) * s1.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)) AS PTM_COST,'#13 +
+      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, s1.`S_STOIM` + IFNULL(s1.`S_OHROPR`, 0) + IFNULL(s1.`S_PLAN_PRIB`, 0), s1.`S_STOIM`)+' +
+      'IF(:FL_INCL_WINTER=1, (s1.`S_ZIM_UDOR` + s1.`S_ZP_ZIM_UDOR`) * s1.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)) AS PTM_COST,'#13 +
       '(NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT'#13 +
       PTMFieldsEmpty +
       'FROM smetasourcedata s'#13 +
@@ -422,13 +431,13 @@ begin
       '(SELECT (s1.PARENT_ID) FROM smetasourcedata s1 WHERE s1.SM_ID=(s2.PARENT_ID)),'#13 +
       '(s2.PARENT_ID), s2.SM_ID) AS SM_ID, s2.SM_TYPE, s2.NAME as NAME, CONCAT('' - '', s2.SM_NUMBER) as SM_NUMBER, SM_ID as ID,'#13 +
       '/* Стоимость */'#13 +
-      'ROUND(IF(:FL_INCL_OHROPR_PLPR=1, s2.`S_ST_OHROPR`, s2.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (s2.`S_ZIM_UDOR` + s2.`S_ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0)) AS PTM_COST,'#13 +
+      'ROUND(IF(:FL_INCL_OHROPR_PLPR=1, s2.`S_STOIM` + IFNULL(s2.`S_OHROPR`, 0) + IFNULL(s2.`S_PLAN_PRIB`, 0), s2.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (s2.`S_ZIM_UDOR` + s2.`S_ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0)) AS PTM_COST,'#13 +
       '/* ВЫПОЛНЕНО */'#13 +
-      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_act.`ST_OHROPR`, data_act.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_act.`ZIM_UDOR` + data_act.`ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
+      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_act.`STOIM` + IFNULL(data_act.`OHROPR`, 0) + IFNULL(data_act.`PLAN_PRIB`, 0), data_act.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_act.`ZIM_UDOR` + data_act.`ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
         ' FROM data_act WHERE data_act.ID_ESTIMATE = s2.SM_ID)) AS PTM_COST_DONE,'#13 +
       '/* ОСТАТОК */'#13 +
-      'ROUND((IF(:FL_INCL_OHROPR_PLPR=1, s2.`S_ST_OHROPR`, s2.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (s2.`S_ZIM_UDOR` + s2.`S_ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
-        '-(SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_act.`ST_OHROPR`, data_act.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_act.`ZIM_UDOR` + data_act.`ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
+      'ROUND((IF(:FL_INCL_OHROPR_PLPR=1, s2.`S_STOIM` + IFNULL(s2.`S_OHROPR`, 0) + IFNULL(s2.`S_PLAN_PRIB`, 0), s2.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (s2.`S_ZIM_UDOR` + s2.`S_ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
+        '-(SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_act.`STOIM` + IFNULL(data_act.`OHROPR`, 0) + IFNULL(data_act.`PLAN_PRIB`, 0), data_act.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_act.`ZIM_UDOR` + data_act.`ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
         ' FROM data_act WHERE data_act.ID_ESTIMATE = s2.SM_ID)) AS PTM_COST_OUT'#13 +
       PTMFields +
       'FROM smetasourcedata s2'#13 +
