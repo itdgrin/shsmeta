@@ -3879,7 +3879,6 @@
     BeforeInsert = qrMechanizmBeforeInsert
     BeforeScroll = qrMechanizmBeforeScroll
     AfterScroll = qrMechanizmAfterScroll
-    OnCalcFields = qrMechanizmCalcFields
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -4151,11 +4150,12 @@
     end
     object qrMechanizmNUM: TIntegerField
       AutoGenerateValue = arDefault
-      FieldKind = fkCalculated
       FieldName = 'NUM'
       Origin = 'NUM'
       ProviderFlags = []
-      Calculated = True
+    end
+    object qrMechanizmTITLE: TIntegerField
+      FieldName = 'TITLE'
     end
     object qrMechanizmID_REPLACED: TIntegerField
       AutoGenerateValue = arDefault

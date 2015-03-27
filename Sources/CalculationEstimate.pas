@@ -456,6 +456,7 @@ type
     qrRatesEx: TFDQuery;
     dsRatesEx: TDataSource;
     JvDBGrid1: TJvDBGrid;
+    qrMechanizmTITLE: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -1159,7 +1160,7 @@ begin
     if CheckQrActiveEmpty(qrMaterial) then
     begin
       qrMaterial.First;
-      if (qrMaterial.FieldByName('TITLE').AsInteger > 0) then
+      if (qrMaterialTITLE.AsInteger > 0) then
         qrMaterial.Next;
     end;
   end;
@@ -1181,7 +1182,11 @@ begin
     VisibleRightTables := s;
     SettingVisibleRightTables;
     if CheckQrActiveEmpty(qrMechanizm) then
+    begin
       qrMechanizm.First;
+      if (qrMechanizmTITLE.AsInteger > 0) then
+        qrMechanizm.Next;
+    end;
   end;
 end;
 
@@ -1884,6 +1889,14 @@ begin
 
   if not ReCalcMech then
   begin
+    if qrMechanizmTITLE.AsInteger > 0 then
+    begin
+      if dbgrdMechanizm.Tag > qrMechanizm.RecNo then
+        qrMechanizm.Prior
+      else
+        qrMechanizm.Next;
+    end;
+
     SetMechReadOnly(CheckMechReadOnly);
     dbgrdRates.Repaint;
 
@@ -1916,6 +1929,9 @@ begin
 
   if not ReCalcMech then
   begin
+    // Предыдущее рекно используется для определния направления движения по таблице
+    dbgrdMechanizm.Tag := qrMechanizm.RecNo;
+
     // закрытие открытой на редактирование строки
     SetMechNoEditMode;
   end;
@@ -1935,6 +1951,8 @@ end;
 // Исключает ввод null в числовые поля таблицы сметы
 procedure TFormCalculationEstimate.MechRowChange(Sender: TField);
 var
+  CField: string;
+  CValue: Variant;
   CType: byte;
 begin
   if Sender.IsNull then
@@ -1948,7 +1966,10 @@ begin
     ReCalcMech := True;
     // Пересчет по строке механизма
     try
+      CField := Sender.FieldName;
+      CValue := Sender.Value;
       CType := 0;
+
       if (Sender.FieldName = 'MECH_COUNT') then
         CType := 1;
 
@@ -1991,6 +2012,32 @@ begin
 
       // После изменения ячейки строка фиксируется
       qrMechanizm.Post;
+
+      // Обновление в базе (так как датасет не связан с базой напрямую)
+      with qrTemp do
+      begin
+        Active := False;
+        SQL.Clear;
+        SQL.Add('UPDATE mechanizmcard_temp SET COAST_NO_NDS = :COAST_NO_NDS, ' +
+          'COAST_NDS = :COAST_NDS, FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
+          'FCOAST_NDS = :FCOAST_NDS, ZP_MACH_NO_NDS = :ZP_MACH_NO_NDS, ' +
+          'ZP_MACH_NDS = :ZP_MACH_NDS, FZP_MACH_NO_NDS = :FZP_MACH_NO_NDS, ' +
+          'FZP_MACH_NDS = :FZP_MACH_NDS, PROC_ZAC = :PROC_ZAC, ' +
+          'PROC_PODR = :PROC_PODR, ' + CField + ' = :AA' + CField + ' WHERE id = :id;');
+        ParamByName('COAST_NO_NDS').Value := qrMechanizmCOAST_NO_NDS.Value;
+        ParamByName('COAST_NDS').Value := qrMechanizmCOAST_NDS.Value;
+        ParamByName('FCOAST_NO_NDS').Value := qrMechanizmFCOAST_NO_NDS.Value;
+        ParamByName('FCOAST_NDS').Value := qrMechanizmFCOAST_NDS.Value;
+        ParamByName('ZP_MACH_NO_NDS').Value := qrMechanizmZP_MACH_NO_NDS.Value;
+        ParamByName('ZP_MACH_NDS').Value := qrMechanizmZP_MACH_NDS.Value;
+        ParamByName('FZP_MACH_NO_NDS').Value := qrMechanizmFZP_MACH_NO_NDS.Value;
+        ParamByName('FZP_MACH_NDS').Value := qrMechanizmFZP_MACH_NDS.Value;
+        ParamByName('PROC_ZAC').Value := qrMechanizmPROC_ZAC.Value;
+        ParamByName('PROC_PODR').Value := qrMechanizmPROC_PODR.Value;
+        ParamByName('AA' + CField).Value := CValue;
+        ParamByName('id').Value := qrMechanizmID.Value;
+        ExecSQL;
+      end;
 
       // Пересчет по строке механизма
       ReCalcRowMech(CType);
@@ -3747,14 +3794,14 @@ begin
   // Нумерация строк, внутри подгрупп
   while not qrMaterial.Eof do
   begin
-    if (qrMaterial.FieldByName('TITLE').AsInteger > 0) then
+    if (qrMaterialTITLE.AsInteger > 0) then
     begin
       i := 0;
       qrMaterial.Next;
     end;
     inc(i);
     qrMaterial.Edit;
-    qrMaterial.FieldByName('NUM').AsInteger := i;
+    qrMaterialNUM.AsInteger := i;
     qrMaterial.Post;
 
     qrMaterial.Next;
@@ -3767,7 +3814,7 @@ begin
     dbgrdMaterial.Columns[2].Visible := False;
 
   qrMaterial.First;
-  if (qrMaterial.FieldByName('TITLE').AsInteger > 0) then
+  if (qrMaterialTITLE.AsInteger > 0) then
     qrMaterial.Next;
 
   ReCalcMat := False;
@@ -3811,27 +3858,62 @@ begin
 end;
 
 procedure TFormCalculationEstimate.FillingTableMechanizm(const vIdCardRate, vIdMech: Integer);
-{ var
-  i: Integer; }
+var
+  fType, fID, i: Integer;
 begin
-
-  qrMechanizm.Active := False;
   if vIdMech > 0 then
   begin
-    qrMechanizm.ParamByName('Type').AsInteger := 0;
-    qrMechanizm.ParamByName('IDValue').AsInteger := vIdMech;
+    fType := 0;
+    fID := vIdMech;
   end
   else
   begin
-    qrMechanizm.ParamByName('Type').AsInteger := 1;
-    qrMechanizm.ParamByName('IDValue').AsInteger := vIdCardRate;
+    fType := 1;
+    fID := vIdCardRate;
   end;
+
+  qrMechanizm.DisableControls;
+  ReCalcMech := True;
+  qrMechanizmNUM.ReadOnly := False;
+  // Открытие датасета для заполнения таблицы материалов
+  qrMechanizm.Active := False;
+  // Заполняет Mechanizms_temp
+  qrMechanizm.SQL.Text := 'call GetMechanizms(' + IntToStr(fType) + ',' + IntToStr(fID) + ')';
+  qrMechanizm.ExecSQL;
+
+  qrMechanizm.Active := False;
+  // Открывает Mechanizms_temp
+  qrMechanizm.SQL.Text := 'SELECT * FROM mechanizms_temp ORDER BY SRTYPE, TITLE DESC, ID';
   qrMechanizm.Active := True;
+  i := 0;
+  // Нумерация строк, внутри подгрупп
+  while not qrMechanizm.Eof do
+  begin
+    if (qrMechanizmTITLE.AsInteger > 0) then
+    begin
+      i := 0;
+      qrMechanizm.Next;
+    end;
+    inc(i);
+    qrMechanizm.Edit;
+    qrMechanizmNUM.AsInteger := i;
+    qrMechanizm.Post;
+
+    qrMechanizm.Next;
+  end;
+  qrMechanizmNUM.ReadOnly := True;
 
   if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
     dbgrdMechanizm.Columns[2].Visible := True
   else
     dbgrdMechanizm.Columns[2].Visible := False;
+
+  qrMechanizm.First;
+  if (qrMechanizmTITLE.AsInteger > 0) then
+    qrMechanizm.Next;
+
+  ReCalcMech := False;
+  qrMechanizm.EnableControls;;
 end;
 
 procedure TFormCalculationEstimate.FillingTableDescription(const vIdNormativ: Integer);
@@ -5091,6 +5173,8 @@ end;
 
 procedure TFormCalculationEstimate.dbgrdMechanizmDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
+var
+  Str: string;
 begin
   with dbgrdMechanizm.Canvas do
   begin
@@ -5172,6 +5256,22 @@ begin
       (dbgrdMechanizm = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
+    Str := '';
+    // Подсветка синим подшапок таблицы
+    if qrMechanizmTITLE.AsInteger > 0 then
+    begin
+      Brush.Color := clNavy;
+      Font.Color := clWhite;
+      Font.Style := Font.Style + [fsbold];
+      if Column.Index = 1 then
+        if Assigned(Column.Field) then
+          Str := Column.Field.AsString;
+    end
+    else
+    begin
+      if Assigned(Column.Field) then
+        Str := Column.Field.AsString;
+    end;
 
     if gdFocused in State then // Ячейка в фокусе
     begin
@@ -5181,9 +5281,9 @@ begin
 
     FillRect(Rect);
     if Column.Alignment = taRightJustify then
-      TextOut(Rect.Right - 2 - TextWidth(Column.Field.AsString), Rect.Top + 2, Column.Field.AsString)
+      TextOut(Rect.Right - 2 - TextWidth(Str), Rect.Top + 2, Str)
     else
-      TextOut(Rect.Left + 2, Rect.Top + 2, Column.Field.AsString);
+      TextOut(Rect.Left + 2, Rect.Top + 2, Str);
   end;
 end;
 
