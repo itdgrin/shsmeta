@@ -27,14 +27,15 @@ object fWinterPrise: TfWinterPrise
     DataSource = dsTreeData
     MasterField = 'ZNORMATIVS_ID'
     DetailField = 'PARENT_ID'
-    ItemField = 'NAME_EX'
-    UseFilter = True
+    ItemField = 'NAME_EX_2'
+    UseFilter = False
     PersistentNode = False
     DragMode = dmAutomatic
     HideSelection = False
     Indent = 19
     Align = alCustom
     TabOrder = 0
+    OnEnter = tvEstimatesEnter
     PopupMenu = pm1
     Anchors = [akLeft, akTop, akRight, akBottom]
     HotTrack = True
@@ -111,12 +112,14 @@ object fWinterPrise: TfWinterPrise
     Anchors = [akTop, akRight, akBottom]
     DataSource = dsZnormativs_detail
     Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    PopupMenu = pm2
     TabOrder = 2
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnEnter = JvDBGrid1Enter
     AutoSizeColumns = True
     SelectColumnsDialogStrings.Caption = 'Select columns'
     SelectColumnsDialogStrings.OK = '&OK'
@@ -161,11 +164,36 @@ object fWinterPrise: TfWinterPrise
       Caption = #1053#1086#1084#1077#1088':'
     end
     object lbl2: TLabel
-      Left = 119
+      Left = 111
       Top = 0
       Width = 52
       Height = 13
       Caption = #1053#1072#1079#1074#1072#1085#1080#1077':'
+    end
+    object dbnvgr1: TDBNavigator
+      Left = 8
+      Top = 0
+      Width = 220
+      Height = 25
+      DataSource = dsTreeData
+      Hints.Strings = (
+        #1053#1072' '#1087#1077#1088#1074#1091#1102' '#1079#1072#1087#1080#1089#1100
+        #1055#1088#1077#1076#1099#1076#1091#1097#1072#1103' '#1079#1072#1087#1080#1089#1100
+        #1057#1083#1077#1076#1091#1102#1097#1072#1103' '#1079#1072#1087#1080#1089#1100
+        #1053#1072' '#1087#1086#1089#1083#1077#1076#1085#1102#1102' '#1079#1072#1087#1080#1089#1100
+        #1053#1086#1074#1072#1103' '#1079#1072#1087#1080#1089#1100
+        #1059#1076#1072#1083#1080#1090#1100' '#1079#1072#1087#1080#1089#1100
+        #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1079#1072#1087#1080#1089#1100
+        #1057#1086#1093#1088#1072#1085#1080#1090#1100
+        #1054#1090#1084#1077#1085#1080#1090#1100
+        #1054#1073#1085#1086#1074#1080#1090#1100
+        'Apply updates'
+        'Cancel updates')
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+      TabStop = True
+      Visible = False
     end
     object btnClose: TBitBtn
       Left = 718
@@ -174,7 +202,7 @@ object fWinterPrise: TfWinterPrise
       Height = 25
       Anchors = [akRight, akBottom]
       Caption = #1047#1072#1082#1088#1099#1090#1100
-      TabOrder = 3
+      TabOrder = 4
       OnClick = btnCloseClick
     end
     object btnSelect: TBitBtn
@@ -185,33 +213,39 @@ object fWinterPrise: TfWinterPrise
       Anchors = [akRight, akBottom]
       Caption = #1042#1099#1073#1088#1072#1090#1100
       ModalResult = 1
-      TabOrder = 2
+      TabOrder = 3
       OnClick = btnSelectClick
     end
     object dbedtNUM: TDBEdit
       Left = 49
       Top = 0
-      Width = 64
+      Width = 56
       Height = 21
       DataField = 'NUM'
       DataSource = dsTreeData
-      TabOrder = 0
+      TabOrder = 1
+      OnExit = dbedtNUMExit
     end
     object dbedtNAME: TDBEdit
-      Left = 177
+      Left = 169
       Top = 0
-      Width = 418
+      Width = 426
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       DataField = 'NAME'
       DataSource = dsTreeData
-      TabOrder = 1
+      TabOrder = 2
+      OnExit = dbedtNUMExit
     end
   end
   object qrTreeData: TFDQuery
+    OnCalcFields = qrTreeDataCalcFields
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    UpdateOptions.AssignedValues = [uvRefreshMode]
+    UpdateOptions.UpdateTableName = 'smeta.znormativs_ex'
+    UpdateOptions.KeyFields = 'ZNORMATIVS_ID'
     SQL.Strings = (
       'SELECT '
       '  `ZNORMATIVS_ID`,'
@@ -228,6 +262,71 @@ object fWinterPrise: TfWinterPrise
       'ORDER BY `NUM`=0, -`NUM` DESC, `NUM`;')
     Left = 33
     Top = 18
+    object qrTreeDataZNORMATIVS_ID: TFDAutoIncField
+      FieldName = 'ZNORMATIVS_ID'
+      Origin = 'ZNORMATIVS_ID'
+      ProviderFlags = [pfInWhere, pfInKey]
+    end
+    object strngfldTreeDataNUM: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NUM'
+      Origin = 'NUM'
+      Size = 10
+    end
+    object strngfldTreeDataNAME: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NAME'
+      Origin = 'NAME'
+      Size = 512
+    end
+    object qrTreeDataCOEF: TBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'COEF'
+      Origin = 'COEF'
+      Precision = 5
+      Size = 2
+    end
+    object qrTreeDataCOEF_ZP: TBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'COEF_ZP'
+      Origin = 'COEF_ZP'
+      Precision = 5
+      Size = 2
+    end
+    object qrTreeDataCOEF_ZP_MACH: TBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'COEF_ZP_MACH'
+      Origin = 'COEF_ZP_MACH'
+      Precision = 5
+      Size = 2
+    end
+    object qrTreeDataCOEF_ZP_MACH_MOD: TBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'COEF_ZP_MACH_MOD'
+      Origin = 'COEF_ZP_MACH_MOD'
+      Precision = 5
+      Size = 2
+    end
+    object qrTreeDataPARENT_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'PARENT_ID'
+      Origin = 'PARENT_ID'
+    end
+    object strngfldTreeDataNAME_EX: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NAME_EX'
+      Origin = 'NAME_EX'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 523
+    end
+    object strngfldTreeDataNAME_EX_2: TStringField
+      DisplayWidth = 1000
+      FieldKind = fkCalculated
+      FieldName = 'NAME_EX_2'
+      Size = 1000
+      Calculated = True
+    end
   end
   object dsTreeData: TDataSource
     DataSet = qrTreeData
@@ -266,6 +365,23 @@ object fWinterPrise: TfWinterPrise
     end
     object N2: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = N2Click
+    end
+  end
+  object tmr1: TTimer
+    OnTimer = tmr1Timer
+    Left = 32
+    Top = 160
+  end
+  object pm2: TPopupMenu
+    Left = 648
+    Top = 168
+    object MenuItem1: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+    end
+    object MenuItem2: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = N2Click
     end
   end
 end
