@@ -35,11 +35,32 @@ type
     dbedtNAME: TDBEdit;
     lbl1: TLabel;
     lbl2: TLabel;
+    qrTreeDataZNORMATIVS_ID: TFDAutoIncField;
+    strngfldTreeDataNUM: TStringField;
+    strngfldTreeDataNAME: TStringField;
+    qrTreeDataCOEF: TBCDField;
+    qrTreeDataCOEF_ZP: TBCDField;
+    qrTreeDataCOEF_ZP_MACH: TBCDField;
+    qrTreeDataCOEF_ZP_MACH_MOD: TBCDField;
+    qrTreeDataPARENT_ID: TIntegerField;
+    strngfldTreeDataNAME_EX: TStringField;
+    strngfldTreeDataNAME_EX_2: TStringField;
+    tmr1: TTimer;
+    dbnvgr1: TDBNavigator;
+    pm2: TPopupMenu;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure btnSelectClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure qrTreeDataCalcFields(DataSet: TDataSet);
+    procedure dbedtNUMExit(Sender: TObject);
+    procedure tmr1Timer(Sender: TObject);
+    procedure tvEstimatesEnter(Sender: TObject);
+    procedure JvDBGrid1Enter(Sender: TObject);
+    procedure N2Click(Sender: TObject);
   private
 
   public
@@ -72,6 +93,12 @@ begin
   end;
 end;
 
+procedure TfWinterPrise.dbedtNUMExit(Sender: TObject);
+begin
+  if qrTreeData.State in [dsEdit, dsInsert] then
+    qrTreeData.Post;
+end;
+
 procedure TfWinterPrise.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Kind := kdNone;
@@ -97,6 +124,33 @@ begin
   end;
   CloseOpen(qrTreeData);
   CloseOpen(qrZnormativs_detail);
+end;
+
+procedure TfWinterPrise.JvDBGrid1Enter(Sender: TObject);
+begin
+  dbnvgr1.DataSource := dsZnormativs_detail;
+end;
+
+procedure TfWinterPrise.N2Click(Sender: TObject);
+begin
+  dbnvgr1.BtnClick(nbDelete);
+end;
+
+procedure TfWinterPrise.qrTreeDataCalcFields(DataSet: TDataSet);
+begin
+  strngfldTreeDataNAME_EX_2.Value := strngfldTreeDataNUM.Value + ' ' + strngfldTreeDataNAME.Value;
+end;
+
+procedure TfWinterPrise.tmr1Timer(Sender: TObject);
+begin
+  // Временное решение
+  if qrTreeData.State in [dsEdit, dsInsert] then
+    qrTreeData.Post;
+end;
+
+procedure TfWinterPrise.tvEstimatesEnter(Sender: TObject);
+begin
+  dbnvgr1.DataSource := dsTreeData;
 end;
 
 end.
