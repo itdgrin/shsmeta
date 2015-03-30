@@ -13,10 +13,11 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-
+  private
+    const CaptionButton = 'Части смет';
+    const HintButton = 'Окно частей смет';
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
-
   end;
 
 var
@@ -81,10 +82,8 @@ begin
     Visible := True;
   end;
 
-  // -----------------------------------------
-
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButtonPartsEstimates, HintButtonPartsEstimates, FormMain.ShowPartsEstimates);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -96,7 +95,7 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(CaptionButtonPartsEstimates);
+  FormMain.SelectButtonActiveWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -115,7 +114,7 @@ begin
   FormPartsEstimates := nil;
 
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(CaptionButtonPartsEstimates);
+  FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

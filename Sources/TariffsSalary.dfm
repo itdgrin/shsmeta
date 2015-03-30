@@ -92,8 +92,6 @@ object FormTariffsSalary: TFormTariffsSalary
       Height = 25
       Anchors = [akLeft]
       Caption = 'F6 '#1055#1086#1080#1089#1082
-      DoubleBuffered = True
-      ParentDoubleBuffered = False
       TabOrder = 0
     end
     object BitBtnLoad: TBitBtn
@@ -103,8 +101,6 @@ object FormTariffsSalary: TFormTariffsSalary
       Height = 25
       Anchors = [akLeft]
       Caption = #1047#1072#1075#1088#1091#1079#1082#1072
-      DoubleBuffered = True
-      ParentDoubleBuffered = False
       TabOrder = 1
     end
   end

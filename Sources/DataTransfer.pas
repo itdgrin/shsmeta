@@ -33,17 +33,11 @@ type
     procedure RepaintImagesForSplitters();
 
   private
-
+    const CaptionButton = 'Перенос данных';
+    const HintButton = 'Окно переноса данных';
   public
 
   end;
-
-const
-  // Название кнопки для этого окна
-  CaptionButton = 'Перенос данных';
-
-  // Подсказка при наведении на кнопку для этого окна
-  HintButton = 'Окно переноса данных';
 
 var
   FormDataTransfer: TFormDataTransfer;
@@ -83,10 +77,8 @@ begin
     GetIcon(0, ImageSplitterCenter.Picture.Icon);
   end;
 
-  // -----------------------------------------
-
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, FormMain.ShowDataTransfer);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

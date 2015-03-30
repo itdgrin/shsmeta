@@ -40,7 +40,7 @@ var
 
 implementation
 
-uses Main, DataModule;
+uses Main, DataModule, Tools;
 
 const
   FormCaption = 'Карточка расценки';

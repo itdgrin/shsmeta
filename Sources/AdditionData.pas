@@ -26,6 +26,9 @@ type
     procedure HideAllFrames;
     procedure SpeedButtonClick(Sender: TObject);
   private
+    const CaptionButton = 'Добавление данных';
+    const HintButton = 'Окно добавления данных';
+  private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
   public
     FrameRates: TFrameRates;
@@ -119,8 +122,7 @@ begin
 
   FormMain.PanelCover.Visible := False;
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButtonAdditionData, HintButtonAdditionData,
-    FormMain.ShowAdditionData);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 procedure TFormAdditionData.FormActivate(Sender: TObject);
@@ -130,7 +132,7 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(CaptionButtonAdditionData);
+  FormMain.SelectButtonActiveWindow(CaptionButton);
 end;
 
 procedure TFormAdditionData.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -146,7 +148,7 @@ procedure TFormAdditionData.FormDestroy(Sender: TObject);
 begin
   FormAdditionData := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(CaptionButtonAdditionData);
+  FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

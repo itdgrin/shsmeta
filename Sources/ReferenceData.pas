@@ -33,7 +33,9 @@ type
 
     function GetLeftIndentForFormSborniks(): Integer;
     function GetTopIndentForFormSborniks(): Integer;
-
+  private
+    const CaptionButton = 'Справочные данные';
+    const HintButton = 'Окно справочных данных';
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
@@ -151,8 +153,7 @@ begin
 
   FormMain.PanelCover.Visible := False;
 
-  FormMain.CreateButtonOpenWindow(CaptionButtonReferenceData, HintButtonReferenceData,
-    FormMain.ShowReferenceData);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -170,7 +171,7 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(CaptionButtonReferenceData);
+  FormMain.SelectButtonActiveWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -178,9 +179,8 @@ end;
 procedure TFormReferenceData.FormDestroy(Sender: TObject);
 begin
   FormReferenceData := nil;
-
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(CaptionButtonReferenceData);
+  FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

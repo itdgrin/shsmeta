@@ -62,17 +62,11 @@ type
     procedure CheckBoxAddionalDataClick(Sender: TObject);
 
   private
-
+    const CaptionButton = 'Акт С-6';
+    const HintButton = 'Окно Акт С-6';
   public
 
   end;
-
-const
-  // Название кнопки для этого окна
-  CaptionButton = 'Акт С-6';
-
-  // Подсказка при наведении на кнопку для этого окна
-  HintButton = 'Окно Акт С-6';
 
 var
   FormActC6: TFormActC6;
@@ -115,10 +109,8 @@ begin
 
   PanelBottom.Constraints.MinHeight := 150;
 
-  // -----------------------------------------
-
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, FormMain.ShowActC6);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

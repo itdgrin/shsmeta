@@ -560,8 +560,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           PopupMenu = PopupMenuEstimates
           RowSelect = True
           Mirror = False
-          ExplicitLeft = -1
-          ExplicitTop = 1
         end
       end
       object PanelActs: TPanel

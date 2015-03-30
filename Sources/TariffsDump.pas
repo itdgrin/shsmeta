@@ -12,10 +12,11 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-
+  private
+    const CaptionButton = 'Тар. по свалкам';
+    const HintButton = 'Окно тарифы по свалкам';
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
-
   public
     FramePriceDump: TFramePriceDumps;
 
@@ -81,10 +82,8 @@ begin
   FormWaiting.Close;
   FormMain.PanelCover.Visible := False;
 
-  // ----------------------------------------
-
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButtonPriceDumps, HintButtonPriceDumps, FormMain.ShowTariffsDump);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -96,7 +95,7 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(CaptionButtonPriceDumps);
+  FormMain.SelectButtonActiveWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -113,7 +112,7 @@ begin
   FormTariffsDump := nil;
 
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(CaptionButtonPriceDumps);
+  FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
 end.

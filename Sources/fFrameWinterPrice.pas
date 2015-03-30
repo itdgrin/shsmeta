@@ -55,7 +55,7 @@ type
 
 implementation
 
-uses Main, DrawingTables, DataModule;
+uses Main, DrawingTables, DataModule, Tools;
 
 {$R *.dfm}
 

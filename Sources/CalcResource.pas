@@ -208,7 +208,8 @@ end;
 procedure TfCalcResource.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N2Click);
+ // FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N2Click);
+ //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   CloseOpen(qrObject);
   LoadDBGridSettings(grMaterial);
   LoadDBGridSettings(grMaterialBott);
