@@ -31,6 +31,10 @@ type
     pm1: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
+    dbedtNUM: TDBEdit;
+    dbedtNAME: TDBEdit;
+    lbl1: TLabel;
+    lbl2: TLabel;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);

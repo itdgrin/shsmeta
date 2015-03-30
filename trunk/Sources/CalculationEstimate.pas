@@ -4728,8 +4728,8 @@ begin
   if qrRates.RecNo = i then
     qrRatesAfterScroll(qrRates);
 
-  qrRatesEx.ParamByName('ID_ESTIMATE').AsInteger := IdEstimate;
-  CloseOpen(qrRatesEx);
+  //qrRatesEx.ParamByName('ID_ESTIMATE').AsInteger := IdEstimate;
+  //CloseOpen(qrRatesEx);
 
   CloseOpen(qrCalculations);
 end;

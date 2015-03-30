@@ -150,13 +150,31 @@ object fWinterPrise: TfWinterPrise
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
+    DesignSize = (
+      801
+      37)
+    object lbl1: TLabel
+      Left = 8
+      Top = 0
+      Width = 35
+      Height = 13
+      Caption = #1053#1086#1084#1077#1088':'
+    end
+    object lbl2: TLabel
+      Left = 119
+      Top = 0
+      Width = 52
+      Height = 13
+      Caption = #1053#1072#1079#1074#1072#1085#1080#1077':'
+    end
     object btnClose: TBitBtn
       Left = 718
       Top = 6
       Width = 75
       Height = 25
+      Anchors = [akRight, akBottom]
       Caption = #1047#1072#1082#1088#1099#1090#1100
-      TabOrder = 0
+      TabOrder = 3
       OnClick = btnCloseClick
     end
     object btnSelect: TBitBtn
@@ -164,10 +182,30 @@ object fWinterPrise: TfWinterPrise
       Top = 6
       Width = 75
       Height = 25
+      Anchors = [akRight, akBottom]
       Caption = #1042#1099#1073#1088#1072#1090#1100
       ModalResult = 1
-      TabOrder = 1
+      TabOrder = 2
       OnClick = btnSelectClick
+    end
+    object dbedtNUM: TDBEdit
+      Left = 49
+      Top = 0
+      Width = 64
+      Height = 21
+      DataField = 'NUM'
+      DataSource = dsTreeData
+      TabOrder = 0
+    end
+    object dbedtNAME: TDBEdit
+      Left = 177
+      Top = 0
+      Width = 418
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      DataField = 'NAME'
+      DataSource = dsTreeData
+      TabOrder = 1
     end
   end
   object qrTreeData: TFDQuery
