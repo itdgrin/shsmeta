@@ -30,6 +30,12 @@ procedure KillDir(const ADirName: string);
 function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
   var AWaitResult: DWord): boolean;
 
+function MyFloatToStr(Value: Extended): string;
+function MyStrToFloat(Value: string): Extended;
+function MyStrToFloatDef(Value: string; DefRes: Extended): Extended;
+function MyCurrToStr(Value: Currency): string;
+function MyStrToCurr(Value: string): Currency;
+
 implementation
 
 // «апускает приложение и ожидает его завершени€
@@ -256,6 +262,84 @@ begin
   if Checked then
     DrawFlags := DrawFlags or DFCS_CHECKED;
   DrawFrameControl(Canvas.Handle, Rect, DFC_BUTTON, DrawFlags);
+end;
+
+function MyFloatToStr(Value: Extended): string;
+var
+  DS: Char;
+begin
+  DS := FormatSettings.DecimalSeparator;
+  try
+    FormatSettings.DecimalSeparator := '.';
+    Result := FloatToStr(Value);
+  finally
+    FormatSettings.DecimalSeparator := DS;
+  end;
+end;
+
+function MyStrToFloat(Value: string): Extended;
+var
+  DS: Char;
+begin
+  DS := FormatSettings.DecimalSeparator;
+  try
+    FormatSettings.DecimalSeparator := '.';
+    if not TextToFloat(Value, Result, FormatSettings) then
+    begin
+      FormatSettings.DecimalSeparator := ',';
+      Result := StrToFloat(Value);
+    end;
+  finally
+    FormatSettings.DecimalSeparator := DS;
+  end;
+end;
+
+function MyCurrToStr(Value: Currency): string;
+var
+  DS: Char;
+begin
+  DS := FormatSettings.DecimalSeparator;
+  try
+    FormatSettings.DecimalSeparator := '.';
+    Result := CurrToStr(Value);
+  finally
+    FormatSettings.DecimalSeparator := DS;
+  end;
+end;
+
+function MyStrToCurr(Value: string): Currency;
+var
+  DS: Char;
+begin
+  DS := FormatSettings.DecimalSeparator;
+  try
+    FormatSettings.DecimalSeparator := '.';
+    if not TextToFloat(Value, Result, FormatSettings) then
+    begin
+      FormatSettings.DecimalSeparator := ',';
+      Result := StrToCurr(Value);
+    end;
+  finally
+    FormatSettings.DecimalSeparator := DS;
+  end;
+end;
+
+function MyStrToFloatDef(Value: string; DefRes: Extended): Extended;
+var
+  DS: Char;
+begin
+  DS := FormatSettings.DecimalSeparator;
+  try
+    FormatSettings.DecimalSeparator := '.';
+    if not TextToFloat(Value, Result, FormatSettings) then
+    begin
+      FormatSettings.DecimalSeparator := ',';
+      if not TextToFloat(Value, Result, FormatSettings) then
+        Result := DefRes;
+    end;
+  finally
+    FormatSettings.DecimalSeparator := DS;
+  end;
 end;
 
 end.

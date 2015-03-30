@@ -26,7 +26,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
   private
-    { Private declarations }
+    const CaptionButton = 'Тар. по зарплате';
+    const HintButton = 'Окно тарифы по зарплате';
   public
     { Public declarations }
   protected
@@ -41,9 +42,6 @@ type
     WindowState: TWindowState;
     PanelLeftWidth: Integer;
   end;
-
-const
-  CaptionButton = 'Тар. по зарплате';
 
 var
   FormTariffsSalary: TFormTariffsSalary;
@@ -113,9 +111,7 @@ begin
     PanelLeft.Width := FS.PanelLeftWidth;
   end;
 
-  // -----------------------------------------
-
-  FormMain.CreateButtonOpenWindow(CaptionButton, 'Окно тарифы по зарплате', FormMain.ShowTariffsSalary);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

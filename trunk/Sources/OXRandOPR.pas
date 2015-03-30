@@ -44,20 +44,15 @@ type
     procedure SelectRegion(Sender: TObject);
     procedure DBLookupComboBoxTypeConstructionClick(Sender: TObject);
     procedure Panel1Resize(Sender: TObject);
-
+  private
+    const FormCaption = 'ОХР и ОПР';
+    const HintButton = 'Окно ОХР и ОПР';
   private
     StrQuery: String; // Для формирования разных запросов
 
   public
 
   end;
-
-const
-  // Название кнопки для этого окна
-  FormCaption = 'ОХР и ОПР';
-
-  // Подсказка при наведении на кнопку для этого окна
-  HintButton = 'Окно ОХР и ОПР';
 
 var
   FormOXRandOPR: TFormOXRandOPR;
@@ -79,10 +74,8 @@ begin
 
   WindowState := wsMaximized;
 
-  // -----------------------------------------
-
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(FormCaption, HintButton, FormMain.ShowOXRandOPR);
+  FormMain.CreateButtonOpenWindow(FormCaption, HintButton, Self);
 
   // -----------------------------------------
 

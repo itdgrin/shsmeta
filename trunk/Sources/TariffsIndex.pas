@@ -61,7 +61,9 @@ type
     procedure RunQuery(const P: Pointer);
     procedure PopupMenuCopyClick(Sender: TObject);
     procedure ADOQueryTariffsIndexAfterScroll(DataSet: TDataSet);
-
+  private
+    const CaptionButton = 'Тар. по статис. индексам';
+    const HintButton = 'Окно тарифы по статистическим индексам';
   private
     IdSelectRecord: Integer; // Код выделенной записи
     StringQuery: String; // Строка для формирования запроса
@@ -85,11 +87,6 @@ type
   end;
 
 const
-  // Название кнопки для этого окна
-  CaptionButton = 'Тар. по статис. индексам';
-
-  // Подсказка при наведении на кнопку для этого окна
-  HintButton = 'Окно тарифы по статистическим индексам';
 
   RenameColumns = 'id, i_statistic, i_rost, date_beg';
 
@@ -158,11 +155,8 @@ begin
   SetWidthColumns(FormMain.ClientWidth div 3 - 16, FormMain.ClientWidth div 3 - 16,
     FormMain.ClientWidth div 3 - 16, 1);
   WidthColumnsToDBGrid(DBGrid);
-
-  // -----------------------------------------
-
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, FormMain.ShowTariffsIndex);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

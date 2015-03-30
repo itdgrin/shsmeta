@@ -54,17 +54,11 @@ type
     procedure FormShow(Sender: TObject);
 
   private
-
+    const CaptionButton = 'График производ. работ';
+    const HintButton = 'Окно графика производства работ';
   public
 
   end;
-
-const
-  // Название кнопки для этого окна
-  CaptionButton = 'График производ. работ';
-
-  // Подсказка при наведении на кнопку для этого окна
-  HintButton = 'Окно графика производства работ';
 
 var
   FormWorkSchedule: TFormWorkSchedule;
@@ -86,10 +80,8 @@ begin
 
   WindowState := wsMaximized;
 
-  // -----------------------------------------
-
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, FormMain.ShowWorkSchedule);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

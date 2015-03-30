@@ -35,7 +35,10 @@ object fKC6Journal: TfKC6Journal
     ExplicitWidth = 965
     object ts1: TTabSheet
       Caption = #1055#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084
+      ExplicitLeft = 0
+      ExplicitTop = 0
       ExplicitWidth = 717
+      ExplicitHeight = 0
       object spl1: TSplitter
         Left = 0
         Top = 121
@@ -166,7 +169,10 @@ object fKC6Journal: TfKC6Journal
     object ts2: TTabSheet
       Caption = #1055#1086' '#1055#1058#1052
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
       ExplicitWidth = 717
+      ExplicitHeight = 0
       object dbgrdPTM: TDBGrid
         Left = 0
         Top = 0

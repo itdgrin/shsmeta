@@ -17,7 +17,9 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure HideAllFrames;
     procedure TimerTimer(Sender: TObject);
-
+  private
+    const ButtonCaption = 'Справочники ССР';
+    const ButtonHint = 'Окно справочников ССР';
   private
     FrameSSR: TFrameSSR;
     InitialFrames: Integer;
@@ -34,15 +36,6 @@ implementation
 uses Main;
 
 {$R *.dfm}
-
-const
-  // Название кнопки для этого окна
-  ButtonCaption = 'Справочники ССР';
-
-  // Подсказка при наведении на кнопку для этого окна
-  ButtonHint = 'Окно справочников ССР';
-
-  // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCatalogSSR.FormCreate(Sender: TObject);
 begin
@@ -62,10 +55,8 @@ begin
 
   HideAllFrames;
 
-  // -----------------------------------------
-
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(ButtonCaption, ButtonHint, FormMain.ShowCatalogSSR);
+  FormMain.CreateButtonOpenWindow(ButtonCaption, ButtonHint, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

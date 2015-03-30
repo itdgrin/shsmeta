@@ -13,7 +13,9 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-
+  private
+    const CaptionButton = 'Организации';
+    const HintButton = 'Окно организаций';
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
@@ -83,7 +85,7 @@ begin
   // -----------------------------------------
 
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButtonOrganizations, HintButtonOrganizations, FormMain.ShowOrganizations);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -95,7 +97,7 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(CaptionButtonOrganizations);
+  FormMain.SelectButtonActiveWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -114,7 +116,7 @@ begin
   FormOrganizations := nil;
 
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(CaptionButtonOrganizations);
+  FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

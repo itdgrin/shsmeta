@@ -50,17 +50,11 @@ type
     procedure FormShow(Sender: TObject);
 
   private
-
+    const CaptionButton = 'Справка С-5';
+    const HintButton = 'Окно справки С-5';
   public
 
   end;
-
-const
-  // Название кнопки для этого окна
-  CaptionButton = 'Справка С-5';
-
-  // Подсказка при наведении на кнопку для этого окна
-  HintButton = 'Окно справки С-5';
 
 var
   FormHelpC5: TFormHelpC5;
@@ -82,10 +76,8 @@ begin
 
   WindowState := wsMaximized;
 
-  // -----------------------------------------
-
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, FormMain.ShowHelpC5);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

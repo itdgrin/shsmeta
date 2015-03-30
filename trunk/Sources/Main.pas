@@ -18,7 +18,6 @@ type
     MenuFile: TMenuItem;
     FileClose: TMenuItem;
     MenuWindows: TMenuItem;
-    WindowsClose: TMenuItem;
     WindowsMinimize: TMenuItem;
     WindowsHorizontal: TMenuItem;
     WindowsVertical: TMenuItem;
@@ -117,10 +116,8 @@ type
     procedure WindowsCascadeClick(Sender: TObject);
     procedure WindowsMinimizeClick(Sender: TObject);
     procedure WindowsExpandClick(Sender: TObject);
-    procedure WindowsCloseClick(Sender: TObject);
 
     procedure FileCloseClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
     procedure HelpAboutClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -128,38 +125,11 @@ type
 
     procedure CascadeForActiveWindow();
     procedure FormCreate(Sender: TObject);
-    procedure CreateButtonOpenWindow(const CaptionButton: String; const HintButton: String;
-      const ClickEvent: TNotifyEvent);
+
+    procedure CreateButtonOpenWindow(const CaptionButton, HintButton: String;
+      const AForm: TForm; AEventType: Byte = 0);
     procedure DeleteButtonCloseWindow(const CaptionButton: String);
     procedure SelectButtonActiveWindow(const CaptionButton: String);
-
-    procedure ShowTariffsTransportation(Sender: TObject);
-    procedure ShowTariffsSalary(Sender: TObject);
-    procedure ShowTariffsMechanism(Sender: TObject);
-    procedure ShowTariffsDump(Sender: TObject);
-    procedure ShowTariffsIndex(Sender: TObject);
-    procedure ShowCalculationEstimate(Sender: TObject);
-    procedure ShowActC6(Sender: TObject);
-    procedure ShowWorkSchedule(Sender: TObject);
-    procedure ShowHelpC3(Sender: TObject);
-    procedure ShowHelpC5(Sender: TObject);
-    procedure ShowCatalogSSR(Sender: TObject);
-    procedure ShowOXRandOPR(Sender: TObject);
-    procedure ShowWinterPrice(Sender: TObject);
-    procedure ShowObjectsAndEstimates(Sender: TObject);
-    procedure ShowDataTransfer(Sender: TObject);
-    procedure ShowOwnData(Sender: TObject);
-    procedure ShowReferenceData(Sender: TObject);
-    procedure ShowPricesOwnData(Sender: TObject);
-    procedure ShowPricesReferenceData(Sender: TObject);
-    procedure ShowAdditionData(Sender: TObject);
-    procedure ShowPartsEstimates(Sender: TObject);
-    procedure ShowSetCoefficients(Sender: TObject);
-    procedure ShowOrganizations(Sender: TObject);
-    procedure ShowSectionsEstimates(Sender: TObject);
-    procedure ShowTypesWorks(Sender: TObject);
-    procedure ShowIndexesChangeCost(Sender: TObject);
-    procedure ShowСategoriesObjects(Sender: TObject);
 
     procedure TimerCoverTimer(Sender: TObject);
     procedure ServiceSettingsClick(Sender: TObject);
@@ -214,7 +184,7 @@ type
     procedure vk6Click(Sender: TObject);
     procedure vk7Click(Sender: TObject);
     procedure N10Click(Sender: TObject);
-	procedure vk9Click(Sender: TObject);	
+	  procedure vk9Click(Sender: TObject);
     procedure mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
     procedure N12Click(Sender: TObject);
   private
@@ -235,6 +205,11 @@ type
     procedure OnUpdate(var Mes: TMessage); message WM_SHOW_SPLASH;
     procedure ShowSplashForm;
     procedure ShowUpdateForm(const AResp: TServiceResponse);
+
+    procedure ButtonClickEvent1(Sender: TObject);
+    procedure ButtonClickEvent2(Sender: TObject);
+    procedure FormShowEvent1(Sender: TObject);
+    procedure FormShowEvent2(Sender: TObject);
   public
     procedure AutoWidthColumn(SG: TStringGrid; Nom: integer);
   end;
@@ -295,83 +270,31 @@ const
   vRoundTo = 'RT';
   vShowHint = 'SH';
 
-  // -----------------------------------------
-
   // Названия форм
   FormNameMain = 'Расчёт сметы';
-
   FormNameCoefficientOrders = 'Коэффициент по приказам';
   FormNameCardOrganization = 'Карточка организации';
   FormNameCardCoefficients = 'Карточка коэффициентов';
   FormNameCardPartsEstimates = 'Карточка частей смет';
   FormNameCardSectionsEstimates = 'Карточка разделов смет';
   FormNameCardTypesWorks = 'Карточка видов работ';
-
   FormNameTypesActs = 'Типы актов';
-  FormNameCardTypesActs = 'Карточка типов актов';
-
   FormNameIndexesChangeCost = 'Индексы изменения стоимости';
   FormNameCardIndexesChangeCost = 'Карточка индексов изменения стоимости';
-
   FormNameCategoriesObjects = 'Категории объектов';
   FormNameCardCategoriesObjects = 'Карточка категорий объектов';
-
-  // ----------------------------------------
-
   FormNamePriceMaterials = 'Цены на материалы';
   FormNamePriceMechanizms = 'Цены на механизмы';
   FormNamePriceDumps = 'Тарифы по свалкам';
-  FormNamePriceTransportation = 'Тарифы по грузоперевозкам';
-  FormNameCalculationEstimate = 'Расчёт сметы';
   FormNameOwnData = 'Собственные данные';
   FormNameReferenceData = 'Справочные данные';
   FormNamePricesOwnData = 'Цены по собственным данным';
   FormNamePricesReferenceData = 'Цены по справочным данным';
   FormNameAdditionData = 'Добавление данных';
-  FormNameCatalogs = 'Справочники';
   FormNamePartsEstimates = 'Части смет';
   FormNameSectionsEstimates = 'Разделы смет';
   FormNameTypesWorks = 'Виды работ';
-  FormNameSetCoefficients = 'Наборы коэффициентов';
   FormNameOrganizations = 'Организации';
-
-  // Названия кнопок форм
-  CaptionButtonPriceMaterials = 'Цены на материалы';
-  CaptionButtonPriceMechanizms = 'Цены на механизмы';
-  CaptionButtonPriceDumps = 'Тар. по свалкам';
-  CaptionButtonPriceTransportation = 'Тар. по грузоперевозкам';
-  CaptionButtonObjectsAndEstimates = 'Объекты и сметы';
-  CaptionButtonCalculationEstimate = 'Расчет акта';
-  CaptionButtonOwnData = 'Собственные данные';
-  CaptionButtonReferenceData = 'Справочные данные';
-  CaptionButtonPricesOwnData = 'Цены по собств. данным';
-  CaptionButtonPricesReferenceData = 'Цены по справоч. данным';
-  CaptionButtonAdditionData = 'Добавление данных';
-  CaptionButtonCatalogs = 'Справочники';
-  CaptionButtonPartsEstimates = 'Части смет';
-  CaptionButtonSectionsEstimates = 'Разделы смет';
-  CaptionButtonTypesWorks = 'Виды работ';
-  CaptionButtonSetCoefficients = 'Наборы коэффициентов';
-  CaptionButtonOrganizations = 'Организации';
-
-  // Описания кнопок форм
-  HintButtonPriceMaterials = 'Окно цены на материалы';
-  HintButtonPriceMechanizms = 'Окно цены на материалы';
-  HintButtonPriceDumps = 'Окно тарифы по свалкам';
-  HintButtonPriceTransportation = 'Окно тарифы по грузоперевозкам';
-  HintButtonObjectsAndEstimates = 'Окно объектов и смет';
-  HintButtonCalculationEstimate = 'Окно расчёта сметы';
-  HintButtonOwnData = 'Окно собственных данных';
-  HintButtonReferenceData = 'Окно справочных данных';
-  HintButtonPricesOwnData = 'Окно цены по собственным данным';
-  HintButtonPricesReferenceData = 'Окно цены по справочным данным';
-  HintButtonAdditionData = 'Окно добавления данных';
-  HintButtonReplacementCatalogs = 'Окно справочников';
-  HintButtonPartsEstimates = 'Окно частей смет';
-  HintButtonSectionsEstimates = 'Окно разделов смет';
-  HintButtonTypesWorks = 'Окно видов работ';
-  HintButtonSetCoefficients = 'Окно наборов коэффициентов';
-  HintButtonOrganizations = 'Окно организаций';
 
 const
   LWA_ALPHA = $2;
@@ -382,12 +305,6 @@ var
   FormMain: TFormMain;
   PS: TProgramSettings;
   FMEndTables: Char;
-
-function MyFloatToStr(Value: Extended): string;
-function MyStrToFloat(Value: string): Extended;
-function MyStrToFloatDef(Value: string; DefRes: Extended): Extended;
-function MyCurrToStr(Value: Currency): string;
-function MyStrToCurr(Value: string): Currency;
 
 implementation
 
@@ -578,197 +495,47 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
+//Управление кнопками на нижней панели
+procedure TFormMain.ButtonClickEvent1(Sender: TObject);
+var sb: TSpeedButton;
+begin
+  sb := TSpeedButton(Sender);
+  if Assigned(TForm(sb.Tag)) then
+    FormShowEvent1(TForm(sb.Tag));
+end;
 
-procedure TFormMain.ShowTariffsTransportation(Sender: TObject);
+procedure TFormMain.ButtonClickEvent2(Sender: TObject);
+var sb: TSpeedButton;
+begin
+  sb := TSpeedButton(Sender);
+  if Assigned(TForm(sb.Tag)) then
+    FormShowEvent2(TForm(sb.Tag));
+end;
+
+procedure TFormMain.FormShowEvent2(Sender: TObject);
+var TmpForm: TForm;
 begin
   PanelCover.Visible := true;
+  try
+    TmpForm := TForm(Sender);
+    if TmpForm.WindowState = wsMinimized then
+      TmpForm.WindowState := wsNormal;
 
-  if FormTariffsTransportation.WindowState = wsMinimized then
-    FormTariffsTransportation.WindowState := wsNormal;
-
-  FormTariffsTransportation.Show;
-
-  PanelCover.Visible := False;
+    TmpForm.Show;
+  finally
+    PanelCover.Visible := False;
+  end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormMain.ShowTariffsSalary(Sender: TObject);
+procedure TFormMain.FormShowEvent1(Sender: TObject);
 begin
-  FormTariffsSalary.Show;
+  TForm(Sender).Show;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormMain.ShowTariffsMechanism(Sender: TObject);
-begin
-  PanelCover.Visible := true;
-
-  if FormTariffsMechanism.WindowState = wsMinimized then
-    FormTariffsMechanism.WindowState := wsNormal;
-
-  FormTariffsMechanism.Show;
-
-  PanelCover.Visible := False;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormMain.ShowTariffsDump(Sender: TObject);
-begin
-  PanelCover.Visible := true;
-
-  if FormTariffsDump.WindowState = wsMinimized then
-    FormTariffsDump.WindowState := wsNormal;
-
-  FormTariffsDump.Show;
-
-  PanelCover.Visible := False;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormMain.ShowTariffsIndex(Sender: TObject);
-begin
-  FormTariffsIndex.Show;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormMain.ShowCalculationEstimate(Sender: TObject);
-begin
-  PanelCover.Visible := true;
-
-  if FormCalculationEstimate.WindowState = wsMinimized then
-    FormCalculationEstimate.WindowState := wsNormal;
-
-  FormCalculationEstimate.Show;
-
-  PanelCover.Visible := False;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormMain.ShowActC6(Sender: TObject);
-begin
-  FormActC6.Show;
-end;
-
-procedure TFormMain.ShowWorkSchedule(Sender: TObject);
-begin
-  FormWorkSchedule.Show;
-end;
-
-procedure TFormMain.ShowHelpC3(Sender: TObject);
-begin
-  FormHelpC3.Show;
-end;
-
-procedure TFormMain.ShowHelpC5(Sender: TObject);
-begin
-  FormHelpC5.Show;
-end;
-
-procedure TFormMain.ShowCatalogSSR(Sender: TObject);
-begin
-  FormCatalogSSR.Show;
-end;
-
-procedure TFormMain.ShowOXRandOPR(Sender: TObject);
-begin
-  FormOXRandOPR.Show;
-end;
-
-procedure TFormMain.ShowWinterPrice(Sender: TObject);
-begin
-  FormWinterPrice.Show;
-end;
-
-procedure TFormMain.ShowPartsEstimates(Sender: TObject);
-begin
-  FormPartsEstimates.Show;
-end;
-
-procedure TFormMain.ShowSetCoefficients(Sender: TObject);
-begin
-  fCoefficients.Show;
-end;
-
-procedure TFormMain.ShowOrganizations(Sender: TObject);
-begin
-  FormOrganizations.Show;
-end;
-
-procedure TFormMain.ShowSectionsEstimates(Sender: TObject);
-begin
-  FormSectionsEstimates.Show;
-end;
-
-procedure TFormMain.ShowTypesWorks(Sender: TObject);
-begin
-  FormTypesWorks.Show;
-end;
-
-procedure TFormMain.ShowIndexesChangeCost(Sender: TObject);
-begin
-  FormIndexesChangeCost.Show;
-end;
-
-procedure TFormMain.ShowСategoriesObjects(Sender: TObject);
-begin
-  FormCategoriesObjects.Show;
-end;
-
-procedure TFormMain.ShowObjectsAndEstimates(Sender: TObject);
-begin
-  PanelCover.Visible := true;
-
-  if FormObjectsAndEstimates.WindowState = wsMinimized then
-    FormObjectsAndEstimates.WindowState := wsNormal;
-
-  FormObjectsAndEstimates.Show;
-
-  PanelCover.Visible := False;
-end;
-
-procedure TFormMain.ShowDataTransfer(Sender: TObject);
-begin
-  FormDataTransfer.Show;
-end;
-
-procedure TFormMain.ShowAdditionData(Sender: TObject);
-begin
-  FormAdditionData.Show;
-end;
-
-procedure TFormMain.ShowOwnData(Sender: TObject);
-begin
-  FormOwnData.Show;
-end;
-
-procedure TFormMain.ShowReferenceData(Sender: TObject);
-begin
-  // FormReferenceData.Show;
-  FormReferenceData.WindowState := wsNormal;
-  FormReferenceData.Show;
-  // ShowWindow(FormReferenceData.Handle, SW_MAXIMIZE);
-end;
-
-procedure TFormMain.ShowPricesOwnData(Sender: TObject);
-begin
-  FormPricesOwnData.Show;
-end;
-
-procedure TFormMain.ShowPricesReferenceData(Sender: TObject);
-begin
-  FormPricesReferenceData.Show;
-end;
-
-procedure TFormMain.CreateButtonOpenWindow(const CaptionButton: String; const HintButton: String;
-  const ClickEvent: TNotifyEvent);
+procedure TFormMain.CreateButtonOpenWindow(const CaptionButton, HintButton: String;
+  const AForm: TForm; AEventType: Byte = 0);
 begin
   ButtonsWindows[CountOpenWindows] := TSpeedButton.Create(PanelOpenWindows);
-
   with ButtonsWindows[CountOpenWindows] do
   begin
     Parent := PanelOpenWindows;
@@ -781,7 +548,13 @@ begin
     Down := true;
     ShowHint := true;
     Hint := HintButton;
-    OnClick := ClickEvent;
+
+    if (AEventType = 1) then
+      OnClick := ButtonClickEvent2
+    else
+      OnClick := ButtonClickEvent1;
+
+    Tag := Integer(AForm);
   end;
 
   Inc(CountOpenWindows);
@@ -793,16 +566,21 @@ var
 begin
   Y := -1;
   for i := 0 to CountOpenWindows - 1 do
-    if ButtonsWindows[i].Caption = CaptionButton then
+    if Assigned(ButtonsWindows[Y]) and
+      (ButtonsWindows[i].Caption = CaptionButton) then
     begin
       Y := i;
       Break;
     end;
 
-  if (Y > -1) then // Нет кнопки с таким названием
+  if (Y = -1) then // Нет кнопки с таким названием
     Exit;
 
-  ButtonsWindows[Y].Free;
+  if Assigned(PanelOpenWindows) then
+  begin
+    ButtonsWindows[Y].Free;
+    ButtonsWindows[Y] := nil;
+  end;
 
   while Y < CountOpenWindows - 1 do
   begin
@@ -1562,14 +1340,15 @@ begin
   // Открываем форму ожидания
   FormWaiting.Show;
   Application.ProcessMessages;
+  try
+    if (not Assigned(FormWinterPrice)) then
+      FormWinterPrice := TFormWinterPrice.Create(Self);
 
-  if (not Assigned(FormWinterPrice)) then
-    FormWinterPrice := TFormWinterPrice.Create(Self);
-
-  FormWinterPrice.Show;
-
-  // Закрываем форму ожидания
-  FormWaiting.Close;
+    FormWinterPrice.Show;
+  finally
+    // Закрываем форму ожидания
+    FormWaiting.Close;
+  end;
 end;
 
 procedure TFormMain.ExtendedClick(Sender: TObject);
@@ -1624,15 +1403,6 @@ begin
     MDIChildren[i].WindowState := wsNormal;
 end;
 
-// Закрыть все
-procedure TFormMain.WindowsCloseClick(Sender: TObject);
-var
-  i: integer;
-begin
-  for i := 0 to MDIChildCount - 1 do
-    MDIChildren[i].Close;
-end;
-
 procedure TFormMain.EditOriginalDataClick(Sender: TObject);
 begin
   FormCardObject.ShowModal;
@@ -1640,8 +1410,7 @@ end;
 
 procedure TFormMain.FileCloseClick(Sender: TObject);
 begin
-  WindowsCloseClick(nil);
-  FormMain.Close;
+  Close;
 end;
 
 procedure TFormMain.FileSaveAsClick(Sender: TObject);
@@ -1657,12 +1426,6 @@ end;
 procedure TFormMain.FormActivate(Sender: TObject);
 begin
   // FormLogin.ShowModal;
-end;
-
-procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  WindowsCloseClick(nil);
-  DM.Connect.Connected := False;
 end;
 
 procedure TFormMain.HelpAboutClick(Sender: TObject);
@@ -1813,84 +1576,6 @@ begin
     CalcWidth := CalcWidth - (ColCount - ColNotVisible - 1);
 
     ColWidths[Nom] := CalcWidth;
-  end;
-end;
-
-function MyFloatToStr(Value: Extended): string;
-var
-  DS: Char;
-begin
-  DS := FormatSettings.DecimalSeparator;
-  try
-    FormatSettings.DecimalSeparator := '.';
-    Result := FloatToStr(Value);
-  finally
-    FormatSettings.DecimalSeparator := DS;
-  end;
-end;
-
-function MyStrToFloat(Value: string): Extended;
-var
-  DS: Char;
-begin
-  DS := FormatSettings.DecimalSeparator;
-  try
-    FormatSettings.DecimalSeparator := '.';
-    if not TextToFloat(Value, Result, FormatSettings) then
-    begin
-      FormatSettings.DecimalSeparator := ',';
-      Result := StrToFloat(Value);
-    end;
-  finally
-    FormatSettings.DecimalSeparator := DS;
-  end;
-end;
-
-function MyCurrToStr(Value: Currency): string;
-var
-  DS: Char;
-begin
-  DS := FormatSettings.DecimalSeparator;
-  try
-    FormatSettings.DecimalSeparator := '.';
-    Result := CurrToStr(Value);
-  finally
-    FormatSettings.DecimalSeparator := DS;
-  end;
-end;
-
-function MyStrToCurr(Value: string): Currency;
-var
-  DS: Char;
-begin
-  DS := FormatSettings.DecimalSeparator;
-  try
-    FormatSettings.DecimalSeparator := '.';
-    if not TextToFloat(Value, Result, FormatSettings) then
-    begin
-      FormatSettings.DecimalSeparator := ',';
-      Result := StrToCurr(Value);
-    end;
-  finally
-    FormatSettings.DecimalSeparator := DS;
-  end;
-end;
-
-function MyStrToFloatDef(Value: string; DefRes: Extended): Extended;
-var
-  DS: Char;
-begin
-  DS := FormatSettings.DecimalSeparator;
-  try
-    FormatSettings.DecimalSeparator := '.';
-    if not TextToFloat(Value, Result, FormatSettings) then
-    begin
-      FormatSettings.DecimalSeparator := ',';
-      if not TextToFloat(Value, Result, FormatSettings) then
-        Result := DefRes;
-    end;
-  finally
-    FormatSettings.DecimalSeparator := DS;
   end;
 end;
 

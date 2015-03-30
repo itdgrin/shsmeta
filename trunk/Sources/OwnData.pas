@@ -25,8 +25,10 @@ type
     procedure HideAllFrames;
 
     procedure SpeedButtonClick(Sender: TObject);
-
-  protected
+  private
+    const CaptionButton = 'Собственные данные';
+    const HintButton = 'Окно собственных данных';
+  private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
   public
@@ -122,7 +124,7 @@ begin
   FrameRates.Visible := True;
   FormMain.PanelCover.Visible := False;
 
-  FormMain.CreateButtonOpenWindow(CaptionButtonOwnData, HintButtonOwnData, FormMain.ShowOwnData);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -140,7 +142,7 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(CaptionButtonOwnData);
+  FormMain.SelectButtonActiveWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -150,7 +152,7 @@ begin
   FormOwnData := nil;
 
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(CaptionButtonOwnData);
+  FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

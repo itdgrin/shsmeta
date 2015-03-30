@@ -126,6 +126,9 @@ type
     procedure tvEstimatesDblClick(Sender: TObject);
     procedure grActsMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
   private
+    const CaptionButton = 'Объекты и сметы';
+    const HintButton = 'Окно объектов и смет';
+  private
     StrQuery: String; // Строка для формирования запросов
     IdObject: Integer;
     IDAct: Integer;
@@ -226,8 +229,7 @@ begin
   IdEstimate := 0;
 
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButtonObjectsAndEstimates, HintButtonObjectsAndEstimates,
-    FormMain.ShowObjectsAndEstimates);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
 end;
 
 procedure TFormObjectsAndEstimates.FormShow(Sender: TObject);
@@ -254,7 +256,7 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(CaptionButtonObjectsAndEstimates);
+  FormMain.SelectButtonActiveWindow(CaptionButton);
 end;
 
 procedure TFormObjectsAndEstimates.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -266,11 +268,7 @@ procedure TFormObjectsAndEstimates.FormDestroy(Sender: TObject);
 begin
   FormObjectsAndEstimates := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  try
-    FormMain.DeleteButtonCloseWindow(CaptionButtonObjectsAndEstimates);
-  except
-
-  end;
+  FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsAddClick(Sender: TObject);

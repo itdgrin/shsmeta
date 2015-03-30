@@ -638,6 +638,9 @@ type
     procedure PopupMenuRatesAdd352Click(Sender: TObject);
     procedure PMMechDeleteClick(Sender: TObject);
   private
+    const CaptionButton = 'Расчёт сметы';
+    const HintButton = 'Окно расчёта сметы';
+  private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
 
@@ -814,24 +817,17 @@ begin
 end;
 
 procedure TFormCalculationEstimate.FormCreate(Sender: TObject);
-{ var
-  i: Integer;
-  Path: string;
-  IFile: TIniFile; }
 begin
   FormMain.PanelCover.Visible := True; // Показываем панель на главной форме
-
-  // -----------------------------------------
 
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
   ClientHeight := FormMain.ClientHeight div 2;
   Top := 10;
-  // (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION)) * -1;
-  Left := 10; // GetSystemMetrics(SM_CXFRAME) * -1;
+  Left := 10;
 
   WindowState := wsMaximized;
-  Caption := FormNameCalculationEstimate + ' - Разрешено редактирование документа';
+  Caption := CaptionButton + ' - Разрешено редактирование документа';
   // -----------------------------------------
 
   IdObject := 0;
@@ -847,8 +843,6 @@ begin
   VisibleRightTables := '';
 
   ShowHint := True;
-
-  // -----------------------------------------
 
   // ЗАГРУЖАЕМ ИЗОБРАЖЕНИЯ ДЛЯ СПЛИТТЕРОВ
 
@@ -922,10 +916,8 @@ begin
   LoadDBGridSettings(dbgrdCalculations);
   LoadDBGridSettings(JvDBGrid1);
 
-  // TCustomDbGridCracker(dbgrdRates).OnMouseWheel:=Wheel;
   if not Act then
-    FormMain.CreateButtonOpenWindow(FormNameCalculationEstimate, FormNameCalculationEstimate,
-      FormMain.ShowCalculationEstimate);
+    FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
 end;
 
 procedure TFormCalculationEstimate.FormShow(Sender: TObject);
@@ -945,19 +937,22 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(FormNameCalculationEstimate);
+  FormMain.SelectButtonActiveWindow(CaptionButton);
 end;
 
 procedure TFormCalculationEstimate.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
+
+  if (not Assigned(FormObjectsAndEstimates)) then
+    FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(FormMain);
 end;
 
 procedure TFormCalculationEstimate.FormDestroy(Sender: TObject);
 begin
   FormCalculationEstimate := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(FormNameCalculationEstimate);
+  FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
 procedure TFormCalculationEstimate.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -1298,7 +1293,7 @@ begin
       Tag := 0;
       Color := clRed;
       Caption := 'Расчёты запрещены';
-      FormCalculationEstimate.Caption := FormNameCalculationEstimate +
+      FormCalculationEstimate.Caption := CaptionButton +
         ' - Запрещено редактирование документа';
     end
     else
@@ -1306,7 +1301,7 @@ begin
       Tag := 1;
       Color := clLime;
       Caption := 'Расчёты разрешены';
-      FormCalculationEstimate.Caption := FormNameCalculationEstimate +
+      FormCalculationEstimate.Caption := CaptionButton +
         ' - Разрешено редактирование документа';
     end;
 end;
@@ -2933,8 +2928,6 @@ begin
             E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
       end;
 
-  if (not Assigned(FormObjectsAndEstimates)) then
-    FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(FormMain);
   CanClose := True;
 end;
 

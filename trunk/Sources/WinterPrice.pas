@@ -61,25 +61,22 @@ type
     procedure PopupMenuTreeViewExpandFalseClick(Sender: TObject);
 
   private
+    const CaptionForm = 'Зимнее удорожание';
+    const HintButton = 'Окно зинмее удорожание';
+  private
     StrQuery: String; // Строка для формирования запроса
-
   public
 
   end;
 
-const
-  // Название кнопки для этого окна
-  CaptionForm = 'Зимнее удорожание';
 
-  // Подсказка при наведении на кнопку для этого окна
-  HintButton = 'Окно зинмее удорожание';
 
 var
   FormWinterPrice: TFormWinterPrice;
 
 implementation
 
-uses Main, DataModule;
+uses Main, DataModule, Tools;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -119,10 +116,8 @@ begin
 
   FillingTree;
 
-  // -----------------------------------------
-
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionForm, HintButton, FormMain.ShowWinterPrice);
+  FormMain.CreateButtonOpenWindow(CaptionForm, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

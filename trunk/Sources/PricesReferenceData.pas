@@ -28,7 +28,10 @@ type
     procedure HideAllFrames;
 
     procedure SpeedButtonClick(Sender: TObject);
-  protected
+  private
+    const CaptionButton = 'Цены по справоч. данным';
+    const HintButton = 'Окно цены по справочным данным';
+  private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
   private
@@ -125,8 +128,7 @@ begin
 
   FormMain.PanelCover.Visible := False;
 
-  FormMain.CreateButtonOpenWindow(CaptionButtonPricesReferenceData, HintButtonPricesReferenceData,
-    FormMain.ShowPricesReferenceData);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -144,7 +146,7 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(CaptionButtonPricesReferenceData);
+  FormMain.SelectButtonActiveWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -154,7 +156,7 @@ begin
   FormPricesReferenceData := nil;
 
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(CaptionButtonPricesReferenceData);
+  FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

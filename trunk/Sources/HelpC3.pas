@@ -31,17 +31,11 @@ type
     procedure Button1Click(Sender: TObject);
 
   private
-
+    const CaptionButton = 'Справка С-3';
+    const HintButton = 'Окно справки С-3';
   public
 
   end;
-
-const
-  // Название кнопки для этого окна
-  CaptionButton = 'Справка С-3';
-
-  // Подсказка при наведении на кнопку для этого окна
-  HintButton = 'Окно справки С-3';
 
 var
   FormHelpC3: TFormHelpC3;
@@ -63,10 +57,8 @@ begin
 
   WindowState := wsMaximized;
 
-  // -----------------------------------------
-
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, FormMain.ShowHelpC3);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

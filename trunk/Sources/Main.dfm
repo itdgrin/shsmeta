@@ -16,7 +16,6 @@
   Position = poDesigned
   WindowState = wsMaximized
   OnActivate = FormActivate
-  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnResize = FormResize
@@ -422,10 +421,6 @@
       object WindowsExpand: TMenuItem
         Caption = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100' '#1074#1089#1077
         OnClick = WindowsExpandClick
-      end
-      object WindowsClose: TMenuItem
-        Caption = #1047#1072#1082#1088#1099#1090#1100' '#1074#1089#1077
-        OnClick = WindowsCloseClick
       end
     end
     object MenuHelp: TMenuItem

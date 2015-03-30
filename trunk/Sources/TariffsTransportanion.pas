@@ -13,7 +13,9 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-
+  private
+    const CaptionButton = 'Тар. по грузоперевозкам';
+    const HintButton = 'Окно тарифы по грузоперевозкам';
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
   public
@@ -84,8 +86,7 @@ begin
   // ----------------------------------------
 
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButtonPriceTransportation, HintButtonPriceTransportation,
-    FormMain.ShowTariffsTransportation);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -97,7 +98,7 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(CaptionButtonPriceTransportation);
+  FormMain.SelectButtonActiveWindow(CaptionButton);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -114,7 +115,7 @@ begin
   FormTariffsTransportation := nil;
 
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(CaptionButtonPriceTransportation);
+  FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
 end.

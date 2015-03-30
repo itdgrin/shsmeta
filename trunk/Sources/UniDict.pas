@@ -89,7 +89,8 @@ end;
 procedure TfUniDict.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N8Click);
+  //FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N8Click);
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   LoadDBGridSettings(JvDBGrid1);
   seYear.Value := YearOf(Now);
   seYearChange(Sender);
