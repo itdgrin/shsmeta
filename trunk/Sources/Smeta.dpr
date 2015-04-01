@@ -102,7 +102,7 @@ uses
   Coef in 'Coef.pas' {fCoefficients},
   ArhivModule in 'ArhivModule.pas',
   GlobsAndConst in 'GlobsAndConst.pas',
-  WinterPrise in 'WinterPrise.pas' {fWinterPrice},
+  WinterPrice in 'WinterPrice.pas' {fWinterPrice},
   ReplacementMatAndMech in 'ReplacementMatAndMech.pas' {frmReplacement};
 
 {$R *.res}

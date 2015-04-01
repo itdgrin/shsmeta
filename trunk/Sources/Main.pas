@@ -314,7 +314,7 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
   PricesReferenceData, AdditionData, PartsEstimates,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
-  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrise;
+  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice;
 
 {$R *.dfm}
 
