@@ -2451,6 +2451,14 @@
               end
               item
                 Expanded = False
+                FieldName = 'KOEF'
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1077#1092'.'
+                Width = 40
+                Visible = True
+              end
+              item
+                Expanded = False
                 FieldName = 'PRICE_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = '    '#1057#1090#1086#1080#1084'.        '#1089' '#1053#1044#1057', '#1088'.'
@@ -5056,6 +5064,9 @@
     end
     object qrTranspTRANSP_UNIT: TStringField
       FieldName = 'TRANSP_UNIT'
+    end
+    object qrTranspKOEF: TFloatField
+      FieldName = 'KOEF'
     end
   end
   object qrStartup: TFDQuery

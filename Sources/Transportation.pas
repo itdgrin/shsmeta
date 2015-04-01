@@ -44,7 +44,7 @@ type
     EditDistance: TEdit;
     LabelDistance: TLabel;
     grbKoef: TGroupBox;
-    ComboBox1: TComboBox;
+    cmbKoef: TComboBox;
     Panel3: TPanel;
     cbKoef: TCheckBox;
     grdPrice: TJvStringGrid;
@@ -58,9 +58,9 @@ type
     procedure edtCountChange(Sender: TObject);
     procedure EditDistanceChange(Sender: TObject);
     procedure ButtonAddClick(Sender: TObject);
-    procedure ComboBox1MeasureItem(Control: TWinControl; Index: Integer;
+    procedure cmbKoefMeasureItem(Control: TWinControl; Index: Integer;
       var Height: Integer);
-    procedure ComboBox1DrawItem(Control: TWinControl; Index: Integer;
+    procedure cmbKoefDrawItem(Control: TWinControl; Index: Integer;
       Rect: TRect; State: TOwnerDrawState);
     procedure FormCreate(Sender: TObject);
     procedure grdPriceGetCellAlignment(Sender: TJvStringGrid; AColumn,
@@ -73,6 +73,8 @@ type
     procedure grdPriceKeyPress(Sender: TObject; var Key: Char);
     procedure grdPriceExitCell(Sender: TJvStringGrid; AColumn, ARow: Integer;
       const EditText: string);
+    procedure cbKoefClick(Sender: TObject);
+    procedure cmbKoefChange(Sender: TObject);
   private
     const CaptionForm = 'Перевозка грузов';
       CCoastNoNDS = 1;
@@ -101,6 +103,10 @@ type
     FClass: Byte;
     //Флаг предотвращающий срабатывание ченжей при загрузке инфы из базы
     Loading: boolean;
+    FCoef: Double;
+
+    KoefLis: array of Double;
+    procedure LoadKoef;
     procedure GetEstimateInfo(aIdEstimate: integer);
     procedure LoadTranspInfo(aIdTransp: integer);
     procedure CalcPrice;
@@ -204,10 +210,10 @@ begin
     qrTemp.SQL.Text := 'Insert into transpcard_temp (TRANSP_TYPE,TRANSP_CODE_JUST,' +
       'TRANSP_JUST,TRANSP_COUNT,TRANSP_DIST,TRANSP_SUM_NDS,TRANSP_SUM_NO_NDS,' +
       'COAST_NO_NDS,COAST_NDS,CARG_CLASS,CARG_UNIT,CARG_TYPE,CARG_COUNT,CARG_YDW,' +
-      'NDS,PRICE_NDS,PRICE_NO_NDS) values (' + ':TRANSP_TYPE,:TRANSP_CODE_JUST,' +
+      'NDS,PRICE_NDS,PRICE_NO_NDS,KOEF) values (' + ':TRANSP_TYPE,:TRANSP_CODE_JUST,' +
       ':TRANSP_JUST,:TRANSP_COUNT,:TRANSP_DIST,:TRANSP_SUM_NDS,:TRANSP_SUM_NO_NDS,' +
       ':COAST_NO_NDS,:COAST_NDS,:CARG_CLASS,:CARG_UNIT,:CARG_TYPE,:CARG_COUNT,:CARG_YDW,' +
-      ':NDS,:PRICE_NDS,:PRICE_NO_NDS)';
+      ':NDS,:PRICE_NDS,:PRICE_NO_NDS,:KOEF)';
     qrTemp.ParamByName('TRANSP_TYPE').Value := TranspType;
     qrTemp.ParamByName('TRANSP_CODE_JUST').Value := EditJustificationNumber.Text;
     qrTemp.ParamByName('TRANSP_JUST').Value := EditJustification.Text;
@@ -225,6 +231,7 @@ begin
     qrTemp.ParamByName('NDS').Value := Nds;
     qrTemp.ParamByName('PRICE_NDS').Value := StrToInt64(edtPriceNDS.Text);
     qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('KOEF').Value := FCoef;
 
     qrTemp.ExecSQL;
 
@@ -242,7 +249,8 @@ begin
       'TRANSP_SUM_NDS=:TRANSP_SUM_NDS,TRANSP_SUM_NO_NDS=:TRANSP_SUM_NO_NDS,' +
       'COAST_NO_NDS=:COAST_NO_NDS,COAST_NDS=:COAST_NDS,CARG_CLASS=:CARG_CLASS,' +
       'CARG_UNIT=:CARG_UNIT,CARG_TYPE=:CARG_TYPE,CARG_COUNT=:CARG_COUNT,' +
-      'CARG_YDW=:CARG_YDW,NDS=:NDS,PRICE_NDS=:PRICE_NDS,' + 'PRICE_NO_NDS=:PRICE_NO_NDS where ID = :ID';
+      'CARG_YDW=:CARG_YDW,NDS=:NDS,PRICE_NDS=:PRICE_NDS,' +
+      'PRICE_NO_NDS=:PRICE_NO_NDS,KOEF=:KOEF where ID = :ID';
     qrTemp.ParamByName('TRANSP_TYPE').Value := TranspType;
     qrTemp.ParamByName('TRANSP_CODE_JUST').Value := EditJustificationNumber.Text;
     qrTemp.ParamByName('TRANSP_JUST').Value := EditJustification.Text;
@@ -261,6 +269,7 @@ begin
     qrTemp.ParamByName('PRICE_NDS').Value := StrToInt64(edtPriceNDS.Text);
     qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
     qrTemp.ParamByName('ID').Value := IdTransp;
+    qrTemp.ParamByName('KOEF').Value := FCoef;
 
     qrTemp.ExecSQL;
   end;
@@ -282,7 +291,35 @@ begin
   CalculationTransp;
 end;
 
-procedure TFormTransportation.ComboBox1DrawItem(Control: TWinControl;
+procedure TFormTransportation.cbKoefClick(Sender: TObject);
+begin
+  if Loading then
+    Exit;
+
+  cmbKoef.Enabled := cbKoef.Checked;
+  if cbKoef.Checked then
+  begin
+    cmbKoef.ItemIndex := 0;
+    FCoef := KoefLis[cmbKoef.ItemIndex];
+  end
+  else
+  begin
+    cmbKoef.ItemIndex := -1;
+    FCoef := 1;
+  end;
+  CalculationTransp;
+end;
+
+procedure TFormTransportation.cmbKoefChange(Sender: TObject);
+begin
+  if Loading then
+    Exit;
+
+  FCoef := KoefLis[cmbKoef.ItemIndex];
+  CalculationTransp;
+end;
+
+procedure TFormTransportation.cmbKoefDrawItem(Control: TWinControl;
   Index: Integer; Rect: TRect; State: TOwnerDrawState);
 var
   ItemString: string;
@@ -294,7 +331,7 @@ begin
   DrawText(TComboBox(Control).Canvas.Handle, PChar(ItemString), -1, Rect, DT_WORDBREAK);
 end;
 
-procedure TFormTransportation.ComboBox1MeasureItem(Control: TWinControl;
+procedure TFormTransportation.cmbKoefMeasureItem(Control: TWinControl;
   Index: Integer; var Height: Integer);
 var
   ItemString: string;
@@ -518,6 +555,26 @@ begin
   //По умолчанию НДС 20%
   DefNDS := 20;
   FClass := cmbClass.ItemIndex + 1;
+  FCoef := 1;
+end;
+
+procedure TFormTransportation.LoadKoef;
+var i: Integer;
+begin
+  cmbKoef.Items.Clear;
+  SetLength(KoefLis, 0);
+
+  qrTemp.Active := false;
+  qrTemp.SQL.Text := 'SELECT koef,description FROM transferkoef';
+  qrTemp.Active := true;
+  while not qrTemp.Eof do
+  begin
+    i := cmbKoef.Items.Add(qrTemp.Fields[0].AsString + '  ' + qrTemp.Fields[1].AsString);
+    SetLength(KoefLis, i + 1);
+    KoefLis[i] := qrTemp.Fields[0].AsFloat;
+    qrTemp.Next;
+  end;
+  qrTemp.Active := false;
 end;
 
 procedure TFormTransportation.FormShow(Sender: TObject);
@@ -525,6 +582,7 @@ begin
   Loading := false;
   //Подкружает общие данные по смете
   GetEstimateInfo(IdEstimate);
+  LoadKoef;
 
   if TranspType in [6, 7] then
     JustNumber := 'C310';
@@ -577,7 +635,7 @@ begin
 end;
 
 procedure TFormTransportation.LoadTranspInfo(aIdTransp: integer);
-{ var i : integer; }
+var i : integer;
 begin
   Loading := true;
   try
@@ -598,6 +656,19 @@ begin
     TranspCount := qrTemp.FieldByName('TRANSP_COUNT').AsFloat;
     CCount := qrTemp.FieldByName('CARG_COUNT').AsFloat;
     Ydw := qrTemp.FieldByName('CARG_YDW').AsFloat;
+    FCoef := qrTemp.FieldByName('KOEF').AsFloat;
+
+    if FCoef > 1 then
+    begin
+      cbKoef.Checked := True;
+      for i := 0 to Length(KoefLis) - 1 do
+        if FCoef = KoefLis[i] then
+        begin
+          cmbKoef.ItemIndex := i;
+          Break;
+        end;
+    end;
+
     qrTemp.Active := false;
 
     GetCoast;
@@ -761,8 +832,8 @@ begin
     else
       TmpCoastNds := StrToFloat(grdPrice.Cells[CCoastNDS, i]);
 
-    grdPrice.Cells[CPriceNoNDS, i] := IntToStr(Round(TranspCount * TmpCoastNoNds));
-    grdPrice.Cells[CPriceNDS, i] := IntToStr(Round(TranspCount * TmpCoastNds));
+    grdPrice.Cells[CPriceNoNDS, i] := IntToStr(Round(TranspCount * FCoef * TmpCoastNoNds));
+    grdPrice.Cells[CPriceNDS, i] := IntToStr(Round(TranspCount * FCoef * TmpCoastNds));
   end;
 end;
 
