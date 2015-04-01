@@ -11,7 +11,7 @@ uses
   Vcl.Menus, Tools;
 
 type
-  TfWinterPrise = class(TForm)
+  TfWinterPrice = class(TForm)
     qrTreeData: TFDQuery;
     dsTreeData: TDataSource;
     tvEstimates: TJvDBTreeView;
@@ -28,9 +28,9 @@ type
     pnl1: TPanel;
     btnClose: TBitBtn;
     btnSelect: TBitBtn;
-    pm1: TPopupMenu;
-    N1: TMenuItem;
-    N2: TMenuItem;
+    pmZnormativ: TPopupMenu;
+    mAddZnormativ: TMenuItem;
+    mDelZnormativ: TMenuItem;
     dbedtNUM: TDBEdit;
     dbedtNAME: TDBEdit;
     lbl1: TLabel;
@@ -41,14 +41,14 @@ type
     qrTreeDataPARENT_ID: TIntegerField;
     strngfldTreeDataNAME_EX_2: TStringField;
     tmr1: TTimer;
-    pm2: TPopupMenu;
-    MenuItem1: TMenuItem;
-    MenuItem2: TMenuItem;
+    pmZnormativDetail: TPopupMenu;
+    mAddZnormativDetail: TMenuItem;
+    mDelZnormativDetail: TMenuItem;
     grChangeDate: TJvDBGrid;
     qrZnormChangeDate: TFDQuery;
     dsZnormChangeDate: TDataSource;
     qrTreeDataDEL_FLAG: TShortintField;
-    pm3: TPopupMenu;
+    pmZnormativOnDate: TPopupMenu;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     qrZnormativs_value: TFDQuery;
@@ -64,13 +64,17 @@ type
     procedure dbedtNUMExit(Sender: TObject);
     procedure tmr1Timer(Sender: TObject);
     procedure qrTreeDataBeforeDelete(DataSet: TDataSet);
-    procedure N2Click(Sender: TObject);
+    procedure mDelZnormativClick(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
     procedure qrTreeDataAfterScroll(DataSet: TDataSet);
     procedure qrZnormativs_valueNewRecord(DataSet: TDataSet);
     procedure qrZnormChangeDateBeforeDelete(DataSet: TDataSet);
     procedure chk1Click(Sender: TObject);
+    procedure mAddZnormativDetailClick(Sender: TObject);
+    procedure qrZnormativs_detailNewRecord(DataSet: TDataSet);
+    procedure mDelZnormativDetailClick(Sender: TObject);
+    procedure qrZnormativs_detailBeforeDelete(DataSet: TDataSet);
   private
 
   public
@@ -79,7 +83,7 @@ type
   end;
 
 var
-  fWinterPrise: TfWinterPrise;
+  fWinterPrice: TfWinterPrice;
 
 implementation
 
@@ -87,12 +91,12 @@ uses DataModule;
 
 {$R *.dfm}
 
-procedure TfWinterPrise.btnCloseClick(Sender: TObject);
+procedure TfWinterPrice.btnCloseClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TfWinterPrise.btnSelectClick(Sender: TObject);
+procedure TfWinterPrice.btnSelectClick(Sender: TObject);
 begin
   OutValue := 0;
   if Application.MessageBox('Вы действительно хотите заменить коэф. зимнего удорожания в выбранной расценке?',
@@ -103,31 +107,31 @@ begin
   end;
 end;
 
-procedure TfWinterPrise.chk1Click(Sender: TObject);
+procedure TfWinterPrice.chk1Click(Sender: TObject);
 begin
   qrTreeData.ParamByName('SHOW_DELETED').AsBoolean := chk1.Checked;
   CloseOpen(qrTreeData);
 end;
 
-procedure TfWinterPrise.dbedtNUMExit(Sender: TObject);
+procedure TfWinterPrice.dbedtNUMExit(Sender: TObject);
 begin
   if qrTreeData.State in [dsEdit, dsInsert] then
     qrTreeData.Post;
 end;
 
-procedure TfWinterPrise.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TfWinterPrice.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Kind := kdNone;
 end;
 
-procedure TfWinterPrise.FormCreate(Sender: TObject);
+procedure TfWinterPrice.FormCreate(Sender: TObject);
 begin
   Kind := kdNone;
   LoadDBGridSettings(grRates);
   LoadDBGridSettings(grChangeDate);
 end;
 
-procedure TfWinterPrise.FormShow(Sender: TObject);
+procedure TfWinterPrice.FormShow(Sender: TObject);
 begin
   case Kind of
     kdSelect:
@@ -144,22 +148,32 @@ begin
   CloseOpen(qrZnormChangeDate);
 end;
 
-procedure TfWinterPrise.MenuItem3Click(Sender: TObject);
+procedure TfWinterPrice.MenuItem3Click(Sender: TObject);
 begin
   qrZnormChangeDate.Insert;
 end;
 
-procedure TfWinterPrise.MenuItem4Click(Sender: TObject);
+procedure TfWinterPrice.MenuItem4Click(Sender: TObject);
 begin
   qrZnormChangeDate.Delete;
 end;
 
-procedure TfWinterPrise.N2Click(Sender: TObject);
+procedure TfWinterPrice.mAddZnormativDetailClick(Sender: TObject);
+begin
+  qrZnormativs_detail.Insert;
+end;
+
+procedure TfWinterPrice.mDelZnormativClick(Sender: TObject);
 begin
   qrTreeData.Delete;
 end;
 
-procedure TfWinterPrise.qrTreeDataAfterScroll(DataSet: TDataSet);
+procedure TfWinterPrice.mDelZnormativDetailClick(Sender: TObject);
+begin
+  qrZnormativs_detail.Delete;
+end;
+
+procedure TfWinterPrice.qrTreeDataAfterScroll(DataSet: TDataSet);
 begin
   if not CheckQrActiveEmpty(qrTreeData) or not CheckQrActiveEmpty(qrZnormChangeDate) then
     Exit;
@@ -170,7 +184,7 @@ begin
   CloseOpen(qrZnormativs_value);
 end;
 
-procedure TfWinterPrise.qrTreeDataBeforeDelete(DataSet: TDataSet);
+procedure TfWinterPrice.qrTreeDataBeforeDelete(DataSet: TDataSet);
 begin
   case Application.MessageBox('Вы действительно хотите удалить запись?', 'Справочник зимних удороданий',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
@@ -185,19 +199,35 @@ begin
   Abort;
 end;
 
-procedure TfWinterPrise.qrTreeDataCalcFields(DataSet: TDataSet);
+procedure TfWinterPrice.qrTreeDataCalcFields(DataSet: TDataSet);
 begin
   strngfldTreeDataNAME_EX_2.Value := strngfldTreeDataNUM.Value + ' ' + strngfldTreeDataNAME.Value;
 end;
 
-procedure TfWinterPrise.qrZnormativs_valueNewRecord(DataSet: TDataSet);
+procedure TfWinterPrice.qrZnormativs_detailBeforeDelete(DataSet: TDataSet);
+begin
+  case Application.MessageBox('Вы действительно хотите удалить запись?', 'Справочник зимних удороданий',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
+    IDNO:
+      begin
+        Abort;
+      end;
+  end;
+end;
+
+procedure TfWinterPrice.qrZnormativs_detailNewRecord(DataSet: TDataSet);
+begin
+  qrZnormativs_detail.FieldByName('ZNORMATIVS_ID').AsInteger := qrTreeDataZNORMATIVS_ID.Value;
+end;
+
+procedure TfWinterPrice.qrZnormativs_valueNewRecord(DataSet: TDataSet);
 begin
   qrZnormativs_value.FieldByName('ZNORMATIVS_ID').AsInteger := qrTreeDataZNORMATIVS_ID.Value;
   qrZnormativs_value.FieldByName('ZNORMATIVS_ONDATE_ID').AsInteger := qrZnormChangeDate.FieldByName('ID')
     .AsInteger;
 end;
 
-procedure TfWinterPrise.qrZnormChangeDateBeforeDelete(DataSet: TDataSet);
+procedure TfWinterPrice.qrZnormChangeDateBeforeDelete(DataSet: TDataSet);
 begin
   case Application.MessageBox('Вы действительно хотите удалить запись?', 'Справочник зимних удороданий',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
@@ -212,7 +242,7 @@ begin
   Abort;
 end;
 
-procedure TfWinterPrise.tmr1Timer(Sender: TObject);
+procedure TfWinterPrice.tmr1Timer(Sender: TObject);
 begin
   // Временное решение
   if qrTreeData.State in [dsEdit, dsInsert] then

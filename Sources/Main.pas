@@ -102,7 +102,7 @@ type
     vk6: TMenuItem;
     vk7: TMenuItem;
     N10: TMenuItem;
-	vk9: TMenuItem;    
+    vk9: TMenuItem;
     mnREPORT_SMETA_OBJ_BUILD: TMenuItem;
     N12: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
@@ -126,8 +126,8 @@ type
     procedure CascadeForActiveWindow();
     procedure FormCreate(Sender: TObject);
 
-    procedure CreateButtonOpenWindow(const CaptionButton, HintButton: String;
-      const AForm: TForm; AEventType: Byte = 0);
+    procedure CreateButtonOpenWindow(const CaptionButton, HintButton: String; const AForm: TForm;
+      AEventType: Byte = 0);
     procedure DeleteButtonCloseWindow(const CaptionButton: String);
     procedure SelectButtonActiveWindow(const CaptionButton: String);
 
@@ -141,10 +141,8 @@ type
     procedure N51Click(Sender: TObject);
     procedure N14Click(Sender: TObject);
     procedure OXRandOPRgClick(Sender: TObject);
-    procedure N16Click(Sender: TObject);
     procedure CalculationSettingsClick(Sender: TObject);
     procedure NormalClick(Sender: TObject);
-    procedure ExtendedClick(Sender: TObject);
     procedure ReadSettingsFromFile(PathFile: String);
     procedure WriteSettingsToFile(PathFile: String);
     procedure FileSaveAsClick(Sender: TObject);
@@ -184,7 +182,7 @@ type
     procedure vk6Click(Sender: TObject);
     procedure vk7Click(Sender: TObject);
     procedure N10Click(Sender: TObject);
-	  procedure vk9Click(Sender: TObject);
+    procedure vk9Click(Sender: TObject);
     procedure mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
     procedure N12Click(Sender: TObject);
   private
@@ -311,7 +309,7 @@ implementation
 uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
   TariffsIndex, About, CalculationEstimate, ConnectDatabase, CardObject,
   DataModule, Login, Waiting, ActC6, WorkSchedule, HelpC3, HelpC5, CatalogSSR,
-  OXRandOPR, WinterPrice, DataTransfer, CardPTM, CalculationSettings,
+  OXRandOPR, DataTransfer, CardPTM, CalculationSettings,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
   PricesReferenceData, AdditionData, PartsEstimates,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
@@ -418,13 +416,13 @@ begin
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   // Объект для управления архивом
-  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName),
-    ExtractFilePath(Application.ExeName) + C_ARHDIR);
+  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
+    C_ARHDIR);
 
   // путь к папке с отчетами (Вадим)
 {$IFDEF DEBUG}
-  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1,
-    Length(ExtractFilePath(Application.ExeName)) - 12) + C_REPORTDIR;
+  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
+    - 12) + C_REPORTDIR;
 {$ELSE}
   FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
 {$ENDIF}
@@ -458,7 +456,7 @@ begin
     if not DM.Connect.Connected then
     begin
       DM.Connect.Params.Text := G_CONNECTSTR;
-      DM.Connect.Connected := True;
+      DM.Connect.Connected := true;
     end;
   except
     on e: exception do
@@ -495,9 +493,10 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
-//Управление кнопками на нижней панели
+// Управление кнопками на нижней панели
 procedure TFormMain.ButtonClickEvent1(Sender: TObject);
-var sb: TSpeedButton;
+var
+  sb: TSpeedButton;
 begin
   sb := TSpeedButton(Sender);
   if Assigned(TForm(sb.Tag)) then
@@ -505,7 +504,8 @@ begin
 end;
 
 procedure TFormMain.ButtonClickEvent2(Sender: TObject);
-var sb: TSpeedButton;
+var
+  sb: TSpeedButton;
 begin
   sb := TSpeedButton(Sender);
   if Assigned(TForm(sb.Tag)) then
@@ -513,7 +513,8 @@ begin
 end;
 
 procedure TFormMain.FormShowEvent2(Sender: TObject);
-var TmpForm: TForm;
+var
+  TmpForm: TForm;
 begin
   PanelCover.Visible := true;
   try
@@ -532,8 +533,8 @@ begin
   TForm(Sender).Show;
 end;
 
-procedure TFormMain.CreateButtonOpenWindow(const CaptionButton, HintButton: String;
-  const AForm: TForm; AEventType: Byte = 0);
+procedure TFormMain.CreateButtonOpenWindow(const CaptionButton, HintButton: String; const AForm: TForm;
+  AEventType: Byte = 0);
 begin
   ButtonsWindows[CountOpenWindows] := TSpeedButton.Create(PanelOpenWindows);
   with ButtonsWindows[CountOpenWindows] do
@@ -554,7 +555,7 @@ begin
     else
       OnClick := ButtonClickEvent1;
 
-    Tag := Integer(AForm);
+    Tag := integer(AForm);
   end;
 
   Inc(CountOpenWindows);
@@ -566,8 +567,7 @@ var
 begin
   Y := -1;
   for i := 0 to CountOpenWindows - 1 do
-    if Assigned(ButtonsWindows[Y]) and
-      (ButtonsWindows[i].Caption = CaptionButton) then
+    if Assigned(ButtonsWindows[Y]) and (ButtonsWindows[i].Caption = CaptionButton) then
     begin
       Y := i;
       Break;
@@ -604,51 +604,50 @@ begin
 end;
 
 procedure TFormMain.ServiceBackupClick(Sender: TObject);
-var i: Integer;
-  Mi,
-  TmpMi,
-  TmpMi2: TMenuItem;
+var
+  i: integer;
+  Mi, TmpMi, TmpMi2: TMenuItem;
 begin
   Mi := TMenuItem(Sender);
-  //Первые 3и пункта существуют всегда, остальные добавляются при необходимости
+  // Первые 3и пункта существуют всегда, остальные добавляются при необходимости
   for i := 3 to Mi.Count - 1 do
     Mi.Delete(3);
 
-  //Если надо перезапустить нечего по архивам лазить
+  // Если надо перезапустить нечего по архивам лазить
   if G_STARTUPDATER > 0 then
   begin
     PMAddNewBackup.Enabled := False;
-    exit;
+    Exit;
   end
   else
-    PMAddNewBackup.Enabled := True;
+    PMAddNewBackup.Enabled := true;
 
+  for i := Low(FArhiv.ArhFiles) to High(FArhiv.ArhFiles) do
+  begin
+    TmpMi := TMenuItem.Create(Mi);
 
-    for i := Low(FArhiv.ArhFiles) to High(FArhiv.ArhFiles) do
-    begin
-      TmpMi := TMenuItem.Create(mi);
-
-      try
-        TmpMi.Caption := DateTimeToStr(FArhiv.GetArhivTime(FArhiv.ArhFiles[i]));
-      except
-        TmpMi.Caption := ExtractFileName(FArhiv.ArhFiles[i]);
-      end;
-
-      TmpMi2 := TMenuItem.Create(TmpMi);
-      TmpMi2.Caption := 'Восстановить';
-      TmpMi2.OnClick := PMRestoreBackupClick;
-      TmpMi.Add(TmpMi2);
-      TmpMi2 := TMenuItem.Create(TmpMi);
-      TmpMi2.Caption := 'Удалить';
-      TmpMi2.OnClick := PMDeleteBackupClick;
-      TmpMi.Add(TmpMi2);
-      TmpMi.Tag := Integer(FArhiv.ArhFiles[i]);
-      mi.Add(TmpMi);
+    try
+      TmpMi.Caption := DateTimeToStr(FArhiv.GetArhivTime(FArhiv.ArhFiles[i]));
+    except
+      TmpMi.Caption := ExtractFileName(FArhiv.ArhFiles[i]);
     end;
+
+    TmpMi2 := TMenuItem.Create(TmpMi);
+    TmpMi2.Caption := 'Восстановить';
+    TmpMi2.OnClick := PMRestoreBackupClick;
+    TmpMi.Add(TmpMi2);
+    TmpMi2 := TMenuItem.Create(TmpMi);
+    TmpMi2.Caption := 'Удалить';
+    TmpMi2.OnClick := PMDeleteBackupClick;
+    TmpMi.Add(TmpMi2);
+    TmpMi.Tag := integer(FArhiv.ArhFiles[i]);
+    Mi.Add(TmpMi);
+  end;
 end;
 
 procedure TFormMain.ServiceSettingsClick(Sender: TObject);
-var FormProgramSettings: TFormProgramSettings;
+var
+  FormProgramSettings: TFormProgramSettings;
 begin
   FormProgramSettings := TFormProgramSettings.Create(nil);
   try
@@ -694,7 +693,7 @@ end;
 procedure TFormMain.vk2Click(Sender: TObject);
 begin
 
-//dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+  // dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
   Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
@@ -876,7 +875,7 @@ end;
 procedure TFormMain.vk3Click(Sender: TObject);
 begin
 
-//dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+  // dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
   Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
@@ -886,7 +885,7 @@ begin
         showmessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_RSMO_OBJ(0,FormObjectsAndEstimates.IdEstimate,0, FileReportPath);
+      dmReportF.Report_RSMO_OBJ(0, FormObjectsAndEstimates.IdEstimate, 0, FileReportPath);
     end
     else
     begin
@@ -898,7 +897,7 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_RSMO_OBJ(0,0,FormCalculationEstimate.GetIdObject, FileReportPath);
+        dmReportF.Report_RSMO_OBJ(0, 0, FormCalculationEstimate.GetIdObject, FileReportPath);
       end;
     end;
   finally
@@ -908,7 +907,7 @@ end;
 
 procedure TFormMain.vk4Click(Sender: TObject);
 begin
-//dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+  // dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
   Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
@@ -918,7 +917,7 @@ begin
         showmessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_RSMO_OBJ(1,FormObjectsAndEstimates.IdEstimate,0, FileReportPath);
+      dmReportF.Report_RSMO_OBJ(1, FormObjectsAndEstimates.IdEstimate, 0, FileReportPath);
     end
     else
     begin
@@ -930,7 +929,7 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_RSMO_OBJ(1,0,FormCalculationEstimate.GetIdObject, FileReportPath);
+        dmReportF.Report_RSMO_OBJ(1, 0, FormCalculationEstimate.GetIdObject, FileReportPath);
       end;
     end;
   finally
@@ -950,7 +949,7 @@ begin
         showmessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_RSMEH_OBJ(0,FormObjectsAndEstimates.IdEstimate,0, FileReportPath);
+      dmReportF.Report_RSMEH_OBJ(0, FormObjectsAndEstimates.IdEstimate, 0, FileReportPath);
     end
     else
     begin
@@ -962,7 +961,7 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_RSMEH_OBJ(0,0,FormCalculationEstimate.GetIdObject, FileReportPath);
+        dmReportF.Report_RSMEH_OBJ(0, 0, FormCalculationEstimate.GetIdObject, FileReportPath);
       end;
     end;
   finally
@@ -972,33 +971,33 @@ end;
 
 procedure TFormMain.vk6Click(Sender: TObject);
 begin
-//vk - Расчет стоимости оборудования по объекту
+  // vk - Расчет стоимости оборудования по объекту
 end;
 
 procedure TFormMain.vk7Click(Sender: TObject);
 begin
-// vk ВЕДОМОСТЬ ОБЪЁМОВ И СТОИМОСТИ РАБОТ  вариант-1
+  // vk ВЕДОМОСТЬ ОБЪЁМОВ И СТОИМОСТИ РАБОТ  вариант-1
   Screen.Cursor := crSQLWait;
   try
 
-      if Assigned(FormCalculationEstimate) then
+    if Assigned(FormCalculationEstimate) then
+    begin
+      if FormCalculationEstimate.GetIdEstimate = 0 then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
-        begin
-          showmessage('Не выбрана смета');
-          Exit;
-        end;
-        dmReportF.Report_VED_OANDPWV1_OBJ(1,0,FormCalculationEstimate.GetIdObject, FileReportPath);
+        showmessage('Не выбрана смета');
+        Exit;
       end;
+      dmReportF.Report_VED_OANDPWV1_OBJ(1, 0, FormCalculationEstimate.GetIdObject, FileReportPath);
+    end;
 
   finally
-   Screen.Cursor := crDefault;
+    Screen.Cursor := crDefault;
   end;
 end;
 
 procedure TFormMain.vk9Click(Sender: TObject);
 begin
- // vk Ведомость объемов работ и расхода ресурсов по смете
+  // vk Ведомость объемов работ и расхода ресурсов по смете
   Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
@@ -1008,7 +1007,7 @@ begin
         showmessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ( FormObjectsAndEstimates.IdEstimate,FileReportPath);
+      dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
     end
     else
     begin
@@ -1019,7 +1018,7 @@ begin
           showmessage('Не выбрана смета');
           Exit;
         end;
-         dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ( FormCalculationEstimate.GetIdObject,FileReportPath);
+        dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ(FormCalculationEstimate.GetIdObject, FileReportPath);
       end;
     end;
   finally
@@ -1033,24 +1032,24 @@ begin
   Screen.Cursor := crSQLWait;
   try
 
-      if Assigned(FormCalculationEstimate) then
+    if Assigned(FormCalculationEstimate) then
+    begin
+      if FormCalculationEstimate.GetIdEstimate = 0 then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
-        begin
-          showmessage('Не выбрана смета');
-          Exit;
-        end;
-        dmReportF.Report_VED_OANDPWV1_OBJ(2,0,FormCalculationEstimate.GetIdObject, FileReportPath);
+        showmessage('Не выбрана смета');
+        Exit;
       end;
+      dmReportF.Report_VED_OANDPWV1_OBJ(2, 0, FormCalculationEstimate.GetIdObject, FileReportPath);
+    end;
 
   finally
-   Screen.Cursor := crDefault;
+    Screen.Cursor := crDefault;
   end;
 end;
 
 procedure TFormMain.N12Click(Sender: TObject);
 begin
-  fWinterPrise.Show;
+  fWinterPrice.Show;
 end;
 
 procedure TFormMain.N13Click(Sender: TObject);
@@ -1277,18 +1276,17 @@ begin
 end;
 
 procedure TFormMain.PMAddNewBackupClick(Sender: TObject);
-var i: Integer;
+var
+  i: integer;
 begin
-  if (MessageBox(Self.Handle,
-    PChar('Создать резервную копию?'),
-    'Резервное копирование',
+  if (MessageBox(Self.Handle, PChar('Создать резервную копию?'), 'Резервное копирование',
     MB_YESNO + MB_ICONQUESTION) = IDYES) then
   begin
-    FormMain.PanelCover.Visible := True;
+    FormMain.PanelCover.Visible := true;
     FormWaiting.Show;
     Application.ProcessMessages;
     try
-      //Максимуи C_ARHCOUNT копии, что-бы не забивать место
+      // Максимуи C_ARHCOUNT копии, что-бы не забивать место
       for i := C_ARHCOUNT - 1 to High(FArhiv.ArhFiles) do
         FArhiv.DeleteArhiv(FArhiv.ArhFiles[i]);
       FArhiv.CreateNewArhiv;
@@ -1300,29 +1298,26 @@ begin
 end;
 
 procedure TFormMain.PMDeleteBackupClick(Sender: TObject);
-var Mi: TMenuItem;
+var
+  Mi: TMenuItem;
 begin
   Mi := TMenuItem(Sender);
-  if (MessageBox(Self.Handle,
-    PChar('Удалить резервную копию от ' +
-      StringReplace(Mi.Parent.Caption, '&', '', [rfReplaceAll]) + '?'),
-    'Резервное копирование',
-    MB_YESNO + MB_ICONQUESTION) = IDYES) then
+  if (MessageBox(Self.Handle, PChar('Удалить резервную копию от ' + StringReplace(Mi.Parent.Caption, '&', '',
+    [rfReplaceAll]) + '?'), 'Резервное копирование', MB_YESNO + MB_ICONQUESTION) = IDYES) then
     FArhiv.DeleteArhiv(string(Mi.Parent.Tag));
 end;
 
 procedure TFormMain.PMRestoreBackupClick(Sender: TObject);
-var Mi: TMenuItem;
+var
+  Mi: TMenuItem;
 begin
   Mi := TMenuItem(Sender);
-  if (MessageBox(Self.Handle,
-    PChar('Восстановить из резервной копии от ' +
-      StringReplace(Mi.Parent.Caption, '&', '', [rfReplaceAll]) + '?' +
-      #13#10 + 'Внимание, все данные внесенные после создания данной копии, будут утеряны!'),
-    'Резервное копирование',
+  if (MessageBox(Self.Handle, PChar('Восстановить из резервной копии от ' + StringReplace(Mi.Parent.Caption,
+    '&', '', [rfReplaceAll]) + '?' + #13#10 +
+    'Внимание, все данные внесенные после создания данной копии, будут утеряны!'), 'Резервное копирование',
     MB_YESNO + MB_ICONQUESTION) = IDYES) then
   begin
-    FormMain.PanelCover.Visible := True;
+    FormMain.PanelCover.Visible := true;
     FormWaiting.Show;
     Application.ProcessMessages;
     try
@@ -1335,30 +1330,9 @@ begin
   end;
 end;
 
-procedure TFormMain.N16Click(Sender: TObject);
-begin
-  // Открываем форму ожидания
-  FormWaiting.Show;
-  Application.ProcessMessages;
-  try
-    if (not Assigned(FormWinterPrice)) then
-      FormWinterPrice := TFormWinterPrice.Create(Self);
-
-    FormWinterPrice.Show;
-  finally
-    // Закрываем форму ожидания
-    FormWaiting.Close;
-  end;
-end;
-
-procedure TFormMain.ExtendedClick(Sender: TObject);
-begin
-  //
-end;
-
 procedure TFormMain.NormalClick(Sender: TObject);
 begin
-  //
+
 end;
 
 // По горизонтали
@@ -1429,7 +1403,8 @@ begin
 end;
 
 procedure TFormMain.HelpAboutClick(Sender: TObject);
-var FormAbout: TFormAbout;
+var
+  FormAbout: TFormAbout;
 begin
   FormAbout := TFormAbout.Create(nil);
   try

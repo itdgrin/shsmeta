@@ -29,7 +29,7 @@
     Height = 50
     Color = clHighlight
     ParentBackground = False
-    TabOrder = 2
+    TabOrder = 1
     Visible = False
     OnMouseDown = UpdatePanelMouseDown
     object Image1: TImage
@@ -231,7 +231,7 @@
     ParentDoubleBuffered = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 0
+    TabOrder = 2
   end
   object PanelCover: TPanel
     Left = 0
@@ -240,7 +240,7 @@
     Height = 460
     Align = alClient
     BevelOuter = bvNone
-    TabOrder = 1
+    TabOrder = 0
     Visible = False
   end
   object MainMenu: TMainMenu
@@ -482,7 +482,6 @@
         end
         object N16: TMenuItem
           Caption = #1047#1072#1075#1088#1091#1079#1082#1072
-          OnClick = N16Click
         end
       end
       object N14: TMenuItem
