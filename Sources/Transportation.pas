@@ -7,9 +7,15 @@ uses
   ExtCtrls, DB,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client, Clipbrd, JvExGrids, JvStringGrid, JvJCLUtils;
 
 type
+  TJvStringGrid = class(JvStringGrid.TJvStringGrid)
+  public
+    procedure DefaultDrawCell(AColumn, ARow: Longint;
+      Rect: TRect; State: TGridDrawState); override;
+  end;
+
   TFormTransportation = class(TForm)
     Panel1: TPanel;
     EditJustificationNumber: TEdit;
@@ -18,8 +24,6 @@ type
     Bevel1: TBevel;
     ButtonCancel: TButton;
     Panel2: TPanel;
-    LabelDistance: TLabel;
-    EditDistance: TEdit;
     PanelBottom: TPanel;
     qrTemp: TFDQuery;
     Label7: TLabel;
@@ -27,7 +31,7 @@ type
     edtPriceNoNDS: TEdit;
     Label8: TLabel;
     edtPriceNDS: TEdit;
-    GroupBox1: TGroupBox;
+    grbGruz: TGroupBox;
     Label6: TLabel;
     cmbUnit: TComboBox;
     Label1: TLabel;
@@ -36,15 +40,14 @@ type
     edtYDW: TEdit;
     Label2: TLabel;
     cmbClass: TComboBox;
-    Label4: TLabel;
-    Label3: TLabel;
-    Label5: TLabel;
-    edtCoastNoNDS: TEdit;
-    edtCoastNDS: TEdit;
-    Label10: TLabel;
-    edtNDS: TEdit;
-    Bevel2: TBevel;
     ButtonAdd: TButton;
+    EditDistance: TEdit;
+    LabelDistance: TLabel;
+    grbKoef: TGroupBox;
+    ComboBox1: TComboBox;
+    Panel3: TPanel;
+    cbKoef: TCheckBox;
+    grdPrice: TJvStringGrid;
 
     procedure FormShow(Sender: TObject);
     procedure ButtonCancelClick(Sender: TObject);
@@ -53,22 +56,54 @@ type
     procedure CalculationTransp;
     procedure GetCoast;
     procedure edtCountChange(Sender: TObject);
-    procedure edtNDSChange(Sender: TObject);
-    procedure edtCoastNDSChange(Sender: TObject);
-    procedure edtCoastNoNDSChange(Sender: TObject);
     procedure EditDistanceChange(Sender: TObject);
     procedure ButtonAddClick(Sender: TObject);
+    procedure ComboBox1MeasureItem(Control: TWinControl; Index: Integer;
+      var Height: Integer);
+    procedure ComboBox1DrawItem(Control: TWinControl; Index: Integer;
+      Rect: TRect; State: TOwnerDrawState);
+    procedure FormCreate(Sender: TObject);
+    procedure grdPriceGetCellAlignment(Sender: TJvStringGrid; AColumn,
+      ARow: Integer; State: TGridDrawState; var CellAlignment: TAlignment);
+    procedure grdPriceSetCanvasProperties(Sender: TObject; ACol, ARow: Integer;
+      Rect: TRect; State: TGridDrawState);
+    procedure grdPriceSelectCell(Sender: TObject; ACol, ARow: Integer;
+      var CanSelect: Boolean);
+    procedure EditExit(Sender: TObject);
+    procedure grdPriceKeyPress(Sender: TObject; var Key: Char);
+    procedure grdPriceExitCell(Sender: TJvStringGrid; AColumn, ARow: Integer;
+      const EditText: string);
+  private
+    const CaptionForm = 'Перевозка грузов';
+      CCoastNoNDS = 1;
+      CCoastNDS = 2;
+      CPriceNoNDS = 3;
+      CNDS = 4;
+      CPriceNDS = 5;
 
   private
-    EstMonth, EstYear: integer;
-    ChangeCoast: boolean;
+    //Месяц и год расценки
+    EstMonth,
+    EstYear: integer;
+
     JustNumber: string;
-    TranspCount, CCount, Ydw: extended;
-    CoastNoNds, CoastNds, Nds: integer;
+    //Масса груза в тоннах
+    TranspCount,
+    CCount,
+    Ydw: extended;
+    //Цена за единицу
+    CoastNoNds,
+    CoastNds: Double;
+    Nds,
+    DefNDS: integer;
     Distance: integer;
+    //Класс груза
+    FClass: Byte;
+    //Флаг предотвращающий срабатывание ченжей при загрузке инфы из базы
     Loading: boolean;
     procedure GetEstimateInfo(aIdEstimate: integer);
     procedure LoadTranspInfo(aIdTransp: integer);
+    procedure CalcPrice;
   public
     IdEstimate: integer; // ID сметы в которой транспорт
     IdTransp: integer; // ID транспорта в смете
@@ -76,9 +111,6 @@ type
     InsMode: boolean; // признак вставкисвалки
     IsSaved: boolean;
   end;
-
-const
-  CaptionForm = 'Перевозка грузов';
 
   // Вызов окна транспорта. InsMode - признак вставкисвалки  в смету
 function GetTranspForm(IdEstimate, IdTransp, TranspType: integer; InsMode: boolean): boolean;
@@ -110,16 +142,18 @@ end;
 
 procedure TFormTransportation.CalculationTransp;
 begin
+  //Каждый раз заново считываются значения со всех эдитов,
+  //что-бы не пролодить обработчики
   if trim(edtCount.Text) = '' then
     CCount := 0
   else
   begin
     if edtCount.Text[length(edtCount.Text)] = '.' then
     begin
-      CCount := StrToFloat(copy(edtCount.Text, 1, length(edtCount.Text) - 1));
+      CCount := StrToFloatDef(copy(edtCount.Text, 1, length(edtCount.Text) - 1), 0);
     end
     else
-      CCount := StrToFloat(edtCount.Text);
+      CCount := StrToFloatDef(edtCount.Text, 0);
   end;
 
   if trim(edtYDW.Text) = '' then
@@ -128,39 +162,38 @@ begin
   begin
     if edtYDW.Text[length(edtYDW.Text)] = '.' then
     begin
-      Ydw := StrToFloat(copy(edtYDW.Text, 1, length(edtYDW.Text) - 1));
+      Ydw := StrToFloatDef(copy(edtYDW.Text, 1, length(edtYDW.Text) - 1), 0);
     end
     else
-      Ydw := StrToFloat(edtYDW.Text);
+      Ydw := StrToFloatDef(edtYDW.Text, 0);
   end;
-
-  if trim(EditDistance.Text) = '' then
-    Distance := 0
-  else
-    Distance := StrToInt(EditDistance.Text);
-
-  if trim(edtCoastNoNDS.Text) = '' then
-    CoastNoNds := 0
-  else
-    CoastNoNds := StrToInt(edtCoastNoNDS.Text);
-
-  if trim(edtCoastNDS.Text) = '' then
-    CoastNds := 0
-  else
-    CoastNds := StrToInt(edtCoastNDS.Text);
-
-  if trim(edtNDS.Text) = '' then
-    Nds := 0
-  else
-    Nds := StrToInt(edtNDS.Text);
 
   if 0 = cmbUnit.ItemIndex then
     TranspCount := CCount
   else
     TranspCount := (CCount * Ydw) / 1000;
 
-  edtPriceNoNDS.Text := IntToStr(Round(TranspCount * CoastNoNds));
-  edtPriceNDS.Text := IntToStr(Round(TranspCount * CoastNds));
+  CalcPrice;
+
+  if grdPrice.Cells[CNDS, FClass] = '' then
+    Nds := 0
+  else
+    Nds := StrToInt(grdPrice.Cells[CNDS, FClass]);
+
+  if grdPrice.Cells[CCoastNoNDS, FClass] = '' then
+     CoastNoNds := 0
+  else
+    CoastNoNds := StrToFloat(grdPrice.Cells[CCoastNoNDS, FClass]);
+
+  if grdPrice.Cells[CCoastNDS, FClass] = '' then
+     CoastNds := 0
+  else
+    CoastNds := StrToFloat(grdPrice.Cells[CCoastNDS, FClass]);
+
+  edtPriceNoNDS.Text := grdPrice.Cells[CPriceNoNDS, FClass];
+  edtPriceNDS.Text := grdPrice.Cells[CPriceNDS, FClass];
+
+  grdPrice.Repaint;
 end;
 
 procedure TFormTransportation.ButtonAddClick(Sender: TObject);
@@ -245,8 +278,49 @@ begin
   if Loading then
     exit;
 
-  edtYDW.Enabled := 0 <> cmbUnit.ItemIndex;
+  edtYDW.Enabled := (0 <> cmbUnit.ItemIndex);
   CalculationTransp;
+end;
+
+procedure TFormTransportation.ComboBox1DrawItem(Control: TWinControl;
+  Index: Integer; Rect: TRect; State: TOwnerDrawState);
+var
+  ItemString: string;
+begin
+  TComboBox(Control).Canvas.FillRect(Rect);
+  ItemString := TComboBox(Control).Items.Strings[Index];
+  Rect.Left := Rect.Left + 2;
+  Rect.Width := Rect.Width - 2;
+  DrawText(TComboBox(Control).Canvas.Handle, PChar(ItemString), -1, Rect, DT_WORDBREAK);
+end;
+
+procedure TFormTransportation.ComboBox1MeasureItem(Control: TWinControl;
+  Index: Integer; var Height: Integer);
+var
+  ItemString: string;
+  MyRect: TRect;
+  MyImage: TImage;
+  MyCombo: TComboBox;
+begin
+  // Don't waste time with this on Index = -1
+  if (Index > -1) then
+  begin
+    MyCombo := TComboBox(Control);
+    // Create a temporary canvas to calculate the height
+    MyImage := TImage.Create(MyCombo);
+    try
+      MyRect := MyCombo.ClientRect;
+      MyRect.Left := MyRect.Left + 2;
+      MyRect.Width := MyRect.Width - 2;
+      ItemString := MyCombo.Items.Strings[Index];
+      MyImage.Canvas.Font := MyCombo.Font;
+      // Calc. using this ComboBox's font size
+      Height := DrawText(MyImage.Canvas.Handle, PChar(ItemString),
+        -1, MyRect, DT_CALCRECT or DT_WORDBREAK);
+    finally
+      MyImage.Free;
+    end;
+  end;
 end;
 
 // Подгружает необходимую информацию из сметы
@@ -266,6 +340,88 @@ begin
   end;
 end;
 
+procedure TFormTransportation.grdPriceExitCell(Sender: TJvStringGrid; AColumn,
+  ARow: Integer; const EditText: string);
+var TmpNds: Integer;
+    TmpCoastNds,
+    TmpCoastNoNds: Double;
+begin
+  if (AColumn = CCoastNoNDS) or
+     (AColumn = CCoastNDS) or
+     (AColumn = CNDS) then
+  begin
+    if trim(grdPrice.Cells[CNDS, FClass]) = '' then
+      TmpNds := 0
+    else
+      TmpNds := StrToInt(grdPrice.Cells[CNDS, FClass]);
+    grdPrice.Cells[CNDS, FClass] := IntToStr(TmpNds);
+
+    if trim(grdPrice.Cells[CCoastNoNDS, FClass]) = '' then
+      TmpCoastNoNds := 0
+    else
+      TmpCoastNoNds := StrToFloat(grdPrice.Cells[CCoastNoNDS, FClass]);
+    grdPrice.Cells[CCoastNoNDS, FClass] := FloatToStr(TmpCoastNoNds);
+
+    if trim(grdPrice.Cells[CCoastNDS, FClass]) = '' then
+      TmpCoastNds := 0
+    else
+      TmpCoastNds := StrToFloat(grdPrice.Cells[CCoastNDS, FClass]);
+    grdPrice.Cells[CCoastNDS, FClass] := FloatToStr(TmpCoastNds);
+
+    if (AColumn = CCoastNoNDS) or (AColumn = CNDS)then
+      grdPrice.Cells[CCoastNDS, FClass] :=
+        FloatToStr(NoNDSToNDS(Trunc(TmpCoastNoNds), TmpNds));
+
+    if (AColumn = CCoastNDS) then
+      grdPrice.Cells[CCoastNoNDS, FClass] :=
+        FloatToStr(NDSToNoNDS(Trunc(TmpCoastNds), TmpNds));
+
+    CalculationTransp;
+  end;
+end;
+
+procedure TFormTransportation.grdPriceGetCellAlignment(Sender: TJvStringGrid;
+  AColumn, ARow: Integer; State: TGridDrawState; var CellAlignment: TAlignment);
+begin
+  //шапка выравнивается по центру, остальное по правому краю
+  if (ARow = 0) or (AColumn = 0) then
+    CellAlignment := TAlignment.taCenter
+  else
+    CellAlignment := TAlignment.taRightJustify;
+end;
+
+procedure TFormTransportation.grdPriceKeyPress(Sender: TObject; var Key: Char);
+begin
+  case Key of
+    '0'..'9',#8,#13: ;
+     else Key:= #0;
+  end;
+end;
+
+procedure TFormTransportation.grdPriceSelectCell(Sender: TObject; ACol,
+  ARow: Integer; var CanSelect: Boolean);
+begin
+  //Разрешено редактировать текущие цены и ндс
+  if (ARow = FClass) and (
+     (ACol = CCoastNoNDS) or
+     (ACol = CCoastNDS) or
+     (ACol = CNDS)) then
+    grdPrice.Options := grdPrice.Options + [goEditing]
+  else
+    grdPrice.Options := grdPrice.Options - [goEditing];
+end;
+
+procedure TFormTransportation.grdPriceSetCanvasProperties(Sender: TObject; ACol,
+  ARow: Integer; Rect: TRect; State: TGridDrawState);
+begin
+  //Подсветка строку текущего класса
+  if (ARow = FClass) and
+    (FClass > 0) and
+    (ACol > 0) and
+    not((ARow = grdPrice.Row) and (ACol = grdPrice.Col)) then
+    grdPrice.Canvas.Brush.Color := $0080FFFF;
+end;
+
 procedure TFormTransportation.EditDistanceChange(Sender: TObject);
 begin
   if Loading then
@@ -274,79 +430,45 @@ begin
   if (EditDistance.Text <> '') and (StrToInt(EditDistance.Text) > 0) then
     EditJustificationNumber.Text := JustNumber + '-' + EditDistance.Text
   else
-    EditJustificationNumber.Text := EditDistance.Text;
+    EditJustificationNumber.Text := JustNumber;
 
   GetCoast;
   CalculationTransp;
 end;
 
 procedure TFormTransportation.EditKeyPress(Sender: TObject; var Key: Char);
+var s: string;
+    f: Double;
 begin
-  if not CharInSet(Key, ['0' .. '9', '.', #8]) then // Не цифра и не BackSpace
-    Key := #0;
+  if CharInSet(Key, [^C, ^X, ^Z]) then
+      Exit;
 
-  if Key = '.' then
+  if (Key = ^V) then
   begin
-    if pos('.', (Sender as TEdit).Text) > 0 then
-      Key := #0;
-    if (Sender as TEdit).Text = '' then
-      Key := #0;
-  end;
-end;
-
-procedure TFormTransportation.edtCoastNDSChange(Sender: TObject);
-var
-  i, Nds: integer;
-begin
-  if Loading then
-    exit;
-  if not ChangeCoast then
-  begin
-    ChangeCoast := true;
-    try
-      if trim(edtCoastNDS.Text) = '' then
-        i := 0
-      else
-        i := StrToInt(edtCoastNDS.Text);
-
-      if trim(edtNDS.Text) = '' then
-        Nds := 0
-      else
-        Nds := StrToInt(edtNDS.Text);
-
-      edtCoastNoNDS.Text := IntToStr(NDSToNoNDS(i, Nds));
-      CalculationTransp;
-    finally
-      ChangeCoast := false;
+    //Проверка на корректность вставляемого текста
+    if TryStrToFloat(Clipboard.AsText, f) then
+    begin
+      s :=
+        Copy(TEdit(Sender).Text, 1,
+          TEdit(Sender).SelStart) + Clipboard.AsText +
+          Copy(TEdit(Sender).Text, TEdit(Sender).SelStart +
+            TEdit(Sender).SelLength + 1, Length(TEdit(Sender).Text) -
+            TEdit(Sender).SelStart - TEdit(Sender).SelLength);
+      if TryStrToFloat(s, f) then
+        Exit;
     end;
   end;
-end;
 
-procedure TFormTransportation.edtCoastNoNDSChange(Sender: TObject);
-var
-  i, Nds: integer;
-begin
-  if Loading then
-    exit;
-  if not ChangeCoast then
-  begin
-    ChangeCoast := true;
-    try
-      if trim(edtCoastNoNDS.Text) = '' then
-        i := 0
-      else
-        i := StrToInt(edtCoastNoNDS.Text);
-
-      if trim(edtNDS.Text) = '' then
-        Nds := 0
-      else
-        Nds := StrToInt(edtNDS.Text);
-
-      edtCoastNDS.Text := IntToStr(NoNDSToNDS(i, Nds));
-      CalculationTransp;
-    finally
-      ChangeCoast := false;
-    end;
+  case Key of
+    '0'..'9',#8: ;
+    '.',',':
+     begin
+       Key := FormatSettings.DecimalSeparator;
+       if (pos(FormatSettings.DecimalSeparator, TEdit(Sender).Text) <> 0) or
+          (TEdit(Sender).Text = '') then
+        Key:= #0;
+     end;
+     else Key:= #0;
   end;
 end;
 
@@ -357,41 +479,59 @@ begin
   CalculationTransp;
 end;
 
-procedure TFormTransportation.edtNDSChange(Sender: TObject);
-var
-  i, cost: integer;
+procedure TFormTransportation.EditExit(Sender: TObject);
+var s: string;
 begin
-  if Loading then
-    exit;
-
-  if not ChangeCoast then
+  if (Length(TEdit(Sender).Text) > 0) and
+    (TEdit(Sender).Text[High(TEdit(Sender).Text)] = FormatSettings.DecimalSeparator) then
   begin
-    ChangeCoast := true;
-    try
-      if trim(edtNDS.Text) = '' then
-        i := 0
-      else
-        i := StrToInt(edtNDS.Text);
-
-      if trim(edtCoastNoNDS.Text) = '' then
-        cost := 0
-      else
-        cost := StrToInt(edtCoastNoNDS.Text);
-
-      edtCoastNDS.Text := IntToStr(NoNDSToNDS(cost, i));
-      CalculationTransp;
-    finally
-      ChangeCoast := false;
-    end;
+    s := TEdit(Sender).Text;
+    SetLength(s, Length(s) - 1);
+    TEdit(Sender).Text := s;
   end;
+
+  if TEdit(Sender).Text = '' then
+    TEdit(Sender).Text := '0';
+end;
+
+procedure TFormTransportation.FormCreate(Sender: TObject);
+begin
+  grdPrice.RowHeights[0] := 30;
+
+  grdPrice.ColWidths[0] := 40;
+  grdPrice.Cells[0,0] := 'Класс';
+  grdPrice.Cells[0,1] := 'I';
+  grdPrice.Cells[0,2] := 'II';
+  grdPrice.Cells[0,3] := 'III';
+  grdPrice.Cells[0,4] := 'IV';
+  grdPrice.ColWidths[CCoastNoNDS] := 100;
+  grdPrice.Cells[CCoastNoNDS,0] := 'Цена за т/м3' + sLineBreak + 'без НДС, руб.';
+  grdPrice.ColWidths[CCoastNDS] := 100;
+  grdPrice.Cells[CCoastNDS,0] := 'Цена за т/м3' + sLineBreak + 'с НДС, руб.';
+  grdPrice.ColWidths[CPriceNoNDS] := 100;
+  grdPrice.Cells[CPriceNoNDS,0] := 'Стоимость' + sLineBreak + 'без НДС, руб.';
+  grdPrice.ColWidths[CNDS] := 50;
+  grdPrice.Cells[CNDS,0] := 'НДС, %';
+  grdPrice.ColWidths[CPriceNDS] := 100;
+  grdPrice.Cells[CPriceNDS,0] := 'Стоимость' + sLineBreak + 'с НДС, руб.';
+
+  //По умолчанию НДС 20%
+  DefNDS := 20;
+  FClass := cmbClass.ItemIndex + 1;
 end;
 
 procedure TFormTransportation.FormShow(Sender: TObject);
 begin
   Loading := false;
+  //Подкружает общие данные по смете
   GetEstimateInfo(IdEstimate);
 
-  if InsMode then
+  if TranspType in [6, 7] then
+    JustNumber := 'C310';
+  if TranspType in [8, 9] then
+    JustNumber := 'C311';
+
+  if InsMode then //Добавление нового
   begin
     case TranspType of
       6:
@@ -418,24 +558,20 @@ begin
       raise Exception.Create('Неизвестный тип транспорта (' + IntToStr(TranspType) + ')');
     end;
 
-    edtYDW.Enabled := 0 <> cmbUnit.ItemIndex;
-    edtCount.Text := '0';
-    edtYDW.Text := '0';
-
+    edtYDW.Enabled := (0 <> cmbUnit.ItemIndex);
+    edtCount.Text := FloatToStr(CCount);
+    edtYDW.Text := FloatToStr(Ydw);
+    EditDistance.Text := IntToStr(Distance);
     if TranspType in [7, 9] then
       cmbClass.Enabled := false;
+    GetCoast;
     CalculationTransp;
   end
-  else
+  else  //Иначе редактирование уже набраного
   begin
     LoadTranspInfo(IdTransp);
     ButtonAdd.Caption := 'Сохранить';
   end;
-
-  if TranspType in [6, 7] then
-    JustNumber := 'C310';
-  if TranspType in [8, 9] then
-    JustNumber := 'C311';
 
   EditDistance.SetFocus;
 end;
@@ -453,24 +589,32 @@ begin
     EditJustification.Text := qrTemp.FieldByName('TRANSP_JUST').AsString;
     EditDistance.Text := qrTemp.FieldByName('TRANSP_DIST').AsString;
     cmbClass.ItemIndex := qrTemp.FieldByName('CARG_CLASS').AsInteger;
+    FClass := cmbClass.ItemIndex + 1;
     cmbUnit.ItemIndex := qrTemp.FieldByName('CARG_TYPE').AsInteger;
     edtCount.Text := qrTemp.FieldByName('CARG_COUNT').AsString;
     edtYDW.Text := qrTemp.FieldByName('CARG_YDW').AsString;
-    edtCoastNDS.Text := qrTemp.FieldByName('COAST_NDS').AsString;
-    edtCoastNoNDS.Text := qrTemp.FieldByName('COAST_NO_NDS').AsString;
-    edtNDS.Text := qrTemp.FieldByName('NDS').AsString;
-    edtPriceNoNDS.Text := qrTemp.FieldByName('TRANSP_SUM_NO_NDS').AsString;
-    edtPriceNDS.Text := qrTemp.FieldByName('TRANSP_SUM_NDS').AsString;
 
     TranspType := qrTemp.FieldByName('TRANSP_TYPE').AsInteger;
     TranspCount := qrTemp.FieldByName('TRANSP_COUNT').AsFloat;
-    CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsInteger;
-    CoastNds := qrTemp.FieldByName('COAST_NDS').AsInteger;
-    Nds := qrTemp.FieldByName('NDS').AsInteger;
     CCount := qrTemp.FieldByName('CARG_COUNT').AsFloat;
     Ydw := qrTemp.FieldByName('CARG_YDW').AsFloat;
+    qrTemp.Active := false;
+
+    GetCoast;
+
+    qrTemp.SQL.Text := 'SELECT * FROM transpcard_temp WHERE (ID = ' + IntToStr(aIdTransp) + ');';
+    qrTemp.Active := true;
+    grdPrice.Cells[CCoastNDS, FClass] := qrTemp.FieldByName('COAST_NDS').AsString;
+    grdPrice.Cells[CCoastNoNDS, FClass] := qrTemp.FieldByName('COAST_NO_NDS').AsString;
+    grdPrice.Cells[CNDS, FClass] := qrTemp.FieldByName('NDS').AsString;
+    grdPrice.Cells[CPriceNDS, FClass] := qrTemp.FieldByName('TRANSP_SUM_NDS').AsString;
+    grdPrice.Cells[CPriceNoNDS, FClass] := qrTemp.FieldByName('TRANSP_SUM_NO_NDS').AsString;
+
+    edtPriceNoNDS.Text := grdPrice.Cells[CPriceNoNDS, FClass];
+    edtPriceNDS.Text := grdPrice.Cells[CPriceNDS, FClass];
 
     qrTemp.Active := false;
+    grdPrice.Repaint;
   except
     on E: Exception do
       MessageBox(0, PChar('При получении данных по свалке ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -479,18 +623,18 @@ begin
   Loading := false;
 end;
 
+//Получает цены за единицу исходя из расстояния
 procedure TFormTransportation.GetCoast;
 var
-  { i: Integer; }
+  i: Integer;
   More: integer;
   TabName, DistanceText, LikeText: string;
 begin
-  More := 0;
   Distance := 0;
+  FClass := cmbClass.ItemIndex + 1;
+
+  More := 0;
   LikeText := '';
-  CoastNoNds := 0;
-  CoastNds := 0;
-  Nds := 20;
 
   case TranspType of
     6, 7:
@@ -533,24 +677,41 @@ begin
     end;
   end;
 
+  for i := grdPrice.FixedRows to grdPrice.RowCount - 1 do
+    grdPrice.Cells[CNDS,i] := IntToStr(DefNDS);
+
   try
     with qrTemp do
     begin
       Active := false;
-      SQL.Text := 'SELECT * FROM ' + TabName + ' WHERE monat = ' + IntToStr(EstMonth) + ' and year = ' +
+      SQL.Text := 'SELECT * FROM ' + TabName +
+        ' WHERE monat = ' + IntToStr(EstMonth) + ' and year = ' +
         IntToStr(EstYear) + ' and distance = :dist;';
       ParamByName('dist').Value := DistanceText;
       Active := true;
 
       if not IsEmpty then
       begin
-        CoastNoNds := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) + '_1').AsInteger;
-        CoastNds := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) + '_2').AsInteger;
+        for i := grdPrice.FixedRows to grdPrice.RowCount - 1 do
+        begin
+          grdPrice.Cells[CCoastNoNDS,i] :=
+            FloatToStr(FieldByName('class' + IntToStr(i) + '_1').AsFloat);
+          grdPrice.Cells[CCoastNDS,i] :=
+            FloatToStr(FieldByName('class' + IntToStr(i) + '_2').AsFloat);
+        end;
+      end
+      else
+      begin
+        for i := grdPrice.FixedRows to grdPrice.RowCount - 1 do
+        begin
+          grdPrice.Cells[CCoastNoNDS,i] := '0';
+          grdPrice.Cells[CCoastNDS,i]   := '0';
+        end;
       end;
 
       Active := false;
 
-      if (More > 0) and (CoastNoNds > 0) then
+      if (More > 0) then
       begin
         SQL.Text := 'SELECT * FROM ' + TabName + ' WHERE monat = ' + IntToStr(EstMonth) + ' and year = ' +
           IntToStr(EstYear) + ' and distance LIKE "%' + LikeText + '%";';
@@ -558,13 +719,19 @@ begin
 
         if not IsEmpty then
         begin
-          CoastNoNds := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) + '_1').AsInteger * More +
-            CoastNoNds;
-          CoastNds := FieldByName('class' + IntToStr(cmbClass.ItemIndex + 1) + '_2').AsInteger * More
-            + CoastNds;
+          for i := grdPrice.FixedRows to grdPrice.RowCount - 1 do
+          begin
+            grdPrice.Cells[CCoastNoNDS,i] := FloatToStr(
+              StrToFloat(grdPrice.Cells[CCoastNoNDS,i]) +
+              FieldByName('class' + IntToStr(i) + '_1').AsFloat * More);
+            grdPrice.Cells[CCoastNDS,i]   := FloatToStr(
+              StrToFloat(grdPrice.Cells[CCoastNDS,i]) +
+              FieldByName('class' + IntToStr(i) + '_2').AsInteger * More);
+          end;
         end;
         Active := false;
       end;
+      CalcPrice;
     end;
   except
     on E: Exception do
@@ -575,11 +742,48 @@ begin
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
   end;
-  ChangeCoast := true;
-  edtCoastNoNDS.Text := IntToStr(CoastNoNds);
-  edtCoastNDS.Text := IntToStr(CoastNds);
-  edtNDS.Text := IntToStr(Nds);
-  ChangeCoast := false;
+end;
+
+procedure TFormTransportation.CalcPrice;
+var i: Integer;
+  TmpCoastNoNds,
+  TmpCoastNds: Double;
+begin
+  for i := grdPrice.FixedRows to grdPrice.RowCount - 1 do
+  begin
+    if trim(grdPrice.Cells[CCoastNoNDS, i]) = '' then
+      TmpCoastNoNds := 0
+    else
+      TmpCoastNoNds := StrToFloat(grdPrice.Cells[CCoastNoNDS, i]);
+
+    if trim(grdPrice.Cells[CCoastNDS, i]) = '' then
+      TmpCoastNds := 0
+    else
+      TmpCoastNds := StrToFloat(grdPrice.Cells[CCoastNDS, i]);
+
+    grdPrice.Cells[CPriceNoNDS, i] := IntToStr(Round(TranspCount * TmpCoastNoNds));
+    grdPrice.Cells[CPriceNDS, i] := IntToStr(Round(TranspCount * TmpCoastNds));
+  end;
+end;
+
+{ TJvStringGrid }
+
+procedure TJvStringGrid.DefaultDrawCell(AColumn, ARow: Integer; Rect: TRect;
+  State: TGridDrawState);
+const
+  Flags: array [TAlignment] of DWORD = (DT_LEFT, DT_RIGHT, DT_CENTER);
+var
+  S: string;
+begin
+  Canvas.FillRect(Rect);
+  S := Cells[AColumn, ARow];
+  if Length(S) > 0 then
+  begin
+    InflateRect(Rect, -2, -2);
+    DrawText(Canvas, S, Length(S), Rect,
+      DT_NOPREFIX or DT_VCENTER or DT_WORDBREAK or
+      Flags[GetCellAlignment(AColumn, ARow, State)]);
+  end;
 end;
 
 end.

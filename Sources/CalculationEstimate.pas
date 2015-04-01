@@ -5135,6 +5135,15 @@ begin
         Str := Column.Field.AsString;
     end;
 
+    //Не отображает кол-во и суммы для замененных или вынесеных
+    if ((qrMaterialFROM_RATE.AsInteger = 1) and
+      not(qrRatesMID.AsInteger = qrMaterialID.AsInteger)) or
+      (qrMaterialREPLACED.AsInteger = 1) then
+    begin
+      if Column.Index in [4, 8, 9,10, 11, 15, 16, 17, 18] then
+        Str := '';
+    end;
+
     if gdFocused in State then // Ячейка в фокусе
     begin
       Brush.Color := PS.BackgroundSelectCell;
@@ -5264,6 +5273,14 @@ begin
     begin
       if Assigned(Column.Field) then
         Str := Column.Field.AsString;
+    end;
+
+    if ((qrMechanizmFROM_RATE.AsInteger = 1) and
+      not(qrRatesMEID.AsInteger > 0)) or
+      (qrMechanizmREPLACED.AsInteger = 1) then
+    begin
+      if Column.Index in [4, 7, 8, 11, 12, 16, 17, 20, 21, 24] then
+        Str := '';
     end;
 
     if gdFocused in State then // Ячейка в фокусе
