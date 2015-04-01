@@ -1,4 +1,4 @@
-object fWinterPrise: TfWinterPrise
+object fWinterPrice: TfWinterPrice
   Left = 0
   Top = 0
   Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
@@ -35,7 +35,7 @@ object fWinterPrise: TfWinterPrise
     Indent = 19
     Align = alCustom
     TabOrder = 0
-    PopupMenu = pm1
+    PopupMenu = pmZnormativ
     Anchors = [akLeft, akTop, akRight, akBottom]
     HotTrack = True
     Mirror = False
@@ -117,7 +117,7 @@ object fWinterPrise: TfWinterPrise
     Anchors = [akTop, akRight, akBottom]
     DataSource = dsZnormativs_detail
     Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-    PopupMenu = pm2
+    PopupMenu = pmZnormativDetail
     TabOrder = 4
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
@@ -222,10 +222,10 @@ object fWinterPrise: TfWinterPrise
     Top = 8
     Width = 192
     Height = 73
-    Anchors = [akTop, akRight, akBottom]
+    Anchors = [akTop, akRight]
     DataSource = dsZnormChangeDate
     Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-    PopupMenu = pm3
+    PopupMenu = pmZnormativOnDate
     TabOrder = 2
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
@@ -254,6 +254,7 @@ object fWinterPrise: TfWinterPrise
     Top = 8
     Width = 179
     Height = 17
+    Anchors = [akTop, akRight]
     Caption = #1087#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1079#1072#1087#1080#1089#1080
     TabOrder = 1
     OnClick = chk1Click
@@ -330,6 +331,8 @@ object fWinterPrise: TfWinterPrise
     Top = 34
   end
   object qrZnormativs_detail: TFDQuery
+    BeforeDelete = qrZnormativs_detailBeforeDelete
+    OnNewRecord = qrZnormativs_detailNewRecord
     MasterSource = dsTreeData
     MasterFields = 'ZNORMATIVS_ID'
     Connection = DM.Connect
@@ -337,7 +340,7 @@ object fWinterPrise: TfWinterPrise
     UpdateTransaction = DM.Write
     SQL.Strings = (
       'select * from znormativs_detail'
-      'WHERE ZNORMATIVS_ID=:ZNORMATIVS_ID')
+      'WHERE `ZNORMATIVS_ID`=:ZNORMATIVS_ID')
     Left = 609
     Top = 194
     ParamData = <
@@ -353,15 +356,15 @@ object fWinterPrise: TfWinterPrise
     Left = 624
     Top = 210
   end
-  object pm1: TPopupMenu
+  object pmZnormativ: TPopupMenu
     Left = 56
     Top = 48
-    object N1: TMenuItem
+    object mAddZnormativ: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     end
-    object N2: TMenuItem
+    object mDelZnormativ: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
-      OnClick = N2Click
+      OnClick = mDelZnormativClick
     end
   end
   object tmr1: TTimer
@@ -369,14 +372,16 @@ object fWinterPrise: TfWinterPrise
     Left = 72
     Top = 64
   end
-  object pm2: TPopupMenu
+  object pmZnormativDetail: TPopupMenu
     Left = 640
     Top = 224
-    object MenuItem1: TMenuItem
+    object mAddZnormativDetail: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      OnClick = mAddZnormativDetailClick
     end
-    object MenuItem2: TMenuItem
+    object mDelZnormativDetail: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = mDelZnormativDetailClick
     end
   end
   object qrZnormChangeDate: TFDQuery
@@ -399,7 +404,7 @@ object fWinterPrise: TfWinterPrise
     Left = 616
     Top = 18
   end
-  object pm3: TPopupMenu
+  object pmZnormativOnDate: TPopupMenu
     Left = 632
     Top = 32
     object MenuItem3: TMenuItem

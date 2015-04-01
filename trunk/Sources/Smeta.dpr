@@ -29,7 +29,6 @@ uses
   HelpC5 in 'HelpC5.pas' {FormHelpC5},
   CatalogSSR in 'CatalogSSR.pas' {FormCatalogSSR},
   OXRandOPR in 'OXRandOPR.pas' {FormOXRandOPR},
-  WinterPrice in 'WinterPrice.pas' {FormWinterPrice},
   Columns in 'Columns.pas' {FormColumns},
   SignatureSSR in 'SignatureSSR.pas' {FormSignatureSSR},
   SummaryCalculationSettings in 'SummaryCalculationSettings.pas' {FormSummaryCalculationSettings},
@@ -103,7 +102,7 @@ uses
   Coef in 'Coef.pas' {fCoefficients},
   ArhivModule in 'ArhivModule.pas',
   GlobsAndConst in 'GlobsAndConst.pas',
-  WinterPrise in 'WinterPrise.pas' {fWinterPrise},
+  WinterPrise in 'WinterPrise.pas' {fWinterPrice},
   ReplacementMatAndMech in 'ReplacementMatAndMech.pas' {frmReplacement};
 
 {$R *.res}
@@ -156,7 +155,7 @@ begin
   Application.CreateForm(TFormCardPTM, FormCardPTM);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
-  Application.CreateForm(TfWinterPrise, fWinterPrise);
+  Application.CreateForm(TfWinterPrice, fWinterPrice);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€

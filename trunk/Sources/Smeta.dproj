@@ -164,9 +164,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="OXRandOPR.pas">
             <Form>FormOXRandOPR</Form>
         </DCCReference>
-        <DCCReference Include="WinterPrice.pas">
-            <Form>FormWinterPrice</Form>
-        </DCCReference>
         <DCCReference Include="Columns.pas">
             <Form>FormColumns</Form>
         </DCCReference>
@@ -399,7 +396,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="ArhivModule.pas"/>
         <DCCReference Include="GlobsAndConst.pas"/>
         <DCCReference Include="WinterPrise.pas">
-            <Form>fWinterPrise</Form>
+            <Form>fWinterPrice</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="ReplacementMatAndMech.pas">
@@ -430,7 +427,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     <VersionInfo Name="MajorVer">1</VersionInfo>
                     <VersionInfo Name="MinorVer">0</VersionInfo>
                     <VersionInfo Name="Release">0</VersionInfo>
-                    <VersionInfo Name="Build">6526</VersionInfo>
+                    <VersionInfo Name="Build">6534</VersionInfo>
                     <VersionInfo Name="Debug">True</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -442,7 +439,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Расчёт сметы</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">1.0.0.6526</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.6534</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">Estimate</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">© 2013 Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks"/>
