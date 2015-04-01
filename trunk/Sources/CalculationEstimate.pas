@@ -457,6 +457,7 @@ type
     dsRatesEx: TDataSource;
     JvDBGrid1: TJvDBGrid;
     qrMechanizmTITLE: TIntegerField;
+    qrTranspKOEF: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -4363,10 +4364,10 @@ begin
   begin
     // в зависимости от ндс скрывает одни и показывает другие калонки
     Columns[7].Visible := aNDS; // цена факт
-    Columns[9].Visible := aNDS; // стоим факт
+    Columns[10].Visible := aNDS; // стоим факт
 
     Columns[8].Visible := not aNDS;
-    Columns[10].Visible := not aNDS;
+    Columns[11].Visible := not aNDS;
   end;
 end;
 
@@ -4986,10 +4987,14 @@ begin
       Brush.Color := $00F0F0FF;
 
     // Подсветка полей стоимости
-    if Column.Index in [9, 10] then
+    if (Sender as TJvDBGrid).Name = 'dbgrdTransp' then
     begin
-      Brush.Color := $00FBFEBC;
-    end;
+      if Column.Index in [10, 11] then
+        Brush.Color := $00FBFEBC;
+    end
+    else
+      if Column.Index in [9, 10] then
+        Brush.Color := $00FBFEBC;
 
     if Assigned(TMyDBGrid(Sender).DataLink) and
       ((Sender as TJvDBGrid).Row = TMyDBGrid(Sender).DataLink.ActiveRecord + 1) and

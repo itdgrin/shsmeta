@@ -300,7 +300,7 @@ object FormTransportation: TFormTransportation
         ' '#1053#1072#1076#1073#1072#1074#1082#1080' '#1079#1072' '#1087#1077#1088#1077#1074#1086#1079#1082#1091' '#1075#1088#1091#1079#1086#1074' '#1074' '#1089#1087#1077#1094#1080#1072#1083#1080#1079#1080#1088#1086#1074#1072#1085#1085#1086#1084' '#1087#1086#1076#1074#1080#1078#1085#1086#1084' '#1089#1086#1089 +
         #1090#1072#1074#1077'  '
       TabOrder = 3
-      object ComboBox1: TComboBox
+      object cmbKoef: TComboBox
         Left = 29
         Top = 15
         Width = 614
@@ -310,8 +310,9 @@ object FormTransportation: TFormTransportation
         Enabled = False
         ItemHeight = 30
         TabOrder = 0
-        OnDrawItem = ComboBox1DrawItem
-        OnMeasureItem = ComboBox1MeasureItem
+        OnChange = cmbKoefChange
+        OnDrawItem = cmbKoefDrawItem
+        OnMeasureItem = cmbKoefMeasureItem
         Items.Strings = (
           'xvxv cx vfdsfvvvsddfdsfsdd fsdfddfd vcxv cvxcvxcvxc'
           'cxv cvcxvcxvxcvcvcx cvcxvcxv vcxvxv vxvxcv cxvxccvxcv ccxv'
@@ -339,6 +340,7 @@ object FormTransportation: TFormTransportation
           Width = 13
           Height = 17
           TabOrder = 0
+          OnClick = cbKoefClick
         end
       end
     end
