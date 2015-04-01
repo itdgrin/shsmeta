@@ -22,7 +22,7 @@ type
     dbedtCOEF: TDBEdit;
     dbedtCOEF_ZP: TDBEdit;
     dbedtCOEF_ZP_MACH: TDBEdit;
-    JvDBGrid1: TJvDBGrid;
+    grRates: TJvDBGrid;
     qrZnormativs_detail: TFDQuery;
     dsZnormativs_detail: TDataSource;
     pnl1: TPanel;
@@ -38,18 +38,23 @@ type
     qrTreeDataZNORMATIVS_ID: TFDAutoIncField;
     strngfldTreeDataNUM: TStringField;
     strngfldTreeDataNAME: TStringField;
-    qrTreeDataCOEF: TBCDField;
-    qrTreeDataCOEF_ZP: TBCDField;
-    qrTreeDataCOEF_ZP_MACH: TBCDField;
-    qrTreeDataCOEF_ZP_MACH_MOD: TBCDField;
     qrTreeDataPARENT_ID: TIntegerField;
-    strngfldTreeDataNAME_EX: TStringField;
     strngfldTreeDataNAME_EX_2: TStringField;
     tmr1: TTimer;
-    dbnvgr1: TDBNavigator;
     pm2: TPopupMenu;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
+    grChangeDate: TJvDBGrid;
+    qrZnormChangeDate: TFDQuery;
+    dsZnormChangeDate: TDataSource;
+    qrTreeDataDEL_FLAG: TShortintField;
+    pm3: TPopupMenu;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
+    qrZnormativs_value: TFDQuery;
+    dsZnormativs_value: TDataSource;
+    dbnvgr1: TDBNavigator;
+    chk1: TCheckBox;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
@@ -58,9 +63,14 @@ type
     procedure qrTreeDataCalcFields(DataSet: TDataSet);
     procedure dbedtNUMExit(Sender: TObject);
     procedure tmr1Timer(Sender: TObject);
-    procedure tvEstimatesEnter(Sender: TObject);
-    procedure JvDBGrid1Enter(Sender: TObject);
+    procedure qrTreeDataBeforeDelete(DataSet: TDataSet);
     procedure N2Click(Sender: TObject);
+    procedure MenuItem4Click(Sender: TObject);
+    procedure MenuItem3Click(Sender: TObject);
+    procedure qrTreeDataAfterScroll(DataSet: TDataSet);
+    procedure qrZnormativs_valueNewRecord(DataSet: TDataSet);
+    procedure qrZnormChangeDateBeforeDelete(DataSet: TDataSet);
+    procedure chk1Click(Sender: TObject);
   private
 
   public
@@ -93,6 +103,12 @@ begin
   end;
 end;
 
+procedure TfWinterPrise.chk1Click(Sender: TObject);
+begin
+  qrTreeData.ParamByName('SHOW_DELETED').AsBoolean := chk1.Checked;
+  CloseOpen(qrTreeData);
+end;
+
 procedure TfWinterPrise.dbedtNUMExit(Sender: TObject);
 begin
   if qrTreeData.State in [dsEdit, dsInsert] then
@@ -107,7 +123,8 @@ end;
 procedure TfWinterPrise.FormCreate(Sender: TObject);
 begin
   Kind := kdNone;
-  LoadDBGridSettings(JvDBGrid1);
+  LoadDBGridSettings(grRates);
+  LoadDBGridSettings(grChangeDate);
 end;
 
 procedure TfWinterPrise.FormShow(Sender: TObject);
@@ -124,16 +141,48 @@ begin
   end;
   CloseOpen(qrTreeData);
   CloseOpen(qrZnormativs_detail);
+  CloseOpen(qrZnormChangeDate);
 end;
 
-procedure TfWinterPrise.JvDBGrid1Enter(Sender: TObject);
+procedure TfWinterPrise.MenuItem3Click(Sender: TObject);
 begin
-  dbnvgr1.DataSource := dsZnormativs_detail;
+  qrZnormChangeDate.Insert;
+end;
+
+procedure TfWinterPrise.MenuItem4Click(Sender: TObject);
+begin
+  qrZnormChangeDate.Delete;
 end;
 
 procedure TfWinterPrise.N2Click(Sender: TObject);
 begin
-  dbnvgr1.BtnClick(nbDelete);
+  qrTreeData.Delete;
+end;
+
+procedure TfWinterPrise.qrTreeDataAfterScroll(DataSet: TDataSet);
+begin
+  if not CheckQrActiveEmpty(qrTreeData) or not CheckQrActiveEmpty(qrZnormChangeDate) then
+    Exit;
+
+  qrZnormativs_value.ParamByName('ZNORMATIVS_ID').AsInteger := qrTreeDataZNORMATIVS_ID.Value;
+  qrZnormativs_value.ParamByName('ZNORMATIVS_ONDATE_ID').AsInteger := qrZnormChangeDate.FieldByName('ID')
+    .AsInteger;
+  CloseOpen(qrZnormativs_value);
+end;
+
+procedure TfWinterPrise.qrTreeDataBeforeDelete(DataSet: TDataSet);
+begin
+  case Application.MessageBox('Вы действительно хотите удалить запись?', 'Справочник зимних удороданий',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
+    IDYES:
+      begin
+        qrTreeData.Edit;
+        qrTreeDataDEL_FLAG.Value := 1;
+        qrTreeData.Post;
+      end;
+  end;
+  CloseOpen(qrTreeData);
+  Abort;
 end;
 
 procedure TfWinterPrise.qrTreeDataCalcFields(DataSet: TDataSet);
@@ -141,16 +190,33 @@ begin
   strngfldTreeDataNAME_EX_2.Value := strngfldTreeDataNUM.Value + ' ' + strngfldTreeDataNAME.Value;
 end;
 
+procedure TfWinterPrise.qrZnormativs_valueNewRecord(DataSet: TDataSet);
+begin
+  qrZnormativs_value.FieldByName('ZNORMATIVS_ID').AsInteger := qrTreeDataZNORMATIVS_ID.Value;
+  qrZnormativs_value.FieldByName('ZNORMATIVS_ONDATE_ID').AsInteger := qrZnormChangeDate.FieldByName('ID')
+    .AsInteger;
+end;
+
+procedure TfWinterPrise.qrZnormChangeDateBeforeDelete(DataSet: TDataSet);
+begin
+  case Application.MessageBox('Вы действительно хотите удалить запись?', 'Справочник зимних удороданий',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
+    IDYES:
+      begin
+        qrZnormChangeDate.Edit;
+        qrZnormChangeDate.FieldByName('DEL_FLAG').AsInteger := 1;
+        qrZnormChangeDate.Post;
+      end;
+  end;
+  CloseOpen(qrZnormChangeDate);
+  Abort;
+end;
+
 procedure TfWinterPrise.tmr1Timer(Sender: TObject);
 begin
   // Временное решение
   if qrTreeData.State in [dsEdit, dsInsert] then
     qrTreeData.Post;
-end;
-
-procedure TfWinterPrise.tvEstimatesEnter(Sender: TObject);
-begin
-  dbnvgr1.DataSource := dsTreeData;
 end;
 
 end.
