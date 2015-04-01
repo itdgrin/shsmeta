@@ -209,7 +209,7 @@ type
     procedure FormShowEvent1(Sender: TObject);
     procedure FormShowEvent2(Sender: TObject);
   public
-    procedure AutoWidthColumn(SG: TStringGrid; Nom: integer);
+
   end;
 
   TProgramSettings = record
@@ -1521,37 +1521,6 @@ begin
   end;
 
   ShellExecute(Handle, nil, PChar(Path), nil, nil, SW_RESTORE);
-end;
-
-procedure TFormMain.AutoWidthColumn(SG: TStringGrid; Nom: integer);
-var
-  i: integer;
-  CalcWidth: integer;
-  ColNotVisible: integer;
-begin
-  ColNotVisible := 0;
-
-  with SG do
-  begin
-    CalcWidth := Width;
-
-    for i := 0 to ColCount - 1 do
-    begin
-      if (i <> Nom) and (ColWidths[i] <> -1) then
-        CalcWidth := CalcWidth - ColWidths[i];
-      if ColWidths[i] = -1 then
-        Inc(ColNotVisible);
-    end;
-
-    CalcWidth := CalcWidth - 5;
-
-    if VisibleRowCount < (RowCount - 1) then
-      CalcWidth := CalcWidth - GetSystemMetrics(SM_CXVSCROLL) - 1;
-
-    CalcWidth := CalcWidth - (ColCount - ColNotVisible - 1);
-
-    ColWidths[Nom] := CalcWidth;
-  end;
 end;
 
 end.
