@@ -267,7 +267,7 @@ object fWinterPrice: TfWinterPrice
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     UpdateOptions.AssignedValues = [uvRefreshMode]
-    UpdateOptions.UpdateTableName = 'smeta.znormativs_ex'
+    UpdateOptions.UpdateTableName = 'smeta.znormativs'
     UpdateOptions.KeyFields = 'ZNORMATIVS_ID'
     SQL.Strings = (
       'SELECT '
@@ -327,8 +327,8 @@ object fWinterPrice: TfWinterPrice
   end
   object dsTreeData: TDataSource
     DataSet = qrTreeData
-    Left = 48
-    Top = 34
+    Left = 32
+    Top = 66
   end
   object qrZnormativs_detail: TFDQuery
     BeforeDelete = qrZnormativs_detailBeforeDelete
@@ -342,7 +342,7 @@ object fWinterPrice: TfWinterPrice
       'select * from znormativs_detail'
       'WHERE `ZNORMATIVS_ID`=:ZNORMATIVS_ID')
     Left = 609
-    Top = 194
+    Top = 186
     ParamData = <
       item
         Name = 'ZNORMATIVS_ID'
@@ -353,12 +353,12 @@ object fWinterPrice: TfWinterPrice
   end
   object dsZnormativs_detail: TDataSource
     DataSet = qrZnormativs_detail
-    Left = 624
-    Top = 210
+    Left = 610
+    Top = 226
   end
   object pmZnormativ: TPopupMenu
-    Left = 56
-    Top = 48
+    Left = 32
+    Top = 112
     object mAddZnormativ: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     end
@@ -369,12 +369,12 @@ object fWinterPrice: TfWinterPrice
   end
   object tmr1: TTimer
     OnTimer = tmr1Timer
-    Left = 72
-    Top = 64
+    Left = 32
+    Top = 160
   end
   object pmZnormativDetail: TPopupMenu
-    Left = 640
-    Top = 224
+    Left = 611
+    Top = 271
     object mAddZnormativDetail: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       OnClick = mAddZnormativDetailClick
@@ -401,12 +401,12 @@ object fWinterPrice: TfWinterPrice
   end
   object dsZnormChangeDate: TDataSource
     DataSet = qrZnormChangeDate
-    Left = 616
-    Top = 18
+    Left = 632
+    Top = 2
   end
   object pmZnormativOnDate: TPopupMenu
-    Left = 632
-    Top = 32
+    Left = 602
+    Top = 48
     object MenuItem3: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       OnClick = MenuItem3Click
@@ -437,7 +437,7 @@ object fWinterPrice: TfWinterPrice
         'WHERE `ZNORMATIVS_ID`=:ZNORMATIVS_ID AND `ZNORMATIVS_ONDATE_ID`=' +
         ':ZNORMATIVS_ONDATE_ID')
     Left = 609
-    Top = 98
+    Top = 114
     ParamData = <
       item
         Name = 'ZNORMATIVS_ID'
@@ -455,6 +455,6 @@ object fWinterPrice: TfWinterPrice
   object dsZnormativs_value: TDataSource
     DataSet = qrZnormativs_value
     Left = 648
-    Top = 98
+    Top = 114
   end
 end
