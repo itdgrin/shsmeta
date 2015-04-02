@@ -49,12 +49,13 @@ type
     dsZnormChangeDate: TDataSource;
     qrTreeDataDEL_FLAG: TShortintField;
     pmZnormativOnDate: TPopupMenu;
-    MenuItem3: TMenuItem;
-    MenuItem4: TMenuItem;
+    mAddDate: TMenuItem;
+    mDelDate: TMenuItem;
     qrZnormativs_value: TFDQuery;
     dsZnormativs_value: TDataSource;
     dbnvgr1: TDBNavigator;
-    chk1: TCheckBox;
+    chkShowDeleted: TCheckBox;
+    mRepair: TMenuItem;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
@@ -65,12 +66,12 @@ type
     procedure tmr1Timer(Sender: TObject);
     procedure qrTreeDataBeforeDelete(DataSet: TDataSet);
     procedure mDelZnormativClick(Sender: TObject);
-    procedure MenuItem4Click(Sender: TObject);
-    procedure MenuItem3Click(Sender: TObject);
+    procedure mDelDateClick(Sender: TObject);
+    procedure mAddDateClick(Sender: TObject);
     procedure qrTreeDataAfterScroll(DataSet: TDataSet);
     procedure qrZnormativs_valueNewRecord(DataSet: TDataSet);
     procedure qrZnormChangeDateBeforeDelete(DataSet: TDataSet);
-    procedure chk1Click(Sender: TObject);
+    procedure chkShowDeletedClick(Sender: TObject);
     procedure mAddZnormativDetailClick(Sender: TObject);
     procedure qrZnormativs_detailNewRecord(DataSet: TDataSet);
     procedure mDelZnormativDetailClick(Sender: TObject);
@@ -107,9 +108,9 @@ begin
   end;
 end;
 
-procedure TfWinterPrice.chk1Click(Sender: TObject);
+procedure TfWinterPrice.chkShowDeletedClick(Sender: TObject);
 begin
-  qrTreeData.ParamByName('SHOW_DELETED').AsBoolean := chk1.Checked;
+  qrTreeData.ParamByName('SHOW_DELETED').AsBoolean := chkShowDeleted.Checked;
   CloseOpen(qrTreeData);
 end;
 
@@ -135,25 +136,21 @@ procedure TfWinterPrice.FormShow(Sender: TObject);
 begin
   case Kind of
     kdSelect:
-      begin
-        btnSelect.Visible := True;
-      end;
+      btnSelect.Visible := True;
   else
-    begin
-      btnSelect.Visible := False;
-    end;
+    btnSelect.Visible := False;
   end;
   CloseOpen(qrTreeData);
   CloseOpen(qrZnormativs_detail);
   CloseOpen(qrZnormChangeDate);
 end;
 
-procedure TfWinterPrice.MenuItem3Click(Sender: TObject);
+procedure TfWinterPrice.mAddDateClick(Sender: TObject);
 begin
   qrZnormChangeDate.Insert;
 end;
 
-procedure TfWinterPrice.MenuItem4Click(Sender: TObject);
+procedure TfWinterPrice.mDelDateClick(Sender: TObject);
 begin
   qrZnormChangeDate.Delete;
 end;

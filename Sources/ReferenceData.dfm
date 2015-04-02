@@ -67,15 +67,6 @@ object FormReferenceData: TFormReferenceData
       Caption = #1054#1061#1056' '#1080' '#1054#1055#1056
       OnClick = SpeedButtonClick
     end
-    object SpeedButtonWinterPrices: TSpeedButton
-      Left = 606
-      Top = 1
-      Width = 120
-      Height = 25
-      GroupIndex = 1
-      Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
-      OnClick = SpeedButtonClick
-    end
     object SpeedButtonRates: TSpeedButton
       Left = 1
       Top = 1
@@ -87,7 +78,7 @@ object FormReferenceData: TFormReferenceData
       OnClick = SpeedButtonClick
     end
     object SpeedButtonSSR: TSpeedButton
-      Left = 727
+      Left = 606
       Top = 1
       Width = 120
       Height = 25
@@ -96,7 +87,7 @@ object FormReferenceData: TFormReferenceData
       OnClick = SpeedButtonClick
     end
     object SpeedButtonAlgorithmsCalculation: TSpeedButton
-      Left = 848
+      Left = 727
       Top = 1
       Width = 120
       Height = 25
