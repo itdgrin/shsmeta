@@ -51,7 +51,6 @@ uses
   fFramePriceMechanizms in 'fFramePriceMechanizms.pas' {FramePriceMechanizm: TFrame},
   fFramePriceDumps in 'fFramePriceDumps.pas' {FramePriceDumps: TFrame},
   fFramePriceTransportations in 'fFramePriceTransportations.pas' {FramePriceTransportations: TFrame},
-  fFrameWinterPrice in 'fFrameWinterPrice.pas' {FrameWinterPrice: TFrame},
   fFrameRates in 'fFrameRates.pas' {FrameRates: TFrame},
   fFrameSSR in 'fFrameSSR.pas' {FrameSSR: TFrame},
   TariffsTransportanion in 'TariffsTransportanion.pas' {FormTariffsTransportation},

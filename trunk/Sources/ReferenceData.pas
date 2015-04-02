@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, Vcl.Dialogs,
   fFrameRates, fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments,
-  fFrameOXROPR, fFrameWinterPrice, fFrameSSR, fFrameSmeta;
+  fFrameOXROPR, fFrameSSR, fFrameSmeta;
 
 type
   TFormReferenceData = class(TForm)
@@ -17,7 +17,6 @@ type
     SpeedButtonMechanizms: TSpeedButton;
     SpeedButtonEquipments: TSpeedButton;
     SpeedButtonOXROPR: TSpeedButton;
-    SpeedButtonWinterPrices: TSpeedButton;
     SpeedButtonSSR: TSpeedButton;
     SpeedButtonAlgorithmsCalculation: TSpeedButton;
 
@@ -45,7 +44,6 @@ type
     FramePriceMechanizms: TFramePriceMechanizm;
     FrameEquipments: TFrameEquipment;
     FrameOXROPR: TFrameOXROPR;
-    FrameWinterPrices: TFrameWinterPrice;
     FrameSSR: TFrameSSR;
   end;
 
@@ -136,12 +134,6 @@ begin
   FrameOXROPR.Visible := False;
   SpeedButtonOXROPR.Tag := Integer(FrameOXROPR);
 
-  FrameWinterPrices := TFrameWinterPrice.Create(Self);
-  FrameWinterPrices.Parent := Self;
-  FrameWinterPrices.Align := alClient;
-  FrameWinterPrices.Visible := False;
-  SpeedButtonWinterPrices.Tag := Integer(FrameWinterPrices);
-
   FrameSSR := TFrameSSR.Create(Self);
   FrameSSR.Parent := Self;
   FrameSSR.Align := alClient;
@@ -192,7 +184,6 @@ begin
   FramePriceMechanizms.Visible := False;
   FrameEquipments.Visible := False;
   FrameOXROPR.Visible := False;
-  FrameWinterPrices.Visible := False;
   FrameSSR.Visible := False;
 end;
 

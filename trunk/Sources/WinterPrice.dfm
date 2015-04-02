@@ -249,7 +249,7 @@ object fWinterPrice: TfWinterPrice
         Visible = True
       end>
   end
-  object chk1: TCheckBox
+  object chkShowDeleted: TCheckBox
     Left = 416
     Top = 8
     Width = 179
@@ -257,7 +257,7 @@ object fWinterPrice: TfWinterPrice
     Anchors = [akTop, akRight]
     Caption = #1087#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1079#1072#1087#1080#1089#1080
     TabOrder = 1
-    OnClick = chk1Click
+    OnClick = chkShowDeletedClick
   end
   object qrTreeData: TFDQuery
     BeforeDelete = qrTreeDataBeforeDelete
@@ -359,6 +359,10 @@ object fWinterPrice: TfWinterPrice
   object pmZnormativ: TPopupMenu
     Left = 32
     Top = 112
+    object mRepair: TMenuItem
+      Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      Enabled = False
+    end
     object mAddZnormativ: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     end
@@ -407,13 +411,13 @@ object fWinterPrice: TfWinterPrice
   object pmZnormativOnDate: TPopupMenu
     Left = 602
     Top = 48
-    object MenuItem3: TMenuItem
+    object mAddDate: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
-      OnClick = MenuItem3Click
+      OnClick = mAddDateClick
     end
-    object MenuItem4: TMenuItem
+    object mDelDate: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
-      OnClick = MenuItem4Click
+      OnClick = mDelDateClick
     end
   end
   object qrZnormativs_value: TFDQuery
