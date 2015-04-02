@@ -456,13 +456,12 @@ type
     grRatesEx: TJvDBGrid;
     qrMechanizmTITLE: TIntegerField;
     qrTranspKOEF: TFloatField;
-    qrRatesExSORT_ID: TVarBytesField;
     qrRatesExINCITERATOR: TIntegerField;
     qrRatesExITERATOR: TIntegerField;
-    strngfldRatesExOBJ_CODE: TStringField;
-    strngfldRatesExOBJ_NAME: TStringField;
+    qrRatesExOBJ_CODE: TStringField;
+    qrRatesExOBJ_NAME: TStringField;
     qrRatesExOBJ_COUNT: TFloatField;
-    strngfldRatesExOBJ_UNIT: TStringField;
+    qrRatesExOBJ_UNIT: TStringField;
     qrRatesExID_TYPE_DATA: TIntegerField;
     qrRatesExDATA_ESTIMATE_OR_ACT_ID: TIntegerField;
     qrRatesExID_TABLES: TIntegerField;
@@ -474,6 +473,7 @@ type
     qrTypeData: TFDQuery;
     dsTypeData: TDataSource;
     qrRatesExID_RATE: TIntegerField;
+    qrRatesExSORT_ID: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -1472,7 +1472,7 @@ var
   FirstChar: Char;
   Path: String;
 begin
-  NumberNormativ := qrRates.FieldByName('CODE').AsString;
+  NumberNormativ := qrRatesex.FieldByName('CODE').AsString;
 
   // В условии - русские символы, в переменной NumberNormativ - английские
   if (NumberNormativ > 'Е121-1-1') and (NumberNormativ < 'Е121-137-1') then
