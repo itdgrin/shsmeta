@@ -427,7 +427,7 @@
     Height = 324
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 7
+    TabOrder = 6
     object ImageSplitterBottom: TImage
       Left = 200
       Top = 365
@@ -2756,7 +2756,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSummaryCalculations'
     ParentBackground = False
-    TabOrder = 5
+    TabOrder = 4
     inline frSummaryCalculations: TfrCalculationEstimateSummaryCalculations
       Left = 0
       Top = 0
@@ -3091,7 +3091,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSSR'
     ParentBackground = False
-    TabOrder = 6
+    TabOrder = 5
     inline frSSR: TfrCalculationEstimateSSR
       Left = 0
       Top = 0
@@ -5211,13 +5211,6 @@
         ParamType = ptInput
         Value = 344
       end>
-    object qrRatesExSORT_ID: TVarBytesField
-      AutoGenerateValue = arDefault
-      FieldName = 'SORT_ID'
-      Origin = 'SORT_ID'
-      ProviderFlags = []
-      Size = 55
-    end
     object qrRatesExINCITERATOR: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'INCITERATOR'
@@ -5230,7 +5223,7 @@
       Origin = 'ITERATOR'
       ProviderFlags = []
     end
-    object strngfldRatesExOBJ_CODE: TStringField
+    object qrRatesExOBJ_CODE: TStringField
       AutoGenerateValue = arDefault
       FieldName = 'OBJ_CODE'
       Origin = 'OBJ_CODE'
@@ -5238,7 +5231,7 @@
       OnChange = qrRatesCODEChange
       Size = 151
     end
-    object strngfldRatesExOBJ_NAME: TStringField
+    object qrRatesExOBJ_NAME: TStringField
       AutoGenerateValue = arDefault
       FieldName = 'OBJ_NAME'
       Origin = 'OBJ_NAME'
@@ -5252,7 +5245,7 @@
       ProviderFlags = []
       OnChange = qrRatesCOUNTChange
     end
-    object strngfldRatesExOBJ_UNIT: TStringField
+    object qrRatesExOBJ_UNIT: TStringField
       AutoGenerateValue = arDefault
       FieldName = 'OBJ_UNIT'
       Origin = 'OBJ_UNIT'
@@ -5307,6 +5300,13 @@
       FieldName = 'ID_RATE'
       Origin = 'ID_RATE'
       ProviderFlags = []
+    end
+    object qrRatesExSORT_ID: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'SORT_ID'
+      Origin = 'SORT_ID'
+      ProviderFlags = []
+      Size = 52
     end
   end
   object dsRatesEx: TDataSource
