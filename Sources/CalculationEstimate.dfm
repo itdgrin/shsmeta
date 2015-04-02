@@ -5302,6 +5302,12 @@
       Origin = 'APPLY_WINTERPRISE_FLAG'
       ProviderFlags = []
     end
+    object qrRatesExID_RATE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_RATE'
+      Origin = 'ID_RATE'
+      ProviderFlags = []
+    end
   end
   object dsRatesEx: TDataSource
     DataSet = qrRatesEx
