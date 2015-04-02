@@ -79,7 +79,6 @@ type
     SplitterCenter: TSplitter;
     PanelTopClient: TPanel;
     Label2: TLabel;
-    ComboBoxTypeData: TComboBox;
     Edit1: TEdit;
     Edit2: TEdit;
     PanelClientLeft: TPanel;
@@ -396,7 +395,6 @@ type
     qrDumpWORK_COUNT: TFloatField;
     qrDumpWORK_YDW: TFloatField;
     dbgrdDescription: TJvDBGrid;
-    dbgrdRates: TJvDBGrid;
     qrRatesTRID: TIntegerField;
     btnTransp: TSpeedButton;
     btnStartup: TSpeedButton;
@@ -455,9 +453,26 @@ type
     qrMechanizmREPLACED: TByteField;
     qrRatesEx: TFDQuery;
     dsRatesEx: TDataSource;
-    JvDBGrid1: TJvDBGrid;
+    grRatesEx: TJvDBGrid;
     qrMechanizmTITLE: TIntegerField;
     qrTranspKOEF: TFloatField;
+    qrRatesExSORT_ID: TVarBytesField;
+    qrRatesExINCITERATOR: TIntegerField;
+    qrRatesExITERATOR: TIntegerField;
+    strngfldRatesExOBJ_CODE: TStringField;
+    strngfldRatesExOBJ_NAME: TStringField;
+    qrRatesExOBJ_COUNT: TFloatField;
+    strngfldRatesExOBJ_UNIT: TStringField;
+    qrRatesExID_TYPE_DATA: TIntegerField;
+    qrRatesExDATA_ESTIMATE_OR_ACT_ID: TIntegerField;
+    qrRatesExID_TABLES: TIntegerField;
+    qrRatesExSM_ID: TIntegerField;
+    qrRatesExWORK_ID: TIntegerField;
+    qrRatesExZNORMATIVS_ID: TIntegerField;
+    qrRatesExAPPLY_WINTERPRISE_FLAG: TShortintField;
+    dblkcbbID_TYPE_DATA: TDBLookupComboBox;
+    qrTypeData: TFDQuery;
+    dsTypeData: TDataSource;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -638,9 +653,12 @@ type
     procedure nWinterPriseSetDefaultClick(Sender: TObject);
     procedure PopupMenuRatesAdd352Click(Sender: TObject);
     procedure PMMechDeleteClick(Sender: TObject);
-  private
-    const CaptionButton = 'Расчёт сметы';
-    const HintButton = 'Окно расчёта сметы';
+    procedure qrRatesExAfterOpen(DataSet: TDataSet);
+  private const
+    CaptionButton = 'Расчёт сметы';
+
+  const
+    HintButton = 'Окно расчёта сметы';
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -659,9 +677,7 @@ type
     CountFromRate: Double;
 
     // Флаги пересчета по правым таблицам, исключает зацикливание в обработчиках ОnChange;
-    ReCalcMech,
-    ReCalcMat,
-    ReCalcDev: Boolean;
+    ReCalcMech, ReCalcMat, ReCalcDev: Boolean;
     // ID замененного материала который надо подсветить
     IdReplasedMat: Integer;
     // ID заменяющего материала который надо подсветить
@@ -758,7 +774,7 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
   CalculationDump, SaveEstimate,
   AdditionData, CardMaterial, CardDataEstimate,
   ListCollections, CoefficientOrders, KC6,
-  CardAct, Tools, Coef, WinterPrise,
+  CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech;
 
 {$R *.dfm}
@@ -906,7 +922,6 @@ begin
   PanelTableBottom.Height := 110 + PanelBottom.Height;
 
   // Установка стиля DBGrid таблицы
-  LoadDBGridSettings(dbgrdRates);
   LoadDBGridSettings(dbgrdMaterial);
   LoadDBGridSettings(dbgrdMechanizm);
   LoadDBGridSettings(dbgrdDevices);
@@ -915,7 +930,7 @@ begin
   LoadDBGridSettings(dbgrdTransp);
   LoadDBGridSettings(dbgrdStartup);
   LoadDBGridSettings(dbgrdCalculations);
-  LoadDBGridSettings(JvDBGrid1);
+  LoadDBGridSettings(grRatesEx);
 
   if not Act then
     FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
@@ -925,7 +940,7 @@ procedure TFormCalculationEstimate.FormShow(Sender: TObject);
 begin
   SettingVisibleRightTables;
 
-  dbgrdRates.SetFocus;
+  grRatesEx.SetFocus;
 
   FormMain.TimerCover.Enabled := True;
   // Запускаем таймер который скроет панель после отображения формы
@@ -966,8 +981,8 @@ begin
       vkEqual:
         begin
           // Если пытамся ввести формулу в таблицу слева
-          if CheckQrActiveEmpty(qrRates) and (ActiveControl = dbgrdRates) and
-            (dbgrdRates.SelectedField = qrRatesCOUNT) then
+          if CheckQrActiveEmpty(qrRates) and (ActiveControl = grRatesEx) and
+            (grRatesEx.SelectedField = qrRatesCOUNT) then
           begin
             res := ShowEditExpression;
             if VarIsNull(res) then
@@ -1294,16 +1309,14 @@ begin
       Tag := 0;
       Color := clRed;
       Caption := 'Расчёты запрещены';
-      FormCalculationEstimate.Caption := CaptionButton +
-        ' - Запрещено редактирование документа';
+      FormCalculationEstimate.Caption := CaptionButton + ' - Запрещено редактирование документа';
     end
     else
     begin
       Tag := 1;
       Color := clLime;
       Caption := 'Расчёты разрешены';
-      FormCalculationEstimate.Caption := CaptionButton +
-        ' - Разрешено редактирование документа';
+      FormCalculationEstimate.Caption := CaptionButton + ' - Разрешено редактирование документа';
     end;
 end;
 
@@ -1638,8 +1651,7 @@ end;
 function TFormCalculationEstimate.CheckMechReadOnly: Boolean;
 begin
   Result := False;
-  if ((qrMechanizmFROM_RATE.AsInteger = 1) and
-    not(qrRatesMEID.AsInteger > 0)) or
+  if ((qrMechanizmFROM_RATE.AsInteger = 1) and not(qrRatesMEID.AsInteger > 0)) or
     (qrMechanizmREPLACED.AsInteger = 1) then
     Result := True;
 end;
@@ -1741,7 +1753,7 @@ begin
     end;
 
     SetMatReadOnly(CheckMatReadOnly);
-    dbgrdRates.Repaint;
+    grRatesEx.Repaint;
 
     flag := False;
 
@@ -1894,7 +1906,7 @@ begin
     end;
 
     SetMechReadOnly(CheckMechReadOnly);
-    dbgrdRates.Repaint;
+    grRatesEx.Repaint;
 
     flag := False;
 
@@ -1908,7 +1920,7 @@ begin
       MemoRight.Text := qrMechanizmMECH_NAME.AsString;
 
     // Для красоты отрисовки
-    if(IdReplasedMech > 0) or flag then
+    if (IdReplasedMech > 0) or flag then
       dbgrdMechanizm.Repaint;
   end;
 end;
@@ -2018,8 +2030,8 @@ begin
           'COAST_NDS = :COAST_NDS, FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
           'FCOAST_NDS = :FCOAST_NDS, ZP_MACH_NO_NDS = :ZP_MACH_NO_NDS, ' +
           'ZP_MACH_NDS = :ZP_MACH_NDS, FZP_MACH_NO_NDS = :FZP_MACH_NO_NDS, ' +
-          'FZP_MACH_NDS = :FZP_MACH_NDS, PROC_ZAC = :PROC_ZAC, ' +
-          'PROC_PODR = :PROC_PODR, ' + CField + ' = :AA' + CField + ' WHERE id = :id;');
+          'FZP_MACH_NDS = :FZP_MACH_NDS, PROC_ZAC = :PROC_ZAC, ' + 'PROC_PODR = :PROC_PODR, ' + CField +
+          ' = :AA' + CField + ' WHERE id = :id;');
         ParamByName('COAST_NO_NDS').Value := qrMechanizmCOAST_NO_NDS.Value;
         ParamByName('COAST_NDS').Value := qrMechanizmCOAST_NDS.Value;
         ParamByName('FCOAST_NO_NDS').Value := qrMechanizmFCOAST_NO_NDS.Value;
@@ -2232,7 +2244,7 @@ var
   NewID: Integer;
 begin
   NewCode := AnsiUpperCase(qrRatesCODE.AsString);
-  dbgrdRates.EditorMode := False;
+  grRatesEx.EditorMode := False;
   NewID := 0;
 
   // Замена литинских на кирилические
@@ -2262,7 +2274,7 @@ begin
     end;
 
     AddRate(NewID);
-    dbgrdRates.EditorMode := True;
+    grRatesEx.EditorMode := True;
     Exit;
   end;
 
@@ -2287,7 +2299,7 @@ begin
     end;
 
     AddMaterial(NewID);
-    dbgrdRates.EditorMode := True;
+    grRatesEx.EditorMode := True;
     Exit;
   end;
   if (NewCode[1] = 'М') or (NewCode[1] = 'M') or (NewCode[1] = 'V') then // M кирилическая и латинская
@@ -2311,7 +2323,7 @@ begin
     end;
 
     AddMechanizm(NewID);
-    dbgrdRates.EditorMode := True;
+    grRatesEx.EditorMode := True;
     Exit;
   end;
 
@@ -2332,7 +2344,7 @@ begin
       Exit;
     end;
     AddDevice(NewID);
-    dbgrdRates.EditorMode := True;
+    grRatesEx.EditorMode := True;
     Exit;
   end;
 
@@ -2452,11 +2464,38 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.qrRatesExAfterOpen(DataSet: TDataSet);
+var
+  NumPP: Integer;
+begin
+  if not CheckQrActiveEmpty(qrRatesEx) then
+    Exit;
+  // Устанавливаем №пп
+  qrRatesEx.DisableControls;
+  NumPP := 0;
+  try
+    qrRatesEx.First;
+    while not qrRatesEx.Eof do
+    begin
+      NumPP := NumPP + qrRatesEx.FieldByName('INCITERATOR').AsInteger;
+      qrRatesEx.Edit;
+      if qrRatesEx.FieldByName('ID_TYPE_DATA').AsInteger < 0 then
+        qrRatesEx.FieldByName('ITERATOR').Value := null
+      else
+        qrRatesEx.FieldByName('ITERATOR').AsInteger := NumPP;
+      qrRatesEx.Next;
+    end;
+  finally
+    qrRatesEx.First; // исправить на SORD_ID
+    qrRatesEx.EnableControls;
+  end;
+end;
+
 procedure TFormCalculationEstimate.qrRatesWORK_IDChange(Sender: TField);
 begin
   qrTemp.SQL.Text := 'UPDATE card_rate_temp SET WORK_ID = :p1 WHERE ID = :p2';
-  qrTemp.ParamByName('p1').AsInteger := qrRatesWORK_ID.Value;
-  qrTemp.ParamByName('p2').AsInteger := qrRatesOWNER_ID.Value;
+  qrTemp.ParamByName('p1').AsInteger := qrRatesExWORK_ID.Value;
+  qrTemp.ParamByName('p2').AsInteger := qrRatesExID_TABLES.Value;
   qrTemp.ExecSQL;
   CloseOpen(qrCalculations);
 end;
@@ -2627,14 +2666,14 @@ end;
 
 procedure TFormCalculationEstimate.nSelectWinterPriseClick(Sender: TObject);
 begin
-  fWinterPrise.Kind := kdSelect;
-  if (fWinterPrise.ShowModal = mrOk) and (fWinterPrise.OutValue <> 0) then
+  fWinterPrice.Kind := kdSelect;
+  if (fWinterPrice.ShowModal = mrOk) and (fWinterPrice.OutValue <> 0) then
   begin
     qrTemp.SQL.Text := 'UPDATE card_rate_temp SET ZNORMATIVS_ID=:ZNORMATIVS_ID WHERE ID=:ID';
-    qrTemp.ParamByName('ZNORMATIVS_ID').AsInteger := fWinterPrise.OutValue;
+    qrTemp.ParamByName('ZNORMATIVS_ID').AsInteger := fWinterPrice.OutValue;
     qrTemp.ParamByName('ID').AsInteger := qrRatesOWNER_ID.AsInteger;
     qrTemp.ExecSQL;
-    qrRatesZNORMATIVS_ID.Value := fWinterPrise.OutValue;
+    qrRatesZNORMATIVS_ID.Value := fWinterPrice.OutValue;
     FillingWinterPrice('');
     CloseOpen(qrCalculations);
   end;
@@ -2982,19 +3021,8 @@ end;
 
 procedure TFormCalculationEstimate.GridRatesRowSellect;
 var
-  { i: Integer;
-    vIdNormativ: string; }
-  { VAT, vClass, Distance, More, Mass, IdDump, Count: Integer; }
-  { TwoValuesSalary, TwoValuesEMiM: TTwoValues; }
   CalcPrice: string[2];
-  // BtnChange: Boolean; // Признак изменения выбраной кнопки
 begin
-  // Изменение типа данных в выпадающем списке
-  if qrRatesTYPE_DATA.AsInteger > 0 then
-    ComboBoxTypeData.ItemIndex := qrRatesTYPE_DATA.AsInteger - 1
-  else
-    ComboBoxTypeData.ItemIndex := -1;
-
   // Средний разряд рабочих-строителей
   EditCategory.Text := '';
   EditWinterPrice.Text := '';
@@ -3060,11 +3088,6 @@ begin
         // Средний разряд рабочих-строителей
         if CheckMatINRates then
           EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
-        // Разраты труда рабочих-строителей
-        // qrCalculations.ParamByName('trud_two').AsFloat :=
-        // GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger));
-        // R StringGridCalculations.Cells[11, CountCoef + 2] :=
-        // R   MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
 
         EditCategory.Text := MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
 
@@ -3231,12 +3254,10 @@ begin
     and (qrMaterialTITLE.AsInteger = 0) // не загоровок
     and (qrMaterialID_REPLACED.AsInteger = 0); // не заменяющуй
 
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and
-    (not CheckMatUnAccountingMatirials) and
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (not CheckMatUnAccountingMatirials) and
     (qrMaterialFROM_RATE.AsInteger = 0);
 
-  PMMatDelete.Enabled := (qrMaterialID_REPLACED.AsInteger > 0) and
-    (qrMaterialFROM_RATE.AsInteger = 0);
+  PMMatDelete.Enabled := (qrMaterialID_REPLACED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0);
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -3244,16 +3265,13 @@ procedure TFormCalculationEstimate.PopupMenuMechanizmsPopup(Sender: TObject);
 begin
   PMMechEdit.Enabled := not CheckMechReadOnly;
 
-  PMMechFromRates.Enabled := (not CheckMechReadOnly) and
-    (qrRatesMEID.AsInteger = 0) and
+  PMMechFromRates.Enabled := (not CheckMechReadOnly) and (qrRatesMEID.AsInteger = 0) and
     (qrMechanizmREPLACED.AsInteger = 0);
 
-  PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) and
-    (qrMechanizmID_REPLACED.AsInteger = 0) and
+  PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) and (qrMechanizmID_REPLACED.AsInteger = 0) and
     (qrRatesMEID.AsInteger = 0); // не заменяющуй
 
-  PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0) and
-    (qrMechanizmFROM_RATE.AsInteger = 0);
+  PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0);
 end;
 
 procedure TFormCalculationEstimate.PopupMenuRatesAdd352Click(Sender: TObject);
@@ -3932,7 +3950,7 @@ begin
       SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 1;');
       Active := True;
 
-      if FieldByName('norma').Value <> Null then
+      if FieldByName('norma').Value <> null then
         Result := FieldByName('norma').AsFloat;
     end;
   except
@@ -3954,7 +3972,7 @@ begin
       SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 2;');
       Active := True;
 
-      if FieldByName('norma').AsVariant <> Null then
+      if FieldByName('norma').AsVariant <> null then
         Result := FieldByName('norma').AsVariant;
     end;
   except
@@ -3976,7 +3994,7 @@ begin
       SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 3;');
       Active := True;
 
-      if FieldByName('norma').AsVariant <> Null then
+      if FieldByName('norma').AsVariant <> null then
         Result := FieldByName('norma').AsVariant;
     end;
   except
@@ -3989,15 +4007,12 @@ end;
 function TFormCalculationEstimate.CalculationSalary(const vIdNormativ: string): TTwoValues;
 var
   TZ, TZ1: Double;
-  { CountMaterial: Integer; }
   Count: Double;
-  { i: Integer; }
   MRCoef: Double;
   IdRegion: Integer;
   RateWorker: Double;
   TW: TTwoValues;
   StrQuery: string;
-  { Key: Integer; }
 begin
   try
     // Количество из ЛЕВОЙ таблицы
@@ -4006,24 +4021,6 @@ begin
     TZ := GetWorkCostBuilders(vIdNormativ) * Count;
     // Затраты труда рабочий * количество
     TZ1 := GetWorkCostBuilders(vIdNormativ); // Затраты труда рабочий * 1
-
-    // Умножение на столбец коэффициентов (ЗП)
-    { key := qrCalculations.RecNo;
-      qrCalculations.DisableControls;
-      try
-      qrCalculations.First;
-      for i := 1 to GetCountCoef + 1 do
-      begin
-      TZ := TZ * qrCalculations.FieldByName('ZP').AsFloat;
-      TZ1 := TZ1 * qrCalculations.FieldByName('ZP').AsFloat;
-      qrCalculations.Next;
-      end;
-      finally
-      qrCalculations.RecNo := key;
-      qrCalculations.EnableControls;
-      end; }
-
-    // -----------------------------------------
 
     EditCategory.Text := MyFloatToStr(GetRankBuilders(vIdNormativ));
 
@@ -4107,7 +4104,7 @@ begin
         + vIdMechanizm + ';');
       Active := True;
 
-      if FieldByName('norm_ras').AsVariant <> Null then
+      if FieldByName('norm_ras').AsVariant <> null then
         Result := MyStrToFloat(FieldByName('norm_ras').AsString)
     end;
   except
@@ -4130,7 +4127,7 @@ begin
         + vIdMechanizm + ';');
       Active := True;
 
-      if FieldByName('norm_ras').AsVariant <> Null then
+      if FieldByName('norm_ras').AsVariant <> null then
         Result := MyStrToFloat(FieldByName('norm_ras').AsString)
     end;
   except
@@ -4379,8 +4376,8 @@ begin
       begin
         Active := False;
         SQL.Clear;
-        SQL.Add('SELECT znormativs_ex.ZNORMATIVS_ID, num as "Number", name as "Name" ' +
-          'FROM znormativs_ex WHERE znormativs_ex.ZNORMATIVS_ID=:ZNORMATIVS_ID LIMIT 1;');
+        SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name" ' +
+          'FROM znormativs WHERE znormativs.ZNORMATIVS_ID=:ZNORMATIVS_ID LIMIT 1;');
         ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesZNORMATIVS_ID.AsInteger;
         Active := True;
         EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
@@ -4388,10 +4385,11 @@ begin
     else
       with qrTemp do
       begin
+        // TODO Добавить условие по новым таблицам с датами!!!!
         Active := False;
         SQL.Clear;
-        SQL.Add('SELECT znormativs_ex.ZNORMATIVS_ID, num as "Number", name as "Name", coef as "Coef", coef_zp as "CoefZP", s as "From", po as "On" '
-          + 'FROM znormativs_ex, znormativs_detail WHERE znormativs_ex.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID;');
+        SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name", coef as "Coef", coef_zp as "CoefZP", s as "From", po as "On" '
+          + 'FROM znormativs, znormativs_detail WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID;');
         Active := True;
         First;
         while not Eof do
@@ -4519,7 +4517,7 @@ begin
 
       Active := True;
 
-      if FieldByName('Salary').AsVariant <> Null then
+      if FieldByName('Salary').AsVariant <> null then
         Result := FieldByName('Salary').AsVariant;
 
       Active := False;
@@ -4547,7 +4545,7 @@ begin
 
       Active := True;
 
-      if FieldByName('Coast').AsVariant <> Null then
+      if FieldByName('Coast').AsVariant <> null then
         Result := FieldByName('Coast').AsVariant;
 
       Active := False;
@@ -4563,9 +4561,6 @@ procedure TFormCalculationEstimate.CreateTempTables;
 var
   Str: string;
 begin
-  { if Act then
-    Str := 'CALL CreateTempTables(2);' // Данные акта
-    else }
   Str := 'CALL CreateTempTables(1);'; // Данные сметы
 
   try
@@ -4626,6 +4621,8 @@ begin
 
   if not qrOXROPR.Active then
     qrOXROPR.Active := True;
+  if not qrTypeData.Active then
+    qrTypeData.Active := True;
 end;
 
 // Заполнение таблицы расценок
@@ -4643,32 +4640,35 @@ begin
 
   // Открытие датасета для заполнения GridRates
   qrRates.Tag := 1; // Что-бы отключить события по скролу у датасета
-  qrRates.Active := False;
-  // Заполняет rates_temp
-  qrRates.SQL.Text := 'CALL GetRates(:DATATAB, :EAID, :fn, '''');';
-  qrRates.ParamByName('DATATAB').Value := Str;
-  if Act then
-  begin
+  {
+    qrRates.Active := False;
+    // Заполняет rates_temp
+
+    qrRates.SQL.Text := 'CALL GetRates(:DATATAB, :EAID, :fn, '''');';
+    qrRates.ParamByName('DATATAB').Value := Str;
+    if Act then
+    begin
     qrRates.ParamByName('EAID').Value := IdAct;
     qrRates.ParamByName('fn').Value := 'ID_ACT';
-  end
-  else
-  begin
+    end
+    else
+    begin
     qrRates.ParamByName('EAID').Value := IdEstimate;
     qrRates.ParamByName('fn').Value := 'ID_ESTIMATE';
-  end;
+    end;
 
-  try
+    try
     qrRates.ExecSQL;
-  except
+    except
     qrTemp.SQL.Text := 'SELECT @sql as QR;';
     qrTemp.Active := True;
     ShowMessage(qrTemp.FieldByName('QR').AsString);
-  end;
-
+    end;
+  }
   // Открывает rates_temp
   qrRates.SQL.Text := 'SELECT * FROM rates_temp ORDER BY SORTID, RID, STYPE, MID, MEID';
   qrRates.Active := True;
+
   Count := 0;
   qrRates.DisableControls;
   // E18 и E20 - могут встречаться в смете только один раз
@@ -4681,8 +4681,7 @@ begin
 
       if (AID > 0) and (AType > 0) then
       begin
-        if (qrRatesIID.AsInteger = AID) and
-          (qrRatesTYPE_DATA.AsInteger = AType) then
+        if (qrRatesIID.AsInteger = AID) and (qrRatesTYPE_DATA.AsInteger = AType) then
           ARecNo := Count;
       end;
 
@@ -4729,8 +4728,19 @@ begin
   if qrRates.RecNo = i then
     qrRatesAfterScroll(qrRates);
 
-  //qrRatesEx.ParamByName('ID_ESTIMATE').AsInteger := IdEstimate;
-  //CloseOpen(qrRatesEx);
+  // Новая процедура вывода левой части
+  if Act then
+  begin
+    qrRatesEx.ParamByName('EAID').Value := IdAct;
+    qrRatesEx.ParamByName('vIsACT').Value := 1;
+  end
+  else
+  begin
+    qrRatesEx.ParamByName('EAID').Value := IdEstimate;
+    qrRatesEx.ParamByName('vIsACT').Value := 0;
+  end;
+  CloseOpen(qrRatesEx);
+  // ----------------------------------
 
   CloseOpen(qrCalculations);
 end;
@@ -4992,9 +5002,8 @@ begin
       if Column.Index in [10, 11] then
         Brush.Color := $00FBFEBC;
     end
-    else
-      if Column.Index in [9, 10] then
-        Brush.Color := $00FBFEBC;
+    else if Column.Index in [9, 10] then
+      Brush.Color := $00FBFEBC;
 
     if Assigned(TMyDBGrid(Sender).DataLink) and
       ((Sender as TJvDBGrid).Row = TMyDBGrid(Sender).DataLink.ActiveRecord + 1) and
@@ -5090,8 +5099,7 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.AsInteger = 1) and
-      not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+    if (qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD;
@@ -5104,18 +5112,15 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and
-      (dbgrdMaterial = LastEntegGrd)
+    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
-    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and
-      (dbgrdRates = LastEntegGrd) then
+    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (grRatesEx = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMaterialFROM_RATE.AsInteger = 0) and
-      (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
+    if (qrMaterialFROM_RATE.AsInteger = 0) and (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
@@ -5140,12 +5145,11 @@ begin
         Str := Column.Field.AsString;
     end;
 
-    //Не отображает кол-во и суммы для замененных или вынесеных
-    if ((qrMaterialFROM_RATE.AsInteger = 1) and
-      not(qrRatesMID.AsInteger = qrMaterialID.AsInteger)) or
+    // Не отображает кол-во и суммы для замененных или вынесеных
+    if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger = qrMaterialID.AsInteger)) or
       (qrMaterialREPLACED.AsInteger = 1) then
     begin
-      if Column.Index in [4, 8, 9,10, 11, 15, 16, 17, 18] then
+      if Column.Index in [4, 8, 9, 10, 11, 15, 16, 17, 18] then
         Str := '';
     end;
 
@@ -5252,14 +5256,12 @@ begin
     end;
 
     // Подсветка замененного механизма
-    if (IdReplasedMech > 0) and (qrMechanizmID.AsInteger = IdReplasedMech) and
-      (dbgrdMechanizm = LastEntegGrd)
+    if (IdReplasedMech > 0) and (qrMechanizmID.AsInteger = IdReplasedMech) and (dbgrdMechanizm = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMechanizmFROM_RATE.AsInteger = 0) and
-      (IdReplasingMech = qrMechanizmID_REPLACED.AsInteger) and
+    if (qrMechanizmFROM_RATE.AsInteger = 0) and (IdReplasingMech = qrMechanizmID_REPLACED.AsInteger) and
       (dbgrdMechanizm = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
@@ -5280,8 +5282,7 @@ begin
         Str := Column.Field.AsString;
     end;
 
-    if ((qrMechanizmFROM_RATE.AsInteger = 1) and
-      not(qrRatesMEID.AsInteger > 0)) or
+    if ((qrMechanizmFROM_RATE.AsInteger = 1) and not(qrRatesMEID.AsInteger > 0)) or
       (qrMechanizmREPLACED.AsInteger = 1) then
     begin
       if Column.Index in [4, 7, 8, 11, 12, 16, 17, 20, 21, 24] then
@@ -5323,7 +5324,7 @@ var
   sdvig: string;
 begin
   j := 2;
-  with dbgrdRates.Canvas do
+  with grRatesEx.Canvas do
   begin
     Brush.Color := PS.BackgroundRows;
     Font.Color := PS.FontRows;
@@ -5334,8 +5335,8 @@ begin
     end;
 
     // Подсвечивается жирным только если есть фокус
-    if Assigned(TMyDBGrid(dbgrdRates).DataLink) and
-      (dbgrdRates.Row = TMyDBGrid(dbgrdRates).DataLink.ActiveRecord + 1) and (dbgrdRates = LastEntegGrd) then
+    if Assigned(TMyDBGrid(grRatesEx).DataLink) and
+      (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) and (grRatesEx = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
@@ -5376,7 +5377,7 @@ procedure TFormCalculationEstimate.dbgrdRatesEnter(Sender: TObject);
 begin
   LastEntegGrd := TJvDBGrid(Sender);
 
-  dbgrdRates.Repaint;
+  grRatesEx.Repaint;
   dbgrdMechanizm.Repaint;
   dbgrdMaterial.Repaint;
   dbgrdDevices.Repaint;
@@ -5386,13 +5387,13 @@ begin
   dbgrdDescription.Repaint;
 end;
 
-// Запрет инсерта
 procedure TFormCalculationEstimate.dbgrdRatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
+  // Запрет инсерта
   if Key = 45 then
     Key := 0;
 
-  dbgrdRates.ReadOnly := PanelCalculationYesNo.Tag = 0;
+  grRatesEx.ReadOnly := PanelCalculationYesNo.Tag = 0;
 end;
 
 end.
