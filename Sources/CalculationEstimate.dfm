@@ -427,7 +427,7 @@
     Height = 324
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 6
+    TabOrder = 7
     object ImageSplitterBottom: TImage
       Left = 200
       Top = 365
@@ -503,28 +503,6 @@
           Height = 13
           Caption = #1056#1072#1079#1088#1103#1076':'
         end
-        object ComboBoxTypeData: TComboBox
-          Left = 36
-          Top = 2
-          Width = 266
-          Height = 21
-          AutoComplete = False
-          Style = csDropDownList
-          Color = 8454143
-          TabOrder = 1
-          Items.Strings = (
-            '1. '#1056#1072#1089#1094#1077#1085#1082#1072
-            '2. '#1052#1072#1090#1077#1088#1080#1072#1083
-            '3. '#1052#1077#1093#1072#1085#1080#1079#1084
-            '4. '#1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
-            '5. '#1056#1072#1089#1095#1077#1090' '#1089#1074#1072#1083#1082#1080' '#1041#1057'999-9901 '
-            '6. '#1055#1077#1088#1077#1074#1086#1079#1082#1072' '#1075#1088#1091#1079#1086#1074' - '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'310'
-            '7. '#1055#1077#1088#1077#1074#1086#1079#1082#1072' '#1084#1091#1089#1086#1088#1072' - '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'310'
-            '8. '#1055#1077#1088#1077#1074#1086#1079#1082#1072' '#1075#1088#1091#1079#1086#1074' - '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'311'
-            '9. '#1055#1077#1088#1077#1074#1086#1079#1082#1072' '#1084#1091#1089#1086#1088#1072' - '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'311'
-            '10. '#1055#1091#1089#1082' '#1080' '#1088#1077#1075#1091#1083#1080#1088#1086#1074#1082#1072' '#1086#1090#1086#1087#1083#1077#1085#1080#1103' ('#1088#1072#1089#1094#1077#1085#1082#1080' '#1045'18)'
-            '11. '#1055#1091#1089#1082' '#1080' '#1088#1077#1075#1091#1083#1080#1088#1086#1074#1082#1072' '#1086#1090#1086#1087#1083#1077#1085#1080#1103' ('#1088#1072#1089#1094#1077#1085#1082#1080' '#1045'20)')
-        end
         object Edit1: TEdit
           Left = 308
           Top = 2
@@ -579,6 +557,18 @@
           TabOrder = 0
           OnClick = Button4Click
         end
+        object dblkcbbID_TYPE_DATA: TDBLookupComboBox
+          Left = 36
+          Top = 2
+          Width = 266
+          Height = 21
+          DataField = 'ID_TYPE_DATA'
+          DataSource = dsRatesEx
+          KeyField = 'ID_TYPE_DATA'
+          ListField = 'TYPE_NAME'
+          ListSource = dsTypeData
+          TabOrder = 1
+        end
       end
       object PanelClientLeft: TPanel
         Left = 0
@@ -590,9 +580,6 @@
         ParentBackground = False
         ShowCaption = False
         TabOrder = 1
-        DesignSize = (
-          361
-          199)
         object ImageSplitterLeft: TImage
           Left = 313
           Top = 40
@@ -618,21 +605,19 @@
           Width = 361
           Height = 39
           Align = alBottom
-          DataField = 'CAPTION'
-          DataSource = dsRates
+          DataField = 'OBJ_NAME'
+          DataSource = dsRatesEx
           ReadOnly = True
           ScrollBars = ssVertical
-          TabOrder = 2
+          TabOrder = 1
         end
-        object dbgrdRates: TJvDBGrid
+        object grRatesEx: TJvDBGrid
           Left = 0
           Top = 0
           Width = 361
           Height = 155
           Align = alClient
-          DataSource = dsRates
-          DefaultDrawing = False
-          DrawingStyle = gdsClassic
+          DataSource = dsRatesEx
           PopupMenu = PopupMenuTableLeft
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
@@ -643,70 +628,46 @@
           OnDrawColumnCell = dbgrdRates12DrawColumnCell
           OnEnter = dbgrdRatesEnter
           OnKeyDown = dbgrdRatesKeyDown
-          AutoSort = False
+          AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-          CanDelete = False
           EditControls = <>
-          AutoSizeRows = False
           RowsHeight = 17
           TitleRowHeight = 17
           Columns = <
             item
               Expanded = False
-              FieldName = 'NUM'
-              ReadOnly = True
+              FieldName = 'ITERATOR'
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1087'/'#1087
-              Width = 40
+              Width = 39
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'CODE'
+              FieldName = 'OBJ_CODE'
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1085#1086#1088#1084#1072#1090#1080#1074#1072
-              Width = 120
+              Width = 148
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'COUNT'
+              FieldName = 'OBJ_COUNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 60
+              Width = 69
               Visible = True
             end
             item
               Expanded = False
-              FieldName = 'UNIT'
+              FieldName = 'OBJ_UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 70
+              Width = 85
               Visible = True
             end>
-        end
-        object JvDBGrid1: TJvDBGrid
-          Left = 141
-          Top = 7
-          Width = 219
-          Height = 147
-          Anchors = [akLeft, akTop, akBottom]
-          DataSource = dsRatesEx
-          TabOrder = 1
-          TitleFont.Charset = DEFAULT_CHARSET
-          TitleFont.Color = clWindowText
-          TitleFont.Height = -11
-          TitleFont.Name = 'Tahoma'
-          TitleFont.Style = []
-          Visible = False
-          SelectColumnsDialogStrings.Caption = 'Select columns'
-          SelectColumnsDialogStrings.OK = '&OK'
-          SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-          EditControls = <>
-          RowsHeight = 17
-          TitleRowHeight = 17
         end
       end
       object PanelNoData: TPanel
@@ -2778,7 +2739,7 @@
         Width = 206
         Height = 21
         DataField = 'WORK_ID'
-        DataSource = dsRates
+        DataSource = dsRatesEx
         DropDownRows = 10
         KeyField = 'work_id'
         ListField = 'NameWork'
@@ -2795,7 +2756,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSummaryCalculations'
     ParentBackground = False
-    TabOrder = 4
+    TabOrder = 5
     inline frSummaryCalculations: TfrCalculationEstimateSummaryCalculations
       Left = 0
       Top = 0
@@ -3130,7 +3091,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSSR'
     ParentBackground = False
-    TabOrder = 5
+    TabOrder = 6
     inline frSSR: TfrCalculationEstimateSSR
       Left = 0
       Top = 0
@@ -3483,7 +3444,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 280
+    Left = 272
     Top = 288
   end
   object qrRates: TFDQuery
@@ -4680,8 +4641,8 @@
     end
   end
   object qrCalculations: TFDQuery
-    MasterSource = dsRates
-    MasterFields = 'ESTIMATE_ID;TYPE_DATA;OWNER_ID'
+    MasterSource = dsRatesEx
+    MasterFields = 'SM_ID;ID_TYPE_DATA;ID_TABLES'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -4712,27 +4673,21 @@
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      'CALL CalcCalculation(:ESTIMATE_ID, :TYPE_DATA, :OWNER_ID, 1)')
+      'CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 1)')
     Left = 323
     Top = 432
     ParamData = <
       item
-        Name = 'ESTIMATE_ID'
-        DataType = ftInteger
+        Name = 'SM_ID'
         ParamType = ptInput
-        Value = Null
       end
       item
-        Name = 'TYPE_DATA'
-        DataType = ftInteger
+        Name = 'ID_TYPE_DATA'
         ParamType = ptInput
-        Value = Null
       end
       item
-        Name = 'OWNER_ID'
-        DataType = ftInteger
+        Name = 'ID_TABLES'
         ParamType = ptInput
-        Value = Null
       end>
   end
   object dsCalculations: TDataSource
@@ -5203,6 +5158,10 @@
     end
   end
   object qrRatesEx: TFDQuery
+    AfterOpen = qrRatesExAfterOpen
+    BeforePost = qrRatesBeforePost
+    AfterPost = qrRatesAfterPost
+    AfterScroll = qrRatesAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -5235,12 +5194,165 @@
     UpdateOptions.CheckRequired = False
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      'CALL `GetRates_ex`(:vIsACT, :EAID);')
     Left = 224
     Top = 216
+    ParamData = <
+      item
+        Name = 'VISACT'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 0
+      end
+      item
+        Name = 'EAID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 344
+      end>
+    object qrRatesExSORT_ID: TVarBytesField
+      AutoGenerateValue = arDefault
+      FieldName = 'SORT_ID'
+      Origin = 'SORT_ID'
+      ProviderFlags = []
+      Size = 55
+    end
+    object qrRatesExINCITERATOR: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'INCITERATOR'
+      Origin = 'INCITERATOR'
+      ProviderFlags = []
+    end
+    object qrRatesExITERATOR: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ITERATOR'
+      Origin = 'ITERATOR'
+      ProviderFlags = []
+    end
+    object strngfldRatesExOBJ_CODE: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'OBJ_CODE'
+      Origin = 'OBJ_CODE'
+      ProviderFlags = []
+      OnChange = qrRatesCODEChange
+      Size = 151
+    end
+    object strngfldRatesExOBJ_NAME: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'OBJ_NAME'
+      Origin = 'OBJ_NAME'
+      ProviderFlags = []
+      Size = 300
+    end
+    object qrRatesExOBJ_COUNT: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'OBJ_COUNT'
+      Origin = 'OBJ_COUNT'
+      ProviderFlags = []
+      OnChange = qrRatesCOUNTChange
+    end
+    object strngfldRatesExOBJ_UNIT: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'OBJ_UNIT'
+      Origin = 'OBJ_UNIT'
+      ProviderFlags = []
+      Size = 100
+    end
+    object qrRatesExID_TYPE_DATA: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_TYPE_DATA'
+      Origin = 'ID_TYPE_DATA'
+      ProviderFlags = []
+    end
+    object qrRatesExDATA_ESTIMATE_OR_ACT_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'DATA_ESTIMATE_OR_ACT_ID'
+      Origin = 'DATA_ESTIMATE_OR_ACT_ID'
+      ProviderFlags = []
+    end
+    object qrRatesExID_TABLES: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_TABLES'
+      Origin = 'ID_TABLES'
+      ProviderFlags = []
+    end
+    object qrRatesExSM_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'SM_ID'
+      Origin = 'SM_ID'
+      ProviderFlags = []
+    end
+    object qrRatesExWORK_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'WORK_ID'
+      Origin = 'WORK_ID'
+      ProviderFlags = []
+      OnChange = qrRatesWORK_IDChange
+    end
+    object qrRatesExZNORMATIVS_ID: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ZNORMATIVS_ID'
+      Origin = 'ZNORMATIVS_ID'
+      ProviderFlags = []
+    end
+    object qrRatesExAPPLY_WINTERPRISE_FLAG: TShortintField
+      AutoGenerateValue = arDefault
+      FieldName = 'APPLY_WINTERPRISE_FLAG'
+      Origin = 'APPLY_WINTERPRISE_FLAG'
+      ProviderFlags = []
+    end
   end
   object dsRatesEx: TDataSource
     DataSet = qrRatesEx
     Left = 256
     Top = 216
+  end
+  object qrTypeData: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtUInt32
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtUInt64
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtInt64
+        TargetDataType = dtInt32
+      end>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.CountUpdatedRecords = False
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      'SELECT '
+      '  `ID` AS ID_TYPE_DATA,'
+      '  CONCAT(`ID`, ". ", `NAME`) AS TYPE_NAME'
+      'FROM '
+      '  `types_data`'
+      'ORDER BY `ID`')
+    Left = 192
+    Top = 152
+  end
+  object dsTypeData: TDataSource
+    DataSet = qrTypeData
+    Left = 224
+    Top = 152
   end
 end
