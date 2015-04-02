@@ -473,6 +473,7 @@ type
     dblkcbbID_TYPE_DATA: TDBLookupComboBox;
     qrTypeData: TFDQuery;
     dsTypeData: TDataSource;
+    qrRatesExID_RATE: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
