@@ -982,14 +982,14 @@ begin
       vkEqual:
         begin
           // Если пытамся ввести формулу в таблицу слева
-          if CheckQrActiveEmpty(qrRates) and (ActiveControl = grRatesEx) and
-            (grRatesEx.SelectedField = qrRatesCOUNT) then
+          if CheckQrActiveEmpty(qrRatesEx) and (ActiveControl = grRatesEx) and
+            (grRatesEx.SelectedField = qrRatesExOBJ_COUNT) then
           begin
             res := ShowEditExpression;
             if VarIsNull(res) then
               Exit;
-            qrRates.Edit;
-            qrRatesCOUNT.Value := res;
+            qrRatesEx.Edit;
+            qrRatesExOBJ_COUNT.Value := res;
           end;
         end;
     end;
