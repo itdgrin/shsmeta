@@ -427,7 +427,7 @@
     Height = 324
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 7
+    TabOrder = 6
     object ImageSplitterBottom: TImage
       Left = 200
       Top = 365
@@ -2756,7 +2756,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSummaryCalculations'
     ParentBackground = False
-    TabOrder = 5
+    TabOrder = 4
     inline frSummaryCalculations: TfrCalculationEstimateSummaryCalculations
       Left = 0
       Top = 0
@@ -3091,7 +3091,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSSR'
     ParentBackground = False
-    TabOrder = 6
+    TabOrder = 5
     inline frSSR: TfrCalculationEstimateSSR
       Left = 0
       Top = 0
@@ -3448,9 +3448,9 @@
     Top = 288
   end
   object qrRates: TFDQuery
-    BeforePost = qrRatesBeforePost
-    AfterPost = qrRatesAfterPost
-    AfterScroll = qrRatesAfterScroll
+    BeforePost = qrRatesExBeforePost
+    AfterPost = qrRatesExAfterPost
+    AfterScroll = qrRatesExAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -3712,7 +3712,7 @@
       Origin = 'CODE'
       ProviderFlags = []
       ReadOnly = True
-      OnChange = qrRatesCODEChange
+      OnChange = qrRatesExCODEChange
       Size = 200
     end
     object qrRatesCOUNT: TFloatField
@@ -3720,7 +3720,7 @@
       FieldName = 'COUNT'
       Origin = 'COUNT'
       ProviderFlags = []
-      OnChange = qrRatesCOUNTChange
+      OnChange = qrRatesExCOUNTChange
       DisplayFormat = '####0.####'
       EditFormat = '####0.####'
     end
@@ -5159,9 +5159,9 @@
   end
   object qrRatesEx: TFDQuery
     AfterOpen = qrRatesExAfterOpen
-    BeforePost = qrRatesBeforePost
-    AfterPost = qrRatesAfterPost
-    AfterScroll = qrRatesAfterScroll
+    BeforePost = qrRatesExBeforePost
+    AfterPost = qrRatesExAfterPost
+    AfterScroll = qrRatesExAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -5228,7 +5228,7 @@
       FieldName = 'OBJ_CODE'
       Origin = 'OBJ_CODE'
       ProviderFlags = []
-      OnChange = qrRatesCODEChange
+      OnChange = qrRatesExCODEChange
       Size = 151
     end
     object qrRatesExOBJ_NAME: TStringField
@@ -5243,7 +5243,7 @@
       FieldName = 'OBJ_COUNT'
       Origin = 'OBJ_COUNT'
       ProviderFlags = []
-      OnChange = qrRatesCOUNTChange
+      OnChange = qrRatesExCOUNTChange
     end
     object qrRatesExOBJ_UNIT: TStringField
       AutoGenerateValue = arDefault
@@ -5311,7 +5311,7 @@
   end
   object dsRatesEx: TDataSource
     DataSet = qrRatesEx
-    Left = 256
+    Left = 272
     Top = 216
   end
   object qrTypeData: TFDQuery
