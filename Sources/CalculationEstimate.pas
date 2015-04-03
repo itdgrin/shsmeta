@@ -582,7 +582,7 @@ type
     procedure PopupMenuCoefPopup(Sender: TObject);
     procedure Button4Click(Sender: TObject);
 
-    procedure OutputDataToTable(ARecNo, AID, AType: Integer); // Заполнение таблицы расценок
+    procedure OutputDataToTable; // Заполнение таблицы расценок
 
     procedure AddRate(const vRateId: Integer);
     procedure AddMaterial(const vMatId: Integer);
@@ -2658,7 +2658,7 @@ begin
         qrTemp.ExecSQL;
       end;
 
-      OutputDataToTable(0, qrRatesIID.AsInteger, qrRatesTYPE_DATA.AsInteger);
+      OutputDataToTable;
     end;
   finally
     FreeAndNil(frmReplace);
@@ -2724,7 +2724,7 @@ begin
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  OutputDataToTable(0, qrRatesIID.AsInteger, qrRatesTYPE_DATA.AsInteger);
+  OutputDataToTable;
 end;
 
 procedure TFormCalculationEstimate.PMMatMechEditClick(Sender: TObject);
@@ -2755,7 +2755,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable(0, qrRatesIID.AsInteger, qrRatesTYPE_DATA.AsInteger);
+    OutputDataToTable;
   except
     on E: Exception do
       MessageBox(0, PChar('При вынесении материала из расценки возникла ошибка:' + sLineBreak + sLineBreak +
@@ -2786,7 +2786,7 @@ begin
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  OutputDataToTable(0, qrRatesIID.AsInteger, qrRatesTYPE_DATA.AsInteger);
+  OutputDataToTable;
 end;
 
 // включение режима расширенного редактирования механизма
@@ -2848,7 +2848,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable(0, qrRatesIID.AsInteger, qrRatesTYPE_DATA.AsInteger);
+    OutputDataToTable;
   except
     on E: Exception do
       MessageBox(0, PChar('При вынесении механизма из расценки возникла ошибка:' + sLineBreak + sLineBreak +
@@ -3506,14 +3506,14 @@ begin
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
+  OutputDataToTable;
 end;
 
 procedure TFormCalculationEstimate.PMAddTranspClick(Sender: TObject);
 begin
   if GetTranspForm(IdEstimate, -1, (Sender as TMenuItem).Tag, True) then
   begin
-    OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
+    OutputDataToTable;
   end;
 end;
 
@@ -3526,14 +3526,14 @@ begin
   qrTemp.ParamByName('SType').AsInteger := (Sender as TComponent).Tag;
   qrTemp.ExecSQL;
 
-  OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
+  OutputDataToTable;
 end;
 
 procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
 begin
   if GetDumpForm(IdEstimate, -1, True) then
   begin
-    OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
+    OutputDataToTable;
   end;
 end;
 
@@ -3677,7 +3677,7 @@ begin
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
     end;
-  OutputDataToTable(qrRates.RecNo, 0, 0);
+  OutputDataToTable;
 end;
 
 procedure TFormCalculationEstimate.PMDevEditClick(Sender: TObject);
@@ -3690,11 +3690,11 @@ procedure TFormCalculationEstimate.PMDumpEditClick(Sender: TObject);
 begin
   if qrRatesTYPE_DATA.AsInteger = 5 then
     if GetDumpForm(IdEstimate, qrDumpID.AsInteger, False) then
-      OutputDataToTable(qrRates.RecNo, 0, 0);
+      OutputDataToTable;
 
   if qrRatesTYPE_DATA.AsInteger in [6, 7, 8, 9] then
     if GetTranspForm(IdEstimate, qrTranspID.AsInteger, qrRatesTYPE_DATA.AsInteger, False) then
-      OutputDataToTable(qrRates.RecNo, 0, 0);
+      OutputDataToTable;
 end;
 
 procedure TFormCalculationEstimate.PMEditClick(Sender: TObject);
@@ -4618,7 +4618,7 @@ begin
   end;
 
   // Заполнение таблицы расценок
-  OutputDataToTable(0, 0, 0);
+  OutputDataToTable;
 
   if not qrOXROPR.Active then
     qrOXROPR.Active := True;
@@ -4627,107 +4627,16 @@ begin
 end;
 
 // Заполнение таблицы расценок
-procedure TFormCalculationEstimate.OutputDataToTable(ARecNo, AID, AType: Integer);
+procedure TFormCalculationEstimate.OutputDataToTable;
 var
   { FieldRates: TFieldRates; }
   i: Integer;
   Str: string;
   Count: Integer;
 begin
-  if Act then // Именно в нижнем регистре, это важно для процедуры
-    Str := 'data_act_temp'
-  else
-    Str := 'data_estimate_temp';
-
-  // Открытие датасета для заполнения GridRates
-  qrRates.Tag := 1; // Что-бы отключить события по скролу у датасета
-  {
-    qrRates.Active := False;
-    // Заполняет rates_temp
-
-    qrRates.SQL.Text := 'CALL GetRates(:DATATAB, :EAID, :fn, '''');';
-    qrRates.ParamByName('DATATAB').Value := Str;
-    if Act then
-    begin
-    qrRates.ParamByName('EAID').Value := IdAct;
-    qrRates.ParamByName('fn').Value := 'ID_ACT';
-    end
-    else
-    begin
-    qrRates.ParamByName('EAID').Value := IdEstimate;
-    qrRates.ParamByName('fn').Value := 'ID_ESTIMATE';
-    end;
-
-    try
-    qrRates.ExecSQL;
-    except
-    qrTemp.SQL.Text := 'SELECT @sql as QR;';
-    qrTemp.Active := True;
-    ShowMessage(qrTemp.FieldByName('QR').AsString);
-    end;
-  }
-  // Открывает rates_temp
-  qrRates.SQL.Text := 'SELECT * FROM rates_temp ORDER BY SORTID, RID, STYPE, MID, MEID';
-  qrRates.Active := True;
-
-  Count := 0;
-  qrRates.DisableControls;
   // E18 и E20 - могут встречаться в смете только один раз
   PMAddAdditionHeatingE18.Enabled := True;
   PMAddAdditionHeatingE20.Enabled := True;
-  try
-    while not qrRates.Eof do
-    begin
-      inc(Count);
-
-      if (AID > 0) and (AType > 0) then
-      begin
-        if (qrRatesIID.AsInteger = AID) and (qrRatesTYPE_DATA.AsInteger = AType) then
-          ARecNo := Count;
-      end;
-
-      if qrRatesTYPE_DATA.AsInteger = 10 then
-        PMAddAdditionHeatingE18.Enabled := False;
-
-      if qrRatesTYPE_DATA.AsInteger = 11 then
-        PMAddAdditionHeatingE20.Enabled := False;
-
-      qrRates.Edit;
-      qrRatesNUM.AsInteger := Count;
-      qrRates.Post;
-
-      qrRates.Next;
-    end;
-
-    // Гасим флаг Eof
-    if Count > 0 then
-    begin
-      i := qrRates.RecNo;
-      qrRates.Prior;
-      if i <> qrRates.RecNo then
-        qrRates.Next;
-    end;
-
-  finally
-    qrRates.EnableControls;
-  end;
-  qrRates.Tag := 0;
-
-  i := qrRates.RecNo;
-  // обязательно надо что-бы произошел скрол
-  if (Count >= ARecNo) and (ARecNo > 0) then
-    qrRates.RecNo := ARecNo
-  else
-  begin
-    if (ARecNo > 0) and (Count > 0) then
-      qrRates.RecNo := Count
-    else
-      qrRates.First;
-  end;
-
-  // Если положение курсора не изменилось выполняем скрол принудительно
-  if qrRates.RecNo = i then
-    qrRatesAfterScroll(qrRates);
 
   // Новая процедура вывода левой части
   if Act then
@@ -4906,7 +4815,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
+    OutputDataToTable;
   except
     on E: Exception do
       MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
@@ -4928,7 +4837,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
+    OutputDataToTable;
   except
     on E: Exception do
       MessageBox(0, PChar('При добавлении материала возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -4952,7 +4861,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable(qrRates.RecordCount + 1, 0, 0);
+    OutputDataToTable;
   except
     on E: Exception do
       MessageBox(0, PChar('При добавлении механизма возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
