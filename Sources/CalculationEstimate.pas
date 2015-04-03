@@ -592,8 +592,8 @@ type
     procedure PMMechFromRatesClick(Sender: TObject);
     procedure dbgrdRates12DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
-    procedure qrRatesAfterScroll(DataSet: TDataSet);
-    procedure qrRatesCOUNTChange(Sender: TField);
+    procedure qrRatesExAfterScroll(DataSet: TDataSet);
+    procedure qrRatesExCOUNTChange(Sender: TField);
     procedure dbgrdDescription1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
     procedure qrDescriptionAfterScroll(DataSet: TDataSet);
@@ -607,7 +607,7 @@ type
     procedure MatRowChange(Sender: TField);
     procedure dbgrdMechanizmExit(Sender: TObject);
     procedure PopupMenuMechanizmsPopup(Sender: TObject);
-    procedure qrRatesBeforePost(DataSet: TDataSet);
+    procedure qrRatesExBeforePost(DataSet: TDataSet);
     procedure MemoRightExit(Sender: TObject);
     procedure MemoRightChange(Sender: TObject);
     procedure qrMaterialBeforeScroll(DataSet: TDataSet);
@@ -635,7 +635,7 @@ type
     procedure qrStartupAfterScroll(DataSet: TDataSet);
     procedure qrTranspCalcFields(DataSet: TDataSet);
     procedure PMAddAdditionHeatingE18Click(Sender: TObject);
-    procedure qrRatesCODEChange(Sender: TField);
+    procedure qrRatesExCODEChange(Sender: TField);
     procedure PMEditClick(Sender: TObject);
     procedure tmRateTimer(Sender: TObject);
     procedure dbgrdRatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -645,7 +645,7 @@ type
     procedure dbgrdDumpKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdDevicesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdRatesEnter(Sender: TObject);
-    procedure qrRatesAfterPost(DataSet: TDataSet);
+    procedure qrRatesExAfterPost(DataSet: TDataSet);
     procedure PMMatDeleteClick(Sender: TObject);
     procedure qrRatesWORK_IDChange(Sender: TField);
     procedure btn1Click(Sender: TObject);
@@ -708,8 +708,7 @@ type
 
     // Изменяет внешний вид таблиц в зависимости от НДС
     procedure ChangeGrigNDSStyle(aNDS: Boolean);
-    // проверка что материал неучтеный в таблице расценок
-    function CheckMatUnAccountingRates: Boolean;
+
     // проверяет что материал внутри расценки (неучтеный или заменяющий)
     function CheckMatINRates: Boolean;
 
@@ -1228,7 +1227,7 @@ begin
   qrTemp.SQL.Text := 'CALL UpdateSmetaCosts(:IDESTIMATE);';
   qrTemp.ParamByName('IDESTIMATE').AsInteger := IdEstimate;
   qrTemp.ExecSQL;
-  qrRatesAfterScroll(qrRates);
+  qrRatesExAfterScroll(qrRatesEx);
   CloseOpen(qrCalculations);
 end;
 
@@ -1472,7 +1471,7 @@ var
   FirstChar: Char;
   Path: String;
 begin
-  NumberNormativ := qrRatesex.FieldByName('CODE').AsString;
+  NumberNormativ := qrRatesExOBJ_CODE.AsString;
 
   // В условии - русские символы, в переменной NumberNormativ - английские
   if (NumberNormativ > 'Е121-1-1') and (NumberNormativ < 'Е121-137-1') then
@@ -1652,8 +1651,9 @@ end;
 function TFormCalculationEstimate.CheckMechReadOnly: Boolean;
 begin
   Result := False;
-  if ((qrMechanizmFROM_RATE.AsInteger = 1) and not(qrRatesMEID.AsInteger > 0)) or
-    (qrMechanizmREPLACED.AsInteger = 1) then
+  //Вынесеный механизм в расценке или замененные механизмы
+  if ((qrMechanizmFROM_RATE.AsInteger = 1) and not(qrRatesExID_TYPE_DATA.AsInteger = 1))
+    or (qrMechanizmREPLACED.AsInteger = 1) or (qrMechanizmTITLE.AsInteger > 0) then
     Result := True;
 end;
 
@@ -1666,9 +1666,9 @@ end;
 function TFormCalculationEstimate.CheckMatReadOnly: Boolean;
 begin
   Result := False;
-  // Вынесенные из расценки
-  if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger > 0)) or // или замененный
-    (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0) then
+  // Вынесенные из расценки // или замененный
+  if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesExID_TYPE_DATA.AsInteger = 1))
+    or (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0) then
     Result := True;
 end;
 
@@ -2196,17 +2196,10 @@ begin
   CloseOpen(qrCalculations);
 end;
 
-// Проверка на неучтеный материал или заменяющий
-function TFormCalculationEstimate.CheckMatUnAccountingRates: Boolean;
-begin
-  Result := ((qrRatesMID.AsInteger > 0) and (qrRatesCONSIDERED.AsInteger = 0) and
-    (qrRatesREPLACED.AsInteger = 0));
-end;
-
 function TFormCalculationEstimate.CheckMatINRates: Boolean;
 begin
-  Result := CheckMatUnAccountingRates or ((qrRatesMID.AsInteger > 0) and (qrRatesID_REPLACED.AsInteger > 0)
-    and (qrRatesFROM_RATE.AsInteger = 0));
+  Result :=  (qrRatesExID_RATE.AsInteger > 0) and
+    (qrRatesExID_TYPE_DATA.AsInteger = 2);
 end;
 
 // проверка что материал неучтеный в таблице материалов
@@ -2215,22 +2208,22 @@ begin
   Result := qrMaterialCONSIDERED.AsInteger = 0;
 end;
 
-// Для того что-бы скрол по таблице был быстрым обработка скрола происходит с задержкой
-procedure TFormCalculationEstimate.qrRatesAfterPost(DataSet: TDataSet);
+procedure TFormCalculationEstimate.qrRatesExAfterPost(DataSet: TDataSet);
 begin
-  qrRatesCOUNT.ReadOnly := False;
+  qrRatesExOBJ_COUNT.ReadOnly := False;
 end;
 
-procedure TFormCalculationEstimate.qrRatesAfterScroll(DataSet: TDataSet);
+// Для того что-бы скрол по таблице был быстрым обработка скрола происходит с задержкой
+procedure TFormCalculationEstimate.qrRatesExAfterScroll(DataSet: TDataSet);
 begin
-  if qrRates.Tag <> 1 then
+  if qrRatesEx.Tag <> 1 then
   begin
     tmRate.Enabled := False;
     tmRate.Enabled := True;
   end;
 end;
 
-procedure TFormCalculationEstimate.qrRatesBeforePost(DataSet: TDataSet);
+procedure TFormCalculationEstimate.qrRatesExBeforePost(DataSet: TDataSet);
 begin
   if DataSet.State in [dsInsert] then
   begin
@@ -2239,12 +2232,12 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.qrRatesCODEChange(Sender: TField);
+procedure TFormCalculationEstimate.qrRatesExCODEChange(Sender: TField);
 var
   NewCode: string;
   NewID: Integer;
 begin
-  NewCode := AnsiUpperCase(qrRatesCODE.AsString);
+  NewCode := AnsiUpperCase(qrRatesExOBJ_CODE.AsString);
   grRatesEx.EditorMode := False;
   NewID := 0;
 
@@ -2353,10 +2346,7 @@ begin
     MB_ICONINFORMATION + MB_OK + mb_TaskModal);
 end;
 
-procedure TFormCalculationEstimate.qrRatesCOUNTChange(Sender: TField);
-var
-  RCount: Real;
-  RecNo: Integer;
+procedure TFormCalculationEstimate.qrRatesExCOUNTChange(Sender: TField);
 begin
   if Sender.IsNull then
   begin
@@ -2364,102 +2354,32 @@ begin
     Exit;
   end;
 
-  if qrRates.Tag <> 1 then
+  if qrRatesEx.Tag <> 1 then
   begin
-    // Обновляем каунт для расчета
-    RecNo := qrRates.RecNo;
-    RCount := Sender.AsFloat;
-
-    if not CheckMatINRates then
-      qrRatesCOUNTFORCALC.AsFloat := RCount;
-
-    qrRates.Post;
-    // Для раценки обновляем COUNTFORCALC и у неучтенных или заменяющих материалов
-    if qrRatesTYPE_DATA.AsInteger = 1 then
-    begin
-      qrRates.Tag := 1; // Блокирует обработчики событий датасета
-      qrRates.DisableControls;
-      try
-        if not qrRates.Eof then
-          qrRates.Next;
-        while not qrRates.Eof do
-        begin
-          if CheckMatINRates then
-          begin
-            qrRates.Edit;
-            qrRatesCOUNTFORCALC.AsFloat := RCount;
-            qrRates.Post;
-          end
-          else
-            Break; // так как датасет отсортирован
-          qrRates.Next;
-        end;
-        qrRates.RecNo := RecNo;
-      finally
-        qrRates.Tag := 0;
-        qrRates.EnableControls
-      end;
-    end;
-
-    case qrRatesTYPE_DATA.AsInteger of
-      1:
-        begin
-          qrTemp.SQL.Text := 'UPDATE card_rate_temp set rate_count=:RC WHERE ID=:ID;';
-          qrTemp.ParamByName('ID').AsInteger := qrRatesRID.AsInteger;
-          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-          qrTemp.ExecSQL;
-        end;
-      2:
-        begin
-          qrTemp.SQL.Text := 'UPDATE materialcard_temp set mat_count=:RC WHERE ID=:ID;';
-          qrTemp.ParamByName('ID').AsInteger := qrRatesMID.AsInteger;
-          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-          qrTemp.ExecSQL;
-        end;
-      3:
-        begin
-          qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set mech_count=:RC WHERE ID=:ID;';
-          qrTemp.ParamByName('ID').AsInteger := qrRatesMEID.AsInteger;
-          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-          qrTemp.ExecSQL;
-        end;
-      4:
-        begin
-          qrTemp.SQL.Text := 'UPDATE devicescard_temp set device_count=:RC WHERE ID=:ID;';
-          qrTemp.ParamByName('ID').AsInteger := qrRatesDEID.AsInteger;
-          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-          qrTemp.ExecSQL;
-        end;
-      5:
-        begin
-          qrTemp.SQL.Text := 'UPDATE dumpcard_temp set WORK_COUNT = :RC WHERE ID=:ID;';
-          qrTemp.ParamByName('ID').AsInteger := qrRatesDUID.AsInteger;
-          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-          qrTemp.ExecSQL;
-        end;
+    case qrRatesExID_TYPE_DATA.AsInteger of
+      1: qrTemp.SQL.Text := 'UPDATE card_rate_temp set rate_count=:RC WHERE ID=:ID;';
+      2: qrTemp.SQL.Text := 'UPDATE materialcard_temp set mat_count=:RC WHERE ID=:ID;';
+      3: qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set mech_count=:RC WHERE ID=:ID;';
+      4: qrTemp.SQL.Text := 'UPDATE devicescard_temp set device_count=:RC WHERE ID=:ID;';
+      5: qrTemp.SQL.Text := 'UPDATE dumpcard_temp set WORK_COUNT = :RC WHERE ID=:ID;';
       6, 7, 8, 9:
-        begin
           qrTemp.SQL.Text := 'UPDATE transpcard_temp set CARG_COUNT = :RC WHERE ID=:ID;';
-          qrTemp.ParamByName('ID').AsInteger := qrRatesTRID.AsInteger;
-          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-          qrTemp.ExecSQL;
-        end;
       10, 11:
         begin
           if Act then
             qrTemp.SQL.Text := 'UPDATE data_act_temp set E1820_COUNT = :RC WHERE ID=:ID;'
           else
             qrTemp.SQL.Text := 'UPDATE data_estimate_temp set E1820_COUNT = :RC WHERE ID=:ID;';
-
-          qrTemp.ParamByName('ID').AsInteger := qrRatesDID.AsInteger;
-          qrTemp.ParamByName('RC').AsFloat := Sender.Value;
-          qrTemp.ExecSQL;
         end
     else
       begin
         ShowMessage('Запрос обновления не реализован!');
+        Exit;
       end;
     end;
+    qrTemp.ParamByName('ID').AsInteger := qrRatesExID_TABLES.AsInteger;
+    qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+    qrTemp.ExecSQL;
     // Пересчитывает все величины по данной строке
     ReCalcRowRates;
   end;
@@ -2546,12 +2466,12 @@ procedure TFormCalculationEstimate.ReCalcRowRates;
 begin
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE);';
-  qrTemp.ParamByName('ID').AsInteger := qrRatesIID.AsInteger;
-  qrTemp.ParamByName('TYPE').AsInteger := qrRatesTYPE_DATA.AsInteger;
+  qrTemp.ParamByName('ID').AsInteger := qrRatesExID_TABLES.AsInteger;
+  qrTemp.ParamByName('TYPE').AsInteger := qrRatesExID_TYPE_DATA.AsInteger;
   qrTemp.ExecSQL;
 
   // Для расценок обновляется кол-во у заменяющих материалов
-  if qrRatesTYPE_DATA.AsInteger = 1 then
+  if qrRatesExID_TYPE_DATA.AsInteger = 1 then
     GridRatesUpdateCount;
 
   GridRatesRowLoad;
@@ -2564,42 +2484,42 @@ var
   RecNo: Integer;
   NewCount: Real;
 begin
-  RecNo := qrRates.RecNo;
+  RecNo := qrRatesEx.RecNo;
   // Для раценки обновляем COUNTFORCALC и у неучтенных или заменяющих материалов
-  if qrRatesTYPE_DATA.AsInteger = 1 then
+  if qrRatesExID_TYPE_DATA.AsInteger = 1 then
   begin
-    qrRates.Tag := 1; // Блокирует обработчики событий датасета
-    qrRates.DisableControls;
+    qrRatesEx.Tag := 1; // Блокирует обработчики событий датасета
+    qrRatesEx.DisableControls;
     try
-      if not qrRates.Eof then
-        qrRates.Next;
+      if not qrRatesEx.Eof then
+        qrRatesEx.Next;
 
       qrTemp.Active := False;
 
-      while not qrRates.Eof do
+      while not qrRatesEx.Eof do
       begin
         if CheckMatINRates then
         begin
           NewCount := 0;
-          qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp ' + 'WHERE ID = ' +
-            IntToStr(qrRatesMID.AsInteger);
+          qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp ' +
+            'WHERE ID = ' + IntToStr(qrRatesExID_TABLES.AsInteger);
           qrTemp.Active := True;
           if not qrTemp.Eof then
             NewCount := qrTemp.Fields[0].AsFloat;
           qrTemp.Active := False;
 
-          qrRates.Edit;
-          qrRatesCOUNT.AsFloat := NewCount;
-          qrRates.Post;
+          qrRatesEx.Edit;
+          qrRatesExOBJ_COUNT.AsFloat := NewCount;
+          qrRatesEx.Post;
         end
         else
           Break; // так как датасет отсортирован
-        qrRates.Next;
+        qrRatesEx.Next;
       end;
-      qrRates.RecNo := RecNo;
+      qrRatesEx.RecNo := RecNo;
     finally
-      qrRates.Tag := 0;
-      qrRates.EnableControls
+      qrRatesEx.Tag := 0;
+      qrRatesEx.EnableControls
     end;
   end;
 end;
@@ -2608,32 +2528,32 @@ procedure TFormCalculationEstimate.UpdateMatCountInGridRate(AMId: Integer; AMCou
 var
   RecNo: Integer;
 begin
-  RecNo := qrRates.RecNo;
+  RecNo := qrRatesEx.RecNo;
   // Для раценки обновляем COUNTFORCALC и у неучтенных или заменяющих материалов
 
-  qrRates.Tag := 1; // Блокирует обработчики событий датасета
-  qrRates.DisableControls;
+  qrRatesEx.Tag := 1; // Блокирует обработчики событий датасета
+  qrRatesEx.DisableControls;
   try
-    qrRates.First;
+    qrRatesEx.First;
 
-    while not qrRates.Eof do
+    while not qrRatesEx.Eof do
     begin
-      if qrRatesMID.AsInteger = AMId then
+      if (qrRatesExID_TYPE_DATA.AsInteger = 2) and
+        (qrRatesExID_TABLES.AsInteger = AMId) then
       begin
-        qrRates.Edit;
-        qrRatesCOUNT.AsFloat := AMCount;
-        qrRates.Post;
+        qrRatesEx.Edit;
+        qrRatesExOBJ_COUNT.AsFloat := AMCount;
+        qrRatesEx.Post;
         Break;
       end;
 
-      qrRates.Next;
+      qrRatesEx.Next;
     end;
-    qrRates.RecNo := RecNo;
+    qrRatesEx.RecNo := RecNo;
   finally
-    qrRates.Tag := 0;
-    qrRates.EnableControls
+    qrRatesEx.Tag := 0;
+    qrRatesEx.EnableControls
   end;
-
 end;
 
 procedure TFormCalculationEstimate.ReplacementClick(Sender: TObject);
@@ -2653,7 +2573,7 @@ begin
       for i := 0 to frmReplace.RateCount - 1 do
       begin
         qrTemp.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, 1, :OWNER_ID, 0);';
-        qrTemp.ParamByName('ESTIMATE_ID').Value := qrRatesESTIMATE_ID.AsInteger;
+        qrTemp.ParamByName('ESTIMATE_ID').Value := qrRatesExSM_ID.AsInteger;
         qrTemp.ParamByName('OWNER_ID').Value := frmReplace.RateIDs[i];
         qrTemp.ExecSQL;
       end;
@@ -2672,9 +2592,9 @@ begin
   begin
     qrTemp.SQL.Text := 'UPDATE card_rate_temp SET ZNORMATIVS_ID=:ZNORMATIVS_ID WHERE ID=:ID';
     qrTemp.ParamByName('ZNORMATIVS_ID').AsInteger := fWinterPrice.OutValue;
-    qrTemp.ParamByName('ID').AsInteger := qrRatesOWNER_ID.AsInteger;
+    qrTemp.ParamByName('ID').AsInteger := qrRatesExID_TABLES.AsInteger;
     qrTemp.ExecSQL;
-    qrRatesZNORMATIVS_ID.Value := fWinterPrice.OutValue;
+    qrRatesExZNORMATIVS_ID.Value := fWinterPrice.OutValue;
     FillingWinterPrice('');
     CloseOpen(qrCalculations);
   end;
@@ -2685,7 +2605,7 @@ begin
   if Application.MessageBox('Вы действительно хотите заменить коэф. зимнего удорожания в выбранной расценке?',
     'Application.Title', MB_OKCANCEL + MB_ICONQUESTION + MB_TOPMOST) = IDOK then
   begin
-    qrRatesZNORMATIVS_ID.Value := 0;
+    qrRatesExZNORMATIVS_ID.Value := 0;
     FillingWinterPrice(qrRatesCODEINRATE.AsString);
     CloseOpen(qrCalculations);
   end;
@@ -2974,48 +2894,48 @@ end;
 
 procedure TFormCalculationEstimate.GridRatesRowLoad;
 begin
-  case qrRatesTYPE_DATA.AsInteger of
+  case qrRatesExID_TYPE_DATA.AsInteger of
     1: // РАСЦЕНКА
       begin
         // Заполнение таблиц справа
-        FillingTableMaterials(qrRatesRID.AsInteger, 0);
-        FillingTableMechanizm(qrRatesRID.AsInteger, 0);
-        FillingTableDescription(qrRatesIDID.AsInteger);
+        FillingTableMaterials(qrRatesExID_TABLES.AsInteger, 0);
+        FillingTableMechanizm(qrRatesExID_TABLES.AsInteger, 0);
+        FillingTableDescription(qrRatesExID_TABLES.AsInteger);
       end;
     2: // МАТЕРИАЛ
       begin
         // Заменяющие неучтенный материал в расценке
         if CheckMatINRates then
         begin
-          FillingTableMaterials(qrRatesID_CARD_RATE.AsInteger, 0);
+          FillingTableMaterials(qrRatesExID_RATE.AsInteger, 0);
         end
         else
         begin // Отдельный материал и вынесенные
-          FillingTableMaterials(0, qrRatesMID.AsInteger);
+          FillingTableMaterials(0, qrRatesExID_TABLES.AsInteger);
         end;
       end;
     3: // МЕХАНИЗМ
       begin
         // Заполнение таблицы механизмов
-        FillingTableMechanizm(0, qrRatesMEID.AsInteger);
+        FillingTableMechanizm(0, qrRatesExID_TABLES.AsInteger);
       end;
     4: // Оборудование
       begin
         // Заполнение таблицы Оборудования
-        FillingTableDevises(qrRatesDEID.AsInteger);
+        FillingTableDevises(qrRatesExID_TABLES.AsInteger);
       end;
     5: // Свалки
       begin
         // Заполнение таблицы свалок
-        FillingTableDump(qrRatesDUID.AsInteger);
+        FillingTableDump(qrRatesExID_TABLES.AsInteger);
       end;
     6, 7, 8, 9: // транспорт
       begin
-        FillingTableTransp(qrRatesTRID.AsInteger);
+        FillingTableTransp(qrRatesExID_TABLES.AsInteger);
       end;
     10, 11: // Пуск и регулировка
       begin
-        FillingTableStartup(qrRatesTYPE_DATA.AsInteger);
+        FillingTableStartup(qrRatesExID_TYPE_DATA.AsInteger);
       end;
   end;
 end;
@@ -3042,7 +2962,7 @@ begin
   // BtnChange := False;
   // Гасит все правые кнопки
   BottomTopMenuEnabled(False);
-  case qrRatesTYPE_DATA.AsInteger of
+  case qrRatesExID_TYPE_DATA.AsInteger of
     1: // РАСЦЕНКА
       begin
         // настройка кнопочек свержу справа, для расценок всегда выбирается "материалы"
@@ -3050,7 +2970,11 @@ begin
         btnMechanisms.Enabled := True;
         btnDescription.Enabled := True;
 
-        if btnMaterials.Down or btnEquipments.Down or btnDump.Down or btnTransp.Down or btnStartup.Down then
+        if btnMaterials.Down or
+           btnEquipments.Down or
+           btnDump.Down or
+           btnTransp.Down or
+           btnStartup.Down then
         begin
           btnMaterials.Down := True;
           btnMaterialsClick(btnMaterials);
@@ -3063,7 +2987,8 @@ begin
           btnDescriptionClick(btnDescription);
 
         // Средний разряд рабочих-строителей
-        EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesIDID.AsInteger)));
+        EditCategory.Text :=
+          MyFloatToStr(GetRankBuilders(IntToStr(qrRatesExID_TABLES.AsInteger)));
 
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(qrRatesCODEINRATE.AsString);
@@ -3078,23 +3003,19 @@ begin
         PanelClientRight.Visible := True;
         PanelNoData.Visible := False;
 
-        if CheckMatUnAccountingRates then // неучтенный материал в расценке
-        begin
-          PMDelete.Enabled := False;
-        end;
-
         // Нажимаем на кнопку материалов, для отображения таблицы материалов
         btnMaterialsClick(btnMaterials);
 
         // Средний разряд рабочих-строителей
         if CheckMatINRates then
-          EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
-
-        EditCategory.Text := MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
-
-        // Запоняем строку зимнего удорожания
-        if CheckMatINRates then
+        begin
+          PMDelete.Enabled := False;
+          EditCategory.Text :=
+            MyFloatToStr(GetRankBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
+          EditCategory.Text :=
+            MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
           FillingWinterPrice(qrRatesCODEINRATE.AsString);
+        end;
 
         CalcPrice := '10';
       end;
@@ -3108,9 +3029,6 @@ begin
 
         // Нажимаем на кнопку механизмов, для отображения таблицы механизмов
         btnMechanismsClick(btnMechanisms);
-
-        // Запоняем строку зимнего удорожания
-        FillingWinterPrice(qrRatesCODEINRATE.AsString);
 
         CalcPrice := '01';
       end;
@@ -3170,9 +3088,9 @@ begin
   qrTemp.Active := False;
   qrTemp.SQL.Text :=
     'SELECT COUNT(*) AS CNT FROM calculation_coef_temp where id_estimate=:id_estimate and id_owner=:id_owner and id_type_data=:id_type_data';
-  qrTemp.ParamByName('id_estimate').AsInteger := qrRatesESTIMATE_ID.AsInteger;
-  qrTemp.ParamByName('id_owner').AsInteger := qrRatesOWNER_ID.AsInteger;
-  qrTemp.ParamByName('id_type_data').AsInteger := qrRatesTYPE_DATA.AsInteger;
+  qrTemp.ParamByName('id_estimate').AsInteger := qrRatesExSM_ID.AsInteger;
+  qrTemp.ParamByName('id_owner').AsInteger := qrRatesExID_TABLES.AsInteger;
+  qrTemp.ParamByName('id_type_data').AsInteger := qrRatesExID_TYPE_DATA.AsInteger;
   qrTemp.Active := True;
   Result := qrTemp.FieldByName('CNT').AsInteger;
   qrTemp.Active := False;
@@ -3237,7 +3155,6 @@ end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefOrdersClick(Sender: TObject);
 begin
-  // FormCoefficientOrders.ShowForm(IdEstimate, RateId, 0);
   GetStateCoefOrdersInRate;
 end;
 
@@ -3266,13 +3183,16 @@ procedure TFormCalculationEstimate.PopupMenuMechanizmsPopup(Sender: TObject);
 begin
   PMMechEdit.Enabled := not CheckMechReadOnly;
 
-  PMMechFromRates.Enabled := (not CheckMechReadOnly) and (qrRatesMEID.AsInteger = 0) and
+  PMMechFromRates.Enabled := (not CheckMechReadOnly) and
+    (qrRatesExID_RATE.AsInteger > 0) and
     (qrMechanizmREPLACED.AsInteger = 0);
 
-  PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) and (qrMechanizmID_REPLACED.AsInteger = 0) and
-    (qrRatesMEID.AsInteger = 0); // не заменяющуй
+  PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) and
+    (qrMechanizmID_REPLACED.AsInteger = 0) and
+    (qrRatesExID_RATE.AsInteger > 0); // не заменяющуй
 
-  PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0);
+  PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0) and
+    (qrMechanizmFROM_RATE.AsInteger = 0);
 end;
 
 procedure TFormCalculationEstimate.PopupMenuRatesAdd352Click(Sender: TObject);
@@ -3550,7 +3470,8 @@ end;
 // Удаление чего-либо из сметы
 procedure TFormCalculationEstimate.PMDeleteClick(Sender: TObject);
 begin
-  if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrRates.FieldByName('CODE').AsString + '?'),
+  if MessageBox(0, PChar('Вы действительно хотите удалить ' +
+    qrRatesExOBJ_CODE.AsString + '?'),
     CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
     Exit;
 
@@ -3561,13 +3482,13 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('CALL DeleteDataFromAct(:IdTypeData, :Id);');
-      ParamByName('IdTypeData').Value := qrRatesTYPE_DATA.AsInteger;
-      ParamByName('Id').Value := qrRatesRID.AsInteger;
+      ParamByName('IdTypeData').Value := qrRatesExID_TYPE_DATA.AsInteger;
+      ParamByName('Id').Value := qrRatesExID_TABLES.AsInteger;
       ExecSQL;
     end;
   end
   else
-    case qrRatesTYPE_DATA.AsInteger of
+    case qrRatesExID_TYPE_DATA.AsInteger of
       1: // Расценка
         try
           with qrTemp do
@@ -3575,12 +3496,13 @@ begin
             Active := False;
             SQL.Clear;
             SQL.Add('CALL DeleteRate(:id);');
-            ParamByName('id').Value := qrRatesRID.AsInteger;
+            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
             ExecSQL;
           end;
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении расценки возникла ошибка:' + sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении расценки возникла ошибка:' +
+              sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       2: // Материал
@@ -3590,13 +3512,14 @@ begin
             Active := False;
             SQL.Clear;
             SQL.Add('CALL DeleteMaterial(:id);');
-            ParamByName('id').Value := qrRatesMID.AsInteger;
+            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
             ExecSQL;
           end;
 
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении материала возникла ошибка:' +
+              sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       3: // Механизм
@@ -3606,13 +3529,14 @@ begin
             Active := False;
             SQL.Clear;
             SQL.Add('CALL DeleteMechanism(:id);');
-            ParamByName('id').Value := qrRatesMEID.AsInteger;
+            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
             ExecSQL;
           end;
 
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении механизма возникла ошибка:' +
+              sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       4: // Оборудование
@@ -3622,13 +3546,14 @@ begin
             Active := False;
             SQL.Clear;
             SQL.Add('CALL DeleteDevice(:id);');
-            ParamByName('id').Value := qrRatesDEID.AsInteger;
+            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
             ExecSQL;
           end;
 
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении оборудования возникла ошибка:' +
+              sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       5: // Свалка
@@ -3638,12 +3563,13 @@ begin
             Active := False;
             SQL.Clear;
             SQL.Add('CALL DeleteDump(:id);');
-            ParamByName('id').Value := qrRatesDUID.AsInteger;
+            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
             ExecSQL;
           end;
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении свалки возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+            MessageBox(0, PChar('При удалении свалки возникла ошибка:' +
+              sLineBreak + sLineBreak + E.Message),
               CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       6, 7, 8, 9: // Транспорт
@@ -3653,12 +3579,13 @@ begin
             Active := False;
             SQL.Clear;
             SQL.Add('CALL DeleteTransp(:id);');
-            ParamByName('id').Value := qrRatesTRID.AsInteger;
+            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
             ExecSQL;
           end;
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' +
+              sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       10, 11: // Пуск и регулировка
@@ -3668,12 +3595,13 @@ begin
             Active := False;
             SQL.Clear;
             SQL.Add('DELETE FROM data_estimate_temp WHERE (id_type_data = ' +
-              IntToStr(qrRatesTYPE_DATA.AsInteger) + ');');
+              IntToStr(qrRatesExID_TYPE_DATA.AsInteger) + ');');
             ExecSQL;
           end;
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' +
+              sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
     end;
@@ -3688,18 +3616,19 @@ end;
 // Общий пункт для свалок и транспорта
 procedure TFormCalculationEstimate.PMDumpEditClick(Sender: TObject);
 begin
-  if qrRatesTYPE_DATA.AsInteger = 5 then
+  if qrRatesExID_TYPE_DATA.AsInteger = 5 then
     if GetDumpForm(IdEstimate, qrDumpID.AsInteger, False) then
       OutputDataToTable;
 
-  if qrRatesTYPE_DATA.AsInteger in [6, 7, 8, 9] then
-    if GetTranspForm(IdEstimate, qrTranspID.AsInteger, qrRatesTYPE_DATA.AsInteger, False) then
+  if qrRatesExID_TYPE_DATA.AsInteger in [6, 7, 8, 9] then
+    if GetTranspForm(IdEstimate, qrTranspID.AsInteger,
+      qrRatesExID_TYPE_DATA.AsInteger, False) then
       OutputDataToTable;
 end;
 
 procedure TFormCalculationEstimate.PMEditClick(Sender: TObject);
 begin
-  case qrRatesTYPE_DATA.AsInteger of
+  case qrRatesExID_TYPE_DATA.AsInteger of
     5:
       PMDumpEditClick(nil);
     6, 7, 8, 9:
@@ -3710,7 +3639,7 @@ end;
 procedure TFormCalculationEstimate.PopupMenuTableLeftPopup(Sender: TObject);
 begin
   // Нельзя удалить неучтенный материал из таблицы расценок
-  PMDelete.Enabled := not(CheckMatUnAccountingRates);
+  PMDelete.Enabled := not(CheckMatINRates);
 end;
 
 procedure TFormCalculationEstimate.EstimateBasicDataClick(Sender: TObject);
@@ -3821,7 +3750,7 @@ begin
   end;
   qrMaterialNUM.ReadOnly := True;
 
-  if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
+  if (qrRatesExID_RATE.AsInteger > 0) then
     dbgrdMaterial.Columns[2].Visible := True
   else
     dbgrdMaterial.Columns[2].Visible := False;
@@ -3891,7 +3820,8 @@ begin
   // Открытие датасета для заполнения таблицы материалов
   qrMechanizm.Active := False;
   // Заполняет Mechanizms_temp
-  qrMechanizm.SQL.Text := 'call GetMechanizms(' + IntToStr(fType) + ',' + IntToStr(fID) + ')';
+  qrMechanizm.SQL.Text := 'call GetMechanizms(' + IntToStr(fType) + ',' +
+    IntToStr(fID) + ')';
   qrMechanizm.ExecSQL;
 
   qrMechanizm.Active := False;
@@ -3916,7 +3846,7 @@ begin
   end;
   qrMechanizmNUM.ReadOnly := True;
 
-  if (qrRatesRID.AsInteger > 0) and (qrRatesFROM_RATE.AsInteger = 0) then
+  if (qrRatesExID_RATE.AsInteger > 0) then
     dbgrdMechanizm.Columns[2].Visible := True
   else
     dbgrdMechanizm.Columns[2].Visible := False;
@@ -3948,7 +3878,8 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 1;');
+      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' +
+        vIdNormativ + ' and work_id = 1;');
       Active := True;
 
       if FieldByName('norma').Value <> null then
@@ -3956,7 +3887,8 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении значения "Средний разряд" возникла ошибка:' + sLineBreak + sLineBreak
+      MessageBox(0, PChar('При получении значения "Средний разряд" возникла ошибка:' +
+        sLineBreak + sLineBreak
         + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -3970,7 +3902,8 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 2;');
+      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ +
+        ' and work_id = 2;');
       Active := True;
 
       if FieldByName('norma').AsVariant <> null then
@@ -3978,7 +3911,8 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении значения "ЗТ строителей" возникла ошибка:' + sLineBreak + sLineBreak
+      MessageBox(0, PChar('При получении значения "ЗТ строителей" возникла ошибка:' +
+        sLineBreak + sLineBreak
         + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -3992,7 +3926,8 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 3;');
+      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ +
+        ' and work_id = 3;');
       Active := True;
 
       if FieldByName('norma').AsVariant <> null then
@@ -4000,7 +3935,8 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении значения "ЗТ машинистов" возникла ошибка:' + sLineBreak + sLineBreak
+      MessageBox(0, PChar('При получении значения "ЗТ машинистов" возникла ошибка:' +
+        sLineBreak + sLineBreak
         + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4048,7 +3984,8 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT objstroj.obj_region as "IdRegion" FROM objcards, objstroj ' +
-        'WHERE objcards.stroj_id = objstroj.stroj_id and obj_id = ' + IntToStr(IdObject) + ';');
+        'WHERE objcards.stroj_id = objstroj.stroj_id and obj_id = ' +
+        IntToStr(IdObject) + ';');
       Active := True;
 
       // Получаем регион (1-город, 2-село, 3-минск)
@@ -4060,8 +3997,8 @@ begin
       SQL.Clear;
 
       if IdRegion = 3 then
-        StrQuery := 'SELECT stavka_m_rab as "RateWorker" FROM stavka WHERE monat = ' + IntToStr(MonthEstimate)
-          + ' and year = ' + IntToStr(YearEstimate) + ';'
+        StrQuery := 'SELECT stavka_m_rab as "RateWorker" FROM stavka WHERE monat = ' +
+          IntToStr(MonthEstimate) + ' and year = ' + IntToStr(YearEstimate) + ';'
       else
         StrQuery := 'SELECT stavka_rb_rab as "RateWorker" FROM stavka WHERE monat = ' +
           IntToStr(MonthEstimate) + ' and year = ' + IntToStr(YearEstimate) + ';';
@@ -4087,7 +4024,8 @@ begin
     Result := TW;
   except
     on E: Exception do
-      MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' + sLineBreak + sLineBreak +
+      MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' +
+        sLineBreak + sLineBreak +
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4101,8 +4039,8 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norm_ras FROM mechanizmnorm WHERE normativ_id = ' + vIdNormativ + ' and mechanizm_id = '
-        + vIdMechanizm + ';');
+      SQL.Add('SELECT norm_ras FROM mechanizmnorm WHERE normativ_id = ' +
+        vIdNormativ + ' and mechanizm_id = ' + vIdMechanizm + ';');
       Active := True;
 
       if FieldByName('norm_ras').AsVariant <> null then
@@ -4110,7 +4048,8 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' + sLineBreak +
+      MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' +
+        sLineBreak +
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4124,8 +4063,8 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norm_ras FROM mechanizmnorm WHERE normativ_id = ' + vIdNormativ + ' and mechanizm_id = '
-        + vIdMechanizm + ';');
+      SQL.Add('SELECT norm_ras FROM mechanizmnorm WHERE normativ_id = ' +
+        vIdNormativ + ' and mechanizm_id = ' + vIdMechanizm + ';');
       Active := True;
 
       if FieldByName('norm_ras').AsVariant <> null then
@@ -4133,7 +4072,8 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' + sLineBreak +
+      MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' +
+        sLineBreak +
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4238,7 +4178,8 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT IFNULL(monat, 0) as "Month", IFNULL(year, 0) as "Year" FROM stavka WHERE stavka_id = (SELECT stavka_id From smetasourcedata '
+      SQL.Add('SELECT IFNULL(monat, 0) as "Month", IFNULL(year, 0) as "Year" ' +
+        'FROM stavka WHERE stavka_id = (SELECT stavka_id From smetasourcedata '
         + 'WHERE sm_id = ' + IntToStr(IdEstimate) + ');');
       Active := True;
 
@@ -4248,8 +4189,8 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе месяца и года из таблицы СТАВКА возникла ошибка:' + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе месяца и года из таблицы СТАВКА возникла ошибка:' +
+        sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4372,16 +4313,17 @@ end;
 procedure TFormCalculationEstimate.FillingWinterPrice(vNumber: string);
 begin
   try
-    if qrRatesZNORMATIVS_ID.AsInteger <> 0 then
+    if qrRatesExZNORMATIVS_ID.AsInteger <> 0 then
       with qrTemp do
       begin
         Active := False;
         SQL.Clear;
         SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name" ' +
           'FROM znormativs WHERE znormativs.ZNORMATIVS_ID=:ZNORMATIVS_ID LIMIT 1;');
-        ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesZNORMATIVS_ID.AsInteger;
+        ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesExZNORMATIVS_ID.AsInteger;
         Active := True;
-        EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
+        EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' +
+          FieldByName('Name').AsVariant;
       end
     else
       with qrTemp do
@@ -4398,10 +4340,10 @@ begin
           if (vNumber > FieldByName('From').AsVariant) and (vNumber < FieldByName('On').AsVariant) then
           begin
             EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
-            qrRatesZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
+            qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
             qrTemp.SQL.Text := 'UPDATE card_rate_temp SET ZNORMATIVS_ID=:ZNORMATIVS_ID WHERE ID=:ID';
-            qrTemp.ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesZNORMATIVS_ID.AsInteger;
-            qrTemp.ParamByName('ID').AsInteger := qrRatesOWNER_ID.AsInteger;
+            qrTemp.ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesExZNORMATIVS_ID.AsInteger;
+            qrTemp.ParamByName('ID').AsInteger := qrRatesExID_TABLES.AsInteger;
             qrTemp.ExecSQL;
             Break;
           end;
@@ -4454,17 +4396,17 @@ begin
   qrDescription.Active := False;
 
   // На всякий случай, что-бы избежать глюков
-  if not qrRates.Active then
+  if not qrRatesEx.Active then
     Exit;
 
-  if qrRates.State in [dsInsert] then
+  if qrRatesEx.State in [dsInsert] then
   begin
     // в режиме добавления строки редактируется код, а не количество
-    qrRatesCOUNT.ReadOnly := True;
-    qrRatesCODE.ReadOnly := False;
+    qrRatesExOBJ_COUNT.ReadOnly := True;
+    qrRatesExOBJ_CODE.ReadOnly := False;
 
     // Если нет расценок, гасим все кнопки, вешаем панель нет данных
-    if qrRates.Eof then
+    if qrRatesEx.Eof then
     begin
       BottomTopMenuEnabled(False);
       TestOnNoDataNew(qrMaterial);
@@ -4480,8 +4422,8 @@ begin
   FixDBGridColumnsWidth(dbgrdCalculations);
 
   // Можно редактировать кол-во для любой строки
-  qrRatesCODE.ReadOnly := True;
-  Panel1.Visible := (qrRatesTYPE_DATA.Value = 1);
+  qrRatesExOBJ_CODE.ReadOnly := True;
+  Panel1.Visible := (qrRatesExID_TYPE_DATA.Value = 1);
 
   // заполняет таблицы справа
   GridRatesRowSellect;
@@ -4525,7 +4467,8 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе «ЗП машиниста» возникла ошибка:' + sLineBreak + E.Message),
+      MessageBox(0, PChar('При запросе «ЗП машиниста» возникла ошибка:' +
+        sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4794,8 +4737,8 @@ begin
     + 'SELECT :id_estimate, :id_type_data, :id_owner, coef_id,COEF_NAME,COEF_VALUE,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH'#13
     + 'FROM coef WHERE coef.coef_id=:coef_id';
   qrTemp.ParamByName('id_estimate').AsInteger := IdEstimate;
-  qrTemp.ParamByName('id_owner').AsInteger := qrRates.FieldByName('owner_id').AsInteger;
-  qrTemp.ParamByName('id_type_data').AsInteger := qrRatesTYPE_DATA.AsInteger;
+  qrTemp.ParamByName('id_owner').AsInteger := qrRatesExID_TABLES.AsInteger;
+  qrTemp.ParamByName('id_type_data').AsInteger := qrRatesExID_TYPE_DATA.AsInteger;
   qrTemp.ParamByName('coef_id').AsInteger := coef_id;
   qrTemp.ExecSQL;
   CloseOpen(qrCalculations);
@@ -4818,7 +4761,8 @@ begin
     OutputDataToTable;
   except
     on E: Exception do
-      MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
+      MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' +
+        sLineBreak + sLineBreak +
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4840,7 +4784,8 @@ begin
     OutputDataToTable;
   except
     on E: Exception do
-      MessageBox(0, PChar('При добавлении материала возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+      MessageBox(0, PChar('При добавлении материала возникла ошибка:' +
+        sLineBreak + sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4864,7 +4809,8 @@ begin
     OutputDataToTable;
   except
     on E: Exception do
-      MessageBox(0, PChar('При добавлении механизма возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+      MessageBox(0, PChar('При добавлении механизма возникла ошибка:' +
+        sLineBreak + sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -5009,7 +4955,8 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger = qrMaterialID.AsInteger) then
+    if (qrMaterialFROM_RATE.AsInteger = 1) and
+      (qrRatesExID_RATE.AsInteger > 0) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD;
@@ -5022,21 +4969,22 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd)
+    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and
+       (dbgrdMaterial = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
-    if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (grRatesEx = LastEntegGrd) then
+    if (qrRatesExID_TYPE_DATA.AsInteger = 2) and
+       (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and
+       (grRatesEx = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMaterialFROM_RATE.AsInteger = 0) and (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
-      (dbgrdMaterial = LastEntegGrd) then
+    if (qrMaterialFROM_RATE.AsInteger = 0) and
+       (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
+       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
-    { // никакой цветовой подсветки для неучтеных
-      if CheckMatUnAccountingMatirials then
-      Brush.Color := PS.BackgroundRows; }
 
     Str := '';
     // Подсветка синим подшапок таблицы
@@ -5056,7 +5004,8 @@ begin
     end;
 
     // Не отображает кол-во и суммы для замененных или вынесеных
-    if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesMID.AsInteger = qrMaterialID.AsInteger)) or
+    if ((qrMaterialFROM_RATE.AsInteger = 1) and
+        (qrRatesExID_RATE.AsInteger > 0)) or
       (qrMaterialREPLACED.AsInteger = 1) then
     begin
       if Column.Index in [4, 8, 9, 10, 11, 15, 16, 17, 18] then
@@ -5153,7 +5102,7 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки механизмы
-    if (qrMechanizmFROM_RATE.AsInteger = 1) and not(qrRatesMEID.AsInteger > 0) then
+    if (qrMechanizmFROM_RATE.AsInteger = 1) and(qrRatesExID_RATE.AsInteger > 0) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
@@ -5166,12 +5115,14 @@ begin
     end;
 
     // Подсветка замененного механизма
-    if (IdReplasedMech > 0) and (qrMechanizmID.AsInteger = IdReplasedMech) and (dbgrdMechanizm = LastEntegGrd)
+    if (IdReplasedMech > 0) and (qrMechanizmID.AsInteger = IdReplasedMech) and
+      (dbgrdMechanizm = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMechanizmFROM_RATE.AsInteger = 0) and (IdReplasingMech = qrMechanizmID_REPLACED.AsInteger) and
+    if (qrMechanizmFROM_RATE.AsInteger = 0) and
+      (IdReplasingMech = qrMechanizmID_REPLACED.AsInteger) and
       (dbgrdMechanizm = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
@@ -5192,7 +5143,7 @@ begin
         Str := Column.Field.AsString;
     end;
 
-    if ((qrMechanizmFROM_RATE.AsInteger = 1) and not(qrRatesMEID.AsInteger > 0)) or
+    if ((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_RATE.AsInteger > 0)) or
       (qrMechanizmREPLACED.AsInteger = 1) then
     begin
       if Column.Index in [4, 7, 8, 11, 12, 16, 17, 20, 21, 24] then
@@ -5246,12 +5197,13 @@ begin
 
     // Подсвечивается жирным только если есть фокус
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
-      (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) and (grRatesEx = LastEntegGrd) then
+      (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) and
+      (grRatesEx = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
 
-    // Подсветка вынесенного и заменяющего материала за расценку материала
+   { // Подсветка вынесенного и заменяющего материала за расценку материала
     // Вынесение за расценку имеет приоритет над заменой
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = LastEntegGrd) then
     begin
@@ -5264,13 +5216,11 @@ begin
     begin
       if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) and (qrRatesMEID.AsInteger > 0) then
         Font.Style := Font.Style + [fsbold];
-    end;
+    end;    }
 
     // Выделение цветом неучтённых материалов расценки и заменяющих их
     if CheckMatINRates then
     begin
-      if CheckMatUnAccountingRates then
-        Font.Color := clGray;
       if Column.Index = 1 then
         sdvig := Indent;
     end
