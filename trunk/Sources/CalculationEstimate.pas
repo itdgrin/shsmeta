@@ -2991,7 +2991,7 @@ begin
           MyFloatToStr(GetRankBuilders(IntToStr(qrRatesExID_TABLES.AsInteger)));
 
         // Запоняем строку зимнего удорожания
-        FillingWinterPrice(qrRatesCODEINRATE.AsString);
+        FillingWinterPrice(qrRatesExOBJ_CODE.AsString);
 
         CalcPrice := '11';
       end;
@@ -4318,21 +4318,28 @@ begin
       begin
         Active := False;
         SQL.Clear;
-        SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name" ' +
+        SQL.Add('SELECT CONCAT(num, " ", name) as "Name" ' +
           'FROM znormativs WHERE znormativs.ZNORMATIVS_ID=:ZNORMATIVS_ID LIMIT 1;');
         ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesExZNORMATIVS_ID.AsInteger;
         Active := True;
-        EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' +
-          FieldByName('Name').AsVariant;
+        EditWinterPrice.Text := FieldByName('Name').AsVariant;
       end
     else
-      with qrTemp do
+    with qrTemp do
       begin
-        // TODO Добавить условие по новым таблицам с датами!!!!
         Active := False;
         SQL.Clear;
         SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name", coef as "Coef", coef_zp as "CoefZP", s as "From", po as "On" '
-          + 'FROM znormativs, znormativs_detail WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID;');
+          + 'FROM znormativs, znormativs_detail, znormativs_value '
+          + 'WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID  '
+          + 'AND znormativs.ZNORMATIVS_ID = znormativs_value.ZNORMATIVS_ID '
+          + 'AND znormativs.DEL_FLAG = 0 '
+          + 'AND znormativs_value.ZNORMATIVS_ONDATE_ID = ('
+          + '  SELECT znormativs_ondate.ID'
+          + '    FROM znormativs_ondate'
+          + '    WHERE `znormativs_ondate`.`onDate` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = (SELECT STAVKA_ID FROM smetasourcedata WHERE SM_ID='+qrRatesExSM_ID.AsString+'))'
+          + '    AND `znormativs_ondate`.`DEL_FLAG` = 0)'
+          + ';');
         Active := True;
         First;
         while not Eof do
@@ -4341,10 +4348,6 @@ begin
           begin
             EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
             qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
-            qrTemp.SQL.Text := 'UPDATE card_rate_temp SET ZNORMATIVS_ID=:ZNORMATIVS_ID WHERE ID=:ID';
-            qrTemp.ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesExZNORMATIVS_ID.AsInteger;
-            qrTemp.ParamByName('ID').AsInteger := qrRatesExID_TABLES.AsInteger;
-            qrTemp.ExecSQL;
             Break;
           end;
           Next;
@@ -5195,6 +5198,10 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
+    if qrRatesExID_TYPE_DATA.AsInteger = -3 then
+      Brush.Color := clSilver;
+
+
     // Подсвечивается жирным только если есть фокус
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
       (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) and
@@ -5219,13 +5226,13 @@ begin
     end;    }
 
     // Выделение цветом неучтённых материалов расценки и заменяющих их
-    if CheckMatINRates then
+    {if CheckMatINRates then
     begin
       if Column.Index = 1 then
         sdvig := Indent;
     end
     else
-      sdvig := '';
+      sdvig := '';  }
 
     FillRect(Rect);
 

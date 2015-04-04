@@ -5189,6 +5189,7 @@
         TargetDataType = dtInt32
       end>
     FormatOptions.DefaultParamDataType = ftBCD
+    FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ### ##0.#######'
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.CountUpdatedRecords = False
     UpdateOptions.CheckRequired = False
