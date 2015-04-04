@@ -207,29 +207,7 @@ type
     qrTemp1: TFDQuery;
     frSummaryCalculations: TfrCalculationEstimateSummaryCalculations;
     frSSR: TfrCalculationEstimateSSR;
-    qrRates: TFDQuery;
-    dsRates: TDataSource;
     dsDescription: TDataSource;
-    qrRatesDID: TIntegerField;
-    qrRatesRID: TIntegerField;
-    qrRatesMID: TIntegerField;
-    qrRatesMEID: TIntegerField;
-    qrRatesIID: TIntegerField;
-    qrRatesTYPE_DATA: TIntegerField;
-    qrRatesIDID: TIntegerField;
-    qrRatesCODE: TStringField;
-    qrRatesCOUNT: TFloatField;
-    qrRatesUNIT: TStringField;
-    qrRatesCAPTION: TStringField;
-    qrRatesCONSIDERED: TIntegerField;
-    qrRatesREPLACED: TIntegerField;
-    qrRatesID_CARD_RATE: TIntegerField;
-    qrRatesID_REPLACED: TIntegerField;
-    qrRatesFROM_RATE: TIntegerField;
-    qrRatesSCROLL: TIntegerField;
-    qrRatesNUM: TIntegerField;
-    qrRatesRATEIDINRATE: TIntegerField;
-    qrRatesCODEINRATE: TStringField;
     qrMechanizm: TFDQuery;
     dsMechanizm: TDataSource;
     qrDescriptionwork: TStringField;
@@ -254,7 +232,6 @@ type
     qrMechanizmFCOAST_NDS: TIntegerField;
     HeaderControl1: THeaderControl;
     N8: TMenuItem;
-    qrRatesCOUNTFORCALC: TFloatField;
     PMMechEdit: TMenuItem;
     qrMechanizmFZP_MACH_NO_NDS: TIntegerField;
     qrMechanizmFZP_MACH_NDS: TIntegerField;
@@ -297,9 +274,7 @@ type
     qrMaterialTITLE: TIntegerField;
     qrMaterialPROC_TRANSP: TFloatField;
     N10: TMenuItem;
-    qrRatesSTYPE: TIntegerField;
     qrMaterialMAT_KOEF: TFloatField;
-    qrRatesDEID: TIntegerField;
     qrDevices: TFDQuery;
     dsDevices: TDataSource;
     qrDevicesID: TFDAutoIncField;
@@ -327,8 +302,6 @@ type
     dbgrdCalculations: TDBGrid;
     qrCalculations: TFDQuery;
     dsCalculations: TDataSource;
-    qrRatesESTIMATE_ID: TIntegerField;
-    qrRatesOWNER_ID: TIntegerField;
     qrMaterialMAT_SUM_NO_NDS: TLargeintField;
     qrMaterialMAT_SUM_NDS: TLargeintField;
     qrMaterialMAT_TRANSP_NO_NDS: TLargeintField;
@@ -362,7 +335,6 @@ type
     qrDevicesDEVICE_TRANSP_NDS: TLargeintField;
     qrDevicesTRANSP_PROC_PODR: TWordField;
     qrDevicesTRANSP_PROC_ZAC: TWordField;
-    qrRatesDUID: TIntegerField;
     dbmmoCAPTION: TDBMemo;
     qrDump: TFDQuery;
     dsDump: TDataSource;
@@ -395,7 +367,6 @@ type
     qrDumpWORK_COUNT: TFloatField;
     qrDumpWORK_YDW: TFloatField;
     dbgrdDescription: TJvDBGrid;
-    qrRatesTRID: TIntegerField;
     btnTransp: TSpeedButton;
     btnStartup: TSpeedButton;
     qrTransp: TFDQuery;
@@ -431,7 +402,6 @@ type
     qrTranspCLASS: TStringField;
     qrTranspTRANSP_UNIT: TStringField;
     tmRate: TTimer;
-    strngfldRatesSORTID: TStringField;
     qrMaterialCONS_REPLASED: TByteField;
     PMMatDelete: TMenuItem;
     qrMaterialCOAST_NO_NDS: TFloatField;
@@ -439,15 +409,12 @@ type
     qrOXROPR: TFDQuery;
     dblkcbbOXROPR: TDBLookupComboBox;
     dsOXROPR: TDataSource;
-    qrRatesWORK_ID: TIntegerField;
     btn1: TSpeedButton;
 
     pmWinterPrise: TPopupMenu;
     nSelectWinterPrise: TMenuItem;
     nWinterPriseSetDefault: TMenuItem;
-    qrRatesZNORMATIVS_ID: TIntegerField;
     PMMechReplace: TMenuItem;
-    qrRatesAPPLY_WINTERPRISE_FLAG: TIntegerField;
     PMMechDelete: TMenuItem;
     qrMechanizmID_REPLACED: TIntegerField;
     qrMechanizmREPLACED: TByteField;
@@ -2606,7 +2573,7 @@ begin
     'Application.Title', MB_OKCANCEL + MB_ICONQUESTION + MB_TOPMOST) = IDOK then
   begin
     qrRatesExZNORMATIVS_ID.Value := 0;
-    FillingWinterPrice(qrRatesCODEINRATE.AsString);
+    FillingWinterPrice(qrRatesExOBJ_CODE.AsString);
     CloseOpen(qrCalculations);
   end;
 end;
@@ -3007,7 +2974,7 @@ begin
         btnMaterialsClick(btnMaterials);
 
         // Средний разряд рабочих-строителей
-        if CheckMatINRates then
+        {if CheckMatINRates then
         begin
           PMDelete.Enabled := False;
           EditCategory.Text :=
@@ -3015,7 +2982,7 @@ begin
           EditCategory.Text :=
             MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
           FillingWinterPrice(qrRatesCODEINRATE.AsString);
-        end;
+        end;}
 
         CalcPrice := '10';
       end;
@@ -4418,8 +4385,8 @@ begin
   end;
 
   // Скрываем колонки зименого удорожания если не нужны
-  dbgrdCalculations.Columns[13].Visible := qrRatesAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
-  dbgrdCalculations.Columns[14].Visible := qrRatesAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
+  dbgrdCalculations.Columns[13].Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
+  dbgrdCalculations.Columns[14].Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   dbgrdCalculations.Columns[13].Width := 64;
   dbgrdCalculations.Columns[14].Width := 64;
   FixDBGridColumnsWidth(dbgrdCalculations);
