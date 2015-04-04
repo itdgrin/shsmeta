@@ -76,6 +76,8 @@ type
     procedure qrZnormativs_detailNewRecord(DataSet: TDataSet);
     procedure mDelZnormativDetailClick(Sender: TObject);
     procedure qrZnormativs_detailBeforeDelete(DataSet: TDataSet);
+    procedure tvEstimatesExpanded(Sender: TObject; Node: TTreeNode);
+    procedure tvEstimatesExpanding(Sender: TObject; Node: TTreeNode; var AllowExpansion: Boolean);
   private
 
   public
@@ -110,8 +112,10 @@ end;
 
 procedure TfWinterPrice.chkShowDeletedClick(Sender: TObject);
 begin
+  qrTreeData.AfterScroll := nil;
   qrTreeData.ParamByName('SHOW_DELETED').AsBoolean := chkShowDeleted.Checked;
   CloseOpen(qrTreeData);
+  qrTreeData.AfterScroll := qrTreeDataAfterScroll;
 end;
 
 procedure TfWinterPrice.dbedtNUMExit(Sender: TObject);
@@ -244,6 +248,16 @@ begin
   // Временное решение
   if qrTreeData.State in [dsEdit, dsInsert] then
     qrTreeData.Post;
+end;
+
+procedure TfWinterPrice.tvEstimatesExpanded(Sender: TObject; Node: TTreeNode);
+begin
+  qrTreeData.AfterScroll := qrTreeDataAfterScroll;
+end;
+
+procedure TfWinterPrice.tvEstimatesExpanding(Sender: TObject; Node: TTreeNode; var AllowExpansion: Boolean);
+begin
+  qrTreeData.AfterScroll := nil;
 end;
 
 end.
