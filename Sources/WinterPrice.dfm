@@ -33,6 +33,8 @@ object fWinterPrice: TfWinterPrice
     DragMode = dmAutomatic
     HideSelection = False
     Indent = 19
+    OnExpanding = tvEstimatesExpanding
+    OnExpanded = tvEstimatesExpanded
     Align = alCustom
     TabOrder = 0
     PopupMenu = pmZnormativ
@@ -365,6 +367,7 @@ object fWinterPrice: TfWinterPrice
     end
     object mAddZnormativ: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      Enabled = False
     end
     object mDelZnormativ: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100

@@ -473,7 +473,7 @@ type
     qrTypeData: TFDQuery;
     dsTypeData: TDataSource;
     qrRatesExID_RATE: TIntegerField;
-    qrRatesExSORT_ID: TStringField;
+    qrRatesExSORT_ID: TVarBytesField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
