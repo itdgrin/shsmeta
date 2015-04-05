@@ -440,7 +440,7 @@ type
     qrTypeData: TFDQuery;
     dsTypeData: TDataSource;
     qrRatesExID_RATE: TIntegerField;
-    qrRatesExSORT_ID: TVarBytesField;
+    qrRatesExSORT_ID: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -3731,6 +3731,7 @@ begin
 
   ReCalcMat := False;
   qrMaterial.EnableControls;
+  qrMaterialAfterScroll(qrMaterial);
 end;
 
 procedure TFormCalculationEstimate.FillingTableDevises(const vIdDev: Integer);
@@ -3826,7 +3827,8 @@ begin
     qrMechanizm.Next;
 
   ReCalcMech := False;
-  qrMechanizm.EnableControls;;
+  qrMechanizm.EnableControls;
+  qrMechanizmAfterScroll(qrMechanizm);
 end;
 
 procedure TFormCalculationEstimate.FillingTableDescription(const vIdNormativ: Integer);
@@ -5180,29 +5182,22 @@ begin
       Font.Style := Font.Style + [fsbold];
     end;
 
-   { // Подсветка вынесенного и заменяющего материала за расценку материала
+    // Подсветка вынесенного и заменяющего материала за расценку материала
     // Вынесение за расценку имеет приоритет над заменой
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = LastEntegGrd) then
     begin
-      if (qrRatesMID.AsInteger = qrMaterialID.AsInteger) and (qrRatesMID.AsInteger > 0) then
+      if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and
+        (qrRatesExID_TYPE_DATA.AsInteger = 2) then
         Font.Style := Font.Style + [fsbold];
     end;
 
     // Подсветка вынесенного за расценку механизма
     if btnMechanisms.Down and qrMechanizm.Active and (dbgrdMechanizm = LastEntegGrd) then
     begin
-      if (qrRatesMEID.AsInteger = qrMechanizmID.AsInteger) and (qrRatesMEID.AsInteger > 0) then
+      if (qrRatesExID_TABLES.AsInteger = qrMechanizmID.AsInteger) and
+        (qrRatesExID_TYPE_DATA.AsInteger = 3) then
         Font.Style := Font.Style + [fsbold];
-    end;    }
-
-    // Выделение цветом неучтённых материалов расценки и заменяющих их
-    {if CheckMatINRates then
-    begin
-      if Column.Index = 1 then
-        sdvig := Indent;
-    end
-    else
-      sdvig := '';  }
+    end;
 
     FillRect(Rect);
 
