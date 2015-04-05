@@ -19,8 +19,8 @@ type
     pnlLeft: TPanel;
     pnlClient: TPanel;
     spl1: TSplitter;
-    JvDBGrid1: TJvDBGrid;
-    JvDBGrid2: TJvDBGrid;
+    grCategory: TJvDBGrid;
+    grStavka: TJvDBGrid;
     pnlTop: TPanel;
     lbl1: TLabel;
     dbedtInDate: TDBEdit;
@@ -38,16 +38,18 @@ type
     qrStavkaSTAVKA_M_RAB: TIntegerField;
     qrStavkaSTAVKA_M_MACH: TIntegerField;
     qrStavkaMONTH_YEAR: TDateField;
-    pnl1: TPanel;
-    pnl2: TPanel;
+    pnlTop1: TPanel;
+    pnlClient1: TPanel;
     JvDBGrid3: TJvDBGrid;
+    qr1: TFDQuery;
+    ds1: TDataSource;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure pgcChange(Sender: TObject);
     procedure qrStavkaAfterScroll(DataSet: TDataSet);
-    procedure JvDBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+    procedure grStavkaDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
   private
     { Private declarations }
@@ -76,8 +78,8 @@ end;
 
 procedure TfTariffDict.FormCreate(Sender: TObject);
 begin
-  LoadDBGridSettings(JvDBGrid1);
-  LoadDBGridSettings(JvDBGrid2);
+  LoadDBGridSettings(grCategory);
+  LoadDBGridSettings(grStavka);
   pgc.ActivePageIndex := 0;
   pgcChange(Sender);
 end;
@@ -87,7 +89,7 @@ begin
   fTariffDict := nil;
 end;
 
-procedure TfTariffDict.JvDBGrid2DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+procedure TfTariffDict.grStavkaDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
   (Sender AS TDBGrid).Canvas.Brush.Color := PS.BackgroundRows;

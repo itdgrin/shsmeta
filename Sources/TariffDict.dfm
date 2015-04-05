@@ -59,7 +59,7 @@ object fTariffDict: TfTariffDict
         TabOrder = 1
         ExplicitTop = 0
         ExplicitHeight = 360
-        object JvDBGrid1: TJvDBGrid
+        object grCategory: TJvDBGrid
           Left = 1
           Top = 1
           Width = 178
@@ -119,7 +119,7 @@ object fTariffDict: TfTariffDict
         ExplicitTop = 230
         ExplicitWidth = 219
         ExplicitHeight = 124
-        object JvDBGrid2: TJvDBGrid
+        object grStavka: TJvDBGrid
           Left = 1
           Top = 1
           Width = 338
@@ -133,7 +133,7 @@ object fTariffDict: TfTariffDict
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
-          OnDrawColumnCell = JvDBGrid2DrawColumnCell
+          OnDrawColumnCell = grStavkaDrawColumnCell
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -254,25 +254,25 @@ object fTariffDict: TfTariffDict
       Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1095#1077#1089#1082#1080#1077' '#1080#1085#1076#1077#1082#1089#1099
       ImageIndex = 1
       ExplicitHeight = 393
-      object pnl1: TPanel
+      object pnlTop1: TPanel
         Left = 0
         Top = 0
         Width = 523
         Height = 41
         Align = alTop
-        Caption = 'pnl1'
+        Caption = 'pnlTop1'
         TabOrder = 0
         ExplicitLeft = 144
         ExplicitTop = 96
         ExplicitWidth = 185
       end
-      object pnl2: TPanel
+      object pnlClient1: TPanel
         Left = 0
         Top = 41
         Width = 523
         Height = 319
         Align = alClient
-        Caption = 'pnl2'
+        Caption = 'pnlClient1'
         TabOrder = 1
         ExplicitLeft = 160
         ExplicitTop = 144
@@ -284,6 +284,7 @@ object fTariffDict: TfTariffDict
           Width = 521
           Height = 317
           Align = alClient
+          DataSource = ds1
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
@@ -291,7 +292,7 @@ object fTariffDict: TfTariffDict
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
-          OnDrawColumnCell = JvDBGrid2DrawColumnCell
+          OnDrawColumnCell = grStavkaDrawColumnCell
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -474,5 +475,48 @@ object fTariffDict: TfTariffDict
     DataSet = qrStavka
     Left = 496
     Top = 342
+  end
+  object qr1: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.DefaultParamDataType = ftBCD
+    FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ##0.####'
+    SQL.Strings = (
+      'SELECT `CATEGORY_ID`,'
+      '       `VALUE`,'
+      '       `COEF`,'
+      '       ROUND(`COEF` * :IN_STAVKA) AS SUMMA,'
+      '       `DATE_BEG`'
+      'FROM `category`'
+      'WHERE `DATE_BEG` ='
+      '      ('
+      '        SELECT MAX(`category`.`DATE_BEG`)'
+      '        FROM `category`'
+      '        WHERE `category`.`DATE_BEG` <= :IN_DATE'
+      '        LIMIT 1'
+      '      )'
+      'ORDER BY `VALUE`')
+    Left = 287
+    Top = 270
+    ParamData = <
+      item
+        Name = 'IN_STAVKA'
+        DataType = ftBCD
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'IN_DATE'
+        DataType = ftDate
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object ds1: TDataSource
+    DataSet = qr1
+    Left = 320
+    Top = 270
   end
 end
