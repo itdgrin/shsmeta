@@ -3155,7 +3155,8 @@ begin
   PMMechEdit.Enabled := not CheckMechReadOnly;
 
   PMMechFromRates.Enabled := (not CheckMechReadOnly) and
-    (qrRatesExID_RATE.AsInteger > 0) and
+    ((qrRatesExID_RATE.AsInteger > 0) or
+     (qrRatesExID_TYPE_DATA.AsInteger = 1)) and
     (qrMechanizmREPLACED.AsInteger = 0);
 
   PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) and
@@ -3724,7 +3725,7 @@ begin
   end;
   qrMaterialNUM.ReadOnly := True;
 
-  if (qrRatesExID_RATE.AsInteger > 0) then
+  if ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) then
     dbgrdMaterial.Columns[2].Visible := True
   else
     dbgrdMaterial.Columns[2].Visible := False;
@@ -3821,7 +3822,7 @@ begin
   end;
   qrMechanizmNUM.ReadOnly := True;
 
-  if (qrRatesExID_RATE.AsInteger > 0) then
+  if ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) then
     dbgrdMechanizm.Columns[2].Visible := True
   else
     dbgrdMechanizm.Columns[2].Visible := False;
@@ -4926,7 +4927,7 @@ begin
 
     // Зачеркиваем вынесеные из расцеки материалы
     if (qrMaterialFROM_RATE.AsInteger = 1) and
-      (qrRatesExID_RATE.AsInteger > 0) then
+      ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD;
@@ -4975,7 +4976,8 @@ begin
 
     // Не отображает кол-во и суммы для замененных или вынесеных
     if ((qrMaterialFROM_RATE.AsInteger = 1) and
-        (qrRatesExID_RATE.AsInteger > 0)) or
+        ((qrRatesExID_RATE.AsInteger > 0) or
+         (qrRatesExID_TYPE_DATA.AsInteger = 1))) or
       (qrMaterialREPLACED.AsInteger = 1) then
     begin
       if Column.Index in [4, 8, 9, 10, 11, 15, 16, 17, 18] then
@@ -5072,7 +5074,9 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки механизмы
-    if (qrMechanizmFROM_RATE.AsInteger = 1) and(qrRatesExID_RATE.AsInteger > 0) then
+    if (qrMechanizmFROM_RATE.AsInteger = 1) and
+      ((qrRatesExID_RATE.AsInteger > 0) or
+       (qrRatesExID_TYPE_DATA.AsInteger = 1)) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
@@ -5113,7 +5117,9 @@ begin
         Str := Column.Field.AsString;
     end;
 
-    if ((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_RATE.AsInteger > 0)) or
+    if ((qrMechanizmFROM_RATE.AsInteger = 1) and
+      ((qrRatesExID_RATE.AsInteger > 0) or
+       (qrRatesExID_TYPE_DATA.AsInteger = 1))) or
       (qrMechanizmREPLACED.AsInteger = 1) then
     begin
       if Column.Index in [4, 7, 8, 11, 12, 16, 17, 20, 21, 24] then
