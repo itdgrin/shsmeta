@@ -440,7 +440,7 @@ type
     qrTypeData: TFDQuery;
     dsTypeData: TDataSource;
     qrRatesExID_RATE: TIntegerField;
-    qrRatesExSORT_ID: TVarBytesField;
+    strngfldRatesExSORT_ID: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -2360,7 +2360,7 @@ var
 begin
   if not CheckQrActiveEmpty(qrRatesEx) then
     Exit;
-  Key := qrRatesEx.Fields[0].Value;
+  Key := qrRatesEx.FieldByName('SORT_ID').Value;
   // Устанавливаем №пп
   qrRatesEx.DisableControls;
   NumPP := 0;
@@ -2377,7 +2377,7 @@ begin
       qrRatesEx.Next;
     end;
   finally
-    qrRatesEx.Locate(qrRatesEx.Fields[0].FieldName, Key, []);
+    qrRatesEx.Locate('SORT_ID', Key, []);
     qrRatesEx.EnableControls;
   end;
 end;

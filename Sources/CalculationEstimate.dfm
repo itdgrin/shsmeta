@@ -4820,6 +4820,10 @@
         ParamType = ptInput
         Value = 344
       end>
+    object strngfldRatesExSORT_ID: TStringField
+      FieldName = 'SORT_ID'
+      Size = 255
+    end
     object qrRatesExINCITERATOR: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'INCITERATOR'
@@ -4909,10 +4913,6 @@
       FieldName = 'ID_RATE'
       Origin = 'ID_RATE'
       ProviderFlags = []
-    end
-    object qrRatesExSORT_ID: TVarBytesField
-      FieldName = 'SORT_ID'
-      Size = 55
     end
   end
   object dsRatesEx: TDataSource
