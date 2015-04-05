@@ -2100,6 +2100,7 @@ begin
     qrMechanizmMECH_SUM_NDS.AsLargeInt := qrTemp.FieldByName('MECH_SUM_NDS').AsLargeInt;
     qrMechanizmMECH_ZPSUM_NO_NDS.AsLargeInt := qrTemp.FieldByName('MECH_ZPSUM_NO_NDS').AsLargeInt;
     qrMechanizmMECH_ZPSUM_NDS.AsLargeInt := qrTemp.FieldByName('MECH_ZPSUM_NDS').AsLargeInt;
+    qrMechanizmNORMATIV.AsFloat := qrTemp.FieldByName('NORMATIV').AsFloat;
     qrMechanizmNORM_TRYD.AsFloat := qrTemp.FieldByName('NORM_TRYD').AsFloat;
     qrMechanizmTERYDOZATR.AsFloat := qrTemp.FieldByName('TERYDOZATR').AsFloat;
     qrMechanizm.Post;
@@ -3159,7 +3160,8 @@ begin
 
   PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) and
     (qrMechanizmID_REPLACED.AsInteger = 0) and
-    (qrRatesExID_RATE.AsInteger > 0); // не заменяющуй
+      ((qrRatesExID_RATE.AsInteger > 0) or
+        (qrRatesExID_TYPE_DATA.AsInteger = 1)); // не заменяющуй
 
   PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0) and
     (qrMechanizmFROM_RATE.AsInteger = 0);
@@ -3293,7 +3295,8 @@ begin
         qrTemp1.SQL.Text := 'Insert into materialcard_temp (ID_CARD_RATE, MAT_ID, ' +
           'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
           'PROC_TRANSP) values (:ID_CARD_RATE, :MAT_ID, ' +
-          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
+          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
+          ':COAST_NDS, :PROC_TRANSP)';
         qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
         qrTemp1.ParamByName('MAT_ID').AsInteger := FieldByName('MatId').AsInteger;
         qrTemp1.ParamByName('MAT_CODE').AsString := FieldByName('MatCode').AsString;
@@ -3369,9 +3372,9 @@ begin
         qrTemp1.Active := False;
         qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (ID_CARD_RATE, ' +
           'MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, MECH_UNIT, COAST_NO_NDS, ' +
-          'COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS) values (:ID_CARD_RATE, ' +
+          'COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, NORMATIV) values (:ID_CARD_RATE, ' +
           ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
-          ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS)';
+          ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :NORMATIV)';
         qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
         qrTemp1.ParamByName('MECH_ID').AsInteger := FieldByName('MechId').AsInteger;
         qrTemp1.ParamByName('MECH_CODE').AsString := FieldByName('MechCode').AsString;
@@ -3383,6 +3386,7 @@ begin
         qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('CoastVAT').AsInteger;
         qrTemp1.ParamByName('ZP_MACH_NO_NDS').AsInteger := FieldByName('SalaryNoVAT').AsInteger;
         qrTemp1.ParamByName('ZP_MACH_NDS').AsInteger := FieldByName('SalaryVAT').AsInteger;
+        qrTemp1.ParamByName('NORMATIV').AsFloat := FieldByName('MECH_PH').AsFloat;
         qrTemp1.ExecSQL;
 
         Next;
@@ -4547,10 +4551,6 @@ end;
 // Заполнение таблицы расценок
 procedure TFormCalculationEstimate.OutputDataToTable;
 begin
-  // E18 и E20 - могут встречаться в смете только один раз
-  PMAddAdditionHeatingE18.Enabled := True;
-  PMAddAdditionHeatingE20.Enabled := True;
-
   // Новая процедура вывода левой части
   if Act then
   begin
