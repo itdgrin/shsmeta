@@ -4546,11 +4546,6 @@ end;
 
 // «аполнение таблицы расценок
 procedure TFormCalculationEstimate.OutputDataToTable;
-var
-  { FieldRates: TFieldRates; }
-  i: Integer;
-  Str: string;
-  Count: Integer;
 begin
   // E18 и E20 - могут встречатьс€ в смете только один раз
   PMAddAdditionHeatingE18.Enabled := True;

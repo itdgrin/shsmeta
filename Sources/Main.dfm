@@ -459,11 +459,6 @@
       end
       object HRRTariffs: TMenuItem
         Caption = #1058#1072#1088#1080#1092#1099' / '#1062#1077#1085#1099' / '#1048#1085#1076#1077#1082#1089#1099
-        object TariffsSalary: TMenuItem
-          Caption = #1058#1072#1088#1080#1092#1099' '#1087#1086' '#1079#1072#1088#1087#1083#1072#1090#1077
-          Enabled = False
-          OnClick = TariffsSalaryClick
-        end
         object TariffsMechanism: TMenuItem
           Caption = #1062#1077#1085#1099' '#1085#1072' '#1084#1077#1093#1072#1085#1080#1079#1084#1099
           OnClick = TariffsMechanismClick
@@ -526,7 +521,8 @@
         OnClick = N61Click
       end
       object mN15: TMenuItem
-        Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1090#1072#1088#1080#1092#1086#1074
+        Caption = #1058#1072#1088#1080#1092#1099' / '#1062#1077#1085#1099' / '#1048#1085#1076#1077#1082#1089#1099
+        OnClick = mN15Click
       end
     end
     object N11: TMenuItem

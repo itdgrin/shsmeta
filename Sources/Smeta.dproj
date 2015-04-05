@@ -110,9 +110,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="Main.pas">
             <Form>FormMain</Form>
         </DCCReference>
-        <DCCReference Include="TariffsSalary.pas">
-            <Form>FormTariffsSalary</Form>
-        </DCCReference>
         <DCCReference Include="TariffsMechanism.pas">
             <Form>FormTariffsMechanism</Form>
         </DCCReference>
@@ -397,6 +394,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="ReplacementMatAndMech.pas">
             <Form>frmReplacement</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="TariffDict.pas">
+            <Form>fTariffDict</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

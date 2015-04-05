@@ -107,7 +107,6 @@ type
     N12: TMenuItem;
     mN15: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
-    procedure TariffsSalaryClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
     procedure TariffsIndexClick(Sender: TObject);
@@ -186,6 +185,7 @@ type
     procedure vk9Click(Sender: TObject);
     procedure mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
     procedure N12Click(Sender: TObject);
+    procedure mN15Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -307,7 +307,7 @@ var
 
 implementation
 
-uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
+uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   TariffsIndex, About, CalculationEstimate, ConnectDatabase, CardObject,
   DataModule, Login, Waiting, ActC6, WorkSchedule, HelpC3, HelpC5, CatalogSSR,
   OXRandOPR, DataTransfer, CardPTM, CalculationSettings,
@@ -315,7 +315,7 @@ uses TariffsTransportanion, TariffsSalary, TariffsMechanism, TariffsDump,
   PricesReferenceData, AdditionData, PartsEstimates,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
-  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice;
+  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict;
 
 {$R *.dfm}
 
@@ -731,19 +731,6 @@ begin
     FormTariffsTransportation := TFormTariffsTransportation.Create(Self);
 end;
 
-procedure TFormMain.TariffsSalaryClick(Sender: TObject);
-begin
-  if (not Assigned(FormTariffsSalary)) then
-    FormTariffsSalary := TFormTariffsSalary.Create(Self);
-
-  // Получаем данные из БД в таблицу
-  // FormTariffsSalary.ReceivingData(nil);
-
-  // -----------------------------------------
-
-  FormTariffsSalary.Show;
-end;
-
 procedure TFormMain.TariffsMechanismClick(Sender: TObject);
 begin
   if not Assigned(FormCalculationEstimate) then
@@ -823,6 +810,13 @@ begin
 end;
 
 // Расход материалов по акту
+procedure TFormMain.mN15Click(Sender: TObject);
+begin
+  if (not Assigned(fTariffDict)) then
+    fTariffDict := TfTariffDict.Create(Self);
+  fTariffDict.Show;
+end;
+
 procedure TFormMain.mnRASX_ACTClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
