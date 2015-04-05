@@ -24,7 +24,7 @@ object fTariffDict: TfTariffDict
     Top = 3
     Width = 531
     Height = 391
-    ActivePage = ts2
+    ActivePage = ts1
     Align = alClient
     MultiLine = True
     Style = tsButtons
@@ -126,7 +126,7 @@ object fTariffDict: TfTariffDict
           Height = 296
           Align = alClient
           DataSource = dsStavka
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText

@@ -2356,9 +2356,11 @@ end;
 procedure TFormCalculationEstimate.qrRatesExAfterOpen(DataSet: TDataSet);
 var
   NumPP: Integer;
+  Key: Variant;
 begin
   if not CheckQrActiveEmpty(qrRatesEx) then
     Exit;
+  Key := qrRatesEx.Fields[0].Value;
   // Устанавливаем №пп
   qrRatesEx.DisableControls;
   NumPP := 0;
@@ -2375,7 +2377,7 @@ begin
       qrRatesEx.Next;
     end;
   finally
-    qrRatesEx.First; // исправить на SORD_ID
+    qrRatesEx.Locate(qrRatesEx.Fields[0].FieldName, Key, []);
     qrRatesEx.EnableControls;
   end;
 end;
