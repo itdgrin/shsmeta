@@ -78,6 +78,7 @@ type
     procedure qrZnormativs_detailBeforeDelete(DataSet: TDataSet);
     procedure tvEstimatesExpanded(Sender: TObject; Node: TTreeNode);
     procedure tvEstimatesExpanding(Sender: TObject; Node: TTreeNode; var AllowExpansion: Boolean);
+    procedure FormDestroy(Sender: TObject);
   private
 
   public
@@ -127,6 +128,7 @@ end;
 procedure TfWinterPrice.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Kind := kdNone;
+  Action := caFree;
 end;
 
 procedure TfWinterPrice.FormCreate(Sender: TObject);
@@ -134,6 +136,11 @@ begin
   Kind := kdNone;
   LoadDBGridSettings(grRates);
   LoadDBGridSettings(grChangeDate);
+end;
+
+procedure TfWinterPrice.FormDestroy(Sender: TObject);
+begin
+  fWinterPrice := nil;
 end;
 
 procedure TfWinterPrice.FormShow(Sender: TObject);

@@ -78,7 +78,7 @@
         RootNodeCount = 10
         ScrollBarOptions.AlwaysVisible = True
         ScrollBarOptions.ScrollBars = ssVertical
-        TabOrder = 0
+        TabOrder = 1
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect]
@@ -109,7 +109,7 @@
         Height = 21
         Align = alTop
         Alignment = taCenter
-        TabOrder = 1
+        TabOrder = 0
         OnChange = EditRateChange
         OnEnter = EditRateEnter
         OnKeyPress = EditRateKeyPress
@@ -122,7 +122,7 @@
       Height = 444
       Align = alRight
       BevelOuter = bvNone
-      TabOrder = 1
+      TabOrder = 2
     end
     object PanelCenter: TPanel
       Left = 115
@@ -131,7 +131,7 @@
       Height = 444
       Align = alClient
       BevelOuter = bvNone
-      TabOrder = 2
+      TabOrder = 1
       object PanelShowHideButton: TPanel
         Left = 569
         Top = 0
@@ -139,7 +139,7 @@
         Height = 444
         Align = alRight
         BevelOuter = bvNone
-        TabOrder = 0
+        TabOrder = 1
         object SpeedButtonShowHideRightPanel: TSpeedButton
           Left = 0
           Top = 0
@@ -161,7 +161,7 @@
         Height = 444
         Align = alClient
         BevelOuter = bvNone
-        TabOrder = 1
+        TabOrder = 0
         OnResize = PanelCenterClientResize
         object ImageSplitterTop: TImage
           Left = 312
@@ -198,7 +198,7 @@
             Align = alTop
             BevelOuter = bvNone
             ParentBackground = False
-            TabOrder = 0
+            TabOrder = 1
             DesignSize = (
               569
               25)
@@ -246,7 +246,7 @@
             Align = alClient
             ReadOnly = True
             ScrollBars = ssVertical
-            TabOrder = 1
+            TabOrder = 2
           end
           object PanelSearchNormative: TPanel
             Left = 0
@@ -256,7 +256,7 @@
             Align = alTop
             BevelOuter = bvNone
             ParentBackground = False
-            TabOrder = 2
+            TabOrder = 0
             DesignSize = (
               569
               25)
@@ -370,7 +370,7 @@
             Align = alTop
             BevelOuter = bvNone
             ParentBackground = False
-            TabOrder = 1
+            TabOrder = 2
             OnResize = PanelHorizontal2Resize
             DesignSize = (
               569
@@ -401,7 +401,7 @@
             Align = alTop
             BevelOuter = bvNone
             ParentBackground = False
-            TabOrder = 2
+            TabOrder = 3
             object Label2: TLabel
               Left = 8
               Top = 6
@@ -451,7 +451,7 @@
             Align = alTop
             BevelOuter = bvNone
             ParentBackground = False
-            TabOrder = 3
+            TabOrder = 1
             OnResize = PanelHorizontal2Resize
             DesignSize = (
               569
@@ -509,7 +509,7 @@
               Width = 505
               Height = 58
               BevelOuter = bvNone
-              TabOrder = 0
+              TabOrder = 2
               object Shape1: TShape
                 Left = 0
                 Top = 20
@@ -547,7 +547,7 @@
               Width = 505
               Height = 65
               BevelOuter = bvNone
-              TabOrder = 1
+              TabOrder = 0
               OnResize = PanelNormСonsumptionResize
               object PanelNCHeader: TPanel
                 Left = 0
@@ -590,7 +590,7 @@
               Height = 66
               BevelOuter = bvNone
               ParentBackground = False
-              TabOrder = 2
+              TabOrder = 1
               OnResize = PanelStructureWorksResize
               object PanelSWHeader: TPanel
                 Left = 0

@@ -105,6 +105,7 @@ type
     vk9: TMenuItem;
     mnREPORT_SMETA_OBJ_BUILD: TMenuItem;
     N12: TMenuItem;
+    mN15: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsSalaryClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
@@ -1049,6 +1050,8 @@ end;
 
 procedure TFormMain.N12Click(Sender: TObject);
 begin
+  if (not Assigned(fWinterPrice)) then
+    fWinterPrice := TfWinterPrice.Create(Self);
   fWinterPrice.Show;
 end;
 
