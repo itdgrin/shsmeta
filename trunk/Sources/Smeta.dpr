@@ -154,7 +154,6 @@ begin
   Application.CreateForm(TFormCardPTM, FormCardPTM);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
-  Application.CreateForm(TfWinterPrice, fWinterPrice);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€

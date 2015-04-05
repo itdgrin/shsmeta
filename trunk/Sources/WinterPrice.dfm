@@ -13,6 +13,7 @@ object fWinterPrice: TfWinterPrice
   OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   DesignSize = (
     801

@@ -1322,7 +1322,7 @@ end;
 
 procedure TFrameRates.GetWinterPrice;
 var
-  s { , s1, s2 } : string;
+  s: string;
 begin
   try
     with ADOQueryTemp do
@@ -1330,28 +1330,14 @@ begin
       Active := False;
       s := ADOQueryNormativ.FieldByName('NumberNormative').AsString;
       SQL.Clear;
-      SQL.Add('SELECT num, name, s, po FROM znormativs_ex, znormativs_detail WHERE znormativs_ex.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID AND ' + '((s <= ''' + s +
-        ''') and (po >= ''' + s + '''));');
+      SQL.Add('SELECT num, name, s, po FROM znormativs, znormativs_detail WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID AND znormativs.DEL_FLAG = 0 AND '
+        + '((s <= ''' + s + ''') and (po >= ''' + s + ''')) LIMIT 1;');
       Active := true;
 
-      { First; //Использовалось для отладки
-        while not Eof do
-        begin
-        s1 := FieldByName('s').AsString;
-        s2 := FieldByName('po').AsString;
-        if (s >= s1) and
-        (s <= s2) then
-        begin
-        EditWinterPrice.Text := FieldByName('num').AsString + ' ' +
-        FieldByName('name').AsString;
-        Break;
-        end;
-
-        Next;
-        end; }
-
       if not Eof then
-        EditWinterPrice.Text := FieldByName('num').AsVariant + ' ' + FieldByName('name').AsVariant;
+        EditWinterPrice.Text := FieldByName('num').AsVariant + ' ' + FieldByName('name').AsVariant
+      else
+        EditWinterPrice.Text := 'не найдено';
 
     end;
   except

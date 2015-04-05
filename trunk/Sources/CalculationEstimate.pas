@@ -2554,6 +2554,8 @@ end;
 
 procedure TFormCalculationEstimate.nSelectWinterPriseClick(Sender: TObject);
 begin
+  if (not Assigned(fWinterPrice)) then
+    fWinterPrice := TfWinterPrice.Create(Self);
   fWinterPrice.Kind := kdSelect;
   if (fWinterPrice.ShowModal = mrOk) and (fWinterPrice.OutValue <> 0) then
   begin
@@ -2573,6 +2575,7 @@ begin
     'Application.Title', MB_OKCANCEL + MB_ICONQUESTION + MB_TOPMOST) = IDOK then
   begin
     qrRatesExZNORMATIVS_ID.Value := 0;
+    EditWinterPrice.Text := '';
     FillingWinterPrice(qrRatesExOBJ_CODE.AsString);
     CloseOpen(qrCalculations);
   end;
