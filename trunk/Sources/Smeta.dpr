@@ -11,7 +11,6 @@ uses
   System.IOUtils,
   DataModule in 'DataModule.pas' {DM: TDataModule},
   Main in 'Main.pas' {FormMain},
-  TariffsSalary in 'TariffsSalary.pas' {FormTariffsSalary},
   TariffsMechanism in 'TariffsMechanism.pas' {FormTariffsMechanism},
   TariffsDump in 'TariffsDump.pas' {FormTariffsDump},
   TariffsIndex in 'TariffsIndex.pas' {FormTariffsIndex},
@@ -102,7 +101,8 @@ uses
   ArhivModule in 'ArhivModule.pas',
   GlobsAndConst in 'GlobsAndConst.pas',
   WinterPrice in 'WinterPrice.pas' {fWinterPrice},
-  ReplacementMatAndMech in 'ReplacementMatAndMech.pas' {frmReplacement};
+  ReplacementMatAndMech in 'ReplacementMatAndMech.pas' {frmReplacement},
+  TariffDict in 'TariffDict.pas' {fTariffDict};
 
 {$R *.res}
 var MHandle: THandle;
