@@ -619,14 +619,13 @@ type
     procedure ReplacementClick(Sender: TObject);
     procedure nSelectWinterPriseClick(Sender: TObject);
     procedure nWinterPriseSetDefaultClick(Sender: TObject);
-    procedure PopupMenuRatesAdd352Click(Sender: TObject);
     procedure PMMechDeleteClick(Sender: TObject);
     procedure qrRatesExAfterOpen(DataSet: TDataSet);
-  private const
-    CaptionButton = 'Расчёт сметы';
-
-  const
-    HintButton = 'Окно расчёта сметы';
+    procedure PMAddAdditionHeatingClick(Sender: TObject);
+  private
+    const
+      CaptionButton = 'Расчёт сметы';
+      HintButton = 'Окно расчёта сметы';
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -665,6 +664,10 @@ type
     // ID отображаемой сметы
     IdEstimate: Integer;
 
+    //Флаги необходимости предлагать автоматически добавить пуск и регулировку
+    AutoAddE18,
+    AutoAddE20: Boolean;
+
     // пересчитывает все относящееся к строке в таблице расценок
     procedure ReCalcRowRates;
 
@@ -697,6 +700,10 @@ type
     procedure ReCalcRowDev; // Пересчет одного оборудование
     procedure SetDevEditMode; // включение режима расширенного редактирования оборудования
     procedure SetDevNoEditMode; // отключение режима расширенного редактирования оборудования
+    //Проверяет есть ли пуск и регулировка в текущей смете
+    function CheckE1820(AType: Byte): Boolean;
+    //Проверяет, что курсор стоит на смете (ПТМ)
+    function CheckCursorInRate: Boolean;
   public
     Act: Boolean;
 
@@ -898,6 +905,10 @@ begin
   LoadDBGridSettings(dbgrdStartup);
   LoadDBGridSettings(dbgrdCalculations);
   LoadDBGridSettings(grRatesEx);
+
+  //По умолчанию будет предлагать добавить пуск и регулировку
+  AutoAddE18 := True;
+  AutoAddE20 := True;
 
   if not Act then
     FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
@@ -2543,10 +2554,10 @@ begin
     if (frmReplace.ShowModal = mrYes) then
     begin
       qrTemp.Active := False;
-      for i := 0 to frmReplace.RateCount - 1 do
+      for i := 0 to frmReplace.Count - 1 do
       begin
         qrTemp.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, 1, :OWNER_ID, 0);';
-        qrTemp.ParamByName('ESTIMATE_ID').Value := qrRatesExSM_ID.AsInteger;
+        qrTemp.ParamByName('ESTIMATE_ID').Value := frmReplace.EstIDs[i];
         qrTemp.ParamByName('OWNER_ID').Value := frmReplace.RateIDs[i];
         qrTemp.ExecSQL;
       end;
@@ -2640,7 +2651,7 @@ begin
       SQL.Clear;
       SQL.Add('INSERT INTO data_estimate_temp (id_estimate, id_type_data, id_tables) ' +
         'VALUE (:id_estimate, :id_type_data, :id_tables);');
-      ParamByName('id_estimate').Value := IdEstimate;
+      ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_type_data').Value := 2;
       ParamByName('id_tables').Value := qrMaterialID.AsInteger;
       ExecSQL;
@@ -2733,7 +2744,7 @@ begin
       SQL.Clear;
       SQL.Add('INSERT INTO data_estimate_temp (id_estimate, id_type_data, id_tables) ' +
         'VALUE (:id_estimate, :id_type_data, :id_tables);');
-      ParamByName('id_estimate').Value := IdEstimate;
+      ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_type_data').Value := 3;
       ParamByName('id_tables').Value := qrMechanizmID.Value;
       ExecSQL;
@@ -3164,24 +3175,26 @@ begin
   PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0);
 end;
 
-procedure TFormCalculationEstimate.PopupMenuRatesAdd352Click(Sender: TObject);
+function TFormCalculationEstimate.CheckCursorInRate: Boolean;
 begin
-
+  Result := (qrRatesExID_TYPE_DATA.AsInteger > 0) or //Что-то врутри смети
+    (qrRatesExID_TYPE_DATA.AsInteger = -3) or
+    (qrRatesExID_TYPE_DATA.AsInteger = -4); //или шапка жешки или строка ввода
 end;
-
 // Добавление расценки в смету
 procedure TFormCalculationEstimate.AddRate(const vRateId: Integer);
 var
-  { i: Integer; }
   vMaxIdRate: Integer;
+  NewRateCode: string;
   vNormRas: Double;
   Month1, Year1: Integer;
   PriceVAT, PriceNoVAT: string;
   PT, PercentTransport: Real;
-  { SQL1, SQL2: string; }
   ZonaId: Integer;
   SCode: string;
 begin
+  if not CheckCursorInRate then
+    Exit;
 
   // Добавляем найденную расценку во временную таблицу card_rate_temp
   try
@@ -3190,7 +3203,7 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('CALL AddRate(:id_estimate, :id_rate, :cnt);');
-      ParamByName('id_estimate').Value := IdEstimate;
+      ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_rate').Value := vRateId;
       ParamByName('cnt').AsFloat := 0;
       ExecSQL;
@@ -3200,9 +3213,11 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT max(id) as "MaxId" FROM card_rate_temp;');
+      SQL.Add('SELECT id, RATE_CODE  FROM card_rate_temp order by id desc limit 1;');
       Active := True;
-      vMaxIdRate := FieldByName('MaxId').AsInteger;
+      vMaxIdRate := Fields[0].AsInteger;
+      NewRateCode := Fields[1].AsString;
+      Active := False;
     end;
   except
     on E: Exception do
@@ -3220,7 +3235,8 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT year,monat FROM stavka WHERE stavka_id = ' +
-        '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate) + ')');
+        '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' +
+          IntToStr(qrRatesExSM_ID.AsInteger) + ')');
       Active := True;
       Month1 := FieldByName('monat').AsInteger;
       Year1 := FieldByName('year').AsInteger;
@@ -3246,7 +3262,8 @@ begin
       Active := False;
 
       SQL.Clear;
-      SQL.Add('SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate));
+      SQL.Add('SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' +
+        IntToStr(qrRatesExSM_ID.AsInteger));
       Active := True;
       PercentTransport := Fields[0].AsFloat;
       Active := False;
@@ -3357,7 +3374,7 @@ begin
       SQL.Add('CALL GetMechanizmsFromRate(:IdObject, :IdEstimate, :IdRate);');
 
       ParamByName('IdObject').Value := IdObject;
-      ParamByName('IdEstimate').Value := IdEstimate;
+      ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdRate').Value := vRateId;
 
       Active := True;
@@ -3396,23 +3413,80 @@ begin
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  OutputDataToTable;
+  if ((pos('е18', AnsiLowerCase(NewRateCode)) > 0) and
+        (not CheckE1820(10)) and AutoAddE18) or
+     ((pos('е20', AnsiLowerCase(NewRateCode)) > 0) and
+        (not CheckE1820(11)) and AutoAddE20) then
+  begin
+    if (pos('е18', AnsiLowerCase(NewRateCode)) > 0) then
+      case MessageDlg('Дабавить пуск и регулировку отопления по Е18 в смету?',
+        mtConfirmation, mbOKCancel, 0) of
+      mrOK: PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE18);
+      mrCancel: AutoAddE18 := False;
+      end;
+
+    if (pos('е20', AnsiLowerCase(NewRateCode)) > 0) then
+      case MessageDlg('Дабавить пуск и регулировку отопления по Е20 в смету?',
+        mtConfirmation, mbOKCancel, 0) of
+      mrOK: PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE20);
+      mrCancel: AutoAddE18 := False;
+      end;
+  end
+  else
+    OutputDataToTable;
 end;
 
 procedure TFormCalculationEstimate.PMAddTranspClick(Sender: TObject);
 begin
-  if GetTranspForm(IdEstimate, -1, (Sender as TMenuItem).Tag, True) then
-  begin
+  if not CheckCursorInRate then
+    Exit;
+
+  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1,
+    (Sender as TMenuItem).Tag, True) then
     OutputDataToTable;
+end;
+
+//в целом процедура работает неверно так как может быть открыто несколько смет
+function TFormCalculationEstimate.CheckE1820(AType: Byte): Boolean;
+var RecNo, SMID: Integer;
+begin
+  RecNo := qrRatesEx.RecNo;
+  SMID := qrRatesExSM_ID.AsInteger;
+  Result := False;
+  qrRatesEx.DisableControls;
+  try
+    qrRatesEx.First;
+    while not qrRatesEx.Eof do
+    begin
+      if (qrRatesExID_TYPE_DATA.AsInteger = AType) and
+         (qrRatesExSM_ID.AsInteger = SMID) then
+      begin
+        Result := True;
+        break;
+      end;
+      qrRatesEx.Next;
+    end;
+    qrRatesEx.RecNo := RecNo;
+  finally
+    qrRatesEx.EnableControls;
   end;
+end;
+
+procedure TFormCalculationEstimate.PMAddAdditionHeatingClick(Sender: TObject);
+begin
+  PMAddAdditionHeatingE18.Enabled := not CheckE1820(PMAddAdditionHeatingE18.Tag);
+  PMAddAdditionHeatingE20.Enabled := not CheckE1820(PMAddAdditionHeatingE20.Tag);
 end;
 
 procedure TFormCalculationEstimate.PMAddAdditionHeatingE18Click(Sender: TObject);
 begin
+  if not CheckCursorInRate then
+    Exit;
+
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
     '(id_estimate, id_type_data) VALUE (:IdEstimate, :SType);';
-  qrTemp.ParamByName('IdEstimate').AsInteger := IdEstimate;
+  qrTemp.ParamByName('IdEstimate').AsInteger := qrRatesExSM_ID.AsInteger;
   qrTemp.ParamByName('SType').AsInteger := (Sender as TComponent).Tag;
   qrTemp.ExecSQL;
 
@@ -3421,7 +3495,7 @@ end;
 
 procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
 begin
-  if GetDumpForm(IdEstimate, -1, True) then
+  if GetDumpForm(qrRatesExSM_ID.AsInteger, -1, True) then
   begin
     OutputDataToTable;
   end;
@@ -3579,28 +3653,29 @@ end;
 procedure TFormCalculationEstimate.PMDumpEditClick(Sender: TObject);
 begin
   if qrRatesExID_TYPE_DATA.AsInteger = 5 then
-    if GetDumpForm(IdEstimate, qrDumpID.AsInteger, False) then
+    if GetDumpForm(qrRatesExSM_ID.AsInteger, qrDumpID.AsInteger, False) then
       OutputDataToTable;
 
   if qrRatesExID_TYPE_DATA.AsInteger in [6, 7, 8, 9] then
-    if GetTranspForm(IdEstimate, qrTranspID.AsInteger, qrRatesExID_TYPE_DATA.AsInteger, False) then
+    if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger,
+      qrRatesExID_TYPE_DATA.AsInteger, False) then
       OutputDataToTable;
 end;
 
 procedure TFormCalculationEstimate.PMEditClick(Sender: TObject);
 begin
-  case qrRatesExID_TYPE_DATA.AsInteger of
-    5:
+  //Редактируются только свалки и транспорт
+  if qrRatesExID_TYPE_DATA.AsInteger in [5,6,7,8,9] then
       PMDumpEditClick(nil);
-    6, 7, 8, 9:
-      PMDumpEditClick(nil);
-  end;
 end;
 
 procedure TFormCalculationEstimate.PopupMenuTableLeftPopup(Sender: TObject);
 begin
   // Нельзя удалить неучтенный материал из таблицы расценок
-  PMDelete.Enabled := not(CheckMatINRates);
+  PMDelete.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
+  PMAdd.Enabled := CheckCursorInRate;
+  PMEdit.Enabled := (qrRatesExID_TYPE_DATA.AsInteger in [5,6,7,8,9]) and
+    CheckCursorInRate;
 end;
 
 procedure TFormCalculationEstimate.EstimateBasicDataClick(Sender: TObject);
@@ -4690,12 +4765,15 @@ procedure TFormCalculationEstimate.AddDevice(const vEquipId: Integer);
 // Добавление оборудования к смете
 begin
   try
+    if not CheckCursorInRate then
+      Exit;
+
     with qrTemp do
     begin
       Active := False;
       SQL.Clear;
       SQL.Add('CALL AddDevice(:IdEstimate, :IdDev);');
-      ParamByName('IdEstimate').Value := IdEstimate;
+      ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdDev').Value := vEquipId;
       ExecSQL;
     end;
@@ -4712,12 +4790,15 @@ end;
 procedure TFormCalculationEstimate.AddMaterial(const vMatId: Integer);
 begin
   try
+    if not CheckCursorInRate then
+      Exit;
+
     with qrTemp do
     begin
       Active := False;
       SQL.Clear;
       SQL.Add('CALL AddMaterial(:IdEstimate, :IdMat);');
-      ParamByName('IdEstimate').Value := IdEstimate;
+      ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdMat').Value := vMatId;
       ExecSQL;
     end;
@@ -4734,12 +4815,15 @@ end;
 procedure TFormCalculationEstimate.AddMechanizm(const vMechId: Integer);
 begin
   try
+    if not CheckCursorInRate then
+      Exit;
+
     with qrTemp do
     begin
       Active := False;
       SQL.Clear;
       SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, :Month, :Year);');
-      ParamByName('IdEstimate').Value := IdEstimate;
+      ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdMech').Value := vMechId;
       ParamByName('Month').Value := MonthEstimate;
       ParamByName('Year').Value := YearEstimate;

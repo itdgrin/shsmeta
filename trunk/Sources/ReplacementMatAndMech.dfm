@@ -580,6 +580,17 @@ object frmReplacement: TfrmReplacement
       TabOrder = 1
       OnClick = btnCancelClick
     end
+    object btnDelReplacement: TButton
+      Tag = 1
+      Left = 464
+      Top = 4
+      Width = 120
+      Height = 25
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1079#1072#1084#1077#1085#1099
+      TabOrder = 2
+      Visible = False
+      OnClick = btnReplaceClick
+    end
   end
   object GroupBox1: TGroupBox
     Left = 0
