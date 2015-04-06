@@ -106,6 +106,7 @@ type
     mnREPORT_SMETA_OBJ_BUILD: TMenuItem;
     N12: TMenuItem;
     mN15: TMenuItem;
+    mN16: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);

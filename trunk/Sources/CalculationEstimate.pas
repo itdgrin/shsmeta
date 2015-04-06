@@ -1618,9 +1618,9 @@ end;
 function TFormCalculationEstimate.CheckMechReadOnly: Boolean;
 begin
   Result := False;
-  //Вынесеный механизм в расценке или замененные механизмы
-  if ((qrMechanizmFROM_RATE.AsInteger = 1) and not(qrRatesExID_TYPE_DATA.AsInteger = 1))
-    or (qrMechanizmREPLACED.AsInteger = 1) or (qrMechanizmTITLE.AsInteger > 0) then
+  // Вынесеный механизм в расценке или замененные механизмы
+  if ((qrMechanizmFROM_RATE.AsInteger = 1) and not(qrRatesExID_TYPE_DATA.AsInteger = 1)) or
+    (qrMechanizmREPLACED.AsInteger = 1) or (qrMechanizmTITLE.AsInteger > 0) then
     Result := True;
 end;
 
@@ -1634,8 +1634,8 @@ function TFormCalculationEstimate.CheckMatReadOnly: Boolean;
 begin
   Result := False;
   // Вынесенные из расценки // или замененный
-  if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesExID_TYPE_DATA.AsInteger = 1))
-    or (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0) then
+  if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesExID_TYPE_DATA.AsInteger = 1)) or
+    (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0) then
     Result := True;
 end;
 
@@ -2166,8 +2166,7 @@ end;
 
 function TFormCalculationEstimate.CheckMatINRates: Boolean;
 begin
-  Result :=  (qrRatesExID_RATE.AsInteger > 0) and
-    (qrRatesExID_TYPE_DATA.AsInteger = 2);
+  Result := (qrRatesExID_RATE.AsInteger > 0) and (qrRatesExID_TYPE_DATA.AsInteger = 2);
 end;
 
 // проверка что материал неучтеный в таблице материалов
@@ -2325,13 +2324,18 @@ begin
   if qrRatesEx.Tag <> 1 then
   begin
     case qrRatesExID_TYPE_DATA.AsInteger of
-      1: qrTemp.SQL.Text := 'UPDATE card_rate_temp set rate_count=:RC WHERE ID=:ID;';
-      2: qrTemp.SQL.Text := 'UPDATE materialcard_temp set mat_count=:RC WHERE ID=:ID;';
-      3: qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set mech_count=:RC WHERE ID=:ID;';
-      4: qrTemp.SQL.Text := 'UPDATE devicescard_temp set device_count=:RC WHERE ID=:ID;';
-      5: qrTemp.SQL.Text := 'UPDATE dumpcard_temp set WORK_COUNT = :RC WHERE ID=:ID;';
+      1:
+        qrTemp.SQL.Text := 'UPDATE card_rate_temp set rate_count=:RC WHERE ID=:ID;';
+      2:
+        qrTemp.SQL.Text := 'UPDATE materialcard_temp set mat_count=:RC WHERE ID=:ID;';
+      3:
+        qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set mech_count=:RC WHERE ID=:ID;';
+      4:
+        qrTemp.SQL.Text := 'UPDATE devicescard_temp set device_count=:RC WHERE ID=:ID;';
+      5:
+        qrTemp.SQL.Text := 'UPDATE dumpcard_temp set WORK_COUNT = :RC WHERE ID=:ID;';
       6, 7, 8, 9:
-          qrTemp.SQL.Text := 'UPDATE transpcard_temp set CARG_COUNT = :RC WHERE ID=:ID;';
+        qrTemp.SQL.Text := 'UPDATE transpcard_temp set CARG_COUNT = :RC WHERE ID=:ID;';
       10, 11:
         begin
           if Act then
@@ -2471,8 +2475,8 @@ begin
         if CheckMatINRates then
         begin
           NewCount := 0;
-          qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp ' +
-            'WHERE ID = ' + IntToStr(qrRatesExID_TABLES.AsInteger);
+          qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp ' + 'WHERE ID = ' +
+            IntToStr(qrRatesExID_TABLES.AsInteger);
           qrTemp.Active := True;
           if not qrTemp.Eof then
             NewCount := qrTemp.Fields[0].AsFloat;
@@ -2508,8 +2512,7 @@ begin
 
     while not qrRatesEx.Eof do
     begin
-      if (qrRatesExID_TYPE_DATA.AsInteger = 2) and
-        (qrRatesExID_TABLES.AsInteger = AMId) then
+      if (qrRatesExID_TYPE_DATA.AsInteger = 2) and (qrRatesExID_TABLES.AsInteger = AMId) then
       begin
         qrRatesEx.Edit;
         qrRatesExOBJ_COUNT.AsFloat := AMCount;
@@ -2943,11 +2946,7 @@ begin
         btnMechanisms.Enabled := True;
         btnDescription.Enabled := True;
 
-        if btnMaterials.Down or
-           btnEquipments.Down or
-           btnDump.Down or
-           btnTransp.Down or
-           btnStartup.Down then
+        if btnMaterials.Down or btnEquipments.Down or btnDump.Down or btnTransp.Down or btnStartup.Down then
         begin
           btnMaterials.Down := True;
           btnMaterialsClick(btnMaterials);
@@ -2960,8 +2959,7 @@ begin
           btnDescriptionClick(btnDescription);
 
         // Средний разряд рабочих-строителей
-        EditCategory.Text :=
-          MyFloatToStr(GetRankBuilders(IntToStr(qrRatesExID_TABLES.AsInteger)));
+        EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesExID_TABLES.AsInteger)));
 
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(qrRatesExOBJ_CODE.AsString);
@@ -2980,15 +2978,15 @@ begin
         btnMaterialsClick(btnMaterials);
 
         // Средний разряд рабочих-строителей
-        {if CheckMatINRates then
-        begin
+        { if CheckMatINRates then
+          begin
           PMDelete.Enabled := False;
           EditCategory.Text :=
-            MyFloatToStr(GetRankBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
+          MyFloatToStr(GetRankBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
           EditCategory.Text :=
-            MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
+          MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
           FillingWinterPrice(qrRatesCODEINRATE.AsString);
-        end;}
+          end; }
 
         CalcPrice := '10';
       end;
@@ -3157,17 +3155,13 @@ begin
   PMMechEdit.Enabled := not CheckMechReadOnly;
 
   PMMechFromRates.Enabled := (not CheckMechReadOnly) and
-    ((qrRatesExID_RATE.AsInteger > 0) or
-     (qrRatesExID_TYPE_DATA.AsInteger = 1)) and
+    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) and
     (qrMechanizmREPLACED.AsInteger = 0);
 
-  PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) and
-    (qrMechanizmID_REPLACED.AsInteger = 0) and
-      ((qrRatesExID_RATE.AsInteger > 0) or
-        (qrRatesExID_TYPE_DATA.AsInteger = 1)); // не заменяющуй
+  PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) and (qrMechanizmID_REPLACED.AsInteger = 0) and
+    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)); // не заменяющуй
 
-  PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0) and
-    (qrMechanizmFROM_RATE.AsInteger = 0);
+  PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0);
 end;
 
 procedure TFormCalculationEstimate.PopupMenuRatesAdd352Click(Sender: TObject);
@@ -3298,8 +3292,7 @@ begin
         qrTemp1.SQL.Text := 'Insert into materialcard_temp (ID_CARD_RATE, MAT_ID, ' +
           'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
           'PROC_TRANSP) values (:ID_CARD_RATE, :MAT_ID, ' +
-          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
-          ':COAST_NDS, :PROC_TRANSP)';
+          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
         qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
         qrTemp1.ParamByName('MAT_ID').AsInteger := FieldByName('MatId').AsInteger;
         qrTemp1.ParamByName('MAT_CODE').AsString := FieldByName('MatCode').AsString;
@@ -3447,9 +3440,8 @@ end;
 // Удаление чего-либо из сметы
 procedure TFormCalculationEstimate.PMDeleteClick(Sender: TObject);
 begin
-  if MessageBox(0, PChar('Вы действительно хотите удалить ' +
-    qrRatesExOBJ_CODE.AsString + '?'),
-    CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+  if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrRatesExOBJ_CODE.AsString + '?'), CaptionForm,
+    MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
     Exit;
 
   if Act then
@@ -3478,8 +3470,7 @@ begin
           end;
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении расценки возникла ошибка:' +
-              sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении расценки возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       2: // Материал
@@ -3495,8 +3486,7 @@ begin
 
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении материала возникла ошибка:' +
-              sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       3: // Механизм
@@ -3512,8 +3502,7 @@ begin
 
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении механизма возникла ошибка:' +
-              sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       4: // Оборудование
@@ -3529,8 +3518,7 @@ begin
 
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении оборудования возникла ошибка:' +
-              sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       5: // Свалка
@@ -3545,8 +3533,7 @@ begin
           end;
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении свалки возникла ошибка:' +
-              sLineBreak + sLineBreak + E.Message),
+            MessageBox(0, PChar('При удалении свалки возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
               CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       6, 7, 8, 9: // Транспорт
@@ -3561,8 +3548,7 @@ begin
           end;
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' +
-              sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       10, 11: // Пуск и регулировка
@@ -3577,8 +3563,7 @@ begin
           end;
         except
           on E: Exception do
-            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' +
-              sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
               E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
     end;
@@ -3598,8 +3583,7 @@ begin
       OutputDataToTable;
 
   if qrRatesExID_TYPE_DATA.AsInteger in [6, 7, 8, 9] then
-    if GetTranspForm(IdEstimate, qrTranspID.AsInteger,
-      qrRatesExID_TYPE_DATA.AsInteger, False) then
+    if GetTranspForm(IdEstimate, qrTranspID.AsInteger, qrRatesExID_TYPE_DATA.AsInteger, False) then
       OutputDataToTable;
 end;
 
@@ -3798,8 +3782,7 @@ begin
   // Открытие датасета для заполнения таблицы материалов
   qrMechanizm.Active := False;
   // Заполняет Mechanizms_temp
-  qrMechanizm.SQL.Text := 'call GetMechanizms(' + IntToStr(fType) + ',' +
-    IntToStr(fID) + ')';
+  qrMechanizm.SQL.Text := 'call GetMechanizms(' + IntToStr(fType) + ',' + IntToStr(fID) + ')';
   qrMechanizm.ExecSQL;
 
   qrMechanizm.Active := False;
@@ -3857,8 +3840,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' +
-        vIdNormativ + ' and work_id = 1;');
+      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 1;');
       Active := True;
 
       if FieldByName('norma').Value <> null then
@@ -3866,8 +3848,7 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении значения "Средний разряд" возникла ошибка:' +
-        sLineBreak + sLineBreak
+      MessageBox(0, PChar('При получении значения "Средний разряд" возникла ошибка:' + sLineBreak + sLineBreak
         + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -3881,8 +3862,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ +
-        ' and work_id = 2;');
+      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 2;');
       Active := True;
 
       if FieldByName('norma').AsVariant <> null then
@@ -3890,8 +3870,7 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении значения "ЗТ строителей" возникла ошибка:' +
-        sLineBreak + sLineBreak
+      MessageBox(0, PChar('При получении значения "ЗТ строителей" возникла ошибка:' + sLineBreak + sLineBreak
         + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -3905,8 +3884,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ +
-        ' and work_id = 3;');
+      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 3;');
       Active := True;
 
       if FieldByName('norma').AsVariant <> null then
@@ -3914,8 +3892,7 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении значения "ЗТ машинистов" возникла ошибка:' +
-        sLineBreak + sLineBreak
+      MessageBox(0, PChar('При получении значения "ЗТ машинистов" возникла ошибка:' + sLineBreak + sLineBreak
         + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -3963,8 +3940,7 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT objstroj.obj_region as "IdRegion" FROM objcards, objstroj ' +
-        'WHERE objcards.stroj_id = objstroj.stroj_id and obj_id = ' +
-        IntToStr(IdObject) + ';');
+        'WHERE objcards.stroj_id = objstroj.stroj_id and obj_id = ' + IntToStr(IdObject) + ';');
       Active := True;
 
       // Получаем регион (1-город, 2-село, 3-минск)
@@ -3976,8 +3952,8 @@ begin
       SQL.Clear;
 
       if IdRegion = 3 then
-        StrQuery := 'SELECT stavka_m_rab as "RateWorker" FROM stavka WHERE monat = ' +
-          IntToStr(MonthEstimate) + ' and year = ' + IntToStr(YearEstimate) + ';'
+        StrQuery := 'SELECT stavka_m_rab as "RateWorker" FROM stavka WHERE monat = ' + IntToStr(MonthEstimate)
+          + ' and year = ' + IntToStr(YearEstimate) + ';'
       else
         StrQuery := 'SELECT stavka_rb_rab as "RateWorker" FROM stavka WHERE monat = ' +
           IntToStr(MonthEstimate) + ' and year = ' + IntToStr(YearEstimate) + ';';
@@ -4003,8 +3979,7 @@ begin
     Result := TW;
   except
     on E: Exception do
-      MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' +
-        sLineBreak + sLineBreak +
+      MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' + sLineBreak + sLineBreak +
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4018,8 +3993,8 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norm_ras FROM mechanizmnorm WHERE normativ_id = ' +
-        vIdNormativ + ' and mechanizm_id = ' + vIdMechanizm + ';');
+      SQL.Add('SELECT norm_ras FROM mechanizmnorm WHERE normativ_id = ' + vIdNormativ + ' and mechanizm_id = '
+        + vIdMechanizm + ';');
       Active := True;
 
       if FieldByName('norm_ras').AsVariant <> null then
@@ -4027,8 +4002,7 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' +
-        sLineBreak +
+      MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' + sLineBreak +
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4042,8 +4016,8 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norm_ras FROM mechanizmnorm WHERE normativ_id = ' +
-        vIdNormativ + ' and mechanizm_id = ' + vIdMechanizm + ';');
+      SQL.Add('SELECT norm_ras FROM mechanizmnorm WHERE normativ_id = ' + vIdNormativ + ' and mechanizm_id = '
+        + vIdMechanizm + ';');
       Active := True;
 
       if FieldByName('norm_ras').AsVariant <> null then
@@ -4051,8 +4025,7 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' +
-        sLineBreak +
+      MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' + sLineBreak +
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4158,8 +4131,8 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT IFNULL(monat, 0) as "Month", IFNULL(year, 0) as "Year" ' +
-        'FROM stavka WHERE stavka_id = (SELECT stavka_id From smetasourcedata '
-        + 'WHERE sm_id = ' + IntToStr(IdEstimate) + ');');
+        'FROM stavka WHERE stavka_id = (SELECT stavka_id From smetasourcedata ' + 'WHERE sm_id = ' +
+        IntToStr(IdEstimate) + ');');
       Active := True;
 
       MonthEstimate := FieldByName('Month').AsInteger;
@@ -4168,8 +4141,8 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе месяца и года из таблицы СТАВКА возникла ошибка:' +
-        sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе месяца и года из таблицы СТАВКА возникла ошибка:' + sLineBreak +
+        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4304,21 +4277,18 @@ begin
         EditWinterPrice.Text := FieldByName('Name').AsVariant;
       end
     else
-    with qrTemp do
+      with qrTemp do
       begin
         Active := False;
         SQL.Clear;
         SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name", coef as "Coef", coef_zp as "CoefZP", s as "From", po as "On" '
-          + 'FROM znormativs, znormativs_detail, znormativs_value '
-          + 'WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID  '
-          + 'AND znormativs.ZNORMATIVS_ID = znormativs_value.ZNORMATIVS_ID '
-          + 'AND znormativs.DEL_FLAG = 0 '
-          + 'AND znormativs_value.ZNORMATIVS_ONDATE_ID = ('
-          + '  SELECT znormativs_ondate.ID'
-          + '    FROM znormativs_ondate'
-          + '    WHERE `znormativs_ondate`.`onDate` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = (SELECT STAVKA_ID FROM smetasourcedata WHERE SM_ID='+qrRatesExSM_ID.AsString+'))'
-          + '    AND `znormativs_ondate`.`DEL_FLAG` = 0)'
-          + ';');
+          + 'FROM znormativs, znormativs_detail, znormativs_value ' +
+          'WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID  ' +
+          'AND znormativs.ZNORMATIVS_ID = znormativs_value.ZNORMATIVS_ID ' + 'AND znormativs.DEL_FLAG = 0 ' +
+          'AND znormativs_value.ZNORMATIVS_ONDATE_ID = (' + '  SELECT znormativs_ondate.ID' +
+          '    FROM znormativs_ondate' +
+          '    WHERE `znormativs_ondate`.`onDate` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = (SELECT STAVKA_ID FROM smetasourcedata WHERE SM_ID='
+          + qrRatesExSM_ID.AsString + '))' + '    AND `znormativs_ondate`.`DEL_FLAG` = 0)' + ';');
         Active := True;
         First;
         while not Eof do
@@ -4449,8 +4419,7 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе «ЗП машиниста» возникла ошибка:' +
-        sLineBreak + E.Message),
+      MessageBox(0, PChar('При запросе «ЗП машиниста» возникла ошибка:' + sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4734,8 +4703,7 @@ begin
     OutputDataToTable;
   except
     on E: Exception do
-      MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' +
-        sLineBreak + sLineBreak +
+      MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4757,8 +4725,7 @@ begin
     OutputDataToTable;
   except
     on E: Exception do
-      MessageBox(0, PChar('При добавлении материала возникла ошибка:' +
-        sLineBreak + sLineBreak + E.Message),
+      MessageBox(0, PChar('При добавлении материала возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4782,8 +4749,7 @@ begin
     OutputDataToTable;
   except
     on E: Exception do
-      MessageBox(0, PChar('При добавлении механизма возникла ошибка:' +
-        sLineBreak + sLineBreak + E.Message),
+      MessageBox(0, PChar('При добавлении механизма возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4942,22 +4908,18 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and
-       (dbgrdMaterial = LastEntegGrd)
+    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
-    if (qrRatesExID_TYPE_DATA.AsInteger = 2) and
-       (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and
-       (grRatesEx = LastEntegGrd) then
+    if (qrRatesExID_TYPE_DATA.AsInteger = 2) and (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and
+      (grRatesEx = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMaterialFROM_RATE.AsInteger = 0) and
-       (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
-       (dbgrdMaterial = LastEntegGrd) then
+    if (qrMaterialFROM_RATE.AsInteger = 0) and (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
+      (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
-
 
     Str := '';
     // Подсветка синим подшапок таблицы
@@ -4977,10 +4939,8 @@ begin
     end;
 
     // Не отображает кол-во и суммы для замененных или вынесеных
-    if ((qrMaterialFROM_RATE.AsInteger = 1) and
-        ((qrRatesExID_RATE.AsInteger > 0) or
-         (qrRatesExID_TYPE_DATA.AsInteger = 1))) or
-      (qrMaterialREPLACED.AsInteger = 1) then
+    if ((qrMaterialFROM_RATE.AsInteger = 1) and ((qrRatesExID_RATE.AsInteger > 0) or
+      (qrRatesExID_TYPE_DATA.AsInteger = 1))) or (qrMaterialREPLACED.AsInteger = 1) then
     begin
       if Column.Index in [4, 8, 9, 10, 11, 15, 16, 17, 18] then
         Str := '';
@@ -5077,8 +5037,7 @@ begin
 
     // Зачеркиваем вынесеные из расцеки механизмы
     if (qrMechanizmFROM_RATE.AsInteger = 1) and
-      ((qrRatesExID_RATE.AsInteger > 0) or
-       (qrRatesExID_TYPE_DATA.AsInteger = 1)) then
+      ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
@@ -5091,14 +5050,12 @@ begin
     end;
 
     // Подсветка замененного механизма
-    if (IdReplasedMech > 0) and (qrMechanizmID.AsInteger = IdReplasedMech) and
-      (dbgrdMechanizm = LastEntegGrd)
+    if (IdReplasedMech > 0) and (qrMechanizmID.AsInteger = IdReplasedMech) and (dbgrdMechanizm = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMechanizmFROM_RATE.AsInteger = 0) and
-      (IdReplasingMech = qrMechanizmID_REPLACED.AsInteger) and
+    if (qrMechanizmFROM_RATE.AsInteger = 0) and (IdReplasingMech = qrMechanizmID_REPLACED.AsInteger) and
       (dbgrdMechanizm = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
@@ -5119,10 +5076,8 @@ begin
         Str := Column.Field.AsString;
     end;
 
-    if ((qrMechanizmFROM_RATE.AsInteger = 1) and
-      ((qrRatesExID_RATE.AsInteger > 0) or
-       (qrRatesExID_TYPE_DATA.AsInteger = 1))) or
-      (qrMechanizmREPLACED.AsInteger = 1) then
+    if ((qrMechanizmFROM_RATE.AsInteger = 1) and ((qrRatesExID_RATE.AsInteger > 0) or
+      (qrRatesExID_TYPE_DATA.AsInteger = 1))) or (qrMechanizmREPLACED.AsInteger = 1) then
     begin
       if Column.Index in [4, 7, 8, 11, 12, 16, 17, 20, 21, 24] then
         Str := '';
@@ -5175,12 +5130,17 @@ begin
 
     if qrRatesExID_TYPE_DATA.AsInteger = -3 then
       Brush.Color := clSilver;
-
+    if qrRatesExID_TYPE_DATA.AsInteger = -1 then
+    begin
+      Font.Style := Font.Style + [fsbold];
+      Brush.Color := clSilver;
+    end;
+    if qrRatesExID_TYPE_DATA.AsInteger = -4 then
+      Brush.Color := clInactiveBorder;
 
     // Подсвечивается жирным только если есть фокус
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
-      (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) and
-      (grRatesEx = LastEntegGrd) then
+      (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) and (grRatesEx = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
@@ -5189,16 +5149,16 @@ begin
     // Вынесение за расценку имеет приоритет над заменой
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = LastEntegGrd) then
     begin
-      if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and
-        (qrRatesExID_TYPE_DATA.AsInteger = 2) then
+      if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2)
+      then
         Font.Style := Font.Style + [fsbold];
     end;
 
     // Подсветка вынесенного за расценку механизма
     if btnMechanisms.Down and qrMechanizm.Active and (dbgrdMechanizm = LastEntegGrd) then
     begin
-      if (qrRatesExID_TABLES.AsInteger = qrMechanizmID.AsInteger) and
-        (qrRatesExID_TYPE_DATA.AsInteger = 3) then
+      if (qrRatesExID_TABLES.AsInteger = qrMechanizmID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 3)
+      then
         Font.Style := Font.Style + [fsbold];
     end;
 
