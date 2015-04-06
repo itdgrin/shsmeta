@@ -101,6 +101,7 @@ type
     pmSelectRate: TMenuItem;
     pmDeselectRate: TMenuItem;
     pmShowRep: TMenuItem;
+    btnDelReplacement: TButton;
     procedure btnCancelClick(Sender: TObject);
     procedure rgroupTypeClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
@@ -155,7 +156,8 @@ type
     //Для хинтов в стринг гриде
     FActRow: Integer;
 
-    FRateIDArray: array of Integer;
+    FRateIDArray,
+    FEstIDArray: array of Integer;
 
     procedure ChangeType(AType: byte);
     procedure LoadObjEstInfo;
@@ -167,16 +169,18 @@ type
     procedure ShowDelRep(const AName: string; const AID: Integer;
       ADel: Boolean = False);
 
-    function GetRateCount: Integer;
+    function GetCount: Integer;
     function GetRateIDs(AIndex: Integer): Integer;
+    function GetEstIDs(AIndex: Integer): Integer;
     { Private declarations }
   public
     constructor Create(const AObjectID, AEstimateID,
       AMatMechID: Integer; AType: Byte; ATemp: Boolean); reintroduce;
     destructor Destroy; override;
 
-    property RateCount: Integer read GetRateCount;
+    property Count: Integer read GetCount;
     property RateIDs[AIndex: Integer] : Integer read GetRateIDs;
+    property EstIDs[AIndex: Integer] : Integer read GetEstIDs;
     { Public declarations }
   end;
 
@@ -360,64 +364,102 @@ end;
 
 //заполняет спрачник
 procedure TfrmReplacement.FillSprList(AFindStr: string);
-var i: Integer;
+var i, j: Integer;
     FindType: Byte;
     Item: TListItem;
+    WordList: TStringList;
+    TmpStr: string;
+    LastSpase, Cont: Boolean;
 begin
   if Length(FSprArray) = 0 then
     Exit;
 
-  //Определяем тип поиска по имени или по коду
-  FindType := 0;
-  if (Length(AFindStr) > 0) then
-  begin
-     FindType := 1;
-     if (Length(AFindStr) > 1) then
-     if FCurType = 0 then
-     begin
-      if (((AFindStr[1] = 'C') or (AFindStr[1] = 'c') or
-          (AFindStr[1] = 'С') or (AFindStr[1] = 'с')) and
-        CharInSet(AFindStr[2], ['1'..'9'])) then
-      begin
-        AFindStr[1] := 'С';
-        FindType := 2;
-      end;
-     end
-     else
-     begin
-      if (((AFindStr[1] = 'M') or (AFindStr[1] = 'm') or
-          (AFindStr[1] = 'М') or (AFindStr[1] = 'м')) and
-        CharInSet(AFindStr[2], ['1'..'9'])) then
-      begin
-        AFindStr[1] := 'М';
-        FindType := 2;
-      end;
-     end;
-  end;
+  WordList := TStringList.Create;
+  try
+    AFindStr := Trim(AFindStr);
 
-  //Видимый список обновляется намного дольше
-  ListSpr.Visible :=  False;
+    //Определяем тип поиска по имени или по коду
+    FindType := 0;
+    if (Length(AFindStr) > 0) then
+    begin
+       FindType := 1;
+       if (Length(AFindStr) > 1) then
+       if FCurType = 0 then
+       begin
+        if (((AFindStr[1] = 'C') or (AFindStr[1] = 'c') or
+            (AFindStr[1] = 'С') or (AFindStr[1] = 'с')) and
+          CharInSet(AFindStr[2], ['1'..'9'])) then
+        begin
+          AFindStr[1] := 'С';
+          FindType := 2;
+        end;
+       end
+       else
+       begin
+        if (((AFindStr[1] = 'M') or (AFindStr[1] = 'm') or
+            (AFindStr[1] = 'М') or (AFindStr[1] = 'м')) and
+          CharInSet(AFindStr[2], ['1'..'9'])) then
+        begin
+          AFindStr[1] := 'М';
+          FindType := 2;
+        end;
+       end;
 
-  ListSpr.Items.Clear;
-  for i := Low(FSprArray) to High(FSprArray) do
-  begin
-    case FindType of
-      1:
-        if Pos(AFindStr.ToLower, FSprArray[i].Name.ToLower) = 0 then
-          Continue;
-      2:
-        if Pos(AFindStr.ToLower, FSprArray[i].Code.ToLower) = 0 then
-          Continue;
+       TmpStr := '';
+       LastSpase := False;
+       for i := Low(AFindStr) to High(AFindStr) do
+       begin
+          if (AFindStr[i] = ' ') then
+          begin
+            if LastSpase then
+              Continue
+            else
+              LastSpase := True;
+          end
+          else
+            LastSpase := False;
+
+          TmpStr := TmpStr + AFindStr[i];
+       end;
+       TmpStr := StringReplace(TmpStr, ' ', sLineBreak,[rfReplaceAll]);
+       WordList.Text := TmpStr;
     end;
-    //Создаем пустые итемы, заполним их при отображении
-    Item := ListSpr.Items.Add;
-    Item.Data := @FSprArray[i];
+
+    //Видимый список обновляется намного дольше
+    ListSpr.Visible :=  False;
+
+    ListSpr.Items.Clear;
+    for i := Low(FSprArray) to High(FSprArray) do
+    begin
+      case FindType of
+        1:
+        begin
+          Cont := False;
+          for j := 0 to WordList.Count - 1 do
+            if Pos(WordList[j].ToLower, FSprArray[i].Name.ToLower) = 0 then
+            begin
+              Cont := True;
+              break;
+            end;
+          if Cont then
+            Continue;
+        end;
+        2:
+          if Pos(AFindStr.ToLower, FSprArray[i].Code.ToLower) = 0 then
+            Continue;
+      end;
+      //Создаем пустые итемы, заполним их при отображении
+      Item := ListSpr.Items.Add;
+      Item.Data := @FSprArray[i];
+    end;
+    btnFind.Enabled := True;
+    btnSelect.Enabled := True;
+    ListSpr.Visible :=  True;
+    if (ListSpr.Items.Count > 0) then
+      ListSpr.ItemIndex := 0;
+  finally
+    WordList.Free;
   end;
-  btnFind.Enabled := True;
-  btnSelect.Enabled := True;
-  ListSpr.Visible :=  True;
-  if (ListSpr.Items.Count > 0) then
-    ListSpr.ItemIndex := 0;
 end;
 
 procedure TfrmReplacement.grdRepKeyPress(Sender: TObject; var Key: Char);
@@ -560,9 +602,16 @@ end;
 
 procedure TfrmReplacement.ListEntryChange(Sender: TObject; Item: TListItem;
   Change: TItemChange);
+var i: Integer;
 begin
   if Assigned(Item.Data) then
     FEntryArray[Integer(Item.Data) - 1].Select := Item.Checked;
+
+  btnDelReplacement.Visible := False;
+  for i := Low(FEntryArray) to High(FEntryArray) do
+    if FEntryArray[i].Select then
+      btnDelReplacement.Visible :=
+        btnDelReplacement.Visible or FEntryArray[i].MRep;
 end;
 
 procedure TfrmReplacement.ListEntryCustomDrawItem(Sender: TCustomListView;
@@ -638,8 +687,8 @@ begin
   inherited;
 end;
 
-function TfrmReplacement.GetRateCount: Integer;
-begin
+function TfrmReplacement.GetCount: Integer;
+begin //Count у FRateIDArray и FEstIDArray одинаков
   Result := Length(FRateIDArray);
 end;
 
@@ -649,6 +698,14 @@ begin
     (AIndex + 1 > Length(FRateIDArray)) then
     raise Exception.Create(Format(SListIndexError, [AIndex]));
   Result := FRateIDArray[AIndex];
+end;
+
+function TfrmReplacement.GetEstIDs(AIndex: Integer): Integer;
+begin
+  if (AIndex < 0) or
+    (AIndex + 1 > Length(FEstIDArray)) then
+    raise Exception.Create(Format(SListIndexError, [AIndex]));
+  Result := FEstIDArray[AIndex];
 end;
 
 constructor TfrmReplacement.Create(const AObjectID, AEstimateID,
@@ -703,7 +760,10 @@ end;
 procedure TfrmReplacement.edtFindKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = #13 then
+  begin
     btnFindClick(nil);
+    Key := #0;
+  end;
 end;
 
 procedure TfrmReplacement.LoadObjEstInfo;
@@ -794,7 +854,11 @@ begin
   begin
     groupEntry.Caption := ' Вхождения в ' + FEstimateName + ':';
     if FTemp then
-      WhereStr := ' AND (SM.SM_ID = ' + FEstimateID.ToString + ')';
+      WhereStr := ' AND ((SM.SM_ID = ' + FEstimateID.ToString + ') OR ' +
+        '(SM.PARENT_ID = ' + FEstimateID.ToString + ') OR ' +
+        '(SM.PARENT_ID IN (SELECT smetasourcedata.SM_ID FROM ' +
+        'smetasourcedata WHERE smetasourcedata.PARENT_ID = ' +
+        FEstimateID.ToString + ')))';
   end
   else
   begin
@@ -837,7 +901,7 @@ begin
 
   ind := 0;
   SetLength(FEntryArray, 0);
-
+  qrTemp.SQL.SaveToFile('d:\123.sql');
   qrTemp.Active := True;
   while not qrTemp.Eof do
   begin
@@ -885,7 +949,10 @@ var i, j, ind:  Integer;
     Flag: Boolean;
     IDArray: array of Integer;
     CoefArray: array of Double;
+    DelOnly: Boolean;
 begin
+  DelOnly := (TButton(Sender).Tag = 1);
+
   Flag := False;
   for i := Low(FEntryArray) to High(FEntryArray) do
     if FEntryArray[i].Select then
@@ -907,6 +974,7 @@ begin
   SetLength(IDArray, ind);
   SetLength(CoefArray, ind);
   SetLength(FRateIDArray, ind);
+  SetLength(FEstIDArray, ind);
 
   for i := grdRep.FixedRows to grdRep.RowCount - 1 do
     if (grdRep.Cells[4, i] <> '') then
@@ -918,7 +986,7 @@ begin
       CoefArray[ind - 1] := grdRep.Cells[3, i].ToDouble;
     end;
 
-  if Length(IDArray) = 0 then
+  if (Length(IDArray) = 0) and not DelOnly then
   begin
     if FCurType = 0 then
       Showmessage('Не задано ни одного заменяющего материала!')
@@ -927,7 +995,7 @@ begin
     Exit;
   end;
 
-  Screen.Cursor := crSQLWait;
+  Screen.Cursor := crHourGlass;
   try
     for i := Low(FEntryArray) to High(FEntryArray) do
     begin
@@ -945,25 +1013,30 @@ begin
       begin
         j := Length(FRateIDArray);
         SetLength(FRateIDArray, j + 1);
+        SetLength(FEstIDArray, j + 1);
         FRateIDArray[j] := FEntryArray[i].RID;
+        FEstIDArray[j] := FEntryArray[i].EID;
       end;
 
       //Если ранее были замены, удаляются
       if FEntryArray[i].MRep then
         ShowDelRep('', FEntryArray[i].MID, True);
 
-      //Выполняются замены
-      for j := Low(IDArray) to High(IDArray) do
+      if not DelOnly then
       begin
-        if FCurType = 0 then
-          qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, :IdMR, :IdMS, :Coef);'
-        else
-          qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, :IdMR, :IdMS, :Coef);';
-        qrTemp.ParamByName('IdEst').Value := FEntryArray[i].EID;
-        qrTemp.ParamByName('IdMR').Value := FEntryArray[i].MID;
-        qrTemp.ParamByName('IdMS').Value := IDArray[j];
-        qrTemp.ParamByName('Coef').Value := CoefArray[j];
-        qrTemp.ExecSQL;
+        //Выполняются замены
+        for j := Low(IDArray) to High(IDArray) do
+        begin
+          if FCurType = 0 then
+            qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, :IdMR, :IdMS, :Coef);'
+          else
+            qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, :IdMR, :IdMS, :Coef);';
+          qrTemp.ParamByName('IdEst').Value := FEntryArray[i].EID;
+          qrTemp.ParamByName('IdMR').Value := FEntryArray[i].MID;
+          qrTemp.ParamByName('IdMS').Value := IDArray[j];
+          qrTemp.ParamByName('Coef').Value := CoefArray[j];
+          qrTemp.ExecSQL;
+        end;
       end;
     end;
   finally

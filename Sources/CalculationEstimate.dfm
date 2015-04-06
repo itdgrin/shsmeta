@@ -427,7 +427,7 @@
     Height = 324
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 7
+    TabOrder = 6
     object ImageSplitterBottom: TImage
       Left = 200
       Top = 365
@@ -2762,7 +2762,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSummaryCalculations'
     ParentBackground = False
-    TabOrder = 5
+    TabOrder = 4
     inline frSummaryCalculations: TfrCalculationEstimateSummaryCalculations
       Left = 0
       Top = 0
@@ -3097,7 +3097,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSSR'
     ParentBackground = False
-    TabOrder = 6
+    TabOrder = 5
     inline frSSR: TfrCalculationEstimateSSR
       Left = 0
       Top = 0
@@ -3232,6 +3232,7 @@
         end
         object PMAddAdditionHeating: TMenuItem
           Caption = #1055#1091#1089#1082' '#1080' '#1088#1077#1075#1091#1083#1080#1088#1086#1074#1082#1072' '#1086#1090#1086#1087#1083#1077#1085#1080#1103
+          OnClick = PMAddAdditionHeatingClick
           object PMAddAdditionHeatingE18: TMenuItem
             Tag = 10
             Caption = #1056#1072#1089#1094#1077#1085#1082#1080' '#1045'18'
@@ -3245,7 +3246,6 @@
         end
         object PopupMenuRatesAdd352: TMenuItem
           Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1082#1086#1101#1092'. '#1089#1086#1075#1083#1072#1089#1085#1086' '#1055#1088#1080#1082#1072#1079#1091' '#8470'352 '#1082' '#1074#1099#1076#1077#1083#1077#1085#1085#1099#1084' '#1089#1090#1088#1086#1082#1072#1084
-          OnClick = PopupMenuRatesAdd352Click
         end
       end
     end
