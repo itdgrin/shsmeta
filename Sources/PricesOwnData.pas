@@ -11,13 +11,10 @@ type
   TFormPricesOwnData = class(TForm)
 
     PanelPrices: TPanel;
-
-    SpeedButtonTariffs: TSpeedButton;
     SpeedButtonPriceMaterials: TSpeedButton;
     SpeedButtonPriceMechanizms: TSpeedButton;
     SpeedButtonPriceTransportation: TSpeedButton;
     SpeedButtonPriceDumps: TSpeedButton;
-    SpeedButtonIndex: TSpeedButton;
 
     constructor Create(AOwner: TComponent; const vDataBase: Char; const vPriceColumn: Boolean); reintroduce;
 
