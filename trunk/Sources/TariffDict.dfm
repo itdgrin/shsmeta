@@ -23,7 +23,7 @@ object fTariffDict: TfTariffDict
     Left = 3
     Top = 3
     Width = 531
-    Height = 391
+    Height = 424
     ActivePage = ts1
     Align = alClient
     MultiLine = True
@@ -31,39 +31,34 @@ object fTariffDict: TfTariffDict
     TabOrder = 0
     TabWidth = 140
     OnChange = pgcChange
-    ExplicitLeft = 8
-    ExplicitTop = 8
-    ExplicitWidth = 436
-    ExplicitHeight = 150
+    ExplicitHeight = 391
     object ts1: TTabSheet
       Caption = #1058#1072#1088#1080#1092#1099' '#1087#1086' '#1079#1072#1088#1087#1083#1072#1090#1077
-      ExplicitLeft = 0
-      ExplicitTop = 31
-      ExplicitHeight = 346
+      ExplicitHeight = 360
       object spl1: TSplitter
         Left = 180
-        Top = 62
-        Height = 298
+        Top = 35
+        Height = 358
         ExplicitLeft = 248
         ExplicitTop = 72
         ExplicitHeight = 100
       end
       object pnlLeft: TPanel
         Left = 0
-        Top = 62
+        Top = 35
         Width = 180
-        Height = 298
+        Height = 358
         Align = alLeft
         Caption = 'pnlLeft'
         Constraints.MinWidth = 180
         TabOrder = 1
-        ExplicitTop = 0
-        ExplicitHeight = 360
+        ExplicitTop = 62
+        ExplicitHeight = 298
         object grCategory: TJvDBGrid
           Left = 1
           Top = 1
           Width = 178
-          Height = 296
+          Height = 356
           Align = alClient
           DataSource = dsCategory
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -109,21 +104,19 @@ object fTariffDict: TfTariffDict
       end
       object pnlClient: TPanel
         Left = 183
-        Top = 62
+        Top = 35
         Width = 340
-        Height = 298
+        Height = 358
         Align = alClient
         Caption = 'pnlClient'
         TabOrder = 2
-        ExplicitLeft = 190
-        ExplicitTop = 230
-        ExplicitWidth = 219
-        ExplicitHeight = 124
+        ExplicitTop = 62
+        ExplicitHeight = 298
         object grStavka: TJvDBGrid
           Left = 1
           Top = 1
           Width = 338
-          Height = 296
+          Height = 356
           Align = alClient
           DataSource = dsStavka
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -212,10 +205,9 @@ object fTariffDict: TfTariffDict
         Left = 0
         Top = 0
         Width = 523
-        Height = 62
+        Height = 35
         Align = alTop
         TabOrder = 0
-        ExplicitTop = -5
         object lbl1: TLabel
           Left = 8
           Top = 8
@@ -224,14 +216,14 @@ object fTariffDict: TfTariffDict
           Caption = #1090#1072#1088#1080#1074#1099' '#1085#1072
         end
         object lbl2: TLabel
-          Left = 8
-          Top = 35
+          Left = 192
+          Top = 8
           Width = 166
           Height = 13
           Caption = #1087#1086' '#1088#1077#1089#1087#1091#1073#1083#1080#1082#1077' '#1089#1090#1072#1074#1082#1072' 4 '#1088#1072#1079#1088#1103#1076#1072
         end
         object dbedtInDate: TDBEdit
-          Left = 180
+          Left = 67
           Top = 8
           Width = 121
           Height = 21
@@ -240,8 +232,8 @@ object fTariffDict: TfTariffDict
           TabOrder = 0
         end
         object dbedtSTAVKA_M_RAB: TDBEdit
-          Left = 180
-          Top = 35
+          Left = 364
+          Top = 8
           Width = 121
           Height = 21
           DataField = 'STAVKA_M_RAB'
@@ -253,7 +245,7 @@ object fTariffDict: TfTariffDict
     object ts2: TTabSheet
       Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1095#1077#1089#1082#1080#1077' '#1080#1085#1076#1077#1082#1089#1099
       ImageIndex = 1
-      ExplicitHeight = 393
+      ExplicitHeight = 360
       object pnlTop1: TPanel
         Left = 0
         Top = 0
@@ -262,27 +254,21 @@ object fTariffDict: TfTariffDict
         Align = alTop
         Caption = 'pnlTop1'
         TabOrder = 0
-        ExplicitLeft = 144
-        ExplicitTop = 96
-        ExplicitWidth = 185
       end
       object pnlClient1: TPanel
         Left = 0
         Top = 41
         Width = 523
-        Height = 319
+        Height = 352
         Align = alClient
         Caption = 'pnlClient1'
         TabOrder = 1
-        ExplicitLeft = 160
-        ExplicitTop = 144
-        ExplicitWidth = 185
-        ExplicitHeight = 41
+        ExplicitHeight = 319
         object JvDBGrid3: TJvDBGrid
           Left = 1
           Top = 1
           Width = 521
-          Height = 317
+          Height = 350
           Align = alClient
           DataSource = ds1
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -328,29 +314,6 @@ object fTariffDict: TfTariffDict
             end>
         end
       end
-    end
-  end
-  object pnlBott: TPanel
-    AlignWithMargins = True
-    Left = 3
-    Top = 400
-    Width = 531
-    Height = 27
-    Align = alBottom
-    BevelOuter = bvNone
-    TabOrder = 1
-    DesignSize = (
-      531
-      27)
-    object btnClose: TBitBtn
-      Left = 452
-      Top = 0
-      Width = 75
-      Height = 25
-      Anchors = [akRight, akBottom]
-      Caption = #1047#1072#1082#1088#1099#1090#1100
-      TabOrder = 0
-      OnClick = btnCloseClick
     end
   end
   object qrCategory: TFDQuery

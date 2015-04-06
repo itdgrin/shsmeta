@@ -79,8 +79,10 @@ type
     procedure tvEstimatesExpanded(Sender: TObject; Node: TTreeNode);
     procedure tvEstimatesExpanding(Sender: TObject; Node: TTreeNode; var AllowExpansion: Boolean);
     procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
-
+    editMode: Boolean;
+    procedure changeEditMode;
   public
     OutValue: Integer;
     Kind: TKindForm;
@@ -111,6 +113,25 @@ begin
   end;
 end;
 
+procedure TfWinterPrice.changeEditMode;
+begin
+  editMode := not editMode;
+  tmr1.Enabled := editMode;
+  lbl1.Visible := editMode;
+  lbl2.Visible := editMode;
+  dbedtNUM.Visible := editMode;
+  dbedtNAME.Visible := editMode;
+  dbnvgr1.Visible := editMode;
+  chkShowDeleted.Visible := editMode;
+  grChangeDate.ReadOnly := not editMode;
+  grRates.ReadOnly := not editMode;
+  tvEstimates.ReadOnly := not editMode;
+  if editMode then
+    Caption := 'Зимнее удорожание - режим редактирования'
+  else
+    Caption := 'Зимнее удорожание';
+end;
+
 procedure TfWinterPrice.chkShowDeletedClick(Sender: TObject);
 begin
   qrTreeData.AfterScroll := nil;
@@ -134,13 +155,25 @@ end;
 procedure TfWinterPrice.FormCreate(Sender: TObject);
 begin
   Kind := kdNone;
+  editMode := True;
+
   LoadDBGridSettings(grRates);
   LoadDBGridSettings(grChangeDate);
+
+  changeEditMode;
 end;
 
 procedure TfWinterPrice.FormDestroy(Sender: TObject);
 begin
   fWinterPrice := nil;
+end;
+
+procedure TfWinterPrice.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  case Key of
+    VK_F11:
+      changeEditMode;
+  end;
 end;
 
 procedure TfWinterPrice.FormShow(Sender: TObject);
