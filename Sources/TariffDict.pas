@@ -14,8 +14,6 @@ type
     pgc: TPageControl;
     ts1: TTabSheet;
     ts2: TTabSheet;
-    pnlBott: TPanel;
-    btnClose: TBitBtn;
     pnlLeft: TPanel;
     pnlClient: TPanel;
     spl1: TSplitter;
@@ -46,7 +44,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure btnCloseClick(Sender: TObject);
     procedure pgcChange(Sender: TObject);
     procedure qrStavkaAfterScroll(DataSet: TDataSet);
     procedure grStavkaDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
@@ -65,11 +62,6 @@ implementation
 {$R *.dfm}
 
 uses Tools, Main;
-
-procedure TfTariffDict.btnCloseClick(Sender: TObject);
-begin
-  Close;
-end;
 
 procedure TfTariffDict.FormClose(Sender: TObject; var Action: TCloseAction);
 begin

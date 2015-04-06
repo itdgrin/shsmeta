@@ -37,7 +37,7 @@ object fUniDict: TfUniDict
   end
   object lbl2: TLabel
     Left = 8
-    Top = 299
+    Top = 314
     Width = 177
     Height = 13
     Anchors = [akLeft, akBottom]
@@ -51,7 +51,7 @@ object fUniDict: TfUniDict
   end
   object lbl3: TLabel
     Left = 191
-    Top = 299
+    Top = 314
     Width = 53
     Height = 13
     Anchors = [akLeft, akBottom]
@@ -63,151 +63,14 @@ object fUniDict: TfUniDict
     Font.Style = []
     ParentFont = False
   end
-  object JvDBGrid1: TJvDBGrid
-    Left = 8
-    Top = 36
-    Width = 727
-    Height = 257
-    Anchors = [akLeft, akTop, akRight, akBottom]
-    DataSource = dsUniDict
-    DrawingStyle = gdsClassic
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-    ParentFont = False
-    TabOrder = 1
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'Tahoma'
-    TitleFont.Style = []
-    PostOnEnterKey = True
-    AutoSizeColumns = True
-    AutoSizeColumnIndex = 0
-    SelectColumnsDialogStrings.Caption = 'Select columns'
-    SelectColumnsDialogStrings.OK = '&OK'
-    SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-    EditControls = <>
-    AutoSizeRows = False
-    RowsHeight = 60
-    TitleRowHeight = 17
-    WordWrap = True
-    WordWrapAllFields = True
-    Columns = <
-      item
-        Expanded = False
-        FieldName = 'param_name'
-        Title.Alignment = taCenter
-        Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-        Width = 50
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_1'
-        Title.Alignment = taCenter
-        Title.Caption = #1071#1085#1074#1072#1088#1100
-        Width = 55
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_2'
-        Title.Alignment = taCenter
-        Title.Caption = #1060#1077#1074#1088#1072#1083#1100
-        Width = 55
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_3'
-        Title.Alignment = taCenter
-        Title.Caption = #1052#1072#1088#1090
-        Width = 55
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_4'
-        Title.Alignment = taCenter
-        Title.Caption = #1040#1087#1088#1077#1083#1100
-        Width = 55
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_5'
-        Title.Alignment = taCenter
-        Title.Caption = #1052#1072#1081
-        Width = 55
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_6'
-        Title.Alignment = taCenter
-        Title.Caption = #1048#1102#1085#1100
-        Width = 55
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_7'
-        Title.Alignment = taCenter
-        Title.Caption = #1048#1102#1083#1100
-        Width = 55
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_8'
-        Title.Alignment = taCenter
-        Title.Caption = #1040#1074#1075#1091#1089#1090
-        Width = 55
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_9'
-        Title.Alignment = taCenter
-        Title.Caption = #1057#1077#1085#1090#1103#1073#1088#1100
-        Width = 55
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_10'
-        Title.Alignment = taCenter
-        Title.Caption = #1054#1082#1090#1103#1073#1088#1100
-        Width = 55
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_11'
-        Title.Alignment = taCenter
-        Title.Caption = #1053#1086#1103#1073#1088#1100
-        Width = 55
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'MONTH_12'
-        Title.Alignment = taCenter
-        Title.Caption = #1044#1077#1082#1072#1073#1088#1100
-        Width = 55
-        Visible = True
-      end>
-  end
   object pnl1: TPanel
-    Left = 8
-    Top = 345
-    Width = 727
-    Height = 41
-    Anchors = [akLeft, akRight, akBottom]
+    AlignWithMargins = True
+    Left = 3
+    Top = 368
+    Width = 737
+    Height = 23
+    Align = alBottom
+    BevelOuter = bvNone
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -215,104 +78,37 @@ object fUniDict: TfUniDict
     Font.Style = []
     ParentFont = False
     TabOrder = 4
-    DesignSize = (
-      727
-      41)
-    object btn1: TBitBtn
-      Left = 8
-      Top = 8
-      Width = 41
-      Height = 25
-      Caption = 'btn1'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
+    object dbnvgr1: TDBNavigator
+      Left = 0
+      Top = 0
+      Width = 220
+      Height = 23
+      Align = alLeft
+      Hints.Strings = (
+        #1053#1072' '#1087#1077#1088#1074#1091#1102' '#1079#1072#1087#1080#1089#1100
+        #1055#1088#1077#1076#1099#1076#1091#1097#1072#1103' '#1079#1072#1087#1080#1089#1100
+        #1057#1083#1077#1076#1091#1102#1097#1072#1103' '#1079#1072#1087#1080#1089#1100
+        #1053#1072' '#1087#1086#1089#1083#1077#1076#1085#1102#1102' '#1079#1072#1087#1080#1089#1100
+        #1053#1086#1074#1072#1103' '#1079#1072#1087#1080#1089#1100
+        #1059#1076#1072#1083#1080#1090#1100' '#1079#1072#1087#1080#1089#1100
+        #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1079#1072#1087#1080#1089#1100
+        #1057#1086#1093#1088#1072#1085#1080#1090#1100
+        #1054#1090#1084#1077#1085#1080#1090#1100
+        #1054#1073#1085#1086#1074#1080#1090#1100
+        'Apply updates'
+        'Cancel updates')
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
-      Visible = False
-    end
-    object btn2: TBitBtn
-      Left = 55
-      Top = 8
-      Width = 41
-      Height = 25
-      Caption = 'btn1'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 1
-      Visible = False
-    end
-    object btn3: TBitBtn
-      Left = 102
-      Top = 8
-      Width = 41
-      Height = 25
-      Caption = 'btn1'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 2
-      Visible = False
-    end
-    object btn4: TBitBtn
-      Left = 149
-      Top = 8
-      Width = 41
-      Height = 25
-      Caption = 'btn1'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 3
-      Visible = False
-    end
-    object btn5: TBitBtn
-      Left = 196
-      Top = 8
-      Width = 41
-      Height = 25
-      Caption = 'btn1'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 4
-      Visible = False
-    end
-    object btn6: TBitBtn
-      Left = 638
-      Top = 8
-      Width = 81
-      Height = 25
-      Anchors = [akRight, akBottom]
-      Caption = #1047#1072#1082#1088#1099#1090#1100
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 5
-      OnClick = btn6Click
+      TabStop = True
+      ExplicitLeft = 5
+      ExplicitTop = 3
+      ExplicitHeight = 25
     end
   end
   object dbmmoparam_description: TDBMemo
     Left = 250
-    Top = 299
+    Top = 314
     Width = 485
     Height = 40
     TabStop = False
@@ -326,7 +122,7 @@ object fUniDict: TfUniDict
     Font.Style = []
     ParentFont = False
     ScrollBars = ssVertical
-    TabOrder = 3
+    TabOrder = 2
   end
   object seYear: TSpinEdit
     Left = 95
@@ -347,7 +143,7 @@ object fUniDict: TfUniDict
   end
   object dbedtcode: TDBEdit
     Left = 8
-    Top = 318
+    Top = 333
     Width = 177
     Height = 21
     TabStop = False
@@ -360,15 +156,241 @@ object fUniDict: TfUniDict
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 3
+  end
+  object pnlClient: TPanel
+    Left = 8
+    Top = 36
+    Width = 727
+    Height = 272
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    BevelOuter = bvNone
+    Caption = 'pnlClient'
+    TabOrder = 1
+    object spl1: TSplitter
+      Left = 185
+      Top = 0
+      Height = 272
+      ExplicitLeft = 312
+      ExplicitTop = 112
+      ExplicitHeight = 100
+    end
+    object pnlLeft: TPanel
+      Left = 0
+      Top = 0
+      Width = 185
+      Height = 272
+      Align = alLeft
+      BevelOuter = bvNone
+      Caption = 'pnlLeft'
+      TabOrder = 0
+      ExplicitLeft = 328
+      ExplicitTop = 112
+      ExplicitHeight = 41
+      object gtUniDictType: TJvDBGrid
+        Left = 0
+        Top = 0
+        Width = 185
+        Height = 272
+        Align = alClient
+        DataSource = dsUniDictType
+        Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        TabOrder = 0
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+        OnEnter = gtUniDictTypeEnter
+        AutoSizeColumns = True
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'unidicttype_name'
+            Title.Alignment = taCenter
+            Title.Caption = #1058#1080#1087' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
+            Width = 168
+            Visible = True
+          end>
+      end
+    end
+    object pnlClientCh: TPanel
+      Left = 188
+      Top = 0
+      Width = 539
+      Height = 272
+      Align = alClient
+      BevelOuter = bvNone
+      Caption = 'pnlClientCh'
+      TabOrder = 1
+      ExplicitLeft = 191
+      ExplicitTop = 57
+      ExplicitWidth = 345
+      ExplicitHeight = 330
+      object grUniDictParam: TJvDBGrid
+        Left = 0
+        Top = 0
+        Width = 539
+        Height = 272
+        Align = alClient
+        DataSource = dsUniDict
+        DrawingStyle = gdsClassic
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        ParentFont = False
+        TabOrder = 0
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+        OnEnter = grUniDictParamEnter
+        PostOnEnterKey = True
+        AutoSizeColumns = True
+        AutoSizeColumnIndex = 0
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        AutoSizeRows = False
+        RowsHeight = 60
+        TitleRowHeight = 17
+        WordWrap = True
+        WordWrapAllFields = True
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'param_name'
+            Title.Alignment = taCenter
+            Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
+            Width = 2
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'LookIDUniDictType'
+            Title.Alignment = taCenter
+            Title.Caption = #1058#1080#1087
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_1'
+            Title.Alignment = taCenter
+            Title.Caption = #1071#1085#1074#1072#1088#1100
+            Width = 55
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_2'
+            Title.Alignment = taCenter
+            Title.Caption = #1060#1077#1074#1088#1072#1083#1100
+            Width = 55
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_3'
+            Title.Alignment = taCenter
+            Title.Caption = #1052#1072#1088#1090
+            Width = 55
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_4'
+            Title.Alignment = taCenter
+            Title.Caption = #1040#1087#1088#1077#1083#1100
+            Width = 55
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_5'
+            Title.Alignment = taCenter
+            Title.Caption = #1052#1072#1081
+            Width = 55
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_6'
+            Title.Alignment = taCenter
+            Title.Caption = #1048#1102#1085#1100
+            Width = 55
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_7'
+            Title.Alignment = taCenter
+            Title.Caption = #1048#1102#1083#1100
+            Width = 55
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_8'
+            Title.Alignment = taCenter
+            Title.Caption = #1040#1074#1075#1091#1089#1090
+            Width = 55
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_9'
+            Title.Alignment = taCenter
+            Title.Caption = #1057#1077#1085#1090#1103#1073#1088#1100
+            Width = 55
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_10'
+            Title.Alignment = taCenter
+            Title.Caption = #1054#1082#1090#1103#1073#1088#1100
+            Width = 55
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_11'
+            Title.Alignment = taCenter
+            Title.Caption = #1053#1086#1103#1073#1088#1100
+            Width = 55
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MONTH_12'
+            Title.Alignment = taCenter
+            Title.Caption = #1044#1077#1082#1072#1073#1088#1100
+            Width = 55
+            Visible = True
+          end>
+      end
+    end
   end
   object qrUniDict: TFDQuery
+    AfterPost = qrUniDictAfterPost
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -387,12 +409,14 @@ object fUniDict: TfUniDict
         SourceDataType = dtBlob
         TargetDataType = dtAnsiString
       end>
+    FormatOptions.DefaultParamDataType = ftBCD
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'SELECT id_unidictparam,code,param_name,param_description,'
+      'id_unidicttype,'
       'FN_getParamValue(code, 1, :year) AS MONTH_1,'
       'FN_getParamValue(code, 2, :year) AS MONTH_2,'
       'FN_getParamValue(code, 3, :year) AS MONTH_3,'
@@ -406,15 +430,22 @@ object fUniDict: TfUniDict
       'FN_getParamValue(code, 11, :year) AS MONTH_11,'
       'FN_getParamValue(code, 12, :year) AS MONTH_12'
       'FROM '
-      '  unidictparam')
-    Left = 35
-    Top = 94
+      '  unidictparam'
+      'WHERE id_unidicttype=:id_unidicttype or (:id_unidicttype=-1)')
+    Left = 203
+    Top = 206
     ParamData = <
       item
         Name = 'YEAR'
         DataType = ftInteger
         ParamType = ptInput
         Value = 2014
+      end
+      item
+        Name = 'ID_UNIDICTTYPE'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = -1
       end>
     object qrUniDictid_unidictparam: TFDAutoIncField
       FieldName = 'id_unidictparam'
@@ -536,11 +567,26 @@ object fUniDict: TfUniDict
       ProviderFlags = []
       OnChange = qrUniDictMONTHChange
     end
+    object qrUniDictid_unidicttype: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'id_unidicttype'
+      Origin = 'id_unidicttype'
+    end
+    object strngfldUniDictLookIDUniDictType: TStringField
+      FieldKind = fkLookup
+      FieldName = 'LookIDUniDictType'
+      LookupDataSet = qrUniDictTypeLook
+      LookupKeyFields = 'unidicttype_id'
+      LookupResultField = 'unidicttype_name'
+      KeyFields = 'id_unidicttype'
+      Size = 255
+      Lookup = True
+    end
   end
   object dsUniDict: TDataSource
     DataSet = qrUniDict
-    Left = 36
-    Top = 142
+    Left = 204
+    Top = 254
   end
   object qrSetParamValue: TFDQuery
     Connection = DM.Connect
@@ -573,8 +619,8 @@ object fUniDict: TfUniDict
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'CALL setParamValue(:inPARAM_CODE, :inMONTH, :inYEAR, :inValue);')
-    Left = 115
-    Top = 94
+    Left = 259
+    Top = 65534
     ParamData = <
       item
         Name = 'INPARAM_CODE'
@@ -601,5 +647,114 @@ object fUniDict: TfUniDict
         ParamType = ptInput
         Value = Null
       end>
+  end
+  object qrUniDictType: TFDQuery
+    AfterPost = qrUniDictTypeAfterPost
+    AfterDelete = qrUniDictTypeAfterPost
+    AfterScroll = qrUniDictTypeAfterScroll
+    OnUpdateError = qrUniDictTypeUpdateError
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtBlob
+        TargetDataType = dtAnsiString
+      end>
+    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvUpdateMode, uvLockMode, uvRefreshMode, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.UpdateNonBaseFields = True
+    UpdateOptions.UpdateMode = upWhereChanged
+    UpdateOptions.LockMode = lmOptimistic
+    UpdateOptions.RefreshMode = rmManual
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.UpdateTableName = 'smeta.unidicttype'
+    SQL.Strings = (
+      'SELECT '
+      '  `unidicttype_id`,'
+      '  `unidicttype_name`'
+      'FROM '
+      '  `unidicttype`'
+      'UNION ALL'
+      'SELECT '
+      '  -1 AS unidicttype_id,'
+      '  ("<'#1074#1089#1077'>") AS unidicttype_name'
+      'UNION ALL'
+      'SELECT '
+      '  0 AS unidicttype_id,'
+      '  ("<'#1085#1077' '#1091#1082#1072#1079#1072#1085'>") AS unidicttype_name'
+      'ORDER BY `unidicttype_name`, unidicttype_id')
+    Left = 27
+    Top = 118
+  end
+  object dsUniDictType: TDataSource
+    DataSet = qrUniDictType
+    Left = 28
+    Top = 174
+  end
+  object qrUniDictTypeLook: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtBlob
+        TargetDataType = dtAnsiString
+      end>
+    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      'SELECT '
+      '  0 AS unidicttype_id,'
+      '  ("<'#1085#1077' '#1091#1082#1072#1079#1072#1085'>") AS unidicttype_name'
+      'UNION ALL'
+      'SELECT '
+      '  `unidicttype_id`,'
+      '  `unidicttype_name`'
+      'FROM '
+      '  `unidicttype`'
+      'ORDER BY `unidicttype_name`')
+    Left = 395
+    Top = 22
+  end
+  object dsUniDictTypeLook: TDataSource
+    DataSet = qrUniDictTypeLook
+    Left = 396
+    Top = 78
   end
 end

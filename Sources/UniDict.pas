@@ -12,14 +12,7 @@ uses
 
 type
   TfUniDict = class(TForm)
-    JvDBGrid1: TJvDBGrid;
     pnl1: TPanel;
-    btn1: TBitBtn;
-    btn2: TBitBtn;
-    btn3: TBitBtn;
-    btn4: TBitBtn;
-    btn5: TBitBtn;
-    btn6: TBitBtn;
     qrUniDict: TFDQuery;
     dsUniDict: TDataSource;
     dbmmoparam_description: TDBMemo;
@@ -45,13 +38,32 @@ type
     qrUniDictMONTH_11: TFloatField;
     qrUniDictMONTH_12: TFloatField;
     qrSetParamValue: TFDQuery;
+    qrUniDictType: TFDQuery;
+    dsUniDictType: TDataSource;
+    dbnvgr1: TDBNavigator;
+    qrUniDictTypeLook: TFDQuery;
+    dsUniDictTypeLook: TDataSource;
+    qrUniDictid_unidicttype: TIntegerField;
+    strngfldUniDictLookIDUniDictType: TStringField;
+    pnlClient: TPanel;
+    pnlLeft: TPanel;
+    spl1: TSplitter;
+    pnlClientCh: TPanel;
+    gtUniDictType: TJvDBGrid;
+    grUniDictParam: TJvDBGrid;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure btn6Click(Sender: TObject);
     procedure seYearChange(Sender: TObject);
     procedure qrUniDictMONTHChange(Sender: TField);
+    procedure gtUniDictTypeEnter(Sender: TObject);
+    procedure grUniDictParamEnter(Sender: TObject);
+    procedure qrUniDictTypeAfterPost(DataSet: TDataSet);
+    procedure qrUniDictTypeAfterScroll(DataSet: TDataSet);
+    procedure qrUniDictTypeUpdateError(ASender: TDataSet; AException: EFDException; ARow: TFDDatSRow;
+      ARequest: TFDUpdateRequest; var AAction: TFDErrorAction);
+    procedure qrUniDictAfterPost(DataSet: TDataSet);
   private
     { Private declarations }
   public
@@ -66,11 +78,6 @@ implementation
 {$R *.dfm}
 
 uses Main;
-
-procedure TfUniDict.btn6Click(Sender: TObject);
-begin
-  Close;
-end;
 
 procedure TfUniDict.FormActivate(Sender: TObject);
 begin
@@ -89,9 +96,12 @@ end;
 procedure TfUniDict.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
-  //FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N8Click);
-  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  LoadDBGridSettings(JvDBGrid1);
+  // FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N8Click);
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  LoadDBGridSettings(grUniDictParam);
+  LoadDBGridSettings(gtUniDictType);
+  CloseOpen(qrUniDictType);
+  CloseOpen(qrUniDictTypeLook);
   seYear.Value := YearOf(Now);
   seYearChange(Sender);
 end;
@@ -103,6 +113,21 @@ begin
   FormMain.DeleteButtonCloseWindow(Caption);
 end;
 
+procedure TfUniDict.grUniDictParamEnter(Sender: TObject);
+begin
+  dbnvgr1.DataSource := dsUniDict;
+end;
+
+procedure TfUniDict.gtUniDictTypeEnter(Sender: TObject);
+begin
+  dbnvgr1.DataSource := dsUniDictType;
+end;
+
+procedure TfUniDict.qrUniDictAfterPost(DataSet: TDataSet);
+begin
+  CloseOpen(qrUniDict);
+end;
+
 procedure TfUniDict.qrUniDictMONTHChange(Sender: TField);
 begin
   qrSetParamValue.ParamByName('inPARAM_CODE').AsString := dbedtcode.Text;
@@ -112,9 +137,29 @@ begin
   qrSetParamValue.ExecSQL;
 end;
 
+procedure TfUniDict.qrUniDictTypeAfterPost(DataSet: TDataSet);
+begin
+  CloseOpen(qrUniDictTypeLook);
+end;
+
+procedure TfUniDict.qrUniDictTypeAfterScroll(DataSet: TDataSet);
+begin
+  seYearChange(Self);
+end;
+
+procedure TfUniDict.qrUniDictTypeUpdateError(ASender: TDataSet; AException: EFDException; ARow: TFDDatSRow;
+  ARequest: TFDUpdateRequest; var AAction: TFDErrorAction);
+begin
+  ASender.Cancel;
+  AAction := eaDefault;
+  Application.MessageBox('Данный тип записи не может быть изменен', 'Предупреждение',
+    MB_OK + MB_ICONWARNING + MB_TOPMOST);
+end;
+
 procedure TfUniDict.seYearChange(Sender: TObject);
 begin
   qrUniDict.ParamByName('year').AsInteger := seYear.Value;
+  qrUniDict.ParamByName('id_unidicttype').AsInteger := qrUniDictType.FieldByName('unidicttype_id').AsInteger;
   CloseOpen(qrUniDict);
 end;
 
