@@ -7,7 +7,8 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls, Vcl.Grids,
   Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Mask, Vcl.DBCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Samples.Spin,
+  System.DateUtils;
 
 type
   TfTariffDict = class(TForm)
@@ -38,9 +39,13 @@ type
     qrStavkaMONTH_YEAR: TDateField;
     pnlTop1: TPanel;
     pnlClient1: TPanel;
-    JvDBGrid3: TJvDBGrid;
-    qr1: TFDQuery;
-    ds1: TDataSource;
+    grIndexes: TJvDBGrid;
+    qrIndexes: TFDQuery;
+    lbl3: TLabel;
+    seYear: TSpinEdit;
+    cbbFromMonth: TComboBox;
+    dsIndexes: TDataSource;
+    qrStavkaMONTH_YEAR2: TDateField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -48,6 +53,7 @@ type
     procedure qrStavkaAfterScroll(DataSet: TDataSet);
     procedure grStavkaDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure seYearChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -72,6 +78,11 @@ procedure TfTariffDict.FormCreate(Sender: TObject);
 begin
   LoadDBGridSettings(grCategory);
   LoadDBGridSettings(grStavka);
+  LoadDBGridSettings(grIndexes);
+
+  seYear.Value := YearOf(Now);
+  cbbFromMonth.ItemIndex := MonthOf(Now) - 1;
+
   pgc.ActivePageIndex := 0;
   pgcChange(Sender);
 end;
@@ -108,7 +119,7 @@ begin
     // Статистические индексы
     1:
       begin
-
+        seYearChange(Sender);
       end;
   end;
 end;
@@ -118,6 +129,13 @@ begin
   qrCategory.ParamByName('IN_STAVKA').AsFloat := qrStavkaSTAVKA_M_RAB.Value;
   qrCategory.ParamByName('IN_DATE').AsDate := qrStavkaMONTH_YEAR.Value;
   CloseOpen(qrCategory);
+end;
+
+procedure TfTariffDict.seYearChange(Sender: TObject);
+begin
+  qrIndexes.ParamByName('MONTH').AsInteger := cbbFromMonth.ItemIndex + 1;
+  qrIndexes.ParamByName('YEAR').AsInteger := seYear.Value;
+  CloseOpen(qrIndexes);
 end;
 
 end.
