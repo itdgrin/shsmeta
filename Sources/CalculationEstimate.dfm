@@ -634,10 +634,12 @@
           OnDrawColumnCell = dbgrdRates12DrawColumnCell
           OnEnter = dbgrdRatesEnter
           OnKeyDown = dbgrdRatesKeyDown
+          AutoAppend = False
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+          CanDelete = False
           EditControls = <>
           RowsHeight = 17
           TitleRowHeight = 17
@@ -700,10 +702,12 @@
           ExplicitHeight = 111
         end
         object ImageNoData: TImage
-          Left = 57
-          Top = 30
-          Width = 256
-          Height = 256
+          Left = 0
+          Top = 0
+          Width = 546
+          Height = 199
+          Align = alClient
+          Center = True
           Picture.Data = {
             0954506E67496D61676589504E470D0A1A0A0000000D49484452000001000000
             010008060000012B7598F0000000097048597300000B1300000B1301009A9C18
@@ -1341,6 +1345,10 @@
             0A4EC2C34104D52F93D012782F2E092354333D2D6143004C9830F1BD300260C2
             24828511001326112C8C0098308960F9FF2CAFFBC3D5F3EEC60000000049454E
             44AE426082}
+          ExplicitLeft = 57
+          ExplicitTop = 30
+          ExplicitWidth = 256
+          ExplicitHeight = 256
         end
         object LabelNoData1: TLabel
           Left = 140
@@ -3334,6 +3342,9 @@
       Caption = #1042#1099#1085#1077#1089#1090#1080' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091
       OnClick = PMMatFromRatesClick
     end
+    object PMMatAddToRate: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1091
+    end
     object PMMatReplace: TMenuItem
       Caption = #1047#1072#1084#1077#1085#1080#1090#1100' '#1084#1072#1090#1077#1088#1080#1072#1083
       OnClick = ReplacementClick
@@ -3398,6 +3409,9 @@
       Tag = 1
       Caption = #1047#1072#1084#1077#1085#1080#1090#1100' '#1084#1077#1093#1072#1085#1080#1079#1084
       OnClick = ReplacementClick
+    end
+    object PMMechAddToRate: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1091
     end
     object PMMechDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
@@ -4774,7 +4788,6 @@
   object qrRatesEx: TFDQuery
     AfterOpen = qrRatesExAfterOpen
     BeforePost = qrRatesExBeforePost
-    AfterPost = qrRatesExAfterPost
     AfterScroll = qrRatesExAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
