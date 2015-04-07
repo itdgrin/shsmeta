@@ -441,6 +441,8 @@ type
     dsTypeData: TDataSource;
     qrRatesExID_RATE: TIntegerField;
     strngfldRatesExSORT_ID: TStringField;
+    PMMatAddToRate: TMenuItem;
+    PMMechAddToRate: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -612,7 +614,6 @@ type
     procedure dbgrdDumpKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdDevicesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdRatesEnter(Sender: TObject);
-    procedure qrRatesExAfterPost(DataSet: TDataSet);
     procedure PMMatDeleteClick(Sender: TObject);
     procedure qrRatesWORK_IDChange(Sender: TField);
     procedure btn1Click(Sender: TObject);
@@ -1136,6 +1137,7 @@ var
   s: string;
 begin
   TestOnNoDataNew(qrMaterial);
+  ImageNoData.PopupMenu := PopupMenuMaterials;
 
   if SpeedButtonModeTables.Tag = 0 then
     s := '1000000'
@@ -1160,6 +1162,7 @@ var
   s: string;
 begin
   TestOnNoDataNew(qrMechanizm);
+  ImageNoData.PopupMenu := PopupMenuMechanizms;
 
   if SpeedButtonModeTables.Tag = 0 then
     s := '0100000'
@@ -1630,8 +1633,12 @@ function TFormCalculationEstimate.CheckMechReadOnly: Boolean;
 begin
   Result := False;
   // Вынесеный механизм в расценке или замененные механизмы
-  if ((qrMechanizmFROM_RATE.AsInteger = 1) and not(qrRatesExID_TYPE_DATA.AsInteger = 1)) or
-    (qrMechanizmREPLACED.AsInteger = 1) or (qrMechanizmTITLE.AsInteger > 0) then
+  if ((qrMechanizmFROM_RATE.AsInteger = 1)
+        and ((qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0)))
+      or (qrMechanizmREPLACED.AsInteger = 1)
+      or (qrMechanizmTITLE.AsInteger > 0)
+      or (not(qrMechanizmID.AsInteger > 0))
+      or (qrMechanizm.Eof) then
     Result := True;
 end;
 
@@ -1645,8 +1652,12 @@ function TFormCalculationEstimate.CheckMatReadOnly: Boolean;
 begin
   Result := False;
   // Вынесенные из расценки // или замененный
-  if ((qrMaterialFROM_RATE.AsInteger = 1) and not(qrRatesExID_TYPE_DATA.AsInteger = 1)) or
-    (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0) then
+  if ((qrMaterialFROM_RATE.AsInteger = 1)
+        and ((qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0)))
+      or (qrMaterialREPLACED.AsInteger = 1)
+      or (qrMaterialTITLE.AsInteger > 0)
+      or (not(qrMaterialID.AsInteger > 0))
+      or (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -2184,11 +2195,6 @@ end;
 function TFormCalculationEstimate.CheckMatUnAccountingMatirials: Boolean;
 begin
   Result := qrMaterialCONSIDERED.AsInteger = 0;
-end;
-
-procedure TFormCalculationEstimate.qrRatesExAfterPost(DataSet: TDataSet);
-begin
-  qrRatesExOBJ_COUNT.ReadOnly := False;
 end;
 
 // Для того что-бы скрол по таблице был быстрым обработка скрола происходит с задержкой
@@ -3148,31 +3154,42 @@ end;
 // вид всплывающего меню материалов
 procedure TFormCalculationEstimate.PopupMenuMaterialsPopup(Sender: TObject);
 begin
-  PMMatEdit.Enabled := not CheckMatReadOnly;
+  PMMatEdit.Enabled := (not CheckMatReadOnly);
 
-  PMMatReplace.Enabled := (qrMaterialFROM_RATE.AsInteger = 0) // В расценка
-    and (qrMaterialTITLE.AsInteger = 0) // не загоровок
-    and (qrMaterialID_REPLACED.AsInteger = 0); // не заменяющуй
+  PMMatFromRates.Enabled := (not CheckMatReadOnly)
+    and ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
 
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (not CheckMatUnAccountingMatirials) and
-    (qrMaterialFROM_RATE.AsInteger = 0);
+  PMMatReplace.Enabled := (not CheckMatReadOnly)
+    and ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1))
+    and (qrMaterialID_REPLACED.AsInteger = 0);
 
-  PMMatDelete.Enabled := (qrMaterialID_REPLACED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0);
+  PMMatAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or
+    (qrRatesExID_RATE.AsInteger > 0);
+
+  PMMatDelete.Enabled := (not CheckMatReadOnly)
+    and ((qrMaterialID_REPLACED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0))
+      or((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 2));
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
 procedure TFormCalculationEstimate.PopupMenuMechanizmsPopup(Sender: TObject);
 begin
-  PMMechEdit.Enabled := not CheckMechReadOnly;
+  PMMechEdit.Enabled := (not CheckMechReadOnly);
 
-  PMMechFromRates.Enabled := (not CheckMechReadOnly) and
-    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) and
-    (qrMechanizmREPLACED.AsInteger = 0);
+  PMMechFromRates.Enabled := (not CheckMechReadOnly)
+    and ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
 
-  PMMechReplace.Enabled := (qrMechanizmFROM_RATE.AsInteger = 0) and (qrMechanizmID_REPLACED.AsInteger = 0) and
-    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)); // не заменяющуй
+  PMMechReplace.Enabled := (not CheckMechReadOnly)
+    and ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1))
+    and (qrMechanizmID_REPLACED.AsInteger = 0);
 
-  PMMechDelete.Enabled := (qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0);
+  //Доступен только с расценке
+  PMMechAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or
+    (qrRatesExID_RATE.AsInteger > 0);
+
+  PMMechDelete.Enabled := (not CheckMechReadOnly)
+    and ((qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0))
+      or((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 3));
 end;
 
 function TFormCalculationEstimate.CheckCursorInRate: Boolean;
@@ -3832,7 +3849,10 @@ begin
     LikeText := 'Е20';
   qrStartup.Active := False;
   qrStartup.SQL.Text := 'select RATE_CODE, RATE_CAPTION, RATE_COUNT, RATE_UNIT ' +
-    'from card_rate_temp WHERE RATE_CODE LIKE "%' + LikeText + '%"';
+    'from data_estimate_temp as dm LEFT JOIN card_rate_temp as cr ' +
+    'ON (dm.ID_TYPE_DATA = 1) AND (cr.ID = dm.ID_TABLES) ' +
+    'WHERE (cr.RATE_CODE LIKE "%' + LikeText + '%") and ' +
+    '(dm.ID_ESTIMATE = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ')';
   qrStartup.Active := True;
 end;
 
@@ -4421,25 +4441,11 @@ begin
   qrTransp.Active := False;
   qrStartup.Active := False;
   qrDescription.Active := False;
+  ImageNoData.PopupMenu := nil;
 
   // На всякий случай, что-бы избежать глюков
   if not qrRatesEx.Active then
     Exit;
-
-  if qrRatesEx.State in [dsInsert] then
-  begin
-    // в режиме добавления строки редактируется код, а не количество
-    qrRatesExOBJ_COUNT.ReadOnly := True;
-    qrRatesExOBJ_CODE.ReadOnly := False;
-
-    // Если нет расценок, гасим все кнопки, вешаем панель нет данных
-    if qrRatesEx.Eof then
-    begin
-      BottomTopMenuEnabled(False);
-      TestOnNoDataNew(qrMaterial);
-      Exit;
-    end;
-  end;
 
   // Скрываем колонки зименого удорожания если не нужны
   dbgrdCalculations.Columns[13].Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
@@ -4448,7 +4454,23 @@ begin
   dbgrdCalculations.Columns[14].Width := 64;
   FixDBGridColumnsWidth(dbgrdCalculations);
 
+  if qrRatesExID_TYPE_DATA.AsInteger = -4 then
+  begin
+    // в режиме добавления строки редактируется код, а не количество
+    qrRatesExOBJ_CODE.ReadOnly := False;
+  end;
+
+  //Для строк шапок и строк вставки
+  if qrRatesExID_TYPE_DATA.AsInteger < 0 then
+  begin
+    qrRatesExOBJ_COUNT.ReadOnly := True;
+    BottomTopMenuEnabled(False);
+    TestOnNoDataNew(qrMaterial);
+    Exit;
+  end;
+
   // Можно редактировать кол-во для любой строки
+  qrRatesExOBJ_COUNT.ReadOnly := False;
   qrRatesExOBJ_CODE.ReadOnly := True;
   Panel1.Visible := (qrRatesExID_TYPE_DATA.Value = 1);
 
@@ -5229,7 +5251,7 @@ begin
       Font.Style := Font.Style + [fsbold];
     end;
 
-    // Подсветка вынесенного и заменяющего материала за расценку материала
+    // Подсветка вынесенного за расценку материала и заменяющего материала
     // Вынесение за расценку имеет приоритет над заменой
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = LastEntegGrd) then
     begin
