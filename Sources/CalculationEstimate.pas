@@ -443,6 +443,8 @@ type
     strngfldRatesExSORT_ID: TStringField;
     PMMatAddToRate: TMenuItem;
     PMMechAddToRate: TMenuItem;
+    qrMaterialADDED: TByteField;
+    qrMechanizmADDED: TByteField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -2552,9 +2554,9 @@ var
   i: Integer;
 begin
   if (TMenuItem(Sender).Tag = 1) then
-    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, qrMechanizmID.AsInteger, 1, True)
+    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, 1, True, False)
   else
-    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, qrMaterialID.AsInteger, 0, True);
+    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, 0, True, False);
 
   try
     if (frmReplace.ShowModal = mrYes) then
@@ -2655,16 +2657,9 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('INSERT INTO data_estimate_temp (id_estimate, id_type_data, id_tables) ' +
-        'VALUE (:id_estimate, :id_type_data, :id_tables);');
+      SQL.Add('CALL FromRareMaterial(:id_estimate, :id_mat);');
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
-      ParamByName('id_type_data').Value := 2;
-      ParamByName('id_tables').Value := qrMaterialID.AsInteger;
-      ExecSQL;
-
-      SQL.Clear;
-      SQL.Add('UPDATE materialcard_temp SET from_rate = 1 WHERE id = :id;');
-      ParamByName('id').Value := qrMaterialID.AsInteger;
+      ParamByName('id_mat').Value := qrMaterialID.AsInteger;
       ExecSQL;
     end;
 
@@ -2748,16 +2743,9 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('INSERT INTO data_estimate_temp (id_estimate, id_type_data, id_tables) ' +
-        'VALUE (:id_estimate, :id_type_data, :id_tables);');
+      SQL.Add('CALL FromRareMechanism(:id_estimate, :id_mech);');
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
-      ParamByName('id_type_data').Value := 3;
-      ParamByName('id_tables').Value := qrMechanizmID.Value;
-      ExecSQL;
-
-      SQL.Clear;
-      SQL.Add('UPDATE mechanizmcard_temp SET from_rate = 1 WHERE id = :id;');
-      ParamByName('id').Value := qrMechanizmID.Value;
+      ParamByName('id_mech').Value := qrMechanizmID.Value;
       ExecSQL;
     end;
 
@@ -3157,6 +3145,7 @@ begin
   PMMatEdit.Enabled := (not CheckMatReadOnly);
 
   PMMatFromRates.Enabled := (not CheckMatReadOnly)
+    and (qrMaterialCONSIDERED.AsInteger = 1)
     and ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
 
   PMMatReplace.Enabled := (not CheckMatReadOnly)
