@@ -102,7 +102,8 @@ uses
   GlobsAndConst in 'GlobsAndConst.pas',
   WinterPrice in 'WinterPrice.pas' {fWinterPrice},
   ReplacementMatAndMech in 'ReplacementMatAndMech.pas' {frmReplacement},
-  TariffDict in 'TariffDict.pas' {fTariffDict};
+  TariffDict in 'TariffDict.pas' {fTariffDict},
+  OXROPRSetup in 'OXROPRSetup.pas' {fOXROPRSetup};
 
 {$R *.res}
 var MHandle: THandle;

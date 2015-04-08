@@ -427,7 +427,7 @@
     Height = 324
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 6
+    TabOrder = 7
     object ImageSplitterBottom: TImage
       Left = 200
       Top = 365
@@ -663,6 +663,11 @@
             item
               Expanded = False
               FieldName = 'OBJ_COUNT'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
               Width = 69
@@ -671,6 +676,11 @@
             item
               Expanded = False
               FieldName = 'OBJ_UNIT'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
               Width = 85
@@ -2770,7 +2780,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSummaryCalculations'
     ParentBackground = False
-    TabOrder = 4
+    TabOrder = 5
     inline frSummaryCalculations: TfrCalculationEstimateSummaryCalculations
       Left = 0
       Top = 0
@@ -3105,7 +3115,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSSR'
     ParentBackground = False
-    TabOrder = 5
+    TabOrder = 6
     inline frSSR: TfrCalculationEstimateSSR
       Left = 0
       Top = 0

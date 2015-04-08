@@ -66,9 +66,9 @@ object fUniDict: TfUniDict
   object pnl1: TPanel
     AlignWithMargins = True
     Left = 3
-    Top = 368
+    Top = 366
     Width = 737
-    Height = 23
+    Height = 25
     Align = alBottom
     BevelOuter = bvNone
     Font.Charset = DEFAULT_CHARSET
@@ -81,8 +81,8 @@ object fUniDict: TfUniDict
     object dbnvgr1: TDBNavigator
       Left = 0
       Top = 0
-      Width = 220
-      Height = 23
+      Width = 240
+      Height = 25
       Align = alLeft
       Hints.Strings = (
         #1053#1072' '#1087#1077#1088#1074#1091#1102' '#1079#1072#1087#1080#1089#1100
@@ -101,9 +101,7 @@ object fUniDict: TfUniDict
       ShowHint = True
       TabOrder = 0
       TabStop = True
-      ExplicitLeft = 5
-      ExplicitTop = 3
-      ExplicitHeight = 25
+      ExplicitHeight = 23
     end
   end
   object dbmmoparam_description: TDBMemo
@@ -184,9 +182,6 @@ object fUniDict: TfUniDict
       BevelOuter = bvNone
       Caption = 'pnlLeft'
       TabOrder = 0
-      ExplicitLeft = 328
-      ExplicitTop = 112
-      ExplicitHeight = 41
       object gtUniDictType: TJvDBGrid
         Left = 0
         Top = 0
@@ -229,10 +224,6 @@ object fUniDict: TfUniDict
       BevelOuter = bvNone
       Caption = 'pnlClientCh'
       TabOrder = 1
-      ExplicitLeft = 191
-      ExplicitTop = 57
-      ExplicitWidth = 345
-      ExplicitHeight = 330
       object grUniDictParam: TJvDBGrid
         Left = 0
         Top = 0

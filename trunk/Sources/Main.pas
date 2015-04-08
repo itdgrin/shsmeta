@@ -107,6 +107,7 @@ type
     N12: TMenuItem;
     mN15: TMenuItem;
     mN16: TMenuItem;
+    mN17: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -187,6 +188,7 @@ type
     procedure mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
     procedure N12Click(Sender: TObject);
     procedure mN15Click(Sender: TObject);
+    procedure mN17Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -316,7 +318,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   PricesReferenceData, AdditionData, PartsEstimates,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
-  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict;
+  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup;
 
 {$R *.dfm}
 
@@ -816,6 +818,13 @@ begin
   if (not Assigned(fTariffDict)) then
     fTariffDict := TfTariffDict.Create(Self);
   fTariffDict.Show;
+end;
+
+procedure TFormMain.mN17Click(Sender: TObject);
+begin
+  if (not Assigned(fOXROPRSetup)) then
+    fOXROPRSetup := TfOXROPRSetup.Create(Self);
+  fOXROPRSetup.Show;
 end;
 
 procedure TFormMain.mnRASX_ACTClick(Sender: TObject);
