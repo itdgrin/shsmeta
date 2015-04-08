@@ -1,3 +1,10 @@
+{///////////////////////////////////////////////////}
+{  Универсальная форма реализующая замену           }
+{  материалов и механизмов в расценке, добавление   }
+{  материалов и механизмов к расценке               }
+{                                                   }
+{///////////////////////////////////////////////////}
+
 unit ReplacementMatAndMech;
 
 interface
@@ -133,20 +140,22 @@ type
 
   private
     FCurType: Byte;
-    FTemp: Boolean;
+    FTemp, //Режим работы с временными таблицами (По невременным не реализовано)
+    FAddMode: Boolean; //False - режим замены True - режим вставки
 
     FObjectID,
     FEstimateID,
+    FRateID,
     FMatMechID: Integer;
 
     FObjectName,
-    FEstimateName: String;
+    FEstimateName,
+    FRateCode: String;
 
     FMonth,
     FYear,
     FRegion: Word;
     FRegionName: string;
-    FOpenEstIDs: string;
 
     FSprArray: TSprArray;
     FEntryArray: TEntryArray;
@@ -174,8 +183,8 @@ type
     function GetEstIDs(AIndex: Integer): Integer;
     { Private declarations }
   public
-    constructor Create(const AObjectID, AEstimateID,
-      AMatMechID: Integer; AType: Byte; ATemp: Boolean); reintroduce;
+    constructor Create(const AObjectID, AEstimateID, ARateID,
+      AMatMechID: Integer; AType: Byte; ATemp, AAdd: Boolean); reintroduce;
     destructor Destroy; override;
 
     property Count: Integer read GetCount;
@@ -190,6 +199,8 @@ implementation
 
 uses DataModule, GlobsAndConst;
 
+//Событие выполняющееся при получении данных из справочника
+//Заполняет массив справочника
 procedure TfrmReplacement.OnActivate(var Mes: TMessage);
 var ind: Integer;
     TmpDS: TDataSet;
@@ -246,8 +257,7 @@ begin
     end;
     SetLength(FSprArray, ind);
   end;
-  //Добавлено из-за Application.ProcessMessages выше
-  //edtDestCodeChange(nil);
+
   //Заполнение справочника
   FillSprList(edtFind.Text);
 end;
@@ -308,6 +318,8 @@ begin
   ListEntry.Repaint;
 end;
 
+//Идаляет заменяющие материалы по ид заменяемого
+//Или выводит сообщение со списком заменяющих ADel = true
 procedure TfrmReplacement.ShowDelRep(const AName: string; const AID: Integer;
       ADel: Boolean = False);
 var TmpStr: string;
@@ -362,7 +374,7 @@ begin
   ShowDelRep(TMenuItem(Sender).Caption, TMenuItem(Sender).Tag);
 end;
 
-//заполняет спрачник
+//заполняет справочник
 procedure TfrmReplacement.FillSprList(AFindStr: string);
 var i, j: Integer;
     FindType: Byte;
@@ -489,7 +501,7 @@ begin
   end;
 
   //Правила редактирования коэф. пересчета
-  if (grdRep.Col = 3) then
+  if (grdRep.Col = 4) then
   begin
     if CharInSet(Key, [^C, ^X, ^Z]) then
       Exit;
@@ -563,13 +575,13 @@ procedure TfrmReplacement.grdRepSelectCell(Sender: TObject; ACol,
   ARow: Integer; var CanSelect: Boolean);
 var s: string;
 begin
-  if ACol = 2 then
-    grdRep.Options := grdRep.Options - [goEditing]
+  if ACol in [1,4] then
+    grdRep.Options := grdRep.Options + [goEditing]
   else
-    grdRep.Options := grdRep.Options + [goEditing];
+    grdRep.Options := grdRep.Options - [goEditing];
 
   //Убирает разделитель в конце, если не ввели дробную часть
-  if (grdRep.Col = 3)then
+  if (grdRep.Col = 4)then
   begin
     s := grdRep.Cells[grdRep.Col, grdRep.Row];
     if (Length(s) > 0) and (s[High(s)] = FormatSettings.DecimalSeparator) then
@@ -591,12 +603,12 @@ begin
     for i := Low(FSprArray) to High(FSprArray) do
       if SameText(grdRep.Cells[1, ARow], FSprArray[i].Code) then
       begin
-        grdRep.Cells[4, ARow] := FSprArray[i].ID.ToString;
+        grdRep.Cells[5, ARow] := FSprArray[i].ID.ToString;
         grdRep.Cells[2, ARow] := FSprArray[i].Name;
         Exit;
       end;
     grdRep.Cells[2, ARow] := '';
-    grdRep.Cells[4, ARow] := '';
+    grdRep.Cells[5, ARow] := '';
   end;
 end;
 
@@ -708,30 +720,39 @@ begin
   Result := FEstIDArray[AIndex];
 end;
 
-constructor TfrmReplacement.Create(const AObjectID, AEstimateID,
-      AMatMechID: Integer; AType: Byte; ATemp: Boolean);
+constructor TfrmReplacement.Create(const AObjectID, AEstimateID, ARateID,
+      AMatMechID: Integer; AType: Byte; ATemp, AAdd: Boolean);
 begin
   inherited Create(nil);
 
+  FTemp := ATemp;
+  FAddMode := AAdd;
+
+  //Зачем этот код именно в Create не известно
   grdRep.ColWidths[0] := 20;
   grdRep.ColWidths[1] := 100;
   grdRep.ColWidths[2] := 450;
-  grdRep.ColWidths[3] := 150;
+  grdRep.ColWidths[3] := 100;
+  if FAddMode then
+    grdRep.ColWidths[4] := -1
+  else
+    grdRep.ColWidths[4] := 100;
+  grdRep.ColWidths[5] := -1;
 
   grdRep.Cells[0,0] := '№';
   grdRep.Cells[1,0] := 'Код';
   grdRep.Cells[2,0] := 'Наименование';
-  grdRep.Cells[3,0] := 'Коэф. пересчета';
-  grdRep.Cells[4,0] := 'ID';
+  grdRep.Cells[3,0] := 'Ед. изм.';
+  grdRep.Cells[4,0] := 'Коэф. пересчета';
+  grdRep.Cells[5,0] := 'ID';
 
   grdRep.Cells[0,1] := '1';
-  grdRep.Cells[3,1] := '1';
-  grdRep.ColWidths[4] := -1;
+  grdRep.Cells[4,1] := '1';
+
 
   if grdRep.Col = 1 then
     grdRep.Options := grdRep.Options - [goEditing];
 
-  FTemp := ATemp;
   //Просто левое число, что-бы onClick отработал
   FCurType := 9;
 
@@ -741,9 +762,11 @@ begin
 
   FObjectID := AObjectID;
   FEstimateID := AEstimateID;
+  FRateID := ARateID;
   FMatMechID := AMatMechID;
   FObjectName := '';
   FEstimateName := '';
+  FRateCode := '';
 
   LoadObjEstInfo;
 
@@ -753,8 +776,11 @@ begin
   else
     rgroupType.ItemIndex := 0;
 
-  LoadRepInfo;
-  LoadEntry;
+  if not FAddMode then
+  begin
+    LoadRepInfo;
+    LoadEntry;
+  end;
 end;
 
 procedure TfrmReplacement.edtFindKeyPress(Sender: TObject; var Key: Char);
@@ -767,21 +793,8 @@ begin
 end;
 
 procedure TfrmReplacement.LoadObjEstInfo;
+var TmpStr: string;
 begin
-//Получает списов id всех открытых смет
-  FOpenEstIDs := '';
-  qrRep.Active := False;
-  qrRep.SQL.Text := 'SELECT ID_ESTIMATE FROM data_estimate_temp GROUP BY ID_ESTIMATE';
-  qrRep.Active := True;
-  while not qrRep.Eof do
-  begin
-    if not FOpenEstIDs.IsEmpty then
-      FOpenEstIDs := FOpenEstIDs + ',';
-    FOpenEstIDs := FOpenEstIDs + qrRep.Fields[0].AsString;
-    qrRep.Next;
-  end;
-  qrRep.Active := False;
-
   qrRep.Active := False;
   qrRep.SQL.Text := 'SELECT ob.region_id, reg.region_name, ob.NAME ' +
     'FROM objcards as ob, regions as reg ' +
@@ -807,6 +820,21 @@ begin
     FMonth := qrRep.Fields[0].AsInteger;
     FYear := qrRep.Fields[1].AsInteger;
     FEstimateName := qrRep.Fields[2].AsString;
+  end;
+  qrRep.Active := False;
+
+  TmpStr := '';
+  if FTemp then
+    TmpStr := '_temp';
+
+  qrRep.SQL.Text := 'SELECT RATE_CODE FROM card_rate' +
+    ' WHERE (ID = ' + IntToStr(FRateID) + ');';
+  qrRep.Active := True;
+  if not qrRep.IsEmpty then
+  begin
+    FRegion := qrRep.Fields[0].AsInteger;
+    FRegionName := qrRep.Fields[1].AsString;
+    FObjectName := qrRep.Fields[2].AsString;
   end;
   qrRep.Active := False;
 end;
@@ -977,13 +1005,13 @@ begin
   SetLength(FEstIDArray, ind);
 
   for i := grdRep.FixedRows to grdRep.RowCount - 1 do
-    if (grdRep.Cells[4, i] <> '') then
+    if (grdRep.Cells[5, i] <> '') then
     begin
       Inc(ind);
       SetLength(IDArray, ind);
       SetLength(CoefArray, ind);
-      IDArray[ind - 1] := grdRep.Cells[4, i].ToInteger;
-      CoefArray[ind - 1] := grdRep.Cells[3, i].ToDouble;
+      IDArray[ind - 1] := grdRep.Cells[5, i].ToInteger;
+      CoefArray[ind - 1] := grdRep.Cells[4, i].ToDouble;
     end;
 
   if (Length(IDArray) = 0) and not DelOnly then
@@ -1028,9 +1056,9 @@ begin
         for j := Low(IDArray) to High(IDArray) do
         begin
           if FCurType = 0 then
-            qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, :IdMR, :IdMS, :Coef);'
+            qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, 0, 0, :IdMS, :IdMR, :Coef);'
           else
-            qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, :IdMR, :IdMS, :Coef);';
+            qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, 0, 0, :IdMS, :IdMR, :Coef);';
           qrTemp.ParamByName('IdEst').Value := FEntryArray[i].EID;
           qrTemp.ParamByName('IdMR').Value := FEntryArray[i].MID;
           qrTemp.ParamByName('IdMS').Value := IDArray[j];
@@ -1054,7 +1082,7 @@ begin
       TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).Code;
     grdRep.Cells[2, grdRep.Row] :=
       TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).Name;
-    grdRep.Cells[4, grdRep.Row] :=
+    grdRep.Cells[5, grdRep.Row] :=
       TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID.ToString;
   end;
 end;
@@ -1159,7 +1187,7 @@ begin
   //Добавляет строку в таблицу заменяющих
   grdRep.RowCount := grdRep.RowCount + 1;
   grdRep.Cells[0, grdRep.RowCount - 1] := (grdRep.RowCount - 1).ToString;
-  grdRep.Cells[3, grdRep.RowCount - 1] := '1';
+  grdRep.Cells[4, grdRep.RowCount - 1] := '1';
   grdRep.Row := grdRep.RowCount - 1;
 end;
 

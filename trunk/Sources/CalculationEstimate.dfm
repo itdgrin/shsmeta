@@ -3764,6 +3764,9 @@
       FieldName = 'REPLACED'
       Origin = 'REPLACED'
     end
+    object qrMechanizmADDED: TByteField
+      FieldName = 'ADDED'
+    end
   end
   object dsMechanizm: TDataSource
     DataSet = qrMechanizm
@@ -4058,6 +4061,9 @@
       FieldName = 'COAST_NDS'
       Origin = 'COAST_NDS'
       OnChange = MatRowChange
+    end
+    object qrMaterialADDED: TByteField
+      FieldName = 'ADDED'
     end
   end
   object dsMaterial: TDataSource

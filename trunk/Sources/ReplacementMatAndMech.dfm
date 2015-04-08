@@ -169,7 +169,7 @@ object frmReplacement: TfrmReplacement
     Top = 250
     Width = 779
     Height = 232
-    Align = alClient
+    Align = alTop
     Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -711,6 +711,7 @@ object frmReplacement: TfrmReplacement
       Width = 748
       Height = 72
       Align = alClient
+      ColCount = 6
       DefaultRowHeight = 16
       RowCount = 2
       Font.Charset = DEFAULT_CHARSET
@@ -731,8 +732,8 @@ object frmReplacement: TfrmReplacement
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 425
-    Top = 17
+    Left = 441
+    Top = 153
   end
   object qrTemp: TFDQuery
     Connection = DM.Connect
@@ -742,14 +743,14 @@ object frmReplacement: TfrmReplacement
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
-    Left = 232
-    Top = 105
+    Left = 520
+    Top = 145
   end
   object PMEntry: TPopupMenu
     AutoHotkeys = maManual
     OnPopup = PMEntryPopup
-    Left = 296
-    Top = 105
+    Left = 608
+    Top = 145
     object pmShowRep: TMenuItem
       Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1079#1072#1084#1077#1085#1103#1102#1097#1080#1077
       OnClick = pmShowRepClick
