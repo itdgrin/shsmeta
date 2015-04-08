@@ -625,6 +625,7 @@ type
     procedure PMMechDeleteClick(Sender: TObject);
     procedure qrRatesExAfterOpen(DataSet: TDataSet);
     procedure PMAddAdditionHeatingClick(Sender: TObject);
+    procedure PMMatAddToRateClick(Sender: TObject);
   private
     const
       CaptionButton = 'Расчёт сметы';
@@ -2617,6 +2618,29 @@ begin
   GetStateCoefOrdersInRate;
 end;
 
+procedure TFormCalculationEstimate.PMMatAddToRateClick(Sender: TObject);
+var
+  frmReplace: TfrmReplacement;
+  IdRate,
+  i: Integer;
+begin
+  if qrRatesExID_TYPE_DATA.AsInteger = 1 then
+    IdRate := qrRatesExID_TABLES.AsInteger
+  else
+    IdRate := qrRatesExSM_ID.AsInteger;
+
+
+  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0,
+    TMenuItem(Sender).Tag, True, True);
+
+  try
+    if (frmReplace.ShowModal = mrYes) then
+      OutputDataToTable;
+  finally
+    FreeAndNil(frmReplace);
+  end;
+end;
+
 procedure TFormCalculationEstimate.PMMatDeleteClick(Sender: TObject);
 begin
   if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrMaterialMAT_CODE.AsString + '?'), CaptionForm,
@@ -3150,14 +3174,16 @@ begin
 
   PMMatReplace.Enabled := (not CheckMatReadOnly)
     and ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1))
-    and (qrMaterialID_REPLACED.AsInteger = 0);
+    and (qrMaterialID_REPLACED.AsInteger = 0)
+    and (qrMaterialADDED.AsInteger = 0);
 
   PMMatAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or
     (qrRatesExID_RATE.AsInteger > 0);
 
   PMMatDelete.Enabled := (not CheckMatReadOnly)
-    and ((qrMaterialID_REPLACED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0))
-      or((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 2));
+    and (((qrMaterialID_REPLACED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0))
+      or ((qrMaterialADDED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0))
+      or ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 2)));
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -3170,15 +3196,17 @@ begin
 
   PMMechReplace.Enabled := (not CheckMechReadOnly)
     and ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1))
-    and (qrMechanizmID_REPLACED.AsInteger = 0);
+    and (qrMechanizmID_REPLACED.AsInteger = 0)
+    and (qrMechanizmADDED.AsInteger = 0);
 
   //Доступен только с расценке
   PMMechAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or
     (qrRatesExID_RATE.AsInteger > 0);
 
   PMMechDelete.Enabled := (not CheckMechReadOnly)
-    and ((qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0))
-      or((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 3));
+    and (((qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0))
+      or ((qrMechanizmADDED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0))
+      or ((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 3)));
 end;
 
 function TFormCalculationEstimate.CheckCursorInRate: Boolean;

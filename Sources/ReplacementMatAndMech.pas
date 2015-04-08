@@ -95,7 +95,7 @@ type
     edtSourceName: TMemo;
     ListEntry: TListView;
     rgroupType: TRadioGroup;
-    GroupBox1: TGroupBox;
+    groupRep: TGroupBox;
     Panel2: TPanel;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
@@ -731,19 +731,19 @@ begin
   //Зачем этот код именно в Create не известно
   grdRep.ColWidths[0] := 20;
   grdRep.ColWidths[1] := 100;
-  grdRep.ColWidths[2] := 450;
-  grdRep.ColWidths[3] := 100;
+  grdRep.ColWidths[2] := 440;
+  grdRep.ColWidths[3] := 70;
   if FAddMode then
     grdRep.ColWidths[4] := -1
   else
-    grdRep.ColWidths[4] := 100;
+    grdRep.ColWidths[4] := 70;
   grdRep.ColWidths[5] := -1;
 
   grdRep.Cells[0,0] := '№';
   grdRep.Cells[1,0] := 'Код';
   grdRep.Cells[2,0] := 'Наименование';
   grdRep.Cells[3,0] := 'Ед. изм.';
-  grdRep.Cells[4,0] := 'Коэф. пересчета';
+  grdRep.Cells[4,0] := 'Коэф. пер.';
   grdRep.Cells[5,0] := 'ID';
 
   grdRep.Cells[0,1] := '1';
@@ -769,6 +769,16 @@ begin
   FRateCode := '';
 
   LoadObjEstInfo;
+
+  if FAddMode then
+  begin
+     Panel1.Visible := False;
+     groupEntry.Visible := False;
+     groupRep.Height := 200;
+     groupRep.Caption := ' Добавить в расценку ' + FRateCode + ': ';
+     Caption := 'Добавление материалов и механизмов';
+     btnReplace.Caption := 'Добавить';
+  end;
 
   //Установка типа приводит к загрузке справочника
   if (AType > 0) then
@@ -827,14 +837,12 @@ begin
   if FTemp then
     TmpStr := '_temp';
 
-  qrRep.SQL.Text := 'SELECT RATE_CODE FROM card_rate' +
+  qrRep.SQL.Text := 'SELECT RATE_CODE FROM card_rate' + TmpStr +
     ' WHERE (ID = ' + IntToStr(FRateID) + ');';
   qrRep.Active := True;
   if not qrRep.IsEmpty then
   begin
-    FRegion := qrRep.Fields[0].AsInteger;
-    FRegionName := qrRep.Fields[1].AsString;
-    FObjectName := qrRep.Fields[2].AsString;
+    FRateCode := qrRep.Fields[0].AsString;
   end;
   qrRep.Active := False;
 end;
@@ -929,7 +937,6 @@ begin
 
   ind := 0;
   SetLength(FEntryArray, 0);
-  qrTemp.SQL.SaveToFile('d:\123.sql');
   qrTemp.Active := True;
   while not qrTemp.Eof do
   begin
@@ -980,22 +987,24 @@ var i, j, ind:  Integer;
     DelOnly: Boolean;
 begin
   DelOnly := (TButton(Sender).Tag = 1);
-
-  Flag := False;
-  for i := Low(FEntryArray) to High(FEntryArray) do
-    if FEntryArray[i].Select then
-    begin
-      Flag := True;
-      Break;
-    end;
-
-  if not Flag then
+  if not FAddMode then
   begin
-    if FCurType = 0 then
-      Showmessage('Не задан заменяемый материал!')
-    else
-      Showmessage('Не задан заменяемый механизм!');
-    Exit;
+    Flag := False;
+    for i := Low(FEntryArray) to High(FEntryArray) do
+      if FEntryArray[i].Select then
+      begin
+        Flag := True;
+        Break;
+      end;
+
+    if not Flag then
+    begin
+      if FCurType = 0 then
+        Showmessage('Не задан заменяемый материал!')
+      else
+        Showmessage('Не задан заменяемый механизм!');
+      Exit;
+    end;
   end;
 
   ind := 0;
@@ -1014,7 +1023,7 @@ begin
       CoefArray[ind - 1] := grdRep.Cells[4, i].ToDouble;
     end;
 
-  if (Length(IDArray) = 0) and not DelOnly then
+  if (Length(IDArray) = 0) and ((not DelOnly) or FAddMode) then
   begin
     if FCurType = 0 then
       Showmessage('Не задано ни одного заменяющего материала!')
@@ -1025,45 +1034,63 @@ begin
 
   Screen.Cursor := crHourGlass;
   try
-    for i := Low(FEntryArray) to High(FEntryArray) do
+    if FAddMode then
     begin
-      //Не отмеченные пропускаются
-      if not FEntryArray[i].Select then
-        Continue;
-
-      //Новые запронутые расценки запоминиаются для последующего пересчета
-      Flag := False;
-      for j := Low(FRateIDArray) to High(FRateIDArray) do
-        if FRateIDArray[j] = FEntryArray[i].RID then
-          Flag := True;
-
-      if not Flag then
+      //Выполняются замены
+      for j := Low(IDArray) to High(IDArray) do
       begin
-        j := Length(FRateIDArray);
-        SetLength(FRateIDArray, j + 1);
-        SetLength(FEstIDArray, j + 1);
-        FRateIDArray[j] := FEntryArray[i].RID;
-        FEstIDArray[j] := FEntryArray[i].EID;
+        if FCurType = 0 then
+          qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, :IdRate, 1, :IdMS, 0, 0);'
+        else
+          qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, :IdRate, 1, :IdMS, 0, 0);';
+        qrTemp.ParamByName('IdEst').Value := FEstimateID;
+        qrTemp.ParamByName('IdRate').Value := FRateID;
+        qrTemp.ParamByName('IdMS').Value := IDArray[j];
+        qrTemp.ExecSQL;
       end;
-
-      //Если ранее были замены, удаляются
-      if FEntryArray[i].MRep then
-        ShowDelRep('', FEntryArray[i].MID, True);
-
-      if not DelOnly then
+    end
+    else
+    begin
+      for i := Low(FEntryArray) to High(FEntryArray) do
       begin
-        //Выполняются замены
-        for j := Low(IDArray) to High(IDArray) do
+        //Не отмеченные пропускаются
+        if not FEntryArray[i].Select then
+          Continue;
+
+        //Новые запронутые расценки запоминиаются для последующего пересчета
+        Flag := False;
+        for j := Low(FRateIDArray) to High(FRateIDArray) do
+          if FRateIDArray[j] = FEntryArray[i].RID then
+            Flag := True;
+
+        if not Flag then
         begin
-          if FCurType = 0 then
-            qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, 0, 0, :IdMS, :IdMR, :Coef);'
-          else
-            qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, 0, 0, :IdMS, :IdMR, :Coef);';
-          qrTemp.ParamByName('IdEst').Value := FEntryArray[i].EID;
-          qrTemp.ParamByName('IdMR').Value := FEntryArray[i].MID;
-          qrTemp.ParamByName('IdMS').Value := IDArray[j];
-          qrTemp.ParamByName('Coef').Value := CoefArray[j];
-          qrTemp.ExecSQL;
+          j := Length(FRateIDArray);
+          SetLength(FRateIDArray, j + 1);
+          SetLength(FEstIDArray, j + 1);
+          FRateIDArray[j] := FEntryArray[i].RID;
+          FEstIDArray[j] := FEntryArray[i].EID;
+        end;
+
+        //Если ранее были замены, удаляются
+        if FEntryArray[i].MRep then
+          ShowDelRep('', FEntryArray[i].MID, True);
+
+        if not DelOnly then
+        begin
+          //Выполняются замены
+          for j := Low(IDArray) to High(IDArray) do
+          begin
+            if FCurType = 0 then
+              qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, 0, 0, :IdMS, :IdMR, :Coef);'
+            else
+              qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, 0, 0, :IdMS, :IdMR, :Coef);';
+            qrTemp.ParamByName('IdEst').Value := FEntryArray[i].EID;
+            qrTemp.ParamByName('IdMR').Value := FEntryArray[i].MID;
+            qrTemp.ParamByName('IdMS').Value := IDArray[j];
+            qrTemp.ParamByName('Coef').Value := CoefArray[j];
+            qrTemp.ExecSQL;
+          end;
         end;
       end;
     end;
@@ -1082,6 +1109,8 @@ begin
       TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).Code;
     grdRep.Cells[2, grdRep.Row] :=
       TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).Name;
+    grdRep.Cells[3, grdRep.Row] :=
+      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).Unt;
     grdRep.Cells[5, grdRep.Row] :=
       TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID.ToString;
   end;

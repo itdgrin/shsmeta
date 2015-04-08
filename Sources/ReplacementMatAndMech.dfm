@@ -169,7 +169,7 @@ object frmReplacement: TfrmReplacement
     Top = 250
     Width = 779
     Height = 232
-    Align = alTop
+    Align = alClient
     Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -592,7 +592,7 @@ object frmReplacement: TfrmReplacement
       OnClick = btnReplaceClick
     end
   end
-  object GroupBox1: TGroupBox
+  object groupRep: TGroupBox
     Left = 0
     Top = 161
     Width = 779
