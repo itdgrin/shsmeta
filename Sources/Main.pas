@@ -51,7 +51,6 @@ type
     N1: TMenuItem;
     N14: TMenuItem;
     N17: TMenuItem;
-    N13: TMenuItem;
     CalculationSettings: TMenuItem;
     MenuCatalogs: TMenuItem;
     HRRReferenceData: TMenuItem;
@@ -141,7 +140,6 @@ type
     procedure FormActivate(Sender: TObject);
     procedure N1Click(Sender: TObject);
     procedure ActC6Click(Sender: TObject);
-    procedure N13Click(Sender: TObject);
     procedure N31Click(Sender: TObject);
     procedure N51Click(Sender: TObject);
     procedure N14Click(Sender: TObject);
@@ -320,7 +318,7 @@ implementation
 uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   TariffsIndex, About, CalculationEstimate, ConnectDatabase, CardObject,
   DataModule, Login, Waiting, ActC6, WorkSchedule, HelpC3, HelpC5, CatalogSSR,
-  OXRandOPR, DataTransfer, CardPTM, CalculationSettings,
+  OXRandOPR, DataTransfer, CalculationSettings,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
   PricesReferenceData, AdditionData, PartsEstimates,
   Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
@@ -1236,11 +1234,6 @@ begin
   if (not Assigned(fWinterPrice)) then
     fWinterPrice := TfWinterPrice.Create(Self);
   fWinterPrice.Show;
-end;
-
-procedure TFormMain.N13Click(Sender: TObject);
-begin
-  FormCardPTM.Show;
 end;
 
 procedure TFormMain.N31Click(Sender: TObject);

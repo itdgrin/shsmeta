@@ -556,10 +556,6 @@
         Caption = #1040#1082#1090' '#1057'-6'
         OnClick = ActC6Click
       end
-      object N13: TMenuItem
-        Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1055#1058#1052
-        OnClick = N13Click
-      end
       object CalculationSettings: TMenuItem
         Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1088#1072#1089#1095#1105#1090#1086#1074
         OnClick = CalculationSettingsClick

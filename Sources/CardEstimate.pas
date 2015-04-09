@@ -49,6 +49,12 @@ type
     LabelTypeWork: TLabel;
     ComboBoxTypeWork: TComboBox;
     qrTemp: TFDQuery;
+    qr1: TFDQuery;
+    ds1: TDataSource;
+    qr2: TFDQuery;
+    ds2: TDataSource;
+    qr3: TFDQuery;
+    ds3: TDataSource;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

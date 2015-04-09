@@ -67,14 +67,14 @@ object FormCardEstimate: TFormCardEstimate
       Top = 2
       Width = 115
       Height = 21
-      TabOrder = 0
+      TabOrder = 1
     end
     object EditNumberRow: TEdit
       Left = 451
       Top = 2
       Width = 115
       Height = 21
-      TabOrder = 1
+      TabOrder = 2
     end
     object EditNumberEstimate: TEdit
       Left = 68
@@ -83,7 +83,7 @@ object FormCardEstimate: TFormCardEstimate
       Height = 21
       Color = 14802912
       ReadOnly = True
-      TabOrder = 2
+      TabOrder = 0
     end
   end
   object Panel2: TPanel
@@ -94,7 +94,7 @@ object FormCardEstimate: TFormCardEstimate
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 1
+    TabOrder = 4
     DesignSize = (
       604
       25)
@@ -122,7 +122,7 @@ object FormCardEstimate: TFormCardEstimate
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 2
+    TabOrder = 5
     object LabelCompose: TLabel
       Left = 10
       Top = 5
@@ -160,7 +160,7 @@ object FormCardEstimate: TFormCardEstimate
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 3
+    TabOrder = 6
     object LabelChecked: TLabel
       Left = 9
       Top = 5
@@ -198,7 +198,7 @@ object FormCardEstimate: TFormCardEstimate
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 4
+    TabOrder = 7
     DesignSize = (
       604
       25)
@@ -232,7 +232,7 @@ object FormCardEstimate: TFormCardEstimate
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 8
     OnClick = btnSaveClick
   end
   object btnClose: TButton
@@ -242,7 +242,7 @@ object FormCardEstimate: TFormCardEstimate
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 6
+    TabOrder = 9
     OnClick = btnCloseClick
   end
   object PanelPart: TPanel
@@ -253,7 +253,7 @@ object FormCardEstimate: TFormCardEstimate
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 7
+    TabOrder = 1
     DesignSize = (
       604
       25)
@@ -283,7 +283,7 @@ object FormCardEstimate: TFormCardEstimate
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 8
+    TabOrder = 2
     DesignSize = (
       604
       25)
@@ -301,6 +301,12 @@ object FormCardEstimate: TFormCardEstimate
       Width = 533
       Height = 21
       Anchors = [akLeft, akTop, akRight]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
       OnChange = ComboBoxChange
     end
@@ -313,7 +319,7 @@ object FormCardEstimate: TFormCardEstimate
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 9
+    TabOrder = 3
     DesignSize = (
       604
       25)
@@ -341,5 +347,68 @@ object FormCardEstimate: TFormCardEstimate
     UpdateTransaction = DM.Write
     Left = 25
     Top = 200
+  end
+  object qr1: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
+    FormatOptions.FmtDisplayNumeric = '#0.00'
+    SQL.Strings = (
+      'SELECT '
+      '  `coef_type_id`,'
+      '  `coef_type_name`'
+      'FROM '
+      '  `coef_type`'
+      'ORDER BY `coef_type_name`')
+    Left = 273
+    Top = 26
+  end
+  object ds1: TDataSource
+    DataSet = qr1
+    Left = 320
+    Top = 26
+  end
+  object qr2: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
+    FormatOptions.FmtDisplayNumeric = '#0.00'
+    SQL.Strings = (
+      'SELECT '
+      '  `coef_type_id`,'
+      '  `coef_type_name`'
+      'FROM '
+      '  `coef_type`'
+      'ORDER BY `coef_type_name`')
+    Left = 265
+    Top = 90
+  end
+  object ds2: TDataSource
+    DataSet = qr2
+    Left = 312
+    Top = 90
+  end
+  object qr3: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
+    FormatOptions.FmtDisplayNumeric = '#0.00'
+    SQL.Strings = (
+      'SELECT '
+      '  `coef_type_id`,'
+      '  `coef_type_name`'
+      'FROM '
+      '  `coef_type`'
+      'ORDER BY `coef_type_name`')
+    Left = 265
+    Top = 138
+  end
+  object ds3: TDataSource
+    DataSet = qr3
+    Left = 312
+    Top = 138
   end
 end
