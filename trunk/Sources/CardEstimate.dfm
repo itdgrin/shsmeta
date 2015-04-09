@@ -4,7 +4,7 @@ object FormCardEstimate: TFormCardEstimate
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1089#1084#1077#1090#1099
-  ClientHeight = 253
+  ClientHeight = 243
   ClientWidth = 604
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,12 +19,12 @@ object FormCardEstimate: TFormCardEstimate
   OnShow = FormShow
   DesignSize = (
     604
-    253)
+    243)
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel: TBevel
     Left = 0
-    Top = 212
+    Top = 202
     Width = 604
     Height = 41
     Align = alBottom
@@ -39,7 +39,13 @@ object FormCardEstimate: TFormCardEstimate
     Height = 25
     Align = alTop
     BevelOuter = bvNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     ParentBackground = False
+    ParentFont = False
     TabOrder = 0
     object LabelNumberChapter: TLabel
       Left = 189
@@ -61,29 +67,53 @@ object FormCardEstimate: TFormCardEstimate
       Width = 51
       Height = 13
       Caption = #8470' '#1089#1084#1077#1090#1099':'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
     end
-    object EditNumberChapter: TEdit
-      Left = 269
-      Top = 2
-      Width = 115
-      Height = 21
-      TabOrder = 1
-    end
-    object EditNumberRow: TEdit
-      Left = 451
-      Top = 2
-      Width = 115
-      Height = 21
-      TabOrder = 2
-    end
-    object EditNumberEstimate: TEdit
+    object dbedtSM_NUMBER: TDBEdit
       Left = 68
       Top = 2
       Width = 115
       Height = 21
       Color = 14802912
+      DataField = 'SM_NUMBER'
+      DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       ReadOnly = True
       TabOrder = 0
+    end
+    object dbedtCHAPTER: TDBEdit
+      Left = 269
+      Top = 2
+      Width = 115
+      Height = 21
+      DataField = 'CHAPTER'
+      DataSource = dsMain
+      TabOrder = 1
+    end
+    object dbedtROW_NUMBER: TDBEdit
+      Left = 451
+      Top = 2
+      Width = 150
+      Height = 21
+      DataField = 'ROW_NUMBER'
+      DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 2
     end
   end
   object Panel2: TPanel
@@ -95,9 +125,6 @@ object FormCardEstimate: TFormCardEstimate
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 4
-    DesignSize = (
-      604
-      25)
     object LabelNameEstimate: TLabel
       Left = 10
       Top = 5
@@ -105,12 +132,19 @@ object FormCardEstimate: TFormCardEstimate
       Height = 13
       Caption = #1053#1072#1079#1074#1072#1085#1080#1077':'
     end
-    object EditNameEstimate: TEdit
+    object dbedtNAME: TDBEdit
       Left = 68
-      Top = 2
+      Top = 3
       Width = 533
       Height = 21
-      Anchors = [akLeft, akTop, akRight]
+      DataField = 'NAME'
+      DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
     end
   end
@@ -137,18 +171,28 @@ object FormCardEstimate: TFormCardEstimate
       Height = 13
       Caption = #1044#1086#1083#1078#1085#1086#1089#1090#1100':'
     end
-    object EditCompose: TEdit
+    object dbedtPREPARER: TDBEdit
       Left = 68
       Top = 2
       Width = 230
       Height = 21
+      DataField = 'PREPARER'
+      DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
     end
-    object EditPostCompose: TEdit
+    object dbedtPOST_PREPARER: TDBEdit
       Left = 371
       Top = 2
       Width = 230
       Height = 21
+      DataField = 'POST_PREPARER'
+      DataSource = dsMain
       TabOrder = 1
     end
   end
@@ -175,18 +219,34 @@ object FormCardEstimate: TFormCardEstimate
       Height = 13
       Caption = #1044#1086#1083#1078#1085#1086#1089#1090#1100':'
     end
-    object EditChecked: TEdit
+    object dbedtEXAMINER: TDBEdit
       Left = 68
       Top = 2
       Width = 230
       Height = 21
+      DataField = 'EXAMINER'
+      DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
     end
-    object EditPostChecked: TEdit
+    object dbedtPOST_EXAMINER: TDBEdit
       Left = 371
       Top = 2
       Width = 230
       Height = 21
+      DataField = 'POST_EXAMINER'
+      DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 1
     end
   end
@@ -199,9 +259,6 @@ object FormCardEstimate: TFormCardEstimate
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 7
-    DesignSize = (
-      604
-      25)
     object LabelSetDrawing: TLabel
       Left = 6
       Top = 5
@@ -209,18 +266,25 @@ object FormCardEstimate: TFormCardEstimate
       Height = 13
       Caption = #1050#1086#1084#1087#1083#1077#1082#1090' '#1095#1077#1088#1090#1077#1078#1077#1081':'
     end
-    object EditSetDrawing: TEdit
+    object dbedtSET_DRAWINGS: TDBEdit
       Left = 118
       Top = 2
       Width = 483
       Height = 21
-      Anchors = [akLeft, akTop, akRight]
+      DataField = 'SET_DRAWINGS'
+      DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
     end
   end
   object btnSave: TButton
     Left = 390
-    Top = 220
+    Top = 210
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
@@ -234,16 +298,18 @@ object FormCardEstimate: TFormCardEstimate
     ParentFont = False
     TabOrder = 8
     OnClick = btnSaveClick
+    ExplicitTop = 220
   end
   object btnClose: TButton
     Left = 496
-    Top = 220
+    Top = 210
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 9
     OnClick = btnCloseClick
+    ExplicitTop = 220
   end
   object PanelPart: TPanel
     Left = 0
@@ -252,11 +318,16 @@ object FormCardEstimate: TFormCardEstimate
     Height = 25
     Align = alTop
     BevelOuter = bvNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     ParentBackground = False
+    ParentFont = False
     TabOrder = 1
-    DesignSize = (
-      604
-      25)
+    ExplicitLeft = 8
+    ExplicitTop = 49
     object LabelPart: TLabel
       Left = 28
       Top = 5
@@ -264,15 +335,23 @@ object FormCardEstimate: TFormCardEstimate
       Height = 13
       Caption = #1063#1072#1089#1090#1100':'
     end
-    object ComboBoxPart: TComboBox
-      Tag = 1
+    object dblkcbbParts: TDBLookupComboBox
       Left = 68
-      Top = 4
+      Top = 3
       Width = 533
       Height = 21
-      Anchors = [akLeft, akTop, akRight]
+      DataField = 'PART_ID'
+      DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'ID'
+      ListField = 'PART_NAME'
+      ListSource = dsParts
+      ParentFont = False
       TabOrder = 0
-      OnChange = ComboBoxChange
     end
   end
   object PanelSection: TPanel
@@ -284,9 +363,6 @@ object FormCardEstimate: TFormCardEstimate
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 2
-    DesignSize = (
-      604
-      25)
     object LabelSection: TLabel
       Left = 22
       Top = 5
@@ -294,21 +370,23 @@ object FormCardEstimate: TFormCardEstimate
       Height = 13
       Caption = #1056#1072#1079#1076#1077#1083':'
     end
-    object ComboBoxSection: TComboBox
-      Tag = 2
+    object dblkcbbSections: TDBLookupComboBox
       Left = 68
-      Top = 2
+      Top = 3
       Width = 533
       Height = 21
-      Anchors = [akLeft, akTop, akRight]
+      DataField = 'SECTION_ID'
+      DataSource = dsMain
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
+      KeyField = 'ID'
+      ListField = 'Section_NAME'
+      ListSource = dsSections
       ParentFont = False
       TabOrder = 0
-      OnChange = ComboBoxChange
     end
   end
   object PanelTypeWork: TPanel
@@ -320,9 +398,6 @@ object FormCardEstimate: TFormCardEstimate
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 3
-    DesignSize = (
-      604
-      25)
     object LabelTypeWork: TLabel
       Left = 6
       Top = 5
@@ -330,15 +405,23 @@ object FormCardEstimate: TFormCardEstimate
       Height = 13
       Caption = #1042#1080#1076' '#1088#1072#1073#1086#1090':'
     end
-    object ComboBoxTypeWork: TComboBox
-      Tag = 3
+    object dblkcbbTypesWorks: TDBLookupComboBox
       Left = 68
-      Top = 2
+      Top = 3
       Width = 533
       Height = 21
-      Anchors = [akLeft, akTop, akRight]
+      DataField = 'TYPE_WORK_ID'
+      DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'ID'
+      ListField = 'TYPE_WORK_NAME'
+      ListSource = dsTypesWorks
+      ParentFont = False
       TabOrder = 0
-      OnChange = ComboBoxChange
     end
   end
   object qrTemp: TFDQuery
@@ -348,7 +431,8 @@ object FormCardEstimate: TFormCardEstimate
     Left = 25
     Top = 200
   end
-  object qr1: TFDQuery
+  object qrParts: TFDQuery
+    AfterScroll = qrPartsAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -356,20 +440,24 @@ object FormCardEstimate: TFormCardEstimate
     FormatOptions.FmtDisplayNumeric = '#0.00'
     SQL.Strings = (
       'SELECT '
-      '  `coef_type_id`,'
-      '  `coef_type_name`'
+      '  `ID`,'
+      '  `CODE`,'
+      '  `NAME`,'
+      '  `CONSTANT`,'
+      '  CONCAT(`CODE`, ". ", `NAME`) AS PART_NAME'
       'FROM '
-      '  `coef_type`'
-      'ORDER BY `coef_type_name`')
-    Left = 273
-    Top = 26
+      '  `parts_estimates`'
+      'ORDER BY `CODE`;')
+    Left = 497
+    Top = 18
   end
-  object ds1: TDataSource
-    DataSet = qr1
-    Left = 320
-    Top = 26
+  object dsParts: TDataSource
+    DataSet = qrParts
+    Left = 536
+    Top = 18
   end
-  object qr2: TFDQuery
+  object qrSections: TFDQuery
+    AfterScroll = qrPartsAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -377,20 +465,24 @@ object FormCardEstimate: TFormCardEstimate
     FormatOptions.FmtDisplayNumeric = '#0.00'
     SQL.Strings = (
       'SELECT '
-      '  `coef_type_id`,'
-      '  `coef_type_name`'
+      '  `ID`,'
+      '  `CODE`,'
+      '  `NAME`,'
+      '  `CONSTANT`,'
+      '  CONCAT(`CODE`, ". ", `NAME`) AS Section_NAME'
       'FROM '
-      '  `coef_type`'
-      'ORDER BY `coef_type_name`')
-    Left = 265
-    Top = 90
+      '  `sections_estimates`'
+      'ORDER BY `CODE`;')
+    Left = 361
+    Top = 42
   end
-  object ds2: TDataSource
-    DataSet = qr2
-    Left = 312
-    Top = 90
+  object dsSections: TDataSource
+    DataSet = qrSections
+    Left = 400
+    Top = 42
   end
-  object qr3: TFDQuery
+  object qrTypesWorks: TFDQuery
+    AfterScroll = qrPartsAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -398,17 +490,45 @@ object FormCardEstimate: TFormCardEstimate
     FormatOptions.FmtDisplayNumeric = '#0.00'
     SQL.Strings = (
       'SELECT '
-      '  `coef_type_id`,'
-      '  `coef_type_name`'
+      '  `ID`,'
+      '  `CODE`,'
+      '  `NAME`,'
+      '  `CONSTANT`,'
+      '  CONCAT(`CODE`, ". ", `NAME`) AS TYPE_WORK_NAME'
       'FROM '
-      '  `coef_type`'
-      'ORDER BY `coef_type_name`')
-    Left = 265
-    Top = 138
+      '  `types_works`'
+      'ORDER BY `CODE`;')
+    Left = 233
+    Top = 74
   end
-  object ds3: TDataSource
-    DataSet = qr3
-    Left = 312
-    Top = 138
+  object dsTypesWorks: TDataSource
+    DataSet = qrTypesWorks
+    Left = 280
+    Top = 74
+  end
+  object qrMain: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
+    FormatOptions.FmtDisplayNumeric = '#0.00'
+    SQL.Strings = (
+      'SELECT * '
+      'FROM smetasourcedata'
+      'WHERE SM_ID=:SM_ID')
+    Left = 105
+    Top = 202
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object dsMain: TDataSource
+    DataSet = qrMain
+    Left = 144
+    Top = 202
   end
 end

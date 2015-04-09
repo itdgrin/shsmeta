@@ -2621,8 +2621,7 @@ end;
 procedure TFormCalculationEstimate.PMMatAddToRateClick(Sender: TObject);
 var
   frmReplace: TfrmReplacement;
-  IdRate,
-  i: Integer;
+  IdRate: Integer;
 begin
   if qrRatesExID_TYPE_DATA.AsInteger = 1 then
     IdRate := qrRatesExID_TABLES.AsInteger
