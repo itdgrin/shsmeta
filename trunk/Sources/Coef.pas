@@ -24,6 +24,17 @@ type
     N3: TMenuItem;
     N4: TMenuItem;
     N5: TMenuItem;
+    qrCoef_Type: TFDQuery;
+    dsCoef_Type: TDataSource;
+    strngfldCoefCoefTypeLook: TStringField;
+    qrCoefcoef_id: TFDAutoIncField;
+    strngfldCoefcoef_name: TStringField;
+    qrCoefosn_zp: TFloatField;
+    qrCoefeksp_mach: TFloatField;
+    qrCoefmat_res: TFloatField;
+    qrCoefwork_pers: TFloatField;
+    qrCoefwork_mach: TFloatField;
+    qrCoefcoef_type_id: TIntegerField;
     procedure FormShow(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure btnAddClick(Sender: TObject);
@@ -72,6 +83,7 @@ end;
 
 procedure TfCoefficients.FormShow(Sender: TObject);
 begin
+  CloseOpen(qrCoef_Type);
   CloseOpen(qrCoef);
   LoadDBGridSettings(grCoef);
 
