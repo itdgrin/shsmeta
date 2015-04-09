@@ -107,8 +107,11 @@ type
     N12: TMenuItem;
     mN15: TMenuItem;
     mN16: TMenuItem;
-    mN17: TMenuItem;
-    procedure TariffsTransportationClick(Sender: TObject);
+    mN17: TMenuItem;    mnSMETA_LSR_FROM_OBJ: TMenuItem;
+    mnSMETA_LSR_ZIM: TMenuItem;
+    mnSMETA_LSR_TRUD: TMenuItem;
+    mnCALC_SMETA_OBJ_GRAPH_C: TMenuItem;
+    mnSMETA_RES_FROM_OBJ: TMenuItem;    procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
     procedure TariffsIndexClick(Sender: TObject);
@@ -188,7 +191,11 @@ type
     procedure mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
     procedure N12Click(Sender: TObject);
     procedure mN15Click(Sender: TObject);
-    procedure mN17Click(Sender: TObject);
+	procedure mN17Click(Sender: TObject);	procedure mnSMETA_LSR_FROM_OBJClick(Sender: TObject);
+    procedure mnSMETA_LSR_ZIMClick(Sender: TObject);
+    procedure mnSMETA_LSR_TRUDClick(Sender: TObject);
+    procedure mnCALC_SMETA_OBJ_GRAPH_CClick(Sender: TObject);
+    procedure mnSMETA_RES_FROM_OBJClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -826,6 +833,37 @@ begin
     fOXROPRSetup := TfOXROPRSetup.Create(Self);
   fOXROPRSetup.Show;
 end;
+// Расчет стоимости работ по объекту (графа С) v1.00 (Вадим)
+procedure TFormMain.mnCALC_SMETA_OBJ_GRAPH_CClick(Sender: TObject);
+begin
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_CALC_SMETA_OBJ_GRAPH_C(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+
+        dmReportF.Report_CALC_SMETA_OBJ_GRAPH_C(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
 
 procedure TFormMain.mnRASX_ACTClick(Sender: TObject);
 begin
@@ -847,6 +885,8 @@ end;
 
 // --> "СМЕТА по объекту строительства" v.1.03
 procedure TFormMain.mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
+var param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16,
+    param17, param18, param19, param20, param21, param22, param23: Double;
 begin
   Screen.Cursor := crSQLWait;
   try
@@ -857,7 +897,13 @@ begin
         showmessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_SMETA_OBJ_BUILD(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+
+//      ShowEnter;
+
+      dmReportF.Report_SMETA_OBJ_BUILD(FormObjectsAndEstimates.IdEstimate, FileReportPath,
+                                       param4, param5, param6, param7, param8, param9, param10,
+                                       param11, param12, param13, param14, param15, param16,
+                                       param17, param18, param19, param20, param21, param22, param23);
     end
     else
     begin
@@ -868,14 +914,147 @@ begin
           showmessage('Не выбрана смета');
           Exit;
         end;
-        dmReportF.Report_SMETA_OBJ_BUILD(FormCalculationEstimate.GetIdEstimate, FileReportPath);
+
+//        ShowEnter;
+
+        dmReportF.Report_SMETA_OBJ_BUILD(FormCalculationEstimate.GetIdEstimate, FileReportPath,
+                                       param4, param5, param6, param7, param8, param9, param10,
+                                       param11, param12, param13, param14, param15, param16,
+                                       param17, param18, param19, param20, param21, param22, param23);
       end;
     end;
   finally
     Screen.Cursor := crDefault;
   end;
 end;
-// <-- "СМЕТА по объекту строительства" v.1.03
+
+// Смета (Локальный сметный расчет) по объекту v1.00 (Вадим)
+procedure TFormMain.mnSMETA_LSR_FROM_OBJClick(Sender: TObject);
+begin
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_SMETA_LSR_FROM_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+
+        dmReportF.Report_SMETA_LSR_FROM_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+
+// Смета (Локальный сметный расчет) с трудозатратами по объекту v1.00 (Вадим)
+procedure TFormMain.mnSMETA_LSR_TRUDClick(Sender: TObject);
+begin
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_SMETA_LSR_TRUD(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+
+        dmReportF.Report_SMETA_LSR_TRUD(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+
+// Смета (Локальный сметный расчет) с зимними v1.00 (Вадим)
+procedure TFormMain.mnSMETA_LSR_ZIMClick(Sender: TObject);
+begin
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_SMETA_LSR_ZIM(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+
+        dmReportF.Report_SMETA_LSR_ZIM(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+
+// Смета (Ресурсно-сметный расчет) по объекту v1.00 (Вадим)
+procedure TFormMain.mnSMETA_RES_FROM_OBJClick(Sender: TObject);
+begin
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_SMETA_RES_FROM_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+
+        dmReportF.Report_SMETA_RES_FROM_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
 
 procedure TFormMain.vk3Click(Sender: TObject);
 begin
