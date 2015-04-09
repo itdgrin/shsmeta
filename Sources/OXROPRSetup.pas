@@ -17,7 +17,6 @@ type
     qrWorkList: TFDQuery;
     dsWorkList: TDataSource;
     pnl1: TPanel;
-    dbnvgr1: TDBNavigator;
     qrONormativsID: TFDAutoIncField;
     qrONormativsINTERVAL_ID: TLongWordField;
     strngfldONormativsS: TStringField;
@@ -26,6 +25,7 @@ type
     qrONormativsDATE_END: TDateField;
     qrONormativsWORK_ID: TWordField;
     strngfldONormativsWorkLooK: TStringField;
+    dbnvgr1: TDBNavigator;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
