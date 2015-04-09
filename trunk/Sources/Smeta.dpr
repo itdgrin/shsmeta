@@ -78,7 +78,6 @@ uses
   CardTypesActs in 'CardTypesActs.pas' {FormCardTypesActs},
   CardIndexesChangeCost in 'CardIndexesChangeCost.pas' {FormCardIndexesChangeCost},
   CardCategoriesObjects in 'CardCategoriesObjects.pas' {FormCardCategoriesObjects},
-  CardPartsEstimates in 'CardPartsEstimates.pas' {FormCardPartsEstimates},
   CardSectionsEstimates in 'CardSectionsEstimates.pas' {FormCardSectionsEstimates},
   CardTypesWorks in 'CardTypesWorks.pas' {FormCardTypesWorks},
   CoefficientOrders in 'CoefficientOrders.pas' {FormCoefficientOrders},
@@ -93,7 +92,6 @@ uses
   UniDict in 'UniDict.pas' {fUniDict},
   UpdateModule in 'UpdateModule.pas',
   TravelList in 'TravelList.pas' {fTravelList},
-  CardPTM in 'CardPTM.pas' {FormCardPTM},
   fUpdate in 'fUpdate.pas' {UpdateForm},
   EditExpression in 'EditExpression.pas' {fEditExpression},
   dmReportU in 'dmReportU.pas' {dmReportF: TDataModule},
@@ -103,7 +101,8 @@ uses
   WinterPrice in 'WinterPrice.pas' {fWinterPrice},
   ReplacementMatAndMech in 'ReplacementMatAndMech.pas' {frmReplacement},
   TariffDict in 'TariffDict.pas' {fTariffDict},
-  OXROPRSetup in 'OXROPRSetup.pas' {fOXROPRSetup};
+  OXROPRSetup in 'OXROPRSetup.pas' {fOXROPRSetup},
+  CardPartsEstimates in 'CardPartsEstimates.pas' {FormCardPartsEstimates};
 
 {$R *.res}
 var MHandle: THandle;
@@ -147,14 +146,13 @@ begin
   Application.CreateForm(TFormIndexesChangeCost, FormIndexesChangeCost);
   Application.CreateForm(TFormCardCategoriesObjects, FormCardCategoriesObjects);
   Application.CreateForm(TFormCategoriesObjects, FormCategoriesObjects);
-  Application.CreateForm(TFormCardPartsEstimates, FormCardPartsEstimates);
   Application.CreateForm(TFormCardSectionsEstimates, FormCardSectionsEstimates);
   Application.CreateForm(TFormCardTypesWorks, FormCardTypesWorks);
   Application.CreateForm(TFormCoefficientOrders, FormCoefficientOrders);
   Application.CreateForm(TFormKC6, FormKC6);
-  Application.CreateForm(TFormCardPTM, FormCardPTM);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
+  Application.CreateForm(TFormCardPartsEstimates, FormCardPartsEstimates);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€
