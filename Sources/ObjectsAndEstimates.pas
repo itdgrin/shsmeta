@@ -668,6 +668,7 @@ end;
 procedure TFormObjectsAndEstimates.PopupMenuEstimatesAddClick(Sender: TObject);
 begin
   // (Sender as TMenuItem).Tag - Устанавливаем тип сметы (1-локальная, 2-объектная, 3-ПТМ)
+  FormCardEstimate.EditingRecord(False);
   FormCardEstimate.ShowForm(IdObject, IdEstimate, (Sender as TMenuItem).Tag);
   CloseOpen(qrTreeData);
 end;
@@ -723,29 +724,6 @@ procedure TFormObjectsAndEstimates.PMEstimatesEditClick(Sender: TObject);
 begin
   with FormCardEstimate do
   begin
-    qrTmp.Active := False;
-
-    qrTmp.SQL.Text :=
-      'SELECT sm_id as "IdEstimate", obj_id as "IdObject", smetasourcedata.name as "NameEstimate", ' +
-      'sm_number as "NumberEstimate", preparer as "Compose", post_preparer as "PostCompose", examiner as "Checked", '
-      + 'post_examiner as "PostChecked", set_drawings as "SetDrawing", chapter as "NumberChapter", ' +
-      'row_number as "NumberRow" FROM smetasourcedata WHERE sm_id = ' + IntToStr(IdEstimate);
-    qrTmp.Active := True;
-
-    ClearAllFields;
-
-    EditNumberChapter.Text := qrTmp.FieldByName('NumberChapter').AsString;
-
-    EditNumberRow.Text := qrTmp.FieldByName('NumberRow').AsString;
-
-    EditNumberEstimate.Text := qrTmp.FieldByName('NumberEstimate').AsString;
-    EditNameEstimate.Text := qrTmp.FieldByName('NameEstimate').AsString;
-    EditCompose.Text := qrTmp.FieldByName('Compose').AsString;
-    EditPostCompose.Text := qrTmp.FieldByName('PostCompose').AsString;
-    EditChecked.Text := qrTmp.FieldByName('Checked').AsString;
-    EditPostChecked.Text := qrTmp.FieldByName('PostChecked').AsString;
-    EditSetDrawing.Text := qrTmp.FieldByName('SetDrawing').AsString;
-
     EditingRecord(True);
 
     FormCardEstimate.ShowForm(IdObject, IdEstimate, qrTreeData.FieldByName('SM_TYPE').AsInteger);

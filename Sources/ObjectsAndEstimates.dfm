@@ -65,7 +65,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1053#1086#1084#1077#1088' '#1076#1086#1075#1086#1074#1086#1088#1072
       Checked = True
       State = cbChecked
-      TabOrder = 1
+      TabOrder = 8
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox4: TCheckBox
@@ -76,7 +76,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1044#1072#1090#1072' '#1076#1086#1075#1086#1074#1086#1088#1072
       Checked = True
       State = cbChecked
-      TabOrder = 2
+      TabOrder = 11
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox5: TCheckBox
@@ -87,7 +87,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1057#1087#1080#1089#1086#1082' '#1076#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1093' '#1089#1086#1075#1083#1072#1096#1077#1085#1080#1081
       Checked = True
       State = cbChecked
-      TabOrder = 3
+      TabOrder = 14
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox6: TCheckBox
@@ -98,7 +98,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1055#1086#1083#1085#1086#1077' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1086#1073#1098#1077#1082#1090#1072
       Checked = True
       State = cbChecked
-      TabOrder = 4
+      TabOrder = 18
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox7: TCheckBox
@@ -109,7 +109,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1050#1088#1072#1090#1082#1086#1077' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1086#1073#1098#1077#1082#1090#1072
       Checked = True
       State = cbChecked
-      TabOrder = 5
+      TabOrder = 1
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox8: TCheckBox
@@ -120,7 +120,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1053#1072#1095#1072#1083#1086' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072
       Checked = True
       State = cbChecked
-      TabOrder = 6
+      TabOrder = 5
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox9: TCheckBox
@@ -131,7 +131,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1057#1088#1086#1082' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072' ('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1084#1077#1089#1103#1094#1077#1074')'
       Checked = True
       State = cbChecked
-      TabOrder = 7
+      TabOrder = 9
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox10: TCheckBox
@@ -142,7 +142,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1048#1089#1090#1086#1095#1085#1080#1082' '#1092#1080#1085#1072#1085#1089#1080#1088#1086#1074#1072#1085#1080#1103
       Checked = True
       State = cbChecked
-      TabOrder = 8
+      TabOrder = 12
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox11: TCheckBox
@@ -153,7 +153,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1047#1072#1082#1072#1079#1095#1080#1082
       Checked = True
       State = cbChecked
-      TabOrder = 9
+      TabOrder = 15
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox12: TCheckBox
@@ -164,7 +164,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1043#1077#1085#1087#1086#1076#1088#1103#1076#1095#1080#1082
       Checked = True
       State = cbChecked
-      TabOrder = 10
+      TabOrder = 19
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox13: TCheckBox
@@ -175,7 +175,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1050#1072#1090#1077#1075#1086#1088#1080#1103' '#1086#1073#1098#1077#1082#1090#1072
       Checked = True
       State = cbChecked
-      TabOrder = 11
+      TabOrder = 2
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox14: TCheckBox
@@ -186,7 +186,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1057' '#1080#1083#1080' '#1073#1077#1079' '#1053#1044#1057
       Checked = True
       State = cbChecked
-      TabOrder = 12
+      TabOrder = 6
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox15: TCheckBox
@@ -197,7 +197,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1056#1077#1075#1080#1086#1085
       Checked = True
       State = cbChecked
-      TabOrder = 13
+      TabOrder = 10
       OnClick = CheckBoxColumnsClick
     end
     object ButtonSelectAll: TButton
@@ -206,7 +206,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Width = 91
       Height = 25
       Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1089#1077
-      TabOrder = 14
+      TabOrder = 3
       OnClick = ButtonSelectAllClick
     end
     object ButtonSelectNone: TButton
@@ -215,7 +215,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Width = 91
       Height = 25
       Caption = #1057#1082#1088#1099#1090#1100' '#1074#1089#1077
-      TabOrder = 15
+      TabOrder = 7
       OnClick = ButtonSelectNoneClick
     end
     object CheckBox16: TCheckBox
@@ -226,7 +226,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1041#1072#1079#1072' '#1088#1072#1089#1094#1077#1085#1086#1082
       Checked = True
       State = cbChecked
-      TabOrder = 16
+      TabOrder = 13
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox17: TCheckBox
@@ -237,7 +237,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1058#1080#1087' '#1054#1061#1056' '#1080' '#1054#1055#1056
       Checked = True
       State = cbChecked
-      TabOrder = 17
+      TabOrder = 16
       OnClick = CheckBoxColumnsClick
     end
     object CheckBox2: TCheckBox
@@ -248,7 +248,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1064#1080#1092#1088' '#1086#1073#1098#1077#1082#1090#1072
       Checked = True
       State = cbChecked
-      TabOrder = 18
+      TabOrder = 4
       OnClick = CheckBoxColumnsClick
     end
     object ButtonCancel: TButton
@@ -257,7 +257,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Width = 91
       Height = 25
       Caption = #1054#1090#1084#1077#1085#1072
-      TabOrder = 19
+      TabOrder = 17
       OnClick = ButtonCancelClick
     end
   end

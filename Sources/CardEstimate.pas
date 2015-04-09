@@ -26,41 +26,41 @@ type
     LabelPostChecked: TLabel;
     LabelSetDrawing: TLabel;
 
-    EditNumberEstimate: TEdit;
-    EditNumberChapter: TEdit;
-    EditNumberRow: TEdit;
-    EditNameEstimate: TEdit;
-    EditCompose: TEdit;
-    EditPostCompose: TEdit;
-    EditChecked: TEdit;
-    EditPostChecked: TEdit;
-    EditSetDrawing: TEdit;
-
     Bevel: TBevel;
     btnSave: TButton;
     btnClose: TButton;
     PanelPart: TPanel;
     LabelPart: TLabel;
-    ComboBoxPart: TComboBox;
     PanelSection: TPanel;
     LabelSection: TLabel;
-    ComboBoxSection: TComboBox;
     PanelTypeWork: TPanel;
     LabelTypeWork: TLabel;
-    ComboBoxTypeWork: TComboBox;
     qrTemp: TFDQuery;
-    qr1: TFDQuery;
-    ds1: TDataSource;
-    qr2: TFDQuery;
-    ds2: TDataSource;
-    qr3: TFDQuery;
-    ds3: TDataSource;
+    qrParts: TFDQuery;
+    dsParts: TDataSource;
+    qrSections: TFDQuery;
+    dsSections: TDataSource;
+    qrTypesWorks: TFDQuery;
+    dsTypesWorks: TDataSource;
+    dblkcbbParts: TDBLookupComboBox;
+    dblkcbbSections: TDBLookupComboBox;
+    dblkcbbTypesWorks: TDBLookupComboBox;
+    qrMain: TFDQuery;
+    dsMain: TDataSource;
+    dbedtSM_NUMBER: TDBEdit;
+    dbedtNAME: TDBEdit;
+    dbedtCHAPTER: TDBEdit;
+    dbedtROW_NUMBER: TDBEdit;
+    dbedtPREPARER: TDBEdit;
+    dbedtPOST_PREPARER: TDBEdit;
+    dbedtEXAMINER: TDBEdit;
+    dbedtPOST_EXAMINER: TDBEdit;
+    dbedtSET_DRAWINGS: TDBEdit;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
 
     procedure ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer);
-    procedure ClearAllFields;
     procedure CreateNumberEstimate;
     procedure btnCloseClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
@@ -68,15 +68,13 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure EditingRecord(const Value: Boolean);
     function GetIdNewEstimate: Integer;
-
-    procedure GetParts;
-    procedure GetSections;
-    procedure GetTypeWorks;
     procedure ComboBoxChange(Sender: TObject);
+    procedure qrPartsAfterScroll(DataSet: TDataSet);
 
   private
     StrQuery: String;
     Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
+    SkeepEvent: Boolean;
 
     IdObject: Integer;
     IdEstimate: Integer;
@@ -90,10 +88,9 @@ var
 
 implementation
 
-uses Main, DataModule, ObjectsAndEstimates, BasicData;
+uses Main, DataModule, ObjectsAndEstimates, BasicData, Tools;
 
 {$R *.dfm}
-// ---------------------------------------------------------------------------------------------------------------------
 
 function ReplaceDecimal(var vString: String; const vChar1: Char; const vChar2: Char): String;
 var
@@ -105,14 +102,10 @@ begin
   Result := vString;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCardEstimate.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Editing := False;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardEstimate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
@@ -123,8 +116,6 @@ begin
     else
       CanClose := False;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardEstimate.FormCreate(Sender: TObject);
 begin
@@ -146,20 +137,18 @@ begin
   Editing := False;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormCardEstimate.FormShow(Sender: TObject);
-{ var
-  str: string; }
 begin
+  qrMain.ParamByName('SM_ID').AsInteger := IdEstimate;
+  CloseOpen(qrMain);
 
-  EditNumberChapter.SetFocus; // Устанавливаем фокус
+  dbedtCHAPTER.SetFocus; // Устанавливаем фокус
 
   btnSave.Tag := 0;
 
   if not Editing then
-    ClearAllFields; // Очистка полей формы
-
+    qrMain.Append
+  else  qrMain.Edit;
   // ----------------------------------------
 
   case TypeEstimate of
@@ -175,9 +164,13 @@ begin
         LabelSection.Enabled := False;
         LabelTypeWork.Enabled := False;
 
-        ComboBoxPart.Enabled := False;
-        ComboBoxSection.Enabled := False;
-        ComboBoxTypeWork.Enabled := False;
+        dblkcbbParts.Enabled := False;
+        dblkcbbSections.Enabled := False;
+        dblkcbbTypesWorks.Enabled := False;
+
+        qrParts.Close;
+        qrSections.Close;
+        qrTypesWorks.Close;
       end;
     3:
       begin
@@ -191,52 +184,35 @@ begin
         LabelSection.Enabled := True;
         LabelTypeWork.Enabled := True;
 
-        ComboBoxPart.Enabled := True;
-        ComboBoxSection.Enabled := True;
-        ComboBoxTypeWork.Enabled := True;
+        dblkcbbParts.Enabled := True;
+        dblkcbbSections.Enabled := True;
+        dblkcbbTypesWorks.Enabled := True;
 
-        GetParts;
-        GetSections;
-        GetTypeWorks;
+        CloseOpen(qrParts);
+        CloseOpen(qrSections);
+        CloseOpen(qrTypesWorks);
       end;
   end;
 
-  // ----------------------------------------
-  {
-    str := ComboBoxPart.Text;
-    Delete(str, 1, Pos('.', str) + 1);
+  if not Editing then
+    CreateNumberEstimate;
 
-    EditNameEstimate.Text := str;
-
-    str := ComboBoxSection.Text;
-    Delete(str, 1, Pos('.', str) + 1);
-
-    EditNameEstimate.Text := EditNameEstimate.Text + str;
-
-    str := ComboBoxTypeWork.Text;
-    Delete(str, 1, Pos('.', str) + 1);
-
-    EditNameEstimate.Text := EditNameEstimate.Text + str;
-  }
-  // ----------------------------------------
-
-  CreateNumberEstimate;
+  SkeepEvent := False;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormCardEstimate.ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer);
 begin
   IdObject := vIdObject;
   IdEstimate := vIdEstimate;
   TypeEstimate := vTypeEstimate;
+  SkeepEvent := True;
   if ShowModal = mrOk then
     FormBasicData.ShowForm(IdObject, IdEstimate);
 end;
 
 procedure TFormCardEstimate.EditingRecord(const Value: Boolean);
 begin
-  Editing := True;
+  Editing := Value;
 end;
 
 procedure TFormCardEstimate.btnCloseClick(Sender: TObject);
@@ -264,10 +240,6 @@ var
   Checked: String;
   PostChecked: String;
   SetDrawing: String;
-  IdParentLocal: Integer;
-
-  // Node: TTreeNode;
-
 begin
   CountWarning := 0;
 
@@ -351,19 +323,7 @@ begin
   K33 := '1';
   K34 := '1';
 
-  with EditNumberChapter do
-    if Text = '' then
-      NumberChapter := 'NULL'
-    else
-      NumberChapter := '"' + Text + '"';
-
-  with EditNumberRow do
-    if Text = '' then
-      NumberRow := 'NULL'
-    else
-      NumberRow := '"' + Text + '"';
-
-  with EditNameEstimate do
+  with dbedtNAME do
     if Text = '' then
     begin
       Color := ColorWarningField;
@@ -371,36 +331,6 @@ begin
     end
     else
       NameEstimate := '"' + Text + '"';
-
-  with EditCompose do
-    if Text = '' then
-      Compose := '""'
-    else
-      Compose := '"' + Text + '"';
-
-  with EditPostCompose do
-    if Text = '' then
-      PostCompose := '""'
-    else
-      PostCompose := '"' + Text + '"';
-
-  with EditChecked do
-    if Text = '' then
-      Checked := '""'
-    else
-      Checked := '"' + Text + '"';
-
-  with EditPostChecked do
-    if Text = '' then
-      PostChecked := '""'
-    else
-      PostChecked := '"' + Text + '"';
-
-  with EditSetDrawing do
-    if Text = '' then
-      SetDrawing := '""'
-    else
-      SetDrawing := '"' + Text + '"';
 
   if CountWarning > 0 then
   begin
@@ -410,14 +340,7 @@ begin
     Exit;
   end;
   // -----------------------------------------
-
-  if TypeEstimate = 2 then
-    IdParentLocal := 0
-  else
-    IdParentLocal := IdEstimate;
-
   try
-
     with qrTemp do
     begin
       Active := False;
@@ -425,28 +348,28 @@ begin
       btnSave.Tag := 1;
       if Editing then
       begin
-        StrQuery := 'UPDATE smetasourcedata SET name = ' + NameEstimate + ', chapter = ' + NumberChapter +
-          ', row_number = ' + NumberRow + ', preparer = ' + Compose + ', ' + 'post_preparer = ' + PostCompose
-          + ', examiner = ' + Checked + ', post_examiner = ' + PostChecked + ', set_drawings = ' + SetDrawing
-          + ',sm_number = "' + EditNumberEstimate.Text + '"' + ' WHERE sm_id = ' + IntToStr(IdEstimate) + ';';
-        SQL.Add(StrQuery);
-        ExecSQL;
+        if qrMain.State in [dsEdit] then
+          qrMain.Post;
 
         ModalResult := mrCancel;
       end
       else
       begin
-        SQL.Text :=
-          'INSERT INTO smetasourcedata (sm_type, obj_id, parent_id, name, date, sm_number, '
-          + 'chapter, row_number, preparer, post_preparer, examiner, post_examiner, set_drawings, k40, k41, k31, k32, '
-          + 'k33, k34, coef_tr_zatr, coef_tr_obor, nds, stavka_id) Value("' + IntToStr(TypeEstimate) + '", "'
-          + IntToStr(IdObject) + '", GetParentLocal(' + IntToStr(IdParentLocal) + ')+GetParentPTM(' +
-          IntToStr(IdEstimate) + '), ' + NameEstimate + ', "' + DateCompose + '", "' + EditNumberEstimate.Text
-          + '", ' + NumberChapter + ', ' + NumberRow + ', ' + Compose + ', ' + PostCompose + ', ' + Checked +
-          ', ' + PostChecked + ', ' + SetDrawing + ', "' + K40 + '", "' + K41 + '", "' + K31 + '", "' + K32 +
-          '", "' + K33 + '", "' + K34 + '", "' + PercentTransport + '", "' + PercentTransportEquipment +
-          '", "' + VAT + '", "' + IdStavka + '");';
-        ExecSQL;
+        qrMain.FieldByName('sm_type').AsInteger := TypeEstimate;
+        qrMain.FieldByName('obj_id').AsInteger := IdObject;
+        qrMain.FieldByName('parent_id').AsInteger := IdEstimate;
+        if qrMain.State in [dsInsert] then
+          qrMain.Post;
+        // SQL.Text := 'INSERT INTO smetasourcedata (sm_type, obj_id, parent_id, name, date, sm_number, ' +
+        // 'chapter, row_number, preparer, post_preparer, examiner, post_examiner, set_drawings, k40, k41, k31, k32, '
+        // + 'k33, k34, coef_tr_zatr, coef_tr_obor, nds, stavka_id) Value("' + IntToStr(TypeEstimate) + '", "'
+        // + IntToStr(IdObject) + '", GetParentLocal(' + IntToStr(IdParentLocal) + ')+GetParentPTM(' +
+        // IntToStr(IdEstimate) + '), ' + NameEstimate + ', "' + DateCompose + '", "' + EditNumberEstimate.Text
+        // + '", ' + NumberChapter + ', ' + NumberRow + ', ' + Compose + ', ' + PostCompose + ', ' + Checked +
+        // ', ' + PostChecked + ', ' + SetDrawing + ', "' + K40 + '", "' + K41 + '", "' + K31 + '", "' + K32 +
+        // '", "' + K33 + '", "' + K34 + '", "' + PercentTransport + '", "' + PercentTransportEquipment +
+        // '", "' + VAT + '", "' + IdStavka + '");';
+        // ExecSQL;
         SQL.Text := 'select LAST_INSERT_ID() as ID';
         Active := True;
         IdEstimate := FieldByName('ID').AsInteger;
@@ -454,16 +377,20 @@ begin
         case TypeEstimate of
           1:
             begin
-              SQL.Text :=
-                'INSERT INTO smetasourcedata (sm_type, obj_id, parent_local_id, parent_ptm_id, name, date, sm_number, '
-                + 'chapter, row_number, preparer, post_preparer, examiner, post_examiner, set_drawings, k40, k41, k31, k32, '
+              SQL.Text := 'INSERT INTO smetasourcedata (sm_type, obj_id, parent_id, name, date, sm_number, ' +
+                'chapter, row_number, preparer, post_preparer, examiner, post_examiner, set_drawings, k40, k41, k31, k32, '
                 + 'k33, k34, coef_tr_zatr, coef_tr_obor, nds, stavka_id) Value("' + IntToStr(3) + '", "' +
-                IntToStr(IdObject) + '", 0, ' + IntToStr(IdEstimate) + ', "", "' + DateCompose + '", "Ж000", '
-                + NumberChapter + ', ' + NumberRow + ', ' + Compose + ', ' + PostCompose + ', ' + Checked +
-                ', ' + PostChecked + ', ' + SetDrawing + ', "' + K40 + '", "' + K41 + '", "' + K31 + '", "' +
-                K32 + '", "' + K33 + '", "' + K34 + '", "' + PercentTransport + '", "' +
-                PercentTransportEquipment + '", "' + VAT + '", "' + IdStavka + '");';
+                IntToStr(IdObject) + '", ' + IntToStr(IdEstimate) + ', "", "' + DateCompose + '", "Ж000", ' +
+                NumberChapter + ', ' + NumberRow + ', ' + Compose + ', ' + PostCompose + ', ' + Checked + ', '
+                + PostChecked + ', ' + SetDrawing + ', "' + K40 + '", "' + K41 + '", "' + K31 + '", "' + K32 +
+                '", "' + K33 + '", "' + K34 + '", "' + PercentTransport + '", "' + PercentTransportEquipment +
+                '", "' + VAT + '", "' + IdStavka + '");';
               ExecSQL;
+              qrMain.Append;
+              qrMain.FieldByName('sm_type').AsInteger := 3;
+              qrMain.FieldByName('obj_id').AsInteger := IdObject;
+              qrMain.FieldByName('parent_id').AsInteger := IdEstimate;
+              qrMain.Post;
             end;
           { 2:
             begin
@@ -509,49 +436,16 @@ begin
   end;
 end;
 
-procedure TFormCardEstimate.ClearAllFields;
-begin
-  EditNumberChapter.Text := '';
-  EditNumberRow.Text := '';
-  EditNameEstimate.Text := '';
-  EditNameEstimate.Color := clWindow;
-  EditCompose.Text := '';
-  EditPostCompose.Text := '';
-  EditChecked.Text := '';
-  EditPostChecked.Text := '';
-  EditSetDrawing.Text := '';
-end;
-
 procedure TFormCardEstimate.ComboBoxChange(Sender: TObject);
-var
-  str: string;
 begin
-  str := Copy(ComboBoxPart.Text, 1, Pos('.', ComboBoxPart.Text) - 1);
-  EditNumberEstimate.Text := 'Ж' + str;
-  str := Copy(ComboBoxSection.Text, 1, Pos('.', ComboBoxSection.Text) - 1);
-  EditNumberEstimate.Text := EditNumberEstimate.Text + str;
-  str := Copy(ComboBoxTypeWork.Text, 1, Pos('.', ComboBoxTypeWork.Text) - 1);
+  if not CheckQrActiveEmpty(qrParts) or not CheckQrActiveEmpty(qrSections) or
+    not CheckQrActiveEmpty(qrTypesWorks) or not CheckQrActiveEmpty(qrMain) or SkeepEvent then
+    Exit;
 
-  if str = '' then
-    str := '0';
-
-  EditNumberEstimate.Text := EditNumberEstimate.Text + str;
-
-  // ----------------------------------------
-  str := ComboBoxPart.Text;
-  Delete(str, 1, Pos('.', str) + 1);
-
-  EditNameEstimate.Text := str;
-
-  str := ComboBoxSection.Text;
-  Delete(str, 1, Pos('.', str) + 1);
-
-  EditNameEstimate.Text := EditNameEstimate.Text + str;
-
-  str := ComboBoxTypeWork.Text;
-  Delete(str, 1, Pos('.', str) + 1);
-
-  EditNameEstimate.Text := EditNameEstimate.Text + str;
+  qrMain.FieldByName('SM_NUMBER').AsString := 'Ж' + qrParts.FieldByName('CODE').AsString +
+    qrSections.FieldByName('CODE').AsString + qrTypesWorks.FieldByName('CODE').AsString;
+  qrMain.FieldByName('NAME').AsString := qrParts.FieldByName('NAME').AsString + qrSections.FieldByName('NAME')
+    .AsString + qrTypesWorks.FieldByName('NAME').AsString;
 end;
 
 procedure TFormCardEstimate.CreateNumberEstimate;
@@ -605,8 +499,8 @@ begin
         while Pos('.', str) > 0 do
           Delete(str, 1, 1);
 
-        EditNumberEstimate.Text := NumberEstimate + '.' + IntToStr(StrToInt(str) + 1);
-        EditNameEstimate.Text := 'Локальная смета №' + IntToStr(StrToInt(str) + 1);
+        qrMain.FieldByName('SM_NUMBER').AsString := NumberEstimate + '.' + IntToStr(StrToInt(str) + 1);
+        qrMain.FieldByName('NAME').AsString := 'Локальная смета №' + IntToStr(StrToInt(str) + 1);
       end;
     2: // ОБЪЕКТНАЯ смета
       begin
@@ -634,49 +528,11 @@ begin
         while Pos('.', str) > 0 do
           Delete(str, 1, 1);
 
-        EditNumberEstimate.Text := IntToStr(StrToInt(str) + 1);
-        EditNameEstimate.Text := 'Объектная смета №' + IntToStr(StrToInt(str) + 1);
+        qrMain.FieldByName('SM_NUMBER').AsString := IntToStr(StrToInt(str) + 1);
+        qrMain.FieldByName('NAME').AsString := 'Объектная смета №' + IntToStr(StrToInt(str) + 1);
       end;
     3: // ПТМ смета
       begin
-        {
-          try
-          with ADOQueryTemp do
-          begin
-          Active := False;
-          SQL.Clear;
-          SQL.Add('SELECT max(sm_number) as "MaxNumber" FROM smetasourcedata WHERE sm_type = 3 and sm_number LIKE "Ж'
-          + NumberEstimate + '%" and obj_id = ' + IntToStr(IdObject) + ';');
-          Active := True;
-
-          if FieldByName('MaxNumber').AsVariant <> NULL then
-          Str := FieldByName('MaxNumber').AsVariant
-          else
-          Str := '0';
-          end;
-          except
-          on E: Exception do
-          MessageBox(0, PChar('При запросе номера последней ПТМ сметы возникла ошибка:' + sLineBreak + E.Message),
-          CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-          end;
-
-          // Удаляем в строке всё что стоит до последней точки, включая точку
-          while Pos('.', Str) > 0 do
-          delete(Str, 1, 1);
-
-          EditNumberEstimate.Text := 'Ж' + NumberEstimate + '.' + IntToStr(StrToInt(Str) + 1);
-        }
-
-        str := Copy(ComboBoxPart.Text, 1, Pos('.', ComboBoxPart.Text) - 1);
-        EditNumberEstimate.Text := 'Ж' + str;
-        str := Copy(ComboBoxSection.Text, 1, Pos('.', ComboBoxSection.Text) - 1);
-        EditNumberEstimate.Text := EditNumberEstimate.Text + str;
-        str := Copy(ComboBoxTypeWork.Text, 1, Pos('.', ComboBoxTypeWork.Text) - 1);
-
-        if str = '' then
-          str := '0';
-
-        EditNumberEstimate.Text := EditNumberEstimate.Text + str;
         ComboBoxChange(nil);
       end;
   end;
@@ -702,91 +558,9 @@ begin
   end;
 end;
 
-procedure TFormCardEstimate.GetParts;
+procedure TFormCardEstimate.qrPartsAfterScroll(DataSet: TDataSet);
 begin
-  ComboBoxPart.Items.Clear;
-
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT * FROM parts_estimates ORDER BY 2, 3;');
-      Active := True;
-      First;
-
-      while not Eof do
-      begin
-        ComboBoxPart.Items.Add(IntToStr(FieldByName('code').AsInteger) + '. ' + FieldByName('name').AsString);
-        Next;
-      end;
-
-      Active := False;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При получении списка всех частей возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-end;
-
-procedure TFormCardEstimate.GetSections;
-begin
-  ComboBoxSection.Items.Clear;
-
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT * FROM sections_estimates ORDER BY 2, 3;');
-      Active := True;
-      First;
-
-      while not Eof do
-      begin
-        ComboBoxSection.Items.Add(IntToStr(FieldByName('code').AsInteger) + '. ' + FieldByName('name')
-          .AsString);
-        Next;
-      end;
-
-      Active := False;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При получении списка всех разделов возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-end;
-
-procedure TFormCardEstimate.GetTypeWorks;
-begin
-  ComboBoxTypeWork.Items.Clear;
-  ComboBoxTypeWork.Items.Add('');
-
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT * FROM types_works ORDER BY 2, 3;');
-      Active := True;
-      First;
-
-      while not Eof do
-      begin
-        ComboBoxTypeWork.Items.Add(IntToStr(FieldByName('code').AsInteger) + '. ' + FieldByName('name')
-          .AsString);
-        Next;
-      end;
-
-      Active := False;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При получении списка всех видов работ возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+  ComboBoxChange(Self);
 end;
 
 end.
