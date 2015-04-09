@@ -35,7 +35,7 @@ object dmReportF: TdmReportF
     PrintOptions.Printer = 'Default'
     PrintOptions.PrintOnSheet = 0
     ReportOptions.CreateDate = 42048.002529965300000000
-    ReportOptions.LastChange = 42081.053201169000000000
+    ReportOptions.LastChange = 42103.141484618050000000
     ScriptLanguage = 'PascalScript'
     StoreInDFM = False
     Left = 16
@@ -139,8 +139,8 @@ object dmReportF: TdmReportF
     Connection = DM.Connect
     Transaction = trReportRead
     UpdateTransaction = trReportWrite
-    Left = 992
-    Top = 72
+    Left = 88
+    Top = 8
   end
   object frxZP_OBJ_ACT: TfrxDBDataset
     UserName = 'frxZP_OBJ_ACT'
@@ -374,7 +374,7 @@ object dmReportF: TdmReportF
     Left = 248
     Top = 56
   end
-  object frxPDFExport1: TfrxPDFExport
+  object frxPDFExport: TfrxPDFExport
     UseFileCache = True
     ShowProgress = True
     OverwritePrompt = False
@@ -397,7 +397,7 @@ object dmReportF: TdmReportF
     Left = 984
     Top = 384
   end
-  object frxHTMLExport1: TfrxHTMLExport
+  object frxHTMLExport: TfrxHTMLExport
     UseFileCache = True
     ShowProgress = True
     OverwritePrompt = False
@@ -411,27 +411,26 @@ object dmReportF: TdmReportF
     Left = 984
     Top = 272
   end
-  object frxRTFExport1: TfrxRTFExport
-    FileName = 'test.rtf'
+  object frxRTFExport: TfrxRTFExport
+    FileName = 'D:\!NEW_WORK\trunk\Reports\test.rtf'
     UseFileCache = True
     DefaultPath = '..\Doc\'
     ShowProgress = True
     OverwritePrompt = True
-    CreationTime = 42075.892391261570000000
+    CreationTime = 42102.919928379630000000
     DataOnly = False
     PictureType = gpPNG
     ExportPageBreaks = False
-    ExportPictures = False
     OpenAfterExport = True
     Wysiwyg = True
     Creator = 'FastReport'
-    SuppressPageHeadersFooters = True
+    SuppressPageHeadersFooters = False
     HeaderFooterMode = hfText
     AutoSize = False
     Left = 984
     Top = 328
   end
-  object frxSimpleTextExport1: TfrxSimpleTextExport
+  object frxSimpleTextExport: TfrxSimpleTextExport
     UseFileCache = True
     ShowProgress = True
     OverwritePrompt = False
@@ -1243,7 +1242,7 @@ object dmReportF: TdmReportF
       
         #9'IF(`de`.`ZP` = NULL, NULL, IF(`os`.`OBJ_REGION` = 3, `s`.`STAVK' +
         'A_M_RAB`, `s`.`STAVKA_RB_RAB`)) `TARIF`,'
-      #9'`cr`.`RATE_CAPTION`,'
+      #9'UPPER(`cr`.`RATE_CAPTION`) `RATE_CAPTION`,'
       #9'`cr`.`RATE_COUNT`,'
       #9'`cr`.`RATE_UNIT`,'
       ''
@@ -1289,7 +1288,25 @@ object dmReportF: TdmReportF
       #9'`de`.`STOIM`, '
       #9'`de`.`K_STOIM`,'
       ''
-      '        0 `FROM_GROUP`'
+      '        0 `FROM_GROUP`,'
+      '        '
+      '        IFNULL(`zn_v`.`COEF`, 0) `ZIM_COEF`, '
+      #9'IFNULL(`zn_v`.`COEF_ZP`, 0) `ZIM_COEF_ZP`,'
+      
+        '        IF(IFNULL(`zn_v`.`COEF`, 0) = 0, 0, `de`.`ZIM_UDOR`) `ZI' +
+        'M_UDOR`,'
+      
+        #9'IF(IFNULL(`zn_v`.`COEF_ZP`, 0) = 0, 0, `de`.`ZP_ZIM_UDOR`) `ZP_' +
+        'ZIM_UDOR`,'
+      '        '
+      
+        '        `de`.`TRUD` / IF(IFNULL(`cr`.`RATE_COUNT`, 1) = 0, 1, IF' +
+        'NULL(`cr`.`RATE_COUNT`, 1)) `TRUD_ED`,'
+      '        `de`.`TRUD`,'
+      '        `ssd`.`SM_ID`,'
+      '        `ssd2`.`SM_ID` `SM_ID2`,'
+      '        `ssd1`.`SM_ID` `SM_ID1`,'
+      '        `de`.`ID_TABLES`'
       ''
       'FROM `smetasourcedata` `ssd`'
       
@@ -1319,13 +1336,27 @@ object dmReportF: TdmReportF
       
         #9#9#9'AND `c`.`DATE_BEG` <= CONVERT(CONCAT(`s`.`YEAR`, "-",`s`.`MON' +
         'AT`, "-01"), DATE)'
+      '/*'#1076#1083#1103' '#1079#1080#1084#1085#1077#1075#1086' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1103'*/'#9#9#9
+      
+        'left join `znormativs` `zn` on `zn`.`ZNORMATIVS_ID` = `cr`.`ZNOR' +
+        'MATIVS_ID`'
+      
+        'left join `znormativs_value` `zn_v` on `zn_v`.`ZNORMATIVS_ID` = ' +
+        '`zn`.`ZNORMATIVS_ID`'
+      
+        'left join `znormativs_ondate` `zn_d` on `zn_d`.`ID` = `zn_v`.`ZN' +
+        'ORMATIVS_ONDATE_ID` '
+      
+        '                                    and `zn_d`.`onDate` <= CONVE' +
+        'RT(CONCAT(`s`.`YEAR`, "-", `s`.`MONAT`, "-01"), DATE)'
+      #9#9#9#9'    and `zn_d`.`DEL_FLAG` = 0'
       'WHERE `ssd`.`SM_ID` = :SM_ID'
       '  AND `ssd`.`SM_TYPE` = 2'
       'ORDER BY `OBJECT_NAME`, '
       '         `LOCAL_NAME`, '
       '         `PTM_NAME`, '
       '         `cr`.`RATE_CODE`')
-    Left = 376
+    Left = 360
     Top = 112
     ParamData = <
       item
@@ -1375,10 +1406,18 @@ object dmReportF: TdmReportF
       'STOIM_ED=STOIM_ED'
       'STOIM=STOIM'
       'K_STOIM=K_STOIM'
-      'FROM_GROUP=FROM_GROUP')
+      'FROM_GROUP=FROM_GROUP'
+      'ZIM_COEF=ZIM_COEF'
+      'ZIM_COEF_ZP=ZIM_COEF_ZP'
+      'ZIM_UDOR=ZIM_UDOR'
+      'ZP_ZIM_UDOR=ZP_ZIM_UDOR'
+      'TRUD_ED=TRUD_ED'
+      'TRUD=TRUD'
+      'SM_ID=SM_ID'
+      'SM_ID2=SM_ID2')
     DataSet = qrSMETA_OBJ_E
     BCDToCurrency = False
-    Left = 376
+    Left = 360
     Top = 56
   end
   object qrSMETA_OBJ_MAT: TFDQuery
@@ -1667,8 +1706,8 @@ object dmReportF: TdmReportF
       ''
       'ORDER BY `sm`.`TYPE_MT`, '
       '         `sm`.`MAT_CODE`')
-    Left = 456
-    Top = 112
+    Left = 440
+    Top = 96
     ParamData = <
       item
         Name = 'SM_ID'
@@ -1694,8 +1733,8 @@ object dmReportF: TdmReportF
       'TYPE_NAME=TYPE_NAME')
     DataSet = qrSMETA_OBJ_MAT
     BCDToCurrency = False
-    Left = 456
-    Top = 56
+    Left = 440
+    Top = 40
   end
   object qrSMETA_OBJ_MEH: TFDQuery
     AutoCalcFields = False
@@ -1926,7 +1965,7 @@ object dmReportF: TdmReportF
       #9' '
       'ORDER BY `sm`.`MT_TYPE`,'
       '         `sm`.`MECH_CODE`')
-    Left = 536
+    Left = 520
     Top = 112
     ParamData = <
       item
@@ -1953,7 +1992,7 @@ object dmReportF: TdmReportF
       'TYPE_NAME=TYPE_NAME')
     DataSet = qrSMETA_OBJ_MEH
     BCDToCurrency = False
-    Left = 536
+    Left = 520
     Top = 56
   end
   object qrSMETA_OBJ_DEV: TFDQuery
@@ -2063,8 +2102,8 @@ object dmReportF: TdmReportF
       ''
       'ORDER BY `sm`.`MT_TYPE`,'
       '         `sm`.`DEVICE_CODE`')
-    Left = 608
-    Top = 112
+    Left = 592
+    Top = 96
     ParamData = <
       item
         Name = 'SM_ID'
@@ -2090,14 +2129,14 @@ object dmReportF: TdmReportF
       'TYPE_NAME=TYPE_NAME')
     DataSet = qrSMETA_OBJ_DEV
     BCDToCurrency = False
-    Left = 608
-    Top = 56
+    Left = 592
+    Top = 40
   end
   object FDGUIxWaitCursor: TFDGUIxWaitCursor
     Provider = 'Forms'
     ScreenCursor = gcrDefault
-    Left = 832
-    Top = 16
+    Left = 992
+    Top = 72
   end
   object frxSMETA_OBJ_GraphC: TfrxDBDataset
     UserName = 'frxSMETA_OBJ_GraphC'
@@ -2113,7 +2152,7 @@ object dmReportF: TdmReportF
       'GROUP_ID=GROUP_ID')
     DataSet = qrSMETA_OBJ_GraphC
     BCDToCurrency = False
-    Left = 704
+    Left = 672
     Top = 56
   end
   object qrSMETA_OBJ_GraphC: TFDQuery
@@ -2122,8 +2161,16 @@ object dmReportF: TdmReportF
     Transaction = trReportRead
     UpdateTransaction = trReportWrite
     SQL.Strings = (
-      'call Report_SMETA_OBJ_BUILD_GraphC(:SM_ID, :IN_MONTH, :IN_YEAR)')
-    Left = 704
+      
+        'call Report_SMETA_OBJ_BUILD_GraphC(:SM_ID, :IN_MONTH, :IN_YEAR, ' +
+        ':param4, :param5, :param6, :param7, :param8, :param9'
+      
+        '                                   , :param10, :param11, :param1' +
+        '2, :param13, :param14, :param15, :param16, :param17, :param18'
+      
+        '                                   , :param19, :param20, :param2' +
+        '1, :param22, :param23);')
+    Left = 672
     Top = 112
     ParamData = <
       item
@@ -2143,6 +2190,298 @@ object dmReportF: TdmReportF
         DataType = ftString
         ParamType = ptInput
         Value = '2014'
+      end
+      item
+        Name = 'PARAM4'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM5'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM6'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM7'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM8'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM9'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM10'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM11'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM12'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM13'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM14'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM15'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM16'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM17'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM18'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM19'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM20'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM21'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM22'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end
+      item
+        Name = 'PARAM23'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
       end>
+  end
+  object frxRichObject: TfrxRichObject
+    Left = 984
+    Top = 440
+  end
+  object qrSMETA_RES_CHILD: TFDQuery
+    AutoCalcFields = False
+    MasterSource = dsSMETA_OBJ_E
+    MasterFields = 'SM_ID;ID_TABLES'
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    SQL.Strings = (
+      'SELECT `zpr`.`ZPR_CODE`,'
+      '   '#9'   UPPER(`zpr`.`ZPR_NAME`) `ZPR_NAME`, '
+      #9'   `zpr`.`ZPR_UNIT`,'
+      #9'   `zpr`.`ZPR_COUNT`,'
+      #9'   `zpr`.`ZPR_MAT_COAST_NO_NDS`,'
+      #9'   `zpr`.`ZPR_MAT_PRICE_NO_NDS`,'
+      #9'   `zpr`.`ZPR_PROC_TRANSP`,'
+      ' '#9'   `zpr`.`ZPR_TRANSP_NO_NDS`,'
+      #9'   `zpr`.`ZPR_COAST_NO_NDS`,'
+      #9'   `zpr`.`ZPR_PRICE_NO_NDS`,'#9'   '
+      ' '#9'   `zpr`.`ZPR_ZP_MACH_NO_NDS`,'
+      #9'   `zpr`.`ZPR_ZPPRICE_NO_NDS`,'
+      ' '#9'   `zpr`.`TYPE_MT`,'
+      '       0 `FROM_GROUP` '
+      'FROM('
+      ''
+      '/*BEGIN '#1084#1072#1090#1077#1088#1080#1072#1083#1099'*/'
+      'SELECT '#9
+      #9'`mtc`.`MAT_CODE` `ZPR_CODE`,'
+      #9'`mtc`.`MAT_NAME` `ZPR_NAME`,'
+      #9'`mtc`.`MAT_UNIT` `ZPR_UNIT`,'
+      #9'SUM(`mtc`.`MAT_COUNT`) `ZPR_COUNT`,'
+      #9'`mtc`.`COAST_NO_NDS` `ZPR_MAT_COAST_NO_NDS`,'
+      #9'SUM(`mtc`.`PRICE_NO_NDS`) `ZPR_MAT_PRICE_NO_NDS`,'
+      #9'`mtc`.`PROC_TRANSP` `ZPR_PROC_TRANSP`,'
+      #9'SUM(`mtc`.`TRANSP_NO_NDS`) `ZPR_TRANSP_NO_NDS`,'
+      #9'Null `ZPR_COAST_NO_NDS`,'
+      #9'Null `ZPR_PRICE_NO_NDS`,'#9
+      #9'Null `ZPR_ZP_MACH_NO_NDS`,'
+      #9'Null `ZPR_ZPPRICE_NO_NDS`,'#9
+      #9'2 `TYPE_MT`'
+      ''
+      'FROM `smetasourcedata` `ssd`'
+      
+        'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      '                                   AND `ssd1`.`SM_TYPE` = 1'
+      
+        'INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      '                                   AND `ssd2`.`SM_TYPE` = 3 '
+      
+        'INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID` '
+      '                               AND `de`.`ID_TYPE_DATA` = 1'
+      'INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES`'
+      
+        'INNER JOIN `materialcard` `mtc` ON `mtc`.`ID_CARD_RATE` = `cr`.`' +
+        'ID`'
+      ''
+      'WHERE `ssd`.`SM_ID` = :SM_ID'
+      '  AND `ssd`.`SM_TYPE` = 2'
+      '  AND `de`.`ID_TABLES` = :ID_TABLES'
+      ''
+      'GROUP BY `mtc`.`MAT_CODE`,'
+      #9' `mtc`.`MAT_NAME`,'
+      #9' `mtc`.`MAT_UNIT`,'
+      #9' `mtc`.`COAST_NO_NDS`,'
+      #9' `mtc`.`PROC_TRANSP`'
+      '/*END '#1084#1072#1090#1077#1088#1080#1072#1083#1099'*/'#9
+      ''
+      'UNION ALL'
+      ''
+      '/*BEGIN '#1084#1077#1093#1072#1085#1080#1079#1084#1099'*/'
+      'SELECT'
+      #9'`mc`.`MECH_CODE` `ZPR_CODE`,'
+      #9'`mc`.`MECH_NAME` `ZPR_NAME`,'
+      #9'`mc`.`MECH_UNIT` `ZPR_UNIT`,'
+      #9'SUM(`mc`.`MECH_COUNT`) `ZPR_COUNT`,'
+      '        Null `ZPR_MAT_COAST_NO_NDS`,'
+      #9'Null `ZPR_MAT_PRICE_NO_NDS`,'
+      '        Null `ZPR_PROC_TRANSP`,'
+      #9'Null `ZPR_TRANSP_NO_NDS`,'
+      #9'`mc`.`COAST_NO_NDS` `ZPR_COAST_NO_NDS`,'
+      #9'SUM(`mc`.`PRICE_NO_NDS`) `ZPR_PRICE_NO_NDS`,'#9
+      #9'`mc`.`ZP_MACH_NO_NDS` `ZPR_ZP_MACH_NO_NDS`,'
+      #9'SUM(`mc`.`ZPPRICE_NO_NDS`) `ZPR_ZPPRICE_NO_NDS`,'
+      '        1 `MT_TYPE`'
+      ''
+      'FROM `smetasourcedata` `ssd`'
+      
+        'INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd' +
+        '`.`SM_ID` '
+      '                                   AND `ssd1`.`SM_TYPE` = 1'
+      
+        'INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd' +
+        '1`.`SM_ID`'
+      '                                   AND `ssd2`.`SM_TYPE` = 3 '
+      
+        'INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`' +
+        'SM_ID` '
+      '                               AND `de`.`ID_TYPE_DATA` = 1 '
+      'INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES`'
+      
+        'INNER JOIN `mechanizmcard` `mc` ON `mc`.`ID_CARD_RATE` = `cr`.`I' +
+        'D`'
+      ''
+      'WHERE `ssd`.`SM_ID` = :SM_ID'
+      '  AND `ssd`.`SM_TYPE` = 2 '
+      '  AND `de`.`ID_TABLES` = :ID_TABLES'
+      ''
+      'GROUP BY `mc`.`MECH_CODE`,'
+      #9' `mc`.`MECH_NAME`,'
+      #9' `mc`.`MECH_UNIT`,      '
+      #9' `mc`.`COAST_NO_NDS`,'#9' '
+      #9' `mc`.`ZP_MACH_NO_NDS`'
+      ''
+      '/*END '#1084#1077#1093#1072#1085#1080#1079#1084#1099'*/ '
+      ') `zpr`'#9#9' '
+      ''
+      'ORDER BY `zpr`.`TYPE_MT`, '
+      '         `zpr`.`ZPR_CODE`')
+    Left = 792
+    Top = 112
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftAutoInc
+        ParamType = ptInput
+        Size = 4
+        Value = 344
+      end
+      item
+        Name = 'ID_TABLES'
+        DataType = ftLongWord
+        ParamType = ptInput
+        Size = 4
+        Value = 34
+      end>
+  end
+  object frxSMETA_RES_CHILD: TfrxDBDataset
+    UserName = 'frxSMETA_RES_CHILD'
+    CloseDataSource = True
+    FieldAliases.Strings = (
+      'ZPR_CODE=ZPR_CODE'
+      'ZPR_NAME=ZPR_NAME'
+      'ZPR_UNIT=ZPR_UNIT'
+      'ZPR_COUNT=ZPR_COUNT'
+      'ZPR_MAT_COAST_NO_NDS=ZPR_MAT_COAST_NO_NDS'
+      'ZPR_MAT_PRICE_NO_NDS=ZPR_MAT_PRICE_NO_NDS'
+      'ZPR_PROC_TRANSP=ZPR_PROC_TRANSP'
+      'ZPR_TRANSP_NO_NDS=ZPR_TRANSP_NO_NDS'
+      'ZPR_COAST_NO_NDS=ZPR_COAST_NO_NDS'
+      'ZPR_PRICE_NO_NDS=ZPR_PRICE_NO_NDS'
+      'ZPR_ZP_MACH_NO_NDS=ZPR_ZP_MACH_NO_NDS'
+      'ZPR_ZPPRICE_NO_NDS=ZPR_ZPPRICE_NO_NDS'
+      'TYPE_MT=TYPE_MT'
+      'FROM_GROUP=FROM_GROUP')
+    DataSet = qrSMETA_RES_CHILD
+    BCDToCurrency = False
+    Left = 792
+    Top = 56
+  end
+  object dsSMETA_OBJ_E: TDataSource
+    DataSet = qrSMETA_OBJ_E
+    Left = 360
+    Top = 160
   end
 end
