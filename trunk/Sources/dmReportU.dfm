@@ -2484,4 +2484,24 @@ object dmReportF: TdmReportF
     Left = 360
     Top = 160
   end
+  object vkExcel: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    SQL.Strings = (
+      '')
+    Left = 56
+    Top = 448
+  end
+  object spr_range: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    SQL.Strings = (
+      'select * from spr_range where x_range<>'#39#39)
+    Left = 56
+    Top = 504
+  end
 end
