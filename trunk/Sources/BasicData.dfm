@@ -258,6 +258,12 @@ object FormBasicData: TFormBasicData
     Top = 108
     Width = 80
     Height = 21
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 6
   end
   object EditK41: TEdit
@@ -279,6 +285,12 @@ object FormBasicData: TFormBasicData
     Top = 204
     Width = 80
     Height = 21
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 11
   end
   object EditK33: TEdit
@@ -293,6 +305,12 @@ object FormBasicData: TFormBasicData
     Top = 250
     Width = 80
     Height = 21
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 13
   end
   object EditRegion: TEdit
@@ -326,9 +344,14 @@ object FormBasicData: TFormBasicData
     Anchors = [akRight, akBottom]
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Default = True
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 22
     OnClick = ButtonSaveClick
-    ExplicitTop = 514
   end
   object ButtonCancel: TButton
     Left = 216
@@ -339,7 +362,6 @@ object FormBasicData: TFormBasicData
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 23
     OnClick = ButtonCancelClick
-    ExplicitTop = 514
   end
   object ComboBoxMonth: TComboBox
     Left = 167
@@ -377,6 +399,12 @@ object FormBasicData: TFormBasicData
     Top = 359
     Width = 156
     Height = 21
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 17
     OnClick = DBLookupComboBoxRegionDumpClick
   end
@@ -407,9 +435,15 @@ object FormBasicData: TFormBasicData
     Height = 21
     DataField = 'exMAIS_ID'
     DataSource = dsSmeta
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     KeyField = 'MAIS_ID'
     ListField = 'COMMENT'
     ListSource = dsMAIS
+    ParentFont = False
     TabOrder = 16
   end
   object dbedtgrowth_index: TDBEdit
@@ -461,7 +495,6 @@ object FormBasicData: TFormBasicData
     Anchors = [akLeft, akRight, akBottom]
     BevelOuter = bvNone
     TabOrder = 21
-    ExplicitTop = 479
     object lbl6: TLabel
       Left = 6
       Top = 7
