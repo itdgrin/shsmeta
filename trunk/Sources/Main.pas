@@ -429,12 +429,14 @@ begin
     C_ARHDIR);
 
   // путь к папке с отчетами (Вадим)
-{$IFDEF DEBUG}
-  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
-    - 12) + C_REPORTDIR;
-{$ELSE}
+
+//{$IFDEF DEBUG}
+//  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
+//    - 12) + C_REPORTDIR;
+//{$ELSE}
+//  FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
+//{$ENDIF}
   FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
-{$ENDIF}
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);

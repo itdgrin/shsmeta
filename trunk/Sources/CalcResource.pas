@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
-  Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools;
+  Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools, Vcl.Mask;
 
 type
   TfCalcResource = class(TForm)
@@ -23,7 +23,6 @@ type
     ts4: TTabSheet;
     ts5: TTabSheet;
     lbl2: TLabel;
-    lbl5: TLabel;
     pnlMatTop: TPanel;
     lbl6: TLabel;
     cbbFromMonth: TComboBox;
@@ -31,7 +30,7 @@ type
     chk1: TCheckBox;
     edtMatCodeFilter: TEdit;
     edtMatNameFilter: TEdit;
-    pmMat: TPopupMenu;
+    pm: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
@@ -64,12 +63,6 @@ type
     edtMechCodeFilter: TEdit;
     edtMechNameFilter: TEdit;
     cbbMechNDS: TComboBox;
-    pmMech: TPopupMenu;
-    MenuItem1: TMenuItem;
-    MenuItem2: TMenuItem;
-    MenuItem3: TMenuItem;
-    MenuItem4: TMenuItem;
-    MenuItem5: TMenuItem;
     qrMechData: TFDQuery;
     dsMechData: TDataSource;
     spl5: TSplitter;
@@ -88,50 +81,17 @@ type
     spl6: TSplitter;
     JvDBGrid2: TJvDBGrid;
     dbmmoNAME2: TDBMemo;
-    pmDevice: TPopupMenu;
-    MenuItem6: TMenuItem;
-    MenuItem7: TMenuItem;
-    MenuItem8: TMenuItem;
-    MenuItem9: TMenuItem;
-    MenuItem10: TMenuItem;
     qrDevices: TFDQuery;
     dsDevices: TDataSource;
-    qrMaterialDataID_ESTIMATE: TLongWordField;
-    qrMaterialDataID_TYPE_DATA: TLongWordField;
-    qrMaterialDataID_TABLES: TLongWordField;
-    qrMaterialDataOBJ_ID: TLongWordField;
-    qrMaterialDataCODE: TStringField;
-    qrMaterialDataNAME: TStringField;
-    qrMaterialDataUNIT: TStringField;
-    qrMaterialDataCNT: TFMTBCDField;
-    qrMaterialDataDOC_DATE: TDateField;
-    qrMaterialDataDOC_NUM: TStringField;
-    qrMaterialDataPROC_TRANSP: TFloatField;
-    qrMaterialDataCOAST: TLargeintField;
-    qrMaterialDataPRICE: TLargeintField;
-    qrMaterialDataTRANSP: TLargeintField;
-    qrMaterialDataCOAST_NDS: TLargeintField;
-    qrMaterialDataCOAST_NO_NDS: TLargeintField;
-    qrMaterialDataPRICE_NDS: TLargeintField;
-    qrMaterialDataPRICE_NO_NDS: TLargeintField;
-    qrMaterialDataTRANSP_NDS: TLargeintField;
-    qrMaterialDataTRANSP_NO_NDS: TLargeintField;
-    qrMechDataID_ESTIMATE: TLongWordField;
-    qrMechDataID_TYPE_DATA: TLongWordField;
-    qrMechDataID_TABLES: TLongWordField;
-    qrMechDataOBJ_ID: TLongWordField;
-    qrMechDataCODE: TStringField;
-    qrMechDataNAME: TStringField;
-    qrMechDataUNIT: TStringField;
-    qrMechDataCNT: TFMTBCDField;
-    qrMechDataDOC_DATE: TDateField;
-    qrMechDataDOC_NUM: TStringField;
-    qrMechDataCOAST: TLargeintField;
-    qrMechDataPRICE: TLargeintField;
-    qrMechDataCOAST_NDS: TLargeintField;
-    qrMechDataCOAST_NO_NDS: TLargeintField;
-    qrMechDataPRICE_NDS: TLargeintField;
-    qrMechDataPRICE_NO_NDS: TLargeintField;
+    pnl6: TPanel;
+    pnl7: TPanel;
+    JvDBGrid3: TJvDBGrid;
+    qrRates: TFDQuery;
+    dsRates: TDataSource;
+    lbl5: TLabel;
+    lbl7: TLabel;
+    dbedt1: TDBEdit;
+    dbedt2: TDBEdit;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgc1Change(Sender: TObject);
@@ -250,7 +210,7 @@ begin
       CloseOpen(qrDevices);
     // Расчет з\п
     4:
-      ;
+      CloseOpen(qrRates);
   end;
 end;
 
