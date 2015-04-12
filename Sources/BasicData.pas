@@ -370,9 +370,13 @@ begin
       ParamByName('sm_id').Value := IdEstimate;
       ExecSQL;
       // Обновляем все зависимые сметы до самого низкого уровня
-      SQL.Text := 'CALL `UPDATE_SMETASOURCEDATA_CHILD`(:sm_id);';
-      ParamByName('sm_id').Value := IdEstimate;
-      ExecSQL;
+      if Application.MessageBox('Обновить исходные данные всех зависмых смет?', 'Вопрос',
+        MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+      begin
+        SQL.Text := 'CALL `UPDATE_SMETASOURCEDATA_CHILD`(:sm_id);';
+        ParamByName('sm_id').Value := IdEstimate;
+        ExecSQL;
+      end;
     end;
     Close;
   except

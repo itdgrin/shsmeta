@@ -298,7 +298,6 @@ object FormCardEstimate: TFormCardEstimate
     ParentFont = False
     TabOrder = 8
     OnClick = btnSaveClick
-    ExplicitTop = 220
   end
   object btnClose: TButton
     Left = 496
@@ -309,7 +308,6 @@ object FormCardEstimate: TFormCardEstimate
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 9
     OnClick = btnCloseClick
-    ExplicitTop = 220
   end
   object PanelPart: TPanel
     Left = 0
@@ -326,8 +324,6 @@ object FormCardEstimate: TFormCardEstimate
     ParentBackground = False
     ParentFont = False
     TabOrder = 1
-    ExplicitLeft = 8
-    ExplicitTop = 49
     object LabelPart: TLabel
       Left = 28
       Top = 5

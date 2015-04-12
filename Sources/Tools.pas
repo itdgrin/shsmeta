@@ -4,13 +4,13 @@ interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
-  ShellAPI, Vcl.Grids;
+  ShellAPI, Vcl.Grids, DataModule;
 
-//Общий тип классификации форм
+// Общий тип классификации форм
 type
   TKindForm = (kdNone, kdInsert, kdEdit, kdSelect);
 
-// Пропорциональная автоширина колонок в таблице
+  // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
 // Установка стиля таблицы из формы настроек
 procedure LoadDBGridSettings(const DBGrid: TDBGrid);
@@ -29,6 +29,8 @@ procedure KillDir(const ADirName: string);
 // Запускает процесс и ждет его завершения
 function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
   var AWaitResult: DWord): boolean;
+// Функция получения значения из справочника ежемесячных величин
+function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
 
 function MyFloatToStr(Value: Extended): string;
 function MyStrToFloat(Value: string): Extended;
@@ -339,6 +341,27 @@ begin
     end;
   finally
     FormatSettings.DecimalSeparator := DS;
+  end;
+end;
+
+function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
+var
+  qr: TFDQuery;
+begin
+  qr := TFDQuery.Create(nil);
+  try
+    qr.Connection := DM.Connect;
+    qr.UpdateTransaction := DM.Write;
+    qr.Transaction := DM.Read;
+    qr.SQL.Text := 'SELECT `FN_getParamValue`(:inPARAM_CODE, :inMONTH, :inYEAR) AS res;';
+    qr.ParamByName('inPARAM_CODE').AsString := AParamName;
+    qr.ParamByName('inMONTH').AsInteger := AMonth;
+    qr.ParamByName('inYEAR').AsInteger := AYear;
+    qr.Active := True;
+    Result := qr.FieldByName('res').AsVariant;
+    qr.Active := False;
+  finally
+    FreeAndNil(qr);
   end;
 end;
 
