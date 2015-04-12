@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls, ComCtrls, DB, ShellAPI, Menus,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, System.Types;
+  FireDAC.Comp.Client, System.Types,dialogs;
 
 type
   TFormListCollections = class(TForm)
@@ -134,6 +134,7 @@ procedure TFormListCollections.Sbornik;
 var
   RootNode: TTreeNode;
 begin
+
   try
     with ADOQuerySbornik do
     begin
@@ -157,6 +158,7 @@ begin
       MessageBox(0, PChar('При получении сборников возникла ошибка:' + sLineBreak + E.Message), FormCaption,
         MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -234,14 +236,33 @@ begin
   try
     with ADOQueryTable do
     begin
-      Filtered := False;
-      Filter := 'sbornik_id = ' + IntToStr(SbornikId) + ' and razd_id = ' + IntToStr(RazdelId) +
-        ' and podrazd_id = ' + IntToStr(PordazdelId);
-      Filtered := True;
+
+      //Filtered := False;
+      //Filter := 'sbornik_id = ' + IntToStr(SbornikId) + ' and razd_id = ' + IntToStr(RazdelId) +
+      //  ' and podrazd_id = ' + IntToStr(PordazdelId);
+       //Filter := 'key1 = ''' +IntToStr(SbornikId)+'Z'+ IntToStr(RazdelId)+'Z'+ IntToStr(PordazdelId)+'''';
+
+      //Filtered := True;
+     //  showmessage('' +IntToStr(SbornikId)+'Z'+ IntToStr(RazdelId)+'Z'+ IntToStr(PordazdelId)+'''');
 
       First;
 
-      while not Eof do
+      if ADOQueryTable.FindKey([IntToStr(SbornikId)+'Z'+ IntToStr(RazdelId)+'Z'+ IntToStr(PordazdelId)]) then
+      begin
+
+        while ADOQueryTable.FieldByName('key1').Value = IntToStr(SbornikId)+'Z'+ IntToStr(RazdelId)+'Z'+ IntToStr(PordazdelId) do
+        begin
+
+
+        Application.ProcessMessages;
+        TreeView.Items.AddChild(ParentNode, FieldByName('tab_name').asString + ' - ' +
+        FieldByName('tab_caption').asString);
+
+        ADOQueryTable.next;
+
+        end;
+      end;
+      {while not Eof do
       begin
         Application.ProcessMessages;
 
@@ -249,10 +270,10 @@ begin
           FieldByName('tab_caption').asString);
 
         Next;
-      end;
+      end; }
     end;
   except
-    on E: Exception do
+   on E: Exception do
       MessageBox(0, PChar('При получении таблиц сборника возникла ошибка:' + sLineBreak + E.Message),
         FormCaption, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
@@ -675,12 +696,18 @@ begin
   begin
     Active := False;
     SQL.Clear;
-    SQL.Add('SELECT sbornik_id, razd_id, podrazd_id, tab_id, tab_name, tab_caption, page FROM tab ' +
-      'ORDER BY 1, 2, 3, 4;');
+    //SQL.Add('SELECT sbornik_id.razd_id sbornik_id, razd_id, podrazd_id, tab_id, tab_name, tab_caption, page FROM tab ' +
+    //  'ORDER BY 1, 2, 3, 4;');
+
+    SQL.Add('SELECT CONCAT(CAST(sbornik_id as char),''Z'',CAST(razd_id as char),''Z'',CAST(podrazd_id as char)) as key1,sbornik_id, razd_id, podrazd_id, tab_id, tab_name, tab_caption, page FROM tab ORDER BY 1, 2, 3, 4;');
     Active := True;
   end;
 
-  with FormListCollections do
+
+  ADOQueryTable.IndexFieldNames :='key1;';
+  ADOQueryTable.IndexesActive :=true;
+
+    with FormListCollections do
   begin
     Sbornik;
     ExpandNodes;
@@ -912,3 +939,4 @@ begin
 end;
 
 end.
+
