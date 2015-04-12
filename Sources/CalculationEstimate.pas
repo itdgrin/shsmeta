@@ -626,10 +626,9 @@ type
     procedure qrRatesExAfterOpen(DataSet: TDataSet);
     procedure PMAddAdditionHeatingClick(Sender: TObject);
     procedure PMMatAddToRateClick(Sender: TObject);
-  private
-    const
-      CaptionButton = 'Расчёт сметы';
-      HintButton = 'Окно расчёта сметы';
+  private const
+    CaptionButton = 'Расчёт сметы';
+    HintButton = 'Окно расчёта сметы';
   private
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -668,9 +667,8 @@ type
     // ID отображаемой сметы
     IdEstimate: Integer;
 
-    //Флаги необходимости предлагать автоматически добавить пуск и регулировку
-    AutoAddE18,
-    AutoAddE20: Boolean;
+    // Флаги необходимости предлагать автоматически добавить пуск и регулировку
+    AutoAddE18, AutoAddE20: Boolean;
 
     // пересчитывает все относящееся к строке в таблице расценок
     procedure ReCalcRowRates;
@@ -704,9 +702,9 @@ type
     procedure ReCalcRowDev; // Пересчет одного оборудование
     procedure SetDevEditMode; // включение режима расширенного редактирования оборудования
     procedure SetDevNoEditMode; // отключение режима расширенного редактирования оборудования
-    //Проверяет есть ли пуск и регулировка в текущей смете
-    function CheckE1820(AType: Byte): Boolean;
-    //Проверяет, что курсор стоит на смете (ПТМ)
+    // Проверяет есть ли пуск и регулировка в текущей смете
+    function CheckE1820(AType: byte): Boolean;
+    // Проверяет, что курсор стоит на смете (ПТМ)
     function CheckCursorInRate: Boolean;
   public
     Act: Boolean;
@@ -910,7 +908,7 @@ begin
   LoadDBGridSettings(dbgrdCalculations);
   LoadDBGridSettings(grRatesEx);
 
-  //По умолчанию будет предлагать добавить пуск и регулировку
+  // По умолчанию будет предлагать добавить пуск и регулировку
   AutoAddE18 := True;
   AutoAddE20 := True;
 
@@ -1636,12 +1634,9 @@ function TFormCalculationEstimate.CheckMechReadOnly: Boolean;
 begin
   Result := False;
   // Вынесеный механизм в расценке или замененные механизмы
-  if ((qrMechanizmFROM_RATE.AsInteger = 1)
-        and ((qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0)))
-      or (qrMechanizmREPLACED.AsInteger = 1)
-      or (qrMechanizmTITLE.AsInteger > 0)
-      or (not(qrMechanizmID.AsInteger > 0))
-      or (qrMechanizm.Eof) then
+  if ((qrMechanizmFROM_RATE.AsInteger = 1) and ((qrRatesExID_TYPE_DATA.AsInteger = 1) or
+    (qrRatesExID_RATE.AsInteger > 0))) or (qrMechanizmREPLACED.AsInteger = 1) or
+    (qrMechanizmTITLE.AsInteger > 0) or (not(qrMechanizmID.AsInteger > 0)) or (qrMechanizm.Eof) then
     Result := True;
 end;
 
@@ -1655,12 +1650,9 @@ function TFormCalculationEstimate.CheckMatReadOnly: Boolean;
 begin
   Result := False;
   // Вынесенные из расценки // или замененный
-  if ((qrMaterialFROM_RATE.AsInteger = 1)
-        and ((qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0)))
-      or (qrMaterialREPLACED.AsInteger = 1)
-      or (qrMaterialTITLE.AsInteger > 0)
-      or (not(qrMaterialID.AsInteger > 0))
-      or (qrMaterial.Eof) then
+  if ((qrMaterialFROM_RATE.AsInteger = 1) and ((qrRatesExID_TYPE_DATA.AsInteger = 1) or
+    (qrRatesExID_RATE.AsInteger > 0))) or (qrMaterialREPLACED.AsInteger = 1) or
+    (qrMaterialTITLE.AsInteger > 0) or (not(qrMaterialID.AsInteger > 0)) or (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -2628,9 +2620,7 @@ begin
   else
     IdRate := qrRatesExSM_ID.AsInteger;
 
-
-  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0,
-    TMenuItem(Sender).Tag, True, True);
+  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0, TMenuItem(Sender).Tag, True, True);
 
   try
     if (frmReplace.ShowModal = mrYes) then
@@ -2873,8 +2863,13 @@ begin
           end;
         except
           on E: Exception do
+          begin
+            qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
+            qrTemp.Active := True;
             MessageBox(0, PChar('При сохранении данных акта возникла ошибка:' + sLineBreak + sLineBreak +
-              E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+              E.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
+              MB_ICONERROR + MB_OK + mb_TaskModal);
+          end;
         end;
     end
     else
@@ -2889,8 +2884,13 @@ begin
         end;
       except
         on E: Exception do
-          MessageBox(0, PChar('При сохранении всех данных сметы возникла ошибка:' + sLineBreak + sLineBreak +
-            E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        begin
+          qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
+          qrTemp.Active := True;
+          MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' + sLineBreak + sLineBreak +
+            E.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
+            MB_ICONERROR + MB_OK + mb_TaskModal);
+        end;
       end;
 
   CanClose := True;
@@ -3167,22 +3167,19 @@ procedure TFormCalculationEstimate.PopupMenuMaterialsPopup(Sender: TObject);
 begin
   PMMatEdit.Enabled := (not CheckMatReadOnly);
 
-  PMMatFromRates.Enabled := (not CheckMatReadOnly)
-    and (qrMaterialCONSIDERED.AsInteger = 1)
-    and ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialCONSIDERED.AsInteger = 1) and
+    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
 
-  PMMatReplace.Enabled := (not CheckMatReadOnly)
-    and ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1))
-    and (qrMaterialID_REPLACED.AsInteger = 0)
-    and (qrMaterialADDED.AsInteger = 0);
+  PMMatReplace.Enabled := (not CheckMatReadOnly) and
+    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) and
+    (qrMaterialID_REPLACED.AsInteger = 0) and (qrMaterialADDED.AsInteger = 0);
 
-  PMMatAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or
-    (qrRatesExID_RATE.AsInteger > 0);
+  PMMatAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0);
 
-  PMMatDelete.Enabled := (not CheckMatReadOnly)
-    and (((qrMaterialID_REPLACED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0))
-      or ((qrMaterialADDED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0))
-      or ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 2)));
+  PMMatDelete.Enabled := (not CheckMatReadOnly) and
+    (((qrMaterialID_REPLACED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0)) or
+    ((qrMaterialADDED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0)) or
+    ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 2)));
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -3190,30 +3187,29 @@ procedure TFormCalculationEstimate.PopupMenuMechanizmsPopup(Sender: TObject);
 begin
   PMMechEdit.Enabled := (not CheckMechReadOnly);
 
-  PMMechFromRates.Enabled := (not CheckMechReadOnly)
-    and ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
+  PMMechFromRates.Enabled := (not CheckMechReadOnly) and
+    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
 
-  PMMechReplace.Enabled := (not CheckMechReadOnly)
-    and ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1))
-    and (qrMechanizmID_REPLACED.AsInteger = 0)
-    and (qrMechanizmADDED.AsInteger = 0);
+  PMMechReplace.Enabled := (not CheckMechReadOnly) and
+    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) and
+    (qrMechanizmID_REPLACED.AsInteger = 0) and (qrMechanizmADDED.AsInteger = 0);
 
-  //Доступен только с расценке
-  PMMechAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or
-    (qrRatesExID_RATE.AsInteger > 0);
+  // Доступен только с расценке
+  PMMechAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0);
 
-  PMMechDelete.Enabled := (not CheckMechReadOnly)
-    and (((qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0))
-      or ((qrMechanizmADDED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0))
-      or ((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 3)));
+  PMMechDelete.Enabled := (not CheckMechReadOnly) and
+    (((qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0)) or
+    ((qrMechanizmADDED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0)) or
+    ((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 3)));
 end;
 
 function TFormCalculationEstimate.CheckCursorInRate: Boolean;
 begin
-  Result := (qrRatesExID_TYPE_DATA.AsInteger > 0) or //Что-то врутри смети
-    (qrRatesExID_TYPE_DATA.AsInteger = -3) or
-    (qrRatesExID_TYPE_DATA.AsInteger = -4); //или шапка жешки или строка ввода
+  Result := (qrRatesExID_TYPE_DATA.AsInteger > 0) or // Что-то врутри смети
+    (qrRatesExID_TYPE_DATA.AsInteger = -3) or (qrRatesExID_TYPE_DATA.AsInteger = -4);
+  // или шапка жешки или строка ввода
 end;
+
 // Добавление расценки в смету
 procedure TFormCalculationEstimate.AddRate(const vRateId: Integer);
 var
@@ -3268,8 +3264,7 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT year,monat FROM stavka WHERE stavka_id = ' +
-        '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' +
-          IntToStr(qrRatesExSM_ID.AsInteger) + ')');
+        '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ')');
       Active := True;
       Month1 := FieldByName('monat').AsInteger;
       Year1 := FieldByName('year').AsInteger;
@@ -3295,8 +3290,7 @@ begin
       Active := False;
 
       SQL.Clear;
-      SQL.Add('SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' +
-        IntToStr(qrRatesExSM_ID.AsInteger));
+      SQL.Add('SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(qrRatesExSM_ID.AsInteger));
       Active := True;
       PercentTransport := Fields[0].AsFloat;
       Active := False;
@@ -3446,23 +3440,25 @@ begin
         sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  if ((pos('е18', AnsiLowerCase(NewRateCode)) > 0) and
-        (not CheckE1820(10)) and AutoAddE18) or
-     ((pos('е20', AnsiLowerCase(NewRateCode)) > 0) and
-        (not CheckE1820(11)) and AutoAddE20) then
+  if ((Pos('е18', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(10)) and AutoAddE18) or
+    ((Pos('е20', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(11)) and AutoAddE20) then
   begin
-    if (pos('е18', AnsiLowerCase(NewRateCode)) > 0) then
-      case MessageDlg('Дабавить пуск и регулировку отопления по Е18 в смету?',
-        mtConfirmation, mbOKCancel, 0) of
-      mrOK: PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE18);
-      mrCancel: AutoAddE18 := False;
+    if (Pos('е18', AnsiLowerCase(NewRateCode)) > 0) then
+      case MessageDlg('Дабавить пуск и регулировку отопления по Е18 в смету?', mtConfirmation,
+        mbOKCancel, 0) of
+        mrOk:
+          PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE18);
+        mrCancel:
+          AutoAddE18 := False;
       end;
 
-    if (pos('е20', AnsiLowerCase(NewRateCode)) > 0) then
-      case MessageDlg('Дабавить пуск и регулировку отопления по Е20 в смету?',
-        mtConfirmation, mbOKCancel, 0) of
-      mrOK: PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE20);
-      mrCancel: AutoAddE18 := False;
+    if (Pos('е20', AnsiLowerCase(NewRateCode)) > 0) then
+      case MessageDlg('Дабавить пуск и регулировку отопления по Е20 в смету?', mtConfirmation,
+        mbOKCancel, 0) of
+        mrOk:
+          PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE20);
+        mrCancel:
+          AutoAddE18 := False;
       end;
   end
   else
@@ -3474,14 +3470,14 @@ begin
   if not CheckCursorInRate then
     Exit;
 
-  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1,
-    (Sender as TMenuItem).Tag, True) then
+  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag, True) then
     OutputDataToTable;
 end;
 
-//в целом процедура работает неверно так как может быть открыто несколько смет
-function TFormCalculationEstimate.CheckE1820(AType: Byte): Boolean;
-var RecNo, SMID: Integer;
+// в целом процедура работает неверно так как может быть открыто несколько смет
+function TFormCalculationEstimate.CheckE1820(AType: byte): Boolean;
+var
+  RecNo, SMID: Integer;
 begin
   RecNo := qrRatesEx.RecNo;
   SMID := qrRatesExSM_ID.AsInteger;
@@ -3491,11 +3487,10 @@ begin
     qrRatesEx.First;
     while not qrRatesEx.Eof do
     begin
-      if (qrRatesExID_TYPE_DATA.AsInteger = AType) and
-         (qrRatesExSM_ID.AsInteger = SMID) then
+      if (qrRatesExID_TYPE_DATA.AsInteger = AType) and (qrRatesExSM_ID.AsInteger = SMID) then
       begin
         Result := True;
-        break;
+        Break;
       end;
       qrRatesEx.Next;
     end;
@@ -3690,16 +3685,16 @@ begin
       OutputDataToTable;
 
   if qrRatesExID_TYPE_DATA.AsInteger in [6, 7, 8, 9] then
-    if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger,
-      qrRatesExID_TYPE_DATA.AsInteger, False) then
+    if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger, qrRatesExID_TYPE_DATA.AsInteger, False)
+    then
       OutputDataToTable;
 end;
 
 procedure TFormCalculationEstimate.PMEditClick(Sender: TObject);
 begin
-  //Редактируются только свалки и транспорт
-  if qrRatesExID_TYPE_DATA.AsInteger in [5,6,7,8,9] then
-      PMDumpEditClick(nil);
+  // Редактируются только свалки и транспорт
+  if qrRatesExID_TYPE_DATA.AsInteger in [5, 6, 7, 8, 9] then
+    PMDumpEditClick(nil);
 end;
 
 procedure TFormCalculationEstimate.PopupMenuTableLeftPopup(Sender: TObject);
@@ -3707,8 +3702,7 @@ begin
   // Нельзя удалить неучтенный материал из таблицы расценок
   PMDelete.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
   PMAdd.Enabled := CheckCursorInRate;
-  PMEdit.Enabled := (qrRatesExID_TYPE_DATA.AsInteger in [5,6,7,8,9]) and
-    CheckCursorInRate;
+  PMEdit.Enabled := (qrRatesExID_TYPE_DATA.AsInteger in [5, 6, 7, 8, 9]) and CheckCursorInRate;
 end;
 
 procedure TFormCalculationEstimate.EstimateBasicDataClick(Sender: TObject);
@@ -3866,9 +3860,8 @@ begin
   qrStartup.Active := False;
   qrStartup.SQL.Text := 'select RATE_CODE, RATE_CAPTION, RATE_COUNT, RATE_UNIT ' +
     'from data_estimate_temp as dm LEFT JOIN card_rate_temp as cr ' +
-    'ON (dm.ID_TYPE_DATA = 1) AND (cr.ID = dm.ID_TABLES) ' +
-    'WHERE (cr.RATE_CODE LIKE "%' + LikeText + '%") and ' +
-    '(dm.ID_ESTIMATE = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ')';
+    'ON (dm.ID_TYPE_DATA = 1) AND (cr.ID = dm.ID_TABLES) ' + 'WHERE (cr.RATE_CODE LIKE "%' + LikeText +
+    '%") and ' + '(dm.ID_ESTIMATE = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ')';
   qrStartup.Active := True;
 end;
 
@@ -4476,7 +4469,7 @@ begin
     qrRatesExOBJ_CODE.ReadOnly := False;
   end;
 
-  //Для строк шапок и строк вставки
+  // Для строк шапок и строк вставки
   if qrRatesExID_TYPE_DATA.AsInteger < 0 then
   begin
     qrRatesExOBJ_COUNT.ReadOnly := True;

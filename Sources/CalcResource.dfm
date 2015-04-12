@@ -26,6 +26,7 @@ object fCalcResource: TfCalcResource
     Height = 32
     Align = alTop
     TabOrder = 0
+    ExplicitTop = -6
     DesignSize = (
       616
       32)
@@ -53,17 +54,20 @@ object fCalcResource: TfCalcResource
     Top = 32
     Width = 616
     Height = 330
-    ActivePage = ts4
+    ActivePage = ts5
     Align = alClient
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     MultiLine = True
+    ParentFont = False
+    PopupMenu = pm
     TabOrder = 1
     OnChange = pgc1Change
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl2: TLabel
         Left = 0
         Top = 0
@@ -81,10 +85,6 @@ object fCalcResource: TfCalcResource
     object ts2: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl2: TSplitter
         Left = 0
         Top = 233
@@ -120,9 +120,13 @@ object fCalcResource: TfCalcResource
           Height = 21
           Style = csDropDownList
           DropDownCount = 12
-          ItemIndex = 1
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           TabOrder = 0
-          Text = #1060#1077#1074#1088#1072#1083#1100
           Items.Strings = (
             #1071#1085#1074#1072#1088#1100
             #1060#1077#1074#1088#1072#1083#1100
@@ -153,14 +157,14 @@ object fCalcResource: TfCalcResource
           Width = 179
           Height = 17
           Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
-          TabOrder = 2
+          TabOrder = 3
         end
         object edtMatCodeFilter: TEdit
           Left = 4
           Top = 27
           Width = 121
           Height = 21
-          TabOrder = 3
+          TabOrder = 4
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1082#1086#1076#1091'...'
           OnChange = edtMatCodeFilterChange
           OnClick = edtMatCodeFilterClick
@@ -171,7 +175,7 @@ object fCalcResource: TfCalcResource
           Width = 472
           Height = 21
           Anchors = [akLeft, akTop, akRight]
-          TabOrder = 4
+          TabOrder = 5
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102'...'
           OnChange = edtMatCodeFilterChange
           OnClick = edtMatCodeFilterClick
@@ -184,7 +188,7 @@ object fCalcResource: TfCalcResource
           Style = csDropDownList
           Anchors = [akTop, akRight]
           DropDownCount = 12
-          TabOrder = 5
+          TabOrder = 2
           OnChange = cbbMatNDSChange
           Items.Strings = (
             #1073#1077#1079' '#1053#1044#1057
@@ -207,7 +211,7 @@ object fCalcResource: TfCalcResource
           Height = 24
           Align = alBottom
           Caption = #1048#1090#1086#1075#1086':'
-          TabOrder = 0
+          TabOrder = 1
         end
         object grMaterial: TJvDBGrid
           Left = 0
@@ -217,9 +221,15 @@ object fCalcResource: TfCalcResource
           Align = alClient
           DataSource = dsMaterialData
           DrawingStyle = gdsClassic
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
-          PopupMenu = pmMat
-          TabOrder = 1
+          ParentFont = False
+          PopupMenu = pm
+          TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
@@ -345,7 +355,7 @@ object fCalcResource: TfCalcResource
           Align = alClient
           Constraints.MinHeight = 40
           DrawingStyle = gdsClassic
-          TabOrder = 0
+          TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
@@ -405,17 +415,13 @@ object fCalcResource: TfCalcResource
           DataField = 'NAME'
           DataSource = dsMaterialData
           ScrollBars = ssVertical
-          TabOrder = 1
+          TabOrder = 0
         end
       end
     end
     object ts3: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl4: TSplitter
         Left = 0
         Top = 233
@@ -433,7 +439,7 @@ object fCalcResource: TfCalcResource
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
-        TabOrder = 0
+        TabOrder = 1
         object pnl2: TPanel
           Left = 0
           Top = 152
@@ -441,7 +447,7 @@ object fCalcResource: TfCalcResource
           Height = 24
           Align = alBottom
           Caption = #1048#1090#1086#1075#1086':'
-          TabOrder = 0
+          TabOrder = 1
         end
         object grMech: TJvDBGrid
           Left = 0
@@ -451,9 +457,15 @@ object fCalcResource: TfCalcResource
           Align = alClient
           DataSource = dsMechData
           DrawingStyle = gdsClassic
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
-          PopupMenu = pmMech
-          TabOrder = 1
+          ParentFont = False
+          PopupMenu = pm
+          TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
@@ -542,7 +554,7 @@ object fCalcResource: TfCalcResource
         Height = 66
         Align = alBottom
         Caption = 'pnlMatBott'
-        TabOrder = 1
+        TabOrder = 2
         object spl3: TSplitter
           Left = 1
           Top = 22
@@ -561,7 +573,7 @@ object fCalcResource: TfCalcResource
           Align = alClient
           Constraints.MinHeight = 40
           DrawingStyle = gdsClassic
-          TabOrder = 0
+          TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
@@ -621,7 +633,7 @@ object fCalcResource: TfCalcResource
           DataField = 'NAME'
           DataSource = dsMechData
           ScrollBars = ssVertical
-          TabOrder = 1
+          TabOrder = 0
         end
       end
       object pnlMechTop: TPanel
@@ -631,7 +643,7 @@ object fCalcResource: TfCalcResource
         Height = 57
         Align = alTop
         BevelOuter = bvNone
-        TabOrder = 2
+        TabOrder = 0
         DesignSize = (
           608
           57)
@@ -682,14 +694,14 @@ object fCalcResource: TfCalcResource
           Width = 179
           Height = 17
           Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
-          TabOrder = 2
+          TabOrder = 3
         end
         object edtMechCodeFilter: TEdit
           Left = 4
           Top = 27
           Width = 121
           Height = 21
-          TabOrder = 3
+          TabOrder = 4
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1082#1086#1076#1091'...'
           OnChange = edtMechCodeFilterChange
           OnClick = edtMatCodeFilterClick
@@ -700,7 +712,7 @@ object fCalcResource: TfCalcResource
           Width = 472
           Height = 21
           Anchors = [akLeft, akTop, akRight]
-          TabOrder = 4
+          TabOrder = 5
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102'...'
           OnChange = edtMechCodeFilterChange
           OnClick = edtMatCodeFilterClick
@@ -713,7 +725,7 @@ object fCalcResource: TfCalcResource
           Style = csDropDownList
           Anchors = [akTop, akRight]
           DropDownCount = 12
-          TabOrder = 5
+          TabOrder = 2
           OnChange = cbbMechNDSChange
           Items.Strings = (
             #1073#1077#1079' '#1053#1044#1057
@@ -724,10 +736,6 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl5: TSplitter
         Left = 0
         Top = 233
@@ -796,14 +804,14 @@ object fCalcResource: TfCalcResource
           Width = 179
           Height = 17
           Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
-          TabOrder = 2
+          TabOrder = 3
         end
         object edt1: TEdit
           Left = 4
           Top = 27
           Width = 121
           Height = 21
-          TabOrder = 3
+          TabOrder = 4
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1082#1086#1076#1091'...'
           OnChange = edtMechCodeFilterChange
           OnClick = edtMatCodeFilterClick
@@ -814,7 +822,7 @@ object fCalcResource: TfCalcResource
           Width = 472
           Height = 21
           Anchors = [akLeft, akTop, akRight]
-          TabOrder = 4
+          TabOrder = 5
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102'...'
           OnChange = edtMechCodeFilterChange
           OnClick = edtMatCodeFilterClick
@@ -827,7 +835,13 @@ object fCalcResource: TfCalcResource
           Style = csDropDownList
           Anchors = [akTop, akRight]
           DropDownCount = 12
-          TabOrder = 5
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 2
           OnChange = cbbMechNDSChange
           Items.Strings = (
             #1073#1077#1079' '#1053#1044#1057
@@ -850,7 +864,7 @@ object fCalcResource: TfCalcResource
           Height = 24
           Align = alBottom
           Caption = #1048#1090#1086#1075#1086':'
-          TabOrder = 0
+          TabOrder = 1
         end
         object JvDBGrid1: TJvDBGrid
           Left = 0
@@ -861,8 +875,7 @@ object fCalcResource: TfCalcResource
           DataSource = dsDevices
           DrawingStyle = gdsClassic
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
-          PopupMenu = pmDevice
-          TabOrder = 1
+          TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
@@ -988,7 +1001,7 @@ object fCalcResource: TfCalcResource
           Align = alClient
           Constraints.MinHeight = 40
           DrawingStyle = gdsClassic
-          TabOrder = 0
+          TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -11
@@ -1048,29 +1061,286 @@ object fCalcResource: TfCalcResource
           DataField = 'NAME'
           DataSource = dsDevices
           ScrollBars = ssVertical
-          TabOrder = 1
+          TabOrder = 0
         end
       end
     end
     object ts5: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072#1088#1087#1083#1072#1090#1099
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object lbl5: TLabel
+      ParentFont = False
+      object pnl6: TPanel
         Left = 0
         Top = 0
         Width = 608
-        Height = 302
+        Height = 26
+        Align = alTop
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 0
+        object lbl5: TLabel
+          Left = 4
+          Top = 4
+          Width = 87
+          Height = 13
+          Caption = #1056#1072#1089#1095#1077#1090#1085#1099#1081' '#1084#1077#1089#1103#1094
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+        end
+        object lbl7: TLabel
+          Left = 224
+          Top = 4
+          Width = 91
+          Height = 13
+          Caption = #1057#1090#1072#1074#1082#1072' 4 '#1088#1072#1079#1088#1103#1076#1072
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+        end
+        object dbedt1: TDBEdit
+          Left = 99
+          Top = 1
+          Width = 121
+          Height = 21
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+        end
+        object dbedt2: TDBEdit
+          Left = 323
+          Top = 1
+          Width = 121
+          Height = 21
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 1
+        end
+      end
+      object pnl7: TPanel
+        Left = 0
+        Top = 26
+        Width = 608
+        Height = 276
         Align = alClient
-        Alignment = taCenter
-        AutoSize = False
-        Caption = #1042' '#1088#1072#1079#1088#1072#1073#1086#1090#1082#1077'...'
-        Layout = tlCenter
-        ExplicitWidth = 80
-        ExplicitHeight = 13
+        Caption = 'pnl7'
+        TabOrder = 1
+        ExplicitLeft = 296
+        ExplicitTop = 136
+        ExplicitWidth = 185
+        ExplicitHeight = 41
+        object JvDBGrid3: TJvDBGrid
+          Left = 1
+          Top = 1
+          Width = 606
+          Height = 274
+          Align = alClient
+          DataSource = dsRates
+          DrawingStyle = gdsClassic
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
+          ParentFont = False
+          PopupMenu = pm
+          TabOrder = 0
+          TitleFont.Charset = DEFAULT_CHARSET
+          TitleFont.Color = clWindowText
+          TitleFont.Height = -11
+          TitleFont.Name = 'Tahoma'
+          TitleFont.Style = []
+          MultiSelect = True
+          AutoSizeColumns = True
+          SelectColumnsDialogStrings.Caption = 'Select columns'
+          SelectColumnsDialogStrings.OK = '&OK'
+          SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+          EditControls = <>
+          RowsHeight = 17
+          TitleRowHeight = 17
+          WordWrap = True
+          WordWrapAllFields = True
+          Columns = <
+            item
+              Expanded = False
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Alignment = taCenter
+              Title.Caption = #8470#1087#1087
+              Width = 28
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'CODE'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Alignment = taCenter
+              Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
+              Width = 20
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'CNT'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Alignment = taCenter
+              Title.Caption = #1050#1086#1083'-'#1074#1086
+              Width = 23
+              Visible = True
+            end
+            item
+              Alignment = taCenter
+              Expanded = False
+              FieldName = 'UNIT'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Alignment = taCenter
+              Title.Caption = #1045#1076'. '#1080#1079#1084'.'
+              Width = 25
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'TRUD_ONE'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Alignment = taCenter
+              Title.Caption = #1058#1088#1091#1076'-'#1090#1099' '#1085#1072' 1'
+              Width = 68
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'K_TRUD'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Alignment = taCenter
+              Title.Caption = #1050#1092' '#1082' '#1090#1088#1091#1076
+              Width = 68
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'TRUD'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Alignment = taCenter
+              Title.Caption = #1058#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099
+              Width = 48
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'Rank'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Alignment = taCenter
+              Title.Caption = #1056#1072#1079#1088#1103#1076
+              Width = 68
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'MRCOEF'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Alignment = taCenter
+              Title.Caption = #1052#1077#1078#1088#1072#1079#1088'. '#1082#1092
+              Width = 48
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'Tariff'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Alignment = taCenter
+              Title.Caption = #1058#1072#1088#1080#1092
+              Width = 73
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'K_ZP'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Alignment = taCenter
+              Title.Caption = #1050'-'#1092
+              Width = 51
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'ZP'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Caption = #1047#1072#1088#1087#1083#1072#1090#1072
+              Width = 58
+              Visible = True
+            end>
+        end
       end
     end
   end
@@ -1089,9 +1359,9 @@ object fCalcResource: TfCalcResource
       'ORDER BY NAME')
     Left = 25
   end
-  object pmMat: TPopupMenu
-    Left = 28
-    Top = 128
+  object pm: TPopupMenu
+    Left = 572
+    Top = 168
     object N1: TMenuItem
       Caption = #1042#1099#1076#1077#1083#1080#1090#1100
     end
@@ -1157,9 +1427,9 @@ object fCalcResource: TfCalcResource
         '_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100 +
         ' */ '
       
-        '  IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF(FTRA' +
-        'NSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090#1088#1072 +
-        #1085#1089#1087'. */ '
+        '  IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS), IF(FTR' +
+        'ANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090#1088 +
+        #1072#1085#1089#1087'. */ '
       ''
       
         '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
@@ -1174,8 +1444,8 @@ object fCalcResource: TfCalcResource
         '  IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_NO_' +
         'NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
       
-        '  IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS, /* '#1090 +
-        #1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
+        '  IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS) AS TRANSP_NDS, /* ' +
+        #1090#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
       
         '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
         '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
@@ -1214,9 +1484,9 @@ object fCalcResource: TfCalcResource
         '_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100 +
         ' */ '
       
-        '  IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS), IF(FTRA' +
-        'NSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090#1088#1072 +
-        #1085#1089#1087'. */'
+        '  IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS), IF(FTR' +
+        'ANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090#1088 +
+        #1072#1085#1089#1087'. */'
       ''
       
         '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
@@ -1231,8 +1501,8 @@ object fCalcResource: TfCalcResource
         '  IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_NO_' +
         'NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
       
-        '  IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANS_NDS) AS TRANSP_NDS, /* '#1090 +
-        #1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
+        '  IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS) AS TRANSP_NDS, /* ' +
+        #1090#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
       
         '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
         '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
@@ -1260,159 +1530,11 @@ object fCalcResource: TfCalcResource
         ParamType = ptInput
         Value = '36'
       end>
-    object qrMaterialDataID_ESTIMATE: TLongWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'ID_ESTIMATE'
-      Origin = 'ID_ESTIMATE'
-      ProviderFlags = []
-    end
-    object qrMaterialDataID_TYPE_DATA: TLongWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'ID_TYPE_DATA'
-      Origin = 'ID_TYPE_DATA'
-      ProviderFlags = []
-    end
-    object qrMaterialDataID_TABLES: TLongWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'ID_TABLES'
-      Origin = 'ID_TABLES'
-      ProviderFlags = []
-    end
-    object qrMaterialDataOBJ_ID: TLongWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'OBJ_ID'
-      Origin = 'OBJ_ID'
-      ProviderFlags = []
-    end
-    object qrMaterialDataCODE: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'CODE'
-      Origin = 'CODE'
-      ProviderFlags = []
-      Size = 15
-    end
-    object qrMaterialDataNAME: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'NAME'
-      Origin = 'NAME'
-      ProviderFlags = []
-      Size = 32767
-    end
-    object qrMaterialDataUNIT: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'UNIT'
-      Origin = 'UNIT'
-      ProviderFlags = []
-      Size = 100
-    end
-    object qrMaterialDataCNT: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'CNT'
-      Origin = 'CNT'
-      ProviderFlags = []
-      Precision = 10
-      Size = 5
-    end
-    object qrMaterialDataDOC_DATE: TDateField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_DATE'
-      Origin = 'DOC_DATE'
-      ProviderFlags = []
-    end
-    object qrMaterialDataDOC_NUM: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_NUM'
-      Origin = 'DOC_NUM'
-      ProviderFlags = []
-      Size = 50
-    end
-    object qrMaterialDataPROC_TRANSP: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'PROC_TRANSP'
-      Origin = 'PROC_TRANSP'
-      ProviderFlags = []
-    end
-    object qrMaterialDataCOAST: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST'
-      Origin = 'COAST'
-      ProviderFlags = []
-      DisplayFormat = '### ### ### ### ###'
-    end
-    object qrMaterialDataPRICE: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE'
-      Origin = 'PRICE'
-      ProviderFlags = []
-      DisplayFormat = '### ### ### ### ###'
-    end
-    object qrMaterialDataTRANSP: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'TRANSP'
-      Origin = 'TRANSP'
-      ProviderFlags = []
-      DisplayFormat = '### ### ### ### ###'
-    end
-    object qrMaterialDataCOAST_NDS: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST_NDS'
-      Origin = 'COAST_NDS'
-      ProviderFlags = []
-    end
-    object qrMaterialDataCOAST_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST_NO_NDS'
-      Origin = 'COAST_NO_NDS'
-      ProviderFlags = []
-    end
-    object qrMaterialDataPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NDS'
-      Origin = 'PRICE_NDS'
-      ProviderFlags = []
-    end
-    object qrMaterialDataPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NO_NDS'
-      Origin = 'PRICE_NO_NDS'
-      ProviderFlags = []
-    end
-    object qrMaterialDataTRANSP_NDS: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'TRANSP_NDS'
-      Origin = 'TRANSP_NDS'
-      ProviderFlags = []
-    end
-    object qrMaterialDataTRANSP_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'TRANSP_NO_NDS'
-      Origin = 'TRANSP_NO_NDS'
-      ProviderFlags = []
-    end
   end
   object dsMaterialData: TDataSource
     DataSet = qrMaterialData
     Left = 27
     Top = 216
-  end
-  object pmMech: TPopupMenu
-    Left = 100
-    Top = 128
-    object MenuItem1: TMenuItem
-      Caption = #1042#1099#1076#1077#1083#1080#1090#1100
-    end
-    object MenuItem2: TMenuItem
-      Caption = #1042#1099#1076#1077#1083#1080#1090#1100' '#1074#1089#1077
-    end
-    object MenuItem3: TMenuItem
-      Caption = '-'
-    end
-    object MenuItem4: TMenuItem
-      Caption = #1059#1076#1072#1083#1080#1090#1100
-    end
-    object MenuItem5: TMenuItem
-      Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
-    end
   end
   object qrMechData: TFDQuery
     MasterSource = dsObject
@@ -1563,134 +1685,11 @@ object fCalcResource: TfCalcResource
         ParamType = ptInput
         Value = '36'
       end>
-    object qrMechDataID_ESTIMATE: TLongWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'ID_ESTIMATE'
-      Origin = 'ID_ESTIMATE'
-      ProviderFlags = []
-    end
-    object qrMechDataID_TYPE_DATA: TLongWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'ID_TYPE_DATA'
-      Origin = 'ID_TYPE_DATA'
-      ProviderFlags = []
-    end
-    object qrMechDataID_TABLES: TLongWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'ID_TABLES'
-      Origin = 'ID_TABLES'
-      ProviderFlags = []
-    end
-    object qrMechDataOBJ_ID: TLongWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'OBJ_ID'
-      Origin = 'OBJ_ID'
-      ProviderFlags = []
-    end
-    object qrMechDataCODE: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'CODE'
-      Origin = 'CODE'
-      ProviderFlags = []
-      Size = 15
-    end
-    object qrMechDataNAME: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'NAME'
-      Origin = 'NAME'
-      ProviderFlags = []
-      Size = 32767
-    end
-    object qrMechDataUNIT: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'UNIT'
-      Origin = 'UNIT'
-      ProviderFlags = []
-      Size = 100
-    end
-    object qrMechDataCNT: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'CNT'
-      Origin = 'CNT'
-      ProviderFlags = []
-      Precision = 10
-      Size = 5
-    end
-    object qrMechDataDOC_DATE: TDateField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_DATE'
-      Origin = 'DOC_DATE'
-      ProviderFlags = []
-    end
-    object qrMechDataDOC_NUM: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_NUM'
-      Origin = 'DOC_NUM'
-      ProviderFlags = []
-      Size = 50
-    end
-    object qrMechDataCOAST: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST'
-      Origin = 'COAST'
-      ProviderFlags = []
-      DisplayFormat = '### ### ### ### ###'
-    end
-    object qrMechDataPRICE: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE'
-      Origin = 'PRICE'
-      ProviderFlags = []
-      DisplayFormat = '### ### ### ### ###'
-    end
-    object qrMechDataCOAST_NDS: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST_NDS'
-      Origin = 'COAST_NDS'
-      ProviderFlags = []
-    end
-    object qrMechDataCOAST_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST_NO_NDS'
-      Origin = 'COAST_NO_NDS'
-      ProviderFlags = []
-    end
-    object qrMechDataPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NDS'
-      Origin = 'PRICE_NDS'
-      ProviderFlags = []
-    end
-    object qrMechDataPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NO_NDS'
-      Origin = 'PRICE_NO_NDS'
-      ProviderFlags = []
-    end
   end
   object dsMechData: TDataSource
     DataSet = qrMechData
     Left = 99
     Top = 216
-  end
-  object pmDevice: TPopupMenu
-    Left = 156
-    Top = 128
-    object MenuItem6: TMenuItem
-      Caption = #1042#1099#1076#1077#1083#1080#1090#1100
-    end
-    object MenuItem7: TMenuItem
-      Caption = #1042#1099#1076#1077#1083#1080#1090#1100' '#1074#1089#1077
-    end
-    object MenuItem8: TMenuItem
-      Caption = '-'
-    end
-    object MenuItem9: TMenuItem
-      Caption = #1059#1076#1072#1083#1080#1090#1100
-    end
-    object MenuItem10: TMenuItem
-      Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
-    end
   end
   object qrDevices: TFDQuery
     MasterSource = dsObject
@@ -1789,6 +1788,101 @@ object fCalcResource: TfCalcResource
   object dsDevices: TDataSource
     DataSet = qrDevices
     Left = 155
+    Top = 216
+  end
+  object qrRates: TFDQuery
+    MasterSource = dsObject
+    MasterFields = 'OBJ_ID'
+    DetailFields = 'OBJ_ID'
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067'*/'
+      'SELECT '
+      '  ID_ESTIMATE,'
+      '  ID_TYPE_DATA,'
+      '  card_rate.ID AS ID_TABLES,'
+      '  smetasourcedata.OBJ_ID,'
+      ''
+      '  RATE_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  RATE_CAPTION AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  RATE_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  COALESCE(RATE_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      ''
+      
+        '  data_estimate.TRUD / COALESCE(RATE_COUNT, 0) AS TRUD_ONE, /* '#1090 +
+        #1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' '#1085#1072' '#1077#1076'. */'
+      '  data_estimate.TRUD AS TRUD, /* '#1090#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' '#1085#1072' '#1077#1076'. */'
+      '  data_estimate.K_TRUD, /* '#1082#1086#1101#1092'. '#1082' '#1076#1088#1091#1076' */'
+      
+        '  (SELECT norma FROM normativwork WHERE normativ_id = card_rate.' +
+        'RATE_ID and work_id = 1 LIMIT 1) AS Rank, /* '#1088#1072#1079#1088#1103#1076' */'
+      '  (SELECT IFNULL(c.`COEF`, 0.0) '
+      '   FROM `category` c'
+      
+        '   WHERE c.`VALUE` = (SELECT norma FROM normativwork WHERE norma' +
+        'tiv_id = card_rate.RATE_ID and work_id = 1 LIMIT 1) and '
+      
+        '   c.`DATE_BEG` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka' +
+        '.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = smetas' +
+        'ourcedata.STAVKA_ID)'
+      '   ORDER BY c.`DATE_BEG` DESC '
+      '   LIMIT 1)'
+      '  AS MRCOEF,  /* '#1084#1077#1078#1088#1072#1079#1088#1103#1076#1085#1099#1081' '#1082#1086#1101#1092'. */'
+      '  ROUND(smetasourcedata.STAVKA_RAB * '
+      '  (SELECT IFNULL(c.`COEF`, 0.0) '
+      '   FROM `category` c'
+      
+        '   WHERE c.`VALUE` = (SELECT norma FROM normativwork WHERE norma' +
+        'tiv_id = card_rate.RATE_ID and work_id = 1 LIMIT 1) and '
+      
+        '   c.`DATE_BEG` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka' +
+        '.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = smetas' +
+        'ourcedata.STAVKA_ID)'
+      '   ORDER BY c.`DATE_BEG` DESC '
+      '   LIMIT 1)) AS Tariff, /* '#1058#1072#1088#1080#1092' */'
+      '  data_estimate.K_ZP,  /* KZP */'
+      '  ROUND(data_estimate.ZP) AS ZP /* ZP */'
+      'FROM '
+      '  smetasourcedata, data_estimate, card_rate'
+      'WHERE '
+      'data_estimate.ID_TYPE_DATA = 1 AND'
+      'card_rate.ID = data_estimate.ID_TABLES AND'
+      'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
+      ''
+      'ORDER BY 5')
+    Left = 211
+    Top = 168
+    ParamData = <
+      item
+        Name = 'OBJ_ID'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '40'
+      end>
+  end
+  object dsRates: TDataSource
+    DataSet = qrRates
+    Left = 211
     Top = 216
   end
 end
