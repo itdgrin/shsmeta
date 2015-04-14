@@ -6,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ComCtrls,
   ExtCtrls, DB, DateUtils, DBCtrls, Menus, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Samples.Spin, System.UITypes, Vcl.Mask;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Samples.Spin, System.UITypes, Vcl.Mask, Vcl.Grids,
+  Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.DBCGrids;
 
 type
   TFormBasicData = class(TForm)
@@ -78,6 +79,13 @@ type
     dbedtK_LOW_PLAN_PRIB: TDBEdit;
     dbchkcoef_orders: TDBCheckBox;
     dbchkAPPLY_WINTERPRISE_FLAG: TDBCheckBox;
+    dsCoef: TDataSource;
+    qrCoef: TFDQuery;
+    grCoef: TJvDBGrid;
+    lbl8: TLabel;
+    pmCoef: TPopupMenu;
+    mN1: TMenuItem;
+    mN2: TMenuItem;
 
     procedure FormShow(Sender: TObject);
 
@@ -92,6 +100,10 @@ type
     procedure dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
     procedure qrSmetaAfterOpen(DataSet: TDataSet);
     procedure dbedtEditRateWorkerEnter(Sender: TObject);
+    procedure qrCoefNewRecord(DataSet: TDataSet);
+    procedure mN1Click(Sender: TObject);
+    procedure mN2Click(Sender: TObject);
+    procedure pmCoefPopup(Sender: TObject);
     // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
 
   private
@@ -109,7 +121,7 @@ var
 
 implementation
 
-uses Main, DataModule, CalculationEstimate, Tools;
+uses Main, DataModule, CalculationEstimate, Tools, Coef;
 
 {$R *.dfm}
 
@@ -146,6 +158,7 @@ procedure TFormBasicData.FormCreate(Sender: TObject);
 begin
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
+  LoadDBGridSettings(grCoef);
 end;
 
 procedure TFormBasicData.FormShow(Sender: TObject);
@@ -155,6 +168,7 @@ var
 begin
   qrSmeta.ParamByName('IdEstimate').AsInteger := IdEstimate;
   CloseOpen(qrSmeta);
+  CloseOpen(qrCoef);
   CloseOpen(qrMAIS);
 
   with qrTMP do
@@ -276,6 +290,26 @@ begin
   end;
 end;
 
+procedure TFormBasicData.mN1Click(Sender: TObject);
+begin
+  qrCoef.CheckBrowseMode;
+  qrCoef.Append;
+end;
+
+procedure TFormBasicData.mN2Click(Sender: TObject);
+begin
+  if Application.MessageBox('Удалить запись?', 'Вопрос', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+  begin
+    qrCoef.CheckBrowseMode;
+    qrCoef.Delete;
+  end;
+end;
+
+procedure TFormBasicData.pmCoefPopup(Sender: TObject);
+begin
+  mN2.Enabled := CheckQrActiveEmpty(qrCoef);
+end;
+
 procedure TFormBasicData.ShowForm(const vIdObject, vIdEstimate: Integer);
 begin
   IdObject := vIdObject;
@@ -297,13 +331,34 @@ begin
     end;
 end;
 
+procedure TFormBasicData.qrCoefNewRecord(DataSet: TDataSet);
+begin
+  // Показываем справочник наборов коэф.
+  if fCoefficients.ShowModal = mrOk then
+  begin
+    qrCoef.FieldByName('id_estimate').Value := qrSmeta.FieldByName('SM_ID').Value;
+    qrCoef.FieldByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
+    qrCoef.FieldByName('id_owner').Value := 0;
+    qrCoef.FieldByName('id_coef').Value := fCoefficients.qrCoef.FieldByName('coef_id').Value;
+    qrCoef.FieldByName('COEF_NAME').Value := fCoefficients.qrCoef.FieldByName('COEF_NAME').Value;
+    qrCoef.FieldByName('OSN_ZP').Value := fCoefficients.qrCoef.FieldByName('OSN_ZP').Value;
+    qrCoef.FieldByName('EKSP_MACH').Value := fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value;
+    qrCoef.FieldByName('MAT_RES').Value := fCoefficients.qrCoef.FieldByName('MAT_RES').Value;
+    qrCoef.FieldByName('WORK_PERS').Value := fCoefficients.qrCoef.FieldByName('WORK_PERS').Value;
+    qrCoef.FieldByName('WORK_MACH').Value := fCoefficients.qrCoef.FieldByName('WORK_MACH').Value;
+    qrCoef.FieldByName('OXROPR').Value := fCoefficients.qrCoef.FieldByName('OXROPR').Value;
+    qrCoef.FieldByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
+    qrCoef.Post;
+  end;
+end;
+
 procedure TFormBasicData.qrSmetaAfterOpen(DataSet: TDataSet);
 begin
   pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
   if pnlLowCoef.Visible then
-    Height := 575
+    Height := 632
   else
-    Height := 575 - pnlLowCoef.Height;
+    Height := 632 - pnlLowCoef.Height;
 end;
 
 procedure TFormBasicData.ButtonSaveClick(Sender: TObject);
@@ -313,6 +368,8 @@ begin
   try
     { if qrSmeta.State in [dsEdit, dsInsert] then
       qrSmeta.Post; }
+    if qrCoef.State in [dsEdit, dsInsert] then
+      qrCoef.Post;
 
     IdStavka := -1;
     with qrTMP do
@@ -428,9 +485,9 @@ procedure TFormBasicData.dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
 begin
   pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
   if pnlLowCoef.Visible then
-    Height := 549
+    Height := 632
   else
-    Height := 549 - pnlLowCoef.Height;
+    Height := 632 - pnlLowCoef.Height;
 end;
 
 procedure TFormBasicData.dbedtEditRateWorkerEnter(Sender: TObject);

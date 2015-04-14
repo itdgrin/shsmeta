@@ -3,7 +3,7 @@ object fCoefficients: TfCoefficients
   Top = 0
   Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1085#1072#1073#1086#1088#1086#1074' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074
   ClientHeight = 393
-  ClientWidth = 547
+  ClientWidth = 612
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,14 +14,14 @@ object fCoefficients: TfCoefficients
   OldCreateOrder = False
   OnShow = FormShow
   DesignSize = (
-    547
+    612
     393)
   PixelsPerInch = 96
   TextHeight = 13
   object grCoef: TJvDBGrid
     Left = 8
     Top = 12
-    Width = 531
+    Width = 596
     Height = 336
     Anchors = [akLeft, akTop, akRight, akBottom]
     DataSource = dsCoef
@@ -54,20 +54,15 @@ object fCoefficients: TfCoefficients
         FieldName = 'coef_name'
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-        Width = 163
+        Width = 126
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'CoefTypeLook'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1058#1080#1087
-        Width = 86
+        Width = 65
         Visible = True
       end
       item
@@ -75,7 +70,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'osn_zp'
         Title.Alignment = taCenter
         Title.Caption = #1047#1055
-        Width = 51
+        Width = 57
         Visible = True
       end
       item
@@ -83,7 +78,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'eksp_mach'
         Title.Alignment = taCenter
         Title.Caption = #1069#1052#1080#1052
-        Width = 51
+        Width = 57
         Visible = True
       end
       item
@@ -91,32 +86,38 @@ object fCoefficients: TfCoefficients
         FieldName = 'mat_res'
         Title.Alignment = taCenter
         Title.Caption = #1052#1056
-        Width = 51
+        Width = 57
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'work_pers'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1058#1047' '#1088#1072#1073'.'
-        Width = 51
+        Width = 57
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'work_mach'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1058#1047' '#1084#1072#1096'.'
+        Width = 57
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'oxropr'
+        Title.Alignment = taCenter
+        Title.Caption = #1054#1061#1056#1080#1054#1055#1056
+        Width = 57
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'planprib'
+        Title.Alignment = taCenter
+        Title.Caption = #1055#1055
         Width = 50
         Visible = True
       end>
@@ -124,15 +125,16 @@ object fCoefficients: TfCoefficients
   object pnl1: TPanel
     Left = 8
     Top = 350
-    Width = 531
+    Width = 596
     Height = 35
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 1
+    ExplicitWidth = 531
     DesignSize = (
-      531
+      596
       35)
     object btnClose: TButton
-      Left = 451
+      Left = 516
       Top = 4
       Width = 75
       Height = 25
@@ -140,6 +142,7 @@ object fCoefficients: TfCoefficients
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 2
       OnClick = btnCloseClick
+      ExplicitLeft = 451
     end
     object dbnvgr1: TDBNavigator
       Left = 5
@@ -167,12 +170,12 @@ object fCoefficients: TfCoefficients
       TabStop = True
     end
     object btnAdd: TButton
-      Left = 368
+      Left = 433
       Top = 4
       Width = 77
       Height = 25
       Anchors = [akRight, akBottom]
-      Caption = #1042' '#1088#1072#1089#1094#1077#1085#1082#1091
+      Caption = #1042#1099#1073#1088#1072#1090#1100
       Default = True
       TabOrder = 1
       OnClick = btnAddClick
@@ -209,7 +212,7 @@ object fCoefficients: TfCoefficients
     SQL.Strings = (
       
         'SELECT coef_id, coef_name, osn_zp, eksp_mach, mat_res, work_pers' +
-        ' , work_mach, coef_type_id'
+        ' , work_mach, coef_type_id, oxropr, planprib'
       'FROM coef '
       'ORDER BY coef_name')
     Left = 25
@@ -218,6 +221,7 @@ object fCoefficients: TfCoefficients
       FieldName = 'coef_id'
       Origin = 'COEF_ID'
       ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
       DisplayFormat = '#0.00'
     end
     object strngfldCoefcoef_name: TStringField
@@ -271,6 +275,18 @@ object fCoefficients: TfCoefficients
       KeyFields = 'coef_type_id'
       Size = 50
       Lookup = True
+    end
+    object qrCoefoxropr: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'oxropr'
+      Origin = 'OXROPR'
+      DisplayFormat = '#0.00'
+    end
+    object qrCoefplanprib: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'planprib'
+      Origin = 'PLANPRIB'
+      DisplayFormat = '#0.00'
     end
   end
   object dsCoef: TDataSource

@@ -35,6 +35,8 @@ type
     qrCoefwork_pers: TFloatField;
     qrCoefwork_mach: TFloatField;
     qrCoefcoef_type_id: TIntegerField;
+    qrCoefoxropr: TFloatField;
+    qrCoefplanprib: TFloatField;
     procedure FormShow(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure btnAddClick(Sender: TObject);
@@ -66,14 +68,7 @@ begin
   if qrCoef.State in [dsEdit, dsInsert] then
     qrCoef.Post;
 
-  if FormCalculationEstimate.GetCountCoef = 5 then
-  begin
-    MessageBox(0, PChar('Уже добавлено 5 наборов коэффициентов!' + sLineBreak + sLineBreak +
-      'Добавление больше 5 наборов невозможно.'), 'Смета', MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-    Close;
-  end
-  else
-    FormCalculationEstimate.AddCoefToRate(qrCoef.FieldByName('coef_id').AsInteger);
+  ModalResult := mrOk;
 end;
 
 procedure TfCoefficients.btnCloseClick(Sender: TObject);
@@ -90,7 +85,7 @@ begin
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
 
-  SelectEnabled := Assigned(FormCalculationEstimate);
+  SelectEnabled := fsModal in FormState;
 
   btnAdd.Visible := SelectEnabled;
   N4.Visible := SelectEnabled;
