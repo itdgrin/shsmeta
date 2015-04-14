@@ -3137,7 +3137,16 @@ end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefAddSetClick(Sender: TObject);
 begin
-  fCoefficients.ShowModal;
+  if fCoefficients.ShowModal = mrOk then
+  begin
+    if FormCalculationEstimate.GetCountCoef = 5 then
+    begin
+      MessageBox(0, PChar('Уже добавлено 5 наборов коэффициентов!' + sLineBreak + sLineBreak +
+        'Добавление больше 5 наборов невозможно.'), 'Смета', MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+    end
+    else
+      AddCoefToRate(fCoefficients.qrCoef.FieldByName('coef_id').AsInteger);
+  end;
 end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefDeleteSetClick(Sender: TObject);
@@ -4781,10 +4790,10 @@ procedure TFormCalculationEstimate.AddCoefToRate(coef_id: Integer);
 begin
   qrTemp.Active := False;
   qrTemp.SQL.Text :=
-    'INSERT INTO calculation_coef_temp(id_estimate,id_type_data,id_owner,id_coef,COEF_NAME,COEF_VALUE,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH)'#13
-    + 'SELECT :id_estimate, :id_type_data, :id_owner, coef_id,COEF_NAME,COEF_VALUE,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH'#13
+    'INSERT INTO calculation_coef_temp(id_estimate,id_type_data,id_owner,id_coef,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB)'#13
+    + 'SELECT :id_estimate, :id_type_data, :id_owner, coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13
     + 'FROM coef WHERE coef.coef_id=:coef_id';
-  qrTemp.ParamByName('id_estimate').AsInteger := IdEstimate;
+  qrTemp.ParamByName('id_estimate').AsInteger := qrRatesExSM_ID.Value;
   qrTemp.ParamByName('id_owner').AsInteger := qrRatesExID_TABLES.AsInteger;
   qrTemp.ParamByName('id_type_data').AsInteger := qrRatesExID_TYPE_DATA.AsInteger;
   qrTemp.ParamByName('coef_id').AsInteger := coef_id;

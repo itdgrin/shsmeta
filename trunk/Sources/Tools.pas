@@ -17,7 +17,7 @@ procedure LoadDBGridSettings(const DBGrid: TDBGrid);
 // Процедура рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
 // Процедура переоткрытия запроса TFDQuery с локейтом на значение Поля[0]
-procedure CloseOpen(const Query: TFDQuery);
+procedure CloseOpen(const Query: TFDQuery; ADeactivateAfterScrollEvent: boolean = False);
 // Процедура загрузки стилей всех таблиц на форме
 procedure LoadDBGridsSettings(const aForm: TForm);
 // Функция проверки TDataSet на активность и пустоту
@@ -31,6 +31,8 @@ function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWo
   var AWaitResult: DWord): boolean;
 // Функция получения значения из справочника ежемесячных величин
 function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
+// Функция подсчета итога по датасету. Возвращает вариантный одномерный массив соответствующий набору колонок
+function CalcFooterSumm(const Query: TFDQuery): Variant;
 
 function MyFloatToStr(Value: Extended): string;
 function MyStrToFloat(Value: string): Extended;
@@ -149,12 +151,15 @@ begin
       LoadDBGridSettings((aForm.Components[i] as TDBGrid));
 end;
 
-procedure CloseOpen(const Query: TFDQuery);
+procedure CloseOpen(const Query: TFDQuery; ADeactivateAfterScrollEvent: boolean = False);
 var
   Key: Variant;
+  E: TDataSetNotifyEvent;
 begin
   Query.DisableControls;
   try
+    E := Query.AfterScroll;
+    Query.AfterScroll := nil;
     Key := Null;
     if CheckQrActiveEmpty(Query) then
       Key := Query.Fields[0].Value;
@@ -163,6 +168,50 @@ begin
     if Key <> Null then
       Query.Locate(Query.Fields[0].FieldName, Key, []);
   finally
+    Query.AfterScroll := E;
+    Query.EnableControls;
+  end;
+end;
+
+function CalcFooterSumm(const Query: TFDQuery): Variant;
+var
+  Key: Variant;
+  E: TDataSetNotifyEvent;
+  Res: Variant;
+  i: Integer;
+begin
+  Result := Null;
+  E := Query.AfterScroll;
+  Query.DisableControls;
+  try
+    // Выключаем событие на всякий случай
+    Query.AfterScroll := nil;
+    Key := Null;
+    if CheckQrActiveEmpty(Query) then
+      Key := Query.Fields[0].Value;
+    // Создаем массив возвращаемых значений
+    Res := VarArrayCreate([0, Query.FieldCount - 1], varDouble);
+    // Инициализируем начальными значениями
+    for i := 0 to Query.FieldCount - 1 do
+      Res[i] := 0;
+
+    Query.First;
+    while not Query.Eof do
+    begin
+      for i := 0 to Query.FieldCount - 1 do
+        if (Query.Fields[i].DataType in [ftInteger, ftFloat, ftBCD, ftFMTBcd, ftLargeint]) and not(VarIsNull(Query.Fields[i].Value))
+        then
+          Res[i] := Res[i] + Query.Fields[i].AsFloat;
+      Query.Next;
+    end;
+
+    //for i := 0 to Query.FieldCount - 1 do ShowMessage(FloatToStr(Res[i]));
+
+    if Key <> Null then
+      Query.Locate(Query.Fields[0].FieldName, Key, []);
+    Result := Res;
+  finally
+    Query.AfterScroll := E;
     Query.EnableControls;
   end;
 end;

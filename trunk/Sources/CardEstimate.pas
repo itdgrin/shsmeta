@@ -233,14 +233,7 @@ var
   PercentTransport, PercentTransportEquipment: String;
   K40, K41, K31, K32, K33, K34, K35: String;
 
-  NumberChapter: String;
-  NumberRow: String;
   NameEstimate: String;
-  Compose: String;
-  PostCompose: String;
-  Checked: String;
-  PostChecked: String;
-  SetDrawing: String;
 begin
   CountWarning := 0;
 
@@ -249,9 +242,7 @@ begin
     try
       Active := False;
       SQL.Clear;
-
       StrQuery := 'SELECT state_nds, BEG_STROJ FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';';
-
       SQL.Add(StrQuery);
       Active := True;
 
@@ -271,15 +262,12 @@ begin
     try
       Active := False;
       SQL.Clear;
-
       StrQuery := 'SELECT stavka_id as "IdStavka" FROM stavka WHERE year = ' + IntToStr(vYear) +
         ' and monat = ' + IntToStr(vMonth) + ';';
-
       SQL.Add(StrQuery);
       Active := True;
 
       IdStavka := FieldByName('IdStavka').Value;
-
     except
       on E: Exception do
         MessageBox(0, PChar('При запросе ID СТАВКИ возникла ошибка:' + sLineBreak + E.Message),
@@ -291,12 +279,10 @@ begin
     try
       Active := False;
       SQL.Clear;
-
       StrQuery :=
         'SELECT objregion.percent_transport as "PercentTransport" FROM objcards, objstroj, objregion ' +
         'WHERE objcards.stroj_id = objstroj.stroj_id and objstroj.obj_region = objregion.obj_region_id and ' +
         'objcards.obj_id = ' + IntToStr(IdObject) + ';';
-
       SQL.Add(StrQuery);
       Active := True;
 

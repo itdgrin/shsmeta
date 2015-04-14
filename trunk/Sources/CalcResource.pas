@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
-  Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools, Vcl.Mask;
+  Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools, Vcl.Mask, JvDBGridFooter;
 
 type
   TfCalcResource = class(TForm)
@@ -38,7 +38,6 @@ type
     N5: TMenuItem;
     cbbMatNDS: TComboBox;
     pnlMatClient: TPanel;
-    pnlMatFooter: TPanel;
     grMaterial: TJvDBGrid;
     pnlMatBott: TPanel;
     grMaterialBott: TJvDBGrid;
@@ -48,7 +47,6 @@ type
     qrMaterialData: TFDQuery;
     dsMaterialData: TDataSource;
     pnlMechClient: TPanel;
-    pnl2: TPanel;
     grMech: TJvDBGrid;
     pnlMechBott: TPanel;
     spl3: TSplitter;
@@ -75,7 +73,6 @@ type
     edt2: TEdit;
     cbb3: TComboBox;
     pnl3: TPanel;
-    pnl4: TPanel;
     JvDBGrid1: TJvDBGrid;
     pnl5: TPanel;
     spl6: TSplitter;
@@ -92,6 +89,10 @@ type
     lbl7: TLabel;
     dbedt1: TDBEdit;
     dbedt2: TDBEdit;
+    JvDBGridFooter1: TJvDBGridFooter;
+    JvDBGridFooter2: TJvDBGridFooter;
+    JvDBGridFooter3: TJvDBGridFooter;
+    JvDBGridFooter4: TJvDBGridFooter;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgc1Change(Sender: TObject);
@@ -102,7 +103,12 @@ type
     procedure cbbMatNDSChange(Sender: TObject);
     procedure edtMechCodeFilterChange(Sender: TObject);
     procedure cbbMechNDSChange(Sender: TObject);
+    procedure qrMaterialDataAfterOpen(DataSet: TDataSet);
+    procedure JvDBGridFooter1Calculate(Sender: TJvDBGridFooter; const FieldName: string;
+      var CalcValue: Variant);
   private
+    Footer: Variant;
+    procedure CalcFooter;
   public
     procedure LocateObject(Object_ID: Integer);
   end;
@@ -115,6 +121,36 @@ implementation
 {$R *.dfm}
 
 uses Main;
+
+procedure TfCalcResource.CalcFooter;
+begin
+  // В зависимости от вкладки
+  case pgc1.ActivePageIndex of
+    // Расчет стоимости
+    0:
+      ;
+    // Расчет материалов
+    1:
+      begin
+        Footer := CalcFooterSumm(qrMaterialData);
+      end;
+    // Расчет механизмов
+    2:
+      begin
+        Footer := CalcFooterSumm(qrMechData);
+      end;
+    // Расчет оборудования
+    3:
+      begin
+        Footer := CalcFooterSumm(qrDevices);
+      end;
+    // Расчет з\п
+    4:
+      begin
+        Footer := CalcFooterSumm(qrRates);
+      end;
+  end;
+end;
 
 procedure TfCalcResource.cbbMatNDSChange(Sender: TObject);
 begin
@@ -135,6 +171,7 @@ begin
     '%'' AND Upper(NAME) LIKE ''%' + AnsiUpperCase(edtMechNameFilter.Text) + '%''';
   // + ' AND NDS=' + IntToStr(cbbMechNDS.ItemIndex); //возможно, неверное решение с НДС
   qrMechData.Filtered := True;
+  CalcFooter;
 end;
 
 procedure TfCalcResource.edtMatCodeFilterChange(Sender: TObject);
@@ -144,6 +181,7 @@ begin
     '%'' AND Upper(NAME) LIKE ''%' + AnsiUpperCase(edtMatNameFilter.Text) + '%''';
   // + ' AND NDS=' + IntToStr(cbbMatNDS.ItemIndex); //возможно, неверное решение с НДС
   qrMaterialData.Filtered := True;
+  CalcFooter;
 end;
 
 procedure TfCalcResource.edtMatCodeFilterClick(Sender: TObject);
@@ -168,8 +206,8 @@ end;
 procedure TfCalcResource.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
- // FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N2Click);
- //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N2Click);
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   CloseOpen(qrObject);
   LoadDBGridSettings(grMaterial);
   LoadDBGridSettings(grMaterialBott);
@@ -177,6 +215,7 @@ begin
   LoadDBGridSettings(grMechBott);
   LoadDBGridSettings(JvDBGrid1);
   LoadDBGridSettings(JvDBGrid2);
+  LoadDBGridSettings(JvDBGrid3);
   // LoadDBGridsSettings(fCalcResource);
 end;
 
@@ -185,6 +224,15 @@ begin
   fCalcResource := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(Caption);
+end;
+
+procedure TfCalcResource.JvDBGridFooter1Calculate(Sender: TJvDBGridFooter; const FieldName: string;
+  var CalcValue: Variant);
+begin
+  if not CheckQrActiveEmpty(Sender.DataSource.DataSet) then
+    Exit;
+
+  CalcValue := Footer[Sender.DataSource.DataSet.FieldByName(FieldName).Index];
 end;
 
 procedure TfCalcResource.LocateObject(Object_ID: Integer);
@@ -212,6 +260,11 @@ begin
     4:
       CloseOpen(qrRates);
   end;
+end;
+
+procedure TfCalcResource.qrMaterialDataAfterOpen(DataSet: TDataSet);
+begin
+  CalcFooter;
 end;
 
 end.

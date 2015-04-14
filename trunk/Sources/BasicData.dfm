@@ -4,8 +4,8 @@ object FormBasicData: TFormBasicData
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
-  ClientHeight = 521
-  ClientWidth = 324
+  ClientHeight = 604
+  ClientWidth = 472
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,8 +17,8 @@ object FormBasicData: TFormBasicData
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
-    324
-    521)
+    472
+    604)
   PixelsPerInch = 96
   TextHeight = 13
   object LabelPercentTransportEquipment: TLabel
@@ -86,7 +86,7 @@ object FormBasicData: TFormBasicData
   object Bevel1: TBevel
     Left = 8
     Top = 104
-    Width = 308
+    Width = 456
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
@@ -94,8 +94,8 @@ object FormBasicData: TFormBasicData
   end
   object Bevel2: TBevel
     Left = 0
-    Top = 480
-    Width = 324
+    Top = 563
+    Width = 472
     Height = 41
     Align = alBottom
     Shape = bsTopLine
@@ -105,7 +105,7 @@ object FormBasicData: TFormBasicData
   object Bevel3: TBevel
     Left = 8
     Top = 131
-    Width = 308
+    Width = 456
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
@@ -114,7 +114,7 @@ object FormBasicData: TFormBasicData
   object Bevel4: TBevel
     Left = 8
     Top = 32
-    Width = 308
+    Width = 456
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
@@ -122,9 +122,9 @@ object FormBasicData: TFormBasicData
   end
   object LabelK41: TLabel
     Left = 8
-    Top = 154
-    Width = 214
-    Height = 26
+    Top = 161
+    Width = 377
+    Height = 17
     Caption = 
       #1050'-'#1092' '#1082' '#1079#1072#1088#1087#1083#1072#1090#1077' '#1085#1072' '#1073#1077#1090#1086#1085#1085#1099#1077' '#1080' '#1096#1090#1091#1082#1072#1090#1091#1088#1085#1099#1077' '#1088#1072#1073#1086#1090#1099'" ('#1087#1088#1080#1082'. '#8470'350) '#1050'4' +
       '1:'
@@ -133,7 +133,7 @@ object FormBasicData: TFormBasicData
   object Bevel5: TBevel
     Left = 8
     Top = 352
-    Width = 308
+    Width = 456
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
@@ -178,7 +178,7 @@ object FormBasicData: TFormBasicData
   object bvl1: TBevel
     Left = 8
     Top = 319
-    Width = 308
+    Width = 456
     Height = 7
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
@@ -191,13 +191,20 @@ object FormBasicData: TFormBasicData
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1079#1080#1084#1085#1080#1084' ('#1087#1088#1080#1082'. '#8470'270) '#1050'34. '#1063#1072#1089#1090#1100' 1:'
   end
+  object lbl8: TLabel
+    Left = 8
+    Top = 429
+    Width = 171
+    Height = 13
+    Caption = #1053#1072#1073#1086#1088#1099' '#1050#1092', '#1087#1088#1080#1084#1077#1085#1103#1077#1084#1099' '#1082' '#1089#1084#1077#1090#1077':'
+  end
   object pnl1: TPanel
-    Left = 325
-    Top = 8
+    Left = 583
+    Top = 1
     Width = 332
     Height = 522
     Caption = 'DELETED'
-    TabOrder = 2
+    TabOrder = 0
     Visible = False
     object lblRateMachinist: TLabel
       Left = 8
@@ -254,10 +261,11 @@ object FormBasicData: TFormBasicData
     end
   end
   object EditPercentTransportEquipment: TEdit
-    Left = 239
+    Left = 384
     Top = 108
     Width = 80
     Height = 21
+    Anchors = [akTop, akRight]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -267,24 +275,27 @@ object FormBasicData: TFormBasicData
     TabOrder = 6
   end
   object EditK41: TEdit
-    Left = 239
+    Left = 384
     Top = 158
     Width = 80
     Height = 21
+    Anchors = [akTop, akRight]
     TabOrder = 9
   end
   object EditK31: TEdit
-    Left = 239
+    Left = 384
     Top = 181
     Width = 80
     Height = 21
+    Anchors = [akTop, akRight]
     TabOrder = 10
   end
   object EditK32: TEdit
-    Left = 239
+    Left = 384
     Top = 204
     Width = 80
     Height = 21
+    Anchors = [akTop, akRight]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -294,17 +305,19 @@ object FormBasicData: TFormBasicData
     TabOrder = 11
   end
   object EditK33: TEdit
-    Left = 239
+    Left = 384
     Top = 227
     Width = 80
     Height = 21
+    Anchors = [akTop, akRight]
     TabOrder = 12
   end
   object EditK34: TEdit
-    Left = 239
+    Left = 384
     Top = 250
     Width = 80
     Height = 21
+    Anchors = [akTop, akRight]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -314,21 +327,23 @@ object FormBasicData: TFormBasicData
     TabOrder = 13
   end
   object EditRegion: TEdit
-    Left = 239
+    Left = 384
     Top = 36
     Width = 80
     Height = 21
     TabStop = False
+    Anchors = [akTop, akRight]
     Color = 14802912
     ReadOnly = True
     TabOrder = 3
   end
   object ComboBoxVAT: TComboBox
-    Left = 239
+    Left = 384
     Top = 58
     Width = 80
     Height = 21
     Style = csDropDownList
+    Anchors = [akTop, akRight]
     ItemIndex = 0
     TabOrder = 4
     Text = #1073#1077#1079' '#1053#1044#1057
@@ -337,8 +352,8 @@ object FormBasicData: TFormBasicData
       #1089' '#1053#1044#1057)
   end
   object ButtonSave: TButton
-    Left = 110
-    Top = 488
+    Left = 258
+    Top = 571
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
@@ -350,18 +365,22 @@ object FormBasicData: TFormBasicData
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 22
+    TabOrder = 23
     OnClick = ButtonSaveClick
+    ExplicitLeft = 110
+    ExplicitTop = 488
   end
   object ButtonCancel: TButton
-    Left = 216
-    Top = 488
+    Left = 364
+    Top = 571
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 23
+    TabOrder = 24
     OnClick = ButtonCancelClick
+    ExplicitLeft = 216
+    ExplicitTop = 488
   end
   object ComboBoxMonth: TComboBox
     Left = 167
@@ -370,7 +389,7 @@ object FormBasicData: TFormBasicData
     Height = 21
     Style = csDropDownList
     ItemIndex = 0
-    TabOrder = 0
+    TabOrder = 1
     Text = #1071#1085#1074#1072#1088#1100
     OnChange = ComboBoxMonthORYearChange
     Items.Strings = (
@@ -390,14 +409,14 @@ object FormBasicData: TFormBasicData
   object dblkcbbDump: TDBLookupComboBox
     Left = 8
     Top = 386
-    Width = 311
+    Width = 456
     Height = 21
     TabOrder = 18
   end
   object DBLookupComboBoxRegionDump: TDBLookupComboBox
     Left = 163
     Top = 359
-    Width = 156
+    Width = 301
     Height = 21
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -409,10 +428,11 @@ object FormBasicData: TFormBasicData
     OnClick = DBLookupComboBoxRegionDumpClick
   end
   object edtKZP: TEdit
-    Left = 239
+    Left = 384
     Top = 135
     Width = 80
     Height = 21
+    Anchors = [akTop, akRight]
     TabOrder = 8
   end
   object edtYear: TSpinEdit
@@ -420,18 +440,17 @@ object FormBasicData: TFormBasicData
     Top = 8
     Width = 55
     Height = 22
-    Anchors = [akTop, akRight]
     MaxLength = 4
     MaxValue = 2050
     MinValue = 1900
-    TabOrder = 1
+    TabOrder = 2
     Value = 2014
     OnChange = ComboBoxMonthORYearChange
   end
   object dblkcbbMAIS: TDBLookupComboBox
     Left = 47
     Top = 326
-    Width = 272
+    Width = 417
     Height = 21
     DataField = 'exMAIS_ID'
     DataSource = dsSmeta
@@ -447,28 +466,31 @@ object FormBasicData: TFormBasicData
     TabOrder = 16
   end
   object dbedtgrowth_index: TDBEdit
-    Left = 239
+    Left = 384
     Top = 295
     Width = 80
     Height = 21
+    Anchors = [akTop, akRight]
     DataField = 'growth_index'
     DataSource = dsSmeta
     TabOrder = 15
   end
   object dbedtK35: TDBEdit
-    Left = 239
+    Left = 384
     Top = 272
     Width = 80
     Height = 21
+    Anchors = [akTop, akRight]
     DataField = 'K35'
     DataSource = dsSmeta
     TabOrder = 14
   end
   object dbedtEditRateWorker: TDBEdit
-    Left = 239
+    Left = 384
     Top = 81
     Width = 80
     Height = 21
+    Anchors = [akTop, akRight]
     DataField = 'STAVKA_RAB'
     DataSource = dsSmeta
     TabOrder = 5
@@ -476,25 +498,27 @@ object FormBasicData: TFormBasicData
   end
   object dbchkAPPLY_LOW_COEF_OHROPR_FLAG: TDBCheckBox
     Left = 8
-    Top = 427
+    Top = 511
     Width = 308
     Height = 17
     Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1087#1086#1085#1080#1078#1072#1102#1097#1080#1077' '#1082#1086#1101#1092' '#1082' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1087#1083#1072#1085'. '#1087#1088#1080#1073'.:'
     DataField = 'APPLY_LOW_COEF_OHROPR_FLAG'
     DataSource = dsSmeta
-    TabOrder = 20
+    TabOrder = 21
     ValueChecked = '1'
     ValueUnchecked = '0'
     OnClick = dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick
   end
   object pnlLowCoef: TPanel
     Left = 9
-    Top = 446
-    Width = 310
+    Top = 529
+    Width = 458
     Height = 28
     Anchors = [akLeft, akRight, akBottom]
     BevelOuter = bvNone
-    TabOrder = 21
+    TabOrder = 22
+    ExplicitTop = 446
+    ExplicitWidth = 310
     object lbl6: TLabel
       Left = 6
       Top = 7
@@ -546,8 +570,9 @@ object FormBasicData: TFormBasicData
   object dbchkAPPLY_WINTERPRISE_FLAG: TDBCheckBox
     Left = 8
     Top = 409
-    Width = 304
+    Width = 456
     Height = 17
+    Anchors = [akLeft, akTop, akRight]
     Caption = #1055#1088#1080#1084#1077#1085#1103#1090#1100' '#1079#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
     DataField = 'APPLY_WINTERPRISE_FLAG'
     DataSource = dsSmeta
@@ -555,13 +580,107 @@ object FormBasicData: TFormBasicData
     ValueChecked = '1'
     ValueUnchecked = '0'
   end
+  object grCoef: TJvDBGrid
+    Left = 8
+    Top = 448
+    Width = 456
+    Height = 57
+    DataSource = dsCoef
+    DrawingStyle = gdsClassic
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    ParentFont = False
+    PopupMenu = pmCoef
+    TabOrder = 20
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+    AutoSizeColumns = True
+    SelectColumnsDialogStrings.Caption = 'Select columns'
+    SelectColumnsDialogStrings.OK = '&OK'
+    SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+    EditControls = <>
+    RowsHeight = 17
+    TitleRowHeight = 17
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'coef_name'
+        Title.Alignment = taCenter
+        Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
+        Width = 110
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'osn_zp'
+        Title.Alignment = taCenter
+        Title.Caption = #1047#1055
+        Width = 50
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'eksp_mach'
+        Title.Alignment = taCenter
+        Title.Caption = #1069#1052#1080#1052
+        Width = 50
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'mat_res'
+        Title.Alignment = taCenter
+        Title.Caption = #1052#1056
+        Width = 50
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'work_pers'
+        Title.Alignment = taCenter
+        Title.Caption = #1058#1047' '#1088#1072#1073'.'
+        Width = 50
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'work_mach'
+        Title.Alignment = taCenter
+        Title.Caption = #1058#1047' '#1084#1072#1096'.'
+        Width = 50
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'oxropr'
+        Title.Alignment = taCenter
+        Title.Caption = #1054#1061#1056#1080#1054#1055#1056
+        Width = 50
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'planprib'
+        Title.Alignment = taCenter
+        Title.Caption = #1055#1055
+        Width = 34
+        Visible = True
+      end>
+  end
   object dsDump: TDataSource
     DataSet = qrDump
     Left = 224
     Top = 357
   end
   object pmTransport: TPopupMenu
-    Left = 72
+    Left = 80
     Top = 4
     object PopupMenuPercentTransportCity: TMenuItem
       Tag = 1
@@ -631,6 +750,26 @@ object FormBasicData: TFormBasicData
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtBlob
+        TargetDataType = dtAnsiString
+      end>
+    FormatOptions.DefaultParamDataType = ftBCD
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
@@ -656,5 +795,90 @@ object FormBasicData: TFormBasicData
   object dsSmeta: TDataSource
     DataSet = qrSmeta
     Left = 40
+  end
+  object dsCoef: TDataSource
+    DataSet = qrCoef
+    Left = 40
+    Top = 424
+  end
+  object qrCoef: TFDQuery
+    OnNewRecord = qrCoefNewRecord
+    MasterSource = dsSmeta
+    MasterFields = 'SM_ID'
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules, fvDataSnapCompatibility, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtBlob
+        TargetDataType = dtAnsiString
+      end>
+    FormatOptions.FmtDisplayNumeric = '#0.00'
+    SQL.Strings = (
+      'SELECT '
+      '  `calculation_coef_id`,'
+      '  `id_estimate`,'
+      '  `id_type_data`,'
+      '  `id_owner`,'
+      '  `id_coef`,'
+      '  `COEF_NAME`,'
+      '  `OSN_ZP`,'
+      '  `EKSP_MACH`,'
+      '  `MAT_RES`,'
+      '  `WORK_PERS`,'
+      '  `WORK_MACH`,'
+      '  `OXROPR`,'
+      '  `PLANPRIB`'
+      'FROM '
+      '  `calculation_coef`'
+      'WHERE `id_type_data` < 0  AND'
+      '       ((`id_estimate` = :SM_ID) OR '
+      
+        '        (`id_estimate`=(SELECT `smetasourcedata`.`PARENT_ID` FRO' +
+        'M `smetasourcedata` WHERE `smetasourcedata`.`SM_ID`=:SM_ID)) OR '
+      '      (`id_estimate`= ('
+      '          SELECT `smetasourcedata`.`PARENT_ID` '
+      '          FROM `smetasourcedata` '
+      
+        '          WHERE `smetasourcedata`.`SM_ID`=(SELECT `smetasourceda' +
+        'ta`.`PARENT_ID` FROM `smetasourcedata` WHERE `smetasourcedata`.`' +
+        'SM_ID`=:SM_ID))))'
+      'ORDER BY `COEF_NAME`')
+    Left = 9
+    Top = 424
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '345'
+      end>
+  end
+  object pmCoef: TPopupMenu
+    OnPopup = pmCoefPopup
+    Left = 80
+    Top = 456
+    object mN1: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      OnClick = mN1Click
+    end
+    object mN2: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = mN2Click
+    end
   end
 end
