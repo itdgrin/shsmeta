@@ -3,7 +3,7 @@ unit UpdateModule;
 interface
 
 uses
-  System.Classes, System.SysUtils, DateUtils, Vcl.Forms, SyncObjs,
+  System.Classes, System.SysUtils, Vcl.Forms, DateUtils, SyncObjs,
   Winapi.Windows, IdHTTP, XMLIntf, XMLDoc,  ActiveX, GlobsAndConst;
 
 type
