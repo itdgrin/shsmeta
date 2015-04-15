@@ -626,6 +626,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   end
   object dsObjects: TDataSource
     DataSet = qrObjects
+    OnDataChange = dsObjectsDataChange
     Left = 104
     Top = 192
   end
@@ -648,6 +649,21 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       OnClick = PopupMenuObjectsDeleteClick
     end
     object PopupMenuObjectsSeparator1: TMenuItem
+      Caption = '-'
+    end
+    object PMExportObject: TMenuItem
+      Caption = #1069#1082#1089#1087#1086#1088#1090' '#1086#1073#1098#1077#1082#1090#1072
+      OnClick = PMExportObjectClick
+    end
+    object N3: TMenuItem
+      Caption = #1048#1084#1087#1086#1088#1090' '#1086#1073#1098#1077#1082#1090#1072
+      OnClick = N3Click
+    end
+    object N5: TMenuItem
+      Caption = #1048#1084#1087#1086#1088#1090' '#1080#1079' '#1087#1072#1087#1082#1080
+      OnClick = N5Click
+    end
+    object N2: TMenuItem
       Caption = '-'
     end
     object PopupMenuObjectsColumns: TMenuItem
@@ -881,5 +897,15 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         Size = 10
         Value = Null
       end>
+  end
+  object SaveDialog: TSaveDialog
+    Filter = 'xml|*.xml'
+    Left = 472
+    Top = 197
+  end
+  object OpenDialog: TOpenDialog
+    Filter = 'xml|*.xml'
+    Left = 536
+    Top = 197
   end
 end

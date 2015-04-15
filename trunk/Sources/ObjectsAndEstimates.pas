@@ -83,6 +83,12 @@ type
     dsTreeData: TDataSource;
     qrTreeData: TFDQuery;
     tvEstimates: TJvDBTreeView;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    PMExportObject: TMenuItem;
+    N5: TMenuItem;
+    SaveDialog: TSaveDialog;
+    OpenDialog: TOpenDialog;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -125,6 +131,10 @@ type
     procedure qrObjectsAfterOpen(DataSet: TDataSet);
     procedure tvEstimatesDblClick(Sender: TObject);
     procedure grActsMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure PMExportObjectClick(Sender: TObject);
+    procedure dsObjectsDataChange(Sender: TObject; Field: TField);
+    procedure N3Click(Sender: TObject);
+    procedure N5Click(Sender: TObject);
   private
     const CaptionButton = 'Объекты и сметы';
     const HintButton = 'Окно объектов и смет';
@@ -148,7 +158,7 @@ var
 implementation
 
 uses Main, DataModule, CardObject, CardEstimate, CalculationEstimate, Waiting,
-  BasicData, DrawingTables, KC6, CardAct;
+  BasicData, DrawingTables, KC6, CardAct, ImportExportModule;
 
 {$R *.dfm}
 
@@ -469,6 +479,12 @@ begin
   end;
 end;
 
+procedure TFormObjectsAndEstimates.dsObjectsDataChange(Sender: TObject;
+  Field: TField);
+begin
+
+end;
+
 // Открытие сметы
 procedure TFormObjectsAndEstimates.VSTDblClick(Sender: TObject);
 begin
@@ -638,6 +654,28 @@ begin
   RAHint1.ActivateHint(R, Format('X: %d, Y: %d, %s', [G.X, G.Y, 'Подсказка']));
 end;
 
+procedure TFormObjectsAndEstimates.N3Click(Sender: TObject);
+begin
+  if OpenDialog.Execute(FormMain.Handle) then
+  begin
+    FormMain.PanelCover.Visible := true;
+    FormWaiting.Show;
+    Application.ProcessMessages;
+    try
+      ImportObject(OpenDialog.FileName);
+    finally
+      FormWaiting.Close;
+      FormMain.PanelCover.Visible := False;
+    end;
+    FillingTableObjects;
+  end;
+end;
+
+procedure TFormObjectsAndEstimates.N5Click(Sender: TObject);
+begin
+  FillingTableObjects;
+end;
+
 procedure TFormObjectsAndEstimates.PMEstimateExpandClick(Sender: TObject);
 begin
   tvEstimates.FullExpand;
@@ -729,6 +767,23 @@ begin
     FormCardEstimate.ShowForm(IdObject, IdEstimate, qrTreeData.FieldByName('SM_TYPE').AsInteger);
     CloseOpen(qrTreeData);
     tvEstimates.Selected.Text := qrTreeData.FieldByName('NAME').AsString;
+  end;
+end;
+
+procedure TFormObjectsAndEstimates.PMExportObjectClick(Sender: TObject);
+begin
+  if SaveDialog.Execute(FormMain.Handle) then
+  begin
+    FormMain.PanelCover.Visible := true;
+    FormWaiting.Show;
+    Application.ProcessMessages;
+    try
+      ExportObject(qrObjects.Fields[0].AsInteger,
+        ChangeFileExt(SaveDialog.FileName, '.xml'));
+    finally
+      FormWaiting.Close;
+      FormMain.PanelCover.Visible := False;
+    end;
   end;
 end;
 
