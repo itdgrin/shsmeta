@@ -29,14 +29,7 @@ uses Main;
 {$R *.dfm}
 
 procedure TFormWaiting.FormCreate(Sender: TObject);
-var
-  FileName: String;
 begin
-  // Расположение файла
-  FileName := ExtractFilePath(Application.ExeName) + 'Settings\Waiting.gif';
-
-  // Если файл существует, открываем его
-  if FileExists(FileName) then
-    JvGIFAnimator1.Image.LoadFromFile(FileName);
+  JvGIFAnimator1.Animate := True;
 end;
 end.
