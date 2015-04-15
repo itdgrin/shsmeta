@@ -4,7 +4,7 @@ interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
-  ShellAPI, Vcl.Grids, DataModule;
+  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls;
 
 // Общий тип классификации форм
 type
@@ -154,12 +154,12 @@ end;
 procedure CloseOpen(const Query: TFDQuery; ADeactivateAfterScrollEvent: boolean = False);
 var
   Key: Variant;
-  E: TDataSetNotifyEvent;
+  // E: TDataSetNotifyEvent;
 begin
+  // E := Query.AfterScroll;
   Query.DisableControls;
   try
-    E := Query.AfterScroll;
-    Query.AfterScroll := nil;
+    // Query.AfterScroll := nil;
     Key := Null;
     if CheckQrActiveEmpty(Query) then
       Key := Query.Fields[0].Value;
@@ -168,7 +168,7 @@ begin
     if Key <> Null then
       Query.Locate(Query.Fields[0].FieldName, Key, []);
   finally
-    Query.AfterScroll := E;
+    // Query.AfterScroll := E;
     Query.EnableControls;
   end;
 end;
@@ -199,13 +199,13 @@ begin
     while not Query.Eof do
     begin
       for i := 0 to Query.FieldCount - 1 do
-        if (Query.Fields[i].DataType in [ftInteger, ftFloat, ftBCD, ftFMTBcd, ftLargeint]) and not(VarIsNull(Query.Fields[i].Value))
-        then
+        if (Query.Fields[i].DataType in [ftInteger, ftFloat, ftBCD, ftFMTBcd, ftLargeint]) and
+          not(VarIsNull(Query.Fields[i].Value)) then
           Res[i] := Res[i] + Query.Fields[i].AsFloat;
       Query.Next;
     end;
 
-    //for i := 0 to Query.FieldCount - 1 do ShowMessage(FloatToStr(Res[i]));
+    // for i := 0 to Query.FieldCount - 1 do ShowMessage(FloatToStr(Res[i]));
 
     if Key <> Null then
       Query.Locate(Query.Fields[0].FieldName, Key, []);

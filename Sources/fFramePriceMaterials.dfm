@@ -1,5 +1,5 @@
 inherited FramePriceMaterial: TFramePriceMaterial
-  Width = 488
+  Width = 547
   Height = 335
   DoubleBuffered = True
   ParentBackground = False
@@ -8,18 +8,19 @@ inherited FramePriceMaterial: TFramePriceMaterial
   OnEnter = FrameEnter
   OnExit = FrameExit
   OnResize = FrameResize
-  ExplicitWidth = 488
+  ExplicitWidth = 547
   ExplicitHeight = 335
   object Panel: TPanel
     Left = 0
     Top = 0
-    Width = 488
+    Width = 547
     Height = 316
     Align = alClient
     BevelOuter = bvNone
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
+    ExplicitWidth = 488
     object ImageSplitter: TImage
       Left = 312
       Top = 395
@@ -30,28 +31,30 @@ inherited FramePriceMaterial: TFramePriceMaterial
     object Splitter: TSplitter
       Left = 0
       Top = 276
-      Width = 488
+      Width = 547
       Height = 5
       Cursor = crVSplit
       Align = alBottom
       ResizeStyle = rsUpdate
       ExplicitTop = 25
+      ExplicitWidth = 488
     end
     object PanelTable: TPanel
       Left = 0
       Top = 50
-      Width = 488
+      Width = 547
       Height = 226
       Align = alClient
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 0
+      TabOrder = 2
       OnResize = PanelTableResize
+      ExplicitWidth = 488
       object SpeedButtonShowHide: TSpeedButton
         Tag = 1
         Left = 0
         Top = 211
-        Width = 488
+        Width = 547
         Height = 15
         Align = alBottom
         Flat = True
@@ -65,7 +68,7 @@ inherited FramePriceMaterial: TFramePriceMaterial
       object VST: TVirtualStringTree
         Left = 0
         Top = 0
-        Width = 488
+        Width = 547
         Height = 211
         Align = alClient
         Header.AutoSizeIndex = 0
@@ -88,6 +91,7 @@ inherited FramePriceMaterial: TFramePriceMaterial
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
         OnKeyPress = VSTKeyPress
+        ExplicitWidth = 488
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]
@@ -124,7 +128,7 @@ inherited FramePriceMaterial: TFramePriceMaterial
     object PanelMemo: TPanel
       Left = 0
       Top = 281
-      Width = 488
+      Width = 547
       Height = 35
       Align = alBottom
       BevelOuter = bvNone
@@ -133,32 +137,35 @@ inherited FramePriceMaterial: TFramePriceMaterial
       ParentBackground = False
       ParentDoubleBuffered = False
       ShowCaption = False
-      TabOrder = 1
+      TabOrder = 3
+      ExplicitWidth = 488
       object Memo: TMemo
         Left = 0
         Top = 0
-        Width = 488
+        Width = 547
         Height = 35
         Align = alClient
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
         OnEnter = MemoEnter
+        ExplicitWidth = 488
       end
     end
     object PanelSearch: TPanel
       Left = 0
       Top = 25
-      Width = 488
+      Width = 547
       Height = 25
       Align = alTop
       BevelOuter = bvNone
       DoubleBuffered = True
       ParentBackground = False
       ParentDoubleBuffered = False
-      TabOrder = 2
+      TabOrder = 1
+      ExplicitWidth = 488
       DesignSize = (
-        488
+        547
         25)
       object LabelSearch: TLabel
         Left = 6
@@ -170,7 +177,7 @@ inherited FramePriceMaterial: TFramePriceMaterial
       object EditSearch: TEdit
         Left = 46
         Top = 2
-        Width = 439
+        Width = 498
         Height = 21
         Hint = 
           #1042#1074#1077#1076#1080#1090#1077' '#1089#1083#1086#1074#1072' '#1095#1077#1088#1077#1079' '#1087#1088#1086#1073#1077#1083' '#1080' '#1085#1072#1078#1084#1080#1090#1077' - Enter, '#1076#1083#1103' '#1086#1095#1080#1089#1090#1082#1080' '#1085#1072#1078#1084#1080#1090 +
@@ -181,19 +188,21 @@ inherited FramePriceMaterial: TFramePriceMaterial
         TabOrder = 0
         OnEnter = EditSearch1Enter
         OnKeyPress = EditSearch1KeyPress
+        ExplicitWidth = 439
       end
     end
     object PanelSettings: TPanel
       Left = 0
       Top = 0
-      Width = 488
+      Width = 547
       Height = 25
       Align = alTop
       BevelOuter = bvNone
       DoubleBuffered = True
       ParentBackground = False
       ParentDoubleBuffered = False
-      TabOrder = 3
+      TabOrder = 0
+      ExplicitWidth = 488
       object LabelYear: TLabel
         Left = 6
         Top = 6
@@ -220,7 +229,7 @@ inherited FramePriceMaterial: TFramePriceMaterial
         Top = 2
         Width = 50
         Height = 21
-        TabOrder = 1
+        TabOrder = 0
         Text = '2012'
         OnChange = ComboBoxMonthYearChange
         Items.Strings = (
@@ -236,7 +245,7 @@ inherited FramePriceMaterial: TFramePriceMaterial
         Width = 75
         Height = 21
         ItemIndex = 1
-        TabOrder = 2
+        TabOrder = 1
         Text = #1060#1077#1074#1088#1072#1083#1100
         OnChange = ComboBoxMonthYearChange
         Items.Strings = (
@@ -259,7 +268,7 @@ inherited FramePriceMaterial: TFramePriceMaterial
         Width = 135
         Height = 21
         ItemIndex = 0
-        TabOrder = 0
+        TabOrder = 2
         Text = #1041#1088#1077#1089#1090#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
         OnChange = ComboBoxRegionChange
         Items.Strings = (
@@ -271,12 +280,32 @@ inherited FramePriceMaterial: TFramePriceMaterial
           #1052#1086#1075#1080#1083#1077#1074#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
           #1052#1080#1085#1089#1082)
       end
+      object chk1: TCheckBox
+        Left = 399
+        Top = 4
+        Width = 82
+        Height = 17
+        Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1057
+        Checked = True
+        State = cbChecked
+        TabOrder = 3
+        OnClick = chk1Click
+      end
+      object chk2: TCheckBox
+        Left = 487
+        Top = 4
+        Width = 42
+        Height = 17
+        Caption = #1046#1041#1048
+        TabOrder = 4
+        OnClick = chk1Click
+      end
     end
   end
   inline FrameStatusBar: TFrameStatusBar
     Left = 0
     Top = 316
-    Width = 488
+    Width = 547
     Height = 19
     Align = alBottom
     DoubleBuffered = True
@@ -285,7 +314,7 @@ inherited FramePriceMaterial: TFramePriceMaterial
     ExplicitTop = 316
     ExplicitWidth = 488
     inherited StatusBar: TStatusBar
-      Width = 488
+      Width = 547
       ExplicitWidth = 488
     end
   end
