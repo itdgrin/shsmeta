@@ -102,7 +102,8 @@ uses
   ReplacementMatAndMech in 'ReplacementMatAndMech.pas' {frmReplacement},
   TariffDict in 'TariffDict.pas' {fTariffDict},
   OXROPRSetup in 'OXROPRSetup.pas' {fOXROPRSetup},
-  CardPartsEstimates in 'CardPartsEstimates.pas' {FormCardPartsEstimates};
+  CardPartsEstimates in 'CardPartsEstimates.pas' {FormCardPartsEstimates},
+  ImportExportModule in 'ImportExportModule.pas';
 
 {$R *.res}
 var MHandle: THandle;
