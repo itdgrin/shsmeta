@@ -545,6 +545,11 @@ begin
 
   IdNormative := ADOQueryNormativ.FieldByName('IdNormative').AsVariant; // Получаем Id норматива
 
+  if CharInSet(Char(ADOQueryNormativ.FieldByName('NumberNormative').AsString[1]), ['0' .. '9']) then
+    CheckBoxNormСonsumption.Checked := False
+  else
+    CheckBoxNormСonsumption.Checked := true;
+
   Sbornik(IdNormative);
   // -----------------------------------------
 
@@ -611,183 +616,185 @@ begin
   // -----------------------------------------
 
   // НОРМЫ РАСХОДА ПО МАШИНАМ И МЕХАНИЗМАМ
-
-  // Формируем и выполняем запрос для получения норм расхода
-  with ADOQueryNC do
+  if CheckBoxNormСonsumption.Checked then
   begin
-    Active := False;
-    SQL.Clear;
-
-    StrQuery := 'SELECT mech_code, mech_name, norm_ras, unit_name FROM mechanizm, mechanizmnorm, units ' +
-      'WHERE mechanizm.unit_id = units.unit_id and mechanizm.mechanizm_id = mechanizmnorm.mechanizm_id ' +
-      'and mechanizmnorm.normativ_id = ' + IdNormative + ';';
-
-    SQL.Add(StrQuery);
-    Active := true;
-  end;
-
-  // Выводим полученные данные в таблицу StringGrid
-  with ADOQueryNC, StringGridNC do
-  begin
-    ColCount := 4; // Столбцов в таблице
-    RowCount := 2; // Строк  в таблице
-
-    Group1 := 1;
-
-    Cells[1, Group1] := 'Машины и механизмы';
-
-    i := Group1 + 1; // Номер заполняемой строки в StringGrid
-
-    First; // Становимся на первую запись в наборе данных
-
-    // Пока есть данные в наборе данных, выводим их в StringGrid
-    while not Eof do
+    // Формируем и выполняем запрос для получения норм расхода
+    with ADOQueryNC do
     begin
-      RowCount := i + 1;
+      Active := False;
+      SQL.Clear;
 
-      Cells[0, i] := Fields.Fields[0].AsString;
-      Cells[1, i] := Fields.Fields[1].AsString;
-      Cells[2, i] := Fields.Fields[2].Value;
-      Cells[3, i] := Fields.Fields[3].AsString;
+      StrQuery := 'SELECT mech_code, mech_name, norm_ras, unit_name FROM mechanizm, mechanizmnorm, units ' +
+        'WHERE mechanizm.unit_id = units.unit_id and mechanizm.mechanizm_id = mechanizmnorm.mechanizm_id ' +
+        'and mechanizmnorm.normativ_id = ' + IdNormative + ';';
 
-      Inc(i);
-      Next;
-    end;
-  end;
-
-  // -----------------------------------------
-
-  // НОРМЫ РАСХОДА ПО МАТЕРИАЛАМ
-
-  // Формируем и выполняем запрос для получения норм расхода
-  with ADOQueryNC do
-  begin
-    Active := False;
-    SQL.Clear;
-
-    StrQuery := 'SELECT mat_code, mat_name, norm_ras, unit_name FROM materialnorm, material, units ' +
-      'WHERE materialnorm.material_id = material.material_id and material.unit_id = units.unit_id ' +
-      'and materialnorm.normativ_id = ' + IdNormative + ';';
-
-    SQL.Add(StrQuery);
-    Active := true;
-  end;
-
-  // Выводим полученные данные в таблицу StringGrid
-  with ADOQueryNC, StringGridNC do
-  begin
-    with StringGridNC do
-    begin
-      Group2 := RowCount;
-      RowCount := RowCount + 1;
+      SQL.Add(StrQuery);
+      Active := true;
     end;
 
-    Filtered := False;
-    Filter := 'mat_code LIKE ''С%''';
-    Filtered := true;
-
-    Cells[1, Group2] := 'Материалы учтённые';
-
-    i := Group2 + 1; // Номер заполняемой строки в StringGrid
-
-    First; // Становимся на первую запись в наборе данных
-
-    // Пока есть данные в наборе данных, выводим их в StringGrid
-    while not Eof do
+    // Выводим полученные данные в таблицу StringGrid
+    with ADOQueryNC, StringGridNC do
     begin
-      RowCount := i + 1;
+      ColCount := 4; // Столбцов в таблице
+      RowCount := 2; // Строк  в таблице
 
-      Cells[0, i] := Fields.Fields[0].AsString;
-      Cells[1, i] := Fields.Fields[1].AsString;
-      Cells[2, i] := Fields.Fields[2].Value;
-      Cells[3, i] := Fields.Fields[3].AsString;
+      Group1 := 1;
 
-      Inc(i);
-      Next;
+      Cells[1, Group1] := 'Машины и механизмы';
+
+      i := Group1 + 1; // Номер заполняемой строки в StringGrid
+
+      First; // Становимся на первую запись в наборе данных
+
+      // Пока есть данные в наборе данных, выводим их в StringGrid
+      while not Eof do
+      begin
+        RowCount := i + 1;
+
+        Cells[0, i] := Fields.Fields[0].AsString;
+        Cells[1, i] := Fields.Fields[1].AsString;
+        Cells[2, i] := Fields.Fields[2].Value;
+        Cells[3, i] := Fields.Fields[3].AsString;
+
+        Inc(i);
+        Next;
+      end;
     end;
 
-    // ----------------------------------------
+    // -----------------------------------------
 
-    with StringGridNC do
+    // НОРМЫ РАСХОДА ПО МАТЕРИАЛАМ
+
+    // Формируем и выполняем запрос для получения норм расхода
+    with ADOQueryNC do
     begin
-      Group3 := RowCount;
-      RowCount := RowCount + 1;
+      Active := False;
+      SQL.Clear;
+
+      StrQuery := 'SELECT mat_code, mat_name, norm_ras, unit_name FROM materialnorm, material, units ' +
+        'WHERE materialnorm.material_id = material.material_id and material.unit_id = units.unit_id ' +
+        'and materialnorm.normativ_id = ' + IdNormative + ';';
+
+      SQL.Add(StrQuery);
+      Active := true;
     end;
 
-    Filtered := False;
-    Filter := 'mat_code LIKE ''П%''';
-    Filtered := true;
-
-    Cells[1, Group3] := 'Материалы неучтённые';
-
-    i := Group3 + 1; // Номер заполняемой строки в StringGrid
-
-    First; // Становимся на первую запись в наборе данных
-
-    // Пока есть данные в наборе данных, выводим их в StringGrid
-    while not Eof do
+    // Выводим полученные данные в таблицу StringGrid
+    with ADOQueryNC, StringGridNC do
     begin
-      RowCount := i + 1;
+      with StringGridNC do
+      begin
+        Group2 := RowCount;
+        RowCount := RowCount + 1;
+      end;
 
-      Cells[0, i] := Fields.Fields[0].AsString;
-      Cells[1, i] := Fields.Fields[1].AsString;
-      Cells[2, i] := Fields.Fields[2].Value;
-      Cells[3, i] := Fields.Fields[3].AsString;
+      Filtered := False;
+      Filter := 'mat_code LIKE ''С%''';
+      Filtered := true;
 
-      Inc(i);
-      Next;
+      Cells[1, Group2] := 'Материалы учтённые';
+
+      i := Group2 + 1; // Номер заполняемой строки в StringGrid
+
+      First; // Становимся на первую запись в наборе данных
+
+      // Пока есть данные в наборе данных, выводим их в StringGrid
+      while not Eof do
+      begin
+        RowCount := i + 1;
+
+        Cells[0, i] := Fields.Fields[0].AsString;
+        Cells[1, i] := Fields.Fields[1].AsString;
+        Cells[2, i] := Fields.Fields[2].Value;
+        Cells[3, i] := Fields.Fields[3].AsString;
+
+        Inc(i);
+        Next;
+      end;
+
+      // ----------------------------------------
+
+      with StringGridNC do
+      begin
+        Group3 := RowCount;
+        RowCount := RowCount + 1;
+      end;
+
+      Filtered := False;
+      Filter := 'mat_code LIKE ''П%''';
+      Filtered := true;
+
+      Cells[1, Group3] := 'Материалы неучтённые';
+
+      i := Group3 + 1; // Номер заполняемой строки в StringGrid
+
+      First; // Становимся на первую запись в наборе данных
+
+      // Пока есть данные в наборе данных, выводим их в StringGrid
+      while not Eof do
+      begin
+        RowCount := i + 1;
+
+        Cells[0, i] := Fields.Fields[0].AsString;
+        Cells[1, i] := Fields.Fields[1].AsString;
+        Cells[2, i] := Fields.Fields[2].Value;
+        Cells[3, i] := Fields.Fields[3].AsString;
+
+        Inc(i);
+        Next;
+      end;
+
+      Filtered := False;
+      Filter := '';
+      Filtered := true;
     end;
 
-    Filtered := False;
-    Filter := '';
-    Filtered := true;
-  end;
+    // -----------------------------------------
 
-  // -----------------------------------------
+    // НОРМЫ РАСХОДА ПО ЗАТРАТАМ ТРУДА
 
-  // НОРМЫ РАСХОДА ПО ЗАТРАТАМ ТРУДА
-
-  // Формируем и выполняем запрос для получения норм расхода
-  with ADOQueryNC do
-  begin
-    Active := False;
-    SQL.Clear;
-
-    StrQuery := 'SELECT works.work_caption, normativwork.norma FROM normativwork, works ' +
-      'WHERE normativwork.work_id = works.work_id and normativwork.normativ_id = ' + IdNormative + ';';
-
-    SQL.Add(StrQuery);
-    Active := true;
-  end;
-
-  // Выводим полученные данные в таблицу StringGrid
-  with ADOQueryNC, StringGridNC do
-  begin
-
-    with StringGridNC do
+    // Формируем и выполняем запрос для получения норм расхода
+    with ADOQueryNC do
     begin
-      Group4 := RowCount;
-      RowCount := RowCount + 1;
+      Active := False;
+      SQL.Clear;
+
+      StrQuery := 'SELECT works.work_caption, normativwork.norma FROM normativwork, works ' +
+        'WHERE normativwork.work_id = works.work_id and normativwork.normativ_id = ' + IdNormative + ';';
+
+      SQL.Add(StrQuery);
+      Active := true;
     end;
 
-    Cells[1, Group4] := 'Затраты труда';
-
-    i := Group4 + 1; // Номер заполняемой строки в StringGrid
-
-    First; // Становимся на первую запись в наборе данных
-
-    // Пока есть данные в наборе данных, выводим их в StringGrid
-    while not Eof do
+    // Выводим полученные данные в таблицу StringGrid
+    with ADOQueryNC, StringGridNC do
     begin
-      RowCount := i + 1;
 
-      Cells[0, i] := '';
-      Cells[1, i] := Fields.Fields[0].AsString;
-      Cells[2, i] := Fields.Fields[1].Value;
-      Cells[3, i] := '';
+      with StringGridNC do
+      begin
+        Group4 := RowCount;
+        RowCount := RowCount + 1;
+      end;
 
-      Inc(i);
-      Next;
+      Cells[1, Group4] := 'Затраты труда';
+
+      i := Group4 + 1; // Номер заполняемой строки в StringGrid
+
+      First; // Становимся на первую запись в наборе данных
+
+      // Пока есть данные в наборе данных, выводим их в StringGrid
+      while not Eof do
+      begin
+        RowCount := i + 1;
+
+        Cells[0, i] := '';
+        Cells[1, i] := Fields.Fields[0].AsString;
+        Cells[2, i] := Fields.Fields[1].Value;
+        Cells[3, i] := '';
+
+        Inc(i);
+        Next;
+      end;
     end;
   end;
 
