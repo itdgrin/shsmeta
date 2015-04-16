@@ -69,7 +69,7 @@ type
     ChangeCoast: boolean;
 
     DumpCount, MCount, Ydw: extended;
-    CoastNoNds, CoastNds, Nds: integer;
+    CoastNoNds, CoastNds, Nds: Extended;
     Loading: boolean;  //Что-бы не срабатывали ченджи при заполнении формы
 
     procedure GetEstimateInfo(aIdEstimate: integer);
@@ -159,12 +159,12 @@ begin
       edtPriceNoNDS.Text := qrTemp.FieldByName('DUMP_SUM_NO_NDS').AsString;
       edtPriceNDS.Text := qrTemp.FieldByName('DUMP_SUM_NDS').AsString;
 
-      DumpCount := qrTemp.FieldByName('DUMP_COUNT').AsFloat;
-      CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsInteger;
-      CoastNds := qrTemp.FieldByName('COAST_NDS').AsInteger;
-      Nds := qrTemp.FieldByName('NDS').AsInteger;
-      MCount := qrTemp.FieldByName('WORK_COUNT').AsFloat;
-      Ydw := qrTemp.FieldByName('WORK_YDW').AsFloat;
+      DumpCount := qrTemp.FieldByName('DUMP_COUNT').AsExtended;
+      CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsExtended;
+      CoastNds := qrTemp.FieldByName('COAST_NDS').AsExtended;
+      Nds := qrTemp.FieldByName('NDS').AsExtended;
+      MCount := qrTemp.FieldByName('WORK_COUNT').AsExtended;
+      Ydw := qrTemp.FieldByName('WORK_YDW').AsExtended;
 
       Memo.Text := EditJustification.Text + ' ' + DBLookupComboBoxND.Text + '.';
       qrTemp.Active := False;
@@ -201,8 +201,8 @@ begin
     qrTemp.ParamByName('DUMP_UNIT').Value := edtDumpUnit.Text;
     qrTemp.ParamByName('DUMP_COUNT').Value := DumpCount;
     qrTemp.ParamByName('DUMP_TYPE').Value := Unit_Type;
-    qrTemp.ParamByName('DUMP_SUM_NDS').Value := StrToInt64(edtPriceNDS.Text);;
-    qrTemp.ParamByName('DUMP_SUM_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('DUMP_SUM_NDS').Value := StrToFloat(edtPriceNDS.Text);;
+    qrTemp.ParamByName('DUMP_SUM_NO_NDS').Value := StrToFloat(edtPriceNoNDS.Text);
     qrTemp.ParamByName('COAST_NO_NDS').Value := CoastNoNds;
     qrTemp.ParamByName('COAST_NDS').Value := CoastNds;
     qrTemp.ParamByName('WORK_UNIT').Value := cmbUnit.Text;
@@ -210,8 +210,8 @@ begin
     qrTemp.ParamByName('WORK_COUNT').Value := MCount;
     qrTemp.ParamByName('WORK_YDW').Value := Ydw;
     qrTemp.ParamByName('NDS').Value := Nds;
-    qrTemp.ParamByName('PRICE_NDS').Value := StrToInt64(edtPriceNDS.Text);
-    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('PRICE_NDS').Value := StrToFloat(edtPriceNDS.Text);
+    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToFloat(edtPriceNoNDS.Text);
 
     qrTemp.ExecSQL;
 
@@ -239,8 +239,8 @@ begin
     qrTemp.ParamByName('DUMP_UNIT').Value := edtDumpUnit.Text;
     qrTemp.ParamByName('DUMP_COUNT').Value := DumpCount;
     qrTemp.ParamByName('DUMP_TYPE').Value := Unit_Type;
-    qrTemp.ParamByName('DUMP_SUM_NDS').Value := StrToInt64(edtPriceNDS.Text);;
-    qrTemp.ParamByName('DUMP_SUM_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('DUMP_SUM_NDS').Value := StrToFloat(edtPriceNDS.Text);;
+    qrTemp.ParamByName('DUMP_SUM_NO_NDS').Value := StrToFloat(edtPriceNoNDS.Text);
     qrTemp.ParamByName('COAST_NO_NDS').Value := CoastNoNds;
     qrTemp.ParamByName('COAST_NDS').Value := CoastNds;
     qrTemp.ParamByName('WORK_UNIT').Value := cmbUnit.Text;
@@ -248,8 +248,8 @@ begin
     qrTemp.ParamByName('WORK_COUNT').Value := MCount;
     qrTemp.ParamByName('WORK_YDW').Value := Ydw;
     qrTemp.ParamByName('NDS').Value := Nds;
-    qrTemp.ParamByName('PRICE_NDS').Value := StrToInt64(edtPriceNDS.Text);
-    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('PRICE_NDS').Value := StrToFloat(edtPriceNDS.Text);
+    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToFloat(edtPriceNoNDS.Text);
     qrTemp.ParamByName('ID').Value := IdDump;
 
     qrTemp.ExecSQL;
@@ -289,8 +289,8 @@ begin
 
     edtYDW.Enabled := Unit_Type <> cmbUnit.ItemIndex;
 
-    edtCoastNoNDS.Text := IntToStr(qrTemp.FieldByName('coast1').AsInteger);
-    edtCoastNDS.Text := IntToStr(qrTemp.FieldByName('coast2').AsInteger);
+    edtCoastNoNDS.Text := FloatToStr(qrTemp.FieldByName('coast1').AsFloat);
+    edtCoastNDS.Text := FloatToStr(qrTemp.FieldByName('coast2').AsFloat);
     edtNDS.Text := '20';
   except
     on E: Exception do
@@ -302,20 +302,21 @@ begin
 end;
 
 procedure TFormCalculationDump.edtCoastNDSChange(Sender: TObject);
-var i, nds: integer;
+var i, nds: Extended;
 begin
-  if Loading then exit;
+  if Loading then
+    exit;
   if not ChangeCoast then
   begin
     ChangeCoast := true;
     try
       if trim(edtCoastNDS.Text) = '' then i := 0
-      else i := StrToInt(edtCoastNDS.Text);
+      else i := StrToFloat(edtCoastNDS.Text);
 
       if trim(edtNDS.Text) = '' then nds := 0
-      else nds := StrToInt(edtNDS.Text);
+      else nds := StrToFloat(edtNDS.Text);
 
-      edtCoastNoNDS.Text := IntToStr(NDSToNoNDS(i, nds));
+      edtCoastNoNDS.Text := FloatToStr(NDSToNoNDS(i, nds));
       CalculationCost;
     finally
       ChangeCoast := false;
@@ -324,20 +325,21 @@ begin
 end;
 
 procedure TFormCalculationDump.edtCoastNoNDSChange(Sender: TObject);
-var i, nds: integer;
+var i, nds: Extended;
 begin
-  if Loading then exit;
+  if Loading then
+    exit;
   if not ChangeCoast then
   begin
     ChangeCoast := true;
     try
       if trim(edtCoastNoNDS.Text) = '' then i := 0
-      else i := StrToInt(edtCoastNoNDS.Text);
+      else i := StrToFloat(edtCoastNoNDS.Text);
 
       if trim(edtNDS.Text) = '' then nds := 0
-      else nds := StrToInt(edtNDS.Text);
+      else nds := StrToFloat(edtNDS.Text);
 
-      edtCoastNDS.Text := IntToStr(NoNDSToNDS(i, nds));
+      edtCoastNDS.Text := FloatToStr(NoNDSToNDS(i, nds));
       CalculationCost;
     finally
       ChangeCoast := false;
@@ -351,7 +353,7 @@ begin
 end;
 
 procedure TFormCalculationDump.edtNDSChange(Sender: TObject);
-var i, cost: integer;
+var i, cost: Extended;
 begin
   if Loading then exit;
   if not ChangeCoast then
@@ -359,12 +361,12 @@ begin
     ChangeCoast := true;
     try
       if trim(edtNDS.Text) = '' then i := 0
-      else i := StrToInt(edtNDS.Text);
+      else i := StrToFloat(edtNDS.Text);
 
       if trim(edtCoastNoNDS.Text) = '' then cost := 0
-      else cost := StrToInt(edtCoastNoNDS.Text);
+      else cost := StrToFloat(edtCoastNoNDS.Text);
 
-      edtCoastNDS.Text := IntToStr(NoNDSToNDS(cost, i));
+      edtCoastNDS.Text := FloatToStr(NoNDSToNDS(cost, i));
       CalculationCost;
     finally
       ChangeCoast := false;
@@ -470,13 +472,13 @@ begin
   end;
 
   if trim(edtCoastNoNDS.Text) = '' then CoastNoNds := 0
-  else CoastNoNds := StrToInt(edtCoastNoNDS.Text);
+  else CoastNoNds := StrToFloat(edtCoastNoNDS.Text);
 
   if trim(edtCoastNDS.Text) = '' then CoastNds := 0
-  else CoastNds := StrToInt(edtCoastNDS.Text);
+  else CoastNds := StrToFloat(edtCoastNDS.Text);
 
   if trim(edtNDS.Text) = '' then Nds := 0
-  else Nds := StrToInt(edtNDS.Text);
+  else Nds := StrToFloat(edtNDS.Text);
 
   if Unit_Type = cmbUnit.ItemIndex then
     DumpCount := MCount
@@ -495,8 +497,8 @@ begin
     end;
   end;
 
-  edtPriceNoNDS.Text := IntToStr(Round(DumpCount * CoastNoNds));
-  edtPriceNDS.Text := IntToStr(Round(DumpCount * CoastNds));
+  edtPriceNoNDS.Text := FloatToStr(Round(DumpCount * CoastNoNds));
+  edtPriceNDS.Text := FloatToStr(Round(DumpCount * CoastNds));
 end;
 
 procedure TFormCalculationDump.cmbUnitChange(Sender: TObject);

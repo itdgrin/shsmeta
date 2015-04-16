@@ -427,7 +427,7 @@
     Height = 324
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 7
+    TabOrder = 6
     object ImageSplitterBottom: TImage
       Left = 200
       Top = 365
@@ -2426,6 +2426,14 @@
               end
               item
                 Expanded = False
+                FieldName = 'TRANSP_DIST'
+                Title.Alignment = taCenter
+                Title.Caption = #1056#1072#1089#1090#1086#1103#1085#1080#1077',           '#1082#1084
+                Width = 75
+                Visible = True
+              end
+              item
+                Expanded = False
                 FieldName = 'KOEF'
                 Title.Alignment = taCenter
                 Title.Caption = #1050#1086#1077#1092'.'
@@ -2770,7 +2778,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSummaryCalculations'
     ParentBackground = False
-    TabOrder = 5
+    TabOrder = 4
     inline frSummaryCalculations: TfrCalculationEstimateSummaryCalculations
       Left = 0
       Top = 0
@@ -3105,7 +3113,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSSR'
     ParentBackground = False
-    TabOrder = 6
+    TabOrder = 5
     inline frSSR: TfrCalculationEstimateSSR
       Left = 0
       Top = 0
@@ -3482,7 +3490,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -3490,17 +3498,10 @@
         TargetDataType = dtAnsiString
       end
       item
-        SourceDataType = dtFmtBCD
-        TargetDataType = dtDouble
-      end
-      item
         SourceDataType = dtUInt32
         TargetDataType = dtInt32
-      end
-      item
-        SourceDataType = dtBCD
-        TargetDataType = dtInt32
       end>
+    FormatOptions.MaxBcdScale = 6
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
       'SELECT *, 0.0 as SCROLL FROM mechanizmcard_temp'
@@ -3550,105 +3551,80 @@
       Origin = 'MECH_NAME'
       Size = 32767
     end
-    object qrMechanizmMECH_NORMA: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMechanizmMECH_NORMA: TBCDField
       FieldName = 'MECH_NORMA'
-      Origin = 'MECH_NORMA'
       OnChange = MechRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmMECH_COUNT: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMechanizmMECH_COUNT: TBCDField
       FieldName = 'MECH_COUNT'
-      Origin = 'MECH_COUNT'
-      OnChange = MechRowChange
-      currency = True
+      Precision = 18
+      Size = 6
     end
     object qrMechanizmMECH_UNIT: TStringField
       AutoGenerateValue = arDefault
       FieldName = 'MECH_UNIT'
       Origin = 'MECH_UNIT'
+      OnChange = MechRowChange
       Size = 100
     end
-    object qrMechanizmCOAST_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMechanizmCOAST_NO_NDS: TBCDField
       FieldName = 'COAST_NO_NDS'
-      Origin = 'COAST_NO_NDS'
       OnChange = MechRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmCOAST_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMechanizmCOAST_NDS: TBCDField
       FieldName = 'COAST_NDS'
-      Origin = 'COAST_NDS'
       OnChange = MechRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmZP_MACH_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMechanizmZP_MACH_NO_NDS: TBCDField
       FieldName = 'ZP_MACH_NO_NDS'
-      Origin = 'ZP_MACH_NO_NDS'
       OnChange = MechRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmZP_MACH_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMechanizmZP_MACH_NDS: TBCDField
       FieldName = 'ZP_MACH_NDS'
-      Origin = 'ZP_MACH_NDS'
       OnChange = MechRowChange
-    end
-    object qrMechanizmMECH_PRICE: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_PRICE'
-      Origin = 'MECH_PRICE'
-    end
-    object qrMechanizmMECH_ACTIVE: TShortintField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_ACTIVE'
-      Origin = 'MECH_ACTIVE'
-    end
-    object qrMechanizmDOC_DATE: TDateField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_DATE'
-      Origin = 'DOC_DATE'
-    end
-    object qrMechanizmDOC_NUM: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_NUM'
-      Origin = 'DOC_NUM'
-      Size = 50
+      Precision = 18
+      Size = 6
     end
     object qrMechanizmFROM_RATE: TByteField
       AutoGenerateValue = arDefault
       FieldName = 'FROM_RATE'
       Origin = 'FROM_RATE'
     end
-    object qrMechanizmFCOAST_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMechanizmFCOAST_NO_NDS: TBCDField
       FieldName = 'FCOAST_NO_NDS'
-      Origin = 'FCOAST_NO_NDS'
       OnChange = MechRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmFCOAST_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMechanizmFCOAST_NDS: TBCDField
       FieldName = 'FCOAST_NDS'
-      Origin = 'FCOAST_NDS'
       OnChange = MechRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmFZP_MACH_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMechanizmFZP_MACH_NO_NDS: TBCDField
       FieldName = 'FZP_MACH_NO_NDS'
-      Origin = 'FZP_MACH_NO_NDS'
       OnChange = MechRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmFZP_MACH_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMechanizmFZP_MACH_NDS: TBCDField
       FieldName = 'FZP_MACH_NDS'
-      Origin = 'FZP_MACH_NDS'
       OnChange = MechRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmNDS: TSmallintField
-      DisplayWidth = 3
+    object qrMechanizmNDS: TIntegerField
       FieldName = 'NDS'
       OnChange = MechRowChange
-      DisplayFormat = '##0'
-      EditFormat = '##0'
     end
     object qrMechanizmPROC_PODR: TSmallintField
       DisplayWidth = 3
@@ -3664,83 +3640,83 @@
       DisplayFormat = '##0'
       EditFormat = '##0'
     end
-    object qrMechanizmNORMATIV: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMechanizmNORMATIV: TBCDField
       FieldName = 'NORMATIV'
-      Origin = 'NORMATIV'
       OnChange = MechRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmNORM_TRYD: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMechanizmNORM_TRYD: TBCDField
       FieldName = 'NORM_TRYD'
-      Origin = 'NORM_TRYD'
       OnChange = MechRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmTERYDOZATR: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMechanizmTERYDOZATR: TBCDField
       FieldName = 'TERYDOZATR'
-      Origin = 'TERYDOZATR'
       OnChange = MechRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmMECH_SUM_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmMECH_SUM_NO_NDS: TBCDField
       FieldName = 'MECH_SUM_NO_NDS'
-      Origin = 'MECH_SUM_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmMECH_SUM_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmMECH_SUM_NDS: TBCDField
       FieldName = 'MECH_SUM_NDS'
-      Origin = 'MECH_SUM_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmMECH_ZPSUM_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmMECH_ZPSUM_NO_NDS: TBCDField
       FieldName = 'MECH_ZPSUM_NO_NDS'
-      Origin = 'MECH_ZPSUM_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmMECH_ZPSUM_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmMECH_ZPSUM_NDS: TBCDField
       FieldName = 'MECH_ZPSUM_NDS'
-      Origin = 'MECH_ZPSUM_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmPRICE_NO_NDS: TBCDField
       FieldName = 'PRICE_NO_NDS'
-      Origin = 'PRICE_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmPRICE_NDS: TBCDField
       FieldName = 'PRICE_NDS'
-      Origin = 'PRICE_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmZPPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmZPPRICE_NO_NDS: TBCDField
       FieldName = 'ZPPRICE_NO_NDS'
-      Origin = 'ZPPRICE_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmZPPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmZPPRICE_NDS: TBCDField
       FieldName = 'ZPPRICE_NDS'
-      Origin = 'ZPPRICE_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmFPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmFPRICE_NO_NDS: TBCDField
       FieldName = 'FPRICE_NO_NDS'
-      Origin = 'FPRICE_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmFPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmFPRICE_NDS: TBCDField
       FieldName = 'FPRICE_NDS'
-      Origin = 'FPRICE_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmFZPPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmFZPPRICE_NO_NDS: TBCDField
       FieldName = 'FZPPRICE_NO_NDS'
-      Origin = 'FZPPRICE_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMechanizmFZPPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMechanizmFZPPRICE_NDS: TBCDField
       FieldName = 'FZPPRICE_NDS'
-      Origin = 'FZPPRICE_NDS'
+      Precision = 18
+      Size = 6
     end
     object qrMechanizmSCROLL: TIntegerField
       AutoGenerateValue = arDefault
@@ -3783,16 +3759,12 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
         SourceDataType = dtMemo
         TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtFmtBCD
-        TargetDataType = dtDouble
       end
       item
         SourceDataType = dtUInt16
@@ -3802,6 +3774,7 @@
         SourceDataType = dtUInt32
         TargetDataType = dtInt32
       end>
+    FormatOptions.MaxBcdScale = 6
     SQL.Strings = (
       
         'SELECT *, 0 as NUM, 0 as SCROLL, 0 as TITLE FROM materialcard WH' +
@@ -3870,17 +3843,17 @@
       Origin = 'MAT_CODE'
       Size = 15
     end
-    object qrMaterialMAT_NORMA: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMaterialMAT_NORMA: TBCDField
       FieldName = 'MAT_NORMA'
-      Origin = 'MAT_NORMA'
       OnChange = MatRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialMAT_COUNT: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMaterialMAT_COUNT: TBCDField
       FieldName = 'MAT_COUNT'
-      Origin = 'MAT_COUNT'
       OnChange = MatRowChange
+      Precision = 18
+      Size = 6
     end
     object qrMaterialMAT_UNIT: TStringField
       AutoGenerateValue = arDefault
@@ -3888,11 +3861,11 @@
       Origin = 'MAT_UNIT'
       Size = 100
     end
-    object qrMaterialMAT_KOEF: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMaterialMAT_KOEF: TBCDField
       FieldName = 'MAT_KOEF'
-      Origin = 'MAT_KOEF'
       OnChange = MatRowChange
+      Precision = 18
+      Size = 6
     end
     object qrMaterialPROC_TRANSP: TFloatField
       AutoGenerateValue = arDefault
@@ -3900,46 +3873,45 @@
       Origin = 'PROC_TRANSP'
       OnChange = MatRowChange
     end
-    object qrMaterialTRANSP_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMaterialTRANSP_NO_NDS: TBCDField
       FieldName = 'TRANSP_NO_NDS'
-      Origin = 'TRANSP_NO_NDS'
       OnChange = MatRowChange
+      Precision = 18
+      Size = 6
+    end
+    object qrMaterialTRANSP_NDS: TBCDField
+      FieldName = 'TRANSP_NDS'
+      OnChange = MatRowChange
+      Precision = 18
+      Size = 6
     end
     object qrMaterialNDS: TIntegerField
-      AutoGenerateValue = arDefault
       FieldName = 'NDS'
-      Origin = 'NDS'
       OnChange = MatRowChange
     end
-    object qrMaterialFCOAST_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMaterialFCOAST_NO_NDS: TBCDField
       FieldName = 'FCOAST_NO_NDS'
-      Origin = 'FCOAST_NO_NDS'
       OnChange = MatRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialFCOAST_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMaterialFCOAST_NDS: TBCDField
       FieldName = 'FCOAST_NDS'
-      Origin = 'FCOAST_NDS'
       OnChange = MatRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialFTRANSP_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMaterialFTRANSP_NO_NDS: TBCDField
       FieldName = 'FTRANSP_NO_NDS'
-      Origin = 'FTRANSP_NO_NDS'
       OnChange = MatRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialFTRANSP_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrMaterialFTRANSP_NDS: TBCDField
       FieldName = 'FTRANSP_NDS'
-      Origin = 'FTRANSP_NDS'
       OnChange = MatRowChange
-    end
-    object qrMaterialMAT_ACTIVE: TByteField
-      AutoGenerateValue = arDefault
-      FieldName = 'MAT_ACTIVE'
-      Origin = 'MAT_ACTIVE'
+      Precision = 18
+      Size = 6
     end
     object qrMaterialSTATE_MATERIAL: TShortintField
       AutoGenerateValue = arDefault
@@ -3950,17 +3922,6 @@
       AutoGenerateValue = arDefault
       FieldName = 'STATE_TRANSPORT'
       Origin = 'STATE_TRANSPORT'
-    end
-    object qrMaterialDOC_DATE: TDateField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_DATE'
-      Origin = 'DOC_DATE'
-    end
-    object qrMaterialDOC_NUM: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_NUM'
-      Origin = 'DOC_NUM'
-      Size = 50
     end
     object qrMaterialMAT_PROC_ZAC: TIntegerField
       AutoGenerateValue = arDefault
@@ -4005,65 +3966,60 @@
       ProviderFlags = []
       ReadOnly = True
     end
-    object qrMaterialMAT_SUM_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMaterialMAT_SUM_NO_NDS: TBCDField
       FieldName = 'MAT_SUM_NO_NDS'
-      Origin = 'MAT_SUM_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialMAT_SUM_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMaterialMAT_SUM_NDS: TBCDField
       FieldName = 'MAT_SUM_NDS'
-      Origin = 'MAT_SUM_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialMAT_TRANSP_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMaterialMAT_TRANSP_NO_NDS: TBCDField
       FieldName = 'MAT_TRANSP_NO_NDS'
-      Origin = 'MAT_TRANSP_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialMAT_TRANSP_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMaterialMAT_TRANSP_NDS: TBCDField
       FieldName = 'MAT_TRANSP_NDS'
-      Origin = 'MAT_TRANSP_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMaterialPRICE_NO_NDS: TBCDField
       FieldName = 'PRICE_NO_NDS'
-      Origin = 'PRICE_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMaterialPRICE_NDS: TBCDField
       FieldName = 'PRICE_NDS'
-      Origin = 'PRICE_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialFPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMaterialFPRICE_NO_NDS: TBCDField
       FieldName = 'FPRICE_NO_NDS'
-      Origin = 'FPRICE_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialFPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrMaterialFPRICE_NDS: TBCDField
       FieldName = 'FPRICE_NDS'
-      Origin = 'FPRICE_NDS'
-    end
-    object qrMaterialTRANSP_NDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'TRANSP_NDS'
-      Origin = 'TRANSP_NDS'
+      Precision = 18
+      Size = 6
     end
     object qrMaterialCONS_REPLASED: TByteField
       FieldName = 'CONS_REPLASED'
     end
-    object qrMaterialCOAST_NO_NDS: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMaterialCOAST_NO_NDS: TBCDField
       FieldName = 'COAST_NO_NDS'
-      Origin = 'COAST_NO_NDS'
       OnChange = MatRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrMaterialCOAST_NDS: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMaterialCOAST_NDS: TBCDField
       FieldName = 'COAST_NDS'
-      Origin = 'COAST_NDS'
       OnChange = MatRowChange
+      Precision = 18
+      Size = 6
     end
     object qrMaterialADDED: TByteField
       FieldName = 'ADDED'
@@ -4082,7 +4038,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4090,17 +4046,10 @@
         TargetDataType = dtAnsiString
       end
       item
-        SourceDataType = dtFmtBCD
-        TargetDataType = dtDouble
-      end
-      item
         SourceDataType = dtUInt32
         TargetDataType = dtInt32
-      end
-      item
-        SourceDataType = dtBCD
-        TargetDataType = dtInt32
       end>
+    FormatOptions.MaxBcdScale = 6
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
       
@@ -4148,44 +4097,32 @@
       Origin = 'DEVICE_NAME'
       Size = 32767
     end
-    object qrDevicesDEVICE_COUNT: TFloatField
-      AutoGenerateValue = arDefault
+    object qrDevicesDEVICE_COUNT: TBCDField
       FieldName = 'DEVICE_COUNT'
-      Origin = 'DEVICE_COUNT'
+      OnChange = DevRowChange
+      Precision = 18
+      Size = 6
     end
     object qrDevicesDEVICE_UNIT: TStringField
       AutoGenerateValue = arDefault
       FieldName = 'DEVICE_UNIT'
       Origin = 'DEVICE_UNIT'
     end
-    object qrDevicesFCOAST_NO_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrDevicesFCOAST_NO_NDS: TBCDField
       FieldName = 'FCOAST_NO_NDS'
-      Origin = 'FCOAST_NO_NDS'
       OnChange = DevRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrDevicesFCOAST_NDS: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrDevicesFCOAST_NDS: TBCDField
       FieldName = 'FCOAST_NDS'
-      Origin = 'FCOAST_NDS'
       OnChange = DevRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrDevicesNDS: TWordField
-      AutoGenerateValue = arDefault
+    object qrDevicesNDS: TIntegerField
       FieldName = 'NDS'
-      Origin = 'NDS'
       OnChange = DevRowChange
-    end
-    object qrDevicesDOC_DATE: TDateField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_DATE'
-      Origin = 'DOC_DATE'
-    end
-    object qrDevicesDOC_NUM: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_NUM'
-      Origin = 'DOC_NUM'
-      Size = 50
     end
     object qrDevicesFACEMAN: TStringField
       AutoGenerateValue = arDefault
@@ -4217,43 +4154,41 @@
       Origin = 'TRANSP_PROC_PODR'
       OnChange = DevRowChange
     end
-    object qrDevicesDEVICE_SUM_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrDevicesDEVICE_SUM_NDS: TBCDField
       FieldName = 'DEVICE_SUM_NDS'
-      Origin = 'DEVICE_SUM_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrDevicesDEVICE_SUM_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrDevicesDEVICE_SUM_NO_NDS: TBCDField
       FieldName = 'DEVICE_SUM_NO_NDS'
-      Origin = 'DEVICE_SUM_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrDevicesFPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrDevicesFPRICE_NDS: TBCDField
       FieldName = 'FPRICE_NDS'
-      Origin = 'FPRICE_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrDevicesFPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrDevicesFPRICE_NO_NDS: TBCDField
       FieldName = 'FPRICE_NO_NDS'
-      Origin = 'FPRICE_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrDevicesDEVICE_TRANSP_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'DEVICE_TRANSP_NO_NDS'
-      Origin = 'DEVICE_TRANSP_NO_NDS'
-      OnChange = DevRowChange
-    end
-    object qrDevicesDEVICE_TRANSP_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrDevicesDEVICE_TRANSP_NDS: TBCDField
       FieldName = 'DEVICE_TRANSP_NDS'
-      Origin = 'DEVICE_TRANSP_NDS'
       OnChange = DevRowChange
+      Precision = 18
+      Size = 6
     end
-    object qrDevicesSCROLL: TIntegerField
-      AutoGenerateValue = arDefault
+    object qrDevicesDEVICE_TRANSP_NO_NDS: TBCDField
+      FieldName = 'DEVICE_TRANSP_NO_NDS'
+      OnChange = DevRowChange
+      Precision = 18
+      Size = 6
+    end
+    object qrDevicesSCROLL: TBCDField
       FieldName = 'SCROLL'
-      Origin = 'SCROLL'
-      ProviderFlags = []
+      Size = 1
     end
     object qrDevicesNUM: TIntegerField
       AutoGenerateValue = arDefault
@@ -4339,7 +4274,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4347,17 +4282,10 @@
         TargetDataType = dtAnsiString
       end
       item
-        SourceDataType = dtFmtBCD
-        TargetDataType = dtDouble
-      end
-      item
         SourceDataType = dtUInt16
         TargetDataType = dtInt32
-      end
-      item
-        SourceDataType = dtBCD
-        TargetDataType = dtDouble
       end>
+    FormatOptions.MaxBcdScale = 6
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
       'SELECT * FROM dumpcard_temp WHERE (ID = :IDValue) ORDER BY ID;')
@@ -4405,25 +4333,28 @@
       FieldName = 'DUMP_TYPE'
       Origin = 'DUMP_TYPE'
     end
-    object qrDumpDUMP_SUM_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrDumpDUMP_SUM_NDS: TBCDField
       FieldName = 'DUMP_SUM_NDS'
-      Origin = 'DUMP_SUM_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrDumpDUMP_SUM_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrDumpDUMP_SUM_NO_NDS: TBCDField
       FieldName = 'DUMP_SUM_NO_NDS'
-      Origin = 'DUMP_SUM_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrDumpCOAST_NO_NDS: TLongWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST_NO_NDS'
-      Origin = 'COAST_NO_NDS'
-    end
-    object qrDumpCOAST_NDS: TLongWordField
-      AutoGenerateValue = arDefault
+    object qrDumpCOAST_NDS: TBCDField
       FieldName = 'COAST_NDS'
-      Origin = 'COAST_NDS'
+      Precision = 18
+      Size = 6
+    end
+    object qrDumpCOAST_NO_NDS: TBCDField
+      FieldName = 'COAST_NO_NDS'
+      Precision = 18
+      Size = 6
+    end
+    object qrDumpNDS: TIntegerField
+      FieldName = 'NDS'
     end
     object qrDumpWORK_UNIT: TStringField
       AutoGenerateValue = arDefault
@@ -4436,40 +4367,35 @@
       FieldName = 'WORK_TYPE'
       Origin = 'WORK_TYPE'
     end
-    object qrDumpNDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'NDS'
-      Origin = 'NDS'
-    end
-    object qrDumpPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrDumpPRICE_NDS: TBCDField
       FieldName = 'PRICE_NDS'
-      Origin = 'PRICE_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrDumpPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrDumpPRICE_NO_NDS: TBCDField
       FieldName = 'PRICE_NO_NDS'
-      Origin = 'PRICE_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrDumpFCOAST_NDS: TLongWordField
-      AutoGenerateValue = arDefault
+    object qrDumpFCOAST_NDS: TBCDField
       FieldName = 'FCOAST_NDS'
-      Origin = 'FCOAST_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrDumpFCOAST_NO_NDS: TLongWordField
-      AutoGenerateValue = arDefault
+    object qrDumpFCOAST_NO_NDS: TBCDField
       FieldName = 'FCOAST_NO_NDS'
-      Origin = 'FCOAST_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrDumpFPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrDumpFPRICE_NDS: TBCDField
       FieldName = 'FPRICE_NDS'
-      Origin = 'FPRICE_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrDumpFPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrDumpFPRICE_NO_NDS: TBCDField
       FieldName = 'FPRICE_NO_NDS'
-      Origin = 'FPRICE_NO_NDS'
+      Precision = 18
+      Size = 6
     end
     object qrDumpNUM: TIntegerField
       FieldKind = fkCalculated
@@ -4481,20 +4407,20 @@
       Origin = 'DUMP_ID'
       Required = True
     end
-    object qrDumpDUMP_COUNT: TFloatField
-      AutoGenerateValue = arDefault
+    object qrDumpDUMP_COUNT: TBCDField
       FieldName = 'DUMP_COUNT'
-      Origin = 'DUMP_COUNT'
+      Precision = 18
+      Size = 6
     end
-    object qrDumpWORK_COUNT: TFloatField
-      AutoGenerateValue = arDefault
+    object qrDumpWORK_COUNT: TBCDField
       FieldName = 'WORK_COUNT'
-      Origin = 'WORK_COUNT'
+      Precision = 18
+      Size = 6
     end
-    object qrDumpWORK_YDW: TFloatField
-      AutoGenerateValue = arDefault
+    object qrDumpWORK_YDW: TBCDField
       FieldName = 'WORK_YDW'
-      Origin = 'WORK_YDW'
+      Precision = 18
+      Size = 6
     end
   end
   object dsDump: TDataSource
@@ -4517,7 +4443,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4527,15 +4453,8 @@
       item
         SourceDataType = dtUInt16
         TargetDataType = dtInt32
-      end
-      item
-        SourceDataType = dtBCD
-        TargetDataType = dtDouble
-      end
-      item
-        SourceDataType = dtFmtBCD
-        TargetDataType = dtDouble
       end>
+    FormatOptions.MaxBcdScale = 6
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
       
@@ -4573,40 +4492,48 @@
       Origin = 'TRANSP_JUST'
       Size = 100
     end
-    object qrTranspTRANSP_COUNT: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'TRANSP_COUNT'
-      Origin = 'TRANSP_COUNT'
-    end
-    object qrTranspTRANSP_DIST: TFloatField
-      AutoGenerateValue = arDefault
+    object qrTranspTRANSP_DIST: TBCDField
       FieldName = 'TRANSP_DIST'
-      Origin = 'TRANSP_DIST'
+      Precision = 18
+      Size = 6
     end
-    object qrTranspTRANSP_SUM_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrTranspTRANSP_COUNT: TBCDField
+      FieldName = 'TRANSP_COUNT'
+      Precision = 18
+      Size = 6
+    end
+    object qrTranspTRANSP_SUM_NDS: TBCDField
       FieldName = 'TRANSP_SUM_NDS'
-      Origin = 'TRANSP_SUM_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrTranspTRANSP_SUM_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrTranspTRANSP_SUM_NO_NDS: TBCDField
       FieldName = 'TRANSP_SUM_NO_NDS'
-      Origin = 'TRANSP_SUM_NO_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrTranspCOAST_NO_NDS: TLongWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST_NO_NDS'
-      Origin = 'COAST_NO_NDS'
+    object qrTranspNDS: TIntegerField
+      FieldName = 'NDS'
     end
-    object qrTranspCOAST_NDS: TLongWordField
-      AutoGenerateValue = arDefault
+    object qrTranspCOAST_NDS: TBCDField
       FieldName = 'COAST_NDS'
-      Origin = 'COAST_NDS'
+      Precision = 18
+      Size = 6
+    end
+    object qrTranspCOAST_NO_NDS: TBCDField
+      FieldName = 'COAST_NO_NDS'
+      Precision = 18
+      Size = 6
     end
     object qrTranspCARG_CLASS: TByteField
       AutoGenerateValue = arDefault
       FieldName = 'CARG_CLASS'
       Origin = 'CARG_CLASS'
+    end
+    object qrTranspCARG_COUNT: TBCDField
+      FieldName = 'CARG_COUNT'
+      Precision = 18
+      Size = 6
     end
     object qrTranspCARG_UNIT: TStringField
       AutoGenerateValue = arDefault
@@ -4619,30 +4546,20 @@
       FieldName = 'CARG_TYPE'
       Origin = 'CARG_TYPE'
     end
-    object qrTranspCARG_COUNT: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'CARG_COUNT'
-      Origin = 'CARG_COUNT'
-    end
-    object qrTranspCARG_YDW: TFloatField
-      AutoGenerateValue = arDefault
+    object qrTranspCARG_YDW: TBCDField
       FieldName = 'CARG_YDW'
-      Origin = 'CARG_YDW'
+      Precision = 18
+      Size = 6
     end
-    object qrTranspNDS: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'NDS'
-      Origin = 'NDS'
-    end
-    object qrTranspPRICE_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrTranspPRICE_NDS: TBCDField
       FieldName = 'PRICE_NDS'
-      Origin = 'PRICE_NDS'
+      Precision = 18
+      Size = 6
     end
-    object qrTranspPRICE_NO_NDS: TLargeintField
-      AutoGenerateValue = arDefault
+    object qrTranspPRICE_NO_NDS: TBCDField
       FieldName = 'PRICE_NO_NDS'
-      Origin = 'PRICE_NO_NDS'
+      Precision = 18
+      Size = 6
     end
     object qrTranspNUM: TIntegerField
       FieldKind = fkCalculated
@@ -4657,8 +4574,10 @@
     object qrTranspTRANSP_UNIT: TStringField
       FieldName = 'TRANSP_UNIT'
     end
-    object qrTranspKOEF: TFloatField
+    object qrTranspKOEF: TBCDField
       FieldName = 'KOEF'
+      Precision = 18
+      Size = 6
     end
   end
   object qrStartup: TFDQuery
@@ -4677,11 +4596,11 @@
       end
       item
         SourceDataType = dtFmtBCD
-        TargetDataType = dtDouble
+        TargetDataType = dtExtended
       end
       item
         SourceDataType = dtBCD
-        TargetDataType = dtDouble
+        TargetDataType = dtExtended
       end
       item
         SourceDataType = dtUInt16
@@ -4880,10 +4799,7 @@
       Size = 300
     end
     object qrRatesExOBJ_COUNT: TFloatField
-      AutoGenerateValue = arDefault
       FieldName = 'OBJ_COUNT'
-      Origin = 'OBJ_COUNT'
-      ProviderFlags = []
       OnChange = qrRatesExCOUNTChange
     end
     object qrRatesExOBJ_UNIT: TStringField

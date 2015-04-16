@@ -216,27 +216,12 @@ type
     qrMechanizmMECH_ID: TIntegerField;
     qrMechanizmMECH_CODE: TStringField;
     qrMechanizmMECH_NAME: TStringField;
-    qrMechanizmMECH_NORMA: TFloatField;
-    qrMechanizmMECH_COUNT: TFloatField;
     qrMechanizmMECH_UNIT: TStringField;
-    qrMechanizmCOAST_NO_NDS: TIntegerField;
-    qrMechanizmCOAST_NDS: TIntegerField;
-    qrMechanizmZP_MACH_NO_NDS: TIntegerField;
-    qrMechanizmZP_MACH_NDS: TIntegerField;
-    qrMechanizmMECH_PRICE: TIntegerField;
-    qrMechanizmMECH_ACTIVE: TShortintField;
-    qrMechanizmDOC_DATE: TDateField;
-    qrMechanizmDOC_NUM: TStringField;
     qrMechanizmFROM_RATE: TByteField;
-    qrMechanizmFCOAST_NO_NDS: TIntegerField;
-    qrMechanizmFCOAST_NDS: TIntegerField;
     HeaderControl1: THeaderControl;
     N8: TMenuItem;
     PMMechEdit: TMenuItem;
-    qrMechanizmFZP_MACH_NO_NDS: TIntegerField;
-    qrMechanizmFZP_MACH_NDS: TIntegerField;
     dbgrdMechanizm: TJvDBGrid;
-    qrMechanizmNDS: TSmallintField;
     qrMechanizmPROC_PODR: TSmallintField;
     qrMechanizmPROC_ZAC: TSmallintField;
     qrMaterial: TFDQuery;
@@ -251,20 +236,9 @@ type
     qrMaterialMAT_ID: TIntegerField;
     qrMaterialMAT_CODE: TStringField;
     qrMaterialMAT_NAME: TStringField;
-    qrMaterialMAT_NORMA: TFloatField;
-    qrMaterialMAT_COUNT: TFloatField;
     qrMaterialMAT_UNIT: TStringField;
-    qrMaterialTRANSP_NO_NDS: TIntegerField;
-    qrMaterialNDS: TIntegerField;
-    qrMaterialFCOAST_NO_NDS: TIntegerField;
-    qrMaterialFCOAST_NDS: TIntegerField;
-    qrMaterialFTRANSP_NO_NDS: TIntegerField;
-    qrMaterialFTRANSP_NDS: TIntegerField;
-    qrMaterialMAT_ACTIVE: TByteField;
     qrMaterialSTATE_MATERIAL: TShortintField;
     qrMaterialSTATE_TRANSPORT: TByteField;
-    qrMaterialDOC_DATE: TDateField;
-    qrMaterialDOC_NUM: TStringField;
     qrMaterialMAT_PROC_ZAC: TIntegerField;
     qrMaterialMAT_PROC_PODR: TIntegerField;
     qrMaterialTRANSP_PROC_ZAC: TIntegerField;
@@ -274,7 +248,6 @@ type
     qrMaterialTITLE: TIntegerField;
     qrMaterialPROC_TRANSP: TFloatField;
     N10: TMenuItem;
-    qrMaterialMAT_KOEF: TFloatField;
     qrDevices: TFDQuery;
     dsDevices: TDataSource;
     qrDevicesID: TFDAutoIncField;
@@ -283,56 +256,19 @@ type
     qrDevicesDEVICE_ACTIVE: TShortintField;
     qrDevicesDEVICE_CODE: TStringField;
     qrDevicesDEVICE_NAME: TStringField;
-    qrDevicesDEVICE_COUNT: TFloatField;
     qrDevicesDEVICE_UNIT: TStringField;
-    qrDevicesFCOAST_NO_NDS: TIntegerField;
-    qrDevicesFCOAST_NDS: TIntegerField;
-    qrDevicesNDS: TWordField;
-    qrDevicesDOC_DATE: TDateField;
-    qrDevicesDOC_NUM: TStringField;
     qrDevicesFACEMAN: TStringField;
     dbgrdDevices: TJvDBGrid;
     qrDevicesPROC_PODR: TWordField;
     qrDevicesPROC_ZAC: TWordField;
     PopupMenuDevices: TPopupMenu;
     PMDevEdit: TMenuItem;
-    qrMechanizmNORMATIV: TFloatField;
-    qrMechanizmNORM_TRYD: TFloatField;
-    qrMechanizmTERYDOZATR: TFloatField;
     dbgrdCalculations: TDBGrid;
     qrCalculations: TFDQuery;
     dsCalculations: TDataSource;
-    qrMaterialMAT_SUM_NO_NDS: TLargeintField;
-    qrMaterialMAT_SUM_NDS: TLargeintField;
-    qrMaterialMAT_TRANSP_NO_NDS: TLargeintField;
-    qrMaterialMAT_TRANSP_NDS: TLargeintField;
-    qrMaterialPRICE_NO_NDS: TLargeintField;
-    qrMaterialPRICE_NDS: TLargeintField;
-    qrMaterialFPRICE_NO_NDS: TLargeintField;
-    qrMaterialFPRICE_NDS: TLargeintField;
-    qrMaterialTRANSP_NDS: TIntegerField;
-    qrMechanizmMECH_SUM_NO_NDS: TLargeintField;
-    qrMechanizmMECH_SUM_NDS: TLargeintField;
-    qrMechanizmMECH_ZPSUM_NO_NDS: TLargeintField;
-    qrMechanizmMECH_ZPSUM_NDS: TLargeintField;
-    qrMechanizmPRICE_NO_NDS: TLargeintField;
-    qrMechanizmPRICE_NDS: TLargeintField;
-    qrMechanizmZPPRICE_NO_NDS: TLargeintField;
-    qrMechanizmZPPRICE_NDS: TLargeintField;
-    qrMechanizmFPRICE_NO_NDS: TLargeintField;
-    qrMechanizmFPRICE_NDS: TLargeintField;
-    qrMechanizmFZPPRICE_NO_NDS: TLargeintField;
-    qrMechanizmFZPPRICE_NDS: TLargeintField;
     qrMechanizmSCROLL: TIntegerField;
     qrMechanizmNUM: TIntegerField;
-    qrDevicesDEVICE_SUM_NDS: TLargeintField;
-    qrDevicesDEVICE_SUM_NO_NDS: TLargeintField;
-    qrDevicesFPRICE_NDS: TLargeintField;
-    qrDevicesFPRICE_NO_NDS: TLargeintField;
-    qrDevicesSCROLL: TIntegerField;
     qrDevicesNUM: TIntegerField;
-    qrDevicesDEVICE_TRANSP_NO_NDS: TLargeintField;
-    qrDevicesDEVICE_TRANSP_NDS: TLargeintField;
     qrDevicesTRANSP_PROC_PODR: TWordField;
     qrDevicesTRANSP_PROC_ZAC: TWordField;
     dbmmoCAPTION: TDBMemo;
@@ -346,26 +282,12 @@ type
     qrDumpDUMP_JUST: TStringField;
     qrDumpDUMP_UNIT: TStringField;
     qrDumpDUMP_TYPE: TByteField;
-    qrDumpDUMP_SUM_NDS: TLargeintField;
-    qrDumpDUMP_SUM_NO_NDS: TLargeintField;
-    qrDumpCOAST_NO_NDS: TLongWordField;
-    qrDumpCOAST_NDS: TLongWordField;
     qrDumpWORK_UNIT: TStringField;
     qrDumpWORK_TYPE: TByteField;
-    qrDumpNDS: TIntegerField;
-    qrDumpPRICE_NDS: TLargeintField;
-    qrDumpPRICE_NO_NDS: TLargeintField;
-    qrDumpFCOAST_NDS: TLongWordField;
-    qrDumpFCOAST_NO_NDS: TLongWordField;
-    qrDumpFPRICE_NDS: TLargeintField;
-    qrDumpFPRICE_NO_NDS: TLargeintField;
     qrDumpNUM: TIntegerField;
     PopupMenuDumpTransp: TPopupMenu;
     PMDumpEdit: TMenuItem;
     qrDumpDUMP_ID: TLongWordField;
-    qrDumpDUMP_COUNT: TFloatField;
-    qrDumpWORK_COUNT: TFloatField;
-    qrDumpWORK_YDW: TFloatField;
     dbgrdDescription: TJvDBGrid;
     btnTransp: TSpeedButton;
     btnStartup: TSpeedButton;
@@ -378,20 +300,9 @@ type
     qrTranspTRANSP_TYPE: TByteField;
     qrTranspTRANSP_CODE_JUST: TStringField;
     qrTranspTRANSP_JUST: TStringField;
-    qrTranspTRANSP_COUNT: TFloatField;
-    qrTranspTRANSP_DIST: TFloatField;
-    qrTranspTRANSP_SUM_NDS: TLargeintField;
-    qrTranspTRANSP_SUM_NO_NDS: TLargeintField;
-    qrTranspCOAST_NO_NDS: TLongWordField;
-    qrTranspCOAST_NDS: TLongWordField;
     qrTranspCARG_CLASS: TByteField;
     qrTranspCARG_UNIT: TStringField;
     qrTranspCARG_TYPE: TByteField;
-    qrTranspCARG_COUNT: TFloatField;
-    qrTranspCARG_YDW: TFloatField;
-    qrTranspNDS: TIntegerField;
-    qrTranspPRICE_NDS: TLargeintField;
-    qrTranspPRICE_NO_NDS: TLargeintField;
     qrTranspNUM: TIntegerField;
     qrStartupRATE_CODE: TStringField;
     qrStartupRATE_CAPTION: TStringField;
@@ -404,8 +315,6 @@ type
     tmRate: TTimer;
     qrMaterialCONS_REPLASED: TByteField;
     PMMatDelete: TMenuItem;
-    qrMaterialCOAST_NO_NDS: TFloatField;
-    qrMaterialCOAST_NDS: TFloatField;
     qrOXROPR: TFDQuery;
     dblkcbbOXROPR: TDBLookupComboBox;
     dsOXROPR: TDataSource;
@@ -422,12 +331,10 @@ type
     dsRatesEx: TDataSource;
     grRatesEx: TJvDBGrid;
     qrMechanizmTITLE: TIntegerField;
-    qrTranspKOEF: TFloatField;
     qrRatesExINCITERATOR: TIntegerField;
     qrRatesExITERATOR: TIntegerField;
     qrRatesExOBJ_CODE: TStringField;
     qrRatesExOBJ_NAME: TStringField;
-    qrRatesExOBJ_COUNT: TFloatField;
     qrRatesExOBJ_UNIT: TStringField;
     qrRatesExID_TYPE_DATA: TIntegerField;
     qrRatesExDATA_ESTIMATE_OR_ACT_ID: TIntegerField;
@@ -445,6 +352,90 @@ type
     PMMechAddToRate: TMenuItem;
     qrMaterialADDED: TByteField;
     qrMechanizmADDED: TByteField;
+    qrMaterialNDS: TIntegerField;
+    qrMechanizmNDS: TIntegerField;
+    qrDevicesNDS: TIntegerField;
+    qrDumpNDS: TIntegerField;
+    qrTranspNDS: TIntegerField;
+    qrRatesExOBJ_COUNT: TFloatField;
+    qrMaterialMAT_NORMA: TBCDField;
+    qrMaterialMAT_COUNT: TBCDField;
+    qrMaterialMAT_KOEF: TBCDField;
+    qrMaterialTRANSP_NO_NDS: TBCDField;
+    qrMaterialTRANSP_NDS: TBCDField;
+    qrMaterialFCOAST_NO_NDS: TBCDField;
+    qrMaterialFCOAST_NDS: TBCDField;
+    qrMaterialFTRANSP_NO_NDS: TBCDField;
+    qrMaterialFTRANSP_NDS: TBCDField;
+    qrMaterialMAT_SUM_NO_NDS: TBCDField;
+    qrMaterialMAT_SUM_NDS: TBCDField;
+    qrMaterialMAT_TRANSP_NO_NDS: TBCDField;
+    qrMaterialMAT_TRANSP_NDS: TBCDField;
+    qrMaterialPRICE_NO_NDS: TBCDField;
+    qrMaterialPRICE_NDS: TBCDField;
+    qrMaterialFPRICE_NO_NDS: TBCDField;
+    qrMaterialFPRICE_NDS: TBCDField;
+    qrMaterialCOAST_NO_NDS: TBCDField;
+    qrMaterialCOAST_NDS: TBCDField;
+    qrMechanizmMECH_NORMA: TBCDField;
+    qrMechanizmMECH_COUNT: TBCDField;
+    qrMechanizmCOAST_NO_NDS: TBCDField;
+    qrMechanizmCOAST_NDS: TBCDField;
+    qrMechanizmZP_MACH_NO_NDS: TBCDField;
+    qrMechanizmZP_MACH_NDS: TBCDField;
+    qrMechanizmFCOAST_NO_NDS: TBCDField;
+    qrMechanizmFCOAST_NDS: TBCDField;
+    qrMechanizmFZP_MACH_NO_NDS: TBCDField;
+    qrMechanizmFZP_MACH_NDS: TBCDField;
+    qrMechanizmNORMATIV: TBCDField;
+    qrMechanizmNORM_TRYD: TBCDField;
+    qrMechanizmTERYDOZATR: TBCDField;
+    qrMechanizmMECH_SUM_NO_NDS: TBCDField;
+    qrMechanizmMECH_SUM_NDS: TBCDField;
+    qrMechanizmMECH_ZPSUM_NO_NDS: TBCDField;
+    qrMechanizmMECH_ZPSUM_NDS: TBCDField;
+    qrMechanizmPRICE_NO_NDS: TBCDField;
+    qrMechanizmPRICE_NDS: TBCDField;
+    qrMechanizmZPPRICE_NO_NDS: TBCDField;
+    qrMechanizmZPPRICE_NDS: TBCDField;
+    qrMechanizmFPRICE_NO_NDS: TBCDField;
+    qrMechanizmFPRICE_NDS: TBCDField;
+    qrMechanizmFZPPRICE_NO_NDS: TBCDField;
+    qrMechanizmFZPPRICE_NDS: TBCDField;
+    qrDevicesDEVICE_COUNT: TBCDField;
+    qrDevicesFCOAST_NO_NDS: TBCDField;
+    qrDevicesFCOAST_NDS: TBCDField;
+    qrDevicesDEVICE_SUM_NDS: TBCDField;
+    qrDevicesDEVICE_SUM_NO_NDS: TBCDField;
+    qrDevicesFPRICE_NDS: TBCDField;
+    qrDevicesFPRICE_NO_NDS: TBCDField;
+    qrDevicesDEVICE_TRANSP_NDS: TBCDField;
+    qrDevicesDEVICE_TRANSP_NO_NDS: TBCDField;
+    qrDumpDUMP_SUM_NDS: TBCDField;
+    qrDumpDUMP_SUM_NO_NDS: TBCDField;
+    qrDumpCOAST_NDS: TBCDField;
+    qrDumpCOAST_NO_NDS: TBCDField;
+    qrDumpPRICE_NDS: TBCDField;
+    qrDumpPRICE_NO_NDS: TBCDField;
+    qrDumpFCOAST_NDS: TBCDField;
+    qrDumpFCOAST_NO_NDS: TBCDField;
+    qrDumpFPRICE_NDS: TBCDField;
+    qrDumpFPRICE_NO_NDS: TBCDField;
+    qrDumpDUMP_COUNT: TBCDField;
+    qrDumpWORK_COUNT: TBCDField;
+    qrDumpWORK_YDW: TBCDField;
+    qrTranspTRANSP_COUNT: TBCDField;
+    qrTranspTRANSP_DIST: TBCDField;
+    qrTranspTRANSP_SUM_NDS: TBCDField;
+    qrTranspTRANSP_SUM_NO_NDS: TBCDField;
+    qrTranspCOAST_NDS: TBCDField;
+    qrTranspCOAST_NO_NDS: TBCDField;
+    qrTranspCARG_COUNT: TBCDField;
+    qrTranspPRICE_NDS: TBCDField;
+    qrTranspPRICE_NO_NDS: TBCDField;
+    qrTranspCARG_YDW: TBCDField;
+    qrTranspKOEF: TBCDField;
+    qrDevicesSCROLL: TBCDField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -739,8 +730,8 @@ var
   FormCalculationEstimate: TFormCalculationEstimate;
   TwoValues: TTwoValues;
 
-function NDSToNoNDS(AValue: Int64; aNDS: Integer): Int64;
-function NoNDSToNDS(AValue: Int64; aNDS: Integer): Int64;
+function NDSToNoNDS(AValue, ANDS: Extended): Extended;
+function NoNDSToNDS(AValue, aNDS: Extended): Extended;
 
 implementation
 
@@ -755,14 +746,14 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
 
 {$R *.dfm}
 
-function NDSToNoNDS(AValue: Int64; aNDS: Integer): Int64;
+function NDSToNoNDS(AValue, ANDS: Extended): Extended;
 begin
-  Result := Round(AValue / (1.000000 + 0.010000 * aNDS));
+  Result := Round(AValue / (1.000000 + 0.010000 * ANDS));
 end;
 
-function NoNDSToNDS(AValue: Int64; aNDS: Integer): Int64;
+function NoNDSToNDS(AValue, ANDS: Extended): Extended;
 begin
-  Result := Round(AValue * (1.000000 + 0.010000 * aNDS));
+  Result := Round(AValue * (1.000000 + 0.010000 * ANDS));
 end;
 
 { TSplitter }
@@ -1587,36 +1578,36 @@ begin
       if (Sender.FieldName = 'PROC_PODR') or (Sender.FieldName = 'PROC_ZAC') or
         (Sender.FieldName = 'TRANSP_PROC_PODR') or (Sender.FieldName = 'TRANSP_PROC_ZAC') then
       begin
-        if Sender.AsInteger > 100 then
-          Sender.AsInteger := 100;
+        if Sender.Value > 100 then
+          Sender.Value := 100;
 
-        if Sender.AsInteger < 0 then
-          Sender.AsInteger := 0;
+        if Sender.Value < 0 then
+          Sender.Value := 0;
 
         if (Sender.FieldName = 'PROC_PODR') then
-          qrDevicesPROC_ZAC.AsInteger := 100 - qrDevicesPROC_PODR.AsInteger;
+          qrDevicesPROC_ZAC.Value := 100 - qrDevicesPROC_PODR.Value;
 
         if (Sender.FieldName = 'PROC_ZAC') then
-          qrDevicesPROC_PODR.AsInteger := 100 - qrDevicesPROC_ZAC.AsInteger;
+          qrDevicesPROC_PODR.Value := 100 - qrDevicesPROC_ZAC.Value;
 
         if (Sender.FieldName = 'TRANSP_PROC_PODR') then
-          qrDevicesTRANSP_PROC_ZAC.AsInteger := 100 - qrDevicesTRANSP_PROC_PODR.AsInteger;
+          qrDevicesTRANSP_PROC_ZAC.Value := 100 - qrDevicesTRANSP_PROC_PODR.Value;
 
         if (Sender.FieldName = 'TRANSP_PROC_ZAC') then
-          qrDevicesTRANSP_PROC_PODR.AsInteger := 100 - qrDevicesTRANSP_PROC_ZAC.AsInteger;
+          qrDevicesTRANSP_PROC_PODR.Value := 100 - qrDevicesTRANSP_PROC_ZAC.Value;
       end;
 
       if NDSEstimate then
       begin
-        qrDevicesFCOAST_NO_NDS.AsInteger := NDSToNoNDS(qrDevicesFCOAST_NDS.AsInteger, qrDevicesNDS.AsInteger);
-        qrDevicesDEVICE_TRANSP_NO_NDS.AsInteger := NDSToNoNDS(qrDevicesDEVICE_TRANSP_NDS.AsInteger,
-          qrDevicesNDS.AsInteger);
+        qrDevicesFCOAST_NO_NDS.Value := NDSToNoNDS(qrDevicesFCOAST_NDS.Value, qrDevicesNDS.Value);
+        qrDevicesDEVICE_TRANSP_NO_NDS.Value := NDSToNoNDS(qrDevicesDEVICE_TRANSP_NDS.Value,
+          qrDevicesNDS.Value);
       end
       else
       begin
-        qrDevicesFCOAST_NDS.AsInteger := NoNDSToNDS(qrDevicesFCOAST_NO_NDS.AsInteger, qrDevicesNDS.AsInteger);
-        qrDevicesDEVICE_TRANSP_NDS.AsLargeInt := NoNDSToNDS(qrDevicesDEVICE_TRANSP_NO_NDS.AsLargeInt,
-          qrDevicesNDS.AsInteger);
+        qrDevicesFCOAST_NDS.Value := NoNDSToNDS(qrDevicesFCOAST_NO_NDS.Value, qrDevicesNDS.Value);
+        qrDevicesDEVICE_TRANSP_NDS.Value := NoNDSToNDS(qrDevicesDEVICE_TRANSP_NO_NDS.Value,
+          qrDevicesNDS.Value);
       end;
       // После изменения ячейки строка фиксируется
       qrDevices.Post;
@@ -1802,39 +1793,39 @@ begin
       if (Sender.FieldName = 'MAT_PROC_PODR') or (Sender.FieldName = 'MAT_PROC_ZAC') or
         (Sender.FieldName = 'TRANSP_PROC_PODR') or (Sender.FieldName = 'TRANSP_PROC_ZAC') then
       begin
-        if Sender.AsInteger > 100 then
-          Sender.AsInteger := 100;
+        if Sender.Value > 100 then
+          Sender.Value := 100;
 
-        if Sender.AsInteger < 0 then
-          Sender.AsInteger := 0;
+        if Sender.Value < 0 then
+          Sender.Value := 0;
 
         if Sender.FieldName = 'MAT_PROC_PODR' then
-          qrMaterialMAT_PROC_ZAC.AsInteger := 100 - qrMaterialMAT_PROC_PODR.AsInteger;
+          qrMaterialMAT_PROC_ZAC.Value := 100 - qrMaterialMAT_PROC_PODR.Value;
         if Sender.FieldName = 'MAT_PROC_ZAC' then
-          qrMaterialMAT_PROC_PODR.AsInteger := 100 - qrMaterialMAT_PROC_ZAC.AsInteger;
+          qrMaterialMAT_PROC_PODR.Value := 100 - qrMaterialMAT_PROC_ZAC.Value;
         if Sender.FieldName = 'TRANSP_PROC_PODR' then
-          qrMaterialTRANSP_PROC_ZAC.AsInteger := 100 - qrMaterialTRANSP_PROC_PODR.AsInteger;
+          qrMaterialTRANSP_PROC_ZAC.Value := 100 - qrMaterialTRANSP_PROC_PODR.Value;
         if Sender.FieldName = 'TRANSP_PROC_ZAC' then
-          qrMaterialTRANSP_PROC_PODR.AsInteger := 100 - qrMaterialTRANSP_PROC_ZAC.AsInteger;
+          qrMaterialTRANSP_PROC_PODR.Value := 100 - qrMaterialTRANSP_PROC_ZAC.Value;
       end;
       // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
       if NDSEstimate then
       begin
-        qrMaterialCOAST_NO_NDS.AsLargeInt := NDSToNoNDS(qrMaterialCOAST_NDS.AsLargeInt,
-          qrMaterialNDS.AsInteger);
-        qrMaterialFCOAST_NO_NDS.AsLargeInt := NDSToNoNDS(qrMaterialFCOAST_NDS.AsLargeInt,
-          qrMaterialNDS.AsInteger);
-        qrMaterialFTRANSP_NO_NDS.AsLargeInt := NDSToNoNDS(qrMaterialFTRANSP_NDS.AsLargeInt,
-          qrMaterialNDS.AsInteger);
+        qrMaterialCOAST_NO_NDS.Value := NDSToNoNDS(qrMaterialCOAST_NDS.Value,
+          qrMaterialNDS.Value);
+        qrMaterialFCOAST_NO_NDS.Value := NDSToNoNDS(qrMaterialFCOAST_NDS.Value,
+          qrMaterialNDS.Value);
+        qrMaterialFTRANSP_NO_NDS.Value := NDSToNoNDS(qrMaterialFTRANSP_NDS.Value,
+          qrMaterialNDS.Value);
       end
       else
       begin
-        qrMaterialCOAST_NDS.AsLargeInt := NoNDSToNDS(qrMaterialCOAST_NO_NDS.AsLargeInt,
-          qrMaterialNDS.AsInteger);
-        qrMaterialFCOAST_NDS.AsLargeInt := NoNDSToNDS(qrMaterialFCOAST_NO_NDS.AsLargeInt,
-          qrMaterialNDS.AsInteger);
-        qrMaterialFTRANSP_NDS.AsLargeInt := NoNDSToNDS(qrMaterialFTRANSP_NO_NDS.AsLargeInt,
-          qrMaterialNDS.AsInteger);
+        qrMaterialCOAST_NDS.Value := NoNDSToNDS(qrMaterialCOAST_NO_NDS.Value,
+          qrMaterialNDS.Value);
+        qrMaterialFCOAST_NDS.Value := NoNDSToNDS(qrMaterialFCOAST_NO_NDS.Value,
+          qrMaterialNDS.Value);
+        qrMaterialFTRANSP_NDS.Value := NoNDSToNDS(qrMaterialFTRANSP_NO_NDS.Value,
+          qrMaterialNDS.Value);
       end;
       // После изменения ячейки фиксируется
       qrMaterial.Post;
@@ -1969,38 +1960,38 @@ begin
       // Индивидуальное поведение для конкретных полей
       if (Sender.FieldName = 'PROC_PODR') or (Sender.FieldName = 'PROC_ZAC') then
       begin
-        if Sender.AsInteger > 100 then
-          Sender.AsInteger := 100;
-        if Sender.AsInteger < 0 then
-          Sender.AsInteger := 0;
+        if Sender.Value > 100 then
+          Sender.Value := 100;
+        if Sender.Value < 0 then
+          Sender.Value := 0;
         if (Sender.FieldName = 'PROC_PODR') then
-          qrMechanizmPROC_ZAC.AsInteger := 100 - qrMechanizmPROC_PODR.AsInteger;
+          qrMechanizmPROC_ZAC.Value := 100 - qrMechanizmPROC_PODR.Value;
         if (Sender.FieldName = 'PROC_ZAC') then
-          qrMechanizmPROC_PODR.AsInteger := 100 - qrMechanizmPROC_ZAC.AsInteger;
+          qrMechanizmPROC_PODR.Value := 100 - qrMechanizmPROC_ZAC.Value;
       end;
 
       // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
       if NDSEstimate then
       begin
-        qrMechanizmCOAST_NO_NDS.AsLargeInt := NDSToNoNDS(qrMechanizmCOAST_NDS.AsLargeInt,
-          qrMechanizmNDS.AsInteger);
-        qrMechanizmFCOAST_NO_NDS.AsLargeInt := NDSToNoNDS(qrMechanizmFCOAST_NDS.AsLargeInt,
-          qrMechanizmNDS.AsInteger);
-        qrMechanizmZP_MACH_NO_NDS.AsLargeInt := NDSToNoNDS(qrMechanizmZP_MACH_NDS.AsLargeInt,
-          qrMechanizmNDS.AsInteger);
-        qrMechanizmFZP_MACH_NO_NDS.AsLargeInt := NDSToNoNDS(qrMechanizmFZP_MACH_NDS.AsLargeInt,
-          qrMechanizmNDS.AsInteger);
+        qrMechanizmCOAST_NO_NDS.Value := NDSToNoNDS(qrMechanizmCOAST_NDS.Value,
+          qrMechanizmNDS.Value);
+        qrMechanizmFCOAST_NO_NDS.Value := NDSToNoNDS(qrMechanizmFCOAST_NDS.Value,
+          qrMechanizmNDS.Value);
+        qrMechanizmZP_MACH_NO_NDS.Value := NDSToNoNDS(qrMechanizmZP_MACH_NDS.Value,
+          qrMechanizmNDS.Value);
+        qrMechanizmFZP_MACH_NO_NDS.Value := NDSToNoNDS(qrMechanizmFZP_MACH_NDS.Value,
+          qrMechanizmNDS.Value);
       end
       else
       begin
-        qrMechanizmCOAST_NDS.AsLargeInt := NoNDSToNDS(qrMechanizmCOAST_NO_NDS.AsLargeInt,
-          qrMechanizmNDS.AsInteger);
-        qrMechanizmFCOAST_NDS.AsLargeInt := NoNDSToNDS(qrMechanizmFCOAST_NO_NDS.AsLargeInt,
-          qrMechanizmNDS.AsInteger);
-        qrMechanizmZP_MACH_NDS.AsLargeInt := NoNDSToNDS(qrMechanizmZP_MACH_NO_NDS.AsLargeInt,
-          qrMechanizmNDS.AsInteger);
-        qrMechanizmFZP_MACH_NDS.AsLargeInt := NoNDSToNDS(qrMechanizmFZP_MACH_NO_NDS.AsLargeInt,
-          qrMechanizmNDS.AsInteger);
+        qrMechanizmCOAST_NDS.Value := NoNDSToNDS(qrMechanizmCOAST_NO_NDS.Value,
+          qrMechanizmNDS.Value);
+        qrMechanizmFCOAST_NDS.Value := NoNDSToNDS(qrMechanizmFCOAST_NO_NDS.Value,
+          qrMechanizmNDS.Value);
+        qrMechanizmZP_MACH_NDS.Value := NoNDSToNDS(qrMechanizmZP_MACH_NO_NDS.Value,
+          qrMechanizmNDS.Value);
+        qrMechanizmFZP_MACH_NDS.Value := NoNDSToNDS(qrMechanizmFZP_MACH_NO_NDS.Value,
+          qrMechanizmNDS.Value);
       end;
 
       // После изменения ячейки строка фиксируется
@@ -2053,8 +2044,8 @@ begin
           qrMaterialMAT_NAME.AsString := MemoRight.Text;
           qrMaterial.Post;
           qrTemp.SQL.Text := 'UPDATE materialcard_temp set ' + 'MAT_NAME=:MAT_NAME WHERE ID=:ID;';
-          qrTemp.ParamByName('ID').AsInteger := qrMaterialID.AsInteger;
-          qrTemp.ParamByName('MAT_NAME').AsString := MemoRight.Text;
+          qrTemp.ParamByName('ID').Value := qrMaterialID.AsInteger;
+          qrTemp.ParamByName('MAT_NAME').Value := MemoRight.Text;
           qrTemp.ExecSQL;
         end;
       3:
@@ -2103,23 +2094,23 @@ begin
   if not qrTemp.IsEmpty then
   begin
     qrMechanizm.Edit;
-    qrMechanizmMECH_NORMA.AsFloat := qrTemp.FieldByName('MECH_NORMA').AsFloat;
-    qrMechanizmMECH_COUNT.AsFloat := qrTemp.FieldByName('MECH_COUNT').AsFloat;
-    qrMechanizmPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('PRICE_NO_NDS').AsLargeInt;
-    qrMechanizmPRICE_NDS.AsLargeInt := qrTemp.FieldByName('PRICE_NDS').AsLargeInt;
-    qrMechanizmZPPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('ZPPRICE_NO_NDS').AsLargeInt;
-    qrMechanizmZPPRICE_NDS.AsLargeInt := qrTemp.FieldByName('ZPPRICE_NDS').AsLargeInt;
-    qrMechanizmFPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NO_NDS').AsLargeInt;
-    qrMechanizmFPRICE_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NDS').AsLargeInt;
-    qrMechanizmFZPPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('FZPPRICE_NO_NDS').AsLargeInt;
-    qrMechanizmFZPPRICE_NDS.AsLargeInt := qrTemp.FieldByName('FZPPRICE_NDS').AsLargeInt;
-    qrMechanizmMECH_SUM_NO_NDS.AsLargeInt := qrTemp.FieldByName('MECH_SUM_NO_NDS').AsLargeInt;
-    qrMechanizmMECH_SUM_NDS.AsLargeInt := qrTemp.FieldByName('MECH_SUM_NDS').AsLargeInt;
-    qrMechanizmMECH_ZPSUM_NO_NDS.AsLargeInt := qrTemp.FieldByName('MECH_ZPSUM_NO_NDS').AsLargeInt;
-    qrMechanizmMECH_ZPSUM_NDS.AsLargeInt := qrTemp.FieldByName('MECH_ZPSUM_NDS').AsLargeInt;
-    qrMechanizmNORMATIV.AsFloat := qrTemp.FieldByName('NORMATIV').AsFloat;
-    qrMechanizmNORM_TRYD.AsFloat := qrTemp.FieldByName('NORM_TRYD').AsFloat;
-    qrMechanizmTERYDOZATR.AsFloat := qrTemp.FieldByName('TERYDOZATR').AsFloat;
+    qrMechanizmMECH_NORMA.Value := qrTemp.FieldByName('MECH_NORMA').Value;
+    qrMechanizmMECH_COUNT.Value := qrTemp.FieldByName('MECH_COUNT').Value;
+    qrMechanizmPRICE_NO_NDS.Value := qrTemp.FieldByName('PRICE_NO_NDS').Value;
+    qrMechanizmPRICE_NDS.Value := qrTemp.FieldByName('PRICE_NDS').Value;
+    qrMechanizmZPPRICE_NO_NDS.Value := qrTemp.FieldByName('ZPPRICE_NO_NDS').Value;
+    qrMechanizmZPPRICE_NDS.Value := qrTemp.FieldByName('ZPPRICE_NDS').Value;
+    qrMechanizmFPRICE_NO_NDS.Value := qrTemp.FieldByName('FPRICE_NO_NDS').Value;
+    qrMechanizmFPRICE_NDS.Value := qrTemp.FieldByName('FPRICE_NDS').Value;
+    qrMechanizmFZPPRICE_NO_NDS.Value := qrTemp.FieldByName('FZPPRICE_NO_NDS').Value;
+    qrMechanizmFZPPRICE_NDS.Value := qrTemp.FieldByName('FZPPRICE_NDS').Value;
+    qrMechanizmMECH_SUM_NO_NDS.Value := qrTemp.FieldByName('MECH_SUM_NO_NDS').Value;
+    qrMechanizmMECH_SUM_NDS.Value := qrTemp.FieldByName('MECH_SUM_NDS').Value;
+    qrMechanizmMECH_ZPSUM_NO_NDS.Value := qrTemp.FieldByName('MECH_ZPSUM_NO_NDS').Value;
+    qrMechanizmMECH_ZPSUM_NDS.Value := qrTemp.FieldByName('MECH_ZPSUM_NDS').Value;
+    qrMechanizmNORMATIV.Value := qrTemp.FieldByName('NORMATIV').Value;
+    qrMechanizmNORM_TRYD.Value := qrTemp.FieldByName('NORM_TRYD').Value;
+    qrMechanizmTERYDOZATR.Value := qrTemp.FieldByName('TERYDOZATR').Value;
     qrMechanizm.Post;
   end;
   qrTemp.Active := False;
@@ -2138,24 +2129,24 @@ begin
   if not qrTemp.IsEmpty then
   begin
     qrMaterial.Edit;
-    qrMaterialMAT_NORMA.AsFloat := qrTemp.FieldByName('MAT_NORMA').AsFloat;
-    qrMaterialMAT_COUNT.AsFloat := qrTemp.FieldByName('MAT_COUNT').AsFloat;
-    qrMaterialTRANSP_NO_NDS.AsInteger := qrTemp.FieldByName('TRANSP_NO_NDS').AsInteger;
-    qrMaterialTRANSP_NDS.AsInteger := qrTemp.FieldByName('TRANSP_NDS').AsInteger;
-    qrMaterialPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('PRICE_NO_NDS').AsLargeInt;
-    qrMaterialPRICE_NDS.AsLargeInt := qrTemp.FieldByName('PRICE_NDS').AsLargeInt;
-    qrMaterialFPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NO_NDS').AsLargeInt;
-    qrMaterialFPRICE_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NDS').AsLargeInt;
-    qrMaterialMAT_SUM_NO_NDS.AsLargeInt := qrTemp.FieldByName('MAT_SUM_NO_NDS').AsLargeInt;
-    qrMaterialMAT_SUM_NDS.AsLargeInt := qrTemp.FieldByName('MAT_SUM_NDS').AsLargeInt;
-    qrMaterialMAT_TRANSP_NO_NDS.AsLargeInt := qrTemp.FieldByName('MAT_TRANSP_NO_NDS').AsLargeInt;
-    qrMaterialMAT_TRANSP_NDS.AsLargeInt := qrTemp.FieldByName('MAT_TRANSP_NDS').AsLargeInt;
+    qrMaterialMAT_NORMA.Value := qrTemp.FieldByName('MAT_NORMA').Value;
+    qrMaterialMAT_COUNT.Value := qrTemp.FieldByName('MAT_COUNT').Value;
+    qrMaterialTRANSP_NO_NDS.Value := qrTemp.FieldByName('TRANSP_NO_NDS').Value;
+    qrMaterialTRANSP_NDS.Value := qrTemp.FieldByName('TRANSP_NDS').Value;
+    qrMaterialPRICE_NO_NDS.Value := qrTemp.FieldByName('PRICE_NO_NDS').Value;
+    qrMaterialPRICE_NDS.Value := qrTemp.FieldByName('PRICE_NDS').Value;
+    qrMaterialFPRICE_NO_NDS.Value := qrTemp.FieldByName('FPRICE_NO_NDS').Value;
+    qrMaterialFPRICE_NDS.Value := qrTemp.FieldByName('FPRICE_NDS').Value;
+    qrMaterialMAT_SUM_NO_NDS.Value := qrTemp.FieldByName('MAT_SUM_NO_NDS').Value;
+    qrMaterialMAT_SUM_NDS.Value := qrTemp.FieldByName('MAT_SUM_NDS').Value;
+    qrMaterialMAT_TRANSP_NO_NDS.Value := qrTemp.FieldByName('MAT_TRANSP_NO_NDS').Value;
+    qrMaterialMAT_TRANSP_NDS.Value := qrTemp.FieldByName('MAT_TRANSP_NDS').Value;
     qrMaterial.Post;
   end;
   qrTemp.Active := False;
 
   if qrMaterialID_REPLACED.AsInteger > 0 then
-    UpdateMatCountInGridRate(qrMaterialID.AsInteger, qrMaterialMAT_COUNT.AsFloat);
+    UpdateMatCountInGridRate(qrMaterialID.AsInteger, qrMaterialMAT_COUNT.Value);
 
   CloseOpen(qrCalculations);
 end;
@@ -2171,10 +2162,10 @@ begin
   if not qrTemp.IsEmpty then
   begin
     qrDevices.Edit;
-    qrDevicesFPRICE_NO_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NO_NDS').AsLargeInt;
-    qrDevicesFPRICE_NDS.AsLargeInt := qrTemp.FieldByName('FPRICE_NDS').AsLargeInt;
-    qrDevicesDEVICE_SUM_NO_NDS.AsLargeInt := qrTemp.FieldByName('DEVICE_SUM_NO_NDS').AsLargeInt;
-    qrDevicesDEVICE_SUM_NDS.AsLargeInt := qrTemp.FieldByName('DEVICE_SUM_NDS').AsLargeInt;
+    qrDevicesFPRICE_NO_NDS.Value := qrTemp.FieldByName('FPRICE_NO_NDS').Value;
+    qrDevicesFPRICE_NDS.Value := qrTemp.FieldByName('FPRICE_NDS').Value;
+    qrDevicesDEVICE_SUM_NO_NDS.Value := qrTemp.FieldByName('DEVICE_SUM_NO_NDS').Value;
+    qrDevicesDEVICE_SUM_NDS.Value := qrTemp.FieldByName('DEVICE_SUM_NDS').Value;
     qrDevices.Post;
   end;
   qrTemp.Active := False;
@@ -2361,8 +2352,8 @@ begin
         Exit;
       end;
     end;
-    qrTemp.ParamByName('ID').AsInteger := qrRatesExID_TABLES.AsInteger;
-    qrTemp.ParamByName('RC').AsFloat := Sender.Value;
+    qrTemp.ParamByName('ID').Value := qrRatesExID_TABLES.AsInteger;
+    qrTemp.ParamByName('RC').Value := Sender.Value;
     qrTemp.ExecSQL;
     // Пересчитывает все величины по данной строке
     ReCalcRowRates;
@@ -2452,8 +2443,8 @@ procedure TFormCalculationEstimate.ReCalcRowRates;
 begin
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE);';
-  qrTemp.ParamByName('ID').AsInteger := qrRatesExID_TABLES.AsInteger;
-  qrTemp.ParamByName('TYPE').AsInteger := qrRatesExID_TYPE_DATA.AsInteger;
+  qrTemp.ParamByName('ID').Value := qrRatesExID_TABLES.Value;
+  qrTemp.ParamByName('TYPE').Value := qrRatesExID_TYPE_DATA.Value;
   qrTemp.ExecSQL;
 
   // Для расценок обновляется кол-во у заменяющих материалов
@@ -3005,17 +2996,6 @@ begin
         // Нажимаем на кнопку материалов, для отображения таблицы материалов
         btnMaterialsClick(btnMaterials);
 
-        // Средний разряд рабочих-строителей
-        { if CheckMatINRates then
-          begin
-          PMDelete.Enabled := False;
-          EditCategory.Text :=
-          MyFloatToStr(GetRankBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
-          EditCategory.Text :=
-          MyFloatToStr(GetWorkCostBuilders(IntToStr(qrRatesRATEIDINRATE.AsInteger)));
-          FillingWinterPrice(qrRatesCODEINRATE.AsString);
-          end; }
-
         CalcPrice := '10';
       end;
     3: // МЕХАНИЗМ
@@ -3087,9 +3067,9 @@ begin
   qrTemp.Active := False;
   qrTemp.SQL.Text :=
     'SELECT COUNT(*) AS CNT FROM calculation_coef_temp where id_estimate=:id_estimate and id_owner=:id_owner and id_type_data=:id_type_data';
-  qrTemp.ParamByName('id_estimate').AsInteger := qrRatesExSM_ID.AsInteger;
-  qrTemp.ParamByName('id_owner').AsInteger := qrRatesExID_TABLES.AsInteger;
-  qrTemp.ParamByName('id_type_data').AsInteger := qrRatesExID_TYPE_DATA.AsInteger;
+  qrTemp.ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
+  qrTemp.ParamByName('id_owner').Value := qrRatesExID_TABLES.AsInteger;
+  qrTemp.ParamByName('id_type_data').Value := qrRatesExID_TYPE_DATA.AsInteger;
   qrTemp.Active := True;
   Result := qrTemp.FieldByName('CNT').AsInteger;
   qrTemp.Active := False;
@@ -3156,7 +3136,7 @@ begin
     Exit;
 
   qrTemp.SQL.Text := 'Delete from calculation_coef_temp where calculation_coef_id=:id';
-  qrTemp.ParamByName('id').AsInteger := qrCalculations.FieldByName('id').AsInteger;
+  qrTemp.ParamByName('id').Value := qrCalculations.FieldByName('id').AsInteger;
   qrTemp.ExecSQL;
   CloseOpen(qrCalculations);
 end;
@@ -3346,15 +3326,15 @@ begin
           'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
           'PROC_TRANSP) values (:ID_CARD_RATE, :MAT_ID, ' +
           ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
-        qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
-        qrTemp1.ParamByName('MAT_ID').AsInteger := FieldByName('MatId').AsInteger;
-        qrTemp1.ParamByName('MAT_CODE').AsString := FieldByName('MatCode').AsString;
-        qrTemp1.ParamByName('MAT_NAME').AsString := FieldByName('MatName').AsString;
+        qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
+        qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
+        qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
+        qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
         vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
-        qrTemp1.ParamByName('MAT_NORMA').AsFloat := vNormRas;
-        qrTemp1.ParamByName('MAT_UNIT').AsString := FieldByName('MatUnit').AsString;
-        qrTemp1.ParamByName('COAST_NO_NDS').AsInteger := FieldByName('PriceNoVAT').AsInteger;
-        qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('PriceVAT').AsInteger;
+        qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
+        qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
+        qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
+        qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
         qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
         qrTemp1.ExecSQL;
 
@@ -3374,17 +3354,17 @@ begin
           'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
           'PROC_TRANSP) values (:ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
           ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
-        qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
-        qrTemp1.ParamByName('CONSIDERED').AsInteger := 0;
-        qrTemp1.ParamByName('MAT_ID').AsInteger := FieldByName('MatId').AsInteger;
-        qrTemp1.ParamByName('MAT_CODE').AsString := FieldByName('MatCode').AsString;
-        qrTemp1.ParamByName('MAT_NAME').AsString := FieldByName('MatName').AsString;
+        qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
+        qrTemp1.ParamByName('CONSIDERED').Value := 0;
+        qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
+        qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
+        qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
         vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
-        qrTemp1.ParamByName('MAT_NORMA').AsFloat := vNormRas;
-        qrTemp1.ParamByName('MAT_UNIT').AsString := FieldByName('MatUnit').AsString;
-        qrTemp1.ParamByName('COAST_NO_NDS').AsInteger := FieldByName('PriceNoVAT').AsInteger;
-        qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('PriceVAT').AsInteger;
-        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := 0;
+        qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
+        qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
+        qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
+        qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
+        qrTemp1.ParamByName('PROC_TRANSP').Value := 0;
         qrTemp1.ExecSQL;
 
         Next;
@@ -3424,18 +3404,18 @@ begin
           'COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, NORMATIV) values (:ID_CARD_RATE, ' +
           ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
           ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :NORMATIV)';
-        qrTemp1.ParamByName('ID_CARD_RATE').AsInteger := vMaxIdRate;
-        qrTemp1.ParamByName('MECH_ID').AsInteger := FieldByName('MechId').AsInteger;
-        qrTemp1.ParamByName('MECH_CODE').AsString := FieldByName('MechCode').AsString;
-        qrTemp1.ParamByName('MECH_NAME').AsString := FieldByName('MechName').AsString;
+        qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
+        qrTemp1.ParamByName('MECH_ID').Value := FieldByName('MechId').AsInteger;
+        qrTemp1.ParamByName('MECH_CODE').Value := FieldByName('MechCode').AsString;
+        qrTemp1.ParamByName('MECH_NAME').Value := FieldByName('MechName').AsString;
         vNormRas := MyStrToFloatDef(FieldByName('MechNorm').AsString, 0);
-        qrTemp1.ParamByName('MECH_NORMA').AsFloat := vNormRas;
-        qrTemp1.ParamByName('MECH_UNIT').AsString := FieldByName('Unit').AsString;
-        qrTemp1.ParamByName('COAST_NO_NDS').AsInteger := FieldByName('CoastNoVAT').AsInteger;
-        qrTemp1.ParamByName('COAST_NDS').AsInteger := FieldByName('CoastVAT').AsInteger;
-        qrTemp1.ParamByName('ZP_MACH_NO_NDS').AsInteger := FieldByName('SalaryNoVAT').AsInteger;
-        qrTemp1.ParamByName('ZP_MACH_NDS').AsInteger := FieldByName('SalaryVAT').AsInteger;
-        qrTemp1.ParamByName('NORMATIV').AsFloat := FieldByName('MECH_PH').AsFloat;
+        qrTemp1.ParamByName('MECH_NORMA').Value := vNormRas;
+        qrTemp1.ParamByName('MECH_UNIT').Value := FieldByName('Unit').AsString;
+        qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('CoastNoVAT').AsExtended;
+        qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('CoastVAT').AsExtended;
+        qrTemp1.ParamByName('ZP_MACH_NO_NDS').Value := FieldByName('SalaryNoVAT').AsExtended;
+        qrTemp1.ParamByName('ZP_MACH_NDS').Value := FieldByName('SalaryVAT').AsExtended;
+        qrTemp1.ParamByName('NORMATIV').Value := FieldByName('MECH_PH').AsExtended;
         qrTemp1.ExecSQL;
 
         Next;
@@ -3523,8 +3503,8 @@ begin
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
     '(id_estimate, id_type_data) VALUE (:IdEstimate, :SType);';
-  qrTemp.ParamByName('IdEstimate').AsInteger := qrRatesExSM_ID.AsInteger;
-  qrTemp.ParamByName('SType').AsInteger := (Sender as TComponent).Tag;
+  qrTemp.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
+  qrTemp.ParamByName('SType').Value := (Sender as TComponent).Tag;
   qrTemp.ExecSQL;
 
   OutputDataToTable;
@@ -4989,20 +4969,20 @@ begin
       // Та стоимость которая используется в расчете подсвечивается берюзовым
       // другая серым
       if (Column.Index in [10, 11]) then
-        if (qrMaterialFPRICE_NO_NDS.AsInteger > 0) then
+        if (qrMaterialFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00DDDDDD
         else
           Brush.Color := $00FBFEBC;
 
       if (Column.Index in [17, 18]) then
-        if (qrMaterialFPRICE_NO_NDS.AsInteger > 0) then
+        if (qrMaterialFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00FBFEBC
         else
           Brush.Color := $00DDDDDD;
     end;
 
     // Подсветка красным пустых значений
-    if (Column.Index in [2, 5, 6, 7]) and (Column.Field.AsFloat = 0) then
+    if (Column.Index in [2, 5, 6, 7]) and (Column.Field.Value = 0) then
     begin
       Brush.Color := $008080FF;
     end;
@@ -5018,30 +4998,34 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.AsInteger = 1) and
-      ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) then
+    if (qrMaterialFROM_RATE.Value = 1) and
+      ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1)) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD;
     end;
 
     // подсвечиваем замененный материал
-    if (qrMaterialREPLACED.AsInteger = 1) then
+    if (qrMaterialREPLACED.Value = 1) then
     begin
       Brush.Color := $00DDDDDD;
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.AsInteger = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd)
+    if (IdReplasedMat > 0) and
+       (qrMaterialID.Value = IdReplasedMat) and
+       (dbgrdMaterial = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
-    if (qrRatesExID_TYPE_DATA.AsInteger = 2) and (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and
+    if (qrRatesExID_TYPE_DATA.Value = 2) and
+       (qrRatesExID_TABLES.Value = qrMaterialID.Value) and
       (grRatesEx = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMaterialFROM_RATE.AsInteger = 0) and (IdReplasingMat = qrMaterialID_REPLACED.AsInteger) and
+    if (qrMaterialFROM_RATE.Value = 0) and
+       (IdReplasingMat = qrMaterialID_REPLACED.Value) and
       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
@@ -5063,8 +5047,8 @@ begin
     end;
 
     // Не отображает кол-во и суммы для замененных или вынесеных
-    if ((qrMaterialFROM_RATE.AsInteger = 1) and ((qrRatesExID_RATE.AsInteger > 0) or
-      (qrRatesExID_TYPE_DATA.AsInteger = 1))) or (qrMaterialREPLACED.AsInteger = 1) then
+    if ((qrMaterialFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or
+      (qrRatesExID_TYPE_DATA.Value = 1))) or (qrMaterialREPLACED.Value = 1) then
     begin
       if Column.Index in [4, 8, 9, 10, 11, 15, 16, 17, 18] then
         Str := '';
@@ -5119,32 +5103,32 @@ begin
       // Та стоимость которая используется в расчете подсвечивается берюзовым
       // другая серым
       if (Column.Index in [7, 8]) then
-        if (qrMechanizmFPRICE_NO_NDS.AsInteger > 0) then
+        if (qrMechanizmFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00DDDDDD
         else
           Brush.Color := $00FBFEBC;
 
       if (Column.Index in [16, 17]) then
-        if (qrMechanizmFPRICE_NO_NDS.AsInteger > 0) then
+        if (qrMechanizmFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00FBFEBC
         else
           Brush.Color := $00DDDDDD;
 
       if (Column.Index in [11, 12]) then
-        if (qrMechanizmFZPPRICE_NO_NDS.AsInteger > 0) then
+        if (qrMechanizmFZPPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00DDDDDD
         else
           Brush.Color := $00FBFEBC;
 
       if (Column.Index in [20, 21]) then
-        if (qrMechanizmFZPPRICE_NO_NDS.AsInteger > 0) then
+        if (qrMechanizmFZPPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00FBFEBC
         else
           Brush.Color := $00DDDDDD;
     end;
 
     // Подсветка красным пустых значений
-    if (Column.Index in [2, 5, 6]) and (Column.Field.AsFloat = 0) then
+    if (Column.Index in [2, 5, 6]) and (Column.Field.Value = 0) then
     begin
       Brush.Color := $008080FF;
     end;
@@ -5160,32 +5144,35 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки механизмы
-    if (qrMechanizmFROM_RATE.AsInteger = 1) and
-      ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) then
+    if (qrMechanizmFROM_RATE.Value = 1) and
+      ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1)) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
     end;
 
     // подсвечиваем замененный механизм
-    if (qrMechanizmREPLACED.AsInteger = 1) then
+    if (qrMechanizmREPLACED.Value = 1) then
     begin
       Brush.Color := $00DDDDDD;
     end;
 
     // Подсветка замененного механизма
-    if (IdReplasedMech > 0) and (qrMechanizmID.AsInteger = IdReplasedMech) and (dbgrdMechanizm = LastEntegGrd)
+    if (IdReplasedMech > 0) and
+       (qrMechanizmID.Value = IdReplasedMech) and
+       (dbgrdMechanizm = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMechanizmFROM_RATE.AsInteger = 0) and (IdReplasingMech = qrMechanizmID_REPLACED.AsInteger) and
-      (dbgrdMechanizm = LastEntegGrd) then
+    if (qrMechanizmFROM_RATE.Value = 0) and
+       (IdReplasingMech = qrMechanizmID_REPLACED.Value) and
+       (dbgrdMechanizm = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';
     // Подсветка синим подшапок таблицы
-    if qrMechanizmTITLE.AsInteger > 0 then
+    if qrMechanizmTITLE.Value > 0 then
     begin
       Brush.Color := clNavy;
       Font.Color := clWhite;
@@ -5200,8 +5187,8 @@ begin
         Str := Column.Field.AsString;
     end;
 
-    if ((qrMechanizmFROM_RATE.AsInteger = 1) and ((qrRatesExID_RATE.AsInteger > 0) or
-      (qrRatesExID_TYPE_DATA.AsInteger = 1))) or (qrMechanizmREPLACED.AsInteger = 1) then
+    if ((qrMechanizmFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or
+      (qrRatesExID_TYPE_DATA.Value = 1))) or (qrMechanizmREPLACED.Value = 1) then
     begin
       if Column.Index in [4, 7, 8, 11, 12, 16, 17, 20, 21, 24] then
         Str := '';

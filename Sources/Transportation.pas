@@ -92,12 +92,12 @@ type
     //Масса груза в тоннах
     TranspCount,
     CCount,
-    Ydw: extended;
+    Ydw: Extended;
     //Цена за единицу
     CoastNoNds,
-    CoastNds: Double;
+    CoastNds: Extended;
     Nds,
-    DefNDS: integer;
+    DefNDS: Extended;
     Distance: integer;
     //Класс груза
     FClass: Byte;
@@ -184,7 +184,7 @@ begin
   if grdPrice.Cells[CNDS, FClass] = '' then
     Nds := 0
   else
-    Nds := StrToInt(grdPrice.Cells[CNDS, FClass]);
+    Nds := StrToFloat(grdPrice.Cells[CNDS, FClass]);
 
   if grdPrice.Cells[CCoastNoNDS, FClass] = '' then
      CoastNoNds := 0
@@ -219,8 +219,8 @@ begin
     qrTemp.ParamByName('TRANSP_JUST').Value := EditJustification.Text;
     qrTemp.ParamByName('TRANSP_COUNT').Value := TranspCount;
     qrTemp.ParamByName('TRANSP_DIST').Value := Distance;
-    qrTemp.ParamByName('TRANSP_SUM_NDS').Value := StrToInt64(edtPriceNDS.Text);;
-    qrTemp.ParamByName('TRANSP_SUM_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('TRANSP_SUM_NDS').Value := StrToFloat(edtPriceNDS.Text);;
+    qrTemp.ParamByName('TRANSP_SUM_NO_NDS').Value := StrToFloat(edtPriceNoNDS.Text);
     qrTemp.ParamByName('COAST_NO_NDS').Value := CoastNoNds;
     qrTemp.ParamByName('COAST_NDS').Value := CoastNds;
     qrTemp.ParamByName('CARG_CLASS').Value := cmbClass.ItemIndex;
@@ -229,8 +229,8 @@ begin
     qrTemp.ParamByName('CARG_COUNT').Value := CCount;
     qrTemp.ParamByName('CARG_YDW').Value := Ydw;
     qrTemp.ParamByName('NDS').Value := Nds;
-    qrTemp.ParamByName('PRICE_NDS').Value := StrToInt64(edtPriceNDS.Text);
-    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('PRICE_NDS').Value := StrToFloat(edtPriceNDS.Text);
+    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToFloat(edtPriceNoNDS.Text);
     qrTemp.ParamByName('KOEF').Value := FCoef;
 
     qrTemp.ExecSQL;
@@ -256,8 +256,8 @@ begin
     qrTemp.ParamByName('TRANSP_JUST').Value := EditJustification.Text;
     qrTemp.ParamByName('TRANSP_COUNT').Value := TranspCount;
     qrTemp.ParamByName('TRANSP_DIST').Value := Distance;
-    qrTemp.ParamByName('TRANSP_SUM_NDS').Value := StrToInt64(edtPriceNDS.Text);;
-    qrTemp.ParamByName('TRANSP_SUM_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('TRANSP_SUM_NDS').Value := StrToFloat(edtPriceNDS.Text);;
+    qrTemp.ParamByName('TRANSP_SUM_NO_NDS').Value := StrToFloat(edtPriceNoNDS.Text);
     qrTemp.ParamByName('COAST_NO_NDS').Value := CoastNoNds;
     qrTemp.ParamByName('COAST_NDS').Value := CoastNds;
     qrTemp.ParamByName('CARG_CLASS').Value := cmbClass.ItemIndex;
@@ -266,8 +266,8 @@ begin
     qrTemp.ParamByName('CARG_COUNT').Value := CCount;
     qrTemp.ParamByName('CARG_YDW').Value := Ydw;
     qrTemp.ParamByName('NDS').Value := Nds;
-    qrTemp.ParamByName('PRICE_NDS').Value := StrToInt64(edtPriceNDS.Text);
-    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToInt64(edtPriceNoNDS.Text);
+    qrTemp.ParamByName('PRICE_NDS').Value := StrToFloat(edtPriceNDS.Text);
+    qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToFloat(edtPriceNoNDS.Text);
     qrTemp.ParamByName('ID').Value := IdTransp;
     qrTemp.ParamByName('KOEF').Value := FCoef;
 
@@ -379,9 +379,9 @@ end;
 
 procedure TFormTransportation.grdPriceExitCell(Sender: TJvStringGrid; AColumn,
   ARow: Integer; const EditText: string);
-var TmpNds: Integer;
+var TmpNds,
     TmpCoastNds,
-    TmpCoastNoNds: Double;
+    TmpCoastNoNds: Extended;
 begin
   if (AColumn = CCoastNoNDS) or
      (AColumn = CCoastNDS) or
@@ -390,8 +390,8 @@ begin
     if trim(grdPrice.Cells[CNDS, FClass]) = '' then
       TmpNds := 0
     else
-      TmpNds := StrToInt(grdPrice.Cells[CNDS, FClass]);
-    grdPrice.Cells[CNDS, FClass] := IntToStr(TmpNds);
+      TmpNds := StrToFloat(grdPrice.Cells[CNDS, FClass]);
+    grdPrice.Cells[CNDS, FClass] := FloatToStr(TmpNds);
 
     if trim(grdPrice.Cells[CCoastNoNDS, FClass]) = '' then
       TmpCoastNoNds := 0
@@ -407,11 +407,11 @@ begin
 
     if (AColumn = CCoastNoNDS) or (AColumn = CNDS)then
       grdPrice.Cells[CCoastNDS, FClass] :=
-        FloatToStr(NoNDSToNDS(Trunc(TmpCoastNoNds), TmpNds));
+        FloatToStr(NoNDSToNDS(TmpCoastNoNds, TmpNds));
 
     if (AColumn = CCoastNDS) then
       grdPrice.Cells[CCoastNoNDS, FClass] :=
-        FloatToStr(NDSToNoNDS(Trunc(TmpCoastNds), TmpNds));
+        FloatToStr(NDSToNoNDS(TmpCoastNds, TmpNds));
 
     CalculationTransp;
   end;
@@ -653,10 +653,10 @@ begin
     edtYDW.Text := qrTemp.FieldByName('CARG_YDW').AsString;
 
     TranspType := qrTemp.FieldByName('TRANSP_TYPE').AsInteger;
-    TranspCount := qrTemp.FieldByName('TRANSP_COUNT').AsFloat;
-    CCount := qrTemp.FieldByName('CARG_COUNT').AsFloat;
-    Ydw := qrTemp.FieldByName('CARG_YDW').AsFloat;
-    FCoef := qrTemp.FieldByName('KOEF').AsFloat;
+    TranspCount := qrTemp.FieldByName('TRANSP_COUNT').AsExtended;
+    CCount := qrTemp.FieldByName('CARG_COUNT').AsExtended;
+    Ydw := qrTemp.FieldByName('CARG_YDW').AsExtended;
+    FCoef := qrTemp.FieldByName('KOEF').AsExtended;
 
     if FCoef > 1 then
     begin
@@ -675,6 +675,9 @@ begin
 
     qrTemp.SQL.Text := 'SELECT * FROM transpcard_temp WHERE (ID = ' + IntToStr(aIdTransp) + ');';
     qrTemp.Active := true;
+    CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsExtended;
+    CoastNds := qrTemp.FieldByName('COAST_NDS').AsExtended;
+    NDS := qrTemp.FieldByName('NDS').AsInteger;
     grdPrice.Cells[CCoastNDS, FClass] := qrTemp.FieldByName('COAST_NDS').AsString;
     grdPrice.Cells[CCoastNoNDS, FClass] := qrTemp.FieldByName('COAST_NO_NDS').AsString;
     grdPrice.Cells[CNDS, FClass] := qrTemp.FieldByName('NDS').AsString;
@@ -749,7 +752,7 @@ begin
   end;
 
   for i := grdPrice.FixedRows to grdPrice.RowCount - 1 do
-    grdPrice.Cells[CNDS,i] := IntToStr(DefNDS);
+    grdPrice.Cells[CNDS,i] := FloatToStr(DefNDS);
 
   try
     with qrTemp do
@@ -832,8 +835,8 @@ begin
     else
       TmpCoastNds := StrToFloat(grdPrice.Cells[CCoastNDS, i]);
 
-    grdPrice.Cells[CPriceNoNDS, i] := IntToStr(Round(TranspCount * FCoef * TmpCoastNoNds));
-    grdPrice.Cells[CPriceNDS, i] := IntToStr(Round(TranspCount * FCoef * TmpCoastNds));
+    grdPrice.Cells[CPriceNoNDS, i] := FloatToStr(Round(TranspCount * FCoef * TmpCoastNoNds));
+    grdPrice.Cells[CPriceNDS, i] := FloatToStr(Round(TranspCount * FCoef * TmpCoastNds));
   end;
 end;
 
