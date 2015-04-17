@@ -246,7 +246,6 @@ type
     qrMaterialNUM: TIntegerField;
     qrMaterialSCROLL: TIntegerField;
     qrMaterialTITLE: TIntegerField;
-    qrMaterialPROC_TRANSP: TFloatField;
     N10: TMenuItem;
     qrDevices: TFDQuery;
     dsDevices: TDataSource;
@@ -306,7 +305,6 @@ type
     qrTranspNUM: TIntegerField;
     qrStartupRATE_CODE: TStringField;
     qrStartupRATE_CAPTION: TStringField;
-    qrStartupRATE_COUNT: TFloatField;
     qrStartupRATE_UNIT: TStringField;
     qrStartupNUM: TIntegerField;
     dbgrdStartup: TJvDBGrid;
@@ -357,7 +355,6 @@ type
     qrDevicesNDS: TIntegerField;
     qrDumpNDS: TIntegerField;
     qrTranspNDS: TIntegerField;
-    qrRatesExOBJ_COUNT: TFloatField;
     qrMaterialMAT_NORMA: TBCDField;
     qrMaterialMAT_COUNT: TBCDField;
     qrMaterialMAT_KOEF: TBCDField;
@@ -436,6 +433,9 @@ type
     qrTranspCARG_YDW: TBCDField;
     qrTranspKOEF: TBCDField;
     qrDevicesSCROLL: TBCDField;
+    qrMaterialPROC_TRANSP: TBCDField;
+    qrStartupRATE_COUNT: TBCDField;
+    qrRatesExOBJ_COUNT: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -667,7 +667,7 @@ type
     // ќбновл€ет кол-во у замен€ющих материалов в расценке
     procedure GridRatesUpdateCount;
     // ќбновл€ет кол-во по одной строке
-    procedure UpdateMatCountInGridRate(AMId: Integer; AMCount: Real);
+    procedure UpdateMatCountInGridRate(AMId: Integer; AMCount: Currency);
 
     // »змен€ет внешний вид таблиц в зависимости от Ќƒ—
     procedure ChangeGrigNDSStyle(aNDS: Boolean);
@@ -730,8 +730,8 @@ var
   FormCalculationEstimate: TFormCalculationEstimate;
   TwoValues: TTwoValues;
 
-function NDSToNoNDS(AValue, ANDS: Extended): Extended;
-function NoNDSToNDS(AValue, aNDS: Extended): Extended;
+function NDSToNoNDS(AValue, ANDS: Currency): Currency;
+function NoNDSToNDS(AValue, aNDS: Currency): Currency;
 
 implementation
 
@@ -746,12 +746,12 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
 
 {$R *.dfm}
 
-function NDSToNoNDS(AValue, ANDS: Extended): Extended;
+function NDSToNoNDS(AValue, ANDS: Currency): Currency;
 begin
   Result := Round(AValue / (1.000000 + 0.010000 * ANDS));
 end;
 
-function NoNDSToNDS(AValue, ANDS: Extended): Extended;
+function NoNDSToNDS(AValue, ANDS: Currency): Currency;
 begin
   Result := Round(AValue * (1.000000 + 0.010000 * ANDS));
 end;
@@ -2459,7 +2459,7 @@ end;
 procedure TFormCalculationEstimate.GridRatesUpdateCount;
 var
   RecNo: Integer;
-  NewCount: Real;
+  NewCount: Currency;
 begin
   RecNo := qrRatesEx.RecNo;
   // ƒл€ раценки обновл€ем COUNTFORCALC и у неучтенных или замен€ющих материалов
@@ -2482,11 +2482,11 @@ begin
             IntToStr(qrRatesExID_TABLES.AsInteger);
           qrTemp.Active := True;
           if not qrTemp.Eof then
-            NewCount := qrTemp.Fields[0].AsFloat;
+            NewCount := qrTemp.Fields[0].Value;
           qrTemp.Active := False;
 
           qrRatesEx.Edit;
-          qrRatesExOBJ_COUNT.AsFloat := NewCount;
+          qrRatesExOBJ_COUNT.Value := NewCount;
           qrRatesEx.Post;
         end
         else
@@ -2501,7 +2501,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.UpdateMatCountInGridRate(AMId: Integer; AMCount: Real);
+procedure TFormCalculationEstimate.UpdateMatCountInGridRate(AMId: Integer; AMCount: Currency);
 var
   RecNo: Integer;
 begin
@@ -2518,7 +2518,7 @@ begin
       if (qrRatesExID_TYPE_DATA.AsInteger = 2) and (qrRatesExID_TABLES.AsInteger = AMId) then
       begin
         qrRatesEx.Edit;
-        qrRatesExOBJ_COUNT.AsFloat := AMCount;
+        qrRatesExOBJ_COUNT.Value := AMCount;
         qrRatesEx.Post;
         Break;
       end;

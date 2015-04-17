@@ -3490,7 +3490,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdScale, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdPrecision, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -3501,7 +3501,8 @@
         SourceDataType = dtUInt32
         TargetDataType = dtInt32
       end>
-    FormatOptions.MaxBcdScale = 6
+    FormatOptions.MaxBcdPrecision = 24
+    FormatOptions.MaxBcdScale = 8
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
       'SELECT *, 0.0 as SCROLL FROM mechanizmcard_temp'
@@ -3554,13 +3555,13 @@
     object qrMechanizmMECH_NORMA: TBCDField
       FieldName = 'MECH_NORMA'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmMECH_COUNT: TBCDField
       FieldName = 'MECH_COUNT'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmMECH_UNIT: TStringField
       AutoGenerateValue = arDefault
@@ -3572,26 +3573,26 @@
     object qrMechanizmCOAST_NO_NDS: TBCDField
       FieldName = 'COAST_NO_NDS'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmCOAST_NDS: TBCDField
       FieldName = 'COAST_NDS'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmZP_MACH_NO_NDS: TBCDField
       FieldName = 'ZP_MACH_NO_NDS'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmZP_MACH_NDS: TBCDField
       FieldName = 'ZP_MACH_NDS'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmFROM_RATE: TByteField
       AutoGenerateValue = arDefault
@@ -3601,26 +3602,26 @@
     object qrMechanizmFCOAST_NO_NDS: TBCDField
       FieldName = 'FCOAST_NO_NDS'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmFCOAST_NDS: TBCDField
       FieldName = 'FCOAST_NDS'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmFZP_MACH_NO_NDS: TBCDField
       FieldName = 'FZP_MACH_NO_NDS'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmFZP_MACH_NDS: TBCDField
       FieldName = 'FZP_MACH_NDS'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmNDS: TIntegerField
       FieldName = 'NDS'
@@ -3643,80 +3644,80 @@
     object qrMechanizmNORMATIV: TBCDField
       FieldName = 'NORMATIV'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmNORM_TRYD: TBCDField
       FieldName = 'NORM_TRYD'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmTERYDOZATR: TBCDField
       FieldName = 'TERYDOZATR'
       OnChange = MechRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmMECH_SUM_NO_NDS: TBCDField
       FieldName = 'MECH_SUM_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmMECH_SUM_NDS: TBCDField
       FieldName = 'MECH_SUM_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmMECH_ZPSUM_NO_NDS: TBCDField
       FieldName = 'MECH_ZPSUM_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmMECH_ZPSUM_NDS: TBCDField
       FieldName = 'MECH_ZPSUM_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmPRICE_NO_NDS: TBCDField
       FieldName = 'PRICE_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmPRICE_NDS: TBCDField
       FieldName = 'PRICE_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmZPPRICE_NO_NDS: TBCDField
       FieldName = 'ZPPRICE_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmZPPRICE_NDS: TBCDField
       FieldName = 'ZPPRICE_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmFPRICE_NO_NDS: TBCDField
       FieldName = 'FPRICE_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmFPRICE_NDS: TBCDField
       FieldName = 'FPRICE_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmFZPPRICE_NO_NDS: TBCDField
       FieldName = 'FZPPRICE_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmFZPPRICE_NDS: TBCDField
       FieldName = 'FZPPRICE_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMechanizmSCROLL: TIntegerField
       AutoGenerateValue = arDefault
@@ -3759,7 +3760,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdScale, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdPrecision, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -3774,7 +3775,8 @@
         SourceDataType = dtUInt32
         TargetDataType = dtInt32
       end>
-    FormatOptions.MaxBcdScale = 6
+    FormatOptions.MaxBcdPrecision = 24
+    FormatOptions.MaxBcdScale = 8
     SQL.Strings = (
       
         'SELECT *, 0 as NUM, 0 as SCROLL, 0 as TITLE FROM materialcard WH' +
@@ -3846,14 +3848,14 @@
     object qrMaterialMAT_NORMA: TBCDField
       FieldName = 'MAT_NORMA'
       OnChange = MatRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialMAT_COUNT: TBCDField
       FieldName = 'MAT_COUNT'
       OnChange = MatRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialMAT_UNIT: TStringField
       AutoGenerateValue = arDefault
@@ -3864,26 +3866,26 @@
     object qrMaterialMAT_KOEF: TBCDField
       FieldName = 'MAT_KOEF'
       OnChange = MatRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
-    object qrMaterialPROC_TRANSP: TFloatField
-      AutoGenerateValue = arDefault
+    object qrMaterialPROC_TRANSP: TBCDField
       FieldName = 'PROC_TRANSP'
-      Origin = 'PROC_TRANSP'
       OnChange = MatRowChange
+      Precision = 24
+      Size = 8
     end
     object qrMaterialTRANSP_NO_NDS: TBCDField
       FieldName = 'TRANSP_NO_NDS'
       OnChange = MatRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialTRANSP_NDS: TBCDField
       FieldName = 'TRANSP_NDS'
       OnChange = MatRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialNDS: TIntegerField
       FieldName = 'NDS'
@@ -3892,26 +3894,26 @@
     object qrMaterialFCOAST_NO_NDS: TBCDField
       FieldName = 'FCOAST_NO_NDS'
       OnChange = MatRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialFCOAST_NDS: TBCDField
       FieldName = 'FCOAST_NDS'
       OnChange = MatRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialFTRANSP_NO_NDS: TBCDField
       FieldName = 'FTRANSP_NO_NDS'
       OnChange = MatRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialFTRANSP_NDS: TBCDField
       FieldName = 'FTRANSP_NDS'
       OnChange = MatRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialSTATE_MATERIAL: TShortintField
       AutoGenerateValue = arDefault
@@ -3968,43 +3970,43 @@
     end
     object qrMaterialMAT_SUM_NO_NDS: TBCDField
       FieldName = 'MAT_SUM_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialMAT_SUM_NDS: TBCDField
       FieldName = 'MAT_SUM_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialMAT_TRANSP_NO_NDS: TBCDField
       FieldName = 'MAT_TRANSP_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialMAT_TRANSP_NDS: TBCDField
       FieldName = 'MAT_TRANSP_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialPRICE_NO_NDS: TBCDField
       FieldName = 'PRICE_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialPRICE_NDS: TBCDField
       FieldName = 'PRICE_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialFPRICE_NO_NDS: TBCDField
       FieldName = 'FPRICE_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialFPRICE_NDS: TBCDField
       FieldName = 'FPRICE_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialCONS_REPLASED: TByteField
       FieldName = 'CONS_REPLASED'
@@ -4012,14 +4014,14 @@
     object qrMaterialCOAST_NO_NDS: TBCDField
       FieldName = 'COAST_NO_NDS'
       OnChange = MatRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialCOAST_NDS: TBCDField
       FieldName = 'COAST_NDS'
       OnChange = MatRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrMaterialADDED: TByteField
       FieldName = 'ADDED'
@@ -4038,7 +4040,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdScale, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdPrecision, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4049,7 +4051,8 @@
         SourceDataType = dtUInt32
         TargetDataType = dtInt32
       end>
-    FormatOptions.MaxBcdScale = 6
+    FormatOptions.MaxBcdPrecision = 24
+    FormatOptions.MaxBcdScale = 8
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
       
@@ -4100,8 +4103,8 @@
     object qrDevicesDEVICE_COUNT: TBCDField
       FieldName = 'DEVICE_COUNT'
       OnChange = DevRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDevicesDEVICE_UNIT: TStringField
       AutoGenerateValue = arDefault
@@ -4111,14 +4114,14 @@
     object qrDevicesFCOAST_NO_NDS: TBCDField
       FieldName = 'FCOAST_NO_NDS'
       OnChange = DevRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDevicesFCOAST_NDS: TBCDField
       FieldName = 'FCOAST_NDS'
       OnChange = DevRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDevicesNDS: TIntegerField
       FieldName = 'NDS'
@@ -4156,35 +4159,35 @@
     end
     object qrDevicesDEVICE_SUM_NDS: TBCDField
       FieldName = 'DEVICE_SUM_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDevicesDEVICE_SUM_NO_NDS: TBCDField
       FieldName = 'DEVICE_SUM_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDevicesFPRICE_NDS: TBCDField
       FieldName = 'FPRICE_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDevicesFPRICE_NO_NDS: TBCDField
       FieldName = 'FPRICE_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDevicesDEVICE_TRANSP_NDS: TBCDField
       FieldName = 'DEVICE_TRANSP_NDS'
       OnChange = DevRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDevicesDEVICE_TRANSP_NO_NDS: TBCDField
       FieldName = 'DEVICE_TRANSP_NO_NDS'
       OnChange = DevRowChange
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDevicesSCROLL: TBCDField
       FieldName = 'SCROLL'
@@ -4274,7 +4277,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdScale, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdPrecision, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4285,7 +4288,8 @@
         SourceDataType = dtUInt16
         TargetDataType = dtInt32
       end>
-    FormatOptions.MaxBcdScale = 6
+    FormatOptions.MaxBcdPrecision = 24
+    FormatOptions.MaxBcdScale = 8
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
       'SELECT * FROM dumpcard_temp WHERE (ID = :IDValue) ORDER BY ID;')
@@ -4335,23 +4339,23 @@
     end
     object qrDumpDUMP_SUM_NDS: TBCDField
       FieldName = 'DUMP_SUM_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpDUMP_SUM_NO_NDS: TBCDField
       FieldName = 'DUMP_SUM_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpCOAST_NDS: TBCDField
       FieldName = 'COAST_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpCOAST_NO_NDS: TBCDField
       FieldName = 'COAST_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpNDS: TIntegerField
       FieldName = 'NDS'
@@ -4369,33 +4373,33 @@
     end
     object qrDumpPRICE_NDS: TBCDField
       FieldName = 'PRICE_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpPRICE_NO_NDS: TBCDField
       FieldName = 'PRICE_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpFCOAST_NDS: TBCDField
       FieldName = 'FCOAST_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpFCOAST_NO_NDS: TBCDField
       FieldName = 'FCOAST_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpFPRICE_NDS: TBCDField
       FieldName = 'FPRICE_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpFPRICE_NO_NDS: TBCDField
       FieldName = 'FPRICE_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpNUM: TIntegerField
       FieldKind = fkCalculated
@@ -4409,18 +4413,18 @@
     end
     object qrDumpDUMP_COUNT: TBCDField
       FieldName = 'DUMP_COUNT'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpWORK_COUNT: TBCDField
       FieldName = 'WORK_COUNT'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrDumpWORK_YDW: TBCDField
       FieldName = 'WORK_YDW'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
   end
   object dsDump: TDataSource
@@ -4443,7 +4447,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdScale, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdPrecision, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4454,7 +4458,8 @@
         SourceDataType = dtUInt16
         TargetDataType = dtInt32
       end>
-    FormatOptions.MaxBcdScale = 6
+    FormatOptions.MaxBcdPrecision = 24
+    FormatOptions.MaxBcdScale = 8
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
       
@@ -4494,36 +4499,36 @@
     end
     object qrTranspTRANSP_DIST: TBCDField
       FieldName = 'TRANSP_DIST'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrTranspTRANSP_COUNT: TBCDField
       FieldName = 'TRANSP_COUNT'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrTranspTRANSP_SUM_NDS: TBCDField
       FieldName = 'TRANSP_SUM_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrTranspTRANSP_SUM_NO_NDS: TBCDField
       FieldName = 'TRANSP_SUM_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrTranspNDS: TIntegerField
       FieldName = 'NDS'
     end
     object qrTranspCOAST_NDS: TBCDField
       FieldName = 'COAST_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrTranspCOAST_NO_NDS: TBCDField
       FieldName = 'COAST_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrTranspCARG_CLASS: TByteField
       AutoGenerateValue = arDefault
@@ -4532,8 +4537,8 @@
     end
     object qrTranspCARG_COUNT: TBCDField
       FieldName = 'CARG_COUNT'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrTranspCARG_UNIT: TStringField
       AutoGenerateValue = arDefault
@@ -4548,18 +4553,18 @@
     end
     object qrTranspCARG_YDW: TBCDField
       FieldName = 'CARG_YDW'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrTranspPRICE_NDS: TBCDField
       FieldName = 'PRICE_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrTranspPRICE_NO_NDS: TBCDField
       FieldName = 'PRICE_NO_NDS'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
     object qrTranspNUM: TIntegerField
       FieldKind = fkCalculated
@@ -4576,8 +4581,8 @@
     end
     object qrTranspKOEF: TBCDField
       FieldName = 'KOEF'
-      Precision = 18
-      Size = 6
+      Precision = 24
+      Size = 8
     end
   end
   object qrStartup: TFDQuery
@@ -4587,7 +4592,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdPrecision, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -4595,17 +4600,11 @@
         TargetDataType = dtAnsiString
       end
       item
-        SourceDataType = dtFmtBCD
-        TargetDataType = dtExtended
-      end
-      item
-        SourceDataType = dtBCD
-        TargetDataType = dtExtended
-      end
-      item
         SourceDataType = dtUInt16
         TargetDataType = dtInt32
       end>
+    FormatOptions.MaxBcdPrecision = 24
+    FormatOptions.MaxBcdScale = 8
     SQL.Strings = (
       
         'select RATE_CODE, RATE_CAPTION, RATE_COUNT, RATE_UNIT from card_' +
@@ -4623,10 +4622,8 @@
       Origin = 'RATE_CAPTION'
       Size = 32767
     end
-    object qrStartupRATE_COUNT: TFloatField
-      AutoGenerateValue = arDefault
+    object qrStartupRATE_COUNT: TBCDField
       FieldName = 'RATE_COUNT'
-      Origin = 'RATE_COUNT'
     end
     object qrStartupRATE_UNIT: TStringField
       AutoGenerateValue = arDefault
@@ -4720,16 +4717,12 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdPrecision, fvMaxBcdScale, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
         SourceDataType = dtMemo
         TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtFmtBCD
-        TargetDataType = dtDouble
       end
       item
         SourceDataType = dtUInt32
@@ -4743,6 +4736,8 @@
         SourceDataType = dtInt64
         TargetDataType = dtInt32
       end>
+    FormatOptions.MaxBcdPrecision = 24
+    FormatOptions.MaxBcdScale = 6
     FormatOptions.DefaultParamDataType = ftBCD
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ### ##0.#######'
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]

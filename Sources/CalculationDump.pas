@@ -69,7 +69,8 @@ type
     ChangeCoast: boolean;
 
     DumpCount, MCount, Ydw: extended;
-    CoastNoNds, CoastNds, Nds: Extended;
+    CoastNoNds, CoastNds: Currency;
+    Nds: Integer;
     Loading: boolean;  //Что-бы не срабатывали ченджи при заполнении формы
 
     procedure GetEstimateInfo(aIdEstimate: integer);
@@ -160,9 +161,9 @@ begin
       edtPriceNDS.Text := qrTemp.FieldByName('DUMP_SUM_NDS').AsString;
 
       DumpCount := qrTemp.FieldByName('DUMP_COUNT').AsExtended;
-      CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsExtended;
-      CoastNds := qrTemp.FieldByName('COAST_NDS').AsExtended;
-      Nds := qrTemp.FieldByName('NDS').AsExtended;
+      CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsCurrency;
+      CoastNds := qrTemp.FieldByName('COAST_NDS').AsCurrency;
+      Nds := qrTemp.FieldByName('NDS').AsInteger;
       MCount := qrTemp.FieldByName('WORK_COUNT').AsExtended;
       Ydw := qrTemp.FieldByName('WORK_YDW').AsExtended;
 
@@ -302,7 +303,8 @@ begin
 end;
 
 procedure TFormCalculationDump.edtCoastNDSChange(Sender: TObject);
-var i, nds: Extended;
+var i: Currency;
+    nds: Integer;
 begin
   if Loading then
     exit;
@@ -311,12 +313,12 @@ begin
     ChangeCoast := true;
     try
       if trim(edtCoastNDS.Text) = '' then i := 0
-      else i := StrToFloat(edtCoastNDS.Text);
+      else i := StrToCurr(edtCoastNDS.Text);
 
       if trim(edtNDS.Text) = '' then nds := 0
-      else nds := StrToFloat(edtNDS.Text);
+      else nds := StrToInt(edtNDS.Text);
 
-      edtCoastNoNDS.Text := FloatToStr(NDSToNoNDS(i, nds));
+      edtCoastNoNDS.Text := CurrToStr(NDSToNoNDS(i, nds));
       CalculationCost;
     finally
       ChangeCoast := false;
@@ -325,7 +327,8 @@ begin
 end;
 
 procedure TFormCalculationDump.edtCoastNoNDSChange(Sender: TObject);
-var i, nds: Extended;
+var i: Currency;
+    nds: Integer;
 begin
   if Loading then
     exit;
@@ -334,12 +337,12 @@ begin
     ChangeCoast := true;
     try
       if trim(edtCoastNoNDS.Text) = '' then i := 0
-      else i := StrToFloat(edtCoastNoNDS.Text);
+      else i := StrToCurr(edtCoastNoNDS.Text);
 
       if trim(edtNDS.Text) = '' then nds := 0
-      else nds := StrToFloat(edtNDS.Text);
+      else nds := StrToInt(edtNDS.Text);
 
-      edtCoastNDS.Text := FloatToStr(NoNDSToNDS(i, nds));
+      edtCoastNDS.Text := CurrToStr(NoNDSToNDS(i, nds));
       CalculationCost;
     finally
       ChangeCoast := false;
@@ -353,7 +356,8 @@ begin
 end;
 
 procedure TFormCalculationDump.edtNDSChange(Sender: TObject);
-var i, cost: Extended;
+var i: Integer;
+    cost: Currency;
 begin
   if Loading then exit;
   if not ChangeCoast then
@@ -361,12 +365,12 @@ begin
     ChangeCoast := true;
     try
       if trim(edtNDS.Text) = '' then i := 0
-      else i := StrToFloat(edtNDS.Text);
+      else i := StrToInt(edtNDS.Text);
 
       if trim(edtCoastNoNDS.Text) = '' then cost := 0
-      else cost := StrToFloat(edtCoastNoNDS.Text);
+      else cost := StrToCurr(edtCoastNoNDS.Text);
 
-      edtCoastNDS.Text := FloatToStr(NoNDSToNDS(cost, i));
+      edtCoastNDS.Text := CurrToStr(NoNDSToNDS(cost, i));
       CalculationCost;
     finally
       ChangeCoast := false;
@@ -472,13 +476,13 @@ begin
   end;
 
   if trim(edtCoastNoNDS.Text) = '' then CoastNoNds := 0
-  else CoastNoNds := StrToFloat(edtCoastNoNDS.Text);
+  else CoastNoNds := StrToCurr(edtCoastNoNDS.Text);
 
   if trim(edtCoastNDS.Text) = '' then CoastNds := 0
-  else CoastNds := StrToFloat(edtCoastNDS.Text);
+  else CoastNds := StrToCurr(edtCoastNDS.Text);
 
   if trim(edtNDS.Text) = '' then Nds := 0
-  else Nds := StrToFloat(edtNDS.Text);
+  else Nds := StrToInt(edtNDS.Text);
 
   if Unit_Type = cmbUnit.ItemIndex then
     DumpCount := MCount
@@ -497,8 +501,8 @@ begin
     end;
   end;
 
-  edtPriceNoNDS.Text := FloatToStr(Round(DumpCount * CoastNoNds));
-  edtPriceNDS.Text := FloatToStr(Round(DumpCount * CoastNds));
+  edtPriceNoNDS.Text := CurrToStr(Round(DumpCount * CoastNoNds));
+  edtPriceNDS.Text := CurrToStr(Round(DumpCount * CoastNds));
 end;
 
 procedure TFormCalculationDump.cmbUnitChange(Sender: TObject);
