@@ -434,8 +434,8 @@ type
     qrTranspKOEF: TBCDField;
     qrDevicesSCROLL: TBCDField;
     qrMaterialPROC_TRANSP: TBCDField;
-    qrStartupRATE_COUNT: TBCDField;
     qrRatesExOBJ_COUNT: TFloatField;
+    qrStartupRATE_COUNT: TBCDField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);

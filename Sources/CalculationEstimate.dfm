@@ -4624,6 +4624,8 @@
     end
     object qrStartupRATE_COUNT: TBCDField
       FieldName = 'RATE_COUNT'
+      Precision = 24
+      Size = 8
     end
     object qrStartupRATE_UNIT: TStringField
       AutoGenerateValue = arDefault
