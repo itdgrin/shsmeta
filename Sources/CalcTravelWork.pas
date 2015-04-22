@@ -1,4 +1,4 @@
-unit CalcTravel;
+unit CalcTravelWork;
 
 interface
 
@@ -10,7 +10,7 @@ uses
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
-  TfCalcTravel = class(TForm)
+  TfCalcTravelWork = class(TForm)
     lbl1: TLabel;
     dbedtPREPARER: TDBEdit;
     lbl3: TLabel;
@@ -43,7 +43,7 @@ type
   end;
 
 var
-  fCalcTravel: TfCalcTravel;
+  fCalcTravelWork: TfCalcTravelWork;
 
 implementation
 
@@ -51,7 +51,7 @@ implementation
 
 uses Main, TravelList;
 
-procedure TfCalcTravel.cbbSourceChange(Sender: TObject);
+procedure TfCalcTravelWork.cbbSourceChange(Sender: TObject);
 begin
   case cbbSource.ItemIndex of
     0:
@@ -68,16 +68,15 @@ begin
   dblkcbbActClick(Sender);
 end;
 
-procedure TfCalcTravel.dblkcbbActClick(Sender: TObject);
+procedure TfCalcTravelWork.dblkcbbActClick(Sender: TObject);
 begin
-  Application.ProcessMessages;
   InitParams;
   if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
     not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
     CloseOpen(qrCalc);
 end;
 
-procedure TfCalcTravel.FormActivate(Sender: TObject);
+procedure TfCalcTravelWork.FormActivate(Sender: TObject);
 begin
   // Если нажата клавиша Ctrl и выбираем форму, то делаем
   // каскадирование с переносом этой формы на передний план
@@ -86,12 +85,12 @@ begin
   FormMain.SelectButtonActiveWindow(Caption);
 end;
 
-procedure TfCalcTravel.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TfCalcTravelWork.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
 end;
 
-procedure TfCalcTravel.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfCalcTravelWork.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   case Application.MessageBox('Сохранить изменения в документе?', 'Расчет', MB_YESNOCANCEL + MB_ICONQUESTION +
     MB_TOPMOST) of
@@ -102,90 +101,78 @@ begin
     IDYES:
       begin
         qrCalc.Last;
-        fTravelList.qrTravel.FieldByName('summ').AsInteger := qrCalc.FieldByName('TOTAL').AsInteger;
-        if fTravelList.qrTravel.State in [dsEdit, dsInsert] then
-          fTravelList.qrTravel.Post;
-        CloseOpen(fTravelList.qrTravel);  
+        fTravelList.qrTravelWork.FieldByName('summ').AsInteger := qrCalc.FieldByName('TOTAL').AsInteger;
+        if fTravelList.qrTravelWork.State in [dsEdit, dsInsert] then
+          fTravelList.qrTravelWork.Post;
         CanClose := True;
       end;
     IDNO:
       begin
-        fTravelList.qrTravel.Cancel;
+        fTravelList.qrTravelWork.Cancel;
         CanClose := True;
       end;
   end;
 end;
 
-procedure TfCalcTravel.FormCreate(Sender: TObject);
+procedure TfCalcTravelWork.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
   // FormMain.CreateButtonOpenWindow(Caption, Caption, fTravelList.qrTravelNewRecord(fTravelList.qrTravel));
   LoadDBGridSettings(JvDBGrid1);
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);
-  if not VarIsNull(fTravelList.qrTravel.FieldByName('ID_ESTIMATE').Value) then
+  if not VarIsNull(fTravelList.qrTravelWork.FieldByName('ID_ESTIMATE').Value) then
   begin
     cbbSource.ItemIndex := 1;
     dblkcbbAct.Visible := False;
     dblkcbbSmeta.Visible := True;
   end;
-  if fTravelList.qrTravel.State in [dsEdit, dsBrowse] then
+  if fTravelList.qrTravelWork.State in [dsEdit, dsBrowse] then
     InitParams;
   if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
     not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
     CloseOpen(qrCalc);
-  dbchkFL_Full_month.OnClick := dblkcbbActClick;  
+  dbchkFL_Full_month.OnClick := dblkcbbActClick;
 end;
 
-procedure TfCalcTravel.FormDestroy(Sender: TObject);
+procedure TfCalcTravelWork.FormDestroy(Sender: TObject);
 begin
-  fCalcTravel := nil;
+  fCalcTravelWork := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(Caption);
 end;
 
-procedure TfCalcTravel.InitParams;
+procedure TfCalcTravelWork.InitParams;
 begin
   // Заполняем параметры расчета
   case cbbSource.ItemIndex of
     // акт
     0:
       begin
-        qrCalc.ParamByName('ID_ACT').Value := fTravelList.qrTravel.FieldByName('ID_ACT').Value;
+        qrCalc.ParamByName('ID_ACT').Value := fTravelList.qrTravelWork.FieldByName('ID_ACT').Value;
         qrCalc.ParamByName('ID_ESTIMATE').Value := null;
       end;
     // смета
     1:
       begin
         qrCalc.ParamByName('ID_ACT').Value := null;
-        qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrTravel.FieldByName('ID_ESTIMATE').Value;
+        qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrTravelWork.FieldByName('ID_ESTIMATE').Value;
       end;
   end;
-  qrCalc.ParamByName('FLFullMonth').Value := fTravelList.qrTravel.FieldByName('FL_Full_month').Value;
-  qrCalc.ParamByName('SUTKI_KOMANDIR').Value := fTravelList.qrTravel.FieldByName('SUTKI_KOMANDIR').Value;
-  qrCalc.ParamByName('HOUSING_KOMANDIR').Value := fTravelList.qrTravel.FieldByName('HOUSING_KOMANDIR').Value;
-  qrCalc.ParamByName('STOIM_KM').Value := fTravelList.qrTravel.FieldByName('STOIM_KM').Value;
-  qrCalc.ParamByName('KM').Value := fTravelList.qrTravel.FieldByName('KM').Value;
+  qrCalc.ParamByName('FLFullMonth').Value := fTravelList.qrTravelWork.FieldByName('FL_Full_month').Value;
+  qrCalc.ParamByName('SUTKI_KOMANDIR').Value := fTravelList.qrTravelWork.FieldByName('SUTKI_KOMANDIR').Value;
 end;
 
-procedure TfCalcTravel.JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
+procedure TfCalcTravelWork.JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
 begin
   if (Ord(Key) = VK_RETURN) and (qrCalc.State = dsEdit) then
     qrCalc.Post;
 end;
 
-procedure TfCalcTravel.qrCalcAfterPost(DataSet: TDataSet);
+procedure TfCalcTravelWork.qrCalcAfterPost(DataSet: TDataSet);
 begin
-  if qrCalc.FieldByName('NUMPP').AsString = '06' then
-    fTravelList.qrTravel.FieldByName('SUTKI_KOMANDIR').AsInteger := qrCalc.FieldByName('CALC').AsInteger;
-  if qrCalc.FieldByName('NUMPP').AsString = '07' then
-    fTravelList.qrTravel.FieldByName('HOUSING_KOMANDIR').AsInteger := qrCalc.FieldByName('CALC').AsInteger;
-  if qrCalc.FieldByName('NUMPP').AsString = '08' then
-    fTravelList.qrTravel.FieldByName('STOIM_KM').AsInteger := qrCalc.FieldByName('CALC').AsInteger;
-  if qrCalc.FieldByName('NUMPP').AsString = '09' then
-    fTravelList.qrTravel.FieldByName('KM').AsFloat := qrCalc.FieldByName('CALC').AsInteger;
-  if qrCalc.FieldByName('NUMPP').AsString = '26' then
-    fTravelList.qrTravel.FieldByName('summ').AsFloat := qrCalc.FieldByName('TOTAL').AsInteger;
+  if qrCalc.RecNo = 1 then
+    fTravelList.qrTravelWork.FieldByName('SUTKI_KOMANDIR').AsInteger := qrCalc.FieldByName('CALC').AsInteger;
   InitParams;
   CloseOpen(qrCalc);
 end;

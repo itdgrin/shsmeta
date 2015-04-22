@@ -1,7 +1,7 @@
-object fCalcTravel: TfCalcTravel
+object fCalcWorkerDepartment: TfCalcWorkerDepartment
   Left = 0
   Top = 0
-  Caption = #1056#1072#1089#1095#1077#1090' '#1082#1086#1084#1072#1085#1076#1080#1088#1086#1074#1086#1095#1085#1099#1093
+  Caption = #1056#1072#1089#1095#1077#1090' '#1087#1077#1088#1077#1074#1086#1079#1082#1080' '#1088#1072#1073#1086#1095#1080#1093
   ClientHeight = 354
   ClientWidth = 495
   Color = clBtnFace
@@ -68,7 +68,7 @@ object fCalcTravel: TfCalcTravel
     Width = 210
     Height = 21
     DataField = 'PREPARER'
-    DataSource = fTravelList.dsTravel
+    DataSource = fTravelList.dsWorkerDepartment
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -126,18 +126,10 @@ object fCalcTravel: TfCalcTravel
     Columns = <
       item
         Expanded = False
-        FieldName = 'NUMPP'
-        Title.Alignment = taCenter
-        Title.Caption = #8470' '#1087#1087
-        Width = 31
-        Visible = True
-      end
-      item
-        Expanded = False
         FieldName = 'NAIMEN'
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1079#1072#1090#1088#1072#1090
-        Width = 131
+        Width = 141
         Visible = True
       end
       item
@@ -145,7 +137,7 @@ object fCalcTravel: TfCalcTravel
         FieldName = 'CALC'
         Title.Alignment = taCenter
         Title.Caption = #1056#1072#1089#1095#1077#1090
-        Width = 231
+        Width = 248
         Visible = True
       end
       item
@@ -153,7 +145,7 @@ object fCalcTravel: TfCalcTravel
         FieldName = 'TOTAL'
         Title.Alignment = taCenter
         Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-        Width = 78
+        Width = 83
         Visible = True
       end>
   end
@@ -164,7 +156,7 @@ object fCalcTravel: TfCalcTravel
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     DataField = 'id_act'
-    DataSource = fTravelList.dsTravel
+    DataSource = fTravelList.dsWorkerDepartment
     KeyField = 'ID'
     ListField = 'NAME'
     ListSource = dsActList
@@ -193,7 +185,7 @@ object fCalcTravel: TfCalcTravel
     Height = 17
     Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072' '#1087#1086#1083#1085#1099#1081' '#1084#1077#1089#1103#1094
     DataField = 'FL_Full_month'
-    DataSource = fTravelList.dsTravel
+    DataSource = fTravelList.dsWorkerDepartment
     TabOrder = 5
     ValueChecked = '1'
     ValueUnchecked = '0'
@@ -205,7 +197,7 @@ object fCalcTravel: TfCalcTravel
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     DataField = 'id_estimate'
-    DataSource = fTravelList.dsTravel
+    DataSource = fTravelList.dsWorkerDepartment
     KeyField = 'SM_ID'
     ListField = 'NAME'
     ListSource = dsSmetaList
@@ -252,41 +244,81 @@ object fCalcTravel: TfCalcTravel
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       
-        'CALL `CalcTravel`(:ID_ACT, :ID_ESTIMATE, :STOIM_KM, :KM, :SUTKI_' +
-        'KOMANDIR, :FLFullMonth, :HOUSING_KOMANDIR);')
+        'CALL `CalcWorkerDepartment`(:ID_ESTIMATE, :ID_ACT, :FLFullMonth,' +
+        ' :PLACE_COUNT, :EMbyHVR, :EMbyKM, :RoadALength, :RoadGLength, :R' +
+        'oadGrLength, :RoadASpeed, :RoadGSpeed, :RoadGrSpeed, :FactDay, :' +
+        'TravelCount, :InOut, :TimeIn, :TimeOut);')
     Left = 35
     Top = 94
     ParamData = <
-      item
-        Name = 'ID_ACT'
-        ParamType = ptInput
-        Value = Null
-      end
       item
         Name = 'ID_ESTIMATE'
         ParamType = ptInput
         Value = Null
       end
       item
-        Name = 'STOIM_KM'
+        Name = 'ID_ACT'
         ParamType = ptInput
         Value = Null
-      end
-      item
-        Name = 'KM'
-        ParamType = ptInput
-        Value = Null
-      end
-      item
-        Name = 'SUTKI_KOMANDIR'
-        ParamType = ptInput
       end
       item
         Name = 'FLFULLMONTH'
         ParamType = ptInput
       end
       item
-        Name = 'HOUSING_KOMANDIR'
+        Name = 'PLACE_COUNT'
+        ParamType = ptInput
+      end
+      item
+        Name = 'EMBYHVR'
+        ParamType = ptInput
+      end
+      item
+        Name = 'EMBYKM'
+        ParamType = ptInput
+      end
+      item
+        Name = 'ROADALENGTH'
+        ParamType = ptInput
+      end
+      item
+        Name = 'ROADGLENGTH'
+        ParamType = ptInput
+      end
+      item
+        Name = 'ROADGRLENGTH'
+        ParamType = ptInput
+      end
+      item
+        Name = 'ROADASPEED'
+        ParamType = ptInput
+      end
+      item
+        Name = 'ROADGSPEED'
+        ParamType = ptInput
+      end
+      item
+        Name = 'ROADGRSPEED'
+        ParamType = ptInput
+      end
+      item
+        Name = 'FACTDAY'
+        ParamType = ptInput
+      end
+      item
+        Name = 'TRAVELCOUNT'
+        ParamType = ptInput
+      end
+      item
+        Name = 'INOUT'
+        ParamType = ptInput
+      end
+      item
+        Name = 'TIMEIN'
+        ParamType = ptInput
+      end
+      item
+        Name = 'TIMEOUT'
         ParamType = ptInput
       end>
   end

@@ -136,7 +136,6 @@ type
 
   private
     StrQuery: String; // Для формирования строки запроса к БД
-    OldNormChkState: Boolean;
 
     { StrQuickSearch: String[20]; }
 

@@ -236,7 +236,10 @@ var
   NameEstimate: String;
 begin
   CountWarning := 0;
-
+  vMonth := MonthOf(Now);
+  vYear := YearOf(Now);
+  DateCompose := Now;
+  VAT := 0;
   with qrTemp do
   begin
     try

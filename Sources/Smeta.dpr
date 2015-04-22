@@ -103,7 +103,9 @@ uses
   TariffDict in 'TariffDict.pas' {fTariffDict},
   OXROPRSetup in 'OXROPRSetup.pas' {fOXROPRSetup},
   CardPartsEstimates in 'CardPartsEstimates.pas' {FormCardPartsEstimates},
-  ImportExportModule in 'ImportExportModule.pas';
+  ImportExportModule in 'ImportExportModule.pas',
+  CalcTravelWork in 'CalcTravelWork.pas' {fCalcTravelWork},
+  CalcWorkerDepartment in 'CalcWorkerDepartment.pas' {fCalcWorkerDepartment};
 
 {$R *.res}
 var MHandle: THandle;

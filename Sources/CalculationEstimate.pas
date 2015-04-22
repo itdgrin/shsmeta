@@ -730,7 +730,7 @@ var
   FormCalculationEstimate: TFormCalculationEstimate;
   TwoValues: TTwoValues;
 
-function NDSToNoNDS(AValue, ANDS: Currency): Currency;
+function NDSToNoNDS(AValue, aNDS: Currency): Currency;
 function NoNDSToNDS(AValue, aNDS: Currency): Currency;
 
 implementation
@@ -746,14 +746,14 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
 
 {$R *.dfm}
 
-function NDSToNoNDS(AValue, ANDS: Currency): Currency;
+function NDSToNoNDS(AValue, aNDS: Currency): Currency;
 begin
-  Result := Round(AValue / (1.000000 + 0.010000 * ANDS));
+  Result := Round(AValue / (1.000000 + 0.010000 * aNDS));
 end;
 
-function NoNDSToNDS(AValue, ANDS: Currency): Currency;
+function NoNDSToNDS(AValue, aNDS: Currency): Currency;
 begin
-  Result := Round(AValue * (1.000000 + 0.010000 * ANDS));
+  Result := Round(AValue * (1.000000 + 0.010000 * aNDS));
 end;
 
 { TSplitter }
@@ -1196,12 +1196,46 @@ begin
 end;
 
 procedure TFormCalculationEstimate.btn1Click(Sender: TObject);
+var
+  Key: Variant;
+  e: TDataSetNotifyEvent;
 begin
-  qrTemp.SQL.Text := 'CALL UpdateSmetaCosts(:IDESTIMATE);';
-  qrTemp.ParamByName('IDESTIMATE').AsInteger := IdEstimate;
-  qrTemp.ExecSQL;
-  qrRatesExAfterScroll(qrRatesEx);
-  CloseOpen(qrCalculations);
+  case Application.MessageBox('Произвести обновление цен по объектам сметы?', 'Перерасчет',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
+    IDYES:
+      begin
+        qrTemp.SQL.Text := 'CALL UpdateSmetaCosts(:IDESTIMATE);';
+        qrTemp.ParamByName('IDESTIMATE').AsInteger := IdEstimate;
+        qrTemp.ExecSQL;
+      end;
+  end;
+
+  qrRatesEx.DisableControls;
+  e := qrRatesEx.AfterScroll;
+  qrRatesEx.AfterScroll := nil;
+  try
+    if CheckQrActiveEmpty(qrRatesEx) then
+      Key := qrRatesEx.Fields[0].Value;
+    qrRatesEx.First;
+    while not qrRatesEx.Eof do
+    begin
+      if qrRatesExID_TYPE_DATA.Value > 0 then
+      begin
+        qrTemp.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE);';
+        qrTemp.ParamByName('ID').Value := qrRatesExID_TABLES.Value;
+        qrTemp.ParamByName('TYPE').Value := qrRatesExID_TYPE_DATA.Value;
+        qrTemp.ExecSQL;
+        CloseOpen(qrCalculations);
+      end;
+      qrRatesEx.Next;
+    end;
+    if Key <> Null then
+      qrRatesEx.Locate(qrRatesEx.Fields[0].FieldName, Key, []);
+  finally
+    qrRatesEx.EnableControls;
+    qrRatesEx.AfterScroll := e;
+    qrRatesExAfterScroll(qrRatesEx);
+  end;
 end;
 
 procedure TFormCalculationEstimate.btnDescriptionClick(Sender: TObject);
@@ -1811,21 +1845,15 @@ begin
       // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
       if NDSEstimate then
       begin
-        qrMaterialCOAST_NO_NDS.Value := NDSToNoNDS(qrMaterialCOAST_NDS.Value,
-          qrMaterialNDS.Value);
-        qrMaterialFCOAST_NO_NDS.Value := NDSToNoNDS(qrMaterialFCOAST_NDS.Value,
-          qrMaterialNDS.Value);
-        qrMaterialFTRANSP_NO_NDS.Value := NDSToNoNDS(qrMaterialFTRANSP_NDS.Value,
-          qrMaterialNDS.Value);
+        qrMaterialCOAST_NO_NDS.Value := NDSToNoNDS(qrMaterialCOAST_NDS.Value, qrMaterialNDS.Value);
+        qrMaterialFCOAST_NO_NDS.Value := NDSToNoNDS(qrMaterialFCOAST_NDS.Value, qrMaterialNDS.Value);
+        qrMaterialFTRANSP_NO_NDS.Value := NDSToNoNDS(qrMaterialFTRANSP_NDS.Value, qrMaterialNDS.Value);
       end
       else
       begin
-        qrMaterialCOAST_NDS.Value := NoNDSToNDS(qrMaterialCOAST_NO_NDS.Value,
-          qrMaterialNDS.Value);
-        qrMaterialFCOAST_NDS.Value := NoNDSToNDS(qrMaterialFCOAST_NO_NDS.Value,
-          qrMaterialNDS.Value);
-        qrMaterialFTRANSP_NDS.Value := NoNDSToNDS(qrMaterialFTRANSP_NO_NDS.Value,
-          qrMaterialNDS.Value);
+        qrMaterialCOAST_NDS.Value := NoNDSToNDS(qrMaterialCOAST_NO_NDS.Value, qrMaterialNDS.Value);
+        qrMaterialFCOAST_NDS.Value := NoNDSToNDS(qrMaterialFCOAST_NO_NDS.Value, qrMaterialNDS.Value);
+        qrMaterialFTRANSP_NDS.Value := NoNDSToNDS(qrMaterialFTRANSP_NO_NDS.Value, qrMaterialNDS.Value);
       end;
       // После изменения ячейки фиксируется
       qrMaterial.Post;
@@ -1973,25 +2001,17 @@ begin
       // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
       if NDSEstimate then
       begin
-        qrMechanizmCOAST_NO_NDS.Value := NDSToNoNDS(qrMechanizmCOAST_NDS.Value,
-          qrMechanizmNDS.Value);
-        qrMechanizmFCOAST_NO_NDS.Value := NDSToNoNDS(qrMechanizmFCOAST_NDS.Value,
-          qrMechanizmNDS.Value);
-        qrMechanizmZP_MACH_NO_NDS.Value := NDSToNoNDS(qrMechanizmZP_MACH_NDS.Value,
-          qrMechanizmNDS.Value);
-        qrMechanizmFZP_MACH_NO_NDS.Value := NDSToNoNDS(qrMechanizmFZP_MACH_NDS.Value,
-          qrMechanizmNDS.Value);
+        qrMechanizmCOAST_NO_NDS.Value := NDSToNoNDS(qrMechanizmCOAST_NDS.Value, qrMechanizmNDS.Value);
+        qrMechanizmFCOAST_NO_NDS.Value := NDSToNoNDS(qrMechanizmFCOAST_NDS.Value, qrMechanizmNDS.Value);
+        qrMechanizmZP_MACH_NO_NDS.Value := NDSToNoNDS(qrMechanizmZP_MACH_NDS.Value, qrMechanizmNDS.Value);
+        qrMechanizmFZP_MACH_NO_NDS.Value := NDSToNoNDS(qrMechanizmFZP_MACH_NDS.Value, qrMechanizmNDS.Value);
       end
       else
       begin
-        qrMechanizmCOAST_NDS.Value := NoNDSToNDS(qrMechanizmCOAST_NO_NDS.Value,
-          qrMechanizmNDS.Value);
-        qrMechanizmFCOAST_NDS.Value := NoNDSToNDS(qrMechanizmFCOAST_NO_NDS.Value,
-          qrMechanizmNDS.Value);
-        qrMechanizmZP_MACH_NDS.Value := NoNDSToNDS(qrMechanizmZP_MACH_NO_NDS.Value,
-          qrMechanizmNDS.Value);
-        qrMechanizmFZP_MACH_NDS.Value := NoNDSToNDS(qrMechanizmFZP_MACH_NO_NDS.Value,
-          qrMechanizmNDS.Value);
+        qrMechanizmCOAST_NDS.Value := NoNDSToNDS(qrMechanizmCOAST_NO_NDS.Value, qrMechanizmNDS.Value);
+        qrMechanizmFCOAST_NDS.Value := NoNDSToNDS(qrMechanizmFCOAST_NO_NDS.Value, qrMechanizmNDS.Value);
+        qrMechanizmZP_MACH_NDS.Value := NoNDSToNDS(qrMechanizmZP_MACH_NO_NDS.Value, qrMechanizmNDS.Value);
+        qrMechanizmFZP_MACH_NDS.Value := NoNDSToNDS(qrMechanizmFZP_MACH_NO_NDS.Value, qrMechanizmNDS.Value);
       end;
 
       // После изменения ячейки строка фиксируется
@@ -2378,7 +2398,7 @@ begin
       NumPP := NumPP + qrRatesEx.FieldByName('INCITERATOR').AsInteger;
       qrRatesEx.Edit;
       if qrRatesEx.FieldByName('ID_TYPE_DATA').AsInteger < 0 then
-        qrRatesEx.FieldByName('ITERATOR').Value := null
+        qrRatesEx.FieldByName('ITERATOR').Value := Null
       else
         qrRatesEx.FieldByName('ITERATOR').AsInteger := NumPP;
       qrRatesEx.Next;
@@ -2638,8 +2658,8 @@ begin
     end;
 
   except
-    on E: Exception do
-      MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
@@ -2669,9 +2689,9 @@ begin
 
     OutputDataToTable;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При вынесении материала из расценки возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -2693,8 +2713,8 @@ begin
     end;
 
   except
-    on E: Exception do
-      MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
@@ -2755,9 +2775,9 @@ begin
 
     OutputDataToTable;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При вынесении механизма из расценки возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -2853,12 +2873,12 @@ begin
             ExecSQL;
           end;
         except
-          on E: Exception do
+          on e: Exception do
           begin
             qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
             qrTemp.Active := True;
             MessageBox(0, PChar('При сохранении данных акта возникла ошибка:' + sLineBreak + sLineBreak +
-              E.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
+              e.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
               MB_ICONERROR + MB_OK + mb_TaskModal);
           end;
         end;
@@ -2874,12 +2894,12 @@ begin
           ExecSQL;
         end;
       except
-        on E: Exception do
+        on e: Exception do
         begin
           qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
           qrTemp.Active := True;
           MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' + sLineBreak + sLineBreak +
-            E.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
+            e.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
             MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       end;
@@ -3238,10 +3258,10 @@ begin
       Active := False;
     end;
   except
-    on E: Exception do
+    on e: Exception do
     begin
       MessageBox(0, PChar('При добавлении расценки во временную таблицу возникла ошибка:' + sLineBreak +
-        sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
       Exit;
     end;
   end;
@@ -3376,9 +3396,9 @@ begin
       Active := False;
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При занесении материалов во временную таблицу возникла ошибка:' + sLineBreak +
-        sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // Заносим во временную таблицу mechanizmcard_temp механизмы находящиеся в расценке
@@ -3424,9 +3444,9 @@ begin
       Active := False;
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При занесении механизмов во временную таблицу возникла ошибка:' + sLineBreak +
-        sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   if ((Pos('е18', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(10)) and AutoAddE18) or
@@ -3560,9 +3580,9 @@ begin
             ExecSQL;
           end;
         except
-          on E: Exception do
+          on e: Exception do
             MessageBox(0, PChar('При удалении расценки возникла ошибка:' + sLineBreak + sLineBreak +
-              E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       2: // Материал
         try
@@ -3576,9 +3596,9 @@ begin
           end;
 
         except
-          on E: Exception do
+          on e: Exception do
             MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak +
-              E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       3: // Механизм
         try
@@ -3592,9 +3612,9 @@ begin
           end;
 
         except
-          on E: Exception do
+          on e: Exception do
             MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak +
-              E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       4: // Оборудование
         try
@@ -3608,9 +3628,9 @@ begin
           end;
 
         except
-          on E: Exception do
+          on e: Exception do
             MessageBox(0, PChar('При удалении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
-              E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       5: // Свалка
         try
@@ -3623,8 +3643,8 @@ begin
             ExecSQL;
           end;
         except
-          on E: Exception do
-            MessageBox(0, PChar('При удалении свалки возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+          on e: Exception do
+            MessageBox(0, PChar('При удалении свалки возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
               CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       6, 7, 8, 9: // Транспорт
@@ -3638,9 +3658,9 @@ begin
             ExecSQL;
           end;
         except
-          on E: Exception do
+          on e: Exception do
             MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
-              E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       10, 11: // Пуск и регулировка
         try
@@ -3653,9 +3673,9 @@ begin
             ExecSQL;
           end;
         except
-          on E: Exception do
+          on e: Exception do
             MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
-              E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
     end;
   OutputDataToTable;
@@ -3936,13 +3956,13 @@ begin
       SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 1;');
       Active := True;
 
-      if FieldByName('norma').Value <> null then
+      if FieldByName('norma').Value <> Null then
         Result := FieldByName('norma').AsFloat;
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При получении значения "Средний разряд" возникла ошибка:' + sLineBreak + sLineBreak
-        + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -3958,13 +3978,13 @@ begin
       SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 2;');
       Active := True;
 
-      if FieldByName('norma').AsVariant <> null then
+      if FieldByName('norma').AsVariant <> Null then
         Result := FieldByName('norma').AsVariant;
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При получении значения "ЗТ строителей" возникла ошибка:' + sLineBreak + sLineBreak
-        + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -3980,13 +4000,13 @@ begin
       SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 3;');
       Active := True;
 
-      if FieldByName('norma').AsVariant <> null then
+      if FieldByName('norma').AsVariant <> Null then
         Result := FieldByName('norma').AsVariant;
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При получении значения "ЗТ машинистов" возникла ошибка:' + sLineBreak + sLineBreak
-        + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4071,9 +4091,9 @@ begin
 
     Result := TW;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' + sLineBreak + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4090,13 +4110,13 @@ begin
         + vIdMechanizm + ';');
       Active := True;
 
-      if FieldByName('norm_ras').AsVariant <> null then
+      if FieldByName('norm_ras').AsVariant <> Null then
         Result := MyStrToFloat(FieldByName('norm_ras').AsString)
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' + sLineBreak +
-        sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4113,13 +4133,13 @@ begin
         + vIdMechanizm + ';');
       Active := True;
 
-      if FieldByName('norm_ras').AsVariant <> null then
+      if FieldByName('norm_ras').AsVariant <> Null then
         Result := MyStrToFloat(FieldByName('norm_ras').AsString)
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' + sLineBreak +
-        sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4233,9 +4253,9 @@ begin
       Active := False;
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При запросе месяца и года из таблицы СТАВКА возникла ошибка:' + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4274,9 +4294,9 @@ begin
     ChangeGrigNDSStyle(NDSEstimate);
 
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При получении исходных данных возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4396,9 +4416,9 @@ begin
         end;
       end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' + sLineBreak +
-        sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4507,14 +4527,14 @@ begin
 
       Active := True;
 
-      if FieldByName('Salary').AsVariant <> null then
+      if FieldByName('Salary').AsVariant <> Null then
         Result := FieldByName('Salary').AsVariant;
 
       Active := False;
     end;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе «ЗП машиниста» возникла ошибка:' + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При запросе «ЗП машиниста» возникла ошибка:' + sLineBreak + e.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4535,14 +4555,14 @@ begin
 
       Active := True;
 
-      if FieldByName('Coast').AsVariant <> null then
+      if FieldByName('Coast').AsVariant <> Null then
         Result := FieldByName('Coast').AsVariant;
 
       Active := False;
     end;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе «Цены аренды механизма» возникла ошибка:' + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При запросе «Цены аренды механизма» возникла ошибка:' + sLineBreak + e.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4561,9 +4581,9 @@ begin
       ExecSQL;
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При создании временных таблиц возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4601,8 +4621,8 @@ begin
       Active := False;
     end;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При открытии данных возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При открытии данных возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
@@ -4732,9 +4752,9 @@ begin
       end;
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При получения флага применения коэффициента по приказам для сметы возникла ошибка:'
-        + sLineBreak + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        + sLineBreak + sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   PopupMenuCoefDeleteSet.Enabled := (qrCalculations.FieldByName('ID').AsInteger > 0);
@@ -4759,9 +4779,9 @@ begin
         EditCoefOrders.Color := $008080FF;
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При получения флага применения коэффициента по приказам возникла ошибка:' +
-        sLineBreak + sLineBreak + E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        sLineBreak + sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4800,9 +4820,9 @@ begin
 
     OutputDataToTable;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4825,8 +4845,8 @@ begin
 
     OutputDataToTable;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При добавлении материала возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При добавлении материала возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4852,8 +4872,8 @@ begin
 
     OutputDataToTable;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При добавлении механизма возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При добавлении механизма возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -4998,8 +5018,8 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.Value = 1) and
-      ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1)) then
+    if (qrMaterialFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
+    then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD;
@@ -5012,20 +5032,15 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and
-       (qrMaterialID.Value = IdReplasedMat) and
-       (dbgrdMaterial = LastEntegGrd)
-    then
+    if (IdReplasedMat > 0) and (qrMaterialID.Value = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
-    if (qrRatesExID_TYPE_DATA.Value = 2) and
-       (qrRatesExID_TABLES.Value = qrMaterialID.Value) and
+    if (qrRatesExID_TYPE_DATA.Value = 2) and (qrRatesExID_TABLES.Value = qrMaterialID.Value) and
       (grRatesEx = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMaterialFROM_RATE.Value = 0) and
-       (IdReplasingMat = qrMaterialID_REPLACED.Value) and
+    if (qrMaterialFROM_RATE.Value = 0) and (IdReplasingMat = qrMaterialID_REPLACED.Value) and
       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
@@ -5047,8 +5062,8 @@ begin
     end;
 
     // Не отображает кол-во и суммы для замененных или вынесеных
-    if ((qrMaterialFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or
-      (qrRatesExID_TYPE_DATA.Value = 1))) or (qrMaterialREPLACED.Value = 1) then
+    if ((qrMaterialFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1)
+      )) or (qrMaterialREPLACED.Value = 1) then
     begin
       if Column.Index in [4, 8, 9, 10, 11, 15, 16, 17, 18] then
         Str := '';
@@ -5144,8 +5159,8 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки механизмы
-    if (qrMechanizmFROM_RATE.Value = 1) and
-      ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1)) then
+    if (qrMechanizmFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
+    then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
@@ -5158,16 +5173,13 @@ begin
     end;
 
     // Подсветка замененного механизма
-    if (IdReplasedMech > 0) and
-       (qrMechanizmID.Value = IdReplasedMech) and
-       (dbgrdMechanizm = LastEntegGrd)
+    if (IdReplasedMech > 0) and (qrMechanizmID.Value = IdReplasedMech) and (dbgrdMechanizm = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMechanizmFROM_RATE.Value = 0) and
-       (IdReplasingMech = qrMechanizmID_REPLACED.Value) and
-       (dbgrdMechanizm = LastEntegGrd) then
+    if (qrMechanizmFROM_RATE.Value = 0) and (IdReplasingMech = qrMechanizmID_REPLACED.Value) and
+      (dbgrdMechanizm = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';
