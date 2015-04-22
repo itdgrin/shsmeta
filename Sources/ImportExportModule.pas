@@ -39,7 +39,6 @@ var XML : IXMLDocument;
     CurNode, Node1, Node2: IXMLNode;
     i, j: Integer;
     IdConvert: array [0..16, 0..1] of array of Integer;
-    ImportGood: Boolean;
 
   procedure GetStrAndExcec(ANode: IXMLNode; AType: Integer);
   var i: Integer;
@@ -125,6 +124,18 @@ var XML : IXMLDocument;
     IdConvert[AType][1][Length(IdConvert[AType][1]) - 1] := Result;
   end;
 
+  procedure RollBackImport;
+  var i, j: Integer;
+  begin
+    for i := 0 to High(IdConvert) do
+      for j := 0 to High(IdConvert[i][0]) do
+      begin
+        DM.qrDifferent.SQL.Text := 'Delete from ' + CTabNameAndID[i][0] +
+          ' where ' + CTabNameAndID[i][1] + ' = ' + IntToStr(IdConvert[i][1][j]);
+        DM.qrDifferent.ExecSQL;
+      end;
+  end;
+
 begin
   for i := 0 to Length(IdConvert) - 1 do
   begin
@@ -134,334 +145,338 @@ begin
   DM.qrDifferent.Active := False;
   Application.ProcessMessages;
   CoInitialize(nil);
-  ImportGood := False;
   try
-    XML := TXMLDocument.Create(nil);
-    XML.LoadFromFile(AFileName);
-    //загрузка объекта
-    Node1 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Data_object');
-    Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
-      GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue,0);
-
-    GetStrAndExcec(Node1, 0);
-    Node1 := nil;
-    Application.ProcessMessages;
-    //загрузка смет
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smety');
-    for j := 0 to Node2.ChildNodes.Count - 1 do
-    begin
-      Node1 := Node2.ChildNodes.Nodes[j];
-      //замена IDшников
-      Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
-        GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue,1);
+    try
+      XML := TXMLDocument.Create(nil);
+      XML.LoadFromFile(AFileName);
+      //загрузка объекта
+      Node1 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Data_object');
       Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
         GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue,0);
-      Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue :=
-        GetNewId(Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue,1);
 
-      GetStrAndExcec(Node1, 1);
+      GetStrAndExcec(Node1, 0);
       Node1 := nil;
+      Application.ProcessMessages;
+      //загрузка смет
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smety');
+      for j := 0 to Node2.ChildNodes.Count - 1 do
+      begin
+        Node1 := Node2.ChildNodes.Nodes[j];
+        //замена IDшников
+        Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+          GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue,1);
+        Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
+          GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue,0);
+        Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue :=
+          GetNewId(Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue,1);
+
+        GetStrAndExcec(Node1, 1);
+        Node1 := nil;
+      end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка расценок смет
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Rates');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,2);
+
+          GetStrAndExcec(Node1, 2);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка материалов смет
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Materials');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,3);
+          Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2);
+          Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,3);
+
+          GetStrAndExcec(Node1, 3);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка механизмов смет
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Mechanizms');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,4);
+          Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2);
+          Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,4);
+
+          GetStrAndExcec(Node1, 4);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка оборудования смет
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Devices');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,5);
+
+          GetStrAndExcec(Node1, 5);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка свалок смет
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Dumps');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,6);
+
+          GetStrAndExcec(Node1, 6);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка транспорта смет
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Transps');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,7);
+
+          GetStrAndExcec(Node1, 7);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка Data_estimate смет
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Data_estimate');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,8);
+          Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue,1);
+
+          i := 0;
+          case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
+            1: i := 2;
+            2: i := 3;
+            3: i := 4;
+            4: i := 5;
+            5: i := 6;
+            6, 7, 8, 9: i := 7;
+          end;
+
+          if i > 0  then
+            Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
+              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue,i);
+
+          GetStrAndExcec(Node1, 8);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка актов
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Acts');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,9);
+          Node1.ChildNodes.Nodes['ID_ESTIMATE_OBJECT'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE_OBJECT'].NodeValue,1);
+
+          GetStrAndExcec(Node1, 9);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка расценок актов
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Rates');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,10);
+
+          GetStrAndExcec(Node1, 10);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка материалов актов
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Materials');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,11);
+          Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,10);
+          Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,11);
+
+          GetStrAndExcec(Node1, 11);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка механизмов актов
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Mechanizms');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,12);
+          Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,10);
+          Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,12);
+
+          GetStrAndExcec(Node1, 12);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка оборудования актов
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Devices');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,13);
+
+          GetStrAndExcec(Node1, 13);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка свалок актов
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Dumps');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,14);
+
+          GetStrAndExcec(Node1, 14);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка транспорта актов
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Transps');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,15);
+
+          GetStrAndExcec(Node1, 15);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+      //загрузка data_act актов
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Data_act');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,16);
+          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+          Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue,1);
+
+          i := 0;
+          case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
+            1: i := 10;
+            2: i := 11;
+            3: i := 12;
+            4: i := 13;
+            5: i := 14;
+            6, 7, 8, 9: i := 15;
+          end;
+
+          if i > 0  then
+            Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
+              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue,i);
+
+          GetStrAndExcec(Node1, 16);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+    except
+      on e: Exception do
+      begin
+        RollBackImport;
+        raise;
+      end;
     end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка расценок смет
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Rates');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,2);
-
-        GetStrAndExcec(Node1, 2);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка материалов смет
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Materials');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,3);
-        Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2);
-        Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,3);
-
-        GetStrAndExcec(Node1, 3);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка механизмов смет
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Mechanizms');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,4);
-        Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2);
-        Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,4);
-
-        GetStrAndExcec(Node1, 4);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка оборудования смет
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Devices');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,5);
-
-        GetStrAndExcec(Node1, 5);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка свалок смет
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Dumps');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,6);
-
-        GetStrAndExcec(Node1, 6);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка транспорта смет
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Transps');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,7);
-
-        GetStrAndExcec(Node1, 7);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка Data_estimate смет
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Data_estimate');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,8);
-        Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue,1);
-
-        i := 0;
-        case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
-          1: i := 2;
-          2: i := 3;
-          3: i := 4;
-          4: i := 5;
-          5: i := 6;
-          6, 7, 8, 9: i := 7;
-        end;
-
-        if i > 0  then
-          Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue,i);
-
-        GetStrAndExcec(Node1, 8);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка актов
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Acts');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,9);
-        Node1.ChildNodes.Nodes['ID_ESTIMATE_OBJECT'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE_OBJECT'].NodeValue,1);
-
-        GetStrAndExcec(Node1, 9);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка расценок актов
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Rates');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,10);
-
-        GetStrAndExcec(Node1, 10);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка материалов актов
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Materials');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,11);
-        Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,10);
-        Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,11);
-
-        GetStrAndExcec(Node1, 11);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка механизмов актов
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Mechanizms');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,12);
-        Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,10);
-        Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,12);
-
-        GetStrAndExcec(Node1, 12);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка оборудования актов
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Devices');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,13);
-
-        GetStrAndExcec(Node1, 13);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка свалок актов
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Dumps');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,14);
-
-        GetStrAndExcec(Node1, 14);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка транспорта актов
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Transps');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,15);
-
-        GetStrAndExcec(Node1, 15);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    //загрузка data_act актов
-    Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Data_act');
-    if Assigned(Node2) then
-      for j := 0 to Node2.ChildNodes.Count - 1 do
-      begin
-        Node1 := Node2.ChildNodes.Nodes[j];
-        //замена IDшников
-        Node1.ChildNodes.Nodes['ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,16);
-        Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
-        Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue,1);
-
-        i := 0;
-        case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
-          1: i := 10;
-          2: i := 11;
-          3: i := 12;
-          4: i := 13;
-          5: i := 14;
-          6, 7, 8, 9: i := 15;
-        end;
-
-        if i > 0  then
-          Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue,i);
-
-        GetStrAndExcec(Node1, 16);
-        Node1 := nil;
-      end;
-    Node2 := nil;
-    Application.ProcessMessages;
-    ImportGood := True;
   finally
     Node2 := nil;
     Node1 := nil;
     CurNode := nil;
     XML := nil;
     CoUninitialize;
-    if ImportGood then
-      showmessage('Импорт завершен успешно.');
   end;
 end;
 
@@ -901,7 +916,6 @@ begin
     CurNode := nil;
     XML := nil;
     CoUninitialize;
-    showmessage('Экспорт завершен.');
   end;
 end;
 

@@ -655,13 +655,13 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1069#1082#1089#1087#1086#1088#1090' '#1086#1073#1098#1077#1082#1090#1072
       OnClick = PMExportObjectClick
     end
-    object N3: TMenuItem
+    object PMImportObject: TMenuItem
       Caption = #1048#1084#1087#1086#1088#1090' '#1086#1073#1098#1077#1082#1090#1072
-      OnClick = N3Click
+      OnClick = PMImportObjectClick
     end
-    object N5: TMenuItem
+    object PMImportDir: TMenuItem
       Caption = #1048#1084#1087#1086#1088#1090' '#1080#1079' '#1087#1072#1087#1082#1080
-      OnClick = N5Click
+      OnClick = PMImportDirClick
     end
     object N2: TMenuItem
       Caption = '-'

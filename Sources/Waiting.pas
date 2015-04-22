@@ -11,6 +11,7 @@ type
     Shape1: TShape;
     Label1: TLabel;
     JvGIFAnimator1: TJvGIFAnimator;
+    lbProcess: TLabel;
 
     procedure FormCreate(Sender: TObject);
   private

@@ -3,11 +3,14 @@ unit ObjectsAndEstimates;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Grids, Menus,
-  DB, DBGrids, StdCtrls, ComCtrls, VirtualTrees, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
-  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes, JvExDBGrids, JvDBGrid, JvExComCtrls,
-  JvDBTreeView, Vcl.Buttons, JvHint, JvComponentBase;
+  Windows, Messages, SysUtils, System.Types, System.IOUtils, Variants,
+  Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, Grids, Menus,
+  Vcl.StdActns, DB, DBGrids, StdCtrls, ComCtrls, VirtualTrees, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes,
+  JvExDBGrids, JvDBGrid, JvExComCtrls, JvDBTreeView, Vcl.Buttons, JvHint,
+  JvComponentBase;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -84,9 +87,9 @@ type
     qrTreeData: TFDQuery;
     tvEstimates: TJvDBTreeView;
     N2: TMenuItem;
-    N3: TMenuItem;
+    PMImportObject: TMenuItem;
     PMExportObject: TMenuItem;
-    N5: TMenuItem;
+    PMImportDir: TMenuItem;
     SaveDialog: TSaveDialog;
     OpenDialog: TOpenDialog;
     procedure ResizeImagesForSplitters;
@@ -133,8 +136,8 @@ type
     procedure grActsMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure PMExportObjectClick(Sender: TObject);
     procedure dsObjectsDataChange(Sender: TObject; Field: TField);
-    procedure N3Click(Sender: TObject);
-    procedure N5Click(Sender: TObject);
+    procedure PMImportObjectClick(Sender: TObject);
+    procedure PMImportDirClick(Sender: TObject);
   private
     const CaptionButton = 'Объекты и сметы';
     const HintButton = 'Окно объектов и смет';
@@ -654,26 +657,94 @@ begin
   RAHint1.ActivateHint(R, Format('X: %d, Y: %d, %s', [G.X, G.Y, 'Подсказка']));
 end;
 
-procedure TFormObjectsAndEstimates.N3Click(Sender: TObject);
+procedure TFormObjectsAndEstimates.PMExportObjectClick(Sender: TObject);
+var TmpStr: string;
+begin
+  if SaveDialog.Execute(FormMain.Handle) then
+  begin
+    FormMain.PanelCover.Visible := true;
+    FormWaiting.Height := 110;
+    FormWaiting.Show;
+    Application.ProcessMessages;
+    try
+      TmpStr := 'Экспорт объекта: ' + qrObjects.FieldbyName('Name').AsString;
+      FormWaiting.lbProcess.Caption := TmpStr;
+      Application.ProcessMessages;
+      ExportObject(qrObjects.Fields[0].AsInteger,
+        ChangeFileExt(SaveDialog.FileName, '.xml'));
+      showmessage('Экспорт завершен.');
+    finally
+      FormWaiting.Close;
+      FormWaiting.Height := 88;
+      FormWaiting.lbProcess.Caption := '';
+      FormMain.PanelCover.Visible := False;
+    end;
+  end;
+end;
+
+procedure TFormObjectsAndEstimates.PMImportObjectClick(Sender: TObject);
+var TmpStr: string;
 begin
   if OpenDialog.Execute(FormMain.Handle) then
   begin
     FormMain.PanelCover.Visible := true;
+    FormWaiting.Height := 110;
     FormWaiting.Show;
     Application.ProcessMessages;
     try
+      TmpStr := 'Импорт из файла: ' + ExtractFileName(OpenDialog.FileName);
+      FormWaiting.lbProcess.Caption := TmpStr;
       ImportObject(OpenDialog.FileName);
+      showmessage('Импорт завершен успешно.');
     finally
       FormWaiting.Close;
+      FormWaiting.Height := 88;
+      FormWaiting.lbProcess.Caption := '';
       FormMain.PanelCover.Visible := False;
     end;
     FillingTableObjects;
   end;
 end;
 
-procedure TFormObjectsAndEstimates.N5Click(Sender: TObject);
+procedure TFormObjectsAndEstimates.PMImportDirClick(Sender: TObject);
+var TmpFiles: TStringDynArray;
+    i: Integer;
+    TmpStr: string;
 begin
-  FillingTableObjects;
+  with TBrowseForFolder.Create(nil) do
+  try
+    if Execute then
+    begin
+      TmpFiles := TDirectory.GetFiles(Folder, '*.xml', TSearchOption.soTopDirectoryOnly);
+      if Length(TmpFiles) = 0 then
+        Exit;
+      try
+        FormMain.PanelCover.Visible := true;
+        FormWaiting.Height := 110;
+        FormWaiting.Show;
+        Application.ProcessMessages;
+        try
+          for i := Low(TmpFiles) to High(TmpFiles) do
+          begin
+            TmpStr := 'Импорт из файла: ' + ExtractFileName(TmpFiles[i]);
+            FormWaiting.lbProcess.Caption := TmpStr;
+            ImportObject(TmpFiles[i]);
+          end;
+          showmessage('Импорт завершен успешно.');
+        finally
+          FormWaiting.Close;
+          FormWaiting.Height := 88;
+          FormWaiting.lbProcess.Caption := '';
+          FormMain.PanelCover.Visible := False;
+        end;
+        FillingTableObjects;
+      finally
+        SetLength(TmpFiles, 0);
+      end;
+    end;
+  finally
+    Free;
+  end;
 end;
 
 procedure TFormObjectsAndEstimates.PMEstimateExpandClick(Sender: TObject);
@@ -767,23 +838,6 @@ begin
     FormCardEstimate.ShowForm(IdObject, IdEstimate, qrTreeData.FieldByName('SM_TYPE').AsInteger);
     CloseOpen(qrTreeData);
     tvEstimates.Selected.Text := qrTreeData.FieldByName('NAME').AsString;
-  end;
-end;
-
-procedure TFormObjectsAndEstimates.PMExportObjectClick(Sender: TObject);
-begin
-  if SaveDialog.Execute(FormMain.Handle) then
-  begin
-    FormMain.PanelCover.Visible := true;
-    FormWaiting.Show;
-    Application.ProcessMessages;
-    try
-      ExportObject(qrObjects.Fields[0].AsInteger,
-        ChangeFileExt(SaveDialog.FileName, '.xml'));
-    finally
-      FormWaiting.Close;
-      FormMain.PanelCover.Visible := False;
-    end;
   end;
 end;
 

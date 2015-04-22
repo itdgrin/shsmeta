@@ -25,14 +25,16 @@ object FormWaiting: TFormWaiting
     Top = 0
     Width = 300
     Height = 88
+    Align = alClient
     Brush.Color = clBtnFace
     Pen.Color = clGradientActiveCaption
     Pen.Width = 2
+    ExplicitHeight = 97
   end
   object Label1: TLabel
-    Left = 67
+    Left = 56
     Top = 45
-    Width = 165
+    Width = 177
     Height = 26
     Alignment = taCenter
     Caption = #1055#1086#1078#1072#1083#1091#1081#1089#1090#1072' '#1087#1086#1076#1086#1078#1076#1080#1090#1077'. '#1048#1076#1105#1090' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1079#1072#1087#1088#1086#1089#1072'...'
@@ -50,7 +52,6 @@ object FormWaiting: TFormWaiting
     Width = 208
     Height = 13
     AsyncDrawing = True
-    FrameIndex = 7
     Image.Data = {
       101C0000474946383961D0000D00C41E00DDDDDDBDBDBDD1D1D1B1B1B1BFBFBF
       EFEFEFE1E1E1CFCFCFA8A8A8B9B9B9ACACACC9C9C9F4F4F4E5E5E5C7C7C7A1A1
@@ -277,5 +278,19 @@ object FormWaiting: TFormWaiting
       871C44561289259515592780942280C9637F087E75208A0431A0566534FAA2E6
       5318B0D9E0050BBCD9559C565D60A7584BC929D5017B7A071E9BF0D5B966507A
       1EFA95A1232C37680AF4D5B2A7A378A61002003B}
+  end
+  object lbProcess: TLabel
+    Left = 42
+    Top = 73
+    Width = 208
+    Height = 26
+    AutoSize = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    WordWrap = True
   end
 end
