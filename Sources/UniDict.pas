@@ -140,6 +140,7 @@ end;
 procedure TfUniDict.qrUniDictTypeAfterPost(DataSet: TDataSet);
 begin
   CloseOpen(qrUniDictTypeLook);
+  CloseOpen(qrUniDictType);
 end;
 
 procedure TfUniDict.qrUniDictTypeAfterScroll(DataSet: TDataSet);

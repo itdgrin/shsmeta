@@ -172,6 +172,8 @@ begin
   qrCalc.ParamByName('RoadASpeed').Value := fTravelList.qrWorkerDepartment.FieldByName('RoadASpeed').Value;
   qrCalc.ParamByName('RoadGSpeed').Value := fTravelList.qrWorkerDepartment.FieldByName('RoadGSpeed').Value;
   qrCalc.ParamByName('RoadGrSpeed').Value := fTravelList.qrWorkerDepartment.FieldByName('RoadGrSpeed').Value;
+  qrCalc.ParamByName('FactDay').Value := fTravelList.qrWorkerDepartment.FieldByName
+    ('COUNT_WORK_DAY_IN_MONTH').Value;
   qrCalc.ParamByName('TravelCount').Value := fTravelList.qrWorkerDepartment.FieldByName('TravelCount').Value;
   qrCalc.ParamByName('InOut').Value := fTravelList.qrWorkerDepartment.FieldByName('InOut').Value;
   qrCalc.ParamByName('TimeIN').Value := fTravelList.qrWorkerDepartment.FieldByName('TimeIN').Value;
@@ -211,6 +213,9 @@ begin
   if qrCalc.RecNo = 12 then
     fTravelList.qrWorkerDepartment.FieldByName('RoadGrSpeed').AsInteger := qrCalc.FieldByName('CALC')
       .AsInteger;
+  if qrCalc.RecNo = 14 then
+    fTravelList.qrWorkerDepartment.FieldByName('COUNT_WORK_DAY_IN_MONTH').AsInteger :=
+      qrCalc.FieldByName('CALC').AsInteger;
   if qrCalc.RecNo = 15 then
     fTravelList.qrWorkerDepartment.FieldByName('TravelCount').AsInteger := qrCalc.FieldByName('CALC')
       .AsInteger;

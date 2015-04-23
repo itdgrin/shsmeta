@@ -626,7 +626,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   end
   object dsObjects: TDataSource
     DataSet = qrObjects
-    OnDataChange = dsObjectsDataChange
     Left = 104
     Top = 192
   end

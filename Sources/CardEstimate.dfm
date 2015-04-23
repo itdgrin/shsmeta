@@ -508,6 +508,7 @@ object FormCardEstimate: TFormCardEstimate
     UpdateTransaction = DM.Write
     FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
     FormatOptions.FmtDisplayNumeric = '#0.00'
+    UpdateOptions.UpdateTableName = 'smeta.smetasourcedata'
     SQL.Strings = (
       'SELECT * '
       'FROM smetasourcedata'

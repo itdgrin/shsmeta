@@ -115,14 +115,12 @@ type
     procedure ButtonSelectNoneClick(Sender: TObject);
     procedure SelectedColumns(Value: Boolean);
     procedure PMEstimatesBasicDataClick(Sender: TObject);
-    procedure StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
     procedure PMEstimateExpandClick(Sender: TObject);
     procedure PMEstimateCollapseClick(Sender: TObject);
     function GetNumberEstimate(): string;
     procedure PopupMenuEstimatesPopup(Sender: TObject);
     procedure PMEstimateExpandSelectedClick(Sender: TObject);
     procedure PMActsAddClick(Sender: TObject);
-    procedure VSTDblClick(Sender: TObject);
     procedure PMActsPopup(Sender: TObject);
     procedure PMActsDeleteClick(Sender: TObject);
     procedure PMActsEditClick(Sender: TObject);
@@ -135,12 +133,13 @@ type
     procedure tvEstimatesDblClick(Sender: TObject);
     procedure grActsMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure PMExportObjectClick(Sender: TObject);
-    procedure dsObjectsDataChange(Sender: TObject; Field: TField);
     procedure PMImportObjectClick(Sender: TObject);
     procedure PMImportDirClick(Sender: TObject);
-  private
-    const CaptionButton = 'Объекты и сметы';
-    const HintButton = 'Окно объектов и смет';
+  private const
+    CaptionButton = 'Объекты и сметы';
+
+  const
+    HintButton = 'Окно объектов и смет';
   private
     StrQuery: String; // Строка для формирования запросов
     IdObject: Integer;
@@ -482,48 +481,6 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.dsObjectsDataChange(Sender: TObject;
-  Field: TField);
-begin
-
-end;
-
-// Открытие сметы
-procedure TFormObjectsAndEstimates.VSTDblClick(Sender: TObject);
-begin
-  { // Открываем форму ожидания
-    FormWaiting.Show;
-    Application.ProcessMessages;
-
-    if (not Assigned(FormCalculationEstimate)) then
-    FormCalculationEstimate := TFormCalculationEstimate.Create(FormMain);
-
-    with FormCalculationEstimate, qrObjects do
-    begin
-    EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' + FieldByName('Name')
-    .AsVariant;
-    EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
-    EditDateContract.Text := FieldByName('DateContract').AsVariant;
-
-    EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
-
-    SetIdObject(IdObject);
-    SetIdEstimate(IdEstimate);
-    Act := True;
-    IDAct := 0;
-
-    CreateTempTables;
-    OpenAllData;
-    end;
-
-    // Закрываем форму ожидания
-    FormWaiting.Close;
-    Close;
-
-    FormKC6.caption := 'Выборка данных';
-    FormKC6.MyShow(IdObject); }
-end;
-
 procedure TFormObjectsAndEstimates.pmActPropertyClick(Sender: TObject);
 var
   f: TfCardAct;
@@ -658,48 +615,49 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.PMExportObjectClick(Sender: TObject);
-var TmpStr: string;
+var
+  TmpStr: string;
 begin
   if SaveDialog.Execute(FormMain.Handle) then
   begin
-    FormMain.PanelCover.Visible := true;
+    FormMain.PanelCover.Visible := True;
     FormWaiting.Height := 110;
     FormWaiting.Show;
     Application.ProcessMessages;
     try
-      TmpStr := 'Экспорт объекта: ' + qrObjects.FieldbyName('Name').AsString;
-      FormWaiting.lbProcess.Caption := TmpStr;
+      TmpStr := 'Экспорт объекта: ' + qrObjects.FieldByName('Name').AsString;
+      FormWaiting.lbProcess.caption := TmpStr;
       Application.ProcessMessages;
-      ExportObject(qrObjects.Fields[0].AsInteger,
-        ChangeFileExt(SaveDialog.FileName, '.xml'));
+      ExportObject(qrObjects.Fields[0].AsInteger, ChangeFileExt(SaveDialog.FileName, '.xml'));
       showmessage('Экспорт завершен.');
     finally
       FormWaiting.Close;
       FormWaiting.Height := 88;
-      FormWaiting.lbProcess.Caption := '';
+      FormWaiting.lbProcess.caption := '';
       FormMain.PanelCover.Visible := False;
     end;
   end;
 end;
 
 procedure TFormObjectsAndEstimates.PMImportObjectClick(Sender: TObject);
-var TmpStr: string;
+var
+  TmpStr: string;
 begin
   if OpenDialog.Execute(FormMain.Handle) then
   begin
-    FormMain.PanelCover.Visible := true;
+    FormMain.PanelCover.Visible := True;
     FormWaiting.Height := 110;
     FormWaiting.Show;
     Application.ProcessMessages;
     try
       TmpStr := 'Импорт из файла: ' + ExtractFileName(OpenDialog.FileName);
-      FormWaiting.lbProcess.Caption := TmpStr;
+      FormWaiting.lbProcess.caption := TmpStr;
       ImportObject(OpenDialog.FileName);
       showmessage('Импорт завершен успешно.');
     finally
       FormWaiting.Close;
       FormWaiting.Height := 88;
-      FormWaiting.lbProcess.Caption := '';
+      FormWaiting.lbProcess.caption := '';
       FormMain.PanelCover.Visible := False;
     end;
     FillingTableObjects;
@@ -707,44 +665,45 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.PMImportDirClick(Sender: TObject);
-var TmpFiles: TStringDynArray;
-    i: Integer;
-    TmpStr: string;
+var
+  TmpFiles: TStringDynArray;
+  i: Integer;
+  TmpStr: string;
 begin
   with TBrowseForFolder.Create(nil) do
-  try
-    if Execute then
-    begin
-      TmpFiles := TDirectory.GetFiles(Folder, '*.xml', TSearchOption.soTopDirectoryOnly);
-      if Length(TmpFiles) = 0 then
-        Exit;
-      try
-        FormMain.PanelCover.Visible := true;
-        FormWaiting.Height := 110;
-        FormWaiting.Show;
-        Application.ProcessMessages;
+    try
+      if Execute then
+      begin
+        TmpFiles := TDirectory.GetFiles(Folder, '*.xml', TSearchOption.soTopDirectoryOnly);
+        if Length(TmpFiles) = 0 then
+          Exit;
         try
-          for i := Low(TmpFiles) to High(TmpFiles) do
-          begin
-            TmpStr := 'Импорт из файла: ' + ExtractFileName(TmpFiles[i]);
-            FormWaiting.lbProcess.Caption := TmpStr;
-            ImportObject(TmpFiles[i]);
+          FormMain.PanelCover.Visible := True;
+          FormWaiting.Height := 110;
+          FormWaiting.Show;
+          Application.ProcessMessages;
+          try
+            for i := Low(TmpFiles) to High(TmpFiles) do
+            begin
+              TmpStr := 'Импорт из файла: ' + ExtractFileName(TmpFiles[i]);
+              FormWaiting.lbProcess.caption := TmpStr;
+              ImportObject(TmpFiles[i]);
+            end;
+            showmessage('Импорт завершен успешно.');
+          finally
+            FormWaiting.Close;
+            FormWaiting.Height := 88;
+            FormWaiting.lbProcess.caption := '';
+            FormMain.PanelCover.Visible := False;
           end;
-          showmessage('Импорт завершен успешно.');
+          FillingTableObjects;
         finally
-          FormWaiting.Close;
-          FormWaiting.Height := 88;
-          FormWaiting.lbProcess.Caption := '';
-          FormMain.PanelCover.Visible := False;
+          SetLength(TmpFiles, 0);
         end;
-        FillingTableObjects;
-      finally
-        SetLength(TmpFiles, 0);
       end;
+    finally
+      Free;
     end;
-  finally
-    Free;
-  end;
 end;
 
 procedure TFormObjectsAndEstimates.PMEstimateExpandClick(Sender: TObject);
@@ -872,42 +831,6 @@ begin
   end
   else if qrTreeData.FieldByName('SM_TYPE').AsInteger = 1 then
     PMEstimatesAddPTM.Enabled := True;
-end;
-
-procedure TFormObjectsAndEstimates.StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-  State: TGridDrawState);
-begin
-  // Так как свойство таблицы DefaultDrawing отключено (иначе ячейка таблицы будет обведена пунктирной линией)
-  // необходимо самому прорисовывать шапку и все строки таблицы
-
-  with (Sender as TStringGrid) do
-  begin
-    // Прорисовка шапки таблицы
-    if ARow = 0 then
-    begin
-      Canvas.Brush.Color := PS.BackgroundHead;
-      Canvas.FillRect(Rect);
-      Canvas.Font.Color := PS.FontHead;
-      Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-    end
-    else
-    // Прорисовка всех остальных строк
-    begin
-      Canvas.Brush.Color := PS.BackgroundRows;
-      Canvas.FillRect(Rect);
-      Canvas.Font.Color := PS.FontRows;
-      Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-    end;
-
-    // Для выделенной строки в активной (в фокусе) таблице
-    if focused and (Row = ARow) and (Row > 0) then
-    begin
-      Canvas.Brush.Color := PS.BackgroundSelectRow;
-      Canvas.FillRect(Rect);
-      Canvas.Font.Color := PS.FontSelectRow;
-      Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, Row]);
-    end
-  end;
 end;
 
 procedure TFormObjectsAndEstimates.tvEstimatesDblClick(Sender: TObject);

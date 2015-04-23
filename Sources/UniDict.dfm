@@ -101,7 +101,6 @@ object fUniDict: TfUniDict
       ShowHint = True
       TabOrder = 0
       TabStop = True
-      ExplicitHeight = 23
     end
   end
   object dbmmoparam_description: TDBMemo

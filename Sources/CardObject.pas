@@ -4,10 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls,
-  ExtCtrls,
-  DBCtrls, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  ExtCtrls, System.DateUtils, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus;
+  FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus, Vcl.DBCtrls, System.UITypes;
 
 type
   TFormCardObject = class(TForm)
@@ -515,6 +514,17 @@ begin
 
   // Дата начала строительства
   DateTimeToString(v7, 'yyyy-mm-dd', DateTimePickerStartBuilding.Date);
+  DM.qrDifferent.SQL.Text := 'SELECT stavka_id FROM stavka WHERE year = :year and monat = :month';
+  DM.qrDifferent.ParamByName('month').AsInteger := MonthOf(DateTimePickerStartBuilding.Date);
+  DM.qrDifferent.ParamByName('year').AsInteger := yearof(DateTimePickerStartBuilding.Date);
+  DM.qrDifferent.Active := True;
+  if DM.qrDifferent.IsEmpty then
+  begin
+    MessageDlg('Для выбраной даты начала строительства значения ставок отсутствуют!'#13 +
+      'Укажите другую дату начала строительства.', mtError, [mbOK], 0);
+    DateTimePickerStartBuilding.setfocus;
+    exit;
+  end;
 
   // Срок строительства (месяцы)
   if EditCountMonth.Text <> '' then
@@ -625,7 +635,7 @@ begin
     MessageBox(0, PChar('Вы заполнили не все поля!' + sLineBreak +
       'Поля выделенные красным не заполнены или заполнены неправильно.'), CaptionForm,
       MB_ICONWARNING + MB_OK + mb_TaskModal);
-    Exit;
+    exit;
   end;
 
   try
@@ -780,7 +790,7 @@ var
   IdCategory: Integer;
 begin
   if (DBLookupComboBoxCategoryObject.KeyValue = Null) or (DBLookupComboBoxZonePrices.KeyValue = Null) then
-    Exit;
+    exit;
 
   // Тип ОХР и ОПР и План прибыли
 
@@ -818,4 +828,3 @@ begin
 end;
 
 end.
-

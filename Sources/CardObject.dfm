@@ -188,8 +188,8 @@ object FormCardObject: TFormCardObject
       Top = 20
       Width = 85
       Height = 21
-      Date = 41507.639729814820000000
-      Time = 41507.639729814820000000
+      Date = 41507.000000000000000000
+      Time = 41507.000000000000000000
       TabOrder = 0
     end
     object EditCountMonth: TEdit

@@ -164,10 +164,10 @@ end;
 procedure TFormBasicData.FormShow(Sender: TObject);
 var
   IdStavka: String;
-  vDate: TDate;
 begin
+  qrSmeta.Active := False;
   qrSmeta.ParamByName('IdEstimate').AsInteger := IdEstimate;
-  CloseOpen(qrSmeta);
+  qrSmeta.Active := True;
   CloseOpen(qrCoef);
   CloseOpen(qrMAIS);
 
@@ -220,9 +220,9 @@ begin
     IdStavka := FieldByName('stavka_id').AsVariant;
     IdDump := FieldByName('dump_id').AsVariant;
 
-    vDate := Now;
+    {vDate := Now;
     ComboBoxMonth.ItemIndex := MonthOf(vDate) - 1;
-    edtYear.Value := YearOf(vDate);
+    edtYear.Value := YearOf(vDate);}
 
     // ----------------------------------------
 
@@ -414,7 +414,7 @@ begin
       ParamByName('kzp').Value := edtKZP.Text;
       ParamByName('nds').Value := ComboBoxVAT.ItemIndex;
       ParamByName('dump_id').Value := dblkcbbDump.KeyValue;
-      ParamByName('STAVKA_RAB').Value := qrSmeta.FieldByName('STAVKA_RAB').AsVariant;
+      ParamByName('STAVKA_RAB').Value := qrSmeta.FieldByName('STAVKA_RAB').Value;
       ParamByName('K_LOW_OHROPR').Value := qrSmeta.FieldByName('K_LOW_OHROPR').Value;
       ParamByName('K_LOW_PLAN_PRIB').Value := qrSmeta.FieldByName('K_LOW_PLAN_PRIB').Value;
       ParamByName('APPLY_LOW_COEF_OHROPR_FLAG').AsInteger := qrSmeta.FieldByName('APPLY_LOW_COEF_OHROPR_FLAG')

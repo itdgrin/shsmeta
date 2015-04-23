@@ -123,8 +123,8 @@ object FormBasicData: TFormBasicData
   object LabelK41: TLabel
     Left = 8
     Top = 161
-    Width = 377
-    Height = 17
+    Width = 372
+    Height = 13
     Caption = 
       #1050'-'#1092' '#1082' '#1079#1072#1088#1087#1083#1072#1090#1077' '#1085#1072' '#1073#1077#1090#1086#1085#1085#1099#1077' '#1080' '#1096#1090#1091#1082#1072#1090#1091#1088#1085#1099#1077' '#1088#1072#1073#1086#1090#1099'" ('#1087#1088#1080#1082'. '#8470'350) '#1050'4' +
       '1:'
@@ -367,8 +367,6 @@ object FormBasicData: TFormBasicData
     ParentFont = False
     TabOrder = 23
     OnClick = ButtonSaveClick
-    ExplicitLeft = 110
-    ExplicitTop = 488
   end
   object ButtonCancel: TButton
     Left = 364
@@ -379,8 +377,6 @@ object FormBasicData: TFormBasicData
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 24
     OnClick = ButtonCancelClick
-    ExplicitLeft = 216
-    ExplicitTop = 488
   end
   object ComboBoxMonth: TComboBox
     Left = 167
@@ -517,8 +513,6 @@ object FormBasicData: TFormBasicData
     Anchors = [akLeft, akRight, akBottom]
     BevelOuter = bvNone
     TabOrder = 22
-    ExplicitTop = 446
-    ExplicitWidth = 310
     object lbl6: TLabel
       Left = 6
       Top = 7
