@@ -288,7 +288,7 @@ object FormCardObject: TFormCardObject
     Height = 43
     Caption = #1047#1086#1085#1072' '#1088#1072#1089#1094#1077#1085#1086#1082':'
     TabOrder = 14
-    object DBLookupComboBoxZonePrices: TDBLookupComboBox
+    object dblkcbbZonePrices: TDBLookupComboBox
       Left = 8
       Top = 16
       Width = 202
@@ -364,12 +364,13 @@ object FormCardObject: TFormCardObject
     Height = 49
     Caption = #1056#1077#1075#1080#1086#1085':'
     TabOrder = 12
-    object DBLookupComboBoxRegion: TDBLookupComboBox
+    object dblkcbbRegion: TDBLookupComboBox
       Left = 8
       Top = 20
       Width = 202
       Height = 21
       TabOrder = 0
+      OnCloseUp = dblkcbbRegionCloseUp
     end
   end
   object CheckBoxCalculationEconom: TCheckBox
@@ -465,13 +466,13 @@ object FormCardObject: TFormCardObject
     Left = 208
     Top = 321
   end
-  object DataSourceZP: TDataSource
-    DataSet = ADOQueryZP
+  object dsZP: TDataSource
+    DataSet = qrZP
     Left = 120
     Top = 410
   end
-  object DataSourceR: TDataSource
-    DataSet = ADOQueryR
+  object dsR: TDataSource
+    DataSet = qrR
     Left = 112
     Top = 362
   end
@@ -549,14 +550,14 @@ object FormCardObject: TFormCardObject
     Left = 281
     Top = 418
   end
-  object ADOQueryR: TFDQuery
+  object qrR: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 81
     Top = 362
   end
-  object ADOQueryZP: TFDQuery
+  object qrZP: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write

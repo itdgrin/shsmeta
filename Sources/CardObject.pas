@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls,
-  ExtCtrls, System.DateUtils, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  ExtCtrls, System.DateUtils, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus, Vcl.DBCtrls, System.UITypes;
 
@@ -15,8 +16,8 @@ type
     DataSourceCl: TDataSource;
     DataSourceC: TDataSource;
     DataSourceCO: TDataSource;
-    DataSourceR: TDataSource;
-    DataSourceZP: TDataSource;
+    dsR: TDataSource;
+    dsZP: TDataSource;
     GroupBoxObject: TGroupBox;
     GroupBoxContract: TGroupBox;
     GroupBoxShortDescription: TGroupBox;
@@ -47,10 +48,10 @@ type
 
     DBLookupComboBoxSourseFinance: TDBLookupComboBox;
     DBLookupComboBoxCategoryObject: TDBLookupComboBox;
-    DBLookupComboBoxZonePrices: TDBLookupComboBox;
+    dblkcbbZonePrices: TDBLookupComboBox;
     DBLookupComboBoxTypeOXR: TDBLookupComboBox;
     DBLookupComboBoxBasePrices: TDBLookupComboBox;
-    DBLookupComboBoxRegion: TDBLookupComboBox;
+    dblkcbbRegion: TDBLookupComboBox;
     DBLookupComboBoxClient: TDBLookupComboBox;
     DBLookupComboBoxContractor: TDBLookupComboBox;
 
@@ -75,8 +76,8 @@ type
     ADOQueryCO: TFDQuery;
     ADOQueryBP: TFDQuery;
     ADOQueryTO: TFDQuery;
-    ADOQueryR: TFDQuery;
-    ADOQueryZP: TFDQuery;
+    qrR: TFDQuery;
+    qrZP: TFDQuery;
     GroupBox1: TGroupBox;
     DBLookupComboBoxMAIS: TDBLookupComboBox;
     ADOQueryMAIS: TFDQuery;
@@ -119,6 +120,7 @@ type
 
     procedure GetValueDBLookupComboBoxTypeOXR(Sender: TObject);
     procedure N1Click(Sender: TObject);
+    procedure dblkcbbRegionCloseUp(Sender: TObject);
 
   private
     Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
@@ -318,7 +320,7 @@ begin
   // РЕГИОН
 
   try
-    with ADOQueryR do
+    with qrR do
     begin
       Active := False;
       SQL.Clear;
@@ -326,9 +328,9 @@ begin
       Active := True;
     end;
 
-    with DBLookupComboBoxRegion do
+    with dblkcbbRegion do
     begin
-      ListSource := DataSourceR;
+      ListSource := dsR;
       ListField := 'region_name';
       KeyField := 'region_id';
     end;
@@ -364,7 +366,7 @@ begin
   // ЗОНА РАСЦЕНОК
 
   try
-    with ADOQueryZP do
+    with qrZP do
     begin
       Active := False;
       SQL.Clear;
@@ -372,9 +374,9 @@ begin
       Active := True;
     end;
 
-    with DBLookupComboBoxZonePrices do
+    with dblkcbbZonePrices do
     begin
-      ListSource := DataSourceZP;
+      ListSource := dsZP;
       ListField := 'region';
       KeyField := 'obj_region_id';
     end;
@@ -412,7 +414,7 @@ begin
     DBLookupComboBoxClient.KeyValue := Client;
     DBLookupComboBoxContractor.KeyValue := Contractor;
     DBLookupComboBoxCategoryObject.KeyValue := CategoryObject;
-    DBLookupComboBoxRegion.KeyValue := Region;
+    dblkcbbRegion.KeyValue := Region;
     ComboBoxVAT.ItemIndex := VAT;
     DBLookupComboBoxBasePrices.KeyValue := BasePrice;
     DBLookupComboBoxMAIS.KeyValue := MAIS;
@@ -426,7 +428,7 @@ begin
         Active := True;
       end;
 
-      DBLookupComboBoxZonePrices.KeyValue := DataSourceDifferent.DataSet.FieldByName('obj_region').AsVariant;
+      dblkcbbZonePrices.KeyValue := DataSourceDifferent.DataSet.FieldByName('obj_region').AsVariant;
     except
       on E: Exception do
         MessageBox(0, PChar('При установке значения в ЗОНЕ РАСЦЕНОК возникла ошибка:' + sLineBreak +
@@ -522,7 +524,7 @@ begin
   begin
     MessageDlg('Для выбраной даты начала строительства значения ставок отсутствуют!'#13 +
       'Укажите другую дату начала строительства.', mtError, [mbOK], 0);
-    DateTimePickerStartBuilding.setfocus;
+    DateTimePickerStartBuilding.SetFocus;
     exit;
   end;
 
@@ -579,11 +581,11 @@ begin
   v13 := IntToStr(ComboBoxVAT.ItemIndex);
 
   // Регион
-  if DBLookupComboBoxRegion.KeyValue <> Null then
-    v14 := DBLookupComboBoxRegion.KeyValue
+  if dblkcbbRegion.KeyValue <> Null then
+    v14 := dblkcbbRegion.KeyValue
   else
   begin
-    DBLookupComboBoxRegion.Color := ColorWarningField;
+    dblkcbbRegion.Color := ColorWarningField;
     Inc(CountField);
   end;
 
@@ -598,7 +600,7 @@ begin
     end;
 
   // Зона расценок
-  with DBLookupComboBoxZonePrices do
+  with dblkcbbZonePrices do
     if KeyValue = Null then
     begin
       Color := ColorWarningField;
@@ -756,8 +758,8 @@ begin
   DBLookupComboBoxClient.Color := clWindow;
   DBLookupComboBoxContractor.Color := clWindow;
   DBLookupComboBoxCategoryObject.Color := clWindow;
-  DBLookupComboBoxRegion.Color := clWindow;
-  DBLookupComboBoxZonePrices.Color := clWindow;
+  dblkcbbRegion.Color := clWindow;
+  dblkcbbZonePrices.Color := clWindow;
   DBLookupComboBoxBasePrices.Color := clWindow;
   DBLookupComboBoxTypeOXR.Color := clWindow;
   DBLookupComboBoxMAIS.Color := clWindow;
@@ -777,11 +779,19 @@ begin
   DBLookupComboBoxClient.KeyValue := Null;
   DBLookupComboBoxContractor.KeyValue := Null;
   DBLookupComboBoxCategoryObject.KeyValue := Null;
-  DBLookupComboBoxRegion.KeyValue := Null;
-  DBLookupComboBoxZonePrices.KeyValue := Null;
+  dblkcbbRegion.KeyValue := Null;
+  dblkcbbZonePrices.KeyValue := Null;
   DBLookupComboBoxBasePrices.KeyValue := Null;
   DBLookupComboBoxTypeOXR.KeyValue := Null;
   DBLookupComboBoxMAIS.KeyValue := Null;
+end;
+
+procedure TFormCardObject.dblkcbbRegionCloseUp(Sender: TObject);
+begin
+  // Автоматическая подстановка зоны расценок "Минск" при выборе региона "Минск"
+  if dblkcbbRegion.KeyValue = 7 then
+    if not qrZP.IsEmpty then
+      dblkcbbZonePrices.KeyValue := 3;
 end;
 
 procedure TFormCardObject.GetValueDBLookupComboBoxTypeOXR(Sender: TObject);
@@ -789,12 +799,12 @@ var
   IdRegion: Integer;
   IdCategory: Integer;
 begin
-  if (DBLookupComboBoxCategoryObject.KeyValue = Null) or (DBLookupComboBoxZonePrices.KeyValue = Null) then
+  if (DBLookupComboBoxCategoryObject.KeyValue = Null) or (dblkcbbZonePrices.KeyValue = Null) then
     exit;
 
   // Тип ОХР и ОПР и План прибыли
 
-  IdRegion := DBLookupComboBoxZonePrices.KeyValue;
+  IdRegion := dblkcbbZonePrices.KeyValue;
   IdCategory := DBLookupComboBoxCategoryObject.KeyValue;
 
   try
