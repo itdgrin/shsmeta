@@ -74,7 +74,7 @@ type
     ADOQueryC: TFDQuery;
     ADOQueryCl: TFDQuery;
     ADOQueryCO: TFDQuery;
-    ADOQueryBP: TFDQuery;
+    qrBP: TFDQuery;
     ADOQueryTO: TFDQuery;
     qrR: TFDQuery;
     qrZP: TFDQuery;
@@ -343,7 +343,7 @@ begin
   // БАЗА РАСЦЕНОК
 
   try
-    with ADOQueryBP do
+    with qrBP do
     begin
       Active := False;
       SQL.Clear;
@@ -356,6 +356,9 @@ begin
       ListSource := DataSourceBP;
       ListField := 'base_name';
       KeyField := 'base_id';
+      // Автоматическая подстановка Базы расценок в новую запись
+      if not qrBP.IsEmpty and not Editing then
+        KeyValue := qrBP.FieldByName('base_id').AsInteger;
     end;
   except
     on E: Exception do

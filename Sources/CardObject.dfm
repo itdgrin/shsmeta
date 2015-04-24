@@ -487,7 +487,7 @@ object FormCardObject: TFormCardObject
     Top = 273
   end
   object DataSourceBP: TDataSource
-    DataSet = ADOQueryBP
+    DataSet = qrBP
     Left = 360
     Top = 362
   end
@@ -536,7 +536,7 @@ object FormCardObject: TFormCardObject
     Left = 177
     Top = 321
   end
-  object ADOQueryBP: TFDQuery
+  object qrBP: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
