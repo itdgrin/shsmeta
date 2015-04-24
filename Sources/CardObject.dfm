@@ -257,7 +257,7 @@ object FormCardObject: TFormCardObject
     Height = 49
     Caption = #1050#1072#1090#1077#1075#1086#1088#1080#1103' '#1086#1073#1098#1077#1082#1090#1072':'
     TabOrder = 10
-    object DBLookupComboBoxCategoryObject: TDBLookupComboBox
+    object dblkcbbCategoryObject: TDBLookupComboBox
       Left = 8
       Top = 20
       Width = 308
@@ -304,7 +304,7 @@ object FormCardObject: TFormCardObject
     Height = 43
     Caption = #1058#1080#1087' '#1054#1061#1056' '#1054#1055#1056' '#1080' '#1087#1083#1072#1085'. '#1087#1088#1080#1073#1099#1083#1080':'
     TabOrder = 15
-    object DBLookupComboBoxTypeOXR: TDBLookupComboBox
+    object dblkcbbTypeOXR: TDBLookupComboBox
       Left = 8
       Top = 16
       Width = 201
@@ -389,7 +389,7 @@ object FormCardObject: TFormCardObject
     Height = 45
     Caption = #1052#1040#1048#1057':'
     TabOrder = 17
-    object DBLookupComboBoxMAIS: TDBLookupComboBox
+    object dblkcbbMAIS: TDBLookupComboBox
       Left = 8
       Top = 16
       Width = 201
@@ -491,8 +491,8 @@ object FormCardObject: TFormCardObject
     Left = 360
     Top = 362
   end
-  object DataSourceTO: TDataSource
-    DataSet = ADOQueryTO
+  object dsTO: TDataSource
+    DataSet = qrTO
     Left = 312
     Top = 418
   end
@@ -543,7 +543,7 @@ object FormCardObject: TFormCardObject
     Left = 329
     Top = 362
   end
-  object ADOQueryTO: TFDQuery
+  object qrTO: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -564,7 +564,7 @@ object FormCardObject: TFormCardObject
     Left = 81
     Top = 410
   end
-  object ADOQueryMAIS: TFDQuery
+  object qrMAIS: TFDQuery
     AutoCalcFields = False
     Connection = DM.Connect
     Transaction = DM.Read
@@ -572,8 +572,8 @@ object FormCardObject: TFormCardObject
     Left = 273
     Top = 461
   end
-  object DataSourceMAIS: TDataSource
-    DataSet = ADOQueryMAIS
+  object dsMAIS: TDataSource
+    DataSet = qrMAIS
     Left = 304
     Top = 461
   end

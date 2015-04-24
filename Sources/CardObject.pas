@@ -47,9 +47,9 @@ type
     DateTimePickerStartBuilding: TDateTimePicker;
 
     DBLookupComboBoxSourseFinance: TDBLookupComboBox;
-    DBLookupComboBoxCategoryObject: TDBLookupComboBox;
+    dblkcbbCategoryObject: TDBLookupComboBox;
     dblkcbbZonePrices: TDBLookupComboBox;
-    DBLookupComboBoxTypeOXR: TDBLookupComboBox;
+    dblkcbbTypeOXR: TDBLookupComboBox;
     DBLookupComboBoxBasePrices: TDBLookupComboBox;
     dblkcbbRegion: TDBLookupComboBox;
     DBLookupComboBoxClient: TDBLookupComboBox;
@@ -62,7 +62,7 @@ type
     MemoFullDescription: TMemo;
     ComboBoxVAT: TComboBox;
     DataSourceBP: TDataSource;
-    DataSourceTO: TDataSource;
+    dsTO: TDataSource;
     DataSourceDifferent: TDataSource;
     LabelNumberObject: TLabel;
     LabelCodeObject: TLabel;
@@ -75,13 +75,13 @@ type
     ADOQueryCl: TFDQuery;
     ADOQueryCO: TFDQuery;
     qrBP: TFDQuery;
-    ADOQueryTO: TFDQuery;
+    qrTO: TFDQuery;
     qrR: TFDQuery;
     qrZP: TFDQuery;
     GroupBox1: TGroupBox;
-    DBLookupComboBoxMAIS: TDBLookupComboBox;
-    ADOQueryMAIS: TFDQuery;
-    DataSourceMAIS: TDataSource;
+    dblkcbbMAIS: TDBLookupComboBox;
+    qrMAIS: TFDQuery;
+    dsMAIS: TDataSource;
     grp1: TGroupBox;
     lbl1: TLabel;
     lbl2: TLabel;
@@ -305,7 +305,7 @@ begin
       Active := True;
     end;
 
-    with DBLookupComboBoxCategoryObject do
+    with dblkcbbCategoryObject do
     begin
       ListSource := DataSourceCO;
       ListField := 'cat_name';
@@ -390,20 +390,23 @@ begin
   end;
 
   try
-    with ADOQueryMAIS do
+    with qrMAIS do
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT * FROM mais;');
+      SQL.Add('SELECT * FROM mais ORDER BY onDate DESC;');
       Active := True;
     end;
 
-    with DBLookupComboBoxMAIS do
+    with dblkcbbMAIS do
     begin
-      ListSource := DataSourceMAIS;
+      ListSource := dsMAIS;
       ListField := 'NAME';
       KeyField := 'MAIS_ID';
     end;
+    // Автоматический выбор последнего МАИС
+    if not Editing then
+      dblkcbbMAIS.KeyValue := qrMAIS.FieldByName('MAIS_ID').AsInteger;
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе списка МАИСов возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
@@ -416,11 +419,11 @@ begin
     DBLookupComboBoxSourseFinance.KeyValue := SourceFinance;
     DBLookupComboBoxClient.KeyValue := Client;
     DBLookupComboBoxContractor.KeyValue := Contractor;
-    DBLookupComboBoxCategoryObject.KeyValue := CategoryObject;
+    dblkcbbCategoryObject.KeyValue := CategoryObject;
     dblkcbbRegion.KeyValue := Region;
     ComboBoxVAT.ItemIndex := VAT;
     DBLookupComboBoxBasePrices.KeyValue := BasePrice;
-    DBLookupComboBoxMAIS.KeyValue := MAIS;
+    dblkcbbMAIS.KeyValue := MAIS;
 
     try
       with ADOQueryDifferent do
@@ -440,7 +443,7 @@ begin
 
     GetValueDBLookupComboBoxTypeOXR(nil);
 
-    DBLookupComboBoxTypeOXR.KeyValue := TypeOXR;
+    dblkcbbTypeOXR.KeyValue := TypeOXR;
   end;
 end;
 
@@ -572,11 +575,11 @@ begin
   end;
 
   // Категория объекта
-  if DBLookupComboBoxCategoryObject.KeyValue <> Null then
-    v12 := DBLookupComboBoxCategoryObject.KeyValue
+  if dblkcbbCategoryObject.KeyValue <> Null then
+    v12 := dblkcbbCategoryObject.KeyValue
   else
   begin
-    DBLookupComboBoxCategoryObject.Color := ColorWarningField;
+    dblkcbbCategoryObject.Color := ColorWarningField;
     Inc(CountField);
   end;
 
@@ -611,7 +614,7 @@ begin
     end;
 
   // Тип ОХР и ОПР и план прибыли
-  with DBLookupComboBoxTypeOXR do
+  with dblkcbbTypeOXR do
     if KeyValue <> Null then
       v16 := KeyValue
     else
@@ -620,7 +623,7 @@ begin
       Inc(CountField);
     end;
 
-  with DBLookupComboBoxMAIS do
+  with dblkcbbMAIS do
     if KeyValue <> Null then
       v19 := KeyValue
     else
@@ -760,12 +763,12 @@ begin
   DBLookupComboBoxSourseFinance.Color := clWindow;
   DBLookupComboBoxClient.Color := clWindow;
   DBLookupComboBoxContractor.Color := clWindow;
-  DBLookupComboBoxCategoryObject.Color := clWindow;
+  dblkcbbCategoryObject.Color := clWindow;
   dblkcbbRegion.Color := clWindow;
   dblkcbbZonePrices.Color := clWindow;
   DBLookupComboBoxBasePrices.Color := clWindow;
-  DBLookupComboBoxTypeOXR.Color := clWindow;
-  DBLookupComboBoxMAIS.Color := clWindow;
+  dblkcbbTypeOXR.Color := clWindow;
+  dblkcbbMAIS.Color := clWindow;
 end;
 
 procedure TFormCardObject.ClearAllFields;
@@ -781,12 +784,12 @@ begin
   DBLookupComboBoxSourseFinance.KeyValue := Null;
   DBLookupComboBoxClient.KeyValue := Null;
   DBLookupComboBoxContractor.KeyValue := Null;
-  DBLookupComboBoxCategoryObject.KeyValue := Null;
+  dblkcbbCategoryObject.KeyValue := Null;
   dblkcbbRegion.KeyValue := Null;
   dblkcbbZonePrices.KeyValue := Null;
   DBLookupComboBoxBasePrices.KeyValue := Null;
-  DBLookupComboBoxTypeOXR.KeyValue := Null;
-  DBLookupComboBoxMAIS.KeyValue := Null;
+  dblkcbbTypeOXR.KeyValue := Null;
+  dblkcbbMAIS.KeyValue := Null;
 end;
 
 procedure TFormCardObject.dblkcbbRegionCloseUp(Sender: TObject);
@@ -794,7 +797,10 @@ begin
   // Автоматическая подстановка зоны расценок "Минск" при выборе региона "Минск"
   if dblkcbbRegion.KeyValue = 7 then
     if not qrZP.IsEmpty then
+    begin
       dblkcbbZonePrices.KeyValue := 3;
+      GetValueDBLookupComboBoxTypeOXR(Sender);
+    end;
 end;
 
 procedure TFormCardObject.GetValueDBLookupComboBoxTypeOXR(Sender: TObject);
@@ -802,16 +808,16 @@ var
   IdRegion: Integer;
   IdCategory: Integer;
 begin
-  if (DBLookupComboBoxCategoryObject.KeyValue = Null) or (dblkcbbZonePrices.KeyValue = Null) then
+  if (dblkcbbCategoryObject.KeyValue = Null) or (dblkcbbZonePrices.KeyValue = Null) then
     exit;
 
   // Тип ОХР и ОПР и План прибыли
 
   IdRegion := dblkcbbZonePrices.KeyValue;
-  IdCategory := DBLookupComboBoxCategoryObject.KeyValue;
+  IdCategory := dblkcbbCategoryObject.KeyValue;
 
   try
-    with ADOQueryTO do
+    with qrTO do
     begin
       Active := False;
       SQL.Clear;
@@ -820,12 +826,15 @@ begin
       Active := True;
     end;
 
-    with DBLookupComboBoxTypeOXR do
+    with dblkcbbTypeOXR do
     begin
-      ListSource := DataSourceTO;
+      ListSource := dsTO;
       ListField := 'name';
       KeyField := 'stroj_id';
     end;
+    // Если объект по тек ремонту то тут ремонт автоматом
+    if dblkcbbCategoryObject.KeyValue = 2 then
+      dblkcbbTypeOXR.KeyValue := qrTO.FieldByName('stroj_id').AsInteger;
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе списка ОХР и ОПР возникла ошибка:' + sLineBreak + E.Message),
