@@ -796,6 +796,7 @@ object FormBasicData: TFormBasicData
     Top = 424
   end
   object qrCoef: TFDQuery
+    BeforeOpen = qrCoefBeforeOpen
     OnNewRecord = qrCoefNewRecord
     MasterSource = dsSmeta
     MasterFields = 'SM_ID'

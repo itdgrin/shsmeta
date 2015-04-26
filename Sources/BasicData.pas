@@ -104,6 +104,7 @@ type
     procedure mN1Click(Sender: TObject);
     procedure mN2Click(Sender: TObject);
     procedure pmCoefPopup(Sender: TObject);
+    procedure qrCoefBeforeOpen(DataSet: TDataSet);
     // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
 
   private
@@ -220,9 +221,9 @@ begin
     IdStavka := FieldByName('stavka_id').AsVariant;
     IdDump := FieldByName('dump_id').AsVariant;
 
-    {vDate := Now;
-    ComboBoxMonth.ItemIndex := MonthOf(vDate) - 1;
-    edtYear.Value := YearOf(vDate);}
+    { vDate := Now;
+      ComboBoxMonth.ItemIndex := MonthOf(vDate) - 1;
+      edtYear.Value := YearOf(vDate); }
 
     // ----------------------------------------
 
@@ -329,6 +330,15 @@ begin
       3:
         Text := MyFloatToStr(PercentTransportMinsk);
     end;
+end;
+
+procedure TFormBasicData.qrCoefBeforeOpen(DataSet: TDataSet);
+begin
+  qrCoef.SQL.Text := StringReplace(qrCoef.SQL.Text, '`calculation_coef_temp`', '`calculation_coef`',
+    [rfReplaceAll, rfIgnoreCase]);
+  if Assigned(FormCalculationEstimate) then
+    qrCoef.SQL.Text := StringReplace(qrCoef.SQL.Text, '`calculation_coef`', '`calculation_coef_temp`',
+      [rfReplaceAll, rfIgnoreCase]);
 end;
 
 procedure TFormBasicData.qrCoefNewRecord(DataSet: TDataSet);

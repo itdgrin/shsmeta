@@ -441,6 +441,7 @@ type
     mDelEstimate: TMenuItem;
     mAddLocal: TMenuItem;
     mEditEstimate: TMenuItem;
+    mBaseData: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -626,6 +627,7 @@ type
     procedure mDelEstimateClick(Sender: TObject);
     procedure mAddLocalClick(Sender: TObject);
     procedure mEditEstimateClick(Sender: TObject);
+    procedure mBaseDataClick(Sender: TObject);
   private const
     CaptionButton = 'Расчёт сметы';
     HintButton = 'Окно расчёта сметы';
@@ -1899,6 +1901,16 @@ begin
       ReCalcMat := False;
     end;
   end;
+end;
+
+procedure TFormCalculationEstimate.mBaseDataClick(Sender: TObject);
+begin
+  FormBasicData.ShowForm(IdObject, qrRatesExSM_ID.AsInteger);
+  GetSourceData;
+  GetStateCoefOrdersInRate;
+  GridRatesRowSellect;
+  CloseOpen(qrRatesEx);
+  CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.mDelEstimateClick(Sender: TObject);
@@ -3808,6 +3820,7 @@ begin
   mAddLocal.Visible := mainType = 2;
   mDelEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4);
   mEditEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4);
+  mBaseData.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4);
 end;
 
 procedure TFormCalculationEstimate.EstimateBasicDataClick(Sender: TObject);
@@ -3851,6 +3864,8 @@ begin
   GetSourceData;
   GetStateCoefOrdersInRate;
   GridRatesRowSellect;
+  CloseOpen(qrRatesEx);
+  CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.LabelMouseEnter(Sender: TObject);
