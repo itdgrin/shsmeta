@@ -340,7 +340,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsMaterialData
           DBGrid = grMaterial
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 163
         end
       end
       object pnlMatBott: TPanel
@@ -579,7 +578,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsMechData
           DBGrid = grMech
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 163
         end
       end
       object pnlMechBott: TPanel
@@ -1031,7 +1029,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsDevices
           DBGrid = JvDBGrid1
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 163
         end
       end
       object pnl5: TPanel
@@ -1160,7 +1157,7 @@ object fCalcResource: TfCalcResource
           ParentFont = False
         end
         object lbl7: TLabel
-          Left = 224
+          Left = 178
           Top = 4
           Width = 91
           Height = 13
@@ -1172,21 +1169,8 @@ object fCalcResource: TfCalcResource
           Font.Style = []
           ParentFont = False
         end
-        object dbedt1: TDBEdit
-          Left = 99
-          Top = 1
-          Width = 121
-          Height = 21
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 0
-        end
         object dbedt2: TDBEdit
-          Left = 323
+          Left = 277
           Top = 1
           Width = 121
           Height = 21
@@ -1197,6 +1181,30 @@ object fCalcResource: TfCalcResource
           Font.Style = []
           ParentFont = False
           TabOrder = 1
+        end
+        object cbb4: TComboBox
+          Left = 97
+          Top = 1
+          Width = 75
+          Height = 21
+          Style = csDropDownList
+          DropDownCount = 12
+          ItemIndex = 1
+          TabOrder = 0
+          Text = #1060#1077#1074#1088#1072#1083#1100
+          Items.Strings = (
+            #1071#1085#1074#1072#1088#1100
+            #1060#1077#1074#1088#1072#1083#1100
+            #1052#1072#1088#1090
+            #1040#1087#1088#1077#1083#1100
+            #1052#1072#1081
+            #1048#1102#1085#1100
+            #1048#1102#1083#1100
+            #1040#1074#1075#1091#1089#1090
+            #1057#1077#1085#1090#1103#1073#1088#1100
+            #1054#1082#1090#1103#1073#1088#1100
+            #1053#1086#1103#1073#1088#1100
+            #1044#1077#1082#1072#1073#1088#1100)
         end
       end
       object pnl7: TPanel
@@ -1358,7 +1366,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsRates
           DBGrid = JvDBGrid3
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 163
         end
       end
     end

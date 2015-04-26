@@ -416,6 +416,17 @@ begin
         MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
+  if not Editing then
+  begin
+    DM.qrDifferent.SQL.Text := 'SELECT SUM(FN_getParamValue(code, :month, :year)) AS VALUE'#13 +
+      'FROM unidictparam WHERE id_unidicttype=7';
+    DM.qrDifferent.ParamByName('month').AsInteger := MonthOf(DateTimePickerStartBuilding.Date);
+    DM.qrDifferent.ParamByName('year').AsInteger := YearOf(DateTimePickerStartBuilding.Date);
+    DM.qrDifferent.Active := True;
+    qrMain.FieldByName('PER_CONTRACTOR').Value := DM.qrDifferent.FieldByName('VALUE').Value;
+    DM.qrDifferent.Active := False;
+  end;
+
   // Выставляем начальные значения в выпадающих списках
   if Editing then
   begin
@@ -527,7 +538,7 @@ begin
   DateTimeToString(v7, 'yyyy-mm-dd', DateTimePickerStartBuilding.Date);
   DM.qrDifferent.SQL.Text := 'SELECT stavka_id FROM stavka WHERE year = :year and monat = :month';
   DM.qrDifferent.ParamByName('month').AsInteger := MonthOf(DateTimePickerStartBuilding.Date);
-  DM.qrDifferent.ParamByName('year').AsInteger := yearof(DateTimePickerStartBuilding.Date);
+  DM.qrDifferent.ParamByName('year').AsInteger := YearOf(DateTimePickerStartBuilding.Date);
   DM.qrDifferent.Active := True;
   if DM.qrDifferent.IsEmpty then
   begin
@@ -802,12 +813,9 @@ begin
   begin
     qrMain.Edit;
     qrMain.FieldByName('PER_TEMP_BUILD').Value := GetUniDictParamValue('PER_TEMP_BUILD',
-      MonthOf(DateTimePickerStartBuilding.Date), yearof(DateTimePickerStartBuilding.Date));
-    qrMain.FieldByName('PER_CONTRACTOR').Value :=
-      GetUniDictParamValue('', MonthOf(DateTimePickerStartBuilding.Date),
-      yearof(DateTimePickerStartBuilding.Date));
+      MonthOf(DateTimePickerStartBuilding.Date), YearOf(DateTimePickerStartBuilding.Date));
     qrMain.FieldByName('PER_TEMP_BUILD_BACK').Value := GetUniDictParamValue('PER_TEMP_BUILD_BACK',
-      MonthOf(DateTimePickerStartBuilding.Date), yearof(DateTimePickerStartBuilding.Date));
+      MonthOf(DateTimePickerStartBuilding.Date), YearOf(DateTimePickerStartBuilding.Date));
   end;
 end;
 
@@ -867,7 +875,7 @@ begin
     fCardObjectContractorServices := TfCardObjectContractorServices.Create(Self);
   if fCardObjectContractorServices.ShowModal = mrOk then
   begin
-    //TODO update main.CONTRACTOR_SERV
+    // TODO update main.CONTRACTOR_SERV
   end;
 end;
 

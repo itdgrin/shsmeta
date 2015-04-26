@@ -87,12 +87,12 @@ type
     dsRates: TDataSource;
     lbl5: TLabel;
     lbl7: TLabel;
-    dbedt1: TDBEdit;
     dbedt2: TDBEdit;
     JvDBGridFooter1: TJvDBGridFooter;
     JvDBGridFooter2: TJvDBGridFooter;
     JvDBGridFooter3: TJvDBGridFooter;
     JvDBGridFooter4: TJvDBGridFooter;
+    cbb4: TComboBox;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgc1Change(Sender: TObject);

@@ -20,7 +20,6 @@ inherited FramePriceMaterial: TFramePriceMaterial
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
-    ExplicitWidth = 488
     object ImageSplitter: TImage
       Left = 312
       Top = 395
@@ -49,7 +48,6 @@ inherited FramePriceMaterial: TFramePriceMaterial
       ParentBackground = False
       TabOrder = 2
       OnResize = PanelTableResize
-      ExplicitWidth = 488
       object SpeedButtonShowHide: TSpeedButton
         Tag = 1
         Left = 0
@@ -91,7 +89,6 @@ inherited FramePriceMaterial: TFramePriceMaterial
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
         OnKeyPress = VSTKeyPress
-        ExplicitWidth = 488
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]
@@ -138,7 +135,6 @@ inherited FramePriceMaterial: TFramePriceMaterial
       ParentDoubleBuffered = False
       ShowCaption = False
       TabOrder = 3
-      ExplicitWidth = 488
       object Memo: TMemo
         Left = 0
         Top = 0
@@ -149,7 +145,6 @@ inherited FramePriceMaterial: TFramePriceMaterial
         ScrollBars = ssVertical
         TabOrder = 0
         OnEnter = MemoEnter
-        ExplicitWidth = 488
       end
     end
     object PanelSearch: TPanel
@@ -163,7 +158,6 @@ inherited FramePriceMaterial: TFramePriceMaterial
       ParentBackground = False
       ParentDoubleBuffered = False
       TabOrder = 1
-      ExplicitWidth = 488
       DesignSize = (
         547
         25)
@@ -188,7 +182,6 @@ inherited FramePriceMaterial: TFramePriceMaterial
         TabOrder = 0
         OnEnter = EditSearch1Enter
         OnKeyPress = EditSearch1KeyPress
-        ExplicitWidth = 439
       end
     end
     object PanelSettings: TPanel
@@ -202,7 +195,6 @@ inherited FramePriceMaterial: TFramePriceMaterial
       ParentBackground = False
       ParentDoubleBuffered = False
       TabOrder = 0
-      ExplicitWidth = 488
       object LabelYear: TLabel
         Left = 6
         Top = 6
@@ -312,10 +304,10 @@ inherited FramePriceMaterial: TFramePriceMaterial
     ParentDoubleBuffered = False
     TabOrder = 1
     ExplicitTop = 316
-    ExplicitWidth = 488
+    ExplicitWidth = 547
     inherited StatusBar: TStatusBar
       Width = 547
-      ExplicitWidth = 488
+      ExplicitWidth = 547
     end
   end
   object PopupMenu: TPopupMenu

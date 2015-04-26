@@ -2187,12 +2187,22 @@ begin
 end;
 
 procedure TFormCalculationEstimate.mAddPTMClick(Sender: TObject);
+var
+  SM_TYPE, PARENT_ID: Integer;
 begin
+  qrTemp.SQL.Text := 'SELECT SM_TYPE, PARENT_ID FROM smetasourcedata WHERE SM_ID=:ID';
+  qrTemp.ParamByName('ID').AsInteger := qrRatesExSM_ID.AsInteger;
+  qrTemp.Active := True;
+  SM_TYPE := qrTemp.FieldByName('SM_TYPE').AsInteger;
+  PARENT_ID := qrTemp.FieldByName('PARENT_ID').AsInteger;
+  qrTemp.Active := False;
   FormCardEstimate.EditingRecord(False);
-  if qrRatesExID_TYPE_DATA.AsInteger = -1 then
-    FormCardEstimate.ShowForm(IdObject, qrRatesExSM_ID.AsInteger, 3)
-  else
-    FormCardEstimate.ShowForm(IdObject, IdEstimate, 3);
+  case SM_TYPE of
+    1:
+      FormCardEstimate.ShowForm(IdObject, qrRatesExSM_ID.AsInteger, 3);
+    3:
+      FormCardEstimate.ShowForm(IdObject, PARENT_ID, 3);
+  end;
   CloseOpen(qrRatesEx);
 end;
 
@@ -3816,8 +3826,8 @@ begin
   qrTemp.Active := True;
   mainType := qrTemp.FieldByName('SM_TYPE').AsInteger;
   qrTemp.Active := False;
-  mAddPTM.Visible := (qrRatesExID_TYPE_DATA.AsInteger = -1) or (mainType = 1);
-  mAddLocal.Visible := mainType = 2;
+  mAddPTM.Visible := (mainType <> 3) and not Act;
+  mAddLocal.Visible := (mainType = 2) and not Act;
   mDelEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4);
   mEditEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4);
   mBaseData.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4);

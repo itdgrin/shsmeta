@@ -366,6 +366,8 @@ end;
 procedure TFramePriceMaterial.EditSearch1KeyPress(Sender: TObject; var Key: Char);
 begin
   with (Sender as TEdit) do
+  begin
+    if (Text <> '') and (Pos('-', Text) <> 0) then;
     if (Key = #13) and (Text <> '') then // Если нажата клавиша "Enter" и строка поиска не пуста
       ReceivingSearch(FilteredString(Text, 'mat_name'))
     else if (Key = #27) or ((Key = #13) and (Text = '')) then
@@ -374,6 +376,7 @@ begin
       Text := '';
       ReceivingSearch('');
     end;
+  end;
 
   // Антибип
   if Key = #13 then
