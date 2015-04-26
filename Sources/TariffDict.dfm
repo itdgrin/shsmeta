@@ -26,15 +26,19 @@ object fTariffDict: TfTariffDict
     Height = 424
     ActivePage = ts1
     Align = alClient
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     MultiLine = True
+    ParentFont = False
     Style = tsButtons
     TabOrder = 0
     TabWidth = 140
     OnChange = pgcChange
-    ExplicitHeight = 391
     object ts1: TTabSheet
       Caption = #1058#1072#1088#1080#1092#1099' '#1087#1086' '#1079#1072#1088#1087#1083#1072#1090#1077
-      ExplicitHeight = 360
       object spl1: TSplitter
         Left = 180
         Top = 30
@@ -53,8 +57,6 @@ object fTariffDict: TfTariffDict
         Caption = 'pnlLeft'
         Constraints.MinWidth = 180
         TabOrder = 1
-        ExplicitTop = 62
-        ExplicitHeight = 298
         object grCategory: TJvDBGrid
           Left = 1
           Top = 1
@@ -112,8 +114,6 @@ object fTariffDict: TfTariffDict
         BevelOuter = bvSpace
         Caption = 'pnlClient'
         TabOrder = 2
-        ExplicitTop = 62
-        ExplicitHeight = 298
         object grStavka: TJvDBGrid
           Left = 1
           Top = 1
@@ -254,7 +254,6 @@ object fTariffDict: TfTariffDict
     object ts2: TTabSheet
       Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1095#1077#1089#1082#1080#1077' '#1080#1085#1076#1077#1082#1089#1099
       ImageIndex = 1
-      ExplicitHeight = 360
       object pnlTop1: TPanel
         Left = 0
         Top = 0
@@ -334,8 +333,6 @@ object fTariffDict: TfTariffDict
         BevelOuter = bvSpace
         Caption = 'pnlClient1'
         TabOrder = 1
-        ExplicitTop = 41
-        ExplicitHeight = 319
         object grIndexes: TJvDBGrid
           Left = 1
           Top = 1
@@ -368,11 +365,6 @@ object fTariffDict: TfTariffDict
             item
               Expanded = False
               FieldName = 'param_name'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1085#1089#1090#1072#1085#1090#1099
               Width = 376
@@ -389,11 +381,6 @@ object fTariffDict: TfTariffDict
             item
               Expanded = False
               FieldName = 'VALUE'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
               Title.Alignment = taCenter
               Title.Caption = #1047#1085#1072#1095#1077#1085#1080#1077
               Visible = True

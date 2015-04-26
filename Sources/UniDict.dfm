@@ -205,11 +205,25 @@ object fUniDict: TfUniDict
         TitleRowHeight = 17
         Columns = <
           item
+            Alignment = taRightJustify
+            Expanded = False
+            FieldName = 'unidicttype_id'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Title.Alignment = taCenter
+            Title.Caption = #1050#1086#1076
+            Width = 46
+            Visible = True
+          end
+          item
             Expanded = False
             FieldName = 'unidicttype_name'
             Title.Alignment = taCenter
             Title.Caption = #1058#1080#1087' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
-            Width = 168
+            Width = 121
             Visible = True
           end>
       end

@@ -80,6 +80,8 @@ type
     ADOQuerySW: TFDQuery;
     ADOQueryTemp: TFDQuery;
     tmrFilter: TTimer;
+    chk1: TCheckBox;
+    chk2: TCheckBox;
 
     procedure FrameResize(Sender: TObject);
 
@@ -133,6 +135,7 @@ type
     procedure EditRateKeyPress(Sender: TObject; var Key: Char);
     procedure GetWinterPrice;
     procedure tmrFilterTimer(Sender: TObject);
+    procedure chk1Click(Sender: TObject);
 
   private
     StrQuery: String; // Для формирования строки запроса к БД
@@ -163,6 +166,11 @@ const
 procedure TSplitter.Paint();
 begin
   // inherited;
+end;
+
+procedure TFrameRates.chk1Click(Sender: TObject);
+begin
+  ReceivingSearch('');
 end;
 
 constructor TFrameRates.Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean);
@@ -1070,8 +1078,7 @@ end;
 
 procedure TFrameRates.ReceivingSearch(vStr: string);
 var
-  QueryStr: string;
-  WhereStr: string;
+  QueryStr, WhereStr, Condition: string;
 begin
   try
     with ADOQueryTemp do
@@ -1094,15 +1101,25 @@ begin
 
     with ADOQueryNormativ do
     begin
+      Condition := '';
+      if chk1.Checked and chk2.Checked then
+        Condition := Condition + '';
+      if not(chk1.Checked) and chk2.Checked then
+        Condition := Condition + ' and ((-(norm_num)<>0)) ';
+      if chk1.Checked and not(chk2.Checked) then
+        Condition := Condition + ' and ((-(norm_num)=0)) ';
+      if not(chk1.Checked) and not(chk2.Checked) then
+        Condition := Condition + ' and (0=1) ';
+
       Active := False;
       SQL.Clear;
       if vStr <> '' then
-        WhereStr := ' where ' + vStr
+        WhereStr := ' where ' + vStr + Condition
       else
-        WhereStr := '';
+        WhereStr := ' WHERE 1=1 ' + Condition;
       QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
-        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id FROM ' + 'normativ' + DataBase +
-        WhereStr + ' ORDER BY NumberNormative ASC;';
+        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id FROM normativ' + DataBase +
+        WhereStr + Condition + ' ORDER BY NumberNormative ASC;';
 
       SQL.Add(QueryStr);
       Active := true;

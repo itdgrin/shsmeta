@@ -121,6 +121,8 @@ type
     procedure GetValueDBLookupComboBoxTypeOXR(Sender: TObject);
     procedure N1Click(Sender: TObject);
     procedure dblkcbbRegionCloseUp(Sender: TObject);
+    procedure DateTimePickerStartBuildingChange(Sender: TObject);
+    procedure lbl2Click(Sender: TObject);
 
   private
     Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
@@ -156,7 +158,7 @@ var
 
 implementation
 
-uses Main, DataModule, Tools;
+uses Main, DataModule, Tools, CardObjectContractorServices;
 
 {$R *.dfm}
 
@@ -186,7 +188,6 @@ begin
 
   qrMain.ParamByName('OBJ_ID').AsInteger := IdObject;
   CloseOpen(qrMain);
-
   // Устанавливаем фокус
   if EditCodeObject.Focused then
     EditCodeObject.SetFocus;
@@ -200,6 +201,8 @@ begin
   // Очистка полей формы
   if not Editing then
     ClearAllFields;
+  // Заполнение % временных зданий и сооружений, услуги генподрядчика
+  DateTimePickerStartBuildingChange(Sender);
 
   if not Editing then
     try
@@ -792,6 +795,22 @@ begin
   dblkcbbMAIS.KeyValue := Null;
 end;
 
+procedure TFormCardObject.DateTimePickerStartBuildingChange(Sender: TObject);
+begin
+  // Автоматическое заполнение %в расхода
+  if not Editing then
+  begin
+    qrMain.Edit;
+    qrMain.FieldByName('PER_TEMP_BUILD').Value := GetUniDictParamValue('PER_TEMP_BUILD',
+      MonthOf(DateTimePickerStartBuilding.Date), yearof(DateTimePickerStartBuilding.Date));
+    qrMain.FieldByName('PER_CONTRACTOR').Value :=
+      GetUniDictParamValue('', MonthOf(DateTimePickerStartBuilding.Date),
+      yearof(DateTimePickerStartBuilding.Date));
+    qrMain.FieldByName('PER_TEMP_BUILD_BACK').Value := GetUniDictParamValue('PER_TEMP_BUILD_BACK',
+      MonthOf(DateTimePickerStartBuilding.Date), yearof(DateTimePickerStartBuilding.Date));
+  end;
+end;
+
 procedure TFormCardObject.dblkcbbRegionCloseUp(Sender: TObject);
 begin
   // Автоматическая подстановка зоны расценок "Минск" при выборе региона "Минск"
@@ -839,6 +858,16 @@ begin
     on E: Exception do
       MessageBox(0, PChar('При запросе списка ОХР и ОПР возникла ошибка:' + sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
+
+procedure TFormCardObject.lbl2Click(Sender: TObject);
+begin
+  if (not Assigned(fCardObjectContractorServices)) then
+    fCardObjectContractorServices := TfCardObjectContractorServices.Create(Self);
+  if fCardObjectContractorServices.ShowModal = mrOk then
+  begin
+    //TODO update main.CONTRACTOR_SERV
   end;
 end;
 

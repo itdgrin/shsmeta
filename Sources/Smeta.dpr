@@ -105,7 +105,8 @@ uses
   CardPartsEstimates in 'CardPartsEstimates.pas' {FormCardPartsEstimates},
   ImportExportModule in 'ImportExportModule.pas',
   CalcTravelWork in 'CalcTravelWork.pas' {fCalcTravelWork},
-  CalcWorkerDepartment in 'CalcWorkerDepartment.pas' {fCalcWorkerDepartment};
+  CalcWorkerDepartment in 'CalcWorkerDepartment.pas' {fCalcWorkerDepartment},
+  CardObjectContractorServices in 'CardObjectContractorServices.pas' {fCardObjectContractorServices};
 
 {$R *.res}
 var MHandle: THandle;

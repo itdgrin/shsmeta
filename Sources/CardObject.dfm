@@ -190,7 +190,14 @@ object FormCardObject: TFormCardObject
       Height = 21
       Date = 41507.000000000000000000
       Time = 41507.000000000000000000
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
+      OnChange = DateTimePickerStartBuildingChange
     end
     object EditCountMonth: TEdit
       Left = 250
@@ -416,7 +423,15 @@ object FormCardObject: TFormCardObject
       Top = 67
       Width = 128
       Height = 13
+      Cursor = crHandPoint
       Caption = #1059#1089#1083#1091#1075#1080' '#1075#1077#1085'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072':'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clNavy
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsUnderline]
+      ParentFont = False
+      OnClick = lbl2Click
     end
     object lbl3: TLabel
       Left = 8
@@ -424,14 +439,26 @@ object FormCardObject: TFormCardObject
       Width = 167
       Height = 26
       Caption = #1042#1086#1079#1074#1088#1072#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074#13#10#1086#1090' '#1074#1088#1077#1084#1077#1085#1085#1099#1093' '#1079#1076#1072#1085#1080#1081' '#1080' '#1089#1086#1086#1088#1091#1078'.:'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
     end
     object dbedtPER_TEPM_BUILD: TDBEdit
       Left = 179
       Top = 14
       Width = 31
       Height = 21
-      DataField = 'PER_TEPM_BUILD'
+      DataField = 'PER_TEMP_BUILD'
       DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       PopupMenu = pm1
       TabOrder = 0
     end
@@ -452,6 +479,12 @@ object FormCardObject: TFormCardObject
       Height = 21
       DataField = 'PER_CONTRACTOR'
       DataSource = dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       PopupMenu = pm1
       TabOrder = 2
     end
@@ -610,8 +643,8 @@ object FormCardObject: TFormCardObject
     Top = 485
   end
   object pm1: TPopupMenu
-    Left = 168
-    Top = 498
+    Left = 16
+    Top = 466
     object N1: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077
       OnClick = N1Click
