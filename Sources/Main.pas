@@ -110,7 +110,25 @@ type
     mnSMETA_LSR_ZIM: TMenuItem;
     mnSMETA_LSR_TRUD: TMenuItem;
     mnCALC_SMETA_OBJ_GRAPH_C: TMenuItem;
-    mnSMETA_RES_FROM_OBJ: TMenuItem;    procedure TariffsTransportationClick(Sender: TObject);
+    mnSMETA_RES_FROM_OBJ: TMenuItem;
+    N13: TMenuItem;
+    jsMenu1: TMenuItem;
+    jsMenu2: TMenuItem;
+    jsMenu3: TMenuItem;
+    Excel1: TMenuItem;
+    Excel2: TMenuItem;
+    EXCEL3: TMenuItem;
+    jsMenu4: TMenuItem;
+    N15: TMenuItem;
+    N19: TMenuItem;
+    N20: TMenuItem;
+    N21: TMenuItem;
+    JSMenu10: TMenuItem;
+    JSMenu9: TMenuItem;
+    JSMenu6: TMenuItem;
+    JSMenu7: TMenuItem;
+    JSMenu8: TMenuItem;
+    jsMenu5: TMenuItem;    procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
     procedure TariffsIndexClick(Sender: TObject);
@@ -194,6 +212,10 @@ type
     procedure mnSMETA_LSR_TRUDClick(Sender: TObject);
     procedure mnCALC_SMETA_OBJ_GRAPH_CClick(Sender: TObject);
     procedure mnSMETA_RES_FROM_OBJClick(Sender: TObject);
+    procedure VK2N13Click(Sender: TObject);
+    procedure JSMenuClick(Sender: TObject);
+    procedure Excel2Click(Sender: TObject);
+    procedure EXCEL3Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -1238,6 +1260,28 @@ begin
   fWinterPrice.Show;
 end;
 
+procedure TFormMain.VK2N13Click(Sender: TObject);
+begin
+
+   Screen.Cursor := crSQLWait;
+  try
+
+  //  if Assigned(FormCalculationEstimate) then
+ //   begin
+  //    if FormCalculationEstimate.GetIdEstimate = 0 then
+  //    begin
+   //     showmessage('Не выбрана смета');
+   //     Exit;
+   //   end;
+        dmReportF.vk2n13(FormObjectsAndEstimates.getCurObject, FileReportPath);
+    //end;
+
+  finally
+    Screen.Cursor := crDefault;
+  end;
+
+end;
+
 procedure TFormMain.N31Click(Sender: TObject);
 begin
   // Открываем форму ожидания
@@ -1297,6 +1341,64 @@ begin
   if (not Assigned(fUniDict)) then
     fUniDict := TfUniDict.Create(Self);
   fUniDict.Show;
+end;
+
+procedure TFormMain.JSMenuClick(Sender: TObject);
+begin
+
+
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+        //**************************************************************************************************************************************
+        if (Sender as TMenuItem).Name = 'jsMenu1'  then dmReportF.JSReport(1, FormObjectsAndEstimates.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов
+        if (Sender as TMenuItem).Name = 'jsMenu2'  then dmReportF.JSReport(2, FormObjectsAndEstimates.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по локальным сметам)
+        if (Sender as TMenuItem).Name = 'jsMenu3'  then dmReportF.JSReport(3, FormObjectsAndEstimates.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по объектным сметам)
+        if (Sender as TMenuItem).Name = 'jsMenu4'  then dmReportF.JSReport(4, FormObjectsAndEstimates.IdEstimate, FileReportPath); //!!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
+        if (Sender as TMenuItem).Name = 'jsMenu5'  then dmReportF.JSReport(5, FormObjectsAndEstimates.IdEstimate, FileReportPath); //Ведомость ресурсов по смете
+
+        if (Sender as TMenuItem).Name = 'JSMenu6'   then dmReportF.JSReport(6, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu7'   then dmReportF.JSReport(7, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu8'   then dmReportF.JSReport(8, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu9'   then dmReportF.JSReport(9, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu10'  then dmReportF.JSReport(10, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        //**************************************************************************************************************************************
+   end
+   else
+   begin
+   if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+        //**************************************************************************************************************************************
+        if (Sender as TMenuItem).Name = 'jsMenu1'   then dmReportF.JSReport(1, FormCalculationEstimate.GetIdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов
+        if (Sender as TMenuItem).Name = 'jsMenu2'   then dmReportF.JSReport(2, FormCalculationEstimate.GetIdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по локальным сметам)
+        if (Sender as TMenuItem).Name = 'jsMenu3'   then dmReportF.JSReport(3, FormCalculationEstimate.GetIdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по объектным сметам)
+        if (Sender as TMenuItem).Name = 'jsMenu4'   then dmReportF.JSReport(4, FormCalculationEstimate.GetIdEstimate, FileReportPath); //!!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
+        if (Sender as TMenuItem).Name = 'jsMenu5'   then dmReportF.JSReport(5, FormCalculationEstimate.GetIdEstimate, FileReportPath); //Ведомость ресурсов по смете
+
+        if (Sender as TMenuItem).Name = 'JSMenu6'   then dmReportF.JSReport(6, FormCalculationEstimate.GetIdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu7'   then dmReportF.JSReport(7, FormCalculationEstimate.GetIdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu8'   then dmReportF.JSReport(8, FormCalculationEstimate.GetIdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu9'   then dmReportF.JSReport(9, FormCalculationEstimate.GetIdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu10'  then dmReportF.JSReport(10, FormCalculationEstimate.GetIdEstimate, FileReportPath);
+        //**************************************************************************************************************************************
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+  
+
 end;
 
 procedure TFormMain.N14Click(Sender: TObject);
@@ -1561,6 +1663,67 @@ end;
 procedure TFormMain.EditOriginalDataClick(Sender: TObject);
 begin
   FormCardObject.ShowModal;
+end;
+
+procedure TFormMain.Excel2Click(Sender: TObject);
+begin
+
+ Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate,1);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+        dmReportF.Report_EXCEL(FormCalculationEstimate.GetIdEstimate,1);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+
+procedure TFormMain.EXCEL3Click(Sender: TObject);
+begin
+Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate,2);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.GetIdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+        dmReportF.Report_EXCEL(FormCalculationEstimate.GetIdEstimate,2);
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
 end;
 
 procedure TFormMain.FileCloseClick(Sender: TObject);
