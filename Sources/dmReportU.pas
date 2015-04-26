@@ -9,7 +9,7 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Dialogs, Tools, DateUtils,
   frxExportRTF, frxExportHTML, frxExportPDF, frxExportText, FireDAC.UI.Intf,
-  FireDAC.VCLUI.Wait, FireDAC.Comp.UI, frxRich ,ComObj, ActiveX,StrUtils;
+  FireDAC.VCLUI.Wait, FireDAC.Comp.UI, frxRich ,ComObj, ActiveX,StrUtils,Windows;
 
 type
   TdmReportF = class(TDataModule)
@@ -57,6 +57,10 @@ type
     dsSMETA_OBJ_E: TDataSource;
     vkExcel: TFDQuery;
     spr_range: TFDQuery;
+    frxUniReport: TfrxDBDataset;
+    vkSQL: TFDQuery;
+    vkSQLtotal: TFDQuery;
+    OpenDialog1: TOpenDialog;
    { Private decla
     FDQuery1: TFDQuery;rations }
   public
@@ -68,7 +72,10 @@ type
     procedure Report_RSMO_OBJ(  with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
     procedure Report_RSMEH_OBJ( with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
     procedure Report_RSDEV_OBJ( with_nds,SM_ID: integer;OBJ_ID: integer; FileReportPath: string);
-    procedure Report_EXCEL(SM_ID: integer);
+    procedure Report_EXCEL(SM_ID,XLS: integer);
+    procedure JSReport (xReport,SM_ID: integer;FileReportPath: string);
+    procedure VK2N13(OBJ_ID: integer;FileReportPath: string); // Объектная смета (Объектный сметный расчет) № 1
+
     //ВЕДОМОСТЬ ОБЪЁМОВ И СТОИМОСТИ РАБОТ
     procedure Report_VED_OANDPWV1_OBJ(xvar,with_nds,OBJ_ID: integer; FileReportPath: string);
     //Ведомость объемов работ и расхода ресурсов по смете v1.02
@@ -120,20 +127,447 @@ implementation
 Uses DataModule, GlobsAndConst;
 
 
-
-procedure TdmReportF.Report_EXCEL(SM_ID: integer);
-var
-  wf,i,j,SM_ID_ROOT: integer;
-  Excel:      Variant;
-  oworkbook : OleVariant;
+procedure TdmReportF.JSReport(xReport,SM_ID: integer; FileReportPath: string);
 begin
+
+  ///**************************************************************************************************************************
+  ///  Ведомость объемов работ и расхода ресурсов
+  ///**************************************************************************************************************************
+  if xReport = 1 then
+      begin
+      qrTMP.Close;
+      qrTMP.SQL.Text := 'select PARENT_ID,SM_TYPE from smetasourcedata where SM_ID = '+inttostr(SM_ID);
+      CloseOpen(qrTMP);
+      if qrTMP.FieldByName('SM_TYPE').AsInteger = 2 then
+      begin
+      vkSQL.Close;
+      vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS1.SQL');
+      vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+      end;
+      if qrTMP.FieldByName('SM_TYPE').AsInteger = 3 then
+      begin
+      qrTMP.SQL.Text := 'select SM_ID,SM_TYPE from smetasourcedata where SM_ID = '+qrTMP.FieldByName('PARENT_ID').AsString ;
+      CloseOpen(qrTMP);
+      SM_ID:=  qrTMP.FieldByName('SM_ID').AsInteger ;
+      end;
+      if qrTMP.FieldByName('SM_TYPE').AsInteger = 1 then
+      begin
+      vkSQL.Close;
+      vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS2.SQL');
+      vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+      end;
+
+      CloseOpen(vkSQL);
+      frxReport.LoadFromFile(FileReportPath + 'Ведомость объемов работ и расхода ресурсов.fr3');
+  end;
+  ///**************************************************************************************************************************
+
+  ///**************************************************************************************************************************
+  ///  Ведомость объемов работ и расхода ресурсов (по локальным сметам)
+  ///**************************************************************************************************************************
+  if xReport = 2 then
+  begin
+  qrTMP.Close;
+  qrTMP.SQL.Text := 'select PARENT_ID,SM_TYPE from smetasourcedata where SM_ID = '+inttostr(SM_ID);
+  CloseOpen(qrTMP);
+  if qrTMP.FieldByName('SM_TYPE').AsInteger = 2 then
+  begin
+  vkSQL.Close;
+  vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS3.SQL');
+  vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+  end;
+  if qrTMP.FieldByName('SM_TYPE').AsInteger = 3 then
+  begin
+  qrTMP.SQL.Text := 'select SM_ID,SM_TYPE from smetasourcedata where SM_ID = '+qrTMP.FieldByName('PARENT_ID').AsString ;
+  CloseOpen(qrTMP);
+  SM_ID:=  qrTMP.FieldByName('SM_ID').AsInteger ;
+  end;
+  if qrTMP.FieldByName('SM_TYPE').AsInteger = 1 then
+  begin
+  vkSQL.Close;
+  vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS4.SQL');
+  vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+  end;
+  CloseOpen(vkSQL);
+  frxReport.LoadFromFile(FileReportPath + 'Ведомость объемов работ и расхода ресурсов (по локальным сметам).fr3');
+  end;
+  ///**************************************************************************************************************************
+
+  ///**************************************************************************************************************************
+  ///  Ведомость объемов работ и расхода ресурсов (по объектным сметам)
+  ///**************************************************************************************************************************
+  if xReport = 3 then
+  begin
+  qrTMP.Close;
+  qrTMP.SQL.Text := 'select PARENT_ID,SM_TYPE from smetasourcedata where SM_ID = '+inttostr(SM_ID);
+  CloseOpen(qrTMP);
+  if qrTMP.FieldByName('SM_TYPE').AsInteger = 2 then
+  begin
+  vkSQL.Close;
+  vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS5.SQL');
+  vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+  end;
+  if qrTMP.FieldByName('SM_TYPE').AsInteger = 3 then
+  begin
+  qrTMP.SQL.Text := 'select SM_ID,SM_TYPE from smetasourcedata where SM_ID = '+qrTMP.FieldByName('PARENT_ID').AsString ;
+  CloseOpen(qrTMP);
+  SM_ID:=  qrTMP.FieldByName('SM_ID').AsInteger ;
+  end;
+  if qrTMP.FieldByName('SM_TYPE').AsInteger = 1 then
+  begin
+  vkSQL.Close;
+  vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS6.SQL');
+  vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+  end;
+
+  CloseOpen(vkSQL);
+  frxReport.LoadFromFile(FileReportPath + 'Ведомость объемов работ и расхода ресурсов (по локальным сметам).fr3');
+  end;
+  ///**************************************************************************************************************************
+
+
+  ///**************************************************************************************************************************
+  ///  !!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
+  ///**************************************************************************************************************************
+  if xReport = 4 then
+  begin
+    qrTMP.Close;
+    qrTMP.SQL.Text := 'select PARENT_ID,SM_TYPE from smetasourcedata where SM_ID = '+inttostr(SM_ID);
+    CloseOpen(qrTMP);
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 2 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS7.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 3 then
+    begin
+    qrTMP.SQL.Text := 'select SM_ID,SM_TYPE from smetasourcedata where SM_ID = '+qrTMP.FieldByName('PARENT_ID').AsString ;
+    CloseOpen(qrTMP);
+    SM_ID:=  qrTMP.FieldByName('SM_ID').AsInteger ;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 1 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS8.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    CloseOpen(vkSQL);
+    frxReport.LoadFromFile(FileReportPath + 'Ведомость объемов работ и расхода ресурсов (в стоимостном выражении).fr3');
+  end;
+  ///**************************************************************************************************************************
+  ///**************************************************************************************************************************
+  ///  !!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
+  ///**************************************************************************************************************************
+  if xReport = 5 then
+  begin
+    qrTMP.Close;
+    qrTMP.SQL.Text := 'select PARENT_ID,SM_TYPE from smetasourcedata where SM_ID = '+inttostr(SM_ID);
+    CloseOpen(qrTMP);
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 2 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS9.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 3 then
+    begin
+    qrTMP.SQL.Text := 'select SM_ID,SM_TYPE from smetasourcedata where SM_ID = '+qrTMP.FieldByName('PARENT_ID').AsString ;
+    CloseOpen(qrTMP);
+    SM_ID:=  qrTMP.FieldByName('SM_ID').AsInteger ;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 1 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS10.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    CloseOpen(vkSQL);
+    frxReport.LoadFromFile(FileReportPath + 'Ведомость ресурсов.fr3');
+  end;
+  ///**************************************************************************************************************************
+  /// **************************************************************************************************************************
+  ///  !!! Сводный сметный расчет
+  ///**************************************************************************************************************************
+
+  if xReport = 6 then
+  begin
+    qrTMP.Close;
+    qrTMP.SQL.Text := 'select PARENT_ID,SM_TYPE from smetasourcedata where SM_ID = '+inttostr(SM_ID);
+    CloseOpen(qrTMP);
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 2 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS11.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 3 then
+    begin
+    qrTMP.SQL.Text := 'select SM_ID,SM_TYPE from smetasourcedata where SM_ID = '+qrTMP.FieldByName('PARENT_ID').AsString ;
+    CloseOpen(qrTMP);
+    SM_ID:=  qrTMP.FieldByName('SM_ID').AsInteger ;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 1 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS12.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    CloseOpen(vkSQL);
+    frxReport.LoadFromFile(FileReportPath + 'Сводный сметный расчет.fr3');
+  end;
+  ///**************************************************************************************************************************
+
+
+  /// **************************************************************************************************************************
+  ///  Сводный сметный расчет в тыс руб
+  ///**************************************************************************************************************************
+
+  if xReport = 7 then
+  begin
+    qrTMP.Close;
+    qrTMP.SQL.Text := 'select PARENT_ID,SM_TYPE from smetasourcedata where SM_ID = '+inttostr(SM_ID);
+    CloseOpen(qrTMP);
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 2 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS13.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 3 then
+    begin
+    qrTMP.SQL.Text := 'select SM_ID,SM_TYPE from smetasourcedata where SM_ID = '+qrTMP.FieldByName('PARENT_ID').AsString ;
+    CloseOpen(qrTMP);
+    SM_ID:=  qrTMP.FieldByName('SM_ID').AsInteger ;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 1 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS14.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    CloseOpen(vkSQL);
+    frxReport.LoadFromFile(FileReportPath + 'Сводный сметный расчет.fr3');
+  end;
+  ///**************************************************************************************************************************
+
+  /// **************************************************************************************************************************
+  ///  Сводный сметный расчет (все строки)
+  ///**************************************************************************************************************************
+  if xReport = 8 then
+  begin
+    qrTMP.Close;
+    qrTMP.SQL.Text := 'select PARENT_ID,SM_TYPE from smetasourcedata where SM_ID = '+inttostr(SM_ID);
+    CloseOpen(qrTMP);
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 2 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS15.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 3 then
+    begin
+    qrTMP.SQL.Text := 'select SM_ID,SM_TYPE from smetasourcedata where SM_ID = '+qrTMP.FieldByName('PARENT_ID').AsString ;
+    CloseOpen(qrTMP);
+    SM_ID:=  qrTMP.FieldByName('SM_ID').AsInteger ;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 1 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS16.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    CloseOpen(vkSQL);
+    frxReport.LoadFromFile(FileReportPath + 'Сводный сметный расчет (все строки).fr3');
+  end;
+  ///**************************************************************************************************************************
+
+  /// **************************************************************************************************************************
+  ///  Cводный сметный расчет (по локальным сметам)
+  ///**************************************************************************************************************************
+
+  if xReport = 9 then
+  begin
+    qrTMP.Close;
+    qrTMP.SQL.Text := 'select PARENT_ID,SM_TYPE from smetasourcedata where SM_ID = '+inttostr(SM_ID);
+    CloseOpen(qrTMP);
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 2 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS17.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 3 then
+    begin
+    qrTMP.SQL.Text := 'select SM_ID,SM_TYPE from smetasourcedata where SM_ID = '+qrTMP.FieldByName('PARENT_ID').AsString ;
+    CloseOpen(qrTMP);
+    SM_ID:=  qrTMP.FieldByName('SM_ID').AsInteger ;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 1 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS18.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    CloseOpen(vkSQL);
+    frxReport.LoadFromFile(FileReportPath + 'Cводный сметный расчет (по локальным сметам).fr3');
+  end;
+  ///**************************************************************************************************************************
+
+  /// **************************************************************************************************************************
+  ///  Cводный сметный расчет (по локальным сметам)
+  ///**************************************************************************************************************************
+
+  if xReport = 10 then
+  begin
+    qrTMP.Close;
+    qrTMP.SQL.Text := 'select PARENT_ID,SM_TYPE from smetasourcedata where SM_ID = '+inttostr(SM_ID);
+    CloseOpen(qrTMP);
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 2 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS19.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 3 then
+    begin
+    qrTMP.SQL.Text := 'select SM_ID,SM_TYPE from smetasourcedata where SM_ID = '+qrTMP.FieldByName('PARENT_ID').AsString ;
+    CloseOpen(qrTMP);
+    SM_ID:=  qrTMP.FieldByName('SM_ID').AsInteger ;
+    end;
+    if qrTMP.FieldByName('SM_TYPE').AsInteger = 1 then
+    begin
+    vkSQL.Close;
+    vkSQL.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL3\JS20.SQL');
+    vkSQL.ParamByName('SM_ID').AsInteger := SM_ID;
+    end;
+    CloseOpen(vkSQL);
+    frxReport.LoadFromFile(FileReportPath + 'Cводный сметный расчет (по локальным сметам) в тыс руб.fr3');
+  end;
+  ///**************************************************************************************************************************
+
+  try
+        frxReport.PrepareReport;
+        frxReport.ShowPreparedReport;
+  except
+      ShowMessage('Ошибка при формировании отчета');
+  end;
+
+  qrTMP.Close;
+  vkSQL.Close;
+end;
+
+
+
+
+
+procedure TdmReportF.VK2N13(OBJ_ID: integer; FileReportPath: string);
+begin
+   qrTMP.Close;
+   qrTMP.SQL.Text :=  'select 	CONCAT(`oc`.`NUM`, " ", `oc`.`NAME`) `NAME`,'#13#10 +
+                    '		IFNULL(`s`.`MONAT`, 0) `MONTH`,'#13#10 +
+                    '		IFNULL(`s`.`YEAR`, 0)  `YEAR`'#13#10 +
+                    'from `smetasourcedata` as `ssd`'#13#10 +
+                    'inner join`objcards`  `oc` on `oc`.`OBJ_ID` = `ssd`.`OBJ_ID`'#13#10 +
+                    'inner join `objstroj` `os` on `os`.`STROJ_ID` = `oc`.`STROJ_ID`'#13#10 +
+                    'inner join `stavka`    `s` on `s`.`STAVKA_ID` = `ssd`.`STAVKA_ID`'#13#10 +
+                    'where `ssd`.`OBJ_ID` = :OBJ_ID'#13#10 ;
+
+ qrTMP.ParamByName('OBJ_ID').AsInteger := OBJ_ID;
+ CloseOpen(qrTMP);
+
+
+  vkSQL.SQL.Text :=
+  'SELECT  sm1.parent_id,concat("Смета №",trim(sm2.SM_NUMBER))as c1,'+
+	'	      concat(trim(sm2.SM_NUMBER)," ",trim(sm2.name))      as c2,'+
+	'	      round(sum(sm1.s_zp)/1000) 		      as c3,  ' +
+	'	      round(sum(sm1.s_emim)/1000)   	    as c4,  ' +
+	'	      round(sum(sm1.S_MR)/1000)   		    as c5,  ' +
+	'	      round(sum(sm1.S_OHROPR)/1000)   	  as c6,  '+
+	'	      0									                  as c7,  '+
+	'	      0									                  as c8,  '+
+	'	      0									                  as c9,  '+
+	'	      round(sum(sm1.S_ZP_MASH)/1000)	    as c10, '+
+	'	      round(sum(sm1.S_TRANSP)/1000)       as c11, '+
+	'	      round(sum(sm1.S_PLAN_PRIB)/1000) 	  as c12, '+
+	'	      0								                    as c13, '+
+	'	      sum(sm1.S_TRUD) 					          as c14, '+
+  '       0                                   as c15  ' +
+'FROM smetasourcedata sm1 ' +
+'left join  smetasourcedata sm2 on sm1.parent_id = sm2.sm_id and sm2.sm_type=1 ' +
+'where sm1.obj_id=:OBJ_ID and sm1.sm_type = 3 group by sm1.parent_id ;';
+vkSQL.ParamByName('OBJ_ID').AsInteger := OBJ_ID;
+
+  CloseOpen(vkSQL);
+
+  vkSQLTotal.SQL.Text :=
+  'SELECT round(sum(sm1.s_zp)/1000) 		      +  ' +
+	'	      round(sum(sm1.s_emim)/1000)   	    +  ' +
+	'	      round(sum(sm1.S_MR)/1000)   		    +  ' +
+	'	      round(sum(sm1.S_OHROPR)/1000)   	  +  '+
+	'	      0									                  +  '+
+	'	      0									                  +  '+
+	'	      0									                  +  '+
+	'	      round(sum(sm1.S_ZP_MASH)/1000)	    + '+
+	'	      round(sum(sm1.S_TRANSP)/1000)       + '+
+	'	      round(sum(sm1.S_PLAN_PRIB)/1000) 	  + '+
+	'	      0								                    as c1 '+
+'FROM smetasourcedata sm1 ' +
+'left join  smetasourcedata sm2 on sm1.parent_id = sm2.sm_id and sm2.sm_type=1 ' +
+'where sm1.obj_id=:OBJ_ID and sm1.sm_type = 3 ;';
+vkSQLTotal.ParamByName('OBJ_ID').AsInteger := OBJ_ID;
+
+  CloseOpen(vkSQLTotal);
+
+  frxReport.LoadFromFile(FileReportPath + 'Объектная смета.fr3');
+
+  try
+  frxReport.Script.Variables['H1'] := vkSQLTotal.FieldByName('c1').AsString ;
+  frxReport.Script.Variables['sm_obj_name'] := AnsiUpperCase(qrTMP.FieldByName('NAME').AsString);
+  frxReport.Script.Variables['sm_date_dog'] := '1 ' + AnsiUpperCase(arraymes[qrTMP.FieldByName('MONTH').AsInteger, 2]) +
+  ' ' + IntToStr(qrTMP.FieldByName('YEAR').AsInteger) + ' г.';
+    frxReport.PrepareReport;
+
+    frxReport.ShowPreparedReport;
+  except
+    ShowMessage('Ошибка при формировании отчета');
+  end;
+end;
+
+procedure TdmReportF.Report_EXCEL(SM_ID,XLS: integer);
+var
+  wf,i,j,SM_ID_ROOT : integer;
+  Excel             : Variant;
+  oworkbook         : OleVariant;
+  fnam,xformula          :string;
+begin
+
+  fnam   :=GetCurrentDir +'\xls\report.xls';
+  if XLS=1 then
+  if fileexists(fnam)
+  then
+  begin
+  CopyFile(PChar(fnam),PChar(GetCurrentDir +'\xls\report1.xls'),False);
+  fnam := GetCurrentDir +'\xls\report1.xls';
+  end;
+
+   OpenDialog1.Filter:='Excel|*.xls';
+   if XLS=2 then
+   begin
+   if opendialog1.Execute then fnam:=openDialog1.FileName else exit;
+   end;
 
   qrTMP.SQL.Text := 'SELECT * FROM `smetasourcedata` WHERE sm_id='+inttostr(SM_ID)+';';
   CloseOpen(qrTMP);
 
+
+  try
   Excel               := CreateOleObject('Excel.Application');
+  except
+  showmessage('Невозможно запустить EXCEL!!!');
+  end;
   Excel.displayalerts :=False;
-  oworkbook := Excel.workbooks.Open(GetCurrentDir +'\xls\report1.xls') ;
+  oworkbook := Excel.workbooks.Open(fnam) ;
 
 
 
@@ -163,101 +597,131 @@ begin
    ' INNER JOIN `data_estimate`   `de` 	  ON  `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID` AND `de`.`ID_TYPE_DATA` = 1 '+
    ' WHERE `ssd`.`SM_ID` = '+inttostr(SM_ID)+';';
 
+   CloseOpen(vkExcel);
 
-    {if qrTMP.FieldByName('sm_type').AsInteger = 3 then
-    vkExcel.SQL.Text :=
-    ' select *  '+
-    ' FROM `smetasourcedata` `ssd` '+
-    ' INNER JOIN `data_estimate` `de` 	ON  `de`.`ID_ESTIMATE` = `ssd`.`SM_ID` AND `de`.`ID_TYPE_DATA` = 1  '+
-    ' WHERE `ssd`.`SM_ID` = '+inttostr(SM_ID)+';';}
+    try
+    oworkbook.WorkSheets[3].cells[1,3].value       :=  TRIM(vkExcel.FieldByName('K_ZP').AsString);
+    oworkbook.WorkSheets[3].cells[2,3].value       :=  TRIM(vkExcel.FieldByName('K_EMiM').AsString);
+    oworkbook.WorkSheets[3].cells[3,3].value       :=  TRIM(vkExcel.FieldByName('K_MR').AsString);
+    oworkbook.WorkSheets[3].cells[4,3].value       :=  TRIM(vkExcel.FieldByName('K_TRUD').AsString);
+    oworkbook.WorkSheets[3].cells[5,3].value       :=  TRIM(vkExcel.FieldByName('K_TRUD_MASH').AsString);
+    oworkbook.WorkSheets[3].cells[6,3].value       :=  TRIM(vkExcel.FieldByName('K_ZP_MASH').AsString);
+    oworkbook.WorkSheets[3].cells[7,3].value       :=  TRIM(vkExcel.FieldByName('K_TRANSP').AsString);
+    oworkbook.WorkSheets[3].cells[8,3].value       :=  TRIM(vkExcel.FieldByName('K_STOIM').AsString);
+    oworkbook.WorkSheets[3].cells[9,3].value       :=  TRIM(vkExcel.FieldByName('K_OHROPR').AsString);
+    oworkbook.WorkSheets[3].cells[10,3].value      :=  TRIM(vkExcel.FieldByName('K_PLAN_PRIB').AsString);
+    oworkbook.WorkSheets[3].cells[11,3].value      :=  TRIM(vkExcel.FieldByName('K_ST_OHROPR').AsString);
+    oworkbook.WorkSheets[3].cells[12,3].value      :=  TRIM(vkExcel.FieldByName('K_ZIM_UDOR').AsString);
+    oworkbook.WorkSheets[3].cells[13,3].value      :=  TRIM(vkExcel.FieldByName('K_ZP_ZIM_UDOR').AsString);
+    oworkbook.WorkSheets[3].cells[14,3].value      :=  '1';
+    oworkbook.WorkSheets[3].cells[15,3].value      :=  '2';
 
-   CloseOpen(vkExcel);
+    oworkbook.worksheets[3].Cells[1,2].value       :=  'ZK_ZP';
+    oworkbook.worksheets[3].Cells[1,3].name        :=  'ZK_ZP';
+    oworkbook.worksheets[3].Cells[2,2].value       :=  'ZK_EMiM';
+    oworkbook.worksheets[3].Cells[2,3].name        :=  'ZK_EMiM';
+    oworkbook.worksheets[3].Cells[3,2].value       :=  'ZK_MR';
+    oworkbook.worksheets[3].Cells[3,3].name        :=  'ZK_MR';
+    oworkbook.worksheets[3].Cells[4,2].value       :=  'ZK_TRUD';
+    oworkbook.worksheets[3].Cells[4,3].name        :=  'ZK_TRUD';
+    oworkbook.worksheets[3].Cells[5,2].value       :=  'ZK_TRUD_MASH';
+    oworkbook.worksheets[3].Cells[5,3].name        :=  'ZK_TRUD_MASH';
+    oworkbook.worksheets[3].Cells[6,2].value       :=  'ZK_ZP_MASH';
+    oworkbook.worksheets[3].Cells[6,3].name        :=  'ZK_ZP_MASH';
+    oworkbook.worksheets[3].Cells[7,2].value       :=  'ZK_TRANSP';
+    oworkbook.worksheets[3].Cells[7,3].name        :=  'ZK_TRANSP';
+    oworkbook.worksheets[3].Cells[8,2].value       :=  'ZK_STOIM';
+    oworkbook.worksheets[3].Cells[8,3].name        :=  'ZK_STOIM';
+    oworkbook.worksheets[3].Cells[9,2].value       :=  'ZK_OHROPR';
+    oworkbook.worksheets[3].Cells[9,3].name        :=  'ZK_OHROPR';
+    oworkbook.worksheets[3].Cells[10,2].value      :=  'ZK_PLAN_PRIB';
+    oworkbook.worksheets[3].Cells[10,3].name       :=  'ZK_PLAN_PRIB';
+    oworkbook.worksheets[3].Cells[11,2].value      :=  'ZK_ST_OHROPR';
+    oworkbook.worksheets[3].Cells[11,3].name       :=  'ZK_ST_OHROPR';
+    oworkbook.worksheets[3].Cells[12,2].value      :=  'ZK_ZIM_UDOR';
+    oworkbook.worksheets[3].Cells[12,3].name       :=  'ZK_ZIM_UDOR';
+    oworkbook.worksheets[3].Cells[13,2].value      :=  'ZK_ZP_ZIM_UDOR';
+    oworkbook.worksheets[3].Cells[13,3].name       :=  'ZK_ZP_ZIM_UDOR';
+    oworkbook.worksheets[3].Cells[14,2].value      :=  'ZKI';
+    oworkbook.worksheets[3].Cells[14,3].name       :=  'ZKI';
+    oworkbook.worksheets[3].Cells[15,2].value      :=  'ZIS';
+    oworkbook.worksheets[3].Cells[15,3].name       :=  'ZIS';
+    oworkbook.worksheets[3].Cells[16,2].value      :=  'Z_NDS';
+    oworkbook.worksheets[3].Cells[16,3].name       :=  'Z_NDS';
+    oworkbook.worksheets[3].Cells[17,2].value      :=  'Z_GENPODR';
+    oworkbook.worksheets[3].Cells[17,3].name       :=  'Z_GENPODR';
+    oworkbook.worksheets[3].Cells[18,2].value      :=  'Z_VOZVR_TIT';
+    oworkbook.worksheets[3].Cells[18,3].name       :=  'Z_VOZVR_TIT';
+    oworkbook.worksheets[3].Cells[19,2].value      :=  'Z_VOZVR_MAT';
+    oworkbook.worksheets[3].Cells[19,3].name       :=  'Z_VOZVR_MAT';
+    oworkbook.worksheets[3].Cells[20,2].value      :=  'Z_SOC';
+    oworkbook.worksheets[3].Cells[20,3].name       :=  'Z_SOC';
 
 
-    oworkbook.WorkSheets[3].cells[1,2].value       :=  TRIM(vkExcel.FieldByName('K_ZP').AsString);
-    oworkbook.WorkSheets[3].cells[2,2].value       :=  TRIM(vkExcel.FieldByName('K_EMiM').AsString);
-    oworkbook.WorkSheets[3].cells[3,2].value       :=  TRIM(vkExcel.FieldByName('K_MR').AsString);
-    oworkbook.WorkSheets[3].cells[4,2].value       :=  TRIM(vkExcel.FieldByName('K_TRUD').AsString);
-    oworkbook.WorkSheets[3].cells[5,2].value       :=  TRIM(vkExcel.FieldByName('K_TRUD_MASH').AsString);
-    oworkbook.WorkSheets[3].cells[6,2].value       :=  TRIM(vkExcel.FieldByName('K_ZP_MASH').AsString);
-    oworkbook.WorkSheets[3].cells[7,2].value       :=  TRIM(vkExcel.FieldByName('K_TRANSP').AsString);
-    oworkbook.WorkSheets[3].cells[8,2].value       :=  TRIM(vkExcel.FieldByName('K_STOIM').AsString);
-    oworkbook.WorkSheets[3].cells[9,2].value       :=  TRIM(vkExcel.FieldByName('K_OHROPR').AsString);
-    oworkbook.WorkSheets[3].cells[10,2].value      :=  TRIM(vkExcel.FieldByName('K_PLAN_PRIB').AsString);
-    oworkbook.WorkSheets[3].cells[11,2].value      :=  TRIM(vkExcel.FieldByName('K_ST_OHROPR').AsString);
-    oworkbook.WorkSheets[3].cells[12,2].value      :=  TRIM(vkExcel.FieldByName('K_ZIM_UDOR').AsString);
-    oworkbook.WorkSheets[3].cells[13,2].value      :=  TRIM(vkExcel.FieldByName('K_ZP_ZIM_UDOR').AsString);
-    oworkbook.WorkSheets[3].cells[14,2].value      :=  '1';
-    oworkbook.WorkSheets[3].cells[15,2].value      :=  '2';
 
-    oworkbook.worksheets[3].Cells[1,1].value       :=  '_K_ZP';
-    oworkbook.worksheets[3].Cells[1,2].name        :=  '_K_ZP';
-    oworkbook.worksheets[3].Cells[2,1].value       :=  '_K_EMiM';
-    oworkbook.worksheets[3].Cells[2,2].name        :=  '_K_EMiM';
-    oworkbook.worksheets[3].Cells[3,1].value       :=  '_K_MR';
-    oworkbook.worksheets[3].Cells[3,2].name        :=  '_K_MR';
-    oworkbook.worksheets[3].Cells[4,1].value       :=  '_K_TRUD';
-    oworkbook.worksheets[3].Cells[4,2].name        :=  '_K_TRUD';
-    oworkbook.worksheets[3].Cells[5,1].value       :=  '_K_TRUD_MASH';
-    oworkbook.worksheets[3].Cells[5,2].name        :=  '_K_TRUD_MASH';
-    oworkbook.worksheets[3].Cells[6,1].value       :=  '_K_ZP_MASH';
-    oworkbook.worksheets[3].Cells[6,2].name        :=  '_K_ZP_MASH';
-    oworkbook.worksheets[3].Cells[7,1].value       :=  '_K_TRANSP';
-    oworkbook.worksheets[3].Cells[7,2].name        :=  '_K_TRANSP';
-    oworkbook.worksheets[3].Cells[8,1].value       :=  '_K_STOIM';
-    oworkbook.worksheets[3].Cells[8,2].name        :=  '_K_STOIM';
-    oworkbook.worksheets[3].Cells[9,1].value       :=  '_K_OHROPR';
-    oworkbook.worksheets[3].Cells[9,2].name        :=  '_K_OHROPR';
-    oworkbook.worksheets[3].Cells[10,1].value      :=  '_K_PLAN_PRIB';
-    oworkbook.worksheets[3].Cells[10,2].name       :=  '_K_PLAN_PRIB';
-    oworkbook.worksheets[3].Cells[11,1].value      :=  '_K_ST_OHROPR';
-    oworkbook.worksheets[3].Cells[11,2].name       :=  '_K_ST_OHROPR';
-    oworkbook.worksheets[3].Cells[12,1].value      :=  '_K_ZIM_UDOR';
-    oworkbook.worksheets[3].Cells[12,2].name       :=  '_K_ZIM_UDOR';
-    oworkbook.worksheets[3].Cells[13,1].value      :=  '_K_ZP_ZIM_UDOR';
-    oworkbook.worksheets[3].Cells[13,2].name       :=  '_K_ZP_ZIM_UDOR';
-    oworkbook.worksheets[3].Cells[14,1].value      :=  '_KI';
-    oworkbook.worksheets[3].Cells[14,2].name       :=  '_KI';
-    oworkbook.worksheets[3].Cells[15,1].value      :=  '_IS';
-    oworkbook.worksheets[3].Cells[15,2].name       :=  '_IS';
+
+    except
+    end;
   vkExcel.Close;
 
-  CloseOpen(spr_range);
-  i:=1;
-  while spr_range.Eof=False do
+  j := 1;
+  for wf := 0 to 30 do
   begin
-    oworkbook.WorkSheets[2].cells[i,1]      :=  TRIM(spr_range.FieldByName('nam_range').AsString);
-    if spr_range.FieldByName('x_range').AsString<>'' then
-    begin
-    oworkbook.worksheets[2].Cells[i,2].value :=  '_'+TRIM(spr_range.FieldByName('x_range').AsString);
-    oworkbook.worksheets[2].Cells[i,3].name :=   '_'+TRIM(spr_range.FieldByName('x_range').AsString);
-    oworkbook.worksheets[2].Cells[i,4].name :=   'file_'+TRIM(spr_range.FieldByName('x_range').AsString);
-    oworkbook.worksheets[2].Range['_'+TRIM(spr_range.FieldByName('x_range').AsString)].value  :=spr_range.FieldByName('val_range').AsString ;
-    end;
-    i:= i + 1;
-    spr_range.Next;
-  end;
-
-
-  for wf := 1 to 20 do
+  if FileExists(GetCurrentDir+'\SQL\SQL'+qrTMP.FieldByName('sm_type').AsString+'\Z'+inttostr(wf)+'.SQL') then
   begin
-  if FileExists(GetCurrentDir+'\SQL\SQL'+qrTMP.FieldByName('sm_type').AsString+'\WF'+inttostr(wf)+'.SQL') then
-  begin
-    vkExcel.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL'+qrTMP.FieldByName('sm_type').AsString+'\WF'+inttostr(wf)+'.SQL');
+    vkExcel.SQL.LoadFromFile(GetCurrentDir+'\SQL\SQL'+qrTMP.FieldByName('sm_type').AsString+'\Z'+inttostr(wf)+'.SQL');
     vkExcel.ParamByName('SM_ID').AsInteger := SM_ID;
+
     CloseOpen(vkExcel);
-    for I := 0 to vkExcel.FieldCount-1 do
+
+    if WF<>13 then
+    BEGIN
+    for   I := 1  to round(vkExcel.FieldCount/2)  do
     begin
-       oworkbook.worksheets[2].Range['_'+vkExcel.FieldList.Fields[i].FieldName].value     := vkExcel.FieldList.Fields[i].AsString;
-       oworkbook.worksheets[2].Range['file_'+vkExcel.FieldList.Fields[i].FieldName].value := 'SQL'+qrTMP.FieldByName('sm_type').AsString+'\WF'+inttostr(wf)+'.SQL';
+       try
+       oworkbook.worksheets[2].Cells[j,1].Value             :=  vkExcel.FieldList.FieldByName('O'+inttostr(i)).AsString;
+       oworkbook.worksheets[2].Cells[j,2].Value             :=  'Z'+inttostr(wf)+ 'C'+inttostr(i);
+       oworkbook.worksheets[2].Cells[j,3].name              :=  'Z'+inttostr(wf)+ 'C'+inttostr(i);
+       oworkbook.worksheets[2].Cells[j,3].Value             :=   vkExcel.FieldByName('C'+inttostr(i)).AsString;
+       oworkbook.worksheets[2].Hyperlinks.Add(oworkbook.worksheets[2].Cells[j,1],  GetCurrentDir+'\SQL\SQL'+qrTMP.FieldByName('sm_type').AsString+'\Z'+inttostr(wf)+'.SQL') ;
+        j:=j+1;
+      except
+      end;
+
     end;
+    END
+    ELSE
+    BEGIN
+    for   I := 1  to vkExcel.FieldCount do
+    begin
+       try
+       oworkbook.worksheets[2].Cells[j,2].Value             :=  'Z'+inttostr(wf)+ 'C'+inttostr(i);
+       oworkbook.worksheets[2].Cells[j,3].name              :=  'Z'+inttostr(wf)+ 'C'+inttostr(i);
+       oworkbook.worksheets[2].Cells[j,3].Value             :=   vkExcel.FieldByName('C'+inttostr(i)).AsString;
+       oworkbook.worksheets[2].Cells[j,1].Value             :=  'Z'+inttostr(wf)+ 'C'+inttostr(i);
+       oworkbook.worksheets[2].Hyperlinks.Add(oworkbook.worksheets[2].Cells[j,1],  GetCurrentDir+'\SQL\SQL'+qrTMP.FieldByName('sm_type').AsString+'\Z'+inttostr(wf)+'.SQL') ;
+       j:=j+1;
+      except
+      end;
+    END;
+     j:=j+1;
+
+
   end;
   end;
+  end;
+  try
 
-
-
+  except
+  end;
   vkExcel.Close;
+  try
   Excel.visible:=true;
+  Excel.displayalerts :=true;
+  except
+  Excel.quit;
+  end;
+
   spr_range.Close;
   vkExcel.Close;
   qrTMP.Close;

@@ -35,7 +35,7 @@ object dmReportF: TdmReportF
     PrintOptions.Printer = 'Default'
     PrintOptions.PrintOnSheet = 0
     ReportOptions.CreateDate = 42048.002529965300000000
-    ReportOptions.LastChange = 42103.141484618050000000
+    ReportOptions.LastChange = 42120.459527777780000000
     ScriptLanguage = 'PascalScript'
     StoreInDFM = False
     Left = 16
@@ -2503,5 +2503,55 @@ object dmReportF: TdmReportF
       'select * from spr_range where x_range<>'#39#39)
     Left = 56
     Top = 504
+  end
+  object frxUniReport: TfrxDBDataset
+    UserName = 'frxUniReport'
+    CloseDataSource = True
+    FieldAliases.Strings = (
+      'C1=C1'
+      'C2=C2'
+      'C3=C3'
+      'C4=C4'
+      'C5=C5'
+      'C6=C6'
+      'C7=C7'
+      'C8=C8'
+      'C9=C9'
+      'C10=C10'
+      'C11=C11'
+      'C12=C12'
+      'C13=C13'
+      'C14=C14'
+      'C15=C15'
+      'C16=C16'
+      'C17=C17'
+      'C18=C18'
+      'C19=C19'
+      'C20=C20'
+      'C21=C21')
+    DataSet = vkSQL
+    BCDToCurrency = False
+    Left = 144
+    Top = 504
+  end
+  object vkSQL: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    Left = 144
+    Top = 448
+  end
+  object vkSQLtotal: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    Left = 192
+    Top = 448
+  end
+  object OpenDialog1: TOpenDialog
+    Left = 776
+    Top = 576
   end
 end
