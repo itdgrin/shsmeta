@@ -1406,6 +1406,7 @@ object fCalcResource: TfCalcResource
   end
   object qrMaterialData: TFDQuery
     AfterOpen = qrMaterialDataAfterOpen
+    AfterScroll = qrMaterialDataAfterScroll
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
     DetailFields = 'OBJ_ID'
@@ -1476,13 +1477,17 @@ object fCalcResource: TfCalcResource
       
         '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
         '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
+      '  , stavka.MONAT AS MONTH, stavka.YEAR'
       'FROM '
-      '  smetasourcedata, data_estimate, card_rate, materialcard'
+      
+        '  smetasourcedata, data_estimate, card_rate, materialcard, stavk' +
+        'a'
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 1 AND'
       'card_rate.ID = data_estimate.ID_TABLES AND'
       'materialcard.ID_CARD_RATE = card_rate.ID AND'
       'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
       'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
       ''
       'UNION ALL'
@@ -1533,12 +1538,14 @@ object fCalcResource: TfCalcResource
       
         '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
         '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
+      '  , stavka.MONAT AS MONTH, stavka.YEAR'
       'FROM '
-      '  smetasourcedata, data_estimate, materialcard'
+      '  smetasourcedata, data_estimate, materialcard, stavka'
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 2 AND'
       'materialcard.ID = data_estimate.ID_TABLES AND'
       'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
       'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
       ''
       'ORDER BY 5')
@@ -1565,6 +1572,7 @@ object fCalcResource: TfCalcResource
   end
   object qrMechData: TFDQuery
     AfterOpen = qrMaterialDataAfterOpen
+    AfterScroll = qrMechDataAfterScroll
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
     DetailFields = 'OBJ_ID'
@@ -1612,13 +1620,17 @@ object fCalcResource: TfCalcResource
         ' */ '
       '  ROUND(data_estimate.zp_mash/IFNULL(MECH_COUNT, 1)) as ZP_1,'
       '  ROUND(data_estimate.zp_mash) as ZP_2'
+      '  , stavka.MONAT AS MONTH, stavka.YEAR'
       'FROM '
-      '  data_estimate, card_rate, mechanizmcard, smetasourcedata'
+      
+        '  data_estimate, card_rate, mechanizmcard, smetasourcedata, stav' +
+        'ka'
       'WHERE '
       'smetasourcedata.OBJ_ID=:OBJ_ID AND  '
       'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID AND '
       'data_estimate.ID_TYPE_DATA = 1 AND'
       'card_rate.ID = data_estimate.ID_TABLES AND'
+      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
       'mechanizmcard.ID_CARD_RATE = card_rate.ID'
       ''
       'UNION ALL'
@@ -1646,12 +1658,14 @@ object fCalcResource: TfCalcResource
         ' */ '
       '  ROUND(data_estimate.zp_mash/IFNULL(MECH_COUNT, 1)) as ZP_1,'
       '  ROUND(data_estimate.zp_mash) as ZP_2'
+      '  , stavka.MONAT AS MONTH, stavka.YEAR'
       'FROM '
-      '  data_estimate, mechanizmcard, smetasourcedata'
+      '  data_estimate, mechanizmcard, smetasourcedata, stavka'
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 3 AND'
       'mechanizmcard.ID = data_estimate.ID_TABLES AND'
       'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
       'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
       'ORDER BY 5')
     Left = 99
@@ -1677,6 +1691,7 @@ object fCalcResource: TfCalcResource
   end
   object qrDevices: TFDQuery
     AfterOpen = qrMaterialDataAfterOpen
+    AfterScroll = qrDevicesAfterScroll
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
     Connection = DM.Connect
@@ -1745,12 +1760,14 @@ object fCalcResource: TfCalcResource
       
         '  /* IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRA' +
         'NSP_NO_NDS '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
+      '  , stavka.MONAT AS MONTH, stavka.YEAR'
       'FROM '
-      '  smetasourcedata, data_estimate, devicescard'
+      '  smetasourcedata, data_estimate, devicescard, stavka'
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 4 AND'
       'devicescard.ID = data_estimate.ID_TABLES AND'
       'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
       'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
       ''
       'ORDER BY 5')
@@ -1777,6 +1794,7 @@ object fCalcResource: TfCalcResource
   end
   object qrRates: TFDQuery
     AfterOpen = qrMaterialDataAfterOpen
+    AfterScroll = qrRatesAfterScroll
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
     DetailFields = 'OBJ_ID'
@@ -1801,7 +1819,6 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067'*/'
       'SELECT '
       '  ID_ESTIMATE,'
       '  ID_TYPE_DATA,'
@@ -1847,12 +1864,14 @@ object fCalcResource: TfCalcResource
       '   LIMIT 1)) AS Tariff, /* '#1058#1072#1088#1080#1092' */'
       '  data_estimate.K_ZP,  /* KZP */'
       '  ROUND(data_estimate.ZP) AS ZP /* ZP */'
+      '  , stavka.MONAT AS MONTH, stavka.YEAR'
       'FROM '
-      '  smetasourcedata, data_estimate, card_rate'
+      '  smetasourcedata, data_estimate, card_rate, stavka'
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 1 AND'
       'card_rate.ID = data_estimate.ID_TABLES AND'
       'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
       'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
       ''
       'ORDER BY 5')

@@ -106,6 +106,10 @@ type
     procedure qrMaterialDataAfterOpen(DataSet: TDataSet);
     procedure JvDBGridFooter1Calculate(Sender: TJvDBGridFooter; const FieldName: string;
       var CalcValue: Variant);
+    procedure qrMaterialDataAfterScroll(DataSet: TDataSet);
+    procedure qrMechDataAfterScroll(DataSet: TDataSet);
+    procedure qrDevicesAfterScroll(DataSet: TDataSet);
+    procedure qrRatesAfterScroll(DataSet: TDataSet);
   private
     Footer: Variant;
     procedure CalcFooter;
@@ -262,9 +266,33 @@ begin
   end;
 end;
 
+procedure TfCalcResource.qrDevicesAfterScroll(DataSet: TDataSet);
+begin
+  cbb2.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
+  se2.Value := DataSet.FieldByName('YEAR').AsInteger;
+end;
+
 procedure TfCalcResource.qrMaterialDataAfterOpen(DataSet: TDataSet);
 begin
   CalcFooter;
+end;
+
+procedure TfCalcResource.qrMaterialDataAfterScroll(DataSet: TDataSet);
+begin
+  cbbFromMonth.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
+  seFromYear.Value := DataSet.FieldByName('YEAR').AsInteger;
+end;
+
+procedure TfCalcResource.qrMechDataAfterScroll(DataSet: TDataSet);
+begin
+  cbb1.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
+  se1.Value := DataSet.FieldByName('YEAR').AsInteger;
+end;
+
+procedure TfCalcResource.qrRatesAfterScroll(DataSet: TDataSet);
+begin
+  cbb4.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
+  // := DataSet.FieldByName('YEAR').AsInteger;
 end;
 
 end.

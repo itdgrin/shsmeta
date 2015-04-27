@@ -364,12 +364,23 @@ begin
 end;
 
 procedure TFramePriceMaterial.EditSearch1KeyPress(Sender: TObject; var Key: Char);
+var
+  LeftPart, RightPart, SR: string;
 begin
   with (Sender as TEdit) do
   begin
-    if (Text <> '') and (Pos('-', Text) <> 0) then;
+    Text := TRIM(Text);
+    SR := Text;
+    // Если ЖБИ(начинается на "5"), форматируем *-1 как *-0001
+    if (Text <> '') and (Pos('-', Text) > 0) and (Text[1] = '5') then
+    begin
+      LeftPart := Copy(Text, 1, Pos('-', Text));
+      RightPart := Copy(Text, Pos('-', Text) + 1, length(Text));
+      if length(RightPart) < 4 then
+        SR := LeftPart + Copy('000', 1, 4 - length(RightPart)) + RightPart;
+    end;
     if (Key = #13) and (Text <> '') then // Если нажата клавиша "Enter" и строка поиска не пуста
-      ReceivingSearch(FilteredString(Text, 'mat_name'))
+      ReceivingSearch(FilteredString(SR, 'mat_name'))
     else if (Key = #27) or ((Key = #13) and (Text = '')) then
     // Нажата клавиша ESC, или Enter и строка поиска пуста
     begin

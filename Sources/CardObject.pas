@@ -672,21 +672,22 @@ begin
           '", srok_stroj = ' + v8 + ', ' + ' fin_id = ' + v9 + ', cust_id = ' + v10 + ', general_id = ' + v11
           + ', cat_id = "' + v12 + '", state_nds = "' + v13 + '", region_id = "' + v14 + '", base_norm_id = "'
           + v15 + '", stroj_id = "' + v16 + '", encrypt = "' + v17 + '", calc_econom = "' + v18 +
-          '", MAIS_ID = "' + v19 +
-          '", PER_TEPM_BUILD=:PER_TEPM_BUILD, PER_CONTRACTOR=:PER_CONTRACTOR, PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK WHERE obj_id = "'
-          + IntToStr(IdObject) + '";')
+          '", MAIS_ID = "' + v19 + '", PER_TEPM_BUILD=:PER_TEPM_BUILD, PER_CONTRACTOR=:PER_CONTRACTOR, '#13 +
+          'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
+          IntToStr(IdObject) + '";')
       else
         SQL.Add('INSERT INTO objcards (num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '
           + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
-          ' calc_econom, MAIS_ID, PER_TEPM_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK) ' + 'VALUE ("' +
-          NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 + '", "' + v7 +
-          '", ' + v8 + ', ' + v9 + ', ' + v10 + ', ' + v11 + ', "' + v12 + '", "' + v13 + '", "' + v14 +
-          '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
-          '", :PER_TEPM_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK);');
+          ' calc_econom, MAIS_ID, PER_TEPM_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV) ' +
+          'VALUE ("' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 +
+          '", "' + v7 + '", ' + v8 + ', ' + v9 + ', ' + v10 + ', ' + v11 + ', "' + v12 + '", "' + v13 + '", "'
+          + v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
+          '", :PER_TEPM_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV);');
 
       ParamByName('PER_TEPM_BUILD').Value := qrMain.FieldByName('PER_TEPM_BUILD').Value;
       ParamByName('PER_CONTRACTOR').Value := qrMain.FieldByName('PER_CONTRACTOR').Value;
       ParamByName('PER_TEMP_BUILD_BACK').Value := qrMain.FieldByName('PER_TEMP_BUILD_BACK').Value;
+      ParamByName('CONTRACTOR_SERV').Value := qrMain.FieldByName('CONTRACTOR_SERV').Value;
       ExecSQL;
     end;
 
@@ -870,12 +871,14 @@ begin
 end;
 
 procedure TFormCardObject.lbl2Click(Sender: TObject);
+var
+  res: Variant;
 begin
-  if (not Assigned(fCardObjectContractorServices)) then
-    fCardObjectContractorServices := TfCardObjectContractorServices.Create(Self);
-  if fCardObjectContractorServices.ShowModal = mrOk then
+  res := EditContractorServices(qrMain.FieldByName('CONTRACTOR_SERV').AsInteger);
+  if not VarIsNull(res) then
   begin
-    // TODO update main.CONTRACTOR_SERV
+    qrMain.FieldByName('CONTRACTOR_SERV').Value := res[0];
+    qrMain.FieldByName('PER_CONTRACTOR').Value := res[1];
   end;
 end;
 

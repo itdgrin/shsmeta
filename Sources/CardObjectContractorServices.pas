@@ -17,30 +17,32 @@ type
     qrMain: TFDQuery;
     dsMain: TDataSource;
     grMain: TJvDBGrid;
-    DBCtrlGrid1: TDBCtrlGrid;
-    dbmmoparam_name: TDBMemo;
-    dbchkchecked: TDBCheckBox;
     qrMainid_unidictparam: TFDAutoIncField;
     strngfldMaincode: TStringField;
     strngfldMainparam_name: TStringField;
     strngfldMainparam_description: TStringField;
     qrMainVALUE: TFloatField;
-    dbtxtVALUE: TDBText;
     qrMainChecked: TBooleanField;
+    qrMainNO: TLargeintField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
-    procedure qrMainCalcFields(DataSet: TDataSet);
     procedure btnCancelClick(Sender: TObject);
+    procedure qrMainCalcFields(DataSet: TDataSet);
+    procedure qrMainCheckedChange(Sender: TField);
+    procedure qrMainAfterOpen(DataSet: TDataSet);
   private
-    { Private declarations }
+    flLoading: Boolean;
   public
     CheckMask: Integer;
+
   end;
 
 var
   fCardObjectContractorServices: TfCardObjectContractorServices;
+
+function EditContractorServices(const aCONTRACTOR_SERV: Integer): Variant;
 
 implementation
 
@@ -48,21 +50,42 @@ implementation
 
 uses Tools;
 
+function EditContractorServices(const aCONTRACTOR_SERV: Integer): Variant;
+var
+  res: Variant;
+begin
+  Result := Null;
+  if (not Assigned(fCardObjectContractorServices)) then
+    fCardObjectContractorServices := TfCardObjectContractorServices.Create(nil);
+  fCardObjectContractorServices.CheckMask := aCONTRACTOR_SERV;
+  fCardObjectContractorServices.qrMain.ParamByName('MONTH').AsInteger := 1; // !!!
+  fCardObjectContractorServices.qrMain.ParamByName('YEAR').AsInteger := 2015; // !!!
+  fCardObjectContractorServices.qrMain.Active := True;
+  if fCardObjectContractorServices.ShowModal = mrOk then
+  begin
+    res := VarArrayCreate([0, 1], varVariant);
+    res[0] := fCardObjectContractorServices.CheckMask;
+    fCardObjectContractorServices.qrMain.first;
+    fCardObjectContractorServices.qrMain.DisableControls;
+    res[1] := 0;
+    while not fCardObjectContractorServices.qrMain.Eof do
+    begin
+      if fCardObjectContractorServices.qrMainChecked.Value then
+        res[1] := res[1] + fCardObjectContractorServices.qrMainVALUE.Value;
+      fCardObjectContractorServices.qrMain.Next;
+    end;
+    fCardObjectContractorServices.qrMain.EnableControls;
+    Result := res;
+  end;
+end;
+
 procedure TfCardObjectContractorServices.btnCancelClick(Sender: TObject);
 begin
-  CheckMask := CheckMask and 2;
-  ShowMessage(IntToStr(CheckMask));
+  ModalResult := mrCancel;
 end;
 
 procedure TfCardObjectContractorServices.btnSaveClick(Sender: TObject);
 begin
-  CheckMask := 0;
-  qrMain.First;
-  while not qrMain.Eof do
-  begin
-    CheckMask := CheckMask or (1 shl qrMain.RecNo);
-    qrMain.Next;
-  end;
   ModalResult := mrOk;
 end;
 
@@ -74,10 +97,6 @@ end;
 procedure TfCardObjectContractorServices.FormCreate(Sender: TObject);
 begin
   LoadDBGridSettings(grMain);
-  qrMain.ParamByName('MONTH').AsInteger := 1;   // !!!
-  qrMain.ParamByName('YEAR').AsInteger := 2015; // !!!
-  CheckMask := 1;
-  CloseOpen(qrMain);
 end;
 
 procedure TfCardObjectContractorServices.FormDestroy(Sender: TObject);
@@ -85,9 +104,33 @@ begin
   fCardObjectContractorServices := nil;
 end;
 
+procedure TfCardObjectContractorServices.qrMainAfterOpen(DataSet: TDataSet);
+var
+  RecNo: Integer;
+begin
+  flLoading := True;
+  qrMain.first;
+  RecNo := 0;
+  while not qrMain.Eof do
+  begin
+    qrMain.Edit;
+    qrMainNO.Value := RecNo;
+    qrMain.Next;
+    Inc(RecNo)
+  end;
+  qrMain.first;
+  flLoading := False;
+end;
+
 procedure TfCardObjectContractorServices.qrMainCalcFields(DataSet: TDataSet);
 begin
-  qrMainChecked.Value := (CheckMask and (1 shl qrMain.RecNo)) = 0;
+  qrMainChecked.Value := (CheckMask and (1 shl qrMainNO.Value)) = 0;
+end;
+
+procedure TfCardObjectContractorServices.qrMainCheckedChange(Sender: TField);
+begin
+  if not flLoading then
+    CheckMask := (CheckMask xor (1 shl qrMainNO.Value));
 end;
 
 end.
