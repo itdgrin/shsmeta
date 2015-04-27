@@ -427,7 +427,7 @@
     Height = 324
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 7
+    TabOrder = 6
     object ImageSplitterBottom: TImage
       Left = 200
       Top = 365
@@ -2428,7 +2428,7 @@
                 Expanded = False
                 FieldName = 'TRANSP_DIST'
                 Title.Alignment = taCenter
-                Title.Caption = #1056#1072#1089#1090#1086#1103#1085#1080#1077',           '#1082#1084
+                Title.Caption = '  '#1056#1072#1089#1090#1086#1103#1085#1080#1077',        '#1082#1084
                 Width = 75
                 Visible = True
               end
@@ -2778,7 +2778,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSummaryCalculations'
     ParentBackground = False
-    TabOrder = 5
+    TabOrder = 4
     inline frSummaryCalculations: TfrCalculationEstimateSummaryCalculations
       Left = 0
       Top = 0
@@ -3113,7 +3113,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSSR'
     ParentBackground = False
-    TabOrder = 6
+    TabOrder = 5
     inline frSSR: TfrCalculationEstimateSSR
       Left = 0
       Top = 0
@@ -3583,6 +3583,7 @@
     end
     object qrMechanizmMECH_COUNT: TBCDField
       FieldName = 'MECH_COUNT'
+      OnChange = MechRowChange
       Precision = 24
       Size = 8
     end
@@ -3590,7 +3591,6 @@
       AutoGenerateValue = arDefault
       FieldName = 'MECH_UNIT'
       Origin = 'MECH_UNIT'
-      OnChange = MechRowChange
       Size = 100
     end
     object qrMechanizmCOAST_NO_NDS: TBCDField

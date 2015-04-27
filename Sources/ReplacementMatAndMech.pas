@@ -18,23 +18,9 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Clipbrd, JvExControls,
   JvAnimatedImage, JvGIFCtrl, FireDAC.Phys.MySQL, Vcl.ValEdit, Vcl.Buttons,
-  Vcl.Menus;
-
-const
-  WM_ONACTIVATE = WM_USER + 2;
+  Vcl.Menus, GlobsAndConst;
 
 type
-  TSprRecord = record
-    ID: Integer;
-    Code,
-    Name,
-    Unt: string;
-    CoastNDS,
-    CoactNoNDS: Extended;
-  end;
-
-  TSprArray = array of TSprRecord;
-
   TEntryRecord = record
     Select: Boolean;
     EID,
@@ -50,19 +36,6 @@ type
   end;
 
   TEntryArray = array of TEntryRecord;
-
-  TThreadQuery = class(TThread)
-  private
-    FHandle: HWND;
-    FQrTemp: TFDQuery;
-    FConnect: TFDConnection;
-    { Private declarations }
-  protected
-    procedure Execute; override;
-  public
-    constructor Create(const ASQLText: string; AHandle: HWND);
-    destructor Destroy; override;
-  end;
 
   TMyGrid = class(TCustomGrid)
   public
@@ -109,6 +82,8 @@ type
     pmDeselectRate: TMenuItem;
     pmShowRep: TMenuItem;
     btnDelReplacement: TButton;
+    cbMat: TCheckBox;
+    cbJBI: TCheckBox;
     procedure btnCancelClick(Sender: TObject);
     procedure rgroupTypeClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
@@ -173,7 +148,7 @@ type
     procedure LoadRepInfo;
     procedure LoadEntry;
 
-    procedure OnActivate(var Mes: TMessage); message WM_ONACTIVATE;
+    procedure OnActivate(var Mes: TMessage); message WM_EXCECUTE;
     procedure FillSprList(AFindStr: string);
     procedure ShowDelRep(const AName: string; const AID: Integer;
       ADel: Boolean = False);
@@ -197,7 +172,7 @@ implementation
 
 {$R *.dfm}
 
-uses DataModule, GlobsAndConst;
+uses DataModule, Tools;
 
 //Событие выполняющееся при получении данных из справочника
 //Заполняет массив справочника
@@ -243,7 +218,7 @@ begin
       if (ind mod 2000) = 0 then
         Application.ProcessMessages;
       //не по именам для быстродействия
-      //Id, Code, Name, Unit, PriceVAT, PriceNotVAT
+      //Id, Code, Name, Unit, PriceVAT, PriceNotVAT, MAT_TYPE
       FSprArray[ind - 1].ID := TmpDS.Fields[0].AsInteger;
       FSprArray[ind - 1].Code := TmpDS.Fields[1].AsString;
       FSprArray[ind - 1].Name := TmpDS.Fields[2].AsString;
@@ -253,6 +228,8 @@ begin
         FSprArray[ind - 1].CoastNDS := TmpDS.Fields[4].AsFloat;
         FSprArray[ind - 1].CoactNoNDS := TmpDS.Fields[5].AsFloat;
       end;
+      if FCurType = 0 then
+        FSprArray[ind - 1].MType := TmpDS.Fields[6].AsInteger;
       TmpDS.Next;
     end;
     SetLength(FSprArray, ind);
@@ -443,6 +420,11 @@ begin
     ListSpr.Items.Clear;
     for i := Low(FSprArray) to High(FSprArray) do
     begin
+      if FCurType = 0 then
+        if ((FSprArray[i].MType = 1) and not cbMat.Checked) or
+           ((FSprArray[i].MType = 2) and not cbJBI.Checked) then
+          Continue;
+
       case FindType of
         1:
         begin
@@ -466,9 +448,16 @@ begin
     end;
     btnFind.Enabled := True;
     btnSelect.Enabled := True;
+    cbMat.Enabled := True;
+    cbJBI.Enabled := True;
     ListSpr.Visible :=  True;
     if (ListSpr.Items.Count > 0) then
-      ListSpr.ItemIndex := 0;
+      ListSpr.ItemIndex := 0
+    else
+    begin
+      StatusBar1.Panels[0].Text := '';
+      StatusBar1.Panels[1].Text := '   0/0';
+    end;
   finally
     WordList.Free;
   end;
@@ -1040,12 +1029,13 @@ begin
       for j := Low(IDArray) to High(IDArray) do
       begin
         if FCurType = 0 then
-          qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, :IdRate, 1, :IdMS, 0, 0);'
+          qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, :IdRate, 1, :IdMS, 0, 0, :CalcMode);'
         else
-          qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, :IdRate, 1, :IdMS, 0, 0);';
+          qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, :IdRate, 1, :IdMS, 0, 0, :CalcMode);';
         qrTemp.ParamByName('IdEst').Value := FEstimateID;
         qrTemp.ParamByName('IdRate').Value := FRateID;
         qrTemp.ParamByName('IdMS').Value := IDArray[j];
+        qrTemp.ParamByName('CalcMode').Value := CalcMode;
         qrTemp.ExecSQL;
       end;
     end
@@ -1082,13 +1072,14 @@ begin
           for j := Low(IDArray) to High(IDArray) do
           begin
             if FCurType = 0 then
-              qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, 0, 0, :IdMS, :IdMR, :Coef);'
+              qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, 0, 0, :IdMS, :IdMR, :Coef, :CalcMode);'
             else
-              qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, 0, 0, :IdMS, :IdMR, :Coef);';
+              qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, 0, 0, :IdMS, :IdMR, :Coef, :CalcMode);';
             qrTemp.ParamByName('IdEst').Value := FEntryArray[i].EID;
             qrTemp.ParamByName('IdMR').Value := FEntryArray[i].MID;
             qrTemp.ParamByName('IdMS').Value := IDArray[j];
             qrTemp.ParamByName('Coef').Value := CoefArray[j];
+            qrTemp.ParamByName('CalcMode').Value := CalcMode;
             qrTemp.ExecSQL;
           end;
         end;
@@ -1126,6 +1117,9 @@ begin
       groupReplace.Caption := 'Материал:';
       ListEntry.Columns[2].Caption := 'Материал';
 
+      cbMat.Visible := True;
+      cbJBI.Visible := True;
+
       if FFlag then
       begin
         groupCatalog.Caption := 'Справочник материалов за ' +
@@ -1134,21 +1128,23 @@ begin
         TmpStr := 'SELECT material.material_id as "Id", mat_code as "Code", ' +
           'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
           'coast' + IntToStr(FRegion) + '_1 as "PriceVAT", ' +
-          'coast' + IntToStr(FRegion) + '_2 as "PriceNotVAT" ' +
+          'coast' + IntToStr(FRegion) + '_2 as "PriceNotVAT", ' +
+          'MAT_TYPE ' +
           'FROM material, units, materialcoastg ' +
           'WHERE (material.unit_id = units.unit_id) ' +
           'and (material.material_id = materialcoastg.material_id) ' +
-          'and (not mat_code like "П%") and (year=' + IntToStr(FYear) +
+          'and (material.MAT_TYPE in (1,2)) and (year=' + IntToStr(FYear) +
           ') and (monat=' + IntToStr(FMonth) +') ORDER BY mat_code;';
       end
       else
       begin
         groupCatalog.Caption := 'Справочник материалов:';
         TmpStr := 'SELECT material.material_id as "Id", mat_code as "Code", ' +
-          'cast(mat_name as char(1024)) as "Name", unit_name as "Unit" ' +
+          'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
+          'MAT_TYPE ' +
           'FROM material, units ' +
           'WHERE (material.unit_id = units.unit_id) ' +
-          'and (not mat_code like "П%") ORDER BY mat_code;';
+          'and (material.MAT_TYPE in (1,2)) ORDER BY mat_code;';
       end;
     end;
     //Механизмы
@@ -1156,6 +1152,9 @@ begin
     begin
       groupReplace.Caption := 'Механизм:';
       ListEntry.Columns[2].Caption := 'Механизм';
+
+      cbMat.Visible := False;
+      cbJBI.Visible := False;
 
       if FFlag then
       begin
@@ -1186,6 +1185,8 @@ begin
   LoadAnimator.Animate := True;
   ListSpr.Visible := False;
   btnFind.Enabled := False;
+  cbMat.Enabled := False;
+  cbJBI.Enabled := False;
   btnSelect.Enabled := False;
   StatusBar1.Panels[0].Text := '';
   StatusBar1.Panels[1].Text := '';
@@ -1240,44 +1241,6 @@ end;
 procedure TfrmReplacement.btnCancelClick(Sender: TObject);
 begin
   Close;
-end;
-
-{ TThreadQuery }
-
-//Выполняет медленный SQL в отдельном потоке
-constructor TThreadQuery.Create(const ASQLText: String; AHandle: HWND);
-begin
-  inherited Create(true);
-  FHandle := AHandle;
-
-  FConnect := TFDConnection.Create(nil);
-  FConnect.Params.Text := G_CONNECTSTR;
-  FQrTemp := TFDQuery.Create(nil);
-  FQrTemp.Connection := FConnect;
-  FQrTemp.SQL.Text := ASQLText;
-
-  FreeOnTerminate := True;
-  Priority := tpLower;
-  Resume;
-end;
-
-destructor TThreadQuery.Destroy;
-begin
-  FreeAndNil(FQrTemp);
-  FreeAndNil(FConnect);
-  inherited;
-end;
-
-procedure TThreadQuery.Execute;
-begin
-  inherited;
-  try
-    FQrTemp.Active := True;
-    SendMessage(FHandle, WM_ONACTIVATE, WParam(FQrTemp), LParam(nil));
-  except
-    on e: exception do
-      SendMessage(FHandle, WM_ONACTIVATE, WParam(nil), LParam(e));
-  end;
 end;
 
 end.

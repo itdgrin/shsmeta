@@ -4,11 +4,25 @@ interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
-  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls;
+  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, GlobsAndConst;
 
 // Общий тип классификации форм
 type
   TKindForm = (kdNone, kdInsert, kdEdit, kdSelect);
+
+  //Выполнение медленных запросов к базе в отдельном потоке
+  TThreadQuery = class(TThread)
+  private
+    FHandle: HWND;
+    FQrTemp: TFDQuery;
+    FConnect: TFDConnection;
+    { Private declarations }
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(const ASQLText: string; AHandle: HWND);
+    destructor Destroy; override;
+  end;
 
   // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
@@ -41,6 +55,44 @@ function MyCurrToStr(Value: Currency): string;
 function MyStrToCurr(Value: string): Currency;
 
 implementation
+
+{ TThreadQuery }
+
+//Выполняет медленный SQL в отдельном потоке
+constructor TThreadQuery.Create(const ASQLText: String; AHandle: HWND);
+begin
+  inherited Create(true);
+  FHandle := AHandle;
+
+  FConnect := TFDConnection.Create(nil);
+  FConnect.Params.Text := G_CONNECTSTR;
+  FQrTemp := TFDQuery.Create(nil);
+  FQrTemp.Connection := FConnect;
+  FQrTemp.SQL.Text := ASQLText;
+
+  FreeOnTerminate := True;
+  Priority := tpLower;
+  Resume;
+end;
+
+destructor TThreadQuery.Destroy;
+begin
+  FreeAndNil(FQrTemp);
+  FreeAndNil(FConnect);
+  inherited;
+end;
+
+procedure TThreadQuery.Execute;
+begin
+  inherited;
+  try
+    FQrTemp.Active := True;
+    SendMessage(FHandle, WM_EXCECUTE, WParam(FQrTemp), LParam(nil));
+  except
+    on e: exception do
+      SendMessage(FHandle, WM_EXCECUTE, WParam(nil), LParam(e));
+  end;
+end;
 
 // Запускает приложение и ожидает его завершения
 function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;

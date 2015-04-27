@@ -105,7 +105,7 @@ uses
   CardPartsEstimates in 'CardPartsEstimates.pas' {FormCardPartsEstimates},
   ImportExportModule in 'ImportExportModule.pas',
   CalcTravelWork in 'CalcTravelWork.pas' {fCalcTravelWork},
-  CalcWorkerDepartment in 'CalcWorkerDepartment.pas' {fCalcWorkerDepartment},
+  fFrameSpr in 'fFrameSpr.pas' {SprFrame: TFrame},
   CardObjectContractorServices in 'CardObjectContractorServices.pas' {fCardObjectContractorServices};
 
 {$R *.res}
@@ -157,6 +157,7 @@ begin
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
   Application.CreateForm(TFormCardPartsEstimates, FormCardPartsEstimates);
+  Application.CreateForm(TfCardObjectContractorServices, fCardObjectContractorServices);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€

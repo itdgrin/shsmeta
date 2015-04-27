@@ -171,11 +171,13 @@ object frmReplacement: TfrmReplacement
     Height = 232
     Align = alClient
     Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082
+    DoubleBuffered = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 2
     object Panel5: TPanel
@@ -468,22 +470,22 @@ object frmReplacement: TfrmReplacement
         Align = alTop
         TabOrder = 1
         object Label1: TLabel
-          Left = 12
+          Left = 8
           Top = 11
           Width = 120
           Height = 13
           Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1080#1083#1080' '#1082#1086#1076':'
         end
         object edtFind: TEdit
-          Left = 136
-          Top = 8
-          Width = 393
+          Left = 130
+          Top = 7
+          Width = 319
           Height = 21
           TabOrder = 0
           OnKeyPress = edtFindKeyPress
         end
         object btnFind: TButton
-          Left = 535
+          Left = 452
           Top = 5
           Width = 75
           Height = 25
@@ -494,13 +496,35 @@ object frmReplacement: TfrmReplacement
         end
         object btnSelect: TButton
           Left = 672
-          Top = 5
+          Top = 3
           Width = 96
           Height = 25
           Caption = #1042#1099#1073#1086#1088
           Enabled = False
           TabOrder = 2
           OnClick = btnSelectClick
+        end
+        object cbMat: TCheckBox
+          Left = 538
+          Top = 10
+          Width = 75
+          Height = 17
+          Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
+          Checked = True
+          State = cbChecked
+          TabOrder = 3
+          OnClick = btnFindClick
+        end
+        object cbJBI: TCheckBox
+          Left = 621
+          Top = 9
+          Width = 52
+          Height = 17
+          Caption = #1046#1041#1048
+          Checked = True
+          State = cbChecked
+          TabOrder = 4
+          OnClick = btnFindClick
         end
       end
       object ListSpr: TListView

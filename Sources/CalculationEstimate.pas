@@ -11,7 +11,8 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls,
   CalculationEstimateSSR, CalculationEstimateSummaryCalculations, JvExDBGrids,
-  JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression;
+  JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression,
+  GlobsAndConst;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -2210,10 +2211,11 @@ end;
 procedure TFormCalculationEstimate.ReCalcRowMech(ACType: byte);
 begin
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'CALL CalcMech(:id, :getdata, :ctype);';
+  qrTemp.SQL.Text := 'CALL CalcMech(:id, :getdata, :ctype, :CalcMode);';
   qrTemp.ParamByName('id').Value := qrMechanizmID.AsInteger;
   qrTemp.ParamByName('getdata').Value := 1;
   qrTemp.ParamByName('ctype').Value := ACType;
+  qrTemp.ParamByName('CalcMode').Value := CalcMode;
   qrTemp.Active := True;
   if not qrTemp.IsEmpty then
   begin
@@ -2245,10 +2247,11 @@ end;
 procedure TFormCalculationEstimate.ReCalcRowMat(ACType: byte);
 begin
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'CALL CalcMat(:id, :getdata, :ctype);';
+  qrTemp.SQL.Text := 'CALL CalcMat(:id, :getdata, :ctype, :CalcMode);';
   qrTemp.ParamByName('id').Value := qrMaterialID.AsInteger;
   qrTemp.ParamByName('getdata').Value := 1;
   qrTemp.ParamByName('ctype').Value := ACType;
+  qrTemp.ParamByName('CalcMode').Value := CalcMode;
   qrTemp.Active := True;
   if not qrTemp.IsEmpty then
   begin
@@ -2566,9 +2569,10 @@ end;
 procedure TFormCalculationEstimate.ReCalcRowRates;
 begin
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE);';
+  qrTemp.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE, :CalcMode);';
   qrTemp.ParamByName('ID').Value := qrRatesExID_TABLES.Value;
   qrTemp.ParamByName('TYPE').Value := qrRatesExID_TYPE_DATA.Value;
+  qrTemp.ParamByName('CalcMode').Value := CalcMode;
   qrTemp.ExecSQL;
 
   // ƒл€ расценок обновл€етс€ кол-во у замен€ющих материалов
@@ -2756,8 +2760,9 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL DeleteMaterial(:id);');
+      SQL.Add('CALL DeleteMaterial(:id, :CalcMode);');
       ParamByName('id').Value := qrMaterialID.AsInteger;
+      ParamByName('CalcMode').Value := CalcMode;
       ExecSQL;
     end;
 
@@ -2811,8 +2816,9 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL DeleteMechanism(:id);');
+      SQL.Add('CALL DeleteMechanism(:id, :CalcMode);');
       ParamByName('id').Value := qrMechanizmID.AsInteger;
+      ParamByName('CalcMode').Value := CalcMode;
       ExecSQL;
     end;
 
@@ -3330,6 +3336,7 @@ var
   NewRateCode: string;
   vNormRas: Double;
   Month1, Year1: Integer;
+  DateBeg: TDateTime;
   PriceVAT, PriceNoVAT: string;
   PT, PercentTransport: Real;
   ZonaId: Integer;
@@ -3376,11 +3383,12 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT year,monat FROM stavka WHERE stavka_id = ' +
+      SQL.Add('SELECT year,monat,DATE_BEG FROM stavka WHERE stavka_id = ' +
         '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ')');
       Active := True;
       Month1 := FieldByName('monat').AsInteger;
       Year1 := FieldByName('year').AsInteger;
+      DateBeg := FieldByName('DATE_BEG').AsDateTime;
       Active := False;
 
       SQL.Clear;
@@ -3436,8 +3444,12 @@ begin
         if ZonaId > 0 then
         begin
           qrTemp1.SQL.Clear;
-          qrTemp1.SQL.Add('SELECT Transp' + IntToStr(ZonaId) + ' FROM materialtransp WHERE LOCATE(''' + SCode
-            + ''', codestr)');
+          qrTemp1.SQL.Add('SELECT Transp' + IntToStr(ZonaId) +
+            ' FROM materialtransp WHERE LOCATE(:SCode, codestr)  and ' +
+            '((BeginDate <= :DDATEBEG) or (BeginDate is NULL)) and ' +
+            '((EndDate >= :DDATEBEG) or (EndDate is NULL))');
+          qrTemp1.ParamByName('SCode').Value := SCode;
+          qrTemp1.ParamByName('DDATEBEG').Value := DateBeg;
           qrTemp1.Active := True;
           if not qrTemp1.Eof then
             PT := qrTemp1.Fields[0].AsFloat;
@@ -3694,8 +3706,9 @@ begin
           begin
             Active := False;
             SQL.Clear;
-            SQL.Add('CALL DeleteMaterial(:id);');
+            SQL.Add('CALL DeleteMaterial(:id, :CalcMode);');
             ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
+            ParamByName('CalcMode').Value := CalcMode;
             ExecSQL;
           end;
 
@@ -3710,8 +3723,9 @@ begin
           begin
             Active := False;
             SQL.Clear;
-            SQL.Add('CALL DeleteMechanism(:id);');
+            SQL.Add('CALL DeleteMechanism(:id, :CalcMode);');
             ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
+            ParamByName('CalcMode').Value := CalcMode;
             ExecSQL;
           end;
 
