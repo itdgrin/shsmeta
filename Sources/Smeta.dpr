@@ -157,7 +157,6 @@ begin
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
   Application.CreateForm(TFormCardPartsEstimates, FormCardPartsEstimates);
-  Application.CreateForm(TfCardObjectContractorServices, fCardObjectContractorServices);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€

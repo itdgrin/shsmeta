@@ -8,7 +8,6 @@ uses
 
 type
   TfMain = class(TForm)
-    DBCtrlGrid1: TDBCtrlGrid;
     pnlTop: TPanel;
     mm1: TMainMenu;
     mN1: TMenuItem;

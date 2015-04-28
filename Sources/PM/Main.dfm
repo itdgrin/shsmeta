@@ -14,22 +14,6 @@ object fMain: TfMain
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object DBCtrlGrid1: TDBCtrlGrid
-    Left = 8
-    Top = 80
-    Width = 646
-    Height = 392
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    PanelHeight = 56
-    PanelWidth = 629
-    ParentFont = False
-    TabOrder = 1
-    RowCount = 7
-  end
   object pnlTop: TPanel
     AlignWithMargins = True
     Left = 3

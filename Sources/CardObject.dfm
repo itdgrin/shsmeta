@@ -3,7 +3,7 @@ object FormCardObject: TFormCardObject
   Top = 0
   BorderIcons = [biSystemMenu]
   Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1086#1073#1098#1077#1082#1090#1072
-  ClientHeight = 577
+  ClientHeight = 551
   ClientWidth = 457
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,12 +18,12 @@ object FormCardObject: TFormCardObject
   OnShow = FormShow
   DesignSize = (
     457
-    577)
+    551)
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel1: TBevel
     Left = 0
-    Top = 536
+    Top = 510
     Width = 457
     Height = 41
     Align = alBottom
@@ -112,9 +112,9 @@ object FormCardObject: TFormCardObject
     end
   end
   object ButtonListAgreements: TButton
-    Left = 304
+    Left = 339
     Top = 158
-    Width = 145
+    Width = 110
     Height = 25
     Caption = #1044#1086#1087'. '#1089#1086#1075#1083#1072#1096#1077#1085#1080#1103
     TabOrder = 5
@@ -162,12 +162,12 @@ object FormCardObject: TFormCardObject
   object GroupBoxDateBuilding: TGroupBox
     Left = 8
     Top = 152
-    Width = 290
+    Width = 325
     Height = 49
     Caption = #1044#1072#1090#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
     TabOrder = 4
     DesignSize = (
-      290
+      325
       49)
     object LabelStartBuilding: TLabel
       Left = 8
@@ -179,9 +179,9 @@ object FormCardObject: TFormCardObject
     object LabelCountMonth: TLabel
       Left = 142
       Top = 23
-      Width = 102
+      Width = 132
       Height = 13
-      Caption = #1089#1088#1086#1082' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072
+      Caption = #1057#1088#1086#1082' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072', '#1084#1077#1089'.'
     end
     object DateTimePickerStartBuilding: TDateTimePicker
       Left = 51
@@ -200,9 +200,9 @@ object FormCardObject: TFormCardObject
       OnChange = DateTimePickerStartBuildingChange
     end
     object EditCountMonth: TEdit
-      Left = 250
+      Left = 280
       Top = 20
-      Width = 32
+      Width = 37
       Height = 21
       Hint = #1063#1080#1089#1083#1086' '#1084#1077#1089#1103#1094#1077#1074
       Anchors = [akLeft, akTop, akRight]
@@ -321,7 +321,7 @@ object FormCardObject: TFormCardObject
   end
   object ButtonSave: TButton
     Left = 223
-    Top = 544
+    Top = 518
     Width = 110
     Height = 25
     Anchors = [akRight, akBottom]
@@ -329,16 +329,18 @@ object FormCardObject: TFormCardObject
     Default = True
     TabOrder = 18
     OnClick = ButtonSaveClick
+    ExplicitTop = 544
   end
   object ButtonCancel: TButton
     Left = 339
-    Top = 544
+    Top = 518
     Width = 110
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 19
     OnClick = ButtonCancelClick
+    ExplicitTop = 544
   end
   object GroupBoxVAT: TGroupBox
     Left = 338
@@ -381,9 +383,9 @@ object FormCardObject: TFormCardObject
     end
   end
   object CheckBoxCalculationEconom: TCheckBox
-    Left = 304
+    Left = 339
     Top = 184
-    Width = 145
+    Width = 110
     Height = 17
     Caption = #1056#1072#1089#1095#1105#1090' '#1093#1086#1079'. '#1089#1087#1086#1089#1086#1073#1086#1084
     TabOrder = 6
@@ -394,13 +396,19 @@ object FormCardObject: TFormCardObject
     Top = 442
     Width = 217
     Height = 45
-    Caption = #1052#1040#1048#1057':'
+    Caption = #1055#1086#1089#1090#1072#1085#1086#1074#1083#1077#1085#1080#1077' '#1052#1040#1048#1057':'
     TabOrder = 17
     object dblkcbbMAIS: TDBLookupComboBox
       Left = 8
       Top = 16
       Width = 201
       Height = 21
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
     end
   end
@@ -408,7 +416,7 @@ object FormCardObject: TFormCardObject
     Left = 8
     Top = 442
     Width = 218
-    Height = 90
+    Height = 63
     Caption = #1056#1072#1089#1093#1086#1076#1099', %'
     TabOrder = 16
     object lbl1: TLabel
@@ -420,7 +428,7 @@ object FormCardObject: TFormCardObject
     end
     object lbl2: TLabel
       Left = 8
-      Top = 67
+      Top = 40
       Width = 128
       Height = 13
       Cursor = crHandPoint
@@ -432,19 +440,6 @@ object FormCardObject: TFormCardObject
       Font.Style = [fsUnderline]
       ParentFont = False
       OnClick = lbl2Click
-    end
-    object lbl3: TLabel
-      Left = 8
-      Top = 36
-      Width = 167
-      Height = 26
-      Caption = #1042#1086#1079#1074#1088#1072#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074#13#10#1086#1090' '#1074#1088#1077#1084#1077#1085#1085#1099#1093' '#1079#1076#1072#1085#1080#1081' '#1080' '#1089#1086#1086#1088#1091#1078'.:'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
     end
     object dbedtPER_TEPM_BUILD: TDBEdit
       Left = 179
@@ -462,19 +457,9 @@ object FormCardObject: TFormCardObject
       PopupMenu = pm1
       TabOrder = 0
     end
-    object dbedtPER_TEMP_BUILD_BACK: TDBEdit
-      Left = 179
-      Top = 39
-      Width = 31
-      Height = 21
-      DataField = 'PER_TEMP_BUILD_BACK'
-      DataSource = dsMain
-      PopupMenu = pm1
-      TabOrder = 1
-    end
     object dbedtPER_CONTRACTOR: TDBEdit
       Left = 179
-      Top = 64
+      Top = 37
       Width = 31
       Height = 21
       DataField = 'PER_CONTRACTOR'
@@ -486,7 +471,7 @@ object FormCardObject: TFormCardObject
       Font.Style = []
       ParentFont = False
       PopupMenu = pm1
-      TabOrder = 2
+      TabOrder = 1
     end
   end
   object DataSourceSF: TDataSource

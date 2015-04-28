@@ -7,11 +7,12 @@ object DM: TDM
       'User_name=root'
       'Password=serg'
       'SERVER=localhost'
-      'DATABASE=smeta'
+      'DATABASE=pm'
       'CharacterSet=cp1251'
       'TinyIntFormat=Integer'
       'DriverID=MySQL')
     FormatOptions.AssignedValues = [fvSortOptions, fvStrsTrim2Len]
+    Connected = True
     LoginPrompt = False
     Transaction = Read
     UpdateTransaction = Read

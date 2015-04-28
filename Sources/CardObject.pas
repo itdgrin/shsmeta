@@ -85,9 +85,7 @@ type
     grp1: TGroupBox;
     lbl1: TLabel;
     lbl2: TLabel;
-    lbl3: TLabel;
     dbedtPER_TEPM_BUILD: TDBEdit;
-    dbedtPER_TEMP_BUILD_BACK: TDBEdit;
     dbedtPER_CONTRACTOR: TDBEdit;
     qrMain: TFDQuery;
     dsMain: TDataSource;
@@ -180,7 +178,6 @@ end;
 procedure TFormCardObject.FormShow(Sender: TObject);
 begin
   dbedtPER_TEPM_BUILD.ReadOnly := True;
-  dbedtPER_TEMP_BUILD_BACK.ReadOnly := True;
   dbedtPER_CONTRACTOR.ReadOnly := True;
 
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
@@ -397,7 +394,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT * FROM mais ORDER BY onDate DESC;');
+      SQL.Add('SELECT MAIS_ID, CONCAT(`mais`.`NAME`, " от ", `mais`.`onDate`, " действует с ", `mais`.`Start_Date`) AS NAME FROM mais ORDER BY onDate DESC;');
       Active := True;
     end;
 
@@ -885,7 +882,6 @@ end;
 procedure TFormCardObject.N1Click(Sender: TObject);
 begin
   dbedtPER_TEPM_BUILD.ReadOnly := False;
-  dbedtPER_TEMP_BUILD_BACK.ReadOnly := False;
   dbedtPER_CONTRACTOR.ReadOnly := False;
 end;
 
