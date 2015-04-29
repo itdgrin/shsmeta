@@ -521,8 +521,6 @@ object frmReplacement: TfrmReplacement
           Width = 52
           Height = 17
           Caption = #1046#1041#1048
-          Checked = True
-          State = cbChecked
           TabOrder = 4
           OnClick = btnFindClick
         end

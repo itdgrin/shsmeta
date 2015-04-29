@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls,
   fFramePriceMaterials, fFramePriceMechanizms, fFramePriceTransportations,
-  fFramePriceDumps, fFrameSmeta;
+  fFramePriceDumps, fFrameSmeta, fFrameMaterial, System.SysUtils;
 
 type
   TFormPricesReferenceData = class(TForm)
@@ -32,7 +32,7 @@ type
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
   private
-    FramePriceMaterials: TFramePriceMaterial;
+    FramePriceMaterials: TSprMaterial;
     FramePriceMechanizms: TFramePriceMechanizm;
     FramePriceTransportations: TFramePriceTransportations;
     FramePriceDumps: TFramePriceDumps;
@@ -96,9 +96,10 @@ begin
 
   // ----------------------------------------
 
-  FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
+  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date);
   FramePriceMaterials.Parent := Self;
-  FramePriceMaterials.align := alClient;
+  FramePriceMaterials.LoadSpr;
+  FramePriceMaterials.Align := alClient;
   FramePriceMaterials.Visible := False;
   SpeedButtonPriceMaterials.Tag := Integer(FramePriceMaterials);
 
@@ -171,27 +172,27 @@ procedure TFormPricesReferenceData.SpeedButtonClick(Sender: TObject);
 begin
   HideAllFrames;
 
-  if not Assigned(TSmetaFrame((Sender as TComponent).Tag)) then exit;
+  if not Assigned(Pointer((Sender as TComponent).Tag)) then exit;
 
-
-  with TSmetaFrame((Sender as TComponent).Tag) do
-  begin
-    if not Loaded then
+  if TObject((Sender as TComponent).Tag) is TSmetaFrame then
+    with TSmetaFrame((Sender as TComponent).Tag) do
     begin
-      FormWaiting.Show;
-      Application.ProcessMessages;
-      try
-        ReceivingAll;
-      finally
-        FormWaiting.Close;
+      if not Loaded then
+      begin
+        FormWaiting.Show;
+        Application.ProcessMessages;
+        try
+          ReceivingAll;
+        finally
+          FormWaiting.Close;
+        end;
       end;
     end;
 
-    if (Self as TControl).Visible then
-    begin
-      Visible := True;
-      SetFocus;
-    end;
+  if (Self as TWinControl).Visible then
+  begin
+    TWinControl((Sender as TComponent).Tag).Visible := True;
+    TWinControl((Sender as TComponent).Tag).SetFocus;
   end;
 end;
 

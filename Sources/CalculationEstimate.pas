@@ -12,7 +12,7 @@ uses
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls,
   CalculationEstimateSSR, CalculationEstimateSummaryCalculations, JvExDBGrids,
   JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression,
-  GlobsAndConst;
+  GlobsAndConst, FireDAC.UI.Intf;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -2215,7 +2215,7 @@ begin
   qrTemp.ParamByName('id').Value := qrMechanizmID.AsInteger;
   qrTemp.ParamByName('getdata').Value := 1;
   qrTemp.ParamByName('ctype').Value := ACType;
-  qrTemp.ParamByName('CalcMode').Value := CalcMode;
+  qrTemp.ParamByName('CalcMode').Value := G_CALCMODE;
   qrTemp.Active := True;
   if not qrTemp.IsEmpty then
   begin
@@ -2251,7 +2251,7 @@ begin
   qrTemp.ParamByName('id').Value := qrMaterialID.AsInteger;
   qrTemp.ParamByName('getdata').Value := 1;
   qrTemp.ParamByName('ctype').Value := ACType;
-  qrTemp.ParamByName('CalcMode').Value := CalcMode;
+  qrTemp.ParamByName('CalcMode').Value := G_CALCMODE;
   qrTemp.Active := True;
   if not qrTemp.IsEmpty then
   begin
@@ -2572,7 +2572,7 @@ begin
   qrTemp.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE, :CalcMode);';
   qrTemp.ParamByName('ID').Value := qrRatesExID_TABLES.Value;
   qrTemp.ParamByName('TYPE').Value := qrRatesExID_TYPE_DATA.Value;
-  qrTemp.ParamByName('CalcMode').Value := CalcMode;
+  qrTemp.ParamByName('CalcMode').Value := G_CALCMODE;
   qrTemp.ExecSQL;
 
   // Для расценок обновляется кол-во у заменяющих материалов
@@ -2762,7 +2762,7 @@ begin
       SQL.Clear;
       SQL.Add('CALL DeleteMaterial(:id, :CalcMode);');
       ParamByName('id').Value := qrMaterialID.AsInteger;
-      ParamByName('CalcMode').Value := CalcMode;
+      ParamByName('CalcMode').Value := G_CALCMODE;
       ExecSQL;
     end;
 
@@ -2818,7 +2818,7 @@ begin
       SQL.Clear;
       SQL.Add('CALL DeleteMechanism(:id, :CalcMode);');
       ParamByName('id').Value := qrMechanizmID.AsInteger;
-      ParamByName('CalcMode').Value := CalcMode;
+      ParamByName('CalcMode').Value := G_CALCMODE;
       ExecSQL;
     end;
 
@@ -3708,7 +3708,7 @@ begin
             SQL.Clear;
             SQL.Add('CALL DeleteMaterial(:id, :CalcMode);');
             ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
-            ParamByName('CalcMode').Value := CalcMode;
+            ParamByName('CalcMode').Value := G_CALCMODE;
             ExecSQL;
           end;
 
@@ -3725,7 +3725,7 @@ begin
             SQL.Clear;
             SQL.Add('CALL DeleteMechanism(:id, :CalcMode);');
             ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
-            ParamByName('CalcMode').Value := CalcMode;
+            ParamByName('CalcMode').Value := G_CALCMODE;
             ExecSQL;
           end;
 
@@ -4819,48 +4819,53 @@ begin
     FormAdditionData.Show;
     Exit;
   end;
+  DM.FDGUIxWaitCursor1.ScreenCursor := gcrHourGlass;
+  try
+    SendMessage(Application.MainForm.ClientHandle,WM_SETREDRAW,0,0);
+    FormAdditionData := TFormAdditionData.Create(FormMain, vDataBase);
+    FormAdditionData.WindowState := wsNormal;
 
-  FormMain.PanelCover.Visible := True;
-  FormAdditionData := TFormAdditionData.Create(FormMain, vDataBase);
-  FormAdditionData.WindowState := wsNormal;
+    // Сворачиваем окно
+    WindowState := wsNormal;
+    // Ставим форму в левый верхний угол
+    Left := 0;
+    Top := 0;
 
-  // Сворачиваем окно
-  WindowState := wsNormal;
+    // Устанавливаем размеры формы
+    Width := FormMain.ClientWidth - 5;
+    Height := FormMain.ClientHeight - (5 + 27); // + 27 - нижняя панель с кнопками
 
-  // Ставим форму в левый верхний угол
-  Left := 0;
-  Top := 0;
+    // Делим левую и правую таблицы в соотношении 1 к 3
+    PanelClientLeft.Width := FormMain.Width div 3;
 
-  // Устанавливаем размеры формы
-  Width := FormMain.ClientWidth - 5;
-  Height := FormMain.ClientHeight - (5 + 27); // + 27 - нижняя панель с кнопками
-
-  // Делим левую и правую таблицы в соотношении 1 к 3
-  PanelClientLeft.Width := FormMain.Width div 3;
-
-  with FormAdditionData do
-  begin
-    // Расстояние сверху до формы с данными (внутри формы FormCalculationEstimate)
-    // FormTop := PanelLocalEstimate.Top + PanelTopClient.Height;
-    // Расстояние сверху до начала координат формы FormCalculationEstimate (внутри формы FormMain)
-    // BorderTop := FormCalculationEstimate.Top;
-    Top := FormCalculationEstimate.Top;
-    // Расстояние слева до формы с данными (внутри формы FormCalculationEstimate)
-    FormLeft := SplitterCenter.Left + SplitterCenter.Width;
-    // Расстояние слева до начала координат формы FormCalculationEstimate (внутри формы FormMain)
-    BorderLeft := FormCalculationEstimate.Left +
-      (FormCalculationEstimate.Width - FormCalculationEstimate.ClientWidth) div 2;
-    // Left := BorderLeft + FormLeft;
-    Width := FormCalculationEstimate.ClientWidth - FormLeft +
-      (FormCalculationEstimate.Width - FormCalculationEstimate.ClientWidth) div 2;
-    // Шапка + высота клиентской область формы
-    Height := GetSystemMetrics(SM_CYCAPTION) + FormCalculationEstimate.ClientHeight;
-    // Отнимаем высоту нижней панели с кнопками
-    Height := Height - 27;
-    Left := BorderLeft + FormLeft;
-    Application.ProcessMessages;
+    with FormAdditionData do
+    begin
+      // Расстояние сверху до формы с данными (внутри формы FormCalculationEstimate)
+      // FormTop := PanelLocalEstimate.Top + PanelTopClient.Height;
+      // Расстояние сверху до начала координат формы FormCalculationEstimate (внутри формы FormMain)
+      // BorderTop := FormCalculationEstimate.Top;
+      Top := FormCalculationEstimate.Top;
+      // Расстояние слева до формы с данными (внутри формы FormCalculationEstimate)
+      FormLeft := SplitterCenter.Left + SplitterCenter.Width;
+      // Расстояние слева до начала координат формы FormCalculationEstimate (внутри формы FormMain)
+      BorderLeft := FormCalculationEstimate.Left +
+        (FormCalculationEstimate.Width - FormCalculationEstimate.ClientWidth) div 2;
+      // Left := BorderLeft + FormLeft;
+      Width := FormCalculationEstimate.ClientWidth - FormLeft +
+        (FormCalculationEstimate.Width - FormCalculationEstimate.ClientWidth) div 2;
+      // Шапка + высота клиентской область формы
+      Height := GetSystemMetrics(SM_CYCAPTION) + FormCalculationEstimate.ClientHeight;
+      // Отнимаем высоту нижней панели с кнопками
+      Height := Height - 27;
+      Left := BorderLeft + FormLeft;
+    end;
+  finally
+    SendMessage(Application.MainForm.ClientHandle,WM_SETREDRAW,1,0);
+    RedrawWindow(Application.MainForm.ClientHandle, nil, 0,
+      RDW_FRAME or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_NOINTERNALPAINT);
+    DM.FDGUIxWaitCursor1.ScreenCursor := gcrDefault;
   end;
-  FormMain.PanelCover.Visible := False;
+
   Application.ProcessMessages;
 end;
 

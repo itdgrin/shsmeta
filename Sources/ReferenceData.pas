@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, Vcl.Dialogs,
   fFrameRates, fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments,
-  fFrameOXROPR, fFrameSSR, fFrameSmeta;
+  fFrameOXROPR, fFrameSSR, fFrameMaterial, fFrameSmeta, GlobsAndConst,
+  Vcl.StdCtrls, System.SysUtils;
 
 type
   TFormReferenceData = class(TForm)
@@ -37,10 +38,9 @@ type
     const HintButton = 'Окно справочных данных';
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
-
   public
     FrameRates: TFrameRates;
-    FramePriceMaterials: TFramePriceMaterial;
+    FramePriceMaterials: TSprMaterial;
     FramePriceMechanizms: TFramePriceMechanizm;
     FrameEquipments: TFrameEquipment;
     FrameOXROPR: TFrameOXROPR;
@@ -57,7 +57,6 @@ uses Main, Waiting;
 {$R *.dfm}
 
 // ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFormReferenceData.WMSysCommand(var Msg: TMessage);
 begin
   // SC_MAXIMIZE - Разворачивание формы во весь экран
@@ -110,8 +109,9 @@ begin
   FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
 
-  FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
+  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date);
   FramePriceMaterials.Parent := Self;
+  FramePriceMaterials.LoadSpr;
   FramePriceMaterials.Align := alClient;
   FramePriceMaterials.Visible := False;
   SpeedButtonMaterials.Tag := Integer(FramePriceMaterials);
@@ -193,26 +193,27 @@ procedure TFormReferenceData.SpeedButtonClick(Sender: TObject);
 begin
   HideAllFrames;
 
-  if not Assigned(TSmetaFrame((Sender as TComponent).Tag)) then exit;
+  if not Assigned(Pointer((Sender as TComponent).Tag)) then exit;
 
-  with TSmetaFrame((Sender as TComponent).Tag) do
-  begin
-    if not Loaded then
+  if TObject((Sender as TComponent).Tag) is TSmetaFrame then
+    with TSmetaFrame((Sender as TComponent).Tag) do
     begin
-      FormWaiting.Show;
-      Application.ProcessMessages;
-      try
-        ReceivingAll;
-      finally
-        FormWaiting.Close;
+      if not Loaded then
+      begin
+        FormWaiting.Show;
+        Application.ProcessMessages;
+        try
+          ReceivingAll;
+        finally
+          FormWaiting.Close;
+        end;
       end;
     end;
 
-    if (Self as TControl).Visible then
-    begin
-      Visible := True;
-      SetFocus;
-    end;
+  if (Self as TWinControl).Visible then
+  begin
+    TWinControl((Sender as TComponent).Tag).Visible := True;
+    TWinControl((Sender as TComponent).Tag).SetFocus;
   end;
 end;
 

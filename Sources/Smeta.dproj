@@ -412,13 +412,13 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="CardObjectContractorServices.pas">
-            <Form>fCardObjectContractorServices</Form>
+        <DCCReference Include="fFrameMaterial.pas">
+            <Form>SprMaterial</Form>
             <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="OrganizationsEx.pas">
             <Form>fOrganizationsEx</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

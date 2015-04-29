@@ -148,7 +148,7 @@ type
     procedure LoadRepInfo;
     procedure LoadEntry;
 
-    procedure OnActivate(var Mes: TMessage); message WM_EXCECUTE;
+    procedure OnExcecute(var Mes: TMessage); message WM_EXCECUTE;
     procedure FillSprList(AFindStr: string);
     procedure ShowDelRep(const AName: string; const AID: Integer;
       ADel: Boolean = False);
@@ -176,7 +176,7 @@ uses DataModule, Tools;
 
 //—обытие выполн€ющеес€ при получении данных из справочника
 //«аполн€ет массив справочника
-procedure TfrmReplacement.OnActivate(var Mes: TMessage);
+procedure TfrmReplacement.OnExcecute(var Mes: TMessage);
 var ind: Integer;
     TmpDS: TDataSet;
     TmpCount: Integer;
@@ -229,7 +229,7 @@ begin
         FSprArray[ind - 1].CoactNoNDS := TmpDS.Fields[5].AsFloat;
       end;
       if FCurType = 0 then
-        FSprArray[ind - 1].MType := TmpDS.Fields[6].AsInteger;
+        FSprArray[ind - 1].MType := TmpDS.FieldByName('MAT_TYPE').AsInteger;
       TmpDS.Next;
     end;
     SetLength(FSprArray, ind);
@@ -1035,7 +1035,7 @@ begin
         qrTemp.ParamByName('IdEst').Value := FEstimateID;
         qrTemp.ParamByName('IdRate').Value := FRateID;
         qrTemp.ParamByName('IdMS').Value := IDArray[j];
-        qrTemp.ParamByName('CalcMode').Value := CalcMode;
+        qrTemp.ParamByName('CalcMode').Value := G_CALCMODE;
         qrTemp.ExecSQL;
       end;
     end
@@ -1079,7 +1079,7 @@ begin
             qrTemp.ParamByName('IdMR').Value := FEntryArray[i].MID;
             qrTemp.ParamByName('IdMS').Value := IDArray[j];
             qrTemp.ParamByName('Coef').Value := CoefArray[j];
-            qrTemp.ParamByName('CalcMode').Value := CalcMode;
+            qrTemp.ParamByName('CalcMode').Value := G_CALCMODE;
             qrTemp.ExecSQL;
           end;
         end;

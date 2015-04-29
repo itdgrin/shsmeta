@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, Classes, Controls, Forms, ExtCtrls, Buttons, StdCtrls,
   SysUtils, fFrameRates, Main, Waiting, fFramePriceMaterials,
-  fFramePriceMechanizms, fFrameEquipments, CalculationEstimate, fFrameSmeta;
+  fFramePriceMechanizms, fFrameEquipments, CalculationEstimate, fFrameSmeta,
+  fFrameMaterial;
 
 type
   TFormAdditionData = class(TForm)
@@ -32,9 +33,10 @@ type
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
   public
     FrameRates: TFrameRates;
-    FramePriceMaterial: TFramePriceMaterial;
+    FramePriceMaterial: TSprMaterial;
     FramePriceMechanizm: TFramePriceMechanizm;
     FrameEquipment: TFrameEquipment;
+   // procedure AfterConstruction; override;
   end;
 
 var
@@ -44,6 +46,11 @@ implementation
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
+//procedure TFormAdditionData.AfterConstruction;
+//begin
+//  Exclude(FFormState, fsVisible);
+//  inherited;
+//end;
 
 procedure TFormAdditionData.WMSysCommand(var Msg: TMessage);
 begin
@@ -71,10 +78,9 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 constructor TFormAdditionData.Create(AOwner: TComponent; const vDataBase: Char);
+var TmpDate: TDateTime;
 begin
   inherited Create(AOwner);
-
-  FormMain.PanelCover.Visible := True;
 
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
@@ -85,6 +91,12 @@ begin
   WindowState := wsMaximized;
   Caption := FormNameAdditionData;
 
+  if Assigned(FormCalculationEstimate) then
+    TmpDate := EncodeDate(FormCalculationEstimate.GetYear,
+      FormCalculationEstimate.GetMonth, 1)
+  else
+    TmpDate := Date;
+
   // ----------------------------------------
 
   FrameRates := TFrameRates.Create(Self, vDataBase, True);
@@ -93,8 +105,9 @@ begin
   FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
 
-  FramePriceMaterial := TFramePriceMaterial.Create(Self, vDataBase, True, True, False);
+  FramePriceMaterial := TSprMaterial.Create(Self, True, False, TmpDate);
   FramePriceMaterial.Parent := Self;
+  FramePriceMaterial.LoadSpr;
   FramePriceMaterial.Align := alClient;
   FramePriceMaterial.Visible := False;
   SpeedButtonMaterial.Tag := Integer(FramePriceMaterial);
@@ -111,16 +124,16 @@ begin
   FrameEquipment.Visible := False;
   SpeedButtonEquipment.Tag := Integer(FrameEquipment);
 
-  FormWaiting.Show;
+  //FormWaiting.Show;
   Application.ProcessMessages;
   try
     SpeedButtonClick(SpeedButtonRates);
   finally
-    FormWaiting.Close;
+ //   FormWaiting.Close;
   end;
   FrameRates.Visible := True;
 
-  FormMain.PanelCover.Visible := False;
+//  FormMain.PanelCover.Visible := False;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
@@ -163,30 +176,31 @@ end;
 
 procedure TFormAdditionData.SpeedButtonClick(Sender: TObject);
 begin
+  if not Assigned(Pointer((Sender as TComponent).Tag)) then exit;
 
-  if not Assigned(TSmetaFrame((Sender as TComponent).Tag)) then
-    exit;
+  if TObject((Sender as TComponent).Tag) is TSmetaFrame then
+    with TSmetaFrame((Sender as TComponent).Tag) do
+    begin
+      if not Loaded then
+      begin
+      //  FormWaiting.Show;
+      //  Application.ProcessMessages;
+      //  try
+          ReceivingAll;
+      //  finally
+      //    FormWaiting.Close;
+      //  end;
+      end;
+    end;
 
-  with TSmetaFrame((Sender as TComponent).Tag) do
+  HideAllFrames;
+
+  if (Self as TWinControl).Visible then
   begin
-    if not Loaded then
-    begin
-      // FormWaiting.Show;
-      // Application.ProcessMessages;
-      // try
-      ReceivingAll;
-      // finally
-      // FormWaiting.Close;
-      // end;
-    end;
-    HideAllFrames;
-
-    if (Self as TControl).Visible then
-    begin
-      Visible := True;
-      SetFocus;
-    end;
+    TWinControl((Sender as TComponent).Tag).Visible := True;
+    TWinControl((Sender as TComponent).Tag).SetFocus;
   end;
+
 end;
 // ---------------------------------------------------------------------------------------------------------------------
 
