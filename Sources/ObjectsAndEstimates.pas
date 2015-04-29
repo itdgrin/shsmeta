@@ -323,12 +323,6 @@ begin
     if FieldByName('IdIstFin').AsVariant <> Null then
       SetSourceFinance(FieldByName('IdIstFin').AsVariant);
 
-    if FieldByName('IdClient').AsVariant <> Null then
-      SetClient(FieldByName('IdClient').AsVariant);
-
-    if FieldByName('IdContractor').AsVariant <> Null then
-      SetContractor(FieldByName('IdContractor').AsVariant);
-
     SetCategory(FieldByName('IdCategory').AsVariant);
     SetRegion(FieldByName('IdRegion').AsVariant);
     SetVAT(FieldByName('VAT').AsVariant);

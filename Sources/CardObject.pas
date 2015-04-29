@@ -7,14 +7,12 @@ uses
   ExtCtrls, System.DateUtils, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus, Vcl.DBCtrls, System.UITypes;
+  FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus, Vcl.DBCtrls, System.UITypes, Vcl.Buttons;
 
 type
   TFormCardObject = class(TForm)
 
     DataSourceSF: TDataSource;
-    DataSourceCl: TDataSource;
-    DataSourceC: TDataSource;
     DataSourceCO: TDataSource;
     dsR: TDataSource;
     dsZP: TDataSource;
@@ -52,8 +50,6 @@ type
     dblkcbbTypeOXR: TDBLookupComboBox;
     DBLookupComboBoxBasePrices: TDBLookupComboBox;
     dblkcbbRegion: TDBLookupComboBox;
-    DBLookupComboBoxClient: TDBLookupComboBox;
-    DBLookupComboBoxContractor: TDBLookupComboBox;
 
     ButtonListAgreements: TButton;
     ButtonSave: TButton;
@@ -71,15 +67,11 @@ type
     CheckBoxCalculationEconom: TCheckBox;
     ADOQueryDifferent: TFDQuery;
     ADOQuerySF: TFDQuery;
-    ADOQueryC: TFDQuery;
-    ADOQueryCl: TFDQuery;
     ADOQueryCO: TFDQuery;
     qrBP: TFDQuery;
     qrTO: TFDQuery;
     qrR: TFDQuery;
     qrZP: TFDQuery;
-    GroupBox1: TGroupBox;
-    dblkcbbMAIS: TDBLookupComboBox;
     qrMAIS: TFDQuery;
     dsMAIS: TDataSource;
     grp1: TGroupBox;
@@ -91,6 +83,14 @@ type
     dsMain: TDataSource;
     pm1: TPopupMenu;
     N1: TMenuItem;
+    grp2: TGroupBox;
+    dblkcbbMAIS: TDBLookupComboBox;
+    dblkcbbCUST_ID: TDBLookupComboBox;
+    dblkcbbCUST_ID1: TDBLookupComboBox;
+    dsClients: TDataSource;
+    qrClients: TFDQuery;
+    btn1: TBitBtn;
+    btn2: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -104,8 +104,6 @@ type
     procedure EditingRecord(const Value: Boolean);
     procedure SetIdSelectRow(const Value: Integer);
     procedure SetSourceFinance(const Value: Integer);
-    procedure SetClient(const Value: Integer);
-    procedure SetContractor(const Value: Integer);
     procedure SetCategory(const Value: Integer);
     procedure SetRegion(const Value: Integer);
     procedure SetVAT(const Value: Integer);
@@ -121,29 +119,23 @@ type
     procedure dblkcbbRegionCloseUp(Sender: TObject);
     procedure DateTimePickerStartBuildingChange(Sender: TObject);
     procedure lbl2Click(Sender: TObject);
+    procedure btn2Click(Sender: TObject);
+    procedure btn1Click(Sender: TObject);
 
   private
     Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
     IdObject: Integer; // ID выделенной строки в таблице
-
     StrQuery: String;
-
-    // -----------------------------------------
 
     // ДЛЯ УСТАНОВКА ЗНАЧЕНИЙ В ВЫПАДАЮЩИХ СПИСКАХ ПРИ РЕДАКТИРОВАНИИ ЗАПИСИ
 
     SourceFinance: Integer;
-    Client: Integer;
-    Contractor: Integer;
     CategoryObject: Integer;
     Region: Integer;
     VAT: Integer;
     BasePrice: Integer;
     TypeOXR: Integer;
     MAIS: Integer;
-
-    // ---------------------------------------
-
   public
 
   end;
@@ -156,7 +148,7 @@ var
 
 implementation
 
-uses Main, DataModule, Tools, CardObjectContractorServices;
+uses Main, DataModule, Tools, CardObjectContractorServices, OrganizationsEx;
 
 {$R *.dfm}
 
@@ -185,6 +177,7 @@ begin
 
   qrMain.ParamByName('OBJ_ID').AsInteger := IdObject;
   CloseOpen(qrMain);
+  CloseOpen(qrClients);
   // Устанавливаем фокус
   if EditCodeObject.Focused then
     EditCodeObject.SetFocus;
@@ -246,52 +239,6 @@ begin
     on E: Exception do
       MessageBox(0, PChar('При запросе списка ИСТОЧНИКИ ФИНАНСИРОВАНИЯ возникла ошибка:' + sLineBreak +
         E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-
-  // ЗАКАЗЧИК
-
-  try
-    with ADOQueryCl do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT * FROM clients;');
-      Active := True;
-    end;
-
-    with DBLookupComboBoxClient do
-    begin
-      ListSource := DataSourceCl;
-      ListField := 'full_name';
-      KeyField := 'client_id';
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе списка ЗАКАЗЧИКИ возникла ошибка:' + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-
-  // ГЕНПОДРЯДЧИК
-
-  try
-    with ADOQueryC do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT * FROM clients;');
-      Active := True;
-    end;
-
-    with DBLookupComboBoxContractor do
-    begin
-      ListSource := DataSourceC;
-      ListField := 'full_name';
-      KeyField := 'client_id';
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе списка ГЕНПОДРЯДЧИКИ возникла ошибка:' + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // КАТЕГОРИЯ ОБЪЕКТА
@@ -394,7 +341,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT MAIS_ID, CONCAT(`mais`.`NAME`, " от ", `mais`.`onDate`, " действует с ", `mais`.`Start_Date`) AS NAME FROM mais ORDER BY onDate DESC;');
+      SQL.Add('SELECT MAIS_ID, CONCAT(`mais`.`NAME`, " от ", DATE_FORMAT(`mais`.`onDate`, "%d.%m.%y"), " действует с ", DATE_FORMAT(`mais`.`Start_Date`, "%d.%m.%y")) AS NAME FROM mais ORDER BY onDate DESC;');
       Active := True;
     end;
 
@@ -428,8 +375,6 @@ begin
   if Editing then
   begin
     DBLookupComboBoxSourseFinance.KeyValue := SourceFinance;
-    DBLookupComboBoxClient.KeyValue := Client;
-    DBLookupComboBoxContractor.KeyValue := Contractor;
     dblkcbbCategoryObject.KeyValue := CategoryObject;
     dblkcbbRegion.KeyValue := Region;
     ComboBoxVAT.ItemIndex := VAT;
@@ -475,7 +420,7 @@ end;
 
 procedure TFormCardObject.ButtonSaveClick(Sender: TObject);
 var
-  NumberObject, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19: string;
+  NumberObject, v2, v3, v4, v5, v6, v7, v8, v9, v12, v13, v14, v15, v16, v17, v18, v19: string;
   CountField: Integer;
 begin
   CountField := 0;
@@ -565,26 +510,6 @@ begin
     // Inc(CountField);
   end;
 
-  // Заказчик
-  if DBLookupComboBoxClient.KeyValue <> Null then
-    v10 := DBLookupComboBoxClient.KeyValue
-  else
-  begin
-    v10 := 'Null';
-    // DBLookupComboBoxClient.Color := ColorWarningField;
-    // Inc(CountField);
-  end;
-
-  // Генподрядчик
-  if DBLookupComboBoxContractor.KeyValue <> Null then
-    v11 := DBLookupComboBoxContractor.KeyValue
-  else
-  begin
-    v11 := 'Null';
-    // DBLookupComboBoxContractor.Color := ColorWarningField;
-    // Inc(CountField);
-  end;
-
   // Категория объекта
   if dblkcbbCategoryObject.KeyValue <> Null then
     v12 := dblkcbbCategoryObject.KeyValue
@@ -666,10 +591,11 @@ begin
       if Editing then
         SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = "' + v2 + '", date_dog = "' + v3
           + '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
-          '", srok_stroj = ' + v8 + ', ' + ' fin_id = ' + v9 + ', cust_id = ' + v10 + ', general_id = ' + v11
-          + ', cat_id = "' + v12 + '", state_nds = "' + v13 + '", region_id = "' + v14 + '", base_norm_id = "'
-          + v15 + '", stroj_id = "' + v16 + '", encrypt = "' + v17 + '", calc_econom = "' + v18 +
-          '", MAIS_ID = "' + v19 + '", PER_TEMP_BUILD=:PER_TEMP_BUILD, PER_CONTRACTOR=:PER_CONTRACTOR, '#13 +
+          '", srok_stroj = ' + v8 + ', ' + ' fin_id = ' + v9 +
+          ', cust_id = :cust_id, general_id = :general_id, cat_id = "' + v12 + '", state_nds = "' + v13 +
+          '", region_id = "' + v14 + '", base_norm_id = "' + v15 + '", stroj_id = "' + v16 + '", encrypt = "'
+          + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
+          '", PER_TEMP_BUILD=:PER_TEMP_BUILD, PER_CONTRACTOR=:PER_CONTRACTOR, '#13 +
           'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
           IntToStr(IdObject) + '";')
       else
@@ -677,14 +603,16 @@ begin
           + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
           ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV) ' +
           'VALUE ("' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 +
-          '", "' + v7 + '", ' + v8 + ', ' + v9 + ', ' + v10 + ', ' + v11 + ', "' + v12 + '", "' + v13 + '", "'
-          + v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
+          '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 + '", "' + v13 + '", "' +
+          v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV);');
 
       ParamByName('PER_TEMP_BUILD').Value := qrMain.FieldByName('PER_TEMP_BUILD').Value;
       ParamByName('PER_CONTRACTOR').Value := qrMain.FieldByName('PER_CONTRACTOR').Value;
       ParamByName('PER_TEMP_BUILD_BACK').Value := qrMain.FieldByName('PER_TEMP_BUILD_BACK').Value;
       ParamByName('CONTRACTOR_SERV').Value := qrMain.FieldByName('CONTRACTOR_SERV').AsInteger;
+      ParamByName('cust_id').Value := qrMain.FieldByName('cust_id').AsInteger;
+      ParamByName('general_id').Value := qrMain.FieldByName('general_id').AsInteger;
       ExecSQL;
     end;
 
@@ -695,6 +623,30 @@ begin
     on E: Exception do
       MessageBox(0, PChar('При сохранении данных возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
+
+procedure TFormCardObject.btn1Click(Sender: TObject);
+var
+  res: Variant;
+begin
+  res := SelectOrganization(dblkcbbCUST_ID1.KeyValue);
+  if not VarIsNull(res) then
+  begin
+    CloseOpen(qrClients);
+    dblkcbbCUST_ID1.KeyValue := res;
+  end;
+end;
+
+procedure TFormCardObject.btn2Click(Sender: TObject);
+var
+  res: Variant;
+begin
+  res := SelectOrganization(dblkcbbCUST_ID.KeyValue);
+  if not VarIsNull(res) then
+  begin
+    CloseOpen(qrClients);
+    dblkcbbCUST_ID.KeyValue := res;
   end;
 end;
 
@@ -723,16 +675,6 @@ end;
 procedure TFormCardObject.SetSourceFinance(const Value: Integer);
 begin
   SourceFinance := Value;
-end;
-
-procedure TFormCardObject.SetClient(const Value: Integer);
-begin
-  Client := Value;
-end;
-
-procedure TFormCardObject.SetContractor(const Value: Integer);
-begin
-  Contractor := Value;
 end;
 
 procedure TFormCardObject.SetCategory(const Value: Integer);
@@ -773,8 +715,6 @@ begin
   MemoFullDescription.Color := clWindow;
   EditCountMonth.Color := clWindow;
   DBLookupComboBoxSourseFinance.Color := clWindow;
-  DBLookupComboBoxClient.Color := clWindow;
-  DBLookupComboBoxContractor.Color := clWindow;
   dblkcbbCategoryObject.Color := clWindow;
   dblkcbbRegion.Color := clWindow;
   dblkcbbZonePrices.Color := clWindow;
@@ -794,8 +734,6 @@ begin
   DateTimePickerDataCreateContract.Date := Now;
   DateTimePickerStartBuilding.Date := Now;
   DBLookupComboBoxSourseFinance.KeyValue := Null;
-  DBLookupComboBoxClient.KeyValue := Null;
-  DBLookupComboBoxContractor.KeyValue := Null;
   dblkcbbCategoryObject.KeyValue := Null;
   dblkcbbRegion.KeyValue := Null;
   dblkcbbZonePrices.KeyValue := Null;

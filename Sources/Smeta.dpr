@@ -106,7 +106,8 @@ uses
   ImportExportModule in 'ImportExportModule.pas',
   CalcTravelWork in 'CalcTravelWork.pas' {fCalcTravelWork},
   fFrameSpr in 'fFrameSpr.pas' {SprFrame: TFrame},
-  CardObjectContractorServices in 'CardObjectContractorServices.pas' {fCardObjectContractorServices};
+  CardObjectContractorServices in 'CardObjectContractorServices.pas' {fCardObjectContractorServices},
+  OrganizationsEx in 'OrganizationsEx.pas' {fOrganizationsEx};
 
 {$R *.res}
 var MHandle: THandle;
