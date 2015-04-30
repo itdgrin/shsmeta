@@ -130,8 +130,8 @@ begin
     if Assigned(FormCalculationEstimate) then
     begin
       // Опасная конструкция, может быть источником ошибок
-      ComboBoxMonth.ItemIndex := FormCalculationEstimate.GetMonth - 1;
-      edtYear.Value := FormCalculationEstimate.GetYear;
+      ComboBoxMonth.ItemIndex := FormCalculationEstimate.MonthEstimate - 1;
+      edtYear.Value := FormCalculationEstimate.YearEstimate;
     end
     else
     begin

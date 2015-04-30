@@ -107,7 +107,8 @@ uses
   CalcTravelWork in 'CalcTravelWork.pas' {fCalcTravelWork},
   fFrameSpr in 'fFrameSpr.pas' {SprFrame: TFrame},
   fFrameMaterial in 'fFrameMaterial.pas' {SprMaterial: TFrame},
-  OrganizationsEx in 'OrganizationsEx.pas' {fOrganizationsEx};
+  OrganizationsEx in 'OrganizationsEx.pas' {fOrganizationsEx},
+  fFrameMechanizm in 'fFrameMechanizm.pas' {SprMechanizm: TFrame};
 
 {$R *.res}
 var MHandle: THandle;

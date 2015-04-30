@@ -17,8 +17,8 @@ type
     cmbMonth: TComboBox;
     edtYear: TSpinEdit;
     PanelFind: TPanel;
-    lbFind: TLabel;
-    edtFind: TEdit;
+    lbFindCode: TLabel;
+    edtFindName: TEdit;
     btnFind: TButton;
     btnShow: TButton;
     Memo: TMemo;
@@ -27,6 +27,8 @@ type
     LoadAnimator: TJvGIFAnimator;
     LoadLabel: TLabel;
     StatusBar: TStatusBar;
+    edtFindCode: TEdit;
+    lbFindName: TLabel;
     procedure SpeedButtonShowHideClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
@@ -34,7 +36,7 @@ type
       Selected: Boolean);
     procedure btnShowClick(Sender: TObject);
     procedure edtYearChange(Sender: TObject);
-    procedure edtFindKeyPress(Sender: TObject; var Key: Char);
+    procedure edtFindNameKeyPress(Sender: TObject; var Key: Char);
     procedure btnFindClick(Sender: TObject);
     procedure ListSprResize(Sender: TObject);
   private
@@ -52,9 +54,8 @@ type
     procedure SpecialFillArray(const AInd: Integer; ADataSet: TDataSet); virtual;
 
     //Заполняет таблицу исходя из поискового запроса
-    procedure FillSprList(AFindStr: string); virtual;
-    //Проверяет поисковый запрос на код
-    function CheckFindCode(AFindStr: string): Boolean; virtual;
+    procedure FillSprList(AFindCode, AFindName: string); virtual;
+    function CheckFindCode(AFindCode: string): string; virtual;
     //Особые условия при заполнении таблицы
     function SpecialFillList(const AInd: Integer): Boolean; virtual;
 
@@ -97,7 +98,7 @@ begin
         end;
 
         //Для того что-бы не подвисало
-        if (ind mod 2000) = 0 then
+        if (ind mod 500) = 0 then
           Application.ProcessMessages;
         //не по именам для быстродействия
         //Id, Code, Name, Unit, PriceVAT, PriceNotVAT, MAT_TYPE
@@ -127,7 +128,7 @@ end;
 
 procedure TSprFrame.btnFindClick(Sender: TObject);
 begin
-  FillSprList(edtFind.Text);
+  FillSprList(edtFindCode.Text, edtFindName.Text);
 end;
 
 procedure TSprFrame.btnShowClick(Sender: TObject);
@@ -135,39 +136,14 @@ begin
   LoadSpr;
 end;
 
-function TSprFrame.CheckFindCode(AFindStr: string): Boolean;
+function TSprFrame.CheckFindCode(AFindCode: string): string;
 begin
-  Result := False;
-  {
-  if (Length(AFindStr) > 1) then
-       if FCurType = 0 then
-       begin
-        if (((AFindStr[1] = 'C') or (AFindStr[1] = 'c') or
-            (AFindStr[1] = 'С') or (AFindStr[1] = 'с')) and
-          CharInSet(AFindStr[2], ['1'..'9'])) then
-        begin
-          AFindStr[1] := 'С';
-          FindType := 2;
-        end;
-       end
-       else
-       begin
-        if (((AFindStr[1] = 'M') or (AFindStr[1] = 'm') or
-            (AFindStr[1] = 'М') or (AFindStr[1] = 'м')) and
-          CharInSet(AFindStr[2], ['1'..'9'])) then
-        begin
-          AFindStr[1] := 'М';
-          FindType := 2;
-        end;
-       end;
-  }
-
+  Result := AFindCode;
 end;
 
  //заполняет справочник
-procedure TSprFrame.FillSprList(AFindStr: string);
+procedure TSprFrame.FillSprList(AFindCode, AFindName: string);
 var i, j: Integer;
-    FindType: Byte;
     Item: TListItem;
     WordList: TStringList;
     TmpStr: string;
@@ -178,37 +154,30 @@ begin
 
   WordList := TStringList.Create;
   try
-    AFindStr := Trim(AFindStr);
+    AFindCode := CheckFindCode(Trim(AFindCode));
+    AFindName := Trim(AFindName);
 
     //Определяем тип поиска по имени или по коду
-    FindType := 0;
-    if (Length(AFindStr) > 0) then
+    if (Length(AFindName) > 0) then
     begin
-       FindType := 1;
-       if CheckFindCode(AFindStr) then
-          FindType := 2;
-
-       if FindType = 1 then
+       TmpStr := '';
+       LastSpase := False;
+       for i := Low(AFindName) to High(AFindName) do
        begin
-         TmpStr := '';
-         LastSpase := False;
-         for i := Low(AFindStr) to High(AFindStr) do
-         begin
-            if (AFindStr[i] = ' ') then
-            begin
-              if LastSpase then
-                Continue
-              else
-                LastSpase := True;
-            end
+          if (AFindName[i] = ' ') then
+          begin
+            if LastSpase then
+              Continue
             else
-              LastSpase := False;
+              LastSpase := True;
+          end
+          else
+            LastSpase := False;
 
-            TmpStr := TmpStr + AFindStr[i];
-         end;
-         TmpStr := StringReplace(TmpStr, ' ', sLineBreak,[rfReplaceAll]);
-         WordList.Text := TmpStr;
+          TmpStr := TmpStr + AFindName[i];
        end;
+       TmpStr := StringReplace(TmpStr, ' ', sLineBreak,[rfReplaceAll]);
+       WordList.Text := TmpStr;
     end;
 
     //Видимый список обновляется намного дольше
@@ -219,25 +188,21 @@ begin
       if SpecialFillList(i) then
         Continue;
 
-      case FindType of
-        1:
-        begin
-          Cont := False;
-          for j := 0 to WordList.Count - 1 do
-            if Pos(WordList[j].ToLower, FSprArray[i].Name.ToLower) = 0 then
-            begin
-              Cont := True;
-              break;
-            end;
-          if Cont then
-            Continue;
-        end;
-        2:
-          if Pos(AFindStr.ToLower, FSprArray[i].Code.ToLower) = 0 then
-            Continue;
-      end;
+      if (AFindCode <> '') and
+         (Pos(AFindCode.ToLower, FSprArray[i].Code.ToLower) = 0) then
+        Continue;
 
-      if (i mod 2000) = 0 then
+      Cont := False;
+      for j := 0 to WordList.Count - 1 do
+        if Pos(WordList[j].ToLower, FSprArray[i].Name.ToLower) = 0 then
+        begin
+          Cont := True;
+          break;
+        end;
+      if Cont then
+        Continue;
+
+      if (i mod 500) = 0 then
           Application.ProcessMessages;
 
       //Создаем пустые итемы, заполним их при отображении
@@ -277,7 +242,7 @@ begin
 
     FillSprArray(TDataSet(Mes.WParam));
     //Заполнение справочника
-    FillSprList(edtFind.Text);
+    FillSprList(edtFindCode.Text, edtFindName.Text);
   finally
     OnLoadDone;
   end;
@@ -309,7 +274,7 @@ begin
   DM.ImageListArrowsBottom.GetBitmap(0, SpeedButtonShowHide.Glyph);
 end;
 
-procedure TSprFrame.edtFindKeyPress(Sender: TObject; var Key: Char);
+procedure TSprFrame.edtFindNameKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = #13 then
   begin
@@ -387,7 +352,8 @@ begin
   btnShow.Enabled := False;
   edtYear.Enabled := False;
   cmbMonth.Enabled := False;
-  edtFind.Enabled := False;
+  edtFindCode.Enabled := False;
+  edtFindName.Enabled := False;
   btnFind.Enabled := False;
   SetLength(FSprArray, 0);
   ListSpr.Items.Clear;
@@ -407,7 +373,8 @@ begin
     edtYear.Enabled := True;
     cmbMonth.Enabled := True;
   end;
-  edtFind.Enabled := True;
+  edtFindCode.Enabled := True;
+  edtFindName.Enabled := True;
   btnFind.Enabled := True;
   ListSpr.Visible := True;
 

@@ -742,12 +742,12 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
         end;
-        dmReportF.Report_WINTER_RS_OBJ(FormCalculationEstimate.GetIdEstimate, FileReportPath);
+        dmReportF.Report_WINTER_RS_OBJ(FormCalculationEstimate.IdEstimate, FileReportPath);
       end;
     end;
   finally
@@ -873,7 +873,7 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
@@ -931,7 +931,7 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
@@ -939,7 +939,7 @@ begin
 
 //        ShowEnter;
 
-        dmReportF.Report_SMETA_OBJ_BUILD(FormCalculationEstimate.GetIdEstimate, FileReportPath,
+        dmReportF.Report_SMETA_OBJ_BUILD(FormCalculationEstimate.IdEstimate, FileReportPath,
                                        param4, param5, param6, param7, param8, param9, param10,
                                        param11, param12, param13, param14, param15, param16,
                                        param17, param18, param19, param20, param21, param22, param23);
@@ -968,7 +968,7 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
@@ -1000,7 +1000,7 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
@@ -1032,7 +1032,7 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
@@ -1064,7 +1064,7 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
@@ -1097,13 +1097,13 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
         end;
 
-        dmReportF.Report_RSMO_OBJ(0, 0, FormCalculationEstimate.GetIdObject, FileReportPath);
+        dmReportF.Report_RSMO_OBJ(0, 0, FormCalculationEstimate.IdObject, FileReportPath);
       end;
     end;
   finally
@@ -1129,13 +1129,13 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
         end;
 
-        dmReportF.Report_RSMO_OBJ(1, 0, FormCalculationEstimate.GetIdObject, FileReportPath);
+        dmReportF.Report_RSMO_OBJ(1, 0, FormCalculationEstimate.IdObject, FileReportPath);
       end;
     end;
   finally
@@ -1161,13 +1161,13 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
         end;
 
-        dmReportF.Report_RSMEH_OBJ(0, 0, FormCalculationEstimate.GetIdObject, FileReportPath);
+        dmReportF.Report_RSMEH_OBJ(0, 0, FormCalculationEstimate.IdObject, FileReportPath);
       end;
     end;
   finally
@@ -1188,12 +1188,12 @@ begin
 
     if Assigned(FormCalculationEstimate) then
     begin
-      if FormCalculationEstimate.GetIdEstimate = 0 then
+      if FormCalculationEstimate.IdEstimate = 0 then
       begin
         showmessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_VED_OANDPWV1_OBJ(1, 0, FormCalculationEstimate.GetIdObject, FileReportPath);
+      dmReportF.Report_VED_OANDPWV1_OBJ(1, 0, FormCalculationEstimate.IdObject, FileReportPath);
     end;
 
   finally
@@ -1219,12 +1219,12 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
         end;
-        dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ(FormCalculationEstimate.GetIdObject, FileReportPath);
+        dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ(FormCalculationEstimate.IdObject, FileReportPath);
       end;
     end;
   finally
@@ -1240,12 +1240,12 @@ begin
 
     if Assigned(FormCalculationEstimate) then
     begin
-      if FormCalculationEstimate.GetIdEstimate = 0 then
+      if FormCalculationEstimate.IdEstimate = 0 then
       begin
         showmessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_VED_OANDPWV1_OBJ(2, 0, FormCalculationEstimate.GetIdObject, FileReportPath);
+      dmReportF.Report_VED_OANDPWV1_OBJ(2, 0, FormCalculationEstimate.IdObject, FileReportPath);
     end;
 
   finally
@@ -1374,23 +1374,23 @@ begin
    begin
    if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
         end;
         //**************************************************************************************************************************************
-        if (Sender as TMenuItem).Name = 'jsMenu1'   then dmReportF.JSReport(1, FormCalculationEstimate.GetIdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов
-        if (Sender as TMenuItem).Name = 'jsMenu2'   then dmReportF.JSReport(2, FormCalculationEstimate.GetIdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по локальным сметам)
-        if (Sender as TMenuItem).Name = 'jsMenu3'   then dmReportF.JSReport(3, FormCalculationEstimate.GetIdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по объектным сметам)
-        if (Sender as TMenuItem).Name = 'jsMenu4'   then dmReportF.JSReport(4, FormCalculationEstimate.GetIdEstimate, FileReportPath); //!!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
-        if (Sender as TMenuItem).Name = 'jsMenu5'   then dmReportF.JSReport(5, FormCalculationEstimate.GetIdEstimate, FileReportPath); //Ведомость ресурсов по смете
+        if (Sender as TMenuItem).Name = 'jsMenu1'   then dmReportF.JSReport(1, FormCalculationEstimate.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов
+        if (Sender as TMenuItem).Name = 'jsMenu2'   then dmReportF.JSReport(2, FormCalculationEstimate.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по локальным сметам)
+        if (Sender as TMenuItem).Name = 'jsMenu3'   then dmReportF.JSReport(3, FormCalculationEstimate.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по объектным сметам)
+        if (Sender as TMenuItem).Name = 'jsMenu4'   then dmReportF.JSReport(4, FormCalculationEstimate.IdEstimate, FileReportPath); //!!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
+        if (Sender as TMenuItem).Name = 'jsMenu5'   then dmReportF.JSReport(5, FormCalculationEstimate.IdEstimate, FileReportPath); //Ведомость ресурсов по смете
 
-        if (Sender as TMenuItem).Name = 'JSMenu6'   then dmReportF.JSReport(6, FormCalculationEstimate.GetIdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu7'   then dmReportF.JSReport(7, FormCalculationEstimate.GetIdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu8'   then dmReportF.JSReport(8, FormCalculationEstimate.GetIdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu9'   then dmReportF.JSReport(9, FormCalculationEstimate.GetIdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu10'  then dmReportF.JSReport(10, FormCalculationEstimate.GetIdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu6'   then dmReportF.JSReport(6, FormCalculationEstimate.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu7'   then dmReportF.JSReport(7, FormCalculationEstimate.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu8'   then dmReportF.JSReport(8, FormCalculationEstimate.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu9'   then dmReportF.JSReport(9, FormCalculationEstimate.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu10'  then dmReportF.JSReport(10, FormCalculationEstimate.IdEstimate, FileReportPath);
         //**************************************************************************************************************************************
       end;
     end;
@@ -1439,12 +1439,12 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
         end;
-        dmReportF.Report_ZP_OBJ(FormCalculationEstimate.GetIdEstimate, FileReportPath);
+        dmReportF.Report_ZP_OBJ(FormCalculationEstimate.IdEstimate, FileReportPath);
       end;
     end;
   finally
@@ -1683,12 +1683,12 @@ begin
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
         end;
-        dmReportF.Report_EXCEL(FormCalculationEstimate.GetIdEstimate,1);
+        dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate,1);
       end;
     end;
   finally
@@ -1713,12 +1713,12 @@ Screen.Cursor := crSQLWait;
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-        if FormCalculationEstimate.GetIdEstimate = 0 then
+        if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
         end;
-        dmReportF.Report_EXCEL(FormCalculationEstimate.GetIdEstimate,2);
+        dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate,2);
       end;
     end;
   finally

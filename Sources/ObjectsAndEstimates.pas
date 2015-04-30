@@ -502,22 +502,27 @@ begin
     FormKC6.MyShow(IdObject);
   end;
 
-  with FormCalculationEstimate, qrObjects do
+  with qrObjects do
   begin
-    EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' + FieldByName('Name')
-      .AsVariant;
-    EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
-    EditDateContract.Text := FieldByName('DateContract').AsVariant;
+    FormCalculationEstimate.EditNameObject.Text :=
+      IntToStr(FieldByName('NumberObject').AsVariant) + ' ' +
+      FieldByName('Name').AsVariant;
+    FormCalculationEstimate.EditNumberContract.Text :=
+      FieldByName('NumberContract').AsVariant;
+    FormCalculationEstimate.EditDateContract.Text :=
+      FieldByName('DateContract').AsVariant;
+    FormCalculationEstimate.Region := FieldByName('IdRegion').AsVariant;
 
-    EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
+    FormCalculationEstimate.EditNameEstimate.Text :=
+      qrTreeData.FieldByName('NAME').AsString;
 
-    SetIdObject(IdObject);
-    SetIdEstimate(IdEstimate);
-    SetIdAct(ActID);
-    SetActReadOnly(ActReadOnly);
-    Act := True;
+    FormCalculationEstimate.IdObject := IdObject;
+    FormCalculationEstimate.IdEstimate := IdEstimate;
+    FormCalculationEstimate.IdAct := ActID;
+    FormCalculationEstimate.SetActReadOnly(ActReadOnly);
+    FormCalculationEstimate.Act := True;
 
-    OpenAllData;
+    FormCalculationEstimate.OpenAllData;
   end;
 
   // Закрываем форму ожидания
@@ -836,21 +841,26 @@ begin
   if (not Assigned(FormCalculationEstimate)) then
     FormCalculationEstimate := TFormCalculationEstimate.Create(FormMain);
 
-  with FormCalculationEstimate, qrObjects do
+  with qrObjects do
   begin
-    EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' + FieldByName('Name')
-      .AsVariant;
-    EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
-    EditDateContract.Text := FieldByName('DateContract').AsVariant;
+    FormCalculationEstimate.EditNameObject.Text :=
+      IntToStr(FieldByName('NumberObject').AsVariant) + ' ' +
+        FieldByName('Name').AsVariant;
+    FormCalculationEstimate.EditNumberContract.Text :=
+      FieldByName('NumberContract').AsVariant;
+    FormCalculationEstimate.EditDateContract.Text :=
+      FieldByName('DateContract').AsVariant;
+    FormCalculationEstimate.Region := FieldByName('IdRegion').AsVariant;
 
-    EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
+    FormCalculationEstimate.EditNameEstimate.Text :=
+      qrTreeData.FieldByName('NAME').AsString;
 
-    SetIdObject(IdObject);
-    SetIdEstimate(IdEstimate);
+    FormCalculationEstimate.IdObject := IdObject;
+    FormCalculationEstimate.IdEstimate := IdEstimate;
     // Создание временных таблиц
-    CreateTempTables;
+    FormCalculationEstimate.CreateTempTables;
     // Заполненя временных таблиц, заполнение формы
-    OpenAllData;
+    FormCalculationEstimate.OpenAllData;
   end;
 
   // FormCalculationEstimate.Show;

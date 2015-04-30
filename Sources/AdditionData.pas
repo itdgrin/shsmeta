@@ -6,7 +6,7 @@ uses
   Windows, Messages, Classes, Controls, Forms, ExtCtrls, Buttons, StdCtrls,
   SysUtils, fFrameRates, Main, Waiting, fFramePriceMaterials,
   fFramePriceMechanizms, fFrameEquipments, CalculationEstimate, fFrameSmeta,
-  fFrameMaterial;
+  fFrameMaterial, fFrameMechanizm;
 
 type
   TFormAdditionData = class(TForm)
@@ -34,9 +34,8 @@ type
   public
     FrameRates: TFrameRates;
     FramePriceMaterial: TSprMaterial;
-    FramePriceMechanizm: TFramePriceMechanizm;
+    FramePriceMechanizm: TSprMechanizm;
     FrameEquipment: TFrameEquipment;
-   // procedure AfterConstruction; override;
   end;
 
 var
@@ -46,11 +45,6 @@ implementation
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
-//procedure TFormAdditionData.AfterConstruction;
-//begin
-//  Exclude(FFormState, fsVisible);
-//  inherited;
-//end;
 
 procedure TFormAdditionData.WMSysCommand(var Msg: TMessage);
 begin
@@ -92,8 +86,8 @@ begin
   Caption := FormNameAdditionData;
 
   if Assigned(FormCalculationEstimate) then
-    TmpDate := EncodeDate(FormCalculationEstimate.GetYear,
-      FormCalculationEstimate.GetMonth, 1)
+    TmpDate := EncodeDate(FormCalculationEstimate.YearEstimate,
+      FormCalculationEstimate.MonthEstimate, 1)
   else
     TmpDate := Date;
 
@@ -105,15 +99,17 @@ begin
   FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
 
-  FramePriceMaterial := TSprMaterial.Create(Self, True, False, TmpDate);
+  FramePriceMaterial := TSprMaterial.Create(Self, True, True, TmpDate,
+    FormCalculationEstimate.Region, True, False);
   FramePriceMaterial.Parent := Self;
   FramePriceMaterial.LoadSpr;
   FramePriceMaterial.Align := alClient;
   FramePriceMaterial.Visible := False;
   SpeedButtonMaterial.Tag := Integer(FramePriceMaterial);
 
-  FramePriceMechanizm := TFramePriceMechanizm.Create(Self, vDataBase, True, True);
+  FramePriceMechanizm := TSprMechanizm.Create(Self, True, True, TmpDate);
   FramePriceMechanizm.Parent := Self;
+  FramePriceMechanizm.LoadSpr;
   FramePriceMechanizm.Align := alClient;
   FramePriceMechanizm.Visible := False;
   SpeedButtonMechanizm.Tag := Integer(FramePriceMechanizm);

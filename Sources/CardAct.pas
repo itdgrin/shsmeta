@@ -65,7 +65,7 @@ begin
         qrTemp.Active := False;
         qrTemp.SQL.Text :=
           'SELECT COUNT(*) AS CNT from card_acts WHERE id_estimate_object=:id_estimate_object;';
-        qrTemp.ParamByName('id_estimate_object').Value := FormCalculationEstimate.GetIdEstimate;
+        qrTemp.ParamByName('id_estimate_object').Value := FormCalculationEstimate.IdEstimate;
         qrTemp.Active := True;
         cnt := qrTemp.FieldByName('CNT').AsInteger + 1;
         qrTemp.Active := False;
@@ -122,7 +122,7 @@ begin
             SQL.Clear;
             SQL.Add('INSERT INTO card_acts (id_estimate_object, name, description, date) ' +
               'VALUE (:id_estimate_object, :name, :description, :date);');
-            ParamByName('id_estimate_object').Value := FormCalculationEstimate.GetIdEstimate;
+            ParamByName('id_estimate_object').Value := FormCalculationEstimate.IdEstimate;
             ParamByName('name').Value := dbedtNAME.Text;
             ParamByName('description').Value := dbmmoDESCRIPTION.Text;
             ParamByName('date').AsDate := edDate.Date;

@@ -636,11 +636,15 @@ type
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
 
-    IdObject: Integer;
+    FIdObject: Integer;
+    FIdAct: Integer;
+    FIdEstimate: Integer;
+
     NDSEstimate: Boolean; // Расчет  с НДС или без
 
-    MonthEstimate: Integer;
-    YearEstimate: Integer;
+    FMonthEstimate: Integer;
+    FYearEstimate: Integer;
+    FRegion: Integer;
 
     VisibleRightTables: String; // Настройка отобаржения нужной таблицы справа
 
@@ -665,10 +669,6 @@ type
 
     // Последняя таблица в которой был фокус, используется для отрисовки
     LastEntegGrd: TJvDBGrid;
-
-    IdAct: Integer;
-    // ID отображаемой сметы
-    IdEstimate: Integer;
 
     // Флаги необходимости предлагать автоматически добавить пуск и регулировку
     AutoAddE18, AutoAddE20: Boolean;
@@ -713,17 +713,19 @@ type
     Act: Boolean;
 
     ConfirmCloseForm: Boolean;
+
+    property IdObject: Integer read FIdObject write FIdObject;
+    property IdAct: Integer read FIdAct write FIdAct;
+    property IdEstimate: Integer read FIdEstimate write FIdEstimate;
+    property MonthEstimate: Integer read FMonthEstimate write FMonthEstimate;
+    property YearEstimate: Integer read FYearEstimate write FYearEstimate;
+    property Region: Integer read FRegion write FRegion;
+
     function GetCountCoef(): Integer;
     procedure AddCoefToRate(coef_id: Integer);
-    procedure SetIdObject(const Value: Integer);
-    procedure SetIdAct(const Value: Integer);
+
     procedure SetActReadOnly(const Value: Boolean);
-    function GetIdObject: Integer;
-    procedure SetIdEstimate(const Value: Integer);
-    function GetIdEstimate: Integer;
-    function GetMonth: Integer;
-    function GetYear: Integer;
-    procedure AddRowToTableRates(FieldRates: TFieldRates);
+     procedure AddRowToTableRates(FieldRates: TFieldRates);
     procedure CreateTempTables;
     procedure OpenAllData;
     procedure Wheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
@@ -3205,44 +3207,10 @@ begin
   qrTemp.Active := False;
 end;
 
-procedure TFormCalculationEstimate.SetIdObject(const Value: Integer);
-begin
-  IdObject := Value;
-end;
-
-function TFormCalculationEstimate.GetIdObject: Integer;
-begin
-  Result := IdObject;
-end;
 
 procedure TFormCalculationEstimate.SetActReadOnly(const Value: Boolean);
 begin
   ActReadOnly := Value;
-end;
-
-procedure TFormCalculationEstimate.SetIdAct(const Value: Integer);
-begin
-  IdAct := Value;
-end;
-
-procedure TFormCalculationEstimate.SetIdEstimate(const Value: Integer);
-begin
-  IdEstimate := Value;
-end;
-
-function TFormCalculationEstimate.GetIdEstimate: Integer;
-begin
-  Result := IdEstimate;
-end;
-
-function TFormCalculationEstimate.GetMonth: Integer;
-begin
-  Result := MonthEstimate;
-end;
-
-function TFormCalculationEstimate.GetYear: Integer;
-begin
-  Result := YearEstimate;
 end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefAddSetClick(Sender: TObject);

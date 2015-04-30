@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls,
   fFramePriceMaterials, fFramePriceMechanizms, fFramePriceTransportations,
-  fFramePriceDumps, fFrameSmeta, fFrameMaterial, System.SysUtils;
+  fFramePriceDumps, fFrameSmeta, fFrameMaterial, fFrameMechanizm,
+  System.SysUtils;
 
 type
   TFormPricesReferenceData = class(TForm)
@@ -33,7 +34,7 @@ type
 
   private
     FramePriceMaterials: TSprMaterial;
-    FramePriceMechanizms: TFramePriceMechanizm;
+    FramePriceMechanizms: TSprMechanizm;
     FramePriceTransportations: TFramePriceTransportations;
     FramePriceDumps: TFramePriceDumps;
 
@@ -96,16 +97,18 @@ begin
 
   // ----------------------------------------
 
-  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date);
+  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date,
+    1, True, False);
   FramePriceMaterials.Parent := Self;
   FramePriceMaterials.LoadSpr;
   FramePriceMaterials.Align := alClient;
   FramePriceMaterials.Visible := False;
   SpeedButtonPriceMaterials.Tag := Integer(FramePriceMaterials);
 
-  FramePriceMechanizms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
+  FramePriceMechanizms := TSprMechanizm.Create(Self, vPriceColumn, False, Date);
   FramePriceMechanizms.Parent := Self;
-  FramePriceMechanizms.align := alClient;
+  FramePriceMechanizms.LoadSpr;
+  FramePriceMechanizms.Align := alClient;
   FramePriceMechanizms.Visible := False;
   SpeedButtonPriceMechanizms.Tag := Integer(FramePriceMechanizms);
 

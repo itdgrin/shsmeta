@@ -5,8 +5,8 @@ interface
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, Vcl.Dialogs,
   fFrameRates, fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments,
-  fFrameOXROPR, fFrameSSR, fFrameMaterial, fFrameSmeta, GlobsAndConst,
-  Vcl.StdCtrls, System.SysUtils;
+  fFrameOXROPR, fFrameSSR, fFrameMaterial, fFrameMechanizm, fFrameSmeta,
+  GlobsAndConst, Vcl.StdCtrls, System.SysUtils;
 
 type
   TFormReferenceData = class(TForm)
@@ -41,7 +41,7 @@ type
   public
     FrameRates: TFrameRates;
     FramePriceMaterials: TSprMaterial;
-    FramePriceMechanizms: TFramePriceMechanizm;
+    FramePriceMechanizms: TSprMechanizm;
     FrameEquipments: TFrameEquipment;
     FrameOXROPR: TFrameOXROPR;
     FrameSSR: TFrameSSR;
@@ -109,15 +109,17 @@ begin
   FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
 
-  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date);
+  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date,
+    1, True, False);
   FramePriceMaterials.Parent := Self;
   FramePriceMaterials.LoadSpr;
   FramePriceMaterials.Align := alClient;
   FramePriceMaterials.Visible := False;
   SpeedButtonMaterials.Tag := Integer(FramePriceMaterials);
 
-  FramePriceMechanizms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
+  FramePriceMechanizms := TSprMechanizm.Create(Self, vPriceColumn, False, Date);
   FramePriceMechanizms.Parent := Self;
+  FramePriceMechanizms.LoadSpr;
   FramePriceMechanizms.Align := alClient;
   FramePriceMechanizms.Visible := False;
   SpeedButtonMechanizms.Tag := Integer(FramePriceMechanizms);

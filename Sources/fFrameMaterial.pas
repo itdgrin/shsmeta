@@ -23,13 +23,14 @@ type
     procedure OnLoadStart; override;
     procedure OnLoadDone; override;
     procedure SpecialFillArray(const AInd: Integer; ADataSet: TDataSet); override;
-    function CheckFindCode(AFindStr: string): Boolean; override;
-
+    function CheckFindCode(AFindCode: string): string; override;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent;
       const APriceColumn, vAllowAddition: Boolean;
-      const AStarDate: TDateTime); reintroduce;
+      const AStarDate: TDateTime;
+      const ARegion: Integer;
+      const AMat, AJBI: Boolean); reintroduce;
   end;
 
 implementation
@@ -40,10 +41,27 @@ uses CalculationEstimate;
 
 constructor TSprMaterial.Create(AOwner: TComponent;
       const APriceColumn, vAllowAddition: Boolean;
-      const AStarDate: TDateTime);
+      const AStarDate: TDateTime;
+      const ARegion: Integer;
+      const AMat, AJBI: Boolean);
 begin
   FAllowAddition := vAllowAddition;
   inherited Create(AOwner, APriceColumn, AStarDate);
+  if (cmbRegion.Items.Count >= ARegion) and (ARegion > 0) then
+    cmbRegion.ItemIndex := ARegion - 1;
+  cbMat.Checked := AMat;
+  cbJBI.Checked := AJBI;
+end;
+
+function TSprMaterial.CheckFindCode(AFindCode: string): string;
+begin
+  if AFindCode.Length > 0 then
+  begin
+    AFindCode := UpperCase(AFindCode);
+    if AFindCode[1] = 'C' then  //латинская
+      AFindCode[1] := 'С';      //кирилица
+  end;
+  Result := AFindCode;
 end;
 
 function TSprMaterial.GetSprSQL: string;
@@ -111,19 +129,6 @@ end;
 procedure TSprMaterial.SpecialFillArray(const AInd: Integer; ADataSet: TDataSet);
 begin
   FSprArray[AInd - 1].MType := ADataSet.FieldByName('MAT_TYPE').AsInteger;
-end;
-
-function TSprMaterial.CheckFindCode(AFindStr: string): Boolean;
-begin
-  Result := False;
-  if (Length(AFindStr) > 1) then
-    if (((AFindStr[1] = 'C') or (AFindStr[1] = 'c') or
-        (AFindStr[1] = 'С') or (AFindStr[1] = 'с')) and
-      CharInSet(AFindStr[2], ['1'..'9'])) then
-    begin
-      AFindStr[1] := 'С';
-      Result := True;
-    end;
 end;
 
 end.

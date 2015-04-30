@@ -189,7 +189,7 @@ begin
           ADOQueryTemp.SQL.Clear;
           ADOQueryTemp.SQL.Add('SELECT stavka.monat, stavka.year'#13 +
             'FROM smetasourcedata, stavka WHERE smetasourcedata.sm_id=:sm_id and smetasourcedata.stavka_id=stavka.stavka_id;');
-          ADOQueryTemp.ParamByName('sm_id').Value := FormCalculationEstimate.GetIdEstimate;
+          ADOQueryTemp.ParamByName('sm_id').Value := FormCalculationEstimate.IdEstimate;
           ADOQueryTemp.Active := True;
 
           ComboBoxMonth.ItemIndex := ADOQueryTemp.FieldByName('monat').AsVariant - 1;

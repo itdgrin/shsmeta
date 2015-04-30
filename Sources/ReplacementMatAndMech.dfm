@@ -469,20 +469,25 @@ object frmReplacement: TfrmReplacement
         Height = 34
         Align = alTop
         TabOrder = 1
-        object Label1: TLabel
+        object lbFindCode: TLabel
           Left = 8
           Top = 11
-          Width = 120
+          Width = 24
           Height = 13
-          Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1080#1083#1080' '#1082#1086#1076':'
+          Caption = #1050#1086#1076':'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
         end
-        object edtFind: TEdit
-          Left = 130
-          Top = 7
-          Width = 319
-          Height = 21
-          TabOrder = 0
-          OnKeyPress = edtFindKeyPress
+        object lbFindName: TLabel
+          Left = 133
+          Top = 11
+          Width = 77
+          Height = 13
+          Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077':'
         end
         object btnFind: TButton
           Left = 452
@@ -491,7 +496,7 @@ object frmReplacement: TfrmReplacement
           Height = 25
           Caption = #1055#1086#1080#1089#1082
           Enabled = False
-          TabOrder = 1
+          TabOrder = 0
           OnClick = btnFindClick
         end
         object btnSelect: TButton
@@ -501,7 +506,7 @@ object frmReplacement: TfrmReplacement
           Height = 25
           Caption = #1042#1099#1073#1086#1088
           Enabled = False
-          TabOrder = 2
+          TabOrder = 1
           OnClick = btnSelectClick
         end
         object cbMat: TCheckBox
@@ -512,7 +517,7 @@ object frmReplacement: TfrmReplacement
           Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
           Checked = True
           State = cbChecked
-          TabOrder = 3
+          TabOrder = 2
           OnClick = btnFindClick
         end
         object cbJBI: TCheckBox
@@ -521,8 +526,28 @@ object frmReplacement: TfrmReplacement
           Width = 52
           Height = 17
           Caption = #1046#1041#1048
-          TabOrder = 4
+          TabOrder = 3
           OnClick = btnFindClick
+        end
+        object edtFindCode: TEdit
+          Left = 37
+          Top = 6
+          Width = 91
+          Height = 23
+          TabOrder = 4
+          OnKeyPress = edtFindKeyPress
+        end
+        object edtFindName: TEdit
+          AlignWithMargins = True
+          Left = 215
+          Top = 6
+          Width = 232
+          Height = 23
+          Margins.Left = 217
+          Margins.Top = 5
+          Margins.Bottom = 4
+          TabOrder = 5
+          OnKeyPress = edtFindKeyPress
         end
       end
       object ListSpr: TListView

@@ -58,8 +58,6 @@ type
     Panel5: TPanel;
     StatusBar1: TStatusBar;
     Panel3: TPanel;
-    Label1: TLabel;
-    edtFind: TEdit;
     btnFind: TButton;
     btnSelect: TButton;
     LoadAnimator: TJvGIFAnimator;
@@ -84,6 +82,10 @@ type
     btnDelReplacement: TButton;
     cbMat: TCheckBox;
     cbJBI: TCheckBox;
+    lbFindCode: TLabel;
+    edtFindCode: TEdit;
+    lbFindName: TLabel;
+    edtFindName: TEdit;
     procedure btnCancelClick(Sender: TObject);
     procedure rgroupTypeClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
@@ -149,7 +151,7 @@ type
     procedure LoadEntry;
 
     procedure OnExcecute(var Mes: TMessage); message WM_EXCECUTE;
-    procedure FillSprList(AFindStr: string);
+    procedure FillSprList(AFindCode, AFindName: string);
     procedure ShowDelRep(const AName: string; const AID: Integer;
       ADel: Boolean = False);
 
@@ -236,7 +238,7 @@ begin
   end;
 
   //Заполнение справочника
-  FillSprList(edtFind.Text);
+  FillSprList(edtFindCode.Text, edtFindName.Text);
 end;
 
 procedure TfrmReplacement.PMEntryPopup(Sender: TObject);
@@ -352,9 +354,8 @@ begin
 end;
 
 //заполняет справочник
-procedure TfrmReplacement.FillSprList(AFindStr: string);
+procedure TfrmReplacement.FillSprList(AFindCode, AFindName: string);
 var i, j: Integer;
-    FindType: Byte;
     Item: TListItem;
     WordList: TStringList;
     TmpStr: string;
@@ -365,40 +366,17 @@ begin
 
   WordList := TStringList.Create;
   try
-    AFindStr := Trim(AFindStr);
+    AFindCode := Trim(AFindCode);
+    AFindName := Trim(AFindName);
 
     //Определяем тип поиска по имени или по коду
-    FindType := 0;
-    if (Length(AFindStr) > 0) then
+    if (Length(AFindName) > 0) then
     begin
-       FindType := 1;
-       if (Length(AFindStr) > 1) then
-       if FCurType = 0 then
-       begin
-        if (((AFindStr[1] = 'C') or (AFindStr[1] = 'c') or
-            (AFindStr[1] = 'С') or (AFindStr[1] = 'с')) and
-          CharInSet(AFindStr[2], ['1'..'9'])) then
-        begin
-          AFindStr[1] := 'С';
-          FindType := 2;
-        end;
-       end
-       else
-       begin
-        if (((AFindStr[1] = 'M') or (AFindStr[1] = 'm') or
-            (AFindStr[1] = 'М') or (AFindStr[1] = 'м')) and
-          CharInSet(AFindStr[2], ['1'..'9'])) then
-        begin
-          AFindStr[1] := 'М';
-          FindType := 2;
-        end;
-       end;
-
        TmpStr := '';
        LastSpase := False;
-       for i := Low(AFindStr) to High(AFindStr) do
+       for i := Low(AFindName) to High(AFindName) do
        begin
-          if (AFindStr[i] = ' ') then
+          if (AFindName[i] = ' ') then
           begin
             if LastSpase then
               Continue
@@ -408,7 +386,7 @@ begin
           else
             LastSpase := False;
 
-          TmpStr := TmpStr + AFindStr[i];
+          TmpStr := TmpStr + AFindName[i];
        end;
        TmpStr := StringReplace(TmpStr, ' ', sLineBreak,[rfReplaceAll]);
        WordList.Text := TmpStr;
@@ -425,28 +403,27 @@ begin
            ((FSprArray[i].MType = 2) and not cbJBI.Checked) then
           Continue;
 
-      case FindType of
-        1:
+      if (AFindCode <> '') and
+         (Pos(AFindCode.ToLower, FSprArray[i].Code.ToLower) = 0) then
+        Continue;
+
+      Cont := False;
+      for j := 0 to WordList.Count - 1 do
+        if Pos(WordList[j].ToLower, FSprArray[i].Name.ToLower) = 0 then
         begin
-          Cont := False;
-          for j := 0 to WordList.Count - 1 do
-            if Pos(WordList[j].ToLower, FSprArray[i].Name.ToLower) = 0 then
-            begin
-              Cont := True;
-              break;
-            end;
-          if Cont then
-            Continue;
+          Cont := True;
+          break;
         end;
-        2:
-          if Pos(AFindStr.ToLower, FSprArray[i].Code.ToLower) = 0 then
-            Continue;
-      end;
+      if Cont then
+        Continue;
+
       //Создаем пустые итемы, заполним их при отображении
       Item := ListSpr.Items.Add;
       Item.Data := @FSprArray[i];
     end;
     btnFind.Enabled := True;
+    edtFindCode.Enabled := True;
+    edtFindName.Enabled := True;
     btnSelect.Enabled := True;
     cbMat.Enabled := True;
     cbJBI.Enabled := True;
@@ -856,7 +833,7 @@ begin
   begin
     edtSourceCode.Text := qrRep.Fields[0].AsString;
     edtSourceName.Text := qrRep.Fields[1].AsString;
-    edtFind.Text := edtSourceName.Text;
+    edtFindName.Text := edtSourceName.Text;
   end;
   qrRep.Active := False;
 end;
@@ -965,7 +942,7 @@ end;
 procedure TfrmReplacement.btnFindClick(Sender: TObject);
 begin
   //Заполняет справочник с поисковой строкой
-  FillSprList(edtFind.Text);
+  FillSprList(edtFindCode.Text, edtFindName.Text);
 end;
 
 procedure TfrmReplacement.btnReplaceClick(Sender: TObject);
@@ -1174,7 +1151,7 @@ begin
         groupCatalog.Caption := 'Справочник механизмов:';
         TmpStr := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
           'cast(mech_name as char(1024)) as "Name", unit_name as "Unit" ' +
-          'FROM mechanizm, units, mechanizmcoastg' +
+          'FROM mechanizm, units ' +
           ' WHERE (mechanizm.unit_id = units.unit_id) ORDER BY mech_code;';
       end;
     end;
@@ -1185,6 +1162,8 @@ begin
   LoadAnimator.Animate := True;
   ListSpr.Visible := False;
   btnFind.Enabled := False;
+  edtFindCode.Enabled := False;
+  edtFindName.Enabled := False;
   cbMat.Enabled := False;
   cbJBI.Enabled := False;
   btnSelect.Enabled := False;
