@@ -18,7 +18,7 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Clipbrd, JvExControls,
   JvAnimatedImage, JvGIFCtrl, FireDAC.Phys.MySQL, Vcl.ValEdit, Vcl.Buttons,
-  Vcl.Menus, GlobsAndConst;
+  Vcl.Menus, fFrameMaterial, fFrameMechanizm, fFrameSpr, GlobsAndConst;
 
 type
   TEntryRecord = record
@@ -56,13 +56,6 @@ type
     qrRep: TFDQuery;
     qrTemp: TFDQuery;
     Panel5: TPanel;
-    StatusBar1: TStatusBar;
-    Panel3: TPanel;
-    btnFind: TButton;
-    btnSelect: TButton;
-    LoadAnimator: TJvGIFAnimator;
-    LoadLabel: TLabel;
-    ListSpr: TListView;
     edtSourceName: TMemo;
     ListEntry: TListView;
     rgroupType: TRadioGroup;
@@ -80,20 +73,11 @@ type
     pmDeselectRate: TMenuItem;
     pmShowRep: TMenuItem;
     btnDelReplacement: TButton;
-    cbMat: TCheckBox;
-    cbJBI: TCheckBox;
-    lbFindCode: TLabel;
-    edtFindCode: TEdit;
-    lbFindName: TLabel;
-    edtFindName: TEdit;
     procedure btnCancelClick(Sender: TObject);
     procedure rgroupTypeClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
-    procedure btnFindClick(Sender: TObject);
     procedure btnSelectClick(Sender: TObject);
-    procedure ListSprSelectItem(Sender: TObject; Item: TListItem;
-      Selected: Boolean);
     procedure ListEntryCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
     procedure ListEntryChange(Sender: TObject; Item: TListItem;
@@ -101,7 +85,6 @@ type
     procedure grdRepSelectCell(Sender: TObject; ACol, ARow: Integer;
       var CanSelect: Boolean);
     procedure grdRepKeyPress(Sender: TObject; var Key: Char);
-    procedure edtFindKeyPress(Sender: TObject; var Key: Char);
     procedure grdRepSetEditText(Sender: TObject; ACol, ARow: Integer;
       const Value: string);
     procedure SpeedButton2Click(Sender: TObject);
@@ -134,7 +117,6 @@ type
     FRegion: Word;
     FRegionName: string;
 
-    FSprArray: TSprArray;
     FEntryArray: TEntryArray;
 
     FFlag: Boolean;
@@ -145,13 +127,13 @@ type
     FRateIDArray,
     FEstIDArray: array of Integer;
 
+    Frame: TSprFrame;
+
     procedure ChangeType(AType: byte);
     procedure LoadObjEstInfo;
     procedure LoadRepInfo;
     procedure LoadEntry;
 
-    procedure OnExcecute(var Mes: TMessage); message WM_EXCECUTE;
-    procedure FillSprList(AFindCode, AFindName: string);
     procedure ShowDelRep(const AName: string; const AID: Integer;
       ADel: Boolean = False);
 
@@ -175,71 +157,6 @@ implementation
 {$R *.dfm}
 
 uses DataModule, Tools;
-
-//Событие выполняющееся при получении данных из справочника
-//Заполняет массив справочника
-procedure TfrmReplacement.OnExcecute(var Mes: TMessage);
-var ind: Integer;
-    TmpDS: TDataSet;
-    TmpCount: Integer;
-begin
-  LoadLabel.Visible := False;
-  LoadAnimator.Visible := False;
-  LoadAnimator.Animate := False;
-
-  ind := 0;
-  TmpCount := 0;
-  SetLength(FSprArray, ind);
-
-  //Если в потоке возникло исключение воспроизводим его
-  if Assigned(Exception(Mes.LParam)) or
-    not Assigned(TDataSet(Mes.WParam)) then
-  begin
-    ListSpr.Items.Clear;
-    ListSpr.Visible := True;
-    if Assigned(Exception(Mes.LParam)) then
-      raise Exception(Mes.LParam);
-    Exit;
-  end;
-
-  TmpDS := TDataSet(Mes.WParam);
-
-  if TmpDS.Active then
-  begin
-    while not TmpDS.Eof do
-    begin
-      inc(ind);
-
-      if (ind > TmpCount) then
-      begin
-        TmpCount := TmpCount + 1000;
-        SetLength(FSprArray, TmpCount);
-      end;
-
-      //Для того что-бы не подвисало
-      if (ind mod 2000) = 0 then
-        Application.ProcessMessages;
-      //не по именам для быстродействия
-      //Id, Code, Name, Unit, PriceVAT, PriceNotVAT, MAT_TYPE
-      FSprArray[ind - 1].ID := TmpDS.Fields[0].AsInteger;
-      FSprArray[ind - 1].Code := TmpDS.Fields[1].AsString;
-      FSprArray[ind - 1].Name := TmpDS.Fields[2].AsString;
-      FSprArray[ind - 1].Unt := TmpDS.Fields[3].AsString;
-      if FFlag then
-      begin
-        FSprArray[ind - 1].CoastNDS := TmpDS.Fields[4].AsFloat;
-        FSprArray[ind - 1].CoactNoNDS := TmpDS.Fields[5].AsFloat;
-      end;
-      if FCurType = 0 then
-        FSprArray[ind - 1].MType := TmpDS.FieldByName('MAT_TYPE').AsInteger;
-      TmpDS.Next;
-    end;
-    SetLength(FSprArray, ind);
-  end;
-
-  //Заполнение справочника
-  FillSprList(edtFindCode.Text, edtFindName.Text);
-end;
 
 procedure TfrmReplacement.PMEntryPopup(Sender: TObject);
 var ind: Integer;
@@ -351,93 +268,6 @@ end;
 procedure TfrmReplacement.pmShowRepClick(Sender: TObject);
 begin
   ShowDelRep(TMenuItem(Sender).Caption, TMenuItem(Sender).Tag);
-end;
-
-//заполняет справочник
-procedure TfrmReplacement.FillSprList(AFindCode, AFindName: string);
-var i, j: Integer;
-    Item: TListItem;
-    WordList: TStringList;
-    TmpStr: string;
-    LastSpase, Cont: Boolean;
-begin
-  if Length(FSprArray) = 0 then
-    Exit;
-
-  WordList := TStringList.Create;
-  try
-    AFindCode := Trim(AFindCode);
-    AFindName := Trim(AFindName);
-
-    //Определяем тип поиска по имени или по коду
-    if (Length(AFindName) > 0) then
-    begin
-       TmpStr := '';
-       LastSpase := False;
-       for i := Low(AFindName) to High(AFindName) do
-       begin
-          if (AFindName[i] = ' ') then
-          begin
-            if LastSpase then
-              Continue
-            else
-              LastSpase := True;
-          end
-          else
-            LastSpase := False;
-
-          TmpStr := TmpStr + AFindName[i];
-       end;
-       TmpStr := StringReplace(TmpStr, ' ', sLineBreak,[rfReplaceAll]);
-       WordList.Text := TmpStr;
-    end;
-
-    //Видимый список обновляется намного дольше
-    ListSpr.Visible :=  False;
-
-    ListSpr.Items.Clear;
-    for i := Low(FSprArray) to High(FSprArray) do
-    begin
-      if FCurType = 0 then
-        if ((FSprArray[i].MType = 1) and not cbMat.Checked) or
-           ((FSprArray[i].MType = 2) and not cbJBI.Checked) then
-          Continue;
-
-      if (AFindCode <> '') and
-         (Pos(AFindCode.ToLower, FSprArray[i].Code.ToLower) = 0) then
-        Continue;
-
-      Cont := False;
-      for j := 0 to WordList.Count - 1 do
-        if Pos(WordList[j].ToLower, FSprArray[i].Name.ToLower) = 0 then
-        begin
-          Cont := True;
-          break;
-        end;
-      if Cont then
-        Continue;
-
-      //Создаем пустые итемы, заполним их при отображении
-      Item := ListSpr.Items.Add;
-      Item.Data := @FSprArray[i];
-    end;
-    btnFind.Enabled := True;
-    edtFindCode.Enabled := True;
-    edtFindName.Enabled := True;
-    btnSelect.Enabled := True;
-    cbMat.Enabled := True;
-    cbJBI.Enabled := True;
-    ListSpr.Visible :=  True;
-    if (ListSpr.Items.Count > 0) then
-      ListSpr.ItemIndex := 0
-    else
-    begin
-      StatusBar1.Panels[0].Text := '';
-      StatusBar1.Panels[1].Text := '   0/0';
-    end;
-  finally
-    WordList.Free;
-  end;
 end;
 
 procedure TfrmReplacement.grdRepKeyPress(Sender: TObject; var Key: Char);
@@ -565,7 +395,7 @@ var i: Integer;
 begin
   if (ACol = 1) then
   begin
-    //Если ввели код находит соответсткие и подставляет наименование
+   { //Если ввели код находит соответсткие и подставляет наименование
     for i := Low(FSprArray) to High(FSprArray) do
       if SameText(grdRep.Cells[1, ARow], FSprArray[i].Code) then
       begin
@@ -573,6 +403,7 @@ begin
         grdRep.Cells[2, ARow] := FSprArray[i].Name;
         Exit;
       end;
+      }
     grdRep.Cells[2, ARow] := '';
     grdRep.Cells[5, ARow] := '';
   end;
@@ -647,20 +478,8 @@ begin
   btnSelectClick(nil);
 end;
 
-procedure TfrmReplacement.ListSprSelectItem(Sender: TObject; Item: TListItem;
-  Selected: Boolean);
-begin
-  if Assigned(Item) and Assigned(Item.Data) then
-  begin
-    StatusBar1.Panels[0].Text := TSprRecord(Item.Data^).Name;
-    StatusBar1.Panels[1].Text := '   ' +
-      (Item.Index + 1).ToString + '/' + ListSpr.Items.Count.ToString;
-  end;
-end;
-
 destructor TfrmReplacement.Destroy;
 begin
-  SetLength(FSprArray, 0);
   SetLength(FEntryArray, 0);
   inherited;
 end;
@@ -759,15 +578,6 @@ begin
   end;
 end;
 
-procedure TfrmReplacement.edtFindKeyPress(Sender: TObject; var Key: Char);
-begin
-  if Key = #13 then
-  begin
-    btnFindClick(nil);
-    Key := #0;
-  end;
-end;
-
 procedure TfrmReplacement.LoadObjEstInfo;
 var TmpStr: string;
 begin
@@ -833,7 +643,7 @@ begin
   begin
     edtSourceCode.Text := qrRep.Fields[0].AsString;
     edtSourceName.Text := qrRep.Fields[1].AsString;
-    edtFindName.Text := edtSourceName.Text;
+    Frame.edtFindName.Text := edtSourceName.Text;
   end;
   qrRep.Active := False;
 end;
@@ -937,12 +747,6 @@ begin
   end;
   qrTemp.Active := False;
   ListEntry.Visible := True;
-end;
-
-procedure TfrmReplacement.btnFindClick(Sender: TObject);
-begin
-  //Заполняет справочник с поисковой строкой
-  FillSprList(edtFindCode.Text, edtFindName.Text);
 end;
 
 procedure TfrmReplacement.btnReplaceClick(Sender: TObject);
@@ -1071,16 +875,16 @@ end;
 procedure TfrmReplacement.btnSelectClick(Sender: TObject);
 begin
   //Выбор из справочника
-  if (ListSpr.ItemIndex > -1) then
+  if (Frame.ListSpr.ItemIndex > -1) then
   begin
     grdRep.Cells[1, grdRep.Row] :=
-      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).Code;
+      TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).Code;
     grdRep.Cells[2, grdRep.Row] :=
-      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).Name;
+      TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).Name;
     grdRep.Cells[3, grdRep.Row] :=
-      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).Unt;
+      TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).Unt;
     grdRep.Cells[5, grdRep.Row] :=
-      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID.ToString;
+      TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).ID.ToString;
   end;
 end;
 
@@ -1093,86 +897,30 @@ begin
     begin
       groupReplace.Caption := 'Материал:';
       ListEntry.Columns[2].Caption := 'Материал';
+      groupCatalog.Caption := 'Справочник материалов:';
 
-      cbMat.Visible := True;
-      cbJBI.Visible := True;
-
-      if FFlag then
-      begin
-        groupCatalog.Caption := 'Справочник материалов за ' +
-          AnsiLowerCase(arraymes[FMonth][1]) + ' ' + IntToStr(FYear) + 'г. ' +
-          FRegionName + ':';
-        TmpStr := 'SELECT material.material_id as "Id", mat_code as "Code", ' +
-          'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
-          'coast' + IntToStr(FRegion) + '_1 as "PriceVAT", ' +
-          'coast' + IntToStr(FRegion) + '_2 as "PriceNotVAT", ' +
-          'MAT_TYPE ' +
-          'FROM material, units, materialcoastg ' +
-          'WHERE (material.unit_id = units.unit_id) ' +
-          'and (material.material_id = materialcoastg.material_id) ' +
-          'and (material.MAT_TYPE in (1,2)) and (year=' + IntToStr(FYear) +
-          ') and (monat=' + IntToStr(FMonth) +') ORDER BY mat_code;';
-      end
-      else
-      begin
-        groupCatalog.Caption := 'Справочник материалов:';
-        TmpStr := 'SELECT material.material_id as "Id", mat_code as "Code", ' +
-          'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
-          'MAT_TYPE ' +
-          'FROM material, units ' +
-          'WHERE (material.unit_id = units.unit_id) ' +
-          'and (material.MAT_TYPE in (1,2)) ORDER BY mat_code;';
-      end;
+      Frame := TSprMaterial.Create(Self, True, True,
+        EncodeDate(FYear, FMonth, 1), FRegion, True, False);
+      Frame.Parent := groupCatalog;
+      Frame.LoadSpr;
+      Frame.Align := alClient;
     end;
     //Механизмы
     1:
     begin
       groupReplace.Caption := 'Механизм:';
       ListEntry.Columns[2].Caption := 'Механизм';
+      groupCatalog.Caption := 'Справочник механизмов:';
 
-      cbMat.Visible := False;
-      cbJBI.Visible := False;
-
-      if FFlag then
-      begin
-        groupCatalog.Caption := 'Справочник механизмов за ' +
-          AnsiLowerCase(arraymes[FMonth][1]) + ' ' + IntToStr(FYear) + 'г.:';
-        TmpStr := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
-          'cast(mech_name as char(1024)) as "Name", unit_name as "Unit", ' +
-          'coast1 as "PriceVAT", coast2 as "PriceNotVAT" ' +
-          'FROM mechanizm, units, mechanizmcoastg' +
-          ' WHERE (mechanizm.unit_id = units.unit_id) and ' +
-          '(mechanizm.mechanizm_id = mechanizmcoastg.mechanizm_id) and ' +
-          '(year=' + IntToStr(FYear) + ') and (monat=' + IntToStr(FMonth) +
-          ') ORDER BY mech_code;';
-      end
-      else
-      begin
-        groupCatalog.Caption := 'Справочник механизмов:';
-        TmpStr := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
-          'cast(mech_name as char(1024)) as "Name", unit_name as "Unit" ' +
-          'FROM mechanizm, units ' +
-          ' WHERE (mechanizm.unit_id = units.unit_id) ORDER BY mech_code;';
-      end;
+      Frame := TSprMechanizm.Create(Self, True, True,
+        EncodeDate(FYear, FMonth, 1));
+      Frame.Parent := groupCatalog;
+      Frame.LoadSpr;
+      Frame.Align := alClient;
     end;
   end;
-
-  LoadLabel.Visible := True;
-  LoadAnimator.Visible := True;
-  LoadAnimator.Animate := True;
-  ListSpr.Visible := False;
-  btnFind.Enabled := False;
-  edtFindCode.Enabled := False;
-  edtFindName.Enabled := False;
-  cbMat.Enabled := False;
-  cbJBI.Enabled := False;
-  btnSelect.Enabled := False;
-  StatusBar1.Panels[0].Text := '';
-  StatusBar1.Panels[1].Text := '';
-
-  //Вызов нити выполняющей запрос на данные справлчника
-  TThreadQuery.Create(TmpStr, Handle);
-
+  Frame.SpeedButtonShowHideClick(Frame.SpeedButtonShowHide);
+  Frame.ListSpr.OnDblClick := btnSelectClick;
   edtSourceCode.Text := '';
   edtSourceName.Text := '';
 end;

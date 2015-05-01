@@ -1,4 +1,4 @@
-inherited SprMechanizm: TSprMechanizm
+inherited SprEquipment: TSprEquipment
   inherited LoadAnimator: TJvGIFAnimator
     Image.Data = {
       101C0000474946383961D0000D00C41E00DDDDDDBDBDBDD1D1D1B1B1B1BFBFBF
@@ -226,14 +226,6 @@ inherited SprMechanizm: TSprMechanizm
       871C44561289259515592780942280C9637F087E75208A0431A0566534FAA2E6
       5318B0D9E0050BBCD9559C565D60A7584BC929D5017B7A071E9BF0D5B966507A
       1EFA95A1232C37680AF4D5B2A7A378A61002003B}
-  end
-  inherited PanelFind: TPanel
-    inherited edtFindCode: TEdit
-      Top = 6
-      Height = 23
-      ExplicitTop = 6
-      ExplicitHeight = 23
-    end
   end
   inherited ListSpr: TListView
     OnDblClick = ListSprDblClick

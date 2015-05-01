@@ -108,7 +108,8 @@ uses
   fFrameSpr in 'fFrameSpr.pas' {SprFrame: TFrame},
   fFrameMaterial in 'fFrameMaterial.pas' {SprMaterial: TFrame},
   OrganizationsEx in 'OrganizationsEx.pas' {fOrganizationsEx},
-  fFrameMechanizm in 'fFrameMechanizm.pas' {SprMechanizm: TFrame};
+  fFrameMechanizm in 'fFrameMechanizm.pas' {SprMechanizm: TFrame},
+  fFrameEquipment in 'fFrameEquipment.pas' {SprEquipment: TFrame};
 
 {$R *.res}
 var MHandle: THandle;

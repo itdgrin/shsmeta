@@ -233,21 +233,21 @@ inherited SprMaterial: TSprMaterial
       ExplicitTop = 12
     end
     object LabelRegion: TLabel [2]
-      Left = 241
+      Left = 221
       Top = 12
-      Width = 39
+      Width = 41
       Height = 13
       Caption = #1056#1077#1075#1080#1086#1085':'
     end
     object cmbRegion: TComboBox
-      Left = 284
+      Left = 264
       Top = 9
-      Width = 135
+      Width = 137
       Height = 21
       Style = csDropDownList
-      ItemIndex = 0
+      ItemIndex = 5
       TabOrder = 3
-      Text = #1041#1088#1077#1089#1090#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
+      Text = #1052#1086#1075#1080#1083#1077#1074#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
       OnChange = edtYearChange
       Items.Strings = (
         #1041#1088#1077#1089#1090#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
@@ -259,9 +259,9 @@ inherited SprMaterial: TSprMaterial
         #1052#1080#1085#1089#1082)
     end
     object cbMat: TCheckBox
-      Left = 442
+      Left = 408
       Top = 12
-      Width = 75
+      Width = 78
       Height = 17
       Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
       Checked = True
@@ -270,13 +270,19 @@ inherited SprMaterial: TSprMaterial
       OnClick = edtYearChange
     end
     object cbJBI: TCheckBox
-      Left = 525
+      Left = 488
       Top = 12
-      Width = 52
+      Width = 54
       Height = 17
       Caption = #1046#1041#1048
       TabOrder = 5
       OnClick = edtYearChange
+    end
+  end
+  inherited PanelFind: TPanel
+    inherited edtFindCode: TEdit
+      Height = 23
+      ExplicitHeight = 23
     end
   end
   inherited ListSpr: TListView

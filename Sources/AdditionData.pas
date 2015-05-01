@@ -6,7 +6,7 @@ uses
   Windows, Messages, Classes, Controls, Forms, ExtCtrls, Buttons, StdCtrls,
   SysUtils, fFrameRates, Main, Waiting, fFramePriceMaterials,
   fFramePriceMechanizms, fFrameEquipments, CalculationEstimate, fFrameSmeta,
-  fFrameMaterial, fFrameMechanizm;
+  fFrameMaterial, fFrameMechanizm, fFrameEquipment;
 
 type
   TFormAdditionData = class(TForm)
@@ -35,7 +35,7 @@ type
     FrameRates: TFrameRates;
     FramePriceMaterial: TSprMaterial;
     FramePriceMechanizm: TSprMechanizm;
-    FrameEquipment: TFrameEquipment;
+    FrameEquipment: TSprEquipment;
   end;
 
 var
@@ -114,8 +114,9 @@ begin
   FramePriceMechanizm.Visible := False;
   SpeedButtonMechanizm.Tag := Integer(FramePriceMechanizm);
 
-  FrameEquipment := TFrameEquipment.Create(Self, vDataBase, True);
+  FrameEquipment := TSprEquipment.Create(Self, True);
   FrameEquipment.Parent := Self;
+  FrameEquipment.LoadSpr;
   FrameEquipment.Align := alClient;
   FrameEquipment.Visible := False;
   SpeedButtonEquipment.Tag := Integer(FrameEquipment);

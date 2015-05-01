@@ -319,7 +319,7 @@ object SprFrame: TSprFrame
     object cmbMonth: TComboBox
       Left = 132
       Top = 8
-      Width = 101
+      Width = 82
       Height = 21
       Style = csDropDownList
       TabOrder = 0
@@ -391,10 +391,7 @@ object SprFrame: TSprFrame
       Align = alClient
       TabOrder = 0
       OnKeyPress = edtFindNameKeyPress
-      ExplicitLeft = 296
-      ExplicitTop = 5
-      ExplicitWidth = 360
-      ExplicitHeight = 24
+      ExplicitHeight = 21
     end
     object btnFind: TButton
       AlignWithMargins = True
@@ -416,7 +413,7 @@ object SprFrame: TSprFrame
       Left = 37
       Top = 5
       Width = 91
-      Height = 23
+      Height = 21
       TabOrder = 2
       OnKeyPress = edtFindNameKeyPress
     end
