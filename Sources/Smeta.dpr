@@ -111,6 +111,7 @@ uses
   fFrameMechanizm in 'fFrameMechanizm.pas' {SprMechanizm: TFrame},
   fFrameEquipment in 'fFrameEquipment.pas' {SprEquipment: TFrame};
 
+
 {$R *.res}
 var MHandle: THandle;
     PrmStr: string;
