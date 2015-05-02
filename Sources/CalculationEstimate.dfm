@@ -1483,6 +1483,7 @@
             Width = 546
             Height = 22
             Align = alTop
+            Color = clWhite
             Ctl3D = False
             DataSource = dsMechanizm
             DefaultDrawing = False
@@ -3385,6 +3386,10 @@
       Caption = #1059#1076#1072#1083#1080#1090#1100
       OnClick = PMMatDeleteClick
     end
+    object PMMatRestore: TMenuItem
+      Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      OnClick = PMMatRestoreClick
+    end
   end
   object PopupMenuCoef: TPopupMenu
     OnPopup = PopupMenuCoefPopup
@@ -3450,6 +3455,10 @@
     object PMMechDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       OnClick = PMMechDeleteClick
+    end
+    object PMMechRestore: TMenuItem
+      Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      OnClick = PMMechRestoreClick
     end
   end
   object qrDescription: TFDQuery
@@ -3770,6 +3779,9 @@
     object qrMechanizmADDED: TByteField
       FieldName = 'ADDED'
     end
+    object qrMechanizmDELETED: TByteField
+      FieldName = 'DELETED'
+    end
   end
   object dsMechanizm: TDataSource
     DataSet = qrMechanizm
@@ -4048,6 +4060,9 @@
     end
     object qrMaterialADDED: TByteField
       FieldName = 'ADDED'
+    end
+    object qrMaterialDELETED: TByteField
+      FieldName = 'DELETED'
     end
   end
   object dsMaterial: TDataSource

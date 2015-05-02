@@ -443,6 +443,10 @@ type
     mAddLocal: TMenuItem;
     mEditEstimate: TMenuItem;
     mBaseData: TMenuItem;
+    qrMaterialDELETED: TByteField;
+    qrMechanizmDELETED: TByteField;
+    PMMatRestore: TMenuItem;
+    PMMechRestore: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -629,6 +633,8 @@ type
     procedure mAddLocalClick(Sender: TObject);
     procedure mEditEstimateClick(Sender: TObject);
     procedure mBaseDataClick(Sender: TObject);
+    procedure PMMatRestoreClick(Sender: TObject);
+    procedure PMMechRestoreClick(Sender: TObject);
   private const
     CaptionButton = 'Расчёт сметы';
     HintButton = 'Окно расчёта сметы';
@@ -1691,7 +1697,8 @@ begin
   // Вынесенные из расценки // или замененный
   if ((qrMaterialFROM_RATE.AsInteger = 1) and ((qrRatesExID_TYPE_DATA.AsInteger = 1) or
     (qrRatesExID_RATE.AsInteger > 0))) or (qrMaterialREPLACED.AsInteger = 1) or
-    (qrMaterialTITLE.AsInteger > 0) or (not(qrMaterialID.AsInteger > 0)) or (qrMaterial.Eof) then
+    (qrMaterialDELETED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0) or
+    (not(qrMaterialID.AsInteger > 0)) or (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -2785,6 +2792,26 @@ begin
     SetMatEditMode;
 end;
 
+procedure TFormCalculationEstimate.PMMatRestoreClick(Sender: TObject);
+begin
+try
+    with qrTemp do
+    begin
+      Active := False;
+      SQL.Clear;
+      SQL.Add('UPDATE materialcard_temp SET DELETED = 0 WHERE id = :vId');
+      ParamByName('vId').Value := qrMaterialID.AsInteger;
+      ExecSQL;
+    end;
+
+    OutputDataToTable;
+  except
+    on e: Exception do
+      MessageBox(0, PChar('При восстановлении материала возникла ошибка:' + sLineBreak + sLineBreak +
+        e.message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
+
 procedure TFormCalculationEstimate.PMMatFromRatesClick(Sender: TObject);
 begin
   try
@@ -2889,6 +2916,26 @@ begin
   except
     on e: Exception do
       MessageBox(0, PChar('При вынесении механизма из расценки возникла ошибка:' + sLineBreak + sLineBreak +
+        e.message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
+
+procedure TFormCalculationEstimate.PMMechRestoreClick(Sender: TObject);
+begin
+  try
+    with qrTemp do
+    begin
+      Active := False;
+      SQL.Clear;
+      SQL.Add('UPDATE mechanizmcard_temp SET DELETED = 0 WHERE id = :vId');
+      ParamByName('vId').Value := qrMechanizmID.Value;
+      ExecSQL;
+    end;
+
+    OutputDataToTable;
+  except
+    on e: Exception do
+      MessageBox(0, PChar('При восстановлении механизма возникла ошибка:' + sLineBreak + sLineBreak +
         e.message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -3264,9 +3311,22 @@ begin
   PMMatAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0);
 
   PMMatDelete.Enabled := (not CheckMatReadOnly) and
+    //Заменяющий
     (((qrMaterialID_REPLACED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0)) or
+    //Добавленный
     ((qrMaterialADDED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0)) or
-    ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 2)));
+    //Вынесеный
+    ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 2)) or
+    //Учтеный
+    ((qrMaterialID_CARD_RATE.AsInteger > 0) and
+     (qrMaterialCONSIDERED.AsInteger = 1) and
+     (qrMaterialID_REPLACED.AsInteger = 0) and
+     (qrMaterialFROM_RATE.AsInteger = 0) and
+     (qrMaterialREPLACED.AsInteger = 0) and
+     (qrMaterialADDED.AsInteger = 0) and
+     (qrMaterialDELETED.AsInteger = 0)));
+
+  PMMatRestore.Enabled := qrMaterialDELETED.AsInteger = 1;
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -3285,9 +3345,21 @@ begin
   PMMechAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0);
 
   PMMechDelete.Enabled := (not CheckMechReadOnly) and
+    //Заменяющий
     (((qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0)) or
+    //Добавленный
     ((qrMechanizmADDED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0)) or
-    ((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 3)));
+    //Вынесенный
+    ((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 3)) or
+    //Учтеный
+    ((qrMechanizmID_CARD_RATE.AsInteger > 0) and
+     (qrMechanizmID_REPLACED.AsInteger = 0) and
+     (qrMechanizmFROM_RATE.AsInteger = 0) and
+     (qrMechanizmREPLACED.AsInteger = 0) and
+     (qrMechanizmADDED.AsInteger = 0) and
+     (qrMechanizmDELETED.AsInteger = 0)));
+
+  PMMechRestore.Enabled := qrMechanizmDELETED.AsInteger = 1;
 end;
 
 function TFormCalculationEstimate.CheckCursorInRate: Boolean;
@@ -5139,6 +5211,12 @@ begin
       Brush.Color := $00DDDDDD;
     end;
 
+    // подсвечиваем удаленный материал
+    if (qrMaterialDELETED.Value = 1) then
+    begin
+      Brush.Color := $008080FF;
+    end;
+
     // Подсветка замененного материяла (подсветка П-шки)
     if (IdReplasedMat > 0) and (qrMaterialID.Value = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
@@ -5171,7 +5249,7 @@ begin
 
     // Не отображает кол-во и суммы для замененных или вынесеных
     if ((qrMaterialFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1)
-      )) or (qrMaterialREPLACED.Value = 1) then
+      )) or (qrMaterialREPLACED.Value = 1) or (qrMaterialDELETED.Value = 1) then
     begin
       if Column.Index in [4, 8, 9, 10, 11, 15, 16, 17, 18] then
         Str := '';
@@ -5267,7 +5345,8 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки механизмы
-    if (qrMechanizmFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
+    if (qrMechanizmFROM_RATE.Value = 1) and
+       ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
     then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
@@ -5278,6 +5357,12 @@ begin
     if (qrMechanizmREPLACED.Value = 1) then
     begin
       Brush.Color := $00DDDDDD;
+    end;
+
+    // подсвечиваем удаленный механизм
+    if (qrMechanizmDELETED.Value = 1) then
+    begin
+      Brush.Color := $008080FF;
     end;
 
     // Подсветка замененного механизма
@@ -5308,7 +5393,8 @@ begin
     end;
 
     if ((qrMechanizmFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or
-      (qrRatesExID_TYPE_DATA.Value = 1))) or (qrMechanizmREPLACED.Value = 1) then
+      (qrRatesExID_TYPE_DATA.Value = 1))) or (qrMechanizmREPLACED.Value = 1) or
+      (qrMechanizmDELETED.Value = 1)then
     begin
       if Column.Index in [4, 7, 8, 11, 12, 16, 17, 20, 21, 24] then
         Str := '';
