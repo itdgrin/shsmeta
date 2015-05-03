@@ -1788,19 +1788,24 @@ begin
 
     flag := False;
 
-    if ((qrMaterialID_REPLACED.AsInteger = 0) and (IdReplasedMat > 0)) or
+    if ((qrMaterialID_REPLACED.Value = 0) and (IdReplasedMat > 0)) or
+       ((qrMaterialREPLACED.Value = 0) and (IdReplasingMat > 0)) or
       (IsUnAcc and (not CheckMatUnAccountingMatirials)) then
       flag := True;
 
-    IdReplasedMat := qrMaterialID_REPLACED.AsInteger;
-    IdReplasingMat := qrMaterialID.AsInteger;
+    IdReplasedMat := qrMaterialID_REPLACED.Value;
+    if qrMaterialREPLACED.Value > 0 then
+      IdReplasingMat := qrMaterialID.Value
+    else
+      IdReplasingMat := 0;
     IsUnAcc := CheckMatUnAccountingMatirials;
 
     if btnMaterials.Down then
       MemoRight.Text := qrMaterialMAT_NAME.AsString;
 
     // Для красоты отрисовки
-    if CheckMatUnAccountingMatirials or (IdReplasedMat > 0) or flag then
+    if CheckMatUnAccountingMatirials or (IdReplasedMat > 0) or
+     (IdReplasingMat > 0) or flag then
       dbgrdMaterial.Repaint;
   end;
 end;
@@ -1984,17 +1989,21 @@ begin
 
     flag := False;
 
-    if (qrMechanizmID_REPLACED.AsInteger = 0) and (IdReplasedMech > 0) then
+    if ((qrMechanizmID_REPLACED.Value = 0) and (IdReplasedMech > 0)) or
+       ((qrMechanizmREPLACED.Value = 0) and (IdReplasingMech > 0)) then
       flag := True;
 
-    IdReplasedMech := qrMechanizmID_REPLACED.AsInteger;
-    IdReplasingMech := qrMechanizmID.AsInteger;
+    IdReplasedMech := qrMechanizmID_REPLACED.Value;
+    if qrMechanizmREPLACED.Value > 0 then
+      IdReplasingMech := qrMechanizmID.Value
+    else
+      IdReplasingMech := 0;
 
     if btnMechanisms.Down then
       MemoRight.Text := qrMechanizmMECH_NAME.AsString;
 
     // Для красоты отрисовки
-    if (IdReplasedMech > 0) or flag then
+    if (IdReplasedMech > 0) or (IdReplasingMech > 0) or flag then
       dbgrdMechanizm.Repaint;
   end;
 end;
@@ -3972,7 +3981,8 @@ begin
   // Открытие датасета для заполнения таблицы материалов
   qrMaterial.Active := False;
   // Заполняет materials_temp
-  qrMaterial.SQL.Text := 'call GetMaterials(' + IntToStr(fType) + ',' + IntToStr(fID) + ')';
+  qrMaterial.SQL.Text := 'call GetMaterials(' + IntToStr(fType) + ',' + IntToStr(fID) +
+    ',' + IntToStr(G_SHOWMODE) + ')';
   qrMaterial.ExecSQL;
 
   qrMaterial.Active := False;
@@ -4070,7 +4080,8 @@ begin
   // Открытие датасета для заполнения таблицы материалов
   qrMechanizm.Active := False;
   // Заполняет Mechanizms_temp
-  qrMechanizm.SQL.Text := 'call GetMechanizms(' + IntToStr(fType) + ',' + IntToStr(fID) + ')';
+  qrMechanizm.SQL.Text := 'call GetMechanizms(' + IntToStr(fType) + ',' + IntToStr(fID) +
+    ',' + IntToStr(G_SHOWMODE) + ')';
   qrMechanizm.ExecSQL;
 
   qrMechanizm.Active := False;
@@ -5198,7 +5209,8 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
+    if (qrMaterialFROM_RATE.Value = 1) and
+       ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
     then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
@@ -5218,16 +5230,18 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.Value = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd) then
+    if (IdReplasedMat > 0) and (qrMaterialID.Value = IdReplasedMat) and
+       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     if (qrRatesExID_TYPE_DATA.Value = 2) and (qrRatesExID_TABLES.Value = qrMaterialID.Value) and
-      (grRatesEx = LastEntegGrd) then
+       (grRatesEx = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMaterialFROM_RATE.Value = 0) and (IdReplasingMat = qrMaterialID_REPLACED.Value) and
-      (dbgrdMaterial = LastEntegGrd) then
+    if (IdReplasingMat > 0) and (qrMaterialFROM_RATE.Value = 0) and
+       (IdReplasingMat = qrMaterialID_REPLACED.Value) and
+       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';
@@ -5366,13 +5380,15 @@ begin
     end;
 
     // Подсветка замененного механизма
-    if (IdReplasedMech > 0) and (qrMechanizmID.Value = IdReplasedMech) and (dbgrdMechanizm = LastEntegGrd)
+    if (IdReplasedMech > 0) and (qrMechanizmID.Value = IdReplasedMech) and
+       (dbgrdMechanizm = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (qrMechanizmFROM_RATE.Value = 0) and (IdReplasingMech = qrMechanizmID_REPLACED.Value) and
-      (dbgrdMechanizm = LastEntegGrd) then
+    if (IdReplasingMech > 0) and (qrMechanizmFROM_RATE.Value = 0) and
+       (IdReplasingMech = qrMechanizmID_REPLACED.Value) and
+       (dbgrdMechanizm = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';
