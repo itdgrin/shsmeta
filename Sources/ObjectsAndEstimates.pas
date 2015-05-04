@@ -10,7 +10,8 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes,
   JvExDBGrids, JvDBGrid, JvExComCtrls, JvDBTreeView, Vcl.Buttons, JvHint,
-  JvComponentBase;
+  JvComponentBase, Vcl.DBCtrls, JvAppStorage, JvAppIniStorage, Vcl.Mask, JvExMask, JvToolEdit, JvMaskEdit,
+  JvDBFindEdit, JvBDEFilter, JvDBUltimGrid, JvExStdCtrls, JvCombobox, JvDBSearchComboBox, JvFormPlacement;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -24,13 +25,11 @@ type
     PanelMain: TPanel;
     PanelObjects: TPanel;
     PanelBottom: TPanel;
-    PanelSelectedColumns: TPanel;
-    PopupMenuObjects: TPopupMenu;
+    pmObjects: TPopupMenu;
     PopupMenuObjectsAdd: TMenuItem;
     PopupMenuObjectsEdit: TMenuItem;
-    PopupMenuObjectsDelete: TMenuItem;
+    mDelete: TMenuItem;
     PopupMenuObjectsSeparator1: TMenuItem;
-    PopupMenuObjectsColumns: TMenuItem;
     PopupMenuEstimates: TPopupMenu;
     PopupMenuEstimatesAdd: TMenuItem;
     PMEstimatesAddLocal: TMenuItem;
@@ -40,28 +39,7 @@ type
     PMEstimatesDelete: TMenuItem;
     PopupMenuEstimatesSeparator1: TMenuItem;
     PMEstimatesBasicData: TMenuItem;
-    CheckBox1: TCheckBox;
-    CheckBox2: TCheckBox;
-    CheckBox3: TCheckBox;
-    CheckBox4: TCheckBox;
-    CheckBox5: TCheckBox;
-    CheckBox6: TCheckBox;
-    CheckBox7: TCheckBox;
-    CheckBox8: TCheckBox;
-    CheckBox9: TCheckBox;
-    CheckBox10: TCheckBox;
-    CheckBox11: TCheckBox;
-    CheckBox12: TCheckBox;
-    CheckBox13: TCheckBox;
-    CheckBox14: TCheckBox;
-    CheckBox15: TCheckBox;
-    CheckBox16: TCheckBox;
-    CheckBox17: TCheckBox;
-    ButtonSelectAll: TButton;
-    ButtonSelectNone: TButton;
-    ButtonCancel: TButton;
-    dbgrdObjects: TDBGrid;
-    Label1: TLabel;
+    dbgrdObjects: TJvDBGrid;
     ImageSplitterCenter: TImage;
     SplitterCenter: TSplitter;
     ImageSplitterBottomCenter: TImage;
@@ -82,7 +60,6 @@ type
     qrObjects: TFDQuery;
     pmActProperty: TMenuItem;
     dsActs: TDataSource;
-    grActs: TJvDBGrid;
     dsTreeData: TDataSource;
     qrTreeData: TFDQuery;
     tvEstimates: TJvDBTreeView;
@@ -92,6 +69,29 @@ type
     PMImportDir: TMenuItem;
     SaveDialog: TSaveDialog;
     OpenDialog: TOpenDialog;
+    dbmmoFullName: TDBMemo;
+    lbl1: TLabel;
+    lbl2: TLabel;
+    JvDBTreeView1: TJvDBTreeView;
+    pnl1: TPanel;
+    mN3: TMenuItem;
+    mCopyObject: TMenuItem;
+    mShowAll: TMenuItem;
+    mShowActual: TMenuItem;
+    mRepair: TMenuItem;
+    mN5: TMenuItem;
+    mREM6KC: TMenuItem;
+    mADD6KC: TMenuItem;
+    mRepAct: TMenuItem;
+    mCopy: TMenuItem;
+    mN8: TMenuItem;
+    lbl3: TLabel;
+    edtSearch: TEdit;
+    btnSearch: TSpeedButton;
+    cbbSearch: TComboBox;
+    JvFormStorage1: TJvFormStorage;
+    mN4: TMenuItem;
+    mN6: TMenuItem;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -101,19 +101,13 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure PopupMenuObjectsAddClick(Sender: TObject);
     procedure PopupMenuObjectsEditClick(Sender: TObject);
-    procedure PopupMenuObjectsDeleteClick(Sender: TObject);
-    procedure PopupMenuObjectsColumnsClick(Sender: TObject);
+    procedure mDeleteClick(Sender: TObject);
     procedure qrObjectsAfterScroll(DataSet: TDataSet);
     procedure PanelBottomResize(Sender: TObject);
     procedure FillingTableObjects;
     procedure PopupMenuEstimatesAddClick(Sender: TObject);
     procedure PMEstimatesEditClick(Sender: TObject);
     procedure PMEstimatesDeleteClick(Sender: TObject);
-    procedure ButtonCancelClick(Sender: TObject);
-    procedure CheckBoxColumnsClick(Sender: TObject);
-    procedure ButtonSelectAllClick(Sender: TObject);
-    procedure ButtonSelectNoneClick(Sender: TObject);
-    procedure SelectedColumns(Value: Boolean);
     procedure PMEstimatesBasicDataClick(Sender: TObject);
     procedure PMEstimateExpandClick(Sender: TObject);
     procedure PMEstimateCollapseClick(Sender: TObject);
@@ -131,20 +125,32 @@ type
     procedure qrTreeDataAfterOpen(DataSet: TDataSet);
     procedure qrObjectsAfterOpen(DataSet: TDataSet);
     procedure tvEstimatesDblClick(Sender: TObject);
-    procedure grActsMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure PMExportObjectClick(Sender: TObject);
     procedure PMImportObjectClick(Sender: TObject);
     procedure PMImportDirClick(Sender: TObject);
+    procedure pmObjectsPopup(Sender: TObject);
+    procedure mRepairClick(Sender: TObject);
+    procedure dbgrdObjectsDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+      Column: TColumn; State: TGridDrawState);
+    procedure mShowActualClick(Sender: TObject);
+    procedure mShowAllClick(Sender: TObject);
+    procedure mREM6KCClick(Sender: TObject);
+    procedure mADD6KCClick(Sender: TObject);
+    procedure mRepActClick(Sender: TObject);
+    procedure edtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure btnSearchClick(Sender: TObject);
+    procedure edtSearchChange(Sender: TObject);
+    procedure dbgrdObjectsTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+    procedure mN6Click(Sender: TObject);
+    procedure mCopyClick(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
 
   const
     HintButton = 'Окно объектов и смет';
   private
-    StrQuery: String; // Строка для формирования запросов
     IdObject: Integer;
     IDAct: Integer;
-    RAHint1: TJvHint;
     // TypeEstimate: Integer;
   public
     ActReadOnly: Boolean;
@@ -207,9 +213,7 @@ end;
 
 procedure TFormObjectsAndEstimates.FormCreate(Sender: TObject);
 begin
-  RAHint1 := TJvHint.Create(Self);
   LoadDBGridSettings(dbgrdObjects);
-  LoadDBGridSettings(grActs);
   FormMain.PanelCover.Visible := True;
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
@@ -218,8 +222,6 @@ begin
   // (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION)) * -1;
   Left := 10; // GetSystemMetrics(SM_CXFRAME) * -1;
   WindowState := wsMaximized;
-  // -----------------------------------------
-  PanelSelectedColumns.Visible := False;
   // -----------------------------------------
   // ЗАГРУЖАЕМ ИЗОБРАЖЕНИЯ ДЛЯ СПЛИТТЕРОВ
   with DM.ImageListHorozontalDots do
@@ -345,7 +347,33 @@ begin
   dbgrdObjects.SetFocus;
 end;
 
-procedure TFormObjectsAndEstimates.PopupMenuObjectsDeleteClick(Sender: TObject);
+procedure TFormObjectsAndEstimates.pmObjectsPopup(Sender: TObject);
+begin
+  mRepair.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
+  mDelete.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 0;
+end;
+
+procedure TFormObjectsAndEstimates.mADD6KCClick(Sender: TObject);
+begin
+  qrTmp.SQL.Text := 'UPDATE card_acts SET FL_USE=1 WHERE ID=:ID';
+  qrTmp.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  qrTmp.ExecSQL;
+  CloseOpen(qrActsEx, False);
+end;
+
+procedure TFormObjectsAndEstimates.mCopyClick(Sender: TObject);
+begin
+  if Application.MessageBox('Копировать выбранный акт?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) <> IDYES
+  then
+    Exit;
+
+  qrTmp.SQL.Text := 'CALL CopyAct(:ID);';
+  qrTmp.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  qrTmp.ExecSQL;
+  CloseOpen(qrActsEx, False);
+end;
+
+procedure TFormObjectsAndEstimates.mDeleteClick(Sender: TObject);
 var
   NumberObject: string;
   ResultDialog: Integer;
@@ -366,47 +394,32 @@ begin
   if ResultDialog = mrNo then
     Exit;
 
-  // Устанавливаем фокус
-  dbgrdObjects.SetFocus;
-
-  try
-    StrQuery := 'DELETE FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';';
-
-    with qrTmp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add(StrQuery);
-      ExecSQL;
-    end;
-
-    StrQuery := 'DELETE FROM smetasourcedata WHERE obj_id = ' + IntToStr(IdObject) + ';';
-
-    with qrTmp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add(StrQuery);
-      ExecSQL;
-    end;
-
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При удалении объекта возникла ошибка.' + sLineBreak +
-        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + E.message), CaptionForm,
-        MB_ICONERROR + mb_OK + mb_TaskModal);
-  end;
-
-  FillingTableObjects;
+  qrObjects.Edit;
+  qrObjects.FieldByName('DEL_FLAG').AsInteger := 1;
+  qrObjects.Post;
+  qrObjects.Prior;
+  CloseOpen(qrObjects);
 end;
 
-procedure TFormObjectsAndEstimates.PopupMenuObjectsColumnsClick(Sender: TObject);
+procedure TFormObjectsAndEstimates.mN6Click(Sender: TObject);
 begin
-  with PopupMenuObjectsColumns do
-  begin
-    Checked := not Checked;
-    PanelSelectedColumns.Visible := Checked;
-  end;
+  dbgrdObjects.ShowColumnsDialog;
+end;
+
+procedure TFormObjectsAndEstimates.mShowAllClick(Sender: TObject);
+begin
+  qrObjects.ParamByName('SHOW_DELETED').AsInteger := 1;
+  CloseOpen(qrObjects);
+  mShowActual.Checked := False;
+  mShowAll.Checked := True;
+end;
+
+procedure TFormObjectsAndEstimates.mShowActualClick(Sender: TObject);
+begin
+  qrObjects.ParamByName('SHOW_DELETED').AsInteger := 0;
+  CloseOpen(qrObjects);
+  mShowActual.Checked := True;
+  mShowAll.Checked := False;
 end;
 
 procedure TFormObjectsAndEstimates.qrActsExAfterOpen(DataSet: TDataSet);
@@ -437,42 +450,54 @@ begin
   PanelEstimates.Width := ((Sender as TPanel).Width - SplitterBottomCenter.Width) div 2;
 end;
 
-procedure TFormObjectsAndEstimates.ButtonCancelClick(Sender: TObject);
-begin
-  PopupMenuObjectsColumnsClick(PopupMenuObjectsColumns);
-end;
-
-procedure TFormObjectsAndEstimates.SelectedColumns(Value: Boolean);
+procedure TFormObjectsAndEstimates.btnSearchClick(Sender: TObject);
 var
-  i: Integer;
+  FN: string;
 begin
-  for i := 1 to 17 do
-  begin
-    (FindComponent('CheckBox' + IntToStr(i)) as TCheckBox).Checked := Value;
-    dbgrdObjects.Columns[i + 7].Visible := Value;
+  case cbbSearch.ItemIndex of
+    // По наименованию
+    0:
+      FN := 'FullName';
+    // По заказчику
+    1:
+      FN := 'NameClient';
   end;
+  qrObjects.Filter := 'UPPER(' + FN + ') LIKE UPPER(''%' + Trim(edtSearch.Text) + '%'')';
+  if (btnSearch.Tag = 0) and qrObjects.FindFirst then
+    btnSearch.Tag := 1
+  else if not qrObjects.FindNext then
+    btnSearch.Tag := 0;
 end;
 
-procedure TFormObjectsAndEstimates.ButtonSelectAllClick(Sender: TObject);
+procedure TFormObjectsAndEstimates.dbgrdObjectsDrawColumnCell(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
-  SelectedColumns(True);
+  if qrObjects.FieldByName('DEL_FLAG').AsInteger = 1 then
+    dbgrdObjects.Canvas.Font.Style := dbgrdObjects.Canvas.Font.Style + [fsStrikeOut];
+  dbgrdObjects.Canvas.FillRect(Rect);
+  dbgrdObjects.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Column.Field.AsString);
 end;
 
-procedure TFormObjectsAndEstimates.ButtonSelectNoneClick(Sender: TObject);
-begin
-  SelectedColumns(False);
-end;
-
-procedure TFormObjectsAndEstimates.CheckBoxColumnsClick(Sender: TObject);
+procedure TFormObjectsAndEstimates.dbgrdObjectsTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
 var
-  Nom: Integer;
-  { Visual: Boolean; }
+  s: string;
 begin
-  with (Sender as TCheckBox) do
-  begin
-    Nom := StrToInt(Copy(Name, 9, Length(Name) - 8));
-    dbgrdObjects.Columns[Nom + 7].Visible := Checked;
-  end;
+  s := '';
+  if dbgrdObjects.SortMarker = smDown then
+    s := ' DESC';
+  qrObjects.SQL[qrObjects.SQL.Count - 1] := 'ORDER BY ' + dbgrdObjects.SortedField + s;
+  CloseOpen(qrObjects);
+end;
+
+procedure TFormObjectsAndEstimates.edtSearchChange(Sender: TObject);
+begin
+  btnSearch.Tag := 0;
+end;
+
+procedure TFormObjectsAndEstimates.edtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_RETURN then
+    btnSearch.Click;
 end;
 
 procedure TFormObjectsAndEstimates.pmActPropertyClick(Sender: TObject);
@@ -483,6 +508,7 @@ begin
   f.Kind := kdEdit;
   f.id := IDAct;
   f.ShowModal;
+  CloseOpen(qrActsEx, False);
 end;
 
 procedure TFormObjectsAndEstimates.OpenAct(const ActID: Integer);
@@ -504,21 +530,17 @@ begin
 
   with qrObjects do
   begin
-    FormCalculationEstimate.EditNameObject.Text :=
-      IntToStr(FieldByName('NumberObject').AsVariant) + ' ' +
+    FormCalculationEstimate.EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' +
       FieldByName('Name').AsVariant;
-    FormCalculationEstimate.EditNumberContract.Text :=
-      FieldByName('NumberContract').AsVariant;
-    FormCalculationEstimate.EditDateContract.Text :=
-      FieldByName('DateContract').AsVariant;
+    FormCalculationEstimate.EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
+    FormCalculationEstimate.EditDateContract.Text := FieldByName('DateContract').AsVariant;
     FormCalculationEstimate.Region := FieldByName('IdRegion').AsVariant;
 
-    FormCalculationEstimate.EditNameEstimate.Text :=
-      qrTreeData.FieldByName('NAME').AsString;
+    FormCalculationEstimate.EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
 
     FormCalculationEstimate.IdObject := IdObject;
     FormCalculationEstimate.IdEstimate := IdEstimate;
-    FormCalculationEstimate.IdAct := ActID;
+    FormCalculationEstimate.IDAct := ActID;
     FormCalculationEstimate.SetActReadOnly(ActReadOnly);
     FormCalculationEstimate.Act := True;
 
@@ -546,21 +568,10 @@ procedure TFormObjectsAndEstimates.PMActsDeleteClick(Sender: TObject);
 begin
   if MessageDlg('Удалить запись?', mtWarning, mbYesNo, 0) <> mrYes then
     Exit;
-  try
-    with qrTmp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('CALL DeleteAct(:IdAct);');
-      ParamByName('IdAct').Value := IDAct;
-      ExecSQL;
-      Active := False;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При удалении акта возникла ошибка:' + sLineBreak + sLineBreak + E.message),
-        PWideChar(caption), MB_ICONERROR + mb_OK + mb_TaskModal);
-  end;
+  qrTmp.SQL.Text := 'UPDATE card_acts SET DEL_FLAG=1 WHERE ID=:ID';
+  qrTmp.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  qrTmp.ExecSQL;
+  CloseOpen(qrActsEx, False);
 end;
 
 procedure TFormObjectsAndEstimates.PMActsEditClick(Sender: TObject);
@@ -569,16 +580,21 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.PMActsPopup(Sender: TObject);
-var
-  TypeEstimate: Integer;
 begin
-  TypeEstimate := qrTreeData.FieldByName('SM_TYPE').AsInteger;
   // Если не выделена смета или выделена, но не объектная
-  PMActsOpen.Enabled := not((qrTreeData.IsEmpty) or (TypeEstimate <> 2));
-  PMActsAdd.Enabled := not((qrTreeData.IsEmpty) or (TypeEstimate <> 2));
-  PMActsEdit.Enabled := not((qrTreeData.IsEmpty) or (TypeEstimate <> 2));
-  PMActsDelete.Enabled := not((qrTreeData.IsEmpty) or (TypeEstimate <> 2));
-  pmActProperty.Enabled := not((qrTreeData.IsEmpty) or (TypeEstimate <> 2));
+  PMActsOpen.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value));
+  PMActsAdd.Visible := not((qrTreeData.IsEmpty) or (qrTreeData.FieldByName('SM_TYPE').AsInteger <> 2));
+  PMActsEdit.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value));
+  PMActsDelete.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value)) and
+    (qrActsEx.FieldByName('DEL_FLAG').AsInteger = 0);
+  pmActProperty.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value));
+  mRepAct.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value)) and
+    (qrActsEx.FieldByName('DEL_FLAG').AsInteger = 1);
+  mADD6KC.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value)) and
+    (qrActsEx.FieldByName('DEL_FLAG').AsInteger = 0) and (qrActsEx.FieldByName('FL_USE').AsInteger = 0);
+  mREM6KC.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value)) and
+    (qrActsEx.FieldByName('DEL_FLAG').AsInteger = 0) and (qrActsEx.FieldByName('FL_USE').AsInteger = 1);
+  mCopy.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value));
 end;
 
 function TFormObjectsAndEstimates.GetNumberEstimate(): string;
@@ -601,16 +617,28 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.grActsMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-var
-  G: TGridCoord;
-  R: TRect;
+procedure TFormObjectsAndEstimates.mREM6KCClick(Sender: TObject);
 begin
-  TDrawGrid(Sender as TDBGrid).MouseToCell(X, Y, G.X, G.Y);
+  qrTmp.SQL.Text := 'UPDATE card_acts SET FL_USE=0 WHERE ID=:ID';
+  qrTmp.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  qrTmp.ExecSQL;
+  CloseOpen(qrActsEx, False);
+end;
 
-  R := TDrawGrid(Sender as TDBGrid).CellRect(G.X, G.Y);
-  OffsetRect(R, (Sender as TDBGrid).ClientOrigin.X, (Sender as TDBGrid).ClientOrigin.Y);
-  RAHint1.ActivateHint(R, Format('X: %d, Y: %d, %s', [G.X, G.Y, 'Подсказка']));
+procedure TFormObjectsAndEstimates.mRepActClick(Sender: TObject);
+begin
+  qrTmp.SQL.Text := 'UPDATE card_acts SET DEL_FLAG=0 WHERE ID=:ID';
+  qrTmp.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  qrTmp.ExecSQL;
+  CloseOpen(qrActsEx, False);
+end;
+
+procedure TFormObjectsAndEstimates.mRepairClick(Sender: TObject);
+begin
+  qrObjects.Edit;
+  qrObjects.FieldByName('DEL_FLAG').AsInteger := 0;
+  qrObjects.Post;
+  CloseOpen(qrObjects);
 end;
 
 procedure TFormObjectsAndEstimates.PMExportObjectClick(Sender: TObject);
@@ -628,7 +656,7 @@ begin
       FormWaiting.lbProcess.caption := TmpStr;
       Application.ProcessMessages;
       ExportObject(qrObjects.Fields[0].AsInteger, ChangeFileExt(SaveDialog.FileName, '.xml'));
-      showmessage('Экспорт завершен.');
+      ShowMessage('Экспорт завершен.');
     finally
       FormWaiting.Close;
       FormWaiting.Height := 88;
@@ -652,7 +680,7 @@ begin
       TmpStr := 'Импорт из файла: ' + ExtractFileName(OpenDialog.FileName);
       FormWaiting.lbProcess.caption := TmpStr;
       ImportObject(OpenDialog.FileName);
-      showmessage('Импорт завершен успешно.');
+      ShowMessage('Импорт завершен успешно.');
     finally
       FormWaiting.Close;
       FormWaiting.Height := 88;
@@ -688,7 +716,7 @@ begin
               FormWaiting.lbProcess.caption := TmpStr;
               ImportObject(TmpFiles[i]);
             end;
-            showmessage('Импорт завершен успешно.');
+            ShowMessage('Импорт завершен успешно.');
           finally
             FormWaiting.Close;
             FormWaiting.Height := 88;
@@ -843,17 +871,13 @@ begin
 
   with qrObjects do
   begin
-    FormCalculationEstimate.EditNameObject.Text :=
-      IntToStr(FieldByName('NumberObject').AsVariant) + ' ' +
-        FieldByName('Name').AsVariant;
-    FormCalculationEstimate.EditNumberContract.Text :=
-      FieldByName('NumberContract').AsVariant;
-    FormCalculationEstimate.EditDateContract.Text :=
-      FieldByName('DateContract').AsVariant;
+    FormCalculationEstimate.EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' +
+      FieldByName('Name').AsVariant;
+    FormCalculationEstimate.EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
+    FormCalculationEstimate.EditDateContract.Text := FieldByName('DateContract').AsVariant;
     FormCalculationEstimate.Region := FieldByName('IdRegion').AsVariant;
 
-    FormCalculationEstimate.EditNameEstimate.Text :=
-      qrTreeData.FieldByName('NAME').AsString;
+    FormCalculationEstimate.EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
 
     FormCalculationEstimate.IdObject := IdObject;
     FormCalculationEstimate.IdEstimate := IdEstimate;

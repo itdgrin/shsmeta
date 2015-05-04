@@ -34,7 +34,7 @@ object frmReplacement: TfrmReplacement
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
-      TabOrder = 0
+      TabOrder = 1
       object Label2: TLabel
         Left = 13
         Top = 21
@@ -109,7 +109,7 @@ object frmReplacement: TfrmReplacement
         #1052#1072#1090#1077#1088#1080#1072#1083#1086#1074
         #1052#1077#1093#1072#1085#1080#1079#1084#1086#1074)
       ParentFont = False
-      TabOrder = 1
+      TabOrder = 0
       OnClick = rgroupTypeClick
     end
   end
@@ -179,8 +179,7 @@ object frmReplacement: TfrmReplacement
     Font.Style = []
     ParentDoubleBuffered = False
     ParentFont = False
-    TabOrder = 2
-    ExplicitHeight = 232
+    TabOrder = 3
     object Panel5: TPanel
       Left = 2
       Top = 15
@@ -189,7 +188,6 @@ object frmReplacement: TfrmReplacement
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitHeight = 215
     end
   end
   object Panel4: TPanel
@@ -198,8 +196,7 @@ object frmReplacement: TfrmReplacement
     Width = 779
     Height = 33
     Align = alBottom
-    TabOrder = 3
-    ExplicitTop = 482
+    TabOrder = 4
     object btnReplace: TButton
       AlignWithMargins = True
       Left = 590
@@ -208,7 +205,7 @@ object frmReplacement: TfrmReplacement
       Height = 25
       Align = alRight
       Caption = #1047#1072#1084#1077#1085#1080#1090#1100
-      TabOrder = 0
+      TabOrder = 1
       OnClick = btnReplaceClick
     end
     object btnCancel: TButton
@@ -219,7 +216,7 @@ object frmReplacement: TfrmReplacement
       Height = 25
       Align = alRight
       Caption = #1054#1090#1084#1077#1085#1072
-      TabOrder = 1
+      TabOrder = 2
       OnClick = btnCancelClick
     end
     object btnDelReplacement: TButton
@@ -229,7 +226,7 @@ object frmReplacement: TfrmReplacement
       Width = 120
       Height = 25
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1079#1072#1084#1077#1085#1099
-      TabOrder = 2
+      TabOrder = 0
       Visible = False
       OnClick = btnReplaceClick
     end
@@ -247,7 +244,7 @@ object frmReplacement: TfrmReplacement
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 2
     object Panel2: TPanel
       Left = 750
       Top = 15
@@ -261,7 +258,7 @@ object frmReplacement: TfrmReplacement
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
-      TabOrder = 0
+      TabOrder = 1
       object SpeedButton1: TSpeedButton
         Left = 2
         Top = -1
@@ -363,7 +360,7 @@ object frmReplacement: TfrmReplacement
       Font.Style = []
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing]
       ParentFont = False
-      TabOrder = 1
+      TabOrder = 0
       OnKeyPress = grdRepKeyPress
       OnMouseMove = grdRepMouseMove
       OnSelectCell = grdRepSelectCell

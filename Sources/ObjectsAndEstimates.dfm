@@ -2,7 +2,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   Left = 0
   Top = 0
   Caption = #1054#1073#1098#1077#1082#1090#1099' '#1080' '#1089#1084#1077#1090#1099
-  ClientHeight = 450
+  ClientHeight = 502
   ClientWidth = 705
   Color = clBtnFace
   DoubleBuffered = True
@@ -22,255 +22,24 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object PanelSelectedColumns: TPanel
+  object PanelMain: TPanel
     Left = 0
     Top = 0
     Width = 705
-    Height = 165
-    Align = alTop
-    BevelOuter = bvNone
-    DoubleBuffered = True
-    ParentBackground = False
-    ParentDoubleBuffered = False
-    TabOrder = 0
-    object Label1: TLabel
-      Left = 8
-      Top = 4
-      Width = 244
-      Height = 13
-      Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1074#1080#1076#1080#1084#1086#1089#1090#1080' '#1082#1086#1083#1086#1085#1086#1082' '#1074' '#1090#1072#1073#1083#1080#1094#1077':'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object CheckBox1: TCheckBox
-      Left = 8
-      Top = 23
-      Width = 210
-      Height = 17
-      Caption = #1053#1086#1084#1077#1088' '#1086#1073#1098#1077#1082#1090#1072
-      Checked = True
-      State = cbChecked
-      TabOrder = 0
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox3: TCheckBox
-      Left = 8
-      Top = 69
-      Width = 210
-      Height = 17
-      Caption = #1053#1086#1084#1077#1088' '#1076#1086#1075#1086#1074#1086#1088#1072
-      Checked = True
-      State = cbChecked
-      TabOrder = 8
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox4: TCheckBox
-      Left = 8
-      Top = 92
-      Width = 210
-      Height = 17
-      Caption = #1044#1072#1090#1072' '#1076#1086#1075#1086#1074#1086#1088#1072
-      Checked = True
-      State = cbChecked
-      TabOrder = 11
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox5: TCheckBox
-      Left = 8
-      Top = 115
-      Width = 210
-      Height = 17
-      Caption = #1057#1087#1080#1089#1086#1082' '#1076#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1093' '#1089#1086#1075#1083#1072#1096#1077#1085#1080#1081
-      Checked = True
-      State = cbChecked
-      TabOrder = 14
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox6: TCheckBox
-      Left = 8
-      Top = 138
-      Width = 210
-      Height = 17
-      Caption = #1055#1086#1083#1085#1086#1077' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1086#1073#1098#1077#1082#1090#1072
-      Checked = True
-      State = cbChecked
-      TabOrder = 18
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox7: TCheckBox
-      Left = 224
-      Top = 23
-      Width = 240
-      Height = 17
-      Caption = #1050#1088#1072#1090#1082#1086#1077' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1086#1073#1098#1077#1082#1090#1072
-      Checked = True
-      State = cbChecked
-      TabOrder = 1
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox8: TCheckBox
-      Left = 224
-      Top = 46
-      Width = 240
-      Height = 17
-      Caption = #1053#1072#1095#1072#1083#1086' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072
-      Checked = True
-      State = cbChecked
-      TabOrder = 5
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox9: TCheckBox
-      Left = 224
-      Top = 69
-      Width = 240
-      Height = 17
-      Caption = #1057#1088#1086#1082' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072' ('#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1084#1077#1089#1103#1094#1077#1074')'
-      Checked = True
-      State = cbChecked
-      TabOrder = 9
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox10: TCheckBox
-      Left = 224
-      Top = 92
-      Width = 240
-      Height = 17
-      Caption = #1048#1089#1090#1086#1095#1085#1080#1082' '#1092#1080#1085#1072#1085#1089#1080#1088#1086#1074#1072#1085#1080#1103
-      Checked = True
-      State = cbChecked
-      TabOrder = 12
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox11: TCheckBox
-      Left = 224
-      Top = 115
-      Width = 240
-      Height = 17
-      Caption = #1047#1072#1082#1072#1079#1095#1080#1082
-      Checked = True
-      State = cbChecked
-      TabOrder = 15
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox12: TCheckBox
-      Left = 224
-      Top = 138
-      Width = 240
-      Height = 17
-      Caption = #1043#1077#1085#1087#1086#1076#1088#1103#1076#1095#1080#1082
-      Checked = True
-      State = cbChecked
-      TabOrder = 19
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox13: TCheckBox
-      Left = 470
-      Top = 23
-      Width = 130
-      Height = 17
-      Caption = #1050#1072#1090#1077#1075#1086#1088#1080#1103' '#1086#1073#1098#1077#1082#1090#1072
-      Checked = True
-      State = cbChecked
-      TabOrder = 2
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox14: TCheckBox
-      Left = 470
-      Top = 46
-      Width = 130
-      Height = 17
-      Caption = #1057' '#1080#1083#1080' '#1073#1077#1079' '#1053#1044#1057
-      Checked = True
-      State = cbChecked
-      TabOrder = 6
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox15: TCheckBox
-      Left = 470
-      Top = 69
-      Width = 130
-      Height = 17
-      Caption = #1056#1077#1075#1080#1086#1085
-      Checked = True
-      State = cbChecked
-      TabOrder = 10
-      OnClick = CheckBoxColumnsClick
-    end
-    object ButtonSelectAll: TButton
-      Left = 606
-      Top = 23
-      Width = 91
-      Height = 25
-      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1089#1077
-      TabOrder = 3
-      OnClick = ButtonSelectAllClick
-    end
-    object ButtonSelectNone: TButton
-      Left = 606
-      Top = 54
-      Width = 91
-      Height = 25
-      Caption = #1057#1082#1088#1099#1090#1100' '#1074#1089#1077
-      TabOrder = 7
-      OnClick = ButtonSelectNoneClick
-    end
-    object CheckBox16: TCheckBox
-      Left = 470
-      Top = 92
-      Width = 130
-      Height = 17
-      Caption = #1041#1072#1079#1072' '#1088#1072#1089#1094#1077#1085#1086#1082
-      Checked = True
-      State = cbChecked
-      TabOrder = 13
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox17: TCheckBox
-      Left = 470
-      Top = 115
-      Width = 130
-      Height = 17
-      Caption = #1058#1080#1087' '#1054#1061#1056' '#1080' '#1054#1055#1056
-      Checked = True
-      State = cbChecked
-      TabOrder = 16
-      OnClick = CheckBoxColumnsClick
-    end
-    object CheckBox2: TCheckBox
-      Left = 8
-      Top = 46
-      Width = 210
-      Height = 17
-      Caption = #1064#1080#1092#1088' '#1086#1073#1098#1077#1082#1090#1072
-      Checked = True
-      State = cbChecked
-      TabOrder = 4
-      OnClick = CheckBoxColumnsClick
-    end
-    object ButtonCancel: TButton
-      Left = 606
-      Top = 130
-      Width = 91
-      Height = 25
-      Caption = #1054#1090#1084#1077#1085#1072
-      TabOrder = 17
-      OnClick = ButtonCancelClick
-    end
-  end
-  object PanelMain: TPanel
-    Left = 0
-    Top = 165
-    Width = 705
-    Height = 285
+    Height = 502
     Align = alClient
     BevelOuter = bvNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     ParentBackground = False
+    ParentFont = False
     ShowCaption = False
-    TabOrder = 1
+    TabOrder = 0
+    ExplicitTop = 165
+    ExplicitHeight = 337
     object ImageSplitterCenter: TImage
       Left = 304
       Top = 125
@@ -280,90 +49,66 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     end
     object SplitterCenter: TSplitter
       Left = 0
-      Top = 100
+      Top = 321
       Width = 705
       Height = 5
       Cursor = crVSplit
       Align = alTop
       ResizeStyle = rsUpdate
+      ExplicitTop = 100
       ExplicitWidth = 617
     end
     object PanelObjects: TPanel
       Left = 0
       Top = 0
       Width = 705
-      Height = 100
+      Height = 321
       Align = alTop
       BevelOuter = bvNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
       ParentBackground = False
+      ParentFont = False
       ShowCaption = False
       TabOrder = 0
-      object dbgrdObjects: TDBGrid
+      object dbgrdObjects: TJvDBGrid
         Left = 0
-        Top = 0
+        Top = 25
         Width = 705
-        Height = 100
+        Height = 268
         Align = alClient
         DataSource = dsObjects
-        DrawingStyle = gdsClassic
-        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-        PopupMenu = PopupMenuObjects
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        ParentFont = False
+        PopupMenu = pmObjects
         ReadOnly = True
-        TabOrder = 0
+        TabOrder = 1
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = dbgrdObjectsDrawColumnCell
+        IniStorage = JvFormStorage1
+        TitleButtons = True
+        OnTitleBtnClick = dbgrdObjectsTitleBtnClick
+        SelectColumn = scGrid
+        TitleArrow = True
+        SelectColumnsDialogStrings.Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1074#1080#1076#1080#1084#1086#1089#1090#1080' '#1082#1086#1083#1086#1085#1086#1082
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = #1044#1086#1083#1078#1085#1072' '#1073#1099#1090#1100' '#1074#1099#1073#1088#1072#1085#1072' '#1093#1086#1090#1103' '#1073#1099' '#1086#1076#1085#1072' '#1082#1086#1083#1086#1085#1082#1072'!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
         Columns = <
-          item
-            Expanded = False
-            FieldName = 'IdObject'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'IdIstFin'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'IdClient'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'IdContractor'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'IdCategory'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'IdRegion'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'IdBasePrice'
-            Title.Alignment = taCenter
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'IdOXROPR'
-            Title.Alignment = taCenter
-            Visible = False
-          end
           item
             Expanded = False
             FieldName = 'NumberObject'
@@ -501,18 +246,105 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
             Visible = True
           end>
       end
+      object dbmmoFullName: TDBMemo
+        Left = 0
+        Top = 293
+        Width = 705
+        Height = 28
+        Align = alBottom
+        DataField = 'FullName'
+        DataSource = dsObjects
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssVertical
+        TabOrder = 2
+        ExplicitTop = 72
+      end
+      object pnl1: TPanel
+        Left = 0
+        Top = 0
+        Width = 705
+        Height = 25
+        Align = alTop
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 0
+        object lbl3: TLabel
+          Left = 8
+          Top = 5
+          Width = 34
+          Height = 13
+          Caption = #1055#1086#1080#1089#1082':'
+        end
+        object btnSearch: TSpeedButton
+          Left = 366
+          Top = 1
+          Width = 23
+          Height = 22
+          Glyph.Data = {
+            F6000000424DF600000000000000760000002800000010000000100000000100
+            04000000000080000000C40E0000C40E00001000000000000000000000000000
+            8000008000000080800080000000800080008080000080808000C0C0C0000000
+            FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00888888888888
+            8888888888888888888800000888880000080F000888880F00080F000888880F
+            0008000000080000000800F000000F00000800F000800F00000800F000800F00
+            00088000000000000088880F00080F0008888800000800000888888000888000
+            88888880F08880F0888888800088800088888888888888888888}
+          OnClick = btnSearchClick
+        end
+        object edtSearch: TEdit
+          Left = 158
+          Top = 2
+          Width = 209
+          Height = 21
+          TabOrder = 1
+          TextHint = #1042#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090' '#1076#1083#1103' '#1087#1086#1080#1089#1082#1072'...'
+          OnChange = edtSearchChange
+          OnKeyDown = edtSearchKeyDown
+        end
+        object cbbSearch: TComboBox
+          Left = 45
+          Top = 2
+          Width = 114
+          Height = 21
+          Style = csDropDownList
+          ItemIndex = 0
+          TabOrder = 0
+          Text = #1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102
+          Items.Strings = (
+            #1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102
+            #1087#1086' '#1079#1072#1082#1072#1079#1095#1080#1082#1091)
+        end
+      end
     end
     object PanelBottom: TPanel
       Left = 0
-      Top = 105
+      Top = 326
       Width = 705
-      Height = 180
+      Height = 176
       Align = alClient
       BevelOuter = bvNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
       ParentBackground = False
+      ParentFont = False
       ShowCaption = False
       TabOrder = 1
       OnResize = PanelBottomResize
+      ExplicitTop = 105
+      ExplicitHeight = 397
       object ImageSplitterBottomCenter: TImage
         Left = 513
         Top = 73
@@ -522,27 +354,51 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         AutoSize = True
       end
       object SplitterBottomCenter: TSplitter
-        Left = 330
+        Left = 358
         Top = 0
         Width = 5
-        Height = 180
+        Height = 176
         ResizeStyle = rsUpdate
         ExplicitLeft = 345
+        ExplicitHeight = 180
       end
       object PanelEstimates: TPanel
         Left = 0
         Top = 0
-        Width = 330
-        Height = 180
+        Width = 358
+        Height = 176
         Align = alLeft
         BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
         ParentBackground = False
+        ParentFont = False
         TabOrder = 0
-        object tvEstimates: TJvDBTreeView
+        ExplicitHeight = 232
+        object lbl2: TLabel
           Left = 0
           Top = 0
-          Width = 330
-          Height = 180
+          Width = 358
+          Height = 13
+          Align = alTop
+          Alignment = taCenter
+          Caption = #1057#1084#1077#1090#1099
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 39
+        end
+        object tvEstimates: TJvDBTreeView
+          Left = 0
+          Top = 13
+          Width = 358
+          Height = 163
           DataSource = dsTreeData
           MasterField = 'SM_ID'
           DetailField = 'PARENT'
@@ -555,85 +411,93 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           HideSelection = False
           Indent = 19
           Align = alClient
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
           TabOrder = 0
-          OnDblClick = tvEstimatesDblClick
           PopupMenu = PopupMenuEstimates
+          ParentFont = False
           RowSelect = True
           Mirror = False
-          ExplicitLeft = -1
-          ExplicitTop = 1
+          ExplicitHeight = 219
         end
       end
       object PanelActs: TPanel
-        Left = 335
+        Left = 363
         Top = 0
-        Width = 370
-        Height = 180
+        Width = 342
+        Height = 176
         Align = alClient
         BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
         ParentBackground = False
+        ParentFont = False
         TabOrder = 1
-        object grActs: TJvDBGrid
+        ExplicitHeight = 232
+        object lbl1: TLabel
           Left = 0
           Top = 0
-          Width = 370
-          Height = 180
-          Align = alClient
+          Width = 342
+          Height = 13
+          Align = alTop
+          Alignment = taCenter
+          Caption = #1040#1082#1090#1099' '#1074#1099#1087#1086#1083#1085#1077#1085#1085#1099#1093' '#1088#1072#1073#1086#1090
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ExplicitWidth = 156
+        end
+        object JvDBTreeView1: TJvDBTreeView
+          Left = 0
+          Top = 13
+          Width = 342
+          Height = 163
           DataSource = dsActs
-          DrawingStyle = gdsClassic
-          Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-          PopupMenu = PMActs
+          MasterField = 'MASTER_ID'
+          DetailField = 'PARENT_ID'
+          ItemField = 'ITEAM_NAME'
+          StartMasterValue = '0'
+          UseFilter = True
+          PersistentNode = True
+          ReadOnly = True
+          DragMode = dmAutomatic
+          HideSelection = False
+          Indent = 19
+          Align = alClient
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
           TabOrder = 0
-          TitleFont.Charset = DEFAULT_CHARSET
-          TitleFont.Color = clWindowText
-          TitleFont.Height = -11
-          TitleFont.Name = 'Tahoma'
-          TitleFont.Style = []
-          OnMouseMove = grActsMouseMove
-          AutoSizeColumns = True
-          SelectColumnsDialogStrings.Caption = 'Select columns'
-          SelectColumnsDialogStrings.OK = '&OK'
-          SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-          EditControls = <>
-          RowsHeight = 17
-          TitleRowHeight = 17
-          Columns = <
-            item
-              Expanded = False
-              FieldName = 'NAME'
-              Title.Alignment = taCenter
-              Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1072#1082#1090#1072
-              Width = 126
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'DATE'
-              Title.Alignment = taCenter
-              Title.Caption = #1044#1072#1090#1072
-              Width = 45
-              Visible = True
-            end
-            item
-              Expanded = False
-              FieldName = 'DESCRIPTION'
-              Title.Alignment = taCenter
-              Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077
-              Width = 192
-              Visible = True
-            end>
+          OnDblClick = tvEstimatesDblClick
+          PopupMenu = PMActs
+          ParentFont = False
+          RowSelect = True
+          Mirror = False
+          ExplicitHeight = 219
         end
       end
     end
   end
   object dsObjects: TDataSource
     DataSet = qrObjects
-    Left = 104
-    Top = 192
+    Left = 32
+    Top = 120
   end
-  object PopupMenuObjects: TPopupMenu
-    Left = 352
-    Top = 192
+  object pmObjects: TPopupMenu
+    OnPopup = pmObjectsPopup
+    Left = 32
+    Top = 168
     object PopupMenuObjectsAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       ImageIndex = 0
@@ -644,10 +508,14 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       ImageIndex = 1
       OnClick = PopupMenuObjectsEditClick
     end
-    object PopupMenuObjectsDelete: TMenuItem
+    object mDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       ImageIndex = 2
-      OnClick = PopupMenuObjectsDeleteClick
+      OnClick = mDeleteClick
+    end
+    object mRepair: TMenuItem
+      Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      OnClick = mRepairClick
     end
     object PopupMenuObjectsSeparator1: TMenuItem
       Caption = '-'
@@ -667,15 +535,33 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object N2: TMenuItem
       Caption = '-'
     end
-    object PopupMenuObjectsColumns: TMenuItem
+    object mCopyObject: TMenuItem
+      Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
+    end
+    object mN3: TMenuItem
+      Caption = '-'
+    end
+    object mShowActual: TMenuItem
+      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1072#1082#1090#1091#1072#1083#1100#1085#1099#1077
+      Checked = True
+      OnClick = mShowActualClick
+    end
+    object mShowAll: TMenuItem
+      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1089#1077
+      OnClick = mShowAllClick
+    end
+    object mN4: TMenuItem
+      Caption = '-'
+    end
+    object mN6: TMenuItem
       Caption = #1050#1086#1083#1086#1085#1082#1080
-      OnClick = PopupMenuObjectsColumnsClick
+      OnClick = mN6Click
     end
   end
   object PopupMenuEstimates: TPopupMenu
     OnPopup = PopupMenuEstimatesPopup
-    Left = 256
-    Top = 400
+    Left = 24
+    Top = 448
     object PopupMenuEstimatesAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       object PMEstimatesAddLocal: TMenuItem
@@ -727,8 +613,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   end
   object PMActs: TPopupMenu
     OnPopup = PMActsPopup
-    Left = 456
-    Top = 384
+    Left = 376
+    Top = 440
     object PMActsOpen: TMenuItem
       Caption = #1054#1090#1082#1088#1099#1090#1100
       OnClick = PMActsOpenClick
@@ -745,9 +631,31 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1059#1076#1072#1083#1080#1090#1100
       OnClick = PMActsDeleteClick
     end
+    object mRepAct: TMenuItem
+      Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      OnClick = mRepActClick
+    end
     object pmActProperty: TMenuItem
       Caption = #1057#1074#1086#1081#1089#1090#1074#1072
       OnClick = pmActPropertyClick
+    end
+    object mN5: TMenuItem
+      Caption = '-'
+    end
+    object mREM6KC: TMenuItem
+      Caption = #1042#1099#1085#1077#1089#1090#1080' '#1080#1079' 6'#1050#1057
+      OnClick = mREM6KCClick
+    end
+    object mADD6KC: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' 6'#1050#1057
+      OnClick = mADD6KCClick
+    end
+    object mN8: TMenuItem
+      Caption = '-'
+    end
+    object mCopy: TMenuItem
+      Caption = #1050#1086#1087#1080#1103
+      OnClick = mCopyClick
     end
   end
   object qrActsEx: TFDQuery
@@ -758,34 +666,66 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
         SourceDataType = dtMemo
         TargetDataType = dtAnsiString
       end>
+    FormatOptions.DefaultParamDataType = ftBCD
+    UpdateOptions.UpdateTableName = 'smeta.card_acts'
+    UpdateOptions.KeyFields = 'ID'
     SQL.Strings = (
-      'SELECT *'
-      'FROM '
-      '  card_acts'
-      'WHERE ID_ESTIMATE_OBJECT = :SM_ID')
-    Left = 393
-    Top = 384
+      'SELECT card_acts.*, '
+      '(YEAR(card_acts.date)*12+MONTH(card_acts.date)) AS PARENT_ID,'
+      'ID AS MASTER_ID,'
+      
+        'CONCAT(IF(card_acts.FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), card_acts.name) A' +
+        'S ITEAM_NAME'
+      'FROM card_acts'
+      'WHERE ID_ESTIMATE_OBJECT = :SM_ID'
+      'UNION ALL'
+      
+        'SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NU' +
+        'LL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, '
+      '0 AS PARENT_ID, '
+      '(YEAR(card_acts.date)*12+MONTH(card_acts.date)) AS MASTER_ID,'
+      'CONCAT(YEAR(card_acts.date), " ", ('
+      'case MONTH(card_acts.date) '
+      'WHEN 1 THEN "'#1071#1053#1042#1040#1056#1068'"'
+      'WHEN 2 THEN "'#1060#1045#1042#1056#1040#1051#1068'"'
+      'WHEN 3 THEN "'#1052#1040#1056#1058'"'
+      'WHEN 4 THEN "'#1040#1055#1056#1045#1051#1068'"'
+      'WHEN 5 THEN "'#1052#1040#1049'"'
+      'WHEN 6 THEN "'#1048#1070#1053#1068'"'
+      'WHEN 7 THEN "'#1048#1070#1051#1068'"'
+      'WHEN 8 THEN "'#1040#1042#1043#1059#1057#1058'"'
+      'WHEN 9 THEN "'#1057#1045#1053#1058#1071#1041#1056#1068'"'
+      'WHEN 10 THEN "'#1054#1050#1058#1071#1041#1056#1068'"'
+      'WHEN 11 THEN "'#1053#1054#1071#1041#1056#1068'"'
+      'WHEN 12 THEN "'#1044#1045#1050#1040#1041#1056#1068'"'
+      'END)) AS ITEAM_NAME'
+      'FROM card_acts'
+      'WHERE ID_ESTIMATE_OBJECT = :SM_ID'
+      'GROUP BY (YEAR(card_acts.date)*12+MONTH(card_acts.date))'
+      'ORDER BY date')
+    Left = 377
+    Top = 344
     ParamData = <
       item
         Name = 'SM_ID'
         DataType = ftInteger
         ParamType = ptInput
-        Value = Null
+        Value = 0
       end>
   end
   object qrTmp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 273
-    Top = 192
+    Left = 649
+    Top = 208
   end
   object qrObjects: TFDQuery
     AfterOpen = qrObjectsAfterOpen
@@ -833,7 +773,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       '       objstroj.name          AS "OXROPR",'
       '       encrypt                AS "CodeObject",'
       '       calc_econom            AS "CalculationEconom",'
-      '       obj_id'
+      '       obj_id,'
+      '       objcards.DEL_FLAG'
       'FROM   objcards,'
       '       istfin,'
       '       objcategory,'
@@ -844,21 +785,26 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       '       AND objcards.region_id = regions.region_id'
       '       AND objcards.base_norm_id = baseprices.base_id'
       '       AND objcards.stroj_id = objstroj.stroj_id'
-      'ORDER BY'
-      '       num,'
-      '       num_dog,'
-      '       objcards.full_name     ASC')
-    Left = 49
-    Top = 192
+      '       AND ((objcards.DEL_FLAG=0) OR (:SHOW_DELETED=1))'
+      'ORDER BY num, num_dog,objcards.full_name')
+    Left = 33
+    Top = 72
+    ParamData = <
+      item
+        Name = 'SHOW_DELETED'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
+      end>
   end
   object dsActs: TDataSource
     DataSet = qrActsEx
-    Left = 425
-    Top = 384
+    Left = 377
+    Top = 392
   end
   object dsTreeData: TDataSource
     DataSet = qrTreeData
-    Left = 216
+    Left = 24
     Top = 400
   end
   object qrTreeData: TFDQuery
@@ -888,8 +834,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       'WHERE SM_TYPE<>2 AND '
       '      OBJ_ID=:OBJ_ID'
       'ORDER BY NAME')
-    Left = 177
-    Top = 400
+    Left = 25
+    Top = 352
     ParamData = <
       item
         Name = 'OBJ_ID'
@@ -901,12 +847,19 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   end
   object SaveDialog: TSaveDialog
     Filter = 'xml|*.xml'
-    Left = 472
-    Top = 197
+    Left = 648
+    Top = 109
   end
   object OpenDialog: TOpenDialog
     Filter = 'xml|*.xml'
-    Left = 536
-    Top = 197
+    Left = 648
+    Top = 61
+  end
+  object JvFormStorage1: TJvFormStorage
+    AppStorage = FormMain.JvAppIniFileStorage1
+    AppStoragePath = '%FORM_NAME%'
+    StoredValues = <>
+    Left = 648
+    Top = 160
   end
 end

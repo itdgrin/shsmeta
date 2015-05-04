@@ -693,4 +693,13 @@
     Left = 32
     Top = 120
   end
+  object JvAppIniFileStorage1: TJvAppIniFileStorage
+    StorageOptions.BooleanStringTrueValues = 'TRUE, YES, Y'
+    StorageOptions.BooleanStringFalseValues = 'FALSE, NO, N'
+    FileName = 'Smeta.ini'
+    DefaultSection = 'JvAppIniFileStorage'
+    SubStorages = <>
+    Left = 32
+    Top = 176
+  end
 end

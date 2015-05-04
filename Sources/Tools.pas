@@ -31,7 +31,7 @@ procedure LoadDBGridSettings(const DBGrid: TDBGrid);
 // Процедура рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
 // Процедура переоткрытия запроса TFDQuery с локейтом на значение Поля[0]
-procedure CloseOpen(const Query: TFDQuery; ADeactivateAfterScrollEvent: boolean = False);
+procedure CloseOpen(const Query: TFDQuery; ADisableControls: boolean = True);
 // Процедура загрузки стилей всех таблиц на форме
 procedure LoadDBGridsSettings(const aForm: TForm);
 // Функция проверки TDataSet на активность и пустоту
@@ -203,13 +203,14 @@ begin
       LoadDBGridSettings((aForm.Components[i] as TDBGrid));
 end;
 
-procedure CloseOpen(const Query: TFDQuery; ADeactivateAfterScrollEvent: boolean = False);
+procedure CloseOpen(const Query: TFDQuery; ADisableControls: boolean = True);
 var
   Key: Variant;
   // E: TDataSetNotifyEvent;
 begin
   // E := Query.AfterScroll;
-  Query.DisableControls;
+  if ADisableControls then
+    Query.DisableControls;
   try
     // Query.AfterScroll := nil;
     Key := Null;
@@ -221,7 +222,8 @@ begin
       Query.Locate(Query.Fields[0].FieldName, Key, []);
   finally
     // Query.AfterScroll := E;
-    Query.EnableControls;
+    if ADisableControls then
+      Query.EnableControls;
   end;
 end;
 

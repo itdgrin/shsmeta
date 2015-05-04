@@ -596,7 +596,7 @@ begin
           '", region_id = "' + v14 + '", base_norm_id = "' + v15 + '", stroj_id = "' + v16 + '", encrypt = "'
           + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
           '", PER_TEMP_BUILD=:PER_TEMP_BUILD, PER_CONTRACTOR=:PER_CONTRACTOR, '#13 +
-          'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
+          'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK, CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
           IntToStr(IdObject) + '";')
       else
         SQL.Add('INSERT INTO objcards (num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '

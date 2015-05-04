@@ -6,7 +6,7 @@ uses
   Classes, Windows, Messages, SysUtils, Variants, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
   ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, ArhivModule,
-  Data.DB, GlobsAndConst, Vcl.Imaging.pngimage;
+  Data.DB, GlobsAndConst, Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
@@ -128,7 +128,8 @@ type
     JSMenu6: TMenuItem;
     JSMenu7: TMenuItem;
     JSMenu8: TMenuItem;
-    jsMenu5: TMenuItem;    procedure TariffsTransportationClick(Sender: TObject);
+    jsMenu5: TMenuItem;
+    JvAppIniFileStorage1: TJvAppIniFileStorage;    procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
     procedure TariffsIndexClick(Sender: TObject);

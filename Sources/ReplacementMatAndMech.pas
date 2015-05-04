@@ -391,7 +391,7 @@ end;
 
 procedure TfrmReplacement.grdRepSetEditText(Sender: TObject; ACol,
   ARow: Integer; const Value: string);
-var i: Integer;
+//var i: Integer;
 begin
   if (ACol = 1) then
   begin
@@ -889,7 +889,7 @@ begin
 end;
 
 procedure TfrmReplacement.ChangeType(AType: byte);
-var TmpStr: string;
+//var TmpStr: string;
 begin
   case AType of
     //Материалы

@@ -25,24 +25,33 @@ object fKC6Journal: TfKC6Journal
     Top = 57
     Width = 962
     Height = 343
-    ActivePage = ts1
+    ActivePage = tsEstimate
     Align = alClient
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     MultiLine = True
+    ParentFont = False
+    Style = tsFlatButtons
     TabOrder = 1
-    TabPosition = tpLeft
     OnChange = pgcPageChange
-    ExplicitLeft = -8
-    ExplicitWidth = 965
-    object ts1: TTabSheet
+    object tsEstimate: TTabSheet
       Caption = #1055#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 717
-      ExplicitHeight = 0
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabVisible = False
+      ExplicitTop = 27
+      ExplicitHeight = 312
       object spl1: TSplitter
         Left = 0
         Top = 121
-        Width = 934
+        Width = 954
         Height = 3
         Cursor = crVSplit
         Align = alTop
@@ -50,8 +59,8 @@ object fKC6Journal: TfKC6Journal
       end
       object spl2: TSplitter
         Left = 0
-        Top = 272
-        Width = 934
+        Top = 270
+        Width = 954
         Height = 3
         Cursor = crVSplit
         Align = alBottom
@@ -62,7 +71,7 @@ object fKC6Journal: TfKC6Journal
       object tvEstimates: TJvDBTreeView
         Left = 0
         Top = 0
-        Width = 934
+        Width = 954
         Height = 121
         DataSource = dsTreeData
         MasterField = 'SM_ID'
@@ -78,12 +87,11 @@ object fKC6Journal: TfKC6Journal
         OnClick = tvEstimatesClick
         RowSelect = True
         Mirror = False
-        ExplicitWidth = 717
       end
       object dbgrd2: TDBGrid
         Left = 0
-        Top = 275
-        Width = 934
+        Top = 273
+        Width = 954
         Height = 60
         Align = alBottom
         DataSource = dsDetail
@@ -146,8 +154,8 @@ object fKC6Journal: TfKC6Journal
       object dbgrdData: TDBGrid
         Left = 0
         Top = 124
-        Width = 934
-        Height = 148
+        Width = 954
+        Height = 146
         Align = alClient
         DataSource = dsData
         DrawingStyle = gdsClassic
@@ -166,20 +174,60 @@ object fKC6Journal: TfKC6Journal
         TitleFont.Style = []
       end
     end
-    object ts2: TTabSheet
+    object tsPTM: TTabSheet
       Caption = #1055#1086' '#1055#1058#1052
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 717
-      ExplicitHeight = 0
+      ParentFont = False
+      TabVisible = False
+      ExplicitTop = 27
+      ExplicitHeight = 312
       object dbgrdPTM: TDBGrid
         Left = 0
         Top = 0
-        Width = 934
-        Height = 335
+        Width = 954
+        Height = 333
         Align = alClient
         DataSource = dsPTM
+        DrawingStyle = gdsClassic
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        ParentFont = False
+        TabOrder = 0
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+      end
+    end
+    object tsSM: TTabSheet
+      Caption = #1055#1086' '#1089#1084#1077#1090#1072#1084
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ImageIndex = 2
+      ParentFont = False
+      TabVisible = False
+      ExplicitTop = 27
+      ExplicitHeight = 312
+      object dbgrdEstimate: TDBGrid
+        Left = 0
+        Top = 0
+        Width = 954
+        Height = 333
+        Align = alClient
+        DataSource = dsEstimate
         DrawingStyle = gdsClassic
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -203,8 +251,13 @@ object fKC6Journal: TfKC6Journal
     Width = 962
     Height = 57
     Align = alTop
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 0
-    ExplicitTop = -2
     DesignSize = (
       962
       57)
@@ -230,13 +283,19 @@ object fKC6Journal: TfKC6Journal
       Caption = #1087#1086
     end
     object cbbMode: TComboBox
-      Left = 723
+      Left = 650
       Top = 30
       Width = 83
       Height = 21
       Style = csDropDownList
       Anchors = [akTop, akRight]
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
       ItemIndex = 0
+      ParentFont = False
       TabOrder = 7
       TabStop = False
       Text = #1082#1086#1083#1080#1095#1077#1089#1090#1074#1086
@@ -246,25 +305,37 @@ object fKC6Journal: TfKC6Journal
         #1089#1090#1086#1080#1084#1086#1089#1090#1100)
     end
     object rbRates: TRadioButton
-      Left = 812
+      Left = 739
       Top = 32
       Width = 84
       Height = 17
       Anchors = [akTop, akRight]
       Caption = #1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084
       Checked = True
-      TabOrder = 8
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 9
       TabStop = True
       OnClick = rbRatesClick
     end
     object rbPTM: TRadioButton
-      Left = 902
+      Left = 829
       Top = 32
       Width = 56
       Height = 17
       Anchors = [akTop, akRight]
       Caption = #1087#1086' '#1055#1058#1052
-      TabOrder = 9
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 10
       OnClick = rbRatesClick
     end
     object cbbFromMonth: TComboBox
@@ -369,6 +440,22 @@ object fKC6Journal: TfKC6Journal
       Caption = #1042#1082#1083#1102#1095#1080#1090#1100' '#1089#1090#1086#1080#1084'. '#1079#1080#1084'. '#1091#1076#1086#1088'.'
       TabOrder = 2
       OnClick = cbbFromMonthChange
+    end
+    object rbSM: TRadioButton
+      Left = 884
+      Top = 31
+      Width = 74
+      Height = 19
+      Anchors = [akTop, akRight]
+      Caption = #1087#1086' '#1089#1084#1077#1090#1072#1084
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 8
+      OnClick = rbRatesClick
     end
   end
   object qrTreeData: TFDQuery
@@ -841,6 +928,29 @@ object fKC6Journal: TfKC6Journal
   object dsPTM: TDataSource
     DataSet = qrPTM
     Left = 232
+    Top = 136
+  end
+  object qrEstimate: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    FormatOptions.DefaultParamDataType = ftBCD
+    FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ###'
+    Left = 289
+    Top = 136
+  end
+  object dsEstimate: TDataSource
+    DataSet = qrEstimate
+    Left = 320
     Top = 136
   end
 end
