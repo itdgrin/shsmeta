@@ -30,7 +30,7 @@ type
     PopupMenuObjectsEdit: TMenuItem;
     mDelete: TMenuItem;
     PopupMenuObjectsSeparator1: TMenuItem;
-    PopupMenuEstimates: TPopupMenu;
+    pmEstimates: TPopupMenu;
     PopupMenuEstimatesAdd: TMenuItem;
     PMEstimatesAddLocal: TMenuItem;
     PMEstimatesAddObject: TMenuItem;
@@ -46,7 +46,7 @@ type
     SplitterBottomCenter: TSplitter;
     PanelEstimates: TPanel;
     PanelActs: TPanel;
-    PMActs: TPopupMenu;
+    pmActs: TPopupMenu;
     PMActsAdd: TMenuItem;
     PMActsEdit: TMenuItem;
     PMActsDelete: TMenuItem;
@@ -112,10 +112,10 @@ type
     procedure PMEstimateExpandClick(Sender: TObject);
     procedure PMEstimateCollapseClick(Sender: TObject);
     function GetNumberEstimate(): string;
-    procedure PopupMenuEstimatesPopup(Sender: TObject);
+    procedure pmEstimatesPopup(Sender: TObject);
     procedure PMEstimateExpandSelectedClick(Sender: TObject);
     procedure PMActsAddClick(Sender: TObject);
-    procedure PMActsPopup(Sender: TObject);
+    procedure pmActsPopup(Sender: TObject);
     procedure PMActsDeleteClick(Sender: TObject);
     procedure PMActsEditClick(Sender: TObject);
     procedure PMActsOpenClick(Sender: TObject);
@@ -143,6 +143,7 @@ type
     procedure dbgrdObjectsTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
     procedure mN6Click(Sender: TObject);
     procedure mCopyClick(Sender: TObject);
+    procedure mCopyObjectClick(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
 
@@ -373,6 +374,46 @@ begin
   CloseOpen(qrActsEx, False);
 end;
 
+procedure TFormObjectsAndEstimates.mCopyObjectClick(Sender: TObject);
+var
+  tmpFileName: string;
+  old_name: string;
+begin
+  FormMain.PanelCover.Visible := True;
+  FormWaiting.Height := 110;
+  FormWaiting.Show;
+  old_name := qrObjects.FieldByName('Name').AsString;
+  Application.ProcessMessages;
+  try
+    tmpFileName := GetEnvironmentVariable('temp') + '\' + 'tmpobj.xml';
+    if TFile.Exists(tmpFileName) then
+      TFile.Delete(tmpFileName);
+    FormWaiting.lbProcess.caption := 'Копирование объекта: ' + qrObjects.FieldByName('Name').AsString;
+
+    qrObjects.Edit;
+    qrObjects.FieldByName('Name').AsString := old_name + '*';
+    qrObjects.Post;
+
+    Application.ProcessMessages;
+    ExportObject(qrObjects.Fields[0].AsInteger, tmpFileName);
+    Application.ProcessMessages;
+    ImportObject(tmpFileName);
+    Application.ProcessMessages;
+  finally
+    qrObjects.Edit;
+    qrObjects.FieldByName('Name').AsString := old_name;
+    qrObjects.Post;
+
+    if TFile.Exists(tmpFileName) then
+      TFile.Delete(tmpFileName);
+    FormWaiting.Close;
+    FormWaiting.Height := 88;
+    FormWaiting.lbProcess.caption := '';
+    FormMain.PanelCover.Visible := False;
+  end;
+  FillingTableObjects;
+end;
+
 procedure TFormObjectsAndEstimates.mDeleteClick(Sender: TObject);
 var
   NumberObject: string;
@@ -436,6 +477,8 @@ end;
 procedure TFormObjectsAndEstimates.qrObjectsAfterScroll(DataSet: TDataSet);
 begin
   IdObject := DataSet.FieldByName('IdObject').AsVariant;
+  CloseOpen(qrTreeData, False);
+  CloseOpen(qrActsEx, False);
 end;
 
 procedure TFormObjectsAndEstimates.qrTreeDataAfterOpen(DataSet: TDataSet);
@@ -579,7 +622,7 @@ begin
   OpenAct(FormObjectsAndEstimates.IDAct);
 end;
 
-procedure TFormObjectsAndEstimates.PMActsPopup(Sender: TObject);
+procedure TFormObjectsAndEstimates.pmActsPopup(Sender: TObject);
 begin
   // Если не выделена смета или выделена, но не объектная
   PMActsOpen.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value));
@@ -827,7 +870,7 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.PopupMenuEstimatesPopup(Sender: TObject);
+procedure TFormObjectsAndEstimates.pmEstimatesPopup(Sender: TObject);
 begin
   PMEstimatesEdit.Enabled := False;
   PMEstimatesDelete.Enabled := False;

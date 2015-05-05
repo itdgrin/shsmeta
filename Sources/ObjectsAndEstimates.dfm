@@ -417,7 +417,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           Font.Name = 'Tahoma'
           Font.Style = []
           TabOrder = 0
-          PopupMenu = PopupMenuEstimates
+          OnDblClick = tvEstimatesDblClick
+          PopupMenu = pmEstimates
           ParentFont = False
           RowSelect = True
           Mirror = False
@@ -480,7 +481,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           Font.Style = []
           TabOrder = 0
           OnDblClick = tvEstimatesDblClick
-          PopupMenu = PMActs
+          PopupMenu = pmActs
           ParentFont = False
           RowSelect = True
           Mirror = False
@@ -537,6 +538,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     end
     object mCopyObject: TMenuItem
       Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
+      OnClick = mCopyObjectClick
     end
     object mN3: TMenuItem
       Caption = '-'
@@ -558,8 +560,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       OnClick = mN6Click
     end
   end
-  object PopupMenuEstimates: TPopupMenu
-    OnPopup = PopupMenuEstimatesPopup
+  object pmEstimates: TPopupMenu
+    OnPopup = pmEstimatesPopup
     Left = 24
     Top = 448
     object PopupMenuEstimatesAdd: TMenuItem
@@ -611,8 +613,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       OnClick = PMEstimateCollapseClick
     end
   end
-  object PMActs: TPopupMenu
-    OnPopup = PMActsPopup
+  object pmActs: TPopupMenu
+    OnPopup = pmActsPopup
     Left = 376
     Top = 440
     object PMActsOpen: TMenuItem
