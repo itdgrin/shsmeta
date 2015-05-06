@@ -16,10 +16,10 @@ type
     Name,
     Unt: string;
     CoastNDS,
-    CoactNoNDS: Extended;
+    CoastNoNDS: Extended;
     MType: byte;
   end;
-
+  PSprRecord = ^TSprRecord;
   TSprArray = array of TSprRecord;
 
 const

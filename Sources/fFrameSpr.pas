@@ -68,6 +68,7 @@ type
     constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
       const AStarDate: TDateTime); reintroduce;
     procedure LoadSpr;
+    function FindCode(const ACode: string): PSprRecord;
   end;
 
 implementation
@@ -77,6 +78,19 @@ implementation
 uses DataModule, Tools;
 
 { TSprFrame }
+
+function TSprFrame.FindCode(const ACode: string): PSprRecord;
+var i: Integer;
+begin
+  Result := nil;
+  for i := Low(FSprArray) to High(FSprArray) do
+      if SameText(ACode, FSprArray[i].Code) then
+      begin
+        Result := @FSprArray[i];
+        Exit;
+      end;
+
+end;
 
 procedure TSprFrame.FillSprArray(ADataSet: TDataSet);
 var ind: Integer;
@@ -109,7 +123,7 @@ begin
         if FPriceColumn then
         begin
           FSprArray[ind - 1].CoastNDS := ADataSet.Fields[4].AsFloat;
-          FSprArray[ind - 1].CoactNoNDS := ADataSet.Fields[5].AsFloat;
+          FSprArray[ind - 1].CoastNoNDS := ADataSet.Fields[5].AsFloat;
         end;
 
         SpecialFillArray(ind, ADataSet);
@@ -303,7 +317,7 @@ begin
     if FPriceColumn then
     begin
       Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNDS));
-      Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoactNoNDS));
+      Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNoNDS));
     end;
   end;
   DefaultDraw := True;

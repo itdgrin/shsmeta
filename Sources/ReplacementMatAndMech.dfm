@@ -350,7 +350,7 @@ object frmReplacement: TfrmReplacement
       Width = 748
       Height = 72
       Align = alClient
-      ColCount = 6
+      ColCount = 8
       DefaultRowHeight = 16
       RowCount = 2
       Font.Charset = DEFAULT_CHARSET

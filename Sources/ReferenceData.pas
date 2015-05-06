@@ -5,8 +5,8 @@ interface
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, Vcl.Dialogs,
   fFrameRates, fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments,
-  fFrameOXROPR, fFrameSSR, fFrameMaterial, fFrameMechanizm, fFrameSmeta,
-  GlobsAndConst, Vcl.StdCtrls, System.SysUtils;
+  fFrameOXROPR, fFrameSSR, fFrameMaterial, fFrameMechanizm, fFrameEquipment,
+  fFrameSmeta, GlobsAndConst, Vcl.StdCtrls, System.SysUtils;
 
 type
   TFormReferenceData = class(TForm)
@@ -42,7 +42,7 @@ type
     FrameRates: TFrameRates;
     FramePriceMaterials: TSprMaterial;
     FramePriceMechanizms: TSprMechanizm;
-    FrameEquipments: TFrameEquipment;
+    FrameEquipments: TSprEquipment;
     FrameOXROPR: TFrameOXROPR;
     FrameSSR: TFrameSSR;
   end;
@@ -124,8 +124,9 @@ begin
   FramePriceMechanizms.Visible := False;
   SpeedButtonMechanizms.Tag := Integer(FramePriceMechanizms);
 
-  FrameEquipments := TFrameEquipment.Create(Self, vDataBase, False);
+  FrameEquipments := TSprEquipment.Create(Self, False);
   FrameEquipments.Parent := Self;
+  FrameEquipments.LoadSpr;
   FrameEquipments.Align := alClient;
   FrameEquipments.Visible := False;
   SpeedButtonEquipments.Tag := Integer(FrameEquipments);

@@ -2354,10 +2354,15 @@ var
 begin
   NewCode := AnsiUpperCase(qrRatesExOBJ_CODE.AsString);
   grRatesEx.EditorMode := False;
+
+  if Length(NewCode) = 0 then
+    Exit;
+
   NewID := 0;
 
   // Замена литинских на кирилические
-  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or (NewCode[1] = 'W')
+  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or
+    (NewCode[1] = 'Ц') or (NewCode[1] = 'W') or (NewCode[1] = '0')
   then // E кирилическая и латинская
   begin
     if (NewCode[1] = 'E') or (NewCode[1] = 'T') then
@@ -2387,7 +2392,8 @@ begin
     Exit;
   end;
 
-  if (NewCode[1] = 'С') or (NewCode[1] = 'C') then // C кирилическая и латинская
+  if (NewCode[1] = 'С') or (NewCode[1] = 'C') or // C кирилическая и латинская
+    ((Length(NewCode) > 1) and (NewCode[1] = '5') and CharInSet(NewCode[2], ['7', '8'])) then
   begin
     if NewCode[1] = 'C' then
       NewCode[1] := 'С';
@@ -2436,7 +2442,7 @@ begin
     Exit;
   end;
 
-  if CharInSet(NewCode[1], ['0' .. '9']) then
+  if CharInSet(NewCode[1], ['1', '9']) then
   begin
     qrTemp.Active := False;
     qrTemp.SQL.Clear;

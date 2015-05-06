@@ -33,6 +33,7 @@ constructor TSprEquipment.Create(AOwner: TComponent;
 begin
   FAllowAddition := vAllowAddition;
   inherited Create(AOwner, False, Date);
+  PanelSettings.Visible := False;
 end;
 
 function TSprEquipment.GetSprSQL: string;

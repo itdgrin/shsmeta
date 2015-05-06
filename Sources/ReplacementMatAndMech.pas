@@ -297,7 +297,7 @@ begin
   end;
 
   //Правила редактирования коэф. пересчета
-  if (grdRep.Col = 4) then
+  if (grdRep.Col = 6) then
   begin
     if CharInSet(Key, [^C, ^X, ^Z]) then
       Exit;
@@ -371,13 +371,13 @@ procedure TfrmReplacement.grdRepSelectCell(Sender: TObject; ACol,
   ARow: Integer; var CanSelect: Boolean);
 var s: string;
 begin
-  if ACol in [1,4] then
+  if ACol in [1,6] then
     grdRep.Options := grdRep.Options + [goEditing]
   else
     grdRep.Options := grdRep.Options - [goEditing];
 
   //Убирает разделитель в конце, если не ввели дробную часть
-  if (grdRep.Col = 4)then
+  if (grdRep.Col = 6)then
   begin
     s := grdRep.Cells[grdRep.Col, grdRep.Row];
     if (Length(s) > 0) and (s[High(s)] = FormatSettings.DecimalSeparator) then
@@ -391,21 +391,27 @@ end;
 
 procedure TfrmReplacement.grdRepSetEditText(Sender: TObject; ACol,
   ARow: Integer; const Value: string);
-//var i: Integer;
+var SprRec: PSprRecord;
 begin
   if (ACol = 1) then
   begin
-   { //Если ввели код находит соответсткие и подставляет наименование
-    for i := Low(FSprArray) to High(FSprArray) do
-      if SameText(grdRep.Cells[1, ARow], FSprArray[i].Code) then
-      begin
-        grdRep.Cells[5, ARow] := FSprArray[i].ID.ToString;
-        grdRep.Cells[2, ARow] := FSprArray[i].Name;
-        Exit;
-      end;
-      }
-    grdRep.Cells[2, ARow] := '';
-    grdRep.Cells[5, ARow] := '';
+    SprRec := Frame.FindCode(grdRep.Cells[1, ARow]);
+    if Assigned(SprRec) then
+    begin
+      grdRep.Cells[2, ARow] := SprRec^.Name;
+      grdRep.Cells[3, ARow] := SprRec^.Unt;
+      grdRep.Cells[4, ARow] := IntToStr(Round(SprRec^.CoastNDS));
+      grdRep.Cells[5, ARow] := IntToStr(Round(SprRec^.CoastNoNDS));
+      grdRep.Cells[7, ARow] := SprRec^.ID.ToString;
+    end
+    else
+    begin
+      grdRep.Cells[2, ARow] := '';
+      grdRep.Cells[3, ARow] := '';
+      grdRep.Cells[4, ARow] := '';
+      grdRep.Cells[5, ARow] := '';
+      grdRep.Cells[7, ARow] := '';
+    end;
   end;
 end;
 
@@ -467,7 +473,7 @@ begin
     if FFlag then
     begin
       Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNDS));
-      Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoactNoNDS));
+      Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNoNDS));
     end;
   end;
   DefaultDraw := True;
@@ -515,24 +521,28 @@ begin
 
   //Зачем этот код именно в Create не известно
   grdRep.ColWidths[0] := 20;
-  grdRep.ColWidths[1] := 100;
-  grdRep.ColWidths[2] := 440;
+  grdRep.ColWidths[1] := 90;
+  grdRep.ColWidths[2] := 260;
   grdRep.ColWidths[3] := 70;
+  grdRep.ColWidths[4] := 100;
+  grdRep.ColWidths[5] := 100;
   if FAddMode then
-    grdRep.ColWidths[4] := -1
+    grdRep.ColWidths[6] := -1
   else
-    grdRep.ColWidths[4] := 70;
-  grdRep.ColWidths[5] := -1;
+    grdRep.ColWidths[6] := 70;
+  grdRep.ColWidths[7] := -1;
 
   grdRep.Cells[0,0] := '№';
   grdRep.Cells[1,0] := 'Код';
   grdRep.Cells[2,0] := 'Наименование';
   grdRep.Cells[3,0] := 'Ед. изм.';
-  grdRep.Cells[4,0] := 'Коэф. пер.';
-  grdRep.Cells[5,0] := 'ID';
+  grdRep.Cells[4,0] := 'Цена с НДС, руб';
+  grdRep.Cells[5,0] := 'Цена без НДС, руб';
+  grdRep.Cells[6,0] := 'Коэф. пер.';
+  grdRep.Cells[7,0] := 'ID';
 
   grdRep.Cells[0,1] := '1';
-  grdRep.Cells[4,1] := '1';
+  grdRep.Cells[6,1] := '1';
 
 
   if grdRep.Col = 1 then
@@ -784,13 +794,13 @@ begin
   SetLength(FEstIDArray, ind);
 
   for i := grdRep.FixedRows to grdRep.RowCount - 1 do
-    if (grdRep.Cells[5, i] <> '') then
+    if (grdRep.Cells[7, i] <> '') then
     begin
       Inc(ind);
       SetLength(IDArray, ind);
       SetLength(CoefArray, ind);
-      IDArray[ind - 1] := grdRep.Cells[5, i].ToInteger;
-      CoefArray[ind - 1] := grdRep.Cells[4, i].ToDouble;
+      IDArray[ind - 1] := grdRep.Cells[7, i].ToInteger;
+      CoefArray[ind - 1] := grdRep.Cells[6, i].ToDouble;
     end;
 
   if (Length(IDArray) = 0) and ((not DelOnly) or FAddMode) then
@@ -883,7 +893,11 @@ begin
       TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).Name;
     grdRep.Cells[3, grdRep.Row] :=
       TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).Unt;
+    grdRep.Cells[4, grdRep.Row] :=
+      IntToStr(Round(TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).CoastNDS));
     grdRep.Cells[5, grdRep.Row] :=
+      IntToStr(Round(TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).CoastNoNDS));
+    grdRep.Cells[7, grdRep.Row] :=
       TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).ID.ToString;
   end;
 end;
@@ -944,7 +958,7 @@ begin
   //Добавляет строку в таблицу заменяющих
   grdRep.RowCount := grdRep.RowCount + 1;
   grdRep.Cells[0, grdRep.RowCount - 1] := (grdRep.RowCount - 1).ToString;
-  grdRep.Cells[4, grdRep.RowCount - 1] := '1';
+  grdRep.Cells[6, grdRep.RowCount - 1] := '1';
   grdRep.Row := grdRep.RowCount - 1;
 end;
 
