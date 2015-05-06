@@ -8,7 +8,7 @@ uses
   ActiveX, FireDAC.Comp.Client;
 
 const
-  CTabNameAndID: array [0..16, 0..1] of string =
+  CTabNameAndID: array [0..17, 0..1] of string =
     (('objcards', 'obj_id'),
     ('smetasourcedata', 'SM_ID'),
     ('card_rate', 'ID'),
@@ -25,7 +25,8 @@ const
     ('devicescard_act', 'ID'),
     ('dumpcard_act', 'ID'),
     ('transpcard_act', 'ID'),
-    ('data_act', 'ID'));
+    ('data_act', 'ID'),
+    ('calculation_coef', 'calculation_coef_id'));
 
   procedure ImportObject(const AFileName: string);
   procedure ExportObject(const AIdObject: Integer; const AFileName: string);
@@ -38,7 +39,7 @@ procedure ImportObject(const AFileName: string);
 var XML : IXMLDocument;
     CurNode, Node1, Node2: IXMLNode;
     i, j: Integer;
-    IdConvert: array [0..16, 0..1] of array of Integer;
+    IdConvert: array [0..17, 0..1] of array of Integer;
 
   procedure GetStrAndExcec(ANode: IXMLNode; AType: Integer);
   var i: Integer;
@@ -86,6 +87,7 @@ var XML : IXMLDocument;
     //14 - акт свалки
     //15 - акт транспорт
     //16 - акт data_act
+    //17 - смета calculation_coef
 
     if VarIsNull(ALastID) or (ALastID = 0) then
     begin
@@ -304,6 +306,41 @@ begin
         end;
       Node2 := nil;
       Application.ProcessMessages;
+
+      //загрузка Data_estimate смет
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_calculation_coef');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['calculation_coef_id'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['calculation_coef_id'].NodeValue,17);
+          Node1.ChildNodes.Nodes['id_estimate'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['id_estimate'].NodeValue,1);
+
+          i := 0;
+          case Node1.ChildNodes.Nodes['id_type_data'].NodeValue of
+            1: i := 2;
+            2: i := 3;
+            3: i := 4;
+            4: i := 5;
+            5: i := 6;
+            6, 7, 8, 9: i := 7;
+          end;
+
+          if i > 0  then
+            Node1.ChildNodes.Nodes['id_owner'].NodeValue :=
+              GetNewId(Node1.ChildNodes.Nodes['id_owner'].NodeValue,i);
+
+          Node1.ChildNodes.Nodes['id_coef'].NodeValue := null;
+
+          GetStrAndExcec(Node1, 17);
+          Node1 := nil;
+        end;
+      Node2 := nil;
+      Application.ProcessMessages;
+
       //загрузка актов
       Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Acts');
       if Assigned(Node2) then
@@ -721,6 +758,26 @@ begin
       Node1 := nil;
     end;
     Application.ProcessMessages;
+    //Выгрузка информации из calculation_coef
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text := 'Select * from calculation_coef where ' +
+      '(ID_ESTIMATE in (select SM_ID from smetasourcedata where obj_id = ' +
+      IntToStr(AIdObject) + '))order by calculation_coef_id';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Smeta_calculation_coef');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Line');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+        Node2 := nil;
+      end;
+      Node1 := nil;
+    end;
+    Application.ProcessMessages;
+
     //Выгрузка информации об актах
     DM.qrDifferent.Active := False;
     DM.qrDifferent.SQL.Text := 'Select * from card_acts where ID_ESTIMATE_OBJECT in ' +
@@ -909,6 +966,7 @@ begin
       Node1 := nil;
     end;
     Application.ProcessMessages;
+
     XML.SaveToFile(AFileName);
   finally
     Node2 := nil;
