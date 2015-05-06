@@ -38,8 +38,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     ParentFont = False
     ShowCaption = False
     TabOrder = 0
-    ExplicitTop = 165
-    ExplicitHeight = 337
     object ImageSplitterCenter: TImage
       Left = 304
       Top = 125
@@ -263,7 +261,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 2
-        ExplicitTop = 72
       end
       object pnl1: TPanel
         Left = 0
@@ -343,8 +340,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       ShowCaption = False
       TabOrder = 1
       OnResize = PanelBottomResize
-      ExplicitTop = 105
-      ExplicitHeight = 397
       object ImageSplitterBottomCenter: TImage
         Left = 513
         Top = 73
@@ -377,7 +372,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        ExplicitHeight = 232
         object lbl2: TLabel
           Left = 0
           Top = 0
@@ -422,7 +416,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           ParentFont = False
           RowSelect = True
           Mirror = False
-          ExplicitHeight = 219
         end
       end
       object PanelActs: TPanel
@@ -440,7 +433,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         ParentBackground = False
         ParentFont = False
         TabOrder = 1
-        ExplicitHeight = 232
         object lbl1: TLabel
           Left = 0
           Top = 0
@@ -457,7 +449,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           ParentFont = False
           ExplicitWidth = 156
         end
-        object JvDBTreeView1: TJvDBTreeView
+        object tvActs: TJvDBTreeView
           Left = 0
           Top = 13
           Width = 342
@@ -467,7 +459,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           DetailField = 'PARENT_ID'
           ItemField = 'ITEAM_NAME'
           StartMasterValue = '0'
-          UseFilter = True
+          UseFilter = False
           PersistentNode = True
           ReadOnly = True
           DragMode = dmAutomatic
@@ -484,8 +476,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           PopupMenu = pmActs
           ParentFont = False
           RowSelect = True
+          OnCustomDrawItem = tvActsCustomDrawItem
           Mirror = False
-          ExplicitHeight = 219
         end
       end
     end
@@ -683,8 +675,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       '(YEAR(card_acts.date)*12+MONTH(card_acts.date)) AS PARENT_ID,'
       'ID AS MASTER_ID,'
       
-        'CONCAT(IF(card_acts.FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), card_acts.name) A' +
-        'S ITEAM_NAME'
+        'CONCAT(IF(card_acts.FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), TRIM(card_acts.na' +
+        'me), IF(card_acts.DEL_FLAG=1, "-", "")) AS ITEAM_NAME'
       'FROM card_acts'
       'WHERE ID_ESTIMATE_OBJECT = :SM_ID'
       'UNION ALL'
@@ -859,7 +851,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   end
   object JvFormStorage1: TJvFormStorage
     AppStorage = FormMain.JvAppIniFileStorage1
-    AppStoragePath = '%FORM_NAME%'
+    AppStoragePath = '%FORM_NAME%\'
+    Options = []
     StoredValues = <>
     Left = 648
     Top = 160

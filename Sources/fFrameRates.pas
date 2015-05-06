@@ -7,7 +7,8 @@ uses
   DBGrids, Grids, System.UITypes,
   ExtCtrls, DB, VirtualTrees, fFrameStatusBar, Menus, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta;
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta, JvExDBGrids,
+  JvDBGrid;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -41,7 +42,7 @@ type
     EditRate: TEdit;
     EditCollection: TEdit;
     LabelSbornik: TLabel;
-    PopupMenuRates: TPopupMenu;
+    pmRates: TPopupMenu;
     FindToRates: TMenuItem;
     Panel1: TPanel;
     PanelHorizontal1: TPanel;
@@ -65,7 +66,6 @@ type
     EditWinterPrice: TEdit;
     Panel3: TPanel;
     PanelChangesAdditions: TPanel;
-    Shape1: TShape;
     PanelCAHeader: TPanel;
     PanelNormСonsumption: TPanel;
     PanelNCHeader: TPanel;
@@ -75,13 +75,17 @@ type
     StringGridSW: TStringGrid;
     Splitter2: TSplitter;
     Splitter1: TSplitter;
-    ADOQueryNormativ: TFDQuery;
+    qrNormativ: TFDQuery;
     ADOQueryNC: TFDQuery;
     ADOQuerySW: TFDQuery;
     ADOQueryTemp: TFDQuery;
     tmrFilter: TTimer;
     chk1: TCheckBox;
     chk2: TCheckBox;
+    grHistory: TJvDBGrid;
+    dsHistory: TDataSource;
+    qrHistory: TFDQuery;
+    dsNormativ: TDataSource;
 
     procedure FrameResize(Sender: TObject);
 
@@ -154,7 +158,7 @@ type
 
 implementation
 
-uses Main, DataModule, DrawingTables, CalculationEstimate, ListCollections;
+uses Main, DataModule, DrawingTables, CalculationEstimate, ListCollections, Tools;
 
 {$R *.dfm}
 
@@ -183,7 +187,7 @@ begin
   AllowAddition := vAllowAddition;
 
   // ----------------------------------------
-
+  LoadDBGridSettings(grHistory);
   SettingTable;
 
   Group1 := 0;
@@ -520,7 +524,7 @@ procedure TFrameRates.VSTDblClick(Sender: TObject);
 begin
   // Если разрешено добавлять данные из фрейма
   if AllowAddition then
-    FormCalculationEstimate.AddRate(ADOQueryNormativ.FieldByName('IdNormative').AsInteger);
+    FormCalculationEstimate.AddRate(qrNormativ.FieldByName('IdNormative').AsInteger);
 end;
 
 procedure TFrameRates.VSTEnter(Sender: TObject);
@@ -548,11 +552,11 @@ begin
   if not Assigned(Node) then
     exit;
 
-  ADOQueryNormativ.RecNo := Node.Index + 1;
+  qrNormativ.RecNo := Node.Index + 1;
 
-  IdNormative := ADOQueryNormativ.FieldByName('IdNormative').AsVariant; // Получаем Id норматива
+  IdNormative := qrNormativ.FieldByName('IdNormative').AsVariant; // Получаем Id норматива
 
-  if CharInSet(Char(ADOQueryNormativ.FieldByName('NumberNormative').AsString[1]), ['0' .. '9']) then
+  if CharInSet(Char(qrNormativ.FieldByName('NumberNormative').AsString[1]), ['0' .. '9']) then
     CheckBoxNormСonsumption.Checked := False
   else
     CheckBoxNormСonsumption.Checked := true;
@@ -814,9 +818,9 @@ begin
 
     Active := False;
     SQL.Clear;
-    StrQuery := 'SELECT work_id, s, po FROM onormativs where ((s <= "' + ADOQueryNormativ.FieldByName
-      ('NumberNormative').AsString + '") and (po >= "' + ADOQueryNormativ.FieldByName('NumberNormative')
-      .AsString + '"));';
+    StrQuery := 'SELECT work_id, s, po FROM onormativs where ((s <= "' +
+      qrNormativ.FieldByName('NumberNormative').AsString + '") and (po >= "' +
+      qrNormativ.FieldByName('NumberNormative').AsString + '"));';
     SQL.Add(StrQuery);
     Active := true;
     // Сделано допущение, что идут work_id по порядку от еденицы
@@ -825,6 +829,21 @@ begin
   end;
 
   // ----------------------------------------
+  if VarIsNull(qrNormativ.FieldByName('date_end').Value) then
+  begin
+    Edit5.Text := 'Действующая';
+    Edit5.Color := $0080FF80;
+  end
+  else
+  begin
+    Edit5.Text := 'Недействующая';
+    Edit5.Color := clRed;
+  end;
+
+  qrHistory.ParamByName('NORM_NUM').AsString :=
+    '%' + Trim(StringReplace(qrNormativ.FieldByName('NumberNormative').AsString, '*', '',
+    [rfReplaceAll])) + '%';
+  CloseOpen(qrHistory);
 
   GetWinterPrice;
 end;
@@ -832,10 +851,10 @@ end;
 procedure TFrameRates.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
   TextType: TVSTTextType; var CellText: string);
 begin
-  if not ADOQueryNormativ.Active then
+  if not qrNormativ.Active then
     exit;
 
-  if (ADOQueryNormativ.RecordCount <= 0) then
+  if (qrNormativ.RecordCount <= 0) then
   begin
     case Column of
       0:
@@ -852,13 +871,13 @@ begin
   end;
 
   if Column > 0 then
-    ADOQueryNormativ.RecNo := Node.Index + 1;
+    qrNormativ.RecNo := Node.Index + 1;
 
   case Column of
     0:
       CellText := IntToStr(Node.Index + 1);
     1:
-      CellText := ADOQueryNormativ.FieldByName('NumberNormative').AsVariant;
+      CellText := qrNormativ.FieldByName('NumberNormative').AsVariant;
   end;
 end;
 
@@ -1099,7 +1118,7 @@ begin
       end;
     end;
 
-    with ADOQueryNormativ do
+    with qrNormativ do
     begin
       Condition := '';
       if chk1.Checked and chk2.Checked then
@@ -1118,16 +1137,16 @@ begin
       else
         WhereStr := ' WHERE 1=1 ' + Condition;
       QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
-        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id FROM normativ' + DataBase +
+        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id, date_end FROM normativ' + DataBase +
         WhereStr + Condition + ' ORDER BY NumberNormative ASC;';
 
       SQL.Add(QueryStr);
       Active := true;
     end;
 
-    ADOQueryNormativ.FetchOptions.RecordCountMode := cmTotal;
+    qrNormativ.FetchOptions.RecordCountMode := cmTotal;
 
-    if ADOQueryNormativ.RecordCount <= 0 then
+    if qrNormativ.RecordCount <= 0 then
     begin
       VST.RootNodeCount := 1;
       VST.ClearSelection;
@@ -1136,17 +1155,17 @@ begin
     end
     else
     begin
-      VST.RootNodeCount := ADOQueryNormativ.RecordCount;
+      VST.RootNodeCount := qrNormativ.RecordCount;
       VST.Selected[VST.GetFirst] := true;
       VST.FocusedNode := VST.GetFirst;
     end;
 
-    FrameStatusBar.InsertText(0, IntToStr(ADOQueryNormativ.RecordCount));
+    FrameStatusBar.InsertText(0, IntToStr(qrNormativ.RecordCount));
 
-    if ADOQueryNormativ.RecordCount > 0 then
+    if qrNormativ.RecordCount > 0 then
       VSTFocusChanged(VST, VST.FocusedNode, VST.FocusedColumn);
 
-    ADOQueryNormativ.FetchOptions.RecordCountMode := cmVisible;
+    qrNormativ.FetchOptions.RecordCountMode := cmVisible;
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -1315,7 +1334,7 @@ procedure TFrameRates.FilteredRates(const vStr: string);
 { var
   i: Integer; }
 begin
-  with ADOQueryNormativ do
+  with qrNormativ do
   begin
     Filtered := False;
     Filter := vStr;
@@ -1323,7 +1342,7 @@ begin
   end;
 
   try
-    if ADOQueryNormativ.RecordCount <= 0 then
+    if qrNormativ.RecordCount <= 0 then
     begin
       VST.RootNodeCount := 1;
       VST.ClearSelection;
@@ -1332,7 +1351,7 @@ begin
     begin
       VST.FocusedNode := VST.GetFirst;
 
-      VST.RootNodeCount := ADOQueryNormativ.RecordCount;
+      VST.RootNodeCount := qrNormativ.RecordCount;
     end;
   except
     on E: Exception do
@@ -1340,7 +1359,7 @@ begin
         MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  FrameStatusBar.InsertText(0, IntToStr(ADOQueryNormativ.RecordCount));
+  FrameStatusBar.InsertText(0, IntToStr(qrNormativ.RecordCount));
   VST.Repaint;
 end;
 
@@ -1352,7 +1371,7 @@ begin
     with ADOQueryTemp do
     begin
       Active := False;
-      s := ADOQueryNormativ.FieldByName('NumberNormative').AsString;
+      s := qrNormativ.FieldByName('NumberNormative').AsString;
       SQL.Clear;
       SQL.Add('SELECT num, name, s, po FROM znormativs, znormativs_detail WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID AND znormativs.DEL_FLAG = 0 AND '
         + '((s <= ''' + s + ''') and (po >= ''' + s + ''')) LIMIT 1;');

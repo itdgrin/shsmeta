@@ -74,7 +74,7 @@
         Header.Font.Name = 'Tahoma'
         Header.Font.Style = []
         Header.Options = []
-        PopupMenu = PopupMenuRates
+        PopupMenu = pmRates
         RootNodeCount = 10
         ScrollBarOptions.AlwaysVisible = True
         ScrollBarOptions.ScrollBars = ssVertical
@@ -532,18 +532,6 @@
               Height = 58
               BevelOuter = bvNone
               TabOrder = 2
-              object Shape1: TShape
-                Left = 0
-                Top = 20
-                Width = 505
-                Height = 38
-                Align = alClient
-                Pen.Color = clMedGray
-                ExplicitLeft = 184
-                ExplicitTop = 26
-                ExplicitWidth = 139
-                ExplicitHeight = 49
-              end
               object PanelCAHeader: TPanel
                 Left = 0
                 Top = 0
@@ -561,6 +549,55 @@
                 ParentBackground = False
                 ParentFont = False
                 TabOrder = 0
+              end
+              object grHistory: TJvDBGrid
+                Left = 0
+                Top = 20
+                Width = 505
+                Height = 38
+                Align = alClient
+                DataSource = dsHistory
+                Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+                TabOrder = 1
+                TitleFont.Charset = DEFAULT_CHARSET
+                TitleFont.Color = clWindowText
+                TitleFont.Height = -11
+                TitleFont.Name = 'Tahoma'
+                TitleFont.Style = []
+                AutoSizeColumns = True
+                SelectColumnsDialogStrings.Caption = 'Select columns'
+                SelectColumnsDialogStrings.OK = '&OK'
+                SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+                EditControls = <>
+                RowsHeight = 17
+                TitleRowHeight = 17
+                Columns = <
+                  item
+                    Alignment = taCenter
+                    Expanded = False
+                    FieldName = 'date_beginer'
+                    Title.Alignment = taCenter
+                    Title.Caption = #1044#1072#1090#1072' '#1085#1072#1095'.'
+                    Width = 77
+                    Visible = True
+                  end
+                  item
+                    Alignment = taCenter
+                    Expanded = False
+                    FieldName = 'date_end'
+                    Title.Alignment = taCenter
+                    Title.Caption = #1044#1072#1090#1072' '#1086#1082#1086#1085'.'
+                    Width = 77
+                    Visible = True
+                  end
+                  item
+                    Expanded = False
+                    FieldName = 'prikaz'
+                    Title.Alignment = taCenter
+                    Title.Caption = #1054#1089#1085#1086#1074#1072#1085#1080#1077
+                    Width = 327
+                    Visible = True
+                  end>
               end
             end
             object PanelNormСonsumption: TPanel
@@ -675,15 +712,15 @@
       ExplicitWidth = 754
     end
   end
-  object PopupMenuRates: TPopupMenu
-    Left = 32
-    Top = 352
+  object pmRates: TPopupMenu
+    Left = 8
+    Top = 400
     object FindToRates: TMenuItem
       Caption = #1053#1072#1081#1090#1080' '#1074' '#1089#1073#1086#1088#1085#1080#1082#1077
       OnClick = FindToRatesClick
     end
   end
-  object ADOQueryNormativ: TFDQuery
+  object qrNormativ: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -718,5 +755,37 @@
     OnTimer = tmrFilterTimer
     Left = 32
     Top = 96
+  end
+  object dsHistory: TDataSource
+    DataSet = qrHistory
+    Left = 587
+    Top = 376
+  end
+  object qrHistory: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evRecordCountMode]
+    SQL.Strings = (
+      'select distinct date_beginer, date_end, prikaz'
+      'from normativg'
+      
+        'where (NORM_NUM like :NORM_NUM) AND ((`normativg`.`date_end` IS ' +
+        'NOT NULL) OR (`normativg`.`date_beginer` IS NOT NULL))'
+      'ORDER BY date_beginer DESC, date_end DESC')
+    Left = 556
+    Top = 376
+    ParamData = <
+      item
+        Name = 'NORM_NUM'
+        DataType = ftString
+        ParamType = ptInput
+        Value = ''
+      end>
+  end
+  object dsNormativ: TDataSource
+    DataSet = qrNormativ
+    Left = 72
+    Top = 24
   end
 end

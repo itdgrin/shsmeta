@@ -72,7 +72,7 @@ type
     dbmmoFullName: TDBMemo;
     lbl1: TLabel;
     lbl2: TLabel;
-    JvDBTreeView1: TJvDBTreeView;
+    tvActs: TJvDBTreeView;
     pnl1: TPanel;
     mN3: TMenuItem;
     mCopyObject: TMenuItem;
@@ -144,6 +144,8 @@ type
     procedure mN6Click(Sender: TObject);
     procedure mCopyClick(Sender: TObject);
     procedure mCopyObjectClick(Sender: TObject);
+    procedure tvActsCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
+      var DefaultDraw: Boolean);
   private const
     CaptionButton = 'Объекты и сметы';
 
@@ -658,6 +660,17 @@ begin
       MessageBox(0, PChar('При получении номера сметы возникла ошибка:' + sLineBreak + sLineBreak +
         E.message), PWideChar(caption), MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
+end;
+
+procedure TFormObjectsAndEstimates.tvActsCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
+  State: TCustomDrawState; var DefaultDraw: Boolean);
+begin
+  DefaultDraw := True;
+  if Node.Text[1] = 'Б' then
+    Sender.Canvas.Font.Color := clRed;
+
+  if Node.Text[Length(Node.Text)] = '-' then
+    Sender.Canvas.Font.Style := Sender.Canvas.Font.Style + [fsStrikeOut];
 end;
 
 procedure TFormObjectsAndEstimates.mREM6KCClick(Sender: TObject);

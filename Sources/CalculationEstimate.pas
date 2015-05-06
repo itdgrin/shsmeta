@@ -731,7 +731,7 @@ type
     procedure AddCoefToRate(coef_id: Integer);
 
     procedure SetActReadOnly(const Value: Boolean);
-     procedure AddRowToTableRates(FieldRates: TFieldRates);
+    procedure AddRowToTableRates(FieldRates: TFieldRates);
     procedure CreateTempTables;
     procedure OpenAllData;
     procedure Wheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
@@ -762,7 +762,7 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
   AdditionData, CardMaterial, CardDataEstimate,
   ListCollections, CoefficientOrders, KC6,
   CardAct, Tools, Coef, WinterPrice,
-  ReplacementMatAndMech, CardEstimate;
+  ReplacementMatAndMech, CardEstimate, KC6Journal;
 
 {$R *.dfm}
 
@@ -1487,9 +1487,21 @@ end;
 
 procedure TFormCalculationEstimate.Button4Click(Sender: TObject);
 begin
-  if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт сметы',
-    MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
-    FormKC6.MyShow(IdObject);
+  if Act then
+  // для акта
+  begin
+    if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт сметы',
+      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
+      FormKC6.MyShow(IdObject);
+  end
+  // Для сметы
+  else
+  begin
+    if (not Assigned(fKC6Journal)) then
+      fKC6Journal := TfKC6Journal.Create(Self);
+    fKC6Journal.LocateObject(IdObject);
+    fKC6Journal.Show;
+  end;
 end;
 
 procedure TFormCalculationEstimate.PopupMenuTableLeftTechnicalPartClick(Sender: TObject);
@@ -1697,8 +1709,8 @@ begin
   // Вынесенные из расценки // или замененный
   if ((qrMaterialFROM_RATE.AsInteger = 1) and ((qrRatesExID_TYPE_DATA.AsInteger = 1) or
     (qrRatesExID_RATE.AsInteger > 0))) or (qrMaterialREPLACED.AsInteger = 1) or
-    (qrMaterialDELETED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0) or
-    (not(qrMaterialID.AsInteger > 0)) or (qrMaterial.Eof) then
+    (qrMaterialDELETED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0) or (not(qrMaterialID.AsInteger > 0))
+    or (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -1789,7 +1801,7 @@ begin
     flag := False;
 
     if ((qrMaterialID_REPLACED.Value = 0) and (IdReplasedMat > 0)) or
-       ((qrMaterialREPLACED.Value = 0) and (IdReplasingMat > 0)) or
+      ((qrMaterialREPLACED.Value = 0) and (IdReplasingMat > 0)) or
       (IsUnAcc and (not CheckMatUnAccountingMatirials)) then
       flag := True;
 
@@ -1804,8 +1816,7 @@ begin
       MemoRight.Text := qrMaterialMAT_NAME.AsString;
 
     // Для красоты отрисовки
-    if CheckMatUnAccountingMatirials or (IdReplasedMat > 0) or
-     (IdReplasingMat > 0) or flag then
+    if CheckMatUnAccountingMatirials or (IdReplasedMat > 0) or (IdReplasingMat > 0) or flag then
       dbgrdMaterial.Repaint;
   end;
 end;
@@ -1990,7 +2001,7 @@ begin
     flag := False;
 
     if ((qrMechanizmID_REPLACED.Value = 0) and (IdReplasedMech > 0)) or
-       ((qrMechanizmREPLACED.Value = 0) and (IdReplasingMech > 0)) then
+      ((qrMechanizmREPLACED.Value = 0) and (IdReplasingMech > 0)) then
       flag := True;
 
     IdReplasedMech := qrMechanizmID_REPLACED.Value;
@@ -2361,9 +2372,8 @@ begin
   NewID := 0;
 
   // Замена литинских на кирилические
-  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or
-    (NewCode[1] = 'Ц') or (NewCode[1] = 'W') or (NewCode[1] = '0')
-  then // E кирилическая и латинская
+  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or
+    (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
   begin
     if (NewCode[1] = 'E') or (NewCode[1] = 'T') then
       NewCode[1] := 'Е';
@@ -2809,7 +2819,7 @@ end;
 
 procedure TFormCalculationEstimate.PMMatRestoreClick(Sender: TObject);
 begin
-try
+  try
     with qrTemp do
     begin
       Active := False;
@@ -3269,7 +3279,6 @@ begin
   qrTemp.Active := False;
 end;
 
-
 procedure TFormCalculationEstimate.SetActReadOnly(const Value: Boolean);
 begin
   ActReadOnly := Value;
@@ -3309,6 +3318,7 @@ end;
 procedure TFormCalculationEstimate.PopupMenuCoefPopup(Sender: TObject);
 begin
   GetStateCoefOrdersInEstimate;
+
 end;
 
 // вид всплывающего меню материалов
@@ -3326,20 +3336,17 @@ begin
   PMMatAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0);
 
   PMMatDelete.Enabled := (not CheckMatReadOnly) and
-    //Заменяющий
+  // Заменяющий
     (((qrMaterialID_REPLACED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0)) or
-    //Добавленный
+    // Добавленный
     ((qrMaterialADDED.AsInteger > 0) and (qrMaterialFROM_RATE.AsInteger = 0)) or
-    //Вынесеный
+    // Вынесеный
     ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 2)) or
-    //Учтеный
-    ((qrMaterialID_CARD_RATE.AsInteger > 0) and
-     (qrMaterialCONSIDERED.AsInteger = 1) and
-     (qrMaterialID_REPLACED.AsInteger = 0) and
-     (qrMaterialFROM_RATE.AsInteger = 0) and
-     (qrMaterialREPLACED.AsInteger = 0) and
-     (qrMaterialADDED.AsInteger = 0) and
-     (qrMaterialDELETED.AsInteger = 0)));
+    // Учтеный
+    ((qrMaterialID_CARD_RATE.AsInteger > 0) and (qrMaterialCONSIDERED.AsInteger = 1) and
+    (qrMaterialID_REPLACED.AsInteger = 0) and (qrMaterialFROM_RATE.AsInteger = 0) and
+    (qrMaterialREPLACED.AsInteger = 0) and (qrMaterialADDED.AsInteger = 0) and
+    (qrMaterialDELETED.AsInteger = 0)));
 
   PMMatRestore.Enabled := qrMaterialDELETED.AsInteger = 1;
 end;
@@ -3360,19 +3367,16 @@ begin
   PMMechAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0);
 
   PMMechDelete.Enabled := (not CheckMechReadOnly) and
-    //Заменяющий
+  // Заменяющий
     (((qrMechanizmID_REPLACED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0)) or
-    //Добавленный
+    // Добавленный
     ((qrMechanizmADDED.AsInteger > 0) and (qrMechanizmFROM_RATE.AsInteger = 0)) or
-    //Вынесенный
+    // Вынесенный
     ((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 3)) or
-    //Учтеный
-    ((qrMechanizmID_CARD_RATE.AsInteger > 0) and
-     (qrMechanizmID_REPLACED.AsInteger = 0) and
-     (qrMechanizmFROM_RATE.AsInteger = 0) and
-     (qrMechanizmREPLACED.AsInteger = 0) and
-     (qrMechanizmADDED.AsInteger = 0) and
-     (qrMechanizmDELETED.AsInteger = 0)));
+    // Учтеный
+    ((qrMechanizmID_CARD_RATE.AsInteger > 0) and (qrMechanizmID_REPLACED.AsInteger = 0) and
+    (qrMechanizmFROM_RATE.AsInteger = 0) and (qrMechanizmREPLACED.AsInteger = 0) and
+    (qrMechanizmADDED.AsInteger = 0) and (qrMechanizmDELETED.AsInteger = 0)));
 
   PMMechRestore.Enabled := qrMechanizmDELETED.AsInteger = 1;
 end;
@@ -3900,6 +3904,7 @@ begin
   mDelEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4);
   mEditEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4);
   mBaseData.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4);
+  mBaseData.Caption := 'Исходные данные - ' + qrRatesExOBJ_CODE.AsString;
 end;
 
 procedure TFormCalculationEstimate.EstimateBasicDataClick(Sender: TObject);
@@ -3987,8 +3992,8 @@ begin
   // Открытие датасета для заполнения таблицы материалов
   qrMaterial.Active := False;
   // Заполняет materials_temp
-  qrMaterial.SQL.Text := 'call GetMaterials(' + IntToStr(fType) + ',' + IntToStr(fID) +
-    ',' + IntToStr(G_SHOWMODE) + ')';
+  qrMaterial.SQL.Text := 'call GetMaterials(' + IntToStr(fType) + ',' + IntToStr(fID) + ',' +
+    IntToStr(G_SHOWMODE) + ')';
   qrMaterial.ExecSQL;
 
   qrMaterial.Active := False;
@@ -4086,8 +4091,8 @@ begin
   // Открытие датасета для заполнения таблицы материалов
   qrMechanizm.Active := False;
   // Заполняет Mechanizms_temp
-  qrMechanizm.SQL.Text := 'call GetMechanizms(' + IntToStr(fType) + ',' + IntToStr(fID) +
-    ',' + IntToStr(G_SHOWMODE) + ')';
+  qrMechanizm.SQL.Text := 'call GetMechanizms(' + IntToStr(fType) + ',' + IntToStr(fID) + ',' +
+    IntToStr(G_SHOWMODE) + ')';
   qrMechanizm.ExecSQL;
 
   qrMechanizm.Active := False;
@@ -4878,7 +4883,7 @@ begin
   end;
   DM.FDGUIxWaitCursor1.ScreenCursor := gcrHourGlass;
   try
-    SendMessage(Application.MainForm.ClientHandle,WM_SETREDRAW,0,0);
+    SendMessage(Application.MainForm.ClientHandle, WM_SETREDRAW, 0, 0);
     FormAdditionData := TFormAdditionData.Create(FormMain, vDataBase);
     FormAdditionData.WindowState := wsNormal;
 
@@ -4917,9 +4922,9 @@ begin
       Left := BorderLeft + FormLeft;
     end;
   finally
-    SendMessage(Application.MainForm.ClientHandle,WM_SETREDRAW,1,0);
-    RedrawWindow(Application.MainForm.ClientHandle, nil, 0,
-      RDW_FRAME or RDW_INVALIDATE or RDW_ALLCHILDREN or RDW_NOINTERNALPAINT);
+    SendMessage(Application.MainForm.ClientHandle, WM_SETREDRAW, 1, 0);
+    RedrawWindow(Application.MainForm.ClientHandle, nil, 0, RDW_FRAME or RDW_INVALIDATE or RDW_ALLCHILDREN or
+      RDW_NOINTERNALPAINT);
     DM.FDGUIxWaitCursor1.ScreenCursor := gcrDefault;
   end;
 
@@ -5215,8 +5220,7 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.Value = 1) and
-       ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
+    if (qrMaterialFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
     then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
@@ -5236,18 +5240,16 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.Value = IdReplasedMat) and
-       (dbgrdMaterial = LastEntegGrd) then
+    if (IdReplasedMat > 0) and (qrMaterialID.Value = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     if (qrRatesExID_TYPE_DATA.Value = 2) and (qrRatesExID_TABLES.Value = qrMaterialID.Value) and
-       (grRatesEx = LastEntegGrd) then
+      (grRatesEx = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
     if (IdReplasingMat > 0) and (qrMaterialFROM_RATE.Value = 0) and
-       (IdReplasingMat = qrMaterialID_REPLACED.Value) and
-       (dbgrdMaterial = LastEntegGrd) then
+      (IdReplasingMat = qrMaterialID_REPLACED.Value) and (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';
@@ -5365,8 +5367,7 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки механизмы
-    if (qrMechanizmFROM_RATE.Value = 1) and
-       ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
+    if (qrMechanizmFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
     then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
@@ -5386,15 +5387,13 @@ begin
     end;
 
     // Подсветка замененного механизма
-    if (IdReplasedMech > 0) and (qrMechanizmID.Value = IdReplasedMech) and
-       (dbgrdMechanizm = LastEntegGrd)
+    if (IdReplasedMech > 0) and (qrMechanizmID.Value = IdReplasedMech) and (dbgrdMechanizm = LastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
     if (IdReplasingMech > 0) and (qrMechanizmFROM_RATE.Value = 0) and
-       (IdReplasingMech = qrMechanizmID_REPLACED.Value) and
-       (dbgrdMechanizm = LastEntegGrd) then
+      (IdReplasingMech = qrMechanizmID_REPLACED.Value) and (dbgrdMechanizm = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';
@@ -5415,8 +5414,8 @@ begin
     end;
 
     if ((qrMechanizmFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or
-      (qrRatesExID_TYPE_DATA.Value = 1))) or (qrMechanizmREPLACED.Value = 1) or
-      (qrMechanizmDELETED.Value = 1)then
+      (qrRatesExID_TYPE_DATA.Value = 1))) or (qrMechanizmREPLACED.Value = 1) or (qrMechanizmDELETED.Value = 1)
+    then
     begin
       if Column.Index in [4, 7, 8, 11, 12, 16, 17, 20, 21, 24] then
         Str := '';
