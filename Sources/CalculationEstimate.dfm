@@ -2551,6 +2551,12 @@
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
         Columns = <
           item
             Expanded = False
@@ -3145,7 +3151,7 @@
             ExplicitWidth = 0
           end
         end
-        inherited dbgrd1: TJvDBGrid
+        inherited dbgrd1: TDBGrid
           Width = 95
         end
       end
@@ -4751,7 +4757,6 @@
     end
   end
   object qrRatesEx: TFDQuery
-    AfterOpen = qrRatesExAfterOpen
     BeforePost = qrRatesExBeforePost
     AfterScroll = qrRatesExAfterScroll
     Connection = DM.Connect
@@ -4806,17 +4811,12 @@
       FieldName = 'SORT_ID'
       Size = 255
     end
-    object qrRatesExINCITERATOR: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'INCITERATOR'
-      Origin = 'INCITERATOR'
-      ProviderFlags = []
-    end
     object qrRatesExITERATOR: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'ITERATOR'
       Origin = 'ITERATOR'
       ProviderFlags = []
+      OnChange = qrRatesExITERATORChange
     end
     object qrRatesExOBJ_CODE: TStringField
       AutoGenerateValue = arDefault

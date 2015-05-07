@@ -330,7 +330,6 @@ type
     dsRatesEx: TDataSource;
     grRatesEx: TJvDBGrid;
     qrMechanizmTITLE: TIntegerField;
-    qrRatesExINCITERATOR: TIntegerField;
     qrRatesExITERATOR: TIntegerField;
     qrRatesExOBJ_CODE: TStringField;
     qrRatesExOBJ_NAME: TStringField;
@@ -625,7 +624,6 @@ type
     procedure nSelectWinterPriseClick(Sender: TObject);
     procedure nWinterPriseSetDefaultClick(Sender: TObject);
     procedure PMMechDeleteClick(Sender: TObject);
-    procedure qrRatesExAfterOpen(DataSet: TDataSet);
     procedure PMAddAdditionHeatingClick(Sender: TObject);
     procedure PMMatAddToRateClick(Sender: TObject);
     procedure mAddPTMClick(Sender: TObject);
@@ -635,6 +633,7 @@ type
     procedure mBaseDataClick(Sender: TObject);
     procedure PMMatRestoreClick(Sender: TObject);
     procedure PMMechRestoreClick(Sender: TObject);
+    procedure qrRatesExITERATORChange(Sender: TField);
   private const
     CaptionButton = 'Расчёт сметы';
     HintButton = 'Окно расчёта сметы';
@@ -2506,6 +2505,7 @@ begin
             qrTemp.SQL.Text := 'UPDATE data_act_temp set E1820_COUNT = :RC WHERE ID=:ID;'
           else
             qrTemp.SQL.Text := 'UPDATE data_estimate_temp set E1820_COUNT = :RC WHERE ID=:ID;';
+          qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
         end
     else
       begin
@@ -2513,7 +2513,8 @@ begin
         Exit;
       end;
     end;
-    qrTemp.ParamByName('ID').Value := qrRatesExID_TABLES.AsInteger;
+    if not(qrRatesExID_TYPE_DATA.AsInteger in [10, 11]) then
+      qrTemp.ParamByName('ID').Value := qrRatesExID_TABLES.AsInteger;
     qrTemp.ParamByName('RC').Value := Sender.Value;
     qrTemp.ExecSQL;
     // Пересчитывает все величины по данной строке
@@ -2521,32 +2522,24 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.qrRatesExAfterOpen(DataSet: TDataSet);
-var
-  NumPP: Integer;
-  Key: Variant;
+procedure TFormCalculationEstimate.qrRatesExITERATORChange(Sender: TField);
 begin
-  if not CheckQrActiveEmpty(qrRatesEx) then
+  if Sender.IsNull then
+  begin
+    Sender.AsInteger := 0;
     Exit;
-  Key := qrRatesEx.FieldByName('SORT_ID').Value;
-  // Устанавливаем №пп
-  qrRatesEx.DisableControls;
-  NumPP := 0;
-  try
-    qrRatesEx.First;
-    while not qrRatesEx.Eof do
-    begin
-      NumPP := NumPP + qrRatesEx.FieldByName('INCITERATOR').AsInteger;
-      qrRatesEx.Edit;
-      if qrRatesEx.FieldByName('ID_TYPE_DATA').AsInteger < 0 then
-        qrRatesEx.FieldByName('ITERATOR').Value := Null
-      else
-        qrRatesEx.FieldByName('ITERATOR').AsInteger := NumPP;
-      qrRatesEx.Next;
-    end;
-  finally
-    qrRatesEx.Locate('SORT_ID', Key, []);
-    qrRatesEx.EnableControls;
+  end;
+
+  if qrRatesEx.Tag <> 1 then
+  begin
+    if Act then
+      qrTemp.SQL.Text := 'UPDATE data_act_temp set NUM_ROW = :RC WHERE ID=:ID;'
+    else
+      qrTemp.SQL.Text := 'UPDATE data_estimate_temp set NUM_ROW = :RC WHERE ID=:ID;';
+    qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
+    qrTemp.ParamByName('RC').Value := Sender.Value;
+    qrTemp.ExecSQL;
+    CloseOpen(qrRatesEx);
   end;
 end;
 
