@@ -649,7 +649,7 @@
               FieldName = 'ITERATOR'
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1087'/'#1087
-              Width = 39
+              Width = 35
               Visible = True
             end
             item
@@ -657,7 +657,7 @@
               FieldName = 'OBJ_CODE'
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1085#1086#1088#1084#1072#1090#1080#1074#1072
-              Width = 148
+              Width = 150
               Visible = True
             end
             item
@@ -665,7 +665,7 @@
               FieldName = 'OBJ_COUNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 69
+              Width = 67
               Visible = True
             end
             item
@@ -673,8 +673,102 @@
               FieldName = 'OBJ_UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 85
+              Width = 89
               Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'SORT_ID'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Width = -1
+              Visible = False
+            end
+            item
+              Expanded = False
+              FieldName = 'ID_TYPE_DATA'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Width = -1
+              Visible = False
+            end
+            item
+              Expanded = False
+              FieldName = 'DATA_ESTIMATE_OR_ACT_ID'
+              Width = -1
+              Visible = False
+            end
+            item
+              Expanded = False
+              FieldName = 'ID_TABLES'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Width = -1
+              Visible = False
+            end
+            item
+              Expanded = False
+              FieldName = 'SM_ID'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Width = -1
+              Visible = False
+            end
+            item
+              Expanded = False
+              FieldName = 'WORK_ID'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Width = -1
+              Visible = False
+            end
+            item
+              Expanded = False
+              FieldName = 'ZNORMATIVS_ID'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Width = -1
+              Visible = False
+            end
+            item
+              Expanded = False
+              FieldName = 'APPLY_WINTERPRISE_FLAG'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Width = -1
+              Visible = False
+            end
+            item
+              Expanded = False
+              FieldName = 'ID_RATE'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Width = -1
+              Visible = False
             end>
         end
       end
