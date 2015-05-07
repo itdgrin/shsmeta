@@ -7,9 +7,13 @@ uses
 
 type
   TFormAbout = class(TForm)
-    Label1: TLabel;
-    Image1: TImage;
-    Label2: TLabel;
+    pnl1: TPanel;
+    imgProgramIcon: TImage;
+    lblProductName: TLabel;
+    lblVersion: TLabel;
+    lblCopyright: TLabel;
+    lblComments: TLabel;
+    btnOKButton: TButton;
     procedure FormShow(Sender: TObject);
   private
     { Private declarations }

@@ -2535,7 +2535,7 @@
       BevelOuter = bvNone
       ParentBackground = False
       TabOrder = 2
-      object dbgrdCalculations: TDBGrid
+      object dbgrdCalculations: TJvDBGrid
         Left = 0
         Top = 0
         Width = 912
@@ -2789,7 +2789,7 @@
       TabOrder = 0
       ExplicitWidth = 100
       ExplicitHeight = 53
-      inherited dbgrdSummaryCalculation: TDBGrid
+      inherited dbgrdSummaryCalculation: TJvDBGrid
         Width = 100
         Height = 53
       end
@@ -3145,7 +3145,7 @@
             ExplicitWidth = 0
           end
         end
-        inherited dbgrd1: TDBGrid
+        inherited dbgrd1: TJvDBGrid
           Width = 95
         end
       end

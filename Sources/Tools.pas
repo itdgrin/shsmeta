@@ -4,11 +4,18 @@ interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
-  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, GlobsAndConst;
+  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, GlobsAndConst, JvDBGrid;
 
 // Общий тип классификации форм
 type
   TKindForm = (kdNone, kdInsert, kdEdit, kdSelect);
+  //Будующий класс формы для наследования всех форм
+  TSmForm = class(TForm)
+    private
+    protected
+    public
+      FormKind: TKindForm;
+  end;
 
   //Выполнение медленных запросов к базе в отдельном потоке
   TThreadQuery = class(TThread)
@@ -27,13 +34,11 @@ type
   // Пропорциональная автоширина колонок в таблице
 procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
 // Установка стиля таблицы из формы настроек
-procedure LoadDBGridSettings(const DBGrid: TDBGrid);
+procedure LoadDBGridSettings(const DBGrid: TJvDBGrid);
 // Процедура рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
 // Процедура переоткрытия запроса TFDQuery с локейтом на значение Поля[0]
 procedure CloseOpen(const Query: TFDQuery; ADisableControls: boolean = True);
-// Процедура загрузки стилей всех таблиц на форме
-procedure LoadDBGridsSettings(const aForm: TForm);
 // Функция проверки TDataSet на активность и пустоту
 function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;
 // Функция вычисления формулы из строки !!!РАБОТАЕТ ЧЕРЕЗ OLE EXCEL - в дальнейшем переписать!
@@ -194,15 +199,6 @@ begin
     Result := False;
 end;
 
-procedure LoadDBGridsSettings(const aForm: TForm);
-var
-  i: Integer;
-begin
-  for i := 0 to aForm.ComponentCount do
-    if (aForm.Components[i].ClassName = 'TDBGrid') or (aForm.Components[i].ClassName = 'TJvDBGrid') then
-      LoadDBGridSettings((aForm.Components[i] as TDBGrid));
-end;
-
 procedure CloseOpen(const Query: TFDQuery; ADisableControls: boolean = True);
 var
   Key: Variant;
@@ -316,13 +312,16 @@ begin
 end;
 
 // Установка стиля таблицы из формы настроек
-procedure LoadDBGridSettings(const DBGrid: TDBGrid);
+procedure LoadDBGridSettings(const DBGrid: TJvDBGrid);
 begin
   DBGrid.DrawingStyle := gdsClassic;
   DBGrid.FixedColor := PS.BackgroundHead;
   DBGrid.TitleFont.Color := PS.FontHead;
   DBGrid.Color := PS.BackgroundRows;
   DBGrid.Font.Color := PS.FontRows;
+  DBGrid.SelectColumn := scGrid;
+  DBGrid.TitleArrow := True;
+  DBGrid.TitleButtons := True;
   {
     DBGrid.TitleFont.
     with (Sender as TStringGrid) do

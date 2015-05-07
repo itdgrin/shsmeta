@@ -5,7 +5,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
   Height = 342
   TabOrder = 0
   OnResize = FrameResize
-  object dbgrdSummaryCalculation: TDBGrid
+  object dbgrdSummaryCalculation: TJvDBGrid
     Left = 0
     Top = 0
     Width = 887
@@ -22,6 +22,12 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
     OnDblClick = dbgrdSummaryCalculationDblClick
+    SelectColumnsDialogStrings.Caption = 'Select columns'
+    SelectColumnsDialogStrings.OK = '&OK'
+    SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+    EditControls = <>
+    RowsHeight = 17
+    TitleRowHeight = 17
     Columns = <
       item
         Expanded = False
@@ -125,9 +131,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       ''
       '/* '#1051#1086#1082#1072#1083#1100#1085#1099#1077' */'
       
-        'SELECT CONCAT((PARENT_LOCAL_ID+PARENT_PTM_ID), SM_ID) AS SM_ID, ' +
-        'SM_TYPE, NAME as NAME, SM_NUMBER, SM_ID as ID, (NULL) AS PTM_COS' +
-        'T, '
+        'SELECT CONCAT((PARENT_ID), SM_ID) AS SM_ID, SM_TYPE, NAME as NAM' +
+        'E, SM_NUMBER, SM_ID as ID, (NULL) AS PTM_COST, '
       
         '(NULL) AS PTM_COST_DONE, (NULL) AS PTM_COST_OUT, ('#39#1051#1086#1082#1072#1083#1100#1085#1072#1103#39') a' +
         's TYPE_NAME, SM_ID as ID  '
@@ -140,51 +145,50 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '/* '#1055#1058#1052' */'
       'SELECT CONCAT('
       
-        '(SELECT (s1.PARENT_LOCAL_ID+s1.PARENT_PTM_ID) FROM smetasourceda' +
-        'ta s1 WHERE s1.SM_ID=(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID)), '
+        '(SELECT (s1.PARENT_ID) FROM smetasourcedata s1 WHERE s1.SM_ID=(s' +
+        '2.PARENT_ID)), '
       
-        '(s2.PARENT_LOCAL_ID+s2.PARENT_PTM_ID), s2.SM_ID) AS SM_ID, s2.SM' +
-        '_TYPE, s2.NAME as NAME, CONCAT('#39' - '#39', s2.SM_NUMBER) as SM_NUMBER' +
-        ', SM_ID as ID,'
+        '(s2.PARENT_ID), s2.SM_ID) AS SM_ID, s2.SM_TYPE, s2.NAME as NAME,' +
+        ' CONCAT('#39' - '#39', s2.SM_NUMBER) as SM_NUMBER, SM_ID as ID,'
       
         '/*'#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084' + '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084' + '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087 +
         #1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084', '#1074#1099#1085#1089#1077#1085#1085#1099#1084' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091'*/'
       
-        '(COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate WH' +
-        'ERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estim' +
-        'ate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
+        '(COALESCE((SELECT SUM(S_STOIM) FROM data_estimate, card_rate WHE' +
+        'RE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estima' +
+        'te.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
       
-        'COALESCE((SELECT SUM(0) FROM data_estimate, materialcard WHERE d' +
-        'ata_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimat' +
-        'e.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
+        'COALESCE((SELECT SUM(S_STOIM) FROM data_estimate, materialcard W' +
+        'HERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_e' +
+        'stimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
       '(0)) AS PTM_COST, '
       
         '/*'#1042#1067#1055#1054#1051#1053#1045#1053#1054' '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1072#1084' + '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084' + '#1057 +
         #1090#1086#1080#1084#1086#1089#1090#1100' '#1087#1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084', '#1074#1099#1085#1089#1077#1085#1085#1099#1084' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091'*/'
       
-        '(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_estimat' +
-        'e where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data' +
-        '_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
+        '(COALESCE((SELECT SUM(S_STOIM) FROM card_rate_act, data_estimate' +
+        ' where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=data_' +
+        'estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
       
-        'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard_a' +
+        'COALESCE((SELECT SUM(S_STOIM) FROM data_estimate, materialcard_a' +
         'ct WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.ID ' +
         '= data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
       '(0)) AS PTM_COST_DONE,'
       '/* '#1054#1057#1058#1040#1058#1054#1050' */'
       
-        '((COALESCE((SELECT SUM(RATE_SUM) FROM data_estimate, card_rate W' +
-        'HERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_esti' +
-        'mate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
+        '((COALESCE((SELECT SUM(S_STOIM) FROM data_estimate, card_rate WH' +
+        'ERE data_estimate.ID_TYPE_DATA = 1 AND card_rate.ID = data_estim' +
+        'ate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
       
-        'COALESCE((SELECT SUM(0) FROM data_estimate, materialcard WHERE d' +
-        'ata_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_estimat' +
-        'e.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
+        'COALESCE((SELECT SUM(S_STOIM) FROM data_estimate, materialcard W' +
+        'HERE data_estimate.ID_TYPE_DATA = 2 AND materialcard.ID = data_e' +
+        'stimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
       
-        '(0))-(COALESCE((SELECT SUM(RATE_SUM) FROM card_rate_act, data_es' +
-        'timate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id' +
-        '=data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
+        '(0))-(COALESCE((SELECT SUM(S_STOIM) FROM card_rate_act, data_est' +
+        'imate where data_estimate.ID_TYPE_DATA = 1 AND card_rate_act.id=' +
+        'data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) +'
       
-        'COALESCE((SELECT SUM(MAT_SUM) FROM data_estimate, materialcard_a' +
+        'COALESCE((SELECT SUM(S_STOIM) FROM data_estimate, materialcard_a' +
         'ct WHERE data_estimate.ID_TYPE_DATA = 2 AND materialcard_act.ID ' +
         '= data_estimate.ID_TABLES AND ID_ESTIMATE = SM_ID), 0) + '
       '(0))) AS PTM_COST_OUT, ('#39#39') as TYPE_NAME, SM_ID as ID    '
@@ -200,7 +204,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         DataType = ftAutoInc
         ParamType = ptInput
         Size = 4
-        Value = 36
+        Value = 40
       end>
   end
   object dsData: TDataSource

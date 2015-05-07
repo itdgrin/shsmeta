@@ -6,7 +6,8 @@ uses
   Classes, Windows, Messages, SysUtils, Variants, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
   ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, ArhivModule,
-  Data.DB, GlobsAndConst, Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage;
+  Data.DB, GlobsAndConst, Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage,
+  JvFormPlacement;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
@@ -129,7 +130,7 @@ type
     JSMenu7: TMenuItem;
     JSMenu8: TMenuItem;
     jsMenu5: TMenuItem;
-    JvAppIniFileStorage1: TJvAppIniFileStorage;    procedure TariffsTransportationClick(Sender: TObject);
+    AppIni: TJvAppIniFileStorage;    procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
     procedure TariffsIndexClick(Sender: TObject);
@@ -167,7 +168,6 @@ type
     procedure NormalClick(Sender: TObject);
     procedure ReadSettingsFromFile(PathFile: String);
     procedure WriteSettingsToFile(PathFile: String);
-    procedure FileSaveAsClick(Sender: TObject);
     procedure HRRReferenceDataClick(Sender: TObject);
     procedure HRROwnDataClick(Sender: TObject);
     procedure HRRPricesReferenceDataClick(Sender: TObject);
@@ -1730,11 +1730,6 @@ end;
 procedure TFormMain.FileCloseClick(Sender: TObject);
 begin
   Close;
-end;
-
-procedure TFormMain.FileSaveAsClick(Sender: TObject);
-begin
-  // FormCalculationEstimate.CopyEstimate;
 end;
 
 procedure TFormMain.CalculationSettingsClick(Sender: TObject);

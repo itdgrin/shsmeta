@@ -8,7 +8,8 @@ uses
   Vcl.ButtonGroup, JvExComCtrls, JvDBTreeView, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, DataModule, Vcl.Grids, Vcl.DBGrids, Tools, JvExControls,
-  JvTFManager, JvTFGlance, JvTFMonths, JvCalendar, JvMonthCalendar, Vcl.Samples.Spin, DateUtils;
+  JvTFManager, JvTFGlance, JvTFMonths, JvCalendar, JvMonthCalendar, Vcl.Samples.Spin, DateUtils, JvDBGrid,
+  JvExDBGrids;
 
 type
   TfKC6Journal = class(TForm)
@@ -26,9 +27,9 @@ type
     qrTreeData: TFDQuery;
     dsTreeData: TDataSource;
     spl1: TSplitter;
-    dbgrd2: TDBGrid;
+    dbgrd2: TJvDBGrid;
     spl2: TSplitter;
-    dbgrdData: TDBGrid;
+    dbgrdData: TJvDBGrid;
     cbbFromMonth: TComboBox;
     cbbToMonth: TComboBox;
     seFromYear: TSpinEdit;
@@ -40,7 +41,7 @@ type
     qrObject: TFDQuery;
     dsObject: TDataSource;
     dblkcbbNAME: TDBLookupComboBox;
-    dbgrdPTM: TDBGrid;
+    dbgrdPTM: TJvDBGrid;
     qrPTM: TFDQuery;
     dsPTM: TDataSource;
     qrDetaildocname: TStringField;
@@ -51,7 +52,7 @@ type
     chkZimUdor: TCheckBox;
     qrDetailMONTHYEAR: TDateField;
     tsSM: TTabSheet;
-    dbgrdEstimate: TDBGrid;
+    dbgrdEstimate: TJvDBGrid;
     rbSM: TRadioButton;
     qrEstimate: TFDQuery;
     dsEstimate: TDataSource;
@@ -92,7 +93,7 @@ var
   col: TColumn;
   PTMFields, PTMFieldsEmpty, DATAFields, allCondition, DATAFieldsEmpty: string;
 
-  procedure addCol(const Grid: TDBGrid; fieldName, titleCaption: String; const Width: Integer);
+  procedure addCol(const Grid: TJvDBGrid; fieldName, titleCaption: String; const Width: Integer);
   begin
     col := Grid.Columns.Add;
     col.Title.Caption := titleCaption;

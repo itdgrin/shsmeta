@@ -7,11 +7,11 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  Tools, Vcl.Menus;
+  Tools, Vcl.Menus, JvDBGrid, JvExDBGrids;
 
 type
   TfrCalculationEstimateSummaryCalculations = class(TFrame)
-    dbgrdSummaryCalculation: TDBGrid;
+    dbgrdSummaryCalculation: TJvDBGrid;
     qrData: TFDQuery;
     dsData: TDataSource;
     pm1: TPopupMenu;

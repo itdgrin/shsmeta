@@ -250,7 +250,6 @@
       Caption = #1060#1072#1081#1083
       object FileSaveAs: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1082#1072#1082'...'
-        OnClick = FileSaveAsClick
       end
       object N3: TMenuItem
         Caption = '-'
@@ -693,7 +692,7 @@
     Left = 32
     Top = 120
   end
-  object JvAppIniFileStorage1: TJvAppIniFileStorage
+  object AppIni: TJvAppIniFileStorage
     StorageOptions.BooleanStringTrueValues = 'TRUE, YES, Y'
     StorageOptions.BooleanStringFalseValues = 'FALSE, NO, N'
     FileName = 'Smeta.ini'

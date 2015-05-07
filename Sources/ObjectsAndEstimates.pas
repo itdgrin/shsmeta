@@ -11,7 +11,7 @@ uses
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes,
   JvExDBGrids, JvDBGrid, JvExComCtrls, JvDBTreeView, Vcl.Buttons, JvHint,
   JvComponentBase, Vcl.DBCtrls, JvAppStorage, JvAppIniStorage, Vcl.Mask, JvExMask, JvToolEdit, JvMaskEdit,
-  JvDBFindEdit, JvBDEFilter, JvDBUltimGrid, JvExStdCtrls, JvCombobox, JvDBSearchComboBox, JvFormPlacement;
+  JvExStdCtrls, JvCombobox, JvDBSearchComboBox, JvFormPlacement;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -20,7 +20,7 @@ type
   end;
 
 type
-  TFormObjectsAndEstimates = class(TForm)
+  TFormObjectsAndEstimates = class(TSmForm)
     dsObjects: TDataSource;
     PanelMain: TPanel;
     PanelObjects: TPanel;
@@ -89,9 +89,9 @@ type
     edtSearch: TEdit;
     btnSearch: TSpeedButton;
     cbbSearch: TComboBox;
-    JvFormStorage1: TJvFormStorage;
     mN4: TMenuItem;
     mN6: TMenuItem;
+    FormStorage: TJvFormStorage;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

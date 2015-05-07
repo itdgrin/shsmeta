@@ -95,7 +95,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
         OnDrawColumnCell = dbgrdObjectsDrawColumnCell
-        IniStorage = JvFormStorage1
+        IniStorage = FormStorage
         TitleButtons = True
         OnTitleBtnClick = dbgrdObjectsTitleBtnClick
         SelectColumn = scGrid
@@ -849,12 +849,12 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     Left = 648
     Top = 61
   end
-  object JvFormStorage1: TJvFormStorage
-    AppStorage = FormMain.JvAppIniFileStorage1
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
     AppStoragePath = '%FORM_NAME%\'
     Options = []
     StoredValues = <>
-    Left = 648
-    Top = 160
+    Left = 32
+    Top = 224
   end
 end

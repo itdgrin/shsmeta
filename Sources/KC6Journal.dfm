@@ -46,7 +46,9 @@ object fKC6Journal: TfKC6Journal
       Font.Style = []
       ParentFont = False
       TabVisible = False
+      ExplicitLeft = 0
       ExplicitTop = 27
+      ExplicitWidth = 0
       ExplicitHeight = 312
       object spl1: TSplitter
         Left = 0
@@ -88,7 +90,7 @@ object fKC6Journal: TfKC6Journal
         RowSelect = True
         Mirror = False
       end
-      object dbgrd2: TDBGrid
+      object dbgrd2: TJvDBGrid
         Left = 0
         Top = 273
         Width = 954
@@ -109,6 +111,12 @@ object fKC6Journal: TfKC6Journal
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
         Columns = <
           item
             Expanded = False
@@ -151,7 +159,7 @@ object fKC6Journal: TfKC6Journal
             Visible = True
           end>
       end
-      object dbgrdData: TDBGrid
+      object dbgrdData: TJvDBGrid
         Left = 0
         Top = 124
         Width = 954
@@ -172,6 +180,12 @@ object fKC6Journal: TfKC6Journal
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
       end
     end
     object tsPTM: TTabSheet
@@ -184,9 +198,11 @@ object fKC6Journal: TfKC6Journal
       ImageIndex = 1
       ParentFont = False
       TabVisible = False
+      ExplicitLeft = 0
       ExplicitTop = 27
+      ExplicitWidth = 0
       ExplicitHeight = 312
-      object dbgrdPTM: TDBGrid
+      object dbgrdPTM: TJvDBGrid
         Left = 0
         Top = 0
         Width = 954
@@ -207,6 +223,12 @@ object fKC6Journal: TfKC6Journal
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
       end
     end
     object tsSM: TTabSheet
@@ -219,9 +241,11 @@ object fKC6Journal: TfKC6Journal
       ImageIndex = 2
       ParentFont = False
       TabVisible = False
+      ExplicitLeft = 0
       ExplicitTop = 27
+      ExplicitWidth = 0
       ExplicitHeight = 312
-      object dbgrdEstimate: TDBGrid
+      object dbgrdEstimate: TJvDBGrid
         Left = 0
         Top = 0
         Width = 954
@@ -242,6 +266,12 @@ object fKC6Journal: TfKC6Journal
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
       end
     end
   end

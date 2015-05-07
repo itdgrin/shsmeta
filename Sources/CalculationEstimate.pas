@@ -20,7 +20,7 @@ type
     procedure Paint(); override;
   end;
 
-  TMyDBGrid = class(TDBGrid)
+  TMyDBGrid = class(TJvDBGrid)
   public
     property DataLink;
   end;
@@ -263,7 +263,7 @@ type
     qrDevicesPROC_ZAC: TWordField;
     PopupMenuDevices: TPopupMenu;
     PMDevEdit: TMenuItem;
-    dbgrdCalculations: TDBGrid;
+    dbgrdCalculations: TJvDBGrid;
     qrCalculations: TFDQuery;
     dsCalculations: TDataSource;
     qrMechanizmSCROLL: TIntegerField;
@@ -786,7 +786,7 @@ end;
 procedure TFormCalculationEstimate.Wheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer;
   MousePos: TPoint; var Handled: Boolean);
 begin
-  with TDBGrid(Sender) do
+  with TJvDBGrid(Sender) do
   begin
     if Assigned(DataSource) then
       if Assigned(DataSource.DataSet) then

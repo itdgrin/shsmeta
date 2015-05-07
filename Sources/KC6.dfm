@@ -261,7 +261,7 @@ object FormKC6: TFormKC6
       Caption = 'PanelBottom'
       ShowCaption = False
       TabOrder = 2
-      object dbgrd1: TDBGrid
+      object dbgrd1: TJvDBGrid
         Left = 0
         Top = 0
         Width = 651
@@ -282,6 +282,12 @@ object FormKC6: TFormKC6
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
         Columns = <
           item
             Alignment = taCenter

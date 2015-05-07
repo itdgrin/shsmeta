@@ -7,7 +7,7 @@ uses
   Controls, DB, SysUtils, Messages, Menus, Variants, Windows, Graphics, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  Vcl.Samples.Spin, Vcl.Mask, System.UITypes;
+  Vcl.Samples.Spin, Vcl.Mask, System.UITypes, JvDBGrid, JvExDBGrids;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -51,7 +51,7 @@ type
     EditKoef: TSpinEdit;
     qrOtherActs: TFDQuery;
     dsOtherActs: TDataSource;
-    dbgrd1: TDBGrid;
+    dbgrd1: TJvDBGrid;
     qrOtherActsNumber: TIntegerField;
     qrOtherActsdocname: TStringField;
     qrOtherActsdate: TDateField;
