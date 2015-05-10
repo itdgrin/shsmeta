@@ -15,7 +15,6 @@ type
     ButtonClose: TButton;
     lbl1: TLabel;
     dbedtNAME: TDBEdit;
-    dbedtFULL_NAME: TDBEdit;
     dbedtUNN: TDBEdit;
     dbedtACCOUNT: TDBEdit;
     dbedtOKPO: TDBEdit;
@@ -25,7 +24,6 @@ type
     dbedtRUK_PROF: TDBEdit;
     dbedtRUK_FIO: TDBEdit;
     dbedtCONTACT_FIO: TDBEdit;
-    lbl2: TLabel;
     lbl3: TLabel;
     lbl4: TLabel;
     lbl5: TLabel;

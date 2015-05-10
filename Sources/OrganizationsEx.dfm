@@ -82,7 +82,7 @@ object fOrganizationsEx: TfOrganizationsEx
         Expanded = False
         FieldName = 'NAME'
         Title.Alignment = taCenter
-        Title.Caption = #1053#1072#1080#1084'. '#1086#1088#1075#1072#1085#1080#1079'. ('#1082#1088#1072#1090#1082#1086#1077')'
+        Title.Caption = #1053#1072#1080#1084'. '#1086#1088#1075#1072#1085#1080#1079#1072#1094#1080#1080
         Width = 69
         Visible = True
       end
@@ -297,7 +297,7 @@ object fOrganizationsEx: TfOrganizationsEx
     Width = 790
     Height = 23
     Align = alBottom
-    DataField = 'FULL_NAME'
+    DataField = 'NAME'
     DataSource = dsMain
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

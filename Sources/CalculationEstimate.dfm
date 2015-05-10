@@ -679,95 +679,46 @@
             item
               Expanded = False
               FieldName = 'SORT_ID'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              Width = -1
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'ID_TYPE_DATA'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              Width = -1
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'DATA_ESTIMATE_OR_ACT_ID'
-              Width = -1
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'ID_TABLES'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              Width = -1
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'SM_ID'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              Width = -1
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'WORK_ID'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              Width = -1
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'ZNORMATIVS_ID'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              Width = -1
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'APPLY_WINTERPRISE_FLAG'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              Width = -1
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'ID_RATE'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
-              Width = -1
               Visible = False
             end>
         end

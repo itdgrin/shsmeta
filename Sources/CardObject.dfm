@@ -289,7 +289,7 @@ object FormCardObject: TFormCardObject
       Font.Name = 'Tahoma'
       Font.Style = []
       KeyField = 'CLIENT_ID'
-      ListField = 'FULL_NAME'
+      ListField = 'NAME'
       ListSource = dsClients
       ParentFont = False
       TabOrder = 1
@@ -337,7 +337,7 @@ object FormCardObject: TFormCardObject
       Font.Name = 'Tahoma'
       Font.Style = []
       KeyField = 'CLIENT_ID'
-      ListField = 'FULL_NAME'
+      ListField = 'NAME'
       ListSource = dsClients
       ParentCtl3D = False
       ParentFont = False

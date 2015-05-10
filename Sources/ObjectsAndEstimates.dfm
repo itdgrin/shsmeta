@@ -472,7 +472,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           Font.Name = 'Tahoma'
           Font.Style = []
           TabOrder = 0
-          OnDblClick = tvEstimatesDblClick
+          OnDblClick = PMActsEditClick
           PopupMenu = pmActs
           ParentFont = False
           RowSelect = True
