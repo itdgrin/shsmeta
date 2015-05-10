@@ -445,7 +445,7 @@ type
     qrMechanizmDELETED: TByteField;
     PMMatRestore: TMenuItem;
     PMMechRestore: TMenuItem;
-    qrRatesExOBJ_COUNT: TFMTBCDField;
+    qrRatesExOBJ_COUNT: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);

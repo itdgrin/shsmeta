@@ -193,6 +193,13 @@ begin
         CloseOpen(qrParts);
         CloseOpen(qrSections);
         CloseOpen(qrTypesWorks);
+        if not Editing then
+        begin
+          dblkcbbParts.KeyValue := 0;
+          dblkcbbSections.KeyValue := 0;
+          dblkcbbTypesWorks.KeyValue := 0;
+        end;
+        ComboBoxChange(Self);
       end;
   end;
 
@@ -207,6 +214,7 @@ begin
   IdObject := vIdObject;
   IdEstimate := vIdEstimate;
   TypeEstimate := vTypeEstimate;
+
   SkeepEvent := True;
   if vTypeEstimate = 3 then
     LabelNumberEstimate.Caption := 'π œ“Ã:'
@@ -482,11 +490,12 @@ begin
   if not CheckQrActiveEmpty(qrParts) or not CheckQrActiveEmpty(qrSections) or
     not CheckQrActiveEmpty(qrTypesWorks) or not CheckQrActiveEmpty(qrMain) or SkeepEvent then
     Exit;
-
+  qrMain.Edit;
   qrMain.FieldByName('SM_NUMBER').AsString := '∆' + qrParts.FieldByName('CODE').AsString +
     qrSections.FieldByName('CODE').AsString + qrTypesWorks.FieldByName('CODE').AsString;
   qrMain.FieldByName('NAME').AsString := qrParts.FieldByName('NAME').AsString + qrSections.FieldByName('NAME')
     .AsString + qrTypesWorks.FieldByName('NAME').AsString;
+  // qrMain.CheckBrowseMode;
 end;
 
 procedure TFormCardEstimate.CreateNumberEstimate;
@@ -574,7 +583,7 @@ begin
       end;
     3: // œ“Ã ÒÏÂÚ‡
       begin
-        ComboBoxChange(nil);
+        qrMain.FieldByName('SM_NUMBER').AsString := '∆000';
       end;
   end;
 end;

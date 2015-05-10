@@ -4874,6 +4874,14 @@
       item
         SourceDataType = dtInt64
         TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
       end>
     FormatOptions.MaxBcdPrecision = 24
     FormatOptions.MaxBcdScale = 6
@@ -4983,10 +4991,9 @@
       Origin = 'ID_RATE'
       ProviderFlags = []
     end
-    object qrRatesExOBJ_COUNT: TFMTBCDField
+    object qrRatesExOBJ_COUNT: TFloatField
       FieldName = 'OBJ_COUNT'
       OnChange = qrRatesExCOUNTChange
-      Precision = 24
     end
   end
   object dsRatesEx: TDataSource

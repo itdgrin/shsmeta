@@ -241,7 +241,7 @@ begin
       ComboBoxMonth.ItemIndex := FieldByName('monat').AsInteger - 1;
       edtYear.Value := FieldByName('year').AsInteger;
       if VarIsNull(qrSmeta.FieldByName('STAVKA_RAB').Value) then
-        dbedtEditRateWorker.Text := FieldByName('stavka_m_rab').AsVariant;
+        qrSmeta.FieldByName('STAVKA_RAB').Value := FieldByName('stavka_m_rab').AsVariant;
       edtRateMachinist.Text := FieldByName('stavka_m_mach').AsVariant;
       edtYear.OnChange := ComboBoxMonthORYearChange;
       ComboBoxMonth.OnChange := ComboBoxMonthORYearChange;
@@ -286,7 +286,7 @@ begin
       DBLookupComboBoxRegionDump.KeyValue := FieldByName('region_id').AsVariant;
     end
     else
-      DBLookupComboBoxRegionDump.KeyValue := ADOQueryRegionDump.FieldByName('region_id').AsVariant;
+      DBLookupComboBoxRegionDump.KeyValue := EditRegion.Tag;
 
     DBLookupComboBoxRegionDumpClick(DBLookupComboBoxRegionDump);
   end;
@@ -481,15 +481,6 @@ begin
       edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
     end;
   end;
-  {
-    qrTMP.Active := False;
-    qrTMP.SQL.Text := 'SELECT stavka_id FROM stavka WHERE year = ' + IntToStr(edtYear.Value) + ' and monat = ' +
-    IntToStr(ComboBoxMonth.ItemIndex + 1) + ';';
-    qrTMP.Active := True;
-    qrSmeta.Edit;
-    qrSmeta.FieldByName('STAVKA_ID').Value := qrTMP.FieldByName('STAVKA_ID').Value;
-    qrSmeta.Post;
-  }
 end;
 
 procedure TFormBasicData.dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);

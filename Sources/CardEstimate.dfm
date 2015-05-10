@@ -433,9 +433,21 @@ object FormCardEstimate: TFormCardEstimate
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
-    FormatOptions.FmtDisplayNumeric = '#0.00'
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
     SQL.Strings = (
+      'SELECT '
+      '  0 AS ID,'
+      '  "0" AS CODE,'
+      '  NULL AS NAME,'
+      '  NULL AS CONSTANT,'
+      '  "0." AS PART_NAME'
+      'UNION ALL '
       'SELECT '
       '  `ID`,'
       '  `CODE`,'
@@ -444,6 +456,7 @@ object FormCardEstimate: TFormCardEstimate
       '  CONCAT(`CODE`, ". ", `NAME`) AS PART_NAME'
       'FROM '
       '  `parts_estimates`'
+      'WHERE `CODE`<>0'
       'ORDER BY `CODE`;')
     Left = 497
     Top = 18
@@ -462,6 +475,13 @@ object FormCardEstimate: TFormCardEstimate
     FormatOptions.FmtDisplayNumeric = '#0.00'
     SQL.Strings = (
       'SELECT '
+      '  0 AS ID,'
+      '  "0" AS CODE,'
+      '  NULL AS NAME,'
+      '  NULL AS CONSTANT,'
+      '  "0." AS Section_NAME'
+      'UNION ALL '
+      'SELECT '
       '  `ID`,'
       '  `CODE`,'
       '  `NAME`,'
@@ -469,6 +489,7 @@ object FormCardEstimate: TFormCardEstimate
       '  CONCAT(`CODE`, ". ", `NAME`) AS Section_NAME'
       'FROM '
       '  `sections_estimates`'
+      'WHERE -`CODE`<>0'
       'ORDER BY `CODE`;')
     Left = 361
     Top = 42
@@ -483,9 +504,22 @@ object FormCardEstimate: TFormCardEstimate
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
-    FormatOptions.FmtDisplayNumeric = '#0.00'
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    FormatOptions.DefaultParamDataType = ftBCD
     SQL.Strings = (
+      'SELECT '
+      '  0 AS ID,'
+      '  "0" AS CODE,'
+      '  NULL AS NAME,'
+      '  NULL AS CONSTANT,'
+      '  "0." AS TYPE_WORK_NAME'
+      'UNION ALL '
       'SELECT '
       '  `ID`,'
       '  CONCAT(LEFT("000", 3-LENGTH(`CODE`)), `CODE`) AS CODE,'
@@ -496,6 +530,7 @@ object FormCardEstimate: TFormCardEstimate
         'AME`) AS TYPE_WORK_NAME'
       'FROM '
       '  `types_works`'
+      'WHERE `CODE`<>0'
       'ORDER BY `CODE`;')
     Left = 233
     Top = 74
