@@ -1,11 +1,11 @@
-object FormCardOrganization: TFormCardOrganization
+object fCardOrganization: TfCardOrganization
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1086#1088#1075#1072#1085#1080#1079#1072#1094#1080#1080
-  ClientHeight = 297
-  ClientWidth = 651
+  ClientHeight = 429
+  ClientWidth = 455
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,62 +13,287 @@ object FormCardOrganization: TFormCardOrganization
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  OnShow = FormShow
   DesignSize = (
-    651
-    297)
+    455
+    429)
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel: TBevel
     Left = 0
-    Top = 256
-    Width = 651
+    Top = 388
+    Width = 455
     Height = 41
     Align = alBottom
     Shape = bsTopLine
     ExplicitTop = 157
     ExplicitWidth = 712
   end
+  object lbl1: TLabel
+    Left = 8
+    Top = 11
+    Width = 77
+    Height = 13
+    Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077':'
+  end
+  object lbl2: TLabel
+    Left = 8
+    Top = 38
+    Width = 116
+    Height = 13
+    Caption = #1055#1086#1083#1085#1086#1077' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077':'
+  end
+  object lbl3: TLabel
+    Left = 8
+    Top = 65
+    Width = 25
+    Height = 13
+    Caption = #1059#1053#1053':'
+  end
+  object lbl4: TLabel
+    Left = 8
+    Top = 172
+    Width = 49
+    Height = 13
+    Caption = #8470' '#1089#1095#1105#1090#1072':'
+  end
+  object lbl5: TLabel
+    Left = 8
+    Top = 199
+    Width = 34
+    Height = 13
+    Caption = #1054#1050#1055#1054':'
+  end
+  object lbl6: TLabel
+    Left = 8
+    Top = 226
+    Width = 35
+    Height = 13
+    Caption = #1040#1076#1088#1077#1089':'
+  end
+  object lbl7: TLabel
+    Left = 8
+    Top = 253
+    Width = 88
+    Height = 13
+    Caption = #1040#1076#1088#1077#1089' '#1101#1083'. '#1087#1086#1095#1090#1099':'
+  end
+  object lbl8: TLabel
+    Left = 8
+    Top = 280
+    Width = 48
+    Height = 13
+    Caption = #1058#1077#1083#1077#1092#1086#1085':'
+  end
+  object lbl9: TLabel
+    Left = 8
+    Top = 307
+    Width = 85
+    Height = 13
+    Caption = #1056#1091#1082'. '#1076#1086#1083#1078#1085#1086#1089#1090#1100':'
+  end
+  object lbl10: TLabel
+    Left = 8
+    Top = 334
+    Width = 39
+    Height = 13
+    Caption = #1060'.'#1048'.'#1054'.:'
+  end
+  object lbl11: TLabel
+    Left = 8
+    Top = 361
+    Width = 78
+    Height = 13
+    Caption = #1050#1086#1085#1090#1072#1082#1090'. '#1083#1080#1094#1086':'
+  end
+  object lbl12: TLabel
+    Left = 273
+    Top = 280
+    Width = 29
+    Height = 13
+    Caption = #1060#1072#1082#1089':'
+  end
+  object lbl13: TLabel
+    Left = 8
+    Top = 119
+    Width = 66
+    Height = 13
+    Caption = #1053#1072#1080#1084'. '#1073#1072#1085#1082#1072':'
+  end
+  object lbl14: TLabel
+    Left = 8
+    Top = 92
+    Width = 57
+    Height = 13
+    Caption = #1050#1086#1076' '#1073#1072#1085#1082#1072':'
+  end
+  object lbl15: TLabel
+    Left = 8
+    Top = 145
+    Width = 68
+    Height = 13
+    Caption = #1040#1076#1088#1077#1089' '#1073#1072#1085#1082#1072':'
+  end
   object ButtonSave: TButton
-    Left = 437
-    Top = 264
+    Left = 241
+    Top = 396
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Default = True
-    TabOrder = 1
+    TabOrder = 15
     OnClick = ButtonSaveClick
+    ExplicitLeft = 437
+    ExplicitTop = 264
   end
   object ButtonClose: TButton
-    Left = 543
-    Top = 264
+    Left = 347
+    Top = 396
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 2
+    TabOrder = 16
     OnClick = ButtonCloseClick
+    ExplicitLeft = 543
+    ExplicitTop = 264
   end
-  object StringGrid: TStringGrid
-    Left = 0
-    Top = 0
-    Width = 651
-    Height = 256
-    Align = alClient
-    DefaultRowHeight = 20
-    DefaultDrawing = False
-    RowCount = 12
+  object dbedtNAME: TDBEdit
+    Left = 130
+    Top = 8
+    Width = 319
+    Height = 21
+    DataField = 'NAME'
+    DataSource = fOrganizationsEx.dsMain
     TabOrder = 0
-    OnDrawCell = StringGridDrawCell
   end
-  object ADOQuery: TFDQuery
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    Left = 345
-    Top = 16
+  object dbedtFULL_NAME: TDBEdit
+    Left = 130
+    Top = 35
+    Width = 319
+    Height = 21
+    DataField = 'FULL_NAME'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 1
+  end
+  object dbedtUNN: TDBEdit
+    Left = 130
+    Top = 62
+    Width = 319
+    Height = 21
+    DataField = 'UNN'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 2
+  end
+  object dbedtACCOUNT: TDBEdit
+    Left = 130
+    Top = 169
+    Width = 319
+    Height = 21
+    DataField = 'ACCOUNT'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 6
+  end
+  object dbedtOKPO: TDBEdit
+    Left = 130
+    Top = 196
+    Width = 319
+    Height = 21
+    DataField = 'OKPO'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 7
+  end
+  object dbedtADDRESS: TDBEdit
+    Left = 130
+    Top = 223
+    Width = 319
+    Height = 21
+    DataField = 'ADDRESS'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 8
+  end
+  object dbedtEMAIL: TDBEdit
+    Left = 130
+    Top = 250
+    Width = 319
+    Height = 21
+    DataField = 'EMAIL'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 9
+  end
+  object dbedtPHONE: TDBEdit
+    Left = 130
+    Top = 277
+    Width = 137
+    Height = 21
+    DataField = 'PHONE'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 10
+  end
+  object dbedtRUK_PROF: TDBEdit
+    Left = 130
+    Top = 304
+    Width = 319
+    Height = 21
+    DataField = 'RUK_PROF'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 12
+  end
+  object dbedtRUK_FIO: TDBEdit
+    Left = 130
+    Top = 331
+    Width = 319
+    Height = 21
+    DataField = 'RUK_FIO'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 13
+  end
+  object dbedtCONTACT_FIO: TDBEdit
+    Left = 130
+    Top = 358
+    Width = 319
+    Height = 21
+    DataField = 'CONTACT_FIO'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 14
+  end
+  object dbedtFAX: TDBEdit
+    Left = 322
+    Top = 277
+    Width = 127
+    Height = 21
+    DataField = 'FAX'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 11
+  end
+  object dbedtACCOUNT1: TDBEdit
+    Left = 130
+    Top = 89
+    Width = 319
+    Height = 21
+    DataField = 'CODE'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 3
+  end
+  object dbedtOKPO1: TDBEdit
+    Left = 130
+    Top = 116
+    Width = 319
+    Height = 21
+    DataField = 'BANK'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 4
+  end
+  object dbedtBANK: TDBEdit
+    Left = 130
+    Top = 142
+    Width = 319
+    Height = 21
+    DataField = 'BANK_ADDRESS'
+    DataSource = fOrganizationsEx.dsMain
+    TabOrder = 5
   end
 end

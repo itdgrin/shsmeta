@@ -41,7 +41,13 @@ object fCardAct: TfCardAct
     Anchors = [akRight, akBottom]
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Default = True
-    TabOrder = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 3
     OnClick = ButtonSaveClick
   end
   object ButtonClose: TButton
@@ -51,7 +57,7 @@ object fCardAct: TfCardAct
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 1
+    TabOrder = 4
     OnClick = ButtonCloseClick
   end
   object PanelDate: TPanel
@@ -63,7 +69,7 @@ object fCardAct: TfCardAct
     BevelOuter = bvNone
     Caption = 'PanelDate'
     ShowCaption = False
-    TabOrder = 2
+    TabOrder = 0
     object LabelDate: TLabel
       Left = 6
       Top = 5
@@ -93,7 +99,7 @@ object fCardAct: TfCardAct
     BevelOuter = bvNone
     Caption = 'PanelDescription'
     ShowCaption = False
-    TabOrder = 3
+    TabOrder = 2
     object LabelDescription: TLabel
       Left = 6
       Top = 16
@@ -120,7 +126,7 @@ object fCardAct: TfCardAct
     BevelOuter = bvNone
     Caption = 'PanelName'
     ShowCaption = False
-    TabOrder = 4
+    TabOrder = 1
     object LabelName: TLabel
       Left = 7
       Top = 5

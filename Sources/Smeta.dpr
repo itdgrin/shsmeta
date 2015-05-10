@@ -60,7 +60,7 @@ uses
   CardMaterial in 'CardMaterial.pas' {FormCardMaterial},
   CardDataEstimate in 'CardDataEstimate.pas' {FormCardDataEstimate},
   ListCollections in 'ListCollections.pas' {FormListCollections},
-  CardOrganization in 'CardOrganization.pas' {FormCardOrganization},
+  CardOrganization in 'CardOrganization.pas' {fCardOrganization},
   fTypesActs in 'fTypesActs.pas' {FrameTypesActs: TFrame},
   fIndexesChangeCost in 'fIndexesChangeCost.pas' {FrameIndexesChangeCost: TFrame},
   fCategoriesObjects in 'fCategoriesObjects.pas' {FrameCategoriesObjects: TFrame},
@@ -68,8 +68,6 @@ uses
   fPartsEstimates in 'fPartsEstimates.pas' {FramePartsEstimates: TFrame},
   fSectionsEstimates in 'fSectionsEstimates.pas' {FrameSectionsEstimates: TFrame},
   fTypesWorks in 'fTypesWorks.pas' {FrameTypesWorks: TFrame},
-  Organizations in 'Organizations.pas' {FormOrganizations},
-  fOrganizations in 'fOrganizations.pas' {FrameOrganizations: TFrame},
   SectionsEstimates in 'SectionsEstimates.pas' {FormSectionsEstimates},
   TypesWorks in 'TypesWorks.pas' {FormTypesWorks},
   TypesActs in 'TypesActs.pas' {FormTypesActs},
@@ -146,7 +144,6 @@ begin
   Application.CreateForm(TFormCardMaterial, FormCardMaterial);
   Application.CreateForm(TFormCardDataEstimate, FormCardDataEstimate);
   Application.CreateForm(TFormListCollections, FormListCollections);
-  Application.CreateForm(TFormCardOrganization, FormCardOrganization);
   Application.CreateForm(TFormTypesActs, FormTypesActs);
   Application.CreateForm(TFormCardTypesActs, FormCardTypesActs);
   Application.CreateForm(TFormCardIndexesChangeCost, FormCardIndexesChangeCost);

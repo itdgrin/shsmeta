@@ -527,6 +527,8 @@ procedure TFormObjectsAndEstimates.dbgrdObjectsTitleBtnClick(Sender: TObject; AC
 var
   s: string;
 begin
+  if not CheckQrActiveEmpty(qrObjects) then
+    Exit;
   s := '';
   if dbgrdObjects.SortMarker = smDown then
     s := ' DESC';

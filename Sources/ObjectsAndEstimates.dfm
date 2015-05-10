@@ -655,8 +655,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   object qrActsEx: TFDQuery
     AfterOpen = qrActsExAfterOpen
     AfterScroll = qrActsExAfterOpen
-    MasterSource = dsTreeData
-    MasterFields = 'SM_ID'
+    MasterSource = dsObjects
+    MasterFields = 'obj_id'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -678,7 +678,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         'CONCAT(IF(card_acts.FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), TRIM(card_acts.na' +
         'me), IF(card_acts.DEL_FLAG=1, "-", "")) AS ITEAM_NAME'
       'FROM card_acts'
-      'WHERE ID_ESTIMATE_OBJECT = :SM_ID'
+      'WHERE ID_OBJECT = :OBJ_ID'
       'UNION ALL'
       
         'SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NU' +
@@ -701,17 +701,15 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       'WHEN 12 THEN "'#1044#1045#1050#1040#1041#1056#1068'"'
       'END)) AS ITEAM_NAME'
       'FROM card_acts'
-      'WHERE ID_ESTIMATE_OBJECT = :SM_ID'
+      'WHERE ID_OBJECT = :OBJ_ID'
       'GROUP BY (YEAR(card_acts.date)*12+MONTH(card_acts.date))'
       'ORDER BY date')
     Left = 377
     Top = 344
     ParamData = <
       item
-        Name = 'SM_ID'
-        DataType = ftInteger
+        Name = 'OBJ_ID'
         ParamType = ptInput
-        Value = 0
       end>
   end
   object qrTmp: TFDQuery

@@ -546,7 +546,7 @@ begin
 
   // Заполнение смежных актов
   qrOtherActs.Active := False;
-  qrOtherActs.ParamByName('idestimate').AsInteger := IdEstimateForSelection;
+  qrOtherActs.ParamByName('idestimate').AsInteger := IdObject;
   qrOtherActs.ParamByName('p_osnov').AsString :=
     Trim(StringGridDataEstimates.Cells[1, StringGridDataEstimates.Row]);
   qrOtherActs.Active := True;

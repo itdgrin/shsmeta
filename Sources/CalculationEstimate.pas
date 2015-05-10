@@ -434,7 +434,6 @@ type
     qrTranspKOEF: TBCDField;
     qrDevicesSCROLL: TBCDField;
     qrMaterialPROC_TRANSP: TBCDField;
-    qrRatesExOBJ_COUNT: TFloatField;
     qrStartupRATE_COUNT: TBCDField;
     mAddPTM: TMenuItem;
     mN11: TMenuItem;
@@ -446,6 +445,7 @@ type
     qrMechanizmDELETED: TByteField;
     PMMatRestore: TMenuItem;
     PMMechRestore: TMenuItem;
+    qrRatesExOBJ_COUNT: TFMTBCDField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -978,7 +978,7 @@ begin
             if VarIsNull(res) then
               Exit;
             qrRatesEx.Edit;
-            qrRatesExOBJ_COUNT.Value := res;
+            //qrRatesExOBJ_COUNT.Value := res;
           end;
         end;
     end;

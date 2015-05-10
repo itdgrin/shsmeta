@@ -4927,10 +4927,6 @@
       ProviderFlags = []
       Size = 300
     end
-    object qrRatesExOBJ_COUNT: TFloatField
-      FieldName = 'OBJ_COUNT'
-      OnChange = qrRatesExCOUNTChange
-    end
     object qrRatesExOBJ_UNIT: TStringField
       AutoGenerateValue = arDefault
       FieldName = 'OBJ_UNIT'
@@ -4986,6 +4982,11 @@
       FieldName = 'ID_RATE'
       Origin = 'ID_RATE'
       ProviderFlags = []
+    end
+    object qrRatesExOBJ_COUNT: TFMTBCDField
+      FieldName = 'OBJ_COUNT'
+      Precision = 8
+      Size = 24
     end
   end
   object dsRatesEx: TDataSource

@@ -107,7 +107,8 @@ type
     N12: TMenuItem;
     mN15: TMenuItem;
     mN16: TMenuItem;
-    mN17: TMenuItem;    mnSMETA_LSR_FROM_OBJ: TMenuItem;
+    mN17: TMenuItem;
+    mnSMETA_LSR_FROM_OBJ: TMenuItem;
     mnSMETA_LSR_ZIM: TMenuItem;
     mnSMETA_LSR_TRUD: TMenuItem;
     mnCALC_SMETA_OBJ_GRAPH_C: TMenuItem;
@@ -130,7 +131,8 @@ type
     JSMenu7: TMenuItem;
     JSMenu8: TMenuItem;
     jsMenu5: TMenuItem;
-    AppIni: TJvAppIniFileStorage;    procedure TariffsTransportationClick(Sender: TObject);
+    AppIni: TJvAppIniFileStorage;
+    procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
     procedure TariffsIndexClick(Sender: TObject);
@@ -208,7 +210,8 @@ type
     procedure mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
     procedure N12Click(Sender: TObject);
     procedure mN15Click(Sender: TObject);
-	procedure mN17Click(Sender: TObject);	procedure mnSMETA_LSR_FROM_OBJClick(Sender: TObject);
+    procedure mN17Click(Sender: TObject);
+    procedure mnSMETA_LSR_FROM_OBJClick(Sender: TObject);
     procedure mnSMETA_LSR_ZIMClick(Sender: TObject);
     procedure mnSMETA_LSR_TRUDClick(Sender: TObject);
     procedure mnCALC_SMETA_OBJ_GRAPH_CClick(Sender: TObject);
@@ -344,9 +347,9 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   OXRandOPR, DataTransfer, CalculationSettings,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
   PricesReferenceData, AdditionData, PartsEstimates,
-  Organizations, SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
+  SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
-  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup;
+  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx;
 
 {$R *.dfm}
 
@@ -453,12 +456,12 @@ begin
 
   // путь к папке с отчетами (Вадим)
 
-//{$IFDEF DEBUG}
-//  FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
-//    - 12) + C_REPORTDIR;
-//{$ELSE}
-//  FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
-//{$ENDIF}
+  // {$IFDEF DEBUG}
+  // FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
+  // - 12) + C_REPORTDIR;
+  // {$ELSE}
+  // FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
+  // {$ENDIF}
   FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
 end;
 
@@ -856,6 +859,7 @@ begin
     fOXROPRSetup := TfOXROPRSetup.Create(Self);
   fOXROPRSetup.Show;
 end;
+
 // Расчет стоимости работ по объекту (графа С) v1.00 (Вадим)
 procedure TFormMain.mnCALC_SMETA_OBJ_GRAPH_CClick(Sender: TObject);
 begin
@@ -908,8 +912,9 @@ end;
 
 // --> "СМЕТА по объекту строительства" v.1.03
 procedure TFormMain.mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
-var param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16,
-    param17, param18, param19, param20, param21, param22, param23: Double;
+var
+  param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15,
+    param16, param17, param18, param19, param20, param21, param22, param23: Double;
 begin
   Screen.Cursor := crSQLWait;
   try
@@ -921,12 +926,11 @@ begin
         Exit;
       end;
 
-//      ShowEnter;
+      // ShowEnter;
 
-      dmReportF.Report_SMETA_OBJ_BUILD(FormObjectsAndEstimates.IdEstimate, FileReportPath,
-                                       param4, param5, param6, param7, param8, param9, param10,
-                                       param11, param12, param13, param14, param15, param16,
-                                       param17, param18, param19, param20, param21, param22, param23);
+      dmReportF.Report_SMETA_OBJ_BUILD(FormObjectsAndEstimates.IdEstimate, FileReportPath, param4, param5,
+        param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16,
+        param17, param18, param19, param20, param21, param22, param23);
     end
     else
     begin
@@ -938,12 +942,11 @@ begin
           Exit;
         end;
 
-//        ShowEnter;
+        // ShowEnter;
 
-        dmReportF.Report_SMETA_OBJ_BUILD(FormCalculationEstimate.IdEstimate, FileReportPath,
-                                       param4, param5, param6, param7, param8, param9, param10,
-                                       param11, param12, param13, param14, param15, param16,
-                                       param17, param18, param19, param20, param21, param22, param23);
+        dmReportF.Report_SMETA_OBJ_BUILD(FormCalculationEstimate.IdEstimate, FileReportPath, param4, param5,
+          param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16,
+          param17, param18, param19, param20, param21, param22, param23);
       end;
     end;
   finally
@@ -1264,18 +1267,18 @@ end;
 procedure TFormMain.VK2N13Click(Sender: TObject);
 begin
 
-   Screen.Cursor := crSQLWait;
+  Screen.Cursor := crSQLWait;
   try
 
-  //  if Assigned(FormCalculationEstimate) then
- //   begin
-  //    if FormCalculationEstimate.GetIdEstimate = 0 then
-  //    begin
-   //     showmessage('Не выбрана смета');
-   //     Exit;
-   //   end;
-        dmReportF.vk2n13(FormObjectsAndEstimates.getCurObject, FileReportPath);
-    //end;
+    // if Assigned(FormCalculationEstimate) then
+    // begin
+    // if FormCalculationEstimate.GetIdEstimate = 0 then
+    // begin
+    // showmessage('Не выбрана смета');
+    // Exit;
+    // end;
+    dmReportF.vk2n13(FormObjectsAndEstimates.getCurObject, FileReportPath);
+    // end;
 
   finally
     Screen.Cursor := crDefault;
@@ -1347,7 +1350,6 @@ end;
 procedure TFormMain.JSMenuClick(Sender: TObject);
 begin
 
-
   Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
@@ -1357,48 +1359,77 @@ begin
         showmessage('Не выбрана смета');
         Exit;
       end;
-        //**************************************************************************************************************************************
-        if (Sender as TMenuItem).Name = 'jsMenu1'  then dmReportF.JSReport(1, FormObjectsAndEstimates.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов
-        if (Sender as TMenuItem).Name = 'jsMenu2'  then dmReportF.JSReport(2, FormObjectsAndEstimates.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по локальным сметам)
-        if (Sender as TMenuItem).Name = 'jsMenu3'  then dmReportF.JSReport(3, FormObjectsAndEstimates.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по объектным сметам)
-        if (Sender as TMenuItem).Name = 'jsMenu4'  then dmReportF.JSReport(4, FormObjectsAndEstimates.IdEstimate, FileReportPath); //!!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
-        if (Sender as TMenuItem).Name = 'jsMenu5'  then dmReportF.JSReport(5, FormObjectsAndEstimates.IdEstimate, FileReportPath); //Ведомость ресурсов по смете
+      // **************************************************************************************************************************************
+      if (Sender as TMenuItem).Name = 'jsMenu1' then
+        dmReportF.JSReport(1, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      // Ведомость объемов работ и расхода ресурсов
+      if (Sender as TMenuItem).Name = 'jsMenu2' then
+        dmReportF.JSReport(2, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      // Ведомость объемов работ и расхода ресурсов (по локальным сметам)
+      if (Sender as TMenuItem).Name = 'jsMenu3' then
+        dmReportF.JSReport(3, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      // Ведомость объемов работ и расхода ресурсов (по объектным сметам)
+      if (Sender as TMenuItem).Name = 'jsMenu4' then
+        dmReportF.JSReport(4, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      // !!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
+      if (Sender as TMenuItem).Name = 'jsMenu5' then
+        dmReportF.JSReport(5, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      // Ведомость ресурсов по смете
 
-        if (Sender as TMenuItem).Name = 'JSMenu6'   then dmReportF.JSReport(6, FormObjectsAndEstimates.IdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu7'   then dmReportF.JSReport(7, FormObjectsAndEstimates.IdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu8'   then dmReportF.JSReport(8, FormObjectsAndEstimates.IdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu9'   then dmReportF.JSReport(9, FormObjectsAndEstimates.IdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu10'  then dmReportF.JSReport(10, FormObjectsAndEstimates.IdEstimate, FileReportPath);
-        //**************************************************************************************************************************************
-   end
-   else
-   begin
-   if Assigned(FormCalculationEstimate) then
+      if (Sender as TMenuItem).Name = 'JSMenu6' then
+        dmReportF.JSReport(6, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      if (Sender as TMenuItem).Name = 'JSMenu7' then
+        dmReportF.JSReport(7, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      if (Sender as TMenuItem).Name = 'JSMenu8' then
+        dmReportF.JSReport(8, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      if (Sender as TMenuItem).Name = 'JSMenu9' then
+        dmReportF.JSReport(9, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      if (Sender as TMenuItem).Name = 'JSMenu10' then
+        dmReportF.JSReport(10, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      // **************************************************************************************************************************************
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
           showmessage('Не выбрана смета');
           Exit;
         end;
-        //**************************************************************************************************************************************
-        if (Sender as TMenuItem).Name = 'jsMenu1'   then dmReportF.JSReport(1, FormCalculationEstimate.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов
-        if (Sender as TMenuItem).Name = 'jsMenu2'   then dmReportF.JSReport(2, FormCalculationEstimate.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по локальным сметам)
-        if (Sender as TMenuItem).Name = 'jsMenu3'   then dmReportF.JSReport(3, FormCalculationEstimate.IdEstimate, FileReportPath); //Ведомость объемов работ и расхода ресурсов (по объектным сметам)
-        if (Sender as TMenuItem).Name = 'jsMenu4'   then dmReportF.JSReport(4, FormCalculationEstimate.IdEstimate, FileReportPath); //!!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
-        if (Sender as TMenuItem).Name = 'jsMenu5'   then dmReportF.JSReport(5, FormCalculationEstimate.IdEstimate, FileReportPath); //Ведомость ресурсов по смете
+        // **************************************************************************************************************************************
+        if (Sender as TMenuItem).Name = 'jsMenu1' then
+          dmReportF.JSReport(1, FormCalculationEstimate.IdEstimate, FileReportPath);
+        // Ведомость объемов работ и расхода ресурсов
+        if (Sender as TMenuItem).Name = 'jsMenu2' then
+          dmReportF.JSReport(2, FormCalculationEstimate.IdEstimate, FileReportPath);
+        // Ведомость объемов работ и расхода ресурсов (по локальным сметам)
+        if (Sender as TMenuItem).Name = 'jsMenu3' then
+          dmReportF.JSReport(3, FormCalculationEstimate.IdEstimate, FileReportPath);
+        // Ведомость объемов работ и расхода ресурсов (по объектным сметам)
+        if (Sender as TMenuItem).Name = 'jsMenu4' then
+          dmReportF.JSReport(4, FormCalculationEstimate.IdEstimate, FileReportPath);
+        // !!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
+        if (Sender as TMenuItem).Name = 'jsMenu5' then
+          dmReportF.JSReport(5, FormCalculationEstimate.IdEstimate, FileReportPath);
+        // Ведомость ресурсов по смете
 
-        if (Sender as TMenuItem).Name = 'JSMenu6'   then dmReportF.JSReport(6, FormCalculationEstimate.IdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu7'   then dmReportF.JSReport(7, FormCalculationEstimate.IdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu8'   then dmReportF.JSReport(8, FormCalculationEstimate.IdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu9'   then dmReportF.JSReport(9, FormCalculationEstimate.IdEstimate, FileReportPath);
-        if (Sender as TMenuItem).Name = 'JSMenu10'  then dmReportF.JSReport(10, FormCalculationEstimate.IdEstimate, FileReportPath);
-        //**************************************************************************************************************************************
+        if (Sender as TMenuItem).Name = 'JSMenu6' then
+          dmReportF.JSReport(6, FormCalculationEstimate.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu7' then
+          dmReportF.JSReport(7, FormCalculationEstimate.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu8' then
+          dmReportF.JSReport(8, FormCalculationEstimate.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu9' then
+          dmReportF.JSReport(9, FormCalculationEstimate.IdEstimate, FileReportPath);
+        if (Sender as TMenuItem).Name = 'JSMenu10' then
+          dmReportF.JSReport(10, FormCalculationEstimate.IdEstimate, FileReportPath);
+        // **************************************************************************************************************************************
       end;
     end;
   finally
     Screen.Cursor := crDefault;
   end;
-  
 
 end;
 
@@ -1514,10 +1545,9 @@ end;
 
 procedure TFormMain.MenuOrganizationsClick(Sender: TObject);
 begin
-  if (not Assigned(FormOrganizations)) then
-    FormOrganizations := TFormOrganizations.Create(FormMain)
-  else
-    FormOrganizations.Show;
+  if (not Assigned(fOrganizationsEx)) then
+    fOrganizationsEx := TfOrganizationsEx.Create(FormMain);
+  fOrganizationsEx.Show;
 end;
 
 procedure TFormMain.HRRReferenceDataClick(Sender: TObject);
@@ -1669,7 +1699,7 @@ end;
 procedure TFormMain.Excel2Click(Sender: TObject);
 begin
 
- Screen.Cursor := crSQLWait;
+  Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
     begin
@@ -1678,7 +1708,7 @@ begin
         showmessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate,1);
+      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
     end
     else
     begin
@@ -1689,7 +1719,7 @@ begin
           showmessage('Не выбрана смета');
           Exit;
         end;
-        dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate,1);
+        dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
       end;
     end;
   finally
@@ -1699,7 +1729,7 @@ end;
 
 procedure TFormMain.EXCEL3Click(Sender: TObject);
 begin
-Screen.Cursor := crSQLWait;
+  Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
     begin
@@ -1708,7 +1738,7 @@ Screen.Cursor := crSQLWait;
         showmessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate,2);
+      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 2);
     end
     else
     begin
@@ -1719,7 +1749,7 @@ Screen.Cursor := crSQLWait;
           showmessage('Не выбрана смета');
           Exit;
         end;
-        dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate,2);
+        dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 2);
       end;
     end;
   finally

@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, JvComponentBase, JvFormPlacement;
 
 type
   TfOrganizationsEx = class(TForm)
@@ -21,11 +21,17 @@ type
     lbl1: TLabel;
     dbnvgr1: TDBNavigator;
     edt1: TEdit;
+    dbmmoFULL_NAME: TDBMemo;
+    lbl2: TLabel;
+    FormStorage: TJvFormStorage;
     procedure btnCancelClick(Sender: TObject);
     procedure btnSelectClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure grMainTitleClick(Column: TColumn);
+    procedure qrMainNewRecord(DataSet: TDataSet);
+    procedure grMainDblClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -42,17 +48,18 @@ implementation
 
 {$R *.dfm}
 
-uses Tools;
+uses Tools, cardOrganization;
 
 function SelectOrganization(const ALocateValue: Variant): Variant;
 begin
   Result := Null;
   if (not Assigned(fOrganizationsEx)) then
     fOrganizationsEx := TfOrganizationsEx.Create(nil);
-  fOrganizationsEx.qrMain.Active := True;
+  fOrganizationsEx.grMain.OnDblClick := fOrganizationsEx.btnSelect.OnClick;
   if not VarIsNull(ALocateValue) then
     fOrganizationsEx.qrMain.Locate('client_id', ALocateValue, []);
   fOrganizationsEx.btnSelect.Visible := True;
+  fOrganizationsEx.btnCancel.Visible := True;
   if fOrganizationsEx.ShowModal = mrOk then
     Result := fOrganizationsEx.qrMain.FieldByName('client_id').AsInteger;
 end;
@@ -75,12 +82,38 @@ end;
 
 procedure TfOrganizationsEx.FormCreate(Sender: TObject);
 begin
+  qrMain.Active := True;
   LoadDBGridSettings(grMain);
 end;
 
 procedure TfOrganizationsEx.FormDestroy(Sender: TObject);
 begin
   fOrganizationsEx := nil;
+end;
+
+procedure TfOrganizationsEx.grMainDblClick(Sender: TObject);
+begin
+  qrMain.Edit;
+end;
+
+procedure TfOrganizationsEx.grMainTitleClick(Column: TColumn);
+var
+  s: string;
+begin
+  if not CheckQrActiveEmpty(qrMain) then
+    Exit;
+  s := '';
+  if grMain.SortMarker = smDown then
+    s := ' DESC';
+  qrMain.SQL[qrMain.SQL.Count - 1] := 'ORDER BY ' + grMain.SortedField + s;
+  CloseOpen(qrMain);
+end;
+
+procedure TfOrganizationsEx.qrMainNewRecord(DataSet: TDataSet);
+begin
+  if (not Assigned(fCardOrganization)) then
+    fCardOrganization := TfCardOrganization.Create(nil);
+  fCardOrganization.Show;
 end;
 
 end.

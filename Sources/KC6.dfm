@@ -45,7 +45,7 @@ object FormKC6: TFormKC6
     BevelOuter = bvNone
     Caption = 'Panel3'
     ShowCaption = False
-    TabOrder = 0
+    TabOrder = 3
     DesignSize = (
       651
       41)
@@ -86,7 +86,7 @@ object FormKC6: TFormKC6
     BevelOuter = bvNone
     ParentBackground = False
     ShowCaption = False
-    TabOrder = 1
+    TabOrder = 0
     TabStop = True
     DesignSize = (
       651
@@ -119,7 +119,7 @@ object FormKC6: TFormKC6
     BevelOuter = bvNone
     Caption = 'PanelTree'
     ShowCaption = False
-    TabOrder = 2
+    TabOrder = 1
     object TreeView: TTreeView
       Left = 0
       Top = 0
@@ -142,7 +142,7 @@ object FormKC6: TFormKC6
     BevelOuter = bvNone
     Caption = 'PanelClient'
     ShowCaption = False
-    TabOrder = 3
+    TabOrder = 2
     OnResize = PanelClientResize
     object ImageSplitterBottom: TImage
       Left = 312
@@ -413,7 +413,7 @@ object FormKC6: TFormKC6
       '       `card_rate_act`.`RATE_COUNT` as cnt'
       'from `card_acts`,'
       '     `card_rate_act`'
-      'where `card_acts`.`ID_ESTIMATE_OBJECT` = :idestimate and'
+      'where `card_acts`.`ID_OBJECT` = :idestimate and'
       '      `card_rate_act`.`ID_ACT` = `card_acts`.`ID` and '
       '     `card_rate_act`.`RATE_CODE` like :p_osnov '
       'UNION ALL'
@@ -424,7 +424,7 @@ object FormKC6: TFormKC6
       'from `card_acts`,'
       '     `materialcard_act`,'
       '     `card_rate_act`      '
-      'where `card_acts`.`ID_ESTIMATE_OBJECT` = :idestimate and'
+      'where `card_acts`.`ID_OBJECT` = :idestimate and'
       '      `card_rate_act`.`ID_ACT` = `card_acts`.`ID` and'
       
         '      `materialcard_act`.`ID_CARD_RATE`=`card_rate_act`.`ID` and' +
@@ -438,7 +438,7 @@ object FormKC6: TFormKC6
       'from `card_acts`,'
       '     `mechanizmcard_act`,'
       '     `card_rate_act`      '
-      'where `card_acts`.`ID_ESTIMATE_OBJECT` = :idestimate and'
+      'where `card_acts`.`ID_OBJECT` = :idestimate and'
       '      `card_rate_act`.`ID_ACT` = `card_acts`.`ID` and'
       
         '      `mechanizmcard_act`.`ID_CARD_RATE`=`card_rate_act`.`ID` an' +
