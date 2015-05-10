@@ -86,7 +86,7 @@ type
     grp2: TGroupBox;
     dblkcbbMAIS: TDBLookupComboBox;
     dblkcbbCUST_ID: TDBLookupComboBox;
-    dblkcbbCUST_ID1: TDBLookupComboBox;
+    dblkcbbGENERAL: TDBLookupComboBox;
     dsClients: TDataSource;
     qrClients: TFDQuery;
     btn1: TBitBtn;
@@ -630,11 +630,13 @@ procedure TFormCardObject.btn1Click(Sender: TObject);
 var
   res: Variant;
 begin
-  res := SelectOrganization(dblkcbbCUST_ID1.KeyValue);
+  res := SelectOrganization(dblkcbbGENERAL.KeyValue);
   if not VarIsNull(res) then
   begin
     CloseOpen(qrClients);
-    dblkcbbCUST_ID1.KeyValue := res;
+    dblkcbbGENERAL.KeyValue := res;
+    qrMain.Edit;
+    qrMain.FieldByName('general_id').Value := res;
   end;
 end;
 
@@ -647,6 +649,8 @@ begin
   begin
     CloseOpen(qrClients);
     dblkcbbCUST_ID.KeyValue := res;
+    qrMain.Edit;
+    qrMain.FieldByName('cust_id').Value := res;
   end;
 end;
 

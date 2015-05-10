@@ -66,6 +66,7 @@ object FormCardEstimate: TFormCardEstimate
       Top = 5
       Width = 51
       Height = 13
+      AutoSize = False
       Caption = #8470' '#1089#1084#1077#1090#1099':'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -487,10 +488,12 @@ object FormCardEstimate: TFormCardEstimate
     SQL.Strings = (
       'SELECT '
       '  `ID`,'
-      '  `CODE`,'
+      '  CONCAT(LEFT("000", 3-LENGTH(`CODE`)), `CODE`) AS CODE,'
       '  `NAME`,'
       '  `CONSTANT`,'
-      '  CONCAT(`CODE`, ". ", `NAME`) AS TYPE_WORK_NAME'
+      
+        '  CONCAT(CONCAT(LEFT("000", 3-LENGTH(`CODE`)), `CODE`), ". ", `N' +
+        'AME`) AS TYPE_WORK_NAME'
       'FROM '
       '  `types_works`'
       'ORDER BY `CODE`;')

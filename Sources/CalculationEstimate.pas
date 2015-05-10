@@ -978,7 +978,7 @@ begin
             if VarIsNull(res) then
               Exit;
             qrRatesEx.Edit;
-            //qrRatesExOBJ_COUNT.Value := res;
+            // qrRatesExOBJ_COUNT.Value := res;
           end;
         end;
     end;
@@ -3937,6 +3937,8 @@ end;
 
 procedure TFormCalculationEstimate.Label1Click(Sender: TObject);
 begin
+  if Act then
+    Exit;
   FormBasicData.ShowForm(IdObject, IdEstimate);
   GetSourceData;
   GetStateCoefOrdersInRate;
@@ -4577,7 +4579,10 @@ begin
           'FROM znormativs WHERE znormativs.ZNORMATIVS_ID=:ZNORMATIVS_ID LIMIT 1;');
         ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesExZNORMATIVS_ID.AsInteger;
         Active := True;
-        EditWinterPrice.Text := FieldByName('Name').AsVariant;
+        if VarIsNull(FieldByName('Name').Value) then
+          EditWinterPrice.Text := 'не найден'
+        else
+          EditWinterPrice.Text := FieldByName('Name').AsString;
       end
     else
       with qrTemp do
@@ -4658,6 +4663,8 @@ begin
   // Скрываем колонки зименого удорожания если не нужны
   dbgrdCalculations.Columns[13].Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   dbgrdCalculations.Columns[14].Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
+  LabelWinterPrice.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
+  EditWinterPrice.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   dbgrdCalculations.Columns[13].Width := 64;
   dbgrdCalculations.Columns[14].Width := 64;
   FixDBGridColumnsWidth(dbgrdCalculations);

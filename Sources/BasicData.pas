@@ -16,7 +16,6 @@ type
     LabelK32: TLabel;
     LabelK33: TLabel;
     EditPercentTransportEquipment: TEdit;
-    EditK41: TEdit;
     EditK31: TEdit;
     EditK32: TEdit;
     EditK33: TEdit;
@@ -34,7 +33,6 @@ type
     Bevel2: TBevel;
     Bevel3: TBevel;
     Bevel4: TBevel;
-    LabelK41: TLabel;
     Bevel5: TBevel;
     LabelDump: TLabel;
     dblkcbbDump: TDBLookupComboBox;
@@ -86,6 +84,8 @@ type
     pmCoef: TPopupMenu;
     mN1: TMenuItem;
     mN2: TMenuItem;
+    edtK: TEdit;
+    lblK1: TLabel;
 
     procedure FormShow(Sender: TObject);
 
@@ -105,6 +105,7 @@ type
     procedure mN2Click(Sender: TObject);
     procedure pmCoefPopup(Sender: TObject);
     procedure qrCoefBeforeOpen(DataSet: TDataSet);
+    procedure dbchkcoef_ordersClick(Sender: TObject);
     // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
 
   private
@@ -209,7 +210,7 @@ begin
     edtPercentTransport.Text := MyFloatToStr(FieldByName('coef_tr_zatr').AsFloat);
     EditPercentTransportEquipment.Text := MyFloatToStr(FieldByName('coef_tr_obor').AsFloat);
     edtK40.Text := MyFloatToStr(FieldByName('K40').AsFloat);
-    EditK41.Text := MyFloatToStr(FieldByName('K41').AsFloat);
+    // EditK41.Text := MyFloatToStr(FieldByName('K41').AsFloat);
     EditK31.Text := MyFloatToStr(FieldByName('K31').AsFloat);
     EditK32.Text := MyFloatToStr(FieldByName('K32').AsFloat);
     EditK33.Text := MyFloatToStr(FieldByName('K33').AsFloat);
@@ -366,9 +367,9 @@ procedure TFormBasicData.qrSmetaAfterOpen(DataSet: TDataSet);
 begin
   pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
   if pnlLowCoef.Visible then
-    Height := 632
+    Height := 615
   else
-    Height := 632 - pnlLowCoef.Height;
+    Height := 615 - pnlLowCoef.Height;
 end;
 
 procedure TFormBasicData.ButtonSaveClick(Sender: TObject);
@@ -415,7 +416,7 @@ begin
       ParamByName('coef_tr_zatr').Value := edtPercentTransport.Text;
       ParamByName('coef_tr_obor').Value := EditPercentTransportEquipment.Text;
       ParamByName('k40').Value := edtK40.Text;
-      ParamByName('k41').Value := EditK41.Text;
+      // ParamByName('k41').Value := EditK41.Text;
       ParamByName('k31').Value := EditK31.Text;
       ParamByName('k32').Value := EditK32.Text;
       ParamByName('k33').Value := EditK33.Text;
@@ -495,9 +496,24 @@ procedure TFormBasicData.dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
 begin
   pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
   if pnlLowCoef.Visible then
-    Height := 632
+    Height := 615
   else
-    Height := 632 - pnlLowCoef.Height;
+    Height := 615 - pnlLowCoef.Height;
+end;
+
+procedure TFormBasicData.dbchkcoef_ordersClick(Sender: TObject);
+begin
+  if not CheckQrActiveEmpty(qrSmeta) then
+    exit;
+  if dbchkcoef_orders.Checked then
+  begin
+    edtKZP.Text := FloatToStr(GetUniDictParamValue('K_KORR_ZP', (ComboBoxMonth.ItemIndex + 1),
+      edtYear.Value));
+  end
+  else
+  begin
+    edtKZP.Text := '1';
+  end;
 end;
 
 procedure TFormBasicData.dbedtEditRateWorkerEnter(Sender: TObject);

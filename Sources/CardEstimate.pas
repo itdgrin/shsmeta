@@ -208,6 +208,10 @@ begin
   IdEstimate := vIdEstimate;
   TypeEstimate := vTypeEstimate;
   SkeepEvent := True;
+  if vTypeEstimate = 3 then
+    LabelNumberEstimate.Caption := 'Ή ΟÒΜ:'
+  else
+    LabelNumberEstimate.Caption := 'Ή ρμεςϋ:';
   if ShowModal = mrOk then
     FormBasicData.ShowForm(IdObject, IdEstimate);
 end;

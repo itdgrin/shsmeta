@@ -9,15 +9,16 @@ uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Vari
 // Общий тип классификации форм
 type
   TKindForm = (kdNone, kdInsert, kdEdit, kdSelect);
-  //Будующий класс формы для наследования всех форм
+
+  // Будующий класс формы для наследования всех форм
   TSmForm = class(TForm)
-    private
-    protected
-    public
-      FormKind: TKindForm;
+  private
+  protected
+  public
+    FormKind: TKindForm;
   end;
 
-  //Выполнение медленных запросов к базе в отдельном потоке
+  // Выполнение медленных запросов к базе в отдельном потоке
   TThreadQuery = class(TThread)
   private
     FHandle: HWND;
@@ -63,10 +64,10 @@ implementation
 
 { TThreadQuery }
 
-//Выполняет медленный SQL в отдельном потоке
+// Выполняет медленный SQL в отдельном потоке
 constructor TThreadQuery.Create(const ASQLText: String; AHandle: HWND);
 begin
-  inherited Create(true);
+  inherited Create(True);
   FHandle := AHandle;
 
   FConnect := TFDConnection.Create(nil);
@@ -151,20 +152,20 @@ var
 
   procedure Formula(Formula_Text: string; var Formula_Val: Variant; var flag1: boolean);
   var
-    E, Sheet, MyCell: Variant;
+    e, Sheet, MyCell: Variant;
   begin
     flag1 := False;
     if Formula_Text[1] <> '=' then
       Formula_Text := '=' + Formula_Text;
     try
       // Если Excel загружен, то подключиться к нему
-      E := GetActiveOLEObject('Excel.Application');
+      e := GetActiveOLEObject('Excel.Application');
     except
       // Иначе Создать объект MS Excel
-      E := CreateOLEObject('Excel.Application');
+      e := CreateOLEObject('Excel.Application');
     end;
-    E.WorkBooks.Add; // Добавить книгу MS Excel
-    Sheet := E.Sheets.Item[1]; // Перейти на первую страницу книги
+    e.WorkBooks.Add; // Добавить книгу MS Excel
+    Sheet := e.Sheets.Item[1]; // Перейти на первую страницу книги
     MyCell := Sheet.Cells[1, 1]; // Определить ячейку для занесения формулы
     MyCell.Value := Formula_Text; // Заносим формулу
     Formula_Val := MyCell.Value; // Вычисляем формулу
@@ -175,10 +176,10 @@ var
     end
     else
       flag1 := True; // расчет выполнен правильно, без ошибок
-    E.DisplayAlerts := False;
+    e.DisplayAlerts := False;
     try
-      E.Quit; // Выйти из созданного Excel
-      E := UnAssigned; // Освободить память
+      e.Quit; // Выйти из созданного Excel
+      e := UnAssigned; // Освободить память
     except
     end;
   end;
@@ -226,12 +227,12 @@ end;
 function CalcFooterSumm(const Query: TFDQuery): Variant;
 var
   Key: Variant;
-  E: TDataSetNotifyEvent;
+  e: TDataSetNotifyEvent;
   Res: Variant;
   i: Integer;
 begin
   Result := Null;
-  E := Query.AfterScroll;
+  e := Query.AfterScroll;
   Query.DisableControls;
   try
     // Выключаем событие на всякий случай
@@ -261,7 +262,7 @@ begin
       Query.Locate(Query.Fields[0].FieldName, Key, []);
     Result := Res;
   finally
-    Query.AfterScroll := E;
+    Query.AfterScroll := e;
     Query.EnableControls;
   end;
 end;
@@ -322,6 +323,8 @@ begin
   DBGrid.SelectColumn := scGrid;
   DBGrid.TitleArrow := True;
   DBGrid.TitleButtons := True;
+  DBGrid.SelectColumnsDialogStrings.NoSelectionWarning := 'Должна быть выбрана хотя бы одна колонка!';
+  DBGrid.SelectColumnsDialogStrings.Caption := 'Настройка видимости колонок';
   {
     DBGrid.TitleFont.
     with (Sender as TStringGrid) do

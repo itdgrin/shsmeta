@@ -31,7 +31,7 @@ object fCoefficients: TfCoefficients
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ParentFont = False
     PopupMenu = pm1
     TabOrder = 0
@@ -41,6 +41,7 @@ object fCoefficients: TfCoefficients
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
     OnDblClick = btnAddClick
+    IniStorage = FormStorage
     AutoSizeColumns = True
     SelectColumnsDialogStrings.Caption = 'Select columns'
     SelectColumnsDialogStrings.OK = '&OK'
@@ -54,7 +55,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'coef_name'
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-        Width = 126
+        Width = 139
         Visible = True
       end
       item
@@ -62,15 +63,14 @@ object fCoefficients: TfCoefficients
         FieldName = 'CoefTypeLook'
         Title.Alignment = taCenter
         Title.Caption = #1058#1080#1087
-        Width = 65
-        Visible = True
+        Visible = False
       end
       item
         Expanded = False
         FieldName = 'osn_zp'
         Title.Alignment = taCenter
         Title.Caption = #1047#1055
-        Width = 57
+        Width = 63
         Visible = True
       end
       item
@@ -78,7 +78,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'eksp_mach'
         Title.Alignment = taCenter
         Title.Caption = #1069#1052#1080#1052
-        Width = 57
+        Width = 63
         Visible = True
       end
       item
@@ -86,7 +86,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'mat_res'
         Title.Alignment = taCenter
         Title.Caption = #1052#1056
-        Width = 57
+        Width = 63
         Visible = True
       end
       item
@@ -94,7 +94,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'work_pers'
         Title.Alignment = taCenter
         Title.Caption = #1058#1047' '#1088#1072#1073'.'
-        Width = 57
+        Width = 63
         Visible = True
       end
       item
@@ -102,7 +102,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'work_mach'
         Title.Alignment = taCenter
         Title.Caption = #1058#1047' '#1084#1072#1096'.'
-        Width = 57
+        Width = 63
         Visible = True
       end
       item
@@ -110,7 +110,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'oxropr'
         Title.Alignment = taCenter
         Title.Caption = #1054#1061#1056#1080#1054#1055#1056
-        Width = 57
+        Width = 63
         Visible = True
       end
       item
@@ -118,7 +118,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'planprib'
         Title.Alignment = taCenter
         Title.Caption = #1055#1055
-        Width = 50
+        Width = 55
         Visible = True
       end>
   end
@@ -129,7 +129,6 @@ object fCoefficients: TfCoefficients
     Height = 35
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 1
-    ExplicitWidth = 531
     DesignSize = (
       596
       35)
@@ -142,7 +141,6 @@ object fCoefficients: TfCoefficients
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 2
       OnClick = btnCloseClick
-      ExplicitLeft = 451
     end
     object dbnvgr1: TDBNavigator
       Left = 5
@@ -214,7 +212,7 @@ object fCoefficients: TfCoefficients
         'SELECT coef_id, coef_name, osn_zp, eksp_mach, mat_res, work_pers' +
         ' , work_mach, coef_type_id, oxropr, planprib'
       'FROM coef '
-      'ORDER BY coef_name')
+      'ORDER BY coef_type_id, coef_name')
     Left = 25
     Top = 66
     object qrCoefcoef_id: TFDAutoIncField
@@ -341,5 +339,13 @@ object fCoefficients: TfCoefficients
     DataSet = qrCoef_Type
     Left = 96
     Top = 130
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    Options = []
+    StoredValues = <>
+    Left = 32
+    Top = 200
   end
 end

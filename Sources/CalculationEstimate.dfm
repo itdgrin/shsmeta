@@ -4899,7 +4899,7 @@
         Name = 'EAID'
         DataType = ftInteger
         ParamType = ptInput
-        Value = 344
+        Value = 0
       end>
     object strngfldRatesExSORT_ID: TStringField
       FieldName = 'SORT_ID'
@@ -4985,8 +4985,8 @@
     end
     object qrRatesExOBJ_COUNT: TFMTBCDField
       FieldName = 'OBJ_COUNT'
-      Precision = 8
-      Size = 24
+      OnChange = qrRatesExCOUNTChange
+      Precision = 24
     end
   end
   object dsRatesEx: TDataSource
