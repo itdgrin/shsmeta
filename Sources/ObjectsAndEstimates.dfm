@@ -712,13 +712,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         ParamType = ptInput
       end>
   end
-  object qrTmp: TFDQuery
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    Left = 649
-    Top = 208
-  end
   object qrObjects: TFDQuery
     AfterOpen = qrObjectsAfterOpen
     AfterScroll = qrObjectsAfterScroll

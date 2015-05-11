@@ -56,7 +56,6 @@ type
     PMEstimateExpandSelected: TMenuItem;
     PMActsOpen: TMenuItem;
     qrActsEx: TFDQuery;
-    qrTmp: TFDQuery;
     qrObjects: TFDQuery;
     pmActProperty: TMenuItem;
     dsActs: TDataSource;
@@ -358,9 +357,9 @@ end;
 
 procedure TFormObjectsAndEstimates.mADD6KCClick(Sender: TObject);
 begin
-  qrTmp.SQL.Text := 'UPDATE card_acts SET FL_USE=1 WHERE ID=:ID';
-  qrTmp.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
-  qrTmp.ExecSQL;
+  DM.qrDifferent.SQL.Text := 'UPDATE card_acts SET FL_USE=1 WHERE ID=:ID';
+  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
 end;
 
@@ -370,9 +369,9 @@ begin
   then
     Exit;
 
-  qrTmp.SQL.Text := 'CALL CopyAct(:ID);';
-  qrTmp.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
-  qrTmp.ExecSQL;
+  DM.qrDifferent.SQL.Text := 'CALL CopyAct(:ID);';
+  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
 end;
 
@@ -615,9 +614,9 @@ procedure TFormObjectsAndEstimates.PMActsDeleteClick(Sender: TObject);
 begin
   if MessageDlg('Удалить запись?', mtWarning, mbYesNo, 0) <> mrYes then
     Exit;
-  qrTmp.SQL.Text := 'UPDATE card_acts SET DEL_FLAG=1 WHERE ID=:ID';
-  qrTmp.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
-  qrTmp.ExecSQL;
+  DM.qrDifferent.SQL.Text := 'UPDATE card_acts SET DEL_FLAG=1 WHERE ID=:ID';
+  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
 end;
 
@@ -647,7 +646,7 @@ end;
 function TFormObjectsAndEstimates.GetNumberEstimate(): string;
 begin
   try
-    with qrTmp do
+    with DM.qrDifferent do
     begin
       Active := False;
       SQL.Clear;
@@ -677,17 +676,17 @@ end;
 
 procedure TFormObjectsAndEstimates.mREM6KCClick(Sender: TObject);
 begin
-  qrTmp.SQL.Text := 'UPDATE card_acts SET FL_USE=0 WHERE ID=:ID';
-  qrTmp.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
-  qrTmp.ExecSQL;
+  DM.qrDifferent.SQL.Text := 'UPDATE card_acts SET FL_USE=0 WHERE ID=:ID';
+  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
 end;
 
 procedure TFormObjectsAndEstimates.mRepActClick(Sender: TObject);
 begin
-  qrTmp.SQL.Text := 'UPDATE card_acts SET DEL_FLAG=0 WHERE ID=:ID';
-  qrTmp.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
-  qrTmp.ExecSQL;
+  DM.qrDifferent.SQL.Text := 'UPDATE card_acts SET DEL_FLAG=0 WHERE ID=:ID';
+  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
 end;
 
@@ -856,7 +855,7 @@ begin
     Exit;
 
   try
-    with qrTmp do
+    with DM.qrDifferent do
     begin
       Active := False;
       SQL.Clear;

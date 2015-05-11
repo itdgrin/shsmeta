@@ -185,7 +185,7 @@
     Height = 29
     Align = alBottom
     ParentBackground = False
-    TabOrder = 8
+    TabOrder = 9
     Visible = False
     object PanelButtonsLocalEstimate: TPanel
       Left = 0
@@ -427,7 +427,7 @@
     Height = 324
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 6
+    TabOrder = 7
     object ImageSplitterBottom: TImage
       Left = 200
       Top = 365
@@ -624,7 +624,7 @@
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
-          PopupMenu = PopupMenuTableLeft
+          PopupMenu = pmTableLeft
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -1540,7 +1540,7 @@
             Font.Style = []
             ParentCtl3D = False
             ParentFont = False
-            PopupMenu = PopupMenuMechanizms
+            PopupMenu = pmMechanizms
             TabOrder = 1
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
@@ -1821,7 +1821,7 @@
             Font.Style = []
             ParentCtl3D = False
             ParentFont = False
-            PopupMenu = PopupMenuMaterials
+            PopupMenu = pmMaterials
             TabOrder = 0
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
@@ -2060,7 +2060,7 @@
             Font.Style = []
             ParentCtl3D = False
             ParentFont = False
-            PopupMenu = PopupMenuDevices
+            PopupMenu = pmDevices
             TabOrder = 2
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
@@ -2224,7 +2224,7 @@
             DefaultDrawing = False
             DrawingStyle = gdsClassic
             ParentCtl3D = False
-            PopupMenu = PopupMenuDumpTransp
+            PopupMenu = pmDumpTransp
             ReadOnly = True
             TabOrder = 4
             TitleFont.Charset = DEFAULT_CHARSET
@@ -2375,7 +2375,7 @@
             DefaultDrawing = False
             DrawingStyle = gdsClassic
             ParentCtl3D = False
-            PopupMenu = PopupMenuDumpTransp
+            PopupMenu = pmDumpTransp
             ReadOnly = True
             TabOrder = 5
             TitleFont.Charset = DEFAULT_CHARSET
@@ -2589,7 +2589,7 @@
         DataSource = dsCalculations
         DrawingStyle = gdsClassic
         Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-        PopupMenu = PopupMenuCoef
+        PopupMenu = pmCoef
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
@@ -2874,8 +2874,6 @@
       ParentShowHint = False
       ShowHint = True
       OnClick = Label1Click
-      OnMouseEnter = LabelMouseEnter
-      OnMouseLeave = LabelMouseLeave
     end
     object Label6: TLabel
       Left = 307
@@ -2948,6 +2946,7 @@
       Top = 6
       Width = 36
       Height = 13
+      Cursor = crHandPoint
       Hint = #1054#1090#1082#1088#1099#1090#1100' '#1086#1082#1085#1086' '#1089#1084#1077#1090
       Caption = #1057#1084#1077#1090#1072
       Font.Charset = DEFAULT_CHARSET
@@ -2959,8 +2958,6 @@
       ParentShowHint = False
       ShowHint = True
       OnClick = LabelEstimateClick
-      OnMouseEnter = LabelMouseEnter
-      OnMouseLeave = LabelMouseLeave
     end
     object BevelEstimate: TBevel
       Left = 48
@@ -2975,6 +2972,7 @@
       Width = 52
       Height = 13
       Caption = #1053#1072#1079#1074#1072#1085#1080#1077':'
+      OnClick = LabelNameEstimateClick
     end
     object btn1: TSpeedButton
       Left = 891
@@ -3091,8 +3089,6 @@
       ParentShowHint = False
       ShowHint = True
       OnClick = LabelObjectClick
-      OnMouseEnter = LabelMouseEnter
-      OnMouseLeave = LabelMouseLeave
     end
     object LabelNumberContract: TLabel
       Left = 591
@@ -3186,6 +3182,8 @@
         end
         inherited pnlTop: TPanel
           Width = 95
+          ExplicitLeft = 32
+          ExplicitTop = 2
           ExplicitWidth = 95
           inherited edt1: TEdit
             Width = 0
@@ -3209,9 +3207,82 @@
     Height = 17
     Sections = <>
   end
-  object PopupMenuButtonSummaryCalculation: TPopupMenu
-    Left = 248
-    Top = 160
+  object pnlEstimates: TPanel
+    Left = 8
+    Top = 125
+    Width = 300
+    Height = 42
+    Align = alCustom
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentBackground = False
+    ParentFont = False
+    TabOrder = 7
+    Visible = False
+    object btn2: TSpeedButton
+      AlignWithMargins = True
+      Left = 282
+      Top = 1
+      Width = 16
+      Height = 16
+      Margins.Left = 281
+      Margins.Top = 0
+      Margins.Right = 0
+      Margins.Bottom = 0
+      Align = alTop
+      Constraints.MaxHeight = 16
+      Constraints.MaxWidth = 16
+      Caption = 'x'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+      OnClick = btn2Click
+      ExplicitLeft = 63
+      ExplicitHeight = 15
+    end
+    object tvEstimates: TJvDBTreeView
+      Left = 1
+      Top = 17
+      Width = 298
+      Height = 24
+      DataSource = dsTreeEstimates
+      MasterField = 'SM_ID'
+      DetailField = 'PARENT'
+      ItemField = 'NAME'
+      StartMasterValue = '0'
+      UseFilter = True
+      PersistentNode = True
+      ReadOnly = True
+      DragMode = dmAutomatic
+      HideSelection = False
+      Indent = 19
+      Align = alClient
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      TabOrder = 0
+      OnClick = tvEstimatesClick
+      OnDblClick = tvEstimatesDblClick
+      ParentFont = False
+      RowSelect = True
+      Mirror = False
+      ExplicitLeft = 7
+      ExplicitTop = 15
+      ExplicitWidth = 50
+      ExplicitHeight = 19
+    end
+  end
+  object pmSummaryCalculation: TPopupMenu
+    Left = 568
+    Top = 488
     object N1: TMenuItem
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072
     end
@@ -3223,10 +3294,10 @@
       OnClick = N3Click
     end
   end
-  object PopupMenuSSRButtonAdd: TPopupMenu
+  object pmSSRButtonAdd: TPopupMenu
     MenuAnimation = [maBottomToTop]
-    Left = 168
-    Top = 144
+    Left = 464
+    Top = 488
     object N4: TMenuItem
       Caption = #1054#1073#1098#1077#1082#1090
     end
@@ -3234,10 +3305,10 @@
       Caption = #1057#1084#1077#1090#1091
     end
   end
-  object PopupMenuSSRButtonTax: TPopupMenu
+  object pmSSRButtonTax: TPopupMenu
     MenuAnimation = [maBottomToTop]
-    Left = 248
-    Top = 112
+    Left = 104
+    Top = 488
     object N6: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     end
@@ -3245,10 +3316,10 @@
       Caption = #1059#1076#1072#1083#1080#1090#1100
     end
   end
-  object PopupMenuTableLeft: TPopupMenu
-    OnPopup = PopupMenuTableLeftPopup
+  object pmTableLeft: TPopupMenu
+    OnPopup = pmTableLeftPopup
     Left = 24
-    Top = 112
+    Top = 488
     object PMAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       object PMAddRatMatMechEquip: TMenuItem
@@ -3409,10 +3480,10 @@
       OnClick = mDelEstimateClick
     end
   end
-  object PopupMenuMaterials: TPopupMenu
-    OnPopup = PopupMenuMaterialsPopup
-    Left = 96
-    Top = 96
+  object pmMaterials: TPopupMenu
+    OnPopup = pmMaterialsPopup
+    Left = 256
+    Top = 488
     object PMMatEdit: TMenuItem
       AutoHotkeys = maAutomatic
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
@@ -3442,10 +3513,10 @@
       OnClick = PMMatRestoreClick
     end
   end
-  object PopupMenuCoef: TPopupMenu
-    OnPopup = PopupMenuCoefPopup
-    Left = 232
-    Top = 432
+  object pmCoef: TPopupMenu
+    OnPopup = pmCoefPopup
+    Left = 648
+    Top = 488
     object PopupMenuCoefCopy: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       Visible = False
@@ -3477,10 +3548,10 @@
       OnClick = PopupMenuCoefColumnsClick
     end
   end
-  object PopupMenuMechanizms: TPopupMenu
-    OnPopup = PopupMenuMechanizmsPopup
-    Left = 88
-    Top = 144
+  object pmMechanizms: TPopupMenu
+    OnPopup = pmMechanizmsPopup
+    Left = 328
+    Top = 488
     object PMMechEdit: TMenuItem
       Tag = 1
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
@@ -4296,9 +4367,9 @@
     Left = 752
     Top = 128
   end
-  object PopupMenuDevices: TPopupMenu
-    Left = 168
-    Top = 104
+  object pmDevices: TPopupMenu
+    Left = 392
+    Top = 488
     object PMDevEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMDevEditClick
@@ -4521,9 +4592,9 @@
     Left = 752
     Top = 85
   end
-  object PopupMenuDumpTransp: TPopupMenu
-    Left = 88
-    Top = 304
+  object pmDumpTransp: TPopupMenu
+    Left = 184
+    Top = 488
     object PMDumpEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMDumpEditClick
@@ -4742,8 +4813,8 @@
     Enabled = False
     Interval = 50
     OnTimer = tmRateTimer
-    Left = 8
-    Top = 305
+    Left = 304
+    Top = 225
   end
   object qrOXROPR: TFDQuery
     Connection = DM.Connect
@@ -4790,8 +4861,8 @@
     Top = 392
   end
   object pmWinterPrise: TPopupMenu
-    Left = 648
-    Top = 400
+    Left = 712
+    Top = 488
     object nSelectWinterPrise: TMenuItem
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1080#1079' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
       OnClick = nSelectWinterPriseClick
@@ -4845,8 +4916,8 @@
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'CALL `GetRates_ex`(:vIsACT, :EAID);')
-    Left = 160
-    Top = 224
+    Left = 24
+    Top = 216
     ParamData = <
       item
         Name = 'VISACT'
@@ -4949,8 +5020,8 @@
   end
   object dsRatesEx: TDataSource
     DataSet = qrRatesEx
-    Left = 216
-    Top = 224
+    Left = 24
+    Top = 264
   end
   object qrTypeData: TFDQuery
     Connection = DM.Connect
@@ -4991,12 +5062,51 @@
       'FROM '
       '  `types_data`'
       'ORDER BY `ID`')
-    Left = 16
-    Top = 224
+    Left = 112
+    Top = 208
   end
   object dsTypeData: TDataSource
     DataSet = qrTypeData
-    Left = 80
-    Top = 224
+    Left = 112
+    Top = 264
+  end
+  object qrTreeEstimates: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    SQL.Strings = (
+      
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
+        'NAME,'
+      '       PARENT_ID as PARENT  '
+      'FROM smetasourcedata'
+      'WHERE SM_TYPE=2 AND '
+      '      OBJ_ID=:OBJ_ID'
+      'UNION ALL'
+      
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
+        'NAME,'
+      '       PARENT_ID as PARENT  '
+      'FROM smetasourcedata'
+      'WHERE SM_TYPE<>2 AND '
+      '      OBJ_ID=:OBJ_ID'
+      'ORDER BY NAME')
+    Left = 321
+    Top = 24
+    ParamData = <
+      item
+        Name = 'OBJ_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Size = 10
+        Value = Null
+      end>
+  end
+  object dsTreeEstimates: TDataSource
+    DataSet = qrTreeEstimates
+    Left = 320
+    Top = 72
   end
 end

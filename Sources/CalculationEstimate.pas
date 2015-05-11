@@ -12,7 +12,7 @@ uses
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls,
   CalculationEstimateSSR, CalculationEstimateSummaryCalculations, JvExDBGrids,
   JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression,
-  GlobsAndConst, FireDAC.UI.Intf;
+  GlobsAndConst, FireDAC.UI.Intf, JvExComCtrls, JvDBTreeView;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -107,19 +107,19 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
-    PopupMenuButtonSummaryCalculation: TPopupMenu;
+    pmSummaryCalculation: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
     ButtonSRRNew: TButton;
-    PopupMenuSSRButtonAdd: TPopupMenu;
+    pmSSRButtonAdd: TPopupMenu;
     N4: TMenuItem;
     N5: TMenuItem;
-    PopupMenuSSRButtonTax: TPopupMenu;
+    pmSSRButtonTax: TPopupMenu;
     N6: TMenuItem;
     N7: TMenuItem;
     ButtonTechnicalPart: TButton;
-    PopupMenuTableLeft: TPopupMenu;
+    pmTableLeft: TPopupMenu;
     PMAdd: TMenuItem;
     PMDelete: TMenuItem;
     PopupMenuTableLeftTechnicalPart: TMenuItem;
@@ -127,8 +127,8 @@ type
     Normal: TMenuItem;
     Extended: TMenuItem;
     N22: TMenuItem;
-    PopupMenuMaterials: TPopupMenu;
-    PopupMenuCoef: TPopupMenu;
+    pmMaterials: TPopupMenu;
+    pmCoef: TPopupMenu;
     PopupMenuCoefAddSet: TMenuItem;
     PopupMenuCoefDeleteSet: TMenuItem;
     PanelEstimate: TPanel;
@@ -181,7 +181,7 @@ type
     PMAddAdditionHeatingE20: TMenuItem;
     PopupMenuRatesAdd352: TMenuItem;
     PMMatFromRates: TMenuItem;
-    PopupMenuMechanizms: TPopupMenu;
+    pmMechanizms: TPopupMenu;
     PMMechFromRates: TMenuItem;
     PMMatReplace: TMenuItem;
     PMAddAddition: TMenuItem;
@@ -261,7 +261,7 @@ type
     dbgrdDevices: TJvDBGrid;
     qrDevicesPROC_PODR: TWordField;
     qrDevicesPROC_ZAC: TWordField;
-    PopupMenuDevices: TPopupMenu;
+    pmDevices: TPopupMenu;
     PMDevEdit: TMenuItem;
     dbgrdCalculations: TJvDBGrid;
     qrCalculations: TFDQuery;
@@ -285,7 +285,7 @@ type
     qrDumpWORK_UNIT: TStringField;
     qrDumpWORK_TYPE: TByteField;
     qrDumpNUM: TIntegerField;
-    PopupMenuDumpTransp: TPopupMenu;
+    pmDumpTransp: TPopupMenu;
     PMDumpEdit: TMenuItem;
     qrDumpDUMP_ID: TLongWordField;
     dbgrdDescription: TJvDBGrid;
@@ -446,6 +446,11 @@ type
     PMMatRestore: TMenuItem;
     PMMechRestore: TMenuItem;
     qrRatesExOBJ_COUNT: TFloatField;
+    pnlEstimates: TPanel;
+    qrTreeEstimates: TFDQuery;
+    dsTreeEstimates: TDataSource;
+    tvEstimates: TJvDBTreeView;
+    btn2: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -520,8 +525,6 @@ type
     procedure LabelObjectClick(Sender: TObject);
     procedure LabelEstimateClick(Sender: TObject);
     procedure Label1Click(Sender: TObject);
-    procedure LabelMouseEnter(Sender: TObject);
-    procedure LabelMouseLeave(Sender: TObject);
     procedure PanelObjectResize(Sender: TObject);
     procedure Panel1Resize(Sender: TObject);
     procedure PanelTopMenuResize(Sender: TObject);
@@ -542,16 +545,16 @@ type
     procedure ShowFormAdditionData(const vDataBase: Char);
     procedure PMAddRatMatMechEquipRefClick(Sender: TObject);
     procedure PMAddRatMatMechEquipOwnClick(Sender: TObject);
-    procedure PopupMenuMaterialsPopup(Sender: TObject);
+    procedure pmMaterialsPopup(Sender: TObject);
 
     procedure PMCoefOrdersClick(Sender: TObject);
-    procedure PopupMenuTableLeftPopup(Sender: TObject);
+    procedure pmTableLeftPopup(Sender: TObject);
     // Удаление вынесенного из расценки материала
     procedure GetStateCoefOrdersInEstimate;
     procedure GetStateCoefOrdersInRate;
     // Получаем флаг состояния (применять или не применять) коэффициента по приказам
     procedure PopupMenuCoefOrdersClick(Sender: TObject);
-    procedure PopupMenuCoefPopup(Sender: TObject);
+    procedure pmCoefPopup(Sender: TObject);
     procedure Button4Click(Sender: TObject);
 
     procedure OutputDataToTable; // Заполнение таблицы расценок
@@ -578,7 +581,7 @@ type
     procedure MechRowChange(Sender: TField);
     procedure MatRowChange(Sender: TField);
     procedure dbgrdMechanizmExit(Sender: TObject);
-    procedure PopupMenuMechanizmsPopup(Sender: TObject);
+    procedure pmMechanizmsPopup(Sender: TObject);
     procedure qrRatesExBeforePost(DataSet: TDataSet);
     procedure MemoRightExit(Sender: TObject);
     procedure MemoRightChange(Sender: TObject);
@@ -634,6 +637,10 @@ type
     procedure PMMatRestoreClick(Sender: TObject);
     procedure PMMechRestoreClick(Sender: TObject);
     procedure qrRatesExITERATORChange(Sender: TField);
+    procedure LabelNameEstimateClick(Sender: TObject);
+    procedure tvEstimatesClick(Sender: TObject);
+    procedure btn2Click(Sender: TObject);
+    procedure tvEstimatesDblClick(Sender: TObject);
   private const
     CaptionButton = 'Расчёт сметы';
     HintButton = 'Окно расчёта сметы';
@@ -737,7 +744,6 @@ type
       var Handled: Boolean);
 
   protected
-    procedure CreateParams(var Params: TCreateParams); override;
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
   const
@@ -1148,7 +1154,7 @@ var
   s: string;
 begin
   TestOnNoDataNew(qrMaterial);
-  ImageNoData.PopupMenu := PopupMenuMaterials;
+  ImageNoData.PopupMenu := pmMaterials;
 
   if SpeedButtonModeTables.Tag = 0 then
     s := '1000000'
@@ -1173,7 +1179,7 @@ var
   s: string;
 begin
   TestOnNoDataNew(qrMechanizm);
-  ImageNoData.PopupMenu := PopupMenuMechanizms;
+  ImageNoData.PopupMenu := pmMechanizms;
 
   if SpeedButtonModeTables.Tag = 0 then
     s := '0100000'
@@ -1255,6 +1261,11 @@ begin
     qrRatesEx.AfterScroll := e;
     qrRatesExAfterScroll(qrRatesEx);
   end;
+end;
+
+procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
+begin
+  pnlEstimates.Visible := False;
 end;
 
 procedure TFormCalculationEstimate.btnDescriptionClick(Sender: TObject);
@@ -2974,7 +2985,7 @@ var
   P: TPoint;
 begin
   P := (Sender as TButton).ClientToScreen(Point(0, 0));
-  PopupMenuSSRButtonAdd.Popup(P.X, P.Y);
+  pmSSRButtonAdd.Popup(P.X, P.Y);
 end;
 
 procedure TFormCalculationEstimate.ButtonSSRTaxClick(Sender: TObject);
@@ -2982,7 +2993,7 @@ var
   P: TPoint;
 begin
   P := (Sender as TButton).ClientToScreen(Point(0, 0));
-  PopupMenuSSRButtonTax.Popup(P.X, P.Y);
+  pmSSRButtonTax.Popup(P.X, P.Y);
 end;
 
 procedure TFormCalculationEstimate.ButtonSRRNewClick(Sender: TObject);
@@ -2996,20 +3007,6 @@ begin
     MessageBox(0, PChar('Новый ССР'), 'Смета', MB_ICONINFORMATION + MB_OK + mb_TaskModal)
   else
     FormCalculationEstimate.Close;
-end;
-
-procedure TFormCalculationEstimate.CreateParams(var Params: TCreateParams);
-begin
-  inherited;
-  {
-    if SettingsFormSave = True then
-    begin
-    Params.Width := FS.Width;
-    Params.Height := FS.Height;
-    Params.X := FS.Left;
-    Params.Y := FS.Top;
-    end;
-  }
 end;
 
 procedure TFormCalculationEstimate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -3308,14 +3305,14 @@ begin
   GetStateCoefOrdersInRate;
 end;
 
-procedure TFormCalculationEstimate.PopupMenuCoefPopup(Sender: TObject);
+procedure TFormCalculationEstimate.pmCoefPopup(Sender: TObject);
 begin
   GetStateCoefOrdersInEstimate;
 
 end;
 
 // вид всплывающего меню материалов
-procedure TFormCalculationEstimate.PopupMenuMaterialsPopup(Sender: TObject);
+procedure TFormCalculationEstimate.pmMaterialsPopup(Sender: TObject);
 begin
   PMMatEdit.Enabled := (not CheckMatReadOnly);
 
@@ -3345,7 +3342,7 @@ begin
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
-procedure TFormCalculationEstimate.PopupMenuMechanizmsPopup(Sender: TObject);
+procedure TFormCalculationEstimate.pmMechanizmsPopup(Sender: TObject);
 begin
   PMMechEdit.Enabled := (not CheckMechReadOnly);
 
@@ -3879,7 +3876,7 @@ begin
     PMDumpEditClick(nil);
 end;
 
-procedure TFormCalculationEstimate.PopupMenuTableLeftPopup(Sender: TObject);
+procedure TFormCalculationEstimate.pmTableLeftPopup(Sender: TObject);
 var
   mainType: Integer;
 begin
@@ -3924,17 +3921,30 @@ end;
 
 procedure TFormCalculationEstimate.LabelEstimateClick(Sender: TObject);
 begin
-  // Открываем форму ожидания
-  FormWaiting.Show;
-  Application.ProcessMessages;
+  {
+    // Открываем форму ожидания
+    FormWaiting.Show;
+    Application.ProcessMessages;
 
-  if (not Assigned(FormObjectsAndEstimates)) then
+    if (not Assigned(FormObjectsAndEstimates)) then
     FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(Self);
 
-  FormObjectsAndEstimates.Show;
+    FormObjectsAndEstimates.Show;
 
-  // Закрываем форму ожидания
-  FormWaiting.Close;
+    // Закрываем форму ожидания
+    FormWaiting.Close;
+  }
+  // Показываем панельку с деревом смет
+  pnlEstimates.Left := 17;
+  pnlEstimates.Top := 77;
+  pnlEstimates.Width := 300;
+  pnlEstimates.Height := 200;
+  tvEstimates.Align := alClient;
+  qrTreeEstimates.ParamByName('obj_id').Value := IdObject;
+  CloseOpen(qrTreeEstimates);
+  tvEstimates.FullExpand;
+  qrTreeEstimates.Locate('SM_ID', qrRatesExSM_ID.Value, []);
+  pnlEstimates.Visible := True;
 end;
 
 procedure TFormCalculationEstimate.Label1Click(Sender: TObject);
@@ -3949,22 +3959,9 @@ begin
   CloseOpen(qrCalculations);
 end;
 
-procedure TFormCalculationEstimate.LabelMouseEnter(Sender: TObject);
+procedure TFormCalculationEstimate.LabelNameEstimateClick(Sender: TObject);
 begin
-  with (Sender as TLabel) do
-  begin
-    Cursor := crHandPoint;
-    Font.Style := Font.Style + [fsUnderline];
-  end;
-end;
 
-procedure TFormCalculationEstimate.LabelMouseLeave(Sender: TObject);
-begin
-  with (Sender as TLabel) do
-  begin
-    Cursor := crDefault;
-    Font.Style := Font.Style - [fsUnderline];
-  end;
 end;
 
 // Открытие датасета таблицы материалов
@@ -4645,6 +4642,8 @@ end;
 procedure TFormCalculationEstimate.tmRateTimer(Sender: TObject);
 begin
   tmRate.Enabled := False;
+  if pnlEstimates.Visible then
+    qrTreeEstimates.Locate('SM_ID', qrRatesExSM_ID.Value, []);
   // Блокирует лишние действия, если в цикле выполняется работа с qrRates
 
   // Вне зависимости от режима, все зависящие от qrRates
@@ -4694,6 +4693,22 @@ begin
 
   // заполняет таблицы справа
   GridRatesRowSellect;
+end;
+
+procedure TFormCalculationEstimate.tvEstimatesClick(Sender: TObject);
+begin
+  qrRatesEx.Locate('SM_ID', qrTreeEstimates.FieldByName('SM_ID').AsInteger, []);
+end;
+
+procedure TFormCalculationEstimate.tvEstimatesDblClick(Sender: TObject);
+begin
+  pnlEstimates.Visible := False;
+  EditNameEstimate.Text := qrTreeEstimates.FieldByName('NAME').AsString;
+  IdEstimate := qrTreeEstimates.FieldByName('SM_ID').AsInteger;;
+  // Создание временных таблиц
+  CreateTempTables;
+  // Заполненя временных таблиц, заполнение формы
+  OpenAllData;
 end;
 
 // Проверка, что таблица является пустой(если пустая показывается картинка нет данных)
