@@ -107,7 +107,8 @@ uses
   fFrameMaterial in 'fFrameMaterial.pas' {SprMaterial: TFrame},
   OrganizationsEx in 'OrganizationsEx.pas' {fOrganizationsEx},
   fFrameMechanizm in 'fFrameMechanizm.pas' {SprMechanizm: TFrame},
-  fFrameEquipment in 'fFrameEquipment.pas' {SprEquipment: TFrame};
+  fFrameEquipment in 'fFrameEquipment.pas' {SprEquipment: TFrame},
+  TreeEstimate in 'TreeEstimate.pas' {fTreeEstimate};
 
 {$R *.res}
 var MHandle: THandle;

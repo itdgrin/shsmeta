@@ -446,11 +446,8 @@ type
     PMMatRestore: TMenuItem;
     PMMechRestore: TMenuItem;
     qrRatesExOBJ_COUNT: TFloatField;
-    pnlEstimates: TPanel;
     qrTreeEstimates: TFDQuery;
     dsTreeEstimates: TDataSource;
-    tvEstimates: TJvDBTreeView;
-    btn2: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -638,9 +635,6 @@ type
     procedure PMMechRestoreClick(Sender: TObject);
     procedure qrRatesExITERATORChange(Sender: TField);
     procedure LabelNameEstimateClick(Sender: TObject);
-    procedure tvEstimatesClick(Sender: TObject);
-    procedure btn2Click(Sender: TObject);
-    procedure tvEstimatesDblClick(Sender: TObject);
   private const
     CaptionButton = 'Расчёт сметы';
     HintButton = 'Окно расчёта сметы';
@@ -767,7 +761,7 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
   AdditionData, CardMaterial, CardDataEstimate,
   ListCollections, CoefficientOrders, KC6,
   CardAct, Tools, Coef, WinterPrice,
-  ReplacementMatAndMech, CardEstimate, KC6Journal;
+  ReplacementMatAndMech, CardEstimate, KC6Journal, TreeEstimate;
 
 {$R *.dfm}
 
@@ -1261,11 +1255,6 @@ begin
     qrRatesEx.AfterScroll := e;
     qrRatesExAfterScroll(qrRatesEx);
   end;
-end;
-
-procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
-begin
-  pnlEstimates.Visible := False;
 end;
 
 procedure TFormCalculationEstimate.btnDescriptionClick(Sender: TObject);
@@ -3459,11 +3448,11 @@ begin
         ZonaId := Fields[0].AsInteger;
       Active := False;
 
-     { SQL.Clear;
-      SQL.Add('SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(qrRatesExSM_ID.AsInteger));
-      Active := True;
-      PercentTransport := Fields[0].AsFloat;
-      Active := False; }
+      { SQL.Clear;
+        SQL.Add('SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(qrRatesExSM_ID.AsInteger));
+        Active := True;
+        PercentTransport := Fields[0].AsFloat;
+        Active := False; }
 
       PercentTransport := 0;
 
@@ -3935,16 +3924,13 @@ begin
     FormWaiting.Close;
   }
   // Показываем панельку с деревом смет
-  pnlEstimates.Left := 17;
-  pnlEstimates.Top := 77;
-  pnlEstimates.Width := 300;
-  pnlEstimates.Height := 200;
-  tvEstimates.Align := alClient;
-  qrTreeEstimates.ParamByName('obj_id').Value := IdObject;
-  CloseOpen(qrTreeEstimates);
-  tvEstimates.FullExpand;
-  qrTreeEstimates.Locate('SM_ID', qrRatesExSM_ID.Value, []);
-  pnlEstimates.Visible := True;
+  if not Assigned(fTreeEstimate) then
+    fTreeEstimate := TfTreeEstimate.Create(Self);
+  fTreeEstimate.qrTreeEstimates.ParamByName('obj_id').Value := IdObject;
+  CloseOpen(fTreeEstimate.qrTreeEstimates);
+  fTreeEstimate.tvEstimates.FullExpand;
+  fTreeEstimate.qrTreeEstimates.Locate('SM_ID', qrRatesExSM_ID.Value, []);
+  fTreeEstimate.Show;
 end;
 
 procedure TFormCalculationEstimate.Label1Click(Sender: TObject);
@@ -4642,8 +4628,8 @@ end;
 procedure TFormCalculationEstimate.tmRateTimer(Sender: TObject);
 begin
   tmRate.Enabled := False;
-  if pnlEstimates.Visible then
-    qrTreeEstimates.Locate('SM_ID', qrRatesExSM_ID.Value, []);
+  if Assigned(fTreeEstimate) then
+    fTreeEstimate.qrTreeEstimates.Locate('SM_ID', qrRatesExSM_ID.Value, []);
   // Блокирует лишние действия, если в цикле выполняется работа с qrRates
 
   // Вне зависимости от режима, все зависящие от qrRates
@@ -4693,22 +4679,6 @@ begin
 
   // заполняет таблицы справа
   GridRatesRowSellect;
-end;
-
-procedure TFormCalculationEstimate.tvEstimatesClick(Sender: TObject);
-begin
-  qrRatesEx.Locate('SM_ID', qrTreeEstimates.FieldByName('SM_ID').AsInteger, []);
-end;
-
-procedure TFormCalculationEstimate.tvEstimatesDblClick(Sender: TObject);
-begin
-  pnlEstimates.Visible := False;
-  EditNameEstimate.Text := qrTreeEstimates.FieldByName('NAME').AsString;
-  IdEstimate := qrTreeEstimates.FieldByName('SM_ID').AsInteger;;
-  // Создание временных таблиц
-  CreateTempTables;
-  // Заполненя временных таблиц, заполнение формы
-  OpenAllData;
 end;
 
 // Проверка, что таблица является пустой(если пустая показывается картинка нет данных)

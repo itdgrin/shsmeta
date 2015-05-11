@@ -185,7 +185,7 @@
     Height = 29
     Align = alBottom
     ParentBackground = False
-    TabOrder = 9
+    TabOrder = 8
     Visible = False
     object PanelButtonsLocalEstimate: TPanel
       Left = 0
@@ -2830,7 +2830,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSummaryCalculations'
     ParentBackground = False
-    TabOrder = 4
+    TabOrder = 5
     inline frSummaryCalculations: TfrCalculationEstimateSummaryCalculations
       Left = 0
       Top = 0
@@ -3161,7 +3161,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSSR'
     ParentBackground = False
-    TabOrder = 5
+    TabOrder = 6
     inline frSSR: TfrCalculationEstimateSSR
       Left = 0
       Top = 0
@@ -3182,8 +3182,6 @@
         end
         inherited pnlTop: TPanel
           Width = 95
-          ExplicitLeft = 32
-          ExplicitTop = 2
           ExplicitWidth = 95
           inherited edt1: TEdit
             Width = 0
@@ -3206,79 +3204,6 @@
     Width = 921
     Height = 17
     Sections = <>
-  end
-  object pnlEstimates: TPanel
-    Left = 8
-    Top = 125
-    Width = 300
-    Height = 42
-    Align = alCustom
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentBackground = False
-    ParentFont = False
-    TabOrder = 7
-    Visible = False
-    object btn2: TSpeedButton
-      AlignWithMargins = True
-      Left = 282
-      Top = 1
-      Width = 16
-      Height = 16
-      Margins.Left = 281
-      Margins.Top = 0
-      Margins.Right = 0
-      Margins.Bottom = 0
-      Align = alTop
-      Constraints.MaxHeight = 16
-      Constraints.MaxWidth = 16
-      Caption = 'x'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-      OnClick = btn2Click
-      ExplicitLeft = 63
-      ExplicitHeight = 15
-    end
-    object tvEstimates: TJvDBTreeView
-      Left = 1
-      Top = 17
-      Width = 298
-      Height = 24
-      DataSource = dsTreeEstimates
-      MasterField = 'SM_ID'
-      DetailField = 'PARENT'
-      ItemField = 'NAME'
-      StartMasterValue = '0'
-      UseFilter = True
-      PersistentNode = True
-      ReadOnly = True
-      DragMode = dmAutomatic
-      HideSelection = False
-      Indent = 19
-      Align = alClient
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      TabOrder = 0
-      OnClick = tvEstimatesClick
-      OnDblClick = tvEstimatesDblClick
-      ParentFont = False
-      RowSelect = True
-      Mirror = False
-      ExplicitLeft = 7
-      ExplicitTop = 15
-      ExplicitWidth = 50
-      ExplicitHeight = 19
-    end
   end
   object pmSummaryCalculation: TPopupMenu
     Left = 568
@@ -5093,8 +5018,8 @@
       'WHERE SM_TYPE<>2 AND '
       '      OBJ_ID=:OBJ_ID'
       'ORDER BY NAME')
-    Left = 321
-    Top = 24
+    Left = 793
+    Top = 488
     ParamData = <
       item
         Name = 'OBJ_ID'
@@ -5106,7 +5031,7 @@
   end
   object dsTreeEstimates: TDataSource
     DataSet = qrTreeEstimates
-    Left = 320
-    Top = 72
+    Left = 824
+    Top = 488
   end
 end
