@@ -677,6 +677,14 @@
         end
       end
     end
+    object N1111111: TMenuItem
+      Caption = '111111'
+      OnClick = N1111111Click
+    end
+    object N2222221: TMenuItem
+      Caption = '222222'
+      OnClick = N2222221Click
+    end
   end
   object TimerCover: TTimer
     Enabled = False

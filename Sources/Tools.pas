@@ -4,7 +4,7 @@ interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
-  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, GlobsAndConst, JvDBGrid;
+  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid;
 
 // Общий тип классификации форм
 type
@@ -30,6 +30,13 @@ type
   public
     constructor Create(const ASQLText: string; AHandle: HWND);
     destructor Destroy; override;
+  end;
+
+  TSmClipData = class
+  public
+    Rec: TSmClipRec;
+    procedure CopyToClipBoard;
+    procedure GetFromClipBoard;
   end;
 
   // Пропорциональная автоширина колонок в таблице
@@ -97,6 +104,49 @@ begin
   except
     on e: exception do
       SendMessage(FHandle, WM_EXCECUTE, WParam(nil), LParam(e));
+  end;
+end;
+
+{  TSmClipData  }
+procedure TSmClipData.CopyToClipBoard;
+var
+  Data: THandle;
+  DataPtr: Pointer;
+  TempStr: string[25];
+begin
+  Data := GlobalAlloc(GMEM_MOVEABLE, SizeOf(TSmClipRec));
+  try
+    DataPtr := GlobalLock(Data);
+    try
+      Move(Rec, DataPtr^, SizeOf(TSmClipRec));
+      ClipBoard.SetAsHandle(G_SMETADATA, Data);
+    finally
+      GlobalUnlock(Data);
+    end;
+  except
+    GlobalFree(Data);
+    raise;
+  end;
+end;
+
+procedure TSmClipData.GetFromClipBoard;
+var
+  Data: THandle;
+  DataPtr: Pointer;
+  Size: Integer;
+begin
+  Data := ClipBoard.GetAsHandle(G_SMETADATA);
+  if Data = 0 then
+    Exit;
+  DataPtr := GlobalLock(Data);
+  try
+    if SizeOf(TSmClipRec) > GlobalSize(Data) then
+      Size := GlobalSize(Data)
+    else
+      Size := SizeOf(TSmClipRec);
+    Move(DataPtr^, Rec, Size)
+  finally
+    GlobalUnlock(Data);
   end;
 end;
 
@@ -469,5 +519,9 @@ begin
     FreeAndNil(qr);
   end;
 end;
+
+initialization
+  //Регистрируем собственный формат для буфера обмена
+  G_SMETADATA := RegisterClipBoardFormat(C_SMETADATA);
 
 end.

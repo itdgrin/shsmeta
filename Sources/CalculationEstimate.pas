@@ -3462,11 +3462,13 @@ begin
         ZonaId := Fields[0].AsInteger;
       Active := False;
 
-      SQL.Clear;
+     { SQL.Clear;
       SQL.Add('SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(qrRatesExSM_ID.AsInteger));
       Active := True;
       PercentTransport := Fields[0].AsFloat;
-      Active := False;
+      Active := False; }
+
+      PercentTransport := 0;
 
       SQL.Clear;
       SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +

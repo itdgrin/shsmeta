@@ -7,7 +7,7 @@ uses
   Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
   ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, ArhivModule,
   Data.DB, GlobsAndConst, Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage,
-  JvFormPlacement;
+  JvFormPlacement, Vcl.Clipbrd;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
@@ -132,6 +132,8 @@ type
     JSMenu8: TMenuItem;
     jsMenu5: TMenuItem;
     AppIni: TJvAppIniFileStorage;
+    N1111111: TMenuItem;
+    N2222221: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -220,6 +222,8 @@ type
     procedure JSMenuClick(Sender: TObject);
     procedure Excel2Click(Sender: TObject);
     procedure EXCEL3Click(Sender: TObject);
+    procedure N1111111Click(Sender: TObject);
+    procedure N2222221Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -573,27 +577,24 @@ end;
 procedure TFormMain.CreateButtonOpenWindow(const CaptionButton, HintButton: String; const AForm: TForm;
   AEventType: Byte = 0);
 begin
-  ButtonsWindows[CountOpenWindows] := TSpeedButton.Create(PanelOpenWindows);
-  with ButtonsWindows[CountOpenWindows] do
-  begin
-    Parent := PanelOpenWindows;
-    Align := alLeft;
-    Width := 140;
-    Height := 25;
-    Top := 1;
-    Caption := CaptionButton;
-    GroupIndex := 1;
-    Down := true;
-    ShowHint := true;
-    Hint := HintButton;
+  ButtonsWindows[CountOpenWindows] := TSpeedButton.Create(Application);
+  ButtonsWindows[CountOpenWindows].Parent := PanelOpenWindows;
+  ButtonsWindows[CountOpenWindows].Align := alLeft;
+  ButtonsWindows[CountOpenWindows].Width := 140;
+  ButtonsWindows[CountOpenWindows].Height := 25;
+  ButtonsWindows[CountOpenWindows].Top := 1;
+  ButtonsWindows[CountOpenWindows].Caption := CaptionButton;
+  ButtonsWindows[CountOpenWindows].GroupIndex := 1;
+  ButtonsWindows[CountOpenWindows].Down := true;
+  ButtonsWindows[CountOpenWindows].ShowHint := true;
+  ButtonsWindows[CountOpenWindows].Hint := HintButton;
 
     if (AEventType = 1) then
-      OnClick := ButtonClickEvent2
+      ButtonsWindows[CountOpenWindows].OnClick := ButtonClickEvent2
     else
-      OnClick := ButtonClickEvent1;
+      ButtonsWindows[CountOpenWindows].OnClick := ButtonClickEvent1;
 
-    Tag := integer(AForm);
-  end;
+    ButtonsWindows[CountOpenWindows].Tag := integer(AForm);
 
   Inc(CountOpenWindows);
 end;
@@ -604,7 +605,7 @@ var
 begin
   Y := -1;
   for i := 0 to CountOpenWindows - 1 do
-    if Assigned(ButtonsWindows[Y]) and (ButtonsWindows[i].Caption = CaptionButton) then
+    if (ButtonsWindows[i].Caption = CaptionButton) then
     begin
       Y := i;
       Break;
@@ -834,6 +835,25 @@ begin
 
   // Закрываем форму ожидания
   FormWaiting.Close;
+end;
+
+procedure TFormMain.N2222221Click(Sender: TObject);
+var
+  DataObj: TSmClipData;
+begin
+  DataObj := TSmClipData.Create;
+  try
+    if ClipBoard.HasFormat(G_SMETADATA) then
+      with DataObj.Rec do
+      begin
+        DataObj.GetFromClipBoard;
+        showmessage(IntToStr(ObjID) + '  ' + IntToStr(SmID) + '  ' +
+          IntToStr(DataID) + '  ' +  IntToStr(DataType));
+      end;
+  finally
+    DataObj.Free;
+  end;
+
 end;
 
 procedure TFormMain.N2Click(Sender: TObject);
@@ -1254,6 +1274,22 @@ begin
 
   finally
     Screen.Cursor := crDefault;
+  end;
+end;
+
+procedure TFormMain.N1111111Click(Sender: TObject);
+var
+  DataObj: TSmClipData;
+begin
+  DataObj := TSmClipData.Create;
+  try
+    DataObj.Rec.ObjID := 1;
+    DataObj.Rec.SmID := 2;
+    DataObj.Rec.DataID := 3;
+    DataObj.Rec.DataType := 4;
+    DataObj.CopyToClipBoard;
+  finally
+    DataObj.Free;
   end;
 end;
 
