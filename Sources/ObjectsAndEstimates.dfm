@@ -2,7 +2,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   Left = 0
   Top = 0
   Caption = #1054#1073#1098#1077#1082#1090#1099' '#1080' '#1089#1084#1077#1090#1099
-  ClientHeight = 502
+  ClientHeight = 518
   ClientWidth = 705
   Color = clBtnFace
   DoubleBuffered = True
@@ -26,7 +26,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     Left = 0
     Top = 0
     Width = 705
-    Height = 502
+    Height = 518
     Align = alClient
     BevelOuter = bvNone
     Font.Charset = DEFAULT_CHARSET
@@ -38,6 +38,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     ParentFont = False
     ShowCaption = False
     TabOrder = 0
+    ExplicitHeight = 502
     object ImageSplitterCenter: TImage
       Left = 304
       Top = 125
@@ -327,7 +328,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Left = 0
       Top = 326
       Width = 705
-      Height = 176
+      Height = 192
       Align = alClient
       BevelOuter = bvNone
       Font.Charset = DEFAULT_CHARSET
@@ -340,6 +341,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       ShowCaption = False
       TabOrder = 1
       OnResize = PanelBottomResize
+      ExplicitHeight = 176
       object ImageSplitterBottomCenter: TImage
         Left = 513
         Top = 73
@@ -352,7 +354,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         Left = 358
         Top = 0
         Width = 5
-        Height = 176
+        Height = 192
         ResizeStyle = rsUpdate
         ExplicitLeft = 345
         ExplicitHeight = 180
@@ -361,7 +363,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         Left = 0
         Top = 0
         Width = 358
-        Height = 176
+        Height = 192
         Align = alLeft
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET
@@ -372,7 +374,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        object lbl2: TLabel
+        ExplicitHeight = 176
+        object lblEstimates: TLabel
           Left = 0
           Top = 0
           Width = 358
@@ -392,7 +395,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           Left = 0
           Top = 13
           Width = 358
-          Height = 163
+          Height = 179
           DataSource = dsTreeData
           MasterField = 'SM_ID'
           DetailField = 'PARENT'
@@ -416,13 +419,14 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           ParentFont = False
           RowSelect = True
           Mirror = False
+          ExplicitHeight = 163
         end
       end
       object PanelActs: TPanel
         Left = 363
         Top = 0
         Width = 342
-        Height = 176
+        Height = 192
         Align = alClient
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET
@@ -433,7 +437,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         ParentBackground = False
         ParentFont = False
         TabOrder = 1
-        object lbl1: TLabel
+        ExplicitHeight = 176
+        object lblActs: TLabel
           Left = 0
           Top = 0
           Width = 342
@@ -453,7 +458,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           Left = 0
           Top = 13
           Width = 342
-          Height = 163
+          Height = 179
           DataSource = dsActs
           MasterField = 'MASTER_ID'
           DetailField = 'PARENT_ID'
@@ -478,6 +483,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           RowSelect = True
           OnCustomDrawItem = tvActsCustomDrawItem
           Mirror = False
+          ExplicitHeight = 163
         end
       end
     end
@@ -578,9 +584,17 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMEstimatesEditClick
     end
-    object PMEstimatesDelete: TMenuItem
+    object mN11: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      Enabled = False
+    end
+    object PMEstimatesDelete: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
       OnClick = PMEstimatesDeleteClick
+    end
+    object mN7: TMenuItem
+      Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      Enabled = False
     end
     object PopupMenuEstimatesSeparator1: TMenuItem
       Caption = '-'
@@ -604,6 +618,25 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1057#1074#1077#1088#1085#1091#1090#1100' '#1074#1089#1077
       OnClick = PMEstimateCollapseClick
     end
+    object mN9: TMenuItem
+      Caption = '-'
+    end
+    object mN10: TMenuItem
+      Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
+      Enabled = False
+    end
+    object mN15: TMenuItem
+      Caption = '-'
+    end
+    object mN13: TMenuItem
+      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1072#1082#1090#1091#1072#1083#1100#1085#1099#1077
+      Checked = True
+      Enabled = False
+    end
+    object mN14: TMenuItem
+      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1089#1077
+      Enabled = False
+    end
   end
   object pmActs: TPopupMenu
     OnPopup = pmActsPopup
@@ -624,6 +657,10 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object PMActsDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       OnClick = PMActsDeleteClick
+    end
+    object mN12: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
+      Enabled = False
     end
     object mRepAct: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
@@ -648,8 +685,20 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = '-'
     end
     object mCopy: TMenuItem
-      Caption = #1050#1086#1087#1080#1103
+      Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
       OnClick = mCopyClick
+    end
+    object mN16: TMenuItem
+      Caption = '-'
+    end
+    object mN17: TMenuItem
+      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1072#1082#1090#1091#1072#1083#1100#1085#1099#1077
+      Checked = True
+      Enabled = False
+    end
+    object mN18: TMenuItem
+      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1089#1077
+      Enabled = False
     end
   end
   object qrActsEx: TFDQuery
@@ -806,7 +855,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       
         'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
         'NAME,'
-      '       PARENT_ID as PARENT  '
+      '       PARENT_ID as PARENT, DELETED'
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2 AND '
       '      OBJ_ID=:OBJ_ID'
@@ -814,7 +863,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       
         'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
         'NAME,'
-      '       PARENT_ID as PARENT  '
+      '       PARENT_ID as PARENT, DELETED '
       'FROM smetasourcedata'
       'WHERE SM_TYPE<>2 AND '
       '      OBJ_ID=:OBJ_ID'

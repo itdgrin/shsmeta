@@ -69,8 +69,8 @@ type
     SaveDialog: TSaveDialog;
     OpenDialog: TOpenDialog;
     dbmmoFullName: TDBMemo;
-    lbl1: TLabel;
-    lbl2: TLabel;
+    lblActs: TLabel;
+    lblEstimates: TLabel;
     tvActs: TJvDBTreeView;
     pnl1: TPanel;
     mN3: TMenuItem;
@@ -91,6 +91,17 @@ type
     mN4: TMenuItem;
     mN6: TMenuItem;
     FormStorage: TJvFormStorage;
+    mN7: TMenuItem;
+    mN9: TMenuItem;
+    mN10: TMenuItem;
+    mN11: TMenuItem;
+    mN12: TMenuItem;
+    mN13: TMenuItem;
+    mN14: TMenuItem;
+    mN15: TMenuItem;
+    mN16: TMenuItem;
+    mN17: TMenuItem;
+    mN18: TMenuItem;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -140,11 +151,11 @@ type
     procedure btnSearchClick(Sender: TObject);
     procedure edtSearchChange(Sender: TObject);
     procedure dbgrdObjectsTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
-    procedure mN6Click(Sender: TObject);
     procedure mCopyClick(Sender: TObject);
     procedure mCopyObjectClick(Sender: TObject);
     procedure tvActsCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
       var DefaultDraw: Boolean);
+    procedure mN6Click(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
 
