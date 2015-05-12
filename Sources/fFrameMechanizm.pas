@@ -57,16 +57,16 @@ begin
     Result := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
           'cast(mech_name as char(1024)) as "Name", unit_name as "Unit", ' +
           'coast1 as "PriceVAT", coast2 as "PriceNotVAT" ' +
-          'FROM mechanizm, units, mechanizmcoastg' +
-          ' WHERE (mechanizm.unit_id = units.unit_id) and ' +
-          '(mechanizm.mechanizm_id = mechanizmcoastg.mechanizm_id) and ' +
+          'FROM mechanizm left join units on (mechanizm.unit_id = units.unit_id) ' +
+          'left join mechanizmcoastg mc on ' +
+          '(mechanizm.mechanizm_id = mc.mechanizm_id) and ' +
           '(year=' + IntToStr(edtYear.Value) + ') and (monat=' +
           IntToStr(cmbMonth.ItemIndex + 1) + ') ORDER BY mech_code;'
   else
     Result := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
           'cast(mech_name as char(1024)) as "Name", unit_name as "Unit" ' +
-          'FROM mechanizm, units' +
-          ' WHERE (mechanizm.unit_id = units.unit_id) ORDER BY mech_code;';
+          'FROM mechanizm left join units on mechanizm.unit_id = units.unit_id ' +
+          'ORDER BY mech_code;';
 end;
 
 procedure TSprMechanizm.ListSprDblClick(Sender: TObject);

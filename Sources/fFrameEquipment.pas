@@ -39,8 +39,8 @@ end;
 function TSprEquipment.GetSprSQL: string;
 begin
   Result := 'SELECT device_id as "Id", device_code1 as "Code", ' +
-    'name as "Name", units.unit_name as "Unit" FROM devices, units ' +
-    'WHERE (devices.unit = units.unit_id) ORDER BY device_code1, name ASC';
+    'name as "Name", units.unit_name as "Unit" FROM devices left join units ' +
+    'on (devices.unit = units.unit_id) ORDER BY device_code1 ASC';
 end;
 
 procedure TSprEquipment.ListSprDblClick(Sender: TObject);

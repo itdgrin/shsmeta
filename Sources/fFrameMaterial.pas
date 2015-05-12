@@ -86,18 +86,16 @@ begin
           'coast' + IntToStr(cmbRegion.ItemIndex + 1) + '_1 as "PriceVAT", ' +
           'coast' + IntToStr(cmbRegion.ItemIndex + 1) + '_2 as "PriceNotVAT", ' +
           'MAT_TYPE ' +
-          'FROM material, units, materialcoastg ' +
-          'WHERE (material.unit_id = units.unit_id) ' +
-          'and (material.material_id = materialcoastg.material_id) ' +
-          'and (material.MAT_TYPE in (' + TmpStr + ')) and (year=' +
-          IntToStr(edtYear.Value) + ') and (monat=' +
-          IntToStr(cmbMonth.ItemIndex + 1) +') ORDER BY mat_code;'
+          'FROM material LEFT JOIN units ON (material.unit_id = units.unit_id) ' +
+          'LEFT JOIN materialcoastg mc ON (material.material_id = mc.material_id) ' +
+          'and (year = ' + IntToStr(edtYear.Value) + ') AND (monat = ' +
+          IntToStr(cmbMonth.ItemIndex + 1) + ') WHERE (material.MAT_TYPE IN (' +
+          TmpStr + ')) ORDER BY mat_code;'
   else
     Result := 'SELECT material.material_id as "Id", mat_code as "Code", ' +
           'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
-          'MAT_TYPE FROM material, units ' +
-          'WHERE (material.unit_id = units.unit_id) ' +
-          'and (material.MAT_TYPE in (' + TmpStr + ')) ORDER BY mat_code;';
+          'MAT_TYPE FROM material left join units on (material.unit_id = units.unit_id) ' +
+          'WHERE (material.MAT_TYPE in (' + TmpStr + ')) ORDER BY mat_code;';
 end;
 
 procedure TSprMaterial.ListSprDblClick(Sender: TObject);

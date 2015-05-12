@@ -235,7 +235,7 @@ inherited SprMaterial: TSprMaterial
     object LabelRegion: TLabel [2]
       Left = 221
       Top = 12
-      Width = 41
+      Width = 39
       Height = 13
       Caption = #1056#1077#1075#1080#1086#1085':'
     end
@@ -277,12 +277,6 @@ inherited SprMaterial: TSprMaterial
       Caption = #1046#1041#1048
       TabOrder = 5
       OnClick = edtYearChange
-    end
-  end
-  inherited PanelFind: TPanel
-    inherited edtFindCode: TEdit
-      Height = 23
-      ExplicitHeight = 23
     end
   end
   inherited ListSpr: TListView

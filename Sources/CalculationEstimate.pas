@@ -446,6 +446,8 @@ type
     PMMatRestore: TMenuItem;
     PMMechRestore: TMenuItem;
     qrRatesExOBJ_COUNT: TFloatField;
+    PMCopy: TMenuItem;
+    PMPaste: TMenuItem;
     qrTreeEstimates: TFDQuery;
     dsTreeEstimates: TDataSource;
     procedure FormCreate(Sender: TObject);
@@ -634,6 +636,8 @@ type
     procedure PMMatRestoreClick(Sender: TObject);
     procedure PMMechRestoreClick(Sender: TObject);
     procedure qrRatesExITERATORChange(Sender: TField);
+    procedure PMCopyClick(Sender: TObject);
+    procedure PMPasteClick(Sender: TObject);
     procedure LabelNameEstimateClick(Sender: TObject);
   private const
     CaptionButton = 'Расчёт сметы';
@@ -761,8 +765,8 @@ uses Main, DataModule, Columns, SignatureSSR, Waiting,
   AdditionData, CardMaterial, CardDataEstimate,
   ListCollections, CoefficientOrders, KC6,
   CardAct, Tools, Coef, WinterPrice,
-  ReplacementMatAndMech, CardEstimate, KC6Journal, TreeEstimate;
-
+  ReplacementMatAndMech, CardEstimate, KC6Journal,
+  TreeEstimate, ImportExportModule;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -2756,6 +2760,25 @@ begin
   GetStateCoefOrdersInRate;
 end;
 
+procedure TFormCalculationEstimate.PMCopyClick(Sender: TObject);
+var
+  DataObj: TSmClipData;
+begin
+  if not(qrRatesExID_TYPE_DATA.Value > 0) or Act then
+    Exit;
+
+  DataObj := TSmClipData.Create;
+  try
+    DataObj.Rec.ObjID := IdObject;
+    DataObj.Rec.SmID := qrRatesExSM_ID.Value;
+    DataObj.Rec.DataID := qrRatesExID_TABLES.Value;
+    DataObj.Rec.DataType := qrRatesExID_TYPE_DATA.Value;
+    DataObj.CopyToClipBoard;
+  finally
+    DataObj.Free;
+  end;
+end;
+
 procedure TFormCalculationEstimate.PMMatAddToRateClick(Sender: TObject);
 var
   frmReplace: TfrmReplacement;
@@ -2955,6 +2978,30 @@ begin
     on e: Exception do
       MessageBox(0, PChar('При восстановлении механизма возникла ошибка:' + sLineBreak + sLineBreak +
         e.message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
+
+procedure TFormCalculationEstimate.PMPasteClick(Sender: TObject);
+var
+  DataObj: TSmClipData;
+begin
+  if not((qrRatesExID_TYPE_DATA.AsInteger > 0) or
+    (qrRatesExID_TYPE_DATA.AsInteger = -4) or
+    (qrRatesExID_TYPE_DATA.AsInteger = -3)) or Act then
+    Exit;
+
+  DataObj := TSmClipData.Create;
+  try
+    if ClipBoard.HasFormat(G_SMETADATA) then
+    begin
+      with DataObj.Rec do
+      begin
+        DataObj.GetFromClipBoard;
+        PasteSmetaRow(DataObj.Rec, qrRatesExSM_ID.Value, qrRatesExITERATOR.Value);
+      end;
+    end;
+  finally
+    DataObj.Free;
   end;
 end;
 
@@ -3457,15 +3504,27 @@ begin
       PercentTransport := 0;
 
       SQL.Clear;
+     { SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
+        'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
+        'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
+        ' as "PriceNoVAT" ' + 'FROM materialnorm as TMatNorm ' +
+        'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
+        'LEFT JOIN units ON TMat.unit_id = units.unit_id ' +
+        'LEFT JOIN (select material_id, ' + PriceVAT + ', ' +
+        PriceNoVAT + ' from materialcoastg where (monat = ' + IntToStr(Month1) + ') and (year = ' +
+        IntToStr(Year1) + ')) as TMatCoast ' + 'ON TMatCoast.material_id = TMatNorm.material_id ' +
+        'WHERE (TMatNorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1'; }
+
       SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
         'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
         'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
         ' as "PriceNoVAT" ' + 'FROM materialnorm as TMatNorm ' +
         'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
-        'JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN (select material_id, ' + PriceVAT + ', ' +
-        PriceNoVAT + ' from materialcoastg where (monat = ' + IntToStr(Month1) + ') and (year = ' +
-        IntToStr(Year1) + ')) as TMatCoast ' + 'ON TMatCoast.material_id = TMatNorm.material_id ' +
-        'WHERE (TMatNorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1';
+        'LEFT JOIN units ON TMat.unit_id = units.unit_id ' +
+        'LEFT JOIN materialcoastg as TMatCoast ON ' +
+        '(TMatCoast.material_id = TMatNorm.material_id) and (monat = ' +
+          IntToStr(Month1) + ') and (year = ' + IntToStr(Year1) +
+          ') WHERE (TMatNorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1';
       Active := True;
 
       Filtered := False;
@@ -3563,11 +3622,18 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL GetMechanizmsFromRate(:IdObject, :IdEstimate, :IdRate);');
-
-      ParamByName('IdObject').Value := IdObject;
-      ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
-      ParamByName('IdRate').Value := vRateId;
+      SQL.Add('SELECT DISTINCT mech.mechanizm_id as "MechId", mech.mech_code as "MechCode", ' +
+  	    'mechnorm.norm_ras as "MechNorm", units.unit_name as "Unit", ' +
+        'mech.mech_name as "MechName", mechcoast.coast1 as "CoastVAT", ' +
+        'mechcoast.coast2 as "CoastNoVAT", mechcoast.zp1 as "SalaryVAT", ' +
+        'mechcoast.zp2 as "SalaryNoVAT", IFNULL(mech.MECH_PH, 0) as "MECH_PH" ' +
+        'FROM mechanizmnorm as mechnorm ' +
+        'JOIN mechanizm as mech ON mechnorm.mechanizm_id = mech.mechanizm_id ' +
+        'JOIN units ON mech.unit_id = units.unit_id ' +
+        'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
+  	    '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and  ' +
+        '(monat = ' + IntToStr(Month1) + ') and (year = ' + IntToStr(Year1) +
+        ') WHERE (mechnorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1');
 
       Active := True;
       First;
@@ -3873,6 +3939,15 @@ begin
   PMDelete.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0);
   PMAdd.Visible := CheckCursorInRate;
   PMEdit.Visible := (qrRatesExID_TYPE_DATA.AsInteger in [5, 6, 7, 8, 9]) and CheckCursorInRate;
+  PMCopy.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
+  PMPaste.Enabled := ((qrRatesExID_TYPE_DATA.AsInteger > 0) or
+    (qrRatesExID_TYPE_DATA.AsInteger = -4) or
+    (qrRatesExID_TYPE_DATA.AsInteger = -3)) and
+    ClipBoard.HasFormat(G_SMETADATA);
+
+  PMCopy.Visible := not Act;
+  PMPaste.Visible := not Act;
+
   // Разрешаем добавлять разделы ПТМ только когда курсор установлен на локальной смете
   // или открыта изначально локальная
   qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata WHERE SM_ID=:ID';

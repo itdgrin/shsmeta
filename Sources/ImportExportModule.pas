@@ -5,41 +5,86 @@ interface
 uses
   System.Classes, System.SysUtils, System.IOUtils, System.UITypes, System.Variants,
   Winapi.Windows, Vcl.Forms, Vcl.Dialogs, Vcl.Controls, Data.DB, XMLIntf, XMLDoc,
-  ActiveX, FireDAC.Comp.Client;
-
-const
-  CTabNameAndID: array [0..17, 0..1] of string =
-    (('objcards', 'obj_id'),
-    ('smetasourcedata', 'SM_ID'),
-    ('card_rate', 'ID'),
-    ('materialcard', 'ID'),
-    ('mechanizmcard', 'ID'),
-    ('devicescard', 'ID'),
-    ('dumpcard', 'ID'),
-    ('transpcard', 'ID'),
-    ('data_estimate', 'ID'),
-    ('card_acts', 'ID'),
-    ('card_rate_act', 'ID'),
-    ('materialcard_act', 'ID'),
-    ('mechanizmcard_act', 'ID'),
-    ('devicescard_act', 'ID'),
-    ('dumpcard_act', 'ID'),
-    ('transpcard_act', 'ID'),
-    ('data_act', 'ID'),
-    ('calculation_coef', 'calculation_coef_id'));
+  ActiveX, FireDAC.Comp.Client, GlobsAndConst;
 
   procedure ImportObject(const AFileName: string);
   procedure ExportObject(const AIdObject: Integer; const AFileName: string);
+  function GetNewId(const ALastID: Variant; const AType: Integer;
+    var AIdConvert: TIDConvertArray): Variant;
+  procedure PasteSmetaRow(ASmClipRec: TSmClipRec; ADestSmID, AIterator: Integer);
 
 implementation
 
 uses DataModule, Tools;
 
+function GetNewId(const ALastID: Variant; const AType: Integer;
+  var AIdConvert: TIDConvertArray): Variant;
+var i: Integer;
+    TabName,
+    FieldName: string;
+begin
+  //Расшифровка типов
+  //0 - объект
+  //1 - смета
+  //2 - смета расценка
+  //3 - смета материал
+  //4 - смета механизм
+  //5 - смета оборудование
+  //6 - смета свалки
+  //7 - смета транспорт
+  //8 - смета data_estimate
+  //9 - акт
+  //10 - акт расценка
+  //11 - акт материал
+  //12 - акт механизм
+  //13 - акт оборудование
+  //14 - акт свалки
+  //15 - акт транспорт
+  //16 - акт data_act
+  //17 - смета calculation_coef
+
+  if VarIsNull(ALastID) or (ALastID = 0) then
+  begin
+    Result := ALastID;
+    Exit;
+  end;
+
+  //Сперва проверяется на наличие этого ID
+  for i := 0 to Length(AIdConvert[AType][0]) - 1 do
+    if AIdConvert[AType][0][i] = ALastID then
+    begin
+      Result := AIdConvert[AType][1][i];
+      Exit;
+    end;
+
+  TabName := CTabNameAndID[AType][0];
+  FieldName := CTabNameAndID[AType][1];
+
+  DM.qrDifferent.Active := False;
+  DM.qrDifferent.SQL.Text := 'Select MAX(' + FieldName + ') from ' + TabName;
+  DM.qrDifferent.Active := True;
+  if not DM.qrDifferent.IsEmpty then
+    Result := DM.qrDifferent.Fields[0].AsInteger + 1
+  else
+    Result := 1;
+
+  DM.qrDifferent.Active := False;
+  DM.qrDifferent.SQL.Text := 'Alter table ' + TabName + ' auto_increment = ' +
+    IntToStr(Result + 1);
+  DM.qrDifferent.ExecSQL;
+
+  SetLength(AIdConvert[AType][0], Length(AIdConvert[AType][0]) + 1);
+  SetLength(AIdConvert[AType][1], Length(AIdConvert[AType][1]) + 1);
+
+  AIdConvert[AType][0][Length(AIdConvert[AType][0]) - 1] := ALastID;
+  AIdConvert[AType][1][Length(AIdConvert[AType][1]) - 1] := Result;
+end;
+
 procedure ImportObject(const AFileName: string);
 var XML : IXMLDocument;
     CurNode, Node1, Node2: IXMLNode;
     i, j: Integer;
-    IdConvert: array [0..17, 0..1] of array of Integer;
+    IdConvert: TIDConvertArray;
 
   procedure GetStrAndExcec(ANode: IXMLNode; AType: Integer);
   var i: Integer;
@@ -62,68 +107,6 @@ var XML : IXMLDocument;
       DM.qrDifferent.ParamByName(ANode.ChildNodes.Nodes[i].NodeName).Value :=
         ANode.ChildNodes.Nodes[i].NodeValue;
     DM.qrDifferent.ExecSQL;
-  end;
-
-  function GetNewId(const ALastID: Variant; const AType: Integer): Variant;
-  var i: Integer;
-      TabName,
-      FieldName: string;
-  begin
-    //Расшифровка типов
-    //0 - объект
-    //1 - смета
-    //2 - смета расценка
-    //3 - смета материал
-    //4 - смета механизм
-    //5 - смета оборудование
-    //6 - смета свалки
-    //7 - смета транспорт
-    //8 - смета data_estimate
-    //9 - акт
-    //10 - акт расценка
-    //11 - акт материал
-    //12 - акт механизм
-    //13 - акт оборудование
-    //14 - акт свалки
-    //15 - акт транспорт
-    //16 - акт data_act
-    //17 - смета calculation_coef
-
-    if VarIsNull(ALastID) or (ALastID = 0) then
-    begin
-      Result := ALastID;
-      Exit;
-    end;
-
-    //Сперва проверяется на наличие этого ID
-    for i := 0 to Length(IdConvert[AType][0]) - 1 do
-      if IdConvert[AType][0][i] = ALastID then
-      begin
-        Result := IdConvert[AType][1][i];
-        Exit;
-      end;
-
-    TabName := CTabNameAndID[AType][0];
-    FieldName := CTabNameAndID[AType][1];
-
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select MAX(' + FieldName + ') from ' + TabName;
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-      Result := DM.qrDifferent.Fields[0].AsInteger + 1
-    else
-      Result := 1;
-
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Alter table ' + TabName + ' auto_increment = ' +
-      IntToStr(Result + 1);
-    DM.qrDifferent.ExecSQL;
-
-    SetLength(IdConvert[AType][0], Length(IdConvert[AType][0]) + 1);
-    SetLength(IdConvert[AType][1], Length(IdConvert[AType][1]) + 1);
-
-    IdConvert[AType][0][Length(IdConvert[AType][0]) - 1] := ALastID;
-    IdConvert[AType][1][Length(IdConvert[AType][1]) - 1] := Result;
   end;
 
   procedure RollBackImport;
@@ -154,7 +137,7 @@ begin
       //загрузка объекта
       Node1 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Data_object');
       Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
-        GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue,0);
+        GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, 0, IdConvert);
 
       GetStrAndExcec(Node1, 0);
       Node1 := nil;
@@ -166,11 +149,11 @@ begin
         Node1 := Node2.ChildNodes.Nodes[j];
         //замена IDшников
         Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue,1);
+          GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue,1, IdConvert);
         Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue,0);
+          GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue,0, IdConvert);
         Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue,1);
+          GetNewId(Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue,1, IdConvert);
 
         GetStrAndExcec(Node1, 1);
         Node1 := nil;
@@ -185,7 +168,7 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,2);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,2, IdConvert);
 
           GetStrAndExcec(Node1, 2);
           Node1 := nil;
@@ -200,11 +183,11 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,3);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,3, IdConvert);
           Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2);
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2, IdConvert);
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,3);
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,3, IdConvert);
 
           GetStrAndExcec(Node1, 3);
           Node1 := nil;
@@ -219,11 +202,11 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,4);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,4, IdConvert);
           Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2);
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2, IdConvert);
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,4);
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,4, IdConvert);
 
           GetStrAndExcec(Node1, 4);
           Node1 := nil;
@@ -238,7 +221,7 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,5);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,5, IdConvert);
 
           GetStrAndExcec(Node1, 5);
           Node1 := nil;
@@ -253,7 +236,7 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,6);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,6, IdConvert);
 
           GetStrAndExcec(Node1, 6);
           Node1 := nil;
@@ -268,7 +251,7 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,7);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,7, IdConvert);
 
           GetStrAndExcec(Node1, 7);
           Node1 := nil;
@@ -283,9 +266,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,8);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,8, IdConvert);
           Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue,1);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue,1, IdConvert);
 
           i := 0;
           case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
@@ -299,7 +282,7 @@ begin
 
           if i > 0  then
             Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
-              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue,i);
+              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue,i, IdConvert);
 
           GetStrAndExcec(Node1, 8);
           Node1 := nil;
@@ -315,9 +298,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['calculation_coef_id'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['calculation_coef_id'].NodeValue,17);
+            GetNewId(Node1.ChildNodes.Nodes['calculation_coef_id'].NodeValue,17, IdConvert);
           Node1.ChildNodes.Nodes['id_estimate'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['id_estimate'].NodeValue,1);
+            GetNewId(Node1.ChildNodes.Nodes['id_estimate'].NodeValue,1, IdConvert);
 
           i := 0;
           case Node1.ChildNodes.Nodes['id_type_data'].NodeValue of
@@ -331,7 +314,7 @@ begin
 
           if i > 0  then
             Node1.ChildNodes.Nodes['id_owner'].NodeValue :=
-              GetNewId(Node1.ChildNodes.Nodes['id_owner'].NodeValue,i);
+              GetNewId(Node1.ChildNodes.Nodes['id_owner'].NodeValue,i, IdConvert);
 
           Node1.ChildNodes.Nodes['id_coef'].NodeValue := null;
 
@@ -349,9 +332,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,9);
-          Node1.ChildNodes.Nodes['ID_ESTIMATE_OBJECT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE_OBJECT'].NodeValue,1);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,9, IdConvert);
+          Node1.ChildNodes.Nodes['ID_OBJECT'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_OBJECT'].NodeValue,0, IdConvert);
 
           GetStrAndExcec(Node1, 9);
           Node1 := nil;
@@ -366,9 +349,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,10);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,10, IdConvert);
 
           GetStrAndExcec(Node1, 10);
           Node1 := nil;
@@ -383,13 +366,13 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,11);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 11, IdConvert);
           Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,10);
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue, 10, IdConvert);
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,11);
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue, 11, IdConvert);
 
           GetStrAndExcec(Node1, 11);
           Node1 := nil;
@@ -404,13 +387,13 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,12);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 12, IdConvert);
           Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,10);
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue, 10, IdConvert);
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,12);
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue, 12 ,IdConvert);
 
           GetStrAndExcec(Node1, 12);
           Node1 := nil;
@@ -425,9 +408,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,13);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 13, IdConvert);
 
           GetStrAndExcec(Node1, 13);
           Node1 := nil;
@@ -442,9 +425,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,14);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 14, IdConvert);
 
           GetStrAndExcec(Node1, 14);
           Node1 := nil;
@@ -459,9 +442,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,15);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 15, IdConvert);
 
           GetStrAndExcec(Node1, 15);
           Node1 := nil;
@@ -476,11 +459,11 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,16);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 16, IdConvert);
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
           Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue,1);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue, 1, IdConvert);
 
           i := 0;
           case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
@@ -494,7 +477,7 @@ begin
 
           if i > 0  then
             Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
-              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue,i);
+              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue, i, IdConvert);
 
           GetStrAndExcec(Node1, 16);
           Node1 := nil;
@@ -975,6 +958,52 @@ begin
     XML := nil;
     CoUninitialize;
   end;
+end;
+
+//Выполняет вставку строки в смету
+procedure PasteSmetaRow(ASmClipRec: TSmClipRec; ADestSmID, AIterator: Integer);
+var i, j: Integer;
+    IdConvert: TIDConvertArray;
+begin
+  i := 0;
+  case ASmClipRec.DataType of
+    1: i := 2;
+    2: i := 3;
+    3: i := 4;
+    4: i := 5;
+    5: i := 6;
+    6, 7, 8, 9: i := 7;
+  end;
+
+  if i = 0 then
+  begin
+    MessageBox(Application.Handle,
+      PChar('Неизвестный тип данных (' + IntToStr(ASmClipRec.DataType) + ').'),
+      'Ошибка вставки', MB_OK + MB_ICONHAND);
+    Exit;
+  end;
+
+  DM.qrDifferent.SQL.Text := 'Select ' + CTabNameAndID[i][1] + ' from ' +
+    CTabNameAndID[i][0] + ' where ' + CTabNameAndID[i][1] + ' = ' +
+    IntToStr(ASmClipRec.DataID);
+  DM.qrDifferent.Active := True;
+  if DM.qrDifferent.IsEmpty then
+  begin
+    DM.qrDifferent.Active := False;
+    MessageBox(Application.Handle,
+      PChar('Источник отсутствует в БД.'),
+      'Ошибка вставки', MB_OK + MB_ICONHAND);
+    Exit;
+  end;
+  DM.qrDifferent.Active := False;
+
+  for i := 0 to Length(IdConvert) - 1 do
+  begin
+    SetLength(IdConvert[i][0], 0);
+    SetLength(IdConvert[i][1], 0);
+  end;
+
+  Showmessage(IntToStr(ADestSmID) + '   ' + IntToStr(AIterator));
 end;
 
 end.

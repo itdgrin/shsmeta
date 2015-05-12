@@ -132,8 +132,6 @@ type
     JSMenu8: TMenuItem;
     jsMenu5: TMenuItem;
     AppIni: TJvAppIniFileStorage;
-    N1111111: TMenuItem;
-    N2222221: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -222,8 +220,6 @@ type
     procedure JSMenuClick(Sender: TObject);
     procedure Excel2Click(Sender: TObject);
     procedure EXCEL3Click(Sender: TObject);
-    procedure N1111111Click(Sender: TObject);
-    procedure N2222221Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -603,6 +599,9 @@ procedure TFormMain.DeleteButtonCloseWindow(const CaptionButton: String);
 var
   i, Y: integer;
 begin
+  if not Assigned(PanelOpenWindows) then
+    Exit;
+
   Y := -1;
   for i := 0 to CountOpenWindows - 1 do
     if (ButtonsWindows[i].Caption = CaptionButton) then
@@ -614,11 +613,8 @@ begin
   if (Y = -1) then // Нет кнопки с таким названием
     Exit;
 
-  if Assigned(PanelOpenWindows) then
-  begin
-    ButtonsWindows[Y].Free;
-    ButtonsWindows[Y] := nil;
-  end;
+  ButtonsWindows[Y].Free;
+  ButtonsWindows[Y] := nil;
 
   while Y < CountOpenWindows - 1 do
   begin
@@ -835,25 +831,6 @@ begin
 
   // Закрываем форму ожидания
   FormWaiting.Close;
-end;
-
-procedure TFormMain.N2222221Click(Sender: TObject);
-var
-  DataObj: TSmClipData;
-begin
-  DataObj := TSmClipData.Create;
-  try
-    if ClipBoard.HasFormat(G_SMETADATA) then
-      with DataObj.Rec do
-      begin
-        DataObj.GetFromClipBoard;
-        showmessage(IntToStr(ObjID) + '  ' + IntToStr(SmID) + '  ' +
-          IntToStr(DataID) + '  ' +  IntToStr(DataType));
-      end;
-  finally
-    DataObj.Free;
-  end;
-
 end;
 
 procedure TFormMain.N2Click(Sender: TObject);
@@ -1274,22 +1251,6 @@ begin
 
   finally
     Screen.Cursor := crDefault;
-  end;
-end;
-
-procedure TFormMain.N1111111Click(Sender: TObject);
-var
-  DataObj: TSmClipData;
-begin
-  DataObj := TSmClipData.Create;
-  try
-    DataObj.Rec.ObjID := 1;
-    DataObj.Rec.SmID := 2;
-    DataObj.Rec.DataID := 3;
-    DataObj.Rec.DataType := 4;
-    DataObj.CopyToClipBoard;
-  finally
-    DataObj.Free;
   end;
 end;
 

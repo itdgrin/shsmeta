@@ -3313,6 +3313,14 @@
         end
       end
     end
+    object PMCopy: TMenuItem
+      Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
+      OnClick = PMCopyClick
+    end
+    object PMPaste: TMenuItem
+      Caption = #1042#1089#1090#1072#1074#1080#1090#1100
+      OnClick = PMPasteClick
+    end
     object PMDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       OnClick = PMDeleteClick

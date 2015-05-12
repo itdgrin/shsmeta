@@ -61,11 +61,34 @@ const
     ('Декабрь',  'Декабря'));
   //Тип данных для буфера обмена
   C_SMETADATA = 'CF_SMETA';
+
+  CTabNameAndID: array [0..17, 0..1] of string =
+    (('objcards', 'obj_id'),
+    ('smetasourcedata', 'SM_ID'),
+    ('card_rate', 'ID'),
+    ('materialcard', 'ID'),
+    ('mechanizmcard', 'ID'),
+    ('devicescard', 'ID'),
+    ('dumpcard', 'ID'),
+    ('transpcard', 'ID'),
+    ('data_estimate', 'ID'),
+    ('card_acts', 'ID'),
+    ('card_rate_act', 'ID'),
+    ('materialcard_act', 'ID'),
+    ('mechanizmcard_act', 'ID'),
+    ('devicescard_act', 'ID'),
+    ('dumpcard_act', 'ID'),
+    ('transpcard_act', 'ID'),
+    ('data_act', 'ID'),
+    ('calculation_coef', 'calculation_coef_id'));
+
+type
+  TIDConvertArray = array [0..17, 0..1] of array of Integer;
 //******************************************************************************
 
 //******************************************************************************
 // константы необходимые для работа системы резервного копирования
-
+const
   //Имена папок внутри архива
   C_ARHBASEDIR = 'Base\';
   C_ARHAPPDIR = 'App\';
