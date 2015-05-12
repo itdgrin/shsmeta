@@ -91,13 +91,13 @@ type
     mN4: TMenuItem;
     mN6: TMenuItem;
     FormStorage: TJvFormStorage;
-    mN7: TMenuItem;
+    mReapirEstimate: TMenuItem;
     mN9: TMenuItem;
     mN10: TMenuItem;
-    mN11: TMenuItem;
+    mDeleteEstimate: TMenuItem;
     mN12: TMenuItem;
-    mN13: TMenuItem;
-    mN14: TMenuItem;
+    mShowActualEstimates: TMenuItem;
+    mShowAllEstimates: TMenuItem;
     mN15: TMenuItem;
     mN16: TMenuItem;
     mN17: TMenuItem;
@@ -156,6 +156,12 @@ type
     procedure tvActsCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
       var DefaultDraw: Boolean);
     procedure mN6Click(Sender: TObject);
+    procedure tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
+      var DefaultDraw: Boolean);
+    procedure mDeleteEstimateClick(Sender: TObject);
+    procedure mReapirEstimateClick(Sender: TObject);
+    procedure mShowActualEstimatesClick(Sender: TObject);
+    procedure mShowAllEstimatesClick(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
 
@@ -454,9 +460,36 @@ begin
   CloseOpen(qrObjects);
 end;
 
+procedure TFormObjectsAndEstimates.mDeleteEstimateClick(Sender: TObject);
+begin
+  if MessageDlg('Удалить запись?', mtWarning, mbYesNo, 0) <> mrYes then
+    Exit;
+  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=1 WHERE SM_ID=:SM_ID';
+  DM.qrDifferent.ParamByName('SM_ID').AsInteger := qrTreeData.FieldByName('SM_ID').AsInteger;
+  DM.qrDifferent.ExecSQL;
+  CloseOpen(qrTreeData, False);
+end;
+
+procedure TFormObjectsAndEstimates.mShowActualEstimatesClick(Sender: TObject);
+begin
+  qrTreeData.ParamByName('SHOW_DELETED').AsInteger := 0;
+  CloseOpen(qrTreeData, False);
+  mShowActualEstimates.Checked := True;
+  mShowAllEstimates.Checked := False;
+end;
+
 procedure TFormObjectsAndEstimates.mN6Click(Sender: TObject);
 begin
   dbgrdObjects.ShowColumnsDialog;
+end;
+
+procedure TFormObjectsAndEstimates.mReapirEstimateClick(Sender: TObject);
+begin
+  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=0 WHERE SM_ID=:SM_ID';
+  DM.qrDifferent.ParamByName('SM_ID').AsInteger := qrTreeData.FieldByName('SM_ID').AsInteger;
+  DM.qrDifferent.ExecSQL;
+  CloseOpen(qrTreeData);
+  tvEstimates.Selected.Text := qrTreeData.FieldByName('NAME').AsString;
 end;
 
 procedure TFormObjectsAndEstimates.mShowAllClick(Sender: TObject);
@@ -465,6 +498,14 @@ begin
   CloseOpen(qrObjects);
   mShowActual.Checked := False;
   mShowAll.Checked := True;
+end;
+
+procedure TFormObjectsAndEstimates.mShowAllEstimatesClick(Sender: TObject);
+begin
+  qrTreeData.ParamByName('SHOW_DELETED').AsInteger := 1;
+  CloseOpen(qrTreeData, False);
+  mShowActualEstimates.Checked := False;
+  mShowAllEstimates.Checked := True;
 end;
 
 procedure TFormObjectsAndEstimates.mShowActualClick(Sender: TObject);
@@ -926,6 +967,16 @@ begin
   end
   else if qrTreeData.FieldByName('SM_TYPE').AsInteger = 1 then
     PMEstimatesAddPTM.Enabled := True;
+  mDeleteEstimate.Visible := qrTreeData.FieldByName('DELETED').AsInteger = 0;
+  mReapirEstimate.Visible := qrTreeData.FieldByName('DELETED').AsInteger = 1;
+  PMEstimatesDelete.Visible := qrTreeData.FieldByName('DELETED').AsInteger = 1;
+end;
+
+procedure TFormObjectsAndEstimates.tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
+  State: TCustomDrawState; var DefaultDraw: Boolean);
+begin
+  if Node.Text[Length(Node.Text)] = '-' then
+    Sender.Canvas.Font.Style := Sender.Canvas.Font.Style + [fsStrikeOut];
 end;
 
 procedure TFormObjectsAndEstimates.tvEstimatesDblClick(Sender: TObject);

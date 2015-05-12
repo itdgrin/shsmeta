@@ -418,6 +418,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           PopupMenu = pmEstimates
           ParentFont = False
           RowSelect = True
+          OnCustomDrawItem = tvEstimatesCustomDrawItem
           Mirror = False
           ExplicitHeight = 163
         end
@@ -561,7 +562,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   object pmEstimates: TPopupMenu
     OnPopup = pmEstimatesPopup
     Left = 24
-    Top = 448
+    Top = 440
     object PopupMenuEstimatesAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       object PMEstimatesAddLocal: TMenuItem
@@ -584,17 +585,17 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMEstimatesEditClick
     end
-    object mN11: TMenuItem
+    object mDeleteEstimate: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
-      Enabled = False
+      OnClick = mDeleteEstimateClick
     end
     object PMEstimatesDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
       OnClick = PMEstimatesDeleteClick
     end
-    object mN7: TMenuItem
+    object mReapirEstimate: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
-      Enabled = False
+      OnClick = mReapirEstimateClick
     end
     object PopupMenuEstimatesSeparator1: TMenuItem
       Caption = '-'
@@ -628,14 +629,14 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object mN15: TMenuItem
       Caption = '-'
     end
-    object mN13: TMenuItem
+    object mShowActualEstimates: TMenuItem
       Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1072#1082#1090#1091#1072#1083#1100#1085#1099#1077
       Checked = True
-      Enabled = False
+      OnClick = mShowActualEstimatesClick
     end
-    object mN14: TMenuItem
+    object mShowAllEstimates: TMenuItem
       Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1089#1077
-      Enabled = False
+      OnClick = mShowAllEstimatesClick
     end
   end
   object pmActs: TPopupMenu
@@ -839,7 +840,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
   object dsTreeData: TDataSource
     DataSet = qrTreeData
     Left = 24
-    Top = 400
+    Top = 392
   end
   object qrTreeData: TFDQuery
     AfterOpen = qrTreeDataAfterOpen
@@ -853,23 +854,25 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     FetchOptions.Cache = [fiBlobs, fiMeta]
     SQL.Strings = (
       
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
-        'NAME,'
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME, IF(' +
+        'DELETED=1, "-", "")) as NAME,'
       '       PARENT_ID as PARENT, DELETED'
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2 AND '
       '      OBJ_ID=:OBJ_ID'
+      '      AND ((DELETED=0) OR (:SHOW_DELETED=1))'
       'UNION ALL'
       
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
-        'NAME,'
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME, IF(' +
+        'DELETED=1, "-", "")) as NAME,'
       '       PARENT_ID as PARENT, DELETED '
       'FROM smetasourcedata'
       'WHERE SM_TYPE<>2 AND '
       '      OBJ_ID=:OBJ_ID'
+      '      AND ((DELETED=0) OR (:SHOW_DELETED=1))'
       'ORDER BY NAME')
     Left = 25
-    Top = 352
+    Top = 344
     ParamData = <
       item
         Name = 'OBJ_ID'
@@ -877,6 +880,12 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         ParamType = ptInput
         Size = 10
         Value = Null
+      end
+      item
+        Name = 'SHOW_DELETED'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 0
       end>
   end
   object SaveDialog: TSaveDialog
