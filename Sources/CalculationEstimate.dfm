@@ -4360,7 +4360,7 @@
   end
   object dsCalculations: TDataSource
     DataSet = qrCalculations
-    Left = 396
+    Left = 356
     Top = 432
   end
   object qrDump: TFDQuery
@@ -4808,6 +4808,7 @@
   object qrRatesEx: TFDQuery
     BeforePost = qrRatesExBeforePost
     AfterScroll = qrRatesExAfterScroll
+    OnCalcFields = qrRatesExCalcFields
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -4949,6 +4950,11 @@
     object qrRatesExOBJ_COUNT: TFloatField
       FieldName = 'OBJ_COUNT'
       OnChange = qrRatesExCOUNTChange
+    end
+    object qrRatesExADDED_COUNT: TIntegerField
+      FieldKind = fkCalculated
+      FieldName = 'ADDED_COUNT'
+      Calculated = True
     end
   end
   object dsRatesEx: TDataSource

@@ -450,6 +450,7 @@ type
     PMPaste: TMenuItem;
     qrTreeEstimates: TFDQuery;
     dsTreeEstimates: TDataSource;
+    qrRatesExADDED_COUNT: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -639,6 +640,7 @@ type
     procedure PMCopyClick(Sender: TObject);
     procedure PMPasteClick(Sender: TObject);
     procedure LabelNameEstimateClick(Sender: TObject);
+    procedure qrRatesExCalcFields(DataSet: TDataSet);
   private const
     CaptionButton = 'Расчёт сметы';
     HintButton = 'Окно расчёта сметы';
@@ -2361,6 +2363,36 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.qrRatesExCalcFields(DataSet: TDataSet);
+// Функция считает сколько добавленных материалов/механизмов в расценке
+  function GetAddedCount(const ID_CARD_RATE: Integer): Integer;
+  begin
+    Result := 0;
+    DM.qrDifferent.SQL.Text :=
+      'SELECT ADDED FROM materialcard_temp WHERE ID_CARD_RATE=:ID_CARD_RATE AND ADDED=1 LIMIT 1';
+    DM.qrDifferent.ParamByName('ID_CARD_RATE').Value := ID_CARD_RATE;
+    DM.qrDifferent.Active := True;
+    Result := Result + DM.qrDifferent.FieldByName('ADDED').AsInteger;
+    // Если уже что то нашли, то можно дальше не производить лишних действий
+    if Result > 0 then
+      Exit;
+    DM.qrDifferent.SQL.Text :=
+      'SELECT ADDED FROM mechanizmcard_temp WHERE ID_CARD_RATE=:ID_CARD_RATE AND ADDED=1 LIMIT 1';
+    DM.qrDifferent.ParamByName('ID_CARD_RATE').Value := ID_CARD_RATE;
+    DM.qrDifferent.Active := True;
+    Result := Result + DM.qrDifferent.FieldByName('ADDED').AsInteger;
+    DM.qrDifferent.Active := False;
+  end;
+
+begin
+  if not CheckQrActiveEmpty(qrRatesEx) then
+    Exit;
+
+  if qrRatesExID_TYPE_DATA.Value = 1 then
+    qrRatesExADDED_COUNT.Value := GetAddedCount(qrRatesExID_TABLES.Value)
+  else qrRatesExADDED_COUNT.Value := 0;
+end;
+
 procedure TFormCalculationEstimate.qrRatesExCODEChange(Sender: TField);
 var
   NewCode: string;
@@ -2985,8 +3017,7 @@ procedure TFormCalculationEstimate.PMPasteClick(Sender: TObject);
 var
   DataObj: TSmClipData;
 begin
-  if not((qrRatesExID_TYPE_DATA.AsInteger > 0) or
-    (qrRatesExID_TYPE_DATA.AsInteger = -4) or
+  if not((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -4) or
     (qrRatesExID_TYPE_DATA.AsInteger = -3)) or Act then
     Exit;
 
@@ -3504,7 +3535,7 @@ begin
       PercentTransport := 0;
 
       SQL.Clear;
-     { SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
+      { SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
         'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
         'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
         ' as "PriceNoVAT" ' + 'FROM materialnorm as TMatNorm ' +
@@ -3520,11 +3551,9 @@ begin
         'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
         ' as "PriceNoVAT" ' + 'FROM materialnorm as TMatNorm ' +
         'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
-        'LEFT JOIN units ON TMat.unit_id = units.unit_id ' +
-        'LEFT JOIN materialcoastg as TMatCoast ON ' +
-        '(TMatCoast.material_id = TMatNorm.material_id) and (monat = ' +
-          IntToStr(Month1) + ') and (year = ' + IntToStr(Year1) +
-          ') WHERE (TMatNorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1';
+        'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
+        '(TMatCoast.material_id = TMatNorm.material_id) and (monat = ' + IntToStr(Month1) + ') and (year = ' +
+        IntToStr(Year1) + ') WHERE (TMatNorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1';
       Active := True;
 
       Filtered := False;
@@ -3623,17 +3652,16 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT DISTINCT mech.mechanizm_id as "MechId", mech.mech_code as "MechCode", ' +
-  	    'mechnorm.norm_ras as "MechNorm", units.unit_name as "Unit", ' +
+        'mechnorm.norm_ras as "MechNorm", units.unit_name as "Unit", ' +
         'mech.mech_name as "MechName", mechcoast.coast1 as "CoastVAT", ' +
         'mechcoast.coast2 as "CoastNoVAT", mechcoast.zp1 as "SalaryVAT", ' +
         'mechcoast.zp2 as "SalaryNoVAT", IFNULL(mech.MECH_PH, 0) as "MECH_PH" ' +
         'FROM mechanizmnorm as mechnorm ' +
         'JOIN mechanizm as mech ON mechnorm.mechanizm_id = mech.mechanizm_id ' +
-        'JOIN units ON mech.unit_id = units.unit_id ' +
-        'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
-  	    '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and  ' +
-        '(monat = ' + IntToStr(Month1) + ') and (year = ' + IntToStr(Year1) +
-        ') WHERE (mechnorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1');
+        'JOIN units ON mech.unit_id = units.unit_id ' + 'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
+        '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and  ' + '(monat = ' + IntToStr(Month1) +
+        ') and (year = ' + IntToStr(Year1) + ') WHERE (mechnorm.normativ_id = ' + IntToStr(vRateId) +
+        ') order by 1');
 
       Active := True;
       First;
@@ -3708,17 +3736,17 @@ end;
 // в целом процедура работает неверно так как может быть открыто несколько смет
 function TFormCalculationEstimate.CheckE1820(AType: byte): Boolean;
 var
-  RecNo, SMID: Integer;
+  RecNo, SmID: Integer;
 begin
   RecNo := qrRatesEx.RecNo;
-  SMID := qrRatesExSM_ID.AsInteger;
+  SmID := qrRatesExSM_ID.AsInteger;
   Result := False;
   qrRatesEx.DisableControls;
   try
     qrRatesEx.First;
     while not qrRatesEx.Eof do
     begin
-      if (qrRatesExID_TYPE_DATA.AsInteger = AType) and (qrRatesExSM_ID.AsInteger = SMID) then
+      if (qrRatesExID_TYPE_DATA.AsInteger = AType) and (qrRatesExSM_ID.AsInteger = SmID) then
       begin
         Result := True;
         Break;
@@ -3940,10 +3968,8 @@ begin
   PMAdd.Visible := CheckCursorInRate;
   PMEdit.Visible := (qrRatesExID_TYPE_DATA.AsInteger in [5, 6, 7, 8, 9]) and CheckCursorInRate;
   PMCopy.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
-  PMPaste.Enabled := ((qrRatesExID_TYPE_DATA.AsInteger > 0) or
-    (qrRatesExID_TYPE_DATA.AsInteger = -4) or
-    (qrRatesExID_TYPE_DATA.AsInteger = -3)) and
-    ClipBoard.HasFormat(G_SMETADATA);
+  PMPaste.Enabled := ((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -4) or
+    (qrRatesExID_TYPE_DATA.AsInteger = -3)) and ClipBoard.HasFormat(G_SMETADATA);
 
   PMCopy.Visible := not Act;
   PMPaste.Visible := not Act;
@@ -5346,6 +5372,10 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
+    //Подсветкаа добавленного материала
+    if qrMaterialADDED.Value = 1 then
+      Brush.Color := clSkyBlue;
+
     FillRect(Rect);
     if Column.Alignment = taRightJustify then
       TextOut(Rect.Right - 2 - TextWidth(Str), Rect.Top + 2, Str)
@@ -5490,6 +5520,11 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
+    //Подсветкаа добавленного материала
+    if qrMechanizmADDED.Value = 1 then
+      Brush.Color := clSkyBlue;
+
+
     FillRect(Rect);
     if Column.Alignment = taRightJustify then
       TextOut(Rect.Right - 2 - TextWidth(Str), Rect.Top + 2, Str)
@@ -5562,6 +5597,10 @@ begin
       then
         Font.Style := Font.Style + [fsbold];
     end;
+
+    // Подсвечиваем расченку с добавленными материалами/механизмами
+    if qrRatesExADDED_COUNT.Value > 0 then
+      Brush.Color := clSkyBlue;
 
     FillRect(Rect);
 
