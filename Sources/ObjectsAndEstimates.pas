@@ -75,8 +75,7 @@ type
     pnl1: TPanel;
     mN3: TMenuItem;
     mCopyObject: TMenuItem;
-    mShowAll: TMenuItem;
-    mShowActual: TMenuItem;
+    mShowDeleted: TMenuItem;
     mRepair: TMenuItem;
     mN5: TMenuItem;
     mREM6KC: TMenuItem;
@@ -95,13 +94,12 @@ type
     mN9: TMenuItem;
     mN10: TMenuItem;
     mDeleteEstimate: TMenuItem;
-    mN12: TMenuItem;
-    mShowActualEstimates: TMenuItem;
-    mShowAllEstimates: TMenuItem;
+    mDeleteAct: TMenuItem;
+    mShowDeletedEstimates: TMenuItem;
     mN15: TMenuItem;
     mN16: TMenuItem;
-    mN17: TMenuItem;
-    mN18: TMenuItem;
+    mShowDeletedActs: TMenuItem;
+    mDeleteObject: TMenuItem;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -142,8 +140,7 @@ type
     procedure mRepairClick(Sender: TObject);
     procedure dbgrdObjectsDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
       Column: TColumn; State: TGridDrawState);
-    procedure mShowActualClick(Sender: TObject);
-    procedure mShowAllClick(Sender: TObject);
+    procedure mShowDeletedClick(Sender: TObject);
     procedure mREM6KCClick(Sender: TObject);
     procedure mADD6KCClick(Sender: TObject);
     procedure mRepActClick(Sender: TObject);
@@ -160,8 +157,10 @@ type
       var DefaultDraw: Boolean);
     procedure mDeleteEstimateClick(Sender: TObject);
     procedure mReapirEstimateClick(Sender: TObject);
-    procedure mShowActualEstimatesClick(Sender: TObject);
-    procedure mShowAllEstimatesClick(Sender: TObject);
+    procedure mShowDeletedEstimatesClick(Sender: TObject);
+    procedure mShowDeletedActsClick(Sender: TObject);
+    procedure mDeleteActClick(Sender: TObject);
+    procedure mDeleteObjectClick(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
 
@@ -370,6 +369,7 @@ procedure TFormObjectsAndEstimates.pmObjectsPopup(Sender: TObject);
 begin
   mRepair.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
   mDelete.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 0;
+  mDeleteObject.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
 end;
 
 procedure TFormObjectsAndEstimates.mADD6KCClick(Sender: TObject);
@@ -432,6 +432,26 @@ begin
   FillingTableObjects;
 end;
 
+procedure TFormObjectsAndEstimates.mDeleteActClick(Sender: TObject);
+begin
+  if MessageDlg('Вы действительно хотите удалить выбранный акт?'#13 +
+    '(дальнейшее восстановнелие будет невозможным)', mtWarning, mbYesNo, 0) <> mrYes then
+    Exit;
+  try
+    with DM.qrDifferent do
+    begin
+      SQL.Text := 'CALL DeleteAct(:IdAct);';
+      ParamByName('IdAct').Value := IDAct;
+      ExecSQL;
+    end;
+    CloseOpen(qrActsEx);
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При удалении акта возникла ошибка:' + sLineBreak + sLineBreak + E.message),
+        PWideChar(caption), MB_ICONERROR + mb_OK + mb_TaskModal);
+  end;
+end;
+
 procedure TFormObjectsAndEstimates.mDeleteClick(Sender: TObject);
 var
   NumberObject: string;
@@ -470,17 +490,65 @@ begin
   CloseOpen(qrTreeData, False);
 end;
 
-procedure TFormObjectsAndEstimates.mShowActualEstimatesClick(Sender: TObject);
+procedure TFormObjectsAndEstimates.mShowDeletedEstimatesClick(Sender: TObject);
 begin
-  qrTreeData.ParamByName('SHOW_DELETED').AsInteger := 0;
-  CloseOpen(qrTreeData, False);
-  mShowActualEstimates.Checked := True;
-  mShowAllEstimates.Checked := False;
+  if mShowDeletedEstimates.Checked then
+    qrTreeData.ParamByName('SHOW_DELETED').AsInteger := 1
+  else
+    qrTreeData.ParamByName('SHOW_DELETED').AsInteger := 0;
+  CloseOpen(qrTreeData);
 end;
 
 procedure TFormObjectsAndEstimates.mN6Click(Sender: TObject);
 begin
   dbgrdObjects.ShowColumnsDialog;
+end;
+
+procedure TFormObjectsAndEstimates.mDeleteObjectClick(Sender: TObject);
+var
+  NumberObject: string;
+  ResultDialog: Integer;
+begin
+  if qrObjects.RecordCount <= 0 then
+  begin
+    MessageBox(0, PChar('Нет объектов для удаления!'), CaptionForm, MB_ICONINFORMATION + mb_OK +
+      mb_TaskModal);
+    Exit;
+  end;
+
+  NumberObject := IntToStr(qrObjects.FieldByName('NumberObject').AsVariant);
+
+  ResultDialog := MessageBox(0, PChar('Вы действительно хотите удалить объект с номером: ' + NumberObject +
+    sLineBreak + 'Внимание! Все сметы связанные с объектом будут удалены!' + sLineBreak + sLineBreak +
+    'Подтверждаете удаление?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+
+  if ResultDialog = mrNo then
+    Exit;
+
+  // Устанавливаем фокус
+  dbgrdObjects.SetFocus;
+
+  try
+    with DM.qrDifferent do
+    begin
+      SQL.Text := 'DELETE FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';';
+      ExecSQL;
+    end;
+
+    with DM.qrDifferent do
+    begin
+      SQL.Text := 'DELETE FROM smetasourcedata WHERE obj_id = ' + IntToStr(IdObject) + ';';
+      ExecSQL;
+    end;
+
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При удалении объекта возникла ошибка.' + sLineBreak +
+        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + E.message), CaptionForm,
+        MB_ICONERROR + mb_OK + mb_TaskModal);
+  end;
+
+  FillingTableObjects;
 end;
 
 procedure TFormObjectsAndEstimates.mReapirEstimateClick(Sender: TObject);
@@ -492,28 +560,24 @@ begin
   tvEstimates.Selected.Text := qrTreeData.FieldByName('NAME').AsString;
 end;
 
-procedure TFormObjectsAndEstimates.mShowAllClick(Sender: TObject);
+procedure TFormObjectsAndEstimates.mShowDeletedActsClick(Sender: TObject);
 begin
-  qrObjects.ParamByName('SHOW_DELETED').AsInteger := 1;
-  CloseOpen(qrObjects);
-  mShowActual.Checked := False;
-  mShowAll.Checked := True;
+  if mShowDeletedActs.Checked then
+    qrActsEx.ParamByName('SHOW_DELETED').AsInteger := 1
+  else
+    qrActsEx.ParamByName('SHOW_DELETED').AsInteger := 0;
+  CloseOpen(qrActsEx);
 end;
 
-procedure TFormObjectsAndEstimates.mShowAllEstimatesClick(Sender: TObject);
+procedure TFormObjectsAndEstimates.mShowDeletedClick(Sender: TObject);
 begin
-  qrTreeData.ParamByName('SHOW_DELETED').AsInteger := 1;
-  CloseOpen(qrTreeData, False);
-  mShowActualEstimates.Checked := False;
-  mShowAllEstimates.Checked := True;
-end;
-
-procedure TFormObjectsAndEstimates.mShowActualClick(Sender: TObject);
-begin
-  qrObjects.ParamByName('SHOW_DELETED').AsInteger := 0;
+  if mShowDeleted.Checked then
+    qrObjects.ParamByName('SHOW_DELETED').AsInteger := 1
+  else
+    qrObjects.ParamByName('SHOW_DELETED').AsInteger := 0;
+  qrObjects.AfterScroll := nil;
   CloseOpen(qrObjects);
-  mShowActual.Checked := True;
-  mShowAll.Checked := False;
+  qrObjects.AfterScroll := qrObjectsAfterScroll;
 end;
 
 procedure TFormObjectsAndEstimates.qrActsExAfterOpen(DataSet: TDataSet);
@@ -693,6 +757,8 @@ begin
   mREM6KC.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value)) and
     (qrActsEx.FieldByName('DEL_FLAG').AsInteger = 0) and (qrActsEx.FieldByName('FL_USE').AsInteger = 1);
   mCopy.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value));
+  mDeleteAct.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value)) and
+    (qrActsEx.FieldByName('DEL_FLAG').AsInteger = 1);
 end;
 
 function TFormObjectsAndEstimates.GetNumberEstimate(): string;

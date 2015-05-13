@@ -513,6 +513,10 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       ImageIndex = 2
       OnClick = mDeleteClick
     end
+    object mDeleteObject: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
+      OnClick = mDeleteObjectClick
+    end
     object mRepair: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
       OnClick = mRepairClick
@@ -542,14 +546,10 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object mN3: TMenuItem
       Caption = '-'
     end
-    object mShowActual: TMenuItem
-      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1072#1082#1090#1091#1072#1083#1100#1085#1099#1077
-      Checked = True
-      OnClick = mShowActualClick
-    end
-    object mShowAll: TMenuItem
-      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1089#1077
-      OnClick = mShowAllClick
+    object mShowDeleted: TMenuItem
+      AutoCheck = True
+      Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
+      OnClick = mShowDeletedClick
     end
     object mN4: TMenuItem
       Caption = '-'
@@ -629,14 +629,10 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object mN15: TMenuItem
       Caption = '-'
     end
-    object mShowActualEstimates: TMenuItem
-      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1072#1082#1090#1091#1072#1083#1100#1085#1099#1077
-      Checked = True
-      OnClick = mShowActualEstimatesClick
-    end
-    object mShowAllEstimates: TMenuItem
-      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1089#1077
-      OnClick = mShowAllEstimatesClick
+    object mShowDeletedEstimates: TMenuItem
+      AutoCheck = True
+      Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
+      OnClick = mShowDeletedEstimatesClick
     end
   end
   object pmActs: TPopupMenu
@@ -659,9 +655,9 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1059#1076#1072#1083#1080#1090#1100
       OnClick = PMActsDeleteClick
     end
-    object mN12: TMenuItem
+    object mDeleteAct: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
-      Enabled = False
+      OnClick = mDeleteActClick
     end
     object mRepAct: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
@@ -692,14 +688,10 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object mN16: TMenuItem
       Caption = '-'
     end
-    object mN17: TMenuItem
-      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1072#1082#1090#1091#1072#1083#1100#1085#1099#1077
-      Checked = True
-      Enabled = False
-    end
-    object mN18: TMenuItem
-      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1074#1089#1077
-      Enabled = False
+    object mShowDeletedActs: TMenuItem
+      AutoCheck = True
+      Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
+      OnClick = mShowDeletedActsClick
     end
   end
   object qrActsEx: TFDQuery
@@ -728,7 +720,9 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         'CONCAT(IF(card_acts.FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), TRIM(card_acts.na' +
         'me), IF(card_acts.DEL_FLAG=1, "-", "")) AS ITEAM_NAME'
       'FROM card_acts'
-      'WHERE ID_OBJECT = :OBJ_ID'
+      
+        'WHERE ID_OBJECT = :OBJ_ID AND ((card_acts.DEL_FLAG=0) OR (:SHOW_' +
+        'DELETED=1))'
       'UNION ALL'
       
         'SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NU' +
@@ -751,7 +745,9 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       'WHEN 12 THEN "'#1044#1045#1050#1040#1041#1056#1068'"'
       'END)) AS ITEAM_NAME'
       'FROM card_acts'
-      'WHERE ID_OBJECT = :OBJ_ID'
+      
+        'WHERE ID_OBJECT = :OBJ_ID AND ((card_acts.DEL_FLAG=0) OR (:SHOW_' +
+        'DELETED=1))'
       'GROUP BY (YEAR(card_acts.date)*12+MONTH(card_acts.date))'
       'ORDER BY date')
     Left = 377
@@ -759,6 +755,10 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     ParamData = <
       item
         Name = 'OBJ_ID'
+        ParamType = ptInput
+      end
+      item
+        Name = 'SHOW_DELETED'
         ParamType = ptInput
       end>
   end
