@@ -5374,7 +5374,7 @@ begin
 
     //Подсветкаа добавленного материала
     if qrMaterialADDED.Value = 1 then
-      Font.Color := clNavy;
+      Font.Color := clBlue;
 
     FillRect(Rect);
     if Column.Alignment = taRightJustify then
@@ -5522,7 +5522,7 @@ begin
 
     //Подсветкаа добавленного материала
     if qrMechanizmADDED.Value = 1 then
-      Font.Color := clNavy;
+      Font.Color := clBlue;
 
 
     FillRect(Rect);
@@ -5600,7 +5600,7 @@ begin
 
     // Подсвечиваем расченку с добавленными материалами/механизмами
     if qrRatesExADDED_COUNT.Value > 0 then
-      Font.Color := clNavy;
+      Font.Color := clBlue;
 
     FillRect(Rect);
 
