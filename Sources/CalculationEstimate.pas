@@ -2360,6 +2360,8 @@ begin
   Key := qrRatesEx.FieldByName('SORT_ID').Value;
   // Устанавливаем №пп
   qrRatesEx.DisableControls;
+  qrRatesEx.AfterScroll := nil;
+  qrRatesEx.OnCalcFields := nil;
   NumPP := 0;
   try
     qrRatesEx.First;
@@ -2374,6 +2376,8 @@ begin
       qrRatesEx.Next;
     end;
   finally
+    qrRatesEx.AfterScroll := qrRatesExAfterScroll;
+    qrRatesEx.OnCalcFields := qrRatesExCalcFields;
     qrRatesEx.Locate('SORT_ID', Key, []);
     qrRatesEx.EnableControls;
   end;

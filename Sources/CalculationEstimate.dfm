@@ -680,57 +680,69 @@
             item
               Expanded = False
               FieldName = 'SORT_ID'
+              Title.Alignment = taCenter
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'ID_TYPE_DATA'
+              Title.Alignment = taCenter
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'DATA_ESTIMATE_OR_ACT_ID'
+              Title.Alignment = taCenter
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'ID_TABLES'
+              Title.Alignment = taCenter
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'SM_ID'
+              Title.Alignment = taCenter
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'WORK_ID'
+              Title.Alignment = taCenter
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'ZNORMATIVS_ID'
+              Title.Alignment = taCenter
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'APPLY_WINTERPRISE_FLAG'
+              Title.Alignment = taCenter
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'ID_RATE'
+              Title.Alignment = taCenter
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'SORT_ID2'
+              Title.Alignment = taCenter
               Width = -1
               Visible = False
             end
             item
               Expanded = False
               FieldName = 'NUM_ROW'
+              Title.Alignment = taCenter
+              Title.Caption = #1055#1086#1088#1103#1076#1082#1086#1074#1099#1081' '#1085#1086#1084#1077#1088
               Width = -1
               Visible = False
             end>
