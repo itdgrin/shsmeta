@@ -427,7 +427,7 @@
     Height = 324
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 6
+    TabOrder = 7
     object ImageSplitterBottom: TImage
       Left = 200
       Top = 365
@@ -647,6 +647,7 @@
             item
               Expanded = False
               FieldName = 'ITERATOR'
+              ReadOnly = True
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1087'/'#1087
               Width = 35
@@ -2830,7 +2831,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSummaryCalculations'
     ParentBackground = False
-    TabOrder = 4
+    TabOrder = 5
     inline frSummaryCalculations: TfrCalculationEstimateSummaryCalculations
       Left = 0
       Top = 0
@@ -3161,7 +3162,7 @@
     BevelOuter = bvNone
     Caption = 'PanelSSR'
     ParentBackground = False
-    TabOrder = 5
+    TabOrder = 6
     inline frSSR: TfrCalculationEstimateSSR
       Left = 0
       Top = 0
@@ -4806,6 +4807,7 @@
     end
   end
   object qrRatesEx: TFDQuery
+    AfterOpen = qrRatesExAfterOpen
     BeforePost = qrRatesExBeforePost
     AfterScroll = qrRatesExAfterScroll
     OnCalcFields = qrRatesExCalcFields
@@ -4874,7 +4876,6 @@
       FieldName = 'ITERATOR'
       Origin = 'ITERATOR'
       ProviderFlags = []
-      OnChange = qrRatesExITERATORChange
     end
     object qrRatesExOBJ_CODE: TStringField
       AutoGenerateValue = arDefault
@@ -4960,6 +4961,13 @@
       FieldKind = fkCalculated
       FieldName = 'REPLACED_COUNT'
       Calculated = True
+    end
+    object qrRatesExINCITERATOR: TIntegerField
+      FieldName = 'INCITERATOR'
+    end
+    object qrRatesExNUM_ROW: TIntegerField
+      FieldName = 'NUM_ROW'
+      OnChange = qrRatesExNUM_ROWChange
     end
   end
   object dsRatesEx: TDataSource

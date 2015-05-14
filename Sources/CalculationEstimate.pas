@@ -452,6 +452,8 @@ type
     dsTreeEstimates: TDataSource;
     qrRatesExADDED_COUNT: TIntegerField;
     qrRatesExREPLACED_COUNT: TIntegerField;
+    qrRatesExINCITERATOR: TIntegerField;
+    qrRatesExNUM_ROW: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -637,11 +639,12 @@ type
     procedure mBaseDataClick(Sender: TObject);
     procedure PMMatRestoreClick(Sender: TObject);
     procedure PMMechRestoreClick(Sender: TObject);
-    procedure qrRatesExITERATORChange(Sender: TField);
     procedure PMCopyClick(Sender: TObject);
     procedure PMPasteClick(Sender: TObject);
     procedure LabelNameEstimateClick(Sender: TObject);
     procedure qrRatesExCalcFields(DataSet: TDataSet);
+    procedure qrRatesExAfterOpen(DataSet: TDataSet);
+    procedure qrRatesExNUM_ROWChange(Sender: TField);
   private const
     CaptionButton = 'Расчёт сметы';
     HintButton = 'Окно расчёта сметы';
@@ -2345,9 +2348,39 @@ begin
   Result := qrMaterialCONSIDERED.AsInteger = 0;
 end;
 
-// Для того что-бы скрол по таблице был быстрым обработка скрола происходит с задержкой
+
+procedure TFormCalculationEstimate.qrRatesExAfterOpen(DataSet: TDataSet);
+var
+  NumPP: Integer;
+  Key: Variant;
+begin
+  if not CheckQrActiveEmpty(qrRatesEx) then
+    Exit;
+  Key := qrRatesEx.FieldByName('SORT_ID').Value;
+  // Устанавливаем №пп
+  qrRatesEx.DisableControls;
+  NumPP := 0;
+  try
+    qrRatesEx.First;
+    while not qrRatesEx.Eof do
+    begin
+      NumPP := NumPP + qrRatesEx.FieldByName('INCITERATOR').AsInteger;
+      qrRatesEx.Edit;
+      if qrRatesEx.FieldByName('ID_TYPE_DATA').AsInteger < 0 then
+        qrRatesEx.FieldByName('ITERATOR').Value := Null
+      else
+        qrRatesEx.FieldByName('ITERATOR').AsInteger := NumPP;
+      qrRatesEx.Next;
+    end;
+  finally
+    qrRatesEx.Locate('SORT_ID', Key, []);
+    qrRatesEx.EnableControls;
+  end;
+end;
+
 procedure TFormCalculationEstimate.qrRatesExAfterScroll(DataSet: TDataSet);
 begin
+  // Для того что-бы скрол по таблице был быстрым обработка скрола происходит с задержкой
   if qrRatesEx.Tag <> 1 then
   begin
     tmRate.Enabled := False;
@@ -2579,7 +2612,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.qrRatesExITERATORChange(Sender: TField);
+procedure TFormCalculationEstimate.qrRatesExNUM_ROWChange(Sender: TField);
 begin
   if Sender.IsNull then
   begin
