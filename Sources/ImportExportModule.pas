@@ -7,6 +7,15 @@ uses
   Winapi.Windows, Vcl.Forms, Vcl.Dialogs, Vcl.Controls, Data.DB, XMLIntf, XMLDoc,
   ActiveX, FireDAC.Comp.DataSet, FireDAC.Comp.Client, GlobsAndConst;
 
+type
+  TFromRateRec = record
+    LocalType,
+    DataType,
+    OldId,
+    NewId: Integer;
+  end;
+  TFromRateArray = array of TFromRateRec;
+
   procedure ImportObject(const AFileName: string);
   procedure ExportObject(const AIdObject: Integer; const AFileName: string);
   function GetNewId(const ALastID: Variant; const AType: Integer;
@@ -89,7 +98,6 @@ begin
   AIdConvert[AType][0][Length(AIdConvert[AType][0]) - 1] := ALastID;
   AIdConvert[AType][1][Length(AIdConvert[AType][1]) - 1] := Result;
 end;
-
 
 function UpdateIterator(ADestSmID, AIterator: Integer): Integer;
 var MaxIterator: Integer;
@@ -1000,12 +1008,16 @@ end;
 
 //Выполняет вставку строки в смету
 function PasteSmetaRow(ASmClipRec: TSmClipRec; ADestSmID, AIterator: Integer): Boolean;
-var i,
+var i, j,
     ind,
-    NewID: Integer;
+    NewID,
+    TmpID_N, TmpID_O: Integer;
+    E1820COUNT: Extended;
     IdConvert: TIDConvertArray;
     TmpTab: string;
+    FromRateArray: TFromRateArray;
 
+    //Формирует строку запроса
     function GetStrAndExcec(AQuery: TFDQuery; AType: Integer): string;
     var i: Integer;
         As1, As2: string;
@@ -1023,6 +1035,75 @@ var i,
       Result := 'Insert into ' + CTabNameAndID[AType][0] +
         '_temp (' + As1 + ') values (' + As2 + ')';
     end;
+
+    //Просто кусок кода который надо выполнить из разных мест
+    procedure CoefEstimCalc(ALocalType, ADataType, AOldId, ANewId: Integer);
+    var i: Integer;
+    begin
+      //Перенос коэффициентов связаных со строчкой
+      DM.qrDifferent.Active := False;
+      DM.qrDifferent.SQL.Text := 'Select * from calculation_coef' +
+        TmpTab + ' where (id_estimate = ' + IntToStr(ASmClipRec.SmID) + ') and ' +
+        '(id_type_data = ' + IntToStr(ADataType) + ') and ' +
+        '(id_owner = ' + IntToStr(AOldId) + ')';
+      DM.qrDifferent.Active := True;
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetStrAndExcec(DM.qrDifferent, 17);
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CALCULATION_COEF_ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 17, IdConvert, '_temp');
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ESTIMATE' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := ADestSmID;
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_OWNER' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := ANewId;
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      //Все типы кроме 10, 11
+      if ALocalType > 0 then
+      begin
+        //Обновление нумерации в смете
+        AIterator := UpdateIterator(ADestSmID, AIterator);
+        //Добавление новой строки
+        DM.qrDifferent1.SQL.Text :=
+          'INSERT INTO data_estimate_temp (id_estimate, id_type_data, id_tables, NUM_ROW) ' +
+          'VALUE (:id_estimate, :id_type_data, :id_tables, :NUM_ROW);';
+        DM.qrDifferent1.ParamByName('id_estimate').Value := ADestSmID;
+        DM.qrDifferent1.ParamByName('id_type_data').Value := ADataType;
+        DM.qrDifferent1.ParamByName('id_tables').Value := ANewId;
+        DM.qrDifferent1.ParamByName('NUM_ROW').Value := AIterator;
+        DM.qrDifferent1.ExecSQL;
+      end;
+
+      //Пересчитываем добавленную строчку
+      DM.qrDifferent1.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, :TypeData_ID, :OWNER_ID, 0);';
+      DM.qrDifferent1.ParamByName('ESTIMATE_ID').Value := ADestSmID;
+      DM.qrDifferent1.ParamByName('TypeData_ID').Value := ADataType;
+      DM.qrDifferent1.ParamByName('OWNER_ID').Value := ANewId;
+      DM.qrDifferent1.ExecSQL;
+    end;
+
 begin
   Result := False;
   ind := 0;
@@ -1051,7 +1132,7 @@ begin
     end
     else
     begin
-      DM.qrDifferent.SQL.Text := 'Select * from data_estimate' + TmpTab +' where ' +
+      DM.qrDifferent.SQL.Text := 'Select E1820_COUNT from data_estimate' + TmpTab +' where ' +
         '(ID_ESTIMATE = ' + IntToStr(ASmClipRec.SmID) +
         ') and (ID_TYPE_DATA = ' + IntToStr(ASmClipRec.DataType) + ')';
     end;
@@ -1090,11 +1171,7 @@ begin
     NewID := -1;
 
     case ASmClipRec.DataType of
-    1:
-    begin
-
-    end;
-    2, 3:
+    1, 2, 3, 4, 5, 6, 7, 8, 9:
     begin
       DM.qrDifferent1.SQL.Text := GetStrAndExcec(DM.qrDifferent, ind);
       for i := 0 to DM.qrDifferent.Fields.Count - 1 do
@@ -1105,43 +1182,28 @@ begin
           DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := NewID;
           Continue;
         end;
-        //Гасим все специфические флаги
-        if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE') or
-           (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED') or
-           (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'REPLACED') or
-           (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'FROM_RATE') or
-           (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CONS_REPLASED') or
-           (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ADDED') or
-           (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'DELETED') then
+        if ASmClipRec.DataType in [2, 3] then
         begin
-          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := 0;
-          Continue;
-        end;
+          //Гасим все специфические флаги
+          if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE') or
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED') or
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'REPLACED') or
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'FROM_RATE') or
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CONS_REPLASED') or
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ADDED') or
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'DELETED') then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := 0;
+            Continue;
+          end;
 
-        if (ASmClipRec.DataType = 2) and
-           (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CONSIDERED') then
-        begin
-          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := 1;
-          Continue;
+          if (ASmClipRec.DataType = 2) and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CONSIDERED') then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := 1;
+            Continue;
+          end;
         end;
-
-        DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-          DM.qrDifferent.Fields[i].Value;
-      end;
-      DM.qrDifferent1.ExecSQL;
-    end;
-    4, 5, 6, 7, 8, 9:
-    begin
-      DM.qrDifferent1.SQL.Text := GetStrAndExcec(DM.qrDifferent, ind);
-      for i := 0 to DM.qrDifferent.Fields.Count - 1 do
-      begin
-        if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
-        begin
-          NewID := GetNewId(DM.qrDifferent.Fields[i].Value, ind, IdConvert, '_temp');
-          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := NewID;
-          Continue;
-        end;
-
         DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
           DM.qrDifferent.Fields[i].Value;
       end;
@@ -1149,69 +1211,162 @@ begin
     end;
     10,11:
     begin
-    end;
-    end;
-
-    //Перенос коэффициентов связаных со строчкой
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from calculation_coef' +
-      TmpTab + ' where (id_estimate = ' + IntToStr(ASmClipRec.SmID) + ') and ' +
-      '(id_type_data = ' + IntToStr(ASmClipRec.DataType) + ') and ' +
-      '(id_owner = ' + IntToStr(ASmClipRec.DataID) + ')';
-    DM.qrDifferent.Active := True;
-    while not DM.qrDifferent.Eof do
-    begin
-      DM.qrDifferent1.SQL.Text := GetStrAndExcec(DM.qrDifferent, 17);
-      for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+      E1820COUNT := DM.qrDifferent.Fields[0].Value;
+      DM.qrDifferent.Active := False;
+      //Проверка на то, что 10 или 11 уже есть в смете
+      DM.qrDifferent.SQL.Text :=
+        'Select E1820_COUNT from data_estimate' + TmpTab +' where ' +
+        '(ID_ESTIMATE = ' + IntToStr(ADestSmID) +
+        ') and (ID_TYPE_DATA = ' + IntToStr(ASmClipRec.DataType) + ')';
+      DM.qrDifferent.Active := True;
+      if not DM.qrDifferent.IsEmpty then
       begin
-        if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CALCULATION_COEF_ID' then
-        begin
-          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-            GetNewId(DM.qrDifferent.Fields[i].Value, 17, IdConvert, '_temp');
-          Continue;
-        end;
-
-        if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ESTIMATE' then
-        begin
-          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := ADestSmID;
-          Continue;
-        end;
-
-        if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_OWNER' then
-        begin
-          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := NewID;
-          Continue;
-        end;
-
-        DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-          DM.qrDifferent.Fields[i].Value;
+        if ASmClipRec.DataType = 10 then
+          raise Exception.Create('ЕТ18 уже присутствует с смете.')
+        else
+          raise Exception.Create('ЕТ20 уже присутствует с смете.');
       end;
-      DM.qrDifferent1.ExecSQL;
-      DM.qrDifferent.Next;
-    end;
-    DM.qrDifferent.Active := False;
+      DM.qrDifferent.Active := False;
 
-    //Все типы кроме 10, 11
-    if ind > 0 then
-    begin
-      //Обновление нумерации в смете
-      AIterator := UpdateIterator(ADestSmID, AIterator);
+      //Топятся в конец сметы
+      if ASmClipRec.DataType = 10 then
+          AIterator := C_ET18ITER
+      else
+          AIterator := C_ET20ITER;
+
       //Добавление новой строки
       DM.qrDifferent1.SQL.Text :=
-        'INSERT INTO data_estimate_temp (id_estimate, id_type_data, id_tables, NUM_ROW) ' +
-  	    'VALUE (:id_estimate, :id_type_data, :id_tables, :NUM_ROW);';
+        'INSERT INTO data_estimate_temp (id_estimate, id_type_data, id_tables, ' +
+        'E1820_COUNT, NUM_ROW) VALUE (:id_estimate, :id_type_data, :id_tables, ' +
+        ':E1820_COUNT, :NUM_ROW);';
       DM.qrDifferent1.ParamByName('id_estimate').Value := ADestSmID;
       DM.qrDifferent1.ParamByName('id_type_data').Value := ASmClipRec.DataType;
-      DM.qrDifferent1.ParamByName('id_tables').Value := NewID;
+      DM.qrDifferent1.ParamByName('id_tables').Value := 0;
+      DM.qrDifferent1.ParamByName('E1820_COUNT').Value := E1820COUNT;
       DM.qrDifferent1.ParamByName('NUM_ROW').Value := AIterator;
       DM.qrDifferent1.ExecSQL;
     end;
-    //Пересчитываем добавленную строчку
-    DM.qrDifferent1.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, :TypeData_ID, :OWNER_ID, 0);';
-    DM.qrDifferent1.ParamByName('ESTIMATE_ID').Value := ADestSmID;
-    DM.qrDifferent1.ParamByName('TypeData_ID').Value := ASmClipRec.DataType;
-    DM.qrDifferent1.ParamByName('OWNER_ID').Value := NewID;
-    DM.qrDifferent1.ExecSQL;
+    end;
+    //Переносит коэффициенты, переносит строку в смету, выполняет пересчет строки
+    CoefEstimCalc(ind, ASmClipRec.DataType, ASmClipRec.DataID, NewId);
+
+    //Для расценок копирует материалы и механизмы
+    if ASmClipRec.DataType = 1 then
+    begin
+      SetLength(FromRateArray, 0);
+      DM.qrDifferent.Active := False;
+      DM.qrDifferent.SQL.Text := 'Select * from materialcard' +
+        TmpTab + ' where ID_CARD_RATE = ' + IntToStr(ASmClipRec.DataID) +
+        ' ORDER BY ID';
+      DM.qrDifferent.Active := True;
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetStrAndExcec(DM.qrDifferent, 3);
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          begin
+            TmpID_O := DM.qrDifferent.Fields[i].Value;
+            TmpID_N := GetNewId(TmpID_O, 3, IdConvert, '_temp');
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := TmpID_N;
+            Continue;
+          end;
+
+          //Гасим все специфические флаги
+          if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE') then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := NewID;
+            Continue;
+          end;
+
+          if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED') then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 3, IdConvert, '_temp');
+            Continue;
+          end;
+
+          if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'FROM_RATE') and
+             (DM.qrDifferent.Fields[i].Value > 0) then
+          begin
+            j := Length(FromRateArray);
+            SetLength(FromRateArray, j + 1);
+            FromRateArray[j].LocalType := 3;
+            FromRateArray[j].DataType := 2;
+            FromRateArray[j].OldId := TmpID_O;
+            FromRateArray[j].NewId := TmpID_N;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+
+        DM.qrDifferent.Next;
+      end;
+
+      DM.qrDifferent.Active := False;
+      DM.qrDifferent.SQL.Text := 'Select * from mechanizmcard' +
+        TmpTab + ' where ID_CARD_RATE = ' + IntToStr(ASmClipRec.DataID) +
+        ' ORDER BY ID';
+      DM.qrDifferent.Active := True;
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetStrAndExcec(DM.qrDifferent, 4);
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          begin
+            TmpID_O := DM.qrDifferent.Fields[i].Value;
+            TmpID_N := GetNewId(TmpID_O, 4, IdConvert, '_temp');
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := TmpID_N;
+            Continue;
+          end;
+
+          //Гасим все специфические флаги
+          if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE') then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := NewID;
+            Continue;
+          end;
+
+          if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED') then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 4, IdConvert, '_temp');
+            Continue;
+          end;
+
+          if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'FROM_RATE') and
+             (DM.qrDifferent.Fields[i].Value > 0) then
+          begin
+            j := Length(FromRateArray);
+            SetLength(FromRateArray, j + 1);
+            FromRateArray[j].LocalType := 4;
+            FromRateArray[j].DataType := 3;
+            FromRateArray[j].OldId := TmpID_O;
+            FromRateArray[j].NewId := TmpID_N;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+      //Добавляет в смету вынесеные из расценки
+      for i := Low(FromRateArray) to High(FromRateArray) do
+      begin
+        Inc(AIterator);
+        CoefEstimCalc(FromRateArray[i].LocalType, FromRateArray[i].DataType,
+          FromRateArray[i].OldId, FromRateArray[i].NewId);
+      end;
+    end;
+
     Result := True;
   except
     on e: Exception do

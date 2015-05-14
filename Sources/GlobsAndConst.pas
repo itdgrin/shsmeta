@@ -62,6 +62,10 @@ const
   //Тип данных для буфера обмена
   C_SMETADATA = 'CF_SMETA';
 
+  //Итераторы (сортировка в левой таблице) для ET18, ET20
+  C_ET18ITER = 2000000000;
+  C_ET20ITER = 2000000001;
+
   CTabNameAndID: array [0..17, 0..1] of string =
     (('objcards', 'obj_id'),
     ('smetasourcedata', 'SM_ID'),

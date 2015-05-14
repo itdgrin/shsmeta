@@ -42,10 +42,6 @@ object FormProgramSettings: TFormProgramSettings
     object TabSheet3: TTabSheet
       Caption = #1058#1072#1073#1083#1080#1094#1099
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         624
         323)
@@ -239,10 +235,6 @@ object FormProgramSettings: TFormProgramSettings
     object TabSheet1: TTabSheet
       Caption = #1056#1072#1079#1085#1086#1077
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBoxRound: TGroupBox
         Left = 3
         Top = 3

@@ -2913,9 +2913,10 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL FromRareMaterial(:id_estimate, :id_mat);');
+      SQL.Add('CALL FromRareMaterial(:id_estimate, :id_mat, :CALCMODE);');
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_mat').Value := qrMaterialID.AsInteger;
+      ParamByName('CALCMODE').Value := G_CALCMODE;
       ExecSQL;
     end;
 
@@ -3000,9 +3001,10 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL FromRareMechanism(:id_estimate, :id_mech);');
+      SQL.Add('CALL FromRareMechanism(:id_estimate, :id_mech, :CALCMODE);');
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_mech').Value := qrMechanizmID.Value;
+      ParamByName('CALCMODE').Value := G_CALCMODE;
       ExecSQL;
     end;
 
@@ -3788,15 +3790,22 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMAddAdditionHeatingE18Click(Sender: TObject);
+var Iterator: Integer;
 begin
   if not CheckCursorInRate then
     Exit;
 
+  if (Sender as TComponent).Tag = 10 then
+    Iterator := C_ET18ITER
+  else
+    Iterator := C_ET20ITER;
+
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
-    '(id_estimate, id_type_data) VALUE (:IdEstimate, :SType);';
+    '(id_estimate, id_type_data, NUM_ROW) VALUE (:IdEstimate, :SType, :NUM_ROW);';
   qrTemp.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
   qrTemp.ParamByName('SType').Value := (Sender as TComponent).Tag;
+  qrTemp.ParamByName('NUM_ROW').Value := Iterator;
   qrTemp.ExecSQL;
 
   OutputDataToTable;
