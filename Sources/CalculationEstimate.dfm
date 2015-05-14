@@ -4956,6 +4956,11 @@
       FieldName = 'ADDED_COUNT'
       Calculated = True
     end
+    object qrRatesExREPLACED_COUNT: TIntegerField
+      FieldKind = fkCalculated
+      FieldName = 'REPLACED_COUNT'
+      Calculated = True
+    end
   end
   object dsRatesEx: TDataSource
     DataSet = qrRatesEx

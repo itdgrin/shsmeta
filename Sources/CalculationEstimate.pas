@@ -451,6 +451,7 @@ type
     qrTreeEstimates: TFDQuery;
     dsTreeEstimates: TDataSource;
     qrRatesExADDED_COUNT: TIntegerField;
+    qrRatesExREPLACED_COUNT: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -2383,14 +2384,34 @@ procedure TFormCalculationEstimate.qrRatesExCalcFields(DataSet: TDataSet);
     Result := Result + DM.qrDifferent.FieldByName('ADDED').AsInteger;
     DM.qrDifferent.Active := False;
   end;
+  function GetReplacedCount(const ID_CARD_RATE: Integer): Integer;
+  begin
+    Result := 0;
+    DM.qrDifferent.SQL.Text :=
+      'SELECT 1 AS R FROM materialcard_temp WHERE ID_CARD_RATE=:ID_CARD_RATE AND ID_REPLACED>0 LIMIT 1';
+    DM.qrDifferent.ParamByName('ID_CARD_RATE').Value := ID_CARD_RATE;
+    DM.qrDifferent.Active := True;
+    Result := Result + DM.qrDifferent.FieldByName('R').AsInteger;
+    // Если уже что то нашли, то можно дальше не производить лишних действий
+    if Result > 0 then
+      Exit;
+    DM.qrDifferent.SQL.Text :=
+      'SELECT 1 AS R FROM mechanizmcard_temp WHERE ID_CARD_RATE=:ID_CARD_RATE AND ID_REPLACED>0 LIMIT 1';
+    DM.qrDifferent.ParamByName('ID_CARD_RATE').Value := ID_CARD_RATE;
+    DM.qrDifferent.Active := True;
+    Result := Result + DM.qrDifferent.FieldByName('R').AsInteger;
+    DM.qrDifferent.Active := False;
+  end;
 
 begin
   if not CheckQrActiveEmpty(qrRatesEx) then
     Exit;
 
   if qrRatesExID_TYPE_DATA.Value = 1 then
-    qrRatesExADDED_COUNT.Value := GetAddedCount(qrRatesExID_TABLES.Value)
-  else qrRatesExADDED_COUNT.Value := 0;
+    qrRatesExADDED_COUNT.Value := GetAddedCount(qrRatesExID_TABLES.Value);
+
+  if qrRatesExID_TYPE_DATA.Value = 1 then
+    qrRatesExREPLACED_COUNT.Value := GetReplacedCount(qrRatesExID_TABLES.Value);
 end;
 
 procedure TFormCalculationEstimate.qrRatesExCODEChange(Sender: TField);
@@ -5373,9 +5394,12 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    //Подсветкаа добавленного материала
+    // Подсветкаа добавленного материала
     if qrMaterialADDED.Value = 1 then
       Font.Color := clBlue;
+
+    if qrMaterialID_REPLACED.Value > 0 then
+      Font.Style := Font.Style + [fsItalic];
 
     FillRect(Rect);
     if Column.Alignment = taRightJustify then
@@ -5521,10 +5545,12 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    //Подсветкаа добавленного материала
+    // Подсветкаа добавленного материала
     if qrMechanizmADDED.Value = 1 then
       Font.Color := clBlue;
 
+    if qrMechanizmID_REPLACED.Value > 0 then
+      Font.Style := Font.Style + [fsItalic];
 
     FillRect(Rect);
     if Column.Alignment = taRightJustify then
@@ -5602,6 +5628,9 @@ begin
     // Подсвечиваем расченку с добавленными материалами/механизмами
     if qrRatesExADDED_COUNT.Value > 0 then
       Font.Color := clBlue;
+
+    if qrRatesExREPLACED_COUNT.Value > 0 then
+      Font.Style := Font.Style + [fsItalic];
 
     FillRect(Rect);
 
