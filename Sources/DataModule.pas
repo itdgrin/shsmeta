@@ -26,6 +26,8 @@ type
     FDPhysMySQLDriverLink1: TFDPhysMySQLDriverLink;
     FDGUIxWaitCursor1: TFDGUIxWaitCursor;
     qrDifferent: TFDQuery;
+    qrDifferent1: TFDQuery;
+    qrDifferent2: TFDQuery;
 
   private
     { Private declarations }

@@ -3028,7 +3028,8 @@ begin
       with DataObj.Rec do
       begin
         DataObj.GetFromClipBoard;
-        PasteSmetaRow(DataObj.Rec, qrRatesExSM_ID.Value, qrRatesExITERATOR.Value);
+        if PasteSmetaRow(DataObj.Rec, qrRatesExSM_ID.Value, qrRatesExITERATOR.Value) then
+          OutputDataToTable;
       end;
     end;
   finally
@@ -4646,10 +4647,10 @@ begin
   begin
     // в зависимости от ндс скрывает одни и показывает другие калонки
     Columns[7].Visible := aNDS; // цена факт
-    Columns[10].Visible := aNDS; // стоим факт
+    Columns[11].Visible := aNDS; // стоим факт
 
     Columns[8].Visible := not aNDS;
-    Columns[11].Visible := not aNDS;
+    Columns[12].Visible := not aNDS;
   end;
 end;
 
@@ -5209,7 +5210,7 @@ begin
     // Подсветка полей стоимости
     if (Sender as TJvDBGrid).Name = 'dbgrdTransp' then
     begin
-      if Column.Index in [10, 11] then
+      if Column.Index in [11, 12] then
         Brush.Color := $00FBFEBC;
     end
     else if Column.Index in [9, 10] then
