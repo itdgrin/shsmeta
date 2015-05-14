@@ -650,7 +650,7 @@
               ReadOnly = True
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1087'/'#1087
-              Width = 24
+              Width = 35
               Visible = True
             end
             item
@@ -658,7 +658,7 @@
               FieldName = 'OBJ_CODE'
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1085#1086#1088#1084#1072#1090#1080#1074#1072
-              Width = 106
+              Width = 150
               Visible = True
             end
             item
@@ -666,7 +666,7 @@
               FieldName = 'OBJ_COUNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 47
+              Width = 67
               Visible = True
             end
             item
@@ -674,7 +674,7 @@
               FieldName = 'OBJ_UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 63
+              Width = 89
               Visible = True
             end
             item
@@ -725,14 +725,14 @@
             item
               Expanded = False
               FieldName = 'SORT_ID2'
-              Width = 54
-              Visible = True
+              Width = -1
+              Visible = False
             end
             item
               Expanded = False
               FieldName = 'NUM_ROW'
-              Width = 45
-              Visible = True
+              Width = -1
+              Visible = False
             end>
         end
       end
