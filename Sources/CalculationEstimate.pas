@@ -454,6 +454,7 @@ type
     qrRatesExREPLACED_COUNT: TIntegerField;
     qrRatesExINCITERATOR: TIntegerField;
     qrRatesExNUM_ROW: TIntegerField;
+    strngfldRatesExSORT_ID2: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);

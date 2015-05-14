@@ -650,7 +650,7 @@
               ReadOnly = True
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1087'/'#1087
-              Width = 35
+              Width = 24
               Visible = True
             end
             item
@@ -658,7 +658,7 @@
               FieldName = 'OBJ_CODE'
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1085#1086#1088#1084#1072#1090#1080#1074#1072
-              Width = 150
+              Width = 106
               Visible = True
             end
             item
@@ -666,7 +666,7 @@
               FieldName = 'OBJ_COUNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 67
+              Width = 47
               Visible = True
             end
             item
@@ -674,7 +674,7 @@
               FieldName = 'OBJ_UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 89
+              Width = 63
               Visible = True
             end
             item
@@ -721,6 +721,18 @@
               Expanded = False
               FieldName = 'ID_RATE'
               Visible = False
+            end
+            item
+              Expanded = False
+              FieldName = 'SORT_ID2'
+              Width = 54
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'NUM_ROW'
+              Width = 45
+              Visible = True
             end>
         end
       end
@@ -4964,6 +4976,9 @@
     end
     object qrRatesExINCITERATOR: TIntegerField
       FieldName = 'INCITERATOR'
+    end
+    object strngfldRatesExSORT_ID2: TStringField
+      FieldName = 'SORT_ID2'
     end
     object qrRatesExNUM_ROW: TIntegerField
       FieldName = 'NUM_ROW'
