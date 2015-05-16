@@ -92,7 +92,7 @@ type
     FormStorage: TJvFormStorage;
     mReapirEstimate: TMenuItem;
     mN9: TMenuItem;
-    mN10: TMenuItem;
+    PMCopySmeta: TMenuItem;
     mDeleteEstimate: TMenuItem;
     mDeleteAct: TMenuItem;
     mShowDeletedEstimates: TMenuItem;
@@ -161,6 +161,7 @@ type
     procedure mShowDeletedActsClick(Sender: TObject);
     procedure mDeleteActClick(Sender: TObject);
     procedure mDeleteObjectClick(Sender: TObject);
+    procedure PMCopySmetaClick(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
 
@@ -497,6 +498,12 @@ begin
   else
     qrTreeData.ParamByName('SHOW_DELETED').AsInteger := 0;
   CloseOpen(qrTreeData);
+end;
+
+procedure TFormObjectsAndEstimates.PMCopySmetaClick(Sender: TObject);
+begin
+  if GetCopySmeta(qrTreeData.FieldByName('SM_ID').AsInteger) then
+    CloseOpen(qrTreeData, False);
 end;
 
 procedure TFormObjectsAndEstimates.mN6Click(Sender: TObject);

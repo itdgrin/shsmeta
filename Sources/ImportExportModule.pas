@@ -18,16 +18,16 @@ type
 
   procedure ImportObject(const AFileName: string);
   procedure ExportObject(const AIdObject: Integer; const AFileName: string);
-  function GetNewId(const ALastID: Variant; const AType: Integer;
-    var AIdConvert: TIDConvertArray; ATmp: string = ''): Variant;
   function PasteSmetaRow(ASmClipRec: TSmClipRec; ADestSmID, AIterator: Integer): Boolean;
-  function UpdateIterator(ADestSmID, AIterator: Integer): Integer;
+  function GetCopySmeta(const ASoursSmetaID: Integer): boolean;
+
 implementation
 
 uses DataModule, Tools;
 
+////////////////////////////////////////////////////////////////////////////////
 function GetNewId(const ALastID: Variant; const AType: Integer;
-  var AIdConvert: TIDConvertArray; ATmp: string = ''): Variant;
+  var AIdConvert: TIDConvertArray; ATmp: string): Variant;
 var i: Integer;
     TabName,
     FieldName: string;
@@ -126,6 +126,26 @@ begin
     Result := MaxIterator + 1;
 end;
 
+//Формирует строку запроса
+function GetQueryStr(AQuery: TFDQuery; AType: Integer; ATmp: string): string;
+var i: Integer;
+    As1, As2: string;
+begin
+  As1 := '';
+  As2 := '';
+  for i := 0 to AQuery.Fields.Count - 1 do
+  begin
+    if As1 <> '' then As1 := As1 + ',';
+    if As2 <> '' then As2 := As2 + ',';
+
+    As1 := As1 + AQuery.Fields[i].FieldName;
+    As2 := As2 + ':' + AQuery.Fields[i].FieldName;
+  end;
+  Result := 'Insert into ' + CTabNameAndID[AType][0] + ATmp +
+    ' (' + As1 + ') values (' + As2 + ')';
+end;
+
+////////////////////////////////////////////////////////////////////////////////
 procedure ImportObject(const AFileName: string);
 var XML : IXMLDocument;
     CurNode, Node1, Node2: IXMLNode;
@@ -183,7 +203,7 @@ begin
       //загрузка объекта
       Node1 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Data_object');
       Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
-        GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, 0, IdConvert);
+        GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, 0, IdConvert, '');
 
       GetStrAndExcec(Node1, 0);
       Node1 := nil;
@@ -195,11 +215,11 @@ begin
         Node1 := Node2.ChildNodes.Nodes[j];
         //замена IDшников
         Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue,1, IdConvert);
+          GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue,1, IdConvert, '');
         Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue,0, IdConvert);
+          GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue,0, IdConvert, '');
         Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue :=
-          GetNewId(Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue,1, IdConvert);
+          GetNewId(Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue,1, IdConvert, '');
 
         GetStrAndExcec(Node1, 1);
         Node1 := nil;
@@ -214,7 +234,7 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,2, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,2, IdConvert, '');
 
           GetStrAndExcec(Node1, 2);
           Node1 := nil;
@@ -229,11 +249,11 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,3, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,3, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,3, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,3, IdConvert, '');
 
           GetStrAndExcec(Node1, 3);
           Node1 := nil;
@@ -248,11 +268,11 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,4, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,4, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue,2, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,4, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue,4, IdConvert, '');
 
           GetStrAndExcec(Node1, 4);
           Node1 := nil;
@@ -267,7 +287,7 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,5, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,5, IdConvert, '');
 
           GetStrAndExcec(Node1, 5);
           Node1 := nil;
@@ -282,7 +302,7 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,6, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,6, IdConvert, '');
 
           GetStrAndExcec(Node1, 6);
           Node1 := nil;
@@ -297,7 +317,7 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,7, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,7, IdConvert, '');
 
           GetStrAndExcec(Node1, 7);
           Node1 := nil;
@@ -312,9 +332,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,8, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,8, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue,1, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue,1, IdConvert, '');
 
           i := 0;
           case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
@@ -328,7 +348,7 @@ begin
 
           if i > 0  then
             Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
-              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue,i, IdConvert);
+              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue,i, IdConvert, '');
 
           GetStrAndExcec(Node1, 8);
           Node1 := nil;
@@ -344,9 +364,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['calculation_coef_id'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['calculation_coef_id'].NodeValue,17, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['calculation_coef_id'].NodeValue,17, IdConvert, '');
           Node1.ChildNodes.Nodes['id_estimate'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['id_estimate'].NodeValue,1, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['id_estimate'].NodeValue,1, IdConvert, '');
 
           i := 0;
           case Node1.ChildNodes.Nodes['id_type_data'].NodeValue of
@@ -360,7 +380,7 @@ begin
 
           if i > 0  then
             Node1.ChildNodes.Nodes['id_owner'].NodeValue :=
-              GetNewId(Node1.ChildNodes.Nodes['id_owner'].NodeValue,i, IdConvert);
+              GetNewId(Node1.ChildNodes.Nodes['id_owner'].NodeValue,i, IdConvert, '');
 
           Node1.ChildNodes.Nodes['id_coef'].NodeValue := null;
 
@@ -378,9 +398,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,9, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,9, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_OBJECT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_OBJECT'].NodeValue,0, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_OBJECT'].NodeValue,0, IdConvert, '');
 
           GetStrAndExcec(Node1, 9);
           Node1 := nil;
@@ -395,9 +415,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue,9, IdConvert, '');
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,10, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue,10, IdConvert, '');
 
           GetStrAndExcec(Node1, 10);
           Node1 := nil;
@@ -412,13 +432,13 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert, '');
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 11, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 11, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue, 10, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue, 10, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue, 11, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue, 11, IdConvert, '');
 
           GetStrAndExcec(Node1, 11);
           Node1 := nil;
@@ -433,13 +453,13 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert, '');
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 12, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 12, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue, 10, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue, 10, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue, 12 ,IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue, 12 ,IdConvert, '');
 
           GetStrAndExcec(Node1, 12);
           Node1 := nil;
@@ -454,9 +474,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert, '');
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 13, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 13, IdConvert, '');
 
           GetStrAndExcec(Node1, 13);
           Node1 := nil;
@@ -471,9 +491,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert, '');
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 14, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 14, IdConvert, '');
 
           GetStrAndExcec(Node1, 14);
           Node1 := nil;
@@ -488,9 +508,9 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert, '');
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 15, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 15, IdConvert, '');
 
           GetStrAndExcec(Node1, 15);
           Node1 := nil;
@@ -505,11 +525,11 @@ begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 16, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, 16, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, 9, IdConvert, '');
           Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue, 1, IdConvert);
+            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue, 1, IdConvert, '');
 
           i := 0;
           case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
@@ -523,7 +543,7 @@ begin
 
           if i > 0  then
             Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
-              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue, i, IdConvert);
+              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue, i, IdConvert, '');
 
           GetStrAndExcec(Node1, 16);
           Node1 := nil;
@@ -545,6 +565,8 @@ begin
     CoUninitialize;
   end;
 end;
+
+////////////////////////////////////////////////////////////////////////////////
 
 procedure ExportObject(const AIdObject: Integer; const AFileName: string);
 var XML : IXMLDocument;
@@ -1005,7 +1027,7 @@ begin
     CoUninitialize;
   end;
 end;
-
+////////////////////////////////////////////////////////////////////////////////
 //Выполняет вставку строки в смету
 function PasteSmetaRow(ASmClipRec: TSmClipRec; ADestSmID, AIterator: Integer): Boolean;
 var i, j,
@@ -1016,25 +1038,6 @@ var i, j,
     IdConvert: TIDConvertArray;
     TmpTab: string;
     FromRateArray: TFromRateArray;
-
-    //Формирует строку запроса
-    function GetStrAndExcec(AQuery: TFDQuery; AType: Integer): string;
-    var i: Integer;
-        As1, As2: string;
-    begin
-      As1 := '';
-      As2 := '';
-      for i := 0 to AQuery.Fields.Count - 1 do
-      begin
-        if As1 <> '' then As1 := As1 + ',';
-        if As2 <> '' then As2 := As2 + ',';
-
-        As1 := As1 + AQuery.Fields[i].FieldName;
-        As2 := As2 + ':' + AQuery.Fields[i].FieldName;
-      end;
-      Result := 'Insert into ' + CTabNameAndID[AType][0] +
-        '_temp (' + As1 + ') values (' + As2 + ')';
-    end;
 
     //Просто кусок кода который надо выполнить из разных мест
     procedure CoefEstimCalc(ALocalType, ADataType, AOldId, ANewId: Integer);
@@ -1048,7 +1051,7 @@ var i, j,
         '(id_owner = ' + IntToStr(AOldId) + ')';
       DM.qrDifferent.Active := True;
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetStrAndExcec(DM.qrDifferent, 17);
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 17, '_temp');
       while not DM.qrDifferent.Eof do
       begin
         for i := 0 to DM.qrDifferent.Fields.Count - 1 do
@@ -1173,7 +1176,7 @@ begin
     case ASmClipRec.DataType of
     1, 2, 3, 4, 5, 6, 7, 8, 9:
     begin
-      DM.qrDifferent1.SQL.Text := GetStrAndExcec(DM.qrDifferent, ind);
+      DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, ind, '_temp');
       for i := 0 to DM.qrDifferent.Fields.Count - 1 do
       begin
         if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
@@ -1260,7 +1263,7 @@ begin
         ' ORDER BY ID';
       DM.qrDifferent.Active := True;
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetStrAndExcec(DM.qrDifferent, 3);
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 3, '_temp');
       while not DM.qrDifferent.Eof do
       begin
         for i := 0 to DM.qrDifferent.Fields.Count - 1 do
@@ -1312,7 +1315,7 @@ begin
         ' ORDER BY ID';
       DM.qrDifferent.Active := True;
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetStrAndExcec(DM.qrDifferent, 4);
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 4, '_temp');
       while not DM.qrDifferent.Eof do
       begin
         for i := 0 to DM.qrDifferent.Fields.Count - 1 do
@@ -1372,8 +1375,408 @@ begin
     on e: Exception do
       Application.ShowException(e);
   end;
+
   if DM.qrDifferent.Active then
     DM.qrDifferent.Active := False;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+function GetCopySmeta(const ASoursSmetaID: Integer): boolean;
+var IdConvert: TIDConvertArray;
+    i, j: Integer;
+    TmpId: Integer;
+    SmIdStr: string;
+begin
+  Result := False;
+  for i := 0 to Length(IdConvert) - 1 do
+  begin
+    SetLength(IdConvert[i][0], 0);
+    SetLength(IdConvert[i][1], 0);
+  end;
+ // DM.qrDifferent.UpdateTransaction.Options.AutoCommit := False;
+ // DM.qrDifferent.UpdateTransaction.Options.AutoStart := False;
+ // DM.qrDifferent.UpdateTransaction.Options.AutoStop := False;
+  try
+ //   DM.qrDifferent.UpdateTransaction.StartTransaction;
+    try
+      DM.qrDifferent.Active := False;
+      DM.qrDifferent.SQL.Text := 'SELECT * FROM smetasourcedata WHERE ' +
+        '((SM_ID = ' + ASoursSmetaID.ToString + ') OR ' +
+         '(PARENT_ID = ' + ASoursSmetaID.ToString + ') OR ' +
+         '(PARENT_ID IN (SELECT smetasourcedata.SM_ID FROM ' +
+          'smetasourcedata WHERE smetasourcedata.PARENT_ID = ' +
+            ASoursSmetaID.ToString + '))) ORDER BY SM_ID';
+      DM.qrDifferent.Active := True;
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,1,'')
+      else
+      begin
+        //Если смет с таким ID не обнаружено
+        DM.qrDifferent.Active := False;
+        raise Exception.Create('Смета источник не найдена.');
+      end;
+      SmIdStr := '';
+      while not DM.qrDifferent.Eof do
+      begin
+        TmpId := DM.qrDifferent.FieldByName('SM_ID').AsInteger;
+
+        //Строка идшников, что-бы не тягать за собой длинный запрос
+        if SmIdStr <> '' then
+          SmIdStr := SmIdStr + ',';
+        SmIdStr := SmIdStr + IntToStr(TmpId);
+
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 1, IdConvert, '');
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'NAME' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              DM.qrDifferent.Fields[i].Value + ' (Копия)';
+            Continue;
+          end;
+
+          //Копия сметы должна быть прикреплена к той же ветке, что и иточник
+          if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'PARENT_ID') and
+             (TmpId <> ASoursSmetaID) then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 1, IdConvert, '');
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from card_rate where ID in ' +
+      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 1) and ' +
+      '(ID_ESTIMATE in (' + SmIdStr + '))) order by ID';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,2,'');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 2, IdConvert, '');
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from materialcard where (ID in ' +
+      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 2) and ' +
+      '(ID_ESTIMATE in (' + SmIdStr + ')))) or (ID_CARD_RATE in (select ID_TABLES from data_estimate where ' +
+      '(ID_TYPE_DATA = 1) and (ID_ESTIMATE in (' + SmIdStr + ')))) order by ID';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,3,'');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 3, IdConvert, '');
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 2, IdConvert, '');
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 3, IdConvert, '');
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from mechanizmcard where (ID in ' +
+      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 3) and ' +
+      '(ID_ESTIMATE in (' + SmIdStr + ')))) or (ID_CARD_RATE in ' +
+      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 1) and ' +
+      '(ID_ESTIMATE in (' + SmIdStr + ')))) order by ID';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,4,'');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 4, IdConvert, '');
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 2, IdConvert, '');
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 4, IdConvert, '');
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from devicescard where ID in ' +
+      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 4) and ' +
+      '(ID_ESTIMATE in (' + SmIdStr + '))) order by ID';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,5,'');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 5, IdConvert, '');
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from dumpcard where ID in ' +
+      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 5) and ' +
+      '(ID_ESTIMATE in (' + SmIdStr + '))) order by ID';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,6,'');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 6, IdConvert, '');
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from transpcard where ID in ' +
+      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA in (6,7,8,9)) and ' +
+      '(ID_ESTIMATE in (' + SmIdStr + '))) order by ID';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,7,'');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 7, IdConvert, '');
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from data_estimate where ' +
+        '(ID_ESTIMATE in (' + SmIdStr + '))order by ID';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,8,'');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 8, IdConvert, '');
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ESTIMATE' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 1, IdConvert, '');
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TABLES' then
+          begin
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA' then
+          begin
+            j := 0;
+            case DM.qrDifferent.Fields[i].Value of
+              1: j := 2;
+              2: j := 3;
+              3: j := 4;
+              4: j := 5;
+              5: j := 6;
+              6, 7, 8, 9: j := 7;
+            end;
+
+            if j > 0  then
+              DM.qrDifferent1.ParamByName('ID_TABLES').Value :=
+                GetNewId(DM.qrDifferent.FieldByName('ID_TABLES').Value,j, IdConvert, '');
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from calculation_coef where ' +
+        '(ID_ESTIMATE in (' + SmIdStr + '))order by calculation_coef_id';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,17,'');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CALCULATION_COEF_ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 17, IdConvert, '');
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ESTIMATE' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, 1, IdConvert, '');
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_OWNER' then
+          begin
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA' then
+          begin
+            j := 0;
+            case DM.qrDifferent.Fields[i].Value of
+              1: j := 2;
+              2: j := 3;
+              3: j := 4;
+              4: j := 5;
+              5: j := 6;
+              6, 7, 8, 9: j := 7;
+            end;
+
+            if i > 0  then
+              DM.qrDifferent1.ParamByName('ID_OWNER').Value :=
+                GetNewId(DM.qrDifferent.FieldByName('ID_OWNER').Value,i, IdConvert, '');
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+     // Abort;
+     // DM.qrDifferent.UpdateTransaction.Commit;
+      Result := True;
+    except
+      on e: Exception do
+      begin
+        Application.ShowException(e);
+     //   DM.qrDifferent.UpdateTransaction.Rollback;
+      end;
+    end;
+  finally
+   // DM.qrDifferent.UpdateTransaction.Options.AutoCommit := True;
+   // DM.qrDifferent.UpdateTransaction.Options.AutoStart := True;
+   // DM.qrDifferent.UpdateTransaction.Options.AutoStop := True;
+  end;
+
 end;
 
 end.

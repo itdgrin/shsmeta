@@ -38,7 +38,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     ParentFont = False
     ShowCaption = False
     TabOrder = 0
-    ExplicitHeight = 502
     object ImageSplitterCenter: TImage
       Left = 304
       Top = 125
@@ -341,7 +340,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       ShowCaption = False
       TabOrder = 1
       OnResize = PanelBottomResize
-      ExplicitHeight = 176
       object ImageSplitterBottomCenter: TImage
         Left = 513
         Top = 73
@@ -374,7 +372,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        ExplicitHeight = 176
         object lblEstimates: TLabel
           Left = 0
           Top = 0
@@ -420,7 +417,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           RowSelect = True
           OnCustomDrawItem = tvEstimatesCustomDrawItem
           Mirror = False
-          ExplicitHeight = 163
         end
       end
       object PanelActs: TPanel
@@ -438,7 +434,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         ParentBackground = False
         ParentFont = False
         TabOrder = 1
-        ExplicitHeight = 176
         object lblActs: TLabel
           Left = 0
           Top = 0
@@ -484,7 +479,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           RowSelect = True
           OnCustomDrawItem = tvActsCustomDrawItem
           Mirror = False
-          ExplicitHeight = 163
         end
       end
     end
@@ -622,9 +616,9 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object mN9: TMenuItem
       Caption = '-'
     end
-    object mN10: TMenuItem
+    object PMCopySmeta: TMenuItem
       Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
-      Enabled = False
+      OnClick = PMCopySmetaClick
     end
     object mN15: TMenuItem
       Caption = '-'
