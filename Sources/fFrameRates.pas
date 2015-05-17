@@ -1138,8 +1138,12 @@ begin
         WhereStr := ' WHERE 1=1 ' + Condition;
       QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
         ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id, date_end FROM normativ' + DataBase +
-        WhereStr + Condition + ' ORDER BY NumberNormative ASC;';
-
+        WhereStr + Condition + ' ORDER BY '#13 +
+        '(`NORM_NUM`+0),'#13 +
+        '`NORM_NUM` REGEXP "^Å" DESC, `NORM_NUM` REGEXP "^Ö" DESC,'#13 +
+        'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13 +
+        '(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) + 0),'#13 +
+        '(SUBSTRING(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) FROM POSITION("-" in SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1)) + 1) + 0)';
       SQL.Add(QueryStr);
       Active := true;
     end;

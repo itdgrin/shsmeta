@@ -141,14 +141,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           end
           item
             Expanded = False
-            FieldName = 'ListAgreements'
-            Title.Alignment = taCenter
-            Title.Caption = #1057#1087#1080#1089#1086#1082' '#1076#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1093' '#1089#1086#1075#1083#1072#1096#1077#1085#1080#1081
-            Width = 200
-            Visible = True
-          end
-          item
-            Expanded = False
             FieldName = 'FullName'
             Title.Alignment = taCenter
             Title.Caption = #1055#1086#1083#1085#1086#1077' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1086#1073#1098#1077#1082#1090#1072
@@ -209,14 +201,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
             Title.Alignment = taCenter
             Title.Caption = #1050#1072#1090#1077#1075#1086#1088#1080#1103' '#1086#1073#1098#1077#1082#1090#1072
             Width = 200
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'VAT'
-            Title.Alignment = taCenter
-            Title.Caption = #1057'/'#1073#1077#1079' '#1053#1044#1057
-            Width = 60
             Visible = True
           end
           item
@@ -788,12 +772,12 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       '           WHERE  id = IdIstFin'
       '       )                      AS "NameIstFin",'
       '       ('
-      '           SELECT DISTINCT full_name'
+      '           SELECT DISTINCT name'
       '           FROM   clients'
       '           WHERE  client_id = IdClient'
       '       )                      AS "NameClient",'
       '       ('
-      '           SELECT DISTINCT full_name'
+      '           SELECT DISTINCT name'
       '           FROM   clients'
       '           WHERE  client_id = IdContractor'
       '       )                      AS "NameContractor",'
