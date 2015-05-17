@@ -89,9 +89,9 @@ begin
   try
     FData := null;
     FData := WorkSheet.Range[WorkSheet.Cells[8, 3].Address,
-      WorkSheet.Cells[29, 26].Address].Value;
+      WorkSheet.Cells[28, 26].Address].Value;
 
-    for j := 1 to 22 do
+    for j := 1 to 21 do
     begin
       DM.qrDifferent.ParamByName('MAIS_ID').Value :=
         qrMAIS.FieldByName('ID').AsString;
