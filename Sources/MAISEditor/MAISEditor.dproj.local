@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.698,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.149,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.429,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.745,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.758,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.485,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.150,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.006,C:\Users\User\Documents\RAD Studio\Projects\Unit2.dfm=D:\Grisha\Shestak\SmetaRep\trunk\Sources\MAISEditor\MainUnit.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.994,C:\Users\User\Documents\RAD Studio\Projects\Project1.dproj=D:\Grisha\Shestak\SmetaRep\trunk\Sources\MAISEditor\MAISEditor.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.961,D:\Grisha\Shestak\SmetaRep\trunk\Sources\MAISEditor\MAISEditor.dproj=D:\Grisha\Shestak\SmetaRep\trunk\Sources\MAISEditor\MAISEditor.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.368,=D:\Grisha\Shestak\SmetaRep\trunk\Sources\GlobsAndConst.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.557,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.298,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.006,C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas=D:\Grisha\Shestak\SmetaRep\trunk\Sources\MAISEditor\MainUnit.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.253,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.736,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.864,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.676,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.610,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.622,=D:\Grisha\Shestak\SmetaRep\trunk\Sources\DataModule.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.257,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.928,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.498,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.657,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.494,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.660,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.067,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.523,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.572,=C:\Users\User\Documents\RAD Studio\Projects\Unit2.pas</Transaction>
+  </Transactions>
+</BorlandProject>
