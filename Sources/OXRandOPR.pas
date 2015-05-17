@@ -247,7 +247,7 @@ begin
       Active := False;
       SQL.Clear;
 
-      StrQuery := 'SELECT * FROM mais ORDER BY comment;';
+      StrQuery := 'SELECT * FROM mais ORDER BY onDate DESC;';
 
       SQL.Add(StrQuery);
       Active := True;

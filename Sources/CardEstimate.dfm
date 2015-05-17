@@ -429,7 +429,6 @@ object FormCardEstimate: TFormCardEstimate
     Top = 200
   end
   object qrParts: TFDQuery
-    AfterScroll = qrPartsAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -467,7 +466,6 @@ object FormCardEstimate: TFormCardEstimate
     Top = 18
   end
   object qrSections: TFDQuery
-    AfterScroll = qrPartsAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -500,7 +498,6 @@ object FormCardEstimate: TFormCardEstimate
     Top = 42
   end
   object qrTypesWorks: TFDQuery
-    AfterScroll = qrPartsAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write

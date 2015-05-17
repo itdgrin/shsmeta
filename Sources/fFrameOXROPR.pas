@@ -181,7 +181,7 @@ var
   StrQuery: string;
 begin
   try
-    StrQuery := 'SELECT * FROM mais ORDER BY `NAME`;';
+    StrQuery := 'SELECT * FROM mais ORDER BY onDate DESC;';
 
     with ADOQueryTemp do
     begin

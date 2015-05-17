@@ -86,6 +86,7 @@ type
     mN2: TMenuItem;
     edtK: TEdit;
     lblK1: TLabel;
+    dbrgrpCOEF_ORDERS: TDBRadioGroup;
 
     procedure FormShow(Sender: TObject);
 
@@ -367,9 +368,9 @@ procedure TFormBasicData.qrSmetaAfterOpen(DataSet: TDataSet);
 begin
   pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
   if pnlLowCoef.Visible then
-    Height := 615
+    Height := 660
   else
-    Height := 615 - pnlLowCoef.Height;
+    Height := 660 - pnlLowCoef.Height;
 end;
 
 procedure TFormBasicData.ButtonSaveClick(Sender: TObject);
@@ -409,8 +410,8 @@ begin
       SQL.Add('UPDATE smetasourcedata SET stavka_id = :stavka_id, coef_tr_zatr = :coef_tr_zatr, coef_orders=:coef_orders, '
         + 'coef_tr_obor=:coef_tr_obor, k40=:k40, k41=:k41, k31=:k31, k32=:k32, k33=:k33, k34=:k34, growth_index=:growth_index, '
         + 'K_LOW_OHROPR=:K_LOW_OHROPR, K_LOW_PLAN_PRIB=:K_LOW_PLAN_PRIB, APPLY_LOW_COEF_OHROPR_FLAG=:APPLY_LOW_COEF_OHROPR_FLAG, '
-        + 'nds=:nds, dump_id=:dump_id, kzp=:kzp, STAVKA_RAB=:STAVKA_RAB, MAIS_ID=:MAIS_ID, K35=:K35, APPLY_WINTERPRISE_FLAG=:APPLY_WINTERPRISE_FLAG '
-        + 'WHERE sm_id = :sm_id;');
+        + 'nds=:nds, dump_id=:dump_id, kzp=:kzp, STAVKA_RAB=:STAVKA_RAB, MAIS_ID=:MAIS_ID, K35=:K35, APPLY_WINTERPRISE_FLAG=:APPLY_WINTERPRISE_FLAG, '
+        + 'WINTERPRICE_TYPE=:WINTERPRICE_TYPE ' + 'WHERE sm_id = :sm_id;');
 
       ParamByName('stavka_id').Value := IdStavka;
       ParamByName('coef_tr_zatr').Value := edtPercentTransport.Text;
@@ -435,6 +436,7 @@ begin
       ParamByName('MAIS_ID').Value := dblkcbbMAIS.KeyValue;
       ParamByName('growth_index').Value := dbedtgrowth_index.Text;
       ParamByName('coef_orders').Value := qrSmeta.FieldByName('coef_orders').AsInteger;
+      ParamByName('WINTERPRICE_TYPE').Value := qrSmeta.FieldByName('WINTERPRICE_TYPE').AsInteger;
       ParamByName('sm_id').Value := IdEstimate;
       ExecSQL;
       // Обновляем все зависимые сметы до самого низкого уровня
@@ -487,9 +489,9 @@ procedure TFormBasicData.dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
 begin
   pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
   if pnlLowCoef.Visible then
-    Height := 615
+    Height := 660
   else
-    Height := 615 - pnlLowCoef.Height;
+    Height := 660 - pnlLowCoef.Height;
 end;
 
 procedure TFormBasicData.dbchkcoef_ordersClick(Sender: TObject);

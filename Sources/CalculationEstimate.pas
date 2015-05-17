@@ -1237,34 +1237,34 @@ begin
         qrTemp.SQL.Text := 'CALL UpdateSmetaCosts(:IDESTIMATE);';
         qrTemp.ParamByName('IDESTIMATE').AsInteger := IdEstimate;
         qrTemp.ExecSQL;
-      end;
-  end;
 
-  qrRatesEx.DisableControls;
-  e := qrRatesEx.AfterScroll;
-  qrRatesEx.AfterScroll := nil;
-  try
-    if CheckQrActiveEmpty(qrRatesEx) then
-      Key := qrRatesEx.Fields[0].Value;
-    qrRatesEx.First;
-    while not qrRatesEx.Eof do
-    begin
-      if qrRatesExID_TYPE_DATA.Value > 0 then
-      begin
-        qrTemp.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE);';
-        qrTemp.ParamByName('ID').Value := qrRatesExID_TABLES.Value;
-        qrTemp.ParamByName('TYPE').Value := qrRatesExID_TYPE_DATA.Value;
-        qrTemp.ExecSQL;
-        CloseOpen(qrCalculations);
+        qrRatesEx.DisableControls;
+        e := qrRatesEx.AfterScroll;
+        qrRatesEx.AfterScroll := nil;
+        try
+          if CheckQrActiveEmpty(qrRatesEx) then
+            Key := qrRatesEx.Fields[0].Value;
+          qrRatesEx.First;
+          while not qrRatesEx.Eof do
+          begin
+            if qrRatesExID_TYPE_DATA.Value > 0 then
+            begin
+              qrTemp.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE);';
+              qrTemp.ParamByName('ID').Value := qrRatesExID_TABLES.Value;
+              qrTemp.ParamByName('TYPE').Value := qrRatesExID_TYPE_DATA.Value;
+              qrTemp.ExecSQL;
+              CloseOpen(qrCalculations);
+            end;
+            qrRatesEx.Next;
+          end;
+          if Key <> Null then
+            qrRatesEx.Locate(qrRatesEx.Fields[0].FieldName, Key, []);
+        finally
+          qrRatesEx.EnableControls;
+          qrRatesEx.AfterScroll := e;
+          qrRatesExAfterScroll(qrRatesEx);
+        end;
       end;
-      qrRatesEx.Next;
-    end;
-    if Key <> Null then
-      qrRatesEx.Locate(qrRatesEx.Fields[0].FieldName, Key, []);
-  finally
-    qrRatesEx.EnableControls;
-    qrRatesEx.AfterScroll := e;
-    qrRatesExAfterScroll(qrRatesEx);
   end;
 end;
 
@@ -2348,7 +2348,6 @@ function TFormCalculationEstimate.CheckMatUnAccountingMatirials: Boolean;
 begin
   Result := qrMaterialCONSIDERED.AsInteger = 0;
 end;
-
 
 procedure TFormCalculationEstimate.qrRatesExAfterOpen(DataSet: TDataSet);
 var
@@ -3828,7 +3827,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMAddAdditionHeatingE18Click(Sender: TObject);
-var Iterator: Integer;
+var
+  Iterator: Integer;
 begin
   if not CheckCursorInRate then
     Exit;

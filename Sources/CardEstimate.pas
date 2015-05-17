@@ -190,9 +190,12 @@ begin
         dblkcbbSections.Enabled := True;
         dblkcbbTypesWorks.Enabled := True;
 
-        CloseOpen(qrParts);
-        CloseOpen(qrSections);
-        CloseOpen(qrTypesWorks);
+        if not qrParts.Active then
+          CloseOpen(qrParts);
+        if not qrSections.Active then
+          CloseOpen(qrSections);
+        if not qrTypesWorks.Active then
+          CloseOpen(qrTypesWorks);
         if not Editing then
         begin
           dblkcbbParts.KeyValue := 0;
@@ -200,6 +203,9 @@ begin
           dblkcbbTypesWorks.KeyValue := 0;
         end;
         ComboBoxChange(Self);
+        qrParts.AfterScroll := qrPartsAfterScroll;
+        qrSections.AfterScroll := qrPartsAfterScroll;
+        qrTypesWorks.AfterScroll := qrPartsAfterScroll;
       end;
   end;
 
@@ -487,8 +493,8 @@ end;
 
 procedure TFormCardEstimate.ComboBoxChange(Sender: TObject);
 begin
-  if not CheckQrActiveEmpty(qrParts) or not CheckQrActiveEmpty(qrSections) or
-    not CheckQrActiveEmpty(qrTypesWorks) or not CheckQrActiveEmpty(qrMain) or SkeepEvent then
+  if SkeepEvent or not CheckQrActiveEmpty(qrMain) or not CheckQrActiveEmpty(qrParts) or
+    not CheckQrActiveEmpty(qrSections) or not CheckQrActiveEmpty(qrTypesWorks) then
     Exit;
   qrMain.Edit;
   qrMain.FieldByName('SM_NUMBER').AsString := 'Æ' + qrParts.FieldByName('CODE').AsString +
@@ -610,7 +616,7 @@ end;
 
 procedure TFormCardEstimate.qrPartsAfterScroll(DataSet: TDataSet);
 begin
-  ComboBoxChange(Self);
+  ComboBoxChange(nil);
 end;
 
 end.

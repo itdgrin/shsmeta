@@ -14,8 +14,9 @@ object fCardOrganization: TfCardOrganization
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
-  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   DesignSize = (
     455
     401)
@@ -129,7 +130,7 @@ object fCardOrganization: TfCardOrganization
     Height = 13
     Caption = #1040#1076#1088#1077#1089' '#1073#1072#1085#1082#1072':'
   end
-  object ButtonSave: TButton
+  object btnSave: TButton
     Left = 241
     Top = 368
     Width = 100
@@ -138,10 +139,9 @@ object fCardOrganization: TfCardOrganization
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Default = True
     TabOrder = 14
-    OnClick = ButtonSaveClick
-    ExplicitTop = 396
+    OnClick = btnSaveClick
   end
-  object ButtonClose: TButton
+  object btnClose: TButton
     Left = 347
     Top = 368
     Width = 100
@@ -149,8 +149,7 @@ object fCardOrganization: TfCardOrganization
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 15
-    OnClick = ButtonCloseClick
-    ExplicitTop = 396
+    OnClick = btnCloseClick
   end
   object dbedtNAME: TDBEdit
     Left = 130

@@ -11,8 +11,8 @@ uses
 type
   TfCardOrganization = class(TForm)
     Bevel: TBevel;
-    ButtonSave: TButton;
-    ButtonClose: TButton;
+    btnSave: TButton;
+    btnClose: TButton;
     lbl1: TLabel;
     dbedtNAME: TDBEdit;
     dbedtUNN: TDBEdit;
@@ -42,9 +42,10 @@ type
     lbl15: TLabel;
     dbedtOKPO1: TDBEdit;
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure ButtonCloseClick(Sender: TObject);
-    procedure ButtonSaveClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    procedure btnCloseClick(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormDestroy(Sender: TObject);
   private
     SkeepAskBeforeClose: Boolean;
   end;
@@ -58,34 +59,39 @@ uses OrganizationsEx;
 
 {$R *.dfm}
 
-procedure TfCardOrganization.ButtonSaveClick(Sender: TObject);
+procedure TfCardOrganization.btnSaveClick(Sender: TObject);
 begin
-  fOrganizationsEx.qrMain.CheckBrowseMode;
-  ModalResult := mrOk;
+  if fOrganizationsEx.qrMain.State in [dsEdit, dsInsert] then
+    fOrganizationsEx.qrMain.Post;
   SkeepAskBeforeClose := True;
+  ModalResult := mrOk;
   Close;
+end;
+
+procedure TfCardOrganization.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
 end;
 
 procedure TfCardOrganization.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  if not SkeepAskBeforeClose then
+  CanClose := SkeepAskBeforeClose;
+  if not SkeepAskBeforeClose and (MessageBox(0, PChar('«акрыть без сохранени€ сделанных изменений?'),
+    PWideChar(fCardOrganization.Caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes) then
   begin
-    if MessageBox(0, PChar('«акрыть без сохранени€ сделанных изменений?'),
-      PWideChar(fCardOrganization.Caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) <> mrYes then
-      CanClose := False
-    else
-      fOrganizationsEx.qrMain.Cancel;
+    fOrganizationsEx.qrMain.Cancel;
+    CanClose := True;
   end;
 end;
 
-procedure TfCardOrganization.FormCreate(Sender: TObject);
+procedure TfCardOrganization.FormDestroy(Sender: TObject);
 begin
-  SkeepAskBeforeClose := False;
+  fCardOrganization := nil;
 end;
 
-procedure TfCardOrganization.ButtonCloseClick(Sender: TObject);
+procedure TfCardOrganization.btnCloseClick(Sender: TObject);
 begin
-  fOrganizationsEx.qrMain.Cancel;
+  SkeepAskBeforeClose := False;
   ModalResult := mrCancel;
   Close;
 end;

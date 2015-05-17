@@ -212,7 +212,7 @@ object fCoefficients: TfCoefficients
         'SELECT coef_id, coef_name, osn_zp, eksp_mach, mat_res, work_pers' +
         ' , work_mach, coef_type_id, oxropr, planprib'
       'FROM coef '
-      'ORDER BY coef_type_id, coef_name')
+      'ORDER BY IFNULL(coef_type_id, 999999999), coef_name')
     Left = 25
     Top = 66
     object qrCoefcoef_id: TFDAutoIncField

@@ -628,6 +628,9 @@ begin
     // По заказчику
     1:
       FN := 'NameClient';
+    // По генподрядчику
+    2:
+      FN := 'NameContractor';
   end;
   qrObjects.Filter := 'UPPER(' + FN + ') LIKE UPPER(''%' + Trim(edtSearch.Text) + '%'')';
   if (btnSearch.Tag = 0) and qrObjects.FindFirst then

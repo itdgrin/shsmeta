@@ -39,7 +39,7 @@ object fCalcResource: TfCalcResource
     object dblkcbbNAME: TDBLookupComboBox
       Left = 53
       Top = 5
-      Width = 554
+      Width = 445
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       KeyField = 'OBJ_ID'
@@ -47,13 +47,23 @@ object fCalcResource: TfCalcResource
       ListSource = dsObject
       TabOrder = 0
     end
+    object chkEdit: TCheckBox
+      Left = 504
+      Top = 9
+      Width = 107
+      Height = 17
+      Anchors = [akTop, akRight]
+      Caption = #1056#1072#1089#1095#1077#1090' '#1088#1072#1079#1088#1077#1096#1077#1085
+      TabOrder = 1
+      OnClick = chkEditClick
+    end
   end
   object pgc1: TPageControl
     Left = 0
     Top = 32
     Width = 616
     Height = 330
-    ActivePage = ts1
+    ActivePage = ts5
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -899,7 +909,7 @@ object fCalcResource: TfCalcResource
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
-        object JvDBGrid1: TJvDBGrid
+        object grDev: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
@@ -1027,7 +1037,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
             end>
           DataSource = dsDevices
-          DBGrid = JvDBGrid1
+          DBGrid = grDev
           OnCalculate = JvDBGridFooter1Calculate
         end
       end
@@ -1049,7 +1059,7 @@ object fCalcResource: TfCalcResource
           ExplicitTop = 1
           ExplicitWidth = 129
         end
-        object JvDBGrid2: TJvDBGrid
+        object grDevBott: TJvDBGrid
           Left = 1
           Top = 25
           Width = 606
@@ -1215,7 +1225,7 @@ object fCalcResource: TfCalcResource
         Align = alClient
         Caption = 'pnl7'
         TabOrder = 1
-        object JvDBGrid3: TJvDBGrid
+        object grRates: TJvDBGrid
           Left = 1
           Top = 1
           Width = 606
@@ -1364,7 +1374,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRUD'
             end>
           DataSource = dsRates
-          DBGrid = JvDBGrid3
+          DBGrid = grRates
           OnCalculate = JvDBGridFooter1Calculate
         end
       end
@@ -1382,6 +1392,7 @@ object fCalcResource: TfCalcResource
     SQL.Strings = (
       'SELECT OBJ_ID, FULL_NAME as NAME, BEG_STROJ as DATE'
       'FROM objcards '
+      'WHERE DEL_FLAG=0'
       'ORDER BY NAME')
     Left = 25
   end
@@ -1431,6 +1442,10 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
+      
+        'SELECT CODE, NAME, UNIT, SUM(CNT) AS CNT, DOC_DATE, DOC_NUM, PRO' +
+        'C_TRANSP, COAST, SUM(PRICE) AS PRICE, SUM(TRANSP) AS TRANSP FROM' +
+        '('
       '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042'\'#1047#1040' '#1056#1040#1057#1062#1045#1053#1050#1045'*/'
       'SELECT '
       '  ID_ESTIMATE,'
@@ -1459,25 +1474,7 @@ object fCalcResource: TfCalcResource
         'ANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090#1088 +
         #1072#1085#1089#1087'. */ '
       ''
-      
-        '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
-        ' '#1089' '#1053#1044#1057' */'
-      
-        '  IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS) AS COAST_NO_' +
-        'NDS, /* '#1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS) AS PRICE_NDS, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' '#1089' '#1053#1044#1057' */'
-      
-        '  IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_NO_' +
-        'NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS) AS TRANSP_NDS, /* ' +
-        #1090#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
-      
-        '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
-        '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
-      '  , stavka.MONAT AS MONTH, stavka.YEAR'
+      '  stavka.MONAT AS MONTH, stavka.YEAR'
       'FROM '
       
         '  smetasourcedata, data_estimate, card_rate, materialcard, stavk' +
@@ -1487,6 +1484,7 @@ object fCalcResource: TfCalcResource
       'card_rate.ID = data_estimate.ID_TABLES AND'
       'materialcard.ID_CARD_RATE = card_rate.ID AND'
       'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'smetasourcedata.DELETED=0 AND'
       'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
       'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
       ''
@@ -1520,34 +1518,18 @@ object fCalcResource: TfCalcResource
         'ANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090#1088 +
         #1072#1085#1089#1087'. */'
       ''
-      
-        '  IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS) AS COAST_NDS, /* '#1062#1077#1085#1072 +
-        ' '#1089' '#1053#1044#1057' */'
-      
-        '  IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS) AS COAST_NO_' +
-        'NDS, /* '#1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS) AS PRICE_NDS, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' '#1089' '#1053#1044#1057' */'
-      
-        '  IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS) AS PRICE_NO_' +
-        'NDS, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1073#1077#1079' '#1053#1044#1057' */'
-      
-        '  IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS) AS TRANSP_NDS, /* ' +
-        #1090#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057'*/'
-      
-        '  IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS) AS TRANSP' +
-        '_NO_NDS /* '#1090#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057'*/'
-      '  , stavka.MONAT AS MONTH, stavka.YEAR'
+      '  stavka.MONAT AS MONTH, stavka.YEAR'
       'FROM '
       '  smetasourcedata, data_estimate, materialcard, stavka'
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 2 AND'
       'materialcard.ID = data_estimate.ID_TABLES AND'
       'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      'smetasourcedata.DELETED=0 AND'
       'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
       'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
-      ''
+      ') AS T'
+      'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, COAST'
       'ORDER BY 5')
     Left = 27
     Top = 168

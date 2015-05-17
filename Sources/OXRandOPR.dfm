@@ -67,7 +67,7 @@ object FormOXRandOPR: TFormOXRandOPR
         Width = 75
         Height = 17
         Caption = '3. '#1075'. '#1052#1080#1085#1089#1082
-        TabOrder = 0
+        TabOrder = 4
         OnClick = SelectRegion
       end
       object RadioButtonCity: TRadioButton
@@ -77,7 +77,7 @@ object FormOXRandOPR: TFormOXRandOPR
         Height = 17
         Caption = '1. '#1043#1086#1088#1086#1076
         Checked = True
-        TabOrder = 1
+        TabOrder = 2
         TabStop = True
         OnClick = SelectRegion
       end
@@ -87,7 +87,7 @@ object FormOXRandOPR: TFormOXRandOPR
         Width = 55
         Height = 17
         Caption = '2. '#1057#1077#1083#1086
-        TabOrder = 2
+        TabOrder = 3
         OnClick = SelectRegion
       end
       object ComboBoxResolution: TComboBox
@@ -96,14 +96,14 @@ object FormOXRandOPR: TFormOXRandOPR
         Width = 107
         Height = 21
         Style = csDropDownList
-        TabOrder = 3
+        TabOrder = 1
       end
       object DBLookupComboBoxTypeConstruction: TDBLookupComboBox
         Left = 279
         Top = 2
         Width = 210
         Height = 21
-        TabOrder = 4
+        TabOrder = 0
         OnClick = DBLookupComboBoxTypeConstructionClick
       end
     end

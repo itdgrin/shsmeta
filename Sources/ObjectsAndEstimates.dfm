@@ -285,8 +285,9 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         object btnSearch: TSpeedButton
           Left = 366
           Top = 1
-          Width = 23
+          Width = 59
           Height = 22
+          Caption = #1055#1086#1080#1089#1082
           Glyph.Data = {
             F6000000424DF600000000000000760000002800000010000000100000000100
             04000000000080000000C40E0000C40E00001000000000000000000000000000
@@ -319,7 +320,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           Text = #1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102
           Items.Strings = (
             #1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102
-            #1087#1086' '#1079#1072#1082#1072#1079#1095#1080#1082#1091)
+            #1087#1086' '#1079#1072#1082#1072#1079#1095#1080#1082#1091
+            #1087#1086' '#1075#1077#1085#1087#1086#1076#1088#1103#1076#1095#1080#1082#1091)
         end
       end
     end
@@ -896,6 +898,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     AppStorage = FormMain.AppIni
     AppStoragePath = '%FORM_NAME%\'
     Options = []
+    StoredProps.Strings = (
+      'cbbSearch.ItemIndex')
     StoredValues = <>
     Left = 32
     Top = 224

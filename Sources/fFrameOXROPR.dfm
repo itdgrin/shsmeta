@@ -45,7 +45,7 @@ inherited FrameOXROPR: TFrameOXROPR
       Align = alClient
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 0
+      TabOrder = 1
       OnResize = PanelTableResize
       object SpeedButtonShowHide: TSpeedButton
         Tag = 1
@@ -76,7 +76,7 @@ inherited FrameOXROPR: TFrameOXROPR
         Header.Font.Style = []
         Header.Options = [hoVisible]
         PopupMenu = PopupMenu
-        TabOrder = 0
+        TabOrder = 1
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
         TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
         TreeOptions.SelectionOptions = [toExtendedFocus]
@@ -121,7 +121,7 @@ inherited FrameOXROPR: TFrameOXROPR
         Align = alClient
         DataSource = ds1
         Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-        TabOrder = 1
+        TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
@@ -182,7 +182,7 @@ inherited FrameOXROPR: TFrameOXROPR
       ParentBackground = False
       ParentDoubleBuffered = False
       ShowCaption = False
-      TabOrder = 1
+      TabOrder = 2
       object Memo: TMemo
         Left = 0
         Top = 0
@@ -203,7 +203,7 @@ inherited FrameOXROPR: TFrameOXROPR
       Align = alTop
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 2
+      TabOrder = 0
       OnResize = PanelTopResize
       object LabelTypeWork: TLabel
         Left = 217
@@ -232,7 +232,7 @@ inherited FrameOXROPR: TFrameOXROPR
         Width = 75
         Height = 17
         Caption = '3. '#1075'. '#1052#1080#1085#1089#1082
-        TabOrder = 2
+        TabOrder = 4
         TabStop = True
         OnClick = RadioButtonClick
       end
@@ -243,7 +243,7 @@ inherited FrameOXROPR: TFrameOXROPR
         Height = 17
         Caption = '1. '#1043#1086#1088#1086#1076
         Checked = True
-        TabOrder = 0
+        TabOrder = 2
         TabStop = True
         OnClick = RadioButtonClick
       end
@@ -253,7 +253,7 @@ inherited FrameOXROPR: TFrameOXROPR
         Width = 55
         Height = 17
         Caption = '2. '#1057#1077#1083#1086
-        TabOrder = 1
+        TabOrder = 3
         TabStop = True
         OnClick = RadioButtonClick
       end
@@ -263,7 +263,7 @@ inherited FrameOXROPR: TFrameOXROPR
         Width = 58
         Height = 21
         Style = csDropDownList
-        TabOrder = 4
+        TabOrder = 1
         OnChange = ComboBoxResolutionChange
       end
       object DBLookupComboBoxTypeWork: TDBLookupComboBox
@@ -271,7 +271,7 @@ inherited FrameOXROPR: TFrameOXROPR
         Top = 2
         Width = 114
         Height = 21
-        TabOrder = 3
+        TabOrder = 0
         OnClick = DBLookupComboBoxTypeWorkClick
       end
     end

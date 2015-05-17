@@ -73,16 +73,16 @@ type
     edt2: TEdit;
     cbb3: TComboBox;
     pnl3: TPanel;
-    JvDBGrid1: TJvDBGrid;
+    grDev: TJvDBGrid;
     pnl5: TPanel;
     spl6: TSplitter;
-    JvDBGrid2: TJvDBGrid;
+    grDevBott: TJvDBGrid;
     dbmmoNAME2: TDBMemo;
     qrDevices: TFDQuery;
     dsDevices: TDataSource;
     pnl6: TPanel;
     pnl7: TPanel;
-    JvDBGrid3: TJvDBGrid;
+    grRates: TJvDBGrid;
     qrRates: TFDQuery;
     dsRates: TDataSource;
     lbl5: TLabel;
@@ -93,6 +93,7 @@ type
     JvDBGridFooter3: TJvDBGridFooter;
     JvDBGridFooter4: TJvDBGridFooter;
     cbb4: TComboBox;
+    chkEdit: TCheckBox;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgc1Change(Sender: TObject);
@@ -110,6 +111,7 @@ type
     procedure qrMechDataAfterScroll(DataSet: TDataSet);
     procedure qrDevicesAfterScroll(DataSet: TDataSet);
     procedure qrRatesAfterScroll(DataSet: TDataSet);
+    procedure chkEditClick(Sender: TObject);
   private
     Footer: Variant;
     procedure CalcFooter;
@@ -168,6 +170,14 @@ begin
   CloseOpen(qrMechData);
 end;
 
+procedure TfCalcResource.chkEditClick(Sender: TObject);
+begin
+  grMaterial.ReadOnly := not chkEdit.Checked;
+  grMech.ReadOnly := not chkEdit.Checked;
+  grDev.ReadOnly := not chkEdit.Checked;
+  grRates.ReadOnly := not chkEdit.Checked;
+end;
+
 procedure TfCalcResource.edtMechCodeFilterChange(Sender: TObject);
 begin
   qrMechData.Filtered := False;
@@ -217,9 +227,9 @@ begin
   LoadDBGridSettings(grMaterialBott);
   LoadDBGridSettings(grMech);
   LoadDBGridSettings(grMechBott);
-  LoadDBGridSettings(JvDBGrid1);
-  LoadDBGridSettings(JvDBGrid2);
-  LoadDBGridSettings(JvDBGrid3);
+  LoadDBGridSettings(grDev);
+  LoadDBGridSettings(grDevBott);
+  LoadDBGridSettings(grRates);
   // LoadDBGridsSettings(fCalcResource);
 end;
 
