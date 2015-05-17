@@ -121,6 +121,7 @@ type
     procedure lbl2Click(Sender: TObject);
     procedure btn2Click(Sender: TObject);
     procedure btn1Click(Sender: TObject);
+    procedure ButtonListAgreementsClick(Sender: TObject);
 
   private
     Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
@@ -148,7 +149,7 @@ var
 
 implementation
 
-uses Main, DataModule, Tools, CardObjectContractorServices, OrganizationsEx;
+uses Main, DataModule, Tools, CardObjectContractorServices, OrganizationsEx, SuppAgreement;
 
 {$R *.dfm}
 
@@ -657,6 +658,11 @@ end;
 procedure TFormCardObject.ButtonCancelClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TFormCardObject.ButtonListAgreementsClick(Sender: TObject);
+begin
+  ShowSuppAgreement(IdObject);
 end;
 
 procedure TFormCardObject.EditNumberObjectKeyPress(Sender: TObject; var Key: Char);

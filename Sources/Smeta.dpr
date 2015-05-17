@@ -108,7 +108,8 @@ uses
   OrganizationsEx in 'OrganizationsEx.pas' {fOrganizationsEx},
   fFrameMechanizm in 'fFrameMechanizm.pas' {SprMechanizm: TFrame},
   fFrameEquipment in 'fFrameEquipment.pas' {SprEquipment: TFrame},
-  TreeEstimate in 'TreeEstimate.pas' {fTreeEstimate};
+  TreeEstimate in 'TreeEstimate.pas' {fTreeEstimate},
+  SuppAgreement in 'SuppAgreement.pas' {fSuppAgreement};
 
 {$R *.res}
 var MHandle: THandle;

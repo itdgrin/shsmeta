@@ -4,7 +4,7 @@ object FormCardObject: TFormCardObject
   BorderIcons = [biSystemMenu]
   Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1086#1073#1098#1077#1082#1090#1072
   ClientHeight = 570
-  ClientWidth = 457
+  ClientWidth = 456
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,14 +17,14 @@ object FormCardObject: TFormCardObject
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
-    457
+    456
     570)
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel1: TBevel
     Left = 0
     Top = 529
-    Width = 457
+    Width = 456
     Height = 41
     Align = alBottom
     Shape = bsTopLine
@@ -131,6 +131,7 @@ object FormCardObject: TFormCardObject
     ParentFont = False
     TabOrder = 5
     WordWrap = True
+    OnClick = ButtonListAgreementsClick
   end
   object GroupBoxFullDescription: TGroupBox
     Left = 8
@@ -440,7 +441,7 @@ object FormCardObject: TFormCardObject
     end
   end
   object ButtonSave: TButton
-    Left = 223
+    Left = 222
     Top = 537
     Width = 110
     Height = 25
@@ -449,9 +450,10 @@ object FormCardObject: TFormCardObject
     Default = True
     TabOrder = 18
     OnClick = ButtonSaveClick
+    ExplicitLeft = 223
   end
   object ButtonCancel: TButton
-    Left = 339
+    Left = 338
     Top = 537
     Width = 110
     Height = 25
@@ -459,6 +461,7 @@ object FormCardObject: TFormCardObject
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 19
     OnClick = ButtonCancelClick
+    ExplicitLeft = 339
   end
   object GroupBoxVAT: TGroupBox
     Left = 338
