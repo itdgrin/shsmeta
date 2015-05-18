@@ -1051,7 +1051,7 @@ end;
 procedure TFormObjectsAndEstimates.tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
   State: TCustomDrawState; var DefaultDraw: Boolean);
 begin
-  if Node.Text[Length(Node.Text)] = '-' then
+  if (Length(Node.Text) > 0) and (Node.Text[Length(Node.Text)] = '-') then
     Sender.Canvas.Font.Style := Sender.Canvas.Font.Style + [fsStrikeOut];
 end;
 

@@ -201,6 +201,9 @@ begin
           dblkcbbParts.KeyValue := 0;
           dblkcbbSections.KeyValue := 0;
           dblkcbbTypesWorks.KeyValue := 0;
+          qrMain.FieldByName('TYPE_WORK_ID').Value := 0;
+          qrMain.FieldByName('PART_ID').Value := 0;
+          qrMain.FieldByName('SECTION_ID').Value := 0;
         end;
         ComboBoxChange(Self);
         qrParts.AfterScroll := qrPartsAfterScroll;
@@ -280,9 +283,14 @@ procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
         begin
           qrMain.FieldByName('SM_NUMBER').Value := 'Ж000';
           qrMain.FieldByName('NAME').Value := '';
+          qrMain.FieldByName('TYPE_WORK_ID').Value := 0;
+          qrMain.FieldByName('PART_ID').Value := 0;
+          qrMain.FieldByName('SECTION_ID').Value := 0;
         end;
     end;
     qrMain.Post;
+    //Копируем все наборы КФ. родетельской сметы
+    //TODO
   end;
 
 var
@@ -292,7 +300,7 @@ var
   vYear, vMonth: Integer;
 
   VAT: Integer;
-  IdStavka: Variant;
+  IdStavka, MAIS_ID: Variant;
   PercentTransport, PercentTransportEquipment: String;
   K40, K41, K31, K32, K33, K34, K35: String;
 
@@ -308,7 +316,8 @@ begin
     try
       Active := False;
       SQL.Clear;
-      StrQuery := 'SELECT state_nds, BEG_STROJ FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';';
+      StrQuery := 'SELECT objcards.MAIS_ID, state_nds, BEG_STROJ FROM objcards WHERE obj_id = ' +
+        IntToStr(IdObject) + ';';
       SQL.Add(StrQuery);
       Active := True;
 
@@ -317,6 +326,7 @@ begin
       DateCompose := FieldByName('BEG_STROJ').AsDateTime;
       vMonth := MonthOf(FieldByName('BEG_STROJ').AsDateTime);
       vYear := YearOf(FieldByName('BEG_STROJ').AsDateTime);
+      MAIS_ID := FieldByName('MAIS_ID').Value;
     except
       on E: Exception do
         MessageBox(0, PChar('При запросе НДС возникла ошибка:' + sLineBreak + E.Message), PWideChar(Caption),
@@ -378,12 +388,13 @@ begin
 
   with dbedtNAME do
     if Text = '' then
-    begin
-      Color := ColorWarningField;
-      Inc(CountWarning);
+      Text := ' ';
+  { begin
+    Color := ColorWarningField;
+    Inc(CountWarning);
     end
-    else
-      NameEstimate := '"' + Text + '"';
+    else }
+  NameEstimate := '"' + Text + '"';
 
   if CountWarning > 0 then
   begin
@@ -422,6 +433,7 @@ begin
         qrMain.FieldByName('k33').Value := GetUniDictParamValue('K_VREM_ZDAN_SOOR', vMonth, vYear);
         qrMain.FieldByName('k34').Value := GetUniDictParamValue('K_ZIM_UDOR_1', vMonth, vYear);
         qrMain.FieldByName('k35').Value := GetUniDictParamValue('K_ZIM_UDOR_2', vMonth, vYear);
+        qrMain.FieldByName('MAIS_ID').Value := MAIS_ID;
         // qrMain.FieldByName('coef_tr_zatr').Value := GetUniDictParamValue('', vMonth, vYear);
         // qrMain.FieldByName('coef_tr_obor').Value := GetUniDictParamValue('', vMonth, vYear);
       end
@@ -463,6 +475,8 @@ begin
       qrTemp.SQL.Text := 'select LAST_INSERT_ID() as ID';
       qrTemp.Active := True;
       IdEstimate := qrTemp.FieldByName('ID').AsInteger;
+      //Копируем все наборы КФ. родетельской сметы
+      //TODO
       case TypeEstimate of
         // Если локальная
         1:

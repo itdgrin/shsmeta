@@ -27,10 +27,7 @@ type
     LabelVAT: TLabel;
     ComboBoxVAT: TComboBox;
     Bevel1: TBevel;
-    ButtonSave: TButton;
-    ButtonCancel: TButton;
     ComboBoxMonth: TComboBox;
-    Bevel2: TBevel;
     Bevel3: TBevel;
     Bevel4: TBevel;
     Bevel5: TBevel;
@@ -79,20 +76,24 @@ type
     dbchkAPPLY_WINTERPRISE_FLAG: TDBCheckBox;
     dsCoef: TDataSource;
     qrCoef: TFDQuery;
-    grCoef: TJvDBGrid;
-    lbl8: TLabel;
     pmCoef: TPopupMenu;
     mN1: TMenuItem;
     mN2: TMenuItem;
     edtK: TEdit;
     lblK1: TLabel;
     dbrgrpCOEF_ORDERS: TDBRadioGroup;
+    pnl2: TPanel;
+    lbl8: TLabel;
+    grCoef: TJvDBGrid;
+    pnl3: TPanel;
+    btnSave: TButton;
+    btnCancel: TButton;
 
     procedure FormShow(Sender: TObject);
 
     procedure ShowForm(const vIdObject, vIdEstimate: Integer);
-    procedure ButtonSaveClick(Sender: TObject);
-    procedure ButtonCancelClick(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
     procedure ComboBoxMonthORYearChange(Sender: TObject);
     procedure DBLookupComboBoxRegionDumpClick(Sender: TObject);
     procedure PopupMenuPercentTransportMinskClick(Sender: TObject);
@@ -167,6 +168,7 @@ end;
 procedure TFormBasicData.FormShow(Sender: TObject);
 var
   IdStavka: String;
+  REGION_ID: Variant;
 begin
   qrSmeta.Active := False;
   qrSmeta.ParamByName('IdEstimate').AsInteger := IdEstimate;
@@ -251,14 +253,15 @@ begin
 
     Active := False;
     SQL.Clear;
-    SQL.Add('SELECT objstroj.obj_region as "IdRegion", objregion.region as "NameRegion" ' +
-      'FROM objcards, objstroj, objregion WHERE objcards.stroj_id = objstroj.stroj_id and ' +
+    SQL.Add('SELECT objcards.REGION_ID, objstroj.obj_region as "IdRegion", objregion.region as "NameRegion" '
+      + 'FROM objcards, objstroj, objregion WHERE objcards.stroj_id = objstroj.stroj_id and ' +
       'objstroj.obj_region = objregion.obj_region_id and objcards.obj_id = :obj_id;');
     ParamByName('obj_id').Value := IdObject;
     Active := True;
 
     EditRegion.Tag := FieldByName('IdRegion').AsVariant;
     EditRegion.Text := FieldByName('NameRegion').AsVariant;
+    REGION_ID := FieldByName('REGION_ID').Value;
 
     // ----------------------------------------
 
@@ -287,7 +290,7 @@ begin
       DBLookupComboBoxRegionDump.KeyValue := FieldByName('region_id').AsVariant;
     end
     else
-      DBLookupComboBoxRegionDump.KeyValue := EditRegion.Tag;
+      DBLookupComboBoxRegionDump.KeyValue := REGION_ID;
 
     DBLookupComboBoxRegionDumpClick(DBLookupComboBoxRegionDump);
   end;
@@ -362,19 +365,32 @@ begin
     qrCoef.FieldByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
     qrCoef.Post;
   end
-  else qrCoef.Cancel;
+  else
+    qrCoef.Cancel;
 end;
 
 procedure TFormBasicData.qrSmetaAfterOpen(DataSet: TDataSet);
+var
+  pnlLowCoef_Visible, dbrgrpCOEF_ORDERS_Visible: Integer;
 begin
   pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
+  dbrgrpCOEF_ORDERS.Visible := dbchkAPPLY_WINTERPRISE_FLAG.Checked;
+
   if pnlLowCoef.Visible then
-    Height := 660
+    pnlLowCoef_Visible := 0
   else
-    Height := 660 - pnlLowCoef.Height;
+    pnlLowCoef_Visible := 1;
+
+  if dbrgrpCOEF_ORDERS.Visible then
+    dbrgrpCOEF_ORDERS_Visible := 0
+  else
+    dbrgrpCOEF_ORDERS_Visible := 1;
+
+  Height := 670 - pnlLowCoef.Height * pnlLowCoef_Visible - dbrgrpCOEF_ORDERS.Height *
+    dbrgrpCOEF_ORDERS_Visible;
 end;
 
-procedure TFormBasicData.ButtonSaveClick(Sender: TObject);
+procedure TFormBasicData.btnSaveClick(Sender: TObject);
 var
   IdStavka: Integer;
 begin
@@ -457,7 +473,7 @@ begin
   end;
 end;
 
-procedure TFormBasicData.ButtonCancelClick(Sender: TObject);
+procedure TFormBasicData.btnCancelClick(Sender: TObject);
 begin
   Close;
 end;
@@ -487,12 +503,24 @@ begin
 end;
 
 procedure TFormBasicData.dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
+var
+  pnlLowCoef_Visible, dbrgrpCOEF_ORDERS_Visible: Integer;
 begin
   pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
+  dbrgrpCOEF_ORDERS.Visible := dbchkAPPLY_WINTERPRISE_FLAG.Checked;
+
   if pnlLowCoef.Visible then
-    Height := 660
+    pnlLowCoef_Visible := 0
   else
-    Height := 660 - pnlLowCoef.Height;
+    pnlLowCoef_Visible := 1;
+
+  if dbrgrpCOEF_ORDERS.Visible then
+    dbrgrpCOEF_ORDERS_Visible := 0
+  else
+    dbrgrpCOEF_ORDERS_Visible := 1;
+
+  Height := 670 - pnlLowCoef.Height * pnlLowCoef_Visible - dbrgrpCOEF_ORDERS.Height *
+    dbrgrpCOEF_ORDERS_Visible;
 end;
 
 procedure TFormBasicData.dbchkcoef_ordersClick(Sender: TObject);

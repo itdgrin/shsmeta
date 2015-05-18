@@ -4,7 +4,7 @@ object FormBasicData: TFormBasicData
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
-  ClientHeight = 632
+  ClientHeight = 642
   ClientWidth = 471
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object FormBasicData: TFormBasicData
   OnShow = FormShow
   DesignSize = (
     471
-    632)
+    642)
   PixelsPerInch = 96
   TextHeight = 13
   object LabelPercentTransportEquipment: TLabel
@@ -91,16 +91,6 @@ object FormBasicData: TFormBasicData
     Anchors = [akLeft, akTop, akRight]
     Shape = bsTopLine
     ExplicitWidth = 309
-  end
-  object Bevel2: TBevel
-    Left = 0
-    Top = 591
-    Width = 471
-    Height = 41
-    Align = alBottom
-    Shape = bsTopLine
-    ExplicitTop = 425
-    ExplicitWidth = 335
   end
   object Bevel3: TBevel
     Left = 8
@@ -179,12 +169,46 @@ object FormBasicData: TFormBasicData
     Height = 13
     Caption = #1050'-'#1092' '#1082' '#1079#1080#1084#1085#1080#1084' ('#1087#1088#1080#1082'. '#8470'270) '#1050'34. '#1063#1072#1089#1090#1100' 1:'
   end
-  object lbl8: TLabel
-    Left = 8
-    Top = 457
-    Width = 171
-    Height = 13
-    Caption = #1053#1072#1073#1086#1088#1099' '#1050#1092', '#1087#1088#1080#1084#1077#1085#1103#1077#1084#1099' '#1082' '#1089#1084#1077#1090#1077':'
+  object pnl3: TPanel
+    Left = 0
+    Top = 601
+    Width = 471
+    Height = 41
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 23
+    ExplicitLeft = -32
+    ExplicitTop = 623
+    DesignSize = (
+      471
+      41)
+    object btnSave: TButton
+      Left = 257
+      Top = 8
+      Width = 100
+      Height = 25
+      Anchors = [akRight, akBottom]
+      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      Default = True
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+      OnClick = btnSaveClick
+    end
+    object btnCancel: TButton
+      Left = 363
+      Top = 8
+      Width = 100
+      Height = 25
+      Anchors = [akRight, akBottom]
+      Caption = #1054#1090#1084#1077#1085#1072
+      TabOrder = 1
+      OnClick = btnCancelClick
+    end
   end
   object pnl1: TPanel
     Left = 536
@@ -350,33 +374,6 @@ object FormBasicData: TFormBasicData
       #1073#1077#1079' '#1053#1044#1057
       #1089' '#1053#1044#1057)
   end
-  object ButtonSave: TButton
-    Left = 257
-    Top = 599
-    Width = 100
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-    Default = True
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 23
-    OnClick = ButtonSaveClick
-  end
-  object ButtonCancel: TButton
-    Left = 363
-    Top = 599
-    Width = 100
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 24
-    OnClick = ButtonCancelClick
-  end
   object ComboBoxMonth: TComboBox
     Left = 167
     Top = 8
@@ -492,10 +489,12 @@ object FormBasicData: TFormBasicData
     OnEnter = dbedtEditRateWorkerEnter
   end
   object dbchkAPPLY_LOW_COEF_OHROPR_FLAG: TDBCheckBox
-    Left = 8
-    Top = 539
-    Width = 308
+    AlignWithMargins = True
+    Left = 3
+    Top = 560
+    Width = 465
     Height = 17
+    Align = alBottom
     Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1087#1086#1085#1080#1078#1072#1102#1097#1080#1077' '#1082#1086#1101#1092' '#1082' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1087#1083#1072#1085'. '#1087#1088#1080#1073'.:'
     DataField = 'APPLY_LOW_COEF_OHROPR_FLAG'
     DataSource = dsSmeta
@@ -503,32 +502,40 @@ object FormBasicData: TFormBasicData
     ValueChecked = '1'
     ValueUnchecked = '0'
     OnClick = dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick
+    ExplicitLeft = 8
+    ExplicitTop = 539
+    ExplicitWidth = 308
   end
   object pnlLowCoef: TPanel
-    Left = 8
-    Top = 557
-    Width = 457
-    Height = 28
-    Anchors = [akLeft, akRight, akBottom]
+    AlignWithMargins = True
+    Left = 3
+    Top = 580
+    Width = 465
+    Height = 21
+    Margins.Top = 0
+    Margins.Bottom = 0
+    Align = alBottom
     BevelOuter = bvNone
     TabOrder = 22
+    ExplicitLeft = -2
+    ExplicitTop = 567
     object lbl6: TLabel
-      Left = 6
-      Top = 7
+      Left = 0
+      Top = 3
       Width = 57
       Height = 13
       Caption = #1054#1061#1056' '#1080' '#1054#1055#1056':'
     end
     object lbl7: TLabel
-      Left = 143
-      Top = 7
+      Left = 137
+      Top = 3
       Width = 80
       Height = 13
       Caption = #1055#1083#1072#1085'. '#1087#1088#1080#1073#1099#1083#1100':'
     end
     object dbedtK_LOW_OHROPR: TDBEdit
-      Left = 69
-      Top = 4
+      Left = 63
+      Top = 0
       Width = 68
       Height = 21
       DataField = 'K_LOW_OHROPR'
@@ -536,8 +543,8 @@ object FormBasicData: TFormBasicData
       TabOrder = 0
     end
     object dbedtK_LOW_PLAN_PRIB: TDBEdit
-      Left = 229
-      Top = 4
+      Left = 223
+      Top = 0
       Width = 74
       Height = 21
       DataField = 'K_LOW_PLAN_PRIB'
@@ -562,119 +569,33 @@ object FormBasicData: TFormBasicData
     OnClick = dbchkcoef_ordersClick
   end
   object dbchkAPPLY_WINTERPRISE_FLAG: TDBCheckBox
-    Left = 8
-    Top = 386
-    Width = 455
+    AlignWithMargins = True
+    Left = 3
+    Top = 399
+    Width = 465
     Height = 17
-    Anchors = [akLeft, akTop, akRight]
+    Align = alBottom
+    BiDiMode = bdLeftToRight
     Caption = #1055#1088#1080#1084#1077#1085#1103#1090#1100' '#1079#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
     DataField = 'APPLY_WINTERPRISE_FLAG'
     DataSource = dsSmeta
+    ParentBiDiMode = False
     TabOrder = 18
     ValueChecked = '1'
     ValueUnchecked = '0'
-  end
-  object grCoef: TJvDBGrid
-    Left = 7
-    Top = 476
-    Width = 456
-    Height = 57
-    Anchors = [akLeft, akTop, akRight]
-    DataSource = dsCoef
-    DrawingStyle = gdsClassic
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-    ParentFont = False
-    PopupMenu = pmCoef
-    TabOrder = 20
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'Tahoma'
-    TitleFont.Style = []
-    AutoSizeColumns = True
-    SelectColumnsDialogStrings.Caption = 'Select columns'
-    SelectColumnsDialogStrings.OK = '&OK'
-    SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-    EditControls = <>
-    RowsHeight = 17
-    TitleRowHeight = 17
-    Columns = <
-      item
-        Expanded = False
-        FieldName = 'coef_name'
-        Title.Alignment = taCenter
-        Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-        Width = 110
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'osn_zp'
-        Title.Alignment = taCenter
-        Title.Caption = #1047#1055
-        Width = 50
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'eksp_mach'
-        Title.Alignment = taCenter
-        Title.Caption = #1069#1052#1080#1052
-        Width = 50
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'mat_res'
-        Title.Alignment = taCenter
-        Title.Caption = #1052#1056
-        Width = 50
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'work_pers'
-        Title.Alignment = taCenter
-        Title.Caption = #1058#1047' '#1088#1072#1073'.'
-        Width = 50
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'work_mach'
-        Title.Alignment = taCenter
-        Title.Caption = #1058#1047' '#1084#1072#1096'.'
-        Width = 50
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'oxropr'
-        Title.Alignment = taCenter
-        Title.Caption = #1054#1061#1056#1080#1054#1055#1056
-        Width = 50
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'planprib'
-        Title.Alignment = taCenter
-        Title.Caption = #1055#1055
-        Width = 34
-        Visible = True
-      end>
+    OnClick = dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick
+    ExplicitLeft = -2
+    ExplicitTop = 390
   end
   object dbrgrpCOEF_ORDERS: TDBRadioGroup
-    Left = 8
-    Top = 409
-    Width = 455
+    AlignWithMargins = True
+    Left = 3
+    Top = 419
+    Width = 465
     Height = 43
-    Anchors = [akLeft, akTop, akRight]
+    Margins.Top = 0
+    Margins.Bottom = 0
+    Align = alBottom
     Caption = #1053#1086#1088#1084#1072' '#1076#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1093' '#1079#1080#1084#1085#1080#1093':'
     Columns = 2
     DataField = 'WINTERPRICE_TYPE'
@@ -686,6 +607,127 @@ object FormBasicData: TFormBasicData
     Values.Strings = (
       '0'
       '1')
+    ExplicitLeft = 8
+    ExplicitTop = 377
+  end
+  object pnl2: TPanel
+    AlignWithMargins = True
+    Left = 3
+    Top = 465
+    Width = 465
+    Height = 89
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 20
+    ExplicitLeft = 184
+    ExplicitTop = 408
+    ExplicitWidth = 225
+    object lbl8: TLabel
+      AlignWithMargins = True
+      Left = 3
+      Top = 3
+      Width = 459
+      Height = 13
+      Align = alTop
+      Caption = #1053#1072#1073#1086#1088#1099' '#1050#1092', '#1087#1088#1080#1084#1077#1085#1103#1077#1084#1099' '#1082' '#1089#1084#1077#1090#1077':'
+      ExplicitLeft = 8
+      ExplicitWidth = 463
+    end
+    object grCoef: TJvDBGrid
+      Left = 0
+      Top = 19
+      Width = 465
+      Height = 70
+      Align = alClient
+      DataSource = dsCoef
+      DrawingStyle = gdsClassic
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+      ParentFont = False
+      PopupMenu = pmCoef
+      TabOrder = 0
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -11
+      TitleFont.Name = 'Tahoma'
+      TitleFont.Style = []
+      AutoSizeColumns = True
+      SelectColumnsDialogStrings.Caption = 'Select columns'
+      SelectColumnsDialogStrings.OK = '&OK'
+      SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+      EditControls = <>
+      RowsHeight = 17
+      TitleRowHeight = 17
+      Columns = <
+        item
+          Expanded = False
+          FieldName = 'coef_name'
+          Title.Alignment = taCenter
+          Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
+          Width = 112
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'osn_zp'
+          Title.Alignment = taCenter
+          Title.Caption = #1047#1055
+          Width = 51
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'eksp_mach'
+          Title.Alignment = taCenter
+          Title.Caption = #1069#1052#1080#1052
+          Width = 51
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'mat_res'
+          Title.Alignment = taCenter
+          Title.Caption = #1052#1056
+          Width = 51
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'work_pers'
+          Title.Alignment = taCenter
+          Title.Caption = #1058#1047' '#1088#1072#1073'.'
+          Width = 51
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'work_mach'
+          Title.Alignment = taCenter
+          Title.Caption = #1058#1047' '#1084#1072#1096'.'
+          Width = 51
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'oxropr'
+          Title.Alignment = taCenter
+          Title.Caption = #1054#1061#1056#1080#1054#1055#1056
+          Width = 51
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'planprib'
+          Title.Alignment = taCenter
+          Title.Caption = #1055#1055
+          Width = 35
+          Visible = True
+        end>
+    end
   end
   object dsDump: TDataSource
     DataSet = qrDump
@@ -866,8 +908,8 @@ object FormBasicData: TFormBasicData
   end
   object pmCoef: TPopupMenu
     OnPopup = pmCoefPopup
-    Left = 80
-    Top = 433
+    Left = 40
+    Top = 505
     object mN1: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       OnClick = mN1Click
