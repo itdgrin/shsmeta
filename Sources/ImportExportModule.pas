@@ -99,33 +99,6 @@ begin
   AIdConvert[AType][1][Length(AIdConvert[AType][1]) - 1] := Result;
 end;
 
-function UpdateIterator(ADestSmID, AIterator: Integer): Integer;
-var MaxIterator: Integer;
-begin
-  Result := 0;
-  DM.qrDifferent2.Active := False;
-  DM.qrDifferent2.SQL.Text := 'Select NUM_ROW, ID from data_estimate_temp ' +
-    'where id_estimate = ' + IntToStr(ADestSmID) + ' order by NUM_ROW';
-  DM.qrDifferent2.Active := True;
-  MaxIterator := 0;
-  while not DM.qrDifferent2.Eof do
-  begin
-    inc(MaxIterator);
-    if (MaxIterator = AIterator) then
-    begin
-      inc(MaxIterator);
-      Result := AIterator;
-    end;
-    DM.qrDifferent2.Edit;
-    DM.qrDifferent2.Fields[0].Value := MaxIterator;
-    DM.qrDifferent2.Post;
-    DM.qrDifferent2.Next;
-  end;
-  DM.qrDifferent2.Active := False;
-  if (AIterator < 1) or (AIterator > MaxIterator) then
-    Result := MaxIterator + 1;
-end;
-
 //Формирует строку запроса
 function GetQueryStr(AQuery: TFDQuery; AType: Integer; ATmp: string): string;
 var i: Integer;
@@ -1362,6 +1335,7 @@ begin
       end;
       DM.qrDifferent.Active := False;
       //Добавляет в смету вынесеные из расценки
+      //При вставке не контролируется порядок выноса, и возможно будет нарушен
       for i := Low(FromRateArray) to High(FromRateArray) do
       begin
         Inc(AIterator);
@@ -1749,9 +1723,9 @@ begin
               6, 7, 8, 9: j := 7;
             end;
 
-            if i > 0  then
+            if j > 0  then
               DM.qrDifferent1.ParamByName('ID_OWNER').Value :=
-                GetNewId(DM.qrDifferent.FieldByName('ID_OWNER').Value,i, IdConvert, '');
+                GetNewId(DM.qrDifferent.FieldByName('ID_OWNER').Value,j, IdConvert, '');
           end;
 
           DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=

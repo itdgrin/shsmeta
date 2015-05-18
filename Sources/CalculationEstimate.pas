@@ -3088,7 +3088,7 @@ begin
       with DataObj.Rec do
       begin
         DataObj.GetFromClipBoard;
-        if PasteSmetaRow(DataObj.Rec, qrRatesExSM_ID.Value, qrRatesExITERATOR.Value) then
+        if PasteSmetaRow(DataObj.Rec, qrRatesExSM_ID.Value, qrRatesExNUM_ROW.Value) then
           OutputDataToTable;
       end;
     end;
@@ -5398,16 +5398,23 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.Value = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd) then
+    if (IdReplasedMat > 0) and
+       (qrMaterialID.Value = IdReplasedMat) and
+       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
-    if (qrRatesExID_TYPE_DATA.Value = 2) and (qrRatesExID_TABLES.Value = qrMaterialID.Value) and
-      (grRatesEx = LastEntegGrd) then
+    //Устаревшее условие для подсветки заменяющего материала с правой таблице,
+    //при выделении его в левой
+    if (qrRatesExID_RATE.Value > 0) and
+       (qrRatesExID_TYPE_DATA.Value = 2) and
+       (qrRatesExID_TABLES.Value = qrMaterialID.Value) and
+       (grRatesEx = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (IdReplasingMat > 0) and (qrMaterialFROM_RATE.Value = 0) and
-      (IdReplasingMat = qrMaterialID_REPLACED.Value) and (dbgrdMaterial = LastEntegGrd) then
+    if (IdReplasingMat > 0) and
+       (IdReplasingMat = qrMaterialID_REPLACED.Value) and
+       (dbgrdMaterial = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';
@@ -5650,7 +5657,8 @@ begin
 
     // Подсвечивается жирным только если есть фокус
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
-      (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) and (grRatesEx = LastEntegGrd) then
+      (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) and
+      (grRatesEx = LastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
@@ -5659,7 +5667,10 @@ begin
     // Вынесение за расценку имеет приоритет над заменой
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = LastEntegGrd) then
     begin
-      if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2)
+      if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and
+         (qrRatesExID_TYPE_DATA.AsInteger = 2) and
+         ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) or
+          (qrRatesExID_RATE.Value > 0))
       then
         Font.Style := Font.Style + [fsbold];
     end;
@@ -5667,7 +5678,9 @@ begin
     // Подсветка вынесенного за расценку механизма
     if btnMechanisms.Down and qrMechanizm.Active and (dbgrdMechanizm = LastEntegGrd) then
     begin
-      if (qrRatesExID_TABLES.AsInteger = qrMechanizmID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 3)
+      if (qrRatesExID_TABLES.AsInteger = qrMechanizmID.AsInteger) and
+         (qrRatesExID_TYPE_DATA.AsInteger = 3) and
+         (grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)
       then
         Font.Style := Font.Style + [fsbold];
     end;

@@ -60,6 +60,8 @@ function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWo
 function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
 // ‘ункци€ подсчета итога по датасету. ¬озвращает вариантный одномерный массив соответствующий набору колонок
 function CalcFooterSumm(const Query: TFDQuery): Variant;
+//ќбновл€ет итератор, использовать при добавлении, вставке и удалении из сметы
+function UpdateIterator(ADestSmID, AIterator: Integer): Integer;
 
 function MyFloatToStr(Value: Extended): string;
 function MyStrToFloat(Value: string): Extended;
@@ -518,6 +520,19 @@ begin
   finally
     FreeAndNil(qr);
   end;
+end;
+
+function UpdateIterator(ADestSmID, AIterator: Integer): Integer;
+begin
+  Result := 0;
+  DM.qrDifferent2.Active := False;
+  DM.qrDifferent2.SQL.Text := 'Select UpdateIterator(:IdEstimate, :AIterator)';
+  DM.qrDifferent2.ParamByName('IdEstimate').Value := ADestSmID;
+  DM.qrDifferent2.ParamByName('AIterator').Value := AIterator;
+  DM.qrDifferent2.Active := True;
+  if not DM.qrDifferent2.IsEmpty then
+    Result := DM.qrDifferent2.Fields[0].Value;
+  DM.qrDifferent2.Active := False;
 end;
 
 initialization

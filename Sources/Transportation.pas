@@ -123,7 +123,7 @@ function GetTranspForm(IdEstimate, IdTransp, TranspType: integer; InsMode: boole
 
 implementation
 
-uses Main, CalculationEstimate, DataModule;
+uses Main, CalculationEstimate, DataModule, Tools;
 
 {$R *.dfm}
 
@@ -203,6 +203,7 @@ begin
 end;
 
 procedure TFormTransportation.ButtonAddClick(Sender: TObject);
+var Iterator: Integer;
 begin
   if InsMode then
   begin
@@ -235,8 +236,11 @@ begin
 
     qrTemp.ExecSQL;
 
-    qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' + '(id_estimate, id_type_data, id_tables) VALUE ' +
-      '(' + IntToStr(IdEstimate) + ', ' + IntToStr(TranspType) + ', (SELECT max(id) FROM transpcard_temp));';
+    Iterator := UpdateIterator(IdEstimate, 0);
+    qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
+      '(id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
+      '(' + IntToStr(IdEstimate) + ', ' + IntToStr(TranspType) +
+      ', (SELECT max(id) FROM transpcard_temp), ' + IntToStr(Iterator) + ');';
 
     qrTemp.ExecSQL;
   end

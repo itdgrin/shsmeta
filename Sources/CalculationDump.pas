@@ -90,7 +90,7 @@ function GetDumpForm(IdEstimate, IdDump: Integer; InsMode: boolean): boolean;
 
 implementation
 
-uses Main, DataModule, CalculationEstimate;
+uses Main, DataModule, CalculationEstimate, Tools;
 
 {$R *.dfm}
 
@@ -184,6 +184,7 @@ begin
 end;
 
 procedure TFormCalculationDump.ButtonSaveClick(Sender: TObject);
+var Iterator: Integer;
 begin
   if InsMode then
   begin
@@ -216,9 +217,11 @@ begin
 
     qrTemp.ExecSQL;
 
+    Iterator := UpdateIterator(IdEstimate, 0);
     qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
-      '(id_estimate, id_type_data, id_tables) VALUE ' +
-      '(' + IntToStr(IdEstimate) + ', 5, (SELECT max(id) FROM dumpcard_temp));';
+      '(id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
+      '(' + IntToStr(IdEstimate) +
+      ', 5, (SELECT max(id) FROM dumpcard_temp), ' + IntToStr(Iterator) + ');';
 
     qrTemp.ExecSQL;
   end
