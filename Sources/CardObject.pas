@@ -170,6 +170,7 @@ end;
 
 procedure TFormCardObject.FormShow(Sender: TObject);
 begin
+  qrZP.Filtered := False;
   dbedtPER_TEPM_BUILD.ReadOnly := True;
   dbedtPER_CONTRACTOR.ReadOnly := True;
 
@@ -767,13 +768,24 @@ end;
 
 procedure TFormCardObject.dblkcbbRegionCloseUp(Sender: TObject);
 begin
+  if qrZP.IsEmpty then
+    exit;
   // Автоматическая подстановка зоны расценок "Минск" при выборе региона "Минск"
   if dblkcbbRegion.KeyValue = 7 then
-    if not qrZP.IsEmpty then
-    begin
-      dblkcbbZonePrices.KeyValue := 3;
-      GetValueDBLookupComboBoxTypeOXR(Sender);
-    end;
+  begin
+    qrZP.Filter := 'OBJ_REGION_ID = 3';
+    qrZP.Filtered := True;
+    dblkcbbZonePrices.KeyValue := 3;
+    GetValueDBLookupComboBoxTypeOXR(Sender);
+  end
+  else if not VarIsNull(dblkcbbRegion.KeyValue) then
+  begin
+    qrZP.Filter := 'OBJ_REGION_ID <> 3';
+    qrZP.Filtered := True;
+    qrZP.First;
+    dblkcbbZonePrices.KeyValue := 1;
+    GetValueDBLookupComboBoxTypeOXR(Sender);
+  end;
 end;
 
 procedure TFormCardObject.GetValueDBLookupComboBoxTypeOXR(Sender: TObject);

@@ -450,7 +450,6 @@ object FormCardObject: TFormCardObject
     Default = True
     TabOrder = 18
     OnClick = ButtonSaveClick
-    ExplicitLeft = 223
   end
   object ButtonCancel: TButton
     Left = 338
@@ -461,7 +460,6 @@ object FormCardObject: TFormCardObject
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 19
     OnClick = ButtonCancelClick
-    ExplicitLeft = 339
   end
   object GroupBoxVAT: TGroupBox
     Left = 338

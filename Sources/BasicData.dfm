@@ -366,7 +366,6 @@ object FormBasicData: TFormBasicData
     ParentFont = False
     TabOrder = 23
     OnClick = ButtonSaveClick
-    ExplicitTop = 554
   end
   object ButtonCancel: TButton
     Left = 363
@@ -377,7 +376,6 @@ object FormBasicData: TFormBasicData
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 24
     OnClick = ButtonCancelClick
-    ExplicitTop = 554
   end
   object ComboBoxMonth: TComboBox
     Left = 167
@@ -514,7 +512,6 @@ object FormBasicData: TFormBasicData
     Anchors = [akLeft, akRight, akBottom]
     BevelOuter = bvNone
     TabOrder = 22
-    ExplicitTop = 512
     object lbl6: TLabel
       Left = 6
       Top = 7
@@ -825,25 +822,7 @@ object FormBasicData: TFormBasicData
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvDataSnapCompatibility, fvFmtDisplayNumeric]
-    FormatOptions.OwnMapRules = True
-    FormatOptions.MapRules = <
-      item
-        SourceDataType = dtMemo
-        TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtByteString
-        TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtBCD
-        TargetDataType = dtDouble
-      end
-      item
-        SourceDataType = dtBlob
-        TargetDataType = dtAnsiString
-      end>
+    FormatOptions.AssignedValues = [fvDataSnapCompatibility, fvFmtDisplayNumeric]
     FormatOptions.FmtDisplayNumeric = '#0.00'
     SQL.Strings = (
       'SELECT '

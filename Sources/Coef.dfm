@@ -12,6 +12,8 @@ object fCoefficients: TfCoefficients
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  Position = poOwnerFormCenter
+  OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
     612
@@ -187,26 +189,10 @@ object fCoefficients: TfCoefficients
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvMapRules, fvDataSnapCompatibility, fvFmtDisplayNumeric]
-    FormatOptions.OwnMapRules = True
-    FormatOptions.MapRules = <
-      item
-        SourceDataType = dtMemo
-        TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtByteString
-        TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtBCD
-        TargetDataType = dtDouble
-      end
-      item
-        SourceDataType = dtBlob
-        TargetDataType = dtAnsiString
-      end>
+    FormatOptions.AssignedValues = [fvDefaultParamDataType, fvDataSnapCompatibility, fvFmtDisplayNumeric]
+    FormatOptions.DefaultParamDataType = ftBCD
     FormatOptions.FmtDisplayNumeric = '#0.00'
+    UpdateOptions.UpdateTableName = 'smeta.coef'
     SQL.Strings = (
       
         'SELECT coef_id, coef_name, osn_zp, eksp_mach, mat_res, work_pers' +
@@ -219,7 +205,6 @@ object fCoefficients: TfCoefficients
       FieldName = 'coef_id'
       Origin = 'COEF_ID'
       ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
       DisplayFormat = '#0.00'
     end
     object strngfldCoefcoef_name: TStringField
@@ -228,41 +213,67 @@ object fCoefficients: TfCoefficients
       Required = True
       Size = 150
     end
-    object qrCoefosn_zp: TFloatField
+    object qrCoefosn_zp: TBCDField
       AutoGenerateValue = arDefault
       FieldName = 'osn_zp'
       Origin = 'OSN_ZP'
       DisplayFormat = '#0.00'
+      Precision = 5
+      Size = 2
     end
-    object qrCoefeksp_mach: TFloatField
+    object qrCoefeksp_mach: TBCDField
       AutoGenerateValue = arDefault
       FieldName = 'eksp_mach'
       Origin = 'EKSP_MACH'
       DisplayFormat = '#0.00'
+      Precision = 5
+      Size = 2
     end
-    object qrCoefmat_res: TFloatField
+    object qrCoefmat_res: TBCDField
       AutoGenerateValue = arDefault
       FieldName = 'mat_res'
       Origin = 'MAT_RES'
       DisplayFormat = '#0.00'
+      Precision = 5
+      Size = 2
     end
-    object qrCoefwork_pers: TFloatField
+    object qrCoefwork_pers: TBCDField
       AutoGenerateValue = arDefault
       FieldName = 'work_pers'
       Origin = 'WORK_PERS'
       DisplayFormat = '#0.00'
+      Precision = 5
+      Size = 2
     end
-    object qrCoefwork_mach: TFloatField
+    object qrCoefwork_mach: TBCDField
       AutoGenerateValue = arDefault
       FieldName = 'work_mach'
       Origin = 'WORK_MACH'
       DisplayFormat = '#0.00'
+      Precision = 5
+      Size = 2
     end
     object qrCoefcoef_type_id: TIntegerField
       AutoGenerateValue = arDefault
       FieldName = 'coef_type_id'
       Origin = 'COEF_TYPE_ID'
       DisplayFormat = '#0.00'
+    end
+    object qrCoefoxropr: TBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'oxropr'
+      Origin = 'OXROPR'
+      DisplayFormat = '#0.00'
+      Precision = 5
+      Size = 2
+    end
+    object qrCoefplanprib: TBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'planprib'
+      Origin = 'PLANPRIB'
+      DisplayFormat = '#0.00'
+      Precision = 5
+      Size = 2
     end
     object strngfldCoefCoefTypeLook: TStringField
       FieldKind = fkLookup
@@ -273,18 +284,6 @@ object fCoefficients: TfCoefficients
       KeyFields = 'coef_type_id'
       Size = 50
       Lookup = True
-    end
-    object qrCoefoxropr: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'oxropr'
-      Origin = 'OXROPR'
-      DisplayFormat = '#0.00'
-    end
-    object qrCoefplanprib: TFloatField
-      AutoGenerateValue = arDefault
-      FieldName = 'planprib'
-      Origin = 'PLANPRIB'
-      DisplayFormat = '#0.00'
     end
   end
   object dsCoef: TDataSource

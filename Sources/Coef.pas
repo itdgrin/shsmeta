@@ -27,17 +27,17 @@ type
     qrCoef_Type: TFDQuery;
     dsCoef_Type: TDataSource;
     strngfldCoefCoefTypeLook: TStringField;
+    FormStorage: TJvFormStorage;
     qrCoefcoef_id: TFDAutoIncField;
     strngfldCoefcoef_name: TStringField;
-    qrCoefosn_zp: TFloatField;
-    qrCoefeksp_mach: TFloatField;
-    qrCoefmat_res: TFloatField;
-    qrCoefwork_pers: TFloatField;
-    qrCoefwork_mach: TFloatField;
+    qrCoefosn_zp: TBCDField;
+    qrCoefeksp_mach: TBCDField;
+    qrCoefmat_res: TBCDField;
+    qrCoefwork_pers: TBCDField;
+    qrCoefwork_mach: TBCDField;
     qrCoefcoef_type_id: TIntegerField;
-    qrCoefoxropr: TFloatField;
-    qrCoefplanprib: TFloatField;
-    FormStorage: TJvFormStorage;
+    qrCoefoxropr: TBCDField;
+    qrCoefplanprib: TBCDField;
     procedure FormShow(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure btnAddClick(Sender: TObject);
@@ -46,6 +46,7 @@ type
     procedure N3Click(Sender: TObject);
     procedure qrCoefAfterPost(DataSet: TDataSet);
     procedure qrCoefNewRecord(DataSet: TDataSet);
+    procedure FormCreate(Sender: TObject);
   private
     SelectEnabled: Boolean;
   public
@@ -77,14 +78,15 @@ begin
   Close;
 end;
 
+procedure TfCoefficients.FormCreate(Sender: TObject);
+begin
+  LoadDBGridSettings(grCoef);
+end;
+
 procedure TfCoefficients.FormShow(Sender: TObject);
 begin
-  CloseOpen(qrCoef_Type);
-  CloseOpen(qrCoef);
-  LoadDBGridSettings(grCoef);
-
-  Left := FormMain.Left + (FormMain.Width - Width) div 2;
-  Top := FormMain.Top + (FormMain.Height - Height) div 2;
+  CloseOpen(qrCoef_Type, False);
+  CloseOpen(qrCoef, False);
 
   SelectEnabled := fsModal in FormState;
 

@@ -361,7 +361,8 @@ begin
     qrCoef.FieldByName('OXROPR').Value := fCoefficients.qrCoef.FieldByName('OXROPR').Value;
     qrCoef.FieldByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
     qrCoef.Post;
-  end;
+  end
+  else qrCoef.Cancel;
 end;
 
 procedure TFormBasicData.qrSmetaAfterOpen(DataSet: TDataSet);
