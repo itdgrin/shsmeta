@@ -77,7 +77,7 @@ type
     SkeepEvent: Boolean;
 
     IdObject: Integer;
-    IdEstimate: Integer;
+    IdEstimate, BaseIdEstimate: Integer;
     TypeEstimate: Integer;
   public
 
@@ -230,7 +230,7 @@ begin
   else
     LabelNumberEstimate.Caption := '№ сметы:';
   if ShowModal = mrOk then
-    FormBasicData.ShowForm(IdObject, IdEstimate);
+    FormBasicData.ShowForm(IdObject, BaseIdEstimate);
 end;
 
 procedure TFormCardEstimate.EditingRecord(const Value: Boolean);
@@ -244,6 +244,22 @@ begin
 end;
 
 procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
+  procedure CopyCoef(FromID, ToID: Integer);
+  begin
+    // Копируем все наборы КФ. родетельской сметы
+    if FromID = 0 then
+      Exit;
+    qrTemp.SQL.Text := 'INSERT INTO `calculation_coef`(`id_estimate`, `id_type_data`, `id_owner`,'#13 +
+      ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
+      '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 + 'SELECT :new_id_estimate,'#13 + '       `id_type_data`,'#13
+      + '       `id_owner`,'#13 + '       `id_coef`,'#13 + '       `COEF_NAME`,'#13 + '       `OSN_ZP`,'#13 +
+      '       `EKSP_MACH`,'#13 + '       `MAT_RES`,'#13 + '       `WORK_PERS`,'#13 + '       `WORK_MACH`,'#13
+      + '       `OXROPR`,'#13 + '       `PLANPRIB`'#13 + 'FROM `calculation_coef`'#13 +
+      'WHERE id_estimate = :id_estimate;';
+    qrTemp.ParamByName('id_estimate').AsInteger := FromID;
+    qrTemp.ParamByName('new_id_estimate').AsInteger := ToID;
+    qrTemp.ExecSQL;
+  end;
   procedure addParentEstimate(aParentID, aType: Integer);
   begin
     qrMain.Append;
@@ -260,6 +276,7 @@ procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
     qrMain.FieldByName('k33').Value := qrTemp.FieldByName('k33').Value;
     qrMain.FieldByName('k34').Value := qrTemp.FieldByName('k34').Value;
     qrMain.FieldByName('k35').Value := qrTemp.FieldByName('k35').Value;
+    qrMain.FieldByName('kzp').Value := qrTemp.FieldByName('kzp').Value;
     qrMain.FieldByName('coef_tr_zatr').Value := qrTemp.FieldByName('coef_tr_zatr').Value;
     qrMain.FieldByName('coef_tr_obor').Value := qrTemp.FieldByName('coef_tr_obor').Value;
     qrMain.FieldByName('stavka_id').Value := qrTemp.FieldByName('stavka_id').Value;
@@ -289,8 +306,11 @@ procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
         end;
     end;
     qrMain.Post;
-    //Копируем все наборы КФ. родетельской сметы
-    //TODO
+
+    // Копируем все наборы КФ. родетельской сметы
+    qrTemp.SQL.Text := 'select LAST_INSERT_ID() as ID';
+    qrTemp.Active := True;
+    CopyCoef(aParentID, qrTemp.FieldByName('ID').AsInteger);
   end;
 
 var
@@ -435,7 +455,7 @@ begin
         qrMain.FieldByName('k35').Value := GetUniDictParamValue('K_ZIM_UDOR_2', vMonth, vYear);
         qrMain.FieldByName('MAIS_ID').Value := MAIS_ID;
         // qrMain.FieldByName('coef_tr_zatr').Value := GetUniDictParamValue('', vMonth, vYear);
-        // qrMain.FieldByName('coef_tr_obor').Value := GetUniDictParamValue('', vMonth, vYear);
+        qrMain.FieldByName('coef_tr_obor').Value := 1;
       end
       else
       begin
@@ -475,8 +495,9 @@ begin
       qrTemp.SQL.Text := 'select LAST_INSERT_ID() as ID';
       qrTemp.Active := True;
       IdEstimate := qrTemp.FieldByName('ID').AsInteger;
-      //Копируем все наборы КФ. родетельской сметы
-      //TODO
+      BaseIdEstimate := IdEstimate;
+      // Копируем все наборы КФ. родетельской сметы
+      CopyCoef(qrMain.FieldByName('parent_id').AsInteger, IdEstimate);
       case TypeEstimate of
         // Если локальная
         1:

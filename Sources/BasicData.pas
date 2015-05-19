@@ -205,7 +205,7 @@ begin
   begin
     Active := False;
     SQL.Clear;
-    SQL.Add('SELECT coef_tr_zatr, coef_tr_obor, k40, k41, k31, k32, k33, k34, nds, kzp, stavka_id, date, dump_id, coef_orders '
+    SQL.Add('SELECT coef_tr_zatr, coef_tr_obor, k40, k41, k31, k32, k33, k34, IFNULL(nds, 0) AS NDS, kzp, stavka_id, date, dump_id, coef_orders '
       + 'FROM smetasourcedata WHERE sm_id = :sm_id;');
     ParamByName('sm_id').Value := IdEstimate;
     Active := True;

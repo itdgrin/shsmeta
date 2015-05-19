@@ -177,8 +177,6 @@ object FormBasicData: TFormBasicData
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 23
-    ExplicitLeft = -32
-    ExplicitTop = 623
     DesignSize = (
       471
       41)
@@ -502,9 +500,6 @@ object FormBasicData: TFormBasicData
     ValueChecked = '1'
     ValueUnchecked = '0'
     OnClick = dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick
-    ExplicitLeft = 8
-    ExplicitTop = 539
-    ExplicitWidth = 308
   end
   object pnlLowCoef: TPanel
     AlignWithMargins = True
@@ -517,8 +512,6 @@ object FormBasicData: TFormBasicData
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 22
-    ExplicitLeft = -2
-    ExplicitTop = 567
     object lbl6: TLabel
       Left = 0
       Top = 3
@@ -584,8 +577,6 @@ object FormBasicData: TFormBasicData
     ValueChecked = '1'
     ValueUnchecked = '0'
     OnClick = dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick
-    ExplicitLeft = -2
-    ExplicitTop = 390
   end
   object dbrgrpCOEF_ORDERS: TDBRadioGroup
     AlignWithMargins = True
@@ -601,14 +592,12 @@ object FormBasicData: TFormBasicData
     DataField = 'WINTERPRICE_TYPE'
     DataSource = dsSmeta
     Items.Strings = (
-      #1057#1073#1086#1088#1085#1080#1082' 1 - % '#1082' '#1086#1073#1098#1077#1082#1090#1091
-      #1057#1073#1086#1088#1085#1080#1082' 2 - '#1087#1086' '#1074#1080#1076#1072#1084' '#1088#1072#1073#1086#1090)
+      #1053#1044#1047' 1'
+      #1053#1044#1047' 2')
     TabOrder = 19
     Values.Strings = (
       '0'
       '1')
-    ExplicitLeft = 8
-    ExplicitTop = 377
   end
   object pnl2: TPanel
     AlignWithMargins = True
@@ -619,9 +608,6 @@ object FormBasicData: TFormBasicData
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 20
-    ExplicitLeft = 184
-    ExplicitTop = 408
-    ExplicitWidth = 225
     object lbl8: TLabel
       AlignWithMargins = True
       Left = 3
@@ -630,8 +616,7 @@ object FormBasicData: TFormBasicData
       Height = 13
       Align = alTop
       Caption = #1053#1072#1073#1086#1088#1099' '#1050#1092', '#1087#1088#1080#1084#1077#1085#1103#1077#1084#1099' '#1082' '#1089#1084#1077#1090#1077':'
-      ExplicitLeft = 8
-      ExplicitWidth = 463
+      ExplicitWidth = 171
     end
     object grCoef: TJvDBGrid
       Left = 0
