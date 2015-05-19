@@ -307,6 +307,18 @@ begin
   if Application.MessageBox('Удалить запись?', 'Вопрос', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
   begin
     qrCoef.CheckBrowseMode;
+    
+    //Каскадное удаление наборав из связанных смет
+    DM.qrDifferent.SQL.Text := 'DELETE FROM calculation_coef WHERE id_estimate IN '#13 +
+    '(SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
+      ' OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE)))'#13 +
+      ' AND id_type_data=:id_type_data AND id_owner=0 AND id_coef=:id_coef';
+      
+    DM.qrDifferent.ParamByName('id_estimate').Value := qrCoef.FieldByName('id_estimate').Value;
+    DM.qrDifferent.ParamByName('id_type_data').Value := qrCoef.FieldByName('id_type_data').Value;
+    DM.qrDifferent.ParamByName('id_coef').Value := qrCoef.FieldByName('id_coef').Value;
+    DM.qrDifferent.ExecSQL;
+    
     qrCoef.Delete;
   end;
 end;
@@ -364,6 +376,36 @@ begin
     qrCoef.FieldByName('OXROPR').Value := fCoefficients.qrCoef.FieldByName('OXROPR').Value;
     qrCoef.FieldByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
     qrCoef.Post;
+    // Каскадно добавляем выбранный кф. на все зависимые сметы
+    DM.qrDifferent.SQL.Text := 'INSERT INTO `calculation_coef`(`id_estimate`, `id_type_data`, `id_owner`,'#13
+      + ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
+      '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 + 'VALUE(:id_estimate,:id_type_data,:id_owner,'#13 +
+      ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB)';
+    DM.qrDifferent.ParamByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
+    DM.qrDifferent.ParamByName('id_owner').Value := 0;
+    DM.qrDifferent.ParamByName('id_coef').Value := fCoefficients.qrCoef.FieldByName('coef_id').Value;
+    DM.qrDifferent.ParamByName('COEF_NAME').Value := fCoefficients.qrCoef.FieldByName('COEF_NAME').Value;
+    DM.qrDifferent.ParamByName('OSN_ZP').Value := fCoefficients.qrCoef.FieldByName('OSN_ZP').Value;
+    DM.qrDifferent.ParamByName('EKSP_MACH').Value := fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value;
+    DM.qrDifferent.ParamByName('MAT_RES').Value := fCoefficients.qrCoef.FieldByName('MAT_RES').Value;
+    DM.qrDifferent.ParamByName('WORK_PERS').Value := fCoefficients.qrCoef.FieldByName('WORK_PERS').Value;
+    DM.qrDifferent.ParamByName('WORK_MACH').Value := fCoefficients.qrCoef.FieldByName('WORK_MACH').Value;
+    DM.qrDifferent.ParamByName('OXROPR').Value := fCoefficients.qrCoef.FieldByName('OXROPR').Value;
+    DM.qrDifferent.ParamByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
+
+    DM.qrDifferent1.Active := False;
+    DM.qrDifferent1.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
+      ' OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE))';
+    DM.qrDifferent1.ParamByName('ID_ESTIMATE').Value := qrSmeta.FieldByName('SM_ID').Value;
+    DM.qrDifferent1.Active := True;
+    DM.qrDifferent1.First;
+    while not DM.qrDifferent1.Eof do
+    begin
+      DM.qrDifferent.ParamByName('id_estimate').Value := DM.qrDifferent1.FieldByName('SM_ID').Value;
+      DM.qrDifferent.ExecSQL;
+      DM.qrDifferent1.Next;
+    end;
+    DM.qrDifferent1.Active := False;
   end
   else
     qrCoef.Cancel;

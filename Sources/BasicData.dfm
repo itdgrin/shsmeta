@@ -869,7 +869,7 @@ object FormBasicData: TFormBasicData
       'FROM '
       '  `calculation_coef`'
       'WHERE `id_type_data` < 0  AND'
-      '       ((`id_estimate` = :SM_ID) OR '
+      '       ((`id_estimate` = :SM_ID) )/* OR '
       
         '        (`id_estimate`=(SELECT `smetasourcedata`.`PARENT_ID` FRO' +
         'M `smetasourcedata` WHERE `smetasourcedata`.`SM_ID`=:SM_ID)) OR '
@@ -879,7 +879,7 @@ object FormBasicData: TFormBasicData
       
         '          WHERE `smetasourcedata`.`SM_ID`=(SELECT `smetasourceda' +
         'ta`.`PARENT_ID` FROM `smetasourcedata` WHERE `smetasourcedata`.`' +
-        'SM_ID`=:SM_ID))))'
+        'SM_ID`=:SM_ID)))) */'
       'ORDER BY `COEF_NAME`')
     Left = 9
     Top = 401
