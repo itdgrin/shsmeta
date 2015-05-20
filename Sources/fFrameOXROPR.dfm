@@ -5,9 +5,6 @@ inherited FrameOXROPR: TFrameOXROPR
   ParentBackground = False
   ParentDoubleBuffered = False
   ParentFont = False
-  OnEnter = FrameEnter
-  OnExit = FrameExit
-  OnResize = FrameResize
   ExplicitWidth = 548
   ExplicitHeight = 335
   object Panel: TPanel
@@ -62,57 +59,6 @@ inherited FrameOXROPR: TFrameOXROPR
         ExplicitTop = 161
         ExplicitWidth = 796
       end
-      object VST: TVirtualStringTree
-        Left = 0
-        Top = 0
-        Width = 548
-        Height = 236
-        Align = alClient
-        Header.AutoSizeIndex = 0
-        Header.Font.Charset = DEFAULT_CHARSET
-        Header.Font.Color = clWindowText
-        Header.Font.Height = -11
-        Header.Font.Name = 'Tahoma'
-        Header.Font.Style = []
-        Header.Options = [hoVisible]
-        PopupMenu = PopupMenu
-        TabOrder = 1
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
-        TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toExtendedFocus]
-        OnAfterCellPaint = VSTAfterCellPaint
-        OnBeforeCellPaint = VSTBeforeCellPaint
-        OnEnter = VSTEnter
-        OnFocusChanged = VSTFocusChanged
-        OnGetText = VSTGetText
-        Columns = <
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]
-            Position = 0
-            WideText = #8470' '#1087'/'#1087
-          end
-          item
-            Position = 1
-            Width = 40
-            WideText = #1050#1086#1076
-          end
-          item
-            Position = 2
-            Width = 130
-            WideText = #1053#1072#1079#1074#1072#1085#1080#1077' '#1088#1072#1073#1086#1090#1099
-          end
-          item
-            Position = 3
-            Width = 95
-            WideText = '% '#1085#1072#1082#1083#1072#1076#1085#1099#1093
-          end
-          item
-            Position = 4
-            Width = 90
-            WideText = '% '#1087#1083#1072#1085#1086#1074#1099#1093
-          end>
-        WideDefaultText = 'node'
-      end
       object JvDBGrid1: TJvDBGrid
         Left = 0
         Top = 0
@@ -139,6 +85,7 @@ inherited FrameOXROPR: TFrameOXROPR
           item
             Expanded = False
             FieldName = 'Number'
+            ReadOnly = True
             Title.Alignment = taCenter
             Title.Caption = #1050#1086#1076
             Width = 58
@@ -147,6 +94,7 @@ inherited FrameOXROPR: TFrameOXROPR
           item
             Expanded = False
             FieldName = 'NameWork'
+            ReadOnly = True
             Title.Alignment = taCenter
             Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1088#1072#1073#1086#1090#1099
             Width = 292
@@ -155,6 +103,7 @@ inherited FrameOXROPR: TFrameOXROPR
           item
             Expanded = False
             FieldName = 'P1'
+            ReadOnly = True
             Title.Alignment = taCenter
             Title.Caption = '% '#1085#1072#1082#1083#1072#1076#1085#1099#1093
             Width = 87
@@ -163,6 +112,7 @@ inherited FrameOXROPR: TFrameOXROPR
           item
             Expanded = False
             FieldName = 'P2'
+            ReadOnly = True
             Title.Alignment = taCenter
             Title.Caption = '% '#1087#1083#1072#1085#1086#1074#1099#1093
             Width = 91
@@ -297,7 +247,6 @@ inherited FrameOXROPR: TFrameOXROPR
     Top = 32
     object CopyCell: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
-      OnClick = CopyCellClick
     end
     object OXROPRSearch: TMenuItem
       Caption = #1055#1086#1080#1089#1082
@@ -320,7 +269,7 @@ inherited FrameOXROPR: TFrameOXROPR
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 216
+    Left = 232
     Top = 104
   end
   object ADOQueryTypeWork: TFDQuery
@@ -331,13 +280,32 @@ inherited FrameOXROPR: TFrameOXROPR
     Top = 104
   end
   object ADOQuery: TFDQuery
+    AfterScroll = ADOQueryAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
+      end>
     FormatOptions.FmtDisplayNumeric = '0.000'
     Left = 24
     Top = 32
+    object ADOQueryNumber: TIntegerField
+      FieldName = 'Number'
+    end
+    object ADOQueryNameWork: TStringField
+      FieldName = 'NameWork'
+    end
+    object ADOQueryP1: TFloatField
+      FieldName = 'P1'
+    end
+    object ADOQueryP2: TFloatField
+      FieldName = 'P2'
+    end
   end
   object ds1: TDataSource
     DataSet = ADOQuery

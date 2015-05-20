@@ -40,7 +40,6 @@ type
     ImageSplitter: TImage;
     LabelTypeWork: TLabel;
     LabelResolution: TLabel;
-    VST: TVirtualStringTree;
     ComboBoxResolution: TComboBox;
     FrameStatusBar: TFrameStatusBar;
     SpeedButtonShowHide: TSpeedButton;
@@ -50,32 +49,24 @@ type
     ADOQuery: TFDQuery;
     JvDBGrid1: TJvDBGrid;
     ds1: TDataSource;
+    ADOQueryNumber: TIntegerField;
+    ADOQueryNameWork: TStringField;
+    ADOQueryP1: TFloatField;
+    ADOQueryP2: TFloatField;
 
     procedure FillingTypeWork;
     procedure FillingResolution;
     procedure ReceivingSearch;
     procedure DBLookupComboBoxTypeWorkClick(Sender: TObject);
 
-    procedure FrameEnter(Sender: TObject);
-    procedure FrameExit(Sender: TObject);
-    procedure FrameResize(Sender: TObject);
     procedure PanelTableResize(Sender: TObject);
     procedure PanelTopResize(Sender: TObject);
     procedure RadioButtonClick(Sender: TObject);
 
-    procedure CopyCellClick(Sender: TObject);
     procedure MemoEnter(Sender: TObject);
     procedure SpeedButtonShowHideClick(Sender: TObject);
-
-    procedure VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-      Column: TColumnIndex; CellRect: TRect);
-    procedure VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-      Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
-    procedure VSTEnter(Sender: TObject);
-    procedure VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
-    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-      TextType: TVSTTextType; var CellText: string);
     procedure ComboBoxResolutionChange(Sender: TObject);
+    procedure ADOQueryAfterScroll(DataSet: TDataSet);
   public
     MaisCodeList: TStringList;
     procedure ReceivingAll; override;
@@ -113,7 +104,6 @@ begin
 
   // ----------------------------------------
   LoadDBGridSettings(JvDBGrid1);
-  VSTSetting(VST); // НАСТРАИВАЕМ ЦВЕТА
 
   PanelMemo.Constraints.MinHeight := 35;
   SpeedButtonShowHide.Hint := 'Свернуть панель';
@@ -139,11 +129,13 @@ var
   IdRegion: Integer;
 begin
   try
-    ADOQuery.FormatOptions.FmtDisplayNumeric := '0.000';
+    ADOQueryP1.DisplayFormat := '0.000';
+    ADOQueryP2.DisplayFormat := '0.000';
     if RadioButtonMinsk.Checked then
     begin
       IdRegion := 3;
-      ADOQuery.FormatOptions.FmtDisplayNumeric := '0.0000';
+       ADOQueryP1.DisplayFormat := '0.0000';
+       ADOQueryP2.DisplayFormat := '0.0000';
     end
     else if RadioButtonCity.Checked then
       IdRegion := 1
@@ -231,39 +223,18 @@ begin
   colP1 := ADOQueryTypeWork.FieldByName('COL1NAME').AsString;
   colP2 := ADOQueryTypeWork.FieldByName('COL2NAME').AsString;
 
-  StrQuery := 'SELECT number as "Number", (SELECT WORK_NAME FROM objworks ' +
-    'WHERE WORK_ID = number) as "NameWork", ' + colP1 + ' as "P1", ' + colP2 + ' as "P2" FROM objdetailex' +
+  StrQuery := 'SELECT number as "Number", ' +
+    '(SELECT WORK_NAME FROM objworks ' +
+    'WHERE WORK_ID = number) as "NameWork", ' + colP1 + ' as "P1", ' +
+    colP2 + ' as "P2" FROM objdetailex' +
     WhereStr + ' ORDER BY number ASC';
 
   with ADOQuery do
   begin
     Active := False;
-    SQL.Clear;
-    SQL.Add(StrQuery);
+    SQL.Text := StrQuery;
     Active := True;
   end;
-
-  ADOQuery.FetchOptions.RecordCountMode := cmTotal;
-
-  if ADOQuery.RecordCount <= 0 then
-  begin
-    VST.RootNodeCount := 1;
-    VST.ClearSelection;
-
-    FrameStatusBar.InsertText(1, '-1');
-  end
-  else
-  begin
-    VST.RootNodeCount := ADOQuery.RecordCount;
-    VST.Selected[VST.GetFirst] := True;
-    VST.FocusedNode := VST.GetFirst;
-
-    FrameStatusBar.InsertText(1, '1');
-  end;
-
-  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount));
-
-  ADOQuery.FetchOptions.RecordCountMode := cmVisible;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -271,41 +242,8 @@ end;
 procedure TFrameOXROPR.DBLookupComboBoxTypeWorkClick(Sender: TObject);
 begin
   ReceivingSearch;
-
-  VST.Repaint;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFrameOXROPR.FrameEnter(Sender: TObject);
-begin
-  FrameStatusBar.InsertText(0, IntToStr(VST.RootNodeCount)); // Количество записей
-
-  if ADOQuery.RecordCount > 0 then
-    FrameStatusBar.InsertText(1, IntToStr(VST.FocusedNode.Index + 1)) // Номер выделенной записи
-  else
-    FrameStatusBar.InsertText(1, '-1'); // Нет записей
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFrameOXROPR.FrameExit(Sender: TObject);
-begin
-  with FrameStatusBar do
-  begin
-    InsertText(0, '');
-    InsertText(1, '');
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFrameOXROPR.FrameResize(Sender: TObject);
-begin
-  AutoWidthColumn(VST, 2);
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameOXROPR.PanelTableResize(Sender: TObject);
 begin
@@ -332,160 +270,37 @@ procedure TFrameOXROPR.RadioButtonClick(Sender: TObject);
 begin
   FillingTypeWork;
   ReceivingSearch;
-
-  VST.Repaint;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
+
+procedure TFrameOXROPR.ADOQueryAfterScroll(DataSet: TDataSet);
+begin
+  inherited;
+  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount)); // Количество записей
+
+  if ADOQuery.RecordCount > 0 then
+    FrameStatusBar.InsertText(1, IntToStr(ADOQuery.RecNo)) // Номер выделенной записи
+  else
+    FrameStatusBar.InsertText(1, '-1'); // Нет записей
+
+  Memo.Text := ADOQueryNameWork.Value;
+end;
 
 procedure TFrameOXROPR.ComboBoxResolutionChange(Sender: TObject);
 begin
   inherited;
   ReceivingSearch;
-
-  VST.Repaint;
 end;
-
-procedure TFrameOXROPR.CopyCellClick(Sender: TObject);
-var
-  ClipBoard: TClipboard;
-  CellText: string;
-begin
-  ADOQuery.RecNo := VST.FocusedNode.Index + 1;
-
-  case VST.FocusedColumn of
-    1:
-      CellText := ADOQuery.FieldByName('Number').AsVariant;
-    2:
-      CellText := ADOQuery.FieldByName('NameWork').AsVariant;
-    3:
-      CellText := ADOQuery.FieldByName('P1').AsVariant;
-    4:
-      CellText := ADOQuery.FieldByName('P2').AsVariant;
-  end;
-
-  ClipBoard := TClipboard.Create;
-  ClipBoard.SetTextBuf(PWideChar(WideString(CellText)));
-  FreeAndNil(ClipBoard);
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameOXROPR.MemoEnter(Sender: TObject);
 begin
   Memo.SelStart := Length(Memo.Text);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFrameOXROPR.SpeedButtonShowHideClick(Sender: TObject);
 begin
   MemoShowHide(Sender, Splitter, PanelMemo);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFrameOXROPR.VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-  Column: TColumnIndex; CellRect: TRect);
-var
-  CellText: string;
-begin
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) then
-    Exit;
-
-  ADOQuery.RecNo := Node.Index + 1;
-
-  case Column of
-    1:
-      CellText := ADOQuery.FieldByName('Number').AsVariant;
-    2:
-      CellText := ADOQuery.FieldByName('NameWork').AsVariant;
-    3:
-      CellText := ADOQuery.FieldByName('P1').AsVariant;
-    4:
-      CellText := ADOQuery.FieldByName('P2').AsVariant;
-  end;
-
-  VSTAfterCellPaintDefault(Sender, TargetCanvas, Node, Column, CellRect, CellText);
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFrameOXROPR.VSTBeforeCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
-  Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
-begin
-  VSTBeforeCellPaintDefault(Sender, TargetCanvas, Node, Column, CellPaintMode, CellRect, ContentRect);
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFrameOXROPR.VSTEnter(Sender: TObject);
-begin
-  LoadKeyboardLayout('00000419', KLF_ACTIVATE); // Русский
-  // LoadKeyboardLayout('00000409', KLF_ACTIVATE); // Английский
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFrameOXROPR.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
-begin
-  VSTFocusChangedDefault(Sender, Node, Column);
-
-  // ----------------------------------------
-
-  // Выводим название в Memo под таблицей
-
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node)) then
-    Exit;
-
-  ADOQuery.RecNo := Node.Index + 1;
-  Memo.Text := ADOQuery.FieldByName('NameWork').AsVariant;
-  FrameStatusBar.InsertText(1, IntToStr(Node.Index + 1));
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFrameOXROPR.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-  TextType: TVSTTextType; var CellText: string);
-begin
-  if not ADOQuery.Active then
-    Exit;
-
-  if (ADOQuery.RecordCount <= 0) then
-  begin
-    case Column of
-      0:
-        CellText := '';
-      1:
-        CellText := '';
-      2:
-        CellText := 'Записей не найдено!';
-      3:
-        CellText := '';
-      4:
-        CellText := '';
-    end;
-
-    Exit;
-  end;
-
-  if Column > 0 then
-    ADOQuery.RecNo := Node.Index + 1;
-
-  case Column of
-    0:
-      CellText := IntToStr(Node.Index + 1);
-    1:
-      CellText := ADOQuery.FieldByName('Number').AsVariant;
-    2:
-      CellText := ADOQuery.FieldByName('NameWork').AsVariant;
-    3:
-      CellText := ADOQuery.FieldByName('P1').AsVariant;
-    4:
-      CellText := ADOQuery.FieldByName('P2').AsVariant;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.
