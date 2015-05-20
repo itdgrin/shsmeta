@@ -455,6 +455,10 @@ type
     qrRatesExINCITERATOR: TIntegerField;
     qrRatesExNUM_ROW: TIntegerField;
     strngfldRatesExSORT_ID2: TStringField;
+    pmAddRate: TPopupMenu;
+    PMAddRateOld: TMenuItem;
+    PMAddRateNew: TMenuItem;
+    PMRateRef: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -646,6 +650,8 @@ type
     procedure qrRatesExCalcFields(DataSet: TDataSet);
     procedure qrRatesExAfterOpen(DataSet: TDataSet);
     procedure qrRatesExNUM_ROWChange(Sender: TField);
+    procedure PMAddRateOldClick(Sender: TObject);
+    procedure PMRateRefClick(Sender: TObject);
   private const
     CaptionButton = 'Расчёт сметы';
     HintButton = 'Окно расчёта сметы';
@@ -2455,6 +2461,7 @@ procedure TFormCalculationEstimate.qrRatesExCODEChange(Sender: TField);
 var
   NewCode: string;
   NewID: Integer;
+  Point: TPoint;
 begin
   NewCode := AnsiUpperCase(qrRatesExOBJ_CODE.AsString);
   grRatesEx.EditorMode := False;
@@ -2477,11 +2484,33 @@ begin
       NewCode[1] := 'Ц';
     qrTemp.Active := False;
     qrTemp.SQL.Clear;
-    qrTemp.SQL.Add('SELECT normativ_id FROM normativg WHERE norm_num = :norm_num;');
-    qrTemp.ParamByName('norm_num').Value := NewCode;
+    qrTemp.SQL.Add('SELECT normativ_id, norm_num FROM normativg WHERE ' +
+      '(norm_num = :norm_num1) or (norm_num = :norm_num2) order by norm_num;');
+    qrTemp.ParamByName('norm_num1').Value := NewCode;
+    qrTemp.ParamByName('norm_num2').Value := NewCode + '*';
     qrTemp.Active := True;
     if not qrTemp.IsEmpty then
-      NewID := qrTemp.Fields[0].AsInteger;
+    begin
+      if qrTemp.RecordCount > 1 then
+      begin
+        PMAddRateOld.Caption := qrTemp.Fields[1].AsString;
+        PMAddRateOld.Tag := qrTemp.Fields[0].AsInteger;
+        qrTemp.Next;
+        PMAddRateNew.Caption := qrTemp.Fields[1].AsString;
+        PMAddRateNew.Tag := qrTemp.Fields[0].AsInteger;
+        qrTemp.Active := False;
+        qrRatesExOBJ_CODE.AsString := '';
+
+        Point.X := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Left;
+        Point.Y := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Bottom + 1;
+        pmAddRate.Popup(grRatesEx.ClientToScreen(Point).X,
+          grRatesEx.ClientToScreen(Point).Y);
+
+        Exit;
+      end
+      else
+        NewID := qrTemp.Fields[0].AsInteger;
+    end;
     qrTemp.Active := False;
     if NewID = 0 then
     begin
@@ -3095,6 +3124,14 @@ begin
   finally
     DataObj.Free;
   end;
+end;
+
+procedure TFormCalculationEstimate.PMRateRefClick(Sender: TObject);
+begin
+  PMAddRatMatMechEquipRefClick(nil);
+  if Assigned(FormAdditionData) then
+    FormAdditionData.FrameRates.EditRate.Text :=
+      StringReplace(PMAddRateOld.Caption, '&', '', [rfReplaceAll]);
 end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefColumnsClick(Sender: TObject);
@@ -3855,6 +3892,11 @@ begin
   begin
     OutputDataToTable;
   end;
+end;
+
+procedure TFormCalculationEstimate.PMAddRateOldClick(Sender: TObject);
+begin
+  AddRate((Sender as TMenuItem).Tag);
 end;
 
 procedure TFormCalculationEstimate.PMAddRatMatMechEquipOwnClick(Sender: TObject);
@@ -5653,8 +5695,10 @@ begin
       Brush.Color := clSilver;
     end;
     if qrRatesExID_TYPE_DATA.AsInteger = -4 then
+    begin
+      Font.Color := PS.FontRows;
       Brush.Color := clInactiveBorder;
-
+    end;
     // Подсвечивается жирным только если есть фокус
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
       (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) and

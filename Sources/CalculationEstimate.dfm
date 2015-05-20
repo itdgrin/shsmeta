@@ -3166,8 +3166,8 @@
     Sections = <>
   end
   object pmSummaryCalculation: TPopupMenu
-    Left = 568
-    Top = 488
+    Left = 424
+    Top = 472
     object N1: TMenuItem
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072
     end
@@ -3181,7 +3181,7 @@
   end
   object pmSSRButtonAdd: TPopupMenu
     MenuAnimation = [maBottomToTop]
-    Left = 464
+    Left = 352
     Top = 488
     object N4: TMenuItem
       Caption = #1054#1073#1098#1077#1082#1090
@@ -3192,8 +3192,8 @@
   end
   object pmSSRButtonTax: TPopupMenu
     MenuAnimation = [maBottomToTop]
-    Left = 104
-    Top = 488
+    Left = 80
+    Top = 472
     object N6: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     end
@@ -3203,7 +3203,7 @@
   end
   object pmTableLeft: TPopupMenu
     OnPopup = pmTableLeftPopup
-    Left = 24
+    Left = 16
     Top = 488
     object PMAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
@@ -3375,8 +3375,8 @@
   end
   object pmMaterials: TPopupMenu
     OnPopup = pmMaterialsPopup
-    Left = 256
-    Top = 488
+    Left = 200
+    Top = 472
     object PMMatEdit: TMenuItem
       AutoHotkeys = maAutomatic
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
@@ -3408,7 +3408,7 @@
   end
   object pmCoef: TPopupMenu
     OnPopup = pmCoefPopup
-    Left = 648
+    Left = 504
     Top = 488
     object PopupMenuCoefCopy: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
@@ -3443,7 +3443,7 @@
   end
   object pmMechanizms: TPopupMenu
     OnPopup = pmMechanizmsPopup
-    Left = 328
+    Left = 248
     Top = 488
     object PMMechEdit: TMenuItem
       Tag = 1
@@ -4261,8 +4261,8 @@
     Top = 128
   end
   object pmDevices: TPopupMenu
-    Left = 392
-    Top = 488
+    Left = 296
+    Top = 472
     object PMDevEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMDevEditClick
@@ -4302,8 +4302,8 @@
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 1)')
-    Left = 323
-    Top = 432
+    Left = 331
+    Top = 424
     ParamData = <
       item
         Name = 'SM_ID'
@@ -4320,8 +4320,8 @@
   end
   object dsCalculations: TDataSource
     DataSet = qrCalculations
-    Left = 356
-    Top = 432
+    Left = 404
+    Top = 424
   end
   object qrDump: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
@@ -4486,7 +4486,7 @@
     Top = 85
   end
   object pmDumpTransp: TPopupMenu
-    Left = 184
+    Left = 144
     Top = 488
     object PMDumpEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
@@ -4754,8 +4754,8 @@
     Top = 392
   end
   object pmWinterPrise: TPopupMenu
-    Left = 712
-    Top = 488
+    Left = 560
+    Top = 472
     object nSelectWinterPrise: TMenuItem
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1080#1079' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
       OnClick = nSelectWinterPriseClick
@@ -4805,6 +4805,8 @@
     FormatOptions.DefaultParamDataType = ftBCD
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ### ##0.#######'
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
     UpdateOptions.CountUpdatedRecords = False
     UpdateOptions.CheckRequired = False
     UpdateOptions.CheckReadOnly = False
@@ -5022,5 +5024,23 @@
     DataSet = qrTreeEstimates
     Left = 824
     Top = 488
+  end
+  object pmAddRate: TPopupMenu
+    Left = 616
+    Top = 488
+    object PMAddRateOld: TMenuItem
+      AutoHotkeys = maManual
+      Caption = 'Old'
+      OnClick = PMAddRateOldClick
+    end
+    object PMAddRateNew: TMenuItem
+      AutoHotkeys = maAutomatic
+      Caption = 'New'
+      OnClick = PMAddRateOldClick
+    end
+    object PMRateRef: TMenuItem
+      Caption = #1054#1090#1082#1088#1099#1090#1100' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082
+      OnClick = PMRateRefClick
+    end
   end
 end
