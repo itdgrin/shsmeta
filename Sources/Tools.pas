@@ -4,7 +4,7 @@ interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
-  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid;
+  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid, FireDAC.Stan.Option;
 
 // Общий тип классификации форм
 type
@@ -60,8 +60,17 @@ function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWo
 function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
 // Функция подсчета итога по датасету. Возвращает вариантный одномерный массив соответствующий набору колонок
 function CalcFooterSumm(const Query: TFDQuery): Variant;
-//Обновляет итератор, использовать при добавлении, вставке и удалении из сметы
+// Обновляет итератор, использовать при добавлении, вставке и удалении из сметы
 function UpdateIterator(ADestSmID, AIterator: Integer): Integer;
+
+/// Функции работы с БД:
+/// ASelectSQL - 'SELECT FIELD FROM TABLE'
+/// AExecSQL - 'DELETE FROM TABLE'
+/// AParams - VarArrayOf([a,b,c,d...]) || VarArrayOf([]), если запрос без параметров
+// Функция быстрого выполнения запроса, возвращает назад единственное полученное значение (Выборка)
+function FastSelectSQLOne(const ASelectSQL: string; const AParams: Variant): Variant;
+// Функция быстрого выполнения запроса, назад ничего не возвращает (Для обновлений и пр.)
+procedure FastExecSQL(const AExecSQL: string; const AParams: Variant);
 
 function MyFloatToStr(Value: Extended): string;
 function MyStrToFloat(Value: string): Extended;
@@ -109,7 +118,7 @@ begin
   end;
 end;
 
-{  TSmClipData  }
+{ TSmClipData }
 procedure TSmClipData.CopyToClipBoard;
 var
   Data: THandle;
@@ -149,6 +158,66 @@ begin
     Move(DataPtr^, Rec, Size)
   finally
     GlobalUnlock(Data);
+  end;
+end;
+
+function FastSelectSQLOne(const ASelectSQL: string; const AParams: Variant): Variant;
+var
+  qr: TFDQuery;
+  i: Integer;
+begin
+  Result := Null;
+  qr := TFDQuery.Create(nil);
+  try
+    // Получаем только 1 запись
+    qr.FetchOptions.AutoFetchAll := afDisable;
+    qr.FetchOptions.RowsetSize := 1;
+    qr.Connection := DM.Connect;
+    qr.UpdateTransaction := DM.Write;
+    qr.Transaction := DM.Read;
+    qr.SQL.Text := ASelectSQL;
+    qr.Prepare;
+    if VarArrayHighBound(AParams, 1) <> (qr.ParamCount - 1) then
+    begin
+      ShowMessage('Передано неверное число параметров!');
+      Exit;
+    end;
+    // Заполняем запрос параметрами
+    for i := 0 to qr.ParamCount - 1 do
+      qr.Params.ParamByPosition(i).Value := AParams[i];
+    qr.Active := True;
+    qr.First;
+    if qr.FieldCount > 0 then
+      Result := qr.Fields[0].Value;
+    qr.Active := False;
+  finally
+    FreeAndNil(qr);
+  end;
+end;
+
+procedure FastExecSQL(const AExecSQL: string; const AParams: Variant);
+var
+  qr: TFDQuery;
+  i: Integer;
+begin
+  qr := TFDQuery.Create(nil);
+  try
+    qr.Connection := DM.Connect;
+    qr.UpdateTransaction := DM.Write;
+    qr.Transaction := DM.Read;
+    qr.SQL.Text := AExecSQL;
+    qr.Prepare;
+    if VarArrayHighBound(AParams, 1) <> (qr.ParamCount - 1) then
+    begin
+      ShowMessage('Передано неверное число параметров!');
+      Exit;
+    end;
+    // Заполняем запрос параметрами
+    for i := 0 to qr.ParamCount - 1 do
+      qr.Params.ParamByPosition(i).Value := AParams[i];
+    qr.ExecSQL;
+  finally
+    FreeAndNil(qr);
   end;
 end;
 
@@ -536,7 +605,8 @@ begin
 end;
 
 initialization
-  //Регистрируем собственный формат для буфера обмена
-  G_SMETADATA := RegisterClipBoardFormat(C_SMETADATA);
+
+// Регистрируем собственный формат для буфера обмена
+G_SMETADATA := RegisterClipBoardFormat(C_SMETADATA);
 
 end.
