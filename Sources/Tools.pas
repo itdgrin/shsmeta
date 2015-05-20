@@ -4,7 +4,8 @@ interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
-  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid, FireDAC.Stan.Option;
+  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid, FireDAC.Stan.Option,
+  FireDAC.Stan.Param;
 
 // Общий тип классификации форм
 type
@@ -124,7 +125,7 @@ procedure TSmClipData.CopyToClipBoard;
 var
   Data: THandle;
   DataPtr: Pointer;
-  TempStr: string[25];
+  //TempStr: string[25];
 begin
   Data := GlobalAlloc(GMEM_MOVEABLE, SizeOf(TSmClipRec));
   try
@@ -177,7 +178,6 @@ begin
     qr.UpdateTransaction := DM.Write;
     qr.Transaction := DM.Read;
     qr.SQL.Text := ASelectSQL;
-    qr.Prepare;
     if VarArrayHighBound(AParams, 1) <> (qr.ParamCount - 1) then
     begin
       ShowMessage('Передано неверное число параметров!');
@@ -185,7 +185,7 @@ begin
     end;
     // Заполняем запрос параметрами
     for i := 0 to qr.ParamCount - 1 do
-      qr.Params.ParamByPosition(i).Value := AParams[i];
+      qr.Params.Items[i].Value := AParams[i];
     qr.Active := True;
     qr.First;
     if qr.FieldCount > 0 then
@@ -207,7 +207,6 @@ begin
     qr.UpdateTransaction := DM.Write;
     qr.Transaction := DM.Read;
     qr.SQL.Text := AExecSQL;
-    qr.Prepare;
     if VarArrayHighBound(AParams, 1) <> (qr.ParamCount - 1) then
     begin
       ShowMessage('Передано неверное число параметров!');
@@ -215,7 +214,7 @@ begin
     end;
     // Заполняем запрос параметрами
     for i := 0 to qr.ParamCount - 1 do
-      qr.Params.ParamByPosition(i).Value := AParams[i];
+      qr.Params.Items[i].Value := AParams[i];
     qr.ExecSQL;
   finally
     FreeAndNil(qr);
@@ -570,11 +569,12 @@ begin
 end;
 
 function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
-var
-  qr: TFDQuery;
+{ var
+  qr: TFDQuery; }
 begin
-  qr := TFDQuery.Create(nil);
-  try
+  {
+    qr := TFDQuery.Create(nil);
+    try
     qr.Connection := DM.Connect;
     qr.UpdateTransaction := DM.Write;
     qr.Transaction := DM.Read;
@@ -585,9 +585,13 @@ begin
     qr.Active := True;
     Result := qr.FieldByName('res').AsVariant;
     qr.Active := False;
-  finally
+    finally
     FreeAndNil(qr);
-  end;
+    end;
+  }
+  // Вместо всего вышеописанного (выгода очевидна!)):
+  Result := FastSelectSQLOne('SELECT `FN_getParamValue`(:inPARAM_CODE, :inMONTH, :inYEAR)',
+    VarArrayOf([AParamName, AMonth, AYear]));
 end;
 
 function UpdateIterator(ADestSmID, AIterator: Integer): Integer;
