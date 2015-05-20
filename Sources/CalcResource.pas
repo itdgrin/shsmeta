@@ -7,15 +7,13 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
-  Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools, Vcl.Mask, JvDBGridFooter;
+  Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Mask, JvDBGridFooter,
+  JvComponentBase, JvFormPlacement;
 
 type
   TfCalcResource = class(TForm)
     pnlTop: TPanel;
     lbl1: TLabel;
-    dblkcbbNAME: TDBLookupComboBox;
-    dsObject: TDataSource;
-    qrObject: TFDQuery;
     pgc1: TPageControl;
     ts1: TTabSheet;
     ts2: TTabSheet;
@@ -94,6 +92,8 @@ type
     JvDBGridFooter4: TJvDBGridFooter;
     cbb4: TComboBox;
     chkEdit: TCheckBox;
+    edtEstimateName: TEdit;
+    FormStorage: TJvFormStorage;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgc1Change(Sender: TObject);
@@ -112,21 +112,38 @@ type
     procedure qrDevicesAfterScroll(DataSet: TDataSet);
     procedure qrRatesAfterScroll(DataSet: TDataSet);
     procedure chkEditClick(Sender: TObject);
+    procedure qrMaterialDataBeforeOpen(DataSet: TDataSet);
   private
     Footer: Variant;
+    IDEstimate: Integer;
     procedure CalcFooter;
   public
-    procedure LocateObject(Object_ID: Integer);
   end;
 
 var
   fCalcResource: TfCalcResource;
 
+procedure ShowCalcResource(const ID_ESTIMATE: Variant);
+
 implementation
 
 {$R *.dfm}
 
-uses Main;
+uses Main, Tools;
+
+procedure ShowCalcResource(const ID_ESTIMATE: Variant);
+begin
+  if VarIsNull(ID_ESTIMATE) then
+    Exit;
+  if (not Assigned(fCalcResource)) then
+    fCalcResource := TfCalcResource.Create(nil);
+  fCalcResource.IDEstimate := ID_ESTIMATE;
+  fCalcResource.edtEstimateName.Text :=
+    FastSelectSQLOne('SELECT CONCAT(SM_NUMBER, " ",  NAME) FROM smetasourcedata WHERE SM_ID=:SM_ID',
+    VarArrayOf([ID_ESTIMATE]));
+  fCalcResource.pgc1.ActivePageIndex := 0;
+  fCalcResource.Show;
+end;
 
 procedure TfCalcResource.CalcFooter;
 begin
@@ -222,7 +239,6 @@ begin
   // Создаём кнопку от этого окна (на главной форме внизу)
   // FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N2Click);
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  CloseOpen(qrObject);
   LoadDBGridSettings(grMaterial);
   LoadDBGridSettings(grMaterialBott);
   LoadDBGridSettings(grMech);
@@ -230,14 +246,13 @@ begin
   LoadDBGridSettings(grDev);
   LoadDBGridSettings(grDevBott);
   LoadDBGridSettings(grRates);
-  // LoadDBGridsSettings(fCalcResource);
 end;
 
 procedure TfCalcResource.FormDestroy(Sender: TObject);
 begin
-  fCalcResource := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(Caption);
+  fCalcResource := nil;
 end;
 
 procedure TfCalcResource.JvDBGridFooter1Calculate(Sender: TJvDBGridFooter; const FieldName: string;
@@ -247,12 +262,6 @@ begin
     Exit;
 
   CalcValue := Footer[Sender.DataSource.DataSet.FieldByName(FieldName).Index];
-end;
-
-procedure TfCalcResource.LocateObject(Object_ID: Integer);
-begin
-  dblkcbbNAME.KeyValue := Object_ID;
-  pgc1.ActivePageIndex := 0;
 end;
 
 procedure TfCalcResource.pgc1Change(Sender: TObject);
@@ -291,6 +300,11 @@ procedure TfCalcResource.qrMaterialDataAfterScroll(DataSet: TDataSet);
 begin
   cbbFromMonth.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
   seFromYear.Value := DataSet.FieldByName('YEAR').AsInteger;
+end;
+
+procedure TfCalcResource.qrMaterialDataBeforeOpen(DataSet: TDataSet);
+begin
+  (DataSet as TFDQuery).ParamByName('SM_ID').AsInteger := IDEstimate;
 end;
 
 procedure TfCalcResource.qrMechDataAfterScroll(DataSet: TDataSet);

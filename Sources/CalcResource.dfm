@@ -1,6 +1,7 @@
 object fCalcResource: TfCalcResource
   Left = 0
   Top = 0
+  ActiveControl = pgc1
   Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074
   ClientHeight = 362
   ClientWidth = 616
@@ -32,20 +33,9 @@ object fCalcResource: TfCalcResource
     object lbl1: TLabel
       Left = 8
       Top = 8
-      Width = 39
+      Width = 35
       Height = 13
-      Caption = #1054#1073#1098#1077#1082#1090
-    end
-    object dblkcbbNAME: TDBLookupComboBox
-      Left = 53
-      Top = 5
-      Width = 445
-      Height = 21
-      Anchors = [akLeft, akTop, akRight]
-      KeyField = 'OBJ_ID'
-      ListField = 'NAME'
-      ListSource = dsObject
-      TabOrder = 0
+      Caption = #1057#1084#1077#1090#1072':'
     end
     object chkEdit: TCheckBox
       Left = 504
@@ -56,6 +46,18 @@ object fCalcResource: TfCalcResource
       Caption = #1056#1072#1089#1095#1077#1090' '#1088#1072#1079#1088#1077#1096#1077#1085
       TabOrder = 1
       OnClick = chkEditClick
+    end
+    object edtEstimateName: TEdit
+      Left = 49
+      Top = 5
+      Width = 449
+      Height = 21
+      TabStop = False
+      Anchors = [akLeft, akTop, akRight]
+      Color = clMenuBar
+      ReadOnly = True
+      TabOrder = 0
+      Text = #1057#1084#1077#1090#1072
     end
   end
   object pgc1: TPageControl
@@ -235,6 +237,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          IniStorage = FormStorage
           MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -251,7 +254,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 23
+              Width = 27
               Visible = True
             end
             item
@@ -259,8 +262,8 @@ object fCalcResource: TfCalcResource
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = 92
-              Visible = True
+              Width = -1
+              Visible = False
             end
             item
               Alignment = taCenter
@@ -268,7 +271,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 28
+              Width = 33
               Visible = True
             end
             item
@@ -276,7 +279,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 26
+              Width = 31
               Visible = True
             end
             item
@@ -284,7 +287,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 76
+              Width = 90
               Visible = True
             end
             item
@@ -292,7 +295,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-              Width = 76
+              Width = 90
               Visible = True
             end
             item
@@ -300,7 +303,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = 53
+              Width = 63
               Visible = True
             end
             item
@@ -308,7 +311,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 76
+              Width = 90
               Visible = True
             end
             item
@@ -316,7 +319,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 53
+              Width = 63
               Visible = True
             end
             item
@@ -324,7 +327,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 79
+              Width = 96
               Visible = True
             end>
         end
@@ -384,6 +387,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          IniStorage = FormStorage
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -485,6 +489,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          IniStorage = FormStorage
           MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -501,7 +506,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 38
+              Width = 49
               Visible = True
             end
             item
@@ -509,8 +514,8 @@ object fCalcResource: TfCalcResource
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = 128
-              Visible = True
+              Width = -1
+              Visible = False
             end
             item
               Alignment = taCenter
@@ -518,7 +523,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 25
+              Width = 32
               Visible = True
             end
             item
@@ -526,7 +531,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 22
+              Width = 28
               Visible = True
             end
             item
@@ -534,7 +539,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 91
+              Width = 117
               Visible = True
             end
             item
@@ -542,7 +547,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-              Width = 91
+              Width = 117
               Visible = True
             end
             item
@@ -550,7 +555,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'ZP_1'
               Title.Alignment = taCenter
               Title.Caption = #1047#1072#1088#1087#1083'. '#1084#1072#1096'.'
-              Width = 91
+              Width = 117
               Visible = True
             end
             item
@@ -558,7 +563,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'ZP_2'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090'-'#1089#1090#1100' '#1079#1072#1088#1087#1083#1072#1090#1099
-              Width = 98
+              Width = 125
               Visible = True
             end>
         end
@@ -622,6 +627,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          IniStorage = FormStorage
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -924,6 +930,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          IniStorage = FormStorage
           MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -940,7 +947,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 58
+              Width = 65
               Visible = True
             end
             item
@@ -948,8 +955,8 @@ object fCalcResource: TfCalcResource
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = 58
-              Visible = True
+              Width = -1
+              Visible = False
             end
             item
               Alignment = taCenter
@@ -957,7 +964,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 58
+              Width = 65
               Visible = True
             end
             item
@@ -965,7 +972,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 58
+              Width = 65
               Visible = True
             end
             item
@@ -973,7 +980,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 58
+              Width = 65
               Visible = True
             end
             item
@@ -981,7 +988,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-              Width = 58
+              Width = 65
               Visible = True
             end
             item
@@ -989,7 +996,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = 58
+              Width = 65
               Visible = True
             end
             item
@@ -997,7 +1004,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 58
+              Width = 65
               Visible = True
             end
             item
@@ -1005,7 +1012,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 58
+              Width = 65
               Visible = True
             end
             item
@@ -1013,7 +1020,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 60
+              Width = 63
               Visible = True
             end>
         end
@@ -1073,6 +1080,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          IniStorage = FormStorage
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1247,6 +1255,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          IniStorage = FormStorage
           MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -1380,22 +1389,6 @@ object fCalcResource: TfCalcResource
       end
     end
   end
-  object dsObject: TDataSource
-    DataSet = qrObject
-    Left = 56
-    Top = 1
-  end
-  object qrObject: TFDQuery
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    SQL.Strings = (
-      'SELECT OBJ_ID, FULL_NAME as NAME, BEG_STROJ as DATE'
-      'FROM objcards '
-      'WHERE DEL_FLAG=0'
-      'ORDER BY NAME')
-    Left = 25
-  end
   object pm: TPopupMenu
     Left = 572
     Top = 168
@@ -1416,15 +1409,13 @@ object fCalcResource: TfCalcResource
     end
   end
   object qrMaterialData: TFDQuery
+    BeforeOpen = qrMaterialDataBeforeOpen
     AfterOpen = qrMaterialDataAfterOpen
     AfterScroll = qrMaterialDataAfterScroll
-    MasterSource = dsObject
-    MasterFields = 'OBJ_ID'
-    DetailFields = 'OBJ_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.AssignedValues = [evCache, evAutoFetchAll]
     FetchOptions.Cache = [fiBlobs, fiMeta]
     FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
@@ -1483,7 +1474,12 @@ object fCalcResource: TfCalcResource
       'data_estimate.ID_TYPE_DATA = 1 AND'
       'card_rate.ID = data_estimate.ID_TABLES AND'
       'materialcard.ID_CARD_RATE = card_rate.ID AND'
-      'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      '((smetasourcedata.SM_ID = :SM_ID) OR'
+      '        (smetasourcedata.PARENT_ID = :SM_ID) OR '
+      '        (smetasourcedata.PARENT_ID IN ('
+      '          SELECT SM_ID'
+      '          FROM smetasourcedata'
+      '          WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
       'smetasourcedata.DELETED=0 AND'
       'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
       'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
@@ -1524,7 +1520,12 @@ object fCalcResource: TfCalcResource
       'WHERE '
       'data_estimate.ID_TYPE_DATA = 2 AND'
       'materialcard.ID = data_estimate.ID_TABLES AND'
-      'smetasourcedata.OBJ_ID=:OBJ_ID AND '
+      '((smetasourcedata.SM_ID = :SM_ID) OR'
+      '        (smetasourcedata.PARENT_ID = :SM_ID) OR '
+      '        (smetasourcedata.PARENT_ID IN ('
+      '          SELECT SM_ID'
+      '          FROM smetasourcedata'
+      '          WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
       'smetasourcedata.DELETED=0 AND'
       'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
       'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
@@ -1541,10 +1542,8 @@ object fCalcResource: TfCalcResource
         Value = '1'
       end
       item
-        Name = 'OBJ_ID'
-        DataType = ftString
+        Name = 'SM_ID'
         ParamType = ptInput
-        Value = '36'
       end>
   end
   object dsMaterialData: TDataSource
@@ -1553,11 +1552,9 @@ object fCalcResource: TfCalcResource
     Top = 216
   end
   object qrMechData: TFDQuery
+    BeforeOpen = qrMaterialDataBeforeOpen
     AfterOpen = qrMaterialDataAfterOpen
     AfterScroll = qrMechDataAfterScroll
-    MasterSource = dsObject
-    MasterFields = 'OBJ_ID'
-    DetailFields = 'OBJ_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1672,10 +1669,9 @@ object fCalcResource: TfCalcResource
     Top = 216
   end
   object qrDevices: TFDQuery
+    BeforeOpen = qrMaterialDataBeforeOpen
     AfterOpen = qrMaterialDataAfterOpen
     AfterScroll = qrDevicesAfterScroll
-    MasterSource = dsObject
-    MasterFields = 'OBJ_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1775,11 +1771,9 @@ object fCalcResource: TfCalcResource
     Top = 216
   end
   object qrRates: TFDQuery
+    BeforeOpen = qrMaterialDataBeforeOpen
     AfterOpen = qrMaterialDataAfterOpen
     AfterScroll = qrRatesAfterScroll
-    MasterSource = dsObject
-    MasterFields = 'OBJ_ID'
-    DetailFields = 'OBJ_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1871,5 +1865,13 @@ object fCalcResource: TfCalcResource
     DataSet = qrRates
     Left = 211
     Top = 216
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    Options = []
+    StoredValues = <>
+    Left = 568
+    Top = 224
   end
 end

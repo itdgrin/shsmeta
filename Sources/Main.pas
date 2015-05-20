@@ -835,11 +835,8 @@ end;
 
 procedure TFormMain.N2Click(Sender: TObject);
 begin
-  if (not Assigned(fCalcResource)) then
-    fCalcResource := TfCalcResource.Create(Self);
-  if Assigned(FormObjectsAndEstimates) then
-    fCalcResource.LocateObject(FormObjectsAndEstimates.getCurObject);
-  fCalcResource.Show;
+ if Assigned(FormObjectsAndEstimates) then
+   ShowCalcResource(FormObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger);
 end;
 
 // Расход материалов по акту
