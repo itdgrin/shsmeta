@@ -45,10 +45,7 @@ procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
 procedure LoadDBGridSettings(const DBGrid: TJvDBGrid);
 // Процедура рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
-// Процедура переоткрытия запроса TFDQuery с локейтом на значение Поля[0]
-procedure CloseOpen(const Query: TFDQuery; ADisableControls: boolean = True);
-// Функция проверки TDataSet на активность и пустоту
-function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;
+
 // Функция вычисления формулы из строки !!!РАБОТАЕТ ЧЕРЕЗ OLE EXCEL - в дальнейшем переписать!
 function CalcFormula(const AFormula: string): Variant;
 // Удаление директории с содержимым !!!!Использовать остородно!!!!!
@@ -56,10 +53,6 @@ procedure KillDir(const ADirName: string);
 // Запускает процесс и ждет его завершения
 function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
   var AWaitResult: DWord): boolean;
-// Функция получения значения из справочника ежемесячных величин
-function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
-// Функция подсчета итога по датасету. Возвращает вариантный одномерный массив соответствующий набору колонок
-function CalcFooterSumm(const Query: TFDQuery): Variant;
 // Обновляет итератор, использовать при добавлении, вставке и удалении из сметы
 function UpdateIterator(ADestSmID, AIterator: Integer): Integer;
 
@@ -71,6 +64,14 @@ function UpdateIterator(ADestSmID, AIterator: Integer): Integer;
 function FastSelectSQLOne(const ASelectSQL: string; const AParams: Variant): Variant;
 // Функция быстрого выполнения запроса, назад ничего не возвращает (Для обновлений и пр.)
 procedure FastExecSQL(const AExecSQL: string; const AParams: Variant);
+// Процедура переоткрытия запроса TFDQuery с локейтом на значение Поля[0]
+procedure CloseOpen(const Query: TFDQuery; ADisableControls: boolean = True);
+// Функция проверки TDataSet на активность и пустоту
+function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;
+// Функция получения значения из справочника ежемесячных величин
+function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
+// Функция подсчета итога по датасету. Возвращает вариантный одномерный массив соответствующий набору колонок
+function CalcFooterSumm(const Query: TFDQuery): Variant;
 
 function MyFloatToStr(Value: Extended): string;
 function MyStrToFloat(Value: string): Extended;
@@ -376,8 +377,6 @@ begin
           Res[i] := Res[i] + Query.Fields[i].AsFloat;
       Query.Next;
     end;
-
-    // for i := 0 to Query.FieldCount - 1 do ShowMessage(FloatToStr(Res[i]));
 
     if Key <> Null then
       Query.Locate(Query.Fields[0].FieldName, Key, []);
