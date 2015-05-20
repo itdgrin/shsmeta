@@ -4752,7 +4752,7 @@ begin
           '    FROM znormativs_ondate' +
           '    WHERE `znormativs_ondate`.`onDate` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = (SELECT STAVKA_ID FROM smetasourcedata WHERE SM_ID='
           + qrRatesExSM_ID.AsString + '))' +
-          '    AND `znormativs_ondate`.`DEL_FLAG` = 0 ORDER BY `znormativs_ondate`.`onDate`)' + ';');
+          '    AND `znormativs_ondate`.`DEL_FLAG` = 0 ORDER BY `znormativs_ondate`.`onDate` DESC LIMIT 1)' + ';');
         Active := True;
         First;
         while not Eof do

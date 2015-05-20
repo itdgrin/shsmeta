@@ -378,6 +378,7 @@ object FormBasicData: TFormBasicData
     Width = 88
     Height = 21
     Style = csDropDownList
+    DropDownCount = 12
     ItemIndex = 0
     TabOrder = 1
     Text = #1071#1085#1074#1072#1088#1100
