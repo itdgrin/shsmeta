@@ -457,7 +457,7 @@ begin
         // qrMain.FieldByName('coef_tr_zatr').Value := GetUniDictParamValue('', vMonth, vYear);
         qrMain.FieldByName('coef_tr_obor').Value := 2;
         // индекс роста цен
-        qrMain.FieldByName('growth_index').Value := GetUniDictParamValue('GROWTH_INDEX', vMonth, vYear);
+        //qrMain.FieldByName('growth_index').Value := GetUniDictParamValue('GROWTH_INDEX', vMonth, vYear);
       end
       else
       begin

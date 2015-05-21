@@ -542,12 +542,14 @@ begin
       edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
     end;
   end;
+  {
   if Application.MessageBox('Произвести замену индекса роста цен из справочника?', 'Смета',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
   begin
     qrSmeta.FieldByName('growth_index').Value := GetUniDictParamValue('GROWTH_INDEX',
       (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
   end;
+  }
 end;
 
 procedure TFormBasicData.dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
