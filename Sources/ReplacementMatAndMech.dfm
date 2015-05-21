@@ -221,10 +221,12 @@ object frmReplacement: TfrmReplacement
     end
     object btnDelReplacement: TButton
       Tag = 1
+      AlignWithMargins = True
       Left = 464
       Top = 4
       Width = 120
       Height = 25
+      Align = alRight
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1079#1072#1084#1077#1085#1099
       TabOrder = 0
       Visible = False

@@ -1724,10 +1724,13 @@ function TFormCalculationEstimate.CheckMatReadOnly: Boolean;
 begin
   Result := False;
   // Вынесенные из расценки // или замененный
-  if ((qrMaterialFROM_RATE.AsInteger = 1) and ((qrRatesExID_TYPE_DATA.AsInteger = 1) or
-    (qrRatesExID_RATE.AsInteger > 0))) or (qrMaterialREPLACED.AsInteger = 1) or
-    (qrMaterialDELETED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0) or (not(qrMaterialID.AsInteger > 0))
-    or (qrMaterial.Eof) then
+  if ((qrMaterialFROM_RATE.AsInteger = 1) and
+        ((qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0))) or
+     (qrMaterialREPLACED.AsInteger = 1) or
+     (qrMaterialDELETED.AsInteger = 1) or
+     (qrMaterialTITLE.AsInteger > 0) or
+     (not(qrMaterialID.AsInteger > 0)) or
+     (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -2517,6 +2520,7 @@ begin
     begin
       MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+      qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
 
@@ -2543,6 +2547,7 @@ begin
     begin
       MessageBox(0, 'Материал с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+      qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
 
@@ -2567,6 +2572,7 @@ begin
     begin
       MessageBox(0, 'Механизм с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+      qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
 
@@ -2589,6 +2595,7 @@ begin
     begin
       MessageBox(0, 'Оборудование с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+      qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
     AddDevice(NewID);
@@ -2598,6 +2605,7 @@ begin
 
   MessageBox(0, 'По указанному коду ничего не найдено!', CaptionForm,
     MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+  qrRatesExOBJ_CODE.AsString := '';
 end;
 
 procedure TFormCalculationEstimate.qrRatesExCOUNTChange(Sender: TField);
@@ -3485,9 +3493,11 @@ begin
   PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialCONSIDERED.AsInteger = 1) and
     ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
 
-  PMMatReplace.Enabled := (not CheckMatReadOnly) and
+  PMMatReplace.Enabled :=
+    ((not CheckMatReadOnly) or (qrMaterialREPLACED.AsInteger = 1))and
     ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) and
-    (qrMaterialID_REPLACED.AsInteger = 0) and (qrMaterialADDED.AsInteger = 0);
+    (qrMaterialID_REPLACED.AsInteger = 0) and
+    (qrMaterialADDED.AsInteger = 0);
 
   PMMatAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0);
 

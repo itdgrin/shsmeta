@@ -299,6 +299,7 @@ inherited FrameOXROPR: TFrameOXROPR
     end
     object ADOQueryNameWork: TStringField
       FieldName = 'NameWork'
+      Size = 255
     end
     object ADOQueryP1: TFloatField
       FieldName = 'P1'
