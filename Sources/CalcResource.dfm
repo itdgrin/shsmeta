@@ -1409,7 +1409,6 @@ object fCalcResource: TfCalcResource
     end
   end
   object qrMaterialData: TFDQuery
-    BeforeOpen = qrMaterialDataBeforeOpen
     AfterOpen = qrMaterialDataAfterOpen
     AfterScroll = qrMaterialDataAfterScroll
     Connection = DM.Connect
@@ -1433,21 +1432,11 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      
-        'SELECT CODE, NAME, UNIT, SUM(CNT) AS CNT, DOC_DATE, DOC_NUM, PRO' +
-        'C_TRANSP, COAST, SUM(PRICE) AS PRICE, SUM(TRANSP) AS TRANSP FROM' +
-        '('
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' '#1042'\'#1047#1040' '#1056#1040#1057#1062#1045#1053#1050#1045'*/'
       'SELECT '
-      '  ID_ESTIMATE,'
-      '  ID_TYPE_DATA,'
-      '  materialcard.ID AS ID_TABLES,'
-      '  smetasourcedata.OBJ_ID,'
-      ''
       '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
       '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
       '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      '  SUM(COALESCE(MAT_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       ''
       '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
       '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
@@ -1457,80 +1446,19 @@ object fCalcResource: TfCalcResource
         '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
         '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
       
-        '  IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FPRICE' +
-        '_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100 +
-        ' */ '
+        '  SUM(IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FP' +
+        'RICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS))) AS PRICE, /* '#1057#1090#1086#1080 +
+        #1084#1086#1089#1090#1100' */ '
       
-        '  IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS), IF(FTR' +
-        'ANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090#1088 +
-        #1072#1085#1089#1087'. */ '
-      ''
-      '  stavka.MONAT AS MONTH, stavka.YEAR'
+        '  SUM(IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS), IF' +
+        '(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS))) AS TRANSP, ' +
+        '/* '#1090#1088#1072#1085#1089#1087'. */ '
+      '  DELETED'
       'FROM '
+      '  materialcard_temp'
       
-        '  smetasourcedata, data_estimate, card_rate, materialcard, stavk' +
-        'a'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 1 AND'
-      'card_rate.ID = data_estimate.ID_TABLES AND'
-      'materialcard.ID_CARD_RATE = card_rate.ID AND'
-      '((smetasourcedata.SM_ID = :SM_ID) OR'
-      '        (smetasourcedata.PARENT_ID = :SM_ID) OR '
-      '        (smetasourcedata.PARENT_ID IN ('
-      '          SELECT SM_ID'
-      '          FROM smetasourcedata'
-      '          WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
-      'smetasourcedata.DELETED=0 AND'
-      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
-      'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
-      ''
-      'UNION ALL'
-      ''
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067'*/'
-      'SELECT '
-      '  ID_ESTIMATE,'
-      '  ID_TYPE_DATA,'
-      '  materialcard.ID AS ID_TABLES,'
-      '  smetasourcedata.OBJ_ID,'
-      ''
-      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
-      ''
-      '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
-      ''
-      
-        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
-        '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
-      
-        '  IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FPRICE' +
-        '_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100 +
-        ' */ '
-      
-        '  IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS), IF(FTR' +
-        'ANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)) AS TRANSP, /* '#1090#1088 +
-        #1072#1085#1089#1087'. */'
-      ''
-      '  stavka.MONAT AS MONTH, stavka.YEAR'
-      'FROM '
-      '  smetasourcedata, data_estimate, materialcard, stavka'
-      'WHERE '
-      'data_estimate.ID_TYPE_DATA = 2 AND'
-      'materialcard.ID = data_estimate.ID_TABLES AND'
-      '((smetasourcedata.SM_ID = :SM_ID) OR'
-      '        (smetasourcedata.PARENT_ID = :SM_ID) OR '
-      '        (smetasourcedata.PARENT_ID IN ('
-      '          SELECT SM_ID'
-      '          FROM smetasourcedata'
-      '          WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
-      'smetasourcedata.DELETED=0 AND'
-      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
-      'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
-      ') AS T'
-      'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, COAST'
+        'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, COAST' +
+        ', DELETED'
       'ORDER BY 1')
     Left = 27
     Top = 168
@@ -1540,10 +1468,6 @@ object fCalcResource: TfCalcResource
         DataType = ftString
         ParamType = ptInput
         Value = '1'
-      end
-      item
-        Name = 'SM_ID'
-        ParamType = ptInput
       end>
   end
   object dsMaterialData: TDataSource

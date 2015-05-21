@@ -346,6 +346,7 @@
       end
       object N2: TMenuItem
         Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074
+        Visible = False
         OnClick = N2Click
       end
       object N61: TMenuItem

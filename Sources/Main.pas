@@ -835,8 +835,8 @@ end;
 
 procedure TFormMain.N2Click(Sender: TObject);
 begin
- if Assigned(FormObjectsAndEstimates) then
-   ShowCalcResource(FormObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger);
+ if Assigned(FormCalculationEstimate) then
+   ShowCalcResource(FormCalculationEstimate.IdEstimate);
 end;
 
 // Расход материалов по акту

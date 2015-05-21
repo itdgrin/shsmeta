@@ -298,8 +298,8 @@ end;
 
 procedure TfCalcResource.qrMaterialDataAfterScroll(DataSet: TDataSet);
 begin
-  cbbFromMonth.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
-  seFromYear.Value := DataSet.FieldByName('YEAR').AsInteger;
+  //cbbFromMonth.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
+  //seFromYear.Value := DataSet.FieldByName('YEAR').AsInteger;
 end;
 
 procedure TfCalcResource.qrMaterialDataBeforeOpen(DataSet: TDataSet);
