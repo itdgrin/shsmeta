@@ -65,7 +65,7 @@ object fCalcResource: TfCalcResource
     Top = 32
     Width = 616
     Height = 330
-    ActivePage = ts5
+    ActivePage = ts3
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -1531,7 +1531,7 @@ object fCalcResource: TfCalcResource
       'data_estimate.ID_ESTIMATE = smetasourcedata.SM_ID'
       ') AS T'
       'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, COAST'
-      'ORDER BY 5')
+      'ORDER BY 1')
     Left = 27
     Top = 168
     ParamData = <

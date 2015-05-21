@@ -307,18 +307,18 @@ begin
   if Application.MessageBox('Удалить запись?', 'Вопрос', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
   begin
     qrCoef.CheckBrowseMode;
-    
-    //Каскадное удаление наборав из связанных смет
+
+    // Каскадное удаление наборав из связанных смет
     DM.qrDifferent.SQL.Text := 'DELETE FROM calculation_coef WHERE id_estimate IN '#13 +
-    '(SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
+      '(SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
       ' OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE)))'#13 +
       ' AND id_type_data=:id_type_data AND id_owner=0 AND id_coef=:id_coef';
-      
+
     DM.qrDifferent.ParamByName('id_estimate').Value := qrCoef.FieldByName('id_estimate').Value;
     DM.qrDifferent.ParamByName('id_type_data').Value := qrCoef.FieldByName('id_type_data').Value;
     DM.qrDifferent.ParamByName('id_coef').Value := qrCoef.FieldByName('id_coef').Value;
     DM.qrDifferent.ExecSQL;
-    
+
     qrCoef.Delete;
   end;
 end;
@@ -541,6 +541,12 @@ begin
       qrSmeta.FieldByName('STAVKA_RAB').AsVariant := FieldByName('RateWorker').AsVariant;
       edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
     end;
+  end;
+  if Application.MessageBox('Произвести замену индекса роста цен из справочника?', 'Смета',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+  begin
+    qrSmeta.FieldByName('growth_index').Value := GetUniDictParamValue('GROWTH_INDEX',
+      (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
   end;
 end;
 

@@ -455,7 +455,9 @@ begin
         qrMain.FieldByName('k35').Value := GetUniDictParamValue('K_ZIM_UDOR_2', vMonth, vYear);
         qrMain.FieldByName('MAIS_ID').Value := MAIS_ID;
         // qrMain.FieldByName('coef_tr_zatr').Value := GetUniDictParamValue('', vMonth, vYear);
-        qrMain.FieldByName('coef_tr_obor').Value := 1;
+        qrMain.FieldByName('coef_tr_obor').Value := 2;
+        // индекс роста цен
+        qrMain.FieldByName('growth_index').Value := GetUniDictParamValue('GROWTH_INDEX', vMonth, vYear);
       end
       else
       begin
