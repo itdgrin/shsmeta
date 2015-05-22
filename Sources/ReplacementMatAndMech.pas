@@ -244,10 +244,11 @@ begin
     begin
       //”дал€ет замен€ющие материалы или механизмы
       if FCurType = 0 then
-        qrTemp.SQL.Text := 'CALL DeleteMaterial(:id);'
+        qrTemp.SQL.Text := 'CALL DeleteMaterial(:id, :CalcMode);'
       else
-        qrTemp.SQL.Text := 'CALL DeleteMechanism(:id);';
+        qrTemp.SQL.Text := 'CALL DeleteMechanism(:id, :CalcMode);';
       qrTemp.ParamByName('id').Value := qrRep.FieldByName('ID').Value;
+      qrTemp.ParamByName('CalcMode').Value := G_CALCMODE;
       qrTemp.ExecSQL;
     end
     else
