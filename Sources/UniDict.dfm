@@ -208,22 +208,25 @@ object fUniDict: TfUniDict
             Alignment = taRightJustify
             Expanded = False
             FieldName = 'unidicttype_id'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
             Title.Alignment = taCenter
             Title.Caption = #1050#1086#1076
-            Width = 46
-            Visible = True
+            Width = -1
+            Visible = False
           end
           item
             Expanded = False
             FieldName = 'unidicttype_name'
             Title.Alignment = taCenter
             Title.Caption = #1058#1080#1087' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
-            Width = 121
+            Width = 119
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'CNT'
+            Title.Alignment = taCenter
+            Title.Caption = #1047#1072#1087#1080#1089#1077#1081
+            Width = 48
             Visible = True
           end>
       end
@@ -693,17 +696,24 @@ object fUniDict: TfUniDict
     SQL.Strings = (
       'SELECT '
       '  `unidicttype_id`,'
-      '  `unidicttype_name`'
+      '  `unidicttype_name`,'
+      
+        '  (SELECT COUNT(*) FROM unidictparam WHERE id_unidicttype=`unidi' +
+        'cttype`.unidicttype_id) AS CNT'
       'FROM '
       '  `unidicttype`'
       'UNION ALL'
       'SELECT '
       '  -1 AS unidicttype_id,'
-      '  ("<'#1074#1089#1077'>") AS unidicttype_name'
+      '  ("<'#1074#1089#1077'>") AS unidicttype_name,'
+      '  (SELECT COUNT(*) FROM unidictparam) AS CNT'
       'UNION ALL'
       'SELECT '
       '  0 AS unidicttype_id,'
-      '  ("<'#1085#1077' '#1091#1082#1072#1079#1072#1085'>") AS unidicttype_name'
+      '  ("<'#1085#1077' '#1091#1082#1072#1079#1072#1085'>") AS unidicttype_name,'
+      
+        '  (SELECT COUNT(*) FROM unidictparam WHERE id_unidicttype=0) AS ' +
+        'CNT'
       'ORDER BY `unidicttype_name`, unidicttype_id')
     Left = 27
     Top = 118
