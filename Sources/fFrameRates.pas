@@ -232,6 +232,24 @@ begin
   PanelRight.Visible := False;
   PanelRight.Constraints.MinWidth := 100;
 
+  with ADOQueryTemp do
+  begin
+    Active := False;
+    SQL.Clear;
+    SQL.Add('SELECT work_id, work_name FROM objworks ORDER BY work_id;');
+    Active := true;
+
+    First;
+
+    ComboBoxOXROPR.Items.Clear;
+
+    while not Eof do
+    begin
+      ComboBoxOXROPR.Items.Add(Fields[0].AsString + '. ' + Fields[1].AsString);
+      Next;
+    end;
+  end;
+
   ShowHidePanels(nil);
 end;
 
@@ -829,17 +847,23 @@ begin
   end;
 
   // ----------------------------------------
-  if VarIsNull(qrNormativ.FieldByName('date_end').Value) then
-  begin
-    Edit5.Text := 'Действующая';
-    Edit5.Color := $0080FF80;
-  end
-  else
-  begin
-    Edit5.Text := 'Недействующая';
-    Edit5.Color := clRed;
+  case qrNormativ.FieldByName('NORM_ACTIVE').Value of
+    0:
+      begin
+        Edit5.Text := 'Недействующая';
+        Edit5.Color := clRed;
+      end;
+    1:
+      begin
+        Edit5.Text := 'Действующая';
+        Edit5.Color := $0080FF80;
+      end;
+    2:
+      begin
+        Edit5.Text := 'Анулированная';
+        Edit5.Color := clRed;
+      end;
   end;
-
   qrHistory.ParamByName('NORM_NUM').AsString :=
     '%' + Trim(StringReplace(qrNormativ.FieldByName('NumberNormative').AsString, '*', '',
     [rfReplaceAll])) + '%';
@@ -1100,24 +1124,6 @@ var
   QueryStr, WhereStr, Condition: string;
 begin
   try
-    with ADOQueryTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT work_id, work_name FROM objworks ORDER BY work_id;');
-      Active := true;
-
-      First;;
-
-      ComboBoxOXROPR.Items.Clear;
-
-      while not Eof do
-      begin
-        ComboBoxOXROPR.Items.Add(Fields[0].AsString + '. ' + Fields[1].AsString);
-        Next;
-      end;
-    end;
-
     with qrNormativ do
     begin
       Condition := '';
@@ -1137,12 +1143,11 @@ begin
       else
         WhereStr := ' WHERE 1=1 ' + Condition;
       QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
-        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id, date_end FROM normativ' + DataBase +
-        WhereStr + Condition + ' ORDER BY '#13 +
-        '(`NORM_NUM`+0),'#13 +
+        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id, NORM_ACTIVE FROM normativ' +
+        DataBase + WhereStr + Condition + ' ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
         '`NORM_NUM` REGEXP "^Е" DESC, `NORM_NUM` REGEXP "^Ц" DESC,'#13 +
-        'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13 +
-        '(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) + 0),'#13 +
+        'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13
+        + '(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) + 0),'#13 +
         '(SUBSTRING(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) FROM POSITION("-" in SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1)) + 1) + 0)';
       SQL.Add(QueryStr);
       Active := true;

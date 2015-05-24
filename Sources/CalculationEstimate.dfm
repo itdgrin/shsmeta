@@ -185,7 +185,7 @@
     Height = 29
     Align = alBottom
     ParentBackground = False
-    TabOrder = 8
+    TabOrder = 7
     Visible = False
     object PanelButtonsLocalEstimate: TPanel
       Left = 0
@@ -549,8 +549,8 @@
           TabOrder = 4
         end
         object Button4: TButton
-          Left = 730
-          Top = 0
+          Left = 731
+          Top = -5
           Width = 85
           Height = 24
           Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
@@ -623,6 +623,7 @@
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pmTableLeft
           TabOrder = 0
@@ -635,6 +636,7 @@
           OnEnter = dbgrdRatesEnter
           OnKeyDown = dbgrdRatesKeyDown
           AutoAppend = False
+          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -2701,7 +2703,7 @@
             Expanded = False
             FieldName = 'ST_OHROPR'
             Title.Alignment = taCenter
-            Title.Caption = #1057#1090'. '#1089' '#1054#1061#1056' '#1080' '#1054#1055#1056
+            Title.Caption = #1048#1090#1086#1075#1086' '#1089' '#1054#1061#1056#1080#1054#1055#1056
             Visible = True
           end
           item
@@ -3158,13 +3160,6 @@
       end
     end
   end
-  object HeaderControl1: THeaderControl
-    Left = 0
-    Top = 102
-    Width = 921
-    Height = 17
-    Sections = <>
-  end
   object pmSummaryCalculation: TPopupMenu
     Left = 424
     Top = 472
@@ -3271,6 +3266,10 @@
         object PopupMenuRatesAdd352: TMenuItem
           Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1082#1086#1101#1092'. '#1089#1086#1075#1083#1072#1089#1085#1086' '#1055#1088#1080#1082#1072#1079#1091' '#8470'352 '#1082' '#1074#1099#1076#1077#1083#1077#1085#1085#1099#1084' '#1089#1090#1088#1086#1082#1072#1084
         end
+      end
+      object mN12: TMenuItem
+        Caption = #1053#1072#1073#1086#1088' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074
+        OnClick = PopupMenuCoefAddSetClick
       end
     end
     object PMCopy: TMenuItem

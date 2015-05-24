@@ -577,17 +577,8 @@
                     Expanded = False
                     FieldName = 'date_beginer'
                     Title.Alignment = taCenter
-                    Title.Caption = #1044#1072#1090#1072' '#1085#1072#1095'.'
-                    Width = 77
-                    Visible = True
-                  end
-                  item
-                    Alignment = taCenter
-                    Expanded = False
-                    FieldName = 'date_end'
-                    Title.Alignment = taCenter
-                    Title.Caption = #1044#1072#1090#1072' '#1086#1082#1086#1085'.'
-                    Width = 77
+                    Title.Caption = #1044#1072#1090#1072
+                    Width = 96
                     Visible = True
                   end
                   item
@@ -595,7 +586,7 @@
                     FieldName = 'prikaz'
                     Title.Alignment = taCenter
                     Title.Caption = #1054#1089#1085#1086#1074#1072#1085#1080#1077
-                    Width = 327
+                    Width = 403
                     Visible = True
                   end>
               end
@@ -767,7 +758,7 @@
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evRecordCountMode]
     SQL.Strings = (
-      'select distinct date_beginer, date_end, prikaz'
+      'select distinct date_beginer, prikaz'
       'from normativg'
       
         'where (NORM_NUM like :NORM_NUM) AND ((`normativg`.`date_end` IS ' +

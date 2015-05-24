@@ -94,6 +94,10 @@ type
     chkEdit: TCheckBox;
     edtEstimateName: TEdit;
     FormStorage: TJvFormStorage;
+    mN6: TMenuItem;
+    mN7: TMenuItem;
+    qrMaterialDetail: TFDQuery;
+    dsMaterialDetail: TDataSource;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgc1Change(Sender: TObject);
@@ -113,6 +117,7 @@ type
     procedure qrRatesAfterScroll(DataSet: TDataSet);
     procedure chkEditClick(Sender: TObject);
     procedure qrMaterialDataBeforeOpen(DataSet: TDataSet);
+    procedure qrMaterialDetailMasterSetValues(DataSet: TFDDataSet);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -272,7 +277,11 @@ begin
       ;
     // Расчет материалов
     1:
+    begin
+      qrMaterialData.ParamByName('NDS').AsInteger := cbbMatNDS.ItemIndex;
       CloseOpen(qrMaterialData);
+      CloseOpen(qrMaterialDetail);
+    end;
     // Расчет механизмов
     2:
       CloseOpen(qrMechData);
@@ -300,11 +309,17 @@ procedure TfCalcResource.qrMaterialDataAfterScroll(DataSet: TDataSet);
 begin
   //cbbFromMonth.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
   //seFromYear.Value := DataSet.FieldByName('YEAR').AsInteger;
+  CloseOpen(qrMaterialDetail);
 end;
 
 procedure TfCalcResource.qrMaterialDataBeforeOpen(DataSet: TDataSet);
 begin
   (DataSet as TFDQuery).ParamByName('SM_ID').AsInteger := IDEstimate;
+end;
+
+procedure TfCalcResource.qrMaterialDetailMasterSetValues(DataSet: TFDDataSet);
+begin
+  qrMaterialDetail.ParamByName('NDS').AsInteger := cbbMatNDS.ItemIndex;
 end;
 
 procedure TfCalcResource.qrMechDataAfterScroll(DataSet: TDataSet);

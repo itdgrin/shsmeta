@@ -219,7 +219,6 @@ type
     qrMechanizmMECH_NAME: TStringField;
     qrMechanizmMECH_UNIT: TStringField;
     qrMechanizmFROM_RATE: TByteField;
-    HeaderControl1: THeaderControl;
     N8: TMenuItem;
     PMMechEdit: TMenuItem;
     dbgrdMechanizm: TJvDBGrid;
@@ -459,6 +458,7 @@ type
     PMAddRateOld: TMenuItem;
     PMAddRateNew: TMenuItem;
     PMRateRef: TMenuItem;
+    mN12: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -5200,17 +5200,36 @@ end;
 
 procedure TFormCalculationEstimate.AddCoefToRate(coef_id: Integer);
 // Добавление коэфф. к строчке
+var
+  x: word;
+  TempBookmark: TBookMark;
 begin
-  qrTemp.Active := False;
-  qrTemp.SQL.Text :=
-    'INSERT INTO calculation_coef_temp(id_estimate,id_type_data,id_owner,id_coef,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB)'#13
-    + 'SELECT :id_estimate, :id_type_data, :id_owner, coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13
-    + 'FROM coef WHERE coef.coef_id=:coef_id';
-  qrTemp.ParamByName('id_estimate').AsInteger := qrRatesExSM_ID.Value;
-  qrTemp.ParamByName('id_owner').AsInteger := qrRatesExID_TABLES.AsInteger;
-  qrTemp.ParamByName('id_type_data').AsInteger := qrRatesExID_TYPE_DATA.AsInteger;
-  qrTemp.ParamByName('coef_id').AsInteger := coef_id;
-  qrTemp.ExecSQL;
+  grRatesEx.Datasource.Dataset.DisableControls;
+  with grRatesEx.SelectedRows do
+    if Count <> 0 then
+    begin
+      TempBookmark := grRatesEx.Datasource.Dataset.GetBookmark;
+      for x := 0 to Count - 1 do
+      begin
+        if IndexOf(Items[x]) > -1 then
+        begin
+          grRatesEx.Datasource.Dataset.Bookmark := Items[x];
+          qrTemp.Active := False;
+          qrTemp.SQL.Text :=
+            'INSERT INTO calculation_coef_temp(id_estimate,id_type_data,id_owner,id_coef,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB)'#13
+            + 'SELECT :id_estimate, :id_type_data, :id_owner, coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13
+            + 'FROM coef WHERE coef.coef_id=:coef_id';
+          qrTemp.ParamByName('id_estimate').AsInteger := qrRatesExSM_ID.Value;
+          qrTemp.ParamByName('id_owner').AsInteger := qrRatesExID_TABLES.AsInteger;
+          qrTemp.ParamByName('id_type_data').AsInteger := qrRatesExID_TYPE_DATA.AsInteger;
+          qrTemp.ParamByName('coef_id').AsInteger := coef_id;
+          qrTemp.ExecSQL;
+        end;
+      end;
+    end;
+  grRatesEx.Datasource.Dataset.GotoBookmark(TempBookmark);
+  grRatesEx.Datasource.Dataset.FreeBookmark(TempBookmark);
+  grRatesEx.Datasource.Dataset.EnableControls;
   CloseOpen(qrCalculations);
 end;
 

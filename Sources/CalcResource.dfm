@@ -65,7 +65,7 @@ object fCalcResource: TfCalcResource
     Top = 32
     Width = 616
     Height = 330
-    ActivePage = ts3
+    ActivePage = ts2
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -98,7 +98,7 @@ object fCalcResource: TfCalcResource
       ImageIndex = 1
       object spl2: TSplitter
         Left = 0
-        Top = 233
+        Top = 217
         Width = 608
         Height = 3
         Cursor = crVSplit
@@ -199,7 +199,9 @@ object fCalcResource: TfCalcResource
           Style = csDropDownList
           Anchors = [akTop, akRight]
           DropDownCount = 12
+          ItemIndex = 0
           TabOrder = 2
+          Text = #1073#1077#1079' '#1053#1044#1057
           OnChange = cbbMatNDSChange
           Items.Strings = (
             #1073#1077#1079' '#1053#1044#1057
@@ -210,16 +212,17 @@ object fCalcResource: TfCalcResource
         Left = 0
         Top = 57
         Width = 608
-        Height = 176
+        Height = 160
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
+        ExplicitHeight = 176
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
-          Height = 157
+          Height = 141
           Align = alClient
           DataSource = dsMaterialData
           DrawingStyle = gdsClassic
@@ -333,7 +336,7 @@ object fCalcResource: TfCalcResource
         end
         object JvDBGridFooter1: TJvDBGridFooter
           Left = 0
-          Top = 157
+          Top = 141
           Width = 608
           Height = 19
           SizeGrip = True
@@ -353,13 +356,14 @@ object fCalcResource: TfCalcResource
           DataSource = dsMaterialData
           DBGrid = grMaterial
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitTop = 155
         end
       end
       object pnlMatBott: TPanel
         Left = 0
-        Top = 236
+        Top = 220
         Width = 608
-        Height = 66
+        Height = 82
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
@@ -377,9 +381,10 @@ object fCalcResource: TfCalcResource
           Left = 1
           Top = 25
           Width = 606
-          Height = 40
+          Height = 56
           Align = alClient
           Constraints.MinHeight = 40
+          DataSource = dsMaterialDetail
           DrawingStyle = gdsClassic
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
@@ -388,6 +393,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           IniStorage = FormStorage
+          ScrollBars = ssVertical
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -405,6 +411,7 @@ object fCalcResource: TfCalcResource
             end
             item
               Expanded = False
+              FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
               Width = 117
@@ -412,6 +419,7 @@ object fCalcResource: TfCalcResource
             end
             item
               Expanded = False
+              FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1098#1077#1084' '#1088#1072#1073#1086#1090
               Width = 117
@@ -419,6 +427,7 @@ object fCalcResource: TfCalcResource
             end
             item
               Expanded = False
+              FieldName = 'CNT_DONE'
               Title.Alignment = taCenter
               Title.Caption = #1056#1072#1089#1093#1086#1076
               Width = 117
@@ -426,6 +435,7 @@ object fCalcResource: TfCalcResource
             end
             item
               Expanded = False
+              FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
               Width = 117
@@ -1407,6 +1417,13 @@ object fCalcResource: TfCalcResource
     object N5: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
     end
+    object mN7: TMenuItem
+      Caption = '-'
+    end
+    object mN6: TMenuItem
+      AutoCheck = True
+      Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
+    end
   end
   object qrMaterialData: TFDQuery
     AfterOpen = qrMaterialDataAfterOpen
@@ -1416,7 +1433,7 @@ object fCalcResource: TfCalcResource
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache, evAutoFetchAll]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -1427,6 +1444,7 @@ object fCalcResource: TfCalcResource
         SourceDataType = dtByteString
         TargetDataType = dtAnsiString
       end>
+    FormatOptions.DefaultParamDataType = ftBCD
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False
@@ -1465,9 +1483,9 @@ object fCalcResource: TfCalcResource
     ParamData = <
       item
         Name = 'NDS'
-        DataType = ftString
+        DataType = ftInteger
         ParamType = ptInput
-        Value = '1'
+        Value = 1
       end>
   end
   object dsMaterialData: TDataSource
@@ -1797,5 +1815,89 @@ object fCalcResource: TfCalcResource
     StoredValues = <>
     Left = 568
     Top = 224
+  end
+  object qrMaterialDetail: TFDQuery
+    BeforeOpen = qrMaterialDataBeforeOpen
+    MasterSource = dsMaterialData
+    MasterFields = 'CODE'
+    OnMasterSetValues = qrMaterialDetailMasterSetValues
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache, evAutoFetchAll]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    FormatOptions.DefaultParamDataType = ftBCD
+    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      'SELECT '
+      '  m.MAT_CODE AS CODE, '
+      '  COALESCE(m.MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      
+        '  IF(:NDS=1, IF(m.FCOAST_NDS<>0, m.FCOAST_NDS, m.COAST_NDS), IF(' +
+        'm.FCOAST_NO_NDS<>0, m.FCOAST_NO_NDS, m.COAST_NO_NDS)) AS COAST, ' +
+        '/* '#1062#1077#1085#1072' */'
+      
+        '  (SELECT SUM(MAT_COUNT) FROM MATERIALCARD_ACT WHERE ID=m.ID) AS' +
+        ' CNT_DONE, /*'#1042#1099#1087#1086#1083#1085#1077#1085#1086'*/ '
+      '  m.DELETED'
+      'FROM        '
+      
+        'smetasourcedata, data_estimate_temp AS d, card_rate_temp AS c, m' +
+        'aterialcard_temp AS m'
+      'WHERE '
+      '  ((smetasourcedata.SM_ID = :SM_ID) OR'
+      '           (smetasourcedata.PARENT_ID = :SM_ID) OR '
+      '           (smetasourcedata.PARENT_ID IN ('
+      '             SELECT SM_ID'
+      '             FROM smetasourcedata'
+      '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
+      '  d.ID_ESTIMATE = smetasourcedata.SM_ID AND  '
+      '  ((d.ID_TYPE_DATA = 1 AND'
+      '  c.ID = d.ID_TABLES AND'
+      
+        '  m.ID_CARD_RATE = c.ID) OR (d.ID_TYPE_DATA = 2 AND m.ID = d.ID_' +
+        'TABLES)) AND'
+      '  smetasourcedata.DELETED=0 AND'
+      '  m.MAT_CODE = :CODE')
+    Left = 27
+    Top = 264
+    ParamData = <
+      item
+        Name = 'NDS'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 0
+      end
+      item
+        Name = 'SM_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'CODE'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object dsMaterialDetail: TDataSource
+    DataSet = qrMaterialDetail
+    Left = 27
+    Top = 312
   end
 end
