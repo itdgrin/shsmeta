@@ -107,6 +107,7 @@ type
     FEstimateID,
     FRateID,
     FMatMechID: Integer;
+    FMatMechCode: string;
 
     FObjectName,
     FEstimateName,
@@ -143,7 +144,7 @@ type
     { Private declarations }
   public
     constructor Create(const AObjectID, AEstimateID, ARateID,
-      AMatMechID: Integer; AType: Byte; ATemp, AAdd: Boolean); reintroduce;
+      AMatMechID: Integer; AMatMechCode: string; AType: Byte; AAdd: Boolean); reintroduce;
     destructor Destroy; override;
 
     property Count: Integer read GetCount;
@@ -513,11 +514,12 @@ begin
 end;
 
 constructor TfrmReplacement.Create(const AObjectID, AEstimateID, ARateID,
-      AMatMechID: Integer; AType: Byte; ATemp, AAdd: Boolean);
+      AMatMechID: Integer; AMatMechCode: string; AType: Byte; AAdd: Boolean);
 begin
   inherited Create(nil);
 
-  FTemp := ATemp;
+  // FTemp := ATemp;
+  FTemp := True;
   FAddMode := AAdd;
 
   //Зачем этот код именно в Create не известно
@@ -560,6 +562,9 @@ begin
   FEstimateID := AEstimateID;
   FRateID := ARateID;
   FMatMechID := AMatMechID;
+  if FMatMechID = 0 then
+    AMatMechCode := FMatMechCode;
+
   FObjectName := '';
   FEstimateName := '';
   FRateCode := '';
@@ -641,13 +646,21 @@ begin
     TmpStr := '_temp';
 
   if FCurType = 0 then
-    qrRep.SQL.Text :=
-      'select MAT_CODE, MAT_NAME from materialcard' + TmpStr + ' where ID = ' +
-      FMatMechID.ToString
+    if FMatMechCode <> '' then
+      qrRep.SQL.Text :=
+        'select MAT_CODE, MAT_NAME from material where MAT_CODE = ' + FMatMechCode
+    else
+      qrRep.SQL.Text :=
+        'select MAT_CODE, MAT_NAME from materialcard' + TmpStr + ' where ID = ' +
+        FMatMechID.ToString
   else
-    qrRep.SQL.Text :=
-      'Select MECH_CODE, MECH_NAME from mechanizmcard' + TmpStr + ' where ID = ' +
-      FMatMechID.ToString;
+    if FMatMechCode <> '' then
+      qrRep.SQL.Text :=
+        'Select MECH_CODE, MECH_NAME from mechanizm where MECH_CODE = ' + FMatMechCode
+    else
+      qrRep.SQL.Text :=
+        'Select MECH_CODE, MECH_NAME from mechanizmcard' + TmpStr + ' where ID = ' +
+        FMatMechID.ToString;
 
   qrRep.Active := True;
   if not qrRep.IsEmpty then
@@ -702,7 +715,7 @@ begin
       'card_rate' + TmpStr + ' as RT, materialcard' + TmpStr + ' as MT ' +
       'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 1) AND ' +
       '(ES.ID_TABLES = RT.ID) AND (RT.ID = MT.ID_CARD_RATE) AND ' +
-      '(MT.ID_REPLACED = 0) AND ' +
+      '(MT.ID_REPLACED = 0) AND (MT.FROM_RATE = 0) ' +
       '(MT.MAT_CODE = ''' + edtSourceCode.Text + ''')' + WhereStr
   else
     qrTemp.SQL.Text :=
@@ -716,7 +729,7 @@ begin
       'card_rate' + TmpStr + ' as RT, mechanizmcard' + TmpStr + ' as MT ' +
       'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 1) AND ' +
       '(ES.ID_TABLES = RT.ID) AND (RT.ID = MT.ID_CARD_RATE) AND ' +
-      '(MT.ID_REPLACED = 0) AND ' +
+      '(MT.ID_REPLACED = 0) AND (MT.FROM_RATE = 0) ' +
       '(MT.MECH_CODE = ''' + edtSourceCode.Text + ''')' + WhereStr;
 
   ListEntry.Visible := False;
@@ -745,11 +758,13 @@ begin
 
     if (FMatMechID > 0) then
       FEntryArray[ind - 1].Select :=
-        (FMatMechID = qrTemp.FieldByName('MTID').AsInteger) and
+        (FMatMechID = FEntryArray[ind - 1].MID) and
         (not FEntryArray[ind - 1].MRep)
-    else //Замененные не выделены
-      FEntryArray[ind - 1].Select := not FEntryArray[ind - 1].MRep;
-
+    else
+    begin
+      FEntryArray[ind - 1].Select :=
+        (FMatMechCode = FEntryArray[ind - 1].MCode);
+    end;
     Item := ListEntry.Items.Add;
     //Так как лист заполняется вместе с массивом
     //сохраняется не ссылка на структуру, а её индекс

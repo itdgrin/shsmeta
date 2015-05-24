@@ -2825,9 +2825,9 @@ var
   i: Integer;
 begin
   if (TMenuItem(Sender).Tag = 1) then
-    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, 1, True, False)
+    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, '', 1, False)
   else
-    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, 0, True, False);
+    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, '', 0, False);
 
   try
     if (frmReplace.ShowModal = mrYes) then
@@ -2917,7 +2917,7 @@ begin
   else
     IdRate := qrRatesExSM_ID.AsInteger;
 
-  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0, TMenuItem(Sender).Tag, True, True);
+  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0, '', TMenuItem(Sender).Tag, True);
 
   try
     if (frmReplace.ShowModal = mrYes) then
