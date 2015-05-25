@@ -32,6 +32,7 @@ constructor TSprEquipment.Create(AOwner: TComponent;
       const vAllowAddition: Boolean);
 begin
   FAllowAddition := vAllowAddition;
+  FNoEdCol := True;
   inherited Create(AOwner, False, Date);
   PanelSettings.Visible := False;
 end;

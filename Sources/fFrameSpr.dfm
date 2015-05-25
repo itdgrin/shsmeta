@@ -413,7 +413,7 @@ object SprFrame: TSprFrame
       Left = 37
       Top = 5
       Width = 91
-      Height = 21
+      Height = 24
       TabOrder = 2
       OnKeyPress = edtFindNameKeyPress
     end

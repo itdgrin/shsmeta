@@ -6,9 +6,12 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.Samples.Spin, Vcl.ExtCtrls, GlobsAndConst, Vcl.ComCtrls, Vcl.Buttons,
-  JvExControls, JvAnimatedImage, JvGIFCtrl, Data.DB;
+  JvExControls, JvAnimatedImage, JvGIFCtrl, Data.DB, Generics.Collections,
+  Generics.Defaults;
 
 type
+  TSortRec = TPair<Integer, Pointer>;
+
   //Базовый класс для построения справочников
   TSprFrame = class(TFrame)
     PanelSettings: TPanel;
@@ -46,6 +49,8 @@ type
     FPriceColumn: Boolean;
     //Основной массив справочника
     FSprArray: TSprArray;
+    //Не показывать колонку едениц измерения
+    FNoEdCol: Boolean;
     //Возвращает текст запроса
     function GetSprSQL: string; virtual; abstract;
     //Заполняет основной массив справочника
@@ -155,13 +160,25 @@ begin
   Result := AFindCode;
 end;
 
+function CompareRel(const Left, Right: TSortRec): Integer;
+begin
+  Result := Right.Key - Left.Key;
+  if Result = 0 then
+    Result := CompareText(TSprRecord(Left.Value^).Code,
+      TSprRecord(Right.Value^).Code);
+end;
+
  //заполняет справочник
 procedure TSprFrame.FillSprList(AFindCode, AFindName: string);
-var i, j: Integer;
+var i, j,
+    TmpInd,
+    TmpRel,
+    TmpCount: Integer;
     Item: TListItem;
     WordList: TStringList;
     TmpStr: string;
     LastSpase, Cont: Boolean;
+    FSortArray: TArray<TSortRec>;
 begin
   if Length(FSprArray) = 0 then
     Exit;
@@ -197,6 +214,8 @@ begin
     //Видимый список обновляется намного дольше
     ListSpr.Visible :=  False;
     ListSpr.Items.Clear;
+    SetLength(FSortArray, Length(FSprArray));
+    TmpCount := -1;
     for i := Low(FSprArray) to High(FSprArray) do
     begin
       if SpecialFillList(i) then
@@ -207,21 +226,52 @@ begin
         Continue;
 
       Cont := False;
+      TmpRel := 0;
       for j := 0 to WordList.Count - 1 do
-        if Pos(WordList[j].ToLower, FSprArray[i].Name.ToLower) = 0 then
+      begin
+        TmpStr := Trim(FSprArray[i].Name.ToLower);
+        TmpInd := Pos(WordList[j].ToLower, TmpStr);
+        if TmpInd = 0 then
         begin
           Cont := True;
-          break;
+          Break;
         end;
+
+        TmpRel := TmpRel + 1;
+
+        if ((TmpInd = 1) or (TmpStr[TmpInd - 1] = ' ')) and
+           ((Length(TmpStr) = (TmpInd + Length(WordList[j]) - 1)) or
+            (TmpStr[TmpInd + Length(WordList[j])] = ' ')) then
+          TmpRel := TmpRel + 2;
+
+        if CompareText(WordList[j], TmpStr) = 0 then
+          TmpRel := TmpRel + 5;
+      end;
       if Cont then
         Continue;
 
-      if (i mod 500) = 0 then
+      if (i mod 1000) = 0 then
+          Application.ProcessMessages;
+
+      inc(TmpCount);
+
+      FSortArray[TmpCount].Key := TmpRel;
+      FSortArray[TmpCount].Value := @FSprArray[i];
+    end;
+
+    SetLength(FSortArray, TmpCount + 1);
+
+    TArray.Sort<TSortRec>(FSortArray,
+      TComparer<TSortRec>.Construct(CompareRel));
+
+    for i := 0 to Length(FSortArray) - 1 do
+    begin
+      if (i mod 1000) = 0 then
           Application.ProcessMessages;
 
       //Создаем пустые итемы, заполним их при отображении
       Item := ListSpr.Items.Add;
-      Item.Data := @FSprArray[i];
+      Item.Data := FSortArray[i].Value;
     end;
 
     ListSpr.Visible :=  True;
@@ -235,6 +285,7 @@ begin
   finally
     WordList.Free;
   end;
+
 end;
 
 function TSprFrame.SpecialFillList(const AInd: Integer): Boolean;
@@ -266,6 +317,7 @@ constructor TSprFrame.Create(AOwner: TComponent; const APriceColumn: Boolean;
       const AStarDate: TDateTime);
 var i: Integer;
     y,m,d: Word;
+    lc: TListColumn;
 begin
   inherited Create(AOwner);
 
@@ -278,6 +330,23 @@ begin
   begin
     ListSpr.Columns.Delete(4);
     ListSpr.Columns.Delete(3);
+  end;
+
+  if FNoEdCol then
+  begin
+    if FPriceColumn then
+    begin
+      ListSpr.Columns.Delete(4);
+      ListSpr.Columns.Delete(3);
+    end;
+    ListSpr.Columns.Delete(2);
+    if FPriceColumn then
+    begin
+      lc := ListSpr.Columns.Add;
+      lc.Caption := 'Цена с НДС, руб';
+      lc := ListSpr.Columns.Add;
+      lc.Caption := 'Цена без НДС, руб';
+    end;
   end;
 
   DecodeDate(AStarDate,y,m,d);
@@ -312,7 +381,9 @@ begin
   begin
     Item.Caption := TSprRecord(Item.Data^).Code;
     Item.SubItems.Add(TSprRecord(Item.Data^).Name);
-    Item.SubItems.Add(TSprRecord(Item.Data^).Unt);
+
+    if not FNoEdCol then
+      Item.SubItems.Add(TSprRecord(Item.Data^).Unt);
 
     if FPriceColumn then
     begin
@@ -327,12 +398,21 @@ procedure TSprFrame.ListSprResize(Sender: TObject);
 var i, j: Integer;
 begin
   j := ListSpr.Width;
+
   ListSpr.Columns[0].Width := 100;
-  ListSpr.Columns[2].Width := 70;
+
+  if FNoEdCol then
+    i := 2
+  else
+  begin
+    ListSpr.Columns[2].Width := 70;
+    i := 3;
+  end;
+
   if FPriceColumn then
   begin
-    ListSpr.Columns[3].Width := 100;
-    ListSpr.Columns[4].Width := 100;
+    ListSpr.Columns[i].Width := 100;
+    ListSpr.Columns[i + 1].Width := 100;
   end;
   for i := 0 to ListSpr.Columns.Count - 1 do
     if i <> 1 then
