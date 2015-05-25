@@ -14,7 +14,7 @@ type
   TfCalcResource = class(TForm)
     pnlTop: TPanel;
     lbl1: TLabel;
-    pgc1: TPageControl;
+    pgc: TPageControl;
     ts1: TTabSheet;
     ts2: TTabSheet;
     ts3: TTabSheet;
@@ -22,19 +22,14 @@ type
     ts5: TTabSheet;
     lbl2: TLabel;
     pnlMatTop: TPanel;
-    lbl6: TLabel;
-    cbbFromMonth: TComboBox;
-    seFromYear: TSpinEdit;
-    chk1: TCheckBox;
     edtMatCodeFilter: TEdit;
     edtMatNameFilter: TEdit;
     pm: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
-    N3: TMenuItem;
+    mDetete: TMenuItem;
     N4: TMenuItem;
-    N5: TMenuItem;
-    cbbMatNDS: TComboBox;
+    mRestore: TMenuItem;
     pnlMatClient: TPanel;
     grMaterial: TJvDBGrid;
     pnlMatBott: TPanel;
@@ -52,34 +47,24 @@ type
     dbmmoNAME1: TDBMemo;
     spl4: TSplitter;
     pnlMechTop: TPanel;
-    lbl3: TLabel;
-    cbb1: TComboBox;
-    se1: TSpinEdit;
-    chk2: TCheckBox;
     edtMechCodeFilter: TEdit;
     edtMechNameFilter: TEdit;
-    cbbMechNDS: TComboBox;
     qrMechData: TFDQuery;
     dsMechData: TDataSource;
     spl5: TSplitter;
-    pnl1: TPanel;
-    lbl4: TLabel;
-    cbb2: TComboBox;
-    se2: TSpinEdit;
-    chk3: TCheckBox;
+    pnlDevTop: TPanel;
     edt1: TEdit;
     edt2: TEdit;
-    cbb3: TComboBox;
-    pnl3: TPanel;
+    pnlDevClient: TPanel;
     grDev: TJvDBGrid;
-    pnl5: TPanel;
+    pnlDevBott: TPanel;
     spl6: TSplitter;
     grDevBott: TJvDBGrid;
     dbmmoNAME2: TDBMemo;
     qrDevices: TFDQuery;
     dsDevices: TDataSource;
-    pnl6: TPanel;
-    pnl7: TPanel;
+    pnlRatesTop: TPanel;
+    pnlRatesClient: TPanel;
     grRates: TJvDBGrid;
     qrRates: TFDQuery;
     dsRates: TDataSource;
@@ -94,34 +79,38 @@ type
     chkEdit: TCheckBox;
     edtEstimateName: TEdit;
     FormStorage: TJvFormStorage;
-    mN6: TMenuItem;
+    mShowDeleted: TMenuItem;
     mN7: TMenuItem;
     qrMaterialDetail: TFDQuery;
     dsMaterialDetail: TDataSource;
+    mReplace: TMenuItem;
+    lbl6: TLabel;
+    cbbFromMonth: TComboBox;
+    seFromYear: TSpinEdit;
+    cbbNDS: TComboBox;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-    procedure pgc1Change(Sender: TObject);
+    procedure pgcChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure edtMatCodeFilterChange(Sender: TObject);
     procedure edtMatCodeFilterClick(Sender: TObject);
-    procedure cbbMatNDSChange(Sender: TObject);
     procedure edtMechCodeFilterChange(Sender: TObject);
-    procedure cbbMechNDSChange(Sender: TObject);
     procedure qrMaterialDataAfterOpen(DataSet: TDataSet);
     procedure JvDBGridFooter1Calculate(Sender: TJvDBGridFooter; const FieldName: string;
       var CalcValue: Variant);
-    procedure qrMaterialDataAfterScroll(DataSet: TDataSet);
-    procedure qrMechDataAfterScroll(DataSet: TDataSet);
-    procedure qrDevicesAfterScroll(DataSet: TDataSet);
-    procedure qrRatesAfterScroll(DataSet: TDataSet);
-    procedure chkEditClick(Sender: TObject);
     procedure qrMaterialDataBeforeOpen(DataSet: TDataSet);
-    procedure qrMaterialDetailMasterSetValues(DataSet: TFDDataSet);
+    procedure pmPopup(Sender: TObject);
+    procedure mReplaceClick(Sender: TObject);
+    procedure grMaterialCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
+    procedure qrMaterialDataBeforePost(DataSet: TDataSet);
+    procedure grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+    procedure chkEditClick(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
     procedure CalcFooter;
+    function CanEditField(Field: TField): Boolean;
   public
   end;
 
@@ -134,7 +123,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools;
+uses Main, Tools, ReplacementMatAndMech;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant);
 begin
@@ -146,58 +135,53 @@ begin
   fCalcResource.edtEstimateName.Text :=
     FastSelectSQLOne('SELECT CONCAT(SM_NUMBER, " ",  NAME) FROM smetasourcedata WHERE SM_ID=:SM_ID',
     VarArrayOf([ID_ESTIMATE]));
-  fCalcResource.pgc1.ActivePageIndex := 0;
+  fCalcResource.pgc.ActivePageIndex := 1;
   fCalcResource.Show;
 end;
 
 procedure TfCalcResource.CalcFooter;
 begin
   // В зависимости от вкладки
-  case pgc1.ActivePageIndex of
+  case pgc.ActivePageIndex of
     // Расчет стоимости
     0:
       ;
     // Расчет материалов
     1:
-      begin
-        Footer := CalcFooterSumm(qrMaterialData);
-      end;
+      Footer := CalcFooterSumm(qrMaterialData);
     // Расчет механизмов
     2:
-      begin
-        Footer := CalcFooterSumm(qrMechData);
-      end;
+      Footer := CalcFooterSumm(qrMechData);
     // Расчет оборудования
     3:
-      begin
-        Footer := CalcFooterSumm(qrDevices);
-      end;
+      Footer := CalcFooterSumm(qrDevices);
     // Расчет з\п
     4:
-      begin
-        Footer := CalcFooterSumm(qrRates);
-      end;
+      Footer := CalcFooterSumm(qrRates);
   end;
 end;
 
-procedure TfCalcResource.cbbMatNDSChange(Sender: TObject);
+function TfCalcResource.CanEditField(Field: TField): Boolean;
 begin
-  qrMaterialData.ParamByName('NDS').AsInteger := cbbMatNDS.ItemIndex;
-  CloseOpen(qrMaterialData);
-end;
+  Result := False;
 
-procedure TfCalcResource.cbbMechNDSChange(Sender: TObject);
-begin
-  qrMechData.ParamByName('NDS').AsInteger := cbbMechNDS.ItemIndex;
-  CloseOpen(qrMechData);
+  if not chkEdit.Checked then
+    Exit;
+
+  if (Field = grMaterial.Columns[4].Field) or (Field = grMaterial.Columns[6].Field) or
+    (Field = grMaterial.Columns[10].Field) then
+  begin
+    Result := True;
+    Exit;
+  end;
 end;
 
 procedure TfCalcResource.chkEditClick(Sender: TObject);
 begin
-  grMaterial.ReadOnly := not chkEdit.Checked;
-  grMech.ReadOnly := not chkEdit.Checked;
-  grDev.ReadOnly := not chkEdit.Checked;
-  grRates.ReadOnly := not chkEdit.Checked;
+  cbbNDS.Enabled := chkEdit.Checked;
+  seFromYear.Enabled := chkEdit.Checked;
+  seFromYear.ReadOnly := not chkEdit.Checked;
+  cbbFromMonth.Enabled := chkEdit.Checked;
 end;
 
 procedure TfCalcResource.edtMechCodeFilterChange(Sender: TObject);
@@ -260,6 +244,24 @@ begin
   fCalcResource := nil;
 end;
 
+procedure TfCalcResource.grMaterialCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
+begin
+  AllowEdit := CanEditField(Field);
+end;
+
+procedure TfCalcResource.grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+var
+  s: string;
+begin
+  if not CheckQrActiveEmpty(qrMaterialData) then
+    Exit;
+  s := '';
+  if grMaterial.SortMarker = smDown then
+    s := ' DESC';
+  qrMaterialData.SQL[qrMaterialData.SQL.Count - 1] := 'ORDER BY ' + grMaterial.SortedField + s;
+  CloseOpen(qrMaterialData);
+end;
+
 procedure TfCalcResource.JvDBGridFooter1Calculate(Sender: TJvDBGridFooter; const FieldName: string;
   var CalcValue: Variant);
 begin
@@ -269,35 +271,112 @@ begin
   CalcValue := Footer[Sender.DataSource.DataSet.FieldByName(FieldName).Index];
 end;
 
-procedure TfCalcResource.pgc1Change(Sender: TObject);
+procedure TfCalcResource.mReplaceClick(Sender: TObject);
+var
+  frmReplace: TfrmReplacement;
+  i: Integer;
 begin
-  case pgc1.ActivePageIndex of
+  case pgc.ActivePageIndex of
+    1:
+      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMaterialData.FieldByName('CODE').AsString,
+        0, False);
+    2:
+      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMechData.FieldByName('CODE').AsString,
+        1, False);
+  end;
+  if Assigned(frmReplace) then
+    try
+      if (frmReplace.ShowModal = mrYes) then
+      begin
+        for i := 0 to frmReplace.Count - 1 do
+          FastExecSQL('CALL CalcCalculation(:ESTIMATE_ID, 1, :OWNER_ID, 0);',
+            VarArrayOf([frmReplace.EstIDs[i], frmReplace.RateIDs[i]]));
+
+        case pgc.ActivePageIndex of
+          1:
+            CloseOpen(qrMaterialData);
+          2:
+            CloseOpen(qrMechData);
+        end;
+      end;
+    finally
+      FreeAndNil(frmReplace);
+    end;
+end;
+
+procedure TfCalcResource.pgcChange(Sender: TObject);
+begin
+  case pgc.ActivePageIndex of
     // Расчет стоимости
     0:
       ;
     // Расчет материалов
     1:
-    begin
-      qrMaterialData.ParamByName('NDS').AsInteger := cbbMatNDS.ItemIndex;
-      CloseOpen(qrMaterialData);
-      CloseOpen(qrMaterialDetail);
-    end;
+      begin
+        qrMaterialData.ParamByName('NDS').AsInteger := cbbNDS.ItemIndex;
+        qrMaterialData.ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
+        qrMaterialDetail.ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
+        CloseOpen(qrMaterialData);
+        CloseOpen(qrMaterialDetail);
+      end;
     // Расчет механизмов
     2:
-      CloseOpen(qrMechData);
+      begin
+        qrMechData.ParamByName('NDS').AsInteger := cbbNDS.ItemIndex;
+        qrMechData.ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
+        CloseOpen(qrMechData);
+      end;
     // Расчет оборудования
     3:
-      CloseOpen(qrDevices);
+      begin
+        qrDevices.ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
+        CloseOpen(qrDevices);
+      end;
     // Расчет з\п
     4:
-      CloseOpen(qrRates);
+      begin
+        qrRates.ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
+        CloseOpen(qrRates);
+      end;
   end;
 end;
 
-procedure TfCalcResource.qrDevicesAfterScroll(DataSet: TDataSet);
+procedure TfCalcResource.pmPopup(Sender: TObject);
 begin
-  cbb2.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
-  se2.Value := DataSet.FieldByName('YEAR').AsInteger;
+  case pgc.ActivePageIndex of
+    // Расчет стоимости
+    0:
+      ;
+    // Расчет материалов
+    1:
+      begin
+        mDetete.Visible := qrMaterialData.FieldByName('DELETED').AsInteger = 0;
+        mRestore.Visible := qrMaterialData.FieldByName('DELETED').AsInteger = 1;
+        mReplace.Visible := True;
+      end;
+    // Расчет механизмов
+    2:
+      begin
+        mDetete.Visible := qrMechData.FieldByName('DELETED').AsInteger = 0;
+        mRestore.Visible := qrMechData.FieldByName('DELETED').AsInteger = 1;
+        mReplace.Visible := True;
+      end;
+    // Расчет оборудования
+    3:
+      begin
+        mDetete.Visible := qrDevices.FieldByName('DELETED').AsInteger = 0;
+        mRestore.Visible := qrDevices.FieldByName('DELETED').AsInteger = 1;
+        mReplace.Visible := False;
+      end;
+    // Расчет з\п
+    4:
+      begin
+        mDetete.Visible := qrRates.FieldByName('DELETED').AsInteger = 0;
+        mRestore.Visible := qrRates.FieldByName('DELETED').AsInteger = 1;
+        mReplace.Visible := False;
+      end;
+  end;
+
 end;
 
 procedure TfCalcResource.qrMaterialDataAfterOpen(DataSet: TDataSet);
@@ -305,33 +384,28 @@ begin
   CalcFooter;
 end;
 
-procedure TfCalcResource.qrMaterialDataAfterScroll(DataSet: TDataSet);
-begin
-  //cbbFromMonth.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
-  //seFromYear.Value := DataSet.FieldByName('YEAR').AsInteger;
-  CloseOpen(qrMaterialDetail);
-end;
-
 procedure TfCalcResource.qrMaterialDataBeforeOpen(DataSet: TDataSet);
 begin
   (DataSet as TFDQuery).ParamByName('SM_ID').AsInteger := IDEstimate;
 end;
 
-procedure TfCalcResource.qrMaterialDetailMasterSetValues(DataSet: TFDDataSet);
+procedure TfCalcResource.qrMaterialDataBeforePost(DataSet: TDataSet);
 begin
-  qrMaterialDetail.ParamByName('NDS').AsInteger := cbbMatNDS.ItemIndex;
-end;
-
-procedure TfCalcResource.qrMechDataAfterScroll(DataSet: TDataSet);
-begin
-  cbb1.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
-  se1.Value := DataSet.FieldByName('YEAR').AsInteger;
-end;
-
-procedure TfCalcResource.qrRatesAfterScroll(DataSet: TDataSet);
-begin
-  cbb4.ItemIndex := DataSet.FieldByName('MONTH').AsInteger - 1;
-  // := DataSet.FieldByName('YEAR').AsInteger;
+  if Application.MessageBox('Произвести замену?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES
+  then
+  begin
+    FastExecSQL('UPDATE materialcard_temp SET FCOAST_NO_NDS = :0,'#13 +
+      'FCOAST_NDS = (FCOAST_NO_NDS*NDS/100),'#13 + 'PROC_TRANSP = :1,'#13 +
+      'FPRICE_NO_NDS=FCOAST_NO_NDS*MAT_COUNT,'#13 + 'FPRICE_NDS=FCOAST_NDS*MAT_COUNT'#13 +
+      'WHERE MAT_CODE=:2', VarArrayOf([qrMaterialData.FieldByName('COAST').Value,
+      qrMaterialData.FieldByName('PROC_TRANSP').Value, qrMaterialData.FieldByName('CODE').Value]));
+    // CloseOpen(qrMaterialData);
+  end
+  else
+  begin
+    DataSet.Cancel;
+    Abort;
+  end;
 end;
 
 end.

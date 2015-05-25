@@ -307,10 +307,9 @@ object fTravelList: TfTravelList
       '  `travel`'
       '  LEFT JOIN `card_acts` ON `card_acts`.`ID`=`travel`.`id_act`'
       
-        'WHERE (`card_acts`.`ID_ESTIMATE_OBJECT`=`smetasourcedata`.`SM_ID' +
-        '` or `smetasourcedata`.`SM_ID`=`travel`.`ID_ESTIMATE`) AND `smet' +
-        'asourcedata`.`OBJ_ID`=:OBJ_ID AND `smetasourcedata`.`SM_TYPE`<>3' +
-        ';')
+        'WHERE (`card_acts`.`ID_OBJECT`=:OBJ_ID or `smetasourcedata`.`SM_' +
+        'ID`=`travel`.`ID_ESTIMATE`) AND `smetasourcedata`.`OBJ_ID`=:OBJ_' +
+        'ID AND `smetasourcedata`.`SM_TYPE`<>3;')
     Left = 25
     Top = 96
     ParamData = <
@@ -350,10 +349,9 @@ object fTravelList: TfTravelList
         '  LEFT JOIN `card_acts` ON `card_acts`.`ID`=`travel_work`.`id_ac' +
         't`'
       
-        'WHERE (`card_acts`.`ID_ESTIMATE_OBJECT`=`smetasourcedata`.`SM_ID' +
-        '` or `smetasourcedata`.`SM_ID`=`travel_work`.`ID_ESTIMATE`) AND ' +
-        '`smetasourcedata`.`OBJ_ID`=:OBJ_ID AND `smetasourcedata`.`SM_TYP' +
-        'E`<>3;')
+        'WHERE (`card_acts`.`ID_OBJECT`=:OBJ_ID or `smetasourcedata`.`SM_' +
+        'ID`=`travel_work`.`ID_ESTIMATE`) AND `smetasourcedata`.`OBJ_ID`=' +
+        ':OBJ_ID AND `smetasourcedata`.`SM_TYPE`<>3;')
     Left = 25
     Top = 152
     ParamData = <
@@ -393,10 +391,9 @@ object fTravelList: TfTravelList
         '  LEFT JOIN `card_acts` ON `card_acts`.`ID`=`worker_deartment`.`' +
         'id_act`'
       
-        'WHERE (`card_acts`.`ID_ESTIMATE_OBJECT`=`smetasourcedata`.`SM_ID' +
-        '` or `smetasourcedata`.`SM_ID`=`worker_deartment`.`ID_ESTIMATE`)' +
-        ' AND `smetasourcedata`.`OBJ_ID`=:OBJ_ID AND `smetasourcedata`.`S' +
-        'M_TYPE`<>3;')
+        'WHERE (`card_acts`.`ID_OBJECT`=:OBJ_ID or `smetasourcedata`.`SM_' +
+        'ID`=`worker_deartment`.`ID_ESTIMATE`) AND `smetasourcedata`.`OBJ' +
+        '_ID`=:OBJ_ID AND `smetasourcedata`.`SM_TYPE`<>3;')
     Left = 25
     Top = 200
     ParamData = <

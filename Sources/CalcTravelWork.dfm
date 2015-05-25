@@ -285,8 +285,8 @@ object fCalcTravelWork: TfCalcTravelWork
       '  `card_acts`.`ID`,'
       '  `card_acts`.`NAME`'
       'FROM '
-      '  `card_acts`, `smetasourcedata`'
-      'WHERE `ID_ESTIMATE_OBJECT`=`SM_ID` AND `OBJ_ID`=:OBJ_ID;')
+      '  `card_acts`'
+      'WHERE `ID_OBJECT`=:OBJ_ID;')
     Left = 233
     Top = 96
     ParamData = <

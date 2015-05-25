@@ -28,7 +28,6 @@ uses
   HelpC5 in 'HelpC5.pas' {FormHelpC5},
   CatalogSSR in 'CatalogSSR.pas' {FormCatalogSSR},
   OXRandOPR in 'OXRandOPR.pas' {FormOXRandOPR},
-  Columns in 'Columns.pas' {FormColumns},
   SignatureSSR in 'SignatureSSR.pas' {FormSignatureSSR},
   SummaryCalculationSettings in 'SummaryCalculationSettings.pas' {FormSummaryCalculationSettings},
   DataTransfer in 'DataTransfer.pas' {FormDataTransfer},
@@ -109,7 +108,8 @@ uses
   fFrameMechanizm in 'fFrameMechanizm.pas' {SprMechanizm: TFrame},
   fFrameEquipment in 'fFrameEquipment.pas' {SprEquipment: TFrame},
   TreeEstimate in 'TreeEstimate.pas' {fTreeEstimate},
-  SuppAgreement in 'SuppAgreement.pas' {fSuppAgreement};
+  SuppAgreement in 'SuppAgreement.pas' {fSuppAgreement},
+  CalcWorkerDepartment in 'CalcWorkerDepartment.pas' {fCalcWorkerDepartment};
 
 {$R *.res}
 var MHandle: THandle;
@@ -135,7 +135,6 @@ begin
   Application.CreateForm(TFormCardObject, FormCardObject);
   Application.CreateForm(TFormWaiting, FormWaiting);
   Application.CreateForm(TFormRequisites, FormRequisites);
-  Application.CreateForm(TFormColumns, FormColumns);
   Application.CreateForm(TFormSignatureSSR, FormSignatureSSR);
   Application.CreateForm(TFormSummaryCalculationSettings, FormSummaryCalculationSettings);
   Application.CreateForm(TFormCalculationSettings, FormCalculationSettings);

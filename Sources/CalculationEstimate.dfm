@@ -3430,15 +3430,6 @@
       Visible = False
       OnClick = PopupMenuCoefOrdersClick
     end
-    object PopupMenuCoefSeparator2: TMenuItem
-      Caption = '-'
-      Visible = False
-    end
-    object PopupMenuCoefColumns: TMenuItem
-      Caption = #1050#1086#1083#1086#1085#1082#1080
-      Visible = False
-      OnClick = PopupMenuCoefColumnsClick
-    end
   end
   object pmMechanizms: TPopupMenu
     OnPopup = pmMechanizmsPopup
@@ -4294,7 +4285,7 @@
         SourceDataType = dtBlob
         TargetDataType = dtAnsiString
       end>
-    FormatOptions.FmtDisplayNumeric = '### ### ### ##0.###'
+    FormatOptions.FmtDisplayNumeric = '### ### ### ##0.####'
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False

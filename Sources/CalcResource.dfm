@@ -1,7 +1,7 @@
 object fCalcResource: TfCalcResource
   Left = 0
   Top = 0
-  ActiveControl = pgc1
+  ActiveControl = pgc
   Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074
   ClientHeight = 362
   ClientWidth = 616
@@ -24,18 +24,25 @@ object fCalcResource: TfCalcResource
     Left = 0
     Top = 0
     Width = 616
-    Height = 32
+    Height = 56
     Align = alTop
     TabOrder = 0
     DesignSize = (
       616
-      32)
+      56)
     object lbl1: TLabel
       Left = 8
       Top = 8
       Width = 35
       Height = 13
       Caption = #1057#1084#1077#1090#1072':'
+    end
+    object lbl6: TLabel
+      Left = 8
+      Top = 32
+      Width = 87
+      Height = 13
+      Caption = #1056#1072#1089#1095#1077#1090#1085#1099#1081' '#1084#1077#1089#1103#1094
     end
     object chkEdit: TCheckBox
       Left = 504
@@ -59,12 +66,70 @@ object fCalcResource: TfCalcResource
       TabOrder = 0
       Text = #1057#1084#1077#1090#1072
     end
+    object cbbFromMonth: TComboBox
+      Left = 101
+      Top = 29
+      Width = 75
+      Height = 21
+      Style = csDropDownList
+      DropDownCount = 12
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 2
+      Items.Strings = (
+        #1071#1085#1074#1072#1088#1100
+        #1060#1077#1074#1088#1072#1083#1100
+        #1052#1072#1088#1090
+        #1040#1087#1088#1077#1083#1100
+        #1052#1072#1081
+        #1048#1102#1085#1100
+        #1048#1102#1083#1100
+        #1040#1074#1075#1091#1089#1090
+        #1057#1077#1085#1090#1103#1073#1088#1100
+        #1054#1082#1090#1103#1073#1088#1100
+        #1053#1086#1103#1073#1088#1100
+        #1044#1077#1082#1072#1073#1088#1100)
+    end
+    object seFromYear: TSpinEdit
+      Left = 179
+      Top = 29
+      Width = 49
+      Height = 22
+      Enabled = False
+      MaxValue = 2100
+      MinValue = 1900
+      ReadOnly = True
+      TabOrder = 3
+      Value = 2014
+    end
+    object cbbNDS: TComboBox
+      Left = 544
+      Top = 29
+      Width = 67
+      Height = 21
+      Style = csDropDownList
+      Anchors = [akTop, akRight]
+      DropDownCount = 12
+      Enabled = False
+      ItemIndex = 0
+      TabOrder = 4
+      Text = #1073#1077#1079' '#1053#1044#1057
+      OnChange = pgcChange
+      Items.Strings = (
+        #1073#1077#1079' '#1053#1044#1057
+        #1089' '#1053#1044#1057)
+    end
   end
-  object pgc1: TPageControl
+  object pgc: TPageControl
     Left = 0
-    Top = 32
+    Top = 56
     Width = 616
-    Height = 330
+    Height = 306
     ActivePage = ts2
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
@@ -76,14 +141,17 @@ object fCalcResource: TfCalcResource
     ParentFont = False
     PopupMenu = pm
     TabOrder = 1
-    OnChange = pgc1Change
+    OnChange = pgcChange
+    ExplicitTop = 32
+    ExplicitHeight = 330
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
+      ExplicitHeight = 302
       object lbl2: TLabel
         Left = 0
         Top = 0
         Width = 608
-        Height = 302
+        Height = 278
         Align = alClient
         Alignment = taCenter
         AutoSize = False
@@ -96,9 +164,10 @@ object fCalcResource: TfCalcResource
     object ts2: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
       ImageIndex = 1
+      ExplicitHeight = 302
       object spl2: TSplitter
         Left = 0
-        Top = 217
+        Top = 193
         Width = 608
         Height = 3
         Cursor = crVSplit
@@ -110,119 +179,51 @@ object fCalcResource: TfCalcResource
         Left = 0
         Top = 0
         Width = 608
-        Height = 57
+        Height = 41
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
         DesignSize = (
           608
-          57)
-        object lbl6: TLabel
-          Left = 4
-          Top = 3
-          Width = 87
-          Height = 13
-          Caption = #1056#1072#1089#1095#1077#1090#1085#1099#1081' '#1084#1077#1089#1103#1094
-        end
-        object cbbFromMonth: TComboBox
-          Left = 97
-          Top = 0
-          Width = 75
-          Height = 21
-          Style = csDropDownList
-          DropDownCount = 12
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 0
-          Items.Strings = (
-            #1071#1085#1074#1072#1088#1100
-            #1060#1077#1074#1088#1072#1083#1100
-            #1052#1072#1088#1090
-            #1040#1087#1088#1077#1083#1100
-            #1052#1072#1081
-            #1048#1102#1085#1100
-            #1048#1102#1083#1100
-            #1040#1074#1075#1091#1089#1090
-            #1057#1077#1085#1090#1103#1073#1088#1100
-            #1054#1082#1090#1103#1073#1088#1100
-            #1053#1086#1103#1073#1088#1100
-            #1044#1077#1082#1072#1073#1088#1100)
-        end
-        object seFromYear: TSpinEdit
-          Left = 175
-          Top = 0
-          Width = 49
-          Height = 22
-          MaxValue = 2100
-          MinValue = 1900
-          TabOrder = 1
-          Value = 2014
-        end
-        object chk1: TCheckBox
-          Left = 230
-          Top = 3
-          Width = 179
-          Height = 17
-          Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
-          TabOrder = 3
-        end
+          41)
         object edtMatCodeFilter: TEdit
           Left = 4
-          Top = 27
+          Top = 11
           Width = 121
           Height = 21
-          TabOrder = 4
+          TabOrder = 0
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1082#1086#1076#1091'...'
           OnChange = edtMatCodeFilterChange
           OnClick = edtMatCodeFilterClick
         end
         object edtMatNameFilter: TEdit
           Left = 131
-          Top = 27
+          Top = 11
           Width = 472
           Height = 21
           Anchors = [akLeft, akTop, akRight]
-          TabOrder = 5
+          TabOrder = 1
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102'...'
           OnChange = edtMatCodeFilterChange
           OnClick = edtMatCodeFilterClick
         end
-        object cbbMatNDS: TComboBox
-          Left = 536
-          Top = 0
-          Width = 67
-          Height = 21
-          Style = csDropDownList
-          Anchors = [akTop, akRight]
-          DropDownCount = 12
-          ItemIndex = 0
-          TabOrder = 2
-          Text = #1073#1077#1079' '#1053#1044#1057
-          OnChange = cbbMatNDSChange
-          Items.Strings = (
-            #1073#1077#1079' '#1053#1044#1057
-            #1089' '#1053#1044#1057)
-        end
       end
       object pnlMatClient: TPanel
         Left = 0
-        Top = 57
+        Top = 41
         Width = 608
-        Height = 160
+        Height = 152
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
+        ExplicitTop = 57
         ExplicitHeight = 176
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
-          Height = 141
+          Height = 133
           Align = alClient
           DataSource = dsMaterialData
           DrawingStyle = gdsClassic
@@ -231,7 +232,6 @@ object fCalcResource: TfCalcResource
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pm
           TabOrder = 0
@@ -241,7 +241,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           IniStorage = FormStorage
-          MultiSelect = True
+          OnTitleBtnClick = grMaterialTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -249,15 +249,14 @@ object fCalcResource: TfCalcResource
           EditControls = <>
           RowsHeight = 17
           TitleRowHeight = 17
-          WordWrap = True
-          WordWrapAllFields = True
+          OnCanEditCell = grMaterialCanEditCell
           Columns = <
             item
               Expanded = False
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 27
+              Width = 18
               Visible = True
             end
             item
@@ -274,7 +273,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 33
+              Width = 22
               Visible = True
             end
             item
@@ -282,7 +281,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 31
+              Width = 20
               Visible = True
             end
             item
@@ -290,7 +289,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 90
+              Width = 59
               Visible = True
             end
             item
@@ -298,7 +297,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-              Width = 90
+              Width = 59
               Visible = True
             end
             item
@@ -306,7 +305,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = 63
+              Width = 41
               Visible = True
             end
             item
@@ -314,7 +313,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 90
+              Width = 59
               Visible = True
             end
             item
@@ -322,7 +321,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 63
+              Width = 41
               Visible = True
             end
             item
@@ -330,13 +329,37 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 96
+              Width = 62
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
+              Width = 41
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
+              Width = 47
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
+              Width = 51
+              Visible = True
+            end
+            item
+              Expanded = False
+              Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
+              Width = 59
               Visible = True
             end>
         end
         object JvDBGridFooter1: TJvDBGridFooter
           Left = 0
-          Top = 141
+          Top = 133
           Width = 608
           Height = 19
           SizeGrip = True
@@ -361,12 +384,13 @@ object fCalcResource: TfCalcResource
       end
       object pnlMatBott: TPanel
         Left = 0
-        Top = 220
+        Top = 196
         Width = 608
         Height = 82
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
+        ExplicitTop = 220
         object spl1: TSplitter
           Left = 1
           Top = 22
@@ -459,9 +483,10 @@ object fCalcResource: TfCalcResource
     object ts3: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       ImageIndex = 2
+      ExplicitHeight = 302
       object spl4: TSplitter
         Left = 0
-        Top = 233
+        Top = 209
         Width = 608
         Height = 3
         Cursor = crVSplit
@@ -470,18 +495,20 @@ object fCalcResource: TfCalcResource
       end
       object pnlMechClient: TPanel
         Left = 0
-        Top = 57
+        Top = 41
         Width = 608
-        Height = 176
+        Height = 168
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
+        ExplicitTop = 57
+        ExplicitHeight = 176
         object grMech: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
-          Height = 157
+          Height = 149
           Align = alClient
           DataSource = dsMechData
           DrawingStyle = gdsClassic
@@ -579,7 +606,7 @@ object fCalcResource: TfCalcResource
         end
         object JvDBGridFooter2: TJvDBGridFooter
           Left = 0
-          Top = 157
+          Top = 149
           Width = 608
           Height = 19
           SizeGrip = True
@@ -603,16 +630,18 @@ object fCalcResource: TfCalcResource
           DataSource = dsMechData
           DBGrid = grMech
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitTop = 157
         end
       end
       object pnlMechBott: TPanel
         Left = 0
-        Top = 236
+        Top = 212
         Width = 608
         Height = 66
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
+        ExplicitTop = 236
         object spl3: TSplitter
           Left = 1
           Top = 22
@@ -699,65 +728,16 @@ object fCalcResource: TfCalcResource
         Left = 0
         Top = 0
         Width = 608
-        Height = 57
+        Height = 41
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
         DesignSize = (
           608
-          57)
-        object lbl3: TLabel
-          Left = 4
-          Top = 3
-          Width = 87
-          Height = 13
-          Caption = #1056#1072#1089#1095#1077#1090#1085#1099#1081' '#1084#1077#1089#1103#1094
-        end
-        object cbb1: TComboBox
-          Left = 97
-          Top = 0
-          Width = 75
-          Height = 21
-          Style = csDropDownList
-          DropDownCount = 12
-          ItemIndex = 1
-          TabOrder = 0
-          Text = #1060#1077#1074#1088#1072#1083#1100
-          Items.Strings = (
-            #1071#1085#1074#1072#1088#1100
-            #1060#1077#1074#1088#1072#1083#1100
-            #1052#1072#1088#1090
-            #1040#1087#1088#1077#1083#1100
-            #1052#1072#1081
-            #1048#1102#1085#1100
-            #1048#1102#1083#1100
-            #1040#1074#1075#1091#1089#1090
-            #1057#1077#1085#1090#1103#1073#1088#1100
-            #1054#1082#1090#1103#1073#1088#1100
-            #1053#1086#1103#1073#1088#1100
-            #1044#1077#1082#1072#1073#1088#1100)
-        end
-        object se1: TSpinEdit
-          Left = 175
-          Top = 0
-          Width = 49
-          Height = 22
-          MaxValue = 2100
-          MinValue = 1900
-          TabOrder = 1
-          Value = 2014
-        end
-        object chk2: TCheckBox
-          Left = 230
-          Top = 3
-          Width = 179
-          Height = 17
-          Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
-          TabOrder = 3
-        end
+          41)
         object edtMechCodeFilter: TEdit
           Left = 4
-          Top = 27
+          Top = 11
           Width = 121
           Height = 21
           Font.Charset = DEFAULT_CHARSET
@@ -766,50 +746,31 @@ object fCalcResource: TfCalcResource
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
-          TabOrder = 4
+          TabOrder = 0
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1082#1086#1076#1091'...'
           OnChange = edtMechCodeFilterChange
           OnClick = edtMatCodeFilterClick
         end
         object edtMechNameFilter: TEdit
           Left = 131
-          Top = 27
+          Top = 11
           Width = 472
           Height = 21
           Anchors = [akLeft, akTop, akRight]
-          TabOrder = 5
+          TabOrder = 1
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102'...'
           OnChange = edtMechCodeFilterChange
           OnClick = edtMatCodeFilterClick
-        end
-        object cbbMechNDS: TComboBox
-          Left = 536
-          Top = 0
-          Width = 67
-          Height = 21
-          Style = csDropDownList
-          Anchors = [akTop, akRight]
-          DropDownCount = 12
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 2
-          OnChange = cbbMechNDSChange
-          Items.Strings = (
-            #1073#1077#1079' '#1053#1044#1057
-            #1089' '#1053#1044#1057)
         end
       end
     end
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
+      ExplicitHeight = 302
       object spl5: TSplitter
         Left = 0
-        Top = 233
+        Top = 209
         Width = 608
         Height = 3
         Cursor = crVSplit
@@ -817,119 +778,52 @@ object fCalcResource: TfCalcResource
         ExplicitLeft = 3
         ExplicitTop = 225
       end
-      object pnl1: TPanel
+      object pnlDevTop: TPanel
         Left = 0
         Top = 0
         Width = 608
-        Height = 57
+        Height = 41
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
         DesignSize = (
           608
-          57)
-        object lbl4: TLabel
-          Left = 4
-          Top = 3
-          Width = 87
-          Height = 13
-          Caption = #1056#1072#1089#1095#1077#1090#1085#1099#1081' '#1084#1077#1089#1103#1094
-        end
-        object cbb2: TComboBox
-          Left = 97
-          Top = 0
-          Width = 75
-          Height = 21
-          Style = csDropDownList
-          DropDownCount = 12
-          ItemIndex = 1
-          TabOrder = 1
-          Text = #1060#1077#1074#1088#1072#1083#1100
-          Items.Strings = (
-            #1071#1085#1074#1072#1088#1100
-            #1060#1077#1074#1088#1072#1083#1100
-            #1052#1072#1088#1090
-            #1040#1087#1088#1077#1083#1100
-            #1052#1072#1081
-            #1048#1102#1085#1100
-            #1048#1102#1083#1100
-            #1040#1074#1075#1091#1089#1090
-            #1057#1077#1085#1090#1103#1073#1088#1100
-            #1054#1082#1090#1103#1073#1088#1100
-            #1053#1086#1103#1073#1088#1100
-            #1044#1077#1082#1072#1073#1088#1100)
-        end
-        object se2: TSpinEdit
-          Left = 175
-          Top = -1
-          Width = 49
-          Height = 22
-          MaxValue = 2100
-          MinValue = 1900
-          TabOrder = 0
-          Value = 2014
-        end
-        object chk3: TCheckBox
-          Left = 230
-          Top = 3
-          Width = 179
-          Height = 17
-          Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
-          TabOrder = 3
-        end
+          41)
         object edt1: TEdit
           Left = 4
-          Top = 27
+          Top = 11
           Width = 121
           Height = 21
-          TabOrder = 4
+          TabOrder = 0
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1082#1086#1076#1091'...'
           OnClick = edtMatCodeFilterClick
         end
         object edt2: TEdit
           Left = 131
-          Top = 27
+          Top = 11
           Width = 472
           Height = 21
           Anchors = [akLeft, akTop, akRight]
-          TabOrder = 5
+          TabOrder = 1
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102'...'
           OnClick = edtMatCodeFilterClick
         end
-        object cbb3: TComboBox
-          Left = 536
-          Top = 0
-          Width = 67
-          Height = 21
-          Style = csDropDownList
-          Anchors = [akTop, akRight]
-          DropDownCount = 12
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 2
-          Items.Strings = (
-            #1073#1077#1079' '#1053#1044#1057
-            #1089' '#1053#1044#1057)
-        end
       end
-      object pnl3: TPanel
+      object pnlDevClient: TPanel
         Left = 0
-        Top = 57
+        Top = 41
         Width = 608
-        Height = 176
+        Height = 168
         Align = alClient
         BevelOuter = bvNone
-        Caption = 'pnlMatClient'
         TabOrder = 1
+        ExplicitTop = 57
+        ExplicitHeight = 176
         object grDev: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
-          Height = 157
+          Height = 149
           Align = alClient
           DataSource = dsDevices
           DrawingStyle = gdsClassic
@@ -1036,7 +930,7 @@ object fCalcResource: TfCalcResource
         end
         object JvDBGridFooter3: TJvDBGridFooter
           Left = 0
-          Top = 157
+          Top = 149
           Width = 608
           Height = 19
           SizeGrip = True
@@ -1056,16 +950,17 @@ object fCalcResource: TfCalcResource
           DataSource = dsDevices
           DBGrid = grDev
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitTop = 157
         end
       end
-      object pnl5: TPanel
+      object pnlDevBott: TPanel
         Left = 0
-        Top = 236
+        Top = 212
         Width = 608
         Height = 66
         Align = alBottom
-        Caption = 'pnlMatBott'
         TabOrder = 2
+        ExplicitTop = 236
         object spl6: TSplitter
           Left = 1
           Top = 22
@@ -1158,7 +1053,8 @@ object fCalcResource: TfCalcResource
       Font.Style = []
       ImageIndex = 4
       ParentFont = False
-      object pnl6: TPanel
+      ExplicitHeight = 302
+      object pnlRatesTop: TPanel
         Left = 0
         Top = 0
         Width = 608
@@ -1235,19 +1131,20 @@ object fCalcResource: TfCalcResource
             #1044#1077#1082#1072#1073#1088#1100)
         end
       end
-      object pnl7: TPanel
+      object pnlRatesClient: TPanel
         Left = 0
         Top = 26
         Width = 608
-        Height = 276
+        Height = 252
         Align = alClient
-        Caption = 'pnl7'
+        Caption = 'pnlRatesClient'
         TabOrder = 1
+        ExplicitHeight = 276
         object grRates: TJvDBGrid
           Left = 1
           Top = 1
           Width = 606
-          Height = 255
+          Height = 231
           Align = alClient
           DataSource = dsRates
           DrawingStyle = gdsClassic
@@ -1375,7 +1272,7 @@ object fCalcResource: TfCalcResource
         end
         object JvDBGridFooter4: TJvDBGridFooter
           Left = 1
-          Top = 256
+          Top = 232
           Width = 606
           Height = 19
           SizeGrip = True
@@ -1395,12 +1292,14 @@ object fCalcResource: TfCalcResource
           DataSource = dsRates
           DBGrid = grRates
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitTop = 256
         end
       end
     end
   end
   object pm: TPopupMenu
-    Left = 572
+    OnPopup = pmPopup
+    Left = 564
     Top = 168
     object N1: TMenuItem
       Caption = #1042#1099#1076#1077#1083#1080#1090#1100
@@ -1411,23 +1310,28 @@ object fCalcResource: TfCalcResource
     object N4: TMenuItem
       Caption = '-'
     end
-    object N3: TMenuItem
+    object mDetete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
     end
-    object N5: TMenuItem
+    object mRestore: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+    end
+    object mReplace: TMenuItem
+      Caption = #1047#1072#1084#1077#1085#1080#1090#1100
+      OnClick = mReplaceClick
     end
     object mN7: TMenuItem
       Caption = '-'
     end
-    object mN6: TMenuItem
+    object mShowDeleted: TMenuItem
       AutoCheck = True
       Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
+      OnClick = pgcChange
     end
   end
   object qrMaterialData: TFDQuery
     AfterOpen = qrMaterialDataAfterOpen
-    AfterScroll = qrMaterialDataAfterScroll
+    BeforePost = qrMaterialDataBeforePost
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1474,6 +1378,7 @@ object fCalcResource: TfCalcResource
       '  DELETED'
       'FROM '
       '  materialcard_temp'
+      'WHERE ((DELETED = 0) OR (:SHOW_DELETED))'
       
         'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, COAST' +
         ', DELETED'
@@ -1486,6 +1391,10 @@ object fCalcResource: TfCalcResource
         DataType = ftInteger
         ParamType = ptInput
         Value = 1
+      end
+      item
+        Name = 'SHOW_DELETED'
+        ParamType = ptInput
       end>
   end
   object dsMaterialData: TDataSource
@@ -1496,7 +1405,6 @@ object fCalcResource: TfCalcResource
   object qrMechData: TFDQuery
     BeforeOpen = qrMaterialDataBeforeOpen
     AfterOpen = qrMaterialDataAfterOpen
-    AfterScroll = qrMechDataAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1613,7 +1521,6 @@ object fCalcResource: TfCalcResource
   object qrDevices: TFDQuery
     BeforeOpen = qrMaterialDataBeforeOpen
     AfterOpen = qrMaterialDataAfterOpen
-    AfterScroll = qrDevicesAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1715,7 +1622,6 @@ object fCalcResource: TfCalcResource
   object qrRates: TFDQuery
     BeforeOpen = qrMaterialDataBeforeOpen
     AfterOpen = qrMaterialDataAfterOpen
-    AfterScroll = qrRatesAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1812,15 +1718,18 @@ object fCalcResource: TfCalcResource
     AppStorage = FormMain.AppIni
     AppStoragePath = '%FORM_NAME%\'
     Options = []
+    StoredProps.Strings = (
+      'pnlMatBott.Height'
+      'pnlMechBott.Height'
+      'pnlDevBott.Height')
     StoredValues = <>
     Left = 568
-    Top = 224
+    Top = 216
   end
   object qrMaterialDetail: TFDQuery
     BeforeOpen = qrMaterialDataBeforeOpen
     MasterSource = dsMaterialData
     MasterFields = 'CODE'
-    OnMasterSetValues = qrMaterialDetailMasterSetValues
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1845,20 +1754,21 @@ object fCalcResource: TfCalcResource
     SQL.Strings = (
       'SELECT '
       '  m.MAT_CODE AS CODE, '
-      '  COALESCE(m.MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      '  IFNULL(m.MAT_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       
         '  IF(:NDS=1, IF(m.FCOAST_NDS<>0, m.FCOAST_NDS, m.COAST_NDS), IF(' +
         'm.FCOAST_NO_NDS<>0, m.FCOAST_NO_NDS, m.COAST_NO_NDS)) AS COAST, ' +
         '/* '#1062#1077#1085#1072' */'
       
-        '  (SELECT SUM(MAT_COUNT) FROM MATERIALCARD_ACT WHERE ID=m.ID) AS' +
-        ' CNT_DONE, /*'#1042#1099#1087#1086#1083#1085#1077#1085#1086'*/ '
+        '  IFNULL((SELECT SUM(MAT_COUNT) FROM MATERIALCARD_ACT WHERE ID=m' +
+        '.ID AND DELETED = 0), 0) AS CNT_DONE, /*'#1042#1099#1087#1086#1083#1085#1077#1085#1086'*/ '
       '  m.DELETED'
       'FROM        '
       
         'smetasourcedata, data_estimate_temp AS d, card_rate_temp AS c, m' +
         'aterialcard_temp AS m'
-      'WHERE '
+      'WHERE'
+      '  ((m.DELETED = 0) OR (:SHOW_DELETED)) AND '
       '  ((smetasourcedata.SM_ID = :SM_ID) OR'
       '           (smetasourcedata.PARENT_ID = :SM_ID) OR '
       '           (smetasourcedata.PARENT_ID IN ('
@@ -1881,6 +1791,10 @@ object fCalcResource: TfCalcResource
         DataType = ftInteger
         ParamType = ptInput
         Value = 0
+      end
+      item
+        Name = 'SHOW_DELETED'
+        ParamType = ptInput
       end
       item
         Name = 'SM_ID'
