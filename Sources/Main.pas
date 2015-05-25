@@ -587,12 +587,12 @@ begin
   ButtonsWindows[CountOpenWindows].ShowHint := true;
   ButtonsWindows[CountOpenWindows].Hint := HintButton;
 
-    if (AEventType = 1) then
-      ButtonsWindows[CountOpenWindows].OnClick := ButtonClickEvent2
-    else
-      ButtonsWindows[CountOpenWindows].OnClick := ButtonClickEvent1;
+  if (AEventType = 1) then
+    ButtonsWindows[CountOpenWindows].OnClick := ButtonClickEvent2
+  else
+    ButtonsWindows[CountOpenWindows].OnClick := ButtonClickEvent1;
 
-    ButtonsWindows[CountOpenWindows].Tag := integer(AForm);
+  ButtonsWindows[CountOpenWindows].Tag := integer(AForm);
 
   Inc(CountOpenWindows);
 end;
@@ -837,8 +837,8 @@ end;
 
 procedure TFormMain.N2Click(Sender: TObject);
 begin
- if Assigned(FormCalculationEstimate) then
-   ShowCalcResource(FormCalculationEstimate.IdEstimate);
+  if Assigned(FormCalculationEstimate) then
+    ShowCalcResource(FormCalculationEstimate.IdEstimate);
 end;
 
 // Расход материалов по акту
@@ -1770,13 +1770,13 @@ end;
 
 procedure TFormMain.HelpAboutClick(Sender: TObject);
 var
-  FormAbout: TFormAbout;
+  fAbout: TfAbout;
 begin
-  FormAbout := TFormAbout.Create(nil);
+  fAbout := TfAbout.Create(nil);
   try
-    FormAbout.ShowModal;
+    fAbout.ShowModal;
   finally
-    FreeAndNil(FormAbout);
+    FreeAndNil(fAbout);
   end;
 end;
 

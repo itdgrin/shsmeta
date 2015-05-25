@@ -284,7 +284,7 @@ begin
   else
     FrameStatusBar.InsertText(1, '-1'); // Нет записей
 
-  Memo.Text := ADOQueryNameWork.Value;
+  Memo.Text := string(ADOQueryNameWork.Value);
 end;
 
 procedure TFrameOXROPR.ComboBoxResolutionChange(Sender: TObject);

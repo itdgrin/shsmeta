@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls;
 
 type
-  TFormAbout = class(TForm)
+  TfAbout = class(TForm)
     pnl1: TPanel;
     imgProgramIcon: TImage;
     lblProductName: TLabel;
@@ -28,7 +28,7 @@ uses Main;
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormAbout.FormShow(Sender: TObject);
+procedure TfAbout.FormShow(Sender: TObject);
 begin
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;

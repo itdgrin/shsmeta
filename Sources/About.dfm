@@ -1,4 +1,4 @@
-object FormAbout: TFormAbout
+object fAbout: TfAbout
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]

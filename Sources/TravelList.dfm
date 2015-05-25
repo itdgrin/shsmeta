@@ -277,6 +277,7 @@ object fTravelList: TfTravelList
     SQL.Strings = (
       'SELECT OBJ_ID, FULL_NAME as NAME, BEG_STROJ as DATE'
       'FROM objcards '
+      'WHERE DEL_FLAG=0'
       'ORDER BY NAME')
     Left = 369
   end

@@ -14,7 +14,7 @@ uses
   TariffsMechanism in 'TariffsMechanism.pas' {FormTariffsMechanism},
   TariffsDump in 'TariffsDump.pas' {FormTariffsDump},
   TariffsIndex in 'TariffsIndex.pas' {FormTariffsIndex},
-  About in 'About.pas' {FormAbout},
+  About in 'About.pas' {fAbout},
   CalculationEstimate in 'CalculationEstimate.pas' {FormCalculationEstimate},
   ConnectDatabase in 'ConnectDatabase.pas' {FormConnectDatabase},
   CardObject in 'CardObject.pas' {FormCardObject},
