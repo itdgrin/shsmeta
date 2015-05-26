@@ -351,7 +351,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   PricesReferenceData, AdditionData, PartsEstimates,
   SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
-  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx;
+  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6;
 
 {$R *.dfm}
 
@@ -1314,11 +1314,38 @@ end;
 
 procedure TFormMain.N61Click(Sender: TObject);
 begin
-  if (not Assigned(fKC6Journal)) then
-    fKC6Journal := TfKC6Journal.Create(Self);
-  if Assigned(FormObjectsAndEstimates) then
-    fKC6Journal.LocateObject(FormObjectsAndEstimates.getCurObject);
-  fKC6Journal.Show;
+  if (not(Assigned(FormCalculationEstimate))) then
+  begin
+    if (not Assigned(fKC6Journal)) then
+      fKC6Journal := TfKC6Journal.Create(Self);
+    if Assigned(FormObjectsAndEstimates) then
+      fKC6Journal.LocateObject(FormObjectsAndEstimates.getCurObject);
+    fKC6Journal.LocateEstimate(FormObjectsAndEstimates.IdEstimate);
+    fKC6Journal.tvEstimates.SelectNode(FormObjectsAndEstimates.IdEstimate).Expand(False);
+    fKC6Journal.tvEstimatesClick(Self);
+    fKC6Journal.Show;
+  end
+  else
+  begin
+    if FormCalculationEstimate.Act then
+    // для акта
+    begin
+      if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт сметы',
+        MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
+        FormKC6.MyShow(FormCalculationEstimate.IdObject);
+    end
+    // Для сметы
+    else
+    begin
+      if (not Assigned(fKC6Journal)) then
+        fKC6Journal := TfKC6Journal.Create(Self);
+      fKC6Journal.LocateObject(FormCalculationEstimate.IdObject);
+      fKC6Journal.LocateEstimate(FormCalculationEstimate.IdEstimate);
+      fKC6Journal.tvEstimates.SelectNode(FormCalculationEstimate.IdEstimate).Expand(False);
+      fKC6Journal.tvEstimatesClick(Self);
+      fKC6Journal.Show;
+    end;
+  end;
 end;
 
 procedure TFormMain.N6Click(Sender: TObject);

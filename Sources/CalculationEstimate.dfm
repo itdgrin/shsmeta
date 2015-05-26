@@ -550,7 +550,7 @@
         end
         object Button4: TButton
           Left = 731
-          Top = -5
+          Top = 1
           Width = 85
           Height = 24
           Caption = #1046#1091#1088#1085#1072#1083' 6-KC'

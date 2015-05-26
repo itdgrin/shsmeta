@@ -1509,6 +1509,9 @@ begin
     if (not Assigned(fKC6Journal)) then
       fKC6Journal := TfKC6Journal.Create(Self);
     fKC6Journal.LocateObject(IdObject);
+    fKC6Journal.LocateEstimate(IdEstimate);
+    fKC6Journal.tvEstimates.SelectNode(IdEstimate).Expand(False);
+    fKC6Journal.tvEstimatesClick(Self);
     fKC6Journal.Show;
   end;
 end;

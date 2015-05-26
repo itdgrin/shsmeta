@@ -1,6 +1,7 @@
 object fKC6Journal: TfKC6Journal
   Left = 0
   Top = 0
+  ActiveControl = tsEstimate
   Caption = #1046#1091#1088#1085#1072#1083' '#1050#1057'-6'
   ClientHeight = 400
   ClientWidth = 962
@@ -46,10 +47,6 @@ object fKC6Journal: TfKC6Journal
       Font.Style = []
       ParentFont = False
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 27
-      ExplicitWidth = 0
-      ExplicitHeight = 312
       object spl1: TSplitter
         Left = 0
         Top = 121
@@ -198,10 +195,6 @@ object fKC6Journal: TfKC6Journal
       ImageIndex = 1
       ParentFont = False
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 27
-      ExplicitWidth = 0
-      ExplicitHeight = 312
       object dbgrdPTM: TJvDBGrid
         Left = 0
         Top = 0
@@ -241,10 +234,6 @@ object fKC6Journal: TfKC6Journal
       ImageIndex = 2
       ParentFont = False
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 27
-      ExplicitWidth = 0
-      ExplicitHeight = 312
       object dbgrdEstimate: TJvDBGrid
         Left = 0
         Top = 0
@@ -929,6 +918,7 @@ object fKC6Journal: TfKC6Journal
     SQL.Strings = (
       'SELECT OBJ_ID, FULL_NAME as NAME, BEG_STROJ as DATE'
       'FROM objcards '
+      'WHERE DEL_FLAG=0'
       'ORDER BY NAME')
     Left = 25
   end

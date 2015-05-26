@@ -72,6 +72,7 @@ type
     procedure UpdateNumPP;
   public
     procedure LocateObject(Object_ID: Integer);
+    procedure LocateEstimate(Estimate_ID: Integer);
   end;
 
 const
@@ -765,6 +766,13 @@ procedure TfKC6Journal.tvEstimatesClick(Sender: TObject);
 begin
   cbbFromMonthChange(Self);
   UpdateNumPP;
+end;
+
+procedure TfKC6Journal.LocateEstimate(Estimate_ID: Integer);
+begin
+  if not qrTreeData.Active then
+    Exit;
+  qrTreeData.Locate('SM_ID', Estimate_ID, []);
 end;
 
 procedure TfKC6Journal.LocateObject(Object_ID: Integer);
