@@ -353,6 +353,9 @@ var
   i: Integer;
 begin
   Result := Null;
+  if not CheckQrActiveEmpty(Query) then
+    Exit;
+
   e := Query.AfterScroll;
   Query.DisableControls;
   try

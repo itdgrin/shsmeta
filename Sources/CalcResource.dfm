@@ -2,7 +2,7 @@ object fCalcResource: TfCalcResource
   Left = 0
   Top = 0
   ActiveControl = pgc
-  Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074
+  Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074' ['#1088#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077' '#1079#1072#1087#1088#1077#1097#1077#1085#1086']'
   ClientHeight = 362
   ClientWidth = 616
   Color = clBtnFace
@@ -79,8 +79,10 @@ object fCalcResource: TfCalcResource
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
+      ItemIndex = 0
       ParentFont = False
       TabOrder = 2
+      Text = #1071#1085#1074#1072#1088#1100
       Items.Strings = (
         #1071#1085#1074#1072#1088#1100
         #1060#1077#1074#1088#1072#1083#1100
@@ -240,6 +242,7 @@ object fCalcResource: TfCalcResource
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          OnDrawColumnCell = grMaterialDrawColumnCell
           IniStorage = FormStorage
           OnTitleBtnClick = grMaterialTitleBtnClick
           AutoSizeColumns = True
@@ -334,24 +337,28 @@ object fCalcResource: TfCalcResource
             end
             item
               Expanded = False
+              FieldName = 'MAT_PROC_ZAC'
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
               Width = 41
               Visible = True
             end
             item
               Expanded = False
+              FieldName = 'MAT_PROC_PODR'
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
               Width = 47
               Visible = True
             end
             item
               Expanded = False
+              FieldName = 'TRANSP_PROC_ZAC'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
               Width = 51
               Visible = True
             end
             item
               Expanded = False
+              FieldName = 'TRANSP_PROC_PODR'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
               Width = 59
               Visible = True
@@ -537,6 +544,7 @@ object fCalcResource: TfCalcResource
           TitleRowHeight = 17
           WordWrap = True
           WordWrapAllFields = True
+          OnCanEditCell = grMaterialCanEditCell
           Columns = <
             item
               Expanded = False
@@ -845,6 +853,7 @@ object fCalcResource: TfCalcResource
           TitleRowHeight = 17
           WordWrap = True
           WordWrapAllFields = True
+          OnCanEditCell = grMaterialCanEditCell
           Columns = <
             item
               Expanded = False
@@ -1173,6 +1182,7 @@ object fCalcResource: TfCalcResource
           TitleRowHeight = 17
           WordWrap = True
           WordWrapAllFields = True
+          OnCanEditCell = grMaterialCanEditCell
           Columns = <
             item
               Expanded = False
@@ -1312,9 +1322,11 @@ object fCalcResource: TfCalcResource
     end
     object mDetete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = mDeteteClick
     end
     object mRestore: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      OnClick = mRestoreClick
     end
     object mReplace: TMenuItem
       Caption = #1047#1072#1084#1077#1085#1080#1090#1100
@@ -1330,6 +1342,7 @@ object fCalcResource: TfCalcResource
     end
   end
   object qrMaterialData: TFDQuery
+    BeforeOpen = qrMaterialDataBeforeOpen
     AfterOpen = qrMaterialDataAfterOpen
     BeforePost = qrMaterialDataBeforePost
     Connection = DM.Connect
@@ -1343,13 +1356,11 @@ object fCalcResource: TfCalcResource
       item
         SourceDataType = dtMemo
         TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtByteString
-        TargetDataType = dtAnsiString
       end>
     FormatOptions.DefaultParamDataType = ftBCD
-    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
@@ -1368,20 +1379,25 @@ object fCalcResource: TfCalcResource
         '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
         '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
       
-        '  SUM(IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FP' +
-        'RICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS))) AS PRICE, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' */ '
+        '  SUM(ROUND(IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS),' +
+        ' IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))*COALESCE(MAT' +
+        '_COUNT, 0))) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
       
         '  SUM(IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS), IF' +
         '(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS))) AS TRANSP, ' +
         '/* '#1090#1088#1072#1085#1089#1087'. */ '
-      '  DELETED'
+      '  DELETED,'
+      '  MAT_PROC_ZAC,'
+      '  MAT_PROC_PODR,'
+      '  TRANSP_PROC_ZAC,'
+      '  TRANSP_PROC_PODR'
       'FROM '
       '  materialcard_temp'
       'WHERE ((DELETED = 0) OR (:SHOW_DELETED))'
       
         'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, COAST' +
-        ', DELETED'
+        ', DELETED,  MAT_PROC_ZAC, MAT_PROC_PODR, TRANSP_PROC_ZAC, TRANSP' +
+        '_PROC_PODR'
       'ORDER BY 1')
     Left = 27
     Top = 168
@@ -1394,6 +1410,7 @@ object fCalcResource: TfCalcResource
       end
       item
         Name = 'SHOW_DELETED'
+        DataType = ftBCD
         ParamType = ptInput
       end>
   end
@@ -1813,5 +1830,48 @@ object fCalcResource: TfCalcResource
     DataSet = qrMaterialDetail
     Left = 27
     Top = 312
+  end
+  object qrEstimate: TFDQuery
+    AfterOpen = qrMaterialDataAfterOpen
+    BeforePost = qrMaterialDataBeforePost
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache, evAutoFetchAll]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    FormatOptions.DefaultParamDataType = ftBCD
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      
+        'SELECT CONCAT(SM_NUMBER, " ",  NAME) AS NAME, NDS, stavka.MONAT ' +
+        'AS MONTH, stavka.YEAR'
+      'FROM '
+      '  smetasourcedata, stavka'
+      'WHERE '
+      'smetasourcedata.SM_ID=:SM_ID AND  '
+      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID')
+    Left = 331
+    Top = 24
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        ParamType = ptInput
+      end>
   end
 end

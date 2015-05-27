@@ -88,6 +88,7 @@ type
     cbbFromMonth: TComboBox;
     seFromYear: TSpinEdit;
     cbbNDS: TComboBox;
+    qrEstimate: TFDQuery;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -106,6 +107,10 @@ type
     procedure qrMaterialDataBeforePost(DataSet: TDataSet);
     procedure grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
     procedure chkEditClick(Sender: TObject);
+    procedure mDeteteClick(Sender: TObject);
+    procedure mRestoreClick(Sender: TObject);
+    procedure grMaterialDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -132,9 +137,12 @@ begin
   if (not Assigned(fCalcResource)) then
     fCalcResource := TfCalcResource.Create(nil);
   fCalcResource.IDEstimate := ID_ESTIMATE;
-  fCalcResource.edtEstimateName.Text :=
-    FastSelectSQLOne('SELECT CONCAT(SM_NUMBER, " ",  NAME) FROM smetasourcedata WHERE SM_ID=:SM_ID',
-    VarArrayOf([ID_ESTIMATE]));
+  fCalcResource.qrEstimate.ParamByName('SM_ID').Value := ID_ESTIMATE;
+  fCalcResource.qrEstimate.Active := True;
+  fCalcResource.cbbFromMonth.ItemIndex := fCalcResource.qrEstimate.FieldByName('MONTH').AsInteger - 1;
+  fCalcResource.edtEstimateName.Text := fCalcResource.qrEstimate.FieldByName('NAME').AsString;
+  fCalcResource.seFromYear.Value := fCalcResource.qrEstimate.FieldByName('YEAR').AsInteger;
+  fCalcResource.cbbNDS.ItemIndex := fCalcResource.qrEstimate.FieldByName('NDS').AsInteger;
   fCalcResource.pgc.ActivePageIndex := 1;
   fCalcResource.Show;
 end;
@@ -169,7 +177,9 @@ begin
     Exit;
 
   if (Field = grMaterial.Columns[4].Field) or (Field = grMaterial.Columns[6].Field) or
-    (Field = grMaterial.Columns[10].Field) then
+    (Field = grMaterial.Columns[7].Field) or (Field = grMaterial.Columns[10].Field) or
+    (Field = grMaterial.Columns[11].Field) or (Field = grMaterial.Columns[12].Field) or
+    (Field = grMaterial.Columns[13].Field) then
   begin
     Result := True;
     Exit;
@@ -178,10 +188,16 @@ end;
 
 procedure TfCalcResource.chkEditClick(Sender: TObject);
 begin
+
   cbbNDS.Enabled := chkEdit.Checked;
-  seFromYear.Enabled := chkEdit.Checked;
-  seFromYear.ReadOnly := not chkEdit.Checked;
-  cbbFromMonth.Enabled := chkEdit.Checked;
+  { seFromYear.Enabled := chkEdit.Checked;
+    seFromYear.ReadOnly := not chkEdit.Checked;
+    cbbFromMonth.Enabled := chkEdit.Checked;
+  }
+  if not chkEdit.Checked then
+    Caption := 'Расчет стоимости ресурсов [редактирование запрещено]'
+  else
+    Caption := 'Расчет стоимости ресурсов [редактирование разрешено]';
 end;
 
 procedure TfCalcResource.edtMechCodeFilterChange(Sender: TObject);
@@ -249,6 +265,15 @@ begin
   AllowEdit := CanEditField(Field);
 end;
 
+procedure TfCalcResource.grMaterialDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  if qrMaterialData.FieldByName('DELETED').AsInteger = 1 then
+    grMaterial.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsStrikeOut];
+  grMaterial.Canvas.FillRect(Rect);
+  grMaterial.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Column.Field.AsString);
+end;
+
 procedure TfCalcResource.grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
 var
   s: string;
@@ -269,6 +294,44 @@ begin
     Exit;
 
   CalcValue := Footer[Sender.DataSource.DataSet.FieldByName(FieldName).Index];
+end;
+
+procedure TfCalcResource.mDeteteClick(Sender: TObject);
+begin
+  case pgc.ActivePageIndex of
+    // Расчет стоимости
+    0:
+      ;
+    // Расчет материалов
+    1:
+      begin
+        if not(qrMaterialData.State in [dsEdit]) then
+          qrMaterialData.Edit;
+        qrMaterialData.FieldByName('DELETED').Value := 1;
+      end;
+    // Расчет механизмов
+    2:
+      begin
+        if not(qrMechData.State in [dsEdit]) then
+          qrMechData.Edit;
+        qrMechData.FieldByName('DELETED').Value := 1;
+      end;
+    // Расчет оборудования
+    3:
+      begin
+        if not(qrDevices.State in [dsEdit]) then
+          qrDevices.Edit;
+        qrDevices.FieldByName('DELETED').Value := 1;
+      end;
+
+    // Расчет з\п
+    4:
+      begin
+        if not(qrRates.State in [dsEdit]) then
+          qrRates.Edit;
+        qrRates.FieldByName('DELETED').Value := 1;
+      end;
+  end;
 end;
 
 procedure TfCalcResource.mReplaceClick(Sender: TObject);
@@ -304,6 +367,44 @@ begin
     end;
 end;
 
+procedure TfCalcResource.mRestoreClick(Sender: TObject);
+begin
+  case pgc.ActivePageIndex of
+    // Расчет стоимости
+    0:
+      ;
+    // Расчет материалов
+    1:
+      begin
+        if not(qrMaterialData.State in [dsEdit]) then
+          qrMaterialData.Edit;
+        qrMaterialData.FieldByName('DELETED').Value := 0;
+      end;
+    // Расчет механизмов
+    2:
+      begin
+        if not(qrMechData.State in [dsEdit]) then
+          qrMechData.Edit;
+        qrMechData.FieldByName('DELETED').Value := 0;
+      end;
+    // Расчет оборудования
+    3:
+      begin
+        if not(qrDevices.State in [dsEdit]) then
+          qrDevices.Edit;
+        qrDevices.FieldByName('DELETED').Value := 0;
+      end;
+
+    // Расчет з\п
+    4:
+      begin
+        if not(qrRates.State in [dsEdit]) then
+          qrRates.Edit;
+        qrRates.FieldByName('DELETED').Value := 0;
+      end;
+  end;
+end;
+
 procedure TfCalcResource.pgcChange(Sender: TObject);
 begin
   case pgc.ActivePageIndex of
@@ -313,29 +414,22 @@ begin
     // Расчет материалов
     1:
       begin
-        qrMaterialData.ParamByName('NDS').AsInteger := cbbNDS.ItemIndex;
-        qrMaterialData.ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
-        qrMaterialDetail.ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
         CloseOpen(qrMaterialData);
         CloseOpen(qrMaterialDetail);
       end;
     // Расчет механизмов
     2:
       begin
-        qrMechData.ParamByName('NDS').AsInteger := cbbNDS.ItemIndex;
-        qrMechData.ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
         CloseOpen(qrMechData);
       end;
     // Расчет оборудования
     3:
       begin
-        qrDevices.ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
         CloseOpen(qrDevices);
       end;
     // Расчет з\п
     4:
       begin
-        qrRates.ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
         CloseOpen(qrRates);
       end;
   end;
@@ -381,29 +475,67 @@ end;
 
 procedure TfCalcResource.qrMaterialDataAfterOpen(DataSet: TDataSet);
 begin
-  CalcFooter;
+  if CheckQrActiveEmpty(DataSet) then
+    CalcFooter;
 end;
 
 procedure TfCalcResource.qrMaterialDataBeforeOpen(DataSet: TDataSet);
 begin
-  (DataSet as TFDQuery).ParamByName('SM_ID').AsInteger := IDEstimate;
+  if (DataSet as TFDQuery).FindParam('SM_ID') <> nil then
+    (DataSet as TFDQuery).ParamByName('SM_ID').AsInteger := IDEstimate;
+  if (DataSet as TFDQuery).FindParam('NDS') <> nil then
+    (DataSet as TFDQuery).ParamByName('NDS').AsInteger := cbbNDS.ItemIndex;
+  if (DataSet as TFDQuery).FindParam('SHOW_DELETED') <> nil then
+    (DataSet as TFDQuery).ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
 end;
 
 procedure TfCalcResource.qrMaterialDataBeforePost(DataSet: TDataSet);
 begin
-  if Application.MessageBox('Произвести замену?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES
+  if Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES
   then
   begin
-    FastExecSQL('UPDATE materialcard_temp SET FCOAST_NO_NDS = :0,'#13 +
-      'FCOAST_NDS = (FCOAST_NO_NDS*NDS/100),'#13 + 'PROC_TRANSP = :1,'#13 +
-      'FPRICE_NO_NDS=FCOAST_NO_NDS*MAT_COUNT,'#13 + 'FPRICE_NDS=FCOAST_NDS*MAT_COUNT'#13 +
-      'WHERE MAT_CODE=:2', VarArrayOf([qrMaterialData.FieldByName('COAST').Value,
-      qrMaterialData.FieldByName('PROC_TRANSP').Value, qrMaterialData.FieldByName('CODE').Value]));
-    // CloseOpen(qrMaterialData);
+    case cbbNDS.ItemIndex of
+      // Если в режиме без НДС
+      0:
+        begin
+          FastExecSQL('UPDATE materialcard_temp SET'#13 + 'TRANSP_PROC_PODR=:1, TRANSP_PROC_ZAC=:2,'#13 +
+            'MAT_PROC_PODR=:3, MAT_PROC_ZAC=:4, DELETED=:5,'#13 + 'FCOAST_NO_NDS=:6,'#13 +
+            'FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),'#13 + 'PROC_TRANSP=:7'#13 +
+            'WHERE MAT_CODE=:8 AND PROC_TRANSP=:9 AND DELETED=:10'#13 +
+            'AND MAT_PROC_ZAC=:11 AND MAT_PROC_PODR=:12'#13 +
+            'AND TRANSP_PROC_ZAC=:13 AND TRANSP_PROC_PODR=:14',
+            VarArrayOf([qrMaterialData.FieldByName('TRANSP_PROC_PODR').Value,
+            qrMaterialData.FieldByName('TRANSP_PROC_ZAC').Value, qrMaterialData.FieldByName('MAT_PROC_PODR')
+            .Value, qrMaterialData.FieldByName('MAT_PROC_ZAC').Value, qrMaterialData.FieldByName('DELETED')
+            .Value, qrMaterialData.FieldByName('COAST').Value, qrMaterialData.FieldByName('PROC_TRANSP')
+            .Value, qrMaterialData.FieldByName('CODE').Value, qrMaterialData.FieldByName('PROC_TRANSP')
+            .OldValue, qrMaterialData.FieldByName('DELETED').OldValue,
+            qrMaterialData.FieldByName('MAT_PROC_ZAC').OldValue, qrMaterialData.FieldByName('MAT_PROC_PODR')
+            .OldValue, qrMaterialData.FieldByName('TRANSP_PROC_ZAC').OldValue,
+            qrMaterialData.FieldByName('TRANSP_PROC_PODR').OldValue]));
+
+          if qrMaterialData.FieldByName('TRANSP').Value <> qrMaterialData.FieldByName('TRANSP').OldValue then
+            FastExecSQL('UPDATE materialcard_temp SET FTRANSP_NO_NDS = :1, FTRANSP_NDS = :2'#13 +
+              'WHERE MAT_CODE=:3 AND PROC_TRANSP=:4 AND DELETED=:5'#13 +
+              'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 +
+              'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9',
+              VarArrayOf([qrMaterialData.FieldByName('TRANSP').Value, qrMaterialData.FieldByName('TRANSP')
+              .Value, qrMaterialData.FieldByName('CODE').Value, qrMaterialData.FieldByName('PROC_TRANSP')
+              .Value, qrMaterialData.FieldByName('DELETED').Value, qrMaterialData.FieldByName('MAT_PROC_ZAC')
+              .Value, qrMaterialData.FieldByName('MAT_PROC_PODR').Value,
+              qrMaterialData.FieldByName('TRANSP_PROC_ZAC').Value,
+              qrMaterialData.FieldByName('TRANSP_PROC_PODR').Value]));
+        end;
+      // С НДС
+      1:
+        ;
+    end;
+
+    CloseOpen(qrMaterialData);
   end
   else
   begin
-    DataSet.Cancel;
+    qrMaterialData.Cancel;
     Abort;
   end;
 end;
