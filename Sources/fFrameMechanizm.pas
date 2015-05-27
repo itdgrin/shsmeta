@@ -15,7 +15,8 @@ type
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
   private
-    FZpColIndex: Integer;
+    FZpColIndex,
+    FTrColIndex: Integer;
     { Private declarations }
   private
     { Private declarations }
@@ -50,6 +51,9 @@ begin
     lc := ListSpr.Columns.Add;
     lc.Caption := 'ЗП машиниста, руб';
     FZpColIndex := lc.Index;
+    lc := ListSpr.Columns.Add;
+    lc.Caption := 'Норматив';
+    FTrColIndex := lc.Index;
   end;
 end;
 
@@ -69,7 +73,7 @@ begin
   if FPriceColumn then
     Result := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
           'cast(mech_name as char(1024)) as "Name", unit_name as "Unit", ' +
-          'coast1 as "PriceVAT", coast2 as "PriceNotVAT", ZP1 ' +
+          'coast1 as "PriceVAT", coast2 as "PriceNotVAT", ZP1, MECH_PH ' +
           'FROM mechanizm left join units on (mechanizm.unit_id = units.unit_id) ' +
           'left join mechanizmcoastg mc on ' +
           '(mechanizm.mechanizm_id = mc.mechanizm_id) and ' +
@@ -87,7 +91,10 @@ procedure TSprMechanizm.ListSprCustomDrawItem(Sender: TCustomListView;
 begin
   inherited;
   if FPriceColumn then
+  begin
     Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).ZpMach));
+    Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).TrZatr));
+  end;
 end;
 
 procedure TSprMechanizm.ListSprDblClick(Sender: TObject);
@@ -102,12 +109,17 @@ procedure TSprMechanizm.ListSprResize(Sender: TObject);
 begin
   inherited;
   ListSpr.Columns[FZpColIndex].Width := 100;
+  ListSpr.Columns[FTrColIndex].Width := 70;
 end;
 
 procedure TSprMechanizm.SpecialFillArray(const AInd: Integer; ADataSet: TDataSet);
 begin
   if FPriceColumn then
+  begin
     FSprArray[AInd - 1].ZpMach := ADataSet.FieldByName('ZP1').AsFloat;
+    FSprArray[AInd - 1].TrZatr := ADataSet.FieldByName('MECH_PH').AsFloat;
+
+  end;
 end;
 
 

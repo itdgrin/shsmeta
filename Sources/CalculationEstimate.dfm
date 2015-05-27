@@ -1915,15 +1915,6 @@
               end
               item
                 Expanded = False
-                FieldName = 'PROC_TRANSP'
-                ReadOnly = True
-                Title.Alignment = taCenter
-                Title.Caption = #1053#1086#1088#1084#1072' '#1090#1088'. '#1088#1072#1089#1093'., %'
-                Width = 60
-                Visible = True
-              end
-              item
-                Expanded = False
                 FieldName = 'COAST_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
@@ -1937,24 +1928,6 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = ' '#1062#1077#1085#1072' ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 70
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'TRANSP_NDS'
-                ReadOnly = True
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057')  '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 70
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'TRANSP_NO_NDS'
-                ReadOnly = True
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1974,6 +1947,33 @@
                 Title.Alignment = taCenter
                 Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'PROC_TRANSP'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1086#1088#1084#1072' '#1090#1088'. '#1088#1072#1089#1093'., %'
+                Width = 60
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057')  '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 70
                 Visible = True
               end
               item
@@ -2003,22 +2003,6 @@
               end
               item
                 Expanded = False
-                FieldName = 'FTRANSP_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060')  '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 70
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'FTRANSP_NO_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 70
-                Visible = True
-              end
-              item
-                Expanded = False
                 FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
@@ -2033,6 +2017,22 @@
                 Title.Alignment = taCenter
                 Title.Caption = ' '#1057#1090#1086#1080#1084'. ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FTRANSP_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060')  '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FTRANSP_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 70
                 Visible = True
               end
               item

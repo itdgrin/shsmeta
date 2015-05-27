@@ -1761,9 +1761,9 @@ begin
     Exit;
   dbgrdMaterial.Columns[2].ReadOnly := False; // Норма
   dbgrdMaterial.Columns[4].ReadOnly := False; // Кол-во
-  dbgrdMaterial.Columns[5].ReadOnly := False; // % транспорта
-  dbgrdMaterial.Columns[6].ReadOnly := False; // Расценка
-  dbgrdMaterial.Columns[7].ReadOnly := False; // Расценка
+  dbgrdMaterial.Columns[5].ReadOnly := False; // Цена НДС
+  dbgrdMaterial.Columns[6].ReadOnly := False; // Цена без НДС
+  dbgrdMaterial.Columns[9].ReadOnly := False; // % транспорта
   dbgrdMaterial.Columns[12].ReadOnly := False; // НДС
   MemoRight.Color := $00AFFEFC;
   MemoRight.ReadOnly := False;
@@ -1778,9 +1778,9 @@ begin
   begin
     dbgrdMaterial.Columns[2].ReadOnly := True; // Норма
     dbgrdMaterial.Columns[4].ReadOnly := True; // Кол-во
-    dbgrdMaterial.Columns[5].ReadOnly := True; // % транспорта
-    dbgrdMaterial.Columns[6].ReadOnly := True; // Расценка
-    dbgrdMaterial.Columns[7].ReadOnly := True; // Расценка
+    dbgrdMaterial.Columns[5].ReadOnly := True; // Цена НДС
+    dbgrdMaterial.Columns[6].ReadOnly := True; // Цена без НДС
+    dbgrdMaterial.Columns[9].ReadOnly := True; // % транспорта
     dbgrdMaterial.Columns[12].ReadOnly := True; // НДС
     MemoRight.Color := clWindow;
     MemoRight.ReadOnly := True;
@@ -1891,6 +1891,18 @@ begin
         if Sender.FieldName = 'TRANSP_PROC_ZAC' then
           qrMaterialTRANSP_PROC_PODR.Value := 100 - qrMaterialTRANSP_PROC_ZAC.Value;
       end;
+
+      // Автоматический расчет фактических транспортных расходов при изменении фактической цены
+      if (Sender.FieldName = 'FCOAST_NO_NDS') or (Sender.FieldName = 'FCOAST_NDS') then
+      begin
+        if NDSEstimate then
+          qrMaterialFTRANSP_NDS.Value := Round((qrMaterialPROC_TRANSP.Value/100) *
+            qrMaterialMAT_COUNT.Value * qrMaterialFCOAST_NDS.Value)
+        else
+          qrMaterialFTRANSP_NO_NDS.Value := Round((qrMaterialPROC_TRANSP.Value/100) *
+            qrMaterialMAT_COUNT.Value * qrMaterialFCOAST_NO_NDS.Value)
+      end;
+
       // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
       if NDSEstimate then
       begin
@@ -4688,15 +4700,16 @@ begin
   with dbgrdMaterial do
   begin
     // в зависимости от ндс скрывает одни и показывает другие калонки
-    Columns[6].Visible := aNDS; // цена смет
-    Columns[8].Visible := aNDS; // Трансп смет
-    Columns[10].Visible := aNDS; // Стоим смет
+    Columns[5].Visible := aNDS; // цена смет
+    Columns[7].Visible := aNDS; // Стоим смет
+    Columns[10].Visible := aNDS; // Трансп смет
+    Columns[12].Visible := aNDS; // НДС
     Columns[13].Visible := aNDS; // цена факт
-    Columns[15].Visible := aNDS; // Трансп факт
-    Columns[17].Visible := aNDS; // стоим факт
+    Columns[15].Visible := aNDS; // стоим факт
+    Columns[17].Visible := aNDS; // Трансп факт
 
-    Columns[7].Visible := not aNDS;
-    Columns[9].Visible := not aNDS;
+    Columns[6].Visible := not aNDS;
+    Columns[8].Visible := not aNDS;
     Columns[11].Visible := not aNDS;
     Columns[14].Visible := not aNDS;
     Columns[16].Visible := not aNDS;
@@ -4706,6 +4719,8 @@ begin
   with dbgrdMechanizm do
   begin
     // в зависимости от ндс скрывает одни и показывает другие калонки
+    Columns[3].Visible := False;
+
     Columns[5].Visible := aNDS;
     Columns[7].Visible := aNDS;
     Columns[9].Visible := aNDS;
@@ -4727,6 +4742,8 @@ begin
 
   with dbgrdDevices do
   begin
+    Columns[2].Visible := False;
+
     // в зависимости от ндс скрывает одни и показывает другие калонки
     Columns[5].Visible := aNDS; // цена факт
     Columns[7].Visible := aNDS; // Трансп
@@ -5400,25 +5417,25 @@ begin
       Brush.Color := $00F0F0FF;
 
     // Подсветка полей стоимости
-    if Column.Index in [10, 11, 17, 18] then
+    if Column.Index in [7, 8, 15, 16] then
     begin
       // Та стоимость которая используется в расчете подсвечивается берюзовым
       // другая серым
-      if (Column.Index in [10, 11]) then
+      if (Column.Index in [7, 8]) then
         if (qrMaterialFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00DDDDDD
         else
           Brush.Color := $00FBFEBC;
 
-      if (Column.Index in [17, 18]) then
+      if (Column.Index in [15, 16]) then
         if (qrMaterialFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00FBFEBC
         else
           Brush.Color := $00DDDDDD;
     end;
 
-    // Подсветка красным пустых значений
-    if (Column.Index in [2, 5, 6, 7]) and (Column.Field.Value = 0) then
+    // Подсветка красным пустых значений  норма, цена и %трансп
+    if (Column.Index in [2, 5, 6, 9]) and (Column.Field.Value = 0) then
     begin
       Brush.Color := $008080FF;
     end;

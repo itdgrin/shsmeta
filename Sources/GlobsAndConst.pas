@@ -17,7 +17,8 @@ type
     Unt: string;
     CoastNDS,
     CoastNoNDS,
-    ZpMach: Extended;
+    ZpMach,
+    TrZatr: Extended;
     MType: byte;
   end;
   PSprRecord = ^TSprRecord;
