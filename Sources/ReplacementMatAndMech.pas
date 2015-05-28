@@ -715,7 +715,7 @@ begin
       'card_rate' + TmpStr + ' as RT, materialcard' + TmpStr + ' as MT ' +
       'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 1) AND ' +
       '(ES.ID_TABLES = RT.ID) AND (RT.ID = MT.ID_CARD_RATE) AND ' +
-      '(MT.ID_REPLACED = 0) AND (MT.FROM_RATE = 0) ' +
+      '(MT.ID_REPLACED = 0) AND (MT.FROM_RATE = 0) AND ' +
       '(MT.MAT_CODE = ''' + edtSourceCode.Text + ''')' + WhereStr
   else
     qrTemp.SQL.Text :=
@@ -729,7 +729,7 @@ begin
       'card_rate' + TmpStr + ' as RT, mechanizmcard' + TmpStr + ' as MT ' +
       'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 1) AND ' +
       '(ES.ID_TABLES = RT.ID) AND (RT.ID = MT.ID_CARD_RATE) AND ' +
-      '(MT.ID_REPLACED = 0) AND (MT.FROM_RATE = 0) ' +
+      '(MT.ID_REPLACED = 0) AND (MT.FROM_RATE = 0) AND ' +
       '(MT.MECH_CODE = ''' + edtSourceCode.Text + ''')' + WhereStr;
 
   ListEntry.Visible := False;

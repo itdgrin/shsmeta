@@ -623,7 +623,6 @@
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pmTableLeft
           TabOrder = 0
@@ -636,7 +635,6 @@
           OnEnter = dbgrdRatesEnter
           OnKeyDown = dbgrdRatesKeyDown
           AutoAppend = False
-          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'

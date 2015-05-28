@@ -12,7 +12,9 @@ uses
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls,
   CalculationEstimateSSR, CalculationEstimateSummaryCalculations, JvExDBGrids,
   JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression,
-  GlobsAndConst, FireDAC.UI.Intf, JvExComCtrls, JvDBTreeView;
+  GlobsAndConst, FireDAC.UI.Intf, JvExComCtrls, JvDBTreeView,
+  Generics.Collections,
+  Generics.Defaults;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -562,7 +564,7 @@ type
     procedure pmCoefPopup(Sender: TObject);
     procedure Button4Click(Sender: TObject);
 
-    procedure OutputDataToTable; // Заполнение таблицы расценок
+    procedure OutputDataToTable(ANewRow: Boolean = False); // Заполнение таблицы расценок
 
     procedure AddRate(const vRateId: Integer);
     procedure AddMaterial(const vMatId: Integer);
@@ -3835,7 +3837,7 @@ begin
       end;
   end
   else
-    OutputDataToTable;
+    OutputDataToTable(True);
 end;
 
 procedure TFormCalculationEstimate.PMAddTranspClick(Sender: TObject);
@@ -3844,7 +3846,7 @@ begin
     Exit;
 
   if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag, True) then
-    OutputDataToTable;
+    OutputDataToTable(True);
 end;
 
 // в целом процедура работает неверно так как может быть открыто несколько смет
@@ -3858,7 +3860,7 @@ begin
   qrRatesEx.DisableControls;
   try
     qrRatesEx.First;
-    while not qrRatesEx.Eof do
+    while (not qrRatesEx.Eof) do
     begin
       if (qrRatesExID_TYPE_DATA.AsInteger = AType) and (qrRatesExSM_ID.AsInteger = SmID) then
       begin
@@ -3899,15 +3901,13 @@ begin
   qrTemp.ParamByName('NUM_ROW').Value := Iterator;
   qrTemp.ExecSQL;
 
-  OutputDataToTable;
+  OutputDataToTable(True);
 end;
 
 procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
 begin
   if GetDumpForm(qrRatesExSM_ID.AsInteger, -1, True) then
-  begin
-    OutputDataToTable;
-  end;
+    OutputDataToTable(True);
 end;
 
 procedure TFormCalculationEstimate.PMAddRateOldClick(Sender: TObject);
@@ -5055,7 +5055,11 @@ begin
 end;
 
 // Заполнение таблицы расценок
-procedure TFormCalculationEstimate.OutputDataToTable;
+procedure TFormCalculationEstimate.OutputDataToTable(ANewRow: Boolean = False);
+var TmpSmID,
+    RecNo: Integer;
+    SortIDArray: TArray<string>;
+    i: Integer;
 begin
   // Новая процедура вывода левой части
   if Act then
@@ -5068,10 +5072,55 @@ begin
     qrRatesEx.ParamByName('EAID').Value := IdEstimate;
     qrRatesEx.ParamByName('vIsACT').Value := 0;
   end;
-  CloseOpen(qrRatesEx);
+
+  qrRatesEx.DisableControls;
+  try
+    if ANewRow then
+    begin
+      RecNo := qrRatesEx.RecNo;
+      TmpSmID := qrRatesExSM_ID.Value;
+      while ((not qrRatesEx.Bof) and (TmpSmID = qrRatesExSM_ID.Value)) do
+        qrRatesEx.Prior;
+      if (TmpSmID <> qrRatesExSM_ID.Value) then
+        qrRatesEx.Next;
+
+      i :=0;
+      SetLength(SortIDArray, i);
+      repeat
+        inc(i);
+        SetLength(SortIDArray, i);
+        SortIDArray[i - 1] := strngfldRatesExSORT_ID.Value;
+        qrRatesEx.Next;
+      until not((not qrRatesEx.Eof) and (TmpSmID = qrRatesExSM_ID.Value));
+      TArray.Sort<string>(SortIDArray, TComparer<string>.Default);
+      qrRatesEx.RecNo := RecNo;
+    end;
+
+    CloseOpen(qrRatesEx);
+
+    if ANewRow then
+    begin
+      TmpSmID := qrRatesExSM_ID.Value;
+      while ((not qrRatesEx.Bof) and (TmpSmID = qrRatesExSM_ID.Value)) do
+        qrRatesEx.Prior;
+      if (TmpSmID <> qrRatesExSM_ID.Value) then
+        qrRatesEx.Next;
+
+      while (not qrRatesEx.Bof) and (TmpSmID = qrRatesExSM_ID.Value) and
+        TArray.BinarySearch<string>(SortIDArray,
+          strngfldRatesExSORT_ID.Value, i,
+          TComparer<string>.Default) do
+        qrRatesEx.Next;
+    end;
+
+    grRatesEx.Col := 3;
+  finally
+    qrRatesEx.EnableControls;
+  end;
   // ----------------------------------
 
   CloseOpen(qrCalculations);
+
 end;
 
 procedure TFormCalculationEstimate.VisibleColumnsWinterPrice(Value: Boolean);
@@ -5261,7 +5310,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable;
+    OutputDataToTable(True);
   except
     on e: Exception do
       MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
@@ -5286,7 +5335,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable;
+    OutputDataToTable(True);
   except
     on e: Exception do
       MessageBox(0, PChar('При добавлении материала возникла ошибка:' + sLineBreak + sLineBreak + e.message),
@@ -5313,7 +5362,7 @@ begin
       ExecSQL;
     end;
 
-    OutputDataToTable;
+    OutputDataToTable(True);
   except
     on e: Exception do
       MessageBox(0, PChar('При добавлении механизма возникла ошибка:' + sLineBreak + sLineBreak + e.message),
@@ -5735,9 +5784,11 @@ begin
       Font.Color := PS.FontRows;
       Brush.Color := clInactiveBorder;
     end;
-    // Подсвечивается жирным только если есть фокус
+
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
-      (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) and (grRatesEx = LastEntegGrd) then
+      (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)
+      // and (grRatesEx = LastEntegGrd) // Подсвечивается жирным только если есть фокус
+      then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
