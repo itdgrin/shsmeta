@@ -52,7 +52,7 @@ begin
     lc.Caption := 'ЗП машиниста, руб';
     FZpColIndex := lc.Index;
     lc := ListSpr.Columns.Add;
-    lc.Caption := 'Норматив';
+    lc.Caption := 'Затр. труда, чел.ч.';
     FTrColIndex := lc.Index;
   end;
 end;
@@ -92,8 +92,12 @@ begin
   inherited;
   if FPriceColumn then
   begin
-    Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).ZpMach));
-    Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).TrZatr));
+    if TSprRecord(Item.Data^).ZpMach > 0 then
+      Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).ZpMach))
+    else Item.SubItems.Add('');
+    if TSprRecord(Item.Data^).TrZatr > 0 then
+      Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).TrZatr))
+    else Item.SubItems.Add('');
   end;
 end;
 
@@ -109,7 +113,7 @@ procedure TSprMechanizm.ListSprResize(Sender: TObject);
 begin
   inherited;
   ListSpr.Columns[FZpColIndex].Width := 100;
-  ListSpr.Columns[FTrColIndex].Width := 70;
+  ListSpr.Columns[FTrColIndex].Width := 100;
 end;
 
 procedure TSprMechanizm.SpecialFillArray(const AInd: Integer; ADataSet: TDataSet);
@@ -118,7 +122,6 @@ begin
   begin
     FSprArray[AInd - 1].ZpMach := ADataSet.FieldByName('ZP1').AsFloat;
     FSprArray[AInd - 1].TrZatr := ADataSet.FieldByName('MECH_PH').AsFloat;
-
   end;
 end;
 

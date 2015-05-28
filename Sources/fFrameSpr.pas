@@ -387,8 +387,15 @@ begin
 
     if FPriceColumn then
     begin
-      Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNDS));
-      Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNoNDS));
+      if TSprRecord(Item.Data^).CoastNDS > 0 then
+        Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNDS))
+      else
+        Item.SubItems.Add('');
+
+      if TSprRecord(Item.Data^).CoastNoNDS > 0 then
+        Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNoNDS))
+      else
+        Item.SubItems.Add('');
     end;
   end;
   DefaultDraw := True;
