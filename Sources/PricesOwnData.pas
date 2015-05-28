@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls,
-  fFramePriceMaterials, fFramePriceMechanizms, fFramePriceTransportations,
+ { fFramePriceMaterials, fFramePriceMechanizms,} fFramePriceTransportations,
   fFramePriceDumps, fFrameSmeta;
 
 type
@@ -32,8 +32,8 @@ type
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
   public
-    FramePriceMaterials: TFramePriceMaterial;
-    FramePriceMechanizms: TFramePriceMechanizm;
+   { FramePriceMaterials: TFramePriceMaterial;
+    FramePriceMechanizms: TFramePriceMechanizm;}
     FramePriceTransportations: TFramePriceTransportations;
     FramePriceDumps: TFramePriceDumps;
 
@@ -96,7 +96,7 @@ begin
   Caption := FormNamePricesOwnData;
 
   // ----------------------------------------
-
+   {
   FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
   FramePriceMaterials.Parent := Self;
   FramePriceMaterials.align := alClient;
@@ -107,7 +107,7 @@ begin
   FramePriceMechanizms.Parent := Self;
   FramePriceMechanizms.align := alClient;
   FramePriceMechanizms.Visible := False;
-  SpeedButtonPriceMechanizms.Tag := Integer(FramePriceMechanizms);
+  SpeedButtonPriceMechanizms.Tag := Integer(FramePriceMechanizms); }
 
   FramePriceTransportations := TFramePriceTransportations.Create(Self);
   FramePriceTransportations.Parent := Self;
@@ -122,7 +122,7 @@ begin
   SpeedButtonPriceDumps.Tag := Integer(FramePriceDumps);
 
   SpeedButtonClick(SpeedButtonPriceMaterials);
-  FramePriceMaterials.Visible := True;
+  {FramePriceMaterials.Visible := True;  }
 
   FormMain.PanelCover.Visible := False;
 
@@ -163,8 +163,8 @@ end;
 
 procedure TFormPricesOwnData.HideAllFrames;
 begin
-  FramePriceMaterials.Visible := False;
-  FramePriceMechanizms.Visible := False;
+ { FramePriceMaterials.Visible := False;
+  FramePriceMechanizms.Visible := False;      }
   FramePriceTransportations.Visible := False;
   FramePriceDumps.Visible := False;
 end;

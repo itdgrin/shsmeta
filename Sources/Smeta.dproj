@@ -206,20 +206,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>FrameStatusBar</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="fFrameEquipments.pas">
-            <Form>FrameEquipment</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="fFrameOXROPR.pas">
             <Form>FrameOXROPR</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="fFramePriceMaterials.pas">
-            <Form>FramePriceMaterial</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="fFramePriceMechanizms.pas">
-            <Form>FramePriceMechanizm</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="fFramePriceDumps.pas">
@@ -455,7 +443,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     <VersionInfo Name="MajorVer">1</VersionInfo>
                     <VersionInfo Name="MinorVer">0</VersionInfo>
                     <VersionInfo Name="Release">0</VersionInfo>
-                    <VersionInfo Name="Build">6597</VersionInfo>
+                    <VersionInfo Name="Build">6615</VersionInfo>
                     <VersionInfo Name="Debug">True</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -467,7 +455,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Расчёт сметы</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">1.0.0.6597</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.6615</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">Estimate</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">© 2013 Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks"/>

@@ -243,8 +243,10 @@ object fCalcResource: TfCalcResource
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = grMaterialDrawColumnCell
+          SortMarker = smUp
           IniStorage = FormStorage
           OnTitleBtnClick = grMaterialTitleBtnClick
+          SortedField = 'CODE'
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -417,6 +419,7 @@ object fCalcResource: TfCalcResource
           Constraints.MinHeight = 40
           DataSource = dsMaterialDetail
           DrawingStyle = gdsClassic
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -1390,14 +1393,15 @@ object fCalcResource: TfCalcResource
       '  MAT_PROC_ZAC,'
       '  MAT_PROC_PODR,'
       '  TRANSP_PROC_ZAC,'
-      '  TRANSP_PROC_PODR'
+      '  TRANSP_PROC_PODR,'
+      '  MAT_ID'
       'FROM '
       '  materialcard_temp'
       'WHERE ((DELETED = 0) OR (:SHOW_DELETED))'
       
         'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, COAST' +
         ', DELETED,  MAT_PROC_ZAC, MAT_PROC_PODR, TRANSP_PROC_ZAC, TRANSP' +
-        '_PROC_PODR'
+        '_PROC_PODR, MAT_ID'
       'ORDER BY 1')
     Left = 27
     Top = 168
@@ -1746,7 +1750,7 @@ object fCalcResource: TfCalcResource
   object qrMaterialDetail: TFDQuery
     BeforeOpen = qrMaterialDataBeforeOpen
     MasterSource = dsMaterialData
-    MasterFields = 'CODE'
+    MasterFields = 'MAT_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1781,9 +1785,13 @@ object fCalcResource: TfCalcResource
         '.ID AND DELETED = 0), 0) AS CNT_DONE, /*'#1042#1099#1087#1086#1083#1085#1077#1085#1086'*/ '
       '  m.DELETED'
       'FROM        '
+      'smetasourcedata, data_estimate_temp AS d '
       
-        'smetasourcedata, data_estimate_temp AS d, card_rate_temp AS c, m' +
-        'aterialcard_temp AS m'
+        'left join card_rate_temp AS c on d.ID_TYPE_DATA = 1 AND c.ID = d' +
+        '.ID_TABLES '
+      
+        'join materialcard_temp AS m on ((d.ID_TYPE_DATA = 2 AND m.ID = d' +
+        '.ID_TABLES) OR (m.ID_CARD_RATE = c.ID)) AND m.MAT_ID = :MAT_ID'
       'WHERE'
       '  ((m.DELETED = 0) OR (:SHOW_DELETED)) AND '
       '  ((smetasourcedata.SM_ID = :SM_ID) OR'
@@ -1793,13 +1801,8 @@ object fCalcResource: TfCalcResource
       '             FROM smetasourcedata'
       '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
       '  d.ID_ESTIMATE = smetasourcedata.SM_ID AND  '
-      '  ((d.ID_TYPE_DATA = 1 AND'
-      '  c.ID = d.ID_TABLES AND'
-      
-        '  m.ID_CARD_RATE = c.ID) OR (d.ID_TYPE_DATA = 2 AND m.ID = d.ID_' +
-        'TABLES)) AND'
-      '  smetasourcedata.DELETED=0 AND'
-      '  m.MAT_CODE = :CODE')
+      '  smetasourcedata.DELETED=0'
+      '  ')
     Left = 27
     Top = 264
     ParamData = <
@@ -1810,18 +1813,16 @@ object fCalcResource: TfCalcResource
         Value = 0
       end
       item
+        Name = 'MAT_ID'
+        ParamType = ptInput
+      end
+      item
         Name = 'SHOW_DELETED'
         ParamType = ptInput
       end
       item
         Name = 'SM_ID'
         DataType = ftInteger
-        ParamType = ptInput
-        Value = Null
-      end
-      item
-        Name = 'CODE'
-        DataType = ftString
         ParamType = ptInput
         Value = Null
       end>

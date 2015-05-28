@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, Vcl.Dialogs,
-  fFrameRates, fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments,
+  fFrameRates,
   fFrameOXROPR, fFrameSSR, fFrameMaterial, fFrameMechanizm, fFrameEquipment,
   fFrameSmeta, GlobsAndConst, Vcl.StdCtrls, System.SysUtils;
 
@@ -33,9 +33,11 @@ type
 
     function GetLeftIndentForFormSborniks(): Integer;
     function GetTopIndentForFormSborniks(): Integer;
-  private
-    const CaptionButton = 'Справочные данные';
-    const HintButton = 'Окно справочных данных';
+  private const
+    CaptionButton = 'Справочные данные';
+
+  const
+    HintButton = 'Окно справочных данных';
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
   public
@@ -109,8 +111,7 @@ begin
   FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
 
-  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date,
-    1, True, False);
+  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date, 1, True, False);
   FramePriceMaterials.Parent := Self;
   FramePriceMaterials.LoadSpr;
   FramePriceMaterials.Align := alClient;
@@ -144,7 +145,7 @@ begin
   SpeedButtonSSR.Tag := Integer(FrameSSR);
 
   SpeedButtonClick(SpeedButtonRates);
-  FrameRates.Visible := true;
+  FrameRates.Visible := True;
 
   FormMain.PanelCover.Visible := False;
 
@@ -196,7 +197,8 @@ procedure TFormReferenceData.SpeedButtonClick(Sender: TObject);
 begin
   HideAllFrames;
 
-  if not Assigned(Pointer((Sender as TComponent).Tag)) then exit;
+  if not Assigned(Pointer((Sender as TComponent).Tag)) then
+    exit;
 
   if TObject((Sender as TComponent).Tag) is TSmetaFrame then
     with TSmetaFrame((Sender as TComponent).Tag) do

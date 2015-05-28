@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls,
-  fFramePriceMaterials, fFramePriceMechanizms, fFramePriceTransportations,
+  {fFramePriceMaterials, fFramePriceMechanizms,} fFramePriceTransportations,
   fFramePriceDumps, fFrameSmeta, fFrameMaterial, fFrameMechanizm,
   System.SysUtils;
 

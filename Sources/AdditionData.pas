@@ -4,8 +4,7 @@ interface
 
 uses
   Windows, Messages, Classes, Controls, Forms, ExtCtrls, Buttons, StdCtrls,
-  SysUtils, fFrameRates, Main, Waiting, fFramePriceMaterials,
-  fFramePriceMechanizms, fFrameEquipments, CalculationEstimate, fFrameSmeta,
+  SysUtils, fFrameRates, Main, Waiting, CalculationEstimate, fFrameSmeta,
   fFrameMaterial, fFrameMechanizm, fFrameEquipment;
 
 type
@@ -26,9 +25,11 @@ type
 
     procedure HideAllFrames;
     procedure SpeedButtonClick(Sender: TObject);
-  private
-    const CaptionButton = 'Добавление данных';
-    const HintButton = 'Окно добавления данных';
+  private const
+    CaptionButton = 'Добавление данных';
+
+  const
+    HintButton = 'Окно добавления данных';
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
   public
@@ -72,7 +73,8 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 constructor TFormAdditionData.Create(AOwner: TComponent; const vDataBase: Char);
-var TmpDate: TDateTime;
+var
+  TmpDate: TDateTime;
 begin
   inherited Create(AOwner);
 
@@ -86,8 +88,7 @@ begin
   Caption := FormNameAdditionData;
 
   if Assigned(FormCalculationEstimate) then
-    TmpDate := EncodeDate(FormCalculationEstimate.YearEstimate,
-      FormCalculationEstimate.MonthEstimate, 1)
+    TmpDate := EncodeDate(FormCalculationEstimate.YearEstimate, FormCalculationEstimate.MonthEstimate, 1)
   else
     TmpDate := Date;
 
@@ -99,8 +100,8 @@ begin
   FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
 
-  FramePriceMaterial := TSprMaterial.Create(Self, True, True, TmpDate,
-    FormCalculationEstimate.Region, True, False);
+  FramePriceMaterial := TSprMaterial.Create(Self, True, True, TmpDate, FormCalculationEstimate.Region,
+    True, False);
   FramePriceMaterial.Parent := Self;
   FramePriceMaterial.LoadSpr;
   FramePriceMaterial.Align := alClient;
@@ -121,16 +122,16 @@ begin
   FrameEquipment.Visible := False;
   SpeedButtonEquipment.Tag := Integer(FrameEquipment);
 
-  //FormWaiting.Show;
+  // FormWaiting.Show;
   Application.ProcessMessages;
   try
     SpeedButtonClick(SpeedButtonRates);
   finally
- //   FormWaiting.Close;
+    // FormWaiting.Close;
   end;
   FrameRates.Visible := True;
 
-//  FormMain.PanelCover.Visible := False;
+  // FormMain.PanelCover.Visible := False;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 end;
@@ -173,20 +174,21 @@ end;
 
 procedure TFormAdditionData.SpeedButtonClick(Sender: TObject);
 begin
-  if not Assigned(Pointer((Sender as TComponent).Tag)) then exit;
+  if not Assigned(Pointer((Sender as TComponent).Tag)) then
+    exit;
 
   if TObject((Sender as TComponent).Tag) is TSmetaFrame then
     with TSmetaFrame((Sender as TComponent).Tag) do
     begin
       if not Loaded then
       begin
-      //  FormWaiting.Show;
-      //  Application.ProcessMessages;
-      //  try
-          ReceivingAll;
-      //  finally
-      //    FormWaiting.Close;
-      //  end;
+        // FormWaiting.Show;
+        // Application.ProcessMessages;
+        // try
+        ReceivingAll;
+        // finally
+        // FormWaiting.Close;
+        // end;
       end;
     end;
 

@@ -3,8 +3,7 @@ unit TariffsMechanism;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, ExtCtrls, AppEvnts, SysUtils,
-  fFramePriceMechanizms;
+  Windows, Messages, Classes, Controls, Forms, ExtCtrls, AppEvnts, SysUtils;
 
 type
   TFormTariffsMechanism = class(TForm)
@@ -13,13 +12,15 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
-  private
-    const CaptionButton = 'Цены на механизмы';
-    const HintButton = 'Окно цены на материалы';
+  private const
+    CaptionButton = 'Цены на механизмы';
+
+  const
+    HintButton = 'Окно цены на материалы';
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
   public
-    FramePriceMechanizm: TFramePriceMechanizm;
+    //29.05.2015 FramePriceMechanizm: TFramePriceMechanizm;
   end;
 
 var
@@ -69,13 +70,13 @@ begin
 
   // ----------------------------------------
 
-  FramePriceMechanizm := TFramePriceMechanizm.Create(Self, 'g', True, True);
-  FramePriceMechanizm.Parent := Self;
+  {29.05.2015 FramePriceMechanizm := TFramePriceMechanizm.Create(Self, 'g', True, True);
+  FramePriceMechanizm.Parent := Self; }
 
   FormWaiting.Show;
   Application.ProcessMessages;
 
-  FramePriceMechanizm.ReceivingAll;
+  {29.05.2015 FramePriceMechanizm.ReceivingAll; }
 
   FormWaiting.Close;
   FormMain.PanelCover.Visible := False;

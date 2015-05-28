@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Mask, JvDBGridFooter,
-  JvComponentBase, JvFormPlacement;
+  JvComponentBase, JvFormPlacement, System.UITypes;
 
 type
   TfCalcResource = class(TForm)
@@ -490,6 +490,8 @@ begin
 end;
 
 procedure TfCalcResource.qrMaterialDataBeforePost(DataSet: TDataSet);
+var
+  priceQ: string;
 begin
   if Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES
   then
@@ -498,59 +500,46 @@ begin
     begin
       FastExecSQL('UPDATE materialcard_temp SET'#13 + 'TRANSP_PROC_PODR=:1, TRANSP_PROC_ZAC=:2,'#13 +
         'MAT_PROC_PODR=:3, MAT_PROC_ZAC=:4, DELETED=:5,'#13 + 'PROC_TRANSP=:7'#13 +
-        'WHERE MAT_CODE=:8 AND PROC_TRANSP=:9 AND DELETED=:10'#13 +
-        'AND MAT_PROC_ZAC=:11 AND MAT_PROC_PODR=:12'#13 +
+        'WHERE PROC_TRANSP=:9 AND DELETED=:10'#13 + 'AND MAT_PROC_ZAC=:11 AND MAT_PROC_PODR=:12'#13 +
         'AND TRANSP_PROC_ZAC=:13 AND TRANSP_PROC_PODR=:14'#13 +
-        'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:15',
+        'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:15 AND MAT_ID=:16',
         VarArrayOf([FieldByName('TRANSP_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
         FieldByName('MAT_PROC_PODR').Value, FieldByName('MAT_PROC_ZAC').Value, FieldByName('DELETED').Value,
-        FieldByName('PROC_TRANSP').Value, FieldByName('CODE').Value, FieldByName('PROC_TRANSP').OldValue,
+        FieldByName('PROC_TRANSP').Value, FieldByName('PROC_TRANSP').OldValue,
         FieldByName('DELETED').OldValue, FieldByName('MAT_PROC_ZAC').OldValue,
         FieldByName('MAT_PROC_PODR').OldValue, FieldByName('TRANSP_PROC_ZAC').OldValue,
-        FieldByName('TRANSP_PROC_PODR').OldValue, cbbNDS.ItemIndex, FieldByName('COAST').OldValue]));
+        FieldByName('TRANSP_PROC_PODR').OldValue, cbbNDS.ItemIndex, FieldByName('COAST').OldValue,
+        FieldByName('ID').Value]));
+
+      // Цена
       case cbbNDS.ItemIndex of
         // Если в режиме без НДС
         0:
-          // Цена
-          if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
-            FastExecSQL('UPDATE materialcard_temp SET'#13 + 'FCOAST_NO_NDS=:1,'#13 +
-              'FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),'#13 +
-              'WHERE MAT_CODE=:3 AND PROC_TRANSP=:4 AND DELETED=:5'#13 +
-              'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 +
-              'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13 +
-              'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10',
-              VarArrayOf([FieldByName('COAST').Value, FieldByName('CODE').Value,
-              FieldByName('PROC_TRANSP').Value, FieldByName('DELETED').Value,
-              FieldByName('MAT_PROC_ZAC').Value, FieldByName('MAT_PROC_PODR').Value,
-              FieldByName('TRANSP_PROC_ZAC').Value, FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex,
-              FieldByName('COAST').OldValue]));
+          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),'#13;
         // С НДС
         1:
-          // Цена
-          if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
-            FastExecSQL('UPDATE materialcard_temp SET'#13 + 'FCOAST_NDS=:1,'#13 +
-              'FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),'#13 +
-              'WHERE MAT_CODE=:3 AND PROC_TRANSP=:4 AND DELETED=:5'#13 +
-              'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 +
-              'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13 +
-              'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10',
-              VarArrayOf([FieldByName('COAST').Value, FieldByName('CODE').Value,
-              FieldByName('PROC_TRANSP').Value, FieldByName('DELETED').Value,
-              FieldByName('MAT_PROC_ZAC').Value, FieldByName('MAT_PROC_PODR').Value,
-              FieldByName('TRANSP_PROC_ZAC').Value, FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex,
-              FieldByName('COAST').OldValue]));
+          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),'#13;
       end;
+      if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
+        FastExecSQL('UPDATE materialcard_temp SET'#13 + priceQ + 'WHERE PROC_TRANSP=:4 AND DELETED=:5'#13 +
+          'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 + 'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13
+          + 'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MAT_ID=:11',
+          VarArrayOf([FieldByName('COAST').Value, FieldByName('PROC_TRANSP').Value,
+          FieldByName('DELETED').Value, FieldByName('MAT_PROC_ZAC').Value, FieldByName('MAT_PROC_PODR').Value,
+          FieldByName('TRANSP_PROC_ZAC').Value, FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex,
+          FieldByName('COAST').OldValue, FieldByName('ID').Value]));
+
       // Стоимость транспорта
       if FieldByName('TRANSP').Value <> FieldByName('TRANSP').OldValue then
         FastExecSQL('UPDATE materialcard_temp SET FTRANSP_NO_NDS = :1, FTRANSP_NDS = :2'#13 +
-          'WHERE MAT_CODE=:3 AND PROC_TRANSP=:4 AND DELETED=:5'#13 +
-          'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 + 'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13
-          + 'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10',
-          VarArrayOf([FieldByName('TRANSP').Value, FieldByName('TRANSP').Value, FieldByName('CODE').Value,
+          'WHERE PROC_TRANSP=:4 AND DELETED=:5'#13 + 'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 +
+          'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13 +
+          'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MAT_ID=:11',
+          VarArrayOf([FieldByName('TRANSP').Value, FieldByName('TRANSP').Value,
           FieldByName('PROC_TRANSP').Value, FieldByName('DELETED').Value, FieldByName('MAT_PROC_ZAC').Value,
           FieldByName('MAT_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
-          FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex, FieldByName('COAST').Value]));
-
+          FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex, FieldByName('COAST').Value,
+          FieldByName('ID').Value]));
     end;
     // Вызываем переасчет всей сметы
     FormCalculationEstimate.RecalcEstimate;

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, fFrameRates,
-  fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments, fFrameSmeta;
+  {fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments,} fFrameSmeta;
 
 type
   TFormOwnData = class(TForm)
@@ -25,17 +25,19 @@ type
     procedure HideAllFrames;
 
     procedure SpeedButtonClick(Sender: TObject);
-  private
-    const CaptionButton = 'Собственные данные';
-    const HintButton = 'Окно собственных данных';
+  private const
+    CaptionButton = 'Собственные данные';
+
+  const
+    HintButton = 'Окно собственных данных';
   private
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
   public
     FrameRates: TFrameRates;
-    FramePriceMaterials: TFramePriceMaterial;
+    {FramePriceMaterials: TFramePriceMaterial;
     FramePriceMechanisms: TFramePriceMechanizm;
-    FrameEquipments: TFrameEquipment;
+    FrameEquipments: TFrameEquipment; }
   end;
 
 var
@@ -46,7 +48,6 @@ implementation
 uses Main, Waiting;
 
 {$R *.dfm}
-
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormOwnData.WMSysCommand(var Msg: TMessage);
@@ -101,7 +102,7 @@ begin
   FrameRates.Align := alClient;
   FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
-
+  {
   FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
   FramePriceMaterials.Parent := Self;
   FramePriceMaterials.Align := alClient;
@@ -118,7 +119,7 @@ begin
   FrameEquipments.Parent := Self;
   FrameEquipments.Align := alClient;
   FrameEquipments.Visible := False;
-  SpeedButtonEquipments.Tag := Integer(FrameEquipments);
+  SpeedButtonEquipments.Tag := Integer(FrameEquipments);    }
 
   SpeedButtonClick(SpeedButtonRates);
   FrameRates.Visible := True;
@@ -158,19 +159,19 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormOwnData.HideAllFrames;
-begin
+begin  {
   FrameRates.Visible := False;
   FramePriceMaterials.Visible := False;
   FramePriceMechanisms.Visible := False;
-  FrameEquipments.Visible := False;
+  FrameEquipments.Visible := False;   }
 end;
 
 procedure TFormOwnData.SpeedButtonClick(Sender: TObject);
 begin
   HideAllFrames;
 
-  if not Assigned(TSmetaFrame((Sender as TComponent).Tag)) then exit;
-
+  if not Assigned(TSmetaFrame((Sender as TComponent).Tag)) then
+    exit;
 
   with TSmetaFrame((Sender as TComponent).Tag) do
   begin

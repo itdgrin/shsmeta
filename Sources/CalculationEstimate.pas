@@ -1235,6 +1235,7 @@ begin
 end;
 
 procedure TFormCalculationEstimate.RecalcEstimate;
+// Процедура перерасчета сметы
 var
   Key: Variant;
   e: TDataSetNotifyEvent;
@@ -1268,9 +1269,6 @@ begin
 end;
 
 procedure TFormCalculationEstimate.btn1Click(Sender: TObject);
-var
-  Key: Variant;
-  e: TDataSetNotifyEvent;
 begin
   if Application.MessageBox('Произвести перерасчет сметы?', 'Перерасчет',
       MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) <> IDYES then Exit;
