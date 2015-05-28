@@ -459,6 +459,9 @@ type
     PMAddRateNew: TMenuItem;
     PMRateRef: TMenuItem;
     mN12: TMenuItem;
+    PMCalcMat: TMenuItem;
+    PMCalcMech: TMenuItem;
+    PMCalcDevice: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);

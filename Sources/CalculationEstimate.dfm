@@ -3379,6 +3379,9 @@
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMMatMechEditClick
     end
+    object PMCalcMat: TMenuItem
+      Caption = #1056#1072#1089#1095#1080#1090#1072#1090#1100
+    end
     object N10: TMenuItem
       Caption = '-'
     end
@@ -3437,6 +3440,9 @@
       Tag = 1
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMMatMechEditClick
+    end
+    object PMCalcMech: TMenuItem
+      Caption = #1056#1072#1089#1095#1080#1090#1072#1090#1100
     end
     object N8: TMenuItem
       Caption = '-'
@@ -4254,6 +4260,9 @@
     object PMDevEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       OnClick = PMDevEditClick
+    end
+    object PMCalcDevice: TMenuItem
+      Caption = #1056#1072#1089#1095#1080#1090#1072#1090#1100
     end
   end
   object qrCalculations: TFDQuery
