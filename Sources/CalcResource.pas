@@ -128,7 +128,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools, ReplacementMatAndMech;
+uses Main, Tools, ReplacementMatAndMech, CalculationEstimate;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant);
 begin
@@ -188,9 +188,9 @@ end;
 
 procedure TfCalcResource.chkEditClick(Sender: TObject);
 begin
-
-  cbbNDS.Enabled := chkEdit.Checked;
-  { seFromYear.Enabled := chkEdit.Checked;
+  {
+    cbbNDS.Enabled := chkEdit.Checked;
+    seFromYear.Enabled := chkEdit.Checked;
     seFromYear.ReadOnly := not chkEdit.Checked;
     cbbFromMonth.Enabled := chkEdit.Checked;
   }
@@ -494,43 +494,66 @@ begin
   if Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES
   then
   begin
-    case cbbNDS.ItemIndex of
-      // Если в режиме без НДС
-      0:
-        begin
-          FastExecSQL('UPDATE materialcard_temp SET'#13 + 'TRANSP_PROC_PODR=:1, TRANSP_PROC_ZAC=:2,'#13 +
-            'MAT_PROC_PODR=:3, MAT_PROC_ZAC=:4, DELETED=:5,'#13 + 'FCOAST_NO_NDS=:6,'#13 +
-            'FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),'#13 + 'PROC_TRANSP=:7'#13 +
-            'WHERE MAT_CODE=:8 AND PROC_TRANSP=:9 AND DELETED=:10'#13 +
-            'AND MAT_PROC_ZAC=:11 AND MAT_PROC_PODR=:12'#13 +
-            'AND TRANSP_PROC_ZAC=:13 AND TRANSP_PROC_PODR=:14',
-            VarArrayOf([qrMaterialData.FieldByName('TRANSP_PROC_PODR').Value,
-            qrMaterialData.FieldByName('TRANSP_PROC_ZAC').Value, qrMaterialData.FieldByName('MAT_PROC_PODR')
-            .Value, qrMaterialData.FieldByName('MAT_PROC_ZAC').Value, qrMaterialData.FieldByName('DELETED')
-            .Value, qrMaterialData.FieldByName('COAST').Value, qrMaterialData.FieldByName('PROC_TRANSP')
-            .Value, qrMaterialData.FieldByName('CODE').Value, qrMaterialData.FieldByName('PROC_TRANSP')
-            .OldValue, qrMaterialData.FieldByName('DELETED').OldValue,
-            qrMaterialData.FieldByName('MAT_PROC_ZAC').OldValue, qrMaterialData.FieldByName('MAT_PROC_PODR')
-            .OldValue, qrMaterialData.FieldByName('TRANSP_PROC_ZAC').OldValue,
-            qrMaterialData.FieldByName('TRANSP_PROC_PODR').OldValue]));
-
-          if qrMaterialData.FieldByName('TRANSP').Value <> qrMaterialData.FieldByName('TRANSP').OldValue then
-            FastExecSQL('UPDATE materialcard_temp SET FTRANSP_NO_NDS = :1, FTRANSP_NDS = :2'#13 +
+    with qrMaterialData do
+    begin
+      FastExecSQL('UPDATE materialcard_temp SET'#13 + 'TRANSP_PROC_PODR=:1, TRANSP_PROC_ZAC=:2,'#13 +
+        'MAT_PROC_PODR=:3, MAT_PROC_ZAC=:4, DELETED=:5,'#13 + 'PROC_TRANSP=:7'#13 +
+        'WHERE MAT_CODE=:8 AND PROC_TRANSP=:9 AND DELETED=:10'#13 +
+        'AND MAT_PROC_ZAC=:11 AND MAT_PROC_PODR=:12'#13 +
+        'AND TRANSP_PROC_ZAC=:13 AND TRANSP_PROC_PODR=:14'#13 +
+        'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:15',
+        VarArrayOf([FieldByName('TRANSP_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
+        FieldByName('MAT_PROC_PODR').Value, FieldByName('MAT_PROC_ZAC').Value, FieldByName('DELETED').Value,
+        FieldByName('PROC_TRANSP').Value, FieldByName('CODE').Value, FieldByName('PROC_TRANSP').OldValue,
+        FieldByName('DELETED').OldValue, FieldByName('MAT_PROC_ZAC').OldValue,
+        FieldByName('MAT_PROC_PODR').OldValue, FieldByName('TRANSP_PROC_ZAC').OldValue,
+        FieldByName('TRANSP_PROC_PODR').OldValue, cbbNDS.ItemIndex, FieldByName('COAST').OldValue]));
+      case cbbNDS.ItemIndex of
+        // Если в режиме без НДС
+        0:
+          // Цена
+          if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
+            FastExecSQL('UPDATE materialcard_temp SET'#13 + 'FCOAST_NO_NDS=:1,'#13 +
+              'FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),'#13 +
               'WHERE MAT_CODE=:3 AND PROC_TRANSP=:4 AND DELETED=:5'#13 +
               'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 +
-              'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9',
-              VarArrayOf([qrMaterialData.FieldByName('TRANSP').Value, qrMaterialData.FieldByName('TRANSP')
-              .Value, qrMaterialData.FieldByName('CODE').Value, qrMaterialData.FieldByName('PROC_TRANSP')
-              .Value, qrMaterialData.FieldByName('DELETED').Value, qrMaterialData.FieldByName('MAT_PROC_ZAC')
-              .Value, qrMaterialData.FieldByName('MAT_PROC_PODR').Value,
-              qrMaterialData.FieldByName('TRANSP_PROC_ZAC').Value,
-              qrMaterialData.FieldByName('TRANSP_PROC_PODR').Value]));
-        end;
-      // С НДС
-      1:
-        ;
-    end;
+              'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13 +
+              'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10',
+              VarArrayOf([FieldByName('COAST').Value, FieldByName('CODE').Value,
+              FieldByName('PROC_TRANSP').Value, FieldByName('DELETED').Value,
+              FieldByName('MAT_PROC_ZAC').Value, FieldByName('MAT_PROC_PODR').Value,
+              FieldByName('TRANSP_PROC_ZAC').Value, FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex,
+              FieldByName('COAST').OldValue]));
+        // С НДС
+        1:
+          // Цена
+          if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
+            FastExecSQL('UPDATE materialcard_temp SET'#13 + 'FCOAST_NDS=:1,'#13 +
+              'FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),'#13 +
+              'WHERE MAT_CODE=:3 AND PROC_TRANSP=:4 AND DELETED=:5'#13 +
+              'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 +
+              'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13 +
+              'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10',
+              VarArrayOf([FieldByName('COAST').Value, FieldByName('CODE').Value,
+              FieldByName('PROC_TRANSP').Value, FieldByName('DELETED').Value,
+              FieldByName('MAT_PROC_ZAC').Value, FieldByName('MAT_PROC_PODR').Value,
+              FieldByName('TRANSP_PROC_ZAC').Value, FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex,
+              FieldByName('COAST').OldValue]));
+      end;
+      // Стоимость транспорта
+      if FieldByName('TRANSP').Value <> FieldByName('TRANSP').OldValue then
+        FastExecSQL('UPDATE materialcard_temp SET FTRANSP_NO_NDS = :1, FTRANSP_NDS = :2'#13 +
+          'WHERE MAT_CODE=:3 AND PROC_TRANSP=:4 AND DELETED=:5'#13 +
+          'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 + 'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13
+          + 'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10',
+          VarArrayOf([FieldByName('TRANSP').Value, FieldByName('TRANSP').Value, FieldByName('CODE').Value,
+          FieldByName('PROC_TRANSP').Value, FieldByName('DELETED').Value, FieldByName('MAT_PROC_ZAC').Value,
+          FieldByName('MAT_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
+          FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex, FieldByName('COAST').Value]));
 
+    end;
+    // Вызываем переасчет всей сметы
+    FormCalculationEstimate.RecalcEstimate;
     CloseOpen(qrMaterialData);
   end
   else

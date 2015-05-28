@@ -750,7 +750,7 @@ type
     procedure OpenAllData;
     procedure Wheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
       var Handled: Boolean);
-
+    procedure RecalcEstimate;
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
@@ -1229,16 +1229,11 @@ begin
 
 end;
 
-procedure TFormCalculationEstimate.btn1Click(Sender: TObject);
+procedure TFormCalculationEstimate.RecalcEstimate;
 var
   Key: Variant;
   e: TDataSetNotifyEvent;
 begin
-  case Application.MessageBox('Произвести обновление цен по объектам сметы?', 'Перерасчет',
-    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
-    IDYES:
-      FastExecSQL('CALL UpdateSmetaCosts(:IDESTIMATE);', VarArrayOf([IdEstimate]));
-  end;
   qrRatesEx.DisableControls;
   e := qrRatesEx.AfterScroll;
   qrRatesEx.AfterScroll := nil;
@@ -1265,6 +1260,21 @@ begin
     qrRatesExAfterScroll(qrRatesEx);
     CloseOpen(qrCalculations);
   end;
+end;
+
+procedure TFormCalculationEstimate.btn1Click(Sender: TObject);
+var
+  Key: Variant;
+  e: TDataSetNotifyEvent;
+begin
+  if Application.MessageBox('Произвести перерасчет сметы?', 'Перерасчет',
+      MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) <> IDYES then Exit;
+  case Application.MessageBox('Произвести обновление цен по всем объектам сметы?', 'Перерасчет',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
+    IDYES:
+      FastExecSQL('CALL UpdateSmetaCosts(:IDESTIMATE);', VarArrayOf([IdEstimate]));
+  end;
+  RecalcEstimate;
 end;
 
 procedure TFormCalculationEstimate.btnDescriptionClick(Sender: TObject);
