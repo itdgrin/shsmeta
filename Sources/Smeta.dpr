@@ -106,7 +106,8 @@ uses
   fFrameEquipment in 'fFrameEquipment.pas' {SprEquipment: TFrame},
   TreeEstimate in 'TreeEstimate.pas' {fTreeEstimate},
   SuppAgreement in 'SuppAgreement.pas' {fSuppAgreement},
-  CalcWorkerDepartment in 'CalcWorkerDepartment.pas' {fCalcWorkerDepartment};
+  CalcWorkerDepartment in 'CalcWorkerDepartment.pas' {fCalcWorkerDepartment},
+  fFrameCalculator in 'fFrameCalculator.pas' {Calculator: TFrame};
 
 {$R *.res}
 var MHandle: THandle;

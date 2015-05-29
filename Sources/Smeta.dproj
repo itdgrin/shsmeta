@@ -419,6 +419,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>fCalcWorkerDepartment</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="fFrameCalculator.pas">
+            <Form>Calculator</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

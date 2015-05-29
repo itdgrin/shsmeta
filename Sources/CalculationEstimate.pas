@@ -14,7 +14,8 @@ uses
   JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression,
   GlobsAndConst, FireDAC.UI.Intf, JvExComCtrls, JvDBTreeView,
   Generics.Collections,
-  Generics.Defaults;
+  Generics.Defaults,
+  fFrameCalculator;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -654,6 +655,10 @@ type
     procedure qrRatesExNUM_ROWChange(Sender: TField);
     procedure PMAddRateOldClick(Sender: TObject);
     procedure PMRateRefClick(Sender: TObject);
+    procedure PMCalcMatClick(Sender: TObject);
+    procedure PMCalcMechClick(Sender: TObject);
+    procedure PMCalcDeviceClick(Sender: TObject);
+    procedure pmDevicesPopup(Sender: TObject);
   private const
     CaptionButton = 'Расчёт сметы';
     HintButton = 'Окно расчёта сметы';
@@ -697,6 +702,8 @@ type
 
     // Флаги необходимости предлагать автоматически добавить пуск и регулировку
     AutoAddE18, AutoAddE20: Boolean;
+
+    Calculator: TCalculator;
 
     // пересчитывает все относящееся к строке в таблице расценок
     procedure ReCalcRowRates;
@@ -941,6 +948,10 @@ begin
   // По умолчанию будет предлагать добавить пуск и регулировку
   AutoAddE18 := True;
   AutoAddE20 := True;
+
+  Calculator := TCalculator.Create(Self);
+  Calculator.Parent := TWinControl(Self);
+  Calculator.Visible := False;
 
   if not Act then
     FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
@@ -2899,6 +2910,21 @@ begin
   FormSummaryCalculationSettings.ShowModal;
 end;
 
+procedure TFormCalculationEstimate.PMCalcDeviceClick(Sender: TObject);
+begin
+  Calculator.ShowCalculator(dbgrdDevices);
+end;
+
+procedure TFormCalculationEstimate.PMCalcMatClick(Sender: TObject);
+begin
+  Calculator.ShowCalculator(dbgrdMaterial);
+end;
+
+procedure TFormCalculationEstimate.PMCalcMechClick(Sender: TObject);
+begin
+  Calculator.ShowCalculator(dbgrdMechanizm);
+end;
+
 procedure TFormCalculationEstimate.PMCoefOrdersClick(Sender: TObject);
 begin
   // FormCoefficientOrders.ShowForm(IdEstimate, RateId, 0);
@@ -3523,6 +3549,12 @@ begin
     (qrMaterialDELETED.AsInteger = 0)));
 
   PMMatRestore.Enabled := qrMaterialDELETED.AsInteger = 1;
+
+  PMCalcMat.Visible := NDSEstimate;
+  PMCalcMat.Enabled :=
+    (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FCOAST_NDS');
+//    or
+//    (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS');
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -3553,6 +3585,10 @@ begin
     (qrMechanizmADDED.AsInteger = 0) and (qrMechanizmDELETED.AsInteger = 0)));
 
   PMMechRestore.Enabled := qrMechanizmDELETED.AsInteger = 1;
+
+  PMCalcMech.Visible := NDSEstimate;
+  PMCalcMech.Enabled :=
+    (dbgrdMechanizm.Columns[dbgrdMechanizm.Col - 1].FieldName = 'FCOAST_NDS');
 end;
 
 function TFormCalculationEstimate.CheckCursorInRate: Boolean;
@@ -3825,7 +3861,10 @@ begin
         mrOk:
           PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE18);
         mrCancel:
+        begin
           AutoAddE18 := False;
+          OutputDataToTable(True);
+        end;
       end;
 
     if (Pos('е20', AnsiLowerCase(NewRateCode)) > 0) then
@@ -3834,7 +3873,10 @@ begin
         mrOk:
           PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE20);
         mrCancel:
+        begin
           AutoAddE18 := False;
+          OutputDataToTable(True);
+        end;
       end;
   end
   else
@@ -4065,6 +4107,13 @@ end;
 procedure TFormCalculationEstimate.PMDevEditClick(Sender: TObject);
 begin
   SetDevEditMode;
+end;
+
+procedure TFormCalculationEstimate.pmDevicesPopup(Sender: TObject);
+begin
+  PMCalcDevice.Visible := NDSEstimate;
+  PMCalcDevice.Enabled :=
+    (dbgrdDevices.Columns[dbgrdDevices.Col - 1].FieldName = 'FCOAST_NDS');
 end;
 
 // Общий пункт для свалок и транспорта
@@ -4555,6 +4604,10 @@ begin
   // связано с тем, что спидбутоны не получают фокуса при нажатии на них
   if not MemoRight.ReadOnly then
     MemoRightExit(MemoRight);
+
+  if Assigned(Calculator) then
+    if Calculator.Visible then
+      Calculator.OnExit(Calculator);
 
   SplitterRight1.Align := alBottom;
   SplitterRight2.Align := alBottom;
@@ -5107,7 +5160,7 @@ begin
       if (TmpSmID <> qrRatesExSM_ID.Value) then
         qrRatesEx.Next;
 
-      while (not qrRatesEx.Bof) and (TmpSmID = qrRatesExSM_ID.Value) and
+      while (not qrRatesEx.Eof) and (TmpSmID = qrRatesExSM_ID.Value) and
         TArray.BinarySearch<string>(SortIDArray,
           strngfldRatesExSORT_ID.Value, i,
           TComparer<string>.Default) do
@@ -5427,7 +5480,9 @@ begin
         Brush.Color := $00AFFEFC
     end;
 
-    if gdFocused in State then // Ячейка в фокусе
+    if (gdFocused in State) or // Ячейка в фокусе
+       (Calculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
+       then
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;
@@ -5570,7 +5625,9 @@ begin
         Str := '';
     end;
 
-    if gdFocused in State then // Ячейка в фокусе
+    if (gdFocused in State) or // Ячейка в фокусе
+       (Calculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
+       then
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;
@@ -5721,7 +5778,9 @@ begin
         Str := '';
     end;
 
-    if gdFocused in State then // Ячейка в фокусе
+    if (gdFocused in State) or // Ячейка в фокусе
+       (Calculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
+       then
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;

@@ -1986,6 +1986,11 @@
               item
                 Expanded = False
                 FieldName = 'FCOAST_NDS'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'Tahoma'
+                Font.Style = []
                 Title.Alignment = taCenter
                 Title.Caption = '  '#1062#1077#1085#1072' ('#1060')    '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
@@ -1994,6 +1999,11 @@
               item
                 Expanded = False
                 FieldName = 'FCOAST_NO_NDS'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'Tahoma'
+                Font.Style = []
                 Title.Alignment = taCenter
                 Title.Caption = ' '#1062#1077#1085#1072' ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
@@ -3380,7 +3390,8 @@
       OnClick = PMMatMechEditClick
     end
     object PMCalcMat: TMenuItem
-      Caption = #1056#1072#1089#1095#1080#1090#1072#1090#1100
+      Caption = #1050#1072#1083#1100#1082#1091#1083#1103#1090#1086#1088' '#1094#1077#1085#1099
+      OnClick = PMCalcMatClick
     end
     object N10: TMenuItem
       Caption = '-'
@@ -3442,7 +3453,8 @@
       OnClick = PMMatMechEditClick
     end
     object PMCalcMech: TMenuItem
-      Caption = #1056#1072#1089#1095#1080#1090#1072#1090#1100
+      Caption = #1050#1072#1083#1100#1082#1091#1083#1103#1090#1086#1088' '#1094#1077#1085#1099
+      OnClick = PMCalcMechClick
     end
     object N8: TMenuItem
       Caption = '-'
@@ -4255,6 +4267,7 @@
     Top = 128
   end
   object pmDevices: TPopupMenu
+    OnPopup = pmDevicesPopup
     Left = 296
     Top = 472
     object PMDevEdit: TMenuItem
@@ -4262,7 +4275,8 @@
       OnClick = PMDevEditClick
     end
     object PMCalcDevice: TMenuItem
-      Caption = #1056#1072#1089#1095#1080#1090#1072#1090#1100
+      Caption = #1050#1072#1083#1100#1082#1091#1083#1103#1090#1086#1088' '#1094#1077#1085#1099
+      OnClick = PMCalcDeviceClick
     end
   end
   object qrCalculations: TFDQuery

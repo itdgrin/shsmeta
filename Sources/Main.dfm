@@ -10850,8 +10850,6 @@
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2
-    ExplicitTop = 460
-    ExplicitWidth = 668
   end
   object PanelCover: TPanel
     Left = 0
@@ -10862,10 +10860,6 @@
     BevelOuter = bvNone
     TabOrder = 0
     Visible = False
-    ExplicitLeft = 379
-    ExplicitTop = 56
-    ExplicitWidth = 284
-    ExplicitHeight = 156
   end
   object MainMenu: TMainMenu
     Left = 32
