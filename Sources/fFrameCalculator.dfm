@@ -14,7 +14,6 @@ object Calculator: TCalculator
     BevelKind = bkFlat
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitHeight = 214
     object lbCoast: TLabel
       Left = 40
       Top = 73
@@ -71,6 +70,7 @@ object Calculator: TCalculator
       ParentFont = False
       TabOrder = 0
       Text = ''
+      OnChange = edtCoastChange
       NumbersOnly = True
     end
     object edtCount: TJvEdit
@@ -81,8 +81,16 @@ object Calculator: TCalculator
       BevelInner = bvNone
       BevelKind = bkFlat
       BevelOuter = bvNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 1
       Text = ''
+      OnChange = edtCountChange
+      OnKeyPress = edtCountKeyPress
     end
     object edtNDS: TJvEdit
       Left = 144
@@ -92,6 +100,13 @@ object Calculator: TCalculator
       BevelInner = bvNone
       BevelKind = bkFlat
       BevelOuter = bvNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ReadOnly = True
       TabOrder = 2
       Text = ''
       NumbersOnly = True
@@ -106,6 +121,7 @@ object Calculator: TCalculator
       BevelOuter = bvNone
       TabOrder = 3
       Text = ''
+      OnChange = edtPriceNDSChange
       NumbersOnly = True
     end
     object ButtonPanel: TPanel
@@ -124,7 +140,6 @@ object Calculator: TCalculator
       Font.Style = []
       ParentFont = False
       TabOrder = 4
-      ExplicitTop = 116
       object btnSetResult: TButton
         AlignWithMargins = True
         Left = 184
@@ -138,6 +153,7 @@ object Calculator: TCalculator
         Align = alRight
         Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100
         TabOrder = 0
+        OnClick = btnSetResultClick
       end
       object btnHide: TButton
         AlignWithMargins = True

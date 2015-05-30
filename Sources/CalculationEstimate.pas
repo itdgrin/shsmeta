@@ -2912,17 +2912,23 @@ end;
 
 procedure TFormCalculationEstimate.PMCalcDeviceClick(Sender: TObject);
 begin
-  Calculator.ShowCalculator(dbgrdDevices);
+  Calculator.ShowCalculator(dbgrdDevices,qrDevicesFCOAST_NDS.Value,
+    qrDevicesDEVICE_COUNT.Value, qrDevicesNDS.Value,
+    qrDevicesFPRICE_NDS.Value, 'FCOAST_NDS');
 end;
 
 procedure TFormCalculationEstimate.PMCalcMatClick(Sender: TObject);
 begin
-  Calculator.ShowCalculator(dbgrdMaterial);
+  Calculator.ShowCalculator(dbgrdMaterial, qrMaterialFCOAST_NDS.Value,
+    qrMaterialMAT_COUNT.Value, qrMaterialNDS.Value,
+    qrMaterialFPRICE_NDS.Value, 'FCOAST_NDS');
 end;
 
 procedure TFormCalculationEstimate.PMCalcMechClick(Sender: TObject);
 begin
-  Calculator.ShowCalculator(dbgrdMechanizm);
+  Calculator.ShowCalculator(dbgrdMechanizm ,qrMechanizmFCOAST_NDS.Value,
+    qrMechanizmMECH_COUNT.Value, qrMechanizmNDS.Value,
+    qrMechanizmFPRICE_NDS.Value, 'FCOAST_NDS');
 end;
 
 procedure TFormCalculationEstimate.PMCoefOrdersClick(Sender: TObject);
