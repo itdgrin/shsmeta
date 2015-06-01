@@ -3611,10 +3611,8 @@ var
   NewRateCode: string;
   vNormRas: Double;
   Month1, Year1: Integer;
-  DateBeg: TDateTime;
   PriceVAT, PriceNoVAT: string;
-  PT, PercentTransport: Real;
-  ZonaId: Integer;
+  PT: Real;
   SCode: string;
 begin
   if not CheckCursorInRate then
@@ -3663,7 +3661,6 @@ begin
       Active := True;
       Month1 := FieldByName('monat').AsInteger;
       Year1 := FieldByName('year').AsInteger;
-      DateBeg := FieldByName('DATE_BEG').AsDateTime;
       Active := False;
 
       SQL.Clear;
@@ -3675,23 +3672,6 @@ begin
         PriceNoVAT := 'coast' + FieldByName('region_id').AsString + '_1';
       end;
       Active := False;
-
-      ZonaId := 0;
-      SQL.Clear;
-      SQL.Add('SELECT obj_region FROM objstroj WHERE ' + 'stroj_id = (SELECT stroj_id FROM objcards WHERE ' +
-        'obj_id = ' + IntToStr(IdObject) + ')');
-      Active := True;
-      if not Eof then
-        ZonaId := Fields[0].AsInteger;
-      Active := False;
-
-      { SQL.Clear;
-        SQL.Add('SELECT coef_tr_zatr FROM smetasourcedata WHERE sm_id = ' + IntToStr(qrRatesExSM_ID.AsInteger));
-        Active := True;
-        PercentTransport := Fields[0].AsFloat;
-        Active := False; }
-
-      PercentTransport := 0;
 
       SQL.Clear;
       { SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
@@ -3725,25 +3705,15 @@ begin
       begin
         // Получение процента транспорта для материала
         qrTemp1.Active := False;
-        SCode := FieldByName('MatCode').AsString;
-        SCode := copy(SCode, 1, Pos('-', SCode) - 1) + ',';
+        qrTemp1.SQL.Clear;
+        qrTemp1.SQL.Add('SELECT GetTranspPers(:IdEstimate, :MatCode);');
+        qrTemp1.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
+        qrTemp1.ParamByName('MatCode').Value := FieldByName('MatCode').AsString;
+        qrTemp1.Active := True;
         PT := 0;
-        if ZonaId > 0 then
-        begin
-          qrTemp1.SQL.Clear;
-          qrTemp1.SQL.Add('SELECT Transp' + IntToStr(ZonaId) +
-            ' FROM materialtransp WHERE LOCATE(:SCode, codestr)  and ' +
-            '((BeginDate <= :DDATEBEG) or (BeginDate is NULL)) and ' +
-            '((EndDate >= :DDATEBEG) or (EndDate is NULL))');
-          qrTemp1.ParamByName('SCode').Value := SCode;
-          qrTemp1.ParamByName('DDATEBEG').Value := DateBeg;
-          qrTemp1.Active := True;
-          if not qrTemp1.Eof then
-            PT := qrTemp1.Fields[0].AsFloat;
-          qrTemp1.Active := False;
-        end;
-        if PT = 0 then
-          PT := PercentTransport;
+        if not qrTemp1.Eof then
+          PT := qrTemp1.Fields[0].AsFloat;
+        qrTemp1.Active := False;
 
         qrTemp1.SQL.Text := 'Insert into materialcard_temp (ID_CARD_RATE, MAT_ID, ' +
           'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
