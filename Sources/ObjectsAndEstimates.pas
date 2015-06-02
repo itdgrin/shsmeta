@@ -502,8 +502,16 @@ end;
 
 procedure TFormObjectsAndEstimates.PMCopySmetaClick(Sender: TObject);
 begin
-  if GetCopySmeta(qrTreeData.FieldByName('SM_ID').AsInteger) then
-    CloseOpen(qrTreeData, False);
+  FormMain.PanelCover.Visible := True;
+  FormWaiting.Show;
+  Application.ProcessMessages;
+  try
+    if GetCopySmeta(qrTreeData.FieldByName('SM_ID').AsInteger) then
+      CloseOpen(qrTreeData, False);
+  finally
+    FormWaiting.Close;
+    FormMain.PanelCover.Visible := False;
+  end;
 end;
 
 procedure TFormObjectsAndEstimates.mN6Click(Sender: TObject);

@@ -804,9 +804,8 @@ begin
 
     //Выгрузка информации об актах
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from card_acts where ID_ESTIMATE_OBJECT in ' +
-    '(select SM_ID from smetasourcedata where obj_id = ' + IntToStr(AIdObject) +
-    ') order by ID';
+    DM.qrDifferent.SQL.Text := 'Select * from card_acts where ID_OBJECT = ' +
+    IntToStr(AIdObject) + ' order by ID';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -831,10 +830,9 @@ begin
     Application.ProcessMessages;
     //Выгрузка информации об расценках
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from card_rate_act where ID in ' +
-    '(select ID_TABLES from data_act where (ID_TYPE_DATA = 1) and (ID_ESTIMATE in ' +
-    '(select SM_ID from smetasourcedata where obj_id = ' + IntToStr(AIdObject) +
-    '))) order by ID';
+    DM.qrDifferent.SQL.Text := 'Select * from card_rate_act where ID_ACT in ' +
+    '(Select ID from card_acts where ID_OBJECT = ' + IntToStr(AIdObject) +
+    ') order by ID';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -854,12 +852,9 @@ begin
     Application.ProcessMessages;
     //Выгрузка информации об материалах
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from materialcard_act where (ID in ' +
-    '(select ID_TABLES from data_act where (ID_TYPE_DATA = 2) and (ID_ESTIMATE in ' +
-    '(select SM_ID from smetasourcedata where obj_id = ' + IntToStr(AIdObject) +
-    ')))) or (ID_CARD_RATE in (select ID_TABLES from data_act where ' +
-    '(ID_TYPE_DATA = 1) and (ID_ESTIMATE in (select SM_ID from smetasourcedata ' +
-    'where obj_id = ' + IntToStr(AIdObject) + ')))) order by ID';
+    DM.qrDifferent.SQL.Text := 'Select * from materialcard_act where ID_ACT in ' +
+    '(Select ID from card_acts where ID_OBJECT = ' + IntToStr(AIdObject) +
+    ') order by ID';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -879,12 +874,9 @@ begin
     Application.ProcessMessages;
      //Выгрузка информации об механизм
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from mechanizmcard_act where (ID in ' +
-    '(select ID_TABLES from data_act where (ID_TYPE_DATA = 3) and (ID_ESTIMATE in ' +
-    '(select SM_ID from smetasourcedata where obj_id = ' + IntToStr(AIdObject) +
-    ')))) or (ID_CARD_RATE in (select ID_TABLES from data_act where ' +
-    '(ID_TYPE_DATA = 1) and (ID_ESTIMATE in (select SM_ID from smetasourcedata ' +
-    'where obj_id = ' + IntToStr(AIdObject) + ')))) order by ID';
+    DM.qrDifferent.SQL.Text := 'Select * from mechanizmcard_act where ID_ACT in ' +
+    '(Select ID from card_acts where ID_OBJECT = ' + IntToStr(AIdObject) +
+    ') order by ID';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -904,10 +896,9 @@ begin
     Application.ProcessMessages;
     //Выгрузка информации об оборудовании
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from devicescard_act where ID in ' +
-    '(select ID_TABLES from data_act where (ID_TYPE_DATA = 4) and (ID_ESTIMATE in ' +
-    '(select SM_ID from smetasourcedata where obj_id = ' + IntToStr(AIdObject) +
-    '))) order by ID';
+    DM.qrDifferent.SQL.Text := 'Select * from devicescard_act where ID_ACT in ' +
+    '(Select ID from card_acts where ID_OBJECT = ' + IntToStr(AIdObject) +
+    ') order by ID';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -927,10 +918,9 @@ begin
     Application.ProcessMessages;
     //Выгрузка информации об свалках
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from dumpcard_act where ID in ' +
-    '(select ID_TABLES from data_act where (ID_TYPE_DATA = 5) and (ID_ESTIMATE in ' +
-    '(select SM_ID from smetasourcedata where obj_id = ' + IntToStr(AIdObject) +
-    '))) order by ID';
+    DM.qrDifferent.SQL.Text := 'Select * from dumpcard_act where ID_ACT in ' +
+    '(Select ID from card_acts where ID_OBJECT = ' + IntToStr(AIdObject) +
+    ') order by ID';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -950,10 +940,9 @@ begin
     Application.ProcessMessages;
     //Выгрузка информации об транспорте
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from transpcard_act where ID in ' +
-    '(select ID_TABLES from data_act where (ID_TYPE_DATA in (6,7,8,9)) and (ID_ESTIMATE in ' +
-    '(select SM_ID from smetasourcedata where obj_id = ' + IntToStr(AIdObject) +
-    '))) order by ID';
+    DM.qrDifferent.SQL.Text := 'Select * from transpcard_act where ID_ACT in ' +
+    '(Select ID from card_acts where ID_OBJECT = ' + IntToStr(AIdObject) +
+    ') order by ID';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -973,9 +962,9 @@ begin
     Application.ProcessMessages;
     //Выгрузка информации из data_act
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from data_act where ' +
-      '(ID_ESTIMATE in (select SM_ID from smetasourcedata where obj_id = ' +
-      IntToStr(AIdObject) + '))order by ID';
+    DM.qrDifferent.SQL.Text := 'Select * from data_act where ID_ACT in ' +
+    '(Select ID from card_acts where ID_OBJECT = ' + IntToStr(AIdObject) +
+    ') order by ID';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
