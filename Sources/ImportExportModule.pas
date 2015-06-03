@@ -151,8 +151,8 @@ var XML : IXMLDocument;
   procedure RollBackImport;
   var i, j: Integer;
   begin
-    for i := 0 to High(IdConvert) do
-      for j := 0 to High(IdConvert[i][0]) do
+    for i := High(IdConvert) downto 0 do
+      for j := High(IdConvert[i][0]) downto 0 do
       begin
         DM.qrDifferent2.SQL.Text := 'Delete from ' + CTabNameAndID[i][0] +
           ' where ' + CTabNameAndID[i][1] + ' = ' + IntToStr(IdConvert[i][1][j]);
@@ -526,7 +526,12 @@ begin
     except
       on e: Exception do
       begin
-        RollBackImport;
+        try
+          RollBackImport;
+        except
+          on ee: Exception do
+            Application.ShowException(ee);
+        end;
         raise;
       end;
     end;
