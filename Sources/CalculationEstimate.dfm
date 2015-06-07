@@ -4268,6 +4268,14 @@
       Caption = #1050#1072#1083#1100#1082#1091#1083#1103#1090#1086#1088' '#1094#1077#1085#1099
       OnClick = PMCalcDeviceClick
     end
+    object N11: TMenuItem
+      Caption = '-'
+    end
+    object PMDeviceReplace: TMenuItem
+      Tag = 2
+      Caption = #1047#1072#1084#1077#1085#1080#1090#1100' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
+      OnClick = ReplacementClick
+    end
   end
   object qrCalculations: TFDQuery
     MasterSource = dsRatesEx

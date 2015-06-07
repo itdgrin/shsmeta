@@ -1054,7 +1054,7 @@ var i, j,
       if ALocalType > 0 then
       begin
         //Обновление нумерации в смете
-        AIterator := UpdateIterator(ADestSmID, AIterator);
+        AIterator := UpdateIterator(ADestSmID, AIterator, 0);
         //Добавление новой строки
         DM.qrDifferent1.SQL.Text :=
           'INSERT INTO data_estimate_temp (id_estimate, id_type_data, id_tables, NUM_ROW) ' +

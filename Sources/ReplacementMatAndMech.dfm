@@ -1,7 +1,7 @@
 object frmReplacement: TfrmReplacement
   Left = 0
   Top = 0
-  Caption = #1047#1072#1084#1077#1085#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074' '#1080' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
+  Caption = #1047#1072#1084#1077#1085#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074', '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074' '#1080' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
   ClientHeight = 564
   ClientWidth = 779
   Color = clBtnFace
@@ -18,14 +18,14 @@ object frmReplacement: TfrmReplacement
     Left = 0
     Top = 0
     Width = 779
-    Height = 57
+    Height = 68
     Align = alTop
     TabOrder = 0
     object groupReplace: TGroupBox
       Left = 145
       Top = 1
       Width = 633
-      Height = 55
+      Height = 66
       Align = alClient
       Caption = ' '#1052#1072#1090#1077#1088#1080#1072#1083#1072': '
       Font.Charset = DEFAULT_CHARSET
@@ -35,6 +35,7 @@ object frmReplacement: TfrmReplacement
       Font.Style = [fsBold]
       ParentFont = False
       TabOrder = 1
+      ExplicitHeight = 55
       object Label2: TLabel
         Left = 13
         Top = 21
@@ -78,9 +79,9 @@ object frmReplacement: TfrmReplacement
       end
       object edtSourceName: TMemo
         Left = 229
-        Top = 20
+        Top = 18
         Width = 396
-        Height = 32
+        Height = 41
         Color = 14802912
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -96,7 +97,7 @@ object frmReplacement: TfrmReplacement
       Left = 1
       Top = 1
       Width = 144
-      Height = 55
+      Height = 66
       Align = alLeft
       Caption = ' '#1047#1072#1084#1077#1085#1072' '
       Enabled = False
@@ -107,17 +108,19 @@ object frmReplacement: TfrmReplacement
       Font.Style = []
       Items.Strings = (
         #1052#1072#1090#1077#1088#1080#1072#1083#1086#1074
-        #1052#1077#1093#1072#1085#1080#1079#1084#1086#1074)
+        #1052#1077#1093#1072#1085#1080#1079#1084#1086#1074
+        #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103)
       ParentFont = False
       TabOrder = 0
       OnClick = rgroupTypeClick
+      ExplicitHeight = 55
     end
   end
   object groupEntry: TGroupBox
     Left = 0
-    Top = 57
+    Top = 68
     Width = 779
-    Height = 104
+    Height = 113
     Align = alTop
     Caption = ' '#1042#1093#1086#1078#1076#1077#1085#1080#1103
     TabOrder = 1
@@ -125,7 +128,7 @@ object frmReplacement: TfrmReplacement
       Left = 2
       Top = 15
       Width = 775
-      Height = 87
+      Height = 96
       Align = alClient
       Checkboxes = True
       Columns = <
@@ -162,13 +165,14 @@ object frmReplacement: TfrmReplacement
       ViewStyle = vsReport
       OnChange = ListEntryChange
       OnCustomDrawItem = ListEntryCustomDrawItem
+      ExplicitHeight = 87
     end
   end
   object groupCatalog: TGroupBox
     Left = 0
-    Top = 250
+    Top = 270
     Width = 779
-    Height = 281
+    Height = 261
     Align = alClient
     Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082
     DoubleBuffered = True
@@ -180,14 +184,17 @@ object frmReplacement: TfrmReplacement
     ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 3
+    ExplicitTop = 250
+    ExplicitHeight = 281
     object Panel5: TPanel
       Left = 2
       Top = 15
       Width = 775
-      Height = 264
+      Height = 244
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitHeight = 264
     end
   end
   object Panel4: TPanel
@@ -235,7 +242,7 @@ object frmReplacement: TfrmReplacement
   end
   object groupRep: TGroupBox
     Left = 0
-    Top = 161
+    Top = 181
     Width = 779
     Height = 89
     Align = alTop
@@ -247,6 +254,7 @@ object frmReplacement: TfrmReplacement
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 2
+    ExplicitTop = 161
     object Panel2: TPanel
       Left = 750
       Top = 15

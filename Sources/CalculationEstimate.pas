@@ -463,6 +463,8 @@ type
     PMCalcMat: TMenuItem;
     PMCalcMech: TMenuItem;
     PMCalcDevice: TMenuItem;
+    N11: TMenuItem;
+    PMDeviceReplace: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -1916,6 +1918,10 @@ begin
           qrMaterialTRANSP_PROC_PODR.Value := 100 - qrMaterialTRANSP_PROC_ZAC.Value;
       end;
 
+      if qrMaterialMAT_NORMA.Value = 0 then
+        Beep;
+
+
       // јвтоматический расчет фактических транспортных расходов при изменении фактической цены
       if (Sender.FieldName = 'FCOAST_NO_NDS') or (Sender.FieldName = 'FCOAST_NDS') then
       begin
@@ -2851,24 +2857,22 @@ var
   frmReplace: TfrmReplacement;
   i: Integer;
 begin
-  if (TMenuItem(Sender).Tag = 1) then
-    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, '', 1, False)
-  else
-    frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, '', 0, False);
+  case TMenuItem(Sender).Tag of
+    0: frmReplace :=
+      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, '', 0, False);
+    1: frmReplace :=
+      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, '', 1, False);
+    2: frmReplace :=
+      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrDevicesID.AsInteger, '', 2, False)
+    else Exit;
+  end;
 
   if Assigned(frmReplace) then
     try
       if (frmReplace.ShowModal = mrYes) then
       begin
-        qrTemp.Active := False;
-        for i := 0 to frmReplace.Count - 1 do
-        begin
-          qrTemp.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, 1, :OWNER_ID, 0);';
-          qrTemp.ParamByName('ESTIMATE_ID').Value := frmReplace.EstIDs[i];
-          qrTemp.ParamByName('OWNER_ID').Value := frmReplace.RateIDs[i];
-          qrTemp.ExecSQL;
-        end;
-
+        qrTemp.SQL.Text := 'CALL CalcCalculationAll;';
+        qrTemp.ExecSQL;
         OutputDataToTable;
       end;
     finally
@@ -3037,10 +3041,9 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL FromRareMaterial(:id_estimate, :id_mat, :CALCMODE);');
+      SQL.Add('CALL FromRareMaterial(:id_estimate, :id_mat, 0);');
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_mat').Value := qrMaterialID.AsInteger;
-      ParamByName('CALCMODE').Value := G_CALCMODE;
       ExecSQL;
     end;
 
@@ -3125,10 +3128,9 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL FromRareMechanism(:id_estimate, :id_mech, :CALCMODE);');
+      SQL.Add('CALL FromRareMechanism(:id_estimate, :id_mech, 0);');
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_mech').Value := qrMechanizmID.Value;
-      ParamByName('CALCMODE').Value := G_CALCMODE;
       ExecSQL;
     end;
 
@@ -3535,9 +3537,7 @@ begin
   PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialCONSIDERED.AsInteger = 1) and
     ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
 
-  PMMatReplace.Enabled := ((not CheckMatReadOnly) or (qrMaterialREPLACED.AsInteger = 1)) and
-    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) and
-    (qrMaterialID_REPLACED.AsInteger = 0) and (qrMaterialADDED.AsInteger = 0);
+  PMMatReplace.Enabled := ((not CheckMatReadOnly) or (qrMaterialREPLACED.AsInteger = 1));
 
   PMMatAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0);
 
@@ -3571,9 +3571,7 @@ begin
   PMMechFromRates.Enabled := (not CheckMechReadOnly) and
     ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
 
-  PMMechReplace.Enabled := (not CheckMechReadOnly) and
-    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) and
-    (qrMechanizmID_REPLACED.AsInteger = 0) and (qrMechanizmADDED.AsInteger = 0);
+  PMMechReplace.Enabled := (not CheckMechReadOnly) or (qrMechanizmREPLACED.AsInteger = 1);
 
   // ƒоступен только с расценке
   PMMechAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0);
@@ -3613,7 +3611,6 @@ var
   Month1, Year1: Integer;
   PriceVAT, PriceNoVAT: string;
   PT: Real;
-  SCode: string;
 begin
   if not CheckCursorInRate then
     Exit;
@@ -5119,7 +5116,7 @@ begin
       repeat
         inc(i);
         SetLength(SortIDArray, i);
-        SortIDArray[i - 1] := strngfldRatesExSORT_ID.Value;
+        SortIDArray[i - 1] := strngfldRatesExSORT_ID.AsString;
         qrRatesEx.Next;
       until not((not qrRatesEx.Eof) and (TmpSmID = qrRatesExSM_ID.Value));
       TArray.Sort<string>(SortIDArray, TComparer<string>.Default);
@@ -5138,7 +5135,7 @@ begin
 
       while (not qrRatesEx.Eof) and (TmpSmID = qrRatesExSM_ID.Value) and
         TArray.BinarySearch<string>(SortIDArray,
-          strngfldRatesExSORT_ID.Value, i,
+          strngfldRatesExSORT_ID.AsString, i,
           TComparer<string>.Default) do
         qrRatesEx.Next;
     end;
@@ -5334,7 +5331,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddDevice(:IdEstimate, :IdDev);');
+      SQL.Add('CALL AddDevice(:IdEstimate, :IdDev, 0, 0);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdDev').Value := vEquipId;
       ExecSQL;
@@ -5359,9 +5356,10 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddMaterial(:IdEstimate, :IdMat);');
+      SQL.Add('CALL AddMaterial(:IdEstimate, :IdMat, 0, 0, :CALCMODE);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdMat').Value := vMatId;
+      ParamByName('CALCMODE').Value := G_CALCMODE;
       ExecSQL;
     end;
 
@@ -5384,11 +5382,10 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, :Month, :Year);');
+      SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, 0, 0, :CALCMODE);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdMech').Value := vMechId;
-      ParamByName('Month').Value := MonthEstimate;
-      ParamByName('Year').Value := YearEstimate;
+      ParamByName('CALCMODE').Value := G_CALCMODE;
       ExecSQL;
     end;
 
@@ -5724,9 +5721,9 @@ begin
     then
       Font.Style := Font.Style + [fsbold];
 
-    // ѕодсветка заменен€ющего материала
-    if (IdReplasingMech > 0) and (qrMechanizmFROM_RATE.Value = 0) and
-      (IdReplasingMech = qrMechanizmID_REPLACED.Value) and (dbgrdMechanizm = LastEntegGrd) then
+    // ѕодсветка заменен€ющего механизма
+    if (IdReplasingMech > 0) and (IdReplasingMech = qrMechanizmID_REPLACED.Value) and
+       (dbgrdMechanizm = LastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';

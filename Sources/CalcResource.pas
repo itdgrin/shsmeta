@@ -351,16 +351,7 @@ begin
     try
       if (frmReplace.ShowModal = mrYes) then
       begin
-        for i := 0 to frmReplace.Count - 1 do
-          FastExecSQL('CALL CalcCalculation(:ESTIMATE_ID, 1, :OWNER_ID, 0);',
-            VarArrayOf([frmReplace.EstIDs[i], frmReplace.RateIDs[i]]));
-
-        case pgc.ActivePageIndex of
-          1:
-            CloseOpen(qrMaterialData);
-          2:
-            CloseOpen(qrMechData);
-        end;
+        //Добавить пересчет после замены
       end;
     finally
       FreeAndNil(frmReplace);

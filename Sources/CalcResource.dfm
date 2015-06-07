@@ -144,10 +144,11 @@ object fCalcResource: TfCalcResource
     PopupMenu = pm
     TabOrder = 1
     OnChange = pgcChange
-    ExplicitTop = 32
-    ExplicitHeight = 330
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 302
       object lbl2: TLabel
         Left = 0
@@ -166,7 +167,6 @@ object fCalcResource: TfCalcResource
     object ts2: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
       ImageIndex = 1
-      ExplicitHeight = 302
       object spl2: TSplitter
         Left = 0
         Top = 193
@@ -219,8 +219,6 @@ object fCalcResource: TfCalcResource
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
-        ExplicitTop = 57
-        ExplicitHeight = 176
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
@@ -269,7 +267,6 @@ object fCalcResource: TfCalcResource
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = -1
               Visible = False
             end
             item
@@ -388,7 +385,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsMaterialData
           DBGrid = grMaterial
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 155
         end
       end
       object pnlMatBott: TPanel
@@ -399,7 +395,6 @@ object fCalcResource: TfCalcResource
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
-        ExplicitTop = 220
         object spl1: TSplitter
           Left = 1
           Top = 22
@@ -493,6 +488,9 @@ object fCalcResource: TfCalcResource
     object ts3: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 302
       object spl4: TSplitter
         Left = 0
@@ -512,8 +510,6 @@ object fCalcResource: TfCalcResource
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
-        ExplicitTop = 57
-        ExplicitHeight = 176
         object grMech: TJvDBGrid
           Left = 0
           Top = 0
@@ -562,7 +558,6 @@ object fCalcResource: TfCalcResource
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = -1
               Visible = False
             end
             item
@@ -778,6 +773,9 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 302
       object spl5: TSplitter
         Left = 0
@@ -871,7 +869,6 @@ object fCalcResource: TfCalcResource
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = -1
               Visible = False
             end
             item
@@ -1065,6 +1062,9 @@ object fCalcResource: TfCalcResource
       Font.Style = []
       ImageIndex = 4
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 302
       object pnlRatesTop: TPanel
         Left = 0
@@ -1151,7 +1151,6 @@ object fCalcResource: TfCalcResource
         Align = alClient
         Caption = 'pnlRatesClient'
         TabOrder = 1
-        ExplicitHeight = 276
         object grRates: TJvDBGrid
           Left = 1
           Top = 1

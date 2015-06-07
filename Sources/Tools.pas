@@ -55,7 +55,7 @@ procedure KillDir(const ADirName: string);
 function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
   var AWaitResult: DWord): boolean;
 // Обновляет итератор, использовать при добавлении, вставке и удалении из сметы
-function UpdateIterator(ADestSmID, AIterator: Integer): Integer;
+function UpdateIterator(ADestSmID, AIterator, AFromRate: Integer): Integer;
 
 /// Функции работы с БД:
 /// ASelectSQL - 'SELECT FIELD FROM TABLE'
@@ -597,13 +597,14 @@ begin
     VarArrayOf([AParamName, AMonth, AYear]));
 end;
 
-function UpdateIterator(ADestSmID, AIterator: Integer): Integer;
+function UpdateIterator(ADestSmID, AIterator, AFromRate: Integer): Integer;
 begin
   Result := 0;
   DM.qrDifferent2.Active := False;
-  DM.qrDifferent2.SQL.Text := 'Select UpdateIterator(:IdEstimate, :AIterator)';
+  DM.qrDifferent2.SQL.Text := 'Select UpdateIterator(:IdEstimate, :AIterator, :AFromRate)';
   DM.qrDifferent2.ParamByName('IdEstimate').Value := ADestSmID;
   DM.qrDifferent2.ParamByName('AIterator').Value := AIterator;
+  DM.qrDifferent2.ParamByName('AFromRate').Value := AFromRate;
   DM.qrDifferent2.Active := True;
   if not DM.qrDifferent2.IsEmpty then
     Result := DM.qrDifferent2.Fields[0].Value;

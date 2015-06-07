@@ -236,7 +236,7 @@ begin
 
     qrTemp.ExecSQL;
 
-    Iterator := UpdateIterator(IdEstimate, 0);
+    Iterator := UpdateIterator(IdEstimate, 0, 0);
     qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
       '(id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
       '(' + IntToStr(IdEstimate) + ', ' + IntToStr(TranspType) +
