@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  JvExStdCtrls, JvEdit, JvExDBGrids, JvDBGrid, Vcl.ExtCtrls, Clipbrd;
+  JvExStdCtrls, JvEdit, JvExDBGrids, JvDBGrid, Vcl.ExtCtrls, Clipbrd, Data.FmtBcd;
 
 type
   TCalculator = class(TFrame)
@@ -34,12 +34,12 @@ type
     FCalc: Boolean;
     FCoast,
     FCount,
-    FNDS,
-    FPrice: Extended;
+    FPrice: TBcd;
+    FNDS: Integer;
     { Private declarations }
   public
-    procedure ShowCalculator(AGrd: TJvDBGrid; ACoast, ACount, ANDS,
-      APrice: Extended; AFieldName: string);
+    procedure ShowCalculator(AGrd: TJvDBGrid; ACoast, ACount, APrice: TBcd;
+      ANDS: Integer; AFieldName: string);
     { Public declarations }
   end;
 
@@ -47,8 +47,8 @@ implementation
 
 {$R *.dfm}
 
-procedure TCalculator.ShowCalculator(AGrd: TJvDBGrid; ACoast, ACount, ANDS,
-      APrice: Extended; AFieldName: string);
+procedure TCalculator.ShowCalculator(AGrd: TJvDBGrid; ACoast, ACount, APrice: TBcd;
+  ANDS: Integer; AFieldName: string);
 var p: TPoint;
 begin
   if not Assigned(AGrd) then
@@ -58,7 +58,7 @@ begin
 
   FCalc := True;
   if ACount > 0 then
-    edtCount.Text := FloatToStr(ACount)
+    edtCount.Text := BcdToStr(ACount)
   else edtCount.Text :=  '0';
 
   if ANDS > 0 then
@@ -66,17 +66,17 @@ begin
   else edtNDS.Text :=  '0';
 
   if ACoast > 0 then
-    edtCoast.Text := IntToStr(Trunc(ACoast))
+    edtCoast.Text := CurrToStr(Trunc(BCDToCurrency(ACoast)))
   else edtCoast.Text :=  '0';
 
   if APrice > 0 then
-    edtPriceNDS.Text := IntToStr(Trunc(APrice))
+    edtPriceNDS.Text := CurrToStr(Trunc(BCDToCurrency(APrice)))
   else edtPriceNDS.Text :=  '0';
 
-  FCoast := StrToInt(edtCoast.Text);
-  FCount := StrToFloat(edtCount.Text);
+  FCoast := StrToBcd(edtCoast.Text);
+  FCount := StrToBcd(edtCount.Text);
   FNDS := StrToInt(edtNDS.Text);
-  FPrice := StrToInt(edtPriceNDS.Text);
+  FPrice := StrToBcd(edtPriceNDS.Text);
 
   FCalc := False;
 
@@ -98,7 +98,7 @@ end;
 procedure TCalculator.btnSetResultClick(Sender: TObject);
 begin
   FGrd.DataSource.DataSet.Edit;
-  FGrd.DataSource.DataSet.FieldByName(FFieldName).Value := FCoast;
+  FGrd.DataSource.DataSet.FieldByName(FFieldName).Value := BCDToCurrency(FCoast);
   FrameExit(Sender);
 end;
 
@@ -142,9 +142,10 @@ begin
   if not FCalc then
   begin
     FCalc := True;
-    FCoast := StrToIntDef(edtCoast.Text, 0);
-    FPrice := Round(FCount * FCoast);
-    edtPriceNDS.Text := IntToStr(Round(FPrice));
+    if TryStrToBcd(edtCoast.Text, FCoast) then
+      FCoast := 0;
+    FPrice := Round(BCDToCurrency(FCount * FCoast));
+    edtPriceNDS.Text := BcdToStr(FPrice);
     FCalc := False;
   end;
 end;
@@ -154,11 +155,12 @@ begin
   if not FCalc then
   begin
     FCalc := True;
-    FCount := StrToFloatDef(edtCount.Text, 0);
+    if TryStrToBcd(edtCount.Text, FCount) then
+      FCount := 0;
     if FCount > 0 then
-      FCoast := Round(FPrice/FCount)
+      FCoast := Round(BCDToCurrency(FPrice/FCount))
     else FCoast := 0;
-    edtCoast.Text := IntToStr(Round(FCoast));
+    edtCoast.Text := BcdToStr(FCoast);
     FCalc := False;
   end;
 end;
@@ -168,11 +170,12 @@ begin
   if not FCalc then
   begin
     FCalc := True;
-    FPrice := StrToIntDef(edtPriceNDS.Text, 0);
+    if TryStrToBcd(edtPriceNDS.Text, FPrice) then
+      FPrice := 0;
     if FCount > 0 then
-      FCoast := Round(FPrice/FCount)
+      FCoast := Round(BCDToCurrency(FPrice/FCount))
     else FCoast := 0;
-    edtCoast.Text := IntToStr(Round(FCoast));
+    edtCoast.Text := BcdToStr(FCoast);
     FCalc := False;
   end;
 end;
