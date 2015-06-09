@@ -227,29 +227,36 @@ end;
 procedure TfrmReplacement.ShowDelRep(const AName: string; const AID: Integer;
       ADel: Boolean = False);
 var TmpStr: string;
-  i: Integer;
+  i, j: Integer;
+  SprRec: PSprRecord;
 begin
-  //Определен только для материалав и механизмов
-  if not(FCurType in [0,1]) then
-    Exit;
-
   if FTemp then
     TmpStr := '_temp';
 
   case FCurType of
     0:  qrRep.SQL.Text :=
         'select MAT_CODE, MAT_NAME, MAT_NORMA, MAT_COUNT, MAT_UNIT, ID ' +
-          'from materialcard' + TmpStr + ' where ID_REPLACED = ' + AID.ToString;
+          'from materialcard' + TmpStr + ' where ID_REPLACED = ' + AID.ToString +
+          ' order by ID';
     1:  qrRep.SQL.Text :=
         'Select MECH_CODE, MECH_NAME, MECH_NORMA, MECH_COUNT, MECH_UNIT, ID ' +
-          'from mechanizmcard' + TmpStr + ' where ID_REPLACED = ' + AID.ToString;
+          'from mechanizmcard' + TmpStr + ' where ID_REPLACED = ' + AID.ToString +
+          ' order by ID';
   end;
 
   qrRep.Active := True;
   if not ADel then
-    TmpStr := AName + ':' + sLineBreak;
+    TmpStr := AName + ':' + sLineBreak
+  else
+  begin
+    for i := grdRep.FixedRows to grdRep.RowCount - 1 do
+      for j := 0 to grdRep.ColCount - 1 do
+        grdRep.Cells[j, i] := '';
+    grdRep.RowCount := grdRep.FixedRows + 1;
+  end;
+
   i := 0;
-  if not qrRep.Eof then
+  while not qrRep.Eof do
   begin
     Inc(i);
     if ADel then
@@ -265,18 +272,24 @@ begin
       qrTemp.ExecSQL;
     end
     else
-      TmpStr := TmpStr +
-        i.ToString + '. Код: ' + qrRep.Fields[0].AsString + sLineBreak +
-        '    Наименование: ' + qrRep.Fields[1].AsString + sLineBreak +
-        '    Норма: ' + qrRep.Fields[2].AsString + sLineBreak +
-        '    Кол-во: ' + qrRep.Fields[3].AsString + ' ' +
-          qrRep.Fields[4].AsString  + sLineBreak + sLineBreak;
+    begin
+      grdRep.RowCount := grdRep.FixedRows + i;
+      grdRep.Cells[0, grdRep.RowCount - 1] := IntToStr(i);
+      SprRec := Frame.FindCode(qrRep.Fields[0].AsString);
+      if Assigned(SprRec) then
+      begin
+        grdRep.Cells[1, grdRep.RowCount - 1] := SprRec^.Code;
+        grdRep.Cells[2, grdRep.RowCount - 1] := SprRec^.Name;
+        grdRep.Cells[3, grdRep.RowCount - 1] := SprRec^.Unt;
+        grdRep.Cells[4, grdRep.RowCount - 1] := IntToStr(Round(SprRec^.CoastNDS));
+        grdRep.Cells[5, grdRep.RowCount - 1] := IntToStr(Round(SprRec^.CoastNoNDS));
+        grdRep.Cells[6, grdRep.RowCount - 1] := '1';
+        grdRep.Cells[7, grdRep.RowCount - 1] := SprRec^.ID.ToString;
+      end;
+    end;
     qrRep.Next;
   end;
   qrRep.Active := False;
-
-  if not ADel then
-    ShowMessage(TmpStr);
 end;
 
 procedure TfrmReplacement.pmShowRepClick(Sender: TObject);
@@ -544,7 +557,7 @@ begin
   FMatMechID := AMatMechID;
   //Если не задан ID использует поиск по коду
   if FMatMechID = 0 then
-    AMatMechCode := FMatMechCode;
+    FMatMechCode := AMatMechCode;
 
   FObjectName := '';
   FEstimateName := '';
@@ -633,7 +646,8 @@ begin
     begin
       if FMatMechCode <> '' then
         qrRep.SQL.Text :=
-          'select MAT_CODE, MAT_NAME from material where MAT_CODE = ' + FMatMechCode
+          'select MAT_CODE, MAT_NAME from material where MAT_CODE = ''' +
+            FMatMechCode + ''''
       else
         qrRep.SQL.Text :=
           'select MAT_CODE, MAT_NAME from materialcard' + TmpStr + ' where ID = ' +
@@ -643,7 +657,8 @@ begin
     begin
       if FMatMechCode <> '' then
         qrRep.SQL.Text :=
-          'Select MECH_CODE, MECH_NAME from mechanizm where MECH_CODE = ' + FMatMechCode
+          'Select MECH_CODE, MECH_NAME from mechanizm where MECH_CODE = ''' +
+            FMatMechCode + ''''
       else
         qrRep.SQL.Text :=
           'Select MECH_CODE, MECH_NAME from mechanizmcard' + TmpStr + ' where ID = ' +
@@ -653,7 +668,8 @@ begin
     begin
       if FMatMechCode <> '' then
         qrRep.SQL.Text :=
-          'Select DEVICE_CODE1, NAME from devices where DEVICE_CODE1 = ' + FMatMechCode
+          'Select DEVICE_CODE1, NAME from devices where DEVICE_CODE1 = ''' +
+            FMatMechCode + ''''
       else
         qrRep.SQL.Text :=
           'Select DEVICE_CODE, DEVICE_NAME from devicescard' + TmpStr + ' where ID = ' +
@@ -1199,6 +1215,12 @@ begin
         grdRep.Cells[j, grdRep.RowCount - 1] := '';
 
     grdRep.RowCount := grdRep.RowCount - 1;
+  end
+  else
+  begin
+    for j := grdRep.FixedCols to grdRep.ColCount - 1 do
+      grdRep.Cells[j, grdRep.RowCount - 1] := '';
+    grdRep.Cells[6, grdRep.RowCount - 1] := '1';
   end;
 end;
 

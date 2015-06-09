@@ -83,8 +83,8 @@ begin
   if FPriceColumn then
     Result := 'SELECT material.material_id as "Id", mat_code as "Code", ' +
           'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
-          'coast' + IntToStr(cmbRegion.ItemIndex + 1) + '_1 as "PriceVAT", ' +
-          'coast' + IntToStr(cmbRegion.ItemIndex + 1) + '_2 as "PriceNotVAT", ' +
+          'coast' + IntToStr(cmbRegion.ItemIndex + 1) + '_2 as "PriceVAT", ' +
+          'coast' + IntToStr(cmbRegion.ItemIndex + 1) + '_1 as "PriceNotVAT", ' +
           'MAT_TYPE ' +
           'FROM material LEFT JOIN units ON (material.unit_id = units.unit_id) ' +
           'LEFT JOIN materialcoastg mc ON (material.material_id = mc.material_id) ' +

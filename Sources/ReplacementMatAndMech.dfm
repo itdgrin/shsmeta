@@ -35,7 +35,6 @@ object frmReplacement: TfrmReplacement
       Font.Style = [fsBold]
       ParentFont = False
       TabOrder = 1
-      ExplicitHeight = 55
       object Label2: TLabel
         Left = 13
         Top = 21
@@ -113,7 +112,6 @@ object frmReplacement: TfrmReplacement
       ParentFont = False
       TabOrder = 0
       OnClick = rgroupTypeClick
-      ExplicitHeight = 55
     end
   end
   object groupEntry: TGroupBox
@@ -165,7 +163,6 @@ object frmReplacement: TfrmReplacement
       ViewStyle = vsReport
       OnChange = ListEntryChange
       OnCustomDrawItem = ListEntryCustomDrawItem
-      ExplicitHeight = 87
     end
   end
   object groupCatalog: TGroupBox
@@ -184,8 +181,6 @@ object frmReplacement: TfrmReplacement
     ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 3
-    ExplicitTop = 250
-    ExplicitHeight = 281
     object Panel5: TPanel
       Left = 2
       Top = 15
@@ -194,7 +189,6 @@ object frmReplacement: TfrmReplacement
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitHeight = 264
     end
   end
   object Panel4: TPanel
@@ -254,7 +248,6 @@ object frmReplacement: TfrmReplacement
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 2
-    ExplicitTop = 161
     object Panel2: TPanel
       Left = 750
       Top = 15
@@ -401,7 +394,7 @@ object frmReplacement: TfrmReplacement
     Left = 608
     Top = 145
     object pmShowRep: TMenuItem
-      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1079#1072#1084#1077#1085#1103#1102#1097#1080#1077
+      Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1079#1072#1084#1077#1085#1103#1102#1097#1080#1077
       OnClick = pmShowRepClick
     end
     object pmCurRate: TMenuItem

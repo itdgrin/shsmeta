@@ -3406,6 +3406,14 @@
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
       OnClick = PMMatRestoreClick
     end
+    object N12: TMenuItem
+      Caption = '-'
+    end
+    object PMMatAutoRep: TMenuItem
+      Caption = #1040#1074#1090#1086#1079#1072#1084#1077#1085#1072' '#1084#1072#1090#1077#1088#1080#1083#1086#1074
+      Checked = True
+      OnClick = PMMechAutoRepClick
+    end
   end
   object pmCoef: TPopupMenu
     OnPopup = pmCoefPopup
@@ -3470,6 +3478,14 @@
     object PMMechRestore: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
       OnClick = PMMechRestoreClick
+    end
+    object N13: TMenuItem
+      Caption = '-'
+    end
+    object PMMechAutoRep: TMenuItem
+      Caption = #1040#1074#1090#1086#1079#1072#1084#1077#1085#1072' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
+      Checked = True
+      OnClick = PMMechAutoRepClick
     end
   end
   object qrDescription: TFDQuery
@@ -4154,6 +4170,7 @@
       FieldName = 'ID'
       Origin = 'ID'
       ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
     end
     object qrDevicesDEVICE_ID: TIntegerField
       FieldName = 'DEVICE_ID'

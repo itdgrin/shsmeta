@@ -142,7 +142,7 @@ begin
   if not FCalc then
   begin
     FCalc := True;
-    if TryStrToBcd(edtCoast.Text, FCoast) then
+    if not TryStrToBcd(edtCoast.Text, FCoast) then
       FCoast := 0;
     FPrice := Round(BCDToCurrency(FCount * FCoast));
     edtPriceNDS.Text := BcdToStr(FPrice);
@@ -155,7 +155,7 @@ begin
   if not FCalc then
   begin
     FCalc := True;
-    if TryStrToBcd(edtCount.Text, FCount) then
+    if not TryStrToBcd(edtCount.Text, FCount) then
       FCount := 0;
     if FCount > 0 then
       FCoast := Round(BCDToCurrency(FPrice/FCount))
@@ -170,7 +170,7 @@ begin
   if not FCalc then
   begin
     FCalc := True;
-    if TryStrToBcd(edtPriceNDS.Text, FPrice) then
+    if not TryStrToBcd(edtPriceNDS.Text, FPrice) then
       FPrice := 0;
     if FCount > 0 then
       FCoast := Round(BCDToCurrency(FPrice/FCount))

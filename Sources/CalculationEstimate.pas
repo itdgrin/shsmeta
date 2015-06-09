@@ -462,6 +462,10 @@ type
     qrMaterialFTRANSP_NDS: TFMTBCDField;
     qrMaterialFPRICE_NO_NDS: TFMTBCDField;
     qrMaterialFPRICE_NDS: TFMTBCDField;
+    N12: TMenuItem;
+    PMMatAutoRep: TMenuItem;
+    N13: TMenuItem;
+    PMMechAutoRep: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -658,6 +662,7 @@ type
     procedure PMCalcMechClick(Sender: TObject);
     procedure PMCalcDeviceClick(Sender: TObject);
     procedure pmDevicesPopup(Sender: TObject);
+    procedure PMMechAutoRepClick(Sender: TObject);
   private const
     CaptionButton = 'Расчёт сметы';
     HintButton = 'Окно расчёта сметы';
@@ -3069,6 +3074,11 @@ begin
 end;
 
 // Открытие строчки механизмов на редактирование
+procedure TFormCalculationEstimate.PMMechAutoRepClick(Sender: TObject);
+begin
+  (Sender as TMenuItem).Checked := not (Sender as TMenuItem).Checked;
+end;
+
 procedure TFormCalculationEstimate.PMMechDeleteClick(Sender: TObject);
 begin
   if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrMechanizmMECH_CODE.AsString + '?'),
