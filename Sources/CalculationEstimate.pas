@@ -19,6 +19,12 @@ uses
   Data.FmtBcd;
 
 type
+  TAutoRepRec = record
+    ID: Integer;
+    DataType: Integer;
+  end;
+  TAutoRepArray = array of TAutoRepRec;
+
   TSplitter = class(ExtCtrls.TSplitter)
   public
     procedure Paint(); override;
@@ -688,27 +694,27 @@ type
     CountFromRate: Double;
 
     // Флаги пересчета по правым таблицам, исключает зацикливание в обработчиках ОnChange;
-    ReCalcMech, ReCalcMat, ReCalcDev: Boolean;
+    FReCalcMech, FReCalcMat, FReCalcDev: Boolean;
+    //Айдишника для посветки жирным связей между заменяющим и замененным
     // ID замененного материала который надо подсветить
-    IdReplasedMat: Integer;
+    FIdReplasedMat: Integer;
     // ID заменяющего материала который надо подсветить
-    IdReplasingMat: Integer;
-
+    FIdReplasingMat: Integer;
     // ID замененного механизма который надо подсветить
-    IdReplasedMech: Integer;
+    FIdReplasedMech: Integer;
     // ID заменяющего механизма который надо подсветить
-    IdReplasingMech: Integer;
+    FIdReplasingMech: Integer;
 
     IsUnAcc: Boolean;
 
     // Последняя таблица в которой был фокус, используется для отрисовки
-    LastEntegGrd: TJvDBGrid;
-
+    FLastEntegGrd: TJvDBGrid;
     // Флаги необходимости предлагать автоматически добавить пуск и регулировку
-    AutoAddE18, AutoAddE20: Boolean;
-
-    Calculator: TCalculator;
-
+    FAutoAddE18, FAutoAddE20: Boolean;
+    //Фрейм для расчета фактической цены, отображается как всплывающая панелька
+    FCalculator: TCalculator;
+    //Массив для автозамены (вписок позицый по которым будет выполняться автозамена)
+    FAutoRepArray: TAutoRepArray;
     // пересчитывает все относящееся к строке в таблице расценок
     procedure ReCalcRowRates;
 
@@ -742,9 +748,14 @@ type
     procedure SetDevEditMode; // включение режима расширенного редактирования оборудования
     procedure SetDevNoEditMode; // отключение режима расширенного редактирования оборудования
     // Проверяет есть ли пуск и регулировка в текущей смете
-    function CheckE1820(AType: byte): Boolean;
+    function CheckE1820(AType: Integer): Boolean;
     // Проверяет, что курсор стоит на смете (ПТМ)
     function CheckCursorInRate: Boolean;
+
+    //Набор процедур для управление автозаменой
+    procedure ClearAutoRep; //Очищает массив автозамены
+    procedure CheckNeedAutoRep(AID: Integer; AType: Integer); //Проверяет необходимость в замене
+    procedure ShowAutoRep; //Показывает диалог замены для всех из массива
   public
     Act: Boolean;
 
@@ -965,12 +976,12 @@ begin
   LoadDBGridSettings(grRatesEx);
 
   // По умолчанию будет предлагать добавить пуск и регулировку
-  AutoAddE18 := True;
-  AutoAddE20 := True;
+  FAutoAddE18 := True;
+  FAutoAddE20 := True;
 
-  Calculator := TCalculator.Create(Self);
-  Calculator.Parent := TWinControl(Self);
-  Calculator.Visible := False;
+  FCalculator := TCalculator.Create(Self);
+  FCalculator.Parent := TWinControl(Self);
+  FCalculator.Visible := False;
 
   if not Act then
     FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
@@ -1654,7 +1665,7 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  if not ReCalcDev then
+  if not FReCalcDev then
   begin
     if btnEquipments.Down then
       MemoRight.Text := qrDevicesDEVICE_NAME.AsString;
@@ -1666,7 +1677,7 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  if not ReCalcDev then
+  if not FReCalcDev then
   begin
     // закрытие открытой на редактирование строки
     SetDevNoEditMode;
@@ -1690,9 +1701,9 @@ begin
     Exit;
   end;
 
-  if not ReCalcDev then
+  if not FReCalcDev then
   begin
-    ReCalcDev := True;
+    FReCalcDev := True;
     // Пересчет по строке оборудования
     try
       // Индивидуальное поведение для конкретных полей
@@ -1736,7 +1747,7 @@ begin
       // Пересчет по строке оборуд
       ReCalcRowDev;
     finally
-      ReCalcDev := False;
+      FReCalcDev := False;
     end;
   end;
 end;
@@ -1750,6 +1761,21 @@ begin
     (qrRatesExID_RATE.AsInteger > 0))) or (qrMechanizmREPLACED.AsInteger = 1) or
     (qrMechanizmTITLE.AsInteger > 0) or (not(qrMechanizmID.AsInteger > 0)) or (qrMechanizm.Eof) then
     Result := True;
+end;
+
+procedure TFormCalculationEstimate.CheckNeedAutoRep(AID: Integer; AType: Integer);
+begin
+  //
+end;
+
+procedure TFormCalculationEstimate.ClearAutoRep;
+begin
+  //
+end;
+
+procedure TFormCalculationEstimate.ShowAutoRep;
+begin
+  //
 end;
 
 procedure TFormCalculationEstimate.SetMechReadOnly(AValue: Boolean); // Устанавливает режим редактирования
@@ -1840,7 +1866,7 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  if not ReCalcMat then
+  if not FReCalcMat then
   begin
     if qrMaterialTITLE.AsInteger > 0 then
     begin
@@ -1855,23 +1881,25 @@ begin
 
     flag := False;
 
-    if ((qrMaterialID_REPLACED.Value = 0) and (IdReplasedMat > 0)) or
-      ((qrMaterialREPLACED.Value = 0) and (IdReplasingMat > 0)) or
+    if ((qrMaterialID_REPLACED.Value = 0) and (FIdReplasedMat > 0)) or
+      ((qrMaterialREPLACED.Value = 0) and (FIdReplasingMat > 0)) or
       (IsUnAcc and (not CheckMatUnAccountingMatirials)) then
       flag := True;
 
-    IdReplasedMat := qrMaterialID_REPLACED.Value;
+    FIdReplasedMat := qrMaterialID_REPLACED.Value;
     if qrMaterialREPLACED.Value > 0 then
-      IdReplasingMat := qrMaterialID.Value
+      FIdReplasingMat := qrMaterialID.Value
     else
-      IdReplasingMat := 0;
+      FIdReplasingMat := 0;
     IsUnAcc := CheckMatUnAccountingMatirials;
 
     if btnMaterials.Down then
       MemoRight.Text := qrMaterialMAT_NAME.AsString;
 
     // Для красоты отрисовки
-    if CheckMatUnAccountingMatirials or (IdReplasedMat > 0) or (IdReplasingMat > 0) or flag then
+    if CheckMatUnAccountingMatirials or
+       (FIdReplasedMat > 0) or
+       (FIdReplasingMat > 0) or flag then
       dbgrdMaterial.Repaint;
   end;
 end;
@@ -1881,7 +1909,7 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  if not ReCalcMat then
+  if not FReCalcMat then
   begin
     // Предыдущее рекно используется для определния направления движения по таблице
     dbgrdMaterial.Tag := qrMaterial.RecNo;
@@ -1903,9 +1931,9 @@ begin
     Exit;
   end;
 
-  if not ReCalcMat then
+  if not FReCalcMat then
   begin
-    ReCalcMat := True;
+    FReCalcMat := True;
     // Пересчет по строке материала
     try
       CField := Sender.FieldName;
@@ -1997,7 +2025,7 @@ begin
       // Пересчет по строке материала
       ReCalcRowMat(CType);
     finally
-      ReCalcMat := False;
+      FReCalcMat := False;
     end;
   end;
 end;
@@ -2058,7 +2086,7 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  if not ReCalcMech then
+  if not FReCalcMech then
   begin
     if qrMechanizmTITLE.AsInteger > 0 then
     begin
@@ -2073,21 +2101,22 @@ begin
 
     flag := False;
 
-    if ((qrMechanizmID_REPLACED.Value = 0) and (IdReplasedMech > 0)) or
-      ((qrMechanizmREPLACED.Value = 0) and (IdReplasingMech > 0)) then
+    if ((qrMechanizmID_REPLACED.Value = 0) and (FIdReplasedMech > 0)) or
+      ((qrMechanizmREPLACED.Value = 0) and (FIdReplasingMech > 0)) then
       flag := True;
 
-    IdReplasedMech := qrMechanizmID_REPLACED.Value;
+    FIdReplasedMech := qrMechanizmID_REPLACED.Value;
     if qrMechanizmREPLACED.Value > 0 then
-      IdReplasingMech := qrMechanizmID.Value
+      FIdReplasingMech := qrMechanizmID.Value
     else
-      IdReplasingMech := 0;
+      FIdReplasingMech := 0;
 
     if btnMechanisms.Down then
       MemoRight.Text := qrMechanizmMECH_NAME.AsString;
 
     // Для красоты отрисовки
-    if (IdReplasedMech > 0) or (IdReplasingMech > 0) or flag then
+    if (FIdReplasedMech > 0) or
+       (FIdReplasingMech > 0) or flag then
       dbgrdMechanizm.Repaint;
   end;
 end;
@@ -2102,7 +2131,7 @@ begin
   if not CheckQrActiveEmpty(DataSet) then
     Exit;
 
-  if not ReCalcMech then
+  if not FReCalcMech then
   begin
     // Предыдущее рекно используется для определния направления движения по таблице
     dbgrdMechanizm.Tag := qrMechanizm.RecNo;
@@ -2136,9 +2165,9 @@ begin
     Exit;
   end;
 
-  if not ReCalcMech then
+  if not FReCalcMech then
   begin
-    ReCalcMech := True;
+    FReCalcMech := True;
     // Пересчет по строке механизма
     try
       CField := Sender.FieldName;
@@ -2209,7 +2238,7 @@ begin
       // Пересчет по строке механизма
       ReCalcRowMech(CType);
     finally
-      ReCalcMech := False;
+      FReCalcMech := False;
     end;
   end;
 end;
@@ -2934,21 +2963,21 @@ end;
 
 procedure TFormCalculationEstimate.PMCalcDeviceClick(Sender: TObject);
 begin
-  Calculator.ShowCalculator(dbgrdDevices,qrDevicesFCOAST_NDS.Value,
+  FCalculator.ShowCalculator(dbgrdDevices,qrDevicesFCOAST_NDS.Value,
     qrDevicesDEVICE_COUNT.Value, qrDevicesFPRICE_NDS.Value,
     qrDevicesNDS.Value, 'FCOAST_NDS');
 end;
 
 procedure TFormCalculationEstimate.PMCalcMatClick(Sender: TObject);
 begin
-  Calculator.ShowCalculator(dbgrdMaterial, qrMaterialFCOAST_NDS.Value,
+  FCalculator.ShowCalculator(dbgrdMaterial, qrMaterialFCOAST_NDS.Value,
     qrMaterialMAT_COUNT.Value, qrMaterialFPRICE_NDS.Value,
     qrMaterialNDS.Value, 'FCOAST_NDS');
 end;
 
 procedure TFormCalculationEstimate.PMCalcMechClick(Sender: TObject);
 begin
-  Calculator.ShowCalculator(dbgrdMechanizm ,qrMechanizmFCOAST_NDS.Value,
+  FCalculator.ShowCalculator(dbgrdMechanizm ,qrMechanizmFCOAST_NDS.Value,
     qrMechanizmMECH_COUNT.Value, qrMechanizmFPRICE_NDS.Value,
     qrMechanizmNDS.Value, 'FCOAST_NDS');
 end;
@@ -3848,8 +3877,8 @@ begin
         sLineBreak + e.message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  if ((Pos('е18', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(10)) and AutoAddE18) or
-    ((Pos('е20', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(11)) and AutoAddE20) then
+  if ((Pos('е18', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(10)) and FAutoAddE18) or
+    ((Pos('е20', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(11)) and FAutoAddE20) then
   begin
     if (Pos('е18', AnsiLowerCase(NewRateCode)) > 0) then
       case MessageDlg('Дабавить пуск и регулировку отопления по Е18 в смету?', mtConfirmation,
@@ -3858,7 +3887,7 @@ begin
           PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE18);
         mrCancel:
         begin
-          AutoAddE18 := False;
+          FAutoAddE18 := False;
           OutputDataToTable(True);
         end;
       end;
@@ -3870,7 +3899,7 @@ begin
           PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE20);
         mrCancel:
         begin
-          AutoAddE18 := False;
+          FAutoAddE18 := False;
           OutputDataToTable(True);
         end;
       end;
@@ -3889,7 +3918,7 @@ begin
 end;
 
 // в целом процедура работает неверно так как может быть открыто несколько смет
-function TFormCalculationEstimate.CheckE1820(AType: byte): Boolean;
+function TFormCalculationEstimate.CheckE1820(AType: Integer): Boolean;
 var
   RecNo, SmID: Integer;
 begin
@@ -4241,7 +4270,7 @@ begin
   end;
 
   qrMaterial.DisableControls;
-  ReCalcMat := True;
+  FReCalcMat := True;
   qrMaterialNUM.ReadOnly := False;
   // Открытие датасета для заполнения таблицы материалов
   qrMaterial.Active := False;
@@ -4281,7 +4310,7 @@ begin
   if (qrMaterialTITLE.AsInteger > 0) then
     qrMaterial.Next;
 
-  ReCalcMat := False;
+  FReCalcMat := False;
   qrMaterial.EnableControls;
   qrMaterialAfterScroll(qrMaterial);
 end;
@@ -4340,7 +4369,7 @@ begin
   end;
 
   qrMechanizm.DisableControls;
-  ReCalcMech := True;
+  FReCalcMech := True;
   qrMechanizmNUM.ReadOnly := False;
   // Открытие датасета для заполнения таблицы материалов
   qrMechanizm.Active := False;
@@ -4380,7 +4409,7 @@ begin
   if (qrMechanizmTITLE.AsInteger > 0) then
     qrMechanizm.Next;
 
-  ReCalcMech := False;
+  FReCalcMech := False;
   qrMechanizm.EnableControls;
   qrMechanizmAfterScroll(qrMechanizm);
 end;
@@ -4601,9 +4630,9 @@ begin
   if not MemoRight.ReadOnly then
     MemoRightExit(MemoRight);
 
-  if Assigned(Calculator) then
-    if Calculator.Visible then
-      Calculator.OnExit(Calculator);
+  if Assigned(FCalculator) then
+    if FCalculator.Visible then
+      FCalculator.OnExit(FCalculator);
 
   SplitterRight1.Align := alBottom;
   SplitterRight2.Align := alBottom;
@@ -5435,7 +5464,7 @@ begin
 
     if Assigned(TMyDBGrid(dbgrdDescription).DataLink) and
       (dbgrdDescription.Row = TMyDBGrid(dbgrdDescription).DataLink.ActiveRecord + 1) and
-      (dbgrdDescription = LastEntegGrd) then
+      (dbgrdDescription = FLastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
     end;
@@ -5468,7 +5497,7 @@ begin
 
     if Assigned(TMyDBGrid(Sender).DataLink) and
       ((Sender as TJvDBGrid).Row = TMyDBGrid(Sender).DataLink.ActiveRecord + 1) and
-      (TJvDBGrid(Sender) = LastEntegGrd) then
+      (TJvDBGrid(Sender) = FLastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
@@ -5477,7 +5506,7 @@ begin
     end;
 
     if (gdFocused in State) or // Ячейка в фокусе
-       (Calculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
+       (FCalculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
        then
     begin
       Brush.Color := PS.BackgroundSelectCell;
@@ -5553,7 +5582,7 @@ begin
 
     if Assigned(TMyDBGrid(dbgrdMaterial).DataLink) and
       (dbgrdMaterial.Row = TMyDBGrid(dbgrdMaterial).DataLink.ActiveRecord + 1) and
-      (dbgrdMaterial = LastEntegGrd) then
+      (dbgrdMaterial = FLastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
@@ -5582,18 +5611,21 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (IdReplasedMat > 0) and (qrMaterialID.Value = IdReplasedMat) and (dbgrdMaterial = LastEntegGrd) then
+    if (FIdReplasedMat > 0) and
+       (qrMaterialID.Value = FIdReplasedMat) and
+       (dbgrdMaterial = FLastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Устаревшее условие для подсветки заменяющего материала с правой таблице,
     // при выделении его в левой
     if (qrRatesExID_RATE.Value > 0) and (qrRatesExID_TYPE_DATA.Value = 2) and
-      (qrRatesExID_TABLES.Value = qrMaterialID.Value) and (grRatesEx = LastEntegGrd) then
+      (qrRatesExID_TABLES.Value = qrMaterialID.Value) and (grRatesEx = FLastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (IdReplasingMat > 0) and (IdReplasingMat = qrMaterialID_REPLACED.Value) and
-      (dbgrdMaterial = LastEntegGrd) then
+    if (FIdReplasingMat > 0) and
+       (FIdReplasingMat = qrMaterialID_REPLACED.Value) and
+       (dbgrdMaterial = FLastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';
@@ -5622,7 +5654,7 @@ begin
     end;
 
     if (gdFocused in State) or // Ячейка в фокусе
-       (Calculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
+       (FCalculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
        then
     begin
       Brush.Color := PS.BackgroundSelectCell;
@@ -5711,7 +5743,7 @@ begin
 
     if Assigned(TMyDBGrid(dbgrdMechanizm).DataLink) and
       (dbgrdMechanizm.Row = TMyDBGrid(dbgrdMechanizm).DataLink.ActiveRecord + 1) and
-      (dbgrdMechanizm = LastEntegGrd) then
+      (dbgrdMechanizm = FLastEntegGrd) then
     begin
       Font.Style := Font.Style + [fsbold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
@@ -5740,13 +5772,16 @@ begin
     end;
 
     // Подсветка замененного механизма
-    if (IdReplasedMech > 0) and (qrMechanizmID.Value = IdReplasedMech) and (dbgrdMechanizm = LastEntegGrd)
+    if (FIdReplasedMech > 0) and
+       (qrMechanizmID.Value = FIdReplasedMech) and
+       (dbgrdMechanizm = FLastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего механизма
-    if (IdReplasingMech > 0) and (IdReplasingMech = qrMechanizmID_REPLACED.Value) and
-       (dbgrdMechanizm = LastEntegGrd) then
+    if (FIdReplasingMech > 0) and
+       (FIdReplasingMech = qrMechanizmID_REPLACED.Value) and
+       (dbgrdMechanizm = FLastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';
@@ -5775,7 +5810,7 @@ begin
     end;
 
     if (gdFocused in State) or // Ячейка в фокусе
-       (Calculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
+       (FCalculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
        then
     begin
       Brush.Color := PS.BackgroundSelectCell;
@@ -5851,7 +5886,7 @@ begin
 
     // Подсветка вынесенного за расценку материала и заменяющего материала
     // Вынесение за расценку имеет приоритет над заменой
-    if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = LastEntegGrd) then
+    if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = FLastEntegGrd) then
     begin
       if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2) and
         ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) or (qrRatesExID_RATE.Value > 0))
@@ -5860,7 +5895,7 @@ begin
     end;
 
     // Подсветка вынесенного за расценку механизма
-    if btnMechanisms.Down and qrMechanizm.Active and (dbgrdMechanizm = LastEntegGrd) then
+    if btnMechanisms.Down and qrMechanizm.Active and (dbgrdMechanizm = FLastEntegGrd) then
     begin
       if (qrRatesExID_TABLES.AsInteger = qrMechanizmID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 3)
         and (grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) then
@@ -5882,7 +5917,7 @@ end;
 
 procedure TFormCalculationEstimate.dbgrdRatesEnter(Sender: TObject);
 begin
-  LastEntegGrd := TJvDBGrid(Sender);
+  FLastEntegGrd := TJvDBGrid(Sender);
 
   grRatesEx.Repaint;
   dbgrdMechanizm.Repaint;
