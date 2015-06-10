@@ -130,6 +130,9 @@ type
     FObjectName,
     FEstimateName,
     FRateCode: String;
+    //Вызов формы для автоматической замены
+    FAutoRep: Boolean;
+    FIdForAutoRep: Integer;
 
     FMonth,
     FYear,
@@ -141,6 +144,7 @@ type
 
     //Для хинтов в стринг гриде
     FActRow: Integer;
+
     //Справочник материалов или механизмов
     Frame: TSprFrame;
 
@@ -149,12 +153,13 @@ type
     procedure LoadRepInfo;
     procedure LoadEntry;
 
-    procedure ShowDelRep(const AName: string; const AID: Integer;
-      ADel: Boolean = False);
+    procedure ShowDelRep(const AID: Integer; ADel: Boolean = False);
+    procedure AfterFrameLoad(ASender: TObject);
     { Private declarations }
   public
     constructor Create(const AObjectID, AEstimateID, ARateID,
-      AMatMechID: Integer; AMatMechCode: string; AType: Byte; AAdd: Boolean); reintroduce;
+      AMatMechID: Integer; AMatMechCode: string; AType: Byte;
+      AAdd, AAutoRep: Boolean); reintroduce;
     { Public declarations }
   end;
 
@@ -224,8 +229,7 @@ end;
 
 //Удаляет заменяющие материалы по ид заменяемого
 //Или выводит сообщение со списком заменяющих ADel = true
-procedure TfrmReplacement.ShowDelRep(const AName: string; const AID: Integer;
-      ADel: Boolean = False);
+procedure TfrmReplacement.ShowDelRep(const AID: Integer; ADel: Boolean = False);
 var TmpStr: string;
   i, j: Integer;
   SprRec: PSprRecord;
@@ -246,8 +250,6 @@ begin
 
   qrRep.Active := True;
   if not ADel then
-    TmpStr := AName + ':' + sLineBreak
-  else
   begin
     for i := grdRep.FixedRows to grdRep.RowCount - 1 do
       for j := 0 to grdRep.ColCount - 1 do
@@ -294,7 +296,7 @@ end;
 
 procedure TfrmReplacement.pmShowRepClick(Sender: TObject);
 begin
-  ShowDelRep(TMenuItem(Sender).Caption, TMenuItem(Sender).Tag);
+  ShowDelRep(TMenuItem(Sender).Tag);
 end;
 
 procedure TfrmReplacement.grdRepKeyPress(Sender: TObject; var Key: Char);
@@ -494,7 +496,8 @@ begin
 end;
 
 constructor TfrmReplacement.Create(const AObjectID, AEstimateID, ARateID,
-      AMatMechID: Integer; AMatMechCode: string; AType: Byte; AAdd: Boolean);
+  AMatMechID: Integer; AMatMechCode: string; AType: Byte;
+  AAdd, AAutoRep: Boolean);
 begin
   // FTemp := ATemp;
   //Реализовано только для временных, для обычных не будут работать хранимки
@@ -559,6 +562,8 @@ begin
   if FMatMechID = 0 then
     FMatMechCode := AMatMechCode;
 
+  FAutoRep := AAutoRep;
+
   FObjectName := '';
   FEstimateName := '';
   FRateCode := '';
@@ -590,10 +595,18 @@ procedure TfrmReplacement.LoadObjEstInfo;
 var TmpStr: string;
 begin
   qrRep.Active := False;
-  qrRep.SQL.Text := 'SELECT ob.region_id, reg.region_name, ob.NAME ' +
-    'FROM objcards as ob, regions as reg ' +
-    'WHERE (ob.region_id = reg.region_id) and ' +
-    '(ob.obj_id = ' + IntToStr(FObjectID) + ');';
+
+  if FObjectID > 0 then
+    qrRep.SQL.Text := 'SELECT ob.region_id, reg.region_name, ob.NAME ' +
+      'FROM objcards as ob, regions as reg ' +
+      'WHERE (ob.region_id = reg.region_id) and ' +
+      '(ob.obj_id = ' + IntToStr(FObjectID) + ');'
+  else
+    qrRep.SQL.Text := 'SELECT ob.region_id, reg.region_name, ob.NAME ' +
+      'FROM objcards as ob, regions as reg ' +
+      'WHERE (ob.region_id = reg.region_id) and ' +
+      '(ob.obj_id = (SELECT obj_id FROM smetasourcedata WHERE sm_id = ' +
+      IntToStr(FEstimateID) + '));';
   qrRep.Active := True;
   if not qrRep.IsEmpty then
   begin
@@ -692,6 +705,8 @@ begin
   Result := Left.EID - Right.EID;
   if Result = 0 then
     Result := Left.MSort - Right.MSort;
+  if Result = 0 then
+    Result := Left.MID - Right.MID;
 end;
 //Подгружает вхождения заменяемого материала в смету
 procedure TfrmReplacement.LoadEntry;
@@ -699,6 +714,7 @@ var Item: TListItem;
     i, ind: Integer;
     TmpStr,
     WhereStr: string;
+    TmpFlag: Boolean;
 
     procedure BrowsDataSet;
     begin
@@ -868,12 +884,30 @@ begin
 
   ListEntry.Visible := False;
   ListEntry.Items.Clear;
+  TmpFlag := False;
   for i := Low(FEntryArray) to High(FEntryArray) do
   begin
     Item := ListEntry.Items.Add;
     Item.Data := @FEntryArray[i];
+    if FAutoRep and (not TmpFlag) and (FEntryArray[i].MRep > 0) then
+    begin
+      if Frame.Loaded then
+        ShowDelRep(FEntryArray[i].MID)
+      else
+        FIdForAutoRep := FEntryArray[i].MID;
+      TmpFlag := True;
+    end;
   end;
   ListEntry.Visible := True;
+end;
+
+procedure TfrmReplacement.AfterFrameLoad(ASender: TObject);
+begin
+  if FIdForAutoRep > 0 then
+  begin
+    ShowDelRep(FIdForAutoRep);
+    FIdForAutoRep := 0;
+  end;
 end;
 
 procedure TfrmReplacement.btnReplaceClick(Sender: TObject);
@@ -967,7 +1001,7 @@ begin
         //Если ранее были замены, удаляются заменяющие
         //После этого материал уже не может быть заменяющим
         if FEntryArray[i].MRep > 0 then
-          ShowDelRep('', FEntryArray[i].MID, True);
+          ShowDelRep(FEntryArray[i].MID, True);
 
         if not DelOnly then
         begin
@@ -1174,6 +1208,7 @@ begin
   Frame.Align := alClient;
   Frame.SpeedButtonShowHideClick(Frame.SpeedButtonShowHide);
   Frame.ListSpr.OnDblClick := btnSelectClick;
+  Frame.OnAfterLoad := AfterFrameLoad;
   edtSourceCode.Text := '';
   edtSourceName.Text := '';
 end;

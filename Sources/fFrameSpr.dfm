@@ -269,8 +269,8 @@ object SprFrame: TSprFrame
     AlignWithMargins = True
     Left = 3
     Top = 105
-    Width = 753
-    Height = 261
+    Width = 96
+    Height = 13
     Margins.Top = 35
     Align = alClient
     Alignment = taCenter
@@ -283,8 +283,6 @@ object SprFrame: TSprFrame
     ParentFont = False
     Layout = tlCenter
     WordWrap = True
-    ExplicitWidth = 96
-    ExplicitHeight = 13
   end
   object PanelSettings: TPanel
     Left = 0

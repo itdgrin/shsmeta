@@ -342,10 +342,10 @@ begin
   case pgc.ActivePageIndex of
     1:
       frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMaterialData.FieldByName('CODE').AsString,
-        0, False);
+        0, False, False);
     2:
       frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMechData.FieldByName('CODE').AsString,
-        1, False);
+        1, False, False);
   end;
   if Assigned(frmReplace) then
     try

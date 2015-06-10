@@ -22,7 +22,9 @@ type
   TAutoRepRec = record
     ID: Integer;
     DataType: Integer;
+    Code: string;
   end;
+
   TAutoRepArray = array of TAutoRepRec;
 
   TSplitter = class(ExtCtrls.TSplitter)
@@ -754,7 +756,7 @@ type
 
     //Набор процедур для управление автозаменой
     procedure ClearAutoRep; //Очищает массив автозамены
-    procedure CheckNeedAutoRep(AID: Integer; AType: Integer); //Проверяет необходимость в замене
+    procedure CheckNeedAutoRep(AID,AType: Integer; ACode: string); //Проверяет необходимость в замене
     procedure ShowAutoRep; //Показывает диалог замены для всех из массива
   public
     Act: Boolean;
@@ -1762,20 +1764,102 @@ begin
     (qrMechanizmTITLE.AsInteger > 0) or (not(qrMechanizmID.AsInteger > 0)) or (qrMechanizm.Eof) then
     Result := True;
 end;
-
-procedure TFormCalculationEstimate.CheckNeedAutoRep(AID: Integer; AType: Integer);
+//Проверяет выполнялась ли ранее в смета замена по такому коду, если да то нуждается в автозамене
+procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType: Integer; ACode: string);
+var j: Integer;
 begin
-  //
+  if ((AType = 2) and not PMMatAutoRep.Checked) or
+     ((AType = 3) and not PMMechAutoRep.Checked) then
+    Exit;
+
+  qrTemp1.Active := False;
+  case AType of
+    2: qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' +
+      '(REPLACED = 1) and (MAT_CODE = ''' + ACode + ''')';
+    3: qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' +
+      '(REPLACED = 1) and (MECH_CODE = ''' + ACode + ''')';
+    else Exit;
+  end;
+  qrTemp1.Active := True;
+  if not qrTemp1.Eof then
+  begin
+    j := Length(FAutoRepArray);
+    SetLength(FAutoRepArray, j + 1);
+    FAutoRepArray[j].ID := AID;
+    FAutoRepArray[j].DataType := AType;
+    FAutoRepArray[j].Code := ACode;
+  end;
+  qrTemp1.Active := False;
 end;
 
 procedure TFormCalculationEstimate.ClearAutoRep;
 begin
-  //
+  SetLength(FAutoRepArray, 0);
 end;
 
 procedure TFormCalculationEstimate.ShowAutoRep;
+var i: Integer;
+    ReCalcFlag: Boolean;
+    frmReplace: TfrmReplacement;
 begin
-  //
+  ReCalcFlag := False;
+  for i := Low(FAutoRepArray) to High(FAutoRepArray) do
+  begin
+    case FAutoRepArray[i].DataType of
+      2:
+      begin
+        case MessageDlg('Хотите произвести замену материала ' +
+          FAutoRepArray[i].Code + '?' + sLineBreak +
+          'Замены данного материала ранее уже производились в смете.', mtConfirmation,
+          mbOKCancel, 0) of
+          mrOk:
+          begin
+            frmReplace :=
+              TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, '', 0, False, True);
+            try
+              if (frmReplace.ShowModal = mrYes) then
+              begin
+                ReCalcFlag := True;
+              end;
+            finally
+              FreeAndNil(frmReplace);
+            end;
+          end;
+          mrCancel: Continue;
+        end;
+      end;
+      3:
+      begin
+        case MessageDlg('Хотите произвести замену механизма ' +
+          FAutoRepArray[i].Code + '?' + sLineBreak +
+          'Замены данного механизма ранее уже производились в смете.', mtConfirmation,
+          mbOKCancel, 0) of
+          mrOk:
+          begin
+            frmReplace :=
+              TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, '', 1, False, True);
+            try
+              if (frmReplace.ShowModal = mrYes) then
+              begin
+                ReCalcFlag := True;
+              end;
+            finally
+              FreeAndNil(frmReplace);
+            end;
+          end;
+          mrCancel: Continue;
+        end;
+      end
+      else Continue;
+    end;
+  end;
+
+  if ReCalcFlag then
+  begin
+    qrTemp.SQL.Text := 'CALL CalcCalculationAll;';
+    qrTemp.ExecSQL;
+    OutputDataToTable;
+  end;
 end;
 
 procedure TFormCalculationEstimate.SetMechReadOnly(AValue: Boolean); // Устанавливает режим редактирования
@@ -2906,11 +2990,11 @@ var
 begin
   case TMenuItem(Sender).Tag of
     0: frmReplace :=
-      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, '', 0, False);
+      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, '', 0, False, False);
     1: frmReplace :=
-      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, '', 1, False);
+      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, '', 1, False, False);
     2: frmReplace :=
-      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrDevicesID.AsInteger, '', 2, False)
+      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrDevicesID.AsInteger, '', 2, False, False);
     else Exit;
   end;
 
@@ -3017,7 +3101,7 @@ begin
   else
     IdRate := qrRatesExSM_ID.AsInteger;
 
-  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0, '', TMenuItem(Sender).Tag, True);
+  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0, '', TMenuItem(Sender).Tag, True, False);
 
   try
     if (frmReplace.ShowModal = mrYes) then
@@ -3658,6 +3742,7 @@ end;
 procedure TFormCalculationEstimate.AddRate(const vRateId: Integer);
 var
   vMaxIdRate: Integer;
+  MaxMId: Integer;
   NewRateCode: string;
   vNormRas: Double;
   Month1, Year1: Integer;
@@ -3699,6 +3784,9 @@ begin
     end;
   end;
 
+  //Подкоговка автозамены
+  ClearAutoRep;
+
   // Заносим во временную таблицу materialcard_temp материалы находящиеся в расценке
   try
     with qrTemp do
@@ -3723,17 +3811,6 @@ begin
       Active := False;
 
       SQL.Clear;
-      { SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
-        'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
-        'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
-        ' as "PriceNoVAT" ' + 'FROM materialnorm as TMatNorm ' +
-        'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
-        'LEFT JOIN units ON TMat.unit_id = units.unit_id ' +
-        'LEFT JOIN (select material_id, ' + PriceVAT + ', ' +
-        PriceNoVAT + ' from materialcoastg where (monat = ' + IntToStr(Month1) + ') and (year = ' +
-        IntToStr(Year1) + ')) as TMatCoast ' + 'ON TMatCoast.material_id = TMatNorm.material_id ' +
-        'WHERE (TMatNorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1'; }
-
       SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
         'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
         'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
@@ -3780,6 +3857,16 @@ begin
         qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
         qrTemp1.ExecSQL;
 
+        qrTemp1.SQL.Text := 'SELECT max(id) FROM materialcard_temp';
+        qrTemp1.Active := True;
+        MaxMId := 0;
+        if not qrTemp1.Eof then
+          MaxMId := qrTemp1.Fields[0].AsInteger;
+        qrTemp1.Active := False;
+
+        if MaxMId > 0 then
+          CheckNeedAutoRep(MaxMId, 2, FieldByName('MatCode').AsString);
+
         Next;
       end;
 
@@ -3808,6 +3895,16 @@ begin
         qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
         qrTemp1.ParamByName('PROC_TRANSP').Value := 0;
         qrTemp1.ExecSQL;
+
+        qrTemp1.SQL.Text := 'SELECT max(id) FROM materialcard_temp';
+        qrTemp1.Active := True;
+        MaxMId := 0;
+        if not qrTemp1.Eof then
+          MaxMId := qrTemp1.Fields[0].AsInteger;
+        qrTemp1.Active := False;
+
+        if MaxMId > 0 then
+          CheckNeedAutoRep(MaxMId, 2, FieldByName('MatCode').AsString);
 
         Next;
       end;
@@ -3866,6 +3963,16 @@ begin
         qrTemp1.ParamByName('NORMATIV').Value := FieldByName('MECH_PH').AsExtended;
         qrTemp1.ExecSQL;
 
+        qrTemp1.SQL.Text := 'SELECT max(id) FROM mechanizmcard_temp';
+        qrTemp1.Active := True;
+        MaxMId := 0;
+        if not qrTemp1.Eof then
+          MaxMId := qrTemp1.Fields[0].AsInteger;
+        qrTemp1.Active := False;
+
+        if MaxMId > 0 then
+          CheckNeedAutoRep(MaxMId, 3, FieldByName('MechCode').AsString);
+
         Next;
       end;
 
@@ -3906,6 +4013,10 @@ begin
   end
   else
     OutputDataToTable(True);
+
+  (Self as TForm).Invalidate;
+  //Выполнение автозамены по добавленной расценке
+  ShowAutoRep;
 end;
 
 procedure TFormCalculationEstimate.PMAddTranspClick(Sender: TObject);

@@ -43,6 +43,9 @@ type
     procedure btnFindClick(Sender: TObject);
     procedure ListSprResize(Sender: TObject);
   private
+    FOnAfterLoad: TNotifyEvent;
+    //Фаг того, что справочник загружен
+    FLoaded: Boolean;
     procedure OnExcecute(var Mes: TMessage); message WM_EXCECUTE;
   protected
     { Private declarations }
@@ -51,6 +54,7 @@ type
     FSprArray: TSprArray;
     //Не показывать колонку едениц измерения
     FNoEdCol: Boolean;
+
     //Возвращает текст запроса
     function GetSprSQL: string; virtual; abstract;
     //Заполняет основной массив справочника
@@ -74,6 +78,9 @@ type
       const AStarDate: TDateTime); reintroduce;
     procedure LoadSpr;
     function FindCode(const ACode: string): PSprRecord;
+
+    property OnAfterLoad: TNotifyEvent read FOnAfterLoad write FOnAfterLoad;
+    property Loaded: Boolean read FLoaded;
   end;
 
 implementation
@@ -320,7 +327,7 @@ var i: Integer;
     lc: TListColumn;
 begin
   inherited Create(AOwner);
-
+  FLoaded := False;
   cmbMonth.Items.Clear;
   for i := Low(arraymes) to High(arraymes) do
     cmbMonth.Items.Add(arraymes[i][1]);
@@ -465,6 +472,7 @@ begin
   LoadLabel.Visible := True;
   LoadAnimator.Visible := True;
   LoadAnimator.Animate := True;
+  FLoaded := False;
 end;
 
 procedure TSprFrame.OnLoadDone;
@@ -482,6 +490,9 @@ begin
   LoadLabel.Visible := False;
   LoadAnimator.Visible := False;
   LoadAnimator.Animate := False;
+  FLoaded := True;
+  if Assigned(FOnAfterLoad) then
+    FOnAfterLoad(Self);
 end;
 
 procedure TSprFrame.SpeedButtonShowHideClick(Sender: TObject);
