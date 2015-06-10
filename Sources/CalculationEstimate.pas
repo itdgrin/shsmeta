@@ -697,7 +697,7 @@ type
 
     // Флаги пересчета по правым таблицам, исключает зацикливание в обработчиках ОnChange;
     FReCalcMech, FReCalcMat, FReCalcDev: Boolean;
-    //Айдишника для посветки жирным связей между заменяющим и замененным
+    // Айдишника для посветки жирным связей между заменяющим и замененным
     // ID замененного материала который надо подсветить
     FIdReplasedMat: Integer;
     // ID заменяющего материала который надо подсветить
@@ -713,9 +713,9 @@ type
     FLastEntegGrd: TJvDBGrid;
     // Флаги необходимости предлагать автоматически добавить пуск и регулировку
     FAutoAddE18, FAutoAddE20: Boolean;
-    //Фрейм для расчета фактической цены, отображается как всплывающая панелька
+    // Фрейм для расчета фактической цены, отображается как всплывающая панелька
     FCalculator: TCalculator;
-    //Массив для автозамены (вписок позицый по которым будет выполняться автозамена)
+    // Массив для автозамены (вписок позицый по которым будет выполняться автозамена)
     FAutoRepArray: TAutoRepArray;
     // пересчитывает все относящееся к строке в таблице расценок
     procedure ReCalcRowRates;
@@ -754,10 +754,10 @@ type
     // Проверяет, что курсор стоит на смете (ПТМ)
     function CheckCursorInRate: Boolean;
 
-    //Набор процедур для управление автозаменой
-    procedure ClearAutoRep; //Очищает массив автозамены
-    procedure CheckNeedAutoRep(AID,AType: Integer; ACode: string); //Проверяет необходимость в замене
-    procedure ShowAutoRep; //Показывает диалог замены для всех из массива
+    // Набор процедур для управление автозаменой
+    procedure ClearAutoRep; // Очищает массив автозамены
+    procedure CheckNeedAutoRep(AID, AType: Integer; ACode: string); // Проверяет необходимость в замене
+    procedure ShowAutoRep; // Показывает диалог замены для всех из массива
   public
     Act: Boolean;
 
@@ -794,8 +794,8 @@ var
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
 function NoNDSToNDS(AValue, aNDS: Currency): Currency;
-function NDSToNoNDS1(AValue, aNDS: TBCD): TBCD;
-function NoNDSToNDS1(AValue, aNDS: TBCD): TBCD;
+function NDSToNoNDS1(AValue, aNDS: TBcd): TBcd;
+function NoNDSToNDS1(AValue, aNDS: TBcd): TBcd;
 
 implementation
 
@@ -820,18 +820,17 @@ begin
   Result := Round(AValue * (1.000000 + 0.010000 * aNDS));
 end;
 
-function NDSToNoNDS1(AValue, aNDS: TBCD): TBCD;
+function NDSToNoNDS1(AValue, aNDS: TBcd): TBcd;
 begin
-  Result :=  AValue / (1.000000 + 0.010000 * aNDS);
+  Result := AValue / (1.000000 + 0.010000 * aNDS);
   Result := CurrencyToBcd(Round(BCDToCurrency(Result)));
 end;
 
-function NoNDSToNDS1(AValue, aNDS: TBCD): TBCD;
+function NoNDSToNDS1(AValue, aNDS: TBcd): TBcd;
 begin
   Result := AValue * (1.000000 + 0.010000 * aNDS);
   Result := CurrencyToBcd(Round(BCDToCurrency(Result)));
 end;
-
 
 { TSplitter }
 procedure TSplitter.Paint();
@@ -1314,7 +1313,8 @@ end;
 procedure TFormCalculationEstimate.btn1Click(Sender: TObject);
 begin
   if Application.MessageBox('Произвести перерасчет сметы?', 'Перерасчет',
-      MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) <> IDYES then Exit;
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) <> IDYES then
+    Exit;
   case Application.MessageBox('Произвести обновление цен по всем объектам сметы?', 'Перерасчет',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
     IDYES:
@@ -1764,21 +1764,25 @@ begin
     (qrMechanizmTITLE.AsInteger > 0) or (not(qrMechanizmID.AsInteger > 0)) or (qrMechanizm.Eof) then
     Result := True;
 end;
-//Проверяет выполнялась ли ранее в смета замена по такому коду, если да то нуждается в автозамене
+
+// Проверяет выполнялась ли ранее в смета замена по такому коду, если да то нуждается в автозамене
 procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType: Integer; ACode: string);
-var j: Integer;
+var
+  j: Integer;
 begin
-  if ((AType = 2) and not PMMatAutoRep.Checked) or
-     ((AType = 3) and not PMMechAutoRep.Checked) then
+  if ((AType = 2) and not PMMatAutoRep.Checked) or ((AType = 3) and not PMMechAutoRep.Checked) then
     Exit;
 
   qrTemp1.Active := False;
   case AType of
-    2: qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' +
-      '(REPLACED = 1) and (MAT_CODE = ''' + ACode + ''')';
-    3: qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' +
-      '(REPLACED = 1) and (MECH_CODE = ''' + ACode + ''')';
-    else Exit;
+    2:
+      qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' + '(REPLACED = 1) and (MAT_CODE = ''' +
+        ACode + ''')';
+    3:
+      qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' + '(REPLACED = 1) and (MECH_CODE = ''' +
+        ACode + ''')';
+  else
+    Exit;
   end;
   qrTemp1.Active := True;
   if not qrTemp1.Eof then
@@ -1798,59 +1802,59 @@ begin
 end;
 
 procedure TFormCalculationEstimate.ShowAutoRep;
-var i: Integer;
-    ReCalcFlag: Boolean;
-    frmReplace: TfrmReplacement;
+var
+  i: Integer;
+  ReCalcFlag: Boolean;
+  frmReplace: TfrmReplacement;
 begin
   ReCalcFlag := False;
   for i := Low(FAutoRepArray) to High(FAutoRepArray) do
   begin
     case FAutoRepArray[i].DataType of
       2:
-      begin
-        case MessageDlg('Хотите произвести замену материала ' +
-          FAutoRepArray[i].Code + '?' + sLineBreak +
-          'Замены данного материала ранее уже производились в смете.', mtConfirmation,
-          mbOKCancel, 0) of
-          mrOk:
-          begin
-            frmReplace :=
-              TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, '', 0, False, True);
-            try
-              if (frmReplace.ShowModal = mrYes) then
+        begin
+          case MessageDlg('Хотите произвести замену материала ' + FAutoRepArray[i].Code + '?' + sLineBreak +
+            'Замены данного материала ранее уже производились в смете.', mtConfirmation, mbOKCancel, 0) of
+            mrOk:
               begin
-                ReCalcFlag := True;
+                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, '', 0,
+                  False, True);
+                try
+                  if (frmReplace.ShowModal = mrYes) then
+                  begin
+                    ReCalcFlag := True;
+                  end;
+                finally
+                  FreeAndNil(frmReplace);
+                end;
               end;
-            finally
-              FreeAndNil(frmReplace);
-            end;
+            mrCancel:
+              Continue;
           end;
-          mrCancel: Continue;
         end;
-      end;
       3:
-      begin
-        case MessageDlg('Хотите произвести замену механизма ' +
-          FAutoRepArray[i].Code + '?' + sLineBreak +
-          'Замены данного механизма ранее уже производились в смете.', mtConfirmation,
-          mbOKCancel, 0) of
-          mrOk:
-          begin
-            frmReplace :=
-              TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, '', 1, False, True);
-            try
-              if (frmReplace.ShowModal = mrYes) then
+        begin
+          case MessageDlg('Хотите произвести замену механизма ' + FAutoRepArray[i].Code + '?' + sLineBreak +
+            'Замены данного механизма ранее уже производились в смете.', mtConfirmation, mbOKCancel, 0) of
+            mrOk:
               begin
-                ReCalcFlag := True;
+                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, '', 1,
+                  False, True);
+                try
+                  if (frmReplace.ShowModal = mrYes) then
+                  begin
+                    ReCalcFlag := True;
+                  end;
+                finally
+                  FreeAndNil(frmReplace);
+                end;
               end;
-            finally
-              FreeAndNil(frmReplace);
-            end;
+            mrCancel:
+              Continue;
           end;
-          mrCancel: Continue;
-        end;
-      end
-      else Continue;
+        end
+    else
+      Continue;
     end;
   end;
 
@@ -1981,9 +1985,7 @@ begin
       MemoRight.Text := qrMaterialMAT_NAME.AsString;
 
     // Для красоты отрисовки
-    if CheckMatUnAccountingMatirials or
-       (FIdReplasedMat > 0) or
-       (FIdReplasingMat > 0) or flag then
+    if CheckMatUnAccountingMatirials or (FIdReplasedMat > 0) or (FIdReplasingMat > 0) or flag then
       dbgrdMaterial.Repaint;
   end;
 end;
@@ -2050,18 +2052,17 @@ begin
       if qrMaterialMAT_NORMA.Value = 0 then
         Beep;
 
-
       // Автоматический расчет фактических транспортных расходов при изменении фактической цены
       if (Sender.FieldName = 'FCOAST_NO_NDS') or (Sender.FieldName = 'FCOAST_NDS') then
       begin
         if NDSEstimate then
           qrMaterialFTRANSP_NDS.Value :=
-            Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value/100) *
-            qrMaterialMAT_COUNT.Value * qrMaterialFCOAST_NDS.Value))
+            Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value / 100) * qrMaterialMAT_COUNT.Value *
+            qrMaterialFCOAST_NDS.Value))
         else
           qrMaterialFTRANSP_NO_NDS.Value :=
-            Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value/100) *
-            qrMaterialMAT_COUNT.Value * qrMaterialFCOAST_NO_NDS.Value));
+            Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value / 100) * qrMaterialMAT_COUNT.Value *
+            qrMaterialFCOAST_NO_NDS.Value));
       end;
 
       // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
@@ -2199,8 +2200,7 @@ begin
       MemoRight.Text := qrMechanizmMECH_NAME.AsString;
 
     // Для красоты отрисовки
-    if (FIdReplasedMech > 0) or
-       (FIdReplasingMech > 0) or flag then
+    if (FIdReplasedMech > 0) or (FIdReplasingMech > 0) or flag then
       dbgrdMechanizm.Repaint;
   end;
 end;
@@ -2989,13 +2989,17 @@ var
   frmReplace: TfrmReplacement;
 begin
   case TMenuItem(Sender).Tag of
-    0: frmReplace :=
-      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, '', 0, False, False);
-    1: frmReplace :=
-      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, '', 1, False, False);
-    2: frmReplace :=
-      TfrmReplacement.Create(IdObject, IdEstimate, 0, qrDevicesID.AsInteger, '', 2, False, False);
-    else Exit;
+    0:
+      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, '', 0,
+        False, False);
+    1:
+      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, '', 1,
+        False, False);
+    2:
+      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrDevicesID.AsInteger, '', 2,
+        False, False);
+  else
+    Exit;
   end;
 
   if Assigned(frmReplace) then
@@ -3047,23 +3051,20 @@ end;
 
 procedure TFormCalculationEstimate.PMCalcDeviceClick(Sender: TObject);
 begin
-  FCalculator.ShowCalculator(dbgrdDevices,qrDevicesFCOAST_NDS.Value,
-    qrDevicesDEVICE_COUNT.Value, qrDevicesFPRICE_NDS.Value,
-    qrDevicesNDS.Value, 'FCOAST_NDS');
+  FCalculator.ShowCalculator(dbgrdDevices, qrDevicesFCOAST_NDS.Value, qrDevicesDEVICE_COUNT.Value,
+    qrDevicesFPRICE_NDS.Value, qrDevicesNDS.Value, 'FCOAST_NDS');
 end;
 
 procedure TFormCalculationEstimate.PMCalcMatClick(Sender: TObject);
 begin
-  FCalculator.ShowCalculator(dbgrdMaterial, qrMaterialFCOAST_NDS.Value,
-    qrMaterialMAT_COUNT.Value, qrMaterialFPRICE_NDS.Value,
-    qrMaterialNDS.Value, 'FCOAST_NDS');
+  FCalculator.ShowCalculator(dbgrdMaterial, qrMaterialFCOAST_NDS.Value, qrMaterialMAT_COUNT.Value,
+    qrMaterialFPRICE_NDS.Value, qrMaterialNDS.Value, 'FCOAST_NDS');
 end;
 
 procedure TFormCalculationEstimate.PMCalcMechClick(Sender: TObject);
 begin
-  FCalculator.ShowCalculator(dbgrdMechanizm ,qrMechanizmFCOAST_NDS.Value,
-    qrMechanizmMECH_COUNT.Value, qrMechanizmFPRICE_NDS.Value,
-    qrMechanizmNDS.Value, 'FCOAST_NDS');
+  FCalculator.ShowCalculator(dbgrdMechanizm, qrMechanizmFCOAST_NDS.Value, qrMechanizmMECH_COUNT.Value,
+    qrMechanizmFPRICE_NDS.Value, qrMechanizmNDS.Value, 'FCOAST_NDS');
 end;
 
 procedure TFormCalculationEstimate.PMCoefOrdersClick(Sender: TObject);
@@ -3101,7 +3102,8 @@ begin
   else
     IdRate := qrRatesExSM_ID.AsInteger;
 
-  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0, '', TMenuItem(Sender).Tag, True, False);
+  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0, '', TMenuItem(Sender).Tag,
+    True, False);
 
   try
     if (frmReplace.ShowModal = mrYes) then
@@ -3189,7 +3191,7 @@ end;
 // Открытие строчки механизмов на редактирование
 procedure TFormCalculationEstimate.PMMechAutoRepClick(Sender: TObject);
 begin
-  (Sender as TMenuItem).Checked := not (Sender as TMenuItem).Checked;
+  (Sender as TMenuItem).Checked := not(Sender as TMenuItem).Checked;
 end;
 
 procedure TFormCalculationEstimate.PMMechDeleteClick(Sender: TObject);
@@ -3662,7 +3664,6 @@ end;
 procedure TFormCalculationEstimate.pmCoefPopup(Sender: TObject);
 begin
   GetStateCoefOrdersInEstimate;
-
 end;
 
 // вид всплывающего меню материалов
@@ -3693,10 +3694,9 @@ begin
   PMMatRestore.Enabled := qrMaterialDELETED.AsInteger = 1;
 
   PMCalcMat.Visible := NDSEstimate;
-  PMCalcMat.Enabled :=
-    (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FCOAST_NDS');
-//    or
-//    (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS');
+  PMCalcMat.Enabled := (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FCOAST_NDS');
+  // or
+  // (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS');
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -3727,8 +3727,7 @@ begin
   PMMechRestore.Enabled := qrMechanizmDELETED.AsInteger = 1;
 
   PMCalcMech.Visible := NDSEstimate;
-  PMCalcMech.Enabled :=
-    (dbgrdMechanizm.Columns[dbgrdMechanizm.Col - 1].FieldName = 'FCOAST_NDS');
+  PMCalcMech.Enabled := (dbgrdMechanizm.Columns[dbgrdMechanizm.Col - 1].FieldName = 'FCOAST_NDS');
 end;
 
 function TFormCalculationEstimate.CheckCursorInRate: Boolean;
@@ -3784,7 +3783,7 @@ begin
     end;
   end;
 
-  //Подкоговка автозамены
+  // Подкоговка автозамены
   ClearAutoRep;
 
   // Заносим во временную таблицу materialcard_temp материалы находящиеся в расценке
@@ -3993,10 +3992,10 @@ begin
         mrOk:
           PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE18);
         mrCancel:
-        begin
-          FAutoAddE18 := False;
-          OutputDataToTable(True);
-        end;
+          begin
+            FAutoAddE18 := False;
+            OutputDataToTable(True);
+          end;
       end;
 
     if (Pos('е20', AnsiLowerCase(NewRateCode)) > 0) then
@@ -4005,17 +4004,17 @@ begin
         mrOk:
           PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE20);
         mrCancel:
-        begin
-          FAutoAddE18 := False;
-          OutputDataToTable(True);
-        end;
+          begin
+            FAutoAddE18 := False;
+            OutputDataToTable(True);
+          end;
       end;
   end
   else
     OutputDataToTable(True);
 
   (Self as TForm).Invalidate;
-  //Выполнение автозамены по добавленной расценке
+  // Выполнение автозамены по добавленной расценке
   ShowAutoRep;
 end;
 
@@ -4248,8 +4247,7 @@ end;
 procedure TFormCalculationEstimate.pmDevicesPopup(Sender: TObject);
 begin
   PMCalcDevice.Visible := NDSEstimate;
-  PMCalcDevice.Enabled :=
-    (dbgrdDevices.Columns[dbgrdDevices.Col - 1].FieldName = 'FCOAST_NDS');
+  PMCalcDevice.Enabled := (dbgrdDevices.Columns[dbgrdDevices.Col - 1].FieldName = 'FCOAST_NDS');
 end;
 
 // Общий пункт для свалок и транспорта
@@ -4530,7 +4528,8 @@ begin
   with qrDescription do
   begin
     Active := False;
-    ParamByName('IdNorm').AsInteger := vIdNormativ;
+    ParamByName('IdNorm').Value := FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:1',
+      VarArrayOf([vIdNormativ]));
     Active := True;
   end;
 end;
@@ -5246,10 +5245,10 @@ end;
 
 // Заполнение таблицы расценок
 procedure TFormCalculationEstimate.OutputDataToTable(ANewRow: Boolean = False);
-var TmpSmID,
-    RecNo: Integer;
-    SortIDArray: TArray<string>;
-    i: Integer;
+var
+  TmpSmID, RecNo: Integer;
+  SortIDArray: TArray<string>;
+  i: Integer;
 begin
   // Новая процедура вывода левой части
   if Act then
@@ -5274,7 +5273,7 @@ begin
       if (TmpSmID <> qrRatesExSM_ID.Value) then
         qrRatesEx.Next;
 
-      i :=0;
+      i := 0;
       SetLength(SortIDArray, i);
       repeat
         inc(i);
@@ -5297,9 +5296,8 @@ begin
         qrRatesEx.Next;
 
       while (not qrRatesEx.Eof) and (TmpSmID = qrRatesExSM_ID.Value) and
-        TArray.BinarySearch<string>(SortIDArray,
-          strngfldRatesExSORT_ID.AsString, i,
-          TComparer<string>.Default) do
+        TArray.BinarySearch<string>(SortIDArray, strngfldRatesExSORT_ID.AsString, i,
+        TComparer<string>.Default) do
         qrRatesEx.Next;
     end;
 
@@ -5617,8 +5615,8 @@ begin
     end;
 
     if (gdFocused in State) or // Ячейка в фокусе
-       (FCalculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
-       then
+      (FCalculator.Visible and (gdSelected in State)) // Или на неё открыли калькулятор
+    then
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;
@@ -5722,9 +5720,7 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (FIdReplasedMat > 0) and
-       (qrMaterialID.Value = FIdReplasedMat) and
-       (dbgrdMaterial = FLastEntegGrd) then
+    if (FIdReplasedMat > 0) and (qrMaterialID.Value = FIdReplasedMat) and (dbgrdMaterial = FLastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Устаревшее условие для подсветки заменяющего материала с правой таблице,
@@ -5734,9 +5730,8 @@ begin
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
-    if (FIdReplasingMat > 0) and
-       (FIdReplasingMat = qrMaterialID_REPLACED.Value) and
-       (dbgrdMaterial = FLastEntegGrd) then
+    if (FIdReplasingMat > 0) and (FIdReplasingMat = qrMaterialID_REPLACED.Value) and
+      (dbgrdMaterial = FLastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';
@@ -5765,8 +5760,8 @@ begin
     end;
 
     if (gdFocused in State) or // Ячейка в фокусе
-       (FCalculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
-       then
+      (FCalculator.Visible and (gdSelected in State)) // Или на неё открыли калькулятор
+    then
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;
@@ -5883,16 +5878,13 @@ begin
     end;
 
     // Подсветка замененного механизма
-    if (FIdReplasedMech > 0) and
-       (qrMechanizmID.Value = FIdReplasedMech) and
-       (dbgrdMechanizm = FLastEntegGrd)
+    if (FIdReplasedMech > 0) and (qrMechanizmID.Value = FIdReplasedMech) and (dbgrdMechanizm = FLastEntegGrd)
     then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего механизма
-    if (FIdReplasingMech > 0) and
-       (FIdReplasingMech = qrMechanizmID_REPLACED.Value) and
-       (dbgrdMechanizm = FLastEntegGrd) then
+    if (FIdReplasingMech > 0) and (FIdReplasingMech = qrMechanizmID_REPLACED.Value) and
+      (dbgrdMechanizm = FLastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     Str := '';
@@ -5921,8 +5913,8 @@ begin
     end;
 
     if (gdFocused in State) or // Ячейка в фокусе
-       (FCalculator.Visible and (gdSelected in State)) //Или на неё открыли калькулятор
-       then
+      (FCalculator.Visible and (gdSelected in State)) // Или на неё открыли калькулятор
+    then
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;
@@ -5989,8 +5981,8 @@ begin
 
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
       (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)
-      // and (grRatesEx = LastEntegGrd) // Подсвечивается жирным только если есть фокус
-      then
+    // and (grRatesEx = LastEntegGrd) // Подсвечивается жирным только если есть фокус
+    then
     begin
       Font.Style := Font.Style + [fsbold];
     end;

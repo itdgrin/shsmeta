@@ -31,8 +31,6 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    ExplicitTop = 360
-    ExplicitWidth = 429
     DesignSize = (
       458
       36)
@@ -51,7 +49,6 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
       ParentFont = False
       TabOrder = 1
       OnClick = btnCancelClick
-      ExplicitLeft = 349
     end
     object btnSave: TBitBtn
       Left = 297
@@ -68,7 +65,6 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
       ParentFont = False
       TabOrder = 0
       OnClick = btnSaveClick
-      ExplicitLeft = 268
     end
   end
   object grMain: TJvDBGrid

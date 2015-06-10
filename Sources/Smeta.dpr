@@ -107,7 +107,9 @@ uses
   TreeEstimate in 'TreeEstimate.pas' {fTreeEstimate},
   SuppAgreement in 'SuppAgreement.pas' {fSuppAgreement},
   CalcWorkerDepartment in 'CalcWorkerDepartment.pas' {fCalcWorkerDepartment},
-  fFrameCalculator in 'fFrameCalculator.pas' {Calculator: TFrame};
+  fFrameCalculator in 'fFrameCalculator.pas' {Calculator: TFrame},
+  NormativDirectory in 'NormativDirectory.pas' {fNormativDirectory},
+  CardObjectContractorServices in 'CardObjectContractorServices.pas' {fCardObjectContractorServices};
 
 {$R *.res}
 var MHandle: THandle;
@@ -142,7 +144,6 @@ begin
   Application.CreateForm(TFormSaveEstimate, FormSaveEstimate);
   Application.CreateForm(TFormCardMaterial, FormCardMaterial);
   Application.CreateForm(TFormCardDataEstimate, FormCardDataEstimate);
-  Application.CreateForm(TFormListCollections, FormListCollections);
   Application.CreateForm(TFormTypesActs, FormTypesActs);
   Application.CreateForm(TFormCardTypesActs, FormCardTypesActs);
   Application.CreateForm(TFormCardIndexesChangeCost, FormCardIndexesChangeCost);
@@ -156,6 +157,7 @@ begin
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
   Application.CreateForm(TFormCardPartsEstimates, FormCardPartsEstimates);
+  Application.CreateForm(TfNormativDirectory, fNormativDirectory);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€

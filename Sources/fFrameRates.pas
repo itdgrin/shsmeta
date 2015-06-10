@@ -72,7 +72,6 @@ type
     StringGridNC: TStringGrid;
     PanelStructureWorks: TPanel;
     PanelSWHeader: TPanel;
-    StringGridSW: TStringGrid;
     Splitter2: TSplitter;
     Splitter1: TSplitter;
     qrNormativ: TFDQuery;
@@ -86,6 +85,9 @@ type
     dsHistory: TDataSource;
     qrHistory: TFDQuery;
     dsNormativ: TDataSource;
+    qrSW: TFDQuery;
+    dsSW: TDataSource;
+    grSostav: TJvDBGrid;
 
     procedure FrameResize(Sender: TObject);
 
@@ -112,7 +114,6 @@ type
     procedure VSTResize(Sender: TObject);
 
     procedure PanelNormСonsumptionResize(Sender: TObject);
-    procedure PanelStructureWorksResize(Sender: TObject);
     procedure PanelCenterClientResize(Sender: TObject);
     procedure PanelHorizontal2Resize(Sender: TObject);
 
@@ -133,7 +134,7 @@ type
     procedure SpeedButtonShowHideRightPanelClick(Sender: TObject);
     procedure ShowHidePanels(Sender: TObject);
     procedure FindToRatesClick(Sender: TObject);
-    procedure Sbornik(const IdRate: string);
+    procedure Sbornik(const normativ_directory_id: Integer);
     procedure FilteredRates(const vStr: string);
     procedure EditRateChange(Sender: TObject);
     procedure EditRateKeyPress(Sender: TObject; var Key: Char);
@@ -158,7 +159,7 @@ type
 
 implementation
 
-uses Main, DataModule, DrawingTables, CalculationEstimate, ListCollections, Tools;
+uses Main, DataModule, DrawingTables, CalculationEstimate, ListCollections, Tools, NormativDirectory;
 
 {$R *.dfm}
 
@@ -271,13 +272,19 @@ end;
 
 procedure TFrameRates.LabelSbornikClick(Sender: TObject);
 begin
+  if (not Assigned(fNormativDirectory)) then
+    fNormativDirectory := fNormativDirectory.Create(nil);
+  fNormativDirectory.Show;
+
   // FormListCollections.RateNum := EditJustification.Text;
   // FormListCollections.ShowModal;
 
-  FormListCollections.Filling(EditJustification.Text);
+  {
+    FormListCollections.Filling(EditJustification.Text);
 
-  if FormListCollections.Open then
+    if FormListCollections.Open then
     FormListCollections.Show;
+  }
 end;
 
 procedure TFrameRates.LabelSbornikMouseEnter(Sender: TObject);
@@ -326,11 +333,6 @@ begin
   AutoWidthColumn(StringGridNC, 1);
 end;
 
-procedure TFrameRates.PanelStructureWorksResize(Sender: TObject);
-begin
-  AutoWidthColumn(StringGridSW, 1);
-end;
-
 procedure TFrameRates.SettingTable;
 begin
   // НАСТРАИВАЕМ ТАБЛИЦУ (StringGridNormative)
@@ -364,23 +366,6 @@ begin
     Cells[2, 0] := 'Нор. рас.';
     Cells[3, 0] := 'Ед. изм.';
   end;
-
-  // НАСТРАИВАЕМ ТАБЛИЦУ ДЛЯ ВЫВОДА НОРМ РАСХОДОВ
-
-  with StringGridSW do
-  begin
-    ColCount := 2; // Столбцов в таблице
-    RowCount := 2; // Строк  в таблице
-
-    // Настраиваем ширину столбцов
-    ColWidths[0] := 40;
-    ColWidths[1] := 600;
-
-    // Названия заголовков столбцов
-    Cells[0, 0] := '№ п/п';
-    Cells[1, 0] := 'Описание состава работ';
-  end;
-
 end;
 
 procedure TFrameRates.ReceivingAll;
@@ -579,7 +564,7 @@ begin
   else
     CheckBoxNormСonsumption.Checked := true;
 
-  Sbornik(IdNormative);
+  Sbornik(qrNormativ.FieldByName('normativ_directory_id').AsInteger);
   // -----------------------------------------
 
   // Формируем и выполняем запрос к БД
@@ -600,39 +585,6 @@ begin
     MemoDescription.Lines.Add(FieldByName('CaptionNormative').AsString);
     EditJustification.Text := FieldByName('NumberNormative').AsString;
     EditUnit.Text := FieldByName('Unit').AsString;
-  end;
-
-  // -----------------------------------------
-
-  // Выводим список Состава работ
-  with ADOQuerySW do
-  begin
-    Active := False;
-    SQL.Clear;
-
-    StrQuery := 'SELECT cast(sostav_name as char(1024)) as "ScopeWork" FROM sostav, normativ' + DataBase +
-      ' WHERE normativ' + DataBase + '.tab_id = sostav.tab_id and normativ' + DataBase + '.normativ_id = ' +
-      IdNormative + ';';
-
-    SQL.Add(StrQuery);
-    Active := true;
-
-    First;
-    i := 1;
-
-    StringGridSW.RowCount := ADOQuerySW.RecordCount + 1;
-
-    while not Eof do
-    begin
-      with StringGridSW do
-      begin
-        Cells[0, i] := IntToStr(i);
-        Cells[1, i] := FieldByName('ScopeWork').AsVariant;
-      end;
-
-      Inc(i);
-      Next;
-    end;
   end;
 
   // -----------------------------------------
@@ -864,12 +816,28 @@ begin
         Edit5.Color := clRed;
       end;
   end;
+
+  // Заполняем историю изменений
   qrHistory.ParamByName('NORM_NUM').AsString :=
     '%' + Trim(StringReplace(qrNormativ.FieldByName('NumberNormative').AsString, '*', '',
     [rfReplaceAll])) + '%';
   CloseOpen(qrHistory);
 
+  // Заполняем состав работ
+  qrSW.ParamByName('normativ_directory_id').AsInteger := qrNormativ.FieldByName('normativ_directory_id')
+    .AsInteger;
+  CloseOpen(qrSW);
+  // Определяем зимнее удорожание
   GetWinterPrice;
+  // Локейтимся на сборник, если открыта форма
+  if Assigned(fNormativDirectory) and fNormativDirectory.Showing then
+  begin
+   { fNormativDirectory.qrMain.Locate('normativ_directory_id', qrNormativ.FieldByName('normativ_directory_id')
+      .AsInteger, []);    }
+    fNormativDirectory.tvMain.SelectNode(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
+      .Expand(False);
+    //fNormativDirectory.BringToFront;
+  end;
 end;
 
 procedure TFrameRates.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
@@ -1143,8 +1111,8 @@ begin
       else
         WhereStr := ' WHERE 1=1 ' + Condition;
       QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
-        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id, NORM_ACTIVE FROM normativ' +
-        DataBase + WhereStr + Condition + ' ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
+        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id, NORM_ACTIVE, normativ_directory_id FROM normativ'
+        + DataBase + WhereStr + Condition + ' ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
         '`NORM_NUM` REGEXP "^Е" DESC, `NORM_NUM` REGEXP "^Ц" DESC,'#13 +
         'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13
         + '(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) + 0),'#13 +
@@ -1323,20 +1291,29 @@ begin
   end;
 end;
 
-procedure TFrameRates.Sbornik(const IdRate: string);
+procedure TFrameRates.Sbornik(const normativ_directory_id: Integer);
+var
+  res, parent_id: Variant;
 begin
-  with ADOQueryTemp do
+  res := FastSelectSQLOne('select type_directory FROM normativ_directory WHERE normativ_directory_id=:1',
+    VarArrayOf([normativ_directory_id]));
+  parent_id := normativ_directory_id;
+  while not(VarIsNull(res)) and (res <> 2) do
   begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT sbornik_name, sbornik_caption FROM sbornik WHERE sbornik_id = ' +
-      '(SELECT sbornik_id FROM normativg WHERE normativ_id = ' + IdRate + ');');
-    Active := true;
-
-    EditCollection.Text := FieldByName('sbornik_name').AsString + ' ' +
-      FieldByName('sbornik_caption').AsString;
-    Active := False;
+    // Поднимаемся на уровень выше, пока не доберемся до сборника
+    parent_id := FastSelectSQLOne('select parent_id FROM normativ_directory WHERE normativ_directory_id=:1',
+      VarArrayOf([parent_id]));
+    res := FastSelectSQLOne('select type_directory FROM normativ_directory WHERE normativ_directory_id=:1',
+      VarArrayOf([parent_id]));
   end;
+
+  if not(VarIsNull(res)) and (res = 2) then
+    EditCollection.Text :=
+      VarToStr(FastSelectSQLOne
+      ('select CONCAT(FIRST_NAME, ". " , SECOND_NAME) FROM normativ_directory WHERE normativ_directory_id=:1',
+      VarArrayOf([parent_id])))
+  else
+    EditCollection.Text := 'Сборник не найден';
 end;
 
 procedure TFrameRates.FilteredRates(const vStr: string);

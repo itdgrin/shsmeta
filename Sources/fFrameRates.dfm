@@ -634,14 +634,13 @@
               end
             end
             object PanelStructureWorks: TPanel
-              Left = 0
+              Left = 1
               Top = 79
               Width = 505
               Height = 66
               BevelOuter = bvNone
               ParentBackground = False
               TabOrder = 1
-              OnResize = PanelStructureWorksResize
               object PanelSWHeader: TPanel
                 Left = 0
                 Top = 0
@@ -660,26 +659,41 @@
                 ParentFont = False
                 TabOrder = 0
               end
-              object StringGridSW: TStringGrid
+              object grSostav: TJvDBGrid
                 Left = 0
                 Top = 20
                 Width = 505
                 Height = 46
                 Align = alClient
-                DefaultRowHeight = 20
-                DefaultDrawing = False
-                FixedCols = 0
-                RowCount = 2
-                Options = [goFixedVertLine, goVertLine, goHorzLine, goRowSelect, goThumbTracking]
-                ScrollBars = ssVertical
+                DataSource = dsSW
+                Options = [dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
+                ReadOnly = True
                 TabOrder = 1
-                OnDrawCell = StringGridSWDrawCell
-                ColWidths = (
-                  64
-                  64
-                  64
-                  64
-                  64)
+                TitleFont.Charset = DEFAULT_CHARSET
+                TitleFont.Color = clWindowText
+                TitleFont.Height = -11
+                TitleFont.Name = 'Tahoma'
+                TitleFont.Style = []
+                AutoAppend = False
+                AutoSizeColumns = True
+                SelectColumnsDialogStrings.Caption = 'Select columns'
+                SelectColumnsDialogStrings.OK = '&OK'
+                SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+                CanDelete = False
+                EditControls = <>
+                RowsHeight = 17
+                TitleRowHeight = 17
+                WordWrap = True
+                WordWrapAllFields = True
+                Columns = <
+                  item
+                    Expanded = False
+                    FieldName = 'FULL_NAME'
+                    Title.Alignment = taCenter
+                    Title.Caption = #1057#1086#1089#1090#1072#1074' '#1088#1072#1073#1086#1090
+                    Width = 500
+                    Visible = True
+                  end>
               end
             end
           end
@@ -778,5 +792,31 @@
     DataSet = qrNormativ
     Left = 72
     Top = 24
+  end
+  object qrSW: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvDefaultParamDataType]
+    FormatOptions.DefaultParamDataType = ftBCD
+    SQL.Strings = (
+      'SELECT FIRST_NAME AS FULL_NAME, normativ_directory_id'
+      'FROM normativ_directory'
+      'WHERE type_directory = 6 AND parent_id=:normativ_directory_id'
+      'ORDER BY FIRST_NAME')
+    Left = 489
+    Top = 296
+    ParamData = <
+      item
+        Name = 'NORMATIV_DIRECTORY_ID'
+        ParamType = ptInput
+      end>
+  end
+  object dsSW: TDataSource
+    DataSet = qrSW
+    Left = 536
+    Top = 296
   end
 end

@@ -652,8 +652,7 @@ procedure TFormObjectsAndEstimates.dbgrdObjectsDrawColumnCell(Sender: TObject; c
 begin
   if qrObjects.FieldByName('DEL_FLAG').AsInteger = 1 then
     dbgrdObjects.Canvas.Font.Style := dbgrdObjects.Canvas.Font.Style + [fsStrikeOut];
-  dbgrdObjects.Canvas.FillRect(Rect);
-  dbgrdObjects.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, Column.Field.AsString);
+  dbgrdObjects.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TFormObjectsAndEstimates.dbgrdObjectsTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);

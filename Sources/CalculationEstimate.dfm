@@ -623,6 +623,7 @@
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pmTableLeft
           TabOrder = 0
@@ -635,6 +636,7 @@
           OnEnter = dbgrdRatesEnter
           OnKeyDown = dbgrdRatesKeyDown
           AutoAppend = False
+          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -3495,13 +3497,13 @@
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     SQL.Strings = (
+      'SELECT FIRST_NAME AS "work"'
+      'FROM normativ_directory '
       
-        'SELECT cast(sostav_name as char(1024)) as "work" FROM sostav, no' +
-        'rmativg '
-      
-        '  WHERE normativg.tab_id = sostav.tab_id and normativg.normativ_' +
-        'id = :IdNorm'
-      '  ORDER BY sostav_name ASC;')
+        'WHERE type_directory = 6 AND parent_id=(SELECT normativg.normati' +
+        'v_directory_id FROM normativg WHERE normativg.normativ_id = :IdN' +
+        'orm)'
+      'ORDER BY FIRST_NAME;')
     Left = 616
     Top = 80
     ParamData = <
@@ -3510,7 +3512,7 @@
         DataType = ftInteger
         ParamType = ptInput
         Size = 10
-        Value = 12
+        Value = 0
       end>
     object qrDescriptionwork: TStringField
       AutoGenerateValue = arDefault
