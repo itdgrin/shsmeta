@@ -89,6 +89,8 @@
         OnGetText = VSTGetText
         OnKeyPress = VSTKeyPress
         OnResize = VSTResize
+        ExplicitLeft = -1
+        ExplicitTop = 15
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]

@@ -32,7 +32,7 @@ object FormListCollections: TFormListCollections
     ParentFont = False
     PopupMenu = PopupMenu
     ReadOnly = True
-    TabOrder = 0
+    TabOrder = 1
     OnClick = TreeViewClick
     OnDblClick = TreeViewDblClick
   end
@@ -45,7 +45,7 @@ object FormListCollections: TFormListCollections
     BevelOuter = bvNone
     Caption = 'PanelTop'
     ShowCaption = False
-    TabOrder = 1
+    TabOrder = 0
     DesignSize = (
       680
       25)
@@ -70,7 +70,7 @@ object FormListCollections: TFormListCollections
       Height = 21
       Color = 14802912
       ReadOnly = True
-      TabOrder = 0
+      TabOrder = 2
     end
     object EditSearch: TEdit
       Left = 157
@@ -78,7 +78,7 @@ object FormListCollections: TFormListCollections
       Width = 472
       Height = 21
       Anchors = [akLeft, akTop, akRight]
-      TabOrder = 1
+      TabOrder = 3
       OnKeyPress = EditSearchKeyPress
     end
     object ButtonSearchUp: TButton
@@ -91,7 +91,7 @@ object FormListCollections: TFormListCollections
       Caption = #171
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 2
+      TabOrder = 0
       OnClick = ButtonSearchUpClick
     end
     object ButtonSearchDown: TButton
@@ -104,7 +104,7 @@ object FormListCollections: TFormListCollections
       Caption = #187
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 3
+      TabOrder = 1
       OnClick = ButtonSearchDownClick
     end
   end

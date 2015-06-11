@@ -274,7 +274,12 @@ procedure TFrameRates.LabelSbornikClick(Sender: TObject);
 begin
   if (not Assigned(fNormativDirectory)) then
     fNormativDirectory := fNormativDirectory.Create(nil);
+  fNormativDirectory.skipReload := true;
   fNormativDirectory.Show;
+  fNormativDirectory.tvMain.SelectNode(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
+    .Expand(False);
+  fNormativDirectory.skipReload := False;
+
 
   // FormListCollections.RateNum := EditJustification.Text;
   // FormListCollections.ShowModal;
@@ -832,11 +837,10 @@ begin
   // Локейтимся на сборник, если открыта форма
   if Assigned(fNormativDirectory) and fNormativDirectory.Showing then
   begin
-   { fNormativDirectory.qrMain.Locate('normativ_directory_id', qrNormativ.FieldByName('normativ_directory_id')
-      .AsInteger, []);    }
+    fNormativDirectory.skipReload := true;
     fNormativDirectory.tvMain.SelectNode(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
       .Expand(False);
-    //fNormativDirectory.BringToFront;
+    fNormativDirectory.skipReload := False;
   end;
 end;
 
@@ -1111,8 +1115,8 @@ begin
       else
         WhereStr := ' WHERE 1=1 ' + Condition;
       QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
-        ' norm_caption as "CaptionNormativ", sbornik_id, razd_id, tab_id, NORM_ACTIVE, normativ_directory_id FROM normativ'
-        + DataBase + WhereStr + Condition + ' ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
+        ' norm_caption as "CaptionNormativ", NORM_ACTIVE, normativg.normativ_directory_id, tree_data FROM normativ_directory, normativ' + DataBase +
+        WhereStr + Condition + ' and normativ_directory.normativ_directory_id=normativg.normativ_directory_id ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
         '`NORM_NUM` REGEXP "^Е" DESC, `NORM_NUM` REGEXP "^Ц" DESC,'#13 +
         'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13
         + '(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) + 0),'#13 +
