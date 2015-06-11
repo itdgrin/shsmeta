@@ -133,7 +133,6 @@ type
 
     procedure SpeedButtonShowHideRightPanelClick(Sender: TObject);
     procedure ShowHidePanels(Sender: TObject);
-    procedure FindToRatesClick(Sender: TObject);
     procedure Sbornik(const normativ_directory_id: Integer);
     procedure FilteredRates(const vStr: string);
     procedure EditRateChange(Sender: TObject);
@@ -159,7 +158,7 @@ type
 
 implementation
 
-uses Main, DataModule, DrawingTables, CalculationEstimate, ListCollections, Tools, NormativDirectory;
+uses Main, DataModule, DrawingTables, CalculationEstimate, Tools, NormativDirectory;
 
 {$R *.dfm}
 
@@ -308,14 +307,6 @@ begin
     Cursor := crDefault;
     Font.Style := Font.Style - [fsUnderline];
   end;
-end;
-
-procedure TFrameRates.FindToRatesClick(Sender: TObject);
-begin
-  FormListCollections.Filling(EditJustification.Text);
-
-  if FormListCollections.Open then
-    FormListCollections.Show;
 end;
 
 procedure TFrameRates.PanelCenterClientResize(Sender: TObject);
@@ -1115,8 +1106,10 @@ begin
       else
         WhereStr := ' WHERE 1=1 ' + Condition;
       QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
-        ' norm_caption as "CaptionNormativ", NORM_ACTIVE, normativg.normativ_directory_id, tree_data FROM normativ_directory, normativ' + DataBase +
-        WhereStr + Condition + ' and normativ_directory.normativ_directory_id=normativg.normativ_directory_id ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
+        ' norm_caption as "CaptionNormativ", NORM_ACTIVE, normativ' + DataBase +
+        '.normativ_directory_id, tree_data FROM normativ_directory, normativ' + DataBase + WhereStr +
+        Condition + ' and normativ_directory.normativ_directory_id=normativ' + DataBase +
+        '.normativ_directory_id ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
         '`NORM_NUM` REGEXP "^Å" DESC, `NORM_NUM` REGEXP "^Ö" DESC,'#13 +
         'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13
         + '(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) + 0),'#13 +

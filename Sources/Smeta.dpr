@@ -55,7 +55,6 @@ uses
   AdditionData in 'AdditionData.pas' {FormAdditionData},
   CardMaterial in 'CardMaterial.pas' {FormCardMaterial},
   CardDataEstimate in 'CardDataEstimate.pas' {FormCardDataEstimate},
-  ListCollections in 'ListCollections.pas' {FormListCollections},
   CardOrganization in 'CardOrganization.pas' {fCardOrganization},
   fTypesActs in 'fTypesActs.pas' {FrameTypesActs: TFrame},
   fIndexesChangeCost in 'fIndexesChangeCost.pas' {FrameIndexesChangeCost: TFrame},

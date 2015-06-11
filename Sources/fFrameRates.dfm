@@ -89,8 +89,6 @@
         OnGetText = VSTGetText
         OnKeyPress = VSTKeyPress
         OnResize = VSTResize
-        ExplicitLeft = -1
-        ExplicitTop = 15
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]
@@ -724,7 +722,6 @@
     Top = 400
     object FindToRates: TMenuItem
       Caption = #1053#1072#1081#1090#1080' '#1074' '#1089#1073#1086#1088#1085#1080#1082#1077
-      OnClick = FindToRatesClick
     end
   end
   object qrNormativ: TFDQuery

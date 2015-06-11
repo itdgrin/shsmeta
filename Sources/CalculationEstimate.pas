@@ -804,7 +804,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   BasicData, ObjectsAndEstimates, PercentClientContractor, Transportation,
   CalculationDump, SaveEstimate,
   AdditionData, CardMaterial, CardDataEstimate,
-  ListCollections, CoefficientOrders, KC6,
+  CoefficientOrders, KC6,
   CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
   TreeEstimate, ImportExportModule;

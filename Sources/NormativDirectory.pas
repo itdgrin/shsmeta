@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.ComCtrls, JvExComCtrls, JvDBTreeView, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Grids,
-  Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Menus {, ShellAPI};
+  Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Menus, ShellAPI;
 
 type
   TfNormativDirectory = class(TForm)
@@ -26,6 +26,7 @@ type
     pm1: TPopupMenu;
     mN1: TMenuItem;
     mN2: TMenuItem;
+    mN3: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure tvMainDblClick(Sender: TObject);
     procedure tvMainChange(Sender: TObject; Node: TTreeNode);
@@ -34,6 +35,7 @@ type
     procedure edtSearchKeyPress(Sender: TObject; var Key: Char);
     procedure mN1Click(Sender: TObject);
     procedure mN2Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     procedure Search(const Direction: Integer);
   public
@@ -46,7 +48,7 @@ var
 
 implementation
 
-uses DataModule, Tools, ReferenceData;
+uses DataModule, Tools, ReferenceData, AdditionData, Main;
 {$R *.dfm}
 
 procedure TfNormativDirectory.btnSearchDownClick(Sender: TObject);
@@ -65,8 +67,6 @@ begin
     if (Key = #13) and (edtSearch.Text <> '') then // Если нажата клавиша "Enter" и строка поиска не пуста
     begin
       Search(0)
-      { qrMain.Filter := 'FULL_NAME LIKE ''%'+ Trim(edtSearch.Text) + '%''';
-        qrMain.Filtered := True; }
     end
     else if (Key = #27) then // Нажата клавиша ESC
     begin
@@ -74,16 +74,49 @@ begin
     end;
 end;
 
+procedure TfNormativDirectory.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  if Assigned(FormReferenceData) then
+    FormReferenceData.FrameRates.FilteredRates('')
+  else if Assigned(FormAdditionData) then
+    FormAdditionData.FrameRates.FilteredRates('');
+end;
+
 procedure TfNormativDirectory.FormCreate(Sender: TObject);
+var
+  Point1: TPoint;
 begin
   if dm.Connect.Connected then
   begin
     if not qrMain.Active then
       qrMain.Active := True;
-    { if not qrDetail.Active then
-      qrDetail.Active := True; }
   end;
   LoadDBGridSettings(grSostav);
+
+  if Assigned(FormReferenceData) then
+  begin
+    Width := FormReferenceData.Width - FormReferenceData.GetLeftIndentForFormSborniks -
+      (GetSystemMetrics(SM_CXFRAME) * 2);
+    Height := FormReferenceData.Height - FormReferenceData.GetTopIndentForFormSborniks - 19;
+
+    Point1 := FormMain.ClientToScreen(Point(FormReferenceData.Left, FormReferenceData.Top));
+
+    Left := Point1.X + FormReferenceData.GetLeftIndentForFormSborniks + GetSystemMetrics(SM_CXFRAME);
+    Top := Point1.Y + FormReferenceData.GetTopIndentForFormSborniks;
+
+  end
+  else if Assigned(FormAdditionData) then
+  begin
+    Point1 := FormMain.ClientToScreen(Point(FormAdditionData.Left, FormAdditionData.Top));
+
+    Left := Point1.X + 5 + GetSystemMetrics(SM_CYBORDER) + FormAdditionData.FrameRates.vst.Width + 5;
+    Top := Point1.Y + 2 + GetSystemMetrics(SM_CYCAPTION) + FormAdditionData.FrameRates.Top +
+      FormAdditionData.FrameRates.MemoDescription.Top;
+
+    Width := Screen.Width - Left - 3;
+    Height := FormAdditionData.Height - (GetSystemMetrics(SM_CYCAPTION) + FormAdditionData.FrameRates.Top +
+      FormAdditionData.FrameRates.MemoDescription.Top);
+  end;
 end;
 
 procedure TfNormativDirectory.Search(const Direction: Integer);
@@ -193,12 +226,16 @@ end;
 
 procedure TfNormativDirectory.mN1Click(Sender: TObject);
 begin
+  tvMain.Visible := False;
   tvMain.FullExpand;
+  tvMain.Visible := True;
 end;
 
 procedure TfNormativDirectory.mN2Click(Sender: TObject);
 begin
+  tvMain.Visible := False;
   tvMain.FullCollapse;
+  tvMain.Visible := True;
 end;
 
 procedure TfNormativDirectory.tvMainChange(Sender: TObject; Node: TTreeNode);
@@ -209,74 +246,78 @@ begin
     Exit;
   if Assigned(FormReferenceData) then
     FormReferenceData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data')
+      .AsString + '%''')
+  else if Assigned(FormAdditionData) then
+    FormAdditionData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data')
       .AsString + '%''');
 end;
 
 procedure TfNormativDirectory.tvMainDblClick(Sender: TObject);
-{ var
+var
   NumberNormativ: String;
   FirstChar: Char;
-  Path: String; }
+  Path: String;
 begin
-  {
-    //? NumberNormativ := RateNum;
+  if Assigned(FormReferenceData) then
+    NumberNormativ := FormReferenceData.FrameRates.qrNormativ.FieldByName('NumberNormative').AsString
+  else if Assigned(FormAdditionData) then
+    NumberNormativ := FormAdditionData.FrameRates.qrNormativ.FieldByName('NumberNormative').AsString;
 
-    // В условии - русские символы, в переменной NumberNormativ - английские
-    if (NumberNormativ > 'Е121-1-1') and (NumberNormativ < 'Е121-137-1') then
+  // В условии - русские символы, в переменной NumberNormativ - английские
+  if (NumberNormativ > 'Е121-1-1') and (NumberNormativ < 'Е121-137-1') then
     NumberNormativ := 'E121_p1'
-    else if (NumberNormativ > 'Е121-141-1') and (NumberNormativ < 'Е121-222-2') then
+  else if (NumberNormativ > 'Е121-141-1') and (NumberNormativ < 'Е121-222-2') then
     NumberNormativ := 'E121_p2'
-    else if (NumberNormativ > 'Е121-241-1') and (NumberNormativ < 'Е121-439-8') then
+  else if (NumberNormativ > 'Е121-241-1') and (NumberNormativ < 'Е121-439-8') then
     NumberNormativ := 'E121_p3'
-    else if (NumberNormativ > 'Е121-451-1') and (NumberNormativ < 'Е121-639-1') then
+  else if (NumberNormativ > 'Е121-451-1') and (NumberNormativ < 'Е121-639-1') then
     NumberNormativ := 'E121_p4'
-    else if (NumberNormativ > 'Е29-6-1') and (NumberNormativ < 'Е29-92-12') then
+  else if (NumberNormativ > 'Е29-6-1') and (NumberNormativ < 'Е29-92-12') then
     NumberNormativ := 'E29_p1'
-    else if (NumberNormativ > 'Е29-93-1') and (NumberNormativ < 'Е29-277-1') then
+  else if (NumberNormativ > 'Е29-93-1') and (NumberNormativ < 'Е29-277-1') then
     NumberNormativ := 'E29_p2'
-    else if (NumberNormativ > 'Е35-9-1') and (NumberNormativ < 'Е35-233-2') then
+  else if (NumberNormativ > 'Е35-9-1') and (NumberNormativ < 'Е35-233-2') then
     NumberNormativ := 'E35_p1'
-    else if (NumberNormativ > 'Е35-234-1') and (NumberNormativ < 'Е35-465-1') then
+  else if (NumberNormativ > 'Е35-234-1') and (NumberNormativ < 'Е35-465-1') then
     NumberNormativ := 'E35_p2'
-    else if (NumberNormativ > 'Ц12-1-1') and (NumberNormativ < 'Ц12-331-3') then
+  else if (NumberNormativ > 'Ц12-1-1') and (NumberNormativ < 'Ц12-331-3') then
     NumberNormativ := 'C12_p1'
-    else if (NumberNormativ > 'Ц12-362-1') and (NumberNormativ < 'Ц12-1314-10') then
+  else if (NumberNormativ > 'Ц12-362-1') and (NumberNormativ < 'Ц12-1314-10') then
     NumberNormativ := 'C12_p2'
-    else if (NumberNormativ > 'Ц13-1-1') and (NumberNormativ < 'Ц13-230-7') then
+  else if (NumberNormativ > 'Ц13-1-1') and (NumberNormativ < 'Ц13-230-7') then
     NumberNormativ := 'C13_p1'
-    else if (NumberNormativ > 'Ц13-250-1') and (NumberNormativ < 'Ц13-383-3') then
+  else if (NumberNormativ > 'Ц13-250-1') and (NumberNormativ < 'Ц13-383-3') then
     NumberNormativ := 'C13_p2'
-    else if (NumberNormativ > 'Ц8-1-1') and (NumberNormativ < 'Ц8-477-1') then
+  else if (NumberNormativ > 'Ц8-1-1') and (NumberNormativ < 'Ц8-477-1') then
     NumberNormativ := 'C8_p1'
-    else if (NumberNormativ > 'Ц8-481-1') and (NumberNormativ < 'Ц8-914-3') then
+  else if (NumberNormativ > 'Ц8-481-1') and (NumberNormativ < 'Ц8-914-3') then
     NumberNormativ := 'C8_p2'
-    else
-    begin
+  else
+  begin
     FirstChar := NumberNormativ[1];
 
     Delete(NumberNormativ, 1, 1);
 
     // В условии - русские символы, в переменной NumberNormativ - английские
     if FirstChar = 'Е' then
-    NumberNormativ := 'E' + NumberNormativ
+      NumberNormativ := 'E' + NumberNormativ
     else if FirstChar = 'С' then
-    NumberNormativ := 'C' + NumberNormativ;
+      NumberNormativ := 'C' + NumberNormativ;
 
     // Удаляем символы начиная с первого символа '-' и до конца строки
     Delete(NumberNormativ, Pos('-', NumberNormativ), Length(NumberNormativ) - Pos('-', NumberNormativ) + 1);
-    end;
+  end;
 
-    Path := ExtractFilePath(Application.ExeName) + 'Normative documents\' + NumberNormativ + '\data.doc';
+  Path := ExtractFilePath(Application.ExeName) + 'Normative documents\' + NumberNormativ + '\data.doc';
 
-    if not FileExists(Path) then
-    begin
+  if not FileExists(Path) then
+  begin
     MessageBox(0, PChar('Вы пытаетесь открыть файл:' + sLineBreak + sLineBreak + Path + sLineBreak +
-    sLineBreak + 'которого не существует!'), '', MB_ICONWARNING + MB_OK + mb_TaskModal);
+      sLineBreak + 'которого не существует!'), '', MB_ICONWARNING + MB_OK + mb_TaskModal);
     Exit;
-    end;
+  end;
 
-    ShellExecute(fNormativDirectory.Handle, nil, PChar(Path), nil, nil, SW_SHOWMAXIMIZED);
-  }
+  ShellExecute(fNormativDirectory.Handle, nil, PChar(Path), nil, nil, SW_SHOWMAXIMIZED);
 end;
 
 end.

@@ -12,6 +12,7 @@ object fNormativDirectory: TfNormativDirectory
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormCreate
   PixelsPerInch = 96
@@ -55,9 +56,6 @@ object fNormativDirectory: TfNormativDirectory
     ParentFont = False
     RowSelect = True
     Mirror = False
-    ExplicitTop = 30
-    ExplicitWidth = 554
-    ExplicitHeight = 362
   end
   object grSostav: TJvDBGrid
     Left = 0
@@ -103,7 +101,6 @@ object fNormativDirectory: TfNormativDirectory
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 554
     DesignSize = (
       646
       27)
@@ -124,7 +121,6 @@ object fNormativDirectory: TfNormativDirectory
       TabOrder = 2
       TextHint = #1074#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090' '#1076#1083#1103' '#1087#1086#1080#1089#1082#1072'...'
       OnKeyPress = edtSearchKeyPress
-      ExplicitWidth = 454
     end
     object btnSearchUp: TButton
       Left = 599
@@ -138,7 +134,6 @@ object fNormativDirectory: TfNormativDirectory
       ShowHint = True
       TabOrder = 0
       OnClick = btnSearchUpClick
-      ExplicitLeft = 507
     end
     object btnSearchDown: TButton
       Left = 622
@@ -152,7 +147,6 @@ object fNormativDirectory: TfNormativDirectory
       ShowHint = True
       TabOrder = 1
       OnClick = btnSearchDownClick
-      ExplicitLeft = 530
     end
   end
   object qrMain: TFDQuery
@@ -217,6 +211,10 @@ object fNormativDirectory: TfNormativDirectory
     object mN2: TMenuItem
       Caption = #1047#1072#1082#1088#1099#1090#1100' '#1074#1089#1077
       OnClick = mN2Click
+    end
+    object mN3: TMenuItem
+      Caption = #1054#1090#1082#1088#1099#1090#1100' '#1076#1086#1082#1091#1084#1077#1085#1090
+      OnClick = tvMainDblClick
     end
   end
 end
