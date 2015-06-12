@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
+  System.Masks, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.Samples.Spin, Vcl.ExtCtrls, GlobsAndConst, Vcl.ComCtrls, Vcl.Buttons,
   JvExControls, JvAnimatedImage, JvGIFCtrl, Data.DB, Generics.Collections,
   Generics.Defaults;
@@ -181,10 +181,12 @@ var i, j,
     TmpInd,
     TmpRel,
     TmpCount: Integer;
+    TmpCode: string;
     Item: TListItem;
     WordList: TStringList;
     TmpStr: string;
-    LastSpase, Cont: Boolean;
+    LastSpase : Boolean;
+    //, Cont: Boolean;
     FSortArray: TArray<TSortRec>;
 begin
   if Length(FSprArray) = 0 then
@@ -192,8 +194,8 @@ begin
 
   WordList := TStringList.Create;
   try
-    AFindCode := CheckFindCode(Trim(AFindCode));
-    AFindName := Trim(AFindName);
+    AFindCode := CheckFindCode(Trim(AFindCode.ToLower));
+    AFindName := Trim(AFindName.ToLower);
 
     //Определяем тип поиска по имени или по коду
     if (Length(AFindName) > 0) then
@@ -228,20 +230,38 @@ begin
       if SpecialFillList(i) then
         Continue;
 
-      if (AFindCode <> '') and
-         (Pos(AFindCode.ToLower, FSprArray[i].Code.ToLower) = 0) then
-        Continue;
-
-      Cont := False;
+      //Cont := False;
       TmpRel := 0;
+
+      if (AFindCode <> '') then
+      begin
+        if (CompareText(AFindCode, FSprArray[i].Code.ToLower) = 0) then
+          TmpRel := 20
+        else
+        begin
+          TmpCode := copy(AFindCode, 1, Length(AFindCode) - 1);
+          if MatchesMask(FSprArray[i].Code.ToLower, AFindCode + '*') or
+             ((Length(TmpCode) > 0) and
+              (MatchesMask(FSprArray[i].Code.ToLower, TmpCode + '*'))) then
+            TmpRel := 10
+          else
+            if (Pos(AFindCode, FSprArray[i].Code.ToLower) <> 0) then
+              TmpRel := 5;
+        end;
+
+        if TmpRel = 0 then
+          Continue;
+      end;
+
       for j := 0 to WordList.Count - 1 do
       begin
         TmpStr := Trim(FSprArray[i].Name.ToLower);
-        TmpInd := Pos(WordList[j].ToLower, TmpStr);
+        TmpInd := Pos(WordList[j], TmpStr);
         if TmpInd = 0 then
         begin
-          Cont := True;
-          Break;
+        //  Cont := True;
+        //  Break;
+          Continue;
         end;
 
         TmpRel := TmpRel + 1;
@@ -254,7 +274,8 @@ begin
         if CompareText(WordList[j], TmpStr) = 0 then
           TmpRel := TmpRel + 5;
       end;
-      if Cont then
+      //if Cont then
+      if (TmpRel = 0) and (WordList.Count > 0) then
         Continue;
 
       if (i mod 1000) = 0 then

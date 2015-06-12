@@ -1813,8 +1813,10 @@ begin
     case FAutoRepArray[i].DataType of
       2:
         begin
-          case MessageDlg('Хотите произвести замену материала ' + FAutoRepArray[i].Code + '?' + sLineBreak +
-            'Замены данного материала ранее уже производились в смете.', mtConfirmation, mbOKCancel, 0) of
+          case MessageBox(0, PChar('Хотите произвести замену материала ' +
+            FAutoRepArray[i].Code + '?' + sLineBreak +
+            'Замены данного материала ранее уже производились в смете.'),
+            'Автозамена', MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
                 frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, '', 0,
@@ -1834,8 +1836,10 @@ begin
         end;
       3:
         begin
-          case MessageDlg('Хотите произвести замену механизма ' + FAutoRepArray[i].Code + '?' + sLineBreak +
-            'Замены данного механизма ранее уже производились в смете.', mtConfirmation, mbOKCancel, 0) of
+          case MessageBox(0, PChar('Хотите произвести замену механизма ' +
+            FAutoRepArray[i].Code + '?' + sLineBreak +
+            'Замены данного механизма ранее уже производились в смете.'),
+            'Автозамена', MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
                 frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, '', 1,
@@ -3987,8 +3991,8 @@ begin
     ((Pos('е20', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(11)) and FAutoAddE20) then
   begin
     if (Pos('е18', AnsiLowerCase(NewRateCode)) > 0) then
-      case MessageDlg('Дабавить пуск и регулировку отопления по Е18 в смету?', mtConfirmation,
-        mbOKCancel, 0) of
+      case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е18 в смету?'),
+            CaptionForm, MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
         mrOk:
           PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE18);
         mrCancel:
@@ -3999,8 +4003,8 @@ begin
       end;
 
     if (Pos('е20', AnsiLowerCase(NewRateCode)) > 0) then
-      case MessageDlg('Дабавить пуск и регулировку отопления по Е20 в смету?', mtConfirmation,
-        mbOKCancel, 0) of
+      case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е20 в смету?'),
+            CaptionForm, MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
         mrOk:
           PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE20);
         mrCancel:

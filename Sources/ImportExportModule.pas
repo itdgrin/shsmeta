@@ -124,6 +124,7 @@ var XML : IXMLDocument;
     CurNode, Node1, Node2: IXMLNode;
     i, j: Integer;
     IdConvert: TIDConvertArray;
+    ds: char;
 
   procedure GetStrAndExcec(ANode: IXMLNode; AType: Integer);
   var i: Integer;
@@ -169,12 +170,20 @@ begin
   DM.qrDifferent.Active := False;
   Application.ProcessMessages;
   CoInitialize(nil);
+  ds := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
   try
     try
       XML := TXMLDocument.Create(nil);
       XML.LoadFromFile(AFileName);
       //загрузка объекта
       Node1 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Data_object');
+
+      if Pos(',', VarToStr(Node1.ChildNodes.Nodes['PER_CONTRACTOR'].NodeValue)) > 0 then
+      begin
+        raise Exception.Create('Запятая(,) неверный разделитель дробной части');
+      end;
+
       Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
         GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, 0, IdConvert, '');
 
@@ -540,6 +549,7 @@ begin
     Node1 := nil;
     CurNode := nil;
     XML := nil;
+    FormatSettings.DecimalSeparator := ds;
     CoUninitialize;
   end;
 end;
@@ -549,12 +559,16 @@ end;
 procedure ExportObject(const AIdObject: Integer; const AFileName: string);
 var XML : IXMLDocument;
     CurNode, Node1, Node2: IXMLNode;
+    ds: char;
+
   procedure RowToNode(ANode: IXMLNode; AQ: TFDQuery);
   var i: Integer;
+      S: Single;
   begin
     for i := 0 to AQ.Fields.Count - 1 do
     begin
-        if AQ.Fields[i].DataType = ftBCD then
+        if (AQ.Fields[i].DataType in [ftFloat, ftCurrency, ftBCD, ftFMTBcd,
+          ftExtended, ftSingle]) then
           ANode.ChildValues[AQ.Fields[i].FieldName] :=
             AQ.Fields[i].AsFloat
         else if AQ.Fields[i].DataType = ftDate then
@@ -567,12 +581,14 @@ var XML : IXMLDocument;
   end;
 begin
   if TFile.Exists(AFileName) then
-    if MessageDlg('Файл ' + AFileName + ' уже существует. Перезаписать его?',
-      mtConfirmation, mbOKCancel, 0) = mrCancel  then
+    if MessageBox(0, PChar('Файл ' + AFileName + ' уже существует. Перезаписать его?'),
+      'Экспорт объекта', MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) = mrCancel  then
       Exit;
 
   CoInitialize(nil);
   Application.ProcessMessages;
+  ds := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
   try
     XML := TXMLDocument.Create(nil);
     XML.Active := True;
@@ -991,6 +1007,7 @@ begin
     Node1 := nil;
     CurNode := nil;
     XML := nil;
+    FormatSettings.DecimalSeparator := ds;
     CoUninitialize;
   end;
 end;
