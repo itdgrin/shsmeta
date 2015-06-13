@@ -237,11 +237,12 @@ begin
       begin
         if (CompareText(AFindCode, FSprArray[i].Code.ToLower) = 0) then
           TmpRel := 20
+        else if MatchesMask(FSprArray[i].Code.ToLower, AFindCode + '*') then
+          TmpRel := 15
         else
         begin
           TmpCode := copy(AFindCode, 1, Length(AFindCode) - 1);
-          if MatchesMask(FSprArray[i].Code.ToLower, AFindCode + '*') or
-             ((Length(TmpCode) > 0) and
+          if ((Length(TmpCode) > 0) and
               (MatchesMask(FSprArray[i].Code.ToLower, TmpCode + '*'))) then
             TmpRel := 10
           else
@@ -253,9 +254,10 @@ begin
           Continue;
       end;
 
+      TmpStr := Trim(FSprArray[i].Name.ToLower);
+
       for j := 0 to WordList.Count - 1 do
       begin
-        TmpStr := Trim(FSprArray[i].Name.ToLower);
         TmpInd := Pos(WordList[j], TmpStr);
         if TmpInd = 0 then
         begin
@@ -264,16 +266,16 @@ begin
           Continue;
         end;
 
-        TmpRel := TmpRel + 1;
-
-        if ((TmpInd = 1) or (TmpStr[TmpInd - 1] = ' ')) and
-           ((Length(TmpStr) = (TmpInd + Length(WordList[j]) - 1)) or
-            (TmpStr[TmpInd + Length(WordList[j])] = ' ')) then
-          TmpRel := TmpRel + 2;
-
         if CompareText(WordList[j], TmpStr) = 0 then
-          TmpRel := TmpRel + 5;
+          TmpRel := TmpRel + 5
+        else if (TmpInd = 1) or
+                (TmpStr[TmpInd - 1] = ' ') or
+                (Length(TmpStr) = (TmpInd + Length(WordList[j]) - 1)) or
+                (TmpStr[TmpInd + Length(WordList[j])] = ' ') then
+          TmpRel := TmpRel + 3
+        else TmpRel := TmpRel + 1;
       end;
+
       //if Cont then
       if (TmpRel = 0) and (WordList.Count > 0) then
         Continue;
