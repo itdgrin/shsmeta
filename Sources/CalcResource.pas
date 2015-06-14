@@ -92,6 +92,51 @@ type
     qrDevicesDetail: TFDQuery;
     dsDevicesDetail: TDataSource;
     dbmmoNAME3: TDBMemo;
+    strngfldMaterialDataCODE: TStringField;
+    strngfldMaterialDataNAME: TStringField;
+    strngfldMaterialDataUNIT: TStringField;
+    qrMaterialDataCNT: TFMTBCDField;
+    qrMaterialDataDOC_DATE: TDateField;
+    strngfldMaterialDataDOC_NUM: TStringField;
+    qrMaterialDataPROC_TRANSP: TFMTBCDField;
+    qrMaterialDataCOAST: TFMTBCDField;
+    qrMaterialDataPRICE: TFMTBCDField;
+    qrMaterialDataTRANSP: TFMTBCDField;
+    qrMaterialDataDELETED: TByteField;
+    qrMaterialDataMAT_PROC_ZAC: TWordField;
+    qrMaterialDataMAT_PROC_PODR: TWordField;
+    qrMaterialDataTRANSP_PROC_ZAC: TWordField;
+    qrMaterialDataTRANSP_PROC_PODR: TWordField;
+    qrMaterialDataMAT_ID: TLongWordField;
+    strngfldMechDataCODE: TStringField;
+    strngfldMechDataNAME: TStringField;
+    strngfldMechDataUNIT: TStringField;
+    qrMechDataCNT: TFMTBCDField;
+    qrMechDataDOC_DATE: TDateField;
+    strngfldMechDataDOC_NUM: TStringField;
+    qrMechDataCOAST: TFMTBCDField;
+    qrMechDataPRICE: TFMTBCDField;
+    qrMechDataZP_1: TFMTBCDField;
+    qrMechDataZP_2: TFMTBCDField;
+    qrMechDataDELETED: TByteField;
+    qrMechDataPROC_ZAC: TWordField;
+    qrMechDataPROC_PODR: TWordField;
+    qrMechDataMECH_ID: TLongWordField;
+    strngfldDevicesCODE: TStringField;
+    strngfldDevicesNAME: TStringField;
+    strngfldDevicesUNIT: TStringField;
+    qrDevicesCNT: TFMTBCDField;
+    qrDevicesDOC_DATE: TDateField;
+    strngfldDevicesDOC_NUM: TStringField;
+    qrDevicesCOAST: TFMTBCDField;
+    qrDevicesPRICE: TFMTBCDField;
+    qrDevicesTRANSP: TFMTBCDField;
+    qrDevicesPROC_ZAC: TWordField;
+    qrDevicesPROC_PODR: TWordField;
+    qrDevicesTRANSP_PROC_ZAC: TWordField;
+    qrDevicesTRANSP_PROC_PODR: TWordField;
+    qrDevicesDELETED: TLargeintField;
+    qrDevicesDEVICE_ID: TLongWordField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -125,6 +170,20 @@ type
       State: TGridDrawState);
     procedure grRatesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure qrMaterialDataMAT_PROC_ZACChange(Sender: TField);
+    procedure qrMaterialDataMAT_PROC_PODRChange(Sender: TField);
+    procedure qrMaterialDataTRANSP_PROC_ZACChange(Sender: TField);
+    procedure qrMaterialDataTRANSP_PROC_PODRChange(Sender: TField);
+    procedure grMaterialBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+      Column: TColumn; State: TGridDrawState);
+    procedure grMechBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
+    procedure qrMechDataPROC_ZACChange(Sender: TField);
+    procedure qrMechDataPROC_PODRChange(Sender: TField);
+    procedure qrDevicesPROC_ZACChange(Sender: TField);
+    procedure qrDevicesPROC_PODRChange(Sender: TField);
+    procedure qrDevicesTRANSP_PROC_ZACChange(Sender: TField);
+    procedure qrDevicesTRANSP_PROC_PODRChange(Sender: TField);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -193,7 +252,21 @@ begin
   if (Field = grMaterial.Columns[4].Field) or (Field = grMaterial.Columns[6].Field) or
     (Field = grMaterial.Columns[7].Field) or (Field = grMaterial.Columns[10].Field) or
     (Field = grMaterial.Columns[11].Field) or (Field = grMaterial.Columns[12].Field) or
-    (Field = grMaterial.Columns[13].Field) or (Field = grMech.Columns[4].Field) then
+    (Field = grMaterial.Columns[13].Field) or (Field = grMech.Columns[4].Field) or
+    (Field = grMech.Columns[6].Field) or (Field = grMech.Columns[8].Field) or
+    (Field = grMech.Columns[9].Field) or (Field = grMaterialBott.Columns[4].Field) or
+    (Field = grMaterialBott.Columns[5].Field) or (Field = grMaterialBott.Columns[6].Field) or
+    (Field = grMaterialBott.Columns[7].Field) or (Field = grMaterialBott.Columns[8].Field) or
+    (Field = grMaterialBott.Columns[9].Field) or (Field = grMaterialBott.Columns[10].Field) or
+    (Field = grMechBott.Columns[4].Field) or (Field = grMechBott.Columns[5].Field) or
+    (Field = grMechBott.Columns[6].Field) or (Field = grMechBott.Columns[7].Field) or
+    (Field = grDev.Columns[4].Field) or (Field = grDev.Columns[6].Field) or (Field = grDev.Columns[7].Field)
+    or (Field = grDev.Columns[8].Field) or (Field = grDev.Columns[9].Field) or
+    (Field = grDev.Columns[10].Field) or (Field = grDev.Columns[11].Field) or
+    (Field = grDev.Columns[12].Field) or (Field = grDev.Columns[13].Field) or
+    (Field = grDevBott.Columns[4].Field) or (Field = grDevBott.Columns[5].Field) or
+    (Field = grDevBott.Columns[6].Field) or (Field = grDevBott.Columns[7].Field) or
+    (Field = grDevBott.Columns[8].Field) or (Field = grDevBott.Columns[9].Field) then
   begin
     Result := True;
     Exit;
@@ -212,16 +285,22 @@ begin
   begin
     Caption := 'Расчет стоимости ресурсов [редактирование запрещено]';
     grMaterial.Options := grMaterial.Options + [dgMultiSelect];
+    grMaterialBott.Options := grMaterialBott.Options + [dgMultiSelect];
     grMech.Options := grMaterial.Options + [dgMultiSelect];
+    grMechBott.Options := grMechBott.Options + [dgMultiSelect];
     grDev.Options := grDev.Options + [dgMultiSelect];
+    grDevBott.Options := grDevBott.Options + [dgMultiSelect];
     grRates.Options := grRates.Options + [dgMultiSelect];
   end
   else
   begin
     Caption := 'Расчет стоимости ресурсов [редактирование разрешено]';
     grMaterial.Options := grMaterial.Options - [dgMultiSelect];
+    grMaterialBott.Options := grMaterialBott.Options - [dgMultiSelect];
     grMech.Options := grMaterial.Options - [dgMultiSelect];
+    grMechBott.Options := grMechBott.Options - [dgMultiSelect];
     grDev.Options := grDev.Options - [dgMultiSelect];
+    grDevBott.Options := grDevBott.Options - [dgMultiSelect];
     grRates.Options := grRates.Options - [dgMultiSelect];
   end;
 
@@ -234,17 +313,17 @@ begin
     '%'' AND Upper(NAME) LIKE ''%' + AnsiUpperCase(edtMechNameFilter.Text) + '%''';
   // + ' AND NDS=' + IntToStr(cbbMechNDS.ItemIndex); //возможно, неверное решение с НДС
   qrMechData.Filtered := True;
-  CalcFooter;
+  // CalcFooter;
 end;
 
 procedure TfCalcResource.edtMatCodeFilterChange(Sender: TObject);
 begin
   qrMaterialData.Filtered := False;
-  qrMaterialData.Filter := 'Upper(CODE) LIKE ''%' + AnsiUpperCase(edtMatCodeFilter.Text) +
-    '%'' AND Upper(NAME) LIKE ''%' + AnsiUpperCase(edtMatNameFilter.Text) + '%''';
+  qrMaterialData.Filter := 'Upper(CODE) LIKE UPPER(''%' + edtMatCodeFilter.Text +
+    '%'') AND Upper(NAME) LIKE UPPER(''%' + edtMatNameFilter.Text + '%'')';
   // + ' AND NDS=' + IntToStr(cbbMatNDS.ItemIndex); //возможно, неверное решение с НДС
   qrMaterialData.Filtered := True;
-  CalcFooter;
+  // CalcFooter;
 end;
 
 procedure TfCalcResource.edtMatCodeFilterClick(Sender: TObject);
@@ -292,7 +371,20 @@ procedure TfCalcResource.grDevDrawColumnCell(Sender: TObject; const Rect: TRect;
 begin
   if qrDevices.FieldByName('DELETED').AsInteger = 1 then
     grDev.Canvas.Font.Style := grDev.Canvas.Font.Style + [fsStrikeOut];
+  if CanEditField(Column.Field) then
+    grDev.Canvas.Brush.Color := clMoneyGreen;
   grDev.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TfCalcResource.grMaterialBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  if qrMaterialDetail.FieldByName('DELETED').AsInteger = 1 then
+    grMaterialBott.Canvas.Font.Style := grMaterialBott.Canvas.Font.Style + [fsStrikeOut];
+  if CanEditField(Column.Field) then
+    grMaterialBott.Canvas.Brush.Color := clMoneyGreen;
+
+  grMaterialBott.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfCalcResource.grMaterialCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
@@ -305,6 +397,9 @@ procedure TfCalcResource.grMaterialDrawColumnCell(Sender: TObject; const Rect: T
 begin
   if qrMaterialData.FieldByName('DELETED').AsInteger = 1 then
     grMaterial.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsStrikeOut];
+  if CanEditField(Column.Field) then
+    grMaterial.Canvas.Brush.Color := clMoneyGreen;
+
   grMaterial.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
@@ -321,11 +416,23 @@ begin
   CloseOpen(qrMaterialData);
 end;
 
+procedure TfCalcResource.grMechBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  if qrMechDetail.FieldByName('DELETED').AsInteger = 1 then
+    grMechBott.Canvas.Font.Style := grMechBott.Canvas.Font.Style + [fsStrikeOut];
+  if CanEditField(Column.Field) then
+    grMechBott.Canvas.Brush.Color := clMoneyGreen;
+  grMechBott.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
 procedure TfCalcResource.grMechDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
   if qrMechData.FieldByName('DELETED').AsInteger = 1 then
     grMech.Canvas.Font.Style := grMech.Canvas.Font.Style + [fsStrikeOut];
+  if CanEditField(Column.Field) then
+    grMech.Canvas.Brush.Color := clMoneyGreen;
   grMech.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
@@ -353,8 +460,12 @@ end;
 procedure TfCalcResource.JvDBGridFooter1Calculate(Sender: TJvDBGridFooter; const FieldName: string;
   var CalcValue: Variant);
 begin
-  if not CheckQrActiveEmpty(Sender.DataSource.DataSet) then
-    Exit;
+  try
+    if not CheckQrActiveEmpty(Sender.DataSource.DataSet) then
+      Exit;
+  except
+
+  end;
 
   CalcValue := Footer[Sender.DataSource.DataSet.FieldByName(FieldName).Index];
 end;
@@ -406,8 +517,8 @@ begin
       frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMaterialData.FieldByName('CODE').AsString,
         0, False, False);
     2:
-      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMechData.FieldByName('CODE').AsString,
-        1, False, False);
+      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMechData.FieldByName('CODE').AsString, 1,
+        False, False);
   end;
   if Assigned(frmReplace) then
     try
@@ -590,55 +701,44 @@ end;
 
 procedure TfCalcResource.qrDevicesBeforePost(DataSet: TDataSet);
 var
-  priceQ: string;
+  priceQ, priceQ1: string;
 begin
-  if Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES
-  then
+  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
+    = IDYES) and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
+    '(будет произведена замена во всех зависимых величинах)', 'Смета',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) then
   begin
-    with qrMaterialData do
+    with qrDevices do
     begin
-      FastExecSQL('UPDATE materialcard_temp SET'#13 + 'TRANSP_PROC_PODR=:1, TRANSP_PROC_ZAC=:2,'#13 +
-        'MAT_PROC_PODR=:3, MAT_PROC_ZAC=:4, DELETED=:5,'#13 + 'PROC_TRANSP=:7'#13 +
-        'WHERE PROC_TRANSP=:9 AND DELETED=:10'#13 + 'AND MAT_PROC_ZAC=:11 AND MAT_PROC_PODR=:12'#13 +
-        'AND TRANSP_PROC_ZAC=:13 AND TRANSP_PROC_PODR=:14'#13 +
-        'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:15 AND MAT_ID=:16',
-        VarArrayOf([FieldByName('TRANSP_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
-        FieldByName('MAT_PROC_PODR').Value, FieldByName('MAT_PROC_ZAC').Value, FieldByName('DELETED').Value,
-        FieldByName('PROC_TRANSP').Value, FieldByName('PROC_TRANSP').OldValue,
-        FieldByName('DELETED').OldValue, FieldByName('MAT_PROC_ZAC').OldValue,
-        FieldByName('MAT_PROC_PODR').OldValue, FieldByName('TRANSP_PROC_ZAC').OldValue,
-        FieldByName('TRANSP_PROC_PODR').OldValue, cbbNDS.ItemIndex, FieldByName('COAST').OldValue,
-        FieldByName('MAT_ID').Value]));
-
       // Цена
       case cbbNDS.ItemIndex of
         // Если в режиме без НДС
         0:
-          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),'#13;
+          begin
+            priceQ := 'FCOAST_NO_NDS=:01, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),'#13;
+            priceQ1 :=
+              'DEVICE_TRANSP_NO_NDS=:02, DEVICE_TRANSP_NDS=DEVICE_TRANSP_NO_NDS+(DEVICE_TRANSP_NO_NDS*NDS/100),'#13;
+          end;
         // С НДС
         1:
-          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),'#13;
+          begin
+            priceQ := 'FCOAST_NDS=:01, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),'#13;
+            priceQ1 :=
+              'DEVICE_TRANSP_NDS=:02, DEVICE_TRANSP_NO_NDS=DEVICE_TRANSP_NDS-(DEVICE_TRANSP_NDS/(100+NDS)*NDS),'#13;
+          end;
       end;
-      if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
-        FastExecSQL('UPDATE materialcard_temp SET'#13 + priceQ + 'WHERE PROC_TRANSP=:4 AND DELETED=:5'#13 +
-          'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 + 'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13
-          + 'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MAT_ID=:11',
-          VarArrayOf([FieldByName('COAST').Value, FieldByName('PROC_TRANSP').Value,
-          FieldByName('DELETED').Value, FieldByName('MAT_PROC_ZAC').Value, FieldByName('MAT_PROC_PODR').Value,
-          FieldByName('TRANSP_PROC_ZAC').Value, FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex,
-          FieldByName('COAST').OldValue, FieldByName('MAT_ID').Value]));
 
-      // Стоимость транспорта
-      if FieldByName('TRANSP').Value <> FieldByName('TRANSP').OldValue then
-        FastExecSQL('UPDATE materialcard_temp SET FTRANSP_NO_NDS = :1, FTRANSP_NDS = :2'#13 +
-          'WHERE PROC_TRANSP=:4 AND DELETED=:5'#13 + 'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 +
-          'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13 +
-          'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MAT_ID=:11',
-          VarArrayOf([FieldByName('TRANSP').Value, FieldByName('TRANSP').Value,
-          FieldByName('PROC_TRANSP').Value, FieldByName('DELETED').Value, FieldByName('MAT_PROC_ZAC').Value,
-          FieldByName('MAT_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
-          FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex, FieldByName('COAST').Value,
-          FieldByName('MAT_ID').Value]));
+      FastExecSQL('UPDATE devicescard_temp SET'#13 + priceQ1 + priceQ +
+        'TRANSP_PROC_PODR=:1, TRANSP_PROC_ZAC=:2,'#13 + 'PROC_PODR=:3, PROC_ZAC=:4'#13 + 'WHERE '#13 +
+        'PROC_ZAC=:11 AND PROC_PODR=:12'#13 + 'AND TRANSP_PROC_ZAC=:13 AND TRANSP_PROC_PODR=:14'#13 +
+        'AND IF(:NDS=1, FCOAST_NDS, FCOAST_NO_NDS)=:15 AND DEVICE_ID=:16'#13 +
+        'AND IF(:NDS1=1, DEVICE_TRANSP_NDS, DEVICE_TRANSP_NO_NDS)=:17',
+        VarArrayOf([FieldByName('TRANSP').Value, FieldByName('COAST').Value,
+        FieldByName('TRANSP_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
+        FieldByName('PROC_PODR').Value, FieldByName('PROC_ZAC').Value, FieldByName('PROC_ZAC').OldValue,
+        FieldByName('PROC_PODR').OldValue, FieldByName('TRANSP_PROC_ZAC').OldValue,
+        FieldByName('TRANSP_PROC_PODR').OldValue, cbbNDS.ItemIndex, FieldByName('COAST').OldValue,
+        FieldByName('DEVICE_ID').Value, cbbNDS.ItemIndex, FieldByName('TRANSP').OldValue]));
     end;
     // Вызываем переасчет всей сметы
     FormCalculationEstimate.RecalcEstimate;
@@ -646,8 +746,68 @@ begin
   end
   else
   begin
-    qrMaterialData.Cancel;
+    qrDevices.Cancel;
     Abort;
+  end;
+end;
+
+procedure TfCalcResource.qrDevicesPROC_PODRChange(Sender: TField);
+var
+  e: TFieldNotifyEvent;
+begin
+  try
+    e := qrDevicesPROC_ZAC.OnChange;
+    qrDevicesPROC_ZAC.OnChange := nil;
+    qrDevices.FieldByName('PROC_ZAC').Value := 100 - qrDevices.FieldByName('PROC_PODR').Value;
+    qrDevicesPROC_ZAC.OnChange := e;
+  except
+    Application.MessageBox('Установлено неверное значение!' + #13#10 +
+      'Значение должно находиться в диаппазоне 0-100.', 'Смета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+  end;
+end;
+
+procedure TfCalcResource.qrDevicesPROC_ZACChange(Sender: TField);
+var
+  e: TFieldNotifyEvent;
+begin
+  try
+    e := qrDevicesPROC_PODR.OnChange;
+    qrDevicesPROC_PODR.OnChange := nil;
+    qrDevices.FieldByName('PROC_PODR').Value := 100 - qrDevices.FieldByName('PROC_ZAC').Value;
+    qrDevicesPROC_PODR.OnChange := e;
+  except
+    Application.MessageBox('Установлено неверное значение!' + #13#10 +
+      'Значение должно находиться в диаппазоне 0-100.', 'Смета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+  end;
+end;
+
+procedure TfCalcResource.qrDevicesTRANSP_PROC_PODRChange(Sender: TField);
+var
+  e: TFieldNotifyEvent;
+begin
+  try
+    e := qrDevicesTRANSP_PROC_ZAC.OnChange;
+    qrDevicesTRANSP_PROC_ZAC.OnChange := nil;
+    qrDevices.FieldByName('TRANSP_PROC_ZAC').Value := 100 - qrDevices.FieldByName('TRANSP_PROC_PODR').Value;
+    qrDevicesTRANSP_PROC_ZAC.OnChange := e;
+  except
+    Application.MessageBox('Установлено неверное значение!' + #13#10 +
+      'Значение должно находиться в диаппазоне 0-100.', 'Смета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+  end;
+end;
+
+procedure TfCalcResource.qrDevicesTRANSP_PROC_ZACChange(Sender: TField);
+var
+  e: TFieldNotifyEvent;
+begin
+  try
+    e := qrDevicesTRANSP_PROC_PODR.OnChange;
+    qrDevicesTRANSP_PROC_PODR.OnChange := nil;
+    qrDevices.FieldByName('TRANSP_PROC_PODR').Value := 100 - qrDevices.FieldByName('TRANSP_PROC_ZAC').Value;
+    qrDevicesTRANSP_PROC_PODR.OnChange := e;
+  except
+    Application.MessageBox('Установлено неверное значение!' + #13#10 +
+      'Значение должно находиться в диаппазоне 0-100.', 'Смета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
   end;
 end;
 
@@ -671,8 +831,10 @@ procedure TfCalcResource.qrMaterialDataBeforePost(DataSet: TDataSet);
 var
   priceQ: string;
 begin
-  if Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES
-  then
+  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
+    = IDYES) and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
+    '(будет произведена замена во всех зависимых величинах)', 'Смета',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) then
   begin
     with qrMaterialData do
     begin
@@ -693,13 +855,14 @@ begin
       case cbbNDS.ItemIndex of
         // Если в режиме без НДС
         0:
-          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),'#13;
+          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100)'#13;
         // С НДС
         1:
-          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),'#13;
+          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS)'#13;
       end;
+
       if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
-        FastExecSQL('UPDATE materialcard_temp SET'#13 + priceQ + 'WHERE PROC_TRANSP=:4 AND DELETED=:5'#13 +
+        FastExecSQL('UPDATE materialcard_temp SET'#13 + priceQ + ' WHERE PROC_TRANSP=:4 AND DELETED=:5'#13 +
           'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 + 'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13
           + 'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MAT_ID=:11',
           VarArrayOf([FieldByName('COAST').Value, FieldByName('PROC_TRANSP').Value,
@@ -730,34 +893,123 @@ begin
   end;
 end;
 
+procedure TfCalcResource.qrMaterialDataMAT_PROC_PODRChange(Sender: TField);
+var
+  e: TFieldNotifyEvent;
+begin
+  try
+    e := qrMaterialDataMAT_PROC_ZAC.OnChange;
+    qrMaterialDataMAT_PROC_ZAC.OnChange := nil;
+    qrMaterialData.FieldByName('MAT_PROC_ZAC').Value := 100 - qrMaterialData.FieldByName
+      ('MAT_PROC_PODR').Value;
+    qrMaterialDataMAT_PROC_ZAC.OnChange := e;
+  except
+    Application.MessageBox('Установлено неверное значение!' + #13#10 +
+      'Значение должно находиться в диаппазоне 0-100.', 'Смета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+  end;
+end;
+
+procedure TfCalcResource.qrMaterialDataMAT_PROC_ZACChange(Sender: TField);
+var
+  e: TFieldNotifyEvent;
+begin
+  try
+    e := qrMaterialDataMAT_PROC_PODR.OnChange;
+    qrMaterialDataMAT_PROC_PODR.OnChange := nil;
+    qrMaterialData.FieldByName('MAT_PROC_PODR').Value :=
+      100 - qrMaterialData.FieldByName('MAT_PROC_ZAC').Value;
+    qrMaterialDataMAT_PROC_PODR.OnChange := e;
+  except
+    Application.MessageBox('Установлено неверное значение!' + #13#10 +
+      'Значение должно находиться в диаппазоне 0-100.', 'Смета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+  end;
+end;
+
+procedure TfCalcResource.qrMaterialDataTRANSP_PROC_PODRChange(Sender: TField);
+var
+  e: TFieldNotifyEvent;
+begin
+  try
+    e := qrMaterialDataTRANSP_PROC_ZAC.OnChange;
+    qrMaterialDataTRANSP_PROC_ZAC.OnChange := nil;
+    qrMaterialData.FieldByName('TRANSP_PROC_ZAC').Value :=
+      100 - qrMaterialData.FieldByName('TRANSP_PROC_PODR').Value;
+    qrMaterialDataTRANSP_PROC_ZAC.OnChange := e;
+  except
+    Application.MessageBox('Установлено неверное значение!' + #13#10 +
+      'Значение должно находиться в диаппазоне 0-100.', 'Смета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+  end;
+end;
+
+procedure TfCalcResource.qrMaterialDataTRANSP_PROC_ZACChange(Sender: TField);
+var
+  e: TFieldNotifyEvent;
+begin
+  try
+    e := qrMaterialDataTRANSP_PROC_PODR.OnChange;
+    qrMaterialDataTRANSP_PROC_PODR.OnChange := nil;
+    qrMaterialData.FieldByName('TRANSP_PROC_PODR').Value :=
+      100 - qrMaterialData.FieldByName('TRANSP_PROC_ZAC').Value;
+    qrMaterialDataTRANSP_PROC_PODR.OnChange := e;
+  except
+    Application.MessageBox('Установлено неверное значение!' + #13#10 +
+      'Значение должно находиться в диаппазоне 0-100.', 'Смета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+  end;
+end;
+
 procedure TfCalcResource.qrMechDataBeforePost(DataSet: TDataSet);
 var
-  priceQ: string;
+  priceQ, priceQ1: string;
 begin
-  if Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES
-  then
+  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
+    = IDYES) and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
+    '(будет произведена замена во всех зависимых величинах)', 'Смета',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) then
   begin
     with qrMechData do
     begin
-      FastExecSQL('UPDATE mechanizmcard_temp SET'#13 + 'DELETED=:5,'#13 + 'WHERE DELETED=:10'#13 +
-        'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:15 AND MECH_ID=:16',
-        VarArrayOf([FieldByName('DELETED').Value, FieldByName('DELETED').OldValue, cbbNDS.ItemIndex,
-        FieldByName('COAST').OldValue, FieldByName('MECH_ID').Value]));
+      FastExecSQL('UPDATE mechanizmcard_temp SET'#13 + 'PROC_PODR=:3, PROC_ZAC=:4, DELETED=:5'#13 +
+        'WHERE DELETED=:10'#13 + 'AND PROC_ZAC=:11 AND PROC_PODR=:12'#13 +
+        'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:15 AND MECH_ID=:16'#13
+        + 'AND IF(:NDS1=1, IF(FZP_MACH_NDS<>0, FZP_MACH_NDS, ZP_MACH_NDS), IF(FZP_MACH_NO_NDS<>0, FZP_MACH_NO_NDS, ZP_MACH_NO_NDS))=:17',
+        VarArrayOf([FieldByName('PROC_PODR').Value, FieldByName('PROC_ZAC').Value,
+        FieldByName('DELETED').Value, FieldByName('DELETED').OldValue, FieldByName('PROC_ZAC').OldValue,
+        FieldByName('PROC_PODR').OldValue, cbbNDS.ItemIndex, FieldByName('COAST').OldValue,
+        FieldByName('MECH_ID').Value, cbbNDS.ItemIndex, FieldByName('ZP_1').OldValue]));
 
       // Цена
       case cbbNDS.ItemIndex of
         // Если в режиме без НДС
         0:
-          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),'#13;
+          begin
+            priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100)'#13;
+            priceQ1 := 'FZP_MACH_NO_NDS=:1, FZP_MACH_NDS=FZP_MACH_NO_NDS+(FZP_MACH_NO_NDS*NDS/100)'#13;
+          end;
         // С НДС
         1:
-          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),'#13;
+          begin
+            priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS)'#13;
+            priceQ1 := 'FZP_MACH_NDS=:1, FZP_MACH_NO_NDS=FZP_MACH_NDS-(FZP_MACH_NDS/(100+NDS)*NDS)'#13;
+          end;
       end;
+
       if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
-        FastExecSQL('UPDATE mechanizmcard_temp SET'#13 + priceQ + 'WHERE DELETED=:5'#13 +
-          'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MECH_ID=:11',
-          VarArrayOf([FieldByName('COAST').Value, FieldByName('DELETED').Value, cbbNDS.ItemIndex,
-          FieldByName('COAST').OldValue, FieldByName('MECH_ID').Value]));
+        FastExecSQL('UPDATE mechanizmcard_temp SET'#13 + priceQ + ' WHERE DELETED=:5'#13 +
+          'AND PROC_ZAC=:6 AND PROC_PODR=:7'#13 +
+          'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MECH_ID=:11'#13
+          + 'AND IF(:NDS1=1, IF(FZP_MACH_NDS<>0, FZP_MACH_NDS, ZP_MACH_NDS), IF(FZP_MACH_NO_NDS<>0, FZP_MACH_NO_NDS, ZP_MACH_NO_NDS))=:12',
+          VarArrayOf([FieldByName('COAST').Value, FieldByName('DELETED').Value, FieldByName('PROC_ZAC').Value,
+          FieldByName('PROC_PODR').Value, cbbNDS.ItemIndex, FieldByName('COAST').OldValue,
+          FieldByName('MECH_ID').Value, cbbNDS.ItemIndex, FieldByName('ZP_1').OldValue]));
+
+      if FieldByName('ZP_1').Value <> FieldByName('ZP_1').OldValue then
+        FastExecSQL('UPDATE mechanizmcard_temp SET'#13 + priceQ1 + ' WHERE DELETED=:5'#13 +
+          'AND PROC_ZAC=:6 AND PROC_PODR=:7'#13 +
+          'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MECH_ID=:11'#13
+          + 'AND IF(:NDS1=1, IF(FZP_MACH_NDS<>0, FZP_MACH_NDS, ZP_MACH_NDS), IF(FZP_MACH_NO_NDS<>0, FZP_MACH_NO_NDS, ZP_MACH_NO_NDS))=:12',
+          VarArrayOf([FieldByName('ZP_1').Value, FieldByName('DELETED').Value, FieldByName('PROC_ZAC').Value,
+          FieldByName('PROC_PODR').Value, cbbNDS.ItemIndex, FieldByName('COAST').Value,
+          FieldByName('MECH_ID').Value, cbbNDS.ItemIndex, FieldByName('ZP_1').OldValue]));
     end;
     // Вызываем переасчет всей сметы
     FormCalculationEstimate.RecalcEstimate;
@@ -765,8 +1017,38 @@ begin
   end
   else
   begin
-    qrMaterialData.Cancel;
+    qrMechData.Cancel;
     Abort;
+  end;
+end;
+
+procedure TfCalcResource.qrMechDataPROC_PODRChange(Sender: TField);
+var
+  e: TFieldNotifyEvent;
+begin
+  try
+    e := qrMechDataPROC_ZAC.OnChange;
+    qrMechDataPROC_ZAC.OnChange := nil;
+    qrMechData.FieldByName('PROC_ZAC').Value := 100 - qrMechData.FieldByName('PROC_PODR').Value;
+    qrMechDataPROC_ZAC.OnChange := e;
+  except
+    Application.MessageBox('Установлено неверное значение!' + #13#10 +
+      'Значение должно находиться в диаппазоне 0-100.', 'Смета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+  end;
+end;
+
+procedure TfCalcResource.qrMechDataPROC_ZACChange(Sender: TField);
+var
+  e: TFieldNotifyEvent;
+begin
+  try
+    e := qrMechDataPROC_PODR.OnChange;
+    qrMechDataPROC_PODR.OnChange := nil;
+    qrMechData.FieldByName('PROC_PODR').Value := 100 - qrMechData.FieldByName('PROC_ZAC').Value;
+    qrMechDataPROC_PODR.OnChange := e;
+  except
+    Application.MessageBox('Установлено неверное значение!' + #13#10 +
+      'Значение должно находиться в диаппазоне 0-100.', 'Смета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
   end;
 end;
 

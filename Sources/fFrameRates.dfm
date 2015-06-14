@@ -65,7 +65,7 @@
         Left = 0
         Top = 21
         Width = 110
-        Height = 423
+        Height = 180
         Align = alClient
         Header.AutoSizeIndex = 0
         Header.Font.Charset = DEFAULT_CHARSET
@@ -89,6 +89,9 @@
         OnGetText = VSTGetText
         OnKeyPress = VSTKeyPress
         OnResize = VSTResize
+        ExplicitLeft = -1
+        ExplicitTop = 27
+        ExplicitHeight = 423
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]
@@ -113,6 +116,37 @@
         OnChange = EditRateChange
         OnEnter = EditRateEnter
         OnKeyPress = EditRateKeyPress
+      end
+      object JvDBGrid1: TJvDBGrid
+        Left = 0
+        Top = 201
+        Width = 110
+        Height = 243
+        Align = alBottom
+        DataSource = dsNormativ
+        Options = [dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        ReadOnly = True
+        TabOrder = 2
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+        AutoAppend = False
+        AutoSizeColumns = True
+        SelectColumnsDialogStrings.Caption = 'Select columns'
+        SelectColumnsDialogStrings.OK = '&OK'
+        SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        EditControls = <>
+        RowsHeight = 17
+        TitleRowHeight = 17
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'NumberNormative'
+            Width = 105
+            Visible = True
+          end>
       end
     end
     object PanelRight: TPanel

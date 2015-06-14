@@ -88,6 +88,7 @@ type
     qrSW: TFDQuery;
     dsSW: TDataSource;
     grSostav: TJvDBGrid;
+    JvDBGrid1: TJvDBGrid;
 
     procedure FrameResize(Sender: TObject);
 
@@ -271,6 +272,12 @@ end;
 
 procedure TFrameRates.LabelSbornikClick(Sender: TObject);
 begin
+  if not chk1.Checked then
+    chk1.Checked := true;
+
+  if not chk2.Checked then
+    chk2.Checked := true;
+
   if (not Assigned(fNormativDirectory)) then
     fNormativDirectory := fNormativDirectory.Create(nil);
   fNormativDirectory.skipReload := true;
@@ -1087,28 +1094,30 @@ var
   QueryStr, WhereStr, Condition: string;
 begin
   try
+    Condition := '';
+    if not(chk1.Checked) and chk2.Checked then
+      Condition := Condition + {' and ((-(norm_num)<>0)) '} ' AND NORM_TYPE=1 ';
+    if chk1.Checked and not(chk2.Checked) then
+      Condition := Condition + {' and ((-(norm_num)=0)) '} ' AND NORM_TYPE=0 ';
+    if not(chk1.Checked) and not(chk2.Checked) then
+      Condition := Condition + ' and (0=1) ';
+
+
+
+    if vStr <> '' then
+      WhereStr := {' WHERE ' + } vStr + Condition
+    else
+      WhereStr := {' WHERE 1=1 '} ' 1=1 ' + Condition;
+
+    if not qrNormativ.Active then
     with qrNormativ do
     begin
-      Condition := '';
-      if chk1.Checked and chk2.Checked then
-        Condition := Condition + '';
-      if not(chk1.Checked) and chk2.Checked then
-        Condition := Condition + ' and ((-(norm_num)<>0)) ';
-      if chk1.Checked and not(chk2.Checked) then
-        Condition := Condition + ' and ((-(norm_num)=0)) ';
-      if not(chk1.Checked) and not(chk2.Checked) then
-        Condition := Condition + ' and (0=1) ';
-
-      Active := False;
+      {Active := False;}
       SQL.Clear;
-      if vStr <> '' then
-        WhereStr := ' where ' + vStr + Condition
-      else
-        WhereStr := ' WHERE 1=1 ' + Condition;
       QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
         ' norm_caption as "CaptionNormativ", NORM_ACTIVE, normativ' + DataBase +
-        '.normativ_directory_id, tree_data FROM normativ_directory, normativ' + DataBase + WhereStr +
-        Condition + ' and normativ_directory.normativ_directory_id=normativ' + DataBase +
+        '.normativ_directory_id, tree_data, ((-(norm_num)<>0)) AS NORM_TYPE FROM normativ_directory, normativ' + DataBase + { WhereStr + } ' WHERE 1=1 ' +
+        ' and normativ_directory.normativ_directory_id=normativ' + DataBase +
         '.normativ_directory_id ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
         '`NORM_NUM` REGEXP "^Е" DESC, `NORM_NUM` REGEXP "^Ц" DESC,'#13 +
         'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13
@@ -1140,6 +1149,10 @@ begin
       VSTFocusChanged(VST, VST.FocusedNode, VST.FocusedColumn);
 
     qrNormativ.FetchOptions.RecordCountMode := cmVisible;
+
+    qrNormativ.Filtered := False;
+    qrNormativ.Filter := WhereStr;
+    qrNormativ.Filtered := True;
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),

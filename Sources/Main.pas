@@ -134,6 +134,7 @@ type
     AppIni: TJvAppIniFileStorage;
     img1: TImage;
     img2: TImage;
+    mN22: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -222,6 +223,7 @@ type
     procedure JSMenuClick(Sender: TObject);
     procedure Excel2Click(Sender: TObject);
     procedure EXCEL3Click(Sender: TObject);
+    procedure mN22Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -351,7 +353,8 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   PricesReferenceData, AdditionData, PartsEstimates,
   SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
-  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6;
+  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
+  NormativDirectory;
 
 {$R *.dfm}
 
@@ -854,6 +857,13 @@ begin
   if (not Assigned(fOXROPRSetup)) then
     fOXROPRSetup := TfOXROPRSetup.Create(Self);
   fOXROPRSetup.Show;
+end;
+
+procedure TFormMain.mN22Click(Sender: TObject);
+begin
+  if (not Assigned(fNormativDirectory)) then
+    fNormativDirectory := fNormativDirectory.Create(nil);
+  fNormativDirectory.Show;
 end;
 
 // Расчет стоимости работ по объекту (графа С) v1.00 (Вадим)
@@ -1576,7 +1586,8 @@ end;
 procedure TFormMain.HRRReferenceDataClick(Sender: TObject);
 begin
   if (not Assigned(FormReferenceData)) then
-    FormReferenceData := TFormReferenceData.Create(Self, 'g', False);
+    FormReferenceData := TFormReferenceData.Create(Self, 'g', False)
+  else FormReferenceData.Show;
 end;
 
 procedure TFormMain.HRROwnDataClick(Sender: TObject);
