@@ -37,7 +37,6 @@ type
     PanelSearchNormative: TPanel;
     LabelSearchNormative: TLabel;
     EditSearchNormative: TEdit;
-    VST: TVirtualStringTree;
     FrameStatusBar: TFrameStatusBar;
     EditRate: TEdit;
     EditCollection: TEdit;
@@ -89,6 +88,7 @@ type
     dsSW: TDataSource;
     grSostav: TJvDBGrid;
     JvDBGrid1: TJvDBGrid;
+    tmrScroll: TTimer;
 
     procedure FrameResize(Sender: TObject);
 
@@ -104,15 +104,7 @@ type
     procedure StringGridNCMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 
     procedure StringGridSWDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
-
-    procedure VSTDblClick(Sender: TObject);
-    procedure VSTEnter(Sender: TObject);
-    procedure VSTExit(Sender: TObject);
-    procedure VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
-    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-      TextType: TVSTTextType; var CellText: string);
     procedure VSTKeyPress(Sender: TObject; var Key: Char);
-    procedure VSTResize(Sender: TObject);
 
     procedure PanelNormСonsumptionResize(Sender: TObject);
     procedure PanelCenterClientResize(Sender: TObject);
@@ -141,6 +133,11 @@ type
     procedure GetWinterPrice;
     procedure tmrFilterTimer(Sender: TObject);
     procedure chk1Click(Sender: TObject);
+    procedure JvDBGrid1DblClick(Sender: TObject);
+    procedure JvDBGrid1Enter(Sender: TObject);
+    procedure JvDBGrid1Exit(Sender: TObject);
+    procedure qrNormativAfterScroll(DataSet: TDataSet);
+    procedure tmrScrollTimer(Sender: TObject);
 
   private
     StrQuery: String; // Для формирования строки запроса к БД
@@ -336,22 +333,17 @@ begin
   AutoWidthColumn(StringGridNC, 1);
 end;
 
+procedure TFrameRates.qrNormativAfterScroll(DataSet: TDataSet);
+begin
+  tmrScroll.Enabled := False;
+  tmrScroll.Enabled := true;
+end;
+
 procedure TFrameRates.SettingTable;
 begin
   // НАСТРАИВАЕМ ТАБЛИЦУ (StringGridNormative)
-
-  VST.Colors.SelectionTextColor := PS.FontSelectCell;
-
-  VST.Colors.UnfocusedSelectionColor := PS.SelectRowUnfocusedTable;
-  VST.Colors.UnfocusedSelectionBorderColor := PS.SelectRowUnfocusedTable;
-
-  VST.Colors.FocusedSelectionColor := PS.BackgroundSelectCell;
-  VST.Colors.FocusedSelectionBorderColor := PS.BackgroundSelectCell;
-
-  // ----------------------------------------
-
+  LoadDBGridSettings(JvDBGrid1);
   // НАСТРАИВАЕМ ТАБЛИЦУ ДЛЯ ВЫВОДА НОРМ РАСХОДОВ
-
   with StringGridNC do
   begin
     ColCount := 4; // Столбцов в таблице
@@ -523,43 +515,15 @@ end;
 procedure TFrameRates.tmrFilterTimer(Sender: TObject);
 begin
   tmrFilter.Enabled := False;
-  ReceivingSearch(FilteredString(EditRate.Text, 'norm_num'));
+  ReceivingSearch(FilteredString(EditRate.Text, 'NumberNormative'));
 end;
 
-procedure TFrameRates.VSTDblClick(Sender: TObject);
-begin
-  // Если разрешено добавлять данные из фрейма
-  if AllowAddition then
-    FormCalculationEstimate.AddRate(qrNormativ.FieldByName('IdNormative').AsInteger);
-end;
-
-procedure TFrameRates.VSTEnter(Sender: TObject);
-begin
-  FrameStatusBar.InsertText(2, '-1'); // Поиск по столбцу есть
-  // R EditRate.Text := '';
-
-  // ----------------------------------------
-
-  LoadKeyboardLayout('00000419', KLF_ACTIVATE); // Русский
-  // LoadKeyboardLayout('00000409', KLF_ACTIVATE); // Английский
-end;
-
-procedure TFrameRates.VSTExit(Sender: TObject);
-begin
-  FrameStatusBar.InsertText(2, '');
-  // R EditRate.Text := '';
-end;
-
-procedure TFrameRates.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
+procedure TFrameRates.tmrScrollTimer(Sender: TObject);
 var
   i: Integer;
   IdNormative: String;
 begin
-  if not Assigned(Node) then
-    exit;
-
-  qrNormativ.RecNo := Node.Index + 1;
-
+  tmrScroll.Enabled := False;
   IdNormative := qrNormativ.FieldByName('IdNormative').AsVariant; // Получаем Id норматива
 
   if CharInSet(Char(qrNormativ.FieldByName('NumberNormative').AsString[1]), ['0' .. '9']) then
@@ -842,39 +806,6 @@ begin
   end;
 end;
 
-procedure TFrameRates.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-  TextType: TVSTTextType; var CellText: string);
-begin
-  if not qrNormativ.Active then
-    exit;
-
-  if (qrNormativ.RecordCount <= 0) then
-  begin
-    case Column of
-      0:
-        CellText := '';
-      1:
-        CellText := '';
-      2:
-        CellText := 'Записей не найдено!';
-      3:
-        CellText := '';
-    end;
-
-    exit;
-  end;
-
-  if Column > 0 then
-    qrNormativ.RecNo := Node.Index + 1;
-
-  case Column of
-    0:
-      CellText := IntToStr(Node.Index + 1);
-    1:
-      CellText := qrNormativ.FieldByName('NumberNormative').AsVariant;
-  end;
-end;
-
 procedure TFrameRates.VSTKeyPress(Sender: TObject; var Key: Char);
 var
   vCode: Integer;
@@ -956,17 +887,12 @@ begin
     else Key := #0; }
 end;
 
-procedure TFrameRates.VSTResize(Sender: TObject);
-begin
-  AutoWidthColumn(VST, 1);
-end;
-
 procedure TFrameRates.EditRateEnter(Sender: TObject);
 begin
-  LoadKeyboardLayout('00000419', KLF_ACTIVATE); // Русский
+  // LoadKeyboardLayout('00000419', KLF_ACTIVATE); // Русский
   // LoadKeyboardLayout('00000409', KLF_ACTIVATE); // Английский
-
-  EditSearchNormative.Text := '';
+  if Trim(EditSearchNormative.Text) <> '' then
+    EditSearchNormative.Text := '';
 end;
 
 procedure TFrameRates.EditRateChange(Sender: TObject);
@@ -1023,11 +949,10 @@ end;
 
 procedure TFrameRates.EditSearchNormativeEnter(Sender: TObject);
 begin
-  LoadKeyboardLayout('00000419', KLF_ACTIVATE);
-  // Русский
+  // LoadKeyboardLayout('00000419', KLF_ACTIVATE); // Русский
   // LoadKeyboardLayout('00000409', KLF_ACTIVATE); // Английский
-
-  EditRate.Text := '';
+  if Trim(EditRate.Text) <> '' then
+    EditRate.Text := '';
 end;
 
 procedure TFrameRates.EditSearchNormativeKeyPress(Sender: TObject; var Key: Char);
@@ -1096,63 +1021,47 @@ begin
   try
     Condition := '';
     if not(chk1.Checked) and chk2.Checked then
-      Condition := Condition + {' and ((-(norm_num)<>0)) '} ' AND NORM_TYPE=1 ';
+      Condition := Condition + { ' and ((-(norm_num)<>0)) ' } ' AND NORM_TYPE=1 ';
     if chk1.Checked and not(chk2.Checked) then
-      Condition := Condition + {' and ((-(norm_num)=0)) '} ' AND NORM_TYPE=0 ';
+      Condition := Condition + { ' and ((-(norm_num)=0)) ' } ' AND NORM_TYPE=0 ';
     if not(chk1.Checked) and not(chk2.Checked) then
       Condition := Condition + ' and (0=1) ';
 
-
-
     if vStr <> '' then
-      WhereStr := {' WHERE ' + } vStr + Condition
+      WhereStr := { ' WHERE ' + } vStr + Condition
     else
-      WhereStr := {' WHERE 1=1 '} ' 1=1 ' + Condition;
+      WhereStr := { ' WHERE 1=1 ' } ' 1=1 ' + Condition;
 
     if not qrNormativ.Active then
-    with qrNormativ do
-    begin
-      {Active := False;}
-      SQL.Clear;
-      QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
-        ' norm_caption as "CaptionNormativ", NORM_ACTIVE, normativ' + DataBase +
-        '.normativ_directory_id, tree_data, ((-(norm_num)<>0)) AS NORM_TYPE FROM normativ_directory, normativ' + DataBase + { WhereStr + } ' WHERE 1=1 ' +
-        ' and normativ_directory.normativ_directory_id=normativ' + DataBase +
-        '.normativ_directory_id ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
-        '`NORM_NUM` REGEXP "^Е" DESC, `NORM_NUM` REGEXP "^Ц" DESC,'#13 +
-        'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13
-        + '(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) + 0),'#13 +
-        '(SUBSTRING(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) FROM POSITION("-" in SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1)) + 1) + 0)';
-      SQL.Add(QueryStr);
-      Active := true;
-    end;
+      with qrNormativ do
+      begin
+        { Active := False; }
+        SQL.Clear;
+        QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
+          ' norm_caption as "CaptionNormativ", NORM_ACTIVE, normativ' + DataBase +
+          '.normativ_directory_id, tree_data, ((-(norm_num)<>0)) AS NORM_TYPE FROM normativ_directory, normativ'
+          + DataBase + { WhereStr + } ' WHERE 1=1 ' + ' and normativ_directory.normativ_directory_id=normativ'
+          + DataBase + '.normativ_directory_id ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
+          '`NORM_NUM` REGEXP "^Е" DESC, `NORM_NUM` REGEXP "^Ц" DESC,'#13 +
+          'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13
+          + '(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) + 0),'#13 +
+          '(SUBSTRING(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) FROM POSITION("-" in SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1)) + 1) + 0)';
+        SQL.Add(QueryStr);
+        Active := true;
+      end;
 
-    qrNormativ.FetchOptions.RecordCountMode := cmTotal;
+    // qrNormativ.FetchOptions.RecordCountMode := cmTotal;
 
     if qrNormativ.RecordCount <= 0 then
-    begin
-      VST.RootNodeCount := 1;
-      VST.ClearSelection;
-
       FrameStatusBar.InsertText(1, '-1');
-    end
-    else
-    begin
-      VST.RootNodeCount := qrNormativ.RecordCount;
-      VST.Selected[VST.GetFirst] := true;
-      VST.FocusedNode := VST.GetFirst;
-    end;
 
     FrameStatusBar.InsertText(0, IntToStr(qrNormativ.RecordCount));
 
-    if qrNormativ.RecordCount > 0 then
-      VSTFocusChanged(VST, VST.FocusedNode, VST.FocusedColumn);
-
-    qrNormativ.FetchOptions.RecordCountMode := cmVisible;
+    // qrNormativ.FetchOptions.RecordCountMode := cmVisible;
 
     qrNormativ.Filtered := False;
     qrNormativ.Filter := WhereStr;
-    qrNormativ.Filtered := True;
+    qrNormativ.Filtered := true;
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -1327,8 +1236,6 @@ begin
 end;
 
 procedure TFrameRates.FilteredRates(const vStr: string);
-{ var
-  i: Integer; }
 begin
   with qrNormativ do
   begin
@@ -1337,26 +1244,7 @@ begin
     Filtered := true;
   end;
 
-  try
-    if qrNormativ.RecordCount <= 0 then
-    begin
-      VST.RootNodeCount := 1;
-      VST.ClearSelection;
-    end
-    else
-    begin
-      VST.FocusedNode := VST.GetFirst;
-
-      VST.RootNodeCount := qrNormativ.RecordCount;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('Ставим количество узлов в компоненте.' + sLineBreak + E.Message), 'Проверка',
-        MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-
   FrameStatusBar.InsertText(0, IntToStr(qrNormativ.RecordCount));
-  VST.Repaint;
 end;
 
 procedure TFrameRates.GetWinterPrice;
@@ -1384,6 +1272,28 @@ begin
       MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' + sLineBreak +
         sLineBreak + E.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+end;
+
+procedure TFrameRates.JvDBGrid1DblClick(Sender: TObject);
+begin
+  // Если разрешено добавлять данные из фрейма
+  if AllowAddition then
+    FormCalculationEstimate.AddRate(qrNormativ.FieldByName('IdNormative').AsInteger);
+end;
+
+procedure TFrameRates.JvDBGrid1Enter(Sender: TObject);
+begin
+  FrameStatusBar.InsertText(2, '-1'); // Поиск по столбцу есть
+  // R EditRate.Text := '';
+  // LoadKeyboardLayout('00000419', KLF_ACTIVATE); // Русский
+  // LoadKeyboardLayout('00000409', KLF_ACTIVATE); // Английский
+
+end;
+
+procedure TFrameRates.JvDBGrid1Exit(Sender: TObject);
+begin
+  FrameStatusBar.InsertText(2, '');
+  // R EditRate.Text := '';
 end;
 
 end.

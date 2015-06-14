@@ -109,7 +109,7 @@ begin
   begin
     Point1 := FormMain.ClientToScreen(Point(FormAdditionData.Left, FormAdditionData.Top));
 
-    Left := Point1.X + 5 + GetSystemMetrics(SM_CYBORDER) + FormAdditionData.FrameRates.vst.Width + 5;
+    Left := Point1.X + 5 + GetSystemMetrics(SM_CYBORDER) + FormAdditionData.FrameRates.JvDBGrid1.Width + 5;
     Top := Point1.Y + 2 + GetSystemMetrics(SM_CYCAPTION) + FormAdditionData.FrameRates.Top +
       FormAdditionData.FrameRates.MemoDescription.Top;
 

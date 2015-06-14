@@ -226,7 +226,7 @@ end;
 
 function TFormReferenceData.GetLeftIndentForFormSborniks(): Integer;
 begin
-  Result := FrameRates.VST.Width + FrameRates.SplitterLeft.Width;
+  Result := FrameRates.JvDBGrid1.Width + FrameRates.SplitterLeft.Width;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

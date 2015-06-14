@@ -61,50 +61,6 @@
       Align = alLeft
       BevelOuter = bvNone
       TabOrder = 0
-      object VST: TVirtualStringTree
-        Left = 0
-        Top = 21
-        Width = 110
-        Height = 180
-        Align = alClient
-        Header.AutoSizeIndex = 0
-        Header.Font.Charset = DEFAULT_CHARSET
-        Header.Font.Color = clWindowText
-        Header.Font.Height = -11
-        Header.Font.Name = 'Tahoma'
-        Header.Font.Style = []
-        Header.Options = []
-        PopupMenu = pmRates
-        RootNodeCount = 10
-        ScrollBarOptions.AlwaysVisible = True
-        ScrollBarOptions.ScrollBars = ssVertical
-        TabOrder = 1
-        TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
-        TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toShowHorzGridLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect]
-        OnDblClick = VSTDblClick
-        OnEnter = VSTEnter
-        OnExit = VSTExit
-        OnFocusChanged = VSTFocusChanged
-        OnGetText = VSTGetText
-        OnKeyPress = VSTKeyPress
-        OnResize = VSTResize
-        ExplicitLeft = -1
-        ExplicitTop = 27
-        ExplicitHeight = 423
-        Columns = <
-          item
-            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]
-            Position = 0
-            WideText = #8470' '#1087'/'#1087
-          end
-          item
-            Position = 1
-            Width = 90
-            WideText = #1050#1086#1076
-          end>
-        WideDefaultText = 'node'
-      end
       object EditRate: TEdit
         Left = 0
         Top = 0
@@ -119,27 +75,31 @@
       end
       object JvDBGrid1: TJvDBGrid
         Left = 0
-        Top = 201
+        Top = 21
         Width = 110
-        Height = 243
-        Align = alBottom
+        Height = 423
+        Align = alClient
         DataSource = dsNormativ
-        Options = [dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        Options = [dgColumnResize, dgColLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         ReadOnly = True
-        TabOrder = 2
+        TabOrder = 1
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDblClick = JvDBGrid1DblClick
+        OnEnter = JvDBGrid1Enter
+        OnExit = JvDBGrid1Exit
+        OnKeyPress = VSTKeyPress
         AutoAppend = False
         AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
         EditControls = <>
-        RowsHeight = 17
-        TitleRowHeight = 17
+        RowsHeight = 16
+        TitleRowHeight = 16
         Columns = <
           item
             Expanded = False
@@ -759,10 +719,12 @@
     end
   end
   object qrNormativ: TFDQuery
+    AfterScroll = qrNormativAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evRecordCountMode]
+    FetchOptions.RecordCountMode = cmTotal
     Left = 36
     Top = 24
   end
@@ -789,7 +751,7 @@
   end
   object tmrFilter: TTimer
     Enabled = False
-    Interval = 400
+    Interval = 200
     OnTimer = tmrFilterTimer
     Left = 32
     Top = 96
@@ -851,5 +813,12 @@
     DataSet = qrSW
     Left = 536
     Top = 296
+  end
+  object tmrScroll: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = tmrScrollTimer
+    Left = 72
+    Top = 96
   end
 end
