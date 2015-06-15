@@ -184,6 +184,9 @@ type
     procedure qrDevicesPROC_PODRChange(Sender: TField);
     procedure qrDevicesTRANSP_PROC_ZACChange(Sender: TField);
     procedure qrDevicesTRANSP_PROC_PODRChange(Sender: TField);
+    procedure qrMaterialDetailBeforePost(DataSet: TDataSet);
+    procedure qrMechDetailBeforePost(DataSet: TDataSet);
+    procedure qrDevicesDetailBeforePost(DataSet: TDataSet);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -751,6 +754,50 @@ begin
   end;
 end;
 
+procedure TfCalcResource.qrDevicesDetailBeforePost(DataSet: TDataSet);
+var
+  priceQ, priceQ1: string;
+begin
+  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES)
+  then
+  begin
+    with qrDevicesDetail do
+    begin
+      // Цена
+      case cbbNDS.ItemIndex of
+        // Если в режиме без НДС
+        0:
+          begin
+            priceQ := 'FCOAST_NO_NDS=:01, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),'#13;
+            priceQ1 :=
+              'DEVICE_TRANSP_NO_NDS=:02, DEVICE_TRANSP_NDS=DEVICE_TRANSP_NO_NDS+(DEVICE_TRANSP_NO_NDS*NDS/100),'#13;
+          end;
+        // С НДС
+        1:
+          begin
+            priceQ := 'FCOAST_NDS=:01, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),'#13;
+            priceQ1 :=
+              'DEVICE_TRANSP_NDS=:02, DEVICE_TRANSP_NO_NDS=DEVICE_TRANSP_NDS-(DEVICE_TRANSP_NDS/(100+NDS)*NDS),'#13;
+          end;
+      end;
+
+      FastExecSQL('UPDATE devicescard_temp SET'#13 + priceQ1 + priceQ +
+        'TRANSP_PROC_PODR=:1, TRANSP_PROC_ZAC=:2, PROC_PODR=:3, PROC_ZAC=:4 WHERE ID=:11',
+        VarArrayOf([FieldByName('TRANSP').Value, FieldByName('COAST').Value,
+        FieldByName('TRANSP_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
+        FieldByName('PROC_PODR').Value, FieldByName('PROC_ZAC').Value, FieldByName('ID').Value]));
+    end;
+    // Вызываем переасчет всей сметы
+    FormCalculationEstimate.RecalcEstimate;
+    pgcChange(nil);
+  end
+  else
+  begin
+    qrDevicesDetail.Cancel;
+    Abort;
+  end;
+end;
+
 procedure TfCalcResource.qrDevicesPROC_PODRChange(Sender: TField);
 var
   e: TFieldNotifyEvent;
@@ -957,6 +1004,51 @@ begin
   end;
 end;
 
+procedure TfCalcResource.qrMaterialDetailBeforePost(DataSet: TDataSet);
+var
+  priceQ: string;
+begin
+  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES)
+  then
+  begin
+    with qrMaterialDetail do
+    begin
+      FastExecSQL('UPDATE materialcard_temp SET TRANSP_PROC_PODR=:1, TRANSP_PROC_ZAC=:2,'#13 +
+        'MAT_PROC_PODR=:3, MAT_PROC_ZAC=:4, DELETED=:5, PROC_TRANSP=:7 WHERE ID=:9',
+        VarArrayOf([FieldByName('TRANSP_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
+        FieldByName('MAT_PROC_PODR').Value, FieldByName('MAT_PROC_ZAC').Value, FieldByName('DELETED').Value,
+        FieldByName('PROC_TRANSP').Value, FieldByName('ID').Value]));
+
+      // Цена
+      case cbbNDS.ItemIndex of
+        // Если в режиме без НДС
+        0:
+          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100)'#13;
+        // С НДС
+        1:
+          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS)'#13;
+      end;
+
+      if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
+        FastExecSQL('UPDATE materialcard_temp SET'#13 + priceQ + ' WHERE ID=:4',
+          VarArrayOf([FieldByName('COAST').Value, FieldByName('ID').Value]));
+
+      // Стоимость транспорта
+      if FieldByName('TRANSP').Value <> FieldByName('TRANSP').OldValue then
+        FastExecSQL('UPDATE materialcard_temp SET FTRANSP_NO_NDS = :1, FTRANSP_NDS = :2 WHERE ID=:4',
+          VarArrayOf([FieldByName('TRANSP').Value, FieldByName('TRANSP').Value, FieldByName('ID').Value]));
+    end;
+    // Вызываем переасчет всей сметы
+    FormCalculationEstimate.RecalcEstimate;
+    pgcChange(nil);
+  end
+  else
+  begin
+    qrMaterialDetail.Cancel;
+    Abort;
+  end;
+end;
+
 procedure TfCalcResource.qrMechDataBeforePost(DataSet: TDataSet);
 var
   priceQ, priceQ1: string;
@@ -1049,6 +1141,54 @@ begin
   except
     Application.MessageBox('Установлено неверное значение!' + #13#10 +
       'Значение должно находиться в диаппазоне 0-100.', 'Смета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+  end;
+end;
+
+procedure TfCalcResource.qrMechDetailBeforePost(DataSet: TDataSet);
+var
+  priceQ, priceQ1: string;
+begin
+  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES)
+  then
+  begin
+    with qrMechDetail do
+    begin
+      FastExecSQL('UPDATE mechanizmcard_temp SET PROC_PODR=:3, PROC_ZAC=:4, DELETED=:5 WHERE ID=:10',
+        VarArrayOf([FieldByName('PROC_PODR').Value, FieldByName('PROC_ZAC').Value,
+        FieldByName('DELETED').Value, FieldByName('ID').Value]));
+
+      // Цена
+      case cbbNDS.ItemIndex of
+        // Если в режиме без НДС
+        0:
+          begin
+            priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100)'#13;
+            priceQ1 := 'FZP_MACH_NO_NDS=:1, FZP_MACH_NDS=FZP_MACH_NO_NDS+(FZP_MACH_NO_NDS*NDS/100)'#13;
+          end;
+        // С НДС
+        1:
+          begin
+            priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS)'#13;
+            priceQ1 := 'FZP_MACH_NDS=:1, FZP_MACH_NO_NDS=FZP_MACH_NDS-(FZP_MACH_NDS/(100+NDS)*NDS)'#13;
+          end;
+      end;
+
+      if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
+        FastExecSQL('UPDATE mechanizmcard_temp SET'#13 + priceQ + ' WHERE ID=:5',
+          VarArrayOf([FieldByName('COAST').Value, FieldByName('ID').Value]));
+
+      if FieldByName('ZP_MASH').Value <> FieldByName('ZP_MASH').OldValue then
+        FastExecSQL('UPDATE mechanizmcard_temp SET'#13 + priceQ1 + ' WHERE ID=:5',
+          VarArrayOf([FieldByName('ZP_MASH').Value, FieldByName('ID').Value]));
+    end;
+    // Вызываем переасчет всей сметы
+    FormCalculationEstimate.RecalcEstimate;
+    pgcChange(nil);
+  end
+  else
+  begin
+    qrMechDetail.Cancel;
+    Abort;
   end;
 end;
 

@@ -8,7 +8,7 @@ uses
   ExtCtrls, DB, VirtualTrees, fFrameStatusBar, Menus, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta, JvExDBGrids,
-  JvDBGrid;
+  JvDBGrid, Vcl.Mask, Vcl.DBCtrls;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -33,7 +33,6 @@ type
     SplitterTop: TSplitter;
     PanelCollection: TPanel;
     PanelHeaderCollection: TPanel;
-    MemoDescription: TMemo;
     PanelSearchNormative: TPanel;
     LabelSearchNormative: TLabel;
     EditSearchNormative: TEdit;
@@ -47,9 +46,7 @@ type
     PanelHorizontal1: TPanel;
     LabelJustification: TLabel;
     LabelUnit: TLabel;
-    EditJustification: TEdit;
     Edit5: TEdit;
-    EditUnit: TEdit;
     PanelHorizontal2: TPanel;
     PanelHorizontal3: TPanel;
     Label2: TLabel;
@@ -73,7 +70,6 @@ type
     PanelSWHeader: TPanel;
     Splitter2: TSplitter;
     Splitter1: TSplitter;
-    qrNormativ: TFDQuery;
     ADOQueryNC: TFDQuery;
     ADOQuerySW: TFDQuery;
     ADOQueryTemp: TFDQuery;
@@ -89,6 +85,9 @@ type
     grSostav: TJvDBGrid;
     JvDBGrid1: TJvDBGrid;
     tmrScroll: TTimer;
+    dbedtNumberNormative: TDBEdit;
+    dbmmoCaptionNormative: TDBMemo;
+    dbedtUnit: TDBEdit;
 
     procedure FrameResize(Sender: TObject);
 
@@ -178,7 +177,7 @@ end;
 constructor TFrameRates.Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean);
 begin
   inherited Create(AOwner);
-
+  dm.qrNormativ.AfterScroll := qrNormativAfterScroll;
   // ----------------------------------------
 
   DataBase := vDataBase;
@@ -197,7 +196,7 @@ begin
 
   // ----------------------------------------
 
-  with DM do
+  with dm do
   begin
     with ImageListHorozontalDots do
     begin
@@ -279,7 +278,7 @@ begin
     fNormativDirectory := fNormativDirectory.Create(nil);
   fNormativDirectory.skipReload := true;
   fNormativDirectory.Show;
-  fNormativDirectory.tvMain.SelectNode(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
+  fNormativDirectory.tvMain.SelectNode(dm.qrNormativ.FieldByName('normativ_directory_id').AsInteger)
     .Expand(False);
   fNormativDirectory.skipReload := False;
 
@@ -379,7 +378,7 @@ begin
       Tag := 0;
       SplitterRight.Visible := False;
       PanelRight.Visible := False;
-      DM.ImageListArrowsLeft.GetBitmap(0, SpeedButtonShowHideRightPanel.Glyph);
+      dm.ImageListArrowsLeft.GetBitmap(0, SpeedButtonShowHideRightPanel.Glyph);
       SpeedButtonShowHideRightPanel.Hint := 'Развернуть панель';
     end
     else
@@ -388,7 +387,7 @@ begin
       PanelRight.Visible := true;
       SplitterRight.Visible := true;
       SpeedButtonShowHideRightPanel.Hint := 'Свернуть панель';
-      DM.ImageListArrowsRight.GetBitmap(0, SpeedButtonShowHideRightPanel.Glyph);
+      dm.ImageListArrowsRight.GetBitmap(0, SpeedButtonShowHideRightPanel.Glyph);
     end;
 end;
 
@@ -524,37 +523,17 @@ var
   IdNormative: String;
 begin
   tmrScroll.Enabled := False;
-  IdNormative := qrNormativ.FieldByName('IdNormative').AsVariant; // Получаем Id норматива
+  if dm.qrNormativ.IsEmpty then
+    Exit;
 
-  if CharInSet(Char(qrNormativ.FieldByName('NumberNormative').AsString[1]), ['0' .. '9']) then
+  IdNormative := dm.qrNormativ.FieldByName('IdNormative').AsVariant; // Получаем Id норматива
+
+  if CharInSet(Char(dm.qrNormativ.FieldByName('NumberNormative').AsString[1]), ['0' .. '9']) then
     CheckBoxNormСonsumption.Checked := False
   else
     CheckBoxNormСonsumption.Checked := true;
 
-  Sbornik(qrNormativ.FieldByName('normativ_directory_id').AsInteger);
-  // -----------------------------------------
-
-  // Формируем и выполняем запрос к БД
-
-  StrQuery :=
-    'SELECT norm_num as "NumberNormative", norm_caption as "CaptionNormative", unit_name as "Unit" FROM normativ'
-    + DataBase + ', units WHERE normativ' + DataBase + '.unit_id = units.unit_id and normativ' + DataBase +
-    '.normativ_id = ' + IdNormative + ';';
-
-  with ADOQueryTemp do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add(StrQuery);
-    Active := true;
-
-    MemoDescription.Clear;
-    MemoDescription.Lines.Add(FieldByName('CaptionNormative').AsString);
-    EditJustification.Text := FieldByName('NumberNormative').AsString;
-    EditUnit.Text := FieldByName('Unit').AsString;
-  end;
-
-  // -----------------------------------------
+  Sbornik(dm.qrNormativ.FieldByName('normativ_directory_id').AsInteger);
 
   Group1 := 0;
   Group2 := 0;
@@ -756,8 +735,8 @@ begin
     Active := False;
     SQL.Clear;
     StrQuery := 'SELECT work_id, s, po FROM onormativs where ((s <= "' +
-      qrNormativ.FieldByName('NumberNormative').AsString + '") and (po >= "' +
-      qrNormativ.FieldByName('NumberNormative').AsString + '"));';
+      dm.qrNormativ.FieldByName('NumberNormative').AsString + '") and (po >= "' +
+      dm.qrNormativ.FieldByName('NumberNormative').AsString + '"));';
     SQL.Add(StrQuery);
     Active := true;
     // Сделано допущение, что идут work_id по порядку от еденицы
@@ -766,7 +745,7 @@ begin
   end;
 
   // ----------------------------------------
-  case qrNormativ.FieldByName('NORM_ACTIVE').Value of
+  case dm.qrNormativ.FieldByName('NORM_ACTIVE').Value of
     0:
       begin
         Edit5.Text := 'Недействующая';
@@ -786,12 +765,12 @@ begin
 
   // Заполняем историю изменений
   qrHistory.ParamByName('NORM_NUM').AsString :=
-    '%' + Trim(StringReplace(qrNormativ.FieldByName('NumberNormative').AsString, '*', '',
+    '%' + Trim(StringReplace(dm.qrNormativ.FieldByName('NumberNormative').AsString, '*', '',
     [rfReplaceAll])) + '%';
   CloseOpen(qrHistory);
 
   // Заполняем состав работ
-  qrSW.ParamByName('normativ_directory_id').AsInteger := qrNormativ.FieldByName('normativ_directory_id')
+  qrSW.ParamByName('normativ_directory_id').AsInteger := dm.qrNormativ.FieldByName('normativ_directory_id')
     .AsInteger;
   CloseOpen(qrSW);
   // Определяем зимнее удорожание
@@ -800,7 +779,7 @@ begin
   if Assigned(fNormativDirectory) and fNormativDirectory.Showing then
   begin
     fNormativDirectory.skipReload := true;
-    fNormativDirectory.tvMain.SelectNode(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
+    fNormativDirectory.tvMain.SelectNode(dm.qrNormativ.FieldByName('normativ_directory_id').AsInteger)
       .Expand(False);
     fNormativDirectory.skipReload := False;
   end;
@@ -820,13 +799,13 @@ begin
     ((Key >= '0') and (Key <= '9'))) then
   begin
     Key := #0;
-    exit;
+    Exit;
   end;
 
   if (vCode = 27) then
   begin
     EditRate.Text := '';
-    exit;
+    Exit;
   end;
 
   // Ввод цифры не первым символом
@@ -915,13 +894,13 @@ begin
     ((Key >= '0') and (Key <= '9'))) then
   begin
     Key := #0;
-    exit;
+    Exit;
   end;
 
   if (vCode = 27) then
   begin
     (Sender as TEdit).Text := '';
-    exit;
+    Exit;
   end;
 
   // Ввод цифры не первым символом
@@ -996,7 +975,7 @@ begin
     StringSearch := '';
 
     for i := 0 to CountWords - 1 do
-      StringSearch := StringSearch + 'norm_caption LIKE ''%' + Words[i] + '%'' and ';
+      StringSearch := StringSearch + 'CaptionNormativ LIKE ''%' + Words[i] + '%'' and ';
 
     Delete(StringSearch, Length(StringSearch) - 4, 5);
 
@@ -1032,16 +1011,17 @@ begin
     else
       WhereStr := { ' WHERE 1=1 ' } ' 1=1 ' + Condition;
 
-    if not qrNormativ.Active then
-      with qrNormativ do
+    if not dm.qrNormativ.Active then
+      with dm.qrNormativ do
       begin
         { Active := False; }
         SQL.Clear;
-        QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative",' +
-          ' norm_caption as "CaptionNormativ", NORM_ACTIVE, normativ' + DataBase +
-          '.normativ_directory_id, tree_data, ((-(norm_num)<>0)) AS NORM_TYPE FROM normativ_directory, normativ'
-          + DataBase + { WhereStr + } ' WHERE 1=1 ' + ' and normativ_directory.normativ_directory_id=normativ'
-          + DataBase + '.normativ_directory_id ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
+        QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative", unit_name as "Unit",'
+          + ' norm_caption as "CaptionNormativ", NORM_ACTIVE, normativ' + DataBase +
+          '.normativ_directory_id, tree_data, ((-(norm_num)<>0)) AS NORM_TYPE FROM normativ_directory, units, normativ'
+          + DataBase + { WhereStr + } ' WHERE 1=1 AND normativ' + DataBase + '.unit_id=units.unit_id ' +
+          ' and normativ_directory.normativ_directory_id=normativ' + DataBase +
+          '.normativ_directory_id ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
           '`NORM_NUM` REGEXP "^Е" DESC, `NORM_NUM` REGEXP "^Ц" DESC,'#13 +
           'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13
           + '(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) + 0),'#13 +
@@ -1052,16 +1032,17 @@ begin
 
     // qrNormativ.FetchOptions.RecordCountMode := cmTotal;
 
-    if qrNormativ.RecordCount <= 0 then
+    if dm.qrNormativ.RecordCount <= 0 then
       FrameStatusBar.InsertText(1, '-1');
 
-    FrameStatusBar.InsertText(0, IntToStr(qrNormativ.RecordCount));
+    FrameStatusBar.InsertText(0, IntToStr(dm.qrNormativ.RecordCount));
 
     // qrNormativ.FetchOptions.RecordCountMode := cmVisible;
 
-    qrNormativ.Filtered := False;
-    qrNormativ.Filter := WhereStr;
-    qrNormativ.Filtered := true;
+    dm.qrNormativ.Filtered := False;
+    dm.qrNormativ.Filter := WhereStr;
+    dm.qrNormativ.Filtered := true;
+    tmrScroll.Enabled := true;
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -1237,14 +1218,14 @@ end;
 
 procedure TFrameRates.FilteredRates(const vStr: string);
 begin
-  with qrNormativ do
+  with dm.qrNormativ do
   begin
     Filtered := False;
     Filter := vStr;
     Filtered := true;
   end;
 
-  FrameStatusBar.InsertText(0, IntToStr(qrNormativ.RecordCount));
+  FrameStatusBar.InsertText(0, IntToStr(dm.qrNormativ.RecordCount));
 end;
 
 procedure TFrameRates.GetWinterPrice;
@@ -1255,7 +1236,7 @@ begin
     with ADOQueryTemp do
     begin
       Active := False;
-      s := qrNormativ.FieldByName('NumberNormative').AsString;
+      s := dm.qrNormativ.FieldByName('NumberNormative').AsString;
       SQL.Clear;
       SQL.Add('SELECT num, name, s, po FROM znormativs, znormativs_detail WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID AND znormativs.DEL_FLAG = 0 AND '
         + '((s <= ''' + s + ''') and (po >= ''' + s + ''')) LIMIT 1;');
@@ -1278,7 +1259,7 @@ procedure TFrameRates.JvDBGrid1DblClick(Sender: TObject);
 begin
   // Если разрешено добавлять данные из фрейма
   if AllowAddition then
-    FormCalculationEstimate.AddRate(qrNormativ.FieldByName('IdNormative').AsInteger);
+    FormCalculationEstimate.AddRate(dm.qrNormativ.FieldByName('IdNormative').AsInteger);
 end;
 
 procedure TFrameRates.JvDBGrid1Enter(Sender: TObject);

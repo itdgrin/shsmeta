@@ -232,16 +232,6 @@
               OnKeyPress = EditSearchNormativeKeyPress
             end
           end
-          object MemoDescription: TMemo
-            Left = 0
-            Top = 50
-            Width = 569
-            Height = 46
-            Align = alClient
-            ReadOnly = True
-            ScrollBars = ssVertical
-            TabOrder = 2
-          end
           object PanelSearchNormative: TPanel
             Left = 0
             Top = 0
@@ -299,6 +289,20 @@
               OnClick = chk1Click
             end
           end
+          object dbmmoCaptionNormative: TDBMemo
+            Left = 0
+            Top = 50
+            Width = 569
+            Height = 46
+            Align = alClient
+            DataField = 'CaptionNormativ'
+            DataSource = dsNormativ
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 2
+            ExplicitLeft = 1
+            ExplicitTop = 51
+          end
         end
         object Panel1: TPanel
           Left = 0
@@ -333,6 +337,8 @@
             BevelOuter = bvNone
             ParentBackground = False
             TabOrder = 0
+            ExplicitLeft = 1
+            ExplicitTop = 1
             object LabelJustification: TLabel
               Left = 6
               Top = 6
@@ -347,15 +353,6 @@
               Height = 13
               Caption = #1045#1076#1080#1085#1080#1094#1072' '#1080#1079#1084#1077#1088#1077#1085#1080#1103':'
             end
-            object EditJustification: TEdit
-              Left = 83
-              Top = 2
-              Width = 100
-              Height = 21
-              Color = 14802912
-              ReadOnly = True
-              TabOrder = 0
-            end
             object Edit5: TEdit
               Left = 189
               Top = 2
@@ -368,12 +365,25 @@
               TabOrder = 1
               Text = #1044#1077#1081#1089#1090#1074#1091#1102#1097#1072#1103
             end
-            object EditUnit: TEdit
+            object dbedtNumberNormative: TDBEdit
+              Left = 83
+              Top = 2
+              Width = 100
+              Height = 21
+              Color = 14802912
+              DataField = 'NumberNormative'
+              DataSource = dsNormativ
+              ReadOnly = True
+              TabOrder = 0
+            end
+            object dbedtUnit: TDBEdit
               Left = 413
               Top = 2
               Width = 100
               Height = 21
               Color = 14802912
+              DataField = 'Unit'
+              DataSource = dsNormativ
               ReadOnly = True
               TabOrder = 2
             end
@@ -718,16 +728,6 @@
       Caption = #1053#1072#1081#1090#1080' '#1074' '#1089#1073#1086#1088#1085#1080#1082#1077
     end
   end
-  object qrNormativ: TFDQuery
-    AfterScroll = qrNormativAfterScroll
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    FetchOptions.AssignedValues = [evRecordCountMode]
-    FetchOptions.RecordCountMode = cmTotal
-    Left = 36
-    Top = 24
-  end
   object ADOQueryNC: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
@@ -784,7 +784,7 @@
       end>
   end
   object dsNormativ: TDataSource
-    DataSet = qrNormativ
+    DataSet = DM.qrNormativ
     Left = 72
     Top = 24
   end

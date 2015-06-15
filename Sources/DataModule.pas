@@ -28,6 +28,7 @@ type
     qrDifferent: TFDQuery;
     qrDifferent1: TFDQuery;
     qrDifferent2: TFDQuery;
+    qrNormativ: TFDQuery;
 
   private
     { Private declarations }

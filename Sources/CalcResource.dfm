@@ -132,7 +132,7 @@ object fCalcResource: TfCalcResource
     Top = 56
     Width = 616
     Height = 306
-    ActivePage = ts2
+    ActivePage = ts4
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -421,7 +421,6 @@ object fCalcResource: TfCalcResource
           AutoAppend = False
           IniStorage = FormStorage
           MultiSelect = True
-          ScrollBars = ssVertical
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -819,8 +818,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsMechData
           ScrollBars = ssVertical
           TabOrder = 0
-          ExplicitLeft = 4
-          ExplicitTop = -2
         end
       end
       object pnlMechTop: TPanel
@@ -998,7 +995,6 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = -1
               Visible = False
             end
             item
@@ -2097,6 +2093,7 @@ object fCalcResource: TfCalcResource
   end
   object qrMaterialDetail: TFDQuery
     BeforeOpen = qrMaterialDataBeforeOpen
+    BeforePost = qrMaterialDetailBeforePost
     MasterSource = dsMaterialData
     MasterFields = 'MAT_ID'
     Connection = DM.Connect
@@ -2242,6 +2239,7 @@ object fCalcResource: TfCalcResource
   end
   object qrMechDetail: TFDQuery
     BeforeOpen = qrMaterialDataBeforeOpen
+    BeforePost = qrMechDetailBeforePost
     MasterSource = dsMechData
     MasterFields = 'MECH_ID'
     Connection = DM.Connect
@@ -2339,6 +2337,7 @@ object fCalcResource: TfCalcResource
   end
   object qrDevicesDetail: TFDQuery
     BeforeOpen = qrMaterialDataBeforeOpen
+    BeforePost = qrDevicesDetailBeforePost
     MasterSource = dsDevices
     MasterFields = 'DEVICE_ID'
     Connection = DM.Connect
@@ -2369,6 +2368,10 @@ object fCalcResource: TfCalcResource
       
         '  IF(:NDS=1, IF(m.FCOAST_NDS<>0, m.FCOAST_NDS, 0), IF(m.FCOAST_N' +
         'O_NDS<>0, m.FCOAST_NO_NDS, 0)) AS COAST, /* '#1062#1077#1085#1072' */'
+      
+        '  IF(:NDS=1, IF(DEVICE_TRANSP_NDS<>0, DEVICE_TRANSP_NDS, 0), IF(' +
+        'DEVICE_TRANSP_NO_NDS<>0, DEVICE_TRANSP_NO_NDS, 0)) AS TRANSP,  /' +
+        '* '#1090#1088#1072#1085#1089#1087'. */'
       '  IFNULL(m.DEVICE_COUNT, 0) AS CNT_DONE, /* '#1056#1072#1089#1093#1086#1076' */'
       '  0 as DELETED,'
       '  d.ID AS data_estimate_id,'

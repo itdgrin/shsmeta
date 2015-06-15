@@ -111,11 +111,11 @@ begin
 
     Left := Point1.X + 5 + GetSystemMetrics(SM_CYBORDER) + FormAdditionData.FrameRates.JvDBGrid1.Width + 5;
     Top := Point1.Y + 2 + GetSystemMetrics(SM_CYCAPTION) + FormAdditionData.FrameRates.Top +
-      FormAdditionData.FrameRates.MemoDescription.Top;
+      FormAdditionData.FrameRates.dbmmoCaptionNormative.Top;
 
     Width := Screen.Width - Left - 3;
     Height := FormAdditionData.Height - (GetSystemMetrics(SM_CYCAPTION) + FormAdditionData.FrameRates.Top +
-      FormAdditionData.FrameRates.MemoDescription.Top);
+      FormAdditionData.FrameRates.dbmmoCaptionNormative.Top);
   end;
 end;
 
@@ -259,9 +259,9 @@ var
   Path: String;
 begin
   if Assigned(FormReferenceData) then
-    NumberNormativ := FormReferenceData.FrameRates.qrNormativ.FieldByName('NumberNormative').AsString
+    NumberNormativ := dm.qrNormativ.FieldByName('NumberNormative').AsString
   else if Assigned(FormAdditionData) then
-    NumberNormativ := FormAdditionData.FrameRates.qrNormativ.FieldByName('NumberNormative').AsString;
+    NumberNormativ := dm.qrNormativ.FieldByName('NumberNormative').AsString;
 
   // В условии - русские символы, в переменной NumberNormativ - английские
   if (NumberNormativ > 'Е121-1-1') and (NumberNormativ < 'Е121-137-1') then

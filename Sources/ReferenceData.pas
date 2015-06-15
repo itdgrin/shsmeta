@@ -158,7 +158,7 @@ procedure TFormReferenceData.FormClose(Sender: TObject; var Action: TCloseAction
 begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButton);
-  {Action := caFree;}
+  Action := caFree;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ end;
 
 procedure TFormReferenceData.FormDestroy(Sender: TObject);
 begin
-  {FormReferenceData := nil;}
+  FormReferenceData := nil;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
