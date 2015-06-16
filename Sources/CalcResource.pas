@@ -137,6 +137,11 @@ type
     qrDevicesTRANSP_PROC_PODR: TWordField;
     qrDevicesDELETED: TLargeintField;
     qrDevicesDEVICE_ID: TLongWordField;
+    qrMaterialDataFCOAST: TIntegerField;
+    qrMaterialDataREPLACED: TIntegerField;
+    qrMechDataREPLACED: TIntegerField;
+    qrMaterialDataID_REPLACED: TLongWordField;
+    qrMechDataID_REPLACED: TLongWordField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -287,24 +292,24 @@ begin
   if not chkEdit.Checked then
   begin
     Caption := 'Расчет стоимости ресурсов [редактирование запрещено]';
-    grMaterial.Options := grMaterial.Options + [dgMultiSelect];
-    grMaterialBott.Options := grMaterialBott.Options + [dgMultiSelect];
-    grMech.Options := grMaterial.Options + [dgMultiSelect];
-    grMechBott.Options := grMechBott.Options + [dgMultiSelect];
-    grDev.Options := grDev.Options + [dgMultiSelect];
-    grDevBott.Options := grDevBott.Options + [dgMultiSelect];
-    grRates.Options := grRates.Options + [dgMultiSelect];
+    { grMaterial.Options := grMaterial.Options + [dgMultiSelect];
+      grMaterialBott.Options := grMaterialBott.Options + [dgMultiSelect];
+      grMech.Options := grMaterial.Options + [dgMultiSelect];
+      grMechBott.Options := grMechBott.Options + [dgMultiSelect];
+      grDev.Options := grDev.Options + [dgMultiSelect];
+      grDevBott.Options := grDevBott.Options + [dgMultiSelect];
+      grRates.Options := grRates.Options + [dgMultiSelect]; }
   end
   else
   begin
     Caption := 'Расчет стоимости ресурсов [редактирование разрешено]';
-    grMaterial.Options := grMaterial.Options - [dgMultiSelect];
-    grMaterialBott.Options := grMaterialBott.Options - [dgMultiSelect];
-    grMech.Options := grMaterial.Options - [dgMultiSelect];
-    grMechBott.Options := grMechBott.Options - [dgMultiSelect];
-    grDev.Options := grDev.Options - [dgMultiSelect];
-    grDevBott.Options := grDevBott.Options - [dgMultiSelect];
-    grRates.Options := grRates.Options - [dgMultiSelect];
+    { grMaterial.Options := grMaterial.Options - [dgMultiSelect];
+      grMaterialBott.Options := grMaterialBott.Options - [dgMultiSelect];
+      grMech.Options := grMaterial.Options - [dgMultiSelect];
+      grMechBott.Options := grMechBott.Options - [dgMultiSelect];
+      grDev.Options := grDev.Options - [dgMultiSelect];
+      grDevBott.Options := grDevBott.Options - [dgMultiSelect];
+      grRates.Options := grRates.Options - [dgMultiSelect]; }
   end;
 
 end;
@@ -382,8 +387,24 @@ end;
 procedure TfCalcResource.grMaterialBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
+  if (qrMaterialDetail.FieldByName('FCOAST').AsInteger = 1) and (Column.FieldName = 'COAST') then
+    grMaterialBott.Canvas.Font.Style := grMaterialBott.Canvas.Font.Style + [fsItalic];
+
   if qrMaterialDetail.FieldByName('DELETED').AsInteger = 1 then
     grMaterialBott.Canvas.Font.Style := grMaterialBott.Canvas.Font.Style + [fsStrikeOut];
+
+  if qrMaterialDetail.FieldByName('REPLACED').AsInteger <> 0 then
+  begin
+    grMaterialBott.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsStrikeOut] + [fsItalic];
+    grMaterialBott.Canvas.Font.Color := clNavy;
+  end;
+
+  if qrMaterialDetail.FieldByName('ID_REPLACED').AsInteger <> 0 then
+  begin
+    grMaterialBott.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsItalic];
+    grMaterialBott.Canvas.Font.Color := clNavy;
+  end;
+
   if CanEditField(Column.Field) then
     grMaterialBott.Canvas.Brush.Color := clMoneyGreen;
 
@@ -398,8 +419,24 @@ end;
 procedure TfCalcResource.grMaterialDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
+  if (qrMaterialData.FieldByName('FCOAST').AsInteger = 1) and (Column.FieldName = 'COAST') then
+    grMaterial.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsItalic];
+
   if qrMaterialData.FieldByName('DELETED').AsInteger = 1 then
     grMaterial.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsStrikeOut];
+
+  if qrMaterialData.FieldByName('REPLACED').AsInteger <> 0 then
+  begin
+    grMaterial.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsStrikeOut] + [fsItalic];
+    grMaterial.Canvas.Font.Color := clNavy;
+  end;
+
+  if qrMaterialData.FieldByName('ID_REPLACED').AsInteger <> 0 then
+  begin
+    grMaterial.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsItalic];
+    grMaterial.Canvas.Font.Color := clNavy;
+  end;
+
   if CanEditField(Column.Field) then
     grMaterial.Canvas.Brush.Color := clMoneyGreen;
 
@@ -424,6 +461,19 @@ procedure TfCalcResource.grMechBottDrawColumnCell(Sender: TObject; const Rect: T
 begin
   if qrMechDetail.FieldByName('DELETED').AsInteger = 1 then
     grMechBott.Canvas.Font.Style := grMechBott.Canvas.Font.Style + [fsStrikeOut];
+
+  if qrMechDetail.FieldByName('REPLACED').AsInteger <> 0 then
+  begin
+    grMechBott.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsStrikeOut] + [fsItalic];
+    grMechBott.Canvas.Font.Color := clNavy;
+  end;
+
+  if qrMechDetail.FieldByName('ID_REPLACED').AsInteger <> 0 then
+  begin
+    grMechBott.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsItalic];
+    grMechBott.Canvas.Font.Color := clNavy;
+  end;
+
   if CanEditField(Column.Field) then
     grMechBott.Canvas.Brush.Color := clMoneyGreen;
   grMechBott.DefaultDrawColumnCell(Rect, DataCol, Column, State);
@@ -434,6 +484,19 @@ procedure TfCalcResource.grMechDrawColumnCell(Sender: TObject; const Rect: TRect
 begin
   if qrMechData.FieldByName('DELETED').AsInteger = 1 then
     grMech.Canvas.Font.Style := grMech.Canvas.Font.Style + [fsStrikeOut];
+
+  if qrMechData.FieldByName('REPLACED').AsInteger <> 0 then
+  begin
+    grMech.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsStrikeOut] + [fsItalic];
+    grMech.Canvas.Font.Color := clNavy;
+  end;
+
+  if qrMechData.FieldByName('ID_REPLACED').AsInteger <> 0 then
+  begin
+    grMech.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsItalic];
+    grMech.Canvas.Font.Color := clNavy;
+  end;
+
   if CanEditField(Column.Field) then
     grMech.Canvas.Brush.Color := clMoneyGreen;
   grMech.DefaultDrawColumnCell(Rect, DataCol, Column, State);
@@ -515,6 +578,10 @@ procedure TfCalcResource.mReplaceClick(Sender: TObject);
 var
   frmReplace: TfrmReplacement;
 begin
+  { grMaterial.Options := grMaterial.Options - [dgMultiSelect];
+    grMaterialBott.Options := grMaterialBott.Options - [dgMultiSelect];
+    grMech.Options := grMaterial.Options - [dgMultiSelect];
+    grMechBott.Options := grMechBott.Options - [dgMultiSelect]; }
   case pgc.ActivePageIndex of
     1:
       frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMaterialData.FieldByName('CODE').AsString,
@@ -534,6 +601,10 @@ begin
     finally
       FreeAndNil(frmReplace);
     end;
+  { grMaterial.Options := grMaterial.Options + [dgMultiSelect];
+    grMaterialBott.Options := grMaterialBott.Options + [dgMultiSelect];
+    grMech.Options := grMaterial.Options + [dgMultiSelect];
+    grMechBott.Options := grMechBott.Options + [dgMultiSelect]; }
 end;
 
 procedure TfCalcResource.mRestoreClick(Sender: TObject);

@@ -132,7 +132,7 @@ object fCalcResource: TfCalcResource
     Top = 56
     Width = 616
     Height = 306
-    ActivePage = ts4
+    ActivePage = ts2
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -228,7 +228,6 @@ object fCalcResource: TfCalcResource
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pm
           TabOrder = 0
@@ -239,11 +238,8 @@ object fCalcResource: TfCalcResource
           TitleFont.Style = []
           OnDrawColumnCell = grMaterialDrawColumnCell
           AutoAppend = False
-          SortMarker = smUp
           IniStorage = FormStorage
-          MultiSelect = True
           OnTitleBtnClick = grMaterialTitleBtnClick
-          SortedField = 'CODE'
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -410,7 +406,6 @@ object fCalcResource: TfCalcResource
           Constraints.MinHeight = 40
           DataSource = dsMaterialDetail
           DrawingStyle = gdsClassic
-          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -420,7 +415,6 @@ object fCalcResource: TfCalcResource
           OnDrawColumnCell = grMaterialBottDrawColumnCell
           AutoAppend = False
           IniStorage = FormStorage
-          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -432,6 +426,7 @@ object fCalcResource: TfCalcResource
           Columns = <
             item
               Expanded = False
+              FieldName = 'F1'
               Title.Alignment = taCenter
               Title.Caption = #8470#1087#1087
               Width = 61
@@ -560,7 +555,7 @@ object fCalcResource: TfCalcResource
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pm
           TabOrder = 0
@@ -571,11 +566,8 @@ object fCalcResource: TfCalcResource
           TitleFont.Style = []
           OnDrawColumnCell = grMechDrawColumnCell
           AutoAppend = False
-          SortMarker = smUp
           IniStorage = FormStorage
-          MultiSelect = True
           OnTitleBtnClick = grMechTitleBtnClick
-          SortedField = 'CODE'
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -723,7 +715,7 @@ object fCalcResource: TfCalcResource
           Constraints.MinHeight = 40
           DataSource = dsMechDetail
           DrawingStyle = gdsClassic
-          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -733,7 +725,6 @@ object fCalcResource: TfCalcResource
           OnDrawColumnCell = grMechBottDrawColumnCell
           AutoAppend = False
           IniStorage = FormStorage
-          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -920,7 +911,7 @@ object fCalcResource: TfCalcResource
           Align = alClient
           DataSource = dsDevices
           DrawingStyle = gdsClassic
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -930,7 +921,6 @@ object fCalcResource: TfCalcResource
           OnDrawColumnCell = grDevDrawColumnCell
           AutoAppend = False
           IniStorage = FormStorage
-          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1100,7 +1090,7 @@ object fCalcResource: TfCalcResource
           Constraints.MinHeight = 40
           DataSource = dsDevicesDetail
           DrawingStyle = gdsClassic
-          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -1109,7 +1099,6 @@ object fCalcResource: TfCalcResource
           TitleFont.Style = []
           AutoAppend = False
           IniStorage = FormStorage
-          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1278,7 +1267,7 @@ object fCalcResource: TfCalcResource
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pm
           TabOrder = 0
@@ -1290,7 +1279,6 @@ object fCalcResource: TfCalcResource
           OnDrawColumnCell = grRatesDrawColumnCell
           AutoAppend = False
           IniStorage = FormStorage
-          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1498,6 +1486,7 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'SELECT '
+      '  MIN(IF(ID_REPLACED<>0, ID_REPLACED, ID)),'
       '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
       '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
       '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
@@ -1506,7 +1495,9 @@ object fCalcResource: TfCalcResource
       '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
       '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
       '  PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
-      ''
+      
+        '  IF(:NDS=1, IF(FCOAST_NDS<>0, 1, 0), IF(FCOAST_NO_NDS<>0, 1, 0)' +
+        ') AS FCOAST, /* '#1062#1077#1085#1072' F */ '
       
         '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
         '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
@@ -1523,15 +1514,17 @@ object fCalcResource: TfCalcResource
       '  MAT_PROC_PODR,'
       '  TRANSP_PROC_ZAC,'
       '  TRANSP_PROC_PODR,'
-      '  MAT_ID'
+      '  MAT_ID,'
+      '  REPLACED,'
+      '  ID_REPLACED'
       'FROM '
       '  materialcard_temp'
-      'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) AND REPLACED = 0'
+      'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) /*AND REPLACED = 0*/'
       
-        'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, COAST' +
-        ', DELETED,  MAT_PROC_ZAC, MAT_PROC_PODR, TRANSP_PROC_ZAC, TRANSP' +
-        '_PROC_PODR, MAT_ID'
-      'ORDER BY 1')
+        'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, FCOAS' +
+        'T, COAST, DELETED,  MAT_PROC_ZAC, MAT_PROC_PODR, TRANSP_PROC_ZAC' +
+        ', TRANSP_PROC_PODR, MAT_ID'
+      'ORDER BY 1,2')
     Left = 27
     Top = 168
     ParamData = <
@@ -1644,6 +1637,15 @@ object fCalcResource: TfCalcResource
       FieldName = 'MAT_ID'
       Origin = 'MAT_ID'
     end
+    object qrMaterialDataFCOAST: TIntegerField
+      FieldName = 'FCOAST'
+    end
+    object qrMaterialDataREPLACED: TIntegerField
+      FieldName = 'REPLACED'
+    end
+    object qrMaterialDataID_REPLACED: TLongWordField
+      FieldName = 'ID_REPLACED'
+    end
   end
   object dsMaterialData: TDataSource
     DataSet = qrMaterialData
@@ -1676,6 +1678,7 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'SELECT '
+      '  MIN(IF(ID_REPLACED<>0, ID_REPLACED, ID)),'
       '  MECH_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
       '  MECH_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
       '  MECH_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
@@ -1705,14 +1708,16 @@ object fCalcResource: TfCalcResource
       '  DELETED,'
       '  PROC_ZAC,'
       '  PROC_PODR,'
-      '  MECH_ID'
+      '  MECH_ID,'
+      '  REPLACED,'
+      '  ID_REPLACED'
       'FROM '
       '  mechanizmcard_temp'
-      'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) AND REPLACED = 0'
+      'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) /*AND REPLACED = 0*/'
       
         'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, COAST, ZP_1, DELET' +
         'ED, PROC_ZAC, PROC_PODR, MECH_ID'
-      'ORDER BY 1')
+      'ORDER BY 1,2')
     Left = 99
     Top = 168
     ParamData = <
@@ -1813,6 +1818,12 @@ object fCalcResource: TfCalcResource
       AutoGenerateValue = arDefault
       FieldName = 'MECH_ID'
       Origin = 'MECH_ID'
+    end
+    object qrMechDataREPLACED: TIntegerField
+      FieldName = 'REPLACED'
+    end
+    object qrMechDataID_REPLACED: TLongWordField
+      FieldName = 'ID_REPLACED'
     end
   end
   object dsMechData: TDataSource
@@ -2119,10 +2130,14 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'SELECT '
+      '  IF(m.ID_REPLACED<>0, m.ID_REPLACED, m.ID) AS F1,'
       '  COALESCE(c.RATE_CODE, m.MAT_CODE) AS CODE, '
       
         '  COALESCE(c.RATE_COUNT, IFNULL(m.MAT_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-' +
         #1074#1086' */'
+      
+        '  IF(:NDS=1, IF(m.FCOAST_NDS<>0, 1, 0), IF(m.FCOAST_NO_NDS<>0, 1' +
+        ', 0)) AS FCOAST, /* '#1062#1077#1085#1072' F */ '
       
         '  IF(:NDS=1, IF(m.FCOAST_NDS<>0, m.FCOAST_NDS, m.COAST_NDS), IF(' +
         'm.FCOAST_NO_NDS<>0, m.FCOAST_NO_NDS, m.COAST_NO_NDS)) AS COAST, ' +
@@ -2143,7 +2158,9 @@ object fCalcResource: TfCalcResource
         'IF(m.FTRANSP_NO_NDS<>0, m.FTRANSP_NO_NDS, m.TRANSP_NO_NDS)) AS T' +
         'RANSP,'
       '  m.MAT_ID,'
-      '  m.ID'
+      '  m.ID,'
+      '  m.REPLACED,'
+      '  m.ID_REPLACED'
       'FROM        '
       'smetasourcedata, data_estimate_temp AS d '
       
@@ -2154,7 +2171,7 @@ object fCalcResource: TfCalcResource
         '.ID_TABLES) OR (m.ID_CARD_RATE = c.ID)) AND m.MAT_ID = :MAT_ID'
       'WHERE'
       '  ((m.DELETED = 0) OR (:SHOW_DELETED)) AND '
-      '  m.REPLACED = 0 AND'
+      '  /*AND m.REPLACED = 0*/'
       '  ((smetasourcedata.SM_ID = :SM_ID) OR'
       '           (smetasourcedata.PARENT_ID = :SM_ID) OR '
       '           (smetasourcedata.PARENT_ID IN ('
@@ -2162,7 +2179,8 @@ object fCalcResource: TfCalcResource
       '             FROM smetasourcedata'
       '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
       '  d.ID_ESTIMATE = smetasourcedata.SM_ID AND  '
-      '  smetasourcedata.DELETED=0')
+      '  smetasourcedata.DELETED=0'
+      'ORDER BY 1,2')
     Left = 27
     Top = 264
     ParamData = <
@@ -2265,6 +2283,7 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'SELECT '
+      '  IF(m.ID_REPLACED<>0, m.ID_REPLACED, m.ID),'
       '  COALESCE(c.RATE_CODE, m.MECH_CODE) AS CODE, '
       
         '  COALESCE(c.RATE_COUNT, IFNULL(m.MECH_COUNT, 0)) AS CNT, /* '#1050#1086#1083 +
@@ -2283,7 +2302,9 @@ object fCalcResource: TfCalcResource
       '  m.PROC_ZAC,'
       '  m.PROC_PODR,'
       '  m.MECH_ID,'
-      '  m.ID'
+      '  m.ID,'
+      '  m.REPLACED,'
+      '  m.ID_REPLACED'
       'FROM        '
       'smetasourcedata, data_estimate_temp AS d '
       
@@ -2295,7 +2316,7 @@ object fCalcResource: TfCalcResource
         'D'
       'WHERE'
       '  ((m.DELETED = 0) OR (:SHOW_DELETED)) AND '
-      '  m.REPLACED = 0 AND'
+      '  /*AND m.REPLACED = 0*/'
       '  ((smetasourcedata.SM_ID = :SM_ID) OR'
       '           (smetasourcedata.PARENT_ID = :SM_ID) OR '
       '           (smetasourcedata.PARENT_ID IN ('
@@ -2303,7 +2324,8 @@ object fCalcResource: TfCalcResource
       '             FROM smetasourcedata'
       '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
       '  d.ID_ESTIMATE = smetasourcedata.SM_ID AND  '
-      '  smetasourcedata.DELETED=0')
+      '  smetasourcedata.DELETED=0'
+      'ORDER BY 1,2')
     Left = 99
     Top = 264
     ParamData = <
