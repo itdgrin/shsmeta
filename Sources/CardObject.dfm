@@ -472,7 +472,7 @@ object FormCardObject: TFormCardObject
       111
       49)
     object ComboBoxVAT: TComboBox
-      Left = 8
+      Left = 7
       Top = 20
       Width = 96
       Height = 21
@@ -482,6 +482,7 @@ object FormCardObject: TFormCardObject
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
+      ItemIndex = 0
       ParentFont = False
       TabOrder = 0
       Text = #1073#1077#1079' '#1053#1044#1057

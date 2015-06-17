@@ -343,7 +343,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT MAIS_ID, CONCAT(`mais`.`NAME`, " от ", DATE_FORMAT(`mais`.`onDate`, "%d.%m.%y"), " действует с ", DATE_FORMAT(`mais`.`Start_Date`, "%d.%m.%y")) AS NAME FROM mais ORDER BY onDate DESC;');
+      SQL.Add('SELECT MAIS_ID, CONCAT(`mais`.`NAME`, " от ", DATE_FORMAT(`mais`.`onDate`, "%d.%m.%y"), " действует с ", DATE_FORMAT(`mais`.`Start_Date`, "%d.%m.%y")) AS NAME, onDate FROM mais ORDER BY onDate DESC;');
       Active := True;
     end;
 
@@ -353,9 +353,15 @@ begin
       ListField := 'NAME';
       KeyField := 'MAIS_ID';
     end;
+
     // Автоматический выбор последнего МАИС
     if not Editing then
+    begin
+      while not (qrMAIS.Eof) and (YearOf(DateTimePickerStartBuilding.Date) <=
+        YearOf(qrMAIS.FieldByName('onDate').AsDateTime)) do
+        qrMAIS.Next;
       dblkcbbMAIS.KeyValue := qrMAIS.FieldByName('MAIS_ID').AsInteger;
+    end;
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе списка МАИСов возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
@@ -379,7 +385,7 @@ begin
     DBLookupComboBoxSourseFinance.KeyValue := SourceFinance;
     dblkcbbCategoryObject.KeyValue := CategoryObject;
     dblkcbbRegion.KeyValue := Region;
-    ComboBoxVAT.ItemIndex := VAT;
+    ComboBoxVAT.ItemIndex := qrMain.FieldByName('state_nds').AsInteger;
     DBLookupComboBoxBasePrices.KeyValue := BasePrice;
     dblkcbbMAIS.KeyValue := MAIS;
 
@@ -422,7 +428,7 @@ end;
 
 procedure TFormCardObject.ButtonSaveClick(Sender: TObject);
 var
-  NumberObject, v2, v3, v4, v5, v6, v7, v8, v9, v12, v13, v14, v15, v16, v17, v18, v19: string;
+  NumberObject, v2, v3, v4, v5, v6, v7, v8, v9, v12, v14, v15, v16, v17, v18, v19: string;
   CountField: Integer;
 begin
   CountField := 0;
@@ -521,9 +527,6 @@ begin
     Inc(CountField);
   end;
 
-  // С/без НДС
-  v13 := IntToStr(ComboBoxVAT.ItemIndex);
-
   // Регион
   if dblkcbbRegion.KeyValue <> Null then
     v14 := dblkcbbRegion.KeyValue
@@ -594,8 +597,7 @@ begin
         SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = "' + v2 + '", date_dog = "' + v3
           + '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
           '", srok_stroj = ' + v8 + ', ' + ' fin_id = ' + v9 +
-          ', cust_id = :cust_id, general_id = :general_id, cat_id = "' + v12 + '", state_nds = "' + v13 +
-          '", region_id = "' + v14 + '", base_norm_id = "' + v15 + '", stroj_id = "' + v16 + '", encrypt = "'
+          ', cust_id = :cust_id, general_id = :general_id, cat_id = "' + v12 + '", state_nds = :snds, region_id = "' + v14 + '", base_norm_id = "' + v15 + '", stroj_id = "' + v16 + '", encrypt = "'
           + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
           '", PER_TEMP_BUILD=:PER_TEMP_BUILD, PER_CONTRACTOR=:PER_CONTRACTOR, '#13 +
           'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK, CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
@@ -605,7 +607,7 @@ begin
           + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
           ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV) ' +
           'VALUE ("' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 +
-          '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 + '", "' + v13 + '", "' +
+          '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 + '", :snds, "' +
           v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV);');
 
@@ -615,6 +617,7 @@ begin
       ParamByName('CONTRACTOR_SERV').Value := qrMain.FieldByName('CONTRACTOR_SERV').AsInteger;
       ParamByName('cust_id').Value := qrMain.FieldByName('cust_id').AsInteger;
       ParamByName('general_id').Value := qrMain.FieldByName('general_id').AsInteger;
+      ParamByName('snds').Value := ComboBoxVAT.ItemIndex;
       ExecSQL;
     end;
 
@@ -763,6 +766,15 @@ begin
       MonthOf(DateTimePickerStartBuilding.Date), YearOf(DateTimePickerStartBuilding.Date));
     qrMain.FieldByName('PER_TEMP_BUILD_BACK').Value := GetUniDictParamValue('PER_TEMP_BUILD_BACK',
       MonthOf(DateTimePickerStartBuilding.Date), YearOf(DateTimePickerStartBuilding.Date));
+    // Автоподстановка МАИС
+    if CheckQrActiveEmpty(qrMAIS) then
+    begin
+      qrMAIS.First;
+      while not (qrMAIS.Eof) and (YearOf(DateTimePickerStartBuilding.Date) <=
+        YearOf(qrMAIS.FieldByName('onDate').AsDateTime)) do
+        qrMAIS.Next;
+      dblkcbbMAIS.KeyValue := qrMAIS.FieldByName('MAIS_ID').AsInteger;
+    end;
   end;
 end;
 
