@@ -3393,6 +3393,7 @@
       OnClick = PMMatFromRatesClick
     end
     object PMMatAddToRate: TMenuItem
+      Tag = 2
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1091
       OnClick = PMMatAddToRateClick
     end
@@ -3469,7 +3470,7 @@
       OnClick = ReplacementClick
     end
     object PMMechAddToRate: TMenuItem
-      Tag = 1
+      Tag = 3
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1091
       OnClick = PMMatAddToRateClick
     end

@@ -646,10 +646,10 @@ begin
     // Поправить вызов ниже под новый вариант  'CODE' заменить на <<-- { 'MAT_ID' }
     1:
       frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0,
-        qrMaterialData.FieldByName( { 'MAT_ID' } 'CODE').AsString, 0 { 2 } , False, False);
+        qrMaterialData.FieldByName('MAT_ID').AsInteger, 2, False, False);
     2:
-      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMechData.FieldByName( { 'MECH_ID' } 'CODE')
-        .AsString, 1 { 3 } , False, False);
+      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0,
+        qrMechData.FieldByName('MECH_ID').AsInteger, 3, False, False);
   end;
   if Assigned(frmReplace) then
     try

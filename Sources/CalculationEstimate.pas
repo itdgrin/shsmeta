@@ -1819,7 +1819,7 @@ begin
             'Автозамена', MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
-                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, '', 0,
+                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, 0, 2,
                   False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
@@ -1842,7 +1842,7 @@ begin
             'Автозамена', MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
-                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, '', 1,
+                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, 0, 3,
                   False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
@@ -2995,13 +2995,13 @@ var
 begin
   case TMenuItem(Sender).Tag of
     0:
-      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, '', 0,
+      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, 0, 2,
         False, False);
     1:
-      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, '', 1,
+      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, 0, 3,
         False, False);
     2:
-      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrDevicesID.AsInteger, '', 2,
+      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrDevicesID.AsInteger, 0, 4,
         False, False);
   else
     Exit;
@@ -3132,7 +3132,7 @@ begin
   else
     IdRate := qrRatesExSM_ID.AsInteger;
 
-  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0, '', TMenuItem(Sender).Tag,
+  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0, 0, TMenuItem(Sender).Tag,
     True, False);
 
   try
