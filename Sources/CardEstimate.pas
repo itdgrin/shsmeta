@@ -534,8 +534,8 @@ begin
     not CheckQrActiveEmpty(qrSections) or not CheckQrActiveEmpty(qrTypesWorks) then
     Exit;
   qrMain.Edit;
-  qrMain.FieldByName('SM_NUMBER').AsString := 'Æ' + qrParts.FieldByName('CODE').AsString +
-    qrSections.FieldByName('CODE').AsString + qrTypesWorks.FieldByName('CODE').AsString;
+  qrMain.FieldByName('SM_NUMBER').AsString := 'Æ' + qrParts.FieldByName('CODE1').AsString +
+    qrSections.FieldByName('CODE1').AsString + qrTypesWorks.FieldByName('CODE1').AsString;
   qrMain.FieldByName('NAME').AsString := qrParts.FieldByName('NAME').AsString + qrSections.FieldByName('NAME')
     .AsString + qrTypesWorks.FieldByName('NAME').AsString;
   // qrMain.CheckBrowseMode;

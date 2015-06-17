@@ -46,10 +46,6 @@ object fTreeEstimate: TfTreeEstimate
     ParentFont = False
     RowSelect = True
     Mirror = False
-    ExplicitLeft = -43
-    ExplicitTop = 17
-    ExplicitWidth = 298
-    ExplicitHeight = 24
   end
   object qrTreeEstimates: TFDQuery
     Connection = DM.Connect
@@ -64,6 +60,7 @@ object fTreeEstimate: TfTreeEstimate
       '       PARENT_ID as PARENT  '
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2 AND '
+      '      DELETED=0 AND'
       '      OBJ_ID=:OBJ_ID'
       'UNION ALL'
       
@@ -72,6 +69,7 @@ object fTreeEstimate: TfTreeEstimate
       '       PARENT_ID as PARENT  '
       'FROM smetasourcedata'
       'WHERE SM_TYPE<>2 AND '
+      '      DELETED=0 AND'
       '      OBJ_ID=:OBJ_ID'
       'ORDER BY NAME')
     Left = 118
