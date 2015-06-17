@@ -140,8 +140,8 @@ type
     qrMaterialDataFCOAST: TIntegerField;
     qrMaterialDataREPLACED: TIntegerField;
     qrMechDataREPLACED: TIntegerField;
-    qrMaterialDataID_REPLACED: TLongWordField;
     qrMechDataID_REPLACED: TLongWordField;
+    qrMaterialDataFREPLACED: TIntegerField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -209,7 +209,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools, ReplacementMatAndMech, CalculationEstimate;
+uses Main, Tools, ReplacementMatAndMech, CalculationEstimate, DataModule, GlobsAndConst;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant);
 begin
@@ -431,7 +431,7 @@ begin
     grMaterial.Canvas.Font.Color := clNavy;
   end;
 
-  if qrMaterialData.FieldByName('ID_REPLACED').AsInteger <> 0 then
+  if qrMaterialData.FieldByName('FREPLACED').AsInteger <> 0 then
   begin
     grMaterial.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsItalic];
     grMaterial.Canvas.Font.Color := clNavy;
@@ -491,7 +491,7 @@ begin
     grMech.Canvas.Font.Color := clNavy;
   end;
 
-  if qrMechData.FieldByName('ID_REPLACED').AsInteger <> 0 then
+  if qrMechData.FieldByName('FREPLACED').AsInteger <> 0 then
   begin
     grMech.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsItalic];
     grMech.Canvas.Font.Color := clNavy;
@@ -545,16 +545,76 @@ begin
     // Расчет материалов
     1:
       begin
-        if not(qrMaterialData.State in [dsEdit]) then
-          qrMaterialData.Edit;
-        qrMaterialData.FieldByName('DELETED').Value := 1;
+        // Если является заменяющим
+        if (qrMaterialData.FieldByName('FREPLACED').AsInteger <> 0) and (not(qrMaterialData.State in [dsEdit]))
+        then
+        begin
+          DM.qrDifferent.SQL.Text := 'SELECT ID FROM materialcard_temp'#13 +
+            'WHERE PROC_TRANSP=:PROC_TRANSP AND DELETED=:DELETED'#13 +
+            'AND MAT_PROC_ZAC=:MAT_PROC_ZAC AND MAT_PROC_PODR=:MAT_PROC_PODR'#13 +
+            'AND TRANSP_PROC_ZAC=:TRANSP_PROC_ZAC AND TRANSP_PROC_PODR=:TRANSP_PROC_PODR'#13 +
+            'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:COAST AND MAT_ID=:MAT_ID';
+          DM.qrDifferent.ParamByName('PROC_TRANSP').Value := qrMaterialData.FieldByName('PROC_TRANSP').Value;
+          DM.qrDifferent.ParamByName('DELETED').Value := qrMaterialData.FieldByName('DELETED').Value;
+          DM.qrDifferent.ParamByName('MAT_PROC_ZAC').Value :=
+            qrMaterialData.FieldByName('MAT_PROC_ZAC').Value;
+          DM.qrDifferent.ParamByName('MAT_PROC_PODR').Value :=
+            qrMaterialData.FieldByName('MAT_PROC_PODR').Value;
+          DM.qrDifferent.ParamByName('TRANSP_PROC_ZAC').Value :=
+            qrMaterialData.FieldByName('TRANSP_PROC_ZAC').Value;
+          DM.qrDifferent.ParamByName('TRANSP_PROC_PODR').Value :=
+            qrMaterialData.FieldByName('TRANSP_PROC_PODR').Value;
+          DM.qrDifferent.ParamByName('NDS').Value := cbbNDS.ItemIndex;
+          DM.qrDifferent.ParamByName('COAST').Value := qrMaterialData.FieldByName('COAST').Value;
+          DM.qrDifferent.ParamByName('MAT_ID').Value := qrMaterialData.FieldByName('MAT_ID').Value;
+          DM.qrDifferent.Active := True;
+          while not DM.qrDifferent.Eof do
+          begin
+            FastExecSQL('CALL DeleteMaterial(:id, :CalcMode);',
+              VarArrayOf([DM.qrDifferent.FieldByName('ID').Value, G_CALCMODE]));
+            DM.qrDifferent.Next;
+          end;
+          CloseOpen(qrMaterialData);
+        end
+        else
+        begin
+          if not(qrMaterialData.State in [dsEdit]) then
+            qrMaterialData.Edit;
+          qrMaterialData.FieldByName('DELETED').Value := 1;
+        end;
       end;
     // Расчет механизмов
     2:
       begin
-        if not(qrMechData.State in [dsEdit]) then
-          qrMechData.Edit;
-        qrMechData.FieldByName('DELETED').Value := 1;
+        // Если является заменяющим
+        if (qrMechData.FieldByName('FREPLACED').AsInteger <> 0) and (not(qrMechData.State in [dsEdit])) then
+        begin
+          DM.qrDifferent.SQL.Text := 'SELECT ID FROM mechanizmcard_temp'#13 +
+            'WHERE DELETED=:DELETED AND PROC_ZAC=:PROC_ZAC AND PROC_PODR=:PROC_PODR'#13 +
+            'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:COAST AND MECH_ID=:MECH_ID'#13
+            + 'AND IF(:NDS=1, IF(FZP_MACH_NDS<>0, FZP_MACH_NDS, ZP_MACH_NDS), IF(FZP_MACH_NO_NDS<>0, FZP_MACH_NO_NDS, ZP_MACH_NO_NDS))=:ZP_1';
+          DM.qrDifferent.ParamByName('DELETED').Value := qrMechData.FieldByName('DELETED').Value;
+          DM.qrDifferent.ParamByName('PROC_ZAC').Value := qrMechData.FieldByName('PROC_ZAC').Value;
+          DM.qrDifferent.ParamByName('PROC_PODR').Value := qrMechData.FieldByName('PROC_PODR').Value;
+          DM.qrDifferent.ParamByName('NDS').Value := cbbNDS.ItemIndex;
+          DM.qrDifferent.ParamByName('COAST').Value := qrMechData.FieldByName('COAST').Value;
+          DM.qrDifferent.ParamByName('MECH_ID').Value := qrMechData.FieldByName('MECH_ID').Value;
+          DM.qrDifferent.ParamByName('ZP_1').Value := qrMechData.FieldByName('ZP_1').Value;
+          DM.qrDifferent.Active := True;
+          while not DM.qrDifferent.Eof do
+          begin
+            FastExecSQL('CALL DeleteMechanism(:id, :CalcMode);',
+              VarArrayOf([DM.qrDifferent.FieldByName('ID').Value, G_CALCMODE]));
+            DM.qrDifferent.Next;
+          end;
+          CloseOpen(qrMechData);
+        end
+        else
+        begin
+          if not(qrMechData.State in [dsEdit]) then
+            qrMechData.Edit;
+          qrMechData.FieldByName('DELETED').Value := 1;
+        end;
       end;
     // Расчет оборудования
     3:
@@ -583,12 +643,13 @@ begin
     grMech.Options := grMaterial.Options - [dgMultiSelect];
     grMechBott.Options := grMechBott.Options - [dgMultiSelect]; }
   case pgc.ActivePageIndex of
+    // Поправить вызов ниже под новый вариант  'CODE' заменить на <<-- { 'MAT_ID' }
     1:
-      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMaterialData.FieldByName('CODE').AsString,
-        0, False, False);
+      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0,
+        qrMaterialData.FieldByName( { 'MAT_ID' } 'CODE').AsString, 0 { 2 } , False, False);
     2:
-      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMechData.FieldByName('CODE').AsString, 1,
-        False, False);
+      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMechData.FieldByName( { 'MECH_ID' } 'CODE')
+        .AsString, 1 { 3 } , False, False);
   end;
   if Assigned(frmReplace) then
     try

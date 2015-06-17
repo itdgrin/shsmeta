@@ -132,7 +132,7 @@ object fCalcResource: TfCalcResource
     Top = 56
     Width = 616
     Height = 306
-    ActivePage = ts2
+    ActivePage = ts3
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -1516,15 +1516,17 @@ object fCalcResource: TfCalcResource
       '  TRANSP_PROC_PODR,'
       '  MAT_ID,'
       '  REPLACED,'
-      '  ID_REPLACED'
+      '  (ID_REPLACED<>0) AS FREPLACED'
       'FROM '
       '  materialcard_temp'
       'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) /*AND REPLACED = 0*/'
       
         'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, FCOAS' +
-        'T, COAST, DELETED,  MAT_PROC_ZAC, MAT_PROC_PODR, TRANSP_PROC_ZAC' +
-        ', TRANSP_PROC_PODR, MAT_ID'
-      'ORDER BY 1,2')
+        'T, COAST, DELETED,  '
+      
+        'MAT_PROC_ZAC, MAT_PROC_PODR, TRANSP_PROC_ZAC, TRANSP_PROC_PODR, ' +
+        'MAT_ID, REPLACED, FREPLACED'
+      'ORDER BY 1, REPLACED DESC, 2')
     Left = 27
     Top = 168
     ParamData = <
@@ -1643,8 +1645,8 @@ object fCalcResource: TfCalcResource
     object qrMaterialDataREPLACED: TIntegerField
       FieldName = 'REPLACED'
     end
-    object qrMaterialDataID_REPLACED: TLongWordField
-      FieldName = 'ID_REPLACED'
+    object qrMaterialDataFREPLACED: TIntegerField
+      FieldName = 'FREPLACED'
     end
   end
   object dsMaterialData: TDataSource
@@ -1710,14 +1712,14 @@ object fCalcResource: TfCalcResource
       '  PROC_PODR,'
       '  MECH_ID,'
       '  REPLACED,'
-      '  ID_REPLACED'
+      '  (ID_REPLACED<>0) AS FREPLACED'
       'FROM '
       '  mechanizmcard_temp'
       'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) /*AND REPLACED = 0*/'
       
         'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, COAST, ZP_1, DELET' +
-        'ED, PROC_ZAC, PROC_PODR, MECH_ID'
-      'ORDER BY 1,2')
+        'ED, PROC_ZAC, PROC_PODR, MECH_ID, REPLACED, FREPLACED'
+      'ORDER BY 1, REPLACED DESC, 2')
     Left = 99
     Top = 168
     ParamData = <
