@@ -25,7 +25,7 @@ type
   TSprArray = array of TSprRecord;
 
   //Контейнер
-  TSmClipRec = packed record
+  TSmClipRec = record
     ObjID,
     SmID,
     DataID,

@@ -3080,17 +3080,42 @@ end;
 procedure TFormCalculationEstimate.PMCopyClick(Sender: TObject);
 var
   DataObj: TSmClipData;
+  TempBookmark: TBookMark;
+  i, j: Integer;
 begin
   if not(qrRatesExID_TYPE_DATA.Value > 0) or Act then
     Exit;
 
   DataObj := TSmClipData.Create;
   try
-    DataObj.Rec.ObjID := IdObject;
-    DataObj.Rec.SmID := qrRatesExSM_ID.Value;
-    DataObj.Rec.DataID := qrRatesExID_TABLES.Value;
-    DataObj.Rec.DataType := qrRatesExID_TYPE_DATA.Value;
-    DataObj.CopyToClipBoard;
+    grRatesEx.DataSource.DataSet.DisableControls;
+    with grRatesEx.SelectedRows do
+    if Count <> 0 then
+    begin
+      TempBookmark := grRatesEx.DataSource.DataSet.GetBookmark;
+      for i := 0 to Count - 1 do
+      begin
+        if IndexOf(Items[i]) > -1 then
+        begin
+          grRatesEx.DataSource.DataSet.Bookmark := Items[i];
+
+          if qrRatesExID_TYPE_DATA.Value > 0 then
+          begin
+            j := Length(DataObj.SmClipArray);
+            SetLength(DataObj.SmClipArray, j + 1);
+
+            DataObj.SmClipArray[j].ObjID := IdObject;
+            DataObj.SmClipArray[j].SmID := qrRatesExSM_ID.Value;
+            DataObj.SmClipArray[j].DataID := qrRatesExID_TABLES.Value;
+            DataObj.SmClipArray[j].DataType := qrRatesExID_TYPE_DATA.Value;
+          end;
+        end;
+      end;
+      DataObj.CopyToClipBoard;
+      grRatesEx.DataSource.DataSet.GotoBookmark(TempBookmark);
+      grRatesEx.DataSource.DataSet.FreeBookmark(TempBookmark);
+    end;
+    grRatesEx.DataSource.DataSet.EnableControls;
   finally
     DataObj.Free;
   end;
@@ -3316,12 +3341,10 @@ begin
   try
     if ClipBoard.HasFormat(G_SMETADATA) then
     begin
-      with DataObj.Rec do
-      begin
-        DataObj.GetFromClipBoard;
-        if PasteSmetaRow(DataObj.Rec, qrRatesExSM_ID.Value, qrRatesExNUM_ROW.Value) then
-          OutputDataToTable;
-      end;
+      DataObj.GetFromClipBoard;
+      if PasteSmetaRow(DataObj.SmClipArray, qrRatesExSM_ID.Value,
+        qrRatesExNUM_ROW.Value) then
+        OutputDataToTable;
     end;
   finally
     DataObj.Free;

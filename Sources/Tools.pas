@@ -35,7 +35,7 @@ type
 
   TSmClipData = class
   public
-    Rec: TSmClipRec;
+    SmClipArray: array of TSmClipRec;
     procedure CopyToClipBoard;
     procedure GetFromClipBoard;
   end;
@@ -125,13 +125,20 @@ procedure TSmClipData.CopyToClipBoard;
 var
   Data: THandle;
   DataPtr: Pointer;
-  //TempStr: string[25];
+  i: Integer;
 begin
-  Data := GlobalAlloc(GMEM_MOVEABLE, SizeOf(TSmClipRec));
+  if Length(SmClipArray) = 0 then
+    Exit;
+
+  Data := GlobalAlloc(GMEM_MOVEABLE, SizeOf(Integer) +
+    SizeOf(TSmClipRec) * Length(SmClipArray));
   try
     DataPtr := GlobalLock(Data);
     try
-      Move(Rec, DataPtr^, SizeOf(TSmClipRec));
+      i := Length(SmClipArray);
+      Move(i, DataPtr^, SizeOf(Integer));
+      DataPtr := Ptr(Cardinal(DataPtr) + SizeOf(Integer));
+      Move(SmClipArray[0], DataPtr^, SizeOf(TSmClipRec) * Length(SmClipArray));
       ClipBoard.SetAsHandle(G_SMETADATA, Data);
     finally
       GlobalUnlock(Data);
@@ -146,18 +153,19 @@ procedure TSmClipData.GetFromClipBoard;
 var
   Data: THandle;
   DataPtr: Pointer;
-  Size: Integer;
+  i: Integer;
 begin
   Data := ClipBoard.GetAsHandle(G_SMETADATA);
   if Data = 0 then
     Exit;
   DataPtr := GlobalLock(Data);
   try
-    if SizeOf(TSmClipRec) > GlobalSize(Data) then
-      Size := GlobalSize(Data)
-    else
-      Size := SizeOf(TSmClipRec);
-    Move(DataPtr^, Rec, Size)
+    Move(DataPtr^, i, SizeOf(Integer));
+    SetLength(SmClipArray, i);
+    if i = 0 then
+      Exit;
+    DataPtr := Ptr(Cardinal(DataPtr) + SizeOf(Integer));
+    Move(DataPtr^, SmClipArray[0], SizeOf(TSmClipRec) * Length(SmClipArray));
   finally
     GlobalUnlock(Data);
   end;
