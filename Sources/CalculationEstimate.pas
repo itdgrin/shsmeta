@@ -2559,6 +2559,7 @@ begin
     qrRatesEx.OnCalcFields := qrRatesExCalcFields;
     qrRatesEx.Locate('SORT_ID', Key, []);
     qrRatesEx.EnableControls;
+    grRatesEx.SelectedRows.Clear;
   end;
 end;
 
