@@ -643,13 +643,15 @@ begin
     grMech.Options := grMaterial.Options - [dgMultiSelect];
     grMechBott.Options := grMechBott.Options - [dgMultiSelect]; }
   case pgc.ActivePageIndex of
-    // Поправить вызов ниже под новый вариант  'CODE' заменить на <<-- { 'MAT_ID' }
     1:
-      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0,
-        qrMaterialData.FieldByName('MAT_ID').AsInteger, 2, False, False);
+      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMaterialData.FieldByName('MAT_ID')
+        .AsInteger, 2, False, False);
     2:
-      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0,
-        qrMechData.FieldByName('MECH_ID').AsInteger, 3, False, False);
+      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMechData.FieldByName('MECH_ID').AsInteger,
+        3, False, False);
+    3:
+      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrDevices.FieldByName('DEVICE_ID').AsInteger,
+        4, False, False);
   end;
   if Assigned(frmReplace) then
     try
@@ -821,7 +823,7 @@ begin
       begin
         mDetete.Visible := qrDevices.FieldByName('DELETED').AsInteger = 0;
         mRestore.Visible := qrDevices.FieldByName('DELETED').AsInteger = 1;
-        mReplace.Visible := False;
+        mReplace.Visible := True;
       end;
     // Расчет з\п
     4:
