@@ -7,7 +7,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  Tools, Vcl.Menus, JvDBGrid, JvExDBGrids;
+  Tools, Vcl.Menus, JvDBGrid, JvExDBGrids, JvComponentBase, JvFormPlacement;
 
 type
   TfrCalculationEstimateSummaryCalculations = class(TFrame)
@@ -17,14 +17,14 @@ type
     pm1: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
-    N3: TMenuItem;
     N4: TMenuItem;
     N5: TMenuItem;
-    procedure FrameResize(Sender: TObject);
+    FormStorage: TJvFormStorage;
     procedure dbgrdSummaryCalculationDblClick(Sender: TObject);
     procedure N5Click(Sender: TObject);
+    procedure FrameResize(Sender: TObject);
   private
-    OBJECT_ID: Integer;
+    SM_ID: Integer;
   public
     function LoadData(const Args: Variant): Boolean;
   end;
@@ -33,21 +33,21 @@ implementation
 
 {$R *.dfm}
 
-uses BasicData, CardObject;
+uses BasicData, CardObject, Main;
 
 procedure TfrCalculationEstimateSummaryCalculations.dbgrdSummaryCalculationDblClick(Sender: TObject);
 var
   Key: Variant;
 begin
   Key := qrData.FieldByName('SM_ID').Value;
-  FormBasicData.ShowForm(OBJECT_ID, qrData.FieldByName('ID').AsInteger);
-  LoadData(OBJECT_ID);
+  FormBasicData.ShowForm(qrData.FieldByName('OBJ_ID').AsInteger, qrData.FieldByName('SM_ID').AsInteger);
+  LoadData(SM_ID);
   qrData.Locate('SM_ID', Key, []);
 end;
 
 procedure TfrCalculationEstimateSummaryCalculations.FrameResize(Sender: TObject);
 begin
-  FixDBGridColumnsWidth(dbgrdSummaryCalculation);
+  // FixDBGridColumnsWidth(dbgrdSummaryCalculation);
 end;
 
 function TfrCalculationEstimateSummaryCalculations.LoadData(const Args: Variant): Boolean;
@@ -56,9 +56,9 @@ begin
   try
     LoadDBGridSettings(dbgrdSummaryCalculation);
     qrData.Active := False;
-    qrData.ParamByName('OBJ_ID').Value := Args;
+    qrData.ParamByName('SM_ID').Value := Args;
     qrData.Active := True;
-    OBJECT_ID := Args;
+    SM_ID := Args;
   except
     Result := False;
   end;

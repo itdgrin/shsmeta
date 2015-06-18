@@ -1107,7 +1107,7 @@ begin
     PanelSSR.Visible := False;
 
     // Инициализация заполнения фрейма данными
-    frSummaryCalculations.LoadData(IdObject);
+    frSummaryCalculations.LoadData(IdEstimate);
 
     // -----------------------------------------
 

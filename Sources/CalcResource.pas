@@ -549,6 +549,9 @@ begin
         if (qrMaterialData.FieldByName('FREPLACED').AsInteger <> 0) and (not(qrMaterialData.State in [dsEdit]))
         then
         begin
+          if MessageBox(0, PChar('Вы действительно хотите удалить ' + strngfldMaterialDataCODE.AsString +
+            '?'), Pwidechar(Caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) <> mrYes then
+            Exit;
           DM.qrDifferent.SQL.Text := 'SELECT ID FROM materialcard_temp'#13 +
             'WHERE PROC_TRANSP=:PROC_TRANSP AND DELETED=:DELETED'#13 +
             'AND MAT_PROC_ZAC=:MAT_PROC_ZAC AND MAT_PROC_PODR=:MAT_PROC_PODR'#13 +
@@ -574,6 +577,7 @@ begin
               VarArrayOf([DM.qrDifferent.FieldByName('ID').Value, G_CALCMODE]));
             DM.qrDifferent.Next;
           end;
+          FormCalculationEstimate.RecalcEstimate;
           CloseOpen(qrMaterialData);
         end
         else
@@ -589,6 +593,9 @@ begin
         // Если является заменяющим
         if (qrMechData.FieldByName('FREPLACED').AsInteger <> 0) and (not(qrMechData.State in [dsEdit])) then
         begin
+          if MessageBox(0, PChar('Вы действительно хотите удалить ' + strngfldMechDataCODE.AsString + '?'),
+            Pwidechar(Caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) <> mrYes then
+            Exit;
           DM.qrDifferent.SQL.Text := 'SELECT ID FROM mechanizmcard_temp'#13 +
             'WHERE DELETED=:DELETED AND PROC_ZAC=:PROC_ZAC AND PROC_PODR=:PROC_PODR'#13 +
             'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:COAST AND MECH_ID=:MECH_ID'#13
@@ -607,6 +614,7 @@ begin
               VarArrayOf([DM.qrDifferent.FieldByName('ID').Value, G_CALCMODE]));
             DM.qrDifferent.Next;
           end;
+          FormCalculationEstimate.RecalcEstimate;
           CloseOpen(qrMechData);
         end
         else
