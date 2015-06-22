@@ -51,10 +51,10 @@ begin
     lc := ListSpr.Columns.Add;
     lc.Caption := 'ЗП машиниста, руб';
     FZpColIndex := lc.Index;
-    lc := ListSpr.Columns.Add;
-    lc.Caption := 'Затр. труда, чел.ч.';
-    FTrColIndex := lc.Index;
   end;
+  lc := ListSpr.Columns.Add;
+  lc.Caption := 'Затр. труда, чел.ч.';
+  FTrColIndex := lc.Index;
 end;
 
 function TSprMechanizm.CheckFindCode(AFindCode: string): string;
@@ -81,7 +81,7 @@ begin
           IntToStr(cmbMonth.ItemIndex + 1) + ') ORDER BY mech_code;'
   else
     Result := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
-          'cast(mech_name as char(1024)) as "Name", unit_name as "Unit" ' +
+          'cast(mech_name as char(1024)) as "Name", unit_name as "Unit", MECH_PH ' +
           'FROM mechanizm left join units on mechanizm.unit_id = units.unit_id ' +
           'ORDER BY mech_code;';
 end;
@@ -95,10 +95,10 @@ begin
     if TSprRecord(Item.Data^).ZpMach > 0 then
       Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).ZpMach))
     else Item.SubItems.Add('');
-    if TSprRecord(Item.Data^).TrZatr > 0 then
-      Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).TrZatr))
-    else Item.SubItems.Add('');
   end;
+  if TSprRecord(Item.Data^).TrZatr > 0 then
+    Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).TrZatr))
+  else Item.SubItems.Add('');
 end;
 
 procedure TSprMechanizm.ListSprDblClick(Sender: TObject);
@@ -121,8 +121,8 @@ begin
   if FPriceColumn then
   begin
     FSprArray[AInd - 1].ZpMach := ADataSet.FieldByName('ZP1').AsFloat;
-    FSprArray[AInd - 1].TrZatr := ADataSet.FieldByName('MECH_PH').AsFloat;
   end;
+  FSprArray[AInd - 1].TrZatr := ADataSet.FieldByName('MECH_PH').AsFloat;
 end;
 
 

@@ -80,7 +80,7 @@ type
     function FindCode(const ACode: string): PSprRecord;
 
     property OnAfterLoad: TNotifyEvent read FOnAfterLoad write FOnAfterLoad;
-    property Loaded: Boolean read FLoaded;
+    property SprLoaded: Boolean read FLoaded;
   end;
 
 implementation
@@ -124,8 +124,8 @@ begin
         end;
 
         //Для того что-бы не подвисало
-        if (ind mod 500) = 0 then
-          Application.ProcessMessages;
+        if (ind mod 1000) = 0 then
+           Application.ProcessMessages;
         //не по именам для быстродействия
         //Id, Code, Name, Unit, PriceVAT, PriceNotVAT, MAT_TYPE
         FSprArray[ind - 1].ID := ADataSet.Fields[0].AsInteger;

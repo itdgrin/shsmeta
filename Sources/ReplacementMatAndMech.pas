@@ -187,6 +187,7 @@ begin
       pmShowRep.Visible := True;
       pmShowRep.Caption := 'Заменяющие ' + PRec^.MCode;
       pmShowRep.Tag := PRec^.MID;
+      pmShowRep.Enabled := Frame.SprLoaded;
     end
     else
       pmShowRep.Visible := False;
@@ -277,6 +278,7 @@ begin
     begin
       grdRep.RowCount := grdRep.FixedRows + i;
       grdRep.Cells[0, grdRep.RowCount - 1] := IntToStr(i);
+      //Возможно следует отваязать от справочника, и брать данные из qrRep
       SprRec := Frame.FindCode(qrRep.Fields[0].AsString);
       if Assigned(SprRec) then
       begin
@@ -897,7 +899,7 @@ begin
     Item.Data := @FEntryArray[i];
     if FAutoRep and (not TmpFlag) and (FEntryArray[i].MRep > 0) then
     begin
-      if Frame.Loaded then
+      if Frame.SprLoaded then
         ShowDelRep(FEntryArray[i].MID)
       else
         FIdForAutoRep := FEntryArray[i].MID;

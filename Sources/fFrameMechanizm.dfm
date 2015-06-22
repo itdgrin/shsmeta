@@ -230,9 +230,7 @@ inherited SprMechanizm: TSprMechanizm
   inherited PanelFind: TPanel
     inherited edtFindCode: TEdit
       Top = 6
-      Height = 23
       ExplicitTop = 6
-      ExplicitHeight = 23
     end
   end
   inherited ListSpr: TListView
