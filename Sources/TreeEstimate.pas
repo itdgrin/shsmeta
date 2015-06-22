@@ -53,11 +53,12 @@ end;
 procedure TfTreeEstimate.tvEstimatesDblClick(Sender: TObject);
 begin
   FormCalculationEstimate.EditNameEstimate.Text := qrTreeEstimates.FieldByName('NAME').AsString;
-  FormCalculationEstimate.IdEstimate := qrTreeEstimates.FieldByName('SM_ID').AsInteger;;
+  FormCalculationEstimate.IdEstimate := qrTreeEstimates.FieldByName('SM_ID').AsInteger;
   // —оздание временных таблиц
   FormCalculationEstimate.CreateTempTables;
   // «аполнен€ временных таблиц, заполнение формы
   FormCalculationEstimate.OpenAllData;
+  FormCalculationEstimate.frSummaryCalculations.LoadData(FormCalculationEstimate.IdEstimate);
   // Close;
 end;
 

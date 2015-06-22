@@ -1824,8 +1824,8 @@ object fCalcResource: TfCalcResource
     object qrMechDataREPLACED: TIntegerField
       FieldName = 'REPLACED'
     end
-    object qrMechDataID_REPLACED: TLongWordField
-      FieldName = 'ID_REPLACED'
+    object qrMechDataFREPLACED: TIntegerField
+      FieldName = 'FREPLACED'
     end
   end
   object dsMechData: TDataSource

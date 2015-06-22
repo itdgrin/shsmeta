@@ -1305,7 +1305,8 @@ begin
   finally
     qrRatesEx.EnableControls;
     qrRatesEx.AfterScroll := e;
-    qrRatesExAfterScroll(qrRatesEx);
+    //qrRatesExAfterScroll(qrRatesEx);
+    CloseOpen(qrRatesEx);
     CloseOpen(qrCalculations);
   end;
 end;

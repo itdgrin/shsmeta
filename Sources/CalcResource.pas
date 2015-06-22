@@ -140,8 +140,8 @@ type
     qrMaterialDataFCOAST: TIntegerField;
     qrMaterialDataREPLACED: TIntegerField;
     qrMechDataREPLACED: TIntegerField;
-    qrMechDataID_REPLACED: TLongWordField;
     qrMaterialDataFREPLACED: TIntegerField;
+    qrMechDataFREPLACED: TIntegerField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);

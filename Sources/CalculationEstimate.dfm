@@ -2868,6 +2868,133 @@
       inherited dbgrdSummaryCalculation: TJvDBGrid
         Width = 100
         Height = 53
+        Columns = <
+          item
+            Expanded = False
+            FieldName = 'TYPE_NAME'
+            Title.Alignment = taCenter
+            Title.Caption = #1058#1080#1087
+            Width = 4
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'SM_NUMBER'
+            Title.Alignment = taCenter
+            Title.Caption = #1053#1086#1084#1077#1088
+            Width = 4
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'SM_NAME'
+            Title.Alignment = taCenter
+            Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+            Width = 6
+            Visible = True
+          end
+          item
+            Expanded = False
+            Title.Alignment = taCenter
+            Title.Caption = #1054#1073#1098#1105#1084' '#1055#1058#1052
+            Visible = False
+          end
+          item
+            Expanded = False
+            FieldName = 'STOIM'
+            Title.Alignment = taCenter
+            Title.Caption = #1042#1089#1077#1075#1086
+            Width = 4
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ST_OHROPR'
+            Title.Alignment = taCenter
+            Title.Caption = #1042#1089#1077#1075#1086' '#1089' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055
+            Width = 5
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ZP'
+            Title.Alignment = taCenter
+            Title.Caption = #1047#1072#1088#1087#1083#1072#1090#1072
+            Width = 4
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'TRUD'
+            Title.Alignment = taCenter
+            Title.Caption = #1058#1088#1091#1076#1086#1105#1084#1082#1086#1089#1090#1100
+            Width = 6
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'EMiM'
+            Title.Alignment = taCenter
+            Title.Caption = #1069#1052#1080#1052
+            Width = 4
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ZP_MASH'
+            Title.Alignment = taCenter
+            Title.Caption = #1047#1055' '#1084#1072#1096'.'
+            Width = 4
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'MR'
+            Title.Alignment = taCenter
+            Title.Caption = #1052#1072#1090#1077#1088#1080#1072#1083
+            Width = 4
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'TRANSP'
+            Title.Alignment = taCenter
+            Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
+            Width = 6
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'OHROPR'
+            Title.Alignment = taCenter
+            Title.Caption = #1054#1061#1056#1080#1054#1055#1056
+            Width = 4
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'PLAN_PRIB'
+            Title.Alignment = taCenter
+            Title.Caption = #1055#1083#1072#1085'. '#1087#1088#1080#1073'.'
+            Width = 4
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ZIM_UDOR'
+            Title.Alignment = taCenter
+            Title.Caption = #1047#1080#1084'. '#1091#1076#1086#1088'.'
+            Width = 5
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'ZP_ZIM_UDOR'
+            Title.Alignment = taCenter
+            Title.Caption = #1047#1055' '#1079#1080#1084'. '#1091#1076#1086#1088'.'
+            Width = 5
+            Visible = True
+          end>
       end
     end
   end
