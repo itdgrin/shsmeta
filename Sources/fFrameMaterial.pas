@@ -24,6 +24,8 @@ type
     procedure OnLoadDone; override;
     procedure SpecialFillArray(const AInd: Integer; ADataSet: TDataSet); override;
     function CheckFindCode(AFindCode: string): string; override;
+    function CheckByffer: Boolean; override;
+    procedure UpdateByffer; override;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent;
@@ -127,6 +129,38 @@ end;
 procedure TSprMaterial.SpecialFillArray(const AInd: Integer; ADataSet: TDataSet);
 begin
   FSprArray[AInd - 1].MType := ADataSet.FieldByName('MAT_TYPE').AsInteger;
+end;
+
+function TSprMaterial.CheckByffer: Boolean;
+begin
+  if (G_MATBYFFER.Mat = cbMat.Checked) and
+     (G_MATBYFFER.JBI = cbJBI.Checked) and
+     (G_MATBYFFER.Region = cmbRegion.ItemIndex + 1) and
+     (G_MATBYFFER.Month = cmbMonth.ItemIndex + 1) and
+     (G_MATBYFFER.Year = edtYear.Value) then
+  begin
+    OnLoadStart;
+    Application.ProcessMessages;
+    try
+      TMatSprByffer.CopyByffer(@G_MATBYFFER.SprArray, @FSprArray);
+      FillSprList(edtFindCode.Text, edtFindName.Text);
+    finally
+      OnLoadDone;
+      Result := True;
+    end;
+  end
+  else
+    Result := False;
+end;
+
+procedure TSprMaterial.UpdateByffer;
+begin
+  G_MATBYFFER.Mat := cbMat.Checked;
+  G_MATBYFFER.JBI := cbJBI.Checked;
+  G_MATBYFFER.Region := cmbRegion.ItemIndex + 1;
+  G_MATBYFFER.Month := cmbMonth.ItemIndex + 1;
+  G_MATBYFFER.Year := edtYear.Value;
+  TMatSprByffer.CopyByffer(@FSprArray, @G_MATBYFFER.SprArray);
 end;
 
 end.

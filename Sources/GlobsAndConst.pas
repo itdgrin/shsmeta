@@ -23,8 +23,20 @@ type
   end;
   PSprRecord = ^TSprRecord;
   TSprArray = array of TSprRecord;
+  PSprArray = ^TSprArray;
 
-  //Контейнер
+  //Контейнер для буферизации справочника материалов
+  TMatSprByffer = record
+    Mat,
+    JBI: Boolean;
+    Month,
+    Year,
+    Region: Integer;
+    SprArray: TSprArray;
+    class procedure CopyByffer(ASoursByffer, ADestByffer: PSprArray); static;
+  end;
+
+  //Контейнер для работы с буфером обмена
   TSmClipRec = record
     ObjID,
     SmID,
@@ -178,7 +190,27 @@ var
   G_SHOWMODE: Byte = 1;  //0 - С разделением на заменяющие и добавленные
   //Результат RegisterClipboardFormat()
   G_SMETADATA: Integer;
+  //Буфер справочника материалов, заполняемый при первой загрузке
+  G_MATBYFFER: TMatSprByffer;
 
 implementation
+
+class procedure TMatSprByffer.CopyByffer(ASoursByffer, ADestByffer: PSprArray);
+var i: Integer;
+begin
+  SetLength(ADestByffer^, Length(ASoursByffer^));
+  for i := Low(ASoursByffer^) to High(ASoursByffer^) do
+  begin
+    ADestByffer^[i].ID := ASoursByffer^[i].ID;
+    ADestByffer^[i].Code := ASoursByffer^[i].Code;
+    ADestByffer^[i].Name := ASoursByffer^[i].Name;
+    ADestByffer^[i].Unt := ASoursByffer^[i].Unt;
+    ADestByffer^[i].CoastNDS := ASoursByffer^[i].CoastNDS;
+    ADestByffer^[i].CoastNoNDS := ASoursByffer^[i].CoastNoNDS;
+    ADestByffer^[i].ZpMach := ASoursByffer^[i].ZpMach;
+    ADestByffer^[i].TrZatr := ASoursByffer^[i].TrZatr;
+    ADestByffer^[i].MType := ASoursByffer^[i].MType;
+  end;
+end;
 
 end.

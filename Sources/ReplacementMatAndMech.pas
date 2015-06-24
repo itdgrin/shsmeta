@@ -152,6 +152,7 @@ type
     procedure LoadObjEstInfo;
     procedure LoadRepInfo;
     procedure LoadEntry;
+    procedure LoadSpr;
 
     procedure ShowDelRep(const AID: Integer; ADel: Boolean = False);
     procedure AfterFrameLoad(ASender: TObject);
@@ -590,10 +591,12 @@ begin
   end;
 
   if not FAddMode then
-  begin
     LoadRepInfo;
+
+  LoadSpr;
+
+  if not FAddMode then
     LoadEntry;
-  end;
 end;
 
 //Подгружает информацию по объекту, смете и расценке, если надо
@@ -702,7 +705,14 @@ begin
     edtSourceCode.Tag := qrRep.Fields[0].AsInteger;
     edtSourceCode.Text := qrRep.Fields[1].AsString;
     edtSourceName.Text := qrRep.Fields[2].AsString;
-    Frame.edtFindName.Text := edtSourceName.Text;
+    if FCurType = 2 then
+    begin
+      //Тип вычисляется по коду
+      if (edtSourceCode.Text <> '') and
+         ((edtSourceCode.Text[1] = 'С') or (edtSourceCode.Text[1] = 'П')) then
+        edtSourceName.Tag := 1
+       else edtSourceName.Tag := 2;
+    end;
   end;
   qrRep.Active := False;
 end;
@@ -1187,9 +1197,6 @@ begin
       groupReplace.Caption := 'Материал:';
       ListEntry.Columns[2].Caption := 'Материал';
       groupCatalog.Caption := 'Справочник материалов:';
-
-      Frame := TSprMaterial.Create(Self, True, False,
-        EncodeDate(FYear, FMonth, 1), FRegion, True, False);
     end;
     //Механизмы
     3:
@@ -1197,9 +1204,6 @@ begin
       groupReplace.Caption := 'Механизм:';
       ListEntry.Columns[2].Caption := 'Механизм';
       groupCatalog.Caption := 'Справочник механизмов:';
-
-      Frame := TSprMechanizm.Create(Self, True, True,
-        EncodeDate(FYear, FMonth, 1));
     end;
     //Оборудование
     4:
@@ -1207,23 +1211,39 @@ begin
       groupReplace.Caption := 'Оборудование:';
       ListEntry.Columns[2].Caption := 'Оборудование';
       groupCatalog.Caption := 'Справочник оборудования:';
-
-      Frame := TSprEquipment.Create(Self, False);
     end;
   end;
+
+end;
+
+procedure TfrmReplacement.LoadSpr;
+var tmp: Boolean;
+begin
+  case FCurType of
+    //Материалы
+    2:
+    begin
+      tmp := edtSourceName.Tag = 1;
+      Frame := TSprMaterial.Create(Self, True, False,
+        EncodeDate(FYear, FMonth, 1), FRegion, tmp, not tmp);
+    end;
+    //Механизмы
+    3: Frame := TSprMechanizm.Create(Self, True, True,
+        EncodeDate(FYear, FMonth, 1));
+    //Оборудование
+    4: Frame := TSprEquipment.Create(Self, False);
+  end;
   Frame.Parent := groupCatalog;
-  Frame.LoadSpr;
   Frame.Align := alClient;
   Frame.SpeedButtonShowHideClick(Frame.SpeedButtonShowHide);
   Frame.ListSpr.OnDblClick := btnSelectClick;
   Frame.OnAfterLoad := AfterFrameLoad;
-  edtSourceCode.Text := '';
-  edtSourceName.Text := '';
+  Frame.edtFindName.Text := edtSourceName.Text;
+  Frame.LoadSpr;
 end;
 
 procedure TfrmReplacement.rgroupTypeClick(Sender: TObject);
-var TmpFlag: Boolean;
-    TmpIndex: Integer;
+var TmpIndex: Integer;
 begin
   case FCurType of
     2: TmpIndex := 0;

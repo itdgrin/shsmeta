@@ -7,7 +7,8 @@ uses
   System.Masks, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.Samples.Spin, Vcl.ExtCtrls, GlobsAndConst, Vcl.ComCtrls, Vcl.Buttons,
   JvExControls, JvAnimatedImage, JvGIFCtrl, Data.DB, Generics.Collections,
-  Generics.Defaults;
+  Generics.Defaults,
+  System.IOUtils;
 
 type
   TSortRec = TPair<Integer, Pointer>;
@@ -43,12 +44,11 @@ type
     procedure btnFindClick(Sender: TObject);
     procedure ListSprResize(Sender: TObject);
   private
-    FOnAfterLoad: TNotifyEvent;
     //Фаг того, что справочник загружен
     FLoaded: Boolean;
+    FOnAfterLoad: TNotifyEvent;
     procedure OnExcecute(var Mes: TMessage); message WM_EXCECUTE;
   protected
-    { Private declarations }
     FPriceColumn: Boolean;
     //Основной массив справочника
     FSprArray: TSprArray;
@@ -72,6 +72,10 @@ type
     procedure OnLoadStart; virtual;
     //Устанавливает внешний вид формы после загрузки
     procedure OnLoadDone; virtual;
+    //Проверяет на наличие актуального буфера
+    function CheckByffer: Boolean; virtual;
+    //обновляет буфер
+    procedure UpdateByffer; virtual;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
@@ -101,7 +105,6 @@ begin
         Result := @FSprArray[i];
         Exit;
       end;
-
 end;
 
 procedure TSprFrame.FillSprArray(ADataSet: TDataSet);
@@ -144,6 +147,8 @@ begin
     end;
   finally
     SetLength(FSprArray, ind);
+    //После загрузки справочника обновляет буфер
+    UpdateByffer;
   end;
 end;
 
@@ -471,11 +476,15 @@ end;
 procedure TSprFrame.LoadSpr;
 var TmpStr: string;
 begin
-  TmpStr := GetSprSQL;
-  //Вызов нити выполняющей запрос на данные справлчника
-  TThreadQuery.Create(TmpStr, Handle);
-  OnLoadStart;
-  Application.ProcessMessages;
+  //Проверяет на наличие подходящего буфера и если его нет, подгружает из базы
+  if not CheckByffer then
+  begin
+    TmpStr := GetSprSQL;
+    //Вызов нити выполняющей запрос на данные справлчника
+    TThreadQuery.Create(TmpStr, Handle);
+    OnLoadStart;
+    Application.ProcessMessages;
+  end;
 end;
 
 procedure TSprFrame.OnLoadStart;
@@ -516,6 +525,17 @@ begin
   FLoaded := True;
   if Assigned(FOnAfterLoad) then
     FOnAfterLoad(Self);
+end;
+
+//Проверяет на наличие актуального буфера
+function TSprFrame.CheckByffer: Boolean;
+begin
+  Result := False;
+end;
+
+procedure TSprFrame.UpdateByffer;
+begin
+
 end;
 
 procedure TSprFrame.SpeedButtonShowHideClick(Sender: TObject);
