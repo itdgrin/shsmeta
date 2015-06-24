@@ -1223,7 +1223,7 @@ begin
     //Материалы
     2:
     begin
-      tmp := edtSourceName.Tag = 1;
+      tmp := (edtSourceName.Tag = 1) or FAddMode;
       Frame := TSprMaterial.Create(Self, True, False,
         EncodeDate(FYear, FMonth, 1), FRegion, tmp, not tmp);
     end;

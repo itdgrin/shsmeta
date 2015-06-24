@@ -5989,11 +5989,6 @@ begin
   begin
     Brush.Color := PS.BackgroundRows;
     Font.Color := PS.FontRows;
-    if gdFocused in State then // Ячейка в фокусе
-    begin
-      Brush.Color := PS.BackgroundSelectCell;
-      Font.Color := PS.FontSelectCell;
-    end;
 
     if qrRatesExID_TYPE_DATA.AsInteger = -3 then
       Brush.Color := clSilver;
@@ -6008,12 +6003,26 @@ begin
       Brush.Color := clInactiveBorder;
     end;
 
+    // Подсвечиваем расченку с добавленными материалами/механизмами
+    if qrRatesExADDED_COUNT.Value > 0 then
+      Font.Color := clBlue;
+
+    if (grRatesEx.SelectedRows.CurrentRowSelected) and
+       (grRatesEx.SelectedRows.Count > 1) then
+      Font.Color := clRed;
+
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
       (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)
     // and (grRatesEx = LastEntegGrd) // Подсвечивается жирным только если есть фокус
     then
     begin
       Font.Style := Font.Style + [fsbold];
+    end;
+
+    if gdFocused in State then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
     end;
 
     // Подсветка вынесенного за расценку материала и заменяющего материала
@@ -6033,10 +6042,6 @@ begin
         and (grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) then
         Font.Style := Font.Style + [fsbold];
     end;
-
-    // Подсвечиваем расченку с добавленными материалами/механизмами
-    if qrRatesExADDED_COUNT.Value > 0 then
-      Font.Color := clBlue;
 
     if qrRatesExREPLACED_COUNT.Value > 0 then
       Font.Style := Font.Style + [fsItalic];
