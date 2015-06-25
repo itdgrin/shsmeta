@@ -10864,18 +10864,22 @@
     ExplicitTop = 40
   end
   object MainMenu: TMainMenu
+    Images = DM.ilIcons_16x16
     Left = 32
     Top = 8
     object MenuFile: TMenuItem
       Caption = #1060#1072#1081#1083
       object FileSaveAs: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1082#1072#1082'...'
+        ImageIndex = 0
+        Visible = False
       end
       object N3: TMenuItem
         Caption = '-'
       end
       object FileClose: TMenuItem
         Caption = #1042#1099#1093#1086#1076
+        ImageIndex = 34
         OnClick = FileCloseClick
       end
     end
@@ -10951,10 +10955,12 @@
       end
       object MenuOrganizations: TMenuItem
         Caption = #1054#1088#1075#1072#1085#1080#1079#1072#1094#1080#1080
+        ImageIndex = 24
         OnClick = MenuOrganizationsClick
       end
       object N12: TMenuItem
         Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
+        ImageIndex = 20
         OnClick = N12Click
       end
       object mN17: TMenuItem
@@ -11137,10 +11143,12 @@
       end
       object ServiceSettings: TMenuItem
         Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
+        ImageIndex = 15
         OnClick = ServiceSettingsClick
       end
       object ServiceBackup: TMenuItem
         Caption = #1056#1077#1079#1077#1088#1074#1085#1086#1077' '#1082#1086#1087#1080#1088#1086#1074#1072#1085#1080#1077
+        ImageIndex = 50
         OnClick = ServiceBackupClick
         object PMAddNewBackup: TMenuItem
           Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1082#1086#1087#1080#1102
@@ -11235,6 +11243,7 @@
       end
       object HelpAbout: TMenuItem
         Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
+        ImageIndex = 2
         OnClick = HelpAboutClick
       end
     end

@@ -475,30 +475,33 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     Top = 120
   end
   object pmObjects: TPopupMenu
+    Images = DM.ilIcons_16x16
     OnPopup = pmObjectsPopup
     Left = 32
     Top = 168
     object PopupMenuObjectsAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
-      ImageIndex = 0
+      ImageIndex = 39
       OnClick = PopupMenuObjectsAddClick
     end
     object PopupMenuObjectsEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
-      ImageIndex = 1
+      ImageIndex = 44
       OnClick = PopupMenuObjectsEditClick
     end
     object mDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
-      ImageIndex = 2
+      ImageIndex = 38
       OnClick = mDeleteClick
     end
     object mDeleteObject: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
+      ImageIndex = 36
       OnClick = mDeleteObjectClick
     end
     object mRepair: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      ImageIndex = 49
       OnClick = mRepairClick
     end
     object PopupMenuObjectsSeparator1: TMenuItem
@@ -506,14 +509,17 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     end
     object PMExportObject: TMenuItem
       Caption = #1069#1082#1089#1087#1086#1088#1090' '#1086#1073#1098#1077#1082#1090#1072
+      ImageIndex = 33
       OnClick = PMExportObjectClick
     end
     object PMImportObject: TMenuItem
       Caption = #1048#1084#1087#1086#1088#1090' '#1086#1073#1098#1077#1082#1090#1072
+      ImageIndex = 7
       OnClick = PMImportObjectClick
     end
     object PMImportDir: TMenuItem
       Caption = #1048#1084#1087#1086#1088#1090' '#1080#1079' '#1087#1072#1087#1082#1080
+      ImageIndex = 7
       OnClick = PMImportDirClick
     end
     object N2: TMenuItem
@@ -521,6 +527,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     end
     object mCopyObject: TMenuItem
       Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
+      ImageIndex = 35
       OnClick = mCopyObjectClick
     end
     object mN3: TMenuItem
@@ -529,6 +536,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object mShowDeleted: TMenuItem
       AutoCheck = True
       Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
+      ImageIndex = 43
       OnClick = mShowDeletedClick
     end
     object mN4: TMenuItem
@@ -536,15 +544,18 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     end
     object mN6: TMenuItem
       Caption = #1050#1086#1083#1086#1085#1082#1080
+      ImageIndex = 52
       OnClick = mN6Click
     end
   end
   object pmEstimates: TPopupMenu
+    Images = DM.ilIcons_16x16
     OnPopup = pmEstimatesPopup
     Left = 24
     Top = 440
     object PopupMenuEstimatesAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      ImageIndex = 42
       object PMEstimatesAddLocal: TMenuItem
         Tag = 1
         Caption = #1051#1086#1082#1072#1083#1100#1085#1072#1103
@@ -563,18 +574,22 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     end
     object PMEstimatesEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      ImageIndex = 44
       OnClick = PMEstimatesEditClick
     end
     object mDeleteEstimate: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      ImageIndex = 38
       OnClick = mDeleteEstimateClick
     end
     object PMEstimatesDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
+      ImageIndex = 36
       OnClick = PMEstimatesDeleteClick
     end
     object mReapirEstimate: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      ImageIndex = 49
       OnClick = mReapirEstimateClick
     end
     object PopupMenuEstimatesSeparator1: TMenuItem
@@ -604,6 +619,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     end
     object PMCopySmeta: TMenuItem
       Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
+      ImageIndex = 35
       OnClick = PMCopySmetaClick
     end
     object mN15: TMenuItem
@@ -612,10 +628,12 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object mShowDeletedEstimates: TMenuItem
       AutoCheck = True
       Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
+      ImageIndex = 43
       OnClick = mShowDeletedEstimatesClick
     end
   end
   object pmActs: TPopupMenu
+    Images = DM.ilIcons_16x16
     OnPopup = pmActsPopup
     Left = 376
     Top = 440
@@ -625,22 +643,27 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     end
     object PMActsAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      ImageIndex = 39
       OnClick = PMActsAddClick
     end
     object PMActsEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      ImageIndex = 44
       OnClick = PMActsEditClick
     end
     object PMActsDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      ImageIndex = 38
       OnClick = PMActsDeleteClick
     end
     object mDeleteAct: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
+      ImageIndex = 36
       OnClick = mDeleteActClick
     end
     object mRepAct: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      ImageIndex = 49
       OnClick = mRepActClick
     end
     object pmActProperty: TMenuItem
@@ -663,6 +686,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     end
     object mCopy: TMenuItem
       Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
+      ImageIndex = 35
       OnClick = mCopyClick
     end
     object mN16: TMenuItem
@@ -671,6 +695,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object mShowDeletedActs: TMenuItem
       AutoCheck = True
       Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
+      ImageIndex = 43
       OnClick = mShowDeletedActsClick
     end
   end
