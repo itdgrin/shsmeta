@@ -1328,12 +1328,15 @@ procedure TFormMain.N61Click(Sender: TObject);
 begin
   if (not(Assigned(FormCalculationEstimate))) then
   begin
+    if FormObjectsAndEstimates.qrTreeData.IsEmpty then
+      Exit;
     if (not Assigned(fKC6Journal)) then
       fKC6Journal := TfKC6Journal.Create(Self);
     if Assigned(FormObjectsAndEstimates) then
       fKC6Journal.LocateObject(FormObjectsAndEstimates.getCurObject);
-    fKC6Journal.LocateEstimate(FormObjectsAndEstimates.IdEstimate);
-    fKC6Journal.tvEstimates.SelectNode(FormObjectsAndEstimates.IdEstimate).Expand(False);
+    fKC6Journal.LocateEstimate(FormObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').Value);
+    fKC6Journal.tvEstimates.SelectNode(FormObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').Value)
+      .Expand(False);
     fKC6Journal.tvEstimatesClick(Self);
     fKC6Journal.Show;
   end

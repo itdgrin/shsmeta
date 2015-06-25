@@ -152,97 +152,97 @@ object fCardOrganization: TfCardOrganization
     OnClick = btnCloseClick
   end
   object dbedtNAME: TDBEdit
-    Left = 130
+    Left = 102
     Top = 8
-    Width = 319
+    Width = 345
     Height = 21
     DataField = 'NAME'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 0
   end
   object dbedtUNN: TDBEdit
-    Left = 130
+    Left = 102
     Top = 35
-    Width = 319
+    Width = 345
     Height = 21
     DataField = 'UNN'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 1
   end
   object dbedtACCOUNT: TDBEdit
-    Left = 130
+    Left = 102
     Top = 142
-    Width = 319
+    Width = 345
     Height = 21
     DataField = 'ACCOUNT'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 5
   end
   object dbedtOKPO: TDBEdit
-    Left = 130
+    Left = 102
     Top = 169
-    Width = 319
+    Width = 345
     Height = 21
     DataField = 'OKPO'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 6
   end
   object dbedtADDRESS: TDBEdit
-    Left = 130
+    Left = 102
     Top = 196
-    Width = 319
+    Width = 345
     Height = 21
     DataField = 'ADDRESS'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 7
   end
   object dbedtEMAIL: TDBEdit
-    Left = 130
+    Left = 102
     Top = 223
-    Width = 319
+    Width = 345
     Height = 21
     DataField = 'EMAIL'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 8
   end
   object dbedtPHONE: TDBEdit
-    Left = 130
+    Left = 102
     Top = 250
-    Width = 137
+    Width = 165
     Height = 21
     DataField = 'PHONE'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 9
   end
   object dbedtRUK_PROF: TDBEdit
-    Left = 130
+    Left = 102
     Top = 277
-    Width = 319
+    Width = 345
     Height = 21
     DataField = 'RUK_PROF'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 11
   end
   object dbedtRUK_FIO: TDBEdit
-    Left = 130
+    Left = 102
     Top = 304
-    Width = 319
+    Width = 345
     Height = 21
     DataField = 'RUK_FIO'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 12
   end
   object dbedtCONTACT_FIO: TDBEdit
-    Left = 130
+    Left = 102
     Top = 331
-    Width = 319
+    Width = 345
     Height = 21
     DataField = 'CONTACT_FIO'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 13
   end
   object dbedtFAX: TDBEdit
-    Left = 322
+    Left = 320
     Top = 250
     Width = 127
     Height = 21
@@ -251,27 +251,27 @@ object fCardOrganization: TfCardOrganization
     TabOrder = 10
   end
   object dbedtACCOUNT1: TDBEdit
-    Left = 130
+    Left = 102
     Top = 62
-    Width = 319
+    Width = 345
     Height = 21
     DataField = 'CODE'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 2
   end
   object dbedtOKPO1: TDBEdit
-    Left = 130
+    Left = 102
     Top = 89
-    Width = 319
+    Width = 345
     Height = 21
     DataField = 'BANK'
     DataSource = fOrganizationsEx.dsMain
     TabOrder = 3
   end
   object dbedtBANK: TDBEdit
-    Left = 130
-    Top = 115
-    Width = 319
+    Left = 102
+    Top = 116
+    Width = 345
     Height = 21
     DataField = 'BANK_ADDRESS'
     DataSource = fOrganizationsEx.dsMain

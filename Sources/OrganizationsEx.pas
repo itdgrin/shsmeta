@@ -20,10 +20,11 @@ type
     pnl1: TPanel;
     lbl1: TLabel;
     dbnvgr1: TDBNavigator;
-    edt1: TEdit;
+    edtSearch: TEdit;
     dbmmoFULL_NAME: TDBMemo;
     lbl2: TLabel;
     FormStorage: TJvFormStorage;
+    btnSearch: TSpeedButton;
     procedure btnCancelClick(Sender: TObject);
     procedure btnSelectClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -32,6 +33,7 @@ type
     procedure grMainTitleClick(Column: TColumn);
     procedure qrMainNewRecord(DataSet: TDataSet);
     procedure grMainDblClick(Sender: TObject);
+    procedure btnSearchClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -67,6 +69,15 @@ end;
 procedure TfOrganizationsEx.btnCancelClick(Sender: TObject);
 begin
   ModalResult := mrCancel;
+end;
+
+procedure TfOrganizationsEx.btnSearchClick(Sender: TObject);
+begin
+  qrMain.Filter := 'UPPER(NAME) LIKE UPPER(''%' + Trim(edtSearch.Text) + '%'')';
+  if (btnSearch.Tag = 0) and qrMain.FindFirst then
+    btnSearch.Tag := 1
+  else if not qrMain.FindNext then
+    btnSearch.Tag := 0;
 end;
 
 procedure TfOrganizationsEx.btnSelectClick(Sender: TObject);

@@ -731,8 +731,7 @@ end;
 procedure TfKC6Journal.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
- // FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N61Click);
-   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   qrObject.Active := True;
   qrTreeData.Active := True;
   qrDetail.Active := True;
