@@ -38,8 +38,9 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     { Private declarations }
-    procedure InitParams;
+
   public
+    procedure InitParams;
   end;
 
 var
@@ -87,6 +88,7 @@ end;
 
 procedure TfCalcWorkerDepartment.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  FormMain.ReplaceButtonOpenWindow(Self, fTravelList);
   Action := caFree;
 end;
 
@@ -126,8 +128,6 @@ end;
 
 procedure TfCalcWorkerDepartment.FormCreate(Sender: TObject);
 begin
-  // Создаём кнопку от этого окна (на главной форме внизу)
-  // FormMain.CreateButtonOpenWindow(Caption, Caption, fTravelList.qrTravelNewRecord(fTravelList.qrTravel));
   LoadDBGridSettings(JvDBGrid1);
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);
@@ -137,19 +137,13 @@ begin
     dblkcbbAct.Visible := False;
     dblkcbbSmeta.Visible := True;
   end;
-  if fTravelList.qrWorkerDepartment.State in [dsEdit, dsBrowse] then
-    InitParams;
-  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
-    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
-    CloseOpen(qrCalc);
   dbchkFL_Full_month.OnClick := dblkcbbActClick;
 end;
 
 procedure TfCalcWorkerDepartment.FormDestroy(Sender: TObject);
 begin
+  fTravelList.Show;
   fCalcWorkerDepartment := nil;
-  // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(Caption);
 end;
 
 procedure TfCalcWorkerDepartment.InitParams;
@@ -188,6 +182,11 @@ begin
   qrCalc.ParamByName('InOut').Value := fTravelList.qrWorkerDepartment.FieldByName('InOut').Value;
   qrCalc.ParamByName('TimeIN').Value := fTravelList.qrWorkerDepartment.FieldByName('TimeIN').Value;
   qrCalc.ParamByName('TimeOUT').Value := fTravelList.qrWorkerDepartment.FieldByName('TimeOUT').Value;
+  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
+    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
+    CloseOpen(qrCalc)
+  else if qrCalc.Active then
+    qrCalc.Active := False;
 end;
 
 procedure TfCalcWorkerDepartment.JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
@@ -236,7 +235,6 @@ begin
   if qrCalc.RecNo = 18 then
     fTravelList.qrWorkerDepartment.FieldByName('TimeOUT').AsInteger := qrCalc.FieldByName('CALC').AsInteger;
   InitParams;
-  CloseOpen(qrCalc);
 end;
 
 end.

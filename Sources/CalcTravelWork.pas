@@ -38,8 +38,9 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     { Private declarations }
-    procedure InitParams;
+
   public
+    procedure InitParams;
   end;
 
 var
@@ -87,6 +88,7 @@ end;
 
 procedure TfCalcTravelWork.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  FormMain.ReplaceButtonOpenWindow(Self, fTravelList);
   Action := caFree;
 end;
 
@@ -126,8 +128,6 @@ end;
 
 procedure TfCalcTravelWork.FormCreate(Sender: TObject);
 begin
-  // Создаём кнопку от этого окна (на главной форме внизу)
-  // FormMain.CreateButtonOpenWindow(Caption, Caption, fTravelList.qrTravelNewRecord(fTravelList.qrTravel));
   LoadDBGridSettings(JvDBGrid1);
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);
@@ -137,19 +137,13 @@ begin
     dblkcbbAct.Visible := False;
     dblkcbbSmeta.Visible := True;
   end;
-  if fTravelList.qrTravelWork.State in [dsEdit, dsBrowse] then
-    InitParams;
-  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
-    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
-    CloseOpen(qrCalc);
   dbchkFL_Full_month.OnClick := dblkcbbActClick;
 end;
 
 procedure TfCalcTravelWork.FormDestroy(Sender: TObject);
 begin
+  fTravelList.Show;
   fCalcTravelWork := nil;
-  // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(Caption);
 end;
 
 procedure TfCalcTravelWork.InitParams;
@@ -171,6 +165,11 @@ begin
   end;
   qrCalc.ParamByName('FLFullMonth').Value := fTravelList.qrTravelWork.FieldByName('FL_Full_month').Value;
   qrCalc.ParamByName('SUTKI_KOMANDIR').Value := fTravelList.qrTravelWork.FieldByName('SUTKI_KOMANDIR').Value;
+  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
+    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
+    CloseOpen(qrCalc)
+  else if qrCalc.Active then
+    qrCalc.Active := False;
 end;
 
 procedure TfCalcTravelWork.JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
@@ -184,7 +183,6 @@ begin
   if qrCalc.RecNo = 1 then
     fTravelList.qrTravelWork.FieldByName('SUTKI_KOMANDIR').AsInteger := qrCalc.FieldByName('CALC').AsInteger;
   InitParams;
-  CloseOpen(qrCalc);
 end;
 
 end.

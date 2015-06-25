@@ -159,6 +159,7 @@ type
       AEventType: Byte = 0);
     procedure DeleteButtonCloseWindow(const CaptionButton: String);
     procedure SelectButtonActiveWindow(const CaptionButton: String);
+    procedure ReplaceButtonOpenWindow(const AFrom, ATo: TForm);
 
     procedure TimerCoverTimer(Sender: TObject);
     procedure ServiceSettingsClick(Sender: TObject);
@@ -1877,6 +1878,17 @@ begin
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
+  end;
+end;
+
+procedure TFormMain.ReplaceButtonOpenWindow(const AFrom, ATo: TForm);
+var
+  i: integer;
+begin
+  for i := 0 to CountOpenWindows - 1 do
+  begin
+    if ButtonsWindows[i].Tag = integer(AFrom) then
+      ButtonsWindows[i].Tag := integer(ATo);
   end;
 end;
 

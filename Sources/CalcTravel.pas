@@ -38,8 +38,9 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     { Private declarations }
-    procedure InitParams;
+
   public
+    procedure InitParams;
   end;
 
 var
@@ -72,9 +73,6 @@ procedure TfCalcTravel.dblkcbbActClick(Sender: TObject);
 begin
   Application.ProcessMessages;
   InitParams;
-  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
-    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
-    CloseOpen(qrCalc);
 end;
 
 procedure TfCalcTravel.FormActivate(Sender: TObject);
@@ -88,6 +86,7 @@ end;
 
 procedure TfCalcTravel.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  FormMain.ReplaceButtonOpenWindow(Self, fTravelList);
   Action := caFree;
 end;
 
@@ -128,8 +127,6 @@ end;
 
 procedure TfCalcTravel.FormCreate(Sender: TObject);
 begin
-  // Создаём кнопку от этого окна (на главной форме внизу)
-  // FormMain.CreateButtonOpenWindow(Caption, Caption, fTravelList.qrTravelNewRecord(fTravelList.qrTravel));
   LoadDBGridSettings(JvDBGrid1);
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);
@@ -139,19 +136,13 @@ begin
     dblkcbbAct.Visible := False;
     dblkcbbSmeta.Visible := True;
   end;
-  if fTravelList.qrTravel.State in [dsEdit, dsBrowse] then
-    InitParams;
-  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
-    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
-    CloseOpen(qrCalc);
   dbchkFL_Full_month.OnClick := dblkcbbActClick;
 end;
 
 procedure TfCalcTravel.FormDestroy(Sender: TObject);
 begin
+  fTravelList.Show;
   fCalcTravel := nil;
-  // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(Caption);
 end;
 
 procedure TfCalcTravel.InitParams;
@@ -176,6 +167,11 @@ begin
   qrCalc.ParamByName('HOUSING_KOMANDIR').Value := fTravelList.qrTravel.FieldByName('HOUSING_KOMANDIR').Value;
   qrCalc.ParamByName('STOIM_KM').Value := fTravelList.qrTravel.FieldByName('STOIM_KM').Value;
   qrCalc.ParamByName('KM').Value := fTravelList.qrTravel.FieldByName('KM').Value;
+  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
+    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
+    CloseOpen(qrCalc)
+  else if qrCalc.Active then
+    qrCalc.Active := False;
 end;
 
 procedure TfCalcTravel.JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
@@ -197,7 +193,6 @@ begin
   if qrCalc.FieldByName('NUMPP').AsString = '26' then
     fTravelList.qrTravel.FieldByName('summ').AsFloat := qrCalc.FieldByName('TOTAL').AsInteger;
   InitParams;
-  CloseOpen(qrCalc);
 end;
 
 end.

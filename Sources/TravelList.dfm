@@ -152,10 +152,6 @@ object fTravelList: TfTravelList
     object ts2: TTabSheet
       Caption = #1056#1072#1079#1098#1077#1079#1076#1085#1086#1081' '#1093#1072#1088#1072#1082#1090#1077#1088' '#1088#1072#1073#1086#1090
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object grTravelWork: TJvDBGrid
         Left = 0
         Top = 0
@@ -216,10 +212,6 @@ object fTravelList: TfTravelList
     object ts3: TTabSheet
       Caption = #1055#1077#1088#1077#1074#1086#1079#1082#1072' '#1088#1072#1073#1086#1095#1080#1093
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object grWorkerDepartment: TJvDBGrid
         Left = 0
         Top = 0

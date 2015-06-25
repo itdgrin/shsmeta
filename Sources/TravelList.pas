@@ -119,6 +119,8 @@ procedure TfTravelList.qrTravelBeforeEdit(DataSet: TDataSet);
 begin
   if (not Assigned(fCalcTravel)) then
     fCalcTravel := TfCalcTravel.Create(Self);
+  FormMain.ReplaceButtonOpenWindow(Self, fCalcTravel);
+  fCalcTravel.InitParams;
   fCalcTravel.Show;
 end;
 
@@ -127,6 +129,8 @@ begin
   qrTravel.FieldByName('OnDate').AsDateTime := Now;
   if (not Assigned(fCalcTravel)) then
     fCalcTravel := TfCalcTravel.Create(Self);
+  FormMain.ReplaceButtonOpenWindow(Self, fCalcTravel);
+  fCalcTravel.InitParams;
   fCalcTravel.Show;
 end;
 
@@ -134,6 +138,8 @@ procedure TfTravelList.qrTravelWorkBeforeEdit(DataSet: TDataSet);
 begin
   if (not Assigned(fCalcTravelWork)) then
     fCalcTravelWork := TfCalcTravelWork.Create(Self);
+  FormMain.ReplaceButtonOpenWindow(Self, fCalcTravelWork);
+  fCalcTravelWork.InitParams;
   fCalcTravelWork.Show;
 end;
 
@@ -142,6 +148,8 @@ begin
   qrTravelWork.FieldByName('OnDate').AsDateTime := Now;
   if (not Assigned(fCalcTravelWork)) then
     fCalcTravelWork := TfCalcTravelWork.Create(Self);
+  FormMain.ReplaceButtonOpenWindow(Self, fCalcTravelWork);
+  fCalcTravelWork.InitParams;
   fCalcTravelWork.Show;
 end;
 
@@ -149,6 +157,8 @@ procedure TfTravelList.qrWorkerDepartmentBeforeEdit(DataSet: TDataSet);
 begin
   if (not Assigned(fCalcWorkerDepartment)) then
     fCalcWorkerDepartment := TfCalcWorkerDepartment.Create(Self);
+  FormMain.ReplaceButtonOpenWindow(Self, fCalcWorkerDepartment);
+  fCalcWorkerDepartment.InitParams;
   fCalcWorkerDepartment.Show;
 end;
 
@@ -157,6 +167,8 @@ begin
   qrWorkerDepartment.FieldByName('OnDate').AsDateTime := Now;
   if (not Assigned(fCalcWorkerDepartment)) then
     fCalcWorkerDepartment := TfCalcWorkerDepartment.Create(Self);
+  FormMain.ReplaceButtonOpenWindow(Self, fCalcWorkerDepartment);
+  fCalcWorkerDepartment.InitParams;
   fCalcWorkerDepartment.Show;
 end;
 
