@@ -745,6 +745,13 @@
               Title.Alignment = taCenter
               Title.Caption = #1055#1086#1088#1103#1076#1082#1086#1074#1099#1081' '#1085#1086#1084#1077#1088
               Visible = False
+            end
+            item
+              Expanded = False
+              FieldName = 'ID_REPLACED'
+              Title.Caption = 'ID_REPLACED ('#1048#1044' '#1084#1072#1090#1077#1088#1080#1072#1083#1072', '#1079#1072#1084#1077#1085#1103#1077#1084#1086#1075#1086' '#1076#1072#1085#1085#1099#1084')'
+              Width = -1
+              Visible = False
             end>
         end
       end
@@ -5148,6 +5155,9 @@
     object qrRatesExNUM_ROW: TIntegerField
       FieldName = 'NUM_ROW'
       OnChange = qrRatesExNUM_ROWChange
+    end
+    object qrRatesExID_REPLACED: TIntegerField
+      FieldName = 'ID_REPLACED'
     end
   end
   object dsRatesEx: TDataSource

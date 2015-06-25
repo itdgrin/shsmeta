@@ -73,8 +73,7 @@ end;
 procedure TfTravelList.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
-  // FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N6Click);
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   LoadDBGridSettings(grTravel);
   LoadDBGridSettings(grTravelWork);
   LoadDBGridSettings(grWorkerDepartment);

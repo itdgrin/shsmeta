@@ -2786,10 +2786,10 @@
         Caption = #1056#1072#1089#1095#1077#1090' '#1082#1086#1084#1072#1085#1076#1080#1088#1086#1074#1086#1095#1085#1099#1093
         OnClick = N6Click
       end
-      object N2: TMenuItem
+      object mCalcResources: TMenuItem
         Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074
         Visible = False
-        OnClick = N2Click
+        OnClick = mCalcResourcesClick
       end
       object N61: TMenuItem
         Caption = #1046#1091#1088#1085#1072#1083' '#1050#1057'-6'

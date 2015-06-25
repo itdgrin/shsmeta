@@ -474,6 +474,7 @@ type
     PMMatAutoRep: TMenuItem;
     N13: TMenuItem;
     PMMechAutoRep: TMenuItem;
+    qrRatesExID_REPLACED: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -878,7 +879,7 @@ end;
 
 procedure TFormCalculationEstimate.FormCreate(Sender: TObject);
 begin
-  FormMain.N2.Visible := True;
+  FormMain.mCalcResources.Visible := True;
   FormMain.PanelCover.Visible := True; // Показываем панель на главной форме
 
   // Настройка размеров и положения формы
@@ -1011,7 +1012,7 @@ end;
 procedure TFormCalculationEstimate.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
-  FormMain.N2.Visible := False;
+  FormMain.mCalcResources.Visible := False;
   if (not Assigned(FormObjectsAndEstimates)) then
     FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(FormMain);
 end;

@@ -101,11 +101,21 @@ begin
       end;
     IDYES:
       begin
+        if qrCalc.IsEmpty then
+        begin
+          if cbbSource.ItemIndex = 0 then
+            Application.MessageBox('Не указан акт!', 'Расчет командировочных',
+              MB_OK + MB_ICONSTOP + MB_TOPMOST)
+          else
+            Application.MessageBox('Не указана смета!', 'Расчет командировочных',
+              MB_OK + MB_ICONSTOP + MB_TOPMOST);
+          Abort;
+        end;
         qrCalc.Last;
         fTravelList.qrTravel.FieldByName('summ').AsInteger := qrCalc.FieldByName('TOTAL').AsInteger;
         if fTravelList.qrTravel.State in [dsEdit, dsInsert] then
           fTravelList.qrTravel.Post;
-        CloseOpen(fTravelList.qrTravel);  
+        CloseOpen(fTravelList.qrTravel);
         CanClose := True;
       end;
     IDNO:
@@ -134,7 +144,7 @@ begin
   if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
     not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
     CloseOpen(qrCalc);
-  dbchkFL_Full_month.OnClick := dblkcbbActClick;  
+  dbchkFL_Full_month.OnClick := dblkcbbActClick;
 end;
 
 procedure TfCalcTravel.FormDestroy(Sender: TObject);

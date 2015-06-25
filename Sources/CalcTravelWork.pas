@@ -100,6 +100,16 @@ begin
       end;
     IDYES:
       begin
+        if qrCalc.IsEmpty then
+        begin
+          if cbbSource.ItemIndex = 0 then
+            Application.MessageBox('Не указан акт!', 'Расчет командировочных',
+              MB_OK + MB_ICONSTOP + MB_TOPMOST)
+          else
+            Application.MessageBox('Не указана смета!', 'Расчет командировочных',
+              MB_OK + MB_ICONSTOP + MB_TOPMOST);
+          Abort;
+        end;
         qrCalc.Last;
         fTravelList.qrTravelWork.FieldByName('summ').AsInteger := qrCalc.FieldByName('TOTAL').AsInteger;
         if fTravelList.qrTravelWork.State in [dsEdit, dsInsert] then

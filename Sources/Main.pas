@@ -75,7 +75,7 @@ type
     MenuLists—ategoriesObjects: TMenuItem;
     MenuListsSeparator: TMenuItem;
     N61: TMenuItem;
-    N2: TMenuItem;
+    mCalcResources: TMenuItem;
     N6: TMenuItem;
     N7: TMenuItem;
     N8: TMenuItem;
@@ -187,7 +187,7 @@ type
     procedure MenuListsIndexesChangeCostClick(Sender: TObject);
     procedure MenuLists—ategoriesObjectsClick(Sender: TObject);
     procedure N61Click(Sender: TObject);
-    procedure N2Click(Sender: TObject);
+    procedure mCalcResourcesClick(Sender: TObject);
     procedure N6Click(Sender: TObject);
     procedure N8Click(Sender: TObject);
     procedure ServiceUpdateClick(Sender: TObject);
@@ -573,6 +573,7 @@ end;
 procedure TFormMain.FormShowEvent1(Sender: TObject);
 begin
   TForm(Sender).Show;
+  TForm(Sender).BringToFront;
 end;
 
 procedure TFormMain.CreateButtonOpenWindow(const CaptionButton, HintButton: String; const AForm: TForm;
@@ -838,7 +839,7 @@ begin
   FormWaiting.Close;
 end;
 
-procedure TFormMain.N2Click(Sender: TObject);
+procedure TFormMain.mCalcResourcesClick(Sender: TObject);
 begin
   if Assigned(FormCalculationEstimate) then
     ShowCalcResource(FormCalculationEstimate.IdEstimate);
@@ -1364,6 +1365,8 @@ begin
     fTravelList := TfTravelList.Create(Self);
   if Assigned(FormObjectsAndEstimates) then
     fTravelList.LocateObject(FormObjectsAndEstimates.getCurObject);
+  if Assigned(FormCalculationEstimate) then
+    fTravelList.LocateObject(FormCalculationEstimate.IdObject);
   fTravelList.Show;
 end;
 
@@ -1587,7 +1590,8 @@ procedure TFormMain.HRRReferenceDataClick(Sender: TObject);
 begin
   if (not Assigned(FormReferenceData)) then
     FormReferenceData := TFormReferenceData.Create(Self, 'g', False)
-  else FormReferenceData.Show;
+  else
+    FormReferenceData.Show;
 end;
 
 procedure TFormMain.HRROwnDataClick(Sender: TObject);
