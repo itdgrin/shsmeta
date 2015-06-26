@@ -6030,8 +6030,22 @@ begin
     // Вынесение за расценку имеет приоритет над заменой
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = FLastEntegGrd) then
     begin
-      if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2) and
-        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) or (qrRatesExID_RATE.Value > 0))
+      if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and
+         (qrRatesExID_TYPE_DATA.AsInteger = 2) and
+         ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) or
+          (qrRatesExID_RATE.Value > 0))
+      then
+        Font.Style := Font.Style + [fsbold];
+    end;
+
+    //Подсветка заменяющего для пэшки
+    if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = FLastEntegGrd) then
+    begin
+      if (qrRatesExID_REPLACED.AsInteger = qrMaterialID.AsInteger) and
+         (qrRatesExID_TYPE_DATA.AsInteger = 2) and
+         (qrMaterialCONSIDERED.AsInteger = 0) and
+         ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) or
+          (qrRatesExID_RATE.Value > 0))
       then
         Font.Style := Font.Style + [fsbold];
     end;

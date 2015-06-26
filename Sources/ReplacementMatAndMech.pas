@@ -133,7 +133,6 @@ type
     FRateCode: String;
     //Вызов формы для автоматической замены
     FAutoRep: Boolean;
-    FIdForAutoRep: Integer;
 
     FMonth,
     FYear,
@@ -155,7 +154,6 @@ type
     procedure LoadSpr;
 
     procedure ShowDelRep(const AID: Integer; ADel: Boolean = False);
-    procedure AfterFrameLoad(ASender: TObject);
     { Private declarations }
   public
     constructor Create(const AObjectID, AEstimateID, ARateID,
@@ -188,7 +186,6 @@ begin
       pmShowRep.Visible := True;
       pmShowRep.Caption := 'Заменяющие ' + PRec^.MCode;
       pmShowRep.Tag := PRec^.MID;
-      pmShowRep.Enabled := Frame.SprLoaded;
     end
     else
       pmShowRep.Visible := False;
@@ -234,18 +231,17 @@ end;
 procedure TfrmReplacement.ShowDelRep(const AID: Integer; ADel: Boolean = False);
 var TmpStr: string;
   i, j: Integer;
-  SprRec: PSprRecord;
 begin
   if FTemp then
     TmpStr := '_temp';
 
   case FCurType of
     2:  qrRep.SQL.Text :=
-        'select MAT_CODE, MAT_NAME, MAT_NORMA, MAT_COUNT, MAT_UNIT, ID ' +
+        'select MAT_ID, MAT_CODE, MAT_NAME, MAT_UNIT, COAST_NDS, COAST_NO_NDS, ID ' +
           'from materialcard' + TmpStr + ' where ID_REPLACED = ' + AID.ToString +
           ' order by ID';
     3:  qrRep.SQL.Text :=
-        'Select MECH_CODE, MECH_NAME, MECH_NORMA, MECH_COUNT, MECH_UNIT, ID ' +
+        'Select MECH_ID, MECH_CODE, MECH_NAME, MECH_UNIT, COAST_NDS, COAST_NO_NDS, ID ' +
           'from mechanizmcard' + TmpStr + ' where ID_REPLACED = ' + AID.ToString +
           ' order by ID';
   end;
@@ -259,10 +255,8 @@ begin
     grdRep.RowCount := grdRep.FixedRows + 1;
   end;
 
-  i := 0;
   while not qrRep.Eof do
   begin
-    Inc(i);
     if ADel then
     begin
       //Удаляет заменяющие материалы или механизмы
@@ -277,20 +271,18 @@ begin
     end
     else
     begin
-      grdRep.RowCount := grdRep.FixedRows + i;
-      grdRep.Cells[0, grdRep.RowCount - 1] := IntToStr(i);
-      //Возможно следует отваязать от справочника, и брать данные из qrRep
-      SprRec := Frame.FindCode(qrRep.Fields[0].AsString);
-      if Assigned(SprRec) then
-      begin
-        grdRep.Cells[1, grdRep.RowCount - 1] := SprRec^.Code;
-        grdRep.Cells[2, grdRep.RowCount - 1] := SprRec^.Name;
-        grdRep.Cells[3, grdRep.RowCount - 1] := SprRec^.Unt;
-        grdRep.Cells[4, grdRep.RowCount - 1] := IntToStr(Round(SprRec^.CoastNDS));
-        grdRep.Cells[5, grdRep.RowCount - 1] := IntToStr(Round(SprRec^.CoastNoNDS));
-        grdRep.Cells[6, grdRep.RowCount - 1] := '1';
-        grdRep.Cells[7, grdRep.RowCount - 1] := SprRec^.ID.ToString;
-      end;
+      grdRep.Cells[0, grdRep.RowCount - 1] :=
+        IntToStr(grdRep.RowCount - grdRep.FixedRows);
+
+      grdRep.Cells[1, grdRep.RowCount - 1] := qrRep.Fields[1].AsString;
+      grdRep.Cells[2, grdRep.RowCount - 1] := qrRep.Fields[2].AsString;
+      grdRep.Cells[3, grdRep.RowCount - 1] := qrRep.Fields[3].AsString;
+      grdRep.Cells[4, grdRep.RowCount - 1] := IntToStr(qrRep.Fields[4].AsInteger);
+      grdRep.Cells[5, grdRep.RowCount - 1] := IntToStr(qrRep.Fields[5].AsInteger);
+      grdRep.Cells[6, grdRep.RowCount - 1] := '1';
+      grdRep.Cells[7, grdRep.RowCount - 1] := qrRep.Fields[0].AsString;
+
+      grdRep.RowCount := grdRep.RowCount + 1;
     end;
     qrRep.Next;
   end;
@@ -312,21 +304,21 @@ begin
       Exit;
     //Проверка корректности вводимого кода в зависимости от типа
     case FCurType of
-      0:
+      2:
       begin
         if (Key = 'C') or (Key = 'c') or (Key = 'с') then
           Key := 'С'; //Кирилица
         if not (CharInSet(Key, ['0'..'9', '-', #8]) or (Key = 'С')) then
           Key := #0;
       end;
-      1:
+      3:
       begin
         if (Key = 'M') or (Key = 'm') or (Key = 'м') then
           Key := 'М'; //Кирилица
         if not (CharInSet(Key, ['0'..'9', #8]) or (Key = 'М')) then
           Key := #0;
       end;
-      2:
+      4:
       begin
         if not (CharInSet(Key, ['0'..'9', '-', #8])) then
           Key := #0;
@@ -410,13 +402,14 @@ procedure TfrmReplacement.grdRepSelectCell(Sender: TObject; ACol,
 var s: string;
 begin
   //Редактировать можно только код и коэффициент
-  if ACol in [1,6] then
+  if ((ACol in [1,6]) and (grdRep.Cells[0, grdRep.Row] <> '')) or
+     ((ACol = 1) and (grdRep.Cells[0, grdRep.Row] = '')) then
     grdRep.Options := grdRep.Options + [goEditing]
   else
     grdRep.Options := grdRep.Options - [goEditing];
 
   //Убирает разделитель в конце, если не ввели дробную часть
-  if (grdRep.Col = 6)then
+  if (grdRep.Col = 6) then
   begin
     s := grdRep.Cells[grdRep.Col, grdRep.Row];
     if (Length(s) > 0) and (s[High(s)] = FormatSettings.DecimalSeparator) then
@@ -442,7 +435,14 @@ begin
       grdRep.Cells[3, ARow] := SprRec^.Unt;
       grdRep.Cells[4, ARow] := IntToStr(Round(SprRec^.CoastNDS));
       grdRep.Cells[5, ARow] := IntToStr(Round(SprRec^.CoastNoNDS));
+      grdRep.Cells[6, ARow] := '1';
       grdRep.Cells[7, ARow] := SprRec^.ID.ToString;
+
+      if grdRep.Cells[0, ARow] = '' then
+      begin
+        grdRep.Cells[0, ARow] := IntToStr(grdRep.RowCount - grdRep.FixedRows);
+        grdRep.RowCount := grdRep.RowCount + 1;
+      end;
     end
     else
     begin
@@ -543,9 +543,6 @@ begin
   grdRep.Cells[5,0] := 'Цена без НДС, руб';
   grdRep.Cells[6,0] := 'Коэф. пер.';
   grdRep.Cells[7,0] := 'ID';
-
-  grdRep.Cells[0,1] := '1';
-  grdRep.Cells[6,1] := '1';
 
   grdRep.Col := 1;
   grdRep.Options := grdRep.Options + [goEditing];
@@ -909,23 +906,11 @@ begin
     Item.Data := @FEntryArray[i];
     if FAutoRep and (not TmpFlag) and (FEntryArray[i].MRep > 0) then
     begin
-      if Frame.SprLoaded then
-        ShowDelRep(FEntryArray[i].MID)
-      else
-        FIdForAutoRep := FEntryArray[i].MID;
+      ShowDelRep(FEntryArray[i].MID);
       TmpFlag := True;
     end;
   end;
   ListEntry.Visible := True;
-end;
-
-procedure TfrmReplacement.AfterFrameLoad(ASender: TObject);
-begin
-  if FIdForAutoRep > 0 then
-  begin
-    ShowDelRep(FIdForAutoRep);
-    FIdForAutoRep := 0;
-  end;
 end;
 
 procedure TfrmReplacement.btnReplaceClick(Sender: TObject);
@@ -968,7 +953,7 @@ begin
   SetLength(CoefArray, ind);
 
   //Формирует список заменяющих
-  for i := grdRep.FixedRows to grdRep.RowCount - 1 do
+  for i := grdRep.FixedRows to grdRep.RowCount - 2 do
     if (grdRep.Cells[7, i] <> '') then
     begin
       Inc(ind);
@@ -1185,6 +1170,12 @@ begin
       IntToStr(Round(TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).CoastNoNDS));
     grdRep.Cells[7, grdRep.Row] :=
       TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).ID.ToString;
+
+    if grdRep.Cells[0, grdRep.Row] = '' then
+    begin
+      grdRep.Cells[0, grdRep.Row] := IntToStr(grdRep.RowCount - grdRep.FixedRows);
+      grdRep.RowCount := grdRep.RowCount + 1;
+    end;
   end;
 end;
 
@@ -1237,7 +1228,6 @@ begin
   Frame.Align := alClient;
   Frame.SpeedButtonShowHideClick(Frame.SpeedButtonShowHide);
   Frame.ListSpr.OnDblClick := btnSelectClick;
-  Frame.OnAfterLoad := AfterFrameLoad;
   Frame.edtFindName.Text := edtSourceName.Text;
   Frame.LoadSpr;
 end;
@@ -1264,33 +1254,27 @@ end;
 procedure TfrmReplacement.SpeedButton1Click(Sender: TObject);
 begin
   //Добавляет строку в таблицу заменяющих
-  grdRep.RowCount := grdRep.RowCount + 1;
-  grdRep.Cells[0, grdRep.RowCount - 1] := (grdRep.RowCount - 1).ToString;
+  grdRep.Cells[0, grdRep.RowCount - 1] := IntToStr(grdRep.RowCount - grdRep.FixedRows);
   grdRep.Cells[6, grdRep.RowCount - 1] := '1';
-  grdRep.Row := grdRep.RowCount - 1;
+  grdRep.RowCount := grdRep.RowCount + 1;
+  grdRep.Row := grdRep.RowCount - 2;
 end;
 
 procedure TfrmReplacement.SpeedButton2Click(Sender: TObject);
 var i, j: Integer;
 begin
+  if grdRep.Cells[0, grdRep.Row] = '' then
+    Exit;
+
   //Удаляет строку из таблицы заменяющих
-  if (grdRep.RowCount > grdRep.FixedRows + 1) then
-  begin
-    for i := grdRep.Row to grdRep.RowCount - 2 do
-      for j := grdRep.FixedCols to grdRep.ColCount - 1 do
-        grdRep.Cells[j, i] := grdRep.Cells[j, i + 1];
-
-    for j := 0 to grdRep.ColCount - 1 do
-        grdRep.Cells[j, grdRep.RowCount - 1] := '';
-
-    grdRep.RowCount := grdRep.RowCount - 1;
-  end
-  else
-  begin
+  for i := grdRep.Row to grdRep.RowCount - 2 do
     for j := grdRep.FixedCols to grdRep.ColCount - 1 do
+      grdRep.Cells[j, i] := grdRep.Cells[j, i + 1];
+
+  grdRep.RowCount := grdRep.RowCount - 1;
+
+  for j := 0 to grdRep.ColCount - 1 do
       grdRep.Cells[j, grdRep.RowCount - 1] := '';
-    grdRep.Cells[6, grdRep.RowCount - 1] := '1';
-  end;
 end;
 
 procedure TfrmReplacement.btnCancelClick(Sender: TObject);
