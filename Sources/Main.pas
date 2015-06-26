@@ -135,6 +135,7 @@ type
     img1: TImage;
     img2: TImage;
     mN22: TMenuItem;
+    mN2: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);

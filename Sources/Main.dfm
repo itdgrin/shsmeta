@@ -10908,10 +10908,6 @@
         Caption = #1058#1072#1088#1080#1092#1099' / '#1062#1077#1085#1099' / '#1048#1085#1076#1077#1082#1089#1099' (NEW)'
         OnClick = mN15Click
       end
-      object N8: TMenuItem
-        Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1077#1078#1077#1084#1077#1089#1103#1095#1085#1099#1093' '#1074#1077#1083#1080#1095#1080#1085
-        OnClick = N8Click
-      end
       object mN22: TMenuItem
         Caption = #1055#1077#1088#1077#1095#1077#1085#1100' '#1089#1073#1086#1088#1085#1080#1082#1086#1074
         OnClick = mN22Click
@@ -10962,10 +10958,6 @@
         Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
         ImageIndex = 20
         OnClick = N12Click
-      end
-      object mN17: TMenuItem
-        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055
-        OnClick = mN17Click
       end
     end
     object N7: TMenuItem
@@ -11141,10 +11133,21 @@
         Enabled = False
         Visible = False
       end
-      object ServiceSettings: TMenuItem
+      object mN2: TMenuItem
         Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
         ImageIndex = 15
-        OnClick = ServiceSettingsClick
+        object ServiceSettings: TMenuItem
+          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
+          OnClick = ServiceSettingsClick
+        end
+        object mN17: TMenuItem
+          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055
+          OnClick = mN17Click
+        end
+        object N8: TMenuItem
+          Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1077#1078#1077#1084#1077#1089#1103#1095#1085#1099#1093' '#1074#1077#1083#1080#1095#1080#1085
+          OnClick = N8Click
+        end
       end
       object ServiceBackup: TMenuItem
         Caption = #1056#1077#1079#1077#1088#1074#1085#1086#1077' '#1082#1086#1087#1080#1088#1086#1074#1072#1085#1080#1077
