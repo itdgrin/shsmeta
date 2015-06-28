@@ -1306,7 +1306,7 @@ begin
   finally
     qrRatesEx.EnableControls;
     qrRatesEx.AfterScroll := e;
-    //qrRatesExAfterScroll(qrRatesEx);
+    // qrRatesExAfterScroll(qrRatesEx);
     CloseOpen(qrRatesEx);
     CloseOpen(qrCalculations);
   end;
@@ -1815,10 +1815,9 @@ begin
     case FAutoRepArray[i].DataType of
       2:
         begin
-          case MessageBox(0, PChar('Хотите произвести замену материала ' +
-            FAutoRepArray[i].Code + '?' + sLineBreak +
-            'Замены данного материала ранее уже производились в смете.'),
-            'Автозамена', MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
+          case MessageBox(0, PChar('Хотите произвести замену материала ' + FAutoRepArray[i].Code + '?' +
+            sLineBreak + 'Замены данного материала ранее уже производились в смете.'), 'Автозамена',
+            MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
                 frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, 0, 2,
@@ -1838,10 +1837,9 @@ begin
         end;
       3:
         begin
-          case MessageBox(0, PChar('Хотите произвести замену механизма ' +
-            FAutoRepArray[i].Code + '?' + sLineBreak +
-            'Замены данного механизма ранее уже производились в смете.'),
-            'Автозамена', MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
+          case MessageBox(0, PChar('Хотите произвести замену механизма ' + FAutoRepArray[i].Code + '?' +
+            sLineBreak + 'Замены данного механизма ранее уже производились в смете.'), 'Автозамена',
+            MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
                 frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, 0, 3,
@@ -3093,31 +3091,31 @@ begin
   try
     grRatesEx.DataSource.DataSet.DisableControls;
     with grRatesEx.SelectedRows do
-    if Count <> 0 then
-    begin
-      TempBookmark := grRatesEx.DataSource.DataSet.GetBookmark;
-      for i := 0 to Count - 1 do
+      if Count <> 0 then
       begin
-        if IndexOf(Items[i]) > -1 then
+        TempBookmark := grRatesEx.DataSource.DataSet.GetBookmark;
+        for i := 0 to Count - 1 do
         begin
-          grRatesEx.DataSource.DataSet.Bookmark := Items[i];
-
-          if qrRatesExID_TYPE_DATA.Value > 0 then
+          if IndexOf(Items[i]) > -1 then
           begin
-            j := Length(DataObj.SmClipArray);
-            SetLength(DataObj.SmClipArray, j + 1);
+            grRatesEx.DataSource.DataSet.Bookmark := Items[i];
 
-            DataObj.SmClipArray[j].ObjID := IdObject;
-            DataObj.SmClipArray[j].SmID := qrRatesExSM_ID.Value;
-            DataObj.SmClipArray[j].DataID := qrRatesExID_TABLES.Value;
-            DataObj.SmClipArray[j].DataType := qrRatesExID_TYPE_DATA.Value;
+            if qrRatesExID_TYPE_DATA.Value > 0 then
+            begin
+              j := Length(DataObj.SmClipArray);
+              SetLength(DataObj.SmClipArray, j + 1);
+
+              DataObj.SmClipArray[j].ObjID := IdObject;
+              DataObj.SmClipArray[j].SmID := qrRatesExSM_ID.Value;
+              DataObj.SmClipArray[j].DataID := qrRatesExID_TABLES.Value;
+              DataObj.SmClipArray[j].DataType := qrRatesExID_TYPE_DATA.Value;
+            end;
           end;
         end;
+        DataObj.CopyToClipBoard;
+        grRatesEx.DataSource.DataSet.GotoBookmark(TempBookmark);
+        grRatesEx.DataSource.DataSet.FreeBookmark(TempBookmark);
       end;
-      DataObj.CopyToClipBoard;
-      grRatesEx.DataSource.DataSet.GotoBookmark(TempBookmark);
-      grRatesEx.DataSource.DataSet.FreeBookmark(TempBookmark);
-    end;
     grRatesEx.DataSource.DataSet.EnableControls;
   finally
     DataObj.Free;
@@ -3345,8 +3343,7 @@ begin
     if ClipBoard.HasFormat(G_SMETADATA) then
     begin
       DataObj.GetFromClipBoard;
-      if PasteSmetaRow(DataObj.SmClipArray, qrRatesExSM_ID.Value,
-        qrRatesExNUM_ROW.Value) then
+      if PasteSmetaRow(DataObj.SmClipArray, qrRatesExSM_ID.Value, qrRatesExNUM_ROW.Value) then
         OutputDataToTable;
     end;
   finally
@@ -4017,8 +4014,8 @@ begin
     ((Pos('е20', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(11)) and FAutoAddE20) then
   begin
     if (Pos('е18', AnsiLowerCase(NewRateCode)) > 0) then
-      case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е18 в смету?'),
-            CaptionForm, MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
+      case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е18 в смету?'), CaptionForm,
+        MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
         mrOk:
           PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE18);
         mrCancel:
@@ -4029,8 +4026,8 @@ begin
       end;
 
     if (Pos('е20', AnsiLowerCase(NewRateCode)) > 0) then
-      case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е20 в смету?'),
-            CaptionForm, MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
+      case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е20 в смету?'), CaptionForm,
+        MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
         mrOk:
           PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE20);
         mrCancel:
@@ -5026,27 +5023,22 @@ begin
       begin
         Active := False;
         SQL.Clear;
-        SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name", coef as "Coef", coef_zp as "CoefZP", s as "From", po as "On" '
+        SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name", coef as "Coef", coef_zp as "CoefZP", FN_NUM_TO_INT(s) as "From", FN_NUM_TO_INT(po) as "On" '
           + 'FROM znormativs, znormativs_detail, znormativs_value ' +
           'WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID  ' +
           'AND znormativs.ZNORMATIVS_ID = znormativs_value.ZNORMATIVS_ID ' + 'AND znormativs.DEL_FLAG = 0 ' +
           'AND znormativs_value.ZNORMATIVS_ONDATE_ID = (' + '  SELECT znormativs_ondate.ID' +
           '    FROM znormativs_ondate' +
           '    WHERE `znormativs_ondate`.`onDate` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = (SELECT STAVKA_ID FROM smetasourcedata WHERE SM_ID='
-          + qrRatesExSM_ID.AsString + '))' +
-          '    AND `znormativs_ondate`.`DEL_FLAG` = 0 ORDER BY `znormativs_ondate`.`onDate` DESC LIMIT 1)' +
-          ';');
+          + qrRatesExSM_ID.AsString + '))' + '    AND `znormativs_ondate`.`DEL_FLAG` = 0 AND FN_NUM_TO_INT("'
+          + vNumber + '")<=FN_NUM_TO_INT(po) AND FN_NUM_TO_INT("' + vNumber +
+          '")>=FN_NUM_TO_INT(s) ORDER BY `znormativs_ondate`.`onDate` DESC LIMIT 1)' + ';');
         Active := True;
         First;
-        while not Eof do
+        if not Eof then
         begin
-          if (vNumber > FieldByName('From').AsVariant) and (vNumber < FieldByName('On').AsVariant) then
-          begin
-            EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
-            qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
-            Break;
-          end;
-          Next;
+          EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
+          qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
         end;
       end;
   except
@@ -6008,8 +6000,7 @@ begin
     if qrRatesExADDED_COUNT.Value > 0 then
       Font.Color := clBlue;
 
-    if (grRatesEx.SelectedRows.CurrentRowSelected) and
-       (grRatesEx.SelectedRows.Count > 1) then
+    if (grRatesEx.SelectedRows.CurrentRowSelected) and (grRatesEx.SelectedRows.Count > 1) then
       Font.Color := clRed;
 
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
@@ -6030,22 +6021,18 @@ begin
     // Вынесение за расценку имеет приоритет над заменой
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = FLastEntegGrd) then
     begin
-      if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and
-         (qrRatesExID_TYPE_DATA.AsInteger = 2) and
-         ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) or
-          (qrRatesExID_RATE.Value > 0))
+      if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2) and
+        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) or (qrRatesExID_RATE.Value > 0))
       then
         Font.Style := Font.Style + [fsbold];
     end;
 
-    //Подсветка заменяющего для пэшки
+    // Подсветка заменяющего для пэшки
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = FLastEntegGrd) then
     begin
-      if (qrRatesExID_REPLACED.AsInteger = qrMaterialID.AsInteger) and
-         (qrRatesExID_TYPE_DATA.AsInteger = 2) and
-         (qrMaterialCONSIDERED.AsInteger = 0) and
-         ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) or
-          (qrRatesExID_RATE.Value > 0))
+      if (qrRatesExID_REPLACED.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2)
+        and (qrMaterialCONSIDERED.AsInteger = 0) and
+        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) or (qrRatesExID_RATE.Value > 0))
       then
         Font.Style := Font.Style + [fsbold];
     end;

@@ -180,6 +180,7 @@ object fUniDict: TfUniDict
       Align = alLeft
       BevelOuter = bvNone
       Caption = 'pnlLeft'
+      Constraints.MinWidth = 50
       TabOrder = 0
       object gtUniDictType: TJvDBGrid
         Left = 0
@@ -210,7 +211,6 @@ object fUniDict: TfUniDict
             FieldName = 'unidicttype_id'
             Title.Alignment = taCenter
             Title.Caption = #1050#1086#1076
-            Width = -1
             Visible = False
           end
           item
