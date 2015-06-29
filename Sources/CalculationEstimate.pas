@@ -3025,12 +3025,11 @@ begin
   if (not Assigned(fWinterPrice)) then
     fWinterPrice := TfWinterPrice.Create(Self);
   fWinterPrice.Kind := kdSelect;
+  fWinterPrice.LicateID := qrRatesExZNORMATIVS_ID.Value;
   if (fWinterPrice.ShowModal = mrOk) and (fWinterPrice.OutValue <> 0) then
   begin
-    qrTemp.SQL.Text := 'UPDATE card_rate_temp SET ZNORMATIVS_ID=:ZNORMATIVS_ID WHERE ID=:ID';
-    qrTemp.ParamByName('ZNORMATIVS_ID').AsInteger := fWinterPrice.OutValue;
-    qrTemp.ParamByName('ID').AsInteger := qrRatesExID_TABLES.AsInteger;
-    qrTemp.ExecSQL;
+    FastExecSQL('UPDATE card_rate_temp SET ZNORMATIVS_ID=:ZNORMATIVS_ID WHERE ID=:ID',
+      VarArrayOf([fWinterPrice.OutValue, qrRatesExID_TABLES.AsInteger]));
     qrRatesExZNORMATIVS_ID.Value := fWinterPrice.OutValue;
     FillingWinterPrice('');
     CloseOpen(qrCalculations);
@@ -3042,6 +3041,8 @@ begin
   if Application.MessageBox('Вы действительно хотите заменить коэф. зимнего удорожания в выбранной расценке?',
     'Application.Title', MB_OKCANCEL + MB_ICONQUESTION + MB_TOPMOST) = IDOK then
   begin
+    FastExecSQL('UPDATE card_rate_temp SET ZNORMATIVS_ID=NULL WHERE ID=:ID',
+      VarArrayOf([qrRatesExID_TABLES.AsInteger]));
     qrRatesExZNORMATIVS_ID.Value := 0;
     EditWinterPrice.Text := '';
     FillingWinterPrice(qrRatesExOBJ_CODE.AsString);
@@ -5030,10 +5031,11 @@ begin
           'AND znormativs_value.ZNORMATIVS_ONDATE_ID = (' + '  SELECT znormativs_ondate.ID' +
           '    FROM znormativs_ondate' +
           '    WHERE `znormativs_ondate`.`onDate` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = (SELECT STAVKA_ID FROM smetasourcedata WHERE SM_ID='
-          + qrRatesExSM_ID.AsString + '))' + '    AND `znormativs_ondate`.`DEL_FLAG` = 0 AND FN_NUM_TO_INT("'
+          + qrRatesExSM_ID.AsString + '))' +
+          '    AND `znormativs_ondate`.`DEL_FLAG` = 0 ORDER BY `znormativs_ondate`.`onDate` DESC LIMIT 1) AND FN_NUM_TO_INT("'
           + vNumber + '")<=FN_NUM_TO_INT(po) AND FN_NUM_TO_INT("' + vNumber +
-          '")>=FN_NUM_TO_INT(s) AND REPLACE(SUBSTRING(s FROM 1 FOR 1), "E", "Е")=REPLACE(SUBSTRING("' + vNumber +
-          '" FROM 1 FOR 1), "E", "Е") ORDER BY `znormativs_ondate`.`onDate` DESC LIMIT 1)' + ';');
+          '")>=FN_NUM_TO_INT(s) AND REPLACE(SUBSTRING(s FROM 1 FOR 1), "E", "Е")=REPLACE(SUBSTRING("' +
+          vNumber + '" FROM 1 FOR 1), "E", "Е") LIMIT 1' + ';');
         Active := True;
         First;
         if not Eof then

@@ -84,7 +84,7 @@ type
     editMode: Boolean;
     procedure changeEditMode;
   public
-    OutValue: Integer;
+    OutValue, LicateID: Integer;
     Kind: TKindForm;
   end;
 
@@ -187,6 +187,8 @@ begin
   CloseOpen(qrTreeData);
   CloseOpen(qrZnormativs_detail);
   CloseOpen(qrZnormChangeDate);
+  if LicateID <> 0 then
+    tvEstimates.SelectNode(LicateID).Expand(False);
 end;
 
 procedure TfWinterPrice.mAddDateClick(Sender: TObject);
