@@ -1625,6 +1625,15 @@
               end
               item
                 Expanded = False
+                FieldName = 'KOEF'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1101#1092'.'
+                Width = 40
+                Visible = True
+              end
+              item
+                Expanded = False
                 FieldName = 'MECH_UNIT'
                 ReadOnly = True
                 Title.Alignment = taCenter
@@ -3708,6 +3717,10 @@
       item
         SourceDataType = dtUInt32
         TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
       end>
     FormatOptions.MaxBcdPrecision = 19
     FormatOptions.MaxBcdScale = 8
@@ -3982,6 +3995,12 @@
       Origin = 'TERYDOZATR'
       OnChange = MechRowChange
       Precision = 24
+    end
+    object qrMechanizmKOEF: TFloatField
+      FieldName = 'KOEF'
+    end
+    object qrMechanizmMECH_INPUTCOUNT: TFMTBCDField
+      FieldName = 'MECH_INPUTCOUNT'
     end
   end
   object dsMechanizm: TDataSource

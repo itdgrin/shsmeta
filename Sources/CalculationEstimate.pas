@@ -475,6 +475,8 @@ type
     N13: TMenuItem;
     PMMechAutoRep: TMenuItem;
     qrRatesExID_REPLACED: TIntegerField;
+    qrMechanizmKOEF: TFloatField;
+    qrMechanizmMECH_INPUTCOUNT: TFMTBCDField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -2053,9 +2055,6 @@ begin
           qrMaterialTRANSP_PROC_PODR.Value := 100 - qrMaterialTRANSP_PROC_ZAC.Value;
       end;
 
-      if qrMaterialMAT_NORMA.Value = 0 then
-        Beep;
-
       // Автоматический расчет фактических транспортных расходов при изменении фактической цены
       if (Sender.FieldName = 'FCOAST_NO_NDS') or (Sender.FieldName = 'FCOAST_NDS') then
       begin
@@ -2428,6 +2427,7 @@ end;
 
 // Пересчитывает данные по строке в таблице механизмов
 procedure TFormCalculationEstimate.ReCalcRowMech(ACType: byte);
+var ev: TFieldNotifyEvent;
 begin
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'CALL CalcMech(:id, :getdata, :ctype, :CalcMode);';
@@ -2439,6 +2439,7 @@ begin
   if not qrTemp.IsEmpty then
   begin
     qrMechanizm.Edit;
+    qrMechanizmMECH_INPUTCOUNT.Value := qrTemp.FieldByName('MECH_INPUTCOUNT').AsBCD;
     qrMechanizmMECH_NORMA.Value := qrTemp.FieldByName('MECH_NORMA').AsBCD;
     qrMechanizmMECH_COUNT.Value := qrTemp.FieldByName('MECH_COUNT').AsBCD;
     qrMechanizmPRICE_NO_NDS.Value := qrTemp.FieldByName('PRICE_NO_NDS').AsBCD;
@@ -2457,6 +2458,19 @@ begin
     qrMechanizmNORM_TRYD.Value := qrTemp.FieldByName('NORM_TRYD').AsBCD;
     qrMechanizmTERYDOZATR.Value := qrTemp.FieldByName('TERYDOZATR').AsBCD;
     qrMechanizm.Post;
+    if (qrRatesExID_TYPE_DATA.Value = 3) and
+       (qrRatesExID_TABLES.Value = qrMechanizmID.Value)  then
+    begin
+      ev := qrRatesExOBJ_COUNT.OnChange;
+      try
+        qrRatesExOBJ_COUNT.OnChange := nil;
+        qrRatesEx.Edit;
+        qrRatesExOBJ_COUNT.Value := qrMechanizmMECH_INPUTCOUNT.AsExtended;
+        qrRatesEx.Post;
+      finally
+        qrRatesExOBJ_COUNT.OnChange := ev;
+      end;
+    end;
   end;
   qrTemp.Active := False;
   CloseOpen(qrCalculations);
@@ -2464,6 +2478,7 @@ end;
 
 // Пересчет одного материала
 procedure TFormCalculationEstimate.ReCalcRowMat(ACType: byte);
+var ev: TFieldNotifyEvent;
 begin
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'CALL CalcMat(:id, :getdata, :ctype, :CalcMode);';
@@ -2488,6 +2503,19 @@ begin
     qrMaterialMAT_TRANSP_NO_NDS.Value := qrTemp.FieldByName('MAT_TRANSP_NO_NDS').AsBCD;
     qrMaterialMAT_TRANSP_NDS.Value := qrTemp.FieldByName('MAT_TRANSP_NDS').AsBCD;
     qrMaterial.Post;
+    if (qrRatesExID_TYPE_DATA.Value = 2) and
+       (qrRatesExID_TABLES.Value = qrMaterialID.Value)  then
+    begin
+      ev := qrRatesExOBJ_COUNT.OnChange;
+      try
+        qrRatesExOBJ_COUNT.OnChange := nil;
+        qrRatesEx.Edit;
+        qrRatesExOBJ_COUNT.Value := qrMaterialMAT_COUNT.AsExtended;
+        qrRatesEx.Post;
+      finally
+        qrRatesExOBJ_COUNT.OnChange := ev;
+      end;
+    end;
   end;
   qrTemp.Active := False;
 
@@ -2499,6 +2527,7 @@ end;
 
 // Пересчет одного оборудование
 procedure TFormCalculationEstimate.ReCalcRowDev;
+var ev: TFieldNotifyEvent;
 begin
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'CALL CalcDevice(:id, :getdata);';
@@ -2508,11 +2537,22 @@ begin
   if not qrTemp.IsEmpty then
   begin
     qrDevices.Edit;
-    qrDevicesFPRICE_NO_NDS.AsVariant := qrTemp.FieldByName('FPRICE_NO_NDS').Value;
-    qrDevicesFPRICE_NDS.AsVariant := qrTemp.FieldByName('FPRICE_NDS').Value;
-    qrDevicesDEVICE_SUM_NO_NDS.AsVariant := qrTemp.FieldByName('DEVICE_SUM_NO_NDS').Value;
-    qrDevicesDEVICE_SUM_NDS.AsVariant := qrTemp.FieldByName('DEVICE_SUM_NDS').Value;
+    qrDevicesDEVICE_COUNT.Value := qrTemp.FieldByName('DEVICE_COUNT').AsBCD;
+    qrDevicesFPRICE_NO_NDS.Value := qrTemp.FieldByName('FPRICE_NO_NDS').AsBCD;
+    qrDevicesFPRICE_NDS.Value := qrTemp.FieldByName('FPRICE_NDS').AsBCD;
+    qrDevicesDEVICE_SUM_NO_NDS.Value := qrTemp.FieldByName('DEVICE_SUM_NO_NDS').AsBCD;
+    qrDevicesDEVICE_SUM_NDS.Value := qrTemp.FieldByName('DEVICE_SUM_NDS').AsBCD;
     qrDevices.Post;
+
+    ev := qrRatesExOBJ_COUNT.OnChange;
+    try
+      qrRatesExOBJ_COUNT.OnChange := nil;
+      qrRatesEx.Edit;
+      qrRatesExOBJ_COUNT.Value := qrDevicesDEVICE_COUNT.AsExtended;
+      qrRatesEx.Post;
+    finally
+      qrRatesExOBJ_COUNT.OnChange := ev;
+    end;
   end;
   qrTemp.Active := False;
   CloseOpen(qrCalculations);
@@ -2794,7 +2834,7 @@ begin
       2:
         qrTemp.SQL.Text := 'UPDATE materialcard_temp set mat_count=:RC WHERE ID=:ID;';
       3:
-        qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set mech_count=:RC WHERE ID=:ID;';
+        qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set MECH_INPUTCOUNT=:RC WHERE ID=:ID;';
       4:
         qrTemp.SQL.Text := 'UPDATE devicescard_temp set device_count=:RC WHERE ID=:ID;';
       5:
@@ -3257,13 +3297,13 @@ begin
   if CheckMechReadOnly then
     Exit;
   dbgrdMechanizm.Columns[2].ReadOnly := False; // Норма
-  dbgrdMechanizm.Columns[4].ReadOnly := False; // Кол-во
-  dbgrdMechanizm.Columns[5].ReadOnly := False; // ЗП машиниста
+  dbgrdMechanizm.Columns[5].ReadOnly := False; // Кол-во
   dbgrdMechanizm.Columns[6].ReadOnly := False; // ЗП машиниста
-  dbgrdMechanizm.Columns[9].ReadOnly := False; // Расценка
+  dbgrdMechanizm.Columns[7].ReadOnly := False; // ЗП машиниста
   dbgrdMechanizm.Columns[10].ReadOnly := False; // Расценка
-  dbgrdMechanizm.Columns[13].ReadOnly := False; // НДС
-  dbgrdMechanizm.Columns[22].ReadOnly := False; // норматив
+  dbgrdMechanizm.Columns[11].ReadOnly := False; // Расценка
+  dbgrdMechanizm.Columns[14].ReadOnly := False; // НДС
+  dbgrdMechanizm.Columns[23].ReadOnly := False; // норматив
   MemoRight.Color := $00AFFEFC;
   MemoRight.ReadOnly := False;
   MemoRight.Tag := 3;
@@ -3276,13 +3316,13 @@ begin
   if qrMechanizm.Tag = 1 then
   begin
     dbgrdMechanizm.Columns[2].ReadOnly := True; // Норма
-    dbgrdMechanizm.Columns[4].ReadOnly := True; // Кол-во
-    dbgrdMechanizm.Columns[5].ReadOnly := True; // ЗП машиниста
+    dbgrdMechanizm.Columns[5].ReadOnly := True; // Кол-во
     dbgrdMechanizm.Columns[6].ReadOnly := True; // ЗП машиниста
-    dbgrdMechanizm.Columns[9].ReadOnly := True; // Расценка
+    dbgrdMechanizm.Columns[7].ReadOnly := True; // ЗП машиниста
     dbgrdMechanizm.Columns[10].ReadOnly := True; // Расценка
-    dbgrdMechanizm.Columns[13].ReadOnly := True; // НДС
-    dbgrdMechanizm.Columns[22].ReadOnly := True; // норматив
+    dbgrdMechanizm.Columns[11].ReadOnly := True; // Расценка
+    dbgrdMechanizm.Columns[14].ReadOnly := True; // НДС
+    dbgrdMechanizm.Columns[23].ReadOnly := True; // норматив
     MemoRight.Color := clWindow;
     MemoRight.ReadOnly := True;
     MemoRight.Tag := 0;
@@ -3297,9 +3337,10 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL FromRareMechanism(:id_estimate, :id_mech, 0);');
+      SQL.Add('CALL FromRareMechanism(:id_estimate, :id_mech, 0, :CalcMode);');
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_mech').Value := qrMechanizmID.Value;
+      ParamByName('CalcMode').Value := G_CALCMODE;
       ExecSQL;
     end;
 
@@ -3668,7 +3709,10 @@ begin
         'Добавление больше 5 наборов невозможно.'), 'Смета', MB_ICONINFORMATION + MB_OK + mb_TaskModal);
     end
     else
+    begin
       AddCoefToRate(fCoefficients.qrCoef.FieldByName('coef_id').AsInteger);
+      RecalcEstimate;
+    end;
   end;
 end;
 
@@ -3681,7 +3725,10 @@ begin
   qrTemp.SQL.Text := 'Delete from calculation_coef_temp where calculation_coef_id=:id';
   qrTemp.ParamByName('id').Value := qrCalculations.FieldByName('id').AsInteger;
   qrTemp.ExecSQL;
-  CloseOpen(qrCalculations);
+
+  RecalcEstimate;
+  //Уже выполнилась в RecalcEstimate;
+  //CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefOrdersClick(Sender: TObject);
@@ -4946,25 +4993,25 @@ begin
   with dbgrdMechanizm do
   begin
     // в зависимости от ндс скрывает одни и показывает другие калонки
-    Columns[3].Visible := False;
+    Columns[4].Visible := False;
 
-    Columns[5].Visible := aNDS;
-    Columns[7].Visible := aNDS;
-    Columns[9].Visible := aNDS;
-    Columns[11].Visible := aNDS;
-    Columns[14].Visible := aNDS;
-    Columns[16].Visible := aNDS;
-    Columns[18].Visible := aNDS;
-    Columns[20].Visible := aNDS;
+    Columns[6].Visible := aNDS;
+    Columns[8].Visible := aNDS;
+    Columns[10].Visible := aNDS;
+    Columns[12].Visible := aNDS;
+    Columns[15].Visible := aNDS;
+    Columns[17].Visible := aNDS;
+    Columns[19].Visible := aNDS;
+    Columns[21].Visible := aNDS;
 
-    Columns[6].Visible := not aNDS;
-    Columns[8].Visible := not aNDS;
-    Columns[10].Visible := not aNDS;
-    Columns[12].Visible := not aNDS;
-    Columns[15].Visible := not aNDS;
-    Columns[17].Visible := not aNDS;
-    Columns[19].Visible := not aNDS;
-    Columns[21].Visible := not aNDS;
+    Columns[7].Visible := not aNDS;
+    Columns[9].Visible := not aNDS;
+    Columns[11].Visible := not aNDS;
+    Columns[13].Visible := not aNDS;
+    Columns[16].Visible := not aNDS;
+    Columns[18].Visible := not aNDS;
+    Columns[20].Visible := not aNDS;
+    Columns[22].Visible := not aNDS;
   end;
 
   with dbgrdDevices do
@@ -5837,29 +5884,29 @@ begin
       Brush.Color := $00F0F0FF;
 
     // Подсветка полей стоимости
-    if Column.Index in [7, 8, 11, 12, 16, 17, 20, 21] then
+    if Column.Index in [8, 9, 12, 13, 17, 18, 21, 22] then
     begin
       // Та стоимость которая используется в расчете подсвечивается берюзовым
       // другая серым
-      if (Column.Index in [7, 8]) then
+      if (Column.Index in [8, 9]) then
         if (qrMechanizmFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00DDDDDD
         else
           Brush.Color := $00FBFEBC;
 
-      if (Column.Index in [16, 17]) then
+      if (Column.Index in [17, 18]) then
         if (qrMechanizmFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00FBFEBC
         else
           Brush.Color := $00DDDDDD;
 
-      if (Column.Index in [11, 12]) then
+      if (Column.Index in [12, 13]) then
         if (qrMechanizmFZPPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00DDDDDD
         else
           Brush.Color := $00FBFEBC;
 
-      if (Column.Index in [20, 21]) then
+      if (Column.Index in [21, 22]) then
         if (qrMechanizmFZPPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00FBFEBC
         else
@@ -5867,7 +5914,7 @@ begin
     end;
 
     // Подсветка красным пустых значений
-    if (Column.Index in [2, 5, 6]) and (Column.Field.Value = 0) then
+    if (Column.Index in [2, 6, 7]) and (Column.Field.Value = 0) then
     begin
       Brush.Color := $008080FF;
     end;
@@ -5933,7 +5980,7 @@ begin
       (qrRatesExID_TYPE_DATA.Value = 1))) or (qrMechanizmREPLACED.Value = 1) or (qrMechanizmDELETED.Value = 1)
     then
     begin
-      if Column.Index in [4, 7, 8, 11, 12, 16, 17, 20, 21, 24] then
+      if Column.Index in [5, 8, 9, 12, 13, 17, 18, 21, 22, 25] then
         Str := '';
     end;
 

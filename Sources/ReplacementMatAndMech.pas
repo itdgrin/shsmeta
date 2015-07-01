@@ -1171,6 +1171,8 @@ begin
     grdRep.Cells[7, grdRep.Row] :=
       TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).ID.ToString;
 
+    grdRep.Cells[6, grdRep.Row] := '1';
+
     if grdRep.Cells[0, grdRep.Row] = '' then
     begin
       grdRep.Cells[0, grdRep.Row] := IntToStr(grdRep.RowCount - grdRep.FixedRows);
