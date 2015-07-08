@@ -34,24 +34,24 @@ var i: Integer;
     FieldName: string;
 begin
   //Расшифровка типов
-  //0 - объект
-  //1 - смета
-  //2 - смета расценка
-  //3 - смета материал
-  //4 - смета механизм
-  //5 - смета оборудование
-  //6 - смета свалки
-  //7 - смета транспорт
-  //8 - смета data_estimate
-  //9 - акт
-  //10 - акт расценка
-  //11 - акт материал
-  //12 - акт механизм
-  //13 - акт оборудование
-  //14 - акт свалки
-  //15 - акт транспорт
-  //16 - акт data_act
-  //17 - смета calculation_coef
+  //1 - объект
+  //2 - смета
+  //3 - смета расценка
+  //4 - смета материал
+  //5 - смета механизм
+  //6 - смета оборудование
+  //7 - смета свалки
+  //8 - смета транспорт
+  //9 - смета data_estimate
+  //10 - акт
+  //11 - акт расценка
+  //12 - акт материал
+  //13 - акт механизм
+  //14 - акт оборудование
+  //15 - акт свалки
+  //16 - акт транспорт
+  //17 - акт data_act
+  //18 - смета calculation_coef
 
   if VarIsNull(ALastID) or (ALastID = 0) then
   begin
@@ -163,6 +163,7 @@ var XML : IXMLDocument;
   end;
 
 begin
+  Exit; //Закрыто на время исправления получения новых ID
   for i := 0 to Length(IdConvert) - 1 do
   begin
     SetLength(IdConvert[i][0], 0);
@@ -581,6 +582,7 @@ var XML : IXMLDocument;
     end;
   end;
 begin
+   Exit; //Закрыто на время исправления получения новых ID
   if TFile.Exists(AFileName) then
     if MessageBox(0, PChar('Файл ' + AFileName + ' уже существует. Перезаписать его?'),
       'Экспорт объекта', MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) = mrCancel  then
@@ -1095,6 +1097,7 @@ var i, j, ii,
     end;
 
 begin
+  Exit; //Закрыто на время исправления получения новых ID
   Result := False;
   for ii := High(ASmClipArray) downto Low(ASmClipArray) do
   begin
@@ -1382,6 +1385,7 @@ var IdConvert: TIDConvertArray;
     TmpId: Integer;
     SmIdStr: string;
 begin
+  Exit; //Закрыто на время исправления получения новых ID
   Result := False;
   for i := 0 to Length(IdConvert) - 1 do
   begin

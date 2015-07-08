@@ -35,7 +35,6 @@ uses
   BasicData in 'BasicData.pas' {FormBasicData},
   CardEstimate in 'CardEstimate.pas' {FormCardEstimate},
   ObjectsAndEstimates in 'ObjectsAndEstimates.pas' {FormObjectsAndEstimates},
-  PercentClientContractor in 'PercentClientContractor.pas' {FormPercentClientContractor},
   Transportation in 'Transportation.pas' {FormTransportation},
   SaveEstimate in 'SaveEstimate.pas' {FormSaveEstimate},
   OwnData in 'OwnData.pas' {FormOwnData},
@@ -139,7 +138,6 @@ begin
   Application.CreateForm(TFormCalculationSettings, FormCalculationSettings);
   Application.CreateForm(TFormBasicData, FormBasicData);
   Application.CreateForm(TFormCardEstimate, FormCardEstimate);
-  Application.CreateForm(TFormPercentClientContractor, FormPercentClientContractor);
   Application.CreateForm(TFormSaveEstimate, FormSaveEstimate);
   Application.CreateForm(TFormCardMaterial, FormCardMaterial);
   Application.CreateForm(TFormCardDataEstimate, FormCardDataEstimate);

@@ -124,7 +124,7 @@ function GetTranspForm(IdEstimate, IdTransp, TranspType: integer; InsMode: boole
 
 implementation
 
-uses Main, CalculationEstimate, DataModule, Tools;
+uses Main, CalculationEstimate, DataModule, Tools, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -203,17 +203,30 @@ end;
 
 procedure TFormTransportation.ButtonAddClick(Sender: TObject);
 var Iterator: Integer;
+    NewId: Integer;
 begin
   if InsMode then
   begin
-    qrTemp.Active := false;
-    qrTemp.SQL.Text := 'Insert into transpcard_temp (TRANSP_TYPE,TRANSP_CODE_JUST,' +
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := 'SELECT GetNewID(:IDType)';
+    qrTemp.ParamByName('IDType').Value := C_ID_SMTR;
+    qrTemp.Active := True;
+    NewId := 0;
+    if not qrTemp.Eof then
+      NewId := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+
+    if NewId = 0 then
+      raise Exception.Create('Не удалось получить новый ID.');
+
+    qrTemp.SQL.Text := 'Insert into transpcard_temp (ID, TRANSP_TYPE,TRANSP_CODE_JUST,' +
       'TRANSP_JUST,TRANSP_COUNT,TRANSP_DIST,TRANSP_SUM_NDS,TRANSP_SUM_NO_NDS,' +
       'COAST_NO_NDS,COAST_NDS,CARG_CLASS,CARG_UNIT,CARG_TYPE,CARG_COUNT,CARG_YDW,' +
-      'NDS,PRICE_NDS,PRICE_NO_NDS,KOEF) values (' + ':TRANSP_TYPE,:TRANSP_CODE_JUST,' +
+      'NDS,PRICE_NDS,PRICE_NO_NDS,KOEF) values (:ID,:TRANSP_TYPE,:TRANSP_CODE_JUST,' +
       ':TRANSP_JUST,:TRANSP_COUNT,:TRANSP_DIST,:TRANSP_SUM_NDS,:TRANSP_SUM_NO_NDS,' +
       ':COAST_NO_NDS,:COAST_NDS,:CARG_CLASS,:CARG_UNIT,:CARG_TYPE,:CARG_COUNT,:CARG_YDW,' +
       ':NDS,:PRICE_NDS,:PRICE_NO_NDS,:KOEF)';
+    qrTemp.ParamByName('ID').Value := NewId;
     qrTemp.ParamByName('TRANSP_TYPE').Value := TranspType;
     qrTemp.ParamByName('TRANSP_CODE_JUST').Value := EditJustificationNumber.Text;
     qrTemp.ParamByName('TRANSP_JUST').Value := EditJustification.Text;
@@ -237,9 +250,13 @@ begin
 
     Iterator := UpdateIterator(IdEstimate, 0, 0);
     qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
-      '(id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
-      '(' + IntToStr(IdEstimate) + ', ' + IntToStr(TranspType) +
-      ', (SELECT max(id) FROM transpcard_temp), ' + IntToStr(Iterator) + ');';
+      '(ID, id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
+      '(GetNewID(:IDType), :id_estimate, :id_type_data, :id_tables, :NUM_ROW)';
+    qrTemp.ParamByName('IDType').Value := C_ID_DATA;
+    qrTemp.ParamByName('id_estimate').Value := IdEstimate;
+    qrTemp.ParamByName('id_type_data').Value := TranspType;
+    qrTemp.ParamByName('id_tables').Value := NewId;
+    qrTemp.ParamByName('NUM_ROW').Value := Iterator;
 
     qrTemp.ExecSQL;
   end

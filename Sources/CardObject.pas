@@ -149,7 +149,8 @@ var
 
 implementation
 
-uses Main, DataModule, Tools, CardObjectContractorServices, OrganizationsEx, SuppAgreement;
+uses Main, DataModule, Tools, CardObjectContractorServices, OrganizationsEx, SuppAgreement,
+  GlobsAndConst;
 
 {$R *.dfm}
 
@@ -603,14 +604,16 @@ begin
           'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK, CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
           IntToStr(IdObject) + '";')
       else
-        SQL.Add('INSERT INTO objcards (num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '
+      begin
+        SQL.Add('INSERT INTO objcards (obj_id, num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '
           + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
           ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV) ' +
-          'VALUE ("' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 +
+          'VALUE (GetNewID(:IDType), "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 +
           '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 + '", :snds, "' +
           v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV);');
-
+        ParamByName('IDType').Value := C_ID_OBJ;
+      end;
       ParamByName('PER_TEMP_BUILD').Value := qrMain.FieldByName('PER_TEMP_BUILD').Value;
       ParamByName('PER_CONTRACTOR').Value := qrMain.FieldByName('PER_CONTRACTOR').Value;
       ParamByName('PER_TEMP_BUILD_BACK').Value := qrMain.FieldByName('PER_TEMP_BUILD_BACK').Value;

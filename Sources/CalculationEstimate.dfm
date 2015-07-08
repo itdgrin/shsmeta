@@ -4048,11 +4048,8 @@
         Name = 'IDVALUE'
         ParamType = ptInput
       end>
-    object qrMaterialID: TFDAutoIncField
+    object qrMaterialID: TIntegerField
       FieldName = 'ID'
-      Origin = 'ID'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
     end
     object qrMaterialID_CARD_RATE: TIntegerField
       AutoGenerateValue = arDefault
@@ -4317,6 +4314,10 @@
       item
         SourceDataType = dtUInt32
         TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtUInt16
+        TargetDataType = dtInt32
       end>
     FormatOptions.MaxBcdPrecision = 19
     FormatOptions.MaxBcdScale = 8
@@ -4334,12 +4335,6 @@
         ParamType = ptInput
         Value = 12
       end>
-    object qrDevicesID: TFDAutoIncField
-      FieldName = 'ID'
-      Origin = 'ID'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
-    end
     object qrDevicesDEVICE_ID: TIntegerField
       FieldName = 'DEVICE_ID'
       Origin = 'DEVICE_ID'
@@ -4469,6 +4464,9 @@
       FieldName = 'NUM'
       Calculated = True
     end
+    object qrDevicesID: TIntegerField
+      FieldName = 'ID'
+    end
   end
   object dsDevices: TDataSource
     DataSet = qrDevices
@@ -4566,6 +4564,10 @@
         TargetDataType = dtAnsiString
       end
       item
+        SourceDataType = dtUInt32
+        TargetDataType = dtInt32
+      end
+      item
         SourceDataType = dtUInt16
         TargetDataType = dtInt32
       end>
@@ -4583,12 +4585,6 @@
         ParamType = ptInput
         Value = 11
       end>
-    object qrDumpID: TFDAutoIncField
-      FieldName = 'ID'
-      Origin = 'ID'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
-    end
     object qrDumpDUMP_NAME: TStringField
       AutoGenerateValue = arDefault
       FieldName = 'DUMP_NAME'
@@ -4633,11 +4629,6 @@
       FieldKind = fkCalculated
       FieldName = 'NUM'
       Calculated = True
-    end
-    object qrDumpDUMP_ID: TLongWordField
-      FieldName = 'DUMP_ID'
-      Origin = 'DUMP_ID'
-      Required = True
     end
     object qrDumpDUMP_COUNT: TFMTBCDField
       AutoGenerateValue = arDefault
@@ -4722,6 +4713,12 @@
       Origin = 'FPRICE_NO_NDS'
       Precision = 24
     end
+    object qrDumpID: TIntegerField
+      FieldName = 'ID'
+    end
+    object qrDumpDUMP_ID: TIntegerField
+      FieldName = 'DUMP_ID'
+    end
   end
   object dsDump: TDataSource
     DataSet = qrDump
@@ -4751,6 +4748,10 @@
         TargetDataType = dtAnsiString
       end
       item
+        SourceDataType = dtUInt32
+        TargetDataType = dtInt32
+      end
+      item
         SourceDataType = dtUInt16
         TargetDataType = dtInt32
       end>
@@ -4770,12 +4771,6 @@
         ParamType = ptInput
         Value = '0'
       end>
-    object qrTranspID: TFDAutoIncField
-      FieldName = 'ID'
-      Origin = 'ID'
-      ProviderFlags = [pfInWhere, pfInKey]
-      ReadOnly = True
-    end
     object qrTranspTRANSP_TYPE: TByteField
       AutoGenerateValue = arDefault
       FieldName = 'TRANSP_TYPE'
@@ -4892,6 +4887,9 @@
       FieldName = 'KOEF'
       Origin = 'KOEF'
       Precision = 24
+    end
+    object qrTranspID: TIntegerField
+      FieldName = 'ID'
     end
   end
   object qrStartup: TFDQuery

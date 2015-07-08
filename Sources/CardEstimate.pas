@@ -67,7 +67,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure EditingRecord(const Value: Boolean);
-    function GetIdNewEstimate: Integer;
     procedure ComboBoxChange(Sender: TObject);
     procedure qrPartsAfterScroll(DataSet: TDataSet);
 
@@ -88,7 +87,7 @@ var
 
 implementation
 
-uses Main, DataModule, ObjectsAndEstimates, BasicData, Tools;
+uses Main, DataModule, ObjectsAndEstimates, BasicData, Tools, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -249,20 +248,36 @@ procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
     // Копируем все наборы КФ. родетельской сметы
     if FromID = 0 then
       Exit;
-    qrTemp.SQL.Text := 'INSERT INTO `calculation_coef`(`id_estimate`, `id_type_data`, `id_owner`,'#13 +
-      ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
-      '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 + 'SELECT :new_id_estimate,'#13 + '       `id_type_data`,'#13
-      + '       `id_owner`,'#13 + '       `id_coef`,'#13 + '       `COEF_NAME`,'#13 + '       `OSN_ZP`,'#13 +
-      '       `EKSP_MACH`,'#13 + '       `MAT_RES`,'#13 + '       `WORK_PERS`,'#13 + '       `WORK_MACH`,'#13
-      + '       `OXROPR`,'#13 + '       `PLANPRIB`'#13 + 'FROM `calculation_coef`'#13 +
-      'WHERE id_estimate = :id_estimate;';
+    qrTemp.SQL.Text := 'INSERT INTO calculation_coef (calculation_coef_id, ' +
+      'id_estimate, id_type_data, ' +
+      'id_owner, id_coef, COEF_NAME, OSN_ZP, EKSP_MACH, MAT_RES, WORK_PERS, ' +
+      'WORK_MACH, OXROPR, PLANPRIB) SELECT GetNewID(:IDType), :new_id_estimate, ' +
+      'id_type_data, id_owner, id_coef, COEF_NAME, OSN_ZP, EKSP_MACH, MAT_RES, ' +
+      'WORK_PERS, WORK_MACH, OXROPR, PLANPRIB FROM calculation_coef WHERE ' +
+      'id_estimate = :id_estimate;';
+    qrTemp.ParamByName('IDType').AsInteger := C_ID_SMCOEF;
     qrTemp.ParamByName('id_estimate').AsInteger := FromID;
     qrTemp.ParamByName('new_id_estimate').AsInteger := ToID;
     qrTemp.ExecSQL;
   end;
-  procedure addParentEstimate(aParentID, aType: Integer);
+  function addParentEstimate(aParentID, aType: Integer): Integer;
+  var NewID: Integer;
   begin
+    qrTemp.Active := False;
+    qrTemp.SQL.Clear;
+    qrTemp.SQL.Add('SELECT GetNewID(:IDType)');
+    qrTemp.ParamByName('IDType').Value := C_ID_SM;
+    qrTemp.Active := True;
+    NewId := 0;
+    if not qrTemp.Eof then
+      NewId := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+
+    if NewId = 0 then
+      raise Exception.Create('Не удалось получить новый ID.');
+
     qrMain.Append;
+    qrMain.FieldByName('SM_ID').AsInteger := NewId;
     qrMain.FieldByName('sm_type').AsInteger := aType;
     qrMain.FieldByName('obj_id').AsInteger := IdObject;
     qrMain.FieldByName('parent_id').AsInteger := aParentID;
@@ -307,10 +322,8 @@ procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
     end;
     qrMain.Post;
 
-    // Копируем все наборы КФ. родетельской сметы
-    qrTemp.SQL.Text := 'select LAST_INSERT_ID() as ID';
-    qrTemp.Active := True;
-    CopyCoef(aParentID, qrTemp.FieldByName('ID').AsInteger);
+    CopyCoef(aParentID, NewID);
+    Result := NewID;
   end;
 
 var
@@ -325,6 +338,7 @@ var
   K40, K41, K31, K32, K33, K34, K35: String;
 
   NameEstimate: String;
+  NewID: Integer;
 begin
   CountWarning := 0;
   vMonth := MonthOf(Now);
@@ -435,6 +449,20 @@ begin
     end
     else
     begin
+      qrTemp.Active := False;
+      qrTemp.SQL.Clear;
+      qrTemp.SQL.Add('SELECT GetNewID(:IDType)');
+      qrTemp.ParamByName('IDType').Value := C_ID_SM;
+      qrTemp.Active := True;
+      NewID := 0;
+      if not qrTemp.Eof then
+        NewID := qrTemp.Fields[0].AsInteger;
+      qrTemp.Active := False;
+
+      if NewID = 0 then
+        raise Exception.Create('Не удалось получить новый ID.');
+
+      qrMain.FieldByName('SM_ID').AsInteger := NewID;
       qrMain.FieldByName('sm_type').AsInteger := TypeEstimate;
       qrMain.FieldByName('obj_id').AsInteger := IdObject;
       qrMain.FieldByName('date').AsDateTime := DateCompose;
@@ -494,9 +522,7 @@ begin
       if qrMain.State in [dsInsert] then
         qrMain.Post;
 
-      qrTemp.SQL.Text := 'select LAST_INSERT_ID() as ID';
-      qrTemp.Active := True;
-      IdEstimate := qrTemp.FieldByName('ID').AsInteger;
+      IdEstimate := NewID;
       BaseIdEstimate := IdEstimate;
       // Копируем все наборы КФ. родетельской сметы
       CopyCoef(qrMain.FieldByName('parent_id').AsInteger, IdEstimate);
@@ -509,10 +535,7 @@ begin
         2:
           begin
             // добавляем Локальную
-            addParentEstimate(IdEstimate, 1);
-            qrTemp.SQL.Text := 'select LAST_INSERT_ID() as ID';
-            qrTemp.Active := True;
-            IdEstimate := qrTemp.FieldByName('ID').AsInteger;
+            IdEstimate := addParentEstimate(IdEstimate, 1);;
             // и раздел ПТМ
             addParentEstimate(IdEstimate, 3);
           end;
@@ -628,26 +651,6 @@ begin
       begin
         qrMain.FieldByName('SM_NUMBER').AsString := 'Ж000';
       end;
-  end;
-end;
-
-function TFormCardEstimate.GetIdNewEstimate: Integer;
-begin
-  Result := 0;
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT LAST_INSERT_ID() as LastIdEstimate;');
-      Active := True;
-
-      Result := FieldByName('LastIdEstimate').AsInteger;
-    end;
-  except
-    on E: Exception do
-      MessageBox(0, PChar('При получении Id только что вставленной сметы возникла ошибка:' + sLineBreak +
-        E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 

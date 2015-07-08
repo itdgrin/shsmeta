@@ -236,7 +236,6 @@ type
     qrMaterial: TFDQuery;
     dsMaterial: TDataSource;
     dbgrdMaterial: TJvDBGrid;
-    qrMaterialID: TFDAutoIncField;
     qrMaterialID_CARD_RATE: TIntegerField;
     qrMaterialID_REPLACED: TIntegerField;
     qrMaterialCONSIDERED: TByteField;
@@ -271,7 +270,6 @@ type
     dsDump: TDataSource;
     btnDump: TSpeedButton;
     dbgrdDump: TJvDBGrid;
-    qrDumpID: TFDAutoIncField;
     qrDumpDUMP_NAME: TStringField;
     qrDumpDUMP_CODE_JUST: TStringField;
     qrDumpDUMP_JUST: TStringField;
@@ -282,7 +280,6 @@ type
     qrDumpNUM: TIntegerField;
     pmDumpTransp: TPopupMenu;
     PMDumpEdit: TMenuItem;
-    qrDumpDUMP_ID: TLongWordField;
     dbgrdDescription: TJvDBGrid;
     btnTransp: TSpeedButton;
     btnStartup: TSpeedButton;
@@ -291,7 +288,6 @@ type
     dsTransp: TDataSource;
     dsStartup: TDataSource;
     dbgrdTransp: TJvDBGrid;
-    qrTranspID: TFDAutoIncField;
     qrTranspTRANSP_TYPE: TByteField;
     qrTranspTRANSP_CODE_JUST: TStringField;
     qrTranspTRANSP_JUST: TStringField;
@@ -377,7 +373,6 @@ type
     PMCalcDevice: TMenuItem;
     N11: TMenuItem;
     PMDeviceReplace: TMenuItem;
-    qrDevicesID: TFDAutoIncField;
     qrDevicesDEVICE_ID: TIntegerField;
     qrDevicesDEVICE_CODE: TStringField;
     qrDevicesDEVICE_NAME: TStringField;
@@ -477,6 +472,11 @@ type
     qrRatesExID_REPLACED: TIntegerField;
     qrMechanizmKOEF: TFloatField;
     qrMechanizmMECH_INPUTCOUNT: TFMTBCDField;
+    qrMaterialID: TIntegerField;
+    qrDumpID: TIntegerField;
+    qrTranspID: TIntegerField;
+    qrDevicesID: TIntegerField;
+    qrDumpDUMP_ID: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -804,7 +804,7 @@ implementation
 
 uses Main, DataModule, SignatureSSR, Waiting,
   SummaryCalculationSettings, DataTransfer,
-  BasicData, ObjectsAndEstimates, PercentClientContractor, Transportation,
+  BasicData, ObjectsAndEstimates, Transportation,
   CalculationDump, SaveEstimate,
   AdditionData, CardMaterial, CardDataEstimate,
   CoefficientOrders, KC6,
@@ -3836,17 +3836,9 @@ begin
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_rate').Value := vRateId;
       ParamByName('cnt').AsFloat := 0;
-      ExecSQL;
-    end;
-
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT id, RATE_CODE  FROM card_rate_temp order by id desc limit 1;');
       Active := True;
-      vMaxIdRate := Fields[0].AsInteger;
-      NewRateCode := Fields[1].AsString;
+      vMaxIdRate := FieldByName('id').AsInteger;
+      NewRateCode := FieldByName('RATE_CODE').AsString;
       Active := False;
     end;
   except
@@ -3861,18 +3853,20 @@ begin
   // Подкоговка автозамены
   ClearAutoRep;
 
+  qrTemp.SQL.Clear;
+  qrTemp.SQL.Add('SELECT year,monat,DATE_BEG FROM stavka WHERE stavka_id = ' +
+    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' +
+    IntToStr(qrRatesExSM_ID.AsInteger) + ')');
+  qrTemp.Active := True;
+  Month1 := qrTemp.FieldByName('monat').AsInteger;
+  Year1 := qrTemp.FieldByName('year').AsInteger;
+  qrTemp.Active := False;
+
   // Заносим во временную таблицу materialcard_temp материалы находящиеся в расценке
   try
     with qrTemp do
     begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT year,monat,DATE_BEG FROM stavka WHERE stavka_id = ' +
-        '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ')');
-      Active := True;
-      Month1 := FieldByName('monat').AsInteger;
-      Year1 := FieldByName('year').AsInteger;
-      Active := False;
+
 
       SQL.Clear;
       SQL.Add('SELECT region_id FROM objcards WHERE obj_id = ' + IntToStr(IdObject));
@@ -3915,23 +3909,8 @@ begin
           PT := qrTemp1.Fields[0].AsFloat;
         qrTemp1.Active := False;
 
-        qrTemp1.SQL.Text := 'Insert into materialcard_temp (ID_CARD_RATE, MAT_ID, ' +
-          'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
-          'PROC_TRANSP) values (:ID_CARD_RATE, :MAT_ID, ' +
-          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
-        qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
-        qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
-        qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
-        qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
-        vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
-        qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
-        qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
-        qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
-        qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
-        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
-        qrTemp1.ExecSQL;
-
-        qrTemp1.SQL.Text := 'SELECT max(id) FROM materialcard_temp';
+        qrTemp1.SQL.Text := 'SELECT GetNewID(:IDType)';
+        qrTemp1.ParamByName('IDType').Value := C_ID_SMMAT;
         qrTemp1.Active := True;
         MaxMId := 0;
         if not qrTemp1.Eof then
@@ -3939,7 +3918,26 @@ begin
         qrTemp1.Active := False;
 
         if MaxMId > 0 then
+        begin
+          qrTemp1.SQL.Text := 'Insert into materialcard_temp (ID, ID_CARD_RATE, MAT_ID, ' +
+            'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
+            'PROC_TRANSP) values (:ID, :ID_CARD_RATE, :MAT_ID, ' +
+            ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
+          qrTemp1.ParamByName('ID').Value := MaxMId;
+          qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
+          qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
+          qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
+          qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
+          vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
+          qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
+          qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
+          qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
+          qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
+          qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
+          qrTemp1.ExecSQL;
+
           CheckNeedAutoRep(MaxMId, 2, FieldByName('MatCode').AsString);
+        end;
 
         Next;
       end;
@@ -3952,25 +3950,8 @@ begin
 
       while not Eof do
       begin
-        qrTemp1.Active := False;
-        qrTemp1.SQL.Text := 'Insert into materialcard_temp (ID_CARD_RATE, CONSIDERED, MAT_ID, ' +
-          'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
-          'PROC_TRANSP) values (:ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
-          ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
-        qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
-        qrTemp1.ParamByName('CONSIDERED').Value := 0;
-        qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
-        qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
-        qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
-        vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
-        qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
-        qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
-        qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
-        qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
-        qrTemp1.ParamByName('PROC_TRANSP').Value := 0;
-        qrTemp1.ExecSQL;
-
-        qrTemp1.SQL.Text := 'SELECT max(id) FROM materialcard_temp';
+        qrTemp1.SQL.Text := 'SELECT GetNewID(:IDType)';
+        qrTemp1.ParamByName('IDType').Value := C_ID_SMMAT;
         qrTemp1.Active := True;
         MaxMId := 0;
         if not qrTemp1.Eof then
@@ -3978,8 +3959,29 @@ begin
         qrTemp1.Active := False;
 
         if MaxMId > 0 then
-          CheckNeedAutoRep(MaxMId, 2, FieldByName('MatCode').AsString);
+        begin
+          qrTemp1.SQL.Text := 'Insert into materialcard_temp (ID, ID_CARD_RATE, CONSIDERED, MAT_ID, ' +
+            'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
+            'PROC_TRANSP) values (:ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
+            ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
+          qrTemp1.ParamByName(':ID').Value := MaxMId;
+          qrTemp1.ParamByName('IDType').Value := C_ID_SMMAT;
+          qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
+          qrTemp1.ParamByName('CONSIDERED').Value := 0;
+          qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
+          qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
+          qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
+          vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
+          qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
+          qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
+          qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
+          qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
+          qrTemp1.ParamByName('PROC_TRANSP').Value := 0;
+          qrTemp1.ExecSQL;
 
+          if MaxMId > 0 then
+            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatCode').AsString);
+        end;
         Next;
       end;
 
@@ -4017,27 +4019,8 @@ begin
 
       while not Eof do
       begin
-        qrTemp1.Active := False;
-        qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (ID_CARD_RATE, ' +
-          'MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, MECH_UNIT, COAST_NO_NDS, ' +
-          'COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, NORMATIV) values (:ID_CARD_RATE, ' +
-          ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
-          ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :NORMATIV)';
-        qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
-        qrTemp1.ParamByName('MECH_ID').Value := FieldByName('MechId').AsInteger;
-        qrTemp1.ParamByName('MECH_CODE').Value := FieldByName('MechCode').AsString;
-        qrTemp1.ParamByName('MECH_NAME').Value := FieldByName('MechName').AsString;
-        vNormRas := MyStrToFloatDef(FieldByName('MechNorm').AsString, 0);
-        qrTemp1.ParamByName('MECH_NORMA').Value := vNormRas;
-        qrTemp1.ParamByName('MECH_UNIT').Value := FieldByName('Unit').AsString;
-        qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('CoastNoVAT').AsExtended;
-        qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('CoastVAT').AsExtended;
-        qrTemp1.ParamByName('ZP_MACH_NO_NDS').Value := FieldByName('SalaryNoVAT').AsExtended;
-        qrTemp1.ParamByName('ZP_MACH_NDS').Value := FieldByName('SalaryVAT').AsExtended;
-        qrTemp1.ParamByName('NORMATIV').Value := FieldByName('MECH_PH').AsExtended;
-        qrTemp1.ExecSQL;
-
-        qrTemp1.SQL.Text := 'SELECT max(id) FROM mechanizmcard_temp';
+        qrTemp1.SQL.Text := 'SELECT GetNewID(:IDType)';
+        qrTemp1.ParamByName('IDType').Value := C_ID_SMMAT;
         qrTemp1.Active := True;
         MaxMId := 0;
         if not qrTemp1.Eof then
@@ -4045,7 +4028,30 @@ begin
         qrTemp1.Active := False;
 
         if MaxMId > 0 then
-          CheckNeedAutoRep(MaxMId, 3, FieldByName('MechCode').AsString);
+        begin
+          qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (ID, ID_CARD_RATE, ' +
+            'MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, MECH_UNIT, COAST_NO_NDS, ' +
+            'COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, NORMATIV) values (:ID, :ID_CARD_RATE, ' +
+            ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
+            ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :NORMATIV)';
+            qrTemp1.ParamByName('ID').Value := MaxMId;
+          qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
+          qrTemp1.ParamByName('MECH_ID').Value := FieldByName('MechId').AsInteger;
+          qrTemp1.ParamByName('MECH_CODE').Value := FieldByName('MechCode').AsString;
+          qrTemp1.ParamByName('MECH_NAME').Value := FieldByName('MechName').AsString;
+          vNormRas := MyStrToFloatDef(FieldByName('MechNorm').AsString, 0);
+          qrTemp1.ParamByName('MECH_NORMA').Value := vNormRas;
+          qrTemp1.ParamByName('MECH_UNIT').Value := FieldByName('Unit').AsString;
+          qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('CoastNoVAT').AsExtended;
+          qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('CoastVAT').AsExtended;
+          qrTemp1.ParamByName('ZP_MACH_NO_NDS').Value := FieldByName('SalaryNoVAT').AsExtended;
+          qrTemp1.ParamByName('ZP_MACH_NDS').Value := FieldByName('SalaryVAT').AsExtended;
+          qrTemp1.ParamByName('NORMATIV').Value := FieldByName('MECH_PH').AsExtended;
+          qrTemp1.ExecSQL;
+
+          if MaxMId > 0 then
+            CheckNeedAutoRep(MaxMId, 3, FieldByName('MechCode').AsString);
+        end;
 
         Next;
       end;
@@ -4148,7 +4154,9 @@ begin
 
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
-    '(id_estimate, id_type_data, NUM_ROW) VALUE (:IdEstimate, :SType, :NUM_ROW);';
+    '(ID, id_estimate, id_type_data, NUM_ROW) VALUE ' +
+      '(GetNewID(:IDType), :IdEstimate, :SType, :NUM_ROW);';
+    qrTemp1.ParamByName('IDType').Value := C_ID_DATA;
   qrTemp.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
   qrTemp.ParamByName('SType').Value := (Sender as TComponent).Tag;
   qrTemp.ParamByName('NUM_ROW').Value := Iterator;
@@ -5536,9 +5544,10 @@ begin
           grRatesEx.DataSource.DataSet.Bookmark := Items[X];
           qrTemp.Active := False;
           qrTemp.SQL.Text :=
-            'INSERT INTO calculation_coef_temp(id_estimate,id_type_data,id_owner,id_coef,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB)'#13
-            + 'SELECT :id_estimate, :id_type_data, :id_owner, coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13
+            'INSERT INTO calculation_coef_temp(calculation_coef_id, id_estimate,id_type_data,id_owner,id_coef,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB)'#13
+            + 'SELECT GetNewID(:IDType), :id_estimate, :id_type_data, :id_owner, coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13
             + 'FROM coef WHERE coef.coef_id=:coef_id';
+          qrTemp.ParamByName('IDType').Value := C_ID_SMCOEF;
           qrTemp.ParamByName('id_estimate').AsInteger := qrRatesExSM_ID.Value;
           qrTemp.ParamByName('id_owner').AsInteger := qrRatesExID_TABLES.AsInteger;
           qrTemp.ParamByName('id_type_data').AsInteger := qrRatesExID_TYPE_DATA.AsInteger;

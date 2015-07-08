@@ -40,7 +40,7 @@ type
 
 implementation
 
-uses Main, DataModule, CalculationEstimate;
+uses Main, DataModule, CalculationEstimate, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -111,6 +111,7 @@ begin
 end;
 
 procedure TfCardAct.ButtonSaveClick(Sender: TObject);
+var NewId: Integer;
 begin
   case Kind of
     kdInsert:
@@ -120,8 +121,21 @@ begin
           begin
             Active := False;
             SQL.Clear;
-            SQL.Add('INSERT INTO card_acts (id_object, name, description, date) ' +
-              'VALUE (:id_object, :name, :description, :date);');
+            SQL.Add('SELECT GetNewID(:IDType)');
+            ParamByName('IDType').Value := C_ID_ACT;
+            Active := True;
+            NewId := 0;
+            if not Eof then
+              NewId := Fields[0].AsInteger;
+            Active := False;
+
+            if NewId = 0 then
+              raise Exception.Create('Не удалось получить новый ID.');
+
+            SQL.Clear;
+            SQL.Add('INSERT INTO card_acts (ID, id_object, name, description, date) ' +
+              'VALUE (:ID, :id_object, :name, :description, :date);');
+            ParamByName('ID').Value := NewId;
             ParamByName('id_object').Value := FormCalculationEstimate.IdObject;
             ParamByName('name').Value := dbedtNAME.Text;
             ParamByName('description').Value := dbmmoDESCRIPTION.Text;
@@ -130,7 +144,8 @@ begin
             if qrAct.State in [dsInsert] then
               qrAct.Cancel;
             SQL.Clear;
-            SQL.Add('CALL SaveDataAct((SELECT last_insert_id()));');
+            SQL.Add('CALL SaveDataAct(:ID);');
+            ParamByName('ID').Value := NewId;
             ExecSQL;
           end;
           FormCalculationEstimate.ConfirmCloseForm := False;

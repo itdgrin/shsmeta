@@ -181,9 +181,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="ObjectsAndEstimates.pas">
             <Form>FormObjectsAndEstimates</Form>
         </DCCReference>
-        <DCCReference Include="PercentClientContractor.pas">
-            <Form>FormPercentClientContractor</Form>
-        </DCCReference>
         <DCCReference Include="Transportation.pas">
             <Form>FormTransportation</Form>
         </DCCReference>

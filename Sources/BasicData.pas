@@ -125,7 +125,7 @@ var
 
 implementation
 
-uses Main, DataModule, CalculationEstimate, Tools, Coef;
+uses Main, DataModule, CalculationEstimate, Tools, Coef, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -377,10 +377,13 @@ begin
     qrCoef.FieldByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
     qrCoef.Post;
     // Каскадно добавляем выбранный кф. на все зависимые сметы
-    DM.qrDifferent.SQL.Text := 'INSERT INTO `calculation_coef`(`id_estimate`, `id_type_data`, `id_owner`,'#13
+    DM.qrDifferent.SQL.Text := 'INSERT INTO `calculation_coef`(`calculation_coef_id`, ' +
+      '`id_estimate`, `id_type_data`, `id_owner`,'#13
       + ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
-      '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 + 'VALUE(:id_estimate,:id_type_data,:id_owner,'#13 +
+      '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
+      'VALUE(GetNewID(:IDType), :id_estimate,:id_type_data,:id_owner,'#13 +
       ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB)';
+    DM.qrDifferent.ParamByName('IDType').Value := C_ID_SMCOEF;
     DM.qrDifferent.ParamByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
     DM.qrDifferent.ParamByName('id_owner').Value := 0;
     DM.qrDifferent.ParamByName('id_coef').Value := fCoefficients.qrCoef.FieldByName('coef_id').Value;

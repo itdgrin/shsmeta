@@ -90,7 +90,7 @@ function GetDumpForm(IdEstimate, IdDump: Integer; InsMode: boolean): boolean;
 
 implementation
 
-uses Main, DataModule, CalculationEstimate, Tools;
+uses Main, DataModule, CalculationEstimate, Tools, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -185,17 +185,30 @@ end;
 
 procedure TFormCalculationDump.ButtonSaveClick(Sender: TObject);
 var Iterator: Integer;
+    NewId: Integer;
 begin
   if InsMode then
   begin
     qrTemp.Active := False;
-    qrTemp.SQL.Text := 'Insert into dumpcard_temp (DUMP_ID, DUMP_NAME,DUMP_CODE_JUST,' +
-      'DUMP_JUST,DUMP_UNIT, ' +
+    qrTemp.SQL.Text := 'SELECT GetNewID(:IDType)';
+    qrTemp.ParamByName('IDType').Value := C_ID_SMDUM;
+    qrTemp.Active := True;
+    NewId := 0;
+    if not qrTemp.Eof then
+      NewId := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+
+    if NewId = 0 then
+      raise Exception.Create('Не удалось получить новый ID.');
+
+    qrTemp.SQL.Text := 'Insert into dumpcard_temp (ID, DUMP_ID, DUMP_NAME, ' +
+      'DUMP_CODE_JUST, DUMP_JUST, DUMP_UNIT, ' +
       'DUMP_COUNT,DUMP_TYPE,DUMP_SUM_NDS,DUMP_SUM_NO_NDS,COAST_NO_NDS,COAST_NDS,' +
       'WORK_UNIT,WORK_TYPE,WORK_COUNT,WORK_YDW,NDS,PRICE_NDS,PRICE_NO_NDS) values (' +
-      ':DUMP_ID,:DUMP_NAME,:DUMP_CODE_JUST,:DUMP_JUST,:DUMP_UNIT, ' +
+      ':ID, :DUMP_ID,:DUMP_NAME,:DUMP_CODE_JUST,:DUMP_JUST,:DUMP_UNIT, ' +
       ':DUMP_COUNT,:DUMP_TYPE,:DUMP_SUM_NDS,:DUMP_SUM_NO_NDS,:COAST_NO_NDS,:COAST_NDS,' +
       ':WORK_UNIT,:WORK_TYPE,:WORK_COUNT,:WORK_YDW,:NDS,:PRICE_NDS,:PRICE_NO_NDS)';
+    qrTemp.ParamByName('ID').Value := NewId;
     qrTemp.ParamByName('DUMP_ID').Value := DBLookupComboBoxND.KeyValue;
     qrTemp.ParamByName('DUMP_NAME').Value := DBLookupComboBoxND.Text;
     qrTemp.ParamByName('DUMP_CODE_JUST').Value := EditJustificationNumber.Text;
@@ -219,9 +232,13 @@ begin
 
     Iterator := UpdateIterator(IdEstimate, 0, 0);
     qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
-      '(id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
-      '(' + IntToStr(IdEstimate) +
-      ', 5, (SELECT max(id) FROM dumpcard_temp), ' + IntToStr(Iterator) + ');';
+      '(ID, id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
+      '(GetNewID(:IDType), :id_estimate, :id_type_data, :id_tables, :NUM_ROW)';
+    qrTemp.ParamByName('IDType').Value := C_ID_DATA;
+    qrTemp.ParamByName('id_estimate').Value := IdEstimate;
+    qrTemp.ParamByName('id_type_data').Value := 5;
+    qrTemp.ParamByName('id_tables').Value := NewId;
+    qrTemp.ParamByName('NUM_ROW').Value := Iterator;
 
     qrTemp.ExecSQL;
   end

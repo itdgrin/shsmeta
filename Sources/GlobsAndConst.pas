@@ -80,7 +80,21 @@ const
   C_ET18ITER = 2000000000;
   C_ET20ITER = 2000000001;
 
-  CTabNameAndID: array [0..17, 0..1] of string =
+  //ID типов для функции GetNewID
+  C_ID_OBJ     = 1;  //1 - объект
+  C_ID_SM      = 2;  //2 - смета
+  C_ID_SMRAT   = 3;  //3 - смета расценка
+  C_ID_SMMAT   = 4;  //4 - смета материал
+  C_ID_SMMEC   = 5;  //5 - смета механизм
+  C_ID_SMDEV   = 6;  //6 - смета оборудование
+  C_ID_SMDUM   = 7;  //7 - смета свалки
+  C_ID_SMTR    = 8;  //8 - смета транспорт
+  C_ID_DATA    = 9;  //9 - смета data_estimate
+  C_ID_SMCOEF  = 10; //10 - смета calculation_coef
+  C_ID_ACT     = 11; //11 - акт
+
+  //Временно не соответствует действительности
+  CTabNameAndID: array [1..18, 0..1] of string =
     (('objcards', 'obj_id'),
     ('smetasourcedata', 'SM_ID'),
     ('card_rate', 'ID'),
@@ -101,7 +115,7 @@ const
     ('calculation_coef', 'calculation_coef_id'));
 
 type
-  TIDConvertArray = array [0..17, 0..1] of array of Integer;
+  TIDConvertArray = array [1..18, 0..1] of array of Integer;
 //******************************************************************************
 
 //******************************************************************************
