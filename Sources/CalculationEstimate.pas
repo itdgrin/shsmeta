@@ -3964,8 +3964,7 @@ begin
             'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
             'PROC_TRANSP) values (:ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
             ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
-          qrTemp1.ParamByName(':ID').Value := MaxMId;
-          qrTemp1.ParamByName('IDType').Value := C_ID_SMMAT;
+          qrTemp1.ParamByName('ID').Value := MaxMId;
           qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
           qrTemp1.ParamByName('CONSIDERED').Value := 0;
           qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
@@ -4020,7 +4019,7 @@ begin
       while not Eof do
       begin
         qrTemp1.SQL.Text := 'SELECT GetNewID(:IDType)';
-        qrTemp1.ParamByName('IDType').Value := C_ID_SMMAT;
+        qrTemp1.ParamByName('IDType').Value := C_ID_SMMEC;
         qrTemp1.Active := True;
         MaxMId := 0;
         if not qrTemp1.Eof then
@@ -4156,7 +4155,7 @@ begin
   qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
     '(ID, id_estimate, id_type_data, NUM_ROW) VALUE ' +
       '(GetNewID(:IDType), :IdEstimate, :SType, :NUM_ROW);';
-    qrTemp1.ParamByName('IDType').Value := C_ID_DATA;
+  qrTemp.ParamByName('IDType').Value := C_ID_DATA;
   qrTemp.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
   qrTemp.ParamByName('SType').Value := (Sender as TComponent).Tag;
   qrTemp.ParamByName('NUM_ROW').Value := Iterator;
