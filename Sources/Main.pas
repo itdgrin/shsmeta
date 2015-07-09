@@ -117,9 +117,6 @@ type
     jsMenu1: TMenuItem;
     jsMenu2: TMenuItem;
     jsMenu3: TMenuItem;
-    Excel1: TMenuItem;
-    Excel2: TMenuItem;
-    EXCEL3: TMenuItem;
     jsMenu4: TMenuItem;
     N15: TMenuItem;
     N19: TMenuItem;
@@ -136,6 +133,11 @@ type
     img2: TImage;
     mN22: TMenuItem;
     mN2: TMenuItem;
+    N2: TMenuItem;
+    N22: TMenuItem;
+    Excel1: TMenuItem;
+    EXCEL2: TMenuItem;
+    Excel3: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -226,6 +228,7 @@ type
     procedure Excel2Click(Sender: TObject);
     procedure EXCEL3Click(Sender: TObject);
     procedure mN22Click(Sender: TObject);
+    procedure N22Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -839,6 +842,44 @@ begin
 
   // Закрываем форму ожидания
   FormWaiting.Close;
+end;
+
+procedure TFormMain.N22Click(Sender: TObject);
+begin
+
+ Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        showmessage('Не выбрана смета');
+        Exit;
+      end;
+      // **************************************************************************************************************************************
+
+
+       ShellExecute (Handle, nil, 'report.exe', PChar('S'+INTTOSTR(FormObjectsAndEstimates.IdEstimate)),  PChar(FileReportPath+'report\') , SW_maximIZE);
+
+      // **************************************************************************************************************************************
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.IdEstimate = 0 then
+        begin
+          showmessage('Не выбрана смета');
+          Exit;
+        end;
+           ShellExecute (Handle, nil, 'report.exe', PChar('S'+INTTOSTR(FormCalculationEstimate.IdEstimate)),  PChar(FileReportPath+'report\') , SW_maximIZE);
+
+        // **************************************************************************************************************************************
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
 end;
 
 procedure TFormMain.mCalcResourcesClick(Sender: TObject);
