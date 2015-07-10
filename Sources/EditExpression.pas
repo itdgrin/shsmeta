@@ -84,9 +84,11 @@ begin
       fEditExpression.edtFormula.Text := Trim(AFormula);
     if (fEditExpression.ShowModal = mrOk) and (Trim(fEditExpression.edtFormula.Text) <> '') then
     begin
-      Formula(StringReplace(fEditExpression.edtFormula.Text, ',', '.', [rfReplaceAll]), res, flNoError);
-      if flNoError then
-        Result := res;
+      { Formula(StringReplace(fEditExpression.edtFormula.Text, ',', '.', [rfReplaceAll]), res, flNoError);
+        if flNoError then
+        Result := res; }
+      Result := FastSelectSQLOne('SELECT (' + StringReplace(Trim(fEditExpression.edtFormula.Text), ',', '.',
+        [rfReplaceAll]) + ') AS res', VarArrayOf([]));
     end;
   finally
     fEditExpression.Free;

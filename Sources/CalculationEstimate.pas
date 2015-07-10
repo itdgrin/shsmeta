@@ -107,7 +107,6 @@ type
     Panel1: TPanel;
     LabelOXROPR: TLabel;
     PanelSSR: TPanel;
-    PanelSummaryCalculations: TPanel;
     PanelData: TPanel;
     Label1: TLabel;
     Label6: TLabel;
@@ -216,7 +215,6 @@ type
     qrDescription: TFDQuery;
     qrTemp: TFDQuery;
     qrTemp1: TFDQuery;
-    frSummaryCalculations: TfrCalculationEstimateSummaryCalculations;
     frSSR: TfrCalculationEstimateSSR;
     dsDescription: TDataSource;
     qrMechanizm: TFDQuery;
@@ -472,6 +470,8 @@ type
     qrRatesExID_REPLACED: TIntegerField;
     qrMechanizmKOEF: TFloatField;
     qrMechanizmMECH_INPUTCOUNT: TFMTBCDField;
+    pnlSummaryCalculations: TPanel;
+    frSummaryCalculations: TfrCalculationEstimateSummaryCalculations;
     qrMaterialID: TIntegerField;
     qrDumpID: TIntegerField;
     qrTranspID: TIntegerField;
@@ -932,11 +932,11 @@ begin
   // -----------------------------------------
 
   PanelLocalEstimate.Visible := True;
-  PanelSummaryCalculations.Visible := False;
+  pnlSummaryCalculations.Visible := False;
   PanelSSR.Visible := False;
 
   PanelLocalEstimate.Align := alClient;
-  PanelSummaryCalculations.Align := alClient;
+  pnlSummaryCalculations.Align := alClient;
   PanelSSR.Align := alClient;
 
   // -----------------------------------------
@@ -1039,11 +1039,11 @@ begin
           if CheckQrActiveEmpty(qrRatesEx) and (ActiveControl = grRatesEx) and
             (grRatesEx.SelectedField = qrRatesExOBJ_COUNT) then
           begin
-            res := ShowEditExpression;
+            res := ShowEditExpression(qrRatesExOBJ_COUNT.AsString);
             if VarIsNull(res) then
               Exit;
             qrRatesEx.Edit;
-            // qrRatesExOBJ_COUNT.Value := res;
+            qrRatesExOBJ_COUNT.Value := res;
           end;
         end;
     end;
@@ -1067,7 +1067,7 @@ begin
 
     // Настройка видимости панелей
     PanelLocalEstimate.Visible := True;
-    PanelSummaryCalculations.Visible := False;
+    pnlSummaryCalculations.Visible := False;
     PanelSSR.Visible := False;
 
     // НАСТРОЙКА ВИДИМОСТИ НИЖНИХ ПАНЕЛЕЙ С КНОПКАМИ
@@ -1106,7 +1106,7 @@ begin
 
     // Настройка видимости панелей
     PanelLocalEstimate.Visible := False;
-    PanelSummaryCalculations.Visible := True;
+    pnlSummaryCalculations.Visible := True;
     PanelSSR.Visible := False;
 
     // Инициализация заполнения фрейма данными
@@ -1165,7 +1165,7 @@ begin
 
     // Настройка видимости панелей
     PanelLocalEstimate.Visible := False;
-    PanelSummaryCalculations.Visible := False;
+    pnlSummaryCalculations.Visible := False;
     PanelSSR.Visible := True;
 
     // -----------------------------------------
@@ -1414,6 +1414,7 @@ begin
       Caption := 'Расчёты разрешены';
       FormCalculationEstimate.Caption := CaptionButton + ' - Разрешено редактирование документа';
     end;
+  frSummaryCalculations.grSummaryCalculation.Repaint;
 end;
 
 procedure TFormCalculationEstimate.PanelClientRightTablesResize(Sender: TObject);
@@ -2427,7 +2428,8 @@ end;
 
 // Пересчитывает данные по строке в таблице механизмов
 procedure TFormCalculationEstimate.ReCalcRowMech(ACType: byte);
-var ev: TFieldNotifyEvent;
+var
+  ev: TFieldNotifyEvent;
 begin
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'CALL CalcMech(:id, :getdata, :ctype, :CalcMode);';
@@ -2458,8 +2460,7 @@ begin
     qrMechanizmNORM_TRYD.Value := qrTemp.FieldByName('NORM_TRYD').AsBCD;
     qrMechanizmTERYDOZATR.Value := qrTemp.FieldByName('TERYDOZATR').AsBCD;
     qrMechanizm.Post;
-    if (qrRatesExID_TYPE_DATA.Value = 3) and
-       (qrRatesExID_TABLES.Value = qrMechanizmID.Value)  then
+    if (qrRatesExID_TYPE_DATA.Value = 3) and (qrRatesExID_TABLES.Value = qrMechanizmID.Value) then
     begin
       ev := qrRatesExOBJ_COUNT.OnChange;
       try
@@ -2478,7 +2479,8 @@ end;
 
 // Пересчет одного материала
 procedure TFormCalculationEstimate.ReCalcRowMat(ACType: byte);
-var ev: TFieldNotifyEvent;
+var
+  ev: TFieldNotifyEvent;
 begin
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'CALL CalcMat(:id, :getdata, :ctype, :CalcMode);';
@@ -2503,8 +2505,7 @@ begin
     qrMaterialMAT_TRANSP_NO_NDS.Value := qrTemp.FieldByName('MAT_TRANSP_NO_NDS').AsBCD;
     qrMaterialMAT_TRANSP_NDS.Value := qrTemp.FieldByName('MAT_TRANSP_NDS').AsBCD;
     qrMaterial.Post;
-    if (qrRatesExID_TYPE_DATA.Value = 2) and
-       (qrRatesExID_TABLES.Value = qrMaterialID.Value)  then
+    if (qrRatesExID_TYPE_DATA.Value = 2) and (qrRatesExID_TABLES.Value = qrMaterialID.Value) then
     begin
       ev := qrRatesExOBJ_COUNT.OnChange;
       try
@@ -2527,7 +2528,8 @@ end;
 
 // Пересчет одного оборудование
 procedure TFormCalculationEstimate.ReCalcRowDev;
-var ev: TFieldNotifyEvent;
+var
+  ev: TFieldNotifyEvent;
 begin
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'CALL CalcDevice(:id, :getdata);';
@@ -3597,7 +3599,11 @@ begin
           btnDescriptionClick(btnDescription);
 
         // Средний разряд рабочих-строителей
-        EditCategory.Text := MyFloatToStr(GetRankBuilders(IntToStr(qrRatesExID_TABLES.AsInteger)));
+
+        EditCategory.Text :=
+          MyFloatToStr
+          (GetRankBuilders(VarToStr(FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:1',
+          VarArrayOf([qrRatesExID_TABLES.AsInteger])))));
 
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(qrRatesExOBJ_CODE.AsString);
@@ -3727,8 +3733,8 @@ begin
   qrTemp.ExecSQL;
 
   RecalcEstimate;
-  //Уже выполнилась в RecalcEstimate;
-  //CloseOpen(qrCalculations);
+  // Уже выполнилась в RecalcEstimate;
+  // CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefOrdersClick(Sender: TObject);
