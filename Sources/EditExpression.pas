@@ -24,12 +24,12 @@ type
     { Public declarations }
   end;
 
-function ShowEditExpression(const AFormula: string = ''): Variant;
+function CalcExpression(const AFormula: string = ''; const AShowDialog: Boolean = True): Variant;
 
 var
   fEditExpression: TfEditExpression;
 
-exports ShowEditExpression;
+exports CalcExpression;
 
 implementation
 
@@ -37,65 +37,36 @@ uses Tools;
 
 {$R *.dfm}
 
-function ShowEditExpression(const AFormula: string = ''): Variant;
-{
-  var
-  res: Variant;
-
-  procedure Formula(Formula_Text: string; var Formula_Val: Variant; var flag1: boolean);
-  var
-  E, Sheet, MyCell: Variant;
-  begin
-  flag1 := False;
-  if Formula_Text[1] <> '=' then
-  Formula_Text := '=' + Formula_Text;
-  try
-  // Если Excel загружен, то подключиться к нему
-  E := GetActiveOLEObject('Excel.Application');
-  except
-  // Иначе Создать объект MS Excel
-  E := CreateOLEObject('Excel.Application');
-  end;
-  E.WorkBooks.Add; // Добавить книгу MS Excel
-  Sheet := E.Sheets.Item[1]; // Перейти на первую страницу книги
-  MyCell := Sheet.Cells[1, 1]; // Определить ячейку для занесения формулы
-  MyCell.Value := Formula_Text; // Заносим формулу
-  Formula_Val := MyCell.Value; // Вычисляем формулу
-  if (VarIsFloat(Formula_Val) = False) or (VarIsNumeric(Formula_Val) = False) then
-  begin
-  MessageDlg('Внимание! Ошибка в формуле: ', mtWarning, [mbOk], 0, mbOk);
-  flag1 := False;
-  end
-  else
-  flag1 := True; // расчет выполнен правильно, без ошибок
-  E.DisplayAlerts := False;
-  try
-  E.Quit; // Выйти из созданного Excel
-  E := UnAssigned; // Освободить память
-  except
-  end;
-  end;
-}
+function CalcExpression(const AFormula: string = ''; const AShowDialog: Boolean = True): Variant;
 begin
   Result := Null;
-  try
-    fEditExpression := TfEditExpression.Create(nil);
-    if Trim(AFormula) <> '' then
-      fEditExpression.edtFormula.Text := Trim(AFormula);
-    if (fEditExpression.ShowModal = mrOk) and (Trim(fEditExpression.edtFormula.Text) <> '') then
-    begin
-      { Formula(StringReplace(fEditExpression.edtFormula.Text, ',', '.', [rfReplaceAll]), res, flNoError);
-        if flNoError then
-        Result := res; }
-      try
-        Result := FastSelectSQLOne('SELECT (' + StringReplace(Trim(fEditExpression.edtFormula.Text), ',', '.',
-          [rfReplaceAll]) + ') AS res', VarArrayOf([]));
-      except
-        Result := Null;
+  if AShowDialog then
+  begin
+    try
+      fEditExpression := TfEditExpression.Create(nil);
+      if Trim(AFormula) <> '' then
+        fEditExpression.edtFormula.Text := Trim(AFormula);
+      if (fEditExpression.ShowModal = mrOk) and (Trim(fEditExpression.edtFormula.Text) <> '') then
+      begin
+        try
+          Result := FastSelectSQLOne('SELECT (' + StringReplace(Trim(fEditExpression.edtFormula.Text), ',',
+            '.', [rfReplaceAll]) + ') AS res', VarArrayOf([]));
+        except
+          Result := Null;
+        end;
       end;
+    finally
+      fEditExpression.Free;
     end;
-  finally
-    fEditExpression.Free;
+  end
+  else
+  begin
+    try
+      Result := FastSelectSQLOne('SELECT (' + StringReplace(Trim(AFormula), ',', '.', [rfReplaceAll]) +
+        ') AS res', VarArrayOf([]));
+    except
+      Result := Null;
+    end;
   end;
 end;
 

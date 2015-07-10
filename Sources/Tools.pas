@@ -47,8 +47,6 @@ procedure LoadDBGridSettings(const DBGrid: TJvDBGrid);
 // Процедура рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
 
-// Функция вычисления формулы из строки !!!РАБОТАЕТ ЧЕРЕЗ OLE EXCEL - в дальнейшем переписать!
-function CalcFormula(const AFormula: string): Variant;
 // Удаление директории с содержимым !!!!Использовать остородно!!!!!
 procedure KillDir(const ADirName: string);
 // Запускает процесс и ждет его завершения
@@ -271,55 +269,6 @@ begin
   FileFolderOperation.pFrom := PChar(ExcludeTrailingPathDelimiter(ADirName) + #0);
   FileFolderOperation.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
   SHFileOperation(FileFolderOperation);
-end;
-
-function CalcFormula(const AFormula: string): Variant;
-var
-  Res: Variant;
-  flNoError: boolean;
-  f: string;
-
-  procedure Formula(Formula_Text: string; var Formula_Val: Variant; var flag1: boolean);
-  var
-    e, Sheet, MyCell: Variant;
-  begin
-    flag1 := False;
-    if Formula_Text[1] <> '=' then
-      Formula_Text := '=' + Formula_Text;
-    try
-      // Если Excel загружен, то подключиться к нему
-      e := GetActiveOLEObject('Excel.Application');
-    except
-      // Иначе Создать объект MS Excel
-      e := CreateOLEObject('Excel.Application');
-    end;
-    e.WorkBooks.Add; // Добавить книгу MS Excel
-    Sheet := e.Sheets.Item[1]; // Перейти на первую страницу книги
-    MyCell := Sheet.Cells[1, 1]; // Определить ячейку для занесения формулы
-    MyCell.Value := Formula_Text; // Заносим формулу
-    Formula_Val := MyCell.Value; // Вычисляем формулу
-    if (VarIsFloat(Formula_Val) = False) or (VarIsNumeric(Formula_Val) = False) then
-    begin
-      MessageDlg('Внимание! Ошибка в формуле: ', mtWarning, [mbOk], 0, mbOk);
-      flag1 := False;
-    end
-    else
-      flag1 := True; // расчет выполнен правильно, без ошибок
-    e.DisplayAlerts := False;
-    try
-      e.Quit; // Выйти из созданного Excel
-      e := UnAssigned; // Освободить память
-    except
-    end;
-  end;
-
-begin
-  Result := Null;
-  f := AnsiUpperCase(ShowEditExpression);
-  StringReplace(f, ',', '.', [rfReplaceAll]);
-  Formula(Trim(f), Res, flNoError);
-  if flNoError then
-    Result := Res;
 end;
 
 function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;

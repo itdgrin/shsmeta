@@ -1039,7 +1039,7 @@ begin
           if CheckQrActiveEmpty(qrRatesEx) and (ActiveControl = grRatesEx) and
             (grRatesEx.SelectedField = qrRatesExOBJ_COUNT) then
           begin
-            res := ShowEditExpression(qrRatesExOBJ_COUNT.AsString);
+            res := CalcExpression(qrRatesExOBJ_COUNT.AsString);
             if VarIsNull(res) then
               Exit;
             qrRatesEx.Edit;
