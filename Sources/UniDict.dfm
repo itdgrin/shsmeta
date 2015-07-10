@@ -77,7 +77,7 @@ object fUniDict: TfUniDict
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 5
     object dbnvgr1: TDBNavigator
       Left = 0
       Top = 0
@@ -106,10 +106,10 @@ object fUniDict: TfUniDict
   object dbmmoparam_description: TDBMemo
     Left = 250
     Top = 314
-    Width = 485
+    Width = 247
     Height = 40
     TabStop = False
-    Anchors = [akLeft, akRight, akBottom]
+    Anchors = [akLeft, akBottom]
     DataField = 'param_description'
     DataSource = dsUniDict
     Font.Charset = DEFAULT_CHARSET
@@ -153,7 +153,7 @@ object fUniDict: TfUniDict
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 4
   end
   object pnlClient: TPanel
     Left = 8
@@ -389,6 +389,24 @@ object fUniDict: TfUniDict
           end>
       end
     end
+  end
+  object dbmmoparam_description1: TDBMemo
+    Left = 503
+    Top = 314
+    Width = 232
+    Height = 40
+    TabStop = False
+    Anchors = [akLeft, akRight, akBottom]
+    DataField = 'param_name'
+    DataSource = dsUniDict
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    ScrollBars = ssVertical
+    TabOrder = 3
   end
   object qrUniDict: TFDQuery
     AfterPost = qrUniDictAfterPost

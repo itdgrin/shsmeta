@@ -330,7 +330,7 @@ begin
     // «аносим значени€ в пол€ редактировани€
     EditNumberObject.Text := FieldByName('NumberObject').AsVariant;
     EditCodeObject.Text := FieldByName('CodeObject').AsVariant;
-    EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
+    EditNumberContract.Text := FieldByName('NumberContract').AsString;
     DateTimePickerDataCreateContract.Date := FieldByName('DateContract').AsVariant;
     EditShortDescription.Text := FieldByName('Name').AsVariant;
     MemoFullDescription.Text := FieldByName('FullName').AsVariant;
@@ -1074,7 +1074,7 @@ begin
   with qrObjects do
   begin
     FormCalculationEstimate.EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' +
-      FieldByName('Name').AsString;
+      FieldByName('Name').AsVariant;
     FormCalculationEstimate.EditNumberContract.Text := FieldByName('NumberContract').AsString;
     FormCalculationEstimate.EditDateContract.Text := FieldByName('DateContract').AsString;
     FormCalculationEstimate.Region := FieldByName('IdRegion').AsVariant;

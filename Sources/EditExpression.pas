@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ImgList, Vcl.Buttons,
-  System.Win.ComObj, System.UITypes;
+  {System.Win.ComObj,} System.UITypes;
 
 type
   TfEditExpression = class(TForm)
@@ -38,44 +38,44 @@ uses Tools;
 {$R *.dfm}
 
 function ShowEditExpression(const AFormula: string = ''): Variant;
-var
+{
+  var
   res: Variant;
-  flNoError: boolean;
 
   procedure Formula(Formula_Text: string; var Formula_Val: Variant; var flag1: boolean);
   var
-    E, Sheet, MyCell: Variant;
+  E, Sheet, MyCell: Variant;
   begin
-    flag1 := False;
-    if Formula_Text[1] <> '=' then
-      Formula_Text := '=' + Formula_Text;
-    try
-      // Если Excel загружен, то подключиться к нему
-      E := GetActiveOLEObject('Excel.Application');
-    except
-      // Иначе Создать объект MS Excel
-      E := CreateOLEObject('Excel.Application');
-    end;
-    E.WorkBooks.Add; // Добавить книгу MS Excel
-    Sheet := E.Sheets.Item[1]; // Перейти на первую страницу книги
-    MyCell := Sheet.Cells[1, 1]; // Определить ячейку для занесения формулы
-    MyCell.Value := Formula_Text; // Заносим формулу
-    Formula_Val := MyCell.Value; // Вычисляем формулу
-    if (VarIsFloat(Formula_Val) = False) or (VarIsNumeric(Formula_Val) = False) then
-    begin
-      MessageDlg('Внимание! Ошибка в формуле: ', mtWarning, [mbOk], 0, mbOk);
-      flag1 := False;
-    end
-    else
-      flag1 := True; // расчет выполнен правильно, без ошибок
-    E.DisplayAlerts := False;
-    try
-      E.Quit; // Выйти из созданного Excel
-      E := UnAssigned; // Освободить память
-    except
-    end;
+  flag1 := False;
+  if Formula_Text[1] <> '=' then
+  Formula_Text := '=' + Formula_Text;
+  try
+  // Если Excel загружен, то подключиться к нему
+  E := GetActiveOLEObject('Excel.Application');
+  except
+  // Иначе Создать объект MS Excel
+  E := CreateOLEObject('Excel.Application');
   end;
-
+  E.WorkBooks.Add; // Добавить книгу MS Excel
+  Sheet := E.Sheets.Item[1]; // Перейти на первую страницу книги
+  MyCell := Sheet.Cells[1, 1]; // Определить ячейку для занесения формулы
+  MyCell.Value := Formula_Text; // Заносим формулу
+  Formula_Val := MyCell.Value; // Вычисляем формулу
+  if (VarIsFloat(Formula_Val) = False) or (VarIsNumeric(Formula_Val) = False) then
+  begin
+  MessageDlg('Внимание! Ошибка в формуле: ', mtWarning, [mbOk], 0, mbOk);
+  flag1 := False;
+  end
+  else
+  flag1 := True; // расчет выполнен правильно, без ошибок
+  E.DisplayAlerts := False;
+  try
+  E.Quit; // Выйти из созданного Excel
+  E := UnAssigned; // Освободить память
+  except
+  end;
+  end;
+}
 begin
   Result := Null;
   try
@@ -87,8 +87,12 @@ begin
       { Formula(StringReplace(fEditExpression.edtFormula.Text, ',', '.', [rfReplaceAll]), res, flNoError);
         if flNoError then
         Result := res; }
-      Result := FastSelectSQLOne('SELECT (' + StringReplace(Trim(fEditExpression.edtFormula.Text), ',', '.',
-        [rfReplaceAll]) + ') AS res', VarArrayOf([]));
+      try
+        Result := FastSelectSQLOne('SELECT (' + StringReplace(Trim(fEditExpression.edtFormula.Text), ',', '.',
+          [rfReplaceAll]) + ') AS res', VarArrayOf([]));
+      except
+        Result := Null;
+      end;
     end;
   finally
     fEditExpression.Free;

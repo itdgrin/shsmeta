@@ -453,6 +453,9 @@ begin
   DBGrid.SelectColumn := scGrid;
   DBGrid.TitleArrow := True;
   DBGrid.TitleButtons := True;
+  DBGrid.ShowCellHint := True;
+  DBGrid.ShowHint := True;
+  //DBGrid.ShowTitleHint := True;
   DBGrid.SelectColumnsDialogStrings.NoSelectionWarning := 'Должна быть выбрана хотя бы одна колонка!';
   DBGrid.SelectColumnsDialogStrings.Caption := 'Настройка видимости колонок';
   {

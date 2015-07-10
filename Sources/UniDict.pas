@@ -51,6 +51,7 @@ type
     pnlClientCh: TPanel;
     gtUniDictType: TJvDBGrid;
     grUniDictParam: TJvDBGrid;
+    dbmmoparam_description1: TDBMemo;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);

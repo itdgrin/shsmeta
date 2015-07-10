@@ -18,7 +18,7 @@ inherited FrameSSR: TFrameSSR
     BevelOuter = bvNone
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 0
+    TabOrder = 1
     object ImageSplitter: TImage
       Left = 312
       Top = 395
@@ -86,7 +86,7 @@ inherited FrameSSR: TFrameSSR
       ParentBackground = False
       ParentDoubleBuffered = False
       ShowCaption = False
-      TabOrder = 1
+      TabOrder = 2
       object Memo: TMemo
         Left = 0
         Top = 0
@@ -107,7 +107,7 @@ inherited FrameSSR: TFrameSSR
       Align = alClient
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 2
+      TabOrder = 1
       OnResize = PanelStringGridResize
       object SpeedButtonShowHide: TSpeedButton
         Tag = 1
@@ -178,7 +178,7 @@ inherited FrameSSR: TFrameSSR
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 1
+    TabOrder = 0
     DesignSize = (
       498
       25)
@@ -348,6 +348,8 @@ inherited FrameSSR: TFrameSSR
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
     Left = 30
     Top = 40
   end

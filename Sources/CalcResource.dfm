@@ -132,7 +132,7 @@ object fCalcResource: TfCalcResource
     Top = 56
     Width = 616
     Height = 306
-    ActivePage = ts3
+    ActivePage = ts2
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
