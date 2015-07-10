@@ -7,7 +7,7 @@ uses
   Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
   ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, ArhivModule,
   Data.DB, GlobsAndConst, Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage,
-  JvFormPlacement, Vcl.Clipbrd, JvGIF;
+  JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
@@ -1410,9 +1410,18 @@ begin
   if (not Assigned(fTravelList)) then
     fTravelList := TfTravelList.Create(Self);
   if Assigned(FormObjectsAndEstimates) then
+  begin
     fTravelList.LocateObject(FormObjectsAndEstimates.getCurObject);
+    fTravelList.defIdEstimate := FormObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger;
+  end;
   if Assigned(FormCalculationEstimate) then
+  begin
     fTravelList.LocateObject(FormCalculationEstimate.IdObject);
+    if FormCalculationEstimate.Act then
+      fTravelList.defIdAct := FormCalculationEstimate.IdAct
+    else
+      fTravelList.defIdEstimate := FormCalculationEstimate.IdEstimate;
+  end;
   fTravelList.Show;
 end;
 
