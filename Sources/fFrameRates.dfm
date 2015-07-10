@@ -300,8 +300,6 @@
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 2
-            ExplicitLeft = 1
-            ExplicitTop = 51
           end
         end
         object Panel1: TPanel
@@ -337,8 +335,6 @@
             BevelOuter = bvNone
             ParentBackground = False
             TabOrder = 0
-            ExplicitLeft = 1
-            ExplicitTop = 1
             object LabelJustification: TLabel
               Left = 6
               Top = 6

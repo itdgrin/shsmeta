@@ -529,9 +529,15 @@ begin
   IdNormative := dm.qrNormativ.FieldByName('IdNormative').AsVariant; // œÓÎÛ˜‡ÂÏ Id ÌÓÏ‡ÚË‚‡
 
   if CharInSet(Char(dm.qrNormativ.FieldByName('NumberNormative').AsString[1]), ['0' .. '9']) then
-    CheckBoxNorm—onsumption.Checked := False
+  begin
+    CheckBoxNorm—onsumption.Checked := False;
+    CheckBoxNorm—onsumption.Visible := False;
+  end
   else
-    CheckBoxNorm—onsumption.Checked := true;
+  begin
+    CheckBoxNorm—onsumption.Checked := True;
+    CheckBoxNorm—onsumption.Visible := True;
+  end;
 
   Sbornik(dm.qrNormativ.FieldByName('normativ_directory_id').AsInteger);
 

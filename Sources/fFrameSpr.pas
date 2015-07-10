@@ -54,6 +54,7 @@ type
     FSprArray: TSprArray;
     //Не показывать колонку едениц измерения
     FNoEdCol: Boolean;
+    FNeedFillSprAfterLoad: Boolean;
 
     //Возвращает текст запроса
     function GetSprSQL: string; virtual; abstract;
@@ -76,6 +77,8 @@ type
     function CheckByffer: Boolean; virtual;
     //обновляет буфер
     procedure UpdateByffer; virtual;
+
+    procedure VisibleChanging; override;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
@@ -94,6 +97,16 @@ implementation
 uses DataModule, Tools;
 
 { TSprFrame }
+
+procedure TSprFrame.VisibleChanging;
+begin
+  inherited;
+  if FNeedFillSprAfterLoad then
+  begin
+    FNeedFillSprAfterLoad := False;
+    FillSprList(edtFindCode.Text, edtFindName.Text);
+  end;
+end;
 
 function TSprFrame.FindCode(const ACode: string): PSprRecord;
 var i: Integer;
@@ -342,7 +355,10 @@ begin
 
     FillSprArray(TDataSet(Mes.WParam));
     //Заполнение справочника
-    FillSprList(edtFindCode.Text, edtFindName.Text);
+    if Visible then
+      FillSprList(edtFindCode.Text, edtFindName.Text)
+    else
+      FNeedFillSprAfterLoad := True;
   finally
     OnLoadDone;
   end;
@@ -390,6 +406,8 @@ begin
 
   SpeedButtonShowHide.Hint := 'Свернуть панель';
   DM.ImageListArrowsBottom.GetBitmap(0, SpeedButtonShowHide.Glyph);
+
+  Update
 end;
 
 procedure TSprFrame.edtFindNameKeyPress(Sender: TObject; var Key: Char);
