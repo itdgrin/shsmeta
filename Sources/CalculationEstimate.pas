@@ -2844,13 +2844,10 @@ begin
       6, 7, 8, 9:
         qrTemp.SQL.Text := 'UPDATE transpcard_temp set CARG_COUNT = :RC WHERE ID=:ID;';
       10, 11:
-        begin
-          if Act then
-            qrTemp.SQL.Text := 'UPDATE data_act_temp set E1820_COUNT = :RC WHERE ID=:ID;'
-          else
-            qrTemp.SQL.Text := 'UPDATE data_estimate_temp set E1820_COUNT = :RC WHERE ID=:ID;';
-          qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
-        end
+      begin
+        qrTemp.SQL.Text := 'UPDATE data_row_temp set E1820_COUNT = :RC WHERE ID=:ID;';
+        qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
+      end;
     else
       begin
         ShowMessage('Запрос обновления не реализован!');
@@ -2876,10 +2873,7 @@ begin
 
   if qrRatesEx.Tag <> 1 then
   begin
-    if Act then
-      qrTemp.SQL.Text := 'UPDATE data_act_temp set NUM_ROW = :RC WHERE ID=:ID;'
-    else
-      qrTemp.SQL.Text := 'UPDATE data_estimate_temp set NUM_ROW = :RC WHERE ID=:ID;';
+    qrTemp.SQL.Text := 'UPDATE data_row_temp set NUM_ROW = :RC WHERE ID=:ID;';
     qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
     qrTemp.ParamByName('RC').Value := Sender.Value;
     qrTemp.ExecSQL;
@@ -4158,7 +4152,7 @@ begin
     Iterator := C_ET20ITER;
 
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'INSERT INTO data_estimate_temp ' +
+  qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
     '(ID, id_estimate, id_type_data, NUM_ROW) VALUE ' +
       '(GetNewID(:IDType), :IdEstimate, :SType, :NUM_ROW);';
   qrTemp.ParamByName('IDType').Value := C_ID_DATA;
@@ -4313,8 +4307,8 @@ begin
           begin
             Active := False;
             SQL.Clear;
-            SQL.Add('DELETE FROM data_estimate_temp WHERE (id_type_data = ' +
-              IntToStr(qrRatesExID_TYPE_DATA.AsInteger) + ');');
+            SQL.Add('DELETE FROM data_row_temp WHERE (ID = ' +
+              IntToStr(qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger) + ');');
             ExecSQL;
           end;
         except
@@ -4544,9 +4538,10 @@ begin
     LikeText := 'Е20';
   qrStartup.Active := False;
   qrStartup.SQL.Text := 'select RATE_CODE, RATE_CAPTION, RATE_COUNT, RATE_UNIT ' +
-    'from data_estimate_temp as dm LEFT JOIN card_rate_temp as cr ' +
+    'from data_row_temp as dm LEFT JOIN card_rate_temp as cr ' +
     'ON (dm.ID_TYPE_DATA = 1) AND (cr.ID = dm.ID_TABLES) ' + 'WHERE (cr.RATE_CODE LIKE "%' + LikeText +
-    '%") and ' + '(dm.ID_ESTIMATE = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ')';
+    '%") and (dm.ID_ESTIMATE = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ') and ' +
+    '(dm.ID_ACT is NULL)';
   qrStartup.Active := True;
 end;
 

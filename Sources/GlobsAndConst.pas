@@ -89,7 +89,7 @@ const
   C_ID_SMDEV   = 6;  //6 - смета оборудование
   C_ID_SMDUM   = 7;  //7 - смета свалки
   C_ID_SMTR    = 8;  //8 - смета транспорт
-  C_ID_DATA    = 9;  //9 - смета data_estimate
+  C_ID_DATA    = 9;  //9 - смета data_row
   C_ID_SMCOEF  = 10; //10 - смета calculation_coef
   C_ID_ACT     = 11; //11 - акт
 
@@ -103,7 +103,7 @@ const
     ('devicescard', 'ID'),
     ('dumpcard', 'ID'),
     ('transpcard', 'ID'),
-    ('data_estimate', 'ID'),
+    ('data_row', 'ID'),
     ('card_acts', 'ID'),
     ('card_rate_act', 'ID'),
     ('materialcard_act', 'ID'),

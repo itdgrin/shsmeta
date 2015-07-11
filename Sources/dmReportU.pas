@@ -586,16 +586,16 @@ begin
    ' FROM `smetasourcedata` `ssd` '+
    ' INNER JOIN `smetasourcedata` `ssd1` 	ON `ssd1`.`PARENT_ID` = `ssd`.`SM_ID` 	AND `ssd1`.`SM_TYPE` 	  = 1  '+
    ' INNER JOIN `smetasourcedata` `ssd2`	ON `ssd2`.`PARENT_ID` = `ssd1`.`SM_ID`	AND `ssd2`.`SM_TYPE` 	  = 3 '+
-   ' INNER JOIN `data_estimate`   `de` 		ON  `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID` AND `de`.`ID_TYPE_DATA`	= 1 '+
-   ' WHERE `ssd`.`SM_ID` ='+inttostr(SM_ID)+';';
+   ' INNER JOIN `data_row`   `de` 		ON  `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID` AND `de`.`ID_TYPE_DATA`	= 1 '+
+   ' WHERE (`ssd`.`SM_ID` ='+inttostr(SM_ID)+') AND (`de`.`ID_ACT` is NULL);';
 
   if qrTMP.FieldByName('sm_type').AsInteger = 1 then
     vkExcel.SQL.Text :=
    ' select * '+
    ' FROM `smetasourcedata` `ssd` '+
    ' INNER JOIN `smetasourcedata` `ssd2`	ON `ssd2`.`PARENT_ID` = `ssd`.`SM_ID`	  AND `ssd2`.`SM_TYPE` 	= 3 '+
-   ' INNER JOIN `data_estimate`   `de` 	  ON  `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID` AND `de`.`ID_TYPE_DATA` = 1 '+
-   ' WHERE `ssd`.`SM_ID` = '+inttostr(SM_ID)+';';
+   ' INNER JOIN `data_row`   `de` 	  ON  `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID` AND `de`.`ID_TYPE_DATA` = 1 '+
+   ' WHERE (`ssd`.`SM_ID` = '+inttostr(SM_ID)+') AND (`de`.`ID_ACT` is NULL);';
 
    CloseOpen(vkExcel);
 
@@ -749,13 +749,13 @@ frxReport.LoadFromFile(FileReportPath + 'frWinter_RS_OBJ.fr3');
   ' round(if(SSx.KZP>0,DE.zp/SSx.KZP,0),0)     as zp_rab,'+
   ' round(if(SSx.KZP>0,ZP_MASH/RATE_COUNT,0),0) as v_mash,'+
   ' round(if(SSx.KZP*RATE_COUNT>0,DE.zp/(SSx.KZP*RATE_COUNT),0),0) as v_rab'+
-  ' FROM data_estimate AS DE'+
+  ' FROM data_row AS DE'+
   ' LEFT JOIN card_rate as CR ON DE.id_tables = CR.id'+
   ' left join'+
   ' (SELECT  ssd.SM_ID,0 as SM_VID,ssd.KZP, "" as NAME1'+
   ' FROM smetasourcedata ssd'+
   ' WHERE ssd.SM_ID = '+inttostr(SM_ID)+
-  ' AND ssd.SM_TYPE = 2'+
+  ' AND ssd.SM_TYPE = 2 AND (DE.ID_ACT is NULL)'+
   ' UNION '+
   ' SELECT ssd_local.SM_ID, 1 as SM_VID,ssd_local.KZP, CONCAT(ssd_local.SM_NUMBER, " ",  ssd_local.NAME) as NAME1'+
   ' FROM smetasourcedata ssd_local'+
@@ -950,9 +950,10 @@ qRSMEH_OBJ.SQL.Text:=
 '     sum(`mech_SUM_NDS`) as `SUM_NDS`'#13#10 +
 ' from mechanizmcard '#13#10 +
 ' left join  card_rate on card_rate.id = mechanizmcard.ID_CARD_RATE'#13#10 +
-' left join  data_estimate on ID_TABLES = card_rate.id'#13#10 +
-' left join  smetasourcedata on  smetasourcedata.sm_id = data_estimate.ID_ESTIMATE '#13#10 +
-' where (:SM_ID is null or `smetasourcedata`.`SM_ID` = :SM_ID) and (:OBJ_ID is null or `smetasourcedata`.`OBJ_ID` = :OBJ_ID)'#13#10 +
+' left join  data_row on ID_TABLES = card_rate.id'#13#10 +
+' left join  smetasourcedata on  smetasourcedata.sm_id = data_row.ID_ESTIMATE '#13#10 +
+' where (:SM_ID is null or `smetasourcedata`.`SM_ID` = :SM_ID) and' +
+' (:OBJ_ID is null or `smetasourcedata`.`OBJ_ID` = :OBJ_ID) AND (`data_row`.`ID_ACT` is NULL)'#13#10 +
 ' group by  `mech_code`,`mech_name`,`mech_unit`,`NDS`,`ZP_MACH_NO_NDS`'#13#10 +
 ' order by `mech_code`' ;
 
@@ -1106,10 +1107,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' FROM `smetasourcedata` `ssd`'#13#10 +
 ' INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd`.`SM_ID`  AND `ssd1`.`SM_TYPE` = 1'#13#10 +
 ' INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd1`.`SM_ID` AND `ssd2`.`SM_TYPE` = 3'#13#10 +
-' INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
+' INNER JOIN `data_row` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
 ' INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES`'#13#10 +
 ' INNER JOIN `materialcard` `mtc` ON `mtc`.`ID_CARD_RATE` = `cr`.`ID`'#13#10 +
-' WHERE `ssd`.`SM_ID` = :SM_ID  AND `ssd`.`SM_TYPE` = 2   '#13#10 +
+' WHERE (`ssd`.`SM_ID` = :SM_ID)  AND (`ssd`.`SM_TYPE` = 2) AND (`de`.`ID_ACT` is NULL) '#13#10 +
 ' group by `sm_id3`,`MAT_CODE` '#13#10 +
 ' union'#13#10 +
 ' SELECT'#13#10 +
@@ -1167,10 +1168,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' FROM `smetasourcedata` `ssd`'#13#10 +
 ' INNER JOIN `smetasourcedata` `ssd1` ON `ssd1`.`PARENT_ID` = `ssd`.`SM_ID`  AND `ssd1`.`SM_TYPE` = 1 '#13#10 +
 ' INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd1`.`SM_ID` AND `ssd2`.`SM_TYPE` = 3  '#13#10 +
-' INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
+' INNER JOIN `data_row` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
 ' INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES` '#13#10 +
 ' INNER JOIN `mechanizmcard` `mch` ON `mch`.`ID_CARD_RATE` = `cr`.`ID` '#13#10 +
-' WHERE `ssd`.`SM_ID` =  :SM_ID   AND `ssd`.`SM_TYPE` = 2   '#13#10 +
+' WHERE (`ssd`.`SM_ID` =  :SM_ID) AND (`ssd`.`SM_TYPE` = 2) AND (`de`.`ID_ACT` is NULL) '#13#10 +
 ' group by `sm_id3`,`MECH_CODE` ) sm  order by `sm_id2`,`sm_id3`,`MAT_CODE`;';
 
 
@@ -1195,10 +1196,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' sum(`mtc`.`MAT_COUNT`) as MAT_COUNT'#13#10 +
 ' FROM `smetasourcedata` `ssd1`'#13#10 +
 ' INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd1`.`SM_ID` AND `ssd2`.`SM_TYPE` = 3'#13#10 +
-' INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
+' INNER JOIN `data_row` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
 ' INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES`'#13#10 +
 ' INNER JOIN `materialcard` `mtc` ON `mtc`.`ID_CARD_RATE` = `cr`.`ID`'#13#10 +
-' WHERE `ssd1`.`SM_ID` = :SM_ID  AND `ssd1`.`SM_TYPE` = 1   '#13#10 +
+' WHERE (`ssd1`.`SM_ID` = :SM_ID) AND (`ssd1`.`SM_TYPE` = 1) AND (`de`.`ID_ACT` is NULL) '#13#10 +
 ' group by `sm_id3`,`MAT_CODE` '#13#10 +
 ' union'#13#10 +
 ' SELECT'#13#10 +
@@ -1253,10 +1254,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' sum(`mch`.`MECH_COUNT`) as `MAT_COUNT` '#13#10 +
 ' FROM `smetasourcedata` `ssd1`'#13#10 +
 ' INNER JOIN `smetasourcedata` `ssd2` ON `ssd2`.`PARENT_ID` = `ssd1`.`SM_ID` AND `ssd2`.`SM_TYPE` = 3  '#13#10 +
-' INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
+' INNER JOIN `data_row` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
 ' INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES` '#13#10 +
 ' INNER JOIN `mechanizmcard` `mch` ON `mch`.`ID_CARD_RATE` = `cr`.`ID` '#13#10 +
-' WHERE `ssd1`.`SM_ID` =  :SM_ID   AND `ssd1`.`SM_TYPE` = 1   '#13#10 +
+' WHERE (`ssd1`.`SM_ID` =  :SM_ID) AND (`ssd1`.`SM_TYPE` = 1) AND (`de`.`ID_ACT` is NULL) '#13#10 +
 ' group by `sm_id3`,`MECH_CODE` ) sm  order by `sm_id2`,`sm_id3`,`MAT_CODE`;';
 
 
@@ -1280,10 +1281,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' `mtc`.`MAT_UNIT`,'#13#10 +
 ' sum(`mtc`.`MAT_COUNT`) as MAT_COUNT'#13#10 +
 ' FROM `smetasourcedata` `ssd2`'#13#10 +
-' INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
+' INNER JOIN `data_row` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
 ' INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES`'#13#10 +
 ' INNER JOIN `materialcard` `mtc` ON `mtc`.`ID_CARD_RATE` = `cr`.`ID`'#13#10 +
-' WHERE `ssd2`.`SM_ID` = :SM_ID  AND `ssd2`.`SM_TYPE` = 3   '#13#10 +
+' WHERE (`ssd2`.`SM_ID` = :SM_ID) AND (`ssd2`.`SM_TYPE` = 3) AND (`de`.`ID_ACT` is NULL) '#13#10 +
 ' group by `sm_id3`,`MAT_CODE` '#13#10 +
 
 ' union'#13#10 +
@@ -1341,10 +1342,10 @@ qVED_OBRAB_RASHRES_SMET.SQL.Text:=
 ' `mch`.`MECH_UNIT`,   '#13#10 +
 ' sum(`mch`.`MECH_COUNT`) as `MAT_COUNT` '#13#10 +
 ' FROM `smetasourcedata` `ssd2`'#13#10 +
-' INNER JOIN `data_estimate` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
+' INNER JOIN `data_row` `de` ON `de`.`ID_ESTIMATE` = `ssd2`.`SM_ID`     AND `de`.`ID_TYPE_DATA` IN (1, 2, 5) '#13#10 +
 ' INNER JOIN `card_rate` `cr` ON `cr`.`ID` = `de`.`ID_TABLES` '#13#10 +
 ' INNER JOIN `mechanizmcard` `mch` ON `mch`.`ID_CARD_RATE` = `cr`.`ID` '#13#10 +
-' WHERE `ssd2`.`SM_ID` =  :SM_ID   AND `ssd2`.`SM_TYPE` = 3   '#13#10 +
+' WHERE (`ssd2`.`SM_ID` =  :SM_ID) AND (`ssd2`.`SM_TYPE` = 3) AND (`de`.`ID_ACT` is NULL) '#13#10 +
 ' group by `sm_id3`,`MECH_CODE` ) sm  order by `sm_id2`,`sm_id3`,`MAT_CODE`;';
 qVED_OBRAB_RASHRES_SMET.ParamByName('SM_ID').AsInteger := SM_ID ;
  CloseOpen(qVED_OBRAB_RASHRES_SMET);
