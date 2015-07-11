@@ -10,7 +10,6 @@ object fCalcTravel: TfCalcTravel
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  FormStyle = fsMDIChild
   OldCreateOrder = False
   Visible = True
   OnActivate = FormActivate
@@ -25,7 +24,7 @@ object fCalcTravel: TfCalcTravel
   TextHeight = 13
   object lbl1: TLabel
     Left = 8
-    Top = 35
+    Top = 8
     Width = 65
     Height = 13
     Caption = #1054#1089#1085#1086#1074#1072#1085#1080#1077':'
@@ -36,22 +35,9 @@ object fCalcTravel: TfCalcTravel
     Font.Style = [fsBold, fsUnderline]
     ParentFont = False
   end
-  object lbl3: TLabel
-    Left = 8
-    Top = 8
-    Width = 48
-    Height = 13
-    Caption = #1054#1073#1098#1077#1082#1090':'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold, fsUnderline]
-    ParentFont = False
-  end
   object lbl4: TLabel
     Left = 8
-    Top = 65
+    Top = 38
     Width = 48
     Height = 13
     Caption = #1057#1086#1089#1090#1072#1074#1080#1083
@@ -64,7 +50,7 @@ object fCalcTravel: TfCalcTravel
   end
   object dbedtPREPARER: TDBEdit
     Left = 79
-    Top = 62
+    Top = 35
     Width = 210
     Height = 21
     DataField = 'PREPARER'
@@ -75,30 +61,13 @@ object fCalcTravel: TfCalcTravel
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 3
   end
-  object dbedtNAME: TDBEdit
-    Left = 79
-    Top = 8
-    Width = 408
-    Height = 21
-    Anchors = [akLeft, akTop, akRight]
-    DataField = 'NAME'
-    DataSource = fTravelList.dsObject
-    Enabled = False
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 0
-  end
-  object JvDBGrid1: TJvDBGrid
+  object grCalc: TJvDBGrid
     Left = 8
-    Top = 89
+    Top = 62
     Width = 479
-    Height = 257
+    Height = 284
     Anchors = [akLeft, akTop, akRight, akBottom]
     DataSource = dsCalc
     DrawingStyle = gdsClassic
@@ -109,13 +78,15 @@ object fCalcTravel: TfCalcTravel
     Font.Style = []
     Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 5
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
-    OnKeyPress = JvDBGrid1KeyPress
+    OnKeyPress = grCalcKeyPress
+    AutoAppend = False
+    IniStorage = FormStorage
     AutoSizeColumns = True
     SelectColumnsDialogStrings.Caption = 'Select columns'
     SelectColumnsDialogStrings.OK = '&OK'
@@ -159,7 +130,7 @@ object fCalcTravel: TfCalcTravel
   end
   object dblkcbbAct: TDBLookupComboBox
     Left = 143
-    Top = 35
+    Top = 8
     Width = 344
     Height = 21
     Anchors = [akLeft, akTop, akRight]
@@ -168,18 +139,18 @@ object fCalcTravel: TfCalcTravel
     KeyField = 'ID'
     ListField = 'NAME'
     ListSource = dsActList
-    TabOrder = 3
+    TabOrder = 2
     OnClick = dblkcbbActClick
   end
   object cbbSource: TComboBox
     Left = 79
-    Top = 35
+    Top = 8
     Width = 58
     Height = 21
     AutoCloseUp = True
     Style = csDropDownList
     ItemIndex = 0
-    TabOrder = 1
+    TabOrder = 0
     Text = #1072#1082#1090
     OnChange = cbbSourceChange
     Items.Strings = (
@@ -188,19 +159,19 @@ object fCalcTravel: TfCalcTravel
   end
   object dbchkFL_Full_month: TDBCheckBox
     Left = 295
-    Top = 62
+    Top = 35
     Width = 146
     Height = 17
     Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072' '#1087#1086#1083#1085#1099#1081' '#1084#1077#1089#1103#1094
     DataField = 'FL_Full_month'
     DataSource = fTravelList.dsTravel
-    TabOrder = 5
+    TabOrder = 4
     ValueChecked = '1'
     ValueUnchecked = '0'
   end
   object dblkcbbSmeta: TDBLookupComboBox
     Left = 143
-    Top = 35
+    Top = 8
     Width = 344
     Height = 21
     Anchors = [akLeft, akTop, akRight]
@@ -209,7 +180,7 @@ object fCalcTravel: TfCalcTravel
     KeyField = 'SM_ID'
     ListField = 'NAME'
     ListSource = dsSmetaList
-    TabOrder = 2
+    TabOrder = 1
     Visible = False
     OnClick = dblkcbbActClick
   end
@@ -219,13 +190,14 @@ object fCalcTravel: TfCalcTravel
     Top = 150
   end
   object qrCalc: TFDQuery
+    BeforePost = qrCalcBeforePost
     AfterPost = qrCalcAfterPost
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -245,7 +217,8 @@ object fCalcTravel: TfCalcTravel
         TargetDataType = dtAnsiString
       end>
     FormatOptions.DefaultParamDataType = ftBCD
-    FormatOptions.FmtDisplayNumeric = '### ### ### ###.###'
+    FormatOptions.FmtDisplayNumeric = '### ### ### ##0.###'
+    FormatOptions.FmtEditNumeric = '############.###'
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False
@@ -253,7 +226,11 @@ object fCalcTravel: TfCalcTravel
     SQL.Strings = (
       
         'CALL `CalcTravel`(:ID_ACT, :ID_ESTIMATE, :STOIM_KM, :KM, :SUTKI_' +
-        'KOMANDIR, :FLFullMonth, :HOUSING_KOMANDIR);')
+        'KOMANDIR, :FLFullMonth, :HOUSING_KOMANDIR, :HOUR_IN_DAY, '
+      
+        '                  :COUNT_WORK_DAY_IN_MONTH, :CUNT_DAY_IN_MONTH, ' +
+        ':NORMAT, :NORMATF, :SUTKI, :SUTKIF, :KVARTIR, :KVARTIRF,'
+      '                  :PROEZD, :PROEZDF, :TOTAL, :TOTALF);')
     Left = 35
     Top = 94
     ParamData = <
@@ -288,6 +265,78 @@ object fCalcTravel: TfCalcTravel
       item
         Name = 'HOUSING_KOMANDIR'
         ParamType = ptInput
+      end
+      item
+        Name = 'HOUR_IN_DAY'
+        ParamType = ptInput
+      end
+      item
+        Name = 'COUNT_WORK_DAY_IN_MONTH'
+        ParamType = ptInput
+      end
+      item
+        Name = 'CUNT_DAY_IN_MONTH'
+        ParamType = ptInput
+      end
+      item
+        Name = 'NORMAT'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'NORMATF'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'SUTKI'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'SUTKIF'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'KVARTIR'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'KVARTIRF'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'PROEZD'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'PROEZDF'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'TOTAL'
+        DataType = ftFloat
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'TOTALF'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
       end>
   end
   object qrActList: TFDQuery
@@ -359,5 +408,13 @@ object fCalcTravel: TfCalcTravel
     DataSet = qrSmetaList
     Left = 280
     Top = 152
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    Options = []
+    StoredValues = <>
+    Left = 32
+    Top = 224
   end
 end

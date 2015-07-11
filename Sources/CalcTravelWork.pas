@@ -7,16 +7,14 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.Mask, Vcl.DBCtrls, Vcl.Grids,
   Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvComponentBase, JvFormPlacement;
 
 type
   TfCalcTravelWork = class(TForm)
     lbl1: TLabel;
     dbedtPREPARER: TDBEdit;
-    lbl3: TLabel;
-    dbedtNAME: TDBEdit;
     lbl4: TLabel;
-    JvDBGrid1: TJvDBGrid;
+    grCalc: TJvDBGrid;
     dsCalc: TDataSource;
     qrCalc: TFDQuery;
     dblkcbbAct: TDBLookupComboBox;
@@ -27,15 +25,17 @@ type
     qrSmetaList: TFDQuery;
     dsSmetaList: TDataSource;
     dblkcbbSmeta: TDBLookupComboBox;
+    FormStorage: TJvFormStorage;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure qrCalcAfterPost(DataSet: TDataSet);
-    procedure JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
+    procedure grCalcKeyPress(Sender: TObject; var Key: Char);
     procedure dblkcbbActClick(Sender: TObject);
     procedure cbbSourceChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure qrCalcBeforePost(DataSet: TDataSet);
   private
     { Private declarations }
 
@@ -50,10 +50,12 @@ implementation
 
 {$R *.dfm}
 
-uses Main, TravelList;
+uses Main, TravelList, EditExpression;
 
 procedure TfCalcTravelWork.cbbSourceChange(Sender: TObject);
 begin
+  fTravelList.qrTravelWork.Edit;
+  fTravelList.qrTravelWork.FieldByName('SOURCE_TYPE').Value := cbbSource.ItemIndex;
   case cbbSource.ItemIndex of
     0:
       begin
@@ -66,15 +68,12 @@ begin
         dblkcbbSmeta.Visible := True;
       end;
   end;
-  dblkcbbActClick(Sender);
 end;
 
 procedure TfCalcTravelWork.dblkcbbActClick(Sender: TObject);
 begin
+  Application.ProcessMessages;
   InitParams;
-  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
-    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
-    CloseOpen(qrCalc);
 end;
 
 procedure TfCalcTravelWork.FormActivate(Sender: TObject);
@@ -88,7 +87,7 @@ end;
 
 procedure TfCalcTravelWork.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  FormMain.ReplaceButtonOpenWindow(Self, fTravelList);
+  // FormMain.ReplaceButtonOpenWindow(Self, fTravelList);
   Action := caFree;
 end;
 
@@ -128,26 +127,37 @@ end;
 
 procedure TfCalcTravelWork.FormCreate(Sender: TObject);
 begin
-  LoadDBGridSettings(JvDBGrid1);
+  LoadDBGridSettings(grCalc);
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);
-  if not VarIsNull(fTravelList.qrTravelWork.FieldByName('ID_ESTIMATE').Value) then
-  begin
-    cbbSource.ItemIndex := 1;
-    dblkcbbAct.Visible := False;
-    dblkcbbSmeta.Visible := True;
-  end;
   dbchkFL_Full_month.OnClick := dblkcbbActClick;
 end;
 
 procedure TfCalcTravelWork.FormDestroy(Sender: TObject);
 begin
-  fTravelList.Show;
+  // fTravelList.Show;
   fCalcTravelWork := nil;
 end;
 
 procedure TfCalcTravelWork.InitParams;
 begin
+  if fTravelList = nil then
+    Exit;
+
+  if (fTravelList.qrTravelWork.FieldByName('SOURCE_TYPE').AsInteger = 1) then
+  begin
+    cbbSource.ItemIndex := 1;
+    dblkcbbAct.Visible := False;
+    dblkcbbSmeta.Visible := True;
+    dblkcbbSmeta.KeyValue := fTravelList.qrTravelWork.FieldByName('ID_ESTIMATE').Value;
+  end
+  else
+  begin
+    cbbSource.ItemIndex := 0;
+    dblkcbbAct.Visible := True;
+    dblkcbbSmeta.Visible := False;
+    dblkcbbAct.KeyValue := fTravelList.qrTravelWork.FieldByName('ID_ACT').Value;
+  end;
   // Заполняем параметры расчета
   case cbbSource.ItemIndex of
     // акт
@@ -165,6 +175,11 @@ begin
   end;
   qrCalc.ParamByName('FLFullMonth').Value := fTravelList.qrTravelWork.FieldByName('FL_Full_month').Value;
   qrCalc.ParamByName('SUTKI_KOMANDIR').Value := fTravelList.qrTravelWork.FieldByName('SUTKI_KOMANDIR').Value;
+  qrCalc.ParamByName('HOUR_IN_DAY').Value := fTravelList.qrTravelWork.FieldByName('HOUR_IN_DAY').Value;
+  qrCalc.ParamByName('NORMAT').Value := fTravelList.qrTravelWork.FieldByName('NORMAT').Value;
+  qrCalc.ParamByName('NORMATF').Value := fTravelList.qrTravelWork.FieldByName('NORMATF').Value;
+  qrCalc.ParamByName('TOTAL').Value := fTravelList.qrTravelWork.FieldByName('TOTAL').Value;
+  qrCalc.ParamByName('TOTALF').Value := fTravelList.qrTravelWork.FieldByName('TOTALF').Value;
   if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
     not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
     CloseOpen(qrCalc)
@@ -172,7 +187,7 @@ begin
     qrCalc.Active := False;
 end;
 
-procedure TfCalcTravelWork.JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
+procedure TfCalcTravelWork.grCalcKeyPress(Sender: TObject; var Key: Char);
 begin
   if (Ord(Key) = VK_RETURN) and (qrCalc.State = dsEdit) then
     qrCalc.Post;
@@ -180,9 +195,67 @@ end;
 
 procedure TfCalcTravelWork.qrCalcAfterPost(DataSet: TDataSet);
 begin
-  if qrCalc.RecNo = 1 then
-    fTravelList.qrTravelWork.FieldByName('SUTKI_KOMANDIR').AsInteger := qrCalc.FieldByName('CALC').AsInteger;
   InitParams;
+end;
+
+procedure TfCalcTravelWork.qrCalcBeforePost(DataSet: TDataSet);
+begin
+  if (qrCalc.RecNo = 1) and (qrCalc.FieldByName('CALC').Value <> qrCalc.FieldByName('CALC').OldValue) then
+  begin
+    fTravelList.qrTravelWork.Edit;
+    if qrCalc.FieldByName('CALC').Value = '' then
+      fTravelList.qrTravelWork.FieldByName('SUTKI_KOMANDIR').Value := null
+    else
+      fTravelList.qrTravelWork.FieldByName('SUTKI_KOMANDIR').Value := qrCalc.FieldByName('CALC').Value;
+  end;
+
+  // Нормативная трудоемкость
+  // Если изменили результат вычисления
+  if (qrCalc.RecNo = 2) and (qrCalc.FieldByName('TOTAL').Value <> qrCalc.FieldByName('TOTAL').OldValue) then
+  begin
+    fTravelList.qrTravelWork.Edit;
+    fTravelList.qrTravelWork.FieldByName('NORMAT').Value := qrCalc.FieldByName('TOTAL').Value;
+  end;
+  // Если изменили формулу
+  if (qrCalc.RecNo = 2) and (qrCalc.FieldByName('CALC').Value <> qrCalc.FieldByName('CALC').OldValue) then
+  begin
+    fTravelList.qrTravelWork.Edit;
+    if qrCalc.FieldByName('CALC').Value = '' then
+    begin
+      fTravelList.qrTravelWork.FieldByName('NORMATF').Value := null;
+      fTravelList.qrTravelWork.FieldByName('NORMAT').Value := null;
+    end
+    else
+    begin
+      fTravelList.qrTravelWork.FieldByName('NORMATF').Value := qrCalc.FieldByName('CALC').Value;
+      fTravelList.qrTravelWork.FieldByName('NORMAT').Value :=
+        CalcExpression(qrCalc.FieldByName('CALC').AsString, False);
+    end;
+  end;
+
+  // Итог
+  // Если изменили результат вычисления
+  if (qrCalc.RecNo = 3) and (qrCalc.FieldByName('TOTAL').Value <> qrCalc.FieldByName('TOTAL').OldValue) then
+  begin
+    fTravelList.qrTravelWork.Edit;
+    fTravelList.qrTravelWork.FieldByName('TOTAL').Value := qrCalc.FieldByName('TOTAL').Value;
+  end;
+  // Если изменили формулу
+  if (qrCalc.RecNo = 3) and (qrCalc.FieldByName('CALC').Value <> qrCalc.FieldByName('CALC').OldValue) then
+  begin
+    fTravelList.qrTravelWork.Edit;
+    if qrCalc.FieldByName('CALC').Value = '' then
+    begin
+      fTravelList.qrTravelWork.FieldByName('TOTALF').Value := null;
+      fTravelList.qrTravelWork.FieldByName('TOTAL').Value := null;
+    end
+    else
+    begin
+      fTravelList.qrTravelWork.FieldByName('TOTALF').Value := qrCalc.FieldByName('CALC').Value;
+      fTravelList.qrTravelWork.FieldByName('TOTAL').Value :=
+        CalcExpression(qrCalc.FieldByName('CALC').AsString, False);
+    end;
+  end;
 end;
 
 end.

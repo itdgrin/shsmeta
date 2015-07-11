@@ -7,16 +7,14 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.Mask, Vcl.DBCtrls, Vcl.Grids,
   Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvComponentBase, JvFormPlacement;
 
 type
   TfCalcWorkerDepartment = class(TForm)
     lbl1: TLabel;
     dbedtPREPARER: TDBEdit;
-    lbl3: TLabel;
-    dbedtNAME: TDBEdit;
     lbl4: TLabel;
-    JvDBGrid1: TJvDBGrid;
+    grCalc: TJvDBGrid;
     dsCalc: TDataSource;
     qrCalc: TFDQuery;
     dblkcbbAct: TDBLookupComboBox;
@@ -27,15 +25,17 @@ type
     qrSmetaList: TFDQuery;
     dsSmetaList: TDataSource;
     dblkcbbSmeta: TDBLookupComboBox;
+    FormStorage: TJvFormStorage;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure qrCalcAfterPost(DataSet: TDataSet);
-    procedure JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
+    procedure grCalcKeyPress(Sender: TObject; var Key: Char);
     procedure dblkcbbActClick(Sender: TObject);
     procedure cbbSourceChange(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure qrCalcBeforePost(DataSet: TDataSet);
   private
     { Private declarations }
 
@@ -50,10 +50,12 @@ implementation
 
 {$R *.dfm}
 
-uses Main, TravelList;
+uses Main, TravelList, EditExpression;
 
 procedure TfCalcWorkerDepartment.cbbSourceChange(Sender: TObject);
 begin
+  fTravelList.qrWorkerDepartment.Edit;
+  fTravelList.qrWorkerDepartment.FieldByName('SOURCE_TYPE').Value := cbbSource.ItemIndex;
   case cbbSource.ItemIndex of
     0:
       begin
@@ -66,15 +68,12 @@ begin
         dblkcbbSmeta.Visible := True;
       end;
   end;
-  dblkcbbActClick(Sender);
 end;
 
 procedure TfCalcWorkerDepartment.dblkcbbActClick(Sender: TObject);
 begin
+  Application.ProcessMessages;
   InitParams;
-  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
-    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
-    CloseOpen(qrCalc);
 end;
 
 procedure TfCalcWorkerDepartment.FormActivate(Sender: TObject);
@@ -88,7 +87,7 @@ end;
 
 procedure TfCalcWorkerDepartment.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  FormMain.ReplaceButtonOpenWindow(Self, fTravelList);
+  // FormMain.ReplaceButtonOpenWindow(Self, fTravelList);
   Action := caFree;
 end;
 
@@ -128,26 +127,37 @@ end;
 
 procedure TfCalcWorkerDepartment.FormCreate(Sender: TObject);
 begin
-  LoadDBGridSettings(JvDBGrid1);
+  LoadDBGridSettings(grCalc);
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);
-  if not VarIsNull(fTravelList.qrWorkerDepartment.FieldByName('ID_ESTIMATE').Value) then
-  begin
-    cbbSource.ItemIndex := 1;
-    dblkcbbAct.Visible := False;
-    dblkcbbSmeta.Visible := True;
-  end;
   dbchkFL_Full_month.OnClick := dblkcbbActClick;
 end;
 
 procedure TfCalcWorkerDepartment.FormDestroy(Sender: TObject);
 begin
-  fTravelList.Show;
+  // fTravelList.Show;
   fCalcWorkerDepartment := nil;
 end;
 
 procedure TfCalcWorkerDepartment.InitParams;
 begin
+  if fTravelList = nil then
+    Exit;
+
+  if (fTravelList.qrWorkerDepartment.FieldByName('SOURCE_TYPE').AsInteger = 1) then
+  begin
+    cbbSource.ItemIndex := 1;
+    dblkcbbAct.Visible := False;
+    dblkcbbSmeta.Visible := True;
+    dblkcbbSmeta.KeyValue := fTravelList.qrWorkerDepartment.FieldByName('ID_ESTIMATE').Value;
+  end
+  else
+  begin
+    cbbSource.ItemIndex := 0;
+    dblkcbbAct.Visible := True;
+    dblkcbbSmeta.Visible := False;
+    dblkcbbAct.KeyValue := fTravelList.qrWorkerDepartment.FieldByName('ID_ACT').Value;
+  end;
   // Заполняем параметры расчета
   case cbbSource.ItemIndex of
     // акт
@@ -182,6 +192,24 @@ begin
   qrCalc.ParamByName('InOut').Value := fTravelList.qrWorkerDepartment.FieldByName('InOut').Value;
   qrCalc.ParamByName('TimeIN').Value := fTravelList.qrWorkerDepartment.FieldByName('TimeIN').Value;
   qrCalc.ParamByName('TimeOUT').Value := fTravelList.qrWorkerDepartment.FieldByName('TimeOUT').Value;
+  qrCalc.ParamByName('auto_mark').Value := fTravelList.qrWorkerDepartment.FieldByName('auto_mark').Value;
+  qrCalc.ParamByName('HOUR_IN_DAY').Value := fTravelList.qrWorkerDepartment.FieldByName('HOUR_IN_DAY').Value;
+  qrCalc.ParamByName('NORMAT').Value := fTravelList.qrWorkerDepartment.FieldByName('NORMAT').Value;
+  qrCalc.ParamByName('NORMATF').Value := fTravelList.qrWorkerDepartment.FieldByName('NORMATF').Value;
+
+  qrCalc.ParamByName('NORM_WORKER_COUNT').Value := fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNT').Value;
+  qrCalc.ParamByName('NORM_WORKER_COUNTF').Value := fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNTF').Value;
+  qrCalc.ParamByName('NORM_AUTO_COUNT').Value := fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNT').Value;
+  qrCalc.ParamByName('NORM_AUTO_COUNTF').Value := fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNTF').Value;
+  qrCalc.ParamByName('FULL_AUTO_TIME').Value := fTravelList.qrWorkerDepartment.FieldByName('FULL_AUTO_TIME').Value;
+  qrCalc.ParamByName('FULL_AUTO_TIMEF').Value := fTravelList.qrWorkerDepartment.FieldByName('FULL_AUTO_TIMEF').Value;
+  qrCalc.ParamByName('AUTO_HVR').Value := fTravelList.qrWorkerDepartment.FieldByName('AUTO_HVR').Value;
+  qrCalc.ParamByName('AUTO_HVRF').Value := fTravelList.qrWorkerDepartment.FieldByName('AUTO_HVRF').Value;
+  qrCalc.ParamByName('AUTOKM').Value := fTravelList.qrWorkerDepartment.FieldByName('AUTOKM').Value;
+  qrCalc.ParamByName('AUTOKMF').Value := fTravelList.qrWorkerDepartment.FieldByName('AUTOKMF').Value;
+  qrCalc.ParamByName('TOTAL').Value := fTravelList.qrWorkerDepartment.FieldByName('TOTAL').Value;
+  qrCalc.ParamByName('TOTALF').Value := fTravelList.qrWorkerDepartment.FieldByName('TOTALF').Value;
+
   if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
     not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
     CloseOpen(qrCalc)
@@ -189,7 +217,7 @@ begin
     qrCalc.Active := False;
 end;
 
-procedure TfCalcWorkerDepartment.JvDBGrid1KeyPress(Sender: TObject; var Key: Char);
+procedure TfCalcWorkerDepartment.grCalcKeyPress(Sender: TObject; var Key: Char);
 begin
   if (Ord(Key) = VK_RETURN) and (qrCalc.State = dsEdit) then
     qrCalc.Post;
@@ -197,6 +225,9 @@ end;
 
 procedure TfCalcWorkerDepartment.qrCalcAfterPost(DataSet: TDataSet);
 begin
+  fTravelList.qrWorkerDepartment.Edit;
+  if qrCalc.RecNo = 1 then
+    fTravelList.qrWorkerDepartment.FieldByName('auto_mark').AsString := qrCalc.FieldByName('CALC').AsString;
   if qrCalc.RecNo = 2 then
     fTravelList.qrWorkerDepartment.FieldByName('PLACE_COUNT').AsInteger := qrCalc.FieldByName('CALC')
       .AsInteger;
@@ -207,6 +238,7 @@ begin
   if qrCalc.RecNo = 6 then
     fTravelList.qrWorkerDepartment.FieldByName('RoadALength').AsInteger := qrCalc.FieldByName('CALC')
       .AsInteger;
+
   if qrCalc.RecNo = 7 then
     fTravelList.qrWorkerDepartment.FieldByName('RoadGLength').AsInteger := qrCalc.FieldByName('CALC')
       .AsInteger;
@@ -222,6 +254,8 @@ begin
   if qrCalc.RecNo = 12 then
     fTravelList.qrWorkerDepartment.FieldByName('RoadGrSpeed').AsInteger := qrCalc.FieldByName('CALC')
       .AsInteger;
+  if qrCalc.RecNo = 13 then
+    fTravelList.qrWorkerDepartment.FieldByName('HOUR_IN_DAY').AsFloat := qrCalc.FieldByName('CALC').AsFloat;
   if qrCalc.RecNo = 14 then
     fTravelList.qrWorkerDepartment.FieldByName('COUNT_WORK_DAY_IN_MONTH').AsInteger :=
       qrCalc.FieldByName('CALC').AsInteger;
@@ -235,6 +269,177 @@ begin
   if qrCalc.RecNo = 18 then
     fTravelList.qrWorkerDepartment.FieldByName('TimeOUT').AsInteger := qrCalc.FieldByName('CALC').AsInteger;
   InitParams;
+end;
+
+procedure TfCalcWorkerDepartment.qrCalcBeforePost(DataSet: TDataSet);
+begin
+  // Нормативная трудоемкость
+  // Если изменили результат вычисления
+  if (qrCalc.RecNo = 19) and (qrCalc.FieldByName('TOTAL').Value <> qrCalc.FieldByName('TOTAL').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    fTravelList.qrWorkerDepartment.FieldByName('NORMAT').Value := qrCalc.FieldByName('TOTAL').Value;
+  end;
+  // Если изменили формулу
+  if (qrCalc.RecNo = 19) and (qrCalc.FieldByName('CALC').Value <> qrCalc.FieldByName('CALC').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    if qrCalc.FieldByName('CALC').Value = '' then
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('NORMATF').Value := null;
+      fTravelList.qrWorkerDepartment.FieldByName('NORMAT').Value := null;
+    end
+    else
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('NORMATF').Value := qrCalc.FieldByName('CALC').Value;
+      fTravelList.qrWorkerDepartment.FieldByName('NORMAT').Value :=
+        CalcExpression(qrCalc.FieldByName('CALC').AsString, False);
+    end;
+  end;
+
+  //
+  // Если изменили результат вычисления
+  if (qrCalc.RecNo = 20) and (qrCalc.FieldByName('TOTAL').Value <> qrCalc.FieldByName('TOTAL').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNT').Value := qrCalc.FieldByName('TOTAL').Value;
+  end;
+  // Если изменили формулу
+  if (qrCalc.RecNo = 20) and (qrCalc.FieldByName('CALC').Value <> qrCalc.FieldByName('CALC').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    if qrCalc.FieldByName('CALC').Value = '' then
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNTF').Value := null;
+      fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNT').Value := null;
+    end
+    else
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNTF').Value := qrCalc.FieldByName('CALC').Value;
+      fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNT').Value :=
+        CalcExpression(qrCalc.FieldByName('CALC').AsString, False);
+    end;
+  end;
+
+  //
+  // Если изменили результат вычисления
+  if (qrCalc.RecNo = 21) and (qrCalc.FieldByName('TOTAL').Value <> qrCalc.FieldByName('TOTAL').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNT').Value := qrCalc.FieldByName('TOTAL').Value;
+  end;
+  // Если изменили формулу
+  if (qrCalc.RecNo = 21) and (qrCalc.FieldByName('CALC').Value <> qrCalc.FieldByName('CALC').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    if qrCalc.FieldByName('CALC').Value = '' then
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNTF').Value := null;
+      fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNT').Value := null;
+    end
+    else
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNTF').Value := qrCalc.FieldByName('CALC').Value;
+      fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNT').Value :=
+        CalcExpression(qrCalc.FieldByName('CALC').AsString, False);
+    end;
+  end;
+
+  //
+  // Если изменили результат вычисления
+  if (qrCalc.RecNo = 22) and (qrCalc.FieldByName('TOTAL').Value <> qrCalc.FieldByName('TOTAL').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    fTravelList.qrWorkerDepartment.FieldByName('FULL_AUTO_TIME').Value := qrCalc.FieldByName('TOTAL').Value;
+  end;
+  // Если изменили формулу
+  if (qrCalc.RecNo = 22) and (qrCalc.FieldByName('CALC').Value <> qrCalc.FieldByName('CALC').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    if qrCalc.FieldByName('CALC').Value = '' then
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('FULL_AUTO_TIMEF').Value := null;
+      fTravelList.qrWorkerDepartment.FieldByName('FULL_AUTO_TIME').Value := null;
+    end
+    else
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('FULL_AUTO_TIMEF').Value := qrCalc.FieldByName('CALC').Value;
+      fTravelList.qrWorkerDepartment.FieldByName('FULL_AUTO_TIME').Value :=
+        CalcExpression(qrCalc.FieldByName('CALC').AsString, False);
+    end;
+  end;
+
+  //
+  // Если изменили результат вычисления
+  if (qrCalc.RecNo = 23) and (qrCalc.FieldByName('TOTAL').Value <> qrCalc.FieldByName('TOTAL').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    fTravelList.qrWorkerDepartment.FieldByName('AUTO_HVR').Value := qrCalc.FieldByName('TOTAL').Value;
+  end;
+  // Если изменили формулу
+  if (qrCalc.RecNo = 23) and (qrCalc.FieldByName('CALC').Value <> qrCalc.FieldByName('CALC').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    if qrCalc.FieldByName('CALC').Value = '' then
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('AUTO_HVRF').Value := null;
+      fTravelList.qrWorkerDepartment.FieldByName('AUTO_HVR').Value := null;
+    end
+    else
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('AUTO_HVRF').Value := qrCalc.FieldByName('CALC').Value;
+      fTravelList.qrWorkerDepartment.FieldByName('AUTO_HVR').Value :=
+        CalcExpression(qrCalc.FieldByName('CALC').AsString, False);
+    end;
+  end;
+
+  //
+  // Если изменили результат вычисления
+  if (qrCalc.RecNo = 24) and (qrCalc.FieldByName('TOTAL').Value <> qrCalc.FieldByName('TOTAL').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    fTravelList.qrWorkerDepartment.FieldByName('AUTOKM').Value := qrCalc.FieldByName('TOTAL').Value;
+  end;
+  // Если изменили формулу
+  if (qrCalc.RecNo = 24) and (qrCalc.FieldByName('CALC').Value <> qrCalc.FieldByName('CALC').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    if qrCalc.FieldByName('CALC').Value = '' then
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('AUTOKMF').Value := null;
+      fTravelList.qrWorkerDepartment.FieldByName('AUTOKM').Value := null;
+    end
+    else
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('AUTOKMF').Value := qrCalc.FieldByName('CALC').Value;
+      fTravelList.qrWorkerDepartment.FieldByName('AUTOKM').Value :=
+        CalcExpression(qrCalc.FieldByName('CALC').AsString, False);
+    end;
+  end;
+
+  //
+  // Если изменили результат вычисления
+  if (qrCalc.RecNo = 25) and (qrCalc.FieldByName('TOTAL').Value <> qrCalc.FieldByName('TOTAL').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    fTravelList.qrWorkerDepartment.FieldByName('TOTAL').Value := qrCalc.FieldByName('TOTAL').Value;
+  end;
+  // Если изменили формулу
+  if (qrCalc.RecNo = 25) and (qrCalc.FieldByName('CALC').Value <> qrCalc.FieldByName('CALC').OldValue) then
+  begin
+    fTravelList.qrWorkerDepartment.Edit;
+    if qrCalc.FieldByName('CALC').Value = '' then
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('TOTALF').Value := null;
+      fTravelList.qrWorkerDepartment.FieldByName('TOTAL').Value := null;
+    end
+    else
+    begin
+      fTravelList.qrWorkerDepartment.FieldByName('TOTALF').Value := qrCalc.FieldByName('CALC').Value;
+      fTravelList.qrWorkerDepartment.FieldByName('TOTAL').Value :=
+        CalcExpression(qrCalc.FieldByName('CALC').AsString, False);
+    end;
+  end;
 end;
 
 end.

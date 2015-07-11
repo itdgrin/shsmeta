@@ -17,6 +17,7 @@ object fTravelList: TfTravelList
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlTop: TPanel
@@ -92,12 +93,21 @@ object fTravelList: TfTravelList
     OnChange = pgc1Change
     object ts1: TTabSheet
       Caption = #1050#1086#1084#1072#1085#1076#1080#1088#1086#1074#1086#1095#1085#1099#1077
+      object spl1: TSplitter
+        Left = 0
+        Top = 97
+        Width = 460
+        Height = 3
+        Cursor = crVSplit
+        Align = alTop
+        ExplicitWidth = 84
+      end
       object grTravel: TJvDBGrid
         Left = 0
         Top = 0
         Width = 460
-        Height = 181
-        Align = alClient
+        Height = 97
+        Align = alTop
         DataSource = dsTravel
         DrawingStyle = gdsClassic
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -107,6 +117,7 @@ object fTravelList: TfTravelList
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        IniStorage = FormStorage
         AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
@@ -148,16 +159,37 @@ object fTravelList: TfTravelList
             Visible = True
           end>
       end
+      object pnlTravel: TPanel
+        Left = 0
+        Top = 100
+        Width = 460
+        Height = 81
+        Align = alClient
+        BevelOuter = bvNone
+        Caption = #1053#1077#1090' '#1076#1072#1085#1085#1099#1093
+        TabOrder = 1
+        ExplicitLeft = -1
+        ExplicitTop = 101
+      end
     end
     object ts2: TTabSheet
       Caption = #1056#1072#1079#1098#1077#1079#1076#1085#1086#1081' '#1093#1072#1088#1072#1082#1090#1077#1088' '#1088#1072#1073#1086#1090
       ImageIndex = 1
+      object spl2: TSplitter
+        Left = 0
+        Top = 97
+        Width = 460
+        Height = 3
+        Cursor = crVSplit
+        Align = alTop
+        ExplicitWidth = 84
+      end
       object grTravelWork: TJvDBGrid
         Left = 0
         Top = 0
         Width = 460
-        Height = 181
-        Align = alClient
+        Height = 97
+        Align = alTop
         DataSource = dsTravelWork
         DrawingStyle = gdsClassic
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -167,6 +199,7 @@ object fTravelList: TfTravelList
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        IniStorage = FormStorage
         AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
@@ -208,16 +241,37 @@ object fTravelList: TfTravelList
             Visible = True
           end>
       end
+      object pnlTravelWork: TPanel
+        Left = 0
+        Top = 100
+        Width = 460
+        Height = 81
+        Align = alClient
+        BevelOuter = bvNone
+        Caption = #1053#1077#1090' '#1076#1072#1085#1085#1099#1093
+        TabOrder = 1
+        ExplicitLeft = -1
+        ExplicitTop = 101
+      end
     end
     object ts3: TTabSheet
       Caption = #1055#1077#1088#1077#1074#1086#1079#1082#1072' '#1088#1072#1073#1086#1095#1080#1093
       ImageIndex = 2
+      object spl3: TSplitter
+        Left = 0
+        Top = 97
+        Width = 460
+        Height = 3
+        Cursor = crVSplit
+        Align = alTop
+        ExplicitWidth = 84
+      end
       object grWorkerDepartment: TJvDBGrid
         Left = 0
         Top = 0
         Width = 460
-        Height = 181
-        Align = alClient
+        Height = 97
+        Align = alTop
         DataSource = dsWorkerDepartment
         DrawingStyle = gdsClassic
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -227,6 +281,7 @@ object fTravelList: TfTravelList
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        IniStorage = FormStorage
         AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
@@ -268,6 +323,17 @@ object fTravelList: TfTravelList
             Visible = True
           end>
       end
+      object pnlWorkerDepartment: TPanel
+        Left = 0
+        Top = 100
+        Width = 460
+        Height = 81
+        Align = alClient
+        BevelOuter = bvNone
+        Caption = #1053#1077#1090' '#1076#1072#1085#1085#1099#1093
+        TabOrder = 1
+        ExplicitTop = 101
+      end
     end
   end
   object qrObject: TFDQuery
@@ -287,7 +353,11 @@ object fTravelList: TfTravelList
     Top = 1
   end
   object qrTravel: TFDQuery
-    BeforeEdit = qrTravelBeforeEdit
+    AfterOpen = qrTravelAfterScroll
+    BeforePost = qrTravelBeforePost
+    AfterPost = qrTravelAfterPost
+    AfterCancel = qrTravelAfterScroll
+    AfterScroll = qrTravelAfterScroll
     OnNewRecord = qrTravelNewRecord
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
@@ -301,16 +371,19 @@ object fTravelList: TfTravelList
       'SELECT '
       '  `travel`.*,'
       
-        '  IF(`travel`.`id_act` IS NOT NULL, `card_acts`.`NAME`, `smetaso' +
-        'urcedata`.`NAME`) AS NAME'
-      'FROM '
-      '  `smetasourcedata`,'
-      '  `travel`'
-      '  LEFT JOIN `card_acts` ON `card_acts`.`ID`=`travel`.`id_act`'
+        '  IF(`travel`.`SOURCE_TYPE`, `smetasourcedata`.`NAME`, `card_act' +
+        's`.`NAME`) AS NAME'
+      'FROM `travel`'
       
-        'WHERE (`card_acts`.`ID_OBJECT`=:OBJ_ID or `smetasourcedata`.`SM_' +
-        'ID`=`travel`.`ID_ESTIMATE`) AND `smetasourcedata`.`OBJ_ID`=:OBJ_' +
-        'ID AND `smetasourcedata`.`SM_TYPE`<>3;')
+        '  LEFT JOIN `smetasourcedata` ON `smetasourcedata`.`SM_ID`=`trav' +
+        'el`.`ID_ESTIMATE`  AND `smetasourcedata`.`OBJ_ID`=:OBJ_ID AND `s' +
+        'metasourcedata`.`SM_TYPE`<>3 AND `travel`.`SOURCE_TYPE` = 1'
+      
+        '  LEFT JOIN `card_acts` ON `card_acts`.`ID`=`travel`.`id_act` AN' +
+        'D `card_acts`.`ID_OBJECT`=:OBJ_ID AND `travel`.`SOURCE_TYPE` = 0'
+      
+        'WHERE ((`card_acts`.`ID` IS NOT NULL) OR (`smetasourcedata`.`SM_' +
+        'ID` IS NOT NULL))')
     Left = 25
     Top = 96
     ParamData = <
@@ -327,8 +400,12 @@ object fTravelList: TfTravelList
     Top = 96
   end
   object qrTravelWork: TFDQuery
-    BeforeEdit = qrTravelWorkBeforeEdit
-    OnNewRecord = qrTravelWorkNewRecord
+    AfterOpen = qrTravelWorkAfterScroll
+    BeforePost = qrTravelWorkBeforePost
+    AfterPost = qrTravelWorkAfterPost
+    AfterCancel = qrTravelWorkAfterScroll
+    AfterScroll = qrTravelWorkAfterScroll
+    OnNewRecord = qrTravelNewRecord
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
     Connection = DM.Connect
@@ -341,18 +418,21 @@ object fTravelList: TfTravelList
       'SELECT '
       '  `travel_work`.*,'
       
-        '  IF(`travel_work`.`id_act` IS NOT NULL, `card_acts`.`NAME`, `sm' +
-        'etasourcedata`.`NAME`) AS NAME'
-      'FROM '
-      '  `smetasourcedata`,'
-      '  `travel_work`'
+        '  IF(`travel_work`.`SOURCE_TYPE`, `smetasourcedata`.`NAME`, `car' +
+        'd_acts`.`NAME`) AS NAME'
+      'FROM `travel_work`'
+      
+        '  LEFT JOIN `smetasourcedata` ON `smetasourcedata`.`SM_ID`=`trav' +
+        'el_work`.`ID_ESTIMATE` AND `smetasourcedata`.`OBJ_ID`=:OBJ_ID AN' +
+        'D `smetasourcedata`.`SM_TYPE`<>3 AND `travel_work`.`SOURCE_TYPE`' +
+        ' = 1'
       
         '  LEFT JOIN `card_acts` ON `card_acts`.`ID`=`travel_work`.`id_ac' +
-        't`'
+        't` AND `card_acts`.`ID_OBJECT`=:OBJ_ID AND `travel_work`.`SOURCE' +
+        '_TYPE` = 0'
       
-        'WHERE (`card_acts`.`ID_OBJECT`=:OBJ_ID or `smetasourcedata`.`SM_' +
-        'ID`=`travel_work`.`ID_ESTIMATE`) AND `smetasourcedata`.`OBJ_ID`=' +
-        ':OBJ_ID AND `smetasourcedata`.`SM_TYPE`<>3;')
+        'WHERE ((`card_acts`.`ID` IS NOT NULL) OR (`smetasourcedata`.`SM_' +
+        'ID` IS NOT NULL))')
     Left = 25
     Top = 152
     ParamData = <
@@ -369,8 +449,12 @@ object fTravelList: TfTravelList
     Top = 152
   end
   object qrWorkerDepartment: TFDQuery
-    BeforeEdit = qrWorkerDepartmentBeforeEdit
-    OnNewRecord = qrWorkerDepartmentNewRecord
+    AfterOpen = qrWorkerDepartmentAfterScroll
+    BeforePost = qrWorkerDepartmentBeforePost
+    AfterPost = qrWorkerDepartmentAfterPost
+    AfterCancel = qrWorkerDepartmentAfterScroll
+    AfterScroll = qrWorkerDepartmentAfterScroll
+    OnNewRecord = qrTravelNewRecord
     MasterSource = dsObject
     MasterFields = 'OBJ_ID'
     Connection = DM.Connect
@@ -383,18 +467,21 @@ object fTravelList: TfTravelList
       'SELECT '
       '  `worker_deartment`.*,'
       
-        '  IF(`worker_deartment`.`id_act` IS NOT NULL, `card_acts`.`NAME`' +
-        ', `smetasourcedata`.`NAME`) AS NAME'
-      'FROM '
-      '  `smetasourcedata`,'
-      '  `worker_deartment`'
+        '  IF(`worker_deartment`.`SOURCE_TYPE`, `smetasourcedata`.`NAME`,' +
+        ' `card_acts`.`NAME`) AS NAME'
+      'FROM `worker_deartment`'
+      
+        '  LEFT JOIN `smetasourcedata` ON `smetasourcedata`.`SM_ID`=`work' +
+        'er_deartment`.`ID_ESTIMATE` AND `smetasourcedata`.`OBJ_ID`=:OBJ_' +
+        'ID AND `smetasourcedata`.`SM_TYPE`<>3 AND `worker_deartment`.`SO' +
+        'URCE_TYPE` = 1'
       
         '  LEFT JOIN `card_acts` ON `card_acts`.`ID`=`worker_deartment`.`' +
-        'id_act`'
+        'id_act` AND `card_acts`.`ID_OBJECT`=:OBJ_ID AND `worker_deartmen' +
+        't`.`SOURCE_TYPE` = 0'
       
-        'WHERE (`card_acts`.`ID_OBJECT`=:OBJ_ID or `smetasourcedata`.`SM_' +
-        'ID`=`worker_deartment`.`ID_ESTIMATE`) AND `smetasourcedata`.`OBJ' +
-        '_ID`=:OBJ_ID AND `smetasourcedata`.`SM_TYPE`<>3;')
+        'WHERE ((`card_acts`.`ID` IS NOT NULL) OR (`smetasourcedata`.`SM_' +
+        'ID` IS NOT NULL))')
     Left = 25
     Top = 200
     ParamData = <
@@ -409,5 +496,17 @@ object fTravelList: TfTravelList
     DataSet = qrWorkerDepartment
     Left = 136
     Top = 200
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    Options = []
+    StoredProps.Strings = (
+      'grTravel.Height'
+      'grTravelWork.Height'
+      'grWorkerDepartment.Height')
+    StoredValues = <>
+    Left = 24
+    Top = 48
   end
 end
