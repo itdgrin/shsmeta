@@ -692,7 +692,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT * FROM data_row WHERE id_estimate = :id_estimate and id_act ORDER BY 1;');
+      SQL.Add('SELECT * FROM data_row WHERE id_estimate = :id_estimate and id_act IS NULL ORDER BY 1;');
       ParamByName('id_estimate').Value := IdEstimate;
       Active := True;
 

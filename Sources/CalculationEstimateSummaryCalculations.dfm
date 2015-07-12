@@ -387,7 +387,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Name = 'SM_ID'
         DataType = ftInteger
         ParamType = ptInput
-        Value = 440
+        Value = Null
       end>
   end
   object dsData: TDataSource

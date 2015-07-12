@@ -5386,9 +5386,9 @@ begin
     qrRatesEx.EnableControls;
   end;
   // ----------------------------------
-
-  CloseOpen(qrCalculations);
-
+  if CheckQrActiveEmpty(qrRatesEx) {and (qrRatesExID_TYPE_DATA.Value > 0)} then
+    CloseOpen(qrCalculations)
+  else qrCalculations.Active := False;
 end;
 
 procedure TFormCalculationEstimate.VisibleColumnsWinterPrice(Value: Boolean);
