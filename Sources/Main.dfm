@@ -10920,7 +10920,6 @@
     BevelOuter = bvNone
     TabOrder = 0
     Visible = False
-    ExplicitTop = 8
   end
   object MainMenu: TMainMenu
     Images = DM.ilIcons_16x16
@@ -11045,9 +11044,11 @@
         Caption = 'Excel'
         object Excel3: TMenuItem
           Caption = 'Excel'
+          OnClick = Excel2Click
         end
         object EXCEL2: TMenuItem
           Caption = 'EXCEL - '#1074#1099#1073#1088#1072#1090#1100' '#1096#1072#1073#1083#1086#1085
+          OnClick = EXCEL3Click
         end
       end
     end
