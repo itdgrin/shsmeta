@@ -109,7 +109,6 @@ object fSuppAgreement: TfSuppAgreement
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitWidth = 389
     object dbnvgr1: TDBNavigator
       Left = 0
       Top = 0

@@ -168,8 +168,6 @@ object fTravelList: TfTravelList
         BevelOuter = bvNone
         Caption = #1053#1077#1090' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
-        ExplicitLeft = -1
-        ExplicitTop = 101
       end
     end
     object ts2: TTabSheet
@@ -250,8 +248,6 @@ object fTravelList: TfTravelList
         BevelOuter = bvNone
         Caption = #1053#1077#1090' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
-        ExplicitLeft = -1
-        ExplicitTop = 101
       end
     end
     object ts3: TTabSheet
@@ -332,7 +328,6 @@ object fTravelList: TfTravelList
         BevelOuter = bvNone
         Caption = #1053#1077#1090' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
-        ExplicitTop = 101
       end
     end
   end

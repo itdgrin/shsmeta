@@ -92,9 +92,13 @@ const
   C_ID_DATA    = 9;  //9 - смета data_row
   C_ID_SMCOEF  = 10; //10 - смета calculation_coef
   C_ID_ACT     = 11; //11 - акт
+  C_ID_TRAVEL  = 12; //12 - Расчет командировочных
+  C_ID_TRWORK  = 13; //13 - Расчет разъездных работ
+  C_ID_WORKDEP = 14; //14 - Расчет перевозки рабочих
+  C_ID_SUPPAG  = 15; //15 - Дополнительные соглашения
 
   //Временно не соответствует действительности
-  CTabNameAndID: array [1..18, 0..1] of string =
+  CTabNameAndID: array [1..15, 0..1] of string =
     (('objcards', 'obj_id'),
     ('smetasourcedata', 'SM_ID'),
     ('card_rate', 'ID'),
@@ -104,18 +108,16 @@ const
     ('dumpcard', 'ID'),
     ('transpcard', 'ID'),
     ('data_row', 'ID'),
+    ('calculation_coef', 'calculation_coef_id'),
     ('card_acts', 'ID'),
-    ('card_rate_act', 'ID'),
-    ('materialcard_act', 'ID'),
-    ('mechanizmcard_act', 'ID'),
-    ('devicescard_act', 'ID'),
-    ('dumpcard_act', 'ID'),
-    ('transpcard_act', 'ID'),
-    ('data_act', 'ID'),
-    ('calculation_coef', 'calculation_coef_id'));
+    ('travel', 'travel_id'),
+    ('travel_work', 'travel_work_id'),
+    ('worker_deartment', 'worker_department_id'),
+    ('supp_agreement', 'supp_agreement_id'));
+
 
 type
-  TIDConvertArray = array [1..18, 0..1] of array of Integer;
+  TIDConvertArray = array [1..15, 0..1] of array of Integer;
 //******************************************************************************
 
 //******************************************************************************

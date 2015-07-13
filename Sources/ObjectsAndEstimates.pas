@@ -835,10 +835,19 @@ end;
 
 procedure TFormObjectsAndEstimates.PMExportObjectClick(Sender: TObject);
 var
-  TmpStr: string;
+  TmpStr,
+  XMLName: string;
 begin
   if SaveDialog.Execute(FormMain.Handle) then
   begin
+    XMLName := ChangeFileExt(SaveDialog.FileName, '.xml');
+    if TFile.Exists(XMLName) then
+      if Application.MessageBox(PChar('‘айл ' + XMLName +
+        ' уже существует. ѕерезаписать его?'),
+        'Ёкспорт объекта',
+        MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) = mrCancel  then
+      Exit;
+
     FormMain.PanelCover.Visible := True;
     FormWaiting.Height := 110;
     FormWaiting.Show;
@@ -847,7 +856,7 @@ begin
       TmpStr := 'Ёкспорт объекта: ' + qrObjects.FieldByName('Name').AsString;
       FormWaiting.lbProcess.caption := TmpStr;
       Application.ProcessMessages;
-      ExportObject(qrObjects.Fields[0].AsInteger, ChangeFileExt(SaveDialog.FileName, '.xml'));
+      ExportObject(qrObjects.Fields[0].AsInteger, XMLName);
       ShowMessage('Ёкспорт завершен.');
     finally
       FormWaiting.Close;
