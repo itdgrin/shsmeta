@@ -58,7 +58,8 @@ begin
   FormCalculationEstimate.CreateTempTables;
   // «аполнен€ временных таблиц, заполнение формы
   FormCalculationEstimate.OpenAllData;
-  FormCalculationEstimate.frSummaryCalculations.LoadData(FormCalculationEstimate.IdEstimate);
+  FormCalculationEstimate.frSummaryCalculations.LoadData
+    (VarArrayOf([FormCalculationEstimate.IdEstimate, FormCalculationEstimate.IdAct]));
   // Close;
 end;
 

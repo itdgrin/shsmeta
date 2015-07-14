@@ -305,7 +305,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     SQL.Strings = (
       'SELECT '
       '  s.SM_ID AS id_estimate,'
-      '  NULL AS id_act, /*'#1079#1072#1075#1083#1091#1096#1082#1072' '#1087#1086#1087#1088#1072#1074#1080#1090#1100'*/'
+      '  :ID_ACT AS id_act, '
       '  typesm.id as sm_type,'
       '  s.OBJ_ID,'
       '  typesm.NAME AS TYPE_NAME, '
@@ -359,17 +359,20 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       'LEFT JOIN summary_calculation d ON d.id_estimate IN'
       '  (SELECT SM_ID'
       '   FROM smetasourcedata '
-      '   WHERE'
+      '   WHERE DELETED=0 AND'
       '    ((smetasourcedata.SM_ID = s.SM_ID) OR'
       '           (smetasourcedata.PARENT_ID = s.SM_ID) OR '
       '           (smetasourcedata.PARENT_ID IN ('
       '             SELECT SM_ID'
       '             FROM smetasourcedata'
       '             WHERE PARENT_ID = s.SM_ID AND DELETED=0)))'
-      '  )'
+      '  ) AND IFNULL(d.ID_ACT, 0)=:ID_ACT'
+      'LEFT JOIN card_acts ca ON ca.ID=:ID_ACT'
       'WHERE '
       '  s.SM_TYPE=typesm.ID AND '
-      '  ((s.SM_ID = :SM_ID) OR'
+      '  s.DELETED=0 AND'
+      '  ((s.OBJ_ID=ca.ID_OBJECT) OR (ca.ID_OBJECT IS NULL)) AND'
+      '  ((s.SM_ID = :SM_ID) OR (s.OBJ_ID=ca.ID_OBJECT) OR'
       '           (s.PARENT_ID = :SM_ID) OR '
       '           (s.PARENT_ID IN ('
       '             SELECT SM_ID'
@@ -378,11 +381,15 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  AND o.OBJ_ID=s.OBJ_ID'
       'GROUP BY s.SM_ID, s.OBJ_ID, TYPE_NAME, s.SM_NUMBER, SM_NAME'
       
-        'ORDER BY CONCAT(IF(((s.SM_ID = :SM_ID) OR (s.PARENT_ID = :SM_ID)' +
-        '), "", :SM_ID), s.PARENT_ID, s.SM_ID);')
+        'ORDER BY CONCAT(IF(s.SM_TYPE=1, s.SM_ID, ""), s.PARENT_ID, s.SM_' +
+        'ID);')
     Left = 9
     Top = 40
     ParamData = <
+      item
+        Name = 'ID_ACT'
+        ParamType = ptInput
+      end
       item
         Name = 'SM_ID'
         DataType = ftInteger
@@ -446,7 +453,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  summary_calculation'
       'SET '
       '  id_estimate = :id_estimate,'
-      '  id_act = :id_act,'
+      '  id_act = IF(:id_act=0, NULL, :id_act),'
       '  ZPF = :ZP,'
       '  EMiMF = :EMiM,'
       '  MRF = :MR,'
@@ -468,7 +475,9 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  NormaAVGF = :NormaAVG,'
       '  PR_352F = :PR_352,'
       '  TRUD_ZIMF = :TRUD_ZIM '
-      'WHERE   id_estimate = :id_estimate OR id_act = :id_act;')
+      
+        'WHERE   id_estimate = :id_estimate and IFNULL(id_act, 0) = :id_a' +
+        'ct;')
     Left = 32
     Top = 160
   end

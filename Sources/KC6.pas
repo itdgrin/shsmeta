@@ -7,7 +7,8 @@ uses
   Controls, DB, SysUtils, Messages, Menus, Variants, Windows, Graphics, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  Vcl.Samples.Spin, Vcl.Mask, System.UITypes, JvDBGrid, JvExDBGrids;
+  Vcl.Samples.Spin, Vcl.Mask, System.UITypes, JvDBGrid, JvExDBGrids, Vcl.DBCtrls, JvComponentBase,
+  JvFormPlacement;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -35,18 +36,9 @@ type
     PanelBottomButton: TPanel;
     Button1: TButton;
     ButtonCancel: TButton;
-    StringGridDataEstimates: TStringGrid;
 
     PanelBottom: TPanel;
     ImageSplitterBottom: TImage;
-    qrTemp: TFDQuery;
-    qrObjectEstimates: TFDQuery;
-    qrLocalEstimates: TFDQuery;
-    qrPTMEstimates: TFDQuery;
-    qrDataEstimate: TFDQuery;
-    qrCardRates: TFDQuery;
-    qrMaterialCard: TFDQuery;
-    qrMechanizmCard: TFDQuery;
     Label1: TLabel;
     EditKoef: TSpinEdit;
     qrOtherActs: TFDQuery;
@@ -57,6 +49,27 @@ type
     qrOtherActsdate: TDateField;
     qrOtherActsosnov: TStringField;
     qrOtherActscnt: TFMTBCDField;
+    grData: TJvDBGrid;
+    qrData: TFDQuery;
+    dsData: TDataSource;
+    strngfldDataOBJ_CODE: TStringField;
+    strngfldDataOBJ_UNIT: TStringField;
+    qrDataOBJ_COUNT_OUT: TFloatField;
+    qrDataID_TYPE_DATA: TIntegerField;
+    qrDataSELECTED: TIntegerField;
+    qrDataCHECKED: TBooleanField;
+    strngfldDataSORT_ID: TStringField;
+    qrDataITERATOR: TIntegerField;
+    qrDataINCITERATOR: TIntegerField;
+    qrDataSM_ID: TLongWordField;
+    qrDataID_TABLES: TLongWordField;
+    dbmmoOBJ_NAME: TDBMemo;
+    strngfldDataOBJ_NAME: TStringField;
+    qrTemp: TFDQuery;
+    FormStorage: TJvFormStorage;
+    qrDataOBJ_COUNT: TFloatField;
+    qrDataCntDONE: TFloatField;
+    qrDataOBJ_COUNT_IN: TFloatField;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -66,50 +79,32 @@ type
     procedure ButtonCancelClick(Sender: TObject);
 
     procedure GetNameObject;
-
-    procedure QueryObjectEstimates;
-    procedure QueryLocalEstimates;
-    procedure QueryPTMEstimates;
-    procedure FillingEstimates;
-
-    procedure SettingTableRates;
-
-    procedure FillingDataEstimate(const IdEstimate: Integer);
-    procedure StringGridDataEstimatesDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-      State: TGridDrawState);
-    procedure StringGridDataEstimatesClick(Sender: TObject);
-    procedure StringGridDataEstimatesEnter(Sender: TObject);
     procedure TreeViewChange(Sender: TObject; Node: TTreeNode);
-    procedure StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
-    procedure PanelClientResize(Sender: TObject);
-    procedure StringGridDataEstimatesMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
-      X, Y: Integer);
-    procedure StringGridDataEstimatesMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint;
-      var Handled: Boolean);
-    procedure StringGridDataEstimatesMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint;
-      var Handled: Boolean);
     procedure Button1Click(Sender: TObject);
-    procedure CopyToAct(const vIdEstimate, vIdTypeData, vIdTables: Integer; const vCnt: Double);
-    procedure StringGridDataEstimatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure StringGridDataEstimatesKeyPress(Sender: TObject; var Key: Char);
+    procedure CopyToAct(const vIdEstimate, vIdTypeData, vIdTables: Integer; const vCnt: Double;
+      const vIdAct: Integer);
     procedure TreeViewAdvancedCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
       State: TCustomDrawState; Stage: TCustomDrawStage; var PaintImages, DefaultDraw: Boolean);
-    procedure AllocationRowInTable;
     procedure Label1Click(Sender: TObject);
     procedure EditKoefChange(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure qrOtherActsCalcFields(DataSet: TDataSet);
+    procedure qrDataBeforeOpen(DataSet: TDataSet);
+    procedure qrDataCalcFields(DataSet: TDataSet);
+    procedure grDataDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
+    procedure qrDataCHECKEDChange(Sender: TField);
+    procedure qrDataAfterOpen(DataSet: TDataSet);
+    procedure qrDataAfterScroll(DataSet: TDataSet);
+    procedure grDataKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure grDataCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
+    procedure grDataKeyPress(Sender: TObject; var Key: Char);
+    procedure grDataMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure qrDataOBJ_COUNT_INChange(Sender: TField);
   private
     IdObject: Integer;
-    nom: Integer;
     IdEstimateForSelection: Integer;
-    procedure SetEstimateSelection;
-    procedure RecalcOutCount;
-
-  public
-    procedure SelectDataEstimates(const idTypeData, IdTables: Integer; const cnt: Double);
-
-  const
+  public const
     Indent = '     ';
 
   end;
@@ -146,15 +141,11 @@ begin
     GetIcon(0, ImageSplitterTop.Picture.Icon);
     GetIcon(0, ImageSplitterBottom.Picture.Icon);
   end;
-
-  SettingTableRates;
-
-  nom := 0;
-
   PanelBottom.Constraints.MinHeight := 100;
   PanelTree.Constraints.MinHeight := 100;
   // PanelClient.Constraints.MinHeight := 175;
   LoadDBGridSettings(dbgrd1);
+  LoadDBGridSettings(grData);
 end;
 
 procedure TFormKC6.FormResize(Sender: TObject);
@@ -169,42 +160,103 @@ begin
   ClientHeight := FormMain.ClientHeight - 100;
   Top := 50;
   Left := ClientWidth div 2;
-  // ----------------------------------------
-  nom := 0;
-  StringGridDataEstimates.SetFocus; // Устанавливаем фокус
 end;
 
 procedure TFormKC6.MyShow(const vIdObject: Integer);
 begin
   IdObject := vIdObject;
+  CloseOpen(qrData);
   GetNameObject;
-  FillingEstimates;
   Show;
 end;
 
-procedure TFormKC6.PanelClientResize(Sender: TObject);
+procedure TFormKC6.qrDataAfterOpen(DataSet: TDataSet);
+var
+  NumPP: Integer;
+  Key: Variant;
 begin
-  AutoWidthColumn(StringGridDataEstimates, 1);
+  if not CheckQrActiveEmpty(qrData) then
+    Exit;
+  Key := qrData.FieldByName('SORT_ID').Value;
+  // Устанавливаем №пп
+  qrData.DisableControls;
+  qrData.AfterScroll := nil;
+  qrData.OnCalcFields := nil;
+  NumPP := 0;
+  try
+    qrData.First;
+    while not qrData.Eof do
+    begin
+      NumPP := NumPP + qrData.FieldByName('INCITERATOR').AsInteger;
+      qrData.Edit;
+      if qrData.FieldByName('ID_TYPE_DATA').AsInteger < 0 then
+        qrData.FieldByName('ITERATOR').Value := Null
+      else
+        qrData.FieldByName('ITERATOR').AsInteger := NumPP;
+      qrData.Next;
+    end;
+  finally
+    qrData.AfterScroll := qrDataAfterScroll;
+    qrData.OnCalcFields := qrDataCalcFields;
+    qrData.Locate('SORT_ID', Key, []);
+    qrData.EnableControls;
+  end;
+end;
+
+procedure TFormKC6.qrDataAfterScroll(DataSet: TDataSet);
+begin
+  IdEstimateForSelection := Integer(qrDataSM_ID.Value);
+  // Заполнение смежных актов
+  qrOtherActs.Active := False;
+  qrOtherActs.ParamByName('idestimate').AsInteger := IdObject;
+  qrOtherActs.ParamByName('p_osnov').AsString := TRIM(strngfldDataOBJ_CODE.Value);
+  qrOtherActs.Active := True;
+  qrOtherActs.Last;
+  qrOtherActs.First;
+  dbgrd1.Repaint;
+
+  TreeView.Repaint;
+end;
+
+procedure TFormKC6.qrDataBeforeOpen(DataSet: TDataSet);
+begin
+  if not Assigned(FormCalculationEstimate) then
+    Exit;
+  qrData.ParamByName('ID_OBJECT').Value := IdObject;
+  qrData.ParamByName('ID_ACT').Value := FormCalculationEstimate.IdAct;
+end;
+
+procedure TFormKC6.qrDataCalcFields(DataSet: TDataSet);
+begin
+  if qrDataID_TYPE_DATA.Value > 0 then
+    qrDataOBJ_COUNT_OUT.Value := qrDataOBJ_COUNT.AsFloat - qrDataCntDONE.AsFloat - qrDataOBJ_COUNT_IN.AsFloat;
+  qrDataCHECKED.OnChange := nil;
+  if qrDataSELECTED.Value = 0 then
+    qrDataCHECKED.Value := False
+  else
+    qrDataCHECKED.Value := True;
+  { if qrDataOBJ_COUNT_IN.Value <> 0 then
+    qrDataCHECKED.Value := True; }
+  qrDataCHECKED.OnChange := qrDataCHECKEDChange;
+end;
+
+procedure TFormKC6.qrDataCHECKEDChange(Sender: TField);
+begin
+  if qrDataCHECKED.Value then
+    qrDataSELECTED.Value := 1
+  else
+    qrDataSELECTED.Value := 0;
+end;
+
+procedure TFormKC6.qrDataOBJ_COUNT_INChange(Sender: TField);
+begin
+  if qrDataOBJ_COUNT_IN.Value <> 0 then
+    qrDataSELECTED.Value := 1;
 end;
 
 procedure TFormKC6.qrOtherActsCalcFields(DataSet: TDataSet);
 begin
-  qrOtherActsNumber.Value := DataSet.RecNo;
-end;
-
-procedure TFormKC6.RecalcOutCount;
-var
-  {ds: Char;}
-  i: Integer;
-begin
-  // Вычисляем остаток
-  for i := 1 to StringGridDataEstimates.RowCount do
-  begin
-    if StringGridDataEstimates.Cells[9, i] <> '0' then
-      StringGridDataEstimates.Cells[6, i] := MyFloatToStr(MyStrToFloatDef(StringGridDataEstimates.Cells[2, i],
-        0) - MyStrToFloatDef(StringGridDataEstimates.Cells[4, i], 0) -
-        MyStrToFloatDef(StringGridDataEstimates.Cells[5, i], 0));
-  end;
+  qrOtherActsNumber.Value := DataSet.RecNo + 1;
 end;
 
 procedure TFormKC6.RepaintImagesForSplitters();
@@ -218,7 +270,7 @@ end;
 
 procedure TFormKC6.Button1Click(Sender: TObject);
 var
-  i: Integer;
+  Key: Variant;
 begin
   if MessageBox(0, PChar('Перенести выделенные данные в акт?'), PWideChar(Caption),
     MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mryes then
@@ -239,16 +291,22 @@ begin
     qrTemp.ExecSQL;
     qrTemp.SQL.Text := 'delete from calculation_coef_temp;';
     qrTemp.ExecSQL;
-    with StringGridDataEstimates do
-      for i := 1 to RowCount - 1 do
-        if (Cells[10, i] = '1') and (Cells[8, i] <> '') then
-        begin
-          CopyToAct(StrToInt(Cells[7, i]), StrToInt(Cells[8, i]), StrToInt(Cells[9, i]),
-            MyStrToFloatDef(Cells[5, i], 0));
-          // ShowMessage(Cells[7, i] + Cells[8, i] + Cells[9, i]);
-        end;
+    Key := strngfldDataSORT_ID.Value;
+    qrData.DisableControls;
+    try
+      qrData.First;
+      while not qrData.Eof do
+      begin
+        if qrDataCHECKED.Value and (qrDataID_TYPE_DATA.Value > 0) then
+          CopyToAct(Integer(qrDataSM_ID.Value), Integer(qrDataID_TYPE_DATA.Value), qrDataID_TABLES.Value,
+            Double(qrDataOBJ_COUNT_IN.Value), FormCalculationEstimate.IdAct);
+        qrData.Next;
+      end;
+    finally
+      qrData.Locate('SORT_ID', Key, []);
+      qrData.EnableControls;
+    end;
   end;
-
   FormCalculationEstimate.OutputDataToTable;
 end;
 
@@ -278,394 +336,79 @@ begin
   end;
 end;
 
+procedure TFormKC6.grDataCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
+begin
+  AllowEdit := (not Grid.Columns[Grid.SelectedIndex].ReadOnly and (qrDataID_TYPE_DATA.Value > 0)) or
+    (Grid.SelectedField.FieldName = 'CHECKED');
+end;
+
+procedure TFormKC6.grDataDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+begin
+  with grData.Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // if not CanEditField(Column.Field) then
+    // Brush.Color := $00E1DFE0;
+
+    // if qrData.FieldByName('sm_type').AsInteger = 1 then
+    // Brush.Color := clSilver;
+    //
+    // if qrData.FieldByName('sm_type').AsInteger = 2 then
+    // begin
+    // Font.Style := Font.Style + [fsbold];
+    // Brush.Color := clSilver;
+    // end;
+
+    if qrDataCHECKED.Value then
+      grData.Canvas.Brush.Color := MixColors(grData.Canvas.Brush.Color, RGB(140, 200, 125), 100);
+
+    if qrDataOBJ_COUNT_OUT.Value < 0 then
+      grData.Canvas.Brush.Color := MixColors(grData.Canvas.Brush.Color, $00CBCAFF, 100);
+
+    if qrDataID_TYPE_DATA.Value < 0 then
+      grData.Canvas.Font.Style := grData.Canvas.Font.Style + [fsBold];
+
+    if (gdSelected in State) { or (gdSelected is State) } then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+  grData.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TFormKC6.grDataKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Key = VK_INSERT) or (Key = VK_SPACE) then
+  begin
+    qrData.Edit;
+    qrDataCHECKED.Value := not qrDataCHECKED.Value;
+    qrData.Next;
+  end;
+end;
+
+procedure TFormKC6.grDataKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = ',' then
+    Key := '.';
+end;
+
+procedure TFormKC6.grDataMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  if CtrlDown then
+  begin
+    qrData.Edit;
+    qrDataCHECKED.Value := not qrDataCHECKED.Value;
+  end;
+end;
+
 procedure TFormKC6.Label1Click(Sender: TObject);
 begin
   EditKoef.Value := 0;
-end;
-
-procedure TFormKC6.QueryObjectEstimates;
-begin
-  with qrObjectEstimates do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT * FROM smetasourcedata WHERE sm_type = 2 and obj_id = :obj_id ORDER BY sm_number');
-    ParamByName('obj_id').Value := IdObject;
-    Active := True;
-    First;
-  end;
-end;
-
-procedure TFormKC6.QueryLocalEstimates;
-begin
-  with qrLocalEstimates do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT * FROM smetasourcedata WHERE sm_type = 1 and parent_id = :parent_local_id and ' +
-      'obj_id = :obj_id ORDER BY sm_number');
-    ParamByName('parent_local_id').Value := qrObjectEstimates.FieldByName('sm_id').AsInteger;
-    ParamByName('obj_id').Value := IdObject;
-    Active := True;
-    First;
-  end;
-end;
-
-procedure TFormKC6.QueryPTMEstimates;
-begin
-  with qrPTMEstimates do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT * FROM smetasourcedata WHERE sm_type = 3 and parent_id = :parent_ptm_id and ' +
-      'obj_id = :obj_id ORDER BY sm_number');
-    ParamByName('parent_ptm_id').Value := qrLocalEstimates.FieldByName('sm_id').AsInteger;
-    ParamByName('obj_id').Value := IdObject;
-    Active := True;
-    First;
-  end;
-end;
-
-procedure TFormKC6.FillingEstimates;
-var
-  n1, n2, n3: Integer;
-begin
-  TreeView.Items.Clear;
-
-  // НАЧАЛО вывода ОБЪЕКТЫХ смет
-
-  QueryObjectEstimates;
-
-  with qrObjectEstimates do
-    while not Eof do
-    begin
-      n1 := TreeView.Items.Add(Nil, FieldByName('sm_number').AsString + ' ' + FieldByName('name').AsString)
-        .AbsoluteIndex;
-      TreeView.Items.Item[n1].Data := Pointer(FieldByName('sm_id').AsInteger);
-
-      // Вывод сметы в таблицу
-      with StringGridDataEstimates do
-      begin
-        Inc(nom);
-        // Cells[0, nom] := IntToStr(nom);
-        // R Cells[1, nom] := 'Ж000';
-        Cells[1, nom] := FieldByName('sm_number').AsString + ' ' + FieldByName('name').AsString;
-        Cells[7, nom] := IntToStr(FieldByName('sm_id').AsInteger);
-        Cells[10, nom] := '0';
-      end;
-      FillingDataEstimate(FieldByName('sm_id').AsInteger);
-      // ---------- НАЧАЛО вывода ЛОКАЛЬНЫХ смет
-      QueryLocalEstimates;
-      with qrLocalEstimates do
-        while not Eof do
-        begin
-          n2 := TreeView.Items.AddChild(TreeView.Items.Item[n1], FieldByName('sm_number').AsString + ' ' +
-            FieldByName('name').AsString).AbsoluteIndex;
-          TreeView.Items.Item[n2].Data := Pointer(FieldByName('sm_id').AsInteger);
-
-          // Вывод сметы в таблицу
-          with StringGridDataEstimates do
-          begin
-            Inc(nom);
-            // Cells[0, nom] := IntToStr(nom);
-            // R Cells[1, nom] := 'Ж000';
-            Cells[1, nom] := FieldByName('sm_number').AsString + ' ' + FieldByName('name').AsString;
-            // FieldByName('sm_number').AsString + ' ' + FieldByName('name').AsString;
-            Cells[7, nom] := IntToStr(FieldByName('sm_id').AsInteger);
-            Cells[10, nom] := '0';
-          end;
-          FillingDataEstimate(FieldByName('sm_id').AsInteger);
-          // -------------------- НАЧАЛО вывода смет ПТМ
-          QueryPTMEstimates;
-
-          with qrPTMEstimates do
-            while not Eof do
-            begin
-              n3 := TreeView.Items.AddChild(TreeView.Items.Item[n2], FieldByName('sm_number').AsString + ' ' +
-                FieldByName('name').AsString).AbsoluteIndex;
-              TreeView.Items.Item[n3].Data := Pointer(FieldByName('sm_id').AsInteger);
-
-              // Вывод сметы в таблицу
-              with StringGridDataEstimates do
-              begin
-                Inc(nom);
-                // Cells[0, nom] := IntToStr(nom);
-                Cells[1, nom] := FieldByName('sm_number').AsString;
-                // + ' ' + FieldByName('name').AsString;
-                Cells[7, nom] := IntToStr(FieldByName('sm_id').AsInteger);
-                Cells[10, nom] := '0';
-              end;
-              FillingDataEstimate(FieldByName('sm_id').AsInteger);
-              Next;
-            end;
-          // -------------------- КОНЕЦ вывода смет ПТМ
-          Next;
-        end;
-      // ---------- КОНЕЦ вывода ЛОКАЛЬНЫХ смет
-      Next;
-    end;
-  // КОНЕЦ вывода ОБЪЕКТЫХ смет
-  TreeView.FullExpand;
-  StringGridDataEstimates.RowCount := nom + 1;
-end;
-
-procedure TFormKC6.SelectDataEstimates(const idTypeData, IdTables: Integer; const cnt: Double);
-var
-  i: Integer;
-  {ds: Char;}
-begin
-  // Процедура выделения строчки для редактируемого акта
-  with StringGridDataEstimates do
-    for i := 1 to RowCount - 1 do
-      if (Cells[8, i] = IntToStr(idTypeData)) and (Cells[9, i] = IntToStr(IdTables)) then
-      begin
-        Cells[10, i] := '1';
-        Cells[11, i] := '1';
-        Cells[5, i] := MyFloatToStr(cnt);
-        Cells[4, i] := MyFloatToStr(MyStrToFloatDef(Cells[4, i], 0) - cnt);
-      end;
-end;
-
-procedure TFormKC6.SetEstimateSelection;
-var
-  i, indentSelCount: Integer;
-begin
-  with StringGridDataEstimates do
-  begin
-    Cells[10, Row] := IntToStr(1 - StrToInt(Cells[10, Row]));
-    if (Cells[10, Row] = '0') then
-      Cells[11, Row] := '0';
-    // Если попали на подчиненную до двигаемся вверх по списку и выделяем корневую
-    if (Pos(Indent, Cells[1, Row], 1) > 0) { and (Cells[10, Row] = '1') } then
-    begin
-      // считаем кол-во выделенных подчиненных
-      indentSelCount := 0;
-      for i := Row + 1 to RowCount - 1 do
-        if Pos(Indent, Cells[1, i], 1) > 0 then
-        begin
-          if (Cells[10, i] = '1') then
-            indentSelCount := indentSelCount + 1;
-        end
-        else
-          Break;
-      for i := Row downto 1 do
-        if Pos(Indent, Cells[1, i], 1) > 0 then
-        begin
-          if (Cells[10, i] = '1') then
-            indentSelCount := indentSelCount + 1;
-          Continue;
-        end
-        else if (Cells[7, Row] = Cells[7, i]) and (((indentSelCount = 1) and (Cells[10, Row] = '1')) or
-          (indentSelCount = 0)) then
-        begin
-          Cells[10, i] := Cells[10, Row];
-          if (Cells[10, i] = '0') then
-            Cells[11, i] := '0';
-          Break;
-        end;
-    end
-    // Иначе, двигаемся по списку вниз и выделяем подчиненные
-    else
-      for i := Row + 1 to RowCount - 1 do
-      begin
-        if Cells[7, i] <> Cells[7, Row] then
-          Break;
-        if ((Pos(Indent, Cells[1, i], 1) > 0) and (Pos(Indent, Cells[1, Row], 1) = 0)) or
-          ((Cells[8, Row] = '') and (Cells[9, Row] = '')) then
-        begin
-          Cells[10, i] := Cells[10, Row];
-          if (Cells[10, i] = '0') then
-            Cells[11, i] := '0';
-        end;
-      end;
-    Repaint;
-  end;
-end;
-
-procedure TFormKC6.SettingTableRates;
-begin
-  with StringGridDataEstimates do
-  begin
-    ColCount := 12;
-    RowCount := 100;
-
-    Cells[0, 0] := '№ п/п';
-    Cells[1, 0] := 'Обоснование';
-    Cells[2, 0] := 'Кол-во';
-    Cells[3, 0] := 'Ед. изм.';
-    Cells[4, 0] := 'Выполнено';
-    Cells[5, 0] := 'Процентовка';
-    Cells[6, 0] := 'Остаток';
-    Cells[7, 0] := 'IdEstimate';
-    Cells[8, 0] := 'IdTypeData';
-    Cells[9, 0] := 'IdTables';
-    Cells[10, 0] := '';
-    Cells[11, 0] := 'flFromEditAct';
-
-    ColWidths[0] := 40;
-    ColWidths[2] := 70;
-    ColWidths[3] := 70;
-    ColWidths[4] := 70;
-    ColWidths[5] := 70;
-    ColWidths[6] := 70;
-    ColWidths[7] := -1;
-    ColWidths[8] := -1;
-    ColWidths[9] := -1;
-    ColWidths[10] := 20; // Selected
-    ColWidths[11] := -1; // flFromEditAct
-
-    FixedCols := 1;
-    FixedRows := 1;
-  end;
-end;
-
-procedure TFormKC6.StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-  State: TGridDrawState);
-begin
-  DrawingTables.StringGridDrawCellDefault(Sender, ACol, ARow, Rect, State);
-end;
-
-procedure TFormKC6.StringGridDataEstimatesClick(Sender: TObject);
-begin
-  with StringGridDataEstimates do
-  begin
-    if (Col = 5) and (Cells[0, Row] <> '') then
-      // Если находимся в столбце "Процентовка" и эта строка с данными
-      Options := Options + [goEditing] // разрешаем редактирование
-    else
-      Options := Options - [goEditing]; // запрещаем редактирование
-
-    if (Col = 10) and (Row > 0) then
-      SetEstimateSelection;
-
-    Repaint;
-    IdEstimateForSelection := StrToInt(Cells[7, Row]); // Получаем ID сметы
-  end;
-
-  RecalcOutCount;
-
-  // Заполнение смежных актов
-  qrOtherActs.Active := False;
-  qrOtherActs.ParamByName('idestimate').AsInteger := IdObject;
-  qrOtherActs.ParamByName('p_osnov').AsString :=
-    Trim(StringGridDataEstimates.Cells[1, StringGridDataEstimates.Row]);
-  qrOtherActs.Active := True;
-  qrOtherActs.Last;
-  qrOtherActs.First;
-  dbgrd1.Repaint;
-
-  TreeView.Repaint;
-end;
-
-procedure TFormKC6.StringGridDataEstimatesDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-  State: TGridDrawState);
-begin
-  DrawingTables.StringGridDrawCellDefault(Sender, ACol, ARow, Rect, State);
-
-  if (Sender.ClassName = 'TStringGrid') then
-    with (Sender as TStringGrid) do
-    begin
-      // Выделение строки когда таблица находится не в фокусе
-      if (ACol > 0) and (ARow = Row) and not Focused then
-      begin
-        Canvas.Brush.Color := PS.SelectRowUnfocusedTable;
-        Canvas.FillRect(Rect);
-        Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-      end;
-
-      // Выделение цветом выделенных строк
-      if (ACol > 0) and (Cells[10, ARow] = '1') then
-      begin
-        Canvas.Brush.Color := RGB(140, 200, 125);
-        Canvas.FillRect(Rect);
-        Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-      end;
-
-      // Выделение цветом выделенных строк ранее добавленных
-      if (ACol > 0) and (Cells[11, ARow] = '1') then
-      begin
-        Canvas.Brush.Color := RGB(140, 250, 125);
-        Canvas.FillRect(Rect);
-        Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-      end;
-
-      if (ACol > 0) and (ARow > 0) and (ARow <> Row) and (Cells[5, ARow] <> '') then
-
-        if (MyStrToFloat(Cells[5, ARow]) > MyStrToFloat(Cells[2, ARow])) or (MyStrToFloat(Cells[2, ARow]) < 0)
-        then
-        // "Процентовка" > "Количество", или Количество < 0
-        begin
-          Canvas.Brush.Color := RGB(225, 128, 131);
-          Canvas.FillRect(Rect);
-          Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-        end;
-    end;
-
-  // Прорисовка чекбокса
-  if (ACol = 10) and (ARow > 0) then
-    if (Sender as TStringGrid).Cells[10, ARow] = '1' then
-      DrawGridCheckBox((Sender as TStringGrid).Canvas, Rect, True)
-    else
-      DrawGridCheckBox((Sender as TStringGrid).Canvas, Rect, False)
-end;
-
-procedure TFormKC6.StringGridDataEstimatesEnter(Sender: TObject);
-begin
-  StringGridDataEstimates.Repaint;
-end;
-
-procedure TFormKC6.StringGridDataEstimatesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = VK_INSERT then
-  begin
-    SetEstimateSelection;
-    if StringGridDataEstimates.Row < StringGridDataEstimates.RowCount - 1 then
-      StringGridDataEstimates.Row := StringGridDataEstimates.Row + 1;
-  end;
-  // Запрещаем переход курсора на невидимые ячейки
-  with (Sender as TStringGrid) do
-    if (ColWidths[Col + 1] = -1) and (Key = Ord(#39)) then
-      Key := Ord(#0);
-end;
-
-procedure TFormKC6.StringGridDataEstimatesKeyPress(Sender: TObject; var Key: Char);
-begin
-  with (Sender as TStringGrid) do
-  begin
-    if Col = 5 then // Выбран столбец "Процентовка"
-    begin
-      if not CharInSet(Key, ['0' .. '9', #8, #13, ',', '.']) then
-        Key := #0;
-
-      if Key = ',' then
-        Key := '.';
-      // Разрешаем только одну точку
-      if (Pos('.', Cells[5, Row], 1) > 0) and (Key = '.') then
-        Key := #0;
-      RecalcOutCount;
-    end;
-  end;
-end;
-
-procedure TFormKC6.StringGridDataEstimatesMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
-begin
-  if CtrlDown then
-    SetEstimateSelection;
-end;
-
-procedure TFormKC6.StringGridDataEstimatesMouseWheelDown(Sender: TObject; Shift: TShiftState;
-  MousePos: TPoint; var Handled: Boolean);
-begin
-  Handled := True;
-  StringGridDataEstimates.Perform(WM_VSCROLL, SB_LINEDOWN, 0);
-end;
-
-procedure TFormKC6.StringGridDataEstimatesMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint;
-  var Handled: Boolean);
-begin
-  Handled := True;
-  StringGridDataEstimates.Perform(WM_VSCROLL, SB_LINEUP, 0);
 end;
 
 procedure TFormKC6.TreeViewAdvancedCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
@@ -680,357 +423,21 @@ end;
 
 procedure TFormKC6.TreeViewChange(Sender: TObject; Node: TTreeNode);
 begin
-  AllocationRowInTable;
+  qrData.Locate('SM_ID', Integer(TreeView.Selected.Data), []);
 end;
 
-procedure TFormKC6.FillingDataEstimate(const IdEstimate: Integer);
-var
-  ds: Char;
-begin
-  try
-    with qrDataEstimate do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT * FROM data_row WHERE id_estimate = :id_estimate and id_act IS NULL ORDER BY 1;');
-      ParamByName('id_estimate').Value := IdEstimate;
-      Active := True;
-
-      First;
-
-      while not Eof do
-      begin
-        case FieldByName('id_type_data').AsInteger of
-          1: // Выводим расценку
-            try
-              with qrCardRates do
-              begin
-                Active := False;
-                SQL.Clear;
-                SQL.Add('SELECT card_rate.*, (select sum(rate_count) from card_rate_act where id=:id) as cntDone FROM card_rate WHERE id = :id;');
-                ParamByName('id').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
-                Active := True;
-
-                with StringGridDataEstimates do
-                begin
-                  Inc(nom);
-                  Cells[0, nom] := IntToStr(nom);
-                  Cells[1, nom] := FieldByName('rate_code').AsString;
-                  Cells[2, nom] := MyFloatToStr(FieldByName('rate_count').AsFloat);
-                  Cells[3, nom] := FieldByName('rate_unit').AsString;
-                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
-                  Cells[5, nom] := '0';
-                  Cells[6, nom] := MyFloatToStr(FieldByName('rate_count').AsFloat - FieldByName('cntDone')
-                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
-                  Cells[8, nom] := '1';
-                  Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
-                  Cells[10, nom] := '0';
-                end;
-              end;
-
-              // ----------------------------------------
-
-              with qrMaterialCard do
-              begin
-                Active := False;
-                SQL.Clear;
-                SQL.Add('SELECT materialcard.*, (select sum(materialcard_act.mat_count) from materialcard_act where id_card_rate=:id_card_rate and materialcard_act.id=materialcard.id) as cntDone FROM materialcard WHERE id_card_rate = :id_card_rate ORDER BY 1;');
-                ParamByName('id_card_rate').Value := qrCardRates.FieldByName('id').AsInteger;
-                Active := True;
-
-                // --------------------
-                {
-                // Выводим все неучтённые материалы которые не были заменены
-                Filtered := False;
-                Filter := 'id_card_rate = ' + IntToStr(qrCardRates.FieldByName('id').AsInteger) +
-                  ' and considered = 0 and replaced = 0';
-                Filtered := True;
-
-                First;
-
-                while not Eof do
-                begin
-                  Inc(nom);
-                  with StringGridDataEstimates do
-                  begin
-                    Cells[0, nom] := IntToStr(nom);
-                    Cells[1, nom] := Indent + FieldByName('mat_code').AsString;
-                    Cells[2, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat);
-                    Cells[3, nom] := FieldByName('mat_unit').AsString;
-                    Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
-                    Cells[5, nom] := '0';
-                    Cells[6, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
-                      .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                    Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
-                    Cells[8, nom] := '2';
-                    Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
-                    Cells[10, nom] := '0';
-                    // было пусто почему то...
-                  end;
-                  Next;
-                end;
-                }
-                // ----------------------------------------
-
-                // Выводим все заменяющие материалы, т.е. материалы которыми были заменены неучтённые
-                Filtered := False;
-                Filter := 'id_card_rate = ' + IntToStr(qrCardRates.FieldByName('id').AsInteger) +
-                  ' and considered = 1 and id_replaced > 0';
-                Filtered := True;
-
-                First;
-
-                while not Eof do
-                begin
-                  Inc(nom);
-                  with StringGridDataEstimates do
-                  begin
-                    Cells[0, nom] := IntToStr(nom);
-                    Cells[1, nom] := FieldByName('mat_code').AsString;
-                    Cells[2, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat);
-                    Cells[3, nom] := FieldByName('mat_unit').AsString;
-                    Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
-                    Cells[5, nom] := '0';
-                    Cells[6, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
-                      .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                    Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
-                    Cells[8, nom] := '2';
-                    Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
-                    Cells[10, nom] := '0';
-                  end;
-                  Next;
-                end;
-
-                Filtered := False;
-                Filter := '';
-              end;
-            except
-              on E: Exception do
-                MessageBox(0, PChar('При выводе расценки в таблицу возникла ошибка:' + sLineBreak + sLineBreak
-                  + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-            end;
-          2: // Выводим материал
-            try
-              with qrMaterialCard do
-              begin
-                Active := False;
-                SQL.Clear;
-                SQL.Add('SELECT materialcard.*, (select sum(materialcard_act.mat_count) from materialcard_act where materialcard_act.id=:id1) as cntDone FROM materialcard WHERE id = :id1;');
-                ParamByName('id1').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
-                Active := True;
-
-                with StringGridDataEstimates do
-                begin
-                  Inc(nom);
-                  Cells[0, nom] := IntToStr(nom);
-                  Cells[1, nom] := FieldByName('mat_code').AsString;
-                  Cells[2, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat);
-                  Cells[3, nom] := FieldByName('mat_unit').AsString;
-                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
-                  Cells[5, nom] := '0';
-                  Cells[6, nom] := MyFloatToStr(FieldByName('mat_count').AsFloat - FieldByName('cntDone')
-                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
-                  Cells[8, nom] := '2';
-                  Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
-                  Cells[10, nom] := '0';
-                end;
-              end;
-            except
-              on E: Exception do
-                MessageBox(0, PChar('При выводе материала в таблицу возникла ошибка:' + sLineBreak +
-                  sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-            end;
-          3: // Выводим механизм
-            try
-              with qrMechanizmCard do
-              begin
-                Active := False;
-                SQL.Clear;
-                SQL.Add('SELECT mechanizmcard.*, (select sum(mechanizmcard_act.mech_count) from mechanizmcard_act where mechanizmcard_act.id=:id) as cntDone FROM mechanizmcard WHERE id = :id;');
-                ParamByName('id').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
-                Active := True;
-
-                with StringGridDataEstimates do
-                begin
-                  Inc(nom);
-                  Cells[0, nom] := IntToStr(nom);
-                  Cells[1, nom] := FieldByName('mech_code').AsString;
-                  Cells[2, nom] := MyFloatToStr(FieldByName('mech_count').AsFloat);
-                  Cells[3, nom] := FieldByName('mech_unit').AsString;
-                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
-                  Cells[5, nom] := '0';
-                  Cells[6, nom] := MyFloatToStr(FieldByName('mech_count').AsFloat - FieldByName('cntDone')
-                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
-                  Cells[8, nom] := '3';
-                  Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
-                  Cells[10, nom] := '0';
-                end;
-              end;
-            except
-              on E: Exception do
-                MessageBox(0, PChar('При выводе материала в таблицу возникла ошибка:' + sLineBreak +
-                  sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-            end;
-          4: // Выводим оборудование
-            try
-              with qrTemp do
-              begin
-                Active := False;
-                SQL.Clear;
-                SQL.Add('SELECT devicescard.*, (select sum(devicescard_act.DEVICE_COUNT) from devicescard_act where devicescard_act.id=:id) as cntDone FROM devicescard WHERE id = :id;');
-                ParamByName('id').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
-                Active := True;
-
-                with StringGridDataEstimates do
-                begin
-                  Inc(nom);
-                  Cells[0, nom] := IntToStr(nom);
-                  Cells[1, nom] := FieldByName('DEVICE_CODE').AsString;
-                  Cells[2, nom] := MyFloatToStr(FieldByName('DEVICE_COUNT').AsFloat);
-                  Cells[3, nom] := FieldByName('DEVICE_UNIT').AsString;
-                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
-                  Cells[5, nom] := '0';
-                  Cells[6, nom] := MyFloatToStr(FieldByName('DEVICE_COUNT').AsFloat - FieldByName('cntDone')
-                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
-                  Cells[8, nom] := '4';
-                  Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
-                  Cells[10, nom] := '0';
-                end;
-              end;
-            except
-              on E: Exception do
-                MessageBox(0, PChar('При выводе оборудования в таблицу возникла ошибка:' + sLineBreak +
-                  sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-            end;
-          5: // Выводим вывоз мусора
-            try
-              with qrTemp do
-              begin
-                Active := False;
-                SQL.Clear;
-                SQL.Add('SELECT dumpcard.*, (select sum(dumpcard_act.DUMP_COUNT) from dumpcard_act where dumpcard_act.id=:id) as cntDone FROM dumpcard WHERE id = :id;');
-                ParamByName('id').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
-                Active := True;
-
-                with StringGridDataEstimates do
-                begin
-                  Inc(nom);
-                  Cells[0, nom] := IntToStr(nom);
-                  Cells[1, nom] := FieldByName('DUMP_CODE_JUST').AsString;
-                  Cells[2, nom] := MyFloatToStr(FieldByName('DUMP_COUNT').AsFloat);
-                  Cells[3, nom] := FieldByName('DUMP_UNIT').AsString;
-                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
-                  Cells[5, nom] := '0';
-                  Cells[6, nom] := MyFloatToStr(FieldByName('DUMP_COUNT').AsFloat - FieldByName('cntDone')
-                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
-                  Cells[8, nom] := '5';
-                  Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
-                  Cells[10, nom] := '0';
-                end;
-              end;
-            except
-              on E: Exception do
-                MessageBox(0, PChar('При выводе оборудования в таблицу возникла ошибка:' + sLineBreak +
-                  sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-            end;
-          6, 7, 8, 9: // Выводим транспортировку
-            try
-              with qrTemp do
-              begin
-                Active := False;
-                SQL.Clear;
-                SQL.Add('SELECT transpcard.*, (select sum(transpcard_act.TRANSP_COUNT) from transpcard_act where transpcard_act.id=:id) as cntDone FROM transpcard WHERE id = :id;');
-                ParamByName('id').Value := qrDataEstimate.FieldByName('id_tables').AsInteger;
-                Active := True;
-
-                with StringGridDataEstimates do
-                begin
-                  Inc(nom);
-                  Cells[0, nom] := IntToStr(nom);
-                  Cells[1, nom] := FieldByName('TRANSP_CODE_JUST').AsString;
-                  Cells[2, nom] := MyFloatToStr(FieldByName('TRANSP_COUNT').AsFloat);
-                  Cells[3, nom] := FieldByName('CARG_UNIT').AsString;
-                  Cells[4, nom] := MyFloatToStr(FieldByName('cntDone').AsFloat);
-                  Cells[5, nom] := '0';
-                  Cells[6, nom] := MyFloatToStr(FieldByName('TRANSP_COUNT').AsFloat - FieldByName('cntDone')
-                    .AsFloat - MyStrToFloatDef(Cells[5, nom], 0));
-                  Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
-                  Cells[8, nom] := FieldByName('TRANSP_TYPE').AsString;
-                  Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
-                  Cells[10, nom] := '0';
-                end;
-              end;
-            except
-              on E: Exception do
-                MessageBox(0, PChar('При выводе оборудования в таблицу возникла ошибка:' + sLineBreak +
-                  sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-            end;
-          10: // Выводим Е18
-            begin
-              with StringGridDataEstimates do
-              begin
-                Inc(nom);
-                Cells[0, nom] := IntToStr(nom);
-                Cells[1, nom] := 'Е18';
-                Cells[2, nom] := MyFloatToStr(qrDataEstimate.FieldByName('E1820_COUNT').AsFloat);
-                Cells[3, nom] := '';
-                Cells[4, nom] := '0'; // исправить кол-во
-                Cells[5, nom] := '0';
-                Cells[6, nom] := MyFloatToStr(qrDataEstimate.FieldByName('E1820_COUNT').AsFloat - 0 -
-                  MyStrToFloatDef(Cells[5, nom], 0)); // исправить
-                Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
-                Cells[8, nom] := '10';
-                Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
-                Cells[10, nom] := '0';
-              end;
-            end;
-          11: // Выводим Е20
-            begin
-              with StringGridDataEstimates do
-              begin
-                Inc(nom);
-                Cells[0, nom] := IntToStr(nom);
-                Cells[1, nom] := 'Е20';
-                Cells[2, nom] := MyFloatToStr(qrDataEstimate.FieldByName('E1820_COUNT').AsFloat);
-                Cells[3, nom] := '';
-                Cells[4, nom] := '0'; // исправить кол-во
-                Cells[5, nom] := '0';
-                Cells[6, nom] := MyFloatToStr(qrDataEstimate.FieldByName('E1820_COUNT').AsFloat - 0 -
-                  MyStrToFloatDef(Cells[5, nom], 0)); // исправить
-                Cells[7, nom] := IntToStr(qrDataEstimate.FieldByName('id_estimate').AsInteger);
-                Cells[8, nom] := '11';
-                Cells[9, nom] := IntToStr(FieldByName('id').AsInteger);
-                Cells[10, nom] := '0';
-              end;
-            end;
-        end;
-        Next;
-      end;
-    end;
-  except
-    on E: Exception do
-    begin
-      MessageBox(0, PChar('При выводе данных всех смет текущего объекта возникла ошибка:' + sLineBreak +
-        sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
-  end;
-end;
-
-procedure TFormKC6.CopyToAct(const vIdEstimate, vIdTypeData, vIdTables: Integer; const vCnt: Double);
+procedure TFormKC6.CopyToAct(const vIdEstimate, vIdTypeData, vIdTables: Integer; const vCnt: Double;
+  const vIdAct: Integer);
 begin
   try
     with qrTemp do
     begin
       SQL.Clear;
-      SQL.Add('CALL DataToAct(:IdEstimate, :IdTypeData, :IdTables, :cnt);');
+      SQL.Add('CALL DataToAct(:IdEstimate, :IdTypeData, :IdTables, :cnt, :vIdAct);');
       ParamByName('IdEstimate').Value := vIdEstimate;
       ParamByName('IdTypeData').Value := vIdTypeData;
       ParamByName('IdTables').Value := vIdTables;
+      ParamByName('vIdAct').Value := vIdAct;
       ParamByName('cnt').Value := vCnt;
       ExecSQL;
     end;
@@ -1044,49 +451,39 @@ end;
 procedure TFormKC6.EditKoefChange(Sender: TObject);
 var
   i: Integer;
-  {ds: Char;}
   fl: Boolean;
+  Key: Variant;
 begin
   fl := False;
-  with StringGridDataEstimates do
-  begin
-    Enabled := False;
-    for i := 1 to RowCount - 1 do
-      if Cells[10, i] = '1' then
+  Key := strngfldDataSORT_ID.Value;
+  qrData.DisableControls;
+  qrData.AfterScroll := nil;
+  // qrData.OnCalcFields := nil;
+  try
+    qrData.First;
+    while not qrData.Eof do
+    begin
+      if qrDataCHECKED.Value and (qrDataID_TYPE_DATA.Value > 0) then
       begin
         fl := True;
-        Cells[5, i] := MyFloatToStr((EditKoef.Value / 100) * (MyStrToFloatDef(Cells[2, i],
-          0) - MyStrToFloatDef(Cells[4, i], 0)));
-        Cells[6, i] := MyFloatToStr(MyStrToFloatDef(Cells[2, i], 0) - MyStrToFloatDef(Cells[4, i], 0) -
-          MyStrToFloatDef(Cells[5, i], 0));
+        qrData.Edit;
+        qrDataOBJ_COUNT_IN.Value := (EditKoef.Value / 100) *
+          (Double(qrDataOBJ_COUNT.Value) - Double(qrDataCntDONE.Value));
       end;
-    // Высчитываем на текущей строке
-    if not fl then
-    begin
-      Cells[5, Row] := MyFloatToStr((EditKoef.Value / 100) * (MyStrToFloatDef(Cells[2, Row],
-        0) - MyStrToFloatDef(Cells[4, Row], 0)));
-      Cells[6, Row] := MyFloatToStr(MyStrToFloatDef(Cells[2, Row], 0) - MyStrToFloatDef(Cells[4, Row], 0) -
-        MyStrToFloatDef(Cells[5, Row], 0));
+      qrData.Next;
     end;
-
-    Enabled := True;
+  finally
+    qrData.AfterScroll := qrDataAfterScroll;
+    // qrData.OnCalcFields := qrDataCalcFields;
+    qrData.Locate('SORT_ID', Key, []);
+    qrData.EnableControls;
   end;
-end;
-
-procedure TFormKC6.AllocationRowInTable;
-var
-  i: Integer;
-begin
-  StringGridDataEstimates.Enabled := False;
-  StringGridDataEstimates.Row := StringGridDataEstimates.RowCount - 1;
-  with StringGridDataEstimates do
-    for i := 1 to RowCount - 1 do
-      if Integer(TreeView.Selected.Data) = StrToInt(Cells[7, i]) then
-      begin
-        Row := i;
-        Break;
-      end;
-  StringGridDataEstimates.Enabled := True;
+  // Высчитываем на текущей строке
+  if not fl then
+  begin
+    qrDataOBJ_COUNT_IN.Value := (EditKoef.Value / 100) *
+      (Double(qrDataOBJ_COUNT.Value) - Double(qrDataCntDONE.Value));
+  end;
 end;
 
 end.

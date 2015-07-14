@@ -2030,10 +2030,10 @@ object fCalcResource: TfCalcResource
       '  COALESCE(RATE_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       ''
       
-        '  data_estimate_temp.TRUD / COALESCE(RATE_COUNT, 0) AS TRUD_ONE,' +
-        ' /* '#1090#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' '#1085#1072' '#1077#1076'. */'
-      '  data_estimate_temp.TRUD AS TRUD, /* '#1090#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' */'
-      '  data_estimate_temp.K_TRUD, /* '#1082#1086#1101#1092'. '#1082' '#1076#1088#1091#1076' */'
+        '  data_row_temp.TRUD / COALESCE(RATE_COUNT, 0) AS TRUD_ONE, /* '#1090 +
+        #1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' '#1085#1072' '#1077#1076'. */'
+      '  data_row_temp.TRUD AS TRUD, /* '#1090#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' */'
+      '  data_row_temp.K_TRUD, /* '#1082#1086#1101#1092'. '#1082' '#1076#1088#1091#1076' */'
       
         '  (SELECT norma FROM normativwork WHERE normativ_id = card_rate_' +
         'temp.RATE_ID and work_id = 1 LIMIT 1) AS Rank, /* '#1088#1072#1079#1088#1103#1076' */'
@@ -2061,14 +2061,14 @@ object fCalcResource: TfCalcResource
         'ourcedata.STAVKA_ID)'
       '   ORDER BY c.`DATE_BEG` DESC '
       '   LIMIT 1)) AS Tariff, /* '#1058#1072#1088#1080#1092' */'
-      '  data_estimate_temp.K_ZP,  /* KZP */'
-      '  ROUND(data_estimate_temp.ZP) AS ZP /* ZP */'
+      '  data_row_temp.K_ZP,  /* KZP */'
+      '  ROUND(data_row_temp.ZP) AS ZP /* ZP */'
       ', 0 AS DELETED'
       'FROM '
-      '  smetasourcedata, data_estimate_temp, card_rate_temp, stavka'
+      '  smetasourcedata, data_row_temp, card_rate_temp, stavka'
       'WHERE '
-      'data_estimate_temp.ID_TYPE_DATA = 1 AND'
-      'card_rate_temp.ID = data_estimate_temp.ID_TABLES AND'
+      'data_row_temp.ID_TYPE_DATA = 1 AND'
+      'card_rate_temp.ID = data_row_temp.ID_TABLES AND'
       '  ((smetasourcedata.SM_ID = :SM_ID) OR'
       '           (smetasourcedata.PARENT_ID = :SM_ID) OR '
       '           (smetasourcedata.PARENT_ID IN ('
@@ -2076,7 +2076,7 @@ object fCalcResource: TfCalcResource
       '             FROM smetasourcedata'
       '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
       'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
-      'data_estimate_temp.ID_ESTIMATE = smetasourcedata.SM_ID'
+      'data_row_temp.ID_ESTIMATE = smetasourcedata.SM_ID'
       ''
       'ORDER BY 5')
     Left = 211
@@ -2164,7 +2164,7 @@ object fCalcResource: TfCalcResource
       '  m.REPLACED,'
       '  m.ID_REPLACED'
       'FROM        '
-      'smetasourcedata, data_estimate_temp AS d '
+      'smetasourcedata, data_row_temp AS d '
       
         'left join card_rate_temp AS c on d.ID_TYPE_DATA = 1 AND c.ID = d' +
         '.ID_TABLES '
@@ -2308,7 +2308,7 @@ object fCalcResource: TfCalcResource
       '  m.REPLACED,'
       '  m.ID_REPLACED'
       'FROM        '
-      'smetasourcedata, data_estimate_temp AS d '
+      'smetasourcedata, data_row_temp AS d '
       
         'left join card_rate_temp AS c on d.ID_TYPE_DATA = 1 AND c.ID = d' +
         '.ID_TABLES '
@@ -2406,7 +2406,7 @@ object fCalcResource: TfCalcResource
       '  m.DEVICE_ID,'
       '  m.ID'
       'FROM        '
-      'smetasourcedata, data_estimate_temp AS d '
+      'smetasourcedata, data_row_temp AS d '
       
         'join devicescard_temp AS m on d.ID_TYPE_DATA = 4 AND m.ID = d.ID' +
         '_TABLES AND m.DEVICE_ID = :DEVICE_ID'

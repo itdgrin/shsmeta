@@ -751,6 +751,11 @@
               FieldName = 'ID_REPLACED'
               Title.Caption = 'ID_REPLACED ('#1048#1044' '#1084#1072#1090#1077#1088#1080#1072#1083#1072', '#1079#1072#1084#1077#1085#1103#1077#1084#1086#1075#1086' '#1076#1072#1085#1085#1099#1084')'
               Visible = False
+            end
+            item
+              Expanded = False
+              FieldName = 'ID_ACT'
+              Visible = False
             end>
         end
       end
@@ -4373,7 +4378,7 @@
   end
   object qrCalculations: TFDQuery
     MasterSource = dsRatesEx
-    MasterFields = 'SM_ID;ID_TYPE_DATA;ID_TABLES'
+    MasterFields = 'SM_ID;ID_TYPE_DATA;ID_TABLES;ID_ACT'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -4404,21 +4409,35 @@
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      'CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 1)')
+      
+        'CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 1, :ID_A' +
+        'CT)')
     Left = 331
     Top = 424
     ParamData = <
       item
         Name = 'SM_ID'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'ID_TYPE_DATA'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'ID_TABLES'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'ID_ACT'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
       end>
   end
   object dsCalculations: TDataSource
@@ -5064,6 +5083,9 @@
     end
     object qrRatesExID_REPLACED: TIntegerField
       FieldName = 'ID_REPLACED'
+    end
+    object qrRatesExID_ACT: TIntegerField
+      FieldName = 'ID_ACT'
     end
   end
   object dsRatesEx: TDataSource

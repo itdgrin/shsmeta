@@ -78,6 +78,8 @@ function MyStrToFloatDef(Value: string; DefRes: Extended): Extended;
 function MyCurrToStr(Value: Currency): string;
 function MyStrToCurr(Value: string): Currency;
 
+function MixColors(FG, BG: TColor; T: byte): TColor;
+
 implementation
 
 { TThreadQuery }
@@ -128,8 +130,7 @@ begin
   if Length(SmClipArray) = 0 then
     Exit;
 
-  Data := GlobalAlloc(GMEM_MOVEABLE, SizeOf(Integer) +
-    SizeOf(TSmClipRec) * Length(SmClipArray));
+  Data := GlobalAlloc(GMEM_MOVEABLE, SizeOf(Integer) + SizeOf(TSmClipRec) * Length(SmClipArray));
   try
     DataPtr := GlobalLock(Data);
     try
@@ -404,7 +405,7 @@ begin
   DBGrid.TitleButtons := True;
   DBGrid.ShowCellHint := True;
   DBGrid.ShowHint := True;
-  //DBGrid.ShowTitleHint := True;
+  // DBGrid.ShowTitleHint := True;
   DBGrid.SelectColumnsDialogStrings.NoSelectionWarning := 'Должна быть выбрана хотя бы одна колонка!';
   DBGrid.SelectColumnsDialogStrings.Caption := 'Настройка видимости колонок';
   {
@@ -569,6 +570,21 @@ begin
   if not DM.qrDifferent2.IsEmpty then
     Result := DM.qrDifferent2.Fields[0].Value;
   DM.qrDifferent2.Active := False;
+end;
+
+function MixBytes(FG, BG, TRANS: byte): byte;//змішує 1 канал двох кольорів з даданою прозорістю
+begin
+  Result := round(bg + (fg - bg)/255*TRANS);
+end;
+
+function MixColors(FG, BG: TColor; T: byte): TColor;
+var
+  r, g, b: byte;
+begin
+  r := MixBytes(FG and 255, BG and 255, T); // extracting and mixing Red
+  g := MixBytes((FG shr 8) and 255, (BG shr 8) and 255, T); // the same with green
+  b := MixBytes((FG shr 16) and 255, (BG shr 16) and 255, T); // and blue, of course
+  Result := r + g * 256 + b * 65536; // finishing with combining all channels together
 end;
 
 initialization

@@ -38,7 +38,7 @@ type
     procedure mN5Click(Sender: TObject);
     procedure mN6Click(Sender: TObject);
   private
-    SM_ID: Integer;
+    SM_ID, ID_ACT: Integer;
     function CanEditField(Field: TField): Boolean;
   public
     function LoadData(const Args: Variant): Boolean;
@@ -75,7 +75,7 @@ var
 begin
   Key := qrData.FieldByName('id_estimate').Value;
   FormBasicData.ShowForm(qrData.FieldByName('OBJ_ID').AsInteger, qrData.FieldByName('id_estimate').AsInteger);
-  LoadData(SM_ID);
+  LoadData(VarArrayOf([SM_ID, ID_ACT]));
   qrData.Locate('id_estimate', Key, []);
 end;
 
@@ -119,9 +119,11 @@ begin
   try
     LoadDBGridSettings(grSummaryCalculation);
     qrData.Active := False;
-    qrData.ParamByName('SM_ID').Value := Args;
+    qrData.ParamByName('SM_ID').Value := Args[0];
+    qrData.ParamByName('ID_ACT').Value := Args[1];
     qrData.Active := True;
-    SM_ID := Args;
+    SM_ID := Args[0];
+    ID_ACT := Args[1];
   except
     Result := False;
   end;

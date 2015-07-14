@@ -700,12 +700,7 @@ begin
     FormCalculationEstimate := TFormCalculationEstimate.Create(FormMain);
 
   FormCalculationEstimate.CreateTempTables;
-
-  if not ActReadOnly then
-  begin
-    FormKC6.caption := 'Выборка данных';
-    FormKC6.MyShow(IdObject);
-  end;
+  FormCalculationEstimate.IDAct := ActID;
 
   with qrObjects do
   begin
@@ -719,11 +714,16 @@ begin
 
     FormCalculationEstimate.IdObject := IdObject;
     FormCalculationEstimate.IdEstimate := IdEstimate;
-    FormCalculationEstimate.IDAct := ActID;
     FormCalculationEstimate.SetActReadOnly(ActReadOnly);
     FormCalculationEstimate.Act := True;
 
     FormCalculationEstimate.OpenAllData;
+  end;
+
+  if not ActReadOnly then
+  begin
+    FormKC6.caption := 'Выборка данных';
+    FormKC6.MyShow(IdObject);
   end;
 
   // Закрываем форму ожидания

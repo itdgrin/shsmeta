@@ -477,6 +477,7 @@ type
     qrTranspID: TIntegerField;
     qrDevicesID: TIntegerField;
     qrDumpDUMP_ID: TIntegerField;
+    qrRatesExID_ACT: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -777,7 +778,6 @@ type
     procedure AddCoefToRate(coef_id: Integer);
 
     procedure SetActReadOnly(const Value: Boolean);
-    procedure AddRowToTableRates(FieldRates: TFieldRates);
     procedure CreateTempTables;
     procedure OpenAllData;
     procedure Wheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
@@ -1110,7 +1110,7 @@ begin
     PanelSSR.Visible := False;
 
     // Инициализация заполнения фрейма данными
-    frSummaryCalculations.LoadData(IdEstimate);
+    frSummaryCalculations.LoadData(VarArrayOf([IdEstimate, IdAct]));
 
     // -----------------------------------------
 
@@ -1298,8 +1298,8 @@ begin
       begin
         FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
           VarArrayOf([qrRatesExID_TABLES.Value, qrRatesExID_TYPE_DATA.Value]));
-        FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0)',
-          VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value]));
+        FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0, :ID_ACT)',
+          VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value, qrRatesExID_ACT.Value]));
       end;
       qrRatesEx.Next;
     end;
@@ -2844,10 +2844,10 @@ begin
       6, 7, 8, 9:
         qrTemp.SQL.Text := 'UPDATE transpcard_temp set CARG_COUNT = :RC WHERE ID=:ID;';
       10, 11:
-      begin
-        qrTemp.SQL.Text := 'UPDATE data_row_temp set E1820_COUNT = :RC WHERE ID=:ID;';
-        qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
-      end;
+        begin
+          qrTemp.SQL.Text := 'UPDATE data_row_temp set E1820_COUNT = :RC WHERE ID=:ID;';
+          qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
+        end;
     else
       begin
         ShowMessage('Запрос обновления не реализован!');
@@ -3855,8 +3855,7 @@ begin
 
   qrTemp.SQL.Clear;
   qrTemp.SQL.Add('SELECT year,monat,DATE_BEG FROM stavka WHERE stavka_id = ' +
-    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' +
-    IntToStr(qrRatesExSM_ID.AsInteger) + ')');
+    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ')');
   qrTemp.Active := True;
   Month1 := qrTemp.FieldByName('monat').AsInteger;
   Year1 := qrTemp.FieldByName('year').AsInteger;
@@ -3866,7 +3865,6 @@ begin
   try
     with qrTemp do
     begin
-
 
       SQL.Clear;
       SQL.Add('SELECT region_id FROM objcards WHERE obj_id = ' + IntToStr(IdObject));
@@ -4033,7 +4031,7 @@ begin
             'COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, NORMATIV) values (:ID, :ID_CARD_RATE, ' +
             ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
             ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :NORMATIV)';
-            qrTemp1.ParamByName('ID').Value := MaxMId;
+          qrTemp1.ParamByName('ID').Value := MaxMId;
           qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
           qrTemp1.ParamByName('MECH_ID').Value := FieldByName('MechId').AsInteger;
           qrTemp1.ParamByName('MECH_CODE').Value := FieldByName('MechCode').AsString;
@@ -4152,9 +4150,8 @@ begin
     Iterator := C_ET20ITER;
 
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
-    '(ID, id_estimate, id_type_data, NUM_ROW) VALUE ' +
-      '(GetNewID(:IDType), :IdEstimate, :SType, :NUM_ROW);';
+  qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' + '(ID, id_estimate, id_type_data, NUM_ROW) VALUE ' +
+    '(GetNewID(:IDType), :IdEstimate, :SType, :NUM_ROW);';
   qrTemp.ParamByName('IDType').Value := C_ID_DATA;
   qrTemp.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
   qrTemp.ParamByName('SType').Value := (Sender as TComponent).Tag;
@@ -4540,8 +4537,7 @@ begin
   qrStartup.SQL.Text := 'select RATE_CODE, RATE_CAPTION, RATE_COUNT, RATE_UNIT ' +
     'from data_row_temp as dm LEFT JOIN card_rate_temp as cr ' +
     'ON (dm.ID_TYPE_DATA = 1) AND (cr.ID = dm.ID_TABLES) ' + 'WHERE (cr.RATE_CODE LIKE "%' + LikeText +
-    '%") and (dm.ID_ESTIMATE = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ') and ' +
-    '(dm.ID_ACT is NULL)';
+    '%") and (dm.ID_ESTIMATE = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ') and ' + '(dm.ID_ACT is NULL)';
   qrStartup.Active := True;
 end;
 
@@ -5106,14 +5102,6 @@ begin
   end;
 end;
 
-// Кусок кода оставлен, что-бы потом решить, что делать с журналом 6кс
-procedure TFormCalculationEstimate.AddRowToTableRates(FieldRates: TFieldRates);
-begin
-  // Выделяем строчку в КС-6
-  if Act and FormKC6.Showing then
-    FormKC6.SelectDataEstimates(FieldRates.vTypeAddData, FieldRates.vId, FieldRates.vCount);
-end;
-
 procedure TFormCalculationEstimate.TestOnNoDataNew(ADataSet: TDataSet);
 begin
   if not CheckQrActiveEmpty(ADataSet) then
@@ -5386,9 +5374,10 @@ begin
     qrRatesEx.EnableControls;
   end;
   // ----------------------------------
-  if CheckQrActiveEmpty(qrRatesEx) {and (qrRatesExID_TYPE_DATA.Value > 0)} then
+  if CheckQrActiveEmpty(qrRatesEx) { and (qrRatesExID_TYPE_DATA.Value > 0) } then
     CloseOpen(qrCalculations)
-  else qrCalculations.Active := False;
+  else
+    qrCalculations.Active := False;
 end;
 
 procedure TFormCalculationEstimate.VisibleColumnsWinterPrice(Value: Boolean);
