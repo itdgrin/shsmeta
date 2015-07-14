@@ -166,6 +166,23 @@ begin
       end;
       Node2 := nil;
 
+      //загрузка Object_suppagreement
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Object_suppagreement');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+
+          Node1.ChildNodes.Nodes['supp_agreement_id'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['supp_agreement_id'].NodeValue, C_ID_SUPPAG, IdConvert);
+          Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
+
+          GetStrAndExcec(Node1, 'supp_agreement');
+          Node1 := nil;
+        end;
+      Node2 := nil;
+
       //загрузка расценок смет
       Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Rates');
       if Assigned(Node2) then
@@ -558,23 +575,6 @@ begin
             GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
 
           GetStrAndExcec(Node1, 'summary_calculation');
-          Node1 := nil;
-        end;
-      Node2 := nil;
-
-      //загрузка Summary_calculation
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Object_suppagreement');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-
-          Node1.ChildNodes.Nodes['supp_agreement_id'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['supp_agreement_id'].NodeValue, C_ID_SUPPAG, IdConvert);
-          Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
-
-          GetStrAndExcec(Node1, 'supp_agreement');
           Node1 := nil;
         end;
       Node2 := nil;
@@ -1496,36 +1496,38 @@ var IdConvert: TIDConvertArray;
     i, j: Integer;
     TmpId: Integer;
     SmIdStr: string;
+    TmpStr: string;
+    AutoCommitValue: Boolean;
 begin
-  Exit; //«акрыто на врем€ исправлени€ получени€ новых ID
- { Result := False;
-  for i := 0 to Length(IdConvert) - 1 do
+  Result := False;
+  for i := 1 to Length(IdConvert) do
   begin
     SetLength(IdConvert[i][0], 0);
     SetLength(IdConvert[i][1], 0);
   end;
- // DM.qrDifferent.UpdateTransaction.Options.AutoCommit := False;
- // DM.qrDifferent.UpdateTransaction.Options.AutoStart := False;
- // DM.qrDifferent.UpdateTransaction.Options.AutoStop := False;
+
+  AutoCommitValue :=DM.qrDifferent1.Transaction.Options.AutoCommit;
+  DM.qrDifferent1.Transaction.Options.AutoCommit := False;
   try
- //   DM.qrDifferent.UpdateTransaction.StartTransaction;
+    DM.qrDifferent1.UpdateTransaction.StartTransaction;
     try
       DM.qrDifferent.Active := False;
       DM.qrDifferent.SQL.Text := 'SELECT * FROM smetasourcedata WHERE ' +
         '((SM_ID = ' + ASoursSmetaID.ToString + ') OR ' +
-         '(PARENT_ID = ' + ASoursSmetaID.ToString + ') OR ' +
-         '(PARENT_ID IN (SELECT smetasourcedata.SM_ID FROM ' +
+         '(((PARENT_ID = ' + ASoursSmetaID.ToString + ')) OR ' +
+         '((PARENT_ID IN (SELECT smetasourcedata.SM_ID FROM ' +
           'smetasourcedata WHERE smetasourcedata.PARENT_ID = ' +
-            ASoursSmetaID.ToString + '))) ORDER BY SM_ID';
+            ASoursSmetaID.ToString + '))) AND (DELETED=0))) ORDER BY SM_ID';
       DM.qrDifferent.Active := True;
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,1,'')
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'smetasourcedata')
       else
       begin
         //≈сли смет с таким ID не обнаружено
         DM.qrDifferent.Active := False;
         raise Exception.Create('—мета источник не найдена.');
       end;
+
       SmIdStr := '';
       while not DM.qrDifferent.Eof do
       begin
@@ -1541,7 +1543,7 @@ begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 1, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
             Continue;
           end;
 
@@ -1557,7 +1559,7 @@ begin
              (TmpId <> ASoursSmetaID) then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 1, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
             Continue;
           end;
 
@@ -1570,12 +1572,12 @@ begin
       DM.qrDifferent.Active := False;
 
       DM.qrDifferent.SQL.Text := 'Select * from card_rate where ID in ' +
-      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 1) and ' +
-      '(ID_ESTIMATE in (' + SmIdStr + '))) order by ID';
+      '(select ID_TABLES from data_row where (ID_TYPE_DATA = 1) and ' +
+      '(ID_ESTIMATE in (' + SmIdStr + ')) and (ID_ACT is null)) order by ID';
       DM.qrDifferent.Active := True;
 
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,2,'');
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'card_rate');
 
       while not DM.qrDifferent.Eof do
       begin
@@ -1584,7 +1586,7 @@ begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 2, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMRAT, IdConvert);
             Continue;
           end;
 
@@ -1597,13 +1599,15 @@ begin
       DM.qrDifferent.Active := False;
 
       DM.qrDifferent.SQL.Text := 'Select * from materialcard where (ID in ' +
-      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 2) and ' +
-      '(ID_ESTIMATE in (' + SmIdStr + ')))) or (ID_CARD_RATE in (select ID_TABLES from data_estimate where ' +
-      '(ID_TYPE_DATA = 1) and (ID_ESTIMATE in (' + SmIdStr + ')))) order by ID';
+        '(select ID_TABLES from data_row where (ID_TYPE_DATA = 2) and ' +
+        '(ID_ACT is null) and (ID_ESTIMATE in (' + SmIdStr + ')))) or ' +
+        '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
+        '(ID_TYPE_DATA = 1) and (ID_ACT is null) and ' +
+        '(ID_ESTIMATE in (' + SmIdStr + ')))) order by ID';
       DM.qrDifferent.Active := True;
 
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,3,'');
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'materialcard');
 
       while not DM.qrDifferent.Eof do
       begin
@@ -1612,21 +1616,21 @@ begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 3, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMMAT, IdConvert);
             Continue;
           end;
 
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 2, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMRAT, IdConvert);
             Continue;
           end;
 
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 3, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMMAT, IdConvert);
             Continue;
           end;
 
@@ -1638,15 +1642,17 @@ begin
       end;
       DM.qrDifferent.Active := False;
 
-      DM.qrDifferent.SQL.Text := 'Select * from mechanizmcard where (ID in ' +
-      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 3) and ' +
-      '(ID_ESTIMATE in (' + SmIdStr + ')))) or (ID_CARD_RATE in ' +
-      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 1) and ' +
+      DM.qrDifferent.SQL.Text := 'Select * from mechanizmcard where ' +
+      '(ID in (select ID_TABLES from data_row where ' +
+      '(ID_TYPE_DATA = 3) and (ID_ACT is null) and ' +
+      '(ID_ESTIMATE in (' + SmIdStr + ')))) or ' +
+      '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
+      '(ID_TYPE_DATA = 1) and (ID_ACT is null) and ' +
       '(ID_ESTIMATE in (' + SmIdStr + ')))) order by ID';
       DM.qrDifferent.Active := True;
 
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,4,'');
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'mechanizmcard');
 
       while not DM.qrDifferent.Eof do
       begin
@@ -1655,21 +1661,21 @@ begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 4, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMMEC, IdConvert);
             Continue;
           end;
 
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 2, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMRAT, IdConvert);
             Continue;
           end;
 
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 4, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMMEC, IdConvert);
             Continue;
           end;
 
@@ -1682,12 +1688,12 @@ begin
       DM.qrDifferent.Active := False;
 
       DM.qrDifferent.SQL.Text := 'Select * from devicescard where ID in ' +
-      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 4) and ' +
-      '(ID_ESTIMATE in (' + SmIdStr + '))) order by ID';
+      '(select ID_TABLES from data_row where (ID_TYPE_DATA = 4) and ' +
+      '(ID_ACT is null) and (ID_ESTIMATE in (' + SmIdStr + '))) order by ID';
       DM.qrDifferent.Active := True;
 
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,5,'');
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'devicescard');
 
       while not DM.qrDifferent.Eof do
       begin
@@ -1696,7 +1702,7 @@ begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 5, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMDEV, IdConvert);
             Continue;
           end;
 
@@ -1709,12 +1715,12 @@ begin
       DM.qrDifferent.Active := False;
 
       DM.qrDifferent.SQL.Text := 'Select * from dumpcard where ID in ' +
-      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA = 5) and ' +
-      '(ID_ESTIMATE in (' + SmIdStr + '))) order by ID';
+      '(select ID_TABLES from data_row where (ID_TYPE_DATA = 5) and ' +
+      '(ID_ACT is null) and (ID_ESTIMATE in (' + SmIdStr + '))) order by ID';
       DM.qrDifferent.Active := True;
 
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,6,'');
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'dumpcard');
 
       while not DM.qrDifferent.Eof do
       begin
@@ -1723,7 +1729,7 @@ begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 6, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMDUM, IdConvert);
             Continue;
           end;
 
@@ -1736,12 +1742,12 @@ begin
       DM.qrDifferent.Active := False;
 
       DM.qrDifferent.SQL.Text := 'Select * from transpcard where ID in ' +
-      '(select ID_TABLES from data_estimate where (ID_TYPE_DATA in (6,7,8,9)) and ' +
-      '(ID_ESTIMATE in (' + SmIdStr + '))) order by ID';
+      '(select ID_TABLES from data_row where (ID_TYPE_DATA in (6,7,8,9)) and ' +
+      '(ID_ACT is null) and (ID_ESTIMATE in (' + SmIdStr + '))) order by ID';
       DM.qrDifferent.Active := True;
 
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,7,'');
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'transpcard');
 
       while not DM.qrDifferent.Eof do
       begin
@@ -1750,7 +1756,7 @@ begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 7, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMTR, IdConvert);
             Continue;
           end;
 
@@ -1762,12 +1768,12 @@ begin
       end;
       DM.qrDifferent.Active := False;
 
-      DM.qrDifferent.SQL.Text := 'Select * from data_estimate where ' +
-        '(ID_ESTIMATE in (' + SmIdStr + '))order by ID';
+      DM.qrDifferent.SQL.Text := 'Select * from data_row where ' +
+        '(ID_ACT is null) and (ID_ESTIMATE in (' + SmIdStr + ')) order by ID';
       DM.qrDifferent.Active := True;
 
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,8,'');
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'data_row');
 
       while not DM.qrDifferent.Eof do
       begin
@@ -1776,14 +1782,14 @@ begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 8, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_DATA, IdConvert);
             Continue;
           end;
 
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ESTIMATE' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 1, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
             Continue;
           end;
 
@@ -1796,17 +1802,17 @@ begin
           begin
             j := 0;
             case DM.qrDifferent.Fields[i].Value of
-              1: j := 2;
-              2: j := 3;
-              3: j := 4;
-              4: j := 5;
-              5: j := 6;
-              6, 7, 8, 9: j := 7;
+              1: j := C_ID_SMRAT;
+              2: j := C_ID_SMMAT;
+              3: j := C_ID_SMMEC;
+              4: j := C_ID_SMDEV;
+              5: j := C_ID_SMDUM;
+              6, 7, 8, 9: j := C_ID_SMTR;
             end;
 
             if j > 0  then
               DM.qrDifferent1.ParamByName('ID_TABLES').Value :=
-                GetNewId(DM.qrDifferent.FieldByName('ID_TABLES').Value,j, IdConvert, '');
+                GetNewId(DM.qrDifferent.FieldByName('ID_TABLES').Value, j, IdConvert);
           end;
 
           DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
@@ -1818,11 +1824,11 @@ begin
       DM.qrDifferent.Active := False;
 
       DM.qrDifferent.SQL.Text := 'Select * from calculation_coef where ' +
-        '(ID_ESTIMATE in (' + SmIdStr + '))order by calculation_coef_id';
+        '(ID_ESTIMATE in (' + SmIdStr + ')) order by calculation_coef_id';
       DM.qrDifferent.Active := True;
 
       if not DM.qrDifferent.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,17,'');
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'calculation_coef');
 
       while not DM.qrDifferent.Eof do
       begin
@@ -1831,14 +1837,14 @@ begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CALCULATION_COEF_ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 17, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMCOEF, IdConvert);
             Continue;
           end;
 
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ESTIMATE' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, 1, IdConvert, '');
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
             Continue;
           end;
 
@@ -1850,18 +1856,19 @@ begin
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA' then
           begin
             j := 0;
+
             case DM.qrDifferent.Fields[i].Value of
-              1: j := 2;
-              2: j := 3;
-              3: j := 4;
-              4: j := 5;
-              5: j := 6;
-              6, 7, 8, 9: j := 7;
+              1: j := C_ID_SMRAT;
+              2: j := C_ID_SMMAT;
+              3: j := C_ID_SMMEC;
+              4: j := C_ID_SMDEV;
+              5: j := C_ID_SMDUM;
+              6, 7, 8, 9: j := C_ID_SMTR;
             end;
 
             if j > 0  then
               DM.qrDifferent1.ParamByName('ID_OWNER').Value :=
-                GetNewId(DM.qrDifferent.FieldByName('ID_OWNER').Value,j, IdConvert, '');
+                GetNewId(DM.qrDifferent.FieldByName('ID_OWNER').Value, j, IdConvert);
           end;
 
           DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
@@ -1871,22 +1878,140 @@ begin
         DM.qrDifferent.Next;
       end;
       DM.qrDifferent.Active := False;
-     // Abort;
-     // DM.qrDifferent.UpdateTransaction.Commit;
+
+      DM.qrDifferent.SQL.Text := 'Select * from travel where ' +
+        '(ID_ACT is null) and (ID_ESTIMATE in (' + SmIdStr + ')) order by travel_id';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'travel');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'TRAVEL_ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_TRAVEL, IdConvert);
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ESTIMATE' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from travel_work where ' +
+        '(ID_ACT is null) and (ID_ESTIMATE in (' + SmIdStr + ')) order by travel_work_id';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'travel_work');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'TRAVEL_WORK_ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_TRWORK, IdConvert);
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ESTIMATE' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from worker_deartment where ' +
+        '(ID_ACT is null) and (ID_ESTIMATE in (' + SmIdStr + ')) order by worker_department_id';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'worker_deartment');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'WORKER_DEPARTMENT_ID' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_WORKDEP, IdConvert);
+            Continue;
+          end;
+
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ESTIMATE' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent.SQL.Text := 'Select * from summary_calculation where ' +
+        '(ID_ACT is null) and (ID_ESTIMATE in (' + SmIdStr + '))';
+      DM.qrDifferent.Active := True;
+
+      if not DM.qrDifferent.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'summary_calculation');
+
+      while not DM.qrDifferent.Eof do
+      begin
+        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        begin
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ESTIMATE' then
+          begin
+            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
+            Continue;
+          end;
+
+          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent.Fields[i].Value;
+        end;
+        DM.qrDifferent1.ExecSQL;
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      DM.qrDifferent1.UpdateTransaction.Commit;
       Result := True;
     except
-      on e: Exception do
-      begin
-        Application.ShowException(e);
-     //   DM.qrDifferent.UpdateTransaction.Rollback;
-      end;
+      DM.qrDifferent1.UpdateTransaction.Rollback;
     end;
   finally
-   // DM.qrDifferent.UpdateTransaction.Options.AutoCommit := True;
-   // DM.qrDifferent.UpdateTransaction.Options.AutoStart := True;
-   // DM.qrDifferent.UpdateTransaction.Options.AutoStop := True;
-  end;   }
-
+    DM.qrDifferent1.Transaction.Options.AutoCommit := AutoCommitValue;
+  end;
 end;
 
 end.
