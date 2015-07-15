@@ -1288,31 +1288,44 @@ procedure TFormCalculationEstimate.RecalcEstimate;
 var
   Key: Variant;
   e: TDataSetNotifyEvent;
+  AutoCommitValue: Boolean;
 begin
   qrRatesEx.DisableControls;
   e := qrRatesEx.AfterScroll;
   qrRatesEx.AfterScroll := nil;
+  AutoCommitValue :=DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
   try
     if CheckQrActiveEmpty(qrRatesEx) then
       Key := qrRatesEx.Fields[0].Value;
     qrRatesEx.First;
-    while not qrRatesEx.Eof do
-    begin
-      if qrRatesExID_TYPE_DATA.Value > 0 then
+    DM.Read.StartTransaction;
+    try
+      while not qrRatesEx.Eof do
       begin
-        FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
-          VarArrayOf([qrRatesExID_TABLES.Value, qrRatesExID_TYPE_DATA.Value]));
-        FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0, :ID_ACT)',
-          VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value, qrRatesExID_ACT.Value]));
+        if qrRatesExID_TYPE_DATA.Value > 0 then
+        begin
+          FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
+            VarArrayOf([qrRatesExID_TABLES.Value, qrRatesExID_TYPE_DATA.Value]));
+          FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0, :ID_ACT)',
+            VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value, qrRatesExID_ACT.Value]));
+        end;
+        qrRatesEx.Next;
       end;
-      qrRatesEx.Next;
+
+      if Key <> Null then
+        qrRatesEx.Locate(qrRatesEx.Fields[0].FieldName, Key, []);
+
+      DM.Read.Commit;
+    except
+      DM.Read.Rollback;
+      raise;
     end;
-    if Key <> Null then
-      qrRatesEx.Locate(qrRatesEx.Fields[0].FieldName, Key, []);
   finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+
     qrRatesEx.EnableControls;
     qrRatesEx.AfterScroll := e;
-    // qrRatesExAfterScroll(qrRatesEx);
     CloseOpen(qrRatesEx);
     CloseOpen(qrCalculations);
   end;
@@ -1871,8 +1884,7 @@ begin
 
   if ReCalcFlag then
   begin
-    qrTemp.SQL.Text := 'CALL CalcCalculationAll;';
-    qrTemp.ExecSQL;
+    RecalcEstimate;
     OutputDataToTable;
   end;
 end;
@@ -3051,8 +3063,7 @@ begin
     try
       if (frmReplace.ShowModal = mrYes) then
       begin
-        qrTemp.SQL.Text := 'CALL CalcCalculationAll;';
-        qrTemp.ExecSQL;
+        RecalcEstimate;
         OutputDataToTable;
       end;
     finally
@@ -3127,6 +3138,12 @@ var
 begin
   if not(qrRatesExID_TYPE_DATA.Value > 0) or Act then
     Exit;
+
+  if not grRatesEx.SelectedRows.CurrentRowSelected then
+  begin
+    grRatesEx.SelectedRows.Clear;
+    grRatesEx.SelectedRows.CurrentRowSelected := True;
+  end;
 
   DataObj := TSmClipData.Create;
   try
@@ -6052,7 +6069,8 @@ begin
     if qrRatesExADDED_COUNT.Value > 0 then
       Font.Color := clBlue;
 
-    if (grRatesEx.SelectedRows.CurrentRowSelected) and (grRatesEx.SelectedRows.Count > 1) then
+    if (grRatesEx.SelectedRows.CurrentRowSelected) and
+       (grRatesEx.SelectedRows.Count > 1) then
       Font.Color := clRed;
 
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
