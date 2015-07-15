@@ -78,11 +78,19 @@ function MyStrToFloatDef(Value: string; DefRes: Extended): Extended;
 function MyCurrToStr(Value: Currency): string;
 function MyStrToCurr(Value: string): Currency;
 
+// Функция смешания двух цветов
 function MixColors(FG, BG: TColor; T: byte): TColor;
+// Выполнение командной строки
+procedure Exec(const AParam: string);
 
 implementation
 
 { TThreadQuery }
+
+procedure Exec(const AParam: string);
+begin
+  ShellExecute(Application.Handle, nil, PChar(AParam), nil, nil, SW_SHOWMAXIMIZED);
+end;
 
 // Выполняет медленный SQL в отдельном потоке
 constructor TThreadQuery.Create(const ASQLText: String; AHandle: HWND);
@@ -533,51 +541,23 @@ begin
 end;
 
 function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
-{ var
-  qr: TFDQuery; }
 begin
-  {
-    qr := TFDQuery.Create(nil);
-    try
-    qr.Connection := DM.Connect;
-    qr.UpdateTransaction := DM.Write;
-    qr.Transaction := DM.Read;
-    qr.SQL.Text := 'SELECT `FN_getParamValue`(:inPARAM_CODE, :inMONTH, :inYEAR) AS res;';
-    qr.ParamByName('inPARAM_CODE').AsString := AParamName;
-    qr.ParamByName('inMONTH').AsInteger := AMonth;
-    qr.ParamByName('inYEAR').AsInteger := AYear;
-    qr.Active := True;
-    Result := qr.FieldByName('res').AsVariant;
-    qr.Active := False;
-    finally
-    FreeAndNil(qr);
-    end;
-  }
-  // Вместо всего вышеописанного (выгода очевидна!)):
   Result := FastSelectSQLOne('SELECT `FN_getParamValue`(:inPARAM_CODE, :inMONTH, :inYEAR)',
     VarArrayOf([AParamName, AMonth, AYear]));
 end;
 
 function UpdateIterator(ADestSmID, AIterator, AFromRate: Integer): Integer;
 begin
-  Result := 0;
-  DM.qrDifferent2.Active := False;
-  DM.qrDifferent2.SQL.Text := 'Select UpdateIterator(:IdEstimate, :AIterator, :AFromRate)';
-  DM.qrDifferent2.ParamByName('IdEstimate').Value := ADestSmID;
-  DM.qrDifferent2.ParamByName('AIterator').Value := AIterator;
-  DM.qrDifferent2.ParamByName('AFromRate').Value := AFromRate;
-  DM.qrDifferent2.Active := True;
-  if not DM.qrDifferent2.IsEmpty then
-    Result := DM.qrDifferent2.Fields[0].Value;
-  DM.qrDifferent2.Active := False;
-end;
-
-function MixBytes(FG, BG, TRANS: byte): byte;//змішує 1 канал двох кольорів з даданою прозорістю
-begin
-  Result := round(bg + (fg - bg)/255*TRANS);
+  Result := FastSelectSQLOne('Select UpdateIterator(:IdEstimate, :AIterator, :AFromRate)',
+    VarArrayOf([ADestSmID, AIterator, AFromRate]));
 end;
 
 function MixColors(FG, BG: TColor; T: byte): TColor;
+  function MixBytes(FG, BG, TRANS: byte): byte;
+  begin
+    Result := round(BG + (FG - BG) / 255 * TRANS);
+  end;
+
 var
   r, g, b: byte;
 begin

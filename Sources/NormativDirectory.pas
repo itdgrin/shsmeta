@@ -317,8 +317,7 @@ begin
       sLineBreak + 'которого не существует!'), '', MB_ICONWARNING + MB_OK + mb_TaskModal);
     Exit;
   end;
-
-  ShellExecute(fNormativDirectory.Handle, nil, PChar(Path), nil, nil, SW_SHOWMAXIMIZED);
+  Exec(Path);
 end;
 
 end.

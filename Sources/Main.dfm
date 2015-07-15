@@ -11017,6 +11017,10 @@
         ImageIndex = 20
         OnClick = N12Click
       end
+      object mN23: TMenuItem
+        Caption = #1055#1088#1086#1075#1085#1086#1079#1085#1099#1077' '#1080#1085#1076#1077#1082#1089#1099' '#1094#1077#1085
+        OnClick = mN23Click
+      end
     end
     object N7: TMenuItem
       Caption = #1056#1072#1089#1095#1077#1090#1099

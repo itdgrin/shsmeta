@@ -119,6 +119,7 @@ begin
         try
           with qrTemp do
           begin
+           //ONNEWRECORD TODO GetNewID
             Active := False;
             SQL.Clear;
             SQL.Add('SELECT GetNewID(:IDType)');

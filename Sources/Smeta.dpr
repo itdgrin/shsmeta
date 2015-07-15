@@ -107,7 +107,8 @@ uses
   CalcWorkerDepartment in 'CalcWorkerDepartment.pas' {fCalcWorkerDepartment},
   fFrameCalculator in 'fFrameCalculator.pas' {Calculator: TFrame},
   NormativDirectory in 'NormativDirectory.pas' {fNormativDirectory},
-  CardObjectContractorServices in 'CardObjectContractorServices.pas' {fCardObjectContractorServices};
+  CardObjectContractorServices in 'CardObjectContractorServices.pas' {fCardObjectContractorServices},
+  ForecastCostIndex in 'ForecastCostIndex.pas' {fForecastCostIndex};
 
 {$R *.res}
 var MHandle: THandle;

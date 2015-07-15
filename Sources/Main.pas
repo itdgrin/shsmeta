@@ -138,6 +138,7 @@ type
     Excel1: TMenuItem;
     EXCEL2: TMenuItem;
     Excel3: TMenuItem;
+    mN23: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -229,6 +230,7 @@ type
     procedure EXCEL3Click(Sender: TObject);
     procedure mN22Click(Sender: TObject);
     procedure N22Click(Sender: TObject);
+    procedure mN23Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -359,7 +361,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
-  NormativDirectory;
+  NormativDirectory, ForecastCostIndex;
 
 {$R *.dfm}
 
@@ -908,6 +910,13 @@ begin
   if (not Assigned(fNormativDirectory)) then
     fNormativDirectory := fNormativDirectory.Create(nil);
   fNormativDirectory.Show;
+end;
+
+procedure TFormMain.mN23Click(Sender: TObject);
+begin
+  if (not Assigned(fForecastCostIndex)) then
+    fForecastCostIndex := TfForecastCostIndex.Create(nil);
+  fForecastCostIndex.Show;
 end;
 
 // Расчет стоимости работ по объекту (графа С) v1.00 (Вадим)

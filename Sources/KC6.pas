@@ -450,7 +450,6 @@ end;
 
 procedure TFormKC6.EditKoefChange(Sender: TObject);
 var
-  i: Integer;
   fl: Boolean;
   Key: Variant;
 begin
