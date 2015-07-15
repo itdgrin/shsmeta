@@ -1155,6 +1155,10 @@ end;
 
 procedure TFormCalculationEstimate.SpeedButtonSSRClick(Sender: TObject);
 begin
+
+  ShellExecute (Handle, nil, 'report.exe', PChar('S'+INTTOSTR(FormCalculationEstimate.IdEstimate)),  PChar('REPOTS\report\') , SW_maximIZE);
+  EXIT;
+
   if SpeedButtonSSR.Tag = 0 then
   begin
     SpeedButtonSSR.Down := True;
