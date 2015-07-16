@@ -1,4 +1,4 @@
-object FormKC6: TFormKC6
+object fKC6: TfKC6
   Left = 0
   Top = 0
   ActiveControl = grData
@@ -47,7 +47,6 @@ object FormKC6: TFormKC6
     Caption = 'Panel3'
     ShowCaption = False
     TabOrder = 3
-    ExplicitWidth = 651
     DesignSize = (
       564
       41)
@@ -67,7 +66,6 @@ object FormKC6: TFormKC6
       ParentFont = False
       TabOrder = 0
       OnClick = Button1Click
-      ExplicitLeft = 437
     end
     object ButtonCancel: TButton
       Left = 456
@@ -78,7 +76,6 @@ object FormKC6: TFormKC6
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 1
       OnClick = ButtonCancelClick
-      ExplicitLeft = 543
     end
   end
   object PanelObject: TPanel
@@ -92,7 +89,6 @@ object FormKC6: TFormKC6
     ShowCaption = False
     TabOrder = 0
     TabStop = True
-    ExplicitWidth = 651
     DesignSize = (
       564
       25)
@@ -113,7 +109,6 @@ object FormKC6: TFormKC6
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 591
     end
   end
   object PanelTree: TPanel
@@ -126,7 +121,6 @@ object FormKC6: TFormKC6
     Caption = 'PanelTree'
     ShowCaption = False
     TabOrder = 1
-    ExplicitWidth = 651
     object tvEstimates: TJvDBTreeView
       Left = 0
       Top = 0
@@ -155,8 +149,6 @@ object FormKC6: TFormKC6
       RowSelect = True
       OnCustomDrawItem = tvEstimatesCustomDrawItem
       Mirror = False
-      ExplicitLeft = 272
-      ExplicitWidth = 292
     end
   end
   object PanelClient: TPanel
@@ -169,7 +161,6 @@ object FormKC6: TFormKC6
     Caption = 'PanelClient'
     ShowCaption = False
     TabOrder = 2
-    ExplicitWidth = 651
     object ImageSplitterBottom: TImage
       Left = 312
       Top = 106
@@ -204,7 +195,6 @@ object FormKC6: TFormKC6
       ParentFont = False
       ShowCaption = False
       TabOrder = 0
-      ExplicitWidth = 651
       DesignSize = (
         564
         25)
@@ -219,7 +209,7 @@ object FormKC6: TFormKC6
       object Label1: TLabel
         Left = 496
         Top = 4
-        Width = 65
+        Width = 60
         Height = 16
         Cursor = crHandPoint
         Anchors = [akTop, akRight]
@@ -261,7 +251,6 @@ object FormKC6: TFormKC6
       Caption = 'PanelBottom'
       ShowCaption = False
       TabOrder = 3
-      ExplicitWidth = 651
       object dbgrd1: TJvDBGrid
         Left = 0
         Top = 0
@@ -443,8 +432,6 @@ object FormKC6: TFormKC6
       ReadOnly = True
       ScrollBars = ssVertical
       TabOrder = 2
-      ExplicitTop = 100
-      ExplicitWidth = 651
     end
   end
   object qrOtherActs: TFDQuery

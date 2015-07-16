@@ -722,8 +722,8 @@ begin
 
   if not ActReadOnly then
   begin
-    FormKC6.caption := 'Выборка данных';
-    FormKC6.MyShow(IdObject);
+    fKC6.caption := 'Выборка данных';
+    fKC6.MyShow(IdObject);
   end;
 
   // Закрываем форму ожидания

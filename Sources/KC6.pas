@@ -17,7 +17,7 @@ type
   end;
 
 type
-  TFormKC6 = class(TForm)
+  TfKC6 = class(TForm)
 
     PanelObject: TPanel;
     LabelObject: TLabel;
@@ -112,7 +112,7 @@ type
   end;
 
 var
-  FormKC6: TFormKC6;
+  fKC6: TfKC6;
 
 implementation
 
@@ -124,7 +124,7 @@ uses Main, DataModule, DrawingTables, CalculationEstimate, Tools;
 procedure TSplitter.Paint();
 begin
   // inherited;
-  FormKC6.RepaintImagesForSplitters();
+  fKC6.RepaintImagesForSplitters();
 end;
 
 function CtrlDown: Boolean;
@@ -135,7 +135,7 @@ begin
   Result := ((State[vk_Control] and 128) <> 0);
 end;
 
-procedure TFormKC6.FormCreate(Sender: TObject);
+procedure TfKC6.FormCreate(Sender: TObject);
 begin
   // Загружаем изображения для сплиттеров
   with DM.ImageListHorozontalDots do
@@ -150,12 +150,12 @@ begin
   LoadDBGridSettings(grData);
 end;
 
-procedure TFormKC6.FormResize(Sender: TObject);
+procedure TfKC6.FormResize(Sender: TObject);
 begin
   FixDBGridColumnsWidth(dbgrd1);
 end;
 
-procedure TFormKC6.FormShow(Sender: TObject);
+procedure TfKC6.FormShow(Sender: TObject);
 begin
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
@@ -164,7 +164,7 @@ begin
   Left := ClientWidth div 2;
 end;
 
-procedure TFormKC6.MyShow(const vIdObject: Integer);
+procedure TfKC6.MyShow(const vIdObject: Integer);
 begin
   IdObject := vIdObject;
   CloseOpen(qrData);
@@ -174,7 +174,7 @@ begin
   Show;
 end;
 
-procedure TFormKC6.qrDataAfterOpen(DataSet: TDataSet);
+procedure TfKC6.qrDataAfterOpen(DataSet: TDataSet);
 var
   NumPP: Integer;
   Key: Variant;
@@ -207,7 +207,7 @@ begin
   end;
 end;
 
-procedure TFormKC6.qrDataAfterScroll(DataSet: TDataSet);
+procedure TfKC6.qrDataAfterScroll(DataSet: TDataSet);
 begin
   // Заполнение смежных актов
   qrOtherActs.Active := False;
@@ -224,7 +224,7 @@ begin
   end;
 end;
 
-procedure TFormKC6.qrDataBeforeOpen(DataSet: TDataSet);
+procedure TfKC6.qrDataBeforeOpen(DataSet: TDataSet);
 begin
   if not Assigned(FormCalculationEstimate) then
     Exit;
@@ -232,7 +232,7 @@ begin
   qrData.ParamByName('ID_ACT').Value := FormCalculationEstimate.IdAct;
 end;
 
-procedure TFormKC6.qrDataCalcFields(DataSet: TDataSet);
+procedure TfKC6.qrDataCalcFields(DataSet: TDataSet);
 begin
   if qrDataID_TYPE_DATA.Value > 0 then
     qrDataOBJ_COUNT_OUT.Value := qrDataOBJ_COUNT.AsFloat - qrDataCntDONE.AsFloat - qrDataOBJ_COUNT_IN.AsFloat;
@@ -246,7 +246,7 @@ begin
   qrDataCHECKED.OnChange := qrDataCHECKEDChange;
 end;
 
-procedure TFormKC6.qrDataCHECKEDChange(Sender: TField);
+procedure TfKC6.qrDataCHECKEDChange(Sender: TField);
 begin
   if qrDataCHECKED.Value then
     qrDataSELECTED.Value := 1
@@ -254,23 +254,23 @@ begin
     qrDataSELECTED.Value := 0;
 end;
 
-procedure TFormKC6.qrDataOBJ_COUNT_INChange(Sender: TField);
+procedure TfKC6.qrDataOBJ_COUNT_INChange(Sender: TField);
 begin
   if qrDataOBJ_COUNT_IN.Value <> 0 then
     qrDataSELECTED.Value := 1;
 end;
 
-procedure TFormKC6.qrOtherActsCalcFields(DataSet: TDataSet);
+procedure TfKC6.qrOtherActsCalcFields(DataSet: TDataSet);
 begin
   qrOtherActsNumber.Value := DataSet.RecNo + 1;
 end;
 
-procedure TFormKC6.qrTreeDataBeforeOpen(DataSet: TDataSet);
+procedure TfKC6.qrTreeDataBeforeOpen(DataSet: TDataSet);
 begin
   qrTreeData.ParamByName('OBJ_ID').Value := IdObject;
 end;
 
-procedure TFormKC6.RepaintImagesForSplitters();
+procedure TfKC6.RepaintImagesForSplitters();
 begin
   ImageSplitterTop.Top := splTop.Top;
   ImageSplitterTop.Left := splTop.Left + (splTop.Width - ImageSplitterTop.Width) div 2;
@@ -279,7 +279,7 @@ begin
   ImageSplitterBottom.Left := splBottom.Left + (splBottom.Width - ImageSplitterBottom.Width) div 2;
 end;
 
-procedure TFormKC6.Button1Click(Sender: TObject);
+procedure TfKC6.Button1Click(Sender: TObject);
 var
   Key: Variant;
 begin
@@ -321,12 +321,12 @@ begin
   FormCalculationEstimate.OutputDataToTable;
 end;
 
-procedure TFormKC6.ButtonCancelClick(Sender: TObject);
+procedure TfKC6.ButtonCancelClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFormKC6.GetNameObject;
+procedure TfKC6.GetNameObject;
 begin
   try
     with qrTemp do
@@ -347,13 +347,13 @@ begin
   end;
 end;
 
-procedure TFormKC6.grDataCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
+procedure TfKC6.grDataCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
 begin
   AllowEdit := (not Grid.Columns[Grid.SelectedIndex].ReadOnly and (qrDataID_TYPE_DATA.Value > 0)) or
     (Grid.SelectedField.FieldName = 'CHECKED');
 end;
 
-procedure TFormKC6.grDataDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+procedure TfKC6.grDataDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
   State: TGridDrawState);
 begin
   with grData.Canvas do
@@ -392,7 +392,7 @@ begin
   grData.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-procedure TFormKC6.grDataKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TfKC6.grDataKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if (Key = VK_INSERT) or (Key = VK_SPACE) then
   begin
@@ -402,13 +402,13 @@ begin
   end;
 end;
 
-procedure TFormKC6.grDataKeyPress(Sender: TObject; var Key: Char);
+procedure TfKC6.grDataKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = ',' then
     Key := '.';
 end;
 
-procedure TFormKC6.grDataMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TfKC6.grDataMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if CtrlDown then
   begin
@@ -417,17 +417,17 @@ begin
   end;
 end;
 
-procedure TFormKC6.Label1Click(Sender: TObject);
+procedure TfKC6.Label1Click(Sender: TObject);
 begin
   EditKoef.Value := 0;
 end;
 
-procedure TFormKC6.tvEstimatesChange(Sender: TObject; Node: TTreeNode);
+procedure TfKC6.tvEstimatesChange(Sender: TObject; Node: TTreeNode);
 begin
   qrData.Locate('SM_ID', qrTreeData.FieldByName('SM_ID').AsInteger, []);
 end;
 
-procedure TFormKC6.tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
+procedure TfKC6.tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
   State: TCustomDrawState; var DefaultDraw: Boolean);
 begin
   if Node.Selected then
@@ -437,7 +437,7 @@ begin
   end
 end;
 
-procedure TFormKC6.CopyToAct(const vIdEstimate, vIdTypeData, vIdTables: Integer; const vCnt: Double;
+procedure TfKC6.CopyToAct(const vIdEstimate, vIdTypeData, vIdTables: Integer; const vCnt: Double;
   const vIdAct: Integer);
 begin
   try
@@ -459,7 +459,7 @@ begin
   end;
 end;
 
-procedure TFormKC6.EditKoefChange(Sender: TObject);
+procedure TfKC6.EditKoefChange(Sender: TObject);
 var
   fl: Boolean;
   Key: Variant;

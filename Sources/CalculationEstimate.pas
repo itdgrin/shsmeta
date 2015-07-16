@@ -1581,7 +1581,7 @@ begin
   begin
     if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт сметы',
       MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
-      FormKC6.MyShow(IdObject);
+      fKC6.MyShow(IdObject);
   end
   // Для сметы
   else

@@ -20,7 +20,7 @@ uses
   CardObject in 'CardObject.pas' {FormCardObject},
   ProgramSettings in 'ProgramSettings.pas' {FormProgramSettings},
   Waiting in 'Waiting.pas' {FormWaiting},
-  KC6 in 'KC6.pas' {FormKC6},
+  KC6 in 'KC6.pas' {fKC6},
   ActC6 in 'ActC6.pas' {FormActC6},
   WorkSchedule in 'WorkSchedule.pas' {FormWorkSchedule},
   HelpC3 in 'HelpC3.pas' {FormHelpC3},
@@ -151,7 +151,7 @@ begin
   Application.CreateForm(TFormCardSectionsEstimates, FormCardSectionsEstimates);
   Application.CreateForm(TFormCardTypesWorks, FormCardTypesWorks);
   Application.CreateForm(TFormCoefficientOrders, FormCoefficientOrders);
-  Application.CreateForm(TFormKC6, FormKC6);
+  Application.CreateForm(TfKC6, fKC6);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
   Application.CreateForm(TFormCardPartsEstimates, FormCardPartsEstimates);
