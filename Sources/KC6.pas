@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   Vcl.Samples.Spin, Vcl.Mask, System.UITypes, JvDBGrid, JvExDBGrids, Vcl.DBCtrls, JvComponentBase,
-  JvFormPlacement;
+  JvFormPlacement, JvExComCtrls, JvDBTreeView;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -24,7 +24,6 @@ type
     EditObject: TEdit;
 
     PanelTree: TPanel;
-    TreeView: TTreeView;
 
     PanelKoef: TPanel;
     LabelKoef: TLabel;
@@ -70,6 +69,9 @@ type
     qrDataOBJ_COUNT: TFloatField;
     qrDataCntDONE: TFloatField;
     qrDataOBJ_COUNT_IN: TFloatField;
+    qrTreeData: TFDQuery;
+    dsTreeData: TDataSource;
+    tvEstimates: TJvDBTreeView;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -79,12 +81,9 @@ type
     procedure ButtonCancelClick(Sender: TObject);
 
     procedure GetNameObject;
-    procedure TreeViewChange(Sender: TObject; Node: TTreeNode);
     procedure Button1Click(Sender: TObject);
     procedure CopyToAct(const vIdEstimate, vIdTypeData, vIdTables: Integer; const vCnt: Double;
       const vIdAct: Integer);
-    procedure TreeViewAdvancedCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
-      State: TCustomDrawState; Stage: TCustomDrawStage; var PaintImages, DefaultDraw: Boolean);
     procedure Label1Click(Sender: TObject);
     procedure EditKoefChange(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -101,9 +100,12 @@ type
     procedure grDataKeyPress(Sender: TObject; var Key: Char);
     procedure grDataMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure qrDataOBJ_COUNT_INChange(Sender: TField);
+    procedure qrTreeDataBeforeOpen(DataSet: TDataSet);
+    procedure tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
+      var DefaultDraw: Boolean);
+    procedure tvEstimatesChange(Sender: TObject; Node: TTreeNode);
   private
     IdObject: Integer;
-    IdEstimateForSelection: Integer;
   public const
     Indent = '     ';
 
@@ -166,6 +168,8 @@ procedure TFormKC6.MyShow(const vIdObject: Integer);
 begin
   IdObject := vIdObject;
   CloseOpen(qrData);
+  CloseOpen(qrTreeData);
+  tvEstimates.FullExpand;
   GetNameObject;
   Show;
 end;
@@ -205,7 +209,6 @@ end;
 
 procedure TFormKC6.qrDataAfterScroll(DataSet: TDataSet);
 begin
-  IdEstimateForSelection := Integer(qrDataSM_ID.Value);
   // Заполнение смежных актов
   qrOtherActs.Active := False;
   qrOtherActs.ParamByName('idestimate').AsInteger := IdObject;
@@ -214,8 +217,11 @@ begin
   qrOtherActs.Last;
   qrOtherActs.First;
   dbgrd1.Repaint;
-
-  TreeView.Repaint;
+  if CheckQrActiveEmpty(qrTreeData) then
+  begin
+    qrTreeData.Locate('SM_ID', qrData.FieldByName('SM_ID').Value, []);
+    tvEstimates.Repaint;
+  end;
 end;
 
 procedure TFormKC6.qrDataBeforeOpen(DataSet: TDataSet);
@@ -257,6 +263,11 @@ end;
 procedure TFormKC6.qrOtherActsCalcFields(DataSet: TDataSet);
 begin
   qrOtherActsNumber.Value := DataSet.RecNo + 1;
+end;
+
+procedure TFormKC6.qrTreeDataBeforeOpen(DataSet: TDataSet);
+begin
+  qrTreeData.ParamByName('OBJ_ID').Value := IdObject;
 end;
 
 procedure TFormKC6.RepaintImagesForSplitters();
@@ -411,19 +422,19 @@ begin
   EditKoef.Value := 0;
 end;
 
-procedure TFormKC6.TreeViewAdvancedCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
-  State: TCustomDrawState; Stage: TCustomDrawStage; var PaintImages, DefaultDraw: Boolean);
+procedure TFormKC6.tvEstimatesChange(Sender: TObject; Node: TTreeNode);
 begin
-  if Integer(Node.Data) = IdEstimateForSelection then
+  qrData.Locate('SM_ID', qrTreeData.FieldByName('SM_ID').AsInteger, []);
+end;
+
+procedure TFormKC6.tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
+  State: TCustomDrawState; var DefaultDraw: Boolean);
+begin
+  if Node.Selected then
   begin
     Sender.Canvas.Font.Color := clBlue;
     Sender.Canvas.Font.Style := Sender.Canvas.Font.Style + [fsItalic];
-  end;
-end;
-
-procedure TFormKC6.TreeViewChange(Sender: TObject; Node: TTreeNode);
-begin
-  qrData.Locate('SM_ID', Integer(TreeView.Selected.Data), []);
+  end
 end;
 
 procedure TFormKC6.CopyToAct(const vIdEstimate, vIdTypeData, vIdTables: Integer; const vCnt: Double;

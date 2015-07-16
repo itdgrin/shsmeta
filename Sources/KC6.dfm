@@ -127,18 +127,36 @@ object FormKC6: TFormKC6
     ShowCaption = False
     TabOrder = 1
     ExplicitWidth = 651
-    object TreeView: TTreeView
+    object tvEstimates: TJvDBTreeView
       Left = 0
       Top = 0
       Width = 564
       Height = 100
-      Align = alClient
-      Indent = 19
+      DataSource = dsTreeData
+      MasterField = 'SM_ID'
+      DetailField = 'PARENT'
+      ItemField = 'NAME'
+      StartMasterValue = '0'
+      UseFilter = True
+      PersistentNode = True
       ReadOnly = True
+      DragMode = dmAutomatic
+      HideSelection = False
+      Indent = 19
+      OnChange = tvEstimatesChange
+      Align = alClient
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
       TabOrder = 0
-      OnAdvancedCustomDrawItem = TreeViewAdvancedCustomDrawItem
-      OnChange = TreeViewChange
-      ExplicitWidth = 651
+      ParentFont = False
+      RowSelect = True
+      OnCustomDrawItem = tvEstimatesCustomDrawItem
+      Mirror = False
+      ExplicitLeft = 272
+      ExplicitWidth = 292
     end
   end
   object PanelClient: TPanel
@@ -191,22 +209,21 @@ object FormKC6: TFormKC6
         564
         25)
       object LabelKoef: TLabel
-        Left = 358
+        Left = 305
         Top = 6
         Width = 115
         Height = 13
         Anchors = [akTop, akRight]
         Caption = #1055#1088#1086#1094#1077#1085#1090' '#1087#1077#1088#1077#1088#1072#1089#1095#1105#1090#1072':'
-        ExplicitLeft = 455
       end
       object Label1: TLabel
-        Left = 549
+        Left = 496
         Top = 4
-        Width = 8
+        Width = 65
         Height = 16
         Cursor = crHandPoint
         Anchors = [akTop, akRight]
-        Caption = 'C'
+        Caption = #1057#1073#1088#1086#1089#1080#1090#1100
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clHotLight
         Font.Height = -13
@@ -214,10 +231,9 @@ object FormKC6: TFormKC6
         Font.Style = [fsBold, fsUnderline]
         ParentFont = False
         OnClick = Label1Click
-        ExplicitLeft = 646
       end
       object EditKoef: TSpinEdit
-        Left = 479
+        Left = 426
         Top = 1
         Width = 64
         Height = 22
@@ -233,7 +249,6 @@ object FormKC6: TFormKC6
         TabOrder = 0
         Value = 0
         OnChange = EditKoefChange
-        ExplicitLeft = 566
       end
     end
     object PanelBottom: TPanel
@@ -350,6 +365,14 @@ object FormKC6: TFormKC6
       Columns = <
         item
           Expanded = False
+          FieldName = 'CHECKED'
+          Title.Alignment = taCenter
+          Title.Caption = #1042' '#1072#1082#1090
+          Width = 36
+          Visible = True
+        end
+        item
+          Expanded = False
           FieldName = 'ITERATOR'
           ReadOnly = True
           Title.Alignment = taCenter
@@ -406,14 +429,6 @@ object FormKC6: TFormKC6
           Title.Alignment = taCenter
           Title.Caption = #1054#1089#1090#1072#1090#1086#1082
           Width = 68
-          Visible = True
-        end
-        item
-          Expanded = False
-          FieldName = 'CHECKED'
-          Title.Alignment = taCenter
-          Title.Caption = #1042' '#1072#1082#1090
-          Width = 36
           Visible = True
         end>
     end
@@ -853,5 +868,54 @@ object FormKC6: TFormKC6
     StoredValues = <>
     Left = 32
     Top = 88
+  end
+  object qrTreeData: TFDQuery
+    BeforeOpen = qrTreeDataBeforeOpen
+    MasterFields = 'obj_id'
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    SQL.Strings = (
+      
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME, IF(' +
+        'DELETED=1, "-", "")) as NAME,'
+      '       PARENT_ID as PARENT, DELETED'
+      'FROM smetasourcedata'
+      'WHERE SM_TYPE=2 AND '
+      '      OBJ_ID=:OBJ_ID'
+      '      AND ((DELETED=0) OR (:SHOW_DELETED=1))'
+      'UNION ALL'
+      
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME, IF(' +
+        'DELETED=1, "-", "")) as NAME,'
+      '       PARENT_ID as PARENT, DELETED '
+      'FROM smetasourcedata'
+      'WHERE SM_TYPE<>2 AND '
+      '      OBJ_ID=:OBJ_ID'
+      '      AND ((DELETED=0) OR (:SHOW_DELETED=1))'
+      'ORDER BY NAME')
+    Left = 217
+    Top = 32
+    ParamData = <
+      item
+        Name = 'OBJ_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Size = 10
+        Value = Null
+      end
+      item
+        Name = 'SHOW_DELETED'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 0
+      end>
+  end
+  object dsTreeData: TDataSource
+    DataSet = qrTreeData
+    Left = 216
+    Top = 80
   end
 end

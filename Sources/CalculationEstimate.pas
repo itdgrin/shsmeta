@@ -1156,8 +1156,9 @@ end;
 procedure TFormCalculationEstimate.SpeedButtonSSRClick(Sender: TObject);
 begin
 
-  ShellExecute (Handle, nil, 'report.exe', PChar('S'+INTTOSTR(FormCalculationEstimate.IdEstimate)),  PChar('REPOTS\report\') , SW_maximIZE);
-  EXIT;
+  ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+    PChar('REPOTS\report\'), SW_maximIZE);
+  Exit;
 
   if SpeedButtonSSR.Tag = 0 then
   begin
@@ -1293,7 +1294,7 @@ begin
   qrRatesEx.DisableControls;
   e := qrRatesEx.AfterScroll;
   qrRatesEx.AfterScroll := nil;
-  AutoCommitValue :=DM.Read.Options.AutoCommit;
+  AutoCommitValue := DM.Read.Options.AutoCommit;
   DM.Read.Options.AutoCommit := False;
   try
     if CheckQrActiveEmpty(qrRatesEx) then
@@ -1308,7 +1309,8 @@ begin
           FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
             VarArrayOf([qrRatesExID_TABLES.Value, qrRatesExID_TYPE_DATA.Value]));
           FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0, :ID_ACT)',
-            VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value, qrRatesExID_ACT.Value]));
+            VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value,
+            qrRatesExID_ACT.Value]));
         end;
         qrRatesEx.Next;
       end;
@@ -2988,7 +2990,7 @@ begin
         begin
           NewCount := 0;
           qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp ' + 'WHERE ID = ' +
-            IntToStr(qrRatesExID_TABLES.AsInteger);
+            INTTOSTR(qrRatesExID_TABLES.AsInteger);
           qrTemp.Active := True;
           if not qrTemp.Eof then
             NewCount := qrTemp.Fields[0].Value;
@@ -3876,7 +3878,7 @@ begin
 
   qrTemp.SQL.Clear;
   qrTemp.SQL.Add('SELECT year,monat,DATE_BEG FROM stavka WHERE stavka_id = ' +
-    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ')');
+    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + INTTOSTR(qrRatesExSM_ID.AsInteger) + ')');
   qrTemp.Active := True;
   Month1 := qrTemp.FieldByName('monat').AsInteger;
   Year1 := qrTemp.FieldByName('year').AsInteger;
@@ -3888,7 +3890,7 @@ begin
     begin
 
       SQL.Clear;
-      SQL.Add('SELECT region_id FROM objcards WHERE obj_id = ' + IntToStr(IdObject));
+      SQL.Add('SELECT region_id FROM objcards WHERE obj_id = ' + INTTOSTR(IdObject));
       Active := True;
       if not Eof then
       begin
@@ -3904,8 +3906,8 @@ begin
         ' as "PriceNoVAT" ' + 'FROM materialnorm as TMatNorm ' +
         'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
         'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
-        '(TMatCoast.material_id = TMatNorm.material_id) and (monat = ' + IntToStr(Month1) + ') and (year = ' +
-        IntToStr(Year1) + ') WHERE (TMatNorm.normativ_id = ' + IntToStr(vRateId) + ') order by 1';
+        '(TMatCoast.material_id = TMatNorm.material_id) and (monat = ' + INTTOSTR(Month1) + ') and (year = ' +
+        INTTOSTR(Year1) + ') WHERE (TMatNorm.normativ_id = ' + INTTOSTR(vRateId) + ') order by 1';
       Active := True;
 
       Filtered := False;
@@ -4028,8 +4030,8 @@ begin
         'FROM mechanizmnorm as mechnorm ' +
         'JOIN mechanizm as mech ON mechnorm.mechanizm_id = mech.mechanizm_id ' +
         'JOIN units ON mech.unit_id = units.unit_id ' + 'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
-        '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and  ' + '(monat = ' + IntToStr(Month1) +
-        ') and (year = ' + IntToStr(Year1) + ') WHERE (mechnorm.normativ_id = ' + IntToStr(vRateId) +
+        '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and  ' + '(monat = ' + INTTOSTR(Month1) +
+        ') and (year = ' + INTTOSTR(Year1) + ') WHERE (mechnorm.normativ_id = ' + INTTOSTR(vRateId) +
         ') order by 1');
 
       Active := True;
@@ -4326,7 +4328,7 @@ begin
             Active := False;
             SQL.Clear;
             SQL.Add('DELETE FROM data_row_temp WHERE (ID = ' +
-              IntToStr(qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger) + ');');
+              INTTOSTR(qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger) + ');');
             ExecSQL;
           end;
         except
@@ -4484,8 +4486,8 @@ begin
   // Открытие датасета для заполнения таблицы материалов
   qrMaterial.Active := False;
   // Заполняет materials_temp
-  qrMaterial.SQL.Text := 'call GetMaterials(' + IntToStr(fType) + ',' + IntToStr(fID) + ',' +
-    IntToStr(G_SHOWMODE) + ')';
+  qrMaterial.SQL.Text := 'call GetMaterials(' + INTTOSTR(fType) + ',' + INTTOSTR(fID) + ',' +
+    INTTOSTR(G_SHOWMODE) + ')';
   qrMaterial.ExecSQL;
 
   qrMaterial.Active := False;
@@ -4558,7 +4560,7 @@ begin
   qrStartup.SQL.Text := 'select RATE_CODE, RATE_CAPTION, RATE_COUNT, RATE_UNIT ' +
     'from data_row_temp as dm LEFT JOIN card_rate_temp as cr ' +
     'ON (dm.ID_TYPE_DATA = 1) AND (cr.ID = dm.ID_TABLES) ' + 'WHERE (cr.RATE_CODE LIKE "%' + LikeText +
-    '%") and (dm.ID_ESTIMATE = ' + IntToStr(qrRatesExSM_ID.AsInteger) + ') and ' + '(dm.ID_ACT is NULL)';
+    '%") and (dm.ID_ESTIMATE = ' + INTTOSTR(qrRatesExSM_ID.AsInteger) + ') and ' + '(dm.ID_ACT is NULL)';
   qrStartup.Active := True;
 end;
 
@@ -4583,8 +4585,8 @@ begin
   // Открытие датасета для заполнения таблицы материалов
   qrMechanizm.Active := False;
   // Заполняет Mechanizms_temp
-  qrMechanizm.SQL.Text := 'call GetMechanizms(' + IntToStr(fType) + ',' + IntToStr(fID) + ',' +
-    IntToStr(G_SHOWMODE) + ')';
+  qrMechanizm.SQL.Text := 'call GetMechanizms(' + INTTOSTR(fType) + ',' + INTTOSTR(fID) + ',' +
+    INTTOSTR(G_SHOWMODE) + ')';
   qrMechanizm.ExecSQL;
 
   qrMechanizm.Active := False;
@@ -4743,7 +4745,7 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('SELECT objstroj.obj_region as "IdRegion" FROM objcards, objstroj ' +
-        'WHERE objcards.stroj_id = objstroj.stroj_id and obj_id = ' + IntToStr(IdObject) + ';');
+        'WHERE objcards.stroj_id = objstroj.stroj_id and obj_id = ' + INTTOSTR(IdObject) + ';');
       Active := True;
 
       // Получаем регион (1-город, 2-село, 3-минск)
@@ -4755,11 +4757,11 @@ begin
       SQL.Clear;
 
       if IdRegion = 3 then
-        StrQuery := 'SELECT stavka_m_rab as "RateWorker" FROM stavka WHERE monat = ' + IntToStr(MonthEstimate)
-          + ' and year = ' + IntToStr(YearEstimate) + ';'
+        StrQuery := 'SELECT stavka_m_rab as "RateWorker" FROM stavka WHERE monat = ' + INTTOSTR(MonthEstimate)
+          + ' and year = ' + INTTOSTR(YearEstimate) + ';'
       else
         StrQuery := 'SELECT stavka_rb_rab as "RateWorker" FROM stavka WHERE monat = ' +
-          IntToStr(MonthEstimate) + ' and year = ' + IntToStr(YearEstimate) + ';';
+          INTTOSTR(MonthEstimate) + ' and year = ' + INTTOSTR(YearEstimate) + ';';
 
       SQL.Add(StrQuery);
       Active := True;
@@ -4935,16 +4937,32 @@ begin
   try
     with qrTemp do
     begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT IFNULL(monat, 0) as "Month", IFNULL(year, 0) as "Year" ' +
-        'FROM stavka WHERE stavka_id = (SELECT stavka_id From smetasourcedata ' + 'WHERE sm_id = ' +
-        IntToStr(IdEstimate) + ');');
-      Active := True;
+      if Act then
+      begin
+        Active := False;
+        SQL.Clear;
+        SQL.Add('select year(ca.`DATE`) as YEAR, MONTH(ca.`DATE`) AS MONTH FROM `card_acts` ca WHERE ca.`ID`='
+          + INTTOSTR(IdAct) + ';');
+        Active := True;
 
-      MonthEstimate := FieldByName('Month').AsInteger;
-      YearEstimate := FieldByName('Year').AsInteger;
-      Active := False;
+        MonthEstimate := FieldByName('MONTH').AsInteger;
+        YearEstimate := FieldByName('YEAR').AsInteger;
+        Active := False;
+      end
+      else
+      begin
+        Active := False;
+        SQL.Clear;
+        SQL.Add('SELECT IFNULL(monat, 0) as "Month", IFNULL(year, 0) as "Year" ' +
+          'FROM stavka WHERE stavka_id = (SELECT stavka_id From smetasourcedata ' + 'WHERE sm_id = ' +
+          INTTOSTR(IdEstimate) + ');');
+        Active := True;
+
+        MonthEstimate := FieldByName('Month').AsInteger;
+        YearEstimate := FieldByName('Year').AsInteger;
+        Active := False;
+      end;
+
     end;
   except
     on e: Exception do
@@ -6069,8 +6087,7 @@ begin
     if qrRatesExADDED_COUNT.Value > 0 then
       Font.Color := clBlue;
 
-    if (grRatesEx.SelectedRows.CurrentRowSelected) and
-       (grRatesEx.SelectedRows.Count > 1) then
+    if (grRatesEx.SelectedRows.CurrentRowSelected) and (grRatesEx.SelectedRows.Count > 1) then
       Font.Color := clRed;
 
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
