@@ -5572,14 +5572,18 @@ begin
           grRatesEx.DataSource.DataSet.Bookmark := Items[X];
           qrTemp.Active := False;
           qrTemp.SQL.Text :=
-            'INSERT INTO calculation_coef_temp(calculation_coef_id, id_estimate,id_type_data,id_owner,id_coef,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB)'#13
-            + 'SELECT GetNewID(:IDType), :id_estimate, :id_type_data, :id_owner, coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13
+            'INSERT INTO calculation_coef_temp(calculation_coef_id, id_act, id_estimate,id_type_data,id_owner,id_coef,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB)'#13
+            + 'SELECT GetNewID(:IDType), :id_act, :id_estimate, :id_type_data, :id_owner, coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13
             + 'FROM coef WHERE coef.coef_id=:coef_id';
           qrTemp.ParamByName('IDType').Value := C_ID_SMCOEF;
           qrTemp.ParamByName('id_estimate').AsInteger := qrRatesExSM_ID.Value;
           qrTemp.ParamByName('id_owner').AsInteger := qrRatesExID_TABLES.AsInteger;
           qrTemp.ParamByName('id_type_data').AsInteger := qrRatesExID_TYPE_DATA.AsInteger;
           qrTemp.ParamByName('coef_id').AsInteger := coef_id;
+          if Act then
+            qrTemp.ParamByName('id_act').AsInteger := IdAct
+          else
+            qrTemp.ParamByName('id_act').Value := Null;
           qrTemp.ExecSQL;
         end;
       end;

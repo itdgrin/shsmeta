@@ -304,6 +304,8 @@ begin
     qrTemp.ExecSQL;
     Key := strngfldDataSORT_ID.Value;
     qrData.DisableControls;
+    qrData.AfterScroll := nil;
+    //qrData.OnCalcFields := nil;
     try
       qrData.First;
       while not qrData.Eof do
@@ -316,6 +318,8 @@ begin
     finally
       qrData.Locate('SORT_ID', Key, []);
       qrData.EnableControls;
+      qrData.AfterScroll := qrDataAfterScroll;
+      //qrData.OnCalcFields := qrDataCalcFields;
     end;
   end;
   FormCalculationEstimate.OutputDataToTable;
