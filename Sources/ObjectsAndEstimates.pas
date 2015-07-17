@@ -697,7 +697,7 @@ begin
   Application.ProcessMessages;
 
   if (not Assigned(FormCalculationEstimate)) then
-    FormCalculationEstimate := TFormCalculationEstimate.Create(FormMain);
+    FormCalculationEstimate := TFormCalculationEstimate.Create(True);
 
   FormCalculationEstimate.CreateTempTables;
   FormCalculationEstimate.IDAct := ActID;
@@ -715,7 +715,6 @@ begin
     FormCalculationEstimate.IdObject := IdObject;
     FormCalculationEstimate.IdEstimate := IdEstimate;
     FormCalculationEstimate.SetActReadOnly(ActReadOnly);
-    FormCalculationEstimate.Act := True;
 
     FormCalculationEstimate.OpenAllData;
   end;
@@ -1078,7 +1077,7 @@ begin
   Application.ProcessMessages;
 
   if (not Assigned(FormCalculationEstimate)) then
-    FormCalculationEstimate := TFormCalculationEstimate.Create(FormMain);
+    FormCalculationEstimate := TFormCalculationEstimate.Create(False);
 
   with qrObjects do
   begin

@@ -256,7 +256,7 @@ end;
 procedure TfNormativDirectory.tvMainDblClick(Sender: TObject);
 var
   NumberNormativ: String;
-  FirstChar: Char;
+  FirstChar: String;
   Path: String;
 begin
   if Assigned(FormReferenceData) then
@@ -295,7 +295,8 @@ begin
     NumberNormativ := 'C8_p2'
   else
   begin
-    FirstChar := NumberNormativ[1];
+    if NumberNormativ <> '' then
+      FirstChar := NumberNormativ[1];
 
     Delete(NumberNormativ, 1, 1);
 

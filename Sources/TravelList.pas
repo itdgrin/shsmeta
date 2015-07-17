@@ -7,7 +7,8 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Grids,
-  Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools, Main, Vcl.ComCtrls, JvComponentBase, JvFormPlacement;
+  Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools, Main, Vcl.ComCtrls, JvComponentBase, JvFormPlacement,
+  System.UITypes;
 
 type
   TfTravelList = class(TForm)
@@ -45,7 +46,6 @@ type
     procedure qrTravelNewRecord(DataSet: TDataSet);
     procedure pgc1Change(Sender: TObject);
     procedure qrTravelAfterScroll(DataSet: TDataSet);
-    procedure FormShow(Sender: TObject);
     procedure qrTravelBeforePost(DataSet: TDataSet);
     procedure qrTravelAfterPost(DataSet: TDataSet);
     procedure qrTravelWorkAfterScroll(DataSet: TDataSet);
@@ -54,10 +54,18 @@ type
     procedure qrWorkerDepartmentAfterScroll(DataSet: TDataSet);
     procedure qrWorkerDepartmentAfterPost(DataSet: TDataSet);
     procedure qrWorkerDepartmentBeforePost(DataSet: TDataSet);
+    procedure grTravelDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
+    procedure grTravelWorkDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+      Column: TColumn; State: TGridDrawState);
+    procedure grWorkerDepartmentDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+      Column: TColumn; State: TGridDrawState);
+    procedure qrTravelAfterOpen(DataSet: TDataSet);
+    procedure qrTravelWorkAfterOpen(DataSet: TDataSet);
+    procedure qrWorkerDepartmentAfterOpen(DataSet: TDataSet);
   private
   public
     defIdEstimate, defIdAct: Integer; // ид сметы и акта по умолчанию
-    procedure LocateObject(Object_ID: Integer);
   end;
 
 var
@@ -68,7 +76,7 @@ implementation
 {$R *.dfm}
 
 uses CalcTravel, CalcTravelWork, CalcWorkerDepartment, DataModule,
-  GlobsAndConst;
+  GlobsAndConst, ObjectsAndEstimates, CalculationEstimate;
 
 procedure TfTravelList.FormActivate(Sender: TObject);
 begin
@@ -93,14 +101,32 @@ begin
 end;
 
 procedure TfTravelList.FormCreate(Sender: TObject);
+  procedure LocateObject(Object_ID: Integer);
+  begin
+    dblkcbbNAME.KeyValue := Object_ID;
+  end;
+
 begin
   // —оздаЄм кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
 
+  qrObject.Active := True;
+
+  if Assigned(FormObjectsAndEstimates) then
+  begin
+    LocateObject(FormObjectsAndEstimates.getCurObject);
+    defIdEstimate := FormObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger;
+  end;
+  if Assigned(FormCalculationEstimate) then
+  begin
+    LocateObject(FormCalculationEstimate.IdObject);
+    defIdAct := FormCalculationEstimate.IdAct;
+    defIdEstimate := FormCalculationEstimate.IdEstimate;
+  end;
+
   LoadDBGridSettings(grTravel);
   LoadDBGridSettings(grTravelWork);
   LoadDBGridSettings(grWorkerDepartment);
-  CloseOpen(qrObject);
   pgc1.ActivePageIndex := 0;
 
   // —оздаем форму расчета командировочных
@@ -131,6 +157,8 @@ begin
   fCalcWorkerDepartment.Align := alClient;
   // fCalcWorkerDepartment.InitParams;
   fCalcWorkerDepartment.Show;
+
+  pgc1Change(Self);
 end;
 
 procedure TfTravelList.FormDestroy(Sender: TObject);
@@ -140,14 +168,58 @@ begin
   FormMain.DeleteButtonCloseWindow(Caption);
 end;
 
-procedure TfTravelList.FormShow(Sender: TObject);
+procedure TfTravelList.grTravelDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
 begin
-  pgc1Change(Self);
+  with grTravel.Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+  grTravel.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-procedure TfTravelList.LocateObject(Object_ID: Integer);
+procedure TfTravelList.grTravelWorkDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
 begin
-  dblkcbbNAME.KeyValue := Object_ID;
+  with grTravelWork.Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+  grTravelWork.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TfTravelList.grWorkerDepartmentDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with grWorkerDepartment.Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+  grWorkerDepartment.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfTravelList.pgc1Change(Sender: TObject);
@@ -172,6 +244,27 @@ begin
           CloseOpen(qrWorkerDepartment);
       end;
   end;
+end;
+
+procedure TfTravelList.qrTravelAfterOpen(DataSet: TDataSet);
+begin
+  if qrTravel.IsEmpty then
+    qrTravel.Insert
+  else
+  begin
+    if defIdEstimate <> 0 then
+    begin
+      if not qrTravel.Locate('id_estimate', defIdEstimate, []) then
+        qrTravel.Insert;
+    end
+    else if defIdAct <> 0 then
+    begin
+      if not qrTravel.Locate('id_act', defIdAct, []) then
+        qrTravel.Insert;
+    end;
+  end;
+
+  qrTravelAfterScroll(DataSet);
 end;
 
 procedure TfTravelList.qrTravelAfterPost(DataSet: TDataSet);
@@ -216,7 +309,8 @@ begin
 end;
 
 procedure TfTravelList.qrTravelNewRecord(DataSet: TDataSet);
-var NewId: Integer;
+var
+  NewId: Integer;
 begin
   DM.qrDifferent.Active := False;
   DM.qrDifferent.SQL.Text := 'SELECT GetNewID(:IDType)';
@@ -246,12 +340,37 @@ begin
   begin
     DataSet.FieldByName('id_estimate').Value := defIdEstimate;
     DataSet.FieldByName('SOURCE_TYPE').Value := 1;
+    DataSet.FieldByName('NAME').Value := FastSelectSQLOne('SELECT NAME FROM smetasourcedata WHERE SM_ID=:0',
+      VarArrayOf([defIdEstimate]));
   end
   else if defIdAct <> 0 then
   begin
     DataSet.FieldByName('id_act').Value := defIdAct;
     DataSet.FieldByName('SOURCE_TYPE').Value := 0;
+    DataSet.FieldByName('NAME').Value := FastSelectSQLOne('SELECT NAME FROM card_acts WHERE ID=:0',
+      VarArrayOf([defIdAct]));
   end;
+end;
+
+procedure TfTravelList.qrTravelWorkAfterOpen(DataSet: TDataSet);
+begin
+  if qrTravelWork.IsEmpty then
+    qrTravelWork.Insert
+  else
+  begin
+    if defIdEstimate <> 0 then
+    begin
+      if not qrTravelWork.Locate('id_estimate', defIdEstimate, []) then
+        qrTravelWork.Insert;
+    end
+    else if defIdAct <> 0 then
+    begin
+      if not qrTravelWork.Locate('id_act', defIdAct, []) then
+        qrTravelWork.Insert;
+    end;
+  end;
+
+  qrTravelWorkAfterScroll(DataSet);
 end;
 
 procedure TfTravelList.qrTravelWorkAfterPost(DataSet: TDataSet);
@@ -293,6 +412,27 @@ begin
         qrTravelWork.FieldByName('summ').Value := fCalcTravelWork.qrCalc.FieldByName('TOTAL').Value;
       end;
   end;
+end;
+
+procedure TfTravelList.qrWorkerDepartmentAfterOpen(DataSet: TDataSet);
+begin
+  if qrWorkerDepartment.IsEmpty then
+    qrWorkerDepartment.Insert
+  else
+  begin
+    if defIdEstimate <> 0 then
+    begin
+      if not qrWorkerDepartment.Locate('id_estimate', defIdEstimate, []) then
+        qrWorkerDepartment.Insert;
+    end
+    else if defIdAct <> 0 then
+    begin
+      if not qrWorkerDepartment.Locate('id_act', defIdAct, []) then
+        qrWorkerDepartment.Insert;
+    end;
+  end;
+
+  qrWorkerDepartmentAfterScroll(DataSet);
 end;
 
 procedure TfTravelList.qrWorkerDepartmentAfterPost(DataSet: TDataSet);

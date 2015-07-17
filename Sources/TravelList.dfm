@@ -17,7 +17,6 @@ object fTravelList: TfTravelList
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlTop: TPanel
@@ -89,6 +88,12 @@ object fTravelList: TfTravelList
     Height = 209
     ActivePage = ts1
     Align = alClient
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 1
     OnChange = pgc1Change
     object ts1: TTabSheet
@@ -110,13 +115,20 @@ object fTravelList: TfTravelList
         Align = alTop
         DataSource = dsTravel
         DrawingStyle = gdsClassic
-        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgTitleClick, dgTitleHotTrack]
+        ParentFont = False
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = grTravelDrawColumnCell
         IniStorage = FormStorage
         AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -167,6 +179,12 @@ object fTravelList: TfTravelList
         Align = alClient
         BevelOuter = bvNone
         Caption = #1053#1077#1090' '#1076#1072#1085#1085#1099#1093
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         TabOrder = 1
       end
     end
@@ -190,13 +208,20 @@ object fTravelList: TfTravelList
         Align = alTop
         DataSource = dsTravelWork
         DrawingStyle = gdsClassic
-        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgTitleClick, dgTitleHotTrack]
+        ParentFont = False
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = grTravelWorkDrawColumnCell
         IniStorage = FormStorage
         AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -270,13 +295,20 @@ object fTravelList: TfTravelList
         Align = alTop
         DataSource = dsWorkerDepartment
         DrawingStyle = gdsClassic
-        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgTitleClick, dgTitleHotTrack]
+        ParentFont = False
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = grWorkerDepartmentDrawColumnCell
         IniStorage = FormStorage
         AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -348,7 +380,7 @@ object fTravelList: TfTravelList
     Top = 1
   end
   object qrTravel: TFDQuery
-    AfterOpen = qrTravelAfterScroll
+    AfterOpen = qrTravelAfterOpen
     BeforePost = qrTravelBeforePost
     AfterPost = qrTravelAfterPost
     AfterCancel = qrTravelAfterScroll
@@ -361,6 +393,8 @@ object fTravelList: TfTravelList
     UpdateTransaction = DM.Write
     FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ### ### ###'
+    UpdateOptions.AssignedValues = [uvCheckReadOnly]
+    UpdateOptions.CheckReadOnly = False
     UpdateOptions.UpdateTableName = 'smeta.travel'
     SQL.Strings = (
       'SELECT '
@@ -395,7 +429,7 @@ object fTravelList: TfTravelList
     Top = 96
   end
   object qrTravelWork: TFDQuery
-    AfterOpen = qrTravelWorkAfterScroll
+    AfterOpen = qrTravelWorkAfterOpen
     BeforePost = qrTravelWorkBeforePost
     AfterPost = qrTravelWorkAfterPost
     AfterCancel = qrTravelWorkAfterScroll
@@ -408,6 +442,8 @@ object fTravelList: TfTravelList
     UpdateTransaction = DM.Write
     FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ### ### ###'
+    UpdateOptions.AssignedValues = [uvCheckReadOnly]
+    UpdateOptions.CheckReadOnly = False
     UpdateOptions.UpdateTableName = 'smeta.travel_work'
     SQL.Strings = (
       'SELECT '
@@ -444,7 +480,7 @@ object fTravelList: TfTravelList
     Top = 152
   end
   object qrWorkerDepartment: TFDQuery
-    AfterOpen = qrWorkerDepartmentAfterScroll
+    AfterOpen = qrWorkerDepartmentAfterOpen
     BeforePost = qrWorkerDepartmentBeforePost
     AfterPost = qrWorkerDepartmentAfterPost
     AfterCancel = qrWorkerDepartmentAfterScroll
@@ -457,6 +493,8 @@ object fTravelList: TfTravelList
     UpdateTransaction = DM.Write
     FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ### ### ###'
+    UpdateOptions.AssignedValues = [uvCheckReadOnly]
+    UpdateOptions.CheckReadOnly = False
     UpdateOptions.UpdateTableName = 'smeta.worker_deartment'
     SQL.Strings = (
       'SELECT '

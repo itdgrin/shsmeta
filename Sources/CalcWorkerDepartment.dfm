@@ -3,7 +3,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
   Top = 0
   Caption = #1056#1072#1089#1095#1077#1090' '#1087#1077#1088#1077#1074#1086#1079#1082#1080' '#1088#1072#1073#1086#1095#1080#1093
   ClientHeight = 354
-  ClientWidth = 495
+  ClientWidth = 610
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,7 +18,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignSize = (
-    495
+    610
     354)
   PixelsPerInch = 96
   TextHeight = 13
@@ -66,7 +66,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
   object grCalc: TJvDBGrid
     Left = 8
     Top = 62
-    Width = 479
+    Width = 594
     Height = 284
     Anchors = [akLeft, akTop, akRight, akBottom]
     DataSource = dsCalc
@@ -76,14 +76,15 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 6
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnDrawColumnCell = grCalcDrawColumnCell
     OnKeyPress = grCalcKeyPress
     AutoAppend = False
     IniStorage = FormStorage
@@ -100,7 +101,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
         FieldName = 'NAIMEN'
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1079#1072#1090#1088#1072#1090
-        Width = 141
+        Width = 177
         Visible = True
       end
       item
@@ -108,7 +109,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
         FieldName = 'CALC'
         Title.Alignment = taCenter
         Title.Caption = #1056#1072#1089#1095#1077#1090
-        Width = 248
+        Width = 311
         Visible = True
       end
       item
@@ -116,14 +117,14 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
         FieldName = 'TOTAL'
         Title.Alignment = taCenter
         Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-        Width = 83
+        Width = 99
         Visible = True
       end>
   end
   object dblkcbbAct: TDBLookupComboBox
     Left = 143
     Top = 8
-    Width = 344
+    Width = 459
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     DataField = 'id_act'
@@ -131,8 +132,9 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     KeyField = 'ID'
     ListField = 'NAME'
     ListSource = dsActList
-    TabOrder = 2
+    TabOrder = 1
     OnClick = dblkcbbActClick
+    ExplicitWidth = 344
   end
   object cbbSource: TComboBox
     Left = 79
@@ -164,17 +166,40 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
   object dblkcbbSmeta: TDBLookupComboBox
     Left = 143
     Top = 8
-    Width = 344
+    Width = 459
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     DataField = 'id_estimate'
     DataSource = fTravelList.dsWorkerDepartment
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     KeyField = 'SM_ID'
     ListField = 'NAME'
     ListSource = dsSmetaList
-    TabOrder = 1
+    ParentFont = False
+    TabOrder = 2
     Visible = False
     OnClick = dblkcbbActClick
+    ExplicitWidth = 344
+  end
+  object chkEnableEditing: TCheckBox
+    Left = 440
+    Top = 35
+    Width = 162
+    Height = 17
+    Anchors = [akTop, akRight]
+    Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1088#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 5
+    OnClick = chkEnableEditingClick
   end
   object dsCalc: TDataSource
     DataSet = qrCalc
@@ -189,7 +214,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -210,6 +235,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
       end>
     FormatOptions.DefaultParamDataType = ftBCD
     FormatOptions.FmtDisplayNumeric = '### ### ### ##0.###'
+    FormatOptions.FmtEditNumeric = '############.###'
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False

@@ -676,9 +676,10 @@ type
     procedure pmDevicesPopup(Sender: TObject);
     procedure PMMechAutoRepClick(Sender: TObject);
   private const
-    CaptionButton = 'Расчёт сметы';
-    HintButton = 'Окно расчёта сметы';
+    CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
+    HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
   private
+    Act: Boolean;
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
 
@@ -763,8 +764,6 @@ type
     procedure CheckNeedAutoRep(AID, AType: Integer; ACode: string); // Проверяет необходимость в замене
     procedure ShowAutoRep; // Показывает диалог замены для всех из массива
   public
-    Act: Boolean;
-
     ConfirmCloseForm: Boolean;
 
     property IdObject: Integer read FIdObject write FIdObject;
@@ -783,6 +782,7 @@ type
     procedure Wheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
       var Handled: Boolean);
     procedure RecalcEstimate;
+    constructor Create(const isAct: Boolean); reintroduce;
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
@@ -891,12 +891,14 @@ begin
   Left := 10;
 
   WindowState := wsMaximized;
-  Caption := CaptionButton + ' - Разрешено редактирование документа';
+  if not Act then
+    Caption := CaptionButton[1] + ' - Разрешено редактирование документа'
+  else
+    Caption := CaptionButton[2] + ' - Разрешено редактирование документа';
   // -----------------------------------------
 
   IdObject := 0;
   IdEstimate := 0;
-  Act := False;
 
   if VisibleRightTables <> '1000000' then
   begin
@@ -988,7 +990,9 @@ begin
   FCalculator.Visible := False;
 
   if not Act then
-    FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
+    FormMain.CreateButtonOpenWindow(CaptionButton[1], HintButton[1], Self, 1)
+  else
+    FormMain.CreateButtonOpenWindow(CaptionButton[2], HintButton[2], Self, 1)
 end;
 
 procedure TFormCalculationEstimate.FormShow(Sender: TObject);
@@ -1008,7 +1012,10 @@ begin
   FormMain.CascadeForActiveWindow;
 
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(CaptionButton);
+  if not Act then
+    FormMain.SelectButtonActiveWindow(CaptionButton[1])
+  else
+    FormMain.SelectButtonActiveWindow(CaptionButton[2]);
 end;
 
 procedure TFormCalculationEstimate.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1023,7 +1030,10 @@ procedure TFormCalculationEstimate.FormDestroy(Sender: TObject);
 begin
   FormCalculationEstimate := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(CaptionButton);
+  if not Act then
+    FormMain.DeleteButtonCloseWindow(CaptionButton[1])
+  else
+    FormMain.DeleteButtonCloseWindow(CaptionButton[2]);
 end;
 
 procedure TFormCalculationEstimate.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -1424,14 +1434,20 @@ begin
       Tag := 0;
       Color := clRed;
       Caption := 'Расчёты запрещены';
-      FormCalculationEstimate.Caption := CaptionButton + ' - Запрещено редактирование документа';
+      if not Act then
+        FormCalculationEstimate.Caption := CaptionButton[1] + ' - Запрещено редактирование документа'
+      else
+        FormCalculationEstimate.Caption := CaptionButton[2] + ' - Запрещено редактирование документа'
     end
     else
     begin
       Tag := 1;
       Color := clLime;
       Caption := 'Расчёты разрешены';
-      FormCalculationEstimate.Caption := CaptionButton + ' - Разрешено редактирование документа';
+      if not Act then
+        FormCalculationEstimate.Caption := CaptionButton[1] + ' - Разрешено редактирование документа'
+      else
+        FormCalculationEstimate.Caption := CaptionButton[2] + ' - Разрешено редактирование документа';
     end;
   frSummaryCalculations.grSummaryCalculation.Repaint;
 end;
@@ -5280,6 +5296,12 @@ begin
       MessageBox(0, PChar('При запросе «Цены аренды механизма» возникла ошибка:' + sLineBreak + e.message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+end;
+
+constructor TFormCalculationEstimate.Create(const isAct: Boolean);
+begin
+  Act := isAct;
+  inherited Create(Application);
 end;
 
 procedure TFormCalculationEstimate.CreateTempTables;

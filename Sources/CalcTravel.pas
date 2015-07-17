@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.Mask, Vcl.DBCtrls, Vcl.Grids,
   Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvComponentBase, JvFormPlacement;
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvComponentBase, JvFormPlacement, System.UITypes;
 
 type
   TfCalcTravel = class(TForm)
@@ -26,6 +26,7 @@ type
     dsSmetaList: TDataSource;
     dblkcbbSmeta: TDBLookupComboBox;
     FormStorage: TJvFormStorage;
+    chkEnableEditing: TCheckBox;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -36,6 +37,9 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormActivate(Sender: TObject);
     procedure qrCalcBeforePost(DataSet: TDataSet);
+    procedure chkEnableEditingClick(Sender: TObject);
+    procedure grCalcDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     { Private declarations }
 
@@ -70,8 +74,18 @@ begin
   end;
 end;
 
+procedure TfCalcTravel.chkEnableEditingClick(Sender: TObject);
+begin
+  if chkEnableEditing.Checked then
+    grCalc.Options := grCalc.Options - [dgRowSelect] + [dgEditing]
+  else
+    grCalc.Options := grCalc.Options - [dgEditing] + [dgRowSelect];
+end;
+
 procedure TfCalcTravel.dblkcbbActClick(Sender: TObject);
 begin
+  if Assigned(fTravelList) and (Sender is TDBLookupComboBox) then
+    fTravelList.qrTravel.FieldByName('NAME').AsString := (Sender as TDBLookupComboBox).Text;
   Application.ProcessMessages;
   InitParams;
 end;
@@ -200,6 +214,24 @@ begin
     CloseOpen(qrCalc)
   else if qrCalc.Active then
     qrCalc.Active := False;
+end;
+
+procedure TfCalcTravel.grCalcDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with grCalc.Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) { or (gdSelected is State) } then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+  grCalc.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfCalcTravel.grCalcKeyPress(Sender: TObject; var Key: Char);

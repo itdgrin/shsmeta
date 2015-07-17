@@ -1393,7 +1393,7 @@ begin
   end
   else
   begin
-    if FormCalculationEstimate.Act then
+    if FormCalculationEstimate.IdAct <> 0 then
     // для акта
     begin
       if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт сметы',
@@ -1418,19 +1418,6 @@ procedure TFormMain.N6Click(Sender: TObject);
 begin
   if (not Assigned(fTravelList)) then
     fTravelList := TfTravelList.Create(Self);
-  if Assigned(FormObjectsAndEstimates) then
-  begin
-    fTravelList.LocateObject(FormObjectsAndEstimates.getCurObject);
-    fTravelList.defIdEstimate := FormObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger;
-  end;
-  if Assigned(FormCalculationEstimate) then
-  begin
-    fTravelList.LocateObject(FormCalculationEstimate.IdObject);
-    if FormCalculationEstimate.Act then
-      fTravelList.defIdAct := FormCalculationEstimate.IdAct
-    else
-      fTravelList.defIdEstimate := FormCalculationEstimate.IdEstimate;
-  end;
   fTravelList.Show;
 end;
 
