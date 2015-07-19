@@ -10964,6 +10964,7 @@
       end
       object mN15: TMenuItem
         Caption = #1058#1072#1088#1080#1092#1099' / '#1062#1077#1085#1099' / '#1048#1085#1076#1077#1082#1089#1099' (NEW)'
+        Visible = False
         OnClick = mN15Click
       end
       object mN22: TMenuItem

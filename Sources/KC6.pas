@@ -305,7 +305,7 @@ begin
     Key := strngfldDataSORT_ID.Value;
     qrData.DisableControls;
     qrData.AfterScroll := nil;
-    //qrData.OnCalcFields := nil;
+    // qrData.OnCalcFields := nil;
     try
       qrData.First;
       while not qrData.Eof do
@@ -319,7 +319,7 @@ begin
       qrData.Locate('SORT_ID', Key, []);
       qrData.EnableControls;
       qrData.AfterScroll := qrDataAfterScroll;
-      //qrData.OnCalcFields := qrDataCalcFields;
+      // qrData.OnCalcFields := qrDataCalcFields;
     end;
   end;
   FormCalculationEstimate.OutputDataToTable;
@@ -401,7 +401,11 @@ begin
   if (Key = VK_INSERT) or (Key = VK_SPACE) then
   begin
     qrData.Edit;
-    qrDataCHECKED.Value := not qrDataCHECKED.Value;
+    //qrDataCHECKED.Value := not qrDataCHECKED.Value;
+    if qrDataSELECTED.Value = 0 then
+      qrDataSELECTED.Value := 1
+    else
+      qrDataSELECTED.Value := 0;
     qrData.Next;
   end;
 end;
@@ -431,8 +435,8 @@ begin
   qrData.Locate('SM_ID', qrTreeData.FieldByName('SM_ID').AsInteger, []);
 end;
 
-procedure TfKC6.tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
-  State: TCustomDrawState; var DefaultDraw: Boolean);
+procedure TfKC6.tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
+  var DefaultDraw: Boolean);
 begin
   if Node.Selected then
   begin

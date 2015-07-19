@@ -3,14 +3,13 @@ object fTariffDict: TfTariffDict
   Top = 0
   Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1090#1072#1088#1080#1092#1086#1074
   ClientHeight = 430
-  ClientWidth = 537
+  ClientWidth = 549
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  FormStyle = fsMDIChild
   OldCreateOrder = False
   Visible = True
   OnClose = FormClose
@@ -19,13 +18,13 @@ object fTariffDict: TfTariffDict
   PixelsPerInch = 96
   TextHeight = 13
   object pgc: TPageControl
-    AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 531
-    Height = 424
+    Width = 543
+    Height = 432
     ActivePage = ts1
-    Align = alClient
+    Align = alCustom
+    Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -33,16 +32,19 @@ object fTariffDict: TfTariffDict
     Font.Style = []
     MultiLine = True
     ParentFont = False
-    Style = tsButtons
+    TabHeight = 1
     TabOrder = 0
+    TabPosition = tpBottom
+    TabStop = False
     TabWidth = 140
     OnChange = pgcChange
     object ts1: TTabSheet
       Caption = #1058#1072#1088#1080#1092#1099' '#1087#1086' '#1079#1072#1088#1087#1083#1072#1090#1077
+      ExplicitHeight = 415
       object spl1: TSplitter
         Left = 180
         Top = 30
-        Height = 363
+        Height = 393
         ExplicitLeft = 248
         ExplicitTop = 72
         ExplicitHeight = 100
@@ -51,17 +53,18 @@ object fTariffDict: TfTariffDict
         Left = 0
         Top = 30
         Width = 180
-        Height = 363
+        Height = 393
         Align = alLeft
         BevelOuter = bvSpace
         Caption = 'pnlLeft'
         Constraints.MinWidth = 180
         TabOrder = 1
+        ExplicitHeight = 385
         object grCategory: TJvDBGrid
           Left = 1
           Top = 1
           Width = 178
-          Height = 361
+          Height = 391
           Align = alClient
           DataSource = dsCategory
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -108,20 +111,27 @@ object fTariffDict: TfTariffDict
       object pnlClient: TPanel
         Left = 183
         Top = 30
-        Width = 340
-        Height = 363
+        Width = 352
+        Height = 393
         Align = alClient
         BevelOuter = bvSpace
         Caption = 'pnlClient'
         TabOrder = 2
+        ExplicitHeight = 385
         object grStavka: TJvDBGrid
           Left = 1
           Top = 1
-          Width = 338
-          Height = 361
+          Width = 350
+          Height = 391
           Align = alClient
           DataSource = dsStavka
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          ParentFont = False
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -142,7 +152,7 @@ object fTariffDict: TfTariffDict
               FieldName = 'MONTH_YEAR'
               Title.Alignment = taCenter
               Title.Caption = #1052#1077#1089#1103#1094
-              Width = 37
+              Width = 38
               Visible = True
             end
             item
@@ -150,7 +160,7 @@ object fTariffDict: TfTariffDict
               FieldName = 'STAVKA_M_RAB'
               Title.Alignment = taCenter
               Title.Caption = #1075'. '#1052#1080#1085#1089#1082
-              Width = 37
+              Width = 38
               Visible = True
             end
             item
@@ -158,7 +168,7 @@ object fTariffDict: TfTariffDict
               FieldName = 'STAVKA_RB_RAB'
               Title.Alignment = taCenter
               Title.Caption = #1041#1088#1077#1089#1090#1089#1082#1072#1103
-              Width = 37
+              Width = 38
               Visible = True
             end
             item
@@ -166,7 +176,7 @@ object fTariffDict: TfTariffDict
               FieldName = 'STAVKA_RB_RAB'
               Title.Alignment = taCenter
               Title.Caption = #1042#1080#1090#1077#1073#1089#1082#1072#1103
-              Width = 37
+              Width = 38
               Visible = True
             end
             item
@@ -174,7 +184,7 @@ object fTariffDict: TfTariffDict
               FieldName = 'STAVKA_RB_RAB'
               Title.Alignment = taCenter
               Title.Caption = #1043#1088#1086#1076#1085#1077#1085#1089#1082#1072#1103
-              Width = 37
+              Width = 38
               Visible = True
             end
             item
@@ -182,7 +192,7 @@ object fTariffDict: TfTariffDict
               FieldName = 'STAVKA_RB_RAB'
               Title.Alignment = taCenter
               Title.Caption = #1043#1086#1084#1077#1083#1100#1089#1082#1072#1103
-              Width = 37
+              Width = 38
               Visible = True
             end
             item
@@ -190,7 +200,7 @@ object fTariffDict: TfTariffDict
               FieldName = 'STAVKA_RB_RAB'
               Title.Alignment = taCenter
               Title.Caption = #1052#1080#1085#1089#1082#1072#1103
-              Width = 37
+              Width = 38
               Visible = True
             end
             item
@@ -198,7 +208,7 @@ object fTariffDict: TfTariffDict
               FieldName = 'STAVKA_RB_RAB'
               Title.Alignment = taCenter
               Title.Caption = #1052#1086#1075#1080#1083#1077#1074#1089#1082#1072#1103
-              Width = 55
+              Width = 60
               Visible = True
             end>
         end
@@ -206,7 +216,7 @@ object fTariffDict: TfTariffDict
       object pnlTop: TPanel
         Left = 0
         Top = 0
-        Width = 523
+        Width = 535
         Height = 30
         Align = alTop
         BevelOuter = bvSpace
@@ -254,10 +264,11 @@ object fTariffDict: TfTariffDict
     object ts2: TTabSheet
       Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1095#1077#1089#1082#1080#1077' '#1080#1085#1076#1077#1082#1089#1099
       ImageIndex = 1
+      ExplicitHeight = 415
       object pnlTop1: TPanel
         Left = 0
         Top = 0
-        Width = 523
+        Width = 535
         Height = 30
         Align = alTop
         BevelOuter = bvSpace
@@ -327,17 +338,18 @@ object fTariffDict: TfTariffDict
       object pnlClient1: TPanel
         Left = 0
         Top = 30
-        Width = 523
-        Height = 363
+        Width = 535
+        Height = 393
         Align = alClient
         BevelOuter = bvSpace
         Caption = 'pnlClient1'
         TabOrder = 1
+        ExplicitHeight = 385
         object grIndexes: TJvDBGrid
           Left = 1
           Top = 1
-          Width = 521
-          Height = 361
+          Width = 533
+          Height = 391
           Align = alClient
           DataSource = dsIndexes
           Font.Charset = DEFAULT_CHARSET
@@ -367,7 +379,7 @@ object fTariffDict: TfTariffDict
               FieldName = 'param_name'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1085#1089#1090#1072#1085#1090#1099
-              Width = 376
+              Width = 385
               Visible = True
             end
             item
@@ -375,7 +387,7 @@ object fTariffDict: TfTariffDict
               FieldName = 'code'
               Title.Alignment = taCenter
               Title.Caption = #1055#1089#1077#1074#1076#1086#1085#1080#1084
-              Width = 62
+              Width = 63
               Visible = True
             end
             item
@@ -383,6 +395,7 @@ object fTariffDict: TfTariffDict
               FieldName = 'VALUE'
               Title.Alignment = taCenter
               Title.Caption = #1047#1085#1072#1095#1077#1085#1080#1077
+              Width = 66
               Visible = True
             end>
         end

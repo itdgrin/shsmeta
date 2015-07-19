@@ -16,6 +16,7 @@ type
     SpeedButtonPriceMechanizms: TSpeedButton;
     SpeedButtonPriceTransportation: TSpeedButton;
     SpeedButtonPriceDumps: TSpeedButton;
+    btnZP: TSpeedButton;
 
     constructor Create(AOwner: TComponent; const vDataBase: Char; const vPriceColumn: Boolean); reintroduce;
 
@@ -45,7 +46,7 @@ var
 
 implementation
 
-uses Main, Waiting;
+uses Main, Waiting, TariffDict;
 
 {$R *.dfm}
 
@@ -124,6 +125,14 @@ begin
   FramePriceDumps.Visible := False;
   SpeedButtonPriceDumps.Tag := Integer(FramePriceDumps);
 
+  if (not Assigned(fTariffDict)) then
+    fTariffDict := TfTariffDict.Create(Self);
+  fTariffDict.BorderStyle := bsNone;
+  fTariffDict.Parent := Self;
+  fTariffDict.Align := alClient;
+  fTariffDict.Visible := False;
+  btnZP.Tag := Integer(fTariffDict);
+
   SpeedButtonClick(SpeedButtonPriceMaterials);
   FramePriceMaterials.Visible := True;
 
@@ -168,6 +177,7 @@ begin
   FramePriceMechanizms.Visible := False;
   FramePriceTransportations.Visible := False;
   FramePriceDumps.Visible := False;
+  fTariffDict.Visible := False;
 end;
 
 

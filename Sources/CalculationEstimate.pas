@@ -1028,12 +1028,12 @@ end;
 
 procedure TFormCalculationEstimate.FormDestroy(Sender: TObject);
 begin
-  FormCalculationEstimate := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
   if not Act then
     FormMain.DeleteButtonCloseWindow(CaptionButton[1])
   else
     FormMain.DeleteButtonCloseWindow(CaptionButton[2]);
+  FormCalculationEstimate := nil;
 end;
 
 procedure TFormCalculationEstimate.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -3476,7 +3476,7 @@ var
 begin
   DialogResult := mrNone;
 
-  if (not ActReadOnly) and (PanelCalculationYesNo.Tag = 1) then
+  if (not ActReadOnly) and (PanelCalculationYesNo.Tag = 1) and ConfirmCloseForm then
     DialogResult := MessageBox(0, PChar('Сохранить сделанные изменения перед закрытием окна?'), 'Смета',
       MB_ICONINFORMATION + MB_YESNOCANCEL + mb_TaskModal);
 
