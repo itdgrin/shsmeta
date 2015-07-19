@@ -506,6 +506,21 @@ begin
     begin
       DM.Connect.Params.Text := G_CONNECTSTR;
       DM.Connect.Connected := true;
+      // Загрузка справочников
+      FormWaiting.Height := 110;
+      FormWaiting.lbProcess.caption := 'Загрузка справочников:';
+      FormWaiting.Show;
+      Application.ProcessMessages;
+      // Справочник сборников расценок
+      FormWaiting.lbProcess.caption := 'Загрузка справочников:'#13 + 'перечень сборников';
+      Application.ProcessMessages;
+      if (not Assigned(fNormativDirectory)) then
+        fNormativDirectory := TfNormativDirectory.Create(Self);
+      //
+      FormWaiting.Close;
+      FormWaiting.Height := 88;
+      FormWaiting.lbProcess.caption := '';
+      Application.ProcessMessages;
     end;
   except
     on e: exception do
@@ -908,7 +923,7 @@ end;
 procedure TFormMain.mN22Click(Sender: TObject);
 begin
   if (not Assigned(fNormativDirectory)) then
-    fNormativDirectory := fNormativDirectory.Create(nil);
+    fNormativDirectory := TfNormativDirectory.Create(nil);
   fNormativDirectory.Show;
 end;
 

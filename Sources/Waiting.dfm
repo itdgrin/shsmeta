@@ -34,7 +34,7 @@ object FormWaiting: TFormWaiting
   object Label1: TLabel
     Left = 56
     Top = 45
-    Width = 177
+    Width = 165
     Height = 26
     Alignment = taCenter
     Caption = #1055#1086#1078#1072#1083#1091#1081#1089#1090#1072' '#1087#1086#1076#1086#1078#1076#1080#1090#1077'. '#1048#1076#1105#1090' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1079#1072#1087#1088#1086#1089#1072'...'
@@ -280,10 +280,11 @@ object FormWaiting: TFormWaiting
       1EFA95A1232C37680AF4D5B2A7A378A61002003B}
   end
   object lbProcess: TLabel
-    Left = 42
+    Left = 8
     Top = 73
-    Width = 208
+    Width = 284
     Height = 26
+    Alignment = taCenter
     AutoSize = False
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

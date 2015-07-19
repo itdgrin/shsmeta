@@ -155,7 +155,6 @@ begin
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
   Application.CreateForm(TFormCardPartsEstimates, FormCardPartsEstimates);
-  Application.CreateForm(TfNormativDirectory, fNormativDirectory);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€
