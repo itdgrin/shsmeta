@@ -37,6 +37,8 @@ type
     procedure mN1Click(Sender: TObject);
     procedure mN2Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure grSostavDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     procedure Search(const Direction: Integer);
   public
@@ -110,7 +112,7 @@ begin
   begin
     Point1 := FormMain.ClientToScreen(Point(FormAdditionData.Left, FormAdditionData.Top));
 
-    Left := Point1.X + 5 + GetSystemMetrics(SM_CYBORDER) + FormAdditionData.FrameRates.JvDBGrid1.Width + 5;
+    Left := Point1.X + 5 + GetSystemMetrics(SM_CYBORDER) + FormAdditionData.FrameRates.grRates.Width + 5;
     Top := Point1.Y + 2 + GetSystemMetrics(SM_CYCAPTION) + FormAdditionData.FrameRates.Top +
       FormAdditionData.FrameRates.dbmmoCaptionNormative.Top;
 
@@ -223,6 +225,24 @@ function TfNormativDirectory.getChildList(const RootID: Integer): string;
 begin
   Result := '';
 
+end;
+
+procedure TfNormativDirectory.grSostavDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfNormativDirectory.mN1Click(Sender: TObject);

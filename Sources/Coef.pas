@@ -47,6 +47,8 @@ type
     procedure qrCoefAfterPost(DataSet: TDataSet);
     procedure qrCoefNewRecord(DataSet: TDataSet);
     procedure FormCreate(Sender: TObject);
+    procedure grCoefDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     SelectEnabled: Boolean;
   public
@@ -93,6 +95,24 @@ begin
   btnAdd.Visible := SelectEnabled;
   N4.Visible := SelectEnabled;
   N5.Visible := SelectEnabled;
+end;
+
+procedure TfCoefficients.grCoefDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfCoefficients.N1Click(Sender: TObject);

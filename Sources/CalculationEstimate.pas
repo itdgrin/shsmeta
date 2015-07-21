@@ -62,28 +62,6 @@ type
     SpeedButtonLocalEstimate: TSpeedButton;
     SpeedButtonSummaryCalculation: TSpeedButton;
     SpeedButtonSSR: TSpeedButton;
-    btnDescription: TSpeedButton;
-    btnMaterials: TSpeedButton;
-    btnMechanisms: TSpeedButton;
-
-    // ---------------------------
-
-    PanelBottomButtons: TPanel;
-    PanelButtonsLocalEstimate: TPanel;
-    ButtonCopy: TButton;
-    ButtonInsert: TButton;
-    ButtonSelect: TButton;
-    ButtonSelectRange: TButton;
-    ButtonAdd: TButton;
-    ButtonFind: TButton;
-    ButtonDelete: TButton;
-    PanelButtonsSSR: TPanel;
-    ButtonSSRAdd: TButton;
-    ButtonSSRDelete: TButton;
-    ButtonSSRTax: TButton;
-    ButtonSSRDetails: TButton;
-    ButtonSSRUpload: TButton;
-    ButtonSSRSave: TButton;
     PanelLocalEstimate: TPanel;
     ImageSplitterBottom: TImage;
     SplitterBottom: TSplitter;
@@ -114,22 +92,16 @@ type
     EditMonth: TEdit;
     Edit4: TEdit;
     PanelCalculationYesNo: TPanel;
-    PanelButtonsSummaryCalculations: TPanel;
-    Button1: TButton;
-    Button2: TButton;
-    Button3: TButton;
     pmSummaryCalculation: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
-    ButtonSRRNew: TButton;
     pmSSRButtonAdd: TPopupMenu;
     N4: TMenuItem;
     N5: TMenuItem;
     pmSSRButtonTax: TPopupMenu;
     N6: TMenuItem;
     N7: TMenuItem;
-    ButtonTechnicalPart: TButton;
     pmTableLeft: TPopupMenu;
     PMAdd: TMenuItem;
     PMDelete: TMenuItem;
@@ -166,7 +138,6 @@ type
     PopupMenuTableLeftTechnicalPart4: TMenuItem;
     PopupMenuTableLeftTechnicalPart5: TMenuItem;
     PopupMenuTableLeftTechnicalPart6: TMenuItem;
-    btnEquipments: TSpeedButton;
     BevelTopMenu: TBevel;
     SpeedButtonModeTables: TSpeedButton;
     PanelNoData: TPanel;
@@ -208,10 +179,8 @@ type
     PMEdit: TMenuItem;
     PMCoefOrders: TMenuItem;
     PopupMenuCoefOrders: TMenuItem;
-    EditCoefOrders: TEdit;
     LabelCategory: TLabel;
     EditCategory: TEdit;
-    Button4: TButton;
     qrDescription: TFDQuery;
     qrTemp: TFDQuery;
     qrTemp1: TFDQuery;
@@ -478,6 +447,11 @@ type
     qrDevicesID: TIntegerField;
     qrDumpDUMP_ID: TIntegerField;
     qrRatesExID_ACT: TIntegerField;
+    btnMaterials: TSpeedButton;
+    btnMechanisms: TSpeedButton;
+    btnEquipments: TSpeedButton;
+    btnDescription: TSpeedButton;
+    btnKC6: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -551,7 +525,6 @@ type
     procedure LabelObjectClick(Sender: TObject);
     procedure LabelEstimateClick(Sender: TObject);
     procedure Label1Click(Sender: TObject);
-    procedure PanelObjectResize(Sender: TObject);
     procedure Panel1Resize(Sender: TObject);
     procedure PanelTopMenuResize(Sender: TObject);
     procedure SettingVisibleRightTables;
@@ -572,16 +545,11 @@ type
     procedure PMAddRatMatMechEquipRefClick(Sender: TObject);
     procedure PMAddRatMatMechEquipOwnClick(Sender: TObject);
     procedure pmMaterialsPopup(Sender: TObject);
-
-    procedure PMCoefOrdersClick(Sender: TObject);
     procedure pmTableLeftPopup(Sender: TObject);
     // Удаление вынесенного из расценки материала
     procedure GetStateCoefOrdersInEstimate;
-    procedure GetStateCoefOrdersInRate;
-    // Получаем флаг состояния (применять или не применять) коэффициента по приказам
-    procedure PopupMenuCoefOrdersClick(Sender: TObject);
     procedure pmCoefPopup(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
+    procedure btnKC6Click(Sender: TObject);
 
     procedure OutputDataToTable(ANewRow: Boolean = False); // Заполнение таблицы расценок
 
@@ -807,8 +775,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   BasicData, ObjectsAndEstimates, Transportation,
   CalculationDump, SaveEstimate,
   AdditionData, CardMaterial, CardDataEstimate,
-  CoefficientOrders, KC6,
-  CardAct, Tools, Coef, WinterPrice,
+  KC6, CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
   TreeEstimate, ImportExportModule;
 {$R *.dfm}
@@ -941,22 +908,6 @@ begin
   pnlSummaryCalculations.Align := alClient;
   PanelSSR.Align := alClient;
 
-  // -----------------------------------------
-
-  // НАСТРОЙКА ВИДИМОСТИ НИЖНИХ ПАНЕЛЕЙ С КНОПКАМИ
-
-  PanelButtonsLocalEstimate.Align := alNone;
-  PanelButtonsSummaryCalculations.Align := alNone;
-  PanelButtonsSSR.Align := alNone;
-
-  PanelButtonsLocalEstimate.Visible := True;
-  PanelButtonsSummaryCalculations.Visible := False;
-  PanelButtonsSSR.Visible := False;
-
-  PanelButtonsLocalEstimate.Align := alClient;
-
-  // -----------------------------------------
-
   PanelClientLeft.Width := 2 * ((FormMain.ClientWidth - 5) div 7);
 
   dbgrdCalculations.Constraints.MinHeight := 50;
@@ -1080,18 +1031,6 @@ begin
     pnlSummaryCalculations.Visible := False;
     PanelSSR.Visible := False;
 
-    // НАСТРОЙКА ВИДИМОСТИ НИЖНИХ ПАНЕЛЕЙ С КНОПКАМИ
-
-    PanelButtonsLocalEstimate.Align := alNone;
-    PanelButtonsSummaryCalculations.Align := alNone;
-    PanelButtonsSSR.Align := alNone;
-
-    PanelButtonsLocalEstimate.Visible := True;
-    PanelButtonsSummaryCalculations.Visible := False;
-    PanelButtonsSSR.Visible := False;
-
-    PanelButtonsLocalEstimate.Align := alClient;
-
     // Делаем кнопки верхнего правого меню активными
     BottomTopMenuEnabled(True);
 
@@ -1121,22 +1060,6 @@ begin
 
     // Инициализация заполнения фрейма данными
     frSummaryCalculations.LoadData(VarArrayOf([IdEstimate, IdAct]));
-
-    // -----------------------------------------
-
-    // НАСТРОЙКА ВИДИМОСТИ НИЖНИХ ПАНЕЛЕЙ С КНОПКАМИ
-
-    PanelButtonsLocalEstimate.Align := alNone;
-    PanelButtonsSummaryCalculations.Align := alNone;
-    PanelButtonsSSR.Align := alNone;
-
-    PanelButtonsLocalEstimate.Visible := False;
-    PanelButtonsSummaryCalculations.Visible := True;
-    PanelButtonsSSR.Visible := False;
-
-    PanelButtonsSummaryCalculations.Align := alClient;
-
-    // -----------------------------------------
 
     // Делаем кнопки верхнего правого меню неактивными
     BottomTopMenuEnabled(False);
@@ -1183,24 +1106,8 @@ begin
     pnlSummaryCalculations.Visible := False;
     PanelSSR.Visible := True;
 
-    // -----------------------------------------
-
-    // НАСТРОЙКА ВИДИМОСТИ НИЖНИХ ПАНЕЛЕЙ С КНОПКАМИ
-
-    PanelButtonsLocalEstimate.Align := alNone;
-    PanelButtonsSummaryCalculations.Align := alNone;
-    PanelButtonsSSR.Align := alNone;
-
-    PanelButtonsLocalEstimate.Visible := False;
-    PanelButtonsSummaryCalculations.Visible := False;
-    PanelButtonsSSR.Visible := True;
-
     // Инициализация заполнения фрейма данными
     frSSR.LoadData(IdObject);
-
-    PanelButtonsSSR.Align := alClient;
-
-    // -----------------------------------------
 
     // Делаем кнопки верхнего правого меню неактивными
     BottomTopMenuEnabled(False);
@@ -1488,12 +1395,6 @@ begin
   // LabelNoData2.Top := LabelNoData1.Top + LabelNoData1.Height + 6;
 end;
 
-procedure TFormCalculationEstimate.PanelObjectResize(Sender: TObject);
-begin
-  EditNameObject.Width := LabelNumberContract.Left - EditNameObject.Left - 6;
-  EditNameEstimate.Width := EditNameObject.Width;
-end;
-
 procedure TFormCalculationEstimate.PanelTopMenuResize(Sender: TObject);
 var
   WidthButton: Integer;
@@ -1519,30 +1420,7 @@ begin
 
   // -----------------------------------------
 
-  WidthButton := 80;
-  // ((Sender as TPanel).Width div 2 - 30 - OffsetCenter - SpeedButtonModeTables.Width) div 4;
-  // 24 = 6 * 5 (расстояния: между 4 и 5, 5 и 6, 6 и 7, 7 и 8, и до конца формы)
-
-  btnMaterials.Left := BevelTopMenu.Left + OffsetCenter;
-  btnMaterials.Width := WidthButton;
-
-  btnMechanisms.Left := btnMaterials.Left + btnMaterials.Width + 3;
-  btnMechanisms.Width := WidthButton;
-
-  btnEquipments.Left := btnMechanisms.Left + btnMaterials.Width + 3;
-  btnEquipments.Width := WidthButton;
-
-  btnDescription.Left := btnEquipments.Left + btnEquipments.Width + 3;
-  btnDescription.Width := WidthButton;
-
-  btnDump.Left := btnDescription.Left + btnDescription.Width + 3;
-  btnDump.Width := WidthButton;
-
-  btnTransp.Left := btnDump.Left + btnDump.Width + 3;
-  btnTransp.Width := WidthButton;
-
-  btnStartup.Left := btnTransp.Left + btnTransp.Width + 3;
-  btnStartup.Width := WidthButton;
+  btnKC6.Left := BevelTopMenu.Left + OffsetCenter;
 
   // Не используется пока
   SpeedButtonModeTables.Left := btnStartup.Left + btnStartup.Width + 3;
@@ -1590,7 +1468,7 @@ begin
   FormSummaryCalculationSettings.ShowModal;
 end;
 
-procedure TFormCalculationEstimate.Button4Click(Sender: TObject);
+procedure TFormCalculationEstimate.btnKC6Click(Sender: TObject);
 begin
   if Act then
   // для акта
@@ -2157,7 +2035,6 @@ procedure TFormCalculationEstimate.mBaseDataClick(Sender: TObject);
 begin
   FormBasicData.ShowForm(IdObject, qrRatesExSM_ID.AsInteger);
   GetSourceData;
-  GetStateCoefOrdersInRate;
   GridRatesRowSellect;
   CloseOpen(qrRatesEx);
   CloseOpen(qrCalculations);
@@ -3142,12 +3019,6 @@ begin
     qrMechanizmFPRICE_NDS.Value, qrMechanizmNDS.Value, 'FCOAST_NDS');
 end;
 
-procedure TFormCalculationEstimate.PMCoefOrdersClick(Sender: TObject);
-begin
-  // FormCoefficientOrders.ShowForm(IdEstimate, RateId, 0);
-  GetStateCoefOrdersInRate;
-end;
-
 procedure TFormCalculationEstimate.PMCopyClick(Sender: TObject);
 var
   DataObj: TSmClipData;
@@ -3768,11 +3639,6 @@ begin
   RecalcEstimate;
   // Уже выполнилась в RecalcEstimate;
   // CloseOpen(qrCalculations);
-end;
-
-procedure TFormCalculationEstimate.PopupMenuCoefOrdersClick(Sender: TObject);
-begin
-  GetStateCoefOrdersInRate;
 end;
 
 procedure TFormCalculationEstimate.pmCoefPopup(Sender: TObject);
@@ -4469,7 +4335,6 @@ begin
     Exit;
   FormBasicData.ShowForm(IdObject, IdEstimate);
   GetSourceData;
-  GetStateCoefOrdersInRate;
   GridRatesRowSellect;
   CloseOpen(qrRatesEx);
   CloseOpen(qrCalculations);
@@ -5328,9 +5193,6 @@ procedure TFormCalculationEstimate.OpenAllData;
 begin
   GetMonthYearCalculationEstimate;
   GetSourceData; // Выводим информациию об исходных данных сметы
-  GetStateCoefOrdersInRate;
-  // Получаем состояние коэффициента по приказам (применять / не применять)
-
   try
     with qrTemp do
     begin
@@ -5549,31 +5411,6 @@ begin
   end;
 
   PopupMenuCoefDeleteSet.Enabled := (qrCalculations.FieldByName('ID').AsInteger > 0);
-end;
-
-procedure TFormCalculationEstimate.GetStateCoefOrdersInRate;
-begin
-  // Получаем флаг состояния коэффициента по приказам (применять или не применять)
-
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT coef_orders FROM smetasourcedata WHERE sm_id = :sm_id;');
-      ParamByName('sm_id').Value := IdEstimate;
-      Active := True;
-
-      if FieldByName('coef_orders').AsInteger = 1 then
-        EditCoefOrders.Color := $0080FF80
-      else
-        EditCoefOrders.Color := $008080FF;
-    end;
-  except
-    on e: Exception do
-      MessageBox(0, PChar('При получения флага применения коэффициента по приказам возникла ошибка:' +
-        sLineBreak + sLineBreak + e.message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
 end;
 
 procedure TFormCalculationEstimate.AddCoefToRate(coef_id: Integer);

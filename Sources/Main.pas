@@ -60,8 +60,6 @@ type
     N16: TMenuItem;
     OXRandOPRg: TMenuItem;
     HRRPrices: TMenuItem;
-    HRRPricesReferenceData: TMenuItem;
-    HRRPricesOwnData: TMenuItem;
     MMAeroAdmin: TMenuItem;
     MMAmmyyAdmin: TMenuItem;
     MenuOrganizations: TMenuItem;
@@ -139,6 +137,7 @@ type
     EXCEL2: TMenuItem;
     Excel3: TMenuItem;
     mN23: TMenuItem;
+    mhfybkbotafqkjd1: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -180,8 +179,6 @@ type
     procedure WriteSettingsToFile(PathFile: String);
     procedure HRRReferenceDataClick(Sender: TObject);
     procedure HRROwnDataClick(Sender: TObject);
-    procedure HRRPricesReferenceDataClick(Sender: TObject);
-    procedure HRRPricesOwnDataClick(Sender: TObject);
     procedure RunProgramsRemoteControl(Sender: TObject);
     procedure MenuPartsEstimatesClick(Sender: TObject);
     procedure MenuSetCoefficientsClick(Sender: TObject);
@@ -231,6 +228,8 @@ type
     procedure mN22Click(Sender: TObject);
     procedure N22Click(Sender: TObject);
     procedure mN23Click(Sender: TObject);
+    procedure mhfybkbotafqkjd1Click(Sender: TObject);
+    procedure HRRPricesClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -361,7 +360,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
-  NormativDirectory, ForecastCostIndex;
+  NormativDirectory, ForecastCostIndex, FileStorage;
 
 {$R *.dfm}
 
@@ -580,7 +579,7 @@ procedure TFormMain.FormShowEvent2(Sender: TObject);
 var
   TmpForm: TForm;
 begin
-  PanelCover.Visible := true;
+  // PanelCover.Visible := true;
   try
     TmpForm := TForm(Sender);
     if TmpForm.WindowState = wsMinimized then
@@ -588,7 +587,7 @@ begin
 
     TmpForm.Show;
   finally
-    PanelCover.Visible := False;
+    // PanelCover.Visible := False;
   end;
 end;
 
@@ -607,7 +606,7 @@ begin
   ButtonsWindows[CountOpenWindows].Width := 140;
   ButtonsWindows[CountOpenWindows].Height := 25;
   ButtonsWindows[CountOpenWindows].Top := 1;
-  ButtonsWindows[CountOpenWindows].Caption := CaptionButton;
+  ButtonsWindows[CountOpenWindows].caption := CaptionButton;
   ButtonsWindows[CountOpenWindows].GroupIndex := 1;
   ButtonsWindows[CountOpenWindows].Down := true;
   ButtonsWindows[CountOpenWindows].ShowHint := true;
@@ -632,7 +631,7 @@ begin
 
   Y := -1;
   for i := 0 to CountOpenWindows - 1 do
-    if (ButtonsWindows[i].Caption = CaptionButton) then
+    if (ButtonsWindows[i].caption = CaptionButton) then
     begin
       Y := i;
       Break;
@@ -658,7 +657,7 @@ var
   i: integer;
 begin
   for i := 0 to CountOpenWindows - 1 do
-    if ButtonsWindows[i].Caption = CaptionButton then
+    if ButtonsWindows[i].caption = CaptionButton then
     begin
       ButtonsWindows[i].Down := true;
       Exit;
@@ -689,17 +688,17 @@ begin
     TmpMi := TMenuItem.Create(Mi);
 
     try
-      TmpMi.Caption := DateTimeToStr(FArhiv.GetArhivTime(FArhiv.ArhFiles[i]));
+      TmpMi.caption := DateTimeToStr(FArhiv.GetArhivTime(FArhiv.ArhFiles[i]));
     except
-      TmpMi.Caption := ExtractFileName(FArhiv.ArhFiles[i]);
+      TmpMi.caption := ExtractFileName(FArhiv.ArhFiles[i]);
     end;
 
     TmpMi2 := TMenuItem.Create(TmpMi);
-    TmpMi2.Caption := 'Восстановить';
+    TmpMi2.caption := 'Восстановить';
     TmpMi2.OnClick := PMRestoreBackupClick;
     TmpMi.Add(TmpMi2);
     TmpMi2 := TMenuItem.Create(TmpMi);
-    TmpMi2.Caption := 'Удалить';
+    TmpMi2.caption := 'Удалить';
     TmpMi2.OnClick := PMDeleteBackupClick;
     TmpMi.Add(TmpMi2);
     TmpMi.Tag := integer(FArhiv.ArhFiles[i]);
@@ -735,9 +734,9 @@ procedure TFormMain.TimerUpdateTimer(Sender: TObject);
 var
   i: integer;
 begin
-  LabelDot.Caption := '';
+  LabelDot.caption := '';
   for i := 1 to TimerUpdate.Tag do
-    LabelDot.Caption := LabelDot.Caption + '.';
+    LabelDot.caption := LabelDot.caption + '.';
   if TimerUpdate.Tag >= 3 then
     TimerUpdate.Tag := 0
   else
@@ -864,7 +863,7 @@ end;
 procedure TFormMain.N22Click(Sender: TObject);
 begin
 
- Screen.Cursor := crSQLWait;
+  Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
     begin
@@ -875,8 +874,8 @@ begin
       end;
       // **************************************************************************************************************************************
 
-
-       ShellExecute (Handle, nil, 'report.exe', PChar('S'+INTTOSTR(FormObjectsAndEstimates.IdEstimate)),  PChar(FileReportPath+'report\') , SW_maximIZE);
+      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormObjectsAndEstimates.IdEstimate)),
+        PChar(FileReportPath + 'report\'), SW_maximIZE);
 
       // **************************************************************************************************************************************
     end
@@ -889,7 +888,8 @@ begin
           showmessage('Не выбрана смета');
           Exit;
         end;
-           ShellExecute (Handle, nil, 'report.exe', PChar('S'+INTTOSTR(FormCalculationEstimate.IdEstimate)),  PChar(FileReportPath+'report\') , SW_maximIZE);
+        ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+          PChar(FileReportPath + 'report\'), SW_maximIZE);
 
         // **************************************************************************************************************************************
       end;
@@ -906,6 +906,13 @@ begin
 end;
 
 // Расход материалов по акту
+procedure TFormMain.mhfybkbotafqkjd1Click(Sender: TObject);
+begin
+  if (not Assigned(fFileStorage)) then
+    fFileStorage := TfFileStorage.Create(Self);
+  fFileStorage.Show;
+end;
+
 procedure TFormMain.mN15Click(Sender: TObject);
 begin
   if (not Assigned(fTariffDict)) then
@@ -1666,16 +1673,15 @@ begin
     FormOwnData := TFormOwnData.Create(Self, 's', False);
 end;
 
-procedure TFormMain.HRRPricesReferenceDataClick(Sender: TObject);
+procedure TFormMain.HRRPricesClick(Sender: TObject);
 begin
+  // Справочные
   if (not Assigned(FormPricesReferenceData)) then
     FormPricesReferenceData := TFormPricesReferenceData.Create(Self, 'g', true);
-end;
-
-procedure TFormMain.HRRPricesOwnDataClick(Sender: TObject);
-begin
-  if (not Assigned(FormPricesOwnData)) then
+  { Собственные
+    if (not Assigned(FormPricesOwnData)) then
     FormPricesOwnData := TFormPricesOwnData.Create(Self, 's', true);
+  }
 end;
 
 procedure TFormMain.OXRandOPRgClick(Sender: TObject);
@@ -1720,7 +1726,7 @@ var
   Mi: TMenuItem;
 begin
   Mi := TMenuItem(Sender);
-  if (MessageBox(Self.Handle, PChar('Удалить резервную копию от ' + StringReplace(Mi.Parent.Caption, '&', '',
+  if (MessageBox(Self.Handle, PChar('Удалить резервную копию от ' + StringReplace(Mi.Parent.caption, '&', '',
     [rfReplaceAll]) + '?'), 'Резервное копирование', MB_YESNO + MB_ICONQUESTION) = IDYES) then
     FArhiv.DeleteArhiv(string(Mi.Parent.Tag));
 end;
@@ -1730,7 +1736,7 @@ var
   Mi: TMenuItem;
 begin
   Mi := TMenuItem(Sender);
-  if (MessageBox(Self.Handle, PChar('Восстановить из резервной копии от ' + StringReplace(Mi.Parent.Caption,
+  if (MessageBox(Self.Handle, PChar('Восстановить из резервной копии от ' + StringReplace(Mi.Parent.caption,
     '&', '', [rfReplaceAll]) + '?' + #13#10 +
     'Внимание, все данные внесенные после создания данной копии, будут утеряны!'), 'Резервное копирование',
     MB_YESNO + MB_ICONQUESTION) = IDYES) then

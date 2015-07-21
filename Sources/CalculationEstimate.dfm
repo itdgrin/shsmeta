@@ -2,7 +2,7 @@
   Left = 0
   Top = 0
   Caption = #1057#1084#1077#1090#1085#1099#1081' '#1088#1072#1089#1095#1077#1090
-  ClientHeight = 564
+  ClientHeight = 537
   ClientWidth = 921
   Color = clBtnFace
   DoubleBuffered = True
@@ -65,59 +65,6 @@
       Caption = '3. '#1057#1057#1056
       OnClick = SpeedButtonSSRClick
     end
-    object btnDescription: TSpeedButton
-      Left = 667
-      Top = 1
-      Width = 53
-      Height = 25
-      Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
-      GroupIndex = 2
-      Caption = #1054#1087#1080#1089#1072#1085#1080#1077
-      Enabled = False
-      ParentShowHint = False
-      ShowHint = True
-      OnClick = btnDescriptionClick
-    end
-    object btnMaterials: TSpeedButton
-      Left = 472
-      Top = 1
-      Width = 58
-      Height = 25
-      Hint = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
-      GroupIndex = 2
-      Down = True
-      Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
-      Enabled = False
-      ParentShowHint = False
-      ShowHint = True
-      OnClick = btnMaterialsClick
-    end
-    object btnMechanisms: TSpeedButton
-      Left = 534
-      Top = 1
-      Width = 62
-      Height = 25
-      Hint = #1052#1077#1093#1072#1085#1080#1079#1084#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
-      GroupIndex = 2
-      Caption = #1052#1077#1093#1072#1085#1080#1079#1084#1099
-      Enabled = False
-      ParentShowHint = False
-      ShowHint = True
-      OnClick = btnMechanismsClick
-    end
-    object btnEquipments: TSpeedButton
-      Left = 600
-      Top = 1
-      Width = 64
-      Height = 25
-      Hint = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
-      GroupIndex = 2
-      Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
-      Enabled = False
-      ParentShowHint = False
-      ShowHint = True
-      OnClick = btnEquipmentsClick
-    end
     object BevelTopMenu: TBevel
       Left = 464
       Top = 4
@@ -149,6 +96,7 @@
       Enabled = False
       ParentShowHint = False
       ShowHint = True
+      Visible = False
       OnClick = btnDumpClick
     end
     object btnTransp: TSpeedButton
@@ -162,11 +110,12 @@
       Enabled = False
       ParentShowHint = False
       ShowHint = True
+      Visible = False
       OnClick = btnTranspClick
     end
     object btnStartup: TSpeedButton
       Left = 827
-      Top = 2
+      Top = 1
       Width = 47
       Height = 25
       Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
@@ -175,249 +124,17 @@
       Enabled = False
       ParentShowHint = False
       ShowHint = True
+      Visible = False
       OnClick = btnStartupClick
     end
-  end
-  object PanelBottomButtons: TPanel
-    Left = 0
-    Top = 535
-    Width = 921
-    Height = 29
-    Align = alBottom
-    ParentBackground = False
-    TabOrder = 7
-    Visible = False
-    object PanelButtonsLocalEstimate: TPanel
-      Left = 0
-      Top = 0
-      Width = 937
-      Height = 27
-      BevelOuter = bvNone
-      UseDockManager = False
-      ParentBackground = False
+    object btnKC6: TButton
+      Left = 471
+      Top = 2
+      Width = 85
+      Height = 25
+      Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
       TabOrder = 0
-      Visible = False
-      object ButtonCopy: TButton
-        Left = 3
-        Top = 1
-        Width = 100
-        Height = 25
-        Hint = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1076#1072#1085#1085#1099#1077' Ctrl+C'
-        Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-      end
-      object ButtonInsert: TButton
-        Left = 109
-        Top = 1
-        Width = 100
-        Height = 25
-        Hint = #1042#1089#1090#1072#1074#1080#1090#1100' '#1076#1072#1085#1085#1099#1077' Ctrl+V'
-        Caption = #1042#1089#1090#1072#1074#1080#1090#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-      end
-      object ButtonSelect: TButton
-        Left = 215
-        Top = 1
-        Width = 100
-        Height = 25
-        Hint = #1042#1099#1076#1077#1083#1080#1090#1100' F2'
-        Caption = #1042#1099#1076#1077#1083#1080#1090#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
-      end
-      object ButtonSelectRange: TButton
-        Left = 321
-        Top = 1
-        Width = 100
-        Height = 25
-        Hint = #1042#1099#1076#1077#1083#1080#1090#1100' '#1076#1080#1072#1087#1086#1079#1086#1085' Shift+F2'
-        Caption = #1044#1080#1072#1087#1086#1079#1086#1085
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 3
-      end
-      object ButtonAdd: TButton
-        Left = 427
-        Top = 1
-        Width = 100
-        Height = 25
-        Hint = #1044#1086#1073#1072#1074#1080#1090#1100' F5'
-        Caption = #1044#1086#1073#1072#1074#1080#1090#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 4
-      end
-      object ButtonFind: TButton
-        Left = 533
-        Top = 1
-        Width = 100
-        Height = 25
-        Hint = #1053#1072#1081#1090#1080' F6'
-        Caption = #1053#1072#1081#1090#1080
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 5
-      end
-      object ButtonDelete: TButton
-        Left = 639
-        Top = 1
-        Width = 100
-        Height = 25
-        Hint = #1059#1076#1072#1083#1080#1090#1100' F8'
-        Caption = #1059#1076#1072#1083#1080#1090#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 6
-      end
-      object ButtonTechnicalPart: TButton
-        Left = 745
-        Top = 1
-        Width = 100
-        Height = 25
-        Hint = #1058#1077#1093'. '#1095#1072#1089#1090#1100
-        Caption = #1058#1077#1093'. '#1095#1072#1089#1090#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 7
-      end
-    end
-    object PanelButtonsSSR: TPanel
-      Left = 1000
-      Top = 1
-      Width = 905
-      Height = 27
-      BevelOuter = bvNone
-      ParentBackground = False
-      TabOrder = 2
-      object ButtonSSRAdd: TButton
-        Left = 3
-        Top = 1
-        Width = 110
-        Height = 25
-        Hint = #1044#1086#1073#1072#1074#1080#1090#1100' '#1089#1090#1088#1086#1082#1091
-        Caption = #1044#1086#1073#1072#1074#1080#1090#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = ButtonSSRAddClick
-      end
-      object ButtonSSRDelete: TButton
-        Left = 119
-        Top = 1
-        Width = 110
-        Height = 25
-        Hint = #1059#1076#1072#1083#1080#1090#1100' '#1089#1090#1088#1086#1082#1091
-        Caption = #1059#1076#1072#1083#1080#1090#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-      end
-      object ButtonSSRTax: TButton
-        Left = 235
-        Top = 1
-        Width = 110
-        Height = 25
-        Hint = #1056#1072#1089#1095#1105#1090
-        Caption = #1053#1072#1083#1086#1075
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
-        OnClick = ButtonSSRTaxClick
-      end
-      object ButtonSSRDetails: TButton
-        Left = 351
-        Top = 1
-        Width = 110
-        Height = 25
-        Hint = #1056#1077#1082#1074#1080#1079#1080#1090#1099
-        Caption = #1056#1077#1082#1074#1080#1079#1080#1090#1099
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 3
-        OnClick = ButtonSSRDetailsClick
-      end
-      object ButtonSSRUpload: TButton
-        Left = 467
-        Top = 1
-        Width = 110
-        Height = 25
-        Hint = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1096#1072#1073#1083#1086#1085
-        Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 4
-      end
-      object ButtonSSRSave: TButton
-        Left = 583
-        Top = 1
-        Width = 110
-        Height = 25
-        Hint = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1096#1072#1073#1083#1086#1085
-        Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 5
-      end
-      object ButtonSRRNew: TButton
-        Left = 699
-        Top = 1
-        Width = 110
-        Height = 25
-        Hint = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1096#1072#1073#1083#1086#1085
-        Caption = #1053#1086#1074#1099#1081
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 6
-        OnClick = ButtonSRRNewClick
-      end
-    end
-    object PanelButtonsSummaryCalculations: TPanel
-      Left = 1000
-      Top = 0
-      Width = 842
-      Height = 27
-      BevelOuter = bvNone
-      ParentBackground = False
-      TabOrder = 1
-      object Button1: TButton
-        Left = 3
-        Top = 1
-        Width = 110
-        Height = 25
-        Hint = #1056#1072#1089#1095#1105#1090
-        Caption = #1050#1072#1088#1090#1086#1095#1082#1072
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-      end
-      object Button2: TButton
-        Left = 119
-        Top = 1
-        Width = 110
-        Height = 25
-        Hint = #1056#1072#1089#1095#1105#1090
-        Caption = #1056#1072#1089#1095#1105#1090
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-      end
-      object Button3: TButton
-        Left = 235
-        Top = 1
-        Width = 115
-        Height = 25
-        Hint = #1056#1072#1089#1095#1105#1090
-        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1088#1072#1089#1095#1105#1090#1086#1074
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
-        OnClick = Button3Click
-      end
+      OnClick = btnKC6Click
     end
   end
   object PanelLocalEstimate: TPanel
@@ -491,21 +208,74 @@
         TabOrder = 0
         object Label2: TLabel
           Left = 8
-          Top = 5
+          Top = 4
           Width = 22
           Height = 13
           Caption = #1058#1080#1087':'
         end
         object LabelCategory: TLabel
-          Left = 487
-          Top = 5
+          Left = 205
+          Top = 4
           Width = 40
           Height = 13
           Caption = #1056#1072#1079#1088#1103#1076':'
         end
+        object btnMaterials: TSpeedButton
+          Left = 476
+          Top = 1
+          Width = 80
+          Height = 21
+          Hint = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
+          GroupIndex = 2
+          Down = True
+          Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
+          Enabled = False
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = btnMaterialsClick
+        end
+        object btnMechanisms: TSpeedButton
+          Left = 557
+          Top = 1
+          Width = 80
+          Height = 21
+          Hint = #1052#1077#1093#1072#1085#1080#1079#1084#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
+          GroupIndex = 2
+          Caption = #1052#1077#1093#1072#1085#1080#1079#1084#1099
+          Enabled = False
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = btnMechanismsClick
+        end
+        object btnEquipments: TSpeedButton
+          Left = 637
+          Top = 1
+          Width = 80
+          Height = 21
+          Hint = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
+          GroupIndex = 2
+          Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
+          Enabled = False
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = btnEquipmentsClick
+        end
+        object btnDescription: TSpeedButton
+          Left = 717
+          Top = 1
+          Width = 80
+          Height = 21
+          Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
+          GroupIndex = 2
+          Caption = #1054#1087#1080#1089#1072#1085#1080#1077
+          Enabled = False
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = btnDescriptionClick
+        end
         object Edit1: TEdit
-          Left = 308
-          Top = 2
+          Left = 297
+          Top = 1
           Width = 93
           Height = 21
           Alignment = taCenter
@@ -515,8 +285,8 @@
           Text = #1044#1077#1081#1089#1090#1074#1091#1102#1097#1072#1103
         end
         object Edit2: TEdit
-          Left = 407
-          Top = 2
+          Left = 396
+          Top = 1
           Width = 74
           Height = 21
           Alignment = taCenter
@@ -527,47 +297,27 @@
           TabOrder = 3
           Text = '01.03.2013'
         end
-        object EditCoefOrders: TEdit
-          Left = 579
-          Top = 2
-          Width = 146
-          Height = 21
-          Alignment = taCenter
-          Color = 14802912
-          ReadOnly = True
-          TabOrder = 5
-          Text = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1087#1086' '#1087#1088#1080#1082#1072#1079#1072#1084
-        end
         object EditCategory: TEdit
-          Left = 533
-          Top = 2
+          Left = 251
+          Top = 1
           Width = 40
           Height = 21
           Alignment = taCenter
           Color = 14802912
           ReadOnly = True
-          TabOrder = 4
-        end
-        object Button4: TButton
-          Left = 731
-          Top = 1
-          Width = 85
-          Height = 24
-          Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
-          TabOrder = 0
-          OnClick = Button4Click
+          TabOrder = 1
         end
         object dblkcbbID_TYPE_DATA: TDBLookupComboBox
           Left = 36
-          Top = 2
-          Width = 266
+          Top = 1
+          Width = 165
           Height = 21
           DataField = 'ID_TYPE_DATA'
           DataSource = dsRatesEx
           KeyField = 'ID_TYPE_DATA'
           ListField = 'TYPE_NAME'
           ListSource = dsTypeData
-          TabOrder = 1
+          TabOrder = 0
         end
       end
       object PanelClientLeft: TPanel
@@ -659,7 +409,7 @@
               Expanded = False
               FieldName = 'OBJ_CODE'
               Title.Alignment = taCenter
-              Title.Caption = #8470' '#1085#1086#1088#1084#1072#1090#1080#1074#1072
+              Title.Caption = #1050#1086#1076
               Width = 150
               Visible = True
             end
@@ -1660,7 +1410,7 @@
                 FieldName = 'COAST_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '   '#1062#1077#1085#1072' ('#1057')    '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '   '#1062#1077#1085#1072' ('#1057#1084')    '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1669,7 +1419,7 @@
                 FieldName = 'COAST_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1062#1077#1085#1072' ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = ' '#1062#1077#1085#1072' ('#1057#1084')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1678,7 +1428,7 @@
                 FieldName = 'PRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1057')      '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1057#1084')      '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1687,7 +1437,7 @@
                 FieldName = 'PRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1057#1084')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1696,7 +1446,7 @@
                 FieldName = 'ZP_MACH_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057#1084')   '#1089' '#1053#1044#1057', p.'
                 Width = 75
                 Visible = True
               end
@@ -1705,7 +1455,7 @@
                 FieldName = 'ZP_MACH_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057#1084')  '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 75
                 Visible = True
               end
@@ -1714,7 +1464,7 @@
                 FieldName = 'ZPPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057#1084')   '#1089' '#1053#1044#1057', p.'
                 Width = 80
                 Visible = True
               end
@@ -1723,7 +1473,7 @@
                 FieldName = 'ZPPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057#1084')  '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 80
                 Visible = True
               end
@@ -1740,7 +1490,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1062#1077#1085#1072' ('#1060')    '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '  '#1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1748,7 +1498,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1062#1077#1085#1072' ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = ' '#1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1757,7 +1507,7 @@
                 FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1060')      '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')      '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1766,7 +1516,7 @@
                 FieldName = 'FPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1774,7 +1524,7 @@
                 Expanded = False
                 FieldName = 'FZP_MACH_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1060')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1092#1072#1082#1090')   '#1089' '#1053#1044#1057', p.'
                 Width = 75
                 Visible = True
               end
@@ -1782,7 +1532,7 @@
                 Expanded = False
                 FieldName = 'FZP_MACH_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1060')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1092#1072#1082#1090')  '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 75
                 Visible = True
               end
@@ -1791,7 +1541,7 @@
                 FieldName = 'FZPPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1060')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1092#1072#1082#1090')   '#1089' '#1053#1044#1057', p.'
                 Width = 80
                 Visible = True
               end
@@ -1800,7 +1550,7 @@
                 FieldName = 'FZPPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1060')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1092#1072#1082#1090')  '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 80
                 Visible = True
               end
@@ -1938,7 +1688,7 @@
                 FieldName = 'COAST_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '   '#1062#1077#1085#1072' ('#1057')    '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '   '#1062#1077#1085#1072' ('#1057#1084')    '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1947,7 +1697,7 @@
                 FieldName = 'COAST_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1062#1077#1085#1072' ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = ' '#1062#1077#1085#1072' ('#1057#1084')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1956,7 +1706,7 @@
                 FieldName = 'PRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1057')      '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1057#1084')      '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1965,7 +1715,7 @@
                 FieldName = 'PRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1057')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1057#1084')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1983,7 +1733,7 @@
                 FieldName = 'TRANSP_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057')  '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057#1084')  '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1992,7 +1742,7 @@
                 FieldName = 'TRANSP_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2009,7 +1759,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1062#1077#1085#1072' ('#1060')    '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '  '#1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2017,7 +1767,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1062#1077#1085#1072' ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = ' '#1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2026,7 +1776,7 @@
                 FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1060')     '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')     '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -2035,7 +1785,7 @@
                 FieldName = 'FPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1057#1090#1086#1080#1084'. ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = ' '#1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -2043,7 +1793,7 @@
                 Expanded = False
                 FieldName = 'FTRANSP_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060')  '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090')  '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2051,7 +1801,7 @@
                 Expanded = False
                 FieldName = 'FTRANSP_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2179,7 +1929,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1062#1077#1085#1072' ('#1060')    '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '  '#1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2187,7 +1937,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1062#1077#1085#1072' ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = ' '#1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2195,7 +1945,7 @@
                 Expanded = False
                 FieldName = 'DEVICE_TRANSP_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060')  '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090')  '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2203,7 +1953,7 @@
                 Expanded = False
                 FieldName = 'DEVICE_TRANSP_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1060') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2212,7 +1962,7 @@
                 FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1060')     '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')     '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -2221,7 +1971,7 @@
                 FieldName = 'FPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1057#1090#1086#1080#1084'. ('#1060')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = ' '#1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -3014,7 +2764,7 @@
     object EditNameEstimate: TEdit
       Left = 125
       Top = 2
-      Width = 125
+      Width = 646
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
@@ -3031,7 +2781,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 1
-    OnResize = PanelObjectResize
     DesignSize = (
       921
       25)
@@ -3087,7 +2836,7 @@
     object EditNameObject: TEdit
       Left = 125
       Top = 2
-      Width = 125
+      Width = 460
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
@@ -3376,7 +3125,6 @@
     object PMCoefOrders: TMenuItem
       Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1087#1086' '#1087#1088#1080#1082#1072#1079#1072#1084
       Visible = False
-      OnClick = PMCoefOrdersClick
     end
     object mN11: TMenuItem
       Caption = '-'
@@ -3433,7 +3181,7 @@
       OnClick = PMMatAddToRateClick
     end
     object PMMatReplace: TMenuItem
-      Caption = #1047#1072#1084#1077#1085#1080#1090#1100' '#1084#1072#1090#1077#1088#1080#1072#1083
+      Caption = #1047#1072#1084#1077#1085#1080#1090#1100' '#1084#1072#1090#1077#1088#1080#1072#1083' / '#1055' '#1085#1072' '#1057
       OnClick = ReplacementClick
     end
     object PMMatDelete: TMenuItem
@@ -3478,7 +3226,6 @@
     object PopupMenuCoefOrders: TMenuItem
       Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1087#1086' '#1087#1088#1080#1082#1072#1079#1072#1084
       Visible = False
-      OnClick = PopupMenuCoefOrdersClick
     end
   end
   object pmMechanizms: TPopupMenu
@@ -5133,7 +4880,7 @@
       '  `types_data`'
       'ORDER BY `ID`')
     Left = 112
-    Top = 208
+    Top = 232
   end
   object dsTypeData: TDataSource
     DataSet = qrTypeData

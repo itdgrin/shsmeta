@@ -72,6 +72,7 @@ object fNormativDirectory: TfNormativDirectory
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnDrawColumnCell = grSostavDrawColumnCell
     AutoAppend = False
     AutoSizeColumns = True
     SelectColumnsDialogStrings.Caption = 'Select columns'

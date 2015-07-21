@@ -83,7 +83,7 @@ type
     qrSW: TFDQuery;
     dsSW: TDataSource;
     grSostav: TJvDBGrid;
-    JvDBGrid1: TJvDBGrid;
+    grRates: TJvDBGrid;
     tmrScroll: TTimer;
     dbedtNumberNormative: TDBEdit;
     dbmmoCaptionNormative: TDBMemo;
@@ -132,17 +132,19 @@ type
     procedure GetWinterPrice;
     procedure tmrFilterTimer(Sender: TObject);
     procedure chk1Click(Sender: TObject);
-    procedure JvDBGrid1DblClick(Sender: TObject);
-    procedure JvDBGrid1Enter(Sender: TObject);
-    procedure JvDBGrid1Exit(Sender: TObject);
+    procedure grRatesDblClick(Sender: TObject);
+    procedure grRatesEnter(Sender: TObject);
+    procedure grRatesExit(Sender: TObject);
     procedure qrNormativAfterScroll(DataSet: TDataSet);
     procedure tmrScrollTimer(Sender: TObject);
+    procedure grRatesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
 
   private
     StrQuery: String; // Для формирования строки запроса к БД
 
     { StrQuickSearch: String[20]; }
-
+    PageNumber, PageRowCount: Integer; // номер текущей страницы / кол-во записей на странице
     DataBase: Char; // Справочные или собственные данные
     AllowAddition: Boolean; // Разрешено/запрещено добавлять записи из фрейма
 
@@ -264,6 +266,8 @@ begin
   SplitterRightMoved(nil);
   Splitter1Moved(nil);
   Splitter2Moved(nil);
+  // Получаем кол-во записей, помещающееся на форму
+  PageRowCount := Trunc(grRates.Height / grRates.RowsHeight);
 end;
 
 procedure TFrameRates.LabelSbornikClick(Sender: TObject);
@@ -341,7 +345,7 @@ end;
 procedure TFrameRates.SettingTable;
 begin
   // НАСТРАИВАЕМ ТАБЛИЦУ (StringGridNormative)
-  LoadDBGridSettings(JvDBGrid1);
+  LoadDBGridSettings(grRates);
   // НАСТРАИВАЕМ ТАБЛИЦУ ДЛЯ ВЫВОДА НОРМ РАСХОДОВ
   with StringGridNC do
   begin
@@ -535,8 +539,8 @@ begin
   end
   else
   begin
-    CheckBoxNormСonsumption.Checked := True;
-    CheckBoxNormСonsumption.Visible := True;
+    CheckBoxNormСonsumption.Checked := true;
+    CheckBoxNormСonsumption.Visible := true;
   end;
 
   Sbornik(dm.qrNormativ.FieldByName('normativ_directory_id').AsInteger);
@@ -1261,14 +1265,32 @@ begin
   end;
 end;
 
-procedure TFrameRates.JvDBGrid1DblClick(Sender: TObject);
+procedure TFrameRates.grRatesDblClick(Sender: TObject);
 begin
   // Если разрешено добавлять данные из фрейма
   if AllowAddition then
     FormCalculationEstimate.AddRate(dm.qrNormativ.FieldByName('IdNormative').AsInteger);
 end;
 
-procedure TFrameRates.JvDBGrid1Enter(Sender: TObject);
+procedure TFrameRates.grRatesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TFrameRates.grRatesEnter(Sender: TObject);
 begin
   FrameStatusBar.InsertText(2, '-1'); // Поиск по столбцу есть
   // R EditRate.Text := '';
@@ -1277,7 +1299,7 @@ begin
 
 end;
 
-procedure TFrameRates.JvDBGrid1Exit(Sender: TObject);
+procedure TFrameRates.grRatesExit(Sender: TObject);
 begin
   FrameStatusBar.InsertText(2, '');
   // R EditRate.Text := '';

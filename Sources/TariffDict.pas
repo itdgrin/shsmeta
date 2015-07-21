@@ -95,14 +95,19 @@ end;
 procedure TfTariffDict.grStavkaDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
-  (Sender AS TDBGrid).Canvas.Brush.Color := PS.BackgroundRows;
-  (Sender AS TDBGrid).Canvas.Font.Color := PS.FontRows;
-  if gdFocused in State then
+  with (Sender AS TJvDBGrid).Canvas do
   begin
-    (Sender AS TDBGrid).Canvas.Brush.Color := PS.BackgroundSelectCell;
-    (Sender AS TDBGrid).Canvas.Font.Color := PS.FontSelectCell;
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
   end;
-  (Sender AS TDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfTariffDict.pgcChange(Sender: TObject);

@@ -10953,27 +10953,26 @@
       end
       object HRRPrices: TMenuItem
         Caption = #1058#1072#1088#1080#1092#1099' / '#1062#1077#1085#1099' / '#1048#1085#1076#1077#1082#1089#1099
-        object HRRPricesReferenceData: TMenuItem
-          Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1099#1077
-          OnClick = HRRPricesReferenceDataClick
-        end
-        object HRRPricesOwnData: TMenuItem
-          Caption = #1057#1086#1073#1089#1090#1074#1077#1085#1085#1099#1077
-          OnClick = HRRPricesOwnDataClick
-        end
+        OnClick = HRRPricesClick
       end
       object mN15: TMenuItem
-        Caption = #1058#1072#1088#1080#1092#1099' / '#1062#1077#1085#1099' / '#1048#1085#1076#1077#1082#1089#1099' (NEW)'
+        Caption = '//'#1058#1072#1088#1080#1092#1099' / '#1062#1077#1085#1099' / '#1048#1085#1076#1077#1082#1089#1099' (NEW)'
         Visible = False
         OnClick = mN15Click
       end
       object mN22: TMenuItem
-        Caption = #1055#1077#1088#1077#1095#1077#1085#1100' '#1089#1073#1086#1088#1085#1080#1082#1086#1074
+        Caption = '//'#1055#1077#1088#1077#1095#1077#1085#1100' '#1089#1073#1086#1088#1085#1080#1082#1086#1074
+        Visible = False
         OnClick = mN22Click
       end
     end
     object MenuCatalogs: TMenuItem
       Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082#1080
+      object MenuOrganizations: TMenuItem
+        Caption = #1054#1088#1075#1072#1085#1080#1079#1072#1094#1080#1080
+        ImageIndex = 24
+        OnClick = MenuOrganizationsClick
+      end
       object MenuSetCoefficients: TMenuItem
         Caption = #1053#1072#1073#1086#1088' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074
         OnClick = MenuSetCoefficientsClick
@@ -11007,11 +11006,6 @@
           Caption = #1042#1080#1076#1099' '#1088#1072#1073#1086#1090
           OnClick = MenuListsTypesWorksClick
         end
-      end
-      object MenuOrganizations: TMenuItem
-        Caption = #1054#1088#1075#1072#1085#1080#1079#1072#1094#1080#1080
-        ImageIndex = 24
-        OnClick = MenuOrganizationsClick
       end
       object N12: TMenuItem
         Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
@@ -11218,6 +11212,11 @@
         object mN17: TMenuItem
           Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055
           OnClick = mN17Click
+        end
+        object mhfybkbotafqkjd1: TMenuItem
+          Caption = #1061#1088#1072#1085#1080#1083#1080#1097#1077' '#1092#1072#1081#1083#1086#1074
+          ImageIndex = 53
+          OnClick = mhfybkbotafqkjd1Click
         end
       end
       object ServiceBackup: TMenuItem

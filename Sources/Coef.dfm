@@ -42,6 +42,7 @@ object fCoefficients: TfCoefficients
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnDrawColumnCell = grCoefDrawColumnCell
     OnDblClick = btnAddClick
     IniStorage = FormStorage
     AutoSizeColumns = True
@@ -205,6 +206,7 @@ object fCoefficients: TfCoefficients
       FieldName = 'coef_id'
       Origin = 'COEF_ID'
       ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
       DisplayFormat = '#0.00'
     end
     object strngfldCoefcoef_name: TStringField

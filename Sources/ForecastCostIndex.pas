@@ -8,7 +8,7 @@ uses
   System.DateUtils,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid;
+  FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Buttons;
 
 type
   TfForecastCostIndex = class(TForm)
@@ -23,6 +23,7 @@ type
     dsMain: TDataSource;
     pnlMain: TPanel;
     grMain: TJvDBGrid;
+    btnRunDoc: TSpeedButton;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -30,6 +31,10 @@ type
     procedure seYearChange(Sender: TObject);
     procedure qrMainBeforeOpen(DataSet: TDataSet);
     procedure qrMainAfterOpen(DataSet: TDataSet);
+    procedure qrDocumentAfterScroll(DataSet: TDataSet);
+    procedure btnRunDocClick(Sender: TObject);
+    procedure grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     { Private declarations }
   public
@@ -44,6 +49,15 @@ implementation
 uses DataModule, Main, Tools;
 
 {$R *.dfm}
+
+procedure TfForecastCostIndex.btnRunDocClick(Sender: TObject);
+var
+  filePath: string;
+begin
+  filePath := FastSelectSQLOne('SELECT doc_path from doc where doc_id=:0',
+    VarArrayOf([qrDocument.FieldByName('doc_id').Value]));
+  Exec(filePath);
+end;
 
 procedure TfForecastCostIndex.FormActivate(Sender: TObject);
 begin
@@ -74,6 +88,29 @@ begin
   // ”дал€ем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(Caption);
   fForecastCostIndex := nil;
+end;
+
+procedure TfForecastCostIndex.grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TfForecastCostIndex.qrDocumentAfterScroll(DataSet: TDataSet);
+begin
+  btnRunDoc.Enabled := DataSet.FieldByName('doc_id').AsInteger <> 0;
 end;
 
 procedure TfForecastCostIndex.qrMainAfterOpen(DataSet: TDataSet);

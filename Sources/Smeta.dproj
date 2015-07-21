@@ -304,9 +304,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="CardTypesWorks.pas">
             <Form>FormCardTypesWorks</Form>
         </DCCReference>
-        <DCCReference Include="CoefficientOrders.pas">
-            <Form>FormCoefficientOrders</Form>
-        </DCCReference>
         <DCCReference Include="CardAct.pas">
             <Form>fCardAct</Form>
         </DCCReference>
@@ -427,6 +424,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="ForecastCostIndex.pas">
             <Form>fForecastCostIndex</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="FileStorage.pas">
+            <Form>fFileStorage</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

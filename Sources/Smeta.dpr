@@ -72,7 +72,6 @@ uses
   CardCategoriesObjects in 'CardCategoriesObjects.pas' {FormCardCategoriesObjects},
   CardSectionsEstimates in 'CardSectionsEstimates.pas' {FormCardSectionsEstimates},
   CardTypesWorks in 'CardTypesWorks.pas' {FormCardTypesWorks},
-  CoefficientOrders in 'CoefficientOrders.pas' {FormCoefficientOrders},
   CardAct in 'CardAct.pas' {fCardAct},
   Tools in 'Tools.pas',
   KC6Journal in 'KC6Journal.pas' {fKC6Journal},
@@ -108,7 +107,8 @@ uses
   fFrameCalculator in 'fFrameCalculator.pas' {Calculator: TFrame},
   NormativDirectory in 'NormativDirectory.pas' {fNormativDirectory},
   CardObjectContractorServices in 'CardObjectContractorServices.pas' {fCardObjectContractorServices},
-  ForecastCostIndex in 'ForecastCostIndex.pas' {fForecastCostIndex};
+  ForecastCostIndex in 'ForecastCostIndex.pas' {fForecastCostIndex},
+  FileStorage in 'FileStorage.pas' {fFileStorage};
 
 {$R *.res}
 var MHandle: THandle;
@@ -150,7 +150,6 @@ begin
   Application.CreateForm(TFormCategoriesObjects, FormCategoriesObjects);
   Application.CreateForm(TFormCardSectionsEstimates, FormCardSectionsEstimates);
   Application.CreateForm(TFormCardTypesWorks, FormCardTypesWorks);
-  Application.CreateForm(TFormCoefficientOrders, FormCoefficientOrders);
   Application.CreateForm(TfKC6, fKC6);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);

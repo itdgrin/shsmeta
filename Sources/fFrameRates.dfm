@@ -73,14 +73,20 @@
         OnEnter = EditRateEnter
         OnKeyPress = EditRateKeyPress
       end
-      object JvDBGrid1: TJvDBGrid
+      object grRates: TJvDBGrid
         Left = 0
         Top = 21
         Width = 110
         Height = 423
         Align = alClient
         DataSource = dsNormativ
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
         Options = [dgColumnResize, dgColLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        ParentFont = False
         ReadOnly = True
         TabOrder = 1
         TitleFont.Charset = DEFAULT_CHARSET
@@ -88,9 +94,10 @@
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
-        OnDblClick = JvDBGrid1DblClick
-        OnEnter = JvDBGrid1Enter
-        OnExit = JvDBGrid1Exit
+        OnDrawColumnCell = grRatesDrawColumnCell
+        OnDblClick = grRatesDblClick
+        OnEnter = grRatesEnter
+        OnExit = grRatesExit
         OnKeyPress = VSTKeyPress
         AutoAppend = False
         AutoSizeColumns = True

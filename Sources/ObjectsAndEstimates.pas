@@ -650,6 +650,18 @@ end;
 procedure TFormObjectsAndEstimates.dbgrdObjectsDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
   if qrObjects.FieldByName('DEL_FLAG').AsInteger = 1 then
     dbgrdObjects.Canvas.Font.Style := dbgrdObjects.Canvas.Font.Style + [fsStrikeOut];
   dbgrdObjects.DefaultDrawColumnCell(Rect, DataCol, Column, State);
