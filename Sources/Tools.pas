@@ -19,18 +19,27 @@ type
     FormKind: TKindForm;
   end;
 
+  TActivateEvent = procedure (ADataSet: TDataSet; ATag: Integer) of object;
+
   // ¬ыполнение медленных запросов к базе в отдельном потоке
   TThreadQuery = class(TThread)
   private
     FHandle: HWND;
-    FQrTemp: TFDQuery;
-    FConnect: TFDConnection;
+    FSQLText: string;
+    FTag: Integer;
+
+    FOnActivate: TActivateEvent;
     { Private declarations }
   protected
     procedure Execute; override;
   public
-    constructor Create(const ASQLText: string; AHandle: HWND);
-    destructor Destroy; override;
+    //—войства не потокобезопасные, записывать можно только когда поток приостановлен
+    property SQLText: string read FSQLText write FSQLText;
+    property OnActivate: TActivateEvent read FOnActivate write FOnActivate;
+    property Tag: Integer read FTag;
+
+    constructor Create(const ASQLText: string; AHandle: HWND;
+      ACreateSuspended: Boolean; ATag: Integer = 0);
   end;
 
   TSmClipData = class
@@ -93,38 +102,55 @@ begin
 end;
 
 // ¬ыполн€ет медленный SQL в отдельном потоке
-constructor TThreadQuery.Create(const ASQLText: String; AHandle: HWND);
+constructor TThreadQuery.Create(const ASQLText: string; AHandle: HWND;
+  ACreateSuspended: Boolean; ATag: Integer = 0);
 begin
-  inherited Create(True);
   FHandle := AHandle;
-
-  FConnect := TFDConnection.Create(nil);
-  FConnect.Params.Text := G_CONNECTSTR;
-  FQrTemp := TFDQuery.Create(nil);
-  FQrTemp.Connection := FConnect;
-  FQrTemp.SQL.Text := ASQLText;
-
-  FreeOnTerminate := True;
-  Priority := tpLower;
-  Resume;
-end;
-
-destructor TThreadQuery.Destroy;
-begin
-  FreeAndNil(FQrTemp);
-  FreeAndNil(FConnect);
-  inherited;
+  FTag := ATag;
+  FSQLText := ASQLText;
+  inherited Create(ACreateSuspended);
 end;
 
 procedure TThreadQuery.Execute;
+var TmpConnect: TFDConnection;
+    TmpTrans: TFDTransaction;
+    TmpQuery: TFDQuery;
 begin
-  inherited;
+  TmpConnect := nil;
+  TmpTrans := nil;
+  TmpQuery := nil;
   try
-    FQrTemp.Active := True;
-    SendMessage(FHandle, WM_EXCECUTE, WParam(FQrTemp), LParam(nil));
-  except
-    on e: exception do
-      SendMessage(FHandle, WM_EXCECUTE, WParam(nil), LParam(e));
+    TmpConnect := TFDConnection.Create(nil);
+    TmpConnect.Params.Text := G_CONNECTSTR;
+
+    TmpTrans := TFDTransaction.Create(nil);
+    TmpTrans.Connection := TmpConnect;
+
+    TmpQuery := TFDQuery.Create(nil);
+    TmpQuery.Connection := TmpConnect;
+    TmpQuery.SQL.Text := FSQLText;
+
+    TmpConnect.Connected := True;
+    TmpQuery.Active := True;
+
+    if Terminated then
+      Exit;
+
+    if FHandle > 0 then
+      SendMessage(FHandle, WM_EXCECUTE, WParam(TmpQuery), LParam(FTag));
+
+    if Terminated then
+      Exit;
+
+    if Assigned(OnActivate) then
+      OnActivate(TmpQuery, FTag);
+  finally
+    if Assigned(TmpConnect) then
+      FreeAndNil(TmpConnect);
+    if Assigned(TmpTrans) then
+      FreeAndNil(TmpTrans);
+    if Assigned(TmpQuery) then
+      FreeAndNil(TmpQuery);
   end;
 end;
 

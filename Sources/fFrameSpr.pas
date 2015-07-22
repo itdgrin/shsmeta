@@ -43,6 +43,8 @@ type
     procedure edtFindNameKeyPress(Sender: TObject; var Key: Char);
     procedure btnFindClick(Sender: TObject);
     procedure ListSprResize(Sender: TObject);
+    procedure LoaderTerminate(Sender: TObject);
+
   private
     //Фаг того, что справочник загружен
     FLoaded: Boolean;
@@ -344,14 +346,8 @@ end;
 procedure TSprFrame.OnExcecute(var Mes: TMessage);
 begin
   try
-    //Если в потоке возникло исключение воспроизводим его
-    if Assigned(Exception(Mes.LParam)) or
-      not Assigned(TDataSet(Mes.WParam)) then
-    begin
-      if Assigned(Exception(Mes.LParam)) then
-        raise Exception(Mes.LParam);
-      Exit;
-    end;
+    if not Assigned(TDataSet(Mes.WParam)) then
+      raise Exception.Create('DataSet not assigned.');
 
     FillSprArray(TDataSet(Mes.WParam));
     //Заполнение справочника
@@ -362,6 +358,12 @@ begin
   finally
     OnLoadDone;
   end;
+end;
+
+procedure TSprFrame.LoaderTerminate(Sender: TObject);
+begin
+  if (Sender is TThread) and Assigned(TThread(Sender).FatalException) then
+    Application.ShowException(Exception(TThread(Sender).FatalException));
 end;
 
 constructor TSprFrame.Create(AOwner: TComponent; const APriceColumn: Boolean;
@@ -493,13 +495,16 @@ end;
 
 procedure TSprFrame.LoadSpr;
 var TmpStr: string;
+    TmpThread: TThreadQuery;
 begin
   //Проверяет на наличие подходящего буфера и если его нет, подгружает из базы
   if not CheckByffer then
   begin
     TmpStr := GetSprSQL;
     //Вызов нити выполняющей запрос на данные справлчника
-    TThreadQuery.Create(TmpStr, Handle);
+    TmpThread := TThreadQuery.Create(TmpStr, Handle, True);
+    TmpThread.FreeOnTerminate := True;
+    TmpThread.Start;
     OnLoadStart;
     Application.ProcessMessages;
   end;

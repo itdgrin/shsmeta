@@ -110,7 +110,8 @@ uses
   ForecastCostIndex in 'ForecastCostIndex.pas' {fForecastCostIndex},
   FileStorage in 'FileStorage.pas' {fFileStorage},
   ForemanList in 'ForemanList.pas' {fForemanList},
-  OXROPR in 'OXROPR.pas' {fOXROPR};
+  OXROPR in 'OXROPR.pas' {fOXROPR},
+  SprController in 'SprController.pas';
 
 {$R *.res}
 var MHandle: THandle;
