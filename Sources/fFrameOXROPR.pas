@@ -67,6 +67,8 @@ type
     procedure SpeedButtonShowHideClick(Sender: TObject);
     procedure ComboBoxResolutionChange(Sender: TObject);
     procedure ADOQueryAfterScroll(DataSet: TDataSet);
+    procedure JvDBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   public
     MaisCodeList: TStringList;
     procedure ReceivingAll; override;
@@ -76,7 +78,7 @@ type
 
 implementation
 
-uses DrawingTables, DataModule, Tools;
+uses DrawingTables, DataModule, Tools, Main;
 
 {$R *.dfm}
 
@@ -164,6 +166,24 @@ begin
       MessageBox(0, PChar('При заполнении выпадающего списка ' + sLineBreak + '«Вид работ» возникла ошибка:' +
         sLineBreak + sLineBreak + E.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+end;
+
+procedure TFrameOXROPR.JvDBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

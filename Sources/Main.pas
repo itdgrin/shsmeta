@@ -240,6 +240,8 @@ type
     procedure mN23Click(Sender: TObject);
     procedure mhfybkbotafqkjd1Click(Sender: TObject);
     procedure HRRPricesClick(Sender: TObject);
+    procedure mN24Click(Sender: TObject);
+    procedure mN27Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -370,7 +372,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
-  NormativDirectory, ForecastCostIndex, FileStorage;
+  NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR;
 
 {$R *.dfm}
 
@@ -949,6 +951,20 @@ begin
   if (not Assigned(fForecastCostIndex)) then
     fForecastCostIndex := TfForecastCostIndex.Create(nil);
   fForecastCostIndex.Show;
+end;
+
+procedure TFormMain.mN24Click(Sender: TObject);
+begin
+  if (not Assigned(fForemanList)) then
+    fForemanList := TfForemanList.Create(FormMain);
+  fForemanList.Show;
+end;
+
+procedure TFormMain.mN27Click(Sender: TObject);
+begin
+  if (not Assigned(fOXROPR)) then
+    fOXROPR := TfOXROPR.Create(FormMain);
+  fOXROPR.Show;
 end;
 
 // Расчет стоимости работ по объекту (графа С) v1.00 (Вадим)
@@ -1672,7 +1688,7 @@ end;
 procedure TFormMain.HRRReferenceDataClick(Sender: TObject);
 begin
   if (not Assigned(FormReferenceData)) then
-    FormReferenceData := TFormReferenceData.Create(Self, 'g', False)
+    FormReferenceData := TFormReferenceData.Create(Self, '0', False)
   else
     FormReferenceData.Show;
 end;
@@ -1680,7 +1696,7 @@ end;
 procedure TFormMain.HRROwnDataClick(Sender: TObject);
 begin
   if (not Assigned(FormOwnData)) then
-    FormOwnData := TFormOwnData.Create(Self, 's', False);
+    FormOwnData := TFormOwnData.Create(Self, '1', False);
 end;
 
 procedure TFormMain.HRRPricesClick(Sender: TObject);

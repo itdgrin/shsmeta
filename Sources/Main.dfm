@@ -10948,7 +10948,8 @@
         OnClick = HRRReferenceDataClick
       end
       object HRROwnData: TMenuItem
-        Caption = #1057#1086#1073#1089#1090#1074#1077#1085#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
+        Caption = '// '#1057#1086#1073#1089#1090#1074#1077#1085#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
+        Visible = False
         OnClick = HRROwnDataClick
       end
       object HRRPrices: TMenuItem
@@ -10975,7 +10976,7 @@
       end
       object mN24: TMenuItem
         Caption = #1057#1087#1080#1089#1086#1082' '#1087#1088#1086#1088#1072#1073#1086#1074
-        Enabled = False
+        OnClick = mN24Click
       end
       object MenuSetCoefficients: TMenuItem
         Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099' '#1082' '#1088#1072#1089#1094#1077#1085#1082#1072#1084
@@ -11006,7 +11007,7 @@
       end
       object mN27: TMenuItem
         Caption = #1054#1061#1056' '#1080' '#1054#1055#1056
-        Enabled = False
+        OnClick = mN27Click
       end
       object mN101: TMenuItem
         Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1057#1057#1056

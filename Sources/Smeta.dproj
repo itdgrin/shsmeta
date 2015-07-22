@@ -430,6 +430,14 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>fFileStorage</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="ForemanList.pas">
+            <Form>fForemanList</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="OXROPR.pas">
+            <Form>fOXROPR</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -454,7 +462,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     <VersionInfo Name="MajorVer">1</VersionInfo>
                     <VersionInfo Name="MinorVer">0</VersionInfo>
                     <VersionInfo Name="Release">0</VersionInfo>
-                    <VersionInfo Name="Build">6655</VersionInfo>
+                    <VersionInfo Name="Build">6657</VersionInfo>
                     <VersionInfo Name="Debug">True</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -466,7 +474,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Расчёт сметы</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">1.0.0.6655</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.6657</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">Estimate</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">© 2013 Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks"/>

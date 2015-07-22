@@ -1027,12 +1027,11 @@ begin
         { Active := False; }
         SQL.Clear;
         QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative", unit_name as "Unit",'
-          + ' norm_caption as "CaptionNormativ", NORM_ACTIVE, normativ' + DataBase +
-          '.normativ_directory_id, tree_data, ((-(norm_num)<>0)) AS NORM_TYPE FROM normativ_directory, units, normativ'
-          + DataBase + { WhereStr + } ' WHERE 1=1 AND normativ' + DataBase + '.unit_id=units.unit_id ' +
-          ' and normativ_directory.normativ_directory_id=normativ' + DataBase +
-          '.normativ_directory_id ORDER BY '#13 + '(`NORM_NUM`+0),'#13 +
-          '`NORM_NUM` REGEXP "^Å" DESC, `NORM_NUM` REGEXP "^Ö" DESC,'#13 +
+          + ' norm_caption as "CaptionNormativ", NORM_ACTIVE, normativg' +
+          '.normativ_directory_id, tree_data, ((-(norm_num)<>0)) AS NORM_TYPE FROM normativ_directory, units, normativg'
+          + ' WHERE 1=1 AND normativg.NORM_BASE=' + DataBase + ' AND normativg.unit_id=units.unit_id ' +
+          ' and normativ_directory.normativ_directory_id=normativg' + '.normativ_directory_id ORDER BY '#13 +
+          '(`NORM_NUM`+0),'#13 + '`NORM_NUM` REGEXP "^Å" DESC, `NORM_NUM` REGEXP "^Ö" DESC,'#13 +
           'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13
           + '(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) + 0),'#13 +
           '(SUBSTRING(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) FROM POSITION("-" in SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1)) + 1) + 0)';

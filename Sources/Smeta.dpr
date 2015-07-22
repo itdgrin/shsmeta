@@ -108,7 +108,9 @@ uses
   NormativDirectory in 'NormativDirectory.pas' {fNormativDirectory},
   CardObjectContractorServices in 'CardObjectContractorServices.pas' {fCardObjectContractorServices},
   ForecastCostIndex in 'ForecastCostIndex.pas' {fForecastCostIndex},
-  FileStorage in 'FileStorage.pas' {fFileStorage};
+  FileStorage in 'FileStorage.pas' {fFileStorage},
+  ForemanList in 'ForemanList.pas' {fForemanList},
+  OXROPR in 'OXROPR.pas' {fOXROPR};
 
 {$R *.res}
 var MHandle: THandle;

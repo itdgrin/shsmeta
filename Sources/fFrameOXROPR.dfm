@@ -73,6 +73,7 @@ inherited FrameOXROPR: TFrameOXROPR
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = JvDBGrid1DrawColumnCell
         AutoAppend = False
         AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
