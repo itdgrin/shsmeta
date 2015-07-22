@@ -70,8 +70,8 @@ type
     SplitterCenter: TSplitter;
     PanelTopClient: TPanel;
     Label2: TLabel;
-    Edit1: TEdit;
-    Edit2: TEdit;
+    edtRateActive: TEdit;
+    edtRateActiveDate: TEdit;
     PanelClientLeft: TPanel;
     ImageSplitterLeft: TImage;
     SplitterLeft: TSplitter;
@@ -5037,6 +5037,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.tmRateTimer(Sender: TObject);
+var
+  res: Variant;
 begin
   tmRate.Enabled := False;
   if Assigned(fTreeEstimate) then
@@ -5067,6 +5069,44 @@ begin
   dbgrdCalculations.Columns[13].Width := 64;
   dbgrdCalculations.Columns[14].Width := 64;
   FixDBGridColumnsWidth(dbgrdCalculations);
+
+  // Если расценка
+  if qrRatesExID_TYPE_DATA.AsInteger = 1 then
+  begin
+    // получаем статус расценки
+    if FastSelectSQLOne('SELECT NORM_ACTIVE FROM normativg, card_rate_temp ' +
+      'WHERE card_rate_temp.ID=:0 and card_rate_temp.RATE_ID=normativg.NORMATIV_ID',
+      VarArrayOf([qrRatesExID_TABLES.Value])) = 1 then
+    begin
+      edtRateActive.Text := 'Действующая';
+      edtRateActive.Color := $0080FF80;
+      res := FastSelectSQLOne('SELECT date_beginer FROM normativg, card_rate_temp ' +
+        'WHERE card_rate_temp.ID=:0 and card_rate_temp.RATE_ID=normativg.NORMATIV_ID',
+        VarArrayOf([qrRatesExID_TABLES.Value]));
+      if VarIsNull(res) then
+        edtRateActiveDate.Text := 'не указана'
+      else
+        edtRateActiveDate.Text := DateToStr(res);
+    end
+    else
+    begin
+      edtRateActive.Text := 'Недействующая';
+      edtRateActive.Color := clRed;
+      res := FastSelectSQLOne('SELECT date_end FROM normativg, card_rate_temp ' +
+        'WHERE card_rate_temp.ID=:0 and card_rate_temp.RATE_ID=normativg.NORMATIV_ID',
+        VarArrayOf([qrRatesExID_TABLES.Value]));
+      if VarIsNull(res) then
+        edtRateActiveDate.Text := 'не указана'
+      else
+        edtRateActiveDate.Text := DateToStr(res);
+    end;
+  end
+  else
+  begin
+    edtRateActive.Text := '';
+    edtRateActive.Color := $00E1DFE0;
+    edtRateActiveDate.Text := '';
+  end;
 
   if qrRatesExID_TYPE_DATA.AsInteger = -4 then
   begin

@@ -273,7 +273,7 @@
           ShowHint = True
           OnClick = btnDescriptionClick
         end
-        object Edit1: TEdit
+        object edtRateActive: TEdit
           Left = 297
           Top = 1
           Width = 93
@@ -284,7 +284,7 @@
           TabOrder = 2
           Text = #1044#1077#1081#1089#1090#1074#1091#1102#1097#1072#1103
         end
-        object Edit2: TEdit
+        object edtRateActiveDate: TEdit
           Left = 396
           Top = 1
           Width = 74

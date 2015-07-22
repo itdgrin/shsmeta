@@ -47,9 +47,9 @@ type
     { Public declarations }
   end;
 
-  // ‘ункци€ открывает токумент, если в AData заполнено поле doc_id, иначе - предлогает заполнить это поле
-function RunDocument(const AData: TDataSet; const AShowLinkDialogIfEmpty: Boolean = True;
-  const AField: string = 'doc_id'): Variant;
+  // открывает токумент, если в AData заполнено поле doc_id, иначе - предлогает заполнить это поле
+procedure RunDocument(const AData: TDataSet; const AShowLinkDialogIfEmpty: Boolean = True;
+  const AField: string = 'doc_id');
 
 var
   fFileStorage: TfFileStorage;
@@ -61,10 +61,11 @@ implementation
 
 uses Main, DataModule, Tools;
 
-function RunDocument(const AData: TDataSet; const AShowLinkDialogIfEmpty: Boolean = True;
-  const AField: string = 'doc_id'): Variant;
+procedure RunDocument(const AData: TDataSet; const AShowLinkDialogIfEmpty: Boolean = True;
+  const AField: string = 'doc_id');
+var
+  filePath: string;
 begin
-  Result := null;
   // ≈сли передали пусто, то выходим
   if not CheckQrActiveEmpty(AData) then
     Exit;
@@ -78,7 +79,7 @@ begin
   // ≈сли св€занный документ не определен
   if (AData.FieldByName(AField).AsInteger = 0) and AShowLinkDialogIfEmpty then
   begin
-    case Application.MessageBox('¬ыбранна€ запись не зв€зана ни с одним из документов из ханилища.' + #13#10 +
+    case Application.MessageBox('¬ыбранна€ запись не св€зана с документом из ханилища.' + #13#10 +
       'ѕроизвести прив€зку нового или существующего документа?', 'ѕросмотр документа',
       MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
       IDYES:
@@ -89,7 +90,21 @@ begin
             fFileStorage := TfFileStorage.Create(nil);
           fFileStorage.btnSelect.Visible := True;
           if fFileStorage.ShowModal = mrOk then
-            Result := SelectedDocument;
+          begin
+            try
+              AData.Edit;
+              AData.FieldByName(AField).Value := SelectedDocument;
+              AData.Post;
+            except
+              on e: Exception do
+                if Application.MessageBox('ѕри попытке прив€зать документ возникла ошибка!' + #13#10 +
+                  'ѕоказать оригинальное сообщение?', 'ѕросмотр документа',
+                  MB_YESNO + MB_ICONSTOP + MB_TOPMOST) = IDYES then
+                begin
+                  ShowMessage(e.Message);
+                end;
+            end;
+          end;
           Exit;
         end;
       IDNO:
@@ -99,8 +114,12 @@ begin
     end;
   end
   else if AData.FieldByName(AField).AsInteger <> 0 then
-
-
+  begin
+    filePath := FastSelectSQLOne('CALL GetDocumentPath(:0, NULL);',
+      VarArrayOf([AData.FieldByName(AField).Value]));
+    if filePath <> '' then
+      Exec(filePath);
+  end;
 
 end;
 

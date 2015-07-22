@@ -190,6 +190,10 @@ object fForecastCostIndex: TfForecastCostIndex
         SourceDataType = dtMemo
         TargetDataType = dtAnsiString
       end>
+    UpdateOptions.AssignedValues = [uvCheckReadOnly]
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.UpdateTableName = 'smeta.forecast_cost_index'
+    UpdateOptions.KeyFields = 'forecast_cost_index_id'
     SQL.Strings = (
       
         'SELECT 0 AS forecast_cost_index_id, "<'#1074#1089#1077'>" AS name, null AS doc' +
@@ -198,7 +202,7 @@ object fForecastCostIndex: TfForecastCostIndex
       
         'select forecast_cost_index_id, name, doc_id, onDate from forecas' +
         't_cost_index'
-      'ORDER BY onDate')
+      'ORDER BY onDate desc')
     Left = 140
     Top = 40
   end

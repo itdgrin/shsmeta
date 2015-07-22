@@ -10973,44 +10973,70 @@
         ImageIndex = 24
         OnClick = MenuOrganizationsClick
       end
+      object mN24: TMenuItem
+        Caption = #1057#1087#1080#1089#1086#1082' '#1087#1088#1086#1088#1072#1073#1086#1074
+        Enabled = False
+      end
       object MenuSetCoefficients: TMenuItem
-        Caption = #1053#1072#1073#1086#1088' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074
+        Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099' '#1082' '#1088#1072#1089#1094#1077#1085#1082#1072#1084
         OnClick = MenuSetCoefficientsClick
       end
-      object MenuLists: TMenuItem
-        Caption = #1057#1087#1080#1089#1082#1080
-        object MenuListsTypesActs: TMenuItem
-          Caption = #1058#1080#1087#1099' '#1072#1082#1090#1086#1074
-          OnClick = MenuListsTypesActsClick
+      object MenuListsСategoriesObjects: TMenuItem
+        Caption = #1042#1080#1076#1099' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072
+        OnClick = MenuListsСategoriesObjectsClick
+      end
+      object MenuListsTypesActs: TMenuItem
+        Caption = #1058#1080#1087#1099' '#1072#1082#1090#1086#1074
+        OnClick = MenuListsTypesActsClick
+      end
+      object MenuListsPartsEstimates: TMenuItem
+        Caption = #1063#1072#1089#1090#1080' '#1089#1084#1077#1090
+        OnClick = MenuPartsEstimatesClick
+      end
+      object MenuListsSectionsEstimates: TMenuItem
+        Caption = #1056#1072#1079#1076#1077#1083#1099' '#1089#1084#1077#1090
+        OnClick = MenuListsSectionsEstimatesClick
+      end
+      object MenuListsTypesWorks: TMenuItem
+        Caption = #1042#1080#1076#1099' '#1088#1072#1073#1086#1090
+        OnClick = MenuListsTypesWorksClick
+      end
+      object mN26: TMenuItem
+        Caption = '-'
+      end
+      object mN27: TMenuItem
+        Caption = #1054#1061#1056' '#1080' '#1054#1055#1056
+        Enabled = False
+      end
+      object mN101: TMenuItem
+        Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1057#1057#1056
+        object mN28: TMenuItem
+          Caption = '2'
         end
-        object MenuListsIndexesChangeCost: TMenuItem
-          Caption = #1048#1085#1076#1077#1082#1089#1099' '#1080#1079#1084#1077#1085#1077#1085#1080#1103' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-          OnClick = MenuListsIndexesChangeCostClick
+        object mN32: TMenuItem
+          Caption = '3'
         end
-        object MenuListsСategoriesObjects: TMenuItem
-          Caption = #1050#1072#1090#1077#1075#1086#1088#1080#1080' '#1086#1073#1098#1077#1082#1090#1086#1074
-          OnClick = MenuListsСategoriesObjectsClick
+        object mN41: TMenuItem
+          Caption = '4'
         end
-        object MenuListsSeparator: TMenuItem
-          Caption = '-'
-        end
-        object MenuListsPartsEstimates: TMenuItem
-          Caption = #1063#1072#1089#1090#1080' '#1089#1084#1077#1090
-          OnClick = MenuPartsEstimatesClick
-        end
-        object MenuListsSectionsEstimates: TMenuItem
-          Caption = #1056#1072#1079#1076#1077#1083#1099' '#1089#1084#1077#1090
-          OnClick = MenuListsSectionsEstimatesClick
-        end
-        object MenuListsTypesWorks: TMenuItem
-          Caption = #1042#1080#1076#1099' '#1088#1072#1073#1086#1090
-          OnClick = MenuListsTypesWorksClick
+        object mN52: TMenuItem
+          Caption = '5'
         end
       end
-      object N12: TMenuItem
+      object mN29: TMenuItem
         Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
         ImageIndex = 20
-        OnClick = N12Click
+        object mN110: TMenuItem
+          Caption = #1053#1044#1047' 1'
+          Enabled = False
+        end
+        object N12: TMenuItem
+          Caption = #1053#1044#1047' 2'
+          OnClick = N12Click
+        end
+      end
+      object mN25: TMenuItem
+        Caption = '-'
       end
       object mN23: TMenuItem
         Caption = #1055#1088#1086#1075#1085#1086#1079#1085#1099#1077' '#1080#1085#1076#1077#1082#1089#1099' '#1094#1077#1085
@@ -11019,6 +11045,15 @@
       object N8: TMenuItem
         Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1077#1078#1077#1084#1077#1089#1103#1095#1085#1099#1093' '#1074#1077#1083#1080#1095#1080#1085
         OnClick = N8Click
+      end
+      object MenuLists: TMenuItem
+        Caption = '//'#1057#1087#1080#1089#1082#1080
+        Visible = False
+        object MenuListsIndexesChangeCost: TMenuItem
+          Caption = #1048#1085#1076#1077#1082#1089#1099' '#1080#1079#1084#1077#1085#1077#1085#1080#1103' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
+          Visible = False
+          OnClick = MenuListsIndexesChangeCostClick
+        end
       end
     end
     object N7: TMenuItem

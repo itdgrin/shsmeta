@@ -46,17 +46,13 @@ var
 
 implementation
 
-uses DataModule, Main, Tools;
+uses DataModule, Main, Tools, FileStorage;
 
 {$R *.dfm}
 
 procedure TfForecastCostIndex.btnRunDocClick(Sender: TObject);
-var
-  filePath: string;
 begin
-  filePath := FastSelectSQLOne('SELECT doc_path from doc where doc_id=:0',
-    VarArrayOf([qrDocument.FieldByName('doc_id').Value]));
-  Exec(filePath);
+  RunDocument(qrDocument);
 end;
 
 procedure TfForecastCostIndex.FormActivate(Sender: TObject);
@@ -110,7 +106,7 @@ end;
 
 procedure TfForecastCostIndex.qrDocumentAfterScroll(DataSet: TDataSet);
 begin
-  btnRunDoc.Enabled := DataSet.FieldByName('doc_id').AsInteger <> 0;
+  //btnRunDoc.Enabled := DataSet.FieldByName('doc_id').AsInteger <> 0;
 end;
 
 procedure TfForecastCostIndex.qrMainAfterOpen(DataSet: TDataSet);

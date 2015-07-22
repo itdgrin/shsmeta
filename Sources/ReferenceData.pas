@@ -19,7 +19,6 @@ type
     SpeedButtonEquipments: TSpeedButton;
     SpeedButtonOXROPR: TSpeedButton;
     SpeedButtonSSR: TSpeedButton;
-    SpeedButtonAlgorithmsCalculation: TSpeedButton;
 
     constructor Create(AOwner: TComponent; const vDataBase: Char; const vPriceColumn: Boolean); reintroduce;
 

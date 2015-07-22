@@ -71,7 +71,6 @@ type
     MenuListsTypesActs: TMenuItem;
     MenuListsIndexesChangeCost: TMenuItem;
     MenuListsСategoriesObjects: TMenuItem;
-    MenuListsSeparator: TMenuItem;
     N61: TMenuItem;
     mCalcResources: TMenuItem;
     N6: TMenuItem;
@@ -138,6 +137,17 @@ type
     Excel3: TMenuItem;
     mN23: TMenuItem;
     mhfybkbotafqkjd1: TMenuItem;
+    mN24: TMenuItem;
+    mN26: TMenuItem;
+    mN27: TMenuItem;
+    mN101: TMenuItem;
+    mN28: TMenuItem;
+    mN32: TMenuItem;
+    mN41: TMenuItem;
+    mN52: TMenuItem;
+    mN29: TMenuItem;
+    mN110: TMenuItem;
+    mN25: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -324,7 +334,7 @@ const
   FormNameTypesActs = 'Типы актов';
   FormNameIndexesChangeCost = 'Индексы изменения стоимости';
   FormNameCardIndexesChangeCost = 'Карточка индексов изменения стоимости';
-  FormNameCategoriesObjects = 'Категории объектов';
+  FormNameCategoriesObjects = 'Виды строительства';
   FormNameCardCategoriesObjects = 'Карточка категорий объектов';
   FormNamePriceMaterials = 'Цены на материалы';
   FormNamePriceMechanizms = 'Цены на механизмы';

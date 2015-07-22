@@ -1,7 +1,6 @@
 object fFileStorage: TfFileStorage
   Left = 0
   Top = 0
-  ActiveControl = tvDocuments
   Caption = #1061#1088#1072#1085#1080#1083#1080#1097#1077' '#1092#1072#1081#1083#1086#1074
   ClientHeight = 394
   ClientWidth = 631
@@ -14,7 +13,6 @@ object fFileStorage: TfFileStorage
   OldCreateOrder = False
   Position = poMainFormCenter
   ShowHint = True
-  Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate

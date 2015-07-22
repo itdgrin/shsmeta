@@ -86,15 +86,5 @@ object FormReferenceData: TFormReferenceData
       Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082#1080' '#1057#1057#1056
       OnClick = SpeedButtonClick
     end
-    object SpeedButtonAlgorithmsCalculation: TSpeedButton
-      Left = 727
-      Top = 1
-      Width = 120
-      Height = 25
-      GroupIndex = 1
-      Caption = #1040#1083#1075#1086#1088#1080#1090#1084#1099' '#1088#1072#1089#1095#1105#1090#1072
-      Enabled = False
-      OnClick = SpeedButtonClick
-    end
   end
 end
