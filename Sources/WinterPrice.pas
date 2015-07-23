@@ -56,6 +56,7 @@ type
     dbnvgr1: TDBNavigator;
     chkShowDeleted: TCheckBox;
     mRepair: TMenuItem;
+    mN1: TMenuItem;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
@@ -80,6 +81,7 @@ type
     procedure tvEstimatesExpanding(Sender: TObject; Node: TTreeNode; var AllowExpansion: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure mN1Click(Sender: TObject);
   private
     editMode: Boolean;
     procedure changeEditMode;
@@ -93,7 +95,7 @@ var
 
 implementation
 
-uses DataModule;
+uses DataModule, FileStorage;
 
 {$R *.dfm}
 
@@ -214,6 +216,11 @@ end;
 procedure TfWinterPrice.mDelZnormativDetailClick(Sender: TObject);
 begin
   qrZnormativs_detail.Delete;
+end;
+
+procedure TfWinterPrice.mN1Click(Sender: TObject);
+begin
+  RunDocument(qrZnormChangeDate);
 end;
 
 procedure TfWinterPrice.qrTreeDataAfterScroll(DataSet: TDataSet);

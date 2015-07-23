@@ -242,6 +242,7 @@ type
     procedure HRRPricesClick(Sender: TObject);
     procedure mN24Click(Sender: TObject);
     procedure mN27Click(Sender: TObject);
+    procedure mN110Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -372,7 +373,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
-  NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR;
+  NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR, SSR;
 
 {$R *.dfm}
 
@@ -923,6 +924,13 @@ begin
   if (not Assigned(fFileStorage)) then
     fFileStorage := TfFileStorage.Create(Self);
   fFileStorage.Show;
+end;
+
+procedure TFormMain.mN110Click(Sender: TObject);
+begin
+  if (not Assigned(fSSR)) then
+    fSSR := TfSSR.Create((Sender as TMenuItem).Tag, (Sender as TMenuItem).caption);
+  fSSR.Show;
 end;
 
 procedure TFormMain.mN15Click(Sender: TObject);

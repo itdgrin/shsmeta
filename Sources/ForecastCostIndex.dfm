@@ -196,8 +196,8 @@ object fForecastCostIndex: TfForecastCostIndex
     UpdateOptions.KeyFields = 'forecast_cost_index_id'
     SQL.Strings = (
       
-        'SELECT 0 AS forecast_cost_index_id, "<'#1074#1089#1077'>" AS name, null AS doc' +
-        '_id, null AS onDate '
+        'SELECT 0 AS forecast_cost_index_id, "<'#1072#1082#1090#1091#1072#1083#1100#1085#1099#1077'>" AS name, null' +
+        ' AS doc_id, null AS onDate '
       'UNION ALL'
       
         'select forecast_cost_index_id, name, doc_id, onDate from forecas' +
@@ -254,10 +254,19 @@ object fForecastCostIndex: TfForecastCostIndex
       
         'WHERE forecast_cost_index_detail.forecast_cost_index_ID=forecast' +
         '_cost_index.forecast_cost_index_ID AND '
+      '  YEAR(forecast_cost_index_detail.onDate) = :YEAR '
+      '  AND ((forecast_cost_index_detail.forecast_cost_index_ID=:DOC) '
       
-        '  YEAR(forecast_cost_index_detail.onDate) = :YEAR AND (forecast_' +
-        'cost_index_detail.forecast_cost_index_ID=:DOC OR :DOC=0 OR :DOC ' +
-        'IS NULL)'
+        '    OR ((:DOC=0 OR :DOC IS NULL) AND forecast_cost_index_detail.' +
+        'forecast_cost_index_ID=('
+      #9'  SELECT forecast_cost_index.forecast_cost_index_ID '
+      #9'  FROM forecast_cost_index, forecast_cost_index_detail '
+      
+        #9'  WHERE YEAR(forecast_cost_index_detail.onDate) = :YEAR AND for' +
+        'ecast_cost_index_detail.forecast_cost_index_ID=forecast_cost_ind' +
+        'ex.forecast_cost_index_ID'
+      #9'  ORDER BY forecast_cost_index.onDate DESC'
+      #9'  LIMIT 1)))'
       'ORDER BY onDate')
     Left = 204
     Top = 120

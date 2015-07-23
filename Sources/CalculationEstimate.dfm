@@ -206,6 +206,10 @@
         BevelOuter = bvNone
         ParentBackground = False
         TabOrder = 0
+        ExplicitTop = 2
+        DesignSize = (
+          912
+          25)
         object Label2: TLabel
           Left = 8
           Top = 4
@@ -221,11 +225,12 @@
           Caption = #1056#1072#1079#1088#1103#1076':'
         end
         object btnMaterials: TSpeedButton
-          Left = 476
-          Top = 1
-          Width = 80
-          Height = 21
+          Left = 543
+          Top = -1
+          Width = 90
+          Height = 25
           Hint = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
+          Anchors = [akTop, akRight]
           GroupIndex = 2
           Down = True
           Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
@@ -235,11 +240,12 @@
           OnClick = btnMaterialsClick
         end
         object btnMechanisms: TSpeedButton
-          Left = 557
-          Top = 1
-          Width = 80
-          Height = 21
+          Left = 636
+          Top = -1
+          Width = 90
+          Height = 25
           Hint = #1052#1077#1093#1072#1085#1080#1079#1084#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
+          Anchors = [akTop, akRight]
           GroupIndex = 2
           Caption = #1052#1077#1093#1072#1085#1080#1079#1084#1099
           Enabled = False
@@ -248,11 +254,12 @@
           OnClick = btnMechanismsClick
         end
         object btnEquipments: TSpeedButton
-          Left = 637
-          Top = 1
-          Width = 80
-          Height = 21
+          Left = 729
+          Top = -1
+          Width = 90
+          Height = 25
           Hint = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
+          Anchors = [akTop, akRight]
           GroupIndex = 2
           Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
           Enabled = False
@@ -261,11 +268,12 @@
           OnClick = btnEquipmentsClick
         end
         object btnDescription: TSpeedButton
-          Left = 717
-          Top = 1
-          Width = 80
-          Height = 21
+          Left = 822
+          Top = -1
+          Width = 90
+          Height = 25
           Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
+          Anchors = [akTop, akRight]
           GroupIndex = 2
           Caption = #1054#1087#1080#1089#1072#1085#1080#1077
           Enabled = False

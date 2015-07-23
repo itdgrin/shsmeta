@@ -973,17 +973,17 @@ procedure TFormCalculationEstimate.FormClose(Sender: TObject; var Action: TClose
 begin
   Action := caFree;
   FormMain.mCalcResources.Visible := False;
+  // Удаляем кнопку от этого окна (на главной форме внизу)
+  if not Act then
+    FormMain.DeleteButtonCloseWindow(CaptionButton[1])
+  else
+    FormMain.DeleteButtonCloseWindow(CaptionButton[2]);
   if (not Assigned(FormObjectsAndEstimates)) then
     FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(FormMain);
 end;
 
 procedure TFormCalculationEstimate.FormDestroy(Sender: TObject);
 begin
-  // Удаляем кнопку от этого окна (на главной форме внизу)
-  if not Act then
-    FormMain.DeleteButtonCloseWindow(CaptionButton[1])
-  else
-    FormMain.DeleteButtonCloseWindow(CaptionButton[2]);
   FormCalculationEstimate := nil;
 end;
 
@@ -4079,12 +4079,12 @@ end;
 
 procedure TFormCalculationEstimate.PMAddRatMatMechEquipOwnClick(Sender: TObject);
 begin
-  ShowFormAdditionData('s');
+  ShowFormAdditionData('1');
 end;
 
 procedure TFormCalculationEstimate.PMAddRatMatMechEquipRefClick(Sender: TObject);
 begin
-  ShowFormAdditionData('g');
+  ShowFormAdditionData('0');
 end;
 
 // Удаление чего-либо из сметы
@@ -5070,6 +5070,10 @@ begin
   dbgrdCalculations.Columns[14].Width := 64;
   FixDBGridColumnsWidth(dbgrdCalculations);
 
+  LabelCategory.Visible := qrRatesExID_TYPE_DATA.AsInteger = 1;
+  EditCategory.Visible := qrRatesExID_TYPE_DATA.AsInteger = 1;
+  edtRateActive.Visible := qrRatesExID_TYPE_DATA.AsInteger = 1;
+  edtRateActiveDate.Visible := qrRatesExID_TYPE_DATA.AsInteger = 1;
   // Если расценка
   if qrRatesExID_TYPE_DATA.AsInteger = 1 then
   begin
@@ -6037,10 +6041,11 @@ begin
 
     if qrRatesExREPLACED_COUNT.Value > 0 then
       Font.Style := Font.Style + [fsItalic];
-
+    {
     FillRect(Rect);
 
-    TextOut(Rect.Left + j, Rect.Top + 2, sdvig + Column.Field.AsString);
+    TextOut(Rect.Left + j, Rect.Top + 2, sdvig + Column.Field.AsString); }
+     (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
   end;
 end;
 

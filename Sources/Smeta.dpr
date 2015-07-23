@@ -111,6 +111,7 @@ uses
   FileStorage in 'FileStorage.pas' {fFileStorage},
   ForemanList in 'ForemanList.pas' {fForemanList},
   OXROPR in 'OXROPR.pas' {fOXROPR},
+  SSR in 'SSR.pas' {fSSR},
   SprController in 'SprController.pas';
 
 {$R *.res}
