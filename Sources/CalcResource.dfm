@@ -44,26 +44,24 @@ object fCalcResource: TfCalcResource
       Height = 13
       Caption = #1056#1072#1089#1095#1077#1090#1085#1099#1081' '#1084#1077#1089#1103#1094
     end
-    object chkEdit: TCheckBox
-      Left = 504
-      Top = 9
-      Width = 107
-      Height = 17
+    object btnShowDiff: TSpeedButton
+      Left = 416
+      Top = 29
+      Width = 122
+      Height = 22
       Anchors = [akTop, akRight]
-      Caption = #1056#1072#1089#1095#1077#1090' '#1088#1072#1079#1088#1077#1096#1077#1085
-      TabOrder = 1
-      OnClick = chkEditClick
+      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1086#1090#1082#1083#1086#1085#1077#1085#1080#1077
     end
     object edtEstimateName: TEdit
       Left = 49
       Top = 5
-      Width = 449
+      Width = 437
       Height = 21
       TabStop = False
       Anchors = [akLeft, akTop, akRight]
       Color = clMenuBar
       ReadOnly = True
-      TabOrder = 0
+      TabOrder = 1
       Text = #1057#1084#1077#1090#1072
     end
     object cbbFromMonth: TComboBox
@@ -125,6 +123,19 @@ object fCalcResource: TfCalcResource
       Items.Strings = (
         #1073#1077#1079' '#1053#1044#1057
         #1089' '#1053#1044#1057)
+    end
+    object pnlCalculationYesNo: TPanel
+      Left = 492
+      Top = 3
+      Width = 120
+      Height = 23
+      Cursor = crHandPoint
+      Anchors = [akTop, akRight]
+      Caption = #1056#1072#1089#1095#1105#1090#1099' '#1079#1072#1087#1088#1077#1097#1077#1085#1099
+      Color = clRed
+      ParentBackground = False
+      TabOrder = 0
+      OnClick = pnlCalculationYesNoClick
     end
   end
   object pgc: TPageControl

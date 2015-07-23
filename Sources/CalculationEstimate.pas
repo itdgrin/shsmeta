@@ -323,8 +323,6 @@ type
     qrRatesExOBJ_COUNT: TFloatField;
     PMCopy: TMenuItem;
     PMPaste: TMenuItem;
-    qrTreeEstimates: TFDQuery;
-    dsTreeEstimates: TDataSource;
     qrRatesExADDED_COUNT: TIntegerField;
     qrRatesExREPLACED_COUNT: TIntegerField;
     qrRatesExINCITERATOR: TIntegerField;
@@ -452,6 +450,11 @@ type
     btnEquipments: TSpeedButton;
     btnDescription: TSpeedButton;
     btnKC6: TButton;
+    btnResMat: TSpeedButton;
+    btnResMech: TSpeedButton;
+    btnResDev: TSpeedButton;
+    btnResZP: TSpeedButton;
+    btnResCalc: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -546,8 +549,6 @@ type
     procedure PMAddRatMatMechEquipOwnClick(Sender: TObject);
     procedure pmMaterialsPopup(Sender: TObject);
     procedure pmTableLeftPopup(Sender: TObject);
-    // Удаление вынесенного из расценки материала
-    procedure GetStateCoefOrdersInEstimate;
     procedure pmCoefPopup(Sender: TObject);
     procedure btnKC6Click(Sender: TObject);
 
@@ -643,6 +644,7 @@ type
     procedure PMCalcDeviceClick(Sender: TObject);
     procedure pmDevicesPopup(Sender: TObject);
     procedure PMMechAutoRepClick(Sender: TObject);
+    procedure btnResMatClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -777,7 +779,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   AdditionData, CardMaterial, CardDataEstimate,
   KC6, CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
-  TreeEstimate, ImportExportModule;
+  TreeEstimate, ImportExportModule, CalcResource;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -859,9 +861,15 @@ begin
 
   WindowState := wsMaximized;
   if not Act then
-    Caption := CaptionButton[1] + ' - Разрешено редактирование документа'
+  begin
+    Caption := CaptionButton[1] + ' - Разрешено редактирование документа';
+  end
   else
+  begin
     Caption := CaptionButton[2] + ' - Разрешено редактирование документа';
+    SpeedButtonSSR.Visible := False;
+    btnResCalc.Caption := 'Расчет';
+  end;
   // -----------------------------------------
 
   IdObject := 0;
@@ -1180,6 +1188,11 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
+begin
+  ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag);
+end;
+
 procedure TFormCalculationEstimate.btnEquipmentsClick(Sender: TObject);
 var
   s: string;
@@ -1386,44 +1399,25 @@ begin
   begin
     ImageNoData.Left := (Width - ImageNoData.Width) div 2;
     ImageNoData.Top := (Height - ImageNoData.Height) div 2;
-
-    // LabelNoData1.Left := (Width - LabelNoData1.Width) div 2;
-    // LabelNoData1.Top := (Height - (LabelNoData1.Height * 2 + 6)) div 2;
   end;
-
-  // LabelNoData2.Left := LabelNoData1.Left;
-  // LabelNoData2.Top := LabelNoData1.Top + LabelNoData1.Height + 6;
 end;
 
 procedure TFormCalculationEstimate.PanelTopMenuResize(Sender: TObject);
+
 var
   WidthButton: Integer;
-  OffsetCenter: Integer;
 begin
-  BevelTopMenu.Left := (Sender as TPanel).Width div 2;
-
-  OffsetCenter := 15; // От серединной линии до правых и левых кнопок
-
-  // -----------------------------------------
-
-  WidthButton := ((Sender as TPanel).Width div 2 - 18 - OffsetCenter) div 3;
-  // 18 = 6 * 3 (расстояния: до первой кнопки, между 1 и 2, 2 и 3)
-
-  SpeedButtonLocalEstimate.Left := 6;
-  SpeedButtonLocalEstimate.Width := WidthButton;
-
-  SpeedButtonSummaryCalculation.Left := SpeedButtonLocalEstimate.Left + SpeedButtonLocalEstimate.Width + 6;
-  SpeedButtonSummaryCalculation.Width := WidthButton;
-
-  SpeedButtonSSR.Left := SpeedButtonSummaryCalculation.Left + SpeedButtonSummaryCalculation.Width + 6;
+  if Act then
+    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - 15) div 6
+  else
+    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - 18) div 7;
+  btnKC6.Width := WidthButton;
+  btnResMat.Width := WidthButton;
+  btnResMech.Width := WidthButton;
+  btnResDev.Width := WidthButton;
+  btnResZP.Width := WidthButton;
+  btnResCalc.Width := WidthButton;
   SpeedButtonSSR.Width := WidthButton;
-
-  // -----------------------------------------
-
-  btnKC6.Left := BevelTopMenu.Left + OffsetCenter;
-
-  // Не используется пока
-  SpeedButtonModeTables.Left := btnStartup.Left + btnStartup.Width + 3;
 
   MemoRight.Height := dbmmoCAPTION.Height;
 end;
@@ -3637,13 +3631,11 @@ begin
   qrTemp.ExecSQL;
 
   RecalcEstimate;
-  // Уже выполнилась в RecalcEstimate;
-  // CloseOpen(qrCalculations);
 end;
 
 procedure TFormCalculationEstimate.pmCoefPopup(Sender: TObject);
 begin
-  GetStateCoefOrdersInEstimate;
+  PopupMenuCoefDeleteSet.Enabled := (qrCalculations.FieldByName('ID').AsInteger > 0);
 end;
 
 // вид всплывающего меню материалов
@@ -4306,19 +4298,6 @@ end;
 
 procedure TFormCalculationEstimate.LabelEstimateClick(Sender: TObject);
 begin
-  {
-    // Открываем форму ожидания
-    FormWaiting.Show;
-    Application.ProcessMessages;
-
-    if (not Assigned(FormObjectsAndEstimates)) then
-    FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(Self);
-
-    FormObjectsAndEstimates.Show;
-
-    // Закрываем форму ожидания
-    FormWaiting.Close;
-  }
   // Показываем панельку с деревом смет
   if not Assigned(fTreeEstimate) then
     fTreeEstimate := TfTreeEstimate.Create(Self);
@@ -5041,6 +5020,9 @@ var
   res: Variant;
 begin
   tmRate.Enabled := False;
+
+  Panel1.Visible := (qrRatesExID_TYPE_DATA.Value = 1);
+
   if Assigned(fTreeEstimate) then
     fTreeEstimate.qrTreeEstimates.Locate('SM_ID', qrRatesExSM_ID.Value, []);
   // Блокирует лишние действия, если в цикле выполняется работа с qrRates
@@ -5130,7 +5112,6 @@ begin
   // Можно редактировать кол-во для любой строки
   qrRatesExOBJ_COUNT.ReadOnly := False;
   qrRatesExOBJ_CODE.ReadOnly := True;
-  Panel1.Visible := (qrRatesExID_TYPE_DATA.Value = 1);
 
   // заполняет таблицы справа
   GridRatesRowSellect;
@@ -5139,7 +5120,6 @@ end;
 // Проверка, что таблица является пустой(если пустая показывается картинка нет данных)
 procedure TFormCalculationEstimate.TestOnNoData(SG: TStringGrid);
 begin
-  // if SG.Cells[0, 1] = '' then
   if SG.RowCount = 1 then
   begin
     PanelClientRight.Visible := False;
@@ -5424,37 +5404,6 @@ begin
   end;
 
   Application.ProcessMessages;
-end;
-
-procedure TFormCalculationEstimate.GetStateCoefOrdersInEstimate;
-begin
-  // Получаем флаг состояние (применять или не применять) коэффициента по приказам
-
-  try
-    PMCoefOrders.Enabled := False;
-    PopupMenuCoefOrders.Enabled := False;
-
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT coef_orders FROM smetasourcedata WHERE sm_id = :sm_id;');
-      ParamByName('sm_id').Value := IdEstimate;
-      Active := True;
-
-      if FieldByName('coef_orders').AsInteger = -1 then
-      begin
-        PMCoefOrders.Enabled := True;
-        PopupMenuCoefOrders.Enabled := True;
-      end;
-    end;
-  except
-    on e: Exception do
-      MessageBox(0, PChar('При получения флага применения коэффициента по приказам для сметы возникла ошибка:'
-        + sLineBreak + sLineBreak + e.message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-
-  PopupMenuCoefDeleteSet.Enabled := (qrCalculations.FieldByName('ID').AsInteger > 0);
 end;
 
 procedure TFormCalculationEstimate.AddCoefToRate(coef_id: Integer);
@@ -6041,11 +5990,8 @@ begin
 
     if qrRatesExREPLACED_COUNT.Value > 0 then
       Font.Style := Font.Style + [fsItalic];
-    {
-    FillRect(Rect);
 
-    TextOut(Rect.Left + j, Rect.Top + 2, sdvig + Column.Field.AsString); }
-     (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+    (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
   end;
 end;
 

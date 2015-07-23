@@ -3,7 +3,7 @@
   Top = 0
   Caption = #1057#1084#1077#1090#1085#1099#1081' '#1088#1072#1089#1095#1077#1090
   ClientHeight = 537
-  ClientWidth = 921
+  ClientWidth = 920
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -28,7 +28,7 @@
   object PanelTopMenu: TPanel
     Left = 0
     Top = 0
-    Width = 921
+    Width = 920
     Height = 27
     Align = alTop
     BevelOuter = bvNone
@@ -37,40 +37,62 @@
     ParentCtl3D = False
     TabOrder = 0
     OnResize = PanelTopMenuResize
+    ExplicitWidth = 921
     object SpeedButtonLocalEstimate: TSpeedButton
-      Left = 1
-      Top = 2
-      Width = 150
+      AlignWithMargins = True
+      Left = 3
+      Top = 1
+      Width = 116
       Height = 25
+      Margins.Top = 1
+      Margins.Bottom = 1
+      Align = alLeft
       GroupIndex = 1
       Down = True
       Caption = '1. '#1051#1086#1082#1072#1083#1100#1085#1072#1103' '#1089#1084#1077#1090#1072
       OnClick = SpeedButtonLocalEstimateClick
     end
     object SpeedButtonSummaryCalculation: TSpeedButton
-      Left = 154
-      Top = 2
-      Width = 150
+      AlignWithMargins = True
+      Left = 122
+      Top = 1
+      Width = 117
       Height = 25
+      Margins.Left = 0
+      Margins.Top = 1
+      Margins.Bottom = 1
+      Align = alLeft
       GroupIndex = 1
       Caption = '2. '#1057#1074#1086#1076#1085#1099#1077' '#1088#1072#1089#1095#1105#1090#1099
       OnClick = SpeedButtonSummaryCalculationClick
+      ExplicitLeft = 125
     end
     object SpeedButtonSSR: TSpeedButton
-      Left = 308
-      Top = 2
-      Width = 150
+      AlignWithMargins = True
+      Left = 793
+      Top = 1
+      Width = 48
       Height = 25
+      Margins.Left = 0
+      Margins.Top = 1
+      Margins.Bottom = 1
+      Align = alLeft
       GroupIndex = 1
-      Caption = '3. '#1057#1057#1056
+      Caption = #1057#1057#1056
       OnClick = SpeedButtonSSRClick
+      ExplicitLeft = 872
+      ExplicitTop = 2
     end
     object BevelTopMenu: TBevel
-      Left = 464
-      Top = 4
+      Left = 242
+      Top = 0
       Width = 2
-      Height = 19
+      Height = 27
+      Align = alLeft
       Shape = bsLeftLine
+      ExplicitLeft = 464
+      ExplicitTop = 4
+      ExplicitHeight = 19
     end
     object SpeedButtonModeTables: TSpeedButton
       Left = 893
@@ -86,9 +108,9 @@
       OnClick = SpeedButtonModeTablesClick
     end
     object btnDump: TSpeedButton
-      Left = 723
-      Top = 1
-      Width = 47
+      Left = 822
+      Top = -4
+      Width = 20
       Height = 25
       Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
@@ -100,10 +122,10 @@
       OnClick = btnDumpClick
     end
     object btnTransp: TSpeedButton
-      Left = 774
-      Top = 1
-      Width = 47
-      Height = 25
+      Left = 848
+      Top = -2
+      Width = 18
+      Height = 23
       Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
       Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
@@ -114,10 +136,10 @@
       OnClick = btnTranspClick
     end
     object btnStartup: TSpeedButton
-      Left = 827
-      Top = 1
-      Width = 47
-      Height = 25
+      Left = 872
+      Top = -2
+      Width = 23
+      Height = 23
       Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
       GroupIndex = 2
       Caption = #1056#1077#1075#1091#1083#1080#1088#1086#1074#1082#1072
@@ -127,14 +149,92 @@
       Visible = False
       OnClick = btnStartupClick
     end
+    object btnResMat: TSpeedButton
+      Tag = 1
+      AlignWithMargins = True
+      Left = 335
+      Top = 1
+      Width = 82
+      Height = 25
+      Margins.Left = 0
+      Margins.Top = 1
+      Margins.Bottom = 1
+      Align = alLeft
+      Caption = #1042#1077#1076#1086#1084#1086#1089#1090#1100' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
+      OnClick = btnResMatClick
+    end
+    object btnResMech: TSpeedButton
+      Tag = 2
+      AlignWithMargins = True
+      Left = 420
+      Top = 1
+      Width = 82
+      Height = 25
+      Margins.Left = 0
+      Margins.Top = 1
+      Margins.Bottom = 1
+      Align = alLeft
+      Caption = #1042#1077#1076#1086#1084#1086#1089#1090#1100' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
+      OnClick = btnResMatClick
+    end
+    object btnResDev: TSpeedButton
+      Tag = 3
+      AlignWithMargins = True
+      Left = 505
+      Top = 1
+      Width = 92
+      Height = 25
+      Margins.Left = 0
+      Margins.Top = 1
+      Margins.Bottom = 1
+      Align = alLeft
+      Caption = #1042#1077#1076#1086#1084#1086#1089#1090#1100' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
+      OnClick = btnResMatClick
+    end
+    object btnResZP: TSpeedButton
+      Tag = 4
+      AlignWithMargins = True
+      Left = 600
+      Top = 1
+      Width = 74
+      Height = 25
+      Margins.Left = 0
+      Margins.Top = 1
+      Margins.Bottom = 1
+      Align = alLeft
+      Caption = #1056#1072#1089#1095#1077#1090' '#1047#1055
+      OnClick = btnResMatClick
+      ExplicitLeft = 762
+      ExplicitTop = 2
+    end
+    object btnResCalc: TSpeedButton
+      AlignWithMargins = True
+      Left = 677
+      Top = 1
+      Width = 113
+      Height = 25
+      Margins.Left = 0
+      Margins.Top = 1
+      Margins.Bottom = 1
+      Align = alLeft
+      Caption = #1050#1086#1085#1090#1088#1072#1082#1090#1085#1072#1103' '#1094#1077#1085#1072
+      OnClick = btnResMatClick
+      ExplicitLeft = 824
+    end
     object btnKC6: TButton
-      Left = 471
-      Top = 2
+      AlignWithMargins = True
+      Left = 247
+      Top = 1
       Width = 85
       Height = 25
+      Margins.Top = 1
+      Margins.Bottom = 1
+      Align = alLeft
       Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
       TabOrder = 0
       OnClick = btnKC6Click
+      ExplicitLeft = 349
+      ExplicitTop = 0
     end
   end
   object PanelLocalEstimate: TPanel
@@ -218,14 +318,14 @@
           Caption = #1058#1080#1087':'
         end
         object LabelCategory: TLabel
-          Left = 205
+          Left = 200
           Top = 4
           Width = 40
           Height = 13
           Caption = #1056#1072#1079#1088#1103#1076':'
         end
         object btnMaterials: TSpeedButton
-          Left = 543
+          Left = 536
           Top = -1
           Width = 90
           Height = 25
@@ -240,7 +340,7 @@
           OnClick = btnMaterialsClick
         end
         object btnMechanisms: TSpeedButton
-          Left = 636
+          Left = 629
           Top = -1
           Width = 90
           Height = 25
@@ -254,7 +354,7 @@
           OnClick = btnMechanismsClick
         end
         object btnEquipments: TSpeedButton
-          Left = 729
+          Left = 722
           Top = -1
           Width = 90
           Height = 25
@@ -268,7 +368,7 @@
           OnClick = btnEquipmentsClick
         end
         object btnDescription: TSpeedButton
-          Left = 822
+          Left = 815
           Top = -1
           Width = 90
           Height = 25
@@ -282,7 +382,7 @@
           OnClick = btnDescriptionClick
         end
         object edtRateActive: TEdit
-          Left = 297
+          Left = 272
           Top = 1
           Width = 93
           Height = 21
@@ -293,9 +393,9 @@
           Text = #1044#1077#1081#1089#1090#1074#1091#1102#1097#1072#1103
         end
         object edtRateActiveDate: TEdit
-          Left = 396
+          Left = 366
           Top = 1
-          Width = 74
+          Width = 68
           Height = 21
           Alignment = taCenter
           BevelInner = bvLowered
@@ -306,9 +406,9 @@
           Text = '01.03.2013'
         end
         object EditCategory: TEdit
-          Left = 251
+          Left = 241
           Top = 1
-          Width = 40
+          Width = 30
           Height = 21
           Alignment = taCenter
           Color = 14802912
@@ -316,7 +416,7 @@
           TabOrder = 1
         end
         object dblkcbbID_TYPE_DATA: TDBLookupComboBox
-          Left = 36
+          Left = 31
           Top = 1
           Width = 165
           Height = 21
@@ -2632,14 +2732,15 @@
   object PanelData: TPanel
     Left = 0
     Top = 52
-    Width = 921
+    Width = 920
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 2
+    ExplicitWidth = 921
     DesignSize = (
-      921
+      920
       25)
     object Label1: TLabel
       Left = 8
@@ -2666,7 +2767,7 @@
       Caption = #1055#1088#1080#1084#1077#1095#1072#1085#1080#1077':'
     end
     object EditVAT: TEdit
-      Left = 251
+      Left = 248
       Top = 2
       Width = 50
       Height = 21
@@ -2678,7 +2779,7 @@
       Text = #1073#1077#1079' '#1053#1044#1057
     end
     object EditMonth: TEdit
-      Left = 128
+      Left = 125
       Top = 2
       Width = 117
       Height = 21
@@ -2692,14 +2793,15 @@
     object Edit4: TEdit
       Left = 378
       Top = 2
-      Width = 393
+      Width = 392
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
+      ExplicitWidth = 393
     end
     object PanelCalculationYesNo: TPanel
       Tag = 1
-      Left = 777
+      Left = 776
       Top = 1
       Width = 137
       Height = 23
@@ -2710,19 +2812,21 @@
       ParentBackground = False
       TabOrder = 0
       OnClick = PanelCalculationYesNoClick
+      ExplicitLeft = 777
     end
   end
   object PanelEstimate: TPanel
     Left = 0
     Top = 77
-    Width = 921
+    Width = 920
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 3
+    ExplicitWidth = 921
     DesignSize = (
-      921
+      920
       25)
     object LabelEstimate: TLabel
       Left = 17
@@ -2758,7 +2862,7 @@
       OnClick = LabelNameEstimateClick
     end
     object btn1: TSpeedButton
-      Left = 777
+      Left = 776
       Top = 2
       Width = 137
       Height = 22
@@ -2768,29 +2872,32 @@
       ParentShowHint = False
       ShowHint = True
       OnClick = btn1Click
+      ExplicitLeft = 777
     end
     object EditNameEstimate: TEdit
       Left = 125
       Top = 2
-      Width = 646
+      Width = 645
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
+      ExplicitWidth = 646
     end
   end
   object PanelObject: TPanel
     Left = 0
     Top = 27
-    Width = 921
+    Width = 920
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 1
+    ExplicitWidth = 921
     DesignSize = (
-      921
+      920
       25)
     object LabelObject: TLabel
       Left = 8
@@ -2810,7 +2917,7 @@
       OnClick = LabelObjectClick
     end
     object LabelNumberContract: TLabel
-      Left = 591
+      Left = 590
       Top = 6
       Width = 68
       Height = 13
@@ -2819,7 +2926,7 @@
       ExplicitLeft = 614
     end
     object LabelDateContract: TLabel
-      Left = 761
+      Left = 760
       Top = 6
       Width = 81
       Height = 13
@@ -2844,15 +2951,16 @@
     object EditNameObject: TEdit
       Left = 125
       Top = 2
-      Width = 460
+      Width = 459
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
+      ExplicitWidth = 460
     end
     object EditNumberContract: TEdit
-      Left = 665
+      Left = 664
       Top = 2
       Width = 90
       Height = 21
@@ -2860,16 +2968,18 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 1
+      ExplicitLeft = 665
     end
     object EditDateContract: TEdit
-      Left = 848
+      Left = 847
       Top = 2
-      Width = 70
+      Width = 66
       Height = 21
       Anchors = [akTop, akRight]
       Color = 14802912
       ReadOnly = True
       TabOrder = 2
+      ExplicitLeft = 848
     end
   end
   object PanelSSR: TPanel
@@ -4894,45 +5004,6 @@
     DataSet = qrTypeData
     Left = 112
     Top = 264
-  end
-  object qrTreeEstimates: TFDQuery
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    FetchOptions.AssignedValues = [evCache]
-    FetchOptions.Cache = [fiBlobs, fiMeta]
-    SQL.Strings = (
-      
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
-        'NAME,'
-      '       PARENT_ID as PARENT  '
-      'FROM smetasourcedata'
-      'WHERE SM_TYPE=2 AND '
-      '      OBJ_ID=:OBJ_ID'
-      'UNION ALL'
-      
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
-        'NAME,'
-      '       PARENT_ID as PARENT  '
-      'FROM smetasourcedata'
-      'WHERE SM_TYPE<>2 AND '
-      '      OBJ_ID=:OBJ_ID'
-      'ORDER BY NAME')
-    Left = 793
-    Top = 488
-    ParamData = <
-      item
-        Name = 'OBJ_ID'
-        DataType = ftInteger
-        ParamType = ptInput
-        Size = 10
-        Value = Null
-      end>
-  end
-  object dsTreeEstimates: TDataSource
-    DataSet = qrTreeEstimates
-    Left = 824
-    Top = 488
   end
   object pmAddRate: TPopupMenu
     Left = 616

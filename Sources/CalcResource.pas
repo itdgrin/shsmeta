@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Mask, JvDBGridFooter,
-  JvComponentBase, JvFormPlacement, System.UITypes;
+  JvComponentBase, JvFormPlacement, System.UITypes, Vcl.Buttons;
 
 type
   TfCalcResource = class(TForm)
@@ -74,7 +74,6 @@ type
     JvDBGridFooter2: TJvDBGridFooter;
     JvDBGridFooter3: TJvDBGridFooter;
     JvDBGridFooter4: TJvDBGridFooter;
-    chkEdit: TCheckBox;
     edtEstimateName: TEdit;
     FormStorage: TJvFormStorage;
     mShowDeleted: TMenuItem;
@@ -142,6 +141,8 @@ type
     qrMechDataREPLACED: TIntegerField;
     qrMaterialDataFREPLACED: TIntegerField;
     qrMechDataFREPLACED: TIntegerField;
+    pnlCalculationYesNo: TPanel;
+    btnShowDiff: TSpeedButton;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -159,7 +160,6 @@ type
     procedure grMaterialCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
     procedure qrMaterialDataBeforePost(DataSet: TDataSet);
     procedure grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
-    procedure chkEditClick(Sender: TObject);
     procedure mDeteteClick(Sender: TObject);
     procedure mRestoreClick(Sender: TObject);
     procedure grMaterialDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
@@ -192,6 +192,7 @@ type
     procedure qrMaterialDetailBeforePost(DataSet: TDataSet);
     procedure qrMechDetailBeforePost(DataSet: TDataSet);
     procedure qrDevicesDetailBeforePost(DataSet: TDataSet);
+    procedure pnlCalculationYesNoClick(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -203,7 +204,7 @@ type
 var
   fCalcResource: TfCalcResource;
 
-procedure ShowCalcResource(const ID_ESTIMATE: Variant);
+procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0);
 
 implementation
 
@@ -211,7 +212,7 @@ implementation
 
 uses Main, Tools, ReplacementMatAndMech, CalculationEstimate, DataModule, GlobsAndConst;
 
-procedure ShowCalcResource(const ID_ESTIMATE: Variant);
+procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0);
 begin
   if VarIsNull(ID_ESTIMATE) then
     Exit;
@@ -224,8 +225,9 @@ begin
   fCalcResource.edtEstimateName.Text := fCalcResource.qrEstimate.FieldByName('NAME').AsString;
   fCalcResource.seFromYear.Value := fCalcResource.qrEstimate.FieldByName('YEAR').AsInteger;
   fCalcResource.cbbNDS.ItemIndex := fCalcResource.qrEstimate.FieldByName('NDS').AsInteger;
-  fCalcResource.pgc.ActivePageIndex := 0;
+  fCalcResource.pgc.ActivePageIndex := APage;
   fCalcResource.Show;
+  fCalcResource.pgcChange(nil);
 end;
 
 procedure TfCalcResource.CalcFooter;
@@ -254,7 +256,7 @@ function TfCalcResource.CanEditField(Field: TField): Boolean;
 begin
   Result := False;
 
-  if not chkEdit.Checked then
+  if pnlCalculationYesNo.Tag = 0 then
     Exit;
 
   if (Field = grMaterial.Columns[4].Field) or (Field = grMaterial.Columns[6].Field) or
@@ -279,39 +281,6 @@ begin
     Result := True;
     Exit;
   end;
-end;
-
-procedure TfCalcResource.chkEditClick(Sender: TObject);
-begin
-  {
-    cbbNDS.Enabled := chkEdit.Checked;
-    seFromYear.Enabled := chkEdit.Checked;
-    seFromYear.ReadOnly := not chkEdit.Checked;
-    cbbFromMonth.Enabled := chkEdit.Checked;
-  }
-  if not chkEdit.Checked then
-  begin
-    Caption := 'Расчет стоимости ресурсов [редактирование запрещено]';
-    { grMaterial.Options := grMaterial.Options + [dgMultiSelect];
-      grMaterialBott.Options := grMaterialBott.Options + [dgMultiSelect];
-      grMech.Options := grMaterial.Options + [dgMultiSelect];
-      grMechBott.Options := grMechBott.Options + [dgMultiSelect];
-      grDev.Options := grDev.Options + [dgMultiSelect];
-      grDevBott.Options := grDevBott.Options + [dgMultiSelect];
-      grRates.Options := grRates.Options + [dgMultiSelect]; }
-  end
-  else
-  begin
-    Caption := 'Расчет стоимости ресурсов [редактирование разрешено]';
-    { grMaterial.Options := grMaterial.Options - [dgMultiSelect];
-      grMaterialBott.Options := grMaterialBott.Options - [dgMultiSelect];
-      grMech.Options := grMaterial.Options - [dgMultiSelect];
-      grMechBott.Options := grMechBott.Options - [dgMultiSelect];
-      grDev.Options := grDev.Options - [dgMultiSelect];
-      grDevBott.Options := grDevBott.Options - [dgMultiSelect];
-      grRates.Options := grRates.Options - [dgMultiSelect]; }
-  end;
-
 end;
 
 procedure TfCalcResource.edtMechCodeFilterChange(Sender: TObject);
@@ -345,7 +314,7 @@ begin
   // каскадирование с переносом этой формы на передний план
   FormMain.CascadeForActiveWindow;
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(Caption);
+  FormMain.SelectButtonActiveWindow('Расчет стоимости ресурсов');
 end;
 
 procedure TfCalcResource.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -356,8 +325,7 @@ end;
 procedure TfCalcResource.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
-  // FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N2Click);
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  FormMain.CreateButtonOpenWindow('Расчет стоимости ресурсов', 'Расчет стоимости ресурсов', Self, 1);
   LoadDBGridSettings(grMaterial);
   LoadDBGridSettings(grMaterialBott);
   LoadDBGridSettings(grMech);
@@ -370,7 +338,7 @@ end;
 procedure TfCalcResource.FormDestroy(Sender: TObject);
 begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(Caption);
+  FormMain.DeleteButtonCloseWindow('Расчет стоимости ресурсов');
   fCalcResource := nil;
 end;
 
@@ -842,6 +810,54 @@ begin
       end;
   end;
 
+end;
+
+procedure TfCalcResource.pnlCalculationYesNoClick(Sender: TObject);
+begin
+  with pnlCalculationYesNo do
+    if Tag = 1 then
+    begin
+      Tag := 0;
+      Color := clRed;
+      Caption := 'Расчёты запрещены';
+      fCalcResource.Caption := 'Расчет стоимости ресурсов [редактирование запрещено]';
+    end
+    else
+    begin
+      Tag := 1;
+      Color := clLime;
+      Caption := 'Расчёты разрешены';
+      fCalcResource.Caption := 'Расчет стоимости ресурсов [редактирование разрешено]';
+    end;
+
+  case pgc.ActivePageIndex of
+    // Расчет стоимости
+    0:
+      ;
+    // Расчет материалов
+    1:
+      begin
+        grMaterial.Repaint;
+        grMaterialBott.Repaint;
+      end;
+    // Расчет механизмов
+    2:
+      begin
+        grMech.Repaint;
+        grMechBott.Repaint;
+      end;
+    // Расчет оборудования
+    3:
+      begin
+        grDev.Repaint;
+        grDevBott.Repaint;
+      end;
+    // Расчет з\п
+    4:
+      begin
+        grRates.Repaint;
+      end;
+  end;
 end;
 
 procedure TfCalcResource.qrDevicesBeforePost(DataSet: TDataSet);

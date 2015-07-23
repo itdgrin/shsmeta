@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Grids,
   Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools, Main, Vcl.ComCtrls, JvComponentBase, JvFormPlacement,
-  System.UITypes;
+  System.UITypes, Vcl.Imaging.pngimage;
 
 type
   TfTravelList = class(TForm)
@@ -39,6 +39,9 @@ type
     pnlTravelWork: TPanel;
     spl3: TSplitter;
     pnlWorkerDepartment: TPanel;
+    imgNoData: TImage;
+    img1: TImage;
+    img2: TImage;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
