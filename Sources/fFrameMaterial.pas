@@ -12,20 +12,19 @@ type
   TSprMaterial = class(TSprFrame)
     LabelRegion: TLabel;
     cmbRegion: TComboBox;
-    cbMat: TCheckBox;
-    cbJBI: TCheckBox;
+    rbMat: TRadioButton;
+    rbJBI: TRadioButton;
     procedure ListSprDblClick(Sender: TObject);
+    procedure rbMatClick(Sender: TObject);
   private
     { Private declarations }
     FAllowAddition: Boolean;
   protected
-    function GetSprSQL: string; override;
+    function GetSprType: Integer; override;
+    function GetRegion: Integer; override;
     procedure OnLoadStart; override;
     procedure OnLoadDone; override;
-    procedure SpecialFillArray(const AInd: Integer; ADataSet: TDataSet); override;
     function CheckFindCode(AFindCode: string): string; override;
-    function CheckByffer: Boolean; override;
-    procedure UpdateByffer; override;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent;
@@ -39,7 +38,7 @@ implementation
 
 {$R *.dfm}
 
-uses CalculationEstimate;
+uses CalculationEstimate, SprController;
 
 constructor TSprMaterial.Create(AOwner: TComponent;
       const APriceColumn, vAllowAddition: Boolean;
@@ -51,8 +50,23 @@ begin
   inherited Create(AOwner, APriceColumn, AStarDate);
   if (cmbRegion.Items.Count >= ARegion) and (ARegion > 0) then
     cmbRegion.ItemIndex := ARegion - 1;
-  cbMat.Checked := AMat;
-  cbJBI.Checked := AJBI;
+  if AMat then
+    rbMat.Checked := True
+  else if AJBI then
+    rbJBI.Checked := True;
+end;
+
+function TSprMaterial.GetRegion;
+begin
+  Result := cmbRegion.ItemIndex + 1;
+end;
+
+function TSprMaterial.GetSprType: Integer;
+begin
+  if rbMat.Checked then
+    Result := CMatIndex
+  else
+    Result := CJBIIndex;
 end;
 
 function TSprMaterial.CheckFindCode(AFindCode: string): string;
@@ -64,40 +78,6 @@ begin
       AFindCode[1] := 'С';      //кирилица
   end;
   Result := AFindCode;
-end;
-
-function TSprMaterial.GetSprSQL: string;
-var TmpStr: string;
-begin
-  TmpStr := '';
-  if cbMat.Checked then
-    TmpStr := '1';
-  if cbJBI.Checked then
-  begin
-    if TmpStr <> '' then
-      TmpStr := TmpStr + ',';
-    TmpStr := TmpStr + '2';
-  end;
-  //Просто несущиствующий тип, что-бы запрос ничего не вернул
-  if TmpStr = '' then
-    TmpStr := '-1';
-
-  if FPriceColumn then
-    Result := 'SELECT material.material_id as "Id", mat_code as "Code", ' +
-          'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
-          'coast' + IntToStr(cmbRegion.ItemIndex + 1) + '_2 as "PriceVAT", ' +
-          'coast' + IntToStr(cmbRegion.ItemIndex + 1) + '_1 as "PriceNotVAT", ' +
-          'MAT_TYPE ' +
-          'FROM material LEFT JOIN units ON (material.unit_id = units.unit_id) ' +
-          'LEFT JOIN materialcoastg mc ON (material.material_id = mc.material_id) ' +
-          'and (year = ' + IntToStr(edtYear.Value) + ') AND (monat = ' +
-          IntToStr(cmbMonth.ItemIndex + 1) + ') WHERE (material.MAT_TYPE IN (' +
-          TmpStr + ')) ORDER BY mat_code;'
-  else
-    Result := 'SELECT material.material_id as "Id", mat_code as "Code", ' +
-          'cast(mat_name as char(1024)) as "Name", unit_name as "Unit", ' +
-          'MAT_TYPE FROM material left join units on (material.unit_id = units.unit_id) ' +
-          'WHERE (material.MAT_TYPE in (' + TmpStr + ')) ORDER BY mat_code;';
 end;
 
 procedure TSprMaterial.ListSprDblClick(Sender: TObject);
@@ -112,8 +92,14 @@ procedure TSprMaterial.OnLoadStart;
 begin
   inherited;
   cmbRegion.Enabled := False;
-  cbMat.Enabled := False;
-  cbJBI.Enabled := False;
+  rbMat.Enabled := False;
+  rbJBI.Enabled := False;
+end;
+
+procedure TSprMaterial.rbMatClick(Sender: TObject);
+begin
+  inherited;
+  btnShow.Enabled := True;
 end;
 
 procedure TSprMaterial.OnLoadDone;
@@ -122,45 +108,8 @@ begin
   if FPriceColumn then
     cmbRegion.Enabled := True;
 
-  cbMat.Enabled := True;
-  cbJBI.Enabled := True;
-end;
-
-procedure TSprMaterial.SpecialFillArray(const AInd: Integer; ADataSet: TDataSet);
-begin
-  FSprArray[AInd - 1].MType := ADataSet.FieldByName('MAT_TYPE').AsInteger;
-end;
-
-function TSprMaterial.CheckByffer: Boolean;
-begin
-  if (G_MATBYFFER.Mat = cbMat.Checked) and
-     (G_MATBYFFER.JBI = cbJBI.Checked) and
-     (G_MATBYFFER.Region = cmbRegion.ItemIndex + 1) and
-     (G_MATBYFFER.Month = cmbMonth.ItemIndex + 1) and
-     (G_MATBYFFER.Year = edtYear.Value) then
-  begin
-    OnLoadStart;
-    Application.ProcessMessages;
-    try
-      TMatSprByffer.CopyByffer(@G_MATBYFFER.SprArray, @FSprArray);
-      FillSprList(edtFindCode.Text, edtFindName.Text);
-    finally
-      OnLoadDone;
-      Result := True;
-    end;
-  end
-  else
-    Result := False;
-end;
-
-procedure TSprMaterial.UpdateByffer;
-begin
-  G_MATBYFFER.Mat := cbMat.Checked;
-  G_MATBYFFER.JBI := cbJBI.Checked;
-  G_MATBYFFER.Region := cmbRegion.ItemIndex + 1;
-  G_MATBYFFER.Month := cmbMonth.ItemIndex + 1;
-  G_MATBYFFER.Year := edtYear.Value;
-  TMatSprByffer.CopyByffer(@FSprArray, @G_MATBYFFER.SprArray);
+  rbMat.Enabled := True;
+  rbJBI.Enabled := True;
 end;
 
 end.

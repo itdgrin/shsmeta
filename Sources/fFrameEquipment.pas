@@ -15,7 +15,7 @@ type
     { Private declarations }
     FAllowAddition: Boolean;
   protected
-    function GetSprSQL: string; override;
+     function GetSprType: Integer; override;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent;
@@ -26,7 +26,7 @@ implementation
 
 {$R *.dfm}
 
-uses CalculationEstimate;
+uses CalculationEstimate, SprController;
 
 constructor TSprEquipment.Create(AOwner: TComponent;
       const vAllowAddition: Boolean);
@@ -37,11 +37,9 @@ begin
   PanelSettings.Visible := False;
 end;
 
-function TSprEquipment.GetSprSQL: string;
+function TSprEquipment.GetSprType: Integer;
 begin
-  Result := 'SELECT device_id as "Id", device_code1 as "Code", ' +
-    'name as "Name", units.unit_name as "Unit" FROM devices left join units ' +
-    'on (devices.unit = units.unit_id) ORDER BY device_code1 ASC';
+  Result := CDevIndex;
 end;
 
 procedure TSprEquipment.ListSprDblClick(Sender: TObject);

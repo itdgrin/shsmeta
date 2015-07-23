@@ -259,6 +259,7 @@ type
 
     procedure GetSystemInfo;
     procedure OnUpdate(var Mes: TMessage); message WM_SHOW_SPLASH;
+    procedure ThreadEXCEPTION(var Mes: TMessage); message WM_EXCEPTION;
     procedure ShowSplashForm;
     procedure ShowUpdateForm(const AResp: TServiceResponse);
 
@@ -373,7 +374,8 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
-  NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR, SSR;
+  NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
+  SprController;
 
 {$R *.dfm}
 
@@ -400,6 +402,14 @@ begin
   finally
     UPForm.Free;
   end;
+end;
+
+//Вывод исключений из вспомогательных потоков
+procedure TFormMain.ThreadEXCEPTION(var Mes: TMessage);
+begin
+  if Assigned(TObject(Mes.WParam)) and
+     (TObject(Mes.WParam) is Exception) then
+    Application.ShowException(Exception(Mes.WParam));
 end;
 
 // Уведомление о доступности новых обновлений
@@ -477,6 +487,8 @@ begin
   // Объект для управления архивом
   FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
     C_ARHDIR);
+  //Объект для загрузки справочников
+  SprControl := TSprControl.Create(Handle);
 
   // путь к папке с отчетами (Вадим)
 
@@ -491,6 +503,9 @@ end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
+  FreeAndNil(FArhiv);
+  FreeAndNil(SprControl);
+
   DM.Connect.Connected := False;
   if Assigned(FUpdateThread) then
   begin // Выполнить Terminate обязательно так как он переопределен
@@ -498,7 +513,6 @@ begin
     FUpdateThread.WaitFor;
     FreeAndNil(FUpdateThread);
   end;
-  FreeAndNil(FArhiv);
 end;
 
 procedure TFormMain.FormResize(Sender: TObject);

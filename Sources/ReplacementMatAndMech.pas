@@ -166,7 +166,7 @@ implementation
 
 {$R *.dfm}
 
-uses DataModule, Tools;
+uses DataModule, Tools, SprController;
 
 procedure TfrmReplacement.PMEntryPopup(Sender: TObject);
 var PRec: ^TEntryRecord;

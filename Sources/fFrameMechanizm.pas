@@ -22,9 +22,8 @@ type
     { Private declarations }
     FAllowAddition: Boolean;
   protected
-    function GetSprSQL: string; override;
+    function GetSprType: Integer; override;
     function CheckFindCode(AFindCode: string): string; override;
-    procedure SpecialFillArray(const AInd: Integer; ADataSet: TDataSet); override;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent;
@@ -36,7 +35,7 @@ implementation
 
 {$R *.dfm}
 
-uses CalculationEstimate;
+uses CalculationEstimate, SprController;
 
 constructor TSprMechanizm.Create(AOwner: TComponent;
       const APriceColumn, vAllowAddition: Boolean;
@@ -68,22 +67,9 @@ begin
   Result := AFindCode;
 end;
 
-function TSprMechanizm.GetSprSQL: string;
+function TSprMechanizm.GetSprType: Integer;
 begin
-  if FPriceColumn then
-    Result := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
-          'cast(mech_name as char(1024)) as "Name", unit_name as "Unit", ' +
-          'coast1 as "PriceVAT", coast2 as "PriceNotVAT", ZP1, MECH_PH ' +
-          'FROM mechanizm left join units on (mechanizm.unit_id = units.unit_id) ' +
-          'left join mechanizmcoastg mc on ' +
-          '(mechanizm.mechanizm_id = mc.mechanizm_id) and ' +
-          '(year=' + IntToStr(edtYear.Value) + ') and (monat=' +
-          IntToStr(cmbMonth.ItemIndex + 1) + ') ORDER BY mech_code;'
-  else
-    Result := 'SELECT mechanizm.mechanizm_id as "Id", mech_code as "Code", ' +
-          'cast(mech_name as char(1024)) as "Name", unit_name as "Unit", MECH_PH ' +
-          'FROM mechanizm left join units on mechanizm.unit_id = units.unit_id ' +
-          'ORDER BY mech_code;';
+  Result := CMechIndex;
 end;
 
 procedure TSprMechanizm.ListSprCustomDrawItem(Sender: TCustomListView;
@@ -115,15 +101,5 @@ begin
   ListSpr.Columns[FZpColIndex].Width := 100;
   ListSpr.Columns[FTrColIndex].Width := 100;
 end;
-
-procedure TSprMechanizm.SpecialFillArray(const AInd: Integer; ADataSet: TDataSet);
-begin
-  if FPriceColumn then
-  begin
-    FSprArray[AInd - 1].ZpMach := ADataSet.FieldByName('ZP1').AsFloat;
-  end;
-  FSprArray[AInd - 1].TrZatr := ADataSet.FieldByName('MECH_PH').AsFloat;
-end;
-
 
 end.

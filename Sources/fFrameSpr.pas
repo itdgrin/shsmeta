@@ -6,9 +6,11 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   System.Masks, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.Samples.Spin, Vcl.ExtCtrls, GlobsAndConst, Vcl.ComCtrls, Vcl.Buttons,
-  JvExControls, JvAnimatedImage, JvGIFCtrl, Data.DB, Generics.Collections,
+  JvExControls, JvAnimatedImage, JvGIFCtrl, Data.DB,
+  Generics.Collections,
   Generics.Defaults,
-  System.IOUtils;
+  System.IOUtils,
+  SprController;
 
 type
   TSortRec = TPair<Integer, Pointer>;
@@ -43,28 +45,24 @@ type
     procedure edtFindNameKeyPress(Sender: TObject; var Key: Char);
     procedure btnFindClick(Sender: TObject);
     procedure ListSprResize(Sender: TObject);
-    procedure LoaderTerminate(Sender: TObject);
 
   private
     //Фаг того, что справочник загружен
     FLoaded: Boolean;
-    FOnAfterLoad: TNotifyEvent;
-    procedure OnExcecute(var Mes: TMessage); message WM_EXCECUTE;
-  protected
-    FPriceColumn: Boolean;
-    //Основной массив справочника
     FSprArray: TSprArray;
+    FOnAfterLoad: TNotifyEvent;
+
+    procedure WMSprLoad(var Mes: TMessage); message WM_SPRLOAD;
+    procedure WMPriceLoad(var Mes: TMessage); message WM_PRICELOAD;
+  protected
+    //Тип справочника
+    FSprType: Integer;
+    FPriceColumn: Boolean;
     //Не показывать колонку едениц измерения
     FNoEdCol: Boolean;
-    FNeedFillSprAfterLoad: Boolean;
 
-    //Возвращает текст запроса
-    function GetSprSQL: string; virtual; abstract;
-    //Заполняет основной массив справочника
-    procedure FillSprArray(ADataSet: TDataSet); virtual;
-    //Особые индивидуальные условия (не реализованные в FillSprArray)
-    procedure SpecialFillArray(const AInd: Integer; ADataSet: TDataSet); virtual;
-
+    function GetSprType: Integer; virtual; abstract;
+    function GetRegion: Integer; virtual;
     //Заполняет таблицу исходя из поискового запроса
     procedure FillSprList(AFindCode, AFindName: string); virtual;
     function CheckFindCode(AFindCode: string): string; virtual;
@@ -79,8 +77,6 @@ type
     function CheckByffer: Boolean; virtual;
     //обновляет буфер
     procedure UpdateByffer; virtual;
-
-    procedure VisibleChanging; override;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
@@ -100,14 +96,136 @@ uses DataModule, Tools;
 
 { TSprFrame }
 
-procedure TSprFrame.VisibleChanging;
+constructor TSprFrame.Create(AOwner: TComponent; const APriceColumn: Boolean;
+      const AStarDate: TDateTime);
+var i: Integer;
+    y,m,d: Word;
+    lc: TListColumn;
 begin
-  inherited;
-  if FNeedFillSprAfterLoad then
+  inherited Create(AOwner);
+  FLoaded := False;
+
+  cmbMonth.Items.Clear;
+  for i := Low(arraymes) to High(arraymes) do
+    cmbMonth.Items.Add(arraymes[i][1]);
+
+  FPriceColumn := APriceColumn;
+  if not FPriceColumn then
   begin
-    FNeedFillSprAfterLoad := False;
-    FillSprList(edtFindCode.Text, edtFindName.Text);
+    ListSpr.Columns.Delete(4);
+    ListSpr.Columns.Delete(3);
   end;
+
+  if FNoEdCol then
+  begin
+    if FPriceColumn then
+    begin
+      ListSpr.Columns.Delete(4);
+      ListSpr.Columns.Delete(3);
+    end;
+    ListSpr.Columns.Delete(2);
+    if FPriceColumn then
+    begin
+      lc := ListSpr.Columns.Add;
+      lc.Caption := 'Цена с НДС, руб';
+      lc := ListSpr.Columns.Add;
+      lc.Caption := 'Цена без НДС, руб';
+    end;
+  end;
+
+  DecodeDate(AStarDate,y,m,d);
+  edtYear.Value := y;
+  cmbMonth.ItemIndex := m - 1;
+
+  SpeedButtonShowHide.Hint := 'Свернуть панель';
+  DM.ImageListArrowsBottom.GetBitmap(0, SpeedButtonShowHide.Glyph);
+
+  Update
+end;
+
+function TSprFrame.GetRegion;
+begin
+  Result := 0;
+end;
+
+procedure TSprFrame.LoadSpr;
+var FRegion: Integer;
+begin
+  FSprType := GetSprType;
+  if FPriceColumn then
+  begin
+    FRegion := GetRegion;
+    SprControl.SetPriceNotify(edtYear.Value, cmbMonth.ItemIndex + 1, FRegion,
+      Handle, FSprType);
+  end
+  else
+    SprControl.SetSprNotify(Handle, FSprType);
+
+  OnLoadStart;
+end;
+
+procedure TSprFrame.OnLoadStart;
+begin
+  btnShow.Enabled := False;
+  edtYear.Enabled := False;
+  cmbMonth.Enabled := False;
+  edtFindCode.Enabled := False;
+  edtFindName.Enabled := False;
+  btnFind.Enabled := False;
+
+  ListSpr.Items.Clear;
+  ListSpr.Visible := False;
+  StatusBar.Panels[0].Text := '';
+  Memo.Text := '';
+
+  LoadLabel.Visible := True;
+  LoadAnimator.Visible := True;
+  LoadAnimator.Animate := True;
+
+  FLoaded := False;
+end;
+
+procedure TSprFrame.WMSprLoad(var Mes: TMessage);
+begin
+  try
+    FSprArray := SprControl.SprList[FSprType];
+    FillSprList(edtFindCode.Text, edtFindName.Text);
+  finally
+    OnLoadDone;
+  end;
+end;
+
+procedure TSprFrame.WMPriceLoad(var Mes: TMessage);
+begin
+  try
+    FSprArray := SprControl.SprList[FSprType];
+    FillSprList(edtFindCode.Text, edtFindName.Text);
+  finally
+    OnLoadDone;
+  end;
+end;
+
+procedure TSprFrame.OnLoadDone;
+begin
+  if FPriceColumn then
+  begin
+    edtYear.Enabled := True;
+    cmbMonth.Enabled := True;
+  end;
+
+  edtFindCode.Enabled := True;
+  edtFindName.Enabled := True;
+  btnFind.Enabled := True;
+  ListSpr.Visible := True;
+
+  LoadLabel.Visible := False;
+  LoadAnimator.Visible := False;
+  LoadAnimator.Animate := False;
+
+  FLoaded := True;
+
+  if Assigned(FOnAfterLoad) then
+    FOnAfterLoad(Self);
 end;
 
 function TSprFrame.FindCode(const ACode: string): PSprRecord;
@@ -115,61 +233,11 @@ var i: Integer;
 begin
   Result := nil;
   for i := Low(FSprArray) to High(FSprArray) do
-      if SameText(ACode, FSprArray[i].Code) then
-      begin
-        Result := @FSprArray[i];
-        Exit;
-      end;
-end;
-
-procedure TSprFrame.FillSprArray(ADataSet: TDataSet);
-var ind: Integer;
-    TmpCount: Integer;
-begin
-  ind := 0;
-  TmpCount := 0;
-  try
-    if ADataSet.Active then
+    if SameText(ACode, FSprArray[i].Code) then
     begin
-      while not ADataSet.Eof do
-      begin
-        inc(ind);
-
-        if (ind > TmpCount) then
-        begin
-          TmpCount := TmpCount + 1000;
-          SetLength(FSprArray, TmpCount);
-        end;
-
-        //Для того что-бы не подвисало
-        if (ind mod 1000) = 0 then
-           Application.ProcessMessages;
-        //не по именам для быстродействия
-        //Id, Code, Name, Unit, PriceVAT, PriceNotVAT, MAT_TYPE
-        FSprArray[ind - 1].ID := ADataSet.Fields[0].AsInteger;
-        FSprArray[ind - 1].Code := ADataSet.Fields[1].AsString;
-        FSprArray[ind - 1].Name := ADataSet.Fields[2].AsString;
-        FSprArray[ind - 1].Unt := ADataSet.Fields[3].AsString;
-        if FPriceColumn then
-        begin
-          FSprArray[ind - 1].CoastNDS := ADataSet.Fields[4].AsFloat;
-          FSprArray[ind - 1].CoastNoNDS := ADataSet.Fields[5].AsFloat;
-        end;
-
-        SpecialFillArray(ind, ADataSet);
-        ADataSet.Next;
-      end;
+      Result := @FSprArray[i];
+      Exit;
     end;
-  finally
-    SetLength(FSprArray, ind);
-    //После загрузки справочника обновляет буфер
-    UpdateByffer;
-  end;
-end;
-
-procedure TSprFrame.SpecialFillArray(const AInd: Integer; ADataSet: TDataSet);
-begin
-
 end;
 
 procedure TSprFrame.btnFindClick(Sender: TObject);
@@ -343,75 +411,6 @@ begin
   Result := False;
 end;
 
-procedure TSprFrame.OnExcecute(var Mes: TMessage);
-begin
-  try
-    if not Assigned(TDataSet(Mes.WParam)) then
-      raise Exception.Create('DataSet not assigned.');
-
-    FillSprArray(TDataSet(Mes.WParam));
-    //Заполнение справочника
-    if Visible then
-      FillSprList(edtFindCode.Text, edtFindName.Text)
-    else
-      FNeedFillSprAfterLoad := True;
-  finally
-    OnLoadDone;
-  end;
-end;
-
-procedure TSprFrame.LoaderTerminate(Sender: TObject);
-begin
-  if (Sender is TThread) and Assigned(TThread(Sender).FatalException) then
-    Application.ShowException(Exception(TThread(Sender).FatalException));
-end;
-
-constructor TSprFrame.Create(AOwner: TComponent; const APriceColumn: Boolean;
-      const AStarDate: TDateTime);
-var i: Integer;
-    y,m,d: Word;
-    lc: TListColumn;
-begin
-  inherited Create(AOwner);
-  FLoaded := False;
-  cmbMonth.Items.Clear;
-  for i := Low(arraymes) to High(arraymes) do
-    cmbMonth.Items.Add(arraymes[i][1]);
-
-  FPriceColumn := APriceColumn;
-  if not FPriceColumn then
-  begin
-    ListSpr.Columns.Delete(4);
-    ListSpr.Columns.Delete(3);
-  end;
-
-  if FNoEdCol then
-  begin
-    if FPriceColumn then
-    begin
-      ListSpr.Columns.Delete(4);
-      ListSpr.Columns.Delete(3);
-    end;
-    ListSpr.Columns.Delete(2);
-    if FPriceColumn then
-    begin
-      lc := ListSpr.Columns.Add;
-      lc.Caption := 'Цена с НДС, руб';
-      lc := ListSpr.Columns.Add;
-      lc.Caption := 'Цена без НДС, руб';
-    end;
-  end;
-
-  DecodeDate(AStarDate,y,m,d);
-  edtYear.Value := y;
-  cmbMonth.ItemIndex := m - 1;
-
-  SpeedButtonShowHide.Hint := 'Свернуть панель';
-  DM.ImageListArrowsBottom.GetBitmap(0, SpeedButtonShowHide.Glyph);
-
-  Update
-end;
-
 procedure TSprFrame.edtFindNameKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = #13 then
@@ -491,63 +490,6 @@ begin
       (Item.Index + 1).ToString + '/' + ListSpr.Items.Count.ToString;
     Memo.Text := TSprRecord(Item.Data^).Name;
   end;
-end;
-
-procedure TSprFrame.LoadSpr;
-var TmpStr: string;
-    TmpThread: TThreadQuery;
-begin
-  //Проверяет на наличие подходящего буфера и если его нет, подгружает из базы
-  if not CheckByffer then
-  begin
-    TmpStr := GetSprSQL;
-    //Вызов нити выполняющей запрос на данные справлчника
-    TmpThread := TThreadQuery.Create(TmpStr, Handle, True);
-    TmpThread.FreeOnTerminate := True;
-    TmpThread.Start;
-    OnLoadStart;
-    Application.ProcessMessages;
-  end;
-end;
-
-procedure TSprFrame.OnLoadStart;
-begin
-  btnShow.Enabled := False;
-  edtYear.Enabled := False;
-  cmbMonth.Enabled := False;
-  edtFindCode.Enabled := False;
-  edtFindName.Enabled := False;
-  btnFind.Enabled := False;
-  SetLength(FSprArray, 0);
-  ListSpr.Items.Clear;
-  ListSpr.Visible := False;
-  StatusBar.Panels[0].Text := '';
-  Memo.Text := '';
-
-  LoadLabel.Visible := True;
-  LoadAnimator.Visible := True;
-  LoadAnimator.Animate := True;
-  FLoaded := False;
-end;
-
-procedure TSprFrame.OnLoadDone;
-begin
-  if FPriceColumn then
-  begin
-    edtYear.Enabled := True;
-    cmbMonth.Enabled := True;
-  end;
-  edtFindCode.Enabled := True;
-  edtFindName.Enabled := True;
-  btnFind.Enabled := True;
-  ListSpr.Visible := True;
-
-  LoadLabel.Visible := False;
-  LoadAnimator.Visible := False;
-  LoadAnimator.Animate := False;
-  FLoaded := True;
-  if Assigned(FOnAfterLoad) then
-    FOnAfterLoad(Self);
 end;
 
 //Проверяет на наличие актуального буфера
