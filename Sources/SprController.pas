@@ -28,6 +28,12 @@ type
     TrZatr: Extended;
   end;
 
+  TSprPeriad = record
+    Year,
+    Month,
+    Region: Integer;
+  end;
+
   PSprRecord = ^TSprRecord;
   TSprArray = array of TSprRecord;
 

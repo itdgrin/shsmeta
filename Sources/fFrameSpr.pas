@@ -54,6 +54,7 @@ type
 
     procedure WMSprLoad(var Mes: TMessage); message WM_SPRLOAD;
     procedure WMPriceLoad(var Mes: TMessage); message WM_PRICELOAD;
+    procedure CopySprArray;
   protected
     //Тип справочника
     FSprType: Integer;
@@ -73,10 +74,6 @@ type
     procedure OnLoadStart; virtual;
     //Устанавливает внешний вид формы после загрузки
     procedure OnLoadDone; virtual;
-    //Проверяет на наличие актуального буфера
-    function CheckByffer: Boolean; virtual;
-    //обновляет буфер
-    procedure UpdateByffer; virtual;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
@@ -185,10 +182,28 @@ begin
   FLoaded := False;
 end;
 
+procedure TSprFrame.CopySprArray;
+var I: Integer;
+begin
+  SetLength(FSprArray, SprControl.SprCount[FSprType]);
+  for I := Low(FSprArray) to High(FSprArray) do
+  begin
+    FSprArray[I].ID := SprControl.SprList[FSprType][I].ID;
+    FSprArray[I].Code := SprControl.SprList[FSprType][I].Code;
+    FSprArray[I].Name := SprControl.SprList[FSprType][I].Name;
+    FSprArray[I].Unt := SprControl.SprList[FSprType][I].Unt;
+    FSprArray[I].CoastNDS := SprControl.SprList[FSprType][I].CoastNDS;
+    FSprArray[I].CoastNoNDS := SprControl.SprList[FSprType][I].CoastNoNDS;
+    FSprArray[I].ZpMach := SprControl.SprList[FSprType][I].ZpMach;
+    FSprArray[I].TrZatr := SprControl.SprList[FSprType][I].TrZatr;
+  end;
+end;
+
 procedure TSprFrame.WMSprLoad(var Mes: TMessage);
 begin
   try
-    FSprArray := SprControl.SprList[FSprType];
+    //FSprArray := SprControl.SprList[FSprType];
+    CopySprArray;
     FillSprList(edtFindCode.Text, edtFindName.Text);
   finally
     OnLoadDone;
@@ -198,7 +213,8 @@ end;
 procedure TSprFrame.WMPriceLoad(var Mes: TMessage);
 begin
   try
-    FSprArray := SprControl.SprList[FSprType];
+    //FSprArray := SprControl.SprList[FSprType];
+    CopySprArray;
     FillSprList(edtFindCode.Text, edtFindName.Text);
   finally
     OnLoadDone;
@@ -490,17 +506,6 @@ begin
       (Item.Index + 1).ToString + '/' + ListSpr.Items.Count.ToString;
     Memo.Text := TSprRecord(Item.Data^).Name;
   end;
-end;
-
-//Проверяет на наличие актуального буфера
-function TSprFrame.CheckByffer: Boolean;
-begin
-  Result := False;
-end;
-
-procedure TSprFrame.UpdateByffer;
-begin
-
 end;
 
 procedure TSprFrame.SpeedButtonShowHideClick(Sender: TObject);
