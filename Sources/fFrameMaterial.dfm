@@ -258,25 +258,26 @@ inherited SprMaterial: TSprMaterial
         #1052#1086#1075#1080#1083#1077#1074#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
         #1052#1080#1085#1089#1082)
     end
-    object cbMat: TCheckBox
-      Left = 408
+    object rbMat: TRadioButton
+      Left = 411
       Top = 12
-      Width = 78
+      Width = 85
       Height = 17
       Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
       Checked = True
-      State = cbChecked
       TabOrder = 4
-      OnClick = edtYearChange
+      TabStop = True
+      OnClick = rbMatClick
     end
-    object cbJBI: TCheckBox
-      Left = 488
+    object rbJBI: TRadioButton
+      Left = 499
       Top = 12
       Width = 54
       Height = 17
       Caption = #1046#1041#1048
       TabOrder = 5
-      OnClick = edtYearChange
+      TabStop = True
+      OnClick = rbMatClick
     end
   end
   inherited ListSpr: TListView
