@@ -14,7 +14,6 @@ type
     procedure CopyAppTo(const ASourceDir, ADestDir: string);
   public
     constructor Create(const AAppPath, AArhivPath: string);
-    destructor Destroy; override;
     procedure Update();
     function GetArhivTime(const AArhivName: string): TDateTime;
     procedure DeleteArhiv(const AArhivName: string);
@@ -33,14 +32,11 @@ uses  Tools, fUpdate;
 constructor TBaseAppArhiv.Create(const AAppPath, AArhivPath: string);
 begin
   if not TDirectory.Exists(AArhivPath) then
-  begin
     TDirectory.CreateDirectory(AArhivPath);
-  end;
 
   inherited Create;
   FAppPath := IncludeTrailingPathDelimiter(AAppPath);
   FArhivPath := IncludeTrailingPathDelimiter(AArhivPath);
-  SetLength(FArhFiles, 0);
   try
     if not TDirectory.Exists(FAppPath) then
       raise Exception.Create('Директорий ''' + AAppPath + ''' не найден.');
@@ -48,22 +44,15 @@ begin
   except
     on e: Exception do
     begin
-      Free;
+      Destroy;
       raise e;
     end;
   end;
 end;
 
-destructor TBaseAppArhiv.Destroy;
-begin
-  SetLength(FArhFiles, 0);
-  inherited;
-end;
-
 function TBaseAppArhiv.GetArhivTime(const AArhivName: string): TDateTime;
 var TmpStr: string;
     TmpList: TStringList;
-
     y,m,d: Word;
 begin
   TmpList := TStringList.Create;
@@ -133,7 +122,7 @@ begin
 
     //Запуск восстановления из дампа
     //НЕ ЗНАЕТ ОБ ВОЗНИКШИХ ИСКЛЮЧЕНИЯХ!!!!!!!!!!!
-    WinExecAndWait(C_DUMPTOBASE, nil, SW_HIDE, 0, TmpWaitResult);
+    WinExecAndWait(C_DUMPTOBASE, nil, 0, TmpWaitResult);
     if (TmpWaitResult <> WAIT_OBJECT_0) then
       raise Exception.Create('Не удалось восстановить базу из дампа!');
 
@@ -141,7 +130,7 @@ begin
     G_UPDPATH := FArhivPath + C_TMPDIR + C_ARHAPPDIR;
     G_STARTAPP := True;
 
-    //Переносим из архива апдейтер (вообще сомнительныя операция)
+    //Переносим из архива апдейтер (вообще сомнительная операция)
     if TFile.Exists(G_UPDPATH + C_UPDATERNAME) then
     begin
       TFile.Copy(G_UPDPATH + C_UPDATERNAME,
@@ -172,6 +161,18 @@ var ZF: TZipForge;
     TmpCurPath: string;
     TmpWaitResult: DWord;
     y,m,d,t: Word;
+
+    function FileSize(const aFilename: String): Int64;
+    var
+      info: TWin32FileAttributeData;
+    begin
+      result := -1;
+
+      if NOT GetFileAttributesEx(PWideChar(aFileName), GetFileExInfoStandard, @info) then
+        EXIT;
+
+      result := Int64(info.nFileSizeLow) or Int64(info.nFileSizeHigh shl 32);
+    end;
 begin
   //Подготавливаем временну папку для сбора файлов дампа
   if TDirectory.Exists(FArhivPath + C_TMPDIR) then
@@ -188,10 +189,11 @@ begin
     TDirectory.SetCurrentDirectory(FArhivPath);
 
     //Запуск создания архива
-    WinExecAndWait(C_BASETODUMP, nil, SW_HIDE, 0, TmpWaitResult);
+    //К сожалению процесс создания архива не как не контролируется
+    WinExecAndWait(C_BASETODUMP, nil, 0, TmpWaitResult);
     if (TmpWaitResult <> WAIT_OBJECT_0) or
-      not TFile.Exists(FArhivPath + C_DUMPNAME) then
-      //Так-же следовало бы проверить размер получившегося дампа
+      not TFile.Exists(FArhivPath + C_DUMPNAME) or
+      (FileSize(FArhivPath + C_DUMPNAME) < 1024*1024*2) then //2мб чисто условно
       raise Exception.Create('Не удалось создать дамп базы данных!');
 
     //Создаем папку базы и папку приложения в архиве

@@ -59,7 +59,7 @@ procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
 // Удаление директории с содержимым !!!!Использовать остородно!!!!!
 procedure KillDir(const ADirName: string);
 // Запускает процесс и ждет его завершения
-function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
+function WinExecAndWait(AAppName, ACmdLine: PChar; ATimeout: DWord;
   var AWaitResult: DWord): boolean;
 // Обновляет итератор, использовать при добавлении, вставке и удалении из сметы
 function UpdateIterator(ADestSmID, AIterator, AFromRate: Integer): Integer;
@@ -263,7 +263,7 @@ begin
 end;
 
 // Запускает приложение и ожидает его завершения
-function WinExecAndWait(AAppName, ACmdLine: PChar; ACmdShow: Word; ATimeout: DWord;
+function WinExecAndWait(AAppName, ACmdLine: PChar; ATimeout: DWord;
   var AWaitResult: DWord): boolean;
 var
   ProcInf: TProcessInformation;
@@ -274,24 +274,22 @@ begin
   begin
     cb := SizeOf(TStartupInfo);
     dwFlags := STARTF_USESHOWWINDOW;
-    wShowWindow := ACmdShow;
+    wShowWindow := SW_HIDE;
   end;
 
-  Result := CreateProcess(AAppName, ACmdLine, nil, nil, False, NORMAL_PRIORITY_CLASS, nil, nil,
-    Start, ProcInf);
+  Result := CreateProcess(AAppName, ACmdLine, nil, nil, False,
+    NORMAL_PRIORITY_CLASS, nil, nil, Start, ProcInf);
 
   if ATimeout = 0 then
-    repeat
-    begin
-      AWaitResult := WaitForSingleObject(ProcInf.hProcess, 2000);
-      Application.ProcessMessages;
-    end;
-    until AWaitResult <> WAIT_TIMEOUT
-  else
-    AWaitResult := WaitForSingleObject(ProcInf.hProcess, ATimeout);
+    ATimeout := INFINITE;
 
+  AWaitResult := WaitForSingleObject(ProcInf.hProcess, ATimeout);
+
+  //В любом случае идет попытка унитожения процесса
   TerminateProcess(ProcInf.hProcess, 0);
+
   CloseHandle(ProcInf.hProcess);
+  CloseHandle(ProcInf.hThread);
 end;
 
 // Удаление директории с содержимым

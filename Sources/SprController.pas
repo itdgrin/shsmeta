@@ -46,6 +46,7 @@ type
     FLoadSprFlags,
     FLoadPriceFlags: array[0..MaxSprIndex] of Boolean;
     FThQueryList: array[0..MaxSprIndex] of TThreadQuery;
+    FSprPeriodList: array[0..MaxSprIndex] of TSprPeriad;
 
     FYear,
     FMonth,
@@ -61,22 +62,27 @@ type
     procedure LoadPrice(ADataSet: TDataSet; AIndex: Integer);
     procedure AddHeaderToException(AException: Exception; AIndex: Integer);
 
+    procedure CheckIndex(AIndex: Integer);
+
     function GetSprList(AIndex: Integer): TSprArray;
     function GetSprCount(AIndex: Integer): Integer;
     function GetSptLoad(AIndex: Integer): Boolean;
     function GetPriceLoad(AIndex: Integer): Boolean;
+    function GetYear(AIndex: Integer): Integer;
+    function GetMonth(AIndex: Integer): Integer;
+    function GetRegion(AIndex: Integer): Integer;
   public
     constructor Create(AHandle: HWND);
     destructor Destroy; override;
 
     procedure SetPriceNotify(AYear, AMonth, ARegion: Integer;
-      ANotifyHandle: HWND; ANotifyIndex: Integer);
+      ANotifyHandle: HWND; AIndex: Integer);
 
-    procedure SetSprNotify(ANotifyHandle: HWND; ANotifyIndex: Integer);
+    procedure SetSprNotify(ANotifyHandle: HWND; AIndex: Integer);
 
-    property Year: Integer read FYear;
-    property Month: Integer read FMonth;
-    property Region: Integer read FRegion;
+    property Year[AIndex: Integer]: Integer read GetYear;
+    property Month[AIndex: Integer]: Integer read GetMonth;
+    property Region[AIndex: Integer]: Integer read GetRegion;
 
     property SprList[AIndex: Integer]: TSprArray read GetSprList;
     property SprCount[AIndex: Integer]: Integer read GetSprCount;
@@ -153,36 +159,52 @@ begin
   inherited;
 end;
 
-function TSprControl.GetSprList(AIndex: Integer): TSprArray;
+procedure TSprControl.CheckIndex(AIndex: Integer);
 begin
   if (AIndex < 0) or (AIndex > MaxSprIndex) then
     raise Exception.Create('Неизвестный индекс справочника');
+end;
 
+function TSprControl.GetSprList(AIndex: Integer): TSprArray;
+begin
+  CheckIndex(AIndex);
   Result := FAllSprList[AIndex];
 end;
 
 function TSprControl.GetSprCount(AIndex: Integer): Integer;
 begin
-  if (AIndex < 0) or (AIndex > MaxSprIndex) then
-    raise Exception.Create('Неизвестный индекс справочника');
-
+  CheckIndex(AIndex);
   Result := Length(FAllSprList[AIndex]);
 end;
 
 function TSprControl.GetSptLoad(AIndex: Integer): Boolean;
 begin
-  if (AIndex < 0) or (AIndex > MaxSprIndex) then
-    raise Exception.Create('Неизвестный индекс справочника');
-
+  CheckIndex(AIndex);
   Result := FLoadSprFlags[AIndex];
 end;
 
 function TSprControl.GetPriceLoad(AIndex: Integer): Boolean;
 begin
-  if (AIndex < 0) or (AIndex > MaxSprIndex) then
-    raise Exception.Create('Неизвестный индекс справочника');
-
+  CheckIndex(AIndex);
   Result := FLoadPriceFlags[AIndex];
+end;
+
+function TSprControl.GetYear(AIndex: Integer): Integer;
+begin
+  CheckIndex(AIndex);
+  Result := FSprPeriodList[AIndex].Year;
+end;
+
+function TSprControl.GetMonth(AIndex: Integer): Integer;
+begin
+  CheckIndex(AIndex);
+  Result := FSprPeriodList[AIndex].Month;
+end;
+
+function TSprControl.GetRegion(AIndex: Integer): Integer;
+begin
+  CheckIndex(AIndex);
+  Result := FSprPeriodList[AIndex].Region;
 end;
 
 procedure TSprControl.AddHeaderToException(AException: Exception; AIndex: Integer);
@@ -219,8 +241,7 @@ var I,
     TmpCount,
     TmpInd: Integer;
 begin
-  if (AIndex < 0) or (AIndex > MaxSprIndex) then
-    raise Exception.Create('Неизвестный индекс справочника');
+  CheckIndex(AIndex);
 
   TmpCount := 0;
   TmpInd := 0;
@@ -257,25 +278,21 @@ begin
   end;
 end;
 
-procedure TSprControl.SetSprNotify(ANotifyHandle: HWND; ANotifyIndex: Integer);
+procedure TSprControl.SetSprNotify(ANotifyHandle: HWND; AIndex: Integer);
 var I: Integer;
 begin
-  if (ANotifyHandle > 0) and
-     ((ANotifyIndex < 0) or
-      (ANotifyIndex > MaxSprIndex)) then
-    raise Exception.Create('Неизвестный индекс справочника');
-
   if (ANotifyHandle > 0) then
   begin
+    CheckIndex(AIndex);
     FNotifyCS.Enter;
     try
-      if FLoadSprFlags[ANotifyIndex] then
-          PostMessage(ANotifyHandle, WM_SPRLOAD, WParam(ANotifyIndex), 0)
+      if FLoadSprFlags[AIndex] then
+          PostMessage(ANotifyHandle, WM_SPRLOAD, WParam(AIndex), 0)
       else
       begin
-        I := Length(FSprNotifyList[ANotifyIndex]);
-        SetLength(FSprNotifyList[ANotifyIndex], I + 1);
-        FSprNotifyList[ANotifyIndex][I] := ANotifyHandle;
+        I := Length(FSprNotifyList[AIndex]);
+        SetLength(FSprNotifyList[AIndex], I + 1);
+        FSprNotifyList[AIndex][I] := ANotifyHandle;
       end;
     finally
       FNotifyCS.Leave;
@@ -284,86 +301,105 @@ begin
 end;
 
 procedure TSprControl.SetPriceNotify(AYear, AMonth, ARegion: Integer;
-  ANotifyHandle: HWND; ANotifyIndex: Integer);
+  ANotifyHandle: HWND; AIndex: Integer);
 var I, J: Integer;
     TmpStr: string;
+    Y, M, D: Word;
 begin
   if (AMonth < 0) or (AMonth > 12) or (AYear < 0) or
      (ARegion < 0) or (ARegion > 7) then
     raise Exception.Create('Неверные входные данные');
 
   if (ANotifyHandle > 0) and
-     ((ANotifyIndex < 0) or
-      (ANotifyIndex > MaxSprIndex) or
-      (ANotifyIndex = CDevIndex)) then
+     ((AIndex < 0) or
+      (AIndex > MaxSprIndex) or
+      (AIndex = CDevIndex)) then
     raise Exception.Create('Неизвестный индекс справочника');
 
   if AYear = 0 then
-    AYear := FYear;
+    AYear := FSprPeriodList[AIndex].Year;
   if AMonth = 0 then
-    AMonth := FMonth;
+    AMonth := FSprPeriodList[AIndex].Month;
   if ARegion = 0 then
-    ARegion := FRegion;
+    ARegion := FSprPeriodList[AIndex].Region;
 
-  J := -1;
-  if (FRegion <> ARegion) then
-    J := 1;
-  if (FYear <> AYear) or (FMonth <> AMonth) then
-    J := 2;
-
-  FYear := AYear;
-  FMonth := AMonth;
-  FRegion := ARegion;
-
-  //Для оборудования нет цен
-  for I := 0 to J do
+  if (AYear = 0) or
+     (AMonth = 0) then
   begin
-    FLoadPriceFlags[I] := False;
-    FreeAndNil(FThQueryList[I]);
-    FThQueryList[I] := TThreadQuery.Create('', 0, True, I);
-    FThQueryList[I].OnTerminate := ThreadTerminate;
-    FThQueryList[I].OnActivate := LoadPrice;
-    case I of
+    DecodeDate(Date, Y, M, D);
+    AYear := Y;
+    AMonth := M;
+  end;
+
+  if (AIndex in [CMatIndex, CJBIIndex]) and
+     (ARegion = 0) then
+    ARegion := 7;
+
+  if (FSprPeriodList[AIndex].Year <> AYear) or
+     (FSprPeriodList[AIndex].Month <> AMonth) or
+     ((AIndex in [CMatIndex, CJBIIndex]) and
+      (FSprPeriodList[AIndex].Region <> ARegion)) then
+  begin
+    FSprPeriodList[AIndex].Year := AYear;
+    FSprPeriodList[AIndex].Month := AMonth;
+    FSprPeriodList[AIndex].Region := ARegion;
+
+    FLoadPriceFlags[AIndex] := False;
+    FreeAndNil(FThQueryList[AIndex]); //потенциально блокирующее место
+    FThQueryList[AIndex] := TThreadQuery.Create('', 0, True, AIndex);
+    FThQueryList[AIndex].OnTerminate := ThreadTerminate;
+    FThQueryList[AIndex].OnActivate := LoadPrice;
+    case AIndex of
       CMatIndex: TmpStr :=
-          'SELECT mt.material_id, mt.mat_code, mc.coast' + IntToStr(FRegion) + '_2, ' +
-          'mc.coast' + IntToStr(FRegion) + '_1 ' +
+          'SELECT mt.material_id, mt.mat_code, mc.coast' +
+            IntToStr(FSprPeriodList[AIndex].Region) + '_2, ' +
+          'mc.coast' +
+            IntToStr(FSprPeriodList[AIndex].Region) + '_1 ' +
           'FROM material mt LEFT JOIN materialcoastg mc ' +
           'ON (mt.material_id = mc.material_id) ' +
-          'AND (mc.year = ' + IntToStr(FYear) + ') ' +
-          'AND (mc.monat = ' + IntToStr(FMonth) + ') ' +
+          'AND (mc.year = ' +
+            IntToStr(FSprPeriodList[AIndex].Year) + ') ' +
+          'AND (mc.monat = ' +
+            IntToStr(FSprPeriodList[AIndex].Month) + ') ' +
           'WHERE (mt.MAT_TYPE = 1) ORDER BY mt.mat_code;';
       CJBIIndex: TmpStr :=
-          'SELECT mt.material_id, mt.mat_code, mc.coast' + IntToStr(FRegion) + '_2, ' +
-          'mc.coast' + IntToStr(FRegion) + '_1 ' +
+          'SELECT mt.material_id, mt.mat_code, mc.coast' +
+            IntToStr(FSprPeriodList[AIndex].Region) + '_2, ' +
+          'mc.coast' +
+            IntToStr(FSprPeriodList[AIndex].Region) + '_1 ' +
           'FROM material mt LEFT JOIN materialcoastg mc ' +
           'ON (mt.material_id = mc.material_id) ' +
-          'AND (mc.year = ' + IntToStr(FYear) + ') ' +
-          'AND (mc.monat = ' + IntToStr(FMonth) + ') ' +
+          'AND (mc.year = ' +
+            IntToStr(FSprPeriodList[AIndex].Year) + ') ' +
+          'AND (mc.monat = ' +
+            IntToStr(FSprPeriodList[AIndex].Month) + ') ' +
           'WHERE (mt.MAT_TYPE = 2) ORDER BY mt.mat_code;';
       CMechIndex: TmpStr :=
           'SELECT mh.mechanizm_id, mh.mech_code, mc.coast1, mc.coast2, mc.ZP1 ' +
           'FROM mechanizm mh LEFT JOIN mechanizmcoastg mc ' +
           'ON (mh.mechanizm_id = mc.mechanizm_id) ' +
-          'AND (mc.year=' + IntToStr(FYear) + ') ' +
-          'AND (mc.monat=' + IntToStr(FMonth) + ') ORDER BY mh.mech_code;';
+          'AND (mc.year=' +
+            IntToStr(FSprPeriodList[AIndex].Year) + ') ' +
+          'AND (mc.monat=' +
+            IntToStr(FSprPeriodList[AIndex].Month) + ') ORDER BY mh.mech_code;';
       else
         raise Exception.Create('Неизвестный индекс справочника');
     end;
-    FThQueryList[I].SQLText := TmpStr;
-    FThQueryList[I].Start;
+    FThQueryList[AIndex].SQLText := TmpStr;
+    FThQueryList[AIndex].Start;
   end;
 
   if (ANotifyHandle > 0) then
   begin
     FNotifyCS.Enter;
     try
-      if FLoadPriceFlags[ANotifyIndex] then
-          PostMessage(ANotifyHandle, WM_PRICELOAD, WParam(ANotifyIndex), 0)
+      if FLoadPriceFlags[AIndex] then
+          PostMessage(ANotifyHandle, WM_PRICELOAD, WParam(AIndex), 0)
       else
       begin
-        I := Length(FPriceNotifyList[ANotifyIndex]);
-        SetLength(FPriceNotifyList[ANotifyIndex], I + 1);
-        FPriceNotifyList[ANotifyIndex][I] := ANotifyHandle;
+        I := Length(FPriceNotifyList[AIndex]);
+        SetLength(FPriceNotifyList[AIndex], I + 1);
+        FPriceNotifyList[AIndex][I] := ANotifyHandle;
       end;
     finally
       FNotifyCS.Leave;
@@ -377,8 +413,7 @@ var I, J: Integer;
     CompRes: Integer;
     SeveralCodes: Boolean;
 begin
-  if (AIndex < 0) or (AIndex > MaxSprIndex) then
-    raise Exception.Create('Неизвестный индекс справочника');
+  CheckIndex(AIndex);
 
   if not FLoadSprFlags[AIndex] then
   begin

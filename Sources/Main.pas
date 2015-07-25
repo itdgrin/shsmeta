@@ -7,7 +7,7 @@ uses
   Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
   ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, ArhivModule,
   Data.DB, GlobsAndConst, Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage,
-  JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg;
+  JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg, dxGDIPlusClasses;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
@@ -78,7 +78,7 @@ type
     N8: TMenuItem;
     Administator: TMenuItem;
     UpdatePanel: TPanel;
-    Image1: TImage;
+    imgUpdate: TImage;
     Label1: TLabel;
     TimerUpdate: TTimer;
     LabelDot: TLabel;
@@ -148,6 +148,11 @@ type
     mN29: TMenuItem;
     mN110: TMenuItem;
     mN25: TMenuItem;
+    ArchivPanel: TPanel;
+    lbStatys: TLabel;
+    imgArchive: TImage;
+    pnlArchiv1: TPanel;
+    pgArchiv: TProgressBar;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -478,6 +483,10 @@ begin
   Width := Screen.Width;
   Height := Screen.Height;
 
+  img1.Align := alClient;
+  img2.Align := alClient;
+  PanelCover.Align := alClient;
+
   FMEndTables := 'g';
   // Локальная установка разделителя
   FormatSettings.DecimalSeparator := '.';
@@ -485,8 +494,8 @@ begin
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   // Объект для управления архивом
-  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
-    C_ARHDIR);
+  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName),
+    ExtractFilePath(Application.ExeName) + C_ARHDIR);
   // путь к папке с отчетами (Вадим)
 
   // {$IFDEF DEBUG}
