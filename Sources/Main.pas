@@ -487,9 +487,6 @@ begin
   // Объект для управления архивом
   FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
     C_ARHDIR);
-  //Объект для загрузки справочников
-  SprControl := TSprControl.Create(Handle);
-
   // путь к папке с отчетами (Вадим)
 
   // {$IFDEF DEBUG}
@@ -540,6 +537,10 @@ begin
       // Справочник сборников расценок
       FormWaiting.lbProcess.caption := 'Загрузка справочников:'#13 + 'перечень сборников';
       Application.ProcessMessages;
+
+      //Объект для загрузки справочников
+      SprControl := TSprControl.Create(Handle);
+
       if (not Assigned(fNormativDirectory)) then
         fNormativDirectory := TfNormativDirectory.Create(Self);
       //
@@ -556,6 +557,7 @@ begin
       Application.Terminate;
     end;
   end;
+
 
   try
     GetSystemInfo;
