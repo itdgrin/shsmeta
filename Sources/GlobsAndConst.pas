@@ -153,6 +153,8 @@ const
   WM_EXCEPTION = WM_USER + 3;
   WM_SPRLOAD = WM_USER + 4;
   WM_PRICELOAD = WM_USER + 5;
+  //”правление прогрессом создани€ архива
+  WM_ARCHIVEPROGRESS = WM_USER + 6;
 //******************************************************************************
 
 var

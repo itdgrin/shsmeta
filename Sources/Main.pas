@@ -149,7 +149,7 @@ type
     mN110: TMenuItem;
     mN25: TMenuItem;
     ArchivPanel: TPanel;
-    lbStatys: TLabel;
+    lbArchStatys: TLabel;
     imgArchive: TImage;
     pnlArchiv1: TPanel;
     pgArchiv: TProgressBar;
@@ -248,6 +248,8 @@ type
     procedure mN24Click(Sender: TObject);
     procedure mN27Click(Sender: TObject);
     procedure mN110Click(Sender: TObject);
+    procedure MenuServiceClick(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -265,6 +267,7 @@ type
     procedure GetSystemInfo;
     procedure OnUpdate(var Mes: TMessage); message WM_SHOW_SPLASH;
     procedure ThreadEXCEPTION(var Mes: TMessage); message WM_EXCEPTION;
+    procedure ARCHIVEPROGRESS(var Mes: TMessage); message WM_ARCHIVEPROGRESS;
     procedure ShowSplashForm;
     procedure ShowUpdateForm(const AResp: TServiceResponse);
 
@@ -417,6 +420,39 @@ begin
     Application.ShowException(Exception(Mes.WParam));
 end;
 
+procedure TFormMain.ARCHIVEPROGRESS(var Mes: TMessage);
+begin
+  if Mes.LParam in [0, 1] then
+  begin
+    ArchivPanel.Left := ClientWidth - ArchivPanel.Width;
+    ArchivPanel.Top := PanelOpenWindows.Top - ArchivPanel.Height;
+    ArchivPanel.Visible := true;
+  end;
+
+  if Mes.LParam = 0 then
+  begin
+    pgArchiv.Enabled := False;
+    pgArchiv.State := pbsPaused;
+
+    lbArchStatys.Caption := string(PChar(Mes.WParam));
+  end;
+
+  if Mes.LParam = 1 then
+  begin
+    pgArchiv.Enabled := True;
+    pgArchiv.Style := pbstMarquee;
+    pgArchiv.State := pbsNormal;
+
+    lbArchStatys.Caption := string(PChar(Mes.WParam));
+  end;
+
+  if Mes.LParam = 2 then
+  begin
+    ArchivPanel.Visible := False;
+    FArhiv.Update();
+  end;
+end;
+
 // Уведомление о доступности новых обновлений
 procedure TFormMain.OnUpdate(var Mes: TMessage);
 var
@@ -472,6 +508,15 @@ begin
   DM.qrDifferent.Active := False;
 end;
 
+procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  if FArhiv.CreateArhInProgress then
+  begin
+    ShowMessage('Идет создание архива.');
+    CanClose := False;
+  end;
+end;
+
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
   FCurVersion.Clear;
@@ -509,9 +554,13 @@ end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(FArhiv);
   FreeAndNil(SprControl);
-
+  while FArhiv.CreateArhInProgress do
+  begin
+    Sleep(1000);
+    Application.ProcessMessages;
+  end;
+  FreeAndNil(FArhiv);
   DM.Connect.Connected := False;
   if Assigned(FUpdateThread) then
   begin // Выполнить Terminate обязательно так как он переопределен
@@ -532,7 +581,6 @@ end;
 
 procedure TFormMain.FormShow(Sender: TObject);
 begin
-
   try
     if not DM.Connect.Connected then
     begin
@@ -1616,6 +1664,11 @@ begin
   FormWaiting.Close;
 end;
 
+procedure TFormMain.MenuServiceClick(Sender: TObject);
+begin
+  ServiceBackup.Enabled := not FArhiv.CreateArhInProgress;
+end;
+
 procedure TFormMain.MenuSetCoefficientsClick(Sender: TObject);
 begin
   fCoefficients.Show;
@@ -1759,25 +1812,12 @@ begin
 end;
 
 procedure TFormMain.PMAddNewBackupClick(Sender: TObject);
-var
-  i: integer;
+var i: Integer;
 begin
-  if (MessageBox(Self.Handle, PChar('Создать резервную копию?'), 'Резервное копирование',
-    MB_YESNO + MB_ICONQUESTION) = IDYES) then
-  begin
-    FormMain.PanelCover.Visible := true;
-    FormWaiting.Show;
-    Application.ProcessMessages;
-    try
-      // Максимуи C_ARHCOUNT копии, что-бы не забивать место
-      for i := C_ARHCOUNT - 1 to High(FArhiv.ArhFiles) do
-        FArhiv.DeleteArhiv(FArhiv.ArhFiles[i]);
-      FArhiv.CreateNewArhiv;
-    finally
-      FormWaiting.Close;
-      FormMain.PanelCover.Visible := False;
-    end;
-  end;
+  // Максимуи C_ARHCOUNT копии, что-бы не забивать место
+  for i := C_ARHCOUNT - 1 to High(FArhiv.ArhFiles) do
+    FArhiv.DeleteArhiv(FArhiv.ArhFiles[i]);
+  FArhiv.CreateNewArhiv(Handle);
 end;
 
 procedure TFormMain.PMDeleteBackupClick(Sender: TObject);
@@ -1795,7 +1835,8 @@ var
   Mi: TMenuItem;
 begin
   Mi := TMenuItem(Sender);
-  if (MessageBox(Self.Handle, PChar('Восстановить из резервной копии от ' + StringReplace(Mi.Parent.caption,
+  beep;
+  {if (MessageBox(Self.Handle, PChar('Восстановить из резервной копии от ' + StringReplace(Mi.Parent.caption,
     '&', '', [rfReplaceAll]) + '?' + #13#10 +
     'Внимание, все данные внесенные после создания данной копии, будут утеряны!'), 'Резервное копирование',
     MB_YESNO + MB_ICONQUESTION) = IDYES) then
@@ -1810,7 +1851,7 @@ begin
       FormWaiting.Close;
       FormMain.PanelCover.Visible := False;
     end;
-  end;
+  end;     }
 end;
 
 procedure TFormMain.NormalClick(Sender: TObject);

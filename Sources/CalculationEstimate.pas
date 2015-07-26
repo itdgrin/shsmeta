@@ -5918,7 +5918,6 @@ procedure TFormCalculationEstimate.dbgrdRates12DrawColumnCell(Sender: TObject; c
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 var
   j: Integer;
-  sdvig: string;
 begin
   j := 2;
   with grRatesEx.Canvas do

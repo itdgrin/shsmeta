@@ -9,6 +9,10 @@ uses System.Classes,
      GlobsAndConst,
      Tools;
 
+//Вспомогательные потоки используют синхронную процедуру SendMessage
+//что приводит к дедлоку когда основной поток вынужден дожидаться завершения
+//вспомогательного, для решения используется Application.ProgressMessage;
+//это криво, надо переделать на разделяемый буфер вместо SendMessage и Synhronize
 const
   CMatIndex = 0;
   CJBIIndex = 1;
@@ -47,10 +51,6 @@ type
     FLoadPriceFlags: array[0..MaxSprIndex] of Boolean;
     FThQueryList: array[0..MaxSprIndex] of TThreadQuery;
     FSprPeriodList: array[0..MaxSprIndex] of TSprPeriad;
-
-    FYear,
-    FMonth,
-    FRegion: Integer;
 
     FNotifyCS: TCriticalSection;
 
@@ -93,6 +93,8 @@ type
 var SprControl: TSprControl;
 
 implementation
+
+uses Forms;
 
 { TSprControl }
 
@@ -302,7 +304,7 @@ end;
 
 procedure TSprControl.SetPriceNotify(AYear, AMonth, ARegion: Integer;
   ANotifyHandle: HWND; AIndex: Integer);
-var I, J: Integer;
+var I: Integer;
     TmpStr: string;
     Y, M, D: Word;
 begin
@@ -345,7 +347,11 @@ begin
     FSprPeriodList[AIndex].Region := ARegion;
 
     FLoadPriceFlags[AIndex] := False;
-    FreeAndNil(FThQueryList[AIndex]); //потенциально блокирующее место
+
+    //Финт для проедаления возможного дедлока
+    while WaitForSingleObject(FThQueryList[AIndex].Handle, 1000) <> WAIT_OBJECT_0 do
+      Application.ProcessMessages;
+    FreeAndNil(FThQueryList[AIndex]);
     FThQueryList[AIndex] := TThreadQuery.Create('', 0, True, AIndex);
     FThQueryList[AIndex].OnTerminate := ThreadTerminate;
     FThQueryList[AIndex].OnActivate := LoadPrice;

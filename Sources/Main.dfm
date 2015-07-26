@@ -16,6 +16,7 @@
   Position = poDesigned
   WindowState = wsMaximized
   OnActivate = FormActivate
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnResize = FormResize
@@ -10902,7 +10903,6 @@
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2
-    ExplicitWidth = 703
   end
   object PanelCover: TPanel
     Left = 440
@@ -10929,11 +10929,11 @@
     TabOrder = 3
     Visible = False
     OnMouseDown = UpdatePanelMouseDown
-    object lbStatys: TLabel
+    object lbArchStatys: TLabel
       AlignWithMargins = True
       Left = 51
       Top = 6
-      Width = 302
+      Width = 39
       Height = 16
       Margins.Left = 5
       Margins.Top = 5
@@ -11168,10 +11168,6 @@
         Style = pbstMarquee
         MarqueeInterval = 70
         TabOrder = 0
-        ExplicitLeft = 2
-        ExplicitTop = 2
-        ExplicitWidth = 292
-        ExplicitHeight = 15
       end
     end
   end
@@ -11494,6 +11490,7 @@
     end
     object MenuService: TMenuItem
       Caption = #1057#1077#1088#1074#1080#1089
+      OnClick = MenuServiceClick
       object Administator: TMenuItem
         Caption = #1040#1076#1084#1080#1085#1080#1089#1090#1088#1080#1088#1086#1074#1072#1085#1080#1077
         Visible = False

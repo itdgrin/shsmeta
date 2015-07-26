@@ -413,7 +413,7 @@ begin
       //Максимуи C_ARHCOUNT копии, что-бы не забивать место
       for i := C_ARHCOUNT - 1 to High(FArhiv.ArhFiles) do
         FArhiv.DeleteArhiv(FArhiv.ArhFiles[i]);
-      FArhiv.CreateNewArhiv();
+     // FArhiv.CreateNewArhiv();
 
       ProgressBar1.Visible := False;
     end;
