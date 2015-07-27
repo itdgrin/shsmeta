@@ -5916,10 +5916,7 @@ end;
 
 procedure TFormCalculationEstimate.dbgrdRates12DrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
-var
-  j: Integer;
 begin
-  j := 2;
   with grRatesEx.Canvas do
   begin
     Brush.Color := PS.BackgroundRows;

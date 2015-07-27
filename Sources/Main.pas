@@ -391,7 +391,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
 procedure TFormMain.ShowSplashForm;
 begin
   UpdatePanel.Left := ClientWidth - UpdatePanel.Width;
-  UpdatePanel.Top := PanelOpenWindows.Top - UpdatePanel.Height;
+  UpdatePanel.Top := ClientHeight - UpdatePanel.Height;
   UpdatePanel.Visible := true;
   TimerUpdate.Enabled := UpdatePanel.Visible;
 end;
@@ -425,7 +425,7 @@ begin
   if Mes.LParam in [0, 1] then
   begin
     ArchivPanel.Left := ClientWidth - ArchivPanel.Width;
-    ArchivPanel.Top := PanelOpenWindows.Top - ArchivPanel.Height;
+    ArchivPanel.Top := ClientHeight - ArchivPanel.Height;
     ArchivPanel.Visible := true;
   end;
 
@@ -515,6 +515,12 @@ begin
     ShowMessage('»дет создание архива.');
     CanClose := False;
   end;
+
+  if FArhiv.RestoreArhInProgress and (G_STARTUPDATER <> 2) then
+  begin
+    ShowMessage('»дет восстановление из архива.');
+    CanClose := False;
+  end;
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -555,11 +561,6 @@ end;
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(SprControl);
-  while FArhiv.CreateArhInProgress do
-  begin
-    Sleep(1000);
-    Application.ProcessMessages;
-  end;
   FreeAndNil(FArhiv);
   DM.Connect.Connected := False;
   if Assigned(FUpdateThread) then
@@ -1666,7 +1667,9 @@ end;
 
 procedure TFormMain.MenuServiceClick(Sender: TObject);
 begin
-  ServiceBackup.Enabled := not FArhiv.CreateArhInProgress;
+  ServiceBackup.Enabled :=
+    not FArhiv.CreateArhInProgress and
+    not FArhiv.RestoreArhInProgress;
 end;
 
 procedure TFormMain.MenuSetCoefficientsClick(Sender: TObject);
@@ -1836,22 +1839,14 @@ var
 begin
   Mi := TMenuItem(Sender);
   beep;
-  {if (MessageBox(Self.Handle, PChar('¬осстановить из резервной копии от ' + StringReplace(Mi.Parent.caption,
-    '&', '', [rfReplaceAll]) + '?' + #13#10 +
-    '¬нимание, все данные внесенные после создани€ данной копии, будут утер€ны!'), '–езервное копирование',
+  if (MessageBox(Self.Handle, PChar('¬осстановить из резервной копии от ' +
+    StringReplace(Mi.Parent.caption, '&', '', [rfReplaceAll]) + '?' +
+    #13#10 + '¬нимание, все данные внесенные после создани€ данной копии, ' +
+    'будут утер€ны!'), '–езервное копирование',
     MB_YESNO + MB_ICONQUESTION) = IDYES) then
   begin
-    FormMain.PanelCover.Visible := true;
-    FormWaiting.Show;
-    Application.ProcessMessages;
-    try
-      FArhiv.RestoreArhiv(string(Mi.Parent.Tag));
-      Close;
-    except
-      FormWaiting.Close;
-      FormMain.PanelCover.Visible := False;
-    end;
-  end;     }
+    FArhiv.RestoreArhiv(Handle, string(Mi.Parent.Tag));
+  end;
 end;
 
 procedure TFormMain.NormalClick(Sender: TObject);

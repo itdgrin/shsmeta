@@ -53,20 +53,25 @@ type
     FArhFiles: TStringDynArray;
 
     FCreateArh: TThreadCreateArchiv;
+    FCreateArhHandle: THandle;
+
+    FRestoreArh: TThreadRestoreArchiv;
+    FRestoreArhHandle: THandle;
 
     procedure ThreadTerminate(ASender: TObject);
-    function GetCreateArhInProgress: Boolean;
+    function GetInProgress(AIndex: Integer): Boolean;
   public
     constructor Create(const AAppPath, AArhivPath: string);
     destructor Destroy; override;
     procedure Update();
     function GetArhivTime(const AArhivName: string): TDateTime;
     procedure DeleteArhiv(const AArhivName: string);
-    procedure RestoreArhiv(const AArhivName: string);
+    procedure RestoreArhiv(AHandle: HWND; const AArhivName: string);
     procedure CreateNewArhiv(AHandle: HWND);
     property ArhivPath: string read FArhivPath;
     property ArhFiles: TStringDynArray read FArhFiles;
-    property CreateArhInProgress: Boolean read GetCreateArhInProgress;
+    property CreateArhInProgress: Boolean Index 0 read GetInProgress;
+    property RestoreArhInProgress: Boolean Index 1 read GetInProgress;
   end;
 
 implementation
@@ -99,8 +104,14 @@ end;
 destructor TBaseAppArhiv.Destroy;
 begin
   //Финт для проедаления возможного дедлока
-  while WaitForSingleObject(FCreateArh.Handle, 1000) <> WAIT_OBJECT_0 do
-    Application.ProcessMessages;
+  if Assigned(FCreateArh) then
+    while WaitForSingleObject(FCreateArhHandle, 1000) <> WAIT_OBJECT_0 do
+      Application.ProcessMessages;
+
+  if Assigned(FRestoreArh) then
+    while WaitForSingleObject(FRestoreArhHandle, 1000) <> WAIT_OBJECT_0 do
+      Application.ProcessMessages;
+
   inherited;
 end;
 
@@ -108,11 +119,17 @@ procedure TBaseAppArhiv.ThreadTerminate(ASender: TObject);
 begin
   if ASender = FCreateArh then
     FCreateArh := nil;
+  if ASender = FRestoreArh then
+    FRestoreArh := nil;
 end;
 
-function TBaseAppArhiv.GetCreateArhInProgress: Boolean;
+function TBaseAppArhiv.GetInProgress(AIndex: Integer): Boolean;
 begin
-  Result := Assigned(FCreateArh);
+  case AIndex of
+  0: Result := Assigned(FCreateArh);
+  1: Result := Assigned(FRestoreArh);
+  else Result := False;
+  end;
 end;
 
 function TBaseAppArhiv.GetArhivTime(const AArhivName: string): TDateTime;
@@ -136,11 +153,18 @@ begin
   end;
 end;
 
-procedure TBaseAppArhiv.RestoreArhiv(const AArhivName: string);
+procedure TBaseAppArhiv.RestoreArhiv(AHandle: HWND; const AArhivName: string);
 begin
   if not SameText(ExtractFilePath(AArhivName), FArhivPath) then
     raise Exception.Create('Расположения файла ''' + AArhivName +
       ''' не совпадает с расположением архива');
+
+  FRestoreArh := TThreadRestoreArchiv.Create(AHandle, FArhivPath, FAppPath,
+    AArhivName, True);
+  FRestoreArh.OnTerminate := ThreadTerminate;
+  FRestoreArh.FreeOnTerminate := True;
+  FRestoreArh.Start;
+  FRestoreArhHandle := FRestoreArh.Handle;
 end;
 
 procedure TBaseAppArhiv.DeleteArhiv(const AArhivName: string);
@@ -161,6 +185,7 @@ begin
   FCreateArh.OnTerminate := ThreadTerminate;
   FCreateArh.FreeOnTerminate := True;
   FCreateArh.Start;
+  FCreateArhHandle := FCreateArh.Handle;
 end;
 
 procedure TBaseAppArhiv.Update();
@@ -347,6 +372,8 @@ begin
   ZF := TZipForge.Create(nil);
   try
     try
+      SendMessage(FHandle, WM_ARCHIVEPROGRESS,
+        WParam(PChar('Распаковка архива')), 1);
       //Подготавливаем временну папку
       if TDirectory.Exists(FArhivPath + C_TMPDIR) then
         KillDir(FArhivPath + C_TMPDIR);
@@ -384,15 +411,14 @@ begin
           raise Exception.Create('Ошибка копирования: ' + e.Message);
       end;
 
+      SendMessage(FHandle, WM_ARCHIVEPROGRESS,
+        WParam(PChar('Загрузка дампа БД')), 1);
+
       //Запуск восстановления из дампа
       //НЕ ЗНАЕТ ОБ ВОЗНИКШИХ ИСКЛЮЧЕНИЯХ!!!!!!!!!!!
       WinExecAndWait(C_DUMPTOBASE, nil, 0, TmpWaitResult);
       if (TmpWaitResult <> WAIT_OBJECT_0) then
         raise Exception.Create('Не удалось восстановить базу из дампа!');
-
-      G_STARTUPDATER := 2;
-      G_UPDPATH := FArhivPath + C_TMPDIR + C_ARHAPPDIR;
-      G_STARTAPP := True;
 
       //Переносим из архива апдейтер (вообще сомнительная операция)
       if TFile.Exists(G_UPDPATH + C_UPDATERNAME) then
@@ -401,12 +427,22 @@ begin
           FAppPath + C_UPDATERNAME, True);
         TFile.Delete(G_UPDPATH + C_UPDATERNAME);
       end;
+
+      G_STARTUPDATER := 2;
+      G_UPDPATH := FArhivPath + C_TMPDIR + C_ARHAPPDIR;
+      G_STARTAPP := True;
+
+      SendMessage(FHandle, WM_ARCHIVEPROGRESS,
+        WParam(PChar('Необходимо перезапустить программу')), 0);
+
+      PostMessage(FHandle, WM_CLOSE, 0, 0);
     except
       on e: Exception do
       begin
         e.Message := 'В процессе восстановления из архива возникло исключение:' +
           sLineBreak + e.Message;
         SendMessage(FHandle, WM_EXCEPTION, WParam(e), 0);
+        SendMessage(FHandle, WM_ARCHIVEPROGRESS, 0, 2);
       end;
     end;
   finally

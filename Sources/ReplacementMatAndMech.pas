@@ -36,6 +36,7 @@ type
     EName,                 //Название сметы
     RCode,                 //Код расценки
     MCode,                 //Код материала или механизма
+    MName,                 //Название материала или мех или оборуд
     MUnt: string;          //Единица измерения
     MNorma,                //Норма в расценке
     MCount: Extended;      //Кол-во
@@ -154,6 +155,7 @@ type
     procedure LoadSpr;
 
     procedure ShowDelRep(const AID: Integer; ADel: Boolean = False);
+    function SpecialCompareStr(AStr1, AStr2: string): Boolean;
     { Private declarations }
   public
     constructor Create(const AObjectID, AEstimateID, ARateID,
@@ -714,6 +716,64 @@ begin
   qrRep.Active := False;
 end;
 
+function TfrmReplacement.SpecialCompareStr(AStr1, AStr2: string): Boolean;
+var WordList1, WordList2: TStringList;
+    I: Integer;
+begin
+  Result := False;
+  AStr1 := AStr1.ToLower;
+  AStr2 := AStr2.ToLower;
+
+  AStr1 := StringReplace(AStr1, '(', ' ', [rfReplaceAll]);
+  AStr1 := StringReplace(AStr1, ')', ' ', [rfReplaceAll]);
+  AStr1 := StringReplace(AStr1, ',', ' ', [rfReplaceAll]);
+  AStr1 := StringReplace(AStr1, '    ', ' ', [rfReplaceAll]);
+  AStr1 := StringReplace(AStr1, '   ', ' ', [rfReplaceAll]);
+  AStr1 := StringReplace(AStr1, '  ', ' ', [rfReplaceAll]);
+  AStr1 := StringReplace(AStr1, ' ', sLineBreak, [rfReplaceAll]);
+
+  AStr2 := StringReplace(AStr2, '(', ' ', [rfReplaceAll]);
+  AStr2 := StringReplace(AStr2, ')', ' ', [rfReplaceAll]);
+  AStr2 := StringReplace(AStr2, ',', ' ', [rfReplaceAll]);
+  AStr2 := StringReplace(AStr2, '    ', ' ', [rfReplaceAll]);
+  AStr2 := StringReplace(AStr2, '   ', ' ', [rfReplaceAll]);
+  AStr2 := StringReplace(AStr2, '  ', ' ', [rfReplaceAll]);
+  AStr2 := StringReplace(AStr2, ' ', sLineBreak, [rfReplaceAll]);
+
+  WordList1 := TStringList.Create;
+  WordList2 := TStringList.Create;
+  try
+    WordList1.Text := AStr1;
+    WordList2.Text := AStr2;
+
+    if (WordList1.Count = 0) or (WordList2.Count = 0) then
+      Exit;
+
+    Result :=  True;
+    for I := 0 to WordList1.Count - 1 do
+      if Pos(WordList1[I], AStr2) = 0 then
+      begin
+        Result := False;
+        Break;
+      end;
+
+    if Result then
+      Exit
+    else
+      Result := True;
+
+    for I := 0 to WordList2.Count - 1 do
+      if Pos(WordList2[I], AStr1) = 0 then
+      begin
+        Result := False;
+        Break;
+      end;
+  finally
+    FreeAndNil(WordList1);
+    FreeAndNil(WordList2);
+  end;
+end;
+
 function CompareEntryRecord(const Left, Right: TEntryRecord): Integer;
 begin
   Result := Left.EID - Right.EID;
@@ -731,41 +791,51 @@ var Item: TListItem;
     TmpFlag: Boolean;
 
     procedure BrowsDataSet;
+    var Flag: Boolean;
     begin
       while not qrTemp.Eof do
       begin
-        Inc(ind);
-        SetLength(FEntryArray, ind);
-        FEntryArray[ind - 1].EID := qrTemp.FieldByName('SMID').AsInteger;
-        FEntryArray[ind - 1].EName := qrTemp.FieldByName('SMNAME').AsString;
-        FEntryArray[ind - 1].RCode := qrTemp.FieldByName('RTCODE').AsString;
-        FEntryArray[ind - 1].MID := qrTemp.FieldByName('MTID').AsInteger;
-        FEntryArray[ind - 1].MSprID := qrTemp.FieldByName('MSPRID').AsInteger;
-        FEntryArray[ind - 1].MCode := qrTemp.FieldByName('MTCODE').AsString;
-        FEntryArray[ind - 1].MUnt := qrTemp.FieldByName('MTUNIT').AsString;
-        FEntryArray[ind - 1].MNorma := qrTemp.FieldByName('MTNORMA').AsFloat;
-        FEntryArray[ind - 1].MCount := qrTemp.FieldByName('MTCOUNT').AsFloat;
-        FEntryArray[ind - 1].MIdCardRate := qrTemp.FieldByName('MTIDRATE').AsInteger;
-        FEntryArray[ind - 1].MIdReplaced := qrTemp.FieldByName('MTIDREP').AsInteger;
-        FEntryArray[ind - 1].MCons := qrTemp.FieldByName('MTCONS').AsInteger;
-        FEntryArray[ind - 1].MRep := qrTemp.FieldByName('MTREP').AsInteger;
-        FEntryArray[ind - 1].MFromRate := qrTemp.FieldByName('MTFROMRATE').AsInteger;
-        FEntryArray[ind - 1].MConsRep := qrTemp.FieldByName('MTCONREP').AsInteger;
-        FEntryArray[ind - 1].MAdded := qrTemp.FieldByName('MTADDED').AsInteger;
-        FEntryArray[ind - 1].MSort := qrTemp.FieldByName('NUMROW').AsInteger;
-        FEntryArray[ind - 1].DataID := qrTemp.FieldByName('IDTABLES').AsInteger;
-        FEntryArray[ind - 1].DataType := qrTemp.FieldByName('TYPEDATA').AsInteger;
+        Flag := (qrTemp.FieldByName('MSPRID').AsInteger = edtSourceCode.Tag);
 
-        if (FMatMechID > 0) then
-          FEntryArray[ind - 1].Select :=
-            (FMatMechID = FEntryArray[ind - 1].MID) and
-            (FEntryArray[ind - 1].MRep = 0)
-        else
+        if not Flag then
+          Flag := SpecialCompareStr(edtSourceName.Text,
+            qrTemp.FieldByName('MTNAME').AsString);
+
+        if Flag then
         begin
-          FEntryArray[ind - 1].Select :=
-            (FMatMechSprID = FEntryArray[ind - 1].MSprID);
-        end;
+          Inc(ind);
+          SetLength(FEntryArray, ind);
+          FEntryArray[ind - 1].EID := qrTemp.FieldByName('SMID').AsInteger;
+          FEntryArray[ind - 1].EName := qrTemp.FieldByName('SMNAME').AsString;
+          FEntryArray[ind - 1].RCode := qrTemp.FieldByName('RTCODE').AsString;
+          FEntryArray[ind - 1].MID := qrTemp.FieldByName('MTID').AsInteger;
+          FEntryArray[ind - 1].MSprID := qrTemp.FieldByName('MSPRID').AsInteger;
+          FEntryArray[ind - 1].MCode := qrTemp.FieldByName('MTCODE').AsString;
+          FEntryArray[ind - 1].MName := qrTemp.FieldByName('MTNAME').AsString;
+          FEntryArray[ind - 1].MUnt := qrTemp.FieldByName('MTUNIT').AsString;
+          FEntryArray[ind - 1].MNorma := qrTemp.FieldByName('MTNORMA').AsFloat;
+          FEntryArray[ind - 1].MCount := qrTemp.FieldByName('MTCOUNT').AsFloat;
+          FEntryArray[ind - 1].MIdCardRate := qrTemp.FieldByName('MTIDRATE').AsInteger;
+          FEntryArray[ind - 1].MIdReplaced := qrTemp.FieldByName('MTIDREP').AsInteger;
+          FEntryArray[ind - 1].MCons := qrTemp.FieldByName('MTCONS').AsInteger;
+          FEntryArray[ind - 1].MRep := qrTemp.FieldByName('MTREP').AsInteger;
+          FEntryArray[ind - 1].MFromRate := qrTemp.FieldByName('MTFROMRATE').AsInteger;
+          FEntryArray[ind - 1].MConsRep := qrTemp.FieldByName('MTCONREP').AsInteger;
+          FEntryArray[ind - 1].MAdded := qrTemp.FieldByName('MTADDED').AsInteger;
+          FEntryArray[ind - 1].MSort := qrTemp.FieldByName('NUMROW').AsInteger;
+          FEntryArray[ind - 1].DataID := qrTemp.FieldByName('IDTABLES').AsInteger;
+          FEntryArray[ind - 1].DataType := qrTemp.FieldByName('TYPEDATA').AsInteger;
 
+          if (FMatMechID > 0) then
+            FEntryArray[ind - 1].Select :=
+              (FMatMechID = FEntryArray[ind - 1].MID) and
+              (FEntryArray[ind - 1].MRep = 0)
+          else
+          begin
+            FEntryArray[ind - 1].Select :=
+              (FMatMechSprID = FEntryArray[ind - 1].MSprID);
+          end;
+        end;
         qrTemp.Next;
       end;
     end;
@@ -805,7 +875,8 @@ begin
       2: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
           'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
           'RT.RATE_CODE as RTCODE, MT.ID as MTID, MT.MAT_ID as MSPRID, ' +
-          'MT.MAT_CODE as MTCODE, MT.MAT_COUNT as MTCOUNT, ' +
+          'MT.MAT_CODE as MTCODE, MT.MAT_NAME as MTNAME, ' +
+          'MT.MAT_COUNT as MTCOUNT, ' +
           'MT.MAT_UNIT as MTUNIT, MT.MAT_NORMA as MTNORMA, ' +
           'MT.ID_CARD_RATE as MTIDRATE, MT.ID_REPLACED as MTIDREP, ' +
           'MT.CONSIDERED as MTCONS, MT.REPLACED as MTREP, ' +
@@ -817,12 +888,12 @@ begin
           'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 1) AND ' +
           '(ES.ID_TABLES = RT.ID) AND (RT.ID = MT.ID_CARD_RATE) AND ' +
           '(MT.FROM_RATE = 0) AND (MT.DELETED = 0) AND ' +
-          '(MT.MAT_ID = ' + IntToStr(edtSourceCode.Tag) + ') AND ' +
           '(ES.ID_ACT is NULL) ' +  WhereStr;
       3: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
           'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
           'RT.RATE_CODE as RTCODE, MT.ID as MTID, MT.MECH_ID as MSPRID, ' +
-          'MT.MECH_CODE as MTCODE, MT.MECH_COUNT as MTCOUNT, ' +
+          'MT.MECH_CODE as MTCODE, MT.MECH_NAME as MTNAME, ' +
+          'MT.MECH_COUNT as MTCOUNT, ' +
           'MT.MECH_UNIT as MTUNIT, MT.MECH_NORMA as MTNORMA, ' +
           'MT.ID_CARD_RATE as MTIDRATE, MT.ID_REPLACED as MTIDREP, ' +
           'null as MTCONS, MT.REPLACED as MTREP, ' +
@@ -834,7 +905,6 @@ begin
           'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 1) AND ' +
           '(ES.ID_TABLES = RT.ID) AND (RT.ID = MT.ID_CARD_RATE) AND ' +
           '(MT.FROM_RATE = 0) AND (MT.DELETED = 0) AND ' +
-          '(MT.MECH_ID = ' + IntToStr(edtSourceCode.Tag) + ') AND ' +
           '(ES.ID_ACT is NULL) ' + WhereStr;
     end;
     qrTemp.Active := True;
@@ -847,7 +917,8 @@ begin
     2: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
         'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
         'null as RTCODE, MT.ID as MTID, MT.MAT_ID as MSPRID, ' +
-        'MT.MAT_CODE as MTCODE, MT.MAT_COUNT as MTCOUNT, ' +
+        'MT.MAT_CODE as MTCODE, MT.MAT_NAME as MTNAME, ' +
+        'MT.MAT_COUNT as MTCOUNT, ' +
         'MT.MAT_UNIT as MTUNIT, MT.MAT_NORMA as MTNORMA, ' +
         'MT.ID_CARD_RATE as MTIDRATE, MT.ID_REPLACED as MTIDREP, ' +
         'MT.CONSIDERED as MTCONS, MT.REPLACED as MTREP, ' +
@@ -857,12 +928,13 @@ begin
         'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
         'materialcard' + TmpStr + ' as MT ' +
         'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 2) AND ' +
-        '(ES.ID_TABLES = MT.ID) AND (MT.MAT_ID = ' + IntToStr(edtSourceCode.Tag) + ') AND ' +
+        '(ES.ID_TABLES = MT.ID) AND ' +
         '(ES.ID_ACT is NULL) ' + WhereStr;
     3: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
         'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
         'null as RTCODE, MT.ID as MTID, MT.MECH_ID as MSPRID, ' +
-        'MT.MECH_CODE as MTCODE, MT.MECH_COUNT as MTCOUNT, ' +
+        'MT.MECH_CODE as MTCODE, MT.MECH_NAME as MTNAME, ' +
+        'MT.MECH_COUNT as MTCOUNT, ' +
         'MT.MECH_UNIT as MTUNIT, MT.MECH_NORMA as MTNORMA, ' +
         'MT.ID_CARD_RATE as MTIDRATE, MT.ID_REPLACED as MTIDREP, ' +
         'null as MTCONS, MT.REPLACED as MTREP, ' +
@@ -872,12 +944,13 @@ begin
         'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
         'mechanizmcard' + TmpStr + ' as MT ' +
         'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 3) AND ' +
-        '(ES.ID_TABLES = MT.ID) AND (MT.MECH_ID = ' + IntToStr(edtSourceCode.Tag) + ') AND ' +
+        '(ES.ID_TABLES = MT.ID) AND ' +
         '(ES.ID_ACT is NULL) ' + WhereStr;
     4: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
         'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
         'null as RTCODE, MT.ID as MTID, MT.DEVICE_ID as MSPRID, ' +
-        'MT.DEVICE_CODE as MTCODE, MT.DEVICE_COUNT as MTCOUNT, ' +
+        'MT.DEVICE_CODE as MTCODE, MT.DEVICE_NAME as MTNAME, ' +
+        'MT.DEVICE_COUNT as MTCOUNT, ' +
         'MT.DEVICE_UNIT as MTUNIT, null as MTNORMA, ' +
         'null as MTIDRATE, null as MTIDREP, ' +
         'null as MTCONS, null as MTREP, ' +
@@ -887,7 +960,7 @@ begin
         'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
         'devicescard' + TmpStr + ' as MT ' +
         'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 4) AND ' +
-        '(ES.ID_TABLES = MT.ID) AND (MT.DEVICE_ID = ' + IntToStr(edtSourceCode.Tag) + ') AND ' +
+        '(ES.ID_TABLES = MT.ID) AND ' +
         '(ES.ID_ACT is NULL) ' + WhereStr;
   end;
   qrTemp.Active := True;
