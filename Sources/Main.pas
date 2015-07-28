@@ -256,10 +256,10 @@ type
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
     FUpdateThread: TUpdateThread; // Нить проверки обновлений
-    SystemInfoResult: boolean;
+    SystemInfoResult: Boolean;
 
     FCurVersion: TVersion; // текущая версия приложения и БД
-    DebugMode: boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
+    DebugMode: Boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
     FileReportPath: string; // путь к папке с отчетами(дабы не захламлять датамодуль лишними модулями)
 
@@ -294,7 +294,7 @@ type
 
     RoundTo: integer; // Округлять числа до vRoundTo знаков после запятой
 
-    ShowHint: boolean;
+    ShowHint: Boolean;
   end;
 
 const
@@ -414,11 +414,10 @@ begin
   end;
 end;
 
-//Вывод исключений из вспомогательных потоков
+// Вывод исключений из вспомогательных потоков
 procedure TFormMain.ThreadEXCEPTION(var Mes: TMessage);
 begin
-  if Assigned(TObject(Mes.WParam)) and
-     (TObject(Mes.WParam) is Exception) then
+  if Assigned(TObject(Mes.WParam)) and (TObject(Mes.WParam) is Exception) then
     Application.ShowException(Exception(Mes.WParam));
 end;
 
@@ -441,7 +440,7 @@ begin
 
   if Mes.LParam = 1 then
   begin
-    pgArchiv.Enabled := True;
+    pgArchiv.Enabled := true;
     pgArchiv.Style := pbstMarquee;
     pgArchiv.State := pbsNormal;
 
@@ -547,8 +546,8 @@ begin
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   // Объект для управления архивом
-  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName),
-    ExtractFilePath(Application.ExeName) + C_ARHDIR);
+  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
+    C_ARHDIR);
   // путь к папке с отчетами (Вадим)
 
   // {$IFDEF DEBUG}
@@ -591,14 +590,14 @@ begin
       DM.Connect.Connected := true;
       // Загрузка справочников
       FormWaiting.Height := 110;
-      FormWaiting.lbProcess.caption := 'Загрузка справочников:';
+      FormWaiting.lbProcess.Caption := 'Загрузка справочников:';
       FormWaiting.Show;
       Application.ProcessMessages;
       // Справочник сборников расценок
-      FormWaiting.lbProcess.caption := 'Загрузка справочников:'#13 + 'перечень сборников';
+      FormWaiting.lbProcess.Caption := 'Загрузка справочников:'#13 + 'перечень сборников';
       Application.ProcessMessages;
 
-      //Объект для загрузки справочников
+      // Объект для загрузки справочников
       SprControl := TSprControl.Create(Handle);
 
       if (not Assigned(fNormativDirectory)) then
@@ -606,11 +605,11 @@ begin
       //
       FormWaiting.Close;
       FormWaiting.Height := 88;
-      FormWaiting.lbProcess.caption := '';
+      FormWaiting.lbProcess.Caption := '';
       Application.ProcessMessages;
     end;
   except
-    on e: exception do
+    on e: Exception do
     begin
       e.Message := 'Ошибка подключения к базе:' + sLineBreak + e.Message;
       Application.ShowException(e);
@@ -618,13 +617,12 @@ begin
     end;
   end;
 
-
   try
     GetSystemInfo;
     SystemInfoResult := true;
   except
-    on e: exception do
-      showmessage('Ошибка инициализации системы: ' + e.Message);
+    on e: Exception do
+      ShowMessage('Ошибка инициализации системы: ' + e.Message);
   end;
 
   // Запуск ниточки для мониторигра обновлений
@@ -633,7 +631,7 @@ begin
   else
   begin
     if not SystemInfoResult then
-      showmessage('Обновления недоступны.');
+      ShowMessage('Обновления недоступны.');
     FUpdateThread := nil;
     ServiceUpdate.Enabled := False;
   end;
@@ -695,7 +693,7 @@ begin
   ButtonsWindows[CountOpenWindows].Width := 140;
   ButtonsWindows[CountOpenWindows].Height := 25;
   ButtonsWindows[CountOpenWindows].Top := 1;
-  ButtonsWindows[CountOpenWindows].caption := CaptionButton;
+  ButtonsWindows[CountOpenWindows].Caption := CaptionButton;
   ButtonsWindows[CountOpenWindows].GroupIndex := 1;
   ButtonsWindows[CountOpenWindows].Down := true;
   ButtonsWindows[CountOpenWindows].ShowHint := true;
@@ -720,7 +718,7 @@ begin
 
   Y := -1;
   for i := 0 to CountOpenWindows - 1 do
-    if (ButtonsWindows[i].caption = CaptionButton) then
+    if (ButtonsWindows[i].Caption = CaptionButton) then
     begin
       Y := i;
       Break;
@@ -746,7 +744,7 @@ var
   i: integer;
 begin
   for i := 0 to CountOpenWindows - 1 do
-    if ButtonsWindows[i].caption = CaptionButton then
+    if ButtonsWindows[i].Caption = CaptionButton then
     begin
       ButtonsWindows[i].Down := true;
       Exit;
@@ -777,17 +775,17 @@ begin
     TmpMi := TMenuItem.Create(Mi);
 
     try
-      TmpMi.caption := DateTimeToStr(FArhiv.GetArhivTime(FArhiv.ArhFiles[i]));
+      TmpMi.Caption := DateTimeToStr(FArhiv.GetArhivTime(FArhiv.ArhFiles[i]));
     except
-      TmpMi.caption := ExtractFileName(FArhiv.ArhFiles[i]);
+      TmpMi.Caption := ExtractFileName(FArhiv.ArhFiles[i]);
     end;
 
     TmpMi2 := TMenuItem.Create(TmpMi);
-    TmpMi2.caption := 'Восстановить';
+    TmpMi2.Caption := 'Восстановить';
     TmpMi2.OnClick := PMRestoreBackupClick;
     TmpMi.Add(TmpMi2);
     TmpMi2 := TMenuItem.Create(TmpMi);
-    TmpMi2.caption := 'Удалить';
+    TmpMi2.Caption := 'Удалить';
     TmpMi2.OnClick := PMDeleteBackupClick;
     TmpMi.Add(TmpMi2);
     TmpMi.Tag := integer(FArhiv.ArhFiles[i]);
@@ -823,9 +821,9 @@ procedure TFormMain.TimerUpdateTimer(Sender: TObject);
 var
   i: integer;
 begin
-  LabelDot.caption := '';
+  LabelDot.Caption := '';
   for i := 1 to TimerUpdate.Tag do
-    LabelDot.caption := LabelDot.caption + '.';
+    LabelDot.Caption := LabelDot.Caption + '.';
   if TimerUpdate.Tag >= 3 then
     TimerUpdate.Tag := 0
   else
@@ -850,7 +848,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
@@ -861,7 +859,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
         dmReportF.Report_WINTER_RS_OBJ(FormCalculationEstimate.IdEstimate, FileReportPath);
@@ -958,7 +956,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       // **************************************************************************************************************************************
@@ -974,7 +972,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
         ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
@@ -996,8 +994,9 @@ begin
     if Assigned(FormObjectsAndEstimates) then
     begin
 
-          if FormObjectsAndEstimates.IDAct > 0 then
-          ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormObjectsAndEstimates.IDAct)),
+      if FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger > 0 then
+        ShellExecute(Handle, nil, 'report.exe',
+          PChar('A' + INTTOSTR(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger)),
           PChar(FileReportPath + 'report\'), SW_maximIZE);
 
     end
@@ -1006,8 +1005,9 @@ begin
       if Assigned(FormCalculationEstimate) then
       begin
 
-          if FormCalculationEstimate.IDAct > 0 then       ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
-          PChar(FileReportPath + 'report\'), SW_maximIZE);
+        if FormCalculationEstimate.IDAct > 0 then
+          ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
+            PChar(FileReportPath + 'report\'), SW_maximIZE);
 
       end;
     end;
@@ -1034,7 +1034,7 @@ end;
 procedure TFormMain.mN110Click(Sender: TObject);
 begin
   if (not Assigned(fSSR)) then
-    fSSR := TfSSR.Create((Sender as TMenuItem).Tag, (Sender as TMenuItem).caption);
+    fSSR := TfSSR.Create((Sender as TMenuItem).Tag, (Sender as TMenuItem).Caption);
   fSSR.Show;
 end;
 
@@ -1089,7 +1089,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_CALC_SMETA_OBJ_GRAPH_C(FormObjectsAndEstimates.IdEstimate, FileReportPath);
@@ -1100,7 +1100,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
 
@@ -1120,7 +1120,7 @@ begin
     begin
       if FormObjectsAndEstimates.qrActsEx.IsEmpty then
       begin
-        showmessage('Не выбран акт');
+        ShowMessage('Не выбран акт');
         Exit;
       end;
       dmReportF.Report_RASX_MAT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
@@ -1142,7 +1142,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
 
@@ -1158,7 +1158,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
 
@@ -1183,7 +1183,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_SMETA_LSR_FROM_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
@@ -1194,7 +1194,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
 
@@ -1215,7 +1215,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_SMETA_LSR_TRUD(FormObjectsAndEstimates.IdEstimate, FileReportPath);
@@ -1226,7 +1226,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
 
@@ -1247,7 +1247,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_SMETA_LSR_ZIM(FormObjectsAndEstimates.IdEstimate, FileReportPath);
@@ -1258,7 +1258,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
 
@@ -1279,7 +1279,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_SMETA_RES_FROM_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
@@ -1290,7 +1290,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
 
@@ -1312,7 +1312,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_RSMO_OBJ(0, FormObjectsAndEstimates.IdEstimate, 0, FileReportPath);
@@ -1323,7 +1323,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
 
@@ -1344,7 +1344,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_RSMO_OBJ(1, FormObjectsAndEstimates.IdEstimate, 0, FileReportPath);
@@ -1355,7 +1355,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
 
@@ -1376,7 +1376,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_RSMEH_OBJ(0, FormObjectsAndEstimates.IdEstimate, 0, FileReportPath);
@@ -1387,7 +1387,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
 
@@ -1414,7 +1414,7 @@ begin
     begin
       if FormCalculationEstimate.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_VED_OANDPWV1_OBJ(1, 0, FormCalculationEstimate.IdObject, FileReportPath);
@@ -1434,7 +1434,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
@@ -1445,7 +1445,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
         dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ(FormCalculationEstimate.IdObject, FileReportPath);
@@ -1466,7 +1466,7 @@ begin
     begin
       if FormCalculationEstimate.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_VED_OANDPWV1_OBJ(2, 0, FormCalculationEstimate.IdObject, FileReportPath);
@@ -1554,7 +1554,7 @@ begin
   end
   else
   begin
-    if FormCalculationEstimate.IdAct <> 0 then
+    if FormCalculationEstimate.IDAct <> 0 then
     // для акта
     begin
       if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт сметы',
@@ -1604,7 +1604,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       // **************************************************************************************************************************************
@@ -1642,7 +1642,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
         // **************************************************************************************************************************************
@@ -1698,9 +1698,7 @@ end;
 
 procedure TFormMain.MenuServiceClick(Sender: TObject);
 begin
-  ServiceBackup.Enabled :=
-    not FArhiv.CreateArhInProgress and
-    not FArhiv.RestoreArhInProgress;
+  ServiceBackup.Enabled := not FArhiv.CreateArhInProgress and not FArhiv.RestoreArhInProgress;
 end;
 
 procedure TFormMain.MenuSetCoefficientsClick(Sender: TObject);
@@ -1717,7 +1715,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_ZP_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
@@ -1728,7 +1726,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
         dmReportF.Report_ZP_OBJ(FormCalculationEstimate.IdEstimate, FileReportPath);
@@ -1747,7 +1745,7 @@ begin
     begin
       if FormObjectsAndEstimates.qrActsEx.IsEmpty then
       begin
-        showmessage('Не выбран акт');
+        ShowMessage('Не выбран акт');
         Exit;
       end;
       dmReportF.Report_ZP_OBJ_ACT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger,
@@ -1846,7 +1844,8 @@ begin
 end;
 
 procedure TFormMain.PMAddNewBackupClick(Sender: TObject);
-var i: Integer;
+var
+  i: integer;
 begin
   // Максимуи C_ARHCOUNT копии, что-бы не забивать место
   for i := C_ARHCOUNT - 1 to High(FArhiv.ArhFiles) do
@@ -1859,7 +1858,7 @@ var
   Mi: TMenuItem;
 begin
   Mi := TMenuItem(Sender);
-  if (MessageBox(Self.Handle, PChar('Удалить резервную копию от ' + StringReplace(Mi.Parent.caption, '&', '',
+  if (MessageBox(Self.Handle, PChar('Удалить резервную копию от ' + StringReplace(Mi.Parent.Caption, '&', '',
     [rfReplaceAll]) + '?'), 'Резервное копирование', MB_YESNO + MB_ICONQUESTION) = IDYES) then
     FArhiv.DeleteArhiv(string(Mi.Parent.Tag));
 end;
@@ -1870,11 +1869,9 @@ var
 begin
   Mi := TMenuItem(Sender);
   beep;
-  if (MessageBox(Self.Handle, PChar('Восстановить из резервной копии от ' +
-    StringReplace(Mi.Parent.caption, '&', '', [rfReplaceAll]) + '?' +
-    #13#10 + 'Внимание, все данные внесенные после создания данной копии, ' +
-    'будут утеряны!'), 'Резервное копирование',
-    MB_YESNO + MB_ICONQUESTION) = IDYES) then
+  if (MessageBox(Self.Handle, PChar('Восстановить из резервной копии от ' + StringReplace(Mi.Parent.Caption,
+    '&', '', [rfReplaceAll]) + '?' + #13#10 + 'Внимание, все данные внесенные после создания данной копии, ' +
+    'будут утеряны!'), 'Резервное копирование', MB_YESNO + MB_ICONQUESTION) = IDYES) then
   begin
     FArhiv.RestoreArhiv(Handle, string(Mi.Parent.Tag));
   end;
@@ -1941,7 +1938,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
@@ -1952,7 +1949,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
         dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
@@ -1971,7 +1968,7 @@ begin
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
-        showmessage('Не выбрана смета');
+        ShowMessage('Не выбрана смета');
         Exit;
       end;
       dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 2);
@@ -1982,7 +1979,7 @@ begin
       begin
         if FormCalculationEstimate.IdEstimate = 0 then
         begin
-          showmessage('Не выбрана смета');
+          ShowMessage('Не выбрана смета');
           Exit;
         end;
         dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 2);
@@ -2020,7 +2017,7 @@ begin
   end;
 end;
 
-function ShiftDown: boolean;
+function ShiftDown: Boolean;
 var
   State: TKeyboardState;
 begin
@@ -2028,7 +2025,7 @@ begin
   Result := ((State[vk_Shift] and 128) <> 0);
 end;
 
-function CtrlDown: boolean;
+function CtrlDown: Boolean;
 var
   State: TKeyboardState;
 begin
@@ -2036,7 +2033,7 @@ begin
   Result := ((State[vk_Control] and 128) <> 0);
 end;
 
-function AltDown: boolean;
+function AltDown: Boolean;
 var
   State: TKeyboardState;
 begin

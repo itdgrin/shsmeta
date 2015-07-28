@@ -10697,7 +10697,7 @@
     Height = 50
     Color = clSkyBlue
     ParentBackground = False
-    TabOrder = 1
+    TabOrder = 2
     Visible = False
     OnMouseDown = UpdatePanelMouseDown
     object imgUpdate: TImage
@@ -10902,7 +10902,7 @@
     ParentDoubleBuffered = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 2
+    TabOrder = 3
   end
   object PanelCover: TPanel
     Left = 440
@@ -10926,7 +10926,7 @@
     Font.Style = []
     ParentBackground = False
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 1
     Visible = False
     OnMouseDown = UpdatePanelMouseDown
     object lbArchStatys: TLabel

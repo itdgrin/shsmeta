@@ -193,9 +193,11 @@ type
     procedure qrMechDetailBeforePost(DataSet: TDataSet);
     procedure qrDevicesDetailBeforePost(DataSet: TDataSet);
     procedure pnlCalculationYesNoClick(Sender: TObject);
+    procedure btnShowDiffClick(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
+    flLoaded: Boolean;
     procedure CalcFooter;
     function CanEditField(Field: TField): Boolean;
   public
@@ -204,7 +206,7 @@ type
 var
   fCalcResource: TfCalcResource;
 
-procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0);
+procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil);
 
 implementation
 
@@ -212,12 +214,15 @@ implementation
 
 uses Main, Tools, ReplacementMatAndMech, CalculationEstimate, DataModule, GlobsAndConst;
 
-procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0);
+procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil);
+var
+  pageID: Integer;
 begin
   if VarIsNull(ID_ESTIMATE) then
     Exit;
   if (not Assigned(fCalcResource)) then
-    fCalcResource := TfCalcResource.Create(nil);
+    fCalcResource := TfCalcResource.Create(AOwner);
+  fCalcResource.flLoaded := False;
   fCalcResource.IDEstimate := ID_ESTIMATE;
   fCalcResource.qrEstimate.ParamByName('SM_ID').Value := ID_ESTIMATE;
   fCalcResource.qrEstimate.Active := True;
@@ -225,9 +230,55 @@ begin
   fCalcResource.edtEstimateName.Text := fCalcResource.qrEstimate.FieldByName('NAME').AsString;
   fCalcResource.seFromYear.Value := fCalcResource.qrEstimate.FieldByName('YEAR').AsInteger;
   fCalcResource.cbbNDS.ItemIndex := fCalcResource.qrEstimate.FieldByName('NDS').AsInteger;
+
+  if AOwner <> nil then
+  begin
+    fCalcResource.BorderStyle := bsNone;
+    fCalcResource.Parent := AOwner;
+    fCalcResource.Align := alClient;
+
+  end;
+
+  // Если вызвали с доп параметром (на что положить) , то скрываем все вкладки
+  for pageID := 0 to fCalcResource.pgc.PageCount - 1 do
+    fCalcResource.pgc.Pages[pageID].TabVisible := AOwner = nil;
+
+  //fCalcResource.pnlTop.Visible := AOwner = nil;
+
   fCalcResource.pgc.ActivePageIndex := APage;
+
   fCalcResource.Show;
+  fCalcResource.flLoaded := True;
   fCalcResource.pgcChange(nil);
+end;
+
+procedure TfCalcResource.btnShowDiffClick(Sender: TObject);
+begin
+  case pgc.ActivePageIndex of
+    // Расчет стоимости
+    0:
+      ;
+    // Расчет материалов
+    1:
+      begin
+
+      end;
+    // Расчет механизмов
+    2:
+      begin
+
+      end;
+    // Расчет оборудования
+    3:
+      begin
+
+      end;
+    // Расчет з\п
+    4:
+      begin
+
+      end;
+  end;
 end;
 
 procedure TfCalcResource.CalcFooter;
@@ -744,6 +795,8 @@ end;
 
 procedure TfCalcResource.pgcChange(Sender: TObject);
 begin
+  if not flLoaded then
+    Exit;
   case pgc.ActivePageIndex of
     // Расчет стоимости
     0:
@@ -1351,4 +1404,3 @@ begin
 end;
 
 end.
-

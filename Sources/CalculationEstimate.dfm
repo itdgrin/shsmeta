@@ -37,7 +37,6 @@
     ParentCtl3D = False
     TabOrder = 0
     OnResize = PanelTopMenuResize
-    ExplicitWidth = 921
     object SpeedButtonLocalEstimate: TSpeedButton
       AlignWithMargins = True
       Left = 3
@@ -160,6 +159,7 @@
       Margins.Top = 1
       Margins.Bottom = 1
       Align = alLeft
+      GroupIndex = 1
       Caption = #1042#1077#1076#1086#1084#1086#1089#1090#1100' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
       OnClick = btnResMatClick
     end
@@ -174,6 +174,7 @@
       Margins.Top = 1
       Margins.Bottom = 1
       Align = alLeft
+      GroupIndex = 1
       Caption = #1042#1077#1076#1086#1084#1086#1089#1090#1100' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       OnClick = btnResMatClick
     end
@@ -188,8 +189,10 @@
       Margins.Top = 1
       Margins.Bottom = 1
       Align = alLeft
+      GroupIndex = 1
       Caption = #1042#1077#1076#1086#1084#1086#1089#1090#1100' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       OnClick = btnResMatClick
+      ExplicitTop = 4
     end
     object btnResZP: TSpeedButton
       Tag = 4
@@ -202,10 +205,10 @@
       Margins.Top = 1
       Margins.Bottom = 1
       Align = alLeft
+      GroupIndex = 1
       Caption = #1056#1072#1089#1095#1077#1090' '#1047#1055
       OnClick = btnResMatClick
-      ExplicitLeft = 762
-      ExplicitTop = 2
+      ExplicitTop = 4
     end
     object btnResCalc: TSpeedButton
       AlignWithMargins = True
@@ -217,9 +220,10 @@
       Margins.Top = 1
       Margins.Bottom = 1
       Align = alLeft
+      GroupIndex = 1
       Caption = #1050#1086#1085#1090#1088#1072#1082#1090#1085#1072#1103' '#1094#1077#1085#1072
       OnClick = btnResMatClick
-      ExplicitLeft = 824
+      ExplicitTop = 4
     end
     object btnKC6: TButton
       AlignWithMargins = True
@@ -233,7 +237,6 @@
       Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
       TabOrder = 0
       OnClick = btnKC6Click
-      ExplicitLeft = 349
       ExplicitTop = 0
     end
   end
@@ -306,7 +309,6 @@
         BevelOuter = bvNone
         ParentBackground = False
         TabOrder = 0
-        ExplicitTop = 2
         DesignSize = (
           912
           25)
@@ -2738,7 +2740,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 2
-    ExplicitWidth = 921
     DesignSize = (
       920
       25)
@@ -2797,7 +2798,6 @@
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
-      ExplicitWidth = 393
     end
     object PanelCalculationYesNo: TPanel
       Tag = 1
@@ -2812,7 +2812,6 @@
       ParentBackground = False
       TabOrder = 0
       OnClick = PanelCalculationYesNoClick
-      ExplicitLeft = 777
     end
   end
   object PanelEstimate: TPanel
@@ -2824,7 +2823,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 3
-    ExplicitWidth = 921
     DesignSize = (
       920
       25)
@@ -2883,7 +2881,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 646
     end
   end
   object PanelObject: TPanel
@@ -2895,7 +2892,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 1
-    ExplicitWidth = 921
     DesignSize = (
       920
       25)
@@ -2957,7 +2953,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 460
     end
     object EditNumberContract: TEdit
       Left = 664
@@ -2968,7 +2963,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 1
-      ExplicitLeft = 665
     end
     object EditDateContract: TEdit
       Left = 847
@@ -2979,7 +2973,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 2
-      ExplicitLeft = 848
     end
   end
   object PanelSSR: TPanel

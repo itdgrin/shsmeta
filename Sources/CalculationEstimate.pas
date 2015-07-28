@@ -1026,6 +1026,10 @@ end;
 
 procedure TFormCalculationEstimate.SpeedButtonLocalEstimateClick(Sender: TObject);
 begin
+  // Временный костыль
+  if (Assigned(fCalcResource)) then
+    fCalcResource.Close;
+
   if SpeedButtonLocalEstimate.Tag = 0 then
   begin
     SpeedButtonLocalEstimate.Down := True;
@@ -1053,6 +1057,10 @@ end;
 
 procedure TFormCalculationEstimate.SpeedButtonSummaryCalculationClick(Sender: TObject);
 begin
+  // Временный костыль
+  if (Assigned(fCalcResource)) then
+    fCalcResource.Close;
+
   if SpeedButtonSummaryCalculation.Tag = 0 then
   begin
     SpeedButtonSummaryCalculation.Down := True;
@@ -1190,7 +1198,7 @@ end;
 
 procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
 begin
-  ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag);
+  ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
 end;
 
 procedure TFormCalculationEstimate.btnEquipmentsClick(Sender: TObject);
