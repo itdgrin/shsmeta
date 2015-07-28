@@ -7,7 +7,7 @@ uses
   Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
   ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, ArhivModule,
   Data.DB, GlobsAndConst, Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage,
-  JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg, dxGDIPlusClasses;
+  JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
@@ -153,6 +153,7 @@ type
     imgArchive: TImage;
     pnlArchiv1: TPanel;
     pgArchiv: TProgressBar;
+    N23: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -250,6 +251,7 @@ type
     procedure mN110Click(Sender: TObject);
     procedure MenuServiceClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure N23Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -984,6 +986,35 @@ begin
   finally
     Screen.Cursor := crDefault;
   end;
+end;
+
+procedure TFormMain.N23Click(Sender: TObject);
+begin
+
+  Screen.Cursor := crSQLWait;
+  try
+    if Assigned(FormObjectsAndEstimates) then
+    begin
+
+          if FormObjectsAndEstimates.IDAct > 0 then
+          ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormObjectsAndEstimates.IDAct)),
+          PChar(FileReportPath + 'report\'), SW_maximIZE);
+
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+
+          if FormCalculationEstimate.IDAct > 0 then       ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
+          PChar(FileReportPath + 'report\'), SW_maximIZE);
+
+      end;
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+
 end;
 
 procedure TFormMain.mCalcResourcesClick(Sender: TObject);
