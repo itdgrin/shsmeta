@@ -455,6 +455,13 @@ type
     btnResDev: TSpeedButton;
     btnResZP: TSpeedButton;
     btnResCalc: TSpeedButton;
+    PMTranstPerc: TMenuItem;
+    PMTrPerc1: TMenuItem;
+    PMTrPerc2: TMenuItem;
+    PMTrPerc3: TMenuItem;
+    PMTrPerc4: TMenuItem;
+    PMTrPerc5: TMenuItem;
+    PMTrPerc0: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -645,6 +652,8 @@ type
     procedure pmDevicesPopup(Sender: TObject);
     procedure PMMechAutoRepClick(Sender: TObject);
     procedure btnResMatClick(Sender: TObject);
+    procedure PMTrPerc0Click(Sender: TObject);
+    procedure PMTranstPercClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -1934,7 +1943,7 @@ var
 begin
   if Sender.IsNull then
   begin
-    Sender.AsInteger := 0;
+    Sender.Value := 0;
     Exit;
   end;
 
@@ -3611,6 +3620,65 @@ begin
   ActReadOnly := Value;
 end;
 
+procedure TFormCalculationEstimate.PMTranstPercClick(Sender: TObject);
+var TmpCode: string;
+begin
+  PMTrPerc1.Enabled := True;
+  PMTrPerc2.Enabled := True;
+  PMTrPerc3.Enabled := True;
+  PMTrPerc4.Enabled := True;
+  PMTrPerc5.Enabled := True;
+
+  TmpCode := qrMaterialMAT_CODE.AsString; //Для улучшения читаемости
+  if Pos('С103', TmpCode) > 0 then
+  begin
+    PMTrPerc2.Enabled := False;
+    PMTrPerc4.Enabled := False;
+    PMTrPerc5.Enabled := False;
+  end;
+
+  if (Pos('С530', TmpCode) > 0) or
+     (Pos('С533', TmpCode) > 0) or
+     (Pos('С544', TmpCode) > 0) then
+  begin
+    PMTrPerc2.Enabled := False;
+    PMTrPerc4.Enabled := False;
+  end;
+end;
+
+procedure TFormCalculationEstimate.PMTrPerc0Click(Sender: TObject);
+var TrPr: Real;
+    TmpCode: string;
+begin
+  if (not qrMaterial.Active) or (qrMaterialMAT_CODE.AsString = '') then
+    Exit;
+
+  case (Sender as TComponent).Tag of
+    0: TmpCode := qrMaterialMAT_CODE.AsString;
+    //Просто константы, что-бы получиль нужное значение из GetTranspPers
+    //GetTranspPers выдаст значение в учетом региона и даты сметы
+    1: TmpCode := 'С101-0000';
+    2: TmpCode := 'С201-0000';
+    3: TmpCode := 'С300-0000';
+    4: TmpCode := 'С501-0000';
+    5: TmpCode := 'С000-0000';
+  end;
+
+  qrTemp1.Active := False;
+  qrTemp1.SQL.Clear;
+  qrTemp1.SQL.Add('SELECT GetTranspPers(:IdEstimate, :MatCode);');
+  qrTemp1.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
+  qrTemp1.ParamByName('MatCode').Value := TmpCode;
+  qrTemp1.Active := True;
+  TrPr := 0;
+  if not qrTemp1.Eof then
+    TrPr := qrTemp1.Fields[0].AsFloat;
+  qrTemp1.Active := False;
+
+  qrMaterial.Edit;
+  qrMaterialPROC_TRANSP.Value := TrPr;
+end;
+
 procedure TFormCalculationEstimate.PopupMenuCoefAddSetClick(Sender: TObject);
 begin
   if fCoefficients.ShowModal = mrOk then
@@ -3650,6 +3718,10 @@ end;
 procedure TFormCalculationEstimate.pmMaterialsPopup(Sender: TObject);
 begin
   PMMatEdit.Enabled := (not CheckMatReadOnly);
+
+  PMTranstPerc.Enabled := (not CheckMatReadOnly);
+  PMTranstPerc.Visible := (dbgrdMaterial.Col > 0) and
+    (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'PROC_TRANSP');
 
   PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialCONSIDERED.AsInteger = 1) and
     ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));

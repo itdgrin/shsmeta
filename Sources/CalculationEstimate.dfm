@@ -237,7 +237,6 @@
       Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
       TabOrder = 0
       OnClick = btnKC6Click
-      ExplicitTop = 0
     end
   end
   object PanelLocalEstimate: TPanel
@@ -3273,6 +3272,39 @@
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       ImageIndex = 44
       OnClick = PMMatMechEditClick
+    end
+    object PMTranstPerc: TMenuItem
+      Caption = '% '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072
+      OnClick = PMTranstPercClick
+      object PMTrPerc1: TMenuItem
+        Tag = 1
+        Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1086#1073#1097#1077#1089#1090#1074#1077#1085#1085#1099#1093' '#1088#1072#1073#1086#1090
+        OnClick = PMTrPerc0Click
+      end
+      object PMTrPerc2: TMenuItem
+        Tag = 2
+        Caption = #1052#1077#1090#1072#1083#1080#1095#1077#1089#1082#1080#1077' '#1082#1086#1085#1089#1090#1088#1091#1082#1094#1080#1080
+        OnClick = PMTrPerc0Click
+      end
+      object PMTrPerc3: TMenuItem
+        Tag = 3
+        Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1089#1072#1085#1080#1090#1072#1088#1085#1086'-'#1090#1077#1093#1085#1080#1095#1077#1089#1082#1080#1093' '#1088#1072#1073#1086#1090
+        OnClick = PMTrPerc0Click
+      end
+      object PMTrPerc4: TMenuItem
+        Tag = 4
+        Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1101#1083#1077#1082#1090#1088#1086#1084#1086#1085#1090#1072#1078#1085#1099#1093' '#1088#1072#1073#1086#1090
+        OnClick = PMTrPerc0Click
+      end
+      object PMTrPerc5: TMenuItem
+        Tag = 5
+        Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1074' '#1087#1086#1089#1090#1088#1086#1077#1095#1085#1099#1093' '#1091#1089#1083#1086#1074#1080#1103#1093
+        OnClick = PMTrPerc0Click
+      end
+      object PMTrPerc0: TMenuItem
+        Caption = '% '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
+        OnClick = PMTrPerc0Click
+      end
     end
     object PMCalcMat: TMenuItem
       Caption = #1050#1072#1083#1100#1082#1091#1083#1103#1090#1086#1088' '#1094#1077#1085#1099

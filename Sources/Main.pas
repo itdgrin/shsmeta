@@ -7,7 +7,7 @@ uses
   Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
   ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, ArhivModule,
   Data.DB, GlobsAndConst, Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage,
-  JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg;
+  JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg, dxGDIPlusClasses;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
