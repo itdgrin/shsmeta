@@ -1114,8 +1114,8 @@ end;
 procedure TFormCalculationEstimate.SpeedButtonSSRClick(Sender: TObject);
 begin
 
-  ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
-    PChar('REPOTS\report\'), SW_maximIZE);
+  ShellExecute(Handle, nil, 'report.exe', PChar('C' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+     PChar(GetCurrentDir + '\REPORTS\report\'), SW_maximIZE);
   Exit;
 
   if SpeedButtonSSR.Tag = 0 then

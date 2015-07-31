@@ -78,6 +78,12 @@
       Align = alLeft
       GroupIndex = 1
       Caption = #1057#1057#1056
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       OnClick = SpeedButtonSSRClick
       ExplicitLeft = 872
       ExplicitTop = 2
@@ -223,7 +229,7 @@
       GroupIndex = 1
       Caption = #1050#1086#1085#1090#1088#1072#1082#1090#1085#1072#1103' '#1094#1077#1085#1072
       OnClick = btnResMatClick
-      ExplicitTop = 4
+      ExplicitTop = 0
     end
     object btnKC6: TButton
       AlignWithMargins = True
