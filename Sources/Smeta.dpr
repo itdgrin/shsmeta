@@ -77,7 +77,7 @@ uses
   KC6Journal in 'KC6Journal.pas' {fKC6Journal},
   CalculationEstimateSummaryCalculations in 'CalculationEstimateSummaryCalculations.pas' {frCalculationEstimateSummaryCalculations: TFrame},
   CalculationEstimateSSR in 'CalculationEstimateSSR.pas' {frCalculationEstimateSSR: TFrame},
-  CalcResource in 'CalcResource.pas' {fCalcResource},
+  CalcResourceFact in 'CalcResourceFact.pas' {fCalcResourceFact},
   CalculationDump in 'CalculationDump.pas' {FormCalculationDump},
   CalcTravel in 'CalcTravel.pas' {fCalcTravel},
   UniDict in 'UniDict.pas' {fUniDict},
@@ -112,7 +112,8 @@ uses
   ForemanList in 'ForemanList.pas' {fForemanList},
   OXROPR in 'OXROPR.pas' {fOXROPR},
   SSR in 'SSR.pas' {fSSR},
-  SprController in 'SprController.pas';
+  SprController in 'SprController.pas',
+  CalcResource in 'CalcResource.pas' {fCalcResource};
 
 {$R *.res}
 var MHandle: THandle;
@@ -158,6 +159,7 @@ begin
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
   Application.CreateForm(TFormCardPartsEstimates, FormCardPartsEstimates);
+  Application.CreateForm(TfCalcResource, fCalcResource);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€
