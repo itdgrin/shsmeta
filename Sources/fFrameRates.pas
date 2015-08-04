@@ -899,6 +899,24 @@ begin
   Key := AnsiUpperCase(Key)[1];
   vCode := Ord(Key);
 
+  if vCode = 84 then
+  begin
+    vCode := 1045;
+    Key := 'Е';
+  end;
+
+  if vCode = 87 then
+  begin
+    vCode := 1062;
+    Key := 'Ц';
+  end;
+
+  if vCode = 67 then
+  begin
+    vCode := 1057;
+    Key := 'С';
+  end;
+
   // Символы разрешённые к вводу
   if not((vCode = 1057) or (vCode = 1045) or (vCode = 1062) or (vCode = 8) or (vCode = 27) or (Key = '-') or
     ((Key >= '0') and (Key <= '9'))) then
@@ -914,8 +932,8 @@ begin
   end;
 
   // Ввод цифры не первым символом
-  if ((Sender as TEdit).Text = '') and (Key >= '0') and (Key <= '9') then
-    Key := #0;
+  { if ((Sender as TEdit).Text = '') and (Key >= '0') and (Key <= '9') then
+    Key := #0; }
 
   // Ввод буквы только первым символом
   if ((Sender as TEdit).Text > '') and ((vCode = 1057) or (vCode = 1045) or (vCode = 1062)) then

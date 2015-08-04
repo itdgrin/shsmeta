@@ -133,8 +133,8 @@ begin
   fTariffDict.Visible := False;
   btnZP.Tag := Integer(fTariffDict);
 
-  SpeedButtonClick(SpeedButtonPriceMaterials);
-  FramePriceMaterials.Visible := True;
+  SpeedButtonClick(btnZP);
+  fTariffDict.Visible := True;
 
   FormMain.PanelCover.Visible := False;
 

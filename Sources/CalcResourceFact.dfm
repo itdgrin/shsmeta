@@ -3,7 +3,7 @@ object fCalcResourceFact: TfCalcResourceFact
   Top = 0
   Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074' ['#1088#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077' '#1079#1072#1087#1088#1077#1097#1077#1085#1086']'
   ClientHeight = 362
-  ClientWidth = 616
+  ClientWidth = 654
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,12 +20,13 @@ object fCalcResourceFact: TfCalcResourceFact
   object pnlTop: TPanel
     Left = 0
     Top = 0
-    Width = 616
+    Width = 654
     Height = 56
     Align = alTop
     TabOrder = 0
+    ExplicitWidth = 616
     DesignSize = (
-      616
+      654
       56)
     object lbl1: TLabel
       Left = 8
@@ -42,18 +43,19 @@ object fCalcResourceFact: TfCalcResourceFact
       Caption = #1056#1072#1089#1095#1077#1090#1085#1099#1081' '#1084#1077#1089#1103#1094
     end
     object btnShowDiff: TSpeedButton
-      Left = 416
+      Left = 454
       Top = 29
       Width = 122
       Height = 22
       Anchors = [akTop, akRight]
       Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1086#1090#1082#1083#1086#1085#1077#1085#1080#1077
       OnClick = btnShowDiffClick
+      ExplicitLeft = 416
     end
     object edtEstimateName: TEdit
       Left = 49
       Top = 5
-      Width = 437
+      Width = 475
       Height = 21
       TabStop = False
       Anchors = [akLeft, akTop, akRight]
@@ -61,6 +63,7 @@ object fCalcResourceFact: TfCalcResourceFact
       ReadOnly = True
       TabOrder = 1
       Text = #1057#1084#1077#1090#1072
+      ExplicitWidth = 437
     end
     object cbbFromMonth: TComboBox
       Left = 101
@@ -106,7 +109,7 @@ object fCalcResourceFact: TfCalcResourceFact
       Value = 2014
     end
     object cbbNDS: TComboBox
-      Left = 544
+      Left = 582
       Top = 29
       Width = 67
       Height = 21
@@ -121,9 +124,10 @@ object fCalcResourceFact: TfCalcResourceFact
       Items.Strings = (
         #1073#1077#1079' '#1053#1044#1057
         #1089' '#1053#1044#1057)
+      ExplicitLeft = 544
     end
     object pnlCalculationYesNo: TPanel
-      Left = 492
+      Left = 530
       Top = 3
       Width = 120
       Height = 23
@@ -134,12 +138,13 @@ object fCalcResourceFact: TfCalcResourceFact
       ParentBackground = False
       TabOrder = 0
       OnClick = pnlCalculationYesNoClick
+      ExplicitLeft = 492
     end
   end
   object pgc: TPageControl
     Left = 0
     Top = 56
-    Width = 616
+    Width = 654
     Height = 306
     ActivePage = ts2
     Align = alClient
@@ -153,12 +158,15 @@ object fCalcResourceFact: TfCalcResourceFact
     PopupMenu = pm
     TabOrder = 1
     OnChange = pgcChange
+    ExplicitTop = 57
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
+      TabVisible = False
+      ExplicitWidth = 608
       object lbl2: TLabel
         Left = 0
         Top = 0
-        Width = 608
+        Width = 646
         Height = 278
         Align = alClient
         Alignment = taCenter
@@ -170,12 +178,13 @@ object fCalcResourceFact: TfCalcResourceFact
       end
     end
     object ts2: TTabSheet
-      Caption = #1056#1072#1089#1095#1077#1090' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
+      Caption = #1060#1072#1082#1090#1080#1095#1077#1089#1082#1080#1077'  '#1084#1072#1090#1077#1088#1080#1072#1083#1099
       ImageIndex = 1
+      ExplicitWidth = 608
       object spl2: TSplitter
         Left = 0
         Top = 193
-        Width = 608
+        Width = 646
         Height = 3
         Cursor = crVSplit
         Align = alBottom
@@ -185,13 +194,16 @@ object fCalcResourceFact: TfCalcResourceFact
       object pnlMatTop: TPanel
         Left = 0
         Top = 0
-        Width = 608
+        Width = 646
         Height = 41
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitLeft = 1
+        ExplicitTop = -6
+        ExplicitWidth = 608
         DesignSize = (
-          608
+          646
           41)
         object edtMatCodeFilter: TEdit
           Left = 4
@@ -206,31 +218,33 @@ object fCalcResourceFact: TfCalcResourceFact
         object edtMatNameFilter: TEdit
           Left = 131
           Top = 11
-          Width = 472
+          Width = 510
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102'...'
           OnChange = edtMatCodeFilterChange
           OnClick = edtMatCodeFilterClick
+          ExplicitWidth = 472
         end
       end
       object pnlMatClient: TPanel
         Left = 0
         Top = 41
-        Width = 608
+        Width = 646
         Height = 152
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
+        ExplicitWidth = 608
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
-          Width = 608
+          Width = 646
           Height = 133
           Align = alClient
-          DataSource = dsMaterialData
+          DataSource = dsMainData
           DrawingStyle = gdsClassic
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -263,7 +277,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 16
+              Width = 17
               Visible = True
             end
             item
@@ -271,7 +285,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = 58
+              Width = 62
               Visible = True
             end
             item
@@ -280,7 +294,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 20
+              Width = 22
               Visible = True
             end
             item
@@ -288,7 +302,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 18
+              Width = 20
               Visible = True
             end
             item
@@ -296,7 +310,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 53
+              Width = 56
               Visible = True
             end
             item
@@ -304,7 +318,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-              Width = 53
+              Width = 56
               Visible = True
             end
             item
@@ -312,7 +326,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = 37
+              Width = 39
               Visible = True
             end
             item
@@ -320,7 +334,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 53
+              Width = 56
               Visible = True
             end
             item
@@ -328,7 +342,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 37
+              Width = 39
               Visible = True
             end
             item
@@ -336,42 +350,42 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 56
+              Width = 60
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'MAT_PROC_ZAC'
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 37
+              Width = 39
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'MAT_PROC_PODR'
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 42
+              Width = 45
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 46
+              Width = 49
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_PODR'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 52
+              Width = 56
               Visible = True
             end>
         end
         object JvDBGridFooter1: TJvDBGridFooter
           Left = 0
           Top = 133
-          Width = 608
+          Width = 646
           Height = 19
           SizeGrip = True
           Columns = <
@@ -383,23 +397,25 @@ object fCalcResourceFact: TfCalcResourceFact
               Alignment = taRightJustify
               FieldName = 'TRANSP'
             end>
-          DataSource = dsMaterialData
+          DataSource = dsMainData
           DBGrid = grMaterial
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitWidth = 608
         end
       end
       object pnlMatBott: TPanel
         Left = 0
         Top = 196
-        Width = 608
+        Width = 646
         Height = 82
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
+        ExplicitWidth = 608
         object spl1: TSplitter
           Left = 1
           Top = 22
-          Width = 606
+          Width = 644
           Height = 3
           Cursor = crVSplit
           Align = alTop
@@ -409,7 +425,7 @@ object fCalcResourceFact: TfCalcResourceFact
         object grMaterialBott: TJvDBGrid
           Left = 1
           Top = 25
-          Width = 606
+          Width = 644
           Height = 56
           Align = alClient
           Constraints.MinHeight = 40
@@ -438,7 +454,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'F1'
               Title.Alignment = taCenter
               Title.Caption = #8470#1087#1087
-              Width = 61
+              Width = 65
               Visible = True
             end
             item
@@ -446,7 +462,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
-              Width = 61
+              Width = 65
               Visible = True
             end
             item
@@ -454,7 +470,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1098#1077#1084' '#1088#1072#1073#1086#1090
-              Width = 61
+              Width = 65
               Visible = True
             end
             item
@@ -462,7 +478,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT_DONE'
               Title.Alignment = taCenter
               Title.Caption = #1056#1072#1089#1093#1086#1076
-              Width = 61
+              Width = 65
               Visible = True
             end
             item
@@ -470,94 +486,98 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 61
+              Width = 65
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PROC_TRANSP'
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = 35
+              Width = 37
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP'
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 40
+              Width = 43
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'MAT_PROC_ZAC'
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 40
+              Width = 43
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'MAT_PROC_PODR'
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 49
+              Width = 52
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 53
+              Width = 56
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_PODR'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 57
+              Width = 61
               Visible = True
             end>
         end
         object dbmmoNAME: TDBMemo
           Left = 1
           Top = 1
-          Width = 606
+          Width = 644
           Height = 21
           Align = alTop
           Constraints.MinHeight = 21
           DataField = 'NAME'
-          DataSource = dsMaterialData
+          DataSource = dsMainData
           ScrollBars = ssVertical
           TabOrder = 0
+          ExplicitWidth = 606
         end
       end
     end
     object ts3: TTabSheet
-      Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
+      Caption = #1060#1072#1082#1090#1080#1095#1077#1089#1082#1080#1077' '#1084#1077#1093#1072#1085#1080#1079#1084#1099
       ImageIndex = 2
+      ExplicitWidth = 608
       object spl4: TSplitter
         Left = 0
         Top = 209
-        Width = 608
+        Width = 646
         Height = 3
         Cursor = crVSplit
         Align = alBottom
         ExplicitTop = 224
+        ExplicitWidth = 608
       end
       object pnlMechClient: TPanel
         Left = 0
         Top = 41
-        Width = 608
+        Width = 646
         Height = 168
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
+        ExplicitWidth = 608
         object grMech: TJvDBGrid
           Left = 0
           Top = 0
-          Width = 608
+          Width = 646
           Height = 149
           Align = alClient
-          DataSource = dsMechData
+          DataSource = dsMainData
           DrawingStyle = gdsClassic
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -573,10 +593,10 @@ object fCalcResourceFact: TfCalcResourceFact
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
-          OnDrawColumnCell = grMechDrawColumnCell
+          OnDrawColumnCell = grMaterialDrawColumnCell
           AutoAppend = False
           IniStorage = FormStorage
-          OnTitleBtnClick = grMechTitleBtnClick
+          OnTitleBtnClick = grMaterialTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -593,7 +613,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 40
+              Width = 43
               Visible = True
             end
             item
@@ -609,7 +629,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 26
+              Width = 28
               Visible = True
             end
             item
@@ -617,7 +637,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 22
+              Width = 24
               Visible = True
             end
             item
@@ -625,7 +645,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 94
+              Width = 101
               Visible = True
             end
             item
@@ -633,7 +653,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-              Width = 94
+              Width = 101
               Visible = True
             end
             item
@@ -641,7 +661,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'ZP_1'
               Title.Alignment = taCenter
               Title.Caption = #1047#1072#1088#1087#1083'. '#1084#1072#1096'.'
-              Width = 94
+              Width = 101
               Visible = True
             end
             item
@@ -649,7 +669,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'ZP_2'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090'-'#1089#1090#1100' '#1079#1072#1088#1087#1083#1072#1090#1099
-              Width = 101
+              Width = 108
               Visible = True
             end
             item
@@ -657,7 +677,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 59
+              Width = 63
               Visible = True
             end
             item
@@ -665,14 +685,14 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 53
+              Width = 52
               Visible = True
             end>
         end
         object JvDBGridFooter2: TJvDBGridFooter
           Left = 0
           Top = 149
-          Width = 608
+          Width = 646
           Height = 19
           SizeGrip = True
           Columns = <
@@ -692,23 +712,24 @@ object fCalcResourceFact: TfCalcResourceFact
               Alignment = taRightJustify
               FieldName = 'ZP_2'
             end>
-          DataSource = dsMechData
           DBGrid = grMech
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitWidth = 608
         end
       end
       object pnlMechBott: TPanel
         Left = 0
         Top = 212
-        Width = 608
+        Width = 646
         Height = 66
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
+        ExplicitWidth = 608
         object spl3: TSplitter
           Left = 1
           Top = 22
-          Width = 606
+          Width = 644
           Height = 3
           Cursor = crVSplit
           Align = alTop
@@ -718,7 +739,7 @@ object fCalcResourceFact: TfCalcResourceFact
         object grMechBott: TJvDBGrid
           Left = 1
           Top = 25
-          Width = 606
+          Width = 644
           Height = 40
           Align = alClient
           Constraints.MinHeight = 40
@@ -747,7 +768,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               Title.Alignment = taCenter
               Title.Caption = #8470#1087#1087
-              Width = 85
+              Width = 90
               Visible = True
             end
             item
@@ -755,7 +776,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
-              Width = 85
+              Width = 90
               Visible = True
             end
             item
@@ -763,7 +784,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1098#1077#1084' '#1088#1072#1073#1086#1090
-              Width = 85
+              Width = 90
               Visible = True
             end
             item
@@ -771,7 +792,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT_DONE'
               Title.Alignment = taCenter
               Title.Caption = #1056#1072#1089#1093#1086#1076
-              Width = 85
+              Width = 90
               Visible = True
             end
             item
@@ -779,7 +800,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 85
+              Width = 90
               Visible = True
             end
             item
@@ -787,7 +808,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'ZP_MASH'
               Title.Alignment = taCenter
               Title.Caption = #1047#1055' '#1084#1072#1096'.'
-              Width = 48
+              Width = 51
               Visible = True
             end
             item
@@ -795,7 +816,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 54
+              Width = 57
               Visible = True
             end
             item
@@ -803,37 +824,38 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 55
+              Width = 62
               Visible = True
             end>
         end
         object dbmmoNAME1: TDBMemo
           Left = 1
           Top = 1
-          Width = 606
+          Width = 644
           Height = 21
           Align = alTop
           Constraints.MinHeight = 21
           DataField = 'NAME'
-          DataSource = dsMechData
           ScrollBars = ssVertical
           TabOrder = 0
+          ExplicitWidth = 606
         end
       end
       object pnlMechTop: TPanel
         Left = 0
         Top = 0
-        Width = 608
+        Width = 646
         Height = 41
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitWidth = 608
         DesignSize = (
-          608
+          646
           41)
         object edtMechCodeFilter: TEdit
           Left = 4
-          Top = 11
+          Top = 14
           Width = 121
           Height = 21
           Font.Charset = DEFAULT_CHARSET
@@ -844,81 +866,87 @@ object fCalcResourceFact: TfCalcResourceFact
           ParentFont = False
           TabOrder = 0
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1082#1086#1076#1091'...'
-          OnChange = edtMechCodeFilterChange
+          OnChange = edtMatCodeFilterChange
           OnClick = edtMatCodeFilterClick
         end
         object edtMechNameFilter: TEdit
           Left = 131
-          Top = 11
-          Width = 472
+          Top = 14
+          Width = 510
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102'...'
-          OnChange = edtMechCodeFilterChange
+          OnChange = edtMatCodeFilterChange
           OnClick = edtMatCodeFilterClick
         end
       end
     end
     object ts4: TTabSheet
-      Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
+      Caption = #1060#1072#1082#1090#1080#1095#1077#1089#1082#1086#1077' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
       ImageIndex = 3
+      ExplicitWidth = 608
       object spl5: TSplitter
         Left = 0
         Top = 209
-        Width = 608
+        Width = 646
         Height = 3
         Cursor = crVSplit
         Align = alBottom
         ExplicitLeft = 3
         ExplicitTop = 225
+        ExplicitWidth = 608
       end
       object pnlDevTop: TPanel
         Left = 0
         Top = 0
-        Width = 608
+        Width = 646
         Height = 41
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitWidth = 608
         DesignSize = (
-          608
+          646
           41)
         object edt1: TEdit
           Left = 4
-          Top = 11
+          Top = 14
           Width = 121
           Height = 21
           TabOrder = 0
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1082#1086#1076#1091'...'
+          OnChange = edtMatCodeFilterChange
           OnClick = edtMatCodeFilterClick
         end
         object edt2: TEdit
           Left = 131
-          Top = 11
-          Width = 472
+          Top = 14
+          Width = 510
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
           TextHint = #1055#1086#1080#1089#1082' '#1087#1086' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1102'...'
+          OnChange = edtMatCodeFilterChange
           OnClick = edtMatCodeFilterClick
         end
       end
       object pnlDevClient: TPanel
         Left = 0
         Top = 41
-        Width = 608
+        Width = 646
         Height = 168
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 1
+        ExplicitWidth = 608
         object grDev: TJvDBGrid
           Left = 0
           Top = 0
-          Width = 608
+          Width = 646
           Height = 149
           Align = alClient
-          DataSource = dsDevices
+          DataSource = dsMainData
           DrawingStyle = gdsClassic
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 0
@@ -927,9 +955,10 @@ object fCalcResourceFact: TfCalcResourceFact
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
-          OnDrawColumnCell = grDevDrawColumnCell
+          OnDrawColumnCell = grMaterialDrawColumnCell
           AutoAppend = False
           IniStorage = FormStorage
+          OnTitleBtnClick = grMaterialTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -946,7 +975,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 49
+              Width = 52
               Visible = True
             end
             item
@@ -962,7 +991,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 49
+              Width = 52
               Visible = True
             end
             item
@@ -970,7 +999,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 49
+              Width = 52
               Visible = True
             end
             item
@@ -978,7 +1007,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 49
+              Width = 52
               Visible = True
             end
             item
@@ -986,7 +1015,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-              Width = 49
+              Width = 52
               Visible = True
             end
             item
@@ -1001,7 +1030,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 43
+              Width = 46
               Visible = True
             end
             item
@@ -1009,7 +1038,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 49
+              Width = 52
               Visible = True
             end
             item
@@ -1017,42 +1046,42 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 44
+              Width = 47
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PROC_ZAC'
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 44
+              Width = 47
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PROC_PODR'
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 48
+              Width = 51
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 52
+              Width = 55
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_PODR'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 55
+              Width = 60
               Visible = True
             end>
         end
         object JvDBGridFooter3: TJvDBGridFooter
           Left = 0
           Top = 149
-          Width = 608
+          Width = 646
           Height = 19
           SizeGrip = True
           Columns = <
@@ -1068,22 +1097,23 @@ object fCalcResourceFact: TfCalcResourceFact
               Alignment = taRightJustify
               FieldName = 'TRANSP'
             end>
-          DataSource = dsDevices
           DBGrid = grDev
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitWidth = 608
         end
       end
       object pnlDevBott: TPanel
         Left = 0
         Top = 212
-        Width = 608
+        Width = 646
         Height = 66
         Align = alBottom
         TabOrder = 2
+        ExplicitWidth = 608
         object spl6: TSplitter
           Left = 1
           Top = 22
-          Width = 606
+          Width = 644
           Height = 3
           Cursor = crVSplit
           Align = alTop
@@ -1093,7 +1123,7 @@ object fCalcResourceFact: TfCalcResourceFact
         object grDevBott: TJvDBGrid
           Left = 1
           Top = 25
-          Width = 606
+          Width = 644
           Height = 40
           Align = alClient
           Constraints.MinHeight = 40
@@ -1121,7 +1151,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               Title.Alignment = taCenter
               Title.Caption = #8470#1087#1087
-              Width = 66
+              Width = 71
               Visible = True
             end
             item
@@ -1129,7 +1159,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
-              Width = 66
+              Width = 71
               Visible = True
             end
             item
@@ -1137,7 +1167,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1098#1077#1084' '#1088#1072#1073#1086#1090
-              Width = 66
+              Width = 71
               Visible = True
             end
             item
@@ -1145,7 +1175,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT_DONE'
               Title.Alignment = taCenter
               Title.Caption = #1056#1072#1089#1093#1086#1076
-              Width = 66
+              Width = 71
               Visible = True
             end
             item
@@ -1153,61 +1183,61 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 66
+              Width = 71
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP'
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 37
+              Width = 39
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PROC_ZAC'
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 63
+              Width = 67
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PROC_PODR'
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 42
+              Width = 45
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 52
+              Width = 55
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_PODR'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 56
+              Width = 57
               Visible = True
             end>
         end
         object dbmmoNAME2: TDBMemo
           Left = 1
           Top = 1
-          Width = 606
+          Width = 644
           Height = 21
           Align = alTop
           Constraints.MinHeight = 21
           DataField = 'NAME'
-          DataSource = dsDevices
           ScrollBars = ssVertical
           TabOrder = 0
+          ExplicitWidth = 606
         end
       end
     end
     object ts5: TTabSheet
-      Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072#1088#1087#1083#1072#1090#1099
+      Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -1215,10 +1245,11 @@ object fCalcResourceFact: TfCalcResourceFact
       Font.Style = []
       ImageIndex = 4
       ParentFont = False
+      ExplicitWidth = 608
       object pnlRatesTop: TPanel
         Left = 0
         Top = 0
-        Width = 608
+        Width = 646
         Height = 26
         Align = alTop
         Font.Charset = DEFAULT_CHARSET
@@ -1228,6 +1259,7 @@ object fCalcResourceFact: TfCalcResourceFact
         Font.Style = []
         ParentFont = False
         TabOrder = 0
+        ExplicitWidth = 608
         object lbl7: TLabel
           Left = 4
           Top = 4
@@ -1258,18 +1290,19 @@ object fCalcResourceFact: TfCalcResourceFact
       object pnlRatesClient: TPanel
         Left = 0
         Top = 26
-        Width = 608
+        Width = 646
         Height = 252
         Align = alClient
         Caption = 'pnlRatesClient'
         TabOrder = 1
+        ExplicitWidth = 608
         object grRates: TJvDBGrid
           Left = 1
           Top = 1
-          Width = 606
+          Width = 644
           Height = 186
           Align = alClient
-          DataSource = dsRates
+          DataSource = dsMainData
           DrawingStyle = gdsClassic
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
@@ -1285,9 +1318,10 @@ object fCalcResourceFact: TfCalcResourceFact
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
-          OnDrawColumnCell = grRatesDrawColumnCell
+          OnDrawColumnCell = grMaterialDrawColumnCell
           AutoAppend = False
           IniStorage = FormStorage
+          OnTitleBtnClick = grMaterialTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1303,7 +1337,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               Title.Alignment = taCenter
               Title.Caption = #8470#1087#1087
-              Width = 28
+              Width = 30
               Visible = True
             end
             item
@@ -1311,7 +1345,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
-              Width = 20
+              Width = 22
               Visible = True
             end
             item
@@ -1319,7 +1353,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 23
+              Width = 25
               Visible = True
             end
             item
@@ -1328,7 +1362,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 25
+              Width = 27
               Visible = True
             end
             item
@@ -1336,7 +1370,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'TRUD_ONE'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1091#1076'-'#1090#1099' '#1085#1072' '#1077#1076'.'
-              Width = 68
+              Width = 73
               Visible = True
             end
             item
@@ -1344,7 +1378,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'K_TRUD'
               Title.Alignment = taCenter
               Title.Caption = #1050#1092' '#1082' '#1090#1088#1091#1076
-              Width = 68
+              Width = 73
               Visible = True
             end
             item
@@ -1352,7 +1386,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'TRUD'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099
-              Width = 48
+              Width = 51
               Visible = True
             end
             item
@@ -1360,7 +1394,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'Rank'
               Title.Alignment = taCenter
               Title.Caption = #1056#1072#1079#1088#1103#1076
-              Width = 68
+              Width = 73
               Visible = True
             end
             item
@@ -1368,7 +1402,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'MRCOEF'
               Title.Alignment = taCenter
               Title.Caption = #1052#1077#1078#1088#1072#1079#1088'. '#1082#1092
-              Width = 48
+              Width = 51
               Visible = True
             end
             item
@@ -1376,7 +1410,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'Tariff'
               Title.Alignment = taCenter
               Title.Caption = #1058#1072#1088#1080#1092
-              Width = 73
+              Width = 78
               Visible = True
             end
             item
@@ -1384,7 +1418,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'K_ZP'
               Title.Alignment = taCenter
               Title.Caption = #1050'-'#1092
-              Width = 51
+              Width = 54
               Visible = True
             end
             item
@@ -1392,14 +1426,14 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'ZP'
               Title.Alignment = taCenter
               Title.Caption = #1047#1072#1088#1087#1083#1072#1090#1072
-              Width = 58
+              Width = 59
               Visible = True
             end>
         end
         object JvDBGridFooter4: TJvDBGridFooter
           Left = 1
           Top = 187
-          Width = 606
+          Width = 644
           Height = 19
           SizeGrip = True
           Columns = <
@@ -1415,21 +1449,21 @@ object fCalcResourceFact: TfCalcResourceFact
               Alignment = taRightJustify
               FieldName = 'TRUD'
             end>
-          DataSource = dsRates
           DBGrid = grRates
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitWidth = 606
         end
         object dbmmoNAME3: TDBMemo
           Left = 1
           Top = 206
-          Width = 606
+          Width = 644
           Height = 45
           Align = alBottom
           DataField = 'NAME'
-          DataSource = dsRates
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 2
+          ExplicitWidth = 606
         end
       end
     end
@@ -1457,10 +1491,6 @@ object fCalcResourceFact: TfCalcResourceFact
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
       OnClick = mRestoreClick
     end
-    object mReplace: TMenuItem
-      Caption = #1047#1072#1084#1077#1085#1080#1090#1100
-      OnClick = mReplaceClick
-    end
     object mN7: TMenuItem
       Caption = '-'
     end
@@ -1470,10 +1500,9 @@ object fCalcResourceFact: TfCalcResourceFact
       OnClick = pgcChange
     end
   end
-  object qrMaterialData: TFDQuery
-    BeforeOpen = qrMaterialDataBeforeOpen
-    AfterOpen = qrMaterialDataAfterOpen
-    BeforePost = qrMaterialDataBeforePost
+  object qrMainData: TFDQuery
+    BeforeOpen = qrMainDataBeforeOpen
+    AfterOpen = qrMainDataAfterOpen
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1495,59 +1524,54 @@ object fCalcResourceFact: TfCalcResourceFact
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'SELECT '
-      '  MIN(IF(ID_REPLACED<>0, ID_REPLACED, ID)),'
-      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  SUM(COALESCE(MAT_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      '  fact_data_id AS ID,'
+      '  CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       ''
-      '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
+      '  /* DOC_DATE,  '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
+      '  /* DOC_NUM,  '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
       '  PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
       
-        '  IF(:NDS=1, IF(FCOAST_NDS<>0, 1, 0), IF(FCOAST_NO_NDS<>0, 1, 0)' +
-        ') AS FCOAST, /* '#1062#1077#1085#1072' F */ '
-      
-        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
-        '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
-      
-        '  SUM(ROUND(IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS),' +
-        ' IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))*COALESCE(MAT' +
-        '_COUNT, 0))) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
-      
-        '  SUM(IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS), IF' +
-        '(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS))) AS TRANSP, ' +
-        '/* '#1090#1088#1072#1085#1089#1087'. */ '
+        '  /* IF(:NDS=1, IF(FCOAST_NDS<>0, 1, 0), IF(FCOAST_NO_NDS<>0, 1,' +
+        ' 0)) AS FCOAST,  '#1062#1077#1085#1072' F */ '
+      '  COAST, /* '#1062#1077#1085#1072' */ '
+      '  PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
+      '  TRANSP, /* '#1090#1088#1072#1085#1089#1087'. */ '
       '  DELETED,'
-      '  MAT_PROC_ZAC,'
-      '  MAT_PROC_PODR,'
+      '  PROC_ZAC,'
+      '  PROC_PODR,'
       '  TRANSP_PROC_ZAC,'
-      '  TRANSP_PROC_PODR,'
-      '  MAT_ID,'
-      '  REPLACED,'
-      '  (ID_REPLACED<>0) AS FREPLACED'
-      'FROM '
-      '  materialcard_temp'
-      'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) /*AND REPLACED = 0*/'
+      '  TRANSP_PROC_PODR'
+      'FROM fact_data'
       
-        'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, FCOAS' +
-        'T, COAST, DELETED,  '
+        'LEFT JOIN materialcard_temp m ON m.ID=ID_TABLES AND ID_TYPE_DATA' +
+        '=2'
       
-        'MAT_PROC_ZAC, MAT_PROC_PODR, TRANSP_PROC_ZAC, TRANSP_PROC_PODR, ' +
-        'MAT_ID, REPLACED, FREPLACED'
-      'ORDER BY 1, REPLACED DESC, 2')
+        'LEFT JOIN mechanizmcard_temp m ON m.ID=ID_TABLES AND ID_TYPE_DAT' +
+        'A=3'
+      
+        'LEFT JOIN devicescard_temp m ON m.ID=ID_TABLES AND ID_TYPE_DATA=' +
+        '4'
+      
+        'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) AND ID_TYPE_DATA=:TYPE_' +
+        'DATA AND ID_ACT=:ID_ACT'
+      'ORDER BY 2')
     Left = 27
     Top = 168
     ParamData = <
       item
-        Name = 'NDS'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = 1
-      end
-      item
         Name = 'SHOW_DELETED'
         DataType = ftBCD
+        ParamType = ptInput
+      end
+      item
+        Name = 'TYPE_DATA'
+        ParamType = ptInput
+      end
+      item
+        Name = 'ID_ACT'
         ParamType = ptInput
       end>
     object strngfldMaterialDataCODE: TStringField
@@ -1568,14 +1592,14 @@ object fCalcResourceFact: TfCalcResourceFact
       Origin = 'MAT_UNIT'
       Size = 100
     end
-    object qrMaterialDataCNT: TFMTBCDField
+    object qrMainDataCNT: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'CNT'
       Origin = 'CNT'
       ProviderFlags = []
       Precision = 46
     end
-    object qrMaterialDataDOC_DATE: TDateField
+    object qrMainDataDOC_DATE: TDateField
       AutoGenerateValue = arDefault
       FieldName = 'DOC_DATE'
       Origin = 'DOC_DATE'
@@ -1586,20 +1610,20 @@ object fCalcResourceFact: TfCalcResourceFact
       Origin = 'DOC_NUM'
       Size = 50
     end
-    object qrMaterialDataPROC_TRANSP: TFMTBCDField
+    object qrMainDataPROC_TRANSP: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PROC_TRANSP'
       Origin = 'PROC_TRANSP'
       Precision = 24
     end
-    object qrMaterialDataCOAST: TFMTBCDField
+    object qrMainDataCOAST: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'COAST'
       Origin = 'COAST'
       ProviderFlags = []
       Precision = 26
     end
-    object qrMaterialDataPRICE: TFMTBCDField
+    object qrMainDataPRICE: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PRICE'
       Origin = 'PRICE'
@@ -1607,498 +1631,60 @@ object fCalcResourceFact: TfCalcResourceFact
       Precision = 55
       Size = 0
     end
-    object qrMaterialDataTRANSP: TFMTBCDField
+    object qrMainDataTRANSP: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'TRANSP'
       Origin = 'TRANSP'
       ProviderFlags = []
       Precision = 46
     end
-    object qrMaterialDataDELETED: TByteField
+    object qrMainDataDELETED: TByteField
       AutoGenerateValue = arDefault
       FieldName = 'DELETED'
       Origin = 'DELETED'
     end
-    object qrMaterialDataMAT_PROC_ZAC: TWordField
+    object qrMainDataPROC_ZAC: TWordField
       AutoGenerateValue = arDefault
-      FieldName = 'MAT_PROC_ZAC'
-      Origin = 'MAT_PROC_ZAC'
-      OnChange = qrMaterialDataMAT_PROC_ZACChange
+      FieldName = 'PROC_ZAC'
+      Origin = 'PROC_ZAC'
+      OnChange = qrMainDataPROC_ZACChange
     end
-    object qrMaterialDataMAT_PROC_PODR: TWordField
+    object qrMainDataPROC_PODR: TWordField
       AutoGenerateValue = arDefault
-      FieldName = 'MAT_PROC_PODR'
-      Origin = 'MAT_PROC_PODR'
-      OnChange = qrMaterialDataMAT_PROC_PODRChange
+      FieldName = 'PROC_PODR'
+      Origin = 'PROC_PODR'
+      OnChange = qrMainDataPROC_PODRChange
     end
-    object qrMaterialDataTRANSP_PROC_ZAC: TWordField
+    object qrMainDataTRANSP_PROC_ZAC: TWordField
       AutoGenerateValue = arDefault
       FieldName = 'TRANSP_PROC_ZAC'
       Origin = 'TRANSP_PROC_ZAC'
-      OnChange = qrMaterialDataTRANSP_PROC_ZACChange
+      OnChange = qrMainDataTRANSP_PROC_ZACChange
     end
-    object qrMaterialDataTRANSP_PROC_PODR: TWordField
+    object qrMainDataTRANSP_PROC_PODR: TWordField
       AutoGenerateValue = arDefault
       FieldName = 'TRANSP_PROC_PODR'
       Origin = 'TRANSP_PROC_PODR'
-      OnChange = qrMaterialDataTRANSP_PROC_PODRChange
+      OnChange = qrMainDataTRANSP_PROC_PODRChange
     end
-    object qrMaterialDataMAT_ID: TLongWordField
+    object qrMainDataMAT_ID: TLongWordField
       AutoGenerateValue = arDefault
       FieldName = 'MAT_ID'
       Origin = 'MAT_ID'
     end
-    object qrMaterialDataFCOAST: TIntegerField
+    object qrMainDataFCOAST: TIntegerField
       FieldName = 'FCOAST'
     end
-    object qrMaterialDataREPLACED: TIntegerField
+    object qrMainDataREPLACED: TIntegerField
       FieldName = 'REPLACED'
     end
-    object qrMaterialDataFREPLACED: TIntegerField
+    object qrMainDataFREPLACED: TIntegerField
       FieldName = 'FREPLACED'
     end
   end
-  object dsMaterialData: TDataSource
-    DataSet = qrMaterialData
+  object dsMainData: TDataSource
+    DataSet = qrMainData
     Left = 27
-    Top = 216
-  end
-  object qrMechData: TFDQuery
-    BeforeOpen = qrMaterialDataBeforeOpen
-    AfterOpen = qrMaterialDataAfterOpen
-    BeforePost = qrMechDataBeforePost
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    FetchOptions.AssignedValues = [evCache]
-    FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
-    FormatOptions.OwnMapRules = True
-    FormatOptions.MapRules = <
-      item
-        SourceDataType = dtMemo
-        TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtByteString
-        TargetDataType = dtAnsiString
-      end>
-    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
-    UpdateOptions.UpdateChangedFields = False
-    UpdateOptions.CheckReadOnly = False
-    UpdateOptions.CheckUpdatable = False
-    SQL.Strings = (
-      'SELECT '
-      '  MIN(IF(ID_REPLACED<>0, ID_REPLACED, ID)),'
-      '  MECH_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MECH_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MECH_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  SUM(COALESCE(MECH_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
-      ''
-      '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      ''
-      ''
-      
-        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
-        '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
-      
-        '  SUM(IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FP' +
-        'RICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS))) AS PRICE, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' */  '
-      '  '
-      
-        '  IF(:NDS=1, IF(FZP_MACH_NDS<>0, FZP_MACH_NDS, ZP_MACH_NDS), IF(' +
-        'FZP_MACH_NO_NDS<>0, FZP_MACH_NO_NDS, ZP_MACH_NO_NDS)) AS ZP_1, /' +
-        '* '#1047#1055' '#1084#1072#1096#1080#1085#1080#1089#1090#1072' */ '
-      
-        '  SUM(IF(:NDS=1, IF(FZPPRICE_NDS <>0, FZPPRICE_NDS, ZPPRICE_NDS)' +
-        ', IF(FZPPRICE_NO_NDS<>0, FZPPRICE_NO_NDS, ZPPRICE_NO_NDS))) AS Z' +
-        'P_2, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1047#1055' '#1084#1072#1096#1080#1085#1080#1089#1090#1072' */ '
-      ' '
-      '  DELETED,'
-      '  PROC_ZAC,'
-      '  PROC_PODR,'
-      '  MECH_ID,'
-      '  REPLACED,'
-      '  (ID_REPLACED<>0) AS FREPLACED'
-      'FROM '
-      '  mechanizmcard_temp'
-      'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) /*AND REPLACED = 0*/'
-      
-        'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, COAST, ZP_1, DELET' +
-        'ED, PROC_ZAC, PROC_PODR, MECH_ID, REPLACED, FREPLACED'
-      'ORDER BY 1, REPLACED DESC, 2')
-    Left = 99
-    Top = 168
-    ParamData = <
-      item
-        Name = 'NDS'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = 0
-      end
-      item
-        Name = 'SHOW_DELETED'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = 0
-      end>
-    object strngfldMechDataCODE: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'CODE'
-      Origin = 'MECH_CODE'
-      Size = 15
-    end
-    object strngfldMechDataNAME: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'NAME'
-      Origin = 'MECH_NAME'
-      Size = 300
-    end
-    object strngfldMechDataUNIT: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'UNIT'
-      Origin = 'MECH_UNIT'
-      Size = 100
-    end
-    object qrMechDataCNT: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'CNT'
-      Origin = 'CNT'
-      ProviderFlags = []
-      Precision = 46
-    end
-    object qrMechDataDOC_DATE: TDateField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_DATE'
-      Origin = 'DOC_DATE'
-    end
-    object strngfldMechDataDOC_NUM: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_NUM'
-      Origin = 'DOC_NUM'
-      Size = 50
-    end
-    object qrMechDataCOAST: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST'
-      Origin = 'COAST'
-      ProviderFlags = []
-      Precision = 25
-    end
-    object qrMechDataPRICE: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE'
-      Origin = 'PRICE'
-      ProviderFlags = []
-      Precision = 46
-    end
-    object qrMechDataZP_1: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'ZP_1'
-      Origin = 'ZP_1'
-      ProviderFlags = []
-      Precision = 25
-    end
-    object qrMechDataZP_2: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'ZP_2'
-      Origin = 'ZP_2'
-      ProviderFlags = []
-      Precision = 46
-    end
-    object qrMechDataDELETED: TByteField
-      AutoGenerateValue = arDefault
-      FieldName = 'DELETED'
-      Origin = 'DELETED'
-    end
-    object qrMechDataPROC_ZAC: TWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'PROC_ZAC'
-      Origin = 'PROC_ZAC'
-      OnChange = qrMechDataPROC_ZACChange
-    end
-    object qrMechDataPROC_PODR: TWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'PROC_PODR'
-      Origin = 'PROC_PODR'
-      OnChange = qrMechDataPROC_PODRChange
-    end
-    object qrMechDataMECH_ID: TLongWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_ID'
-      Origin = 'MECH_ID'
-    end
-    object qrMechDataREPLACED: TIntegerField
-      FieldName = 'REPLACED'
-    end
-    object qrMechDataFREPLACED: TIntegerField
-      FieldName = 'FREPLACED'
-    end
-  end
-  object dsMechData: TDataSource
-    DataSet = qrMechData
-    Left = 99
-    Top = 216
-  end
-  object qrDevices: TFDQuery
-    BeforeOpen = qrMaterialDataBeforeOpen
-    AfterOpen = qrMaterialDataAfterOpen
-    BeforePost = qrDevicesBeforePost
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    FetchOptions.AssignedValues = [evCache]
-    FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
-    FormatOptions.OwnMapRules = True
-    FormatOptions.MapRules = <
-      item
-        SourceDataType = dtMemo
-        TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtByteString
-        TargetDataType = dtAnsiString
-      end>
-    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
-    UpdateOptions.UpdateChangedFields = False
-    UpdateOptions.CheckReadOnly = False
-    UpdateOptions.CheckUpdatable = False
-    SQL.Strings = (
-      '/* '#1054#1041#1054#1056#1059#1044#1054#1042#1040#1053#1048#1045' */'
-      'SELECT '
-      '  DEVICE_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  DEVICE_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  DEVICE_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  SUM(COALESCE(DEVICE_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
-      ''
-      '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      ''
-      
-        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, 0), IF(FCOAST_NO_NDS<' +
-        '>0, FCOAST_NO_NDS, 0)) AS COAST, /* '#1062#1077#1085#1072' */ '
-      
-        '  SUM(IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, 0), IF(FPRICE_NO_' +
-        'NDS<>0, FPRICE_NO_NDS, 0))) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
-      
-        '  SUM(IF(:NDS=1, IF(DEVICE_TRANSP_NDS<>0, DEVICE_TRANSP_NDS, 0),' +
-        ' IF(DEVICE_TRANSP_NO_NDS<>0, DEVICE_TRANSP_NO_NDS, 0))) AS TRANS' +
-        'P,  /* '#1090#1088#1072#1085#1089#1087'. */'
-      '  PROC_ZAC,'
-      '  PROC_PODR,'
-      '  TRANSP_PROC_ZAC,'
-      '  TRANSP_PROC_PODR,'
-      '  0 AS DELETED,'
-      '  DEVICE_ID'
-      'FROM devicescard_temp'
-      
-        'GROUP BY CODE,NAME,UNIT,DOC_DATE,DOC_NUM,COAST,PROC_ZAC,PROC_POD' +
-        'R,TRANSP_PROC_ZAC,TRANSP_PROC_PODR,DELETED,DEVICE_ID'
-      'ORDER BY 1')
-    Left = 155
-    Top = 168
-    ParamData = <
-      item
-        Name = 'NDS'
-        DataType = ftString
-        ParamType = ptInput
-        Value = '1'
-      end>
-    object strngfldDevicesCODE: TStringField
-      FieldName = 'CODE'
-      Origin = 'DEVICE_CODE'
-      Required = True
-      Size = 15
-    end
-    object strngfldDevicesNAME: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'NAME'
-      Origin = 'DEVICE_NAME'
-      Size = 300
-    end
-    object strngfldDevicesUNIT: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'UNIT'
-      Origin = 'DEVICE_UNIT'
-    end
-    object qrDevicesCNT: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'CNT'
-      Origin = 'CNT'
-      ProviderFlags = []
-      Precision = 46
-    end
-    object qrDevicesDOC_DATE: TDateField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_DATE'
-      Origin = 'DOC_DATE'
-    end
-    object strngfldDevicesDOC_NUM: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_NUM'
-      Origin = 'DOC_NUM'
-      Size = 50
-    end
-    object qrDevicesCOAST: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'COAST'
-      Origin = 'COAST'
-      ProviderFlags = []
-      Precision = 25
-    end
-    object qrDevicesPRICE: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE'
-      Origin = 'PRICE'
-      ProviderFlags = []
-      Precision = 46
-    end
-    object qrDevicesTRANSP: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'TRANSP'
-      Origin = 'TRANSP'
-      ProviderFlags = []
-      Precision = 46
-    end
-    object qrDevicesPROC_ZAC: TWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'PROC_ZAC'
-      Origin = 'PROC_ZAC'
-      OnChange = qrDevicesPROC_ZACChange
-    end
-    object qrDevicesPROC_PODR: TWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'PROC_PODR'
-      Origin = 'PROC_PODR'
-      OnChange = qrDevicesPROC_PODRChange
-    end
-    object qrDevicesTRANSP_PROC_ZAC: TWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'TRANSP_PROC_ZAC'
-      Origin = 'TRANSP_PROC_ZAC'
-      OnChange = qrDevicesTRANSP_PROC_ZACChange
-    end
-    object qrDevicesTRANSP_PROC_PODR: TWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'TRANSP_PROC_PODR'
-      Origin = 'TRANSP_PROC_PODR'
-      OnChange = qrDevicesTRANSP_PROC_PODRChange
-    end
-    object qrDevicesDELETED: TLargeintField
-      AutoGenerateValue = arDefault
-      FieldName = 'DELETED'
-      Origin = 'DELETED'
-      ProviderFlags = []
-    end
-    object qrDevicesDEVICE_ID: TLongWordField
-      FieldName = 'DEVICE_ID'
-      Origin = 'DEVICE_ID'
-      Required = True
-    end
-  end
-  object dsDevices: TDataSource
-    DataSet = qrDevices
-    Left = 155
-    Top = 216
-  end
-  object qrRates: TFDQuery
-    BeforeOpen = qrMaterialDataBeforeOpen
-    AfterOpen = qrMaterialDataAfterOpen
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    FetchOptions.AssignedValues = [evCache]
-    FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
-    FormatOptions.OwnMapRules = True
-    FormatOptions.MapRules = <
-      item
-        SourceDataType = dtMemo
-        TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtByteString
-        TargetDataType = dtAnsiString
-      end>
-    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
-    UpdateOptions.UpdateChangedFields = False
-    UpdateOptions.CheckReadOnly = False
-    UpdateOptions.CheckUpdatable = False
-    SQL.Strings = (
-      'SELECT '
-      '  ID_ESTIMATE,'
-      '  ID_TYPE_DATA,'
-      '  card_rate_temp.ID AS ID_TABLES,'
-      ''
-      '  RATE_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  RATE_CAPTION AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  RATE_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  COALESCE(RATE_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
-      ''
-      
-        '  data_row_temp.TRUD / COALESCE(RATE_COUNT, 0) AS TRUD_ONE, /* '#1090 +
-        #1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' '#1085#1072' '#1077#1076'. */'
-      '  data_row_temp.TRUD AS TRUD, /* '#1090#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' */'
-      '  data_row_temp.K_TRUD, /* '#1082#1086#1101#1092'. '#1082' '#1076#1088#1091#1076' */'
-      
-        '  (SELECT norma FROM normativwork WHERE normativ_id = card_rate_' +
-        'temp.RATE_ID and work_id = 1 LIMIT 1) AS Rank, /* '#1088#1072#1079#1088#1103#1076' */'
-      '  (SELECT IFNULL(c.`COEF`, 0.0) '
-      '   FROM `category` c'
-      
-        '   WHERE c.`VALUE` = (SELECT norma FROM normativwork WHERE norma' +
-        'tiv_id = card_rate_temp.RATE_ID and work_id = 1 LIMIT 1) and '
-      
-        '   c.`DATE_BEG` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka' +
-        '.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = smetas' +
-        'ourcedata.STAVKA_ID)'
-      '   ORDER BY c.`DATE_BEG` DESC '
-      '   LIMIT 1)'
-      '  AS MRCOEF,  /* '#1084#1077#1078#1088#1072#1079#1088#1103#1076#1085#1099#1081' '#1082#1086#1101#1092'. */'
-      '  ROUND(smetasourcedata.STAVKA_RAB * '
-      '  (SELECT IFNULL(c.`COEF`, 0.0) '
-      '   FROM `category` c'
-      
-        '   WHERE c.`VALUE` = (SELECT norma FROM normativwork WHERE norma' +
-        'tiv_id = card_rate_temp.RATE_ID and work_id = 1 LIMIT 1) and '
-      
-        '   c.`DATE_BEG` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka' +
-        '.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = smetas' +
-        'ourcedata.STAVKA_ID)'
-      '   ORDER BY c.`DATE_BEG` DESC '
-      '   LIMIT 1)) AS Tariff, /* '#1058#1072#1088#1080#1092' */'
-      '  data_row_temp.K_ZP,  /* KZP */'
-      '  ROUND(data_row_temp.ZP) AS ZP /* ZP */'
-      ', 0 AS DELETED'
-      'FROM '
-      '  smetasourcedata, data_row_temp, card_rate_temp, stavka'
-      'WHERE '
-      'data_row_temp.ID_TYPE_DATA = 1 AND'
-      'card_rate_temp.ID = data_row_temp.ID_TABLES AND'
-      '  ((smetasourcedata.SM_ID = :SM_ID) OR'
-      '           (smetasourcedata.PARENT_ID = :SM_ID) OR '
-      '           (smetasourcedata.PARENT_ID IN ('
-      '             SELECT SM_ID'
-      '             FROM smetasourcedata'
-      '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
-      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
-      'data_row_temp.ID_ESTIMATE = smetasourcedata.SM_ID'
-      ''
-      'ORDER BY 5')
-    Left = 211
-    Top = 168
-    ParamData = <
-      item
-        Name = 'SM_ID'
-        ParamType = ptInput
-      end>
-  end
-  object dsRates: TDataSource
-    DataSet = qrRates
-    Left = 211
     Top = 216
   end
   object FormStorage: TJvFormStorage
@@ -2114,9 +1700,9 @@ object fCalcResourceFact: TfCalcResourceFact
     Top = 216
   end
   object qrMaterialDetail: TFDQuery
-    BeforeOpen = qrMaterialDataBeforeOpen
+    BeforeOpen = qrMainDataBeforeOpen
     BeforePost = qrMaterialDetailBeforePost
-    MasterSource = dsMaterialData
+    MasterSource = dsMainData
     MasterFields = 'MAT_ID'
     Connection = DM.Connect
     Transaction = DM.Read
@@ -2224,8 +1810,7 @@ object fCalcResourceFact: TfCalcResourceFact
     Top = 312
   end
   object qrEstimate: TFDQuery
-    AfterOpen = qrMaterialDataAfterOpen
-    BeforePost = qrMaterialDataBeforePost
+    AfterOpen = qrMainDataAfterOpen
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -2267,9 +1852,8 @@ object fCalcResourceFact: TfCalcResourceFact
       end>
   end
   object qrMechDetail: TFDQuery
-    BeforeOpen = qrMaterialDataBeforeOpen
+    BeforeOpen = qrMainDataBeforeOpen
     BeforePost = qrMechDetailBeforePost
-    MasterSource = dsMechData
     MasterFields = 'MECH_ID'
     Connection = DM.Connect
     Transaction = DM.Read
@@ -2369,9 +1953,8 @@ object fCalcResourceFact: TfCalcResourceFact
     Top = 312
   end
   object qrDevicesDetail: TFDQuery
-    BeforeOpen = qrMaterialDataBeforeOpen
+    BeforeOpen = qrMainDataBeforeOpen
     BeforePost = qrDevicesDetailBeforePost
-    MasterSource = dsDevices
     MasterFields = 'DEVICE_ID'
     Connection = DM.Connect
     Transaction = DM.Read

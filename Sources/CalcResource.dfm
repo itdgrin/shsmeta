@@ -41,15 +41,6 @@ object fCalcResource: TfCalcResource
       Height = 13
       Caption = #1056#1072#1089#1095#1077#1090#1085#1099#1081' '#1084#1077#1089#1103#1094
     end
-    object btnShowDiff: TSpeedButton
-      Left = 416
-      Top = 29
-      Width = 122
-      Height = 22
-      Anchors = [akTop, akRight]
-      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1086#1090#1082#1083#1086#1085#1077#1085#1080#1077
-      OnClick = btnShowDiffClick
-    end
     object edtEstimateName: TEdit
       Left = 49
       Top = 5
@@ -537,6 +528,10 @@ object fCalcResource: TfCalcResource
     object ts3: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object spl4: TSplitter
         Left = 0
         Top = 209
@@ -867,6 +862,10 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object spl5: TSplitter
         Left = 0
         Top = 209

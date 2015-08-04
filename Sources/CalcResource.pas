@@ -142,7 +142,6 @@ type
     qrMaterialDataFREPLACED: TIntegerField;
     qrMechDataFREPLACED: TIntegerField;
     pnlCalculationYesNo: TPanel;
-    btnShowDiff: TSpeedButton;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -236,14 +235,16 @@ begin
     fCalcResource.BorderStyle := bsNone;
     fCalcResource.Parent := AOwner;
     fCalcResource.Align := alClient;
-
-  end;
+  end
+  else
+    // Создаём кнопку от этого окна (на главной форме внизу)
+    FormMain.CreateButtonOpenWindow('Расчет стоимости ресурсов', 'Расчет стоимости ресурсов', fCalcResource, 1);
 
   // Если вызвали с доп параметром (на что положить) , то скрываем все вкладки
   for pageID := 0 to fCalcResource.pgc.PageCount - 1 do
     fCalcResource.pgc.Pages[pageID].TabVisible := AOwner = nil;
 
-  //fCalcResource.pnlTop.Visible := AOwner = nil;
+  // fCalcResource.pnlTop.Visible := AOwner = nil;
 
   fCalcResource.pgc.ActivePageIndex := APage;
 
@@ -375,8 +376,6 @@ end;
 
 procedure TfCalcResource.FormCreate(Sender: TObject);
 begin
-  // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow('Расчет стоимости ресурсов', 'Расчет стоимости ресурсов', Self, 1);
   LoadDBGridSettings(grMaterial);
   LoadDBGridSettings(grMaterialBott);
   LoadDBGridSettings(grMech);

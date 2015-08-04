@@ -44,8 +44,8 @@ type
     FramePriceMaterials: TSprMaterial;
     FramePriceMechanizms: TSprMechanizm;
     FrameEquipments: TSprEquipment;
-    FrameOXROPR: TFrameOXROPR;
-    FrameSSR: TFrameSSR;
+    // FrameOXROPR: TFrameOXROPR;
+    // FrameSSR: TFrameSSR;
   end;
 
 var
@@ -130,18 +130,18 @@ begin
   FrameEquipments.Align := alClient;
   FrameEquipments.Visible := False;
   SpeedButtonEquipments.Tag := Integer(FrameEquipments);
-
-  FrameOXROPR := TFrameOXROPR.Create(Self);
-  FrameOXROPR.Parent := Self;
-  FrameOXROPR.Align := alClient;
-  FrameOXROPR.Visible := False;
-  SpeedButtonOXROPR.Tag := Integer(FrameOXROPR);
-
-  FrameSSR := TFrameSSR.Create(Self);
-  FrameSSR.Parent := Self;
-  FrameSSR.Align := alClient;
-  FrameSSR.Visible := False;
-  SpeedButtonSSR.Tag := Integer(FrameSSR);
+  {
+    FrameOXROPR := TFrameOXROPR.Create(Self);
+    FrameOXROPR.Parent := Self;
+    FrameOXROPR.Align := alClient;
+    FrameOXROPR.Visible := False;
+    SpeedButtonOXROPR.Tag := Integer(FrameOXROPR); }
+  {
+    FrameSSR := TFrameSSR.Create(Self);
+    FrameSSR.Parent := Self;
+    FrameSSR.Align := alClient;
+    FrameSSR.Visible := False;
+    SpeedButtonSSR.Tag := Integer(FrameSSR); }
 
   SpeedButtonClick(SpeedButtonRates);
   FrameRates.Visible := True;
@@ -186,8 +186,8 @@ begin
   FramePriceMaterials.Visible := False;
   FramePriceMechanizms.Visible := False;
   FrameEquipments.Visible := False;
-  FrameOXROPR.Visible := False;
-  FrameSSR.Visible := False;
+  { FrameOXROPR.Visible := False;
+    FrameSSR.Visible := False; }
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

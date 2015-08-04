@@ -462,6 +462,7 @@ type
     PMTrPerc4: TMenuItem;
     PMTrPerc5: TMenuItem;
     PMTrPerc0: TMenuItem;
+    btn2: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -654,6 +655,7 @@ type
     procedure btnResMatClick(Sender: TObject);
     procedure PMTrPerc0Click(Sender: TObject);
     procedure PMTranstPercClick(Sender: TObject);
+    procedure btn2Click(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -788,7 +790,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   AdditionData, CardMaterial, CardDataEstimate,
   KC6, CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
-  TreeEstimate, ImportExportModule, CalcResource;
+  TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -1115,7 +1117,7 @@ procedure TFormCalculationEstimate.SpeedButtonSSRClick(Sender: TObject);
 begin
 
   ShellExecute(Handle, nil, 'report.exe', PChar('C' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
-     PChar(GetCurrentDir + '\REPORTS\report\'), SW_maximIZE);
+    PChar(GetCurrentDir + '\REPORTS\report\'), SW_maximIZE);
   Exit;
 
   if SpeedButtonSSR.Tag = 0 then
@@ -1291,6 +1293,11 @@ begin
       FastExecSQL('CALL UpdateSmetaCosts(:IDESTIMATE);', VarArrayOf([IdEstimate]));
   end;
   RecalcEstimate;
+end;
+
+procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
+begin
+  ShowCalcResourceFact(FormCalculationEstimate.IdEstimate);
 end;
 
 procedure TFormCalculationEstimate.btnDescriptionClick(Sender: TObject);
@@ -3621,7 +3628,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMTranstPercClick(Sender: TObject);
-var TmpCode: string;
+var
+  TmpCode: string;
 begin
   PMTrPerc1.Enabled := True;
   PMTrPerc2.Enabled := True;
@@ -3629,7 +3637,7 @@ begin
   PMTrPerc4.Enabled := True;
   PMTrPerc5.Enabled := True;
 
-  TmpCode := qrMaterialMAT_CODE.AsString; //Для улучшения читаемости
+  TmpCode := qrMaterialMAT_CODE.AsString; // Для улучшения читаемости
   if Pos('С103', TmpCode) > 0 then
   begin
     PMTrPerc2.Enabled := False;
@@ -3637,9 +3645,7 @@ begin
     PMTrPerc5.Enabled := False;
   end;
 
-  if (Pos('С530', TmpCode) > 0) or
-     (Pos('С533', TmpCode) > 0) or
-     (Pos('С544', TmpCode) > 0) then
+  if (Pos('С530', TmpCode) > 0) or (Pos('С533', TmpCode) > 0) or (Pos('С544', TmpCode) > 0) then
   begin
     PMTrPerc2.Enabled := False;
     PMTrPerc4.Enabled := False;
@@ -3647,21 +3653,28 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMTrPerc0Click(Sender: TObject);
-var TrPr: Real;
-    TmpCode: string;
+var
+  TrPr: Real;
+  TmpCode: string;
 begin
   if (not qrMaterial.Active) or (qrMaterialMAT_CODE.AsString = '') then
     Exit;
 
   case (Sender as TComponent).Tag of
-    0: TmpCode := qrMaterialMAT_CODE.AsString;
-    //Просто константы, что-бы получиль нужное значение из GetTranspPers
-    //GetTranspPers выдаст значение в учетом региона и даты сметы
-    1: TmpCode := 'С101-0000';
-    2: TmpCode := 'С201-0000';
-    3: TmpCode := 'С300-0000';
-    4: TmpCode := 'С501-0000';
-    5: TmpCode := 'С000-0000';
+    0:
+      TmpCode := qrMaterialMAT_CODE.AsString;
+    // Просто константы, что-бы получиль нужное значение из GetTranspPers
+    // GetTranspPers выдаст значение в учетом региона и даты сметы
+    1:
+      TmpCode := 'С101-0000';
+    2:
+      TmpCode := 'С201-0000';
+    3:
+      TmpCode := 'С300-0000';
+    4:
+      TmpCode := 'С501-0000';
+    5:
+      TmpCode := 'С000-0000';
   end;
 
   qrTemp1.Active := False;

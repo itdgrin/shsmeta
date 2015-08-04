@@ -7,7 +7,7 @@ uses
   Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
   ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, ArhivModule,
   Data.DB, GlobsAndConst, Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage,
-  JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg, dxGDIPlusClasses;
+  JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
@@ -338,7 +338,7 @@ const
   vShowHint = 'SH';
 
   // Названия форм
-  FormNameMain = 'Расчёт сметы';
+  FormNameMain = 'Смета';
   FormNameCoefficientOrders = 'Коэффициент по приказам';
   FormNameCardOrganization = 'Карточка организации';
   FormNameCardCoefficients = 'Карточка коэффициентов';

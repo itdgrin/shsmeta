@@ -231,6 +231,28 @@
       OnClick = btnResMatClick
       ExplicitTop = 0
     end
+    object btn2: TSpeedButton
+      AlignWithMargins = True
+      Left = 844
+      Top = 1
+      Width = 48
+      Height = 25
+      Margins.Left = 0
+      Margins.Top = 1
+      Margins.Bottom = 1
+      Align = alLeft
+      GroupIndex = 1
+      Caption = #1056#1072#1089#1095#1077#1090' '#1092#1072#1082#1090#1080#1095#1077#1089#1082#1080#1093' '#1079#1072#1090#1088#1072#1090
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      OnClick = btn2Click
+      ExplicitLeft = 864
+      ExplicitTop = 0
+    end
     object btnKC6: TButton
       AlignWithMargins = True
       Left = 247
