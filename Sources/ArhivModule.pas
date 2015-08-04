@@ -433,16 +433,15 @@ begin
       G_STARTAPP := True;
 
       SendMessage(FHandle, WM_ARCHIVEPROGRESS,
-        WParam(PChar('Необходимо перезапустить программу')), 0);
-
-      PostMessage(FHandle, WM_CLOSE, 0, 0);
+        WParam(PChar('Программа будет перезапущена')), 0);
+      sleep(2000);
+      PostMessage(FHandle, WM_ARCHIVEPROGRESS, 0, 2);
     except
       on e: Exception do
       begin
         e.Message := 'В процессе восстановления из архива возникло исключение:' +
           sLineBreak + e.Message;
         SendMessage(FHandle, WM_EXCEPTION, WParam(e), 0);
-        SendMessage(FHandle, WM_ARCHIVEPROGRESS, 0, 2);
       end;
     end;
   finally

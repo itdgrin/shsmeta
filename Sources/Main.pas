@@ -3,10 +3,12 @@ Unit Main;
 interface
 
 uses
-  Classes, Windows, Messages, SysUtils, Variants, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, Menus, ComCtrls, ToolWin, StdCtrls, Buttons, DBGrids,
-  ShellAPI, DateUtils, IniFiles, Grids, UpdateModule, ArhivModule,
-  Data.DB, GlobsAndConst, Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage,
+  Classes, Windows, Messages, SysUtils, Variants,
+  Graphics, Controls, Forms, Dialogs, ExtCtrls,
+  Menus, ComCtrls, ToolWin, StdCtrls, Buttons,
+  DBGrids, ShellAPI, DateUtils, IniFiles, Grids,
+  UpdateModule, ArhivModule, Data.DB, GlobsAndConst,
+  Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage,
   JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg;
 
 type
@@ -385,7 +387,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
-  SprController, SSR;
+  SprController, SSR, ArhivRestore;
 
 {$R *.dfm}
 
@@ -514,12 +516,6 @@ begin
   if FArhiv.CreateArhInProgress then
   begin
     ShowMessage('Идет создание архива.');
-    CanClose := False;
-  end;
-
-  if FArhiv.RestoreArhInProgress and (G_STARTUPDATER <> 2) then
-  begin
-    ShowMessage('Идет восстановление из архива.');
     CanClose := False;
   end;
 end;
@@ -1866,6 +1862,7 @@ end;
 procedure TFormMain.PMRestoreBackupClick(Sender: TObject);
 var
   Mi: TMenuItem;
+  ArhForm: TfrmArhRestore;
 begin
   Mi := TMenuItem(Sender);
   beep;
@@ -1873,7 +1870,14 @@ begin
     '&', '', [rfReplaceAll]) + '?' + #13#10 + 'Внимание, все данные внесенные после создания данной копии, ' +
     'будут утеряны!'), 'Резервное копирование', MB_YESNO + MB_ICONQUESTION) = IDYES) then
   begin
-    FArhiv.RestoreArhiv(Handle, string(Mi.Parent.Tag));
+    try
+      ArhForm := TfrmArhRestore.Create(Self);
+      FArhiv.RestoreArhiv(ArhForm.Handle, string(Mi.Parent.Tag));
+      ArhForm.ShowModal;
+    finally
+      FreeAndNil(ArhForm);
+      Close;
+    end;
   end;
 end;
 
