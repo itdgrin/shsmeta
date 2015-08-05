@@ -27,7 +27,7 @@ object dmReportF: TdmReportF
     Top = 56
   end
   object frxReport: TfrxReport
-    Version = '4.13.2'
+    Version = '4.15.6'
     DotMatrixReport = False
     IniFile = '\Software\Fast Reports'
     PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick]
@@ -373,29 +373,6 @@ object dmReportF: TdmReportF
     BCDToCurrency = False
     Left = 248
     Top = 56
-  end
-  object frxPDFExport: TfrxPDFExport
-    UseFileCache = True
-    ShowProgress = True
-    OverwritePrompt = False
-    DataOnly = False
-    OpenAfterExport = True
-    PrintOptimized = False
-    Outline = False
-    Background = False
-    HTMLTags = True
-    Quality = 95
-    Author = 'FastReport'
-    Subject = 'FastReport PDF export'
-    ProtectionFlags = [ePrint, eModify, eCopy, eAnnot]
-    HideToolbar = False
-    HideMenubar = False
-    HideWindowUI = False
-    FitWindow = False
-    CenterWindow = True
-    PrintScaling = False
-    Left = 984
-    Top = 384
   end
   object frxHTMLExport: TfrxHTMLExport
     UseFileCache = True
@@ -2553,5 +2530,15 @@ object dmReportF: TdmReportF
   object OpenDialog1: TOpenDialog
     Left = 776
     Top = 576
+  end
+  object vkRaschet: TFDQuery
+    AutoCalcFields = False
+    Connection = DM.Connect
+    Transaction = trReportRead
+    UpdateTransaction = trReportWrite
+    SQL.Strings = (
+      '')
+    Left = 56
+    Top = 568
   end
 end
