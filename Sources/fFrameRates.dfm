@@ -77,7 +77,7 @@
         Left = 0
         Top = 21
         Width = 110
-        Height = 423
+        Height = 395
         Align = alClient
         DataSource = dsNormativ
         Font.Charset = DEFAULT_CHARSET
@@ -114,6 +114,30 @@
             Width = 105
             Visible = True
           end>
+      end
+      object pnlNaviator: TPanel
+        Left = 0
+        Top = 416
+        Width = 110
+        Height = 28
+        Align = alBottom
+        TabOrder = 2
+        object btn1: TSpeedButton
+          Left = 81
+          Top = 3
+          Width = 23
+          Height = 22
+          Caption = '>>'
+          OnClick = btn1Click
+        end
+        object btn2: TSpeedButton
+          Left = 52
+          Top = 3
+          Width = 23
+          Height = 22
+          Caption = '<<'
+          OnClick = btn2Click
+        end
       end
     end
     object PanelRight: TPanel
@@ -787,7 +811,7 @@
       end>
   end
   object dsNormativ: TDataSource
-    DataSet = DM.qrNormativ
+    DataSet = qrNormativ
     Left = 72
     Top = 24
   end
@@ -823,5 +847,13 @@
     OnTimer = tmrScrollTimer
     Left = 72
     Top = 96
+  end
+  object qrNormativ: TFDQuery
+    BeforeOpen = qrNormativBeforeOpen
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    Left = 36
+    Top = 24
   end
 end

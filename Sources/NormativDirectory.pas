@@ -280,9 +280,9 @@ var
   Path: String;
 begin
   if Assigned(FormReferenceData) then
-    NumberNormativ := dm.qrNormativ.FieldByName('NumberNormative').AsString
+    NumberNormativ := FormReferenceData.FrameRates.qrNormativ.FieldByName('NumberNormative').AsString
   else if Assigned(FormAdditionData) then
-    NumberNormativ := dm.qrNormativ.FieldByName('NumberNormative').AsString;
+    NumberNormativ := FormReferenceData.FrameRates.qrNormativ.FieldByName('NumberNormative').AsString;
 
   // В условии - русские символы, в переменной NumberNormativ - английские
   if (NumberNormativ > 'Е121-1-1') and (NumberNormativ < 'Е121-137-1') then
