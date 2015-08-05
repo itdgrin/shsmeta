@@ -16,7 +16,7 @@ uses
   Generics.Collections,
   Generics.Defaults,
   fFrameCalculator,
-  Data.FmtBcd;
+  Data.FmtBcd,dmReportU;
 
 type
   TAutoRepRec = record
@@ -1299,7 +1299,27 @@ end;
 
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
-  //
+  if Assigned(FormObjectsAndEstimates) then
+    begin
+      if FormObjectsAndEstimates.IdEstimate = 0 then
+      begin
+        ShowMessage('Не выбрана смета');
+        Exit;
+      end;
+      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.IdEstimate = 0 then
+        begin
+          ShowMessage('Не выбрана смета');
+          Exit;
+        end;
+        dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
+      end;
+    end;
 end;
 
 procedure TFormCalculationEstimate.btn3Click(Sender: TObject);

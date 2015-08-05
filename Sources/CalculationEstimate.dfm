@@ -3,7 +3,7 @@
   Top = 0
   Caption = #1057#1084#1077#1090#1085#1099#1081' '#1088#1072#1089#1095#1077#1090
   ClientHeight = 537
-  ClientWidth = 920
+  ClientWidth = 1095
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -28,7 +28,7 @@
   object PanelTopMenu: TPanel
     Left = 0
     Top = 0
-    Width = 920
+    Width = 1095
     Height = 27
     Align = alTop
     BevelOuter = bvNone
@@ -37,6 +37,7 @@
     ParentCtl3D = False
     TabOrder = 0
     OnResize = PanelTopMenuResize
+    ExplicitWidth = 920
     object SpeedButtonLocalEstimate: TSpeedButton
       AlignWithMargins = True
       Left = 3
@@ -2783,14 +2784,15 @@
   object PanelData: TPanel
     Left = 0
     Top = 52
-    Width = 920
+    Width = 1095
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 2
+    ExplicitWidth = 920
     DesignSize = (
-      920
+      1095
       25)
     object Label1: TLabel
       Left = 8
@@ -2843,14 +2845,15 @@
     object Edit4: TEdit
       Left = 378
       Top = 2
-      Width = 392
+      Width = 567
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
+      ExplicitWidth = 392
     end
     object PanelCalculationYesNo: TPanel
       Tag = 1
-      Left = 776
+      Left = 951
       Top = 1
       Width = 137
       Height = 23
@@ -2861,19 +2864,21 @@
       ParentBackground = False
       TabOrder = 0
       OnClick = PanelCalculationYesNoClick
+      ExplicitLeft = 776
     end
   end
   object PanelEstimate: TPanel
     Left = 0
     Top = 77
-    Width = 920
+    Width = 1095
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 3
+    ExplicitWidth = 920
     DesignSize = (
-      920
+      1095
       25)
     object LabelEstimate: TLabel
       Left = 17
@@ -2909,7 +2914,7 @@
       OnClick = LabelNameEstimateClick
     end
     object btn1: TSpeedButton
-      Left = 776
+      Left = 951
       Top = 2
       Width = 137
       Height = 22
@@ -2924,25 +2929,27 @@
     object EditNameEstimate: TEdit
       Left = 125
       Top = 2
-      Width = 645
+      Width = 820
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
+      ExplicitWidth = 645
     end
   end
   object PanelObject: TPanel
     Left = 0
     Top = 27
-    Width = 920
+    Width = 1095
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 1
+    ExplicitWidth = 920
     DesignSize = (
-      920
+      1095
       25)
     object LabelObject: TLabel
       Left = 8
@@ -2962,7 +2969,7 @@
       OnClick = LabelObjectClick
     end
     object LabelNumberContract: TLabel
-      Left = 590
+      Left = 765
       Top = 6
       Width = 68
       Height = 13
@@ -2971,7 +2978,7 @@
       ExplicitLeft = 614
     end
     object LabelDateContract: TLabel
-      Left = 760
+      Left = 935
       Top = 6
       Width = 81
       Height = 13
@@ -2996,15 +3003,16 @@
     object EditNameObject: TEdit
       Left = 125
       Top = 2
-      Width = 459
+      Width = 634
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
+      ExplicitWidth = 459
     end
     object EditNumberContract: TEdit
-      Left = 664
+      Left = 839
       Top = 2
       Width = 90
       Height = 21
@@ -3012,9 +3020,10 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 1
+      ExplicitLeft = 664
     end
     object EditDateContract: TEdit
-      Left = 847
+      Left = 1022
       Top = 2
       Width = 66
       Height = 21
@@ -3022,6 +3031,7 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 2
+      ExplicitLeft = 847
     end
   end
   object PanelSSR: TPanel
