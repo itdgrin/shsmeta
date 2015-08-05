@@ -68,7 +68,7 @@
     end
     object SpeedButtonSSR: TSpeedButton
       AlignWithMargins = True
-      Left = 793
+      Left = 844
       Top = 1
       Width = 48
       Height = 25
@@ -233,7 +233,29 @@
     end
     object btn2: TSpeedButton
       AlignWithMargins = True
-      Left = 844
+      Left = 793
+      Top = 1
+      Width = 48
+      Height = 25
+      Margins.Left = 0
+      Margins.Top = 1
+      Margins.Bottom = 1
+      Align = alLeft
+      GroupIndex = 1
+      Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      OnClick = btn2Click
+      ExplicitLeft = 768
+      ExplicitTop = -2
+    end
+    object btn3: TSpeedButton
+      AlignWithMargins = True
+      Left = 895
       Top = 1
       Width = 48
       Height = 25
@@ -249,7 +271,7 @@
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      OnClick = btn2Click
+      OnClick = btn3Click
       ExplicitLeft = 864
       ExplicitTop = 0
     end

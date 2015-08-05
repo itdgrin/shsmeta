@@ -463,6 +463,7 @@ type
     PMTrPerc5: TMenuItem;
     PMTrPerc0: TMenuItem;
     btn2: TSpeedButton;
+    btn3: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -656,6 +657,7 @@ type
     procedure PMTrPerc0Click(Sender: TObject);
     procedure PMTranstPercClick(Sender: TObject);
     procedure btn2Click(Sender: TObject);
+    procedure btn3Click(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -1297,6 +1299,11 @@ end;
 
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
+  //
+end;
+
+procedure TFormCalculationEstimate.btn3Click(Sender: TObject);
+begin
   ShowCalcResourceFact(FormCalculationEstimate.IdEstimate);
 end;
 
@@ -1432,9 +1439,9 @@ var
   WidthButton: Integer;
 begin
   if Act then
-    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - 15) div 6
+    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - 15) div 8
   else
-    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - 18) div 7;
+    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - 18) div 8;
   btnKC6.Width := WidthButton;
   btnResMat.Width := WidthButton;
   btnResMech.Width := WidthButton;
@@ -1442,6 +1449,8 @@ begin
   btnResZP.Width := WidthButton;
   btnResCalc.Width := WidthButton;
   SpeedButtonSSR.Width := WidthButton;
+  btn2.Width := WidthButton;
+  btn3.Width := WidthButton;
 
   MemoRight.Height := dbmmoCAPTION.Height;
 end;
