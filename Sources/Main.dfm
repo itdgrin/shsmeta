@@ -11554,6 +11554,10 @@
           OnClick = RunProgramsRemoteControl
         end
       end
+      object ServiceUpdNorm: TMenuItem
+        Caption = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1086#1088#1090#1080#1088#1086#1074#1082#1091' '#1085#1086#1088#1084#1072#1090#1080#1074#1086#1074
+        OnClick = ServiceUpdNormClick
+      end
     end
     object MenuWindows: TMenuItem
       Caption = #1054#1082#1085#1072

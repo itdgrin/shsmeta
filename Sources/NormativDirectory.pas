@@ -80,9 +80,9 @@ end;
 procedure TfNormativDirectory.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if Assigned(FormReferenceData) then
-    FormReferenceData.FrameRates.FilteredRates('')
+    FormReferenceData.FrameRates.FilteredRates('', False)
   else if Assigned(FormAdditionData) then
-    FormAdditionData.FrameRates.FilteredRates('');
+    FormAdditionData.FrameRates.FilteredRates('', False);
 end;
 
 procedure TfNormativDirectory.FormCreate(Sender: TObject);
@@ -267,10 +267,10 @@ begin
     Exit;
   if Assigned(FormReferenceData) then
     FormReferenceData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data')
-      .AsString + '%''')
+      .AsString + '%''', True)
   else if Assigned(FormAdditionData) then
     FormAdditionData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data')
-      .AsString + '%''');
+      .AsString + '%''', True);
 end;
 
 procedure TfNormativDirectory.tvMainDblClick(Sender: TObject);

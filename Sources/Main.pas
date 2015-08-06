@@ -156,6 +156,7 @@ type
     pnlArchiv1: TPanel;
     pgArchiv: TProgressBar;
     N23: TMenuItem;
+    ServiceUpdNorm: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -254,6 +255,7 @@ type
     procedure MenuServiceClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure N23Click(Sender: TObject);
+    procedure ServiceUpdNormClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -387,7 +389,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
-  SprController, SSR, ArhivRestore;
+  SprController, SSR, ArhivRestore, FireDAC.UI.Intf;
 
 {$R *.dfm}
 
@@ -805,6 +807,31 @@ procedure TFormMain.ServiceUpdateClick(Sender: TObject);
 begin
   if Assigned(FUpdateThread) then
     FUpdateThread.UserRequest;
+end;
+
+procedure TFormMain.ServiceUpdNormClick(Sender: TObject);
+var tmp: TFDGUIxScreenCursor;
+begin
+  try
+    with DM.qrDifferent do
+    begin
+      Active := False;
+      SQL.Text := 'CALL `UpdateNormSortField`()';
+      try
+        tmp := DM.FDGUIxWaitCursor1.ScreenCursor;
+        DM.FDGUIxWaitCursor1.ScreenCursor := TFDGUIxScreenCursor.gcrHourGlass;
+        ExecSQL;
+      finally
+        DM.FDGUIxWaitCursor1.ScreenCursor := tmp;
+      end;
+    end;
+  except
+    on e: Exception do
+    begin
+      e.Message := 'Возникло исключение:' + sLineBreak + e.Message;
+      Application.ShowException(e);
+    end;
+  end;
 end;
 
 procedure TFormMain.TimerCoverTimer(Sender: TObject);

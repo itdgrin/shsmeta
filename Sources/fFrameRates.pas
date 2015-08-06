@@ -130,7 +130,7 @@ type
     procedure SpeedButtonShowHideRightPanelClick(Sender: TObject);
     procedure ShowHidePanels(Sender: TObject);
     procedure Sbornik(const normativ_directory_id: Integer);
-    procedure FilteredRates(const vStr: string);
+    procedure FilteredRates(const vStr: string; AFilterType: Boolean);
     procedure EditRateChange(Sender: TObject);
     procedure EditRateKeyPress(Sender: TObject; var Key: Char);
     procedure GetWinterPrice;
@@ -306,17 +306,6 @@ begin
   fNormativDirectory.tvMain.SelectNode(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
     .Expand(False);
   fNormativDirectory.skipReload := False;
-
-
-  // FormListCollections.RateNum := EditJustification.Text;
-  // FormListCollections.ShowModal;
-
-  {
-    FormListCollections.Filling(EditJustification.Text);
-
-    if FormListCollections.Open then
-    FormListCollections.Show;
-  }
 end;
 
 procedure TFrameRates.LabelSbornikMouseEnter(Sender: TObject);
@@ -396,7 +385,7 @@ end;
 
 procedure TFrameRates.ReceivingAll;
 begin
-  ReceivingSearch('');
+  EditRateChange(nil);
   fLoaded := true;
 end;
 
@@ -868,46 +857,10 @@ begin
     EditRate.Text := Copy(EditRate.Text, 0, Length(EditRate.Text) - 1)
   else
     EditRate.Text := EditRate.Text + Key;
-  { // Разрешаем ввод русских смиволов (unicode) + символ "пробел" + цифры
-    // Большие: А-Я = 1040-1071, Ё = 1025, Малые: а-я = 1072-1103, ё = 1105
-    if ((Key >= #1040) and (Key <= #1103)) or (Key = #1025) or (Key = #1105) or (Key = #32) or
-    ((Key >= '0') and (Key <= '9')) or (Key = '-') then
-    begin
-    StrQuickSearch := StrQuickSearch + Key; // Заносим символ в строку быстрого поиска
-
-    FrameStatusBar.InsertText(2, StrQuickSearch);
-    EditRate.Text := StrQuickSearch;
-
-    ReceivingSearch('NumberNormative' + ' LIKE ''' + StrQuickSearch + '%''');
-    end
-    else if Key = #27 then // Если была нажата клавиша "Esc"
-    begin
-    StrQuickSearch := ''; // Очищаем строку быстрого поиска
-
-    FrameStatusBar.InsertText(2, StrQuickSearch);
-    EditRate.Text := StrQuickSearch;
-
-    ReceivingSearch('');
-    end
-    else if Key = #08 then // Если была нажата клавиша "Backspace"
-    begin
-    Delete(StrQuickSearch, Length(StrQuickSearch), 1);
-
-    FrameStatusBar.InsertText(2, StrQuickSearch);
-    EditRate.Text := StrQuickSearch;
-
-    if StrQuickSearch <> '' then
-    ReceivingSearch('NumberNormative' + ' LIKE ''' + StrQuickSearch + '%''')
-    else
-    ReceivingSearch('');
-    end
-    else Key := #0; }
 end;
 
 procedure TFrameRates.EditRateEnter(Sender: TObject);
 begin
-  // LoadKeyboardLayout('00000419', KLF_ACTIVATE); // Русский
-  // LoadKeyboardLayout('00000409', KLF_ACTIVATE); // Английский
   if Trim(EditSearchNormative.Text) <> '' then
     EditSearchNormative.Text := '';
 end;
@@ -915,7 +868,7 @@ end;
 procedure TFrameRates.EditRateChange(Sender: TObject);
 begin
   tmrFilter.Enabled := False;
-  tmrFilter.Enabled := true;
+  tmrFilter.Enabled := True;
 end;
 
 procedure TFrameRates.EditRateKeyPress(Sender: TObject; var Key: Char);
@@ -1055,49 +1008,40 @@ var
 begin
   try
     Condition := '';
-    if not(chk1.Checked) and chk2.Checked then
-      Condition := Condition +  ' and ((-(norm_num)<>0)) '  {' AND NORM_TYPE=1 '};
-    if chk1.Checked and not(chk2.Checked) then
-      Condition := Condition +  ' and ((-(norm_num)=0)) '  {' AND NORM_TYPE=0 '};
-    if not(chk1.Checked) and not(chk2.Checked) then
+   if not(chk1.Checked) and chk2.Checked then
+      Condition := Condition +  ' and (NORM_TYPE=1) ';
+   if chk1.Checked and not(chk2.Checked) then
+      Condition := Condition +  ' and (NORM_TYPE=0) ';
+   if not(chk1.Checked) and not(chk2.Checked) then
       Condition := Condition + ' and (0=1) ';
 
-    if vStr <> '' then
+   if vStr <> '' then
       WhereStr := ' WHERE ' + vStr + Condition
-    else
-      WhereStr := ' WHERE 1=1 ' + Condition;
+   else
+      WhereStr := ' WHERE (1=1) ' + Condition;
 
-    // if not dm.qrNormativ.Active then
     with qrNormativ do
     begin
-      { Active := False; }
+      Active := False;
       SQL.Clear;
-      QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative", unit_name as "Unit",' +
-        ' norm_caption as "CaptionNormativ", NORM_ACTIVE, normativg' +
-        '.normativ_directory_id, tree_data, ((-(norm_num)<>0)) AS NORM_TYPE FROM normativ_directory, units, normativg'
-        + ' ' + WhereStr + ' AND normativg.NORM_BASE=' + DataBase + ' AND normativg.unit_id=units.unit_id ' +
-        ' and normativ_directory.normativ_directory_id=normativg' + '.normativ_directory_id ORDER BY '#13 +
-        '(`NORM_NUM`+0),'#13 + '`NORM_NUM` REGEXP "^Е" DESC, `NORM_NUM` REGEXP "^Ц" DESC,'#13 +
-        'CONCAT(LEFT("00000", 5-LENGTH(LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1))),  LEFT(`NORM_NUM`, POSITION("-" in `NORM_NUM`)-1)),'#13
-        + '(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) + 0),'#13 +
-        '(SUBSTRING(SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1) FROM POSITION("-" in SUBSTRING(`NORM_NUM` FROM POSITION("-" in `NORM_NUM`) + 1)) + 1) + 0)'#13
-        + ' LIMIT :SkipCount, :PageRowCount;';
+      QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative", ' +
+        'unit_name as "Unit", norm_caption as "CaptionNormativ", NORM_ACTIVE, ' +
+        'nv.normativ_directory_id, tree_data, NORM_TYPE, SORT_NUM ' +
+        'FROM normativg nv ' +
+        'LEFT JOIN normativ_directory ndr ON ' +
+          '(ndr.normativ_directory_id = nv.normativ_directory_id) ' +
+        'LEFT JOIN units ON (nv.unit_id=units.unit_id) ' +
+        WhereStr + ' AND (nv.norm_base = ' + DataBase + ') ' +
+        'ORDER BY SORT_NUM LIMIT :SkipCount, :PageRowCount;';
       SQL.Add(QueryStr);
       Active := true;
     end;
-
-    // qrNormativ.FetchOptions.RecordCountMode := cmTotal;
 
     if qrNormativ.RecordCount <= 0 then
       FrameStatusBar.InsertText(1, '-1');
 
     FrameStatusBar.InsertText(0, IntToStr(qrNormativ.RecordCount)); // исправить
 
-    // qrNormativ.FetchOptions.RecordCountMode := cmVisible;
-
-    {qrNormativ.Filtered := False;
-    qrNormativ.Filter := WhereStr;
-    qrNormativ.Filtered := true; }
     tmrScroll.Enabled := true;
   except
     on E: Exception do
@@ -1272,16 +1216,12 @@ begin
     EditCollection.Text := 'Сборник не найден';
 end;
 
-procedure TFrameRates.FilteredRates(const vStr: string);
+procedure TFrameRates.FilteredRates(const vStr: string; AFilterType: Boolean);
 begin
-  with qrNormativ do
-  begin
-    Filtered := False;
-    Filter := vStr;
-    Filtered := true;
-  end;
-
-  FrameStatusBar.InsertText(0, IntToStr(qrNormativ.RecordCount));
+  if AFilterType then
+    ReceivingSearch(vStr)
+  else
+    ReceivingSearch(FilteredString(EditRate.Text, 'norm_num'));;
 end;
 
 procedure TFrameRates.GetWinterPrice;
