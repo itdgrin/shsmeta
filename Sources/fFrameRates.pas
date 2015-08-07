@@ -868,7 +868,7 @@ end;
 procedure TFrameRates.EditRateChange(Sender: TObject);
 begin
   tmrFilter.Enabled := False;
-  tmrFilter.Enabled := True;
+  tmrFilter.Enabled := true;
 end;
 
 procedure TFrameRates.EditRateKeyPress(Sender: TObject; var Key: Char);
@@ -1008,31 +1008,28 @@ var
 begin
   try
     Condition := '';
-   if not(chk1.Checked) and chk2.Checked then
-      Condition := Condition +  ' and (NORM_TYPE=1) ';
-   if chk1.Checked and not(chk2.Checked) then
-      Condition := Condition +  ' and (NORM_TYPE=0) ';
-   if not(chk1.Checked) and not(chk2.Checked) then
+    if not(chk1.Checked) and chk2.Checked then
+      Condition := Condition + ' and (NORM_TYPE=1) ';
+    if chk1.Checked and not(chk2.Checked) then
+      Condition := Condition + ' and (NORM_TYPE=0) ';
+    if not(chk1.Checked) and not(chk2.Checked) then
       Condition := Condition + ' and (0=1) ';
 
-   if vStr <> '' then
+    if vStr <> '' then
       WhereStr := ' WHERE ' + vStr + Condition
-   else
+    else
       WhereStr := ' WHERE (1=1) ' + Condition;
-
+    PageNumber := 0;
     with qrNormativ do
     begin
       Active := False;
       SQL.Clear;
-      QueryStr := 'SELECT normativ_id as "IdNormative", norm_num as "NumberNormative", ' +
+      QueryStr := 'SELECT SQL_NO_CACHE normativ_id as "IdNormative", norm_num as "NumberNormative", ' +
         'unit_name as "Unit", norm_caption as "CaptionNormativ", NORM_ACTIVE, ' +
-        'nv.normativ_directory_id, tree_data, NORM_TYPE, SORT_NUM ' +
-        'FROM normativg nv ' +
-        'LEFT JOIN normativ_directory ndr ON ' +
-          '(ndr.normativ_directory_id = nv.normativ_directory_id) ' +
-        'LEFT JOIN units ON (nv.unit_id=units.unit_id) ' +
-        WhereStr + ' AND (nv.norm_base = ' + DataBase + ') ' +
-        'ORDER BY SORT_NUM LIMIT :SkipCount, :PageRowCount;';
+        'nv.normativ_directory_id, tree_data, NORM_TYPE, SORT_NUM ' + 'FROM normativg nv FORCE INDEX(normativg_idx4)' +
+        'LEFT JOIN normativ_directory ndr ON ' + '(ndr.normativ_directory_id = nv.normativ_directory_id) ' +
+        'LEFT JOIN units ON (nv.unit_id=units.unit_id) ' + WhereStr + ' AND (nv.norm_base = ' + DataBase +
+        ') ' + 'ORDER BY SORT_NUM LIMIT :SkipCount, :PageRowCount;';
       SQL.Add(QueryStr);
       Active := true;
     end;

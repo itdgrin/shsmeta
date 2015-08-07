@@ -853,8 +853,6 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FetchOptions.AssignedValues = [evRecordCountMode]
-    FetchOptions.RecordCountMode = cmTotal
     Left = 36
     Top = 24
   end
