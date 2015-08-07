@@ -74,6 +74,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
         Header.Font.Height = -11
         Header.Font.Name = 'Tahoma'
         Header.Font.Style = []
+        Header.Height = 32
         Header.Options = [hoVisible]
         PopupMenu = PopupMenu
         TabOrder = 0
@@ -85,6 +86,8 @@ inherited FramePriceTransportations: TFramePriceTransportations
         OnEnter = VSTEnter
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
+        ExplicitLeft = 8
+        ExplicitTop = -6
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]
@@ -96,44 +99,60 @@ inherited FramePriceTransportations: TFramePriceTransportations
             WideText = #1056#1072#1089#1089#1090#1086#1103#1085#1080#1077
           end
           item
+            CaptionAlignment = taCenter
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coUseCaptionAlignment]
             Position = 2
-            Width = 95
-            WideText = 'I '#1073#1077#1079' '#1053#1044#1057', '#1088#1091#1073
+            Width = 90
+            WideText = 'I '#1082#1083#1072#1089#1089' '#1075#1088#1091#1079#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088#1091#1073
           end
           item
+            CaptionAlignment = taCenter
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coUseCaptionAlignment]
             Position = 3
-            Width = 95
-            WideText = 'I '#1089' '#1053#1044#1057', '#1088#1091#1073
+            Width = 90
+            WideText = 'I '#1082#1083#1072#1089#1089' '#1075#1088#1091#1079#1072'   '#1089' '#1053#1044#1057', '#1088#1091#1073
           end
           item
+            CaptionAlignment = taCenter
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coUseCaptionAlignment]
             Position = 4
-            Width = 95
-            WideText = 'II '#1073#1077#1079' '#1053#1044#1057', '#1088#1091#1073
+            Width = 90
+            WideText = 'II '#1082#1083#1072#1089#1089' '#1075#1088#1091#1079#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088#1091#1073
           end
           item
+            CaptionAlignment = taCenter
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coUseCaptionAlignment]
             Position = 5
-            Width = 95
-            WideText = 'II '#1089' '#1053#1044#1057', '#1088#1091#1073
+            Width = 90
+            WideText = 'II '#1082#1083#1072#1089#1089' '#1075#1088#1091#1079#1072'  '#1089' '#1053#1044#1057', '#1088#1091#1073
           end
           item
+            CaptionAlignment = taCenter
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coUseCaptionAlignment]
             Position = 6
-            Width = 95
-            WideText = 'III '#1073#1077#1079' '#1053#1044#1057', '#1088#1091#1073
+            Width = 90
+            WideText = 'III '#1082#1083#1072#1089#1089' '#1075#1088#1091#1079#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088#1091#1073
           end
           item
+            CaptionAlignment = taCenter
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coUseCaptionAlignment]
             Position = 7
-            Width = 95
-            WideText = 'III '#1089' '#1053#1044#1057', '#1088#1091#1073
+            Width = 90
+            WideText = 'III '#1082#1083#1072#1089#1089' '#1075#1088#1091#1079#1072' '#1089' '#1053#1044#1057', '#1088#1091#1073
           end
           item
+            CaptionAlignment = taCenter
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coUseCaptionAlignment]
             Position = 8
-            Width = 95
-            WideText = 'IV '#1073#1077#1079' '#1053#1044#1057', '#1088#1091#1073
+            Width = 90
+            WideText = 'IV '#1082#1083#1072#1089#1089' '#1075#1088#1091#1079#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088#1091#1073
           end
           item
+            CaptionAlignment = taCenter
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coWrapCaption, coUseCaptionAlignment]
             Position = 9
-            Width = 95
-            WideText = 'IV '#1089' '#1053#1044#1057', '#1088#1091#1073
+            Width = 90
+            WideText = 'IV '#1082#1083#1072#1089#1089' '#1075#1088#1091#1079#1072' '#1089' '#1053#1044#1057', '#1088#1091#1073
           end>
         WideDefaultText = 'node'
       end

@@ -57,6 +57,7 @@ type
     chkShowDeleted: TCheckBox;
     mRepair: TMenuItem;
     mN1: TMenuItem;
+    memChangeDate: TDBMemo;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);

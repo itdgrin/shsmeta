@@ -49,6 +49,7 @@ type
     FrameStatusBar: TFrameStatusBar;
     StringGrid2: TStringGrid;
     ADOQuery: TFDQuery;
+    lbPrikazRef: TLabel;
 
     procedure SettingTable;
     procedure SettingTable2;

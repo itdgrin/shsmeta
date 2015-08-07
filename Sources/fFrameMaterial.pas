@@ -100,6 +100,7 @@ procedure TSprMaterial.rbMatClick(Sender: TObject);
 begin
   inherited;
   btnShow.Enabled := True;
+  ListSpr.Visible := False;
 end;
 
 procedure TSprMaterial.OnLoadDone;

@@ -124,9 +124,9 @@ begin
     if FPriceColumn then
     begin
       lc := ListSpr.Columns.Add;
-      lc.Caption := 'Öåíà ñ ÍÄÑ, ðóá';
-      lc := ListSpr.Columns.Add;
       lc.Caption := 'Öåíà áåç ÍÄÑ, ðóá';
+      lc := ListSpr.Columns.Add;
+      lc.Caption := 'Öåíà ñ ÍÄÑ, ðóá';
     end;
   end;
 
@@ -439,6 +439,7 @@ end;
 procedure TSprFrame.edtYearChange(Sender: TObject);
 begin
   btnShow.Enabled := True;
+  ListSpr.Visible := False;
 end;
 
 procedure TSprFrame.ListSprCustomDrawItem(Sender: TCustomListView;
@@ -457,13 +458,13 @@ begin
 
     if FPriceColumn then
     begin
-      if TSprRecord(Item.Data^).CoastNDS > 0 then
-        Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNDS))
+      if TSprRecord(Item.Data^).CoastNoNDS > 0 then
+        Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNoNDS))
       else
         Item.SubItems.Add('');
 
-      if TSprRecord(Item.Data^).CoastNoNDS > 0 then
-        Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNoNDS))
+      if TSprRecord(Item.Data^).CoastNDS > 0 then
+        Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNDS))
       else
         Item.SubItems.Add('');
     end;

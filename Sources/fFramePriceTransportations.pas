@@ -280,7 +280,7 @@ begin
 
   case VST.FocusedColumn of
     1:
-      CellText := ADOQuery.FieldByName('distance').AsVariant;
+      CellText := 'Ñ310-' + ADOQuery.FieldByName('distance').AsString;
     2:
       CellText := ADOQuery.FieldByName('class1_1').AsVariant;
     3:
@@ -332,7 +332,7 @@ begin
 
   case Column of
     1:
-      CellText := ADOQuery.FieldByName('distance').AsVariant;
+      CellText := 'Ñ310-' + ADOQuery.FieldByName('distance').AsString;
     2:
       CellText := ADOQuery.FieldByName('class1_1').AsVariant;
     3:
@@ -433,7 +433,7 @@ begin
     0:
       CellText := IntToStr(Node.Index + 1);
     1:
-      CellText := ADOQuery.FieldByName('distance').AsVariant;
+      CellText := 'Ñ310-' + ADOQuery.FieldByName('distance').AsString;
     2:
       CellText := ADOQuery.FieldByName('class1_1').AsVariant;
     3:

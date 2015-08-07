@@ -3,7 +3,7 @@ object fWinterPrice: TfWinterPrice
   Top = 0
   Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
   ClientHeight = 575
-  ClientWidth = 788
+  ClientWidth = 870
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,14 +19,14 @@ object fWinterPrice: TfWinterPrice
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   DesignSize = (
-    788
+    870
     575)
   PixelsPerInch = 96
   TextHeight = 13
   object tvEstimates: TJvDBTreeView
     Left = 8
     Top = 8
-    Width = 548
+    Width = 529
     Height = 524
     DataSource = dsTreeData
     MasterField = 'ZNORMATIVS_ID'
@@ -45,43 +45,40 @@ object fWinterPrice: TfWinterPrice
     Anchors = [akLeft, akTop, akRight, akBottom]
     HotTrack = True
     Mirror = False
-    ExplicitWidth = 561
-    ExplicitHeight = 591
   end
   object grp1: TGroupBox
-    Left = 562
-    Top = 127
-    Width = 218
-    Height = 83
+    Left = 543
+    Top = 167
+    Width = 319
+    Height = 91
     Anchors = [akTop, akRight]
     Caption = #1057#1090#1072#1074#1082#1072', %:'
     TabOrder = 3
-    ExplicitLeft = 575
     object lblCoef: TLabel
       Left = 8
-      Top = 20
+      Top = 23
       Width = 39
       Height = 13
       Caption = #1054#1073#1097#1080#1081':'
     end
     object lblCoefZP: TLabel
       Left = 8
-      Top = 41
+      Top = 44
       Width = 52
       Height = 13
       Caption = #1047#1072#1088#1087#1083#1072#1090#1072':'
     end
     object lblCoefZPMach: TLabel
       Left = 8
-      Top = 62
+      Top = 65
       Width = 110
       Height = 13
       Caption = #1047#1072#1088#1087#1083#1072#1090#1072' '#1084#1072#1096#1080#1085#1080#1089#1090#1072':'
     end
     object dbedtCOEF: TDBEdit
-      Left = 157
-      Top = 16
-      Width = 57
+      Left = 154
+      Top = 20
+      Width = 156
       Height = 21
       Color = clSilver
       DataField = 'COEF'
@@ -89,9 +86,9 @@ object fWinterPrice: TfWinterPrice
       TabOrder = 1
     end
     object dbedtCOEF_ZP: TDBEdit
-      Left = 157
-      Top = 37
-      Width = 57
+      Left = 154
+      Top = 41
+      Width = 156
       Height = 21
       Color = clSilver
       DataField = 'COEF_ZP'
@@ -99,9 +96,9 @@ object fWinterPrice: TfWinterPrice
       TabOrder = 2
     end
     object dbedtCOEF_ZP_MACH: TDBEdit
-      Left = 157
-      Top = 58
-      Width = 57
+      Left = 154
+      Top = 62
+      Width = 156
       Height = 21
       Color = clSilver
       DataField = 'COEF_ZP_MACH'
@@ -109,7 +106,7 @@ object fWinterPrice: TfWinterPrice
       TabOrder = 3
     end
     object dbnvgr1: TDBNavigator
-      Left = 178
+      Left = 270
       Top = 0
       Width = 40
       Height = 18
@@ -119,10 +116,10 @@ object fWinterPrice: TfWinterPrice
     end
   end
   object grRates: TJvDBGrid
-    Left = 562
-    Top = 216
-    Width = 218
-    Height = 316
+    Left = 543
+    Top = 264
+    Width = 319
+    Height = 268
     Anchors = [akTop, akRight, akBottom]
     DataSource = dsZnormativs_detail
     Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -146,7 +143,7 @@ object fWinterPrice: TfWinterPrice
         FieldName = 'S'
         Title.Alignment = taCenter
         Title.Caption = #1057
-        Width = 106
+        Width = 155
         Visible = True
       end
       item
@@ -154,22 +151,21 @@ object fWinterPrice: TfWinterPrice
         FieldName = 'PO'
         Title.Alignment = taCenter
         Title.Caption = #1055#1086
-        Width = 106
+        Width = 158
         Visible = True
       end>
   end
   object pnl1: TPanel
     Left = 0
     Top = 538
-    Width = 788
+    Width = 870
     Height = 37
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 5
-    ExplicitTop = 495
-    ExplicitWidth = 801
+    ExplicitWidth = 788
     DesignSize = (
-      788
+      870
       37)
     object lbl1: TLabel
       Left = 8
@@ -186,7 +182,7 @@ object fWinterPrice: TfWinterPrice
       Caption = #1053#1072#1079#1074#1072#1085#1080#1077':'
     end
     object btnClose: TBitBtn
-      Left = 705
+      Left = 787
       Top = 6
       Width = 75
       Height = 25
@@ -194,10 +190,10 @@ object fWinterPrice: TfWinterPrice
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 3
       OnClick = btnCloseClick
-      ExplicitLeft = 718
+      ExplicitLeft = 705
     end
     object btnSelect: TBitBtn
-      Left = 624
+      Left = 706
       Top = 6
       Width = 75
       Height = 25
@@ -206,7 +202,7 @@ object fWinterPrice: TfWinterPrice
       ModalResult = 1
       TabOrder = 2
       OnClick = btnSelectClick
-      ExplicitLeft = 637
+      ExplicitLeft = 624
     end
     object dbedtNUM: TDBEdit
       Left = 49
@@ -221,20 +217,20 @@ object fWinterPrice: TfWinterPrice
     object dbedtNAME: TDBEdit
       Left = 169
       Top = 0
-      Width = 387
+      Width = 469
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       DataField = 'NAME'
       DataSource = dsTreeData
       TabOrder = 1
       OnExit = dbedtNUMExit
-      ExplicitWidth = 400
+      ExplicitWidth = 387
     end
   end
   object grChangeDate: TJvDBGrid
-    Left = 562
+    Left = 543
     Top = 8
-    Width = 218
+    Width = 319
     Height = 113
     Anchors = [akTop, akRight]
     DataSource = dsZnormChangeDate
@@ -261,7 +257,7 @@ object fWinterPrice: TfWinterPrice
         FieldName = 'onDate'
         Title.Alignment = taCenter
         Title.Caption = #1044#1072#1090#1072' '#1080#1079#1084#1077#1085#1077#1085#1080#1103' '#1089#1090#1072#1074#1086#1082
-        Width = 126
+        Width = 130
         Visible = True
       end
       item
@@ -269,7 +265,7 @@ object fWinterPrice: TfWinterPrice
         FieldName = 'reason'
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
-        Width = 132
+        Width = 150
         Visible = True
       end
       item
@@ -282,15 +278,24 @@ object fWinterPrice: TfWinterPrice
       end>
   end
   object chkShowDeleted: TCheckBox
-    Left = 377
-    Top = 8
+    Left = 357
+    Top = 9
     Width = 179
     Height = 17
     Anchors = [akTop, akRight]
     Caption = #1087#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1079#1072#1087#1080#1089#1080
     TabOrder = 1
     OnClick = chkShowDeletedClick
-    ExplicitLeft = 390
+  end
+  object memChangeDate: TDBMemo
+    Left = 543
+    Top = 127
+    Width = 319
+    Height = 34
+    DataField = 'FULLREASON'
+    DataSource = dsZnormChangeDate
+    ReadOnly = True
+    TabOrder = 6
   end
   object qrTreeData: TFDQuery
     BeforeDelete = qrTreeDataBeforeDelete
@@ -374,8 +379,8 @@ object fWinterPrice: TfWinterPrice
     SQL.Strings = (
       'select * from znormativs_detail'
       'WHERE `ZNORMATIVS_ID`=:ZNORMATIVS_ID')
-    Left = 609
-    Top = 186
+    Left = 585
+    Top = 306
     ParamData = <
       item
         Name = 'ZNORMATIVS_ID'
@@ -386,8 +391,8 @@ object fWinterPrice: TfWinterPrice
   end
   object dsZnormativs_detail: TDataSource
     DataSet = qrZnormativs_detail
-    Left = 610
-    Top = 226
+    Left = 586
+    Top = 402
   end
   object pmZnormativ: TPopupMenu
     Left = 32
@@ -411,8 +416,8 @@ object fWinterPrice: TfWinterPrice
     Top = 160
   end
   object pmZnormativDetail: TPopupMenu
-    Left = 611
-    Top = 271
+    Left = 587
+    Top = 351
     object mAddZnormativDetail: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       OnClick = mAddZnormativDetailClick
@@ -434,13 +439,13 @@ object fWinterPrice: TfWinterPrice
       'FROM `znormativs_ondate`'
       'WHERE `DEL_FLAG` = 0'
       'ORDER BY `onDate` DESC')
-    Left = 737
-    Top = 10
+    Left = 697
+    Top = 34
   end
   object dsZnormChangeDate: TDataSource
     DataSet = qrZnormChangeDate
-    Left = 736
-    Top = 50
+    Left = 696
+    Top = 82
   end
   object pmZnormativOnDate: TPopupMenu
     Left = 578
@@ -478,8 +483,8 @@ object fWinterPrice: TfWinterPrice
       
         'WHERE `ZNORMATIVS_ID`=:ZNORMATIVS_ID AND `ZNORMATIVS_ONDATE_ID`=' +
         ':ZNORMATIVS_ONDATE_ID')
-    Left = 657
-    Top = 154
+    Left = 713
+    Top = 402
     ParamData = <
       item
         Name = 'ZNORMATIVS_ID'
@@ -496,7 +501,7 @@ object fWinterPrice: TfWinterPrice
   end
   object dsZnormativs_value: TDataSource
     DataSet = qrZnormativs_value
-    Left = 704
-    Top = 154
+    Left = 712
+    Top = 346
   end
 end

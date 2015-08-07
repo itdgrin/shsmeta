@@ -2,7 +2,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
   Left = 0
   Top = 0
   ClientHeight = 436
-  ClientWidth = 611
+  ClientWidth = 733
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
   object PanelPrices: TPanel
     Left = 0
     Top = 0
-    Width = 611
+    Width = 733
     Height = 25
     Align = alTop
     BevelOuter = bvNone
@@ -37,6 +37,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
     ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 0
+    ExplicitWidth = 611
     object SpeedButtonPriceMaterials: TSpeedButton
       Left = 123
       Top = 0
@@ -70,10 +71,10 @@ object FormPricesReferenceData: TFormPricesReferenceData
     object SpeedButtonPriceTransportation: TSpeedButton
       Left = 365
       Top = 0
-      Width = 120
+      Width = 164
       Height = 25
       GroupIndex = 1
-      Caption = #1058#1072#1088'. '#1087#1086' '#1075#1088#1091#1079#1086#1087#1077#1088#1077#1074#1086#1079'.'
+      Caption = #1058#1072#1088#1080#1092#1099' '#1085#1072' '#1075#1088#1091#1079#1086#1087#1077#1088#1077#1074#1086#1079#1082#1080
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -83,12 +84,12 @@ object FormPricesReferenceData: TFormPricesReferenceData
       OnClick = SpeedButtonClick
     end
     object SpeedButtonPriceDumps: TSpeedButton
-      Left = 486
+      Left = 530
       Top = 0
-      Width = 120
+      Width = 118
       Height = 25
       GroupIndex = 1
-      Caption = #1058#1072#1088#1080#1092#1099' '#1087#1086' '#1089#1074#1072#1083#1082#1072#1084
+      Caption = #1058#1072#1088#1080#1092#1099' '#1085#1072' '#1089#1074#1072#1083#1082#1080
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11

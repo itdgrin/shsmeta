@@ -1,5 +1,5 @@
 inherited FrameSSR: TFrameSSR
-  Width = 498
+  Width = 792
   Height = 335
   DoubleBuffered = True
   ParentBackground = False
@@ -7,18 +7,19 @@ inherited FrameSSR: TFrameSSR
   ParentFont = False
   OnEnter = FrameEnter
   OnExit = FrameExit
-  ExplicitWidth = 498
+  ExplicitWidth = 792
   ExplicitHeight = 335
   object Panel: TPanel
     Left = 0
     Top = 25
-    Width = 498
+    Width = 792
     Height = 291
     Align = alClient
     BevelOuter = bvNone
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
+    ExplicitWidth = 498
     object ImageSplitter: TImage
       Left = 312
       Top = 395
@@ -29,7 +30,7 @@ inherited FrameSSR: TFrameSSR
     object Splitter: TSplitter
       Left = 0
       Top = 251
-      Width = 498
+      Width = 792
       Height = 5
       Cursor = crVSplit
       Align = alBottom
@@ -40,7 +41,7 @@ inherited FrameSSR: TFrameSSR
     object PanelSearch: TPanel
       Left = 0
       Top = 0
-      Width = 498
+      Width = 792
       Height = 25
       Align = alTop
       BevelOuter = bvNone
@@ -48,9 +49,7 @@ inherited FrameSSR: TFrameSSR
       ParentBackground = False
       ParentDoubleBuffered = False
       TabOrder = 0
-      DesignSize = (
-        498
-        25)
+      ExplicitWidth = 498
       object LabelSearch: TLabel
         Left = 8
         Top = 6
@@ -58,15 +57,30 @@ inherited FrameSSR: TFrameSSR
         Height = 13
         Caption = #1055#1086#1080#1089#1082':'
       end
+      object lbPrikazRef: TLabel
+        Left = 459
+        Top = 6
+        Width = 328
+        Height = 13
+        Cursor = crHandPoint
+        Caption = #1053#1056#1056' 8.01.103.-2012 '#1063#1072#1089#1090#1100' I '#1055#1088#1080#1082#1072#1079' '#8470'450 '#1052#1040#1080#1057' '#1086#1090' 23.12.2011 '#1075'.'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clNavy
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+      end
       object EditSearch: TEdit
-        Left = 48
-        Top = 2
-        Width = 447
-        Height = 21
+        Left = 46
+        Top = 3
+        Width = 407
+        Height = 20
         Hint = 
           #1042#1074#1077#1076#1080#1090#1077' '#1089#1083#1086#1074#1072' '#1095#1077#1088#1077#1079' '#1087#1088#1086#1073#1077#1083' '#1080' '#1085#1072#1078#1084#1080#1090#1077' - Enter, '#1076#1083#1103' '#1086#1095#1080#1089#1090#1082#1080' '#1085#1072#1078#1084#1080#1090 +
           #1077' - Esc'
-        Anchors = [akLeft, akTop, akRight]
+        Margins.Left = 100
+        Margins.Bottom = 0
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
@@ -77,7 +91,7 @@ inherited FrameSSR: TFrameSSR
     object PanelMemo: TPanel
       Left = 0
       Top = 256
-      Width = 498
+      Width = 792
       Height = 35
       Align = alBottom
       BevelOuter = bvNone
@@ -87,33 +101,42 @@ inherited FrameSSR: TFrameSSR
       ParentDoubleBuffered = False
       ShowCaption = False
       TabOrder = 2
+      ExplicitWidth = 498
       object Memo: TMemo
         Left = 0
         Top = 0
-        Width = 498
+        Width = 792
         Height = 35
         Align = alClient
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
         OnEnter = MemoEnter
+        ExplicitWidth = 498
       end
     end
     object PanelStringGrid: TPanel
       Left = 0
       Top = 25
-      Width = 498
+      Width = 792
       Height = 226
       Align = alClient
       BevelOuter = bvNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
       ParentBackground = False
+      ParentFont = False
       TabOrder = 1
       OnResize = PanelStringGridResize
+      ExplicitWidth = 498
       object SpeedButtonShowHide: TSpeedButton
         Tag = 1
         Left = 0
         Top = 211
-        Width = 498
+        Width = 792
         Height = 15
         Align = alBottom
         Flat = True
@@ -173,18 +196,19 @@ inherited FrameSSR: TFrameSSR
   object PanelMenu: TPanel
     Left = 0
     Top = 0
-    Width = 498
+    Width = 792
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 0
+    ExplicitWidth = 498
     DesignSize = (
-      498
+      792
       25)
     object SpeedButton1: TSpeedButton
       Tag = 1
-      Left = 313
+      Left = 607
       Top = 2
       Width = 21
       Height = 21
@@ -197,7 +221,7 @@ inherited FrameSSR: TFrameSSR
     end
     object SpeedButton2: TSpeedButton
       Tag = 2
-      Left = 336
+      Left = 630
       Top = 2
       Width = 21
       Height = 21
@@ -209,7 +233,7 @@ inherited FrameSSR: TFrameSSR
     end
     object SpeedButton3: TSpeedButton
       Tag = 3
-      Left = 359
+      Left = 653
       Top = 2
       Width = 21
       Height = 21
@@ -221,7 +245,7 @@ inherited FrameSSR: TFrameSSR
     end
     object SpeedButton4: TSpeedButton
       Tag = 4
-      Left = 382
+      Left = 676
       Top = 2
       Width = 21
       Height = 21
@@ -233,7 +257,7 @@ inherited FrameSSR: TFrameSSR
     end
     object SpeedButton5: TSpeedButton
       Tag = 5
-      Left = 405
+      Left = 699
       Top = 2
       Width = 21
       Height = 21
@@ -245,7 +269,7 @@ inherited FrameSSR: TFrameSSR
     end
     object SpeedButton6: TSpeedButton
       Tag = 6
-      Left = 428
+      Left = 722
       Top = 2
       Width = 21
       Height = 21
@@ -258,7 +282,7 @@ inherited FrameSSR: TFrameSSR
     end
     object SpeedButton7: TSpeedButton
       Tag = 7
-      Left = 451
+      Left = 745
       Top = 2
       Width = 21
       Height = 21
@@ -271,7 +295,7 @@ inherited FrameSSR: TFrameSSR
     end
     object SpeedButton8: TSpeedButton
       Tag = 8
-      Left = 474
+      Left = 768
       Top = 2
       Width = 21
       Height = 21
@@ -285,7 +309,7 @@ inherited FrameSSR: TFrameSSR
     object ComboBox: TComboBox
       Left = 3
       Top = 2
-      Width = 304
+      Width = 598
       Height = 21
       Style = csDropDownList
       Anchors = [akLeft, akTop, akRight]
@@ -301,12 +325,13 @@ inherited FrameSSR: TFrameSSR
         '4. '#1057#1086#1076#1077#1088#1078#1072#1085#1080#1077' '#1077#1076#1080#1085#1099#1093' '#1079#1072#1082#1072#1079#1095#1080#1082#1086#1074
         '7. '#1056#1077#1079#1077#1088#1074' '#1085#1072' '#1085#1077#1087#1088#1077#1076#1074#1080#1076#1077#1085#1085#1099#1077' '#1088#1072#1073#1086#1090#1099' '#1080' '#1079#1072#1090#1088#1072#1090#1099
         '8. '#1047#1072#1090#1088#1072#1090#1099', '#1089#1074#1103#1079#1072#1085#1085#1099#1077' '#1089' '#1087#1086#1076#1074#1080#1078#1085#1099#1084' '#1088#1072#1079#1098#1077#1079#1076#1085#1099#1084' '#1093#1072#1088#1072#1082#1090#1077#1088#1086#1084' '#1088#1072#1073#1086#1090)
+      ExplicitWidth = 304
     end
   end
   inline FrameStatusBar: TFrameStatusBar
     Left = 0
     Top = 316
-    Width = 498
+    Width = 792
     Height = 19
     Align = alBottom
     DoubleBuffered = True
@@ -321,13 +346,13 @@ inherited FrameSSR: TFrameSSR
     ExplicitTop = 316
     ExplicitWidth = 498
     inherited StatusBar: TStatusBar
-      Width = 498
+      Width = 792
       ExplicitWidth = 498
     end
   end
   object PopupMenu: TPopupMenu
-    Left = 80
-    Top = 32
+    Left = 88
+    Top = 128
     object CopyCell: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       OnClick = CopyCellClick
@@ -351,6 +376,6 @@ inherited FrameSSR: TFrameSSR
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
     Left = 30
-    Top = 40
+    Top = 152
   end
 end

@@ -256,6 +256,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure N23Click(Sender: TObject);
     procedure ServiceUpdNormClick(Sender: TObject);
+    procedure mN29Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -711,7 +712,8 @@ procedure TFormMain.DeleteButtonCloseWindow(const CaptionButton: String);
 var
   i, Y: integer;
 begin
-  if not Assigned(PanelOpenWindows) then
+  if not Assigned(PanelOpenWindows) or
+     Application.Terminated then
     Exit;
 
   Y := -1;
@@ -1101,6 +1103,11 @@ begin
   if (not Assigned(fOXROPR)) then
     fOXROPR := TfOXROPR.Create(FormMain);
   fOXROPR.Show;
+end;
+
+procedure TFormMain.mN29Click(Sender: TObject);
+begin
+
 end;
 
 // Расчет стоимости работ по объекту (графа С) v1.00 (Вадим)

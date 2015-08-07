@@ -94,6 +94,7 @@ inherited FramePriceDumps: TFramePriceDumps
             WideText = #8470' '#1087'/'#1087
           end
           item
+            Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coAllowFocus, coUseCaptionAlignment]
             Position = 1
             Width = 110
             WideText = #1053#1072#1079#1074#1072#1085#1080#1077' '#1089#1074#1072#1083#1082#1080
