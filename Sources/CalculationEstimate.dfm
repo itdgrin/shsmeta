@@ -37,7 +37,6 @@
     ParentCtl3D = False
     TabOrder = 0
     OnResize = PanelTopMenuResize
-    ExplicitWidth = 920
     object SpeedButtonLocalEstimate: TSpeedButton
       AlignWithMargins = True
       Left = 3
@@ -2790,7 +2789,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 2
-    ExplicitWidth = 920
     DesignSize = (
       1095
       25)
@@ -2849,7 +2847,6 @@
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
-      ExplicitWidth = 392
     end
     object PanelCalculationYesNo: TPanel
       Tag = 1
@@ -2864,7 +2861,6 @@
       ParentBackground = False
       TabOrder = 0
       OnClick = PanelCalculationYesNoClick
-      ExplicitLeft = 776
     end
   end
   object PanelEstimate: TPanel
@@ -2876,7 +2872,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 3
-    ExplicitWidth = 920
     DesignSize = (
       1095
       25)
@@ -2935,7 +2930,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 645
     end
   end
   object PanelObject: TPanel
@@ -2947,7 +2941,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 1
-    ExplicitWidth = 920
     DesignSize = (
       1095
       25)
@@ -3009,7 +3002,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 459
     end
     object EditNumberContract: TEdit
       Left = 839
@@ -3020,7 +3012,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 1
-      ExplicitLeft = 664
     end
     object EditDateContract: TEdit
       Left = 1022
@@ -3031,7 +3022,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 2
-      ExplicitLeft = 847
     end
   end
   object PanelSSR: TPanel

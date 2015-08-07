@@ -1286,13 +1286,13 @@ end;
 
 procedure TFormCalculationEstimate.btn1Click(Sender: TObject);
 begin
-  if Application.MessageBox('Произвести перерасчет сметы?', 'Перерасчет',
+  if Application.MessageBox('Произвести перерасчет?', 'Перерасчет',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) <> IDYES then
     Exit;
-  case Application.MessageBox('Произвести обновление цен по всем объектам сметы?', 'Перерасчет',
+  case Application.MessageBox('Произвести обновление цен по всем объектам?', 'Перерасчет',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
     IDYES:
-      FastExecSQL('CALL UpdateSmetaCosts(:IDESTIMATE);', VarArrayOf([IdEstimate]));
+      FastExecSQL('CALL UpdateSmetaCosts(:IDESTIMATE,:ID_ACT);', VarArrayOf([IdEstimate, IdAct]));
   end;
   RecalcEstimate;
 end;

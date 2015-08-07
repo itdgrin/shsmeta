@@ -238,7 +238,8 @@ begin
   end
   else
     // Создаём кнопку от этого окна (на главной форме внизу)
-    FormMain.CreateButtonOpenWindow('Расчет стоимости ресурсов', 'Расчет стоимости ресурсов', fCalcResource, 1);
+    FormMain.CreateButtonOpenWindow('Расчет стоимости ресурсов', 'Расчет стоимости ресурсов',
+      fCalcResource, 1);
 
   // Если вызвали с доп параметром (на что положить) , то скрываем все вкладки
   for pageID := 0 to fCalcResource.pgc.PageCount - 1 do
@@ -249,6 +250,8 @@ begin
   fCalcResource.pgc.ActivePageIndex := APage;
 
   fCalcResource.Show;
+  if AOwner = nil then
+    fCalcResource.WindowState := wsMaximized;
   fCalcResource.flLoaded := True;
   fCalcResource.pgcChange(nil);
 end;

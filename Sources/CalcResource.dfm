@@ -146,10 +146,6 @@ object fCalcResource: TfCalcResource
     OnChange = pgcChange
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl2: TLabel
         Left = 0
         Top = 0
@@ -528,10 +524,6 @@ object fCalcResource: TfCalcResource
     object ts3: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl4: TSplitter
         Left = 0
         Top = 209
@@ -862,10 +854,6 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl5: TSplitter
         Left = 0
         Top = 209
@@ -1701,7 +1689,6 @@ object fCalcResource: TfCalcResource
       '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
       '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
       ''
-      ''
       
         '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
         '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
@@ -2176,7 +2163,7 @@ object fCalcResource: TfCalcResource
       '  m.REPLACED,'
       '  m.ID_REPLACED'
       'FROM        '
-      'smetasourcedata, data_row_temp AS d '
+      'data_row_temp AS d '
       
         'left join card_rate_temp AS c on d.ID_TYPE_DATA = 1 AND c.ID = d' +
         '.ID_TABLES '
@@ -2184,16 +2171,7 @@ object fCalcResource: TfCalcResource
         'join materialcard_temp AS m on ((d.ID_TYPE_DATA = 2 AND m.ID = d' +
         '.ID_TABLES) OR (m.ID_CARD_RATE = c.ID)) AND m.MAT_ID = :MAT_ID'
       'WHERE'
-      '  ((m.DELETED = 0) OR (:SHOW_DELETED)) AND '
-      '  /*AND m.REPLACED = 0*/'
-      '  ((smetasourcedata.SM_ID = :SM_ID) OR'
-      '           (smetasourcedata.PARENT_ID = :SM_ID) OR '
-      '           (smetasourcedata.PARENT_ID IN ('
-      '             SELECT SM_ID'
-      '             FROM smetasourcedata'
-      '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
-      '  d.ID_ESTIMATE = smetasourcedata.SM_ID AND  '
-      '  smetasourcedata.DELETED=0'
+      '  ((m.DELETED = 0) OR (:SHOW_DELETED))'
       'ORDER BY 1,2')
     Left = 27
     Top = 264
@@ -2213,12 +2191,6 @@ object fCalcResource: TfCalcResource
         Name = 'SHOW_DELETED'
         DataType = ftBCD
         ParamType = ptInput
-      end
-      item
-        Name = 'SM_ID'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = Null
       end>
   end
   object dsMaterialDetail: TDataSource
@@ -2320,7 +2292,7 @@ object fCalcResource: TfCalcResource
       '  m.REPLACED,'
       '  m.ID_REPLACED'
       'FROM        '
-      'smetasourcedata, data_row_temp AS d '
+      'data_row_temp AS d '
       
         'left join card_rate_temp AS c on d.ID_TYPE_DATA = 1 AND c.ID = d' +
         '.ID_TABLES '
@@ -2329,16 +2301,7 @@ object fCalcResource: TfCalcResource
         'd.ID_TABLES) OR (m.ID_CARD_RATE = c.ID)) AND m.MECH_ID = :MECH_I' +
         'D'
       'WHERE'
-      '  ((m.DELETED = 0) OR (:SHOW_DELETED)) AND '
-      '  /*AND m.REPLACED = 0*/'
-      '  ((smetasourcedata.SM_ID = :SM_ID) OR'
-      '           (smetasourcedata.PARENT_ID = :SM_ID) OR '
-      '           (smetasourcedata.PARENT_ID IN ('
-      '             SELECT SM_ID'
-      '             FROM smetasourcedata'
-      '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
-      '  d.ID_ESTIMATE = smetasourcedata.SM_ID AND  '
-      '  smetasourcedata.DELETED=0'
+      '  ((m.DELETED = 0) OR (:SHOW_DELETED))'
       'ORDER BY 1,2')
     Left = 99
     Top = 264
@@ -2358,12 +2321,6 @@ object fCalcResource: TfCalcResource
         Name = 'SHOW_DELETED'
         DataType = ftBCD
         ParamType = ptInput
-      end
-      item
-        Name = 'SM_ID'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = Null
       end>
   end
   object dsMechDetail: TDataSource
@@ -2418,19 +2375,11 @@ object fCalcResource: TfCalcResource
       '  m.DEVICE_ID,'
       '  m.ID'
       'FROM        '
-      'smetasourcedata, data_row_temp AS d '
+      'data_row_temp AS d '
       
         'join devicescard_temp AS m on d.ID_TYPE_DATA = 4 AND m.ID = d.ID' +
         '_TABLES AND m.DEVICE_ID = :DEVICE_ID'
-      'WHERE'
-      '  ((smetasourcedata.SM_ID = :SM_ID) OR'
-      '           (smetasourcedata.PARENT_ID = :SM_ID) OR '
-      '           (smetasourcedata.PARENT_ID IN ('
-      '             SELECT SM_ID'
-      '             FROM smetasourcedata'
-      '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
-      '  d.ID_ESTIMATE = smetasourcedata.SM_ID AND  '
-      '  smetasourcedata.DELETED=0')
+      '')
     Left = 155
     Top = 264
     ParamData = <
@@ -2444,12 +2393,6 @@ object fCalcResource: TfCalcResource
         Name = 'DEVICE_ID'
         DataType = ftBCD
         ParamType = ptInput
-      end
-      item
-        Name = 'SM_ID'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = Null
       end>
   end
   object dsDevicesDetail: TDataSource
