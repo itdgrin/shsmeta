@@ -16,7 +16,7 @@ uses
   Generics.Collections,
   Generics.Defaults,
   fFrameCalculator,
-  Data.FmtBcd,dmReportU;
+  Data.FmtBcd, dmReportU;
 
 type
   TAutoRepRec = record
@@ -1286,8 +1286,8 @@ end;
 
 procedure TFormCalculationEstimate.btn1Click(Sender: TObject);
 begin
-  if Application.MessageBox('Произвести перерасчет?', 'Перерасчет',
-    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) <> IDYES then
+  if Application.MessageBox('Произвести перерасчет?', 'Перерасчет', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
+    <> IDYES then
     Exit;
   case Application.MessageBox('Произвести обновление цен по всем объектам?', 'Перерасчет',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
@@ -1300,26 +1300,26 @@ end;
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
   if Assigned(FormObjectsAndEstimates) then
+  begin
+    if FormObjectsAndEstimates.IdEstimate = 0 then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      ShowMessage('Не выбрана смета');
+      Exit;
+    end;
+    dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
+  end
+  else
+  begin
+    if Assigned(FormCalculationEstimate) then
+    begin
+      if FormCalculationEstimate.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
-    end
-    else
-    begin
-      if Assigned(FormCalculationEstimate) then
-      begin
-        if FormCalculationEstimate.IdEstimate = 0 then
-        begin
-          ShowMessage('Не выбрана смета');
-          Exit;
-        end;
-        dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
-      end;
+      dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
     end;
+  end;
 end;
 
 procedure TFormCalculationEstimate.btn3Click(Sender: TObject);
@@ -1421,6 +1421,8 @@ begin
         FormCalculationEstimate.Caption := CaptionButton[2] + ' - Разрешено редактирование документа';
     end;
   frSummaryCalculations.grSummaryCalculation.Repaint;
+  if Assigned(fCalcResource) then
+    fCalcResource.pnlCalculationYesNoClick(nil);
 end;
 
 procedure TFormCalculationEstimate.PanelClientRightTablesResize(Sender: TObject);

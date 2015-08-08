@@ -179,17 +179,33 @@ begin
 end;
 
 procedure TFrameRates.btn1Click(Sender: TObject);
+var
+  e: TDataSetNotifyEvent;
 begin
+  if qrNormativ.RecordCount < PageRowCount then
+    Exit;
+  e := qrNormativ.AfterScroll;
+  qrNormativ.AfterScroll := nil;
   Inc(PageNumber);
   CloseOpen(qrNormativ);
+  qrNormativ.AfterScroll := e;
+  tmrScroll.Enabled := False;
+  tmrScroll.Enabled := true;
 end;
 
 procedure TFrameRates.btn2Click(Sender: TObject);
+var
+  e: TDataSetNotifyEvent;
 begin
   if PageNumber = 0 then
     Exit;
+  e := qrNormativ.AfterScroll;
+  qrNormativ.AfterScroll := nil;
   Dec(PageNumber);
   CloseOpen(qrNormativ);
+  qrNormativ.AfterScroll := e;
+  tmrScroll.Enabled := False;
+  tmrScroll.Enabled := true;
 end;
 
 procedure TFrameRates.chk1Click(Sender: TObject);
@@ -348,6 +364,17 @@ end;
 
 procedure TFrameRates.qrNormativAfterScroll(DataSet: TDataSet);
 begin
+  if qrNormativ.Eof then
+  begin
+    btn1.Click;
+    Exit;
+  end
+  else if qrNormativ.Bof and (PageNumber <> 0) then
+  begin
+    btn2.Click;
+    Exit;
+  end;
+
   tmrScroll.Enabled := False;
   tmrScroll.Enabled := true;
 end;
@@ -1026,8 +1053,9 @@ begin
       SQL.Clear;
       QueryStr := 'SELECT SQL_NO_CACHE normativ_id as "IdNormative", norm_num as "NumberNormative", ' +
         'unit_name as "Unit", norm_caption as "CaptionNormativ", NORM_ACTIVE, ' +
-        'nv.normativ_directory_id, tree_data, NORM_TYPE, SORT_NUM ' + 'FROM normativg nv FORCE INDEX(normativg_idx4)' +
-        'LEFT JOIN normativ_directory ndr ON ' + '(ndr.normativ_directory_id = nv.normativ_directory_id) ' +
+        'nv.normativ_directory_id, tree_data, NORM_TYPE, SORT_NUM ' +
+        'FROM normativg nv FORCE INDEX(normativg_idx4)' + 'LEFT JOIN normativ_directory ndr ON ' +
+        '(ndr.normativ_directory_id = nv.normativ_directory_id) ' +
         'LEFT JOIN units ON (nv.unit_id=units.unit_id) ' + WhereStr + ' AND (nv.norm_base = ' + DataBase +
         ') ' + 'ORDER BY SORT_NUM LIMIT :SkipCount, :PageRowCount;';
       SQL.Add(QueryStr);
@@ -1041,8 +1069,8 @@ begin
 
     tmrScroll.Enabled := true;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
         CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -1242,9 +1270,9 @@ begin
 
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' + sLineBreak +
-        sLineBreak + E.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
+        sLineBreak + e.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 

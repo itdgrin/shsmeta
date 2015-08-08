@@ -63,13 +63,10 @@ type
     dbmmoNAME2: TDBMemo;
     qrDevices: TFDQuery;
     dsDevices: TDataSource;
-    pnlRatesTop: TPanel;
     pnlRatesClient: TPanel;
     grRates: TJvDBGrid;
     qrRates: TFDQuery;
     dsRates: TDataSource;
-    lbl7: TLabel;
-    dbedt2: TDBEdit;
     JvDBGridFooter1: TJvDBGridFooter;
     JvDBGridFooter2: TJvDBGridFooter;
     JvDBGridFooter3: TJvDBGridFooter;
@@ -245,7 +242,7 @@ begin
   for pageID := 0 to fCalcResource.pgc.PageCount - 1 do
     fCalcResource.pgc.Pages[pageID].TabVisible := AOwner = nil;
 
-  // fCalcResource.pnlTop.Visible := AOwner = nil;
+  fCalcResource.pnlTop.Visible := AOwner = nil;
 
   fCalcResource.pgc.ActivePageIndex := APage;
 

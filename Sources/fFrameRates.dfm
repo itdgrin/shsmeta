@@ -100,6 +100,7 @@
         OnExit = grRatesExit
         OnKeyPress = VSTKeyPress
         AutoAppend = False
+        ScrollBars = ssNone
         AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
@@ -843,7 +844,7 @@
   end
   object tmrScroll: TTimer
     Enabled = False
-    Interval = 100
+    Interval = 200
     OnTimer = tmrScrollTimer
     Left = 72
     Top = 96

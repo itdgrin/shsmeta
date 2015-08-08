@@ -114,6 +114,7 @@ object fCalcResource: TfCalcResource
         #1089' '#1053#1044#1057)
     end
     object pnlCalculationYesNo: TPanel
+      Tag = 1
       Left = 492
       Top = 3
       Width = 120
@@ -177,16 +178,16 @@ object fCalcResource: TfCalcResource
         Left = 0
         Top = 0
         Width = 608
-        Height = 41
+        Height = 29
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
         DesignSize = (
           608
-          41)
+          29)
         object edtMatCodeFilter: TEdit
           Left = 4
-          Top = 11
+          Top = 2
           Width = 121
           Height = 21
           TabOrder = 0
@@ -196,7 +197,7 @@ object fCalcResource: TfCalcResource
         end
         object edtMatNameFilter: TEdit
           Left = 131
-          Top = 11
+          Top = 2
           Width = 472
           Height = 21
           Anchors = [akLeft, akTop, akRight]
@@ -208,18 +209,20 @@ object fCalcResource: TfCalcResource
       end
       object pnlMatClient: TPanel
         Left = 0
-        Top = 41
+        Top = 29
         Width = 608
-        Height = 152
+        Height = 164
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
+        ExplicitTop = 41
+        ExplicitHeight = 152
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
-          Height = 133
+          Height = 145
           Align = alClient
           DataSource = dsMaterialData
           DrawingStyle = gdsClassic
@@ -361,7 +364,7 @@ object fCalcResource: TfCalcResource
         end
         object JvDBGridFooter1: TJvDBGridFooter
           Left = 0
-          Top = 133
+          Top = 145
           Width = 608
           Height = 19
           SizeGrip = True
@@ -377,6 +380,7 @@ object fCalcResource: TfCalcResource
           DataSource = dsMaterialData
           DBGrid = grMaterial
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitTop = 133
         end
       end
       object pnlMatBott: TPanel
@@ -535,18 +539,20 @@ object fCalcResource: TfCalcResource
       end
       object pnlMechClient: TPanel
         Left = 0
-        Top = 41
+        Top = 29
         Width = 608
-        Height = 168
+        Height = 180
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
+        ExplicitTop = 41
+        ExplicitHeight = 168
         object grMech: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
-          Height = 149
+          Height = 161
           Align = alClient
           DataSource = dsMechData
           DrawingStyle = gdsClassic
@@ -555,7 +561,6 @@ object fCalcResource: TfCalcResource
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pm
           TabOrder = 0
@@ -662,7 +667,7 @@ object fCalcResource: TfCalcResource
         end
         object JvDBGridFooter2: TJvDBGridFooter
           Left = 0
-          Top = 149
+          Top = 161
           Width = 608
           Height = 19
           SizeGrip = True
@@ -686,6 +691,7 @@ object fCalcResource: TfCalcResource
           DataSource = dsMechData
           DBGrid = grMech
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitTop = 149
         end
       end
       object pnlMechBott: TPanel
@@ -815,16 +821,16 @@ object fCalcResource: TfCalcResource
         Left = 0
         Top = 0
         Width = 608
-        Height = 41
+        Height = 29
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
         DesignSize = (
           608
-          41)
+          29)
         object edtMechCodeFilter: TEdit
           Left = 4
-          Top = 11
+          Top = 2
           Width = 121
           Height = 21
           Font.Charset = DEFAULT_CHARSET
@@ -840,7 +846,7 @@ object fCalcResource: TfCalcResource
         end
         object edtMechNameFilter: TEdit
           Left = 131
-          Top = 11
+          Top = 2
           Width = 472
           Height = 21
           Anchors = [akLeft, akTop, akRight]
@@ -868,16 +874,16 @@ object fCalcResource: TfCalcResource
         Left = 0
         Top = 0
         Width = 608
-        Height = 41
+        Height = 29
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
         DesignSize = (
           608
-          41)
+          29)
         object edt1: TEdit
           Left = 4
-          Top = 11
+          Top = 2
           Width = 121
           Height = 21
           TabOrder = 0
@@ -886,7 +892,7 @@ object fCalcResource: TfCalcResource
         end
         object edt2: TEdit
           Left = 131
-          Top = 11
+          Top = 2
           Width = 472
           Height = 21
           Anchors = [akLeft, akTop, akRight]
@@ -897,21 +903,22 @@ object fCalcResource: TfCalcResource
       end
       object pnlDevClient: TPanel
         Left = 0
-        Top = 41
+        Top = 29
         Width = 608
-        Height = 168
+        Height = 180
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 1
+        ExplicitTop = 41
+        ExplicitHeight = 168
         object grDev: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
-          Height = 149
+          Height = 161
           Align = alClient
           DataSource = dsDevices
           DrawingStyle = gdsClassic
-          Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -1042,7 +1049,7 @@ object fCalcResource: TfCalcResource
         end
         object JvDBGridFooter3: TJvDBGridFooter
           Left = 0
-          Top = 149
+          Top = 161
           Width = 608
           Height = 19
           SizeGrip = True
@@ -1062,6 +1069,7 @@ object fCalcResource: TfCalcResource
           DataSource = dsDevices
           DBGrid = grDev
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitTop = 149
         end
       end
       object pnlDevBott: TPanel
@@ -1206,59 +1214,21 @@ object fCalcResource: TfCalcResource
       Font.Style = []
       ImageIndex = 4
       ParentFont = False
-      object pnlRatesTop: TPanel
+      object pnlRatesClient: TPanel
         Left = 0
         Top = 0
         Width = 608
-        Height = 26
-        Align = alTop
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 0
-        object lbl7: TLabel
-          Left = 4
-          Top = 4
-          Width = 91
-          Height = 13
-          Caption = #1057#1090#1072#1074#1082#1072' 4 '#1088#1072#1079#1088#1103#1076#1072
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-        end
-        object dbedt2: TDBEdit
-          Left = 103
-          Top = 1
-          Width = 121
-          Height = 21
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 0
-        end
-      end
-      object pnlRatesClient: TPanel
-        Left = 0
-        Top = 26
-        Width = 608
-        Height = 252
+        Height = 278
         Align = alClient
         Caption = 'pnlRatesClient'
-        TabOrder = 1
+        TabOrder = 0
+        ExplicitTop = 26
+        ExplicitHeight = 252
         object grRates: TJvDBGrid
           Left = 1
           Top = 1
           Width = 606
-          Height = 186
+          Height = 212
           Align = alClient
           DataSource = dsRates
           DrawingStyle = gdsClassic
@@ -1389,7 +1359,7 @@ object fCalcResource: TfCalcResource
         end
         object JvDBGridFooter4: TJvDBGridFooter
           Left = 1
-          Top = 187
+          Top = 213
           Width = 606
           Height = 19
           SizeGrip = True
@@ -1409,10 +1379,11 @@ object fCalcResource: TfCalcResource
           DataSource = dsRates
           DBGrid = grRates
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitTop = 187
         end
         object dbmmoNAME3: TDBMemo
           Left = 1
-          Top = 206
+          Top = 232
           Width = 606
           Height = 45
           Align = alBottom
@@ -1421,6 +1392,7 @@ object fCalcResource: TfCalcResource
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 2
+          ExplicitTop = 206
         end
       end
     end

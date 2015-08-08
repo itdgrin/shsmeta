@@ -113,7 +113,8 @@ uses
   OXROPR in 'OXROPR.pas' {fOXROPR},
   SSR in 'SSR.pas' {fSSR},
   SprController in 'SprController.pas',
-  CalcResource in 'CalcResource.pas' {fCalcResource};
+  CalcResource in 'CalcResource.pas' {fCalcResource},
+  CalcResourceFactDiff in 'CalcResourceFactDiff.pas' {fCalcResourceFactDiff};
 
 {$R *.res}
 var MHandle: THandle;
