@@ -157,6 +157,7 @@ type
     pgArchiv: TProgressBar;
     N23: TMenuItem;
     ServiceUpdNorm: TMenuItem;
+    mConstractorService: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -257,6 +258,7 @@ type
     procedure N23Click(Sender: TObject);
     procedure ServiceUpdNormClick(Sender: TObject);
     procedure mN29Click(Sender: TObject);
+    procedure mConstractorServiceClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -1049,6 +1051,14 @@ begin
 end;
 
 // Расход материалов по акту
+procedure TFormMain.mConstractorServiceClick(Sender: TObject);
+begin
+  if (not Assigned(fUniDict)) then
+    fUniDict := TfUniDict.Create(Self);
+  fUniDict.SetConstactorService;
+  fUniDict.Show;
+end;
+
 procedure TFormMain.mhfybkbotafqkjd1Click(Sender: TObject);
 begin
   if (not Assigned(fFileStorage)) then

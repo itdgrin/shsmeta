@@ -447,9 +447,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>fCalcResource</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="ArhivRestore.pas">
+            <Form>frmArhRestore</Form>
+        </DCCReference>
         <DCCReference Include="CalcResourceFactDiff.pas">
             <Form>fCalcResourceFactDiff</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

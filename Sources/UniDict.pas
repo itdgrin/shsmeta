@@ -68,6 +68,7 @@ type
   private
     { Private declarations }
   public
+    procedure SetConstactorService;
     { Public declarations }
   end;
 
@@ -163,6 +164,34 @@ begin
   qrUniDict.ParamByName('year').AsInteger := seYear.Value;
   qrUniDict.ParamByName('id_unidicttype').AsInteger := qrUniDictType.FieldByName('unidicttype_id').AsInteger;
   CloseOpen(qrUniDict);
+end;
+
+procedure TfUniDict.SetConstactorService;
+var RecNo: Integer;
+    ev: TDataSetNotifyEvent;
+begin
+  if not qrUniDictType.Active then
+    Exit;
+  RecNo := qrUniDictType.RecNo;
+  qrUniDictType.DisableControls;
+  try
+    ev := qrUniDictType.AfterScroll;
+    qrUniDictType.AfterScroll := nil;
+    qrUniDictType.First;
+    while not qrUniDictType.Eof do
+    begin
+      if qrUniDictType.FieldByName('unidicttype_id').AsInteger = 7 then
+      begin
+        RecNo := qrUniDictType.RecNo;
+        Exit;
+      end;
+      qrUniDictType.Next
+    end;
+    qrUniDictType.AfterScroll := ev;
+    qrUniDictType.RecNo := RecNo;
+  finally
+    qrUniDictType.EnableControls;
+  end;
 end;
 
 end.

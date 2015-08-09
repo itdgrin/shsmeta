@@ -114,6 +114,7 @@ uses
   SSR in 'SSR.pas' {fSSR},
   SprController in 'SprController.pas',
   CalcResource in 'CalcResource.pas' {fCalcResource},
+  ArhivRestore in 'ArhivRestore.pas' {frmArhRestore},
   CalcResourceFactDiff in 'CalcResourceFactDiff.pas' {fCalcResourceFactDiff};
 
 {$R *.res}
