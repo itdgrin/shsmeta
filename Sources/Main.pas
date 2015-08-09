@@ -158,6 +158,7 @@ type
     ServiceUpdNorm: TMenuItem;
     mN30: TMenuItem;
     mConstractorService: TMenuItem;
+    mN33: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -259,6 +260,7 @@ type
     procedure ServiceUpdNormClick(Sender: TObject);
     procedure mN31Click(Sender: TObject);
     procedure mConstractorServiceClick(Sender: TObject);
+    procedure mN33Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -392,7 +394,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
-  SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList;
+  SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList, NormativDictHelp;
 
 {$R *.dfm}
 
@@ -1121,6 +1123,13 @@ begin
   if (not Assigned(fCategoryList)) then
     fCategoryList := TfCategoryList.Create(FormMain);
   fCategoryList.Show;
+end;
+
+procedure TFormMain.mN33Click(Sender: TObject);
+begin
+  if (not Assigned(fNormativDictHelp)) then
+    fNormativDictHelp := TfNormativDictHelp.Create(FormMain);
+  fNormativDictHelp.Show;
 end;
 
 // Расчет стоимости работ по объекту (графа С) v1.00 (Вадим)
