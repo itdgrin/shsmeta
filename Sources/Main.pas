@@ -142,7 +142,6 @@ type
     mN24: TMenuItem;
     mN26: TMenuItem;
     mN27: TMenuItem;
-    mN101: TMenuItem;
     mN28: TMenuItem;
     mN32: TMenuItem;
     mN41: TMenuItem;
@@ -157,6 +156,7 @@ type
     pgArchiv: TProgressBar;
     N23: TMenuItem;
     ServiceUpdNorm: TMenuItem;
+    mN30: TMenuItem;
     mConstractorService: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
@@ -257,7 +257,7 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure N23Click(Sender: TObject);
     procedure ServiceUpdNormClick(Sender: TObject);
-    procedure mN29Click(Sender: TObject);
+    procedure mN31Click(Sender: TObject);
     procedure mConstractorServiceClick(Sender: TObject);
   private
     CountOpenWindows: integer;
@@ -392,7 +392,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
-  SprController, SSR, ArhivRestore, FireDAC.UI.Intf;
+  SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList;
 
 {$R *.dfm}
 
@@ -674,6 +674,7 @@ begin
       TmpForm.WindowState := wsNormal;
 
     TmpForm.Show;
+    TmpForm.BringToFront;
   finally
     // PanelCover.Visible := False;
   end;
@@ -714,8 +715,7 @@ procedure TFormMain.DeleteButtonCloseWindow(const CaptionButton: String);
 var
   i, Y: integer;
 begin
-  if not Assigned(PanelOpenWindows) or
-     Application.Terminated then
+  if not Assigned(PanelOpenWindows) or Application.Terminated then
     Exit;
 
   Y := -1;
@@ -814,7 +814,8 @@ begin
 end;
 
 procedure TFormMain.ServiceUpdNormClick(Sender: TObject);
-var tmp: TFDGUIxScreenCursor;
+var
+  tmp: TFDGUIxScreenCursor;
 begin
   try
     with DM.qrDifferent do
@@ -1115,9 +1116,11 @@ begin
   fOXROPR.Show;
 end;
 
-procedure TFormMain.mN29Click(Sender: TObject);
+procedure TFormMain.mN31Click(Sender: TObject);
 begin
-
+  if (not Assigned(fCategoryList)) then
+    fCategoryList := TfCategoryList.Create(FormMain);
+  fCategoryList.Show;
 end;
 
 // Расчет стоимости работ по объекту (графа С) v1.00 (Вадим)

@@ -11216,7 +11216,7 @@
         OnClick = mN24Click
       end
       object MenuSetCoefficients: TMenuItem
-        Caption = #1053#1072#1073#1086#1088' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074' '#1082' '#1089#1090#1072#1090#1100#1103#1084' '#1079#1072#1090#1088#1072#1090
+        Caption = #1053#1072#1073#1086#1088#1099' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074' '#1082' '#1089#1090#1072#1090#1100#1103#1084' '#1079#1072#1090#1088#1072#1090
         OnClick = MenuSetCoefficientsClick
       end
       object MenuListsСategoriesObjects: TMenuItem
@@ -11246,14 +11246,9 @@
         Caption = #1054#1061#1056' '#1080' '#1054#1055#1056
         OnClick = mN27Click
       end
-      object mN101: TMenuItem
-        Caption = '//'#1057#1087#1088#1072#1074#1086#1095#1085#1080#1082#1080' '#1057#1057#1056
-        Visible = False
-      end
       object mN29: TMenuItem
         Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
         ImageIndex = 20
-        OnClick = mN29Click
         object mN110: TMenuItem
           Tag = 1
           Caption = #1053#1044#1047' 1 ('#1087#1086' '#1074#1080#1076#1072#1084' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072')'
@@ -11275,6 +11270,10 @@
         Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1077#1078#1077#1084#1077#1089#1103#1095#1085#1099#1093' '#1074#1077#1083#1080#1095#1080#1085
         OnClick = N8Click
       end
+      object mN31: TMenuItem
+        Caption = #1052#1077#1078#1088#1072#1079#1088#1103#1076#1085#1099#1077' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099
+        OnClick = mN31Click
+      end
       object MenuLists: TMenuItem
         Caption = '//'#1057#1087#1080#1089#1082#1080
         Visible = False
@@ -11283,6 +11282,9 @@
           Visible = False
           OnClick = MenuListsIndexesChangeCostClick
         end
+      end
+      object mN30: TMenuItem
+        Caption = '-'
       end
       object mN28: TMenuItem
         Tag = 2

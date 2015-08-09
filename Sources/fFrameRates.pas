@@ -363,6 +363,8 @@ begin
 end;
 
 procedure TFrameRates.qrNormativAfterScroll(DataSet: TDataSet);
+var
+  e: TDataSetNotifyEvent;
 begin
   if qrNormativ.Eof then
   begin
@@ -372,7 +374,10 @@ begin
   else if qrNormativ.Bof and (PageNumber <> 0) then
   begin
     btn2.Click;
-    Exit;
+    e := qrNormativ.AfterScroll;
+    qrNormativ.AfterScroll := nil;
+    qrNormativ.Last;
+    qrNormativ.AfterScroll := e;
   end;
 
   tmrScroll.Enabled := False;
@@ -1067,7 +1072,7 @@ begin
 
     FrameStatusBar.InsertText(0, IntToStr(qrNormativ.RecordCount)); // исправить
 
-    tmrScroll.Enabled := true;
+    //tmrScroll.Enabled := true;
   except
     on e: Exception do
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + e.Message),

@@ -260,17 +260,29 @@ begin
 end;
 
 procedure TfNormativDirectory.tvMainChange(Sender: TObject; Node: TTreeNode);
+var
+  e: TDataSetNotifyEvent;
 begin
   qrDetail.ParamByName('normativ_directory_id').Value := qrMain.FieldByName('normativ_directory_id').Value;
   CloseOpen(qrDetail);
   if skipReload then
     Exit;
   if Assigned(FormReferenceData) then
-    FormReferenceData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data')
-      .AsString + '%''', True)
+  begin
+    e := FormReferenceData.FrameRates.qrNormativ.AfterScroll;
+    FormReferenceData.FrameRates.qrNormativ.AfterScroll := nil;
+    FormReferenceData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data').AsString
+      + '%''', True);
+    FormReferenceData.FrameRates.qrNormativ.AfterScroll := e;
+  end
   else if Assigned(FormAdditionData) then
-    FormAdditionData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data')
-      .AsString + '%''', True);
+  begin
+    e := FormAdditionData.FrameRates.qrNormativ.AfterScroll;
+    FormAdditionData.FrameRates.qrNormativ.AfterScroll := nil;
+    FormAdditionData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data').AsString +
+      '%''', True);
+    FormAdditionData.FrameRates.qrNormativ.AfterScroll := e;
+  end;
 end;
 
 procedure TfNormativDirectory.tvMainDblClick(Sender: TObject);

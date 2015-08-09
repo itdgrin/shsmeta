@@ -77,7 +77,7 @@
         Left = 0
         Top = 21
         Width = 110
-        Height = 395
+        Height = 401
         Align = alClient
         DataSource = dsNormativ
         Font.Charset = DEFAULT_CHARSET
@@ -100,7 +100,7 @@
         OnExit = grRatesExit
         OnKeyPress = VSTKeyPress
         AutoAppend = False
-        ScrollBars = ssNone
+        ScrollBars = ssVertical
         AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
@@ -118,25 +118,32 @@
       end
       object pnlNaviator: TPanel
         Left = 0
-        Top = 416
+        Top = 422
         Width = 110
-        Height = 28
+        Height = 22
         Align = alBottom
         TabOrder = 2
+        ExplicitTop = 421
         object btn1: TSpeedButton
-          Left = 81
-          Top = 3
-          Width = 23
+          Left = 55
+          Top = 0
+          Width = 55
           Height = 22
+          Hint = #1057#1083#1077#1076#1091#1102#1097#1072#1103' '#1089#1090#1088#1072#1085#1080#1094#1072
           Caption = '>>'
+          ParentShowHint = False
+          ShowHint = True
           OnClick = btn1Click
         end
         object btn2: TSpeedButton
-          Left = 52
-          Top = 3
-          Width = 23
+          Left = 0
+          Top = 0
+          Width = 55
           Height = 22
+          Hint = #1055#1088#1077#1076#1080#1076#1091#1097#1072#1103' '#1089#1090#1088#1072#1085#1080#1094#1072
           Caption = '<<'
+          ParentShowHint = False
+          ShowHint = True
           OnClick = btn2Click
         end
       end
@@ -750,8 +757,8 @@
     end
   end
   object pmRates: TPopupMenu
-    Left = 8
-    Top = 400
+    Left = 24
+    Top = 360
     object FindToRates: TMenuItem
       Caption = #1053#1072#1081#1090#1080' '#1074' '#1089#1073#1086#1088#1085#1080#1082#1077
     end
