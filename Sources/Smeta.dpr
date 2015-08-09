@@ -115,7 +115,7 @@ uses
   SprController in 'SprController.pas',
   CalcResource in 'CalcResource.pas' {fCalcResource},
   CalcResourceFactDiff in 'CalcResourceFactDiff.pas' {fCalcResourceFactDiff},
-  CategoryList in 'CategoryList.pas' {fCategoryList};
+  CategoryList in 'CategoryList.pas' {fCategoryList},
   ArhivRestore in 'ArhivRestore.pas' {frmArhRestore};
 
 {$R *.res}
