@@ -452,13 +452,15 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="CategoryList.pas">
             <Form>fCategoryList</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="ArhivRestore.pas">
             <Form>frmArhRestore</Form>
         </DCCReference>
         <DCCReference Include="NormativDictHelp.pas">
             <Form>fNormativDictHelp</Form>
+        </DCCReference>
+        <DCCReference Include="BuildZone.pas">
+            <Form>fBuildZone</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="BuildZone.pas">

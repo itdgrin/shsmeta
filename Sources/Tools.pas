@@ -94,8 +94,6 @@ procedure Exec(const AParam: string);
 
 implementation
 
-{ TThreadQuery }
-
 procedure Exec(const AParam: string);
 begin
   ShellExecute(Application.Handle, nil, PChar(AParam), nil, nil, SW_SHOWMAXIMIZED);

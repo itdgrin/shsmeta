@@ -69,8 +69,6 @@ object fFileStorage: TfFileStorage
     Font.Style = []
     ParentFont = False
     TabOrder = 2
-    ExplicitTop = 243
-    ExplicitWidth = 418
     DesignSize = (
       631
       38)
@@ -105,7 +103,6 @@ object fFileStorage: TfFileStorage
       ParentFont = False
       TabOrder = 1
       OnClick = btn1Click
-      ExplicitLeft = 337
     end
     object btnSelect: TBitBtn
       Left = 469
@@ -124,7 +121,6 @@ object fFileStorage: TfFileStorage
       TabOrder = 0
       Visible = False
       OnClick = btnSelectClick
-      ExplicitLeft = 256
     end
   end
   object pnl2: TPanel
@@ -141,8 +137,6 @@ object fFileStorage: TfFileStorage
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    ExplicitLeft = 223
-    ExplicitTop = 6
     DesignSize = (
       402
       350)
@@ -200,9 +194,6 @@ object fFileStorage: TfFileStorage
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      ExplicitLeft = 3
-      ExplicitTop = 50
-      ExplicitWidth = 215
     end
     object dbedtdoc_path: TDBEdit
       Left = 4
@@ -261,7 +252,8 @@ object fFileStorage: TfFileStorage
     SQL.Strings = (
       'SELECT * '
       'FROM '
-      '  `doc`'
+      '  `doc` '
+      'WHERE `doc_id` > 100'
       'ORDER BY `doc_name`')
     Left = 41
     Top = 38
@@ -285,7 +277,7 @@ object fFileStorage: TfFileStorage
     Left = 136
     Top = 176
     Bitmap = {
-      494C010103000800280010001000FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      494C0101030008002C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       000000000000000000000000000000000000FFFFFF00DBDBDB00DBDBDB00DBDB
       DB00DBDBDB00DBDBDB00DBDBDB00DBDBDB00DBDBDB00DBDBDB00DBDBDB00DBDB
@@ -421,6 +413,7 @@ object fFileStorage: TfFileStorage
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000}
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000}
   end
 end

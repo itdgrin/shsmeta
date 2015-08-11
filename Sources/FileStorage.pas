@@ -59,7 +59,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, DataModule, Tools;
+uses Main, DataModule, Tools, GlobsAndConst;
 
 procedure RunDocument(const AData: TDataSet; const AShowLinkDialogIfEmpty: Boolean = True;
   const AField: string = 'doc_id');
@@ -142,13 +142,28 @@ end;
 procedure TfFileStorage.btnAddClick(Sender: TObject);
 var
   parent_id: Integer;
+  NewID: Integer;
 begin
   parent_id := qrTreeData.FieldByName('doc_id').AsInteger;
-  qrTreeData.Insert;
-  qrTreeData.FieldByName('doc_name').AsString := 'Хранилище файлов';
-  qrTreeData.FieldByName('parent_id').AsInteger := parent_id;
-  qrTreeData.Post;
-  qrTreeData.Locate('doc_id', parent_id, []);
+  DM.qrDifferent.SQL.Text := 'SELECT GetNewID(:IDType)';
+  DM.qrDifferent.ParamByName('IDType').Value := C_ID_DOC;
+  DM.qrDifferent.Active := True;
+  NewID := 0;
+  if not DM.qrDifferent.Eof then
+    NewID := DM.qrDifferent.Fields[0].AsInteger;
+  DM.qrDifferent.Active := False;
+
+  if NewID > 0 then
+  begin
+    qrTreeData.Insert;
+    qrTreeData.FieldByName('doc_id').AsInteger := NewID;
+    qrTreeData.FieldByName('doc_name').AsString := 'Хранилище файлов';
+    qrTreeData.FieldByName('parent_id').AsInteger := parent_id;
+    qrTreeData.Post;
+    qrTreeData.Locate('doc_id', parent_id, []);
+  end
+  else
+    raise Exception.Create('Не удалось получить ID документа');
 end;
 
 procedure TfFileStorage.btnDeleteClick(Sender: TObject);

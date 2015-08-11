@@ -142,6 +142,7 @@ type
     mN24: TMenuItem;
     mN26: TMenuItem;
     mN27: TMenuItem;
+    mN101: TMenuItem;
     mN28: TMenuItem;
     mN32: TMenuItem;
     mN41: TMenuItem;
@@ -156,9 +157,9 @@ type
     pgArchiv: TProgressBar;
     N23: TMenuItem;
     ServiceUpdNorm: TMenuItem;
-    mN30: TMenuItem;
     mConstractorService: TMenuItem;
-    mN33: TMenuItem;
+    mTranspNorm: TMenuItem;
+    mBuildZone: TMenuItem;
     mN34: TMenuItem;
     mHelpKfSt: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
@@ -260,9 +261,9 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure N23Click(Sender: TObject);
     procedure ServiceUpdNormClick(Sender: TObject);
-    procedure mN31Click(Sender: TObject);
     procedure mConstractorServiceClick(Sender: TObject);
-    procedure mN33Click(Sender: TObject);
+    procedure mTranspNormClick(Sender: TObject);
+    procedure mBuildZoneClick(Sender: TObject);
     procedure mN34Click(Sender: TObject);
     procedure mHelpKfStClick(Sender: TObject);
   private
@@ -398,7 +399,8 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
-  SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList, NormativDictHelp, BuildZone, HelpKfSt;
+  SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList,
+  NormativDictHelp, BuildZone, HelpKfSt;
 
 {$R *.dfm}
 
@@ -680,7 +682,6 @@ begin
       TmpForm.WindowState := wsNormal;
 
     TmpForm.Show;
-    TmpForm.BringToFront;
   finally
     // PanelCover.Visible := False;
   end;
@@ -721,7 +722,8 @@ procedure TFormMain.DeleteButtonCloseWindow(const CaptionButton: String);
 var
   i, Y: integer;
 begin
-  if not Assigned(PanelOpenWindows) or Application.Terminated then
+  if not Assigned(PanelOpenWindows) or
+     Application.Terminated then
     Exit;
 
   Y := -1;
@@ -820,8 +822,7 @@ begin
 end;
 
 procedure TFormMain.ServiceUpdNormClick(Sender: TObject);
-var
-  tmp: TFDGUIxScreenCursor;
+var tmp: TFDGUIxScreenCursor;
 begin
   try
     with DM.qrDifferent do
@@ -1051,6 +1052,17 @@ begin
 
 end;
 
+procedure TFormMain.mBuildZoneClick(Sender: TObject);
+var fBuildZone: TfBuildZone;
+begin
+  fBuildZone := TfBuildZone.Create(Self);
+  try
+    fBuildZone.ShowModal;
+  finally
+    FreeAndNil(fBuildZone);
+  end;
+end;
+
 procedure TFormMain.mCalcResourcesClick(Sender: TObject);
 begin
   if Assigned(FormCalculationEstimate) then
@@ -1122,25 +1134,11 @@ begin
   fOXROPR.Show;
 end;
 
-procedure TFormMain.mN31Click(Sender: TObject);
-begin
-  if (not Assigned(fCategoryList)) then
-    fCategoryList := TfCategoryList.Create(FormMain);
-  fCategoryList.Show;
-end;
-
-procedure TFormMain.mN33Click(Sender: TObject);
-begin
-  if (not Assigned(fNormativDictHelp)) then
-    fNormativDictHelp := TfNormativDictHelp.Create(FormMain);
-  fNormativDictHelp.Show;
-end;
-
 procedure TFormMain.mN34Click(Sender: TObject);
 begin
-  if (not Assigned(fBuildZone)) then
+ { if (not Assigned(fBuildZone)) then
     fBuildZone := TfBuildZone.Create(FormMain);
-  fBuildZone.Show;
+  fBuildZone.Show;     }
 end;
 
 procedure TFormMain.mHelpKfStClick(Sender: TObject);
@@ -1826,6 +1824,22 @@ begin
     Screen.Cursor := crDefault;
   end;
 end;
+procedure TFormMain.mTranspNormClick(Sender: TObject);
+begin
+  DM.qrDifferent.Active := False;
+  DM.qrDifferent.SQL.Text := 'Select doc_id from doc where doc_id = ' +
+    IntToStr(C_DOCID_TRANSP_XLT);
+  DM.qrDifferent.Active := True;
+  try
+    if DM.qrDifferent.IsEmpty then
+      raise Exception.Create('Связь с документом не установлена.')
+    else
+      RunDocument(DM.qrDifferent, False);
+  finally
+    DM.qrDifferent.Active := False;
+  end;
+end;
+
 // <-- вызовы отчетов (Вадим)
 
 procedure TFormMain.MenuListsTypesActsClick(Sender: TObject);
