@@ -713,59 +713,21 @@ begin
   end;
   end;
 
-  vkRaschet.sql.text :='CALL CalcTravel(null, '+inttostr(SM_ID)+', null, null, null, 1, null, 8,null, null, null, null, null, null, null, null,null, null, null, null)';
-  CloseOpen(vkRaschet);
-  try
-  vkRaschet.First;
-   while vkRaschet.Eof=false  do
-   begin
-      oworkbook.worksheets[4].Cells[vkRaschet.RecNo,1].Value             := vkRaschet.FieldByName('NUMPP').AsString;
-      oworkbook.worksheets[4].Cells[vkRaschet.RecNo,2].Value             := vkRaschet.FieldByName('NAIMEN').AsString;
-      oworkbook.worksheets[4].Cells[vkRaschet.RecNo,3].Value             := vkRaschet.FieldByName('CALC').AsAnsiString ;
-      oworkbook.worksheets[4].Cells[vkRaschet.RecNo,4].Value             := vkRaschet.FieldByName('TOTAL').AsString;
-      vkRaschet.Next;
-   end;
-      oworkbook.worksheets[4].Cells[vkRaschet.RecNo,4].name             := 'CalcTravel';
-   except
-   end;
 
-  vkRaschet.sql.text :='call CalcTravelWork('+inttostr(SM_ID)+',null,null,null,null,null,null,null,null)';
-  CloseOpen(vkRaschet);
+vkExcel.Close;
   try
-  vkRaschet.First;
-   while vkRaschet.Eof=false  do
-   begin
-      oworkbook.worksheets[5].Cells[vkRaschet.RecNo,1].Value             := vkRaschet.FieldByName('NAIMEN').AsString;
-      oworkbook.worksheets[5].Cells[vkRaschet.RecNo,2].Value             := vkRaschet.FieldByName('CALC').AsAnsiString ;
-      oworkbook.worksheets[5].Cells[vkRaschet.RecNo,3].Value             := vkRaschet.FieldByName('TOTAL').AsString;
-      vkRaschet.Next;
-   end;
-   oworkbook.worksheets[5].Cells[vkRaschet.RecNo,3].name             := 'CalcTravelWork';
+
+  Excel.visible       :=  false;
+  Excel.displayalerts :=  false;
+  //showmessage(GetCurrentDir +'\reports\report\xl8\report.xls');
+  Excel.ActiveWorkBook.saveAs(GetCurrentDir +'\reports\report\xl8\report.xls');
+
   except
+  Excel.ActiveWorkbook.Close;
+  Excel.Application.Quit;
+  Excel.Quit;
   end;
 
-  vkRaschet.sql.text :='call CalcWorkerDepartment('+inttostr(SM_ID)+',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)';
-  CloseOpen(vkRaschet);
-  try
-  vkRaschet.First;
-   while vkRaschet.Eof=false  do
-   begin
-      oworkbook.worksheets[6].Cells[vkRaschet.RecNo,1].Value             := vkRaschet.FieldByName('NAIMEN').AsString;
-      oworkbook.worksheets[6].Cells[vkRaschet.RecNo,2].Value             := vkRaschet.FieldByName('CALC').AsAnsiString ;
-      oworkbook.worksheets[6].Cells[vkRaschet.RecNo,3].Value             := vkRaschet.FieldByName('TOTAL').AsString;
-      vkRaschet.Next;
-   end;
-   oworkbook.worksheets[6].Cells[vkRaschet.RecNo,3].name             := 'CalcWorkerDepartment';
-  except
-  end;
-
-  vkExcel.Close;
-  try
-  Excel.visible:=true;
-  Excel.displayalerts :=true;
-  except
-  Excel.quit;
-  end;
 
   spr_range.Close;
   vkExcel.Close;

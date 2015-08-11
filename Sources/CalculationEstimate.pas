@@ -1299,26 +1299,35 @@ end;
 
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
-  if Assigned(FormObjectsAndEstimates) then
-  begin
-    if FormObjectsAndEstimates.IdEstimate = 0 then
+   try
+    if Assigned(FormObjectsAndEstimates) then
     begin
-      ShowMessage('Не выбрана смета');
-      Exit;
-    end;
-    dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
-  end
-  else
-  begin
-    if Assigned(FormCalculationEstimate) then
-    begin
-      if FormCalculationEstimate.IdEstimate = 0 then
+      if FormObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
+      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
+
+      ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormObjectsAndEstimates.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+
+    end
+    else
+    begin
+      if Assigned(FormCalculationEstimate) then
+      begin
+        if FormCalculationEstimate.IdEstimate = 0 then
+        begin
+          ShowMessage('Не выбрана смета');
+          Exit;
+        end;
+        dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
+        ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormCalculationEstimate.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+
+      end;
     end;
+  finally
+    Screen.Cursor := crDefault;
   end;
 end;
 

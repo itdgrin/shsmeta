@@ -2024,8 +2024,7 @@ end;
 
 procedure TFormMain.Excel2Click(Sender: TObject);
 begin
-
-  Screen.Cursor := crSQLWait;
+Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
     begin
@@ -2035,6 +2034,9 @@ begin
         Exit;
       end;
       dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
+
+      ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormObjectsAndEstimates.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+
     end
     else
     begin
@@ -2046,6 +2048,8 @@ begin
           Exit;
         end;
         dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
+        ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormCalculationEstimate.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+
       end;
     end;
   finally
