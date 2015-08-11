@@ -83,6 +83,7 @@ type
     procedure StringGrid2DrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
     procedure StringGrid2Click(Sender: TObject);
     procedure StringGridClick(Sender: TObject);
+    procedure lbPrikazRefClick(Sender: TObject);
 
   private
     StrQuery: String; // Для формирования строки запроса к БД
@@ -97,7 +98,13 @@ type
 
 implementation
 
-uses Main, DrawingTables, DataModule, CalculationEstimate;
+uses
+  Main,
+  DrawingTables,
+  DataModule,
+  CalculationEstimate,
+  FileStorage,
+  GlobsAndConst;
 
 {$R *.dfm}
 
@@ -205,11 +212,7 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFrameSSR.ReceivingAll;
-{ var
-  NameTable: string; }
 begin
   StrQuickSearch := '';
 
@@ -603,6 +606,23 @@ begin
     InsertText(0, '');
     InsertText(1, '');
     InsertText(2, '');
+  end;
+end;
+
+procedure TFrameSSR.lbPrikazRefClick(Sender: TObject);
+begin
+  inherited;
+  DM.qrDifferent.Active := False;
+  DM.qrDifferent.SQL.Text := 'Select doc_id from doc where doc_id = ' +
+    IntToStr(C_DOCID_MAIS450);
+  DM.qrDifferent.Active := True;
+  try
+    if DM.qrDifferent.IsEmpty then
+      raise Exception.Create('Связь с документом не установлена.')
+    else
+      RunDocument(DM.qrDifferent, False);
+  finally
+    DM.qrDifferent.Active := False;
   end;
 end;
 

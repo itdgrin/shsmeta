@@ -566,6 +566,10 @@ begin
   // FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
   // {$ENDIF}
   FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
+
+  //Переменная среды для аботы относительных путей в хранилище
+  Windows.SetEnvironmentVariable('SMETADIR',
+    PCHAR(ExtractFileDir(Application.ExeName)));
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);

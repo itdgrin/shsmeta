@@ -90,13 +90,22 @@ function MyStrToCurr(Value: string): Currency;
 // Функция смешания двух цветов
 function MixColors(FG, BG: TColor; T: byte): TColor;
 // Выполнение командной строки
-procedure Exec(const AParam: string);
+procedure Exec(AParam: string);
 
 implementation
 
-procedure Exec(const AParam: string);
+function Expand(const AParam: string): string;
+var buf : array[0..$FF] of char;
+    Size : integer;
 begin
-  ShellExecute(Application.Handle, nil, PChar(AParam), nil, nil, SW_SHOWMAXIMIZED);
+  Size := ExpandEnvironmentStrings(PChar(AParam), buf, sizeof(buf));
+  Result := copy(buf, 1, Size);
+end;
+
+procedure Exec(AParam: string);
+begin
+  AParam := Expand(AParam);
+  ShellExecute(Application.Handle, 'open', PChar(AParam), nil, nil, SW_SHOWMAXIMIZED);
 end;
 
 // Выполняет медленный SQL в отдельном потоке

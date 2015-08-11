@@ -221,7 +221,7 @@ end;
 
 procedure TfWinterPrice.mN1Click(Sender: TObject);
 begin
-  RunDocument(qrZnormChangeDate);
+  RunDocument(qrZnormChangeDate, False);
 end;
 
 procedure TfWinterPrice.qrTreeDataAfterScroll(DataSet: TDataSet);
