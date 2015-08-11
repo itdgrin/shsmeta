@@ -160,6 +160,7 @@ type
     mConstractorService: TMenuItem;
     mN33: TMenuItem;
     mN34: TMenuItem;
+    mHelpKfSt: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -263,6 +264,7 @@ type
     procedure mConstractorServiceClick(Sender: TObject);
     procedure mN33Click(Sender: TObject);
     procedure mN34Click(Sender: TObject);
+    procedure mHelpKfStClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -396,7 +398,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
-  SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList, NormativDictHelp, BuildZone;
+  SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList, NormativDictHelp, BuildZone, HelpKfSt;
 
 {$R *.dfm}
 
@@ -1139,6 +1141,13 @@ begin
   if (not Assigned(fBuildZone)) then
     fBuildZone := TfBuildZone.Create(FormMain);
   fBuildZone.Show;
+end;
+
+procedure TFormMain.mHelpKfStClick(Sender: TObject);
+begin
+  if (not Assigned(fHelpKfSt)) then
+    fHelpKfSt := TfHelpKfSt.Create(FormMain);
+  fHelpKfSt.Show;
 end;
 
 // Расчет стоимости работ по объекту (графа С) v1.00 (Вадим)

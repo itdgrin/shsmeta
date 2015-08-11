@@ -118,7 +118,8 @@ uses
   CategoryList in 'CategoryList.pas' {fCategoryList},
   ArhivRestore in 'ArhivRestore.pas' {frmArhRestore},
   NormativDictHelp in 'NormativDictHelp.pas' {fNormativDictHelp},
-  BuildZone in 'BuildZone.pas' {fBuildZone};
+  BuildZone in 'BuildZone.pas' {fBuildZone},
+  HelpKfSt in 'HelpKfSt.pas' {fHelpKfSt};
 
 {$R *.res}
 var MHandle: THandle;
