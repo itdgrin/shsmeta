@@ -117,7 +117,8 @@ uses
   CalcResourceFactDiff in 'CalcResourceFactDiff.pas' {fCalcResourceFactDiff},
   CategoryList in 'CategoryList.pas' {fCategoryList},
   ArhivRestore in 'ArhivRestore.pas' {frmArhRestore},
-  NormativDictHelp in 'NormativDictHelp.pas' {fNormativDictHelp};
+  NormativDictHelp in 'NormativDictHelp.pas' {fNormativDictHelp},
+  BuildZone in 'BuildZone.pas' {fBuildZone};
 
 {$R *.res}
 var MHandle: THandle;

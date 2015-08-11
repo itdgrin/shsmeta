@@ -11,12 +11,14 @@ object fUniDict: TfUniDict
   Font.Name = 'Tahoma'
   Font.Style = []
   FormStyle = fsMDIChild
+  KeyPreview = True
   OldCreateOrder = False
   Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   DesignSize = (
     743
     394)
@@ -48,6 +50,7 @@ object fUniDict: TfUniDict
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Visible = False
   end
   object lbl3: TLabel
     Left = 191
@@ -62,6 +65,26 @@ object fUniDict: TfUniDict
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Visible = False
+  end
+  object dbmmoparam_description1: TDBMemo
+    Left = 191
+    Top = 314
+    Width = 544
+    Height = 40
+    TabStop = False
+    Anchors = [akLeft, akRight, akBottom]
+    DataField = 'param_name'
+    DataSource = dsUniDict
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    ReadOnly = True
+    ScrollBars = ssVertical
+    TabOrder = 2
   end
   object pnl1: TPanel
     AlignWithMargins = True
@@ -78,6 +101,7 @@ object fUniDict: TfUniDict
     Font.Style = []
     ParentFont = False
     TabOrder = 5
+    Visible = False
     object dbnvgr1: TDBNavigator
       Left = 0
       Top = 0
@@ -119,7 +143,8 @@ object fUniDict: TfUniDict
     Font.Style = []
     ParentFont = False
     ScrollBars = ssVertical
-    TabOrder = 2
+    TabOrder = 3
+    Visible = False
   end
   object seYear: TSpinEdit
     Left = 95
@@ -154,6 +179,7 @@ object fUniDict: TfUniDict
     Font.Style = []
     ParentFont = False
     TabOrder = 4
+    Visible = False
   end
   object pnlClient: TPanel
     Left = 8
@@ -190,6 +216,7 @@ object fUniDict: TfUniDict
         Align = alClient
         DataSource = dsUniDictType
         Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        ReadOnly = True
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
@@ -197,6 +224,7 @@ object fUniDict: TfUniDict
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
         OnEnter = gtUniDictTypeEnter
+        IniStorage = FormStorage
         AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
@@ -255,6 +283,7 @@ object fUniDict: TfUniDict
         Font.Style = []
         Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         ParentFont = False
+        ReadOnly = True
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
@@ -262,6 +291,7 @@ object fUniDict: TfUniDict
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
         OnEnter = grUniDictParamEnter
+        IniStorage = FormStorage
         PostOnEnterKey = True
         AutoSizeColumns = True
         AutoSizeColumnIndex = 0
@@ -288,8 +318,8 @@ object fUniDict: TfUniDict
             FieldName = 'LookIDUniDictType'
             Title.Alignment = taCenter
             Title.Caption = #1058#1080#1087
-            Width = 100
-            Visible = True
+            Width = -1
+            Visible = False
           end
           item
             Expanded = False
@@ -390,24 +420,6 @@ object fUniDict: TfUniDict
       end
     end
   end
-  object dbmmoparam_description1: TDBMemo
-    Left = 503
-    Top = 314
-    Width = 232
-    Height = 40
-    TabStop = False
-    Anchors = [akLeft, akRight, akBottom]
-    DataField = 'param_name'
-    DataSource = dsUniDict
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    ScrollBars = ssVertical
-    TabOrder = 3
-  end
   object qrUniDict: TFDQuery
     AfterPost = qrUniDictAfterPost
     Connection = DM.Connect
@@ -456,7 +468,8 @@ object fUniDict: TfUniDict
       'FN_getParamValue(code, 12, :year) AS MONTH_12'
       'FROM '
       '  unidictparam'
-      'WHERE id_unidicttype=:id_unidicttype or (:id_unidicttype=-1)')
+      'WHERE id_unidicttype=:id_unidicttype or (:id_unidicttype=-1)'
+      'ORDER BY param_name')
     Left = 203
     Top = 206
     ParamData = <
@@ -788,5 +801,15 @@ object fUniDict: TfUniDict
     DataSet = qrUniDictTypeLook
     Left = 396
     Top = 78
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    Options = []
+    StoredProps.Strings = (
+      'spl1.Left')
+    StoredValues = <>
+    Left = 24
+    Top = 264
   end
 end

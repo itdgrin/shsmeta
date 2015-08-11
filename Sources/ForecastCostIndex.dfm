@@ -2,18 +2,17 @@ object fForecastCostIndex: TfForecastCostIndex
   Left = 0
   Top = 0
   Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1087#1088#1086#1075#1085#1086#1079#1085#1099#1093' '#1080#1085#1076#1077#1082#1089#1086#1074' '#1094#1077#1085
-  ClientHeight = 430
-  ClientWidth = 604
+  ClientHeight = 279
+  ClientWidth = 540
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  FormStyle = fsMDIChild
   OldCreateOrder = False
+  Position = poMainFormCenter
   ShowHint = True
-  Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
@@ -23,13 +22,13 @@ object fForecastCostIndex: TfForecastCostIndex
   object pnlTop: TPanel
     Left = 0
     Top = 0
-    Width = 604
+    Width = 540
     Height = 33
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 418
+    ExplicitWidth = 604
     DesignSize = (
-      604
+      540
       33)
     object lbl1: TLabel
       Left = 13
@@ -46,7 +45,7 @@ object fForecastCostIndex: TfForecastCostIndex
       Caption = #1044#1086#1082#1091#1084#1077#1085#1090':'
     end
     object btnRunDoc: TSpeedButton
-      Left = 577
+      Left = 513
       Top = 5
       Width = 23
       Height = 22
@@ -110,7 +109,7 @@ object fForecastCostIndex: TfForecastCostIndex
     object dblkcbbDocument: TDBLookupComboBox
       Left = 164
       Top = 6
-      Width = 407
+      Width = 343
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       KeyField = 'forecast_cost_index_id'
@@ -118,24 +117,24 @@ object fForecastCostIndex: TfForecastCostIndex
       ListSource = dsDocument
       TabOrder = 1
       OnCloseUp = seYearChange
-      ExplicitWidth = 221
+      ExplicitWidth = 407
     end
   end
   object pnlMain: TPanel
     Left = 0
     Top = 33
-    Width = 604
-    Height = 397
+    Width = 540
+    Height = 246
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 418
-    ExplicitHeight = 249
+    ExplicitWidth = 604
+    ExplicitHeight = 397
     object imgNoData: TImage
       Left = 0
       Top = 0
-      Width = 604
-      Height = 397
+      Width = 540
+      Height = 246
       Align = alClient
       Center = True
       ParentShowHint = False
@@ -785,8 +784,8 @@ object fForecastCostIndex: TfForecastCostIndex
     object grMain: TJvDBGrid
       Left = 0
       Top = 0
-      Width = 604
-      Height = 397
+      Width = 540
+      Height = 246
       Align = alClient
       DataSource = dsMain
       Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -812,7 +811,7 @@ object fForecastCostIndex: TfForecastCostIndex
           FieldName = 'MONTH'
           Title.Alignment = taCenter
           Title.Caption = #1052#1077#1089#1103#1094
-          Width = 114
+          Width = 102
           Visible = True
         end
         item
@@ -820,7 +819,7 @@ object fForecastCostIndex: TfForecastCostIndex
           FieldName = 'value'
           Title.Alignment = taCenter
           Title.Caption = #1047#1085#1072#1095#1077#1085#1080#1077
-          Width = 161
+          Width = 143
           Visible = True
         end
         item
@@ -828,7 +827,7 @@ object fForecastCostIndex: TfForecastCostIndex
           FieldName = 'NAME'
           Title.Alignment = taCenter
           Title.Caption = #1044#1086#1082#1091#1084#1077#1085#1090
-          Width = 310
+          Width = 276
           Visible = True
         end>
     end

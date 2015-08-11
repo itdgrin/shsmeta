@@ -159,6 +159,7 @@ type
     mN30: TMenuItem;
     mConstractorService: TMenuItem;
     mN33: TMenuItem;
+    mN34: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -261,6 +262,7 @@ type
     procedure mN31Click(Sender: TObject);
     procedure mConstractorServiceClick(Sender: TObject);
     procedure mN33Click(Sender: TObject);
+    procedure mN34Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -394,7 +396,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
-  SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList, NormativDictHelp;
+  SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList, NormativDictHelp, BuildZone;
 
 {$R *.dfm}
 
@@ -1132,6 +1134,13 @@ begin
   fNormativDictHelp.Show;
 end;
 
+procedure TFormMain.mN34Click(Sender: TObject);
+begin
+  if (not Assigned(fBuildZone)) then
+    fBuildZone := TfBuildZone.Create(FormMain);
+  fBuildZone.Show;
+end;
+
 // Расчет стоимости работ по объекту (графа С) v1.00 (Вадим)
 procedure TFormMain.mnCALC_SMETA_OBJ_GRAPH_CClick(Sender: TObject);
 begin
@@ -1635,13 +1644,14 @@ begin
 end;
 
 procedure TFormMain.N8Click(Sender: TObject);
-var
-  s: string;
+{ var
+  s: string; }
 begin
-  s := InputBox('Справочник ежемесячных величин', 'Укажите пароль:', '');
-  if s <> '1' then
+  {
+    s := InputBox('Справочник ежемесячных величин', 'Укажите пароль:', '');
+    if s <> '1' then
     Exit;
-
+  }
   if (not Assigned(fUniDict)) then
     fUniDict := TfUniDict.Create(Self);
   fUniDict.Show;

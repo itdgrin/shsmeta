@@ -8,7 +8,7 @@ uses
   JvExDBGrids, JvDBGrid, Tools, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.DBCtrls, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Samples.Spin, System.DateUtils,
-  Vcl.Mask;
+  Vcl.Mask, JvComponentBase, JvFormPlacement;
 
 type
   TfUniDict = class(TForm)
@@ -52,6 +52,7 @@ type
     gtUniDictType: TJvDBGrid;
     grUniDictParam: TJvDBGrid;
     dbmmoparam_description1: TDBMemo;
+    FormStorage: TJvFormStorage;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -65,8 +66,10 @@ type
     procedure qrUniDictTypeUpdateError(ASender: TDataSet; AException: EFDException; ARow: TFDDatSRow;
       ARequest: TFDUpdateRequest; var AAction: TFDErrorAction);
     procedure qrUniDictAfterPost(DataSet: TDataSet);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure changeEditMode;
   private
-    { Private declarations }
+    editMode: Boolean;
   public
     procedure SetConstactorService;
     { Public declarations }
@@ -113,6 +116,27 @@ begin
   fUniDict := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(Caption);
+end;
+
+procedure TfUniDict.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  case Key of
+    VK_F11:
+      changeEditMode;
+  end;
+end;
+
+procedure TfUniDict.changeEditMode;
+begin
+  editMode := not editMode;
+  lbl3.Visible := editMode;
+  lbl2.Visible := editMode;
+  dbedtcode.Visible := editMode;
+  dbmmoparam_description.Visible := editMode;
+  grUniDictParam.Columns[1].Visible := editMode;
+  pnl1.Visible := editMode;
+  gtUniDictType.ReadOnly := not editMode;
+  grUniDictParam.ReadOnly := not editMode;
 end;
 
 procedure TfUniDict.grUniDictParamEnter(Sender: TObject);
@@ -167,8 +191,9 @@ begin
 end;
 
 procedure TfUniDict.SetConstactorService;
-var RecNo: Integer;
-    ev: TDataSetNotifyEvent;
+var
+  RecNo: Integer;
+  ev: TDataSetNotifyEvent;
 begin
   if not qrUniDictType.Active then
     Exit;
