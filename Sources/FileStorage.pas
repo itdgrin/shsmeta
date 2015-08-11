@@ -41,6 +41,7 @@ type
     procedure qrTreeDataAfterScroll(DataSet: TDataSet);
     procedure btnDeleteClick(Sender: TObject);
     procedure btnSelectClick(Sender: TObject);
+    procedure qrTreeDataNewRecord(DataSet: TDataSet);
   private
     { Private declarations }
   public
@@ -142,28 +143,13 @@ end;
 procedure TfFileStorage.btnAddClick(Sender: TObject);
 var
   parent_id: Integer;
-  NewID: Integer;
 begin
   parent_id := qrTreeData.FieldByName('doc_id').AsInteger;
-  DM.qrDifferent.SQL.Text := 'SELECT GetNewID(:IDType)';
-  DM.qrDifferent.ParamByName('IDType').Value := C_ID_DOC;
-  DM.qrDifferent.Active := True;
-  NewID := 0;
-  if not DM.qrDifferent.Eof then
-    NewID := DM.qrDifferent.Fields[0].AsInteger;
-  DM.qrDifferent.Active := False;
-
-  if NewID > 0 then
-  begin
-    qrTreeData.Insert;
-    qrTreeData.FieldByName('doc_id').AsInteger := NewID;
-    qrTreeData.FieldByName('doc_name').AsString := 'Хранилище файлов';
-    qrTreeData.FieldByName('parent_id').AsInteger := parent_id;
-    qrTreeData.Post;
-    qrTreeData.Locate('doc_id', parent_id, []);
-  end
-  else
-    raise Exception.Create('Не удалось получить ID документа');
+  qrTreeData.Insert;
+  qrTreeData.FieldByName('doc_name').AsString := 'Хранилище файлов';
+  qrTreeData.FieldByName('parent_id').AsInteger := parent_id;
+  qrTreeData.Post;
+  qrTreeData.Locate('doc_id', parent_id, []);
 end;
 
 procedure TfFileStorage.btnDeleteClick(Sender: TObject);
@@ -202,6 +188,14 @@ end;
 procedure TfFileStorage.qrTreeDataAfterScroll(DataSet: TDataSet);
 begin
   btnDelete.Enabled := qrTreeData.FieldByName('parent_id').AsInteger <> 0;
+end;
+
+procedure TfFileStorage.qrTreeDataNewRecord(DataSet: TDataSet);
+begin
+  qrTreeData.FieldByName('doc_id').Value := FastSelectSQLOne('SELECT GetNewID(:IDType)',
+    VarArrayOf([C_ID_DOC]));
+  if qrTreeData.FieldByName('doc_id').AsInteger = 0 then
+    raise Exception.Create('Не удалось получить ID документа');
 end;
 
 end.
