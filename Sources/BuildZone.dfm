@@ -2,8 +2,8 @@ object fBuildZone: TfBuildZone
   Left = 0
   Top = 0
   Caption = #1047#1086#1085#1099' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072
-  ClientHeight = 495
-  ClientWidth = 591
+  ClientHeight = 612
+  ClientWidth = 343
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,16 +19,17 @@ object fBuildZone: TfBuildZone
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 363
-    Height = 495
-    Align = alLeft
+    Width = 343
+    Height = 612
+    Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitHeight = 409
+    ExplicitWidth = 363
+    ExplicitHeight = 495
     object gbZone: TGroupBox
       Left = 0
       Top = 0
-      Width = 363
+      Width = 343
       Height = 105
       Margins.Left = 1
       Margins.Top = 100
@@ -37,10 +38,11 @@ object fBuildZone: TfBuildZone
       Align = alTop
       Caption = ' '#1047#1072#1085#1099' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072' '
       TabOrder = 0
+      ExplicitWidth = 363
       object grdZone: TJvDBGrid
         Left = 2
         Top = 15
-        Width = 359
+        Width = 339
         Height = 88
         Align = alClient
         DataSource = dsObjRegion
@@ -78,54 +80,49 @@ object fBuildZone: TfBuildZone
     end
     object gbDescript: TGroupBox
       Left = 0
-      Top = 105
-      Width = 363
-      Height = 104
-      Align = alTop
+      Top = 518
+      Width = 343
+      Height = 94
+      Align = alBottom
       Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1079#1086#1085#1099' '
       TabOrder = 1
+      ExplicitTop = 538
       object DBMemo1: TDBMemo
         Left = 2
         Top = 15
-        Width = 359
-        Height = 87
+        Width = 339
+        Height = 77
         Align = alClient
         DataField = 'DESCRIPT'
         DataSource = dsObjRegion
         TabOrder = 0
-        ExplicitHeight = 66
+        ExplicitWidth = 359
+        ExplicitHeight = 87
       end
     end
-  end
-  object Panel2: TPanel
-    Left = 363
-    Top = 0
-    Width = 228
-    Height = 495
-    Align = alClient
-    BevelOuter = bvNone
-    TabOrder = 1
-    ExplicitHeight = 409
     object gbObject: TGroupBox
       Left = 0
-      Top = 0
-      Width = 228
-      Height = 495
+      Top = 105
+      Width = 343
+      Height = 413
       Align = alClient
       Caption = #1055#1077#1088#1077#1095#1077#1085#1100' '#1088#1072#1081#1086#1085#1086#1074
-      TabOrder = 0
-      ExplicitHeight = 409
+      TabOrder = 2
+      ExplicitTop = 0
+      ExplicitWidth = 228
+      ExplicitHeight = 495
       object Panel3: TPanel
         Left = 2
         Top = 15
-        Width = 224
-        Height = 34
+        Width = 339
+        Height = 29
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitWidth = 359
         object cbRegions: TComboBox
           Left = 4
-          Top = 7
+          Top = 2
           Width = 213
           Height = 21
           Style = csDropDownList
@@ -135,9 +132,9 @@ object fBuildZone: TfBuildZone
       end
       object grdObject: TJvDBGrid
         Left = 2
-        Top = 49
-        Width = 224
-        Height = 444
+        Top = 44
+        Width = 339
+        Height = 367
         Align = alClient
         DataSource = dsRegionObject
         TabOrder = 1
@@ -158,7 +155,7 @@ object fBuildZone: TfBuildZone
             FieldName = 'NUM'
             Title.Alignment = taCenter
             Title.Caption = #8470
-            Width = 25
+            Width = 60
             Visible = True
           end
           item
@@ -166,7 +163,7 @@ object fBuildZone: TfBuildZone
             FieldName = 'NAME'
             Title.Alignment = taCenter
             Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-            Width = 150
+            Width = 250
             Visible = True
           end>
       end
@@ -175,8 +172,8 @@ object fBuildZone: TfBuildZone
   object dsObjRegion: TDataSource
     AutoEdit = False
     DataSet = qrObjRegion
-    Left = 296
-    Top = 64
+    Left = 272
+    Top = 56
   end
   object qrObjRegion: TFDQuery
     AfterScroll = qrObjRegionAfterScroll
@@ -189,8 +186,8 @@ object fBuildZone: TfBuildZone
       
         'Select OBJ_REGION_ID, TITLE, DESCRIPT from objregion order by OB' +
         'J_REGION_ID;')
-    Left = 296
-    Top = 16
+    Left = 208
+    Top = 56
   end
   object qrRegionObject: TFDQuery
     OnCalcFields = qrRegionObjectCalcFields
