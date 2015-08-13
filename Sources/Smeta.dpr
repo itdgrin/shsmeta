@@ -119,7 +119,8 @@ uses
   ArhivRestore in 'ArhivRestore.pas' {frmArhRestore},
   NormativDictHelp in 'NormativDictHelp.pas' {fNormativDictHelp},
   BuildZone in 'BuildZone.pas' {fBuildZone},
-  HelpKfSt in 'HelpKfSt.pas' {fHelpKfSt};
+  HelpKfSt in 'HelpKfSt.pas' {fHelpKfSt},
+  LogIn in 'LogIn.pas' {fLogIn};
 
 {$R *.res}
 var MHandle: THandle;
@@ -165,6 +166,7 @@ begin
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
   Application.CreateForm(TFormCardPartsEstimates, FormCardPartsEstimates);
+  Application.CreateForm(TfLogIn, fLogIn);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€

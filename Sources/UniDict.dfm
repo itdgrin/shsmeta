@@ -26,7 +26,7 @@ object fUniDict: TfUniDict
   TextHeight = 13
   object lbl1: TLabel
     Left = 8
-    Top = 11
+    Top = 8
     Width = 81
     Height = 13
     Caption = #1059#1082#1072#1078#1080#1090#1077' '#1075#1086#1076':'
@@ -38,12 +38,11 @@ object fUniDict: TfUniDict
     ParentFont = False
   end
   object lbl2: TLabel
-    Left = 8
-    Top = 314
-    Width = 177
-    Height = 13
-    Anchors = [akLeft, akBottom]
-    Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1075#1083#1086#1073#1072#1083#1100#1085#1086#1081' '#1087#1077#1088#1077#1084#1077#1085#1085#1086#1081':'
+    Left = 157
+    Top = 5
+    Width = 113
+    Height = 26
+    Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1075#1083#1086#1073#1072#1083#1100#1085#1086#1081' '#13#10#1087#1077#1088#1077#1084#1077#1085#1085#1086#1081':'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -53,11 +52,10 @@ object fUniDict: TfUniDict
     Visible = False
   end
   object lbl3: TLabel
-    Left = 191
-    Top = 314
+    Left = 399
+    Top = 8
     Width = 53
     Height = 13
-    Anchors = [akLeft, akBottom]
     Caption = #1054#1087#1080#1089#1072#1085#1080#1077':'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -67,73 +65,13 @@ object fUniDict: TfUniDict
     ParentFont = False
     Visible = False
   end
-  object dbmmoparam_description1: TDBMemo
-    Left = 191
-    Top = 314
-    Width = 544
-    Height = 40
-    TabStop = False
-    Anchors = [akLeft, akRight, akBottom]
-    DataField = 'param_name'
-    DataSource = dsUniDict
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    ReadOnly = True
-    ScrollBars = ssVertical
-    TabOrder = 2
-  end
-  object pnl1: TPanel
-    AlignWithMargins = True
-    Left = 3
-    Top = 366
-    Width = 737
-    Height = 25
-    Align = alBottom
-    BevelOuter = bvNone
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 5
-    Visible = False
-    object dbnvgr1: TDBNavigator
-      Left = 0
-      Top = 0
-      Width = 240
-      Height = 25
-      Align = alLeft
-      Hints.Strings = (
-        #1053#1072' '#1087#1077#1088#1074#1091#1102' '#1079#1072#1087#1080#1089#1100
-        #1055#1088#1077#1076#1099#1076#1091#1097#1072#1103' '#1079#1072#1087#1080#1089#1100
-        #1057#1083#1077#1076#1091#1102#1097#1072#1103' '#1079#1072#1087#1080#1089#1100
-        #1053#1072' '#1087#1086#1089#1083#1077#1076#1085#1102#1102' '#1079#1072#1087#1080#1089#1100
-        #1053#1086#1074#1072#1103' '#1079#1072#1087#1080#1089#1100
-        #1059#1076#1072#1083#1080#1090#1100' '#1079#1072#1087#1080#1089#1100
-        #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1079#1072#1087#1080#1089#1100
-        #1057#1086#1093#1088#1072#1085#1080#1090#1100
-        #1054#1090#1084#1077#1085#1080#1090#1100
-        #1054#1073#1085#1086#1074#1080#1090#1100
-        'Apply updates'
-        'Cancel updates')
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 0
-      TabStop = True
-    end
-  end
   object dbmmoparam_description: TDBMemo
-    Left = 250
-    Top = 314
-    Width = 247
-    Height = 40
+    Left = 458
+    Top = 8
+    Width = 71
+    Height = 22
     TabStop = False
-    Anchors = [akLeft, akBottom]
+    Anchors = [akLeft, akTop, akRight]
     DataField = 'param_description'
     DataSource = dsUniDict
     Font.Charset = DEFAULT_CHARSET
@@ -143,7 +81,7 @@ object fUniDict: TfUniDict
     Font.Style = []
     ParentFont = False
     ScrollBars = ssVertical
-    TabOrder = 3
+    TabOrder = 1
     Visible = False
   end
   object seYear: TSpinEdit
@@ -164,12 +102,11 @@ object fUniDict: TfUniDict
     OnChange = seYearChange
   end
   object dbedtcode: TDBEdit
-    Left = 8
-    Top = 333
-    Width = 177
+    Left = 276
+    Top = 9
+    Width = 117
     Height = 21
     TabStop = False
-    Anchors = [akLeft, akBottom]
     DataField = 'code'
     DataSource = dsUniDict
     Font.Charset = DEFAULT_CHARSET
@@ -178,22 +115,22 @@ object fUniDict: TfUniDict
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 3
     Visible = False
   end
   object pnlClient: TPanel
     Left = 8
     Top = 36
     Width = 727
-    Height = 272
+    Height = 350
     Anchors = [akLeft, akTop, akRight, akBottom]
     BevelOuter = bvNone
     Caption = 'pnlClient'
-    TabOrder = 1
+    TabOrder = 4
     object spl1: TSplitter
       Left = 185
       Top = 0
-      Height = 272
+      Height = 350
       ExplicitLeft = 312
       ExplicitTop = 112
       ExplicitHeight = 100
@@ -202,17 +139,18 @@ object fUniDict: TfUniDict
       Left = 0
       Top = 0
       Width = 185
-      Height = 272
+      Height = 350
       Align = alLeft
       BevelOuter = bvNone
       Caption = 'pnlLeft'
       Constraints.MinWidth = 50
       TabOrder = 0
+      ExplicitHeight = 272
       object gtUniDictType: TJvDBGrid
         Left = 0
         Top = 0
         Width = 185
-        Height = 272
+        Height = 350
         Align = alClient
         DataSource = dsUniDictType
         Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -263,16 +201,17 @@ object fUniDict: TfUniDict
       Left = 188
       Top = 0
       Width = 539
-      Height = 272
+      Height = 350
       Align = alClient
       BevelOuter = bvNone
       Caption = 'pnlClientCh'
       TabOrder = 1
+      ExplicitHeight = 272
       object grUniDictParam: TJvDBGrid
         Left = 0
         Top = 0
         Width = 539
-        Height = 272
+        Height = 310
         Align = alClient
         DataSource = dsUniDict
         DrawingStyle = gdsClassic
@@ -281,7 +220,7 @@ object fUniDict: TfUniDict
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         ParentFont = False
         ReadOnly = True
         TabOrder = 0
@@ -318,7 +257,6 @@ object fUniDict: TfUniDict
             FieldName = 'LookIDUniDictType'
             Title.Alignment = taCenter
             Title.Caption = #1058#1080#1087
-            Width = -1
             Visible = False
           end
           item
@@ -418,7 +356,54 @@ object fUniDict: TfUniDict
             Visible = True
           end>
       end
+      object dbmmoparam_description1: TDBMemo
+        Left = 0
+        Top = 310
+        Width = 539
+        Height = 40
+        TabStop = False
+        Align = alBottom
+        DataField = 'param_name'
+        DataSource = dsUniDict
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssVertical
+        TabOrder = 1
+        ExplicitLeft = -3
+        ExplicitTop = 232
+        ExplicitWidth = 542
+      end
     end
+  end
+  object dbnvgr1: TDBNavigator
+    Left = 535
+    Top = 8
+    Width = 200
+    Height = 25
+    Align = alCustom
+    Anchors = [akTop, akRight]
+    Hints.Strings = (
+      #1053#1072' '#1087#1077#1088#1074#1091#1102' '#1079#1072#1087#1080#1089#1100
+      #1055#1088#1077#1076#1099#1076#1091#1097#1072#1103' '#1079#1072#1087#1080#1089#1100
+      #1057#1083#1077#1076#1091#1102#1097#1072#1103' '#1079#1072#1087#1080#1089#1100
+      #1053#1072' '#1087#1086#1089#1083#1077#1076#1085#1102#1102' '#1079#1072#1087#1080#1089#1100
+      #1053#1086#1074#1072#1103' '#1079#1072#1087#1080#1089#1100
+      #1059#1076#1072#1083#1080#1090#1100' '#1079#1072#1087#1080#1089#1100
+      #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1079#1072#1087#1080#1089#1100
+      #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      #1054#1090#1084#1077#1085#1080#1090#1100
+      #1054#1073#1085#1086#1074#1080#1090#1100
+      'Apply updates'
+      'Cancel updates')
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 2
+    TabStop = True
   end
   object qrUniDict: TFDQuery
     AfterPost = qrUniDictAfterPost
@@ -657,8 +642,8 @@ object fUniDict: TfUniDict
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'CALL setParamValue(:inPARAM_CODE, :inMONTH, :inYEAR, :inValue);')
-    Left = 259
-    Top = 65534
+    Left = 283
+    Top = 94
     ParamData = <
       item
         Name = 'INPARAM_CODE'

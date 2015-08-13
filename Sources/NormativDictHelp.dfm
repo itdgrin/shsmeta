@@ -26,7 +26,6 @@ object fNormativDictHelp: TfNormativDictHelp
     Top = 0
     Width = 652
     Height = 452
-    ActivePage = ts1
     Align = alClient
     MultiLine = True
     TabOrder = 0
@@ -35,11 +34,14 @@ object fNormativDictHelp: TfNormativDictHelp
       Caption = 
         #1055#1077#1088#1077#1095#1077#1085#1100' '#1089#1073#1086#1088#1085#1080#1082#1086#1074' '#1085#1086#1088#1084#1072#1090#1080#1074#1086#1074' '#1088#1072#1089#1093#1086#1076#1072' '#1088#1077#1089#1091#1088#1089#1086#1074' '#1074' '#1085#1072#1090#1091#1088#1072#1083#1100#1085#1086#1084' '#1074#1099#1088 +
         #1072#1078#1077#1085#1080#1080' '#1085#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1085#1099#1077' '#1082#1086#1085#1089#1090#1088#1091#1082#1094#1080#1080' '#1080' '#1088#1072#1073#1086#1090#1099
+      TabVisible = False
+      ExplicitTop = 78
+      ExplicitHeight = 370
       object grMain1: TJvDBGrid
         Left = 0
         Top = 0
         Width = 644
-        Height = 370
+        Height = 442
         Align = alClient
         DataSource = dsMainData
         DrawingStyle = gdsClassic
@@ -104,11 +106,14 @@ object fNormativDictHelp: TfNormativDictHelp
         #1055#1077#1088#1077#1095#1077#1085#1100' '#1089#1073#1086#1088#1085#1080#1082#1086#1074' '#1085#1086#1088#1084#1072#1090#1080#1074#1086#1074' '#1088#1072#1089#1093#1086#1076#1072' '#1088#1077#1089#1091#1088#1089#1086#1074' '#1074' '#1085#1072#1090#1091#1088#1072#1083#1100#1085#1086#1084' '#1074#1099#1088 +
         #1072#1078#1077#1085#1080#1080' '#1085#1072' '#1084#1086#1085#1090#1072#1078' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 1
+      TabVisible = False
+      ExplicitTop = 78
+      ExplicitHeight = 370
       object grMain4: TJvDBGrid
         Left = 0
         Top = 0
         Width = 644
-        Height = 370
+        Height = 442
         Align = alClient
         DataSource = dsMainData
         DrawingStyle = gdsClassic
@@ -173,11 +178,14 @@ object fNormativDictHelp: TfNormativDictHelp
         #1055#1077#1088#1077#1095#1077#1085#1100' '#1089#1073#1086#1088#1085#1080#1082#1086#1074' '#1085#1086#1088#1084#1072#1090#1080#1074#1086#1074' '#1088#1072#1089#1093#1086#1076#1072' '#1088#1077#1089#1091#1088#1089#1086#1074' '#1074' '#1085#1072#1090#1091#1088#1072#1083#1100#1085#1086#1084' '#1074#1099#1088 +
         #1072#1078#1077#1085#1080#1080' '#1085#1072' '#1088#1077#1084#1086#1085#1090' '#1086#1073#1098#1077#1082#1090#1086#1074
       ImageIndex = 2
+      TabVisible = False
+      ExplicitTop = 78
+      ExplicitHeight = 370
       object grMain3: TJvDBGrid
         Left = 0
         Top = 0
         Width = 644
-        Height = 370
+        Height = 442
         Align = alClient
         DataSource = dsMainData
         DrawingStyle = gdsClassic
@@ -240,11 +248,14 @@ object fNormativDictHelp: TfNormativDictHelp
     object ts4: TTabSheet
       Caption = #1055#1077#1088#1077#1095#1077#1085#1100' '#1089#1073#1086#1088#1085#1080#1082#1086#1074' '#1085#1086#1088#1084#1072#1090#1080#1074#1086#1074' '#1088#1072#1089#1093#1086#1076#1072' '#1088#1077#1089#1091#1088#1089#1086#1074
       ImageIndex = 3
+      TabVisible = False
+      ExplicitTop = 78
+      ExplicitHeight = 370
       object grMain2: TJvDBGrid
         Left = 0
         Top = 0
         Width = 644
-        Height = 370
+        Height = 442
         Align = alClient
         DataSource = dsMainData
         DrawingStyle = gdsClassic

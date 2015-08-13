@@ -92,6 +92,7 @@ type
     btn1: TSpeedButton;
     btn2: TSpeedButton;
     qrNormativ: TFDQuery;
+    chk3: TCheckBox;
 
     procedure FrameResize(Sender: TObject);
 
@@ -907,10 +908,28 @@ procedure TFrameRates.EditRateKeyPress(Sender: TObject; var Key: Char);
 var
   vCode: Integer;
 begin
-  // 1057 = С ; 1045 = Е ; 1062 = Ц ; 8 = BackSpace ; 27 = Esc
+  // 1057 = С ; 1045 = Е ; 1062 = Ц ; 8 = BackSpace ; 27 = Esc ; 1059 = У
 
   Key := AnsiUpperCase(Key)[1];
   vCode := Ord(Key);
+
+  if vCode = 67 then
+  begin
+    vCode := 1057;
+    Key := 'С';
+  end;
+
+  if vCode = 69 then
+  begin
+    vCode := 1059;
+    Key := 'У';
+  end;
+
+  if vCode = 72 then
+  begin
+    vCode := 1056;
+    Key := 'Р';
+  end;
 
   if vCode = 84 then
   begin
@@ -924,15 +943,15 @@ begin
     Key := 'Ц';
   end;
 
-  if vCode = 67 then
+  if vCode = 89 then
   begin
-    vCode := 1057;
-    Key := 'С';
+    vCode := 1053;
+    Key := 'Н';
   end;
 
   // Символы разрешённые к вводу
-  if not((vCode = 1057) or (vCode = 1045) or (vCode = 1062) or (vCode = 8) or (vCode = 27) or (Key = '-') or
-    ((Key >= '0') and (Key <= '9'))) then
+  if not((vCode = 1053) or (vCode = 1056) or (vCode = 1057) or (vCode = 1059) or (vCode = 1045) or
+    (vCode = 1062) or (vCode = 8) or (vCode = 27) or (Key = '-') or ((Key >= '0') and (Key <= '9'))) then
   begin
     Key := #0;
     Exit;
@@ -949,7 +968,8 @@ begin
     Key := #0; }
 
   // Ввод буквы только первым символом
-  if ((Sender as TEdit).Text > '') and ((vCode = 1057) or (vCode = 1045) or (vCode = 1062)) then
+  if ((Sender as TEdit).Text > '') and ((vCode = 1057) or (vCode = 1059) or (vCode = 1045) or (vCode = 1062))
+  then
     Key := #0;
 
   // Если тире и строка пуста, выходим, иначе дальше возникнет ошибка, при обращении к символом пустой строки
@@ -1039,13 +1059,7 @@ var
   QueryStr, WhereStr, Condition: string;
 begin
   try
-    Condition := '';
-    if not(chk1.Checked) and chk2.Checked then
-      Condition := Condition + ' and (NORM_TYPE=1) ';
-    if chk1.Checked and not(chk2.Checked) then
-      Condition := Condition + ' and (NORM_TYPE=0) ';
-    if not(chk1.Checked) and not(chk2.Checked) then
-      Condition := Condition + ' and (0=1) ';
+    Condition := ' and ((NORM_TYPE=0 AND :x1) OR (NORM_TYPE=1 AND :x2) OR (NORM_TYPE=2 AND :x3))';
 
     if vStr <> '' then
       WhereStr := ' WHERE ' + vStr + Condition
@@ -1064,6 +1078,9 @@ begin
         'LEFT JOIN units ON (nv.unit_id=units.unit_id) ' + WhereStr + ' AND (nv.norm_base = ' + DataBase +
         ') ' + 'ORDER BY SORT_NUM LIMIT :SkipCount, :PageRowCount;';
       SQL.Add(QueryStr);
+      ParamByName('x1').Value := chk1.Checked;
+      ParamByName('x2').Value := chk2.Checked;
+      ParamByName('x3').Value := chk3.Checked;
       Active := true;
     end;
 
@@ -1072,7 +1089,7 @@ begin
 
     FrameStatusBar.InsertText(0, IntToStr(qrNormativ.RecordCount)); // исправить
 
-    //tmrScroll.Enabled := true;
+    // tmrScroll.Enabled := true;
   except
     on e: Exception do
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
@@ -1228,19 +1245,21 @@ begin
   res := FastSelectSQLOne('select type_directory FROM normativ_directory WHERE normativ_directory_id=:1',
     VarArrayOf([normativ_directory_id]));
   parent_id := normativ_directory_id;
-  while not(VarIsNull(res)) and (res <> 2) do
+  while not(VarIsNull(res)) and (res <> 2) and (res <> 1) do
   begin
     // Поднимаемся на уровень выше, пока не доберемся до сборника
     parent_id := FastSelectSQLOne('select parent_id FROM normativ_directory WHERE normativ_directory_id=:1',
       VarArrayOf([parent_id]));
+    if VarIsNull(parent_id) then
+      parent_id := 0;
     res := FastSelectSQLOne('select type_directory FROM normativ_directory WHERE normativ_directory_id=:1',
       VarArrayOf([parent_id]));
   end;
 
-  if not(VarIsNull(res)) and (res = 2) then
+  if not(VarIsNull(res)) and ((res = 2) or (res = 1)) then
     EditCollection.Text :=
       VarToStr(FastSelectSQLOne
-      ('select CONCAT(FIRST_NAME, ". " , SECOND_NAME) FROM normativ_directory WHERE normativ_directory_id=:1',
+      ('select CONCAT(FIRST_NAME, ". " , IFNULL(SECOND_NAME, "")) FROM normativ_directory WHERE normativ_directory_id=:1',
       VarArrayOf([parent_id])))
   else
     EditCollection.Text := 'Сборник не найден';

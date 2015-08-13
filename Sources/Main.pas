@@ -160,8 +160,13 @@ type
     mConstractorService: TMenuItem;
     mTranspNorm: TMenuItem;
     mBuildZone: TMenuItem;
-    mN34: TMenuItem;
     mHelpKfSt: TMenuItem;
+    mN30: TMenuItem;
+    mN33: TMenuItem;
+    mN111: TMenuItem;
+    mN34: TMenuItem;
+    mN35: TMenuItem;
+    mN42: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -264,8 +269,8 @@ type
     procedure mConstractorServiceClick(Sender: TObject);
     procedure mTranspNormClick(Sender: TObject);
     procedure mBuildZoneClick(Sender: TObject);
-    procedure mN34Click(Sender: TObject);
     procedure mHelpKfStClick(Sender: TObject);
+    procedure mN111Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -567,9 +572,8 @@ begin
   // {$ENDIF}
   FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
 
-  //Переменная среды для аботы относительных путей в хранилище
-  Windows.SetEnvironmentVariable('SMETADIR',
-    PCHAR(ExtractFileDir(Application.ExeName)));
+  // Переменная среды для аботы относительных путей в хранилище
+  Windows.SetEnvironmentVariable('SMETADIR', PChar(ExtractFileDir(Application.ExeName)));
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
@@ -726,8 +730,7 @@ procedure TFormMain.DeleteButtonCloseWindow(const CaptionButton: String);
 var
   i, Y: integer;
 begin
-  if not Assigned(PanelOpenWindows) or
-     Application.Terminated then
+  if not Assigned(PanelOpenWindows) or Application.Terminated then
     Exit;
 
   Y := -1;
@@ -826,7 +829,8 @@ begin
 end;
 
 procedure TFormMain.ServiceUpdNormClick(Sender: TObject);
-var tmp: TFDGUIxScreenCursor;
+var
+  tmp: TFDGUIxScreenCursor;
 begin
   try
     with DM.qrDifferent do
@@ -1057,7 +1061,8 @@ begin
 end;
 
 procedure TFormMain.mBuildZoneClick(Sender: TObject);
-var fBuildZone: TfBuildZone;
+var
+  fBuildZone: TfBuildZone;
 begin
   fBuildZone := TfBuildZone.Create(Self);
   try
@@ -1094,6 +1099,15 @@ begin
   if (not Assigned(fSSR)) then
     fSSR := TfSSR.Create((Sender as TMenuItem).Tag, (Sender as TMenuItem).Caption);
   fSSR.Show;
+end;
+
+procedure TFormMain.mN111Click(Sender: TObject);
+begin
+  if (not Assigned(fNormativDictHelp)) then
+    fNormativDictHelp := TfNormativDictHelp.Create(FormMain);
+  fNormativDictHelp.pgc1.ActivePageIndex := (Sender as TMenuItem).Tag;
+  fNormativDictHelp.pgc1Change(nil);
+  fNormativDictHelp.Show;
 end;
 
 procedure TFormMain.mN15Click(Sender: TObject);
@@ -1136,13 +1150,6 @@ begin
   if (not Assigned(fOXROPR)) then
     fOXROPR := TfOXROPR.Create(FormMain);
   fOXROPR.Show;
-end;
-
-procedure TFormMain.mN34Click(Sender: TObject);
-begin
- { if (not Assigned(fBuildZone)) then
-    fBuildZone := TfBuildZone.Create(FormMain);
-  fBuildZone.Show;     }
 end;
 
 procedure TFormMain.mHelpKfStClick(Sender: TObject);
@@ -1828,12 +1835,12 @@ begin
     Screen.Cursor := crDefault;
   end;
 end;
+
 procedure TFormMain.mTranspNormClick(Sender: TObject);
 begin
   DM.qrDifferent.Active := False;
-  DM.qrDifferent.SQL.Text := 'Select doc_id from doc where doc_id = ' +
-    IntToStr(C_DOCID_TRANSP_XLT);
-  DM.qrDifferent.Active := True;
+  DM.qrDifferent.SQL.Text := 'Select doc_id from doc where doc_id = ' + INTTOSTR(C_DOCID_TRANSP_XLT);
+  DM.qrDifferent.Active := true;
   try
     if DM.qrDifferent.IsEmpty then
       raise Exception.Create('Связь с документом не установлена.')
@@ -2028,7 +2035,7 @@ end;
 
 procedure TFormMain.Excel2Click(Sender: TObject);
 begin
-Screen.Cursor := crSQLWait;
+  Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
     begin
@@ -2039,7 +2046,8 @@ Screen.Cursor := crSQLWait;
       end;
       dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
 
-      ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormObjectsAndEstimates.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+      ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormObjectsAndEstimates.IdEstimate)),
+        PChar(GetCurrentDir + '\reports\report\'), SW_maximIZE);
 
     end
     else
@@ -2052,7 +2060,8 @@ Screen.Cursor := crSQLWait;
           Exit;
         end;
         dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
-        ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormCalculationEstimate.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+        ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+          PChar(GetCurrentDir + '\reports\report\'), SW_maximIZE);
 
       end;
     end;

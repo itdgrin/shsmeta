@@ -3,7 +3,7 @@ object fHelpKfSt: TfHelpKfSt
   Top = 0
   Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074' '#1085#1072' '#1089#1090#1077#1089#1085#1077#1085#1080' '#1091#1089#1083#1086#1074#1080#1081' '#1090#1088#1091#1076#1072
   ClientHeight = 547
-  ClientWidth = 952
+  ClientWidth = 984
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,7 +23,7 @@ object fHelpKfSt: TfHelpKfSt
   object spl1: TSplitter
     Left = 0
     Top = 285
-    Width = 952
+    Width = 984
     Height = 3
     Cursor = crVSplit
     Align = alBottom
@@ -33,7 +33,7 @@ object fHelpKfSt: TfHelpKfSt
   object grMain1: TJvDBGrid
     Left = 0
     Top = 0
-    Width = 952
+    Width = 984
     Height = 285
     Align = alClient
     DataSource = dsMainData
@@ -72,7 +72,7 @@ object fHelpKfSt: TfHelpKfSt
         FieldName = 'NAME'
         Title.Alignment = taCenter
         Title.Caption = #1061#1072#1088#1072#1082#1090#1077#1088#1080#1089#1090#1080#1082#1072' '#1091#1089#1083#1086#1074#1080#1081' '#1087#1088#1086#1080#1079#1074#1086#1076#1089#1090#1074#1072' '#1088#1072#1073#1086#1090
-        Width = 823
+        Width = 851
         Visible = True
       end
       item
@@ -81,14 +81,14 @@ object fHelpKfSt: TfHelpKfSt
         FieldName = 'VAL'
         Title.Alignment = taCenter
         Title.Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090
-        Width = 111
+        Width = 115
         Visible = True
       end>
   end
   object redt1: TRichEdit
     Left = 0
     Top = 288
-    Width = 952
+    Width = 984
     Height = 259
     Align = alBottom
     Font.Charset = RUSSIAN_CHARSET
@@ -180,7 +180,7 @@ object fHelpKfSt: TfHelpKfSt
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 1
-    ExplicitTop = 400
+    ExplicitWidth = 952
   end
   object qrMainData: TFDQuery
     Connection = DM.Connect

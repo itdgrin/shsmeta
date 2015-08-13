@@ -123,7 +123,6 @@
         Height = 22
         Align = alBottom
         TabOrder = 2
-        ExplicitTop = 421
         object btn1: TSpeedButton
           Left = 55
           Top = 0
@@ -293,7 +292,7 @@
             object EditSearchNormative: TEdit
               Left = 65
               Top = 2
-              Width = 336
+              Width = 209
               Height = 21
               Hint = 
                 #1042#1074#1077#1076#1080#1090#1077' '#1095#1072#1089#1090#1100' '#1086#1087#1080#1089#1072#1085#1080#1103' '#1088#1072#1073#1086#1090' '#1080' '#1085#1072#1078#1084#1080#1090#1077' - Enter, '#1076#1083#1103' '#1086#1095#1080#1089#1090#1082#1080' '#1085#1072#1078#1084 +
@@ -306,7 +305,7 @@
               OnKeyPress = EditSearchNormativeKeyPress
             end
             object chk1: TCheckBox
-              Left = 407
+              Left = 280
               Top = 4
               Width = 66
               Height = 17
@@ -318,13 +317,27 @@
               OnClick = chk1Click
             end
             object chk2: TCheckBox
-              Left = 479
+              Left = 352
               Top = 6
               Width = 90
               Height = 15
               Anchors = [akTop, akRight]
               Caption = #1055#1091#1089#1082#1086#1085#1072#1083#1072#1076#1082#1072
+              Checked = True
+              State = cbChecked
               TabOrder = 2
+              OnClick = chk1Click
+            end
+            object chk3: TCheckBox
+              Left = 448
+              Top = 6
+              Width = 121
+              Height = 15
+              Anchors = [akTop, akRight]
+              Caption = #1059#1082#1088#1091#1087#1085#1077#1085#1085#1099#1077' '#1085#1086#1088#1084#1099
+              Checked = True
+              State = cbChecked
+              TabOrder = 3
               OnClick = chk1Click
             end
           end

@@ -12,7 +12,6 @@ uses
 
 type
   TfUniDict = class(TForm)
-    pnl1: TPanel;
     qrUniDict: TFDQuery;
     dsUniDict: TDataSource;
     dbmmoparam_description: TDBMemo;
@@ -40,7 +39,6 @@ type
     qrSetParamValue: TFDQuery;
     qrUniDictType: TFDQuery;
     dsUniDictType: TDataSource;
-    dbnvgr1: TDBNavigator;
     qrUniDictTypeLook: TFDQuery;
     dsUniDictTypeLook: TDataSource;
     qrUniDictid_unidicttype: TIntegerField;
@@ -51,8 +49,9 @@ type
     pnlClientCh: TPanel;
     gtUniDictType: TJvDBGrid;
     grUniDictParam: TJvDBGrid;
-    dbmmoparam_description1: TDBMemo;
     FormStorage: TJvFormStorage;
+    dbmmoparam_description1: TDBMemo;
+    dbnvgr1: TDBNavigator;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -91,6 +90,8 @@ begin
   FormMain.CascadeForActiveWindow;
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
   FormMain.SelectButtonActiveWindow(Caption);
+  dbnvgr1.Visible := editMode;
+  grUniDictParam.Columns[1].Visible := editMode;
 end;
 
 procedure TfUniDict.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -101,8 +102,7 @@ end;
 procedure TfUniDict.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
-  // FormMain.CreateButtonOpenWindow(Caption, Caption, FormMain.N8Click);
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  FormMain.CreateButtonOpenWindow(Caption, Caption, fUniDict, 1);
   LoadDBGridSettings(grUniDictParam);
   LoadDBGridSettings(gtUniDictType);
   CloseOpen(qrUniDictType);
@@ -134,7 +134,7 @@ begin
   dbedtcode.Visible := editMode;
   dbmmoparam_description.Visible := editMode;
   grUniDictParam.Columns[1].Visible := editMode;
-  pnl1.Visible := editMode;
+  dbnvgr1.Visible := editMode;
   gtUniDictType.ReadOnly := not editMode;
   grUniDictParam.ReadOnly := not editMode;
 end;
