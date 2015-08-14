@@ -22,7 +22,7 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
     Left = 0
     Top = 0
     Width = 867
-    Height = 491
+    Height = 460
     ActivePage = ts2
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
@@ -33,33 +33,27 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
     MultiLine = True
     ParentFont = False
     TabOrder = 0
-    ExplicitWidth = 743
-    ExplicitHeight = 411
+    ExplicitHeight = 456
     object ts2: TTabSheet
       Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
       ImageIndex = 1
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 446
       object pnlMatClient: TPanel
         Left = 0
         Top = 0
         Width = 859
-        Height = 481
+        Height = 450
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 0
-        ExplicitTop = 41
-        ExplicitWidth = 646
-        ExplicitHeight = 152
+        ExplicitHeight = 446
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
           Width = 859
-          Height = 462
+          Height = 431
           Align = alClient
           DataSource = dsMainData
           DrawingStyle = gdsClassic
@@ -359,7 +353,7 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
         end
         object JvDBGridFooter1: TJvDBGridFooter
           Left = 0
-          Top = 462
+          Top = 431
           Width = 859
           Height = 19
           SizeGrip = True
@@ -469,8 +463,7 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
           DataSource = dsMainData
           DBGrid = grMaterial
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 133
-          ExplicitWidth = 646
+          ExplicitTop = 427
         end
       end
     end
@@ -478,25 +471,20 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
       Caption = #1052#1077#1093#1072#1085#1080#1079#1084#1099
       ImageIndex = 2
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 446
       object pnlMechClient: TPanel
         Left = 0
         Top = 0
         Width = 859
-        Height = 481
+        Height = 450
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 0
-        ExplicitTop = 41
-        ExplicitWidth = 646
-        ExplicitHeight = 168
+        ExplicitHeight = 446
         object JvDBGridFooter2: TJvDBGridFooter
           Left = 0
-          Top = 462
+          Top = 431
           Width = 859
           Height = 19
           SizeGrip = True
@@ -517,8 +505,7 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
               Alignment = taRightJustify
               FieldName = 'PRICE_ZP'
             end>
-          ExplicitTop = 37
-          ExplicitWidth = 410
+          ExplicitTop = 427
         end
       end
     end
@@ -526,24 +513,19 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
       Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
       ImageIndex = 3
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 446
       object pnlDevClient: TPanel
         Left = 0
         Top = 0
         Width = 859
-        Height = 481
+        Height = 450
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitTop = 41
-        ExplicitWidth = 646
-        ExplicitHeight = 168
+        ExplicitHeight = 446
         object JvDBGridFooter3: TJvDBGridFooter
           Left = 0
-          Top = 462
+          Top = 431
           Width = 859
           Height = 19
           SizeGrip = True
@@ -560,10 +542,28 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
               Alignment = taRightJustify
               FieldName = 'TRANSP'
             end>
-          ExplicitTop = 37
-          ExplicitWidth = 410
+          ExplicitTop = 427
         end
       end
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 460
+    Width = 867
+    Height = 31
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 1
+    ExplicitTop = 461
+    object Button1: TButton
+      Left = 4
+      Top = 4
+      Width = 198
+      Height = 25
+      Caption = #1054#1090#1082#1083#1086#1085#1077#1085#1080#1103' '#1087#1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072#1084
+      TabOrder = 0
+      OnClick = Button1Click
     end
   end
   object qrMainData: TFDQuery
@@ -610,5 +610,13 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
     StoredValues = <>
     Left = 24
     Top = 264
+  end
+  object JvDBGridExcelExport1: TJvDBGridExcelExport
+    Caption = 'Exporting to MS Excel...'
+    Grid = grMaterial
+    Close = scAlways
+    AutoFit = False
+    Left = 296
+    Top = 456
   end
 end

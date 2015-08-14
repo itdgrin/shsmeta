@@ -1299,7 +1299,7 @@ end;
 
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
-   try
+   {try
     if Assigned(FormObjectsAndEstimates) then
     begin
       if FormObjectsAndEstimates.IdEstimate = 0 then
@@ -1308,7 +1308,7 @@ begin
         Exit;
       end;
       dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
-
+      ShowMessage('1');
       ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormObjectsAndEstimates.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
 
     end
@@ -1321,14 +1321,15 @@ begin
           ShowMessage('Не выбрана смета');
           Exit;
         end;
+         ShowMessage('2'); }
         dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
         ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormCalculationEstimate.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
-
+       {
       end;
     end;
   finally
     Screen.Cursor := crDefault;
-  end;
+  end;   }
 end;
 
 procedure TFormCalculationEstimate.btnCalcFactClick(Sender: TObject);

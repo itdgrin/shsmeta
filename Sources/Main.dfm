@@ -11380,6 +11380,10 @@
         Caption = #1040#1082#1090#1099
         OnClick = N23Click
       end
+    end
+    object N11: TMenuItem
+      Caption = #1054#1090#1095#1077#1090#1099
+      Visible = False
       object Excel1: TMenuItem
         Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074
         object Excel3: TMenuItem
@@ -11391,10 +11395,6 @@
           OnClick = EXCEL3Click
         end
       end
-    end
-    object N11: TMenuItem
-      Caption = #1054#1090#1095#1077#1090#1099
-      Visible = False
       object mnZP_OBJ: TMenuItem
         Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072#1088#1072#1073#1086#1090#1085#1086#1081' '#1087#1083#1072#1090#1099' '#1088#1072#1073#1086#1095#1080#1093' '#1087#1086' '#1086#1073#1098#1077#1082#1090#1091
         OnClick = mnZP_OBJClick

@@ -4,7 +4,7 @@ unit dmReportU;
 interface
 
 uses
-  System.SysUtils, System.Classes, frxClass, frxDBSet, FireDAC.Stan.Intf,
+  Forms ,System.Variants,System.SysUtils, System.Classes, frxClass, frxDBSet, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Dialogs, Tools, DateUtils,
@@ -124,7 +124,7 @@ implementation
 
 {$R *.dfm}
 
-Uses DataModule, GlobsAndConst;
+Uses DataModule, GlobsAndConst, Waiting;
 
 
 procedure TdmReportF.JSReport(xReport,SM_ID: integer; FileReportPath: string);
@@ -542,6 +542,9 @@ var
   fnam,xformula          :string;
 begin
 
+  FormWaiting.Show;
+  Application.ProcessMessages;
+
   fnam   :=GetCurrentDir +'\xls\report.xls';
   if XLS=1 then
   if fileexists(fnam)
@@ -576,6 +579,7 @@ begin
    if qrTMP.FieldByName('sm_type').AsInteger = 3 then
    begin
    showmessage('Ќе рассчитываетс€ дл€ данного типа сметы');
+   FormWaiting.Close;
    exit;
    end;
 
@@ -713,25 +717,20 @@ begin
   end;
   end;
 
-
-vkExcel.Close;
-  try
-
+  DeleteFile(PChar(GetCurrentDir +'\reports\report\xl8\report.xls'));
   Excel.visible       :=  false;
   Excel.displayalerts :=  false;
-  //showmessage(GetCurrentDir +'\reports\report\xl8\report.xls');
   Excel.ActiveWorkBook.saveAs(GetCurrentDir +'\reports\report\xl8\report.xls');
 
-  except
-  Excel.ActiveWorkbook.Close;
-  Excel.Application.Quit;
   Excel.Quit;
-  end;
-
+  Excel:= 0;
+  oworkbook:=0;
 
   spr_range.Close;
   vkExcel.Close;
   qrTMP.Close;
+  FormWaiting.Close;
+
 end;
 
 

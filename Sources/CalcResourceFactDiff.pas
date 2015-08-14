@@ -3,11 +3,12 @@ unit CalcResourceFactDiff;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  ShellApi,Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, JvDBGridFooter, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
   JvDBGrid, Vcl.ExtCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvComponentBase, JvFormPlacement;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvComponentBase, JvFormPlacement,
+  Vcl.StdCtrls, Bde.DBTables, JvDBGridExport;
 
 type
   TfCalcResourceFactDiff = class(TForm)
@@ -25,6 +26,9 @@ type
     qrMainData: TFDQuery;
     dsMainData: TDataSource;
     FormStorage: TJvFormStorage;
+    Panel1: TPanel;
+    Button1: TButton;
+    JvDBGridExcelExport1: TJvDBGridExcelExport;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -35,6 +39,7 @@ type
       var CalcValue: Variant);
     procedure grMaterialDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure Button1Click(Sender: TObject);
   private
     Footer: Variant;
   public
@@ -48,7 +53,16 @@ implementation
 
 {$R *.dfm}
 
-uses Main, DataModule, Tools, CalcResourceFact;
+uses Main, DataModule, Tools, CalcResourceFact, CalculationEstimate, Waiting;
+
+procedure TfCalcResourceFactDiff.Button1Click(Sender: TObject);
+begin
+     FormWaiting.Show;
+     JvDBGridExcelExport1.FileName :=  GetCurrentDir +'\reports\report\TMP\dif_mat.xls';
+     JvDBGridExcelExport1.ExportGrid;
+     ShellExecute(Handle, nil, 'report.exe', PChar('D' + INTTOSTR(FormCalculationEstimate.IDAct)),  PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+     FormWaiting.Close;
+end;
 
 procedure TfCalcResourceFactDiff.FormActivate(Sender: TObject);
 begin
