@@ -11164,6 +11164,11 @@
     Top = 8
     object MenuFile: TMenuItem
       Caption = #1060#1072#1081#1083
+      object mLogIn: TMenuItem
+        Caption = #1057#1084#1077#1085#1080#1090#1100' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1103
+        ImageIndex = 54
+        OnClick = mLogInClick
+      end
       object FileSaveAs: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1082#1072#1082'...'
         ImageIndex = 0
@@ -11526,6 +11531,11 @@
     object MenuService: TMenuItem
       Caption = #1057#1077#1088#1074#1080#1089
       OnClick = MenuServiceClick
+      object mUsers: TMenuItem
+        Caption = #1059#1095#1077#1090#1085#1099#1077' '#1079#1072#1087#1080#1089#1080' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081
+        ImageIndex = 55
+        OnClick = mUsersClick
+      end
       object Administator: TMenuItem
         Caption = #1040#1076#1084#1080#1085#1080#1089#1090#1088#1080#1088#1086#1074#1072#1085#1080#1077
         Visible = False

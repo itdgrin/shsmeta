@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, JvComponentBase, JvFormPlacement;
 
 type
   TfLogIn = class(TForm)
@@ -12,10 +12,13 @@ type
     lbl2: TLabel;
     btn1: TBitBtn;
     btn2: TBitBtn;
-    edt1: TEdit;
-    edt2: TEdit;
-    procedure btn1Click(Sender: TObject);
+    edtName: TEdit;
+    edtPass: TEdit;
+    FormStorage: TJvFormStorage;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormDestroy(Sender: TObject);
     procedure btn2Click(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -29,14 +32,49 @@ implementation
 
 {$R *.dfm}
 
-procedure TfLogIn.btn1Click(Sender: TObject);
-begin
-  Application.Terminate;
-end;
+uses Main, Tools, DataModule, GlobsAndConst;
 
 procedure TfLogIn.btn2Click(Sender: TObject);
+var
+  res: Variant;
 begin
-  Close;
+  res := FastSelectSQLOne('SELECT USER_ID FROM USER WHERE UPPER(USER_NAME)=UPPER(:0) AND USER_PASS=:1',
+    VarArrayOf([Trim(edtName.Text), Trim(edtPass.Text)]));
+  if VarIsNull(res) then
+  begin
+    Application.MessageBox('Неверное имя пользователя или пароль!'#13 + 'Повторите попытку.',
+      'Авторизация пользователя', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+  end
+  else
+  begin
+    try
+      FastExecSQL('UPDATE USER SET USER_LAST_LOGIN_TIME=:0 WHERE USER_ID=:1', VarArrayOf([Now, res]));
+    except
+      Application.MessageBox('Ошибка обновления даты последнего входа!', 'Авторизация пользователя',
+        MB_OK + MB_ICONSTOP + MB_TOPMOST);
+    end;
+    G_USER_ID := res;
+    ModalResult := mrOk;
+  end;
+end;
+
+procedure TfLogIn.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
+
+procedure TfLogIn.FormDestroy(Sender: TObject);
+begin
+  fLogIn := nil;
+end;
+
+procedure TfLogIn.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if ([ssCtrl, ssShift] = Shift) and (Key = VK_RETURN) then
+  begin
+    G_USER_ID := -1;
+    ModalResult := mrOk;
+  end;
 end;
 
 end.

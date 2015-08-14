@@ -62,7 +62,7 @@ end;
 procedure TfNormativDictHelp.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(Caption, Caption, fNormativDictHelp, 1);
+  FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   LoadDBGridSettings(grMain1);
   LoadDBGridSettings(grMain2);
   LoadDBGridSettings(grMain3);

@@ -12,8 +12,12 @@ object fLogIn: TfLogIn
   Font.Name = 'Tahoma'
   Font.Style = []
   FormStyle = fsStayOnTop
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnClose = FormClose
+  OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object lbl1: TLabel
@@ -36,8 +40,8 @@ object fLogIn: TfLogIn
     Width = 75
     Height = 25
     Caption = #1054#1090#1084#1077#1085#1072
+    ModalResult = 2
     TabOrder = 3
-    OnClick = btn1Click
   end
   object btn2: TBitBtn
     Left = 73
@@ -48,20 +52,29 @@ object fLogIn: TfLogIn
     TabOrder = 2
     OnClick = btn2Click
   end
-  object edt1: TEdit
+  object edtName: TEdit
     Left = 90
     Top = 8
     Width = 139
     Height = 21
     TabOrder = 0
-    Text = 'edt1'
   end
-  object edt2: TEdit
+  object edtPass: TEdit
     Left = 90
     Top = 35
     Width = 139
     Height = 21
+    PasswordChar = '*'
     TabOrder = 1
-    Text = 'edt1'
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    Options = []
+    StoredProps.Strings = (
+      'edtName.Text')
+    StoredValues = <>
+    Left = 24
+    Top = 26
   end
 end

@@ -167,6 +167,8 @@ type
     mN34: TMenuItem;
     mN35: TMenuItem;
     mN42: TMenuItem;
+    mUsers: TMenuItem;
+    mLogIn: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -271,6 +273,8 @@ type
     procedure mBuildZoneClick(Sender: TObject);
     procedure mHelpKfStClick(Sender: TObject);
     procedure mN111Click(Sender: TObject);
+    procedure mLogInClick(Sender: TObject);
+    procedure mUsersClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -405,7 +409,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
   SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList,
-  NormativDictHelp, BuildZone, HelpKfSt;
+  NormativDictHelp, BuildZone, HelpKfSt, Users;
 
 {$R *.dfm}
 
@@ -605,6 +609,9 @@ begin
     begin
       DM.Connect.Params.Text := G_CONNECTSTR;
       DM.Connect.Connected := true;
+      mLogInClick(nil);
+      if G_USER_ID = 0 then
+        Exit;
       // Загрузка справочников
       FormWaiting.Height := 110;
       FormWaiting.lbProcess.Caption := 'Загрузка справочников:';
@@ -1087,6 +1094,14 @@ begin
   fUniDict.Show;
 end;
 
+procedure TFormMain.mLogInClick(Sender: TObject);
+begin
+  if (not Assigned(fLogIn)) then
+    fLogIn := TfLogIn.Create(FormMain);
+  if fLogIn.ShowModal <> mrOk then
+    Close;
+end;
+
 procedure TFormMain.mhfybkbotafqkjd1Click(Sender: TObject);
 begin
   if (not Assigned(fFileStorage)) then
@@ -1150,6 +1165,13 @@ begin
   if (not Assigned(fOXROPR)) then
     fOXROPR := TfOXROPR.Create(FormMain);
   fOXROPR.Show;
+end;
+
+procedure TFormMain.mUsersClick(Sender: TObject);
+begin
+  if (not Assigned(fUsers)) then
+    fUsers := TfUsers.Create(FormMain);
+  fUsers.ShowModal;
 end;
 
 procedure TFormMain.mHelpKfStClick(Sender: TObject);

@@ -190,6 +190,8 @@ var
   G_SHOWMODE: Byte = 1;  //0 - С разделением на заменяющие и добавленные
   //Результат RegisterClipboardFormat()
   G_SMETADATA: Integer;
+  //ID текущего пользователя
+  G_USER_ID: Integer = 0;
 
 implementation
 

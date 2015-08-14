@@ -462,8 +462,8 @@ type
     PMTrPerc4: TMenuItem;
     PMTrPerc5: TMenuItem;
     PMTrPerc0: TMenuItem;
-    btn2: TSpeedButton;
-    btn3: TSpeedButton;
+    btnCalcFact: TBitBtn;
+    btn3: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -657,7 +657,7 @@ type
     procedure PMTrPerc0Click(Sender: TObject);
     procedure PMTranstPercClick(Sender: TObject);
     procedure btn2Click(Sender: TObject);
-    procedure btn3Click(Sender: TObject);
+    procedure btnCalcFactClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -1331,7 +1331,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.btn3Click(Sender: TObject);
+procedure TFormCalculationEstimate.btnCalcFactClick(Sender: TObject);
 begin
   ShowCalcResourceFact(FormCalculationEstimate.IdEstimate);
 end;
@@ -1470,18 +1470,23 @@ var
   WidthButton: Integer;
 begin
   if Act then
-    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - 15) div 8
+    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 7
   else
-    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - 18) div 8;
-  btnKC6.Width := WidthButton;
+    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 7;
+  //btnKC6.Width := WidthButton;
   btnResMat.Width := WidthButton;
   btnResMech.Width := WidthButton;
   btnResDev.Width := WidthButton;
   btnResZP.Width := WidthButton;
   btnResCalc.Width := WidthButton;
   SpeedButtonSSR.Width := WidthButton;
-  btn2.Width := WidthButton;
   btn3.Width := WidthButton;
+  btnCalcFact.Width := WidthButton;
+
+  btnResMat.Caption := StringReplace(btnResMat.Caption, ' ', ''#13, [rfReplaceAll]);
+  btnResMech.Caption := StringReplace(btnResMech.Caption, ' ', ''#13, [rfReplaceAll]);
+  btnResDev.Caption := StringReplace(btnResDev.Caption, ' ', ''#13, [rfReplaceAll]);
+  btnResCalc.Caption := StringReplace(btnResCalc.Caption, ' ', ''#13, [rfReplaceAll]);
 
   MemoRight.Height := dbmmoCAPTION.Height;
 end;
