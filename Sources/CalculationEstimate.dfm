@@ -37,7 +37,6 @@
     ParentCtl3D = False
     TabOrder = 0
     OnResize = PanelTopMenuResize
-    ExplicitWidth = 921
     object SpeedButtonLocalEstimate: TSpeedButton
       AlignWithMargins = True
       Left = 3
@@ -230,7 +229,7 @@
       Align = alLeft
       GroupIndex = 1
       Caption = #1056#1072#1089#1095#1077#1090' '#1047#1055
-      OnClick = btnResMatClick
+      OnClick = btnResZPClick
       ExplicitLeft = 600
       ExplicitTop = 4
       ExplicitHeight = 25
@@ -264,8 +263,6 @@
       Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
       TabOrder = 0
       OnClick = btnKC6Click
-      ExplicitLeft = 217
-      ExplicitHeight = 25
     end
     object btnCalcFact: TBitBtn
       AlignWithMargins = True
@@ -283,7 +280,6 @@
       TabStop = False
       WordWrap = True
       OnClick = btnCalcFactClick
-      ExplicitLeft = 833
     end
     object btn3: TBitBtn
       AlignWithMargins = True
@@ -301,7 +297,6 @@
       TabStop = False
       WordWrap = True
       OnClick = btn2Click
-      ExplicitTop = 4
     end
   end
   object PanelLocalEstimate: TPanel
@@ -2804,8 +2799,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 2
-    ExplicitTop = 52
-    ExplicitWidth = 1095
     DesignSize = (
       929
       25)
@@ -2864,7 +2857,6 @@
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
-      ExplicitWidth = 567
     end
     object PanelCalculationYesNo: TPanel
       Tag = 1
@@ -2879,7 +2871,6 @@
       ParentBackground = False
       TabOrder = 0
       OnClick = PanelCalculationYesNoClick
-      ExplicitLeft = 951
     end
   end
   object PanelEstimate: TPanel
@@ -2891,8 +2882,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 3
-    ExplicitTop = 77
-    ExplicitWidth = 1095
     DesignSize = (
       929
       25)
@@ -2951,7 +2940,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 820
     end
   end
   object PanelObject: TPanel
@@ -2963,8 +2951,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 1
-    ExplicitTop = 27
-    ExplicitWidth = 1095
     DesignSize = (
       929
       25)
@@ -3026,7 +3012,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 634
     end
     object EditNumberContract: TEdit
       Left = 673
@@ -3037,7 +3022,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 1
-      ExplicitLeft = 839
     end
     object EditDateContract: TEdit
       Left = 856
@@ -3048,7 +3032,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 2
-      ExplicitLeft = 1022
     end
   end
   object PanelSSR: TPanel

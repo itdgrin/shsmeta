@@ -658,6 +658,7 @@ type
     procedure PMTranstPercClick(Sender: TObject);
     procedure btn2Click(Sender: TObject);
     procedure btnCalcFactClick(Sender: TObject);
+    procedure btnResZPClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -1211,7 +1212,15 @@ end;
 
 procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
 begin
-  ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
+//  ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
+if FormCalculationEstimate.IDAct > 0 then
+          ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IDAct)),
+            PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+end;
+
+procedure TFormCalculationEstimate.btnResZPClick(Sender: TObject);
+begin
+// ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
 end;
 
 procedure TFormCalculationEstimate.btnEquipmentsClick(Sender: TObject);
@@ -1322,8 +1331,8 @@ begin
           Exit;
         end;
          ShowMessage('2'); }
-        dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
-        ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormCalculationEstimate.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+        if FormCalculationEstimate.IDAct = 0 then dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
+        if FormCalculationEstimate.IDAct = 0 then ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormCalculationEstimate.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
        {
       end;
     end;
