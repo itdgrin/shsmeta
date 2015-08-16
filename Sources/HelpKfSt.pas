@@ -17,6 +17,7 @@ type
     grMain1: TJvDBGrid;
     redt1: TRichEdit;
     spl1: TSplitter;
+    lbl1: TLabel;
     procedure grMain1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
     procedure FormActivate(Sender: TObject);

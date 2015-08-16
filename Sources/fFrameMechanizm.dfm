@@ -228,12 +228,25 @@ inherited SprMechanizm: TSprMechanizm
       1EFA95A1232C37680AF4D5B2A7A378A61002003B}
   end
   inherited PanelFind: TPanel
+    inherited edtFindName: TEdit
+      TabOrder = 2
+    end
+    inherited btnFind: TButton
+      TabOrder = 0
+    end
     inherited edtFindCode: TEdit
       Top = 6
+      TabOrder = 1
       ExplicitTop = 6
     end
   end
+  inherited Memo: TMemo
+    TabOrder = 3
+  end
   inherited ListSpr: TListView
+    TabOrder = 2
     OnDblClick = ListSprDblClick
+    ExplicitLeft = 8
+    ExplicitTop = 111
   end
 end

@@ -74,8 +74,6 @@ type
     ADOQuerySW: TFDQuery;
     ADOQueryTemp: TFDQuery;
     tmrFilter: TTimer;
-    chk1: TCheckBox;
-    chk2: TCheckBox;
     grHistory: TJvDBGrid;
     dsHistory: TDataSource;
     qrHistory: TFDQuery;
@@ -92,7 +90,8 @@ type
     btn1: TSpeedButton;
     btn2: TSpeedButton;
     qrNormativ: TFDQuery;
-    chk3: TCheckBox;
+    rb1: TRadioButton;
+    rb2: TRadioButton;
 
     procedure FrameResize(Sender: TObject);
 
@@ -310,11 +309,7 @@ end;
 
 procedure TFrameRates.LabelSbornikClick(Sender: TObject);
 begin
-  if not chk1.Checked then
-    chk1.Checked := true;
-
-  if not chk2.Checked then
-    chk2.Checked := true;
+  rb1.Checked := true;
 
   if (not Assigned(fNormativDirectory)) then
     fNormativDirectory := fNormativDirectory.Create(nil);
@@ -1036,7 +1031,7 @@ begin
     StringSearch := '';
 
     for i := 0 to CountWords - 1 do
-      StringSearch := StringSearch + 'CaptionNormativ LIKE ''%' + Words[i] + '%'' and ';
+      StringSearch := StringSearch + 'norm_caption LIKE ''%' + Words[i] + '%'' and ';
 
     Delete(StringSearch, Length(StringSearch) - 4, 5);
 
@@ -1078,9 +1073,18 @@ begin
         'LEFT JOIN units ON (nv.unit_id=units.unit_id) ' + WhereStr + ' AND (nv.norm_base = ' + DataBase +
         ') ' + 'ORDER BY SORT_NUM LIMIT :SkipCount, :PageRowCount;';
       SQL.Add(QueryStr);
-      ParamByName('x1').Value := chk1.Checked;
-      ParamByName('x2').Value := chk2.Checked;
-      ParamByName('x3').Value := chk3.Checked;
+      if rb1.Checked then
+      begin
+        ParamByName('x1').Value := true;
+        ParamByName('x2').Value := true;
+        ParamByName('x3').Value := true;
+      end
+      else
+      begin
+        ParamByName('x1').Value := False;
+        ParamByName('x2').Value := true;
+        ParamByName('x3').Value := False;
+      end;
       Active := true;
     end;
 

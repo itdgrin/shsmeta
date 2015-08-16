@@ -1,7 +1,7 @@
 object fUsers: TfUsers
   Left = 0
   Top = 0
-  ActiveControl = dblklst2
+  ActiveControl = dblklst1
   Caption = #1059#1095#1077#1090#1085#1099#1077' '#1079#1072#1087#1080#1089#1080' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081
   ClientHeight = 449
   ClientWidth = 589
@@ -23,16 +23,13 @@ object fUsers: TfUsers
     Top = 0
     Width = 589
     Height = 449
-    ActivePage = ts2
+    ActivePage = ts1
     Align = alClient
     TabOrder = 0
     OnChanging = pgc1Changing
     object ts2: TTabSheet
       Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1080
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitWidth = 281
-      ExplicitHeight = 165
       object spl2: TSplitter
         Left = 185
         Top = 36
@@ -51,13 +48,13 @@ object fUsers: TfUsers
         Images = DM.ilIcons_16x16
         ShowCaptions = True
         TabOrder = 0
-        ExplicitTop = 8
         object btn5: TToolButton
           Left = 0
           Top = 0
           Caption = #1044#1086#1073#1072#1074#1080#1090#1100
           ImageIndex = 39
           Style = tbsTextButton
+          OnClick = btn5Click
         end
         object btn6: TToolButton
           Left = 86
@@ -87,8 +84,6 @@ object fUsers: TfUsers
         Align = alLeft
         Caption = 'pnl1'
         TabOrder = 1
-        ExplicitLeft = 8
-        ExplicitHeight = 387
         object lbl3: TLabel
           AlignWithMargins = True
           Left = 4
@@ -111,8 +106,6 @@ object fUsers: TfUsers
           ListField = 'USER_NAME'
           ListSource = dsUser
           TabOrder = 0
-          ExplicitTop = 60
-          ExplicitHeight = 351
         end
       end
       object pnl4: TPanel
@@ -123,10 +116,6 @@ object fUsers: TfUsers
         Align = alClient
         Enabled = False
         TabOrder = 2
-        ExplicitLeft = 217
-        ExplicitTop = 112
-        ExplicitWidth = 393
-        ExplicitHeight = 421
         object lbl4: TLabel
           AlignWithMargins = True
           Left = 4
@@ -135,7 +124,6 @@ object fUsers: TfUsers
           Height = 13
           Align = alTop
           Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1076#1086#1089#1090#1091#1087#1072':'
-          ExplicitTop = 4
           ExplicitWidth = 103
         end
         object pnl6: TPanel
@@ -145,8 +133,6 @@ object fUsers: TfUsers
           Height = 113
           Align = alTop
           TabOrder = 0
-          ExplicitLeft = 6
-          ExplicitTop = -2
           object lbl6: TLabel
             Left = 5
             Top = 5
@@ -242,17 +228,11 @@ object fUsers: TfUsers
           ParentFont = False
           RowSelect = True
           Mirror = False
-          ExplicitLeft = 3
-          ExplicitTop = 3
-          ExplicitWidth = 214
-          ExplicitHeight = 350
         end
       end
     end
     object ts1: TTabSheet
       Caption = #1043#1088#1091#1087#1087#1099' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081
-      ExplicitWidth = 281
-      ExplicitHeight = 165
       object spl1: TSplitter
         Left = 185
         Top = 36
@@ -268,9 +248,6 @@ object fUsers: TfUsers
         Align = alLeft
         Caption = 'pnl1'
         TabOrder = 1
-        ExplicitLeft = 264
-        ExplicitTop = 72
-        ExplicitHeight = 41
         object lbl1: TLabel
           AlignWithMargins = True
           Left = 4
@@ -279,8 +256,6 @@ object fUsers: TfUsers
           Height = 13
           Align = alTop
           Caption = #1043#1088#1091#1087#1087#1099' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081':'
-          ExplicitLeft = 1
-          ExplicitTop = 1
           ExplicitWidth = 122
         end
         object dblklst1: TDBLookupListBox
@@ -295,7 +270,6 @@ object fUsers: TfUsers
           ListField = 'USER_GROUP_NAME'
           ListSource = dsUserGroup
           TabOrder = 0
-          ExplicitHeight = 351
         end
       end
       object pnl2: TPanel
@@ -306,10 +280,6 @@ object fUsers: TfUsers
         Align = alClient
         Enabled = False
         TabOrder = 2
-        ExplicitLeft = 217
-        ExplicitTop = 112
-        ExplicitWidth = 393
-        ExplicitHeight = 421
         object lbl2: TLabel
           AlignWithMargins = True
           Left = 4
@@ -318,9 +288,7 @@ object fUsers: TfUsers
           Height = 13
           Align = alTop
           Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1076#1086#1089#1090#1091#1087#1072':'
-          ExplicitLeft = -1
-          ExplicitTop = 67
-          ExplicitWidth = 385
+          ExplicitWidth = 103
         end
         object pnl5: TPanel
           Left = 1
@@ -329,7 +297,6 @@ object fUsers: TfUsers
           Height = 32
           Align = alTop
           TabOrder = 0
-          ExplicitWidth = 391
           object lbl5: TLabel
             Left = 5
             Top = 5
@@ -346,6 +313,34 @@ object fUsers: TfUsers
             DataSource = dsUserGroup
             TabOrder = 0
           end
+        end
+        object JvDBTreeView1: TJvDBTreeView
+          AlignWithMargins = True
+          Left = 4
+          Top = 55
+          Width = 383
+          Height = 326
+          DataSource = dsTreeData
+          MasterField = 'doc_id'
+          DetailField = 'parent_id'
+          IconField = 'doc_type'
+          ItemField = 'doc_name'
+          StartMasterValue = '0'
+          UseFilter = True
+          PersistentNode = True
+          DragMode = dmAutomatic
+          HideSelection = False
+          Indent = 19
+          Align = alClient
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          TabOrder = 1
+          ParentFont = False
+          RowSelect = True
+          Mirror = False
         end
       end
       object tlb3: TToolBar
@@ -365,6 +360,7 @@ object fUsers: TfUsers
           Caption = #1044#1086#1073#1072#1074#1080#1090#1100
           ImageIndex = 39
           Style = tbsTextButton
+          OnClick = btn2Click
         end
         object btn1: TToolButton
           Left = 86

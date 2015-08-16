@@ -16,6 +16,7 @@ type
     rbJBI: TRadioButton;
     procedure ListSprDblClick(Sender: TObject);
     procedure rbMatClick(Sender: TObject);
+    procedure edtYearChange(Sender: TObject);
   private
     { Private declarations }
     FAllowAddition: Boolean;
@@ -54,6 +55,12 @@ begin
     rbMat.Checked := True
   else if AJBI then
     rbJBI.Checked := True;
+end;
+
+procedure TSprMaterial.edtYearChange(Sender: TObject);
+begin
+  inherited;
+  btnShow.Click;
 end;
 
 function TSprMaterial.GetRegion;
@@ -101,6 +108,7 @@ begin
   inherited;
   btnShow.Enabled := True;
   ListSpr.Visible := False;
+  btnShow.Click;
 end;
 
 procedure TSprMaterial.OnLoadDone;

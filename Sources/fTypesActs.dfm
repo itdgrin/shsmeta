@@ -16,13 +16,20 @@ object FrameTypesActs: TFrameTypesActs
     Width = 600
     Height = 400
     Align = alClient
-    Header.AutoSizeIndex = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Header.AutoSizeIndex = -1
     Header.Font.Charset = DEFAULT_CHARSET
     Header.Font.Color = clWindowText
     Header.Font.Height = -11
     Header.Font.Name = 'Tahoma'
     Header.Font.Style = []
+    Header.MainColumn = 1
     Header.Options = [hoVisible]
+    ParentFont = False
     PopupMenu = PopupMenu
     TabOrder = 0
     TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
@@ -33,13 +40,15 @@ object FrameTypesActs: TFrameTypesActs
     OnFocusChanged = VSTFocusChanged
     OnGetText = VSTGetText
     OnResize = VSTResize
+    ExplicitLeft = 3
+    ExplicitTop = 3
     Columns = <
       item
-        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]
         Position = 0
         WideText = #8470' '#1087'/'#1087
       end
       item
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coAllowFocus]
         Position = 1
         WideText = #1050#1086#1076
       end

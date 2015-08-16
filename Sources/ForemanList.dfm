@@ -43,11 +43,20 @@ object fForemanList: TfForemanList
     TitleRowHeight = 17
     Columns = <
       item
+        Alignment = taCenter
+        Expanded = False
+        FieldName = 'NUMPP'
+        Title.Alignment = taCenter
+        Title.Caption = #8470#1087#1087
+        Width = 35
+        Visible = True
+      end
+      item
         Expanded = False
         FieldName = 'foreman_first_name'
         Title.Alignment = taCenter
         Title.Caption = #1060#1072#1084#1080#1083#1080#1103
-        Width = 110
+        Width = 98
         Visible = True
       end
       item
@@ -55,7 +64,7 @@ object fForemanList: TfForemanList
         FieldName = 'foreman_name'
         Title.Alignment = taCenter
         Title.Caption = #1048#1084#1103
-        Width = 110
+        Width = 98
         Visible = True
       end
       item
@@ -63,7 +72,7 @@ object fForemanList: TfForemanList
         FieldName = 'foreman_second_name'
         Title.Alignment = taCenter
         Title.Caption = #1054#1090#1095#1077#1089#1090#1074#1086
-        Width = 106
+        Width = 94
         Visible = True
       end>
   end
@@ -92,20 +101,47 @@ object fForemanList: TfForemanList
     ShowHint = True
     TabOrder = 1
     TabStop = True
-    ExplicitLeft = 0
-    ExplicitTop = 427
-    ExplicitWidth = 351
   end
   object qrMain: TFDQuery
+    OnCalcFields = qrMainCalcFields
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     UpdateOptions.UpdateTableName = 'smeta.foreman'
     UpdateOptions.KeyFields = 'foreman_id'
     SQL.Strings = (
-      'SELECT * FROM foreman')
+      'SELECT * FROM foreman'
+      'ORDER BY foreman_first_name')
     Left = 256
     Top = 152
+    object qrMainforeman_id: TFDAutoIncField
+      FieldName = 'foreman_id'
+      Origin = 'foreman_id'
+      ProviderFlags = [pfInWhere, pfInKey]
+    end
+    object strngfldMainforeman_name: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'foreman_name'
+      Origin = 'foreman_name'
+      Size = 100
+    end
+    object strngfldMainforeman_first_name: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'foreman_first_name'
+      Origin = 'foreman_first_name'
+      Size = 11
+    end
+    object strngfldMainforeman_second_name: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'foreman_second_name'
+      Origin = 'foreman_second_name'
+      Size = 100
+    end
+    object qrMainNUMPP: TIntegerField
+      FieldKind = fkCalculated
+      FieldName = 'NUMPP'
+      Calculated = True
+    end
   end
   object dsMain: TDataSource
     DataSet = qrMain

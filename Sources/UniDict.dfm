@@ -145,7 +145,6 @@ object fUniDict: TfUniDict
       Caption = 'pnlLeft'
       Constraints.MinWidth = 50
       TabOrder = 0
-      ExplicitHeight = 272
       object gtUniDictType: TJvDBGrid
         Left = 0
         Top = 0
@@ -184,7 +183,7 @@ object fUniDict: TfUniDict
             FieldName = 'unidicttype_name'
             Title.Alignment = taCenter
             Title.Caption = #1058#1080#1087' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
-            Width = 119
+            Width = 120
             Visible = True
           end
           item
@@ -192,8 +191,16 @@ object fUniDict: TfUniDict
             FieldName = 'CNT'
             Title.Alignment = taCenter
             Title.Caption = #1047#1072#1087#1080#1089#1077#1081
-            Width = 48
+            Width = 47
             Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'unidicttype_first_month'
+            Title.Alignment = taCenter
+            Title.Caption = '1 '#1079#1085#1072#1095#1077#1085#1080#1077
+            Width = -1
+            Visible = False
           end>
       end
     end
@@ -206,12 +213,21 @@ object fUniDict: TfUniDict
       BevelOuter = bvNone
       Caption = 'pnlClientCh'
       TabOrder = 1
-      ExplicitHeight = 272
+      object spl2: TSplitter
+        Left = 0
+        Top = 307
+        Width = 539
+        Height = 3
+        Cursor = crVSplit
+        Align = alBottom
+        ExplicitTop = 0
+        ExplicitWidth = 310
+      end
       object grUniDictParam: TJvDBGrid
         Left = 0
         Top = 0
         Width = 539
-        Height = 310
+        Height = 307
         Align = alClient
         DataSource = dsUniDict
         DrawingStyle = gdsClassic
@@ -239,7 +255,8 @@ object fUniDict: TfUniDict
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
         EditControls = <>
         AutoSizeRows = False
-        RowsHeight = 60
+        RowResize = True
+        RowsHeight = 80
         TitleRowHeight = 17
         WordWrap = True
         WordWrapAllFields = True
@@ -260,6 +277,7 @@ object fUniDict: TfUniDict
             Visible = False
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_1'
             Title.Alignment = taCenter
@@ -268,6 +286,7 @@ object fUniDict: TfUniDict
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_2'
             Title.Alignment = taCenter
@@ -276,6 +295,7 @@ object fUniDict: TfUniDict
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_3'
             Title.Alignment = taCenter
@@ -284,6 +304,7 @@ object fUniDict: TfUniDict
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_4'
             Title.Alignment = taCenter
@@ -292,6 +313,7 @@ object fUniDict: TfUniDict
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_5'
             Title.Alignment = taCenter
@@ -300,6 +322,7 @@ object fUniDict: TfUniDict
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_6'
             Title.Alignment = taCenter
@@ -308,6 +331,7 @@ object fUniDict: TfUniDict
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_7'
             Title.Alignment = taCenter
@@ -316,6 +340,7 @@ object fUniDict: TfUniDict
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_8'
             Title.Alignment = taCenter
@@ -324,6 +349,7 @@ object fUniDict: TfUniDict
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_9'
             Title.Alignment = taCenter
@@ -332,6 +358,7 @@ object fUniDict: TfUniDict
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_10'
             Title.Alignment = taCenter
@@ -340,6 +367,7 @@ object fUniDict: TfUniDict
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_11'
             Title.Alignment = taCenter
@@ -348,6 +376,7 @@ object fUniDict: TfUniDict
             Visible = True
           end
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'MONTH_12'
             Title.Alignment = taCenter
@@ -363,6 +392,7 @@ object fUniDict: TfUniDict
         Height = 40
         TabStop = False
         Align = alBottom
+        Constraints.MinHeight = 20
         DataField = 'param_name'
         DataSource = dsUniDict
         Font.Charset = DEFAULT_CHARSET
@@ -374,9 +404,6 @@ object fUniDict: TfUniDict
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 1
-        ExplicitLeft = -3
-        ExplicitTop = 232
-        ExplicitWidth = 542
       end
     end
   end
@@ -453,7 +480,9 @@ object fUniDict: TfUniDict
       'FN_getParamValue(code, 12, :year) AS MONTH_12'
       'FROM '
       '  unidictparam'
-      'WHERE id_unidicttype=:id_unidicttype or (:id_unidicttype=-1)'
+      
+        'WHERE (id_unidicttype=:id_unidicttype or (:id_unidicttype=-1)) A' +
+        'ND ((DELETED=0) OR (:SHOW_DELETED))'
       'ORDER BY param_name')
     Left = 203
     Top = 206
@@ -469,6 +498,12 @@ object fUniDict: TfUniDict
         DataType = ftInteger
         ParamType = ptInput
         Value = -1
+      end
+      item
+        Name = 'SHOW_DELETED'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '0'
       end>
     object qrUniDictid_unidictparam: TFDAutoIncField
       FieldName = 'id_unidictparam'
@@ -675,6 +710,8 @@ object fUniDict: TfUniDict
     AfterPost = qrUniDictTypeAfterPost
     AfterDelete = qrUniDictTypeAfterPost
     AfterScroll = qrUniDictTypeAfterScroll
+    Filtered = True
+    Filter = 'unidicttype_id>0'
     OnUpdateError = qrUniDictTypeUpdateError
     Connection = DM.Connect
     Transaction = DM.Read
@@ -707,29 +744,32 @@ object fUniDict: TfUniDict
     UpdateOptions.LockMode = lmOptimistic
     UpdateOptions.RefreshMode = rmManual
     UpdateOptions.CheckRequired = False
-    UpdateOptions.CheckReadOnly = False
     UpdateOptions.UpdateTableName = 'smeta.unidicttype'
+    UpdateOptions.KeyFields = 'unidicttype_id'
     SQL.Strings = (
       'SELECT '
       '  `unidicttype_id`,'
       '  `unidicttype_name`,'
       
         '  (SELECT COUNT(*) FROM unidictparam WHERE id_unidicttype=`unidi' +
-        'cttype`.unidicttype_id) AS CNT'
+        'cttype`.unidicttype_id) AS CNT,'
+      '  unidicttype_first_month'
       'FROM '
       '  `unidicttype`'
       'UNION ALL'
       'SELECT '
       '  -1 AS unidicttype_id,'
       '  ("<'#1074#1089#1077'>") AS unidicttype_name,'
-      '  (SELECT COUNT(*) FROM unidictparam) AS CNT'
+      '  (SELECT COUNT(*) FROM unidictparam) AS CNT,'
+      '  0 AS unidicttype_first_month'
       'UNION ALL'
       'SELECT '
       '  0 AS unidicttype_id,'
       '  ("<'#1085#1077' '#1091#1082#1072#1079#1072#1085'>") AS unidicttype_name,'
       
         '  (SELECT COUNT(*) FROM unidictparam WHERE id_unidicttype=0) AS ' +
-        'CNT'
+        'CNT,'
+      '  0 AS unidicttype_first_month'
       'ORDER BY `unidicttype_name`, unidicttype_id')
     Left = 27
     Top = 118
@@ -792,7 +832,9 @@ object fUniDict: TfUniDict
     AppStoragePath = '%FORM_NAME%\'
     Options = []
     StoredProps.Strings = (
-      'spl1.Left')
+      'pnlLeft.Width'
+      'grUniDictParam.RowsHeight'
+      'dbmmoparam_description1.Height')
     StoredValues = <>
     Left = 24
     Top = 264

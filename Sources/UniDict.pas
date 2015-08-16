@@ -52,6 +52,7 @@ type
     FormStorage: TJvFormStorage;
     dbmmoparam_description1: TDBMemo;
     dbnvgr1: TDBNavigator;
+    spl2: TSplitter;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -129,6 +130,8 @@ end;
 procedure TfUniDict.changeEditMode;
 begin
   editMode := not editMode;
+
+  qrUniDictType.Filtered := not editMode;
   lbl3.Visible := editMode;
   lbl2.Visible := editMode;
   dbedtcode.Visible := editMode;
@@ -172,6 +175,39 @@ end;
 procedure TfUniDict.qrUniDictTypeAfterScroll(DataSet: TDataSet);
 begin
   seYearChange(Self);
+  // ”бираем показ всех мес€цев на некоторых типах
+  if (qrUniDictType.FieldByName('unidicttype_first_month').Value = 1) and not editMode then
+  begin
+    // —крываем
+    grUniDictParam.Columns[2].Title.Caption := '«начение';
+    grUniDictParam.Columns[3].Visible := False;
+    grUniDictParam.Columns[4].Visible := False;
+    grUniDictParam.Columns[5].Visible := False;
+    grUniDictParam.Columns[6].Visible := False;
+    grUniDictParam.Columns[7].Visible := False;
+    grUniDictParam.Columns[8].Visible := False;
+    grUniDictParam.Columns[9].Visible := False;
+    grUniDictParam.Columns[10].Visible := False;
+    grUniDictParam.Columns[11].Visible := False;
+    grUniDictParam.Columns[12].Visible := False;
+    grUniDictParam.Columns[13].Visible := False;
+  end
+  else
+  begin
+    // ѕоказываем
+    grUniDictParam.Columns[2].Title.Caption := 'январь';
+    grUniDictParam.Columns[3].Visible := True;
+    grUniDictParam.Columns[4].Visible := True;
+    grUniDictParam.Columns[5].Visible := True;
+    grUniDictParam.Columns[6].Visible := True;
+    grUniDictParam.Columns[7].Visible := True;
+    grUniDictParam.Columns[8].Visible := True;
+    grUniDictParam.Columns[9].Visible := True;
+    grUniDictParam.Columns[10].Visible := True;
+    grUniDictParam.Columns[11].Visible := True;
+    grUniDictParam.Columns[12].Visible := True;
+    grUniDictParam.Columns[13].Visible := True;
+  end;
 end;
 
 procedure TfUniDict.qrUniDictTypeUpdateError(ASender: TDataSet; AException: EFDException; ARow: TFDDatSRow;

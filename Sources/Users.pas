@@ -57,6 +57,7 @@ type
     qrTreeData: TFDQuery;
     dsTreeData: TDataSource;
     tvDocuments: TJvDBTreeView;
+    JvDBTreeView1: TJvDBTreeView;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -67,6 +68,8 @@ type
     procedure pgc1Changing(Sender: TObject; var AllowChange: Boolean);
     procedure qrUserAfterEdit(DataSet: TDataSet);
     procedure qrUserAfterPost(DataSet: TDataSet);
+    procedure btn5Click(Sender: TObject);
+    procedure btn2Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -82,9 +85,19 @@ implementation
 
 uses Main, DataModule, Tools, GlobsAndConst;
 
+procedure TfUsers.btn2Click(Sender: TObject);
+begin
+  qrUserGroup.Insert;
+end;
+
 procedure TfUsers.btn3Click(Sender: TObject);
 begin
   pnl2.Enabled := not pnl2.Enabled;
+end;
+
+procedure TfUsers.btn5Click(Sender: TObject);
+begin
+  qrUser.Insert;
 end;
 
 procedure TfUsers.btn7Click(Sender: TObject);

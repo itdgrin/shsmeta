@@ -87,7 +87,6 @@ inherited FramePriceTransportations: TFramePriceTransportations
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
         ExplicitLeft = 8
-        ExplicitTop = -6
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]
@@ -216,7 +215,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
         Height = 21
         Anchors = [akTop, akRight]
         ItemIndex = 1
-        TabOrder = 1
+        TabOrder = 2
         Text = #1060#1077#1074#1088#1072#1083#1100
         OnChange = ComboBoxMonthYearChange
         Items.Strings = (
@@ -242,7 +241,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
         MaxLength = 4
         MaxValue = 2050
         MinValue = 1900
-        TabOrder = 2
+        TabOrder = 1
         Value = 2014
         OnChange = ComboBoxMonthYearChange
       end

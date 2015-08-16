@@ -292,7 +292,7 @@
             object EditSearchNormative: TEdit
               Left = 65
               Top = 2
-              Width = 209
+              Width = 314
               Height = 21
               Hint = 
                 #1042#1074#1077#1076#1080#1090#1077' '#1095#1072#1089#1090#1100' '#1086#1087#1080#1089#1072#1085#1080#1103' '#1088#1072#1073#1086#1090' '#1080' '#1085#1072#1078#1084#1080#1090#1077' - Enter, '#1076#1083#1103' '#1086#1095#1080#1089#1090#1082#1080' '#1085#1072#1078#1084 +
@@ -304,40 +304,26 @@
               OnEnter = EditSearchNormativeEnter
               OnKeyPress = EditSearchNormativeKeyPress
             end
-            object chk1: TCheckBox
-              Left = 280
-              Top = 4
-              Width = 66
+            object rb1: TRadioButton
+              Left = 385
+              Top = 2
+              Width = 89
               Height = 17
               Anchors = [akTop, akRight]
-              Caption = #1056#1072#1089#1094#1077#1085#1082#1080
+              Caption = #1042#1089#1077' '#1088#1072#1089#1094#1077#1085#1082#1080
               Checked = True
-              State = cbChecked
               TabOrder = 1
+              TabStop = True
               OnClick = chk1Click
             end
-            object chk2: TCheckBox
-              Left = 352
-              Top = 6
-              Width = 90
-              Height = 15
+            object rb2: TRadioButton
+              Left = 480
+              Top = 2
+              Width = 89
+              Height = 17
               Anchors = [akTop, akRight]
               Caption = #1055#1091#1089#1082#1086#1085#1072#1083#1072#1076#1082#1072
-              Checked = True
-              State = cbChecked
               TabOrder = 2
-              OnClick = chk1Click
-            end
-            object chk3: TCheckBox
-              Left = 448
-              Top = 6
-              Width = 121
-              Height = 15
-              Anchors = [akTop, akRight]
-              Caption = #1059#1082#1088#1091#1087#1085#1077#1085#1085#1099#1077' '#1085#1086#1088#1084#1099
-              Checked = True
-              State = cbChecked
-              TabOrder = 3
               OnClick = chk1Click
             end
           end
@@ -629,8 +615,8 @@
                     Expanded = False
                     FieldName = 'date_beginer'
                     Title.Alignment = taCenter
-                    Title.Caption = #1044#1072#1090#1072
-                    Width = 96
+                    Title.Caption = #1044#1072#1090#1072' '#1074#1089#1090#1091#1087#1083#1077#1085#1080#1103' '#1074' '#1089#1080#1083#1091
+                    Width = 138
                     Visible = True
                   end
                   item
@@ -638,7 +624,7 @@
                     FieldName = 'prikaz'
                     Title.Alignment = taCenter
                     Title.Caption = #1054#1089#1085#1086#1074#1072#1085#1080#1077
-                    Width = 403
+                    Width = 361
                     Visible = True
                   end>
               end

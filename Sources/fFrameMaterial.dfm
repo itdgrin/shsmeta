@@ -280,7 +280,21 @@ inherited SprMaterial: TSprMaterial
       OnClick = rbMatClick
     end
   end
+  inherited PanelFind: TPanel
+    inherited edtFindName: TEdit
+      TabOrder = 2
+    end
+    inherited edtFindCode: TEdit
+      TabOrder = 0
+    end
+  end
+  inherited Memo: TMemo
+    TabOrder = 3
+  end
   inherited ListSpr: TListView
+    TabOrder = 2
     OnDblClick = ListSprDblClick
+    ExplicitLeft = 3
+    ExplicitTop = 136
   end
 end

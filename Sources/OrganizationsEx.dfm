@@ -114,6 +114,7 @@ object fOrganizationsEx: TfOrganizationsEx
         Expanded = False
         FieldName = 'UNN'
         Title.Alignment = taCenter
+        Title.Caption = #1059#1053#1053
         Width = 69
         Visible = True
       end

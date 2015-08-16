@@ -157,12 +157,17 @@ object fNormativDirectory: TfNormativDirectory
     FetchOptions.AssignedValues = [evCache]
     FetchOptions.Cache = [fiBlobs, fiMeta]
     SQL.Strings = (
+      'SELECT "'#1042#1089#1077' '#1089#1073#1086#1088#1085#1080#1082#1080'" AS FULL_NAME,'
+      '0 AS parent_id, NULL AS normativ_directory_id, "" AS tree_data,'
+      '"0. '#1042#1089#1077' '#1089#1073#1086#1088#1085#1080#1082#1080'" AS FIRST_NAME, "" AS SECOND_NAME'
+      'UNION ALL'
       
         'SELECT CONCAT(IFNULL(FIRST_NAME, ""), IF(SECOND_NAME IS NULL, ""' +
         ', " - "), IFNULL(SECOND_NAME, "")) AS FULL_NAME, '
       
         'IFNULL(parent_id, 0) AS parent_id, normativ_directory_id, tree_d' +
-        'ata'
+        'ata,'
+      'FIRST_NAME, SECOND_NAME'
       'FROM normativ_directory'
       'WHERE type_directory <> 6'
       

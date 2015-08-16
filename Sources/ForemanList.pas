@@ -16,12 +16,18 @@ type
     dsMain: TDataSource;
     dbnvgr1: TDBNavigator;
     FormStorage: TJvFormStorage;
+    qrMainforeman_id: TFDAutoIncField;
+    strngfldMainforeman_name: TStringField;
+    strngfldMainforeman_first_name: TStringField;
+    strngfldMainforeman_second_name: TStringField;
+    qrMainNUMPP: TIntegerField;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure qrMainCalcFields(DataSet: TDataSet);
   private
     { Private declarations }
   public
@@ -82,6 +88,11 @@ begin
     end;
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TfForemanList.qrMainCalcFields(DataSet: TDataSet);
+begin
+  qrMainNUMPP.Value := qrMain.RecNo;
 end;
 
 end.
