@@ -140,9 +140,7 @@ type
     mN23: TMenuItem;
     mhfybkbotafqkjd1: TMenuItem;
     mN24: TMenuItem;
-    mN26: TMenuItem;
     mN27: TMenuItem;
-    mN101: TMenuItem;
     mN28: TMenuItem;
     mN32: TMenuItem;
     mN41: TMenuItem;
@@ -161,7 +159,6 @@ type
     mTranspNorm: TMenuItem;
     mBuildZone: TMenuItem;
     mHelpKfSt: TMenuItem;
-    mN30: TMenuItem;
     mN33: TMenuItem;
     mN111: TMenuItem;
     mN34: TMenuItem;
@@ -169,6 +166,10 @@ type
     mN42: TMenuItem;
     mUsers: TMenuItem;
     mLogIn: TMenuItem;
+    mN31: TMenuItem;
+    mN36: TMenuItem;
+    mN26: TMenuItem;
+    mN30: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -275,6 +276,7 @@ type
     procedure mN111Click(Sender: TObject);
     procedure mLogInClick(Sender: TObject);
     procedure mUsersClick(Sender: TObject);
+    procedure mN26Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -1158,6 +1160,13 @@ begin
   if (not Assigned(fForemanList)) then
     fForemanList := TfForemanList.Create(FormMain);
   fForemanList.Show;
+end;
+
+procedure TFormMain.mN26Click(Sender: TObject);
+begin
+  if (not Assigned(fCategoryList)) then
+    fCategoryList := TfCategoryList.Create(FormMain);
+  fCategoryList.Show;
 end;
 
 procedure TFormMain.mN27Click(Sender: TObject);

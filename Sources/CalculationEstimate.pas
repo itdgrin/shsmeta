@@ -658,7 +658,6 @@ type
     procedure PMTranstPercClick(Sender: TObject);
     procedure btn2Click(Sender: TObject);
     procedure btnCalcFactClick(Sender: TObject);
-    procedure btnResZPClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -1212,15 +1211,10 @@ end;
 
 procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
 begin
-//  ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
-if FormCalculationEstimate.IDAct > 0 then
-          ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IDAct)),
-            PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
-end;
-
-procedure TFormCalculationEstimate.btnResZPClick(Sender: TObject);
-begin
-// ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
+  ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
+  { if FormCalculationEstimate.IDAct > 0 then
+    ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IDAct)),
+    PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE); }
 end;
 
 procedure TFormCalculationEstimate.btnEquipmentsClick(Sender: TObject);
@@ -1308,37 +1302,40 @@ end;
 
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
-   {try
+  { try
     if Assigned(FormObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
-      begin
-        ShowMessage('Не выбрана смета');
-        Exit;
-      end;
-      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
-      ShowMessage('1');
-      ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormObjectsAndEstimates.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+    if FormObjectsAndEstimates.IdEstimate = 0 then
+    begin
+    ShowMessage('Не выбрана смета');
+    Exit;
+    end;
+    dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
+    ShowMessage('1');
+    ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormObjectsAndEstimates.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
 
     end
     else
     begin
-      if Assigned(FormCalculationEstimate) then
-      begin
-        if FormCalculationEstimate.IdEstimate = 0 then
-        begin
-          ShowMessage('Не выбрана смета');
-          Exit;
-        end;
-         ShowMessage('2'); }
-        if FormCalculationEstimate.IDAct = 0 then dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
-        if FormCalculationEstimate.IDAct = 0 then ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormCalculationEstimate.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
-       {
-      end;
+    if Assigned(FormCalculationEstimate) then
+    begin
+    if FormCalculationEstimate.IdEstimate = 0 then
+    begin
+    ShowMessage('Не выбрана смета');
+    Exit;
     end;
-  finally
+    ShowMessage('2'); }
+  if FormCalculationEstimate.IdAct = 0 then
+    dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
+  if FormCalculationEstimate.IdAct = 0 then
+    ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+      PChar(GetCurrentDir + '\reports\report\'), SW_maximIZE);
+  {
+    end;
+    end;
+    finally
     Screen.Cursor := crDefault;
-  end;   }
+    end; }
 end;
 
 procedure TFormCalculationEstimate.btnCalcFactClick(Sender: TObject);
@@ -1480,18 +1477,20 @@ var
   WidthButton: Integer;
 begin
   if Act then
-    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 7
+    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 5
   else
-    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 7;
-  //btnKC6.Width := WidthButton;
+    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 6;
+  // btnKC6.Width := WidthButton;
   btnResMat.Width := WidthButton;
   btnResMech.Width := WidthButton;
   btnResDev.Width := WidthButton;
   btnResZP.Width := WidthButton;
-  btnResCalc.Width := WidthButton;
+  //btnResCalc.Width := WidthButton;
   SpeedButtonSSR.Width := WidthButton;
   btn3.Width := WidthButton;
   btnCalcFact.Width := WidthButton;
+
+  btn3.Visible := not Act;
 
   btnResMat.Caption := StringReplace(btnResMat.Caption, ' ', ''#13, [rfReplaceAll]);
   btnResMech.Caption := StringReplace(btnResMech.Caption, ' ', ''#13, [rfReplaceAll]);

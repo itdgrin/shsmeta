@@ -485,7 +485,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       OnClick = PopupMenuObjectsAddClick
     end
     object PopupMenuObjectsEdit: TMenuItem
-      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1086#1073#1098#1077#1082#1090#1072
       ImageIndex = 44
       OnClick = PopupMenuObjectsEditClick
     end
@@ -596,7 +596,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = '-'
     end
     object PMEstimatesBasicData: TMenuItem
-      Caption = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
+      Caption = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077' '#1089#1084#1077#1090#1099
       OnClick = PMEstimatesBasicDataClick
     end
     object N1: TMenuItem
@@ -667,7 +667,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       OnClick = mRepActClick
     end
     object pmActProperty: TMenuItem
-      Caption = #1057#1074#1086#1081#1089#1090#1074#1072
+      Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1072#1082#1090#1072
       OnClick = pmActPropertyClick
     end
     object mN5: TMenuItem
