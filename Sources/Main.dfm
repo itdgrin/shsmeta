@@ -11564,6 +11564,7 @@
         end
         object mN30: TMenuItem
           Caption = #1054#1082#1088#1091#1075#1083#1077#1085#1080#1103
+          OnClick = mN30Click
         end
       end
       object ServiceBackup: TMenuItem

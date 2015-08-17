@@ -16,6 +16,7 @@ object fForemanList: TfForemanList
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object grMain: TJvDBGrid
@@ -23,9 +24,15 @@ object fForemanList: TfForemanList
     Left = 3
     Top = 3
     Width = 345
-    Height = 414
+    Height = 380
     Align = alClient
     DataSource = dsMain
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
@@ -79,7 +86,7 @@ object fForemanList: TfForemanList
   object dbnvgr1: TDBNavigator
     AlignWithMargins = True
     Left = 3
-    Top = 423
+    Top = 389
     Width = 345
     Height = 25
     DataSource = dsMain
@@ -102,6 +109,44 @@ object fForemanList: TfForemanList
     TabOrder = 1
     TabStop = True
   end
+  object pnlSelect: TPanel
+    Left = 0
+    Top = 417
+    Width = 351
+    Height = 34
+    Align = alBottom
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 2
+    object btn1: TBitBtn
+      Left = 271
+      Top = 4
+      Width = 75
+      Height = 25
+      Caption = #1054#1090#1084#1077#1085#1072
+      TabOrder = 1
+      OnClick = btn1Click
+    end
+    object btn2: TBitBtn
+      Left = 190
+      Top = 3
+      Width = 75
+      Height = 25
+      Caption = #1042#1099#1073#1088#1072#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+      OnClick = btn2Click
+    end
+  end
   object qrMain: TFDQuery
     OnCalcFields = qrMainCalcFields
     Connection = DM.Connect
@@ -118,6 +163,7 @@ object fForemanList: TfForemanList
       FieldName = 'foreman_id'
       Origin = 'foreman_id'
       ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
     end
     object strngfldMainforeman_name: TStringField
       AutoGenerateValue = arDefault

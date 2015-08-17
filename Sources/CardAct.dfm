@@ -5,7 +5,7 @@ object fCardAct: TfCardAct
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1072#1082#1090#1072
-  ClientHeight = 153
+  ClientHeight = 167
   ClientWidth = 392
   Color = clBtnFace
   DoubleBuffered = True
@@ -16,17 +16,18 @@ object fCardAct: TfCardAct
   Font.Style = []
   OldCreateOrder = False
   ParentBiDiMode = False
+  ShowHint = True
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
     392
-    153)
+    167)
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel: TBevel
     Left = 0
-    Top = 112
+    Top = 126
     Width = 392
     Height = 41
     Align = alBottom
@@ -35,7 +36,7 @@ object fCardAct: TfCardAct
   end
   object ButtonSave: TButton
     Left = 178
-    Top = 120
+    Top = 134
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
@@ -47,18 +48,20 @@ object fCardAct: TfCardAct
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 4
     OnClick = ButtonSaveClick
+    ExplicitTop = 120
   end
   object ButtonClose: TButton
     Left = 284
-    Top = 120
+    Top = 134
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 4
+    TabOrder = 5
     OnClick = ButtonCloseClick
+    ExplicitTop = 120
   end
   object PanelDate: TPanel
     Left = 0
@@ -145,12 +148,66 @@ object fCardAct: TfCardAct
       OnChange = dbedtNAMEChange
     end
   end
+  object pnl1: TPanel
+    Left = 0
+    Top = 100
+    Width = 392
+    Height = 25
+    Align = alTop
+    BevelOuter = bvNone
+    Caption = 'PanelName'
+    ShowCaption = False
+    TabOrder = 3
+    ExplicitLeft = 8
+    ExplicitTop = 112
+    object lbl1: TLabel
+      Left = 7
+      Top = 5
+      Width = 41
+      Height = 13
+      Caption = #1055#1088#1086#1088#1072#1073':'
+    end
+    object btn1: TSpeedButton
+      Left = 361
+      Top = 2
+      Width = 23
+      Height = 21
+      Hint = #1042#1099#1073#1086#1088' '#1087#1088#1086#1088#1072#1073#1072' '#1080#1079' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
+      Caption = '...'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = btn1Click
+    end
+    object dbedtNAME1: TDBEdit
+      Left = 65
+      Top = 2
+      Width = 290
+      Height = 21
+      DataField = 'FOREMAN_'
+      DataSource = dsAct
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ReadOnly = True
+      TabOrder = 0
+      OnChange = dbedtNAMEChange
+    end
+  end
   object qrTemp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 12
-    Top = 96
+    Left = 20
+    Top = 32
   end
   object qrAct: TFDQuery
     Connection = DM.Connect
@@ -163,11 +220,22 @@ object fCardAct: TfCardAct
         SourceDataType = dtMemo
         TargetDataType = dtAnsiString
       end>
+    UpdateOptions.AssignedValues = [uvEDelete, uvUpdateChngFields, uvRefreshMode, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
+    UpdateOptions.RefreshMode = rmAll
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    UpdateOptions.UpdateTableName = 'smeta.card_acts'
+    UpdateOptions.KeyFields = 'ID'
     SQL.Strings = (
-      'select * from card_acts'
+      'select card_acts.*, '
+      
+        'CONCAT(IFNULL(foreman_first_name, ""), " ", IFNULL(foreman_name,' +
+        ' ""), " ", IFNULL(foreman_second_name, "")) AS FOREMAN_'
+      'from card_acts'
+      'LEFT JOIN foreman ON card_acts.foreman_id=foreman.foreman_id'
       'where id=:id')
-    Left = 84
-    Top = 96
+    Left = 212
+    Top = 48
     ParamData = <
       item
         Name = 'ID'
@@ -178,7 +246,7 @@ object fCardAct: TfCardAct
   end
   object dsAct: TDataSource
     DataSet = qrAct
-    Left = 120
-    Top = 96
+    Left = 256
+    Top = 40
   end
 end

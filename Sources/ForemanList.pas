@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  Vcl.ExtCtrls, Vcl.DBCtrls, JvComponentBase, JvFormPlacement;
+  Vcl.ExtCtrls, Vcl.DBCtrls, JvComponentBase, JvFormPlacement, Tools, Vcl.StdCtrls, Vcl.Buttons;
 
 type
   TfForemanList = class(TForm)
@@ -21,6 +21,9 @@ type
     strngfldMainforeman_first_name: TStringField;
     strngfldMainforeman_second_name: TStringField;
     qrMainNUMPP: TIntegerField;
+    pnlSelect: TPanel;
+    btn1: TBitBtn;
+    btn2: TBitBtn;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -28,10 +31,14 @@ type
     procedure grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
     procedure qrMainCalcFields(DataSet: TDataSet);
+    procedure FormShow(Sender: TObject);
+    procedure btn1Click(Sender: TObject);
+    procedure btn2Click(Sender: TObject);
   private
     { Private declarations }
   public
-    { Public declarations }
+    Kind: TKindForm;
+    OutValue: Integer;
   end;
 
 var
@@ -41,7 +48,20 @@ implementation
 
 {$R *.dfm}
 
-uses Main, DataModule, Tools;
+uses Main, DataModule;
+
+procedure TfForemanList.btn1Click(Sender: TObject);
+begin
+  ModalResult := mrCancel;
+end;
+
+procedure TfForemanList.btn2Click(Sender: TObject);
+begin
+  OutValue := 0;
+  if not qrMain.IsEmpty then
+    OutValue := qrMain.FieldByName('foreman_id').AsInteger;
+  ModalResult := mrOk;
+end;
 
 procedure TfForemanList.FormActivate(Sender: TObject);
 begin
@@ -59,6 +79,7 @@ end;
 
 procedure TfForemanList.FormCreate(Sender: TObject);
 begin
+  Kind := kdNone;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   LoadDBGridSettings(grMain);
@@ -70,6 +91,11 @@ begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(Caption);
   fForemanList := nil;
+end;
+
+procedure TfForemanList.FormShow(Sender: TObject);
+begin
+  pnlSelect.Visible := Kind in [kdSelect];
 end;
 
 procedure TfForemanList.grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;

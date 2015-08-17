@@ -121,7 +121,8 @@ uses
   BuildZone in 'BuildZone.pas' {fBuildZone},
   HelpKfSt in 'HelpKfSt.pas' {fHelpKfSt},
   LogIn in 'LogIn.pas' {fLogIn},
-  Users in 'Users.pas' {fUsers};
+  Users in 'Users.pas' {fUsers},
+  RoundSetup in 'RoundSetup.pas' {fRoundSetup};
 
 {$R *.res}
 var MHandle: THandle;

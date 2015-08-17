@@ -139,6 +139,7 @@ type
     qrMaterialDataFREPLACED: TIntegerField;
     qrMechDataFREPLACED: TIntegerField;
     pnlCalculationYesNo: TPanel;
+    qrMaterialDataNUMPP: TIntegerField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -190,6 +191,7 @@ type
     procedure qrDevicesDetailBeforePost(DataSet: TDataSet);
     procedure pnlCalculationYesNoClick(Sender: TObject);
     procedure btnShowDiffClick(Sender: TObject);
+    procedure qrMaterialDataCalcFields(DataSet: TDataSet);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -1148,6 +1150,11 @@ begin
     qrMaterialData.Cancel;
     Abort;
   end;
+end;
+
+procedure TfCalcResource.qrMaterialDataCalcFields(DataSet: TDataSet);
+begin
+  qrMaterialDataNUMPP.Value := qrMaterialData.RecNo;
 end;
 
 procedure TfCalcResource.qrMaterialDataMAT_PROC_PODRChange(Sender: TField);

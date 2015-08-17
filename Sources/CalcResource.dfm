@@ -216,8 +216,6 @@ object fCalcResource: TfCalcResource
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
-        ExplicitTop = 41
-        ExplicitHeight = 152
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
@@ -254,6 +252,18 @@ object fCalcResource: TfCalcResource
           Columns = <
             item
               Expanded = False
+              FieldName = 'NUMPP'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              Title.Caption = #8470' '#1087#1087
+              Width = 14
+              Visible = True
+            end
+            item
+              Expanded = False
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
@@ -265,7 +275,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = 58
+              Width = 56
               Visible = True
             end
             item
@@ -290,7 +300,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072
-              Width = 53
+              Width = 52
               Visible = True
             end
             item
@@ -298,7 +308,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
-              Width = 53
+              Width = 52
               Visible = True
             end
             item
@@ -306,7 +316,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = 37
+              Width = 35
               Visible = True
             end
             item
@@ -314,7 +324,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 53
+              Width = 52
               Visible = True
             end
             item
@@ -322,7 +332,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 37
+              Width = 35
               Visible = True
             end
             item
@@ -330,14 +340,14 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 56
+              Width = 54
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'MAT_PROC_ZAC'
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 37
+              Width = 35
               Visible = True
             end
             item
@@ -351,14 +361,14 @@ object fCalcResource: TfCalcResource
               Expanded = False
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 46
+              Width = 45
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_PODR'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 52
+              Width = 51
               Visible = True
             end>
         end
@@ -380,7 +390,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsMaterialData
           DBGrid = grMaterial
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 133
         end
       end
       object pnlMatBott: TPanel
@@ -546,8 +555,6 @@ object fCalcResource: TfCalcResource
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
-        ExplicitTop = 41
-        ExplicitHeight = 168
         object grMech: TJvDBGrid
           Left = 0
           Top = 0
@@ -691,7 +698,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsMechData
           DBGrid = grMech
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 149
         end
       end
       object pnlMechBott: TPanel
@@ -909,8 +915,6 @@ object fCalcResource: TfCalcResource
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 1
-        ExplicitTop = 41
-        ExplicitHeight = 168
         object grDev: TJvDBGrid
           Left = 0
           Top = 0
@@ -1069,7 +1073,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsDevices
           DBGrid = grDev
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 149
         end
       end
       object pnlDevBott: TPanel
@@ -1222,8 +1225,6 @@ object fCalcResource: TfCalcResource
         Align = alClient
         Caption = 'pnlRatesClient'
         TabOrder = 0
-        ExplicitTop = 26
-        ExplicitHeight = 252
         object grRates: TJvDBGrid
           Left = 1
           Top = 1
@@ -1379,7 +1380,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsRates
           DBGrid = grRates
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 187
         end
         object dbmmoNAME3: TDBMemo
           Left = 1
@@ -1392,7 +1392,6 @@ object fCalcResource: TfCalcResource
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 2
-          ExplicitTop = 206
         end
       end
     end
@@ -1437,6 +1436,7 @@ object fCalcResource: TfCalcResource
     BeforeOpen = qrMaterialDataBeforeOpen
     AfterOpen = qrMaterialDataAfterOpen
     BeforePost = qrMaterialDataBeforePost
+    OnCalcFields = qrMaterialDataCalcFields
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -1491,14 +1491,17 @@ object fCalcResource: TfCalcResource
       '  (ID_REPLACED<>0) AS FREPLACED'
       'FROM '
       '  materialcard_temp'
-      'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) /*AND REPLACED = 0*/'
+      
+        'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) /*AND REPLACED = 0*/ AN' +
+        'D CONSIDERED=1'
       
         'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, FCOAS' +
         'T, COAST, DELETED,  '
       
         'MAT_PROC_ZAC, MAT_PROC_PODR, TRANSP_PROC_ZAC, TRANSP_PROC_PODR, ' +
         'MAT_ID, REPLACED, FREPLACED'
-      'ORDER BY 1, REPLACED DESC, 2')
+      '/* ORDER BY 1, REPLACED DESC, 2 */'
+      'ORDER BY 2 DESC')
     Left = 27
     Top = 168
     ParamData = <
@@ -1619,6 +1622,11 @@ object fCalcResource: TfCalcResource
     end
     object qrMaterialDataFREPLACED: TIntegerField
       FieldName = 'FREPLACED'
+    end
+    object qrMaterialDataNUMPP: TIntegerField
+      FieldKind = fkCalculated
+      FieldName = 'NUMPP'
+      Calculated = True
     end
   end
   object dsMaterialData: TDataSource
