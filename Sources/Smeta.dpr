@@ -122,7 +122,8 @@ uses
   HelpKfSt in 'HelpKfSt.pas' {fHelpKfSt},
   LogIn in 'LogIn.pas' {fLogIn},
   Users in 'Users.pas' {fUsers},
-  RoundSetup in 'RoundSetup.pas' {fRoundSetup};
+  RoundSetup in 'RoundSetup.pas' {fRoundSetup},
+  InstructionHelp in 'InstructionHelp.pas' {fInstructionHelp};
 
 {$R *.res}
 var MHandle: THandle;

@@ -280,6 +280,7 @@ type
     procedure mN26Click(Sender: TObject);
     procedure mN30Click(Sender: TObject);
     procedure N24Click(Sender: TObject);
+    procedure mN36Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -414,7 +415,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
   SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList,
-  NormativDictHelp, BuildZone, HelpKfSt, Users, RoundSetup;
+  NormativDictHelp, BuildZone, HelpKfSt, Users, RoundSetup, InstructionHelp;
 
 {$R *.dfm}
 
@@ -1106,7 +1107,7 @@ procedure TFormMain.mConstractorServiceClick(Sender: TObject);
 begin
   if (not Assigned(fUniDict)) then
     fUniDict := TfUniDict.Create(Self);
-  fUniDict.SetConstactorService;
+  fUniDict.qrUniDictType.Locate('unidicttype_id', 7, []);
   fUniDict.Show;
 end;
 
@@ -1195,6 +1196,13 @@ begin
   if (not Assigned(fRoundSetup)) then
     fRoundSetup := TfRoundSetup.Create(FormMain);
   fRoundSetup.ShowModal;
+end;
+
+procedure TFormMain.mN36Click(Sender: TObject);
+begin
+  if (not Assigned(fInstructionHelp)) then
+    fInstructionHelp := TfInstructionHelp.Create(FormMain);
+  fInstructionHelp.ShowModal;
 end;
 
 procedure TFormMain.mUsersClick(Sender: TObject);

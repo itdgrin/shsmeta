@@ -199,7 +199,6 @@ object fUniDict: TfUniDict
             FieldName = 'unidicttype_first_month'
             Title.Alignment = taCenter
             Title.Caption = '1 '#1079#1085#1072#1095#1077#1085#1080#1077
-            Width = -1
             Visible = False
           end>
       end

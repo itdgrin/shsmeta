@@ -137,7 +137,7 @@ end;
 
 procedure TfFileStorage.btn3Click(Sender: TObject);
 begin
-  Exec(qrTreeData.FieldByName('doc_path').AsString);
+  RunDocument(qrTreeData, False);
 end;
 
 procedure TfFileStorage.btnAddClick(Sender: TObject);
