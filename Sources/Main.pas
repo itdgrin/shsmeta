@@ -170,6 +170,7 @@ type
     mN36: TMenuItem;
     mN26: TMenuItem;
     mN30: TMenuItem;
+    N24: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -278,6 +279,7 @@ type
     procedure mUsersClick(Sender: TObject);
     procedure mN26Click(Sender: TObject);
     procedure mN30Click(Sender: TObject);
+    procedure N24Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -1068,6 +1070,17 @@ begin
     Screen.Cursor := crDefault;
   end;
 
+end;
+
+procedure TFormMain.N24Click(Sender: TObject);
+begin
+    if Assigned(FormCalculationEstimate) then
+    begin
+    if FormCalculationEstimate.IdEstimate>0 then
+    ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)), PChar(FileReportPath + 'report\'), SW_maximIZE)
+    else
+    ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)), PChar(FileReportPath + 'report\'), SW_maximIZE);
+    end;
 end;
 
 procedure TFormMain.mBuildZoneClick(Sender: TObject);
