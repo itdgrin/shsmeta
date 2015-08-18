@@ -43,7 +43,7 @@ constructor TSprMechanizm.Create(AOwner: TComponent;
 var lc: TListColumn;
 begin
   FAllowAddition := vAllowAddition;
-  FNoEdCol := True;
+ // FNoEdCol := False;
   inherited Create(AOwner, APriceColumn, AStarDate);
   if APriceColumn then
   begin
@@ -98,8 +98,9 @@ end;
 procedure TSprMechanizm.ListSprResize(Sender: TObject);
 begin
   inherited;
-  ListSpr.Columns[FZpColIndex].Width := 100;
-  ListSpr.Columns[FTrColIndex].Width := 100;
+  if FPriceColumn then
+    ListSpr.Columns[FZpColIndex].Width := 120;
+  ListSpr.Columns[FTrColIndex].Width := 120;
 end;
 
 end.

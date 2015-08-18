@@ -232,7 +232,7 @@ inherited SprMaterial: TSprMaterial
       Top = 12
       ExplicitTop = 12
     end
-    object LabelRegion: TLabel [2]
+    object lbRegion: TLabel [2]
       Left = 221
       Top = 12
       Width = 39
@@ -294,7 +294,5 @@ inherited SprMaterial: TSprMaterial
   inherited ListSpr: TListView
     TabOrder = 2
     OnDblClick = ListSprDblClick
-    ExplicitLeft = 3
-    ExplicitTop = 136
   end
 end

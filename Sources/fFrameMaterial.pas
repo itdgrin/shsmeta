@@ -10,13 +10,12 @@ uses
 
 type
   TSprMaterial = class(TSprFrame)
-    LabelRegion: TLabel;
+    lbRegion: TLabel;
     cmbRegion: TComboBox;
     rbMat: TRadioButton;
     rbJBI: TRadioButton;
     procedure ListSprDblClick(Sender: TObject);
     procedure rbMatClick(Sender: TObject);
-    procedure edtYearChange(Sender: TObject);
   private
     { Private declarations }
     FAllowAddition: Boolean;
@@ -49,18 +48,26 @@ constructor TSprMaterial.Create(AOwner: TComponent;
 begin
   FAllowAddition := vAllowAddition;
   inherited Create(AOwner, APriceColumn, AStarDate);
+
+  if not APriceColumn then
+  begin
+    lbYear.Visible := False;
+    edtYear.Visible := False;
+    lbMonth.Visible := False;
+    cmbMonth.Visible := False;
+    lbRegion.Visible := False;
+    cmbRegion.Visible := False;
+    PanelSettings.Visible := True;
+    rbMat.Left := 20;
+    rbJBI.Left := rbMat.Left + rbMat.Width + 5;
+  end;
+
   if (cmbRegion.Items.Count >= ARegion) and (ARegion > 0) then
     cmbRegion.ItemIndex := ARegion - 1;
   if AMat then
     rbMat.Checked := True
   else if AJBI then
     rbJBI.Checked := True;
-end;
-
-procedure TSprMaterial.edtYearChange(Sender: TObject);
-begin
-  inherited;
-  btnShow.Click;
 end;
 
 function TSprMaterial.GetRegion;

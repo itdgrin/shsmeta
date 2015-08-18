@@ -27,46 +27,21 @@ inherited FramePriceTransportations: TFramePriceTransportations
       Height = 5
       Cursor = crVSplit
     end
-    object Splitter: TSplitter
-      Left = 0
-      Top = 276
-      Width = 488
-      Height = 5
-      Cursor = crVSplit
-      Align = alBottom
-      ResizeStyle = rsUpdate
-      ExplicitTop = 25
-    end
     object PanelTable: TPanel
       Left = 0
       Top = 25
       Width = 488
-      Height = 251
+      Height = 291
       Align = alClient
       BevelOuter = bvNone
       ParentBackground = False
       TabOrder = 1
-      OnResize = PanelTableResize
-      object SpeedButtonShowHide: TSpeedButton
-        Tag = 1
-        Left = 0
-        Top = 236
-        Width = 488
-        Height = 15
-        Align = alBottom
-        Flat = True
-        ParentShowHint = False
-        ShowHint = True
-        OnClick = SpeedButtonShowHideClick
-        ExplicitLeft = -568
-        ExplicitTop = 161
-        ExplicitWidth = 796
-      end
+      ExplicitHeight = 251
       object VST: TVirtualStringTree
         Left = 0
         Top = 0
         Width = 488
-        Height = 236
+        Height = 291
         Align = alClient
         Header.AutoSizeIndex = 0
         Header.Font.Charset = DEFAULT_CHARSET
@@ -86,7 +61,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
         OnEnter = VSTEnter
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
-        ExplicitLeft = 8
+        ExplicitHeight = 236
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]
@@ -167,55 +142,27 @@ inherited FramePriceTransportations: TFramePriceTransportations
       ParentBackground = False
       ParentDoubleBuffered = False
       TabOrder = 0
-      DesignSize = (
-        488
-        25)
-      object LabelSearch: TLabel
-        Left = 8
-        Top = 6
-        Width = 34
-        Height = 13
-        Caption = #1055#1086#1080#1089#1082':'
-      end
       object LabelYear: TLabel
-        Left = 285
+        Left = 3
         Top = 6
-        Width = 23
+        Width = 25
         Height = 13
-        Anchors = [akTop, akRight]
         Caption = #1043#1086#1076':'
       end
       object LabelMonth: TLabel
-        Left = 370
+        Left = 88
         Top = 6
-        Width = 35
+        Width = 37
         Height = 13
-        Anchors = [akTop, akRight]
         Caption = #1052#1077#1089#1103#1094':'
       end
-      object EditSearch: TEdit
-        Left = 48
-        Top = 2
-        Width = 231
-        Height = 21
-        Hint = 
-          #1042#1074#1077#1076#1080#1090#1077' '#1089#1083#1086#1074#1072' '#1095#1077#1088#1077#1079' '#1087#1088#1086#1073#1077#1083' '#1080' '#1085#1072#1078#1084#1080#1090#1077' - Enter, '#1076#1083#1103' '#1086#1095#1080#1089#1090#1082#1080' '#1085#1072#1078#1084#1080#1090 +
-          #1077' - Esc'
-        Anchors = [akLeft, akTop, akRight]
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnEnter = EditSearchEnter
-        OnKeyPress = EditSearchKeyPress
-      end
       object ComboBoxMonth: TComboBox
-        Left = 411
+        Left = 129
         Top = 2
-        Width = 75
+        Width = 77
         Height = 21
-        Anchors = [akTop, akRight]
         ItemIndex = 1
-        TabOrder = 2
+        TabOrder = 1
         Text = #1060#1077#1074#1088#1072#1083#1100
         OnChange = ComboBoxMonthYearChange
         Items.Strings = (
@@ -233,42 +180,30 @@ inherited FramePriceTransportations: TFramePriceTransportations
           #1044#1077#1082#1072#1073#1088#1100)
       end
       object edtYear: TSpinEdit
-        Left = 311
+        Left = 29
         Top = 2
-        Width = 55
+        Width = 57
         Height = 22
-        Anchors = [akTop, akRight]
         MaxLength = 4
         MaxValue = 2050
         MinValue = 1900
-        TabOrder = 1
+        TabOrder = 0
         Value = 2014
         OnChange = ComboBoxMonthYearChange
       end
-    end
-    object PanelMemo: TPanel
-      Left = 0
-      Top = 281
-      Width = 488
-      Height = 35
-      Align = alBottom
-      BevelOuter = bvNone
-      Constraints.MinHeight = 35
-      DoubleBuffered = True
-      ParentBackground = False
-      ParentDoubleBuffered = False
-      ShowCaption = False
-      TabOrder = 2
-      object Memo: TMemo
-        Left = 0
-        Top = 0
-        Width = 488
-        Height = 35
-        Align = alClient
-        ReadOnly = True
-        ScrollBars = ssVertical
-        TabOrder = 0
-        OnEnter = MemoEnter
+      object cmbTranspType: TComboBox
+        Left = 212
+        Top = 2
+        Width = 122
+        Height = 21
+        Style = csDropDownList
+        ItemIndex = 0
+        TabOrder = 2
+        Text = #1057#1072#1084#1086#1089#1074#1072#1083#1099' '#1057'310'
+        OnChange = ComboBoxMonthYearChange
+        Items.Strings = (
+          #1057#1072#1084#1086#1089#1074#1072#1083#1099' '#1057'310'
+          #1057#1072#1084#1086#1089#1074#1072#1083#1099' '#1057'311')
       end
     end
   end

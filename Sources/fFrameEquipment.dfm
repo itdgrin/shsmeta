@@ -241,7 +241,5 @@ inherited SprEquipment: TSprEquipment
   inherited ListSpr: TListView
     TabOrder = 2
     OnDblClick = ListSprDblClick
-    ExplicitLeft = 37
-    ExplicitTop = 117
   end
 end

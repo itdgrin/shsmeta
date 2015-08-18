@@ -582,7 +582,7 @@ begin
   // {$ENDIF}
   FileReportPath := ExtractFilePath(Application.ExeName) + C_REPORTDIR;
 
-  // Переменная среды для аботы относительных путей в хранилище
+  // Переменная среды для работы относительных путей в хранилище
   Windows.SetEnvironmentVariable('SMETADIR', PChar(ExtractFileDir(Application.ExeName)));
 end;
 

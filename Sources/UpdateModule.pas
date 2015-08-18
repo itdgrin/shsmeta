@@ -418,6 +418,7 @@ begin
   if FUserBlok then exit;
 
   HTTP := TIdHTTP.Create(nil);
+  HTTP.ConnectTimeout := 3000;
   StrimPage := TMemoryStream.Create;
   try
     try

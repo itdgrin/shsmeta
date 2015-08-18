@@ -100,6 +100,8 @@ var i: Integer;
     lc: TListColumn;
 begin
   inherited Create(AOwner);
+  btnShow.Visible := False;
+
   FLoaded := False;
 
   cmbMonth.Items.Clear;
@@ -129,6 +131,8 @@ begin
       lc.Caption := 'Цена с НДС, руб';
     end;
   end;
+
+  PanelSettings.Visible :=  FPriceColumn;
 
   DecodeDate(AStarDate,y,m,d);
   edtYear.Value := y;
@@ -440,6 +444,7 @@ procedure TSprFrame.edtYearChange(Sender: TObject);
 begin
   btnShow.Enabled := True;
   ListSpr.Visible := False;
+  btnShow.Click;
 end;
 
 procedure TSprFrame.ListSprCustomDrawItem(Sender: TCustomListView;
@@ -483,19 +488,19 @@ begin
     i := 2
   else
   begin
-    ListSpr.Columns[2].Width := 70;
+    ListSpr.Columns[2].Width := 60;
     i := 3;
   end;
 
   if FPriceColumn then
   begin
-    ListSpr.Columns[i].Width := 100;
+    ListSpr.Columns[i].Width := 110;
     ListSpr.Columns[i + 1].Width := 100;
   end;
   for i := 0 to ListSpr.Columns.Count - 1 do
     if i <> 1 then
       j := j - ListSpr.Columns[i].Width;
-  ListSpr.Columns[1].Width := j - 50;
+  ListSpr.Columns[1].Width := j - 25;
 end;
 
 procedure TSprFrame.ListSprSelectItem(Sender: TObject; Item: TListItem;

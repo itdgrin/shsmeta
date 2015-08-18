@@ -246,7 +246,5 @@ inherited SprMechanizm: TSprMechanizm
   inherited ListSpr: TListView
     TabOrder = 2
     OnDblClick = ListSprDblClick
-    ExplicitLeft = 8
-    ExplicitTop = 111
   end
 end

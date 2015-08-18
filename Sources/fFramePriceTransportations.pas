@@ -19,42 +19,27 @@ type
 
     PopupMenu: TPopupMenu;
     CopyCell: TMenuItem;
-    PriceTransportationSearch: TMenuItem;
-    PriceTransportationSearchFast: TMenuItem;
-    PriceTransportationSearchAccurate: TMenuItem;
 
     Panel: TPanel;
-    PanelMemo: TPanel;
     PanelTable: TPanel;
     PanelSearch: TPanel;
-
-    Memo: TMemo;
-    EditSearch: TEdit;
-    LabelSearch: TLabel;
-    Splitter: TSplitter;
     ImageSplitter: TImage;
     VST: TVirtualStringTree;
     FrameStatusBar: TFrameStatusBar;
-    SpeedButtonShowHide: TSpeedButton;
     LabelYear: TLabel;
     LabelMonth: TLabel;
     ComboBoxMonth: TComboBox;
     ADOQuery: TFDQuery;
     edtYear: TSpinEdit;
+    cmbTranspType: TComboBox;
 
-    procedure ReceivingSearch(vStr: String);
-
-    procedure EditSearchEnter(Sender: TObject);
-    procedure EditSearchKeyPress(Sender: TObject; var Key: Char);
+    procedure ReceivingSearch();
 
     procedure FrameEnter(Sender: TObject);
     procedure FrameExit(Sender: TObject);
     procedure FrameResize(Sender: TObject);
-    procedure PanelTableResize(Sender: TObject);
 
     procedure CopyCellClick(Sender: TObject);
-    procedure MemoEnter(Sender: TObject);
-    procedure SpeedButtonShowHideClick(Sender: TObject);
 
     procedure VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
       Column: TColumnIndex; CellRect: TRect);
@@ -69,6 +54,10 @@ type
 
   private
     StrFilterData: string; // Фильтрация данных по месяцу и году
+    FCode: string;
+    FMaxValue: array [2..9] of integer;
+    FDeltaValue: array [2..9] of integer;
+    function FillingCell(AColumn: TColumnIndex; ARow: Integer): string;
   public
     procedure ReceivingAll; override;
     constructor Create(AOwner: TComponent); override;
@@ -100,23 +89,8 @@ end;
 constructor TFramePriceTransportations.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-
-  // ----------------------------------------
-
   StrFilterData := '';
-
-  // ----------------------------------------
-
   VSTSetting(VST); // НАСТРАИВАЕМ ЦВЕТА
-
-  PanelMemo.Constraints.MinHeight := 35;
-  SpeedButtonShowHide.Hint := 'Свернуть панель';
-
-  with DM do
-  begin
-    ImageListHorozontalDots.GetIcon(0, ImageSplitter.Picture.Icon);
-    ImageListArrowsBottom.GetBitmap(0, SpeedButtonShowHide.Glyph);
-  end;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -143,7 +117,7 @@ begin
     StrFilterData := '(year = ' + IntToStr(edtYear.Value) + ') and (monat = ' +
       IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
 
-    ReceivingSearch('');
+    ReceivingSearch();
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе к БД возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -155,25 +129,28 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFramePriceTransportations.ReceivingSearch(vStr: String);
+procedure TFramePriceTransportations.ReceivingSearch();
 var
   WhereStr: string;
   FilterStr, StrQuery: string;
 begin
-  FilterStr := '';
-  if (StrFilterData <> '') and (vStr <> '') then
-    FilterStr := StrFilterData + ' and (' + vStr + ')'
-  else if StrFilterData = '' then
-    FilterStr := vStr
-  else if vStr = '' then
-    FilterStr := StrFilterData;
+  FilterStr := StrFilterData;
 
   if FilterStr <> '' then
     WhereStr := ' where ' + FilterStr
   else
     WhereStr := '';
 
-  StrQuery := 'SELECT * FROM transfercargo' + WhereStr + ';';
+  if cmbTranspType.ItemIndex = 1 then
+  begin
+    FCode := 'С311-';
+    StrQuery := 'SELECT * FROM transfercargoboard' + WhereStr + ' order by ID;';
+  end
+  else
+  begin
+    FCode := 'С310-';
+    StrQuery := 'SELECT * FROM transfercargo' + WhereStr + ' order by ID;';
+  end;
 
   with ADOQuery do
   begin
@@ -184,63 +161,63 @@ begin
     FetchAll;
   end;
 
-  if ADOQuery.RecordCount <= 0 then
+  if (ADOQuery.RecordCount <= 0) or
+     ((ADOQuery.RecordCount <> 51) and (cmbTranspType.ItemIndex = 0)) or
+     ((ADOQuery.RecordCount <> 121) and (cmbTranspType.ItemIndex = 1)) then
   begin
     VST.RootNodeCount := 1;
     VST.ClearSelection;
-
     FrameStatusBar.InsertText(1, '-1');
   end
   else
   begin
-    VST.RootNodeCount := ADOQuery.RecordCount;
+    if cmbTranspType.ItemIndex = 0 then
+      ADOQuery.RecNo := 50
+    else
+      ADOQuery.RecNo := 120;
+
+    FMaxValue[2] := ADOQuery.FieldByName('class1_1').AsVariant;
+    FMaxValue[3] := ADOQuery.FieldByName('class1_2').AsVariant;
+    FMaxValue[4] := ADOQuery.FieldByName('class2_1').AsVariant;
+    FMaxValue[5] := ADOQuery.FieldByName('class2_2').AsVariant;
+    FMaxValue[6] := ADOQuery.FieldByName('class3_1').AsVariant;
+    FMaxValue[7] := ADOQuery.FieldByName('class3_2').AsVariant;
+    FMaxValue[8] := ADOQuery.FieldByName('class4_1').AsVariant;
+    FMaxValue[9] := ADOQuery.FieldByName('class4_2').AsVariant;
+
+    if cmbTranspType.ItemIndex = 0 then
+      ADOQuery.RecNo := 51
+    else
+      ADOQuery.RecNo := 121;
+
+    FDeltaValue[2] := ADOQuery.FieldByName('class1_1').AsVariant;
+    FDeltaValue[3] := ADOQuery.FieldByName('class1_2').AsVariant;
+    FDeltaValue[4] := ADOQuery.FieldByName('class2_1').AsVariant;
+    FDeltaValue[5] := ADOQuery.FieldByName('class2_2').AsVariant;
+    FDeltaValue[6] := ADOQuery.FieldByName('class3_1').AsVariant;
+    FDeltaValue[7] := ADOQuery.FieldByName('class3_2').AsVariant;
+    FDeltaValue[8] := ADOQuery.FieldByName('class4_1').AsVariant;
+    FDeltaValue[9] := ADOQuery.FieldByName('class4_2').AsVariant;
+
+    VST.RootNodeCount := 301;
     VST.Selected[VST.GetFirst] := true;
     VST.FocusedNode := VST.GetFirst;
-
     FrameStatusBar.InsertText(1, '1');
   end;
-
-  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount));
+  VST.Repaint;
+  FrameStatusBar.InsertText(0, IntToStr(VST.RootNodeCount));
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFramePriceTransportations.EditSearchEnter(Sender: TObject);
-begin
-  LoadKeyboardLayout('00000419', KLF_ACTIVATE); // Русский
-  // LoadKeyboardLayout('00000409', KLF_ACTIVATE); // Английский
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFramePriceTransportations.EditSearchKeyPress(Sender: TObject; var Key: Char);
-begin
-  with (Sender as TEdit) do
-    if (Key = #13) and (Text <> '') then // Если нажата клавиша "Enter" и строка поиска не пуста
-      ReceivingSearch(FilteredString(Text, 'distance'))
-    else if (Key = #27) or ((Key = #13) and (Text = '')) then
-    // Нажата клавиша ESC, или Enter и строка поиска пуста
-    begin
-      Text := '';
-      ReceivingSearch('');
-    end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFramePriceTransportations.FrameEnter(Sender: TObject);
 begin
-  EditSearch.SetFocus;
-
   if not ADOQuery.Active then
     Exit;
 
   FrameStatusBar.InsertText(0, IntToStr(VST.RootNodeCount)); // Количество записей
-
-  if ADOQuery.RecordCount > 0 then
-    FrameStatusBar.InsertText(1, IntToStr(VST.FocusedNode.Index + 1)) // Номер выделенной записи
+  if Assigned(VST.FocusedNode) then
+    FrameStatusBar.InsertText(1, IntToStr(VST.FocusedNode.Index + 1))
   else
-    FrameStatusBar.InsertText(1, '-1'); // Нет записей
+    FrameStatusBar.InsertText(1, '-1');
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -254,102 +231,103 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFramePriceTransportations.FrameResize(Sender: TObject);
 begin
   AutoWidthColumn(VST, 1);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFramePriceTransportations.PanelTableResize(Sender: TObject);
-begin
-  ImageSplitter.Top := Splitter.Top;
-  ImageSplitter.Left := Splitter.Left + (Splitter.Width - ImageSplitter.Width) div 2;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFramePriceTransportations.CopyCellClick(Sender: TObject);
 var
   ClipBoard: TClipboard;
   CellText: string;
 begin
-  ADOQuery.RecNo := VST.FocusedNode.Index + 1;
+  if ((VST.FocusedNode.Index + 1 < 51) and (cmbTranspType.ItemIndex = 0)) or
+     ((VST.FocusedNode.Index + 1 < 101) and (cmbTranspType.ItemIndex = 1)) then
+    ADOQuery.RecNo := VST.FocusedNode.Index + 1;
 
-  case VST.FocusedColumn of
-    1:
-      CellText := 'С310-' + ADOQuery.FieldByName('distance').AsString;
-    2:
-      CellText := ADOQuery.FieldByName('class1_1').AsVariant;
-    3:
-      CellText := ADOQuery.FieldByName('class1_2').AsVariant;
-    4:
-      CellText := ADOQuery.FieldByName('class2_1').AsVariant;
-    5:
-      CellText := ADOQuery.FieldByName('class2_2').AsVariant;
-    6:
-      CellText := ADOQuery.FieldByName('class3_1').AsVariant;
-    7:
-      CellText := ADOQuery.FieldByName('class3_2').AsVariant;
-    8:
-      CellText := ADOQuery.FieldByName('class4_1').AsVariant;
-    9:
-      CellText := ADOQuery.FieldByName('class4_2').AsVariant;
-  end;
+  if (cmbTranspType.ItemIndex = 1) and (VST.FocusedNode.Index + 1 >= 101) and
+    (VST.FocusedNode.Index + 1 < 301) then
+    ADOQuery.RecNo := 101 + ((VST.FocusedNode.Index - 100) div 5);
+
+  CellText := FillingCell(VST.FocusedColumn, VST.FocusedNode.Index + 1);
 
   ClipBoard := TClipboard.Create;
   ClipBoard.SetTextBuf(PWideChar(WideString(CellText)));
   FreeAndNil(ClipBoard);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+function TFramePriceTransportations.FillingCell(AColumn: TColumnIndex; ARow: Integer): string;
 
-procedure TFramePriceTransportations.MemoEnter(Sender: TObject);
+  function GetPriceValue(const AField: string; AIndex: Integer): string;
+  begin
+    if cmbTranspType.ItemIndex = 0 then
+    begin
+      if (ARow < 51) then
+        Result := ADOQuery.FieldByName(AField).AsVariant
+      else if ARow < 301 then
+        Result := IntToStr(FMaxValue[AIndex] + FDeltaValue[AIndex] * (ARow - 50))
+      else
+        Result := IntToStr(FDeltaValue[AIndex]);
+    end
+    else
+    begin
+      if ARow < 201 then
+        Result := ADOQuery.FieldByName(AField).AsVariant
+      else if ARow < 301 then
+        Result := IntToStr(FMaxValue[AIndex] + FDeltaValue[AIndex] * (ARow - 200))
+      else
+        Result := IntToStr(FDeltaValue[AIndex]);
+    end;
+  end;
 begin
-  Memo.SelStart := Length(Memo.Text);
+  case AColumn of
+    0:
+      Result := IntToStr(ARow);
+    1:
+    begin
+      if ARow > 300 then
+        Result := 'на расстояние перевозки свыше 300 км за каждый км дополнительно прибавлять  '
+      else
+        Result := FCode + IntToStr(ARow);
+    end;
+    2:
+      Result := GetPriceValue('class1_1', 2);
+    3:
+      Result := GetPriceValue('class1_2', 3);
+    4:
+      Result := GetPriceValue('class2_1', 4);
+    5:
+      Result := GetPriceValue('class2_2', 5);
+    6:
+      Result := GetPriceValue('class3_1', 6);
+    7:
+      Result := GetPriceValue('class3_2', 7);
+    8:
+      Result := GetPriceValue('class4_1', 8);
+    9:
+      Result := GetPriceValue('class4_2', 9);
+  end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFramePriceTransportations.SpeedButtonShowHideClick(Sender: TObject);
-begin
-  MemoShowHide(Sender, Splitter, PanelMemo);
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFramePriceTransportations.VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas;
   Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
 var
   CellText: string;
 begin
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node)) then
+  if (not ADOQuery.Active) or
+     (ADOQuery.RecordCount <= 0) or
+     (not Assigned(Node)) then
     Exit;
 
-  ADOQuery.RecNo := Node.Index + 1;
+  if ((Node.Index + 1 < 51) and (cmbTranspType.ItemIndex = 0)) or
+     ((Node.Index + 1 < 101) and (cmbTranspType.ItemIndex = 1)) then
+    ADOQuery.RecNo := Node.Index + 1;
 
-  case Column of
-    1:
-      CellText := 'С310-' + ADOQuery.FieldByName('distance').AsString;
-    2:
-      CellText := ADOQuery.FieldByName('class1_1').AsVariant;
-    3:
-      CellText := ADOQuery.FieldByName('class1_2').AsVariant;
-    4:
-      CellText := ADOQuery.FieldByName('class2_1').AsVariant;
-    5:
-      CellText := ADOQuery.FieldByName('class2_2').AsVariant;
-    6:
-      CellText := ADOQuery.FieldByName('class3_1').AsVariant;
-    7:
-      CellText := ADOQuery.FieldByName('class3_2').AsVariant;
-    8:
-      CellText := ADOQuery.FieldByName('class4_1').AsVariant;
-    9:
-      CellText := ADOQuery.FieldByName('class4_2').AsVariant;
-  end;
+  if (cmbTranspType.ItemIndex = 1) and (Node.Index + 1 >= 101) and
+    (Node.Index + 1 < 301) then
+    ADOQuery.RecNo := 101 + ((Node.Index - 100) div 5);
+
+  CellText := FillingCell(Column, Node.Index + 1);
 
   VSTAfterCellPaintDefault(Sender, TargetCanvas, Node, Column, CellRect, CellText);
 end;
@@ -373,21 +351,13 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFramePriceTransportations.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode;
+procedure TFramePriceTransportations.VSTFocusChanged(Sender: TBaseVirtualTree;
+  Node: PVirtualNode;
   Column: TColumnIndex);
 begin
   VSTFocusChangedDefault(Sender, Node, Column);
-
-  // ----------------------------------------
-
-  // Выводим название в Memo под таблицей
-
-  if not ADOQuery.Active or (ADOQuery.RecordCount <= 0) or (not Assigned(Node)) then
-    Exit;
-
-  ADOQuery.RecNo := Node.Index + 1;
-  Memo.Text := ADOQuery.FieldByName('distance').AsVariant;
-  FrameStatusBar.InsertText(1, IntToStr(Node.Index + 1));
+  if Assigned(Node) then
+    FrameStatusBar.InsertText(1, IntToStr(Node.Index + 1));
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -398,7 +368,7 @@ begin
   if not ADOQuery.Active then
     Exit;
 
-  if (ADOQuery.RecordCount <= 0) then
+  if (VST.RootNodeCount = 1) then
   begin
     case Column of
       0:
@@ -426,31 +396,15 @@ begin
     Exit;
   end;
 
-  if Column > 0 then
+  if ((Node.Index + 1 < 51) and (cmbTranspType.ItemIndex = 0)) or
+     ((Node.Index + 1 < 101) and (cmbTranspType.ItemIndex = 1)) then
     ADOQuery.RecNo := Node.Index + 1;
 
-  case Column of
-    0:
-      CellText := IntToStr(Node.Index + 1);
-    1:
-      CellText := 'С310-' + ADOQuery.FieldByName('distance').AsString;
-    2:
-      CellText := ADOQuery.FieldByName('class1_1').AsVariant;
-    3:
-      CellText := ADOQuery.FieldByName('class1_2').AsVariant;
-    4:
-      CellText := ADOQuery.FieldByName('class2_1').AsVariant;
-    5:
-      CellText := ADOQuery.FieldByName('class2_2').AsVariant;
-    6:
-      CellText := ADOQuery.FieldByName('class3_1').AsVariant;
-    7:
-      CellText := ADOQuery.FieldByName('class3_2').AsVariant;
-    8:
-      CellText := ADOQuery.FieldByName('class4_1').AsVariant;
-    9:
-      CellText := ADOQuery.FieldByName('class4_2').AsVariant;
-  end;
+  if (cmbTranspType.ItemIndex = 1) and (Node.Index + 1 >= 101) and
+    (Node.Index + 1 < 301) then
+    ADOQuery.RecNo := 101 + ((Node.Index - 100) div 5);
+
+  CellText := FillingCell(Column, Node.Index + 1);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -460,12 +414,9 @@ begin
   StrFilterData := '(year = ' + IntToStr(edtYear.Value) + ') and (monat = ' +
     IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
 
-  EditSearch.Text := '';
   FrameStatusBar.InsertText(2, '-1');
 
-  ReceivingSearch('');
+  ReceivingSearch();
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.

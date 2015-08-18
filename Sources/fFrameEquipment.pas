@@ -34,7 +34,6 @@ begin
   FAllowAddition := vAllowAddition;
   FNoEdCol := True;
   inherited Create(AOwner, False, Date);
-  PanelSettings.Visible := False;
 end;
 
 function TSprEquipment.GetSprType: Integer;
