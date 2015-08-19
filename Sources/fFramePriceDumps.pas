@@ -111,8 +111,8 @@ begin
   PanelMemo.Constraints.MinHeight := 35;
   SpeedButtonShowHide.Hint := 'Свернуть панель';
 
+  ev := edtYear.OnChange;
   try
-    ev := edtYear.OnChange;
     edtYear.OnChange := nil;
     ComboBoxMonth.OnChange := nil;
 
