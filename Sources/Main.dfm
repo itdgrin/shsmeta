@@ -15,7 +15,6 @@
   OldCreateOrder = False
   Position = poDesigned
   WindowState = wsMaximized
-  OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -10910,6 +10909,12 @@
     Width = 121
     Height = 119
     BevelOuter = bvNone
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 0
     Visible = False
   end

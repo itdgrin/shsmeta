@@ -200,7 +200,6 @@ type
 
     procedure TimerCoverTimer(Sender: TObject);
     procedure ServiceSettingsClick(Sender: TObject);
-    procedure FormActivate(Sender: TObject);
     procedure N1Click(Sender: TObject);
     procedure ActC6Click(Sender: TObject);
     procedure N31Click(Sender: TObject);
@@ -630,9 +629,11 @@ begin
     begin
       DM.Connect.Params.Text := G_CONNECTSTR;
       DM.Connect.Connected := true;
+
       mLogInClick(nil);
       if G_USER_ID = 0 then
         Exit;
+
       // Загрузка справочников
       FormWaiting.Height := 110;
       FormWaiting.lbProcess.Caption := 'Загрузка справочников:';
@@ -2183,11 +2184,6 @@ end;
 procedure TFormMain.CalculationSettingsClick(Sender: TObject);
 begin
   FormCalculationSettings.Show;
-end;
-
-procedure TFormMain.FormActivate(Sender: TObject);
-begin
-  // FormLogin.ShowModal;
 end;
 
 procedure TFormMain.HelpAboutClick(Sender: TObject);
