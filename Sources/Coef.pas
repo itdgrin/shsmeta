@@ -49,6 +49,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure grCoefDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure dbnvgr1Click(Sender: TObject; Button: TNavigateBtn);
   private
     SelectEnabled: Boolean;
   public
@@ -78,6 +79,12 @@ end;
 procedure TfCoefficients.btnCloseClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TfCoefficients.dbnvgr1Click(Sender: TObject; Button: TNavigateBtn);
+begin
+  if Button = nbInsert then
+    qrCoef.Append;
 end;
 
 procedure TfCoefficients.FormCreate(Sender: TObject);

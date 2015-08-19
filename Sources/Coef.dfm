@@ -146,7 +146,7 @@ object fCoefficients: TfCoefficients
       OnClick = btnCloseClick
     end
     object dbnvgr1: TDBNavigator
-      Left = 5
+      Left = 0
       Top = 4
       Width = 216
       Height = 25
@@ -169,6 +169,7 @@ object fCoefficients: TfCoefficients
       ShowHint = True
       TabOrder = 0
       TabStop = True
+      OnClick = dbnvgr1Click
     end
     object btnAdd: TButton
       Left = 433

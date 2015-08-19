@@ -86,7 +86,7 @@ object fInstructionHelp: TfInstructionHelp
       'SELECT * '
       'FROM '
       '  `doc` '
-      'WHERE (doc_id>=2 and doc_id<=4) or (doc_id>=9 and doc_id<=34)'
+      'WHERE (doc_id>=2 and doc_id<=4) or (doc_id>=9 and doc_id<=35)'
       'ORDER BY doc_type, doc_name')
     Left = 41
     Top = 38

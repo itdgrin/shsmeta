@@ -34,6 +34,7 @@ begin
   SSRID := ID;
   BtnCaption := ToolBtnCaption;
   inherited Create(Application);
+  Caption := ToolBtnCaption;
 end;
 
 procedure TfSSR.FormActivate(Sender: TObject);

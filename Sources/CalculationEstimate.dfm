@@ -461,6 +461,20 @@
           ShowHint = True
           OnClick = btnDescriptionClick
         end
+        object lblForeman: TLabel
+          Left = 461
+          Top = 4
+          Width = 41
+          Height = 13
+          Caption = #1055#1088#1086#1088#1072#1073':'
+        end
+        object lblForemanFIO: TLabel
+          Left = 508
+          Top = 4
+          Width = 23
+          Height = 13
+          Caption = #1060#1048#1054
+        end
         object edtRateActive: TEdit
           Left = 272
           Top = 1
@@ -475,7 +489,7 @@
         object edtRateActiveDate: TEdit
           Left = 366
           Top = 1
-          Width = 68
+          Width = 91
           Height = 21
           Alignment = taCenter
           BevelInner = bvLowered
@@ -483,7 +497,7 @@
           Color = 14802912
           ReadOnly = True
           TabOrder = 3
-          Text = '01.03.2013'
+          Text = #1076#1072#1090#1072' '#1085#1077' '#1091#1082#1072#1079#1072#1085#1072
         end
         object EditCategory: TEdit
           Left = 241

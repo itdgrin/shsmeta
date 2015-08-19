@@ -713,6 +713,11 @@ begin
 
   FormCalculationEstimate.CreateTempTables;
   FormCalculationEstimate.IDAct := ActID;
+  FormCalculationEstimate.lblForemanFIO.caption :=
+    VarToStr(FastSelectSQLOne
+    ('select CONCAT(IFNULL(foreman_first_name, ""), " ", IFNULL(foreman_name, ""), " ", IFNULL(foreman_second_name, ""))'#13
+    + 'from card_acts LEFT JOIN foreman ON card_acts.foreman_id=foreman.foreman_id where id=:id',
+    VarArrayOf([ActID])));
 
   with qrObjects do
   begin
@@ -846,18 +851,15 @@ end;
 
 procedure TFormObjectsAndEstimates.PMExportObjectClick(Sender: TObject);
 var
-  TmpStr,
-  XMLName: string;
+  TmpStr, XMLName: string;
 begin
   if SaveDialog.Execute(FormMain.Handle) then
   begin
     XMLName := ChangeFileExt(SaveDialog.FileName, '.xml');
     if TFile.Exists(XMLName) then
-      if Application.MessageBox(PChar('‘айл ' + XMLName +
-        ' уже существует. ѕерезаписать его?'),
-        'Ёкспорт объекта',
-        MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) = mrCancel  then
-      Exit;
+      if Application.MessageBox(PChar('‘айл ' + XMLName + ' уже существует. ѕерезаписать его?'),
+        'Ёкспорт объекта', MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) = mrCancel then
+        Exit;
 
     FormMain.PanelCover.Visible := True;
     FormWaiting.Height := 110;

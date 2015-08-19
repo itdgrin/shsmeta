@@ -405,14 +405,13 @@ var
 
 implementation
 
-uses TariffsTransportanion, TariffsMechanism, TariffsDump,
-  TariffsIndex, About, CalculationEstimate, ConnectDatabase, CardObject,
+uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex, About, CalculationEstimate,
+  ConnectDatabase, CardObject,
   DataModule, Login, Waiting, ActC6, WorkSchedule, HelpC3, HelpC5, CatalogSSR,
-  OXRandOPR, DataTransfer, CalculationSettings,
-  ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
-  PricesReferenceData, AdditionData, PartsEstimates,
-  TypesActs, IndexesChangeCost,
-  CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
+  OXRandOPR, DataTransfer, CalculationSettings, ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData,
+  PricesOwnData,
+  PricesReferenceData, AdditionData, PartsEstimates, TypesActs, IndexesChangeCost, CategoriesObjects,
+  KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
   SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList,

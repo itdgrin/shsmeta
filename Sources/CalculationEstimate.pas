@@ -464,6 +464,8 @@ type
     PMTrPerc0: TMenuItem;
     btnCalcFact: TBitBtn;
     btn3: TBitBtn;
+    lblForeman: TLabel;
+    lblForemanFIO: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -883,6 +885,9 @@ begin
     SpeedButtonSSR.Visible := False;
     btnResCalc.Caption := 'Расчет';
   end;
+
+  lblForeman.Visible := Act;
+  lblForemanFIO.Visible := Act;
   // -----------------------------------------
 
   IdObject := 0;
@@ -1485,7 +1490,7 @@ begin
   btnResMech.Width := WidthButton;
   btnResDev.Width := WidthButton;
   btnResZP.Width := WidthButton;
-  //btnResCalc.Width := WidthButton;
+  // btnResCalc.Width := WidthButton;
   SpeedButtonSSR.Width := WidthButton;
   btn3.Width := WidthButton;
   btnCalcFact.Width := WidthButton;
@@ -5217,7 +5222,7 @@ begin
         'WHERE card_rate_temp.ID=:0 and card_rate_temp.RATE_ID=normativg.NORMATIV_ID',
         VarArrayOf([qrRatesExID_TABLES.Value]));
       if VarIsNull(res) then
-        edtRateActiveDate.Text := 'не указана'
+        edtRateActiveDate.Text := 'дата не указана'
       else
         edtRateActiveDate.Text := DateToStr(res);
     end
