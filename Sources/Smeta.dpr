@@ -118,7 +118,8 @@ uses
   Users in 'Users.pas' {fUsers},
   RoundSetup in 'RoundSetup.pas' {fRoundSetup},
   InstructionHelp in 'InstructionHelp.pas' {fInstructionHelp},
-  TypeWorkList in 'TypeWorkList.pas' {fTypeWorkList};
+  TypeWorkList in 'TypeWorkList.pas' {fTypeWorkList},
+  SectionEstimateList in 'SectionEstimateList.pas' {fSectionEstimateList};
 
 {$R *.res}
 var MHandle: THandle;

@@ -416,7 +416,8 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
   SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList,
-  NormativDictHelp, BuildZone, HelpKfSt, Users, RoundSetup, InstructionHelp, TypeWorkList;
+  NormativDictHelp, BuildZone, HelpKfSt, Users, RoundSetup, InstructionHelp, TypeWorkList,
+  SectionEstimateList;
 
 {$R *.dfm}
 
@@ -1940,10 +1941,10 @@ begin
 end;
 
 procedure TFormMain.MenuListsSectionsEstimatesClick(Sender: TObject);
-begin  {
-  if (not Assigned(FormSectionsEstimates)) then
-    FormSectionsEstimates := TFormSectionsEstimates.Create(FormMain);
-  FormSectionsEstimates.Show; }
+begin
+  if (not Assigned(fSectionEstimateList)) then
+    fSectionEstimateList := TfSectionEstimateList.Create(FormMain);
+  fSectionEstimateList.Show;
 end;
 
 procedure TFormMain.MenuListsTypesWorksClick(Sender: TObject);
