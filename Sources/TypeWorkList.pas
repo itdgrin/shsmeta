@@ -21,6 +21,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure grMainTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
   private
     { Private declarations }
   public
@@ -82,6 +83,19 @@ begin
   end;
 
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TfTypeWorkList.grMainTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+var
+  s: string;
+begin
+  if not CheckQrActiveEmpty(qrMain) then
+    Exit;
+  s := '';
+  if grMain.SortMarker = smDown then
+    s := ' DESC';
+  qrMain.SQL[qrMain.SQL.Count - 1] := 'ORDER BY ' + grMain.SortedField + s;
+  CloseOpen(qrMain);
 end;
 
 end.

@@ -32,6 +32,7 @@ object fSectionEstimateList: TfSectionEstimateList
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ParentFont = False
     ReadOnly = True
     TabOrder = 0
@@ -43,6 +44,7 @@ object fSectionEstimateList: TfSectionEstimateList
     OnDrawColumnCell = grMainDrawColumnCell
     AutoAppend = False
     IniStorage = FormStorage
+    OnTitleBtnClick = grMainTitleBtnClick
     AutoSizeColumns = True
     AutoSizeColumnIndex = 1
     SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -105,7 +107,8 @@ object fSectionEstimateList: TfSectionEstimateList
     UpdateOptions.UpdateTableName = 'smeta.fact_data'
     UpdateOptions.KeyFields = 'fact_data_id'
     SQL.Strings = (
-      'SELECT * FROM sections_estimates')
+      'SELECT * FROM sections_estimates'
+      'ORDER BY CODE')
     Left = 35
     Top = 16
   end
