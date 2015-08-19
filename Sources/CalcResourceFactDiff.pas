@@ -8,7 +8,7 @@ uses
   JvDBGrid, Vcl.ExtCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvComponentBase, JvFormPlacement,
-  Vcl.StdCtrls, Bde.DBTables, JvDBGridExport;
+  Vcl.StdCtrls, Bde.DBTables, JvDBGridExport, System.UITypes;
 
 type
   TfCalcResourceFactDiff = class(TForm)
@@ -138,8 +138,8 @@ begin
 end;
 
 procedure TfCalcResourceFactDiff.qrMainDataAfterOpen(DataSet: TDataSet);
-var
-  I: Integer;
+{var
+  I: Integer;}
 begin
   {for I := 0 to grMaterial.Columns.Count - 1 do
     grMaterial.Columns[I].Visible := qrMainData.FindField(grMaterial.Columns[I].FieldName) <> nil;  }

@@ -30,8 +30,8 @@ uses DataModule, Tools;
 function GetNewId(const ALastID: Variant; const AType: Integer;
   var AIdConvert: TIDConvertArray): Variant;
 var i: Integer;
-    TabName,
-    FieldName: string;
+   { TabName,
+    FieldName: string; }
 begin
 
   if VarIsNull(ALastID) or (ALastID = 0) then
@@ -606,7 +606,7 @@ var XML : IXMLDocument;
 
   procedure RowToNode(ANode: IXMLNode; AQ: TFDQuery);
   var i: Integer;
-      S: Single;
+      {S: Single;}
   begin
     for i := 0 to AQ.Fields.Count - 1 do
     begin

@@ -171,6 +171,7 @@ type
     mN26: TMenuItem;
     mN30: TMenuItem;
     N24: TMenuItem;
+    mN37: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);

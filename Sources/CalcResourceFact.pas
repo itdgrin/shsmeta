@@ -167,8 +167,8 @@ uses Main, Tools, CalculationEstimate, DataModule, CalcResourceFactDiff;
 
 procedure ShowCalcResourceFact(const ID_ESTIMATE: Variant; const APage: Integer = 0;
   AOwner: TWinControl = nil);
-var
-  pageID: Integer;
+{var
+  pageID: Integer;}
 begin
   if VarIsNull(ID_ESTIMATE) then
     Exit;

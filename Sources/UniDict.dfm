@@ -26,7 +26,7 @@ object fUniDict: TfUniDict
   TextHeight = 13
   object lbl1: TLabel
     Left = 8
-    Top = 8
+    Top = 11
     Width = 81
     Height = 13
     Caption = #1059#1082#1072#1078#1080#1090#1077' '#1075#1086#1076':'
@@ -152,7 +152,13 @@ object fUniDict: TfUniDict
         Height = 350
         Align = alClient
         DataSource = dsUniDictType
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
         Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        ParentFont = False
         ReadOnly = True
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
@@ -747,6 +753,7 @@ object fUniDict: TfUniDict
     UpdateOptions.KeyFields = 'unidicttype_id'
     SQL.Strings = (
       'SELECT '
+      '  unidicttype_position,'
       '  `unidicttype_id`,'
       '  `unidicttype_name`,'
       
@@ -757,19 +764,23 @@ object fUniDict: TfUniDict
       '  `unidicttype`'
       'UNION ALL'
       'SELECT '
+      '  -1 AS unidicttype_position,'
       '  -1 AS unidicttype_id,'
       '  ("<'#1074#1089#1077'>") AS unidicttype_name,'
       '  (SELECT COUNT(*) FROM unidictparam) AS CNT,'
       '  0 AS unidicttype_first_month'
       'UNION ALL'
       'SELECT '
+      '  0 AS unidicttype_position,'
       '  0 AS unidicttype_id,'
       '  ("<'#1085#1077' '#1091#1082#1072#1079#1072#1085'>") AS unidicttype_name,'
       
         '  (SELECT COUNT(*) FROM unidictparam WHERE id_unidicttype=0) AS ' +
         'CNT,'
       '  0 AS unidicttype_first_month'
-      'ORDER BY `unidicttype_name`, unidicttype_id')
+      
+        'ORDER BY unidicttype_position, `unidicttype_name`, unidicttype_i' +
+        'd')
     Left = 27
     Top = 118
   end

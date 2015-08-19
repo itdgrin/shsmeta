@@ -33,12 +33,10 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
     MultiLine = True
     ParentFont = False
     TabOrder = 0
-    ExplicitHeight = 456
     object ts2: TTabSheet
       Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
       ImageIndex = 1
       TabVisible = False
-      ExplicitHeight = 446
       object pnlMatClient: TPanel
         Left = 0
         Top = 0
@@ -48,7 +46,6 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 0
-        ExplicitHeight = 446
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
@@ -471,6 +468,9 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
       Caption = #1052#1077#1093#1072#1085#1080#1079#1084#1099
       ImageIndex = 2
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 446
       object pnlMechClient: TPanel
         Left = 0
@@ -513,6 +513,9 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
       Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
       ImageIndex = 3
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 446
       object pnlDevClient: TPanel
         Left = 0

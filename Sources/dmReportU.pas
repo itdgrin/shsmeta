@@ -536,10 +536,10 @@ end;
 
 procedure TdmReportF.Report_EXCEL(SM_ID,XLS: integer);
 var
-  wf,i,j,SM_ID_ROOT : integer;
+  wf,i,j{,SM_ID_ROOT} : integer;
   Excel             : Variant;
   oworkbook         : OleVariant;
-  fnam,xformula          :string;
+  fnam{,xformula }         :string;
 begin
 
   FormWaiting.Show;

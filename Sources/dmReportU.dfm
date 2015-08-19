@@ -27,7 +27,7 @@ object dmReportF: TdmReportF
     Top = 56
   end
   object frxReport: TfrxReport
-    Version = '4.15.6'
+    Version = '4.13.2'
     DotMatrixReport = False
     IniFile = '\Software\Fast Reports'
     PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick]
@@ -394,7 +394,7 @@ object dmReportF: TdmReportF
     DefaultPath = '..\Doc\'
     ShowProgress = True
     OverwritePrompt = True
-    CreationTime = 42102.919928379630000000
+    CreationTime = 42102.919928379640000000
     DataOnly = False
     PictureType = gpPNG
     ExportPageBreaks = False

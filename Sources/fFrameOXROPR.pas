@@ -6,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   DBCtrls, VirtualTrees, fFrameStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, System.UITypes;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
