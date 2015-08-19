@@ -385,7 +385,13 @@
         Height = 25
         Align = alTop
         BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
         ParentBackground = False
+        ParentFont = False
         TabOrder = 0
         DesignSize = (
           912
@@ -462,18 +468,34 @@
           OnClick = btnDescriptionClick
         end
         object lblForeman: TLabel
-          Left = 461
+          Left = 482
           Top = 4
-          Width = 41
+          Width = 46
           Height = 13
+          Cursor = crHandPoint
           Caption = #1055#1088#1086#1088#1072#1073':'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clNavy
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          OnClick = lblForemanClick
         end
         object lblForemanFIO: TLabel
-          Left = 508
+          Left = 534
           Top = 4
           Width = 23
           Height = 13
+          Cursor = crHandPoint
           Caption = #1060#1048#1054
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          OnClick = lblForemanClick
         end
         object edtRateActive: TEdit
           Left = 272

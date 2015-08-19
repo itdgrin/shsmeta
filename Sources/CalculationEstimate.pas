@@ -660,6 +660,7 @@ type
     procedure PMTranstPercClick(Sender: TObject);
     procedure btn2Click(Sender: TObject);
     procedure btnCalcFactClick(Sender: TObject);
+    procedure lblForemanClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -794,7 +795,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   AdditionData, CardMaterial, CardDataEstimate,
   KC6, CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
-  TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact;
+  TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -4446,6 +4447,21 @@ begin
 
   // Закрываем форму ожидания
   FormWaiting.Close;
+end;
+
+procedure TFormCalculationEstimate.lblForemanClick(Sender: TObject);
+begin
+  if (not Assigned(fForemanList)) then
+    fForemanList := TfForemanList.Create(FormMain);
+  fForemanList.Kind := kdSelect;
+  if (fForemanList.ShowModal = mrOk) and (fForemanList.OutValue <> 0) then
+  begin
+    FastExecSQL('UPDATE card_acts SET foreman_id=:0 WHERE ID=:1', VarArrayOf([fForemanList.OutValue, IdAct]));
+    lblForemanFIO.Caption :=
+      VarToStr(FastSelectSQLOne
+      ('SELECT CONCAT(IFNULL(foreman_first_name, ""), " ", IFNULL(foreman_name, ""), " ", IFNULL(foreman_second_name, "")) FROM foreman WHERE foreman_id=:0',
+      VarArrayOf([fForemanList.OutValue])));
+  end;
 end;
 
 procedure TFormCalculationEstimate.LabelEstimateClick(Sender: TObject);

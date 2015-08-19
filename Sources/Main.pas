@@ -542,9 +542,23 @@ end;
 
 procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
+
+  case Application.MessageBox('Вы действительно хотите закрыть программу?', 'Смета',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
+    IDYES:
+      begin
+        CanClose := true;
+      end;
+    IDNO:
+      begin
+        CanClose := False;
+      end;
+  end;
   if FArhiv.CreateArhInProgress then
   begin
-    ShowMessage('Идет создание архива.');
+    Application.MessageBox('В данный момент идет создание архива. ' + #13#10 +
+      'Дождитесь окончания операции.', 'Смета', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+
     CanClose := False;
   end;
 end;
