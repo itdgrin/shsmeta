@@ -163,7 +163,6 @@ object fWinterPrice: TfWinterPrice
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 5
-    ExplicitWidth = 788
     DesignSize = (
       870
       37)
@@ -190,7 +189,6 @@ object fWinterPrice: TfWinterPrice
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 3
       OnClick = btnCloseClick
-      ExplicitLeft = 705
     end
     object btnSelect: TBitBtn
       Left = 706
@@ -202,7 +200,6 @@ object fWinterPrice: TfWinterPrice
       ModalResult = 1
       TabOrder = 2
       OnClick = btnSelectClick
-      ExplicitLeft = 624
     end
     object dbedtNUM: TDBEdit
       Left = 49
@@ -224,7 +221,6 @@ object fWinterPrice: TfWinterPrice
       DataSource = dsTreeData
       TabOrder = 1
       OnExit = dbedtNUMExit
-      ExplicitWidth = 387
     end
   end
   object grChangeDate: TJvDBGrid
@@ -292,6 +288,7 @@ object fWinterPrice: TfWinterPrice
     Top = 127
     Width = 319
     Height = 34
+    Anchors = [akTop, akRight]
     DataField = 'FULLREASON'
     DataSource = dsZnormChangeDate
     ReadOnly = True

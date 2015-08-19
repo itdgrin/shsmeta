@@ -77,8 +77,8 @@ begin
     if As1 <> '' then As1 := As1 + ',';
     if As2 <> '' then As2 := As2 + ',';
 
-    As1 := As1 + AQuery.Fields[i].FieldName;
-    As2 := As2 + ':' + AQuery.Fields[i].FieldName;
+    As1 := As1 + AQuery.Fields[i].FieldName.ToUpper;
+    As2 := As2 + ':' + AQuery.Fields[i].FieldName.ToUpper;
   end;
   Result := 'Insert into ' + ATabName + ' (' + As1 + ') values (' + As2 + ')';
 end;
@@ -288,13 +288,13 @@ begin
         begin
           Node1 := Node2.ChildNodes.Nodes[j];
           //замена IDшников
-          Node1.ChildNodes.Nodes['calculation_coef_id'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['calculation_coef_id'].NodeValue, C_ID_SMCOEF, IdConvert);
-          Node1.ChildNodes.Nodes['id_estimate'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['id_estimate'].NodeValue, C_ID_SM, IdConvert);
+          Node1.ChildNodes.Nodes['CALCULATION_COEF_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['CALCULATION_COEF_ID'].NodeValue, C_ID_SMCOEF, IdConvert);
+          Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue, C_ID_SM, IdConvert);
 
           i := 0;
-          case Node1.ChildNodes.Nodes['id_type_data'].NodeValue of
+          case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
             1: i := C_ID_SMRAT;
             2: i := C_ID_SMMAT;
             3: i := C_ID_SMMEC;
@@ -304,10 +304,10 @@ begin
           end;
 
           if i > 0  then
-            Node1.ChildNodes.Nodes['id_owner'].NodeValue :=
-              GetNewId(Node1.ChildNodes.Nodes['id_owner'].NodeValue, i, IdConvert);
+            Node1.ChildNodes.Nodes['ID_OWNER'].NodeValue :=
+              GetNewId(Node1.ChildNodes.Nodes['ID_OWNER'].NodeValue, i, IdConvert);
 
-          Node1.ChildNodes.Nodes['id_coef'].NodeValue := null;
+          Node1.ChildNodes.Nodes['ID_COEF'].NodeValue := null;
 
           GetStrAndExcec(Node1, 'calculation_coef');
           Node1 := nil;
@@ -612,13 +612,13 @@ var XML : IXMLDocument;
     begin
         if (AQ.Fields[i].DataType in [ftFloat, ftCurrency, ftBCD, ftFMTBcd,
           ftExtended, ftSingle]) then
-          ANode.ChildValues[AQ.Fields[i].FieldName] :=
+          ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
             AQ.Fields[i].AsFloat
         else if AQ.Fields[i].DataType = ftDate then
-          ANode.ChildValues[AQ.Fields[i].FieldName] :=
+          ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
             FormatDateTime('yy/mm/dd', AQ.Fields[i].AsDateTime)
         else
-          ANode.ChildValues[AQ.Fields[i].FieldName] :=
+          ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
             AQ.Fields[i].Value;
     end;
   end;
