@@ -294,9 +294,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="CardSectionsEstimates.pas">
             <Form>FormCardSectionsEstimates</Form>
         </DCCReference>
-        <DCCReference Include="CardTypesWorks.pas">
-            <Form>FormCardTypesWorks</Form>
-        </DCCReference>
         <DCCReference Include="CardAct.pas">
             <Form>fCardAct</Form>
         </DCCReference>
@@ -474,6 +471,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="InstructionHelp.pas">
             <Form>fInstructionHelp</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="TypeWorkList.pas">
+            <Form>fTypeWorkList</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

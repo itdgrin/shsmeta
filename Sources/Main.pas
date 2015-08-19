@@ -411,12 +411,12 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   OXRandOPR, DataTransfer, CalculationSettings,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
   PricesReferenceData, AdditionData, PartsEstimates,
-  SectionsEstimates, TypesWorks, TypesActs, IndexesChangeCost,
+  SectionsEstimates, TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
   SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList,
-  NormativDictHelp, BuildZone, HelpKfSt, Users, RoundSetup, InstructionHelp;
+  NormativDictHelp, BuildZone, HelpKfSt, Users, RoundSetup, InstructionHelp, TypeWorkList;
 
 {$R *.dfm}
 
@@ -1949,9 +1949,9 @@ end;
 
 procedure TFormMain.MenuListsTypesWorksClick(Sender: TObject);
 begin
-  if (not Assigned(FormTypesWorks)) then
-    FormTypesWorks := TFormTypesWorks.Create(FormMain);
-  FormTypesWorks.Show;
+  if (not Assigned(fTypeWorkList)) then
+    fTypeWorkList := TfTypeWorkList.Create(FormMain);
+  fTypeWorkList.Show;
 end;
 
 procedure TFormMain.MenuOrganizationsClick(Sender: TObject);

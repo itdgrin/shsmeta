@@ -69,7 +69,6 @@ uses
   CardIndexesChangeCost in 'CardIndexesChangeCost.pas' {FormCardIndexesChangeCost},
   CardCategoriesObjects in 'CardCategoriesObjects.pas' {FormCardCategoriesObjects},
   CardSectionsEstimates in 'CardSectionsEstimates.pas' {FormCardSectionsEstimates},
-  CardTypesWorks in 'CardTypesWorks.pas' {FormCardTypesWorks},
   CardAct in 'CardAct.pas' {fCardAct},
   Tools in 'Tools.pas',
   KC6Journal in 'KC6Journal.pas' {fKC6Journal},
@@ -121,7 +120,8 @@ uses
   LogIn in 'LogIn.pas' {fLogIn},
   Users in 'Users.pas' {fUsers},
   RoundSetup in 'RoundSetup.pas' {fRoundSetup},
-  InstructionHelp in 'InstructionHelp.pas' {fInstructionHelp};
+  InstructionHelp in 'InstructionHelp.pas' {fInstructionHelp},
+  TypeWorkList in 'TypeWorkList.pas' {fTypeWorkList};
 
 {$R *.res}
 var MHandle: THandle;
@@ -162,7 +162,6 @@ begin
   Application.CreateForm(TFormCardCategoriesObjects, FormCardCategoriesObjects);
   Application.CreateForm(TFormCategoriesObjects, FormCategoriesObjects);
   Application.CreateForm(TFormCardSectionsEstimates, FormCardSectionsEstimates);
-  Application.CreateForm(TFormCardTypesWorks, FormCardTypesWorks);
   Application.CreateForm(TfKC6, fKC6);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
