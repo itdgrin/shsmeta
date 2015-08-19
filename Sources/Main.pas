@@ -1289,10 +1289,11 @@ end;
 
 // --> "СМЕТА по объекту строительства" v.1.03
 procedure TFormMain.mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
-var
+{var
   param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15,
-    param16, param17, param18, param19, param20, param21, param22, param23: Double;
+    param16, param17, param18, param19, param20, param21, param22, param23: Double; }
 begin
+{
   Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
@@ -1329,6 +1330,7 @@ begin
   finally
     Screen.Cursor := crDefault;
   end;
+  }
 end;
 
 // Смета (Локальный сметный расчет) по объекту v1.00 (Вадим)

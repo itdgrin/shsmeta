@@ -130,11 +130,6 @@ object fInstructionHelp: TfInstructionHelp
       item
         Expanded = False
         FieldName = 'doc_name'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
         Width = 117
@@ -142,11 +137,6 @@ object fInstructionHelp: TfInstructionHelp
       end
       item
         Expanded = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1044#1072#1090#1072
         Width = 48
@@ -154,11 +144,6 @@ object fInstructionHelp: TfInstructionHelp
       end
       item
         Expanded = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1054#1088#1075#1072#1085
         Width = 57
@@ -166,11 +151,6 @@ object fInstructionHelp: TfInstructionHelp
       end
       item
         Expanded = False
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1058#1080#1087' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
         Width = 88
@@ -180,11 +160,6 @@ object fInstructionHelp: TfInstructionHelp
         Alignment = taCenter
         Expanded = False
         FieldName = 'doc_description'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077
         Width = 98

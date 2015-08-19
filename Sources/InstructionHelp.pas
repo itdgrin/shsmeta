@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Vcl.ComCtrls, JvExComCtrls, JvDBTreeView, Data.DB, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, Vcl.StdCtrls, Vcl.Buttons, JvComponentBase, JvFormPlacement, Vcl.Grids, Vcl.DBGrids,
-  JvExDBGrids, JvDBGrid;
+  JvExDBGrids, JvDBGrid, System.UITypes;
 
 type
   TfInstructionHelp = class(TForm)
