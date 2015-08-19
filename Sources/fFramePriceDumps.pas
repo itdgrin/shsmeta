@@ -67,7 +67,6 @@ type
       var CellText: string);
     procedure VSTKeyPress(Sender: TObject; var Key: Char);
     procedure edtYearChange(Sender: TObject);
-    procedure ComboBoxMonthChange(Sender: TObject);
 
   private
     StrQuickSearch: String;
@@ -101,6 +100,7 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 constructor TFramePriceDumps.Create(AOwner: TComponent);
+var ev: TNotifyEvent;
 begin
   inherited Create(AOwner);
 
@@ -111,16 +111,26 @@ begin
   PanelMemo.Constraints.MinHeight := 35;
   SpeedButtonShowHide.Hint := 'Свернуть панель';
 
-  if Assigned(FormCalculationEstimate) then
-  begin
-    //Опасная конструкция, может быть источником ошибок
-    ComboBoxMonth.ItemIndex := FormCalculationEstimate.MonthEstimate - 1;
-    edtYear.Value := FormCalculationEstimate.YearEstimate;
-  end
-  else
-  begin
-    edtYear.Value := YearOf(Date);
-    ComboBoxMonth.ItemIndex := MonthOf(Date) - 1;
+  try
+    ev := edtYear.OnChange;
+    edtYear.OnChange := nil;
+    ComboBoxMonth.OnChange := nil;
+
+    if Assigned(FormCalculationEstimate) then
+    begin
+      //Опасная конструкция, может быть источником ошибок
+      edtYear.Value := FormCalculationEstimate.YearEstimate;
+      ComboBoxMonth.ItemIndex := FormCalculationEstimate.MonthEstimate - 1;
+    end
+    else
+    begin
+      edtYear.Value := YearOf(Date);
+      ComboBoxMonth.ItemIndex := MonthOf(Date) - 1;
+    end;
+  finally
+    edtYear.OnChange := ev;
+    ComboBoxMonth.OnChange := ev;
+    edtYearChange(edtYear);
   end;
 
   with DM do
@@ -159,6 +169,8 @@ begin
     VST.RootNodeCount := ADOQuery.RecordCount;
     VST.Selected[VST.GetFirst] := True;
     VST.FocusedNode := VST.GetFirst;
+
+    VST.Repaint;
 
     FrameStatusBar.InsertText(1, IntToStr(1));
     FrameStatusBar.InsertText(2, '');
@@ -272,12 +284,6 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFramePriceDumps.ComboBoxMonthChange(Sender: TObject);
-begin
-  inherited;
-  ReceivingAll;
-end;
 
 procedure TFramePriceDumps.CopyCellClick(Sender: TObject);
 var

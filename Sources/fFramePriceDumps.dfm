@@ -183,7 +183,7 @@ inherited FramePriceDumps: TFramePriceDumps
         ItemIndex = 1
         TabOrder = 1
         Text = #1060#1077#1074#1088#1072#1083#1100
-        OnChange = ComboBoxMonthChange
+        OnChange = edtYearChange
         Items.Strings = (
           #1071#1085#1074#1072#1088#1100
           #1060#1077#1074#1088#1072#1083#1100

@@ -32,7 +32,7 @@ constructor TSprEquipment.Create(AOwner: TComponent;
       const vAllowAddition: Boolean);
 begin
   FAllowAddition := vAllowAddition;
-  FNoEdCol := True;
+  //FNoEdCol := True;
   inherited Create(AOwner, False, Date);
 end;
 

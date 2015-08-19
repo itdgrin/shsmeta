@@ -36,7 +36,6 @@ inherited FramePriceTransportations: TFramePriceTransportations
       BevelOuter = bvNone
       ParentBackground = False
       TabOrder = 1
-      ExplicitHeight = 251
       object VST: TVirtualStringTree
         Left = 0
         Top = 0
@@ -61,7 +60,6 @@ inherited FramePriceTransportations: TFramePriceTransportations
         OnEnter = VSTEnter
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
-        ExplicitHeight = 236
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]
@@ -145,14 +143,14 @@ inherited FramePriceTransportations: TFramePriceTransportations
       object LabelYear: TLabel
         Left = 3
         Top = 6
-        Width = 25
+        Width = 23
         Height = 13
         Caption = #1043#1086#1076':'
       end
       object LabelMonth: TLabel
         Left = 88
         Top = 6
-        Width = 37
+        Width = 35
         Height = 13
         Caption = #1052#1077#1089#1103#1094':'
       end

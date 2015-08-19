@@ -144,12 +144,12 @@ begin
   if cmbTranspType.ItemIndex = 1 then
   begin
     FCode := 'Ñ311-';
-    StrQuery := 'SELECT * FROM transfercargoboard' + WhereStr + ' order by ID;';
+    StrQuery := 'SELECT * FROM transfercargoboard' + WhereStr + ' order by SORT, ID;';
   end
   else
   begin
     FCode := 'Ñ310-';
-    StrQuery := 'SELECT * FROM transfercargo' + WhereStr + ' order by ID;';
+    StrQuery := 'SELECT * FROM transfercargo' + WhereStr + ' order by SORT, ID;';
   end;
 
   with ADOQuery do
