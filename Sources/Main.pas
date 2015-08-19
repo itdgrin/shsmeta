@@ -411,7 +411,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump,
   OXRandOPR, DataTransfer, CalculationSettings,
   ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
   PricesReferenceData, AdditionData, PartsEstimates,
-  SectionsEstimates, TypesActs, IndexesChangeCost,
+  TypesActs, IndexesChangeCost,
   CategoriesObjects, KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
@@ -1940,11 +1940,10 @@ begin
 end;
 
 procedure TFormMain.MenuListsSectionsEstimatesClick(Sender: TObject);
-begin
+begin  {
   if (not Assigned(FormSectionsEstimates)) then
-    FormSectionsEstimates := TFormSectionsEstimates.Create(FormMain)
-  else
-    FormSectionsEstimates.Show;
+    FormSectionsEstimates := TFormSectionsEstimates.Create(FormMain);
+  FormSectionsEstimates.Show; }
 end;
 
 procedure TFormMain.MenuListsTypesWorksClick(Sender: TObject);

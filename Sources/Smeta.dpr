@@ -60,15 +60,12 @@ uses
   fCategoriesObjects in 'fCategoriesObjects.pas' {FrameCategoriesObjects: TFrame},
   PartsEstimates in 'PartsEstimates.pas' {FormPartsEstimates},
   fPartsEstimates in 'fPartsEstimates.pas' {FramePartsEstimates: TFrame},
-  fSectionsEstimates in 'fSectionsEstimates.pas' {FrameSectionsEstimates: TFrame},
-  SectionsEstimates in 'SectionsEstimates.pas' {FormSectionsEstimates},
   TypesActs in 'TypesActs.pas' {FormTypesActs},
   IndexesChangeCost in 'IndexesChangeCost.pas' {FormIndexesChangeCost},
   CategoriesObjects in 'CategoriesObjects.pas' {FormCategoriesObjects},
   CardTypesActs in 'CardTypesActs.pas' {FormCardTypesActs},
   CardIndexesChangeCost in 'CardIndexesChangeCost.pas' {FormCardIndexesChangeCost},
   CardCategoriesObjects in 'CardCategoriesObjects.pas' {FormCardCategoriesObjects},
-  CardSectionsEstimates in 'CardSectionsEstimates.pas' {FormCardSectionsEstimates},
   CardAct in 'CardAct.pas' {fCardAct},
   Tools in 'Tools.pas',
   KC6Journal in 'KC6Journal.pas' {fKC6Journal},
@@ -161,7 +158,6 @@ begin
   Application.CreateForm(TFormIndexesChangeCost, FormIndexesChangeCost);
   Application.CreateForm(TFormCardCategoriesObjects, FormCardCategoriesObjects);
   Application.CreateForm(TFormCategoriesObjects, FormCategoriesObjects);
-  Application.CreateForm(TFormCardSectionsEstimates, FormCardSectionsEstimates);
   Application.CreateForm(TfKC6, fKC6);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);

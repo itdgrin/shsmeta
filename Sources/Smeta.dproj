@@ -266,13 +266,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>FramePartsEstimates</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="fSectionsEstimates.pas">
-            <Form>FrameSectionsEstimates</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="SectionsEstimates.pas">
-            <Form>FormSectionsEstimates</Form>
-        </DCCReference>
         <DCCReference Include="TypesActs.pas">
             <Form>FormTypesActs</Form>
         </DCCReference>
@@ -290,9 +283,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="CardCategoriesObjects.pas">
             <Form>FormCardCategoriesObjects</Form>
-        </DCCReference>
-        <DCCReference Include="CardSectionsEstimates.pas">
-            <Form>FormCardSectionsEstimates</Form>
         </DCCReference>
         <DCCReference Include="CardAct.pas">
             <Form>fCardAct</Form>
