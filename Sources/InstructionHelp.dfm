@@ -24,7 +24,6 @@ object fInstructionHelp: TfInstructionHelp
     Height = 32
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 332
     DesignSize = (
       493
       32)
@@ -35,6 +34,7 @@ object fInstructionHelp: TfInstructionHelp
       Height = 25
       Caption = #1054#1090#1082#1088#1099#1090#1100' '#1076#1086#1082#1091#1084#1077#1085#1090
       TabOrder = 0
+      OnClick = tvDocumentsDblClick
     end
     object btn2: TBitBtn
       Left = 415
@@ -75,9 +75,6 @@ object fInstructionHelp: TfInstructionHelp
     ParentFont = False
     RowSelect = True
     Mirror = False
-    ExplicitTop = -58
-    ExplicitWidth = 214
-    ExplicitHeight = 350
   end
   object qrTreeData: TFDQuery
     Connection = DM.Connect
@@ -89,7 +86,7 @@ object fInstructionHelp: TfInstructionHelp
       'SELECT * '
       'FROM '
       '  `doc` '
-      'WHERE (doc_id>=2 and doc_id<=4) or (doc_id>=9 and doc_id<=25)'
+      'WHERE (doc_id>=2 and doc_id<=4) or (doc_id>=9 and doc_id<=34)'
       'ORDER BY doc_type, doc_name')
     Left = 41
     Top = 38

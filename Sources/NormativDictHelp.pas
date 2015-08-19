@@ -23,6 +23,8 @@ type
     grMain2: TJvDBGrid;
     grMain3: TJvDBGrid;
     grMain4: TJvDBGrid;
+    ts5: TTabSheet;
+    grMain5: TJvDBGrid;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -67,6 +69,7 @@ begin
   LoadDBGridSettings(grMain2);
   LoadDBGridSettings(grMain3);
   LoadDBGridSettings(grMain4);
+  LoadDBGridSettings(grMain5);
   CloseOpen(qrMainData);
   pgc1Change(Sender);
 end;

@@ -270,15 +270,8 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>FrameSectionsEstimates</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="fTypesWorks.pas">
-            <Form>FrameTypesWorks</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="SectionsEstimates.pas">
             <Form>FormSectionsEstimates</Form>
-        </DCCReference>
-        <DCCReference Include="TypesWorks.pas">
-            <Form>FormTypesWorks</Form>
         </DCCReference>
         <DCCReference Include="TypesActs.pas">
             <Form>FormTypesActs</Form>
@@ -507,7 +500,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     <VersionInfo Name="MajorVer">1</VersionInfo>
                     <VersionInfo Name="MinorVer">0</VersionInfo>
                     <VersionInfo Name="Release">0</VersionInfo>
-                    <VersionInfo Name="Build">6676</VersionInfo>
+                    <VersionInfo Name="Build">6681</VersionInfo>
                     <VersionInfo Name="Debug">True</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -519,7 +512,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Расчёт сметы</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">1.0.0.6676</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.6681</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">Estimate</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">© 2013 Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks"/>

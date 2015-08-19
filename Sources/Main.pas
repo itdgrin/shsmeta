@@ -851,8 +851,8 @@ begin
     begin
       Active := False;
       SQL.Text := 'CALL `UpdateNormSortField`()';
+      tmp := DM.FDGUIxWaitCursor1.ScreenCursor;
       try
-        tmp := DM.FDGUIxWaitCursor1.ScreenCursor;
         DM.FDGUIxWaitCursor1.ScreenCursor := TFDGUIxScreenCursor.gcrHourGlass;
         ExecSQL;
       finally
@@ -1076,13 +1076,15 @@ end;
 
 procedure TFormMain.N24Click(Sender: TObject);
 begin
-    if Assigned(FormCalculationEstimate) then
-    begin
-    if FormCalculationEstimate.IdEstimate>0 then
-    ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)), PChar(FileReportPath + 'report\'), SW_maximIZE)
+  if Assigned(FormCalculationEstimate) then
+  begin
+    if FormCalculationEstimate.IdEstimate > 0 then
+      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+        PChar(FileReportPath + 'report\'), SW_maximIZE)
     else
-    ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)), PChar(FileReportPath + 'report\'), SW_maximIZE);
-    end;
+      ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
+        PChar(FileReportPath + 'report\'), SW_maximIZE);
+  end;
 end;
 
 procedure TFormMain.mBuildZoneClick(Sender: TObject);
@@ -1948,9 +1950,8 @@ end;
 procedure TFormMain.MenuListsTypesWorksClick(Sender: TObject);
 begin
   if (not Assigned(FormTypesWorks)) then
-    FormTypesWorks := TFormTypesWorks.Create(FormMain)
-  else
-    FormTypesWorks.Show;
+    FormTypesWorks := TFormTypesWorks.Create(FormMain);
+  FormTypesWorks.Show;
 end;
 
 procedure TFormMain.MenuOrganizationsClick(Sender: TObject);
