@@ -614,7 +614,7 @@ begin
   inherited;
   DM.qrDifferent.Active := False;
   DM.qrDifferent.SQL.Text := 'Select doc_id from doc where doc_id = ' +
-    IntToStr(C_DOCID_MAIS450);
+    IntToStr(36);
   DM.qrDifferent.Active := True;
   try
     if DM.qrDifferent.IsEmpty then

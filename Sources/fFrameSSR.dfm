@@ -19,7 +19,6 @@ inherited FrameSSR: TFrameSSR
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
-    ExplicitWidth = 792
     object ImageSplitter: TImage
       Left = 312
       Top = 395
@@ -49,7 +48,6 @@ inherited FrameSSR: TFrameSSR
       ParentBackground = False
       ParentDoubleBuffered = False
       TabOrder = 0
-      ExplicitWidth = 792
       DesignSize = (
         797
         25)
@@ -61,13 +59,13 @@ inherited FrameSSR: TFrameSSR
         Caption = #1055#1086#1080#1089#1082':'
       end
       object lbPrikazRef: TLabel
-        Left = 464
+        Left = 501
         Top = 6
-        Width = 328
+        Width = 293
         Height = 13
         Cursor = crHandPoint
         Anchors = [akTop, akRight]
-        Caption = #1053#1056#1056' 8.01.103.-2012 '#1063#1072#1089#1090#1100' I '#1055#1088#1080#1082#1072#1079' '#8470'450 '#1052#1040#1080#1057' '#1086#1090' 23.12.2011 '#1075'.'
+        Caption = #1053#1056#1056' 8.01.104 '#1055#1086#1089#1090#1072#1085#1086#1074#1083#1077#1085#1080#1077' '#1052#1040#1048#1057' '#8470'51 '#1086#1090' 18.11.2011 '#1075'.'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clNavy
         Font.Height = -11
@@ -75,12 +73,11 @@ inherited FrameSSR: TFrameSSR
         Font.Style = [fsUnderline]
         ParentFont = False
         OnClick = lbPrikazRefClick
-        ExplicitLeft = 459
       end
       object EditSearch: TEdit
         Left = 46
         Top = 3
-        Width = 413
+        Width = 449
         Height = 21
         Hint = 
           #1042#1074#1077#1076#1080#1090#1077' '#1089#1083#1086#1074#1072' '#1095#1077#1088#1077#1079' '#1087#1088#1086#1073#1077#1083' '#1080' '#1085#1072#1078#1084#1080#1090#1077' - Enter, '#1076#1083#1103' '#1086#1095#1080#1089#1090#1082#1080' '#1085#1072#1078#1084#1080#1090 +
@@ -93,7 +90,6 @@ inherited FrameSSR: TFrameSSR
         TabOrder = 0
         OnEnter = EditSearchEnter
         OnKeyPress = EditSearchKeyPress
-        ExplicitWidth = 407
       end
     end
     object PanelMemo: TPanel
@@ -109,7 +105,6 @@ inherited FrameSSR: TFrameSSR
       ParentDoubleBuffered = False
       ShowCaption = False
       TabOrder = 2
-      ExplicitWidth = 792
       object Memo: TMemo
         Left = 0
         Top = 0
@@ -120,7 +115,6 @@ inherited FrameSSR: TFrameSSR
         ScrollBars = ssVertical
         TabOrder = 0
         OnEnter = MemoEnter
-        ExplicitWidth = 792
       end
     end
     object PanelStringGrid: TPanel
@@ -139,7 +133,6 @@ inherited FrameSSR: TFrameSSR
       ParentFont = False
       TabOrder = 1
       OnResize = PanelStringGridResize
-      ExplicitWidth = 792
       object SpeedButtonShowHide: TSpeedButton
         Tag = 1
         Left = 0
@@ -210,7 +203,6 @@ inherited FrameSSR: TFrameSSR
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 0
-    ExplicitWidth = 792
     DesignSize = (
       797
       25)
@@ -333,7 +325,6 @@ inherited FrameSSR: TFrameSSR
         '4. '#1057#1086#1076#1077#1088#1078#1072#1085#1080#1077' '#1077#1076#1080#1085#1099#1093' '#1079#1072#1082#1072#1079#1095#1080#1082#1086#1074
         '7. '#1056#1077#1079#1077#1088#1074' '#1085#1072' '#1085#1077#1087#1088#1077#1076#1074#1080#1076#1077#1085#1085#1099#1077' '#1088#1072#1073#1086#1090#1099' '#1080' '#1079#1072#1090#1088#1072#1090#1099
         '8. '#1047#1072#1090#1088#1072#1090#1099', '#1089#1074#1103#1079#1072#1085#1085#1099#1077' '#1089' '#1087#1086#1076#1074#1080#1078#1085#1099#1084' '#1088#1072#1079#1098#1077#1079#1076#1085#1099#1084' '#1093#1072#1088#1072#1082#1090#1077#1088#1086#1084' '#1088#1072#1073#1086#1090)
-      ExplicitWidth = 598
     end
   end
   inline FrameStatusBar: TFrameStatusBar
@@ -352,10 +343,10 @@ inherited FrameSSR: TFrameSSR
     ParentFont = False
     TabOrder = 2
     ExplicitTop = 316
-    ExplicitWidth = 792
+    ExplicitWidth = 797
     inherited StatusBar: TStatusBar
       Width = 797
-      ExplicitWidth = 792
+      ExplicitWidth = 797
     end
   end
   object PopupMenu: TPopupMenu

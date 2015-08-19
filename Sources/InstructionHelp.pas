@@ -7,7 +7,8 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Vcl.ComCtrls, JvExComCtrls, JvDBTreeView, Data.DB, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Vcl.StdCtrls, Vcl.Buttons;
+  FireDAC.Comp.Client, Vcl.StdCtrls, Vcl.Buttons, JvComponentBase, JvFormPlacement, Vcl.Grids, Vcl.DBGrids,
+  JvExDBGrids, JvDBGrid;
 
 type
   TfInstructionHelp = class(TForm)
@@ -17,11 +18,22 @@ type
     tvDocuments: TJvDBTreeView;
     btn1: TBitBtn;
     btn2: TBitBtn;
+    grMain1: TJvDBGrid;
+    spl1: TSplitter;
+    FormStorage: TJvFormStorage;
+    pnl2: TPanel;
+    lbl3: TLabel;
+    edtSearch: TEdit;
+    btnSearch: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure tvDocumentsDblClick(Sender: TObject);
     procedure btn2Click(Sender: TObject);
+    procedure grMain1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
+    procedure btnSearchClick(Sender: TObject);
+    procedure qrTreeDataBeforeOpen(DataSet: TDataSet);
   private
     { Private declarations }
   public
@@ -42,6 +54,12 @@ begin
   Close;
 end;
 
+procedure TfInstructionHelp.btnSearchClick(Sender: TObject);
+begin
+  qrTreeData.Active := False;
+  qrTreeData.Active := True;
+end;
+
 procedure TfInstructionHelp.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
@@ -55,6 +73,33 @@ end;
 procedure TfInstructionHelp.FormDestroy(Sender: TObject);
 begin
   fInstructionHelp := nil;
+end;
+
+procedure TfInstructionHelp.grMain1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+
+    if qrTreeData.FieldByName('doc_type').Value = 0 then
+      Font.Style := Font.Style + [fsBold];
+  end;
+
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TfInstructionHelp.qrTreeDataBeforeOpen(DataSet: TDataSet);
+begin
+  qrTreeData.ParamByName('search').AsString := '%' + Trim(edtSearch.Text) + '%';
 end;
 
 procedure TfInstructionHelp.tvDocumentsDblClick(Sender: TObject);
