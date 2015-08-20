@@ -43,12 +43,27 @@ var
   fCardObjectContractorServices: TfCardObjectContractorServices;
 
 function EditContractorServices(const aCONTRACTOR_SERV: Integer): Variant;
+procedure ShowContractorServices;
 
 implementation
 
 {$R *.dfm}
 
 uses Tools;
+
+procedure ShowContractorServices;
+begin
+  if (not Assigned(fCardObjectContractorServices)) then
+    fCardObjectContractorServices := TfCardObjectContractorServices.Create(nil);
+  fCardObjectContractorServices.CheckMask := 0;
+  fCardObjectContractorServices.qrMain.ParamByName('MONTH').AsInteger := 1; // !!!
+  fCardObjectContractorServices.qrMain.ParamByName('YEAR').AsInteger := 2015; // !!!
+  fCardObjectContractorServices.qrMain.Active := True;
+  fCardObjectContractorServices.grMain.Columns[0].Visible := False;
+  fCardObjectContractorServices.pnlBott.Visible := False;
+  fCardObjectContractorServices.grMain.ReadOnly := True;
+  fCardObjectContractorServices.ShowModal;
+end;
 
 function EditContractorServices(const aCONTRACTOR_SERV: Integer): Variant;
 var

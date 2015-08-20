@@ -147,7 +147,6 @@ type
     mN52: TMenuItem;
     mN29: TMenuItem;
     mN110: TMenuItem;
-    mN25: TMenuItem;
     ArchivPanel: TPanel;
     lbArchStatys: TLabel;
     imgArchive: TImage;
@@ -172,6 +171,7 @@ type
     mN30: TMenuItem;
     N24: TMenuItem;
     mN37: TMenuItem;
+    mN25: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -281,6 +281,7 @@ type
     procedure mN30Click(Sender: TObject);
     procedure N24Click(Sender: TObject);
     procedure mN36Click(Sender: TObject);
+    procedure mN25Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -408,7 +409,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex, About, 
   ConnectDatabase, CardObject,
   DataModule, Login, Waiting, ActC6, WorkSchedule, HelpC3, HelpC5, CatalogSSR,
   OXRandOPR, DataTransfer, CalculationSettings, ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData,
-  PricesOwnData,
+  PricesOwnData, CardObjectContractorServices,
   PricesReferenceData, AdditionData, PartsEstimates, TypesActs, IndexesChangeCost, CategoriesObjects,
   KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
   Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
@@ -1122,11 +1123,12 @@ end;
 
 // Расход материалов по акту
 procedure TFormMain.mConstractorServiceClick(Sender: TObject);
-begin
-  if (not Assigned(fUniDict)) then
+begin {
+    if (not Assigned(fUniDict)) then
     fUniDict := TfUniDict.Create(Self);
-  fUniDict.qrUniDictType.Locate('unidicttype_id', 7, []);
-  fUniDict.Show;
+    fUniDict.qrUniDictType.Locate('unidicttype_id', 7, []);
+    fUniDict.Show; }
+  ShowContractorServices;
 end;
 
 procedure TFormMain.mLogInClick(Sender: TObject);
@@ -1193,6 +1195,16 @@ begin
   if (not Assigned(fForemanList)) then
     fForemanList := TfForemanList.Create(FormMain);
   fForemanList.Show;
+end;
+
+procedure TFormMain.mN25Click(Sender: TObject);
+begin
+    if (not Assigned(fUniDict)) then
+    fUniDict := TfUniDict.Create(Self);
+    fUniDict.qrUniDictType.Filtered := False;
+    fUniDict.qrUniDictType.Locate('unidicttype_id', 14, []);
+    fUniDict.pnlLeft.Visible := False;
+    fUniDict.Show;
 end;
 
 procedure TFormMain.mN26Click(Sender: TObject);
@@ -1289,47 +1301,47 @@ end;
 
 // --> "СМЕТА по объекту строительства" v.1.03
 procedure TFormMain.mnREPORT_SMETA_OBJ_BUILDClick(Sender: TObject);
-{var
+{ var
   param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15,
-    param16, param17, param18, param19, param20, param21, param22, param23: Double; }
+  param16, param17, param18, param19, param20, param21, param22, param23: Double; }
 begin
-{
-  Screen.Cursor := crSQLWait;
-  try
+  {
+    Screen.Cursor := crSQLWait;
+    try
     if Assigned(FormObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
-      begin
-        ShowMessage('Не выбрана смета');
-        Exit;
-      end;
+    if FormObjectsAndEstimates.IdEstimate = 0 then
+    begin
+    ShowMessage('Не выбрана смета');
+    Exit;
+    end;
 
-      // ShowEnter;
+    // ShowEnter;
 
-      dmReportF.Report_SMETA_OBJ_BUILD(FormObjectsAndEstimates.IdEstimate, FileReportPath, param4, param5,
-        param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16,
-        param17, param18, param19, param20, param21, param22, param23);
+    dmReportF.Report_SMETA_OBJ_BUILD(FormObjectsAndEstimates.IdEstimate, FileReportPath, param4, param5,
+    param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16,
+    param17, param18, param19, param20, param21, param22, param23);
     end
     else
     begin
-      if Assigned(FormCalculationEstimate) then
-      begin
-        if FormCalculationEstimate.IdEstimate = 0 then
-        begin
-          ShowMessage('Не выбрана смета');
-          Exit;
-        end;
-
-        // ShowEnter;
-
-        dmReportF.Report_SMETA_OBJ_BUILD(FormCalculationEstimate.IdEstimate, FileReportPath, param4, param5,
-          param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16,
-          param17, param18, param19, param20, param21, param22, param23);
-      end;
+    if Assigned(FormCalculationEstimate) then
+    begin
+    if FormCalculationEstimate.IdEstimate = 0 then
+    begin
+    ShowMessage('Не выбрана смета');
+    Exit;
     end;
-  finally
+
+    // ShowEnter;
+
+    dmReportF.Report_SMETA_OBJ_BUILD(FormCalculationEstimate.IdEstimate, FileReportPath, param4, param5,
+    param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16,
+    param17, param18, param19, param20, param21, param22, param23);
+    end;
+    end;
+    finally
     Screen.Cursor := crDefault;
-  end;
+    end;
   }
 end;
 

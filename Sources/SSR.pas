@@ -58,6 +58,16 @@ begin
   FrameSSR.Align := alClient;
   FrameSSR.PanelMenu.Visible := False;
   FrameSSR.ComboBox.ItemIndex := SSRID - 1;
+  with FrameSSR do
+    case SSRID of
+      1:
+        lbPrikazRef.Caption := 'ÍÐÐ 8.01.103 - 212';
+      2:
+        lbPrikazRef.Caption := 'ÍÐÐ 8.01.102 - 212';
+    else
+      lbPrikazRef.Caption := '';
+    end;
+
   if (SSRID >= 3) and (SSRID <= 5) then
     FrameSSR.ReceivingAll2
   else

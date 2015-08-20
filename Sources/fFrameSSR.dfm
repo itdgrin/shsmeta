@@ -59,25 +59,24 @@ inherited FrameSSR: TFrameSSR
         Caption = #1055#1086#1080#1089#1082':'
       end
       object lbPrikazRef: TLabel
-        Left = 501
+        Left = 700
         Top = 6
-        Width = 293
+        Width = 94
         Height = 13
-        Cursor = crHandPoint
         Anchors = [akTop, akRight]
-        Caption = #1053#1056#1056' 8.01.104 '#1055#1086#1089#1090#1072#1085#1086#1074#1083#1077#1085#1080#1077' '#1052#1040#1048#1057' '#8470'51 '#1086#1090' 18.11.2011 '#1075'.'
+        Caption = #1053#1056#1056' 8.01.103 - 212'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clNavy
+        Font.Color = clBlack
         Font.Height = -11
         Font.Name = 'Tahoma'
-        Font.Style = [fsUnderline]
+        Font.Style = []
         ParentFont = False
         OnClick = lbPrikazRefClick
       end
       object EditSearch: TEdit
         Left = 46
         Top = 3
-        Width = 449
+        Width = 648
         Height = 21
         Hint = 
           #1042#1074#1077#1076#1080#1090#1077' '#1089#1083#1086#1074#1072' '#1095#1077#1088#1077#1079' '#1087#1088#1086#1073#1077#1083' '#1080' '#1085#1072#1078#1084#1080#1090#1077' - Enter, '#1076#1083#1103' '#1086#1095#1080#1089#1090#1082#1080' '#1085#1072#1078#1084#1080#1090 +
@@ -228,6 +227,12 @@ inherited FrameSSR: TFrameSSR
       Anchors = [akTop, akRight]
       GroupIndex = 1
       Caption = '2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       OnClick = SpeedButtonClick
       ExplicitLeft = 558
     end

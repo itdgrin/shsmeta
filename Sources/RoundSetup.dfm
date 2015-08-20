@@ -233,7 +233,7 @@ object fRoundSetup: TfRoundSetup
     Font.Style = []
     ParentFont = False
     TabOrder = 4
-    DataField = 'round_'
+    DataField = 'round_GROW_INDEX'
     DataSource = dsMainData
   end
   object qrMainData: TFDQuery

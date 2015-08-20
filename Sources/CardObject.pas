@@ -7,7 +7,7 @@ uses
   ExtCtrls, System.DateUtils, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus, Vcl.DBCtrls, System.UITypes, Vcl.Buttons;
+  FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus, Vcl.DBCtrls, System.UITypes, Vcl.Buttons, Vcl.Samples.Spin;
 
 type
   TFormCardObject = class(TForm)
@@ -42,7 +42,6 @@ type
     LabelCountMonth: TLabel;
 
     DateTimePickerDataCreateContract: TDateTimePicker;
-    DateTimePickerStartBuilding: TDateTimePicker;
 
     DBLookupComboBoxSourseFinance: TDBLookupComboBox;
     dblkcbbCategoryObject: TDBLookupComboBox;
@@ -91,6 +90,8 @@ type
     qrClients: TFDQuery;
     btn1: TBitBtn;
     btn2: TBitBtn;
+    cbbFromMonth: TComboBox;
+    seYear: TSpinEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -358,8 +359,7 @@ begin
     // Автоматический выбор последнего МАИС
     if not Editing then
     begin
-      while not (qrMAIS.Eof) and (YearOf(DateTimePickerStartBuilding.Date) <=
-        YearOf(qrMAIS.FieldByName('onDate').AsDateTime)) do
+      while not(qrMAIS.Eof) and (seYear.Value <= YearOf(qrMAIS.FieldByName('onDate').AsDateTime)) do
         qrMAIS.Next;
       dblkcbbMAIS.KeyValue := qrMAIS.FieldByName('MAIS_ID').AsInteger;
     end;
@@ -373,8 +373,8 @@ begin
   begin
     DM.qrDifferent.SQL.Text := 'SELECT SUM(FN_getParamValue(code, :month, :year)) AS VALUE'#13 +
       'FROM unidictparam WHERE id_unidicttype=7';
-    DM.qrDifferent.ParamByName('month').AsInteger := MonthOf(DateTimePickerStartBuilding.Date);
-    DM.qrDifferent.ParamByName('year').AsInteger := YearOf(DateTimePickerStartBuilding.Date);
+    DM.qrDifferent.ParamByName('month').AsInteger := cbbFromMonth.ItemIndex + 1;
+    DM.qrDifferent.ParamByName('year').AsInteger := seYear.Value;
     DM.qrDifferent.Active := True;
     qrMain.FieldByName('PER_CONTRACTOR').Value := DM.qrDifferent.FieldByName('VALUE').Value;
     DM.qrDifferent.Active := False;
@@ -486,16 +486,17 @@ begin
   end;
 
   // Дата начала строительства
-  DateTimeToString(v7, 'yyyy-mm-dd', DateTimePickerStartBuilding.Date);
+  DateTimeToString(v7, 'yyyy-mm-dd', StrToDate('01.' + IntToStr(cbbFromMonth.ItemIndex + 1) + '.' +
+    IntToStr(seYear.Value)));
   DM.qrDifferent.SQL.Text := 'SELECT stavka_id FROM stavka WHERE year = :year and monat = :month';
-  DM.qrDifferent.ParamByName('month').AsInteger := MonthOf(DateTimePickerStartBuilding.Date);
-  DM.qrDifferent.ParamByName('year').AsInteger := YearOf(DateTimePickerStartBuilding.Date);
+  DM.qrDifferent.ParamByName('month').AsInteger := cbbFromMonth.ItemIndex + 1;
+  DM.qrDifferent.ParamByName('year').AsInteger := seYear.Value;
   DM.qrDifferent.Active := True;
   if DM.qrDifferent.IsEmpty then
   begin
     MessageDlg('Для выбраной даты начала строительства значения ставок отсутствуют!'#13 +
       'Укажите другую дату начала строительства.', mtError, [mbOK], 0);
-    DateTimePickerStartBuilding.SetFocus;
+    cbbFromMonth.SetFocus;
     exit;
   end;
 
@@ -598,8 +599,9 @@ begin
         SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = "' + v2 + '", date_dog = "' + v3
           + '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
           '", srok_stroj = ' + v8 + ', ' + ' fin_id = ' + v9 +
-          ', cust_id = :cust_id, general_id = :general_id, cat_id = "' + v12 + '", state_nds = :snds, region_id = "' + v14 + '", base_norm_id = "' + v15 + '", stroj_id = "' + v16 + '", encrypt = "'
-          + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
+          ', cust_id = :cust_id, general_id = :general_id, cat_id = "' + v12 +
+          '", state_nds = :snds, region_id = "' + v14 + '", base_norm_id = "' + v15 + '", stroj_id = "' + v16
+          + '", encrypt = "' + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
           '", PER_TEMP_BUILD=:PER_TEMP_BUILD, PER_CONTRACTOR=:PER_CONTRACTOR, '#13 +
           'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK, CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
           IntToStr(IdObject) + '";')
@@ -608,9 +610,9 @@ begin
         SQL.Add('INSERT INTO objcards (obj_id, num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '
           + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
           ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV) ' +
-          'VALUE (GetNewID(:IDType), "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 +
-          '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 + '", :snds, "' +
-          v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
+          'VALUE (GetNewID(:IDType), "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5
+          + '", "' + v6 + '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 +
+          '", :snds, "' + v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV);');
         ParamByName('IDType').Value := C_ID_OBJ;
       end;
@@ -674,9 +676,9 @@ end;
 
 procedure TFormCardObject.EditNumberObjectKeyPress(Sender: TObject; var Key: Char);
 begin
-  if Key <> #8 then
+ { if Key <> #8 then
     if (Key < '0') or (Key > '9') then // Запрещаем ввод символов кроме цифр
-      Key := #0;
+      Key := #0;  }
 end;
 
 procedure TFormCardObject.EditingRecord(const Value: Boolean);
@@ -749,7 +751,8 @@ begin
   EditCountMonth.Text := '';
   CheckBoxCalculationEconom.Checked := False;
   DateTimePickerDataCreateContract.Date := Now;
-  DateTimePickerStartBuilding.Date := Now;
+  cbbFromMonth.ItemIndex := MonthOf(Now) - 1;
+  seYear.Value := YearOf(Now);
   DBLookupComboBoxSourseFinance.KeyValue := Null;
   dblkcbbCategoryObject.KeyValue := Null;
   dblkcbbRegion.KeyValue := Null;
@@ -766,14 +769,14 @@ begin
   begin
     qrMain.Edit;
     qrMain.FieldByName('PER_TEMP_BUILD').Value := GetUniDictParamValue('PER_TEMP_BUILD',
-      MonthOf(DateTimePickerStartBuilding.Date), YearOf(DateTimePickerStartBuilding.Date));
+      cbbFromMonth.ItemIndex + 1, seYear.Value);
     qrMain.FieldByName('PER_TEMP_BUILD_BACK').Value := GetUniDictParamValue('PER_TEMP_BUILD_BACK',
-      MonthOf(DateTimePickerStartBuilding.Date), YearOf(DateTimePickerStartBuilding.Date));
+      cbbFromMonth.ItemIndex + 1, seYear.Value);
     // Автоподстановка МАИС
     if CheckQrActiveEmpty(qrMAIS) then
     begin
       qrMAIS.First;
-      while not (qrMAIS.Eof) and (YearOf(DateTimePickerStartBuilding.Date) <=
+      while not(qrMAIS.Eof) and (seYear.Value <=
         YearOf(qrMAIS.FieldByName('onDate').AsDateTime)) do
         qrMAIS.Next;
       dblkcbbMAIS.KeyValue := qrMAIS.FieldByName('MAIS_ID').AsInteger;

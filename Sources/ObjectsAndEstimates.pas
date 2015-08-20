@@ -11,7 +11,7 @@ uses
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes,
   JvExDBGrids, JvDBGrid, JvExComCtrls, JvDBTreeView, Vcl.Buttons, JvHint,
   JvComponentBase, Vcl.DBCtrls, JvAppStorage, JvAppIniStorage, Vcl.Mask, JvExMask, JvToolEdit, JvMaskEdit,
-  JvExStdCtrls, JvCombobox, JvDBSearchComboBox, JvFormPlacement;
+  JvExStdCtrls, JvCombobox, JvDBSearchComboBox, JvFormPlacement, System.DateUtils;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -317,6 +317,8 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsEditClick(Sender: TObject);
+var
+  e: TNotifyEvent;
 begin
   if qrObjects.RecordCount <= 0 then
   begin
@@ -334,7 +336,13 @@ begin
     DateTimePickerDataCreateContract.Date := FieldByName('DateContract').AsVariant;
     EditShortDescription.Text := FieldByName('Name').AsVariant;
     MemoFullDescription.Text := FieldByName('FullName').AsVariant;
-    DateTimePickerStartBuilding.Date := FieldByName('BeginConstruction').AsVariant;
+    e := cbbFromMonth.OnChange;
+    cbbFromMonth.OnChange := nil;
+    seYear.OnChange := nil;
+    cbbFromMonth.ItemIndex := MonthOf(FieldByName('BeginConstruction').AsDateTime) - 1;
+    seYear.Value := YearOf(FieldByName('BeginConstruction').AsDateTime);
+    cbbFromMonth.OnChange := e;
+    seYear.OnChange := e;
     CheckBoxCalculationEconom.Checked := FieldByName('CalculationEconom').AsVariant;
 
     if FieldByName('TermConstruction').AsVariant <> Null then
@@ -447,8 +455,8 @@ begin
     end;
     CloseOpen(qrActsEx);
   except
-    on E: Exception do
-      MessageBox(0, PChar('При удалении акта возникла ошибка:' + sLineBreak + sLineBreak + E.message),
+    on e: Exception do
+      MessageBox(0, PChar('При удалении акта возникла ошибка:' + sLineBreak + sLineBreak + e.message),
         PWideChar(caption), MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
 end;
@@ -557,9 +565,9 @@ begin
     end;
 
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При удалении объекта возникла ошибка.' + sLineBreak +
-        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + E.message), CaptionForm,
+        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + e.message), CaptionForm,
         MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
 
@@ -808,9 +816,9 @@ begin
       Result := FieldByName('sm_number').AsString;
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При получении номера сметы возникла ошибка:' + sLineBreak + sLineBreak +
-        E.message), PWideChar(caption), MB_ICONERROR + mb_OK + mb_TaskModal);
+        e.message), PWideChar(caption), MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
 end;
 
@@ -967,9 +975,9 @@ begin
   try
     CloseOpen(qrObjects);
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('Запрос на получение данных об объектах не был выполнен.' + sLineBreak +
-        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + E.message), PWideChar(caption),
+        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + e.message), PWideChar(caption),
         MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
 end;
@@ -1023,8 +1031,8 @@ begin
       CloseOpen(qrTreeData);
     end;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При удалении сметы возникла ошибка:' + sLineBreak + E.message), PWideChar(caption),
+    on e: Exception do
+      MessageBox(0, PChar('При удалении сметы возникла ошибка:' + sLineBreak + e.message), PWideChar(caption),
         MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
 end;

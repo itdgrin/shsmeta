@@ -11359,7 +11359,8 @@
         end
       end
       object mN25: TMenuItem
-        Caption = '-'
+        Caption = #1055#1088#1086#1095#1080#1077
+        OnClick = mN25Click
       end
     end
     object mN36: TMenuItem

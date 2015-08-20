@@ -69,6 +69,12 @@ object FormCardObject: TFormCardObject
       Top = 14
       Width = 59
       Height = 21
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 1
       OnKeyPress = EditNumberObjectKeyPress
     end
@@ -196,6 +202,12 @@ object FormCardObject: TFormCardObject
     Width = 325
     Height = 49
     Caption = #1044#1072#1090#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 4
     DesignSize = (
       325
@@ -206,41 +218,85 @@ object FormCardObject: TFormCardObject
       Width = 37
       Height = 13
       Caption = #1053#1072#1095#1072#1083#1086
-    end
-    object LabelCountMonth: TLabel
-      Left = 142
-      Top = 23
-      Width = 132
-      Height = 13
-      Caption = #1057#1088#1086#1082' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072', '#1084#1077#1089'.'
-    end
-    object DateTimePickerStartBuilding: TDateTimePicker
-      Left = 51
-      Top = 20
-      Width = 85
-      Height = 21
-      Date = 41507.000000000000000000
-      Time = 41507.000000000000000000
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 0
-      OnChange = DateTimePickerStartBuildingChange
+    end
+    object LabelCountMonth: TLabel
+      Left = 195
+      Top = 15
+      Width = 86
+      Height = 26
+      Caption = #1057#1088#1086#1082' '#1089#1090#1088#1086#1080#1090'-'#1074#1072', '#13#10#1084#1077#1089'.'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
     end
     object EditCountMonth: TEdit
-      Left = 280
+      Left = 287
       Top = 20
-      Width = 37
+      Width = 33
       Height = 21
       Hint = #1063#1080#1089#1083#1086' '#1084#1077#1089#1103#1094#1077#1074
       Anchors = [akLeft, akTop, akRight]
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 1
+      TabOrder = 2
       OnKeyPress = EditNumberObjectKeyPress
+    end
+    object cbbFromMonth: TComboBox
+      Left = 51
+      Top = 20
+      Width = 75
+      Height = 21
+      Style = csDropDownList
+      DropDownCount = 12
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ItemIndex = 0
+      ParentFont = False
+      TabOrder = 1
+      Text = #1071#1085#1074#1072#1088#1100
+      OnChange = DateTimePickerStartBuildingChange
+      Items.Strings = (
+        #1071#1085#1074#1072#1088#1100
+        #1060#1077#1074#1088#1072#1083#1100
+        #1052#1072#1088#1090
+        #1040#1087#1088#1077#1083#1100
+        #1052#1072#1081
+        #1048#1102#1085#1100
+        #1048#1102#1083#1100
+        #1040#1074#1075#1091#1089#1090
+        #1057#1077#1085#1090#1103#1073#1088#1100
+        #1054#1082#1090#1103#1073#1088#1100
+        #1053#1086#1103#1073#1088#1100
+        #1044#1077#1082#1072#1073#1088#1100)
+    end
+    object seYear: TSpinEdit
+      Left = 128
+      Top = 19
+      Width = 56
+      Height = 22
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      MaxValue = 2100
+      MinValue = 1900
+      ParentFont = False
+      TabOrder = 0
+      Value = 2015
+      OnChange = DateTimePickerStartBuildingChange
     end
   end
   object GroupBoxSourseFinance: TGroupBox
@@ -656,8 +712,8 @@ object FormCardObject: TFormCardObject
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 209
-    Top = 128
+    Left = 241
+    Top = 112
   end
   object ADOQuerySF: TFDQuery
     Connection = DM.Connect
