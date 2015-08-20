@@ -879,14 +879,15 @@ begin
   if not Act then
   begin
     Caption := CaptionButton[1] + ' - Разрешено редактирование документа';
-    btnResCalc.Visible := True;
+    btnResCalc.Visible := False;
+
   end
   else
   begin
     Caption := CaptionButton[2] + ' - Разрешено редактирование документа';
     SpeedButtonSSR.Visible := False;
-    btnResCalc.Caption := 'Расчет';
-    btnResCalc.Visible := False;
+    //btnResCalc.Caption := 'Расчет';
+    btnResCalc.Visible := True;
   end;
 
   lblForeman.Visible := Act;
@@ -1219,10 +1220,9 @@ end;
 
 procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
 begin
-  ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
-  { if FormCalculationEstimate.IDAct > 0 then
-    ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IDAct)),
-    PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE); }
+ // ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
+  //if FormCalculationEstimate.IDAct > 0 then
+    ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IDAct)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
 end;
 
 procedure TFormCalculationEstimate.btnEquipmentsClick(Sender: TObject);
