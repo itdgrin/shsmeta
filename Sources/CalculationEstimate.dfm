@@ -3065,6 +3065,12 @@
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       ReadOnly = True
       TabOrder = 0
     end

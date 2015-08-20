@@ -2,7 +2,7 @@ object fRoundSetup: TfRoundSetup
   Left = 0
   Top = 0
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1086#1082#1088#1091#1075#1083#1077#1085#1080#1081
-  ClientHeight = 202
+  ClientHeight = 237
   ClientWidth = 253
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,7 +17,7 @@ object fRoundSetup: TfRoundSetup
   OnDestroy = FormDestroy
   DesignSize = (
     253
-    202)
+    237)
   PixelsPerInch = 96
   TextHeight = 13
   object lbl1: TLabel
@@ -58,6 +58,13 @@ object fRoundSetup: TfRoundSetup
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+  end
+  object lbl6: TLabel
+    Left = 8
+    Top = 170
+    Width = 183
+    Height = 13
+    Caption = #1048#1085#1076#1077#1082#1089' '#1088#1086#1089#1090#1072' '#1086#1082#1088#1091#1075#1083#1103#1090#1100' '#1076#1086' '#1079#1085#1072#1082#1086#1074':'
   end
   object JvDBSpinEdit1: TJvDBSpinEdit
     Left = 192
@@ -181,7 +188,7 @@ object fRoundSetup: TfRoundSetup
   end
   object btn1: TBitBtn
     Left = 170
-    Top = 169
+    Top = 204
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -192,14 +199,13 @@ object fRoundSetup: TfRoundSetup
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 6
     OnClick = btn1Click
-    ExplicitLeft = 175
-    ExplicitTop = 180
+    ExplicitTop = 169
   end
   object btn2: TBitBtn
     Left = 89
-    Top = 169
+    Top = 204
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -210,10 +216,25 @@ object fRoundSetup: TfRoundSetup
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 5
     OnClick = btn2Click
-    ExplicitLeft = 94
-    ExplicitTop = 180
+    ExplicitTop = 169
+  end
+  object JvDBSpinEdit6: TJvDBSpinEdit
+    Left = 192
+    Top = 170
+    Width = 47
+    Height = 21
+    MaxValue = 10.000000000000000000
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 4
+    DataField = 'round_'
+    DataSource = dsMainData
   end
   object qrMainData: TFDQuery
     Connection = DM.Connect

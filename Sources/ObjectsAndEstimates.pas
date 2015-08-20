@@ -722,7 +722,7 @@ begin
   with qrObjects do
   begin
     FormCalculationEstimate.EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' +
-      FieldByName('Name').AsVariant;
+      FieldByName('FullName').AsVariant;
     FormCalculationEstimate.EditNumberContract.Text := FieldByName('NumberContract').AsVariant;
     FormCalculationEstimate.EditDateContract.Text := FieldByName('DateContract').AsVariant;
     FormCalculationEstimate.Region := FieldByName('IdRegion').AsVariant;
@@ -1096,7 +1096,7 @@ begin
   with qrObjects do
   begin
     FormCalculationEstimate.EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' +
-      FieldByName('Name').AsVariant;
+      FieldByName('FullName').AsVariant;
     FormCalculationEstimate.EditNumberContract.Text := FieldByName('NumberContract').AsString;
     FormCalculationEstimate.EditDateContract.Text := FieldByName('DateContract').AsString;
     FormCalculationEstimate.Region := FieldByName('IdRegion').AsVariant;

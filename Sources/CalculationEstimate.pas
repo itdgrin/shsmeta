@@ -879,12 +879,14 @@ begin
   if not Act then
   begin
     Caption := CaptionButton[1] + ' - Разрешено редактирование документа';
+    btnResCalc.Visible := True;
   end
   else
   begin
     Caption := CaptionButton[2] + ' - Разрешено редактирование документа';
     SpeedButtonSSR.Visible := False;
     btnResCalc.Caption := 'Расчет';
+    btnResCalc.Visible := False;
   end;
 
   lblForeman.Visible := Act;
@@ -1485,13 +1487,13 @@ begin
   if Act then
     WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 5
   else
-    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 6;
+    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 7;
   // btnKC6.Width := WidthButton;
   btnResMat.Width := WidthButton;
   btnResMech.Width := WidthButton;
   btnResDev.Width := WidthButton;
   btnResZP.Width := WidthButton;
-  // btnResCalc.Width := WidthButton;
+  btnResCalc.Width := WidthButton;
   SpeedButtonSSR.Width := WidthButton;
   btn3.Width := WidthButton;
   btnCalcFact.Width := WidthButton;

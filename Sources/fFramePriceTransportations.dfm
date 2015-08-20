@@ -42,6 +42,11 @@ inherited FramePriceTransportations: TFramePriceTransportations
         Width = 488
         Height = 291
         Align = alClient
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
         Header.AutoSizeIndex = 0
         Header.Font.Charset = DEFAULT_CHARSET
         Header.Font.Color = clWindowText
@@ -50,6 +55,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
         Header.Font.Style = []
         Header.Height = 32
         Header.Options = [hoVisible]
+        ParentFont = False
         PopupMenu = PopupMenu
         TabOrder = 0
         TreeOptions.MiscOptions = [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
@@ -60,6 +66,8 @@ inherited FramePriceTransportations: TFramePriceTransportations
         OnEnter = VSTEnter
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
+        ExplicitLeft = 3
+        ExplicitTop = 4
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]
@@ -68,7 +76,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
           end
           item
             Position = 1
-            WideText = #1056#1072#1089#1089#1090#1086#1103#1085#1080#1077
+            WideText = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
           end
           item
             CaptionAlignment = taCenter

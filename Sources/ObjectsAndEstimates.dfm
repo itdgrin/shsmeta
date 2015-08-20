@@ -142,6 +142,11 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
           item
             Expanded = False
             FieldName = 'FullName'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
             Title.Alignment = taCenter
             Title.Caption = #1055#1086#1083#1085#1086#1077' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1086#1073#1098#1077#1082#1090#1072
             Width = 250

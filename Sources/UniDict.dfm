@@ -716,7 +716,7 @@ object fUniDict: TfUniDict
     AfterDelete = qrUniDictTypeAfterPost
     AfterScroll = qrUniDictTypeAfterScroll
     Filtered = True
-    Filter = 'unidicttype_id>0'
+    Filter = 'unidicttype_id>0 and unidicttype_id<>7 and unidicttype_id<>14'
     OnUpdateError = qrUniDictTypeUpdateError
     Connection = DM.Connect
     Transaction = DM.Read

@@ -26,6 +26,8 @@ type
     btn2: TBitBtn;
     qrMainData: TFDQuery;
     dsMainData: TDataSource;
+    lbl6: TLabel;
+    JvDBSpinEdit6: TJvDBSpinEdit;
     procedure btn1Click(Sender: TObject);
     procedure btn2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);

@@ -54,7 +54,6 @@ type
     lblK: TLabel;
     edtK40: TEdit;
     lbl3: TLabel;
-    lbl4: TLabel;
     qrMAIS: TFDQuery;
     dsMAIS: TDataSource;
     dblkcbbMAIS: TDBLookupComboBox;
@@ -63,7 +62,6 @@ type
     qrSmeta: TFDQuery;
     dsSmeta: TDataSource;
     lbl2: TLabel;
-    dbedtgrowth_index: TDBEdit;
     dbedtK35: TDBEdit;
     dbedtEditRateWorker: TDBEdit;
     dbchkAPPLY_LOW_COEF_OHROPR_FLAG: TDBCheckBox;
@@ -431,7 +429,7 @@ begin
   else
     dbrgrpCOEF_ORDERS_Visible := 1;
 
-  Height := 670 - pnlLowCoef.Height * pnlLowCoef_Visible - dbrgrpCOEF_ORDERS.Height *
+  Height := 640 - pnlLowCoef.Height * pnlLowCoef_Visible - dbrgrpCOEF_ORDERS.Height *
     dbrgrpCOEF_ORDERS_Visible;
 end;
 
@@ -496,7 +494,7 @@ begin
       ParamByName('APPLY_WINTERPRISE_FLAG').AsInteger := qrSmeta.FieldByName('APPLY_WINTERPRISE_FLAG')
         .AsInteger;
       ParamByName('MAIS_ID').Value := dblkcbbMAIS.KeyValue;
-      ParamByName('growth_index').Value := dbedtgrowth_index.Text;
+      ParamByName('growth_index').Value := 1; // yне актуально
       ParamByName('coef_orders').Value := qrSmeta.FieldByName('coef_orders').AsInteger;
       ParamByName('WINTERPRICE_TYPE').Value := qrSmeta.FieldByName('WINTERPRICE_TYPE').AsInteger;
       ParamByName('sm_id').Value := IdEstimate;
@@ -572,7 +570,7 @@ begin
   else
     dbrgrpCOEF_ORDERS_Visible := 1;
 
-  Height := 670 - pnlLowCoef.Height * pnlLowCoef_Visible - dbrgrpCOEF_ORDERS.Height *
+  Height := 640 - pnlLowCoef.Height * pnlLowCoef_Visible - dbrgrpCOEF_ORDERS.Height *
     dbrgrpCOEF_ORDERS_Visible;
 end;
 
