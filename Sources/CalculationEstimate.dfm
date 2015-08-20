@@ -3224,7 +3224,7 @@
         object PMAddAdditionTransportation: TMenuItem
           Caption = #1055#1077#1088#1077#1074#1086#1079#1082#1072
           object PMAddAdditionTransportationС310: TMenuItem
-            Caption = #1057#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'310'
+            Caption = #1040#1074#1090#1086#1084#1086#1073#1080#1083#1103#1084#1080' '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'310'
             object PMAddAdditionTransportationС310Cargo: TMenuItem
               Tag = 6
               Caption = #1043#1088#1091#1079#1072
@@ -3237,7 +3237,7 @@
             end
           end
           object PMAddAdditionTransportationС311: TMenuItem
-            Caption = #1057#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'311'
+            Caption = #1041#1086#1088#1090#1086#1074#1099#1084#1080' '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'311'
             object PMAddAdditionTransportationС311Cargo: TMenuItem
               Tag = 8
               Caption = #1043#1088#1091#1079#1072

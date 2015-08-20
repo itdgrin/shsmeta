@@ -23,6 +23,7 @@ type
     ID: Integer;
     DataType: Integer;
     Code: string;
+    MID: Integer;
   end;
 
   TAutoRepArray = array of TAutoRepRec;
@@ -747,7 +748,7 @@ type
 
     // Ќабор процедур дл€ управление автозаменой
     procedure ClearAutoRep; // ќчищает массив автозамены
-    procedure CheckNeedAutoRep(AID, AType: Integer; ACode: string); // ѕровер€ет необходимость в замене
+    procedure CheckNeedAutoRep(AID, AType, AMID: Integer; ACode: string); // ѕровер€ет необходимость в замене
     procedure ShowAutoRep; // ѕоказывает диалог замены дл€ всех из массива
   public
     ConfirmCloseForm: Boolean;
@@ -1764,7 +1765,7 @@ begin
 end;
 
 // ѕровер€ет выполн€лась ли ранее в смета замена по такому коду, если да то нуждаетс€ в автозамене
-procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType: Integer; ACode: string);
+procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType, AMID: Integer; ACode: string);
 var
   j: Integer;
 begin
@@ -1774,14 +1775,15 @@ begin
   qrTemp1.Active := False;
   case AType of
     2:
-      qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' + '(REPLACED = 1) and (MAT_CODE = ''' +
-        ACode + ''')';
+      qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' +
+        '(REPLACED = 1) and (MAT_ID = ' + IntToStr(AMID) + ')';
     3:
-      qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' + '(REPLACED = 1) and (MECH_CODE = ''' +
-        ACode + ''')';
+      qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' +
+        '(REPLACED = 1) and (MECH_ID = ' + IntToStr(AMID) + ')';
   else
     Exit;
   end;
+
   qrTemp1.Active := True;
   if not qrTemp1.Eof then
   begin
@@ -1790,6 +1792,7 @@ begin
     FAutoRepArray[j].ID := AID;
     FAutoRepArray[j].DataType := AType;
     FAutoRepArray[j].Code := ACode;
+    FAutoRepArray[j].MID := AMID;
   end;
   qrTemp1.Active := False;
 end;
@@ -3986,7 +3989,8 @@ begin
           qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
           qrTemp1.ExecSQL;
 
-          CheckNeedAutoRep(MaxMId, 2, FieldByName('MatCode').AsString);
+          CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
+            FieldByName('MatCode').AsString);
         end;
 
         Next;
@@ -4029,7 +4033,8 @@ begin
           qrTemp1.ExecSQL;
 
           if MaxMId > 0 then
-            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatCode').AsString);
+            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
+              FieldByName('MatCode').AsString);
         end;
         Next;
       end;
@@ -4099,7 +4104,8 @@ begin
           qrTemp1.ExecSQL;
 
           if MaxMId > 0 then
-            CheckNeedAutoRep(MaxMId, 3, FieldByName('MechCode').AsString);
+            CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger,
+              FieldByName('MechCode').AsString);
         end;
 
         Next;
@@ -5851,6 +5857,7 @@ begin
     // подсвечиваем удаленный материал
     if (qrMaterialDELETED.Value = 1) then
     begin
+      Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $008080FF;
     end;
 
@@ -6009,6 +6016,7 @@ begin
     // подсвечиваем удаленный механизм
     if (qrMechanizmDELETED.Value = 1) then
     begin
+      Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $008080FF;
     end;
 
