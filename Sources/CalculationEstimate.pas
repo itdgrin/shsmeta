@@ -748,7 +748,7 @@ type
 
     // Набор процедур для управление автозаменой
     procedure ClearAutoRep; // Очищает массив автозамены
-    procedure CheckNeedAutoRep(AID, AType, AMID: Integer; ACode: string); // Проверяет необходимость в замене
+    procedure CheckNeedAutoRep(AID, AType, AMId: Integer; ACode: string); // Проверяет необходимость в замене
     procedure ShowAutoRep; // Показывает диалог замены для всех из массива
   public
     ConfirmCloseForm: Boolean;
@@ -888,7 +888,7 @@ begin
     Caption := CaptionButton[2] + ' - Разрешено редактирование документа';
     SpeedButtonSSR.Visible := False;
     btnResCalc.Caption := 'Расчет';
-    //btnResCalc.Visible := True;
+    // btnResCalc.Visible := True;
   end;
 
   lblForeman.Visible := Act;
@@ -1221,9 +1221,10 @@ end;
 
 procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
 begin
- // ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
-  //if FormCalculationEstimate.IDAct > 0 then
-    ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IDEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+  // ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
+  // if FormCalculationEstimate.IDAct > 0 then
+  ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+    PChar(GetCurrentDir + '\reports\report\'), SW_maximIZE);
 end;
 
 procedure TFormCalculationEstimate.btnEquipmentsClick(Sender: TObject);
@@ -1765,7 +1766,7 @@ begin
 end;
 
 // Проверяет выполнялась ли ранее в смета замена по такому коду, если да то нуждается в автозамене
-procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType, AMID: Integer; ACode: string);
+procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType, AMId: Integer; ACode: string);
 var
   j: Integer;
 begin
@@ -1775,11 +1776,11 @@ begin
   qrTemp1.Active := False;
   case AType of
     2:
-      qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' +
-        '(REPLACED = 1) and (MAT_ID = ' + IntToStr(AMID) + ')';
+      qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' + '(REPLACED = 1) and (MAT_ID = ' +
+        INTTOSTR(AMId) + ')';
     3:
-      qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' +
-        '(REPLACED = 1) and (MECH_ID = ' + IntToStr(AMID) + ')';
+      qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' + '(REPLACED = 1) and (MECH_ID = ' +
+        INTTOSTR(AMId) + ')';
   else
     Exit;
   end;
@@ -1792,7 +1793,7 @@ begin
     FAutoRepArray[j].ID := AID;
     FAutoRepArray[j].DataType := AType;
     FAutoRepArray[j].Code := ACode;
-    FAutoRepArray[j].MID := AMID;
+    FAutoRepArray[j].MID := AMId;
   end;
   qrTemp1.Active := False;
 end;
@@ -2595,7 +2596,7 @@ begin
     qrRatesEx.OnCalcFields := qrRatesExCalcFields;
     qrRatesEx.Locate('SORT_ID', Key, []);
     qrRatesEx.EnableControls;
-    grRatesEx.SelectedRows.Clear;
+    // grRatesEx.SelectedRows.Clear;
   end;
 end;
 
@@ -3769,7 +3770,7 @@ begin
     else
     begin
       AddCoefToRate(fCoefficients.qrCoef.FieldByName('coef_id').AsInteger);
-      RecalcEstimate;
+      // RecalcEstimate;
     end;
   end;
 end;
@@ -3989,8 +3990,7 @@ begin
           qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
           qrTemp1.ExecSQL;
 
-          CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
-            FieldByName('MatCode').AsString);
+          CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, FieldByName('MatCode').AsString);
         end;
 
         Next;
@@ -4033,8 +4033,7 @@ begin
           qrTemp1.ExecSQL;
 
           if MaxMId > 0 then
-            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
-              FieldByName('MatCode').AsString);
+            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, FieldByName('MatCode').AsString);
         end;
         Next;
       end;
@@ -4104,8 +4103,7 @@ begin
           qrTemp1.ExecSQL;
 
           if MaxMId > 0 then
-            CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger,
-              FieldByName('MechCode').AsString);
+            CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger, FieldByName('MechCode').AsString);
         end;
 
         Next;
@@ -5613,12 +5611,22 @@ begin
           else
             qrTemp.ParamByName('id_act').Value := Null;
           qrTemp.ExecSQL;
+
+          if qrRatesExID_TYPE_DATA.Value > 0 then
+          begin
+            FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
+              VarArrayOf([qrRatesExID_TABLES.Value, qrRatesExID_TYPE_DATA.Value]));
+            FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0, :ID_ACT)',
+              VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value,
+              qrRatesExID_ACT.Value]));
+          end;
         end;
       end;
     end;
   grRatesEx.DataSource.DataSet.GotoBookmark(TempBookmark);
   grRatesEx.DataSource.DataSet.FreeBookmark(TempBookmark);
   grRatesEx.DataSource.DataSet.EnableControls;
+  grRatesEx.SetFocus;
   CloseOpen(qrCalculations);
 end;
 
