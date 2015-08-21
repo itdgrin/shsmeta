@@ -248,36 +248,35 @@ procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
     // Копируем все наборы КФ. родетельской сметы
     if FromID = 0 then
       Exit;
-    qrTemp.SQL.Text := 'INSERT INTO calculation_coef (calculation_coef_id, ' +
-      'id_estimate, id_type_data, ' +
+    qrTemp.SQL.Text := 'INSERT INTO calculation_coef (calculation_coef_id, ' + 'id_estimate, id_type_data, ' +
       'id_owner, id_coef, COEF_NAME, OSN_ZP, EKSP_MACH, MAT_RES, WORK_PERS, ' +
       'WORK_MACH, OXROPR, PLANPRIB) SELECT GetNewID(:IDType), :new_id_estimate, ' +
       'id_type_data, id_owner, id_coef, COEF_NAME, OSN_ZP, EKSP_MACH, MAT_RES, ' +
-      'WORK_PERS, WORK_MACH, OXROPR, PLANPRIB FROM calculation_coef WHERE ' +
-      'id_estimate = :id_estimate;';
+      'WORK_PERS, WORK_MACH, OXROPR, PLANPRIB FROM calculation_coef WHERE ' + 'id_estimate = :id_estimate;';
     qrTemp.ParamByName('IDType').AsInteger := C_ID_SMCOEF;
     qrTemp.ParamByName('id_estimate').AsInteger := FromID;
     qrTemp.ParamByName('new_id_estimate').AsInteger := ToID;
     qrTemp.ExecSQL;
   end;
   function addParentEstimate(aParentID, aType: Integer): Integer;
-  var NewID: Integer;
+  var
+    NewID: Integer;
   begin
     qrTemp.Active := False;
     qrTemp.SQL.Clear;
     qrTemp.SQL.Add('SELECT GetNewID(:IDType)');
     qrTemp.ParamByName('IDType').Value := C_ID_SM;
     qrTemp.Active := True;
-    NewId := 0;
+    NewID := 0;
     if not qrTemp.Eof then
-      NewId := qrTemp.Fields[0].AsInteger;
+      NewID := qrTemp.Fields[0].AsInteger;
     qrTemp.Active := False;
 
-    if NewId = 0 then
+    if NewID = 0 then
       raise Exception.Create('Не удалось получить новый ID.');
 
     qrMain.Append;
-    qrMain.FieldByName('SM_ID').AsInteger := NewId;
+    qrMain.FieldByName('SM_ID').AsInteger := NewID;
     qrMain.FieldByName('sm_type').AsInteger := aType;
     qrMain.FieldByName('obj_id').AsInteger := IdObject;
     qrMain.FieldByName('parent_id').AsInteger := aParentID;
@@ -485,7 +484,7 @@ begin
         // qrMain.FieldByName('coef_tr_zatr').Value := GetUniDictParamValue('', vMonth, vYear);
         qrMain.FieldByName('coef_tr_obor').Value := 2;
         // индекс роста цен
-        //qrMain.FieldByName('growth_index').Value := GetUniDictParamValue('GROWTH_INDEX', vMonth, vYear);
+        // qrMain.FieldByName('growth_index').Value := GetUniDictParamValue('GROWTH_INDEX', vMonth, vYear);
       end
       else
       begin

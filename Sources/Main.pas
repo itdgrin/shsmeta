@@ -172,6 +172,7 @@ type
     N24: TMenuItem;
     mN37: TMenuItem;
     mN25: TMenuItem;
+    mN38: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -282,6 +283,7 @@ type
     procedure N24Click(Sender: TObject);
     procedure mN36Click(Sender: TObject);
     procedure mN25Click(Sender: TObject);
+    procedure mN38Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -1199,26 +1201,26 @@ end;
 
 procedure TFormMain.mN25Click(Sender: TObject);
 begin
-    if (not Assigned(fUniDict)) then
+  if (not Assigned(fUniDict)) then
     fUniDict := TfUniDict.Create(Self);
-    fUniDict.qrUniDictType.Filtered := False;
-    fUniDict.qrUniDictType.Locate('unidicttype_id', 14, []);
-    fUniDict.pnlLeft.Visible := False;
-    fUniDict.lbl1.Visible := False;
-    fUniDict.seYear.Visible := False;
-    fUniDict.dbmmoparam_description1.Visible := False;
-    FormMain.DeleteButtonCloseWindow(fUniDict.Caption);
-    fUniDict.Caption := 'Прочие';
-    fUniDict.FormStyle := fsNormal;
-    fUniDict.Width := 400;
-    fUniDict.Height := 200;
-    fUniDict.pnlClient.Align := alClient;
-    fUniDict.FormStorage.Active := False;
-    fUniDict.Position := poMainFormCenter;
-    fUniDict.grUniDictParam.RowsHeight := 17;
-    fUniDict.grUniDictParam.RowResize := False;
-    fUniDict.grUniDictParam.Options := fUniDict.grUniDictParam.Options - [dgIndicator];
-    fUniDict.Show;
+  fUniDict.qrUniDictType.Filtered := False;
+  fUniDict.qrUniDictType.Locate('unidicttype_id', 14, []);
+  fUniDict.pnlLeft.Visible := False;
+  fUniDict.lbl1.Visible := False;
+  fUniDict.seYear.Visible := False;
+  fUniDict.dbmmoparam_description1.Visible := False;
+  FormMain.DeleteButtonCloseWindow(fUniDict.Caption);
+  fUniDict.Caption := 'Прочие';
+  fUniDict.FormStyle := fsNormal;
+  fUniDict.Width := 400;
+  fUniDict.Height := 200;
+  fUniDict.pnlClient.Align := alClient;
+  fUniDict.FormStorage.Active := False;
+  fUniDict.Position := poMainFormCenter;
+  fUniDict.grUniDictParam.RowsHeight := 17;
+  fUniDict.grUniDictParam.RowResize := False;
+  fUniDict.grUniDictParam.Options := fUniDict.grUniDictParam.Options - [dgIndicator];
+  fUniDict.Show;
 end;
 
 procedure TFormMain.mN26Click(Sender: TObject);
@@ -1247,6 +1249,13 @@ begin
   if (not Assigned(fInstructionHelp)) then
     fInstructionHelp := TfInstructionHelp.Create(FormMain);
   fInstructionHelp.ShowModal;
+end;
+
+procedure TFormMain.mN38Click(Sender: TObject);
+begin
+  if (not Assigned(FormObjectsAndEstimates)) then
+    FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(Self);
+  FormObjectsAndEstimates.Show;
 end;
 
 procedure TFormMain.mUsersClick(Sender: TObject);
