@@ -467,6 +467,7 @@ type
     btn3: TBitBtn;
     lblForeman: TLabel;
     lblForemanFIO: TLabel;
+    qrRatesExCONS_REPLASED: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -2558,7 +2559,8 @@ end;
 
 function TFormCalculationEstimate.CheckMatINRates: Boolean;
 begin
-  Result := (qrRatesExID_RATE.AsInteger > 0) and (qrRatesExID_TYPE_DATA.AsInteger = 2);
+  Result := (qrRatesExID_RATE.AsInteger > 0) and
+            (qrRatesExID_TYPE_DATA.AsInteger = 2);
 end;
 
 // проверка что материал неучтеный в таблице материалов
@@ -2951,7 +2953,6 @@ var
   NewCount: Currency;
 begin
   RecNo := qrRatesEx.RecNo;
-  // ƒл€ раценки обновл€ем COUNTFORCALC и у неучтенных или замен€ющих материалов
   if qrRatesExID_TYPE_DATA.AsInteger = 1 then
   begin
     qrRatesEx.Tag := 1; // Ѕлокирует обработчики событий датасета
@@ -2964,10 +2965,12 @@ begin
 
       while not qrRatesEx.Eof do
       begin
-        if CheckMatINRates then
+        if (qrRatesExID_TYPE_DATA.Value = 2) and
+           (qrRatesExID_REPLACED.Value > 0) and
+           (qrRatesExCONS_REPLASED.Value = 0) then
         begin
           NewCount := 0;
-          qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp ' + 'WHERE ID = ' +
+          qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp WHERE ID = ' +
             INTTOSTR(qrRatesExID_TABLES.AsInteger);
           qrTemp.Active := True;
           if not qrTemp.Eof then
@@ -4547,7 +4550,11 @@ begin
   end;
   qrMaterialNUM.ReadOnly := True;
 
-  if ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) then
+  if ((qrRatesExID_RATE.Value > 0) or
+      (qrRatesExID_TYPE_DATA.Value = 1) or
+      ((qrRatesExID_TYPE_DATA.Value = 2) and
+       (qrRatesExID_REPLACED.Value > 0) and
+       (qrRatesExCONS_REPLASED.Value = 0))) then
     dbgrdMaterial.Columns[2].Visible := True
   else
     dbgrdMaterial.Columns[2].Visible := False;
