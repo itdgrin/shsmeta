@@ -357,10 +357,14 @@ begin
 end;
 
 procedure TFormBasicData.qrCoefNewRecord(DataSet: TDataSet);
+var
+  tableName: string;
 begin
   // Показываем справочник наборов коэф.
   if fCoefficients.ShowModal = mrOk then
   begin
+    qrCoef.FieldByName('calculation_coef_id').Value := FastSelectSQLOne('SELECT GetNewID(:IDType)',
+      VarArrayOf([C_ID_SMCOEF]));
     qrCoef.FieldByName('id_estimate').Value := qrSmeta.FieldByName('SM_ID').Value;
     qrCoef.FieldByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
     qrCoef.FieldByName('id_owner').Value := 0;
@@ -374,10 +378,16 @@ begin
     qrCoef.FieldByName('OXROPR').Value := fCoefficients.qrCoef.FieldByName('OXROPR').Value;
     qrCoef.FieldByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
     qrCoef.Post;
+
+    if Assigned(FormCalculationEstimate) then
+      tableName := 'calculation_coef_temp'
+    else
+      tableName := 'calculation_coef';
+
     // Каскадно добавляем выбранный кф. на все зависимые сметы
-    DM.qrDifferent.SQL.Text := 'INSERT INTO `calculation_coef`(`calculation_coef_id`, ' +
-      '`id_estimate`, `id_type_data`, `id_owner`,'#13
-      + ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
+    DM.qrDifferent.SQL.Text := 'INSERT INTO `' + tableName + '`(`calculation_coef_id`, ' +
+      '`id_estimate`, `id_type_data`, `id_owner`,'#13 +
+      ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
       '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
       'VALUE(GetNewID(:IDType), :id_estimate,:id_type_data,:id_owner,'#13 +
       ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB)';
@@ -407,6 +417,9 @@ begin
       DM.qrDifferent1.Next;
     end;
     DM.qrDifferent1.Active := False;
+
+    if Assigned(FormCalculationEstimate) then
+      FormCalculationEstimate.RecalcEstimate;
   end
   else
     qrCoef.Cancel;
@@ -544,12 +557,12 @@ begin
     end;
   end;
   {
-  if Application.MessageBox('Произвести замену индекса роста цен из справочника?', 'Смета',
+    if Application.MessageBox('Произвести замену индекса роста цен из справочника?', 'Смета',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
-  begin
+    begin
     qrSmeta.FieldByName('growth_index').Value := GetUniDictParamValue('GROWTH_INDEX',
-      (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
-  end;
+    (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
+    end;
   }
 end;
 

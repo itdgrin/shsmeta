@@ -835,9 +835,7 @@ begin
       ListField := 'name';
       KeyField := 'stroj_id';
     end;
-    // Если объект по тек ремонту то тут ремонт автоматом
-    if dblkcbbCategoryObject.KeyValue = 2 then
-      dblkcbbTypeOXR.KeyValue := qrTO.FieldByName('stroj_id').AsInteger;
+    dblkcbbTypeOXR.KeyValue := (IdRegion - 1) * 4 + IdCategory;
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе списка ОХР и ОПР возникла ошибка:' + sLineBreak + E.Message),

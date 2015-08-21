@@ -421,7 +421,7 @@ object FormCardObject: TFormCardObject
     Top = 303
     Width = 324
     Height = 49
-    Caption = #1050#1072#1090#1077#1075#1086#1088#1080#1103' '#1086#1073#1098#1077#1082#1090#1072':'
+    Caption = #1042#1080#1076' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -444,6 +444,12 @@ object FormCardObject: TFormCardObject
     Width = 217
     Height = 49
     Caption = #1041#1072#1079#1072' '#1088#1072#1089#1094#1077#1085#1086#1082':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 13
     object DBLookupComboBoxBasePrices: TDBLookupComboBox
       Left = 8
@@ -464,7 +470,13 @@ object FormCardObject: TFormCardObject
     Top = 400
     Width = 218
     Height = 43
-    Caption = #1047#1086#1085#1072' '#1088#1072#1089#1094#1077#1085#1086#1082':'
+    Caption = #1047#1086#1085#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 14
     object dblkcbbZonePrices: TDBLookupComboBox
       Left = 8
@@ -487,6 +499,7 @@ object FormCardObject: TFormCardObject
       Top = 16
       Width = 202
       Height = 21
+      Enabled = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11

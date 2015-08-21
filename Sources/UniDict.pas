@@ -68,6 +68,7 @@ type
     procedure qrUniDictAfterPost(DataSet: TDataSet);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure changeEditMode;
+    procedure qrUniDictTypeBeforeScroll(DataSet: TDataSet);
   private
     editMode: Boolean;
   public
@@ -104,6 +105,7 @@ begin
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, fUniDict, 1);
   LoadDBGridSettings(grUniDictParam);
+  grUniDictParam.TitleArrow := False;
   LoadDBGridSettings(gtUniDictType);
   CloseOpen(qrUniDictType);
   CloseOpen(qrUniDictTypeLook);
@@ -139,6 +141,7 @@ begin
   dbnvgr1.Visible := editMode;
   gtUniDictType.ReadOnly := not editMode;
   grUniDictParam.ReadOnly := not editMode;
+  grUniDictParam.TitleArrow := editMode;
 end;
 
 procedure TfUniDict.grUniDictParamEnter(Sender: TObject);
@@ -172,7 +175,18 @@ begin
 end;
 
 procedure TfUniDict.qrUniDictTypeAfterScroll(DataSet: TDataSet);
+var
+  res: Variant;
 begin
+  // Восстанавливаем значение высоты строк в правой таблице
+  res := FastSelectSQLOne('SELECT unidicttype_RowsHeight FROM unidicttype WHERE unidicttype_id=:0',
+    VarArrayOf([qrUniDictType.FieldByName('unidicttype_id').Value]));
+
+  if VarIsNull(res) then
+    grUniDictParam.RowsHeight := 17
+  else
+    grUniDictParam.RowsHeight := res;
+
   seYearChange(Self);
   // Убираем показ всех месяцев на некоторых типах
   if (qrUniDictType.FieldByName('unidicttype_first_month').Value = 1) and not editMode then
@@ -207,6 +221,14 @@ begin
     grUniDictParam.Columns[12].Visible := True;
     grUniDictParam.Columns[13].Visible := True;
   end;
+end;
+
+procedure TfUniDict.qrUniDictTypeBeforeScroll(DataSet: TDataSet);
+begin
+  // Сохраняем высоту строк в правой таблице, если изменилась
+  if grUniDictParam.RowsHeight <> qrUniDictType.FieldByName('unidicttype_RowsHeight').AsInteger then
+    FastExecSQL('UPDATE unidicttype SET unidicttype_RowsHeight=:0 WHERE unidicttype_id=:1',
+      VarArrayOf([grUniDictParam.RowsHeight, qrUniDictType.FieldByName('unidicttype_id').Value]));
 end;
 
 procedure TfUniDict.qrUniDictTypeUpdateError(ASender: TDataSet; AException: EFDException; ARow: TFDDatSRow;

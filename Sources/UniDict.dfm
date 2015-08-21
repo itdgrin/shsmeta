@@ -126,6 +126,12 @@ object fUniDict: TfUniDict
     Anchors = [akLeft, akTop, akRight, akBottom]
     BevelOuter = bvNone
     Caption = 'pnlClient'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 4
     object spl1: TSplitter
       Left = 185
@@ -251,7 +257,6 @@ object fUniDict: TfUniDict
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
         OnEnter = grUniDictParamEnter
-        IniStorage = FormStorage
         PostOnEnterKey = True
         AutoSizeColumns = True
         AutoSizeColumnIndex = 0
@@ -714,6 +719,7 @@ object fUniDict: TfUniDict
   object qrUniDictType: TFDQuery
     AfterPost = qrUniDictTypeAfterPost
     AfterDelete = qrUniDictTypeAfterPost
+    BeforeScroll = qrUniDictTypeBeforeScroll
     AfterScroll = qrUniDictTypeAfterScroll
     Filtered = True
     Filter = 'unidicttype_id>0 and unidicttype_id<>7 and unidicttype_id<>14'
@@ -759,7 +765,8 @@ object fUniDict: TfUniDict
       
         '  (SELECT COUNT(*) FROM unidictparam WHERE id_unidicttype=`unidi' +
         'cttype`.unidicttype_id) AS CNT,'
-      '  unidicttype_first_month'
+      '  unidicttype_first_month,'
+      '  unidicttype_RowsHeight'
       'FROM '
       '  `unidicttype`'
       'UNION ALL'
@@ -768,7 +775,8 @@ object fUniDict: TfUniDict
       '  -1 AS unidicttype_id,'
       '  ("<'#1074#1089#1077'>") AS unidicttype_name,'
       '  (SELECT COUNT(*) FROM unidictparam) AS CNT,'
-      '  0 AS unidicttype_first_month'
+      '  0 AS unidicttype_first_month,'
+      '  NULL AS unidicttype_RowsHeight'
       'UNION ALL'
       'SELECT '
       '  0 AS unidicttype_position,'
@@ -777,7 +785,8 @@ object fUniDict: TfUniDict
       
         '  (SELECT COUNT(*) FROM unidictparam WHERE id_unidicttype=0) AS ' +
         'CNT,'
-      '  0 AS unidicttype_first_month'
+      '  0 AS unidicttype_first_month,'
+      '  NULL AS unidicttype_RowsHeight'
       
         'ORDER BY unidicttype_position, `unidicttype_name`, unidicttype_i' +
         'd')

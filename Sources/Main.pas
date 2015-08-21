@@ -1204,15 +1204,20 @@ begin
     fUniDict.qrUniDictType.Filtered := False;
     fUniDict.qrUniDictType.Locate('unidicttype_id', 14, []);
     fUniDict.pnlLeft.Visible := False;
+    fUniDict.lbl1.Visible := False;
+    fUniDict.seYear.Visible := False;
     fUniDict.dbmmoparam_description1.Visible := False;
     FormMain.DeleteButtonCloseWindow(fUniDict.Caption);
     fUniDict.Caption := 'Прочие';
     fUniDict.FormStyle := fsNormal;
     fUniDict.Width := 400;
+    fUniDict.Height := 200;
+    fUniDict.pnlClient.Align := alClient;
     fUniDict.FormStorage.Active := False;
     fUniDict.Position := poMainFormCenter;
     fUniDict.grUniDictParam.RowsHeight := 17;
     fUniDict.grUniDictParam.RowResize := False;
+    fUniDict.grUniDictParam.Options := fUniDict.grUniDictParam.Options - [dgIndicator];
     fUniDict.Show;
 end;
 

@@ -170,7 +170,6 @@ object FormBasicData: TFormBasicData
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 22
-    ExplicitTop = 601
     DesignSize = (
       471
       41)
@@ -485,7 +484,6 @@ object FormBasicData: TFormBasicData
     ValueChecked = '1'
     ValueUnchecked = '0'
     OnClick = dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick
-    ExplicitTop = 560
   end
   object pnlLowCoef: TPanel
     AlignWithMargins = True
@@ -498,7 +496,6 @@ object FormBasicData: TFormBasicData
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 21
-    ExplicitTop = 580
     object lbl6: TLabel
       Left = 0
       Top = 3
@@ -564,7 +561,6 @@ object FormBasicData: TFormBasicData
     ValueChecked = '1'
     ValueUnchecked = '0'
     OnClick = dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick
-    ExplicitTop = 399
   end
   object dbrgrpCOEF_ORDERS: TDBRadioGroup
     AlignWithMargins = True
@@ -579,14 +575,19 @@ object FormBasicData: TFormBasicData
     Columns = 2
     DataField = 'WINTERPRICE_TYPE'
     DataSource = dsSmeta
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     Items.Strings = (
-      #1053#1044#1047' 1'
-      #1053#1044#1047' 2')
+      #1053#1044#1047' 1 ('#1087#1086' '#1074#1080#1076#1072#1084' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072')'
+      #1053#1044#1047' 2 ('#1087#1086' '#1074#1080#1076#1072#1084' '#1088#1072#1073#1086#1090')')
+    ParentFont = False
     TabOrder = 18
     Values.Strings = (
       '0'
       '1')
-    ExplicitTop = 419
   end
   object pnl2: TPanel
     AlignWithMargins = True
@@ -597,7 +598,6 @@ object FormBasicData: TFormBasicData
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 19
-    ExplicitTop = 465
     object lbl8: TLabel
       AlignWithMargins = True
       Left = 3
