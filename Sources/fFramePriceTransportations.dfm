@@ -66,8 +66,6 @@ inherited FramePriceTransportations: TFramePriceTransportations
         OnEnter = VSTEnter
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
-        ExplicitLeft = 3
-        ExplicitTop = 4
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]
@@ -200,16 +198,16 @@ inherited FramePriceTransportations: TFramePriceTransportations
       object cmbTranspType: TComboBox
         Left = 212
         Top = 2
-        Width = 122
+        Width = 197
         Height = 21
         Style = csDropDownList
         ItemIndex = 0
         TabOrder = 2
-        Text = #1057#1072#1084#1086#1089#1074#1072#1083#1099' '#1057'310'
+        Text = #1040#1074#1090#1086#1084#1086#1073#1080#1083#1103#1084#1080' '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'310'
         OnChange = ComboBoxMonthYearChange
         Items.Strings = (
-          #1057#1072#1084#1086#1089#1074#1072#1083#1099' '#1057'310'
-          #1057#1072#1084#1086#1089#1074#1072#1083#1099' '#1057'311')
+          #1040#1074#1090#1086#1084#1086#1073#1080#1083#1103#1084#1080' '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'310'
+          #1041#1086#1088#1090#1086#1074#1099#1084#1080' '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'311')
       end
     end
   end

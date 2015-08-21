@@ -3220,56 +3220,56 @@
           OnClick = PMAddRatMatMechEquipOwnClick
         end
       end
+      object PMAddAdditionTransportation: TMenuItem
+        Caption = #1055#1077#1088#1077#1074#1086#1079#1082#1072
+        object PMAddAdditionTransportationС310: TMenuItem
+          Caption = #1040#1074#1090#1086#1084#1086#1073#1080#1083#1103#1084#1080' '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'310'
+          object PMAddAdditionTransportationС310Cargo: TMenuItem
+            Tag = 6
+            Caption = #1043#1088#1091#1079#1072
+            OnClick = PMAddTranspClick
+          end
+          object PMAddAdditionTransportationС310Trash: TMenuItem
+            Tag = 7
+            Caption = #1052#1091#1089#1086#1088#1072
+            OnClick = PMAddTranspClick
+          end
+        end
+        object PMAddAdditionTransportationС311: TMenuItem
+          Caption = #1041#1086#1088#1090#1086#1074#1099#1084#1080' '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'311'
+          object PMAddAdditionTransportationС311Cargo: TMenuItem
+            Tag = 8
+            Caption = #1043#1088#1091#1079#1072
+            OnClick = PMAddTranspClick
+          end
+          object PMAddAdditionTransportationС311Trash: TMenuItem
+            Tag = 9
+            Caption = #1052#1091#1089#1086#1088#1072
+            OnClick = PMAddTranspClick
+          end
+        end
+      end
+      object PMAddDump: TMenuItem
+        Tag = 9
+        Caption = #1055#1088#1080#1105#1084' '#1080' '#1079#1072#1093#1086#1088#1086#1085#1077#1085#1080#1077' '#1086#1090#1093#1086#1076#1086#1074' '#1041#1057'999-9901'
+        OnClick = PMAddDumpClick
+      end
+      object PMAddAdditionHeating: TMenuItem
+        Caption = #1055#1091#1089#1082' '#1080' '#1088#1077#1075#1091#1083#1080#1088#1086#1074#1082#1072' '#1086#1090#1086#1087#1083#1077#1085#1080#1103
+        OnClick = PMAddAdditionHeatingClick
+        object PMAddAdditionHeatingE18: TMenuItem
+          Tag = 10
+          Caption = #1056#1072#1089#1094#1077#1085#1082#1080' '#1045'18'
+          OnClick = PMAddAdditionHeatingE18Click
+        end
+        object PMAddAdditionHeatingE20: TMenuItem
+          Tag = 11
+          Caption = #1056#1072#1089#1094#1077#1085#1082#1080' '#1045'20'
+          OnClick = PMAddAdditionHeatingE18Click
+        end
+      end
       object PMAddAddition: TMenuItem
         Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
-        object PMAddAdditionTransportation: TMenuItem
-          Caption = #1055#1077#1088#1077#1074#1086#1079#1082#1072
-          object PMAddAdditionTransportationС310: TMenuItem
-            Caption = #1040#1074#1090#1086#1084#1086#1073#1080#1083#1103#1084#1080' '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'310'
-            object PMAddAdditionTransportationС310Cargo: TMenuItem
-              Tag = 6
-              Caption = #1043#1088#1091#1079#1072
-              OnClick = PMAddTranspClick
-            end
-            object PMAddAdditionTransportationС310Trash: TMenuItem
-              Tag = 7
-              Caption = #1052#1091#1089#1086#1088#1072
-              OnClick = PMAddTranspClick
-            end
-          end
-          object PMAddAdditionTransportationС311: TMenuItem
-            Caption = #1041#1086#1088#1090#1086#1074#1099#1084#1080' '#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080' '#1057'311'
-            object PMAddAdditionTransportationС311Cargo: TMenuItem
-              Tag = 8
-              Caption = #1043#1088#1091#1079#1072
-              OnClick = PMAddTranspClick
-            end
-            object PMAddAdditionTransportationС311Trash: TMenuItem
-              Tag = 9
-              Caption = #1052#1091#1089#1086#1088#1072
-              OnClick = PMAddTranspClick
-            end
-          end
-        end
-        object PMAddDump: TMenuItem
-          Tag = 9
-          Caption = #1055#1088#1080#1105#1084' '#1080' '#1079#1072#1093#1086#1088#1086#1085#1077#1085#1080#1077' '#1086#1090#1093#1086#1076#1086#1074' '#1041#1057'999-9901'
-          OnClick = PMAddDumpClick
-        end
-        object PMAddAdditionHeating: TMenuItem
-          Caption = #1055#1091#1089#1082' '#1080' '#1088#1077#1075#1091#1083#1080#1088#1086#1074#1082#1072' '#1086#1090#1086#1087#1083#1077#1085#1080#1103
-          OnClick = PMAddAdditionHeatingClick
-          object PMAddAdditionHeatingE18: TMenuItem
-            Tag = 10
-            Caption = #1056#1072#1089#1094#1077#1085#1082#1080' '#1045'18'
-            OnClick = PMAddAdditionHeatingE18Click
-          end
-          object PMAddAdditionHeatingE20: TMenuItem
-            Tag = 11
-            Caption = #1056#1072#1089#1094#1077#1085#1082#1080' '#1045'20'
-            OnClick = PMAddAdditionHeatingE18Click
-          end
-        end
         object PopupMenuRatesAdd352: TMenuItem
           Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1082#1086#1101#1092'. '#1089#1086#1075#1083#1072#1089#1085#1086' '#1055#1088#1080#1082#1072#1079#1091' '#8470'352 '#1082' '#1074#1099#1076#1077#1083#1077#1085#1085#1099#1084' '#1089#1090#1088#1086#1082#1072#1084
         end
