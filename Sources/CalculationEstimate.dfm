@@ -247,6 +247,7 @@
       ExplicitHeight = 25
     end
     object btnResCalc: TSpeedButton
+      Tag = 77
       AlignWithMargins = True
       Left = 621
       Top = 1

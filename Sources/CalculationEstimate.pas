@@ -1221,10 +1221,11 @@ end;
 
 procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
 begin
-  // ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
-  // if FormCalculationEstimate.IDAct > 0 then
-  ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
-    PChar(GetCurrentDir + '\reports\report\'), SW_maximIZE);
+ if (Sender as TSpeedButton).Tag = 77  then
+  ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IDEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE)
+  else
+  ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
+
 end;
 
 procedure TFormCalculationEstimate.btnEquipmentsClick(Sender: TObject);
