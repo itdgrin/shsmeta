@@ -53,6 +53,7 @@ type
     dbmmoparam_description1: TDBMemo;
     dbnvgr1: TDBNavigator;
     spl2: TSplitter;
+    qrUniDicteditable: TShortintField;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -69,6 +70,7 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure changeEditMode;
     procedure qrUniDictTypeBeforeScroll(DataSet: TDataSet);
+    procedure qrUniDictAfterScroll(DataSet: TDataSet);
   private
     editMode: Boolean;
   public
@@ -157,6 +159,12 @@ end;
 procedure TfUniDict.qrUniDictAfterPost(DataSet: TDataSet);
 begin
   CloseOpen(qrUniDict);
+end;
+
+procedure TfUniDict.qrUniDictAfterScroll(DataSet: TDataSet);
+begin
+  if not editMode then
+    grUniDictParam.ReadOnly := qrUniDicteditable.Value = 0;
 end;
 
 procedure TfUniDict.qrUniDictMONTHChange(Sender: TField);

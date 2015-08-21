@@ -444,6 +444,7 @@ object fUniDict: TfUniDict
   end
   object qrUniDict: TFDQuery
     AfterPost = qrUniDictAfterPost
+    AfterScroll = qrUniDictAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -475,7 +476,7 @@ object fUniDict: TfUniDict
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'SELECT id_unidictparam,code,param_name,param_description,'
-      'id_unidicttype,'
+      'id_unidicttype, editable,'
       'FN_getParamValue(code, 1, :year) AS MONTH_1,'
       'FN_getParamValue(code, 2, :year) AS MONTH_2,'
       'FN_getParamValue(code, 3, :year) AS MONTH_3,'
@@ -649,6 +650,11 @@ object fUniDict: TfUniDict
       KeyFields = 'id_unidicttype'
       Size = 255
       Lookup = True
+    end
+    object qrUniDicteditable: TShortintField
+      AutoGenerateValue = arDefault
+      FieldName = 'editable'
+      Origin = 'editable'
     end
   end
   object dsUniDict: TDataSource
