@@ -1892,6 +1892,15 @@
               end
               item
                 Expanded = False
+                FieldName = 'KOEF'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1077#1092'.'
+                Width = 40
+                Visible = True
+              end
+              item
+                Expanded = False
                 FieldName = 'MAT_UNIT'
                 ReadOnly = True
                 Title.Alignment = taCenter
@@ -3923,6 +3932,10 @@
       item
         SourceDataType = dtUInt32
         TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtBCD
+        TargetDataType = dtDouble
       end>
     FormatOptions.MaxBcdPrecision = 19
     FormatOptions.MaxBcdScale = 8
@@ -4183,6 +4196,9 @@
       FieldName = 'FPRICE_NDS'
       Origin = 'FPRICE_NDS'
       Precision = 24
+    end
+    object qrMaterialKOEF: TFloatField
+      FieldName = 'KOEF'
     end
   end
   object dsMaterial: TDataSource

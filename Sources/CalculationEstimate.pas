@@ -468,6 +468,7 @@ type
     lblForeman: TLabel;
     lblForemanFIO: TLabel;
     qrRatesExCONS_REPLASED: TIntegerField;
+    qrMaterialKOEF: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -1921,12 +1922,13 @@ procedure TFormCalculationEstimate.SetMatEditMode;
 begin
   if CheckMatReadOnly then
     Exit;
+
   dbgrdMaterial.Columns[2].ReadOnly := False; // Норма
-  dbgrdMaterial.Columns[4].ReadOnly := False; // Кол-во
-  dbgrdMaterial.Columns[5].ReadOnly := False; // Цена НДС
-  dbgrdMaterial.Columns[6].ReadOnly := False; // Цена без НДС
-  dbgrdMaterial.Columns[9].ReadOnly := False; // % транспорта
-  dbgrdMaterial.Columns[12].ReadOnly := False; // НДС
+  dbgrdMaterial.Columns[5].ReadOnly := False; // Кол-во
+  dbgrdMaterial.Columns[6].ReadOnly := False; // Цена НДС
+  dbgrdMaterial.Columns[7].ReadOnly := False; // Цена без НДС
+  dbgrdMaterial.Columns[10].ReadOnly := False; // % транспорта
+  dbgrdMaterial.Columns[13].ReadOnly := False; // НДС
   MemoRight.Color := $00AFFEFC;
   MemoRight.ReadOnly := False;
   MemoRight.Tag := 2; // Type_Data
@@ -1939,11 +1941,11 @@ begin
   if qrMaterial.Tag = 1 then
   begin
     dbgrdMaterial.Columns[2].ReadOnly := True; // Норма
-    dbgrdMaterial.Columns[4].ReadOnly := True; // Кол-во
-    dbgrdMaterial.Columns[5].ReadOnly := True; // Цена НДС
-    dbgrdMaterial.Columns[6].ReadOnly := True; // Цена без НДС
-    dbgrdMaterial.Columns[9].ReadOnly := True; // % транспорта
-    dbgrdMaterial.Columns[12].ReadOnly := True; // НДС
+    dbgrdMaterial.Columns[5].ReadOnly := True; // Кол-во
+    dbgrdMaterial.Columns[6].ReadOnly := True; // Цена НДС
+    dbgrdMaterial.Columns[7].ReadOnly := True; // Цена без НДС
+    dbgrdMaterial.Columns[10].ReadOnly := True; // % транспорта
+    dbgrdMaterial.Columns[13].ReadOnly := True; // НДС
     MemoRight.Color := clWindow;
     MemoRight.ReadOnly := True;
     MemoRight.Tag := 0;
@@ -3774,7 +3776,7 @@ begin
     else
     begin
       AddCoefToRate(fCoefficients.qrCoef.FieldByName('coef_id').AsInteger);
-      // RecalcEstimate;
+      RecalcEstimate;
     end;
   end;
 end;
@@ -4555,9 +4557,15 @@ begin
       ((qrRatesExID_TYPE_DATA.Value = 2) and
        (qrRatesExID_REPLACED.Value > 0) and
        (qrRatesExCONS_REPLASED.Value = 0))) then
-    dbgrdMaterial.Columns[2].Visible := True
+  begin
+    dbgrdMaterial.Columns[2].Visible := True;
+    dbgrdMaterial.Columns[3].Visible := True;
+  end
   else
+  begin
     dbgrdMaterial.Columns[2].Visible := False;
+    dbgrdMaterial.Columns[3].Visible := False;
+  end;
 
   qrMaterial.First;
   if (qrMaterialTITLE.AsInteger > 0) then
@@ -5059,20 +5067,20 @@ begin
   with dbgrdMaterial do
   begin
     // в зависимости от ндс скрывает одни и показывает другие калонки
-    Columns[5].Visible := aNDS; // цена смет
-    Columns[7].Visible := aNDS; // Стоим смет
-    Columns[10].Visible := aNDS; // Трансп смет
-    Columns[12].Visible := aNDS; // НДС
-    Columns[13].Visible := aNDS; // цена факт
-    Columns[15].Visible := aNDS; // стоим факт
-    Columns[17].Visible := aNDS; // Трансп факт
+    Columns[6].Visible := aNDS; // цена смет
+    Columns[8].Visible := aNDS; // Стоим смет
+    Columns[11].Visible := aNDS; // Трансп смет
+    Columns[13].Visible := aNDS; // НДС
+    Columns[14].Visible := aNDS; // цена факт
+    Columns[16].Visible := aNDS; // стоим факт
+    Columns[18].Visible := aNDS; // Трансп факт
 
-    Columns[6].Visible := not aNDS;
-    Columns[8].Visible := not aNDS;
-    Columns[11].Visible := not aNDS;
-    Columns[14].Visible := not aNDS;
-    Columns[16].Visible := not aNDS;
-    Columns[18].Visible := not aNDS;
+    Columns[7].Visible := not aNDS;
+    Columns[9].Visible := not aNDS;
+    Columns[12].Visible := not aNDS;
+    Columns[15].Visible := not aNDS;
+    Columns[17].Visible := not aNDS;
+    Columns[19].Visible := not aNDS;
   end;
 
   with dbgrdMechanizm do
@@ -5823,17 +5831,17 @@ begin
       Brush.Color := $00F0F0FF;
 
     // Подсветка полей стоимости
-    if Column.Index in [7, 8, 15, 16] then
+    if Column.Index in [8, 9, 16, 17] then
     begin
       // Та стоимость которая используется в расчете подсвечивается берюзовым
       // другая серым
-      if (Column.Index in [7, 8]) then
+      if (Column.Index in [8, 9]) then
         if (qrMaterialFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00DDDDDD
         else
           Brush.Color := $00FBFEBC;
 
-      if (Column.Index in [15, 16]) then
+      if (Column.Index in [16, 17]) then
         if (qrMaterialFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00FBFEBC
         else
@@ -5841,7 +5849,7 @@ begin
     end;
 
     // Подсветка красным пустых значений  норма, цена и %трансп
-    if (Column.Index in [2, 5, 6, 9]) and (Column.Field.Value = 0) then
+    if (Column.Index in [2, 6, 7, 10]) and (Column.Field.Value = 0) then
     begin
       Brush.Color := $008080FF;
     end;
@@ -5913,7 +5921,7 @@ begin
     if ((qrMaterialFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1)
       )) or (qrMaterialREPLACED.Value = 1) or (qrMaterialDELETED.Value = 1) then
     begin
-      if Column.Index in [4, 8, 9, 10, 11, 15, 16, 17, 18] then
+      if Column.Index in [5, 9, 10, 11, 12, 16, 17, 18, 19] then
         Str := '';
     end;
 
