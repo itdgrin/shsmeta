@@ -339,7 +339,7 @@ object fCoefficients: TfCoefficients
   end
   object dsCoef_Type: TDataSource
     DataSet = qrCoef_Type
-    Left = 96
+    Left = 112
     Top = 130
   end
   object FormStorage: TJvFormStorage
