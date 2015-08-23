@@ -20,7 +20,7 @@ type
     ButtonSave: TButton;
     Panel2: TPanel;
     LabelND: TLabel;
-    DBLookupComboBoxND: TDBLookupComboBox;
+    cmbND: TDBLookupComboBox;
     DataSourceND: TDataSource;
     Panel3: TPanel;
     ADOQueryND: TFDQuery;
@@ -33,8 +33,6 @@ type
     Label4: TLabel;
     edtCoastNDS: TEdit;
     edtCoastNoNDS: TEdit;
-    Label5: TLabel;
-    edtNDS: TEdit;
     GroupBox2: TGroupBox;
     Label6: TLabel;
     cmbUnit: TComboBox;
@@ -54,14 +52,13 @@ type
     procedure ButtonSaveClick(Sender: TObject);
     procedure CalculationCost;
     procedure FillingComboBox;
-    procedure DBLookupComboBoxNDClick(Sender: TObject);
+    procedure cmbNDClick(Sender: TObject);
     procedure EditKeyPress(Sender: TObject; var Key: Char);
     procedure edtCountChange(Sender: TObject);
     procedure edtYDWChange(Sender: TObject);
     procedure cmbUnitChange(Sender: TObject);
     procedure edtCoastNoNDSChange(Sender: TObject);
     procedure edtCoastNDSChange(Sender: TObject);
-    procedure edtNDSChange(Sender: TObject);
 
   private
     Unit_Type: byte;
@@ -70,7 +67,7 @@ type
 
     DumpCount, MCount, Ydw,
     CoastNoNds, CoastNds: TBcd;
-    Nds: Integer;
+    FNds: Integer;
     Loading: boolean;  //Что-бы не срабатывали ченджи при заполнении формы
 
     procedure GetEstimateInfo(aIdEstimate: integer);
@@ -128,6 +125,7 @@ begin
     qrTemp.Active := True;
     EstMonth := qrTemp.FieldByName('Month').AsInteger;
     EstYear := qrTemp.FieldByName('Year').AsInteger;
+    FNds := 20;
     qrTemp.Active := False;
   except
     on E: Exception do
@@ -148,12 +146,11 @@ begin
 
       EditJustificationNumber.Text := qrTemp.FieldByName('DUMP_CODE_JUST').AsString;
       EditJustification.Text := qrTemp.FieldByName('DUMP_JUST').AsString;
-      DBLookupComboBoxND.KeyValue := qrTemp.FieldByName('DUMP_ID').AsInteger;
+      cmbND.KeyValue := qrTemp.FieldByName('DUMP_ID').AsInteger;
       edtDumpUnit.Text := qrTemp.FieldByName('DUMP_UNIT').AsString;
       Unit_Type := qrTemp.FieldByName('DUMP_TYPE').AsInteger;
       edtCoastNDS.Text := qrTemp.FieldByName('COAST_NDS').AsString;
       edtCoastNoNDS.Text := qrTemp.FieldByName('COAST_NO_NDS').AsString;
-      edtNDS.Text := qrTemp.FieldByName('NDS').AsString;
       cmbUnit.ItemIndex := qrTemp.FieldByName('WORK_TYPE').AsInteger;
       edtCount.Text := qrTemp.FieldByName('WORK_COUNT').AsString;
       edtYDW.Text := qrTemp.FieldByName('WORK_YDW').AsString;
@@ -163,11 +160,10 @@ begin
       DumpCount := qrTemp.FieldByName('DUMP_COUNT').AsBCD;
       CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsBCD;
       CoastNds := qrTemp.FieldByName('COAST_NDS').AsBCD;
-      Nds := qrTemp.FieldByName('NDS').AsInteger;
       MCount := qrTemp.FieldByName('WORK_COUNT').AsBCD;
       Ydw := qrTemp.FieldByName('WORK_YDW').AsBCD;
 
-      Memo.Text := EditJustification.Text + ' ' + DBLookupComboBoxND.Text + '.';
+      Memo.Text := EditJustification.Text + ' ' + cmbND.Text + '.';
       qrTemp.Active := False;
     except
       on E: Exception do
@@ -209,8 +205,8 @@ begin
       ':DUMP_COUNT,:DUMP_TYPE,:DUMP_SUM_NDS,:DUMP_SUM_NO_NDS,:COAST_NO_NDS,:COAST_NDS,' +
       ':WORK_UNIT,:WORK_TYPE,:WORK_COUNT,:WORK_YDW,:NDS,:PRICE_NDS,:PRICE_NO_NDS)';
     qrTemp.ParamByName('ID').Value := NewId;
-    qrTemp.ParamByName('DUMP_ID').Value := DBLookupComboBoxND.KeyValue;
-    qrTemp.ParamByName('DUMP_NAME').Value := DBLookupComboBoxND.Text;
+    qrTemp.ParamByName('DUMP_ID').Value := cmbND.KeyValue;
+    qrTemp.ParamByName('DUMP_NAME').Value := cmbND.Text;
     qrTemp.ParamByName('DUMP_CODE_JUST').Value := EditJustificationNumber.Text;
     qrTemp.ParamByName('DUMP_JUST').Value := EditJustification.Text;
     qrTemp.ParamByName('DUMP_UNIT').Value := edtDumpUnit.Text;
@@ -224,7 +220,7 @@ begin
     qrTemp.ParamByName('WORK_TYPE').Value := cmbUnit.ItemIndex;
     qrTemp.ParamByName('WORK_COUNT').Value := BCDToDouble(MCount);
     qrTemp.ParamByName('WORK_YDW').Value := BCDToDouble(Ydw);
-    qrTemp.ParamByName('NDS').Value := Nds;
+    qrTemp.ParamByName('NDS').Value := FNds;
     qrTemp.ParamByName('PRICE_NDS').Value := StrToCurr(edtPriceNDS.Text);
     qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToCurr(edtPriceNoNDS.Text);
 
@@ -253,8 +249,8 @@ begin
       'WORK_UNIT = :WORK_UNIT, WORK_TYPE = :WORK_TYPE, WORK_COUNT = :WORK_COUNT, ' +
       'WORK_YDW = :WORK_YDW, NDS = :NDS, PRICE_NDS = :PRICE_NDS, ' +
       'PRICE_NO_NDS = :PRICE_NO_NDS where ID = :ID';
-    qrTemp.ParamByName('DUMP_ID').Value := DBLookupComboBoxND.KeyValue;
-    qrTemp.ParamByName('DUMP_NAME').Value := DBLookupComboBoxND.Text;
+    qrTemp.ParamByName('DUMP_ID').Value := cmbND.KeyValue;
+    qrTemp.ParamByName('DUMP_NAME').Value := cmbND.Text;
     qrTemp.ParamByName('DUMP_CODE_JUST').Value := EditJustificationNumber.Text;
     qrTemp.ParamByName('DUMP_JUST').Value := EditJustification.Text;
     qrTemp.ParamByName('DUMP_UNIT').Value := edtDumpUnit.Text;
@@ -268,7 +264,7 @@ begin
     qrTemp.ParamByName('WORK_TYPE').Value := cmbUnit.ItemIndex;
     qrTemp.ParamByName('WORK_COUNT').Value := BcdToDouble(MCount);
     qrTemp.ParamByName('WORK_YDW').Value := BcdToDouble(Ydw);
-    qrTemp.ParamByName('NDS').Value := Nds;
+    qrTemp.ParamByName('NDS').Value := FNds;
     qrTemp.ParamByName('PRICE_NDS').Value := StrToFloat(edtPriceNDS.Text);
     qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToFloat(edtPriceNoNDS.Text);
     qrTemp.ParamByName('ID').Value := IdDump;
@@ -279,7 +275,7 @@ begin
   ButtonCancelClick(Sender);
 end;
 
-procedure TFormCalculationDump.DBLookupComboBoxNDClick(Sender: TObject);
+procedure TFormCalculationDump.cmbNDClick(Sender: TObject);
 var vID: integer;
     te: TDateTime;
 begin
@@ -287,7 +283,7 @@ begin
   EditJustificationNumber.Text := 'БС999-9901';
   EditJustification.Text := 'Плата за прием и захоронение отходов (строительного мусора).';
 
-  Memo.Text := EditJustification.Text + ' ' + DBLookupComboBoxND.Text + '.';
+  Memo.Text := EditJustification.Text + ' ' + cmbND.Text + '.';
 
   vID := (Sender as TDBLookupComboBox).KeyValue;
 
@@ -312,7 +308,6 @@ begin
 
     edtCoastNoNDS.Text := FloatToStr(qrTemp.FieldByName('coast1').AsFloat);
     edtCoastNDS.Text := FloatToStr(qrTemp.FieldByName('coast2').AsFloat);
-    edtNDS.Text := '20';
   except
     on E: Exception do
       MessageBox(0, PChar('При получении цен по свалке возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
@@ -324,7 +319,6 @@ end;
 
 procedure TFormCalculationDump.edtCoastNDSChange(Sender: TObject);
 var i: TBcd;
-    nds: Integer;
 begin
   if Loading then
     exit;
@@ -335,9 +329,7 @@ begin
       if not TryStrToBcd(edtCoastNDS.Text, i) then
         i := 0;
 
-      nds := StrToIntDef(edtNDS.Text, 0);
-
-      edtCoastNoNDS.Text := BcdToStr(NDSToNoNDS1(i, nds));
+      edtCoastNoNDS.Text := BcdToStr(NDSToNoNDS1(i, FNds));
       CalculationCost;
     finally
       ChangeCoast := false;
@@ -347,7 +339,6 @@ end;
 
 procedure TFormCalculationDump.edtCoastNoNDSChange(Sender: TObject);
 var i: TBcd;
-    nds: Integer;
 begin
   if Loading then
     exit;
@@ -358,9 +349,7 @@ begin
       if not TryStrToBcd(edtCoastNoNDS.Text, i) then
         i := 0;
 
-      nds := StrToIntDef(edtNDS.Text, 0);
-
-      edtCoastNDS.Text := BcdToStr(NDSToNoNDS1(i, nds));
+      edtCoastNDS.Text := BcdToStr(NDSToNoNDS1(i, FNds));
       CalculationCost;
     finally
       ChangeCoast := false;
@@ -372,29 +361,6 @@ procedure TFormCalculationDump.edtCountChange(Sender: TObject);
 begin
   CalculationCost;
 end;
-
-procedure TFormCalculationDump.edtNDSChange(Sender: TObject);
-var i: Integer;
-    cost: TBcd;
-begin
-  if Loading then exit;
-  if not ChangeCoast then
-  begin
-    ChangeCoast := true;
-    try
-      i := StrToIntDef(edtNDS.Text, 0);
-
-      if not TryStrToBcd(edtCoastNoNDS.Text, cost) then
-        cost := 0;
-
-      edtCoastNDS.Text := BcdToStr(NDSToNoNDS1(cost, i));
-      CalculationCost;
-    finally
-      ChangeCoast := false;
-    end;
-  end;
-end;
-
 
 procedure TFormCalculationDump.EditKeyPress(Sender: TObject; var Key: Char);
 begin
@@ -429,9 +395,9 @@ begin
   //Если идет первичная вставка, то устанавливается свалка по умолчания
   if InsMode then
   begin
-    DBLookupComboBoxND.KeyValue := EstDumpId;
-    DBLookupComboBoxNDClick(DBLookupComboBoxND);
-    DBLookupComboBoxND.SetFocus;
+    cmbND.KeyValue := EstDumpId;
+    cmbNDClick(cmbND);
+    cmbND.SetFocus;
     cmbUnit.ItemIndex := Unit_Type;
     edtYDW.Enabled := Unit_Type <> cmbUnit.ItemIndex;
     edtCount.Text := '0';
@@ -457,7 +423,7 @@ begin
       Active := True;
     end;
 
-    with DBLookupComboBoxND do
+    with cmbND do
     begin
       ListSource := DataSourceND;
       ListField := 'dump_name';
@@ -472,7 +438,8 @@ end;
 
 procedure TFormCalculationDump.CalculationCost;
 begin
-  if trim(edtCount.Text) = '' then MCount := 0
+  if trim(edtCount.Text) = '' then
+    MCount := 0
   else
   begin
     if edtCount.Text[length(edtCount.Text)] = '.' then
@@ -503,8 +470,6 @@ begin
 
   if not TryStrToBcd(edtCoastNDS.Text, CoastNds) then
     CoastNds := 0;
-
-  Nds := StrToIntDef(edtNDS.Text, 0);
 
   if Unit_Type = cmbUnit.ItemIndex then
     DumpCount := MCount

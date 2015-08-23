@@ -1606,6 +1606,11 @@
               item
                 Expanded = False
                 FieldName = 'KOEF'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'Tahoma'
+                Font.Style = []
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1050#1086#1101#1092'.'
@@ -1892,7 +1897,12 @@
               end
               item
                 Expanded = False
-                FieldName = 'KOEF'
+                FieldName = 'KOEFMR'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'Tahoma'
+                Font.Style = []
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1050#1086#1077#1092'.'
@@ -3902,9 +3912,6 @@
     object qrMechanizmKOEF: TFloatField
       FieldName = 'KOEF'
     end
-    object qrMechanizmMECH_INPUTCOUNT: TFMTBCDField
-      FieldName = 'MECH_INPUTCOUNT'
-    end
   end
   object dsMechanizm: TDataSource
     DataSet = qrMechanizm
@@ -4197,8 +4204,8 @@
       Origin = 'FPRICE_NDS'
       Precision = 24
     end
-    object qrMaterialKOEF: TFloatField
-      FieldName = 'KOEF'
+    object qrMaterialKOEFMR: TFloatField
+      FieldName = 'KOEFMR'
     end
   end
   object dsMaterial: TDataSource

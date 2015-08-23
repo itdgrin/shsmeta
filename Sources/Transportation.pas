@@ -555,15 +555,15 @@ begin
   grdPrice.Cells[0,2] := 'II';
   grdPrice.Cells[0,3] := 'III';
   grdPrice.Cells[0,4] := 'IV';
-  grdPrice.ColWidths[CCoastNoNDS] := 100;
+  grdPrice.ColWidths[CCoastNoNDS] := 80;
   grdPrice.Cells[CCoastNoNDS,0] := 'Цена за т/м3' + sLineBreak + 'без НДС, руб.';
-  grdPrice.ColWidths[CCoastNDS] := 100;
+  grdPrice.ColWidths[CCoastNDS] := 80;
   grdPrice.Cells[CCoastNDS,0] := 'Цена за т/м3' + sLineBreak + 'с НДС, руб.';
-  grdPrice.ColWidths[CPriceNoNDS] := 100;
+  grdPrice.ColWidths[CPriceNoNDS] := 80;
   grdPrice.Cells[CPriceNoNDS,0] := 'Стоимость' + sLineBreak + 'без НДС, руб.';
   grdPrice.ColWidths[CNDS] := 50;
   grdPrice.Cells[CNDS,0] := 'НДС, %';
-  grdPrice.ColWidths[CPriceNDS] := 100;
+  grdPrice.ColWidths[CPriceNDS] := 80;
   grdPrice.Cells[CPriceNDS,0] := 'Стоимость' + sLineBreak + 'с НДС, руб.';
 
   //По умолчанию НДС 20%

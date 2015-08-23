@@ -35,6 +35,7 @@ type
 
   TMyDBGrid = class(TJvDBGrid)
   public
+    property TopRow;
     property DataLink;
   end;
 
@@ -437,7 +438,6 @@ type
     PMMechAutoRep: TMenuItem;
     qrRatesExID_REPLACED: TIntegerField;
     qrMechanizmKOEF: TFloatField;
-    qrMechanizmMECH_INPUTCOUNT: TFMTBCDField;
     pnlSummaryCalculations: TPanel;
     frSummaryCalculations: TfrCalculationEstimateSummaryCalculations;
     qrMaterialID: TIntegerField;
@@ -468,7 +468,7 @@ type
     lblForeman: TLabel;
     lblForemanFIO: TLabel;
     qrRatesExCONS_REPLASED: TIntegerField;
-    qrMaterialKOEF: TFloatField;
+    qrMaterialKOEFMR: TFloatField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -721,9 +721,6 @@ type
 
     // Изменяет внешний вид таблиц в зависимости от НДС
     procedure ChangeGrigNDSStyle(aNDS: Boolean);
-
-    // проверяет что материал внутри расценки (неучтеный или заменяющий)
-    function CheckMatINRates: Boolean;
 
     // проверка что материал неучтеный в таблице материалов
     function CheckMatUnAccountingMatirials: Boolean;
@@ -1762,9 +1759,13 @@ function TFormCalculationEstimate.CheckMechReadOnly: Boolean;
 begin
   Result := False;
   // Вынесеный механизм в расценке или замененные механизмы
-  if ((qrMechanizmFROM_RATE.AsInteger = 1) and ((qrRatesExID_TYPE_DATA.AsInteger = 1) or
-    (qrRatesExID_RATE.AsInteger > 0))) or (qrMechanizmREPLACED.AsInteger = 1) or
-    (qrMechanizmTITLE.AsInteger > 0) or (not(qrMechanizmID.AsInteger > 0)) or (qrMechanizm.Eof) then
+  if ((qrMechanizmFROM_RATE.AsInteger = 1) and
+      (qrRatesExID_TYPE_DATA.AsInteger = 1))
+     or
+     (qrMechanizmREPLACED.AsInteger = 1) or
+     (qrMechanizmTITLE.AsInteger > 0) or
+     (not(qrMechanizmID.AsInteger > 0)) or
+     (qrMechanizm.Eof) then
     Result := True;
 end;
 
@@ -1882,10 +1883,13 @@ function TFormCalculationEstimate.CheckMatReadOnly: Boolean;
 begin
   Result := False;
   // Вынесенные из расценки // или замененный
-  if ((qrMaterialFROM_RATE.AsInteger = 1) and ((qrRatesExID_TYPE_DATA.AsInteger = 1) or
-    (qrRatesExID_RATE.AsInteger > 0))) or (qrMaterialREPLACED.AsInteger = 1) or
-    (qrMaterialDELETED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0) or (not(qrMaterialID.AsInteger > 0))
-    or (qrMaterial.Eof) then
+  if ((qrMaterialFROM_RATE.AsInteger = 1) and
+      (qrRatesExID_TYPE_DATA.AsInteger = 1)) or
+     (qrMaterialREPLACED.AsInteger = 1) or
+     (qrMaterialDELETED.AsInteger = 1) or
+     (qrMaterialTITLE.AsInteger > 0) or
+     (not(qrMaterialID.AsInteger > 0)) or
+     (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -2440,7 +2444,6 @@ begin
   if not qrTemp.IsEmpty then
   begin
     qrMechanizm.Edit;
-    qrMechanizmMECH_INPUTCOUNT.Value := qrTemp.FieldByName('MECH_INPUTCOUNT').AsBCD;
     qrMechanizmMECH_NORMA.Value := qrTemp.FieldByName('MECH_NORMA').AsBCD;
     qrMechanizmMECH_COUNT.Value := qrTemp.FieldByName('MECH_COUNT').AsBCD;
     qrMechanizmPRICE_NO_NDS.Value := qrTemp.FieldByName('PRICE_NO_NDS').AsBCD;
@@ -2459,13 +2462,15 @@ begin
     qrMechanizmNORM_TRYD.Value := qrTemp.FieldByName('NORM_TRYD').AsBCD;
     qrMechanizmTERYDOZATR.Value := qrTemp.FieldByName('TERYDOZATR').AsBCD;
     qrMechanizm.Post;
-    if (qrRatesExID_TYPE_DATA.Value = 3) and (qrRatesExID_TABLES.Value = qrMechanizmID.Value) then
+
+    if (qrRatesExID_TYPE_DATA.Value = 3) and
+       (qrRatesExID_TABLES.Value = qrMechanizmID.Value) then
     begin
       ev := qrRatesExOBJ_COUNT.OnChange;
       try
         qrRatesExOBJ_COUNT.OnChange := nil;
         qrRatesEx.Edit;
-        qrRatesExOBJ_COUNT.Value := qrMechanizmMECH_INPUTCOUNT.AsExtended;
+        qrRatesExOBJ_COUNT.Value := qrMechanizmMECH_COUNT.AsExtended;
         qrRatesEx.Post;
       finally
         qrRatesExOBJ_COUNT.OnChange := ev;
@@ -2557,12 +2562,6 @@ begin
   end;
   qrTemp.Active := False;
   CloseOpen(qrCalculations);
-end;
-
-function TFormCalculationEstimate.CheckMatINRates: Boolean;
-begin
-  Result := (qrRatesExID_RATE.AsInteger > 0) and
-            (qrRatesExID_TYPE_DATA.AsInteger = 2);
 end;
 
 // проверка что материал неучтеный в таблице материалов
@@ -2836,7 +2835,7 @@ begin
       2:
         qrTemp.SQL.Text := 'UPDATE materialcard_temp set mat_count=:RC WHERE ID=:ID;';
       3:
-        qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set MECH_INPUTCOUNT=:RC WHERE ID=:ID;';
+        qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set MECH_COUNT=:RC WHERE ID=:ID;';
       4:
         qrTemp.SQL.Text := 'UPDATE devicescard_temp set device_count=:RC WHERE ID=:ID;';
       5:
@@ -2951,13 +2950,16 @@ end;
 
 procedure TFormCalculationEstimate.GridRatesUpdateCount;
 var
-  RecNo: Integer;
+  TempBookmark: TBookMark;
   NewCount: Currency;
+  RateID: Integer;
 begin
-  RecNo := qrRatesEx.RecNo;
   if qrRatesExID_TYPE_DATA.AsInteger = 1 then
   begin
+    TempBookmark := qrRatesEx.GetBookmark;
+    RateID := qrRatesExID_TABLES.Value;
     qrRatesEx.Tag := 1; // Блокирует обработчики событий датасета
+
     qrRatesEx.DisableControls;
     try
       if not qrRatesEx.Eof then
@@ -2967,30 +2969,34 @@ begin
 
       while not qrRatesEx.Eof do
       begin
-        if (qrRatesExID_TYPE_DATA.Value = 2) and
-           (qrRatesExID_REPLACED.Value > 0) and
-           (qrRatesExCONS_REPLASED.Value = 0) then
+        if RateID = qrRatesExID_RATE.Value then
         begin
-          NewCount := 0;
-          qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp WHERE ID = ' +
-            INTTOSTR(qrRatesExID_TABLES.AsInteger);
-          qrTemp.Active := True;
-          if not qrTemp.Eof then
-            NewCount := qrTemp.Fields[0].Value;
-          qrTemp.Active := False;
+          if (qrRatesExID_TYPE_DATA.Value = 2) and
+             (qrRatesExID_REPLACED.Value > 0) and
+             (qrRatesExCONS_REPLASED.Value = 0) then
+          begin
+            NewCount := 0;
+            qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp WHERE ID = ' +
+              INTTOSTR(qrRatesExID_TABLES.AsInteger);
+            qrTemp.Active := True;
+            if not qrTemp.Eof then
+              NewCount := qrTemp.Fields[0].Value;
+            qrTemp.Active := False;
 
-          qrRatesEx.Edit;
-          qrRatesExOBJ_COUNT.Value := NewCount;
-          qrRatesEx.Post;
+            qrRatesEx.Edit;
+            qrRatesExOBJ_COUNT.Value := NewCount;
+            qrRatesEx.Post;
+          end;
         end
         else
           Break; // так как датасет отсортирован
         qrRatesEx.Next;
       end;
-      qrRatesEx.RecNo := RecNo;
+      qrRatesEx.GotoBookmark(TempBookmark);
+      qrRatesEx.FreeBookmark(TempBookmark);
     finally
       qrRatesEx.Tag := 0;
-      qrRatesEx.EnableControls
+      qrRatesEx.EnableControls;
     end;
   end;
 end;
@@ -3514,15 +3520,7 @@ begin
       end;
     2: // МАТЕРИАЛ
       begin
-        // Заменяющие неучтенный материал в расценке
-        if CheckMatINRates then
-        begin
-          FillingTableMaterials(qrRatesExID_RATE.AsInteger, 0);
-        end
-        else
-        begin // Отдельный материал и вынесенные
-          FillingTableMaterials(0, qrRatesExID_TABLES.AsInteger);
-        end;
+        FillingTableMaterials(0, qrRatesExID_TABLES.AsInteger);
       end;
     3: // МЕХАНИЗМ
       begin
@@ -3808,12 +3806,13 @@ begin
   PMTranstPerc.Visible := (dbgrdMaterial.Col > 0) and
     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'PROC_TRANSP');
 
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialCONSIDERED.AsInteger = 1) and
-    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and
+    (qrMaterialCONSIDERED.AsInteger = 1) and
+    (qrRatesExID_TYPE_DATA.AsInteger = 1);
 
   PMMatReplace.Enabled := ((not CheckMatReadOnly) or (qrMaterialREPLACED.AsInteger = 1));
 
-  PMMatAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0);
+  PMMatAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1);
 
   PMMatDelete.Enabled := (not CheckMatReadOnly) and
   // Заменяющий
@@ -3842,12 +3841,12 @@ begin
   PMMechEdit.Enabled := (not CheckMechReadOnly);
 
   PMMechFromRates.Enabled := (not CheckMechReadOnly) and
-    ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1));
+    (qrRatesExID_TYPE_DATA.AsInteger = 1);
 
   PMMechReplace.Enabled := (not CheckMechReadOnly) or (qrMechanizmREPLACED.AsInteger = 1);
 
   // Доступен только с расценке
-  PMMechAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1) or (qrRatesExID_RATE.AsInteger > 0);
+  PMMechAddToRate.Enabled := (qrRatesExID_TYPE_DATA.AsInteger = 1);
 
   PMMechDelete.Enabled := (not CheckMechReadOnly) and
   // Заменяющий
@@ -4552,11 +4551,10 @@ begin
   end;
   qrMaterialNUM.ReadOnly := True;
 
-  if ((qrRatesExID_RATE.Value > 0) or
-      (qrRatesExID_TYPE_DATA.Value = 1) or
-      ((qrRatesExID_TYPE_DATA.Value = 2) and
+  if (qrRatesExID_TYPE_DATA.Value = 1) or
+     ((qrRatesExID_TYPE_DATA.Value = 2) and
        (qrRatesExID_REPLACED.Value > 0) and
-       (qrRatesExCONS_REPLASED.Value = 0))) then
+       (qrRatesExCONS_REPLASED.Value = 0)) then
   begin
     dbgrdMaterial.Columns[2].Visible := True;
     dbgrdMaterial.Columns[3].Visible := True;
@@ -4661,10 +4659,16 @@ begin
   end;
   qrMechanizmNUM.ReadOnly := True;
 
-  if ((qrRatesExID_RATE.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = 1)) then
-    dbgrdMechanizm.Columns[2].Visible := True
+  if (qrRatesExID_TYPE_DATA.AsInteger = 1) then
+  begin
+    dbgrdMechanizm.Columns[2].Visible := True;
+    dbgrdMechanizm.Columns[3].Visible := True;
+  end
   else
+  begin
     dbgrdMechanizm.Columns[2].Visible := False;
+    dbgrdMechanizm.Columns[3].Visible := False;
+  end;
 
   qrMechanizm.First;
   if (qrMechanizmTITLE.AsInteger > 0) then
@@ -5865,7 +5869,7 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
+    if (qrMaterialFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1)
     then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
@@ -5887,12 +5891,6 @@ begin
 
     // Подсветка замененного материяла (подсветка П-шки)
     if (FIdReplasedMat > 0) and (qrMaterialID.Value = FIdReplasedMat) and (dbgrdMaterial = FLastEntegGrd) then
-      Font.Style := Font.Style + [fsbold];
-
-    // Устаревшее условие для подсветки заменяющего материала с правой таблице,
-    // при выделении его в левой
-    if (qrRatesExID_RATE.Value > 0) and (qrRatesExID_TYPE_DATA.Value = 2) and
-      (qrRatesExID_TABLES.Value = qrMaterialID.Value) and (grRatesEx = FLastEntegGrd) then
       Font.Style := Font.Style + [fsbold];
 
     // Подсветка замененяющего материала
@@ -5918,8 +5916,10 @@ begin
     end;
 
     // Не отображает кол-во и суммы для замененных или вынесеных
-    if ((qrMaterialFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1)
-      )) or (qrMaterialREPLACED.Value = 1) or (qrMaterialDELETED.Value = 1) then
+    if ((qrMaterialFROM_RATE.Value = 1) and
+        (qrRatesExID_TYPE_DATA.Value = 1)) or
+       (qrMaterialREPLACED.Value = 1) or
+       (qrMaterialDELETED.Value = 1) then
     begin
       if Column.Index in [5, 9, 10, 11, 12, 16, 17, 18, 19] then
         Str := '';
@@ -6024,7 +6024,7 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки механизмы
-    if (qrMechanizmFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or (qrRatesExID_TYPE_DATA.Value = 1))
+    if (qrMechanizmFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1)
     then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
@@ -6071,8 +6071,10 @@ begin
         Str := Column.Field.AsString;
     end;
 
-    if ((qrMechanizmFROM_RATE.Value = 1) and ((qrRatesExID_RATE.Value > 0) or
-      (qrRatesExID_TYPE_DATA.Value = 1))) or (qrMechanizmREPLACED.Value = 1) or (qrMechanizmDELETED.Value = 1)
+    if ((qrMechanizmFROM_RATE.Value = 1) and
+        (qrRatesExID_TYPE_DATA.Value = 1)) or
+       (qrMechanizmREPLACED.Value = 1) or
+       (qrMechanizmDELETED.Value = 1)
     then
     begin
       if Column.Index in [5, 8, 9, 12, 13, 17, 18, 21, 22, 25] then
@@ -6163,7 +6165,7 @@ begin
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = FLastEntegGrd) then
     begin
       if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2) and
-        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) or (qrRatesExID_RATE.Value > 0))
+        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1))
       then
         Font.Style := Font.Style + [fsbold];
     end;
@@ -6173,7 +6175,7 @@ begin
     begin
       if (qrRatesExID_REPLACED.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2)
         and (qrMaterialCONSIDERED.AsInteger = 0) and
-        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) or (qrRatesExID_RATE.Value > 0))
+        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1))
       then
         Font.Style := Font.Style + [fsbold];
     end;
