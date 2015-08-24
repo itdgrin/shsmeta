@@ -1606,11 +1606,6 @@
               item
                 Expanded = False
                 FieldName = 'KOEF'
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clWindowText
-                Font.Height = -11
-                Font.Name = 'Tahoma'
-                Font.Style = []
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1050#1086#1101#1092'.'
@@ -1898,11 +1893,6 @@
               item
                 Expanded = False
                 FieldName = 'KOEFMR'
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clWindowText
-                Font.Height = -11
-                Font.Name = 'Tahoma'
-                Font.Style = []
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1050#1086#1077#1092'.'
@@ -3293,6 +3283,10 @@
           Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1082#1086#1101#1092'. '#1089#1086#1075#1083#1072#1089#1085#1086' '#1055#1088#1080#1082#1072#1079#1091' '#8470'352 '#1082' '#1074#1099#1076#1077#1083#1077#1085#1085#1099#1084' '#1089#1090#1088#1086#1082#1072#1084
         end
       end
+    end
+    object PMInsertRow: TMenuItem
+      Caption = #1042#1089#1090#1072#1074#1080#1090#1100' '#1089#1090#1088#1086#1082#1091
+      OnClick = PMInsertRowClick
     end
     object PMCopy: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
@@ -4950,7 +4944,6 @@
   end
   object qrRatesEx: TFDQuery
     AfterOpen = qrRatesExAfterOpen
-    BeforePost = qrRatesExBeforePost
     AfterScroll = qrRatesExAfterScroll
     OnCalcFields = qrRatesExCalcFields
     Connection = DM.Connect
@@ -4987,7 +4980,7 @@
     FormatOptions.MaxBcdScale = 6
     FormatOptions.DefaultParamDataType = ftBCD
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ### ##0.#######'
-    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvUpdateMode, uvRefreshMode, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
     UpdateOptions.CountUpdatedRecords = False
@@ -5041,6 +5034,7 @@
       FieldName = 'OBJ_UNIT'
       Origin = 'OBJ_UNIT'
       ProviderFlags = []
+      ReadOnly = True
       Size = 100
     end
     object qrRatesExID_TYPE_DATA: TIntegerField
@@ -5171,7 +5165,7 @@
       '  `types_data`'
       'ORDER BY `ID`')
     Left = 112
-    Top = 232
+    Top = 216
   end
   object dsTypeData: TDataSource
     DataSet = qrTypeData

@@ -469,6 +469,7 @@ type
     lblForemanFIO: TLabel;
     qrRatesExCONS_REPLASED: TIntegerField;
     qrMaterialKOEFMR: TFloatField;
+    PMInsertRow: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -591,7 +592,6 @@ type
     procedure MatRowChange(Sender: TField);
     procedure dbgrdMechanizmExit(Sender: TObject);
     procedure pmMechanizmsPopup(Sender: TObject);
-    procedure qrRatesExBeforePost(DataSet: TDataSet);
     procedure MemoRightExit(Sender: TObject);
     procedure MemoRightChange(Sender: TObject);
     procedure qrMaterialBeforeScroll(DataSet: TDataSet);
@@ -664,6 +664,7 @@ type
     procedure btn2Click(Sender: TObject);
     procedure btnCalcFactClick(Sender: TObject);
     procedure lblForemanClick(Sender: TObject);
+    procedure PMInsertRowClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -2614,15 +2615,6 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.qrRatesExBeforePost(DataSet: TDataSet);
-begin
-  if DataSet.State in [dsInsert] then
-  begin
-    DataSet.Cancel;
-    Abort;
-  end;
-end;
-
 procedure TFormCalculationEstimate.qrRatesExCalcFields(DataSet: TDataSet);
 // Функция считает сколько добавленных материалов/механизмов в расценке
   function GetAddedCount(const ID_CARD_RATE: Integer): Integer;
@@ -4410,6 +4402,18 @@ begin
     PMDumpEditClick(nil);
 end;
 
+procedure TFormCalculationEstimate.PMInsertRowClick(Sender: TObject);
+begin
+  qrRatesEx.UpdateOptions.EnableInsert := True;
+  try
+    qrRatesEx.Insert;
+    qrRatesExID_TYPE_DATA.Value := -5;
+    //qrRatesEx.Post;
+  finally
+    //qrRatesEx.UpdateOptions.EnableInsert := False;
+  end;
+end;
+
 procedure TFormCalculationEstimate.pmTableLeftPopup(Sender: TObject);
 var
   mainType: Integer;
@@ -4417,6 +4421,8 @@ begin
   // Нельзя удалить неучтенный материал из таблицы расценок
   PMDelete.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0);
   PMAdd.Visible := CheckCursorInRate;
+  PMInsertRow.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0);
+
   PMEdit.Visible := (qrRatesExID_TYPE_DATA.AsInteger in [5, 6, 7, 8, 9]) and CheckCursorInRate;
   PMCopy.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
   PMPaste.Enabled := ((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -4) or
@@ -6133,7 +6139,8 @@ begin
       Font.Style := Font.Style + [fsbold];
       Brush.Color := clSilver;
     end;
-    if qrRatesExID_TYPE_DATA.AsInteger = -4 then
+    if (qrRatesExID_TYPE_DATA.AsInteger = -4) or
+       (qrRatesExID_TYPE_DATA.AsInteger = -5) then
     begin
       Font.Color := PS.FontRows;
       Brush.Color := clInactiveBorder;
