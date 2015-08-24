@@ -683,6 +683,8 @@ type
     FYearEstimate: Integer;
     FRegion: Integer;
 
+    FNewRowIterator: Integer;
+
     VisibleRightTables: String; // Ќастройка отобаржени€ нужной таблицы справа
 
     WCWinterPrice: Integer;
@@ -2610,6 +2612,8 @@ begin
   // ƒл€ того что-бы скрол по таблице был быстрым обработка скрола происходит с задержкой
   if qrRatesEx.Tag <> 1 then
   begin
+    //√асит итератор, все добавл€етс€ в конец сметы(отличаетс€ от 0 только в режиме вставке строки)
+    FNewRowIterator := 0;
     tmRate.Enabled := False;
     tmRate.Enabled := True;
   end;
@@ -3885,10 +3889,11 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddRate(:id_estimate, :id_rate, :cnt);');
+      SQL.Add('CALL AddRate(:id_estimate, :id_rate, :cnt, :iterator);');
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_rate').Value := vRateId;
-      ParamByName('cnt').AsFloat := 0;
+      ParamByName('cnt').Value := 0;
+      ParamByName('iterator').Value := FNewRowIterator;
       Active := True;
       vMaxIdRate := FieldByName('id').AsInteger;
       NewRateCode := FieldByName('RATE_CODE').AsString;
@@ -4154,7 +4159,8 @@ begin
   if not CheckCursorInRate then
     Exit;
 
-  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag, True) then
+  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag,
+     FNewRowIterator, True) then
     OutputDataToTable(True);
 end;
 
@@ -4216,7 +4222,7 @@ end;
 
 procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
 begin
-  if GetDumpForm(qrRatesExSM_ID.AsInteger, -1, True) then
+  if GetDumpForm(qrRatesExSM_ID.AsInteger, -1, FNewRowIterator, True) then
     OutputDataToTable(True);
 end;
 
@@ -4386,11 +4392,13 @@ end;
 procedure TFormCalculationEstimate.PMDumpEditClick(Sender: TObject);
 begin
   if qrRatesExID_TYPE_DATA.AsInteger = 5 then
-    if GetDumpForm(qrRatesExSM_ID.AsInteger, qrDumpID.AsInteger, False) then
+    if GetDumpForm(qrRatesExSM_ID.AsInteger, qrDumpID.AsInteger,
+      FNewRowIterator, False) then
       OutputDataToTable;
 
   if qrRatesExID_TYPE_DATA.AsInteger in [6, 7, 8, 9] then
-    if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger, qrRatesExID_TYPE_DATA.AsInteger, False)
+    if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger,
+      qrRatesExID_TYPE_DATA.AsInteger, FNewRowIterator, False)
     then
       OutputDataToTable;
 end;
@@ -4408,9 +4416,9 @@ begin
   try
     qrRatesEx.Insert;
     qrRatesExID_TYPE_DATA.Value := -5;
-    //qrRatesEx.Post;
+    qrRatesEx.Post;
   finally
-    //qrRatesEx.UpdateOptions.EnableInsert := False;
+    qrRatesEx.UpdateOptions.EnableInsert := False;
   end;
 end;
 
@@ -5667,9 +5675,10 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddDevice(:IdEstimate, :IdDev, 0, 0);');
+      SQL.Add('CALL AddDevice(:IdEstimate, :IdDev, 0, :Iterator);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdDev').Value := vEquipId;
+      ParamByName('Iterator').Value := FNewRowIterator;
       ExecSQL;
     end;
 
@@ -5692,9 +5701,10 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddMaterial(:IdEstimate, :IdMat, 0, 0, :CALCMODE);');
+      SQL.Add('CALL AddMaterial(:IdEstimate, :IdMat, 0, :Iterator, :CALCMODE);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdMat').Value := vMatId;
+      ParamByName('Iterator').Value := FNewRowIterator;
       ParamByName('CALCMODE').Value := G_CALCMODE;
       ExecSQL;
     end;
@@ -5718,9 +5728,10 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, 0, 0, :CALCMODE);');
+      SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, 0, :Iterator, :CALCMODE);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdMech').Value := vMechId;
+      ParamByName('Iterator').Value := FNewRowIterator;
       ParamByName('CALCMODE').Value := G_CALCMODE;
       ExecSQL;
     end;

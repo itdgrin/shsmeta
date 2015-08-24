@@ -80,7 +80,6 @@ object FormCalculationDump: TFormCalculationDump
     ParentBackground = False
     ShowCaption = False
     TabOrder = 1
-    ExplicitTop = 199
     object Memo: TMemo
       Left = 0
       Top = 0
@@ -90,8 +89,6 @@ object FormCalculationDump: TFormCalculationDump
       Lines.Strings = (
         'Memo')
       TabOrder = 0
-      ExplicitTop = 32
-      ExplicitHeight = 26
     end
   end
   object ButtonCancel: TButton
@@ -177,8 +174,6 @@ object FormCalculationDump: TFormCalculationDump
     ShowCaption = False
     TabOrder = 5
     TabStop = True
-    ExplicitTop = 50
-    ExplicitHeight = 282
     DesignSize = (
       524
       117)
@@ -404,7 +399,6 @@ object FormCalculationDump: TFormCalculationDump
       ReadOnly = True
       TabOrder = 2
       Text = '0'
-      ExplicitTop = 103
     end
     object edtPriceNDS: TEdit
       Left = 416
@@ -424,7 +418,6 @@ object FormCalculationDump: TFormCalculationDump
       ReadOnly = True
       TabOrder = 3
       Text = '0'
-      ExplicitTop = 103
     end
   end
   object DataSourceND: TDataSource

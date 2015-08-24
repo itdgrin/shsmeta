@@ -4946,7 +4946,6 @@
     AfterOpen = qrRatesExAfterOpen
     AfterScroll = qrRatesExAfterScroll
     OnCalcFields = qrRatesExCalcFields
-    CachedUpdates = True
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -4981,11 +4980,10 @@
     FormatOptions.MaxBcdScale = 6
     FormatOptions.DefaultParamDataType = ftBCD
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ### ##0.#######'
-    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvUpdateMode, uvRefreshMode, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvUpdateMode, uvLockMode, uvRefreshMode, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateChangedFields = False
-    UpdateOptions.UpdateNonBaseFields = True
     UpdateOptions.RefreshMode = rmManual
     UpdateOptions.CountUpdatedRecords = False
     UpdateOptions.CheckRequired = False

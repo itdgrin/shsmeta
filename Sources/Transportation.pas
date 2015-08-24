@@ -113,6 +113,7 @@ type
     procedure CalcPrice;
   public
     IdEstimate: integer; // ID сметы в которой транспорт
+    Iterator: Integer;
     IdTransp: integer; // ID транспорта в смете
     TranspType: integer;
     InsMode: boolean; // признак вставкисвалки
@@ -120,7 +121,8 @@ type
   end;
 
   // Вызов окна транспорта. InsMode - признак вставкисвалки  в смету
-function GetTranspForm(IdEstimate, IdTransp, TranspType: integer; InsMode: boolean): boolean;
+function GetTranspForm(AIdEstimate, AIdTransp, ATranspType, AIterator: Integer;
+  AInsMode: boolean): boolean;
 
 implementation
 
@@ -128,17 +130,19 @@ uses Main, CalculationEstimate, DataModule, Tools, GlobsAndConst;
 
 {$R *.dfm}
 
-function GetTranspForm(IdEstimate, IdTransp, TranspType: integer; InsMode: boolean): boolean;
+function GetTranspForm(AIdEstimate, AIdTransp, ATranspType, AIterator: Integer;
+  AInsMode: boolean): boolean;
 var
   FormTransp: TFormTransportation;
 begin
   //Result := false;
   FormTransp := TFormTransportation.Create(nil);
   try
-    FormTransp.IdEstimate := IdEstimate;
-    FormTransp.IdTransp := IdTransp;
-    FormTransp.InsMode := InsMode;
-    FormTransp.TranspType := TranspType;
+    FormTransp.IdEstimate := AIdEstimate;
+    FormTransp.Iterator := AIterator;
+    FormTransp.IdTransp := AIdTransp;
+    FormTransp.InsMode := AInsMode;
+    FormTransp.TranspType := ATranspType;
     FormTransp.IsSaved := false;
     FormTransp.ShowModal;
     Result := FormTransp.IsSaved;
@@ -202,8 +206,7 @@ begin
 end;
 
 procedure TFormTransportation.ButtonAddClick(Sender: TObject);
-var Iterator: Integer;
-    NewId: Integer;
+var NewId: Integer;
 begin
   if InsMode then
   begin
@@ -248,7 +251,7 @@ begin
 
     qrTemp.ExecSQL;
 
-    Iterator := UpdateIterator(IdEstimate, 0, 0);
+    Iterator := UpdateIterator(IdEstimate, Iterator, 0);
     qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
       '(ID, id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
       '(GetNewID(:IDType), :id_estimate, :id_type_data, :id_tables, :NUM_ROW)';

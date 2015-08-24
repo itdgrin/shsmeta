@@ -41,7 +41,6 @@ object FormTransportation: TFormTransportation
     ParentBackground = False
     ShowCaption = False
     TabOrder = 2
-    ExplicitWidth = 645
     DesignSize = (
       445
       25)
@@ -101,9 +100,6 @@ object FormTransportation: TFormTransportation
     ShowCaption = False
     TabOrder = 0
     TabStop = True
-    ExplicitLeft = 8
-    ExplicitTop = 24
-    ExplicitHeight = 384
     DesignSize = (
       445
       312)
@@ -126,7 +122,7 @@ object FormTransportation: TFormTransportation
       Left = 80
       Top = 292
       Width = 64
-      Height = 14
+      Height = 13
       Anchors = [akLeft, akBottom]
       Caption = #1073#1077#1079' '#1053#1044#1057', '#1088':'
       Font.Charset = DEFAULT_CHARSET
@@ -135,7 +131,6 @@ object FormTransportation: TFormTransportation
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitTop = 334
     end
     object Label8: TLabel
       Left = 272
@@ -170,7 +165,6 @@ object FormTransportation: TFormTransportation
       ReadOnly = True
       TabOrder = 0
       Text = '0'
-      ExplicitTop = 331
     end
     object edtPriceNDS: TEdit
       Left = 334
@@ -368,8 +362,6 @@ object FormTransportation: TFormTransportation
         ' '#1053#1072#1076#1073#1072#1074#1082#1080' '#1079#1072' '#1087#1077#1088#1077#1074#1086#1079#1082#1091' '#1075#1088#1091#1079#1086#1074' '#1074' '#1089#1087#1077#1094#1080#1072#1083#1080#1079#1080#1088#1086#1074#1072#1085#1085#1086#1084' '#1087#1086#1076#1074#1080#1078#1085#1086#1084' '#1089#1086#1089 +
         #1090#1072#1074#1077'  '
       TabOrder = 3
-      ExplicitTop = 73
-      ExplicitWidth = 645
       object cmbKoef: TComboBox
         Left = 29
         Top = 15
@@ -394,7 +386,6 @@ object FormTransportation: TFormTransportation
           'fsfsdfsdfsdf '
           'gfgdfgdff gdffgdfg fgdffgdfgdfg fdgdfgdffgdf '
           'ertertert tertert ertertretert rtertert')
-        ExplicitWidth = 614
       end
       object Panel3: TPanel
         Left = 2
@@ -441,8 +432,6 @@ object FormTransportation: TFormTransportation
       OnExitCell = grdPriceExitCell
       OnSetCanvasProperties = grdPriceSetCanvasProperties
       OnGetCellAlignment = grdPriceGetCellAlignment
-      ExplicitTop = 183
-      ExplicitWidth = 538
     end
   end
   object PanelBottom: TPanel
@@ -454,8 +443,6 @@ object FormTransportation: TFormTransportation
     BevelOuter = bvNone
     ShowCaption = False
     TabOrder = 3
-    ExplicitTop = 303
-    ExplicitWidth = 645
   end
   object ButtonAdd: TButton
     Left = 334

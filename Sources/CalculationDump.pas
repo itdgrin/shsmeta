@@ -74,6 +74,7 @@ type
     procedure LoadDumpInfo(aIdDump: integer);
   public
     IdEstimate: Integer; //ID сметы в которой свалка
+    Iterator: Integer; //Место куда добавить новую строку
     IdDump: Integer; // ID свалки в смете
     InsMode: boolean; //признак вставкисвалки  в смету
     IsSaved: boolean;
@@ -83,7 +84,7 @@ const
   CaptionForm = 'Расчёт свалки';
 
 //Вызов окна свалок. InsMode - признак вставкисвалки  в смету
-function GetDumpForm(IdEstimate, IdDump: Integer; InsMode: boolean): boolean;
+function GetDumpForm(AIdEstimate, AIdDump, AIterator: Integer; AInsMode: boolean): boolean;
 
 implementation
 
@@ -91,15 +92,15 @@ uses Main, DataModule, CalculationEstimate, Tools, GlobsAndConst;
 
 {$R *.dfm}
 
-function GetDumpForm(IdEstimate, IdDump: Integer; InsMode: boolean): boolean;
+function GetDumpForm(AIdEstimate, AIdDump, AIterator: Integer; AInsMode: boolean): boolean;
 var FormDump: TFormCalculationDump;
 begin
-  //Result := false;
   FormDump := TFormCalculationDump.Create(nil);
   try
-    FormDump.IdEstimate := IdEstimate;
-    FormDump.IdDump := IdDump;
-    FormDump.InsMode := InsMode;
+    FormDump.IdEstimate := AIdEstimate;
+    FormDump.Iterator := AIterator;
+    FormDump.IdDump := AIdDump;
+    FormDump.InsMode := AInsMode;
     FormDump.IsSaved := false;
     FormDump.ShowModal;
     Result := FormDump.IsSaved;
@@ -137,41 +138,41 @@ end;
 
 procedure TFormCalculationDump.LoadDumpInfo(aIdDump: integer);
 begin
-    Loading := True;
-    try
-      qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT * FROM dumpcard_temp WHERE (ID = ' +
-        IntToStr(aIdDump) + ');';
-      qrTemp.Active := True;
+  Loading := True;
+  try
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := 'SELECT * FROM dumpcard_temp WHERE (ID = ' +
+      IntToStr(aIdDump) + ');';
+    qrTemp.Active := True;
 
-      EditJustificationNumber.Text := qrTemp.FieldByName('DUMP_CODE_JUST').AsString;
-      EditJustification.Text := qrTemp.FieldByName('DUMP_JUST').AsString;
-      cmbND.KeyValue := qrTemp.FieldByName('DUMP_ID').AsInteger;
-      edtDumpUnit.Text := qrTemp.FieldByName('DUMP_UNIT').AsString;
-      Unit_Type := qrTemp.FieldByName('DUMP_TYPE').AsInteger;
-      edtCoastNDS.Text := qrTemp.FieldByName('COAST_NDS').AsString;
-      edtCoastNoNDS.Text := qrTemp.FieldByName('COAST_NO_NDS').AsString;
-      cmbUnit.ItemIndex := qrTemp.FieldByName('WORK_TYPE').AsInteger;
-      edtCount.Text := qrTemp.FieldByName('WORK_COUNT').AsString;
-      edtYDW.Text := qrTemp.FieldByName('WORK_YDW').AsString;
-      edtPriceNoNDS.Text := qrTemp.FieldByName('DUMP_SUM_NO_NDS').AsString;
-      edtPriceNDS.Text := qrTemp.FieldByName('DUMP_SUM_NDS').AsString;
+    EditJustificationNumber.Text := qrTemp.FieldByName('DUMP_CODE_JUST').AsString;
+    EditJustification.Text := qrTemp.FieldByName('DUMP_JUST').AsString;
+    cmbND.KeyValue := qrTemp.FieldByName('DUMP_ID').AsInteger;
+    edtDumpUnit.Text := qrTemp.FieldByName('DUMP_UNIT').AsString;
+    Unit_Type := qrTemp.FieldByName('DUMP_TYPE').AsInteger;
+    edtCoastNDS.Text := qrTemp.FieldByName('COAST_NDS').AsString;
+    edtCoastNoNDS.Text := qrTemp.FieldByName('COAST_NO_NDS').AsString;
+    cmbUnit.ItemIndex := qrTemp.FieldByName('WORK_TYPE').AsInteger;
+    edtCount.Text := qrTemp.FieldByName('WORK_COUNT').AsString;
+    edtYDW.Text := qrTemp.FieldByName('WORK_YDW').AsString;
+    edtPriceNoNDS.Text := qrTemp.FieldByName('DUMP_SUM_NO_NDS').AsString;
+    edtPriceNDS.Text := qrTemp.FieldByName('DUMP_SUM_NDS').AsString;
 
-      DumpCount := qrTemp.FieldByName('DUMP_COUNT').AsBCD;
-      CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsBCD;
-      CoastNds := qrTemp.FieldByName('COAST_NDS').AsBCD;
-      MCount := qrTemp.FieldByName('WORK_COUNT').AsBCD;
-      Ydw := qrTemp.FieldByName('WORK_YDW').AsBCD;
+    DumpCount := qrTemp.FieldByName('DUMP_COUNT').AsBCD;
+    CoastNoNds := qrTemp.FieldByName('COAST_NO_NDS').AsBCD;
+    CoastNds := qrTemp.FieldByName('COAST_NDS').AsBCD;
+    MCount := qrTemp.FieldByName('WORK_COUNT').AsBCD;
+    Ydw := qrTemp.FieldByName('WORK_YDW').AsBCD;
 
-      Memo.Text := EditJustification.Text + ' ' + cmbND.Text + '.';
-      qrTemp.Active := False;
-    except
-      on E: Exception do
-        MessageBox(0, PChar('При получении данных по свалке ошибка:' +
-        sLineBreak + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
-    Loading := false;
+    Memo.Text := EditJustification.Text + ' ' + cmbND.Text + '.';
+    qrTemp.Active := False;
+  except
+    on E: Exception do
+      MessageBox(0, PChar('При получении данных по свалке ошибка:' +
+      sLineBreak + sLineBreak + E.Message), CaptionForm,
+      MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+  Loading := false;
 end;
 
 procedure TFormCalculationDump.ButtonCancelClick(Sender: TObject);
@@ -180,8 +181,7 @@ begin
 end;
 
 procedure TFormCalculationDump.ButtonSaveClick(Sender: TObject);
-var Iterator: Integer;
-    NewId: Integer;
+var NewId: Integer;
 begin
   if InsMode then
   begin
@@ -226,7 +226,7 @@ begin
 
     qrTemp.ExecSQL;
 
-    Iterator := UpdateIterator(IdEstimate, 0, 0);
+    Iterator := UpdateIterator(IdEstimate, Iterator, 0);
     qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
       '(ID, id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
       '(GetNewID(:IDType), :id_estimate, :id_type_data, :id_tables, :NUM_ROW)';
