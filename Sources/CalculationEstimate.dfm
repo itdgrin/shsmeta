@@ -4946,6 +4946,7 @@
     AfterOpen = qrRatesExAfterOpen
     AfterScroll = qrRatesExAfterScroll
     OnCalcFields = qrRatesExCalcFields
+    CachedUpdates = True
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -4983,6 +4984,9 @@
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvUpdateMode, uvRefreshMode, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.UpdateNonBaseFields = True
+    UpdateOptions.RefreshMode = rmManual
     UpdateOptions.CountUpdatedRecords = False
     UpdateOptions.CheckRequired = False
     UpdateOptions.CheckReadOnly = False

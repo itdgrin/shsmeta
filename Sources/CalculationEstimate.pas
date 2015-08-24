@@ -3766,7 +3766,7 @@ begin
     else
     begin
       AddCoefToRate(fCoefficients.qrCoef.FieldByName('coef_id').AsInteger);
-      RecalcEstimate;
+      //RecalcEstimate;
     end;
   end;
 end;
