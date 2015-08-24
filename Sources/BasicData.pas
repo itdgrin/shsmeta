@@ -112,6 +112,7 @@ type
     IdObject: Integer;
     IdEstimate: Integer;
     IdDump: Variant;
+    flLoaded: Boolean; // Признак завершения загрузки формы
 
     PercentTransportCity: Double;
     PercentTransportVillage: Double;
@@ -158,6 +159,7 @@ end;
 
 procedure TFormBasicData.FormCreate(Sender: TObject);
 begin
+  flLoaded := False;
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
   LoadDBGridSettings(grCoef);
@@ -168,6 +170,7 @@ var
   IdStavka: String;
   REGION_ID: Variant;
 begin
+  flLoaded := False;
   qrSmeta.Active := False;
   qrSmeta.ParamByName('IdEstimate').AsInteger := IdEstimate;
   qrSmeta.Active := True;
@@ -292,6 +295,7 @@ begin
 
     DBLookupComboBoxRegionDumpClick(DBLookupComboBoxRegionDump);
   end;
+  flLoaded := True;
 end;
 
 procedure TFormBasicData.mN1Click(Sender: TObject);
@@ -301,13 +305,20 @@ begin
 end;
 
 procedure TFormBasicData.mN2Click(Sender: TObject);
+var
+  tableName: string;
 begin
   if Application.MessageBox('Удалить запись?', 'Вопрос', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
   begin
     qrCoef.CheckBrowseMode;
 
+    if Assigned(FormCalculationEstimate) then
+      tableName := 'calculation_coef_temp'
+    else
+      tableName := 'calculation_coef';
+
     // Каскадное удаление наборав из связанных смет
-    DM.qrDifferent.SQL.Text := 'DELETE FROM calculation_coef WHERE id_estimate IN '#13 +
+    DM.qrDifferent.SQL.Text := 'DELETE FROM ' + tableName + ' WHERE id_estimate IN '#13 +
       '(SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
       ' OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE)))'#13 +
       ' AND id_type_data=:id_type_data AND id_owner=0 AND id_coef=:id_coef';
@@ -588,18 +599,84 @@ begin
 end;
 
 procedure TFormBasicData.dbchkcoef_ordersClick(Sender: TObject);
+var
+  tableName: String;
 begin
-  if not CheckQrActiveEmpty(qrSmeta) then
+  if not CheckQrActiveEmpty(qrSmeta) or (not flLoaded) then
     exit;
   if dbchkcoef_orders.Checked then
   begin
     edtKZP.Text := FloatToStr(GetUniDictParamValue('K_KORR_ZP', (ComboBoxMonth.ItemIndex + 1),
       edtYear.Value));
+
+    if Assigned(FormCalculationEstimate) then
+      tableName := 'calculation_coef_temp'
+    else
+      tableName := 'calculation_coef';
+
+    // Каскадно добавляем выбранный кф. на все зависимые сметы
+    DM.qrDifferent.SQL.Text := 'INSERT INTO `' + tableName + '`(`calculation_coef_id`, ' +
+      '`id_estimate`, `id_type_data`, `id_owner`,'#13 +
+      ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
+      '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
+      'VALUE(GetNewID(:IDType), :id_estimate,:id_type_data,:id_owner,'#13 +
+      ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB)';
+    DM.qrDifferent.ParamByName('IDType').Value := C_ID_SMCOEF;
+    DM.qrDifferent.ParamByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
+    DM.qrDifferent.ParamByName('id_owner').Value := 0;
+    DM.qrDifferent.ParamByName('id_coef').Value := 20;
+    DM.qrDifferent.ParamByName('COEF_NAME').Value := 'Кф по прик.';
+    DM.qrDifferent.ParamByName('OSN_ZP').Value := StrToFloatDef(edtKZP.Text, 1);
+    DM.qrDifferent.ParamByName('EKSP_MACH').Value := 1;
+    DM.qrDifferent.ParamByName('MAT_RES').Value := 1;
+    DM.qrDifferent.ParamByName('WORK_PERS').Value := 1;
+    DM.qrDifferent.ParamByName('WORK_MACH').Value := 1;
+    DM.qrDifferent.ParamByName('OXROPR').Value := 1;
+    DM.qrDifferent.ParamByName('PLANPRIB').Value := 1;
+
+    DM.qrDifferent1.Active := False;
+    DM.qrDifferent1.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
+      ' OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE))';
+    DM.qrDifferent1.ParamByName('ID_ESTIMATE').Value := qrSmeta.FieldByName('SM_ID').Value;
+    DM.qrDifferent1.Active := True;
+    DM.qrDifferent1.First;
+
+    DM.qrDifferent.ParamByName('id_estimate').Value := qrSmeta.FieldByName('SM_ID').Value;
+    DM.qrDifferent.ExecSQL;
+    while not DM.qrDifferent1.Eof do
+    begin
+      DM.qrDifferent.ParamByName('id_estimate').Value := DM.qrDifferent1.FieldByName('SM_ID').Value;
+      DM.qrDifferent.ExecSQL;
+      DM.qrDifferent1.Next;
+    end;
+    DM.qrDifferent1.Active := False;
   end
   else
   begin
     edtKZP.Text := '1';
+
+    qrCoef.CheckBrowseMode;
+
+    if Assigned(FormCalculationEstimate) then
+      tableName := 'calculation_coef_temp'
+    else
+      tableName := 'calculation_coef';
+
+    // Каскадное удаление наборав из связанных смет
+    DM.qrDifferent.SQL.Text := 'DELETE FROM ' + tableName + ' WHERE id_estimate IN '#13 +
+      '(SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
+      ' OR (SM_ID=:id_estimate) OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE)))'#13
+      + ' AND id_type_data<0 AND id_owner=0 AND id_coef=:id_coef';
+
+    DM.qrDifferent.ParamByName('id_estimate').Value := qrSmeta.FieldByName('SM_ID').Value;
+    // DM.qrDifferent.ParamByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
+    DM.qrDifferent.ParamByName('id_coef').Value := 20;
+
+    DM.qrDifferent.ExecSQL;
   end;
+  if Assigned(FormCalculationEstimate) then
+    FormCalculationEstimate.RecalcEstimate;
+  CloseOpen(qrCoef);
 end;
 
 procedure TFormBasicData.dbedtEditRateWorkerEnter(Sender: TObject);

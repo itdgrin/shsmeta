@@ -11268,6 +11268,115 @@
         end
       end
     end
+    object MenuService: TMenuItem
+      Caption = #1057#1077#1088#1074#1080#1089
+      OnClick = MenuServiceClick
+      object mUsers: TMenuItem
+        Caption = #1059#1095#1077#1090#1085#1099#1077' '#1079#1072#1087#1080#1089#1080' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081
+        ImageIndex = 55
+        OnClick = mUsersClick
+      end
+      object Administator: TMenuItem
+        Caption = #1040#1076#1084#1080#1085#1080#1089#1090#1088#1080#1088#1086#1074#1072#1085#1080#1077
+        Visible = False
+      end
+      object MenuConnectDatabase: TMenuItem
+        Caption = #1055#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077' '#1082' MySQL '#1089#1077#1088#1074#1077#1088#1091
+        Enabled = False
+        Visible = False
+      end
+      object mN2: TMenuItem
+        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
+        ImageIndex = 15
+        object ServiceSettings: TMenuItem
+          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
+          OnClick = ServiceSettingsClick
+        end
+        object mN17: TMenuItem
+          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055
+          OnClick = mN17Click
+        end
+        object mhfybkbotafqkjd1: TMenuItem
+          Caption = #1061#1088#1072#1085#1080#1083#1080#1097#1077' '#1092#1072#1081#1083#1086#1074
+          ImageIndex = 53
+          OnClick = mhfybkbotafqkjd1Click
+        end
+        object mN30: TMenuItem
+          Caption = #1054#1082#1088#1091#1075#1083#1077#1085#1080#1103
+          OnClick = mN30Click
+        end
+      end
+      object ServiceBackup: TMenuItem
+        Caption = #1056#1077#1079#1077#1088#1074#1085#1086#1077' '#1082#1086#1087#1080#1088#1086#1074#1072#1085#1080#1077
+        ImageIndex = 50
+        OnClick = ServiceBackupClick
+        object PMAddNewBackup: TMenuItem
+          Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1082#1086#1087#1080#1102
+          OnClick = PMAddNewBackupClick
+        end
+        object N18: TMenuItem
+          Caption = '-'
+        end
+        object PMRestoreOldBackup: TMenuItem
+          Caption = 'PMRestoreOldBackup'
+          Visible = False
+          object PMRestoreBackup: TMenuItem
+            Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+            OnClick = PMRestoreBackupClick
+          end
+          object PMDeleteBackup: TMenuItem
+            Caption = #1059#1076#1072#1083#1080#1090#1100
+            OnClick = PMDeleteBackupClick
+          end
+        end
+      end
+      object ServiceRecovery: TMenuItem
+        Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1083#1077#1085#1080#1077' ('#1072#1076#1084')'
+        Visible = False
+      end
+      object ServiceUpdate: TMenuItem
+        Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1055#1054
+        OnClick = ServiceUpdateClick
+      end
+      object ServiceAssistant: TMenuItem
+        Caption = #1055#1088#1086#1075#1088#1072#1084#1084#1099'-'#1087#1086#1084#1086#1097#1085#1080#1082#1080
+        Hint = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1087#1088#1086#1075#1088#1072#1084#1084#1091' '#1091#1076#1072#1083#1105#1085#1085#1086#1075#1086' '#1091#1087#1088#1072#1074#1083#1077#1085#1080#1103
+        object MMAeroAdmin: TMenuItem
+          Tag = 1
+          Caption = 'AeroAdmin'
+          OnClick = RunProgramsRemoteControl
+        end
+        object MMAmmyyAdmin: TMenuItem
+          Tag = 2
+          Caption = 'Ammyy Admin'
+          OnClick = RunProgramsRemoteControl
+        end
+      end
+      object ServiceUpdNorm: TMenuItem
+        Caption = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1086#1088#1090#1080#1088#1086#1074#1082#1091' '#1085#1086#1088#1084#1072#1090#1080#1074#1086#1074
+        OnClick = ServiceUpdNormClick
+      end
+    end
+    object MenuHelp: TMenuItem
+      Caption = #1057#1087#1088#1072#1074#1082#1072
+      object HelpSupport: TMenuItem
+        Caption = #1055#1086#1084#1086#1097#1100
+        Visible = False
+      end
+      object HelpRegistration: TMenuItem
+        Caption = #1056#1077#1075#1080#1089#1090#1088#1072#1094#1080#1103
+        Visible = False
+      end
+      object HelpSite: TMenuItem
+        Caption = #1057#1072#1081#1090
+        Visible = False
+      end
+      object HelpAbout: TMenuItem
+        Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
+        ImageIndex = 2
+        OnClick = HelpAboutClick
+      end
+    end
     object mN31: TMenuItem
       Caption = #1053#1086#1088#1084#1072#1090#1080#1074#1085#1099#1077' '#1076#1086#1082#1091#1084#1077#1085#1090#1099
       object mN27: TMenuItem
@@ -11388,12 +11497,9 @@
         OnClick = N61Click
       end
     end
-    object N2: TMenuItem
+    object mReport: TMenuItem
       Caption = #1054#1090#1095#1077#1090#1099
-      object N24: TMenuItem
-        Caption = #1055#1077#1095#1072#1090#1100
-        OnClick = N24Click
-      end
+      OnClick = mReportClick
     end
     object N11: TMenuItem
       Caption = #1054#1090#1095#1077#1090#1099
@@ -11550,95 +11656,6 @@
         end
       end
     end
-    object MenuService: TMenuItem
-      Caption = #1057#1077#1088#1074#1080#1089
-      OnClick = MenuServiceClick
-      object mUsers: TMenuItem
-        Caption = #1059#1095#1077#1090#1085#1099#1077' '#1079#1072#1087#1080#1089#1080' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081
-        ImageIndex = 55
-        OnClick = mUsersClick
-      end
-      object Administator: TMenuItem
-        Caption = #1040#1076#1084#1080#1085#1080#1089#1090#1088#1080#1088#1086#1074#1072#1085#1080#1077
-        Visible = False
-      end
-      object MenuConnectDatabase: TMenuItem
-        Caption = #1055#1086#1076#1082#1083#1102#1095#1077#1085#1080#1077' '#1082' MySQL '#1089#1077#1088#1074#1077#1088#1091
-        Enabled = False
-        Visible = False
-      end
-      object mN2: TMenuItem
-        Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080
-        ImageIndex = 15
-        object ServiceSettings: TMenuItem
-          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
-          OnClick = ServiceSettingsClick
-        end
-        object mN17: TMenuItem
-          Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055
-          OnClick = mN17Click
-        end
-        object mhfybkbotafqkjd1: TMenuItem
-          Caption = #1061#1088#1072#1085#1080#1083#1080#1097#1077' '#1092#1072#1081#1083#1086#1074
-          ImageIndex = 53
-          OnClick = mhfybkbotafqkjd1Click
-        end
-        object mN30: TMenuItem
-          Caption = #1054#1082#1088#1091#1075#1083#1077#1085#1080#1103
-          OnClick = mN30Click
-        end
-      end
-      object ServiceBackup: TMenuItem
-        Caption = #1056#1077#1079#1077#1088#1074#1085#1086#1077' '#1082#1086#1087#1080#1088#1086#1074#1072#1085#1080#1077
-        ImageIndex = 50
-        OnClick = ServiceBackupClick
-        object PMAddNewBackup: TMenuItem
-          Caption = #1057#1086#1079#1076#1072#1090#1100' '#1085#1086#1074#1091#1102' '#1082#1086#1087#1080#1102
-          OnClick = PMAddNewBackupClick
-        end
-        object N18: TMenuItem
-          Caption = '-'
-        end
-        object PMRestoreOldBackup: TMenuItem
-          Caption = 'PMRestoreOldBackup'
-          Visible = False
-          object PMRestoreBackup: TMenuItem
-            Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
-            OnClick = PMRestoreBackupClick
-          end
-          object PMDeleteBackup: TMenuItem
-            Caption = #1059#1076#1072#1083#1080#1090#1100
-            OnClick = PMDeleteBackupClick
-          end
-        end
-      end
-      object ServiceRecovery: TMenuItem
-        Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1083#1077#1085#1080#1077' ('#1072#1076#1084')'
-        Visible = False
-      end
-      object ServiceUpdate: TMenuItem
-        Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1055#1054
-        OnClick = ServiceUpdateClick
-      end
-      object ServiceAssistant: TMenuItem
-        Caption = #1055#1088#1086#1075#1088#1072#1084#1084#1099'-'#1087#1086#1084#1086#1097#1085#1080#1082#1080
-        Hint = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1087#1088#1086#1075#1088#1072#1084#1084#1091' '#1091#1076#1072#1083#1105#1085#1085#1086#1075#1086' '#1091#1087#1088#1072#1074#1083#1077#1085#1080#1103
-        object MMAeroAdmin: TMenuItem
-          Tag = 1
-          Caption = 'AeroAdmin'
-          OnClick = RunProgramsRemoteControl
-        end
-        object MMAmmyyAdmin: TMenuItem
-          Tag = 2
-          Caption = 'Ammyy Admin'
-          OnClick = RunProgramsRemoteControl
-        end
-      end
-      object ServiceUpdNorm: TMenuItem
-        Caption = #1054#1073#1085#1086#1074#1080#1090#1100' '#1089#1086#1088#1090#1080#1088#1086#1074#1082#1091' '#1085#1086#1088#1084#1072#1090#1080#1074#1086#1074
-        OnClick = ServiceUpdNormClick
-      end
-    end
     object MenuWindows: TMenuItem
       Caption = #1054#1082#1085#1072
       object WindowsHorizontal: TMenuItem
@@ -11671,26 +11688,6 @@
       object WindowsExpand: TMenuItem
         Caption = #1056#1072#1079#1074#1077#1088#1085#1091#1090#1100' '#1074#1089#1077
         OnClick = WindowsExpandClick
-      end
-    end
-    object MenuHelp: TMenuItem
-      Caption = #1057#1087#1088#1072#1074#1082#1072
-      object HelpSupport: TMenuItem
-        Caption = #1055#1086#1084#1086#1097#1100
-        Visible = False
-      end
-      object HelpRegistration: TMenuItem
-        Caption = #1056#1077#1075#1080#1089#1090#1088#1072#1094#1080#1103
-        Visible = False
-      end
-      object HelpSite: TMenuItem
-        Caption = #1057#1072#1081#1090
-        Visible = False
-      end
-      object HelpAbout: TMenuItem
-        Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
-        ImageIndex = 2
-        OnClick = HelpAboutClick
       end
     end
     object N17: TMenuItem

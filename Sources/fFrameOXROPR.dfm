@@ -65,8 +65,13 @@ inherited FrameOXROPR: TFrameOXROPR
         Width = 548
         Height = 236
         Align = alClient
-        DataSource = ds1
-        Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        DataSource = dsMain
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
@@ -75,48 +80,69 @@ inherited FrameOXROPR: TFrameOXROPR
         TitleFont.Style = []
         OnDrawColumnCell = JvDBGrid1DrawColumnCell
         AutoAppend = False
+        IniStorage = fOXROPR.FormStorage
+        PostOnEnterKey = True
         AutoSizeColumns = True
+        AutoSizeColumnIndex = 1
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+        CanDelete = False
         EditControls = <>
         RowsHeight = 17
         TitleRowHeight = 17
         Columns = <
           item
+            Alignment = taCenter
             Expanded = False
             FieldName = 'Number'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
             ReadOnly = True
             Title.Alignment = taCenter
             Title.Caption = #1050#1086#1076
-            Width = 58
+            Width = 42
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'NameWork'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
             ReadOnly = True
             Title.Alignment = taCenter
             Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1088#1072#1073#1086#1090#1099
-            Width = 292
+            Width = 294
             Visible = True
           end
           item
             Expanded = False
-            FieldName = 'P1'
-            ReadOnly = True
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
             Title.Alignment = taCenter
-            Title.Caption = '% '#1085#1072#1082#1083#1072#1076#1085#1099#1093
-            Width = 87
+            Title.Caption = '% '#1054#1061#1056#1080#1054#1055#1056
+            Width = 74
             Visible = True
           end
           item
             Expanded = False
-            FieldName = 'P2'
-            ReadOnly = True
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
             Title.Alignment = taCenter
-            Title.Caption = '% '#1087#1083#1072#1085#1086#1074#1099#1093
-            Width = 91
+            Title.Caption = '% '#1087#1083#1072#1085#1086#1074#1086#1081' '#1087#1088#1080#1073#1099#1083#1080
+            Width = 118
             Visible = True
           end>
       end
@@ -134,16 +160,27 @@ inherited FrameOXROPR: TFrameOXROPR
       ParentDoubleBuffered = False
       ShowCaption = False
       TabOrder = 2
-      object Memo: TMemo
+      object dbmmoNameWork: TDBMemo
         Left = 0
         Top = 0
         Width = 548
         Height = 35
         Align = alClient
+        DataField = 'NameWork'
+        DataSource = dsMain
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
-        OnEnter = MemoEnter
+        ExplicitLeft = 200
+        ExplicitTop = 8
+        ExplicitWidth = 185
+        ExplicitHeight = 89
       end
     end
     object PanelTop: TPanel
@@ -244,8 +281,8 @@ inherited FrameOXROPR: TFrameOXROPR
     end
   end
   object PopupMenu: TPopupMenu
-    Left = 80
-    Top = 32
+    Left = 72
+    Top = 72
     object CopyCell: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
     end
@@ -263,25 +300,26 @@ inherited FrameOXROPR: TFrameOXROPR
   end
   object DataSourceTypeWork: TDataSource
     DataSet = ADOQueryTypeWork
-    Left = 208
-    Top = 32
+    Left = 152
+    Top = 64
   end
   object ADOQueryTemp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 232
-    Top = 104
+    Left = 152
+    Top = 120
   end
   object ADOQueryTypeWork: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 128
-    Top = 104
+    Left = 72
+    Top = 128
   end
-  object ADOQuery: TFDQuery
-    AfterScroll = ADOQueryAfterScroll
+  object qrMain: TFDQuery
+    BeforePost = qrMainBeforePost
+    AfterScroll = qrMainAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -289,29 +327,25 @@ inherited FrameOXROPR: TFrameOXROPR
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
-        SourceDataType = dtBCD
-        TargetDataType = dtDouble
+        SourceDataType = dtBlob
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
       end>
     FormatOptions.FmtDisplayNumeric = '0.000'
+    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvUpdateMode, uvLockMode, uvRefreshMode, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.UpdateMode = upWhereChanged
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.UpdateTableName = 'objdetailex'
+    UpdateOptions.KeyFields = 'ID'
     Left = 24
-    Top = 32
-    object ADOQueryNumber: TIntegerField
-      FieldName = 'Number'
-    end
-    object ADOQueryNameWork: TStringField
-      FieldName = 'NameWork'
-      Size = 255
-    end
-    object ADOQueryP1: TFloatField
-      FieldName = 'P1'
-    end
-    object ADOQueryP2: TFloatField
-      FieldName = 'P2'
-    end
+    Top = 72
   end
-  object ds1: TDataSource
-    DataSet = ADOQuery
+  object dsMain: TDataSource
+    DataSet = qrMain
     Left = 24
-    Top = 73
+    Top = 129
   end
 end

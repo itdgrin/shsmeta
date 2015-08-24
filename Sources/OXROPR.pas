@@ -4,10 +4,11 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, fFrameOXROPR, fFrameSmeta;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, fFrameOXROPR, fFrameSmeta, JvComponentBase, JvFormPlacement;
 
 type
   TfOXROPR = class(TForm)
+    FormStorage: TJvFormStorage;
     procedure FormCreate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);

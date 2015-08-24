@@ -179,8 +179,11 @@ object fUniDict: TfUniDict
         SelectColumnsDialogStrings.OK = '&OK'
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
         EditControls = <>
-        RowsHeight = 17
+        AutoSizeRows = False
+        RowsHeight = 35
         TitleRowHeight = 17
+        WordWrap = True
+        WordWrapAllFields = True
         Columns = <
           item
             Alignment = taRightJustify

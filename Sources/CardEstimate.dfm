@@ -339,6 +339,7 @@ object FormCardEstimate: TFormCardEstimate
       Height = 21
       DataField = 'PART_ID'
       DataSource = dsMain
+      DropDownRows = 20
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -374,6 +375,7 @@ object FormCardEstimate: TFormCardEstimate
       Height = 21
       DataField = 'SECTION_ID'
       DataSource = dsMain
+      DropDownRows = 20
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -409,6 +411,7 @@ object FormCardEstimate: TFormCardEstimate
       Height = 21
       DataField = 'TYPE_WORK_ID'
       DataSource = dsMain
+      DropDownRows = 20
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11

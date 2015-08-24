@@ -2,7 +2,7 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
   Left = 0
   Top = 0
   Caption = #1059#1089#1083#1091#1075#1080' '#1075#1077#1085#1077#1088#1072#1083#1100#1085#1086#1075#1086' '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-  ClientHeight = 400
+  ClientHeight = 442
   ClientWidth = 464
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,7 +20,7 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
   object pnlBott: TPanel
     AlignWithMargins = True
     Left = 3
-    Top = 361
+    Top = 403
     Width = 458
     Height = 36
     Align = alBottom
@@ -31,6 +31,7 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
     Font.Style = []
     ParentFont = False
     TabOrder = 1
+    ExplicitTop = 361
     DesignSize = (
       458
       36)
@@ -72,7 +73,7 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
     Left = 3
     Top = 3
     Width = 458
-    Height = 352
+    Height = 394
     Align = alClient
     DataSource = dsMain
     Font.Charset = DEFAULT_CHARSET
@@ -92,7 +93,7 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
     TitleFont.Style = []
     AutoAppend = False
     PostOnEnterKey = True
-    ScrollBars = ssVertical
+    ScrollBars = ssNone
     ShowCellHint = True
     AutoSizeColumns = True
     SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -210,5 +211,13 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
     DataSet = qrMain
     Left = 320
     Top = 270
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    Options = [fpState, fpSize, fpLocation, fpActiveControl]
+    StoredValues = <>
+    Left = 24
+    Top = 264
   end
 end

@@ -132,7 +132,7 @@ type
     img2: TImage;
     mN22: TMenuItem;
     mN2: TMenuItem;
-    N2: TMenuItem;
+    mReport: TMenuItem;
     N22: TMenuItem;
     Excel1: TMenuItem;
     EXCEL2: TMenuItem;
@@ -169,7 +169,6 @@ type
     mN36: TMenuItem;
     mN26: TMenuItem;
     mN30: TMenuItem;
-    N24: TMenuItem;
     mN37: TMenuItem;
     mN25: TMenuItem;
     mN38: TMenuItem;
@@ -280,10 +279,10 @@ type
     procedure mUsersClick(Sender: TObject);
     procedure mN26Click(Sender: TObject);
     procedure mN30Click(Sender: TObject);
-    procedure N24Click(Sender: TObject);
     procedure mN36Click(Sender: TObject);
     procedure mN25Click(Sender: TObject);
     procedure mN38Click(Sender: TObject);
+    procedure mReportClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -1092,19 +1091,6 @@ begin
 
 end;
 
-procedure TFormMain.N24Click(Sender: TObject);
-begin
-  if Assigned(FormCalculationEstimate) then
-  begin
-    if FormCalculationEstimate.IdEstimate > 0 then
-      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
-        PChar(FileReportPath + 'report\'), SW_maximIZE)
-    else
-      ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
-        PChar(FileReportPath + 'report\'), SW_maximIZE);
-  end;
-end;
-
 procedure TFormMain.mBuildZoneClick(Sender: TObject);
 var
   fBuildZone: TfBuildZone;
@@ -1234,6 +1220,7 @@ procedure TFormMain.mN27Click(Sender: TObject);
 begin
   if (not Assigned(fOXROPR)) then
     fOXROPR := TfOXROPR.Create(FormMain);
+  fOXROPR.FormStyle := fsNormal;
   fOXROPR.Show;
 end;
 
@@ -1948,6 +1935,19 @@ begin
     end;
   finally
     Screen.Cursor := crDefault;
+  end;
+end;
+
+procedure TFormMain.mReportClick(Sender: TObject);
+begin
+  if Assigned(FormCalculationEstimate) then
+  begin
+    if FormCalculationEstimate.IdEstimate > 0 then
+      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+        PChar(FileReportPath + 'report\'), SW_maximIZE)
+    else
+      ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
+        PChar(FileReportPath + 'report\'), SW_maximIZE);
   end;
 end;
 

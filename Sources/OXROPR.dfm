@@ -12,6 +12,7 @@ object fOXROPR: TfOXROPR
   Font.Style = []
   FormStyle = fsMDIChild
   OldCreateOrder = False
+  Position = poMainFormCenter
   Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
@@ -19,4 +20,12 @@ object fOXROPR: TfOXROPR
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    Options = [fpState, fpSize, fpLocation, fpActiveControl]
+    StoredValues = <>
+    Left = 24
+    Top = 78
+  end
 end

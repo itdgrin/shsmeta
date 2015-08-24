@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.DBCGrids;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.DBCGrids, JvComponentBase, JvFormPlacement;
 
 type
   TfCardObjectContractorServices = class(TForm)
@@ -24,6 +24,7 @@ type
     qrMainVALUE: TFloatField;
     qrMainChecked: TBooleanField;
     qrMainNO: TLargeintField;
+    FormStorage: TJvFormStorage;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -49,7 +50,7 @@ implementation
 
 {$R *.dfm}
 
-uses Tools;
+uses Tools, Main, DataModule;
 
 procedure ShowContractorServices;
 begin

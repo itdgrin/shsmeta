@@ -6,7 +6,8 @@ uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB,
   DBCtrls, VirtualTrees, fFrameStatusBar, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, System.UITypes;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid,
+  System.UITypes, System.Variants;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -32,8 +33,6 @@ type
     RadioButtonCity: TRadioButton;
     RadioButtonVillage: TRadioButton;
     RadioButtonMinsk: TRadioButton;
-
-    Memo: TMemo;
     BevelLine: TBevel;
 
     Splitter: TSplitter;
@@ -46,13 +45,10 @@ type
     DBLookupComboBoxTypeWork: TDBLookupComboBox;
     ADOQueryTemp: TFDQuery;
     ADOQueryTypeWork: TFDQuery;
-    ADOQuery: TFDQuery;
+    qrMain: TFDQuery;
     JvDBGrid1: TJvDBGrid;
-    ds1: TDataSource;
-    ADOQueryNumber: TIntegerField;
-    ADOQueryNameWork: TStringField;
-    ADOQueryP1: TFloatField;
-    ADOQueryP2: TFloatField;
+    dsMain: TDataSource;
+    dbmmoNameWork: TDBMemo;
 
     procedure FillingTypeWork;
     procedure FillingResolution;
@@ -62,13 +58,12 @@ type
     procedure PanelTableResize(Sender: TObject);
     procedure PanelTopResize(Sender: TObject);
     procedure RadioButtonClick(Sender: TObject);
-
-    procedure MemoEnter(Sender: TObject);
     procedure SpeedButtonShowHideClick(Sender: TObject);
     procedure ComboBoxResolutionChange(Sender: TObject);
-    procedure ADOQueryAfterScroll(DataSet: TDataSet);
+    procedure qrMainAfterScroll(DataSet: TDataSet);
     procedure JvDBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure qrMainBeforePost(DataSet: TDataSet);
   public
     MaisCodeList: TStringList;
     procedure ReceivingAll; override;
@@ -78,15 +73,13 @@ type
 
 implementation
 
-uses DrawingTables, DataModule, Tools, Main;
+uses DrawingTables, DataModule, Tools, Main, OXROPR;
 
 {$R *.dfm}
 
 const
   // Название этого фрейма
   CaptionFrame = 'Фрейм «ОХР и ОПР»';
-
-  // ---------------------------------------------------------------------------------------------------------------------
 
   { TSplitter }
 procedure TSplitter.Paint();
@@ -123,21 +116,17 @@ begin
   FillingResolution;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFrameOXROPR.FillingTypeWork;
 var
   StrQuery: string;
   IdRegion: Integer;
 begin
   try
-    ADOQueryP1.DisplayFormat := '0.000';
-    ADOQueryP2.DisplayFormat := '0.000';
+    qrMain.FormatOptions.FmtDisplayNumeric := '0.000';
     if RadioButtonMinsk.Checked then
     begin
       IdRegion := 3;
-       ADOQueryP1.DisplayFormat := '0.0000';
-       ADOQueryP2.DisplayFormat := '0.0000';
+      qrMain.FormatOptions.FmtDisplayNumeric := '0.0000';
     end
     else if RadioButtonCity.Checked then
       IdRegion := 1
@@ -186,8 +175,6 @@ begin
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFrameOXROPR.FillingResolution;
 var
   StrQuery: string;
@@ -222,15 +209,11 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFrameOXROPR.ReceivingAll;
 begin
   ReceivingSearch;
   fLoaded := True;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameOXROPR.ReceivingSearch;
 var
@@ -238,40 +221,33 @@ var
   WhereStr: string;
   colP1, colP2: string;
 begin
+  qrMain.Active := False;
   WhereStr := ' where MAIS_ID = ' + MaisCodeList[ComboBoxResolution.ItemIndex];
 
   colP1 := ADOQueryTypeWork.FieldByName('COL1NAME').AsString;
   colP2 := ADOQueryTypeWork.FieldByName('COL2NAME').AsString;
+  JvDBGrid1.Columns[2].FieldName := colP1;
+  JvDBGrid1.Columns[3].FieldName := colP2;
 
-  StrQuery := 'SELECT number as "Number", ' +
-    '(SELECT WORK_NAME FROM objworks ' +
-    'WHERE WORK_ID = number) as "NameWork", ' + colP1 + ' as "P1", ' +
-    colP2 + ' as "P2" FROM objdetailex' +
-    WhereStr + ' ORDER BY number ASC';
+  StrQuery := 'SELECT CONCAT(objdetailex.number, "") as number,' + 'objworks.WORK_NAME as NameWork,' + colP1 +
+    ',' + colP2 + ',objdetailex.ID FROM objdetailex' +
+    ' LEFT JOIN objworks ON objworks.WORK_ID=objdetailex.number ' + WhereStr +
+    ' ORDER BY objdetailex.number ASC';
 
-  with ADOQuery do
-  begin
-    Active := False;
-    SQL.Text := StrQuery;
-    Active := True;
-  end;
+  qrMain.SQL.Text := StrQuery;
+  qrMain.Active := True;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameOXROPR.DBLookupComboBoxTypeWorkClick(Sender: TObject);
 begin
   ReceivingSearch;
 end;
 
-
 procedure TFrameOXROPR.PanelTableResize(Sender: TObject);
 begin
   ImageSplitter.Top := Splitter.Top;
   ImageSplitter.Left := Splitter.Left + (Splitter.Width - ImageSplitter.Width) div 2;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameOXROPR.PanelTopResize(Sender: TObject);
 begin
@@ -284,38 +260,34 @@ begin
   ComboBoxResolution.Width := PanelTop.Width - ComboBoxResolution.Left - 3;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFrameOXROPR.RadioButtonClick(Sender: TObject);
 begin
   FillingTypeWork;
   ReceivingSearch;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFrameOXROPR.ADOQueryAfterScroll(DataSet: TDataSet);
+procedure TFrameOXROPR.qrMainAfterScroll(DataSet: TDataSet);
 begin
   inherited;
-  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount)); // Количество записей
+  FrameStatusBar.InsertText(0, IntToStr(qrMain.RecordCount)); // Количество записей
 
-  if ADOQuery.RecordCount > 0 then
-    FrameStatusBar.InsertText(1, IntToStr(ADOQuery.RecNo)) // Номер выделенной записи
+  if qrMain.RecordCount > 0 then
+    FrameStatusBar.InsertText(1, IntToStr(qrMain.RecNo)) // Номер выделенной записи
   else
     FrameStatusBar.InsertText(1, '-1'); // Нет записей
+end;
 
-  Memo.Text := string(ADOQueryNameWork.Value);
+procedure TFrameOXROPR.qrMainBeforePost(DataSet: TDataSet);
+begin
+  FastExecSQL('UPDATE objdetailex SET ' + JvDBGrid1.Columns[2].FieldName + '=:0, ' + JvDBGrid1.Columns[3]
+    .FieldName + '=:1 WHERE ID=:2', VarArrayOf([qrMain.FieldByName(JvDBGrid1.Columns[2].FieldName).Value,
+    qrMain.FieldByName(JvDBGrid1.Columns[3].FieldName).Value, qrMain.FieldByName('ID').Value]));
 end;
 
 procedure TFrameOXROPR.ComboBoxResolutionChange(Sender: TObject);
 begin
   inherited;
   ReceivingSearch;
-end;
-
-procedure TFrameOXROPR.MemoEnter(Sender: TObject);
-begin
-  Memo.SelStart := Length(Memo.Text);
 end;
 
 procedure TFrameOXROPR.SpeedButtonShowHideClick(Sender: TObject);

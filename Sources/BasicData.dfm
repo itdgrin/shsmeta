@@ -417,7 +417,7 @@ object FormBasicData: TFormBasicData
     Width = 80
     Height = 21
     Anchors = [akTop, akRight]
-    TabOrder = 8
+    TabOrder = 7
   end
   object edtYear: TSpinEdit
     Left = 261
@@ -531,16 +531,22 @@ object FormBasicData: TFormBasicData
   end
   object dbchkcoef_orders: TDBCheckBox
     Left = 8
-    Top = 134
+    Top = 138
     Width = 17
     Height = 17
     Hint = #1055#1088#1080#1084#1077#1085#1103#1090#1100' '#1082#1092' '#1087#1086' '#1087#1088#1080#1082#1072#1079#1072#1084
     TabStop = False
     DataField = 'coef_orders'
     DataSource = dsSmeta
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 7
+    TabOrder = 8
     ValueChecked = '1'
     ValueUnchecked = '0'
     OnClick = dbchkcoef_ordersClick
