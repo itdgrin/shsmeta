@@ -4160,7 +4160,7 @@ begin
     Exit;
 
   if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag,
-     FNewRowIterator, True) then
+     FNewRowIterator,  True) then
     OutputDataToTable(True);
 end;
 
@@ -4396,9 +4396,10 @@ begin
       FNewRowIterator, False) then
       OutputDataToTable;
 
+
   if qrRatesExID_TYPE_DATA.AsInteger in [6, 7, 8, 9] then
     if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger,
-      qrRatesExID_TYPE_DATA.AsInteger, FNewRowIterator, False)
+      qrRatesExID_TYPE_DATA.AsInteger, FNewRowIterator,  False)
     then
       OutputDataToTable;
 end;
