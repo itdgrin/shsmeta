@@ -665,10 +665,12 @@ type
     procedure btnCalcFactClick(Sender: TObject);
     procedure lblForemanClick(Sender: TObject);
     procedure PMInsertRowClick(Sender: TObject);
+    procedure PopupMenuCoefOrdersClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
   private
+    flLoaded: Boolean;
     Act: Boolean;
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
@@ -976,7 +978,8 @@ begin
   if not Act then
     FormMain.CreateButtonOpenWindow(CaptionButton[1], HintButton[1], Self, 1)
   else
-    FormMain.CreateButtonOpenWindow(CaptionButton[2], HintButton[2], Self, 1)
+    FormMain.CreateButtonOpenWindow(CaptionButton[2], HintButton[2], Self, 1);
+  flLoaded := True;
 end;
 
 procedure TFormCalculationEstimate.FormShow(Sender: TObject);
@@ -1223,10 +1226,12 @@ end;
 
 procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
 begin
- if (Sender as TSpeedButton).Tag = 77  then
-  ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IDEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE)
+  if (Sender as TSpeedButton).Tag = 77 then
+    ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+      PChar(GetCurrentDir + '\reports\report\'), SW_maximIZE)
   else
-  ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag, FormCalculationEstimate);
+    ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag,
+      FormCalculationEstimate);
 
 end;
 
@@ -1488,22 +1493,52 @@ procedure TFormCalculationEstimate.PanelTopMenuResize(Sender: TObject);
 
 var
   WidthButton: Integer;
+  i, btnCount: Integer;
 begin
-  if Act then
-    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 5
-  else
-    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 7;
-  // btnKC6.Width := WidthButton;
-  btnResMat.Width := WidthButton;
-  btnResMech.Width := WidthButton;
-  btnResDev.Width := WidthButton;
-  btnResZP.Width := WidthButton;
-  btnResCalc.Width := WidthButton;
-  SpeedButtonSSR.Width := WidthButton;
-  btn3.Width := WidthButton;
-  btnCalcFact.Width := WidthButton;
+  if not flLoaded then
+    Exit;
 
   btn3.Visible := not Act;
+  btnCalcFact.Visible := Act;
+
+  btnCount := 0;
+
+  for i := 0 to PanelTopMenu.ControlCount - 1 do
+  begin
+    if (PanelTopMenu.Controls[i] is TSpeedButton) and (PanelTopMenu.Controls[i] as TSpeedButton).Visible then
+      Inc(btnCount);
+    if (PanelTopMenu.Controls[i] is TButton) and (PanelTopMenu.Controls[i] as TButton).Visible then
+      Inc(btnCount);
+    if (PanelTopMenu.Controls[i] is TBitBtn) and (PanelTopMenu.Controls[i] as TBitBtn).Visible then
+      Inc(btnCount);
+  end;
+
+  WidthButton := ((Sender as TPanel).ClientWidth - btnCount - 5) div btnCount;
+
+  for i := 0 to PanelTopMenu.ControlCount - 1 do
+  begin
+    if (PanelTopMenu.Controls[i] is TSpeedButton) and (PanelTopMenu.Controls[i] as TSpeedButton).Visible then
+      (PanelTopMenu.Controls[i] as TSpeedButton).Width := WidthButton;
+    if (PanelTopMenu.Controls[i] is TButton) and (PanelTopMenu.Controls[i] as TButton).Visible then
+      (PanelTopMenu.Controls[i] as TButton).Width := WidthButton;
+    if (PanelTopMenu.Controls[i] is TBitBtn) and (PanelTopMenu.Controls[i] as TBitBtn).Visible then
+      (PanelTopMenu.Controls[i] as TBitBtn).Width := WidthButton;
+  end;
+  {
+    if Act then
+    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 5
+    else
+    WidthButton := ((Sender as TPanel).ClientWidth - btnKC6.Left - btnKC6.Width - 7) div 7;
+    // btnKC6.Width := WidthButton;
+    btnResMat.Width := WidthButton;
+    btnResMech.Width := WidthButton;
+    btnResDev.Width := WidthButton;
+    btnResZP.Width := WidthButton;
+    btnResCalc.Width := WidthButton;
+    SpeedButtonSSR.Width := WidthButton;
+    btn3.Width := WidthButton;
+    btnCalcFact.Width := WidthButton;
+  }
 
   btnResMat.Caption := StringReplace(btnResMat.Caption, ' ', ''#13, [rfReplaceAll]);
   btnResMech.Caption := StringReplace(btnResMech.Caption, ' ', ''#13, [rfReplaceAll]);
@@ -1546,6 +1581,7 @@ begin
   ImageSplitterRightBottom.Top := SplitterRightMemo.Top;
   ImageSplitterRightBottom.Left := SplitterRightMemo.Left +
     (SplitterRightMemo.Width - ImageSplitterRightBottom.Width) div 2;
+  // flLoaded := True;
 end;
 
 procedure TFormCalculationEstimate.Button3Click(Sender: TObject);
@@ -1762,13 +1798,9 @@ function TFormCalculationEstimate.CheckMechReadOnly: Boolean;
 begin
   Result := False;
   // Вынесеный механизм в расценке или замененные механизмы
-  if ((qrMechanizmFROM_RATE.AsInteger = 1) and
-      (qrRatesExID_TYPE_DATA.AsInteger = 1))
-     or
-     (qrMechanizmREPLACED.AsInteger = 1) or
-     (qrMechanizmTITLE.AsInteger > 0) or
-     (not(qrMechanizmID.AsInteger > 0)) or
-     (qrMechanizm.Eof) then
+  if ((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 1)) or
+    (qrMechanizmREPLACED.AsInteger = 1) or (qrMechanizmTITLE.AsInteger > 0) or
+    (not(qrMechanizmID.AsInteger > 0)) or (qrMechanizm.Eof) then
     Result := True;
 end;
 
@@ -1886,13 +1918,9 @@ function TFormCalculationEstimate.CheckMatReadOnly: Boolean;
 begin
   Result := False;
   // Вынесенные из расценки // или замененный
-  if ((qrMaterialFROM_RATE.AsInteger = 1) and
-      (qrRatesExID_TYPE_DATA.AsInteger = 1)) or
-     (qrMaterialREPLACED.AsInteger = 1) or
-     (qrMaterialDELETED.AsInteger = 1) or
-     (qrMaterialTITLE.AsInteger > 0) or
-     (not(qrMaterialID.AsInteger > 0)) or
-     (qrMaterial.Eof) then
+  if ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 1)) or
+    (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialDELETED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0)
+    or (not(qrMaterialID.AsInteger > 0)) or (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -2466,8 +2494,7 @@ begin
     qrMechanizmTERYDOZATR.Value := qrTemp.FieldByName('TERYDOZATR').AsBCD;
     qrMechanizm.Post;
 
-    if (qrRatesExID_TYPE_DATA.Value = 3) and
-       (qrRatesExID_TABLES.Value = qrMechanizmID.Value) then
+    if (qrRatesExID_TYPE_DATA.Value = 3) and (qrRatesExID_TABLES.Value = qrMechanizmID.Value) then
     begin
       ev := qrRatesExOBJ_COUNT.OnChange;
       try
@@ -2967,9 +2994,8 @@ begin
       begin
         if RateID = qrRatesExID_RATE.Value then
         begin
-          if (qrRatesExID_TYPE_DATA.Value = 2) and
-             (qrRatesExID_REPLACED.Value > 0) and
-             (qrRatesExCONS_REPLASED.Value = 0) then
+          if (qrRatesExID_TYPE_DATA.Value = 2) and (qrRatesExID_REPLACED.Value > 0) and
+            (qrRatesExCONS_REPLASED.Value = 0) then
           begin
             NewCount := 0;
             qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp WHERE ID = ' +
@@ -3770,7 +3796,7 @@ begin
     else
     begin
       AddCoefToRate(fCoefficients.qrCoef.FieldByName('coef_id').AsInteger);
-      //RecalcEstimate;
+      // RecalcEstimate;
     end;
   end;
 end;
@@ -3788,9 +3814,31 @@ begin
   RecalcEstimate;
 end;
 
+procedure TFormCalculationEstimate.PopupMenuCoefOrdersClick(Sender: TObject);
+begin
+  if PopupMenuCoefOrders.Checked then
+  begin
+    FastExecSQL('UPDATE card_rate_temp SET COEF_ORDERS=0 WHERE ID=:0',
+      VarArrayOf([qrRatesExID_TABLES.Value]));
+    PopupMenuCoefOrders.Checked := False;
+  end
+  else
+  begin
+    FastExecSQL('UPDATE card_rate_temp SET COEF_ORDERS=1 WHERE ID=:0',
+      VarArrayOf([qrRatesExID_TABLES.Value]));
+    PopupMenuCoefOrders.Checked := True;
+  end;
+  FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
+    VarArrayOf([qrRatesExID_TABLES.Value, qrRatesExID_TYPE_DATA.Value]));
+  CloseOpen(qrCalculations);
+end;
+
 procedure TFormCalculationEstimate.pmCoefPopup(Sender: TObject);
 begin
   PopupMenuCoefDeleteSet.Enabled := (qrCalculations.FieldByName('ID').AsInteger > 0);
+  PopupMenuCoefOrders.Visible := qrRatesExID_TYPE_DATA.Value = 1;
+  PopupMenuCoefOrders.Checked := FastSelectSQLOne('SELECT COEF_ORDERS FROM card_rate_temp WHERE ID=:0',
+    VarArrayOf([qrRatesExID_TABLES.Value])) = 1;
 end;
 
 // вид всплывающего меню материалов
@@ -3802,8 +3850,7 @@ begin
   PMTranstPerc.Visible := (dbgrdMaterial.Col > 0) and
     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'PROC_TRANSP');
 
-  PMMatFromRates.Enabled := (not CheckMatReadOnly) and
-    (qrMaterialCONSIDERED.AsInteger = 1) and
+  PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialCONSIDERED.AsInteger = 1) and
     (qrRatesExID_TYPE_DATA.AsInteger = 1);
 
   PMMatReplace.Enabled := ((not CheckMatReadOnly) or (qrMaterialREPLACED.AsInteger = 1));
@@ -3836,8 +3883,7 @@ procedure TFormCalculationEstimate.pmMechanizmsPopup(Sender: TObject);
 begin
   PMMechEdit.Enabled := (not CheckMechReadOnly);
 
-  PMMechFromRates.Enabled := (not CheckMechReadOnly) and
-    (qrRatesExID_TYPE_DATA.AsInteger = 1);
+  PMMechFromRates.Enabled := (not CheckMechReadOnly) and (qrRatesExID_TYPE_DATA.AsInteger = 1);
 
   PMMechReplace.Enabled := (not CheckMechReadOnly) or (qrMechanizmREPLACED.AsInteger = 1);
 
@@ -4417,9 +4463,9 @@ begin
   try
     qrRatesEx.Insert;
     qrRatesExID_TYPE_DATA.Value := -5;
-    qrRatesEx.Post;
+    // qrRatesEx.Post;
   finally
-    qrRatesEx.UpdateOptions.EnableInsert := False;
+    // qrRatesEx.UpdateOptions.EnableInsert := False;
   end;
 end;
 
@@ -4557,7 +4603,7 @@ begin
       i := 0;
       qrMaterial.Next;
     end;
-    inc(i);
+    Inc(i);
     qrMaterial.Edit;
     qrMaterialNUM.AsInteger := i;
     qrMaterial.Post;
@@ -4567,9 +4613,8 @@ begin
   qrMaterialNUM.ReadOnly := True;
 
   if (qrRatesExID_TYPE_DATA.Value = 1) or
-     ((qrRatesExID_TYPE_DATA.Value = 2) and
-       (qrRatesExID_REPLACED.Value > 0) and
-       (qrRatesExCONS_REPLASED.Value = 0)) then
+    ((qrRatesExID_TYPE_DATA.Value = 2) and (qrRatesExID_REPLACED.Value > 0) and
+    (qrRatesExCONS_REPLASED.Value = 0)) then
   begin
     dbgrdMaterial.Columns[2].Visible := True;
     dbgrdMaterial.Columns[3].Visible := True;
@@ -4665,7 +4710,7 @@ begin
       i := 0;
       qrMechanizm.Next;
     end;
-    inc(i);
+    Inc(i);
     qrMechanizm.Edit;
     qrMechanizmNUM.AsInteger := i;
     qrMechanizm.Post;
@@ -5500,7 +5545,7 @@ begin
       i := 0;
       SetLength(SortIDArray, i);
       repeat
-        inc(i);
+        Inc(i);
         SetLength(SortIDArray, i);
         SortIDArray[i - 1] := strngfldRatesExSORT_ID.AsString;
         qrRatesEx.Next;
@@ -5887,8 +5932,7 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1)
-    then
+    if (qrMaterialFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD;
@@ -5934,10 +5978,8 @@ begin
     end;
 
     // Не отображает кол-во и суммы для замененных или вынесеных
-    if ((qrMaterialFROM_RATE.Value = 1) and
-        (qrRatesExID_TYPE_DATA.Value = 1)) or
-       (qrMaterialREPLACED.Value = 1) or
-       (qrMaterialDELETED.Value = 1) then
+    if ((qrMaterialFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1)) or
+      (qrMaterialREPLACED.Value = 1) or (qrMaterialDELETED.Value = 1) then
     begin
       if Column.Index in [5, 9, 10, 11, 12, 16, 17, 18, 19] then
         Str := '';
@@ -6042,8 +6084,7 @@ begin
     end;
 
     // Зачеркиваем вынесеные из расцеки механизмы
-    if (qrMechanizmFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1)
-    then
+    if (qrMechanizmFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD
@@ -6089,11 +6130,8 @@ begin
         Str := Column.Field.AsString;
     end;
 
-    if ((qrMechanizmFROM_RATE.Value = 1) and
-        (qrRatesExID_TYPE_DATA.Value = 1)) or
-       (qrMechanizmREPLACED.Value = 1) or
-       (qrMechanizmDELETED.Value = 1)
-    then
+    if ((qrMechanizmFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1)) or
+      (qrMechanizmREPLACED.Value = 1) or (qrMechanizmDELETED.Value = 1) then
     begin
       if Column.Index in [5, 8, 9, 12, 13, 17, 18, 21, 22, 25] then
         Str := '';
@@ -6151,8 +6189,7 @@ begin
       Font.Style := Font.Style + [fsbold];
       Brush.Color := clSilver;
     end;
-    if (qrRatesExID_TYPE_DATA.AsInteger = -4) or
-       (qrRatesExID_TYPE_DATA.AsInteger = -5) then
+    if (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -5) then
     begin
       Font.Color := PS.FontRows;
       Brush.Color := clInactiveBorder;
@@ -6184,8 +6221,7 @@ begin
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = FLastEntegGrd) then
     begin
       if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2) and
-        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1))
-      then
+        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)) then
         Font.Style := Font.Style + [fsbold];
     end;
 
@@ -6194,8 +6230,7 @@ begin
     begin
       if (qrRatesExID_REPLACED.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2)
         and (qrMaterialCONSIDERED.AsInteger = 0) and
-        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1))
-      then
+        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)) then
         Font.Style := Font.Style + [fsbold];
     end;
 

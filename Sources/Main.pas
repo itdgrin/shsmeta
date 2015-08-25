@@ -1986,9 +1986,9 @@ end;
 procedure TFormMain.MenuPartsEstimatesClick(Sender: TObject);
 begin
   if (not Assigned(FormPartsEstimates)) then
-    FormPartsEstimates := TFormPartsEstimates.Create(FormMain)
-  else
-    FormPartsEstimates.Show;
+    FormPartsEstimates := TFormPartsEstimates.Create(FormMain);
+  FormPartsEstimates.FormStyle := fsNormal;
+  FormPartsEstimates.Show;
 end;
 
 procedure TFormMain.MenuListsSectionsEstimatesClick(Sender: TObject);

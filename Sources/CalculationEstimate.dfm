@@ -3,7 +3,7 @@
   Top = 0
   Caption = #1057#1084#1077#1090#1085#1099#1081' '#1088#1072#1089#1095#1077#1090
   ClientHeight = 537
-  ClientWidth = 929
+  ClientWidth = 918
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -28,7 +28,7 @@
   object PanelTopMenu: TPanel
     Left = 0
     Top = 0
-    Width = 929
+    Width = 918
     Height = 37
     Align = alTop
     BevelOuter = bvNone
@@ -37,6 +37,49 @@
     ParentCtl3D = False
     TabOrder = 0
     OnResize = PanelTopMenuResize
+    ExplicitWidth = 929
+    object btnDump: TSpeedButton
+      Left = 849
+      Top = 6
+      Width = 20
+      Height = 25
+      Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
+      GroupIndex = 2
+      Caption = #1057#1074#1072#1083#1082#1080
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      Visible = False
+      OnClick = btnDumpClick
+    end
+    object btnTransp: TSpeedButton
+      Left = 875
+      Top = 8
+      Width = 18
+      Height = 23
+      Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
+      GroupIndex = 2
+      Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      Visible = False
+      OnClick = btnTranspClick
+    end
+    object btnStartup: TSpeedButton
+      Left = 899
+      Top = 8
+      Width = 23
+      Height = 23
+      Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
+      GroupIndex = 2
+      Caption = #1056#1077#1075#1091#1083#1080#1088#1086#1074#1082#1072
+      Enabled = False
+      ParentShowHint = False
+      ShowHint = True
+      Visible = False
+      OnClick = btnStartupClick
+    end
     object SpeedButtonLocalEstimate: TSpeedButton
       AlignWithMargins = True
       Left = 3
@@ -55,7 +98,7 @@
     end
     object SpeedButtonSummaryCalculation: TSpeedButton
       AlignWithMargins = True
-      Left = 106
+      Left = 595
       Top = 1
       Width = 101
       Height = 35
@@ -67,8 +110,7 @@
       GroupIndex = 1
       Caption = #1057#1074#1086#1076#1085#1099#1077' '#1088#1072#1089#1095#1105#1090#1099
       OnClick = SpeedButtonSummaryCalculationClick
-      ExplicitLeft = 108
-      ExplicitHeight = 25
+      ExplicitTop = 4
     end
     object SpeedButtonSSR: TSpeedButton
       AlignWithMargins = True
@@ -90,12 +132,10 @@
       Font.Style = []
       ParentFont = False
       OnClick = SpeedButtonSSRClick
-      ExplicitLeft = 872
-      ExplicitTop = 2
-      ExplicitHeight = 25
+      ExplicitTop = 4
     end
     object BevelTopMenu: TBevel
-      Left = 208
+      Left = 183
       Top = 0
       Width = 2
       Height = 37
@@ -106,8 +146,8 @@
       ExplicitHeight = 19
     end
     object SpeedButtonModeTables: TSpeedButton
-      Left = 893
-      Top = -2
+      Left = 928
+      Top = 6
       Width = 28
       Height = 25
       Hint = #1056#1077#1078#1080#1084' '#1087#1086#1082#1072#1079#1072' '#1090#1072#1073#1083#1080#1094': '#1084#1072#1090#1077#1088#1080#1072#1083#1099', '#1084#1077#1093#1072#1085#1080#1079#1084#1099', '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
@@ -116,54 +156,13 @@
       ParentShowHint = False
       ShowHint = True
       Transparent = False
+      Visible = False
       OnClick = SpeedButtonModeTablesClick
-    end
-    object btnDump: TSpeedButton
-      Left = 822
-      Top = -4
-      Width = 20
-      Height = 25
-      Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
-      GroupIndex = 2
-      Caption = #1057#1074#1072#1083#1082#1080
-      Enabled = False
-      ParentShowHint = False
-      ShowHint = True
-      Visible = False
-      OnClick = btnDumpClick
-    end
-    object btnTransp: TSpeedButton
-      Left = 848
-      Top = -2
-      Width = 18
-      Height = 23
-      Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
-      GroupIndex = 2
-      Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-      Enabled = False
-      ParentShowHint = False
-      ShowHint = True
-      Visible = False
-      OnClick = btnTranspClick
-    end
-    object btnStartup: TSpeedButton
-      Left = 872
-      Top = -2
-      Width = 23
-      Height = 23
-      Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
-      GroupIndex = 2
-      Caption = #1056#1077#1075#1091#1083#1080#1088#1086#1074#1082#1072
-      Enabled = False
-      ParentShowHint = False
-      ShowHint = True
-      Visible = False
-      OnClick = btnStartupClick
     end
     object btnResMat: TSpeedButton
       Tag = 1
       AlignWithMargins = True
-      Left = 287
+      Left = 185
       Top = 1
       Width = 82
       Height = 35
@@ -181,7 +180,7 @@
     object btnResMech: TSpeedButton
       Tag = 2
       AlignWithMargins = True
-      Left = 370
+      Left = 268
       Top = 1
       Width = 82
       Height = 35
@@ -199,7 +198,7 @@
     object btnResDev: TSpeedButton
       Tag = 3
       AlignWithMargins = True
-      Left = 453
+      Left = 351
       Top = 1
       Width = 92
       Height = 35
@@ -224,7 +223,7 @@
     object btnResZP: TSpeedButton
       Tag = 4
       AlignWithMargins = True
-      Left = 546
+      Left = 444
       Top = 1
       Width = 74
       Height = 35
@@ -249,7 +248,7 @@
     object btnResCalc: TSpeedButton
       Tag = 77
       AlignWithMargins = True
-      Left = 621
+      Left = 697
       Top = 1
       Width = 48
       Height = 35
@@ -268,10 +267,11 @@
       ParentFont = False
       Visible = False
       OnClick = btnResMatClick
+      ExplicitTop = 8
     end
     object btnKC6: TButton
       AlignWithMargins = True
-      Left = 211
+      Left = 107
       Top = 1
       Width = 75
       Height = 35
@@ -283,6 +283,7 @@
       Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
       TabOrder = 0
       OnClick = btnKC6Click
+      ExplicitTop = 0
     end
     object btnCalcFact: TBitBtn
       AlignWithMargins = True
@@ -300,10 +301,12 @@
       TabStop = False
       WordWrap = True
       OnClick = btnCalcFactClick
+      ExplicitLeft = 804
+      ExplicitTop = 2
     end
     object btn3: TBitBtn
       AlignWithMargins = True
-      Left = 670
+      Left = 519
       Top = 1
       Width = 75
       Height = 35
@@ -312,11 +315,12 @@
       Margins.Right = 1
       Margins.Bottom = 1
       Align = alLeft
-      Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074
+      Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
       TabOrder = 1
       TabStop = False
       WordWrap = True
       OnClick = btn2Click
+      ExplicitTop = 8
     end
   end
   object PanelLocalEstimate: TPanel
@@ -2858,14 +2862,15 @@
   object PanelData: TPanel
     Left = 0
     Top = 62
-    Width = 929
+    Width = 918
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 2
+    ExplicitWidth = 929
     DesignSize = (
-      929
+      918
       25)
     object Label1: TLabel
       Left = 8
@@ -2918,14 +2923,15 @@
     object Edit4: TEdit
       Left = 378
       Top = 2
-      Width = 401
+      Width = 390
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
+      ExplicitWidth = 401
     end
     object PanelCalculationYesNo: TPanel
       Tag = 1
-      Left = 785
+      Left = 774
       Top = 1
       Width = 137
       Height = 23
@@ -2936,19 +2942,21 @@
       ParentBackground = False
       TabOrder = 0
       OnClick = PanelCalculationYesNoClick
+      ExplicitLeft = 785
     end
   end
   object PanelEstimate: TPanel
     Left = 0
     Top = 87
-    Width = 929
+    Width = 918
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 3
+    ExplicitWidth = 929
     DesignSize = (
-      929
+      918
       25)
     object LabelEstimate: TLabel
       Left = 17
@@ -2984,7 +2992,7 @@
       OnClick = LabelNameEstimateClick
     end
     object btn1: TSpeedButton
-      Left = 785
+      Left = 774
       Top = 2
       Width = 137
       Height = 22
@@ -2999,25 +3007,27 @@
     object EditNameEstimate: TEdit
       Left = 125
       Top = 2
-      Width = 654
+      Width = 643
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
+      ExplicitWidth = 654
     end
   end
   object PanelObject: TPanel
     Left = 0
     Top = 37
-    Width = 929
+    Width = 918
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 1
+    ExplicitWidth = 929
     DesignSize = (
-      929
+      918
       25)
     object LabelObject: TLabel
       Left = 8
@@ -3037,7 +3047,7 @@
       OnClick = LabelObjectClick
     end
     object LabelNumberContract: TLabel
-      Left = 599
+      Left = 588
       Top = 6
       Width = 68
       Height = 13
@@ -3046,7 +3056,7 @@
       ExplicitLeft = 614
     end
     object LabelDateContract: TLabel
-      Left = 769
+      Left = 758
       Top = 6
       Width = 81
       Height = 13
@@ -3071,7 +3081,7 @@
     object EditNameObject: TEdit
       Left = 125
       Top = 2
-      Width = 468
+      Width = 457
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
@@ -3083,9 +3093,10 @@
       ParentFont = False
       ReadOnly = True
       TabOrder = 0
+      ExplicitWidth = 468
     end
     object EditNumberContract: TEdit
-      Left = 673
+      Left = 662
       Top = 2
       Width = 90
       Height = 21
@@ -3093,9 +3104,10 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 1
+      ExplicitLeft = 673
     end
     object EditDateContract: TEdit
-      Left = 856
+      Left = 845
       Top = 2
       Width = 66
       Height = 21
@@ -3103,6 +3115,7 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 2
+      ExplicitLeft = 856
     end
   end
   object PanelSSR: TPanel
@@ -3502,8 +3515,10 @@
       OnClick = PopupMenuCoefDeleteSetClick
     end
     object PopupMenuCoefOrders: TMenuItem
-      Caption = #1050#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1087#1086' '#1087#1088#1080#1082#1072#1079#1072#1084
+      Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099' '#1087#1086' '#1087#1088#1080#1082#1072#1079#1072#1084
+      Checked = True
       Visible = False
+      OnClick = PopupMenuCoefOrdersClick
     end
   end
   object pmMechanizms: TPopupMenu
@@ -4946,6 +4961,7 @@
     AfterOpen = qrRatesExAfterOpen
     AfterScroll = qrRatesExAfterScroll
     OnCalcFields = qrRatesExCalcFields
+    CachedUpdates = True
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -4980,10 +4996,11 @@
     FormatOptions.MaxBcdScale = 6
     FormatOptions.DefaultParamDataType = ftBCD
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ### ##0.#######'
-    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvUpdateMode, uvLockMode, uvRefreshMode, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvUpdateMode, uvRefreshMode, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.UpdateNonBaseFields = True
     UpdateOptions.RefreshMode = rmManual
     UpdateOptions.CountUpdatedRecords = False
     UpdateOptions.CheckRequired = False

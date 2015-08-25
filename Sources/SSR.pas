@@ -61,9 +61,9 @@ begin
   with FrameSSR do
     case SSRID of
       1:
-        lbPrikazRef.Caption := 'ÍÐÐ 8.01.103 - 212';
+        lbPrikazRef.Caption := 'ÍÐÐ 8.01.103 - 2012';
       2:
-        lbPrikazRef.Caption := 'ÍÐÐ 8.01.102 - 212';
+        lbPrikazRef.Caption := 'ÍÐÐ 8.01.102 - 2012';
     else
       lbPrikazRef.Caption := '';
     end;

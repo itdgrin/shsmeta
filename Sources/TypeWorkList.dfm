@@ -120,7 +120,6 @@ object fTypeWorkList: TfTypeWorkList
   object FormStorage: TJvFormStorage
     AppStorage = FormMain.AppIni
     AppStoragePath = '%FORM_NAME%\'
-    Options = []
     StoredValues = <>
     Left = 32
     Top = 210

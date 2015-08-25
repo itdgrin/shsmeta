@@ -170,6 +170,7 @@ type
   private
     IdObject: Integer;
     IDAct: Integer;
+    flLoaded: Boolean;
     // TypeEstimate: Integer;
   public
     ActReadOnly: Boolean;
@@ -267,9 +268,11 @@ end;
 
 procedure TFormObjectsAndEstimates.FormShow(Sender: TObject);
 begin
-  dbgrdObjects.SetFocus; // Устанавливаем фокус
   FormMain.TimerCover.Enabled := True;
   // Запускаем таймер который скроет панель после отображения формы
+  flLoaded := True;
+  // Переходим на последний активный объект
+  qrObjects.Locate('IdObject', dbgrdObjects.Tag, []);
 end;
 
 function TFormObjectsAndEstimates.getCurObject: Integer;
@@ -617,6 +620,8 @@ end;
 procedure TFormObjectsAndEstimates.qrObjectsAfterScroll(DataSet: TDataSet);
 begin
   IdObject := DataSet.FieldByName('IdObject').AsVariant;
+  if flLoaded then
+    dbgrdObjects.Tag := IdObject;
   CloseOpen(qrTreeData, False);
   CloseOpen(qrActsEx, False);
 end;

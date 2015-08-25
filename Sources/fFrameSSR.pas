@@ -611,21 +611,26 @@ end;
 
 procedure TFrameSSR.lbPrikazRefClick(Sender: TObject);
 begin
-  {
-    inherited;
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select doc_id from doc where doc_id = ' +
-    IntToStr(36);
-    DM.qrDifferent.Active := True;
-    try
+  inherited;
+  DM.qrDifferent.Active := False;
+
+  case ComboBox.ItemIndex + 1 of
+    1:
+      DM.qrDifferent.SQL.Text := 'Select doc_id from doc where doc_id = 19';
+    2:
+      DM.qrDifferent.SQL.Text := 'Select doc_id from doc where doc_id = 17';
+  else
+    DM.qrDifferent.SQL.Text := 'Select doc_id from doc where doc_id = 0';
+  end;
+  DM.qrDifferent.Active := True;
+  try
     if DM.qrDifferent.IsEmpty then
-    raise Exception.Create('Связь с документом не установлена.')
+      // raise Exception.Create('Связь с документом не установлена.')
     else
-    RunDocument(DM.qrDifferent, False);
-    finally
+      RunDocument(DM.qrDifferent, False);
+  finally
     DM.qrDifferent.Active := False;
-    end;
-  }
+  end;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

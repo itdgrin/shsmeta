@@ -66,7 +66,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT * FROM objcategory ORDER BY cat_name;');
+      SQL.Add('SELECT * FROM objcategory /*ORDER BY cat_name*/;');
       Active := True;
     end;
 

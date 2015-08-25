@@ -2,8 +2,8 @@ object FormPartsEstimates: TFormPartsEstimates
   Left = 0
   Top = 0
   Caption = 'FormPartsEstimates'
-  ClientHeight = 366
-  ClientWidth = 592
+  ClientHeight = 262
+  ClientWidth = 284
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,7 +12,7 @@ object FormPartsEstimates: TFormPartsEstimates
   Font.Style = []
   FormStyle = fsMDIChild
   OldCreateOrder = False
-  Visible = True
+  Position = poMainFormCenter
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
@@ -28,5 +28,13 @@ object FormPartsEstimates: TFormPartsEstimates
     Caption = 'Panel'
     ShowCaption = False
     TabOrder = 0
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    Options = [fpState, fpSize, fpLocation, fpActiveControl]
+    StoredValues = <>
+    Left = 32
+    Top = 16
   end
 end

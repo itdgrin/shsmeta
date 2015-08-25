@@ -3,11 +3,12 @@ unit CategoriesObjects;
 interface
 
 uses
-  Classes, Controls, Forms, ExtCtrls, SysUtils;
+  Classes, Controls, Forms, ExtCtrls, SysUtils, JvComponentBase, JvFormPlacement;
 
 type
   TFormCategoriesObjects = class(TForm)
     Panel: TPanel;
+    FormStorage: TJvFormStorage;
 
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -30,12 +31,13 @@ var
 procedure TFormCategoriesObjects.FormCreate(Sender: TObject);
 begin
   // Настройка размеров и положения формы
-
+  {
   ClientWidth := FormMain.ClientWidth div 2;
   ClientHeight := FormMain.ClientHeight div 2;
 
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
+  }
 
   // -----------------------------------------
 

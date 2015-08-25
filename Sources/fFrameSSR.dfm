@@ -61,15 +61,16 @@ inherited FrameSSR: TFrameSSR
       object lbPrikazRef: TLabel
         Left = 700
         Top = 6
-        Width = 94
+        Width = 100
         Height = 13
+        Cursor = crHandPoint
         Anchors = [akTop, akRight]
-        Caption = #1053#1056#1056' 8.01.103 - 212'
+        Caption = #1053#1056#1056' 8.01.103 - 2012'
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
+        Font.Color = clNavy
         Font.Height = -11
         Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Style = [fsUnderline]
         ParentFont = False
         OnClick = lbPrikazRefClick
       end

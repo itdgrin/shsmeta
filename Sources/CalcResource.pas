@@ -313,10 +313,10 @@ begin
   if pnlCalculationYesNo.Tag = 0 then
     Exit;
 
-  if (Field = grMaterial.Columns[4].Field) or (Field = grMaterial.Columns[6].Field) or
-    (Field = grMaterial.Columns[7].Field) or (Field = grMaterial.Columns[10].Field) or
-    (Field = grMaterial.Columns[11].Field) or (Field = grMaterial.Columns[12].Field) or
-    (Field = grMaterial.Columns[13].Field) or (Field = grMech.Columns[4].Field) or
+  if (Field = grMaterial.Columns[5].Field) or (Field = grMaterial.Columns[7].Field) or
+    (Field = grMaterial.Columns[8].Field) or (Field = grMaterial.Columns[11].Field) or
+    (Field = grMaterial.Columns[12].Field) or (Field = grMaterial.Columns[13].Field) or
+    (Field = grMaterial.Columns[14].Field) or (Field = grMech.Columns[4].Field) or
     (Field = grMech.Columns[6].Field) or (Field = grMech.Columns[8].Field) or
     (Field = grMech.Columns[9].Field) or (Field = grMaterialBott.Columns[4].Field) or
     (Field = grMaterialBott.Columns[5].Field) or (Field = grMaterialBott.Columns[6].Field) or

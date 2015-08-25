@@ -3,11 +3,12 @@ unit PartsEstimates;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, ComCtrls, ExtCtrls;
+  Windows, Messages, Classes, Controls, Forms, ComCtrls, ExtCtrls, JvComponentBase, JvFormPlacement;
 
 type
   TFormPartsEstimates = class(TForm)
     Panel: TPanel;
+    FormStorage: TJvFormStorage;
 
     procedure FormCreate(Sender: TObject);
     procedure FormActivate(Sender: TObject);

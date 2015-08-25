@@ -3,8 +3,8 @@ object FormCategoriesObjects: TFormCategoriesObjects
   Top = 0
   BorderIcons = [biSystemMenu]
   Caption = 'FormCategoriesObjects'
-  ClientHeight = 366
-  ClientWidth = 592
+  ClientHeight = 212
+  ClientWidth = 234
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,6 +12,7 @@ object FormCategoriesObjects: TFormCategoriesObjects
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
@@ -26,5 +27,12 @@ object FormCategoriesObjects: TFormCategoriesObjects
     Caption = 'Panel'
     ShowCaption = False
     TabOrder = 0
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    StoredValues = <>
+    Left = 24
+    Top = 48
   end
 end

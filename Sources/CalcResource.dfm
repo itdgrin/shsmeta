@@ -253,11 +253,6 @@ object fCalcResource: TfCalcResource
             item
               Expanded = False
               FieldName = 'NUMPP'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
               Title.Caption = #8470' '#1087#1087
               Width = 14
               Visible = True

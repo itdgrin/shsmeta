@@ -35,7 +35,7 @@ object FrameCategoriesObjects: TFrameCategoriesObjects
     OnResize = VSTResize
     Columns = <
       item
-        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coFixed]
+        Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]
         Position = 0
         WideText = #8470' '#1087'/'#1087
       end

@@ -33,7 +33,6 @@ object fInstructionHelp: TfInstructionHelp
     Height = 32
     Align = alBottom
     TabOrder = 3
-    ExplicitWidth = 493
     DesignSize = (
       812
       32)
@@ -55,7 +54,6 @@ object fInstructionHelp: TfInstructionHelp
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 1
       OnClick = btn2Click
-      ExplicitLeft = 415
     end
   end
   object tvDocuments: TJvDBTreeView
@@ -86,8 +84,6 @@ object fInstructionHelp: TfInstructionHelp
     ParentFont = False
     RowSelect = True
     Mirror = False
-    ExplicitTop = 3
-    ExplicitHeight = 327
   end
   object grMain1: TJvDBGrid
     Left = 383
@@ -179,7 +175,6 @@ object fInstructionHelp: TfInstructionHelp
     Font.Style = []
     ParentFont = False
     TabOrder = 0
-    ExplicitWidth = 808
     DesignSize = (
       812
       35)
@@ -235,7 +230,6 @@ object fInstructionHelp: TfInstructionHelp
       ParentFont = False
       TabOrder = 0
       TextHint = #1042#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090' '#1076#1083#1103' '#1087#1086#1080#1089#1082#1072'...'
-      ExplicitWidth = 677
     end
   end
   object qrTreeData: TFDQuery
@@ -255,8 +249,13 @@ object fInstructionHelp: TfInstructionHelp
       '*/'
       'SELECT *'
       'FROM '
-      '  `doc` '
-      'WHERE ((doc_id>=2 and doc_id<=4) or (doc_id>=9 and doc_id<=35)) '
+      '  `doc` dm'
+      
+        'WHERE /* ((doc_id>=2 and doc_id<=4) or (doc_id>=9 and doc_id<=35' +
+        ') or (doc_id>=37 and doc_id<=41)) */'
+      
+        '  ((dm.parent_id=2) or (SELECT d.parent_id FROM doc d where d.do' +
+        'c_id=dm.parent_id)=2)'
       
         'AND UPPER(CONCAT(IFNULL(doc_name, ""), IFNULL(doc_description, "' +
         '"))) LIKE UPPER(:search)'
