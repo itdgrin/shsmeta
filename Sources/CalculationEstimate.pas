@@ -685,7 +685,7 @@ type
     FYearEstimate: Integer;
     FRegion: Integer;
 
-     FNewRowIterator: Integer;
+    FNewRowIterator: Integer;
 
     VisibleRightTables: String; // Настройка отобаржения нужной таблицы справа
 
@@ -2639,10 +2639,10 @@ begin
   // Для того что-бы скрол по таблице был быстрым обработка скрола происходит с задержкой
   if qrRatesEx.Tag <> 1 then
   begin
-      //Гасит итератор, все добавляется в конец сметы(отличается от 0 только в режиме вставке строки)
-      FNewRowIterator := 0;
-      tmRate.Enabled := False;
-      tmRate.Enabled := True;
+    // Гасит итератор, все добавляется в конец сметы(отличается от 0 только в режиме вставке строки)
+    FNewRowIterator := 0;
+    tmRate.Enabled := False;
+    tmRate.Enabled := True;
   end;
 end;
 
@@ -3933,17 +3933,17 @@ begin
   try
     with qrTemp do
     begin
-        Active := False;
-        SQL.Clear;
-        SQL.Add('CALL AddRate(:id_estimate, :id_rate, :cnt, :iterator);');
-        ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
-        ParamByName('id_rate').Value := vRateId;
-        ParamByName('cnt').Value := 0;
-        ParamByName('iterator').Value := FNewRowIterator;
-        Active := True;
-        vMaxIdRate := FieldByName('id').AsInteger;
-        NewRateCode := FieldByName('RATE_CODE').AsString;
-        Active := False;
+      Active := False;
+      SQL.Clear;
+      SQL.Add('CALL AddRate(:id_estimate, :id_rate, :cnt, :iterator);');
+      ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
+      ParamByName('id_rate').Value := vRateId;
+      ParamByName('cnt').Value := 0;
+      ParamByName('iterator').Value := FNewRowIterator;
+      Active := True;
+      vMaxIdRate := FieldByName('id').AsInteger;
+      NewRateCode := FieldByName('RATE_CODE').AsString;
+      Active := False;
     end;
   except
     on e: Exception do
@@ -4205,9 +4205,8 @@ begin
   if not CheckCursorInRate then
     Exit;
 
-    if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag,
-       FNewRowIterator,  True) then
-      OutputDataToTable(True);
+  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag, FNewRowIterator, True) then
+    OutputDataToTable(True);
 end;
 
 // в целом процедура работает неверно так как может быть открыто несколько смет
@@ -4268,8 +4267,8 @@ end;
 
 procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
 begin
-    if GetDumpForm(qrRatesExSM_ID.AsInteger, -1, FNewRowIterator, True) then
-      OutputDataToTable(True);
+  if GetDumpForm(qrRatesExSM_ID.AsInteger, -1, FNewRowIterator, True) then
+    OutputDataToTable(True);
 end;
 
 procedure TFormCalculationEstimate.PMAddRateOldClick(Sender: TObject);
@@ -4437,17 +4436,14 @@ end;
 // Общий пункт для свалок и транспорта
 procedure TFormCalculationEstimate.PMDumpEditClick(Sender: TObject);
 begin
-    if qrRatesExID_TYPE_DATA.AsInteger = 5 then
-      if GetDumpForm(qrRatesExSM_ID.AsInteger, qrDumpID.AsInteger,
-        FNewRowIterator, False) then
-        OutputDataToTable;
+  if qrRatesExID_TYPE_DATA.AsInteger = 5 then
+    if GetDumpForm(qrRatesExSM_ID.AsInteger, qrDumpID.AsInteger, FNewRowIterator, False) then
+      OutputDataToTable;
 
-
-    if qrRatesExID_TYPE_DATA.AsInteger in [6, 7, 8, 9] then
-      if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger,
-        qrRatesExID_TYPE_DATA.AsInteger, FNewRowIterator,  False)
-      then
-        OutputDataToTable;
+  if qrRatesExID_TYPE_DATA.AsInteger in [6, 7, 8, 9] then
+    if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger, qrRatesExID_TYPE_DATA.AsInteger,
+      FNewRowIterator, False) then
+      OutputDataToTable;
 end;
 
 procedure TFormCalculationEstimate.PMEditClick(Sender: TObject);
@@ -4458,15 +4454,14 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMInsertRowClick(Sender: TObject);
+var
+  SM_ID: Integer;
 begin
-  qrRatesEx.UpdateOptions.EnableInsert := True;
-  try
-    qrRatesEx.Insert;
-    qrRatesExID_TYPE_DATA.Value := -5;
-    // qrRatesEx.Post;
-  finally
-    // qrRatesEx.UpdateOptions.EnableInsert := False;
-  end;
+  SM_ID := qrRatesExSM_ID.Value;
+  qrRatesEx.Insert;
+  qrRatesExSM_ID.Value := SM_ID;
+  qrRatesExID_TYPE_DATA.Value := -5;
+  qrRatesEx.Post;
 end;
 
 procedure TFormCalculationEstimate.pmTableLeftPopup(Sender: TObject);
@@ -5719,13 +5714,13 @@ begin
 
     with qrTemp do
     begin
-        Active := False;
-        SQL.Clear;
-        SQL.Add('CALL AddDevice(:IdEstimate, :IdDev, 0, :Iterator);');
-        ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
-        ParamByName('IdDev').Value := vEquipId;
-        ParamByName('Iterator').Value := FNewRowIterator;
-        ExecSQL;
+      Active := False;
+      SQL.Clear;
+      SQL.Add('CALL AddDevice(:IdEstimate, :IdDev, 0, :Iterator);');
+      ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
+      ParamByName('IdDev').Value := vEquipId;
+      ParamByName('Iterator').Value := FNewRowIterator;
+      ExecSQL;
     end;
 
     OutputDataToTable(True);
@@ -5745,14 +5740,14 @@ begin
 
     with qrTemp do
     begin
-        Active := False;
-        SQL.Clear;
-        SQL.Add('CALL AddMaterial(:IdEstimate, :IdMat, 0, :Iterator, :CALCMODE);');
-        ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
-        ParamByName('IdMat').Value := vMatId;
-        ParamByName('Iterator').Value := FNewRowIterator;
-        ParamByName('CALCMODE').Value := G_CALCMODE;
-        ExecSQL;
+      Active := False;
+      SQL.Clear;
+      SQL.Add('CALL AddMaterial(:IdEstimate, :IdMat, 0, :Iterator, :CALCMODE);');
+      ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
+      ParamByName('IdMat').Value := vMatId;
+      ParamByName('Iterator').Value := FNewRowIterator;
+      ParamByName('CALCMODE').Value := G_CALCMODE;
+      ExecSQL;
     end;
 
     OutputDataToTable(True);
@@ -5772,14 +5767,14 @@ begin
 
     with qrTemp do
     begin
-        Active := False;
-        SQL.Clear;
-        SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, 0, :Iterator, :CALCMODE);');
-        ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
-        ParamByName('IdMech').Value := vMechId;
-        ParamByName('Iterator').Value := FNewRowIterator;
-        ParamByName('CALCMODE').Value := G_CALCMODE;
-        ExecSQL;
+      Active := False;
+      SQL.Clear;
+      SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, 0, :Iterator, :CALCMODE);');
+      ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
+      ParamByName('IdMech').Value := vMechId;
+      ParamByName('Iterator').Value := FNewRowIterator;
+      ParamByName('CALCMODE').Value := G_CALCMODE;
+      ExecSQL;
     end;
 
     OutputDataToTable(True);

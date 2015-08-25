@@ -37,7 +37,6 @@
     ParentCtl3D = False
     TabOrder = 0
     OnResize = PanelTopMenuResize
-    ExplicitWidth = 929
     object btnDump: TSpeedButton
       Left = 849
       Top = 6
@@ -283,7 +282,6 @@
       Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
       TabOrder = 0
       OnClick = btnKC6Click
-      ExplicitTop = 0
     end
     object btnCalcFact: TBitBtn
       AlignWithMargins = True
@@ -301,8 +299,6 @@
       TabStop = False
       WordWrap = True
       OnClick = btnCalcFactClick
-      ExplicitLeft = 804
-      ExplicitTop = 2
     end
     object btn3: TBitBtn
       AlignWithMargins = True
@@ -320,7 +316,6 @@
       TabStop = False
       WordWrap = True
       OnClick = btn2Click
-      ExplicitTop = 8
     end
   end
   object PanelLocalEstimate: TPanel
@@ -2868,7 +2863,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 2
-    ExplicitWidth = 929
     DesignSize = (
       918
       25)
@@ -2927,7 +2921,6 @@
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
-      ExplicitWidth = 401
     end
     object PanelCalculationYesNo: TPanel
       Tag = 1
@@ -2942,7 +2935,6 @@
       ParentBackground = False
       TabOrder = 0
       OnClick = PanelCalculationYesNoClick
-      ExplicitLeft = 785
     end
   end
   object PanelEstimate: TPanel
@@ -2954,7 +2946,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 3
-    ExplicitWidth = 929
     DesignSize = (
       918
       25)
@@ -3013,7 +3004,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 654
     end
   end
   object PanelObject: TPanel
@@ -3025,7 +3015,6 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 1
-    ExplicitWidth = 929
     DesignSize = (
       918
       25)
@@ -3093,7 +3082,6 @@
       ParentFont = False
       ReadOnly = True
       TabOrder = 0
-      ExplicitWidth = 468
     end
     object EditNumberContract: TEdit
       Left = 662
@@ -3104,7 +3092,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 1
-      ExplicitLeft = 673
     end
     object EditDateContract: TEdit
       Left = 845
@@ -3115,7 +3102,6 @@
       Color = 14802912
       ReadOnly = True
       TabOrder = 2
-      ExplicitLeft = 856
     end
   end
   object PanelSSR: TPanel
@@ -4965,6 +4951,8 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evItems]
+    FetchOptions.Items = [fiBlobs, fiDetails]
     FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdPrecision, fvMaxBcdScale, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
@@ -4996,13 +4984,9 @@
     FormatOptions.MaxBcdScale = 6
     FormatOptions.DefaultParamDataType = ftBCD
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ### ##0.#######'
-    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvUpdateMode, uvRefreshMode, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
-    UpdateOptions.EnableDelete = False
-    UpdateOptions.EnableInsert = False
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvRefreshDelete, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.UpdateNonBaseFields = True
-    UpdateOptions.RefreshMode = rmManual
-    UpdateOptions.CountUpdatedRecords = False
     UpdateOptions.CheckRequired = False
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
