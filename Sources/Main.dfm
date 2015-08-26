@@ -11498,7 +11498,7 @@
       end
     end
     object mReport: TMenuItem
-      Caption = #1054#1090#1095#1077#1090#1099
+      Caption = #1055#1077#1095#1072#1090#1100
       OnClick = mReportClick
     end
     object N11: TMenuItem

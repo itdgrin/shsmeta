@@ -598,7 +598,7 @@ object fKC6: TfKC6
       '  CASE d.`ID_TYPE_DATA` '
       '    WHEN 1 THEN cr.`RATE_COUNT`'
       '    WHEN 2 THEN mat.`MAT_COUNT`'
-      '    WHEN 3 THEN mech.`MECH_INPUTCOUNT`'
+      '    WHEN 3 THEN mech.`MECH_COUNT`'
       '    WHEN 4 THEN dev.`DEVICE_COUNT`'
       '    WHEN 5 THEN dmp.`DUMP_COUNT`'
       '    WHEN 6 THEN tr.`TRANSP_COUNT`'
@@ -640,9 +640,9 @@ object fKC6: TfKC6
         '    WHEN 2 THEN IFNULL((SELECT SUM(a.MAT_COUNT) FROM `materialca' +
         'rd_act` a WHERE a.`ID`=mat.`ID` AND a.`ID_ACT` <> :ID_ACT), 0)'
       
-        '    WHEN 3 THEN IFNULL((SELECT SUM(a.MECH_INPUTCOUNT) FROM `mech' +
-        'anizmcard_act` a WHERE a.`ID`=mech.`ID` AND a.`ID_ACT` <> :ID_AC' +
-        'T), 0)'
+        '    WHEN 3 THEN IFNULL((SELECT SUM(a.MECH_COUNT) FROM `mechanizm' +
+        'card_act` a WHERE a.`ID`=mech.`ID` AND a.`ID_ACT` <> :ID_ACT), 0' +
+        ')'
       
         '    WHEN 4 THEN IFNULL((SELECT SUM(a.DEVICE_COUNT) FROM `devices' +
         'card_act` a WHERE a.`ID`=dev.`ID` AND a.`ID_ACT` <> :ID_ACT), 0)'
@@ -677,7 +677,7 @@ object fKC6: TfKC6
       '  CASE d.`ID_TYPE_DATA` '
       '    WHEN 1 THEN crt.`RATE_COUNT`'
       '    WHEN 2 THEN matt.`MAT_COUNT`'
-      '    WHEN 3 THEN mecht.`MECH_INPUTCOUNT`'
+      '    WHEN 3 THEN mecht.`MECH_COUNT`'
       '    WHEN 4 THEN devt.`DEVICE_COUNT`'
       '    WHEN 5 THEN dmpt.`DUMP_COUNT`'
       '    WHEN 6 THEN trt.`TRANSP_COUNT`'
@@ -691,7 +691,7 @@ object fKC6: TfKC6
       '  CASE d.`ID_TYPE_DATA` '
       '    WHEN 1 THEN crt.`RATE_COUNT`'
       '    WHEN 2 THEN matt.`MAT_COUNT`'
-      '    WHEN 3 THEN mecht.`MECH_INPUTCOUNT`'
+      '    WHEN 3 THEN mecht.`MECH_COUNT`'
       '    WHEN 4 THEN devt.`DEVICE_COUNT`'
       '    WHEN 5 THEN dmpt.`DUMP_COUNT`'
       '    WHEN 6 THEN trt.`TRANSP_COUNT`'

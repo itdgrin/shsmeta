@@ -379,7 +379,6 @@ const
   FormNameTypesActs = 'Типы актов';
   FormNameIndexesChangeCost = 'Индексы изменения стоимости';
   FormNameCardIndexesChangeCost = 'Карточка индексов изменения стоимости';
-  FormNameCategoriesObjects = 'Виды строительства';
   FormNameCardCategoriesObjects = 'Карточка категорий объектов';
   FormNamePriceMaterials = 'Цены на материалы';
   FormNamePriceMechanizms = 'Цены на механизмы';
@@ -1980,7 +1979,9 @@ end;
 
 procedure TFormMain.MenuListsСategoriesObjectsClick(Sender: TObject);
 begin
-  FormCategoriesObjects.ShowModal;
+  if (not Assigned(fCategoriesObjects)) then
+    fCategoriesObjects := TfCategoriesObjects.Create(FormMain);
+  fCategoriesObjects.ShowModal;
 end;
 
 procedure TFormMain.MenuPartsEstimatesClick(Sender: TObject);

@@ -3,69 +3,126 @@ unit CategoriesObjects;
 interface
 
 uses
-  Classes, Controls, Forms, ExtCtrls, SysUtils, JvComponentBase, JvFormPlacement;
+  Winapi.Windows, StdCtrls, Forms, ExtCtrls, SysUtils, JvComponentBase, JvFormPlacement, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Menus;
 
 type
-  TFormCategoriesObjects = class(TForm)
-    Panel: TPanel;
+  TfCategoriesObjects = class(TForm)
     FormStorage: TJvFormStorage;
+    qrMain: TFDQuery;
+    dsMain: TDataSource;
+    grMain: TJvDBGrid;
+    pm1: TPopupMenu;
+    mN1: TMenuItem;
+    mN2: TMenuItem;
+    mN3: TMenuItem;
 
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormShow(Sender: TObject);
+    procedure grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure mN1Click(Sender: TObject);
+    procedure mN2Click(Sender: TObject);
+    procedure mN3Click(Sender: TObject);
+    procedure grMainTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
   end;
 
 var
-  FormCategoriesObjects: TFormCategoriesObjects;
+  fCategoriesObjects: TfCategoriesObjects;
 
 implementation
 
-uses Main, fCategoriesObjects;
-
-var
-  FrameСategoriesObjects: TFrameCategoriesObjects;
+uses Main, DataModule, Tools;
 
 {$R *.dfm}
-  // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormCategoriesObjects.FormCreate(Sender: TObject);
+procedure TfCategoriesObjects.FormCreate(Sender: TObject);
 begin
-  // Настройка размеров и положения формы
-  {
-  ClientWidth := FormMain.ClientWidth div 2;
-  ClientHeight := FormMain.ClientHeight div 2;
-
-  Left := FormMain.Left + (FormMain.Width - Width) div 2;
-  Top := FormMain.Top + (FormMain.Height - Height) div 2;
-  }
-
-  // -----------------------------------------
-
-  Caption := FormNameCategoriesObjects;
-
-  Panel.Align := alClient;
+  // Создаём кнопку от этого окна (на главной форме внизу)
+  FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
+  LoadDBGridSettings(grMain);
+  CloseOpen(qrMain);
 end;
 
-procedure TFormCategoriesObjects.FormShow(Sender: TObject);
+procedure TfCategoriesObjects.FormDestroy(Sender: TObject);
 begin
-  FrameСategoriesObjects := TFrameCategoriesObjects.Create(Self);
-  with FrameСategoriesObjects do
+  // Удаляем кнопку от этого окна (на главной форме внизу)
+  FormMain.DeleteButtonCloseWindow(Caption);
+  fCategoriesObjects := nil;
+end;
+
+procedure TfCategoriesObjects.FormResize(Sender: TObject);
+begin
+  if qrMain.RecordCount > grMain.VisibleRowCount then
+    grMain.ScrollBars := ssVertical
+  else
+    grMain.ScrollBars := ssNone;
+end;
+
+procedure TfCategoriesObjects.grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
   begin
-    Parent := Panel;
-    Align := alClient;
-    Visible := True;
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    if (gdSelected in State) then // Ячейка в фокусе
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
   end;
 
-  FrameСategoriesObjects.TableFilling;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFormCategoriesObjects.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TfCategoriesObjects.grMainTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+var
+  s: string;
 begin
-  FreeAndNil(FrameСategoriesObjects);
+  if not CheckQrActiveEmpty(qrMain) then
+    Exit;
+  s := '';
+  if grMain.SortMarker = smDown then
+    s := ' DESC';
+  qrMain.SQL[qrMain.SQL.Count - 1] := 'ORDER BY ' + grMain.SortedField + s;
+  CloseOpen(qrMain);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+procedure TfCategoriesObjects.mN1Click(Sender: TObject);
+begin
+  qrMain.Append;
+end;
+
+procedure TfCategoriesObjects.mN2Click(Sender: TObject);
+begin
+  qrMain.Edit;
+end;
+
+procedure TfCategoriesObjects.mN3Click(Sender: TObject);
+begin
+  qrMain.Delete;
+end;
+
+procedure TfCategoriesObjects.FormActivate(Sender: TObject);
+begin
+  // Если нажата клавиша Ctrl и выбираем форму, то делаем
+  // каскадирование с переносом этой формы на передний план
+  FormMain.CascadeForActiveWindow;
+  // Делаем нажатой кнопку активной формы (на главной форме внизу)
+  FormMain.SelectButtonActiveWindow(Caption);
+end;
+
+procedure TfCategoriesObjects.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
 
 end.
