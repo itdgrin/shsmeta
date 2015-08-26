@@ -4945,6 +4945,7 @@
   end
   object qrRatesEx: TFDQuery
     AfterOpen = qrRatesExAfterOpen
+    BeforeScroll = qrRatesExBeforeScroll
     AfterScroll = qrRatesExAfterScroll
     OnCalcFields = qrRatesExCalcFields
     CachedUpdates = True
@@ -4984,7 +4985,7 @@
     FormatOptions.MaxBcdScale = 6
     FormatOptions.DefaultParamDataType = ftBCD
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ### ##0.#######'
-    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvRefreshDelete, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvRefreshMode, uvRefreshDelete, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.UpdateNonBaseFields = True
     UpdateOptions.CheckRequired = False
