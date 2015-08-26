@@ -99,6 +99,8 @@ object fCategoriesObjects: TfCategoriesObjects
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    UpdateOptions.UpdateTableName = 'objcategory'
+    UpdateOptions.KeyFields = 'CAT_ID'
     SQL.Strings = (
       'SELECT * FROM objcategory'
       'ORDER BY 1')

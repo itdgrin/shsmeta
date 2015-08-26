@@ -57,8 +57,7 @@ uses
   CardOrganization in 'CardOrganization.pas' {fCardOrganization},
   fTypesActs in 'fTypesActs.pas' {FrameTypesActs: TFrame},
   fIndexesChangeCost in 'fIndexesChangeCost.pas' {FrameIndexesChangeCost: TFrame},
-  PartsEstimates in 'PartsEstimates.pas' {FormPartsEstimates},
-  fPartsEstimates in 'fPartsEstimates.pas' {FramePartsEstimates: TFrame},
+  PartsEstimates in 'PartsEstimates.pas' {fPartsEstimates},
   TypesActs in 'TypesActs.pas' {FormTypesActs},
   IndexesChangeCost in 'IndexesChangeCost.pas' {FormIndexesChangeCost},
   CategoriesObjects in 'CategoriesObjects.pas' {fCategoriesObjects},
@@ -85,7 +84,6 @@ uses
   ReplacementMatAndMech in 'ReplacementMatAndMech.pas' {frmReplacement},
   TariffDict in 'TariffDict.pas' {fTariffDict},
   OXROPRSetup in 'OXROPRSetup.pas' {fOXROPRSetup},
-  CardPartsEstimates in 'CardPartsEstimates.pas' {FormCardPartsEstimates},
   ImportExportModule in 'ImportExportModule.pas',
   CalcTravelWork in 'CalcTravelWork.pas' {fCalcTravelWork},
   fFrameSpr in 'fFrameSpr.pas' {SprFrame: TFrame},
@@ -158,7 +156,6 @@ begin
   Application.CreateForm(TfKC6, fKC6);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
-  Application.CreateForm(TFormCardPartsEstimates, FormCardPartsEstimates);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€
