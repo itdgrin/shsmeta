@@ -2,7 +2,7 @@ object fTypeWorkList: TfTypeWorkList
   Left = 0
   Top = 0
   Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082' '#1074#1080#1076#1086#1074' '#1088#1072#1073#1086#1090
-  ClientHeight = 286
+  ClientHeight = 480
   ClientWidth = 432
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,6 +12,7 @@ object fTypeWorkList: TfTypeWorkList
   Font.Style = []
   FormStyle = fsMDIChild
   OldCreateOrder = False
+  Position = poMainFormCenter
   Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
@@ -23,7 +24,7 @@ object fTypeWorkList: TfTypeWorkList
     Left = 0
     Top = 0
     Width = 432
-    Height = 286
+    Height = 480
     Align = alClient
     DataSource = dsMain
     DrawingStyle = gdsClassic

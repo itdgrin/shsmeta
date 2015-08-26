@@ -3,7 +3,7 @@ unit OXROPR;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, StdCtrls, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, fFrameOXROPR, fFrameSmeta, JvComponentBase, JvFormPlacement;
 
 type
@@ -13,6 +13,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
     FrameOXROPR: TFrameOXROPR;
   public
@@ -57,6 +58,14 @@ begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(Caption);
   fOXROPR := nil;
+end;
+
+procedure TfOXROPR.FormResize(Sender: TObject);
+begin
+  if FrameOXROPR.qrMain.RecordCount > FrameOXROPR.JvDBGrid1.VisibleRowCount then
+    FrameOXROPR.JvDBGrid1.ScrollBars := ssVertical
+  else
+    FrameOXROPR.JvDBGrid1.ScrollBars := ssNone;
 end;
 
 end.

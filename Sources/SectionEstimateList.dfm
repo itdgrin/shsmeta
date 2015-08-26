@@ -2,7 +2,7 @@ object fSectionEstimateList: TfSectionEstimateList
   Left = 0
   Top = 0
   Caption = #1056#1072#1079#1076#1077#1083#1099' '#1089#1084#1077#1090
-  ClientHeight = 308
+  ClientHeight = 489
   ClientWidth = 446
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,6 +12,7 @@ object fSectionEstimateList: TfSectionEstimateList
   Font.Style = []
   FormStyle = fsMDIChild
   OldCreateOrder = False
+  Position = poMainFormCenter
   Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
@@ -23,7 +24,7 @@ object fSectionEstimateList: TfSectionEstimateList
     Left = 0
     Top = 0
     Width = 446
-    Height = 308
+    Height = 489
     Align = alClient
     DataSource = dsMain
     DrawingStyle = gdsClassic
@@ -120,7 +121,6 @@ object fSectionEstimateList: TfSectionEstimateList
   object FormStorage: TJvFormStorage
     AppStorage = FormMain.AppIni
     AppStoragePath = '%FORM_NAME%\'
-    Options = []
     StoredValues = <>
     Left = 32
     Top = 128

@@ -18,6 +18,7 @@ object fOXROPR: TfOXROPR
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object FormStorage: TJvFormStorage

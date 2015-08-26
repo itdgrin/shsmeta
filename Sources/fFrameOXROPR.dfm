@@ -96,11 +96,6 @@ inherited FrameOXROPR: TFrameOXROPR
             Alignment = taCenter
             Expanded = False
             FieldName = 'Number'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
             ReadOnly = True
             Title.Alignment = taCenter
             Title.Caption = #1050#1086#1076
@@ -110,11 +105,6 @@ inherited FrameOXROPR: TFrameOXROPR
           item
             Expanded = False
             FieldName = 'NameWork'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
             ReadOnly = True
             Title.Alignment = taCenter
             Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1088#1072#1073#1086#1090#1099
@@ -123,11 +113,6 @@ inherited FrameOXROPR: TFrameOXROPR
           end
           item
             Expanded = False
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
             Title.Alignment = taCenter
             Title.Caption = '% '#1054#1061#1056#1080#1054#1055#1056
             Width = 74
@@ -135,11 +120,6 @@ inherited FrameOXROPR: TFrameOXROPR
           end
           item
             Expanded = False
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
             Title.Alignment = taCenter
             Title.Caption = '% '#1087#1083#1072#1085#1086#1074#1086#1081' '#1087#1088#1080#1073#1099#1083#1080
             Width = 118
@@ -177,10 +157,6 @@ inherited FrameOXROPR: TFrameOXROPR
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
-        ExplicitLeft = 200
-        ExplicitTop = 8
-        ExplicitWidth = 185
-        ExplicitHeight = 89
       end
     end
     object PanelTop: TPanel

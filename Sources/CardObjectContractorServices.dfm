@@ -15,6 +15,7 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object pnlBott: TPanel
@@ -31,7 +32,6 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    ExplicitTop = 361
     DesignSize = (
       458
       36)

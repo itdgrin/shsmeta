@@ -1995,6 +1995,7 @@ procedure TFormMain.MenuListsSectionsEstimatesClick(Sender: TObject);
 begin
   if (not Assigned(fSectionEstimateList)) then
     fSectionEstimateList := TfSectionEstimateList.Create(FormMain);
+  fSectionEstimateList.FormStyle := fsNormal;
   fSectionEstimateList.Show;
 end;
 
@@ -2002,6 +2003,7 @@ procedure TFormMain.MenuListsTypesWorksClick(Sender: TObject);
 begin
   if (not Assigned(fTypeWorkList)) then
     fTypeWorkList := TfTypeWorkList.Create(FormMain);
+  fTypeWorkList.FormStyle := fsNormal;
   fTypeWorkList.Show;
 end;
 

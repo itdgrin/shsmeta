@@ -33,6 +33,7 @@ type
     procedure qrMainCalcFields(DataSet: TDataSet);
     procedure qrMainCheckedChange(Sender: TField);
     procedure qrMainAfterOpen(DataSet: TDataSet);
+    procedure FormResize(Sender: TObject);
   private
     flLoading: Boolean;
   public
@@ -118,6 +119,14 @@ end;
 procedure TfCardObjectContractorServices.FormDestroy(Sender: TObject);
 begin
   fCardObjectContractorServices := nil;
+end;
+
+procedure TfCardObjectContractorServices.FormResize(Sender: TObject);
+begin
+  if qrMain.RecordCount > grMain.VisibleRowCount then
+    grMain.ScrollBars := ssVertical
+  else
+    grMain.ScrollBars := ssNone;
 end;
 
 procedure TfCardObjectContractorServices.qrMainAfterOpen(DataSet: TDataSet);
