@@ -11171,6 +11171,7 @@
       Caption = #1060#1072#1081#1083
       object mN38: TMenuItem
         Caption = #1054#1073#1098#1077#1082#1090#1099' '#1080' '#1089#1084#1077#1090#1099
+        ImageIndex = 57
         OnClick = mN38Click
       end
       object mLogIn: TMenuItem
