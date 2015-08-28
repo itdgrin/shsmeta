@@ -235,7 +235,12 @@ begin
     qrTemp.ParamByName('id_type_data').Value := 5;
     qrTemp.ParamByName('id_tables').Value := NewId;
     qrTemp.ParamByName('NUM_ROW').Value := Iterator;
+    qrTemp.ExecSQL;
 
+    qrTemp.SQL.Text := 'CALL AddCalcCoef(:IdEstimate, :NewID, :TypeData);';
+    qrTemp.ParamByName('IdEstimate').Value := IdEstimate;
+    qrTemp.ParamByName('TypeData').Value := 5;
+    qrTemp.ParamByName('NewID').Value := NewId;
     qrTemp.ExecSQL;
   end
   else

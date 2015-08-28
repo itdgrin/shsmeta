@@ -753,6 +753,8 @@ type
     procedure ClearAutoRep; // Очищает массив автозамены
     procedure CheckNeedAutoRep(AID, AType, AMId: Integer; ACode: string); // Проверяет необходимость в замене
     procedure ShowAutoRep; // Показывает диалог замены для всех из массива
+
+    procedure DeleteRowFromSmeta();
   public
     ConfirmCloseForm: Boolean;
 
@@ -4283,13 +4285,8 @@ begin
   ShowFormAdditionData('0');
 end;
 
-// Удаление чего-либо из сметы
-procedure TFormCalculationEstimate.PMDeleteClick(Sender: TObject);
+procedure TFormCalculationEstimate.DeleteRowFromSmeta();
 begin
-  if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrRatesExOBJ_CODE.AsString + '?'), CaptionForm,
-    MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
-    Exit;
-
   if Act then
   begin
     with qrTemp do
@@ -4415,7 +4412,46 @@ begin
               e.message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
     end;
-  qrRatesEx.Prior;
+end;
+
+// Удаление чего-либо из сметы
+procedure TFormCalculationEstimate.PMDeleteClick(Sender: TObject);
+var TempBookmark: TBookMark;
+    X: Integer;
+begin
+  if grRatesEx.SelectedRows.Count > 1 then
+  begin
+    if MessageBox(0, PChar('Вы действительно хотите удалить ' +
+      IntToStr(grRatesEx.SelectedRows.Count) + ' объектов?'), CaptionForm,
+      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+      Exit;
+
+    grRatesEx.DataSource.DataSet.DisableControls;
+    TempBookmark := grRatesEx.DataSource.DataSet.GetBookmark;
+    for X := 0 to grRatesEx.SelectedRows.Count - 1 do
+    begin
+      if grRatesEx.SelectedRows.IndexOf(grRatesEx.SelectedRows.Items[X]) > -1 then
+      begin
+        grRatesEx.DataSource.DataSet.Bookmark := grRatesEx.SelectedRows.Items[X];
+        DeleteRowFromSmeta();
+      end;
+    end;
+
+    grRatesEx.DataSource.DataSet.GotoBookmark(TempBookmark);
+    grRatesEx.DataSource.DataSet.FreeBookmark(TempBookmark);
+    grRatesEx.DataSource.DataSet.EnableControls;
+  end
+  else
+  begin
+    if MessageBox(0, PChar('Вы действительно хотите удалить ' +
+      qrRatesExOBJ_CODE.AsString + ' объектов?'), CaptionForm,
+      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+      Exit;
+    DeleteRowFromSmeta();
+  end;
+
+  if not qrRatesEx.Bof then
+    qrRatesEx.Prior;
   OutputDataToTable;
 end;
 
@@ -4470,6 +4506,11 @@ procedure TFormCalculationEstimate.pmTableLeftPopup(Sender: TObject);
 var
   mainType: Integer;
 begin
+  //Вынесено сюда так как mousedown работает глючно
+  if (grRatesEx.SelectedRows.Count > 0) and
+     not (grRatesEx.SelectedRows.CurrentRowSelected) then
+    grRatesEx.SelectedRows.Clear;
+
   // Нельзя удалить неучтенный материал из таблицы расценок
   PMDelete.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0);
   PMAdd.Visible := CheckCursorInRate;

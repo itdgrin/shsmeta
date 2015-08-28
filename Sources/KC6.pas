@@ -212,7 +212,7 @@ begin
   // Заполнение смежных актов
   qrOtherActs.Active := False;
   qrOtherActs.ParamByName('idestimate').AsInteger := IdObject;
-  qrOtherActs.ParamByName('p_osnov').AsString := TRIM(strngfldDataOBJ_CODE.Value);
+  qrOtherActs.ParamByName('p_osnov').AsString := TRIM(strngfldDataOBJ_CODE.AsString);
   qrOtherActs.Active := True;
   qrOtherActs.Last;
   qrOtherActs.First;
