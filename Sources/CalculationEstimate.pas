@@ -2496,8 +2496,7 @@ begin
     qrMechanizmTERYDOZATR.Value := qrTemp.FieldByName('TERYDOZATR').AsBCD;
     qrMechanizm.Post;
 
-    if (qrRatesExID_TYPE_DATA.Value = 3) and
-       (qrRatesExID_TABLES.Value = qrMechanizmID.Value) then
+    if (qrRatesExID_TYPE_DATA.Value = 3) and (qrRatesExID_TABLES.Value = qrMechanizmID.Value) then
     begin
       ev := qrRatesExOBJ_COUNT.OnChange;
       try
@@ -2542,8 +2541,7 @@ begin
     qrMaterialMAT_TRANSP_NO_NDS.Value := qrTemp.FieldByName('MAT_TRANSP_NO_NDS').AsBCD;
     qrMaterialMAT_TRANSP_NDS.Value := qrTemp.FieldByName('MAT_TRANSP_NDS').AsBCD;
     qrMaterial.Post;
-    if (qrRatesExID_TYPE_DATA.Value = 2) and
-       (qrRatesExID_TABLES.Value = qrMaterialID.Value) then
+    if (qrRatesExID_TYPE_DATA.Value = 2) and (qrRatesExID_TABLES.Value = qrMaterialID.Value) then
     begin
       ev := qrRatesExOBJ_COUNT.OnChange;
       try
@@ -2644,7 +2642,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.qrRatesExBeforeScroll(DataSet: TDataSet);
-var ev: TDataSetNotifyEvent;
+var
+  ev: TDataSetNotifyEvent;
 begin
   if (qrRatesExID_TYPE_DATA.Value = -5) then
   begin
@@ -3003,9 +3002,8 @@ begin
       begin
         if RateID = qrRatesExID_RATE.Value then
         begin
-          if (qrRatesExID_TYPE_DATA.Value = 2) and
-             (qrRatesExID_REPLACED.Value > 0) and
-             (qrRatesExCONS_REPLASED.Value = 0) then
+          if (qrRatesExID_TYPE_DATA.Value = 2) and (qrRatesExID_REPLACED.Value > 0) and
+            (qrRatesExCONS_REPLASED.Value = 0) then
           begin
             NewCount := 0;
             qrTemp.SQL.Text := 'Select MAT_COUNT FROM materialcard_temp WHERE ID = ' +
@@ -3380,10 +3378,8 @@ var
   DataObj: TSmClipData;
   TmpIterator: Integer;
 begin
-  if not((qrRatesExID_TYPE_DATA.AsInteger > 0) or
-    (qrRatesExID_TYPE_DATA.AsInteger = -5) or
-    (qrRatesExID_TYPE_DATA.AsInteger = -4) or
-    (qrRatesExID_TYPE_DATA.AsInteger = -3)) or Act then
+  if not((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -5) or
+    (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -3)) or Act then
     Exit;
 
   DataObj := TSmClipData.Create;
@@ -3396,8 +3392,7 @@ begin
         TmpIterator := FNewRowIterator;
 
       if PasteSmetaRow(DataObj.SmClipArray, qrRatesExSM_ID.Value, TmpIterator) then
-        OutputDataToTable((qrRatesExID_TYPE_DATA.Value = -4) or
-          (qrRatesExID_TYPE_DATA.Value = -5));
+        OutputDataToTable((qrRatesExID_TYPE_DATA.Value = -4) or (qrRatesExID_TYPE_DATA.Value = -5));
     end;
   finally
     DataObj.Free;
@@ -3783,7 +3778,7 @@ begin
     else
     begin
       AddCoefToRate(fCoefficients.qrCoef.FieldByName('coef_id').AsInteger);
-      // RecalcEstimate;
+      RecalcEstimate;
     end;
   end;
 end;
@@ -3898,8 +3893,7 @@ end;
 function TFormCalculationEstimate.CheckCursorInRate: Boolean;
 begin
   Result := (qrRatesExID_TYPE_DATA.AsInteger > 0) or // Что-то врутри смети
-    (qrRatesExID_TYPE_DATA.AsInteger = -3) or
-    (qrRatesExID_TYPE_DATA.AsInteger = -4) or
+    (qrRatesExID_TYPE_DATA.AsInteger = -3) or (qrRatesExID_TYPE_DATA.AsInteger = -4) or
     (qrRatesExID_TYPE_DATA.AsInteger = -5);
   // или шапка жешки или строка ввода
 end;
@@ -3943,7 +3937,7 @@ begin
     end;
   end;
 
-   // Подкоговка автозамены
+  // Подкоговка автозамены
   ClearAutoRep;
 
   qrTemp.SQL.Clear;
@@ -4218,8 +4212,7 @@ begin
     qrRatesEx.First;
     while (not qrRatesEx.Eof) do
     begin
-      if (qrRatesExID_TYPE_DATA.AsInteger = AType) and
-         (qrRatesExSM_ID.AsInteger = SmID) then
+      if (qrRatesExID_TYPE_DATA.AsInteger = AType) and (qrRatesExSM_ID.AsInteger = SmID) then
       begin
         Result := True;
         Break;
@@ -4416,14 +4409,14 @@ end;
 
 // Удаление чего-либо из сметы
 procedure TFormCalculationEstimate.PMDeleteClick(Sender: TObject);
-var TempBookmark: TBookMark;
-    X: Integer;
+var
+  TempBookmark: TBookMark;
+  X: Integer;
 begin
   if grRatesEx.SelectedRows.Count > 1 then
   begin
-    if MessageBox(0, PChar('Вы действительно хотите удалить ' +
-      IntToStr(grRatesEx.SelectedRows.Count) + ' объектов?'), CaptionForm,
-      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+    if MessageBox(0, PChar('Вы действительно хотите удалить ' + INTTOSTR(grRatesEx.SelectedRows.Count) +
+      ' объектов?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
       Exit;
 
     grRatesEx.DataSource.DataSet.DisableControls;
@@ -4443,9 +4436,8 @@ begin
   end
   else
   begin
-    if MessageBox(0, PChar('Вы действительно хотите удалить ' +
-      qrRatesExOBJ_CODE.AsString + ' объектов?'), CaptionForm,
-      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+    if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrRatesExOBJ_CODE.AsString + ' объектов?'),
+      CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
       Exit;
     DeleteRowFromSmeta();
   end;
@@ -4506,9 +4498,8 @@ procedure TFormCalculationEstimate.pmTableLeftPopup(Sender: TObject);
 var
   mainType: Integer;
 begin
-  //Вынесено сюда так как mousedown работает глючно
-  if (grRatesEx.SelectedRows.Count > 0) and
-     not (grRatesEx.SelectedRows.CurrentRowSelected) then
+  // Вынесено сюда так как mousedown работает глючно
+  if (grRatesEx.SelectedRows.Count > 0) and not(grRatesEx.SelectedRows.CurrentRowSelected) then
     grRatesEx.SelectedRows.Clear;
 
   // Нельзя удалить неучтенный материал из таблицы расценок
@@ -4518,11 +4509,9 @@ begin
 
   PMEdit.Visible := (qrRatesExID_TYPE_DATA.AsInteger in [5, 6, 7, 8, 9]) and CheckCursorInRate;
   PMCopy.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
-  PMPaste.Enabled := ((qrRatesExID_TYPE_DATA.AsInteger > 0) or
-                      (qrRatesExID_TYPE_DATA.AsInteger = -5) or
-                      (qrRatesExID_TYPE_DATA.AsInteger = -4) or
-                      (qrRatesExID_TYPE_DATA.AsInteger = -3)) and
-                     ClipBoard.HasFormat(G_SMETADATA);
+  PMPaste.Enabled := ((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -5) or
+    (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -3)) and
+    ClipBoard.HasFormat(G_SMETADATA);
 
   PMCopy.Visible := not Act;
   PMPaste.Visible := not Act;
@@ -4537,14 +4526,11 @@ begin
   mAddPTM.Visible := (mainType <> 3) and not Act;
   mAddLocal.Visible := (mainType = 2) and not Act;
   mDelEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and
-                          ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or
-                           (qrRatesExID_TYPE_DATA.AsInteger <> -5));
+    ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or (qrRatesExID_TYPE_DATA.AsInteger <> -5));
   mEditEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and
-                           ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or
-                            (qrRatesExID_TYPE_DATA.AsInteger <> -5));
+    ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or (qrRatesExID_TYPE_DATA.AsInteger <> -5));
   mBaseData.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and
-                       ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or
-                        (qrRatesExID_TYPE_DATA.AsInteger <> -5));;
+    ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or (qrRatesExID_TYPE_DATA.AsInteger <> -5));;
   mBaseData.Caption := 'Исходные данные - ' + qrRatesExOBJ_CODE.AsString;
 end;
 
@@ -5395,8 +5381,7 @@ begin
     edtRateActiveDate.Text := '';
   end;
 
-  if (qrRatesExID_TYPE_DATA.AsInteger = -4) or
-     (qrRatesExID_TYPE_DATA.AsInteger = -5) then
+  if (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -5) then
   begin
     // в режиме добавления строки редактируется код, а не количество
     qrRatesExOBJ_CODE.ReadOnly := False;
@@ -5582,7 +5567,7 @@ begin
   qrRatesEx.DisableControls;
 
   if qrRatesExID_TYPE_DATA.Value = -5 then
-      qrRatesExID_TYPE_DATA.Value := -4;
+    qrRatesExID_TYPE_DATA.Value := -4;
 
   try
     if (ANewRow) then
@@ -5745,15 +5730,29 @@ begin
             qrTemp.ParamByName('id_act').Value := Null;
           qrTemp.ExecSQL;
 
-          if qrRatesExID_TYPE_DATA.Value > 0 then
+          if qrRatesExID_TYPE_DATA.Value < 0 then
           begin
-            FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
-              VarArrayOf([qrRatesExID_TABLES.Value, qrRatesExID_TYPE_DATA.Value]));
-            FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0, :ID_ACT)',
-              VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value,
-              qrRatesExID_ACT.Value]));
-            GridRatesUpdateCount;
+            // Добавление во все содерожимое сметы, кроме пусконаладки
+            FastExecSQL('INSERT INTO `calculation_coef_temp`(`calculation_coef_id`, ' +
+              '`id_estimate`, `id_type_data`, `id_owner`,'#13 +
+              ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
+              '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
+              '(SELECT GetNewID(:IDType),data_row_temp.ID_ESTIMATE,data_row_temp.ID_TYPE_DATA,data_row_temp.ID_TABLES,'#13
+              + 'coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13 +
+              'FROM data_row_temp, coef WHERE data_row_temp.ID_ESTIMATE=:id_estimate AND data_row_temp.ID_TYPE_DATA<10 AND coef.coef_id=:coef_id)',
+              VarArrayOf([C_ID_SMCOEF, qrRatesExSM_ID.Value, coef_id]));
           end;
+          {
+            if qrRatesExID_TYPE_DATA.Value > 0 then
+            begin
+            FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
+            VarArrayOf([qrRatesExID_TABLES.Value, qrRatesExID_TYPE_DATA.Value]));
+            FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0, :ID_ACT)',
+            VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value,
+            qrRatesExID_ACT.Value]));
+            GridRatesUpdateCount;
+            end;
+          }
         end;
       end;
     end;
@@ -6243,8 +6242,7 @@ begin
       Font.Style := Font.Style + [fsbold];
       Brush.Color := clSilver;
     end;
-    if (qrRatesExID_TYPE_DATA.AsInteger = -4) or
-       (qrRatesExID_TYPE_DATA.AsInteger = -5) then
+    if (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -5) then
     begin
       Font.Color := PS.FontRows;
       Brush.Color := clInactiveBorder;

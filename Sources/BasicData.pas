@@ -372,8 +372,6 @@ var
   tableName: string;
   AutoCommitValue: Boolean;
 begin
-  AutoCommitValue := DM.Read.Options.AutoCommit;
-  DM.Read.Options.AutoCommit := False;
   // Показываем справочник наборов коэф.
   if fCoefficients.ShowModal = mrOk then
   begin
@@ -402,6 +400,22 @@ begin
           tableName := '_temp'
         else
           tableName := '';
+
+        // Добавление во все содерожимое сметы, кроме пусконаладки
+        FastExecSQL('INSERT INTO `calculation_coef' + tableName + '`(`calculation_coef_id`, ' +
+          '`id_estimate`, `id_type_data`, `id_owner`,'#13 +
+          ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
+          '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
+          '(SELECT GetNewID(:IDType),ID_ESTIMATE,ID_TYPE_DATA,ID_TABLES,'#13 +
+          ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB'#13 +
+          'FROM data_row' + tableName + ' WHERE ID_ESTIMATE=:id_estimate AND ID_TYPE_DATA<10)',
+          VarArrayOf([C_ID_SMCOEF, fCoefficients.qrCoef.FieldByName('coef_id').Value,
+          fCoefficients.qrCoef.FieldByName('COEF_NAME').Value, fCoefficients.qrCoef.FieldByName('OSN_ZP')
+          .Value, fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value,
+          fCoefficients.qrCoef.FieldByName('MAT_RES').Value, fCoefficients.qrCoef.FieldByName('WORK_PERS')
+          .Value, fCoefficients.qrCoef.FieldByName('WORK_MACH').Value,
+          fCoefficients.qrCoef.FieldByName('OXROPR').Value, fCoefficients.qrCoef.FieldByName('PLANPRIB')
+          .Value, qrSmeta.FieldByName('SM_ID').Value]));
 
         // Каскадно добавляем выбранный кф. на все зависимые сметы
         DM.qrDifferent.SQL.Text := 'INSERT INTO `calculation_coef' + tableName + '`(`calculation_coef_id`, ' +
