@@ -317,14 +317,14 @@ begin
     else
       tableName := 'calculation_coef';
 
-    // Каскадное удаление наборав из связанных смет
+    // Каскадное удаление наборав из связанных смет и всего что в смете находится
     DM.qrDifferent.SQL.Text := 'DELETE FROM ' + tableName + ' WHERE id_estimate IN '#13 +
       '(SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
       ' OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE)))'#13 +
-      ' AND id_type_data=:id_type_data AND id_owner=0 AND id_coef=:id_coef';
+      ' /*AND id_type_data=:id_type_data AND id_owner=0*/ AND id_coef=:id_coef';
 
     DM.qrDifferent.ParamByName('id_estimate').Value := qrCoef.FieldByName('id_estimate').Value;
-    DM.qrDifferent.ParamByName('id_type_data').Value := qrCoef.FieldByName('id_type_data').Value;
+    { DM.qrDifferent.ParamByName('id_type_data').Value := qrCoef.FieldByName('id_type_data').Value; }
     DM.qrDifferent.ParamByName('id_coef').Value := qrCoef.FieldByName('id_coef').Value;
     DM.qrDifferent.ExecSQL;
 
@@ -370,67 +370,100 @@ end;
 procedure TFormBasicData.qrCoefNewRecord(DataSet: TDataSet);
 var
   tableName: string;
+  AutoCommitValue: Boolean;
 begin
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
   // Показываем справочник наборов коэф.
   if fCoefficients.ShowModal = mrOk then
   begin
-    qrCoef.FieldByName('calculation_coef_id').Value := FastSelectSQLOne('SELECT GetNewID(:IDType)',
-      VarArrayOf([C_ID_SMCOEF]));
-    qrCoef.FieldByName('id_estimate').Value := qrSmeta.FieldByName('SM_ID').Value;
-    qrCoef.FieldByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
-    qrCoef.FieldByName('id_owner').Value := 0;
-    qrCoef.FieldByName('id_coef').Value := fCoefficients.qrCoef.FieldByName('coef_id').Value;
-    qrCoef.FieldByName('COEF_NAME').Value := fCoefficients.qrCoef.FieldByName('COEF_NAME').Value;
-    qrCoef.FieldByName('OSN_ZP').Value := fCoefficients.qrCoef.FieldByName('OSN_ZP').Value;
-    qrCoef.FieldByName('EKSP_MACH').Value := fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value;
-    qrCoef.FieldByName('MAT_RES').Value := fCoefficients.qrCoef.FieldByName('MAT_RES').Value;
-    qrCoef.FieldByName('WORK_PERS').Value := fCoefficients.qrCoef.FieldByName('WORK_PERS').Value;
-    qrCoef.FieldByName('WORK_MACH').Value := fCoefficients.qrCoef.FieldByName('WORK_MACH').Value;
-    qrCoef.FieldByName('OXROPR').Value := fCoefficients.qrCoef.FieldByName('OXROPR').Value;
-    qrCoef.FieldByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
-    qrCoef.Post;
+    AutoCommitValue := DM.Read.Options.AutoCommit;
+    try
+      DM.Read.Options.AutoCommit := False;
+      DM.Read.StartTransaction;
+      try
+        qrCoef.FieldByName('calculation_coef_id').Value := FastSelectSQLOne('SELECT GetNewID(:IDType)',
+          VarArrayOf([C_ID_SMCOEF]));
+        qrCoef.FieldByName('id_estimate').Value := qrSmeta.FieldByName('SM_ID').Value;
+        qrCoef.FieldByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
+        qrCoef.FieldByName('id_owner').Value := 0;
+        qrCoef.FieldByName('id_coef').Value := fCoefficients.qrCoef.FieldByName('coef_id').Value;
+        qrCoef.FieldByName('COEF_NAME').Value := fCoefficients.qrCoef.FieldByName('COEF_NAME').Value;
+        qrCoef.FieldByName('OSN_ZP').Value := fCoefficients.qrCoef.FieldByName('OSN_ZP').Value;
+        qrCoef.FieldByName('EKSP_MACH').Value := fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value;
+        qrCoef.FieldByName('MAT_RES').Value := fCoefficients.qrCoef.FieldByName('MAT_RES').Value;
+        qrCoef.FieldByName('WORK_PERS').Value := fCoefficients.qrCoef.FieldByName('WORK_PERS').Value;
+        qrCoef.FieldByName('WORK_MACH').Value := fCoefficients.qrCoef.FieldByName('WORK_MACH').Value;
+        qrCoef.FieldByName('OXROPR').Value := fCoefficients.qrCoef.FieldByName('OXROPR').Value;
+        qrCoef.FieldByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
+        qrCoef.Post;
 
-    if Assigned(FormCalculationEstimate) then
-      tableName := 'calculation_coef_temp'
-    else
-      tableName := 'calculation_coef';
+        if Assigned(FormCalculationEstimate) then
+          tableName := '_temp'
+        else
+          tableName := '';
 
-    // Каскадно добавляем выбранный кф. на все зависимые сметы
-    DM.qrDifferent.SQL.Text := 'INSERT INTO `' + tableName + '`(`calculation_coef_id`, ' +
-      '`id_estimate`, `id_type_data`, `id_owner`,'#13 +
-      ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
-      '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
-      'VALUE(GetNewID(:IDType), :id_estimate,:id_type_data,:id_owner,'#13 +
-      ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB)';
-    DM.qrDifferent.ParamByName('IDType').Value := C_ID_SMCOEF;
-    DM.qrDifferent.ParamByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
-    DM.qrDifferent.ParamByName('id_owner').Value := 0;
-    DM.qrDifferent.ParamByName('id_coef').Value := fCoefficients.qrCoef.FieldByName('coef_id').Value;
-    DM.qrDifferent.ParamByName('COEF_NAME').Value := fCoefficients.qrCoef.FieldByName('COEF_NAME').Value;
-    DM.qrDifferent.ParamByName('OSN_ZP').Value := fCoefficients.qrCoef.FieldByName('OSN_ZP').Value;
-    DM.qrDifferent.ParamByName('EKSP_MACH').Value := fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value;
-    DM.qrDifferent.ParamByName('MAT_RES').Value := fCoefficients.qrCoef.FieldByName('MAT_RES').Value;
-    DM.qrDifferent.ParamByName('WORK_PERS').Value := fCoefficients.qrCoef.FieldByName('WORK_PERS').Value;
-    DM.qrDifferent.ParamByName('WORK_MACH').Value := fCoefficients.qrCoef.FieldByName('WORK_MACH').Value;
-    DM.qrDifferent.ParamByName('OXROPR').Value := fCoefficients.qrCoef.FieldByName('OXROPR').Value;
-    DM.qrDifferent.ParamByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
+        // Каскадно добавляем выбранный кф. на все зависимые сметы
+        DM.qrDifferent.SQL.Text := 'INSERT INTO `calculation_coef' + tableName + '`(`calculation_coef_id`, ' +
+          '`id_estimate`, `id_type_data`, `id_owner`,'#13 +
+          ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
+          '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
+          'VALUE(GetNewID(:IDType), :id_estimate,:id_type_data,:id_owner,'#13 +
+          ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB)';
+        DM.qrDifferent.ParamByName('IDType').Value := C_ID_SMCOEF;
+        DM.qrDifferent.ParamByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
+        DM.qrDifferent.ParamByName('id_owner').Value := 0;
+        DM.qrDifferent.ParamByName('id_coef').Value := fCoefficients.qrCoef.FieldByName('coef_id').Value;
+        DM.qrDifferent.ParamByName('COEF_NAME').Value := fCoefficients.qrCoef.FieldByName('COEF_NAME').Value;
+        DM.qrDifferent.ParamByName('OSN_ZP').Value := fCoefficients.qrCoef.FieldByName('OSN_ZP').Value;
+        DM.qrDifferent.ParamByName('EKSP_MACH').Value := fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value;
+        DM.qrDifferent.ParamByName('MAT_RES').Value := fCoefficients.qrCoef.FieldByName('MAT_RES').Value;
+        DM.qrDifferent.ParamByName('WORK_PERS').Value := fCoefficients.qrCoef.FieldByName('WORK_PERS').Value;
+        DM.qrDifferent.ParamByName('WORK_MACH').Value := fCoefficients.qrCoef.FieldByName('WORK_MACH').Value;
+        DM.qrDifferent.ParamByName('OXROPR').Value := fCoefficients.qrCoef.FieldByName('OXROPR').Value;
+        DM.qrDifferent.ParamByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
 
-    DM.qrDifferent1.Active := False;
-    DM.qrDifferent1.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
-      ' OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE))';
-    DM.qrDifferent1.ParamByName('ID_ESTIMATE').Value := qrSmeta.FieldByName('SM_ID').Value;
-    DM.qrDifferent1.Active := True;
-    DM.qrDifferent1.First;
-    while not DM.qrDifferent1.Eof do
-    begin
-      DM.qrDifferent.ParamByName('id_estimate').Value := DM.qrDifferent1.FieldByName('SM_ID').Value;
-      DM.qrDifferent.ExecSQL;
-      DM.qrDifferent1.Next;
+        DM.qrDifferent1.Active := False;
+        DM.qrDifferent1.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
+          ' OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE))';
+        DM.qrDifferent1.ParamByName('ID_ESTIMATE').Value := qrSmeta.FieldByName('SM_ID').Value;
+        DM.qrDifferent1.Active := True;
+        DM.qrDifferent1.First;
+        while not DM.qrDifferent1.Eof do
+        begin
+          DM.qrDifferent.ParamByName('id_estimate').Value := DM.qrDifferent1.FieldByName('SM_ID').Value;
+          DM.qrDifferent.ExecSQL;
+
+          // Добавление во все содерожимое сметы, кроме пусконаладки
+          FastExecSQL('INSERT INTO `calculation_coef' + tableName + '`(`calculation_coef_id`, ' +
+            '`id_estimate`, `id_type_data`, `id_owner`,'#13 +
+            ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
+            '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
+            '(SELECT GetNewID(:IDType),ID_ESTIMATE,ID_TYPE_DATA,ID_TABLES,'#13 +
+            ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB'#13 +
+            'FROM data_row' + tableName + ' WHERE ID_ESTIMATE=:id_estimate AND ID_TYPE_DATA<10)',
+            VarArrayOf([C_ID_SMCOEF, fCoefficients.qrCoef.FieldByName('coef_id').Value,
+            fCoefficients.qrCoef.FieldByName('COEF_NAME').Value, fCoefficients.qrCoef.FieldByName('OSN_ZP')
+            .Value, fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value,
+            fCoefficients.qrCoef.FieldByName('MAT_RES').Value, fCoefficients.qrCoef.FieldByName('WORK_PERS')
+            .Value, fCoefficients.qrCoef.FieldByName('WORK_MACH').Value,
+            fCoefficients.qrCoef.FieldByName('OXROPR').Value, fCoefficients.qrCoef.FieldByName('PLANPRIB')
+            .Value, DM.qrDifferent1.FieldByName('SM_ID').Value]));
+
+          DM.qrDifferent1.Next;
+        end;
+        DM.qrDifferent1.Active := False;
+
+        if Assigned(FormCalculationEstimate) then
+          FormCalculationEstimate.RecalcEstimate;
+        DM.Read.Commit;
+      except
+        DM.Read.Rollback;
+        raise;
+      end;
+    finally
+      DM.Read.Options.AutoCommit := AutoCommitValue;
     end;
-    DM.qrDifferent1.Active := False;
-
-    if Assigned(FormCalculationEstimate) then
-      FormCalculationEstimate.RecalcEstimate;
   end
   else
     qrCoef.Cancel;
@@ -601,7 +634,7 @@ begin
 end;
 
 procedure TFormBasicData.dbchkcoef_ordersClick(Sender: TObject);
-{var
+{ var
   tableName: String; }
 begin
   if not CheckQrActiveEmpty(qrSmeta) or (not flLoaded) then
