@@ -15,6 +15,8 @@ uses
 type
   TSortRec = TPair<Integer, Pointer>;
 
+  TSprItemSelectEvent = procedure(ASprRecord: PSprRecord) of object;
+
   //Ѕазовый класс дл€ построени€ справочников
   TSprFrame = class(TFrame)
     PanelSettings: TPanel;
@@ -61,6 +63,7 @@ type
     FPriceColumn: Boolean;
     //Ќе показывать колонку едениц измерени€
     FNoEdCol: Boolean;
+    FOnSprItemSelect: TSprItemSelectEvent;
 
     function GetSprType: Integer; virtual; abstract;
     function GetRegion: Integer; virtual;
@@ -81,6 +84,8 @@ type
     procedure LoadSpr;
     function FindCode(const ACode: string): PSprRecord;
 
+    property OnSprItemSelect: TSprItemSelectEvent
+      read FOnSprItemSelect write FOnSprItemSelect;
     property OnAfterLoad: TNotifyEvent read FOnAfterLoad write FOnAfterLoad;
     property SprLoaded: Boolean read FLoaded;
   end;
@@ -506,11 +511,17 @@ end;
 procedure TSprFrame.ListSprSelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
 begin
-  if Assigned(Item) and Assigned(Item.Data) then
+  if Assigned(Item) then
   begin
-    StatusBar.Panels[0].Text := '   ' +
-      (Item.Index + 1).ToString + '/' + ListSpr.Items.Count.ToString;
-    Memo.Text := TSprRecord(Item.Data^).Name;
+    if Assigned(FOnSprItemSelect) then
+      FOnSprItemSelect(Item.Data);
+
+    if Assigned(Item.Data) then
+    begin
+      StatusBar.Panels[0].Text := '   ' +
+        (Item.Index + 1).ToString + '/' + ListSpr.Items.Count.ToString;
+      Memo.Text := TSprRecord(Item.Data^).Name;
+    end;
   end;
 end;
 

@@ -416,7 +416,8 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex, About, 
   NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
   SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList,
   NormativDictHelp, BuildZone, HelpKfSt, Users, RoundSetup, InstructionHelp, TypeWorkList,
-  SectionEstimateList;
+  SectionEstimateList,
+  SprSelection;
 
 {$R *.dfm}
 

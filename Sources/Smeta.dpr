@@ -114,7 +114,8 @@ uses
   RoundSetup in 'RoundSetup.pas' {fRoundSetup},
   InstructionHelp in 'InstructionHelp.pas' {fInstructionHelp},
   TypeWorkList in 'TypeWorkList.pas' {fTypeWorkList},
-  SectionEstimateList in 'SectionEstimateList.pas' {fSectionEstimateList};
+  SectionEstimateList in 'SectionEstimateList.pas' {fSectionEstimateList},
+  SprSelection in 'SprSelection.pas' {fSprSelection};
 
 {$R *.res}
 var MHandle: THandle;
