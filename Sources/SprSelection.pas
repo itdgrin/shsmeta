@@ -112,7 +112,6 @@ begin
   end;
   FFrame.Parent := Self;
   FFrame.Align := alClient;
-  FFrame.SpeedButtonShowHideClick(FFrame.SpeedButtonShowHide);
   FFrame.OnSprItemSelect := SelectSprItem;
   FFrame.ListSpr.OnDblClick := btnSelectClick;
   FFrame.LoadSpr;
