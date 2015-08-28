@@ -796,7 +796,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   SummaryCalculationSettings, DataTransfer,
   BasicData, ObjectsAndEstimates, Transportation,
   CalculationDump, SaveEstimate,
-  AdditionData, CardMaterial, CardDataEstimate,
+  AdditionData, CardMaterial,
   KC6, CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList;

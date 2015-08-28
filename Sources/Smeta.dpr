@@ -53,7 +53,6 @@ uses
   PricesReferenceData in 'PricesReferenceData.pas' {FormPricesReferenceData},
   AdditionData in 'AdditionData.pas' {FormAdditionData},
   CardMaterial in 'CardMaterial.pas' {FormCardMaterial},
-  CardDataEstimate in 'CardDataEstimate.pas' {FormCardDataEstimate},
   CardOrganization in 'CardOrganization.pas' {fCardOrganization},
   fTypesActs in 'fTypesActs.pas' {FrameTypesActs: TFrame},
   fIndexesChangeCost in 'fIndexesChangeCost.pas' {FrameIndexesChangeCost: TFrame},
@@ -148,7 +147,6 @@ begin
   Application.CreateForm(TFormCardEstimate, FormCardEstimate);
   Application.CreateForm(TFormSaveEstimate, FormSaveEstimate);
   Application.CreateForm(TFormCardMaterial, FormCardMaterial);
-  Application.CreateForm(TFormCardDataEstimate, FormCardDataEstimate);
   Application.CreateForm(TFormTypesActs, FormTypesActs);
   Application.CreateForm(TFormCardTypesActs, FormCardTypesActs);
   Application.CreateForm(TFormCardIndexesChangeCost, FormCardIndexesChangeCost);

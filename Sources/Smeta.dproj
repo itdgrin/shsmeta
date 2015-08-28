@@ -241,9 +241,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="CardMaterial.pas">
             <Form>FormCardMaterial</Form>
         </DCCReference>
-        <DCCReference Include="CardDataEstimate.pas">
-            <Form>FormCardDataEstimate</Form>
-        </DCCReference>
         <DCCReference Include="CardOrganization.pas">
             <Form>fCardOrganization</Form>
         </DCCReference>
