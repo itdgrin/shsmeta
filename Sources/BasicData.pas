@@ -320,7 +320,7 @@ begin
     // Каскадное удаление наборав из связанных смет и всего что в смете находится
     DM.qrDifferent.SQL.Text := 'DELETE FROM ' + tableName + ' WHERE id_estimate IN '#13 +
       '(SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
-      ' OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE)))'#13 +
+      ' OR (SM_ID=:ID_ESTIMATE) OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE)))'#13 +
       ' /*AND id_type_data=:id_type_data AND id_owner=0*/ AND id_coef=:id_coef';
 
     DM.qrDifferent.ParamByName('id_estimate').Value := qrCoef.FieldByName('id_estimate').Value;
@@ -328,7 +328,8 @@ begin
     DM.qrDifferent.ParamByName('id_coef').Value := qrCoef.FieldByName('id_coef').Value;
     DM.qrDifferent.ExecSQL;
 
-    qrCoef.Delete;
+    CloseOpen(qrCoef);
+    //qrCoef.Delete;
   end;
 end;
 
