@@ -92,9 +92,9 @@ object FormCalculationDump: TFormCalculationDump
     end
   end
   object ButtonCancel: TButton
-    Left = 299
+    Left = 416
     Top = 215
-    Width = 110
+    Width = 101
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
@@ -108,9 +108,9 @@ object FormCalculationDump: TFormCalculationDump
     OnClick = ButtonCancelClick
   end
   object ButtonSave: TButton
-    Left = 416
+    Left = 296
     Top = 215
-    Width = 101
+    Width = 114
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1044#1086#1073#1072#1074#1080#1090#1100

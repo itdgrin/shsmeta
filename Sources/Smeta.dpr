@@ -115,7 +115,8 @@ uses
   InstructionHelp in 'InstructionHelp.pas' {fInstructionHelp},
   TypeWorkList in 'TypeWorkList.pas' {fTypeWorkList},
   SectionEstimateList in 'SectionEstimateList.pas' {fSectionEstimateList},
-  SprSelection in 'SprSelection.pas' {fSprSelection};
+  SprSelection in 'SprSelection.pas' {fSprSelection},
+  TranspPersSelect in 'TranspPersSelect.pas' {fTrPersSelect};
 
 {$R *.res}
 var MHandle: THandle;

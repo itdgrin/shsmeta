@@ -74,9 +74,9 @@ object FormTransportation: TFormTransportation
     end
   end
   object ButtonCancel: TButton
-    Left = 218
-    Top = 349
-    Width = 110
+    Left = 334
+    Top = 348
+    Width = 101
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
@@ -445,9 +445,9 @@ object FormTransportation: TFormTransportation
     TabOrder = 3
   end
   object ButtonAdd: TButton
-    Left = 334
-    Top = 349
-    Width = 101
+    Left = 214
+    Top = 348
+    Width = 114
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1044#1086#1073#1072#1074#1080#1090#1100

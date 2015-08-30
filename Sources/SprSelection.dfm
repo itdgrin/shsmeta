@@ -20,29 +20,31 @@ object fSprSelection: TfSprSelection
     Height = 33
     Align = alBottom
     TabOrder = 0
-    ExplicitLeft = -155
-    ExplicitTop = 366
     object btnSelect: TButton
       AlignWithMargins = True
-      Left = 590
+      Left = 551
       Top = 4
-      Width = 104
+      Width = 114
       Height = 25
       Align = alRight
       Caption = #1042#1099#1073#1088#1072#1090#1100
       TabOrder = 0
       OnClick = btnSelectClick
+      ExplicitLeft = 490
+      ExplicitTop = 12
     end
     object btnCancel: TButton
       AlignWithMargins = True
-      Left = 700
+      Left = 671
       Top = 4
-      Width = 75
+      Width = 101
       Height = 25
+      Margins.Right = 6
       Align = alRight
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 1
       OnClick = btnCancelClick
+      ExplicitLeft = 666
     end
   end
 end
