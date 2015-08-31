@@ -138,6 +138,11 @@ end;
 
 procedure TFormCardEstimate.FormShow(Sender: TObject);
 begin
+  dbedtCHAPTER.Enabled := True;
+  dbedtCHAPTER.Color := clWindow;
+  dbedtROW_NUMBER.Enabled := True;
+  dbedtROW_NUMBER.Color := clWindow;
+
   qrMain.Active := False;
   qrMain.ParamByName('SM_ID').AsInteger := IdEstimate;
   qrMain.Active := True;
@@ -188,6 +193,11 @@ begin
         dblkcbbParts.Enabled := True;
         dblkcbbSections.Enabled := True;
         dblkcbbTypesWorks.Enabled := True;
+
+        dbedtCHAPTER.Enabled := False;
+        dbedtCHAPTER.Color := $00E1DFE0;
+        dbedtROW_NUMBER.Enabled := False;
+        dbedtROW_NUMBER.Color := $00E1DFE0;
 
         if not qrParts.Active then
           CloseOpen(qrParts);
@@ -659,5 +669,3 @@ begin
 end;
 
 end.
-
-

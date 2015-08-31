@@ -197,7 +197,7 @@ object fUniDict: TfUniDict
             Expanded = False
             FieldName = 'unidicttype_name'
             Title.Alignment = taCenter
-            Title.Caption = #1058#1080#1087' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
+            Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
             Width = 120
             Visible = True
           end

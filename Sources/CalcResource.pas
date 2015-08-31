@@ -192,6 +192,11 @@ type
     procedure pnlCalculationYesNoClick(Sender: TObject);
     procedure btnShowDiffClick(Sender: TObject);
     procedure qrMaterialDataCalcFields(DataSet: TDataSet);
+    procedure qrMaterialDataCOASTChange(Sender: TField);
+    procedure qrMechDataCOASTChange(Sender: TField);
+    procedure qrDevicesCOASTChange(Sender: TField);
+    procedure grDevTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+    procedure grRatesTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -314,7 +319,7 @@ begin
     Exit;
 
   if (Field = grMaterial.Columns[5].Field) or (Field = grMaterial.Columns[7].Field) or
-    (Field = grMaterial.Columns[8].Field) or (Field = grMaterial.Columns[11].Field) or
+  { (Field = grMaterial.Columns[8].Field) or } (Field = grMaterial.Columns[11].Field) or
     (Field = grMaterial.Columns[12].Field) or (Field = grMaterial.Columns[13].Field) or
     (Field = grMaterial.Columns[14].Field) or (Field = grMech.Columns[4].Field) or
     (Field = grMech.Columns[6].Field) or (Field = grMech.Columns[8].Field) or
@@ -404,6 +409,11 @@ begin
   grDev.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
+procedure TfCalcResource.grDevTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+begin
+  DoSort(qrDevices, grDev);
+end;
+
 procedure TfCalcResource.grMaterialBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
@@ -464,16 +474,8 @@ begin
 end;
 
 procedure TfCalcResource.grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
-var
-  s: string;
 begin
-  if not CheckQrActiveEmpty(qrMaterialData) then
-    Exit;
-  s := '';
-  if grMaterial.SortMarker = smDown then
-    s := ' DESC';
-  qrMaterialData.SQL[qrMaterialData.SQL.Count - 1] := 'ORDER BY ' + grMaterial.SortedField + s;
-  CloseOpen(qrMaterialData);
+  DoSort(qrMaterialData, grMaterial);
 end;
 
 procedure TfCalcResource.grMechBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -523,16 +525,8 @@ begin
 end;
 
 procedure TfCalcResource.grMechTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
-var
-  s: string;
 begin
-  if not CheckQrActiveEmpty(qrMechData) then
-    Exit;
-  s := '';
-  if grMech.SortMarker = smDown then
-    s := ' DESC';
-  qrMechData.SQL[qrMechData.SQL.Count - 1] := 'ORDER BY ' + grMech.SortedField + s;
-  CloseOpen(qrMechData);
+  DoSort(qrMechData, grMech);
 end;
 
 procedure TfCalcResource.grRatesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -541,6 +535,11 @@ begin
   if qrRates.FieldByName('DELETED').AsInteger = 1 then
     grRates.Canvas.Font.Style := grRates.Canvas.Font.Style + [fsStrikeOut];
   grRates.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TfCalcResource.grRatesTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+begin
+  DoSort(qrRates, grRates);
 end;
 
 procedure TfCalcResource.JvDBGridFooter1Calculate(Sender: TJvDBGridFooter; const FieldName: string;
@@ -807,23 +806,27 @@ begin
       begin
         CloseOpen(qrMaterialData);
         CloseOpen(qrMaterialDetail);
+        DoSort(qrMaterialData, grMaterial);
       end;
     // Расчет механизмов
     2:
       begin
         CloseOpen(qrMechData);
         CloseOpen(qrMechDetail);
+        DoSort(qrMechData, grMech);
       end;
     // Расчет оборудования
     3:
       begin
         CloseOpen(qrDevices);
         CloseOpen(qrDevicesDetail);
+        DoSort(qrDevices, grDev);
       end;
     // Расчет з\п
     4:
       begin
         CloseOpen(qrRates);
+        DoSort(qrRates, grRates);
       end;
   end;
 end;
@@ -964,6 +967,12 @@ begin
     qrDevices.Cancel;
     Abort;
   end;
+end;
+
+procedure TfCalcResource.qrDevicesCOASTChange(Sender: TField);
+begin
+  qrDevices.FieldByName('PRICE').Value := qrDevices.FieldByName('COAST').Value *
+    qrDevices.FieldByName('CNT').Value;
 end;
 
 procedure TfCalcResource.qrDevicesDetailBeforePost(DataSet: TDataSet);
@@ -1114,10 +1123,10 @@ begin
       case cbbNDS.ItemIndex of
         // Если в режиме без НДС
         0:
-          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100)'#13;
+          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
         // С НДС
         1:
-          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS)'#13;
+          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
       end;
 
       if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
@@ -1130,16 +1139,18 @@ begin
           FieldByName('COAST').OldValue, FieldByName('MAT_ID').Value]));
 
       // Стоимость транспорта
-      if FieldByName('TRANSP').Value <> FieldByName('TRANSP').OldValue then
+      {
+        if FieldByName('TRANSP').Value <> FieldByName('TRANSP').OldValue then
         FastExecSQL('UPDATE materialcard_temp SET FTRANSP_NO_NDS = :1, FTRANSP_NDS = :2'#13 +
-          'WHERE PROC_TRANSP=:4 AND DELETED=:5'#13 + 'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 +
-          'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13 +
-          'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MAT_ID=:11',
-          VarArrayOf([FieldByName('TRANSP').Value, FieldByName('TRANSP').Value,
-          FieldByName('PROC_TRANSP').Value, FieldByName('DELETED').Value, FieldByName('MAT_PROC_ZAC').Value,
-          FieldByName('MAT_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
-          FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex, FieldByName('COAST').Value,
-          FieldByName('MAT_ID').Value]));
+        'WHERE PROC_TRANSP=:4 AND DELETED=:5'#13 + 'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 +
+        'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13 +
+        'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MAT_ID=:11',
+        VarArrayOf([FieldByName('TRANSP').Value, FieldByName('TRANSP').Value,
+        FieldByName('PROC_TRANSP').Value, FieldByName('DELETED').Value, FieldByName('MAT_PROC_ZAC').Value,
+        FieldByName('MAT_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
+        FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex, FieldByName('COAST').Value,
+        FieldByName('MAT_ID').Value]));
+      }
     end;
     // Вызываем переасчет всей сметы
     FormCalculationEstimate.RecalcEstimate;
@@ -1155,6 +1166,12 @@ end;
 procedure TfCalcResource.qrMaterialDataCalcFields(DataSet: TDataSet);
 begin
   qrMaterialDataNUMPP.Value := qrMaterialData.RecNo;
+end;
+
+procedure TfCalcResource.qrMaterialDataCOASTChange(Sender: TField);
+begin
+  qrMaterialData.FieldByName('PRICE').Value := qrMaterialData.FieldByName('COAST').Value *
+    qrMaterialData.FieldByName('CNT').Value;
 end;
 
 procedure TfCalcResource.qrMaterialDataMAT_PROC_PODRChange(Sender: TField);
@@ -1240,10 +1257,10 @@ begin
       case cbbNDS.ItemIndex of
         // Если в режиме без НДС
         0:
-          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100)'#13;
+          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
         // С НДС
         1:
-          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS)'#13;
+          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
       end;
 
       if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
@@ -1331,6 +1348,12 @@ begin
   end;
 end;
 
+procedure TfCalcResource.qrMechDataCOASTChange(Sender: TField);
+begin
+  qrMechData.FieldByName('PRICE').Value := qrMechData.FieldByName('COAST').Value *
+    qrMechData.FieldByName('CNT').Value;
+end;
+
 procedure TfCalcResource.qrMechDataPROC_PODRChange(Sender: TField);
 var
   e: TFieldNotifyEvent;
@@ -1410,4 +1433,3 @@ begin
 end;
 
 end.
-

@@ -317,6 +317,7 @@ begin
 
   // Устанавливаем фокус
   dbgrdObjects.SetFocus;
+  qrObjects.Locate('IdObject', FormCardObject.OUT_ID_OBJECT, []);
 end;
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsEditClick(Sender: TObject);
@@ -555,17 +556,7 @@ begin
   dbgrdObjects.SetFocus;
 
   try
-    with DM.qrDifferent do
-    begin
-      SQL.Text := 'DELETE FROM objcards WHERE obj_id = ' + IntToStr(IdObject) + ';';
-      ExecSQL;
-    end;
-
-    with DM.qrDifferent do
-    begin
-      SQL.Text := 'DELETE FROM smetasourcedata WHERE obj_id = ' + IntToStr(IdObject) + ';';
-      ExecSQL;
-    end;
+    FastExecSQL('DELETE FROM objcards WHERE obj_id = :0;', VarArrayOf([IdObject]));
 
   except
     on e: Exception do
@@ -1077,6 +1068,11 @@ begin
   PMEstimatesBasicData.Enabled := True;
   PMEstimateExpand.Enabled := True;
   PMEstimateCollapse.Enabled := True;
+
+  if qrTreeData.FieldByName('SM_TYPE').AsInteger = 3 then
+    PMEstimatesEdit.caption := 'Карточка ПТМ'
+  else
+    PMEstimatesEdit.caption := 'Карточка сметы';
 
   if qrTreeData.FieldByName('SM_TYPE').AsInteger = 2 then
   begin

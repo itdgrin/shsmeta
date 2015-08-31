@@ -19,7 +19,7 @@ type
     FormKind: TKindForm;
   end;
 
-  TActivateEvent = procedure (ADataSet: TDataSet; ATag: Integer) of object;
+  TActivateEvent = procedure(ADataSet: TDataSet; ATag: Integer) of object;
 
   // Выполнение медленных запросов к базе в отдельном потоке
   TThreadQuery = class(TThread)
@@ -33,13 +33,12 @@ type
   protected
     procedure Execute; override;
   public
-    //Свойства не потокобезопасные, записывать можно только когда поток приостановлен
+    // Свойства не потокобезопасные, записывать можно только когда поток приостановлен
     property SQLText: string read FSQLText write FSQLText;
     property OnActivate: TActivateEvent read FOnActivate write FOnActivate;
     property Tag: Integer read FTag;
 
-    constructor Create(const ASQLText: string; AHandle: HWND;
-      ACreateSuspended: Boolean; ATag: Integer = 0);
+    constructor Create(const ASQLText: string; AHandle: HWND; ACreateSuspended: Boolean; ATag: Integer = 0);
   end;
 
   TSmClipData = class
@@ -54,13 +53,12 @@ procedure FixDBGridColumnsWidth(const DBGrid: TDBGrid);
 // Установка стиля таблицы из формы настроек
 procedure LoadDBGridSettings(const DBGrid: TJvDBGrid);
 // Процедура рисования чекбокса на гриде
-procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
+procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: Boolean);
 
 // Удаление директории с содержимым !!!!Использовать остородно!!!!!
 procedure KillDir(const ADirName: string);
 // Запускает процесс и ждет его завершения
-function WinExecAndWait(AAppName, ACmdLine: PChar; ATimeout: DWord;
-  var AWaitResult: DWord): boolean;
+function WinExecAndWait(AAppName, ACmdLine: PChar; ATimeout: DWord; var AWaitResult: DWord): Boolean;
 // Обновляет итератор, использовать при добавлении, вставке и удалении из сметы
 function UpdateIterator(ADestSmID, AIterator, AFromRate: Integer): Integer;
 
@@ -73,13 +71,15 @@ function FastSelectSQLOne(const ASelectSQL: string; const AParams: Variant): Var
 // Функция быстрого выполнения запроса, назад ничего не возвращает (Для обновлений и пр.)
 procedure FastExecSQL(const AExecSQL: string; const AParams: Variant);
 // Процедура переоткрытия запроса TFDQuery с локейтом на значение Поля[0]
-procedure CloseOpen(const Query: TFDQuery; ADisableControls: boolean = True);
+procedure CloseOpen(const Query: TFDQuery; ADisableControls: Boolean = True);
 // Функция проверки TDataSet на активность и пустоту
-function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;
+function CheckQrActiveEmpty(const ADataSet: TDataSet): Boolean;
 // Функция получения значения из справочника ежемесячных величин
 function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
 // Функция подсчета итога по датасету. Возвращает вариантный одномерный массив соответствующий набору колонок
 function CalcFooterSumm(const Query: TFDQuery): Variant;
+// Процедура сортировки для использования в событии TitleBtnClick
+procedure DoSort(const Query: TFDQuery; Grid: TJvDBGrid);
 
 function MyFloatToStr(Value: Extended): string;
 function MyStrToFloat(Value: string): Extended;
@@ -95,8 +95,9 @@ procedure Exec(AParam: string);
 implementation
 
 function Expand(const AParam: string): string;
-var buf : array[0..$FF] of char;
-    Size : integer;
+var
+  buf: array [0 .. $FF] of char;
+  Size: Integer;
 begin
   Size := ExpandEnvironmentStrings(PChar(AParam), buf, sizeof(buf));
   Result := copy(buf, 1, Size);
@@ -108,9 +109,29 @@ begin
   ShellExecute(Application.Handle, 'open', PChar(AParam), nil, nil, SW_SHOWMAXIMIZED);
 end;
 
+procedure DoSort(const Query: TFDQuery; Grid: TJvDBGrid);
+var
+  s: string;
+begin
+  try
+    if not CheckQrActiveEmpty(Query) then
+      Exit;
+    s := '';
+    if Grid.SortMarker = smDown then
+      s := ' DESC';
+    if Grid.SortedField <> '' then
+      Query.SQL[Query.SQL.Count - 1] := 'ORDER BY ' + Grid.SortedField + s
+    else
+      Query.SQL[Query.SQL.Count - 1] := 'ORDER BY 1';
+    CloseOpen(Query);
+  except
+
+  end;
+end;
+
 // Выполняет медленный SQL в отдельном потоке
-constructor TThreadQuery.Create(const ASQLText: string; AHandle: HWND;
-  ACreateSuspended: Boolean; ATag: Integer = 0);
+constructor TThreadQuery.Create(const ASQLText: string; AHandle: HWND; ACreateSuspended: Boolean;
+  ATag: Integer = 0);
 begin
   FHandle := AHandle;
   FTag := ATag;
@@ -119,9 +140,10 @@ begin
 end;
 
 procedure TThreadQuery.Execute;
-var TmpConnect: TFDConnection;
-    TmpTrans: TFDTransaction;
-    TmpQuery: TFDQuery;
+var
+  TmpConnect: TFDConnection;
+  TmpTrans: TFDTransaction;
+  TmpQuery: TFDQuery;
 begin
   TmpConnect := nil;
   TmpTrans := nil;
@@ -171,14 +193,14 @@ begin
   if Length(SmClipArray) = 0 then
     Exit;
 
-  Data := GlobalAlloc(GMEM_MOVEABLE, SizeOf(Integer) + SizeOf(TSmClipRec) * Length(SmClipArray));
+  Data := GlobalAlloc(GMEM_MOVEABLE, sizeof(Integer) + sizeof(TSmClipRec) * Length(SmClipArray));
   try
     DataPtr := GlobalLock(Data);
     try
       i := Length(SmClipArray);
-      Move(i, DataPtr^, SizeOf(Integer));
-      DataPtr := Ptr(Cardinal(DataPtr) + SizeOf(Integer));
-      Move(SmClipArray[0], DataPtr^, SizeOf(TSmClipRec) * Length(SmClipArray));
+      Move(i, DataPtr^, sizeof(Integer));
+      DataPtr := Ptr(Cardinal(DataPtr) + sizeof(Integer));
+      Move(SmClipArray[0], DataPtr^, sizeof(TSmClipRec) * Length(SmClipArray));
       ClipBoard.SetAsHandle(G_SMETADATA, Data);
     finally
       GlobalUnlock(Data);
@@ -200,12 +222,12 @@ begin
     Exit;
   DataPtr := GlobalLock(Data);
   try
-    Move(DataPtr^, i, SizeOf(Integer));
+    Move(DataPtr^, i, sizeof(Integer));
     SetLength(SmClipArray, i);
     if i = 0 then
       Exit;
-    DataPtr := Ptr(Cardinal(DataPtr) + SizeOf(Integer));
-    Move(DataPtr^, SmClipArray[0], SizeOf(TSmClipRec) * Length(SmClipArray));
+    DataPtr := Ptr(Cardinal(DataPtr) + sizeof(Integer));
+    Move(DataPtr^, SmClipArray[0], sizeof(TSmClipRec) * Length(SmClipArray));
   finally
     GlobalUnlock(Data);
   end;
@@ -270,29 +292,28 @@ begin
 end;
 
 // Запускает приложение и ожидает его завершения
-function WinExecAndWait(AAppName, ACmdLine: PChar; ATimeout: DWord;
-  var AWaitResult: DWord): boolean;
+function WinExecAndWait(AAppName, ACmdLine: PChar; ATimeout: DWord; var AWaitResult: DWord): Boolean;
 var
   ProcInf: TProcessInformation;
   Start: TStartupInfo;
 begin
-  FillChar(Start, SizeOf(TStartupInfo), 0);
+  FillChar(Start, sizeof(TStartupInfo), 0);
   with Start do
   begin
-    cb := SizeOf(TStartupInfo);
+    cb := sizeof(TStartupInfo);
     dwFlags := STARTF_USESHOWWINDOW;
     wShowWindow := SW_HIDE;
   end;
 
-  Result := CreateProcess(AAppName, ACmdLine, nil, nil, False,
-    NORMAL_PRIORITY_CLASS, nil, nil, Start, ProcInf);
+  Result := CreateProcess(AAppName, ACmdLine, nil, nil, False, NORMAL_PRIORITY_CLASS, nil, nil,
+    Start, ProcInf);
 
   if ATimeout = 0 then
     ATimeout := INFINITE;
 
   AWaitResult := WaitForSingleObject(ProcInf.hProcess, ATimeout);
 
-  //В любом случае идет попытка унитожения процесса
+  // В любом случае идет попытка унитожения процесса
   TerminateProcess(ProcInf.hProcess, 0);
 
   CloseHandle(ProcInf.hProcess);
@@ -304,21 +325,21 @@ procedure KillDir(const ADirName: string);
 var
   FileFolderOperation: TSHFileOpStruct;
 begin
-  FillChar(FileFolderOperation, SizeOf(FileFolderOperation), 0);
+  FillChar(FileFolderOperation, sizeof(FileFolderOperation), 0);
   FileFolderOperation.wFunc := FO_DELETE;
   FileFolderOperation.pFrom := PChar(ExcludeTrailingPathDelimiter(ADirName) + #0);
   FileFolderOperation.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
   SHFileOperation(FileFolderOperation);
 end;
 
-function CheckQrActiveEmpty(const ADataSet: TDataSet): boolean;
+function CheckQrActiveEmpty(const ADataSet: TDataSet): Boolean;
 begin
   Result := True;
   if not ADataSet.Active or ADataSet.IsEmpty then
     Result := False;
 end;
 
-procedure CloseOpen(const Query: TFDQuery; ADisableControls: boolean = True);
+procedure CloseOpen(const Query: TFDQuery; ADisableControls: Boolean = True);
 var
   Key: Variant;
   // E: TDataSetNotifyEvent;
@@ -481,7 +502,7 @@ begin
 end;
 
 // Процедури рисования чекбокса на гриде
-procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: boolean);
+procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: Boolean);
 var
   DrawFlags: Integer;
 begin
@@ -495,7 +516,7 @@ end;
 
 function MyFloatToStr(Value: Extended): string;
 var
-  DS: Char;
+  DS: char;
 begin
   DS := FormatSettings.DecimalSeparator;
   try
@@ -508,7 +529,7 @@ end;
 
 function MyStrToFloat(Value: string): Extended;
 var
-  DS: Char;
+  DS: char;
 begin
   DS := FormatSettings.DecimalSeparator;
   try
@@ -525,7 +546,7 @@ end;
 
 function MyCurrToStr(Value: Currency): string;
 var
-  DS: Char;
+  DS: char;
 begin
   DS := FormatSettings.DecimalSeparator;
   try
@@ -538,7 +559,7 @@ end;
 
 function MyStrToCurr(Value: string): Currency;
 var
-  DS: Char;
+  DS: char;
 begin
   DS := FormatSettings.DecimalSeparator;
   try
@@ -555,7 +576,7 @@ end;
 
 function MyStrToFloatDef(Value: string; DefRes: Extended): Extended;
 var
-  DS: Char;
+  DS: char;
 begin
   DS := FormatSettings.DecimalSeparator;
   try

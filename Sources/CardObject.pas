@@ -139,7 +139,7 @@ type
     TypeOXR: Integer;
     MAIS: Integer;
   public
-
+    OUT_ID_OBJECT: Variant;
   end;
 
 const
@@ -431,7 +431,9 @@ procedure TFormCardObject.ButtonSaveClick(Sender: TObject);
 var
   NumberObject, v2, v3, v4, v5, v6, v7, v8, v9, v12, v14, v15, v16, v17, v18, v19: string;
   CountField: Integer;
+  NEW_ID: Variant;
 begin
+  NEW_ID := NULL;
   CountField := 0;
   // ПРОВЕРКА ЧТОБЫ НЕ БЫЛО ПУСТЫХ ЗНАЧЕНИЙ
 
@@ -511,7 +513,7 @@ begin
   end;
 
   // Источник финансирования
-  if DBLookupComboBoxSourseFinance.KeyValue <> Null then
+  if DBLookupComboBoxSourseFinance.KeyValue <> NULL then
     v9 := DBLookupComboBoxSourseFinance.KeyValue
   else
   begin
@@ -521,7 +523,7 @@ begin
   end;
 
   // Категория объекта
-  if dblkcbbCategoryObject.KeyValue <> Null then
+  if dblkcbbCategoryObject.KeyValue <> NULL then
     v12 := dblkcbbCategoryObject.KeyValue
   else
   begin
@@ -530,7 +532,7 @@ begin
   end;
 
   // Регион
-  if dblkcbbRegion.KeyValue <> Null then
+  if dblkcbbRegion.KeyValue <> NULL then
     v14 := dblkcbbRegion.KeyValue
   else
   begin
@@ -540,7 +542,7 @@ begin
 
   // База расценок
   with DBLookupComboBoxBasePrices do
-    if KeyValue <> Null then
+    if KeyValue <> NULL then
       v15 := KeyValue
     else
     begin
@@ -550,7 +552,7 @@ begin
 
   // Зона расценок
   with dblkcbbZonePrices do
-    if KeyValue = Null then
+    if KeyValue = NULL then
     begin
       Color := ColorWarningField;
       Inc(CountField);
@@ -558,7 +560,7 @@ begin
 
   // Тип ОХР и ОПР и план прибыли
   with dblkcbbTypeOXR do
-    if KeyValue <> Null then
+    if KeyValue <> NULL then
       v16 := KeyValue
     else
     begin
@@ -567,7 +569,7 @@ begin
     end;
 
   with dblkcbbMAIS do
-    if KeyValue <> Null then
+    if KeyValue <> NULL then
       v19 := KeyValue
     else
     begin
@@ -594,7 +596,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-
+      OUT_ID_OBJECT := IdObject;
       if Editing then
         SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = "' + v2 + '", date_dog = "' + v3
           + '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
@@ -607,14 +609,16 @@ begin
           IntToStr(IdObject) + '";')
       else
       begin
+        NEW_ID := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_OBJ]));
         SQL.Add('INSERT INTO objcards (obj_id, num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '
           + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
           ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV) ' +
-          'VALUE (GetNewID(:IDType), "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5
-          + '", "' + v6 + '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 +
-          '", :snds, "' + v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
+          'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "'
+          + v6 + '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 + '", :snds, "' +
+          v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV);');
-        ParamByName('IDType').Value := C_ID_OBJ;
+        ParamByName('NEW_ID').Value := NEW_ID;
+        OUT_ID_OBJECT := NEW_ID;
       end;
       ParamByName('PER_TEMP_BUILD').Value := qrMain.FieldByName('PER_TEMP_BUILD').Value;
       ParamByName('PER_CONTRACTOR').Value := qrMain.FieldByName('PER_CONTRACTOR').Value;
@@ -676,9 +680,9 @@ end;
 
 procedure TFormCardObject.EditNumberObjectKeyPress(Sender: TObject; var Key: Char);
 begin
- { if Key <> #8 then
+  { if Key <> #8 then
     if (Key < '0') or (Key > '9') then // Запрещаем ввод символов кроме цифр
-      Key := #0;  }
+    Key := #0; }
 end;
 
 procedure TFormCardObject.EditingRecord(const Value: Boolean);
@@ -753,13 +757,13 @@ begin
   DateTimePickerDataCreateContract.Date := Now;
   cbbFromMonth.ItemIndex := MonthOf(Now) - 1;
   seYear.Value := YearOf(Now);
-  DBLookupComboBoxSourseFinance.KeyValue := Null;
-  dblkcbbCategoryObject.KeyValue := Null;
-  dblkcbbRegion.KeyValue := Null;
-  dblkcbbZonePrices.KeyValue := Null;
-  DBLookupComboBoxBasePrices.KeyValue := Null;
-  dblkcbbTypeOXR.KeyValue := Null;
-  dblkcbbMAIS.KeyValue := Null;
+  DBLookupComboBoxSourseFinance.KeyValue := NULL;
+  dblkcbbCategoryObject.KeyValue := NULL;
+  dblkcbbRegion.KeyValue := NULL;
+  dblkcbbZonePrices.KeyValue := NULL;
+  DBLookupComboBoxBasePrices.KeyValue := NULL;
+  dblkcbbTypeOXR.KeyValue := NULL;
+  dblkcbbMAIS.KeyValue := NULL;
 end;
 
 procedure TFormCardObject.DateTimePickerStartBuildingChange(Sender: TObject);
@@ -776,8 +780,7 @@ begin
     if CheckQrActiveEmpty(qrMAIS) then
     begin
       qrMAIS.First;
-      while not(qrMAIS.Eof) and (seYear.Value <=
-        YearOf(qrMAIS.FieldByName('onDate').AsDateTime)) do
+      while not(qrMAIS.Eof) and (seYear.Value <= YearOf(qrMAIS.FieldByName('onDate').AsDateTime)) do
         qrMAIS.Next;
       dblkcbbMAIS.KeyValue := qrMAIS.FieldByName('MAIS_ID').AsInteger;
     end;
@@ -811,7 +814,7 @@ var
   IdRegion: Integer;
   IdCategory: Integer;
 begin
-  if (dblkcbbCategoryObject.KeyValue = Null) or (dblkcbbZonePrices.KeyValue = Null) then
+  if (dblkcbbCategoryObject.KeyValue = NULL) or (dblkcbbZonePrices.KeyValue = NULL) then
     exit;
 
   // Тип ОХР и ОПР и План прибыли

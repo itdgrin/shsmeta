@@ -472,6 +472,9 @@ type
     lblZone: TLabel;
     lblTypeWork: TLabel;
     lblWinterPrice: TLabel;
+    pmLblObj: TPopupMenu;
+    mN14: TMenuItem;
+    mN15: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -1314,8 +1317,8 @@ begin
   if Application.MessageBox('Произвести перерасчет?', 'Перерасчет', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
     <> IDYES then
     Exit;
-  case Application.MessageBox('Произвести обновление цен по всем объектам?', 'Перерасчет',
-    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
+  case Application.MessageBox('Произвести перерасчет\замену данных?'#13 +
+    '(будут восстановлены справочные цены)', 'Перерасчет', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
     IDYES:
       FastExecSQL('CALL UpdateSmetaCosts(:IDESTIMATE,:ID_ACT);', VarArrayOf([IdEstimate, IdAct]));
   end;
@@ -1429,7 +1432,7 @@ procedure TFormCalculationEstimate.Panel1Resize(Sender: TObject);
 begin
   dblkcbbOXROPR.Width := (Sender as TPanel).Width div 2 - dblkcbbOXROPR.Left - 3;
 
-  //EditWinterPrice.Left := lblWinterPrice.Left + lblWinterPrice.Width + 6;
+  // EditWinterPrice.Left := lblWinterPrice.Left + lblWinterPrice.Width + 6;
   EditWinterPrice.Width := (Sender as TPanel).Width - EditWinterPrice.Left - 6;
 end;
 
@@ -2893,6 +2896,10 @@ begin
   qrTemp.ExecSQL;
   // Пересчитывает все величины по данной строке
   ReCalcRowRates;
+  // Переходим на следующую строку после ввода кол-ва
+  qrRatesEx.Next;
+  // ...в колонку ввода кода расценки
+  grRatesEx.Col := 2;
 end;
 
 procedure TFormCalculationEstimate.qrRatesExNUM_ROWChange(Sender: TField);
@@ -3201,6 +3208,8 @@ begin
       ParamByName('CalcMode').Value := G_CALCMODE;
       ExecSQL;
     end;
+
+    // Вызываем расчет
 
   except
     on e: Exception do

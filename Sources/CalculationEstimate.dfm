@@ -362,7 +362,6 @@
       ParentBackground = False
       ParentFont = False
       TabOrder = 0
-      ExplicitHeight = 224
       object ImageSplitterCenter: TImage
         Left = 425
         Top = 97
@@ -556,7 +555,6 @@
         ParentBackground = False
         ShowCaption = False
         TabOrder = 1
-        ExplicitHeight = 199
         object ImageSplitterLeft: TImage
           Left = 313
           Top = 40
@@ -587,7 +585,6 @@
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 1
-          ExplicitTop = 160
         end
         object grRatesEx: TJvDBGrid
           Left = 0
@@ -747,7 +744,6 @@
         ParentBackground = False
         TabOrder = 3
         OnResize = PanelNoDataResize
-        ExplicitHeight = 199
         object ShapeNoData: TShape
           Left = 0
           Top = 0
@@ -1457,7 +1453,6 @@
         ShowCaption = False
         TabOrder = 2
         Visible = False
-        ExplicitHeight = 199
         object ImageSplitterRightBottom: TImage
           Left = 312
           Top = 97
@@ -1487,7 +1482,6 @@
           TabOrder = 1
           OnChange = MemoRightChange
           OnExit = MemoRightExit
-          ExplicitTop = 184
         end
         object PanelClientRightTables: TPanel
           Left = 0
@@ -1501,7 +1495,6 @@
           ShowCaption = False
           TabOrder = 0
           OnResize = PanelClientRightTablesResize
-          ExplicitHeight = 179
           object ImageSplitterRight1: TImage
             Left = 208
             Top = 97
@@ -2857,9 +2850,7 @@
         Margins.Bottom = 5
         Align = alLeft
         Caption = #1042#1080#1076' '#1088#1072#1073#1086#1090':'
-        ExplicitLeft = 140
-        ExplicitTop = 2
-        ExplicitHeight = 15
+        ExplicitHeight = 13
       end
       object lblWinterPrice: TLabel
         AlignWithMargins = True
@@ -2872,7 +2863,6 @@
         Margins.Bottom = 5
         Align = alLeft
         Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077' '#1085#1072':'
-        ExplicitLeft = 489
         ExplicitHeight = 13
       end
       object EditWinterPrice: TEdit
@@ -2888,6 +2878,7 @@
         ReadOnly = True
         TabOrder = 1
         OnClick = nSelectWinterPriseClick
+        ExplicitHeight = 21
       end
       object dblkcbbOXROPR: TDBLookupComboBox
         Left = 275
@@ -2924,6 +2915,7 @@
       Top = 6
       Width = 114
       Height = 13
+      Cursor = crHandPoint
       Hint = #1054#1090#1082#1088#1099#1090#1100' '#1086#1082#1085#1086' '#1080#1089#1093#1086#1076#1085#1099#1093' '#1076#1072#1085#1085#1099#1093
       Caption = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077':'
       Font.Charset = DEFAULT_CHARSET
@@ -3076,6 +3068,7 @@
       Top = 6
       Width = 45
       Height = 13
+      Cursor = crHandPoint
       Hint = #1054#1090#1082#1088#1099#1090#1100' '#1086#1082#1085#1086' '#1086#1073#1098#1077#1082#1090#1086#1074
       Caption = #1054#1073#1098#1077#1082#1090
       Font.Charset = DEFAULT_CHARSET
@@ -3085,6 +3078,7 @@
       Font.Style = [fsBold]
       ParentFont = False
       ParentShowHint = False
+      PopupMenu = pmLblObj
       ShowHint = True
       OnClick = LabelObjectClick
     end
@@ -5245,6 +5239,18 @@
     object PMRateRef: TMenuItem
       Caption = #1054#1090#1082#1088#1099#1090#1100' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082
       OnClick = PMRateRefClick
+    end
+  end
+  object pmLblObj: TPopupMenu
+    Left = 16
+    Top = 120
+    object mN14: TMenuItem
+      Caption = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
+      OnClick = Label1Click
+    end
+    object mN15: TMenuItem
+      Caption = #1054#1090#1082#1088#1099#1090#1100' '#1080#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077' '#1087#1086' '#1086#1073#1098#1077#1082#1090#1091
+      OnClick = LabelObjectClick
     end
   end
 end

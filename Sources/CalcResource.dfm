@@ -147,10 +147,6 @@ object fCalcResource: TfCalcResource
     OnChange = pgcChange
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl2: TLabel
         Left = 0
         Top = 0
@@ -168,10 +164,6 @@ object fCalcResource: TfCalcResource
     object ts2: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl2: TSplitter
         Left = 0
         Top = 193
@@ -540,10 +532,6 @@ object fCalcResource: TfCalcResource
     object ts3: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl4: TSplitter
         Left = 0
         Top = 209
@@ -873,10 +861,6 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl5: TSplitter
         Left = 0
         Top = 209
@@ -943,6 +927,7 @@ object fCalcResource: TfCalcResource
           OnDrawColumnCell = grDevDrawColumnCell
           AutoAppend = False
           IniStorage = FormStorage
+          OnTitleBtnClick = grDevTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1261,6 +1246,7 @@ object fCalcResource: TfCalcResource
           OnDrawColumnCell = grRatesDrawColumnCell
           AutoAppend = False
           IniStorage = FormStorage
+          OnTitleBtnClick = grRatesTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1489,9 +1475,10 @@ object fCalcResource: TfCalcResource
         ' IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))*COALESCE(MAT' +
         '_COUNT, 0))) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
       
-        '  SUM(IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS), IF' +
-        '(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS))) AS TRANSP, ' +
-        '/* '#1090#1088#1072#1085#1089#1087'. */ '
+        '  SUM(IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, IF(FCOAST_NDS<>' +
+        '0, FTRANSP_NDS, TRANSP_NDS)), IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_N' +
+        'DS, IF(FCOAST_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)))) AS TR' +
+        'ANSP, /* '#1090#1088#1072#1085#1089#1087'. */ '
       '  DELETED,'
       '  MAT_PROC_ZAC,'
       '  MAT_PROC_PODR,'
@@ -1550,6 +1537,7 @@ object fCalcResource: TfCalcResource
       FieldName = 'CNT'
       Origin = 'CNT'
       ProviderFlags = []
+      OnChange = qrMaterialDataCOASTChange
       Precision = 46
     end
     object qrMaterialDataDOC_DATE: TDateField
@@ -1574,6 +1562,7 @@ object fCalcResource: TfCalcResource
       FieldName = 'COAST'
       Origin = 'COAST'
       ProviderFlags = []
+      OnChange = qrMaterialDataCOASTChange
       Precision = 26
     end
     object qrMaterialDataPRICE: TFMTBCDField
@@ -1748,6 +1737,7 @@ object fCalcResource: TfCalcResource
       FieldName = 'CNT'
       Origin = 'CNT'
       ProviderFlags = []
+      OnChange = qrMechDataCOASTChange
       Precision = 46
     end
     object qrMechDataDOC_DATE: TDateField
@@ -1766,6 +1756,7 @@ object fCalcResource: TfCalcResource
       FieldName = 'COAST'
       Origin = 'COAST'
       ProviderFlags = []
+      OnChange = qrMechDataCOASTChange
       Precision = 25
     end
     object qrMechDataPRICE: TFMTBCDField
@@ -1910,6 +1901,7 @@ object fCalcResource: TfCalcResource
       FieldName = 'CNT'
       Origin = 'CNT'
       ProviderFlags = []
+      OnChange = qrDevicesCOASTChange
       Precision = 46
     end
     object qrDevicesDOC_DATE: TDateField
@@ -1928,6 +1920,7 @@ object fCalcResource: TfCalcResource
       FieldName = 'COAST'
       Origin = 'COAST'
       ProviderFlags = []
+      OnChange = qrDevicesCOASTChange
       Precision = 25
     end
     object qrDevicesPRICE: TFMTBCDField
@@ -2089,7 +2082,21 @@ object fCalcResource: TfCalcResource
     StoredProps.Strings = (
       'pnlMatBott.Height'
       'pnlMechBott.Height'
-      'pnlDevBott.Height')
+      'pnlDevBott.Height'
+      'grDev.SortedField'
+      'grDevBott.SortedField'
+      'grMaterial.SortedField'
+      'grMaterialBott.SortedField'
+      'grMech.SortedField'
+      'grMechBott.SortedField'
+      'grRates.SortedField'
+      'grDev.SortMarker'
+      'grDevBott.SortMarker'
+      'grMaterial.SortMarker'
+      'grMaterialBott.SortMarker'
+      'grMech.SortMarker'
+      'grMechBott.SortMarker'
+      'grRates.SortMarker')
     StoredValues = <>
     Left = 552
     Top = 216
@@ -2146,9 +2153,10 @@ object fCalcResource: TfCalcResource
       '  m.TRANSP_PROC_PODR,'
       '  m.PROC_TRANSP,'
       
-        '  IF(:NDS=1, IF(m.FTRANSP_NDS<>0, m.FTRANSP_NDS, m.TRANSP_NDS), ' +
-        'IF(m.FTRANSP_NO_NDS<>0, m.FTRANSP_NO_NDS, m.TRANSP_NO_NDS)) AS T' +
-        'RANSP,'
+        '  IF(:NDS=1, IF(m.FTRANSP_NDS<>0, m.FTRANSP_NDS, IF(m.FCOAST_NDS' +
+        '<>0, m.FTRANSP_NDS, m.TRANSP_NDS)), IF(m.FTRANSP_NO_NDS<>0, m.FT' +
+        'RANSP_NO_NDS, IF(m.FCOAST_NO_NDS<>0, m.FTRANSP_NO_NDS, m.TRANSP_' +
+        'NO_NDS))) AS TRANSP, /* '#1090#1088#1072#1085#1089#1087'. */'
       '  m.MAT_ID,'
       '  m.ID,'
       '  m.REPLACED,'

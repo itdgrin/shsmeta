@@ -107,7 +107,7 @@ inherited FrameOXROPR: TFrameOXROPR
             FieldName = 'NameWork'
             ReadOnly = True
             Title.Alignment = taCenter
-            Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1088#1072#1073#1086#1090#1099
+            Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1088#1072#1073#1086#1090
             Width = 294
             Visible = True
           end
