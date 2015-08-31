@@ -320,8 +320,8 @@ begin
     // Каскадное удаление наборав из связанных смет и всего что в смете находится
     DM.qrDifferent.SQL.Text := 'DELETE FROM ' + tableName + ' WHERE id_estimate IN '#13 +
       '(SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
-      ' OR (SM_ID=:ID_ESTIMATE) OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE)))'#13 +
-      ' /*AND id_type_data=:id_type_data AND id_owner=0*/ AND id_coef=:id_coef';
+      ' OR (SM_ID=:ID_ESTIMATE) OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE)))'#13
+      + ' /*AND id_type_data=:id_type_data AND id_owner=0*/ AND id_coef=:id_coef';
 
     DM.qrDifferent.ParamByName('id_estimate').Value := qrCoef.FieldByName('id_estimate').Value;
     { DM.qrDifferent.ParamByName('id_type_data').Value := qrCoef.FieldByName('id_type_data').Value; }
@@ -329,7 +329,7 @@ begin
     DM.qrDifferent.ExecSQL;
 
     CloseOpen(qrCoef);
-    //qrCoef.Delete;
+    // qrCoef.Delete;
   end;
 end;
 
@@ -598,7 +598,11 @@ end;
 procedure TFormBasicData.ComboBoxMonthORYearChange(Sender: TObject);
 var
   vYear, vMonth: String;
+  res: Variant;
 begin
+  if not CheckQrActiveEmpty(qrSmeta) or (not flLoaded) then
+    exit;
+
   edtRateMachinist.Text := '';
 
   vMonth := IntToStr(ComboBoxMonth.ItemIndex + 1);
@@ -617,6 +621,52 @@ begin
       edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
     end;
   end;
+
+  if dbchkcoef_orders.Checked then
+  begin
+    res := GetUniDictParamValue('K_KORR_ZP', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
+    if VarIsNull(res) then
+      edtKZP.Text := '1'
+    else
+      edtKZP.Text := FloatToStr(res);
+
+    res := GetUniDictParamValue('K_OXR_OPR_270', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
+    if VarIsNull(res) then
+      EditK31.Text := '1'
+    else
+      EditK31.Text := FloatToStr(res);
+
+    res := GetUniDictParamValue('K_PLAN_PRIB_270', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
+    if VarIsNull(res) then
+      EditK32.Text := '1'
+    else
+      EditK32.Text := FloatToStr(res);
+
+    res := GetUniDictParamValue('K_VREM_ZDAN_SOOR', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
+    if VarIsNull(res) then
+      EditK33.Text := '1'
+    else
+      EditK33.Text := FloatToStr(res);
+
+    res := GetUniDictParamValue('K_ZIM_UDOR_1', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
+    if VarIsNull(res) then
+      EditK34.Text := '1'
+    else
+      EditK34.Text := FloatToStr(res);
+
+    res := GetUniDictParamValue('K_ZIM_UDOR_2', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
+    if VarIsNull(res) then
+    begin
+      qrSmeta.Edit;
+      qrSmeta.FieldByName('K35').Value := 1;
+    end
+    else
+    begin
+      qrSmeta.Edit;
+      qrSmeta.FieldByName('K35').Value := res;
+    end;
+  end;
+
   {
     if Application.MessageBox('Произвести замену индекса роста цен из справочника?', 'Смета',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then

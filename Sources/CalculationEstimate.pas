@@ -85,7 +85,6 @@ type
     Edit13: TEdit;
     Edit14: TEdit;
     Panel1: TPanel;
-    LabelOXROPR: TLabel;
     PanelSSR: TPanel;
     PanelData: TPanel;
     Label1: TLabel;
@@ -130,7 +129,6 @@ type
     BevelEstimate: TBevel;
     LabelNameObject: TLabel;
     LabelNameEstimate: TLabel;
-    LabelWinterPrice: TLabel;
     PopupMenuCoefSeparator1: TMenuItem;
     PopupMenuCoefCopy: TMenuItem;
     EditWinterPrice: TEdit;
@@ -470,6 +468,10 @@ type
     qrRatesExCONS_REPLASED: TIntegerField;
     qrMaterialKOEFMR: TFloatField;
     PMInsertRow: TMenuItem;
+    lbl1: TLabel;
+    lblZone: TLabel;
+    lblTypeWork: TLabel;
+    lblWinterPrice: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -1427,9 +1429,7 @@ procedure TFormCalculationEstimate.Panel1Resize(Sender: TObject);
 begin
   dblkcbbOXROPR.Width := (Sender as TPanel).Width div 2 - dblkcbbOXROPR.Left - 3;
 
-  LabelWinterPrice.Left := dblkcbbOXROPR.Left + dblkcbbOXROPR.Width + 6;
-
-  EditWinterPrice.Left := LabelWinterPrice.Left + LabelWinterPrice.Width + 6;
+  //EditWinterPrice.Left := lblWinterPrice.Left + lblWinterPrice.Width + 6;
   EditWinterPrice.Width := (Sender as TPanel).Width - EditWinterPrice.Left - 6;
 end;
 
@@ -5333,7 +5333,7 @@ begin
   // Скрываем колонки зименого удорожания если не нужны
   dbgrdCalculations.Columns[13].Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   dbgrdCalculations.Columns[14].Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
-  LabelWinterPrice.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
+  lblWinterPrice.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   EditWinterPrice.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   dbgrdCalculations.Columns[13].Width := 64;
   dbgrdCalculations.Columns[14].Width := 64;
@@ -5538,6 +5538,14 @@ begin
 
   // Заполнение таблицы расценок
   OutputDataToTable;
+
+  lblZone.Caption := 'Зона строительства: ' +
+    FastSelectSQLOne
+    ('SELECT `objregion`.`REGION` FROM `objregion`, `objcards`, `objstroj` WHERE `objcards`.`OBJ_ID`=:0 and `objcards`.`STROJ_ID`=`objstroj`.`STROJ_ID` AND  `objstroj`.`OBJ_REGION`=`objregion`.`OBJ_REGION_ID`',
+    VarArrayOf([IdObject]));
+  lblTypeWork.Caption := 'Вид работ: ' + FastSelectSQLOne
+    ('SELECT `objstroj`.`NAME` FROM `objcards`, `objstroj` WHERE `objcards`.`OBJ_ID`=:0 and `objcards`.`STROJ_ID`=`objstroj`.`STROJ_ID`',
+    VarArrayOf([IdObject]));
 
   if not qrOXROPR.Active then
     qrOXROPR.Active := True;

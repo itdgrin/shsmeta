@@ -350,7 +350,7 @@
       Left = 0
       Top = 0
       Width = 912
-      Height = 224
+      Height = 225
       Align = alClient
       Alignment = taRightJustify
       BevelOuter = bvNone
@@ -362,6 +362,7 @@
       ParentBackground = False
       ParentFont = False
       TabOrder = 0
+      ExplicitHeight = 224
       object ImageSplitterCenter: TImage
         Left = 425
         Top = 97
@@ -374,9 +375,10 @@
         Left = 361
         Top = 25
         Width = 5
-        Height = 199
+        Height = 200
         ExplicitLeft = 407
         ExplicitTop = 29
+        ExplicitHeight = 199
       end
       object PanelTopClient: TPanel
         Left = 0
@@ -548,12 +550,13 @@
         Left = 0
         Top = 25
         Width = 361
-        Height = 199
+        Height = 200
         Align = alLeft
         BevelOuter = bvNone
         ParentBackground = False
         ShowCaption = False
         TabOrder = 1
+        ExplicitHeight = 199
         object ImageSplitterLeft: TImage
           Left = 313
           Top = 40
@@ -564,7 +567,7 @@
         end
         object SplitterLeft: TSplitter
           Left = 0
-          Top = 155
+          Top = 156
           Width = 361
           Height = 5
           Cursor = crVSplit
@@ -575,7 +578,7 @@
         end
         object dbmmoCAPTION: TDBMemo
           Left = 0
-          Top = 160
+          Top = 161
           Width = 361
           Height = 39
           Align = alBottom
@@ -584,12 +587,13 @@
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 1
+          ExplicitTop = 160
         end
         object grRatesEx: TJvDBGrid
           Left = 0
           Top = 0
           Width = 361
-          Height = 155
+          Height = 156
           Align = alClient
           DataSource = dsRatesEx
           Font.Charset = DEFAULT_CHARSET
@@ -737,17 +741,18 @@
         Left = 366
         Top = 25
         Width = 546
-        Height = 199
+        Height = 200
         Align = alClient
         BevelOuter = bvNone
         ParentBackground = False
         TabOrder = 3
         OnResize = PanelNoDataResize
+        ExplicitHeight = 199
         object ShapeNoData: TShape
           Left = 0
           Top = 0
           Width = 546
-          Height = 199
+          Height = 200
           Align = alClient
           Brush.Color = clWindow
           Pen.Color = clMedGray
@@ -760,7 +765,7 @@
           Left = 0
           Top = 0
           Width = 546
-          Height = 199
+          Height = 200
           Align = alClient
           Center = True
           Picture.Data = {
@@ -1438,7 +1443,7 @@
         Left = 366
         Top = 25
         Width = 546
-        Height = 199
+        Height = 200
         Align = alClient
         Alignment = taRightJustify
         BevelOuter = bvNone
@@ -1452,6 +1457,7 @@
         ShowCaption = False
         TabOrder = 2
         Visible = False
+        ExplicitHeight = 199
         object ImageSplitterRightBottom: TImage
           Left = 312
           Top = 97
@@ -1462,7 +1468,7 @@
         end
         object SplitterRightMemo: TSplitter
           Left = 0
-          Top = 179
+          Top = 180
           Width = 546
           Height = 5
           Cursor = crVSplit
@@ -1472,7 +1478,7 @@
         end
         object MemoRight: TMemo
           Left = 0
-          Top = 184
+          Top = 185
           Width = 546
           Height = 15
           Align = alBottom
@@ -1481,12 +1487,13 @@
           TabOrder = 1
           OnChange = MemoRightChange
           OnExit = MemoRightExit
+          ExplicitTop = 184
         end
         object PanelClientRightTables: TPanel
           Left = 0
           Top = 0
           Width = 546
-          Height = 179
+          Height = 180
           Align = alClient
           BevelOuter = bvNone
           Caption = 'PanelClientRightTables'
@@ -1494,6 +1501,7 @@
           ShowCaption = False
           TabOrder = 0
           OnResize = PanelClientRightTablesResize
+          ExplicitHeight = 179
           object ImageSplitterRight1: TImage
             Left = 208
             Top = 97
@@ -2804,53 +2812,98 @@
     end
     object Panel1: TPanel
       Left = 0
-      Top = 224
+      Top = 225
       Width = 912
-      Height = 25
+      Height = 24
       Align = alBottom
       BevelOuter = bvNone
       ParentBackground = False
       TabOrder = 1
       OnResize = Panel1Resize
-      object LabelOXROPR: TLabel
-        Left = 8
-        Top = 6
+      object lbl1: TLabel
+        AlignWithMargins = True
+        Left = 164
+        Top = 5
         Width = 108
-        Height = 13
+        Height = 14
+        Margins.Left = 8
+        Margins.Top = 5
+        Margins.Bottom = 5
+        Align = alLeft
         Caption = #1054#1061#1056' '#1054#1055#1056' '#1080' '#1055#1083'. '#1087#1088#1080#1073'.:'
+        ExplicitHeight = 13
       end
-      object LabelWinterPrice: TLabel
-        Left = 695
-        Top = 6
+      object lblZone: TLabel
+        AlignWithMargins = True
+        Left = 8
+        Top = 5
+        Width = 78
+        Height = 14
+        Margins.Left = 8
+        Margins.Top = 5
+        Margins.Bottom = 5
+        Align = alLeft
+        Caption = #1047#1086#1085#1072' '#1088#1072#1089#1094#1077#1085#1086#1082':'
+        ExplicitHeight = 13
+      end
+      object lblTypeWork: TLabel
+        AlignWithMargins = True
+        Left = 97
+        Top = 5
+        Width = 56
+        Height = 14
+        Margins.Left = 8
+        Margins.Top = 5
+        Margins.Bottom = 5
+        Align = alLeft
+        Caption = #1042#1080#1076' '#1088#1072#1073#1086#1090':'
+        ExplicitLeft = 140
+        ExplicitTop = 2
+        ExplicitHeight = 15
+      end
+      object lblWinterPrice: TLabel
+        AlignWithMargins = True
+        Left = 541
+        Top = 5
         Width = 121
-        Height = 13
+        Height = 14
+        Margins.Left = 8
+        Margins.Top = 5
+        Margins.Bottom = 5
+        Align = alLeft
         Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077' '#1085#1072':'
+        ExplicitLeft = 489
+        ExplicitHeight = 13
       end
       object EditWinterPrice: TEdit
-        Left = 822
-        Top = 2
-        Width = 81
-        Height = 21
+        Left = 665
+        Top = 0
+        Width = 247
+        Height = 24
         Cursor = crHandPoint
         TabStop = False
+        Align = alLeft
         Color = 14802912
         PopupMenu = pmWinterPrise
         ReadOnly = True
-        TabOrder = 0
+        TabOrder = 1
         OnClick = nSelectWinterPriseClick
       end
       object dblkcbbOXROPR: TDBLookupComboBox
-        Left = 122
-        Top = 3
-        Width = 206
+        Left = 275
+        Top = 0
+        Width = 258
         Height = 21
+        Margins.Top = 2
+        Margins.Bottom = 2
+        Align = alLeft
         DataField = 'WORK_ID'
         DataSource = dsRatesEx
         DropDownRows = 10
         KeyField = 'work_id'
         ListField = 'NameWork'
         ListSource = dsOXROPR
-        TabOrder = 1
+        TabOrder = 0
       end
     end
   end
@@ -4922,14 +4975,14 @@
     SQL.Strings = (
       
         'SELECT work_id, work_name as "NameWork" FROM objworks ORDER BY w' +
-        'ork_name')
-    Left = 240
-    Top = 392
+        'ork_id')
+    Left = 224
+    Top = 344
   end
   object dsOXROPR: TDataSource
     DataSet = qrOXROPR
     Left = 272
-    Top = 392
+    Top = 344
   end
   object pmWinterPrise: TPopupMenu
     Left = 560
