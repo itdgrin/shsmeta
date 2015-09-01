@@ -11779,4 +11779,12 @@
     Left = 32
     Top = 176
   end
+  object FormStorage: TJvFormStorage
+    AppStorage = AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    Options = []
+    StoredValues = <>
+    Left = 32
+    Top = 224
+  end
 end

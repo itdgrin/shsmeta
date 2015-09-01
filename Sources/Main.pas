@@ -172,6 +172,7 @@ type
     mN37: TMenuItem;
     mN25: TMenuItem;
     mN38: TMenuItem;
+    FormStorage: TJvFormStorage;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -322,6 +323,7 @@ type
     BackgroundSelectCell: integer;
     FontSelectCell: integer;
     SelectRowUnfocusedTable: integer;
+    AutoCreateEstimates: Boolean; // Автоматически создавать набор смет при создании объекта
 
     RoundTo: integer; // Округлять числа до vRoundTo знаков после запятой
 
@@ -2286,7 +2288,7 @@ begin
       PS.BackgroundSelectCell := ReadInteger('Tables', BackgroundSelectCell, 2039583);
       PS.FontSelectCell := ReadInteger('Tables', FontSelectCell, 16777215);
       PS.SelectRowUnfocusedTable := ReadInteger('Tables', SelectRowUnfocusedTable, -16777201);
-
+      PS.AutoCreateEstimates := ReadBool('Object', 'AutoCreateEstimates', True);
       PS.RoundTo := ReadInteger('Round', vRoundTo, 0);
 
       PS.ShowHint := ReadBool('ShowHint', vShowHint, true);
@@ -2329,6 +2331,7 @@ begin
       WriteInteger('Round', vRoundTo, PS.RoundTo);
 
       WriteBool('ShowHint', vShowHint, PS.ShowHint);
+      WriteBool('Object', 'AutoCreateEstimates', PS.AutoCreateEstimates);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти

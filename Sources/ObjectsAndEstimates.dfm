@@ -536,7 +536,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object mShowDeleted: TMenuItem
       AutoCheck = True
       Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
-      ImageIndex = 43
       OnClick = mShowDeletedClick
     end
     object mN4: TMenuItem
@@ -628,7 +627,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object mShowDeletedEstimates: TMenuItem
       AutoCheck = True
       Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
-      ImageIndex = 43
       OnClick = mShowDeletedEstimatesClick
     end
   end
@@ -695,7 +693,6 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     object mShowDeletedActs: TMenuItem
       AutoCheck = True
       Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
-      ImageIndex = 43
       OnClick = mShowDeletedActsClick
     end
   end

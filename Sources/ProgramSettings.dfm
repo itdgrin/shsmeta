@@ -36,7 +36,7 @@ object FormProgramSettings: TFormProgramSettings
     Top = 8
     Width = 632
     Height = 351
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
     object TabSheet3: TTabSheet
@@ -278,7 +278,7 @@ object FormProgramSettings: TFormProgramSettings
         Width = 230
         Height = 25
         Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
-        TabOrder = 1
+        TabOrder = 3
         OnClick = ButtonDefaultOtherSettingsClick
       end
       object CheckBoxShowHint: TCheckBox
@@ -287,6 +287,16 @@ object FormProgramSettings: TFormProgramSettings
         Width = 286
         Height = 17
         Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1087#1083#1099#1074#1072#1102#1097#1091#1102' '#1087#1086#1076#1089#1082#1072#1079#1082#1091' '#1074' '#1090#1072#1073#1083#1080#1094#1072#1093
+        TabOrder = 1
+      end
+      object chkAutoCreateEstimates: TCheckBox
+        Left = 3
+        Top = 78
+        Width = 334
+        Height = 17
+        Caption = #1057#1086#1079#1076#1072#1074#1072#1090#1100' '#1085#1072#1073#1086#1088' '#1054#1073#1098#1077#1082#1090#1085#1072#1103'-'#1051#1086#1082#1072#1083#1100#1085#1072#1103'-'#1055#1058#1052' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
+        Checked = True
+        State = cbChecked
         TabOrder = 2
       end
     end
@@ -298,7 +308,7 @@ object FormProgramSettings: TFormProgramSettings
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 1
+    TabOrder = 2
     OnClick = ButtonCancelClick
   end
   object ButtonSave: TButton
@@ -309,7 +319,7 @@ object FormProgramSettings: TFormProgramSettings
     Anchors = [akRight, akBottom]
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Default = True
-    TabOrder = 2
+    TabOrder = 1
     OnClick = ButtonSaveClick
   end
   object ColorDialog: TColorDialog

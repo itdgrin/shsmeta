@@ -52,6 +52,10 @@ end;
 
 procedure TfTreeEstimate.tvEstimatesDblClick(Sender: TObject);
 begin
+  FormCalculationEstimate.flChangeEstimate := True;
+  FormCalculationEstimate.Close;
+  if (not Assigned(FormCalculationEstimate)) then
+    FormCalculationEstimate := TFormCalculationEstimate.Create(False);
   FormCalculationEstimate.EditNameEstimate.Text := qrTreeEstimates.FieldByName('NAME').AsString;
   FormCalculationEstimate.IdEstimate := qrTreeEstimates.FieldByName('SM_ID').AsInteger;
   // Создание временных таблиц
@@ -60,6 +64,8 @@ begin
   FormCalculationEstimate.OpenAllData;
   FormCalculationEstimate.frSummaryCalculations.LoadData
     (VarArrayOf([FormCalculationEstimate.IdEstimate, FormCalculationEstimate.IdAct]));
+  FormCalculationEstimate.flChangeEstimate := False;
+  FormCalculationEstimate.WindowState := wsMaximized;
   // Close;
 end;
 

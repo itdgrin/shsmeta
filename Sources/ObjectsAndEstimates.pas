@@ -318,6 +318,13 @@ begin
   // Устанавливаем фокус
   dbgrdObjects.SetFocus;
   qrObjects.Locate('IdObject', FormCardObject.OUT_ID_OBJECT, []);
+  // Если установлена настройка, то добавляем автоматом связку смет
+  if PS.AutoCreateEstimates then
+  begin
+    FormCardEstimate.EditingRecord(False);
+    FormCardEstimate.ShowForm(FormCardObject.OUT_ID_OBJECT, 0, 2, False);
+    CloseOpen(qrTreeData);
+  end;
 end;
 
 procedure TFormObjectsAndEstimates.PopupMenuObjectsEditClick(Sender: TObject);
@@ -1096,8 +1103,13 @@ end;
 procedure TFormObjectsAndEstimates.tvEstimatesDblClick(Sender: TObject);
 begin
   // Открываем форму ожидания
-  FormWaiting.Show;
+  // FormWaiting.Show;
   Application.ProcessMessages;
+  if (Assigned(FormCalculationEstimate)) then
+  begin
+    FormCalculationEstimate.flChangeEstimate := True;
+    FormCalculationEstimate.Close;
+  end;
 
   if (not Assigned(FormCalculationEstimate)) then
     FormCalculationEstimate := TFormCalculationEstimate.Create(False);
@@ -1119,11 +1131,12 @@ begin
     // Заполненя временных таблиц, заполнение формы
     FormCalculationEstimate.OpenAllData;
   end;
-
+  FormCalculationEstimate.flChangeEstimate := False;
+  FormCalculationEstimate.WindowState := wsMaximized;
   // FormCalculationEstimate.Show;
 
   // Закрываем форму ожидания
-  FormWaiting.Close;
+  // FormWaiting.Close;
 
   Close;
 end;

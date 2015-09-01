@@ -762,7 +762,7 @@ type
     procedure DeleteRowFromSmeta();
   public
     ConfirmCloseForm: Boolean;
-
+    flChangeEstimate: Boolean; // Не даем закрыться окну при изменении сметы.
     property IdObject: Integer read FIdObject write FIdObject;
     property IdAct: Integer read FIdAct write FIdAct;
     property IdEstimate: Integer read FIdEstimate write FIdEstimate;
@@ -1013,6 +1013,8 @@ end;
 
 procedure TFormCalculationEstimate.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  if flChangeEstimate then
+    Exit;
   Action := caFree;
   FormMain.mCalcResources.Visible := False;
   // Удаляем кнопку от этого окна (на главной форме внизу)
@@ -3457,13 +3459,14 @@ begin
   DialogResult := mrNone;
 
   if (not ActReadOnly) and (PanelCalculationYesNo.Tag = 1) and ConfirmCloseForm then
-    DialogResult := MessageBox(0, PChar('Сохранить сделанные изменения перед закрытием окна?'), 'Смета',
+    DialogResult := MessageBox(0, PChar('Сохранить сделанные изменения?'), 'Смета',
       MB_ICONINFORMATION + MB_YESNOCANCEL + mb_TaskModal);
 
   if DialogResult = mrCancel then
   begin
     ConfirmCloseForm := True;
     CanClose := False;
+    Abort;
     Exit;
   end;
 

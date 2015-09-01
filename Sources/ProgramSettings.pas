@@ -45,6 +45,7 @@ type
     CheckBoxShowHint: TCheckBox;
     ShapeSelectRowUnfocusedTable: TShape;
     LabelSelectRowUnfocusedTable: TLabel;
+    chkAutoCreateEstimates: TCheckBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -302,6 +303,7 @@ begin
   PS.BackgroundSelectCell := ShapeBackgroundSelectCell.Brush.Color;
   PS.FontSelectCell := ShapeFontSelectCell.Brush.Color;
   PS.SelectRowUnfocusedTable := ShapeSelectRowUnfocusedTable.Brush.Color;
+  PS.AutoCreateEstimates := chkAutoCreateEstimates.Checked;
 
   PS.RoundTo := ComboBoxRound.ItemIndex;
 
@@ -340,6 +342,8 @@ begin
   ComboBoxRound.ItemIndex := PS.RoundTo;
 
   CheckBoxShowHint.Checked := PS.ShowHint;
+
+  chkAutoCreateEstimates.Checked := PS.AutoCreateEstimates;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

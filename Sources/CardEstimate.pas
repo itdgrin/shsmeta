@@ -60,7 +60,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
 
-    procedure ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer);
+    procedure ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer;
+      const ShowBasicData: Boolean = True);
     procedure CreateNumberEstimate;
     procedure btnCloseClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
@@ -227,7 +228,8 @@ begin
   SkeepEvent := False;
 end;
 
-procedure TFormCardEstimate.ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer);
+procedure TFormCardEstimate.ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer;
+  const ShowBasicData: Boolean = True);
 begin
   IdObject := vIdObject;
   IdEstimate := vIdEstimate;
@@ -238,8 +240,17 @@ begin
     LabelNumberEstimate.Caption := '¹ ÏÒÌ:'
   else
     LabelNumberEstimate.Caption := '¹ ñìåòû:';
-  if ShowModal = mrOk then
+  if ShowBasicData then
+  begin
+  if (ShowModal = mrOk) then
     FormBasicData.ShowForm(IdObject, BaseIdEstimate);
+  end
+  else
+  begin
+    Show;
+    btnSave.Click;
+    Close;
+  end;
 end;
 
 procedure TFormCardEstimate.EditingRecord(const Value: Boolean);
