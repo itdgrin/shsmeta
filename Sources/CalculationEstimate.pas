@@ -475,6 +475,11 @@ type
     pmLblObj: TPopupMenu;
     mN14: TMenuItem;
     mN15: TMenuItem;
+    N14: TMenuItem;
+    PMSetTransPerc1: TMenuItem;
+    PMSetTransPerc2: TMenuItem;
+    PMSetTransPerc3: TMenuItem;
+    PMSetTransPerc4: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -672,6 +677,7 @@ type
     procedure PMInsertRowClick(Sender: TObject);
     procedure PopupMenuCoefOrdersClick(Sender: TObject);
     procedure qrRatesExBeforeScroll(DataSet: TDataSet);
+    procedure PMSetTransPercClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -806,7 +812,8 @@ uses Main, DataModule, SignatureSSR, Waiting,
   AdditionData, CardMaterial,
   KC6, CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
-  TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList;
+  TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
+  TranspPersSelect;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -3417,6 +3424,99 @@ begin
     FormAdditionData.FrameRates.EditRate.Text := StringReplace(PMAddRateOld.Caption, '&', '', [rfReplaceAll]);
 end;
 
+procedure TFormCalculationEstimate.PMSetTransPercClick(Sender: TObject);
+var fTrPersSelect: TfTrPersSelect;
+    TransPr: Double;
+    MatCode: string;
+    TmpStr: string;
+    UpdateStr: string;
+    EstimStr: string;
+    SelType: Byte;
+    WhereStr: string;
+    TempBookmark: TBookMark;
+    X: Integer;
+begin
+  if (Sender as TComponent).Tag in [1,2,3] then
+  begin
+    fTrPersSelect := TfTrPersSelect.Create(nil);
+    try
+      if fTrPersSelect.ShowModal = mrOk then
+      begin
+        SelType := fTrPersSelect.SelectType;
+        TransPr := fTrPersSelect.TranspPers;
+        MatCode := fTrPersSelect.MatCode;
+      end
+      else
+        Exit;
+    finally
+      FreeAndNil(fTrPersSelect);
+    end;
+  end;
+
+  grRatesEx.DataSource.DataSet.DisableControls;
+  TempBookmark := grRatesEx.DataSource.DataSet.GetBookmark;
+  try
+    if grRatesEx.SelectedRows.Count = 0 then
+      grRatesEx.SelectedRows.CurrentRowSelected := True;
+
+    for X := 0 to grRatesEx.SelectedRows.Count - 1 do
+    begin  // (1-локальная, 2-объектная, 3-ПТМ)
+      if grRatesEx.SelectedRows.IndexOf(grRatesEx.SelectedRows.Items[X]) > -1 then
+      begin
+        grRatesEx.DataSource.DataSet.Bookmark := grRatesEx.SelectedRows.Items[X];
+        if (qrRatesExID_TYPE_DATA.Value in [1,2]) or
+           (qrRatesExID_TYPE_DATA.Value = -1) or
+           (qrRatesExID_TYPE_DATA.Value = -2) or
+           (qrRatesExID_TYPE_DATA.Value = -3) then
+        begin
+          case qrRatesExID_TYPE_DATA.Value of
+            1:
+            begin
+              WhereStr := '(ID_CARD_RATE = ' + qrRatesExID_TABLES.Value.ToString + ')';
+              EstimStr := qrRatesExSM_ID.Value.ToString;
+            end;
+            2:
+            begin
+              WhereStr := '(ID = ' + qrRatesExID_TABLES.Value.ToString + ')';
+              EstimStr := qrRatesExSM_ID.Value.ToString;
+            end;
+            -1, -2, -3:
+            begin
+              continue;
+            end;
+          end;
+
+          if (Sender as TComponent).Tag in [1,2,3] then
+          begin
+            case SelType of
+            1: UpdateStr := 'PROC_TRANSP = GetTranspPers(' + EstimStr + ', ''' + MatCode + ''')';
+            2: UpdateStr := 'PROC_TRANSP = ' + TransPr.ToString;
+            end;
+            if (Sender as TComponent).Tag = 1 then
+              WhereStr := WhereStr + ' and (MAT_CODE like ''С103%'')';
+            if (Sender as TComponent).Tag = 2 then
+              WhereStr := WhereStr + ' and ((MAT_CODE like ''С530%'') or ' +
+                '(MAT_CODE like ''С533%'') or (MAT_CODE like ''С534%''))';
+          end
+          else
+            UpdateStr := 'PROC_TRANSP = GetTranspPers(' + EstimStr + ', MAT_CODE)';
+
+          qrTemp.Active := False;
+          qrTemp.SQL.Text :=
+            'update materialcard_temp set ' + UpdateStr + ' where ' + WhereStr;
+          qrTemp.ExecSQL;
+        end;
+      end;
+    end;
+  finally
+    grRatesEx.DataSource.DataSet.GotoBookmark(TempBookmark);
+    grRatesEx.DataSource.DataSet.FreeBookmark(TempBookmark);
+    grRatesEx.DataSource.DataSet.EnableControls;
+
+    RecalcEstimate;
+  end;
+end;
+
 procedure TFormCalculationEstimate.ButtonSSRDetailsClick(Sender: TObject);
 begin
   FormSignatureSSR.ShowModal;
@@ -4454,7 +4554,7 @@ begin
   end
   else
   begin
-    if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrRatesExOBJ_CODE.AsString + ' объектов?'),
+    if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrRatesExOBJ_CODE.AsString + '?'),
       CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
       Exit;
     DeleteRowFromSmeta();
@@ -5731,6 +5831,8 @@ var
   TempBookmark: TBookMark;
 begin
   grRatesEx.DataSource.DataSet.DisableControls;
+  if grRatesEx.SelectedRows.Count = 0 then
+      grRatesEx.SelectedRows.CurrentRowSelected := True;
   with grRatesEx.SelectedRows do
     if Count <> 0 then
     begin

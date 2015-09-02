@@ -2,8 +2,8 @@ object fTrPersSelect: TfTrPersSelect
   Left = 0
   Top = 0
   Caption = #1042#1099#1073#1086#1088' '#1087#1088#1086#1094#1077#1085#1090#1072' '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072
-  ClientHeight = 226
-  ClientWidth = 305
+  ClientHeight = 200
+  ClientWidth = 313
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,17 +15,16 @@ object fTrPersSelect: TfTrPersSelect
   TextHeight = 13
   object Panel4: TPanel
     Left = 0
-    Top = 193
-    Width = 305
+    Top = 167
+    Width = 313
     Height = 33
     Align = alBottom
     TabOrder = 0
-    ExplicitLeft = -460
-    ExplicitTop = 285
-    ExplicitWidth = 779
+    ExplicitTop = 193
+    ExplicitWidth = 305
     object btnSelect: TButton
       AlignWithMargins = True
-      Left = 77
+      Left = 85
       Top = 4
       Width = 114
       Height = 25
@@ -33,11 +32,11 @@ object fTrPersSelect: TfTrPersSelect
       Caption = #1042#1099#1073#1088#1072#1090#1100
       TabOrder = 0
       OnClick = btnSelectClick
-      ExplicitLeft = 551
+      ExplicitLeft = 77
     end
     object btnCancel: TButton
       AlignWithMargins = True
-      Left = 197
+      Left = 205
       Top = 4
       Width = 101
       Height = 25
@@ -46,7 +45,7 @@ object fTrPersSelect: TfTrPersSelect
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 1
       OnClick = btnCancelClick
-      ExplicitLeft = 671
+      ExplicitLeft = 197
     end
   end
   object rbTrPers1: TRadioButton
@@ -56,9 +55,8 @@ object fTrPersSelect: TfTrPersSelect
     Width = 265
     Height = 17
     Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1086#1073#1097#1077#1089#1090#1074#1077#1085#1085#1099#1093' '#1088#1072#1073#1086#1090
-    Checked = True
     TabOrder = 1
-    TabStop = True
+    OnClick = rbTrPersClick
   end
   object rbTrPers2: TRadioButton
     Tag = 2
@@ -66,8 +64,9 @@ object fTrPersSelect: TfTrPersSelect
     Top = 41
     Width = 265
     Height = 17
-    Caption = #1042#1099#1073#1086#1088' '#1087#1088#1086#1094#1077#1085#1090#1072' '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072
+    Caption = #1052#1077#1090#1072#1083#1080#1095#1077#1089#1082#1080#1077' '#1082#1086#1085#1089#1090#1088#1091#1082#1094#1080#1080
     TabOrder = 2
+    OnClick = rbTrPersClick
   end
   object rbTrPers3: TRadioButton
     Tag = 3
@@ -77,6 +76,7 @@ object fTrPersSelect: TfTrPersSelect
     Height = 17
     Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1089#1072#1085#1080#1090#1072#1088#1085#1086'-'#1090#1077#1093#1085#1080#1095#1077#1089#1082#1080#1093' '#1088#1072#1073#1086#1090
     TabOrder = 3
+    OnClick = rbTrPersClick
   end
   object rbTrPers4: TRadioButton
     Tag = 4
@@ -86,6 +86,7 @@ object fTrPersSelect: TfTrPersSelect
     Height = 19
     Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1101#1083#1077#1082#1090#1088#1086#1084#1086#1085#1090#1072#1078#1085#1099#1093' '#1088#1072#1073#1086#1090
     TabOrder = 4
+    OnClick = rbTrPersClick
   end
   object rbTrPers5: TRadioButton
     Tag = 5
@@ -95,32 +96,26 @@ object fTrPersSelect: TfTrPersSelect
     Height = 17
     Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1074' '#1087#1086#1089#1090#1088#1086#1077#1095#1085#1099#1093' '#1091#1089#1083#1086#1074#1080#1103#1093
     TabOrder = 5
+    OnClick = rbTrPersClick
   end
   object rbTrPers6: TRadioButton
     Tag = 6
     Left = 16
     Top = 137
-    Width = 281
-    Height = 17
-    Caption = '% '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
-    TabOrder = 6
-  end
-  object rbTrPers7: TRadioButton
-    Tag = 7
-    Left = 16
-    Top = 161
     Width = 113
     Height = 17
-    TabOrder = 7
-    OnClick = rbTrPers7Click
+    Checked = True
+    TabOrder = 6
+    TabStop = True
+    OnClick = rbTrPersClick
   end
   object edtrbTrPers: TEdit
     Left = 32
-    Top = 160
+    Top = 136
     Width = 89
     Height = 21
     Alignment = taRightJustify
-    TabOrder = 8
+    TabOrder = 7
     Text = '0'
     OnExit = edtrbTrPersExit
     OnKeyPress = edtrbTrPersKeyPress

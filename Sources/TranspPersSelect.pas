@@ -27,27 +27,25 @@ type
     rbTrPers4: TRadioButton;
     rbTrPers5: TRadioButton;
     rbTrPers6: TRadioButton;
-    rbTrPers7: TRadioButton;
     edtrbTrPers: TEdit;
     procedure btnCancelClick(Sender: TObject);
     procedure btnSelectClick(Sender: TObject);
     procedure edtrbTrPersKeyPress(Sender: TObject; var Key: Char);
     procedure edtrbTrPersExit(Sender: TObject);
-    procedure rbTrPers7Click(Sender: TObject);
+    procedure rbTrPersClick(Sender: TObject);
   private
     FSelectRb: Integer;
-    FIdEstimate: Integer;
+    FTranspPers: Double;
     FMatCode: string;
-    FTranspPers: Extended;
+    FSelectType: Byte;
   public
-    constructor Create(AOwner: TComponent; AIdEstimate: Integer;
-      AMatCode: string); reintroduce;
-    property TranspPers: Extended read FTranspPers;
+    constructor Create(AOwner: TComponent); override;
+    property TranspPers: Double read FTranspPers;
+    property MatCode: string read FMatCode;
+    property SelectType: Byte read FSelectType;
   end;
 
 implementation
-
-uses DataModule;
 
 {$R *.dfm}
 
@@ -61,47 +59,35 @@ var
   TmpCode: string;
 begin
   FTranspPers := 0;
+  FMatCode := '';
+
   case FSelectRb of
     1:
-      TmpCode := FMatCode;
+      FMatCode := 'Ñ101-0000';
     2:
-      TmpCode := 'Ñ101-0000';
+      FMatCode := 'Ñ201-0000';
     3:
-      TmpCode := 'Ñ201-0000';
+      FMatCode := 'Ñ300-0000';
     4:
-      TmpCode := 'Ñ300-0000';
+      FMatCode := 'Ñ501-0000';
     5:
-      TmpCode := 'Ñ501-0000';
+      FMatCode := 'Ñ000-0000';
     6:
-      TmpCode := 'Ñ000-0000';
-    7:
-    begin
       FTranspPers := StrToIntDef(edtrbTrPers.Text, 0);
-      ModalResult := mrOk;
-      Exit;
-    end;
   end;
 
-  DM.qrDifferent.Active := False;
-  DM.qrDifferent.SQL.Clear;
-  DM.qrDifferent.SQL.Add('SELECT GetTranspPers(:IdEstimate, :MatCode);');
-  DM.qrDifferent.ParamByName('IdEstimate').Value := FIdEstimate;
-  DM.qrDifferent.ParamByName('MatCode').Value := TmpCode;
-  DM.qrDifferent.Active := True;
-  if not DM.qrDifferent.Eof then
-    FTranspPers := DM.qrDifferent.Fields[0].AsFloat;
-  DM.qrDifferent.Active := False;
+  if FSelectRb in [1,2,3,4,5] then
+    FSelectType := 1
+  else
+    FSelectType := 2;
 
   ModalResult := mrOk;
 end;
 
-constructor TfTrPersSelect.Create(AOwner: TComponent; AIdEstimate: Integer;
-      AMatCode: string);
+constructor TfTrPersSelect.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  FIdEstimate := AIdEstimate;
-  FMatCode := AMatCode;
-  FSelectRb := 1;
+  inherited;
+  rbTrPers1.Checked := True;
 end;
 
 procedure TfTrPersSelect.edtrbTrPersExit(Sender: TObject);
@@ -155,9 +141,10 @@ begin
   end;
 end;
 
-procedure TfTrPersSelect.rbTrPers7Click(Sender: TObject);
+procedure TfTrPersSelect.rbTrPersClick(Sender: TObject);
 begin
   FSelectRb := (Sender as TControl).Tag;
+  edtrbTrPers.Enabled := FSelectRb = 6;
 end;
 
 end.
