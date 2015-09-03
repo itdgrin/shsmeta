@@ -197,6 +197,10 @@ type
     procedure qrDevicesCOASTChange(Sender: TField);
     procedure grDevTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
     procedure grRatesTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+    procedure grMaterialExit(Sender: TObject);
+    procedure grMaterialKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure grDevBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -236,9 +240,9 @@ begin
 
   if AOwner <> nil then
   begin
-    fCalcResource.BorderStyle := bsNone;
     fCalcResource.Parent := AOwner;
     fCalcResource.Align := alClient;
+    fCalcResource.BorderStyle := bsNone;
   end
   else
     // Создаём кнопку от этого окна (на главной форме внизу)
@@ -399,14 +403,73 @@ begin
   fCalcResource := nil;
 end;
 
+procedure TfCalcResource.grDevBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
+  if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+    ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+  begin
+    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
 procedure TfCalcResource.grDevDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
   if qrDevices.FieldByName('DELETED').AsInteger = 1 then
     grDev.Canvas.Font.Style := grDev.Canvas.Font.Style + [fsStrikeOut];
-  if CanEditField(Column.Field) then
-    grDev.Canvas.Brush.Color := clMoneyGreen;
-  grDev.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+
+  if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+    ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+  begin
+    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfCalcResource.grDevTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
@@ -417,6 +480,27 @@ end;
 procedure TfCalcResource.grMaterialBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
   if (qrMaterialDetail.FieldByName('FCOAST').AsInteger = 1) and (Column.FieldName = 'COAST') then
     grMaterialBott.Canvas.Font.Style := grMaterialBott.Canvas.Font.Style + [fsItalic];
 
@@ -434,10 +518,12 @@ begin
     grMaterialBott.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsItalic];
     grMaterialBott.Canvas.Font.Color := clNavy;
   end;
-
-  if CanEditField(Column.Field) then
-    grMaterialBott.Canvas.Brush.Color := clMoneyGreen;
-
+  if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+    ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+  begin
+    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
+  end;
   grMaterialBott.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
@@ -449,6 +535,27 @@ end;
 procedure TfCalcResource.grMaterialDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
   if (qrMaterialData.FieldByName('FCOAST').AsInteger = 1) and (Column.FieldName = 'COAST') then
     grMaterial.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsItalic];
 
@@ -467,10 +574,30 @@ begin
     grMaterial.Canvas.Font.Color := clNavy;
   end;
 
-  if CanEditField(Column.Field) then
-    grMaterial.Canvas.Brush.Color := clMoneyGreen;
+  if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+    ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+  begin
+    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
 
-  grMaterial.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+procedure TfCalcResource.grMaterialExit(Sender: TObject);
+begin
+  (Sender as TJvDBGrid).DataSource.DataSet.CheckBrowseMode;
+end;
+
+procedure TfCalcResource.grMaterialKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  case Key of
+    VK_RETURN:
+      begin
+        if not(Sender AS TJvDBGrid).EditorMode and
+          ((Sender AS TJvDBGrid).DataSource.DataSet.State in [dsEdit, dsInsert]) then
+          (Sender AS TJvDBGrid).DataSource.DataSet.CheckBrowseMode;
+      end;
+  end;
 end;
 
 procedure TfCalcResource.grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
@@ -481,6 +608,27 @@ end;
 procedure TfCalcResource.grMechBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
   if qrMechDetail.FieldByName('DELETED').AsInteger = 1 then
     grMechBott.Canvas.Font.Style := grMechBott.Canvas.Font.Style + [fsStrikeOut];
 
@@ -496,14 +644,39 @@ begin
     grMechBott.Canvas.Font.Color := clNavy;
   end;
 
-  if CanEditField(Column.Field) then
-    grMechBott.Canvas.Brush.Color := clMoneyGreen;
-  grMechBott.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+    ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+  begin
+    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfCalcResource.grMechDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
   if qrMechData.FieldByName('DELETED').AsInteger = 1 then
     grMech.Canvas.Font.Style := grMech.Canvas.Font.Style + [fsStrikeOut];
 
@@ -518,10 +691,13 @@ begin
     grMech.Canvas.Font.Style := grMaterial.Canvas.Font.Style + [fsItalic];
     grMech.Canvas.Font.Color := clNavy;
   end;
-
-  if CanEditField(Column.Field) then
-    grMech.Canvas.Brush.Color := clMoneyGreen;
-  grMech.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+    ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+  begin
+    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfCalcResource.grMechTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
@@ -532,9 +708,30 @@ end;
 procedure TfCalcResource.grRatesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
   if qrRates.FieldByName('DELETED').AsInteger = 1 then
     grRates.Canvas.Font.Style := grRates.Canvas.Font.Style + [fsStrikeOut];
-  grRates.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfCalcResource.grRatesTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
@@ -922,9 +1119,9 @@ var
   priceQ, priceQ1: string;
 begin
   if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
-    = IDYES) and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
+    = IDYES) { and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
     '(будет произведена замена во всех зависимых величинах)', 'Смета',
-    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) then
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) } then
   begin
     with qrDevices do
     begin
@@ -951,7 +1148,7 @@ begin
         'PROC_ZAC=:11 AND PROC_PODR=:12'#13 + 'AND TRANSP_PROC_ZAC=:13 AND TRANSP_PROC_PODR=:14'#13 +
         'AND IF(:NDS=1, FCOAST_NDS, FCOAST_NO_NDS)=:15 AND DEVICE_ID=:16'#13 +
         'AND IF(:NDS1=1, DEVICE_TRANSP_NDS, DEVICE_TRANSP_NO_NDS)=:17',
-        VarArrayOf([FieldByName('TRANSP').Value, FieldByName('COAST').Value,
+        VarArrayOf([FieldByName('TRANSP').AsFloat, FieldByName('COAST').AsFloat,
         FieldByName('TRANSP_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
         FieldByName('PROC_PODR').Value, FieldByName('PROC_ZAC').Value, FieldByName('PROC_ZAC').OldValue,
         FieldByName('PROC_PODR').OldValue, FieldByName('TRANSP_PROC_ZAC').OldValue,
@@ -971,8 +1168,8 @@ end;
 
 procedure TfCalcResource.qrDevicesCOASTChange(Sender: TField);
 begin
-  qrDevices.FieldByName('PRICE').Value := qrDevices.FieldByName('COAST').Value *
-    qrDevices.FieldByName('CNT').Value;
+  qrDevices.FieldByName('PRICE').Value :=
+    ROUND(qrDevices.FieldByName('COAST').AsFloat * qrDevices.FieldByName('CNT').Value);
 end;
 
 procedure TfCalcResource.qrDevicesDetailBeforePost(DataSet: TDataSet);
@@ -1004,7 +1201,7 @@ begin
 
       FastExecSQL('UPDATE devicescard_temp SET'#13 + priceQ1 + priceQ +
         'TRANSP_PROC_PODR=:1, TRANSP_PROC_ZAC=:2, PROC_PODR=:3, PROC_ZAC=:4 WHERE ID=:11',
-        VarArrayOf([FieldByName('TRANSP').Value, FieldByName('COAST').Value,
+        VarArrayOf([FieldByName('TRANSP').AsFloat, FieldByName('COAST').AsFloat,
         FieldByName('TRANSP_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
         FieldByName('PROC_PODR').Value, FieldByName('PROC_ZAC').Value, FieldByName('ID').Value]));
     end;
@@ -1100,9 +1297,9 @@ var
   priceQ: string;
 begin
   if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
-    = IDYES) and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
+    = IDYES) { and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
     '(будет произведена замена во всех зависимых величинах)', 'Смета',
-    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) then
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) } then
   begin
     with qrMaterialData do
     begin
@@ -1113,7 +1310,7 @@ begin
         'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:15 AND MAT_ID=:16',
         VarArrayOf([FieldByName('TRANSP_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
         FieldByName('MAT_PROC_PODR').Value, FieldByName('MAT_PROC_ZAC').Value, FieldByName('DELETED').Value,
-        FieldByName('PROC_TRANSP').Value, FieldByName('PROC_TRANSP').OldValue,
+        FieldByName('PROC_TRANSP').AsFloat, FieldByName('PROC_TRANSP').OldValue,
         FieldByName('DELETED').OldValue, FieldByName('MAT_PROC_ZAC').OldValue,
         FieldByName('MAT_PROC_PODR').OldValue, FieldByName('TRANSP_PROC_ZAC').OldValue,
         FieldByName('TRANSP_PROC_PODR').OldValue, cbbNDS.ItemIndex, FieldByName('COAST').OldValue,
@@ -1123,21 +1320,31 @@ begin
       case cbbNDS.ItemIndex of
         // Если в режиме без НДС
         0:
-          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
+          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS/*FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100)*/,FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
         // С НДС
         1:
-          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
+          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS/*FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS)*/,FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
       end;
 
       if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
         FastExecSQL('UPDATE materialcard_temp SET'#13 + priceQ + ' WHERE PROC_TRANSP=:4 AND DELETED=:5'#13 +
           'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 + 'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13
           + 'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MAT_ID=:11',
-          VarArrayOf([FieldByName('COAST').Value, FieldByName('PROC_TRANSP').Value,
+          VarArrayOf([FieldByName('COAST').AsFloat, FieldByName('PROC_TRANSP').Value,
           FieldByName('DELETED').Value, FieldByName('MAT_PROC_ZAC').Value, FieldByName('MAT_PROC_PODR').Value,
           FieldByName('TRANSP_PROC_ZAC').Value, FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex,
           FieldByName('COAST').OldValue, FieldByName('MAT_ID').Value]));
-
+      // Процент транспорта
+      if FieldByName('PROC_TRANSP').Value <> FieldByName('PROC_TRANSP').OldValue then
+        FastExecSQL
+          ('UPDATE materialcard_temp SET FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100) WHERE PROC_TRANSP=:4 AND DELETED=:5'#13
+          + 'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 +
+          'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13 +
+          'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MAT_ID=:11',
+          VarArrayOf([FieldByName('PROC_TRANSP').Value, FieldByName('DELETED').Value,
+          FieldByName('MAT_PROC_ZAC').Value, FieldByName('MAT_PROC_PODR').Value,
+          FieldByName('TRANSP_PROC_ZAC').Value, FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex,
+          FieldByName('COAST').Value, FieldByName('MAT_ID').Value]));
       // Стоимость транспорта
       {
         if FieldByName('TRANSP').Value <> FieldByName('TRANSP').OldValue then
@@ -1170,8 +1377,11 @@ end;
 
 procedure TfCalcResource.qrMaterialDataCOASTChange(Sender: TField);
 begin
-  qrMaterialData.FieldByName('PRICE').Value := qrMaterialData.FieldByName('COAST').Value *
-    qrMaterialData.FieldByName('CNT').Value;
+  qrMaterialData.FieldByName('PRICE').Value :=
+    ROUND(qrMaterialData.FieldByName('COAST').AsFloat * qrMaterialData.FieldByName('CNT').Value);
+  qrMaterialData.FieldByName('TRANSP').Value :=
+    ROUND(qrMaterialData.FieldByName('PRICE').Value * qrMaterialData.FieldByName('PROC_TRANSP')
+    .AsFloat / 100);
 end;
 
 procedure TfCalcResource.qrMaterialDataMAT_PROC_PODRChange(Sender: TField);
@@ -1257,20 +1467,26 @@ begin
       case cbbNDS.ItemIndex of
         // Если в режиме без НДС
         0:
-          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
+          priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS/*FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100)*/,FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
         // С НДС
         1:
-          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
+          priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS/*FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS)*/,FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100)'#13;
       end;
 
       if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
         FastExecSQL('UPDATE materialcard_temp SET'#13 + priceQ + ' WHERE ID=:4',
-          VarArrayOf([FieldByName('COAST').Value, FieldByName('ID').Value]));
+          VarArrayOf([FieldByName('COAST').AsFloat, FieldByName('ID').Value]));
+
+      if FieldByName('PROC_TRANSP').Value <> FieldByName('PROC_TRANSP').OldValue then
+        FastExecSQL
+          ('UPDATE materialcard_temp SET FTRANSP_NO_NDS=ROUND(FCOAST_NO_NDS*MAT_COUNT*PROC_TRANSP/100), FTRANSP_NDS=ROUND(FCOAST_NDS*MAT_COUNT*PROC_TRANSP/100) WHERE ID=:4',
+          VarArrayOf([FieldByName('ID').Value]));
 
       // Стоимость транспорта
       if FieldByName('TRANSP').Value <> FieldByName('TRANSP').OldValue then
         FastExecSQL('UPDATE materialcard_temp SET FTRANSP_NO_NDS = :1, FTRANSP_NDS = :2 WHERE ID=:4',
-          VarArrayOf([FieldByName('TRANSP').Value, FieldByName('TRANSP').Value, FieldByName('ID').Value]));
+          VarArrayOf([FieldByName('TRANSP').AsFloat, FieldByName('TRANSP').AsFloat,
+          FieldByName('ID').Value]));
     end;
     // Вызываем переасчет всей сметы
     FormCalculationEstimate.RecalcEstimate;
@@ -1288,9 +1504,9 @@ var
   priceQ, priceQ1: string;
 begin
   if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
-    = IDYES) and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
+    = IDYES) { and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
     '(будет произведена замена во всех зависимых величинах)', 'Смета',
-    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) then
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) } then
   begin
     with qrMechData do
     begin
@@ -1324,18 +1540,20 @@ begin
           'AND PROC_ZAC=:6 AND PROC_PODR=:7'#13 +
           'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MECH_ID=:11'#13
           + 'AND IF(:NDS1=1, IF(FZP_MACH_NDS<>0, FZP_MACH_NDS, ZP_MACH_NDS), IF(FZP_MACH_NO_NDS<>0, FZP_MACH_NO_NDS, ZP_MACH_NO_NDS))=:12',
-          VarArrayOf([FieldByName('COAST').Value, FieldByName('DELETED').Value, FieldByName('PROC_ZAC').Value,
-          FieldByName('PROC_PODR').Value, cbbNDS.ItemIndex, FieldByName('COAST').OldValue,
-          FieldByName('MECH_ID').Value, cbbNDS.ItemIndex, FieldByName('ZP_1').OldValue]));
+          VarArrayOf([FieldByName('COAST').AsFloat, FieldByName('DELETED').Value,
+          FieldByName('PROC_ZAC').Value, FieldByName('PROC_PODR').Value, cbbNDS.ItemIndex,
+          FieldByName('COAST').OldValue, FieldByName('MECH_ID').Value, cbbNDS.ItemIndex,
+          FieldByName('ZP_1').OldValue]));
 
       if FieldByName('ZP_1').Value <> FieldByName('ZP_1').OldValue then
         FastExecSQL('UPDATE mechanizmcard_temp SET'#13 + priceQ1 + ' WHERE DELETED=:5'#13 +
           'AND PROC_ZAC=:6 AND PROC_PODR=:7'#13 +
           'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MECH_ID=:11'#13
           + 'AND IF(:NDS1=1, IF(FZP_MACH_NDS<>0, FZP_MACH_NDS, ZP_MACH_NDS), IF(FZP_MACH_NO_NDS<>0, FZP_MACH_NO_NDS, ZP_MACH_NO_NDS))=:12',
-          VarArrayOf([FieldByName('ZP_1').Value, FieldByName('DELETED').Value, FieldByName('PROC_ZAC').Value,
-          FieldByName('PROC_PODR').Value, cbbNDS.ItemIndex, FieldByName('COAST').Value,
-          FieldByName('MECH_ID').Value, cbbNDS.ItemIndex, FieldByName('ZP_1').OldValue]));
+          VarArrayOf([FieldByName('ZP_1').AsFloat, FieldByName('DELETED').Value,
+          FieldByName('PROC_ZAC').Value, FieldByName('PROC_PODR').Value, cbbNDS.ItemIndex,
+          FieldByName('COAST').Value, FieldByName('MECH_ID').Value, cbbNDS.ItemIndex,
+          FieldByName('ZP_1').OldValue]));
     end;
     // Вызываем переасчет всей сметы
     FormCalculationEstimate.RecalcEstimate;
@@ -1350,8 +1568,10 @@ end;
 
 procedure TfCalcResource.qrMechDataCOASTChange(Sender: TField);
 begin
-  qrMechData.FieldByName('PRICE').Value := qrMechData.FieldByName('COAST').Value *
-    qrMechData.FieldByName('CNT').Value;
+  qrMechData.FieldByName('PRICE').Value :=
+    ROUND(qrMechData.FieldByName('COAST').AsFloat * qrMechData.FieldByName('CNT').Value);
+  qrMechData.FieldByName('ZP_2').Value :=
+    ROUND(qrMechData.FieldByName('ZP_1').AsFloat * qrMechData.FieldByName('CNT').Value);
 end;
 
 procedure TfCalcResource.qrMechDataPROC_PODRChange(Sender: TField);
@@ -1415,11 +1635,11 @@ begin
 
       if FieldByName('COAST').Value <> FieldByName('COAST').OldValue then
         FastExecSQL('UPDATE mechanizmcard_temp SET'#13 + priceQ + ' WHERE ID=:5',
-          VarArrayOf([FieldByName('COAST').Value, FieldByName('ID').Value]));
+          VarArrayOf([FieldByName('COAST').AsFloat, FieldByName('ID').Value]));
 
       if FieldByName('ZP_MASH').Value <> FieldByName('ZP_MASH').OldValue then
         FastExecSQL('UPDATE mechanizmcard_temp SET'#13 + priceQ1 + ' WHERE ID=:5',
-          VarArrayOf([FieldByName('ZP_MASH').Value, FieldByName('ID').Value]));
+          VarArrayOf([FieldByName('ZP_MASH').AsFloat, FieldByName('ID').Value]));
     end;
     // Вызываем переасчет всей сметы
     FormCalculationEstimate.RecalcEstimate;

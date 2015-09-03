@@ -33,12 +33,6 @@ type
     procedure Paint(); override;
   end;
 
-  TMyDBGrid = class(TJvDBGrid)
-  public
-    property TopRow;
-    property DataLink;
-  end;
-
   TTwoValues = record
     ForOne: Currency;
     ForCount: Currency;
@@ -480,6 +474,8 @@ type
     PMSetTransPerc2: TMenuItem;
     PMSetTransPerc3: TMenuItem;
     PMSetTransPerc4: TMenuItem;
+    edtTypeWork: TEdit;
+    edtZone: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -678,6 +674,12 @@ type
     procedure PopupMenuCoefOrdersClick(Sender: TObject);
     procedure qrRatesExBeforeScroll(DataSet: TDataSet);
     procedure PMSetTransPercClick(Sender: TObject);
+    procedure grRatesExExit(Sender: TObject);
+    procedure dbgrdCalculationsDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+      Column: TColumn; State: TGridDrawState);
+    procedure qrCalculationsAfterOpen(DataSet: TDataSet);
+    procedure dbgrdCalculationsResize(Sender: TObject);
+    procedure dbmmoCAPTIONExit(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -1064,7 +1066,7 @@ end;
 
 procedure TFormCalculationEstimate.FormResize(Sender: TObject);
 begin
-  FixDBGridColumnsWidth(dbgrdCalculations);
+  // FixDBGridColumnsWidth(dbgrdCalculations);
 end;
 
 procedure TFormCalculationEstimate.SpeedButtonLocalEstimateClick(Sender: TObject);
@@ -1438,11 +1440,14 @@ begin
 end;
 
 procedure TFormCalculationEstimate.Panel1Resize(Sender: TObject);
+var
+  newWith: Integer;
 begin
-  dblkcbbOXROPR.Width := (Sender as TPanel).Width div 2 - dblkcbbOXROPR.Left - 3;
+  newWith := ((Sender as TPanel).Width - dblkcbbOXROPR.Left - lblWinterPrice.Width - 24) div 2;
+  dblkcbbOXROPR.Width := newWith;
 
   // EditWinterPrice.Left := lblWinterPrice.Left + lblWinterPrice.Width + 6;
-  EditWinterPrice.Width := (Sender as TPanel).Width - EditWinterPrice.Left - 6;
+  EditWinterPrice.Width := newWith;
 end;
 
 procedure TFormCalculationEstimate.PanelCalculationYesNoClick(Sender: TObject);
@@ -1704,6 +1709,14 @@ begin
   end;
 
   ShellExecute(FormCalculationEstimate.Handle, nil, PChar(Path), nil, nil, SW_SHOWMAXIMIZED);
+end;
+
+procedure TFormCalculationEstimate.qrCalculationsAfterOpen(DataSet: TDataSet);
+begin
+  if qrCalculations.RecordCount > dbgrdCalculations.VisibleRowCount then
+    dbgrdCalculations.ScrollBars := ssVertical
+  else
+    dbgrdCalculations.ScrollBars := ssNone;
 end;
 
 procedure TFormCalculationEstimate.qrDescriptionAfterScroll(DataSet: TDataSet);
@@ -2647,6 +2660,7 @@ end;
 
 procedure TFormCalculationEstimate.qrRatesExAfterScroll(DataSet: TDataSet);
 begin
+  qrCalculationsAfterOpen(qrCalculations);
   // Гасит итератор, все добавляется в конец сметы(отличается от 0 только в режиме вставке строки)
   FNewRowIterator := 0;
   tmRate.Enabled := False;
@@ -3047,6 +3061,11 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.grRatesExExit(Sender: TObject);
+begin
+  (Sender as TJvDBGrid).DataSource.DataSet.CheckBrowseMode;
+end;
+
 procedure TFormCalculationEstimate.ReplacementClick(Sender: TObject);
 var
   frmReplace: TfrmReplacement;
@@ -3425,18 +3444,19 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMSetTransPercClick(Sender: TObject);
-var fTrPersSelect: TfTrPersSelect;
-    TransPr: Double;
-    MatCode: string;
-    TmpStr: string;
-    UpdateStr: string;
-    EstimStr: string;
-    SelType: Byte;
-    WhereStr: string;
-    TempBookmark: TBookMark;
-    X: Integer;
+var
+  fTrPersSelect: TfTrPersSelect;
+  TransPr: Double;
+  MatCode: string;
+  TmpStr: string;
+  UpdateStr: string;
+  EstimStr: string;
+  SelType: byte;
+  WhereStr: string;
+  TempBookmark: TBookMark;
+  X: Integer;
 begin
-  if (Sender as TComponent).Tag in [1,2,3] then
+  if (Sender as TComponent).Tag in [1, 2, 3] then
   begin
     fTrPersSelect := TfTrPersSelect.Create(nil);
     try
@@ -3460,47 +3480,45 @@ begin
       grRatesEx.SelectedRows.CurrentRowSelected := True;
 
     for X := 0 to grRatesEx.SelectedRows.Count - 1 do
-    begin  // (1-локальная, 2-объектная, 3-ПТМ)
+    begin // (1-локальная, 2-объектная, 3-ПТМ)
       if grRatesEx.SelectedRows.IndexOf(grRatesEx.SelectedRows.Items[X]) > -1 then
       begin
         grRatesEx.DataSource.DataSet.Bookmark := grRatesEx.SelectedRows.Items[X];
-        if (qrRatesExID_TYPE_DATA.Value in [1,2]) or
-           (qrRatesExID_TYPE_DATA.Value = -1) or
-           (qrRatesExID_TYPE_DATA.Value = -2) or
-           (qrRatesExID_TYPE_DATA.Value = -3) then
+        if (qrRatesExID_TYPE_DATA.Value in [1, 2]) or (qrRatesExID_TYPE_DATA.Value = -1) or
+          (qrRatesExID_TYPE_DATA.Value = -2) or (qrRatesExID_TYPE_DATA.Value = -3) then
         begin
           case qrRatesExID_TYPE_DATA.Value of
             1:
-            begin
-              WhereStr := '(ID_CARD_RATE = ' + qrRatesExID_TABLES.Value.ToString + ')';
-              EstimStr := qrRatesExSM_ID.Value.ToString;
-            end;
+              begin
+                WhereStr := '(ID_CARD_RATE = ' + qrRatesExID_TABLES.Value.ToString + ')';
+                EstimStr := qrRatesExSM_ID.Value.ToString;
+              end;
             2:
-            begin
-              WhereStr := '(ID = ' + qrRatesExID_TABLES.Value.ToString + ')';
-              EstimStr := qrRatesExSM_ID.Value.ToString;
-            end;
+              begin
+                WhereStr := '(ID = ' + qrRatesExID_TABLES.Value.ToString + ')';
+                EstimStr := qrRatesExSM_ID.Value.ToString;
+              end;
             -1, -2:
-            begin
-              continue;
-            end;
+              begin
+                Continue;
+              end;
             -3:
-            begin
-              WhereStr := '((ID in (select ID_TABLES from data_row_temp where ' +
-                '(ID_TYPE_DATA = 2) and (ID_ESTIMATE = ' +
-                  qrRatesExSM_ID.Value.ToString + '))) or ' +
-                '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
-                '(ID_TYPE_DATA = 1) and (ID_ESTIMATE = ' +
-                qrRatesExSM_ID.Value.ToString + '))))';
-              EstimStr := qrRatesExSM_ID.Value.ToString;
-            end;
+              begin
+                WhereStr := '((ID in (select ID_TABLES from data_row_temp where ' +
+                  '(ID_TYPE_DATA = 2) and (ID_ESTIMATE = ' + qrRatesExSM_ID.Value.ToString + '))) or ' +
+                  '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
+                  '(ID_TYPE_DATA = 1) and (ID_ESTIMATE = ' + qrRatesExSM_ID.Value.ToString + '))))';
+                EstimStr := qrRatesExSM_ID.Value.ToString;
+              end;
           end;
 
-          if (Sender as TComponent).Tag in [1,2,3] then
+          if (Sender as TComponent).Tag in [1, 2, 3] then
           begin
             case SelType of
-            1: UpdateStr := 'PROC_TRANSP = GetTranspPers(' + EstimStr + ', ''' + MatCode + ''')';
-            2: UpdateStr := 'PROC_TRANSP = ' + TransPr.ToString;
+              1:
+                UpdateStr := 'PROC_TRANSP = GetTranspPers(' + EstimStr + ', ''' + MatCode + ''')';
+              2:
+                UpdateStr := 'PROC_TRANSP = ' + TransPr.ToString;
             end;
             if (Sender as TComponent).Tag = 1 then
               WhereStr := WhereStr + ' and (MAT_CODE like ''С103%'')';
@@ -3512,8 +3530,7 @@ begin
             UpdateStr := 'PROC_TRANSP = GetTranspPers(' + EstimStr + ', MAT_CODE)';
 
           qrTemp.Active := False;
-          qrTemp.SQL.Text :=
-            'update materialcard_temp set ' + UpdateStr + ' where ' + WhereStr;
+          qrTemp.SQL.Text := 'update materialcard_temp set ' + UpdateStr + ' where ' + WhereStr;
           qrTemp.ExecSQL;
         end;
       end;
@@ -4543,8 +4560,9 @@ var
 begin
   if grRatesEx.SelectedRows.Count > 1 then
   begin
-    if MessageBox(0, PChar('Вы действительно хотите удалить ' + INTTOSTR(grRatesEx.SelectedRows.Count) +
-      ' объектов?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+    if MessageBox(0, PChar('Вы действительно хотите удалить выбранные записи(' +
+      INTTOSTR(grRatesEx.SelectedRows.Count) + ')?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO +
+      mb_TaskModal) = mrNo then
       Exit;
 
     grRatesEx.DataSource.DataSet.DisableControls;
@@ -5667,13 +5685,14 @@ begin
   // Заполнение таблицы расценок
   OutputDataToTable;
 
-  lblZone.Caption := 'Зона строительства: ' +
-    FastSelectSQLOne
+  edtZone.Text := FastSelectSQLOne
     ('SELECT `objregion`.`REGION` FROM `objregion`, `objcards`, `objstroj` WHERE `objcards`.`OBJ_ID`=:0 and `objcards`.`STROJ_ID`=`objstroj`.`STROJ_ID` AND  `objstroj`.`OBJ_REGION`=`objregion`.`OBJ_REGION_ID`',
     VarArrayOf([IdObject]));
-  lblTypeWork.Caption := 'Вид работ: ' + FastSelectSQLOne
+  edtZone.Width := GetTextWidth(edtZone.Text, edtZone.Handle) + 4;
+  edtTypeWork.Text := FastSelectSQLOne
     ('SELECT `objstroj`.`NAME` FROM `objcards`, `objstroj` WHERE `objcards`.`OBJ_ID`=:0 and `objcards`.`STROJ_ID`=`objstroj`.`STROJ_ID`',
     VarArrayOf([IdObject]));
+  edtTypeWork.Width := GetTextWidth(edtTypeWork.Text, edtTypeWork.Handle) + 4;
 
   if not qrOXROPR.Active then
     qrOXROPR.Active := True;
@@ -5842,7 +5861,7 @@ var
 begin
   grRatesEx.DataSource.DataSet.DisableControls;
   if grRatesEx.SelectedRows.Count = 0 then
-      grRatesEx.SelectedRows.CurrentRowSelected := True;
+    grRatesEx.SelectedRows.CurrentRowSelected := True;
   with grRatesEx.SelectedRows do
     if Count <> 0 then
     begin
@@ -5981,6 +6000,41 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.dbgrdCalculationsDrawColumnCell(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TFormCalculationEstimate.dbgrdCalculationsResize(Sender: TObject);
+begin
+  if qrCalculations.RecordCount > dbgrdCalculations.VisibleRowCount then
+    dbgrdCalculations.ScrollBars := ssVertical
+  else
+    dbgrdCalculations.ScrollBars := ssNone;
+end;
+
 procedure TFormCalculationEstimate.dbgrdDescription1DrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
@@ -5998,7 +6052,7 @@ begin
       (dbgrdDescription.Row = TMyDBGrid(dbgrdDescription).DataLink.ActiveRecord + 1) and
       (dbgrdDescription = FLastEntegGrd) then
     begin
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
     end;
 
     FillRect(Rect);
@@ -6031,7 +6085,7 @@ begin
       ((Sender as TJvDBGrid).Row = TMyDBGrid(Sender).DataLink.ActiveRecord + 1) and
       (TJvDBGrid(Sender) = FLastEntegGrd) then
     begin
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
       if not Column.ReadOnly then
         Brush.Color := $00AFFEFC
@@ -6116,7 +6170,7 @@ begin
       (dbgrdMaterial.Row = TMyDBGrid(dbgrdMaterial).DataLink.ActiveRecord + 1) and
       (dbgrdMaterial = FLastEntegGrd) then
     begin
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
       if not Column.ReadOnly then
         Brush.Color := $00AFFEFC;
@@ -6144,12 +6198,12 @@ begin
 
     // Подсветка замененного материяла (подсветка П-шки)
     if (FIdReplasedMat > 0) and (qrMaterialID.Value = FIdReplasedMat) and (dbgrdMaterial = FLastEntegGrd) then
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
 
     // Подсветка замененяющего материала
     if (FIdReplasingMat > 0) and (FIdReplasingMat = qrMaterialID_REPLACED.Value) and
       (dbgrdMaterial = FLastEntegGrd) then
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
 
     Str := '';
     // Подсветка синим подшапок таблицы
@@ -6157,7 +6211,7 @@ begin
     begin
       Brush.Color := clNavy;
       Font.Color := clWhite;
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
       if Column.Index = 1 then
         if Assigned(Column.Field) then
           Str := Column.Field.AsString;
@@ -6268,7 +6322,7 @@ begin
       (dbgrdMechanizm.Row = TMyDBGrid(dbgrdMechanizm).DataLink.ActiveRecord + 1) and
       (dbgrdMechanizm = FLastEntegGrd) then
     begin
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
       // Все поля открытые для редактирования подсвечиваются желтеньким
       if not Column.ReadOnly then
         Brush.Color := $00AFFEFC
@@ -6297,12 +6351,12 @@ begin
     // Подсветка замененного механизма
     if (FIdReplasedMech > 0) and (qrMechanizmID.Value = FIdReplasedMech) and (dbgrdMechanizm = FLastEntegGrd)
     then
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
 
     // Подсветка замененяющего механизма
     if (FIdReplasingMech > 0) and (FIdReplasingMech = qrMechanizmID_REPLACED.Value) and
       (dbgrdMechanizm = FLastEntegGrd) then
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
 
     Str := '';
     // Подсветка синим подшапок таблицы
@@ -6310,7 +6364,7 @@ begin
     begin
       Brush.Color := clNavy;
       Font.Color := clWhite;
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
       if Column.Index = 1 then
         if Assigned(Column.Field) then
           Str := Column.Field.AsString;
@@ -6377,7 +6431,7 @@ begin
       Brush.Color := clSilver;
     if qrRatesExID_TYPE_DATA.AsInteger = -1 then
     begin
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
       Brush.Color := clSilver;
     end;
     if (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -5) then
@@ -6398,7 +6452,7 @@ begin
     // and (grRatesEx = LastEntegGrd) // Подсвечивается жирным только если есть фокус
     then
     begin
-      Font.Style := Font.Style + [fsbold];
+      Font.Style := Font.Style + [fsBold];
     end;
 
     if gdFocused in State then // Ячейка в фокусе
@@ -6413,7 +6467,7 @@ begin
     begin
       if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2) and
         ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)) then
-        Font.Style := Font.Style + [fsbold];
+        Font.Style := Font.Style + [fsBold];
     end;
 
     // Подсветка заменяющего для пэшки
@@ -6422,7 +6476,7 @@ begin
       if (qrRatesExID_REPLACED.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2)
         and (qrMaterialCONSIDERED.AsInteger = 0) and
         ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)) then
-        Font.Style := Font.Style + [fsbold];
+        Font.Style := Font.Style + [fsBold];
     end;
 
     // Подсветка вынесенного за расценку механизма
@@ -6430,7 +6484,7 @@ begin
     begin
       if (qrRatesExID_TABLES.AsInteger = qrMechanizmID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 3)
         and (grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) then
-        Font.Style := Font.Style + [fsbold];
+        Font.Style := Font.Style + [fsBold];
     end;
 
     if qrRatesExREPLACED_COUNT.Value > 0 then
@@ -6461,6 +6515,23 @@ begin
     Key := 0;
 
   grRatesEx.ReadOnly := PanelCalculationYesNo.Tag = 0;
+end;
+
+procedure TFormCalculationEstimate.dbmmoCAPTIONExit(Sender: TObject);
+begin
+  if (qrRatesEx.State in [dsEdit, dsInsert]) and
+    (qrRatesEx.FieldByName('OBJ_NAME').Value <> qrRatesEx.FieldByName('OBJ_NAME').OldValue) then
+  begin
+    if Application.MessageBox('Сохранить описание записи?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
+      = IDYES then
+    begin
+      FastExecSQL('UPDATE data_row_temp SET OBJ_NAME=:0 WHERE ID=:1',
+        VarArrayOf([dbmmoCAPTION.Text, qrRatesExDATA_ESTIMATE_OR_ACT_ID.Value]));
+    end
+    else
+      qrRatesEx.Cancel;
+    qrRatesEx.CheckBrowseMode;
+  end;
 end;
 
 end.

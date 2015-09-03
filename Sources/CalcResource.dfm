@@ -10,7 +10,9 @@ object fCalcResource: TfCalcResource
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
+  Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
@@ -133,7 +135,7 @@ object fCalcResource: TfCalcResource
     Top = 56
     Width = 616
     Height = 306
-    ActivePage = ts2
+    ActivePage = ts1
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -156,6 +158,12 @@ object fCalcResource: TfCalcResource
         Alignment = taCenter
         AutoSize = False
         Caption = #1042' '#1088#1072#1079#1088#1072#1073#1086#1090#1082#1077'...'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         Layout = tlCenter
         ExplicitWidth = 80
         ExplicitHeight = 13
@@ -166,13 +174,15 @@ object fCalcResource: TfCalcResource
       ImageIndex = 1
       object spl2: TSplitter
         Left = 0
-        Top = 193
+        Top = 191
         Width = 608
-        Height = 3
+        Height = 5
         Cursor = crVSplit
         Align = alBottom
-        ExplicitTop = 57
-        ExplicitWidth = 179
+        Color = clBtnFace
+        ParentColor = False
+        ExplicitLeft = 3
+        ExplicitWidth = 602
       end
       object pnlMatTop: TPanel
         Left = 0
@@ -181,6 +191,12 @@ object fCalcResource: TfCalcResource
         Height = 29
         Align = alTop
         BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         TabOrder = 0
         DesignSize = (
           608
@@ -211,16 +227,17 @@ object fCalcResource: TfCalcResource
         Left = 0
         Top = 29
         Width = 608
-        Height = 164
+        Height = 162
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
+        ExplicitHeight = 164
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
-          Height = 145
+          Height = 143
           Align = alClient
           DataSource = dsMaterialData
           DrawingStyle = gdsClassic
@@ -238,6 +255,8 @@ object fCalcResource: TfCalcResource
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = grMaterialDrawColumnCell
+          OnExit = grMaterialExit
+          OnKeyDown = grMaterialKeyDown
           AutoAppend = False
           IniStorage = FormStorage
           OnTitleBtnClick = grMaterialTitleBtnClick
@@ -369,7 +388,7 @@ object fCalcResource: TfCalcResource
         end
         object JvDBGridFooter1: TJvDBGridFooter
           Left = 0
-          Top = 145
+          Top = 143
           Width = 608
           Height = 19
           SizeGrip = True
@@ -385,6 +404,7 @@ object fCalcResource: TfCalcResource
           DataSource = dsMaterialData
           DBGrid = grMaterial
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitTop = 145
         end
       end
       object pnlMatBott: TPanel
@@ -394,26 +414,39 @@ object fCalcResource: TfCalcResource
         Height = 82
         Align = alBottom
         Caption = 'pnlMatBott'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         TabOrder = 2
         object spl1: TSplitter
           Left = 1
           Top = 22
           Width = 606
-          Height = 3
+          Height = 5
           Cursor = crVSplit
           Align = alTop
-          ExplicitTop = 1
-          ExplicitWidth = 129
+          ExplicitLeft = 0
+          ExplicitTop = 21
+          ExplicitWidth = 608
         end
         object grMaterialBott: TJvDBGrid
           Left = 1
-          Top = 25
+          Top = 27
           Width = 606
-          Height = 56
+          Height = 54
           Align = alClient
           Constraints.MinHeight = 40
           DataSource = dsMaterialDetail
           DrawingStyle = gdsClassic
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -421,6 +454,8 @@ object fCalcResource: TfCalcResource
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = grMaterialBottDrawColumnCell
+          OnExit = grMaterialExit
+          OnKeyDown = grMaterialKeyDown
           AutoAppend = False
           IniStorage = FormStorage
           AutoSizeColumns = True
@@ -524,6 +559,12 @@ object fCalcResource: TfCalcResource
           Constraints.MinHeight = 21
           DataField = 'NAME'
           DataSource = dsMaterialData
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           ScrollBars = ssVertical
           TabOrder = 0
         end
@@ -534,27 +575,28 @@ object fCalcResource: TfCalcResource
       ImageIndex = 2
       object spl4: TSplitter
         Left = 0
-        Top = 209
+        Top = 205
         Width = 608
-        Height = 3
+        Height = 5
         Cursor = crVSplit
         Align = alBottom
-        ExplicitTop = 224
+        ExplicitTop = 209
       end
       object pnlMechClient: TPanel
         Left = 0
         Top = 29
         Width = 608
-        Height = 180
+        Height = 176
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
+        ExplicitHeight = 180
         object grMech: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
-          Height = 161
+          Height = 157
           Align = alClient
           DataSource = dsMechData
           DrawingStyle = gdsClassic
@@ -572,6 +614,8 @@ object fCalcResource: TfCalcResource
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = grMechDrawColumnCell
+          OnExit = grMaterialExit
+          OnKeyDown = grMaterialKeyDown
           AutoAppend = False
           IniStorage = FormStorage
           OnTitleBtnClick = grMechTitleBtnClick
@@ -613,6 +657,11 @@ object fCalcResource: TfCalcResource
             item
               Expanded = False
               FieldName = 'CNT'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
               Width = 22
@@ -637,6 +686,11 @@ object fCalcResource: TfCalcResource
             item
               Expanded = False
               FieldName = 'ZP_1'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
               Title.Alignment = taCenter
               Title.Caption = #1047#1072#1088#1087#1083'. '#1084#1072#1096'.'
               Width = 94
@@ -645,6 +699,11 @@ object fCalcResource: TfCalcResource
             item
               Expanded = False
               FieldName = 'ZP_2'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = []
               Title.Alignment = taCenter
               Title.Caption = #1057#1090'-'#1089#1090#1100' '#1079#1072#1088#1087#1083#1072#1090#1099
               Width = 101
@@ -669,7 +728,7 @@ object fCalcResource: TfCalcResource
         end
         object JvDBGridFooter2: TJvDBGridFooter
           Left = 0
-          Top = 161
+          Top = 157
           Width = 608
           Height = 19
           SizeGrip = True
@@ -693,36 +752,42 @@ object fCalcResource: TfCalcResource
           DataSource = dsMechData
           DBGrid = grMech
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitTop = 161
         end
       end
       object pnlMechBott: TPanel
         Left = 0
-        Top = 212
+        Top = 210
         Width = 608
-        Height = 66
+        Height = 68
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
+        ExplicitTop = 212
         object spl3: TSplitter
           Left = 1
           Top = 22
           Width = 606
-          Height = 3
+          Height = 5
           Cursor = crVSplit
           Align = alTop
-          ExplicitTop = 1
-          ExplicitWidth = 129
         end
         object grMechBott: TJvDBGrid
           Left = 1
-          Top = 25
+          Top = 27
           Width = 606
           Height = 40
           Align = alClient
           Constraints.MinHeight = 40
           DataSource = dsMechDetail
           DrawingStyle = gdsClassic
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
           Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+          ParentFont = False
           TabOrder = 1
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -730,6 +795,8 @@ object fCalcResource: TfCalcResource
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = grMechBottDrawColumnCell
+          OnExit = grMaterialExit
+          OnKeyDown = grMaterialKeyDown
           AutoAppend = False
           IniStorage = FormStorage
           AutoSizeColumns = True
@@ -814,6 +881,12 @@ object fCalcResource: TfCalcResource
           Constraints.MinHeight = 21
           DataField = 'NAME'
           DataSource = dsMechData
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           ScrollBars = ssVertical
           TabOrder = 0
         end
@@ -863,13 +936,12 @@ object fCalcResource: TfCalcResource
       ImageIndex = 3
       object spl5: TSplitter
         Left = 0
-        Top = 209
+        Top = 205
         Width = 608
-        Height = 3
+        Height = 5
         Cursor = crVSplit
         Align = alBottom
-        ExplicitLeft = 3
-        ExplicitTop = 225
+        ExplicitTop = 209
       end
       object pnlDevTop: TPanel
         Left = 0
@@ -878,6 +950,12 @@ object fCalcResource: TfCalcResource
         Height = 29
         Align = alTop
         BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         TabOrder = 0
         DesignSize = (
           608
@@ -906,18 +984,31 @@ object fCalcResource: TfCalcResource
         Left = 0
         Top = 29
         Width = 608
-        Height = 180
+        Height = 176
         Align = alClient
         BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         TabOrder = 1
+        ExplicitHeight = 180
         object grDev: TJvDBGrid
           Left = 0
           Top = 0
           Width = 608
-          Height = 161
+          Height = 157
           Align = alClient
           DataSource = dsDevices
           DrawingStyle = gdsClassic
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -925,6 +1016,8 @@ object fCalcResource: TfCalcResource
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = grDevDrawColumnCell
+          OnExit = grMaterialExit
+          OnKeyDown = grMaterialKeyDown
           AutoAppend = False
           IniStorage = FormStorage
           OnTitleBtnClick = grDevTitleBtnClick
@@ -1049,7 +1142,7 @@ object fCalcResource: TfCalcResource
         end
         object JvDBGridFooter3: TJvDBGridFooter
           Left = 0
-          Top = 161
+          Top = 157
           Width = 608
           Height = 19
           SizeGrip = True
@@ -1069,28 +1162,34 @@ object fCalcResource: TfCalcResource
           DataSource = dsDevices
           DBGrid = grDev
           OnCalculate = JvDBGridFooter1Calculate
+          ExplicitTop = 161
         end
       end
       object pnlDevBott: TPanel
         Left = 0
-        Top = 212
+        Top = 210
         Width = 608
-        Height = 66
+        Height = 68
         Align = alBottom
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         TabOrder = 2
+        ExplicitTop = 212
         object spl6: TSplitter
           Left = 1
           Top = 22
           Width = 606
-          Height = 3
+          Height = 5
           Cursor = crVSplit
           Align = alTop
-          ExplicitTop = 1
-          ExplicitWidth = 129
         end
         object grDevBott: TJvDBGrid
           Left = 1
-          Top = 25
+          Top = 27
           Width = 606
           Height = 40
           Align = alClient
@@ -1104,6 +1203,9 @@ object fCalcResource: TfCalcResource
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          OnDrawColumnCell = grDevBottDrawColumnCell
+          OnExit = grMaterialExit
+          OnKeyDown = grMaterialKeyDown
           AutoAppend = False
           IniStorage = FormStorage
           AutoSizeColumns = True
@@ -1475,10 +1577,10 @@ object fCalcResource: TfCalcResource
         ' IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))*COALESCE(MAT' +
         '_COUNT, 0))) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
       
-        '  SUM(IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, IF(FCOAST_NDS<>' +
-        '0, FTRANSP_NDS, TRANSP_NDS)), IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_N' +
-        'DS, IF(FCOAST_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS)))) AS TR' +
-        'ANSP, /* '#1090#1088#1072#1085#1089#1087'. */ '
+        '  SUM(ROUND(IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, IF(FCOAST' +
+        '_NDS<>0, FTRANSP_NDS, TRANSP_NDS)), IF(FTRANSP_NO_NDS<>0, FTRANS' +
+        'P_NO_NDS, IF(FCOAST_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS))))' +
+        ') AS TRANSP, /* '#1090#1088#1072#1085#1089#1087'. */ '
       '  DELETED,'
       '  MAT_PROC_ZAC,'
       '  MAT_PROC_PODR,'
@@ -1555,6 +1657,7 @@ object fCalcResource: TfCalcResource
       AutoGenerateValue = arDefault
       FieldName = 'PROC_TRANSP'
       Origin = 'PROC_TRANSP'
+      OnChange = qrMaterialDataCOASTChange
       Precision = 24
     end
     object qrMaterialDataCOAST: TFMTBCDField
@@ -1771,6 +1874,7 @@ object fCalcResource: TfCalcResource
       FieldName = 'ZP_1'
       Origin = 'ZP_1'
       ProviderFlags = []
+      OnChange = qrMechDataCOASTChange
       Precision = 25
     end
     object qrMechDataZP_2: TFMTBCDField
@@ -2096,7 +2200,11 @@ object fCalcResource: TfCalcResource
       'grMaterialBott.SortMarker'
       'grMech.SortMarker'
       'grMechBott.SortMarker'
-      'grRates.SortMarker')
+      'grRates.SortMarker'
+      'dbmmoNAME.Height'
+      'dbmmoNAME1.Height'
+      'dbmmoNAME2.Height'
+      'dbmmoNAME3.Height')
     StoredValues = <>
     Left = 552
     Top = 216
@@ -2153,10 +2261,10 @@ object fCalcResource: TfCalcResource
       '  m.TRANSP_PROC_PODR,'
       '  m.PROC_TRANSP,'
       
-        '  IF(:NDS=1, IF(m.FTRANSP_NDS<>0, m.FTRANSP_NDS, IF(m.FCOAST_NDS' +
-        '<>0, m.FTRANSP_NDS, m.TRANSP_NDS)), IF(m.FTRANSP_NO_NDS<>0, m.FT' +
-        'RANSP_NO_NDS, IF(m.FCOAST_NO_NDS<>0, m.FTRANSP_NO_NDS, m.TRANSP_' +
-        'NO_NDS))) AS TRANSP, /* '#1090#1088#1072#1085#1089#1087'. */'
+        '  ROUND(IF(:NDS=1, IF(m.FTRANSP_NDS<>0, m.FTRANSP_NDS, IF(m.FCOA' +
+        'ST_NDS<>0, m.FTRANSP_NDS, m.TRANSP_NDS)), IF(m.FTRANSP_NO_NDS<>0' +
+        ', m.FTRANSP_NO_NDS, IF(m.FCOAST_NO_NDS<>0, m.FTRANSP_NO_NDS, m.T' +
+        'RANSP_NO_NDS)))) AS TRANSP, /* '#1090#1088#1072#1085#1089#1087'. */'
       '  m.MAT_ID,'
       '  m.ID,'
       '  m.REPLACED,'

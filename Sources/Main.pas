@@ -208,7 +208,6 @@ type
     procedure N14Click(Sender: TObject);
     procedure OXRandOPRgClick(Sender: TObject);
     procedure CalculationSettingsClick(Sender: TObject);
-    procedure NormalClick(Sender: TObject);
     procedure ReadSettingsFromFile(PathFile: String);
     procedure WriteSettingsToFile(PathFile: String);
     procedure HRRReferenceDataClick(Sender: TObject);
@@ -324,6 +323,7 @@ type
     FontSelectCell: integer;
     SelectRowUnfocusedTable: integer;
     AutoCreateEstimates: Boolean; // Автоматически создавать набор смет при создании объекта
+    AutoExpandTreeEstimates: Boolean; // Автоматически раскрывать дерево смет
 
     RoundTo: integer; // Округлять числа до vRoundTo знаков после запятой
 
@@ -2099,11 +2099,6 @@ begin
   end;
 end;
 
-procedure TFormMain.NormalClick(Sender: TObject);
-begin
-
-end;
-
 // По горизонтали
 procedure TFormMain.WindowsHorizontalClick(Sender: TObject);
 begin
@@ -2288,7 +2283,8 @@ begin
       PS.BackgroundSelectCell := ReadInteger('Tables', BackgroundSelectCell, 2039583);
       PS.FontSelectCell := ReadInteger('Tables', FontSelectCell, 16777215);
       PS.SelectRowUnfocusedTable := ReadInteger('Tables', SelectRowUnfocusedTable, -16777201);
-      PS.AutoCreateEstimates := ReadBool('Object', 'AutoCreateEstimates', True);
+      PS.AutoCreateEstimates := ReadBool('Object', 'AutoCreateEstimates', true);
+      PS.AutoExpandTreeEstimates := ReadBool('Object', 'AutoExpandTreeEstimates', true);
       PS.RoundTo := ReadInteger('Round', vRoundTo, 0);
 
       PS.ShowHint := ReadBool('ShowHint', vShowHint, true);
@@ -2332,6 +2328,7 @@ begin
 
       WriteBool('ShowHint', vShowHint, PS.ShowHint);
       WriteBool('Object', 'AutoCreateEstimates', PS.AutoCreateEstimates);
+      WriteBool('Object', 'AutoExpandTreeEstimates', PS.AutoExpandTreeEstimates);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти

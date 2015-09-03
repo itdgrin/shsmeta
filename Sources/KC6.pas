@@ -104,6 +104,8 @@ type
     procedure tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode; State: TCustomDrawState;
       var DefaultDraw: Boolean);
     procedure tvEstimatesChange(Sender: TObject; Node: TTreeNode);
+    procedure dbgrd1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     IdObject: Integer;
   public const
@@ -360,10 +362,29 @@ end;
 procedure TfKC6.grDataDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
   State: TGridDrawState);
 begin
-  with grData.Canvas do
+  with (Sender AS TJvDBGrid).Canvas do
   begin
     Brush.Color := PS.BackgroundRows;
     Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
+  with grData.Canvas do
+  begin
 
     // if not CanEditField(Column.Field) then
     // Brush.Color := $00E1DFE0;
@@ -385,13 +406,6 @@ begin
 
     if qrDataID_TYPE_DATA.Value < 0 then
       grData.Canvas.Font.Style := grData.Canvas.Font.Style + [fsBold];
-
-    if (gdSelected in State) { or (gdSelected is State) } then // Ячейка в фокусе
-    begin
-      Brush.Color := PS.BackgroundSelectCell;
-      Font.Color := PS.FontSelectCell;
-      Font.Style := Font.Style + [fsBold];
-    end;
   end;
   grData.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
@@ -465,6 +479,33 @@ begin
       MessageBox(0, PChar('При занесении выделенных данные во временные таблицы возникла ошибка:' + sLineBreak
         + sLineBreak + E.Message), PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+end;
+
+procedure TfKC6.dbgrd1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfKC6.EditKoefChange(Sender: TObject);

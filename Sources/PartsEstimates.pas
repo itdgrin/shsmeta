@@ -6,7 +6,8 @@ uses
   Windows, Messages, Classes, StdCtrls, Controls, Forms, ComCtrls, ExtCtrls, JvComponentBase, JvFormPlacement,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
-  JvDBGrid, Vcl.Menus, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  JvDBGrid, Vcl.Menus, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.UITypes, Vcl.Mask,
+  Vcl.DBCtrls, Graphics;
 
 type
   TfPartsEstimates = class(TForm)
@@ -28,6 +29,8 @@ type
     procedure mN1Click(Sender: TObject);
     procedure mN2Click(Sender: TObject);
     procedure mN3Click(Sender: TObject);
+    procedure grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
   end;
 
@@ -75,6 +78,33 @@ begin
     grMain.ScrollBars := ssVertical
   else
     grMain.ScrollBars := ssNone;
+end;
+
+procedure TfPartsEstimates.grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfPartsEstimates.grMainTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);

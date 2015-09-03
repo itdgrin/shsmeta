@@ -34,6 +34,8 @@ type
     procedure qrMainNewRecord(DataSet: TDataSet);
     procedure grMainDblClick(Sender: TObject);
     procedure btnSearchClick(Sender: TObject);
+    procedure grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     { Private declarations }
   public
@@ -50,7 +52,7 @@ implementation
 
 {$R *.dfm}
 
-uses Tools, cardOrganization;
+uses Tools, cardOrganization, Main;
 
 function SelectOrganization(const ALocateValue: Variant): Variant;
 begin
@@ -105,6 +107,33 @@ end;
 procedure TfOrganizationsEx.grMainDblClick(Sender: TObject);
 begin
   qrMain.Edit;
+end;
+
+procedure TfOrganizationsEx.grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfOrganizationsEx.grMainTitleClick(Column: TColumn);

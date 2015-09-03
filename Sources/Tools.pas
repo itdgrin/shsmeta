@@ -5,11 +5,18 @@ interface
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
   ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid, FireDAC.Stan.Option,
-  FireDAC.Stan.Param;
+  FireDAC.Stan.Param, Controls;
 
 // Общий тип классификации форм
 type
   TKindForm = (kdNone, kdInsert, kdEdit, kdSelect);
+
+  // Для выноса в паблик некоторых свойств грида
+  TMyDBGrid = class(TJvDBGrid)
+  public
+    property TopRow;
+    property DataLink;
+  end;
 
   // Будующий класс формы для наследования всех форм
   TSmForm = class(TForm)
@@ -91,16 +98,29 @@ function MyStrToCurr(Value: string): Currency;
 function MixColors(FG, BG: TColor; T: byte): TColor;
 // Выполнение командной строки
 procedure Exec(AParam: string);
+// Функция получения ширины текста в пикселях внутри окна
+function GetTextWidth(Text: string; W: HWND): Integer;
 
 implementation
+
+function GetTextWidth(Text: string; W: HWND): Integer;
+var
+  DC: HDC;
+  sz: SIZE;
+begin
+  DC := GetDC(W);
+  GetTextExtentPoint32(DC, PChar(Text), length(Text), sz);
+  ReleaseDC(W, DC);
+  result := sz.cx;
+end;
 
 function Expand(const AParam: string): string;
 var
   buf: array [0 .. $FF] of char;
-  Size: Integer;
+  SIZE: Integer;
 begin
-  Size := ExpandEnvironmentStrings(PChar(AParam), buf, sizeof(buf));
-  Result := copy(buf, 1, Size);
+  SIZE := ExpandEnvironmentStrings(PChar(AParam), buf, sizeof(buf));
+  result := copy(buf, 1, SIZE);
 end;
 
 procedure Exec(AParam: string);
@@ -190,17 +210,17 @@ var
   DataPtr: Pointer;
   i: Integer;
 begin
-  if Length(SmClipArray) = 0 then
+  if length(SmClipArray) = 0 then
     Exit;
 
-  Data := GlobalAlloc(GMEM_MOVEABLE, sizeof(Integer) + sizeof(TSmClipRec) * Length(SmClipArray));
+  Data := GlobalAlloc(GMEM_MOVEABLE, sizeof(Integer) + sizeof(TSmClipRec) * length(SmClipArray));
   try
     DataPtr := GlobalLock(Data);
     try
-      i := Length(SmClipArray);
+      i := length(SmClipArray);
       Move(i, DataPtr^, sizeof(Integer));
       DataPtr := Ptr(Cardinal(DataPtr) + sizeof(Integer));
-      Move(SmClipArray[0], DataPtr^, sizeof(TSmClipRec) * Length(SmClipArray));
+      Move(SmClipArray[0], DataPtr^, sizeof(TSmClipRec) * length(SmClipArray));
       ClipBoard.SetAsHandle(G_SMETADATA, Data);
     finally
       GlobalUnlock(Data);
@@ -227,7 +247,7 @@ begin
     if i = 0 then
       Exit;
     DataPtr := Ptr(Cardinal(DataPtr) + sizeof(Integer));
-    Move(DataPtr^, SmClipArray[0], sizeof(TSmClipRec) * Length(SmClipArray));
+    Move(DataPtr^, SmClipArray[0], sizeof(TSmClipRec) * length(SmClipArray));
   finally
     GlobalUnlock(Data);
   end;
@@ -238,7 +258,7 @@ var
   qr: TFDQuery;
   i: Integer;
 begin
-  Result := Null;
+  result := Null;
   qr := TFDQuery.Create(nil);
   try
     // Получаем только 1 запись
@@ -259,7 +279,7 @@ begin
     qr.Active := True;
     qr.First;
     if qr.FieldCount > 0 then
-      Result := qr.Fields[0].Value;
+      result := qr.Fields[0].Value;
     qr.Active := False;
   finally
     FreeAndNil(qr);
@@ -305,7 +325,7 @@ begin
     wShowWindow := SW_HIDE;
   end;
 
-  Result := CreateProcess(AAppName, ACmdLine, nil, nil, False, NORMAL_PRIORITY_CLASS, nil, nil,
+  result := CreateProcess(AAppName, ACmdLine, nil, nil, False, NORMAL_PRIORITY_CLASS, nil, nil,
     Start, ProcInf);
 
   if ATimeout = 0 then
@@ -334,9 +354,9 @@ end;
 
 function CheckQrActiveEmpty(const ADataSet: TDataSet): Boolean;
 begin
-  Result := True;
+  result := True;
   if not ADataSet.Active or ADataSet.IsEmpty then
-    Result := False;
+    result := False;
 end;
 
 procedure CloseOpen(const Query: TFDQuery; ADisableControls: Boolean = True);
@@ -370,7 +390,7 @@ var
   Res: Variant;
   i: Integer;
 begin
-  Result := Null;
+  result := Null;
   if not CheckQrActiveEmpty(Query) then
     Exit;
 
@@ -400,7 +420,7 @@ begin
 
     if Key <> Null then
       Query.Locate(Query.Fields[0].FieldName, Key, []);
-    Result := Res;
+    result := Res;
   finally
     Query.AfterScroll := e;
     Query.EnableControls;
@@ -468,37 +488,6 @@ begin
   // DBGrid.ShowTitleHint := True;
   DBGrid.SelectColumnsDialogStrings.NoSelectionWarning := 'Должна быть выбрана хотя бы одна колонка!';
   DBGrid.SelectColumnsDialogStrings.Caption := 'Настройка видимости колонок';
-  {
-    DBGrid.TitleFont.
-    with (Sender as TStringGrid) do
-    begin
-    // Прорисовка шапки таблицы
-    if ARow = 0 then
-    begin
-    Canvas.Brush.Color := PS.BackgroundHead;
-    Canvas.FillRect(Rect);
-    Canvas.Font.Color := PS.FontHead;
-    Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-    end
-    else
-    // Прорисовка всех остальных строк
-    begin
-    Canvas.Brush.Color := PS.BackgroundRows;
-    Canvas.FillRect(Rect);
-    Canvas.Font.Color := PS.FontRows;
-    Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
-    end;
-
-    // Для выделенной строки в активной (в фокусе) таблице
-    if focused and (Row = ARow) and (Row > 0) then
-    begin
-    Canvas.Brush.Color := PS.BackgroundSelectRow;
-    Canvas.FillRect(Rect);
-    Canvas.Font.Color := PS.FontSelectRow;
-    Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, Row]);
-    end
-    end;
-  }
 end;
 
 // Процедури рисования чекбокса на гриде
@@ -521,7 +510,7 @@ begin
   DS := FormatSettings.DecimalSeparator;
   try
     FormatSettings.DecimalSeparator := '.';
-    Result := FloatToStr(Value);
+    result := FloatToStr(Value);
   finally
     FormatSettings.DecimalSeparator := DS;
   end;
@@ -534,10 +523,10 @@ begin
   DS := FormatSettings.DecimalSeparator;
   try
     FormatSettings.DecimalSeparator := '.';
-    if not TextToFloat(Value, Result, FormatSettings) then
+    if not TextToFloat(Value, result, FormatSettings) then
     begin
       FormatSettings.DecimalSeparator := ',';
-      Result := StrToFloat(Value);
+      result := StrToFloat(Value);
     end;
   finally
     FormatSettings.DecimalSeparator := DS;
@@ -551,7 +540,7 @@ begin
   DS := FormatSettings.DecimalSeparator;
   try
     FormatSettings.DecimalSeparator := '.';
-    Result := CurrToStr(Value);
+    result := CurrToStr(Value);
   finally
     FormatSettings.DecimalSeparator := DS;
   end;
@@ -564,10 +553,10 @@ begin
   DS := FormatSettings.DecimalSeparator;
   try
     FormatSettings.DecimalSeparator := '.';
-    if not TextToFloat(Value, Result, FormatSettings) then
+    if not TextToFloat(Value, result, FormatSettings) then
     begin
       FormatSettings.DecimalSeparator := ',';
-      Result := StrToCurr(Value);
+      result := StrToCurr(Value);
     end;
   finally
     FormatSettings.DecimalSeparator := DS;
@@ -581,11 +570,11 @@ begin
   DS := FormatSettings.DecimalSeparator;
   try
     FormatSettings.DecimalSeparator := '.';
-    if not TextToFloat(Value, Result, FormatSettings) then
+    if not TextToFloat(Value, result, FormatSettings) then
     begin
       FormatSettings.DecimalSeparator := ',';
-      if not TextToFloat(Value, Result, FormatSettings) then
-        Result := DefRes;
+      if not TextToFloat(Value, result, FormatSettings) then
+        result := DefRes;
     end;
   finally
     FormatSettings.DecimalSeparator := DS;
@@ -594,20 +583,20 @@ end;
 
 function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
 begin
-  Result := FastSelectSQLOne('SELECT `FN_getParamValue`(:inPARAM_CODE, :inMONTH, :inYEAR)',
+  result := FastSelectSQLOne('SELECT `FN_getParamValue`(:inPARAM_CODE, :inMONTH, :inYEAR)',
     VarArrayOf([AParamName, AMonth, AYear]));
 end;
 
 function UpdateIterator(ADestSmID, AIterator, AFromRate: Integer): Integer;
 begin
-  Result := FastSelectSQLOne('Select UpdateIterator(:IdEstimate, :AIterator, :AFromRate)',
+  result := FastSelectSQLOne('Select UpdateIterator(:IdEstimate, :AIterator, :AFromRate)',
     VarArrayOf([ADestSmID, AIterator, AFromRate]));
 end;
 
 function MixColors(FG, BG: TColor; T: byte): TColor;
   function MixBytes(FG, BG, TRANS: byte): byte;
   begin
-    Result := round(BG + (FG - BG) / 255 * TRANS);
+    result := round(BG + (FG - BG) / 255 * TRANS);
   end;
 
 var
@@ -616,7 +605,7 @@ begin
   r := MixBytes(FG and 255, BG and 255, T); // extracting and mixing Red
   g := MixBytes((FG shr 8) and 255, (BG shr 8) and 255, T); // the same with green
   b := MixBytes((FG shr 16) and 255, (BG shr 16) and 255, T); // and blue, of course
-  Result := r + g * 256 + b * 65536; // finishing with combining all channels together
+  result := r + g * 256 + b * 65536; // finishing with combining all channels together
 end;
 
 initialization

@@ -607,6 +607,8 @@ end;
 procedure TFormObjectsAndEstimates.qrActsExAfterOpen(DataSet: TDataSet);
 begin
   IDAct := qrActsEx.FieldByName('id').AsInteger;
+  if PS.AutoExpandTreeEstimates then
+    tvActs.FullExpand;
 end;
 
 procedure TFormObjectsAndEstimates.qrObjectsAfterOpen(DataSet: TDataSet);
@@ -629,6 +631,8 @@ begin
   if not CheckQrActiveEmpty(qrTreeData) then
     Exit;
   IdEstimate := Integer(qrTreeData.FieldByName('SM_ID').AsInteger);
+  if PS.AutoExpandTreeEstimates then
+    tvEstimates.FullExpand
 end;
 
 procedure TFormObjectsAndEstimates.PanelBottomResize(Sender: TObject);
@@ -666,16 +670,24 @@ begin
     Brush.Color := PS.BackgroundRows;
     Font.Color := PS.FontRows;
 
-    if (gdSelected in State) then // Ячейка в фокусе
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;
       Font.Style := Font.Style + [fsBold];
     end;
   end;
-  if qrObjects.FieldByName('DEL_FLAG').AsInteger = 1 then
-    dbgrdObjects.Canvas.Font.Style := dbgrdObjects.Canvas.Font.Style + [fsStrikeOut];
-  dbgrdObjects.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  if (Sender AS TJvDBGrid).DataSource.DataSet.FieldByName('DEL_FLAG').AsInteger = 1 then
+    (Sender AS TJvDBGrid).Canvas.Font.Style := dbgrdObjects.Canvas.Font.Style + [fsStrikeOut];
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TFormObjectsAndEstimates.dbgrdObjectsTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);

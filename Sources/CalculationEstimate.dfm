@@ -172,6 +172,12 @@
       Align = alLeft
       GroupIndex = 1
       Caption = #1042#1077#1076#1086#1084#1086#1089#1090#1100' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       OnClick = btnResMatClick
       ExplicitLeft = 335
       ExplicitHeight = 25
@@ -582,9 +588,15 @@
           Align = alBottom
           DataField = 'OBJ_NAME'
           DataSource = dsRatesEx
-          ReadOnly = True
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
           ScrollBars = ssVertical
           TabOrder = 1
+          OnExit = dbmmoCAPTIONExit
         end
         object grRatesEx: TJvDBGrid
           Left = 0
@@ -609,6 +621,7 @@
           TitleFont.Style = []
           OnDrawColumnCell = dbgrdRates12DrawColumnCell
           OnEnter = dbgrdRatesEnter
+          OnExit = grRatesExExit
           OnKeyDown = dbgrdRatesKeyDown
           AutoAppend = False
           MultiSelect = True
@@ -1477,6 +1490,12 @@
           Width = 546
           Height = 15
           Align = alBottom
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 1
@@ -1895,7 +1914,7 @@
                 FieldName = 'KOEFMR'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1050#1086#1077#1092'.'
+                Title.Caption = #1050#1086#1101#1092'.'
                 Width = 40
                 Visible = True
               end
@@ -2252,7 +2271,13 @@
             DataSource = dsDump
             DefaultDrawing = False
             DrawingStyle = gdsClassic
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
             ParentCtl3D = False
+            ParentFont = False
             PopupMenu = pmDumpTransp
             ReadOnly = True
             TabOrder = 4
@@ -2403,7 +2428,13 @@
             DataSource = dsTransp
             DefaultDrawing = False
             DrawingStyle = gdsClassic
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
             ParentCtl3D = False
+            ParentFont = False
             PopupMenu = pmDumpTransp
             ReadOnly = True
             TabOrder = 5
@@ -2511,7 +2542,7 @@
                 Expanded = False
                 FieldName = 'KOEF'
                 Title.Alignment = taCenter
-                Title.Caption = #1050#1086#1077#1092'.'
+                Title.Caption = #1050#1086#1101#1092'.'
                 Width = 40
                 Visible = True
               end
@@ -2617,7 +2648,13 @@
         Align = alClient
         DataSource = dsCalculations
         DrawingStyle = gdsClassic
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        ParentFont = False
         PopupMenu = pmCoef
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
@@ -2625,6 +2662,10 @@
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = dbgrdCalculationsDrawColumnCell
+        OnResize = dbgrdCalculationsResize
+        ScrollBars = ssNone
+        AutoSizeColumns = True
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -2637,6 +2678,7 @@
             FieldName = 'NAME'
             Title.Alignment = taCenter
             Title.Caption = ' '
+            Width = 68
             Visible = True
           end
           item
@@ -2645,6 +2687,7 @@
             FieldName = 'CNT'
             Title.Alignment = taCenter
             Title.Caption = #1050#1086#1083'-'#1074#1086
+            Width = 68
             Visible = True
           end
           item
@@ -2652,6 +2695,7 @@
             FieldName = 'ZP'
             Title.Alignment = taCenter
             Title.Caption = #1047#1055
+            Width = 68
             Visible = True
           end
           item
@@ -2659,6 +2703,7 @@
             FieldName = 'EMiM'
             Title.Alignment = taCenter
             Title.Caption = #1069#1052#1080#1052
+            Width = 68
             Visible = True
           end
           item
@@ -2666,6 +2711,7 @@
             FieldName = 'ZP_MASH'
             Title.Alignment = taCenter
             Title.Caption = #1047#1055' '#1084#1072#1096'.'
+            Width = 68
             Visible = True
           end
           item
@@ -2673,6 +2719,7 @@
             FieldName = 'MR'
             Title.Alignment = taCenter
             Title.Caption = #1052#1056
+            Width = 68
             Visible = True
           end
           item
@@ -2680,6 +2727,7 @@
             FieldName = 'TRANSP'
             Title.Alignment = taCenter
             Title.Caption = #1058#1088#1072#1085#1089#1087'.'
+            Width = 68
             Visible = True
           end
           item
@@ -2687,6 +2735,7 @@
             FieldName = 'STOIM'
             Title.Alignment = taCenter
             Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+            Width = 68
             Visible = True
           end
           item
@@ -2695,6 +2744,7 @@
             FieldName = 'OHROPR'
             Title.Alignment = taCenter
             Title.Caption = #1054#1061#1056' '#1080' '#1054#1055#1056
+            Width = 68
             Visible = True
           end
           item
@@ -2703,6 +2753,7 @@
             FieldName = 'PLAN_PRIB'
             Title.Alignment = taCenter
             Title.Caption = #1055#1083#1072#1085' '#1087#1088#1080#1073'.'
+            Width = 68
             Visible = True
           end
           item
@@ -2710,6 +2761,7 @@
             FieldName = 'ST_OHROPR'
             Title.Alignment = taCenter
             Title.Caption = #1048#1090#1086#1075#1086' '#1089' '#1054#1061#1056#1080#1054#1055#1056
+            Width = 68
             Visible = True
           end
           item
@@ -2717,6 +2769,7 @@
             FieldName = 'TRUD'
             Title.Alignment = taCenter
             Title.Caption = #1058#1088#1091#1076
+            Width = 68
             Visible = True
           end
           item
@@ -2724,6 +2777,7 @@
             FieldName = 'TRUD_MASH'
             Title.Alignment = taCenter
             Title.Caption = #1058#1088#1091#1076' '#1084#1072#1096'.'
+            Width = 67
             Visible = True
           end
           item
@@ -2815,11 +2869,10 @@
       OnResize = Panel1Resize
       object lbl1: TLabel
         AlignWithMargins = True
-        Left = 164
+        Left = 334
         Top = 5
         Width = 108
         Height = 14
-        Margins.Left = 8
         Margins.Top = 5
         Margins.Bottom = 5
         Align = alLeft
@@ -2830,22 +2883,27 @@
         AlignWithMargins = True
         Left = 8
         Top = 5
-        Width = 78
+        Width = 107
         Height = 14
         Margins.Left = 8
         Margins.Top = 5
         Margins.Bottom = 5
         Align = alLeft
-        Caption = #1047#1086#1085#1072' '#1088#1072#1089#1094#1077#1085#1086#1082':'
+        Caption = #1047#1086#1085#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         ExplicitHeight = 13
       end
       object lblTypeWork: TLabel
         AlignWithMargins = True
-        Left = 97
+        Left = 199
         Top = 5
         Width = 56
         Height = 14
-        Margins.Left = 8
         Margins.Top = 5
         Margins.Bottom = 5
         Align = alLeft
@@ -2854,11 +2912,10 @@
       end
       object lblWinterPrice: TLabel
         AlignWithMargins = True
-        Left = 541
+        Left = 609
         Top = 5
         Width = 121
         Height = 14
-        Margins.Left = 8
         Margins.Top = 5
         Margins.Bottom = 5
         Align = alLeft
@@ -2866,25 +2923,37 @@
         ExplicitHeight = 13
       end
       object EditWinterPrice: TEdit
-        Left = 665
-        Top = 0
-        Width = 247
-        Height = 24
+        AlignWithMargins = True
+        Left = 733
+        Top = 2
+        Width = 114
+        Height = 20
         Cursor = crHandPoint
+        Margins.Left = 0
+        Margins.Top = 2
+        Margins.Bottom = 2
         TabStop = False
         Align = alLeft
         Color = 14802912
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
         PopupMenu = pmWinterPrise
         ReadOnly = True
-        TabOrder = 1
+        TabOrder = 3
         OnClick = nSelectWinterPriseClick
         ExplicitHeight = 21
       end
       object dblkcbbOXROPR: TDBLookupComboBox
-        Left = 275
-        Top = 0
-        Width = 258
+        AlignWithMargins = True
+        Left = 445
+        Top = 2
+        Width = 158
         Height = 21
+        Margins.Left = 0
         Margins.Top = 2
         Margins.Bottom = 2
         Align = alLeft
@@ -2894,7 +2963,57 @@
         KeyField = 'work_id'
         ListField = 'NameWork'
         ListSource = dsOXROPR
+        TabOrder = 2
+      end
+      object edtTypeWork: TEdit
+        AlignWithMargins = True
+        Left = 258
+        Top = 2
+        Width = 70
+        Height = 20
+        Margins.Left = 0
+        Margins.Top = 2
+        Margins.Bottom = 2
+        Align = alLeft
+        Alignment = taCenter
+        BevelInner = bvLowered
+        BevelOuter = bvNone
+        Color = 14802912
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ReadOnly = True
+        TabOrder = 1
+        Text = #1042#1080#1076' '#1088#1072#1073#1086#1090
+        ExplicitHeight = 21
+      end
+      object edtZone: TEdit
+        AlignWithMargins = True
+        Left = 118
+        Top = 2
+        Width = 75
+        Height = 20
+        Margins.Left = 0
+        Margins.Top = 2
+        Margins.Bottom = 2
+        Align = alLeft
+        Alignment = taCenter
+        BevelInner = bvLowered
+        BevelOuter = bvNone
+        Color = 14802912
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ReadOnly = True
         TabOrder = 0
+        Text = #1047#1086#1085#1072' '#1088#1072#1089#1094#1077#1085#1086#1082
+        ExplicitHeight = 21
       end
     end
   end
@@ -4477,6 +4596,7 @@
     end
   end
   object qrCalculations: TFDQuery
+    AfterOpen = qrCalculationsAfterOpen
     MasterSource = dsRatesEx
     MasterFields = 'SM_ID;ID_TYPE_DATA;ID_TABLES;ID_ACT'
     Connection = DM.Connect

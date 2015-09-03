@@ -91,6 +91,7 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnDrawColumnCell = grMainDrawColumnCell
     AutoAppend = False
     PostOnEnterKey = True
     ScrollBars = ssNone

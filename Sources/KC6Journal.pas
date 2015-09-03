@@ -67,6 +67,8 @@ type
     procedure qrDetailCalcFields(DataSet: TDataSet);
     procedure FormActivate(Sender: TObject);
     procedure qrObjectAfterScroll(DataSet: TDataSet);
+    procedure dbgrdDataDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     SkipReload: Boolean;
     procedure UpdateNumPP;
@@ -714,6 +716,33 @@ begin
   end;
 end;
 
+procedure TfKC6Journal.dbgrdDataDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
 procedure TfKC6Journal.FormActivate(Sender: TObject);
 begin
   // Если нажата клавиша Ctrl и выбираем форму, то делаем
@@ -812,7 +841,7 @@ begin
       pgcPage.ActivePageIndex := 1
     else
      pgcPage.ActivePageIndex := 2;
-  cbbFromMonthChange(Self);   
+  cbbFromMonthChange(Self);
 end;
 
 procedure TfKC6Journal.UpdateNumPP;

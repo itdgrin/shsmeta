@@ -106,6 +106,8 @@ type
     procedure pmCoefPopup(Sender: TObject);
     procedure qrCoefBeforeOpen(DataSet: TDataSet);
     procedure dbchkcoef_ordersClick(Sender: TObject);
+    procedure grCoefDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
     // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
 
   private
@@ -296,6 +298,33 @@ begin
     DBLookupComboBoxRegionDumpClick(DBLookupComboBoxRegionDump);
   end;
   flLoaded := True;
+end;
+
+procedure TFormBasicData.grCoefDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TFormBasicData.mN1Click(Sender: TObject);
@@ -572,8 +601,9 @@ begin
       ParamByName('sm_id').Value := IdEstimate;
       ExecSQL;
       // Обновляем все зависимые сметы до самого низкого уровня
-      if Application.MessageBox('Обновить исходные данные всех зависмых смет?', 'Вопрос',
-        MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+      if Application.MessageBox('Применить текущие настройки к зависимым данным?'#13#13 +
+        'Примечание: текущие настройки будут перенесены на все нижестоящие уровни локальных и/или ПТМ разделов.',
+        'Вопрос', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
       begin
         SQL.Text := 'CALL `UPDATE_SMETASOURCEDATA_CHILD`(:sm_id);';
         ParamByName('sm_id').Value := IdEstimate;

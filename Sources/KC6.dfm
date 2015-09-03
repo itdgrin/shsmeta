@@ -272,6 +272,7 @@ object fKC6: TfKC6
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = dbgrd1DrawColumnCell
         IniStorage = FormStorage
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'

@@ -35,6 +35,8 @@ type
     procedure cbRegionsChange(Sender: TObject);
     procedure qrObjRegionAfterScroll(DataSet: TDataSet);
     procedure FormDestroy(Sender: TObject);
+    procedure grdZoneDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     FRefID: TStringList;
     { Private declarations }
@@ -44,7 +46,7 @@ type
 
 
 implementation
-uses DataModule, Tools;
+uses DataModule, Tools, Main;
 
 {$R *.dfm}
 
@@ -76,6 +78,33 @@ end;
 procedure TfBuildZone.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FRefID);
+end;
+
+procedure TfBuildZone.grdZoneDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TfBuildZone.cbRegionsChange(Sender: TObject);

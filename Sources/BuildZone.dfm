@@ -24,8 +24,6 @@ object fBuildZone: TfBuildZone
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 363
-    ExplicitHeight = 495
     object gbZone: TGroupBox
       Left = 0
       Top = 0
@@ -38,7 +36,6 @@ object fBuildZone: TfBuildZone
       Align = alTop
       Caption = ' '#1047#1072#1085#1099' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072' '
       TabOrder = 0
-      ExplicitWidth = 363
       object grdZone: TJvDBGrid
         Left = 2
         Top = 15
@@ -52,6 +49,7 @@ object fBuildZone: TfBuildZone
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = grdZoneDrawColumnCell
         ScrollBars = ssNone
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
@@ -85,8 +83,7 @@ object fBuildZone: TfBuildZone
       Height = 94
       Align = alBottom
       Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1079#1086#1085#1099' '
-      TabOrder = 1
-      ExplicitTop = 538
+      TabOrder = 2
       object DBMemo1: TDBMemo
         Left = 2
         Top = 15
@@ -96,8 +93,6 @@ object fBuildZone: TfBuildZone
         DataField = 'DESCRIPT'
         DataSource = dsObjRegion
         TabOrder = 0
-        ExplicitWidth = 359
-        ExplicitHeight = 87
       end
     end
     object gbObject: TGroupBox
@@ -107,10 +102,7 @@ object fBuildZone: TfBuildZone
       Height = 413
       Align = alClient
       Caption = #1055#1077#1088#1077#1095#1077#1085#1100' '#1088#1072#1081#1086#1085#1086#1074
-      TabOrder = 2
-      ExplicitTop = 0
-      ExplicitWidth = 228
-      ExplicitHeight = 495
+      TabOrder = 1
       object Panel3: TPanel
         Left = 2
         Top = 15
@@ -119,7 +111,6 @@ object fBuildZone: TfBuildZone
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitWidth = 359
         object cbRegions: TComboBox
           Left = 4
           Top = 2
@@ -143,6 +134,7 @@ object fBuildZone: TfBuildZone
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = grdZoneDrawColumnCell
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'

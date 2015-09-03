@@ -46,7 +46,7 @@ object fOrganizationsEx: TfOrganizationsEx
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
@@ -56,6 +56,7 @@ object fOrganizationsEx: TfOrganizationsEx
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnDrawColumnCell = grMainDrawColumnCell
     OnDblClick = grMainDblClick
     OnTitleClick = grMainTitleClick
     IniStorage = FormStorage

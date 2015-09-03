@@ -53,7 +53,7 @@ object fWinterPrice: TfWinterPrice
     Height = 91
     Anchors = [akTop, akRight]
     Caption = #1057#1090#1072#1074#1082#1072', %:'
-    TabOrder = 3
+    TabOrder = 4
     object lblCoef: TLabel
       Left = 8
       Top = 23
@@ -124,12 +124,13 @@ object fWinterPrice: TfWinterPrice
     DataSource = dsZnormativs_detail
     Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     PopupMenu = pmZnormativDetail
-    TabOrder = 4
+    TabOrder = 5
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnDrawColumnCell = grRatesDrawColumnCell
     AutoSizeColumns = True
     SelectColumnsDialogStrings.Caption = 'Select columns'
     SelectColumnsDialogStrings.OK = '&OK'
@@ -162,7 +163,7 @@ object fWinterPrice: TfWinterPrice
     Height = 37
     Align = alBottom
     BevelOuter = bvNone
-    TabOrder = 5
+    TabOrder = 6
     DesignSize = (
       870
       37)
@@ -232,12 +233,13 @@ object fWinterPrice: TfWinterPrice
     DataSource = dsZnormChangeDate
     Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     PopupMenu = pmZnormativOnDate
-    TabOrder = 2
+    TabOrder = 1
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnDrawColumnCell = grRatesDrawColumnCell
     AutoSort = False
     SelectColumnsDialogStrings.Caption = 'Select columns'
     SelectColumnsDialogStrings.OK = '&OK'
@@ -280,7 +282,7 @@ object fWinterPrice: TfWinterPrice
     Height = 17
     Anchors = [akTop, akRight]
     Caption = #1087#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077' '#1079#1072#1087#1080#1089#1080
-    TabOrder = 1
+    TabOrder = 2
     OnClick = chkShowDeletedClick
   end
   object memChangeDate: TDBMemo
@@ -292,7 +294,7 @@ object fWinterPrice: TfWinterPrice
     DataField = 'FULLREASON'
     DataSource = dsZnormChangeDate
     ReadOnly = True
-    TabOrder = 6
+    TabOrder = 3
   end
   object qrTreeData: TFDQuery
     BeforeDelete = qrTreeDataBeforeDelete

@@ -26,7 +26,6 @@ object fForecastCostIndex: TfForecastCostIndex
     Height = 33
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 604
     DesignSize = (
       540
       33)
@@ -117,7 +116,6 @@ object fForecastCostIndex: TfForecastCostIndex
       ListSource = dsDocument
       TabOrder = 1
       OnCloseUp = seYearChange
-      ExplicitWidth = 407
     end
   end
   object pnlMain: TPanel
@@ -128,8 +126,6 @@ object fForecastCostIndex: TfForecastCostIndex
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 604
-    ExplicitHeight = 397
     object imgNoData: TImage
       Left = 0
       Top = 0

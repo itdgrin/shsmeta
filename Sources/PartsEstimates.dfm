@@ -41,6 +41,7 @@ object fPartsEstimates: TfPartsEstimates
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    OnDrawColumnCell = grMainDrawColumnCell
     AutoAppend = False
     IniStorage = FormStorage
     OnTitleBtnClick = grMainTitleBtnClick
@@ -62,11 +63,6 @@ object fPartsEstimates: TfPartsEstimates
       item
         Expanded = False
         FieldName = 'CODE'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1050#1086#1076
         Width = 44
@@ -75,11 +71,6 @@ object fPartsEstimates: TfPartsEstimates
       item
         Expanded = False
         FieldName = 'NAME'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
         Width = 222

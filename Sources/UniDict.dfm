@@ -172,6 +172,7 @@ object fUniDict: TfUniDict
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = gtUniDictTypeDrawColumnCell
         OnEnter = gtUniDictTypeEnter
         IniStorage = FormStorage
         AutoSizeColumns = True
@@ -259,6 +260,7 @@ object fUniDict: TfUniDict
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
+        OnDrawColumnCell = grUniDictParamDrawColumnCell
         OnEnter = grUniDictParamEnter
         PostOnEnterKey = True
         AutoSizeColumns = True

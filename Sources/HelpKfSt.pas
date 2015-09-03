@@ -76,7 +76,15 @@ begin
     Brush.Color := PS.BackgroundRows;
     Font.Color := PS.FontRows;
 
-    if (gdSelected in State) then // Ячейка в фокусе
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;

@@ -324,8 +324,6 @@ object fNormativDictHelp: TfNormativDictHelp
       ImageIndex = 4
       ParentFont = False
       TabVisible = False
-      ExplicitTop = 24
-      ExplicitHeight = 424
       object grMain5: TJvDBGrid
         Left = 0
         Top = 0

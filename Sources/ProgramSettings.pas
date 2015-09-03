@@ -46,6 +46,7 @@ type
     ShapeSelectRowUnfocusedTable: TShape;
     LabelSelectRowUnfocusedTable: TLabel;
     chkAutoCreateEstimates: TCheckBox;
+    chkAutoExpandTreeEstimates: TCheckBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -304,7 +305,7 @@ begin
   PS.FontSelectCell := ShapeFontSelectCell.Brush.Color;
   PS.SelectRowUnfocusedTable := ShapeSelectRowUnfocusedTable.Brush.Color;
   PS.AutoCreateEstimates := chkAutoCreateEstimates.Checked;
-
+  PS.AutoExpandTreeEstimates := chkAutoExpandTreeEstimates.Checked;
   PS.RoundTo := ComboBoxRound.ItemIndex;
 
   PS.ShowHint := CheckBoxShowHint.Checked;
@@ -344,6 +345,7 @@ begin
   CheckBoxShowHint.Checked := PS.ShowHint;
 
   chkAutoCreateEstimates.Checked := PS.AutoCreateEstimates;
+  chkAutoExpandTreeEstimates.Checked := PS.AutoExpandTreeEstimates;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

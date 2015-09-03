@@ -636,6 +636,7 @@ object FormBasicData: TFormBasicData
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
+      OnDrawColumnCell = grCoefDrawColumnCell
       AutoSizeColumns = True
       SelectColumnsDialogStrings.Caption = 'Select columns'
       SelectColumnsDialogStrings.OK = '&OK'
