@@ -3480,9 +3480,19 @@ begin
               WhereStr := '(ID = ' + qrRatesExID_TABLES.Value.ToString + ')';
               EstimStr := qrRatesExSM_ID.Value.ToString;
             end;
-            -1, -2, -3:
+            -1, -2:
             begin
               continue;
+            end;
+            -3:
+            begin
+              WhereStr := '((ID in (select ID_TABLES from data_row_temp where ' +
+                '(ID_TYPE_DATA = 2) and (ID_ESTIMATE = ' +
+                  qrRatesExSM_ID.Value.ToString + '))) or ' +
+                '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
+                '(ID_TYPE_DATA = 1) and (ID_ESTIMATE = ' +
+                qrRatesExSM_ID.Value.ToString + '))))';
+              EstimStr := qrRatesExSM_ID.Value.ToString;
             end;
           end;
 
