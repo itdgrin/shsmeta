@@ -469,11 +469,11 @@ type
     pmLblObj: TPopupMenu;
     mN14: TMenuItem;
     mN15: TMenuItem;
-    N14: TMenuItem;
     PMSetTransPerc1: TMenuItem;
     PMSetTransPerc2: TMenuItem;
     PMSetTransPerc3: TMenuItem;
     PMSetTransPerc4: TMenuItem;
+    PMChangeTranspProc: TMenuItem;
     edtTypeWork: TEdit;
     edtZone: TEdit;
     procedure FormCreate(Sender: TObject);
@@ -3455,6 +3455,7 @@ var
   TempBookmark: TBookMark;
   X: Integer;
 begin
+  SelType := 0;
   if (Sender as TComponent).Tag in [1, 2, 3] then
   begin
     fTrPersSelect := TfTrPersSelect.Create(nil);
@@ -3497,16 +3498,17 @@ begin
                 WhereStr := '(ID = ' + qrRatesExID_TABLES.Value.ToString + ')';
                 EstimStr := qrRatesExSM_ID.Value.ToString;
               end;
-            -1, -2:
+            -1, -2, -3:
               begin
-                Continue;
-              end;
-            -3:
-              begin
+                EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
+                  '(PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
+                  '(SM_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
+                  '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' +
+                    'PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + '))';
                 WhereStr := '((ID in (select ID_TABLES from data_row_temp where ' +
-                  '(ID_TYPE_DATA = 2) and (ID_ESTIMATE = ' + qrRatesExSM_ID.Value.ToString + '))) or ' +
+                  '(ID_TYPE_DATA = 2) and (ID_ESTIMATE in (' + EstimStr + ')))) or ' +
                   '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
-                  '(ID_TYPE_DATA = 1) and (ID_ESTIMATE = ' + qrRatesExSM_ID.Value.ToString + '))))';
+                  '(ID_TYPE_DATA = 1) and (ID_ESTIMATE in (' + EstimStr + ')))))';
                 EstimStr := qrRatesExSM_ID.Value.ToString;
               end;
           end;
