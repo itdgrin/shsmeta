@@ -232,7 +232,6 @@ object fCalcResource: TfCalcResource
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
-        ExplicitHeight = 164
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
@@ -404,7 +403,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsMaterialData
           DBGrid = grMaterial
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 145
         end
       end
       object pnlMatBott: TPanel
@@ -591,7 +589,6 @@ object fCalcResource: TfCalcResource
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
-        ExplicitHeight = 180
         object grMech: TJvDBGrid
           Left = 0
           Top = 0
@@ -657,11 +654,6 @@ object fCalcResource: TfCalcResource
             item
               Expanded = False
               FieldName = 'CNT'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
               Width = 22
@@ -686,11 +678,6 @@ object fCalcResource: TfCalcResource
             item
               Expanded = False
               FieldName = 'ZP_1'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
               Title.Alignment = taCenter
               Title.Caption = #1047#1072#1088#1087#1083'. '#1084#1072#1096'.'
               Width = 94
@@ -699,11 +686,6 @@ object fCalcResource: TfCalcResource
             item
               Expanded = False
               FieldName = 'ZP_2'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
               Title.Alignment = taCenter
               Title.Caption = #1057#1090'-'#1089#1090#1100' '#1079#1072#1088#1087#1083#1072#1090#1099
               Width = 101
@@ -752,7 +734,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsMechData
           DBGrid = grMech
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 161
         end
       end
       object pnlMechBott: TPanel
@@ -763,7 +744,6 @@ object fCalcResource: TfCalcResource
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
-        ExplicitTop = 212
         object spl3: TSplitter
           Left = 1
           Top = 22
@@ -994,7 +974,6 @@ object fCalcResource: TfCalcResource
         Font.Style = []
         ParentFont = False
         TabOrder = 1
-        ExplicitHeight = 180
         object grDev: TJvDBGrid
           Left = 0
           Top = 0
@@ -1162,7 +1141,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsDevices
           DBGrid = grDev
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 161
         end
       end
       object pnlDevBott: TPanel
@@ -1178,7 +1156,6 @@ object fCalcResource: TfCalcResource
         Font.Style = []
         ParentFont = False
         TabOrder = 2
-        ExplicitTop = 212
         object spl6: TSplitter
           Left = 1
           Top = 22
@@ -1499,6 +1476,43 @@ object fCalcResource: TfCalcResource
     OnPopup = pmPopup
     Left = 556
     Top = 168
+    object mN3: TMenuItem
+      Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1080#1089#1093#1086#1076#1085#1099#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
+      OnClick = mN3Click
+    end
+    object mPROC_TRANSP: TMenuItem
+      Caption = '% '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072
+      Visible = False
+      object mN4: TMenuItem
+        Tag = 1
+        Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1086#1073#1097#1077#1089#1090#1074#1077#1085#1085#1099#1093' '#1088#1072#1073#1086#1090
+        OnClick = PMTrPerc0Click
+      end
+      object mN5: TMenuItem
+        Tag = 2
+        Caption = #1052#1077#1090#1072#1083#1080#1095#1077#1089#1082#1080#1077' '#1082#1086#1085#1089#1090#1088#1091#1082#1094#1080#1080
+        OnClick = PMTrPerc0Click
+      end
+      object mN6: TMenuItem
+        Tag = 3
+        Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1089#1072#1085#1080#1090#1072#1088#1085#1086'-'#1090#1077#1093#1085#1080#1095#1077#1089#1082#1080#1093' '#1088#1072#1073#1086#1090
+        OnClick = PMTrPerc0Click
+      end
+      object mN8: TMenuItem
+        Tag = 4
+        Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1101#1083#1077#1082#1090#1088#1086#1084#1086#1085#1090#1072#1078#1085#1099#1093' '#1088#1072#1073#1086#1090
+        OnClick = PMTrPerc0Click
+      end
+      object mN9: TMenuItem
+        Tag = 5
+        Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1074' '#1087#1086#1089#1090#1088#1086#1077#1095#1085#1099#1093' '#1091#1089#1083#1086#1074#1080#1103#1093
+        OnClick = PMTrPerc0Click
+      end
+      object mN11: TMenuItem
+        Caption = '% '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
+        OnClick = PMTrPerc0Click
+      end
+    end
     object N1: TMenuItem
       Caption = #1042#1099#1076#1077#1083#1080#1090#1100
       OnClick = N1Click

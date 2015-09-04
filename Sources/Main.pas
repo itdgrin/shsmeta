@@ -324,7 +324,7 @@ type
     SelectRowUnfocusedTable: integer;
     AutoCreateEstimates: Boolean; // Автоматически создавать набор смет при создании объекта
     AutoExpandTreeEstimates: Boolean; // Автоматически раскрывать дерево смет
-
+    CalcResourcesAutoSave: Boolean; // Автоматически сохранять изменения на форме расчета стоимости ресурсов без подтверждения
     RoundTo: integer; // Округлять числа до vRoundTo знаков после запятой
 
     ShowHint: Boolean;
@@ -2286,7 +2286,7 @@ begin
       PS.AutoCreateEstimates := ReadBool('Object', 'AutoCreateEstimates', true);
       PS.AutoExpandTreeEstimates := ReadBool('Object', 'AutoExpandTreeEstimates', true);
       PS.RoundTo := ReadInteger('Round', vRoundTo, 0);
-
+      PS.CalcResourcesAutoSave := ReadBool('CalcResources', 'CalcResourcesAutoSave', true);
       PS.ShowHint := ReadBool('ShowHint', vShowHint, true);
     end;
   finally
@@ -2329,6 +2329,7 @@ begin
       WriteBool('ShowHint', vShowHint, PS.ShowHint);
       WriteBool('Object', 'AutoCreateEstimates', PS.AutoCreateEstimates);
       WriteBool('Object', 'AutoExpandTreeEstimates', PS.AutoExpandTreeEstimates);
+      WriteBool('CalcResources', 'CalcResourcesAutoSave', PS.CalcResourcesAutoSave);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти

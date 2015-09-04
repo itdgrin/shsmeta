@@ -132,18 +132,22 @@ end;
 procedure DoSort(const Query: TFDQuery; Grid: TJvDBGrid);
 var
   s: string;
+  key: Variant;
 begin
   try
     if not CheckQrActiveEmpty(Query) then
       Exit;
     s := '';
+    key := Query.Fields[0].Value;
     if Grid.SortMarker = smDown then
       s := ' DESC';
     if Grid.SortedField <> '' then
       Query.SQL[Query.SQL.Count - 1] := 'ORDER BY ' + Grid.SortedField + s
     else
       Query.SQL[Query.SQL.Count - 1] := 'ORDER BY 1';
-    CloseOpen(Query);
+    Query.Active := True;
+    if key <> Null then
+      Query.Locate(Query.Fields[0].FieldName, key, []);
   except
 
   end;
@@ -361,7 +365,7 @@ end;
 
 procedure CloseOpen(const Query: TFDQuery; ADisableControls: Boolean = True);
 var
-  Key: Variant;
+  key: Variant;
   // E: TDataSetNotifyEvent;
 begin
   // E := Query.AfterScroll;
@@ -369,13 +373,13 @@ begin
     Query.DisableControls;
   try
     // Query.AfterScroll := nil;
-    Key := Null;
+    key := Null;
     if CheckQrActiveEmpty(Query) then
-      Key := Query.Fields[0].Value;
+      key := Query.Fields[0].Value;
     Query.Active := False;
     Query.Active := True;
-    if Key <> Null then
-      Query.Locate(Query.Fields[0].FieldName, Key, []);
+    if key <> Null then
+      Query.Locate(Query.Fields[0].FieldName, key, []);
   finally
     // Query.AfterScroll := E;
     if ADisableControls then
@@ -385,7 +389,7 @@ end;
 
 function CalcFooterSumm(const Query: TFDQuery): Variant;
 var
-  Key: Variant;
+  key: Variant;
   e: TDataSetNotifyEvent;
   Res: Variant;
   i: Integer;
@@ -399,9 +403,9 @@ begin
   try
     // Выключаем событие на всякий случай
     Query.AfterScroll := nil;
-    Key := Null;
+    key := Null;
     if CheckQrActiveEmpty(Query) then
-      Key := Query.Fields[0].Value;
+      key := Query.Fields[0].Value;
     // Создаем массив возвращаемых значений
     Res := VarArrayCreate([0, Query.FieldCount - 1], varDouble);
     // Инициализируем начальными значениями
@@ -418,8 +422,8 @@ begin
       Query.Next;
     end;
 
-    if Key <> Null then
-      Query.Locate(Query.Fields[0].FieldName, Key, []);
+    if key <> Null then
+      Query.Locate(Query.Fields[0].FieldName, key, []);
     result := Res;
   finally
     Query.AfterScroll := e;

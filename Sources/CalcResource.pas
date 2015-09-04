@@ -140,6 +140,14 @@ type
     qrMechDataFREPLACED: TIntegerField;
     pnlCalculationYesNo: TPanel;
     qrMaterialDataNUMPP: TIntegerField;
+    mPROC_TRANSP: TMenuItem;
+    mN4: TMenuItem;
+    mN5: TMenuItem;
+    mN6: TMenuItem;
+    mN8: TMenuItem;
+    mN9: TMenuItem;
+    mN11: TMenuItem;
+    mN3: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -201,6 +209,8 @@ type
     procedure grMaterialKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure grDevBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure PMTrPerc0Click(Sender: TObject);
+    procedure mN3Click(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -224,11 +234,16 @@ uses Main, Tools, ReplacementMatAndMech, CalculationEstimate, DataModule, GlobsA
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil);
 var
   pageID: Integer;
+  fl: Boolean;
 begin
+  fl := False;
   if VarIsNull(ID_ESTIMATE) then
     Exit;
   if (not Assigned(fCalcResource)) then
+  begin
     fCalcResource := TfCalcResource.Create(AOwner);
+    fl := True;
+  end;
   fCalcResource.flLoaded := False;
   fCalcResource.IDEstimate := ID_ESTIMATE;
   fCalcResource.qrEstimate.ParamByName('SM_ID').Value := ID_ESTIMATE;
@@ -262,6 +277,22 @@ begin
     fCalcResource.WindowState := wsMaximized;
   fCalcResource.flLoaded := True;
   fCalcResource.pgcChange(nil);
+  with fCalcResource do
+    if fl then
+      case pgc.ActivePageIndex of
+        // Расчет материалов
+        1:
+          qrMaterialData.First;
+        // Расчет механизмов
+        2:
+          qrMechData.First;
+        // Расчет оборудования
+        3:
+          qrDevices.First;
+        // Расчет з\п
+        4:
+          qrRates.First;
+      end;
 end;
 
 procedure TfCalcResource.btnShowDiffClick(Sender: TObject);
@@ -858,6 +889,41 @@ begin
   end;
 end;
 
+procedure TfCalcResource.mN3Click(Sender: TObject);
+begin
+  if Application.MessageBox('Восстановить исходные значения строки?',
+    'Расчет стоимости ресурсов', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) =
+    IDYES then
+  begin
+     case pgc.ActivePageIndex of
+    // Расчет материалов
+    1:
+     begin
+       qrMaterialData.Edit;
+       qrMaterialData.FieldByName('COAST').Value := 0;
+       // PMTrPerc0Click(mN11);
+       qrMaterialData.Post;
+     end;
+    // Расчет механизмов
+    2:
+     begin
+        qrMechData.Edit;
+        qrMechDataCOAST.Value := 0;
+        qrMechDataZP_1.Value := 0;
+        qrMechData.Post;
+     end;
+    // Расчет оборудования
+    3:
+      begin
+
+      end;
+  end;
+
+  end;
+
+
+end;
+
 procedure TfCalcResource.mReplaceClick(Sender: TObject);
 var
   frmReplace: TfrmReplacement;
@@ -1040,6 +1106,7 @@ begin
         mDetete.Visible := qrMaterialData.FieldByName('DELETED').AsInteger = 0;
         mRestore.Visible := qrMaterialData.FieldByName('DELETED').AsInteger = 1;
         mReplace.Visible := True;
+        mPROC_TRANSP.Visible := True;
       end;
     // Расчет механизмов
     2:
@@ -1047,6 +1114,7 @@ begin
         mDetete.Visible := qrMechData.FieldByName('DELETED').AsInteger = 0;
         mRestore.Visible := qrMechData.FieldByName('DELETED').AsInteger = 1;
         mReplace.Visible := True;
+        mPROC_TRANSP.Visible := False;
       end;
     // Расчет оборудования
     3:
@@ -1054,6 +1122,7 @@ begin
         mDetete.Visible := qrDevices.FieldByName('DELETED').AsInteger = 0;
         mRestore.Visible := qrDevices.FieldByName('DELETED').AsInteger = 1;
         mReplace.Visible := True;
+        mPROC_TRANSP.Visible := False;
       end;
     // Расчет з\п
     4:
@@ -1061,6 +1130,7 @@ begin
         mDetete.Visible := qrRates.FieldByName('DELETED').AsInteger = 0;
         mRestore.Visible := qrRates.FieldByName('DELETED').AsInteger = 1;
         mReplace.Visible := False;
+        mPROC_TRANSP.Visible := False;
       end;
   end;
 
@@ -1118,8 +1188,9 @@ procedure TfCalcResource.qrDevicesBeforePost(DataSet: TDataSet);
 var
   priceQ, priceQ1: string;
 begin
-  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
-    = IDYES) { and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
+  if PS.CalcResourcesAutoSave or (Application.MessageBox('Сохранить изменения?', 'Смета',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES)
+  { and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
     '(будет произведена замена во всех зависимых величинах)', 'Смета',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) } then
   begin
@@ -1176,8 +1247,8 @@ procedure TfCalcResource.qrDevicesDetailBeforePost(DataSet: TDataSet);
 var
   priceQ, priceQ1: string;
 begin
-  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES)
-  then
+  if PS.CalcResourcesAutoSave or (Application.MessageBox('Сохранить изменения?', 'Смета',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) then
   begin
     with qrDevicesDetail do
     begin
@@ -1296,8 +1367,9 @@ procedure TfCalcResource.qrMaterialDataBeforePost(DataSet: TDataSet);
 var
   priceQ: string;
 begin
-  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
-    = IDYES) { and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
+  if PS.CalcResourcesAutoSave or (Application.MessageBox('Сохранить изменения?', 'Смета',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES)
+  { and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
     '(будет произведена замена во всех зависимых величинах)', 'Смета',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) } then
   begin
@@ -1452,8 +1524,8 @@ procedure TfCalcResource.qrMaterialDetailBeforePost(DataSet: TDataSet);
 var
   priceQ: string;
 begin
-  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES)
-  then
+  if PS.CalcResourcesAutoSave or (Application.MessageBox('Сохранить изменения?', 'Смета',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) then
   begin
     with qrMaterialDetail do
     begin
@@ -1503,8 +1575,9 @@ procedure TfCalcResource.qrMechDataBeforePost(DataSet: TDataSet);
 var
   priceQ, priceQ1: string;
 begin
-  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
-    = IDYES) { and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
+  if PS.CalcResourcesAutoSave or (Application.MessageBox('Сохранить изменения?', 'Смета',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES)
+  { and (Application.MessageBox('Вы уверены, что хотите применить изменения?'#13 +
     '(будет произведена замена во всех зависимых величинах)', 'Смета',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) } then
   begin
@@ -1608,8 +1681,8 @@ procedure TfCalcResource.qrMechDetailBeforePost(DataSet: TDataSet);
 var
   priceQ, priceQ1: string;
 begin
-  if (Application.MessageBox('Сохранить изменения?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES)
-  then
+  if PS.CalcResourcesAutoSave or (Application.MessageBox('Сохранить изменения?', 'Смета',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) then
   begin
     with qrMechDetail do
     begin
@@ -1650,6 +1723,37 @@ begin
     qrMechDetail.Cancel;
     Abort;
   end;
+end;
+
+procedure TfCalcResource.PMTrPerc0Click(Sender: TObject);
+var
+  TrPr: Variant;
+  TmpCode: AnsiString;
+begin
+  case (Sender as TComponent).Tag of
+    0:
+      TmpCode := strngfldMaterialDataCODE.Value;
+    // Просто константы, что-бы получиль нужное значение из GetTranspPers
+    // GetTranspPers выдаст значение в учетом региона и даты сметы
+    1:
+      TmpCode := 'С101-0000';
+    2:
+      TmpCode := 'С201-0000';
+    3:
+      TmpCode := 'С300-0000';
+    4:
+      TmpCode := 'С501-0000';
+    5:
+      TmpCode := 'С000-0000';
+  end;
+
+  TrPr := FastSelectSQLOne('SELECT GetTranspPers(:IdEstimate, :MatCode);',
+    VarArrayOf([FormCalculationEstimate.IDEstimate, TmpCode]));
+  if VarIsNull(TrPr) then
+    TrPr := 0;
+
+  qrMaterialData.Edit;
+  qrMaterialData.FieldByName('PROC_TRANSP').Value := TrPr;
 end;
 
 end.

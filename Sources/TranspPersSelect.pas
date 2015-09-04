@@ -55,8 +55,6 @@ begin
 end;
 
 procedure TfTrPersSelect.btnSelectClick(Sender: TObject);
-var
-  TmpCode: string;
 begin
   FTranspPers := 0;
   FMatCode := '';

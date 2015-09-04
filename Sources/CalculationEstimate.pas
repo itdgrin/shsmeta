@@ -3448,7 +3448,6 @@ var
   fTrPersSelect: TfTrPersSelect;
   TransPr: Double;
   MatCode: string;
-  TmpStr: string;
   UpdateStr: string;
   EstimStr: string;
   SelType: byte;
@@ -3873,7 +3872,7 @@ end;
 
 procedure TFormCalculationEstimate.PMTrPerc0Click(Sender: TObject);
 var
-  TrPr: Real;
+  TrPr: Variant;
   TmpCode: string;
 begin
   if (not qrMaterial.Active) or (qrMaterialMAT_CODE.AsString = '') then
@@ -3896,19 +3895,13 @@ begin
       TmpCode := 'Ñ000-0000';
   end;
 
-  qrTemp1.Active := False;
-  qrTemp1.SQL.Clear;
-  qrTemp1.SQL.Add('SELECT GetTranspPers(:IdEstimate, :MatCode);');
-  qrTemp1.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
-  qrTemp1.ParamByName('MatCode').Value := TmpCode;
-  qrTemp1.Active := True;
-  TrPr := 0;
-  if not qrTemp1.Eof then
-    TrPr := qrTemp1.Fields[0].AsFloat;
-  qrTemp1.Active := False;
+  TrPr := FastSelectSQLOne('SELECT GetTranspPers(:IdEstimate, :MatCode);',
+    VarArrayOf([qrRatesExSM_ID.AsInteger, TmpCode]));
+  if VarIsNull(TrPr) then
+    TrPr := 0;
 
   qrMaterial.Edit;
-  qrMaterialPROC_TRANSP.Value := TrPr;
+  qrMaterial.FieldByName('PROC_TRANSP').Value := TrPr;
 end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefAddSetClick(Sender: TObject);

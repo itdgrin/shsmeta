@@ -47,6 +47,7 @@ type
     LabelSelectRowUnfocusedTable: TLabel;
     chkAutoCreateEstimates: TCheckBox;
     chkAutoExpandTreeEstimates: TCheckBox;
+    chkCalcResourcesAutoSave: TCheckBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -307,7 +308,7 @@ begin
   PS.AutoCreateEstimates := chkAutoCreateEstimates.Checked;
   PS.AutoExpandTreeEstimates := chkAutoExpandTreeEstimates.Checked;
   PS.RoundTo := ComboBoxRound.ItemIndex;
-
+  PS.CalcResourcesAutoSave := chkCalcResourcesAutoSave.Checked;
   PS.ShowHint := CheckBoxShowHint.Checked;
 
   FormMain.WriteSettingsToFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
@@ -346,6 +347,7 @@ begin
 
   chkAutoCreateEstimates.Checked := PS.AutoCreateEstimates;
   chkAutoExpandTreeEstimates.Checked := PS.AutoExpandTreeEstimates;
+  chkCalcResourcesAutoSave.Checked := PS.CalcResourcesAutoSave;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

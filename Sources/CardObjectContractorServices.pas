@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.DBCGrids, JvComponentBase, JvFormPlacement;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.DBCGrids, JvComponentBase, JvFormPlacement, System.UITypes;
 
 type
   TfCardObjectContractorServices = class(TForm)
@@ -134,7 +134,7 @@ end;
 procedure TfCardObjectContractorServices.grMainDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
-  with (Sender AS TJvDBGrid).Canvas do
+{  with (Sender AS TJvDBGrid).Canvas do
   begin
     Brush.Color := PS.BackgroundRows;
     Font.Color := PS.FontRows;
@@ -155,7 +155,7 @@ begin
     end;
   end;
 
-  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);   }
 end;
 
 procedure TfCardObjectContractorServices.qrMainAfterOpen(DataSet: TDataSet);
