@@ -3158,11 +3158,8 @@ begin
   if not(qrRatesExID_TYPE_DATA.Value > 0) or Act then
     Exit;
 
-  if not grRatesEx.SelectedRows.CurrentRowSelected then
-  begin
-    grRatesEx.SelectedRows.Clear;
+  if grRatesEx.SelectedRows.Count = 0 then
     grRatesEx.SelectedRows.CurrentRowSelected := True;
-  end;
 
   DataObj := TSmClipData.Create;
   try
@@ -3429,7 +3426,7 @@ begin
         TmpIterator := FNewRowIterator;
 
       if PasteSmetaRow(DataObj.SmClipArray, qrRatesExSM_ID.Value, TmpIterator) then
-        OutputDataToTable((qrRatesExID_TYPE_DATA.Value = -4) or (qrRatesExID_TYPE_DATA.Value = -5));
+        OutputDataToTable(True);
     end;
   finally
     DataObj.Free;
@@ -4640,7 +4637,8 @@ var
   mainType: Integer;
 begin
   // Вынесено сюда так как mousedown работает глючно
-  if (grRatesEx.SelectedRows.Count > 0) and not(grRatesEx.SelectedRows.CurrentRowSelected) then
+  if (grRatesEx.SelectedRows.Count > 0) and
+     not(grRatesEx.SelectedRows.CurrentRowSelected) then
     grRatesEx.SelectedRows.Clear;
 
   // Нельзя удалить неучтенный материал из таблицы расценок
