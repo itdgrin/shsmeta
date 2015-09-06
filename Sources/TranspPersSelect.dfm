@@ -11,6 +11,7 @@ object fTrPersSelect: TfTrPersSelect
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   PixelsPerInch = 96
   TextHeight = 13
   object Panel4: TPanel
@@ -20,8 +21,6 @@ object fTrPersSelect: TfTrPersSelect
     Height = 33
     Align = alBottom
     TabOrder = 0
-    ExplicitTop = 193
-    ExplicitWidth = 305
     object btnSelect: TButton
       AlignWithMargins = True
       Left = 85
@@ -32,7 +31,6 @@ object fTrPersSelect: TfTrPersSelect
       Caption = #1042#1099#1073#1088#1072#1090#1100
       TabOrder = 0
       OnClick = btnSelectClick
-      ExplicitLeft = 77
     end
     object btnCancel: TButton
       AlignWithMargins = True
@@ -45,7 +43,6 @@ object fTrPersSelect: TfTrPersSelect
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 1
       OnClick = btnCancelClick
-      ExplicitLeft = 197
     end
   end
   object rbTrPers1: TRadioButton
