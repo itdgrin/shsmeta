@@ -272,6 +272,31 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Title.Caption = #1058#1088#1091#1076'. '#1079#1080#1084'.'
         Width = 90
         Visible = True
+      end
+      item
+        Expanded = False
+        Title.Caption = #1057#1086#1094#1089#1090#1088#1072#1093
+        Visible = True
+      end
+      item
+        Expanded = False
+        Title.Caption = #1047#1077#1084#1077#1083#1100#1085#1099#1081' '#1085#1072#1083#1086#1075
+        Visible = True
+      end
+      item
+        Expanded = False
+        Title.Caption = #1057#1083#1091#1078#1073#1072' '#1074#1077#1076#1086#1084#1089#1090#1074#1077#1085#1085#1086#1075#1086' '#1082#1086#1085#1090#1088#1086#1083#1103
+        Visible = True
+      end
+      item
+        Expanded = False
+        Title.Caption = #1053#1044#1057
+        Visible = True
+      end
+      item
+        Expanded = False
+        Title.Caption = #1053#1072#1083#1086#1075' '#1086#1090' '#1074#1099#1088#1091#1095#1082#1080
+        Visible = True
       end>
   end
   object qrData: TFDQuery

@@ -48,6 +48,8 @@ type
     chkAutoCreateEstimates: TCheckBox;
     chkAutoExpandTreeEstimates: TCheckBox;
     chkCalcResourcesAutoSave: TCheckBox;
+    chkAutosaveRateDescr: TCheckBox;
+    chkAutoSaveCalcResourcesAfterExitCell: TCheckBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -310,6 +312,8 @@ begin
   PS.RoundTo := ComboBoxRound.ItemIndex;
   PS.CalcResourcesAutoSave := chkCalcResourcesAutoSave.Checked;
   PS.ShowHint := CheckBoxShowHint.Checked;
+  PS.AutosaveRateDescr := chkAutosaveRateDescr.Checked;
+  PS.AutoSaveCalcResourcesAfterExitCell := chkAutoSaveCalcResourcesAfterExitCell.Checked;
 
   FormMain.WriteSettingsToFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
@@ -348,6 +352,8 @@ begin
   chkAutoCreateEstimates.Checked := PS.AutoCreateEstimates;
   chkAutoExpandTreeEstimates.Checked := PS.AutoExpandTreeEstimates;
   chkCalcResourcesAutoSave.Checked := PS.CalcResourcesAutoSave;
+  chkAutosaveRateDescr.Checked := PS.AutosaveRateDescr;
+  chkAutoSaveCalcResourcesAfterExitCell.Checked := PS.AutoSaveCalcResourcesAfterExitCell;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

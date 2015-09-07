@@ -201,7 +201,7 @@ object FormCardObject: TFormCardObject
     Top = 152
     Width = 325
     Height = 49
-    Caption = #1044#1072#1090#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
+    Caption = #1044#1072#1090#1072' '#1089#1086#1089#1090#1072#1074#1083#1077#1085#1080#1103' '#1089#1084#1077#1090#1099':'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11

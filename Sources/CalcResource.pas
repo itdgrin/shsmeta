@@ -211,6 +211,7 @@ type
       State: TGridDrawState);
     procedure PMTrPerc0Click(Sender: TObject);
     procedure mN3Click(Sender: TObject);
+    procedure grDevColExit(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -353,28 +354,43 @@ begin
   if pnlCalculationYesNo.Tag = 0 then
     Exit;
 
-  if (Field = grMaterial.Columns[5].Field) or (Field = grMaterial.Columns[7].Field) or
-  { (Field = grMaterial.Columns[8].Field) or } (Field = grMaterial.Columns[11].Field) or
-    (Field = grMaterial.Columns[12].Field) or (Field = grMaterial.Columns[13].Field) or
-    (Field = grMaterial.Columns[14].Field) or (Field = grMech.Columns[4].Field) or
-    (Field = grMech.Columns[6].Field) or (Field = grMech.Columns[8].Field) or
-    (Field = grMech.Columns[9].Field) or (Field = grMaterialBott.Columns[4].Field) or
-    (Field = grMaterialBott.Columns[5].Field) or (Field = grMaterialBott.Columns[6].Field) or
-    (Field = grMaterialBott.Columns[7].Field) or (Field = grMaterialBott.Columns[8].Field) or
-    (Field = grMaterialBott.Columns[9].Field) or (Field = grMaterialBott.Columns[10].Field) or
-    (Field = grMechBott.Columns[4].Field) or (Field = grMechBott.Columns[5].Field) or
-    (Field = grMechBott.Columns[6].Field) or (Field = grMechBott.Columns[7].Field) or
-    (Field = grDev.Columns[4].Field) or (Field = grDev.Columns[6].Field) or (Field = grDev.Columns[7].Field)
-    or (Field = grDev.Columns[8].Field) or (Field = grDev.Columns[9].Field) or
-    (Field = grDev.Columns[10].Field) or (Field = grDev.Columns[11].Field) or
-    (Field = grDev.Columns[12].Field) or (Field = grDev.Columns[13].Field) or
-    (Field = grDevBott.Columns[4].Field) or (Field = grDevBott.Columns[5].Field) or
-    (Field = grDevBott.Columns[6].Field) or (Field = grDevBott.Columns[7].Field) or
-    (Field = grDevBott.Columns[8].Field) or (Field = grDevBott.Columns[9].Field) then
-  begin
-    Result := True;
-    Exit;
+  case pgc.ActivePageIndex of
+    // Расчет материалов
+    1:
+      Result := (Field = qrMaterialData.FieldByName('COAST')) or
+        (Field = qrMaterialData.FieldByName('PROC_TRANSP')) or
+        (Field = qrMaterialData.FieldByName('MAT_PROC_ZAC')) or
+        (Field = qrMaterialData.FieldByName('MAT_PROC_PODR')) or
+        (Field = qrMaterialData.FieldByName('TRANSP_PROC_ZAC')) or
+        (Field = qrMaterialData.FieldByName('TRANSP_PROC_PODR')) or
+        (Field = qrMaterialData.FieldByName('DOC_DATE')) or (Field = qrMaterialData.FieldByName('DOC_NUM')) or
+        (Field = qrMaterialDetail.FieldByName('COAST')) or
+        (Field = qrMaterialDetail.FieldByName('PROC_TRANSP')) or
+        (Field = qrMaterialDetail.FieldByName('TRANSP')) or
+        (Field = qrMaterialDetail.FieldByName('MAT_PROC_ZAC')) or
+        (Field = qrMaterialDetail.FieldByName('MAT_PROC_PODR')) or
+        (Field = qrMaterialDetail.FieldByName('TRANSP_PROC_ZAC')) or
+        (Field = qrMaterialDetail.FieldByName('TRANSP_PROC_PODR'));
+    // Расчет механизмов
+    2:
+      Result := (Field = qrMechData.FieldByName('COAST')) or (Field = qrMechData.FieldByName('ZP_1')) or
+        (Field = qrMechData.FieldByName('PROC_ZAC')) or (Field = qrMechData.FieldByName('PROC_PODR')) or
+        (Field = qrMechDetail.FieldByName('COAST')) or (Field = qrMechDetail.FieldByName('ZP_MASH')) or
+        (Field = qrMechDetail.FieldByName('PROC_ZAC')) or (Field = qrMechDetail.FieldByName('PROC_PODR'));
+    // Расчет оборудования
+    3:
+      Result := (Field = qrDevices.FieldByName('COAST')) or
+      { (Field = qrDevices.FieldByName('PROC_TRANSP')) or }
+        (Field = qrDevices.FieldByName('TRANSP')) or (Field = qrDevices.FieldByName('DOC_DATE')) or
+        (Field = qrDevices.FieldByName('DOC_NUM')) or (Field = qrDevices.FieldByName('PROC_ZAC')) or
+        (Field = qrDevices.FieldByName('PROC_PODR')) or (Field = qrDevices.FieldByName('TRANSP_PROC_ZAC')) or
+        (Field = qrDevices.FieldByName('TRANSP_PROC_PODR')) or (Field = qrDevicesDetail.FieldByName('COAST'))
+        or (Field = qrDevicesDetail.FieldByName('TRANSP')) or (Field = qrDevicesDetail.FieldByName('PROC_ZAC')
+        ) or (Field = qrDevicesDetail.FieldByName('PROC_PODR')) or
+        (Field = qrDevicesDetail.FieldByName('TRANSP_PROC_ZAC')) or
+        (Field = qrDevicesDetail.FieldByName('TRANSP_PROC_PODR'));
   end;
+
 end;
 
 procedure TfCalcResource.edtMechCodeFilterChange(Sender: TObject);
@@ -461,10 +477,18 @@ begin
   if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
     ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
   begin
-    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Brush.Color :=
+      clMoneyGreen { MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150) };
     (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TfCalcResource.grDevColExit(Sender: TObject);
+begin
+  if PS.AutoSaveCalcResourcesAfterExitCell and ((Sender as TJvDBGrid).DataSource.DataSet.State
+    in [dsEdit, dsInsert]) then
+    (Sender as TJvDBGrid).DataSource.DataSet.CheckBrowseMode;
 end;
 
 procedure TfCalcResource.grDevDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -497,7 +521,8 @@ begin
   if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
     ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
   begin
-    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Brush.Color :=
+      clMoneyGreen { MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150) };
     (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
@@ -552,7 +577,8 @@ begin
   if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
     ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
   begin
-    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Brush.Color :=
+      clMoneyGreen { MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150) };
     (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
   end;
   grMaterialBott.DefaultDrawColumnCell(Rect, DataCol, Column, State);
@@ -608,7 +634,8 @@ begin
   if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
     ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
   begin
-    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Brush.Color :=
+      clMoneyGreen { MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150) };
     (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
@@ -678,7 +705,8 @@ begin
   if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
     ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
   begin
-    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Brush.Color :=
+      clMoneyGreen { MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150) };
     (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
@@ -725,7 +753,8 @@ begin
   if CanEditField(Column.Field) and (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
     ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
   begin
-    (Sender AS TJvDBGrid).Canvas.Brush.Color := MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150);
+    (Sender AS TJvDBGrid).Canvas.Brush.Color :=
+      clMoneyGreen { MixColors(clMoneyGreen, grMaterial.Canvas.Brush.Color, 150) };
     (Sender AS TJvDBGrid).Canvas.Font.Color := PS.FontRows;
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
@@ -891,36 +920,34 @@ end;
 
 procedure TfCalcResource.mN3Click(Sender: TObject);
 begin
-  if Application.MessageBox('Восстановить исходные значения строки?',
-    'Расчет стоимости ресурсов', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) =
-    IDYES then
+  if Application.MessageBox('Восстановить исходные значения строки?', 'Расчет стоимости ресурсов',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
   begin
-     case pgc.ActivePageIndex of
-    // Расчет материалов
-    1:
-     begin
-       qrMaterialData.Edit;
-       qrMaterialData.FieldByName('COAST').Value := 0;
-       // PMTrPerc0Click(mN11);
-       qrMaterialData.Post;
-     end;
-    // Расчет механизмов
-    2:
-     begin
-        qrMechData.Edit;
-        qrMechDataCOAST.Value := 0;
-        qrMechDataZP_1.Value := 0;
-        qrMechData.Post;
-     end;
-    // Расчет оборудования
-    3:
-      begin
+    case pgc.ActivePageIndex of
+      // Расчет материалов
+      1:
+        begin
+          qrMaterialData.Edit;
+          qrMaterialData.FieldByName('COAST').Value := 0;
+          // PMTrPerc0Click(mN11);
+          qrMaterialData.Post;
+        end;
+      // Расчет механизмов
+      2:
+        begin
+          qrMechData.Edit;
+          qrMechDataCOAST.Value := 0;
+          qrMechDataZP_1.Value := 0;
+          qrMechData.Post;
+        end;
+      // Расчет оборудования
+      3:
+        begin
 
-      end;
+        end;
+    end;
+
   end;
-
-  end;
-
 
 end;
 

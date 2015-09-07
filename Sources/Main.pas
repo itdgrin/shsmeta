@@ -326,6 +326,8 @@ type
     AutoExpandTreeEstimates: Boolean; // јвтоматически раскрывать дерево смет
     CalcResourcesAutoSave: Boolean; // јвтоматически сохран€ть изменени€ на форме расчета стоимости ресурсов без подтверждени€
     RoundTo: integer; // ќкругл€ть числа до vRoundTo знаков после зап€той
+    AutosaveRateDescr: Boolean; // јвтоматически сохран€ть описание записей в левой таблице на форме расчета сметы
+    AutoSaveCalcResourcesAfterExitCell: Boolean; // јвтоматический пост записи при переходе внутри редактируемой записи на форме расчета стоимости ресурсов
 
     ShowHint: Boolean;
   end;
@@ -2287,7 +2289,9 @@ begin
       PS.AutoExpandTreeEstimates := ReadBool('Object', 'AutoExpandTreeEstimates', true);
       PS.RoundTo := ReadInteger('Round', vRoundTo, 0);
       PS.CalcResourcesAutoSave := ReadBool('CalcResources', 'CalcResourcesAutoSave', true);
+      PS.AutoSaveCalcResourcesAfterExitCell := ReadBool('CalcResources', 'AutoSaveCalcResourcesAfterExitCell', False);
       PS.ShowHint := ReadBool('ShowHint', vShowHint, true);
+      PS.AutosaveRateDescr := ReadBool('ESTIMATE', 'AutosaveRateDescr', True);
     end;
   finally
     FreeAndNil(IFile); // ”дал€ем открытый файл из пам€ти
@@ -2330,6 +2334,8 @@ begin
       WriteBool('Object', 'AutoCreateEstimates', PS.AutoCreateEstimates);
       WriteBool('Object', 'AutoExpandTreeEstimates', PS.AutoExpandTreeEstimates);
       WriteBool('CalcResources', 'CalcResourcesAutoSave', PS.CalcResourcesAutoSave);
+      WriteBool('CalcResources', 'AutoSaveCalcResourcesAfterExitCell', PS.AutoSaveCalcResourcesAfterExitCell);
+      WriteBool('ESTIMATE', 'AutosaveRateDescr', PS.AutosaveRateDescr);
     end;
   finally
     FreeAndNil(IFile); // ”дал€ем открытый файл из пам€ти

@@ -680,6 +680,9 @@ type
     procedure qrCalculationsAfterOpen(DataSet: TDataSet);
     procedure dbgrdCalculationsResize(Sender: TObject);
     procedure dbmmoCAPTIONExit(Sender: TObject);
+    procedure grRatesExCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
+    procedure dbgrdMaterialCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
+    procedure dbgrdMechanizmCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -2131,6 +2134,35 @@ begin
             qrMaterialFCOAST_NO_NDS.Value));
       end;
 
+      // Автоматический расчет фактических транспортных расходов при изменении кол-ва или нормы
+      // TO DO:
+      // в общем идея такова: если перед изменение чего-либо фактический транспорт был посчитак как
+      // процент от стоимости фактической (%от старой стоимости = (равен условно +/-1) фактическому трнспорту),
+      // то так же необходимо пересчитать и фактический транспорт.
+      // те же действия должны происходить внутри CalcMat процедуры в базе, т.к. необходимо пересчитывать
+      // транспорт вышеописанным способом при изменении, например, кол-ва по расценке
+      if (Sender.FieldName = 'MAT_NORMA') or (Sender.FieldName = 'MAT_COUNT') then
+      begin
+        if NDSEstimate then
+        begin
+          if Abs(Double((qrMaterialFTRANSP_NDS.OldValue) -
+            Round((qrMaterialPROC_TRANSP.OldValue / 100) * qrMaterialMAT_COUNT.OldValue *
+            qrMaterialFCOAST_NDS.OldValue))) <= 1.0 then
+            qrMaterialFTRANSP_NDS.Value :=
+              Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value / 100) * qrMaterialMAT_COUNT.Value *
+              qrMaterialFCOAST_NDS.Value))
+        end
+        else
+        begin
+          if Abs(Double((qrMaterialFTRANSP_NO_NDS.OldValue) -
+            Round((qrMaterialPROC_TRANSP.OldValue / 100) * qrMaterialMAT_COUNT.OldValue *
+            qrMaterialFCOAST_NO_NDS.OldValue))) <= 1.0 then
+            qrMaterialFTRANSP_NO_NDS.Value :=
+              Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value / 100) * qrMaterialMAT_COUNT.Value *
+              qrMaterialFCOAST_NO_NDS.Value));
+        end;
+      end;
+
       // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
       if NDSEstimate then
       begin
@@ -2144,6 +2176,7 @@ begin
         qrMaterialFCOAST_NDS.Value := NoNDSToNDS1(qrMaterialFCOAST_NO_NDS.Value, qrMaterialNDS.Value);
         qrMaterialFTRANSP_NDS.Value := NoNDSToNDS1(qrMaterialFTRANSP_NO_NDS.Value, qrMaterialNDS.Value);
       end;
+
       // После изменения ячейки фиксируется
       qrMaterial.Post;
 
@@ -3061,6 +3094,16 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.grRatesExCanEditCell(Grid: TJvDBGrid; Field: TField;
+  var AllowEdit: Boolean);
+begin
+  AllowEdit := True;
+  if (Field = qrRatesExOBJ_CODE) and ((qrRatesExID_TYPE_DATA.Value <> -4) and
+    (qrRatesExID_TYPE_DATA.Value <> -5)) then
+    AllowEdit := False;
+
+end;
+
 procedure TFormCalculationEstimate.grRatesExExit(Sender: TObject);
 begin
   (Sender as TJvDBGrid).DataSource.DataSet.CheckBrowseMode;
@@ -3497,11 +3540,10 @@ begin
               end;
             -1, -2, -3:
               begin
-                EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
-                  '(PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
-                  '(SM_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
-                  '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' +
-                    'PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + '))';
+                EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '(PARENT_ID = ' +
+                  qrRatesExSM_ID.Value.ToString + ') OR ' + '(SM_ID = ' + qrRatesExSM_ID.Value.ToString +
+                  ') OR ' + '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' + 'PARENT_ID = ' +
+                  qrRatesExSM_ID.Value.ToString + '))';
                 WhereStr := '((ID in (select ID_TABLES from data_row_temp where ' +
                   '(ID_TYPE_DATA = 2) and (ID_ESTIMATE in (' + EstimStr + ')))) or ' +
                   '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
@@ -4637,8 +4679,7 @@ var
   mainType: Integer;
 begin
   // Вынесено сюда так как mousedown работает глючно
-  if (grRatesEx.SelectedRows.Count > 0) and
-     not(grRatesEx.SelectedRows.CurrentRowSelected) then
+  if (grRatesEx.SelectedRows.Count > 0) and not(grRatesEx.SelectedRows.CurrentRowSelected) then
     grRatesEx.SelectedRows.Clear;
 
   // Нельзя удалить неучтенный материал из таблицы расценок
@@ -6120,6 +6161,12 @@ begin
     PMDumpEditClick(Sender);
 end;
 
+procedure TFormCalculationEstimate.dbgrdMaterialCanEditCell(Grid: TJvDBGrid; Field: TField;
+  var AllowEdit: Boolean);
+begin
+  AllowEdit := not dbgrdMaterial.Columns[2].ReadOnly;
+end;
+
 procedure TFormCalculationEstimate.dbgrdMaterialDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 var
@@ -6259,6 +6306,12 @@ begin
   // Исловие аналогично условаю в PopupMenuMaterialsPopup
   if (Key = 45) and ((not CheckMatReadOnly) and (qrMaterialTITLE.AsInteger = 0)) then
     SetMatEditMode;
+end;
+
+procedure TFormCalculationEstimate.dbgrdMechanizmCanEditCell(Grid: TJvDBGrid; Field: TField;
+  var AllowEdit: Boolean);
+begin
+  AllowEdit := not dbgrdMechanizm.Columns[2].ReadOnly;
 end;
 
 procedure TFormCalculationEstimate.dbgrdMechanizmDrawColumnCell(Sender: TObject; const Rect: TRect;
@@ -6515,8 +6568,8 @@ begin
   if (qrRatesEx.State in [dsEdit, dsInsert]) and
     (qrRatesEx.FieldByName('OBJ_NAME').Value <> qrRatesEx.FieldByName('OBJ_NAME').OldValue) then
   begin
-    if Application.MessageBox('Сохранить описание записи?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
-      = IDYES then
+    if PS.AutosaveRateDescr or (Application.MessageBox('Сохранить описание записи?', 'Смета',
+      MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES) then
     begin
       FastExecSQL('UPDATE data_row_temp SET OBJ_NAME=:0 WHERE ID=:1',
         VarArrayOf([dbmmoCAPTION.Text, qrRatesExDATA_ESTIMATE_OR_ACT_ID.Value]));
