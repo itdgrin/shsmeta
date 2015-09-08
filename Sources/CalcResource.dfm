@@ -135,7 +135,7 @@ object fCalcResource: TfCalcResource
     Top = 56
     Width = 616
     Height = 306
-    ActivePage = ts1
+    ActivePage = ts2
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -245,6 +245,7 @@ object fCalcResource: TfCalcResource
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pm
           TabOrder = 0
@@ -259,6 +260,7 @@ object fCalcResource: TfCalcResource
           OnKeyDown = grMaterialKeyDown
           AutoAppend = False
           IniStorage = FormStorage
+          MultiSelect = True
           OnTitleBtnClick = grMaterialTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -1564,6 +1566,29 @@ object fCalcResource: TfCalcResource
         Caption = '% '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
         OnClick = PMTrPerc0Click
       end
+      object mN10: TMenuItem
+        Caption = '-'
+      end
+      object mN12: TMenuItem
+        Tag = 1
+        Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' % '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072' '#1076#1083#1103' '#1057'103'
+        OnClick = mN12Click
+      end
+      object N5305335341: TMenuItem
+        Tag = 2
+        Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' % '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072' '#1076#1083#1103' '#1057'530, '#1057'533, '#1057'534'
+        OnClick = mN12Click
+      end
+      object mN13: TMenuItem
+        Tag = 3
+        Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' % '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072' '#1076#1083#1103' '#1074#1089#1077#1093' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
+        OnClick = mN12Click
+      end
+      object mN14: TMenuItem
+        Tag = 4
+        Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' % '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072' '#1076#1083#1103' '#1074#1089#1077#1093' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
+        OnClick = mN12Click
+      end
     end
     object N1: TMenuItem
       Caption = #1042#1099#1076#1077#1083#1080#1090#1100
@@ -2281,7 +2306,9 @@ object fCalcResource: TfCalcResource
     BeforeOpen = qrMaterialDataBeforeOpen
     BeforePost = qrMaterialDetailBeforePost
     MasterSource = dsMaterialData
-    MasterFields = 'MAT_ID'
+    MasterFields = 
+      'MAT_ID;COAST;PROC_TRANSP;MAT_PROC_PODR;MAT_PROC_ZAC;TRANSP_PROC_' +
+      'PODR;TRANSP_PROC_ZAC'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -2338,7 +2365,8 @@ object fCalcResource: TfCalcResource
       '  m.REPLACED,'
       '  m.ID_REPLACED,'
       '  S1.SM_NUMBER AS PTM_NAME,'
-      '  S2.SM_NUMBER AS SM_NAME'
+      '  S2.SM_NUMBER AS SM_NAME,'
+      '  S1.SM_ID AS PTM_ID'
       'FROM        '
       'data_row_temp AS d '
       
@@ -2346,7 +2374,16 @@ object fCalcResource: TfCalcResource
         '.ID_TABLES '
       
         'join materialcard_temp AS m on ((d.ID_TYPE_DATA = 2 AND m.ID = d' +
-        '.ID_TABLES) OR (m.ID_CARD_RATE = c.ID)) AND m.MAT_ID = :MAT_ID'
+        '.ID_TABLES) OR (m.ID_CARD_RATE = c.ID)) AND m.MAT_ID = :MAT_ID '
+      
+        '  AND IF(:NDS=1, IF(m.FCOAST_NDS<>0, m.FCOAST_NDS, m.COAST_NDS),' +
+        ' IF(m.FCOAST_NO_NDS<>0, m.FCOAST_NO_NDS, m.COAST_NO_NDS)) = :COA' +
+        'ST'
+      '  AND MAT_PROC_ZAC = :MAT_PROC_ZAC'
+      '  AND MAT_PROC_PODR = :MAT_PROC_PODR'
+      '  AND TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC'
+      '  AND TRANSP_PROC_PODR = :TRANSP_PROC_PODR'
+      '  AND PROC_TRANSP = :PROC_TRANSP'
       'join smetasourcedata S1 ON S1.SM_ID = d.ID_ESTIMATE'
       'join smetasourcedata S2 ON S2.SM_ID = S1.PARENT_ID'
       'WHERE'
@@ -2366,6 +2403,30 @@ object fCalcResource: TfCalcResource
       item
         Name = 'MAT_ID'
         DataType = ftBCD
+        ParamType = ptInput
+      end
+      item
+        Name = 'COAST'
+        ParamType = ptInput
+      end
+      item
+        Name = 'MAT_PROC_ZAC'
+        ParamType = ptInput
+      end
+      item
+        Name = 'MAT_PROC_PODR'
+        ParamType = ptInput
+      end
+      item
+        Name = 'TRANSP_PROC_ZAC'
+        ParamType = ptInput
+      end
+      item
+        Name = 'TRANSP_PROC_PODR'
+        ParamType = ptInput
+      end
+      item
+        Name = 'PROC_TRANSP'
         ParamType = ptInput
       end
       item
@@ -2591,5 +2652,20 @@ object fCalcResource: TfCalcResource
     DataSet = qrDevicesDetail
     Left = 155
     Top = 312
+  end
+  object FDScript1: TFDScript
+    SQLScripts = <>
+    Connection = DM.Connect
+    Transaction = DM.Read
+    Params = <>
+    Macros = <>
+    FetchOptions.AssignedValues = [evItems, evAutoClose, evAutoFetchAll]
+    FetchOptions.AutoClose = False
+    FetchOptions.Items = [fiBlobs, fiDetails]
+    ResourceOptions.AssignedValues = [rvMacroCreate, rvMacroExpand, rvDirectExecute, rvPersistent]
+    ResourceOptions.MacroCreate = False
+    ResourceOptions.DirectExecute = True
+    Left = 268
+    Top = 173
   end
 end

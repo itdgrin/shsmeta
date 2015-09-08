@@ -74,7 +74,7 @@ begin
       FTranspPers := StrToIntDef(edtrbTrPers.Text, 0);
   end;
 
-  if FSelectRb in [1,2,3,4,5] then
+  if FSelectRb in [1, 2, 3, 4, 5] then
     FSelectType := 1
   else
     FSelectType := 2;
@@ -89,7 +89,8 @@ begin
 end;
 
 procedure TfTrPersSelect.edtrbTrPersExit(Sender: TObject);
-var s: string;
+var
+  s: string;
 begin
   if (Length(TEdit(Sender).Text) > 0) and
     (TEdit(Sender).Text[High(TEdit(Sender).Text)] = FormatSettings.DecimalSeparator) then
@@ -104,38 +105,37 @@ begin
 end;
 
 procedure TfTrPersSelect.edtrbTrPersKeyPress(Sender: TObject; var Key: Char);
-var s: string;
-    f: Double;
+var
+  s: string;
+  f: Double;
 begin
   if CharInSet(Key, [^C, ^X, ^Z]) then
-      Exit;
+    Exit;
 
   if (Key = ^V) then
   begin
-    //Проверка на корректность вставляемого текста
+    // Проверка на корректность вставляемого текста
     if TryStrToFloat(Clipboard.AsText, f) then
     begin
-      s :=
-        Copy(TEdit(Sender).Text, 1,
-          TEdit(Sender).SelStart) + Clipboard.AsText +
-          Copy(TEdit(Sender).Text, TEdit(Sender).SelStart +
-            TEdit(Sender).SelLength + 1, Length(TEdit(Sender).Text) -
-            TEdit(Sender).SelStart - TEdit(Sender).SelLength);
+      s := Copy(TEdit(Sender).Text, 1, TEdit(Sender).SelStart) + Clipboard.AsText +
+        Copy(TEdit(Sender).Text, TEdit(Sender).SelStart + TEdit(Sender).SelLength + 1,
+        Length(TEdit(Sender).Text) - TEdit(Sender).SelStart - TEdit(Sender).SelLength);
       if TryStrToFloat(s, f) then
         Exit;
     end;
   end;
 
   case Key of
-    '0'..'9',#8: ;
-    '.',',':
-     begin
-       Key := FormatSettings.DecimalSeparator;
-       if (pos(FormatSettings.DecimalSeparator, TEdit(Sender).Text) <> 0) or
-          (TEdit(Sender).Text = '') then
-        Key:= #0;
-     end;
-     else Key:= #0;
+    '0' .. '9', #8:
+      ;
+    '.', ',':
+      begin
+        Key := FormatSettings.DecimalSeparator;
+        if (pos(FormatSettings.DecimalSeparator, TEdit(Sender).Text) <> 0) or (TEdit(Sender).Text = '') then
+          Key := #0;
+      end;
+  else
+    Key := #0;
   end;
 end;
 
@@ -143,6 +143,8 @@ procedure TfTrPersSelect.rbTrPersClick(Sender: TObject);
 begin
   FSelectRb := (Sender as TControl).Tag;
   edtrbTrPers.Enabled := FSelectRb = 6;
+  if edtrbTrPers.Enabled then
+    edtrbTrPers.SetFocus;
 end;
 
 end.

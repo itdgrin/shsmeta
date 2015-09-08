@@ -8,7 +8,8 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Mask, JvDBGridFooter,
-  JvComponentBase, JvFormPlacement, System.UITypes, Vcl.Buttons;
+  JvComponentBase, JvFormPlacement, System.UITypes, Vcl.Buttons, FireDAC.UI.Intf, FireDAC.Comp.ScriptCommands,
+  FireDAC.Comp.Script;
 
 type
   TfCalcResource = class(TForm)
@@ -148,6 +149,12 @@ type
     mN9: TMenuItem;
     mN11: TMenuItem;
     mN3: TMenuItem;
+    mN10: TMenuItem;
+    mN12: TMenuItem;
+    N5305335341: TMenuItem;
+    mN13: TMenuItem;
+    mN14: TMenuItem;
+    FDScript1: TFDScript;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -212,6 +219,7 @@ type
     procedure PMTrPerc0Click(Sender: TObject);
     procedure mN3Click(Sender: TObject);
     procedure grDevColExit(Sender: TObject);
+    procedure mN12Click(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -230,7 +238,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools, ReplacementMatAndMech, CalculationEstimate, DataModule, GlobsAndConst;
+uses Main, Tools, ReplacementMatAndMech, CalculationEstimate, DataModule, GlobsAndConst, TranspPersSelect;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil);
 var
@@ -915,6 +923,93 @@ begin
           qrRates.Edit;
         qrRates.FieldByName('DELETED').Value := 1;
       end;
+  end;
+end;
+
+procedure TfCalcResource.mN12Click(Sender: TObject);
+var
+  fTrPersSelect: TfTrPersSelect;
+  TransPr: Double;
+  MatCode: string;
+  UpdateStr: string;
+  SelType: byte;
+  WhereStr: string;
+  TempBookmark: TBookMark;
+  X: Integer;
+  Script: TStringList;
+begin
+  SelType := 0;
+
+  if (Sender as TComponent).Tag in [1, 2, 3] then
+  begin
+    fTrPersSelect := TfTrPersSelect.Create(nil);
+    try
+      if fTrPersSelect.ShowModal = mrOk then
+      begin
+        SelType := fTrPersSelect.SelectType;
+        TransPr := fTrPersSelect.TranspPers;
+        MatCode := fTrPersSelect.MatCode;
+      end
+      else
+        Exit;
+    finally
+      FreeAndNil(fTrPersSelect);
+    end;
+  end;
+  Script := TStringList.Create;
+  grMaterial.DataSource.DataSet.DisableControls;
+  qrMaterialDetail.DisableControls;
+  TempBookmark := grMaterial.DataSource.DataSet.GetBookmark;
+  try
+    if grMaterial.SelectedRows.Count = 0 then
+      grMaterial.SelectedRows.CurrentRowSelected := True;
+
+    for X := 0 to grMaterial.SelectedRows.Count - 1 do
+    begin
+      if grMaterial.SelectedRows.IndexOf(grMaterial.SelectedRows.Items[X]) > -1 then
+      begin
+        grMaterial.DataSource.DataSet.Bookmark := grMaterial.SelectedRows.Items[X];
+        qrMaterialDetail.Active := False;
+        qrMaterialDetail.Active := True;
+        qrMaterialDetail.First;
+        while not qrMaterialDetail.Eof do
+        begin
+
+          if (Sender as TComponent).Tag in [1, 2, 3] then
+          begin
+            case SelType of
+              1:
+                UpdateStr := 'PROC_TRANSP = GetTranspPers(' + qrMaterialDetail.FieldByName('PTM_ID').AsString
+                  + ', ''' + MatCode + ''')';
+              2:
+                UpdateStr := 'PROC_TRANSP = ' + TransPr.ToString;
+            end;
+            if (Sender as TComponent).Tag = 1 then
+              WhereStr := ' and (MAT_CODE like ''Ñ103%'')';
+            if (Sender as TComponent).Tag = 2 then
+              WhereStr := ' and ((MAT_CODE like ''Ñ530%'') or ' +
+                '(MAT_CODE like ''Ñ533%'') or (MAT_CODE like ''Ñ534%''))';
+          end
+          else
+            UpdateStr := 'PROC_TRANSP = GetTranspPers(' + qrMaterialDetail.FieldByName('PTM_ID').AsString +
+              ', MAT_CODE)';
+
+          Script.Add('UPDATE materialcard_temp set ' + UpdateStr + ' WHERE ID=' +
+            qrMaterialDetail.FieldByName('ID').AsString + WhereStr + ';');
+
+          qrMaterialDetail.Next;
+        end;
+
+      end;
+    end;
+    FDScript1.ExecuteScript(TStrings(Script));
+  finally
+    grMaterial.DataSource.DataSet.GotoBookmark(TempBookmark);
+    grMaterial.DataSource.DataSet.FreeBookmark(TempBookmark);
+    grMaterial.DataSource.DataSet.EnableControls;
+    qrMaterialDetail.EnableControls;
+    FormCalculationEstimate.RecalcEstimate;
+    pgcChange(nil);
   end;
 end;
 

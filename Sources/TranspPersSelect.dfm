@@ -20,7 +20,7 @@ object fTrPersSelect: TfTrPersSelect
     Width = 313
     Height = 33
     Align = alBottom
-    TabOrder = 0
+    TabOrder = 7
     object btnSelect: TButton
       AlignWithMargins = True
       Left = 85
@@ -52,7 +52,7 @@ object fTrPersSelect: TfTrPersSelect
     Width = 265
     Height = 17
     Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1086#1073#1097#1077#1089#1090#1074#1077#1085#1085#1099#1093' '#1088#1072#1073#1086#1090
-    TabOrder = 1
+    TabOrder = 0
     OnClick = rbTrPersClick
   end
   object rbTrPers2: TRadioButton
@@ -62,7 +62,7 @@ object fTrPersSelect: TfTrPersSelect
     Width = 265
     Height = 17
     Caption = #1052#1077#1090#1072#1083#1080#1095#1077#1089#1082#1080#1077' '#1082#1086#1085#1089#1090#1088#1091#1082#1094#1080#1080
-    TabOrder = 2
+    TabOrder = 1
     OnClick = rbTrPersClick
   end
   object rbTrPers3: TRadioButton
@@ -72,7 +72,7 @@ object fTrPersSelect: TfTrPersSelect
     Width = 265
     Height = 17
     Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1089#1072#1085#1080#1090#1072#1088#1085#1086'-'#1090#1077#1093#1085#1080#1095#1077#1089#1082#1080#1093' '#1088#1072#1073#1086#1090
-    TabOrder = 3
+    TabOrder = 2
     OnClick = rbTrPersClick
   end
   object rbTrPers4: TRadioButton
@@ -82,7 +82,7 @@ object fTrPersSelect: TfTrPersSelect
     Width = 265
     Height = 19
     Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1101#1083#1077#1082#1090#1088#1086#1084#1086#1085#1090#1072#1078#1085#1099#1093' '#1088#1072#1073#1086#1090
-    TabOrder = 4
+    TabOrder = 3
     OnClick = rbTrPersClick
   end
   object rbTrPers5: TRadioButton
@@ -92,14 +92,14 @@ object fTrPersSelect: TfTrPersSelect
     Width = 265
     Height = 17
     Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1074' '#1087#1086#1089#1090#1088#1086#1077#1095#1085#1099#1093' '#1091#1089#1083#1086#1074#1080#1103#1093
-    TabOrder = 5
+    TabOrder = 4
     OnClick = rbTrPersClick
   end
   object rbTrPers6: TRadioButton
     Tag = 6
     Left = 16
     Top = 137
-    Width = 113
+    Width = 17
     Height = 17
     Checked = True
     TabOrder = 6
@@ -112,7 +112,7 @@ object fTrPersSelect: TfTrPersSelect
     Width = 89
     Height = 21
     Alignment = taRightJustify
-    TabOrder = 7
+    TabOrder = 5
     Text = '0'
     OnExit = edtrbTrPersExit
     OnKeyPress = edtrbTrPersKeyPress
