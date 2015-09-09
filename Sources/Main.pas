@@ -1947,11 +1947,9 @@ begin
   if Assigned(FormCalculationEstimate) then
   begin
     if FormCalculationEstimate.IdEstimate > 0 then
-      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
-        PChar(FileReportPath + 'report\'), SW_maximIZE)
+      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),PChar(FileReportPath), SW_maximIZE)
     else
-      ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
-        PChar(FileReportPath + 'report\'), SW_maximIZE);
+      ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),PChar(FileReportPath), SW_maximIZE);
   end;
 end;
 

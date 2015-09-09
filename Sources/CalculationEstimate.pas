@@ -1153,8 +1153,7 @@ end;
 procedure TFormCalculationEstimate.SpeedButtonSSRClick(Sender: TObject);
 begin
 
-  ShellExecute(Handle, nil, 'report.exe', PChar('C' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
-    PChar(GetCurrentDir + '\REPORTS\report\'), SW_maximIZE);
+  ShellExecute(Handle, nil, 'report.exe', PChar('C' + INTTOSTR(FormCalculationEstimate.IdEstimate)),PChar(GetCurrentDir + '\REPORTS\'), SW_maximIZE);
   Exit;
 
   if SpeedButtonSSR.Tag = 0 then
@@ -1247,8 +1246,7 @@ end;
 procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
 begin
   if (Sender as TSpeedButton).Tag = 77 then
-    ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
-      PChar(GetCurrentDir + '\reports\report\'), SW_maximIZE)
+    ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IdEstimate)),PChar(GetCurrentDir + '\reports\'), SW_maximIZE)
   else
     ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag,
       FormCalculationEstimate);
@@ -1341,40 +1339,10 @@ end;
 
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
-  { try
-    if Assigned(FormObjectsAndEstimates) then
-    begin
-    if FormObjectsAndEstimates.IdEstimate = 0 then
-    begin
-    ShowMessage('Не выбрана смета');
-    Exit;
-    end;
-    dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
-    ShowMessage('1');
-    ShellExecute(Handle, nil, 'report.exe', PChar('E' + inttostr(FormObjectsAndEstimates.IdEstimate)),PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
 
-    end
-    else
-    begin
-    if Assigned(FormCalculationEstimate) then
-    begin
-    if FormCalculationEstimate.IdEstimate = 0 then
-    begin
-    ShowMessage('Не выбрана смета');
-    Exit;
-    end;
-    ShowMessage('2'); }
   if FormCalculationEstimate.IdAct = 0 then
-    dmReportF.Report_EXCEL(FormCalculationEstimate.IdEstimate, 1);
-  if FormCalculationEstimate.IdAct = 0 then
-    ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
-      PChar(GetCurrentDir + '\reports\report\'), SW_maximIZE);
-  {
-    end;
-    end;
-    finally
-    Screen.Cursor := crDefault;
-    end; }
+     ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormCalculationEstimate.IdEstimate)), PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
+
 end;
 
 procedure TFormCalculationEstimate.btnCalcFactClick(Sender: TObject);

@@ -109,7 +109,7 @@
       GroupIndex = 1
       Caption = #1057#1074#1086#1076#1085#1099#1077' '#1088#1072#1089#1095#1105#1090#1099
       OnClick = SpeedButtonSummaryCalculationClick
-      ExplicitTop = 4
+      ExplicitTop = 0
     end
     object SpeedButtonSSR: TSpeedButton
       AlignWithMargins = True
