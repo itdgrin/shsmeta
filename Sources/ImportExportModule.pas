@@ -93,8 +93,10 @@ var XML : IXMLDocument;
     AutoCommitValue: Boolean;
 
   procedure GetStrAndExcec(ANode: IXMLNode; ATabName: string);
-  var i: Integer;
+  var i, j: Integer;
       As1, As2: string;
+      FieldName: string;
+      FieldValue: Variant;
   begin
     As1 := '';
     As2 := '';
@@ -107,14 +109,21 @@ var XML : IXMLDocument;
       As2 := As2 + ':' + ANode.ChildNodes.Nodes[i].NodeName;
     end;
 
+    DM.qrDifferent.Params.Clear; //Без очистки случаются неожиданные глюки
     DM.qrDifferent.SQL.Text := 'Insert into ' + ATabName +
       ' (' + As1 + ') values (' + As2 + ')';
+
     for i := 0 to ANode.ChildNodes.Count - 1 do
-      DM.qrDifferent.ParamByName(ANode.ChildNodes.Nodes[i].NodeName).Value :=
-        ANode.ChildNodes.Nodes[i].NodeValue;
+    begin
+      //Добавлено для удобства отладки
+      FieldName := ANode.ChildNodes.Nodes[i].NodeName;
+      FieldValue := ANode.ChildNodes.Nodes[i].NodeValue;
+
+      DM.qrDifferent.ParamByName(FieldName).Value := FieldValue;
+    end;
+
     DM.qrDifferent.ExecSQL;
   end;
-
 begin
   for i := 1 to Length(IdConvert) do
   begin
