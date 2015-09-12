@@ -11200,8 +11200,7 @@
         OnClick = HRRReferenceDataClick
       end
       object HRROwnData: TMenuItem
-        Caption = '// '#1057#1086#1073#1089#1090#1074#1077#1085#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
-        Visible = False
+        Caption = #1057#1086#1073#1089#1090#1074#1077#1085#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
         OnClick = HRROwnDataClick
       end
       object HRRPrices: TMenuItem

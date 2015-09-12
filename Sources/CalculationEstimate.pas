@@ -476,6 +476,8 @@ type
     PMChangeTranspProc: TMenuItem;
     edtTypeWork: TEdit;
     edtZone: TEdit;
+    qrObjects: TFDQuery;
+    qrRatesExCOEF_ORDERS: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -683,6 +685,7 @@ type
     procedure grRatesExCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
     procedure dbgrdMaterialCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
     procedure dbgrdMechanizmCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
+    procedure mN14Click(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -773,7 +776,7 @@ type
     procedure DeleteRowFromSmeta();
   public
     ConfirmCloseForm: Boolean;
-    flChangeEstimate: Boolean; // Не даем закрыться окну при изменении сметы.
+    flChangeEstimate: Boolean; // Не даем закрыться окну при переключении между сметами.
     property IdObject: Integer read FIdObject write FIdObject;
     property IdAct: Integer read FIdAct write FIdAct;
     property IdEstimate: Integer read FIdEstimate write FIdEstimate;
@@ -818,7 +821,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   KC6, CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
-  TranspPersSelect;
+  TranspPersSelect, CardObject;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -1153,7 +1156,8 @@ end;
 procedure TFormCalculationEstimate.SpeedButtonSSRClick(Sender: TObject);
 begin
 
-  ShellExecute(Handle, nil, 'report.exe', PChar('C' + INTTOSTR(FormCalculationEstimate.IdEstimate)),PChar(GetCurrentDir + '\REPORTS\'), SW_maximIZE);
+  ShellExecute(Handle, nil, 'report.exe', PChar('C' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+    PChar(GetCurrentDir + '\REPORTS\'), SW_maximIZE);
   Exit;
 
   if SpeedButtonSSR.Tag = 0 then
@@ -1246,7 +1250,8 @@ end;
 procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
 begin
   if (Sender as TSpeedButton).Tag = 77 then
-    ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IdEstimate)),PChar(GetCurrentDir + '\reports\'), SW_maximIZE)
+    ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+      PChar(GetCurrentDir + '\reports\'), SW_maximIZE)
   else
     ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag,
       FormCalculationEstimate);
@@ -1341,7 +1346,8 @@ procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
 
   if FormCalculationEstimate.IdAct = 0 then
-     ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormCalculationEstimate.IdEstimate)), PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
+    ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+      PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
 
 end;
 
@@ -2113,18 +2119,16 @@ begin
       begin
         if NDSEstimate then
         begin
-          if Abs(Double((qrMaterialFTRANSP_NDS.OldValue) -
-            Round((qrMaterialPROC_TRANSP.OldValue / 100) * qrMaterialMAT_COUNT.OldValue *
-            qrMaterialFCOAST_NDS.OldValue))) <= 1.0 then
+          if Abs(Double((qrMaterialFTRANSP_NDS.OldValue) - Round((qrMaterialPROC_TRANSP.OldValue / 100) *
+            qrMaterialMAT_COUNT.OldValue * qrMaterialFCOAST_NDS.OldValue))) <= 1.0 then
             qrMaterialFTRANSP_NDS.Value :=
               Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value / 100) * qrMaterialMAT_COUNT.Value *
               qrMaterialFCOAST_NDS.Value))
         end
         else
         begin
-          if Abs(Double((qrMaterialFTRANSP_NO_NDS.OldValue) -
-            Round((qrMaterialPROC_TRANSP.OldValue / 100) * qrMaterialMAT_COUNT.OldValue *
-            qrMaterialFCOAST_NO_NDS.OldValue))) <= 1.0 then
+          if Abs(Double((qrMaterialFTRANSP_NO_NDS.OldValue) - Round((qrMaterialPROC_TRANSP.OldValue / 100) *
+            qrMaterialMAT_COUNT.OldValue * qrMaterialFCOAST_NO_NDS.OldValue))) <= 1.0 then
             qrMaterialFTRANSP_NO_NDS.Value :=
               Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value / 100) * qrMaterialMAT_COUNT.Value *
               qrMaterialFCOAST_NO_NDS.Value));
@@ -2458,6 +2462,57 @@ begin
       if not Assigned(FormCalculationEstimate.ActiveControl) or
         (FormCalculationEstimate.ActiveControl.Name <> 'dbgrdDevices') then
         SetDevNoEditMode;
+  end;
+end;
+
+procedure TFormCalculationEstimate.mN14Click(Sender: TObject);
+var
+  e: TNotifyEvent;
+begin
+  // Карточка объекта
+  qrObjects.Active := False;
+  qrObjects.ParamByName('in_id').Value := IdObject;
+  qrObjects.Active := True;
+
+  with FormCardObject, qrObjects do
+  begin
+    // Заносим значения в поля редактирования
+    EditNumberObject.Text := FieldByName('NumberObject').AsVariant;
+    EditCodeObject.Text := FieldByName('CodeObject').AsVariant;
+    EditNumberContract.Text := FieldByName('NumberContract').AsString;
+    DateTimePickerDataCreateContract.Date := FieldByName('DateContract').AsVariant;
+    EditShortDescription.Text := FieldByName('Name').AsVariant;
+    MemoFullDescription.Text := FieldByName('FullName').AsVariant;
+    e := cbbFromMonth.OnChange;
+    cbbFromMonth.OnChange := nil;
+    seYear.OnChange := nil;
+    cbbFromMonth.ItemIndex := MonthOf(FieldByName('BeginConstruction').AsDateTime) - 1;
+    seYear.Value := YearOf(FieldByName('BeginConstruction').AsDateTime);
+    cbbFromMonth.OnChange := e;
+    seYear.OnChange := e;
+    CheckBoxCalculationEconom.Checked := FieldByName('CalculationEconom').AsVariant;
+
+    if FieldByName('TermConstruction').AsVariant <> Null then
+      EditCountMonth.Text := FieldByName('TermConstruction').AsVariant;
+
+    // Для выпадающих списков
+    if FieldByName('IdIstFin').AsVariant <> Null then
+      SetSourceFinance(FieldByName('IdIstFin').AsVariant);
+
+    SetCategory(FieldByName('IdCategory').AsVariant);
+    SetRegion(FieldByName('IdRegion').AsVariant);
+    SetVAT(FieldByName('VAT').AsVariant);
+    SetBasePrice(FieldByName('IdBasePrice').AsVariant);
+    SetTypeOXR(FieldByName('IdOXROPR').AsVariant);
+    SetMAIS(FieldByName('IdMAIS').AsVariant);
+
+    // ID выделенной записи
+    SetIdSelectRow(Fields[0].AsVariant);
+
+    // Даём знать форме, что будет операция редактирования и чтобы не очищались поля
+    EditingRecord(True);
+
+    ShowModal;
   end;
 end;
 
@@ -3965,9 +4020,10 @@ end;
 procedure TFormCalculationEstimate.pmCoefPopup(Sender: TObject);
 begin
   PopupMenuCoefDeleteSet.Enabled := (qrCalculations.FieldByName('ID').AsInteger > 0);
-  PopupMenuCoefOrders.Visible := qrRatesExID_TYPE_DATA.Value = 1;
+  PopupMenuCoefOrders.Visible := (qrRatesExID_TYPE_DATA.Value = 1) and (qrRatesExCOEF_ORDERS.Value = 1);
   PopupMenuCoefOrders.Checked := FastSelectSQLOne('SELECT COEF_ORDERS FROM card_rate_temp WHERE ID=:0',
     VarArrayOf([qrRatesExID_TABLES.Value])) = 1;
+
 end;
 
 // вид всплывающего меню материалов
@@ -5481,8 +5537,8 @@ begin
   // Скрываем колонки зименого удорожания если не нужны
   dbgrdCalculations.Columns[13].Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   dbgrdCalculations.Columns[14].Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
-  lblWinterPrice.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   EditWinterPrice.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
+  lblWinterPrice.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   dbgrdCalculations.Columns[13].Width := 64;
   dbgrdCalculations.Columns[14].Width := 64;
   FixDBGridColumnsWidth(dbgrdCalculations);

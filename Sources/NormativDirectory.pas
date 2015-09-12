@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.ComCtrls, JvExComCtrls, JvDBTreeView, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Grids,
   Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Menus, ShellAPI, Vcl.Mask, Vcl.DBCtrls,
-  System.Types, System.UITypes;
+  System.Types, System.UITypes, Vcl.Buttons, Tools;
 
 type
   TfNormativDirectory = class(TForm)
@@ -28,6 +28,9 @@ type
     mN1: TMenuItem;
     mN2: TMenuItem;
     mN3: TMenuItem;
+    pnl2: TPanel;
+    btn1: TBitBtn;
+    btn2: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure tvMainDblClick(Sender: TObject);
     procedure tvMainChange(Sender: TObject; Node: TTreeNode);
@@ -39,10 +42,13 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure grSostavDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure qrMainAfterScroll(DataSet: TDataSet);
+    procedure btn1Click(Sender: TObject);
   private
     procedure Search(const Direction: Integer);
   public
     skipReload: Boolean;
+    Kind: TKindForm;
     function getChildList(const RootID: Integer): string;
   end;
 
@@ -51,8 +57,13 @@ var
 
 implementation
 
-uses DataModule, Tools, ReferenceData, AdditionData, Main;
+uses DataModule, ReferenceData, AdditionData, Main;
 {$R *.dfm}
+
+procedure TfNormativDirectory.btn1Click(Sender: TObject);
+begin
+  Close;
+end;
 
 procedure TfNormativDirectory.btnSearchDownClick(Sender: TObject);
 begin
@@ -79,6 +90,7 @@ end;
 
 procedure TfNormativDirectory.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  Kind := kdNone;
   if Assigned(FormReferenceData) then
     FormReferenceData.FrameRates.FilteredRates('', False)
   else if Assigned(FormAdditionData) then
@@ -120,6 +132,11 @@ begin
     Height := FormAdditionData.Height - (GetSystemMetrics(SM_CYCAPTION) + FormAdditionData.FrameRates.Top +
       FormAdditionData.FrameRates.dbmmoCaptionNormative.Top);
   end;
+
+  if Kind = kdSelect then
+    pnl2.Height := 38
+  else
+    pnl2.Height := 1
 end;
 
 procedure TfNormativDirectory.Search(const Direction: Integer);
@@ -259,6 +276,12 @@ begin
   tvMain.Visible := True;
 end;
 
+procedure TfNormativDirectory.qrMainAfterScroll(DataSet: TDataSet);
+begin
+  btn2.Enabled := (qrMain.FieldByName('type_directory').AsInteger = 5) or
+    (qrMain.FieldByName('type_directory').AsInteger = 7);
+end;
+
 procedure TfNormativDirectory.tvMainChange(Sender: TObject; Node: TTreeNode);
 var
   e: TDataSetNotifyEvent;
@@ -267,21 +290,24 @@ begin
   CloseOpen(qrDetail);
   if skipReload then
     Exit;
-  if Assigned(FormReferenceData) then
+  if not(Kind = kdSelect) then
   begin
-    e := FormReferenceData.FrameRates.qrNormativ.AfterScroll;
-    FormReferenceData.FrameRates.qrNormativ.AfterScroll := nil;
-    FormReferenceData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data').AsString
-      + '%''', True);
-    FormReferenceData.FrameRates.qrNormativ.AfterScroll := e;
-  end
-  else if Assigned(FormAdditionData) then
-  begin
-    e := FormAdditionData.FrameRates.qrNormativ.AfterScroll;
-    FormAdditionData.FrameRates.qrNormativ.AfterScroll := nil;
-    FormAdditionData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data').AsString +
-      '%''', True);
-    FormAdditionData.FrameRates.qrNormativ.AfterScroll := e;
+    if Assigned(FormReferenceData) then
+    begin
+      e := FormReferenceData.FrameRates.qrNormativ.AfterScroll;
+      FormReferenceData.FrameRates.qrNormativ.AfterScroll := nil;
+      FormReferenceData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data')
+        .AsString + '%''', True);
+      FormReferenceData.FrameRates.qrNormativ.AfterScroll := e;
+    end
+    else if Assigned(FormAdditionData) then
+    begin
+      e := FormAdditionData.FrameRates.qrNormativ.AfterScroll;
+      FormAdditionData.FrameRates.qrNormativ.AfterScroll := nil;
+      FormAdditionData.FrameRates.FilteredRates('tree_data LIKE ''' + qrMain.FieldByName('tree_data').AsString
+        + '%''', True);
+      FormAdditionData.FrameRates.qrNormativ.AfterScroll := e;
+    end;
   end;
 end;
 

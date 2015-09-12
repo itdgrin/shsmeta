@@ -1,15 +1,15 @@
 ﻿inherited FrameRates: TFrameRates
   Width = 754
-  Height = 463
+  Height = 530
   ParentFont = False
   OnResize = FrameResize
   ExplicitWidth = 754
-  ExplicitHeight = 463
+  ExplicitHeight = 530
   object PanelRates: TPanel
     Left = 0
     Top = 0
     Width = 754
-    Height = 444
+    Height = 511
     Align = alClient
     BevelOuter = bvNone
     ParentBackground = False
@@ -18,7 +18,7 @@
       Left = 110
       Top = 0
       Width = 5
-      Height = 444
+      Height = 511
       ResizeStyle = rsUpdate
       OnMoved = SplitterLeftMoved
       ExplicitLeft = 128
@@ -42,10 +42,10 @@
       AutoSize = True
     end
     object SplitterRight: TSplitter
-      Left = 699
+      Left = 660
       Top = 0
       Width = 5
-      Height = 444
+      Height = 511
       Align = alRight
       ResizeStyle = rsUpdate
       OnMoved = SplitterRightMoved
@@ -57,7 +57,7 @@
       Left = 0
       Top = 0
       Width = 110
-      Height = 444
+      Height = 511
       Align = alLeft
       BevelOuter = bvNone
       TabOrder = 0
@@ -77,7 +77,7 @@
         Left = 0
         Top = 21
         Width = 110
-        Height = 401
+        Height = 468
         Align = alClient
         DataSource = dsNormativ
         Font.Charset = DEFAULT_CHARSET
@@ -85,8 +85,9 @@
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        Options = [dgColumnResize, dgColLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        Options = [dgColumnResize, dgColLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgTitleClick, dgTitleHotTrack]
         ParentFont = False
+        PopupMenu = pmRatesEx
         ReadOnly = True
         TabOrder = 1
         TitleFont.Charset = DEFAULT_CHARSET
@@ -118,65 +119,99 @@
       end
       object pnlNaviator: TPanel
         Left = 0
-        Top = 422
+        Top = 489
         Width = 110
         Height = 22
         Align = alBottom
         TabOrder = 2
-        object btn1: TSpeedButton
-          Left = 55
-          Top = 0
+        OnResize = pnlNaviatorResize
+        object btnNext: TSpeedButton
+          Left = 56
+          Top = 1
           Width = 55
-          Height = 22
+          Height = 20
           Hint = #1057#1083#1077#1076#1091#1102#1097#1072#1103' '#1089#1090#1088#1072#1085#1080#1094#1072
+          Align = alLeft
           Caption = '>>'
           ParentShowHint = False
           ShowHint = True
-          OnClick = btn1Click
+          OnClick = btnNextClick
+          ExplicitLeft = 55
+          ExplicitTop = 0
+          ExplicitHeight = 22
         end
-        object btn2: TSpeedButton
-          Left = 0
-          Top = 0
+        object btnPrev: TSpeedButton
+          Left = 1
+          Top = 1
           Width = 55
-          Height = 22
+          Height = 20
           Hint = #1055#1088#1077#1076#1080#1076#1091#1097#1072#1103' '#1089#1090#1088#1072#1085#1080#1094#1072
+          Align = alLeft
           Caption = '<<'
           ParentShowHint = False
           ShowHint = True
-          OnClick = btn2Click
+          OnClick = btnPrevClick
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitHeight = 22
         end
       end
     end
     object PanelRight: TPanel
-      Left = 704
+      Left = 665
       Top = 0
-      Width = 50
-      Height = 444
+      Width = 89
+      Height = 511
       Align = alRight
-      BevelOuter = bvNone
+      BevelOuter = bvLowered
       TabOrder = 2
+      DesignSize = (
+        89
+        511)
+      object btnSave: TBitBtn
+        Left = 6
+        Top = 449
+        Width = 75
+        Height = 25
+        Anchors = [akLeft, akBottom]
+        Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+        TabOrder = 0
+        OnClick = btnSaveClick
+      end
+      object btnCancel: TBitBtn
+        Left = 6
+        Top = 480
+        Width = 75
+        Height = 25
+        Anchors = [akLeft, akBottom]
+        Caption = #1054#1090#1084#1077#1085#1072
+        TabOrder = 1
+        OnClick = btnCancelClick
+      end
     end
     object PanelCenter: TPanel
       Left = 115
       Top = 0
-      Width = 584
-      Height = 444
+      Width = 545
+      Height = 511
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitWidth = 584
       object PanelShowHideButton: TPanel
-        Left = 569
+        Left = 530
         Top = 0
         Width = 15
-        Height = 444
+        Height = 511
         Align = alRight
         BevelOuter = bvNone
         TabOrder = 1
+        ExplicitLeft = 569
         object SpeedButtonShowHideRightPanel: TSpeedButton
           Left = 0
           Top = 0
           Width = 15
-          Height = 444
+          Height = 511
           Align = alClient
           Flat = True
           ParentShowHint = False
@@ -189,12 +224,12 @@
       object PanelCenterClient: TPanel
         Left = 0
         Top = 0
-        Width = 569
-        Height = 444
+        Width = 530
+        Height = 511
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        OnResize = PanelCenterClientResize
+        ExplicitWidth = 569
         object ImageSplitterTop: TImage
           Left = 312
           Top = 0
@@ -205,7 +240,7 @@
         object SplitterTop: TSplitter
           Left = 0
           Top = 96
-          Width = 569
+          Width = 530
           Height = 5
           Cursor = crVSplit
           Align = alTop
@@ -217,29 +252,33 @@
         object PanelCollection: TPanel
           Left = 0
           Top = 0
-          Width = 569
+          Width = 530
           Height = 96
           Align = alTop
           BevelOuter = bvNone
           TabOrder = 0
+          ExplicitWidth = 569
           object PanelHeaderCollection: TPanel
             Left = 0
             Top = 25
-            Width = 569
+            Width = 530
             Height = 25
             Align = alTop
             BevelOuter = bvNone
             ParentBackground = False
             TabOrder = 1
-            DesignSize = (
-              569
-              25)
+            ExplicitWidth = 569
             object LabelSbornik: TLabel
-              Left = 8
-              Top = 6
+              AlignWithMargins = True
+              Left = 7
+              Top = 5
               Width = 57
-              Height = 13
+              Height = 17
               Hint = #1054#1090#1082#1088#1099#1090#1100' '#1086#1082#1085#1086' '#1080#1089#1093#1086#1076#1085#1099#1093' '#1076#1072#1085#1085#1099#1093
+              Margins.Left = 7
+              Margins.Top = 5
+              Margins.Right = 7
+              Align = alLeft
               Caption = #1057#1073#1086#1088#1085#1080#1082#1080':'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clNavy
@@ -252,38 +291,65 @@
               OnClick = LabelSbornikClick
               OnMouseEnter = LabelSbornikMouseEnter
               OnMouseLeave = LabelSbornikMouseLeave
+              ExplicitLeft = 3
+              ExplicitTop = 3
+              ExplicitHeight = 13
+            end
+            object btn1: TSpeedButton
+              AlignWithMargins = True
+              Left = 504
+              Top = 1
+              Width = 23
+              Height = 23
+              Hint = #1042#1099#1073#1088#1072#1090#1100' '#1089#1073#1086#1088#1085#1080#1082' '#1088#1072#1089#1094#1077#1085#1086#1082
+              Margins.Top = 1
+              Margins.Bottom = 1
+              Align = alRight
+              Caption = '...'
+              ParentShowHint = False
+              ShowHint = True
+              Visible = False
+              OnClick = btn1Click
+              ExplicitLeft = 507
+              ExplicitTop = 2
             end
             object EditCollection: TEdit
+              AlignWithMargins = True
               Left = 71
               Top = 2
-              Width = 498
+              Width = 427
               Height = 21
               Hint = 
                 #1042#1074#1077#1076#1080#1090#1077' '#1095#1072#1089#1090#1100' '#1086#1087#1080#1089#1072#1085#1080#1103' '#1088#1072#1073#1086#1090' '#1080' '#1085#1072#1078#1084#1080#1090#1077' - Enter, '#1076#1083#1103' '#1086#1095#1080#1089#1090#1082#1080' '#1085#1072#1078#1084 +
                 #1080#1090#1077' - Esc'
-              Anchors = [akLeft, akTop, akRight]
+              Margins.Left = 0
+              Margins.Top = 2
+              Margins.Bottom = 2
+              Align = alClient
               Color = 14802912
               ParentShowHint = False
               ReadOnly = True
               ShowHint = True
               TabOrder = 0
               OnKeyPress = EditSearchNormativeKeyPress
+              ExplicitWidth = 434
             end
           end
           object PanelSearchNormative: TPanel
             Left = 0
             Top = 0
-            Width = 569
+            Width = 530
             Height = 25
             Align = alTop
             BevelOuter = bvNone
             ParentBackground = False
             TabOrder = 0
+            ExplicitWidth = 569
             DesignSize = (
-              569
+              530
               25)
             object LabelSearchNormative: TLabel
-              Left = 25
+              Left = 31
               Top = 6
               Width = 34
               Height = 13
@@ -292,7 +358,7 @@
             object EditSearchNormative: TEdit
               Left = 71
               Top = 2
-              Width = 308
+              Width = 269
               Height = 21
               Hint = 
                 #1042#1074#1077#1076#1080#1090#1077' '#1095#1072#1089#1090#1100' '#1086#1087#1080#1089#1072#1085#1080#1103' '#1088#1072#1073#1086#1090' '#1080' '#1085#1072#1078#1084#1080#1090#1077' - Enter, '#1076#1083#1103' '#1086#1095#1080#1089#1090#1082#1080' '#1085#1072#1078#1084 +
@@ -303,9 +369,10 @@
               TabOrder = 0
               OnEnter = EditSearchNormativeEnter
               OnKeyPress = EditSearchNormativeKeyPress
+              ExplicitWidth = 308
             end
             object rb1: TRadioButton
-              Left = 385
+              Left = 346
               Top = 2
               Width = 89
               Height = 17
@@ -315,9 +382,10 @@
               TabOrder = 1
               TabStop = True
               OnClick = chk1Click
+              ExplicitLeft = 385
             end
             object rb2: TRadioButton
-              Left = 480
+              Left = 441
               Top = 2
               Width = 89
               Height = 17
@@ -325,12 +393,13 @@
               Caption = #1055#1091#1089#1082#1086#1085#1072#1083#1072#1076#1082#1072
               TabOrder = 2
               OnClick = chk1Click
+              ExplicitLeft = 480
             end
           end
           object dbmmoCaptionNormative: TDBMemo
             Left = 0
             Top = 50
-            Width = 569
+            Width = 530
             Height = 46
             Align = alClient
             DataField = 'CaptionNormativ'
@@ -338,18 +407,20 @@
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 2
+            ExplicitWidth = 569
           end
         end
         object Panel1: TPanel
           Left = 0
           Top = 101
-          Width = 569
-          Height = 343
+          Width = 530
+          Height = 410
           Align = alClient
           BevelOuter = bvNone
           Caption = 'Panel1'
           ShowCaption = False
           TabOrder = 1
+          ExplicitWidth = 569
           object ImageSplitter1: TImage
             Left = 320
             Top = 8
@@ -367,12 +438,13 @@
           object PanelHorizontal1: TPanel
             Left = 0
             Top = 0
-            Width = 569
+            Width = 530
             Height = 25
             Align = alTop
             BevelOuter = bvNone
             ParentBackground = False
             TabOrder = 0
+            ExplicitWidth = 569
             object LabelJustification: TLabel
               Left = 6
               Top = 6
@@ -396,7 +468,7 @@
               Color = 8454016
               Enabled = False
               ReadOnly = True
-              TabOrder = 1
+              TabOrder = 2
               Text = #1044#1077#1081#1089#1090#1074#1091#1102#1097#1072#1103
             end
             object dbedtNumberNormative: TDBEdit
@@ -419,49 +491,89 @@
               DataField = 'Unit'
               DataSource = dsNormativ
               ReadOnly = True
-              TabOrder = 2
+              TabOrder = 3
+            end
+            object cbbType: TComboBox
+              Left = 189
+              Top = 2
+              Width = 109
+              Height = 21
+              Style = csDropDownList
+              DropDownCount = 3
+              ItemIndex = 0
+              TabOrder = 1
+              Text = #1056#1072#1089#1094#1077#1085#1082#1072
+              OnChange = cbbTypeChange
+              Items.Strings = (
+                #1056#1072#1089#1094#1077#1085#1082#1072
+                #1055#1091#1089#1082#1086#1085#1072#1083#1072#1076#1082#1072
+                #1059#1053#1056)
             end
           end
           object PanelHorizontal2: TPanel
             Left = 0
             Top = 50
-            Width = 569
+            Width = 530
             Height = 25
             Align = alTop
             BevelOuter = bvNone
             ParentBackground = False
             TabOrder = 2
-            OnResize = PanelHorizontal2Resize
-            DesignSize = (
-              569
-              25)
+            ExplicitWidth = 569
             object LabelWinterPrice: TLabel
-              Left = 6
-              Top = 6
+              AlignWithMargins = True
+              Left = 8
+              Top = 3
               Width = 121
-              Height = 13
+              Height = 19
+              Margins.Left = 8
+              Align = alLeft
               Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077' '#1085#1072':'
+              ExplicitHeight = 13
+            end
+            object btnSelectWinterPrice: TSpeedButton
+              AlignWithMargins = True
+              Left = 504
+              Top = 1
+              Width = 23
+              Height = 23
+              Hint = #1042#1099#1073#1088#1072#1090#1100' '#1079#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077' '#1076#1083#1103' '#1088#1072#1089#1094#1077#1085#1082#1080
+              Margins.Top = 1
+              Margins.Bottom = 1
+              Align = alRight
+              Caption = '...'
+              ParentShowHint = False
+              ShowHint = True
+              Visible = False
+              OnClick = btnSelectWinterPriceClick
+              ExplicitLeft = 546
+              ExplicitTop = 2
             end
             object EditWinterPrice: TEdit
-              Left = 133
+              AlignWithMargins = True
+              Left = 135
               Top = 2
-              Width = 433
+              Width = 363
               Height = 21
-              Anchors = [akLeft, akTop, akRight]
+              Margins.Top = 2
+              Margins.Bottom = 2
+              Align = alClient
               Color = 14802912
               ReadOnly = True
               TabOrder = 0
+              ExplicitWidth = 402
             end
           end
           object PanelHorizontal3: TPanel
             Left = 0
             Top = 75
-            Width = 569
+            Width = 530
             Height = 25
             Align = alTop
             BevelOuter = bvNone
             ParentBackground = False
             TabOrder = 3
+            ExplicitWidth = 569
             object Label2: TLabel
               Left = 8
               Top = 6
@@ -506,15 +618,15 @@
           object Panel2: TPanel
             Left = 0
             Top = 25
-            Width = 569
+            Width = 530
             Height = 25
             Align = alTop
             BevelOuter = bvNone
             ParentBackground = False
             TabOrder = 1
-            OnResize = PanelHorizontal2Resize
+            ExplicitWidth = 569
             DesignSize = (
-              569
+              530
               25)
             object LabelOXROPR: TLabel
               Left = 6
@@ -523,57 +635,69 @@
               Height = 13
               Caption = #1054#1061#1056' '#1080' '#1054#1055#1056' '#1080' '#1055#1083#1072#1085' '#1087#1088#1080#1073#1099#1083#1080':'
             end
-            object ComboBoxOXROPR: TComboBox
+            object dblkcbbwork_id: TDBLookupComboBox
               Left = 153
               Top = 2
-              Width = 413
+              Width = 371
               Height = 21
-              Style = csDropDownList
               Anchors = [akLeft, akTop, akRight]
+              DataField = 'work_id'
+              DropDownRows = 21
+              KeyField = 'work_id'
+              ListField = 'work_name'
+              ListSource = dsObjWorks
               TabOrder = 0
+              OnCloseUp = dblkcbbwork_idCloseUp
             end
           end
           object Panel3: TPanel
             Left = 0
             Top = 100
-            Width = 569
-            Height = 243
+            Width = 530
+            Height = 310
             Align = alClient
             BevelOuter = bvNone
             Caption = 'Panel3'
             ShowCaption = False
             TabOrder = 4
+            ExplicitWidth = 569
             object Splitter2: TSplitter
               Left = 0
-              Top = 238
-              Width = 569
+              Top = 205
+              Width = 530
               Height = 5
               Cursor = crVSplit
               Align = alBottom
               ResizeStyle = rsUpdate
-              ExplicitTop = 0
+              ExplicitLeft = 6
+              ExplicitTop = 169
+              ExplicitWidth = 569
             end
             object Splitter1: TSplitter
               Left = 0
-              Top = 233
-              Width = 569
+              Top = 100
+              Width = 530
               Height = 5
               Cursor = crVSplit
               Align = alBottom
               ResizeStyle = rsUpdate
               ExplicitTop = 0
+              ExplicitWidth = 569
             end
             object PanelChangesAdditions: TPanel
               Left = 0
-              Top = 151
-              Width = 505
-              Height = 58
+              Top = 210
+              Width = 530
+              Height = 100
+              Align = alBottom
               BevelOuter = bvNone
+              Constraints.MinHeight = 20
               TabOrder = 2
+              ExplicitWidth = 569
               object PanelCAHeader: TPanel
                 Left = 0
                 Top = 0
-                Width = 505
+                Width = 530
                 Height = 20
                 Align = alTop
                 BevelOuter = bvNone
@@ -587,12 +711,13 @@
                 ParentBackground = False
                 ParentFont = False
                 TabOrder = 0
+                ExplicitWidth = 569
               end
               object grHistory: TJvDBGrid
                 Left = 0
                 Top = 20
-                Width = 505
-                Height = 38
+                Width = 530
+                Height = 80
                 Align = alClient
                 DataSource = dsHistory
                 Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
@@ -602,6 +727,9 @@
                 TitleFont.Height = -11
                 TitleFont.Name = 'Tahoma'
                 TitleFont.Style = []
+                OnDrawColumnCell = grHistoryDrawColumnCell
+                OnResize = grNCResize
+                ScrollBars = ssNone
                 AutoSizeColumns = True
                 SelectColumnsDialogStrings.Caption = 'Select columns'
                 SelectColumnsDialogStrings.OK = '&OK'
@@ -616,7 +744,7 @@
                     FieldName = 'date_beginer'
                     Title.Alignment = taCenter
                     Title.Caption = #1044#1072#1090#1072' '#1074#1089#1090#1091#1087#1083#1077#1085#1080#1103' '#1074' '#1089#1080#1083#1091
-                    Width = 138
+                    Width = 144
                     Visible = True
                   end
                   item
@@ -624,23 +752,25 @@
                     FieldName = 'prikaz'
                     Title.Alignment = taCenter
                     Title.Caption = #1054#1089#1085#1086#1074#1072#1085#1080#1077
-                    Width = 361
+                    Width = 380
                     Visible = True
                   end>
               end
             end
             object PanelNormСonsumption: TPanel
               Left = 0
-              Top = 8
-              Width = 505
-              Height = 65
+              Top = 0
+              Width = 530
+              Height = 100
+              Align = alClient
               BevelOuter = bvNone
+              Constraints.MinHeight = 20
               TabOrder = 0
-              OnResize = PanelNormСonsumptionResize
+              ExplicitWidth = 569
               object PanelNCHeader: TPanel
                 Left = 0
                 Top = 0
-                Width = 505
+                Width = 530
                 Height = 20
                 Align = alTop
                 BevelOuter = bvNone
@@ -654,35 +784,93 @@
                 ParentBackground = False
                 ParentFont = False
                 TabOrder = 0
+                ExplicitWidth = 569
               end
-              object StringGridNC: TStringGrid
+              object grNC: TJvDBGrid
                 Left = 0
                 Top = 20
-                Width = 505
-                Height = 45
+                Width = 530
+                Height = 80
                 Align = alClient
-                DefaultRowHeight = 20
-                DefaultDrawing = False
-                FixedCols = 0
-                RowCount = 2
-                Options = [goFixedVertLine, goVertLine, goHorzLine, goRowSelect, goThumbTracking]
-                ScrollBars = ssVertical
+                DataSource = dsNC
+                Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
+                PopupMenu = pmNC
+                ReadOnly = True
                 TabOrder = 1
-                OnDrawCell = StringGridNCDrawCell
+                TitleFont.Charset = DEFAULT_CHARSET
+                TitleFont.Color = clWindowText
+                TitleFont.Height = -11
+                TitleFont.Name = 'Tahoma'
+                TitleFont.Style = []
+                OnDrawColumnCell = grNCDrawColumnCell
+                AutoAppend = False
+                OnResize = grNCResize
+                ScrollBars = ssNone
+                AutoSizeColumns = True
+                AutoSizeColumnIndex = 1
+                SelectColumnsDialogStrings.Caption = 'Select columns'
+                SelectColumnsDialogStrings.OK = '&OK'
+                SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+                CanDelete = False
+                EditControls = <>
+                RowsHeight = 17
+                TitleRowHeight = 17
+                WordWrap = True
+                WordWrapAllFields = True
+                OnCanEditCell = grNCCanEditCell
+                Columns = <
+                  item
+                    Alignment = taCenter
+                    Expanded = False
+                    FieldName = 'OBJ_CODE'
+                    Title.Alignment = taCenter
+                    Title.Caption = #1050#1086#1076
+                    Width = 70
+                    Visible = True
+                  end
+                  item
+                    Expanded = False
+                    FieldName = 'OBJ_NAME'
+                    Title.Alignment = taCenter
+                    Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+                    Width = 312
+                    Visible = True
+                  end
+                  item
+                    Alignment = taRightJustify
+                    Expanded = False
+                    FieldName = 'OBJ_VALUE'
+                    ReadOnly = False
+                    Title.Alignment = taCenter
+                    Title.Caption = #1053#1086#1088'. '#1088#1072#1089'.'
+                    Width = 70
+                    Visible = True
+                  end
+                  item
+                    Expanded = False
+                    FieldName = 'UNIT_NAME'
+                    Title.Alignment = taCenter
+                    Title.Caption = #1045#1076'. '#1080#1079#1084'.'
+                    Width = 70
+                    Visible = True
+                  end>
               end
             end
             object PanelStructureWorks: TPanel
-              Left = 1
-              Top = 79
-              Width = 505
-              Height = 66
+              Left = 0
+              Top = 105
+              Width = 530
+              Height = 100
+              Align = alBottom
               BevelOuter = bvNone
+              Constraints.MinHeight = 20
               ParentBackground = False
               TabOrder = 1
+              ExplicitWidth = 569
               object PanelSWHeader: TPanel
                 Left = 0
                 Top = 0
-                Width = 505
+                Width = 530
                 Height = 20
                 Align = alTop
                 BevelOuter = bvNone
@@ -696,12 +884,13 @@
                 ParentBackground = False
                 ParentFont = False
                 TabOrder = 0
+                ExplicitWidth = 569
               end
               object grSostav: TJvDBGrid
                 Left = 0
                 Top = 20
-                Width = 505
-                Height = 46
+                Width = 530
+                Height = 80
                 Align = alClient
                 DataSource = dsSW
                 Options = [dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
@@ -712,7 +901,10 @@
                 TitleFont.Height = -11
                 TitleFont.Name = 'Tahoma'
                 TitleFont.Style = []
+                OnDrawColumnCell = grRatesDrawColumnCell
                 AutoAppend = False
+                OnResize = grNCResize
+                ScrollBars = ssNone
                 AutoSizeColumns = True
                 SelectColumnsDialogStrings.Caption = 'Select columns'
                 SelectColumnsDialogStrings.OK = '&OK'
@@ -729,7 +921,7 @@
                     FieldName = 'FULL_NAME'
                     Title.Alignment = taCenter
                     Title.Caption = #1057#1086#1089#1090#1072#1074' '#1088#1072#1073#1086#1090
-                    Width = 500
+                    Width = 525
                     Visible = True
                   end>
               end
@@ -741,61 +933,142 @@
   end
   inline FrameStatusBar: TFrameStatusBar
     Left = 0
-    Top = 444
+    Top = 511
     Width = 754
     Height = 19
     Align = alBottom
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 1
-    ExplicitTop = 444
+    ExplicitTop = 511
     ExplicitWidth = 754
     inherited StatusBar: TStatusBar
       Width = 754
       ExplicitWidth = 754
     end
   end
-  object pmRates: TPopupMenu
-    Left = 24
-    Top = 360
-    object FindToRates: TMenuItem
-      Caption = #1053#1072#1081#1090#1080' '#1074' '#1089#1073#1086#1088#1085#1080#1082#1077
-    end
-  end
-  object ADOQueryNC: TFDQuery
+  object qrNC: TFDQuery
+    BeforeOpen = qrNCBeforeOpen
+    AfterOpen = qrNCAfterOpen
+    BeforePost = qrNCBeforePost
+    CachedUpdates = True
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 28
-    Top = 168
+    FetchOptions.AssignedValues = [evItems]
+    FetchOptions.Items = [fiBlobs, fiDetails]
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.UpdateNonBaseFields = True
+    UpdateOptions.CountUpdatedRecords = False
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      
+        'SELECT 1 AS OBJ_TYPE, 1 AS FL_PART_NAME, NULL AS OBJ_CODE, "'#1052#1072#1096#1080 +
+        #1085#1099' '#1080' '#1084#1077#1093#1072#1085#1080#1079#1084#1099'" AS OBJ_NAME, NULL AS OBJ_VALUE, NULL AS UNIT_NAM' +
+        'E, NULL AS ID'
+      'UNION ALL'
+      
+        'SELECT 1 AS OBJ_TYPE, 0 AS FL_PART_NAME, mech_code AS OBJ_CODE, ' +
+        'mech_name AS OBJ_NAME, norm_ras AS OBJ_VALUE, unit_name AS UNIT_' +
+        'NAME, mechanizmnorm.ID '
+      'FROM mechanizm, mechanizmnorm, units'
+      
+        'WHERE mechanizm.unit_id = units.unit_id and mechanizm.mechanizm_' +
+        'id = mechanizmnorm.mechanizm_id and mechanizmnorm.normativ_id = ' +
+        ':IdNormativ'
+      'UNION ALL'
+      
+        'SELECT 2 AS OBJ_TYPE, 1 AS FL_PART_NAME, NULL AS OBJ_CODE, "'#1052#1072#1090#1077 +
+        #1088#1080#1072#1083#1099' '#1091#1095#1090#1105#1085#1085#1099#1077'" AS OBJ_NAME, NULL AS OBJ_VALUE, NULL AS UNIT_NAM' +
+        'E, NULL AS ID'
+      'UNION ALL'
+      
+        'SELECT 2 AS OBJ_TYPE, 0 AS FL_PART_NAME, mat_code AS OBJ_CODE, m' +
+        'at_name AS OBJ_NAME, norm_ras  AS OBJ_VALUE, unit_name AS UNIT_N' +
+        'AME, materialnorm.ID '
+      'FROM materialnorm, material, units'
+      
+        'WHERE materialnorm.material_id = material.material_id and materi' +
+        'al.unit_id = units.unit_id and mat_code LIKE "'#1057'%" and materialno' +
+        'rm.normativ_id = :IdNormativ'
+      'UNION ALL'
+      
+        'SELECT 3 AS OBJ_TYPE, 1 AS FL_PART_NAME, NULL AS OBJ_CODE, "'#1052#1072#1090#1077 +
+        #1088#1080#1072#1083#1099' '#1085#1077#1091#1095#1090#1105#1085#1085#1099#1077'" AS OBJ_NAME, NULL AS OBJ_VALUE, NULL AS UNIT_N' +
+        'AME, NULL AS ID'
+      'UNION ALL'
+      
+        'SELECT 3 AS OBJ_TYPE, 0 AS FL_PART_NAME, mat_code AS OBJ_CODE, m' +
+        'at_name AS OBJ_NAME, norm_ras  AS OBJ_VALUE, unit_name AS UNIT_N' +
+        'AME, materialnorm.ID '
+      'FROM materialnorm, material, units'
+      
+        'WHERE materialnorm.material_id = material.material_id and materi' +
+        'al.unit_id = units.unit_id and mat_code LIKE "'#1055'%" and materialno' +
+        'rm.normativ_id = :IdNormativ'
+      'UNION ALL'
+      
+        'SELECT 4 AS OBJ_TYPE, 1 AS FL_PART_NAME, NULL AS OBJ_CODE, "'#1047#1072#1090#1088 +
+        #1072#1090#1099' '#1090#1088#1091#1076#1072'" AS OBJ_NAME, NULL AS OBJ_VALUE, NULL AS UNIT_NAME, NU' +
+        'LL AS ID'
+      'UNION ALL'
+      
+        'SELECT 4 AS OBJ_TYPE, 0 AS FL_PART_NAME, NULL AS OBJ_CODE, works' +
+        '.work_caption AS OBJ_NAME, normativwork.norma AS OBJ_VALUE, NULL' +
+        ' AS UNIT_NAME, normativwork.ID '
+      'FROM normativwork, works'
+      
+        'WHERE normativwork.work_id = works.work_id and normativwork.norm' +
+        'ativ_id = :IdNormativ'
+      'ORDER BY 1, 2 DESC, 3, 4')
+    Left = 132
+    Top = 240
+    ParamData = <
+      item
+        Name = 'IDNORMATIV'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
   end
   object ADOQuerySW: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 28
-    Top = 216
+    Top = 184
   end
   object ADOQueryTemp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 28
-    Top = 272
+    Top = 232
   end
   object tmrFilter: TTimer
     Enabled = False
     Interval = 200
     OnTimer = tmrFilterTimer
-    Left = 32
+    Left = 24
     Top = 96
   end
   object dsHistory: TDataSource
     DataSet = qrHistory
-    Left = 587
-    Top = 376
+    Left = 171
+    Top = 448
   end
   object qrHistory: TFDQuery
+    AfterOpen = qrHistoryAfterOpen
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -807,8 +1080,8 @@
         'where (NORM_NUM like :NORM_NUM) AND ((`normativg`.`date_end` IS ' +
         'NOT NULL) OR (`normativg`.`date_beginer` IS NOT NULL))'
       'ORDER BY date_beginer DESC, date_end DESC')
-    Left = 556
-    Top = 376
+    Left = 132
+    Top = 448
     ParamData = <
       item
         Name = 'NORM_NUM'
@@ -823,6 +1096,8 @@
     Top = 24
   end
   object qrSW: TFDQuery
+    BeforeOpen = qrSWBeforeOpen
+    AfterOpen = qrSWAfterOpen
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -835,8 +1110,8 @@
       'FROM normativ_directory'
       'WHERE type_directory = 6 AND parent_id=:normativ_directory_id'
       'ORDER BY FIRST_NAME')
-    Left = 489
-    Top = 296
+    Left = 137
+    Top = 336
     ParamData = <
       item
         Name = 'NORMATIV_DIRECTORY_ID'
@@ -845,8 +1120,8 @@
   end
   object dsSW: TDataSource
     DataSet = qrSW
-    Left = 536
-    Top = 296
+    Left = 168
+    Top = 336
   end
   object tmrScroll: TTimer
     Enabled = False
@@ -857,10 +1132,91 @@
   end
   object qrNormativ: TFDQuery
     BeforeOpen = qrNormativBeforeOpen
+    BeforePost = qrNormativBeforePost
+    OnNewRecord = qrNormativNewRecord
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 36
+    UpdateOptions.AssignedValues = [uvCheckReadOnly]
+    UpdateOptions.CheckReadOnly = False
+    Left = 28
     Top = 24
+  end
+  object pmRatesEx: TPopupMenu
+    Left = 28
+    Top = 280
+    object mLjfdbnm1: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      OnClick = mLjfdbnm1Click
+    end
+    object mN1: TMenuItem
+      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      OnClick = mN1Click
+    end
+    object mN2: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = mN2Click
+    end
+  end
+  object pmNC: TPopupMenu
+    OnPopup = pmNCPopup
+    Left = 203
+    Top = 241
+    object mNCAdd2: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      object mN3: TMenuItem
+        Caption = #1042#1089#1077
+        OnClick = mN3Click
+      end
+      object mN4: TMenuItem
+        Caption = '-'
+      end
+      object mN11: TMenuItem
+        Tag = 1
+        Caption = #1057#1088#1077#1076#1085#1080#1081' '#1088#1072#1079#1088#1103#1076' '#1088#1072#1073#1086#1095#1080#1093'-'#1089#1090#1088#1086#1080#1090#1077#1083#1077#1081
+        OnClick = mN31Click
+      end
+      object mN21: TMenuItem
+        Tag = 2
+        Caption = #1047#1072#1090#1088#1072#1090#1099' '#1090#1088#1091#1076#1072' '#1088#1072#1073#1086#1095#1080#1093
+        OnClick = mN31Click
+      end
+      object mN31: TMenuItem
+        Tag = 3
+        Caption = #1047#1072#1090#1088#1072#1090#1099' '#1090#1088#1091#1076#1072' '#1084#1072#1096#1080#1085#1080#1089#1090#1086#1074
+        OnClick = mN31Click
+      end
+    end
+    object mNCAdd: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      OnClick = mNCAddClick
+    end
+    object mNCDel: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = mNCDelClick
+    end
+  end
+  object dsNC: TDataSource
+    DataSet = qrNC
+    Left = 168
+    Top = 240
+  end
+  object qrObjWorks: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    UpdateOptions.AssignedValues = [uvCheckReadOnly]
+    UpdateOptions.CheckReadOnly = False
+    SQL.Strings = (
+      
+        'SELECT work_id, CONCAT(work_id, ". ",  work_name) AS work_name F' +
+        'ROM objworks ORDER BY work_id;')
+    Left = 156
+    Top = 120
+  end
+  object dsObjWorks: TDataSource
+    DataSet = qrObjWorks
+    Left = 200
+    Top = 120
   end
 end

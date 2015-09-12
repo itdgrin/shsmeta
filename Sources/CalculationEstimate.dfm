@@ -342,7 +342,7 @@
     end
     object SplitterBottom: TSplitter
       Left = 0
-      Top = 249
+      Top = 225
       Width = 912
       Height = 5
       Cursor = crVSplit
@@ -2862,7 +2862,7 @@
     end
     object Panel1: TPanel
       Left = 0
-      Top = 225
+      Top = 230
       Width = 912
       Height = 24
       Align = alBottom
@@ -2870,6 +2870,8 @@
       ParentBackground = False
       TabOrder = 1
       OnResize = Panel1Resize
+      ExplicitLeft = 6
+      ExplicitTop = 231
       object lbl1: TLabel
         AlignWithMargins = True
         Left = 334
@@ -2929,7 +2931,7 @@
         AlignWithMargins = True
         Left = 733
         Top = 2
-        Width = 114
+        Width = 172
         Height = 20
         Cursor = crHandPoint
         Margins.Left = 0
@@ -2948,7 +2950,6 @@
         ReadOnly = True
         TabOrder = 3
         OnClick = nSelectWinterPriseClick
-        ExplicitHeight = 21
       end
       object dblkcbbOXROPR: TDBLookupComboBox
         AlignWithMargins = True
@@ -3507,6 +3508,7 @@
     end
     object PMChangeTranspProc: TMenuItem
       Caption = #1048#1079#1084#1077#1085#1080#1090#1100' % '#1087#1088#1072#1085#1089#1087#1086#1088#1090#1072
+      Visible = False
     end
     object N9: TMenuItem
       Caption = '-'
@@ -3699,7 +3701,7 @@
       OnClick = PopupMenuCoefDeleteSetClick
     end
     object PopupMenuCoefOrders: TMenuItem
-      Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1099' '#1087#1086' '#1087#1088#1080#1082#1072#1079#1072#1084
+      Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090' '#1082' '#1047#1055' '#1087#1086' '#1087#1086#1089#1090#1072#1085#1086#1074#1083#1077#1085#1080#1102' '#8470'5'
       Checked = True
       Visible = False
       OnClick = PopupMenuCoefOrdersClick
@@ -5322,6 +5324,9 @@
     object qrRatesExCONS_REPLASED: TIntegerField
       FieldName = 'CONS_REPLASED'
     end
+    object qrRatesExCOEF_ORDERS: TIntegerField
+      FieldName = 'COEF_ORDERS'
+    end
   end
   object dsRatesEx: TDataSource
     DataSet = qrRatesEx
@@ -5398,11 +5403,78 @@
     Top = 120
     object mN14: TMenuItem
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1086#1073#1098#1077#1082#1090#1072
-      OnClick = Label1Click
+      OnClick = mN14Click
     end
     object mN15: TMenuItem
       Caption = #1042#1099#1073#1086#1088' '#1086#1073#1098#1077#1082#1090#1072' '#1076#1083#1103' '#1082#1086#1087#1080#1088#1086#1074#1072#1085#1080#1103' '#1076#1072#1085#1085#1099#1093
       OnClick = LabelObjectClick
     end
+  end
+  object qrObjects: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    SQL.Strings = (
+      'SELECT DISTINCT obj_id        AS "IdObject",'
+      '       objcards.fin_id        AS "IdIstFin",'
+      '       objcards.cust_id       AS "IdClient",'
+      '       objcards.general_id    AS "IdContractor",'
+      '       objcards.cat_id        AS "IdCategory",'
+      '       objcards.region_id     AS "IdRegion",'
+      '       objcards.base_norm_id  AS "IdBasePrice",'
+      '       objcards.stroj_id      AS "IdOXROPR",'
+      '       objcards.mais_id       AS "IdMAIS",'
+      '       num                    AS "NumberObject",'
+      '       num_dog                AS "NumberContract",'
+      '       date_dog               AS "DateContract",'
+      '       agr_list               AS "ListAgreements",'
+      '       objcards.full_name     AS "FullName",'
+      '       objcards.name          AS "Name",'
+      '       beg_stroj              AS "BeginConstruction",'
+      '       srok_stroj             AS "TermConstruction",'
+      '       ('
+      '           SELECT DISTINCT NAME'
+      '           FROM   istfin'
+      '           WHERE  id = IdIstFin'
+      '       )                      AS "NameIstFin",'
+      '       ('
+      '           SELECT DISTINCT name'
+      '           FROM   clients'
+      '           WHERE  client_id = IdClient'
+      '       )                      AS "NameClient",'
+      '       ('
+      '           SELECT DISTINCT name'
+      '           FROM   clients'
+      '           WHERE  client_id = IdContractor'
+      '       )                      AS "NameContractor",'
+      '       objcategory.cat_name   AS "NameCategory",'
+      '       state_nds              AS "VAT",'
+      '       regions.region_name    AS "NameRegion",'
+      '       baseprices.base_name   AS "BasePrice",'
+      '       objstroj.name          AS "OXROPR",'
+      '       encrypt                AS "CodeObject",'
+      '       calc_econom            AS "CalculationEconom",'
+      '       obj_id,'
+      '       objcards.DEL_FLAG'
+      'FROM   objcards,'
+      '       istfin,'
+      '       objcategory,'
+      '       regions,'
+      '       baseprices,'
+      '       objstroj'
+      'WHERE  objcards.cat_id = objcategory.cat_id'
+      '       AND objcards.region_id = regions.region_id'
+      '       AND objcards.base_norm_id = baseprices.base_id'
+      '       AND objcards.stroj_id = objstroj.stroj_id'
+      '       AND obj_id=:in_id')
+    Left = 57
+    Top = 88
+    ParamData = <
+      item
+        Name = 'IN_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
   end
 end

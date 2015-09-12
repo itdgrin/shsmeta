@@ -67,6 +67,7 @@ end;
 function SelectFromSpr(AType: Integer): Variant;
 var fSprSelection: TfSprSelection;
 begin
+  Result := null;
   if not AType in [2,3,4] then
     raise Exception.Create('Неизвестный тип справочника');
   fSprSelection := TfSprSelection.Create(AType);

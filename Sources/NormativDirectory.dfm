@@ -19,7 +19,7 @@ object fNormativDirectory: TfNormativDirectory
   TextHeight = 13
   object spl1: TSplitter
     Left = 0
-    Top = 365
+    Top = 327
     Width = 646
     Height = 3
     Cursor = crVSplit
@@ -31,7 +31,7 @@ object fNormativDirectory: TfNormativDirectory
     Left = 0
     Top = 27
     Width = 646
-    Height = 338
+    Height = 300
     DataSource = dsMain
     MasterField = 'normativ_directory_id'
     DetailField = 'parent_id'
@@ -56,10 +56,11 @@ object fNormativDirectory: TfNormativDirectory
     ParentFont = False
     RowSelect = True
     Mirror = False
+    ExplicitHeight = 338
   end
   object grSostav: TJvDBGrid
     Left = 0
-    Top = 368
+    Top = 330
     Width = 646
     Height = 121
     Align = alBottom
@@ -150,7 +151,40 @@ object fNormativDirectory: TfNormativDirectory
       OnClick = btnSearchDownClick
     end
   end
+  object pnl2: TPanel
+    Left = 0
+    Top = 451
+    Width = 646
+    Height = 38
+    Align = alBottom
+    TabOrder = 3
+    ExplicitTop = 450
+    DesignSize = (
+      646
+      38)
+    object btn1: TBitBtn
+      Left = 567
+      Top = 6
+      Width = 75
+      Height = 25
+      Anchors = [akRight, akBottom]
+      Caption = #1054#1090#1084#1077#1085#1072
+      TabOrder = 1
+      OnClick = btn1Click
+    end
+    object btn2: TBitBtn
+      Left = 486
+      Top = 6
+      Width = 75
+      Height = 25
+      Anchors = [akRight, akBottom]
+      Caption = #1042#1099#1073#1088#1072#1090#1100
+      ModalResult = 1
+      TabOrder = 0
+    end
+  end
   object qrMain: TFDQuery
+    AfterScroll = qrMainAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -159,7 +193,9 @@ object fNormativDirectory: TfNormativDirectory
     SQL.Strings = (
       'SELECT "'#1042#1089#1077' '#1089#1073#1086#1088#1085#1080#1082#1080'" AS FULL_NAME,'
       '0 AS parent_id, NULL AS normativ_directory_id, "" AS tree_data,'
-      '"0. '#1042#1089#1077' '#1089#1073#1086#1088#1085#1080#1082#1080'" AS FIRST_NAME, "" AS SECOND_NAME'
+      
+        '"0. '#1042#1089#1077' '#1089#1073#1086#1088#1085#1080#1082#1080'" AS FIRST_NAME, "" AS SECOND_NAME, NULL AS type' +
+        '_directory'
       'UNION ALL'
       
         'SELECT CONCAT(IFNULL(FIRST_NAME, ""), IF(SECOND_NAME IS NULL, ""' +
@@ -167,7 +203,7 @@ object fNormativDirectory: TfNormativDirectory
       
         'IFNULL(parent_id, 0) AS parent_id, normativ_directory_id, tree_d' +
         'ata,'
-      'FIRST_NAME, SECOND_NAME'
+      'FIRST_NAME, SECOND_NAME, type_directory'
       'FROM normativ_directory'
       'WHERE type_directory <> 6'
       

@@ -142,7 +142,13 @@ begin
     if Grid.SortMarker = smDown then
       s := ' DESC';
     if Grid.SortedField <> '' then
-      Query.SQL[Query.SQL.Count - 1] := 'ORDER BY ' + Grid.SortedField + s
+    begin
+      // Если сортируем некий код, то буквенные значения всегда выше в списке
+      if Grid.SortedField = 'CODE' then
+        Query.SQL[Query.SQL.Count - 1] := 'ORDER BY CODE+1,' + Grid.SortedField + s
+      else
+        Query.SQL[Query.SQL.Count - 1] := 'ORDER BY ' + Grid.SortedField + s
+    end
     else
       Query.SQL[Query.SQL.Count - 1] := 'ORDER BY 1';
     Query.Active := True;

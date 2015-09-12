@@ -224,6 +224,10 @@ type
     Footer: Variant;
     IDEstimate: Integer;
     flLoaded: Boolean;
+
+    FOldGridProc: TWndMethod;
+    procedure GridProc(var Message: TMessage);
+
     procedure CalcFooter;
     function CanEditField(Field: TField): Boolean;
   public
@@ -359,7 +363,7 @@ function TfCalcResource.CanEditField(Field: TField): Boolean;
 begin
   Result := False;
 
-  if pnlCalculationYesNo.Tag = 0 then
+  if (pnlCalculationYesNo.Tag = 0) or (not flLoaded) then
     Exit;
 
   case pgc.ActivePageIndex of
@@ -442,6 +446,8 @@ end;
 
 procedure TfCalcResource.FormCreate(Sender: TObject);
 begin
+  FOldGridProc := grMaterial.WindowProc;
+  grMaterial.WindowProc := GridProc;
   LoadDBGridSettings(grMaterial);
   LoadDBGridSettings(grMaterialBott);
   LoadDBGridSettings(grMech);
@@ -664,6 +670,45 @@ begin
           (Sender AS TJvDBGrid).DataSource.DataSet.CheckBrowseMode;
       end;
   end;
+end;
+
+procedure TfCalcResource.GridProc(var Message: TMessage);
+begin
+  // // Вообще отключить реакцию
+  // case Message.Msg of
+  // WM_MOUSEWHEEL:
+  // begin
+  // Message.Result := 0;
+  // Exit;
+  // end;
+  // end;
+  // FOldGridProc(Message);
+
+  // Для более красивого скролла в мультиселекте
+  case Message.Msg of
+    WM_MOUSEWHEEL:
+      with TWMMouseWheel(Message) do
+      begin
+        grMaterial.DataSource.DataSet.DisableControls;
+        try
+          if grMaterial.DataSource.DataSet.Active then
+            grMaterial.DataSource.DataSet.MoveBy(-WheelDelta div 120);
+          with grMaterial.SelectedRows do
+          begin
+            if Count < 2 then
+            begin
+              Clear;
+              CurrentRowSelected := True;
+            end;
+          end;
+          Message.Result := 0;
+          Exit;
+        finally
+          grMaterial.DataSource.DataSet.EnableControls;
+        end;
+      end;
+  end;
+  FOldGridProc(Message);
 end;
 
 procedure TfCalcResource.grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
@@ -956,6 +1001,7 @@ begin
       FreeAndNil(fTrPersSelect);
     end;
   end;
+
   Script := TStringList.Create;
   grMaterial.DataSource.DataSet.DisableControls;
   qrMaterialDetail.DisableControls;
@@ -968,7 +1014,8 @@ begin
     begin
       if grMaterial.SelectedRows.IndexOf(grMaterial.SelectedRows.Items[X]) > -1 then
       begin
-        grMaterial.DataSource.DataSet.Bookmark := grMaterial.SelectedRows.Items[X];
+        // grMaterial.DataSource.DataSet.Bookmark := grMaterial.SelectedRows.Items[X];
+        grMaterial.DataSource.DataSet.GotoBookmark(Pointer(grMaterial.SelectedRows.Items[X]));
         qrMaterialDetail.Active := False;
         qrMaterialDetail.Active := True;
         qrMaterialDetail.First;
@@ -1229,6 +1276,7 @@ begin
         mRestore.Visible := qrMaterialData.FieldByName('DELETED').AsInteger = 1;
         mReplace.Visible := True;
         mPROC_TRANSP.Visible := True;
+        //grMaterial.SelectedRows.CurrentRowSelected := True;
       end;
     // Расчет механизмов
     2:
@@ -1567,6 +1615,8 @@ end;
 procedure TfCalcResource.qrMaterialDataCalcFields(DataSet: TDataSet);
 begin
   qrMaterialDataNUMPP.Value := qrMaterialData.RecNo;
+  if qrMaterialDataNUMPP.Value = 0 then
+    qrMaterialDataNUMPP.Value := 1;
 end;
 
 procedure TfCalcResource.qrMaterialDataCOASTChange(Sender: TField);

@@ -275,28 +275,29 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       end
       item
         Expanded = False
+        FieldName = 'SOC_STRAH'
         Title.Caption = #1057#1086#1094#1089#1090#1088#1072#1093
         Visible = True
       end
       item
         Expanded = False
         Title.Caption = #1047#1077#1084#1077#1083#1100#1085#1099#1081' '#1085#1072#1083#1086#1075
-        Visible = True
+        Visible = False
       end
       item
         Expanded = False
         Title.Caption = #1057#1083#1091#1078#1073#1072' '#1074#1077#1076#1086#1084#1089#1090#1074#1077#1085#1085#1086#1075#1086' '#1082#1086#1085#1090#1088#1086#1083#1103
-        Visible = True
+        Visible = False
       end
       item
         Expanded = False
         Title.Caption = #1053#1044#1057
-        Visible = True
+        Visible = False
       end
       item
         Expanded = False
         Title.Caption = #1053#1072#1083#1086#1075' '#1086#1090' '#1074#1099#1088#1091#1095#1082#1080
-        Visible = True
+        Visible = False
       end>
   end
   object qrData: TFDQuery
@@ -359,6 +360,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  AVG(IFNULL(d.NormaAVGF, d.NormaAVG)) AS NormaAVG,'
       '  SUM(IFNULL(d.PR_352F, d.PR_352)) AS PR_352,'
       '  SUM(IFNULL(d.TRUD_ZIMF, d.TRUD_ZIM)) AS TRUD_ZIM,'
+      '  SUM(IFNULL(d.SOC_STRAHF, d.SOC_STRAH)) AS SOC_STRAH,'
       ''
       '  SUM(IFNULL(d.ZP, 0)) AS ZPF,'
       '  SUM(IFNULL(d.EMiM, 0)) AS EMiMF,'
@@ -379,7 +381,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  SUM(IFNULL(d.DUMP_COUNT, 0)) AS DUMP_COUNTF,'
       '  SUM(IFNULL(d.TEMP_RET, 0)) AS TEMP_RETF,'
       '  SUM(IFNULL(d.PR_352, 0)) AS PR_352F,'
-      '  SUM(IFNULL(d.TRUD_ZIM, 0)) AS TRUD_ZIMF'
+      '  SUM(IFNULL(d.TRUD_ZIM, 0)) AS TRUD_ZIMF,'
+      '  SUM(IFNULL(d.SOC_STRAH, 0)) AS SOC_STRAHF'
       'FROM typesm, objcards o, smetasourcedata s'
       'LEFT JOIN summary_calculation d ON d.id_estimate IN'
       '  (SELECT SM_ID'
@@ -499,7 +502,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  TEMP_RETF = :TEMP_RET,'
       '  NormaAVGF = :NormaAVG,'
       '  PR_352F = :PR_352,'
-      '  TRUD_ZIMF = :TRUD_ZIM '
+      '  TRUD_ZIMF = :TRUD_ZIM, '
+      '  SOC_STRAHF = :SOC_STRAH'
       
         'WHERE   id_estimate = :id_estimate and IFNULL(id_act, 0) = :id_a' +
         'ct;')

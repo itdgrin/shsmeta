@@ -11,6 +11,7 @@ object fSprSelection: TfSprSelection
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   PixelsPerInch = 96
   TextHeight = 13
   object Panel4: TPanel
@@ -30,8 +31,6 @@ object fSprSelection: TfSprSelection
       Caption = #1042#1099#1073#1088#1072#1090#1100
       TabOrder = 0
       OnClick = btnSelectClick
-      ExplicitLeft = 490
-      ExplicitTop = 12
     end
     object btnCancel: TButton
       AlignWithMargins = True
@@ -44,7 +43,6 @@ object fSprSelection: TfSprSelection
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 1
       OnClick = btnCancelClick
-      ExplicitLeft = 666
     end
   end
 end

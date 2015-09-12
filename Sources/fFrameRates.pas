@@ -40,8 +40,6 @@ type
     EditRate: TEdit;
     EditCollection: TEdit;
     LabelSbornik: TLabel;
-    pmRates: TPopupMenu;
-    FindToRates: TMenuItem;
     Panel1: TPanel;
     PanelHorizontal1: TPanel;
     LabelJustification: TLabel;
@@ -57,7 +55,6 @@ type
     ImageSplitter2: TImage;
     Panel2: TPanel;
     LabelOXROPR: TLabel;
-    ComboBoxOXROPR: TComboBox;
     LabelWinterPrice: TLabel;
     EditWinterPrice: TEdit;
     Panel3: TPanel;
@@ -65,12 +62,11 @@ type
     PanelCAHeader: TPanel;
     PanelNormСonsumption: TPanel;
     PanelNCHeader: TPanel;
-    StringGridNC: TStringGrid;
     PanelStructureWorks: TPanel;
     PanelSWHeader: TPanel;
     Splitter2: TSplitter;
     Splitter1: TSplitter;
-    ADOQueryNC: TFDQuery;
+    qrNC: TFDQuery;
     ADOQuerySW: TFDQuery;
     ADOQueryTemp: TFDQuery;
     tmrFilter: TTimer;
@@ -87,46 +83,56 @@ type
     dbmmoCaptionNormative: TDBMemo;
     dbedtUnit: TDBEdit;
     pnlNaviator: TPanel;
-    btn1: TSpeedButton;
-    btn2: TSpeedButton;
+    btnNext: TSpeedButton;
+    btnPrev: TSpeedButton;
     qrNormativ: TFDQuery;
     rb1: TRadioButton;
     rb2: TRadioButton;
+    pmRatesEx: TPopupMenu;
+    mLjfdbnm1: TMenuItem;
+    mN1: TMenuItem;
+    mN2: TMenuItem;
+    pmNC: TPopupMenu;
+    mNCAdd: TMenuItem;
+    mNCDel: TMenuItem;
+    cbbType: TComboBox;
+    btnSelectWinterPrice: TSpeedButton;
+    grNC: TJvDBGrid;
+    dsNC: TDataSource;
+    btnSave: TBitBtn;
+    btnCancel: TBitBtn;
+    mNCAdd2: TMenuItem;
+    mN11: TMenuItem;
+    mN21: TMenuItem;
+    mN31: TMenuItem;
+    mN3: TMenuItem;
+    mN4: TMenuItem;
+    btn1: TSpeedButton;
+    qrObjWorks: TFDQuery;
+    dsObjWorks: TDataSource;
+    dblkcbbwork_id: TDBLookupComboBox;
 
     procedure FrameResize(Sender: TObject);
-
-    procedure SettingTable;
     procedure ReceivingSearch(vStr: string);
-
     procedure StringGridNCClick(Sender: TObject);
-    procedure StringGridNCDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
     procedure StringGridNCEnter(Sender: TObject);
     procedure StringGridNCExit(Sender: TObject);
     procedure StringGridNCKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure StringGridNCMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure StringGridNCMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-
     procedure StringGridSWDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
     procedure VSTKeyPress(Sender: TObject; var Key: Char);
-
-    procedure PanelNormСonsumptionResize(Sender: TObject);
-    procedure PanelCenterClientResize(Sender: TObject);
-    procedure PanelHorizontal2Resize(Sender: TObject);
-
     procedure SplitterLeftMoved(Sender: TObject);
     procedure SplitterRightMoved(Sender: TObject);
     procedure Splitter1Moved(Sender: TObject);
     procedure Splitter2Moved(Sender: TObject);
     procedure SplitterTopMoved(Sender: TObject);
-
     procedure LabelSbornikClick(Sender: TObject);
     procedure LabelSbornikMouseEnter(Sender: TObject);
     procedure LabelSbornikMouseLeave(Sender: TObject);
-
     procedure EditSearchNormativeKeyPress(Sender: TObject; var Key: Char);
     procedure EditRateEnter(Sender: TObject);
     procedure EditSearchNormativeEnter(Sender: TObject);
-
     procedure SpeedButtonShowHideRightPanelClick(Sender: TObject);
     procedure ShowHidePanels(Sender: TObject);
     procedure Sbornik(const normativ_directory_id: Integer);
@@ -143,19 +149,45 @@ type
     procedure tmrScrollTimer(Sender: TObject);
     procedure grRatesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
-    procedure btn1Click(Sender: TObject);
-    procedure btn2Click(Sender: TObject);
+    procedure btnNextClick(Sender: TObject);
+    procedure btnPrevClick(Sender: TObject);
     procedure qrNormativBeforeOpen(DataSet: TDataSet);
-
+    procedure grNCDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
+    procedure qrNCBeforeOpen(DataSet: TDataSet);
+    procedure grNCResize(Sender: TObject);
+    procedure qrNCAfterOpen(DataSet: TDataSet);
+    procedure pnlNaviatorResize(Sender: TObject);
+    procedure qrSWBeforeOpen(DataSet: TDataSet);
+    procedure qrSWAfterOpen(DataSet: TDataSet);
+    procedure qrHistoryAfterOpen(DataSet: TDataSet);
+    procedure mLjfdbnm1Click(Sender: TObject);
+    procedure qrNormativNewRecord(DataSet: TDataSet);
+    procedure cbbTypeChange(Sender: TObject);
+    procedure grHistoryDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
+    procedure mNCAddClick(Sender: TObject);
+    procedure mNCDelClick(Sender: TObject);
+    procedure qrNormativBeforePost(DataSet: TDataSet);
+    procedure pmNCPopup(Sender: TObject);
+    procedure grNCCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
+    procedure qrNCBeforePost(DataSet: TDataSet);
+    procedure mN31Click(Sender: TObject);
+    procedure mN3Click(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
+    procedure mN1Click(Sender: TObject);
+    procedure mN2Click(Sender: TObject);
+    procedure btn1Click(Sender: TObject);
+    procedure dblkcbbwork_idCloseUp(Sender: TObject);
+    procedure btnSelectWinterPriceClick(Sender: TObject);
   private
     StrQuery: String; // Для формирования строки запроса к БД
-
+    flNewRecord: Boolean; // Признак новой записи
     { StrQuickSearch: String[20]; }
     PageNumber, PageRowCount: Integer; // номер текущей страницы / кол-во записей на странице
     DataBase: Char; // Справочные или собственные данные
     AllowAddition: Boolean; // Разрешено/запрещено добавлять записи из фрейма
-
-    Group1, Group2, Group3, Group4: Integer;
   public
     procedure ReceivingAll; override;
     constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean); reintroduce;
@@ -164,7 +196,8 @@ type
 
 implementation
 
-uses Main, DataModule, DrawingTables, CalculationEstimate, Tools, NormativDirectory;
+uses Main, DataModule, DrawingTables, CalculationEstimate, Tools, NormativDirectory, SprSelection,
+  WinterPrice;
 
 {$R *.dfm}
 
@@ -179,6 +212,30 @@ begin
 end;
 
 procedure TFrameRates.btn1Click(Sender: TObject);
+begin
+  if (not Assigned(fNormativDirectory)) then
+    fNormativDirectory := fNormativDirectory.Create(nil);
+  fNormativDirectory.skipReload := true;
+  fNormativDirectory.Kind := kdSelect;
+  if qrNormativ.FieldByName('normativ_directory_id').AsInteger <> 0 then
+    fNormativDirectory.tvMain.SelectNode(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
+      .Expand(False);
+  if fNormativDirectory.ShowModal = mrOk then
+  begin
+    qrNormativ.Edit;
+    qrNormativ.FieldByName('normativ_directory_id').Value := fNormativDirectory.qrMain.FieldByName
+      ('normativ_directory_id').Value;
+    Sbornik(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
+  end;
+end;
+
+procedure TFrameRates.btnCancelClick(Sender: TObject);
+begin
+  qrNormativ.Cancel;
+  SpeedButtonShowHideRightPanel.Click;
+end;
+
+procedure TFrameRates.btnNextClick(Sender: TObject);
 var
   e: TDataSetNotifyEvent;
 begin
@@ -193,7 +250,7 @@ begin
   tmrScroll.Enabled := true;
 end;
 
-procedure TFrameRates.btn2Click(Sender: TObject);
+procedure TFrameRates.btnPrevClick(Sender: TObject);
 var
   e: TDataSetNotifyEvent;
 begin
@@ -208,6 +265,34 @@ begin
   tmrScroll.Enabled := true;
 end;
 
+procedure TFrameRates.btnSaveClick(Sender: TObject);
+begin
+  qrNormativ.Post;
+  SpeedButtonShowHideRightPanel.Click;
+end;
+
+procedure TFrameRates.btnSelectWinterPriceClick(Sender: TObject);
+begin
+  if (not Assigned(fWinterPrice)) then
+    fWinterPrice := TfWinterPrice.Create(Self);
+  fWinterPrice.Kind := kdSelect;
+  if not VarIsNull(qrNormativ.FieldByName('ZNORMATIVS_ID').Value) then
+    fWinterPrice.LicateID := qrNormativ.FieldByName('ZNORMATIVS_ID').Value;
+  if (fWinterPrice.ShowModal = mrOk) and (fWinterPrice.OutValue <> 0) then
+  begin
+    qrNormativ.Edit;
+    qrNormativ.FieldByName('ZNORMATIVS_ID').Value := fWinterPrice.OutValue;
+    // Определяем зимнее удорожание
+    GetWinterPrice;
+  end;
+end;
+
+procedure TFrameRates.cbbTypeChange(Sender: TObject);
+begin
+  qrNormativ.Edit;
+  qrNormativ.FieldByName('NORM_TYPE').AsInteger := cbbType.ItemIndex;
+end;
+
 procedure TFrameRates.chk1Click(Sender: TObject);
 begin
   ReceivingSearch('');
@@ -216,6 +301,34 @@ end;
 constructor TFrameRates.Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean);
 begin
   inherited Create(AOwner);
+
+  flNewRecord := False;
+  // Если собственная база
+  if vDataBase = '1' then
+  begin
+    grRates.PopupMenu := pmRatesEx;
+    grNC.PopupMenu := pmNC;
+    CheckBoxChangesAdditions.Checked := False;
+    CheckBoxChangesAdditions.Visible := False;
+    dbedtNumberNormative.Color := clWindow;
+    dbedtUnit.Color := clWindow;
+  end
+  else
+  // База НРР
+  begin
+    grRates.PopupMenu := nil;
+    grNC.PopupMenu := nil;
+    grSostav.PopupMenu := nil;
+  end;
+
+  btnSelectWinterPrice.Visible := vDataBase = '1';
+  btn1.Visible := vDataBase = '1';
+  cbbType.Visible := vDataBase = '1';
+  dbedtNumberNormative.ReadOnly := not(vDataBase = '1');
+  dbedtUnit.ReadOnly := not(vDataBase = '1');
+  dbmmoCaptionNormative.ReadOnly := not(vDataBase = '1');
+  grNC.ReadOnly := not(vDataBase = '1');
+
   qrNormativ.AfterScroll := qrNormativAfterScroll;
   // ----------------------------------------
 
@@ -224,12 +337,8 @@ begin
 
   // ----------------------------------------
   LoadDBGridSettings(grHistory);
-  SettingTable;
-
-  Group1 := 0;
-  Group2 := 0;
-  Group3 := 0;
-  Group4 := 0;
+  LoadDBGridSettings(grRates);
+  LoadDBGridSettings(grNC);
 
   PanelChangesAdditions.Visible := False;
 
@@ -268,25 +377,18 @@ begin
   PanelRight.Visible := False;
   PanelRight.Constraints.MinWidth := 100;
 
-  with ADOQueryTemp do
-  begin
-    Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT work_id, work_name FROM objworks ORDER BY work_id;');
-    Active := true;
-
-    First;
-
-    ComboBoxOXROPR.Items.Clear;
-
-    while not Eof do
-    begin
-      ComboBoxOXROPR.Items.Add(Fields[0].AsString + '. ' + Fields[1].AsString);
-      Next;
-    end;
-  end;
+  CloseOpen(qrObjWorks);
 
   ShowHidePanels(nil);
+end;
+
+procedure TFrameRates.dblkcbbwork_idCloseUp(Sender: TObject);
+begin
+  if DataBase = '1' then
+  begin
+    qrNormativ.Edit;
+    qrNormativ.FieldByName('work_id').Value := dblkcbbwork_id.KeyValue;
+  end;
 end;
 
 procedure TFrameRates.FrameResize(Sender: TObject);
@@ -315,8 +417,9 @@ begin
     fNormativDirectory := fNormativDirectory.Create(nil);
   fNormativDirectory.skipReload := true;
   fNormativDirectory.Show;
-  fNormativDirectory.tvMain.SelectNode(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
-    .Expand(False);
+  if qrNormativ.FieldByName('normativ_directory_id').AsInteger <> 0 then
+    fNormativDirectory.tvMain.SelectNode(qrNormativ.FieldByName('normativ_directory_id').AsInteger)
+      .Expand(False);
   fNormativDirectory.skipReload := False;
 end;
 
@@ -338,38 +441,180 @@ begin
   end;
 end;
 
-procedure TFrameRates.PanelCenterClientResize(Sender: TObject);
+procedure TFrameRates.mLjfdbnm1Click(Sender: TObject);
+begin
+  qrNormativ.Insert;
+end;
+
+procedure TFrameRates.mN1Click(Sender: TObject);
+begin
+  qrNormativ.Edit;
+  if SpeedButtonShowHideRightPanel.Tag = 0 then
+    SpeedButtonShowHideRightPanel.Click;
+
+end;
+
+procedure TFrameRates.mN2Click(Sender: TObject);
+begin
+  if Application.MessageBox('Удалить запись?', 'Справочник расценок', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
+    = IDYES then
+  begin
+    qrNormativ.Delete;
+  end;
+end;
+
+procedure TFrameRates.mN31Click(Sender: TObject);
+begin
+  FastExecSQL('INSERT INTO normativwork (NORMATIV_ID, WORK_ID, NORMA) VALUE(:1,:2,0)',
+    VarArrayOf([qrNormativ.FieldByName('IdNormative').Value, (Sender as TComponent).Tag]));
+  CloseOpen(qrNC);
+end;
+
+procedure TFrameRates.mN3Click(Sender: TObject);
 var
-  PHeight: Integer;
+  i: Integer;
 begin
-  PHeight := PanelNormСonsumption.Height + PanelStructureWorks.Height + PanelChangesAdditions.Height;
-  PHeight := PHeight div 3;
-  PanelNormСonsumption.Height := PHeight;
-  PanelChangesAdditions.Height := PHeight;
+  for i := 1 to 3 do
+    FastExecSQL('INSERT INTO normativwork (NORMATIV_ID, WORK_ID, NORMA) VALUE(:1,:2,0)',
+      VarArrayOf([qrNormativ.FieldByName('IdNormative').Value, i]));
+  CloseOpen(qrNC);
 end;
 
-procedure TFrameRates.PanelHorizontal2Resize(Sender: TObject);
+procedure TFrameRates.mNCAddClick(Sender: TObject);
+var
+  res: Variant;
 begin
-  // ComboBoxOXROPR.Width := LabelWinterPrice.Left - ComboBoxOXROPR.Left - 6;
+  case qrNC.FieldByName('OBJ_TYPE').AsInteger of
+    1:
+      begin
+        res := SelectMechanizm;
+        if not VarIsNull(res) then
+        begin
+          FastExecSQL('INSERT INTO mechanizmnorm (NORMATIV_ID, MECHANIZM_ID, NORM_RAS) VALUE(:1,:2,"1")',
+            VarArrayOf([qrNormativ.FieldByName('IdNormative').Value, res]));
+          CloseOpen(qrNC);
+        end;
+      end;
+    2:
+      begin
+        res := SelectMaterial;
+        if not VarIsNull(res) then
+        begin
+          FastExecSQL('INSERT INTO materialnorm (NORMATIV_ID, MATERIAL_ID, NORM_RAS) VALUE(:1,:2,"1")',
+            VarArrayOf([qrNormativ.FieldByName('IdNormative').Value, res]));
+          CloseOpen(qrNC);
+        end;
+      end;
+    3:
+      begin
+        res := SelectMaterial;
+        if not VarIsNull(res) then
+        begin
+          FastExecSQL('INSERT INTO materialnorm (NORMATIV_ID, MATERIAL_ID, NORM_RAS) VALUE(:1,:2,"1")',
+            VarArrayOf([qrNormativ.FieldByName('IdNormative').Value, res]));
+          CloseOpen(qrNC);
+        end;
+      end;
+  end;
 end;
 
-procedure TFrameRates.PanelNormСonsumptionResize(Sender: TObject);
+procedure TFrameRates.mNCDelClick(Sender: TObject);
 begin
-  AutoWidthColumn(StringGridNC, 1);
+  case qrNC.FieldByName('OBJ_TYPE').AsInteger of
+    1:
+      begin
+        FastExecSQL('DELETE FROM mechanizmnorm WHERE ID=:2', VarArrayOf([qrNC.FieldByName('ID').Value]));
+      end;
+    2:
+      begin
+        FastExecSQL('DELETE FROM materialnorm WHERE ID=:2', VarArrayOf([qrNC.FieldByName('ID').Value]));
+      end;
+    3:
+      begin
+        FastExecSQL('DELETE FROM materialnorm WHERE ID=:2', VarArrayOf([qrNC.FieldByName('ID').Value]));
+      end;
+    4:
+      begin
+        FastExecSQL('DELETE FROM normativwork WHERE ID=:2', VarArrayOf([qrNC.FieldByName('ID').Value]));
+      end;
+  end;
+  qrNC.Delete;
+end;
+
+procedure TFrameRates.pmNCPopup(Sender: TObject);
+begin
+  if qrNormativ.State in [dsInsert] then
+    qrNormativ.Post;
+
+  mNCDel.Visible := qrNC.FieldByName('FL_PART_NAME').AsInteger = 0;
+  mNCAdd.Visible := qrNC.FieldByName('OBJ_TYPE').AsInteger <> 4;
+  mNCAdd2.Visible := qrNC.FieldByName('OBJ_TYPE').AsInteger = 4;
+end;
+
+procedure TFrameRates.pnlNaviatorResize(Sender: TObject);
+begin
+  btnPrev.Width := (pnlNaviator.ClientWidth - pnlNaviator.ControlCount - 1) div pnlNaviator.ControlCount;
+  btnNext.Width := (pnlNaviator.ClientWidth - pnlNaviator.ControlCount - 1) div pnlNaviator.ControlCount;
+end;
+
+procedure TFrameRates.qrHistoryAfterOpen(DataSet: TDataSet);
+begin
+  {
+    PanelChangesAdditions.Height := PanelCAHeader.Height + qrHistory.RecordCount *
+    (grHistory.RowsHeight + 2) + 1;
+  }
+  grNCResize(grHistory);
+end;
+
+procedure TFrameRates.qrNCAfterOpen(DataSet: TDataSet);
+begin
+  grNCResize(grNC);
+end;
+
+procedure TFrameRates.qrNCBeforeOpen(DataSet: TDataSet);
+begin
+  qrNC.ParamByName('IdNormativ').Value := qrNormativ.FieldByName('IdNormative').Value;
+end;
+
+procedure TFrameRates.qrNCBeforePost(DataSet: TDataSet);
+begin
+  case qrNC.FieldByName('OBJ_TYPE').AsInteger of
+    1:
+      begin
+        FastExecSQL('UPDATE mechanizmnorm SET NORM_RAS=:1 WHERE ID=:2',
+          VarArrayOf([qrNC.FieldByName('OBJ_VALUE').Value, qrNC.FieldByName('ID').Value]));
+      end;
+    2:
+      begin
+        FastExecSQL('UPDATE materialnorm SET NORM_RAS=:1 WHERE ID=:2',
+          VarArrayOf([qrNC.FieldByName('OBJ_VALUE').Value, qrNC.FieldByName('ID').Value]));
+      end;
+    3:
+      begin
+        FastExecSQL('UPDATE materialnorm SET NORM_RAS=:1 WHERE ID=:2',
+          VarArrayOf([qrNC.FieldByName('OBJ_VALUE').Value, qrNC.FieldByName('ID').Value]));
+      end;
+    4:
+      begin
+        FastExecSQL('UPDATE normativwork SET NORMA=:1 WHERE ID=:2',
+          VarArrayOf([qrNC.FieldByName('OBJ_VALUE').Value, qrNC.FieldByName('ID').Value]));
+      end;
+  end;
 end;
 
 procedure TFrameRates.qrNormativAfterScroll(DataSet: TDataSet);
 var
   e: TDataSetNotifyEvent;
 begin
+  flNewRecord := False;
   if qrNormativ.Eof then
   begin
-    btn1.Click;
+    btnNext.Click;
     Exit;
   end
   else if qrNormativ.Bof and (PageNumber <> 0) then
   begin
-    btn2.Click;
+    btnPrev.Click;
     e := qrNormativ.AfterScroll;
     qrNormativ.AfterScroll := nil;
     qrNormativ.Last;
@@ -387,28 +632,64 @@ begin
   qrNormativ.ParamByName('PageRowCount').AsInteger := PageRowCount;
 end;
 
-procedure TFrameRates.SettingTable;
+procedure TFrameRates.qrNormativBeforePost(DataSet: TDataSet);
+var
+  res: Variant;
 begin
-  // НАСТРАИВАЕМ ТАБЛИЦУ (StringGridNormative)
-  LoadDBGridSettings(grRates);
-  // НАСТРАИВАЕМ ТАБЛИЦУ ДЛЯ ВЫВОДА НОРМ РАСХОДОВ
-  with StringGridNC do
+  if VarIsNull(qrNormativ.FieldByName('NumberNormative').Value) then
   begin
-    ColCount := 4; // Столбцов в таблице
-    RowCount := 2; // Строк  в таблице
-
-    // Настраиваем ширину столбцов
-    ColWidths[0] := 80;
-    ColWidths[1] := 600;
-    ColWidths[2] := 60;
-    ColWidths[3] := 60;
-
-    // Названия заголовков столбцов
-    Cells[0, 0] := 'Код';
-    Cells[1, 0] := 'Название';
-    Cells[2, 0] := 'Нор. рас.';
-    Cells[3, 0] := 'Ед. изм.';
+    ShowMessage('Заполните обоснование!');
+    dbedtNumberNormative.SetFocus;
+    Abort;
   end;
+  // Находим единицу измерения
+  if qrNormativ.FieldByName('Unit').Value <> qrNormativ.FieldByName('Unit').OldValue then
+  begin
+    res := null;
+    res := FastSelectSQLOne('SELECT units.unit_id FROM units WHERE UPPER(unit_name)=TRIM(UPPER(:0))',
+      VarArrayOf([qrNormativ.FieldByName('Unit').Value]));
+    if VarIsNull(res) then
+    begin
+      FastExecSQL('INSERT INTO units(UNIT_NAME) VALUE(:0)',
+        VarArrayOf([qrNormativ.FieldByName('Unit').Value]));
+      res := FastSelectSQLOne('SELECT LAST_INSERT_ID()', VarArrayOf([]));
+    end;
+    qrNormativ.FieldByName('UNIT_ID').Value := res;
+  end;
+
+  {
+    if Application.MessageBox('Сохранить изменения?', 'Справочник расценок',
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+    begin
+
+    end
+    else
+    qrNormativ.Cancel; }
+end;
+
+procedure TFrameRates.qrNormativNewRecord(DataSet: TDataSet);
+begin
+  // Устанавливаем признак новой записи
+  flNewRecord := true;
+  if SpeedButtonShowHideRightPanel.Tag = 0 then
+    SpeedButtonShowHideRightPanel.Click;
+  // Автоматическое заполенение полей новой расценки
+  qrNormativ.FieldByName('NORM_BASE').AsInteger := 1; // Собственная БД
+  qrNormativ.FieldByName('NORM_ACTIVE').AsInteger := 1; // Действующая
+  // qrNormativ.Post;
+  // qrNormativ.Edit;
+end;
+
+procedure TFrameRates.qrSWAfterOpen(DataSet: TDataSet);
+begin
+  // PanelStructureWorks.Height := PanelSWHeader.Height + qrSW.RecordCount * (grSostav.RowsHeight + 2) + 1;
+  grNCResize(grSostav);
+end;
+
+procedure TFrameRates.qrSWBeforeOpen(DataSet: TDataSet);
+begin
+  qrSW.ParamByName('normativ_directory_id').AsInteger := qrNormativ.FieldByName('normativ_directory_id')
+    .AsInteger;
 end;
 
 procedure TFrameRates.ReceivingAll;
@@ -475,56 +756,6 @@ begin
   (Sender as TStringGrid).Repaint;
 end;
 
-procedure TFrameRates.StringGridNCDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-  State: TGridDrawState);
-var
-  TW: Integer;
-begin
-  StringGridDrawCellDefault(Sender, ACol, ARow, Rect, State);
-
-  if ((ARow = Group1) and (Group1 <> 0)) or ((ARow = Group2) and (Group2 <> 0)) or
-    ((ARow = Group3) and (Group3 <> 0)) or ((ARow = Group4) and (Group4 <> 0)) then
-  begin
-    with StringGridNC.Canvas do
-    begin
-      Font.Style := Font.Style + [fsBold];
-      Font.Color := PS.FontSelectRow;
-      Brush.Color := RGB(106, 116, 157);
-      FillRect(Rect);
-
-      if (Group1 > 0) and (Group1 = ARow) and (ACol = 1) then
-      begin
-        TW := TextWidth(StringGridNC.Cells[1, Group1]);
-        TW := (Rect.Right - TW) div 2;
-        TextOut(Rect.Left + TW, Rect.Top + 3, StringGridNC.Cells[1, Group1]);
-      end;
-
-      if (Group2 > 0) and (Group2 = ARow) and (ACol = 1) then
-      begin
-        TW := TextWidth(StringGridNC.Cells[1, Group2]);
-        TW := (Rect.Right - TW) div 2;
-        TextOut(Rect.Left + TW, Rect.Top + 3, StringGridNC.Cells[1, Group2]);
-      end;
-
-      if (Group3 > 0) and (Group3 = ARow) and (ACol = 1) then
-      begin
-        TW := TextWidth(StringGridNC.Cells[1, Group3]);
-        TW := (Rect.Right - TW) div 2;
-        TextOut(Rect.Left + TW, Rect.Top + 3, StringGridNC.Cells[1, Group3]);
-      end;
-
-      if (Group4 > 0) and (Group4 = ARow) and (ACol = 1) then
-      begin
-        TW := TextWidth(StringGridNC.Cells[1, Group4]);
-        TW := (Rect.Right - TW) div 2;
-        TextOut(Rect.Left + TW, Rect.Top + 3, StringGridNC.Cells[1, Group4]);
-      end;
-
-      Font.Style := Font.Style - [fsBold];
-    end;
-  end;
-end;
-
 procedure TFrameRates.StringGridNCEnter(Sender: TObject);
 begin
   (Sender as TStringGrid).Repaint;
@@ -568,236 +799,62 @@ end;
 
 procedure TFrameRates.tmrScrollTimer(Sender: TObject);
 var
-  i: Integer;
   IdNormative: String;
 begin
   tmrScroll.Enabled := False;
+
   if qrNormativ.IsEmpty then
     Exit;
 
+  CloseOpen(qrNC);
   IdNormative := qrNormativ.FieldByName('IdNormative').AsVariant; // Получаем Id норматива
 
-  if CharInSet(Char(qrNormativ.FieldByName('NumberNormative').AsString[1]), ['0' .. '9']) then
+  if not(qrNormativ.State in [dsInsert]) then
   begin
-    CheckBoxNormСonsumption.Checked := False;
-    CheckBoxNormСonsumption.Visible := False;
-  end
-  else
-  begin
-    CheckBoxNormСonsumption.Checked := true;
-    CheckBoxNormСonsumption.Visible := true;
+    if qrNormativ.FieldByName('NORM_TYPE').AsInteger = 1 then
+    begin
+      CheckBoxNormСonsumption.Checked := False;
+      CheckBoxNormСonsumption.Visible := False;
+    end
+    else
+    begin
+      CheckBoxNormСonsumption.Checked := true;
+      CheckBoxNormСonsumption.Visible := true;
+    end;
   end;
 
   Sbornik(qrNormativ.FieldByName('normativ_directory_id').AsInteger);
 
-  Group1 := 0;
-  Group2 := 0;
-  Group3 := 0;
-  Group4 := 0;
-
-  // -----------------------------------------
-
-  // НОРМЫ РАСХОДА ПО МАШИНАМ И МЕХАНИЗМАМ
-  if CheckBoxNormСonsumption.Checked then
-  begin
-    // Формируем и выполняем запрос для получения норм расхода
-    with ADOQueryNC do
-    begin
-      Active := False;
-      SQL.Clear;
-
-      StrQuery := 'SELECT mech_code, mech_name, norm_ras, unit_name FROM mechanizm, mechanizmnorm, units ' +
-        'WHERE mechanizm.unit_id = units.unit_id and mechanizm.mechanizm_id = mechanizmnorm.mechanizm_id ' +
-        'and mechanizmnorm.normativ_id = ' + IdNormative + ';';
-
-      SQL.Add(StrQuery);
-      Active := true;
-    end;
-
-    // Выводим полученные данные в таблицу StringGrid
-    with ADOQueryNC, StringGridNC do
-    begin
-      ColCount := 4; // Столбцов в таблице
-      RowCount := 2; // Строк  в таблице
-
-      Group1 := 1;
-
-      Cells[1, Group1] := 'Машины и механизмы';
-
-      i := Group1 + 1; // Номер заполняемой строки в StringGrid
-
-      First; // Становимся на первую запись в наборе данных
-
-      // Пока есть данные в наборе данных, выводим их в StringGrid
-      while not Eof do
-      begin
-        RowCount := i + 1;
-
-        Cells[0, i] := Fields.Fields[0].AsString;
-        Cells[1, i] := Fields.Fields[1].AsString;
-        Cells[2, i] := Fields.Fields[2].Value;
-        Cells[3, i] := Fields.Fields[3].AsString;
-
-        Inc(i);
-        Next;
-      end;
-    end;
-
-    // -----------------------------------------
-
-    // НОРМЫ РАСХОДА ПО МАТЕРИАЛАМ
-
-    // Формируем и выполняем запрос для получения норм расхода
-    with ADOQueryNC do
-    begin
-      Active := False;
-      SQL.Clear;
-
-      StrQuery := 'SELECT mat_code, mat_name, norm_ras, unit_name FROM materialnorm, material, units ' +
-        'WHERE materialnorm.material_id = material.material_id and material.unit_id = units.unit_id ' +
-        'and materialnorm.normativ_id = ' + IdNormative + ';';
-
-      SQL.Add(StrQuery);
-      Active := true;
-    end;
-
-    // Выводим полученные данные в таблицу StringGrid
-    with ADOQueryNC, StringGridNC do
-    begin
-      with StringGridNC do
-      begin
-        Group2 := RowCount;
-        RowCount := RowCount + 1;
-      end;
-
-      Filtered := False;
-      Filter := 'mat_code LIKE ''С%''';
-      Filtered := true;
-
-      Cells[1, Group2] := 'Материалы учтённые';
-
-      i := Group2 + 1; // Номер заполняемой строки в StringGrid
-
-      First; // Становимся на первую запись в наборе данных
-
-      // Пока есть данные в наборе данных, выводим их в StringGrid
-      while not Eof do
-      begin
-        RowCount := i + 1;
-
-        Cells[0, i] := Fields.Fields[0].AsString;
-        Cells[1, i] := Fields.Fields[1].AsString;
-        Cells[2, i] := Fields.Fields[2].Value;
-        Cells[3, i] := Fields.Fields[3].AsString;
-
-        Inc(i);
-        Next;
-      end;
-
-      // ----------------------------------------
-
-      with StringGridNC do
-      begin
-        Group3 := RowCount;
-        RowCount := RowCount + 1;
-      end;
-
-      Filtered := False;
-      Filter := 'mat_code LIKE ''П%''';
-      Filtered := true;
-
-      Cells[1, Group3] := 'Материалы неучтённые';
-
-      i := Group3 + 1; // Номер заполняемой строки в StringGrid
-
-      First; // Становимся на первую запись в наборе данных
-
-      // Пока есть данные в наборе данных, выводим их в StringGrid
-      while not Eof do
-      begin
-        RowCount := i + 1;
-
-        Cells[0, i] := Fields.Fields[0].AsString;
-        Cells[1, i] := Fields.Fields[1].AsString;
-        Cells[2, i] := Fields.Fields[2].Value;
-        Cells[3, i] := Fields.Fields[3].AsString;
-
-        Inc(i);
-        Next;
-      end;
-
-      Filtered := False;
-      Filter := '';
-      Filtered := true;
-    end;
-
-    // -----------------------------------------
-
-    // НОРМЫ РАСХОДА ПО ЗАТРАТАМ ТРУДА
-
-    // Формируем и выполняем запрос для получения норм расхода
-    with ADOQueryNC do
-    begin
-      Active := False;
-      SQL.Clear;
-
-      StrQuery := 'SELECT works.work_caption, normativwork.norma FROM normativwork, works ' +
-        'WHERE normativwork.work_id = works.work_id and normativwork.normativ_id = ' + IdNormative + ';';
-
-      SQL.Add(StrQuery);
-      Active := true;
-    end;
-
-    // Выводим полученные данные в таблицу StringGrid
-    with ADOQueryNC, StringGridNC do
-    begin
-
-      with StringGridNC do
-      begin
-        Group4 := RowCount;
-        RowCount := RowCount + 1;
-      end;
-
-      Cells[1, Group4] := 'Затраты труда';
-
-      i := Group4 + 1; // Номер заполняемой строки в StringGrid
-
-      First; // Становимся на первую запись в наборе данных
-
-      // Пока есть данные в наборе данных, выводим их в StringGrid
-      while not Eof do
-      begin
-        RowCount := i + 1;
-
-        Cells[0, i] := '';
-        Cells[1, i] := Fields.Fields[0].AsString;
-        Cells[2, i] := Fields.Fields[1].Value;
-        Cells[3, i] := '';
-
-        Inc(i);
-        Next;
-      end;
-    end;
-  end;
-
   // ----------------------------------
 
   // ВЫВОДИМ ОХР И ОПР И ПЛАН ПРИБЫЛИ
-  with ADOQueryTemp do
+  if VarIsNull(qrNormativ.FieldByName('work_id').Value) then
   begin
-    ComboBoxOXROPR.ItemIndex := 0;
-
-    Active := False;
-    SQL.Clear;
-    StrQuery := 'SELECT work_id, s, po FROM onormativs where ((s <= "' +
-      qrNormativ.FieldByName('NumberNormative').AsString + '") and (po >= "' +
-      qrNormativ.FieldByName('NumberNormative').AsString + '"));';
-    SQL.Add(StrQuery);
-    Active := true;
-    // Сделано допущение, что идут work_id по порядку от еденицы
-    if not Eof then
-      ComboBoxOXROPR.ItemIndex := FieldByName('work_id').AsVariant - 1;
-  end;
+    with ADOQueryTemp do
+    begin
+      Active := False;
+      SQL.Clear;
+      StrQuery := 'SELECT work_id, s, po FROM onormativs where ((s <= "' +
+        qrNormativ.FieldByName('NumberNormative').AsString + '") and (po >= "' +
+        qrNormativ.FieldByName('NumberNormative').AsString + '"));';
+      SQL.Add(StrQuery);
+      Active := true;
+      // Сделано допущение, что идут work_id по порядку от еденицы
+      if not Eof then
+      begin
+        // dblkcbbwork_id.DataSource := nil;
+        dblkcbbwork_id.KeyValue := FieldByName('work_id').Value;
+        {
+          qrNormativ.Edit;
+          qrNormativ.FieldByName('work_id').Value := FieldByName('work_id').Value;
+        }
+      end
+      else
+        dblkcbbwork_id.KeyValue := 1;
+    end;
+  end
+  else
+    dblkcbbwork_id.KeyValue := qrNormativ.FieldByName('work_id').Value;
 
   // ----------------------------------------
   case qrNormativ.FieldByName('NORM_ACTIVE').Value of
@@ -825,8 +882,6 @@ begin
   CloseOpen(qrHistory);
 
   // Заполняем состав работ
-  qrSW.ParamByName('normativ_directory_id').AsInteger := qrNormativ.FieldByName('normativ_directory_id')
-    .AsInteger;
   CloseOpen(qrSW);
   // Определяем зимнее удорожание
   GetWinterPrice;
@@ -984,8 +1039,6 @@ end;
 
 procedure TFrameRates.EditSearchNormativeEnter(Sender: TObject);
 begin
-  // LoadKeyboardLayout('00000419', KLF_ACTIVATE); // Русский
-  // LoadKeyboardLayout('00000409', KLF_ACTIVATE); // Английский
   if Trim(EditRate.Text) <> '' then
     EditRate.Text := '';
 end;
@@ -1051,27 +1104,26 @@ end;
 
 procedure TFrameRates.ReceivingSearch(vStr: string);
 var
-  QueryStr, WhereStr, Condition: string;
+  QueryStr, WhereStr: string;
 begin
   try
-    Condition := ' and ((NORM_TYPE=0 AND :x1) OR (NORM_TYPE=1 AND :x2) OR (NORM_TYPE=2 AND :x3))';
-
     if vStr <> '' then
-      WhereStr := ' WHERE ' + vStr + Condition
+      WhereStr := ' WHERE ' + vStr
     else
-      WhereStr := ' WHERE (1=1) ' + Condition;
+      WhereStr := ' WHERE (1=1) ';
     PageNumber := 0;
     with qrNormativ do
     begin
       Active := False;
       SQL.Clear;
       QueryStr := 'SELECT SQL_NO_CACHE normativ_id as "IdNormative", norm_num as "NumberNormative", ' +
-        'unit_name as "Unit", norm_caption as "CaptionNormativ", NORM_ACTIVE, ' +
-        'nv.normativ_directory_id, tree_data, NORM_TYPE, SORT_NUM ' +
-        'FROM normativg nv FORCE INDEX(normativg_idx4)' + 'LEFT JOIN normativ_directory ndr ON ' +
+        'unit_name as "Unit", norm_caption as "CaptionNormativ", NORM_ACTIVE, nv.normativ_directory_id, ' +
+        'tree_data, NORM_TYPE, SORT_NUM, NORM_TYPE, NORM_BASE, nv.UNIT_ID, nv.work_id, nv.ZNORMATIVS_ID ' +
+        'FROM normativg nv FORCE INDEX(normativg_idx4)' + ' LEFT JOIN normativ_directory ndr ON ' +
         '(ndr.normativ_directory_id = nv.normativ_directory_id) ' +
         'LEFT JOIN units ON (nv.unit_id=units.unit_id) ' + WhereStr + ' AND (nv.norm_base = ' + DataBase +
-        ') ' + 'ORDER BY SORT_NUM LIMIT :SkipCount, :PageRowCount;';
+        ') and ((NORM_TYPE=0 AND :x1) OR (NORM_TYPE=1 AND :x2) OR (NORM_TYPE=2 AND :x3)) ' +
+        'ORDER BY SORT_NUM LIMIT :SkipCount, :PageRowCount;';
       SQL.Add(QueryStr);
       if rb1.Checked then
       begin
@@ -1102,144 +1154,18 @@ begin
 end;
 
 procedure TFrameRates.ShowHidePanels(Sender: TObject);
-var
-  P1, P2, P3: Boolean;
 begin
-  PanelNormСonsumption.Align := alNone;
-  PanelStructureWorks.Align := alNone;
-  PanelChangesAdditions.Align := alNone;
-
-  PanelNormСonsumption.Visible := False;
-  PanelStructureWorks.Visible := False;
-  PanelChangesAdditions.Visible := False;
-
-  // ----------------------------------------
-
-  Splitter1.Align := alNone;
-  Splitter2.Align := alNone;
-
-  Splitter1.Visible := False;
-  Splitter2.Visible := False;
-
-  // ----------------------------------------
-
-  ImageSplitter1.Visible := False;
-  ImageSplitter2.Visible := False;
-
-  // ----------------------------------------
-
-  PanelNormСonsumption.Top := Height + 10;
-  PanelStructureWorks.Top := Height + 10;
-  PanelChangesAdditions.Top := Height + 10;
-
-  // ----------------------------------------
-
-  P1 := CheckBoxNormСonsumption.Checked;
-  P2 := CheckBoxStructureWorks.Checked;
-  P3 := CheckBoxChangesAdditions.Checked;
-
-  // H := PanelCollection.Height;
-  // PanelCollection.Height := 50;
-
-  // ----------------------------------------
-
-  // ЕСЛИ ОТКРЫТА ТОЛЬКО ОДНА ИЗ ТРЁХ ПАНЕЛЕЙ
-
-  if (P1 = true) and (P2 = False) and (P3 = False) then
-  begin
-    PanelNormСonsumption.Visible := true;
-    PanelNormСonsumption.Align := alClient;
-  end;
-
-  if (P1 = False) and (P2 = true) and (P3 = False) then
-  begin
-    PanelStructureWorks.Visible := true;
-    PanelStructureWorks.Align := alClient;
-  end;
-
-  if (P1 = False) and (P2 = False) and (P3 = true) then
-  begin
-    PanelChangesAdditions.Visible := true;
-    PanelChangesAdditions.Align := alClient;
-  end;
-
-  // ----------------------------------------
-
-  // ЕСЛИ ОТКРЫТЫ ЛЮБЫЕ ДВЕ ИЗ ТРЁХ ПАНЕЛЕЙ
-
-  if (P1 = true) and (P2 = true) and (P3 = False) then
-  begin
-    PanelStructureWorks.Visible := true;
-    PanelStructureWorks.Align := alBottom;
-
-    Splitter2.Visible := true;
-    Splitter2.Align := alNone;
-    Splitter2.Align := alBottom;
-
-    PanelNormСonsumption.Visible := true;
-    PanelNormСonsumption.Align := alClient;
-
-    ImageSplitter2.Visible := true;
-  end;
-
-  if (P1 = False) and (P2 = true) and (P3 = true) then
-  begin
-    PanelChangesAdditions.Visible := true;
-    PanelChangesAdditions.Align := alBottom;
-
-    Splitter2.Visible := true;
-    Splitter2.Align := alNone;
-    Splitter2.Align := alBottom;
-
-    PanelStructureWorks.Visible := true;
-    PanelStructureWorks.Align := alClient;
-
-    ImageSplitter2.Visible := true;
-  end;
-
-  if (P1 = true) and (P2 = False) and (P3 = true) then
-  begin
-    PanelChangesAdditions.Visible := true;
-    PanelChangesAdditions.Align := alBottom;
-
-    Splitter2.Visible := true;
-    Splitter2.Align := alNone;
-    Splitter2.Align := alBottom;
-
-    PanelNormСonsumption.Visible := true;
-    PanelNormСonsumption.Align := alClient;
-
-    ImageSplitter2.Visible := true;
-  end;
-
-  // ----------------------------------------
-
-  // ЕСЛИ ОТКРЫТЫ ВСЕ ТРИ ПАНЕЛИ
-
-  if (P1 = true) and (P2 = true) and (P3 = true) then
-  begin
-    PanelNormСonsumption.Visible := true;
+  {
+    if not CheckBoxStructureWorks.Checked then
+    PanelNormСonsumption.Align := alClient
+    else
     PanelNormСonsumption.Align := alTop;
-
-    Splitter1.Visible := true;
-    // Размещаем сплиттер ниже панели, иначе сплиттер привязывается к верхнему краю
-    Splitter1.Top := PanelNormСonsumption.Top + PanelNormСonsumption.Height + 10;
-    Splitter1.Align := alTop;
-
-    PanelChangesAdditions.Visible := true;
-    PanelChangesAdditions.Align := alBottom;
-
-    Splitter2.Visible := true;
-    // Размещаем сплиттер выше панели, иначе сплиттер привязывается к нижнему краю
-    Splitter2.Top := PanelChangesAdditions.Top - 10;
-    Splitter2.Align := alBottom;
-
-    PanelStructureWorks.Visible := true;
-    PanelStructureWorks.Align := alClient;
-
-    ImageSplitter1.Visible := true;
-    ImageSplitter2.Visible := true;
-  end;
+  }
+  Splitter1.Visible := CheckBoxNormСonsumption.Checked;
+  PanelNormСonsumption.Visible := CheckBoxNormСonsumption.Checked;
+  PanelStructureWorks.Visible := CheckBoxStructureWorks.Checked;
+  PanelChangesAdditions.Visible := CheckBoxChangesAdditions.Checked;
+  Splitter2.Visible := CheckBoxChangesAdditions.Checked;
 end;
 
 procedure TFrameRates.Sbornik(const normativ_directory_id: Integer);
@@ -1282,26 +1208,130 @@ var
   s: string;
 begin
   try
-    with ADOQueryTemp do
+    if VarIsNull(qrNormativ.FieldByName('ZNORMATIVS_ID').Value) then
     begin
-      Active := False;
-      s := qrNormativ.FieldByName('NumberNormative').AsString;
-      SQL.Clear;
-      SQL.Add('SELECT num, name, s, po FROM znormativs, znormativs_detail WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID AND znormativs.DEL_FLAG = 0 AND '
-        + '((s <= ''' + s + ''') and (po >= ''' + s + ''')) LIMIT 1;');
-      Active := true;
+      with ADOQueryTemp do
+      begin
+        Active := False;
+        s := qrNormativ.FieldByName('NumberNormative').AsString;
+        SQL.Clear;
+        SQL.Add('SELECT num, name, s, po FROM znormativs, znormativs_detail WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID AND znormativs.DEL_FLAG = 0 AND '
+          + '((s <= ''' + s + ''') and (po >= ''' + s + ''')) LIMIT 1;');
+        Active := true;
 
-      if not Eof then
-        EditWinterPrice.Text := FieldByName('num').AsVariant + ' ' + FieldByName('name').AsVariant
-      else
-        EditWinterPrice.Text := 'не найдено';
+        if not Eof then
+          EditWinterPrice.Text := FieldByName('num').AsVariant + ' ' + FieldByName('name').AsVariant
+        else
+          EditWinterPrice.Text := 'не найдено';
+      end;
+    end
+    else
+    begin
+      with ADOQueryTemp do
+      begin
+        Active := False;
+        s := qrNormativ.FieldByName('NumberNormative').AsString;
+        SQL.Clear;
+        SQL.Add('SELECT num, name FROM znormativs WHERE znormativs.ZNORMATIVS_ID=' +
+          qrNormativ.FieldByName('ZNORMATIVS_ID').AsString);
+        Active := true;
 
+        if not Eof then
+          EditWinterPrice.Text := FieldByName('num').AsVariant + ' ' + FieldByName('name').AsVariant
+        else
+          EditWinterPrice.Text := 'не найдено';
+      end;
     end;
   except
     on e: Exception do
       MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' + sLineBreak +
         sLineBreak + e.Message), CaptionFrame, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+end;
+
+procedure TFrameRates.grHistoryDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TFrameRates.grNCCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
+begin
+  AllowEdit := (Field = qrNC.FieldByName('OBJ_VALUE')) and (qrNC.FieldByName('FL_PART_NAME').AsInteger = 0);
+end;
+
+procedure TFrameRates.grNCDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    // Если заголовок
+    if qrNC.FieldByName('FL_PART_NAME').Value = 1 then
+    begin
+      Font.Style := Font.Style + [fsBold];
+      Brush.Color := RGB(106, 116, 157);
+      Font.Color := PS.FontSelectRow;
+      { if Column.FieldName = 'OBJ_NAME' then
+        Column.Alignment := taCenter; }
+    end;
+    { else if Column.FieldName = 'OBJ_NAME' then
+      Column.Alignment := taLeftJustify; }
+
+  end;
+
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TFrameRates.grNCResize(Sender: TObject);
+begin
+  if not(Sender AS TJvDBGrid).Showing then
+    Exit;
+  if (Sender AS TJvDBGrid).DataSource.DataSet.RecordCount > (Sender AS TJvDBGrid).VisibleRowCount then
+    (Sender AS TJvDBGrid).ScrollBars := ssVertical
+  else
+    (Sender AS TJvDBGrid).ScrollBars := ssNone;
 end;
 
 procedure TFrameRates.grRatesDblClick(Sender: TObject);
@@ -1319,13 +1349,22 @@ begin
     Brush.Color := PS.BackgroundRows;
     Font.Color := PS.FontRows;
 
-    if (gdSelected in State) then // Ячейка в фокусе
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;
       Font.Style := Font.Style + [fsBold];
     end;
   end;
+
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
