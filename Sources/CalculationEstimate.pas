@@ -793,6 +793,7 @@ type
     procedure Wheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
       var Handled: Boolean);
     procedure RecalcEstimate;
+    procedure FillObjectInfo;
     constructor Create(const isAct: Boolean); reintroduce;
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -5743,6 +5744,16 @@ begin
   // Заполнение таблицы расценок
   OutputDataToTable;
 
+  FillObjectInfo;
+
+  if not qrOXROPR.Active then
+    qrOXROPR.Active := True;
+  if not qrTypeData.Active then
+    qrTypeData.Active := True;
+end;
+
+procedure TFormCalculationEstimate.FillObjectInfo;
+begin
   edtZone.Text := FastSelectSQLOne
     ('SELECT `objregion`.`REGION` FROM `objregion`, `objcards`, `objstroj` WHERE `objcards`.`OBJ_ID`=:0 and `objcards`.`STROJ_ID`=`objstroj`.`STROJ_ID` AND  `objstroj`.`OBJ_REGION`=`objregion`.`OBJ_REGION_ID`',
     VarArrayOf([IdObject]));
@@ -5751,11 +5762,6 @@ begin
     ('SELECT `objstroj`.`NAME` FROM `objcards`, `objstroj` WHERE `objcards`.`OBJ_ID`=:0 and `objcards`.`STROJ_ID`=`objstroj`.`STROJ_ID`',
     VarArrayOf([IdObject]));
   edtTypeWork.Width := GetTextWidth(edtTypeWork.Text, edtTypeWork.Handle) + 4;
-
-  if not qrOXROPR.Active then
-    qrOXROPR.Active := True;
-  if not qrTypeData.Active then
-    qrTypeData.Active := True;
 end;
 
 // Заполнение таблицы расценок

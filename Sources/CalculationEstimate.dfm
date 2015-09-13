@@ -2870,8 +2870,6 @@
       ParentBackground = False
       TabOrder = 1
       OnResize = Panel1Resize
-      ExplicitLeft = 6
-      ExplicitTop = 231
       object lbl1: TLabel
         AlignWithMargins = True
         Left = 334
@@ -2950,6 +2948,7 @@
         ReadOnly = True
         TabOrder = 3
         OnClick = nSelectWinterPriseClick
+        ExplicitHeight = 21
       end
       object dblkcbbOXROPR: TDBLookupComboBox
         AlignWithMargins = True

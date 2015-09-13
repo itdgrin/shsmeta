@@ -151,7 +151,7 @@ var
 implementation
 
 uses Main, DataModule, Tools, CardObjectContractorServices, OrganizationsEx, SuppAgreement,
-  GlobsAndConst;
+  GlobsAndConst, CalculationEstimate;
 
 {$R *.dfm}
 
@@ -632,6 +632,14 @@ begin
 
     ButtonSave.Tag := 1;
     qrMain.Close;
+
+    // Если открыта смета или акт, то вызываем перерасчет
+    if Assigned(FormCalculationEstimate) then
+    begin
+      FormCalculationEstimate.RecalcEstimate;
+      FormCalculationEstimate.FillObjectInfo;
+    end;
+
     Close;
   except
     on E: Exception do

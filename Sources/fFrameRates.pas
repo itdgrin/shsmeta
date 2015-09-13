@@ -89,9 +89,9 @@ type
     rb1: TRadioButton;
     rb2: TRadioButton;
     pmRatesEx: TPopupMenu;
-    mLjfdbnm1: TMenuItem;
-    mN1: TMenuItem;
-    mN2: TMenuItem;
+    mAdd: TMenuItem;
+    mEdit: TMenuItem;
+    mDelete: TMenuItem;
     pmNC: TPopupMenu;
     mNCAdd: TMenuItem;
     mNCDel: TMenuItem;
@@ -99,18 +99,22 @@ type
     btnSelectWinterPrice: TSpeedButton;
     grNC: TJvDBGrid;
     dsNC: TDataSource;
-    btnSave: TBitBtn;
-    btnCancel: TBitBtn;
     mNCAdd2: TMenuItem;
     mN11: TMenuItem;
     mN21: TMenuItem;
     mN31: TMenuItem;
     mN3: TMenuItem;
     mN4: TMenuItem;
-    btn1: TSpeedButton;
+    btnSelectCollection: TSpeedButton;
     qrObjWorks: TFDQuery;
     dsObjWorks: TDataSource;
     dblkcbbwork_id: TDBLookupComboBox;
+    mAddToEstimate: TMenuItem;
+    mCopyToOwnBase: TMenuItem;
+    mN1: TMenuItem;
+    pnlSaveCancel: TPanel;
+    btnSave: TBitBtn;
+    btnCancel: TBitBtn;
 
     procedure FrameResize(Sender: TObject);
     procedure ReceivingSearch(vStr: string);
@@ -161,7 +165,7 @@ type
     procedure qrSWBeforeOpen(DataSet: TDataSet);
     procedure qrSWAfterOpen(DataSet: TDataSet);
     procedure qrHistoryAfterOpen(DataSet: TDataSet);
-    procedure mLjfdbnm1Click(Sender: TObject);
+    procedure mAddClick(Sender: TObject);
     procedure qrNormativNewRecord(DataSet: TDataSet);
     procedure cbbTypeChange(Sender: TObject);
     procedure grHistoryDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
@@ -176,11 +180,16 @@ type
     procedure mN3Click(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
-    procedure mN1Click(Sender: TObject);
-    procedure mN2Click(Sender: TObject);
-    procedure btn1Click(Sender: TObject);
+    procedure mEditClick(Sender: TObject);
+    procedure mDeleteClick(Sender: TObject);
+    procedure btnSelectCollectionClick(Sender: TObject);
     procedure dblkcbbwork_idCloseUp(Sender: TObject);
     procedure btnSelectWinterPriceClick(Sender: TObject);
+    procedure mAddToEstimateClick(Sender: TObject);
+    procedure mCopyToOwnBaseClick(Sender: TObject);
+    procedure pmRatesExPopup(Sender: TObject);
+    procedure qrNormativAfterPost(DataSet: TDataSet);
+    procedure qrNormativBeforeEdit(DataSet: TDataSet);
   private
     StrQuery: String; // Для формирования строки запроса к БД
     flNewRecord: Boolean; // Признак новой записи
@@ -211,7 +220,7 @@ begin
   // inherited;
 end;
 
-procedure TFrameRates.btn1Click(Sender: TObject);
+procedure TFrameRates.btnSelectCollectionClick(Sender: TObject);
 begin
   if (not Assigned(fNormativDirectory)) then
     fNormativDirectory := fNormativDirectory.Create(nil);
@@ -232,7 +241,6 @@ end;
 procedure TFrameRates.btnCancelClick(Sender: TObject);
 begin
   qrNormativ.Cancel;
-  SpeedButtonShowHideRightPanel.Click;
 end;
 
 procedure TFrameRates.btnNextClick(Sender: TObject);
@@ -268,7 +276,6 @@ end;
 procedure TFrameRates.btnSaveClick(Sender: TObject);
 begin
   qrNormativ.Post;
-  SpeedButtonShowHideRightPanel.Click;
 end;
 
 procedure TFrameRates.btnSelectWinterPriceClick(Sender: TObject);
@@ -306,7 +313,6 @@ begin
   // Если собственная база
   if vDataBase = '1' then
   begin
-    grRates.PopupMenu := pmRatesEx;
     grNC.PopupMenu := pmNC;
     CheckBoxChangesAdditions.Checked := False;
     CheckBoxChangesAdditions.Visible := False;
@@ -316,13 +322,11 @@ begin
   else
   // База НРР
   begin
-    grRates.PopupMenu := nil;
     grNC.PopupMenu := nil;
-    grSostav.PopupMenu := nil;
   end;
 
   btnSelectWinterPrice.Visible := vDataBase = '1';
-  btn1.Visible := vDataBase = '1';
+  btnSelectCollection.Visible := vDataBase = '1';
   cbbType.Visible := vDataBase = '1';
   dbedtNumberNormative.ReadOnly := not(vDataBase = '1');
   dbedtUnit.ReadOnly := not(vDataBase = '1');
@@ -395,11 +399,12 @@ procedure TFrameRates.FrameResize(Sender: TObject);
 var
   PHeight: Integer;
 begin
-  PHeight := PanelNormСonsumption.Height + PanelStructureWorks.Height + PanelChangesAdditions.Height;
-  PHeight := PHeight div 3;
-  PanelNormСonsumption.Height := PHeight;
-  PanelChangesAdditions.Height := PHeight;
-
+  {
+    PHeight := PanelNormСonsumption.Height + PanelStructureWorks.Height + PanelChangesAdditions.Height;
+    PHeight := PHeight div 3;
+    PanelNormСonsumption.Height := PHeight;
+    PanelChangesAdditions.Height := PHeight;
+  }
   SplitterTopMoved(nil);
   SplitterLeftMoved(nil);
   SplitterRightMoved(nil);
@@ -441,20 +446,29 @@ begin
   end;
 end;
 
-procedure TFrameRates.mLjfdbnm1Click(Sender: TObject);
+procedure TFrameRates.mAddClick(Sender: TObject);
 begin
   qrNormativ.Insert;
 end;
 
-procedure TFrameRates.mN1Click(Sender: TObject);
+procedure TFrameRates.mAddToEstimateClick(Sender: TObject);
+begin
+  FormCalculationEstimate.AddRate(qrNormativ.FieldByName('IdNormative').AsInteger);
+end;
+
+procedure TFrameRates.mCopyToOwnBaseClick(Sender: TObject);
+begin
+  // TODO
+end;
+
+procedure TFrameRates.mEditClick(Sender: TObject);
 begin
   qrNormativ.Edit;
   if SpeedButtonShowHideRightPanel.Tag = 0 then
     SpeedButtonShowHideRightPanel.Click;
-
 end;
 
-procedure TFrameRates.mN2Click(Sender: TObject);
+procedure TFrameRates.mDeleteClick(Sender: TObject);
 begin
   if Application.MessageBox('Удалить запись?', 'Справочник расценок', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
     = IDYES then
@@ -551,6 +565,15 @@ begin
   mNCAdd2.Visible := qrNC.FieldByName('OBJ_TYPE').AsInteger = 4;
 end;
 
+procedure TFrameRates.pmRatesExPopup(Sender: TObject);
+begin
+  mAdd.Visible := DataBase = '1';
+  mEdit.Visible := DataBase = '1';
+  mDelete.Visible := DataBase = '1';
+  mAddToEstimate.Visible := Assigned(FormCalculationEstimate);
+  mCopyToOwnBase.Visible := DataBase = '0';
+end;
+
 procedure TFrameRates.pnlNaviatorResize(Sender: TObject);
 begin
   btnPrev.Width := (pnlNaviator.ClientWidth - pnlNaviator.ControlCount - 1) div pnlNaviator.ControlCount;
@@ -602,6 +625,11 @@ begin
   end;
 end;
 
+procedure TFrameRates.qrNormativAfterPost(DataSet: TDataSet);
+begin
+  pnlSaveCancel.Visible := False;
+end;
+
 procedure TFrameRates.qrNormativAfterScroll(DataSet: TDataSet);
 var
   e: TDataSetNotifyEvent;
@@ -623,6 +651,12 @@ begin
 
   tmrScroll.Enabled := False;
   tmrScroll.Enabled := true;
+end;
+
+procedure TFrameRates.qrNormativBeforeEdit(DataSet: TDataSet);
+begin
+  pnlSaveCancel.Visible := true;
+  pnlSaveCancel.Top := Panel3.Height;
 end;
 
 procedure TFrameRates.qrNormativBeforeOpen(DataSet: TDataSet);
@@ -671,8 +705,8 @@ procedure TFrameRates.qrNormativNewRecord(DataSet: TDataSet);
 begin
   // Устанавливаем признак новой записи
   flNewRecord := true;
-  if SpeedButtonShowHideRightPanel.Tag = 0 then
-    SpeedButtonShowHideRightPanel.Click;
+  pnlSaveCancel.Visible := true;
+  pnlSaveCancel.Top := Panel3.Height;
   // Автоматическое заполенение полей новой расценки
   qrNormativ.FieldByName('NORM_BASE').AsInteger := 1; // Собственная БД
   qrNormativ.FieldByName('NORM_ACTIVE').AsInteger := 1; // Действующая
