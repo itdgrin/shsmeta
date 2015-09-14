@@ -650,7 +650,6 @@
               BevelOuter = bvNone
               Constraints.MinHeight = 20
               TabOrder = 2
-              ExplicitTop = 210
               object PanelCAHeader: TPanel
                 Left = 0
                 Top = 0
@@ -820,7 +819,6 @@
               Constraints.MinHeight = 20
               ParentBackground = False
               TabOrder = 1
-              ExplicitTop = 105
               object PanelSWHeader: TPanel
                 Left = 0
                 Top = 0
@@ -887,8 +885,6 @@
               Align = alBottom
               TabOrder = 3
               Visible = False
-              ExplicitLeft = 1
-              ExplicitTop = 281
               DesignSize = (
                 530
                 35)
@@ -901,7 +897,6 @@
                 Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
                 TabOrder = 0
                 OnClick = btnSaveClick
-                ExplicitTop = 6
               end
               object btnCancel: TBitBtn
                 Left = 449
@@ -912,7 +907,6 @@
                 Caption = #1054#1090#1084#1077#1085#1072
                 TabOrder = 1
                 OnClick = btnCancelClick
-                ExplicitTop = 6
               end
             end
           end

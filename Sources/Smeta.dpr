@@ -116,7 +116,8 @@ uses
   TypeWorkList in 'TypeWorkList.pas' {fTypeWorkList},
   SectionEstimateList in 'SectionEstimateList.pas' {fSectionEstimateList},
   SprSelection in 'SprSelection.pas' {fSprSelection},
-  TranspPersSelect in 'TranspPersSelect.pas' {fTrPersSelect};
+  TranspPersSelect in 'TranspPersSelect.pas' {fTrPersSelect},
+  CopyToOwnDialog in 'CopyToOwnDialog.pas' {fCopyToOwnDialog};
 
 {$R *.res}
 var MHandle: THandle;

@@ -206,7 +206,7 @@ type
 implementation
 
 uses Main, DataModule, DrawingTables, CalculationEstimate, Tools, NormativDirectory, SprSelection,
-  WinterPrice;
+  WinterPrice, CopyToOwnDialog;
 
 {$R *.dfm}
 
@@ -396,8 +396,8 @@ begin
 end;
 
 procedure TFrameRates.FrameResize(Sender: TObject);
-var
-  PHeight: Integer;
+{ var
+  PHeight: Integer; }
 begin
   {
     PHeight := PanelNormСonsumption.Height + PanelStructureWorks.Height + PanelChangesAdditions.Height;
@@ -458,21 +458,45 @@ end;
 
 procedure TFrameRates.mCopyToOwnBaseClick(Sender: TObject);
 var
-  newID: Variant;
-  AutoCommitValue: Boolean;
+  newID, res, tID: Variant;
+  AutoCommitValue, flOk: Boolean;
+  OBJ_NAME: string;
 begin
   if not CheckQrActiveEmpty(qrNormativ) then
     Exit;
   AutoCommitValue := dm.Read.Options.AutoCommit;
   dm.Read.Options.AutoCommit := False;
   try
-    dm.Read.StartTransaction;
     try
+      // Проверяем на наличие такой же записи
+      flOk := False;
+      OBJ_NAME := qrNormativ.FieldByName('NumberNormative').AsString;
+      while not flOk do
+      begin
+        tID := null;
+        tID := FastSelectSQLOne('SELECT NORMATIV_ID FROM normativg WHERE NORM_BASE=1 and NORM_NUM=:0 LIMIT 1',
+          VarArrayOf([OBJ_NAME]));
+        if not VarIsNull(tID) then
+        begin
+          res := ShowCopyToOwnDialog(OBJ_NAME);
+
+          if VarIsNull(res) then
+            Exit;
+          if res = 1 then
+          begin
+            FastExecSQL('DELETE FROM normativg WHERE NORMATIV_ID = :1', VarArrayOf([tID]));
+            flOk := true;
+          end;
+        end
+        else
+          flOk := true;
+      end;
+      dm.Read.StartTransaction;
       // Копируем расценку
       FastExecSQL
-        ('INSERT INTO normativg(SORT_NUM, NORM_NUM, NORM_CAPTION, UNIT_ID, NORM_ACTIVE,normativ_directory_id, NORM_BASE, NORM_TYPE, work_id, ZNORMATIVS_ID)'#13
-        + '(SELECT null,NORM_NUM,NORM_CAPTION,UNIT_ID,1,normativ_directory_id,1,NORM_TYPE,work_id,ZNORMATIVS_ID FROM normativg WHERE NORMATIV_ID = :0);',
-        VarArrayOf([qrNormativ.FieldByName('IdNormative').Value]));
+        ('INSERT INTO normativg(SORT_NUM, NORM_NUM, NORM_CAPTION, UNIT_ID, NORM_ACTIVE,normativ_directory_id, NORM_BASE, NORM_TYPE, work_id, ZNORMATIVS_ID,date_beginer)'#13
+        + '(SELECT null,:2,NORM_CAPTION,UNIT_ID,1,normativ_directory_id,1,NORM_TYPE,work_id,ZNORMATIVS_ID, :0 FROM normativg WHERE NORMATIV_ID = :1);',
+        VarArrayOf([OBJ_NAME, Now, qrNormativ.FieldByName('IdNormative').Value]));
       newID := FastSelectSQLOne('SELECT LAST_INSERT_ID()', VarArrayOf([]));
       // Копируем материалы
       FastExecSQL
@@ -749,6 +773,7 @@ begin
   // Автоматическое заполенение полей новой расценки
   qrNormativ.FieldByName('NORM_BASE').AsInteger := 1; // Собственная БД
   qrNormativ.FieldByName('NORM_ACTIVE').AsInteger := 1; // Действующая
+  qrNormativ.FieldByName('date_beginer').AsDateTime := Now;
   // qrNormativ.Post;
   // qrNormativ.Edit;
 end;
@@ -1191,9 +1216,9 @@ begin
       SQL.Clear;
       QueryStr := 'SELECT SQL_NO_CACHE normativ_id as "IdNormative", norm_num as "NumberNormative", ' +
         'unit_name as "Unit", norm_caption as "CaptionNormativ", NORM_ACTIVE, nv.normativ_directory_id, ' +
-        'tree_data, NORM_TYPE, SORT_NUM, NORM_TYPE, NORM_BASE, nv.UNIT_ID, nv.work_id, nv.ZNORMATIVS_ID ' +
-        'FROM normativg nv FORCE INDEX(normativg_idx4)' + ' LEFT JOIN normativ_directory ndr ON ' +
-        '(ndr.normativ_directory_id = nv.normativ_directory_id) ' +
+        'tree_data, NORM_TYPE, SORT_NUM, NORM_TYPE, NORM_BASE, nv.UNIT_ID, nv.work_id, nv.ZNORMATIVS_ID, ' +
+        'nv.date_beginer ' + 'FROM normativg nv FORCE INDEX(normativg_idx4)' +
+        ' LEFT JOIN normativ_directory ndr ON ' + '(ndr.normativ_directory_id = nv.normativ_directory_id) ' +
         'LEFT JOIN units ON (nv.unit_id=units.unit_id) ' + WhereStr + ' AND (nv.norm_base = ' + DataBase +
         ') and ((NORM_TYPE=0 AND :x1) OR (NORM_TYPE=1 AND :x2) OR (NORM_TYPE=2 AND :x3)) ' +
         'ORDER BY SORT_NUM LIMIT :SkipCount, :PageRowCount;';
