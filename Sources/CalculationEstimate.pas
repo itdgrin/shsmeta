@@ -481,6 +481,7 @@ type
     qrMaterialFTRANSCOUNT: TFMTBCDField;
     PMUseTransPerc: TMenuItem;
     PMUseTransForThisCount: TMenuItem;
+    mCopyToOwnBase: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -691,6 +692,7 @@ type
     procedure mN14Click(Sender: TObject);
     procedure PMUseTransPercClick(Sender: TObject);
     procedure PMUseTransForThisCountClick(Sender: TObject);
+    procedure mCopyToOwnBaseClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -827,7 +829,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   KC6, CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
-  TranspPersSelect, CardObject;
+  TranspPersSelect, CardObject, CopyToOwnDialog;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -1809,10 +1811,8 @@ begin
   Result := False;
   // Вынесеный механизм в расценке или замененные механизмы
   if ((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 1)) or
-    (qrMechanizmREPLACED.AsInteger = 1) or
-    (qrMechanizmTITLE.AsInteger > 0) or
-    not(qrMechanizmID.AsInteger > 0) or
-    (qrMechanizm.Eof) then
+    (qrMechanizmREPLACED.AsInteger = 1) or (qrMechanizmTITLE.AsInteger > 0) or
+    not(qrMechanizmID.AsInteger > 0) or (qrMechanizm.Eof) then
     Result := True;
 end;
 
@@ -1931,11 +1931,8 @@ begin
   Result := False;
   // Вынесенные из расценки // или замененный
   if ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 1)) or
-    (qrMaterialREPLACED.AsInteger = 1) or
-    (qrMaterialDELETED.AsInteger = 1) or
-    (qrMaterialTITLE.AsInteger > 0) or
-    not(qrMaterialID.AsInteger > 0) or
-    (qrMaterial.Eof) then
+    (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialDELETED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0)
+    or not(qrMaterialID.AsInteger > 0) or (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -2087,10 +2084,8 @@ begin
         CType := 1;
 
       // Индивидуальное поведение для конкретных полей
-      if (Sender.FieldName = 'MAT_PROC_PODR') or
-         (Sender.FieldName = 'MAT_PROC_ZAC') or
-         (Sender.FieldName = 'TRANSP_PROC_PODR') or
-         (Sender.FieldName = 'TRANSP_PROC_ZAC') then
+      if (Sender.FieldName = 'MAT_PROC_PODR') or (Sender.FieldName = 'MAT_PROC_ZAC') or
+        (Sender.FieldName = 'TRANSP_PROC_PODR') or (Sender.FieldName = 'TRANSP_PROC_ZAC') then
       begin
         if Sender.Value > 100 then
           Sender.Value := 100;
@@ -2108,8 +2103,7 @@ begin
           qrMaterialTRANSP_PROC_PODR.Value := 100 - qrMaterialTRANSP_PROC_ZAC.Value;
       end;
 
-      if (Sender.FieldName = 'FTRANSP_NDS') or
-         (Sender.FieldName = 'FTRANSP_NO_NDS') then
+      if (Sender.FieldName = 'FTRANSP_NDS') or (Sender.FieldName = 'FTRANSP_NO_NDS') then
         qrMaterialFTRANSCOUNT.Value := qrMaterialMAT_COUNT.Value;
 
       // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
@@ -2139,8 +2133,8 @@ begin
           'FCOAST_NDS = :FCOAST_NDS, FTRANSP_NO_NDS = :FTRANSP_NO_NDS, ' +
           'FTRANSP_NDS = :FTRANSP_NDS, MAT_PROC_ZAC = :MAT_PROC_ZAC, ' +
           'MAT_PROC_PODR = :MAT_PROC_PODR, TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC, ' +
-          'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, FTRANSCOUNT = :FTRANSCOUNT, ' +
-          CField + ' = :AA' + CField + ' WHERE id = :id;');
+          'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, FTRANSCOUNT = :FTRANSCOUNT, ' + CField + ' = :AA' + CField +
+          ' WHERE id = :id;');
         ParamByName('COAST_NO_NDS').Value := qrMaterialCOAST_NO_NDS.AsVariant;
         ParamByName('COAST_NDS').Value := qrMaterialCOAST_NDS.AsVariant;
         ParamByName('FCOAST_NO_NDS').Value := qrMaterialFCOAST_NO_NDS.AsVariant;
@@ -2172,6 +2166,97 @@ begin
   GridRatesRowSellect;
   CloseOpen(qrRatesEx);
   CloseOpen(qrCalculations);
+end;
+
+procedure TFormCalculationEstimate.mCopyToOwnBaseClick(Sender: TObject);
+var
+  newID, res, tID: Variant;
+  AutoCommitValue, flOk: Boolean;
+  OBJ_NAME: string;
+begin
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  try
+    case qrRatesExID_TYPE_DATA.Value of
+      // Копирование расценки в собственную бд
+      1:
+        begin
+          try
+            // Проверяем на наличие такой же записи
+            flOk := False;
+            OBJ_NAME := qrRatesExOBJ_CODE.Value;
+            while not flOk do
+            begin
+              tID := Null;
+              tID := FastSelectSQLOne
+                ('SELECT NORMATIV_ID FROM normativg WHERE NORM_BASE=1 and NORM_NUM=:0 LIMIT 1',
+                VarArrayOf([OBJ_NAME]));
+              if not VarIsNull(tID) then
+              begin
+                res := ShowCopyToOwnDialog(OBJ_NAME);
+
+                if VarIsNull(res) then
+                  Exit;
+                if res = 1 then
+                begin
+                  FastExecSQL('DELETE FROM normativg WHERE NORMATIV_ID = :1', VarArrayOf([tID]));
+                  flOk := True;
+                end;
+              end
+              else
+                flOk := True;
+            end;
+            DM.Read.StartTransaction;
+            tID := FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:0',
+              VarArrayOf([qrRatesExID_TABLES.Value]));
+            // Копируем расценку
+            FastExecSQL
+              ('INSERT INTO normativg(SORT_NUM, NORM_NUM, NORM_CAPTION, UNIT_ID, NORM_ACTIVE,normativ_directory_id, NORM_BASE, NORM_TYPE, work_id, ZNORMATIVS_ID,date_beginer)'#13
+              + '(SELECT null,:2,:3,UNIT_ID,1,normativ_directory_id,1,NORM_TYPE,work_id,ZNORMATIVS_ID, :0 FROM normativg WHERE NORMATIV_ID = :1);',
+              VarArrayOf([OBJ_NAME, qrRatesExOBJ_NAME.Value, Now, tID]));
+            newID := FastSelectSQLOne('SELECT LAST_INSERT_ID()', VarArrayOf([]));
+            // Копируем материалы
+            FastExecSQL
+              ('INSERT INTO materialnorm (NORMATIV_ID, MATERIAL_ID, NORM_RAS) (SELECT :0, MAT_ID, MAT_NORMA FROM materialcard_temp WHERE ID_CARD_RATE=:1)',
+              VarArrayOf([newID, qrRatesExID_TABLES.Value]));
+            // Копируем механизмы
+            FastExecSQL
+              ('INSERT INTO mechanizmnorm (NORMATIV_ID, MECHANIZM_ID, NORM_RAS) (SELECT :0, MECH_ID, MECH_NORMA FROM mechanizmcard_temp WHERE ID_CARD_RATE=:1)',
+              VarArrayOf([newID, qrRatesExID_TABLES.Value]));
+            // Копируем затраты труда
+            FastExecSQL
+              ('INSERT INTO normativwork (NORMATIV_ID, WORK_ID, NORMA) (SELECT :0, WORK_ID, NORMA FROM normativwork WHERE NORMATIV_ID=:1)',
+              VarArrayOf([newID, tID]));
+
+            DM.Read.Commit;
+            Application.MessageBox('Запись успешно скопирована!', 'Справочник расценок',
+              MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+          except
+            DM.Read.Rollback;
+            Application.MessageBox('Ошибка копирования записи!', 'Справочник расценок',
+              MB_OK + MB_ICONSTOP + MB_TOPMOST);
+          end;
+
+        end;
+      // Материал
+      2:
+        begin
+
+        end;
+      // Механизм
+      3:
+        begin
+
+        end;
+      // Оборудование
+      4:
+        begin
+
+        end;
+    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+  end;
 end;
 
 procedure TFormCalculationEstimate.mDelEstimateClick(Sender: TObject);
@@ -2775,7 +2860,7 @@ end;
 procedure TFormCalculationEstimate.qrRatesExCODEChange(Sender: TField);
 var
   NewCode: string;
-  NewID: Integer;
+  newID: Integer;
   Point: TPoint;
 begin
   NewCode := AnsiUpperCase(qrRatesExOBJ_CODE.AsString);
@@ -2784,7 +2869,7 @@ begin
   if Length(NewCode) = 0 then
     Exit;
 
-  NewID := 0;
+  newID := 0;
 
   // Замена литинских на кирилические
   if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or
@@ -2823,10 +2908,10 @@ begin
         Exit;
       end
       else
-        NewID := qrTemp.Fields[0].AsInteger;
+        newID := qrTemp.Fields[0].AsInteger;
     end;
     qrTemp.Active := False;
-    if NewID = 0 then
+    if newID = 0 then
     begin
       MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
@@ -2834,7 +2919,7 @@ begin
       Exit;
     end;
 
-    AddRate(NewID);
+    AddRate(newID);
     grRatesEx.EditorMode := True;
     Exit;
   end;
@@ -2851,9 +2936,9 @@ begin
     qrTemp.ParamByName('CODE').Value := NewCode;
     qrTemp.Active := True;
     if not qrTemp.IsEmpty then
-      NewID := qrTemp.Fields[0].AsInteger;
+      newID := qrTemp.Fields[0].AsInteger;
     qrTemp.Active := False;
-    if NewID = 0 then
+    if newID = 0 then
     begin
       MessageBox(0, 'Материал с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
@@ -2861,7 +2946,7 @@ begin
       Exit;
     end;
 
-    AddMaterial(NewID);
+    AddMaterial(newID);
     grRatesEx.EditorMode := True;
     Exit;
   end;
@@ -2876,9 +2961,9 @@ begin
     qrTemp.ParamByName('CODE').Value := NewCode;
     qrTemp.Active := True;
     if not qrTemp.IsEmpty then
-      NewID := qrTemp.Fields[0].AsInteger;
+      newID := qrTemp.Fields[0].AsInteger;
     qrTemp.Active := False;
-    if NewID = 0 then
+    if newID = 0 then
     begin
       MessageBox(0, 'Механизм с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
@@ -2886,7 +2971,7 @@ begin
       Exit;
     end;
 
-    AddMechanizm(NewID);
+    AddMechanizm(newID);
     grRatesEx.EditorMode := True;
     Exit;
   end;
@@ -2899,16 +2984,16 @@ begin
     qrTemp.ParamByName('CODE').Value := NewCode;
     qrTemp.Active := True;
     if not qrTemp.IsEmpty then
-      NewID := qrTemp.Fields[0].AsInteger;
+      newID := qrTemp.Fields[0].AsInteger;
     qrTemp.Active := False;
-    if NewID = 0 then
+    if newID = 0 then
     begin
       MessageBox(0, 'Оборудование с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
       qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
-    AddDevice(NewID);
+    AddDevice(newID);
     grRatesEx.EditorMode := True;
     Exit;
   end;
@@ -4036,7 +4121,7 @@ begin
   PMUseTransPerc.Enabled := (not CheckMatReadOnly) and (qrMaterialFTRANSCOUNT.Value > 0);
   PMUseTransPerc.Visible := (dbgrdMaterial.Col > 0) and
     ((dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NO_NDS') or
-     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS'));
+    (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS'));
 
   PMUseTransForThisCount.Enabled := PMUseTransPerc.Enabled and
     (qrMaterialFTRANSCOUNT.Value <> qrMaterialMAT_COUNT.Value);
@@ -4726,6 +4811,8 @@ begin
 
   PMCopy.Visible := not Act;
   PMPaste.Visible := not Act;
+
+  mCopyToOwnBase.Visible := qrRatesExID_TYPE_DATA.Value in [1];
 
   // Разрешаем добавлять разделы ПТМ только когда курсор установлен на локальной смете
   // или открыта изначально локальная
@@ -6200,15 +6287,11 @@ end;
 procedure TFormCalculationEstimate.dbgrdMaterialCanEditCell(Grid: TJvDBGrid; Field: TField;
   var AllowEdit: Boolean);
 begin
-  //Перечень полей которые можно редактировать всегда
-  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or
-     (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
-     (Field.FieldName.ToUpper = 'FTRANSP_NDS') or
-     (Field.FieldName.ToUpper = 'FTRANSP_NO_NDS') or
-     (Field.FieldName.ToUpper = 'MAT_PROC_PODR') or
-     (Field.FieldName.ToUpper = 'MAT_PROC_ZAC') or
-     (Field.FieldName.ToUpper = 'TRANSP_PROC_PODR') or
-     (Field.FieldName.ToUpper = 'TRANSP_PROC_ZAC') then
+  // Перечень полей которые можно редактировать всегда
+  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
+    (Field.FieldName.ToUpper = 'FTRANSP_NDS') or (Field.FieldName.ToUpper = 'FTRANSP_NO_NDS') or
+    (Field.FieldName.ToUpper = 'MAT_PROC_PODR') or (Field.FieldName.ToUpper = 'MAT_PROC_ZAC') or
+    (Field.FieldName.ToUpper = 'TRANSP_PROC_PODR') or (Field.FieldName.ToUpper = 'TRANSP_PROC_ZAC') then
     Exit;
 
   AllowEdit := not dbgrdMaterial.Columns[2].ReadOnly;
@@ -6370,12 +6453,9 @@ end;
 procedure TFormCalculationEstimate.dbgrdMechanizmCanEditCell(Grid: TJvDBGrid; Field: TField;
   var AllowEdit: Boolean);
 begin
-  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or
-     (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
-     (Field.FieldName.ToUpper = 'FZP_MACH_NDS') or
-     (Field.FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
-     (Field.FieldName.ToUpper = 'PROC_PODR') or
-     (Field.FieldName.ToUpper = 'PROC_ZAC') then
+  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
+    (Field.FieldName.ToUpper = 'FZP_MACH_NDS') or (Field.FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
+    (Field.FieldName.ToUpper = 'PROC_PODR') or (Field.FieldName.ToUpper = 'PROC_ZAC') then
     Exit;
 
   AllowEdit := not dbgrdMechanizm.Columns[2].ReadOnly;

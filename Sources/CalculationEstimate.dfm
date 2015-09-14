@@ -2440,7 +2440,7 @@
             ParentFont = False
             PopupMenu = pmDumpTransp
             ReadOnly = True
-            TabOrder = 5
+            TabOrder = 6
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -2578,7 +2578,7 @@
             DrawingStyle = gdsClassic
             ParentCtl3D = False
             ReadOnly = True
-            TabOrder = 6
+            TabOrder = 5
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -3508,6 +3508,10 @@
     object PMChangeTranspProc: TMenuItem
       Caption = #1048#1079#1084#1077#1085#1080#1090#1100' % '#1087#1088#1072#1085#1089#1087#1086#1088#1090#1072
       Visible = False
+    end
+    object mCopyToOwnBase: TMenuItem
+      Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074' '#1089#1086#1073#1089#1090#1074#1077#1085#1085#1091#1102' '#1073#1072#1079#1091
+      OnClick = mCopyToOwnBaseClick
     end
     object N9: TMenuItem
       Caption = '-'
