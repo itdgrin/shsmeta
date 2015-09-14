@@ -448,7 +448,7 @@ type
     btnResDev: TSpeedButton;
     btnResZP: TSpeedButton;
     btnResCalc: TSpeedButton;
-    PMTranstPerc: TMenuItem;
+    PMTransPerc: TMenuItem;
     PMTrPerc1: TMenuItem;
     PMTrPerc2: TMenuItem;
     PMTrPerc3: TMenuItem;
@@ -478,6 +478,9 @@ type
     edtZone: TEdit;
     qrObjects: TFDQuery;
     qrRatesExCOEF_ORDERS: TIntegerField;
+    qrMaterialFTRANSCOUNT: TFMTBCDField;
+    PMUseTransPerc: TMenuItem;
+    PMUseTransForThisCount: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -668,7 +671,7 @@ type
     procedure PMMechAutoRepClick(Sender: TObject);
     procedure btnResMatClick(Sender: TObject);
     procedure PMTrPerc0Click(Sender: TObject);
-    procedure PMTranstPercClick(Sender: TObject);
+    procedure PMTransPercClick(Sender: TObject);
     procedure btn2Click(Sender: TObject);
     procedure btnCalcFactClick(Sender: TObject);
     procedure lblForemanClick(Sender: TObject);
@@ -686,6 +689,8 @@ type
     procedure dbgrdMaterialCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
     procedure dbgrdMechanizmCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
     procedure mN14Click(Sender: TObject);
+    procedure PMUseTransPercClick(Sender: TObject);
+    procedure PMUseTransForThisCountClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -1804,8 +1809,10 @@ begin
   Result := False;
   // Вынесеный механизм в расценке или замененные механизмы
   if ((qrMechanizmFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 1)) or
-    (qrMechanizmREPLACED.AsInteger = 1) or (qrMechanizmTITLE.AsInteger > 0) or
-    (not(qrMechanizmID.AsInteger > 0)) or (qrMechanizm.Eof) then
+    (qrMechanizmREPLACED.AsInteger = 1) or
+    (qrMechanizmTITLE.AsInteger > 0) or
+    not(qrMechanizmID.AsInteger > 0) or
+    (qrMechanizm.Eof) then
     Result := True;
 end;
 
@@ -1924,8 +1931,11 @@ begin
   Result := False;
   // Вынесенные из расценки // или замененный
   if ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 1)) or
-    (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialDELETED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0)
-    or (not(qrMaterialID.AsInteger > 0)) or (qrMaterial.Eof) then
+    (qrMaterialREPLACED.AsInteger = 1) or
+    (qrMaterialDELETED.AsInteger = 1) or
+    (qrMaterialTITLE.AsInteger > 0) or
+    not(qrMaterialID.AsInteger > 0) or
+    (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -2077,8 +2087,10 @@ begin
         CType := 1;
 
       // Индивидуальное поведение для конкретных полей
-      if (Sender.FieldName = 'MAT_PROC_PODR') or (Sender.FieldName = 'MAT_PROC_ZAC') or
-        (Sender.FieldName = 'TRANSP_PROC_PODR') or (Sender.FieldName = 'TRANSP_PROC_ZAC') then
+      if (Sender.FieldName = 'MAT_PROC_PODR') or
+         (Sender.FieldName = 'MAT_PROC_ZAC') or
+         (Sender.FieldName = 'TRANSP_PROC_PODR') or
+         (Sender.FieldName = 'TRANSP_PROC_ZAC') then
       begin
         if Sender.Value > 100 then
           Sender.Value := 100;
@@ -2096,45 +2108,9 @@ begin
           qrMaterialTRANSP_PROC_PODR.Value := 100 - qrMaterialTRANSP_PROC_ZAC.Value;
       end;
 
-      // Автоматический расчет фактических транспортных расходов при изменении фактической цены
-      if (Sender.FieldName = 'FCOAST_NO_NDS') or (Sender.FieldName = 'FCOAST_NDS') then
-      begin
-        if NDSEstimate then
-          qrMaterialFTRANSP_NDS.Value :=
-            Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value / 100) * qrMaterialMAT_COUNT.Value *
-            qrMaterialFCOAST_NDS.Value))
-        else
-          qrMaterialFTRANSP_NO_NDS.Value :=
-            Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value / 100) * qrMaterialMAT_COUNT.Value *
-            qrMaterialFCOAST_NO_NDS.Value));
-      end;
-
-      // Автоматический расчет фактических транспортных расходов при изменении кол-ва или нормы
-      // TO DO:
-      // в общем идея такова: если перед изменение чего-либо фактический транспорт был посчитак как
-      // процент от стоимости фактической (%от старой стоимости = (равен условно +/-1) фактическому трнспорту),
-      // то так же необходимо пересчитать и фактический транспорт.
-      // те же действия должны происходить внутри CalcMat процедуры в базе, т.к. необходимо пересчитывать
-      // транспорт вышеописанным способом при изменении, например, кол-ва по расценке
-      if (Sender.FieldName = 'MAT_NORMA') or (Sender.FieldName = 'MAT_COUNT') then
-      begin
-        if NDSEstimate then
-        begin
-          if Abs(Double((qrMaterialFTRANSP_NDS.OldValue) - Round((qrMaterialPROC_TRANSP.OldValue / 100) *
-            qrMaterialMAT_COUNT.OldValue * qrMaterialFCOAST_NDS.OldValue))) <= 1.0 then
-            qrMaterialFTRANSP_NDS.Value :=
-              Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value / 100) * qrMaterialMAT_COUNT.Value *
-              qrMaterialFCOAST_NDS.Value))
-        end
-        else
-        begin
-          if Abs(Double((qrMaterialFTRANSP_NO_NDS.OldValue) - Round((qrMaterialPROC_TRANSP.OldValue / 100) *
-            qrMaterialMAT_COUNT.OldValue * qrMaterialFCOAST_NO_NDS.OldValue))) <= 1.0 then
-            qrMaterialFTRANSP_NO_NDS.Value :=
-              Round(BCDToCurrency((qrMaterialPROC_TRANSP.Value / 100) * qrMaterialMAT_COUNT.Value *
-              qrMaterialFCOAST_NO_NDS.Value));
-        end;
-      end;
+      if (Sender.FieldName = 'FTRANSP_NDS') or
+         (Sender.FieldName = 'FTRANSP_NO_NDS') then
+        qrMaterialFTRANSCOUNT.Value := qrMaterialMAT_COUNT.Value;
 
       // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
       if NDSEstimate then
@@ -2163,7 +2139,8 @@ begin
           'FCOAST_NDS = :FCOAST_NDS, FTRANSP_NO_NDS = :FTRANSP_NO_NDS, ' +
           'FTRANSP_NDS = :FTRANSP_NDS, MAT_PROC_ZAC = :MAT_PROC_ZAC, ' +
           'MAT_PROC_PODR = :MAT_PROC_PODR, TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC, ' +
-          'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, ' + CField + ' = :AA' + CField + ' WHERE id = :id;');
+          'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, FTRANSCOUNT = :FTRANSCOUNT, ' +
+          CField + ' = :AA' + CField + ' WHERE id = :id;');
         ParamByName('COAST_NO_NDS').Value := qrMaterialCOAST_NO_NDS.AsVariant;
         ParamByName('COAST_NDS').Value := qrMaterialCOAST_NDS.AsVariant;
         ParamByName('FCOAST_NO_NDS').Value := qrMaterialFCOAST_NO_NDS.AsVariant;
@@ -2174,6 +2151,7 @@ begin
         ParamByName('MAT_PROC_PODR').Value := qrMaterialMAT_PROC_PODR.Value;
         ParamByName('TRANSP_PROC_ZAC').Value := qrMaterialTRANSP_PROC_ZAC.Value;
         ParamByName('TRANSP_PROC_PODR').Value := qrMaterialTRANSP_PROC_PODR.Value;
+        ParamByName('FTRANSCOUNT').Value := qrMaterialFTRANSCOUNT.AsVariant;
         ParamByName('AA' + CField).Value := CValue;
         ParamByName('id').Value := qrMaterialID.Value;
         ExecSQL;
@@ -2618,6 +2596,8 @@ begin
     qrMaterialPRICE_NDS.Value := qrTemp.FieldByName('PRICE_NDS').AsBCD;
     qrMaterialFPRICE_NO_NDS.Value := qrTemp.FieldByName('FPRICE_NO_NDS').AsBCD;
     qrMaterialFPRICE_NDS.Value := qrTemp.FieldByName('FPRICE_NDS').AsBCD;
+    qrMaterialFTRANSP_NO_NDS.Value := qrTemp.FieldByName('FTRANSP_NO_NDS').AsBCD;
+    qrMaterialFTRANSP_NDS.Value := qrTemp.FieldByName('FTRANSP_NDS').AsBCD;
     qrMaterialMAT_SUM_NO_NDS.Value := qrTemp.FieldByName('MAT_SUM_NO_NDS').AsBCD;
     qrMaterialMAT_SUM_NDS.Value := qrTemp.FieldByName('MAT_SUM_NDS').AsBCD;
     qrMaterialMAT_TRANSP_NO_NDS.Value := qrTemp.FieldByName('MAT_TRANSP_NO_NDS').AsBCD;
@@ -2976,10 +2956,15 @@ begin
   qrTemp.ExecSQL;
   // Пересчитывает все величины по данной строке
   ReCalcRowRates;
-  // Переходим на следующую строку после ввода кол-ва
-  qrRatesEx.Next;
-  // ...в колонку ввода кода расценки
-  grRatesEx.Col := 2;
+  qrRatesEx.DisableControls;
+  try
+    // Переходим на следующую строку после ввода кол-ва
+    qrRatesEx.Next;
+    // ...в колонку ввода кода расценки
+    grRatesEx.Col := 2;
+  finally
+    qrRatesEx.EnableControls;
+  end;
 end;
 
 procedure TFormCalculationEstimate.qrRatesExNUM_ROWChange(Sender: TField);
@@ -3910,7 +3895,7 @@ begin
   ActReadOnly := Value;
 end;
 
-procedure TFormCalculationEstimate.PMTranstPercClick(Sender: TObject);
+procedure TFormCalculationEstimate.PMTransPercClick(Sender: TObject);
 var
   TmpCode: string;
 begin
@@ -3967,6 +3952,18 @@ begin
 
   qrMaterial.Edit;
   qrMaterial.FieldByName('PROC_TRANSP').Value := TrPr;
+end;
+
+procedure TFormCalculationEstimate.PMUseTransForThisCountClick(Sender: TObject);
+begin
+  qrMaterial.Edit;
+  qrMaterialFTRANSCOUNT.Value := qrMaterialMAT_COUNT.Value;;
+end;
+
+procedure TFormCalculationEstimate.PMUseTransPercClick(Sender: TObject);
+begin
+  qrMaterial.Edit;
+  qrMaterialFTRANSCOUNT.Value := 0;
 end;
 
 procedure TFormCalculationEstimate.PopupMenuCoefAddSetClick(Sender: TObject);
@@ -4032,9 +4029,18 @@ procedure TFormCalculationEstimate.pmMaterialsPopup(Sender: TObject);
 begin
   PMMatEdit.Enabled := (not CheckMatReadOnly);
 
-  PMTranstPerc.Enabled := (not CheckMatReadOnly);
-  PMTranstPerc.Visible := (dbgrdMaterial.Col > 0) and
+  PMTransPerc.Enabled := (not CheckMatReadOnly);
+  PMTransPerc.Visible := (dbgrdMaterial.Col > 0) and
     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'PROC_TRANSP');
+
+  PMUseTransPerc.Enabled := (not CheckMatReadOnly) and (qrMaterialFTRANSCOUNT.Value > 0);
+  PMUseTransPerc.Visible := (dbgrdMaterial.Col > 0) and
+    ((dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NO_NDS') or
+     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS'));
+
+  PMUseTransForThisCount.Enabled := PMUseTransPerc.Enabled and
+    (qrMaterialFTRANSCOUNT.Value <> qrMaterialMAT_COUNT.Value);
+  PMUseTransForThisCount.Visible := PMUseTransPerc.Visible;
 
   PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialCONSIDERED.AsInteger = 1) and
     (qrRatesExID_TYPE_DATA.AsInteger = 1);
@@ -6194,6 +6200,17 @@ end;
 procedure TFormCalculationEstimate.dbgrdMaterialCanEditCell(Grid: TJvDBGrid; Field: TField;
   var AllowEdit: Boolean);
 begin
+  //Перечень полей которые можно редактировать всегда
+  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or
+     (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
+     (Field.FieldName.ToUpper = 'FTRANSP_NDS') or
+     (Field.FieldName.ToUpper = 'FTRANSP_NO_NDS') or
+     (Field.FieldName.ToUpper = 'MAT_PROC_PODR') or
+     (Field.FieldName.ToUpper = 'MAT_PROC_ZAC') or
+     (Field.FieldName.ToUpper = 'TRANSP_PROC_PODR') or
+     (Field.FieldName.ToUpper = 'TRANSP_PROC_ZAC') then
+    Exit;
+
   AllowEdit := not dbgrdMaterial.Columns[2].ReadOnly;
 end;
 
@@ -6244,6 +6261,18 @@ begin
       // Все поля открытые для редактирования подсвечиваются желтеньким
       if not Column.ReadOnly then
         Brush.Color := $00AFFEFC;
+    end;
+
+    // Подсветка зеленым фактических транспортных расходов в режиме ручного ввода
+    if Column.Index in [18, 19] then
+    begin
+      if qrMaterialFTRANSCOUNT.Value > 0 then
+      begin
+        Brush.Color := $0080FF80;
+        // Подсветка красным если значение вводилось для другого колва
+        if qrMaterialFTRANSCOUNT.Value <> qrMaterialMAT_COUNT.Value then
+          Brush.Color := $008080FF;
+      end;
     end;
 
     // Зачеркиваем вынесеные из расцеки материалы
@@ -6341,6 +6370,14 @@ end;
 procedure TFormCalculationEstimate.dbgrdMechanizmCanEditCell(Grid: TJvDBGrid; Field: TField;
   var AllowEdit: Boolean);
 begin
+  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or
+     (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
+     (Field.FieldName.ToUpper = 'FZP_MACH_NDS') or
+     (Field.FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
+     (Field.FieldName.ToUpper = 'PROC_PODR') or
+     (Field.FieldName.ToUpper = 'PROC_ZAC') then
+    Exit;
+
   AllowEdit := not dbgrdMechanizm.Columns[2].ReadOnly;
 end;
 

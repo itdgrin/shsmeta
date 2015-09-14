@@ -2423,7 +2423,7 @@
           end
           object dbgrdTransp: TJvDBGrid
             Left = 0
-            Top = 129
+            Top = 145
             Width = 546
             Height = 30
             Align = alTop
@@ -2568,7 +2568,7 @@
           end
           object dbgrdStartup: TJvDBGrid
             Left = 0
-            Top = 159
+            Top = 129
             Width = 546
             Height = 16
             Align = alTop
@@ -3606,9 +3606,9 @@
       ImageIndex = 44
       OnClick = PMMatMechEditClick
     end
-    object PMTranstPerc: TMenuItem
+    object PMTransPerc: TMenuItem
       Caption = '% '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072
-      OnClick = PMTranstPercClick
+      OnClick = PMTransPercClick
       object PMTrPerc1: TMenuItem
         Tag = 1
         Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1086#1073#1097#1077#1089#1090#1074#1077#1085#1085#1099#1093' '#1088#1072#1073#1086#1090
@@ -3638,6 +3638,14 @@
         Caption = '% '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
         OnClick = PMTrPerc0Click
       end
+    end
+    object PMUseTransPerc: TMenuItem
+      Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' % '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072
+      OnClick = PMUseTransPercClick
+    end
+    object PMUseTransForThisCount: TMenuItem
+      Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1076#1083#1103' '#1079#1072#1076#1072#1085#1085#1086#1075#1086' '#1082#1086#1083'-'#1074#1072
+      OnClick = PMUseTransForThisCountClick
     end
     object PMCalcMat: TMenuItem
       Caption = #1050#1072#1083#1100#1082#1091#1083#1103#1090#1086#1088' '#1094#1077#1085#1099
@@ -3707,12 +3715,14 @@
     end
   end
   object pmMechanizms: TPopupMenu
+    Images = DM.ilIcons_16x16
     OnPopup = pmMechanizmsPopup
     Left = 248
     Top = 488
     object PMMechEdit: TMenuItem
       Tag = 1
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      ImageIndex = 44
       OnClick = PMMatMechEditClick
     end
     object PMCalcMech: TMenuItem
@@ -3724,6 +3734,7 @@
     end
     object PMMechFromRates: TMenuItem
       Caption = #1042#1099#1085#1077#1089#1090#1080' '#1079#1072' '#1088#1072#1089#1094#1077#1085#1082#1091
+      ImageIndex = 6
       OnClick = PMMechFromRatesClick
     end
     object PMMechReplace: TMenuItem
@@ -3738,10 +3749,12 @@
     end
     object PMMechDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      ImageIndex = 38
       OnClick = PMMechDeleteClick
     end
     object PMMechRestore: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
+      ImageIndex = 49
       OnClick = PMMechRestoreClick
     end
     object N13: TMenuItem
@@ -4400,6 +4413,10 @@
     end
     object qrMaterialKOEFMR: TFloatField
       FieldName = 'KOEFMR'
+    end
+    object qrMaterialFTRANSCOUNT: TFMTBCDField
+      FieldName = 'FTRANSCOUNT'
+      OnChange = MatRowChange
     end
   end
   object dsMaterial: TDataSource
