@@ -457,8 +457,47 @@ begin
 end;
 
 procedure TFrameRates.mCopyToOwnBaseClick(Sender: TObject);
+var
+  newID: Variant;
+  AutoCommitValue: Boolean;
 begin
-  // TODO
+  if not CheckQrActiveEmpty(qrNormativ) then
+    Exit;
+  AutoCommitValue := dm.Read.Options.AutoCommit;
+  dm.Read.Options.AutoCommit := False;
+  try
+    dm.Read.StartTransaction;
+    try
+      // Копируем расценку
+      FastExecSQL
+        ('INSERT INTO normativg(SORT_NUM, NORM_NUM, NORM_CAPTION, UNIT_ID, NORM_ACTIVE,normativ_directory_id, NORM_BASE, NORM_TYPE, work_id, ZNORMATIVS_ID)'#13
+        + '(SELECT null,NORM_NUM,NORM_CAPTION,UNIT_ID,1,normativ_directory_id,1,NORM_TYPE,work_id,ZNORMATIVS_ID FROM normativg WHERE NORMATIV_ID = :0);',
+        VarArrayOf([qrNormativ.FieldByName('IdNormative').Value]));
+      newID := FastSelectSQLOne('SELECT LAST_INSERT_ID()', VarArrayOf([]));
+      // Копируем материалы
+      FastExecSQL
+        ('INSERT INTO materialnorm (NORMATIV_ID, MATERIAL_ID, NORM_RAS) (SELECT :0, MATERIAL_ID, NORM_RAS FROM materialnorm WHERE NORMATIV_ID=:1)',
+        VarArrayOf([newID, qrNormativ.FieldByName('IdNormative').Value]));
+      // Копируем механизмы
+      FastExecSQL
+        ('INSERT INTO mechanizmnorm (NORMATIV_ID, MECHANIZM_ID, NORM_RAS) (SELECT :0, MECHANIZM_ID, NORM_RAS FROM mechanizmnorm WHERE NORMATIV_ID=:1)',
+        VarArrayOf([newID, qrNormativ.FieldByName('IdNormative').Value]));
+      // Копируем затраты труда
+      FastExecSQL
+        ('INSERT INTO normativwork (NORMATIV_ID, WORK_ID, NORMA) (SELECT :0, WORK_ID, NORMA FROM normativwork WHERE NORMATIV_ID=:1)',
+        VarArrayOf([newID, qrNormativ.FieldByName('IdNormative').Value]));
+
+      dm.Read.Commit;
+      Application.MessageBox('Запись успешно скопирована!', 'Справочник расценок',
+        MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+    except
+      dm.Read.Rollback;
+      Application.MessageBox('Ошибка копирования записи!', 'Справочник расценок',
+        MB_OK + MB_ICONSTOP + MB_TOPMOST);
+    end;
+  finally
+    dm.Read.Options.AutoCommit := AutoCommitValue;
+  end;
 end;
 
 procedure TFrameRates.mEditClick(Sender: TObject);
