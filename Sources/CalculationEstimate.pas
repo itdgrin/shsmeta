@@ -2241,17 +2241,140 @@ begin
       // Материал
       2:
         begin
+          try
+            // Проверяем на наличие такой же записи
+            flOk := False;
+            OBJ_NAME := qrRatesExOBJ_CODE.Value;
+            while not flOk do
+            begin
+              tID := Null;
+              tID := FastSelectSQLOne('SELECT MATERIAL_ID FROM MATERIAL WHERE BASE=1 and MAT_CODE=:0 LIMIT 1',
+                VarArrayOf([OBJ_NAME]));
+              if not VarIsNull(tID) then
+              begin
+                res := ShowCopyToOwnDialog(OBJ_NAME);
 
+                if VarIsNull(res) then
+                  Exit;
+                if res = 1 then
+                begin
+                  FastExecSQL('DELETE FROM MATERIAL WHERE MATERIAL_ID = :1', VarArrayOf([tID]));
+                  flOk := True;
+                end;
+              end
+              else
+                flOk := True;
+            end;
+            DM.Read.StartTransaction;
+            tID := FastSelectSQLOne('SELECT MAT_ID FROM materialcard_temp WHERE ID=:0',
+              VarArrayOf([qrRatesExID_TABLES.Value]));
+
+            // Копируем
+            FastExecSQL
+              ('INSERT INTO MATERIAL(MAT_CODE, MAT_NAME, MAT_TYPE, UNIT_ID, BASE) (SELECT :0, :1, MAT_NAME, MAT_TYPE, UNIT_ID, 1 FROM MATERIAL WHERE MATERIAL_ID=:2)',
+              VarArrayOf([OBJ_NAME, qrRatesExOBJ_NAME.Value, tID]));
+
+            DM.Read.Commit;
+            Application.MessageBox('Запись успешно скопирована!', 'Справочник',
+              MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+          except
+            DM.Read.Rollback;
+            Application.MessageBox('Ошибка копирования записи!', 'Справочник',
+              MB_OK + MB_ICONSTOP + MB_TOPMOST);
+          end;
         end;
       // Механизм
       3:
         begin
+          try
+            // Проверяем на наличие такой же записи
+            flOk := False;
+            OBJ_NAME := qrRatesExOBJ_CODE.Value;
+            while not flOk do
+            begin
+              tID := Null;
+              tID := FastSelectSQLOne
+                ('SELECT MECHANIZM_ID FROM MECHANIZM WHERE BASE=1 and MECH_CODE=:0 LIMIT 1',
+                VarArrayOf([OBJ_NAME]));
+              if not VarIsNull(tID) then
+              begin
+                res := ShowCopyToOwnDialog(OBJ_NAME);
 
+                if VarIsNull(res) then
+                  Exit;
+                if res = 1 then
+                begin
+                  FastExecSQL('DELETE FROM MECHANIZM WHERE MECHANIZM_ID = :1', VarArrayOf([tID]));
+                  flOk := True;
+                end;
+              end
+              else
+                flOk := True;
+            end;
+            DM.Read.StartTransaction;
+            tID := FastSelectSQLOne('SELECT MECH_ID FROM mechanizmcard_temp WHERE ID=:0',
+              VarArrayOf([qrRatesExID_TABLES.Value]));
+
+            // Копируем
+            FastExecSQL
+              ('INSERT INTO MECHANIZM(MECH_CODE, MECH_NAME, UNIT_ID, DESCRIPTION, MECH_PH, TYPE_MEH_SMEN_HOUR, BASE) (SELECT :0, :1, UNIT_ID, DESCRIPTION, MECH_PH, TYPE_MEH_SMEN_HOUR, 1 FROM MECHANIZM WHERE MECHANIZM_ID=:2)',
+              VarArrayOf([OBJ_NAME, qrRatesExOBJ_NAME.Value, tID]));
+
+            DM.Read.Commit;
+            Application.MessageBox('Запись успешно скопирована!', 'Справочник',
+              MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+          except
+            DM.Read.Rollback;
+            Application.MessageBox('Ошибка копирования записи!', 'Справочник',
+              MB_OK + MB_ICONSTOP + MB_TOPMOST);
+          end;
         end;
       // Оборудование
       4:
         begin
+          {
+            try
+            // Проверяем на наличие такой же записи
+            flOk := False;
+            OBJ_NAME := qrRatesExOBJ_CODE.Value;
+            while not flOk do
+            begin
+            tID := Null;
+            tID := FastSelectSQLOne('SELECT MATERIAL_ID FROM MATERIAL WHERE BASE=1 and MAT_CODE=:0 LIMIT 1',
+            VarArrayOf([OBJ_NAME]));
+            if not VarIsNull(tID) then
+            begin
+            res := ShowCopyToOwnDialog(OBJ_NAME);
 
+            if VarIsNull(res) then
+            Exit;
+            if res = 1 then
+            begin
+            FastExecSQL('DELETE FROM MATERIAL WHERE MATERIAL_ID = :1', VarArrayOf([tID]));
+            flOk := True;
+            end;
+            end
+            else
+            flOk := True;
+            end;
+            DM.Read.StartTransaction;
+            tID := FastSelectSQLOne('SELECT MAT_ID FROM materialcard_temp WHERE ID=:0',
+            VarArrayOf([qrRatesExID_TABLES.Value]));
+
+            // Копируем
+            FastExecSQL
+            ('INSERT INTO MATERIAL(MAT_CODE, MAT_NAME, MAT_TYPE, UNIT_ID, BASE) (SELECT :0, :1, MAT_NAME, MAT_TYPE, UNIT_ID, 1 FROM MATERIAL WHERE MATERIAL_ID=:2)',
+            VarArrayOf([OBJ_NAME, qrRatesExOBJ_NAME.Value, tID]));
+
+            DM.Read.Commit;
+            Application.MessageBox('Запись успешно скопирована!', 'Справочник',
+            MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+            except
+            DM.Read.Rollback;
+            Application.MessageBox('Ошибка копирования записи!', 'Справочник',
+            MB_OK + MB_ICONSTOP + MB_TOPMOST);
+            end;
+          }
         end;
     end;
   finally
@@ -4812,7 +4935,7 @@ begin
   PMCopy.Visible := not Act;
   PMPaste.Visible := not Act;
 
-  mCopyToOwnBase.Visible := qrRatesExID_TYPE_DATA.Value in [1];
+  mCopyToOwnBase.Visible := qrRatesExID_TYPE_DATA.Value in [1, 2, 3 { , 4 } ];
 
   // Разрешаем добавлять разделы ПТМ только когда курсор установлен на локальной смете
   // или открыта изначально локальная
