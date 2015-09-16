@@ -638,10 +638,17 @@
             item
               Expanded = False
               FieldName = 'ITERATOR'
-              ReadOnly = True
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1087'/'#1087
-              Width = 35
+              Width = 31
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'NOM_ROW_MANUAL'
+              Title.Alignment = taCenter
+              Title.Caption = #8470
+              Width = 31
               Visible = True
             end
             item
@@ -649,7 +656,7 @@
               FieldName = 'OBJ_CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 150
+              Width = 136
               Visible = True
             end
             item
@@ -657,7 +664,7 @@
               FieldName = 'OBJ_COUNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 67
+              Width = 60
               Visible = True
             end
             item
@@ -665,7 +672,7 @@
               FieldName = 'OBJ_UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 89
+              Width = 82
               Visible = True
             end
             item
@@ -3382,7 +3389,7 @@
     Images = DM.ilIcons_16x16
     OnPopup = pmTableLeftPopup
     Left = 16
-    Top = 488
+    Top = 496
     object PMAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       ImageIndex = 42
@@ -3505,9 +3512,29 @@
       ImageIndex = 44
       OnClick = PMEditClick
     end
-    object PMChangeTranspProc: TMenuItem
-      Caption = #1048#1079#1084#1077#1085#1080#1090#1100' % '#1087#1088#1072#1085#1089#1087#1086#1088#1090#1072
-      Visible = False
+    object PMNumRow: TMenuItem
+      Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077' '#1085#1091#1084#1077#1088#1072#1094#1080#1077#1081
+      OnClick = PMNumRowClick
+      object PMRenumCurSmet: TMenuItem
+        Tag = 1
+        Caption = #1055#1088#1086#1085#1091#1084#1077#1088#1086#1074#1072#1090#1100' '#1090#1077#1082#1091#1097#1091#1102' '#1089#1084#1077#1090#1091' '
+        OnClick = PMRenumCurSmetClick
+      end
+      object PMRenumAllList: TMenuItem
+        Tag = 2
+        Caption = #1055#1088#1086#1085#1091#1084#1077#1088#1086#1074#1072#1090#1100' '#1074#1077#1089#1100' '#1089#1087#1080#1089#1086#1082
+        OnClick = PMRenumCurSmetClick
+      end
+      object PMRenumFromCurRowToSM: TMenuItem
+        Tag = 3
+        Caption = #1055#1088#1086#1085#1091#1084#1077#1088#1086#1074#1072#1090#1100' '#1086#1090' '#1090#1077#1082#1091#1097#1077#1081' '#1089#1090#1088#1086#1082#1080' '#1076#1086' '#1082#1086#1085#1094#1072' '#1089#1084#1077#1090#1099
+        OnClick = PMRenumFromCurRowClick
+      end
+      object PMRenumFromCurRowToList: TMenuItem
+        Tag = 4
+        Caption = #1055#1088#1086#1085#1091#1084#1077#1088#1086#1074#1072#1090#1100' '#1086#1090' '#1090#1077#1082#1091#1097#1077#1081' '#1089#1090#1088#1086#1082#1080' '#1076#1086' '#1082#1086#1085#1094#1072' '#1089#1087#1080#1089#1082#1072
+        OnClick = PMRenumFromCurRowClick
+      end
     end
     object mCopyToOwnBase: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1074' '#1089#1086#1073#1089#1090#1074#1077#1085#1085#1091#1102' '#1073#1072#1079#1091
@@ -3816,7 +3843,7 @@
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 272
+    Left = 288
     Top = 288
   end
   object dsDescription: TDataSource
@@ -5149,7 +5176,7 @@
   end
   object dsOXROPR: TDataSource
     DataSet = qrOXROPR
-    Left = 272
+    Left = 288
     Top = 344
   end
   object pmWinterPrise: TPopupMenu
@@ -5238,6 +5265,7 @@
       FieldName = 'ITERATOR'
       Origin = 'ITERATOR'
       ProviderFlags = []
+      ReadOnly = True
     end
     object qrRatesExOBJ_CODE: TStringField
       AutoGenerateValue = arDefault
@@ -5333,7 +5361,6 @@
     end
     object qrRatesExNUM_ROW: TIntegerField
       FieldName = 'NUM_ROW'
-      OnChange = qrRatesExNUM_ROWChange
     end
     object qrRatesExID_REPLACED: TIntegerField
       FieldName = 'ID_REPLACED'
@@ -5346,6 +5373,10 @@
     end
     object qrRatesExCOEF_ORDERS: TIntegerField
       FieldName = 'COEF_ORDERS'
+    end
+    object qrRatesExNOM_ROW_MANUAL: TIntegerField
+      FieldName = 'NOM_ROW_MANUAL'
+      OnChange = qrRatesExNOM_ROW_MANUALChange
     end
   end
   object dsRatesEx: TDataSource
@@ -5487,8 +5518,8 @@
       '       AND objcards.base_norm_id = baseprices.base_id'
       '       AND objcards.stroj_id = objstroj.stroj_id'
       '       AND obj_id=:in_id')
-    Left = 57
-    Top = 88
+    Left = 81
+    Top = 120
     ParamData = <
       item
         Name = 'IN_ID'

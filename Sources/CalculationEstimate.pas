@@ -473,7 +473,6 @@ type
     PMSetTransPerc2: TMenuItem;
     PMSetTransPerc3: TMenuItem;
     PMSetTransPerc4: TMenuItem;
-    PMChangeTranspProc: TMenuItem;
     edtTypeWork: TEdit;
     edtZone: TEdit;
     qrObjects: TFDQuery;
@@ -482,6 +481,12 @@ type
     PMUseTransPerc: TMenuItem;
     PMUseTransForThisCount: TMenuItem;
     mCopyToOwnBase: TMenuItem;
+    qrRatesExNOM_ROW_MANUAL: TIntegerField;
+    PMNumRow: TMenuItem;
+    PMRenumCurSmet: TMenuItem;
+    PMRenumFromCurRowToSM: TMenuItem;
+    PMRenumFromCurRowToList: TMenuItem;
+    PMRenumAllList: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -662,7 +667,6 @@ type
     procedure LabelNameEstimateClick(Sender: TObject);
     procedure qrRatesExCalcFields(DataSet: TDataSet);
     procedure qrRatesExAfterOpen(DataSet: TDataSet);
-    procedure qrRatesExNUM_ROWChange(Sender: TField);
     procedure PMAddRateOldClick(Sender: TObject);
     procedure PMRateRefClick(Sender: TObject);
     procedure PMCalcMatClick(Sender: TObject);
@@ -693,6 +697,10 @@ type
     procedure PMUseTransPercClick(Sender: TObject);
     procedure PMUseTransForThisCountClick(Sender: TObject);
     procedure mCopyToOwnBaseClick(Sender: TObject);
+    procedure qrRatesExNOM_ROW_MANUALChange(Sender: TField);
+    procedure PMNumRowClick(Sender: TObject);
+    procedure PMRenumCurSmetClick(Sender: TObject);
+    procedure PMRenumFromCurRowClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -1064,8 +1072,9 @@ begin
       vkEqual:
         begin
           // Если пытамся ввести формулу в таблицу слева
-          if CheckQrActiveEmpty(qrRatesEx) and (ActiveControl = grRatesEx) and
-            (grRatesEx.SelectedField = qrRatesExOBJ_COUNT) then
+          if CheckQrActiveEmpty(qrRatesEx) and
+             (ActiveControl = grRatesEx) and
+             (grRatesEx.SelectedField = qrRatesExOBJ_COUNT) then
           begin
             res := CalcExpression(qrRatesExOBJ_COUNT.AsString);
             if VarIsNull(res) then
@@ -3169,25 +3178,27 @@ begin
     // Переходим на следующую строку после ввода кол-ва
     qrRatesEx.Next;
     // ...в колонку ввода кода расценки
-    grRatesEx.Col := 2;
+    grRatesEx.Col := 3;
   finally
+    grRatesEx.SelectedRows.Clear;
     qrRatesEx.EnableControls;
   end;
 end;
 
-procedure TFormCalculationEstimate.qrRatesExNUM_ROWChange(Sender: TField);
+procedure TFormCalculationEstimate.qrRatesExNOM_ROW_MANUALChange(Sender: TField);
 begin
-  if Sender.IsNull then
+  {if Sender.IsNull then
   begin
     Sender.AsInteger := 0;
     Exit;
-  end;
+  end;}
 
-  qrTemp.SQL.Text := 'UPDATE data_row_temp set NUM_ROW = :RC WHERE ID=:ID;';
+  qrTemp.SQL.Text := 'UPDATE data_row_temp set NOM_ROW_MANUAL=:VAL WHERE ID=:ID;';
   qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
-  qrTemp.ParamByName('RC').Value := Sender.Value;
+  qrTemp.ParamByName('VAL').Value := Sender.Value;
   qrTemp.ExecSQL;
-  CloseOpen(qrRatesEx);
+
+  qrRatesEx.Post;
 end;
 
 procedure TFormCalculationEstimate.qrRatesWORK_IDChange(Sender: TField);
@@ -3315,10 +3326,15 @@ procedure TFormCalculationEstimate.grRatesExCanEditCell(Grid: TJvDBGrid; Field: 
   var AllowEdit: Boolean);
 begin
   AllowEdit := True;
-  if (Field = qrRatesExOBJ_CODE) and ((qrRatesExID_TYPE_DATA.Value <> -4) and
-    (qrRatesExID_TYPE_DATA.Value <> -5)) then
+  if ((Field = qrRatesExOBJ_CODE) and
+     (qrRatesExID_TYPE_DATA.Value <> -4) and
+     (qrRatesExID_TYPE_DATA.Value <> -5))
+     or
+     ((Field = qrRatesExNOM_ROW_MANUAL) and
+     (qrRatesExID_TYPE_DATA.Value < 1))
+     or
+     (Grid.Col = 1) then
     AllowEdit := False;
-
 end;
 
 procedure TFormCalculationEstimate.grRatesExExit(Sender: TObject);
@@ -3667,6 +3683,14 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.PMNumRowClick(Sender: TObject);
+begin
+  PMRenumFromCurRowToSM.Enabled :=
+    (qrRatesExID_TYPE_DATA.Value > 0) and
+    (qrRatesExNOM_ROW_MANUAL.Value > 0);
+  PMRenumFromCurRowToList.Enabled := PMRenumFromCurRowToSM.Enabled;
+end;
+
 procedure TFormCalculationEstimate.PMPasteClick(Sender: TObject);
 var
   DataObj: TSmClipData;
@@ -3698,6 +3722,124 @@ begin
   PMAddRatMatMechEquipRefClick(nil);
   if Assigned(FormAdditionData) then
     FormAdditionData.FrameRates.EditRate.Text := StringReplace(PMAddRateOld.Caption, '&', '', [rfReplaceAll]);
+end;
+
+procedure TFormCalculationEstimate.PMRenumCurSmetClick(Sender: TObject);
+var ev: TDataSetNotifyEvent;
+    TempBookmark: TBookMark;
+    NumRow: Integer;
+    SmIdList: TList<Integer>;
+    AutoCommitValue: Boolean;
+begin
+    SmIdList := TList<Integer>.Create;
+    try
+      if (Sender as TComponent).Tag = 1 then
+      begin
+        qrTemp.Active := False;
+        qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
+          '(PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
+          '(SM_ID = ' + qrRatesExSM_ID.Value.ToString + ')';
+        qrTemp.Active := True;
+        while not qrTemp.Eof do
+        begin
+          SmIdList.Add(qrTemp.Fields[0].AsInteger);
+          qrTemp.Next;
+        end;
+        qrTemp.Close;
+      end;
+
+      TempBookmark := qrRatesEx.GetBookmark;
+      qrRatesEx.DisableControls;
+      ev := qrRatesEx.AfterScroll;
+      AutoCommitValue := DM.Read.Options.AutoCommit;
+      try
+        DM.Read.Options.AutoCommit := False;
+        DM.Read.StartTransaction;
+        qrRatesEx.AfterScroll := nil;
+        qrRatesEx.First;
+        NumRow := 0;
+        try
+          while not qrRatesEx.Eof do
+          begin
+            if (((SmIdList.IndexOf(qrRatesExSM_ID.Value) > -1) and
+                 ((Sender as TComponent).Tag = 1))
+                 or
+                 ((Sender as TComponent).Tag = 2)) and
+               (qrRatesExID_TYPE_DATA.Value > 0) then
+            begin
+              Inc(NumRow);
+              qrRatesEx.Edit;
+              qrRatesExNOM_ROW_MANUAL.Value := NumRow;
+            end;
+            qrRatesEx.Next;
+          end;
+          DM.Read.Commit;
+        except
+          DM.Read.Rollback;
+          raise;
+        end;
+      finally
+        DM.Read.Options.AutoCommit := AutoCommitValue;
+
+        qrRatesEx.GotoBookmark(TempBookmark);
+        qrRatesEx.FreeBookmark(TempBookmark);
+
+
+        qrRatesEx.AfterScroll := ev;
+        qrRatesEx.EnableControls;
+      end;
+    finally
+      FreeAndNil(SmIdList);
+    end;
+end;
+
+procedure TFormCalculationEstimate.PMRenumFromCurRowClick(Sender: TObject);
+var ev: TDataSetNotifyEvent;
+    TempBookmark: TBookMark;
+    NumRow: Integer;
+    SmId: Integer;
+    AutoCommitValue: Boolean;
+begin
+    SmId := qrRatesExSM_ID.Value;
+    TempBookmark := qrRatesEx.GetBookmark;
+    qrRatesEx.DisableControls;
+    ev := qrRatesEx.AfterScroll;
+    AutoCommitValue := DM.Read.Options.AutoCommit;
+    try
+      DM.Read.Options.AutoCommit := False;
+      DM.Read.StartTransaction;
+      qrRatesEx.AfterScroll := nil;
+      NumRow := qrRatesExNOM_ROW_MANUAL.Value;
+      if not qrRatesEx.Eof then
+        qrRatesEx.Next;
+      try
+        while not qrRatesEx.Eof do
+        begin
+          if (((SmId = qrRatesExSM_ID.Value) and
+               ((Sender as TComponent).Tag = 3))
+              or ((Sender as TComponent).Tag = 4))and
+             (qrRatesExID_TYPE_DATA.Value > 0) then
+          begin
+            Inc(NumRow);
+            qrRatesEx.Edit;
+            qrRatesExNOM_ROW_MANUAL.Value := NumRow;
+          end;
+          qrRatesEx.Next;
+        end;
+        DM.Read.Commit;
+      except
+        DM.Read.Rollback;
+        raise;
+      end;
+    finally
+      DM.Read.Options.AutoCommit := AutoCommitValue;
+
+      qrRatesEx.GotoBookmark(TempBookmark);
+      qrRatesEx.FreeBookmark(TempBookmark);
+
+      qrRatesEx.AfterScroll := ev;
+      qrRatesEx.EnableControls;
+    end;
 end;
 
 procedure TFormCalculationEstimate.PMSetTransPercClick(Sender: TObject);
@@ -6042,7 +6184,7 @@ begin
         qrRatesEx.Next;
     end;
 
-    grRatesEx.Col := 3;
+    grRatesEx.Col := 4;
   finally
     qrRatesEx.EnableControls;
     grRatesEx.SelectedRows.Clear;
@@ -6755,6 +6897,10 @@ begin
       Font.Color := PS.FontRows;
       Brush.Color := clInactiveBorder;
     end;
+
+    //Подсветка нумерации строк как фиксированной облости
+    if Column.Index = 0 then
+      Brush.Color := grRatesEx.FixedColor;
 
     // Подсвечиваем расченку с добавленными материалами/механизмами
     if qrRatesExADDED_COUNT.Value > 0 then
