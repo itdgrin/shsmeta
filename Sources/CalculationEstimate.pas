@@ -2193,7 +2193,7 @@ begin
           try
             // Проверяем на наличие такой же записи
             flOk := False;
-            OBJ_NAME := qrRatesExOBJ_CODE.Value;
+            OBJ_NAME := qrRatesExOBJ_CODE.AsString;
             while not flOk do
             begin
               tID := Null;
@@ -2253,7 +2253,7 @@ begin
           try
             // Проверяем на наличие такой же записи
             flOk := False;
-            OBJ_NAME := qrRatesExOBJ_CODE.Value;
+            OBJ_NAME := qrRatesExOBJ_CODE.AsString;
             while not flOk do
             begin
               tID := Null;
@@ -2298,7 +2298,7 @@ begin
           try
             // Проверяем на наличие такой же записи
             flOk := False;
-            OBJ_NAME := qrRatesExOBJ_CODE.Value;
+            OBJ_NAME := qrRatesExOBJ_CODE.AsString;
             while not flOk do
             begin
               tID := Null;
