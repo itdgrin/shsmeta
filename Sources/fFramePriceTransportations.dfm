@@ -29,18 +29,20 @@ inherited FramePriceTransportations: TFramePriceTransportations
     end
     object PanelTable: TPanel
       Left = 0
-      Top = 25
+      Top = 36
       Width = 488
-      Height = 291
+      Height = 280
       Align = alClient
       BevelOuter = bvNone
       ParentBackground = False
       TabOrder = 1
+      ExplicitTop = 25
+      ExplicitHeight = 291
       object VST: TVirtualStringTree
         Left = 0
         Top = 0
         Width = 488
-        Height = 291
+        Height = 280
         Align = alClient
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -66,6 +68,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
         OnEnter = VSTEnter
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
+        ExplicitHeight = 291
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]
@@ -139,7 +142,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
       Left = 0
       Top = 0
       Width = 488
-      Height = 25
+      Height = 36
       Align = alTop
       BevelOuter = bvNone
       DoubleBuffered = True
@@ -147,27 +150,26 @@ inherited FramePriceTransportations: TFramePriceTransportations
       ParentDoubleBuffered = False
       TabOrder = 0
       object LabelYear: TLabel
-        Left = 3
-        Top = 6
+        Left = 8
+        Top = 11
         Width = 23
         Height = 13
         Caption = #1043#1086#1076':'
       end
       object LabelMonth: TLabel
-        Left = 88
-        Top = 6
+        Left = 93
+        Top = 11
         Width = 35
         Height = 13
         Caption = #1052#1077#1089#1103#1094':'
       end
       object ComboBoxMonth: TComboBox
-        Left = 129
-        Top = 2
-        Width = 77
+        Left = 132
+        Top = 8
+        Width = 82
         Height = 21
-        ItemIndex = 1
+        Style = csDropDownList
         TabOrder = 1
-        Text = #1060#1077#1074#1088#1072#1083#1100
         OnChange = ComboBoxMonthYearChange
         Items.Strings = (
           #1071#1085#1074#1072#1088#1100
@@ -184,10 +186,10 @@ inherited FramePriceTransportations: TFramePriceTransportations
           #1044#1077#1082#1072#1073#1088#1100)
       end
       object edtYear: TSpinEdit
-        Left = 29
-        Top = 2
-        Width = 57
-        Height = 22
+        Left = 33
+        Top = 8
+        Width = 54
+        Height = 23
         MaxLength = 4
         MaxValue = 2050
         MinValue = 1900
@@ -196,8 +198,8 @@ inherited FramePriceTransportations: TFramePriceTransportations
         OnChange = ComboBoxMonthYearChange
       end
       object cmbTranspType: TComboBox
-        Left = 212
-        Top = 2
+        Left = 221
+        Top = 8
         Width = 197
         Height = 21
         Style = csDropDownList
@@ -228,8 +230,8 @@ inherited FramePriceTransportations: TFramePriceTransportations
     end
   end
   object PopupMenu: TPopupMenu
-    Left = 80
-    Top = 32
+    Left = 112
+    Top = 112
     object CopyCell: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       OnClick = CopyCellClick
@@ -250,7 +252,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 28
-    Top = 33
+    Left = 52
+    Top = 113
   end
 end

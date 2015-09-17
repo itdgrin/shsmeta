@@ -304,7 +304,7 @@ object SprFrame: TSprFrame
     TabOrder = 0
     object lbYear: TLabel
       Left = 8
-      Top = 10
+      Top = 11
       Width = 23
       Height = 13
       Caption = #1043#1086#1076':'
@@ -411,9 +411,9 @@ object SprFrame: TSprFrame
     end
     object edtFindCode: TEdit
       Left = 37
-      Top = 5
+      Top = 6
       Width = 91
-      Height = 21
+      Height = 23
       TabOrder = 2
       OnKeyPress = edtFindNameKeyPress
     end

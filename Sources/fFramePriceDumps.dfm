@@ -39,18 +39,20 @@ inherited FramePriceDumps: TFramePriceDumps
     end
     object PanelTable: TPanel
       Left = 0
-      Top = 25
+      Top = 36
       Width = 488
-      Height = 251
+      Height = 240
       Align = alClient
       BevelOuter = bvNone
       ParentBackground = False
       TabOrder = 1
       OnResize = PanelTableResize
+      ExplicitTop = 25
+      ExplicitHeight = 251
       object SpeedButtonShowHide: TSpeedButton
         Tag = 1
         Left = 0
-        Top = 236
+        Top = 225
         Width = 488
         Height = 15
         Align = alBottom
@@ -66,7 +68,7 @@ inherited FramePriceDumps: TFramePriceDumps
         Left = 0
         Top = 0
         Width = 488
-        Height = 236
+        Height = 225
         Align = alClient
         Header.AutoSizeIndex = 0
         Header.Font.Charset = DEFAULT_CHARSET
@@ -87,6 +89,7 @@ inherited FramePriceDumps: TFramePriceDumps
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
         OnKeyPress = VSTKeyPress
+        ExplicitHeight = 236
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]
@@ -126,7 +129,7 @@ inherited FramePriceDumps: TFramePriceDumps
       Left = 0
       Top = 0
       Width = 488
-      Height = 25
+      Height = 36
       Align = alTop
       BevelOuter = bvNone
       DoubleBuffered = True
@@ -135,34 +138,32 @@ inherited FramePriceDumps: TFramePriceDumps
       TabOrder = 0
       DesignSize = (
         488
-        25)
+        36)
       object LabelSearch: TLabel
-        Left = 8
-        Top = 6
+        Left = 221
+        Top = 11
         Width = 34
         Height = 13
         Caption = #1055#1086#1080#1089#1082':'
       end
       object LabelYear: TLabel
-        Left = 283
-        Top = 6
+        Left = 8
+        Top = 11
         Width = 23
         Height = 13
-        Anchors = [akTop, akRight]
         Caption = #1043#1086#1076':'
       end
       object LabelMonth: TLabel
-        Left = 368
-        Top = 6
+        Left = 93
+        Top = 11
         Width = 35
         Height = 13
-        Anchors = [akTop, akRight]
         Caption = #1052#1077#1089#1103#1094':'
       end
       object EditSearch: TEdit
-        Left = 48
-        Top = 2
-        Width = 229
+        Left = 261
+        Top = 8
+        Width = 220
         Height = 21
         Hint = 
           #1042#1074#1077#1076#1080#1090#1077' '#1089#1083#1086#1074#1072' '#1095#1077#1088#1077#1079' '#1087#1088#1086#1073#1077#1083' '#1080' '#1085#1072#1078#1084#1080#1090#1077' - Enter, '#1076#1083#1103' '#1086#1095#1080#1089#1090#1082#1080' '#1085#1072#1078#1084#1080#1090 +
@@ -175,14 +176,12 @@ inherited FramePriceDumps: TFramePriceDumps
         OnKeyPress = EditSearchKeyPress
       end
       object ComboBoxMonth: TComboBox
-        Left = 409
-        Top = 2
-        Width = 75
+        Left = 132
+        Top = 8
+        Width = 82
         Height = 21
-        Anchors = [akTop, akRight]
-        ItemIndex = 1
+        Style = csDropDownList
         TabOrder = 1
-        Text = #1060#1077#1074#1088#1072#1083#1100
         OnChange = edtYearChange
         Items.Strings = (
           #1071#1085#1074#1072#1088#1100
@@ -199,11 +198,10 @@ inherited FramePriceDumps: TFramePriceDumps
           #1044#1077#1082#1072#1073#1088#1100)
       end
       object edtYear: TSpinEdit
-        Left = 309
-        Top = 2
-        Width = 55
+        Left = 33
+        Top = 8
+        Width = 54
         Height = 22
-        Anchors = [akTop, akRight]
         MaxLength = 4
         MaxValue = 2050
         MinValue = 1900
@@ -255,8 +253,8 @@ inherited FramePriceDumps: TFramePriceDumps
     end
   end
   object PopupMenu: TPopupMenu
-    Left = 80
-    Top = 32
+    Left = 112
+    Top = 80
     object CopyCell: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       OnClick = CopyCellClick
@@ -278,6 +276,6 @@ inherited FramePriceDumps: TFramePriceDumps
     Transaction = DM.Read
     UpdateTransaction = DM.Write
     Left = 28
-    Top = 40
+    Top = 88
   end
 end

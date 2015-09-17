@@ -72,6 +72,8 @@ begin
       FMatCode := 'С000-0000';
     6:
       FTranspPers := StrToIntDef(edtrbTrPers.Text, 0);
+    else
+      raise Exception.Create('Неизвестный тип транспорта.');
   end;
 
   if FSelectRb in [1, 2, 3, 4, 5] then

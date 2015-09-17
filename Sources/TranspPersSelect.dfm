@@ -48,7 +48,7 @@ object fTrPersSelect: TfTrPersSelect
   object rbTrPers1: TRadioButton
     Tag = 1
     Left = 16
-    Top = 16
+    Top = 18
     Width = 265
     Height = 17
     Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1076#1083#1103' '#1086#1073#1097#1077#1089#1090#1074#1077#1085#1085#1099#1093' '#1088#1072#1073#1086#1090

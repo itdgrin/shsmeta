@@ -228,16 +228,16 @@ inherited SprMaterial: TSprMaterial
       1EFA95A1232C37680AF4D5B2A7A378A61002003B}
   end
   inherited PanelSettings: TPanel
-    inherited lbYear: TLabel
-      Top = 12
-      ExplicitTop = 12
-    end
     object lbRegion: TLabel [2]
       Left = 221
       Top = 12
       Width = 39
       Height = 13
       Caption = #1056#1077#1075#1080#1086#1085':'
+    end
+    inherited edtYear: TSpinEdit
+      Height = 23
+      ExplicitHeight = 23
     end
     object cmbRegion: TComboBox
       Left = 264
