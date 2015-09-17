@@ -12,7 +12,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     Align = alClient
     DataSource = dsData
     DrawingStyle = gdsClassic
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ParentShowHint = False
     PopupMenu = pm1
     ShowHint = False
@@ -289,9 +289,10 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       end
       item
         Expanded = False
+        FieldName = 'VEDOMS_NAL'
         Title.Alignment = taCenter
         Title.Caption = #1057#1083#1091#1078#1073#1072' '#1074#1077#1076#1086#1084#1089#1090#1074#1077#1085#1085#1086#1075#1086' '#1082#1086#1085#1090#1088#1086#1083#1103
-        Visible = False
+        Visible = True
       end
       item
         Expanded = False
@@ -302,9 +303,10 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       end
       item
         Expanded = False
+        FieldName = 'DEBET_NAL'
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1083#1086#1075' '#1086#1090' '#1074#1099#1088#1091#1095#1082#1080
-        Visible = False
+        Visible = True
       end>
   end
   object qrData: TFDQuery
@@ -370,6 +372,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  SUM(IFNULL(d.SOC_STRAHF, d.SOC_STRAH)) AS SOC_STRAH,'
       '  SUM(IFNULL(d.ZEM_NALF, d.ZEM_NAL)) AS ZEM_NAL,'
       '  SUM(IFNULL(d.NDSF, d.NDS)) AS NDS,'
+      '  SUM(IFNULL(d.DEBET_NALF, d.DEBET_NAL)) AS DEBET_NAL,'
+      '  SUM(IFNULL(d.VEDOMS_NALF, d.VEDOMS_NAL)) AS VEDOMS_NAL,'
       ''
       '  SUM(IFNULL(d.ZP, 0)) AS ZPF,'
       '  SUM(IFNULL(d.EMiM, 0)) AS EMiMF,'
@@ -393,7 +397,9 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  SUM(IFNULL(d.TRUD_ZIM, 0)) AS TRUD_ZIMF,'
       '  SUM(IFNULL(d.SOC_STRAH, 0)) AS SOC_STRAHF,'
       '  SUM(IFNULL(d.ZEM_NAL, 0)) AS ZEM_NALF,'
-      '  SUM(IFNULL(d.NDS, 0)) AS NDSF'
+      '  SUM(IFNULL(d.NDS, 0)) AS NDSF,'
+      '  SUM(IFNULL(d.DEBET_NAL, 0)) AS DEBET_NALF,'
+      '  SUM(IFNULL(d.VEDOMS_NAL, 0)) AS VEDOMS_NALF'
       ''
       'FROM typesm, objcards o, smetasourcedata s'
       'LEFT JOIN summary_calculation d ON d.id_estimate IN'
@@ -517,7 +523,9 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  TRUD_ZIMF = :TRUD_ZIM, '
       '  SOC_STRAHF = :SOC_STRAH,'
       '  ZEM_NALF = :ZEM_NAL,'
-      '  NDSF=:NDS'
+      '  NDSF=:NDS,'
+      '  DEBET_NALF=:DEBET_NAL,'
+      '  VEDOMS_NALF=:VEDOMS_NAL'
       
         'WHERE   id_estimate = :id_estimate and IFNULL(id_act, 0) = :id_a' +
         'ct;')

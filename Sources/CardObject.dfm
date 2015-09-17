@@ -292,7 +292,7 @@ object FormCardObject: TFormCardObject
       Font.Name = 'Tahoma'
       Font.Style = []
       MaxValue = 2100
-      MinValue = 1900
+      MinValue = 2012
       ParentFont = False
       TabOrder = 0
       Value = 2015

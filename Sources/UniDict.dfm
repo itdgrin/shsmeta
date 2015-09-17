@@ -95,7 +95,7 @@ object fUniDict: TfUniDict
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     MaxValue = 2100
-    MinValue = 1900
+    MinValue = 2012
     ParentFont = False
     TabOrder = 0
     Value = 2014

@@ -777,7 +777,7 @@ end;
 procedure TFormCardObject.DateTimePickerStartBuildingChange(Sender: TObject);
 begin
   // Автоматическое заполнение %в расхода
-  if not Editing then
+  // if not Editing then // только для новых записей
   begin
     qrMain.Edit;
     qrMain.FieldByName('PER_TEMP_BUILD').Value := GetUniDictParamValue('PER_TEMP_BUILD',

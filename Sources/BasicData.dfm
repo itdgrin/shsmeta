@@ -426,7 +426,7 @@ object FormBasicData: TFormBasicData
     Height = 22
     MaxLength = 4
     MaxValue = 2050
-    MinValue = 1900
+    MinValue = 2012
     TabOrder = 2
     Value = 2014
     OnChange = ComboBoxMonthORYearChange

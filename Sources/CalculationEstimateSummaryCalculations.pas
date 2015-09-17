@@ -99,16 +99,24 @@ begin
       Brush.Color := clSilver;
     end;
 
-    if (not Column.ReadOnly) and (qrData.FieldByName(Column.FieldName).Value <>
-      qrData.FieldByName(Column.FieldName + 'F').Value) then
-      Font.Color := clRed;
-
-    if (gdSelected in State) { or (gdSelected is State) } then // Ячейка в фокусе
+    // Строка в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // Ячейка в фокусе
+    if (gdSelected in State) then
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;
       Font.Style := Font.Style + [fsbold];
     end;
+
+    if (not Column.ReadOnly) and (qrData.FieldByName(Column.FieldName).Value <>
+      qrData.FieldByName(Column.FieldName + 'F').Value) then
+      Font.Color := clRed;
   end;
   grSummaryCalculation.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
@@ -131,7 +139,7 @@ end;
 
 procedure TfrCalculationEstimateSummaryCalculations.mN3Click(Sender: TObject);
 begin
-  grSummaryCalculation.Options := grSummaryCalculation.Options - [dgRowSelect] + [dgEditing];
+  grSummaryCalculation.Options := grSummaryCalculation.Options + [dgEditing];
   qrData.Edit;
 end;
 
@@ -214,13 +222,13 @@ end;
 
 procedure TfrCalculationEstimateSummaryCalculations.qrDataAfterCancel(DataSet: TDataSet);
 begin
-  grSummaryCalculation.Options := grSummaryCalculation.Options - [dgEditing] + [dgRowSelect];
+  grSummaryCalculation.Options := grSummaryCalculation.Options - [dgEditing];
 end;
 
 procedure TfrCalculationEstimateSummaryCalculations.qrDataAfterPost(DataSet: TDataSet);
 begin
   CloseOpen(qrData);
-  grSummaryCalculation.Options := grSummaryCalculation.Options - [dgEditing] + [dgRowSelect];
+  grSummaryCalculation.Options := grSummaryCalculation.Options - [dgEditing];
 end;
 
 end.
