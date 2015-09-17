@@ -324,10 +324,13 @@ type
     SelectRowUnfocusedTable: integer;
     AutoCreateEstimates: Boolean; // Автоматически создавать набор смет при создании объекта
     AutoExpandTreeEstimates: Boolean; // Автоматически раскрывать дерево смет
-    CalcResourcesAutoSave: Boolean; // Автоматически сохранять изменения на форме расчета стоимости ресурсов без подтверждения
+    CalcResourcesAutoSave: Boolean;
+    // Автоматически сохранять изменения на форме расчета стоимости ресурсов без подтверждения
     RoundTo: integer; // Округлять числа до vRoundTo знаков после запятой
-    AutosaveRateDescr: Boolean; // Автоматически сохранять описание записей в левой таблице на форме расчета сметы
-    AutoSaveCalcResourcesAfterExitCell: Boolean; // Автоматический пост записи при переходе внутри редактируемой записи на форме расчета стоимости ресурсов
+    AutosaveRateDescr: Boolean;
+    // Автоматически сохранять описание записей в левой таблице на форме расчета сметы
+    AutoSaveCalcResourcesAfterExitCell: Boolean;
+    // Автоматический пост записи при переходе внутри редактируемой записи на форме расчета стоимости ресурсов
 
     ShowHint: Boolean;
   end;
@@ -1946,10 +1949,13 @@ procedure TFormMain.mReportClick(Sender: TObject);
 begin
   if Assigned(FormCalculationEstimate) then
   begin
+    FormCalculationEstimate.ShowNeedSaveDialog;
     if FormCalculationEstimate.IdEstimate > 0 then
-      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),PChar(FileReportPath), SW_maximIZE)
+      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+        PChar(FileReportPath), SW_maximIZE)
     else
-      ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),PChar(FileReportPath), SW_maximIZE);
+      ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
+        PChar(FileReportPath), SW_maximIZE);
   end;
 end;
 
@@ -2287,9 +2293,10 @@ begin
       PS.AutoExpandTreeEstimates := ReadBool('Object', 'AutoExpandTreeEstimates', true);
       PS.RoundTo := ReadInteger('Round', vRoundTo, 0);
       PS.CalcResourcesAutoSave := ReadBool('CalcResources', 'CalcResourcesAutoSave', true);
-      PS.AutoSaveCalcResourcesAfterExitCell := ReadBool('CalcResources', 'AutoSaveCalcResourcesAfterExitCell', False);
+      PS.AutoSaveCalcResourcesAfterExitCell :=
+        ReadBool('CalcResources', 'AutoSaveCalcResourcesAfterExitCell', False);
       PS.ShowHint := ReadBool('ShowHint', vShowHint, true);
-      PS.AutosaveRateDescr := ReadBool('ESTIMATE', 'AutosaveRateDescr', True);
+      PS.AutosaveRateDescr := ReadBool('ESTIMATE', 'AutosaveRateDescr', true);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти

@@ -789,6 +789,8 @@ type
     procedure ShowAutoRep; // Показывает диалог замены для всех из массива
 
     procedure DeleteRowFromSmeta();
+    procedure SaveData; // Процедура сохранения сметы/акта
+
   public
     ConfirmCloseForm: Boolean;
     flChangeEstimate: Boolean; // Не даем закрыться окну при переключении между сметами.
@@ -809,6 +811,7 @@ type
       var Handled: Boolean);
     procedure RecalcEstimate;
     procedure FillObjectInfo;
+    procedure ShowNeedSaveDialog;
     constructor Create(const isAct: Boolean); reintroduce;
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -1072,9 +1075,8 @@ begin
       vkEqual:
         begin
           // Если пытамся ввести формулу в таблицу слева
-          if CheckQrActiveEmpty(qrRatesEx) and
-             (ActiveControl = grRatesEx) and
-             (grRatesEx.SelectedField = qrRatesExOBJ_COUNT) then
+          if CheckQrActiveEmpty(qrRatesEx) and (ActiveControl = grRatesEx) and
+            (grRatesEx.SelectedField = qrRatesExOBJ_COUNT) then
           begin
             res := CalcExpression(qrRatesExOBJ_COUNT.AsString);
             if VarIsNull(res) then
@@ -1172,7 +1174,7 @@ end;
 
 procedure TFormCalculationEstimate.SpeedButtonSSRClick(Sender: TObject);
 begin
-
+  ShowNeedSaveDialog;
   ShellExecute(Handle, nil, 'report.exe', PChar('C' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
     PChar(GetCurrentDir + '\REPORTS\'), SW_maximIZE);
   Exit;
@@ -1361,7 +1363,7 @@ end;
 
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
-
+  ShowNeedSaveDialog;
   if FormCalculationEstimate.IdAct = 0 then
     ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
       PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
@@ -3187,11 +3189,11 @@ end;
 
 procedure TFormCalculationEstimate.qrRatesExNOM_ROW_MANUALChange(Sender: TField);
 begin
-  {if Sender.IsNull then
-  begin
+  { if Sender.IsNull then
+    begin
     Sender.AsInteger := 0;
     Exit;
-  end;}
+    end; }
 
   qrTemp.SQL.Text := 'UPDATE data_row_temp set NOM_ROW_MANUAL=:VAL WHERE ID=:ID;';
   qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
@@ -3326,14 +3328,9 @@ procedure TFormCalculationEstimate.grRatesExCanEditCell(Grid: TJvDBGrid; Field: 
   var AllowEdit: Boolean);
 begin
   AllowEdit := True;
-  if ((Field = qrRatesExOBJ_CODE) and
-     (qrRatesExID_TYPE_DATA.Value <> -4) and
-     (qrRatesExID_TYPE_DATA.Value <> -5))
-     or
-     ((Field = qrRatesExNOM_ROW_MANUAL) and
-     (qrRatesExID_TYPE_DATA.Value < 1))
-     or
-     (Grid.Col = 1) then
+  if ((Field = qrRatesExOBJ_CODE) and (qrRatesExID_TYPE_DATA.Value <> -4) and
+    (qrRatesExID_TYPE_DATA.Value <> -5)) or
+    ((Field = qrRatesExNOM_ROW_MANUAL) and (qrRatesExID_TYPE_DATA.Value < 1)) or (Grid.Col = 1) then
     AllowEdit := False;
 end;
 
@@ -3685,9 +3682,7 @@ end;
 
 procedure TFormCalculationEstimate.PMNumRowClick(Sender: TObject);
 begin
-  PMRenumFromCurRowToSM.Enabled :=
-    (qrRatesExID_TYPE_DATA.Value > 0) and
-    (qrRatesExNOM_ROW_MANUAL.Value > 0);
+  PMRenumFromCurRowToSM.Enabled := (qrRatesExID_TYPE_DATA.Value > 0) and (qrRatesExNOM_ROW_MANUAL.Value > 0);
   PMRenumFromCurRowToList.Enabled := PMRenumFromCurRowToSM.Enabled;
 end;
 
@@ -3725,82 +3720,29 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMRenumCurSmetClick(Sender: TObject);
-var ev: TDataSetNotifyEvent;
-    TempBookmark: TBookMark;
-    NumRow: Integer;
-    SmIdList: TList<Integer>;
-    AutoCommitValue: Boolean;
+var
+  ev: TDataSetNotifyEvent;
+  TempBookmark: TBookMark;
+  NumRow: Integer;
+  SmIdList: TList<Integer>;
+  AutoCommitValue: Boolean;
 begin
-    SmIdList := TList<Integer>.Create;
-    try
-      if (Sender as TComponent).Tag = 1 then
+  SmIdList := TList<Integer>.Create;
+  try
+    if (Sender as TComponent).Tag = 1 then
+    begin
+      qrTemp.Active := False;
+      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '(PARENT_ID = ' +
+        qrRatesExSM_ID.Value.ToString + ') OR ' + '(SM_ID = ' + qrRatesExSM_ID.Value.ToString + ')';
+      qrTemp.Active := True;
+      while not qrTemp.Eof do
       begin
-        qrTemp.Active := False;
-        qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
-          '(PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
-          '(SM_ID = ' + qrRatesExSM_ID.Value.ToString + ')';
-        qrTemp.Active := True;
-        while not qrTemp.Eof do
-        begin
-          SmIdList.Add(qrTemp.Fields[0].AsInteger);
-          qrTemp.Next;
-        end;
-        qrTemp.Close;
+        SmIdList.Add(qrTemp.Fields[0].AsInteger);
+        qrTemp.Next;
       end;
-
-      TempBookmark := qrRatesEx.GetBookmark;
-      qrRatesEx.DisableControls;
-      ev := qrRatesEx.AfterScroll;
-      AutoCommitValue := DM.Read.Options.AutoCommit;
-      try
-        DM.Read.Options.AutoCommit := False;
-        DM.Read.StartTransaction;
-        qrRatesEx.AfterScroll := nil;
-        qrRatesEx.First;
-        NumRow := 0;
-        try
-          while not qrRatesEx.Eof do
-          begin
-            if (((SmIdList.IndexOf(qrRatesExSM_ID.Value) > -1) and
-                 ((Sender as TComponent).Tag = 1))
-                 or
-                 ((Sender as TComponent).Tag = 2)) and
-               (qrRatesExID_TYPE_DATA.Value > 0) then
-            begin
-              Inc(NumRow);
-              qrRatesEx.Edit;
-              qrRatesExNOM_ROW_MANUAL.Value := NumRow;
-            end;
-            qrRatesEx.Next;
-          end;
-          DM.Read.Commit;
-        except
-          DM.Read.Rollback;
-          raise;
-        end;
-      finally
-        DM.Read.Options.AutoCommit := AutoCommitValue;
-
-        qrRatesEx.GotoBookmark(TempBookmark);
-        qrRatesEx.FreeBookmark(TempBookmark);
-
-
-        qrRatesEx.AfterScroll := ev;
-        qrRatesEx.EnableControls;
-      end;
-    finally
-      FreeAndNil(SmIdList);
+      qrTemp.Close;
     end;
-end;
 
-procedure TFormCalculationEstimate.PMRenumFromCurRowClick(Sender: TObject);
-var ev: TDataSetNotifyEvent;
-    TempBookmark: TBookMark;
-    NumRow: Integer;
-    SmId: Integer;
-    AutoCommitValue: Boolean;
-begin
-    SmId := qrRatesExSM_ID.Value;
     TempBookmark := qrRatesEx.GetBookmark;
     qrRatesEx.DisableControls;
     ev := qrRatesEx.AfterScroll;
@@ -3809,16 +3751,13 @@ begin
       DM.Read.Options.AutoCommit := False;
       DM.Read.StartTransaction;
       qrRatesEx.AfterScroll := nil;
-      NumRow := qrRatesExNOM_ROW_MANUAL.Value;
-      if not qrRatesEx.Eof then
-        qrRatesEx.Next;
+      qrRatesEx.First;
+      NumRow := 0;
       try
         while not qrRatesEx.Eof do
         begin
-          if (((SmId = qrRatesExSM_ID.Value) and
-               ((Sender as TComponent).Tag = 3))
-              or ((Sender as TComponent).Tag = 4))and
-             (qrRatesExID_TYPE_DATA.Value > 0) then
+          if (((SmIdList.IndexOf(qrRatesExSM_ID.Value) > -1) and ((Sender as TComponent).Tag = 1)) or
+            ((Sender as TComponent).Tag = 2)) and (qrRatesExID_TYPE_DATA.Value > 0) then
           begin
             Inc(NumRow);
             qrRatesEx.Edit;
@@ -3840,6 +3779,57 @@ begin
       qrRatesEx.AfterScroll := ev;
       qrRatesEx.EnableControls;
     end;
+  finally
+    FreeAndNil(SmIdList);
+  end;
+end;
+
+procedure TFormCalculationEstimate.PMRenumFromCurRowClick(Sender: TObject);
+var
+  ev: TDataSetNotifyEvent;
+  TempBookmark: TBookMark;
+  NumRow: Integer;
+  SmID: Integer;
+  AutoCommitValue: Boolean;
+begin
+  SmID := qrRatesExSM_ID.Value;
+  TempBookmark := qrRatesEx.GetBookmark;
+  qrRatesEx.DisableControls;
+  ev := qrRatesEx.AfterScroll;
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  try
+    DM.Read.Options.AutoCommit := False;
+    DM.Read.StartTransaction;
+    qrRatesEx.AfterScroll := nil;
+    NumRow := qrRatesExNOM_ROW_MANUAL.Value;
+    if not qrRatesEx.Eof then
+      qrRatesEx.Next;
+    try
+      while not qrRatesEx.Eof do
+      begin
+        if (((SmID = qrRatesExSM_ID.Value) and ((Sender as TComponent).Tag = 3)) or
+          ((Sender as TComponent).Tag = 4)) and (qrRatesExID_TYPE_DATA.Value > 0) then
+        begin
+          Inc(NumRow);
+          qrRatesEx.Edit;
+          qrRatesExNOM_ROW_MANUAL.Value := NumRow;
+        end;
+        qrRatesEx.Next;
+      end;
+      DM.Read.Commit;
+    except
+      DM.Read.Rollback;
+      raise;
+    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+
+    qrRatesEx.GotoBookmark(TempBookmark);
+    qrRatesEx.FreeBookmark(TempBookmark);
+
+    qrRatesEx.AfterScroll := ev;
+    qrRatesEx.EnableControls;
+  end;
 end;
 
 procedure TFormCalculationEstimate.PMSetTransPercClick(Sender: TObject);
@@ -3980,7 +3970,6 @@ end;
 procedure TFormCalculationEstimate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var
   DialogResult: Integer;
-  FormCardAct: TfCardAct;
   docType: String;
 begin
   DialogResult := mrNone;
@@ -4003,55 +3992,7 @@ begin
   end;
 
   if DialogResult = mrYes then
-    if Act then
-    begin
-      if IdAct = 0 then
-      begin
-        FormCardAct := TfCardAct.Create(Self);
-        FormCardAct.Kind := kdInsert;
-        FormCardAct.ShowModal;
-      end
-      else if not ActReadOnly then
-        try
-          with qrTemp do
-          begin
-            Active := False;
-            SQL.Clear;
-            SQL.Add('CALL SaveDataAct(:IdAct);');
-            ParamByName('IdAct').Value := IdAct;
-            ExecSQL;
-          end;
-        except
-          on e: Exception do
-          begin
-            qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
-            qrTemp.Active := True;
-            MessageBox(0, PChar('При сохранении данных акта возникла ошибка:' + sLineBreak + sLineBreak +
-              e.message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
-              MB_ICONERROR + MB_OK + mb_TaskModal);
-          end;
-        end;
-    end
-    else
-      try
-        with qrTemp do
-        begin
-          Active := False;
-          SQL.Clear;
-          SQL.Add('CALL SaveAllDataEstimate(:id_estimate);');
-          ParamByName('id_estimate').Value := IdEstimate;
-          ExecSQL;
-        end;
-      except
-        on e: Exception do
-        begin
-          qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
-          qrTemp.Active := True;
-          MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' + sLineBreak + sLineBreak +
-            e.message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
-            MB_ICONERROR + MB_OK + mb_TaskModal);
-        end;
-      end;
+    SaveData;
 
   CanClose := True;
 end;
@@ -4238,6 +4179,47 @@ begin
   qrTemp.Active := True;
   Result := qrTemp.FieldByName('CNT').AsInteger;
   qrTemp.Active := False;
+end;
+
+procedure TFormCalculationEstimate.SaveData;
+var
+  FormCardAct: TfCardAct;
+begin
+  if Act then
+  begin
+    if IdAct = 0 then
+    begin
+      FormCardAct := TfCardAct.Create(Self);
+      FormCardAct.Kind := kdInsert;
+      FormCardAct.ShowModal;
+    end
+    else if not ActReadOnly then
+      try
+        FastExecSQL('CALL SaveDataAct(:IdAct);', VarArrayOf([IdAct]));
+      except
+        on e: Exception do
+        begin
+          qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
+          qrTemp.Active := True;
+          MessageBox(0, PChar('При сохранении данных акта возникла ошибка:' + sLineBreak + sLineBreak +
+            e.message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
+            MB_ICONERROR + MB_OK + mb_TaskModal);
+        end;
+      end;
+  end
+  else
+    try
+      FastExecSQL('CALL SaveAllDataEstimate(:id_estimate);', VarArrayOf([IdEstimate]));
+    except
+      on e: Exception do
+      begin
+        qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
+        qrTemp.Active := True;
+        MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' + sLineBreak + sLineBreak +
+          e.message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
+          MB_ICONERROR + MB_OK + mb_TaskModal);
+      end;
+    end;
 end;
 
 procedure TFormCalculationEstimate.SetActReadOnly(const Value: Boolean);
@@ -6275,6 +6257,18 @@ begin
   Application.ProcessMessages;
 end;
 
+procedure TFormCalculationEstimate.ShowNeedSaveDialog;
+begin
+  case Application.MessageBox
+    ('Для корректного отображения результатов расчета необходимо сохранить текущий документ. Сохранить изменения?',
+    'Расчет', MB_YESNOCANCEL + MB_ICONQUESTION + MB_TOPMOST) of
+    IDCANCEL:
+      Abort;
+    IDYES:
+      SaveData;
+  end;
+end;
+
 procedure TFormCalculationEstimate.AddCoefToRate(coef_id: Integer);
 // Добавление коэфф. к строчке
 var
@@ -6898,7 +6892,7 @@ begin
       Brush.Color := clInactiveBorder;
     end;
 
-    //Подсветка нумерации строк как фиксированной облости
+    // Подсветка нумерации строк как фиксированной облости
     if Column.Index = 0 then
       Brush.Color := grRatesEx.FixedColor;
 
