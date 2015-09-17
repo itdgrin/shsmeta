@@ -32,8 +32,9 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
     CanDelete = False
     EditControls = <>
+    AutoSizeRows = False
     RowsHeight = 17
-    TitleRowHeight = 17
+    TitleRowHeight = 34
     WordWrap = True
     WordWrapAllFields = True
     OnCanEditCell = grSummaryCalculationCanEditCell
@@ -73,6 +74,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = False
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'STOIM'
         Title.Alignment = taCenter
@@ -81,6 +83,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'ST_OHROPR'
         Title.Alignment = taCenter
@@ -89,6 +92,15 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'STOIM_SMR'
+        Title.Alignment = taCenter
+        Title.Caption = #1042#1089#1077#1075#1086' '#1057#1052#1056
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'ZP'
         Title.Alignment = taCenter
@@ -97,6 +109,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'TRUD'
         Title.Alignment = taCenter
@@ -105,6 +118,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'TRUD_MASH'
         Title.Alignment = taCenter
@@ -113,6 +127,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'EMiM'
         Title.Alignment = taCenter
@@ -121,6 +136,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'ZP_MASH'
         Title.Alignment = taCenter
@@ -129,6 +145,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'MR'
         Title.Alignment = taCenter
@@ -137,6 +154,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'TRANSP'
         Title.Alignment = taCenter
@@ -145,6 +163,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'OHROPR'
         Title.Alignment = taCenter
@@ -153,6 +172,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'PLAN_PRIB'
         Title.Alignment = taCenter
@@ -161,6 +181,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'ZIM_UDOR'
         Title.Alignment = taCenter
@@ -169,6 +190,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'ZP_ZIM_UDOR'
         Title.Alignment = taCenter
@@ -177,6 +199,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'MR_DEVICE'
         Title.Alignment = taCenter
@@ -185,6 +208,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'TRANSP_DEVICE'
         Title.Alignment = taCenter
@@ -193,30 +217,35 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         Title.Alignment = taCenter
         Title.Caption = #1048#1084#1087'. '#1084#1072#1090#1077#1088#1080#1072#1083#1099
         Visible = False
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         Title.Alignment = taCenter
         Title.Caption = #1048#1084#1087'. '#1086#1073#1086#1088#1091#1076'.'
         Visible = False
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         Title.Alignment = taCenter
         Title.Caption = #1056#1072#1079'. '#1089#1090#1086#1080#1084'. '#1084#1072#1090'.'
         Visible = False
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         Title.Alignment = taCenter
         Title.Caption = #1056#1072#1079'. '#1089#1090#1086#1080#1084'. '#1084#1077#1093'.'
         Visible = False
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'MR_DUMP'
         Title.Alignment = taCenter
@@ -225,6 +254,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'DUMP_COUNT'
         Title.Alignment = taCenter
@@ -233,6 +263,15 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'TEMP_BUILD'
+        Title.Alignment = taCenter
+        Title.Caption = 'B'#1088#1077#1084#1077#1085#1085#1099#1077' ('#1090#1080#1090#1091#1083#1100#1085#1099#1077') '#1079#1076#1072#1085#1080#1103' '#1080' '#1089#1086#1086#1088#1091#1078#1077#1085#1080#1103
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'TEMP_RET'
         Title.Alignment = taCenter
@@ -241,6 +280,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'NormaAVG'
         ReadOnly = True
@@ -250,6 +290,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'MR_DUMP'
         Title.Alignment = taCenter
@@ -258,6 +299,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'PR_352'
         Title.Alignment = taCenter
@@ -266,6 +308,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'TRUD_ZIM'
         Title.Alignment = taCenter
@@ -274,6 +317,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'SOC_STRAH'
         Title.Alignment = taCenter
@@ -281,6 +325,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'ZEM_NAL'
         Title.Alignment = taCenter
@@ -288,6 +333,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'VEDOMS_NAL'
         Title.Alignment = taCenter
@@ -295,6 +341,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'NDS'
         Title.Alignment = taCenter
@@ -302,6 +349,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end
       item
+        Alignment = taRightJustify
         Expanded = False
         FieldName = 'DEBET_NAL'
         Title.Alignment = taCenter
@@ -374,6 +422,10 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  SUM(IFNULL(d.NDSF, d.NDS)) AS NDS,'
       '  SUM(IFNULL(d.DEBET_NALF, d.DEBET_NAL)) AS DEBET_NAL,'
       '  SUM(IFNULL(d.VEDOMS_NALF, d.VEDOMS_NAL)) AS VEDOMS_NAL,'
+      '  SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR)) AS STOIM_SMR,'
+      '  SUM(IFNULL(d.TEMP_BUILDF, d.TEMP_BUILD)) AS TEMP_BUILD,'
+      '  SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR)) AS STOIM_SMR,'
+      ''
       ''
       '  SUM(IFNULL(d.ZP, 0)) AS ZPF,'
       '  SUM(IFNULL(d.EMiM, 0)) AS EMiMF,'
@@ -399,7 +451,10 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  SUM(IFNULL(d.ZEM_NAL, 0)) AS ZEM_NALF,'
       '  SUM(IFNULL(d.NDS, 0)) AS NDSF,'
       '  SUM(IFNULL(d.DEBET_NAL, 0)) AS DEBET_NALF,'
-      '  SUM(IFNULL(d.VEDOMS_NAL, 0)) AS VEDOMS_NALF'
+      '  SUM(IFNULL(d.VEDOMS_NAL, 0)) AS VEDOMS_NALF,'
+      '  SUM(IFNULL(d.STOIM_SMR, 0)) AS STOIM_SMRF,'
+      '  SUM(IFNULL(d.TEMP_BUILD, 0)) AS TEMP_BUILDF,'
+      '  SUM(IFNULL(d.STOIM_SMR, 0)) AS STOIM_SMRF'
       ''
       'FROM typesm, objcards o, smetasourcedata s'
       'LEFT JOIN summary_calculation d ON d.id_estimate IN'
@@ -500,32 +555,39 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       'SET '
       '  id_estimate = :id_estimate,'
       '  id_act = IF(:id_act=0, NULL, :id_act),'
-      '  ZPF = :ZP,'
-      '  EMiMF = :EMiM,'
-      '  MRF = :MR,'
-      '  TRUDF = :TRUD,'
-      '  TRUD_MASHF = :TRUD_MASH,'
-      '  ZP_MASHF = :ZP_MASH,'
-      '  TRANSPF = :TRANSP,'
-      '  STOIMF = :STOIM,'
-      '  OHROPRF = :OHROPR,'
-      '  PLAN_PRIBF = :PLAN_PRIB,'
-      '  ST_OHROPRF = :ST_OHROPR,'
-      '  ZIM_UDORF = :ZIM_UDOR,'
-      '  ZP_ZIM_UDORF = :ZP_ZIM_UDOR,'
-      '  MR_DEVICEF = :MR_DEVICE,'
-      '  TRANSP_DEVICEF = :TRANSP_DEVICE,'
-      '  MR_DUMPF = :MR_DUMP,'
-      '  DUMP_COUNTF = :DUMP_COUNT,'
-      '  TEMP_RETF = :TEMP_RET,'
-      '  NormaAVGF = :NormaAVG,'
-      '  PR_352F = :PR_352,'
-      '  TRUD_ZIMF = :TRUD_ZIM, '
-      '  SOC_STRAHF = :SOC_STRAH,'
-      '  ZEM_NALF = :ZEM_NAL,'
-      '  NDSF=:NDS,'
-      '  DEBET_NALF=:DEBET_NAL,'
-      '  VEDOMS_NALF=:VEDOMS_NAL'
+      '  ZPF = IF(:ZP=ZP, NULL, :ZP),'
+      '  EMiMF = IF(:EMiM=EMiM, NULL, :EMiM),'
+      '  MRF =  IF(:MR=MR, NULL, :MR),'
+      '  TRUDF = IF( :TRUD=TRUD, NULL, :TRUD),'
+      '  TRUD_MASHF =  IF(:TRUD_MASH=TRUD_MASH, NULL, :TRUD_MASH),'
+      '  ZP_MASHF =  IF(:ZP_MASH=ZP_MASH, NULL, :ZP_MASH),'
+      '  TRANSPF =  IF(:TRANSP=TRANSP, NULL, :TRANSP),'
+      '  STOIMF =  IF(:STOIM=STOIM, NULL, :STOIM),'
+      '  OHROPRF =  IF(:OHROPR=OHROPR, NULL, :OHROPR),'
+      '  PLAN_PRIBF =  IF(:PLAN_PRIB=PLAN_PRIB, NULL, :PLAN_PRIB),'
+      '  ST_OHROPRF =  IF(:ST_OHROPR=ST_OHROPR, NULL, :ST_OHROPR),'
+      '  ZIM_UDORF =  IF(:ZIM_UDOR=ZIM_UDOR, NULL, :ZIM_UDOR),'
+      
+        '  ZP_ZIM_UDORF =  IF(:ZP_ZIM_UDOR=ZP_ZIM_UDOR, NULL, :ZP_ZIM_UDO' +
+        'R),'
+      '  MR_DEVICEF =  IF(:MR_DEVICE=MR_DEVICE, NULL, :MR_DEVICE),'
+      
+        '  TRANSP_DEVICEF =  IF(:TRANSP_DEVICE=TRANSP_DEVICE, NULL, :TRAN' +
+        'SP_DEVICE),'
+      '  MR_DUMPF =  IF(:MR_DUMP=MR_DUMP, NULL, :MR_DUMP),'
+      '  DUMP_COUNTF = IF( :DUMP_COUNT=DUMP_COUNT, NULL, :DUMP_COUNT),'
+      '  TEMP_RETF =  IF(:TEMP_RET=TEMP_RET, NULL, :TEMP_RET),'
+      '  NormaAVGF =  IF(:NormaAVG=NormaAVG, NULL, :NormaAVG),'
+      '  PR_352F =  IF(:PR_352=PR_352, NULL, :PR_352),'
+      '  TRUD_ZIMF =  IF(:TRUD_ZIM=TRUD_ZIM, NULL, :TRUD_ZIM),'
+      '  SOC_STRAHF =  IF( :SOC_STRAH=SOC_STRAH, NULL, :SOC_STRAH),'
+      '  ZEM_NALF =  IF(:ZEM_NAL=ZEM_NAL, NULL, :ZEM_NAL),'
+      '  NDSF=  IF(:NDS=NDS, NULL, :NDS),'
+      '  DEBET_NALF=  IF(:DEBET_NAL=DEBET_NAL, NULL, :DEBET_NAL),'
+      '  VEDOMS_NALF= IF(:VEDOMS_NAL=VEDOMS_NAL, NULL, :VEDOMS_NAL),'
+      '  STOIM_SMRF= IF(:STOIM_SMR=STOIM_SMR, NULL, :STOIM_SMR),'
+      '  TEMP_BUILDF= IF(:TEMP_BUILD=TEMP_BUILD, NULL, :TEMP_BUILD),'
+      '  STOIM_SMRF= IF(:STOIM_SMR=STOIM_SMR, NULL, :STOIM_SMR)'
       
         'WHERE   id_estimate = :id_estimate and IFNULL(id_act, 0) = :id_a' +
         'ct;')
