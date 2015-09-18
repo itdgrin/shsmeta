@@ -93,6 +93,7 @@ type
     AllowUseFilter: Boolean; // Блокировка фильтрации в ADOQuery
   public
     procedure ReceivingAll; override;
+    procedure CheckCurPeriod; override;
     constructor Create(AOwner: TComponent); override;
   end;
 
@@ -210,6 +211,11 @@ begin
     ColWidths[2] := 150;
     ColWidths[3] := 60;
   end;
+end;
+
+procedure TFrameSSR.CheckCurPeriod;
+begin
+
 end;
 
 procedure TFrameSSR.ReceivingAll;
