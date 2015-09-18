@@ -274,7 +274,7 @@
       OnClick = btnResMatClick
       ExplicitTop = 8
     end
-    object btnKC6: TButton
+    object btnKC6J: TSpeedButton
       AlignWithMargins = True
       Left = 107
       Top = 1
@@ -285,9 +285,10 @@
       Margins.Right = 1
       Margins.Bottom = 1
       Align = alLeft
+      GroupIndex = 1
       Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
-      TabOrder = 0
-      OnClick = btnKC6Click
+      OnClick = btnKC6JClick
+      ExplicitLeft = 186
     end
     object btnCalcFact: TBitBtn
       AlignWithMargins = True
@@ -301,7 +302,7 @@
       Margins.Bottom = 1
       Align = alLeft
       Caption = #1056#1072#1089#1095#1077#1090' '#1092#1072#1082#1090#1080#1095#1077#1089#1082#1080#1093' '#1079#1072#1090#1088#1072#1090
-      TabOrder = 2
+      TabOrder = 1
       TabStop = False
       WordWrap = True
       OnClick = btnCalcFactClick
@@ -318,7 +319,7 @@
       Margins.Bottom = 1
       Align = alLeft
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-      TabOrder = 1
+      TabOrder = 0
       TabStop = False
       WordWrap = True
       OnClick = btn2Click

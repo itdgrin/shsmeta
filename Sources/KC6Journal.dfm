@@ -1,7 +1,6 @@
 object fKC6Journal: TfKC6Journal
   Left = 0
   Top = 0
-  ActiveControl = tvEstimates
   Caption = #1046#1091#1088#1085#1072#1083' '#1050#1057'-6'
   ClientHeight = 400
   ClientWidth = 962
@@ -11,9 +10,7 @@ object fKC6Journal: TfKC6Journal
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  FormStyle = fsMDIChild
   OldCreateOrder = False
-  Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
@@ -47,10 +44,6 @@ object fKC6Journal: TfKC6Journal
       Font.Style = []
       ParentFont = False
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl1: TSplitter
         Left = 0
         Top = 121

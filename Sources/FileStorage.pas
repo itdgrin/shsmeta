@@ -31,6 +31,8 @@ type
     dbchkdoc_use_owner_path: TDBCheckBox;
     btnAdd: TSpeedButton;
     btnDelete: TSpeedButton;
+    btn2: TSpeedButton;
+    FileOpenDialog1: TFileOpenDialog;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -42,6 +44,8 @@ type
     procedure btnDeleteClick(Sender: TObject);
     procedure btnSelectClick(Sender: TObject);
     procedure qrTreeDataNewRecord(DataSet: TDataSet);
+    procedure btn2Click(Sender: TObject);
+    procedure btn4Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -135,9 +139,34 @@ begin
   SelectedDocument := qrTreeData.FieldByName('doc_id').Value;
 end;
 
+procedure TfFileStorage.btn2Click(Sender: TObject);
+var
+  parent_id: Integer;
+begin
+  parent_id := qrTreeData.FieldByName('doc_id').AsInteger;
+  qrTreeData.Insert;
+  qrTreeData.FieldByName('doc_name').AsString := 'Новый файл';
+  qrTreeData.FieldByName('parent_id').AsInteger := parent_id;
+  qrTreeData.FieldByName('doc_type').AsInteger := 1;
+  qrTreeData.Post;
+  qrTreeData.Locate('doc_id', parent_id, []);
+end;
+
 procedure TfFileStorage.btn3Click(Sender: TObject);
 begin
   RunDocument(qrTreeData, False);
+end;
+
+procedure TfFileStorage.btn4Click(Sender: TObject);
+begin
+  if FileOpenDialog1.Execute then
+  begin
+    qrTreeData.Edit;
+    qrTreeData.FieldByName('doc_path').AsString := FileOpenDialog1.FileName;
+    qrTreeData.FieldByName('doc_name').AsString := ExtractFileName(FileOpenDialog1.FileName);
+    qrTreeData.FieldByName('doc_use_owner_path').AsInteger := 0;
+    qrTreeData.Post;
+  end;
 end;
 
 procedure TfFileStorage.btnAddClick(Sender: TObject);
@@ -146,7 +175,7 @@ var
 begin
   parent_id := qrTreeData.FieldByName('doc_id').AsInteger;
   qrTreeData.Insert;
-  qrTreeData.FieldByName('doc_name').AsString := 'Хранилище файлов';
+  qrTreeData.FieldByName('doc_name').AsString := 'Новый каталог';
   qrTreeData.FieldByName('parent_id').AsInteger := parent_id;
   qrTreeData.Post;
   qrTreeData.Locate('doc_id', parent_id, []);
@@ -154,7 +183,11 @@ end;
 
 procedure TfFileStorage.btnDeleteClick(Sender: TObject);
 begin
-  qrTreeData.Delete;
+  if Application.MessageBox('Удалить запись?', 'Хранилище файлов', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES
+  then
+  begin
+    qrTreeData.Delete;
+  end;
 end;
 
 procedure TfFileStorage.FormActivate(Sender: TObject);
@@ -188,6 +221,7 @@ end;
 procedure TfFileStorage.qrTreeDataAfterScroll(DataSet: TDataSet);
 begin
   btnDelete.Enabled := qrTreeData.FieldByName('parent_id').AsInteger <> 0;
+  btn2.Enabled := qrTreeData.FieldByName('doc_type').AsInteger = 0;
 end;
 
 procedure TfFileStorage.qrTreeDataNewRecord(DataSet: TDataSet);
