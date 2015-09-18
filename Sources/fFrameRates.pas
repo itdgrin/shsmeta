@@ -200,6 +200,7 @@ type
     AllowAddition: Boolean; // Разрешено/запрещено добавлять записи из фрейма
   public
     procedure ReceivingAll; override;
+    procedure CheckCurPeriod; override;
     constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean); reintroduce;
 
   end;
@@ -795,6 +796,11 @@ procedure TFrameRates.ReceivingAll;
 begin
   EditRateChange(nil);
   fLoaded := true;
+end;
+
+procedure TFrameRates.CheckCurPeriod;
+begin
+
 end;
 
 procedure TFrameRates.SpeedButtonShowHideRightPanelClick(Sender: TObject);

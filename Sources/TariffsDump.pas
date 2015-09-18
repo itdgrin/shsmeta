@@ -3,7 +3,14 @@ unit TariffsDump;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, ExtCtrls, fFramePriceDumps;
+  Windows,
+  Messages,
+  Classes,
+  Controls,
+  Forms,
+  ExtCtrls,
+  System.SysUtils,
+  fFramePriceDumps;
 
 type
   TFormTariffsDump = class(TForm)
@@ -69,7 +76,7 @@ begin
 
   // ----------------------------------------
 
-  FramePriceDump := TFramePriceDumps.Create(Self);
+  FramePriceDump := TFramePriceDumps.Create(Self, Date);
   FramePriceDump.Parent := Self;
   FramePriceDump.Align := alClient;
   FramePriceDump.Visible := true;

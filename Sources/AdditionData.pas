@@ -3,9 +3,22 @@ unit AdditionData;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, ExtCtrls, Buttons, StdCtrls,
-  SysUtils, fFrameRates, Main, Waiting, CalculationEstimate, fFrameSmeta,
-  fFrameMaterial, fFrameMechanizm, fFrameEquipment;
+  Windows,
+  Messages,
+  Classes,
+  Controls,
+  Forms,
+  ExtCtrls,
+  Buttons,
+  StdCtrls,
+  SysUtils,
+  fFrameRates,
+  Main,
+  Waiting,
+  fFrameSmeta,
+  fFrameMaterial,
+  fFrameMechanizm,
+  fFrameEquipment;
 
 type
   TFormAdditionData = class(TForm)
@@ -43,6 +56,8 @@ var
   FormAdditionData: TFormAdditionData;
 
 implementation
+
+uses CalculationEstimate, fFrameSpr;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -174,25 +189,23 @@ end;
 
 procedure TFormAdditionData.SpeedButtonClick(Sender: TObject);
 begin
-  if not Assigned(Pointer((Sender as TComponent).Tag)) then
-    exit;
+  HideAllFrames;
+
+  if not Assigned(Pointer((Sender as TComponent).Tag)) then exit;
 
   if TObject((Sender as TComponent).Tag) is TSmetaFrame then
     with TSmetaFrame((Sender as TComponent).Tag) do
     begin
       if not Loaded then
       begin
-        // FormWaiting.Show;
-        // Application.ProcessMessages;
-        // try
         ReceivingAll;
-        // finally
-        // FormWaiting.Close;
-        // end;
-      end;
+      end
+      else
+        CheckCurPeriod;
     end;
 
-  HideAllFrames;
+  if TObject((Sender as TComponent).Tag) is TSprFrame then
+    TSprFrame((Sender as TComponent).Tag).CheckCurPeriod;
 
   if (Self as TWinControl).Visible then
   begin

@@ -3,9 +3,19 @@ unit PricesReferenceData;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls,
-  {fFramePriceMaterials, fFramePriceMechanizms,} fFramePriceTransportations,
-  fFramePriceDumps, fFrameSmeta, fFrameMaterial, fFrameMechanizm,
+  Windows,
+  Messages,
+  Classes,
+  Controls,
+  Forms,
+  Buttons,
+  ExtCtrls,
+  fFramePriceTransportations,
+  fFramePriceDumps,
+  fFrameSpr,
+  fFrameSmeta,
+  fFrameMaterial,
+  fFrameMechanizm,
   System.SysUtils;
 
 type
@@ -113,13 +123,13 @@ begin
   FramePriceMechanizms.Visible := False;
   SpeedButtonPriceMechanizms.Tag := Integer(FramePriceMechanizms);
 
-  FramePriceTransportations := TFramePriceTransportations.Create(Self);
+  FramePriceTransportations := TFramePriceTransportations.Create(Self, Date);
   FramePriceTransportations.Parent := Self;
   FramePriceTransportations.align := alClient;
   FramePriceTransportations.Visible := False;
   SpeedButtonPriceTransportation.Tag := Integer(FramePriceTransportations);
 
-  FramePriceDumps := TFramePriceDumps.Create(Self);
+  FramePriceDumps := TFramePriceDumps.Create(Self, Date);
   FramePriceDumps.Parent := Self;
   FramePriceDumps.align := alClient;
   FramePriceDumps.Visible := False;
@@ -199,8 +209,13 @@ begin
         finally
           FormWaiting.Close;
         end;
-      end;
+      end
+      else
+        CheckCurPeriod;
     end;
+
+  if TObject((Sender as TComponent).Tag) is TSprFrame then
+    TSprFrame((Sender as TComponent).Tag).CheckCurPeriod;
 
   if (Self as TWinControl).Visible then
   begin

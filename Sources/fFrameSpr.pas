@@ -82,6 +82,7 @@ type
     constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
       const AStarDate: TDateTime); reintroduce;
     procedure LoadSpr;
+    procedure CheckCurPeriod;
     function FindCode(const ACode: string): PSprRecord;
 
     property OnSprItemSelect: TSprItemSelectEvent
@@ -103,6 +104,7 @@ constructor TSprFrame.Create(AOwner: TComponent; const APriceColumn: Boolean;
 var i: Integer;
     y,m,d: Word;
     lc: TListColumn;
+    ev: TNotifyEvent;
 begin
   inherited Create(AOwner);
   btnShow.Visible := False;
@@ -140,8 +142,19 @@ begin
   PanelSettings.Visible :=  FPriceColumn;
 
   DecodeDate(AStarDate,y,m,d);
-  edtYear.Value := y;
-  cmbMonth.ItemIndex := m - 1;
+  ev := edtYear.OnChange;
+  try
+    edtYear.OnChange := nil;
+    cmbMonth.OnChange := nil;
+    edtYear.Value := y;
+    cmbMonth.ItemIndex := m - 1;
+  finally
+    edtYear.OnChange := ev;
+    cmbMonth.OnChange := ev;
+  end;
+
+  G_CURYEAR := edtYear.Value;
+  G_CURMONTH := cmbMonth.ItemIndex;
 
   SpeedButtonShowHide.Hint := 'Свернуть панель';
   DM.ImageListArrowsBottom.GetBitmap(0, SpeedButtonShowHide.Glyph);
@@ -447,9 +460,39 @@ end;
 
 procedure TSprFrame.edtYearChange(Sender: TObject);
 begin
+  if edtYear.Value < 2012 then //что-бы не лазили дальше 2012 года
+  begin
+    edtYear.Value := 2012;
+    Exit;
+  end;
+
   btnShow.Enabled := True;
   ListSpr.Visible := False;
+
+  G_CURYEAR := edtYear.Value;
+  G_CURMONTH := cmbMonth.ItemIndex;
+
   btnShow.Click;
+end;
+
+procedure TSprFrame.CheckCurPeriod;
+var ev: TNotifyEvent;
+begin
+  if (G_CURYEAR <> edtYear.Value) or
+     (G_CURMONTH <> cmbMonth.ItemIndex) then
+  begin
+    ev := edtYear.OnChange;
+    try
+      edtYear.OnChange := nil;
+      cmbMonth.OnChange := nil;
+      edtYear.Value := G_CURYEAR;
+      cmbMonth.ItemIndex := G_CURMONTH;
+      ev(nil);
+    finally
+      edtYear.OnChange := ev;
+      cmbMonth.OnChange := ev;
+    end;
+  end;
 end;
 
 procedure TSprFrame.ListSprCustomDrawItem(Sender: TCustomListView;

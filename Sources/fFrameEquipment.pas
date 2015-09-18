@@ -30,10 +30,15 @@ uses CalculationEstimate, SprController;
 
 constructor TSprEquipment.Create(AOwner: TComponent;
       const vAllowAddition: Boolean);
+var y, m: Integer;
 begin
   FAllowAddition := vAllowAddition;
   //FNoEdCol := True;
+  y := G_CURYEAR;
+  m := G_CURMONTH;
   inherited Create(AOwner, False, Date);
+  G_CURYEAR := y;
+  G_CURMONTH := m;
 end;
 
 function TSprEquipment.GetSprType: Integer;

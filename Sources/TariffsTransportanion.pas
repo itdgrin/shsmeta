@@ -3,7 +3,13 @@ unit TariffsTransportanion;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, ExtCtrls,
+  Windows,
+  Messages,
+  Classes,
+  Controls,
+  Forms,
+  ExtCtrls,
+  System.SysUtils,
   fFramePriceTransportations;
 
 type
@@ -72,7 +78,7 @@ begin
 
   // ----------------------------------------
 
-  FramePriceTransportation := TFramePriceTransportations.Create(Self);
+  FramePriceTransportation := TFramePriceTransportations.Create(Self, Date);
   FramePriceTransportation.Parent := Self;
   FramePriceTransportation.Align := alClient;
 

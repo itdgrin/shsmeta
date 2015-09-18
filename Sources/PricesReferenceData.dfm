@@ -37,7 +37,6 @@ object FormPricesReferenceData: TFormPricesReferenceData
     ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 0
-    ExplicitWidth = 611
     object SpeedButtonPriceMaterials: TSpeedButton
       Left = 123
       Top = 0

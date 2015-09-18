@@ -45,6 +45,7 @@ constructor TSprMaterial.Create(AOwner: TComponent;
       const AStarDate: TDateTime;
       const ARegion: Integer;
       const AMat, AJBI: Boolean);
+var ev: TNotifyEvent;
 begin
   FAllowAddition := vAllowAddition;
   inherited Create(AOwner, APriceColumn, AStarDate);

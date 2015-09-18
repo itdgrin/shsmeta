@@ -9,12 +9,6 @@ uses
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta, Vcl.Samples.Spin;
 
 type
-  TSplitter = class(ExtCtrls.TSplitter)
-  public
-    procedure Paint(); override;
-  end;
-
-type
   TFramePriceTransportations = class(TSmetaFrame)
 
     PopupMenu: TPopupMenu;
@@ -28,7 +22,7 @@ type
     FrameStatusBar: TFrameStatusBar;
     LabelYear: TLabel;
     LabelMonth: TLabel;
-    ComboBoxMonth: TComboBox;
+    cmbMonth: TComboBox;
     ADOQuery: TFDQuery;
     edtYear: TSpinEdit;
     cmbTranspType: TComboBox;
@@ -51,7 +45,6 @@ type
       TextType: TVSTTextType; var CellText: string);
 
     procedure ComboBoxMonthYearChange(Sender: TObject);
-
   private
     StrFilterData: string; // Фильтрация данных по месяцу и году
     FCode: string;
@@ -60,12 +53,13 @@ type
     function FillingCell(AColumn: TColumnIndex; ARow: Integer): string;
   public
     procedure ReceivingAll; override;
-    constructor Create(AOwner: TComponent); override;
+    procedure CheckCurPeriod; override;
+    constructor Create(AOwner: TComponent; ADate: TDateTime); reintroduce;
   end;
 
 implementation
 
-uses DrawingTables, DataModule, CalculationEstimate;
+uses DrawingTables, DataModule, CalculationEstimate, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -76,21 +70,30 @@ const
   // Массив содержащий названия всех видимых столбцов таблицы
   NameVisibleColumns: array [1 .. 1] of String[8] = ('distance');
 
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  { TSplitter }
-procedure TSplitter.Paint();
-begin
-  // inherited;
-end;
-
 // ---------------------------------------------------------------------------------------------------------------------
 
-constructor TFramePriceTransportations.Create(AOwner: TComponent);
+constructor TFramePriceTransportations.Create(AOwner: TComponent; ADate: TDateTime);
+var ev: TNotifyEvent;
+    y,m,d: Word;
 begin
   inherited Create(AOwner);
   StrFilterData := '';
   VSTSetting(VST); // НАСТРАИВАЕМ ЦВЕТА
+
+  DecodeDate(ADate,y,m,d);
+  ev := edtYear.OnChange;
+  try
+    edtYear.OnChange := nil;
+    cmbMonth.OnChange := nil;
+    edtYear.Value := y;
+    cmbMonth.ItemIndex := m - 1;
+  finally
+    edtYear.OnChange := ev;
+    cmbMonth.OnChange := ev;
+  end;
+
+  G_CURYEAR := edtYear.Value;
+  G_CURMONTH := cmbMonth.ItemIndex;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -101,21 +104,8 @@ begin
     if ADOQuery.Active then
       Exit;
 
-    if Assigned(FormCalculationEstimate) then
-    begin
-      // Опасная конструкция, может быть источником ошибок
-      ComboBoxMonth.ItemIndex := FormCalculationEstimate.MonthEstimate - 1;
-      edtYear.Value := FormCalculationEstimate.YearEstimate;
-    end
-    else
-    begin
-      // Ставит текущую дату
-      ComboBoxMonth.ItemIndex := MonthOf(Now) - 1;
-      edtYear.Value := YearOf(Now);
-    end;
-
     StrFilterData := '(year = ' + IntToStr(edtYear.Value) + ') and (monat = ' +
-      IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
+      IntToStr(cmbMonth.ItemIndex + 1) + ')';
 
     ReceivingSearch();
   except
@@ -127,7 +117,25 @@ begin
   fLoaded := true;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+procedure TFramePriceTransportations.CheckCurPeriod;
+var ev: TNotifyEvent;
+begin
+  if (G_CURYEAR <> edtYear.Value) or
+     (G_CURMONTH <> cmbMonth.ItemIndex) then
+  begin
+    ev := edtYear.OnChange;
+    try
+      edtYear.OnChange := nil;
+      cmbMonth.OnChange := nil;
+      edtYear.Value := G_CURYEAR;
+      cmbMonth.ItemIndex := G_CURMONTH;
+      ev(nil);
+    finally
+      edtYear.OnChange := ev;
+      cmbMonth.OnChange := ev;
+    end;
+  end;
+end;
 
 procedure TFramePriceTransportations.ReceivingSearch();
 var
@@ -411,8 +419,17 @@ end;
 
 procedure TFramePriceTransportations.ComboBoxMonthYearChange(Sender: TObject);
 begin
+  if edtYear.Value < 2012 then //что-бы не лазили дальше 2012 года
+  begin
+    edtYear.Value := 2012;
+    Exit;
+  end;
+
+  G_CURYEAR := edtYear.Value;
+  G_CURMONTH := cmbMonth.ItemIndex;
+
   StrFilterData := '(year = ' + IntToStr(edtYear.Value) + ') and (monat = ' +
-    IntToStr(ComboBoxMonth.ItemIndex + 1) + ')';
+    IntToStr(cmbMonth.ItemIndex + 1) + ')';
 
   FrameStatusBar.InsertText(2, '-1');
 

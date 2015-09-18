@@ -12,6 +12,7 @@ type
     fLoaded: boolean;
   public
     procedure ReceivingAll; Virtual; Abstract;
+    procedure CheckCurPeriod; Virtual; Abstract;
     property Loaded: boolean read fLoaded;
     constructor Create(AOwner: TComponent); override;
   end;

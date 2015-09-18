@@ -47,8 +47,6 @@ inherited FramePriceDumps: TFramePriceDumps
       ParentBackground = False
       TabOrder = 1
       OnResize = PanelTableResize
-      ExplicitTop = 25
-      ExplicitHeight = 251
       object SpeedButtonShowHide: TSpeedButton
         Tag = 1
         Left = 0
@@ -89,7 +87,6 @@ inherited FramePriceDumps: TFramePriceDumps
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
         OnKeyPress = VSTKeyPress
-        ExplicitHeight = 236
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]
@@ -175,7 +172,7 @@ inherited FramePriceDumps: TFramePriceDumps
         OnEnter = EditSearchEnter
         OnKeyPress = EditSearchKeyPress
       end
-      object ComboBoxMonth: TComboBox
+      object cmbMonth: TComboBox
         Left = 132
         Top = 8
         Width = 82

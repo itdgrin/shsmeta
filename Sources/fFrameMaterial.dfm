@@ -235,10 +235,6 @@ inherited SprMaterial: TSprMaterial
       Height = 13
       Caption = #1056#1077#1075#1080#1086#1085':'
     end
-    inherited edtYear: TSpinEdit
-      Height = 23
-      ExplicitHeight = 23
-    end
     object cmbRegion: TComboBox
       Left = 264
       Top = 9

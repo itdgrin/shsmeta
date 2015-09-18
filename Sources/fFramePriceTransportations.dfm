@@ -36,8 +36,6 @@ inherited FramePriceTransportations: TFramePriceTransportations
       BevelOuter = bvNone
       ParentBackground = False
       TabOrder = 1
-      ExplicitTop = 25
-      ExplicitHeight = 291
       object VST: TVirtualStringTree
         Left = 0
         Top = 0
@@ -68,7 +66,6 @@ inherited FramePriceTransportations: TFramePriceTransportations
         OnEnter = VSTEnter
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
-        ExplicitHeight = 291
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]
@@ -163,7 +160,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
         Height = 13
         Caption = #1052#1077#1089#1103#1094':'
       end
-      object ComboBoxMonth: TComboBox
+      object cmbMonth: TComboBox
         Left = 132
         Top = 8
         Width = 82
@@ -189,7 +186,7 @@ inherited FramePriceTransportations: TFramePriceTransportations
         Left = 33
         Top = 8
         Width = 54
-        Height = 23
+        Height = 22
         MaxLength = 4
         MaxValue = 2050
         MinValue = 1900

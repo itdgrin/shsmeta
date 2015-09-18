@@ -193,6 +193,10 @@ var
   //ID текущего пользователя
   G_USER_ID: Integer = 0;
 
+  //Переменные для увязки периодов справочников
+  G_CURYEAR,
+  G_CURMONTH: Integer;
+
 implementation
 
 end.

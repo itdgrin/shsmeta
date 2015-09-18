@@ -333,7 +333,7 @@ object SprFrame: TSprFrame
       MaxValue = 0
       MinValue = 0
       TabOrder = 1
-      Value = 2015
+      Value = 0
       OnChange = edtYearChange
     end
     object btnShow: TButton
@@ -413,7 +413,7 @@ object SprFrame: TSprFrame
       Left = 37
       Top = 6
       Width = 91
-      Height = 23
+      Height = 21
       TabOrder = 2
       OnKeyPress = edtFindNameKeyPress
     end

@@ -3,8 +3,15 @@ unit PricesOwnData;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls,
- { fFramePriceMaterials, fFramePriceMechanizms,} fFramePriceTransportations,
+  Windows,
+  Messages,
+  Classes,
+  Controls,
+  Forms,
+  Buttons,
+  ExtCtrls,
+  System.SysUtils,
+  fFramePriceTransportations,
   fFramePriceDumps, fFrameSmeta;
 
 type
@@ -109,13 +116,13 @@ begin
   FramePriceMechanizms.Visible := False;
   SpeedButtonPriceMechanizms.Tag := Integer(FramePriceMechanizms); }
 
-  FramePriceTransportations := TFramePriceTransportations.Create(Self);
+  FramePriceTransportations := TFramePriceTransportations.Create(Self, Date);
   FramePriceTransportations.Parent := Self;
   FramePriceTransportations.align := alClient;
   FramePriceTransportations.Visible := False;
   SpeedButtonPriceTransportation.Tag := Integer(FramePriceTransportations);
 
-  FramePriceDumps := TFramePriceDumps.Create(Self);
+  FramePriceDumps := TFramePriceDumps.Create(Self, Date);
   FramePriceDumps.Parent := Self;
   FramePriceDumps.align := alClient;
   FramePriceDumps.Visible := False;
@@ -187,7 +194,9 @@ begin
       finally
         FormWaiting.Close;
       end;
-    end;
+    end
+    else
+        CheckCurPeriod;
 
     if (Self as TControl).Visible then
     begin

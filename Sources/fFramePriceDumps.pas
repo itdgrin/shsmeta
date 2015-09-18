@@ -9,12 +9,6 @@ uses
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, fFrameSmeta, Vcl.Samples.Spin, System.DateUtils;
 
 type
-  TSplitter = class(ExtCtrls.TSplitter)
-  public
-    procedure Paint(); override;
-  end;
-
-type
   TFramePriceDumps = class(TSmetaFrame)
 
     PopupMenu: TPopupMenu;
@@ -39,7 +33,7 @@ type
     ADOQuery: TFDQuery;
     LabelYear: TLabel;
     LabelMonth: TLabel;
-    ComboBoxMonth: TComboBox;
+    cmbMonth: TComboBox;
     edtYear: TSpinEdit;
 
     procedure ReceivingSearch(vStr: String);
@@ -73,12 +67,13 @@ type
     NomColumn: Integer;
   public
     procedure ReceivingAll; override;
-    constructor Create(AOwner: TComponent); override;
+    procedure CheckCurPeriod; override;
+    constructor Create(AOwner: TComponent; ADate: TDateTime); reintroduce;
   end;
 
 implementation
 
-uses DrawingTables, DataModule, CalculationEstimate;
+uses DrawingTables, DataModule, CalculationEstimate, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -89,49 +84,33 @@ const
   // Массив содержащий названия всех видимых столбцов таблицы
   NameVisibleColumns: array [1 .. 1] of String[4] = ('Name');
 
-  // ---------------------------------------------------------------------------------------------------------------------
-
-  { TSplitter }
-procedure TSplitter.Paint();
-begin
-  // inherited;
-end;
-
 // ---------------------------------------------------------------------------------------------------------------------
 
-constructor TFramePriceDumps.Create(AOwner: TComponent);
+constructor TFramePriceDumps.Create(AOwner: TComponent; ADate: TDateTime);
 var ev: TNotifyEvent;
+    y,m,d: Word;
 begin
   inherited Create(AOwner);
-
-  // ----------------------------------------
 
   VSTSetting(VST); // НАСТРАИВАЕМ ЦВЕТА
 
   PanelMemo.Constraints.MinHeight := 35;
   SpeedButtonShowHide.Hint := 'Свернуть панель';
 
+  DecodeDate(ADate,y,m,d);
   ev := edtYear.OnChange;
   try
     edtYear.OnChange := nil;
-    ComboBoxMonth.OnChange := nil;
-
-    if Assigned(FormCalculationEstimate) then
-    begin
-      //Опасная конструкция, может быть источником ошибок
-      edtYear.Value := FormCalculationEstimate.YearEstimate;
-      ComboBoxMonth.ItemIndex := FormCalculationEstimate.MonthEstimate - 1;
-    end
-    else
-    begin
-      edtYear.Value := YearOf(Date);
-      ComboBoxMonth.ItemIndex := MonthOf(Date) - 1;
-    end;
+    cmbMonth.OnChange := nil;
+    edtYear.Value := y;
+    cmbMonth.ItemIndex := m - 1;
   finally
     edtYear.OnChange := ev;
-    ComboBoxMonth.OnChange := ev;
-    edtYearChange(edtYear);
+    cmbMonth.OnChange := ev;
   end;
+
+  G_CURYEAR := edtYear.Value;
+  G_CURMONTH := cmbMonth.ItemIndex;
 
   with DM do
   begin
@@ -159,7 +138,7 @@ begin
       'LEFT JOIN dumpcoast ON dump.dump_id = dumpcoast.dump_id ' +
       'WHERE (dumpcoast.DATE_BEG >= :date1) and (dumpcoast.DATE_BEG <= :date2);';
 
-    te := EncodeDate(edtYear.Value, ComboBoxMonth.ItemIndex + 1, 1);
+    te := EncodeDate(edtYear.Value, cmbMonth.ItemIndex + 1, 1);
     ADOQuery.ParamByName('date1').Value := te;
     te := IncMonth(te) - 1;
     ADOQuery.ParamByName('date2').Value := te;
@@ -182,7 +161,25 @@ begin
   fLoaded := true;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+procedure TFramePriceDumps.CheckCurPeriod;
+var ev: TNotifyEvent;
+begin
+  if (G_CURYEAR <> edtYear.Value) or
+     (G_CURMONTH <> cmbMonth.ItemIndex) then
+  begin
+    ev := edtYear.OnChange;
+    try
+      edtYear.OnChange := nil;
+      cmbMonth.OnChange := nil;
+      edtYear.Value := G_CURYEAR;
+      cmbMonth.ItemIndex := G_CURMONTH;
+      ev(nil);
+    finally
+      edtYear.OnChange := ev;
+      cmbMonth.OnChange := ev;
+    end;
+  end;
+end;
 
 procedure TFramePriceDumps.ReceivingSearch(vStr: String);
 begin
@@ -238,7 +235,15 @@ end;
 
 procedure TFramePriceDumps.edtYearChange(Sender: TObject);
 begin
-  inherited;
+  if edtYear.Value < 2012 then //что-бы не лазили дальше 2012 года
+  begin
+    edtYear.Value := 2012;
+    Exit;
+  end;
+
+  G_CURYEAR := edtYear.Value;
+  G_CURMONTH := cmbMonth.ItemIndex;
+
   ReceivingAll;
 end;
 
