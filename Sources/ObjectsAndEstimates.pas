@@ -319,7 +319,7 @@ begin
   dbgrdObjects.SetFocus;
   qrObjects.Locate('IdObject', FormCardObject.OUT_ID_OBJECT, []);
   // Если установлена настройка, то добавляем автоматом связку смет
-  if PS.AutoCreateEstimates then
+  if PS.AutoCreateEstimates and (FormCardObject.OUT_ID_OBJECT <> 0) then
   begin
     FormCardEstimate.EditingRecord(False);
     FormCardEstimate.ShowForm(FormCardObject.OUT_ID_OBJECT, 0, 2, False);

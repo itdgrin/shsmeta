@@ -36,7 +36,7 @@ object FormProgramSettings: TFormProgramSettings
     Top = 8
     Width = 632
     Height = 351
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -290,7 +290,7 @@ object FormProgramSettings: TFormProgramSettings
         Width = 230
         Height = 25
         Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
-        TabOrder = 7
+        TabOrder = 8
         OnClick = ButtonDefaultOtherSettingsClick
       end
       object CheckBoxShowHint: TCheckBox
@@ -352,6 +352,16 @@ object FormProgramSettings: TFormProgramSettings
           #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074' - '#1072#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1086#1077' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1080#1079#1084#1077#1085#1077#1085#1080#1081' '#1087 +
           #1088#1080' '#1087#1077#1088#1077#1093#1086#1076#1077' '#1074#1085#1091#1090#1088#1080' '#1088#1077#1076#1072#1082#1090#1080#1088#1091#1077#1084#1086#1081' '#1079#1072#1087#1080#1089#1080
         TabOrder = 5
+      end
+      object chkShowNeedSaveDialog: TCheckBox
+        Left = 3
+        Top = 193
+        Width = 350
+        Height = 17
+        Caption = #1047#1072#1087#1088#1086#1089' '#1085#1072' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1089#1084#1077#1090#1099' '#1055#1045#1063#1040#1058#1068'-'#1057#1057#1056'-'#1056#1040#1057#1063#1045#1058' '#1057#1058#1054#1048#1052#1054#1057#1058#1048
+        Checked = True
+        State = cbChecked
+        TabOrder = 7
       end
     end
   end

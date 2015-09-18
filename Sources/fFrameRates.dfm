@@ -756,6 +756,7 @@
                 TitleFont.Name = 'Tahoma'
                 TitleFont.Style = []
                 OnDrawColumnCell = grNCDrawColumnCell
+                OnEnter = grNCEnter
                 AutoAppend = False
                 OnResize = grNCResize
                 ScrollBars = ssNone

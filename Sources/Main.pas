@@ -283,6 +283,7 @@ type
     procedure mN25Click(Sender: TObject);
     procedure mN38Click(Sender: TObject);
     procedure mReportClick(Sender: TObject);
+    procedure HelpSupportClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -331,14 +332,14 @@ type
     // Автоматически сохранять описание записей в левой таблице на форме расчета сметы
     AutoSaveCalcResourcesAfterExitCell: Boolean;
     // Автоматический пост записи при переходе внутри редактируемой записи на форме расчета стоимости ресурсов
-
+    ShowNeedSaveDialog: Boolean; // Запрос на сохранение сметы ПЕЧАТЬ-ССР-РАСЧЕТ СТОИМОСТИ
     ShowHint: Boolean;
   end;
 
 const
   ColorWarningField = $008080FF;
 
-  FolderSettings = 'Settings\';
+  FolderSettings = '';
   FileSettingsTables = FolderSettings + 'SettingsTables.ini';
   FileProgramSettings = FolderSettings + 'ProgramSettings.ini';
   FileDefaultSettingsTables = FolderSettings + 'SettingsDefault\SettingsTables.ini';
@@ -1196,6 +1197,11 @@ procedure TFormMain.mN25Click(Sender: TObject);
 begin
   if (not Assigned(fUniDict)) then
     fUniDict := TfUniDict.Create(Self);
+  fUniDict.FormStyle := fsNormal;
+  fUniDict.Width := 400;
+  fUniDict.Height := 200;
+  fUniDict.Position := poMainFormCenter;
+  fUniDict.Visible := False;
   fUniDict.qrUniDictType.Filtered := False;
   fUniDict.qrUniDictType.Locate('unidicttype_id', 14, []);
   fUniDict.pnlLeft.Visible := False;
@@ -1204,12 +1210,8 @@ begin
   fUniDict.dbmmoparam_description1.Visible := False;
   FormMain.DeleteButtonCloseWindow(fUniDict.Caption);
   fUniDict.Caption := 'Прочие';
-  fUniDict.FormStyle := fsNormal;
-  fUniDict.Width := 400;
-  fUniDict.Height := 200;
   fUniDict.pnlClient.Align := alClient;
   fUniDict.FormStorage.Active := False;
-  fUniDict.Position := poMainFormCenter;
   fUniDict.grUniDictParam.RowsHeight := 17;
   fUniDict.grUniDictParam.RowResize := False;
   fUniDict.grUniDictParam.Options := fUniDict.grUniDictParam.Options - [dgIndicator];
@@ -1781,6 +1783,8 @@ begin
   }
   if (not Assigned(fUniDict)) then
     fUniDict := TfUniDict.Create(Self);
+  fUniDict.FormStyle := fsMDIChild;
+  fUniDict.WindowState := wsMaximized;
   fUniDict.Show;
 end;
 
@@ -2241,6 +2245,11 @@ begin
   end;
 end;
 
+procedure TFormMain.HelpSupportClick(Sender: TObject);
+begin
+  Exec('%SMETADIR%\Docs\Help.rtf');
+end;
+
 function ShiftDown: Boolean;
 var
   State: TKeyboardState;
@@ -2297,6 +2306,7 @@ begin
         ReadBool('CalcResources', 'AutoSaveCalcResourcesAfterExitCell', False);
       PS.ShowHint := ReadBool('ShowHint', vShowHint, true);
       PS.AutosaveRateDescr := ReadBool('ESTIMATE', 'AutosaveRateDescr', true);
+      PS.ShowNeedSaveDialog := ReadBool('ESTIMATE', 'ShowNeedSaveDialog', true);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -2341,6 +2351,7 @@ begin
       WriteBool('CalcResources', 'CalcResourcesAutoSave', PS.CalcResourcesAutoSave);
       WriteBool('CalcResources', 'AutoSaveCalcResourcesAfterExitCell', PS.AutoSaveCalcResourcesAfterExitCell);
       WriteBool('ESTIMATE', 'AutosaveRateDescr', PS.AutosaveRateDescr);
+      WriteBool('ESTIMATE', 'ShowNeedSaveDialog', PS.ShowNeedSaveDialog);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти

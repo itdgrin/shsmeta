@@ -11361,7 +11361,9 @@
       Caption = #1057#1087#1088#1072#1074#1082#1072
       object HelpSupport: TMenuItem
         Caption = #1055#1086#1084#1086#1097#1100
-        Visible = False
+        ImageIndex = 60
+        ShortCut = 112
+        OnClick = HelpSupportClick
       end
       object HelpRegistration: TMenuItem
         Caption = #1056#1077#1075#1080#1089#1090#1088#1072#1094#1080#1103
@@ -11373,7 +11375,7 @@
       end
       object HelpAbout: TMenuItem
         Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
-        ImageIndex = 2
+        ImageIndex = 61
         OnClick = HelpAboutClick
       end
     end

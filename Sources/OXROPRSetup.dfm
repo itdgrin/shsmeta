@@ -61,11 +61,6 @@ object fOXROPRSetup: TfOXROPRSetup
       item
         Expanded = False
         FieldName = 'PO'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1055#1086
         Width = 95
@@ -75,11 +70,6 @@ object fOXROPRSetup: TfOXROPRSetup
         DropDownRows = 22
         Expanded = False
         FieldName = 'WorkLooK'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
         Title.Alignment = taCenter
         Title.Caption = #1058#1080#1087' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055
         Width = 188
@@ -218,7 +208,6 @@ object fOXROPRSetup: TfOXROPRSetup
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ##0.####'
     SQL.Strings = (
       'SELECT '
-      '  `ID`,'
       '  `WORK_ID`,'
       '  `WORK_NAME`'
       'FROM '

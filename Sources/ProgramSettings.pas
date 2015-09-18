@@ -50,6 +50,7 @@ type
     chkCalcResourcesAutoSave: TCheckBox;
     chkAutosaveRateDescr: TCheckBox;
     chkAutoSaveCalcResourcesAfterExitCell: TCheckBox;
+    chkShowNeedSaveDialog: TCheckBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -314,6 +315,7 @@ begin
   PS.ShowHint := CheckBoxShowHint.Checked;
   PS.AutosaveRateDescr := chkAutosaveRateDescr.Checked;
   PS.AutoSaveCalcResourcesAfterExitCell := chkAutoSaveCalcResourcesAfterExitCell.Checked;
+  PS.ShowNeedSaveDialog := chkShowNeedSaveDialog.Checked;
 
   FormMain.WriteSettingsToFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
@@ -354,6 +356,7 @@ begin
   chkCalcResourcesAutoSave.Checked := PS.CalcResourcesAutoSave;
   chkAutosaveRateDescr.Checked := PS.AutosaveRateDescr;
   chkAutoSaveCalcResourcesAfterExitCell.Checked := PS.AutoSaveCalcResourcesAfterExitCell;
+  chkShowNeedSaveDialog.Checked := PS.ShowNeedSaveDialog;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

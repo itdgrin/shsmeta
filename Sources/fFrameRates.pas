@@ -190,6 +190,7 @@ type
     procedure pmRatesExPopup(Sender: TObject);
     procedure qrNormativAfterPost(DataSet: TDataSet);
     procedure qrNormativBeforeEdit(DataSet: TDataSet);
+    procedure grNCEnter(Sender: TObject);
   private
     StrQuery: String; // Для формирования строки запроса к БД
     flNewRecord: Boolean; // Признак новой записи
@@ -527,8 +528,6 @@ end;
 procedure TFrameRates.mEditClick(Sender: TObject);
 begin
   qrNormativ.Edit;
-  if SpeedButtonShowHideRightPanel.Tag = 0 then
-    SpeedButtonShowHideRightPanel.Click;
 end;
 
 procedure TFrameRates.mDeleteClick(Sender: TObject);
@@ -691,6 +690,8 @@ end;
 procedure TFrameRates.qrNormativAfterPost(DataSet: TDataSet);
 begin
   pnlSaveCancel.Visible := False;
+  tmrScroll.Enabled := False;
+  tmrScroll.Enabled := true;
 end;
 
 procedure TFrameRates.qrNormativAfterScroll(DataSet: TDataSet);
@@ -1420,6 +1421,12 @@ begin
   end;
 
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TFrameRates.grNCEnter(Sender: TObject);
+begin
+  if qrNormativ.State in [dsInsert] then
+    qrNormativ.Post;
 end;
 
 procedure TFrameRates.grNCResize(Sender: TObject);

@@ -3679,13 +3679,13 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMNumRowClick(Sender: TObject);
-var TmpSmType: Integer;
+var
+  TmpSmType: Integer;
 begin
-  //Не ясно как оно должно работать для акта
+  // Не ясно как оно должно работать для акта
   TmpSmType := 0;
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' +
-    'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
+  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' + 'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
   qrTemp.Active := True;
   if not qrTemp.Eof then
   begin
@@ -3693,10 +3693,8 @@ begin
   end;
   qrTemp.Active := False;
 
-  PMRenumCurSmet.Enabled := TmpSmType in [1,2];
-  PMRenumFromCurRowToSM.Enabled :=
-    PMRenumCurSmet.Enabled and
-    (qrRatesExID_TYPE_DATA.Value > 0) and
+  PMRenumCurSmet.Enabled := TmpSmType in [1, 2];
+  PMRenumFromCurRowToSM.Enabled := PMRenumCurSmet.Enabled and (qrRatesExID_TYPE_DATA.Value > 0) and
     (qrRatesExNOM_ROW_MANUAL.Value > 0);
   PMRenumAllList.Enabled := TmpSmType = 2;
 end;
@@ -3735,117 +3733,113 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMRenumCurSmetClick(Sender: TObject);
-var ev: TDataSetNotifyEvent;
-    TempBookmark: TBookMark;
-    NumRow: Integer;
-    LocalSmIdList,
-    SmIdList: TList<Integer>;
-    AutoCommitValue: Boolean;
-    I: Integer;
+var
+  ev: TDataSetNotifyEvent;
+  TempBookmark: TBookMark;
+  NumRow: Integer;
+  LocalSmIdList, SmIdList: TList<Integer>;
+  AutoCommitValue: Boolean;
+  i: Integer;
 begin
-    LocalSmIdList := TList<Integer>.Create;
-    SmIdList := TList<Integer>.Create;
-    try
-      if (Sender as TComponent).Tag in [1,2] then
+  LocalSmIdList := TList<Integer>.Create;
+  SmIdList := TList<Integer>.Create;
+  try
+    if (Sender as TComponent).Tag in [1, 2] then
+    begin
+      qrTemp.Active := False;
+      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (SM_ID = ' +
+        qrRatesExSM_ID.Value.ToString + ')';
+      qrTemp.Active := True;
+      if not qrTemp.Eof then
       begin
-        qrTemp.Active := False;
-        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
-          'FROM smetasourcedata WHERE (SM_ID = ' +
-          qrRatesExSM_ID.Value.ToString + ')';
-        qrTemp.Active := True;
-        if not qrTemp.Eof then
-        begin
-          if qrTemp.Fields[1].AsInteger = 1 then
-            LocalSmIdList.Add(qrTemp.Fields[0].AsInteger)
-          else
-            LocalSmIdList.Add(qrTemp.Fields[2].AsInteger);
-        end;
-        qrTemp.Active := False;
+        if qrTemp.Fields[1].AsInteger = 1 then
+          LocalSmIdList.Add(qrTemp.Fields[0].AsInteger)
+        else
+          LocalSmIdList.Add(qrTemp.Fields[2].AsInteger);
       end;
+      qrTemp.Active := False;
+    end;
 
-      if (Sender as TComponent).Tag = 3 then
+    if (Sender as TComponent).Tag = 3 then
+    begin
+      qrTemp.Active := False;
+      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '(PARENT_ID = ' + FIdEstimate.ToString +
+        ') and (SM_TYPE = 1)';
+      qrTemp.Active := True;
+      while not qrTemp.Eof do
       begin
-        qrTemp.Active := False;
-        qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
-          '(PARENT_ID = ' + FIdEstimate.ToString + ') and (SM_TYPE = 1)';
+        LocalSmIdList.Add(qrTemp.Fields[0].AsInteger);
+        qrTemp.Next;
+      end;
+      qrTemp.Active := False;
+    end;
+
+    if (LocalSmIdList.Count > 1) and ((Sender as TComponent).Tag <> 3) then
+      Exit;
+
+    TempBookmark := qrRatesEx.GetBookmark;
+    qrRatesEx.DisableControls;
+    ev := qrRatesEx.AfterScroll;
+    AutoCommitValue := DM.Read.Options.AutoCommit;
+    try
+      DM.Read.Options.AutoCommit := False;
+      qrRatesEx.AfterScroll := nil;
+
+      for i := 0 to LocalSmIdList.Count - 1 do
+      begin
+        SmIdList.Clear;
+        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (PARENT_ID = ' +
+          LocalSmIdList[i].ToString + ')';
         qrTemp.Active := True;
         while not qrTemp.Eof do
         begin
-          LocalSmIdList.Add(qrTemp.Fields[0].AsInteger);
+          SmIdList.Add(qrTemp.Fields[0].AsInteger);
           qrTemp.Next;
         end;
         qrTemp.Active := False;
-      end;
 
-      if (LocalSmIdList.Count > 1) and
-         ((Sender as TComponent).Tag <> 3) then
-        Exit;
+        NumRow := 0;
+        if (Sender as TComponent).Tag in [1, 3] then
+          qrRatesEx.First;
 
-      TempBookmark := qrRatesEx.GetBookmark;
-      qrRatesEx.DisableControls;
-      ev := qrRatesEx.AfterScroll;
-      AutoCommitValue := DM.Read.Options.AutoCommit;
-      try
-        DM.Read.Options.AutoCommit := False;
-        qrRatesEx.AfterScroll := nil;
-
-        for I := 0 to LocalSmIdList.Count - 1 do
+        if (Sender as TComponent).Tag = 2 then
         begin
-          SmIdList.Clear;
-          qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
-            'FROM smetasourcedata WHERE (PARENT_ID = ' +
-            LocalSmIdList[I].ToString + ')';
-          qrTemp.Active := True;
-          while not qrTemp.Eof do
-          begin
-            SmIdList.Add(qrTemp.Fields[0].AsInteger);
-            qrTemp.Next;
-          end;
-          qrTemp.Active := False;
-
-          NumRow := 0;
-          if (Sender as TComponent).Tag in [1,3] then
-            qrRatesEx.First;
-
-          if (Sender as TComponent).Tag = 2 then
-          begin
-            NumRow := qrRatesExNOM_ROW_MANUAL.Value;
-            if not qrRatesEx.Eof then
-              qrRatesEx.Next;
-          end;
-
-          DM.Read.StartTransaction;
-          try
-            while not qrRatesEx.Eof do
-            begin
-              if (SmIdList.IndexOf(qrRatesExSM_ID.Value) > -1) and
-                 (qrRatesExID_TYPE_DATA.Value > 0) then
-              begin
-                Inc(NumRow);
-                qrRatesEx.Edit;
-                qrRatesExNOM_ROW_MANUAL.Value := NumRow;
-              end;
-              qrRatesEx.Next;
-            end;
-            DM.Read.Commit;
-          except
-            DM.Read.Rollback;
-            raise;
-          end;
+          NumRow := qrRatesExNOM_ROW_MANUAL.Value;
+          if not qrRatesEx.Eof then
+            qrRatesEx.Next;
         end;
-      finally
-        DM.Read.Options.AutoCommit := AutoCommitValue;
 
-        qrRatesEx.GotoBookmark(TempBookmark);
-        qrRatesEx.FreeBookmark(TempBookmark);
-
-        qrRatesEx.AfterScroll := ev;
-        qrRatesEx.EnableControls;
+        DM.Read.StartTransaction;
+        try
+          while not qrRatesEx.Eof do
+          begin
+            if (SmIdList.IndexOf(qrRatesExSM_ID.Value) > -1) and (qrRatesExID_TYPE_DATA.Value > 0) then
+            begin
+              Inc(NumRow);
+              qrRatesEx.Edit;
+              qrRatesExNOM_ROW_MANUAL.Value := NumRow;
+            end;
+            qrRatesEx.Next;
+          end;
+          DM.Read.Commit;
+        except
+          DM.Read.Rollback;
+          raise;
+        end;
       end;
     finally
-      FreeAndNil(LocalSmIdList);
-      FreeAndNil(SmIdList);
+      DM.Read.Options.AutoCommit := AutoCommitValue;
+
+      qrRatesEx.GotoBookmark(TempBookmark);
+      qrRatesEx.FreeBookmark(TempBookmark);
+
+      qrRatesEx.AfterScroll := ev;
+      qrRatesEx.EnableControls;
     end;
+  finally
+    FreeAndNil(LocalSmIdList);
+    FreeAndNil(SmIdList);
+  end;
 end;
 
 procedure TFormCalculationEstimate.PMSetTransPercClick(Sender: TObject);
@@ -6275,14 +6269,19 @@ end;
 
 procedure TFormCalculationEstimate.ShowNeedSaveDialog;
 begin
-  case Application.MessageBox
-    ('Для корректного отображения результатов расчета необходимо сохранить текущий документ. Сохранить изменения?',
-    'Расчет', MB_YESNOCANCEL + MB_ICONQUESTION + MB_TOPMOST) of
-    IDCANCEL:
-      Abort;
-    IDYES:
-      SaveData;
-  end;
+  if PS.ShowNeedSaveDialog then
+  begin
+    case Application.MessageBox
+      ('Для корректного отображения результатов расчета необходимо сохранить текущий документ. Сохранить изменения?',
+      'Расчет', MB_YESNOCANCEL + MB_ICONQUESTION + MB_TOPMOST) of
+      IDCANCEL:
+        Abort;
+      IDYES:
+        SaveData;
+    end;
+  end
+  else
+    SaveData;
 end;
 
 procedure TFormCalculationEstimate.AddCoefToRate(coef_id: Integer);
