@@ -486,6 +486,7 @@ type
     PMRenumFromCurRowToSM: TMenuItem;
     PMRenumAllList: TMenuItem;
     btnKC6J: TSpeedButton;
+    PMRenumSelected: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -699,6 +700,7 @@ type
     procedure PMRenumCurSmetClick(Sender: TObject);
     procedure PMNumRowClick(Sender: TObject);
     procedure btnKC6JClick(Sender: TObject);
+    procedure PMRenumSelectedClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -3731,7 +3733,8 @@ begin
   // Не ясно как оно должно работать для акта
   TmpSmType := 0;
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' + 'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
+  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' +
+    'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
   qrTemp.Active := True;
   if not qrTemp.Eof then
   begin
@@ -3739,8 +3742,11 @@ begin
   end;
   qrTemp.Active := False;
 
+  PMRenumSelected.Enabled := grRatesEx.SelectedRows.Count > 1;
   PMRenumCurSmet.Enabled := TmpSmType in [1, 2];
-  PMRenumFromCurRowToSM.Enabled := PMRenumCurSmet.Enabled and (qrRatesExID_TYPE_DATA.Value > 0) and
+  PMRenumFromCurRowToSM.Enabled :=
+    PMRenumCurSmet.Enabled and
+    (qrRatesExID_TYPE_DATA.Value > 0) and
     (qrRatesExNOM_ROW_MANUAL.Value > 0);
   PMRenumAllList.Enabled := TmpSmType = 2;
 end;
@@ -3793,8 +3799,8 @@ begin
     if (Sender as TComponent).Tag in [1, 2] then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (SM_ID = ' +
-        qrRatesExSM_ID.Value.ToString + ')';
+      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
+        'FROM smetasourcedata WHERE (SM_ID = ' + qrRatesExSM_ID.Value.ToString + ')';
       qrTemp.Active := True;
       if not qrTemp.Eof then
       begin
@@ -3809,8 +3815,8 @@ begin
     if (Sender as TComponent).Tag = 3 then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '(PARENT_ID = ' + FIdEstimate.ToString +
-        ') and (SM_TYPE = 1)';
+      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
+        '(PARENT_ID = ' + FIdEstimate.ToString + ') and (SM_TYPE = 1)';
       qrTemp.Active := True;
       while not qrTemp.Eof do
       begin
@@ -3820,7 +3826,8 @@ begin
       qrTemp.Active := False;
     end;
 
-    if (LocalSmIdList.Count > 1) and ((Sender as TComponent).Tag <> 3) then
+    if (LocalSmIdList.Count > 1) and
+       ((Sender as TComponent).Tag <> 3) then
       Exit;
 
     TempBookmark := qrRatesEx.GetBookmark;
@@ -3834,8 +3841,8 @@ begin
       for i := 0 to LocalSmIdList.Count - 1 do
       begin
         SmIdList.Clear;
-        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (PARENT_ID = ' +
-          LocalSmIdList[i].ToString + ')';
+        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
+          'FROM smetasourcedata WHERE (PARENT_ID = ' + LocalSmIdList[i].ToString + ')';
         qrTemp.Active := True;
         while not qrTemp.Eof do
         begin
@@ -3859,7 +3866,8 @@ begin
         try
           while not qrRatesEx.Eof do
           begin
-            if (SmIdList.IndexOf(qrRatesExSM_ID.Value) > -1) and (qrRatesExID_TYPE_DATA.Value > 0) then
+            if (SmIdList.IndexOf(qrRatesExSM_ID.Value) > -1) and
+               (qrRatesExID_TYPE_DATA.Value > 0) then
             begin
               Inc(NumRow);
               qrRatesEx.Edit;
@@ -3885,6 +3893,64 @@ begin
   finally
     FreeAndNil(LocalSmIdList);
     FreeAndNil(SmIdList);
+  end;
+end;
+
+procedure TFormCalculationEstimate.PMRenumSelectedClick(Sender: TObject);
+var
+  TempBookmark: TBookMark;
+  X: Integer;
+  AutoCommitValue: Boolean;
+  ev: TDataSetNotifyEvent;
+  NumRow: Integer;
+  Flag: Boolean;
+begin
+  TempBookmark := qrRatesEx.GetBookmark;
+  qrRatesEx.DisableControls;
+  ev := qrRatesEx.AfterScroll;
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  try
+    DM.Read.Options.AutoCommit := False;
+    qrRatesEx.AfterScroll := nil;
+
+    if grRatesEx.SelectedRows.Count = 0 then
+      grRatesEx.SelectedRows.CurrentRowSelected := True;
+
+    NumRow := 0;
+    Flag := False;
+    DM.Read.StartTransaction;
+    try
+      for X := 0 to grRatesEx.SelectedRows.Count - 1 do
+      begin
+        grRatesEx.DataSource.DataSet.Bookmark := grRatesEx.SelectedRows.Items[X];
+        if qrRatesExID_TYPE_DATA.Value < 1 then
+          Continue;
+
+        if not Flag and (qrRatesExNOM_ROW_MANUAL.Value > 0) then
+        begin
+          NumRow := qrRatesExNOM_ROW_MANUAL.Value;
+          Flag := True;
+          continue;
+        end;
+
+        Inc(NumRow);
+        qrRatesEx.Edit;
+        qrRatesExNOM_ROW_MANUAL.Value := NumRow;
+
+      end;
+      DM.Read.Commit;
+    except
+      DM.Read.Rollback;
+      raise;
+    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+
+    qrRatesEx.GotoBookmark(TempBookmark);
+    qrRatesEx.FreeBookmark(TempBookmark);
+
+    qrRatesEx.AfterScroll := ev;
+    qrRatesEx.EnableControls;
   end;
 end;
 
@@ -4844,7 +4910,8 @@ begin
     Iterator := C_ET20ITER;
 
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' + '(ID, id_estimate, id_type_data, NUM_ROW) VALUE ' +
+  qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
+    '(ID, id_estimate, id_type_data, NUM_ROW) VALUE ' +
     '(GetNewID(:IDType), :IdEstimate, :SType, :NUM_ROW);';
   qrTemp.ParamByName('IDType').Value := C_ID_DATA;
   qrTemp.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;

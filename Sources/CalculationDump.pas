@@ -229,7 +229,7 @@ begin
     Iterator := UpdateIterator(IdEstimate, Iterator, 0);
     qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
       '(ID, id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
-      '(GetNewID(:IDType), :id_estimate, :id_type_data, :id_tables, :NUM_ROW)';
+      '(GetNewID(:IDType), :id_estimate, :id_type_data, :id_tables, :NUM_ROW);';
     qrTemp.ParamByName('IDType').Value := C_ID_DATA;
     qrTemp.ParamByName('id_estimate').Value := IdEstimate;
     qrTemp.ParamByName('id_type_data').Value := 5;

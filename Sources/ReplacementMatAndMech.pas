@@ -1284,6 +1284,8 @@ end;
 
 procedure TfrmReplacement.LoadSpr;
 var tmp: Boolean;
+    i: Integer;
+    s: string;
 begin
   case FCurType of
     //Материалы
@@ -1303,7 +1305,17 @@ begin
   Frame.Align := alClient;
   Frame.SpeedButtonShowHideClick(Frame.SpeedButtonShowHide);
   Frame.ListSpr.OnDblClick := btnSelectClick;
+
+  if (Length(edtSourceCode.Text) > 0) and
+     (edtSourceCode.Text[1] = 'П') then
+  begin
+    s := edtSourceCode.Text;
+    s[1] := 'С';
+    i := pos('-', s);
+    Frame.edtFindCode.Text := copy(s, 1, i - 1);
+  end;
   Frame.edtFindName.Text := edtSourceName.Text;
+
   Frame.LoadSpr;
 end;
 
