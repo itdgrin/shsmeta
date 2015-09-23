@@ -100,6 +100,9 @@ type
     mN16: TMenuItem;
     mShowDeletedActs: TMenuItem;
     mDeleteObject: TMenuItem;
+    mN7: TMenuItem;
+    mN10: TMenuItem;
+    mN11: TMenuItem;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

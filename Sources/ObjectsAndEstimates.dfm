@@ -639,10 +639,19 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       Caption = #1054#1090#1082#1088#1099#1090#1100
       OnClick = PMActsOpenClick
     end
-    object PMActsAdd: TMenuItem
+    object mN7: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
-      ImageIndex = 39
-      OnClick = PMActsAddClick
+      object PMActsAdd: TMenuItem
+        Caption = #1040#1082#1090
+        ImageIndex = 39
+        OnClick = PMActsAddClick
+      end
+      object mN10: TMenuItem
+        Caption = #1040#1082#1090' '#1089#1091#1073#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
+      end
+      object mN11: TMenuItem
+        Caption = #1040#1082#1090' '#1080#1090#1086#1075#1086#1074#1099#1084#1080' '#1089#1091#1084#1084#1072#1084#1080
+      end
     end
     object PMActsEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100

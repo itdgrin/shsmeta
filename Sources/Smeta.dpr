@@ -117,7 +117,8 @@ uses
   SectionEstimateList in 'SectionEstimateList.pas' {fSectionEstimateList},
   SprSelection in 'SprSelection.pas' {fSprSelection},
   TranspPersSelect in 'TranspPersSelect.pas' {fTrPersSelect},
-  CopyToOwnDialog in 'CopyToOwnDialog.pas' {fCopyToOwnDialog};
+  CopyToOwnDialog in 'CopyToOwnDialog.pas' {fCopyToOwnDialog},
+  SelectDialog in 'SelectDialog.pas' {fSelectDialog};
 
 {$R *.res}
 var MHandle: THandle;

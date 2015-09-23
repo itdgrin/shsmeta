@@ -569,6 +569,7 @@ type
     procedure GetMonthYearCalculationEstimate;
     procedure GetSourceData;
     procedure FillingWinterPrice(vNumber: string);
+    procedure FillingOHROPR(vNumber: string);
 
     procedure PMDeleteClick(Sender: TObject);
     procedure PanelNoDataResize(Sender: TObject);
@@ -845,7 +846,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   KC6, CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
-  TranspPersSelect, CardObject, CopyToOwnDialog;
+  TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -3739,8 +3740,7 @@ begin
   // Не ясно как оно должно работать для акта
   TmpSmType := 0;
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' +
-    'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
+  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' + 'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
   qrTemp.Active := True;
   if not qrTemp.Eof then
   begin
@@ -3750,9 +3750,7 @@ begin
 
   PMRenumSelected.Enabled := grRatesEx.SelectedRows.Count > 1;
   PMRenumCurSmet.Enabled := TmpSmType in [1, 2];
-  PMRenumFromCurRowToSM.Enabled :=
-    PMRenumCurSmet.Enabled and
-    (qrRatesExID_TYPE_DATA.Value > 0) and
+  PMRenumFromCurRowToSM.Enabled := PMRenumCurSmet.Enabled and (qrRatesExID_TYPE_DATA.Value > 0) and
     (qrRatesExNOM_ROW_MANUAL.Value > 0);
   PMRenumAllList.Enabled := TmpSmType = 2;
 end;
@@ -3805,8 +3803,8 @@ begin
     if (Sender as TComponent).Tag in [1, 2] then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
-        'FROM smetasourcedata WHERE (SM_ID = ' + qrRatesExSM_ID.Value.ToString + ')';
+      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (SM_ID = ' +
+        qrRatesExSM_ID.Value.ToString + ')';
       qrTemp.Active := True;
       if not qrTemp.Eof then
       begin
@@ -3821,8 +3819,8 @@ begin
     if (Sender as TComponent).Tag = 3 then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
-        '(PARENT_ID = ' + FIdEstimate.ToString + ') and (SM_TYPE = 1)';
+      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '(PARENT_ID = ' + FIdEstimate.ToString +
+        ') and (SM_TYPE = 1)';
       qrTemp.Active := True;
       while not qrTemp.Eof do
       begin
@@ -3832,8 +3830,7 @@ begin
       qrTemp.Active := False;
     end;
 
-    if (LocalSmIdList.Count > 1) and
-       ((Sender as TComponent).Tag <> 3) then
+    if (LocalSmIdList.Count > 1) and ((Sender as TComponent).Tag <> 3) then
       Exit;
 
     TempBookmark := qrRatesEx.GetBookmark;
@@ -3847,8 +3844,8 @@ begin
       for i := 0 to LocalSmIdList.Count - 1 do
       begin
         SmIdList.Clear;
-        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
-          'FROM smetasourcedata WHERE (PARENT_ID = ' + LocalSmIdList[i].ToString + ')';
+        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (PARENT_ID = ' +
+          LocalSmIdList[i].ToString + ')';
         qrTemp.Active := True;
         while not qrTemp.Eof do
         begin
@@ -3872,8 +3869,7 @@ begin
         try
           while not qrRatesEx.Eof do
           begin
-            if (SmIdList.IndexOf(qrRatesExSM_ID.Value) > -1) and
-               (qrRatesExID_TYPE_DATA.Value > 0) then
+            if (SmIdList.IndexOf(qrRatesExSM_ID.Value) > -1) and (qrRatesExID_TYPE_DATA.Value > 0) then
             begin
               Inc(NumRow);
               qrRatesEx.Edit;
@@ -3909,7 +3905,7 @@ var
   AutoCommitValue: Boolean;
   ev: TDataSetNotifyEvent;
   NumRow: Integer;
-  Flag: Boolean;
+  flag: Boolean;
 begin
   TempBookmark := qrRatesEx.GetBookmark;
   qrRatesEx.DisableControls;
@@ -3923,7 +3919,7 @@ begin
       grRatesEx.SelectedRows.CurrentRowSelected := True;
 
     NumRow := 0;
-    Flag := False;
+    flag := False;
     DM.Read.StartTransaction;
     try
       for X := 0 to grRatesEx.SelectedRows.Count - 1 do
@@ -3932,11 +3928,11 @@ begin
         if qrRatesExID_TYPE_DATA.Value < 1 then
           Continue;
 
-        if not Flag and (qrRatesExNOM_ROW_MANUAL.Value > 0) then
+        if not flag and (qrRatesExNOM_ROW_MANUAL.Value > 0) then
         begin
           NumRow := qrRatesExNOM_ROW_MANUAL.Value;
-          Flag := True;
-          continue;
+          flag := True;
+          Continue;
         end;
 
         Inc(NumRow);
@@ -4216,7 +4212,7 @@ begin
 
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(qrRatesExOBJ_CODE.AsString);
-
+        FillingOHROPR(qrRatesExOBJ_CODE.AsString);
         CalcPrice := '11';
       end;
     2: // МАТЕРИАЛ
@@ -4847,6 +4843,8 @@ begin
   end
   else
     OutputDataToTable(True);
+  // Проверка нескольких настроек ОХРиОПР и ПП
+  // ТОДО
 
   (Self as TForm).Invalidate;
   // Выполнение автозамены по добавленной расценке
@@ -4916,8 +4914,7 @@ begin
     Iterator := C_ET20ITER;
 
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
-    '(ID, id_estimate, id_type_data, NUM_ROW) VALUE ' +
+  qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' + '(ID, id_estimate, id_type_data, NUM_ROW) VALUE ' +
     '(GetNewID(:IDType), :IdEstimate, :SType, :NUM_ROW);';
   qrTemp.ParamByName('IDType').Value := C_ID_DATA;
   qrTemp.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
@@ -5446,6 +5443,48 @@ begin
   qrMechanizmAfterScroll(qrMechanizm);
 end;
 
+procedure TFormCalculationEstimate.FillingOHROPR(vNumber: string);
+// Находим охр и опр по настройке
+var
+  mes: string;
+begin
+  try
+    if qrRatesExWORK_ID.AsInteger = 0 then
+      with qrTemp do
+      begin
+        Active := False;
+        SQL.Clear;
+        SQL.Text :=
+          'SELECT DISTINCT objworks.work_id as work_id, work_name as NAME FROM onormativs, objworks WHERE objworks.WORK_ID=onormativs.WORK_ID AND FN_NUM_TO_INT(:ncode)>=FN_NUM_TO_INT(s) and FN_NUM_TO_INT(:ncode)<=FN_NUM_TO_INT(po)';
+        ParamByName('ncode').AsString := vNumber;
+        Active := True;
+        First;
+        if not Eof then
+        begin
+          if RecordCount = 1 then
+          begin
+            qrRatesExWORK_ID.Value := FieldByName('work_id').Value;
+          end
+          else
+          // Если нашлось более одной записи, показываем диалог
+          begin
+            mes := 'Расценка "' + qrRatesExOBJ_CODE.Value +
+              '" относится к нескольким настройкам ОХРиОПР и ПП. Укажите необходимый тип.';
+            Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+            if ShowSelectDialog('Выбор типа ОХРиОПР и ПП' { , Pointer(qrTemp) } ) then
+            begin
+              qrRatesExWORK_ID.Value := FieldByName('work_id').Value;
+            end;
+          end;
+        end;
+      end;
+  except
+    on e: Exception do
+      MessageBox(0, PChar('При получении значений ОХРиОПР:' + sLineBreak + sLineBreak + e.Message),
+        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
+end;
+
 procedure TFormCalculationEstimate.FillingTableDescription(const vIdNormativ: Integer);
 begin
   with qrDescription do
@@ -5914,6 +5953,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.FillingWinterPrice(vNumber: string);
+var
+  mes: string;
 begin
   try
     if qrRatesExZNORMATIVS_ID.AsInteger <> 0 then
@@ -5946,13 +5987,28 @@ begin
           '    AND `znormativs_ondate`.`DEL_FLAG` = 0 ORDER BY `znormativs_ondate`.`onDate` DESC LIMIT 1) AND FN_NUM_TO_INT("'
           + vNumber + '")<=FN_NUM_TO_INT(po) AND FN_NUM_TO_INT("' + vNumber +
           '")>=FN_NUM_TO_INT(s) AND REPLACE(SUBSTRING(s FROM 1 FOR 1), "E", "Е")=REPLACE(SUBSTRING("' +
-          vNumber + '" FROM 1 FOR 1), "E", "Е") LIMIT 1' + ';');
+          vNumber + '" FROM 1 FOR 1), "E", "Е")' + ';');
         Active := True;
         First;
         if not Eof then
         begin
-          EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
-          qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
+          if RecordCount = 1 then
+          begin
+            EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
+            qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
+          end
+          else
+          // Если нашлось более одной записи, показываем диалог
+          begin
+            mes := 'Расценка "' + qrRatesExOBJ_CODE.Value +
+              '" относится к нескольким настройкам зимнего удорожания. Укажите необходимый вид.';
+            Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+            if ShowSelectDialog('Выбор зимнего удорожания' { , Pointer(qrTemp) } ) then
+            begin
+              EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
+              qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
+            end;
+          end;
         end;
       end;
   except

@@ -496,8 +496,8 @@ begin
   DM.qrDifferent.Active := True;
   if DM.qrDifferent.IsEmpty then
   begin
-    MessageDlg('Для выбраной даты начала строительства значения ставок отсутствуют!'#13 +
-      'Укажите другую дату начала строительства.', mtError, [mbOK], 0);
+    MessageDlg('Для выбранной даты составления сметы значения ставок отсутствуют.'#13 +
+      'Загрузите ставки или укажите другую дату составления сметы.', mtError, [mbOK], 0);
     cbbFromMonth.SetFocus;
     exit;
   end;

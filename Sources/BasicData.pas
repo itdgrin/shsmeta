@@ -696,6 +696,14 @@ begin
       qrSmeta.FieldByName('K35').Value := res;
     end;
   end;
+  // Автоподстановка МАИС
+  if CheckQrActiveEmpty(qrMAIS) then
+  begin
+    qrMAIS.First;
+    while not(qrMAIS.Eof) and (edtYear.Value <= YearOf(qrMAIS.FieldByName('onDate').AsDateTime)) do
+      qrMAIS.Next;
+    dblkcbbMAIS.KeyValue := qrMAIS.FieldByName('MAIS_ID').AsInteger;
+  end;
 
   {
     if Application.MessageBox('Произвести замену индекса роста цен из справочника?', 'Смета',
