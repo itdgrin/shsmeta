@@ -3322,6 +3322,8 @@ var
   NewCount: Currency;
   RateID: Integer;
   ev: TDataSetNotifyEvent;
+  ev2: TFieldNotifyEvent;
+
 begin
   if qrRatesExID_TYPE_DATA.AsInteger = 1 then
   begin
@@ -3330,8 +3332,11 @@ begin
 
     qrRatesEx.DisableControls;
     ev := qrRatesEx.AfterScroll;
+    ev2 := qrRatesExOBJ_COUNT.OnChange;
     try
       qrRatesEx.AfterScroll := nil;
+      qrRatesExOBJ_COUNT.OnChange := nil;
+
       if not qrRatesEx.Eof then
         qrRatesEx.Next;
 
@@ -3364,6 +3369,7 @@ begin
       qrRatesEx.GotoBookmark(TempBookmark);
       qrRatesEx.FreeBookmark(TempBookmark);
     finally
+      qrRatesExOBJ_COUNT.OnChange := ev2;
       qrRatesEx.AfterScroll := ev;
       qrRatesEx.EnableControls;
     end;
