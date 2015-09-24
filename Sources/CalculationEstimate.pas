@@ -2986,6 +2986,13 @@ begin
       qrRatesEx.BeforeScroll := ev;
     end;
   end;
+
+  if (qrRatesExID_TYPE_DATA.Value = -4) and
+     (qrRatesExNOM_ROW_MANUAL.AsVariant <> null) then
+  begin
+    qrRatesEx.Edit;
+    qrRatesExNOM_ROW_MANUAL.AsVariant := null;
+  end;
 end;
 
 procedure TFormCalculationEstimate.qrRatesExCalcFields(DataSet: TDataSet);
@@ -3043,8 +3050,10 @@ var
   NewCode: string;
   newID: Integer;
   Point: TPoint;
+  NomManual: Integer;
 begin
   NewCode := AnsiUpperCase(qrRatesExOBJ_CODE.AsString);
+  NomManual := qrRatesExNOM_ROW_MANUAL.Value;
   grRatesEx.EditorMode := False;
 
   if Length(NewCode) = 0 then
@@ -3052,136 +3061,144 @@ begin
 
   newID := 0;
 
-  // Замена литинских на кирилические
-  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or
-    (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
-  begin
-    if (NewCode[1] = 'E') or (NewCode[1] = 'T') then
-      NewCode[1] := 'Е';
-    if NewCode[1] = 'W' then
-      NewCode[1] := 'Ц';
-
-    if NewCode[1] = 'W' then
-      NewCode[1] := 'Ц';
-    qrTemp.Active := False;
-    qrTemp.SQL.Clear;
-    qrTemp.SQL.Add('SELECT normativ_id, norm_num FROM normativg WHERE ' +
-      '(norm_num = :norm_num1) or (norm_num = :norm_num2) order by norm_num;');
-    qrTemp.ParamByName('norm_num1').Value := NewCode;
-    qrTemp.ParamByName('norm_num2').Value := NewCode + '*';
-    qrTemp.Active := True;
-    if not qrTemp.IsEmpty then
+  try
+    // Замена литинских на кирилические
+    if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or
+      (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
     begin
-      if qrTemp.RecordCount > 1 then
+      if (NewCode[1] = 'E') or (NewCode[1] = 'T') then
+        NewCode[1] := 'Е';
+      if NewCode[1] = 'W' then
+        NewCode[1] := 'Ц';
+
+      if NewCode[1] = 'W' then
+        NewCode[1] := 'Ц';
+      qrTemp.Active := False;
+      qrTemp.SQL.Clear;
+      qrTemp.SQL.Add('SELECT normativ_id, norm_num FROM normativg WHERE ' +
+        '(norm_num = :norm_num1) or (norm_num = :norm_num2) order by norm_num;');
+      qrTemp.ParamByName('norm_num1').Value := NewCode;
+      qrTemp.ParamByName('norm_num2').Value := NewCode + '*';
+      qrTemp.Active := True;
+      if not qrTemp.IsEmpty then
       begin
-        PMAddRateOld.Caption := qrTemp.Fields[1].AsString;
-        PMAddRateOld.Tag := qrTemp.Fields[0].AsInteger;
-        qrTemp.Next;
-        PMAddRateNew.Caption := qrTemp.Fields[1].AsString;
-        PMAddRateNew.Tag := qrTemp.Fields[0].AsInteger;
-        qrTemp.Active := False;
+        if qrTemp.RecordCount > 1 then
+        begin
+          PMAddRateOld.Caption := qrTemp.Fields[1].AsString;
+          PMAddRateOld.Tag := qrTemp.Fields[0].AsInteger;
+          qrTemp.Next;
+          PMAddRateNew.Caption := qrTemp.Fields[1].AsString;
+          PMAddRateNew.Tag := qrTemp.Fields[0].AsInteger;
+          qrTemp.Active := False;
+          qrRatesExOBJ_CODE.AsString := '';
+
+          Point.X := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Left;
+          Point.Y := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Bottom + 1;
+          pmAddRate.Popup(grRatesEx.ClientToScreen(Point).X, grRatesEx.ClientToScreen(Point).Y);
+
+          Exit;
+        end
+        else
+          newID := qrTemp.Fields[0].AsInteger;
+      end;
+      qrTemp.Active := False;
+      if newID = 0 then
+      begin
+        MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
+          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
         qrRatesExOBJ_CODE.AsString := '';
-
-        Point.X := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Left;
-        Point.Y := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Bottom + 1;
-        pmAddRate.Popup(grRatesEx.ClientToScreen(Point).X, grRatesEx.ClientToScreen(Point).Y);
-
         Exit;
-      end
-      else
+      end;
+
+      AddRate(newID);
+      grRatesEx.EditorMode := True;
+      Exit;
+    end;
+
+    if (NewCode[1] = 'С') or (NewCode[1] = 'C') or // C кирилическая и латинская
+      ((Length(NewCode) > 1) and (NewCode[1] = '5') and CharInSet(NewCode[2], ['7', '8'])) then
+    begin
+      if NewCode[1] = 'C' then
+        NewCode[1] := 'С';
+
+      qrTemp.Active := False;
+      qrTemp.SQL.Clear;
+      qrTemp.SQL.Add('SELECT MATERIAL_ID FROM material WHERE MAT_CODE = :CODE;');
+      qrTemp.ParamByName('CODE').Value := NewCode;
+      qrTemp.Active := True;
+      if not qrTemp.IsEmpty then
         newID := qrTemp.Fields[0].AsInteger;
+      qrTemp.Active := False;
+      if newID = 0 then
+      begin
+        MessageBox(0, 'Материал с указанным кодом не найден!', CaptionForm,
+          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+        qrRatesExOBJ_CODE.AsString := '';
+        Exit;
+      end;
+
+      AddMaterial(newID);
+      grRatesEx.EditorMode := True;
+      Exit;
     end;
-    qrTemp.Active := False;
-    if newID = 0 then
+    if (NewCode[1] = 'М') or (NewCode[1] = 'M') or (NewCode[1] = 'V') then // M кирилическая и латинская
     begin
-      MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
-        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-      qrRatesExOBJ_CODE.AsString := '';
+
+      if (NewCode[1] = 'M') or (NewCode[1] = 'V') then
+        NewCode[1] := 'М';
+      qrTemp.Active := False;
+      qrTemp.SQL.Clear;
+      qrTemp.SQL.Add('SELECT MECHANIZM_ID FROM mechanizm WHERE MECH_CODE = :CODE;');
+      qrTemp.ParamByName('CODE').Value := NewCode;
+      qrTemp.Active := True;
+      if not qrTemp.IsEmpty then
+        newID := qrTemp.Fields[0].AsInteger;
+      qrTemp.Active := False;
+      if newID = 0 then
+      begin
+        MessageBox(0, 'Механизм с указанным кодом не найден!', CaptionForm,
+          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+        qrRatesExOBJ_CODE.AsString := '';
+        Exit;
+      end;
+
+      AddMechanizm(newID);
+      grRatesEx.EditorMode := True;
       Exit;
     end;
 
-    AddRate(newID);
-    grRatesEx.EditorMode := True;
-    Exit;
-  end;
-
-  if (NewCode[1] = 'С') or (NewCode[1] = 'C') or // C кирилическая и латинская
-    ((Length(NewCode) > 1) and (NewCode[1] = '5') and CharInSet(NewCode[2], ['7', '8'])) then
-  begin
-    if NewCode[1] = 'C' then
-      NewCode[1] := 'С';
-
-    qrTemp.Active := False;
-    qrTemp.SQL.Clear;
-    qrTemp.SQL.Add('SELECT MATERIAL_ID FROM material WHERE MAT_CODE = :CODE;');
-    qrTemp.ParamByName('CODE').Value := NewCode;
-    qrTemp.Active := True;
-    if not qrTemp.IsEmpty then
-      newID := qrTemp.Fields[0].AsInteger;
-    qrTemp.Active := False;
-    if newID = 0 then
+    if CharInSet(NewCode[1], ['1', '9']) then
     begin
-      MessageBox(0, 'Материал с указанным кодом не найден!', CaptionForm,
-        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-      qrRatesExOBJ_CODE.AsString := '';
+      qrTemp.Active := False;
+      qrTemp.SQL.Clear;
+      qrTemp.SQL.Add('SELECT DEVICE_ID FROM devices WHERE DEVICE_CODE1 = :CODE;');
+      qrTemp.ParamByName('CODE').Value := NewCode;
+      qrTemp.Active := True;
+      if not qrTemp.IsEmpty then
+        newID := qrTemp.Fields[0].AsInteger;
+      qrTemp.Active := False;
+      if newID = 0 then
+      begin
+        MessageBox(0, 'Оборудование с указанным кодом не найден!', CaptionForm,
+          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+        qrRatesExOBJ_CODE.AsString := '';
+        Exit;
+      end;
+      AddDevice(newID);
+      grRatesEx.EditorMode := True;
       Exit;
     end;
 
-    AddMaterial(newID);
-    grRatesEx.EditorMode := True;
-    Exit;
-  end;
-  if (NewCode[1] = 'М') or (NewCode[1] = 'M') or (NewCode[1] = 'V') then // M кирилическая и латинская
-  begin
-
-    if (NewCode[1] = 'M') or (NewCode[1] = 'V') then
-      NewCode[1] := 'М';
-    qrTemp.Active := False;
-    qrTemp.SQL.Clear;
-    qrTemp.SQL.Add('SELECT MECHANIZM_ID FROM mechanizm WHERE MECH_CODE = :CODE;');
-    qrTemp.ParamByName('CODE').Value := NewCode;
-    qrTemp.Active := True;
-    if not qrTemp.IsEmpty then
-      newID := qrTemp.Fields[0].AsInteger;
-    qrTemp.Active := False;
-    if newID = 0 then
+    MessageBox(0, 'По указанному коду ничего не найдено!', CaptionForm,
+      MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+    qrRatesExOBJ_CODE.AsString := '';
+  finally
+    if NomManual > 0 then
     begin
-      MessageBox(0, 'Механизм с указанным кодом не найден!', CaptionForm,
-        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-      qrRatesExOBJ_CODE.AsString := '';
-      Exit;
+      qrRatesEx.Edit;
+      qrRatesExNOM_ROW_MANUAL.Value := NomManual;
     end;
-
-    AddMechanizm(newID);
-    grRatesEx.EditorMode := True;
-    Exit;
   end;
-
-  if CharInSet(NewCode[1], ['1', '9']) then
-  begin
-    qrTemp.Active := False;
-    qrTemp.SQL.Clear;
-    qrTemp.SQL.Add('SELECT DEVICE_ID FROM devices WHERE DEVICE_CODE1 = :CODE;');
-    qrTemp.ParamByName('CODE').Value := NewCode;
-    qrTemp.Active := True;
-    if not qrTemp.IsEmpty then
-      newID := qrTemp.Fields[0].AsInteger;
-    qrTemp.Active := False;
-    if newID = 0 then
-    begin
-      MessageBox(0, 'Оборудование с указанным кодом не найден!', CaptionForm,
-        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-      qrRatesExOBJ_CODE.AsString := '';
-      Exit;
-    end;
-    AddDevice(newID);
-    grRatesEx.EditorMode := True;
-    Exit;
-  end;
-
-  MessageBox(0, 'По указанному коду ничего не найдено!', CaptionForm,
-    MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-  qrRatesExOBJ_CODE.AsString := '';
 end;
 
 procedure TFormCalculationEstimate.qrRatesExCOUNTChange(Sender: TField);
@@ -3227,7 +3244,7 @@ begin
     // Переходим на следующую строку после ввода кол-ва
     qrRatesEx.Next;
     // ...в колонку ввода кода расценки
-    grRatesEx.Col := 3;
+    grRatesEx.Col := 2;
   finally
     grRatesEx.SelectedRows.Clear;
     qrRatesEx.EnableControls;
@@ -3236,18 +3253,16 @@ end;
 
 procedure TFormCalculationEstimate.qrRatesExNOM_ROW_MANUALChange(Sender: TField);
 begin
-  { if Sender.IsNull then
-    begin
-    Sender.AsInteger := 0;
-    Exit;
-    end; }
-
-  qrTemp.SQL.Text := 'UPDATE data_row_temp set NOM_ROW_MANUAL=:VAL WHERE ID=:ID;';
-  qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
-  qrTemp.ParamByName('VAL').Value := Sender.Value;
-  qrTemp.ExecSQL;
-
+  if qrRatesExID_TYPE_DATA.Value > 0 then
+  begin
+    qrTemp.SQL.Text := 'UPDATE data_row_temp set NOM_ROW_MANUAL=:VAL WHERE ID=:ID;';
+    qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
+    qrTemp.ParamByName('VAL').Value := Sender.Value;
+    qrTemp.ExecSQL;
+  end;
   qrRatesEx.Post;
+  if grRatesEx.Col = 2 then
+    grRatesEx.Col := 3;
 end;
 
 procedure TFormCalculationEstimate.qrRatesWORK_IDChange(Sender: TField);
@@ -3383,7 +3398,11 @@ begin
   AllowEdit := True;
   if ((Field = qrRatesExOBJ_CODE) and (qrRatesExID_TYPE_DATA.Value <> -4) and
     (qrRatesExID_TYPE_DATA.Value <> -5)) or
-    ((Field = qrRatesExNOM_ROW_MANUAL) and (qrRatesExID_TYPE_DATA.Value < 1)) or (Grid.Col = 1) then
+    ((Field = qrRatesExNOM_ROW_MANUAL) and
+     ((qrRatesExID_TYPE_DATA.Value = -1) or
+      (qrRatesExID_TYPE_DATA.Value = -2) or
+      (qrRatesExID_TYPE_DATA.Value = -3))) or
+    (Grid.Col = 1) then
     AllowEdit := False;
 end;
 
