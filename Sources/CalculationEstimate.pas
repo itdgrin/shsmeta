@@ -2968,6 +2968,10 @@ begin
   FNewRowIterator := 0;
   tmRate.Enabled := False;
   tmRate.Enabled := True;
+
+  //для поля ввода ставит курсор на пользовательский помер
+  if qrRatesExID_TYPE_DATA.Value = -4 then
+    grRatesEx.Col := 2;
 end;
 
 procedure TFormCalculationEstimate.qrRatesExBeforeScroll(DataSet: TDataSet);
