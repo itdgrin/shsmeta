@@ -1951,15 +1951,17 @@ end;
 
 procedure TFormMain.mReportClick(Sender: TObject);
 begin
-  if Assigned(FormCalculationEstimate) then
+ if Assigned(FormCalculationEstimate) then
   begin
     FormCalculationEstimate.ShowNeedSaveDialog;
-    if FormCalculationEstimate.IdEstimate > 0 then
-      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+    //FormCalculationEstimate.IdEstimate > 0
+    if FormCalculationEstimate.IDAct>0  then
+    ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
         PChar(FileReportPath), SW_maximIZE)
     else
-      ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
+    ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
         PChar(FileReportPath), SW_maximIZE);
+
   end;
 end;
 
