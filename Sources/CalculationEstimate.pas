@@ -2969,7 +2969,7 @@ begin
   tmRate.Enabled := False;
   tmRate.Enabled := True;
 
-  //для поля ввода ставит курсор на пользовательский помер
+  // для поля ввода ставит курсор на пользовательский помер
   if qrRatesExID_TYPE_DATA.Value = -4 then
     grRatesEx.Col := 2;
 end;
@@ -2991,11 +2991,10 @@ begin
     end;
   end;
 
-  if (qrRatesExID_TYPE_DATA.Value = -4) and
-     (qrRatesExNOM_ROW_MANUAL.AsVariant <> null) then
+  if (qrRatesExID_TYPE_DATA.Value = -4) and (qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) then
   begin
     qrRatesEx.Edit;
-    qrRatesExNOM_ROW_MANUAL.AsVariant := null;
+    qrRatesExNOM_ROW_MANUAL.AsVariant := Null;
   end;
 end;
 
@@ -3402,11 +3401,8 @@ begin
   AllowEdit := True;
   if ((Field = qrRatesExOBJ_CODE) and (qrRatesExID_TYPE_DATA.Value <> -4) and
     (qrRatesExID_TYPE_DATA.Value <> -5)) or
-    ((Field = qrRatesExNOM_ROW_MANUAL) and
-     ((qrRatesExID_TYPE_DATA.Value = -1) or
-      (qrRatesExID_TYPE_DATA.Value = -2) or
-      (qrRatesExID_TYPE_DATA.Value = -3))) or
-    (Grid.Col = 1) then
+    ((Field = qrRatesExNOM_ROW_MANUAL) and ((qrRatesExID_TYPE_DATA.Value = -1) or
+    (qrRatesExID_TYPE_DATA.Value = -2) or (qrRatesExID_TYPE_DATA.Value = -3))) or (Grid.Col = 1) then
     AllowEdit := False;
 end;
 
@@ -4331,42 +4327,57 @@ end;
 procedure TFormCalculationEstimate.SaveData;
 var
   FormCardAct: TfCardAct;
+  AutoCommitValue: Boolean;
 begin
-  if Act then
-  begin
-    if IdAct = 0 then
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  try
+    if Act then
     begin
-      FormCardAct := TfCardAct.Create(Self);
-      FormCardAct.Kind := kdInsert;
-      FormCardAct.ShowModal;
+      if IdAct = 0 then
+      begin
+        FormCardAct := TfCardAct.Create(Self);
+        FormCardAct.Kind := kdInsert;
+        FormCardAct.ShowModal;
+      end
+      else if not ActReadOnly then
+        try
+          DM.Read.StartTransaction;
+          FastExecSQL('CALL SaveDataAct(:IdAct);', VarArrayOf([IdAct]));
+          DM.Read.Commit;
+        except
+          on e: Exception do
+          begin
+            DM.Read.Rollback;
+            qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
+            qrTemp.Active := True;
+            MessageBox(0, PChar('При сохранении данных акта возникла ошибка:' + sLineBreak + sLineBreak +
+              e.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
+              MB_ICONERROR + MB_OK + mb_TaskModal);
+            Abort;
+          end;
+        end;
     end
-    else if not ActReadOnly then
+    else
       try
-        FastExecSQL('CALL SaveDataAct(:IdAct);', VarArrayOf([IdAct]));
+        DM.Read.StartTransaction;
+        FastExecSQL('CALL SaveAllDataEstimate(:id_estimate);', VarArrayOf([IdEstimate]));
+        DM.Read.Commit;
       except
         on e: Exception do
         begin
+          DM.Read.Rollback;
           qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
           qrTemp.Active := True;
-          MessageBox(0, PChar('При сохранении данных акта возникла ошибка:' + sLineBreak + sLineBreak +
+          MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' + sLineBreak + sLineBreak +
             e.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
             MB_ICONERROR + MB_OK + mb_TaskModal);
+          Abort;
         end;
       end;
-  end
-  else
-    try
-      FastExecSQL('CALL SaveAllDataEstimate(:id_estimate);', VarArrayOf([IdEstimate]));
-    except
-      on e: Exception do
-      begin
-        qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
-        qrTemp.Active := True;
-        MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' + sLineBreak + sLineBreak +
-          e.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
-          MB_ICONERROR + MB_OK + mb_TaskModal);
-      end;
-    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+  end;
 end;
 
 procedure TFormCalculationEstimate.SetActReadOnly(const Value: Boolean);
