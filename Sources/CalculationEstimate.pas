@@ -1428,6 +1428,8 @@ begin
       FastExecSQL('CALL UpdateSmetaCosts(:IDESTIMATE,:ID_ACT);', VarArrayOf([IdEstimate, IdAct]));
   end;
   RecalcEstimate;
+  if pnlSummaryCalculations.Visible then
+    frSummaryCalculations.LoadData(VarArrayOf([IdEstimate, IdAct]));
 end;
 
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);

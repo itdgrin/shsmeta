@@ -737,7 +737,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       'UNION ALL'
       
         'SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NU' +
-        'LL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, '
+        'LL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, NULL,'
       '0 AS PARENT_ID, '
       '(YEAR(card_acts.date)*12+MONTH(card_acts.date)) AS MASTER_ID,'
       'CONCAT(YEAR(card_acts.date), " ", ('
