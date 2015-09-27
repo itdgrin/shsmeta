@@ -5504,7 +5504,7 @@ begin
           else
           // Если нашлось более одной записи, показываем диалог
           begin
-            mes := 'Расценка "' + qrRatesExOBJ_CODE.Value +
+            mes := 'Расценка "' + qrRatesExOBJ_CODE.AsString +
               '" относится к нескольким настройкам ОХРиОПР и ПП. Укажите необходимый тип.';
             Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
             if ShowSelectDialog('Выбор типа ОХРиОПР и ПП' { , Pointer(qrTemp) } ) then
@@ -6036,7 +6036,7 @@ begin
           else
           // Если нашлось более одной записи, показываем диалог
           begin
-            mes := 'Расценка "' + qrRatesExOBJ_CODE.Value +
+            mes := 'Расценка "' + qrRatesExOBJ_CODE.AsString +
               '" относится к нескольким настройкам зимнего удорожания. Укажите необходимый вид.';
             Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
             if ShowSelectDialog('Выбор зимнего удорожания' { , Pointer(qrTemp) } ) then

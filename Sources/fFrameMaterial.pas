@@ -31,7 +31,7 @@ type
       const APriceColumn, vAllowAddition: Boolean;
       const AStarDate: TDateTime;
       const ARegion: Integer;
-      const AMat, AJBI: Boolean); reintroduce;
+      const AMat, AJBI: Boolean; ABaseType: Byte = 0); reintroduce;
   end;
 
 implementation
@@ -44,23 +44,17 @@ constructor TSprMaterial.Create(AOwner: TComponent;
       const APriceColumn, vAllowAddition: Boolean;
       const AStarDate: TDateTime;
       const ARegion: Integer;
-      const AMat, AJBI: Boolean);
-var ev: TNotifyEvent;
+      const AMat, AJBI: Boolean; ABaseType: Byte);
 begin
   FAllowAddition := vAllowAddition;
-  inherited Create(AOwner, APriceColumn, AStarDate);
+  inherited Create(AOwner, APriceColumn, AStarDate, ABaseType);
 
   if not APriceColumn then
   begin
-    lbYear.Visible := False;
-    edtYear.Visible := False;
-    lbMonth.Visible := False;
-    cmbMonth.Visible := False;
     lbRegion.Visible := False;
     cmbRegion.Visible := False;
-    PanelSettings.Visible := True;
-    rbMat.Left := 20;
-    rbJBI.Left := rbMat.Left + rbMat.Width + 5;
+    rbMat.Left := PanelManual.Width + 8;
+    rbJBI.Left := rbMat.Left;
   end;
 
   if (cmbRegion.Items.Count >= ARegion) and (ARegion > 0) then

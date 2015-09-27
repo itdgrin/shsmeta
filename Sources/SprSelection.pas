@@ -15,10 +15,7 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
   Vcl.ComCtrls,
-  fFrameMaterial,
-  fFrameMechanizm,
   fFrameSpr,
-  fFrameEquipment,
   SprController,
   GlobsAndConst;
 
@@ -46,6 +43,8 @@ function SelectDevice(): Variant;
 function SelectFromSpr(AType: Integer): Variant;
 
 implementation
+
+uses fFrameMaterial, fFrameMechanizm, fFrameEquipment;
 
 {$R *.dfm}
 

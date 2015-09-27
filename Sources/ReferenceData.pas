@@ -3,10 +3,24 @@ unit ReferenceData;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, Vcl.Dialogs,
+  Windows,
+  Messages,
+  Classes,
+  Controls,
+  System.SysUtils,
+  Forms,
+  Buttons,
+  ExtCtrls,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
   fFrameRates,
-  fFrameOXROPR, fFrameSSR, fFrameMaterial, fFrameMechanizm, fFrameEquipment,
-  fFrameSmeta, GlobsAndConst, Vcl.StdCtrls, System.SysUtils;
+  fFrameOXROPR,
+  fFrameSSR,
+  fFrameMaterial,
+  fFrameMechanizm,
+  fFrameEquipment,
+  fFrameSmeta,
+  GlobsAndConst;
 
 type
   TFormReferenceData = class(TForm)
@@ -110,21 +124,21 @@ begin
   FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
 
-  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date, 1, True, False);
+  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date, 1, True, False, 1);
   FramePriceMaterials.Parent := Self;
   FramePriceMaterials.LoadSpr;
   FramePriceMaterials.Align := alClient;
   FramePriceMaterials.Visible := False;
   SpeedButtonMaterials.Tag := Integer(FramePriceMaterials);
 
-  FramePriceMechanizms := TSprMechanizm.Create(Self, vPriceColumn, False, Date);
+  FramePriceMechanizms := TSprMechanizm.Create(Self, vPriceColumn, False, Date, 1);
   FramePriceMechanizms.Parent := Self;
   FramePriceMechanizms.LoadSpr;
   FramePriceMechanizms.Align := alClient;
   FramePriceMechanizms.Visible := False;
   SpeedButtonMechanizms.Tag := Integer(FramePriceMechanizms);
 
-  FrameEquipments := TSprEquipment.Create(Self, False);
+  FrameEquipments := TSprEquipment.Create(Self, False, 1);
   FrameEquipments.Parent := Self;
   FrameEquipments.LoadSpr;
   FrameEquipments.Align := alClient;
@@ -145,7 +159,6 @@ begin
 
   SpeedButtonClick(SpeedButtonRates);
   FrameRates.Visible := True;
-
   FormMain.PanelCover.Visible := False;
 
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);

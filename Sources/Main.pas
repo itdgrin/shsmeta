@@ -2093,6 +2093,7 @@ procedure TFormMain.PMRestoreBackupClick(Sender: TObject);
 var
   Mi: TMenuItem;
   ArhForm: TfrmArhRestore;
+  mr: TModalResult;
 begin
   Mi := TMenuItem(Sender);
   beep;
@@ -2103,10 +2104,11 @@ begin
     try
       ArhForm := TfrmArhRestore.Create(Self);
       FArhiv.RestoreArhiv(ArhForm.Handle, string(Mi.Parent.Tag));
-      ArhForm.ShowModal;
+      mr := ArhForm.ShowModal;
     finally
       FreeAndNil(ArhForm);
-      Close;
+      if mr = mrOk then
+        Close;
     end;
   end;
 end;

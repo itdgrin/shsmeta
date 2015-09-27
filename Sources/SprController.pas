@@ -30,6 +30,7 @@ type
     CoastNoNDS,
     ZpMach,
     TrZatr: Extended;
+    Manual: Boolean;
   end;
 
   TSprPeriad = record
@@ -119,22 +120,22 @@ begin
       FThQueryList[I].OnActivate := LoadSpr;
       case I of
         CMatIndex: TmpStr :=
-            'SELECT mt.material_id, mt.mat_code, mt.mat_name, ut.unit_name ' +
+            'SELECT mt.material_id, mt.mat_code, mt.mat_name, ut.unit_name, mt.base ' +
             'FROM material mt LEFT JOIN units ut ' +
             'ON (mt.unit_id = ut.unit_id) WHERE (mt.MAT_TYPE = 1) ' +
             'ORDER BY mt.mat_code;';
         CJBIIndex: TmpStr :=
-            'SELECT mt.material_id, mt.mat_code, mt.mat_name, ut.unit_name ' +
+            'SELECT mt.material_id, mt.mat_code, mt.mat_name, ut.unit_name, mt.base ' +
             'FROM material mt LEFT JOIN units ut ' +
             'ON (mt.unit_id = ut.unit_id) WHERE (mt.MAT_TYPE = 2) ' +
             'ORDER BY mt.mat_code;';
         CMechIndex: TmpStr :=
-            'SELECT mh.mechanizm_id, mh.mech_code, mh.mech_name, ut.unit_name, ' +
+            'SELECT mh.mechanizm_id, mh.mech_code, mh.mech_name, ut.unit_name, mh.base, ' +
             'mh.MECH_PH ' +
             'FROM mechanizm mh LEFT JOIN units ut ' +
             'ON (mh.unit_id = ut.unit_id) ORDER BY mh.mech_code;';
         CDevIndex: TmpStr :=
-            'SELECT dv.device_id, dv.device_code1, dv.name, ut.unit_name ' +
+            'SELECT dv.device_id, dv.device_code1, dv.name, ut.unit_name, dv.base ' +
             'FROM devices dv LEFT JOIN units ut ' +
             'ON (dv.unit = ut.unit_id) ORDER BY dv.device_code1';
         else
@@ -261,8 +262,9 @@ begin
     FAllSprList[AIndex][TmpInd].Code := ADataSet.Fields[1].AsString;
     FAllSprList[AIndex][TmpInd].Name := ADataSet.Fields[2].AsString;
     FAllSprList[AIndex][TmpInd].Unt := ADataSet.Fields[3].AsString;
+    FAllSprList[AIndex][TmpInd].Manual := ADataSet.Fields[4].AsInteger > 0;
     if AIndex = CMechIndex then
-      FAllSprList[AIndex][TmpInd].TrZatr := ADataSet.Fields[4].AsExtended;
+      FAllSprList[AIndex][TmpInd].TrZatr := ADataSet.Fields[5].AsExtended;
 
     Inc(TmpInd);
     ADataSet.Next;

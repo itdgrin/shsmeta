@@ -19,7 +19,7 @@ type
   public
     { Public declarations }
     constructor Create(AOwner: TComponent;
-      const vAllowAddition: Boolean); reintroduce;
+      const vAllowAddition: Boolean; ABaseType: Byte = 0); reintroduce;
   end;
 
 implementation
@@ -29,14 +29,15 @@ implementation
 uses CalculationEstimate, SprController;
 
 constructor TSprEquipment.Create(AOwner: TComponent;
-      const vAllowAddition: Boolean);
+      const vAllowAddition: Boolean; ABaseType: Byte);
 var y, m: Integer;
 begin
   FAllowAddition := vAllowAddition;
   //FNoEdCol := True;
   y := G_CURYEAR;
   m := G_CURMONTH;
-  inherited Create(AOwner, False, Date);
+  inherited Create(AOwner, False, Date, ABaseType);
+
   G_CURYEAR := y;
   G_CURMONTH := m;
 end;

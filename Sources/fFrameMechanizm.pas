@@ -28,7 +28,7 @@ type
     { Public declarations }
     constructor Create(AOwner: TComponent;
       const APriceColumn, vAllowAddition: Boolean;
-      const AStarDate: TDateTime); reintroduce;
+      const AStarDate: TDateTime; ABaseType: Byte = 0); reintroduce;
   end;
 
 implementation
@@ -39,12 +39,12 @@ uses CalculationEstimate, SprController;
 
 constructor TSprMechanizm.Create(AOwner: TComponent;
       const APriceColumn, vAllowAddition: Boolean;
-      const AStarDate: TDateTime);
+      const AStarDate: TDateTime; ABaseType: Byte);
 var lc: TListColumn;
 begin
   FAllowAddition := vAllowAddition;
  // FNoEdCol := False;
-  inherited Create(AOwner, APriceColumn, AStarDate);
+  inherited Create(AOwner, APriceColumn, AStarDate, ABaseType);
   if APriceColumn then
   begin
     lc := ListSpr.Columns.Add;

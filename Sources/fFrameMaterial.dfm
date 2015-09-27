@@ -1,4 +1,10 @@
 inherited SprMaterial: TSprMaterial
+  Width = 743
+  ExplicitWidth = 743
+  inherited SpeedButtonShowHide: TSpeedButton
+    Width = 743
+    ExplicitWidth = 743
+  end
   inherited LoadAnimator: TJvGIFAnimator
     Image.Data = {
       101C0000474946383961D0000D00C41E00DDDDDDBDBDBDD1D1D1B1B1B1BFBFBF
@@ -228,16 +234,22 @@ inherited SprMaterial: TSprMaterial
       1EFA95A1232C37680AF4D5B2A7A378A61002003B}
   end
   inherited PanelSettings: TPanel
+    Width = 743
+    ExplicitWidth = 743
     object lbRegion: TLabel [2]
-      Left = 221
-      Top = 12
+      Left = 363
+      Top = 11
       Width = 39
       Height = 13
       Caption = #1056#1077#1075#1080#1086#1085':'
     end
-    object cmbRegion: TComboBox
-      Left = 264
-      Top = 9
+    inherited btnShow: TButton
+      Left = 647
+      ExplicitLeft = 647
+    end
+    object cmbRegion: TComboBox [6]
+      Left = 407
+      Top = 8
       Width = 137
       Height = 21
       Style = csDropDownList
@@ -254,9 +266,9 @@ inherited SprMaterial: TSprMaterial
         #1052#1086#1075#1080#1083#1077#1074#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
         #1052#1080#1085#1089#1082)
     end
-    object rbMat: TRadioButton
-      Left = 411
-      Top = 12
+    object rbMat: TRadioButton [7]
+      Left = 554
+      Top = 4
       Width = 85
       Height = 17
       Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
@@ -265,9 +277,9 @@ inherited SprMaterial: TSprMaterial
       TabStop = True
       OnClick = rbMatClick
     end
-    object rbJBI: TRadioButton
-      Left = 499
-      Top = 12
+    object rbJBI: TRadioButton [8]
+      Left = 554
+      Top = 20
       Width = 54
       Height = 17
       Caption = #1046#1041#1048
@@ -275,20 +287,37 @@ inherited SprMaterial: TSprMaterial
       TabStop = True
       OnClick = rbMatClick
     end
+    inherited PanelManual: TPanel
+      TabOrder = 6
+    end
   end
   inherited PanelFind: TPanel
+    Width = 743
+    ExplicitWidth = 743
     inherited edtFindName: TEdit
+      Width = 422
       TabOrder = 2
+      ExplicitWidth = 422
+    end
+    inherited btnFind: TButton
+      Left = 647
+      ExplicitLeft = 647
     end
     inherited edtFindCode: TEdit
       TabOrder = 0
     end
   end
   inherited Memo: TMemo
+    Width = 743
     TabOrder = 3
+    ExplicitWidth = 743
   end
   inherited ListSpr: TListView
     TabOrder = 2
     OnDblClick = ListSprDblClick
+  end
+  inherited StatusBar: TStatusBar
+    Width = 743
+    ExplicitWidth = 743
   end
 end

@@ -26,10 +26,10 @@ object SprFrame: TSprFrame
     ExplicitWidth = 796
   end
   object LoadAnimator: TJvGIFAnimator
-    Left = 0
-    Top = 70
-    Width = 759
-    Height = 299
+    Left = 331
+    Top = 136
+    Width = 352
+    Height = 99
     AutoSize = False
     Center = True
     Image.Data = {
@@ -259,20 +259,14 @@ object SprFrame: TSprFrame
       5318B0D9E0050BBCD9559C565D60A7584BC929D5017B7A071E9BF0D5B966507A
       1EFA95A1232C37680AF4D5B2A7A378A61002003B}
     Threaded = False
-    Align = alClient
-    ExplicitLeft = -16
-    ExplicitTop = 34
-    ExplicitWidth = 775
-    ExplicitHeight = 162
   end
   object LoadLabel: TLabel
     AlignWithMargins = True
-    Left = 3
-    Top = 105
-    Width = 753
-    Height = 261
+    Left = 451
+    Top = 257
+    Width = 96
+    Height = 13
     Margins.Top = 35
-    Align = alClient
     Alignment = taCenter
     Caption = #1048#1076#1105#1090' '#1079#1072#1075#1088#1091#1079#1082#1072'...'
     Font.Charset = DEFAULT_CHARSET
@@ -283,14 +277,12 @@ object SprFrame: TSprFrame
     ParentFont = False
     Layout = tlCenter
     WordWrap = True
-    ExplicitWidth = 96
-    ExplicitHeight = 13
   end
   object PanelSettings: TPanel
     Left = 0
     Top = 0
     Width = 759
-    Height = 36
+    Height = 43
     Align = alTop
     DoubleBuffered = True
     Font.Charset = DEFAULT_CHARSET
@@ -303,36 +295,36 @@ object SprFrame: TSprFrame
     ParentFont = False
     TabOrder = 0
     object lbYear: TLabel
-      Left = 8
+      Left = 149
       Top = 11
       Width = 23
       Height = 13
       Caption = #1043#1086#1076':'
     end
     object lbMonth: TLabel
-      Left = 93
+      Left = 234
       Top = 11
       Width = 35
       Height = 13
       Caption = #1052#1077#1089#1103#1094':'
     end
     object cmbMonth: TComboBox
-      Left = 132
+      Left = 273
       Top = 8
-      Width = 82
+      Width = 85
       Height = 21
       Style = csDropDownList
-      TabOrder = 0
+      TabOrder = 1
       OnChange = edtYearChange
     end
     object edtYear: TSpinEdit
-      Left = 33
+      Left = 174
       Top = 8
-      Width = 54
+      Width = 57
       Height = 22
       MaxValue = 0
       MinValue = 0
-      TabOrder = 1
+      TabOrder = 0
       Value = 0
       OnChange = edtYearChange
     end
@@ -341,20 +333,62 @@ object SprFrame: TSprFrame
       Left = 663
       Top = 5
       Width = 91
-      Height = 26
+      Height = 24
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
-      Margins.Bottom = 4
+      Margins.Bottom = 13
       Align = alRight
       Caption = #1055#1086#1082#1072#1079#1072#1090#1100
       TabOrder = 2
       OnClick = btnShowClick
     end
+    object PanelManual: TPanel
+      Left = 1
+      Top = 1
+      Width = 142
+      Height = 41
+      Align = alLeft
+      BevelOuter = bvNone
+      TabOrder = 3
+      ExplicitLeft = 26
+      ExplicitTop = 0
+      object Bevel1: TBevel
+        Left = 0
+        Top = 0
+        Width = 142
+        Height = 41
+        Align = alClient
+        Shape = bsRightLine
+        ExplicitLeft = 8
+        ExplicitWidth = 64
+      end
+      object rbNarmBase: TRadioButton
+        Left = 7
+        Top = 5
+        Width = 120
+        Height = 13
+        Caption = #1053#1086#1088#1084#1072#1090#1080#1074#1085#1072#1103' '#1073#1072#1079#1072
+        Checked = True
+        TabOrder = 0
+        TabStop = True
+        OnClick = btnFindClick
+      end
+      object rbUserBase: TRadioButton
+        Left = 7
+        Top = 23
+        Width = 131
+        Height = 13
+        Caption = #1057#1086#1073#1089#1090#1074#1077#1085#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
+        TabOrder = 1
+        TabStop = True
+        OnClick = btnFindClick
+      end
+    end
   end
   object PanelFind: TPanel
     Left = 0
-    Top = 36
+    Top = 43
     Width = 759
     Height = 34
     Align = alTop
@@ -429,11 +463,10 @@ object SprFrame: TSprFrame
     TabOrder = 2
   end
   object ListSpr: TListView
-    Left = 0
-    Top = 70
-    Width = 759
-    Height = 299
-    Align = alClient
+    Left = 13
+    Top = 136
+    Width = 228
+    Height = 209
     Columns = <
       item
         Caption = #1050#1086#1076

@@ -3,8 +3,19 @@ unit OwnData;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, Buttons, ExtCtrls, fFrameRates,
-  {fFramePriceMaterials, fFramePriceMechanizms, fFrameEquipments,} fFrameSmeta;
+  Windows,
+  Messages,
+  Classes,
+  Controls,
+  System.SysUtils,
+  Forms,
+  Buttons,
+  ExtCtrls,
+  fFrameRates,
+  fFrameMaterial,
+  fFrameMechanizm,
+  fFrameEquipment,
+  fFrameSmeta;
 
 type
   TFormOwnData = class(TForm)
@@ -35,9 +46,9 @@ type
 
   public
     FrameRates: TFrameRates;
-    {FramePriceMaterials: TFramePriceMaterial;
-    FramePriceMechanisms: TFramePriceMechanizm;
-    FrameEquipments: TFrameEquipment; }
+    FramePriceMaterials: TSprMaterial;
+    FramePriceMechanizms: TSprMechanizm;
+    FrameEquipments: TSprEquipment;
   end;
 
 var
@@ -102,24 +113,27 @@ begin
   FrameRates.Align := alClient;
   FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
-  {
-  FramePriceMaterials := TFramePriceMaterial.Create(Self, vDataBase, vPriceColumn, False, False);
+
+  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date, 1, True, False, 2);
   FramePriceMaterials.Parent := Self;
+  FramePriceMaterials.LoadSpr;
   FramePriceMaterials.Align := alClient;
   FramePriceMaterials.Visible := False;
   SpeedButtonMaterials.Tag := Integer(FramePriceMaterials);
 
-  FramePriceMechanisms := TFramePriceMechanizm.Create(Self, vDataBase, vPriceColumn, False);
-  FramePriceMechanisms.Parent := Self;
-  FramePriceMechanisms.Align := alClient;
-  FramePriceMechanisms.Visible := False;
-  SpeedButtonMechanisms.Tag := Integer(FramePriceMechanisms);
+  FramePriceMechanizms := TSprMechanizm.Create(Self, vPriceColumn, False, Date, 2);
+  FramePriceMechanizms.Parent := Self;
+  FramePriceMechanizms.LoadSpr;
+  FramePriceMechanizms.Align := alClient;
+  FramePriceMechanizms.Visible := False;
+  SpeedButtonMechanisms.Tag := Integer(FramePriceMechanizms);
 
-  FrameEquipments := TFrameEquipment.Create(Self, vDataBase, False);
+  FrameEquipments := TSprEquipment.Create(Self, False, 2);
   FrameEquipments.Parent := Self;
+  FrameEquipments.LoadSpr;
   FrameEquipments.Align := alClient;
   FrameEquipments.Visible := False;
-  SpeedButtonEquipments.Tag := Integer(FrameEquipments);    }
+  SpeedButtonEquipments.Tag := Integer(FrameEquipments);
 
   SpeedButtonClick(SpeedButtonRates);
   FrameRates.Visible := True;
@@ -159,11 +173,11 @@ end;
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormOwnData.HideAllFrames;
-begin  {
+begin
   FrameRates.Visible := False;
   FramePriceMaterials.Visible := False;
-  FramePriceMechanisms.Visible := False;
-  FrameEquipments.Visible := False;   }
+  FramePriceMechanizms.Visible := False;
+  FrameEquipments.Visible := False;
 end;
 
 procedure TFormOwnData.SpeedButtonClick(Sender: TObject);
@@ -186,10 +200,10 @@ begin
       end;
     end;
 
-    if (Self as TControl).Visible then
+    if (Self as TWinControl).Visible then
     begin
-      Visible := True;
-      SetFocus;
+      TWinControl((Sender as TComponent).Tag).Visible := True;
+      TWinControl((Sender as TComponent).Tag).SetFocus;
     end;
   end;
 end;

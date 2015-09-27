@@ -37,6 +37,10 @@ type
     StatusBar: TStatusBar;
     edtFindCode: TEdit;
     lbFindName: TLabel;
+    PanelManual: TPanel;
+    rbNarmBase: TRadioButton;
+    rbUserBase: TRadioButton;
+    Bevel1: TBevel;
     procedure SpeedButtonShowHideClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
@@ -53,6 +57,7 @@ type
     FLoaded: Boolean;
     FSprArray: TSprArray;
     FOnAfterLoad: TNotifyEvent;
+    FBaseType: Byte; //0 - оба типа, 1 - норматичная, 2 - собственная
 
     procedure WMSprLoad(var Mes: TMessage); message WM_SPRLOAD;
     procedure WMPriceLoad(var Mes: TMessage); message WM_PRICELOAD;
@@ -80,7 +85,7 @@ type
   public
     { Public declarations }
     constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
-      const AStarDate: TDateTime); reintroduce;
+      const AStarDate: TDateTime; ABaseType: Byte); reintroduce;
     procedure LoadSpr;
     procedure CheckCurPeriod;
     function FindCode(const ACode: string): PSprRecord;
@@ -100,13 +105,44 @@ uses DataModule, Tools;
 { TSprFrame }
 
 constructor TSprFrame.Create(AOwner: TComponent; const APriceColumn: Boolean;
-      const AStarDate: TDateTime);
+      const AStarDate: TDateTime; ABaseType: Byte);
 var i: Integer;
     y,m,d: Word;
     lc: TListColumn;
     ev: TNotifyEvent;
 begin
+  if not ABaseType in [0,1,2] then
+    raise Exception.Create('Неизвестный тип данных.');
+
   inherited Create(AOwner);
+
+  FBaseType := ABaseType;
+  ev := rbNarmBase.OnClick;
+  try
+    rbNarmBase.OnClick := nil;
+    rbUserBase.OnClick := nil;
+    case FBaseType of
+      0: rbNarmBase.Checked := True;
+      1:
+      begin
+        rbNarmBase.Checked := True;
+        //PanelManual.Enabled := False;
+      end;
+      2:
+      begin
+        rbUserBase.Checked := True;
+       // PanelManual.Enabled := False;
+      end;
+    end;
+  finally
+    rbNarmBase.OnClick := ev;
+    rbUserBase.OnClick := ev;
+  end;
+
+  ListSpr.Align := alClient;
+  LoadAnimator.Align := alClient;
+  LoadLabel.Align := alClient;
+
   btnShow.Visible := False;
 
   FLoaded := False;
@@ -139,7 +175,10 @@ begin
     end;
   end;
 
-  PanelSettings.Visible :=  FPriceColumn;
+  lbYear.Visible := FPriceColumn;
+  edtYear.Visible := FPriceColumn;
+  lbMonth.Visible := FPriceColumn;
+  cmbMonth.Visible := FPriceColumn;
 
   DecodeDate(AStarDate,y,m,d);
   ev := edtYear.OnChange;
@@ -191,6 +230,9 @@ begin
   edtFindCode.Enabled := False;
   edtFindName.Enabled := False;
   btnFind.Enabled := False;
+
+  rbNarmBase.Enabled := False;
+  rbUserBase.Enabled := False;
 
   ListSpr.Items.Clear;
   ListSpr.Visible := False;
@@ -255,6 +297,9 @@ begin
   edtFindName.Enabled := True;
   btnFind.Enabled := True;
   ListSpr.Visible := True;
+
+  rbNarmBase.Enabled := True;
+  rbUserBase.Enabled := True;
 
   LoadLabel.Visible := False;
   LoadAnimator.Visible := False;
@@ -346,6 +391,9 @@ begin
        WordList.Text := TmpStr;
     end;
 
+    if rbNarmBase.Checked then FBaseType := 1;
+    if rbUserBase.Checked then FBaseType := 2;
+
     //Видимый список обновляется намного дольше
     ListSpr.Visible :=  False;
     ListSpr.Items.Clear;
@@ -353,6 +401,9 @@ begin
     TmpCount := -1;
     for i := Low(FSprArray) to High(FSprArray) do
     begin
+      if (FBaseType = 1) and (FSprArray[i].Manual) then Continue;
+      if (FBaseType = 2) and (not FSprArray[i].Manual) then Continue;
+
       if SpecialFillList(i) then
         Continue;
 
@@ -441,7 +492,6 @@ begin
   finally
     WordList.Free;
   end;
-
 end;
 
 function TSprFrame.SpecialFillList(const AInd: Integer): Boolean;
