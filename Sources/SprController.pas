@@ -118,6 +118,7 @@ begin
       FThQueryList[I] := TThreadQuery.Create('', 0, True, I);
       FThQueryList[I].OnTerminate := ThreadTerminate;
       FThQueryList[I].OnActivate := LoadSpr;
+      //Ќе делаетс€ разделени€ на нормативные и собственные, если собственные разростутс€, надо сделать
       case I of
         CMatIndex: TmpStr :=
             'SELECT mt.material_id, mt.mat_code, mt.mat_name, ut.unit_name, mt.base ' +
@@ -369,7 +370,8 @@ begin
             IntToStr(FSprPeriodList[AIndex].Year) + ') ' +
           'AND (mc.monat = ' +
             IntToStr(FSprPeriodList[AIndex].Month) + ') ' +
-          'WHERE (mt.MAT_TYPE = 1) ORDER BY mt.mat_code;';
+          'WHERE (mt.MAT_TYPE = 1) and (mt.BASE = 0) ' +
+          'ORDER BY mt.mat_code;';
       CJBIIndex: TmpStr :=
           'SELECT mt.material_id, mt.mat_code, mc.coast' +
             IntToStr(FSprPeriodList[AIndex].Region) + '_2, ' +
@@ -381,7 +383,8 @@ begin
             IntToStr(FSprPeriodList[AIndex].Year) + ') ' +
           'AND (mc.monat = ' +
             IntToStr(FSprPeriodList[AIndex].Month) + ') ' +
-          'WHERE (mt.MAT_TYPE = 2) ORDER BY mt.mat_code;';
+          'WHERE (mt.MAT_TYPE = 2) and (mt.BASE = 0) ' +
+          'ORDER BY mt.mat_code;';
       CMechIndex: TmpStr :=
           'SELECT mh.mechanizm_id, mh.mech_code, mc.coast1, mc.coast2, mc.ZP1 ' +
           'FROM mechanizm mh LEFT JOIN mechanizmcoastg mc ' +
@@ -389,7 +392,9 @@ begin
           'AND (mc.year=' +
             IntToStr(FSprPeriodList[AIndex].Year) + ') ' +
           'AND (mc.monat=' +
-            IntToStr(FSprPeriodList[AIndex].Month) + ') ORDER BY mh.mech_code;';
+            IntToStr(FSprPeriodList[AIndex].Month) + ') ' +
+          'WHERE (mh.BASE = 0) ' +
+          'ORDER BY mh.mech_code;';
       else
         raise Exception.Create('Ќеизвестный индекс справочника');
     end;

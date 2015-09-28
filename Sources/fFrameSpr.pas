@@ -52,6 +52,9 @@ type
     procedure btnFindClick(Sender: TObject);
     procedure ListSprResize(Sender: TObject);
 
+  private const
+    FAdjecEnding2 = 'ее.яя.ая.ое.ие.ые.ой.ей.им.ым.юю.ую.ей.ой.ем.ом.их.ых.ый.ий';
+    FAdjecEnding3 = 'ого.его.ему.ому.ими.ыми';
   private
     //Фаг того, что справочник загружен
     FLoaded: Boolean;
@@ -357,7 +360,6 @@ var i, j,
     WordList: TStringList;
     TmpStr: string;
     LastSpase : Boolean;
-    //, Cont: Boolean;
     FSortArray: TArray<TSortRec>;
 begin
   if Length(FSprArray) = 0 then
@@ -368,7 +370,7 @@ begin
     AFindCode := CheckFindCode(Trim(AFindCode.ToLower));
     AFindName := Trim(AFindName.ToLower);
 
-    //Определяем тип поиска по имени или по коду
+    //разбивка поисковой строки на слова (не самым быстрым пособом)
     if (Length(AFindName) > 0) then
     begin
        TmpStr := '';
@@ -390,6 +392,24 @@ begin
        TmpStr := StringReplace(TmpStr, ' ', sLineBreak,[rfReplaceAll]);
        WordList.Text := TmpStr;
     end;
+    //добавляет доп слова с обрубленными окончаниями
+    if WordList.Count > 0 then
+    begin
+      for i := 0 to WordList.Count - 1 do
+      begin
+        if WordList[i].Length < 7 then
+          Continue;
+        TmpStr := Copy(WordList[i], WordList[i].Length - 1, 2);
+        if pos(TmpStr, FAdjecEnding2) > 0 then
+          WordList.Add(Copy(WordList[i], 1, WordList[i].Length - 2))
+        else
+        begin
+          TmpStr := Copy(WordList[i], WordList[i].Length - 2, 3);
+          if pos(TmpStr, FAdjecEnding3) > 0 then
+            WordList.Add(Copy(WordList[i], 1, WordList[i].Length - 3))
+        end;
+      end;
+    end;
 
     if rbNarmBase.Checked then FBaseType := 1;
     if rbUserBase.Checked then FBaseType := 2;
@@ -407,7 +427,6 @@ begin
       if SpecialFillList(i) then
         Continue;
 
-      //Cont := False;
       TmpRel := 0;
 
       if (AFindCode <> '') then
@@ -438,8 +457,6 @@ begin
         TmpInd := Pos(WordList[j], TmpStr);
         if TmpInd = 0 then
         begin
-        //  Cont := True;
-        //  Break;
           Continue;
         end;
 
@@ -453,7 +470,6 @@ begin
         else TmpRel := TmpRel + 1;
       end;
 
-      //if Cont then
       if (TmpRel = 0) and (WordList.Count > 0) then
         Continue;
 

@@ -351,8 +351,6 @@ object SprFrame: TSprFrame
       Align = alLeft
       BevelOuter = bvNone
       TabOrder = 3
-      ExplicitLeft = 26
-      ExplicitTop = 0
       object Bevel1: TBevel
         Left = 0
         Top = 0
