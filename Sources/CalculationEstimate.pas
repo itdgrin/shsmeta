@@ -1438,7 +1438,6 @@ begin
   if FormCalculationEstimate.IdAct = 0 then
     ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
       PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
-
 end;
 
 procedure TFormCalculationEstimate.btnCalcFactClick(Sender: TObject);
@@ -5482,17 +5481,28 @@ end;
 procedure TFormCalculationEstimate.FillingOHROPR(vNumber: string);
 // Находим охр и опр по настройке
 var
-  mes: string;
+  mes, COL1NAME, COL2NAME: string;
+  MAIS: Integer;
 begin
   try
     if qrRatesExWORK_ID.AsInteger = 0 then
       with qrTemp do
       begin
+        COL1NAME := FastSelectSQLOne
+          ('SELECT objstroj.COL1NAME FROM objstroj, objcards WHERE objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID',
+          VarArrayOf([IdObject]));
+        COL2NAME := FastSelectSQLOne
+          ('SELECT objstroj.COL2NAME FROM objstroj, objcards WHERE objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID',
+          VarArrayOf([IdObject]));
+        MAIS := FastSelectSQLOne
+          ('SELECT IFNULL(smetasourcedata.`MAIS_ID`, objcards.`MAIS_ID`) FROM smetasourcedata, objcards WHERE sm_id = :0 AND objcards.`obj_id` = smetasourcedata.`OBJ_ID`',
+          VarArrayOf([qrRatesExSM_ID.Value]));
         Active := False;
-        SQL.Clear;
-        SQL.Text :=
-          'SELECT DISTINCT objworks.work_id as work_id, work_name as NAME FROM onormativs, objworks WHERE objworks.WORK_ID=onormativs.WORK_ID AND FN_NUM_TO_INT(:ncode)>=FN_NUM_TO_INT(s) and FN_NUM_TO_INT(:ncode)<=FN_NUM_TO_INT(po)';
+        SQL.Text := 'SELECT DISTINCT objworks.work_id as work_id, work_name as NAME,'#13 +
+          'CONCAT(objdetailex.' + COL1NAME + ', "% / ", objdetailex.' + COL2NAME + ', "%") AS VALUE'#13 +
+          'FROM onormativs, objworks, objdetailex WHERE objdetailex.NUMBER=objworks.work_id AND objdetailex.MAIS_ID=:MAIS AND objworks.WORK_ID=onormativs.WORK_ID AND FN_NUM_TO_INT(:ncode)>=FN_NUM_TO_INT(s) and FN_NUM_TO_INT(:ncode)<=FN_NUM_TO_INT(po)';
         ParamByName('ncode').AsString := vNumber;
+        ParamByName('MAIS').AsInteger := MAIS;
         Active := True;
         First;
         if not Eof then
@@ -6012,7 +6022,8 @@ begin
       begin
         Active := False;
         SQL.Clear;
-        SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name", coef as "Coef", coef_zp as "CoefZP", FN_NUM_TO_INT(s) as "From", FN_NUM_TO_INT(po) as "On" '
+        SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name",'#13 +
+          'CONCAT(coef, "% / ", coef_zp, "%") AS VALUE, coef as "Coef", coef_zp as "CoefZP", FN_NUM_TO_INT(s) as "From", FN_NUM_TO_INT(po) as "On" '
           + 'FROM znormativs, znormativs_detail, znormativs_value ' +
           'WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID  ' +
           'AND znormativs.ZNORMATIVS_ID = znormativs_value.ZNORMATIVS_ID ' + 'AND znormativs.DEL_FLAG = 0 ' +

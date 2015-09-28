@@ -50,7 +50,6 @@ object fCardAct: TfCardAct
     ParentFont = False
     TabOrder = 4
     OnClick = ButtonSaveClick
-    ExplicitTop = 120
   end
   object ButtonClose: TButton
     Left = 284
@@ -61,7 +60,6 @@ object fCardAct: TfCardAct
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 5
     OnClick = ButtonCloseClick
-    ExplicitTop = 120
   end
   object PanelDate: TPanel
     Left = 0
@@ -158,8 +156,6 @@ object fCardAct: TfCardAct
     Caption = 'PanelName'
     ShowCaption = False
     TabOrder = 3
-    ExplicitLeft = 8
-    ExplicitTop = 112
     object lbl1: TLabel
       Left = 7
       Top = 5
@@ -206,6 +202,8 @@ object fCardAct: TfCardAct
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvDefaultParamDataType]
+    FormatOptions.DefaultParamDataType = ftBCD
     Left = 20
     Top = 32
   end

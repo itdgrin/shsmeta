@@ -4,7 +4,7 @@ object fSelectDialog: TfSelectDialog
   BorderStyle = bsDialog
   Caption = 'fSelectDialog'
   ClientHeight = 338
-  ClientWidth = 384
+  ClientWidth = 459
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,7 +19,7 @@ object fSelectDialog: TfSelectDialog
   object grMain1: TJvDBGrid
     Left = 0
     Top = 0
-    Width = 384
+    Width = 459
     Height = 301
     Align = alClient
     DataSource = dsMainData
@@ -60,24 +60,31 @@ object fSelectDialog: TfSelectDialog
         FieldName = 'NAME'
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-        Width = 367
+        Width = 316
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'VALUE'
+        Title.Alignment = taCenter
+        Title.Caption = #1047#1085#1072#1095#1077#1085#1080#1077
+        Width = 125
         Visible = True
       end>
   end
   object pnl1: TPanel
     Left = 0
     Top = 301
-    Width = 384
+    Width = 459
     Height = 37
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 232
-    ExplicitWidth = 373
+    ExplicitWidth = 384
     DesignSize = (
-      384
+      459
       37)
     object btn1: TBitBtn
-      Left = 299
+      Left = 374
       Top = 6
       Width = 75
       Height = 25
@@ -85,10 +92,10 @@ object fSelectDialog: TfSelectDialog
       Caption = #1054#1090#1084#1077#1085#1072
       ModalResult = 2
       TabOrder = 1
-      ExplicitLeft = 288
+      ExplicitLeft = 299
     end
     object btn2: TBitBtn
-      Left = 218
+      Left = 293
       Top = 6
       Width = 75
       Height = 25
@@ -96,7 +103,7 @@ object fSelectDialog: TfSelectDialog
       Caption = #1042#1099#1073#1088#1072#1090#1100
       ModalResult = 1
       TabOrder = 0
-      ExplicitLeft = 207
+      ExplicitLeft = 218
     end
   end
   object dsMainData: TDataSource
