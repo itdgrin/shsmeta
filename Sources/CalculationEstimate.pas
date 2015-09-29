@@ -707,7 +707,7 @@ type
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
   private
     flLoaded: Boolean;
-    Act: Boolean;
+
     ActReadOnly: Boolean;
     RowCoefDefault: Boolean;
 
@@ -798,6 +798,7 @@ type
     procedure SaveData; // Процедура сохранения сметы/акта
 
   public
+    Act: Boolean;
     ConfirmCloseForm: Boolean;
     flChangeEstimate: Boolean; // Не даем закрыться окну при переключении между сметами.
     property IdObject: Integer read FIdObject write FIdObject;

@@ -43,6 +43,7 @@ object fTreeEstimate: TfTreeEstimate
     TabOrder = 0
     OnClick = tvEstimatesClick
     OnDblClick = tvEstimatesDblClick
+    PopupMenu = pmTree
     ParentFont = False
     RowSelect = True
     Mirror = False
@@ -95,5 +96,23 @@ object fTreeEstimate: TfTreeEstimate
     StoredValues = <>
     Left = 32
     Top = 224
+  end
+  object pmTree: TPopupMenu
+    OnPopup = pmTreePopup
+    Left = 224
+    Top = 184
+    object mUse: TMenuItem
+      Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1074' '#1076#1086#1082#1091#1084#1077#1085#1090#1077
+      OnClick = mUseClick
+    end
+    object mN4: TMenuItem
+      Caption = '-'
+    end
+    object mN2: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1088#1072#1079#1076#1077#1083' '#1055#1058#1052
+    end
+    object mN3: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1083#1086#1082#1072#1083#1100#1085#1091#1102' '#1089#1084#1077#1090#1091
+    end
   end
 end
