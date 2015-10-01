@@ -143,7 +143,11 @@ begin
     rbNarmBase.OnClick := nil;
     rbUserBase.OnClick := nil;
     case FBaseType of
-      0: rbNarmBase.Checked := True;
+      0:
+      begin
+        rbNarmBase.Checked := True;
+        FBaseType := 1;
+      end;
       1:
       begin
         rbNarmBase.Checked := True;
@@ -273,7 +277,7 @@ procedure TSprFrame.rbNarmBaseClick(Sender: TObject);
 begin
   if rbNarmBase.Checked then FBaseType := 1;
   if rbUserBase.Checked then FBaseType := 2;
-  if SpeedButtonShowHide.Tag = 1 then
+  if (SpeedButtonShowHide.Tag = 1) or (FBaseType = 2) then
     ChangeDetailsPanel(0);
   btnFindClick(nil);
 end;
@@ -726,7 +730,7 @@ begin
       memDetName.Visible := False;
       gbDetPrice.Top := 10;
       gbDetPrice.Visible := True;
-      PanelDetails.Height := 120;
+      PanelDetails.Height := 110;
     end
     else
     begin
@@ -738,7 +742,7 @@ begin
       memDetName.Visible := True;
       gbDetPrice.Top := 71;
       gbDetPrice.Visible := True;
-      PanelDetails.Height := 190;
+      PanelDetails.Height := 180;
     end;
   end;
 end;

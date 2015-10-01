@@ -3433,6 +3433,11 @@ begin
 
   if Assigned(frmReplace) then
     try
+      if Height > 700 then
+        frmReplace.Height := 700
+      else
+        frmReplace.Height := Height;
+
       if (frmReplace.ShowModal = mrYes) then
       begin
         RecalcEstimate;

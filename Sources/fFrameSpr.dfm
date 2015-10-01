@@ -496,9 +496,9 @@ object SprFrame: TSprFrame
   end
   object PanelDetails: TPanel
     Left = 0
-    Top = 226
+    Top = 236
     Width = 759
-    Height = 190
+    Height = 180
     Align = alBottom
     TabOrder = 4
     OnResize = PanelDetailsResize
@@ -507,23 +507,22 @@ object SprFrame: TSprFrame
       Left = 1
       Top = 1
       Width = 757
-      Height = 15
+      Height = 12
       Align = alTop
       Flat = True
       ParentShowHint = False
       ShowHint = True
       OnClick = SpeedButtonShowHideClick
-      ExplicitLeft = -568
-      ExplicitTop = 161
-      ExplicitWidth = 796
     end
     object gbDetails: TGroupBox
       Left = 1
-      Top = 16
+      Top = 13
       Width = 757
-      Height = 173
+      Height = 166
       Align = alClient
       TabOrder = 0
+      ExplicitTop = 16
+      ExplicitHeight = 173
       object lbDetCode: TLabel
         Left = 16
         Top = 2
@@ -547,17 +546,18 @@ object SprFrame: TSprFrame
       end
       object gbDetPrice: TGroupBox
         Left = 2
-        Top = 71
+        Top = 74
         Width = 753
-        Height = 100
+        Height = 90
         Align = alBottom
         Caption = '  '#1062#1077#1085#1099' '#1087#1086' '#1085#1072#1082#1083#1072#1076#1085#1099#1084'   '
         TabOrder = 0
+        ExplicitTop = 78
         object lvDetPrice: TListView
           Left = 2
           Top = 15
           Width = 749
-          Height = 83
+          Height = 73
           Align = alClient
           Columns = <
             item
@@ -589,7 +589,7 @@ object SprFrame: TSprFrame
           RowSelect = True
           TabOrder = 0
           ViewStyle = vsReport
-          ExplicitHeight = 87
+          ExplicitHeight = 83
         end
       end
       object edtDetCode: TEdit
