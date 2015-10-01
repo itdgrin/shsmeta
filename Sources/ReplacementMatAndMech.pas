@@ -1303,7 +1303,7 @@ begin
   end;
   Frame.Parent := groupCatalog;
   Frame.Align := alClient;
-  Frame.SpeedButtonShowHideClick(Frame.SpeedButtonShowHide);
+  Frame.ChangeDetailsPanel(1);
   Frame.ListSpr.OnDblClick := btnSelectClick;
 
   if (Length(edtSourceCode.Text) > 0) and

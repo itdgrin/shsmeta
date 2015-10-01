@@ -2,7 +2,7 @@ object frmReplacement: TfrmReplacement
   Left = 0
   Top = 0
   Caption = #1047#1072#1084#1077#1085#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074', '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074' '#1080' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
-  ClientHeight = 564
+  ClientHeight = 602
   ClientWidth = 779
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -169,7 +169,7 @@ object frmReplacement: TfrmReplacement
     Left = 0
     Top = 270
     Width = 779
-    Height = 261
+    Height = 299
     Align = alClient
     Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1080#1082
     DoubleBuffered = True
@@ -185,7 +185,7 @@ object frmReplacement: TfrmReplacement
       Left = 2
       Top = 15
       Width = 775
-      Height = 244
+      Height = 282
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
@@ -193,7 +193,7 @@ object frmReplacement: TfrmReplacement
   end
   object Panel4: TPanel
     Left = 0
-    Top = 531
+    Top = 569
     Width = 779
     Height = 33
     Align = alBottom

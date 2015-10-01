@@ -10,24 +10,10 @@ object SprFrame: TSprFrame
   Font.Style = []
   ParentFont = False
   TabOrder = 0
-  object SpeedButtonShowHide: TSpeedButton
-    Tag = 1
-    Left = 0
-    Top = 369
-    Width = 759
-    Height = 15
-    Align = alBottom
-    Flat = True
-    ParentShowHint = False
-    ShowHint = True
-    OnClick = SpeedButtonShowHideClick
-    ExplicitLeft = -568
-    ExplicitTop = 161
-    ExplicitWidth = 796
-  end
+  OnResize = FrameResize
   object LoadAnimator: TJvGIFAnimator
-    Left = 331
-    Top = 136
+    Left = 259
+    Top = 83
     Width = 352
     Height = 99
     AutoSize = False
@@ -262,8 +248,8 @@ object SprFrame: TSprFrame
   end
   object LoadLabel: TLabel
     AlignWithMargins = True
-    Left = 451
-    Top = 257
+    Left = 395
+    Top = 193
     Width = 96
     Height = 13
     Margins.Top = 35
@@ -370,7 +356,7 @@ object SprFrame: TSprFrame
         Checked = True
         TabOrder = 0
         TabStop = True
-        OnClick = btnFindClick
+        OnClick = rbNarmBaseClick
       end
       object rbUserBase: TRadioButton
         Left = 7
@@ -380,7 +366,7 @@ object SprFrame: TSprFrame
         Caption = #1057#1086#1073#1089#1090#1074#1077#1085#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
         TabOrder = 1
         TabStop = True
-        OnClick = btnFindClick
+        OnClick = rbNarmBaseClick
       end
     end
   end
@@ -450,21 +436,11 @@ object SprFrame: TSprFrame
       OnKeyPress = edtFindNameKeyPress
     end
   end
-  object Memo: TMemo
-    Left = 0
-    Top = 384
-    Width = 759
-    Height = 32
-    Align = alBottom
-    ReadOnly = True
-    ScrollBars = ssVertical
-    TabOrder = 2
-  end
   object ListSpr: TListView
-    Left = 13
-    Top = 136
+    Left = 3
+    Top = 84
     Width = 228
-    Height = 209
+    Height = 122
     Columns = <
       item
         Caption = #1050#1086#1076
@@ -499,7 +475,7 @@ object SprFrame: TSprFrame
     ParentDoubleBuffered = False
     ParentFont = False
     ShowWorkAreas = True
-    TabOrder = 3
+    TabOrder = 2
     ViewStyle = vsReport
     OnCustomDrawItem = ListSprCustomDrawItem
     OnResize = ListSprResize
@@ -517,5 +493,129 @@ object SprFrame: TSprFrame
       item
         Width = 100
       end>
+  end
+  object PanelDetails: TPanel
+    Left = 0
+    Top = 226
+    Width = 759
+    Height = 190
+    Align = alBottom
+    TabOrder = 4
+    OnResize = PanelDetailsResize
+    object SpeedButtonShowHide: TSpeedButton
+      Tag = 1
+      Left = 1
+      Top = 1
+      Width = 757
+      Height = 15
+      Align = alTop
+      Flat = True
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = SpeedButtonShowHideClick
+      ExplicitLeft = -568
+      ExplicitTop = 161
+      ExplicitWidth = 796
+    end
+    object gbDetails: TGroupBox
+      Left = 1
+      Top = 16
+      Width = 757
+      Height = 173
+      Align = alClient
+      TabOrder = 0
+      object lbDetCode: TLabel
+        Left = 16
+        Top = 2
+        Width = 24
+        Height = 13
+        Caption = #1050#1086#1076':'
+      end
+      object lbDetEdIzm: TLabel
+        Left = 16
+        Top = 37
+        Width = 45
+        Height = 13
+        Caption = #1045#1076'. '#1080#1079#1085'.:'
+      end
+      object lbDetName: TLabel
+        Left = 208
+        Top = 2
+        Width = 77
+        Height = 13
+        Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077':'
+      end
+      object gbDetPrice: TGroupBox
+        Left = 2
+        Top = 71
+        Width = 753
+        Height = 100
+        Align = alBottom
+        Caption = '  '#1062#1077#1085#1099' '#1087#1086' '#1085#1072#1082#1083#1072#1076#1085#1099#1084'   '
+        TabOrder = 0
+        object lvDetPrice: TListView
+          Left = 2
+          Top = 15
+          Width = 749
+          Height = 83
+          Align = alClient
+          Columns = <
+            item
+              Caption = #1044#1072#1090#1072
+              Width = 70
+            end
+            item
+              Caption = #1053#1086#1084#1077#1088
+              Width = 70
+            end
+            item
+              Caption = #1055#1086#1089#1090#1072#1074#1097#1080#1082
+              Width = 150
+            end
+            item
+              Caption = #1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088#1091#1073
+              Width = 120
+            end
+            item
+              Caption = #1062#1077#1085#1072' '#1089' '#1053#1044#1057', '#1088#1091#1073
+              Width = 120
+            end
+            item
+              Caption = #1055#1088#1080#1084#1077#1095#1072#1085#1080#1077
+              Width = 200
+            end>
+          GridLines = True
+          ReadOnly = True
+          RowSelect = True
+          TabOrder = 0
+          ViewStyle = vsReport
+          ExplicitHeight = 87
+        end
+      end
+      object edtDetCode: TEdit
+        Left = 10
+        Top = 16
+        Width = 184
+        Height = 21
+        ReadOnly = True
+        TabOrder = 1
+      end
+      object edtDetEdIzm: TEdit
+        Left = 10
+        Top = 51
+        Width = 184
+        Height = 21
+        ReadOnly = True
+        TabOrder = 2
+      end
+      object memDetName: TMemo
+        Left = 203
+        Top = 16
+        Width = 550
+        Height = 56
+        ReadOnly = True
+        TabOrder = 3
+      end
+    end
   end
 end

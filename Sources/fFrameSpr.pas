@@ -29,8 +29,6 @@ type
     edtFindName: TEdit;
     btnFind: TButton;
     btnShow: TButton;
-    Memo: TMemo;
-    SpeedButtonShowHide: TSpeedButton;
     ListSpr: TListView;
     LoadAnimator: TJvGIFAnimator;
     LoadLabel: TLabel;
@@ -41,6 +39,17 @@ type
     rbNarmBase: TRadioButton;
     rbUserBase: TRadioButton;
     Bevel1: TBevel;
+    PanelDetails: TPanel;
+    SpeedButtonShowHide: TSpeedButton;
+    gbDetails: TGroupBox;
+    gbDetPrice: TGroupBox;
+    lvDetPrice: TListView;
+    lbDetCode: TLabel;
+    edtDetCode: TEdit;
+    lbDetEdIzm: TLabel;
+    edtDetEdIzm: TEdit;
+    lbDetName: TLabel;
+    memDetName: TMemo;
     procedure SpeedButtonShowHideClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
@@ -51,6 +60,9 @@ type
     procedure edtFindNameKeyPress(Sender: TObject; var Key: Char);
     procedure btnFindClick(Sender: TObject);
     procedure ListSprResize(Sender: TObject);
+    procedure PanelDetailsResize(Sender: TObject);
+    procedure rbNarmBaseClick(Sender: TObject);
+    procedure FrameResize(Sender: TObject);
 
   private const
     FAdjecEnding2 = 'ее.яя.ая.ое.ие.ые.ой.ей.им.ым.юю.ую.ей.ой.ем.ом.их.ых.ый.ий';
@@ -65,6 +77,10 @@ type
     procedure WMSprLoad(var Mes: TMessage); message WM_SPRLOAD;
     procedure WMPriceLoad(var Mes: TMessage); message WM_PRICELOAD;
     procedure CopySprArray;
+    procedure DetailsPanelStyle;
+    procedure ClearDetailsPanel;
+    procedure FillingDetailsPanel(ASprRecord: PSprRecord);
+
   protected
     //Тип справочника
     FSprType: Integer;
@@ -91,6 +107,8 @@ type
       const AStarDate: TDateTime; ABaseType: Byte); reintroduce;
     procedure LoadSpr;
     procedure CheckCurPeriod;
+    procedure ChangeDetailsPanel(AStyle: Byte);
+
     function FindCode(const ACode: string): PSprRecord;
 
     property OnSprItemSelect: TSprItemSelectEvent
@@ -198,9 +216,7 @@ begin
   G_CURYEAR := edtYear.Value;
   G_CURMONTH := cmbMonth.ItemIndex;
 
-  SpeedButtonShowHide.Hint := 'Свернуть панель';
-  DM.ImageListArrowsBottom.GetBitmap(0, SpeedButtonShowHide.Glyph);
-
+  ChangeDetailsPanel(0);
   Update
 end;
 
@@ -240,13 +256,26 @@ begin
   ListSpr.Items.Clear;
   ListSpr.Visible := False;
   StatusBar.Panels[0].Text := '';
-  Memo.Text := '';
 
   LoadLabel.Visible := True;
   LoadAnimator.Visible := True;
   LoadAnimator.Animate := True;
 
   FLoaded := False;
+end;
+
+procedure TSprFrame.PanelDetailsResize(Sender: TObject);
+begin
+  memDetName.Width := PanelDetails.Width - memDetName.Left - 10;
+end;
+
+procedure TSprFrame.rbNarmBaseClick(Sender: TObject);
+begin
+  if rbNarmBase.Checked then FBaseType := 1;
+  if rbUserBase.Checked then FBaseType := 2;
+  if SpeedButtonShowHide.Tag = 1 then
+    ChangeDetailsPanel(0);
+  btnFindClick(nil);
 end;
 
 procedure TSprFrame.CopySprArray;
@@ -324,6 +353,12 @@ begin
       Result := @FSprArray[i];
       Exit;
     end;
+end;
+
+procedure TSprFrame.FrameResize(Sender: TObject);
+begin
+  if SpeedButtonShowHide.Tag = 1 then
+    ChangeDetailsPanel(0);
 end;
 
 procedure TSprFrame.btnFindClick(Sender: TObject);
@@ -411,9 +446,6 @@ begin
       end;
     end;
 
-    if rbNarmBase.Checked then FBaseType := 1;
-    if rbUserBase.Checked then FBaseType := 2;
-
     //Видимый список обновляется намного дольше
     ListSpr.Visible :=  False;
     ListSpr.Items.Clear;
@@ -487,14 +519,19 @@ begin
     TArray.Sort<TSortRec>(FSortArray,
       TComparer<TSortRec>.Construct(CompareRel));
 
-    for i := 0 to Length(FSortArray) - 1 do
-    begin
-      if (i mod 1000) = 0 then
-          Application.ProcessMessages;
+    ListSpr.Items.BeginUpdate;
+    try
+      for i := 0 to Length(FSortArray) - 1 do
+      begin
+        if (i mod 1000) = 0 then
+            Application.ProcessMessages;
 
-      //Создаем пустые итемы, заполним их при отображении
-      Item := ListSpr.Items.Add;
-      Item.Data := FSortArray[i].Value;
+        //Создаем пустые итемы, заполним их при отображении
+        Item := ListSpr.Items.Add;
+        Item.Data := FSortArray[i].Value;
+      end;
+    finally
+      ListSpr.Items.EndUpdate;
     end;
 
     ListSpr.Visible :=  True;
@@ -503,7 +540,7 @@ begin
     else
     begin
       StatusBar.Panels[0].Text := '   0/0';
-      Memo.Text := '';
+      ClearDetailsPanel;
     end;
   finally
     WordList.Free;
@@ -627,35 +664,102 @@ begin
 
     if Assigned(Item.Data) then
     begin
+      FillingDetailsPanel(Item.Data);
       StatusBar.Panels[0].Text := '   ' +
         (Item.Index + 1).ToString + '/' + ListSpr.Items.Count.ToString;
-      Memo.Text := TSprRecord(Item.Data^).Name;
     end;
+  end;
+end;
+
+procedure TSprFrame.ChangeDetailsPanel(AStyle: Byte);
+begin
+  SpeedButtonShowHide.Glyph.Assign(nil);
+  if AStyle = 1 then
+  begin
+    SpeedButtonShowHide.Tag := 0;
+    PanelDetails.Height := SpeedButtonShowHide.Height + 3;
+    DM.ImageListArrowsTop.GetBitmap(0, SpeedButtonShowHide.Glyph);
+    SpeedButtonShowHide.Hint := 'Развернуть панель';
+    StatusBar.Top := Width;
+    StatusBar.Align := alBottom;
+  end
+  else
+  begin
+    SpeedButtonShowHide.Tag := 1;
+    DetailsPanelStyle;
+    SpeedButtonShowHide.Hint := 'Свернуть панель';
+    DM.ImageListArrowsBottom.GetBitmap(0, SpeedButtonShowHide.Glyph);
+    StatusBar.Top := Width;
+    StatusBar.Align := alBottom;
   end;
 end;
 
 procedure TSprFrame.SpeedButtonShowHideClick(Sender: TObject);
 begin
-  with (Sender as TSpeedButton) do
-  begin
-    Glyph.Assign(nil);
+  ChangeDetailsPanel(SpeedButtonShowHide.Tag);
+end;
 
-    if Tag = 1 then
+procedure TSprFrame.DetailsPanelStyle;
+begin
+  if FBaseType = 1 then
+  begin
+    lbDetCode.Visible := True;
+    lbDetEdIzm.Visible := True;
+    lbDetName.Visible := True;
+    edtDetCode.Visible := True;
+    edtDetEdIzm.Visible := True;
+    memDetName.Visible := True;
+    gbDetPrice.Visible := False;
+    PanelDetails.Height := 96;
+  end;
+
+  if FBaseType = 2 then
+  begin
+    if (Self.Height - PanelSettings.Height -
+        PanelFind.Height - StatusBar.Height) < 340  then
     begin
-      Tag := 0;
-      Memo.Visible := False;
-      DM.ImageListArrowsTop.GetBitmap(0, Glyph);
-      Hint := 'Развернуть панель';
+      lbDetCode.Visible := False;
+      lbDetEdIzm.Visible := False;
+      lbDetName.Visible := False;
+      edtDetCode.Visible := False;
+      edtDetEdIzm.Visible := False;
+      memDetName.Visible := False;
+      gbDetPrice.Top := 10;
+      gbDetPrice.Visible := True;
+      PanelDetails.Height := 120;
     end
     else
     begin
-      Tag := 1;
-      SpeedButtonShowHide.Align := alNone;
-      Memo.Visible := True;
-      SpeedButtonShowHide.Align := alBottom;
-      Hint := 'Свернуть панель';
-      DM.ImageListArrowsBottom.GetBitmap(0, Glyph);
+      lbDetCode.Visible := True;
+      lbDetEdIzm.Visible := True;
+      lbDetName.Visible := True;
+      edtDetCode.Visible := True;
+      edtDetEdIzm.Visible := True;
+      memDetName.Visible := True;
+      gbDetPrice.Top := 71;
+      gbDetPrice.Visible := True;
+      PanelDetails.Height := 190;
     end;
+  end;
+end;
+
+procedure TSprFrame.ClearDetailsPanel;
+begin
+  edtDetCode.Text := '';
+  edtDetEdIzm.Text := '';
+  memDetName.Lines.Text := '';
+  lvDetPrice.Items.Clear;
+end;
+
+procedure TSprFrame.FillingDetailsPanel(ASprRecord: PSprRecord);
+begin
+  ClearDetailsPanel;
+
+  if Assigned(ASprRecord) then
+  begin
+    edtDetCode.Text := ASprRecord.Code;
+    edtDetEdIzm.Text := ASprRecord.Unt;
+    memDetName.Lines.Text := ASprRecord.Name;
   end;
 end;
 

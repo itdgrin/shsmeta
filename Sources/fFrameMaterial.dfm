@@ -1,10 +1,6 @@
 inherited SprMaterial: TSprMaterial
   Width = 743
   ExplicitWidth = 743
-  inherited SpeedButtonShowHide: TSpeedButton
-    Width = 743
-    ExplicitWidth = 743
-  end
   inherited LoadAnimator: TJvGIFAnimator
     Image.Data = {
       101C0000474946383961D0000D00C41E00DDDDDDBDBDBDD1D1D1B1B1B1BFBFBF
@@ -307,17 +303,18 @@ inherited SprMaterial: TSprMaterial
       TabOrder = 0
     end
   end
-  inherited Memo: TMemo
-    Width = 743
-    TabOrder = 3
-    ExplicitWidth = 743
-  end
   inherited ListSpr: TListView
-    TabOrder = 2
     OnDblClick = ListSprDblClick
   end
   inherited StatusBar: TStatusBar
     Width = 743
     ExplicitWidth = 743
+  end
+  inherited PanelDetails: TPanel
+    Width = 743
+    inherited SpeedButtonShowHide: TSpeedButton
+      Width = 741
+      ExplicitWidth = 743
+    end
   end
 end

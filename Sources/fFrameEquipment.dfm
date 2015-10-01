@@ -235,11 +235,7 @@ inherited SprEquipment: TSprEquipment
       TabOrder = 0
     end
   end
-  inherited Memo: TMemo
-    TabOrder = 3
-  end
   inherited ListSpr: TListView
-    TabOrder = 2
     OnDblClick = ListSprDblClick
   end
 end

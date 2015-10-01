@@ -227,12 +227,6 @@ inherited SprMechanizm: TSprMechanizm
       5318B0D9E0050BBCD9559C565D60A7584BC929D5017B7A071E9BF0D5B966507A
       1EFA95A1232C37680AF4D5B2A7A378A61002003B}
   end
-  inherited PanelSettings: TPanel
-    inherited edtYear: TSpinEdit
-      Height = 23
-      ExplicitHeight = 23
-    end
-  end
   inherited PanelFind: TPanel
     inherited edtFindName: TEdit
       TabOrder = 2
@@ -244,11 +238,7 @@ inherited SprMechanizm: TSprMechanizm
       TabOrder = 1
     end
   end
-  inherited Memo: TMemo
-    TabOrder = 3
-  end
   inherited ListSpr: TListView
-    TabOrder = 2
     OnDblClick = ListSprDblClick
   end
 end
