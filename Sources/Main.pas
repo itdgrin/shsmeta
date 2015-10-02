@@ -2101,6 +2101,7 @@ begin
     '&', '', [rfReplaceAll]) + '?' + #13#10 + '¬нимание, все данные внесенные после создани€ данной копии, ' +
     'будут утер€ны!'), '–езервное копирование', MB_YESNO + MB_ICONQUESTION) = IDYES) then
   begin
+    mr := 0;
     try
       ArhForm := TfrmArhRestore.Create(Self);
       FArhiv.RestoreArhiv(ArhForm.Handle, string(Mi.Parent.Tag));

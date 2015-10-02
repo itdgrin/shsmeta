@@ -10,7 +10,7 @@ uses
   Generics.Collections,
   Generics.Defaults,
   System.IOUtils,
-  SprController;
+  SprController, Vcl.Menus;
 
 type
   TSortRec = TPair<Integer, Pointer>;
@@ -50,6 +50,10 @@ type
     edtDetEdIzm: TEdit;
     lbDetName: TLabel;
     memDetName: TMemo;
+    pmListSpr: TPopupMenu;
+    PMAddManual: TMenuItem;
+    PMEditManual: TMenuItem;
+    PMDelManual: TMenuItem;
     procedure SpeedButtonShowHideClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
@@ -63,6 +67,7 @@ type
     procedure PanelDetailsResize(Sender: TObject);
     procedure rbNarmBaseClick(Sender: TObject);
     procedure FrameResize(Sender: TObject);
+    procedure pmListSprPopup(Sender: TObject);
 
   private const
     FAdjecEnding2 = 'ее.яя.ая.ое.ие.ые.ой.ей.им.ым.юю.ую.ей.ой.ем.ом.их.ых.ый.ий';
@@ -71,8 +76,7 @@ type
     //Фаг того, что справочник загружен
     FLoaded: Boolean;
     FSprArray: TSprArray;
-    FOnAfterLoad: TNotifyEvent;
-    FBaseType: Byte; //0 - оба типа, 1 - норматичная, 2 - собственная
+    FOnAfterLoad: TNotifyEvent; 
 
     procedure WMSprLoad(var Mes: TMessage); message WM_SPRLOAD;
     procedure WMPriceLoad(var Mes: TMessage); message WM_PRICELOAD;
@@ -88,7 +92,8 @@ type
     //Не показывать колонку едениц измерения
     FNoEdCol: Boolean;
     FOnSprItemSelect: TSprItemSelectEvent;
-
+    FBaseType: Byte; //0 - оба типа, 1 - норматичная, 2 - собственная
+    
     function GetSprType: Integer; virtual; abstract;
     function GetRegion: Integer; virtual;
     //Заполняет таблицу исходя из поискового запроса
@@ -101,6 +106,8 @@ type
     procedure OnLoadStart; virtual;
     //Устанавливает внешний вид формы после загрузки
     procedure OnLoadDone; virtual;
+    //Изменяет внешний вид справочника исходя из заданных параметров
+    procedure SprStyle; virtual;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
@@ -127,10 +134,9 @@ uses DataModule, Tools;
 
 constructor TSprFrame.Create(AOwner: TComponent; const APriceColumn: Boolean;
       const AStarDate: TDateTime; ABaseType: Byte);
-var i: Integer;
-    y,m,d: Word;
-    lc: TListColumn;
+var y,m,d: Word;
     ev: TNotifyEvent;
+    i: Integer;
 begin
   if not ABaseType in [0,1,2] then
     raise Exception.Create('Неизвестный тип данных.');
@@ -138,6 +144,8 @@ begin
   inherited Create(AOwner);
 
   FBaseType := ABaseType;
+  FPriceColumn := APriceColumn;
+  
   ev := rbNarmBase.OnClick;
   try
     rbNarmBase.OnClick := nil;
@@ -148,16 +156,8 @@ begin
         rbNarmBase.Checked := True;
         FBaseType := 1;
       end;
-      1:
-      begin
-        rbNarmBase.Checked := True;
-        //PanelManual.Enabled := False;
-      end;
-      2:
-      begin
-        rbUserBase.Checked := True;
-       // PanelManual.Enabled := False;
-      end;
+      1: rbNarmBase.Checked := True;
+      2: rbUserBase.Checked := True;
     end;
   finally
     rbNarmBase.OnClick := ev;
@@ -176,35 +176,6 @@ begin
   for i := Low(arraymes) to High(arraymes) do
     cmbMonth.Items.Add(arraymes[i][1]);
 
-  FPriceColumn := APriceColumn;
-  if not FPriceColumn then
-  begin
-    ListSpr.Columns.Delete(4);
-    ListSpr.Columns.Delete(3);
-  end;
-
-  if FNoEdCol then
-  begin
-    if FPriceColumn then
-    begin
-      ListSpr.Columns.Delete(4);
-      ListSpr.Columns.Delete(3);
-    end;
-    ListSpr.Columns.Delete(2);
-    if FPriceColumn then
-    begin
-      lc := ListSpr.Columns.Add;
-      lc.Caption := 'Цена без НДС, руб';
-      lc := ListSpr.Columns.Add;
-      lc.Caption := 'Цена с НДС, руб';
-    end;
-  end;
-
-  lbYear.Visible := FPriceColumn;
-  edtYear.Visible := FPriceColumn;
-  lbMonth.Visible := FPriceColumn;
-  cmbMonth.Visible := FPriceColumn;
-
   DecodeDate(AStarDate,y,m,d);
   ev := edtYear.OnChange;
   try
@@ -215,13 +186,74 @@ begin
   finally
     edtYear.OnChange := ev;
     cmbMonth.OnChange := ev;
-  end;
+  end;   
 
   G_CURYEAR := edtYear.Value;
   G_CURMONTH := cmbMonth.ItemIndex;
 
-  ChangeDetailsPanel(0);
+  SprStyle;
   Update
+end;
+
+procedure TSprFrame.SprStyle;
+var lc: TListColumn;
+    TmpFlag: Boolean;
+begin  
+  ListSpr.Visible := False;
+  ListSpr.Columns.BeginUpdate;
+  try 
+    ListSpr.Columns.Clear;
+    lc := ListSpr.Columns.Add;
+    lc.Caption := 'Код';
+    lc := ListSpr.Columns.Add;
+    lc.Caption := 'Наименование';
+    lc := ListSpr.Columns.Add;
+    lc.Caption := 'Ед. изм.';
+    lc := ListSpr.Columns.Add;
+    lc.Caption := 'Цена без НДС, руб';
+    lc := ListSpr.Columns.Add;
+    lc.Caption := 'Цена с НДС, руб';
+  
+    TmpFlag := FPriceColumn and (FBaseType = 1);
+    if not TmpFlag then
+    begin
+      ListSpr.Columns.Delete(4);
+      ListSpr.Columns.Delete(3);
+    end;
+
+    if FNoEdCol then
+    begin
+      if TmpFlag then
+      begin
+        ListSpr.Columns.Delete(4);
+        ListSpr.Columns.Delete(3);
+      end;
+      ListSpr.Columns.Delete(2);
+      if TmpFlag then
+      begin
+        lc := ListSpr.Columns.Add;
+        lc.Caption := 'Цена без НДС, руб';
+        lc := ListSpr.Columns.Add;
+        lc.Caption := 'Цена с НДС, руб';
+      end;
+    end;
+  finally
+    ListSpr.Columns.EndUpdate;
+  end;
+
+  lbYear.Visible := TmpFlag;
+  edtYear.Visible := TmpFlag;
+  lbMonth.Visible := TmpFlag;
+  cmbMonth.Visible := TmpFlag;
+
+  edtYear.Enabled := TmpFlag;
+  cmbMonth.Enabled := TmpFlag;
+  
+  if (SpeedButtonShowHide.Tag = 1) or 
+     ((FBaseType = 2) and FPriceColumn) then
+    ChangeDetailsPanel(0);
+
+  PanelSettings.Update;
 end;
 
 function TSprFrame.GetRegion;
@@ -233,7 +265,7 @@ procedure TSprFrame.LoadSpr;
 var FRegion: Integer;
 begin
   FSprType := GetSprType;
-  if FPriceColumn then
+  if FPriceColumn and (FBaseType = 1) then
   begin
     FRegion := GetRegion;
     SprControl.SetPriceNotify(edtYear.Value, cmbMonth.ItemIndex + 1, FRegion,
@@ -273,12 +305,20 @@ begin
   memDetName.Width := PanelDetails.Width - memDetName.Left - 10;
 end;
 
+procedure TSprFrame.pmListSprPopup(Sender: TObject);
+begin
+  PMAddManual.Enabled := (FBaseType = 2) and Assigned(ListSpr.Selected);
+  PMEditManual.Enabled := Assigned(ListSpr.Selected);
+  PMDelManual.Enabled := (FBaseType = 2) and Assigned(ListSpr.Selected);
+end;
+
 procedure TSprFrame.rbNarmBaseClick(Sender: TObject);
 begin
   if rbNarmBase.Checked then FBaseType := 1;
   if rbUserBase.Checked then FBaseType := 2;
-  if (SpeedButtonShowHide.Tag = 1) or (FBaseType = 2) then
-    ChangeDetailsPanel(0);
+
+  SprStyle;
+  
   btnFindClick(nil);
 end;
 
@@ -323,7 +363,7 @@ end;
 
 procedure TSprFrame.OnLoadDone;
 begin
-  if FPriceColumn then
+  if FPriceColumn and (FBaseType = 1) then
   begin
     edtYear.Enabled := True;
     cmbMonth.Enabled := True;
@@ -616,7 +656,7 @@ begin
     if not FNoEdCol then
       Item.SubItems.Add(TSprRecord(Item.Data^).Unt);
 
-    if FPriceColumn then
+    if FPriceColumn and (FBaseType = 1) then
     begin
       if TSprRecord(Item.Data^).CoastNoNDS > 0 then
         Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNoNDS))
@@ -647,7 +687,7 @@ begin
     i := 3;
   end;
 
-  if FPriceColumn then
+  if FPriceColumn and (FBaseType = 1) then
   begin
     ListSpr.Columns[i].Width := 110;
     ListSpr.Columns[i + 1].Width := 100;
@@ -705,7 +745,7 @@ end;
 
 procedure TSprFrame.DetailsPanelStyle;
 begin
-  if FBaseType = 1 then
+  if (FBaseType = 1) or not FPriceColumn then
   begin
     lbDetCode.Visible := True;
     lbDetEdIzm.Visible := True;
@@ -717,7 +757,7 @@ begin
     PanelDetails.Height := 96;
   end;
 
-  if FBaseType = 2 then
+  if (FBaseType = 2) and FPriceColumn then
   begin
     if (Self.Height - PanelSettings.Height -
         PanelFind.Height - StatusBar.Height) < 340  then

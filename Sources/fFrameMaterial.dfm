@@ -312,9 +312,13 @@ inherited SprMaterial: TSprMaterial
   end
   inherited PanelDetails: TPanel
     Width = 743
+    ExplicitWidth = 743
     inherited SpeedButtonShowHide: TSpeedButton
       Width = 741
       ExplicitWidth = 743
+    end
+    inherited gbDetails: TGroupBox
+      Width = 741
     end
   end
 end

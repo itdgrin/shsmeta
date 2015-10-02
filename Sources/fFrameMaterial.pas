@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, fFrameSpr, Vcl.ComCtrls, Vcl.StdCtrls,
   Vcl.Samples.Spin, Vcl.ExtCtrls, JvExControls, JvAnimatedImage, JvGIFCtrl,
-  Vcl.Buttons, Data.DB, GlobsAndConst;
+  Vcl.Buttons, Data.DB, GlobsAndConst, Vcl.Menus;
 
 type
   TSprMaterial = class(TSprFrame)
@@ -25,6 +25,7 @@ type
     procedure OnLoadStart; override;
     procedure OnLoadDone; override;
     function CheckFindCode(AFindCode: string): string; override;
+    procedure SprStyle; override;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent;
@@ -49,20 +50,35 @@ begin
   FAllowAddition := vAllowAddition;
   inherited Create(AOwner, APriceColumn, AStarDate, ABaseType);
 
-  if not APriceColumn then
-  begin
-    lbRegion.Visible := False;
-    cmbRegion.Visible := False;
-    rbMat.Left := PanelManual.Width + 8;
-    rbJBI.Left := rbMat.Left;
-  end;
-
   if (cmbRegion.Items.Count >= ARegion) and (ARegion > 0) then
     cmbRegion.ItemIndex := ARegion - 1;
   if AMat then
     rbMat.Checked := True
   else if AJBI then
     rbJBI.Checked := True;
+end;
+
+procedure TSprMaterial.SprStyle;
+var TmpFlag: Boolean;
+begin
+  inherited;
+
+  TmpFlag := FPriceColumn and (FBaseType = 1);
+  lbRegion.Visible := TmpFlag;
+  cmbRegion.Visible := TmpFlag;
+  cmbRegion.Enabled := TmpFlag;
+
+  if TmpFlag then
+  begin
+    rbMat.Left := cmbRegion.Left + cmbRegion.Width + 8;
+    rbJBI.Left := rbMat.Left;
+  end
+  else
+  begin
+    rbMat.Left := PanelManual.Width + 8;
+    rbJBI.Left := rbMat.Left;
+  end;
+  PanelSettings.Update;
 end;
 
 function TSprMaterial.GetRegion;

@@ -270,14 +270,12 @@ object SprFrame: TSprFrame
     Width = 759
     Height = 43
     Align = alTop
-    DoubleBuffered = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentBackground = False
-    ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 0
     object lbYear: TLabel
@@ -474,6 +472,7 @@ object SprFrame: TSprFrame
     RowSelect = True
     ParentDoubleBuffered = False
     ParentFont = False
+    PopupMenu = pmListSpr
     ShowWorkAreas = True
     TabOrder = 2
     ViewStyle = vsReport
@@ -521,8 +520,6 @@ object SprFrame: TSprFrame
       Height = 166
       Align = alClient
       TabOrder = 0
-      ExplicitTop = 16
-      ExplicitHeight = 173
       object lbDetCode: TLabel
         Left = 16
         Top = 2
@@ -552,7 +549,6 @@ object SprFrame: TSprFrame
         Align = alBottom
         Caption = '  '#1062#1077#1085#1099' '#1087#1086' '#1085#1072#1082#1083#1072#1076#1085#1099#1084'   '
         TabOrder = 0
-        ExplicitTop = 78
         object lvDetPrice: TListView
           Left = 2
           Top = 15
@@ -589,7 +585,6 @@ object SprFrame: TSprFrame
           RowSelect = True
           TabOrder = 0
           ViewStyle = vsReport
-          ExplicitHeight = 83
         end
       end
       object edtDetCode: TEdit
@@ -616,6 +611,20 @@ object SprFrame: TSprFrame
         ReadOnly = True
         TabOrder = 3
       end
+    end
+  end
+  object pmListSpr: TPopupMenu
+    OnPopup = pmListSprPopup
+    Left = 128
+    Top = 120
+    object PMAddManual: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+    end
+    object PMEditManual: TMenuItem
+      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1088#1100
+    end
+    object PMDelManual: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100
     end
   end
 end

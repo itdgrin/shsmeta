@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, fFrameSpr, Vcl.ComCtrls, Vcl.StdCtrls,
   Vcl.Samples.Spin, Vcl.ExtCtrls, JvExControls, JvAnimatedImage, JvGIFCtrl,
-  Vcl.Buttons, GlobsAndConst, Data.DB;
+  Vcl.Buttons, GlobsAndConst, Data.DB, Vcl.Menus;
 
 type
   TSprMechanizm = class(TSprFrame)
@@ -24,6 +24,7 @@ type
   protected
     function GetSprType: Integer; override;
     function CheckFindCode(AFindCode: string): string; override;
+    procedure SprStyle; override;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent;
@@ -45,15 +46,26 @@ begin
   FAllowAddition := vAllowAddition;
  // FNoEdCol := False;
   inherited Create(AOwner, APriceColumn, AStarDate, ABaseType);
-  if APriceColumn then
+end;
+
+procedure TSprMechanizm.SprStyle;
+var TmpFlag: Boolean;
+    lc: TListColumn;
+begin
+  inherited;
+
+  if (FBaseType = 1) then
   begin
+    if FPriceColumn  then
+    begin
+      lc := ListSpr.Columns.Add;
+      lc.Caption := 'ЗП машиниста, руб';
+      FZpColIndex := lc.Index;
+    end;
     lc := ListSpr.Columns.Add;
-    lc.Caption := 'ЗП машиниста, руб';
-    FZpColIndex := lc.Index;
+    lc.Caption := 'Затр. труда, чел.ч.';
+    FTrColIndex := lc.Index;
   end;
-  lc := ListSpr.Columns.Add;
-  lc.Caption := 'Затр. труда, чел.ч.';
-  FTrColIndex := lc.Index;
 end;
 
 function TSprMechanizm.CheckFindCode(AFindCode: string): string;
@@ -76,15 +88,18 @@ procedure TSprMechanizm.ListSprCustomDrawItem(Sender: TCustomListView;
   Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
 begin
   inherited;
-  if FPriceColumn then
+  if (FBaseType = 1) then
   begin
-    if TSprRecord(Item.Data^).ZpMach > 0 then
-      Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).ZpMach))
+    if FPriceColumn then
+    begin
+      if TSprRecord(Item.Data^).ZpMach > 0 then
+        Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).ZpMach))
+      else Item.SubItems.Add('');
+    end;
+    if TSprRecord(Item.Data^).TrZatr > 0 then
+      Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).TrZatr))
     else Item.SubItems.Add('');
   end;
-  if TSprRecord(Item.Data^).TrZatr > 0 then
-    Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).TrZatr))
-  else Item.SubItems.Add('');
 end;
 
 procedure TSprMechanizm.ListSprDblClick(Sender: TObject);
@@ -98,9 +113,12 @@ end;
 procedure TSprMechanizm.ListSprResize(Sender: TObject);
 begin
   inherited;
-  if FPriceColumn then
-    ListSpr.Columns[FZpColIndex].Width := 120;
-  ListSpr.Columns[FTrColIndex].Width := 120;
+  if (FBaseType = 1) then
+  begin
+    if FPriceColumn then
+      ListSpr.Columns[FZpColIndex].Width := 120;
+    ListSpr.Columns[FTrColIndex].Width := 120;
+  end;
 end;
 
 end.
