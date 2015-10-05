@@ -80,7 +80,7 @@ object FormTransportation: TFormTransportation
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 1
+    TabOrder = 0
     OnClick = ButtonCancelClick
   end
   object Panel2: TPanel
@@ -98,7 +98,7 @@ object FormTransportation: TFormTransportation
     ParentBackground = False
     ParentFont = False
     ShowCaption = False
-    TabOrder = 0
+    TabOrder = 1
     TabStop = True
     DesignSize = (
       445
@@ -451,6 +451,7 @@ object FormTransportation: TFormTransportation
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+    Default = True
     TabOrder = 4
     OnClick = ButtonAddClick
   end

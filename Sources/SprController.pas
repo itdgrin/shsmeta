@@ -5,6 +5,8 @@ uses System.Classes,
      System.SysUtils,
      Winapi.Windows,
      System.SyncObjs,
+     Generics.Collections,
+     Generics.Defaults,
      Data.DB,
      GlobsAndConst,
      Tools;
@@ -33,21 +35,23 @@ type
     Manual: Boolean;
   end;
 
+  PSprRecord = ^TSprRecord;
+
   TSprPeriad = record
     Year,
     Month,
     Region: Integer;
   end;
 
-  PSprRecord = ^TSprRecord;
   TSprArray = array of TSprRecord;
+  TSprArrayEx = TList<PSprRecord>;
 
   //Класс использует потоки но не является потокобезопасным
   //Доступ к справочникам возможет только просле проверки флагов загрузки
   TSprControl = class(TObject)
   private
     FHandle: HWND;
-    FAllSprList: array[0..MaxSprIndex] of TSprArray;
+    FAllSprList: array[0..MaxSprIndex] of TSprArrayEx;
     FLoadSprFlags,
     FLoadPriceFlags: array[0..MaxSprIndex] of Boolean;
     FThQueryList: array[0..MaxSprIndex] of TThreadQuery;
@@ -65,7 +69,7 @@ type
 
     procedure CheckIndex(AIndex: Integer);
 
-    function GetSprList(AIndex: Integer): TSprArray;
+    function GetSprList(AIndex: Integer): TSprArrayEx;
     function GetSprCount(AIndex: Integer): Integer;
     function GetSptLoad(AIndex: Integer): Boolean;
     function GetPriceLoad(AIndex: Integer): Boolean;
@@ -80,12 +84,15 @@ type
       ANotifyHandle: HWND; AIndex: Integer);
 
     procedure SetSprNotify(ANotifyHandle: HWND; AIndex: Integer);
+    procedure AddItem(const AIndex: Integer; const ASprRecord: TSprRecord);
+    procedure UpdateItem(const AIndex: Integer; const ASprRecord: TSprRecord);
+    procedure DeleteItem(const AIndex, ASprID: Integer);
 
     property Year[AIndex: Integer]: Integer read GetYear;
     property Month[AIndex: Integer]: Integer read GetMonth;
     property Region[AIndex: Integer]: Integer read GetRegion;
 
-    property SprList[AIndex: Integer]: TSprArray read GetSprList;
+    property SprList[AIndex: Integer]: TSprArrayEx read GetSprList;
     property SprCount[AIndex: Integer]: Integer read GetSprCount;
     property SprLoaded[AIndex: Integer]: Boolean read GetSptLoad;
     property PriceLoaded[AIndex: Integer]: Boolean read GetPriceLoad;
@@ -99,6 +106,11 @@ uses Forms;
 
 { TSprControl }
 
+function CompareSprRecord(const Left, Right: PSprRecord): Integer;
+begin
+  Result := string.Compare(Left.Code, Right.Code);
+end;
+
 constructor TSprControl.Create(AHandle: HWND);
 var I: Integer;
     TmpStr: string;
@@ -110,7 +122,8 @@ begin
 
     for I := 0 to MaxSprIndex do
     begin
-      SetLength(FAllSprList[I], 0);
+      FAllSprList[I] := TList<PSprRecord>.Create(
+        TComparer<PSprRecord>.Construct(CompareSprRecord));
       FLoadSprFlags[I] := False;
       FLoadPriceFlags[I] := False;
       SetLength(FSprNotifyList[I], 0);
@@ -123,22 +136,18 @@ begin
         CMatIndex: TmpStr :=
             'SELECT mt.material_id, mt.mat_code, mt.mat_name, ut.unit_name, mt.base ' +
             'FROM material mt LEFT JOIN units ut ' +
-            'ON (mt.unit_id = ut.unit_id) WHERE (mt.MAT_TYPE = 1) ' +
-            'ORDER BY mt.mat_code;';
+            'ON (mt.unit_id = ut.unit_id) WHERE (mt.MAT_TYPE = 1);';
         CJBIIndex: TmpStr :=
             'SELECT mt.material_id, mt.mat_code, mt.mat_name, ut.unit_name, mt.base ' +
             'FROM material mt LEFT JOIN units ut ' +
-            'ON (mt.unit_id = ut.unit_id) WHERE (mt.MAT_TYPE = 2) ' +
-            'ORDER BY mt.mat_code;';
+            'ON (mt.unit_id = ut.unit_id) WHERE (mt.MAT_TYPE = 2);';
         CMechIndex: TmpStr :=
             'SELECT mh.mechanizm_id, mh.mech_code, mh.mech_name, ut.unit_name, mh.base, ' +
             'mh.MECH_PH ' +
-            'FROM mechanizm mh LEFT JOIN units ut ' +
-            'ON (mh.unit_id = ut.unit_id) ORDER BY mh.mech_code;';
+            'FROM mechanizm mh LEFT JOIN units ut ON (mh.unit_id = ut.unit_id);';
         CDevIndex: TmpStr :=
             'SELECT dv.device_id, dv.device_code1, dv.name, ut.unit_name, dv.base ' +
-            'FROM devices dv LEFT JOIN units ut ' +
-            'ON (dv.unit = ut.unit_id) ORDER BY dv.device_code1';
+            'FROM devices dv LEFT JOIN units ut ON (dv.unit = ut.unit_id);';
         else
           raise Exception.Create('Неизвестный индекс справочника');
       end;
@@ -152,15 +161,73 @@ begin
 end;
 
 destructor TSprControl.Destroy;
-var I: Integer;
+var I, J: Integer;
 begin
   FreeAndNil(FNotifyCS);
   for I := 0 to MaxSprIndex do
   begin
+    for J := 0 to FAllSprList[I].Count - 1 do
+      Dispose(FAllSprList[I][J]);
+    FreeAndNil(FAllSprList[I]);
     if Assigned(FThQueryList[I]) then
       FreeAndNil(FThQueryList[I]);
   end;
   inherited;
+end;
+
+procedure TSprControl.DeleteItem(const AIndex, ASprID: Integer);
+var I: Integer;
+begin
+  CheckIndex(AIndex);
+  for I := 0 to FAllSprList[AIndex].Count - 1 do
+    if FAllSprList[AIndex][I].ID = ASprID then
+    begin
+      Dispose(FAllSprList[AIndex][I]);
+      FAllSprList[AIndex].Delete(I);
+      Break;
+    end;
+end;
+
+procedure TSprControl.UpdateItem(const AIndex: Integer;
+  const ASprRecord: TSprRecord);
+var I: Integer;
+begin
+  CheckIndex(AIndex);
+  for I := 0 to FAllSprList[AIndex].Count - 1 do
+    if FAllSprList[AIndex][I].ID = ASprRecord.ID then
+    begin
+      FAllSprList[AIndex][I].Code := ASprRecord.Code;
+      FAllSprList[AIndex][I].Name := ASprRecord.Name;
+      FAllSprList[AIndex][I].Unt := ASprRecord.Unt;
+      FAllSprList[AIndex][I].CoastNDS := ASprRecord.CoastNDS;
+      FAllSprList[AIndex][I].CoastNoNDS := ASprRecord.CoastNoNDS;
+      FAllSprList[AIndex][I].ZpMach := ASprRecord.ZpMach;
+      FAllSprList[AIndex][I].TrZatr := ASprRecord.TrZatr;
+      FAllSprList[AIndex][I].Manual := ASprRecord.Manual;
+      Break;
+    end;
+  FAllSprList[AIndex].Sort;
+end;
+
+procedure TSprControl.AddItem(const AIndex: Integer;
+  const ASprRecord: TSprRecord);
+var TmpRec: PSprRecord;
+begin
+  CheckIndex(AIndex);
+
+  New(TmpRec);
+  TmpRec.ID := ASprRecord.ID;
+  TmpRec.Code := ASprRecord.Code;
+  TmpRec.Name := ASprRecord.Name;
+  TmpRec.Unt := ASprRecord.Unt;
+  TmpRec.CoastNDS := ASprRecord.CoastNDS;
+  TmpRec.CoastNoNDS := ASprRecord.CoastNoNDS;
+  TmpRec.ZpMach := ASprRecord.ZpMach;
+  TmpRec.TrZatr := ASprRecord.TrZatr;
+  TmpRec.Manual := ASprRecord.Manual;
+
+  FAllSprList[AIndex].Add(TmpRec);
+  FAllSprList[AIndex].Sort;
 end;
 
 procedure TSprControl.CheckIndex(AIndex: Integer);
@@ -169,7 +236,7 @@ begin
     raise Exception.Create('Неизвестный индекс справочника');
 end;
 
-function TSprControl.GetSprList(AIndex: Integer): TSprArray;
+function TSprControl.GetSprList(AIndex: Integer): TSprArrayEx;
 begin
   CheckIndex(AIndex);
   Result := FAllSprList[AIndex];
@@ -178,7 +245,7 @@ end;
 function TSprControl.GetSprCount(AIndex: Integer): Integer;
 begin
   CheckIndex(AIndex);
-  Result := Length(FAllSprList[AIndex]);
+  Result := FAllSprList[AIndex].Count;
 end;
 
 function TSprControl.GetSptLoad(AIndex: Integer): Boolean;
@@ -244,8 +311,13 @@ procedure TSprControl.LoadSpr(ADataSet: TDataSet; AIndex: Integer);
 var I,
     TmpCount,
     TmpInd: Integer;
+    TmpRec: PSprRecord;
 begin
   CheckIndex(AIndex);
+
+  for I := 0 to FAllSprList[AIndex].Count - 1 do
+    Dispose(FAllSprList[AIndex][I]);
+  FAllSprList[AIndex].Clear;
 
   TmpCount := 0;
   TmpInd := 0;
@@ -256,21 +328,26 @@ begin
     if TmpCount = TmpInd then
     begin
       TmpCount := TmpCount + 1000;
-      SetLength(FAllSprList[AIndex], TmpCount);
+      FAllSprList[AIndex].Count := TmpCount;
     end;
 
-    FAllSprList[AIndex][TmpInd].ID := ADataSet.Fields[0].AsInteger;
-    FAllSprList[AIndex][TmpInd].Code := ADataSet.Fields[1].AsString;
-    FAllSprList[AIndex][TmpInd].Name := ADataSet.Fields[2].AsString;
-    FAllSprList[AIndex][TmpInd].Unt := ADataSet.Fields[3].AsString;
-    FAllSprList[AIndex][TmpInd].Manual := ADataSet.Fields[4].AsInteger > 0;
+    New(TmpRec);
+
+    TmpRec.ID := ADataSet.Fields[0].AsInteger;
+    TmpRec.Code := Trim(ADataSet.Fields[1].AsString);
+    TmpRec.Name := Trim(ADataSet.Fields[2].AsString);
+    TmpRec.Unt := Trim(ADataSet.Fields[3].AsString);
+    TmpRec.Manual := ADataSet.Fields[4].AsInteger > 0;
+
     if AIndex = CMechIndex then
-      FAllSprList[AIndex][TmpInd].TrZatr := ADataSet.Fields[5].AsExtended;
+      TmpRec.TrZatr := ADataSet.Fields[5].AsExtended;
+    FAllSprList[AIndex][TmpInd] := TmpRec;
 
     Inc(TmpInd);
     ADataSet.Next;
   end;
-  SetLength(FAllSprList[AIndex], TmpInd);
+  FAllSprList[AIndex].Count := TmpInd;
+  FAllSprList[AIndex].Sort;
 
   FNotifyCS.Enter;
   try
@@ -435,7 +512,7 @@ begin
     raise e;
   end;
 
-  for I := Low(FAllSprList[AIndex]) to High(FAllSprList[AIndex]) do
+  for I := 0 to FAllSprList[AIndex].Count - 1 do
   begin
     FAllSprList[AIndex][I].CoastNDS := 0;
     FAllSprList[AIndex][I].CoastNoNDS := 0;
@@ -448,7 +525,7 @@ begin
   ADataSet.First;
   while not ADataSet.Eof do
   begin
-    for J := I to High(FAllSprList[AIndex]) do
+    for J := I to FAllSprList[AIndex].Count - 1 do
     begin
       CompRes := string.Compare(FAllSprList[AIndex][J].Code, ADataSet.Fields[1].AsString);
 

@@ -619,12 +619,22 @@ object SprFrame: TSprFrame
     Top = 120
     object PMAddManual: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      OnClick = PMAddManualClick
     end
     object PMEditManual: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1088#1100
+      OnClick = PMAddManualClick
     end
     object PMDelManual: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = PMDelManualClick
     end
+  end
+  object tmPrice: TTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = tmPriceTimer
+    Left = 664
+    Top = 160
   end
 end

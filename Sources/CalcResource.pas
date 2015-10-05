@@ -242,7 +242,8 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools, ReplacementMatAndMech, CalculationEstimate, DataModule, GlobsAndConst, TranspPersSelect;
+uses Main, Tools, ReplacementMatAndMech, CalculationEstimate, DataModule,
+  GlobsAndConst, TranspPersSelect;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil);
 var
@@ -1929,3 +1930,4 @@ begin
 end;
 
 end.
+

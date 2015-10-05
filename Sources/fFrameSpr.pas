@@ -3,14 +3,31 @@ unit fFrameSpr;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  System.Masks, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  Vcl.Samples.Spin, Vcl.ExtCtrls, GlobsAndConst, Vcl.ComCtrls, Vcl.Buttons,
-  JvExControls, JvAnimatedImage, JvGIFCtrl, Data.DB,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  System.Masks,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.Samples.Spin,
+  Vcl.ExtCtrls,
+  Vcl.Menus,
+  Vcl.ComCtrls,
+  Vcl.Buttons,
+  JvExControls,
+  JvAnimatedImage,
+  JvGIFCtrl,
+  Data.DB,
   Generics.Collections,
   Generics.Defaults,
   System.IOUtils,
-  SprController, Vcl.Menus;
+  GlobsAndConst,
+  SprController;
 
 type
   TSortRec = TPair<Integer, Pointer>;
@@ -54,6 +71,7 @@ type
     PMAddManual: TMenuItem;
     PMEditManual: TMenuItem;
     PMDelManual: TMenuItem;
+    tmPrice: TTimer;
     procedure SpeedButtonShowHideClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
@@ -68,6 +86,9 @@ type
     procedure rbNarmBaseClick(Sender: TObject);
     procedure FrameResize(Sender: TObject);
     procedure pmListSprPopup(Sender: TObject);
+    procedure PMAddManualClick(Sender: TObject);
+    procedure PMDelManualClick(Sender: TObject);
+    procedure tmPriceTimer(Sender: TObject);
 
   private const
     FAdjecEnding2 = 'ее.€€.а€.ое.ие.ые.ой.ей.им.ым.юю.ую.ей.ой.ем.ом.их.ых.ый.ий';
@@ -76,7 +97,7 @@ type
     //‘аг того, что справочник загружен
     FLoaded: Boolean;
     FSprArray: TSprArray;
-    FOnAfterLoad: TNotifyEvent; 
+    FOnAfterLoad: TNotifyEvent;
 
     procedure WMSprLoad(var Mes: TMessage); message WM_SPRLOAD;
     procedure WMPriceLoad(var Mes: TMessage); message WM_PRICELOAD;
@@ -128,7 +149,7 @@ implementation
 
 {$R *.dfm}
 
-uses DataModule, Tools;
+uses DataModule, Tools, ManualSprItem;
 
 { TSprFrame }
 
@@ -192,7 +213,7 @@ begin
   G_CURMONTH := cmbMonth.ItemIndex;
 
   SprStyle;
-  Update
+  Update;
 end;
 
 procedure TSprFrame.SprStyle;
@@ -256,6 +277,12 @@ begin
   PanelSettings.Update;
 end;
 
+procedure TSprFrame.tmPriceTimer(Sender: TObject);
+begin
+  Beep;
+  tmPrice.Enabled := False;
+end;
+
 function TSprFrame.GetRegion;
 begin
   Result := 0;
@@ -305,9 +332,35 @@ begin
   memDetName.Width := PanelDetails.Width - memDetName.Left - 10;
 end;
 
+procedure TSprFrame.PMAddManualClick(Sender: TObject);
+var SprCard: TManSprCardForm;
+    SprID: Integer;
+begin
+  SprID := 0;
+  if Assigned(ListSpr.Selected) then
+    SprID := TSprRecord(ListSpr.Selected.Data^).ID;
+
+  SprCard := TManSprCardForm.Create(Self, SprID, GetSprType);
+  try
+    if SprCard.ShowModal = mrOk then
+      btnShow.Click;
+  finally
+    FreeAndNil(SprCard);
+  end;
+end;
+
+procedure TSprFrame.PMDelManualClick(Sender: TObject);
+begin
+  if Assigned(ListSpr.Selected) then
+  begin
+    DelSprItem(TSprRecord(ListSpr.Selected.Data^).ID, GetSprType);
+    btnShow.Click;
+  end;
+end;
+
 procedure TSprFrame.pmListSprPopup(Sender: TObject);
 begin
-  PMAddManual.Enabled := (FBaseType = 2) and Assigned(ListSpr.Selected);
+  PMAddManual.Enabled := (FBaseType = 2);
   PMEditManual.Enabled := Assigned(ListSpr.Selected);
   PMDelManual.Enabled := (FBaseType = 2) and Assigned(ListSpr.Selected);
 end;
@@ -336,6 +389,7 @@ begin
     FSprArray[I].CoastNoNDS := SprControl.SprList[FSprType][I].CoastNoNDS;
     FSprArray[I].ZpMach := SprControl.SprList[FSprType][I].ZpMach;
     FSprArray[I].TrZatr := SprControl.SprList[FSprType][I].TrZatr;
+    FSprArray[I].Manual := SprControl.SprList[FSprType][I].Manual;
   end;
 end;
 
@@ -711,6 +765,7 @@ begin
       FillingDetailsPanel(Item.Data);
       StatusBar.Panels[0].Text := '   ' +
         (Item.Index + 1).ToString + '/' + ListSpr.Items.Count.ToString;
+      lvDetPrice.Items.Clear;
     end;
   end;
 end;
@@ -804,6 +859,11 @@ begin
     edtDetCode.Text := ASprRecord.Code;
     edtDetEdIzm.Text := ASprRecord.Unt;
     memDetName.Lines.Text := ASprRecord.Name;
+    if (FBaseType = 2) and FPriceColumn then
+    begin
+      tmPrice.Enabled := False;
+      tmPrice.Enabled := True;
+    end;
   end;
 end;
 

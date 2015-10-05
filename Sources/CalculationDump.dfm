@@ -79,7 +79,7 @@ object FormCalculationDump: TFormCalculationDump
     BevelOuter = bvNone
     ParentBackground = False
     ShowCaption = False
-    TabOrder = 1
+    TabOrder = 2
     object Memo: TMemo
       Left = 0
       Top = 0
@@ -104,7 +104,7 @@ object FormCalculationDump: TFormCalculationDump
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 0
     OnClick = ButtonCancelClick
   end
   object ButtonSave: TButton
@@ -115,7 +115,7 @@ object FormCalculationDump: TFormCalculationDump
     Anchors = [akRight, akBottom]
     Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     Default = True
-    TabOrder = 2
+    TabOrder = 3
     OnClick = ButtonSaveClick
   end
   object Panel2: TPanel
@@ -127,7 +127,7 @@ object FormCalculationDump: TFormCalculationDump
     BevelOuter = bvNone
     ParentBackground = False
     ShowCaption = False
-    TabOrder = 0
+    TabOrder = 1
     TabStop = True
     DesignSize = (
       524

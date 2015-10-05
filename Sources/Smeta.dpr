@@ -118,7 +118,8 @@ uses
   SprSelection in 'SprSelection.pas' {fSprSelection},
   TranspPersSelect in 'TranspPersSelect.pas' {fTrPersSelect},
   CopyToOwnDialog in 'CopyToOwnDialog.pas' {fCopyToOwnDialog},
-  SelectDialog in 'SelectDialog.pas' {fSelectDialog};
+  SelectDialog in 'SelectDialog.pas' {fSelectDialog},
+  ManualSprItem in 'ManualSprItem.pas' {ManSprCardForm};
 
 {$R *.res}
 var MHandle: THandle;
