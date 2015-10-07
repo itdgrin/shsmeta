@@ -13,6 +13,7 @@ uses
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.StdCtrls,
+  Vcl.ComCtrls,
   Generics.Collections,
   Generics.Defaults, Datasnap.Provider, Data.DB, Datasnap.DBClient, Vcl.Grids,
   Vcl.DBGrids, JvExDBGrids, JvDBGrid, FireDAC.Stan.Intf, FireDAC.Stan.Option,
@@ -79,6 +80,7 @@ type
   end;
 
   procedure DelSprItem(ASprID, ADataType: Integer);
+  procedure GetSprManualPrice(AListView: TListView; ASprID, ADataType: Integer);
 
 implementation
 
@@ -114,6 +116,7 @@ begin
         0, 1: MainDataType := 2;
         2: MainDataType := 3;
         3: MainDataType := 4;
+        else MainDataType := 0;
       end;
 
       DM.qrDifferent.SQL.Text :=
@@ -139,7 +142,40 @@ begin
   finally
     DM.Read.Options.AutoCommit := AutoCommitValue;
   end;
+end;
 
+procedure GetSprManualPrice(AListView: TListView; ASprID, ADataType: Integer);
+var MainDataType: Integer;
+    Item: TListItem;
+begin
+  case ADataType of
+    0, 1: MainDataType := 2;
+    2: MainDataType := 3;
+    3: MainDataType := 4;
+    else MainDataType := 0;
+  end;
+  AListView.Items.Clear;
+  DM.qrDifferent.SQL.Text :=
+      'Select * from manual_cost where (ID_TYPE_DATA = ' + IntToStr(MainDataType) +
+      ') and (ID_SPR = ' + IntToStr(ASprID) +
+      ') order by DOC_DATE desc, DOC_NOM desc';
+  DM.qrDifferent.Active := True;
+  try
+    while not DM.qrDifferent.Eof do
+    begin
+      Item := AListView.Items.Add;
+      Item.Caption := DM.qrDifferent.FieldByName('DOC_DATE').AsString;
+      Item.SubItems.Add(DM.qrDifferent.FieldByName('DOC_NOM').AsString);
+      Item.SubItems.Add(DM.qrDifferent.FieldByName('PROVIDER').AsString);
+      Item.SubItems.Add(DM.qrDifferent.FieldByName('COASTNONDS').AsString);
+      Item.SubItems.Add(DM.qrDifferent.FieldByName('COASTNDS').AsString);
+      Item.SubItems.Add(DM.qrDifferent.FieldByName('DESCRIPT').AsString);
+
+      DM.qrDifferent.Next;
+    end;
+  finally
+    DM.qrDifferent.Active := False;
+  end;
 end;
 
 procedure TManSprCardForm.btnCloseClick(Sender: TObject);

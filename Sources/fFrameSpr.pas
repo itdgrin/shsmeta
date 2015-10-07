@@ -8,7 +8,7 @@ uses
   System.SysUtils,
   System.Variants,
   System.Classes,
-  System.Masks,
+  System.IniFiles,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
@@ -72,6 +72,10 @@ type
     PMEditManual: TMenuItem;
     PMDelManual: TMenuItem;
     tmPrice: TTimer;
+    sbtFindSettings: TSpeedButton;
+    pmFindSettings: TPopupMenu;
+    PMStrictEqual: TMenuItem;
+    PMEqualCode: TMenuItem;
     procedure SpeedButtonShowHideClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
@@ -89,6 +93,9 @@ type
     procedure PMAddManualClick(Sender: TObject);
     procedure PMDelManualClick(Sender: TObject);
     procedure tmPriceTimer(Sender: TObject);
+    procedure sbtFindSettingsClick(Sender: TObject);
+    procedure lvDetPriceResize(Sender: TObject);
+    procedure PMStrictEqualClick(Sender: TObject);
 
   private const
     FAdjecEnding2 = 'ее.€€.а€.ое.ие.ые.ой.ей.им.ым.юю.ую.ей.ой.ем.ом.их.ых.ый.ий';
@@ -129,6 +136,9 @@ type
     procedure OnLoadDone; virtual;
     //»змен€ет внешний вид справочника исход€ из заданных параметров
     procedure SprStyle; virtual;
+    //—охранение и восстановление настроек поиска
+    procedure SaveFindSettings;
+    procedure LoadFindSettings;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
@@ -177,8 +187,16 @@ begin
         rbNarmBase.Checked := True;
         FBaseType := 1;
       end;
-      1: rbNarmBase.Checked := True;
-      2: rbUserBase.Checked := True;
+      1:
+      begin
+        rbNarmBase.Checked := True;
+        PanelManual.Enabled := False;
+      end;
+      2:
+      begin
+        rbUserBase.Checked := True;
+        PanelManual.Enabled := False;
+      end;
     end;
   finally
     rbNarmBase.OnClick := ev;
@@ -213,6 +231,7 @@ begin
   G_CURMONTH := cmbMonth.ItemIndex;
 
   SprStyle;
+  LoadFindSettings;
   Update;
 end;
 
@@ -278,9 +297,14 @@ begin
 end;
 
 procedure TSprFrame.tmPriceTimer(Sender: TObject);
+var TmpRec: PSprRecord;
 begin
-  Beep;
   tmPrice.Enabled := False;
+  if Assigned(ListSpr.Selected) and Assigned(ListSpr.Selected.Data) then
+  begin
+    TmpRec := PSprRecord(ListSpr.Selected.Data);
+    GetSprManualPrice(lvDetPrice, TmpRec.ID, GetSprType);
+  end;
 end;
 
 function TSprFrame.GetRegion;
@@ -302,6 +326,13 @@ begin
     SprControl.SetSprNotify(Handle, FSprType);
 
   OnLoadStart;
+end;
+
+procedure TSprFrame.lvDetPriceResize(Sender: TObject);
+var i, j: Integer;
+begin
+  lvDetPrice.Columns[lvDetPrice.Columns.Count - 1].Width :=
+    lvDetPrice.Width - 530 - 25;  //530 сумма колонок, если суммировать автоматом как-то глючит
 end;
 
 procedure TSprFrame.OnLoadStart;
@@ -363,6 +394,13 @@ begin
   PMAddManual.Enabled := (FBaseType = 2);
   PMEditManual.Enabled := Assigned(ListSpr.Selected);
   PMDelManual.Enabled := (FBaseType = 2) and Assigned(ListSpr.Selected);
+end;
+
+procedure TSprFrame.PMStrictEqualClick(Sender: TObject);
+begin
+  (Sender as TMenuItem).Checked := not (Sender as TMenuItem).Checked;
+  SaveFindSettings;
+  btnFind.Click;
 end;
 
 procedure TSprFrame.rbNarmBaseClick(Sender: TObject);
@@ -563,17 +601,17 @@ begin
       begin
         if (CompareText(AFindCode, FSprArray[i].Code.ToLower) = 0) then
           TmpRel := 20
-        else if MatchesMask(FSprArray[i].Code.ToLower, AFindCode + '*') then
+        else if Pos(AFindCode, FSprArray[i].Code.ToLower) = 1 then
           TmpRel := 15
         else
         begin
           TmpCode := copy(AFindCode, 1, Length(AFindCode) - 1);
           if ((Length(TmpCode) > 0) and
-              (MatchesMask(FSprArray[i].Code.ToLower, TmpCode + '*'))) then
-            TmpRel := 10
+              (Pos(TmpCode, FSprArray[i].Code.ToLower) = 1)) then
+            TmpRel := 5
           else
             if (Pos(AFindCode, FSprArray[i].Code.ToLower) <> 0) then
-              TmpRel := 5;
+              TmpRel := 3;
         end;
 
         if TmpRel = 0 then
@@ -793,6 +831,15 @@ begin
   end;
 end;
 
+procedure TSprFrame.sbtFindSettingsClick(Sender: TObject);
+var Point: TPoint;
+begin
+  Point.X := sbtFindSettings.Left;
+  Point.Y := sbtFindSettings.Top + sbtFindSettings.Height + 1;
+  pmFindSettings.Popup(PanelFind.ClientToScreen(Point).X,
+    PanelFind.ClientToScreen(Point).Y);
+end;
+
 procedure TSprFrame.SpeedButtonShowHideClick(Sender: TObject);
 begin
   ChangeDetailsPanel(SpeedButtonShowHide.Tag);
@@ -864,6 +911,60 @@ begin
       tmPrice.Enabled := False;
       tmPrice.Enabled := True;
     end;
+  end;
+end;
+
+procedure TSprFrame.SaveFindSettings;
+var IniFile: TIniFile;
+    MainDataType: Byte;
+begin
+  case GetSprType of
+    0, 1: MainDataType := 2;
+    2: MainDataType := 3;
+    3: MainDataType := 4;
+    else MainDataType := 0;
+  end;
+
+  IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+  try
+    IniFile.WriteBool('FindSettings' + MainDataType.ToString, 'StrictEqual',
+      PMStrictEqual.Checked);
+    IniFile.WriteBool('FindSettings' + MainDataType.ToString, 'EqualCode',
+      PMEqualCode.Checked);
+  finally
+    FreeAndNil(IniFile);
+  end;
+end;
+
+procedure TSprFrame.LoadFindSettings;
+var IniFile: TIniFile;
+    MainDataType: Byte;
+begin
+  case GetSprType of
+    0, 1: MainDataType := 2;
+    2: MainDataType := 3;
+    3: MainDataType := 4;
+    else MainDataType := 0;
+  end;
+
+  IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+  try
+    if not IniFile.SectionExists('FindSettings' + MainDataType.ToString) then
+    begin
+      IniFile.WriteBool('FindSettings' + MainDataType.ToString, 'StrictEqual',
+        PMStrictEqual.Checked);
+      IniFile.WriteBool('FindSettings' + MainDataType.ToString, 'EqualCode',
+        PMEqualCode.Checked);
+    end
+    else
+    begin
+      PMStrictEqual.Checked :=
+        IniFile.ReadBool('FindSettings' + MainDataType.ToString, 'StrictEqual', False);
+      PMEqualCode.Checked :=
+        IniFile.ReadBool('FindSettings' + MainDataType.ToString, 'EqualCode', True);
+    end;
+  finally
+    FreeAndNil(IniFile);
   end;
 end;
 

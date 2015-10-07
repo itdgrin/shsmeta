@@ -3,6 +3,7 @@ object SprFrame: TSprFrame
   Top = 0
   Width = 759
   Height = 435
+  Anchors = [akTop, akRight]
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -375,6 +376,9 @@ object SprFrame: TSprFrame
     Height = 34
     Align = alTop
     TabOrder = 1
+    DesignSize = (
+      759
+      34)
     object lbFindCode: TLabel
       Left = 8
       Top = 11
@@ -395,31 +399,37 @@ object SprFrame: TSprFrame
       Height = 13
       Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077':'
     end
-    object edtFindName: TEdit
-      AlignWithMargins = True
-      Left = 218
+    object sbtFindSettings: TSpeedButton
+      Left = 633
       Top = 6
-      Width = 438
-      Height = 23
+      Width = 23
+      Height = 21
+      Anchors = [akTop, akRight]
+      OnClick = sbtFindSettingsClick
+    end
+    object edtFindName: TEdit
+      Left = 220
+      Top = 6
+      Width = 407
+      Height = 21
       Margins.Left = 217
       Margins.Top = 5
       Margins.Bottom = 4
-      Align = alClient
+      Anchors = [akLeft, akTop, akRight]
       TabOrder = 0
       OnKeyPress = edtFindNameKeyPress
-      ExplicitHeight = 21
     end
     object btnFind: TButton
       AlignWithMargins = True
       Left = 663
-      Top = 5
+      Top = 4
       Width = 91
       Height = 24
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
       Margins.Bottom = 4
-      Align = alRight
+      Anchors = [akTop, akRight]
       Caption = #1055#1086#1080#1089#1082
       Enabled = False
       TabOrder = 1
@@ -569,10 +579,12 @@ object SprFrame: TSprFrame
               Width = 150
             end
             item
+              Alignment = taRightJustify
               Caption = #1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088#1091#1073
               Width = 120
             end
             item
+              Alignment = taRightJustify
               Caption = #1062#1077#1085#1072' '#1089' '#1053#1044#1057', '#1088#1091#1073
               Width = 120
             end
@@ -585,6 +597,7 @@ object SprFrame: TSprFrame
           RowSelect = True
           TabOrder = 0
           ViewStyle = vsReport
+          OnResize = lvDetPriceResize
         end
       end
       object edtDetCode: TEdit
@@ -636,5 +649,18 @@ object SprFrame: TSprFrame
     OnTimer = tmPriceTimer
     Left = 664
     Top = 160
+  end
+  object pmFindSettings: TPopupMenu
+    Left = 664
+    Top = 112
+    object PMStrictEqual: TMenuItem
+      Caption = #1055#1088#1080#1086#1088#1080#1090#1077#1090' '#1090#1086#1095#1085#1086#1075#1086' '#1089#1086#1074#1087#1072#1076#1077#1085#1080#1103
+      OnClick = PMStrictEqualClick
+    end
+    object PMEqualCode: TMenuItem
+      Caption = #1058#1086#1095#1085#1086#1077' '#1089#1086#1074#1087#1072#1076#1077#1085#1080#1077' '#1087#1086' '#1082#1086#1076#1091
+      Checked = True
+      OnClick = PMStrictEqualClick
+    end
   end
 end

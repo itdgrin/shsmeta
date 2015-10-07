@@ -1,6 +1,4 @@
 inherited SprMaterial: TSprMaterial
-  Width = 743
-  ExplicitWidth = 743
   inherited LoadAnimator: TJvGIFAnimator
     Image.Data = {
       101C0000474946383961D0000D00C41E00DDDDDDBDBDBDD1D1D1B1B1B1BFBFBF
@@ -230,7 +228,6 @@ inherited SprMaterial: TSprMaterial
       1EFA95A1232C37680AF4D5B2A7A378A61002003B}
   end
   inherited PanelSettings: TPanel
-    Width = 743
     ExplicitWidth = 743
     object lbRegion: TLabel [2]
       Left = 363
@@ -240,7 +237,6 @@ inherited SprMaterial: TSprMaterial
       Caption = #1056#1077#1075#1080#1086#1085':'
     end
     inherited btnShow: TButton
-      Left = 647
       ExplicitLeft = 647
     end
     object cmbRegion: TComboBox [6]
@@ -288,15 +284,13 @@ inherited SprMaterial: TSprMaterial
     end
   end
   inherited PanelFind: TPanel
-    Width = 743
     ExplicitWidth = 743
     inherited edtFindName: TEdit
-      Width = 422
+      Anchors = [akLeft, akTop, akRight]
       TabOrder = 2
-      ExplicitWidth = 422
+      ExplicitWidth = 391
     end
     inherited btnFind: TButton
-      Left = 647
       ExplicitLeft = 647
     end
     inherited edtFindCode: TEdit
@@ -307,18 +301,21 @@ inherited SprMaterial: TSprMaterial
     OnDblClick = ListSprDblClick
   end
   inherited StatusBar: TStatusBar
-    Width = 743
     ExplicitWidth = 743
   end
   inherited PanelDetails: TPanel
-    Width = 743
     ExplicitWidth = 743
     inherited SpeedButtonShowHide: TSpeedButton
-      Width = 741
       ExplicitWidth = 743
     end
     inherited gbDetails: TGroupBox
-      Width = 741
+      ExplicitWidth = 741
+      inherited gbDetPrice: TGroupBox
+        ExplicitWidth = 737
+        inherited lvDetPrice: TListView
+          ExplicitWidth = 733
+        end
+      end
     end
   end
 end
