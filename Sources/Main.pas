@@ -1070,33 +1070,27 @@ end;
 
 procedure TFormMain.N23Click(Sender: TObject);
 begin
-
   Screen.Cursor := crSQLWait;
   try
     if Assigned(FormObjectsAndEstimates) then
     begin
-
       if FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger > 0 then
         ShellExecute(Handle, nil, 'report.exe',
           PChar('A' + INTTOSTR(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger)),
           PChar(FileReportPath + 'report\'), SW_maximIZE);
-
     end
     else
     begin
       if Assigned(FormCalculationEstimate) then
       begin
-
-        if FormCalculationEstimate.IDAct > 0 then
-          ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
+        if FormCalculationEstimate.Act then
+          ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
             PChar(FileReportPath + 'report\'), SW_maximIZE);
-
       end;
     end;
   finally
     Screen.Cursor := crDefault;
   end;
-
 end;
 
 procedure TFormMain.mBuildZoneClick(Sender: TObject);
@@ -1744,7 +1738,7 @@ begin
   end
   else
   begin
-    if FormCalculationEstimate.IDAct <> 0 then
+    if FormCalculationEstimate.Act then
     // для акта
     begin
       if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт сметы',
@@ -1951,15 +1945,15 @@ end;
 
 procedure TFormMain.mReportClick(Sender: TObject);
 begin
- if Assigned(FormCalculationEstimate) then
+  if Assigned(FormCalculationEstimate) then
   begin
     FormCalculationEstimate.ShowNeedSaveDialog;
-    //FormCalculationEstimate.IdEstimate > 0
-    if FormCalculationEstimate.IDAct>0  then
-    ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IDAct)),
+    // FormCalculationEstimate.IdEstimate > 0
+    if FormCalculationEstimate.Act then
+      ShellExecute(Handle, nil, 'report.exe', PChar('A' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
         PChar(FileReportPath), SW_maximIZE)
     else
-    ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
         PChar(FileReportPath), SW_maximIZE);
 
   end;

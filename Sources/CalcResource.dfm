@@ -149,10 +149,6 @@ object fCalcResource: TfCalcResource
     OnChange = pgcChange
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl2: TLabel
         Left = 0
         Top = 0
@@ -955,10 +951,6 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl5: TSplitter
         Left = 0
         Top = 205
@@ -2208,7 +2200,7 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'SELECT '
-      '  ID_ESTIMATE,'
+      '  data_row_temp.SM_ID AS ID_ESTIMATE,'
       '  ID_TYPE_DATA,'
       '  card_rate_temp.ID AS ID_TABLES,'
       ''
@@ -2264,7 +2256,7 @@ object fCalcResource: TfCalcResource
       '             FROM smetasourcedata'
       '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
       'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
-      'data_row_temp.ID_ESTIMATE = smetasourcedata.SM_ID'
+      'data_row_temp.SM_ID = smetasourcedata.SM_ID'
       ''
       'ORDER BY 5')
     Left = 211
@@ -2392,7 +2384,7 @@ object fCalcResource: TfCalcResource
       '  AND TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC'
       '  AND TRANSP_PROC_PODR = :TRANSP_PROC_PODR'
       '  AND PROC_TRANSP = :PROC_TRANSP'
-      'join smetasourcedata S1 ON S1.SM_ID = d.ID_ESTIMATE'
+      'join smetasourcedata S1 ON S1.SM_ID = d.SM_ID'
       'join smetasourcedata S2 ON S2.SM_ID = S1.PARENT_ID'
       'WHERE'
       
@@ -2553,7 +2545,7 @@ object fCalcResource: TfCalcResource
         'join mechanizmcard_temp AS m on ((d.ID_TYPE_DATA = 3 AND m.ID = ' +
         'd.ID_TABLES) OR (m.ID_CARD_RATE = c.ID)) AND m.MECH_ID = :MECH_I' +
         'D'
-      'join smetasourcedata S1 ON S1.SM_ID = d.ID_ESTIMATE'
+      'join smetasourcedata S1 ON S1.SM_ID = d.SM_ID'
       'join smetasourcedata S2 ON S2.SM_ID = S1.PARENT_ID'
       'WHERE'
       
@@ -2638,7 +2630,7 @@ object fCalcResource: TfCalcResource
       
         'join devicescard_temp AS m on d.ID_TYPE_DATA = 4 AND m.ID = d.ID' +
         '_TABLES AND m.DEVICE_ID = :DEVICE_ID'
-      'join smetasourcedata S1 ON S1.SM_ID = d.ID_ESTIMATE'
+      'join smetasourcedata S1 ON S1.SM_ID = d.SM_ID'
       'join smetasourcedata S2 ON S2.SM_ID = S1.PARENT_ID'
       '')
     Left = 155

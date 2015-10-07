@@ -387,8 +387,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     UpdateObject = UpdateSQL
     SQL.Strings = (
       'SELECT '
-      '  s.SM_ID AS id_estimate,'
-      '  :ID_ACT AS id_act, '
+      '  s.SM_ID AS id_estimate, '
       '  typesm.id as sm_type,'
       '  s.OBJ_ID,'
       '  typesm.NAME AS TYPE_NAME, '
@@ -457,7 +456,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  SUM(IFNULL(d.STOIM_SMR, 0)) AS STOIM_SMRF'
       ''
       'FROM typesm, objcards o, smetasourcedata s'
-      'LEFT JOIN summary_calculation d ON d.id_estimate IN'
+      'LEFT JOIN summary_calculation d ON d.SM_ID IN'
       '  (SELECT SM_ID'
       '   FROM smetasourcedata '
       '   WHERE DELETED=0 AND'
@@ -467,13 +466,11 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '             SELECT SM_ID'
       '             FROM smetasourcedata'
       '             WHERE PARENT_ID = s.SM_ID AND DELETED=0)))'
-      '  ) AND IFNULL(d.ID_ACT, 0)=:ID_ACT'
-      'LEFT JOIN card_acts ca ON ca.ID=:ID_ACT'
+      '  ) '
       'WHERE '
       '  s.SM_TYPE=typesm.ID AND '
       '  s.DELETED=0 AND'
-      '  ((s.OBJ_ID=ca.ID_OBJECT) OR (ca.ID_OBJECT IS NULL)) AND'
-      '  ((s.SM_ID = :SM_ID) OR (s.OBJ_ID=ca.ID_OBJECT) OR'
+      '  ((s.SM_ID = :SM_ID) OR'
       '           (s.PARENT_ID = :SM_ID) OR '
       '           (s.PARENT_ID IN ('
       '             SELECT SM_ID'
@@ -487,10 +484,6 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     Left = 9
     Top = 40
     ParamData = <
-      item
-        Name = 'ID_ACT'
-        ParamType = ptInput
-      end
       item
         Name = 'SM_ID'
         DataType = ftInteger
@@ -553,8 +546,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       'UPDATE '
       '  summary_calculation'
       'SET '
-      '  id_estimate = :id_estimate,'
-      '  id_act = IF(:id_act=0, NULL, :id_act),'
+      '  SM_ID = :id_estimate,'
       '  ZPF = IF(:ZP=ZP, NULL, :ZP),'
       '  EMiMF = IF(:EMiM=EMiM, NULL, :EMiM),'
       '  MRF =  IF(:MR=MR, NULL, :MR),'
@@ -588,9 +580,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  STOIM_SMRF= IF(:STOIM_SMR=STOIM_SMR, NULL, :STOIM_SMR),'
       '  TEMP_BUILDF= IF(:TEMP_BUILD=TEMP_BUILD, NULL, :TEMP_BUILD),'
       '  STOIM_SMRF= IF(:STOIM_SMR=STOIM_SMR, NULL, :STOIM_SMR)'
-      
-        'WHERE   id_estimate = :id_estimate and IFNULL(id_act, 0) = :id_a' +
-        'ct;')
+      'WHERE   SM_ID = :id_estimate;')
     Left = 32
     Top = 160
   end

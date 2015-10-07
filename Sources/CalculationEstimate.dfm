@@ -4662,7 +4662,7 @@
   object qrCalculations: TFDQuery
     AfterOpen = qrCalculationsAfterOpen
     MasterSource = dsRatesEx
-    MasterFields = 'SM_ID;ID_TYPE_DATA;ID_TABLES;ID_ACT'
+    MasterFields = 'SM_ID;ID_TYPE_DATA;ID_TABLES'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -4693,9 +4693,7 @@
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      
-        'CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 1, :ID_A' +
-        'CT)')
+      'CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 1)')
     Left = 331
     Top = 424
     ParamData = <
@@ -4713,12 +4711,6 @@
       end
       item
         Name = 'ID_TABLES'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = Null
-      end
-      item
-        Name = 'ID_ACT'
         DataType = ftInteger
         ParamType = ptInput
         Value = Null
@@ -5370,9 +5362,6 @@
     end
     object qrRatesExID_REPLACED: TIntegerField
       FieldName = 'ID_REPLACED'
-    end
-    object qrRatesExID_ACT: TIntegerField
-      FieldName = 'ID_ACT'
     end
     object qrRatesExCONS_REPLASED: TIntegerField
       FieldName = 'CONS_REPLASED'

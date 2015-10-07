@@ -189,7 +189,7 @@ var
 implementation
 
 uses Main, DataModule, CardObject, CardEstimate, CalculationEstimate, Waiting,
-  BasicData, DrawingTables, KC6, CardAct, ImportExportModule;
+  BasicData, DrawingTables, KC6, CardAct, ImportExportModule, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -397,8 +397,8 @@ end;
 
 procedure TFormObjectsAndEstimates.mADD6KCClick(Sender: TObject);
 begin
-  DM.qrDifferent.SQL.Text := 'UPDATE card_acts SET FL_USE=1 WHERE ID=:ID';
-  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET FL_USE=1 WHERE SM_ID=:ID';
+  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
 end;
@@ -609,7 +609,10 @@ end;
 
 procedure TFormObjectsAndEstimates.qrActsExAfterOpen(DataSet: TDataSet);
 begin
-  IDAct := qrActsEx.FieldByName('id').AsInteger;
+  if qrActsEx.FieldByName('PARENT_ID').AsInteger = 0 then
+    IDAct := 0 //Выбрана группа вместо акта
+  else
+    IDAct := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   if PS.AutoExpandTreeEstimates then
     tvActs.FullExpand;
 end;
@@ -729,26 +732,32 @@ begin
 end;
 
 procedure TFormObjectsAndEstimates.OpenAct(const ActID: Integer);
+var
+  newActId: Integer;
 begin
   // Открываем форму ожидания
   FormWaiting.Show;
   Application.ProcessMessages;
 
+  newActId := ActID;
+  // Назначаем новый ID
+  if newActId = 0 then
+    newActId := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_SM]));
+
   if (not Assigned(FormCalculationEstimate)) then
     FormCalculationEstimate := TFormCalculationEstimate.Create(True);
 
   FormCalculationEstimate.CreateTempTables;
-  FormCalculationEstimate.IDAct := ActID;
+  FormCalculationEstimate.IdEstimate := newActId;
   FormCalculationEstimate.lblForemanFIO.caption :=
     VarToStr(FastSelectSQLOne
     ('select CONCAT(IFNULL(foreman_first_name, ""), " ", IFNULL(foreman_name, ""), " ", IFNULL(foreman_second_name, ""))'#13
     + 'from card_acts LEFT JOIN foreman ON card_acts.foreman_id=foreman.foreman_id where id=:id',
-    VarArrayOf([ActID])));
+    VarArrayOf([newActId])));
 
   with qrObjects do
   begin
-    FormCalculationEstimate.EditNameObject.Text :=
-      IntToStr(FieldByName('NumberObject').AsInteger) + ' ' +
+    FormCalculationEstimate.EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsInteger) + ' ' +
       FieldByName('FullName').AsString;
     FormCalculationEstimate.EditNumberContract.Text := FieldByName('NumberContract').AsString;
     FormCalculationEstimate.EditDateContract.Text := FieldByName('DateContract').AsString;
@@ -757,7 +766,7 @@ begin
     FormCalculationEstimate.EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
 
     FormCalculationEstimate.IdObject := IdObject;
-    FormCalculationEstimate.IdEstimate := IdEstimate;
+    FormCalculationEstimate.IdEstimate := newActId;
     FormCalculationEstimate.SetActReadOnly(ActReadOnly);
 
     FormCalculationEstimate.OpenAllData;
@@ -766,7 +775,9 @@ begin
   if not ActReadOnly then
   begin
     fKC6.caption := 'Выборка данных';
-    fKC6.MyShow(IdObject);
+    if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт акта',
+      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
+      fKC6.MyShow(IdObject);
   end;
 
   // Закрываем форму ожидания
@@ -790,8 +801,8 @@ procedure TFormObjectsAndEstimates.PMActsDeleteClick(Sender: TObject);
 begin
   if MessageDlg('Удалить запись?', mtWarning, mbYesNo, 0) <> mrYes then
     Exit;
-  DM.qrDifferent.SQL.Text := 'UPDATE card_acts SET DEL_FLAG=1 WHERE ID=:ID';
-  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DEL_FLAG=1 WHERE SM_ID=:ID';
+  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
 end;
@@ -854,16 +865,16 @@ end;
 
 procedure TFormObjectsAndEstimates.mREM6KCClick(Sender: TObject);
 begin
-  DM.qrDifferent.SQL.Text := 'UPDATE card_acts SET FL_USE=0 WHERE ID=:ID';
-  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET FL_USE=0 WHERE SM_ID=:ID';
+  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
 end;
 
 procedure TFormObjectsAndEstimates.mRepActClick(Sender: TObject);
 begin
-  DM.qrDifferent.SQL.Text := 'UPDATE card_acts SET DEL_FLAG=0 WHERE ID=:ID';
-  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
+  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DEL_FLAG=0 WHERE SM_ID=:ID';
+  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
 end;

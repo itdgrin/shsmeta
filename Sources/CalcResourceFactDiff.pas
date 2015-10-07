@@ -60,7 +60,7 @@ begin
      FormWaiting.Show;
      JvDBGridExcelExport1.FileName :=  GetCurrentDir +'\reports\report\TMP\dif_mat.xls';
      JvDBGridExcelExport1.ExportGrid;
-     ShellExecute(Handle, nil, 'report.exe', PChar('D' + INTTOSTR(FormCalculationEstimate.IDAct)),  PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
+     ShellExecute(Handle, nil, 'report.exe', PChar('D' + INTTOSTR(FormCalculationEstimate.IdEstimate)),  PChar(GetCurrentDir +'\reports\report\'), SW_maximIZE);
      FormWaiting.Close;
 end;
 

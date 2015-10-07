@@ -176,7 +176,7 @@ begin
     fCalcResourceFact := TfCalcResourceFact.Create(AOwner);
   fCalcResourceFact.flLoaded := False;
   fCalcResourceFact.IDEstimate := ID_ESTIMATE;
-  fCalcResourceFact.qrEstimate.ParamByName('SM_ID').Value := FormCalculationEstimate.IdAct;
+  fCalcResourceFact.qrEstimate.ParamByName('SM_ID').Value := ID_ESTIMATE;
   fCalcResourceFact.qrEstimate.Active := True;
   fCalcResourceFact.cbbFromMonth.ItemIndex := fCalcResourceFact.qrEstimate.FieldByName('MONTH').AsInteger - 1;
   fCalcResourceFact.edtEstimateName.Text := fCalcResourceFact.qrEstimate.FieldByName('NAME').AsString;
@@ -507,7 +507,7 @@ begin
       begin
         FastExecSQL
           ('DELETE FROM fact_data WHERE ID_ACT=:ID_ACT AND ID_TABLES IS NOT NULL AND ID_TYPE_DATA=2;',
-          VarArrayOf([FormCalculationEstimate.IdAct]));
+          VarArrayOf([FormCalculationEstimate.IdEstimate]));
         FastExecSQL('INSERT INTO fact_data'#13 +
           '(ID_ACT,ID_TYPE_DATA,ID_TABLES,CODE,NAME,CNT,UNIT,DOC_DATE,DOC_NUM,forecast_cost_index,'#13 +
           ' PROC_TRANSP,FCOAST,COAST,PRICE,TRANSP,DELETED,PROC_ZAC,PROC_PODR,TRANSP_PROC_ZAC,'#13 +
@@ -522,7 +522,7 @@ begin
           'FROM materialcard_temp'#13 + 'WHERE ((DELETED = 0) OR (:SHOW_DELETED))'#13 +
           'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, FCOAST, COAST, DELETED,'#13 +
           'MAT_PROC_ZAC, MAT_PROC_PODR, TRANSP_PROC_ZAC, TRANSP_PROC_PODR, NDS, MAT_ID)',
-          VarArrayOf([FormCalculationEstimate.IdAct, 2, cbbNDS.ItemIndex, cbbNDS.ItemIndex, cbbNDS.ItemIndex,
+          VarArrayOf([FormCalculationEstimate.IdEstimate, 2, cbbNDS.ItemIndex, cbbNDS.ItemIndex, cbbNDS.ItemIndex,
           cbbNDS.ItemIndex, mShowDeleted.Checked]));
       end;
     // Расчет механизмов
@@ -530,7 +530,7 @@ begin
       begin
         FastExecSQL
           ('DELETE FROM fact_data WHERE ID_ACT=:ID_ACT AND ID_TABLES IS NOT NULL AND ID_TYPE_DATA=3;',
-          VarArrayOf([FormCalculationEstimate.IdAct]));
+          VarArrayOf([FormCalculationEstimate.IdEstimate]));
         FastExecSQL('INSERT INTO fact_data'#13 +
           '(ID_ACT,ID_TYPE_DATA,ID_TABLES,CODE,NAME,CNT,UNIT,DOC_DATE,DOC_NUM,forecast_cost_index,'#13 +
           'COAST,PRICE,COAST_ZP,PRICE_ZP,DELETED,PROC_ZAC,PROC_PODR,NDS,SRC_OBJECT_ID)'#13 +
@@ -546,7 +546,7 @@ begin
           + '  DELETED,PROC_ZAC,PROC_PODR,NDS,MECH_ID'#13 + 'FROM  mechanizmcard_temp'#13 +
           'WHERE ((DELETED = 0) OR (:SHOW_DELETED))'#13 +
           'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, COAST, COAST_ZP, DELETED, PROC_ZAC, PROC_PODR, NDS, MECH_ID)',
-          VarArrayOf([FormCalculationEstimate.IdAct, 3, cbbNDS.ItemIndex, cbbNDS.ItemIndex, cbbNDS.ItemIndex,
+          VarArrayOf([FormCalculationEstimate.IdEstimate, 3, cbbNDS.ItemIndex, cbbNDS.ItemIndex, cbbNDS.ItemIndex,
           cbbNDS.ItemIndex, mShowDeleted.Checked]));
       end;
     // Расчет оборудования
@@ -554,7 +554,7 @@ begin
       begin
         FastExecSQL
           ('DELETE FROM fact_data WHERE ID_ACT=:ID_ACT AND ID_TABLES IS NOT NULL AND ID_TYPE_DATA=4;',
-          VarArrayOf([FormCalculationEstimate.IdAct]));
+          VarArrayOf([FormCalculationEstimate.IdEstimate]));
         FastExecSQL('INSERT INTO fact_data'#13 +
           '(ID_ACT,ID_TYPE_DATA,ID_TABLES,CODE,NAME,CNT,UNIT,DOC_DATE,DOC_NUM,forecast_cost_index,'#13 +
           'COAST,PRICE,TRANSP,DELETED,PROC_ZAC,PROC_PODR,TRANSP_PROC_ZAC,TRANSP_PROC_PODR,NDS,SRC_OBJECT_ID)'#13
@@ -566,7 +566,7 @@ begin
           + '  0 AS DELETED,PROC_ZAC,PROC_PODR,TRANSP_PROC_ZAC,TRANSP_PROC_PODR,NDS,DEVICE_ID'#13 +
           'FROM devicescard_temp'#13 +
           'GROUP BY CODE,NAME,UNIT,DOC_DATE,DOC_NUM,COAST,PROC_ZAC,PROC_PODR,TRANSP_PROC_ZAC,TRANSP_PROC_PODR,DELETED, DEVICE_ID, NDS)',
-          VarArrayOf([FormCalculationEstimate.IdAct, 4, cbbNDS.ItemIndex, cbbNDS.ItemIndex,
+          VarArrayOf([FormCalculationEstimate.IdEstimate, 4, cbbNDS.ItemIndex, cbbNDS.ItemIndex,
           cbbNDS.ItemIndex]));
       end;
   end;
@@ -762,7 +762,7 @@ begin
   if (DataSet as TFDQuery).FindParam('SHOW_DELETED') <> nil then
     (DataSet as TFDQuery).ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
   if (DataSet as TFDQuery).FindParam('ID_ACT') <> nil then
-    (DataSet as TFDQuery).ParamByName('ID_ACT').Value := FormCalculationEstimate.IdAct;
+    (DataSet as TFDQuery).ParamByName('ID_ACT').Value := FormCalculationEstimate.IdEstimate;
 
   if (DataSet as TFDQuery).FindParam('ID_TYPE_DATA') <> nil then
     case pgc.ActivePageIndex of

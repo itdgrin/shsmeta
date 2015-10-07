@@ -104,8 +104,7 @@ begin
       FormCalculationEstimate.CreateTempTables;
       // «аполнен€ временных таблиц, заполнение формы
       FormCalculationEstimate.OpenAllData;
-      FormCalculationEstimate.frSummaryCalculations.LoadData
-        (VarArrayOf([FormCalculationEstimate.IdEstimate, FormCalculationEstimate.IdAct]));
+      FormCalculationEstimate.frSummaryCalculations.LoadData(FormCalculationEstimate.IdEstimate);
       FormCalculationEstimate.flChangeEstimate := False;
       FormCalculationEstimate.WindowState := wsMaximized;
       // Close;

@@ -437,7 +437,6 @@ type
     qrTranspID: TIntegerField;
     qrDevicesID: TIntegerField;
     qrDumpDUMP_ID: TIntegerField;
-    qrRatesExID_ACT: TIntegerField;
     btnMaterials: TSpeedButton;
     btnMechanisms: TSpeedButton;
     btnEquipments: TSpeedButton;
@@ -712,7 +711,6 @@ type
     RowCoefDefault: Boolean;
 
     FIdObject: Integer;
-    FIdAct: Integer;
     FIdEstimate: Integer;
 
     NDSEstimate: Boolean; // Расчет  с НДС или без
@@ -802,7 +800,6 @@ type
     ConfirmCloseForm: Boolean;
     flChangeEstimate: Boolean; // Не даем закрыться окну при переключении между сметами.
     property IdObject: Integer read FIdObject write FIdObject;
-    property IdAct: Integer read FIdAct write FIdAct;
     property IdEstimate: Integer read FIdEstimate write FIdEstimate;
     property MonthEstimate: Integer read FMonthEstimate write FMonthEstimate;
     property YearEstimate: Integer read FYearEstimate write FYearEstimate;
@@ -1186,7 +1183,7 @@ begin
     PanelSSR.Visible := False;
 
     // Инициализация заполнения фрейма данными
-    frSummaryCalculations.LoadData(VarArrayOf([IdEstimate, IdAct]));
+    frSummaryCalculations.LoadData(IdEstimate);
 
     // Делаем кнопки верхнего правого меню неактивными
     BottomTopMenuEnabled(False);
@@ -1392,9 +1389,8 @@ begin
         begin
           FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
             VarArrayOf([qrRatesExID_TABLES.Value, qrRatesExID_TYPE_DATA.Value]));
-          FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0, :ID_ACT)',
-            VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value,
-            qrRatesExID_ACT.Value]));
+          FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0)',
+            VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value]));
         end;
         qrRatesEx.Next;
       end;
@@ -1426,17 +1422,17 @@ begin
   case Application.MessageBox('Произвести перерасчет\замену данных?'#13 +
     '(будут восстановлены справочные цены)', 'Перерасчет', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
     IDYES:
-      FastExecSQL('CALL UpdateSmetaCosts(:IDESTIMATE,:ID_ACT);', VarArrayOf([IdEstimate, IdAct]));
+      FastExecSQL('CALL UpdateSmetaCosts(:IDESTIMATE);', VarArrayOf([IdEstimate]));
   end;
   RecalcEstimate;
   if pnlSummaryCalculations.Visible then
-    frSummaryCalculations.LoadData(VarArrayOf([IdEstimate, IdAct]));
+    frSummaryCalculations.LoadData(IdEstimate);
 end;
 
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
   ShowNeedSaveDialog;
-  if FormCalculationEstimate.IdAct = 0 then
+  if not Act then
     ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
       PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
 end;
@@ -4341,47 +4337,31 @@ begin
   try
     if Act then
     begin
-      if IdAct = 0 then
+      if IdEstimate = 0 then
       begin
         FormCardAct := TfCardAct.Create(Self);
         FormCardAct.Kind := kdInsert;
         FormCardAct.ShowModal;
       end
-      else if not ActReadOnly then
-        try
-          DM.Read.StartTransaction;
-          FastExecSQL('CALL SaveDataAct(:IdAct);', VarArrayOf([IdAct]));
-          DM.Read.Commit;
-        except
-          on e: Exception do
-          begin
-            DM.Read.Rollback;
-            qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
-            qrTemp.Active := True;
-            MessageBox(0, PChar('При сохранении данных акта возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
-              MB_ICONERROR + MB_OK + mb_TaskModal);
-            Abort;
-          end;
-        end;
-    end
-    else
-      try
-        DM.Read.StartTransaction;
-        FastExecSQL('CALL SaveAllDataEstimate(:id_estimate);', VarArrayOf([IdEstimate]));
-        DM.Read.Commit;
-      except
-        on e: Exception do
-        begin
-          DM.Read.Rollback;
-          qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
-          qrTemp.Active := True;
-          MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' + sLineBreak + sLineBreak +
-            e.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
-            MB_ICONERROR + MB_OK + mb_TaskModal);
-          Abort;
-        end;
+      else if ActReadOnly then
+        Exit;
+    end;
+    try
+      DM.Read.StartTransaction;
+      FastExecSQL('CALL SaveAllDataEstimate(:id_estimate);', VarArrayOf([IdEstimate]));
+      DM.Read.Commit;
+    except
+      on e: Exception do
+      begin
+        DM.Read.Rollback;
+        qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
+        qrTemp.Active := True;
+        MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' + sLineBreak + sLineBreak +
+          e.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
+          MB_ICONERROR + MB_OK + mb_TaskModal);
+        Abort;
       end;
+    end;
   finally
     DM.Read.Options.AutoCommit := AutoCommitValue;
   end;
@@ -4711,8 +4691,8 @@ begin
 
         if MaxMId > 0 then
         begin
-          qrTemp1.SQL.Text := 'Insert into materialcard_temp (ID, ID_CARD_RATE, MAT_ID, ' +
-            'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
+          qrTemp1.SQL.Text := 'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, MAT_ID, '
+            + 'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
             'PROC_TRANSP) values (:ID, :ID_CARD_RATE, :MAT_ID, ' +
             ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
           qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -4752,7 +4732,8 @@ begin
 
         if MaxMId > 0 then
         begin
-          qrTemp1.SQL.Text := 'Insert into materialcard_temp (ID, ID_CARD_RATE, CONSIDERED, MAT_ID, ' +
+          qrTemp1.SQL.Text :=
+            'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, CONSIDERED, MAT_ID, ' +
             'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
             'PROC_TRANSP) values (:ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
             ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
@@ -4820,7 +4801,7 @@ begin
 
         if MaxMId > 0 then
         begin
-          qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (ID, ID_CARD_RATE, ' +
+          qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
             'MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, MECH_UNIT, COAST_NO_NDS, ' +
             'COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, NORMATIV) values (:ID, :ID_CARD_RATE, ' +
             ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
@@ -5273,7 +5254,8 @@ begin
   fForemanList.Kind := kdSelect;
   if (fForemanList.ShowModal = mrOk) and (fForemanList.OutValue <> 0) then
   begin
-    FastExecSQL('UPDATE card_acts SET foreman_id=:0 WHERE ID=:1', VarArrayOf([fForemanList.OutValue, IdAct]));
+    FastExecSQL('UPDATE smetasourcedata SET foreman_id=:0 WHERE SM_ID=:1',
+      VarArrayOf([fForemanList.OutValue, IdEstimate]));
     lblForemanFIO.Caption :=
       VarToStr(FastSelectSQLOne
       ('SELECT CONCAT(IFNULL(foreman_first_name, ""), " ", IFNULL(foreman_name, ""), " ", IFNULL(foreman_second_name, "")) FROM foreman WHERE foreman_id=:0',
@@ -5413,7 +5395,7 @@ begin
   qrStartup.SQL.Text := 'select RATE_CODE, RATE_CAPTION, RATE_COUNT, RATE_UNIT ' +
     'from data_row_temp as dm LEFT JOIN card_rate_temp as cr ' +
     'ON (dm.ID_TYPE_DATA = 1) AND (cr.ID = dm.ID_TABLES) ' + 'WHERE (cr.RATE_CODE LIKE "%' + LikeText +
-    '%") and (dm.ID_ESTIMATE = ' + INTTOSTR(qrRatesExSM_ID.AsInteger) + ') and ' + '(dm.ID_ACT is NULL)';
+    '%") and (dm.SM_ID = ' + INTTOSTR(qrRatesExSM_ID.AsInteger) + ')';
   qrStartup.Active := True;
 end;
 
@@ -5853,8 +5835,8 @@ begin
       begin
         Active := False;
         SQL.Clear;
-        SQL.Add('select year(ca.`DATE`) as YEAR, MONTH(ca.`DATE`) AS MONTH FROM `card_acts` ca WHERE ca.`ID`='
-          + INTTOSTR(IdAct) + ';');
+        SQL.Add('select year(s.`DATE`) as YEAR, MONTH(s.`DATE`) AS MONTH FROM smetasourcedata s WHERE s.SM_ID='
+          + INTTOSTR(IdEstimate) + ';');
         Active := True;
 
         MonthEstimate := FieldByName('MONTH').AsInteger;
@@ -6292,18 +6274,8 @@ begin
     begin
       Active := False;
       SQL.Clear;
-
-      if Act then
-      begin
-        SQL.Add('CALL OpenAllDataAct(:IdAct);');
-        ParamByName('IdAct').Value := IdAct;
-      end
-      else
-      begin
-        SQL.Add('CALL OpenAllDataEstimate(:IdEstimate);');
-        ParamByName('IdEstimate').Value := IdEstimate;
-      end;
-
+      SQL.Add('CALL OpenAllDataEstimate(:IdEstimate);');
+      ParamByName('IdEstimate').Value := IdEstimate;
       try
         ExecSQL;
       except
@@ -6350,16 +6322,11 @@ var
   i: Integer;
 begin
   // Новая процедура вывода левой части
+  qrRatesEx.ParamByName('EAID').Value := IdEstimate;
   if Act then
-  begin
-    qrRatesEx.ParamByName('EAID').Value := IdAct;
-    qrRatesEx.ParamByName('vIsACT').Value := 1;
-  end
+    qrRatesEx.ParamByName('vIsACT').Value := 1
   else
-  begin
-    qrRatesEx.ParamByName('EAID').Value := IdEstimate;
     qrRatesEx.ParamByName('vIsACT').Value := 0;
-  end;
 
   qrRatesEx.DisableControls;
 
@@ -6532,18 +6499,14 @@ begin
           grRatesEx.DataSource.DataSet.Bookmark := Items[X];
           qrTemp.Active := False;
           qrTemp.SQL.Text :=
-            'INSERT INTO calculation_coef_temp(calculation_coef_id, id_act, id_estimate,id_type_data,id_owner,id_coef,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB)'#13
-            + 'SELECT GetNewID(:IDType), :id_act, :id_estimate, :id_type_data, :id_owner, coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13
+            'INSERT INTO calculation_coef_temp(calculation_coef_id,SM_ID,id_type_data,id_owner,id_coef,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB)'#13
+            + 'SELECT GetNewID(:IDType), :SM_ID, :id_type_data, :id_owner, coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13
             + 'FROM coef WHERE coef.coef_id=:coef_id';
           qrTemp.ParamByName('IDType').Value := C_ID_SMCOEF;
-          qrTemp.ParamByName('id_estimate').AsInteger := qrRatesExSM_ID.Value;
+          qrTemp.ParamByName('SM_ID').AsInteger := qrRatesExSM_ID.Value;
           qrTemp.ParamByName('id_owner').AsInteger := qrRatesExID_TABLES.AsInteger;
           qrTemp.ParamByName('id_type_data').AsInteger := qrRatesExID_TYPE_DATA.AsInteger;
           qrTemp.ParamByName('coef_id').AsInteger := coef_id;
-          if Act then
-            qrTemp.ParamByName('id_act').AsInteger := IdAct
-          else
-            qrTemp.ParamByName('id_act').Value := Null;
           qrTemp.ExecSQL;
 
           if qrRatesExID_TYPE_DATA.Value < 0 then

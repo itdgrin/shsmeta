@@ -68,7 +68,7 @@ type
     procedure qrWorkerDepartmentAfterOpen(DataSet: TDataSet);
   private
   public
-    defIdEstimate, defIdAct: Integer; // ид сметы и акта по умолчанию
+    defIdEstimate: Integer; // ид сметы и акта по умолчанию
   end;
 
 var
@@ -123,7 +123,6 @@ begin
   if Assigned(FormCalculationEstimate) then
   begin
     LocateObject(FormCalculationEstimate.IdObject);
-    defIdAct := FormCalculationEstimate.IdAct;
     defIdEstimate := FormCalculationEstimate.IdEstimate;
   end;
 
@@ -259,11 +258,6 @@ begin
     begin
       if not qrTravel.Locate('id_estimate', defIdEstimate, []) then
         qrTravel.Insert;
-    end
-    else if defIdAct <> 0 then
-    begin
-      if not qrTravel.Locate('id_act', defIdAct, []) then
-        qrTravel.Insert;
     end;
   end;
 
@@ -345,13 +339,6 @@ begin
     DataSet.FieldByName('SOURCE_TYPE').Value := 1;
     DataSet.FieldByName('NAME').Value := FastSelectSQLOne('SELECT NAME FROM smetasourcedata WHERE SM_ID=:0',
       VarArrayOf([defIdEstimate]));
-  end
-  else if defIdAct <> 0 then
-  begin
-    DataSet.FieldByName('id_act').Value := defIdAct;
-    DataSet.FieldByName('SOURCE_TYPE').Value := 0;
-    DataSet.FieldByName('NAME').Value := FastSelectSQLOne('SELECT NAME FROM card_acts WHERE ID=:0',
-      VarArrayOf([defIdAct]));
   end;
 end;
 
@@ -364,11 +351,6 @@ begin
     if defIdEstimate <> 0 then
     begin
       if not qrTravelWork.Locate('id_estimate', defIdEstimate, []) then
-        qrTravelWork.Insert;
-    end
-    else if defIdAct <> 0 then
-    begin
-      if not qrTravelWork.Locate('id_act', defIdAct, []) then
         qrTravelWork.Insert;
     end;
   end;
@@ -426,11 +408,6 @@ begin
     if defIdEstimate <> 0 then
     begin
       if not qrWorkerDepartment.Locate('id_estimate', defIdEstimate, []) then
-        qrWorkerDepartment.Insert;
-    end
-    else if defIdAct <> 0 then
-    begin
-      if not qrWorkerDepartment.Locate('id_act', defIdAct, []) then
         qrWorkerDepartment.Insert;
     end;
   end;

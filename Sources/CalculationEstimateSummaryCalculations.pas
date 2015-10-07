@@ -38,7 +38,7 @@ type
     procedure mN5Click(Sender: TObject);
     procedure mN6Click(Sender: TObject);
   private
-    SM_ID, ID_ACT: Integer;
+    SM_ID: Integer;
     function CanEditField(Field: TField): Boolean;
   public
     function LoadData(const Args: Variant): Boolean;
@@ -75,7 +75,7 @@ var
 begin
   Key := qrData.FieldByName('id_estimate').Value;
   FormBasicData.ShowForm(qrData.FieldByName('OBJ_ID').AsInteger, qrData.FieldByName('id_estimate').AsInteger);
-  LoadData(VarArrayOf([SM_ID, ID_ACT]));
+  LoadData(SM_ID);
   qrData.Locate('id_estimate', Key, []);
 end;
 
@@ -127,11 +127,9 @@ begin
   try
     LoadDBGridSettings(grSummaryCalculation);
     qrData.Active := False;
-    qrData.ParamByName('SM_ID').Value := Args[0];
-    qrData.ParamByName('ID_ACT').Value := Args[1];
+    qrData.ParamByName('SM_ID').Value := Args;
     qrData.Active := True;
-    SM_ID := Args[0];
-    ID_ACT := Args[1];
+    SM_ID := Args;
   except
     Result := False;
   end;
@@ -194,7 +192,7 @@ begin
             if grSummaryCalculation.Columns[I].Field <> nil then
               SQL := SQL + grSummaryCalculation.Columns[I].Field.FieldName + 'F=NULL' + sep + ''#13;
           end;
-          FastExecSQL('UPDATE summary_calculation SET'#13 + SQL + 'WHERE id_estimate=:0',
+          FastExecSQL('UPDATE summary_calculation SET'#13 + SQL + 'WHERE SM_ID=:0',
             VarArrayOf([qrData.FieldByName('id_estimate').Value]));
         end;
         qrData.Next;

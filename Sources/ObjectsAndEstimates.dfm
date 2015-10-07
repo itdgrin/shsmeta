@@ -724,6 +724,46 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     UpdateOptions.UpdateTableName = 'smeta.card_acts'
     UpdateOptions.KeyFields = 'ID'
     SQL.Strings = (
+      
+        'SELECT (YEAR(date)*12+MONTH(date)) AS PARENT_ID, SM_ID AS MASTER' +
+        '_ID, '
+      
+        '  CONCAT(IF(FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), TRIM(name), IF(DELETED=1,' +
+        ' "-", "")) AS ITEAM_NAME'
+      'FROM smetasourcedata'
+      'WHERE SM_TYPE=2'
+      '  AND OBJ_ID=:OBJ_ID'
+      '  AND ((DELETED=0) OR (:SHOW_DELETED=1))'
+      '  AND ACT=1'
+      ''
+      'UNION ALL'
+      ''
+      'SELECT 0 AS PARENT_ID, '
+      '(YEAR(date)*12+MONTH(date)) AS MASTER_ID,'
+      'CONCAT(YEAR(date), " ", ('
+      'case MONTH(date) '
+      'WHEN 1 THEN "'#1071#1053#1042#1040#1056#1068'"'
+      'WHEN 2 THEN "'#1060#1045#1042#1056#1040#1051#1068'"'
+      'WHEN 3 THEN "'#1052#1040#1056#1058'"'
+      'WHEN 4 THEN "'#1040#1055#1056#1045#1051#1068'"'
+      'WHEN 5 THEN "'#1052#1040#1049'"'
+      'WHEN 6 THEN "'#1048#1070#1053#1068'"'
+      'WHEN 7 THEN "'#1048#1070#1051#1068'"'
+      'WHEN 8 THEN "'#1040#1042#1043#1059#1057#1058'"'
+      'WHEN 9 THEN "'#1057#1045#1053#1058#1071#1041#1056#1068'"'
+      'WHEN 10 THEN "'#1054#1050#1058#1071#1041#1056#1068'"'
+      'WHEN 11 THEN "'#1053#1054#1071#1041#1056#1068'"'
+      'WHEN 12 THEN "'#1044#1045#1050#1040#1041#1056#1068'"'
+      'END)) AS ITEAM_NAME'
+      'FROM smetasourcedata'
+      'WHERE SM_TYPE=2'
+      '  AND OBJ_ID=:OBJ_ID'
+      '  AND ((DELETED=0) OR (:SHOW_DELETED=1))'
+      '  AND ACT=1'
+      'GROUP BY (YEAR(date)*12+MONTH(date))'
+      'ORDER BY 1, 3'
+      ''
+      '/*'
       'SELECT card_acts.*, '
       '(YEAR(card_acts.date)*12+MONTH(card_acts.date)) AS PARENT_ID,'
       'ID AS MASTER_ID,'
@@ -734,7 +774,9 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       
         'WHERE ID_OBJECT = :OBJ_ID AND ((card_acts.DEL_FLAG=0) OR (:SHOW_' +
         'DELETED=1))'
+      ''
       'UNION ALL'
+      ''
       
         'SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NU' +
         'LL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, NULL,'
@@ -760,7 +802,12 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         'WHERE ID_OBJECT = :OBJ_ID AND ((card_acts.DEL_FLAG=0) OR (:SHOW_' +
         'DELETED=1))'
       'GROUP BY (YEAR(card_acts.date)*12+MONTH(card_acts.date))'
-      'ORDER BY date')
+      'ORDER BY date'
+      '*/'
+      ''
+      ''
+      ''
+      '')
     Left = 377
     Top = 344
     ParamData = <
@@ -869,9 +916,12 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         'DELETED=1, "-", "")) as NAME,'
       '       PARENT_ID as PARENT, DELETED'
       'FROM smetasourcedata'
-      'WHERE SM_TYPE=2 AND '
-      '      OBJ_ID=:OBJ_ID'
-      '      AND ((DELETED=0) OR (:SHOW_DELETED=1))'
+      'WHERE /*SM_TYPE=2'
+      '  AND*/ OBJ_ID=:OBJ_ID'
+      '  AND ((DELETED=0) OR (:SHOW_DELETED=1))'
+      '  AND ACT=0'
+      'ORDER BY NAME'
+      '/*'
       'UNION ALL'
       
         'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME, IF(' +
@@ -881,7 +931,9 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       'WHERE SM_TYPE<>2 AND '
       '      OBJ_ID=:OBJ_ID'
       '      AND ((DELETED=0) OR (:SHOW_DELETED=1))'
-      'ORDER BY NAME')
+      '  AND ACT=0'
+      ''
+      '*/')
     Left = 25
     Top = 344
     ParamData = <

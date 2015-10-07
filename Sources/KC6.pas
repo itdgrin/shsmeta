@@ -231,7 +231,7 @@ begin
   if not Assigned(FormCalculationEstimate) then
     Exit;
   qrData.ParamByName('ID_OBJECT').Value := IdObject;
-  qrData.ParamByName('ID_ACT').Value := FormCalculationEstimate.IdAct;
+  qrData.ParamByName('SM_ID').Value := FormCalculationEstimate.IdEstimate;
 end;
 
 procedure TfKC6.qrDataCalcFields(DataSet: TDataSet);
@@ -314,7 +314,7 @@ begin
       begin
         if qrDataCHECKED.Value and (qrDataID_TYPE_DATA.Value > 0) then
           CopyToAct(Integer(qrDataSM_ID.Value), Integer(qrDataID_TYPE_DATA.Value), qrDataID_TABLES.Value,
-            Double(qrDataOBJ_COUNT_IN.Value), FormCalculationEstimate.IdAct);
+            Double(qrDataOBJ_COUNT_IN.Value), FormCalculationEstimate.IdEstimate);
         qrData.Next;
       end;
     finally
