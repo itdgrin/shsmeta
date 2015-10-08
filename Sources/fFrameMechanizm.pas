@@ -41,7 +41,6 @@ uses CalculationEstimate, SprController;
 constructor TSprMechanizm.Create(AOwner: TComponent;
       const APriceColumn, vAllowAddition: Boolean;
       const AStarDate: TDateTime; ABaseType: Byte);
-var lc: TListColumn;
 begin
   FAllowAddition := vAllowAddition;
  // FNoEdCol := False;
@@ -49,8 +48,7 @@ begin
 end;
 
 procedure TSprMechanizm.SprStyle;
-var TmpFlag: Boolean;
-    lc: TListColumn;
+var lc: TListColumn;
 begin
   inherited;
 

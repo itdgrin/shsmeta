@@ -206,7 +206,7 @@ begin
 end;
 
 procedure TFormTransportation.ButtonAddClick(Sender: TObject);
-var NewId: Integer;
+var NewId, NewDataRowId: Integer;
 begin
   if InsMode then
   begin
@@ -220,15 +220,41 @@ begin
     qrTemp.Active := False;
 
     if NewId = 0 then
-      raise Exception.Create('Не удалось получить новый ID.');
+      raise Exception.Create('Не удалось получить новый ID транспорта.');
 
-    qrTemp.SQL.Text := 'Insert into transpcard_temp (ID, TRANSP_TYPE,TRANSP_CODE_JUST,' +
-      'TRANSP_JUST,TRANSP_COUNT,TRANSP_DIST,TRANSP_SUM_NDS,TRANSP_SUM_NO_NDS,' +
-      'COAST_NO_NDS,COAST_NDS,CARG_CLASS,CARG_UNIT,CARG_TYPE,CARG_COUNT,CARG_YDW,' +
-      'NDS,PRICE_NDS,PRICE_NO_NDS,KOEF) values (:ID,:TRANSP_TYPE,:TRANSP_CODE_JUST,' +
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := 'SELECT GetNewID(:IDType)';
+    qrTemp.ParamByName('IDType').Value := C_ID_DATA;
+    qrTemp.Active := True;
+    NewDataRowId := 0;
+    if not qrTemp.Eof then
+      NewDataRowId := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+
+    if NewDataRowId = 0 then
+      raise Exception.Create('Не удалось получить новый ID сметы.');
+
+    Iterator := UpdateIterator(IdEstimate, Iterator, 0);
+    qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
+      '(ID, SM_ID, id_type_data, id_tables, NUM_ROW) VALUE ' +
+      '(:ID, :SM_ID, :id_type_data, :id_tables, :NUM_ROW);';
+    qrTemp.ParamByName('ID').Value := NewDataRowId;
+    qrTemp.ParamByName('SM_ID').Value := IdEstimate;
+    qrTemp.ParamByName('id_type_data').Value := TranspType;
+    qrTemp.ParamByName('id_tables').Value := NewId;
+    qrTemp.ParamByName('NUM_ROW').Value := Iterator;
+    qrTemp.ExecSQL;
+
+    qrTemp.SQL.Text := 'Insert into transpcard_temp (SM_ID, DATA_ROW_ID, ID, ' +
+      'TRANSP_TYPE,TRANSP_CODE_JUST,TRANSP_JUST,TRANSP_COUNT,TRANSP_DIST,' +
+      'TRANSP_SUM_NDS,TRANSP_SUM_NO_NDS,COAST_NO_NDS,COAST_NDS,CARG_CLASS,' +
+      'CARG_UNIT,CARG_TYPE,CARG_COUNT,CARG_YDW,NDS,PRICE_NDS,PRICE_NO_NDS,KOEF) ' +
+      'values (:SM_ID,:DATA_ROW_ID,:ID,:TRANSP_TYPE,:TRANSP_CODE_JUST,' +
       ':TRANSP_JUST,:TRANSP_COUNT,:TRANSP_DIST,:TRANSP_SUM_NDS,:TRANSP_SUM_NO_NDS,' +
       ':COAST_NO_NDS,:COAST_NDS,:CARG_CLASS,:CARG_UNIT,:CARG_TYPE,:CARG_COUNT,:CARG_YDW,' +
       ':NDS,:PRICE_NDS,:PRICE_NO_NDS,:KOEF)';
+    qrTemp.ParamByName('SM_ID').Value := IdEstimate;
+    qrTemp.ParamByName('DATA_ROW_ID').Value := NewDataRowId;
     qrTemp.ParamByName('ID').Value := NewId;
     qrTemp.ParamByName('TRANSP_TYPE').Value := TranspType;
     qrTemp.ParamByName('TRANSP_CODE_JUST').Value := EditJustificationNumber.Text;
@@ -248,18 +274,6 @@ begin
     qrTemp.ParamByName('PRICE_NDS').Value := StrToCurr(edtPriceNDS.Text);
     qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToCurr(edtPriceNoNDS.Text);
     qrTemp.ParamByName('KOEF').Value := FCoef;
-
-    qrTemp.ExecSQL;
-
-    Iterator := UpdateIterator(IdEstimate, Iterator, 0);
-    qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
-      '(ID, id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
-      '(GetNewID(:IDType), :id_estimate, :id_type_data, :id_tables, :NUM_ROW);';
-    qrTemp.ParamByName('IDType').Value := C_ID_DATA;
-    qrTemp.ParamByName('id_estimate').Value := IdEstimate;
-    qrTemp.ParamByName('id_type_data').Value := TranspType;
-    qrTemp.ParamByName('id_tables').Value := NewId;
-    qrTemp.ParamByName('NUM_ROW').Value := Iterator;
     qrTemp.ExecSQL;
 
     qrTemp.SQL.Text := 'CALL AddCalcCoef(:IdEstimate, :NewID, :TypeData);';

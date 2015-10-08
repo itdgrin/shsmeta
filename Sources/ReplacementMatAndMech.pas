@@ -885,10 +885,9 @@ begin
           'ES.ID_TABLES as IDTABLES, ES.ID_TYPE_DATA as TYPEDATA ' +
           'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
           'card_rate' + TmpStr + ' as RT, materialcard' + TmpStr + ' as MT ' +
-          'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 1) AND ' +
+          'WHERE (SM.SM_ID = ES.SM_ID) AND (ES.ID_TYPE_DATA = 1) AND ' +
           '(ES.ID_TABLES = RT.ID) AND (RT.ID = MT.ID_CARD_RATE) AND ' +
-          '(MT.FROM_RATE = 0) AND (MT.DELETED = 0) AND ' +
-          '(ES.ID_ACT is NULL) ' +  WhereStr;
+          '(MT.FROM_RATE = 0) AND (MT.DELETED = 0) ' +  WhereStr;
       3: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
           'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
           'RT.RATE_CODE as RTCODE, MT.ID as MTID, MT.MECH_ID as MSPRID, ' +
@@ -902,10 +901,9 @@ begin
           'ES.ID_TABLES as IDTABLES, ES.ID_TYPE_DATA as TYPEDATA ' +
           'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
           'card_rate' + TmpStr + ' as RT, mechanizmcard' + TmpStr + ' as MT ' +
-          'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 1) AND ' +
+          'WHERE (SM.SM_ID = ES.SM_ID) AND (ES.ID_TYPE_DATA = 1) AND ' +
           '(ES.ID_TABLES = RT.ID) AND (RT.ID = MT.ID_CARD_RATE) AND ' +
-          '(MT.FROM_RATE = 0) AND (MT.DELETED = 0) AND ' +
-          '(ES.ID_ACT is NULL) ' + WhereStr;
+          '(MT.FROM_RATE = 0) AND (MT.DELETED = 0) ' + WhereStr;
     end;
     qrTemp.Active := True;
     BrowsDataSet;
@@ -927,9 +925,8 @@ begin
         'ES.ID_TABLES as IDTABLES, ES.ID_TYPE_DATA as TYPEDATA ' +
         'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
         'materialcard' + TmpStr + ' as MT ' +
-        'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 2) AND ' +
-        '(ES.ID_TABLES = MT.ID) AND ' +
-        '(ES.ID_ACT is NULL) ' + WhereStr;
+        'WHERE (SM.SM_ID = ES.SM_ID) AND (ES.ID_TYPE_DATA = 2) AND ' +
+        '(ES.ID_TABLES = MT.ID) ' + WhereStr;
     3: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
         'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
         'null as RTCODE, MT.ID as MTID, MT.MECH_ID as MSPRID, ' +
@@ -943,9 +940,8 @@ begin
         'ES.ID_TABLES as IDTABLES, ES.ID_TYPE_DATA as TYPEDATA ' +
         'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
         'mechanizmcard' + TmpStr + ' as MT ' +
-        'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 3) AND ' +
-        '(ES.ID_TABLES = MT.ID) AND ' +
-        '(ES.ID_ACT is NULL) ' + WhereStr;
+        'WHERE (SM.SM_ID = ES.SM_ID) AND (ES.ID_TYPE_DATA = 3) AND ' +
+        '(ES.ID_TABLES = MT.ID) ' + WhereStr;
     4: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
         'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
         'null as RTCODE, MT.ID as MTID, MT.DEVICE_ID as MSPRID, ' +
@@ -959,9 +955,8 @@ begin
         'ES.ID_TABLES as IDTABLES, ES.ID_TYPE_DATA as TYPEDATA ' +
         'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
         'devicescard' + TmpStr + ' as MT ' +
-        'WHERE (SM.SM_ID = ES.ID_ESTIMATE) AND (ES.ID_TYPE_DATA = 4) AND ' +
-        '(ES.ID_TABLES = MT.ID) AND ' +
-        '(ES.ID_ACT is NULL) ' + WhereStr;
+        'WHERE (SM.SM_ID = ES.SM_ID) AND (ES.ID_TYPE_DATA = 4) AND ' +
+        '(ES.ID_TABLES = MT.ID) ' + WhereStr;
   end;
   qrTemp.Active := True;
   BrowsDataSet;
@@ -1088,18 +1083,18 @@ begin
             case FCurType of
               2: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row' +
                   TmpStr + ' WHERE ' +
-                  '(ID_ESTIMATE = :ID_ESTIMATE) AND (ID_TABLES = :ID_TABLES) ' +
-                  'AND (ID_TYPE_DATA = 2) AND (ID_ACT is NULL)';
+                  '(SM_ID = :SM_ID) AND (ID_TABLES = :ID_TABLES) ' +
+                  'AND (ID_TYPE_DATA = 2)';
               3: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row' +
                   TmpStr + ' WHERE ' +
-                  '(ID_ESTIMATE = :ID_ESTIMATE) AND (ID_TABLES = :ID_TABLES) ' +
-                  'AND (ID_TYPE_DATA = 3) AND (ID_ACT is NULL)';
+                  '(SM_ID = :SM_ID) AND (ID_TABLES = :ID_TABLES) ' +
+                  'AND (ID_TYPE_DATA = 3)';
               4: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row' +
                   TmpStr + ' WHERE ' +
-                  '(ID_ESTIMATE = :ID_ESTIMATE) AND (ID_TABLES = :ID_TABLES) ' +
-                  'AND (ID_TYPE_DATA = 4) AND (ID_ACT is NULL)';
+                  '(SM_ID = :SM_ID) AND (ID_TABLES = :ID_TABLES) ' +
+                  'AND (ID_TYPE_DATA = 4)';
             end;
-            qrTemp.ParamByName('ID_ESTIMATE').Value := FEntryArray[i].EID;
+            qrTemp.ParamByName('SM_ID').Value := FEntryArray[i].EID;
             qrTemp.ParamByName('ID_TABLES').Value := FEntryArray[i].MID;
             qrTemp.Active := True;
             if not qrTemp.IsEmpty then

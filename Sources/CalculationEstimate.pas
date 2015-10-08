@@ -543,18 +543,6 @@ type
     // Расчёт ЗП (заработной платы)
     function CalculationSalary(const vIdNormativ: string): TTwoValues; // +++
 
-    // Норма расхода по механизму
-    function GetNormMechanizm(const vIdNormativ, vIdMechanizm: string): Double;
-
-    // Цена по механизму
-    function GetPriceMechanizm(const vIdNormativ, vIdMechanizm: string): Currency;
-
-    // Зарплата машиниста (ЗП маш.)
-    function GetSalaryMachinist(const vIdMechanizm: Integer): Currency;
-
-    // Цена использования (аренды, работы) механизма
-    function GetCoastMechanizm(const vIdMechanizm: Integer): Currency;
-
     procedure EstimateBasicDataClick(Sender: TObject);
     procedure LabelObjectClick(Sender: TObject);
     procedure LabelEstimateClick(Sender: TObject);
@@ -1883,11 +1871,11 @@ begin
   qrTemp1.Active := False;
   case AType of
     2:
-      qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' + '(REPLACED = 1) and (MAT_ID = ' +
-        INTTOSTR(AMId) + ')';
+      qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' +
+        '(REPLACED = 1) and (MAT_ID = ' + INTTOSTR(AMId) + ')';
     3:
-      qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' + '(REPLACED = 1) and (MECH_ID = ' +
-        INTTOSTR(AMId) + ')';
+      qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' +
+        '(REPLACED = 1) and (MECH_ID = ' + INTTOSTR(AMId) + ')';
   else
     Exit;
   end;
@@ -3759,10 +3747,10 @@ procedure TFormCalculationEstimate.PMNumRowClick(Sender: TObject);
 var
   TmpSmType: Integer;
 begin
-  // Не ясно как оно должно работать для акта
   TmpSmType := 0;
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' + 'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
+  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' +
+    'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
   qrTemp.Active := True;
   if not qrTemp.Eof then
   begin
@@ -4579,7 +4567,8 @@ end;
 // Добавление расценки в смету
 procedure TFormCalculationEstimate.AddRate(const vRateId: Integer);
 var
-  vMaxIdRate: Integer;
+  vMaxIdRate,
+  DataRowID: Integer;
   MaxMId: Integer;
   NewRateCode: string;
   vNormRas: Double;
@@ -4604,6 +4593,7 @@ begin
       Active := True;
       vMaxIdRate := FieldByName('id').AsInteger;
       NewRateCode := FieldByName('RATE_CODE').AsString;
+      DataRowID := FieldByName('DATA_ROW_ID').AsInteger;
       Active := False;
     end;
   except
@@ -4680,27 +4670,28 @@ begin
           MaxMId := qrTemp1.Fields[0].AsInteger;
         qrTemp1.Active := False;
 
-        if MaxMId > 0 then
-        begin
-          qrTemp1.SQL.Text := 'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, MAT_ID, '
-            + 'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
-            'PROC_TRANSP) values (:ID, :ID_CARD_RATE, :MAT_ID, ' +
-            ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
-          qrTemp1.ParamByName('ID').Value := MaxMId;
-          qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
-          qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
-          qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
-          qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
-          vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
-          qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
-          qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
-          qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
-          qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
-          qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
-          qrTemp1.ExecSQL;
+        qrTemp1.SQL.Text := 'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ' +
+          'ID, ID_CARD_RATE, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
+          'COAST_NO_NDS, COAST_NDS, PROC_TRANSP) values '+
+          '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :MAT_ID, :MAT_CODE, ' +
+          ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, :PROC_TRANSP)';
+        qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
+        qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
+        qrTemp1.ParamByName('ID').Value := MaxMId;
+        qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
+        qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
+        qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
+        qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
+        vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
+        qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
+        qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
+        qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
+        qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
+        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
+        qrTemp1.ExecSQL;
 
-          CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, FieldByName('MatCode').AsString);
-        end;
+        CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
+          FieldByName('MatCode').AsString);
 
         Next;
       end;
@@ -4724,10 +4715,14 @@ begin
         if MaxMId > 0 then
         begin
           qrTemp1.SQL.Text :=
-            'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, CONSIDERED, MAT_ID, ' +
-            'MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, COAST_NO_NDS, COAST_NDS, ' +
-            'PROC_TRANSP) values (:ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
-            ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
+            'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
+            'CONSIDERED, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
+            'COAST_NO_NDS, COAST_NDS, PROC_TRANSP) values ' +
+            '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
+            ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
+            ':COAST_NDS, :PROC_TRANSP)';
+          qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
+          qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
           qrTemp1.ParamByName('ID').Value := MaxMId;
           qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
           qrTemp1.ParamByName('CONSIDERED').Value := 0;
@@ -4792,11 +4787,14 @@ begin
 
         if MaxMId > 0 then
         begin
-          qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
-            'MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, MECH_UNIT, COAST_NO_NDS, ' +
-            'COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, NORMATIV) values (:ID, :ID_CARD_RATE, ' +
+          qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (SM_ID, DATA_ROW_ID, ' +
+            'ID, ID_CARD_RATE, MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, ' +
+            'MECH_UNIT, COAST_NO_NDS, COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, ' +
+            'NORMATIV) values (:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, ' +
             ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
             ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :NORMATIV)';
+          qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
+          qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
           qrTemp1.ParamByName('ID').Value := MaxMId;
           qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
           qrTemp1.ParamByName('MECH_ID').Value := FieldByName('MechId').AsInteger;
@@ -4813,7 +4811,8 @@ begin
           qrTemp1.ExecSQL;
 
           if MaxMId > 0 then
-            CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger, FieldByName('MechCode').AsString);
+            CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger,
+              FieldByName('MechCode').AsString);
         end;
 
         Next;
@@ -4927,10 +4926,11 @@ begin
     Iterator := C_ET20ITER;
 
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' + '(ID, id_estimate, id_type_data, NUM_ROW) VALUE ' +
-    '(GetNewID(:IDType), :IdEstimate, :SType, :NUM_ROW);';
+  qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
+    '(ID, SM_ID, id_type_data, NUM_ROW) VALUE ' +
+    '(GetNewID(:IDType), :SM_ID, :SType, :NUM_ROW);';
   qrTemp.ParamByName('IDType').Value := C_ID_DATA;
-  qrTemp.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
+  qrTemp.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
   qrTemp.ParamByName('SType').Value := (Sender as TComponent).Tag;
   qrTemp.ParamByName('NUM_ROW').Value := Iterator;
   qrTemp.ExecSQL;
@@ -5674,52 +5674,6 @@ begin
   end;
 end;
 
-function TFormCalculationEstimate.GetNormMechanizm(const vIdNormativ, vIdMechanizm: string): Double;
-begin
-  Result := 0;
-  // Норма расхода по механизму
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT norm_ras FROM mechanizmnorm WHERE normativ_id = ' + vIdNormativ + ' and mechanizm_id = '
-        + vIdMechanizm + ';');
-      Active := True;
-
-      if FieldByName('norm_ras').AsVariant <> Null then
-        Result := MyStrToFloat(FieldByName('norm_ras').AsString)
-    end;
-  except
-    on e: Exception do
-      MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' + sLineBreak +
-        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-end;
-
-function TFormCalculationEstimate.GetPriceMechanizm(const vIdNormativ, vIdMechanizm: string): Currency;
-begin
-  Result := 0;
-  // Цена по механизму
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT norm_ras FROM mechanizmnorm WHERE normativ_id = ' + vIdNormativ + ' and mechanizm_id = '
-        + vIdMechanizm + ';');
-      Active := True;
-
-      if FieldByName('norm_ras').AsVariant <> Null then
-        Result := MyStrToFloat(FieldByName('norm_ras').AsString)
-    end;
-  except
-    on e: Exception do
-      MessageBox(0, PChar('При получении нормы расхода по механизму возникла ошибка:' + sLineBreak +
-        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-end;
-
 procedure TFormCalculationEstimate.SettingVisibleRightTables;
 begin
   // Закрывает режим редактирования в мемо, если он включен
@@ -6172,61 +6126,6 @@ begin
   begin
     PanelClientRight.Visible := True;
     PanelNoData.Visible := False;
-  end;
-end;
-
-function TFormCalculationEstimate.GetSalaryMachinist(const vIdMechanizm: Integer): Currency;
-begin
-  Result := 0;
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('Call GetSalaryMachinist(:IdObject, :IdMechanizm);');
-
-      ParamByName('IdObject').Value := IdObject;
-      ParamByName('IdMechanizm').Value := vIdMechanizm;
-
-      Active := True;
-
-      if FieldByName('Salary').AsVariant <> Null then
-        Result := FieldByName('Salary').AsVariant;
-
-      Active := False;
-    end;
-  except
-    on e: Exception do
-      MessageBox(0, PChar('При запросе «ЗП машиниста» возникла ошибка:' + sLineBreak + e.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-end;
-
-function TFormCalculationEstimate.GetCoastMechanizm(const vIdMechanizm: Integer): Currency;
-begin
-  // Цена использования (аренды, работы) механизма
-  Result := 0;
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('Call GetCoastMechanism(:IdObject, :IdMechanizm);');
-
-      ParamByName('IdObject').Value := IdObject;
-      ParamByName('IdMechanizm').Value := vIdMechanizm;
-
-      Active := True;
-
-      if FieldByName('Coast').AsVariant <> Null then
-        Result := FieldByName('Coast').AsVariant;
-
-      Active := False;
-    end;
-  except
-    on e: Exception do
-      MessageBox(0, PChar('При запросе «Цены аренды механизма» возникла ошибка:' + sLineBreak + e.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 

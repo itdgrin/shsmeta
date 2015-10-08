@@ -181,7 +181,7 @@ begin
 end;
 
 procedure TFormCalculationDump.ButtonSaveClick(Sender: TObject);
-var NewId: Integer;
+var NewId, NewDataRowId: Integer;
 begin
   if InsMode then
   begin
@@ -195,15 +195,40 @@ begin
     qrTemp.Active := False;
 
     if NewId = 0 then
-      raise Exception.Create('Не удалось получить новый ID.');
+      raise Exception.Create('Не удалось получить новый ID свалки.');
 
-    qrTemp.SQL.Text := 'Insert into dumpcard_temp (ID, DUMP_ID, DUMP_NAME, ' +
-      'DUMP_CODE_JUST, DUMP_JUST, DUMP_UNIT, ' +
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := 'SELECT GetNewID(:IDType)';
+    qrTemp.ParamByName('IDType').Value := C_ID_DATA;
+    qrTemp.Active := True;
+    NewDataRowId := 0;
+    if not qrTemp.Eof then
+      NewDataRowId := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+
+    if NewDataRowId = 0 then
+      raise Exception.Create('Не удалось получить новый ID сметы.');
+
+    Iterator := UpdateIterator(IdEstimate, Iterator, 0);
+    qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
+      '(ID, SM_ID, id_type_data, id_tables, NUM_ROW) VALUE ' +
+      '(:ID, :SM_ID, :id_type_data, :id_tables, :NUM_ROW);';
+    qrTemp.ParamByName('ID').Value := NewDataRowId;
+    qrTemp.ParamByName('SM_ID').Value := IdEstimate;
+    qrTemp.ParamByName('id_type_data').Value := 5;
+    qrTemp.ParamByName('id_tables').Value := NewId;
+    qrTemp.ParamByName('NUM_ROW').Value := Iterator;
+    qrTemp.ExecSQL;
+
+    qrTemp.SQL.Text := 'Insert into dumpcard_temp (SM_ID, DATA_ROW_ID, ID, ' +
+      'DUMP_ID, DUMP_NAME, DUMP_CODE_JUST, DUMP_JUST, DUMP_UNIT, ' +
       'DUMP_COUNT,DUMP_TYPE,DUMP_SUM_NDS,DUMP_SUM_NO_NDS,COAST_NO_NDS,COAST_NDS,' +
       'WORK_UNIT,WORK_TYPE,WORK_COUNT,WORK_YDW,NDS,PRICE_NDS,PRICE_NO_NDS) values (' +
-      ':ID, :DUMP_ID,:DUMP_NAME,:DUMP_CODE_JUST,:DUMP_JUST,:DUMP_UNIT, ' +
+      ':SM_ID,:DATA_ROW_ID,:ID, :DUMP_ID,:DUMP_NAME,:DUMP_CODE_JUST,:DUMP_JUST,:DUMP_UNIT, ' +
       ':DUMP_COUNT,:DUMP_TYPE,:DUMP_SUM_NDS,:DUMP_SUM_NO_NDS,:COAST_NO_NDS,:COAST_NDS,' +
       ':WORK_UNIT,:WORK_TYPE,:WORK_COUNT,:WORK_YDW,:NDS,:PRICE_NDS,:PRICE_NO_NDS)';
+    qrTemp.ParamByName('SM_ID').Value := IdEstimate;
+    qrTemp.ParamByName('DATA_ROW_ID').Value := NewDataRowId;
     qrTemp.ParamByName('ID').Value := NewId;
     qrTemp.ParamByName('DUMP_ID').Value := cmbND.KeyValue;
     qrTemp.ParamByName('DUMP_NAME').Value := cmbND.Text;
@@ -223,18 +248,6 @@ begin
     qrTemp.ParamByName('NDS').Value := FNds;
     qrTemp.ParamByName('PRICE_NDS').Value := StrToCurr(edtPriceNDS.Text);
     qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToCurr(edtPriceNoNDS.Text);
-
-    qrTemp.ExecSQL;
-
-    Iterator := UpdateIterator(IdEstimate, Iterator, 0);
-    qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
-      '(ID, id_estimate, id_type_data, id_tables, NUM_ROW) VALUE ' +
-      '(GetNewID(:IDType), :id_estimate, :id_type_data, :id_tables, :NUM_ROW);';
-    qrTemp.ParamByName('IDType').Value := C_ID_DATA;
-    qrTemp.ParamByName('id_estimate').Value := IdEstimate;
-    qrTemp.ParamByName('id_type_data').Value := 5;
-    qrTemp.ParamByName('id_tables').Value := NewId;
-    qrTemp.ParamByName('NUM_ROW').Value := Iterator;
     qrTemp.ExecSQL;
 
     qrTemp.SQL.Text := 'CALL AddCalcCoef(:IdEstimate, :NewID, :TypeData);';
