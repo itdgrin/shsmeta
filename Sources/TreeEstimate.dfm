@@ -56,20 +56,11 @@ object fTreeEstimate: TfTreeEstimate
     FetchOptions.Cache = [fiBlobs, fiMeta]
     SQL.Strings = (
       
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
-        'NAME,'
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(IFNULL(SM_NUMBER, ""), " "' +
+        ',  IFNULL(NAME, "")) as NAME,'
       '       PARENT_ID as PARENT  '
       'FROM smetasourcedata'
-      'WHERE SM_TYPE=2 AND '
-      '      DELETED=0 AND'
-      '      OBJ_ID=:OBJ_ID'
-      'UNION ALL'
-      
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
-        'NAME,'
-      '       PARENT_ID as PARENT  '
-      'FROM smetasourcedata'
-      'WHERE SM_TYPE<>2 AND '
+      'WHERE ACT=0 AND '
       '      DELETED=0 AND'
       '      OBJ_ID=:OBJ_ID'
       'ORDER BY NAME')

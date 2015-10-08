@@ -457,53 +457,83 @@ object fKC6: TfKC6
     FormatOptions.FmtDisplayDateTime = 'mmyyyy'
     FormatOptions.FmtDisplayDate = 'mmyyyy'
     SQL.Strings = (
-      'select Trim(`card_acts`.name) as docname,'
-      '       `card_acts`.`DATE`,'
-      '       `card_rate_act`.`RATE_CODE` as osnov,'
-      '       `card_rate_act`.`RATE_COUNT` as cnt'
-      'from `card_acts`,'
-      '     `card_rate_act`'
-      'where `card_acts`.`ID_OBJECT` = :idestimate and'
-      '      `card_rate_act`.`ID_ACT` = `card_acts`.`ID` and '
-      '     `card_rate_act`.`RATE_CODE` like :p_osnov '
-      'UNION ALL'
-      'select Trim(`card_acts`.name) as docname,'
-      '       `card_acts`.`DATE`,'
-      '       `materialcard_act`.`MAT_CODE` as osnov,'
-      '       `materialcard_act`.`MAT_COUNT` as cnt'
-      'from `card_acts`,'
-      '     `materialcard_act`,'
-      '     `card_rate_act`      '
-      'where `card_acts`.`ID_OBJECT` = :idestimate and'
-      '      `card_rate_act`.`ID_ACT` = `card_acts`.`ID` and'
+      'SELECT TRIM(sm.`NAME`) as docname, '
+      '       sm.`DATE`,'
+      '       CASE d.`ID_TYPE_DATA` '
+      '          WHEN 1 THEN cr.`RATE_CODE` '
+      '          WHEN 2 THEN mat.`MAT_CODE`'
+      '          WHEN 3 THEN mech.`MECH_CODE`'
+      '          WHEN 4 THEN dev.`DEVICE_CODE`'
+      '          WHEN 5 THEN dmp.`DUMP_CODE_JUST`'
+      '          WHEN 6 THEN tr.`TRANSP_CODE_JUST`'
+      '          WHEN 7 THEN tr.`TRANSP_CODE_JUST`'
+      '          WHEN 8 THEN tr.`TRANSP_CODE_JUST`'
+      '          WHEN 9 THEN tr.`TRANSP_CODE_JUST`'
+      '          WHEN 10 THEN ('#39#1045#1058'18'#39')'
+      '          WHEN 11 THEN ('#39#1045#1058'20'#39')'
+      '          END AS osnov,'
+      '        CASE d.`ID_TYPE_DATA` '
+      '          WHEN 1 THEN cr.RATE_COUNT '
+      '          WHEN 2 THEN mat.MAT_COUNT'
+      '          WHEN 3 THEN mech.MECH_COUNT'
+      '          WHEN 4 THEN dev.DEVICE_COUNT'
+      '          WHEN 5 THEN dmp.DUMP_COUNT'
+      '          WHEN 6 THEN tr.TRANSP_COUNT'
+      '          WHEN 7 THEN tr.TRANSP_COUNT'
+      '          WHEN 8 THEN tr.TRANSP_COUNT'
+      '          WHEN 9 THEN tr.TRANSP_COUNT'
+      '          WHEN 10 THEN d.E1820_COUNT'
+      '          WHEN 11 THEN d.E1820_COUNT'
+      '        END AS cnt'
+      'FROM `smetasourcedata` sm, `data_row` d'
       
-        '      `materialcard_act`.`ID_CARD_RATE`=`card_rate_act`.`ID` and' +
-        ' '
-      '      `materialcard_act`.`MAT_CODE` like :p_osnov '
-      'UNION ALL'
-      'select Trim(`card_acts`.name) as docname,'
-      '       `card_acts`.`DATE`,'
-      '       `mechanizmcard_act`.`MECH_CODE` as osnov,'
-      '       `mechanizmcard_act`.`MECH_COUNT` as cnt'
-      'from `card_acts`,'
-      '     `mechanizmcard_act`,'
-      '     `card_rate_act`      '
-      'where `card_acts`.`ID_OBJECT` = :idestimate and'
-      '      `card_rate_act`.`ID_ACT` = `card_acts`.`ID` and'
+        '  LEFT JOIN `card_rate` cr ON d.`ID_TYPE_DATA` = 1 AND cr.`ID` =' +
+        ' d.`ID_TABLES`'
       
-        '      `mechanizmcard_act`.`ID_CARD_RATE`=`card_rate_act`.`ID` an' +
-        'd '
-      '      `mechanizmcard_act`.`MECH_CODE` like  :p_osnov;')
+        '  LEFT JOIN `materialcard` mat ON d.`ID_TYPE_DATA` = 2 AND mat.`' +
+        'ID` = d.`ID_TABLES`'
+      
+        '  LEFT JOIN `mechanizmcard` mech ON d.`ID_TYPE_DATA` = 3 AND mec' +
+        'h.`ID` = d.`ID_TABLES`'
+      
+        '  LEFT JOIN `devicescard` dev ON d.`ID_TYPE_DATA` = 4 AND dev.`I' +
+        'D` = d.`ID_TABLES`'
+      
+        '  LEFT JOIN `dumpcard` dmp ON d.`ID_TYPE_DATA` = 5 AND dmp.`ID` ' +
+        '= d.`ID_TABLES`'
+      
+        '  LEFT JOIN `transpcard` tr ON d.`ID_TYPE_DATA` IN (6,7,8,9) AND' +
+        ' tr.`ID` = d.`ID_TABLES`'
+      'WHERE sm.`DELETED` = 0 AND'
+      '      sm.`FL_USE` = 1 AND'
+      '      sm.`ACT` = 1 AND'
+      '      sm.`SM_ID` = d.`SM_ID` AND'
+      
+        '      sm.`SM_ID` NOT IN (SELECT SM_ID FROM `smetasourcedata` WHE' +
+        'RE PARENT_ID IN (SELECT SM_ID FROM `smetasourcedata` WHERE `smet' +
+        'asourcedata`.`PARENT_ID` = :ID_ACT))'
+      '      AND d.`ID_TABLES` = :ID_TABLES'
+      '      AND d.`ID_TYPE_DATA` = :ID_TYPE_DATA'
+      '      AND sm.`OBJ_ID` = :ID_OBJECT')
     Left = 249
     Top = 312
     ParamData = <
       item
-        Name = 'IDESTIMATE'
+        Name = 'ID_ACT'
+        DataType = ftInteger
         ParamType = ptInput
         Value = Null
       end
       item
-        Name = 'P_OSNOV'
+        Name = 'ID_TABLES'
+        ParamType = ptInput
+      end
+      item
+        Name = 'ID_TYPE_DATA'
+        ParamType = ptInput
+      end
+      item
+        Name = 'ID_OBJECT'
         ParamType = ptInput
       end>
     object qrOtherActsNumber: TIntegerField
@@ -636,42 +666,85 @@ object fKC6: TfKC6
       '  CASE d.`ID_TYPE_DATA` '
       
         '    WHEN 1 THEN IFNULL((SELECT SUM(a.RATE_COUNT) FROM `card_rate' +
-        '_act` a WHERE a.`ID`=cr.`ID` AND a.`ID_ACT` <> :ID_ACT), 0) '
+        '` a WHERE a.`ID`=cr.`ID` AND a.`SM_ID` NOT IN '
+      
+        '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
+        'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0) '
       
         '    WHEN 2 THEN IFNULL((SELECT SUM(a.MAT_COUNT) FROM `materialca' +
-        'rd_act` a WHERE a.`ID`=mat.`ID` AND a.`ID_ACT` <> :ID_ACT), 0)'
+        'rd` a WHERE a.`ID`=mat.`ID` AND a.`SM_ID` NOT IN '
+      
+        '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
+        'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
       
         '    WHEN 3 THEN IFNULL((SELECT SUM(a.MECH_COUNT) FROM `mechanizm' +
-        'card_act` a WHERE a.`ID`=mech.`ID` AND a.`ID_ACT` <> :ID_ACT), 0' +
-        ')'
+        'card` a WHERE a.`ID`=mech.`ID` AND a.`SM_ID` NOT IN '
+      
+        '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
+        'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
       
         '    WHEN 4 THEN IFNULL((SELECT SUM(a.DEVICE_COUNT) FROM `devices' +
-        'card_act` a WHERE a.`ID`=dev.`ID` AND a.`ID_ACT` <> :ID_ACT), 0)'
+        'card` a WHERE a.`ID`=dev.`ID` AND a.`SM_ID` NOT IN '
       
-        '    WHEN 5 THEN IFNULL((SELECT SUM(a.DUMP_COUNT) FROM `dumpcard_' +
-        'act` a WHERE a.`ID`=dmp.`ID` AND a.`ID_ACT` <> :ID_ACT), 0)'
+        '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
+        'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
+      
+        '    WHEN 5 THEN IFNULL((SELECT SUM(a.DUMP_COUNT) FROM `dumpcard`' +
+        ' a WHERE a.`ID`=dmp.`ID` AND a.`SM_ID` NOT IN '
+      
+        '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
+        'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
       
         '    WHEN 6 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
-        'ard_act` a WHERE a.`ID`=tr.`ID` AND a.`ID_ACT` <> :ID_ACT), 0)'
+        'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
+      
+        '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
+        'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
       
         '    WHEN 7 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
-        'ard_act` a WHERE a.`ID`=tr.`ID` AND a.`ID_ACT` <> :ID_ACT), 0)'
+        'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
+      
+        '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
+        'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
       
         '    WHEN 8 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
-        'ard_act` a WHERE a.`ID`=tr.`ID` AND a.`ID_ACT` <> :ID_ACT), 0)'
+        'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
+      
+        '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
+        'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
       
         '    WHEN 9 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
-        'ard_act` a WHERE a.`ID`=tr.`ID` AND a.`ID_ACT` <> :ID_ACT), 0)'
+        'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
+      
+        '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
+        'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
       
         '    WHEN 10 THEN IFNULL((SELECT SUM(a.E1820_COUNT) FROM `data_ro' +
-        'w` a WHERE a.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND a.`ID_ACT` <> :' +
-        'ID_ACT AND a.`ID_ACT` IS NOT NULL AND a.`ID_ESTIMATE` = d.`ID_ES' +
-        'TIMATE`), 0)'
+        'w` a WHERE a.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND a.`SM_ID` NOT I' +
+        'N '
+      
+        '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
+        'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
+        ' = :ID_ACT)) AND (SELECT SOURCE_ID FROM smetasourcedata WHERE SM' +
+        '_ID=a.`SM_ID`) = d.`SM_ID`), 0)'
       
         '    WHEN 11 THEN IFNULL((SELECT SUM(a.E1820_COUNT) FROM `data_ro' +
-        'w` a WHERE a.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND a.`ID_ACT` <> :' +
-        'ID_ACT AND a.`ID_ACT` IS NOT NULL AND a.`ID_ESTIMATE` = d.`ID_ES' +
-        'TIMATE`), 0)'
+        'w` a WHERE a.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND a.`SM_ID` NOT I' +
+        'N '
+      
+        '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
+        'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
+        ' = :ID_ACT)) AND (SELECT SOURCE_ID FROM smetasourcedata WHERE SM' +
+        '_ID=a.`SM_ID`) = d.`SM_ID`), 0)'
       '  END AS CntDONE, '
       '/* '#1055#1088#1086#1094#1077#1085#1090#1086#1074#1082#1072' */'
       '  IFNULL('
@@ -721,10 +794,10 @@ object fKC6: TfKC6
       
         '  LEFT JOIN `transpcard` tr ON d.`ID_TYPE_DATA` IN (6,7,8,9) AND' +
         ' tr.`ID` = d.`ID_TABLES`'
+      '  '
       
-        '  LEFT JOIN `data_row_temp` dt ON dt.id_act = :ID_ACT AND dt.`ID' +
-        '_ESTIMATE`=d.`ID_ESTIMATE` AND dt.`ID_TYPE_DATA`=d.`ID_TYPE_DATA' +
-        '` AND dt.`ID_TABLES`=d.`ID_TABLES`'
+        '  LEFT JOIN `data_row_temp` dt ON dt.`ID_TYPE_DATA`=d.`ID_TYPE_D' +
+        'ATA` AND dt.`ID_TABLES`=d.`ID_TABLES`'
       
         '  LEFT JOIN `card_rate_temp` crt ON dt.`ID_TYPE_DATA` = 1 AND cr' +
         't.`ID` = dt.`ID_TABLES` AND crt.`ID`=cr.`ID`'
@@ -744,8 +817,8 @@ object fKC6: TfKC6
         '  LEFT JOIN `transpcard_temp` trt ON dt.`ID_TYPE_DATA` IN (6,7,8' +
         ',9) AND trt.`ID` = dt.`ID_TABLES` AND trt.`ID`=tr.`ID`'
       '  WHERE sm.`DELETED` = 0 AND'
-      '        d.id_act IS NULL AND '
-      '  '#9'sm.`SM_ID`=d.`ID_ESTIMATE` AND'
+      '        sm.`ACT` = 0 AND'
+      '  '#9'    sm.`SM_ID`=d.`SM_ID` AND'
       '        sm.`OBJ_ID`=:ID_OBJECT'
       '        '
       '  UNION ALL'
@@ -767,6 +840,7 @@ object fKC6: TfKC6
         ' OBJ_COUNT_IN, FALSE AS SELECTED'
       '  FROM `smetasourcedata` sm'
       '  WHERE sm.`DELETED` = 0 AND'
+      '        sm.`ACT` = 0 AND '
       '        sm.`OBJ_ID`=:ID_OBJECT'
       '                '
       '  ORDER BY SORT_ID, NUM_ROW, ID_TYPE_DATA;')
@@ -775,9 +849,7 @@ object fKC6: TfKC6
     ParamData = <
       item
         Name = 'ID_ACT'
-        DataType = ftInteger
         ParamType = ptInput
-        Value = Null
       end
       item
         Name = 'ID_OBJECT'
@@ -873,20 +945,11 @@ object fKC6: TfKC6
     FetchOptions.Cache = [fiBlobs, fiMeta]
     SQL.Strings = (
       
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME, IF(' +
-        'DELETED=1, "-", "")) as NAME,'
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(IFNULL(SM_NUMBER, ""), " "' +
+        ',  IFNULL(NAME, ""), IF(DELETED=1, "-", "")) as NAME,'
       '       PARENT_ID as PARENT, DELETED'
       'FROM smetasourcedata'
-      'WHERE SM_TYPE=2 AND '
-      '      OBJ_ID=:OBJ_ID'
-      '      AND ((DELETED=0) OR (:SHOW_DELETED=1))'
-      'UNION ALL'
-      
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME, IF(' +
-        'DELETED=1, "-", "")) as NAME,'
-      '       PARENT_ID as PARENT, DELETED '
-      'FROM smetasourcedata'
-      'WHERE SM_TYPE<>2 AND '
+      'WHERE ACT=0 AND '
       '      OBJ_ID=:OBJ_ID'
       '      AND ((DELETED=0) OR (:SHOW_DELETED=1))'
       'ORDER BY NAME')

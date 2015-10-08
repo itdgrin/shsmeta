@@ -734,7 +734,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       
         '  CONCAT(IF(FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), TRIM(name), IF(DELETED=1,' +
         ' "-", "")) AS ITEAM_NAME,'
-      '  DELETED, FL_USE, DATE'
+      '  DELETED, FL_USE, DATE, NAME, TYPE_ACT'
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2'
       '  AND OBJ_ID=:OBJ_ID'
@@ -760,18 +760,16 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       'WHEN 11 THEN "'#1053#1054#1071#1041#1056#1068'"'
       'WHEN 12 THEN "'#1044#1045#1050#1040#1041#1056#1068'"'
       'END)) AS ITEAM_NAME,'
-      '0 AS DELETED, NULL AS FL_USE, DATE'
+      
+        '0 AS DELETED, NULL AS FL_USE, DATE, NULL AS NAME, NULL AS TYPE_A' +
+        'CT'
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2'
       '  AND OBJ_ID=:OBJ_ID'
       '  AND ((DELETED=0) OR (:SHOW_DELETED=1))'
       '  AND ACT=1'
       'GROUP BY (YEAR(date)*12+MONTH(date))'
-      'ORDER BY DATE, 3'
-      ''
-      ''
-      ''
-      '')
+      'ORDER BY DATE, 3')
     Left = 377
     Top = 344
     ParamData = <

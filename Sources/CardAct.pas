@@ -5,7 +5,7 @@ interface
 uses Windows, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls, DB, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Mask,
-  JvExMask, JvToolEdit, JvDBControls, Vcl.DBCtrls, Tools, Vcl.Buttons, System.Variants;
+  JvExMask, JvToolEdit, JvDBControls, Vcl.DBCtrls, Tools, Vcl.Buttons, System.Variants, System.DateUtils;
 
 type
   TfCardAct = class(TForm)
@@ -202,7 +202,7 @@ procedure TfCardAct.ButtonSaveClick(Sender: TObject);
   end;
 
 var
-  NewID: Variant;
+  NewID, MAIS_ID, IdStavka, VAT, vMonth, vYear: Variant;
 begin
   case Kind of
     kdInsert:
@@ -210,14 +210,62 @@ begin
         try
           with qrTemp do
           begin
+            // -----
+            try
+              Active := False;
+              SQL.Clear;
+              SQL.Add('SELECT objcards.MAIS_ID, state_nds, BEG_STROJ, objregion.percent_transport as "PercentTransport" FROM objcards, objstroj, objregion '
+                + 'WHERE objcards.stroj_id = objstroj.stroj_id and objstroj.obj_region = objregion.obj_region_id and '
+                + 'objcards.obj_id = ' + qrAct.FieldByName('OBJ_ID').AsString + ';');
+              Active := True;
+              {
+                PercentTransport := FieldByName('PercentTransport').AsString;
+                ReplaceDecimal(PercentTransport, ',', '.');
+                PercentTransportEquipment := '1';
+              }
+
+              VAT := FieldByName('state_nds').AsInteger;
+              // FieldByName('BEG_STROJ').AsDateTime
+              vMonth := MonthOf(edDate.Date);
+              vYear := YearOf(edDate.Date);
+              MAIS_ID := FieldByName('MAIS_ID').Value;
+            except
+              on E: Exception do
+                MessageBox(0, PChar('При запросе НДС возникла ошибка:' + sLineBreak + E.Message),
+                  PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
+            end;
+
+            try
+              Active := False;
+              SQL.Clear;
+              SQL.Add('SELECT stavka_id FROM stavka WHERE year = ' + IntToStr(vYear) + ' and monat = ' +
+                IntToStr(vMonth) + ';');
+              Active := True;
+
+              if IsEmpty then
+                Abort;
+
+              IdStavka := FieldByName('stavka_id').Value;
+            except
+              on E: Exception do
+              begin
+                MessageBox(0, PChar('При запросе ID СТАВКИ возникла ошибка:' + sLineBreak + E.Message),
+                  PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
+                Exit;
+              end;
+            end;
+            /// /-----
+
             NewID := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_SM]));
 
             if VarIsNull(NewID) then
               raise Exception.Create('Не удалось получить новый ID.');
 
             SQL.Clear;
-            SQL.Add('INSERT INTO smetasourcedata (SM_ID, OBJ_ID, name, description, date, foreman_id, ACT, TYPE_ACT, SM_TYPE, PARENT_ID) '
-              + 'VALUE (:ID, :OBJ_ID, :name, :description, :date, :foreman_id, 1, :TYPE_ACT, 2, 0);');
+            SQL.Add('INSERT INTO smetasourcedata (SM_ID,OBJ_ID,name,description,date,foreman_id,ACT,'#13 +
+              'TYPE_ACT,SM_TYPE,PARENT_ID,MAIS_ID,nds,stavka_id,KZP,k31,k32,k33,k34,k35,coef_tr_obor) ' +
+              'VALUE (:ID, :OBJ_ID, :name, :description, :date, :foreman_id, 1, :TYPE_ACT, 2, 0,'#13 +
+              ':MAIS_ID,:nds,:stavka_id,:KZP,:k31,:k32,:k33,:k34,:k35,:coef_tr_obor);');
             ParamByName('ID').Value := NewID;
             ParamByName('name').Value := dbedtNAME.Text;
             ParamByName('description').Value := dbmmoDESCRIPTION.Text;
@@ -225,6 +273,17 @@ begin
             ParamByName('foreman_id').Value := qrAct.FieldByName('foreman_id').Value;
             ParamByName('OBJ_ID').Value := qrAct.FieldByName('OBJ_ID').Value;
             ParamByName('TYPE_ACT').Value := cbbType.ItemIndex;
+            ParamByName('MAIS_ID').Value := MAIS_ID;
+            ParamByName('nds').Value := VAT;
+            ParamByName('stavka_id').Value := IdStavka;
+            ParamByName('KZP').Value := GetUniDictParamValue('K_KORR_ZP', vMonth, vYear);
+            ParamByName('k31').Value := GetUniDictParamValue('K_OXR_OPR_270', vMonth, vYear);
+            ParamByName('k32').Value := GetUniDictParamValue('K_PLAN_PRIB_270', vMonth, vYear);
+            ParamByName('k33').Value := GetUniDictParamValue('K_VREM_ZDAN_SOOR', vMonth, vYear);
+            ParamByName('k34').Value := GetUniDictParamValue('K_ZIM_UDOR_1', vMonth, vYear);
+            ParamByName('k35').Value := GetUniDictParamValue('K_ZIM_UDOR_2', vMonth, vYear);
+            ParamByName('coef_tr_obor').Value := 2;
+
             ExecSQL;
             if qrAct.State in [dsInsert] then
               qrAct.Cancel;

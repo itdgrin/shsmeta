@@ -851,7 +851,7 @@ object FormBasicData: TFormBasicData
     SQL.Strings = (
       'SELECT '
       '  `calculation_coef_id`,'
-      '  `id_estimate`,'
+      '  `SM_ID`,'
       '  `id_type_data`,'
       '  `id_owner`,'
       '  `id_coef`,'
@@ -866,11 +866,11 @@ object FormBasicData: TFormBasicData
       'FROM '
       '  `calculation_coef`'
       'WHERE `id_type_data` < 0  AND'
-      '       ((`id_estimate` = :SM_ID) )/* OR '
+      '       ((`SM_ID` = :SM_ID) )/* OR '
       
-        '        (`id_estimate`=(SELECT `smetasourcedata`.`PARENT_ID` FRO' +
-        'M `smetasourcedata` WHERE `smetasourcedata`.`SM_ID`=:SM_ID)) OR '
-      '      (`id_estimate`= ('
+        '        (`SM_ID`=(SELECT `smetasourcedata`.`PARENT_ID` FROM `sme' +
+        'tasourcedata` WHERE `smetasourcedata`.`SM_ID`=:SM_ID)) OR '
+      '      (`SM_ID`= ('
       '          SELECT `smetasourcedata`.`PARENT_ID` '
       '          FROM `smetasourcedata` '
       

@@ -1677,13 +1677,14 @@ object fCalcResourceFact: TfCalcResourceFact
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       
-        'SELECT card_acts.NAME AS NAME, objcards.STATE_NDS AS NDS, MONTH(' +
-        'card_acts.DATE) AS MONTH, YEAR(card_acts.DATE) AS YEAR'
+        'SELECT smetasourcedata.NAME AS NAME, objcards.STATE_NDS AS NDS, ' +
+        'MONTH(smetasourcedata.DATE) AS MONTH, YEAR(smetasourcedata.DATE)' +
+        ' AS YEAR'
       'FROM '
-      '  card_acts,objcards '
+      '  smetasourcedata,objcards '
       'WHERE '
-      'card_acts.ID=:SM_ID AND '
-      'card_acts.ID_OBJECT=objcards.OBJ_ID')
+      'smetasourcedata.SM_ID=:SM_ID AND '
+      'smetasourcedata.OBJ_ID=objcards.OBJ_ID')
     Left = 483
     Top = 8
     ParamData = <

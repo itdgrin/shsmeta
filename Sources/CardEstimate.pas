@@ -368,10 +368,14 @@ begin
     try
       Active := False;
       SQL.Clear;
-      StrQuery := 'SELECT objcards.MAIS_ID, state_nds, BEG_STROJ FROM objcards WHERE obj_id = ' +
-        IntToStr(IdObject) + ';';
-      SQL.Add(StrQuery);
+      SQL.Add('SELECT objcards.MAIS_ID, state_nds, BEG_STROJ, objregion.percent_transport as "PercentTransport" FROM objcards, objstroj, objregion '
+        + 'WHERE objcards.stroj_id = objstroj.stroj_id and objstroj.obj_region = objregion.obj_region_id and '
+        + 'objcards.obj_id = ' + IntToStr(IdObject) + ';');
       Active := True;
+
+      PercentTransport := FieldByName('PercentTransport').AsString;
+      ReplaceDecimal(PercentTransport, ',', '.');
+      PercentTransportEquipment := '1';
 
       VAT := FieldByName('state_nds').AsInteger;
       // При создании сметы дата для расценок проставляетсся как у объекта
@@ -384,8 +388,6 @@ begin
         MessageBox(0, PChar('При запросе НДС возникла ошибка:' + sLineBreak + E.Message), PWideChar(Caption),
           MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
-
-    // -----------------------------------------
 
     try
       Active := False;
@@ -407,28 +409,7 @@ begin
         Exit;
       end;
     end;
-
-    try
-      Active := False;
-      SQL.Clear;
-      StrQuery :=
-        'SELECT objregion.percent_transport as "PercentTransport" FROM objcards, objstroj, objregion ' +
-        'WHERE objcards.stroj_id = objstroj.stroj_id and objstroj.obj_region = objregion.obj_region_id and ' +
-        'objcards.obj_id = ' + IntToStr(IdObject) + ';';
-      SQL.Add(StrQuery);
-      Active := True;
-
-      PercentTransport := FieldByName('PercentTransport').AsString;
-      ReplaceDecimal(PercentTransport, ',', '.');
-      PercentTransportEquipment := '1';
-    except
-      on E: Exception do
-        MessageBox(0, PChar('При запросе % ТРАНСПОРТНЫХ возникла ошибка:' + sLineBreak + E.Message),
-          PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-    end;
   end;
-
-  // -----------------------------------------
 
   K40 := '1';
   K41 := '1';

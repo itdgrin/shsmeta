@@ -5207,8 +5207,8 @@ begin
   qrTemp.Active := True;
   mainType := qrTemp.FieldByName('SM_TYPE').AsInteger;
   qrTemp.Active := False;
-  mAddPTM.Visible := (mainType <> 3) and not Act;
-  mAddLocal.Visible := (mainType = 2) and not Act;
+  mAddPTM.Visible := (mainType <> 3) {and not Act};
+  mAddLocal.Visible := (mainType = 2) {and not Act};
   mDelEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and
     ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or (qrRatesExID_TYPE_DATA.AsInteger <> -5));
   mEditEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and

@@ -742,7 +742,7 @@ begin
   end;
 
   if (not Assigned(FormCalculationEstimate)) then
-    FormCalculationEstimate := TFormCalculationEstimate.Create(False);
+    FormCalculationEstimate := TFormCalculationEstimate.Create(True);
 
   FormCalculationEstimate.lblForemanFIO.caption :=
     VarToStr(FastSelectSQLOne
@@ -757,10 +757,10 @@ begin
     FormCalculationEstimate.EditDateContract.Text := FieldByName('DateContract').AsString;
     FormCalculationEstimate.Region := FieldByName('IdRegion').AsVariant;
 
-    FormCalculationEstimate.EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
+    FormCalculationEstimate.EditNameEstimate.Text := qrActsEx.FieldByName('NAME').AsString;
 
     FormCalculationEstimate.IdObject := IdObject;
-    FormCalculationEstimate.IdEstimate := IdEstimate;
+    FormCalculationEstimate.IdEstimate := qrActsEx.FieldByName('MASTER_ID').AsInteger;
     FormCalculationEstimate.SetActReadOnly(ActReadOnly);
     // Создание временных таблиц
     FormCalculationEstimate.CreateTempTables;
@@ -808,7 +808,49 @@ end;
 
 procedure TfObjectsAndEstimates.PMActsEditClick(Sender: TObject);
 begin
-  //OpenAct(qrActsEx.FieldByName('MASTER_ID').Value);
+  if (Assigned(FormCalculationEstimate)) then
+  begin
+    FormCalculationEstimate.flChangeEstimate := True;
+    FormCalculationEstimate.Close;
+  end;
+
+  if (not Assigned(FormCalculationEstimate)) then
+    FormCalculationEstimate := TFormCalculationEstimate.Create(True);
+
+  FormCalculationEstimate.lblForemanFIO.caption :=
+    VarToStr(FastSelectSQLOne
+    ('select CONCAT(IFNULL(foreman_first_name, ""), " ", IFNULL(foreman_name, ""), " ", IFNULL(foreman_second_name, ""))'#13
+    + 'from smetasourcedata LEFT JOIN foreman ON smetasourcedata.foreman_id=foreman.foreman_id where SM_ID=:0',
+    VarArrayOf([qrActsEx.FieldByName('MASTER_ID').Value])));
+  with qrObjects do
+  begin
+    FormCalculationEstimate.EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' +
+      FieldByName('FullName').AsVariant;
+    FormCalculationEstimate.EditNumberContract.Text := FieldByName('NumberContract').AsString;
+    FormCalculationEstimate.EditDateContract.Text := FieldByName('DateContract').AsString;
+    FormCalculationEstimate.Region := FieldByName('IdRegion').AsVariant;
+
+    FormCalculationEstimate.EditNameEstimate.Text := qrActsEx.FieldByName('NAME').AsString;
+
+    FormCalculationEstimate.IdObject := IdObject;
+    FormCalculationEstimate.IdEstimate := qrActsEx.FieldByName('MASTER_ID').AsInteger;
+    FormCalculationEstimate.SetActReadOnly(ActReadOnly);
+    // Создание временных таблиц
+    FormCalculationEstimate.CreateTempTables;
+    // Заполненя временных таблиц, заполнение формы
+    FormCalculationEstimate.OpenAllData;
+  end;
+  FormCalculationEstimate.flChangeEstimate := False;
+  FormCalculationEstimate.WindowState := wsMaximized;
+
+  if not ActReadOnly then
+  begin
+    fKC6.caption := 'Выборка данных';
+    if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт акта',
+      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
+      fKC6.MyShow(IdObject);
+  end;
+  Close;
 end;
 
 procedure TfObjectsAndEstimates.pmActsPopup(Sender: TObject);

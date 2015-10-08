@@ -213,16 +213,21 @@ procedure TfKC6.qrDataAfterScroll(DataSet: TDataSet);
 begin
   // Заполнение смежных актов
   qrOtherActs.Active := False;
-  qrOtherActs.ParamByName('idestimate').AsInteger := IdObject;
-  qrOtherActs.ParamByName('p_osnov').AsString := TRIM(strngfldDataOBJ_CODE.AsString);
+  qrOtherActs.ParamByName('ID_TABLES').AsInteger := qrDataID_TABLES.Value;
+  qrOtherActs.ParamByName('ID_TYPE_DATA').AsInteger := qrDataID_TYPE_DATA.Value;
+  qrOtherActs.ParamByName('ID_OBJECT').AsInteger := IdObject;
+  qrOtherActs.ParamByName('ID_ACT').AsInteger := qrData.ParamByName('ID_ACT').Value;
+
   qrOtherActs.Active := True;
   qrOtherActs.Last;
   qrOtherActs.First;
   dbgrd1.Repaint;
   if CheckQrActiveEmpty(qrTreeData) then
   begin
+    tvEstimates.OnChange := nil;
     qrTreeData.Locate('SM_ID', qrData.FieldByName('SM_ID').Value, []);
     tvEstimates.Repaint;
+    tvEstimates.OnChange := tvEstimatesChange;
   end;
 end;
 
@@ -231,7 +236,7 @@ begin
   if not Assigned(FormCalculationEstimate) then
     Exit;
   qrData.ParamByName('ID_OBJECT').Value := IdObject;
-  qrData.ParamByName('SM_ID').Value := FormCalculationEstimate.IdEstimate;
+  qrData.ParamByName('ID_ACT').Value := FormCalculationEstimate.IdEstimate;
 end;
 
 procedure TfKC6.qrDataCalcFields(DataSet: TDataSet);
@@ -415,7 +420,7 @@ begin
   if (Key = VK_INSERT) or (Key = VK_SPACE) then
   begin
     qrData.Edit;
-    //qrDataCHECKED.Value := not qrDataCHECKED.Value;
+    // qrDataCHECKED.Value := not qrDataCHECKED.Value;
     if qrDataSELECTED.Value = 0 then
       qrDataSELECTED.Value := 1
     else
@@ -532,9 +537,9 @@ begin
       qrData.Next;
     end;
   finally
-    qrData.AfterScroll := qrDataAfterScroll;
-    // qrData.OnCalcFields := qrDataCalcFields;
     qrData.Locate('SORT_ID', Key, []);
+    // qrData.OnCalcFields := qrDataCalcFields;
+    qrData.AfterScroll := qrDataAfterScroll;
     qrData.EnableControls;
   end;
   // Высчитываем на текущей строке
