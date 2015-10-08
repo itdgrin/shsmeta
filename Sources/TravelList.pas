@@ -115,10 +115,10 @@ begin
 
   qrObject.Active := True;
 
-  if Assigned(FormObjectsAndEstimates) then
+  if Assigned(fObjectsAndEstimates) then
   begin
-    LocateObject(FormObjectsAndEstimates.getCurObject);
-    defIdEstimate := FormObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger;
+    LocateObject(fObjectsAndEstimates.getCurObject);
+    defIdEstimate := fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger;
   end;
   if Assigned(FormCalculationEstimate) then
   begin

@@ -20,7 +20,7 @@ type
   end;
 
 type
-  TFormObjectsAndEstimates = class(TSmForm)
+  TfObjectsAndEstimates = class(TSmForm)
     dsObjects: TDataSource;
     PanelMain: TPanel;
     PanelObjects: TPanel;
@@ -130,7 +130,6 @@ type
     procedure PMActsDeleteClick(Sender: TObject);
     procedure PMActsEditClick(Sender: TObject);
     procedure PMActsOpenClick(Sender: TObject);
-    procedure OpenAct(const ActID: Integer);
     procedure pmActPropertyClick(Sender: TObject);
     procedure qrActsExAfterOpen(DataSet: TDataSet);
     procedure qrTreeDataAfterOpen(DataSet: TDataSet);
@@ -172,7 +171,6 @@ type
     HintButton = 'Окно объектов и смет';
   private
     IdObject: Integer;
-    IDAct: Integer;
     flLoaded: Boolean;
     // TypeEstimate: Integer;
   public
@@ -184,7 +182,7 @@ type
   end;
 
 var
-  FormObjectsAndEstimates: TFormObjectsAndEstimates;
+  fObjectsAndEstimates: TfObjectsAndEstimates;
 
 implementation
 
@@ -197,10 +195,10 @@ uses Main, DataModule, CardObject, CardEstimate, CalculationEstimate, Waiting,
 procedure TSplitter.Paint();
 begin
   // inherited;
-  FormObjectsAndEstimates.ResizeImagesForSplitters;
+  fObjectsAndEstimates.ResizeImagesForSplitters;
 end;
 
-procedure TFormObjectsAndEstimates.WMSysCommand(var Msg: TMessage);
+procedure TfObjectsAndEstimates.WMSysCommand(var Msg: TMessage);
 begin
   // SC_MAXIMIZE - Разворачивание формы во весь экран
   // SC_RESTORE - Сворачивание формы в окно
@@ -216,7 +214,7 @@ begin
   begin
     FormMain.PanelCover.Visible := True;
     inherited;
-    ShowWindow(FormObjectsAndEstimates.Handle, SW_HIDE);
+    ShowWindow(fObjectsAndEstimates.Handle, SW_HIDE);
     // Скрываем панель свёрнутой формы
     FormMain.PanelCover.Visible := False;
   end
@@ -224,7 +222,7 @@ begin
     inherited;
 end;
 
-procedure TFormObjectsAndEstimates.ResizeImagesForSplitters;
+procedure TfObjectsAndEstimates.ResizeImagesForSplitters;
 begin
   ImageSplitterCenter.Top := SplitterCenter.Top;
   ImageSplitterCenter.Left := SplitterCenter.Left + (SplitterCenter.Width - ImageSplitterCenter.Width) div 2;
@@ -234,7 +232,7 @@ begin
     (SplitterBottomCenter.Height - ImageSplitterBottomCenter.Height) div 2;
 end;
 
-procedure TFormObjectsAndEstimates.FormCreate(Sender: TObject);
+procedure TfObjectsAndEstimates.FormCreate(Sender: TObject);
 begin
   LoadDBGridSettings(dbgrdObjects);
   FormMain.PanelCover.Visible := True;
@@ -269,7 +267,7 @@ begin
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
 end;
 
-procedure TFormObjectsAndEstimates.FormShow(Sender: TObject);
+procedure TfObjectsAndEstimates.FormShow(Sender: TObject);
 begin
   FormMain.TimerCover.Enabled := True;
   // Запускаем таймер который скроет панель после отображения формы
@@ -278,17 +276,17 @@ begin
   qrObjects.Locate('IdObject', dbgrdObjects.Tag, []);
 end;
 
-function TFormObjectsAndEstimates.getCurObject: Integer;
+function TfObjectsAndEstimates.getCurObject: Integer;
 begin
   Result := IdObject;
 end;
 
-procedure TFormObjectsAndEstimates.FormResize(Sender: TObject);
+procedure TfObjectsAndEstimates.FormResize(Sender: TObject);
 begin
   PanelObjects.Height := (ClientHeight - SplitterCenter.Height) div 2;
 end;
 
-procedure TFormObjectsAndEstimates.FormActivate(Sender: TObject);
+procedure TfObjectsAndEstimates.FormActivate(Sender: TObject);
 begin
   // Если нажата клавиша Ctrl и выбираем форму, то делаем
   // каскадирование с переносом этой формы на передний план
@@ -298,19 +296,19 @@ begin
   FormMain.SelectButtonActiveWindow(CaptionButton);
 end;
 
-procedure TFormObjectsAndEstimates.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TfObjectsAndEstimates.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
 end;
 
-procedure TFormObjectsAndEstimates.FormDestroy(Sender: TObject);
+procedure TfObjectsAndEstimates.FormDestroy(Sender: TObject);
 begin
-  FormObjectsAndEstimates := nil;
+  fObjectsAndEstimates := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
-procedure TFormObjectsAndEstimates.PopupMenuObjectsAddClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PopupMenuObjectsAddClick(Sender: TObject);
 begin
   FormCardObject.SetIdSelectRow(0);
   FormCardObject.ShowModal;
@@ -330,7 +328,7 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.PopupMenuObjectsEditClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PopupMenuObjectsEditClick(Sender: TObject);
 var
   e: TNotifyEvent;
 begin
@@ -388,14 +386,14 @@ begin
   dbgrdObjects.SetFocus;
 end;
 
-procedure TFormObjectsAndEstimates.pmObjectsPopup(Sender: TObject);
+procedure TfObjectsAndEstimates.pmObjectsPopup(Sender: TObject);
 begin
   mRepair.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
   mDelete.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 0;
   mDeleteObject.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
 end;
 
-procedure TFormObjectsAndEstimates.mADD6KCClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mADD6KCClick(Sender: TObject);
 begin
   DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET FL_USE=1 WHERE SM_ID=:ID';
   DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
@@ -403,7 +401,7 @@ begin
   CloseOpen(qrActsEx, False);
 end;
 
-procedure TFormObjectsAndEstimates.mCopyClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mCopyClick(Sender: TObject);
 begin
   if Application.MessageBox('Копировать выбранный акт?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) <> IDYES
   then
@@ -415,7 +413,7 @@ begin
   CloseOpen(qrActsEx, False);
 end;
 
-procedure TFormObjectsAndEstimates.mCopyObjectClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mCopyObjectClick(Sender: TObject);
 var
   tmpFileName: string;
   old_name: string;
@@ -455,7 +453,7 @@ begin
   FillingTableObjects;
 end;
 
-procedure TFormObjectsAndEstimates.mDeleteActClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mDeleteActClick(Sender: TObject);
 begin
   if MessageDlg('Вы действительно хотите удалить выбранный акт?'#13 +
     '(дальнейшее восстановнелие будет невозможным)', mtWarning, mbYesNo, 0) <> mrYes then
@@ -463,9 +461,13 @@ begin
   try
     with DM.qrDifferent do
     begin
-      SQL.Text := 'CALL DeleteAct(:IdAct);';
-      ParamByName('IdAct').Value := IDAct;
+      Active := False;
+      SQL.Clear;
+      SQL.Add('CALL DeleteEstimate(:IdEstimate);');
+      ParamByName('IdEstimate').Value := qrActsEx.FieldByName('MASTER_ID').Value;
       ExecSQL;
+      Active := False;
+      CloseOpen(qrTreeData);
     end;
     CloseOpen(qrActsEx);
   except
@@ -475,7 +477,7 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.mDeleteClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mDeleteClick(Sender: TObject);
 var
   NumberObject: string;
   ResultDialog: Integer;
@@ -503,7 +505,7 @@ begin
   CloseOpen(qrObjects);
 end;
 
-procedure TFormObjectsAndEstimates.mDeleteEstimateClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mDeleteEstimateClick(Sender: TObject);
 begin
   if MessageDlg('Удалить запись?', mtWarning, mbYesNo, 0) <> mrYes then
     Exit;
@@ -513,7 +515,7 @@ begin
   CloseOpen(qrTreeData, False);
 end;
 
-procedure TFormObjectsAndEstimates.mShowDeletedEstimatesClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mShowDeletedEstimatesClick(Sender: TObject);
 begin
   if mShowDeletedEstimates.Checked then
     qrTreeData.ParamByName('SHOW_DELETED').AsInteger := 1
@@ -522,7 +524,7 @@ begin
   CloseOpen(qrTreeData);
 end;
 
-procedure TFormObjectsAndEstimates.PMCopySmetaClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMCopySmetaClick(Sender: TObject);
 begin
   FormMain.PanelCover.Visible := True;
   FormWaiting.Show;
@@ -536,12 +538,12 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.mN6Click(Sender: TObject);
+procedure TfObjectsAndEstimates.mN6Click(Sender: TObject);
 begin
   dbgrdObjects.ShowColumnsDialog;
 end;
 
-procedure TFormObjectsAndEstimates.mDeleteObjectClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mDeleteObjectClick(Sender: TObject);
 var
   NumberObject: string;
   ResultDialog: Integer;
@@ -578,7 +580,7 @@ begin
   FillingTableObjects;
 end;
 
-procedure TFormObjectsAndEstimates.mReapirEstimateClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mReapirEstimateClick(Sender: TObject);
 begin
   DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=0 WHERE SM_ID=:SM_ID';
   DM.qrDifferent.ParamByName('SM_ID').AsInteger := qrTreeData.FieldByName('SM_ID').AsInteger;
@@ -587,7 +589,7 @@ begin
   tvEstimates.Selected.Text := qrTreeData.FieldByName('NAME').AsString;
 end;
 
-procedure TFormObjectsAndEstimates.mShowDeletedActsClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mShowDeletedActsClick(Sender: TObject);
 begin
   if mShowDeletedActs.Checked then
     qrActsEx.ParamByName('SHOW_DELETED').AsInteger := 1
@@ -596,7 +598,7 @@ begin
   CloseOpen(qrActsEx);
 end;
 
-procedure TFormObjectsAndEstimates.mShowDeletedClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mShowDeletedClick(Sender: TObject);
 begin
   if mShowDeleted.Checked then
     qrObjects.ParamByName('SHOW_DELETED').AsInteger := 1
@@ -607,23 +609,19 @@ begin
   qrObjects.AfterScroll := qrObjectsAfterScroll;
 end;
 
-procedure TFormObjectsAndEstimates.qrActsExAfterOpen(DataSet: TDataSet);
+procedure TfObjectsAndEstimates.qrActsExAfterOpen(DataSet: TDataSet);
 begin
-  if qrActsEx.FieldByName('PARENT_ID').AsInteger = 0 then
-    IDAct := 0 //Выбрана группа вместо акта
-  else
-    IDAct := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   if PS.AutoExpandTreeEstimates then
     tvActs.FullExpand;
 end;
 
-procedure TFormObjectsAndEstimates.qrObjectsAfterOpen(DataSet: TDataSet);
+procedure TfObjectsAndEstimates.qrObjectsAfterOpen(DataSet: TDataSet);
 begin
   CloseOpen(qrTreeData);
   CloseOpen(qrActsEx);
 end;
 
-procedure TFormObjectsAndEstimates.qrObjectsAfterScroll(DataSet: TDataSet);
+procedure TfObjectsAndEstimates.qrObjectsAfterScroll(DataSet: TDataSet);
 begin
   IdObject := DataSet.FieldByName('IdObject').AsVariant;
   if flLoaded then
@@ -632,7 +630,7 @@ begin
   CloseOpen(qrActsEx, False);
 end;
 
-procedure TFormObjectsAndEstimates.qrTreeDataAfterOpen(DataSet: TDataSet);
+procedure TfObjectsAndEstimates.qrTreeDataAfterOpen(DataSet: TDataSet);
 begin
   if not CheckQrActiveEmpty(qrTreeData) then
     Exit;
@@ -641,12 +639,12 @@ begin
     tvEstimates.FullExpand
 end;
 
-procedure TFormObjectsAndEstimates.PanelBottomResize(Sender: TObject);
+procedure TfObjectsAndEstimates.PanelBottomResize(Sender: TObject);
 begin
   PanelEstimates.Width := ((Sender as TPanel).Width - SplitterBottomCenter.Width) div 2;
 end;
 
-procedure TFormObjectsAndEstimates.btnSearchClick(Sender: TObject);
+procedure TfObjectsAndEstimates.btnSearchClick(Sender: TObject);
 var
   FN: string;
 begin
@@ -668,7 +666,7 @@ begin
     btnSearch.Tag := 0;
 end;
 
-procedure TFormObjectsAndEstimates.dbgrdObjectsDrawColumnCell(Sender: TObject; const Rect: TRect;
+procedure TfObjectsAndEstimates.dbgrdObjectsDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
   with (Sender AS TJvDBGrid).Canvas do
@@ -696,7 +694,7 @@ begin
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-procedure TFormObjectsAndEstimates.dbgrdObjectsTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+procedure TfObjectsAndEstimates.dbgrdObjectsTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
 var
   s: string;
 begin
@@ -709,68 +707,68 @@ begin
   CloseOpen(qrObjects);
 end;
 
-procedure TFormObjectsAndEstimates.edtSearchChange(Sender: TObject);
+procedure TfObjectsAndEstimates.edtSearchChange(Sender: TObject);
 begin
   btnSearch.Tag := 0;
 end;
 
-procedure TFormObjectsAndEstimates.edtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TfObjectsAndEstimates.edtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_RETURN then
     btnSearch.Click;
 end;
 
-procedure TFormObjectsAndEstimates.pmActPropertyClick(Sender: TObject);
+procedure TfObjectsAndEstimates.pmActPropertyClick(Sender: TObject);
 var
   f: TfCardAct;
 begin
   f := TfCardAct.Create(nil);
   f.Kind := kdEdit;
-  f.id := IDAct;
+  f.id := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   f.ShowModal;
   CloseOpen(qrActsEx, False);
 end;
 
-procedure TFormObjectsAndEstimates.OpenAct(const ActID: Integer);
-var
-  newActId: Integer;
+procedure TfObjectsAndEstimates.PMActsOpenClick(Sender: TObject);
 begin
+  ActReadOnly := True;
   // Открываем форму ожидания
-  FormWaiting.Show;
+  // FormWaiting.Show;
   Application.ProcessMessages;
-
-  newActId := ActID;
-  // Назначаем новый ID
-  if newActId = 0 then
-    newActId := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_SM]));
+  if (Assigned(FormCalculationEstimate)) then
+  begin
+    FormCalculationEstimate.flChangeEstimate := True;
+    FormCalculationEstimate.Close;
+  end;
 
   if (not Assigned(FormCalculationEstimate)) then
-    FormCalculationEstimate := TFormCalculationEstimate.Create(True);
+    FormCalculationEstimate := TFormCalculationEstimate.Create(False);
 
-  FormCalculationEstimate.CreateTempTables;
-  FormCalculationEstimate.IdEstimate := newActId;
   FormCalculationEstimate.lblForemanFIO.caption :=
     VarToStr(FastSelectSQLOne
     ('select CONCAT(IFNULL(foreman_first_name, ""), " ", IFNULL(foreman_name, ""), " ", IFNULL(foreman_second_name, ""))'#13
-    + 'from card_acts LEFT JOIN foreman ON card_acts.foreman_id=foreman.foreman_id where id=:id',
-    VarArrayOf([newActId])));
-
+    + 'from smetasourcedata LEFT JOIN foreman ON smetasourcedata.foreman_id=foreman.foreman_id where SM_ID=:0',
+    VarArrayOf([qrActsEx.FieldByName('MASTER_ID').Value])));
   with qrObjects do
   begin
-    FormCalculationEstimate.EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsInteger) + ' ' +
-      FieldByName('FullName').AsString;
+    FormCalculationEstimate.EditNameObject.Text := IntToStr(FieldByName('NumberObject').AsVariant) + ' ' +
+      FieldByName('FullName').AsVariant;
     FormCalculationEstimate.EditNumberContract.Text := FieldByName('NumberContract').AsString;
     FormCalculationEstimate.EditDateContract.Text := FieldByName('DateContract').AsString;
-    FormCalculationEstimate.Region := FieldByName('IdRegion').AsInteger;
+    FormCalculationEstimate.Region := FieldByName('IdRegion').AsVariant;
 
     FormCalculationEstimate.EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
 
     FormCalculationEstimate.IdObject := IdObject;
-    FormCalculationEstimate.IdEstimate := newActId;
+    FormCalculationEstimate.IdEstimate := IdEstimate;
     FormCalculationEstimate.SetActReadOnly(ActReadOnly);
-
+    // Создание временных таблиц
+    FormCalculationEstimate.CreateTempTables;
+    // Заполненя временных таблиц, заполнение формы
     FormCalculationEstimate.OpenAllData;
   end;
+  FormCalculationEstimate.flChangeEstimate := False;
+  FormCalculationEstimate.WindowState := wsMaximized;
 
   if not ActReadOnly then
   begin
@@ -779,60 +777,59 @@ begin
       MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
       fKC6.MyShow(IdObject);
   end;
+  // FormCalculationEstimate.Show;
 
   // Закрываем форму ожидания
-  FormWaiting.Close;
+  // FormWaiting.Close;
+  ActReadOnly := False;
   Close;
 end;
 
-procedure TFormObjectsAndEstimates.PMActsOpenClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMActsAddClick(Sender: TObject);
+var
+  FormCardAct: TfCardAct;
 begin
-  ActReadOnly := True;
-  OpenAct(FormObjectsAndEstimates.IDAct);
-  ActReadOnly := False;
+  FormCardAct := TfCardAct.Create(Self);
+  FormCardAct.Kind := kdInsert;
+  FormCardAct.cbbType.ItemIndex := (Sender as TMenuItem).Tag;
+  FormCardAct.ShowModal;
+  // OpenAct(0);
 end;
 
-procedure TFormObjectsAndEstimates.PMActsAddClick(Sender: TObject);
-begin
-  OpenAct(0);
-end;
-
-procedure TFormObjectsAndEstimates.PMActsDeleteClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMActsDeleteClick(Sender: TObject);
 begin
   if MessageDlg('Удалить запись?', mtWarning, mbYesNo, 0) <> mrYes then
     Exit;
-  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DEL_FLAG=1 WHERE SM_ID=:ID';
+  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=1 WHERE SM_ID=:ID';
   DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
 end;
 
-procedure TFormObjectsAndEstimates.PMActsEditClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMActsEditClick(Sender: TObject);
 begin
-  OpenAct(FormObjectsAndEstimates.IDAct);
+  //OpenAct(qrActsEx.FieldByName('MASTER_ID').Value);
 end;
 
-procedure TFormObjectsAndEstimates.pmActsPopup(Sender: TObject);
+procedure TfObjectsAndEstimates.pmActsPopup(Sender: TObject);
 begin
   // Если не выделена смета или выделена, но не объектная
-  PMActsOpen.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value));
-  PMActsAdd.Visible := not((qrTreeData.IsEmpty) or (qrTreeData.FieldByName('SM_TYPE').AsInteger <> 2));
-  PMActsEdit.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value));
-  PMActsDelete.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value)) and
-    (qrActsEx.FieldByName('DEL_FLAG').AsInteger = 0);
-  pmActProperty.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value));
-  mRepAct.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value)) and
-    (qrActsEx.FieldByName('DEL_FLAG').AsInteger = 1);
-  mADD6KC.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value)) and
-    (qrActsEx.FieldByName('DEL_FLAG').AsInteger = 0) and (qrActsEx.FieldByName('FL_USE').AsInteger = 0);
-  mREM6KC.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value)) and
-    (qrActsEx.FieldByName('DEL_FLAG').AsInteger = 0) and (qrActsEx.FieldByName('FL_USE').AsInteger = 1);
-  mCopy.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value));
-  mDeleteAct.Visible := not(VarIsNull(qrActsEx.FieldByName('ID').Value)) and
-    (qrActsEx.FieldByName('DEL_FLAG').AsInteger = 1);
+  PMActsOpen.Visible := not(VarIsNull(qrActsEx.FieldByName('MASTER_ID').Value)) and
+    (qrActsEx.FieldByName('PARENT_ID').Value <> 0);
+  PMActsAdd.Visible := not(qrObjects.IsEmpty);
+  PMActsEdit.Visible := PMActsOpen.Visible;
+  PMActsDelete.Visible := PMActsOpen.Visible and (qrActsEx.FieldByName('DELETED').AsInteger = 0);
+  pmActProperty.Visible := PMActsOpen.Visible;
+  mRepAct.Visible := PMActsOpen.Visible and (qrActsEx.FieldByName('DELETED').AsInteger = 1);
+  mADD6KC.Visible := PMActsOpen.Visible and (qrActsEx.FieldByName('DELETED').AsInteger = 0) and
+    (qrActsEx.FieldByName('FL_USE').AsInteger = 0);
+  mREM6KC.Visible := PMActsOpen.Visible and (qrActsEx.FieldByName('DELETED').AsInteger = 0) and
+    (qrActsEx.FieldByName('FL_USE').AsInteger = 1);
+  mCopy.Visible := PMActsOpen.Visible;
+  mDeleteAct.Visible := PMActsOpen.Visible and (qrActsEx.FieldByName('DELETED').AsInteger = 1);
 end;
 
-function TFormObjectsAndEstimates.GetNumberEstimate(): string;
+function TfObjectsAndEstimates.GetNumberEstimate(): string;
 begin
   try
     with DM.qrDifferent do
@@ -852,7 +849,7 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.tvActsCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
+procedure TfObjectsAndEstimates.tvActsCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
   State: TCustomDrawState; var DefaultDraw: Boolean);
 begin
   DefaultDraw := True;
@@ -863,7 +860,7 @@ begin
     Sender.Canvas.Font.Style := Sender.Canvas.Font.Style + [fsStrikeOut];
 end;
 
-procedure TFormObjectsAndEstimates.mREM6KCClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mREM6KCClick(Sender: TObject);
 begin
   DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET FL_USE=0 WHERE SM_ID=:ID';
   DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
@@ -871,15 +868,15 @@ begin
   CloseOpen(qrActsEx, False);
 end;
 
-procedure TFormObjectsAndEstimates.mRepActClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mRepActClick(Sender: TObject);
 begin
-  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DEL_FLAG=0 WHERE SM_ID=:ID';
+  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=0 WHERE SM_ID=:ID';
   DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
 end;
 
-procedure TFormObjectsAndEstimates.mRepairClick(Sender: TObject);
+procedure TfObjectsAndEstimates.mRepairClick(Sender: TObject);
 begin
   qrObjects.Edit;
   qrObjects.FieldByName('DEL_FLAG').AsInteger := 0;
@@ -887,7 +884,7 @@ begin
   CloseOpen(qrObjects);
 end;
 
-procedure TFormObjectsAndEstimates.PMExportObjectClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMExportObjectClick(Sender: TObject);
 var
   TmpStr, XMLName: string;
 begin
@@ -918,7 +915,7 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.PMImportObjectClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMImportObjectClick(Sender: TObject);
 var
   TmpStr: string;
 begin
@@ -943,7 +940,7 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.PMImportDirClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMImportDirClick(Sender: TObject);
 var
   TmpFiles: TStringDynArray;
   i: Integer;
@@ -985,22 +982,22 @@ begin
     end;
 end;
 
-procedure TFormObjectsAndEstimates.PMEstimateExpandClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMEstimateExpandClick(Sender: TObject);
 begin
   tvEstimates.FullExpand;
 end;
 
-procedure TFormObjectsAndEstimates.PMEstimateExpandSelectedClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMEstimateExpandSelectedClick(Sender: TObject);
 begin
   tvEstimates.Selected.Expand(True);
 end;
 
-procedure TFormObjectsAndEstimates.PMEstimateCollapseClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMEstimateCollapseClick(Sender: TObject);
 begin
   tvEstimates.FullCollapse;
 end;
 
-procedure TFormObjectsAndEstimates.FillingTableObjects;
+procedure TfObjectsAndEstimates.FillingTableObjects;
 begin
   try
     CloseOpen(qrObjects);
@@ -1012,7 +1009,7 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.PopupMenuEstimatesAddClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PopupMenuEstimatesAddClick(Sender: TObject);
 begin
   // (Sender as TMenuItem).Tag - Устанавливаем тип сметы (1-локальная, 2-объектная, 3-ПТМ)
   FormCardEstimate.EditingRecord(False);
@@ -1020,13 +1017,13 @@ begin
   CloseOpen(qrTreeData);
 end;
 
-procedure TFormObjectsAndEstimates.PMEstimatesBasicDataClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMEstimatesBasicDataClick(Sender: TObject);
 begin
   if (IdEstimate > 0) and (IdObject > 0) then
     FormBasicData.ShowForm(IdObject, IdEstimate);
 end;
 
-procedure TFormObjectsAndEstimates.PMEstimatesDeleteClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMEstimatesDeleteClick(Sender: TObject);
 var
   NumberEstimate, { StrIdEstimate, StrIdRates, } TextWarning: String;
 begin
@@ -1067,7 +1064,7 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.PMEstimatesEditClick(Sender: TObject);
+procedure TfObjectsAndEstimates.PMEstimatesEditClick(Sender: TObject);
 begin
   with FormCardEstimate do
   begin
@@ -1079,7 +1076,7 @@ begin
   end;
 end;
 
-procedure TFormObjectsAndEstimates.pmEstimatesPopup(Sender: TObject);
+procedure TfObjectsAndEstimates.pmEstimatesPopup(Sender: TObject);
 begin
   PMEstimatesEdit.Enabled := False;
   PMEstimatesDelete.Enabled := False;
@@ -1120,14 +1117,14 @@ begin
   PMEstimatesDelete.Visible := qrTreeData.FieldByName('DELETED').AsInteger = 1;
 end;
 
-procedure TFormObjectsAndEstimates.tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
+procedure TfObjectsAndEstimates.tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
   State: TCustomDrawState; var DefaultDraw: Boolean);
 begin
   if (Length(Node.Text) > 0) and (Node.Text[Length(Node.Text)] = '-') then
     Sender.Canvas.Font.Style := Sender.Canvas.Font.Style + [fsStrikeOut];
 end;
 
-procedure TFormObjectsAndEstimates.tvEstimatesDblClick(Sender: TObject);
+procedure TfObjectsAndEstimates.tvEstimatesDblClick(Sender: TObject);
 begin
   // Открываем форму ожидания
   // FormWaiting.Show;

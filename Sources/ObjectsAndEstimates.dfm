@@ -1,4 +1,4 @@
-object FormObjectsAndEstimates: TFormObjectsAndEstimates
+object fObjectsAndEstimates: TfObjectsAndEstimates
   Left = 0
   Top = 0
   Caption = #1054#1073#1098#1077#1082#1090#1099' '#1080' '#1089#1084#1077#1090#1099
@@ -641,16 +641,20 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
     end
     object mN7: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      ImageIndex = 39
       object PMActsAdd: TMenuItem
         Caption = #1040#1082#1090
-        ImageIndex = 39
         OnClick = PMActsAddClick
       end
       object mN10: TMenuItem
+        Tag = 1
         Caption = #1040#1082#1090' '#1089#1091#1073#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
+        OnClick = PMActsAddClick
       end
       object mN11: TMenuItem
+        Tag = 2
         Caption = #1040#1082#1090' '#1080#1090#1086#1075#1086#1074#1099#1084#1080' '#1089#1091#1084#1084#1072#1084#1080
+        OnClick = PMActsAddClick
       end
     end
     object PMActsEdit: TMenuItem
@@ -729,7 +733,8 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
         '_ID, '
       
         '  CONCAT(IF(FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), TRIM(name), IF(DELETED=1,' +
-        ' "-", "")) AS ITEAM_NAME'
+        ' "-", "")) AS ITEAM_NAME,'
+      '  DELETED, FL_USE, DATE'
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2'
       '  AND OBJ_ID=:OBJ_ID'
@@ -738,7 +743,7 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       ''
       'UNION ALL'
       ''
-      'SELECT 0 AS PARENT_ID, '
+      'SELECT DISTINCT 0 AS PARENT_ID, '
       '(YEAR(date)*12+MONTH(date)) AS MASTER_ID,'
       'CONCAT(YEAR(date), " ", ('
       'case MONTH(date) '
@@ -754,56 +759,15 @@ object FormObjectsAndEstimates: TFormObjectsAndEstimates
       'WHEN 10 THEN "'#1054#1050#1058#1071#1041#1056#1068'"'
       'WHEN 11 THEN "'#1053#1054#1071#1041#1056#1068'"'
       'WHEN 12 THEN "'#1044#1045#1050#1040#1041#1056#1068'"'
-      'END)) AS ITEAM_NAME'
+      'END)) AS ITEAM_NAME,'
+      '0 AS DELETED, NULL AS FL_USE, DATE'
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2'
       '  AND OBJ_ID=:OBJ_ID'
       '  AND ((DELETED=0) OR (:SHOW_DELETED=1))'
       '  AND ACT=1'
       'GROUP BY (YEAR(date)*12+MONTH(date))'
-      'ORDER BY 1, 3'
-      ''
-      '/*'
-      'SELECT card_acts.*, '
-      '(YEAR(card_acts.date)*12+MONTH(card_acts.date)) AS PARENT_ID,'
-      'ID AS MASTER_ID,'
-      
-        'CONCAT(IF(card_acts.FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), TRIM(card_acts.na' +
-        'me), IF(card_acts.DEL_FLAG=1, "-", "")) AS ITEAM_NAME'
-      'FROM card_acts'
-      
-        'WHERE ID_OBJECT = :OBJ_ID AND ((card_acts.DEL_FLAG=0) OR (:SHOW_' +
-        'DELETED=1))'
-      ''
-      'UNION ALL'
-      ''
-      
-        'SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NU' +
-        'LL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, NULL,'
-      '0 AS PARENT_ID, '
-      '(YEAR(card_acts.date)*12+MONTH(card_acts.date)) AS MASTER_ID,'
-      'CONCAT(YEAR(card_acts.date), " ", ('
-      'case MONTH(card_acts.date) '
-      'WHEN 1 THEN "'#1071#1053#1042#1040#1056#1068'"'
-      'WHEN 2 THEN "'#1060#1045#1042#1056#1040#1051#1068'"'
-      'WHEN 3 THEN "'#1052#1040#1056#1058'"'
-      'WHEN 4 THEN "'#1040#1055#1056#1045#1051#1068'"'
-      'WHEN 5 THEN "'#1052#1040#1049'"'
-      'WHEN 6 THEN "'#1048#1070#1053#1068'"'
-      'WHEN 7 THEN "'#1048#1070#1051#1068'"'
-      'WHEN 8 THEN "'#1040#1042#1043#1059#1057#1058'"'
-      'WHEN 9 THEN "'#1057#1045#1053#1058#1071#1041#1056#1068'"'
-      'WHEN 10 THEN "'#1054#1050#1058#1071#1041#1056#1068'"'
-      'WHEN 11 THEN "'#1053#1054#1071#1041#1056#1068'"'
-      'WHEN 12 THEN "'#1044#1045#1050#1040#1041#1056#1068'"'
-      'END)) AS ITEAM_NAME'
-      'FROM card_acts'
-      
-        'WHERE ID_OBJECT = :OBJ_ID AND ((card_acts.DEL_FLAG=0) OR (:SHOW_' +
-        'DELETED=1))'
-      'GROUP BY (YEAR(card_acts.date)*12+MONTH(card_acts.date))'
-      'ORDER BY date'
-      '*/'
+      'ORDER BY DATE, 3'
       ''
       ''
       ''

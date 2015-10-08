@@ -1092,8 +1092,8 @@ begin
     FormMain.DeleteButtonCloseWindow(CaptionButton[1])
   else
     FormMain.DeleteButtonCloseWindow(CaptionButton[2]);
-  if (not Assigned(FormObjectsAndEstimates)) then
-    FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(FormMain);
+  if (not Assigned(fObjectsAndEstimates)) then
+    fObjectsAndEstimates := TfObjectsAndEstimates.Create(FormMain);
 end;
 
 procedure TFormCalculationEstimate.FormDestroy(Sender: TObject);
@@ -4335,17 +4335,8 @@ begin
   AutoCommitValue := DM.Read.Options.AutoCommit;
   DM.Read.Options.AutoCommit := False;
   try
-    if Act then
-    begin
-      if IdEstimate = 0 then
-      begin
-        FormCardAct := TfCardAct.Create(Self);
-        FormCardAct.Kind := kdInsert;
-        FormCardAct.ShowModal;
-      end
-      else if ActReadOnly then
-        Exit;
-    end;
+    if Act and ActReadOnly then
+      Exit;
     try
       DM.Read.StartTransaction;
       FastExecSQL('CALL SaveAllDataEstimate(:id_estimate);', VarArrayOf([IdEstimate]));
@@ -5238,10 +5229,10 @@ begin
   FormWaiting.Show;
   Application.ProcessMessages;
 
-  if (not Assigned(FormObjectsAndEstimates)) then
-    FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(Self);
+  if (not Assigned(fObjectsAndEstimates)) then
+    fObjectsAndEstimates := TfObjectsAndEstimates.Create(Self);
 
-  FormObjectsAndEstimates.Show;
+  fObjectsAndEstimates.Show;
 
   // Закрываем форму ожидания
   FormWaiting.Close;

@@ -78,9 +78,16 @@ object fCardAct: TfCardAct
       Height = 13
       Caption = #1044#1072#1090#1072' '#1089#1086#1089#1090#1072#1074#1083#1077#1085#1080#1103':'
     end
+    object lbl2: TLabel
+      Left = 212
+      Top = 6
+      Width = 22
+      Height = 13
+      Caption = #1058#1080#1087':'
+    end
     object edDate: TJvDBDateEdit
       Left = 109
-      Top = 2
+      Top = 3
       Width = 97
       Height = 21
       DataField = 'DATE'
@@ -89,6 +96,20 @@ object fCardAct: TfCardAct
       ShowNullDate = False
       TabOrder = 0
       OnChange = edDateChange
+    end
+    object cbbType: TComboBox
+      Left = 240
+      Top = 3
+      Width = 144
+      Height = 21
+      Style = csDropDownList
+      ItemIndex = 0
+      TabOrder = 1
+      Text = #1087#1086' '#1089#1084#1077#1090#1077
+      Items.Strings = (
+        #1087#1086' '#1089#1084#1077#1090#1077
+        #1076#1086#1087'. '#1088#1072#1073#1086#1090#1099
+        #1080#1090#1086#1075#1086#1074#1099#1084#1080' '#1089#1091#1084#1084#1072#1084#1080)
     end
   end
   object PanelDescription: TPanel
@@ -222,16 +243,18 @@ object fCardAct: TfCardAct
     UpdateOptions.RefreshMode = rmAll
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
-    UpdateOptions.UpdateTableName = 'smeta.card_acts'
+    UpdateOptions.UpdateTableName = 'smeta.smetasourcedata'
     UpdateOptions.KeyFields = 'ID'
     SQL.Strings = (
-      'select card_acts.*, '
+      'select smetasourcedata.*, '
       
         'CONCAT(IFNULL(foreman_first_name, ""), " ", IFNULL(foreman_name,' +
         ' ""), " ", IFNULL(foreman_second_name, "")) AS FOREMAN_'
-      'from card_acts'
-      'LEFT JOIN foreman ON card_acts.foreman_id=foreman.foreman_id'
-      'where id=:id')
+      'from smetasourcedata'
+      
+        'LEFT JOIN foreman ON smetasourcedata.foreman_id=foreman.foreman_' +
+        'id'
+      'where SM_ID=:id')
     Left = 212
     Top = 48
     ParamData = <
@@ -246,5 +269,26 @@ object fCardAct: TfCardAct
     DataSet = qrAct
     Left = 256
     Top = 40
+  end
+  object qrMain: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
+    FormatOptions.FmtDisplayNumeric = '#0.00'
+    UpdateOptions.UpdateTableName = 'smeta.smetasourcedata'
+    SQL.Strings = (
+      'SELECT * '
+      'FROM smetasourcedata'
+      'WHERE SM_ID=:SM_ID')
+    Left = 73
+    Top = 43
+    ParamData = <
+      item
+        Name = 'SM_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
   end
 end

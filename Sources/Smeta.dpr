@@ -34,7 +34,7 @@ uses
   CalculationSettings in 'CalculationSettings.pas' {FormCalculationSettings},
   BasicData in 'BasicData.pas' {FormBasicData},
   CardEstimate in 'CardEstimate.pas' {FormCardEstimate},
-  ObjectsAndEstimates in 'ObjectsAndEstimates.pas' {FormObjectsAndEstimates},
+  ObjectsAndEstimates in 'ObjectsAndEstimates.pas' {fObjectsAndEstimates},
   Transportation in 'Transportation.pas' {FormTransportation},
   SaveEstimate in 'SaveEstimate.pas' {FormSaveEstimate},
   OwnData in 'OwnData.pas' {FormOwnData},

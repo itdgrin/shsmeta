@@ -694,8 +694,8 @@ begin
 
   PanelCover.Visible := true;
 
-  if (not Assigned(FormObjectsAndEstimates)) then
-    FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(Self);
+  if (not Assigned(fObjectsAndEstimates)) then
+    fObjectsAndEstimates := TfObjectsAndEstimates.Create(Self);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -926,14 +926,14 @@ begin
   // dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_WINTER_RS_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
     end
     else
     begin
@@ -1034,16 +1034,16 @@ begin
 
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
       // **************************************************************************************************************************************
 
-      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(FormObjectsAndEstimates.IdEstimate)),
+      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(fObjectsAndEstimates.IdEstimate)),
         PChar(FileReportPath + 'report\'), SW_maximIZE);
 
       // **************************************************************************************************************************************
@@ -1072,11 +1072,11 @@ procedure TFormMain.N23Click(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger > 0 then
+      if fObjectsAndEstimates.qrActsEx.FieldByName('PARENT_ID').AsInteger <> 0 then
         ShellExecute(Handle, nil, 'report.exe',
-          PChar('A' + INTTOSTR(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger)),
+          PChar('A' + INTTOSTR(fObjectsAndEstimates.qrActsEx.FieldByName('MASTER_ID').AsInteger)),
           PChar(FileReportPath + 'report\'), SW_maximIZE);
     end
     else
@@ -1243,9 +1243,9 @@ end;
 
 procedure TFormMain.mN38Click(Sender: TObject);
 begin
-  if (not Assigned(FormObjectsAndEstimates)) then
-    FormObjectsAndEstimates := TFormObjectsAndEstimates.Create(Self);
-  FormObjectsAndEstimates.Show;
+  if (not Assigned(fObjectsAndEstimates)) then
+    fObjectsAndEstimates := TfObjectsAndEstimates.Create(Self);
+  fObjectsAndEstimates.Show;
 end;
 
 procedure TFormMain.mUsersClick(Sender: TObject);
@@ -1267,14 +1267,14 @@ procedure TFormMain.mnCALC_SMETA_OBJ_GRAPH_CClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_CALC_SMETA_OBJ_GRAPH_C(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_CALC_SMETA_OBJ_GRAPH_C(fObjectsAndEstimates.IdEstimate, FileReportPath);
     end
     else
     begin
@@ -1286,7 +1286,7 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_CALC_SMETA_OBJ_GRAPH_C(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.Report_CALC_SMETA_OBJ_GRAPH_C(fObjectsAndEstimates.IdEstimate, FileReportPath);
       end;
     end;
   finally
@@ -1298,14 +1298,14 @@ procedure TFormMain.mnRASX_ACTClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.qrActsEx.IsEmpty then
+      if fObjectsAndEstimates.qrActsEx.IsEmpty then
       begin
         ShowMessage('Не выбран акт');
         Exit;
       end;
-      dmReportF.Report_RASX_MAT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
+      dmReportF.Report_RASX_MAT(fObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
     end;
   finally
     Screen.Cursor := crDefault;
@@ -1363,14 +1363,14 @@ procedure TFormMain.mnSMETA_LSR_FROM_OBJClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_SMETA_LSR_FROM_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_SMETA_LSR_FROM_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
     end
     else
     begin
@@ -1382,7 +1382,7 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_SMETA_LSR_FROM_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.Report_SMETA_LSR_FROM_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
       end;
     end;
   finally
@@ -1395,14 +1395,14 @@ procedure TFormMain.mnSMETA_LSR_TRUDClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_SMETA_LSR_TRUD(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_SMETA_LSR_TRUD(fObjectsAndEstimates.IdEstimate, FileReportPath);
     end
     else
     begin
@@ -1414,7 +1414,7 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_SMETA_LSR_TRUD(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.Report_SMETA_LSR_TRUD(fObjectsAndEstimates.IdEstimate, FileReportPath);
       end;
     end;
   finally
@@ -1427,14 +1427,14 @@ procedure TFormMain.mnSMETA_LSR_ZIMClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_SMETA_LSR_ZIM(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_SMETA_LSR_ZIM(fObjectsAndEstimates.IdEstimate, FileReportPath);
     end
     else
     begin
@@ -1446,7 +1446,7 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_SMETA_LSR_ZIM(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.Report_SMETA_LSR_ZIM(fObjectsAndEstimates.IdEstimate, FileReportPath);
       end;
     end;
   finally
@@ -1459,14 +1459,14 @@ procedure TFormMain.mnSMETA_RES_FROM_OBJClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_SMETA_RES_FROM_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_SMETA_RES_FROM_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
     end
     else
     begin
@@ -1478,7 +1478,7 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_SMETA_RES_FROM_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.Report_SMETA_RES_FROM_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
       end;
     end;
   finally
@@ -1492,14 +1492,14 @@ begin
   // dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_RSMO_OBJ(0, FormObjectsAndEstimates.IdEstimate, 0, FileReportPath);
+      dmReportF.Report_RSMO_OBJ(0, fObjectsAndEstimates.IdEstimate, 0, FileReportPath);
     end
     else
     begin
@@ -1524,14 +1524,14 @@ begin
   // dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_RSMO_OBJ(1, FormObjectsAndEstimates.IdEstimate, 0, FileReportPath);
+      dmReportF.Report_RSMO_OBJ(1, fObjectsAndEstimates.IdEstimate, 0, FileReportPath);
     end
     else
     begin
@@ -1556,14 +1556,14 @@ begin
   // vk Расчет стоимости механизмов без НДС по объекту
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_RSMEH_OBJ(0, FormObjectsAndEstimates.IdEstimate, 0, FileReportPath);
+      dmReportF.Report_RSMEH_OBJ(0, fObjectsAndEstimates.IdEstimate, 0, FileReportPath);
     end
     else
     begin
@@ -1614,14 +1614,14 @@ begin
   // vk Ведомость объемов работ и расхода ресурсов по смете
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
     end
     else
     begin
@@ -1681,7 +1681,7 @@ begin
     // showmessage('Не выбрана смета');
     // Exit;
     // end;
-    dmReportF.vk2n13(FormObjectsAndEstimates.getCurObject, FileReportPath);
+    dmReportF.vk2n13(fObjectsAndEstimates.getCurObject, FileReportPath);
     // end;
 
   finally
@@ -1724,14 +1724,14 @@ procedure TFormMain.N61Click(Sender: TObject);
 begin
   if (not(Assigned(FormCalculationEstimate))) then
   begin
-    if FormObjectsAndEstimates.qrTreeData.IsEmpty then
+    if fObjectsAndEstimates.qrTreeData.IsEmpty then
       Exit;
     if (not Assigned(fKC6Journal)) then
       fKC6Journal := TfKC6Journal.Create(Self);
-    if Assigned(FormObjectsAndEstimates) then
-      fKC6Journal.LocateObject(FormObjectsAndEstimates.getCurObject);
-    fKC6Journal.LocateEstimate(FormObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').Value);
-    fKC6Journal.tvEstimates.SelectNode(FormObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').Value)
+    if Assigned(fObjectsAndEstimates) then
+      fKC6Journal.LocateObject(fObjectsAndEstimates.getCurObject);
+    fKC6Journal.LocateEstimate(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').Value);
+    fKC6Journal.tvEstimates.SelectNode(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').Value)
       .Expand(False);
     fKC6Journal.tvEstimatesClick(Self);
     fKC6Journal.Show;
@@ -1787,40 +1787,40 @@ begin
 
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
       // **************************************************************************************************************************************
       if (Sender as TMenuItem).Name = 'jsMenu1' then
-        dmReportF.JSReport(1, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(1, fObjectsAndEstimates.IdEstimate, FileReportPath);
       // Ведомость объемов работ и расхода ресурсов
       if (Sender as TMenuItem).Name = 'jsMenu2' then
-        dmReportF.JSReport(2, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(2, fObjectsAndEstimates.IdEstimate, FileReportPath);
       // Ведомость объемов работ и расхода ресурсов (по локальным сметам)
       if (Sender as TMenuItem).Name = 'jsMenu3' then
-        dmReportF.JSReport(3, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(3, fObjectsAndEstimates.IdEstimate, FileReportPath);
       // Ведомость объемов работ и расхода ресурсов (по объектным сметам)
       if (Sender as TMenuItem).Name = 'jsMenu4' then
-        dmReportF.JSReport(4, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(4, fObjectsAndEstimates.IdEstimate, FileReportPath);
       // !!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
       if (Sender as TMenuItem).Name = 'jsMenu5' then
-        dmReportF.JSReport(5, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(5, fObjectsAndEstimates.IdEstimate, FileReportPath);
       // Ведомость ресурсов по смете
 
       if (Sender as TMenuItem).Name = 'JSMenu6' then
-        dmReportF.JSReport(6, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(6, fObjectsAndEstimates.IdEstimate, FileReportPath);
       if (Sender as TMenuItem).Name = 'JSMenu7' then
-        dmReportF.JSReport(7, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(7, fObjectsAndEstimates.IdEstimate, FileReportPath);
       if (Sender as TMenuItem).Name = 'JSMenu8' then
-        dmReportF.JSReport(8, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(8, fObjectsAndEstimates.IdEstimate, FileReportPath);
       if (Sender as TMenuItem).Name = 'JSMenu9' then
-        dmReportF.JSReport(9, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(9, fObjectsAndEstimates.IdEstimate, FileReportPath);
       if (Sender as TMenuItem).Name = 'JSMenu10' then
-        dmReportF.JSReport(10, FormObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(10, fObjectsAndEstimates.IdEstimate, FileReportPath);
       // **************************************************************************************************************************************
     end
     else
@@ -1898,14 +1898,14 @@ procedure TFormMain.mnZP_OBJClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_ZP_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_ZP_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
     end
     else
     begin
@@ -1928,15 +1928,14 @@ procedure TFormMain.mnZP_OBJ_AKTClick(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.qrActsEx.IsEmpty then
+      if fObjectsAndEstimates.qrActsEx.IsEmpty then
       begin
         ShowMessage('Не выбран акт');
         Exit;
       end;
-      dmReportF.Report_ZP_OBJ_ACT(FormObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger,
-        FileReportPath);
+      dmReportF.Report_ZP_OBJ_ACT(fObjectsAndEstimates.qrActsEx.FieldByName('ID').AsInteger, FileReportPath);
     end;
   finally
     Screen.Cursor := crDefault;
@@ -2159,16 +2158,16 @@ procedure TFormMain.Excel2Click(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 1);
+      dmReportF.Report_EXCEL(fObjectsAndEstimates.IdEstimate, 1);
 
-      ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormObjectsAndEstimates.IdEstimate)),
+      ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(fObjectsAndEstimates.IdEstimate)),
         PChar(GetCurrentDir + '\reports\report\'), SW_maximIZE);
 
     end
@@ -2196,14 +2195,14 @@ procedure TFormMain.EXCEL3Click(Sender: TObject);
 begin
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(FormObjectsAndEstimates) then
+    if Assigned(fObjectsAndEstimates) then
     begin
-      if FormObjectsAndEstimates.IdEstimate = 0 then
+      if fObjectsAndEstimates.IdEstimate = 0 then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_EXCEL(FormObjectsAndEstimates.IdEstimate, 2);
+      dmReportF.Report_EXCEL(fObjectsAndEstimates.IdEstimate, 2);
     end
     else
     begin

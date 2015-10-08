@@ -28,6 +28,9 @@ type
     lbl1: TLabel;
     dbedtNAME1: TDBEdit;
     btn1: TSpeedButton;
+    lbl2: TLabel;
+    cbbType: TComboBox;
+    qrMain: TFDQuery;
     procedure FormShow(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
@@ -45,7 +48,7 @@ type
 
 implementation
 
-uses Main, DataModule, CalculationEstimate, GlobsAndConst, ForemanList;
+uses Main, DataModule, CalculationEstimate, GlobsAndConst, ForemanList, ObjectsAndEstimates;
 
 {$R *.dfm}
 
@@ -62,14 +65,16 @@ end;
 
 procedure TfCardAct.FormShow(Sender: TObject);
 begin
+  qrMain.ParamByName('SM_ID').AsInteger := 0;
+  qrMain.Active := True;
   case Kind of
     kdInsert:
       begin
         qrAct.ParamByName('id').AsInteger := 0;
         CloseOpen(qrAct);
         qrTemp.Active := False;
-        qrTemp.SQL.Text := 'SELECT COUNT(*) AS CNT from card_acts WHERE id_object=:id_object;';
-        qrTemp.ParamByName('id_object').Value := FormCalculationEstimate.IdObject;
+        qrTemp.SQL.Text := 'SELECT COUNT(*) AS CNT from smetasourcedata WHERE ACT=1 AND OBJ_ID=:OBJ_ID;';
+        qrTemp.ParamByName('OBJ_ID').Value := fObjectsAndEstimates.qrObjects.FieldByName('IdObject').Value;
         qrTemp.Active := True;
         cnt := qrTemp.FieldByName('CNT').AsInteger + 1;
         qrTemp.Active := False;
@@ -77,8 +82,10 @@ begin
         qrAct.Insert;
         qrAct.FieldByName('DATE').AsDateTime := Now();
         qrAct.FieldByName('NAME').AsString := 'Акт№' + IntToStr(cnt) + 'от' + qrAct.FieldByName('DATE')
-          .AsString + 'для' + FormCalculationEstimate.EditNameObject.Text;
+          .AsString + 'для' + fObjectsAndEstimates.qrObjects.FieldByName('NumberObject').AsString + ' ' +
+          fObjectsAndEstimates.qrObjects.FieldByName('FullName').AsString;
         qrAct.FieldByName('DESCRIPTION').AsString := dbedtNAME.Text;
+        qrAct.FieldByName('OBJ_ID').Value := fObjectsAndEstimates.qrObjects.FieldByName('IdObject').Value;
         dbedtNAME.SetFocus;
       end;
     kdEdit:
@@ -116,8 +123,6 @@ begin
         begin
           if qrAct.State in [dsEdit, dsInsert] then
             qrAct.Cancel;
-          FormCalculationEstimate.ConfirmCloseForm := False;
-          FormCalculationEstimate.Close;
           Close;
         end;
       end;
@@ -131,8 +136,73 @@ begin
 end;
 
 procedure TfCardAct.ButtonSaveClick(Sender: TObject);
+
+  function addParentEstimate(aParentID, aType: Integer): Integer;
+  var
+    NewID: Variant;
+  begin
+    NewID := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_SM]));
+
+    if VarIsNull(NewID) then
+      raise Exception.Create('Не удалось получить новый ID.');
+
+    qrTemp.SQL.Text := 'SELECT * FROM smetasourcedata WHERE SM_ID=:SM_ID';
+    qrTemp.ParamByName('SM_ID').AsInteger := aParentID;
+    qrTemp.Active := True;
+
+    qrMain.Append;
+    qrMain.FieldByName('SM_ID').AsInteger := NewID;
+    qrMain.FieldByName('sm_type').AsInteger := aType;
+    qrMain.FieldByName('obj_id').AsInteger := qrTemp.FieldByName('obj_id').Value;
+    qrMain.FieldByName('parent_id').AsInteger := aParentID;
+    qrMain.FieldByName('ACT').Value := qrTemp.FieldByName('ACT').Value;
+    qrMain.FieldByName('TYPE_ACT').Value := qrTemp.FieldByName('TYPE_ACT').Value;
+    qrMain.FieldByName('FL_USE').Value := qrTemp.FieldByName('FL_USE').Value;
+    qrMain.FieldByName('DESCRIPTION').Value := qrTemp.FieldByName('DESCRIPTION').Value;
+    qrMain.FieldByName('FOREMAN_ID').Value := qrTemp.FieldByName('FOREMAN_ID').Value;
+    qrMain.FieldByName('k40').Value := qrTemp.FieldByName('k40').Value;
+    qrMain.FieldByName('k41').Value := qrTemp.FieldByName('k41').Value;
+    qrMain.FieldByName('k31').Value := qrTemp.FieldByName('k31').Value;
+    qrMain.FieldByName('k32').Value := qrTemp.FieldByName('k32').Value;
+    qrMain.FieldByName('k33').Value := qrTemp.FieldByName('k33').Value;
+    qrMain.FieldByName('k34').Value := qrTemp.FieldByName('k34').Value;
+    qrMain.FieldByName('k35').Value := qrTemp.FieldByName('k35').Value;
+    qrMain.FieldByName('kzp').Value := qrTemp.FieldByName('kzp').Value;
+    qrMain.FieldByName('coef_tr_zatr').Value := qrTemp.FieldByName('coef_tr_zatr').Value;
+    qrMain.FieldByName('coef_tr_obor').Value := qrTemp.FieldByName('coef_tr_obor').Value;
+    qrMain.FieldByName('stavka_id').Value := qrTemp.FieldByName('stavka_id').Value;
+    qrMain.FieldByName('dump_id').Value := qrTemp.FieldByName('dump_id').Value;
+    qrMain.FieldByName('MAIS_ID').Value := qrTemp.FieldByName('MAIS_ID').Value;
+    qrMain.FieldByName('NDS').Value := qrTemp.FieldByName('NDS').Value;
+    qrMain.FieldByName('APPLY_LOW_COEF_OHROPR_FLAG').Value :=
+      qrTemp.FieldByName('APPLY_LOW_COEF_OHROPR_FLAG').Value;
+    qrMain.FieldByName('growth_index').Value := qrTemp.FieldByName('growth_index').Value;
+    qrMain.FieldByName('STAVKA_RAB').Value := qrTemp.FieldByName('STAVKA_RAB').Value;
+    qrMain.FieldByName('K_LOW_OHROPR').Value := qrTemp.FieldByName('K_LOW_OHROPR').Value;
+    qrMain.FieldByName('K_LOW_PLAN_PRIB').Value := qrTemp.FieldByName('K_LOW_PLAN_PRIB').Value;
+    qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value := qrTemp.FieldByName('APPLY_WINTERPRISE_FLAG').Value;
+    case aType of
+      1:
+        begin
+          qrMain.FieldByName('SM_NUMBER').Value := qrTemp.FieldByName('SM_NUMBER').Value + '.1';
+          qrMain.FieldByName('NAME').Value := 'Локальная №1';
+        end;
+      3:
+        begin
+          qrMain.FieldByName('SM_NUMBER').Value := 'Ж000';
+          qrMain.FieldByName('NAME').Value := '';
+          qrMain.FieldByName('TYPE_WORK_ID').Value := 0;
+          qrMain.FieldByName('PART_ID').Value := 0;
+          qrMain.FieldByName('SECTION_ID').Value := 0;
+        end;
+    end;
+    qrMain.Post;
+
+    Result := NewID;
+  end;
+
 var
-  NewId: Integer;
+  NewID: Variant;
 begin
   case Kind of
     kdInsert:
@@ -140,39 +210,36 @@ begin
         try
           with qrTemp do
           begin
-            // ONNEWRECORD TODO GetNewID
-            Active := False;
-            SQL.Clear;
-            SQL.Add('SELECT GetNewID(:IDType)');
-            ParamByName('IDType').Value := C_ID_ACT;
-            Active := True;
-            NewId := 0;
-            if not Eof then
-              NewId := Fields[0].AsInteger;
-            Active := False;
+            NewID := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_SM]));
 
-            if NewId = 0 then
+            if VarIsNull(NewID) then
               raise Exception.Create('Не удалось получить новый ID.');
 
             SQL.Clear;
-            SQL.Add('INSERT INTO card_acts (ID, id_object, name, description, date, foreman_id) ' +
-              'VALUE (:ID, :id_object, :name, :description, :date, :foreman_id);');
-            ParamByName('ID').Value := NewId;
-            ParamByName('id_object').Value := FormCalculationEstimate.IdObject;
+            SQL.Add('INSERT INTO smetasourcedata (SM_ID, OBJ_ID, name, description, date, foreman_id, ACT, TYPE_ACT, SM_TYPE, PARENT_ID) '
+              + 'VALUE (:ID, :OBJ_ID, :name, :description, :date, :foreman_id, 1, :TYPE_ACT, 2, 0);');
+            ParamByName('ID').Value := NewID;
             ParamByName('name').Value := dbedtNAME.Text;
             ParamByName('description').Value := dbmmoDESCRIPTION.Text;
             ParamByName('date').AsDate := edDate.Date;
             ParamByName('foreman_id').Value := qrAct.FieldByName('foreman_id').Value;
+            ParamByName('OBJ_ID').Value := qrAct.FieldByName('OBJ_ID').Value;
+            ParamByName('TYPE_ACT').Value := cbbType.ItemIndex;
             ExecSQL;
             if qrAct.State in [dsInsert] then
               qrAct.Cancel;
-            SQL.Clear;
-            SQL.Add('CALL SaveDataAct(:ID);');
-            ParamByName('ID').Value := NewId;
-            ExecSQL;
           end;
-          FormCalculationEstimate.ConfirmCloseForm := False;
-          FormCalculationEstimate.Close;
+          CloseOpen(fObjectsAndEstimates.qrActsEx, False);
+          fObjectsAndEstimates.qrActsEx.Locate('MASTER_ID', NewID, []);
+          // Если акт на допработы
+          if cbbType.ItemIndex = 1 then
+          begin
+            // Создаем разделы по умолчанию
+            // добавляем Локальную
+            NewID := addParentEstimate(NewID, 1);;
+            // и раздел ПТМ
+            addParentEstimate(NewID, 3);
+          end;
           Close;
         except
           on E: Exception do
@@ -201,7 +268,8 @@ begin
   if not CheckQrActiveEmpty(qrAct) or (Kind <> kdInsert) then
     Exit;
   qrAct.FieldByName('NAME').AsString := 'Акт№' + IntToStr(cnt) + 'от' + qrAct.FieldByName('DATE').AsString +
-    'для' + FormCalculationEstimate.EditNameObject.Text;
+    'для' + fObjectsAndEstimates.qrObjects.FieldByName('NumberObject').AsString + ' ' +
+    fObjectsAndEstimates.qrObjects.FieldByName('FullName').AsString;
 end;
 
 end.

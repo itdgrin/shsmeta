@@ -242,8 +242,8 @@ begin
     LabelNumberEstimate.Caption := '№ сметы:';
   if ShowBasicData then
   begin
-  if (ShowModal = mrOk) then
-    FormBasicData.ShowForm(IdObject, BaseIdEstimate);
+    if (ShowModal = mrOk) then
+      FormBasicData.ShowForm(IdObject, BaseIdEstimate);
   end
   else
   begin
@@ -269,11 +269,11 @@ procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
     // Копируем все наборы КФ. родетельской сметы
     if FromID = 0 then
       Exit;
-    qrTemp.SQL.Text := 'INSERT INTO calculation_coef (calculation_coef_id, ' + 'id_estimate, id_type_data, ' +
+    qrTemp.SQL.Text := 'INSERT INTO calculation_coef (calculation_coef_id, ' + 'SM_ID, id_type_data, ' +
       'id_owner, id_coef, COEF_NAME, OSN_ZP, EKSP_MACH, MAT_RES, WORK_PERS, ' +
       'WORK_MACH, OXROPR, PLANPRIB) SELECT GetNewID(:IDType), :new_id_estimate, ' +
       'id_type_data, id_owner, id_coef, COEF_NAME, OSN_ZP, EKSP_MACH, MAT_RES, ' +
-      'WORK_PERS, WORK_MACH, OXROPR, PLANPRIB FROM calculation_coef WHERE ' + 'id_estimate = :id_estimate;';
+      'WORK_PERS, WORK_MACH, OXROPR, PLANPRIB FROM calculation_coef WHERE ' + 'SM_ID = :id_estimate;';
     qrTemp.ParamByName('IDType').AsInteger := C_ID_SMCOEF;
     qrTemp.ParamByName('id_estimate').AsInteger := FromID;
     qrTemp.ParamByName('new_id_estimate').AsInteger := ToID;
@@ -283,27 +283,25 @@ procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
   var
     NewID: Integer;
   begin
-    qrTemp.Active := False;
-    qrTemp.SQL.Clear;
-    qrTemp.SQL.Add('SELECT GetNewID(:IDType)');
-    qrTemp.ParamByName('IDType').Value := C_ID_SM;
-    qrTemp.Active := True;
-    NewID := 0;
-    if not qrTemp.Eof then
-      NewID := qrTemp.Fields[0].AsInteger;
-    qrTemp.Active := False;
+    NewID := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_SM]));
 
-    if NewID = 0 then
+    if VarIsNull(NewID) then
       raise Exception.Create('Не удалось получить новый ID.');
+
+    qrTemp.SQL.Text := 'SELECT * FROM smetasourcedata WHERE SM_ID=:SM_ID';
+    qrTemp.ParamByName('SM_ID').AsInteger := aParentID;
+    qrTemp.Active := True;
 
     qrMain.Append;
     qrMain.FieldByName('SM_ID').AsInteger := NewID;
     qrMain.FieldByName('sm_type').AsInteger := aType;
     qrMain.FieldByName('obj_id').AsInteger := IdObject;
     qrMain.FieldByName('parent_id').AsInteger := aParentID;
-    qrTemp.SQL.Text := 'SELECT * FROM smetasourcedata WHERE SM_ID=:SM_ID';
-    qrTemp.ParamByName('SM_ID').AsInteger := aParentID;
-    qrTemp.Active := True;
+    qrMain.FieldByName('ACT').Value := qrTemp.FieldByName('ACT').Value;
+    qrMain.FieldByName('TYPE_ACT').Value := qrTemp.FieldByName('TYPE_ACT').Value;
+    qrMain.FieldByName('FL_USE').Value := qrTemp.FieldByName('FL_USE').Value;
+    qrMain.FieldByName('DESCRIPTION').Value := qrTemp.FieldByName('DESCRIPTION').Value;
+    qrMain.FieldByName('FOREMAN_ID').Value := qrTemp.FieldByName('FOREMAN_ID').Value;
     qrMain.FieldByName('k40').Value := qrTemp.FieldByName('k40').Value;
     qrMain.FieldByName('k41').Value := qrTemp.FieldByName('k41').Value;
     qrMain.FieldByName('k31').Value := qrTemp.FieldByName('k31').Value;

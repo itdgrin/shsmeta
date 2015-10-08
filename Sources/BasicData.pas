@@ -347,7 +347,7 @@ begin
       tableName := 'calculation_coef';
 
     //  аскадное удаление наборав из св€занных смет и всего что в смете находитс€
-    DM.qrDifferent.SQL.Text := 'DELETE FROM ' + tableName + ' WHERE id_estimate IN '#13 +
+    DM.qrDifferent.SQL.Text := 'DELETE FROM ' + tableName + ' WHERE SM_ID IN '#13 +
       '(SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
       ' OR (SM_ID=:ID_ESTIMATE) OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE)))'#13
       + ' /*AND id_type_data=:id_type_data AND id_owner=0*/ AND id_coef=:id_coef';
@@ -412,7 +412,7 @@ begin
       try
         qrCoef.FieldByName('calculation_coef_id').Value := FastSelectSQLOne('SELECT GetNewID(:IDType)',
           VarArrayOf([C_ID_SMCOEF]));
-        qrCoef.FieldByName('id_estimate').Value := qrSmeta.FieldByName('SM_ID').Value;
+        qrCoef.FieldByName('SM_ID').Value := qrSmeta.FieldByName('SM_ID').Value;
         qrCoef.FieldByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
         qrCoef.FieldByName('id_owner').Value := 0;
         qrCoef.FieldByName('id_coef').Value := fCoefficients.qrCoef.FieldByName('coef_id').Value;
@@ -433,12 +433,12 @@ begin
 
         // ƒобавление во все содерожимое сметы, кроме пусконаладки
         FastExecSQL('INSERT INTO `calculation_coef' + tableName + '`(`calculation_coef_id`, ' +
-          '`id_estimate`, `id_type_data`, `id_owner`,'#13 +
+          '`SM_ID`, `id_type_data`, `id_owner`,'#13 +
           ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
           '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
-          '(SELECT GetNewID(:IDType),ID_ESTIMATE,ID_TYPE_DATA,ID_TABLES,'#13 +
+          '(SELECT GetNewID(:IDType),SM_ID,ID_TYPE_DATA,ID_TABLES,'#13 +
           ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB'#13 +
-          'FROM data_row' + tableName + ' WHERE ID_ESTIMATE=:id_estimate AND ID_TYPE_DATA<10)',
+          'FROM data_row' + tableName + ' WHERE SM_ID=:id_estimate AND ID_TYPE_DATA<10)',
           VarArrayOf([C_ID_SMCOEF, fCoefficients.qrCoef.FieldByName('coef_id').Value,
           fCoefficients.qrCoef.FieldByName('COEF_NAME').Value, fCoefficients.qrCoef.FieldByName('OSN_ZP')
           .Value, fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value,
@@ -449,7 +449,7 @@ begin
 
         //  аскадно добавл€ем выбранный кф. на все зависимые сметы
         DM.qrDifferent.SQL.Text := 'INSERT INTO `calculation_coef' + tableName + '`(`calculation_coef_id`, ' +
-          '`id_estimate`, `id_type_data`, `id_owner`,'#13 +
+          '`SM_ID`, `id_type_data`, `id_owner`,'#13 +
           ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
           '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
           'VALUE(GetNewID(:IDType), :id_estimate,:id_type_data,:id_owner,'#13 +
@@ -480,12 +480,12 @@ begin
 
           // ƒобавление во все содерожимое сметы, кроме пусконаладки
           FastExecSQL('INSERT INTO `calculation_coef' + tableName + '`(`calculation_coef_id`, ' +
-            '`id_estimate`, `id_type_data`, `id_owner`,'#13 +
+            '`SM_ID`, `id_type_data`, `id_owner`,'#13 +
             ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
             '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
-            '(SELECT GetNewID(:IDType),ID_ESTIMATE,ID_TYPE_DATA,ID_TABLES,'#13 +
+            '(SELECT GetNewID(:IDType),SM_ID,ID_TYPE_DATA,ID_TABLES,'#13 +
             ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB'#13 +
-            'FROM data_row' + tableName + ' WHERE ID_ESTIMATE=:id_estimate AND ID_TYPE_DATA<10)',
+            'FROM data_row' + tableName + ' WHERE SM_ID=:id_estimate AND ID_TYPE_DATA<10)',
             VarArrayOf([C_ID_SMCOEF, fCoefficients.qrCoef.FieldByName('coef_id').Value,
             fCoefficients.qrCoef.FieldByName('COEF_NAME').Value, fCoefficients.qrCoef.FieldByName('OSN_ZP')
             .Value, fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value,
