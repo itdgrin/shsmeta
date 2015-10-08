@@ -522,9 +522,10 @@ end;
 
  //заполняет справочник
 procedure TSprFrame.FillSprList(AFindCode, AFindName: string);
-var i, j,
+var i, j, n,
     TmpInd,
-    TmpRel,
+    TmpRel1,
+    TmpRel2,
     TmpCount: Integer;
     TmpCode: string;
     Item: TListItem;
@@ -582,6 +583,11 @@ begin
       end;
     end;
 
+    if PMStrictEqual.Checked then
+      n := 5
+    else
+      n := 3;
+
     //Видимый список обновляется намного дольше
     ListSpr.Visible :=  False;
     ListSpr.Items.Clear;
@@ -595,26 +601,30 @@ begin
       if SpecialFillList(i) then
         Continue;
 
-      TmpRel := 0;
+      TmpRel1 := 0;
+      TmpRel2 := 0;
 
       if (AFindCode <> '') then
       begin
         if (CompareText(AFindCode, FSprArray[i].Code.ToLower) = 0) then
-          TmpRel := 20
+          TmpRel1 := 20
         else if Pos(AFindCode, FSprArray[i].Code.ToLower) = 1 then
-          TmpRel := 15
+          TmpRel1 := 15
         else
         begin
-          TmpCode := copy(AFindCode, 1, Length(AFindCode) - 1);
-          if ((Length(TmpCode) > 0) and
-              (Pos(TmpCode, FSprArray[i].Code.ToLower) = 1)) then
-            TmpRel := 5
-          else
-            if (Pos(AFindCode, FSprArray[i].Code.ToLower) <> 0) then
-              TmpRel := 3;
+          if not PMEqualCode.Checked then
+          begin
+            TmpCode := copy(AFindCode, 1, Length(AFindCode) - 1);
+            if ((Length(TmpCode) > 0) and
+                (Pos(TmpCode, FSprArray[i].Code.ToLower) = 1)) then
+              TmpRel1 := 5
+            else
+              if (Pos(AFindCode, FSprArray[i].Code.ToLower) <> 0) then
+                TmpRel1 := 3;
+          end;
         end;
 
-        if TmpRel = 0 then
+        if TmpRel1 = 0 then
           Continue;
       end;
 
@@ -629,16 +639,16 @@ begin
         end;
 
         if CompareText(WordList[j], TmpStr) = 0 then
-          TmpRel := TmpRel + 5
+          TmpRel2 := TmpRel2 + n
         else if (TmpInd = 1) or
                 (TmpStr[TmpInd - 1] = ' ') or
                 (Length(TmpStr) = (TmpInd + Length(WordList[j]) - 1)) or
                 (TmpStr[TmpInd + Length(WordList[j])] = ' ') then
-          TmpRel := TmpRel + 3
-        else TmpRel := TmpRel + 1;
+          TmpRel2 := TmpRel2 + 3
+        else TmpRel2 := TmpRel2 + 1;
       end;
 
-      if (TmpRel = 0) and (WordList.Count > 0) then
+      if (TmpRel2 = 0) and (WordList.Count > 0) then
         Continue;
 
       if (i mod 1000) = 0 then
@@ -646,7 +656,7 @@ begin
 
       inc(TmpCount);
 
-      FSortArray[TmpCount].Key := TmpRel;
+      FSortArray[TmpCount].Key := TmpRel1 + TmpRel2;
       FSortArray[TmpCount].Value := @FSprArray[i];
     end;
 

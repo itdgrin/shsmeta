@@ -255,6 +255,9 @@ begin
       if TFile.Exists(FArhivPath + C_DUMPNAME) then
         TFile.Delete(FArhivPath + C_DUMPNAME);
 
+      if not TFile.Exists(FArhivPath + C_BASETODUMP) then
+        raise Exception.Create('Скрипт ''' + C_BASETODUMP + ''' не найден!');
+
       //Задаем текущий директорый, чтобы не создавало дамп абы где
       TDirectory.SetCurrentDirectory(FArhivPath);
 
@@ -413,6 +416,9 @@ begin
 
       SendMessage(FHandle, WM_ARCHIVEPROGRESS,
         WParam(PChar('Загрузка дампа БД')), 1);
+
+      if not TFile.Exists(FArhivPath + C_DUMPTOBASE) then
+        raise Exception.Create('Скрипт ''' + C_DUMPTOBASE + ''' не найден!');
 
       //Запуск восстановления из дампа
       //НЕ ЗНАЕТ ОБ ВОЗНИКШИХ ИСКЛЮЧЕНИЯХ!!!!!!!!!!!

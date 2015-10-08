@@ -78,7 +78,7 @@ begin
   if Mes.LParam = 2 then
   begin
     FCanClose := True;
-    Close;
+    ModalResult := mrOk;
   end;
 end;
 
