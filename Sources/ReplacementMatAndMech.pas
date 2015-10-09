@@ -32,7 +32,8 @@ type
     Select: Boolean;
     EID,                   //ID сметы
     MID,                   //ID материала или механизма
-    MSprID: Integer;       //ID по справочнику
+    MSprID,                //ID по справочнику
+    RTSprID: Integer;      //ID расценки по справочнику
     EName,                 //Название сметы
     RCode,                 //Код расценки
     MCode,                 //Код материала или механизма
@@ -120,12 +121,12 @@ type
 
   private
     FCurType: Byte;
-    FTemp, //Режим работы с временными таблицами (По невременным не реализовано)
     FAddMode: Boolean; //False - режим замены True - режим вставки
 
     FObjectID,
     FEstimateID,
     FRateID,
+    FRateStrID,
     FMatMechID,
     FMatMechSprID: Integer;
 
@@ -231,20 +232,16 @@ end;
 //Удаляет заменяющие материалы по ид заменяемого
 //Или выводит сообщение со списком заменяющих ADel = true
 procedure TfrmReplacement.ShowDelRep(const AID: Integer; ADel: Boolean = False);
-var TmpStr: string;
-  i, j: Integer;
+var i, j: Integer;
 begin
-  if FTemp then
-    TmpStr := '_temp';
-
   case FCurType of
     2:  qrRep.SQL.Text :=
         'select MAT_ID, MAT_CODE, MAT_NAME, MAT_UNIT, COAST_NDS, COAST_NO_NDS, ID ' +
-          'from materialcard' + TmpStr + ' where ID_REPLACED = ' + AID.ToString +
+          'from materialcard_temp where ID_REPLACED = ' + AID.ToString +
           ' order by ID';
     3:  qrRep.SQL.Text :=
         'Select MECH_ID, MECH_CODE, MECH_NAME, MECH_UNIT, COAST_NDS, COAST_NO_NDS, ID ' +
-          'from mechanizmcard' + TmpStr + ' where ID_REPLACED = ' + AID.ToString +
+          'from mechanizmcard_temp where ID_REPLACED = ' + AID.ToString +
           ' order by ID';
   end;
 
@@ -504,9 +501,6 @@ constructor TfrmReplacement.Create(const AObjectID, AEstimateID, ARateID,
   AMatMechID, AMatMechSprID: Integer; ADataType: Byte;
   AAdd, AAutoRep: Boolean);
 begin
-  // FTemp := ATemp;
-  //Реализовано только для временных, для обычных не будут работать хранимки
-  FTemp := True;
   FAddMode := AAdd;
 
   if (FAddMode and not(ADataType in [2,3])) or
@@ -559,12 +553,19 @@ begin
   FObjectID := AObjectID;
   FEstimateID := AEstimateID;
   FRateID := ARateID;
+  FRateStrID := 0;
   FMatMechID := AMatMechID;
   //Если не задан ID использует поиск по коду
   if FMatMechID = 0 then
     FMatMechSprID := AMatMechSprID;
 
   FAutoRep := AAutoRep;
+
+  if FAutoRep then
+  begin
+    FRateStrID := ARateID;
+    FRateID := 0;
+  end;
 
   FObjectName := '';
   FEstimateName := '';
@@ -600,7 +601,6 @@ end;
 
 //Подгружает информацию по объекту, смете и расценке, если надо
 procedure TfrmReplacement.LoadObjEstInfo;
-var TmpStr: string;
 begin
   qrRep.Active := False;
 
@@ -638,14 +638,10 @@ begin
   end;
   qrRep.Active := False;
 
-  if FRateID > 0 then
+  if (FRateID > 0) then
   begin
-    TmpStr := '';
-    if FTemp then
-      TmpStr := '_temp';
-
-    qrRep.SQL.Text := 'SELECT RATE_CODE FROM card_rate' + TmpStr +
-      ' WHERE (ID = ' + IntToStr(FRateID) + ');';
+    qrRep.SQL.Text := 'SELECT RATE_CODE FROM card_rate_temp ' +
+      'WHERE (ID = ' + IntToStr(FRateID) + ');';
     qrRep.Active := True;
     if not qrRep.IsEmpty then
     begin
@@ -657,11 +653,7 @@ end;
 
 //Подгружает информацию о заменяемом материале
 procedure TfrmReplacement.LoadRepInfo;
-var TmpStr: string;
 begin
-  if FTemp then
-    TmpStr := '_temp';
-
   case FCurType of
     2:
     begin
@@ -671,8 +663,8 @@ begin
             IntToStr(FMatMechSprID)
       else
         qrRep.SQL.Text :=
-          'select MAT_ID, MAT_CODE, MAT_NAME from materialcard' + TmpStr +
-            ' where ID = ' + FMatMechID.ToString;
+          'select MAT_ID, MAT_CODE, MAT_NAME from materialcard_temp ' +
+            'where ID = ' + FMatMechID.ToString;
     end;
     3:
     begin
@@ -682,8 +674,8 @@ begin
             IntToStr(FMatMechSprID)
       else
         qrRep.SQL.Text :=
-          'Select MECH_ID, MECH_CODE, MECH_NAME from mechanizmcard' + TmpStr +
-            ' where ID = ' + FMatMechID.ToString;
+          'Select MECH_ID, MECH_CODE, MECH_NAME from mechanizmcard_temp ' +
+            'where ID = ' + FMatMechID.ToString;
     end;
     4:
     begin
@@ -693,8 +685,8 @@ begin
             IntToStr(FMatMechSprID)
       else
         qrRep.SQL.Text :=
-          'Select DEVICE_ID, DEVICE_CODE, DEVICE_NAME from devicescard' + TmpStr +
-            ' where ID = ' + FMatMechID.ToString;
+          'Select DEVICE_ID, DEVICE_CODE, DEVICE_NAME from devicescard_temp ' +
+            'where ID = ' + FMatMechID.ToString;
     end;
   end;
 
@@ -786,7 +778,6 @@ end;
 procedure TfrmReplacement.LoadEntry;
 var Item: TListItem;
     i, ind: Integer;
-    TmpStr,
     WhereStr: string;
     TmpFlag: Boolean;
 
@@ -810,6 +801,7 @@ var Item: TListItem;
           FEntryArray[ind - 1].RCode := qrTemp.FieldByName('RTCODE').AsString;
           FEntryArray[ind - 1].MID := qrTemp.FieldByName('MTID').AsInteger;
           FEntryArray[ind - 1].MSprID := qrTemp.FieldByName('MSPRID').AsInteger;
+          FEntryArray[ind - 1].RTSprID := qrTemp.FieldByName('RTID').AsInteger;
           FEntryArray[ind - 1].MCode := qrTemp.FieldByName('MTCODE').AsString;
           FEntryArray[ind - 1].MName := qrTemp.FieldByName('MTNAME').AsString;
           FEntryArray[ind - 1].MUnt := qrTemp.FieldByName('MTUNIT').AsString;
@@ -840,29 +832,22 @@ var Item: TListItem;
       end;
     end;
 begin
-
-  TmpStr := '';
   WhereStr := '';
-
-  if FTemp then
-    TmpStr := '_temp';
 
   //Поиск по смете
   if (FEstimateName <> '') then
   begin
     groupEntry.Caption := ' Вхождения в ' + FEstimateName + ':';
-    if FTemp then
-      WhereStr := ' AND ((SM.SM_ID = ' + FEstimateID.ToString + ') OR ' +
-        '(SM.PARENT_ID = ' + FEstimateID.ToString + ') OR ' +
-        '(SM.PARENT_ID IN (SELECT smetasourcedata.SM_ID FROM ' +
-        'smetasourcedata WHERE smetasourcedata.PARENT_ID = ' +
-        FEstimateID.ToString + ')))';
+    WhereStr := ' AND ((SM.SM_ID = ' + FEstimateID.ToString + ') OR ' +
+      '(SM.PARENT_ID = ' + FEstimateID.ToString + ') OR ' +
+      '(SM.PARENT_ID IN (SELECT smetasourcedata.SM_ID FROM ' +
+      'smetasourcedata WHERE smetasourcedata.PARENT_ID = ' +
+      FEstimateID.ToString + ')))';
   end
   else
   begin
     groupEntry.Caption := ' Вхождения в ' + FObjectName + ':';
-    if FTemp then
-      WhereStr := ' AND (SM.OBJ_ID = ' + FObjectID.ToString + ')';
+    WhereStr := ' AND (SM.OBJ_ID = ' + FObjectID.ToString + ')';
   end;
 
   ind := 0;
@@ -873,7 +858,7 @@ begin
     qrTemp.Active := False;
     case FCurType of
       2: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
-          'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
+          'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, RT.RATE_ID as RTID, ' +
           'RT.RATE_CODE as RTCODE, MT.ID as MTID, MT.MAT_ID as MSPRID, ' +
           'MT.MAT_CODE as MTCODE, MT.MAT_NAME as MTNAME, ' +
           'MT.MAT_COUNT as MTCOUNT, ' +
@@ -883,13 +868,13 @@ begin
           'MT.FROM_RATE as MTFROMRATE, MT.CONS_REPLASED as MTCONREP, ' +
           'MT.ADDED as MTADDED, ES.NUM_ROW as NUMROW, ' +
           'ES.ID_TABLES as IDTABLES, ES.ID_TYPE_DATA as TYPEDATA ' +
-          'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
-          'card_rate' + TmpStr + ' as RT, materialcard' + TmpStr + ' as MT ' +
+          'FROM smetasourcedata as SM, data_row_temp as ES, ' +
+          'card_rate_temp as RT, materialcard_temp as MT ' +
           'WHERE (SM.SM_ID = ES.SM_ID) AND (ES.ID_TYPE_DATA = 1) AND ' +
           '(ES.ID_TABLES = RT.ID) AND (RT.ID = MT.ID_CARD_RATE) AND ' +
           '(MT.FROM_RATE = 0) AND (MT.DELETED = 0) ' +  WhereStr;
       3: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
-          'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
+          'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, RT.RATE_ID as RTID, ' +
           'RT.RATE_CODE as RTCODE, MT.ID as MTID, MT.MECH_ID as MSPRID, ' +
           'MT.MECH_CODE as MTCODE, MT.MECH_NAME as MTNAME, ' +
           'MT.MECH_COUNT as MTCOUNT, ' +
@@ -899,8 +884,8 @@ begin
           'MT.FROM_RATE as MTFROMRATE, null as MTCONREP, ' +
           'MT.ADDED as MTADDED, ES.NUM_ROW as NUMROW, ' +
           'ES.ID_TABLES as IDTABLES, ES.ID_TYPE_DATA as TYPEDATA ' +
-          'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
-          'card_rate' + TmpStr + ' as RT, mechanizmcard' + TmpStr + ' as MT ' +
+          'FROM smetasourcedata as SM, data_row_temp as ES, ' +
+          'card_rate_temp as RT, mechanizmcard_temp as MT ' +
           'WHERE (SM.SM_ID = ES.SM_ID) AND (ES.ID_TYPE_DATA = 1) AND ' +
           '(ES.ID_TABLES = RT.ID) AND (RT.ID = MT.ID_CARD_RATE) AND ' +
           '(MT.FROM_RATE = 0) AND (MT.DELETED = 0) ' + WhereStr;
@@ -914,7 +899,7 @@ begin
   case FCurType of
     2: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
         'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
-        'null as RTCODE, MT.ID as MTID, MT.MAT_ID as MSPRID, ' +
+        'null as RTCODE, null as RTID, MT.ID as MTID, MT.MAT_ID as MSPRID, ' +
         'MT.MAT_CODE as MTCODE, MT.MAT_NAME as MTNAME, ' +
         'MT.MAT_COUNT as MTCOUNT, ' +
         'MT.MAT_UNIT as MTUNIT, MT.MAT_NORMA as MTNORMA, ' +
@@ -923,13 +908,13 @@ begin
         'MT.FROM_RATE as MTFROMRATE, MT.CONS_REPLASED as MTCONREP, ' +
         'MT.ADDED as MTADDED, ES.NUM_ROW as NUMROW, ' +
         'ES.ID_TABLES as IDTABLES, ES.ID_TYPE_DATA as TYPEDATA ' +
-        'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
-        'materialcard' + TmpStr + ' as MT ' +
+        'FROM smetasourcedata as SM, data_row_temp as ES, ' +
+        'materialcard_temp as MT ' +
         'WHERE (SM.SM_ID = ES.SM_ID) AND (ES.ID_TYPE_DATA = 2) AND ' +
         '(ES.ID_TABLES = MT.ID) ' + WhereStr;
     3: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
         'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
-        'null as RTCODE, MT.ID as MTID, MT.MECH_ID as MSPRID, ' +
+        'null as RTCODE, null as RTID, MT.ID as MTID, MT.MECH_ID as MSPRID, ' +
         'MT.MECH_CODE as MTCODE, MT.MECH_NAME as MTNAME, ' +
         'MT.MECH_COUNT as MTCOUNT, ' +
         'MT.MECH_UNIT as MTUNIT, MT.MECH_NORMA as MTNORMA, ' +
@@ -938,13 +923,13 @@ begin
         'MT.FROM_RATE as MTFROMRATE, null as MTCONREP, ' +
         'MT.ADDED as MTADDED, ES.NUM_ROW as NUMROW, ' +
         'ES.ID_TABLES as IDTABLES, ES.ID_TYPE_DATA as TYPEDATA ' +
-        'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
-        'mechanizmcard' + TmpStr + ' as MT ' +
+        'FROM smetasourcedata as SM, data_row_temp as ES, ' +
+        'mechanizmcard_temp as MT ' +
         'WHERE (SM.SM_ID = ES.SM_ID) AND (ES.ID_TYPE_DATA = 3) AND ' +
         '(ES.ID_TABLES = MT.ID) ' + WhereStr;
     4: qrTemp.SQL.Text := 'SELECT SM.SM_ID as SMID, ' +
         'CONCAT(SM.SM_NUMBER, " ",  SM.NAME) as SMNAME, ' +
-        'null as RTCODE, MT.ID as MTID, MT.DEVICE_ID as MSPRID, ' +
+        'null as RTCODE, null as RTID, MT.ID as MTID, MT.DEVICE_ID as MSPRID, ' +
         'MT.DEVICE_CODE as MTCODE, MT.DEVICE_NAME as MTNAME, ' +
         'MT.DEVICE_COUNT as MTCOUNT, ' +
         'MT.DEVICE_UNIT as MTUNIT, null as MTNORMA, ' +
@@ -953,8 +938,8 @@ begin
         'null as MTFROMRATE, null as MTCONREP, ' +
         'null as MTADDED, ES.NUM_ROW as NUMROW, ' +
         'ES.ID_TABLES as IDTABLES, ES.ID_TYPE_DATA as TYPEDATA ' +
-        'FROM smetasourcedata as SM, data_row' + TmpStr + ' as ES, ' +
-        'devicescard' + TmpStr + ' as MT ' +
+        'FROM smetasourcedata as SM, data_row_temp as ES, ' +
+        'devicescard_temp as MT ' +
         'WHERE (SM.SM_ID = ES.SM_ID) AND (ES.ID_TYPE_DATA = 4) AND ' +
         '(ES.ID_TABLES = MT.ID) ' + WhereStr;
   end;
@@ -972,7 +957,10 @@ begin
   begin
     Item := ListEntry.Items.Add;
     Item.Data := @FEntryArray[i];
-    if FAutoRep and (not TmpFlag) and (FEntryArray[i].MRep > 0) then
+    if FAutoRep and
+       (not TmpFlag) and
+       (FEntryArray[i].MRep > 0) and
+       ((FRateStrID = 0) or (FEntryArray[i].RTSprID = FRateStrID)) then
     begin
       ShowDelRep(FEntryArray[i].MID);
       TmpFlag := True;
@@ -987,11 +975,7 @@ var i, j, ind, iterator:  Integer;
     IDArray: array of Integer;
     CoefArray: array of Double;
     DelOnly: Boolean;
-    TmpStr: string;
 begin
-  if FTemp then
-    TmpStr := '_temp';
-
   //Флаг удаления замен
   DelOnly := (TButton(Sender).Tag = 1);
   //Проверка на наличие выделенного заменяемого
@@ -1081,16 +1065,13 @@ begin
           if (FEntryArray[i].MIdCardRate = 0) or (FEntryArray[i].MFromRate > 0) then
           begin
             case FCurType of
-              2: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row' +
-                  TmpStr + ' WHERE ' +
+              2: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row_temp WHERE ' +
                   '(SM_ID = :SM_ID) AND (ID_TABLES = :ID_TABLES) ' +
                   'AND (ID_TYPE_DATA = 2)';
-              3: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row' +
-                  TmpStr + ' WHERE ' +
+              3: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row_temp WHERE ' +
                   '(SM_ID = :SM_ID) AND (ID_TABLES = :ID_TABLES) ' +
                   'AND (ID_TYPE_DATA = 3)';
-              4: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row' +
-                  TmpStr + ' WHERE ' +
+              4: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row_temp WHERE ' +
                   '(SM_ID = :SM_ID) AND (ID_TABLES = :ID_TABLES) ' +
                   'AND (ID_TYPE_DATA = 4)';
             end;

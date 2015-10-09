@@ -24,6 +24,7 @@ type
     DataType: Integer;
     Code: string;
     MID: Integer;
+    RTID: Integer;
   end;
 
   TAutoRepArray = array of TAutoRepRec;
@@ -777,7 +778,7 @@ type
 
     // Набор процедур для управление автозаменой
     procedure ClearAutoRep; // Очищает массив автозамены
-    procedure CheckNeedAutoRep(AID, AType, AMId: Integer; ACode: string); // Проверяет необходимость в замене
+    procedure CheckNeedAutoRep(AID, AType, AMId, ARTId: Integer; ACode: string); // Проверяет необходимость в замене
     procedure ShowAutoRep; // Показывает диалог замены для всех из массива
 
     procedure DeleteRowFromSmeta();
@@ -1861,23 +1862,47 @@ begin
 end;
 
 // Проверяет выполнялась ли ранее в смета замена по такому коду, если да то нуждается в автозамене
-procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType, AMId: Integer; ACode: string);
+procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType, AMId, ARTId: Integer; ACode: string);
 var
   j: Integer;
 begin
-  if ((AType = 2) and not PMMatAutoRep.Checked) or ((AType = 3) and not PMMechAutoRep.Checked) then
+  if ((AType = 2) and not PMMatAutoRep.Checked) or
+     ((AType = 3) and not PMMechAutoRep.Checked) then
     Exit;
 
   qrTemp1.Active := False;
-  case AType of
-    2:
-      qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' +
-        '(REPLACED = 1) and (MAT_ID = ' + INTTOSTR(AMId) + ')';
-    3:
-      qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' +
-        '(REPLACED = 1) and (MECH_ID = ' + INTTOSTR(AMId) + ')';
-  else
-    Exit;
+  case G_AUTOREPTYPE of
+  0:
+  begin
+    case AType of
+      2:
+        qrTemp1.SQL.Text := 'SELECT mt.id FROM materialcard_temp mt, card_rate_temp cr ' +
+          ' where (mt.DATA_ROW_ID = cr.DATA_ROW_ID) and (mt.REPLACED = 1) and ' +
+          '(mt.MAT_ID = ' + INTTOSTR(AMId) + ') and ' +
+          '(cr.RATE_ID = ' + INTTOSTR(ARTId) + ')';
+      3:
+        qrTemp1.SQL.Text := 'SELECT mh.id FROM mechanizmcard_temp mh, card_rate_temp cr ' +
+          ' where (mh.DATA_ROW_ID = cr.DATA_ROW_ID) and (mh.REPLACED = 1) and ' +
+          '(mh.MECH_ID = ' + INTTOSTR(AMId) + ') and ' +
+          '(cr.RATE_ID = ' + INTTOSTR(ARTId) + ')';
+    else
+      Exit;
+    end;
+  end;
+  1:
+  begin
+    case AType of
+      2:
+        qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' +
+          '(REPLACED = 1) and (MAT_ID = ' + INTTOSTR(AMId) + ')';
+      3:
+        qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' +
+          '(REPLACED = 1) and (MECH_ID = ' + INTTOSTR(AMId) + ')';
+    else
+      Exit;
+    end;
+  end;
+  else Exit;
   end;
 
   qrTemp1.Active := True;
@@ -1889,6 +1914,10 @@ begin
     FAutoRepArray[j].DataType := AType;
     FAutoRepArray[j].Code := ACode;
     FAutoRepArray[j].MID := AMId;
+    if G_AUTOREPTYPE = 0 then
+      FAutoRepArray[j].RTID := ARTId
+    else
+      FAutoRepArray[j].RTID := 0;
   end;
   qrTemp1.Active := False;
 end;
@@ -1915,8 +1944,8 @@ begin
             MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
-                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, 0, 2,
-                  False, True);
+                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
+                  FAutoRepArray[i].RTID, FAutoRepArray[i].ID, 0, 2, False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
                   begin
@@ -1937,8 +1966,8 @@ begin
             MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
-                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, FAutoRepArray[i].ID, 0, 3,
-                  False, True);
+                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
+                  FAutoRepArray[i].RTID, FAutoRepArray[i].ID, 0, 3, False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
                   begin
@@ -4025,12 +4054,12 @@ begin
               begin
                 EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '(PARENT_ID = ' +
                   qrRatesExSM_ID.Value.ToString + ') OR ' + '(SM_ID = ' + qrRatesExSM_ID.Value.ToString +
-                  ') OR ' + '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' + 'PARENT_ID = ' +
-                  qrRatesExSM_ID.Value.ToString + '))';
+                  ') OR ' + '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' +
+                  'PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + '))';
                 WhereStr := '((ID in (select ID_TABLES from data_row_temp where ' +
-                  '(ID_TYPE_DATA = 2) and (ID_ESTIMATE in (' + EstimStr + ')))) or ' +
+                  '(ID_TYPE_DATA = 2) and (SM_ID in (' + EstimStr + ')))) or ' +
                   '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
-                  '(ID_TYPE_DATA = 1) and (ID_ESTIMATE in (' + EstimStr + ')))))';
+                  '(ID_TYPE_DATA = 1) and (SM_ID in (' + EstimStr + ')))))';
                 EstimStr := qrRatesExSM_ID.Value.ToString;
               end;
           end;
@@ -4691,7 +4720,7 @@ begin
         qrTemp1.ExecSQL;
 
         CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
-          FieldByName('MatCode').AsString);
+          vRateId, FieldByName('MatCode').AsString);
 
         Next;
       end;
@@ -4738,7 +4767,8 @@ begin
           qrTemp1.ExecSQL;
 
           if MaxMId > 0 then
-            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, FieldByName('MatCode').AsString);
+            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
+              vRateId, FieldByName('MatCode').AsString);
         end;
         Next;
       end;
@@ -4812,7 +4842,7 @@ begin
 
           if MaxMId > 0 then
             CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger,
-              FieldByName('MechCode').AsString);
+              vRateId, FieldByName('MechCode').AsString);
         end;
 
         Next;
@@ -4859,6 +4889,7 @@ begin
   // ТОДО
 
   (Self as TForm).Invalidate;
+
   // Выполнение автозамены по добавленной расценке
   ShowAutoRep;
 end;

@@ -192,10 +192,11 @@ var
   G_SMETADATA: Integer;
   //ID текущего пользователя
   G_USER_ID: Integer = 0;
-
   //Переменные для увязки периодов справочников
   G_CURYEAR,
   G_CURMONTH: Integer;
+  //Тип автозамены искать 0 - только в таких же расценках, 1 - во всех расценках
+  G_AUTOREPTYPE: Byte = 0;
 
 implementation
 
