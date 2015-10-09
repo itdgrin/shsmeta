@@ -595,7 +595,7 @@ begin
           begin
             Active := False;
             SQL.Clear;
-            SQL.Add('SELECT max(sm_number) as "MaxNumber" FROM smetasourcedata WHERE sm_type = 1 and sm_number LIKE "'
+            SQL.Add('SELECT max(sm_number) as "MaxNumber" FROM smetasourcedata WHERE ACT=0 and sm_type = 1 and sm_number LIKE "'
               + NumberEstimate + '%" and obj_id = ' + IntToStr(IdObject) + ';');
             Active := True;
 
@@ -624,7 +624,7 @@ begin
           begin
             Active := False;
             SQL.Clear;
-            SQL.Add('SELECT max(sm_number) as "MaxNumber" FROM smetasourcedata WHERE sm_type = 2 and sm_number LIKE "'
+            SQL.Add('SELECT max(sm_number) as "MaxNumber" FROM smetasourcedata WHERE ACT=0 and sm_type = 2 and sm_number LIKE "'
               + NumberEstimate + '%" and obj_id = ' + IntToStr(IdObject) + ';');
             Active := True;
 

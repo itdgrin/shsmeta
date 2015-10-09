@@ -106,6 +106,7 @@ type
     procedure tvEstimatesChange(Sender: TObject; Node: TTreeNode);
     procedure dbgrd1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure grDataCellClick(Column: TColumn);
   private
     IdObject: Integer;
   public const
@@ -293,22 +294,23 @@ begin
   if MessageBox(0, PChar('Перенести выделенные данные в акт?'), PWideChar(Caption),
     MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mryes then
   begin
-    qrTemp.SQL.Text := 'delete from data_row_temp;';
+    qrTemp.SQL.Text :=
+      'delete from data_row_temp WHERE SM_ID IN (SELECT SM_ID FROM smetasourcedata WHERE SOURCE_ID IS NOT NULL AND (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ACT) OR PARENT_ID = :ID_ACT));';
+    qrTemp.ParamByName('ID_ACT').Value := FormCalculationEstimate.IdEstimate;
     qrTemp.ExecSQL;
-    qrTemp.SQL.Text := 'delete from card_rate_temp;';
-    qrTemp.ExecSQL;
-    qrTemp.SQL.Text := 'delete from materialcard_temp;';
-    qrTemp.ExecSQL;
-    qrTemp.SQL.Text := 'delete from mechanizmcard_temp;';
-    qrTemp.ExecSQL;
-    qrTemp.SQL.Text := 'delete from devicescard_temp;';
-    qrTemp.ExecSQL;
-    qrTemp.SQL.Text := 'delete from dumpcard_temp;';
-    qrTemp.ExecSQL;
-    qrTemp.SQL.Text := 'delete from transpcard_temp;';
-    qrTemp.ExecSQL;
-    qrTemp.SQL.Text := 'delete from calculation_coef_temp;';
-    qrTemp.ExecSQL;
+    FastExecSQL('DELETE FROM materialcard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
+      VarArrayOf([]));
+    FastExecSQL('DELETE FROM mechanizmcard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
+      VarArrayOf([]));
+    FastExecSQL('DELETE FROM devicescard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
+      VarArrayOf([]));
+    FastExecSQL('DELETE FROM dumpcard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
+      VarArrayOf([]));
+    FastExecSQL('DELETE FROM transpcard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
+      VarArrayOf([]));
+    FastExecSQL('DELETE FROM card_rate_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
+      VarArrayOf([]));
+
     Key := strngfldDataSORT_ID.Value;
     qrData.DisableControls;
     qrData.AfterScroll := nil;
@@ -360,8 +362,18 @@ end;
 
 procedure TfKC6.grDataCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
 begin
-  AllowEdit := (not Grid.Columns[Grid.SelectedIndex].ReadOnly and (qrDataID_TYPE_DATA.Value > 0)) or
-    (Grid.SelectedField.FieldName = 'CHECKED');
+  AllowEdit := (not Grid.Columns[Grid.SelectedIndex].ReadOnly and (qrDataID_TYPE_DATA.Value > 0)) { or
+    (Grid.SelectedField.FieldName = 'CHECKED') };
+end;
+
+procedure TfKC6.grDataCellClick(Column: TColumn);
+begin
+  if Column.Field = qrDataCHECKED then
+  begin
+    qrData.Edit;
+    qrDataCHECKED.Value := not qrDataCHECKED.Value;
+    qrData.CheckBrowseMode;
+  end;
 end;
 
 procedure TfKC6.grDataDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
@@ -437,7 +449,7 @@ end;
 
 procedure TfKC6.grDataMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if CtrlDown then
+  if CtrlDown or (grData.SelectedField = qrDataCHECKED) then
   begin
     qrData.Edit;
     qrDataCHECKED.Value := not qrDataCHECKED.Value;

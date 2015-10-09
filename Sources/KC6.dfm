@@ -52,7 +52,7 @@ object fKC6: TfKC6
       41)
     object Button1: TButton
       Left = 350
-      Top = 8
+      Top = 6
       Width = 100
       Height = 25
       Anchors = [akRight, akBottom]
@@ -344,6 +344,7 @@ object fKC6: TfKC6
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
+      OnCellClick = grDataCellClick
       OnDrawColumnCell = grDataDrawColumnCell
       OnKeyDown = grDataKeyDown
       OnKeyPress = grDataKeyPress
@@ -362,6 +363,7 @@ object fKC6: TfKC6
         item
           Expanded = False
           FieldName = 'CHECKED'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1042' '#1072#1082#1090
           Width = 36

@@ -202,7 +202,7 @@ procedure TfCardAct.ButtonSaveClick(Sender: TObject);
   end;
 
 var
-  NewID, MAIS_ID, IdStavka, VAT, vMonth, vYear: Variant;
+  NewID, MAIS_ID, IdStavka, VAT, vMonth, vYear, SM_NUMBER: Variant;
 begin
   case Kind of
     kdInsert:
@@ -261,11 +261,18 @@ begin
             if VarIsNull(NewID) then
               raise Exception.Create('Не удалось получить новый ID.');
 
+            SM_NUMBER := FastSelectSQLOne
+              ('SELECT max(sm_number) FROM smetasourcedata WHERE ACT=1 and sm_type=2 and obj_id =:0',
+              VarArrayOf([qrAct.FieldByName('OBJ_ID').Value]));
+            if VarIsNull(SM_NUMBER) then
+              SM_NUMBER := 0;
+            SM_NUMBER := SM_NUMBER + 1;
+
             SQL.Clear;
             SQL.Add('INSERT INTO smetasourcedata (SM_ID,OBJ_ID,name,description,date,foreman_id,ACT,'#13 +
-              'TYPE_ACT,SM_TYPE,PARENT_ID,MAIS_ID,nds,stavka_id,KZP,k31,k32,k33,k34,k35,coef_tr_obor) ' +
-              'VALUE (:ID, :OBJ_ID, :name, :description, :date, :foreman_id, 1, :TYPE_ACT, 2, 0,'#13 +
-              ':MAIS_ID,:nds,:stavka_id,:KZP,:k31,:k32,:k33,:k34,:k35,:coef_tr_obor);');
+              'TYPE_ACT,SM_TYPE,PARENT_ID,MAIS_ID,nds,stavka_id,KZP,k31,k32,k33,k34,k35,coef_tr_obor,SM_NUMBER) '
+              + 'VALUE (:ID, :OBJ_ID, :name, :description, :date, :foreman_id, 1, :TYPE_ACT, 2, 0,'#13 +
+              ':MAIS_ID,:nds,:stavka_id,:KZP,:k31,:k32,:k33,:k34,:k35,:coef_tr_obor,:SM_NUMBER);');
             ParamByName('ID').Value := NewID;
             ParamByName('name').Value := dbedtNAME.Text;
             ParamByName('description').Value := dbmmoDESCRIPTION.Text;
@@ -283,6 +290,7 @@ begin
             ParamByName('k34').Value := GetUniDictParamValue('K_ZIM_UDOR_1', vMonth, vYear);
             ParamByName('k35').Value := GetUniDictParamValue('K_ZIM_UDOR_2', vMonth, vYear);
             ParamByName('coef_tr_obor').Value := 2;
+            ParamByName('SM_NUMBER').Value := SM_NUMBER;
 
             ExecSQL;
             if qrAct.State in [dsInsert] then
