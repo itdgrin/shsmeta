@@ -334,6 +334,7 @@ type
     // Автоматический пост записи при переходе внутри редактируемой записи на форме расчета стоимости ресурсов
     ShowNeedSaveDialog: Boolean; // Запрос на сохранение сметы ПЕЧАТЬ-ССР-РАСЧЕТ СТОИМОСТИ
     ShowHint: Boolean;
+    FindAutoRepInAllRate: Boolean; //Флаг необходимости поиска автозамены по всем расценкам
   end;
 
 const
@@ -2305,6 +2306,7 @@ begin
       PS.ShowHint := ReadBool('ShowHint', vShowHint, true);
       PS.AutosaveRateDescr := ReadBool('ESTIMATE', 'AutosaveRateDescr', true);
       PS.ShowNeedSaveDialog := ReadBool('ESTIMATE', 'ShowNeedSaveDialog', true);
+      PS.FindAutoRepInAllRate := ReadBool('ESTIMATE', 'FindAutoRepInAllRate', false);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -2350,6 +2352,7 @@ begin
       WriteBool('CalcResources', 'AutoSaveCalcResourcesAfterExitCell', PS.AutoSaveCalcResourcesAfterExitCell);
       WriteBool('ESTIMATE', 'AutosaveRateDescr', PS.AutosaveRateDescr);
       WriteBool('ESTIMATE', 'ShowNeedSaveDialog', PS.ShowNeedSaveDialog);
+      WriteBool('ESTIMATE', 'FindAutoRepInAllRate', PS.FindAutoRepInAllRate);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти

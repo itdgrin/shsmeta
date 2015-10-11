@@ -36,7 +36,7 @@ object FormProgramSettings: TFormProgramSettings
     Top = 8
     Width = 632
     Height = 351
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -362,6 +362,14 @@ object FormProgramSettings: TFormProgramSettings
         Checked = True
         State = cbChecked
         TabOrder = 7
+      end
+      object chkFindAutoRepInAllRate: TCheckBox
+        Left = 3
+        Top = 216
+        Width = 494
+        Height = 17
+        Caption = #1048#1089#1082#1072#1090#1100' '#1072#1074#1090#1086#1079#1072#1084#1077#1085#1091' '#1087#1086' '#1074#1089#1077#1084' '#1088#1072#1089#1094#1077#1085#1082#1072#1084' '#1089#1084#1077#1090#1099
+        TabOrder = 9
       end
     end
   end

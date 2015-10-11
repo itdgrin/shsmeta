@@ -51,6 +51,7 @@ type
     chkAutosaveRateDescr: TCheckBox;
     chkAutoSaveCalcResourcesAfterExitCell: TCheckBox;
     chkShowNeedSaveDialog: TCheckBox;
+    chkFindAutoRepInAllRate: TCheckBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -316,6 +317,7 @@ begin
   PS.AutosaveRateDescr := chkAutosaveRateDescr.Checked;
   PS.AutoSaveCalcResourcesAfterExitCell := chkAutoSaveCalcResourcesAfterExitCell.Checked;
   PS.ShowNeedSaveDialog := chkShowNeedSaveDialog.Checked;
+  PS.FindAutoRepInAllRate := chkFindAutoRepInAllRate.Checked;
 
   FormMain.WriteSettingsToFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
@@ -357,6 +359,7 @@ begin
   chkAutosaveRateDescr.Checked := PS.AutosaveRateDescr;
   chkAutoSaveCalcResourcesAfterExitCell.Checked := PS.AutoSaveCalcResourcesAfterExitCell;
   chkShowNeedSaveDialog.Checked := PS.ShowNeedSaveDialog;
+  chkFindAutoRepInAllRate.Checked := PS.FindAutoRepInAllRate;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
