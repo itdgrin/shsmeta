@@ -37,10 +37,6 @@ type
   //Ѕазовый класс дл€ построени€ справочников
   TSprFrame = class(TFrame)
     PanelSettings: TPanel;
-    lbYear: TLabel;
-    lbMonth: TLabel;
-    cmbMonth: TComboBox;
-    edtYear: TSpinEdit;
     PanelFind: TPanel;
     lbFindCode: TLabel;
     edtFindName: TEdit;
@@ -76,6 +72,11 @@ type
     pmFindSettings: TPopupMenu;
     PMStrictEqual: TMenuItem;
     PMEqualCode: TMenuItem;
+    PanelPeriod: TPanel;
+    lbYear: TLabel;
+    edtYear: TSpinEdit;
+    lbMonth: TLabel;
+    cmbMonth: TComboBox;
     procedure SpeedButtonShowHideClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
@@ -176,7 +177,7 @@ begin
 
   FBaseType := ABaseType;
   FPriceColumn := APriceColumn;
-  
+
   ev := rbNarmBase.OnClick;
   try
     rbNarmBase.OnClick := nil;
@@ -190,12 +191,16 @@ begin
       1:
       begin
         rbNarmBase.Checked := True;
-        PanelManual.Enabled := False;
+        PanelManual.Visible := False;
+        if not FPriceColumn then
+          PanelSettings.Visible := False;
       end;
       2:
       begin
         rbUserBase.Checked := True;
-        PanelManual.Enabled := False;
+        PanelManual.Visible := False;
+        if not FPriceColumn then
+          PanelSettings.Visible := False;
       end;
     end;
   finally
@@ -526,6 +531,7 @@ var i, j, n,
     TmpInd,
     TmpRel1,
     TmpRel2,
+    SummRel1,
     TmpCount: Integer;
     TmpCode: string;
     Item: TListItem;
@@ -593,6 +599,7 @@ begin
     ListSpr.Items.Clear;
     SetLength(FSortArray, Length(FSprArray));
     TmpCount := -1;
+    SummRel1 := 0;
     for i := Low(FSprArray) to High(FSprArray) do
     begin
       if (FBaseType = 1) and (FSprArray[i].Manual) then Continue;
@@ -623,6 +630,8 @@ begin
                 TmpRel1 := 3;
           end;
         end;
+
+        SummRel1 := SummRel1 + TmpRel1;
 
         if TmpRel1 = 0 then
           Continue;
@@ -685,7 +694,16 @@ begin
       ListSpr.ItemIndex := 0
     else
     begin
-      StatusBar.Panels[0].Text := '   0/0';
+      if (AFindCode <> '') then
+      begin
+        if (SummRel1 = 0) then
+          StatusBar.Panels[0].Text := '''' + AFindCode + ''' не существует'
+        else
+          StatusBar.Panels[0].Text :=
+            'ѕо ''' + AFindCode + ''' + ''' + AFindName + ''' ничего не найдено';
+      end
+      else
+        StatusBar.Panels[0].Text := '   0/0';
       ClearDetailsPanel;
     end;
   finally

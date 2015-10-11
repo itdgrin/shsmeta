@@ -10,10 +10,10 @@ uses
 
 type
   TSprMaterial = class(TSprFrame)
-    lbRegion: TLabel;
     cmbRegion: TComboBox;
     rbMat: TRadioButton;
     rbJBI: TRadioButton;
+    lbRegion: TLabel;
     procedure ListSprDblClick(Sender: TObject);
     procedure rbMatClick(Sender: TObject);
   private
@@ -75,8 +75,9 @@ begin
   end
   else
   begin
-    rbMat.Left := PanelManual.Width + 8;
+    rbMat.Left := 10;
     rbJBI.Left := rbMat.Left;
+    PanelSettings.Visible := True;
   end;
   PanelSettings.Update;
 end;

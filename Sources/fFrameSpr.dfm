@@ -281,40 +281,6 @@ object SprFrame: TSprFrame
     ParentBackground = False
     ParentFont = False
     TabOrder = 0
-    object lbYear: TLabel
-      Left = 149
-      Top = 11
-      Width = 23
-      Height = 13
-      Caption = #1043#1086#1076':'
-    end
-    object lbMonth: TLabel
-      Left = 234
-      Top = 11
-      Width = 35
-      Height = 13
-      Caption = #1052#1077#1089#1103#1094':'
-    end
-    object cmbMonth: TComboBox
-      Left = 273
-      Top = 8
-      Width = 85
-      Height = 21
-      Style = csDropDownList
-      TabOrder = 1
-      OnChange = edtYearChange
-    end
-    object edtYear: TSpinEdit
-      Left = 174
-      Top = 8
-      Width = 57
-      Height = 22
-      MaxValue = 0
-      MinValue = 0
-      TabOrder = 0
-      Value = 0
-      OnChange = edtYearChange
-    end
     object btnShow: TButton
       AlignWithMargins = True
       Left = 663
@@ -327,7 +293,7 @@ object SprFrame: TSprFrame
       Margins.Bottom = 13
       Align = alRight
       Caption = #1055#1086#1082#1072#1079#1072#1090#1100
-      TabOrder = 2
+      TabOrder = 0
       OnClick = btnShowClick
     end
     object PanelManual: TPanel
@@ -337,7 +303,7 @@ object SprFrame: TSprFrame
       Height = 41
       Align = alLeft
       BevelOuter = bvNone
-      TabOrder = 3
+      TabOrder = 1
       object Bevel1: TBevel
         Left = 0
         Top = 0
@@ -368,6 +334,49 @@ object SprFrame: TSprFrame
         TabOrder = 1
         TabStop = True
         OnClick = rbNarmBaseClick
+      end
+    end
+    object PanelPeriod: TPanel
+      Left = 143
+      Top = 1
+      Width = 513
+      Height = 41
+      Align = alLeft
+      BevelOuter = bvNone
+      TabOrder = 2
+      object lbYear: TLabel
+        Left = 5
+        Top = 11
+        Width = 23
+        Height = 13
+        Caption = #1043#1086#1076':'
+      end
+      object lbMonth: TLabel
+        Left = 95
+        Top = 11
+        Width = 35
+        Height = 13
+        Caption = #1052#1077#1089#1103#1094':'
+      end
+      object edtYear: TSpinEdit
+        Left = 32
+        Top = 8
+        Width = 57
+        Height = 22
+        MaxValue = 0
+        MinValue = 0
+        TabOrder = 0
+        Value = 0
+        OnChange = edtYearChange
+      end
+      object cmbMonth: TComboBox
+        Left = 135
+        Top = 8
+        Width = 98
+        Height = 21
+        Style = csDropDownList
+        TabOrder = 1
+        OnChange = edtYearChange
       end
     end
   end
@@ -414,19 +423,19 @@ object SprFrame: TSprFrame
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEA
-        EAEAEEEEEEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-        FFFFFFFFFFFFFFFFFFFFFFFFF1F1F1A8A8A8A1A1A1F3F3F3FFFFFFFFFFFFFFFF
-        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF9F9F9AEAEAEF3
-        F3F3EEEEEE9C9C9CF9F9F9FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-        FFFFFFFFFFFFFDFDFDBABABAECECECFFFFFFFFFFFFE3E3E39B9B9BFDFDFDFFFF
-        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC6C6C6E0E0E0FAFAFAFA
-        FAFAFAFAFAF9F9F9CECECEA1A1A1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-        FFFFFFFAFAFAC6C6C6C0C0C0BABABAB4B4B4AEAEAEA8A8A8A2A2A29E9E9EF7F7
-        F7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF707070585858FFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF70707000
+        0000000000585858FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFF707070000000000000000000000000686868FFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF70707000000000000000
+        0000000000000000000000707070FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFF7070700000000000000000000000000000000000000000000000007070
+        70FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF70707000000000000000000000000000
+        0000000000000000000000000000000000707070FFFFFFFFFFFFFFFFFF707070
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000000707070FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF

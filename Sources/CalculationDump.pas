@@ -75,6 +75,7 @@ type
   public
     IdEstimate: Integer; //ID сметы в которой свалка
     Iterator: Integer; //Место куда добавить новую строку
+    NomManual: Integer;
     IdDump: Integer; // ID свалки в смете
     InsMode: boolean; //признак вставкисвалки  в смету
     IsSaved: boolean;
@@ -84,7 +85,7 @@ const
   CaptionForm = 'Расчёт свалки';
 
 //Вызов окна свалок. InsMode - признак вставкисвалки  в смету
-function GetDumpForm(AIdEstimate, AIdDump, AIterator: Integer; AInsMode: boolean): boolean;
+function GetDumpForm(AIdEstimate, AIdDump, AIterator, ANomManual: Integer; AInsMode: boolean): boolean;
 
 implementation
 
@@ -92,13 +93,14 @@ uses Main, DataModule, CalculationEstimate, Tools, GlobsAndConst;
 
 {$R *.dfm}
 
-function GetDumpForm(AIdEstimate, AIdDump, AIterator: Integer; AInsMode: boolean): boolean;
+function GetDumpForm(AIdEstimate, AIdDump, AIterator, ANomManual: Integer; AInsMode: boolean): boolean;
 var FormDump: TFormCalculationDump;
 begin
   FormDump := TFormCalculationDump.Create(nil);
   try
     FormDump.IdEstimate := AIdEstimate;
     FormDump.Iterator := AIterator;
+    FormDump.NomManual := ANomManual;
     FormDump.IdDump := AIdDump;
     FormDump.InsMode := AInsMode;
     FormDump.IsSaved := false;
@@ -211,13 +213,14 @@ begin
 
     Iterator := UpdateIterator(IdEstimate, Iterator, 0);
     qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
-      '(ID, SM_ID, id_type_data, id_tables, NUM_ROW) VALUE ' +
-      '(:ID, :SM_ID, :id_type_data, :id_tables, :NUM_ROW);';
+      '(ID, SM_ID, id_type_data, id_tables, NUM_ROW, NOM_ROW_MANUAL) VALUE ' +
+      '(:ID, :SM_ID, :id_type_data, :id_tables, :NUM_ROW, :NOM_ROW_MANUAL);';
     qrTemp.ParamByName('ID').Value := NewDataRowId;
     qrTemp.ParamByName('SM_ID').Value := IdEstimate;
     qrTemp.ParamByName('id_type_data').Value := 5;
     qrTemp.ParamByName('id_tables').Value := NewId;
     qrTemp.ParamByName('NUM_ROW').Value := Iterator;
+    qrTemp.ParamByName('NOM_ROW_MANUAL').Value := NomManual;
     qrTemp.ExecSQL;
 
     qrTemp.SQL.Text := 'Insert into dumpcard_temp (SM_ID, DATA_ROW_ID, ID, ' +
@@ -248,6 +251,10 @@ begin
     qrTemp.ParamByName('NDS').Value := FNds;
     qrTemp.ParamByName('PRICE_NDS').Value := StrToCurr(edtPriceNDS.Text);
     qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToCurr(edtPriceNoNDS.Text);
+    qrTemp.ExecSQL;
+
+    qrTemp.SQL.Text := 'CALL UpdateNomManual(:IdEstimate, 0, 0);';
+    qrTemp.ParamByName('IdEstimate').Value := IdEstimate;
     qrTemp.ExecSQL;
 
     qrTemp.SQL.Text := 'CALL AddCalcCoef(:IdEstimate, :NewID, :TypeData);';

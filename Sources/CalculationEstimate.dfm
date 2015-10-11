@@ -621,6 +621,7 @@
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = dbgrdRates12DrawColumnCell
+          OnDblClick = grRatesExDblClick
           OnEnter = dbgrdRatesEnter
           OnExit = grRatesExExit
           OnKeyDown = dbgrdRatesKeyDown
@@ -2194,7 +2195,7 @@
                 FieldName = 'FCOAST_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = '  '#1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 70
+                Width = 80
                 Visible = True
               end
               item
@@ -2202,7 +2203,7 @@
                 FieldName = 'FCOAST_NO_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = ' '#1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 70
+                Width = 80
                 Visible = True
               end
               item
@@ -2210,7 +2211,7 @@
                 FieldName = 'DEVICE_TRANSP_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090')  '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 70
+                Width = 90
                 Visible = True
               end
               item
@@ -2218,7 +2219,7 @@
                 FieldName = 'DEVICE_TRANSP_NO_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 70
+                Width = 90
                 Visible = True
               end
               item
@@ -2227,7 +2228,7 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')     '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 80
+                Width = 90
                 Visible = True
               end
               item
@@ -2236,7 +2237,7 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = ' '#1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 80
+                Width = 90
                 Visible = True
               end
               item
@@ -3518,7 +3519,12 @@
       OnClick = PMNumRowClick
       object PMRenumSelected: TMenuItem
         Caption = #1055#1088#1086#1085#1091#1084#1077#1088#1086#1074#1072#1090#1100' '#1074#1099#1076#1077#1083#1077#1085#1085#1099#1077' '#1089#1090#1088#1086#1082#1080
+        Visible = False
         OnClick = PMRenumSelectedClick
+      end
+      object PMRenumPTM: TMenuItem
+        Caption = #1055#1088#1086#1084#1091#1084#1077#1088#1086#1074#1072#1090#1100' '#1055#1058#1052
+        OnClick = PMRenumPTMClick
       end
       object PMRenumCurSmet: TMenuItem
         Tag = 1
@@ -5376,6 +5382,7 @@
   end
   object dsRatesEx: TDataSource
     DataSet = qrRatesEx
+    OnDataChange = dsRatesExDataChange
     Left = 24
     Top = 264
   end

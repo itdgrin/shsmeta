@@ -23,6 +23,7 @@ type
     ID: Integer;
     DataType: Integer;
     Code: string;
+    Name: string;
     MID: Integer;
     RTID: Integer;
   end;
@@ -487,6 +488,7 @@ type
     PMRenumAllList: TMenuItem;
     btnKC6J: TSpeedButton;
     PMRenumSelected: TMenuItem;
+    PMRenumPTM: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -690,6 +692,9 @@ type
     procedure PMNumRowClick(Sender: TObject);
     procedure btnKC6JClick(Sender: TObject);
     procedure PMRenumSelectedClick(Sender: TObject);
+    procedure dsRatesExDataChange(Sender: TObject; Field: TField);
+    procedure grRatesExDblClick(Sender: TObject);
+    procedure PMRenumPTMClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -708,7 +713,8 @@ type
     FYearEstimate: Integer;
     FRegion: Integer;
 
-    FNewRowIterator: Integer;
+    FNewRowIterator,
+    FNewNomManual: Integer;
 
     VisibleRightTables: String; // Настройка отобаржения нужной таблицы справа
 
@@ -778,7 +784,7 @@ type
 
     // Набор процедур для управление автозаменой
     procedure ClearAutoRep; // Очищает массив автозамены
-    procedure CheckNeedAutoRep(AID, AType, AMId, ARTId: Integer; ACode: string); // Проверяет необходимость в замене
+    procedure CheckNeedAutoRep(AID, AType, AMId, ARTId: Integer; ACode, AName: string); // Проверяет необходимость в замене
     procedure ShowAutoRep; // Показывает диалог замены для всех из массива
 
     procedure DeleteRowFromSmeta();
@@ -1850,6 +1856,12 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.dsRatesExDataChange(Sender: TObject;
+  Field: TField);
+begin
+
+end;
+
 // Проверят можно ли редактировать данную строку
 function TFormCalculationEstimate.CheckMechReadOnly: Boolean;
 begin
@@ -1862,7 +1874,8 @@ begin
 end;
 
 // Проверяет выполнялась ли ранее в смета замена по такому коду, если да то нуждается в автозамене
-procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType, AMId, ARTId: Integer; ACode: string);
+procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType, AMId, ARTId: Integer;
+  ACode, AName: string);
 var
   j: Integer;
 begin
@@ -1871,7 +1884,7 @@ begin
     Exit;
 
   qrTemp1.Active := False;
-  case G_AUTOREPTYPE of
+  case Byte(PS.FindAutoRepInAllRate) of
   0:
   begin
     case AType of
@@ -1913,8 +1926,9 @@ begin
     FAutoRepArray[j].ID := AID;
     FAutoRepArray[j].DataType := AType;
     FAutoRepArray[j].Code := ACode;
+    FAutoRepArray[j].Name := AName;
     FAutoRepArray[j].MID := AMId;
-    if G_AUTOREPTYPE = 0 then
+    if not PS.FindAutoRepInAllRate then
       FAutoRepArray[j].RTID := ARTId
     else
       FAutoRepArray[j].RTID := 0;
@@ -1939,7 +1953,8 @@ begin
     case FAutoRepArray[i].DataType of
       2:
         begin
-          case MessageBox(0, PChar('Хотите произвести замену материала ' + FAutoRepArray[i].Code + '?' +
+          case MessageBox(0, PChar('Хотите произвести замену материала ''' +
+            FAutoRepArray[i].Code + ' ' + FAutoRepArray[i].Name + '''?' +
             sLineBreak + 'Замены данного материала ранее уже производились в смете.'), 'Автозамена',
             MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
@@ -1961,13 +1976,14 @@ begin
         end;
       3:
         begin
-          case MessageBox(0, PChar('Хотите произвести замену механизма ' + FAutoRepArray[i].Code + '?' +
+          case MessageBox(0, PChar('Хотите произвести замену механизма ''' +
+            FAutoRepArray[i].Code + ' ' + FAutoRepArray[i].Name + '''?' +
             sLineBreak + 'Замены данного механизма ранее уже производились в смете.'), 'Автозамена',
             MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
                 frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
-                  FAutoRepArray[i].RTID, FAutoRepArray[i].ID, 0, 3, False, True);
+                  FAutoRepArray[i].RiciTID, FAutoRepArray[i].ID, 0, 3, False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
                   begin
@@ -2981,6 +2997,8 @@ begin
   qrCalculationsAfterOpen(qrCalculations);
   // Гасит итератор, все добавляется в конец сметы(отличается от 0 только в режиме вставке строки)
   FNewRowIterator := 0;
+  // Гасит собственный номер
+  FNewNomManual := 0;
   tmRate.Enabled := False;
   tmRate.Enabled := True;
 
@@ -3006,7 +3024,8 @@ begin
     end;
   end;
 
-  if (qrRatesExID_TYPE_DATA.Value = -4) and (qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) then
+  if (qrRatesExID_TYPE_DATA.Value = -4) and
+     (qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) then
   begin
     qrRatesEx.Edit;
     qrRatesExNOM_ROW_MANUAL.AsVariant := Null;
@@ -3066,157 +3085,147 @@ end;
 procedure TFormCalculationEstimate.qrRatesExCODEChange(Sender: TField);
 var
   NewCode: string;
-  newID: Integer;
+  NewID: Integer;
   Point: TPoint;
-  NomManual: Integer;
 begin
   NewCode := AnsiUpperCase(qrRatesExOBJ_CODE.AsString);
-  NomManual := qrRatesExNOM_ROW_MANUAL.Value;
   grRatesEx.EditorMode := False;
 
   if Length(NewCode) = 0 then
     Exit;
 
-  newID := 0;
+  NewID := 0;
 
-  try
-    // Замена литинских на кирилические
-    if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or
-      (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
+  // Замена литинских на кирилические
+  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or
+    (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
+  begin
+    if (NewCode[1] = 'E') or (NewCode[1] = 'T') then
+      NewCode[1] := 'Е';
+    if NewCode[1] = 'W' then
+      NewCode[1] := 'Ц';
+
+    if NewCode[1] = 'W' then
+      NewCode[1] := 'Ц';
+    qrTemp.Active := False;
+    qrTemp.SQL.Clear;
+    qrTemp.SQL.Add('SELECT normativ_id, norm_num FROM normativg WHERE ' +
+      '(norm_num = :norm_num1) or (norm_num = :norm_num2) order by norm_num;');
+    qrTemp.ParamByName('norm_num1').Value := NewCode;
+    qrTemp.ParamByName('norm_num2').Value := NewCode + '*';
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
     begin
-      if (NewCode[1] = 'E') or (NewCode[1] = 'T') then
-        NewCode[1] := 'Е';
-      if NewCode[1] = 'W' then
-        NewCode[1] := 'Ц';
-
-      if NewCode[1] = 'W' then
-        NewCode[1] := 'Ц';
-      qrTemp.Active := False;
-      qrTemp.SQL.Clear;
-      qrTemp.SQL.Add('SELECT normativ_id, norm_num FROM normativg WHERE ' +
-        '(norm_num = :norm_num1) or (norm_num = :norm_num2) order by norm_num;');
-      qrTemp.ParamByName('norm_num1').Value := NewCode;
-      qrTemp.ParamByName('norm_num2').Value := NewCode + '*';
-      qrTemp.Active := True;
-      if not qrTemp.IsEmpty then
+      if qrTemp.RecordCount > 1 then
       begin
-        if qrTemp.RecordCount > 1 then
-        begin
-          PMAddRateOld.Caption := qrTemp.Fields[1].AsString;
-          PMAddRateOld.Tag := qrTemp.Fields[0].AsInteger;
-          qrTemp.Next;
-          PMAddRateNew.Caption := qrTemp.Fields[1].AsString;
-          PMAddRateNew.Tag := qrTemp.Fields[0].AsInteger;
-          qrTemp.Active := False;
-          qrRatesExOBJ_CODE.AsString := '';
-
-          Point.X := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Left;
-          Point.Y := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Bottom + 1;
-          pmAddRate.Popup(grRatesEx.ClientToScreen(Point).X, grRatesEx.ClientToScreen(Point).Y);
-
-          Exit;
-        end
-        else
-          newID := qrTemp.Fields[0].AsInteger;
-      end;
-      qrTemp.Active := False;
-      if newID = 0 then
-      begin
-        MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
-          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+        PMAddRateOld.Caption := qrTemp.Fields[1].AsString;
+        PMAddRateOld.Tag := qrTemp.Fields[0].AsInteger;
+        qrTemp.Next;
+        PMAddRateNew.Caption := qrTemp.Fields[1].AsString;
+        PMAddRateNew.Tag := qrTemp.Fields[0].AsInteger;
+        qrTemp.Active := False;
         qrRatesExOBJ_CODE.AsString := '';
-        Exit;
-      end;
 
-      AddRate(newID);
-      grRatesEx.EditorMode := True;
+        Point.X := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Left;
+        Point.Y := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Bottom + 1;
+        pmAddRate.Popup(grRatesEx.ClientToScreen(Point).X, grRatesEx.ClientToScreen(Point).Y);
+
+        Exit;
+      end
+      else
+        NewID := qrTemp.Fields[0].AsInteger;
+    end;
+    qrTemp.Active := False;
+    if NewID = 0 then
+    begin
+      MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
+        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+      qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
 
-    if (NewCode[1] = 'С') or (NewCode[1] = 'C') or // C кирилическая и латинская
-      ((Length(NewCode) > 1) and (NewCode[1] = '5') and CharInSet(NewCode[2], ['7', '8'])) then
-    begin
-      if NewCode[1] = 'C' then
-        NewCode[1] := 'С';
-
-      qrTemp.Active := False;
-      qrTemp.SQL.Clear;
-      qrTemp.SQL.Add('SELECT MATERIAL_ID FROM material WHERE MAT_CODE = :CODE;');
-      qrTemp.ParamByName('CODE').Value := NewCode;
-      qrTemp.Active := True;
-      if not qrTemp.IsEmpty then
-        newID := qrTemp.Fields[0].AsInteger;
-      qrTemp.Active := False;
-      if newID = 0 then
-      begin
-        MessageBox(0, 'Материал с указанным кодом не найден!', CaptionForm,
-          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-        qrRatesExOBJ_CODE.AsString := '';
-        Exit;
-      end;
-
-      AddMaterial(newID);
-      grRatesEx.EditorMode := True;
-      Exit;
-    end;
-    if (NewCode[1] = 'М') or (NewCode[1] = 'M') or (NewCode[1] = 'V') then // M кирилическая и латинская
-    begin
-
-      if (NewCode[1] = 'M') or (NewCode[1] = 'V') then
-        NewCode[1] := 'М';
-      qrTemp.Active := False;
-      qrTemp.SQL.Clear;
-      qrTemp.SQL.Add('SELECT MECHANIZM_ID FROM mechanizm WHERE MECH_CODE = :CODE;');
-      qrTemp.ParamByName('CODE').Value := NewCode;
-      qrTemp.Active := True;
-      if not qrTemp.IsEmpty then
-        newID := qrTemp.Fields[0].AsInteger;
-      qrTemp.Active := False;
-      if newID = 0 then
-      begin
-        MessageBox(0, 'Механизм с указанным кодом не найден!', CaptionForm,
-          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-        qrRatesExOBJ_CODE.AsString := '';
-        Exit;
-      end;
-
-      AddMechanizm(newID);
-      grRatesEx.EditorMode := True;
-      Exit;
-    end;
-
-    if CharInSet(NewCode[1], ['1', '9']) then
-    begin
-      qrTemp.Active := False;
-      qrTemp.SQL.Clear;
-      qrTemp.SQL.Add('SELECT DEVICE_ID FROM devices WHERE DEVICE_CODE1 = :CODE;');
-      qrTemp.ParamByName('CODE').Value := NewCode;
-      qrTemp.Active := True;
-      if not qrTemp.IsEmpty then
-        newID := qrTemp.Fields[0].AsInteger;
-      qrTemp.Active := False;
-      if newID = 0 then
-      begin
-        MessageBox(0, 'Оборудование с указанным кодом не найден!', CaptionForm,
-          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-        qrRatesExOBJ_CODE.AsString := '';
-        Exit;
-      end;
-      AddDevice(newID);
-      grRatesEx.EditorMode := True;
-      Exit;
-    end;
-
-    MessageBox(0, 'По указанному коду ничего не найдено!', CaptionForm,
-      MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-    qrRatesExOBJ_CODE.AsString := '';
-  finally
-    if NomManual > 0 then
-    begin
-      qrRatesEx.Edit;
-      qrRatesExNOM_ROW_MANUAL.Value := NomManual;
-    end;
+    AddRate(newID);
+    grRatesEx.EditorMode := True;
+    Exit;
   end;
+
+  if (NewCode[1] = 'С') or (NewCode[1] = 'C') or // C кирилическая и латинская
+    ((Length(NewCode) > 1) and (NewCode[1] = '5') and CharInSet(NewCode[2], ['7', '8'])) then
+  begin
+    if NewCode[1] = 'C' then
+      NewCode[1] := 'С';
+
+    qrTemp.Active := False;
+    qrTemp.SQL.Clear;
+    qrTemp.SQL.Add('SELECT MATERIAL_ID FROM material WHERE MAT_CODE = :CODE;');
+    qrTemp.ParamByName('CODE').Value := NewCode;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      NewID := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+    if NewID = 0 then
+    begin
+      MessageBox(0, 'Материал с указанным кодом не найден!', CaptionForm,
+        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+      qrRatesExOBJ_CODE.AsString := '';
+      Exit;
+    end;
+
+    AddMaterial(newID);
+    grRatesEx.EditorMode := True;
+    Exit;
+  end;
+  if (NewCode[1] = 'М') or (NewCode[1] = 'M') or (NewCode[1] = 'V') then // M кирилическая и латинская
+  begin
+
+    if (NewCode[1] = 'M') or (NewCode[1] = 'V') then
+      NewCode[1] := 'М';
+    qrTemp.Active := False;
+    qrTemp.SQL.Clear;
+    qrTemp.SQL.Add('SELECT MECHANIZM_ID FROM mechanizm WHERE MECH_CODE = :CODE;');
+    qrTemp.ParamByName('CODE').Value := NewCode;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      NewID := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+    if NewID = 0 then
+    begin
+      MessageBox(0, 'Механизм с указанным кодом не найден!', CaptionForm,
+        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+      qrRatesExOBJ_CODE.AsString := '';
+      Exit;
+    end;
+
+    AddMechanizm(newID);
+    grRatesEx.EditorMode := True;
+    Exit;
+  end;
+
+  if CharInSet(NewCode[1], ['1', '9']) then
+  begin
+    qrTemp.Active := False;
+    qrTemp.SQL.Clear;
+    qrTemp.SQL.Add('SELECT DEVICE_ID FROM devices WHERE DEVICE_CODE1 = :CODE;');
+    qrTemp.ParamByName('CODE').Value := NewCode;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      NewID := qrTemp.Fields[0].AsInteger;
+    qrTemp.Active := False;
+    if NewID = 0 then
+    begin
+      MessageBox(0, 'Оборудование с указанным кодом не найден!', CaptionForm,
+        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+      qrRatesExOBJ_CODE.AsString := '';
+      Exit;
+    end;
+    AddDevice(newID);
+    grRatesEx.EditorMode := True;
+    Exit;
+  end;
+
+  MessageBox(0, 'По указанному коду ничего не найдено!', CaptionForm,
+    MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+  qrRatesExOBJ_CODE.AsString := '';
 end;
 
 procedure TFormCalculationEstimate.qrRatesExCOUNTChange(Sender: TField);
@@ -3270,15 +3279,54 @@ begin
 end;
 
 procedure TFormCalculationEstimate.qrRatesExNOM_ROW_MANUALChange(Sender: TField);
+var AutoCommitValue: Boolean;
+    ev: TDataSetNotifyEvent;
+    col: Integer;
 begin
+  qrRatesEx.Post;
+
   if qrRatesExID_TYPE_DATA.Value > 0 then
   begin
-    qrTemp.SQL.Text := 'UPDATE data_row_temp set NOM_ROW_MANUAL=:VAL WHERE ID=:ID;';
-    qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
-    qrTemp.ParamByName('VAL').Value := Sender.Value;
-    qrTemp.ExecSQL;
-  end;
-  qrRatesEx.Post;
+    qrRatesEx.DisableControls;
+    col := grRatesEx.Col;
+    ev := qrRatesEx.AfterScroll;
+    AutoCommitValue := DM.Read.Options.AutoCommit;
+    try
+      DM.Read.Options.AutoCommit := False;
+      qrRatesEx.AfterScroll := nil;
+
+      DM.Read.StartTransaction;
+      try
+        qrTemp.SQL.Text := 'UPDATE data_row_temp set NOM_ROW_MANUAL=:VAL WHERE ID=:ID;';
+        qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
+        qrTemp.ParamByName('VAL').Value := Sender.Value;
+        qrTemp.ExecSQL;
+
+        qrTemp.SQL.Text := 'CALL UpdateNomManual(:SM_ID, 0, 0);';
+        qrTemp.ParamByName('SM_ID').Value := qrRatesExSM_ID.Value;
+        qrTemp.ExecSQL;
+
+        OutputDataToTable(False);
+
+
+        DM.Read.Commit;
+      except
+        DM.Read.Rollback;
+        raise;
+      end;
+    finally
+      DM.Read.Options.AutoCommit := AutoCommitValue;
+      qrRatesEx.AfterScroll := ev;
+      grRatesEx.Col := col;
+      qrRatesEx.EnableControls;
+    end;
+  end
+  else
+    //будет использовано в Add процедурах
+    //позволяет ввести номер до добавления строки
+    if (qrRatesExID_TYPE_DATA.Value = -4) or (qrRatesExID_TYPE_DATA.Value = -5) then
+      FNewNomManual := Sender.AsInteger;
+
   if grRatesEx.Col = 2 then
     grRatesEx.Col := 3;
 end;
@@ -3419,6 +3467,19 @@ begin
     ((Field = qrRatesExNOM_ROW_MANUAL) and ((qrRatesExID_TYPE_DATA.Value = -1) or
     (qrRatesExID_TYPE_DATA.Value = -2) or (qrRatesExID_TYPE_DATA.Value = -3))) or (Grid.Col = 1) then
     AllowEdit := False;
+end;
+
+procedure TFormCalculationEstimate.grRatesExDblClick(Sender: TObject);
+begin
+  DM.qrDifferent.SQL.Text := 'Select UpdateNomManual(:AAA)';
+  DM.qrDifferent.ParamByName('AAA').Value := qrRatesExSM_ID.Value;
+  DM.qrDifferent.Active := True;
+  try
+    if not DM.qrDifferent.Eof then
+      ShowMessage(IntToStr(DM.qrDifferent.Fields[0].AsInteger));
+  finally
+    DM.qrDifferent.Active := False;
+  end;
 end;
 
 procedure TFormCalculationEstimate.grRatesExExit(Sender: TObject);
@@ -3788,6 +3849,7 @@ begin
   qrTemp.Active := False;
 
   PMRenumSelected.Enabled := grRatesEx.SelectedRows.Count > 1;
+  PMRenumPTM.Enabled := (TmpSmType = 3);
   PMRenumCurSmet.Enabled := TmpSmType in [1, 2];
   PMRenumFromCurRowToSM.Enabled := PMRenumCurSmet.Enabled and (qrRatesExID_TYPE_DATA.Value > 0) and
     (qrRatesExNOM_ROW_MANUAL.Value > 0);
@@ -3830,6 +3892,7 @@ end;
 procedure TFormCalculationEstimate.PMRenumCurSmetClick(Sender: TObject);
 var
   ev: TDataSetNotifyEvent;
+  ev2: TFieldNotifyEvent;
   TempBookmark: TBookMark;
   NumRow: Integer;
   LocalSmIdList, SmIdList: TList<Integer>;
@@ -3842,7 +3905,8 @@ begin
     if (Sender as TComponent).Tag in [1, 2] then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (SM_ID = ' +
+      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
+        'FROM smetasourcedata WHERE (SM_ID = ' +
         qrRatesExSM_ID.Value.ToString + ')';
       qrTemp.Active := True;
       if not qrTemp.Eof then
@@ -3858,8 +3922,9 @@ begin
     if (Sender as TComponent).Tag = 3 then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '(PARENT_ID = ' + FIdEstimate.ToString +
-        ') and (SM_TYPE = 1)';
+      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
+        '(PARENT_ID = ' + FIdEstimate.ToString +
+        ') and (SM_TYPE = 1) and (DELETED = 0)';
       qrTemp.Active := True;
       while not qrTemp.Eof do
       begin
@@ -3875,16 +3940,19 @@ begin
     TempBookmark := qrRatesEx.GetBookmark;
     qrRatesEx.DisableControls;
     ev := qrRatesEx.AfterScroll;
+    ev2 := qrRatesExNOM_ROW_MANUAL.OnChange;
     AutoCommitValue := DM.Read.Options.AutoCommit;
     try
       DM.Read.Options.AutoCommit := False;
       qrRatesEx.AfterScroll := nil;
+      qrRatesExNOM_ROW_MANUAL.OnChange := nil;
 
       for i := 0 to LocalSmIdList.Count - 1 do
       begin
         SmIdList.Clear;
-        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (PARENT_ID = ' +
-          LocalSmIdList[i].ToString + ')';
+        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
+          'FROM smetasourcedata WHERE (PARENT_ID = ' +
+          LocalSmIdList[i].ToString + ') and (DELETED = 0)';
         qrTemp.Active := True;
         while not qrTemp.Eof do
         begin
@@ -3913,6 +3981,11 @@ begin
               Inc(NumRow);
               qrRatesEx.Edit;
               qrRatesExNOM_ROW_MANUAL.Value := NumRow;
+              qrRatesEx.Post;
+              qrTemp.SQL.Text := 'UPDATE data_row_temp set NOM_ROW_MANUAL=:VAL WHERE ID=:ID;';
+              qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
+              qrTemp.ParamByName('VAL').Value := NumRow;
+              qrTemp.ExecSQL;
             end;
             qrRatesEx.Next;
           end;
@@ -3929,11 +4002,77 @@ begin
       qrRatesEx.FreeBookmark(TempBookmark);
 
       qrRatesEx.AfterScroll := ev;
+      qrRatesExNOM_ROW_MANUAL.OnChange := ev2;
       qrRatesEx.EnableControls;
     end;
   finally
     FreeAndNil(LocalSmIdList);
     FreeAndNil(SmIdList);
+  end;
+end;
+
+procedure TFormCalculationEstimate.PMRenumPTMClick(Sender: TObject);
+var
+  ev: TDataSetNotifyEvent;
+  ev2: TFieldNotifyEvent;
+  TempBookmark: TBookMark;
+  NumRow: Integer;
+  AutoCommitValue: Boolean;
+begin
+  TempBookmark := qrRatesEx.GetBookmark;
+  qrRatesEx.DisableControls;
+  ev := qrRatesEx.AfterScroll;
+  ev2 := qrRatesExNOM_ROW_MANUAL.OnChange;
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  try
+    DM.Read.Options.AutoCommit := False;
+    qrRatesEx.AfterScroll := nil;
+    qrRatesExNOM_ROW_MANUAL.OnChange := nil;
+
+    DM.Read.StartTransaction;
+    try
+      qrTemp.Active := False;
+      qrTemp.SQL.Text := 'Select GetLastNomManual(:SM_ID, 0)';
+      qrTemp.ParamByName('SM_ID').Value := FIdEstimate;
+      qrTemp.Active := True;
+      try
+        NumRow := 0;
+        if not qrTemp.Eof then
+          NumRow := qrTemp.Fields[0].AsInteger;
+      finally
+        qrTemp.Active := False;
+      end;
+
+      qrRatesEx.First;
+      while not qrRatesEx.Eof do
+      begin
+        if (qrRatesExSM_ID.Value = FIdEstimate) and (qrRatesExID_TYPE_DATA.Value > 0) then
+        begin
+          Inc(NumRow);
+          qrRatesEx.Edit;
+          qrRatesExNOM_ROW_MANUAL.Value := NumRow;
+          qrRatesEx.Post;
+          qrTemp.SQL.Text := 'UPDATE data_row_temp set NOM_ROW_MANUAL=:VAL WHERE ID=:ID;';
+          qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
+          qrTemp.ParamByName('VAL').Value := NumRow;
+          qrTemp.ExecSQL;
+        end;
+        qrRatesEx.Next;
+      end;
+      DM.Read.Commit;
+    except
+      DM.Read.Rollback;
+      raise;
+    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+
+    qrRatesEx.GotoBookmark(TempBookmark);
+    qrRatesEx.FreeBookmark(TempBookmark);
+
+    qrRatesEx.AfterScroll := ev;
+    qrRatesExNOM_ROW_MANUAL.OnChange := ev2;
+    qrRatesEx.EnableControls;
   end;
 end;
 
@@ -3943,16 +4082,19 @@ var
   X: Integer;
   AutoCommitValue: Boolean;
   ev: TDataSetNotifyEvent;
+  ev2: TFieldNotifyEvent;
   NumRow: Integer;
   flag: Boolean;
 begin
   TempBookmark := qrRatesEx.GetBookmark;
   qrRatesEx.DisableControls;
   ev := qrRatesEx.AfterScroll;
+  ev2 := qrRatesExNOM_ROW_MANUAL.OnChange;
   AutoCommitValue := DM.Read.Options.AutoCommit;
   try
     DM.Read.Options.AutoCommit := False;
     qrRatesEx.AfterScroll := nil;
+    qrRatesExNOM_ROW_MANUAL.OnChange := nil;
 
     if grRatesEx.SelectedRows.Count = 0 then
       grRatesEx.SelectedRows.CurrentRowSelected := True;
@@ -3977,6 +4119,11 @@ begin
         Inc(NumRow);
         qrRatesEx.Edit;
         qrRatesExNOM_ROW_MANUAL.Value := NumRow;
+        qrRatesEx.Post;
+        qrTemp.SQL.Text := 'UPDATE data_row_temp set NOM_ROW_MANUAL=:VAL WHERE ID=:ID;';
+        qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
+        qrTemp.ParamByName('VAL').Value := NumRow;
+        qrTemp.ExecSQL;
 
       end;
       DM.Read.Commit;
@@ -3991,6 +4138,7 @@ begin
     qrRatesEx.FreeBookmark(TempBookmark);
 
     qrRatesEx.AfterScroll := ev;
+    qrRatesExNOM_ROW_MANUAL.OnChange := ev2;
     qrRatesEx.EnableControls;
   end;
 end;
@@ -4052,10 +4200,12 @@ begin
               end;
             -1, -2, -3:
               begin
-                EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '(PARENT_ID = ' +
-                  qrRatesExSM_ID.Value.ToString + ') OR ' + '(SM_ID = ' + qrRatesExSM_ID.Value.ToString +
-                  ') OR ' + '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' +
-                  'PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + '))';
+                EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
+                  '((PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
+                  '(SM_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
+                  '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' +
+                  'PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + '))) AND ' +
+                  '(DELETED = 0)';
                 WhereStr := '((ID in (select ID_TABLES from data_row_temp where ' +
                   '(ID_TYPE_DATA = 2) and (SM_ID in (' + EstimStr + ')))) or ' +
                   '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
@@ -4614,11 +4764,12 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddRate(:id_estimate, :id_rate, :cnt, :iterator);');
+      SQL.Add('CALL AddRate(:id_estimate, :id_rate, :cnt, :iterator, :nommanual);');
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_rate').Value := vRateId;
       ParamByName('cnt').Value := 0;
       ParamByName('iterator').Value := FNewRowIterator;
+      ParamByName('nommanual').Value := FNewNomManual;
       Active := True;
       vMaxIdRate := FieldByName('id').AsInteger;
       NewRateCode := FieldByName('RATE_CODE').AsString;
@@ -4639,7 +4790,8 @@ begin
 
   qrTemp.SQL.Clear;
   qrTemp.SQL.Add('SELECT year,monat,DATE_BEG FROM stavka WHERE stavka_id = ' +
-    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + INTTOSTR(qrRatesExSM_ID.AsInteger) + ')');
+    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' +
+    INTTOSTR(qrRatesExSM_ID.AsInteger) + ')');
   qrTemp.Active := True;
   Month1 := qrTemp.FieldByName('monat').AsInteger;
   Year1 := qrTemp.FieldByName('year').AsInteger;
@@ -4720,7 +4872,7 @@ begin
         qrTemp1.ExecSQL;
 
         CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
-          vRateId, FieldByName('MatCode').AsString);
+          vRateId, FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
 
         Next;
       end;
@@ -4768,7 +4920,7 @@ begin
 
           if MaxMId > 0 then
             CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
-              vRateId, FieldByName('MatCode').AsString);
+              vRateId, FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
         end;
         Next;
       end;
@@ -4842,7 +4994,7 @@ begin
 
           if MaxMId > 0 then
             CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger,
-              vRateId, FieldByName('MechCode').AsString);
+              vRateId, FieldByName('MechCode').AsString, FieldByName('MechName').AsString);
         end;
 
         Next;
@@ -4899,7 +5051,8 @@ begin
   if not CheckCursorInRate then
     Exit;
 
-  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag, FNewRowIterator, True) then
+  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag,
+    FNewRowIterator, FNewNomManual, True) then
   begin
     OutputDataToTable(True);
   end;
@@ -4958,12 +5111,17 @@ begin
 
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
-    '(ID, SM_ID, id_type_data, NUM_ROW) VALUE ' +
-    '(GetNewID(:IDType), :SM_ID, :SType, :NUM_ROW);';
+    '(ID, SM_ID, id_type_data, NUM_ROW, NOM_ROW_MANUAL) VALUE ' +
+    '(GetNewID(:IDType), :SM_ID, :SType, :NUM_ROW, :NOM_ROW_MANUAL);';
   qrTemp.ParamByName('IDType').Value := C_ID_DATA;
   qrTemp.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
   qrTemp.ParamByName('SType').Value := (Sender as TComponent).Tag;
   qrTemp.ParamByName('NUM_ROW').Value := Iterator;
+  qrTemp.ParamByName('NOM_ROW_MANUAL').Value := FNewNomManual;
+  qrTemp.ExecSQL;
+
+  qrTemp.SQL.Text := 'CALL UpdateNomManual(:IdEstimate, 0);';
+  qrTemp.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
   qrTemp.ExecSQL;
 
   OutputDataToTable(True);
@@ -4971,7 +5129,8 @@ end;
 
 procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
 begin
-  if GetDumpForm(qrRatesExSM_ID.AsInteger, -1, FNewRowIterator, True) then
+  if GetDumpForm(qrRatesExSM_ID.AsInteger, -1, FNewRowIterator,
+    FNewNomManual, True) then
     OutputDataToTable(True);
 end;
 
@@ -5110,6 +5269,12 @@ begin
             SQL.Add('DELETE FROM data_row_temp WHERE (ID = ' +
               INTTOSTR(qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger) + ');');
             ExecSQL;
+
+            SQL.Clear;
+            SQL.Add('CALL `UpdateNomManual`(:SM_ID, :NomManual, 1);');
+            ParamByName('SM_ID').Value := qrRatesExSM_ID.Value;
+            ParamByName('NomManual').Value := qrRatesExNOM_ROW_MANUAL.Value;
+            ExecSQL;
           end;
         except
           on e: Exception do
@@ -5175,12 +5340,14 @@ end;
 procedure TFormCalculationEstimate.PMDumpEditClick(Sender: TObject);
 begin
   if qrRatesExID_TYPE_DATA.AsInteger = 5 then
-    if GetDumpForm(qrRatesExSM_ID.AsInteger, qrDumpID.AsInteger, FNewRowIterator, False) then
+    if GetDumpForm(qrRatesExSM_ID.AsInteger, qrDumpID.AsInteger,
+      FNewRowIterator, FNewNomManual, False) then
       OutputDataToTable;
 
   if qrRatesExID_TYPE_DATA.AsInteger in [6, 7, 8, 9] then
-    if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger, qrRatesExID_TYPE_DATA.AsInteger,
-      FNewRowIterator, False) then
+    if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger,
+      qrRatesExID_TYPE_DATA.AsInteger, FNewRowIterator,
+      FNewNomManual, False) then
       OutputDataToTable;
 end;
 
@@ -6474,10 +6641,11 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddDevice(:IdEstimate, :IdDev, 0, :Iterator);');
+      SQL.Add('CALL AddDevice(:IdEstimate, :IdDev, 0, :Iterator, :NomManual);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdDev').Value := vEquipId;
       ParamByName('Iterator').Value := FNewRowIterator;
+      ParamByName('NomManual').Value := FNewNomManual;
       ExecSQL;
     end;
 
@@ -6500,10 +6668,11 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddMaterial(:IdEstimate, :IdMat, 0, :Iterator, :CALCMODE);');
+      SQL.Add('CALL AddMaterial(:IdEstimate, :IdMat, 0, :Iterator, :NomManual, :CALCMODE);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdMat').Value := vMatId;
       ParamByName('Iterator').Value := FNewRowIterator;
+      ParamByName('NomManual').Value := FNewNomManual;
       ParamByName('CALCMODE').Value := G_CALCMODE;
       ExecSQL;
     end;
@@ -6527,10 +6696,11 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, 0, :Iterator, :CALCMODE);');
+      SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, 0, :Iterator, :NomManual, :CALCMODE);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('IdMech').Value := vMechId;
       ParamByName('Iterator').Value := FNewRowIterator;
+      ParamByName('NomManual').Value := FNewNomManual;
       ParamByName('CALCMODE').Value := G_CALCMODE;
       ExecSQL;
     end;

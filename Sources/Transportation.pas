@@ -114,6 +114,7 @@ type
   public
     IdEstimate: integer; // ID сметы в которой транспорт
     Iterator: Integer;
+    NomManual: Integer;
     IdTransp: integer; // ID транспорта в смете
     TranspType: integer;
     InsMode: boolean; // признак вставкисвалки
@@ -121,7 +122,7 @@ type
   end;
 
   // Вызов окна транспорта. InsMode - признак вставкисвалки  в смету
-function GetTranspForm(AIdEstimate, AIdTransp, ATranspType, AIterator: Integer;
+function GetTranspForm(AIdEstimate, AIdTransp, ATranspType, AIterator, ANomManual: Integer;
   AInsMode: boolean): boolean;
 
 implementation
@@ -130,7 +131,7 @@ uses Main, CalculationEstimate, DataModule, Tools, GlobsAndConst;
 
 {$R *.dfm}
 
-function GetTranspForm(AIdEstimate, AIdTransp, ATranspType, AIterator: Integer;
+function GetTranspForm(AIdEstimate, AIdTransp, ATranspType, AIterator, ANomManual: Integer;
   AInsMode: boolean): boolean;
 var
   FormTransp: TFormTransportation;
@@ -140,6 +141,7 @@ begin
   try
     FormTransp.IdEstimate := AIdEstimate;
     FormTransp.Iterator := AIterator;
+    FormTransp.NomManual := ANomManual;
     FormTransp.IdTransp := AIdTransp;
     FormTransp.InsMode := AInsMode;
     FormTransp.TranspType := ATranspType;
@@ -236,13 +238,14 @@ begin
 
     Iterator := UpdateIterator(IdEstimate, Iterator, 0);
     qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
-      '(ID, SM_ID, id_type_data, id_tables, NUM_ROW) VALUE ' +
-      '(:ID, :SM_ID, :id_type_data, :id_tables, :NUM_ROW);';
+      '(ID, SM_ID, id_type_data, id_tables, NUM_ROW, NOM_ROW_MANUAL) VALUE ' +
+      '(:ID, :SM_ID, :id_type_data, :id_tables, :NUM_ROW, :NOM_ROW_MANUAL);';
     qrTemp.ParamByName('ID').Value := NewDataRowId;
     qrTemp.ParamByName('SM_ID').Value := IdEstimate;
     qrTemp.ParamByName('id_type_data').Value := TranspType;
     qrTemp.ParamByName('id_tables').Value := NewId;
     qrTemp.ParamByName('NUM_ROW').Value := Iterator;
+    qrTemp.ParamByName('NOM_ROW_MANUAL').Value := NomManual;
     qrTemp.ExecSQL;
 
     qrTemp.SQL.Text := 'Insert into transpcard_temp (SM_ID, DATA_ROW_ID, ID, ' +
@@ -274,6 +277,10 @@ begin
     qrTemp.ParamByName('PRICE_NDS').Value := StrToCurr(edtPriceNDS.Text);
     qrTemp.ParamByName('PRICE_NO_NDS').Value := StrToCurr(edtPriceNoNDS.Text);
     qrTemp.ParamByName('KOEF').Value := FCoef;
+    qrTemp.ExecSQL;
+
+    qrTemp.SQL.Text := 'CALL UpdateNomManual(:IdEstimate, 0, 0);';
+    qrTemp.ParamByName('IdEstimate').Value := IdEstimate;
     qrTemp.ExecSQL;
 
     qrTemp.SQL.Text := 'CALL AddCalcCoef(:IdEstimate, :NewID, :TypeData);';

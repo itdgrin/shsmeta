@@ -228,70 +228,65 @@ inherited SprMaterial: TSprMaterial
       1EFA95A1232C37680AF4D5B2A7A378A61002003B}
   end
   inherited PanelSettings: TPanel
-    ExplicitWidth = 743
-    object lbRegion: TLabel [2]
-      Left = 363
-      Top = 11
-      Width = 39
-      Height = 13
-      Caption = #1056#1077#1075#1080#1086#1085':'
-    end
-    inherited btnShow: TButton
-      ExplicitLeft = 647
-    end
-    object cmbRegion: TComboBox [6]
-      Left = 407
-      Top = 8
-      Width = 137
-      Height = 21
-      Style = csDropDownList
-      ItemIndex = 5
-      TabOrder = 3
-      Text = #1052#1086#1075#1080#1083#1077#1074#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
-      OnChange = edtYearChange
-      Items.Strings = (
-        #1041#1088#1077#1089#1090#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
-        #1042#1080#1090#1077#1073#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
-        #1043#1086#1084#1077#1083#1100#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
-        #1043#1088#1086#1076#1085#1077#1085#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
-        #1052#1080#1085#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
-        #1052#1086#1075#1080#1083#1077#1074#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
-        #1052#1080#1085#1089#1082)
-    end
-    object rbMat: TRadioButton [7]
-      Left = 554
-      Top = 4
-      Width = 85
-      Height = 17
-      Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
-      Checked = True
-      TabOrder = 4
-      TabStop = True
-      OnClick = rbMatClick
-    end
-    object rbJBI: TRadioButton [8]
-      Left = 554
-      Top = 20
-      Width = 54
-      Height = 17
-      Caption = #1046#1041#1048
-      TabOrder = 5
-      TabStop = True
-      OnClick = rbMatClick
-    end
-    inherited PanelManual: TPanel
-      TabOrder = 6
+    inherited PanelPeriod: TPanel
+      Width = 519
+      ExplicitWidth = 519
+      inherited lbYear: TLabel
+        Height = 13
+        ExplicitHeight = 13
+      end
+      object lbRegion: TLabel [2]
+        Left = 240
+        Top = 11
+        Width = 39
+        Height = 13
+        Caption = #1056#1077#1075#1080#1086#1085':'
+      end
+      object cmbRegion: TComboBox
+        Left = 284
+        Top = 8
+        Width = 137
+        Height = 21
+        Style = csDropDownList
+        ItemIndex = 5
+        TabOrder = 2
+        Text = #1052#1086#1075#1080#1083#1077#1074#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
+        OnChange = edtYearChange
+        Items.Strings = (
+          #1041#1088#1077#1089#1090#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
+          #1042#1080#1090#1077#1073#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
+          #1043#1086#1084#1077#1083#1100#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
+          #1043#1088#1086#1076#1085#1077#1085#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
+          #1052#1080#1085#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
+          #1052#1086#1075#1080#1083#1077#1074#1089#1082#1072#1103' '#1086#1073#1083#1072#1089#1090#1100
+          #1052#1080#1085#1089#1082)
+      end
+      object rbMat: TRadioButton
+        Left = 440
+        Top = 3
+        Width = 78
+        Height = 17
+        Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
+        Checked = True
+        TabOrder = 3
+        TabStop = True
+        OnClick = rbMatClick
+      end
+      object rbJBI: TRadioButton
+        Left = 440
+        Top = 21
+        Width = 54
+        Height = 17
+        Caption = #1046#1041#1048
+        TabOrder = 4
+        TabStop = True
+        OnClick = rbMatClick
+      end
     end
   end
   inherited PanelFind: TPanel
-    ExplicitWidth = 743
     inherited edtFindName: TEdit
-      Anchors = [akLeft, akTop, akRight]
       TabOrder = 2
-      ExplicitWidth = 391
-    end
-    inherited btnFind: TButton
-      ExplicitLeft = 647
     end
     inherited edtFindCode: TEdit
       TabOrder = 0
@@ -300,22 +295,9 @@ inherited SprMaterial: TSprMaterial
   inherited ListSpr: TListView
     OnDblClick = ListSprDblClick
   end
-  inherited StatusBar: TStatusBar
-    ExplicitWidth = 743
-  end
   inherited PanelDetails: TPanel
-    ExplicitWidth = 743
     inherited SpeedButtonShowHide: TSpeedButton
       ExplicitWidth = 743
-    end
-    inherited gbDetails: TGroupBox
-      ExplicitWidth = 741
-      inherited gbDetPrice: TGroupBox
-        ExplicitWidth = 737
-        inherited lvDetPrice: TListView
-          ExplicitWidth = 733
-        end
-      end
     end
   end
 end
