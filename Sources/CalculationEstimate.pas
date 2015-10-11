@@ -1983,7 +1983,7 @@ begin
             mrOk:
               begin
                 frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
-                  FAutoRepArray[i].RiciTID, FAutoRepArray[i].ID, 0, 3, False, True);
+                  FAutoRepArray[i].RTID, FAutoRepArray[i].ID, 0, 3, False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
                   begin
