@@ -3000,7 +3000,7 @@
         ReadOnly = True
         TabOrder = 1
         Text = #1042#1080#1076' '#1088#1072#1073#1086#1090
-        ExplicitTop = 5
+        ExplicitHeight = 21
       end
       object edtZone: TEdit
         AlignWithMargins = True

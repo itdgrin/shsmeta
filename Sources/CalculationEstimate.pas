@@ -792,6 +792,7 @@ type
 
   public
     Act: Boolean;
+    TYPE_ACT: Integer; // Тип акта
     ConfirmCloseForm: Boolean;
     flChangeEstimate: Boolean; // Не даем закрыться окну при переключении между сметами.
     property IdObject: Integer read FIdObject write FIdObject;
@@ -5384,8 +5385,8 @@ begin
 
   // Нельзя удалить неучтенный материал из таблицы расценок
   PMDelete.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0);
-  PMAdd.Visible := CheckCursorInRate;
-  PMInsertRow.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0);
+  PMAdd.Visible := CheckCursorInRate and not(Act and (TYPE_ACT=0));
+  PMInsertRow.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0) AND not(Act and (TYPE_ACT=0));
 
   PMEdit.Visible := (qrRatesExID_TYPE_DATA.AsInteger in [5, 6, 7, 8, 9]) and CheckCursorInRate;
   PMCopy.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
@@ -5405,8 +5406,8 @@ begin
   qrTemp.Active := True;
   mainType := qrTemp.FieldByName('SM_TYPE').AsInteger;
   qrTemp.Active := False;
-  mAddPTM.Visible := (mainType <> 3) {and not Act};
-  mAddLocal.Visible := (mainType = 2) {and not Act};
+  mAddPTM.Visible := (mainType <> 3) and not(Act and (TYPE_ACT=0));
+  mAddLocal.Visible := (mainType = 2) and not(Act and (TYPE_ACT=0));
   mDelEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and
     ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or (qrRatesExID_TYPE_DATA.AsInteger <> -5));
   mEditEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and

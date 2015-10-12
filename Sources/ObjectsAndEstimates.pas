@@ -731,6 +731,10 @@ end;
 
 procedure TfObjectsAndEstimates.PMActsOpenClick(Sender: TObject);
 begin
+  // Если тип акта "итоговыми суммами", то игнорируем
+  if qrActsEx.FieldByName('TYPE_ACT').AsInteger = 2 then
+    Exit;
+
   ActReadOnly := True;
   // Открываем форму ожидания
   // FormWaiting.Show;
@@ -761,6 +765,7 @@ begin
 
     FormCalculationEstimate.IdObject := IdObject;
     FormCalculationEstimate.IdEstimate := qrActsEx.FieldByName('MASTER_ID').AsInteger;
+    FormCalculationEstimate.TYPE_ACT := qrActsEx.FieldByName('TYPE_ACT').AsInteger;
     FormCalculationEstimate.SetActReadOnly(ActReadOnly);
     // Создание временных таблиц
     FormCalculationEstimate.CreateTempTables;
@@ -808,6 +813,11 @@ end;
 
 procedure TfObjectsAndEstimates.PMActsEditClick(Sender: TObject);
 begin
+  // Если тип акта "итоговыми суммами", то игнорируем
+  if qrActsEx.FieldByName('TYPE_ACT').AsInteger = 2 then
+    Exit;
+
+
   if (Assigned(FormCalculationEstimate)) then
   begin
     FormCalculationEstimate.flChangeEstimate := True;
@@ -834,6 +844,7 @@ begin
 
     FormCalculationEstimate.IdObject := IdObject;
     FormCalculationEstimate.IdEstimate := qrActsEx.FieldByName('MASTER_ID').AsInteger;
+    FormCalculationEstimate.TYPE_ACT := qrActsEx.FieldByName('TYPE_ACT').AsInteger;
     FormCalculationEstimate.SetActReadOnly(ActReadOnly);
     // Создание временных таблиц
     FormCalculationEstimate.CreateTempTables;
@@ -843,7 +854,7 @@ begin
   FormCalculationEstimate.flChangeEstimate := False;
   FormCalculationEstimate.WindowState := wsMaximized;
 
-  if not ActReadOnly then
+  if not ActReadOnly and (qrActsEx.FieldByName('TYPE_ACT').AsInteger = 0) then
   begin
     fKC6.caption := 'Выборка данных';
     if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт акта',

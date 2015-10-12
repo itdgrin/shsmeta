@@ -675,63 +675,90 @@ object fKC6: TfKC6
       
         '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
         'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
-        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0) '
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
+      
+        'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
+        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0) '
       
         '    WHEN 2 THEN IFNULL((SELECT SUM(a.MAT_COUNT) FROM `materialca' +
         'rd` a WHERE a.`ID`=mat.`ID` AND a.`SM_ID` NOT IN '
       
         '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
         'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
-        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
+      
+        'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
+        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
       
         '    WHEN 3 THEN IFNULL((SELECT SUM(a.MECH_COUNT) FROM `mechanizm' +
         'card` a WHERE a.`ID`=mech.`ID` AND a.`SM_ID` NOT IN '
       
         '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
         'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
-        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
+      
+        'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
+        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
       
         '    WHEN 4 THEN IFNULL((SELECT SUM(a.DEVICE_COUNT) FROM `devices' +
         'card` a WHERE a.`ID`=dev.`ID` AND a.`SM_ID` NOT IN '
       
         '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
         'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
-        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
+      
+        'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
+        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
       
         '    WHEN 5 THEN IFNULL((SELECT SUM(a.DUMP_COUNT) FROM `dumpcard`' +
         ' a WHERE a.`ID`=dmp.`ID` AND a.`SM_ID` NOT IN '
       
         '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
         'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
-        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
+      
+        'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
+        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
       
         '    WHEN 6 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
         'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
       
         '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
         'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
-        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
+      
+        'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
+        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
       
         '    WHEN 7 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
         'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
       
         '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
         'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
-        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
+      
+        'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
+        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
       
         '    WHEN 8 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
         'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
       
         '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
         'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
-        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
+      
+        'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
+        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
       
         '    WHEN 9 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
         'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
       
         '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
         'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
-        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`), 0)'
+        ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
+      
+        'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
+        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
       
         '    WHEN 10 THEN IFNULL((SELECT SUM(a.E1820_COUNT) FROM `data_ro' +
         'w` a WHERE a.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND a.`SM_ID` NOT I' +
@@ -740,7 +767,10 @@ object fKC6: TfKC6
         '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
         'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
         ' = :ID_ACT)) AND (SELECT SOURCE_ID FROM smetasourcedata WHERE SM' +
-        '_ID=a.`SM_ID`) = d.`SM_ID`), 0)'
+        '_ID=a.`SM_ID`) = d.`SM_ID`'
+      
+        'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
+        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
       
         '    WHEN 11 THEN IFNULL((SELECT SUM(a.E1820_COUNT) FROM `data_ro' +
         'w` a WHERE a.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND a.`SM_ID` NOT I' +
@@ -749,7 +779,10 @@ object fKC6: TfKC6
         '(SELECT SM_ID FROM `smetasourcedata` WHERE PARENT_ID IN (SELECT ' +
         'SM_ID FROM `smetasourcedata` WHERE `smetasourcedata`.`PARENT_ID`' +
         ' = :ID_ACT)) AND (SELECT SOURCE_ID FROM smetasourcedata WHERE SM' +
-        '_ID=a.`SM_ID`) = d.`SM_ID`), 0)'
+        '_ID=a.`SM_ID`) = d.`SM_ID`'
+      
+        'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
+        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
       '  END AS CntDONE, '
       '/* '#1055#1088#1086#1094#1077#1085#1090#1086#1074#1082#1072' */'
       '  IFNULL('
@@ -842,7 +875,8 @@ object fKC6: TfKC6
       
         '  NULL AS DATA_ESTIMATE_OR_ACT_ID, NULL AS ID_TABLES, sm.`SM_ID`' +
         ', NULL AS ID_RATE, NULL AS ID_REPLACED, NULL AS CntDONE, NULL AS' +
-        ' OBJ_COUNT_IN, FALSE AS SELECTED'
+        ' OBJ_COUNT_IN, EXISTS(SELECT SM_ID FROM `smetasourcedata` WHERE ' +
+        'SOURCE_ID=sm.SM_ID) AS SELECTED'
       '  FROM `smetasourcedata` sm'
       '  WHERE sm.`DELETED` = 0 AND'
       '        sm.`ACT` = 0 AND '

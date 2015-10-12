@@ -208,7 +208,7 @@ type
 implementation
 
 uses Main, DataModule, DrawingTables, CalculationEstimate, Tools, NormativDirectory, SprSelection,
-  WinterPrice, CopyToOwnDialog;
+  WinterPrice, CopyToOwnDialog, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -733,7 +733,7 @@ end;
 
 procedure TFrameRates.qrNormativBeforePost(DataSet: TDataSet);
 var
-  res: Variant;
+  res, newID: Variant;
 begin
   if VarIsNull(qrNormativ.FieldByName('NumberNormative').Value) then
   begin
@@ -749,8 +749,12 @@ begin
       VarArrayOf([qrNormativ.FieldByName('Unit').Value]));
     if VarIsNull(res) then
     begin
-      FastExecSQL('INSERT INTO units(UNIT_NAME) VALUE(:0)',
-        VarArrayOf([qrNormativ.FieldByName('Unit').Value]));
+      newID := FastSelectSQLOne('SELECT MAX(UNIT_ID) + 1 FROM UNITS WHERE UNIT_ID>=:0',
+        VarArrayOf([Ñ_MANIDDELIMETER]));
+      if VarIsNull(newID) then
+        newID := Ñ_MANIDDELIMETER + 1;
+      FastExecSQL('INSERT INTO units(UNIT_NAME, BASE, UNIT_ID) VALUE(:0, 1, :1)',
+        VarArrayOf([qrNormativ.FieldByName('Unit').Value, newID]));
       res := FastSelectSQLOne('SELECT LAST_INSERT_ID()', VarArrayOf([]));
     end;
     qrNormativ.FieldByName('UNIT_ID').Value := res;

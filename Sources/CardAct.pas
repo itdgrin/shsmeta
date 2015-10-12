@@ -92,6 +92,7 @@ begin
       begin
         qrAct.ParamByName('id').AsInteger := id;
         CloseOpen(qrAct);
+        cbbType.ItemIndex := qrAct.FieldByName('TYPE_ACT').AsInteger;
       end;
   end;
 end;
