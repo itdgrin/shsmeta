@@ -460,7 +460,9 @@ object fKC6: TfKC6
     FormatOptions.FmtDisplayDate = 'mmyyyy'
     SQL.Strings = (
       'SELECT TRIM(sm.`NAME`) as docname, '
-      '       sm.`DATE`,'
+      
+        '       (SELECT DATE FROM smetasourcedata WHERE SM_ID=(SELECT PAR' +
+        'ENT_ID FROM smetasourcedata WHERE SM_ID=sm.PARENT_ID)) AS DATE,'
       '       CASE d.`ID_TYPE_DATA` '
       '          WHEN 1 THEN cr.`RATE_CODE` '
       '          WHEN 2 THEN mat.`MAT_CODE`'
@@ -490,22 +492,22 @@ object fKC6: TfKC6
       'FROM `smetasourcedata` sm, `data_row` d'
       
         '  LEFT JOIN `card_rate` cr ON d.`ID_TYPE_DATA` = 1 AND cr.`ID` =' +
-        ' d.`ID_TABLES`'
+        ' d.`ID_TABLES` AND cr.DATA_ROW_ID=d.ID'
       
         '  LEFT JOIN `materialcard` mat ON d.`ID_TYPE_DATA` = 2 AND mat.`' +
-        'ID` = d.`ID_TABLES`'
+        'ID` = d.`ID_TABLES` AND mat.DATA_ROW_ID=d.ID'
       
         '  LEFT JOIN `mechanizmcard` mech ON d.`ID_TYPE_DATA` = 3 AND mec' +
-        'h.`ID` = d.`ID_TABLES`'
+        'h.`ID` = d.`ID_TABLES` AND mech.DATA_ROW_ID=d.ID'
       
         '  LEFT JOIN `devicescard` dev ON d.`ID_TYPE_DATA` = 4 AND dev.`I' +
-        'D` = d.`ID_TABLES`'
+        'D` = d.`ID_TABLES` AND dev.DATA_ROW_ID=d.ID'
       
         '  LEFT JOIN `dumpcard` dmp ON d.`ID_TYPE_DATA` = 5 AND dmp.`ID` ' +
-        '= d.`ID_TABLES`'
+        '= d.`ID_TABLES` AND dmp.DATA_ROW_ID=d.ID'
       
         '  LEFT JOIN `transpcard` tr ON d.`ID_TYPE_DATA` IN (6,7,8,9) AND' +
-        ' tr.`ID` = d.`ID_TABLES`'
+        ' tr.`ID` = d.`ID_TABLES` AND tr.DATA_ROW_ID=d.ID'
       'WHERE sm.`DELETED` = 0 AND'
       '      sm.`FL_USE` = 1 AND'
       '      sm.`ACT` = 1 AND'
@@ -548,6 +550,7 @@ object fKC6: TfKC6
     end
     object qrOtherActsdate: TDateField
       FieldName = 'date'
+      DisplayFormat = 'mmmm yyyy'
     end
     object qrOtherActsosnov: TStringField
       FieldName = 'osnov'
@@ -780,22 +783,22 @@ object fKC6: TfKC6
       '  FROM `smetasourcedata` sm, `data_row` d'
       
         '  LEFT JOIN `card_rate` cr ON d.`ID_TYPE_DATA` = 1 AND cr.`ID` =' +
-        ' d.`ID_TABLES`'
+        ' d.`ID_TABLES` AND cr.DATA_ROW_ID=d.ID'
       
         '  LEFT JOIN `materialcard` mat ON d.`ID_TYPE_DATA` = 2 AND mat.`' +
-        'ID` = d.`ID_TABLES`'
+        'ID` = d.`ID_TABLES` AND mat.DATA_ROW_ID=d.ID'
       
         '  LEFT JOIN `mechanizmcard` mech ON d.`ID_TYPE_DATA` = 3 AND mec' +
-        'h.`ID` = d.`ID_TABLES`'
+        'h.`ID` = d.`ID_TABLES` AND mech.DATA_ROW_ID=d.ID'
       
         '  LEFT JOIN `devicescard` dev ON d.`ID_TYPE_DATA` = 4 AND dev.`I' +
-        'D` = d.`ID_TABLES`'
+        'D` = d.`ID_TABLES` AND dev.DATA_ROW_ID=d.ID'
       
         '  LEFT JOIN `dumpcard` dmp ON d.`ID_TYPE_DATA` = 5 AND dmp.`ID` ' +
-        '= d.`ID_TABLES`'
+        '= d.`ID_TABLES` AND dmp.DATA_ROW_ID=d.ID'
       
         '  LEFT JOIN `transpcard` tr ON d.`ID_TYPE_DATA` IN (6,7,8,9) AND' +
-        ' tr.`ID` = d.`ID_TABLES`'
+        ' tr.`ID` = d.`ID_TABLES` AND tr.DATA_ROW_ID=d.ID'
       '  '
       
         '  LEFT JOIN `data_row_temp` dt ON dt.`ID_TYPE_DATA`=d.`ID_TYPE_D' +
@@ -820,7 +823,7 @@ object fKC6: TfKC6
         ',9) AND trt.`ID` = dt.`ID_TABLES` AND trt.`ID`=tr.`ID`'
       '  WHERE sm.`DELETED` = 0 AND'
       '        sm.`ACT` = 0 AND'
-      '  '#9'    sm.`SM_ID`=d.`SM_ID` AND'
+      '  '#9'sm.`SM_ID`=d.`SM_ID` AND'
       '        sm.`OBJ_ID`=:ID_OBJECT'
       '        '
       '  UNION ALL'

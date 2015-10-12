@@ -258,14 +258,6 @@ begin
     fCalcResource := TfCalcResource.Create(AOwner);
     fl := True;
   end;
-  fCalcResource.flLoaded := False;
-  fCalcResource.IDEstimate := ID_ESTIMATE;
-  fCalcResource.qrEstimate.ParamByName('SM_ID').Value := ID_ESTIMATE;
-  fCalcResource.qrEstimate.Active := True;
-  fCalcResource.cbbFromMonth.ItemIndex := fCalcResource.qrEstimate.FieldByName('MONTH').AsInteger - 1;
-  fCalcResource.edtEstimateName.Text := fCalcResource.qrEstimate.FieldByName('NAME').AsString;
-  fCalcResource.seFromYear.Value := fCalcResource.qrEstimate.FieldByName('YEAR').AsInteger;
-  fCalcResource.cbbNDS.ItemIndex := fCalcResource.qrEstimate.FieldByName('NDS').AsInteger;
 
   if AOwner <> nil then
   begin
@@ -278,6 +270,15 @@ begin
     FormMain.CreateButtonOpenWindow('Расчет стоимости ресурсов', 'Расчет стоимости ресурсов',
       fCalcResource, 1);
 
+  fCalcResource.flLoaded := False;
+  fCalcResource.IDEstimate := ID_ESTIMATE;
+  fCalcResource.qrEstimate.ParamByName('SM_ID').Value := ID_ESTIMATE;
+  fCalcResource.qrEstimate.Active := True;
+  fCalcResource.cbbFromMonth.ItemIndex := fCalcResource.qrEstimate.FieldByName('MONTH').AsInteger - 1;
+  fCalcResource.edtEstimateName.Text := fCalcResource.qrEstimate.FieldByName('NAME').AsString;
+  fCalcResource.seFromYear.Value := fCalcResource.qrEstimate.FieldByName('YEAR').AsInteger;
+  fCalcResource.cbbNDS.ItemIndex := fCalcResource.qrEstimate.FieldByName('NDS').AsInteger;
+
   // Если вызвали с доп параметром (на что положить) , то скрываем все вкладки
   for pageID := 0 to fCalcResource.pgc.PageCount - 1 do
     fCalcResource.pgc.Pages[pageID].TabVisible := AOwner = nil;
@@ -286,7 +287,6 @@ begin
 
   fCalcResource.pgc.ActivePageIndex := APage;
 
-  fCalcResource.Show;
   if AOwner = nil then
     fCalcResource.WindowState := wsMaximized;
   fCalcResource.flLoaded := True;
@@ -307,6 +307,7 @@ begin
         4:
           qrRates.First;
       end;
+  fCalcResource.Show;
 end;
 
 procedure TfCalcResource.btnShowDiffClick(Sender: TObject);

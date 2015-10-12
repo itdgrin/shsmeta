@@ -93,7 +93,7 @@ var XML : IXMLDocument;
     AutoCommitValue: Boolean;
 
   procedure GetStrAndExcec(ANode: IXMLNode; ATabName: string);
-  var i, j: Integer;
+  var i{, j}: Integer;
       As1, As2: string;
       FieldName: string;
       FieldValue: Variant;

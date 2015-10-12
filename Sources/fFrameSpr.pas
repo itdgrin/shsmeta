@@ -334,7 +334,6 @@ begin
 end;
 
 procedure TSprFrame.lvDetPriceResize(Sender: TObject);
-var i, j: Integer;
 begin
   lvDetPrice.Columns[lvDetPrice.Columns.Count - 1].Width :=
     lvDetPrice.Width - 530 - 25;  //530 сумма колонок, если суммировать автоматом как-то глючит

@@ -194,10 +194,6 @@ object fKC6Journal: TfKC6Journal
       ImageIndex = 1
       ParentFont = False
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object dbgrdPTM: TJvDBGrid
         Left = 0
         Top = 0
@@ -237,10 +233,6 @@ object fKC6Journal: TfKC6Journal
       ImageIndex = 2
       ParentFont = False
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object dbgrdEstimate: TJvDBGrid
         Left = 0
         Top = 0
@@ -496,17 +488,9 @@ object fKC6Journal: TfKC6Journal
       
         'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
         'NAME, DATE,'
-      '       0 as PARENT  '
-      'FROM smetasourcedata'
-      'WHERE SM_TYPE=2 AND '
-      '      OBJ_ID=:OBJ_ID'
-      'UNION ALL'
-      
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
-        'NAME, DATE,'
       '       (PARENT_ID) as PARENT  '
       'FROM smetasourcedata'
-      'WHERE SM_TYPE<>2 AND '
+      'WHERE ACT=0 AND '
       '      OBJ_ID=:OBJ_ID'
       'ORDER BY NAME')
     Left = 25
@@ -817,59 +801,73 @@ object fKC6Journal: TfKC6Journal
       end>
     FormatOptions.DefaultParamDataType = ftBCD
     SQL.Strings = (
-      '/* '#1056#1040#1057#1062#1045#1053#1050#1048' */'
-      'SELECT '
-      '  Trim(card_acts.name) as docname,'
-      '  card_acts.DATE AS MONTHYEAR,'
-      '  card_rate_act.RATE_CODE as osnov,'
-      '  card_rate_act.RATE_COUNT as cnt'
-      'FROM '
-      '  card_acts, card_rate_act'
-      'WHERE '
-      ':ID_TYPE_DATA = 1 AND'
-      'card_rate_act.ID = :ID_TABLES AND'
-      'card_rate_act.ID_ACT = card_acts.ID'
-      ''
-      'UNION ALL'
-      ''
-      '/* '#1052#1040#1058#1045#1056#1048#1040#1051#1067' */'
-      'SELECT '
-      '  Trim(card_acts.name) as docname,'
-      '  card_acts.DATE AS MONTHYEAR,'
-      '  materialcard_act.MAT_CODE as osnov,'
-      '  materialcard_act.MAT_COUNT as cnt'
-      'FROM '
-      '  card_acts, materialcard_act'
-      'WHERE '
-      ':ID_TYPE_DATA = 2 AND'
-      'materialcard_act.ID = :ID_TABLES AND'
-      'materialcard_act.ID_ACT = card_acts.ID'
-      ''
-      'UNION ALL'
-      ''
-      '/* '#1052#1045#1061#1040#1053#1048#1047#1052#1067' */'
-      'SELECT '
-      '  Trim(card_acts.name) as docname,'
-      '  card_acts.DATE AS MONTHYEAR,'
-      '  mechanizmcard_act.MECH_CODE as osnov,'
-      '  mechanizmcard_act.MECH_COUNT as cnt'
-      'FROM '
-      '  card_acts, mechanizmcard_act'
-      'WHERE '
-      ':ID_TYPE_DATA = 3 AND'
-      'mechanizmcard_act.ID = :ID_TABLES AND'
-      'mechanizmcard_act.ID_ACT = card_acts.ID')
+      'SELECT TRIM(sm.`NAME`) as docname, '
+      
+        '       (SELECT DATE FROM smetasourcedata WHERE SM_ID=(SELECT PAR' +
+        'ENT_ID FROM smetasourcedata WHERE SM_ID=sm.PARENT_ID)) AS MONTHY' +
+        'EAR,'
+      '       CASE d.`ID_TYPE_DATA` '
+      '          WHEN 1 THEN cr.`RATE_CODE` '
+      '          WHEN 2 THEN mat.`MAT_CODE`'
+      '          WHEN 3 THEN mech.`MECH_CODE`'
+      '          WHEN 4 THEN dev.`DEVICE_CODE`'
+      '          WHEN 5 THEN dmp.`DUMP_CODE_JUST`'
+      '          WHEN 6 THEN tr.`TRANSP_CODE_JUST`'
+      '          WHEN 7 THEN tr.`TRANSP_CODE_JUST`'
+      '          WHEN 8 THEN tr.`TRANSP_CODE_JUST`'
+      '          WHEN 9 THEN tr.`TRANSP_CODE_JUST`'
+      '          WHEN 10 THEN ('#39#1045#1058'18'#39')'
+      '          WHEN 11 THEN ('#39#1045#1058'20'#39')'
+      '          END AS osnov,'
+      '        CASE d.`ID_TYPE_DATA` '
+      '          WHEN 1 THEN cr.RATE_COUNT '
+      '          WHEN 2 THEN mat.MAT_COUNT'
+      '          WHEN 3 THEN mech.MECH_COUNT'
+      '          WHEN 4 THEN dev.DEVICE_COUNT'
+      '          WHEN 5 THEN dmp.DUMP_COUNT'
+      '          WHEN 6 THEN tr.TRANSP_COUNT'
+      '          WHEN 7 THEN tr.TRANSP_COUNT'
+      '          WHEN 8 THEN tr.TRANSP_COUNT'
+      '          WHEN 9 THEN tr.TRANSP_COUNT'
+      '          WHEN 10 THEN d.E1820_COUNT'
+      '          WHEN 11 THEN d.E1820_COUNT'
+      '        END AS cnt'
+      'FROM `smetasourcedata` sm, `data_row` d'
+      
+        '  LEFT JOIN `card_rate` cr ON d.`ID_TYPE_DATA` = 1 AND cr.`ID` =' +
+        ' d.`ID_TABLES` AND cr.DATA_ROW_ID=d.ID'
+      
+        '  LEFT JOIN `materialcard` mat ON d.`ID_TYPE_DATA` = 2 AND mat.`' +
+        'ID` = d.`ID_TABLES` AND mat.DATA_ROW_ID=d.ID'
+      
+        '  LEFT JOIN `mechanizmcard` mech ON d.`ID_TYPE_DATA` = 3 AND mec' +
+        'h.`ID` = d.`ID_TABLES` AND mech.DATA_ROW_ID=d.ID'
+      
+        '  LEFT JOIN `devicescard` dev ON d.`ID_TYPE_DATA` = 4 AND dev.`I' +
+        'D` = d.`ID_TABLES` AND dev.DATA_ROW_ID=d.ID'
+      
+        '  LEFT JOIN `dumpcard` dmp ON d.`ID_TYPE_DATA` = 5 AND dmp.`ID` ' +
+        '= d.`ID_TABLES` AND dmp.DATA_ROW_ID=d.ID'
+      
+        '  LEFT JOIN `transpcard` tr ON d.`ID_TYPE_DATA` IN (6,7,8,9) AND' +
+        ' tr.`ID` = d.`ID_TABLES` AND tr.DATA_ROW_ID=d.ID'
+      'WHERE sm.`DELETED` = 0 AND'
+      '      sm.`FL_USE` = 1 AND'
+      '      sm.`ACT` = 1 AND'
+      '      sm.`SM_ID` = d.`SM_ID` AND'
+      '      d.`ID_TABLES` = :ID_TABLES AND '
+      '      d.`ID_TYPE_DATA` = :ID_TYPE_DATA')
     Left = 25
     Top = 336
     ParamData = <
       item
-        Name = 'ID_TYPE_DATA'
+        Name = 'ID_TABLES'
         DataType = ftInteger
         ParamType = ptInput
         Value = 0
       end
       item
-        Name = 'ID_TABLES'
+        Name = 'ID_TYPE_DATA'
         DataType = ftInteger
         ParamType = ptInput
         Value = 0

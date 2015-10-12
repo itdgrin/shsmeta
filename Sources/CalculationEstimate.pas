@@ -5676,7 +5676,8 @@ begin
           VarArrayOf([qrRatesExSM_ID.Value]));
         Active := False;
         SQL.Text := 'SELECT DISTINCT objworks.work_id as work_id, work_name as NAME,'#13 +
-          'CONCAT(objdetailex.' + COL1NAME + ', "% / ", objdetailex.' + COL2NAME + ', "%") AS VALUE'#13 +
+          'CONCAT(objdetailex.' + COL1NAME + ', "% / ", objdetailex.' + COL2NAME + ', "%") AS VALUE,'#13 +
+          'CONCAT(s, " - ", po) AS DESCRIPTION'#13 +
           'FROM onormativs, objworks, objdetailex WHERE objdetailex.NUMBER=objworks.work_id AND objdetailex.MAIS_ID=:MAIS AND objworks.WORK_ID=onormativs.WORK_ID AND FN_NUM_TO_INT(:ncode)>=FN_NUM_TO_INT(s) and FN_NUM_TO_INT(:ncode)<=FN_NUM_TO_INT(po)';
         ParamByName('ncode').AsString := vNumber;
         ParamByName('MAIS').AsInteger := MAIS;
@@ -6154,6 +6155,7 @@ begin
         Active := False;
         SQL.Clear;
         SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name",'#13 +
+          'CONCAT(s, " - ", po) AS DESCRIPTION,'#13 +
           'CONCAT(coef, "% / ", coef_zp, "%") AS VALUE, coef as "Coef", coef_zp as "CoefZP", FN_NUM_TO_INT(s) as "From", FN_NUM_TO_INT(po) as "On" '
           + 'FROM znormativs, znormativs_detail, znormativs_value ' +
           'WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID  ' +
