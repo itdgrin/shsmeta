@@ -84,7 +84,7 @@ type
 
 implementation
 
-uses DataModule, SprController;
+uses DataModule, SprController, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -347,6 +347,7 @@ end;
 
 function TManSprCardForm.GetNewUnitID: Integer;
 var i, j: Integer;
+    TmpID: Integer;
 begin
   i := -1;
   cbUnit.Text := Trim(cbUnit.Text);
@@ -360,7 +361,28 @@ begin
   if i > -1 then
     Result := FUnitIDList[i]
   else
-    raise Exception.Create('Единица измерения ''' + Trim(cbUnit.Text) + ''' отсутствует в справочнике.');
+  begin
+    DM.qrDifferent.SQL.Text := 'Select MAX(UNIT_ID) from units where (UNIT_ID > ' +
+      IntToStr(С_MANIDDELIMETER) + ')';
+    DM.qrDifferent.Active := True;
+    try
+      if (not DM.qrDifferent.Eof) and
+         (DM.qrDifferent.Fields[0].AsInteger > С_MANIDDELIMETER) then
+        TmpID := DM.qrDifferent.Fields[0].AsInteger + 1
+      else
+        TmpID := С_MANIDDELIMETER + 1;
+    finally
+      DM.qrDifferent.Active := False;
+    end;
+
+    DM.qrDifferent.SQL.Text :=
+      'Insert into units (UNIT_ID, UNIT_NAME, BASE) values (:ID, :NAME, 1)';
+    DM.qrDifferent.ParamByName('ID').Value := TmpID;
+    DM.qrDifferent.ParamByName('NAME').Value := cbUnit.Text;
+    DM.qrDifferent.ExecSQL;
+
+    Result := TmpID;
+  end;
 end;
 
 function TManSprCardForm.ValidateData: Boolean;
@@ -411,30 +433,46 @@ begin
       if FNewItem or (not FNewItem and (FBase = 0)) then
       begin
         case FSprDataType of
-          0: DM.qrDifferent.SQL.Text :=
-              'Insert into material (MAT_CODE, MAT_NAME, UNIT_ID, BASE, MAT_TYPE) values ' +
-              '(:CODE, :NAME, :UNITID, 1, 1)';
-          1: DM.qrDifferent.SQL.Text :=
-              'Insert into material (MAT_CODE, MAT_NAME, UNIT_ID, BASE, MAT_TYPE) values ' +
-              '(:CODE, :NAME, :UNITID, 1, 2)';
-          2: DM.qrDifferent.SQL.Text :=
-              'Insert into mechanizm (MECH_CODE, MECH_NAME, UNIT_ID, BASE) values ' +
-              '(:CODE, :NAME, :UNITID, 1)';
-          3: DM.qrDifferent.SQL.Text :=
-              'Insert into devices (DEVICE_CODE1, NAME, UNIT, BASE) values ' +
-              '(:CODE, :NAME, :UNITID, 1)';
+        0,1:
+          DM.qrDifferent.SQL.Text := 'Select MAX(MATERIAL_ID) from material ' +
+            'where (MATERIAL_ID > ' + IntToStr(С_MANIDDELIMETER) + ')';
+        2:
+          DM.qrDifferent.SQL.Text := 'Select MAX(MECHANIZM_ID) from mechanizm ' +
+            'where (MECHANIZM_ID > ' + IntToStr(С_MANIDDELIMETER) + ')';
+        3:
+          DM.qrDifferent.SQL.Text := 'Select MAX(DEVICE_ID) from devices ' +
+            'where (DEVICE_ID > ' + IntToStr(С_MANIDDELIMETER) + ')';
         end;
+        DM.qrDifferent.Active := True;
+        try
+          if (not DM.qrDifferent.Eof) and
+             (DM.qrDifferent.Fields[0].AsInteger > С_MANIDDELIMETER) then
+            FSprID := DM.qrDifferent.Fields[0].AsInteger + 1
+          else
+            FSprID := С_MANIDDELIMETER + 1;
+        finally
+          DM.qrDifferent.Active := False;
+        end;
+
+        case FSprDataType of
+          0: DM.qrDifferent.SQL.Text :=
+              'Insert into material (MATERIAL_ID, MAT_CODE, MAT_NAME, UNIT_ID, BASE, MAT_TYPE) values ' +
+              '(:ID, :CODE, :NAME, :UNITID, 1, 1)';
+          1: DM.qrDifferent.SQL.Text :=
+              'Insert into material (MATERIAL_ID, MAT_CODE, MAT_NAME, UNIT_ID, BASE, MAT_TYPE) values ' +
+              '(:ID, :CODE, :NAME, :UNITID, 1, 2)';
+          2: DM.qrDifferent.SQL.Text :=
+              'Insert into mechanizm (MECHANIZM_ID, MECH_CODE, MECH_NAME, UNIT_ID, BASE) values ' +
+              '(:ID, :CODE, :NAME, :UNITID, 1)';
+          3: DM.qrDifferent.SQL.Text :=
+              'Insert into devices (DEVICE_ID, DEVICE_CODE1, NAME, UNIT, BASE) values ' +
+              '(:ID, :CODE, :NAME, :UNITID, 1)';
+        end;
+        DM.qrDifferent.ParamByName('ID').Value := FSprID;
         DM.qrDifferent.ParamByName('CODE').Value := Trim(edtCode.Text);
         DM.qrDifferent.ParamByName('NAME').Value := NewName;
         DM.qrDifferent.ParamByName('UNITID').Value := NewUnitID;
         DM.qrDifferent.ExecSQL;
-        DM.qrDifferent.SQL.Text := 'Select last_insert_id()';
-        DM.qrDifferent.Active := True;
-        try
-          FSprID := DM.qrDifferent.Fields[0].AsInteger;
-        finally
-          DM.qrDifferent.Active := False;
-        end;
       end
       else
       begin

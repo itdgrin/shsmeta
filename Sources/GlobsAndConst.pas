@@ -88,6 +88,7 @@ const
     ('worker_deartment', 'worker_department_id'),
     ('supp_agreement', 'supp_agreement_id'));
 
+  С_MANIDDELIMETER = 1000000000; //Разделитель ID для собственных данных в справочниках.
 
 type
   TIDConvertArray = array [1..15, 0..1] of array of Integer;
