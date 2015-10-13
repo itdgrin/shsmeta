@@ -1272,10 +1272,10 @@ begin
         EncodeDate(FYear, FMonth, 1), FRegion, tmp, not tmp);
     end;
     //Механизмы
-    3: Frame := TSprMechanizm.Create(Self, True, True,
+    3: Frame := TSprMechanizm.Create(Self, True, False,
         EncodeDate(FYear, FMonth, 1));
     //Оборудование
-    4: Frame := TSprEquipment.Create(Self, False);
+    4: Frame := TSprEquipment.Create(Self, True, False);
   end;
   Frame.Parent := groupCatalog;
   Frame.Align := alClient;

@@ -107,7 +107,7 @@ begin
   4:
   begin
     Caption := 'Выбор оборудования';
-    FFrame := TSprEquipment.Create(Self, False);
+    FFrame := TSprEquipment.Create(Self, False, False);
   end;
   end;
   FFrame.Parent := Self;

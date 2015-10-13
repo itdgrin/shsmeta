@@ -231,10 +231,6 @@ inherited SprMaterial: TSprMaterial
     inherited PanelPeriod: TPanel
       Width = 519
       ExplicitWidth = 519
-      inherited lbYear: TLabel
-        Height = 13
-        ExplicitHeight = 13
-      end
       object lbRegion: TLabel [2]
         Left = 240
         Top = 11
@@ -298,6 +294,13 @@ inherited SprMaterial: TSprMaterial
   inherited PanelDetails: TPanel
     inherited SpeedButtonShowHide: TSpeedButton
       ExplicitWidth = 743
+    end
+    inherited gbDetails: TGroupBox
+      inherited gbDetPrice: TGroupBox
+        inherited lvDetPrice: TListView
+          OnDblClick = ListSprDblClick
+        end
+      end
     end
   end
 end

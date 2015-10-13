@@ -130,7 +130,7 @@ begin
   FramePriceMechanizm.Visible := False;
   SpeedButtonMechanizm.Tag := Integer(FramePriceMechanizm);
 
-  FrameEquipment := TSprEquipment.Create(Self, True);
+  FrameEquipment := TSprEquipment.Create(Self, True, True);
   FrameEquipment.Parent := Self;
   FrameEquipment.LoadSpr;
   FrameEquipment.Align := alClient;

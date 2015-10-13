@@ -259,7 +259,7 @@ begin
     lc := ListSpr.Columns.Add;
     lc.Caption := 'Цена с НДС, руб';
   
-    TmpFlag := FPriceColumn and (FBaseType = 1);
+    TmpFlag := FPriceColumn and (FBaseType = 1) and (GetSprType <> CDevIndex);
     if not TmpFlag then
     begin
       ListSpr.Columns.Delete(4);
@@ -321,7 +321,8 @@ procedure TSprFrame.LoadSpr;
 var FRegion: Integer;
 begin
   FSprType := GetSprType;
-  if FPriceColumn and (FBaseType = 1) then
+  //(FSprType <> CDevIndex) - заглушка для справочника оборудования
+  if FPriceColumn and (FBaseType = 1) and (FSprType <> CDevIndex) then
   begin
     FRegion := GetRegion;
     SprControl.SetPriceNotify(edtYear.Value, cmbMonth.ItemIndex + 1, FRegion,
@@ -459,7 +460,7 @@ end;
 
 procedure TSprFrame.OnLoadDone;
 begin
-  if FPriceColumn and (FBaseType = 1) then
+  if FPriceColumn and (FBaseType = 1) and (GetSprType <> CDevIndex) then
   begin
     edtYear.Enabled := True;
     cmbMonth.Enabled := True;
@@ -677,9 +678,6 @@ begin
     try
       for i := 0 to Length(FSortArray) - 1 do
       begin
-        if (i mod 1000) = 0 then
-            Application.ProcessMessages;
-
         //Создаем пустые итемы, заполним их при отображении
         Item := ListSpr.Items.Add;
         Item.Data := FSortArray[i].Value;
@@ -775,7 +773,7 @@ begin
     if not FNoEdCol then
       Item.SubItems.Add(TSprRecord(Item.Data^).Unt);
 
-    if FPriceColumn and (FBaseType = 1) then
+    if FPriceColumn and (FBaseType = 1) and (GetSprType <> CDevIndex) then
     begin
       if TSprRecord(Item.Data^).CoastNoNDS > 0 then
         Item.SubItems.Add(FloatToStr(TSprRecord(Item.Data^).CoastNoNDS))
@@ -806,7 +804,7 @@ begin
     i := 3;
   end;
 
-  if FPriceColumn and (FBaseType = 1) then
+  if FPriceColumn and (FBaseType = 1) and (GetSprType <> CDevIndex) then
   begin
     ListSpr.Columns[i].Width := 110;
     ListSpr.Columns[i + 1].Width := 100;

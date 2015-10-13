@@ -101,11 +101,16 @@ begin
 end;
 
 procedure TSprMechanizm.ListSprDblClick(Sender: TObject);
+var TmpPriceID: Integer;
 begin
   inherited;
+  TmpPriceID := 0;
+  if lvDetPrice.ItemIndex > -1 then
+    TmpPriceID := Integer(lvDetPrice.Items[lvDetPrice.ItemIndex].Data);
+
   if FAllowAddition and (ListSpr.ItemIndex > -1) then
     FormCalculationEstimate.AddMechanizm(
-      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID);
+      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID, TmpPriceID);
 end;
 
 procedure TSprMechanizm.ListSprResize(Sender: TObject);

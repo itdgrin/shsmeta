@@ -241,4 +241,13 @@ inherited SprMechanizm: TSprMechanizm
   inherited ListSpr: TListView
     OnDblClick = ListSprDblClick
   end
+  inherited PanelDetails: TPanel
+    inherited gbDetails: TGroupBox
+      inherited gbDetPrice: TGroupBox
+        inherited lvDetPrice: TListView
+          OnDblClick = ListSprDblClick
+        end
+      end
+    end
+  end
 end

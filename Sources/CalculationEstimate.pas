@@ -576,10 +576,10 @@ type
 
     procedure OutputDataToTable(ANewRow: Boolean = False); // Заполнение таблицы расценок
 
-    procedure AddRate(const vRateId: Integer);
-    procedure AddMaterial(const vMatId: Integer);
-    procedure AddMechanizm(const vMechId: Integer);
-    procedure AddDevice(const vEquipId: Integer);
+    procedure AddRate(const ARateId: Integer);
+    procedure AddMaterial(const AMatId, AManPriceID: Integer);
+    procedure AddMechanizm(const AMechId, AManPriceID: Integer);
+    procedure AddDevice(const AEquipId, AManPriceID: Integer);
 
     procedure PMMechFromRatesClick(Sender: TObject);
     procedure dbgrdRates12DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -3172,7 +3172,7 @@ begin
       Exit;
     end;
 
-    AddMaterial(newID);
+    AddMaterial(newID, 0);
     grRatesEx.EditorMode := True;
     Exit;
   end;
@@ -3197,7 +3197,7 @@ begin
       Exit;
     end;
 
-    AddMechanizm(newID);
+    AddMechanizm(newID, 0);
     grRatesEx.EditorMode := True;
     Exit;
   end;
@@ -3219,7 +3219,7 @@ begin
       qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
-    AddDevice(newID);
+    AddDevice(newID, 0);
     grRatesEx.EditorMode := True;
     Exit;
   end;
@@ -4745,7 +4745,7 @@ begin
 end;
 
 // Добавление расценки в смету
-procedure TFormCalculationEstimate.AddRate(const vRateId: Integer);
+procedure TFormCalculationEstimate.AddRate(const ARateId: Integer);
 var
   vMaxIdRate,
   DataRowID: Integer;
@@ -4767,7 +4767,7 @@ begin
       SQL.Clear;
       SQL.Add('CALL AddRate(:id_estimate, :id_rate, :cnt, :iterator, :nommanual);');
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
-      ParamByName('id_rate').Value := vRateId;
+      ParamByName('id_rate').Value := ARateId;
       ParamByName('cnt').Value := 0;
       ParamByName('iterator').Value := FNewRowIterator;
       ParamByName('nommanual').Value := FNewNomManual;
@@ -4821,7 +4821,7 @@ begin
         'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
         'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
         '(TMatCoast.material_id = TMatNorm.material_id) and (monat = ' + INTTOSTR(Month1) + ') and (year = ' +
-        INTTOSTR(Year1) + ') WHERE (TMatNorm.normativ_id = ' + INTTOSTR(vRateId) + ') order by 1';
+        INTTOSTR(Year1) + ') WHERE (TMatNorm.normativ_id = ' + INTTOSTR(ARateId) + ') order by 1';
       Active := True;
 
       Filtered := False;
@@ -4873,7 +4873,7 @@ begin
         qrTemp1.ExecSQL;
 
         CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
-          vRateId, FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
+          ARateId, FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
 
         Next;
       end;
@@ -4921,7 +4921,7 @@ begin
 
           if MaxMId > 0 then
             CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
-              vRateId, FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
+              ARateId, FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
         end;
         Next;
       end;
@@ -4952,7 +4952,7 @@ begin
         'JOIN mechanizm as mech ON mechnorm.mechanizm_id = mech.mechanizm_id ' +
         'JOIN units ON mech.unit_id = units.unit_id ' + 'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
         '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and  ' + '(monat = ' + INTTOSTR(Month1) +
-        ') and (year = ' + INTTOSTR(Year1) + ') WHERE (mechnorm.normativ_id = ' + INTTOSTR(vRateId) +
+        ') and (year = ' + INTTOSTR(Year1) + ') WHERE (mechnorm.normativ_id = ' + INTTOSTR(ARateId) +
         ') order by 1');
 
       Active := True;
@@ -4995,7 +4995,7 @@ begin
 
           if MaxMId > 0 then
             CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger,
-              vRateId, FieldByName('MechCode').AsString, FieldByName('MechName').AsString);
+              ARateId, FieldByName('MechCode').AsString, FieldByName('MechName').AsString);
         end;
 
         Next;
@@ -6633,7 +6633,7 @@ begin
   CloseOpen(qrCalculations);
 end;
 
-procedure TFormCalculationEstimate.AddDevice(const vEquipId: Integer);
+procedure TFormCalculationEstimate.AddDevice(const AEquipId, AManPriceID: Integer);
 // Добавление оборудования к смете
 begin
   try
@@ -6644,11 +6644,12 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddDevice(:IdEstimate, :IdDev, 0, :Iterator, :NomManual);');
+      SQL.Add('CALL AddDevice(:IdEstimate, :IdDev, 0, :Iterator, :NomManual, :ManPriceID);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
-      ParamByName('IdDev').Value := vEquipId;
+      ParamByName('IdDev').Value := AEquipId;
       ParamByName('Iterator').Value := FNewRowIterator;
       ParamByName('NomManual').Value := FNewNomManual;
+      ParamByName('ManPriceID').Value := AManPriceID;
       ExecSQL;
     end;
 
@@ -6661,7 +6662,7 @@ begin
 end;
 
 // Добавление материала к смете
-procedure TFormCalculationEstimate.AddMaterial(const vMatId: Integer);
+procedure TFormCalculationEstimate.AddMaterial(const AMatId, AManPriceID: Integer);
 begin
   try
     if not CheckCursorInRate then
@@ -6671,12 +6672,14 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddMaterial(:IdEstimate, :IdMat, 0, :Iterator, :NomManual, :CALCMODE);');
+      SQL.Add('CALL AddMaterial(:IdEstimate, :IdMat, 0, :Iterator, ' +
+        ':NomManual, :CALCMODE, :ManPriceID);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
-      ParamByName('IdMat').Value := vMatId;
+      ParamByName('IdMat').Value := AMatId;
       ParamByName('Iterator').Value := FNewRowIterator;
       ParamByName('NomManual').Value := FNewNomManual;
       ParamByName('CALCMODE').Value := G_CALCMODE;
+      ParamByName('ManPriceID').Value := AManPriceID;
       ExecSQL;
     end;
 
@@ -6689,7 +6692,7 @@ begin
 end;
 
 // Добавление механизма к смете
-procedure TFormCalculationEstimate.AddMechanizm(const vMechId: Integer);
+procedure TFormCalculationEstimate.AddMechanizm(const AMechId, AManPriceID: Integer);
 begin
   try
     if not CheckCursorInRate then
@@ -6699,12 +6702,14 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, 0, :Iterator, :NomManual, :CALCMODE);');
+      SQL.Add('CALL AddMechanizm(:IdEstimate, :IdMech, 0, :Iterator, ' +
+        ':NomManual, :CALCMODE, :ManPriceID);');
       ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
-      ParamByName('IdMech').Value := vMechId;
+      ParamByName('IdMech').Value := AMechId;
       ParamByName('Iterator').Value := FNewRowIterator;
       ParamByName('NomManual').Value := FNewNomManual;
       ParamByName('CALCMODE').Value := G_CALCMODE;
+      ParamByName('ManPriceID').Value := AManPriceID;
       ExecSQL;
     end;
 

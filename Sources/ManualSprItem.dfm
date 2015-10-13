@@ -319,6 +319,10 @@ object ManSprCardForm: TManSprCardForm
         Name = 'PROVIDER'
         DataType = ftString
         Size = 100
+      end
+      item
+        Name = 'ID'
+        DataType = ftInteger
       end>
     IndexDefs = <>
     FetchOptions.AssignedValues = [evMode]
@@ -353,6 +357,9 @@ object ManSprCardForm: TManSprCardForm
     object mtPricesPROVIDER: TStringField
       FieldName = 'PROVIDER'
       Size = 100
+    end
+    object mtPricesID: TIntegerField
+      FieldName = 'ID'
     end
   end
   object dsPrices: TDataSource

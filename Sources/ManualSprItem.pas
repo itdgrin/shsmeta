@@ -58,6 +58,7 @@ type
     pnlButtons: TPanel;
     btnClose: TButton;
     btnSave: TButton;
+    mtPricesID: TIntegerField;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure mtPricesDOC_DATESetText(Sender: TField; const Text: string);
@@ -164,6 +165,7 @@ begin
     while not DM.qrDifferent.Eof do
     begin
       Item := AListView.Items.Add;
+      Item.Data := Pointer(DM.qrDifferent.FieldByName('ID').AsInteger);
       Item.Caption := DM.qrDifferent.FieldByName('DOC_DATE').AsString;
       Item.SubItems.Add(DM.qrDifferent.FieldByName('DOC_NOM').AsString);
       Item.SubItems.Add(DM.qrDifferent.FieldByName('PROVIDER').AsString);
@@ -310,6 +312,7 @@ begin
       while not DM.qrDifferent.Eof do
       begin
         mtPrices.Append;
+        mtPrices.FieldByName('ID').Value := DM.qrDifferent.FieldByName('ID').Value;
         mtPrices.FieldByName('DOC_NOM').Value := DM.qrDifferent.FieldByName('DOC_NOM').Value;
         mtPrices.FieldByName('DOC_DATE').Value := DM.qrDifferent.FieldByName('DOC_DATE').Value;
         mtPrices.FieldByName('PROVIDER').Value := DM.qrDifferent.FieldByName('PROVIDER').Value;
@@ -454,6 +457,7 @@ begin
           DM.qrDifferent.Active := False;
         end;
 
+        DM.qrDifferent.Params.Clear;
         case FSprDataType of
           0: DM.qrDifferent.SQL.Text :=
               'Insert into material (MATERIAL_ID, MAT_CODE, MAT_NAME, UNIT_ID, BASE, MAT_TYPE) values ' +
@@ -465,8 +469,8 @@ begin
               'Insert into mechanizm (MECHANIZM_ID, MECH_CODE, MECH_NAME, UNIT_ID, BASE) values ' +
               '(:ID, :CODE, :NAME, :UNITID, 1)';
           3: DM.qrDifferent.SQL.Text :=
-              'Insert into devices (DEVICE_ID, DEVICE_CODE1, NAME, UNIT, BASE) values ' +
-              '(:ID, :CODE, :NAME, :UNITID, 1)';
+              'Insert into devices (DEVICE_ID, DEVICE_CODE1, DEVICE_CODE2, NAME, UNIT, BASE) values ' +
+              '(:ID, :CODE, '''', :NAME, :UNITID, 1)';
         end;
         DM.qrDifferent.ParamByName('ID').Value := FSprID;
         DM.qrDifferent.ParamByName('CODE').Value := Trim(edtCode.Text);
@@ -526,17 +530,31 @@ begin
       DM.qrDifferent.ParamByName('ID_SPR').Value := FSprID;
       DM.qrDifferent.ExecSQL;
 
-      DM.qrDifferent.SQL.Text :=
-        'Insert into manual_cost (ID_TYPE_DATA,ID_SPR,DOC_NOM,DOC_DATE,' +
-        'PROVIDER,COASTNDS,COASTNONDS,DESCRIPT) values ' +
-        '(:ID_TYPE_DATA,:ID_SPR,:DOC_NOM,:DOC_DATE,:PROVIDER,:COASTNDS,' +
-        ':COASTNONDS,:DESCRIPT)';
-
       mtPrices.DisableControls;
       try
         mtPrices.First;
         while not mtPrices.Eof do
         begin
+          DM.qrDifferent.Params.Clear;
+
+          if mtPrices.FieldByName('ID').AsInteger > 0 then
+          begin
+             DM.qrDifferent.SQL.Text :=
+              'Insert into manual_cost (ID,ID_TYPE_DATA,ID_SPR,DOC_NOM,DOC_DATE,' +
+              'PROVIDER,COASTNDS,COASTNONDS,DESCRIPT) values ' +
+              '(:ID,:ID_TYPE_DATA,:ID_SPR,:DOC_NOM,:DOC_DATE,:PROVIDER,:COASTNDS,' +
+              ':COASTNONDS,:DESCRIPT)';
+             DM.qrDifferent.ParamByName('ID').Value := mtPrices.FieldByName('ID').AsInteger;
+          end
+          else
+          begin
+            DM.qrDifferent.SQL.Text :=
+              'Insert into manual_cost (ID_TYPE_DATA,ID_SPR,DOC_NOM,DOC_DATE,' +
+              'PROVIDER,COASTNDS,COASTNONDS,DESCRIPT) values ' +
+              '(:ID_TYPE_DATA,:ID_SPR,:DOC_NOM,:DOC_DATE,:PROVIDER,:COASTNDS,' +
+              ':COASTNONDS,:DESCRIPT)';
+          end;
+
           DM.qrDifferent.ParamByName('ID_TYPE_DATA').Value := FMainDataType;
           DM.qrDifferent.ParamByName('ID_SPR').Value := FSprID;
           DM.qrDifferent.ParamByName('DOC_NOM').Value := mtPrices.FieldByName('DOC_NOM').Value;

@@ -19,7 +19,8 @@ type
   public
     { Public declarations }
     constructor Create(AOwner: TComponent;
-      const vAllowAddition: Boolean; ABaseType: Byte = 0); reintroduce;
+      const APriceColumn, vAllowAddition: Boolean;
+      ABaseType: Byte = 0); reintroduce;
   end;
 
 implementation
@@ -29,14 +30,14 @@ implementation
 uses CalculationEstimate, SprController;
 
 constructor TSprEquipment.Create(AOwner: TComponent;
-      const vAllowAddition: Boolean; ABaseType: Byte);
+      const APriceColumn, vAllowAddition: Boolean; ABaseType: Byte);
 var y, m: Integer;
 begin
   FAllowAddition := vAllowAddition;
   //FNoEdCol := True;
   y := G_CURYEAR;
   m := G_CURMONTH;
-  inherited Create(AOwner, False, Date, ABaseType);
+  inherited Create(AOwner, APriceColumn, Date, ABaseType);
 
   G_CURYEAR := y;
   G_CURMONTH := m;
@@ -48,11 +49,16 @@ begin
 end;
 
 procedure TSprEquipment.ListSprDblClick(Sender: TObject);
+var TmpPriceID: Integer;
 begin
   inherited;
+  TmpPriceID := 0;
+  if lvDetPrice.ItemIndex > -1 then
+    TmpPriceID := Integer(lvDetPrice.Items[lvDetPrice.ItemIndex].Data);
+
   if FAllowAddition and (ListSpr.ItemIndex > -1) then
     FormCalculationEstimate.AddDevice(
-      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID);
+      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID, TmpPriceID);
 end;
 
 end.
