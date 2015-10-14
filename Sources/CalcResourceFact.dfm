@@ -1335,7 +1335,6 @@ object fCalcResourceFact: TfCalcResourceFact
     FormatOptions.DefaultParamDataType = ftBCD
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.EnableDelete = False
-    UpdateOptions.EnableInsert = False
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
@@ -1364,7 +1363,9 @@ object fCalcResourceFact: TfCalcResourceFact
       '  f.COAST_ZP,'
       '  f.PRICE_ZP,'
       '  f.SRC_OBJECT_ID,'
-      '  f.forecast_cost_index'
+      '  f.forecast_cost_index,'
+      '  f.ID_TYPE_DATA,'
+      '  f.ID_ACT'
       'FROM fact_data f'
       '/*'
       
@@ -1537,6 +1538,16 @@ object fCalcResourceFact: TfCalcResourceFact
       Origin = 'forecast_cost_index'
       OnChange = qrMainDataCNTChange
       Precision = 24
+    end
+    object qrMainDataID_TYPE_DATA: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_TYPE_DATA'
+      Origin = 'ID_TYPE_DATA'
+    end
+    object qrMainDataID_ACT: TLongWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'ID_ACT'
+      Origin = 'ID_ACT'
     end
   end
   object dsMainData: TDataSource

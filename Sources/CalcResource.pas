@@ -285,11 +285,14 @@ begin
 
   fCalcResource.pnlTop.Visible := AOwner = nil;
 
+  //fCalcResource.pgc.ActivePageIndex := 0;
   fCalcResource.pgc.ActivePageIndex := APage;
 
   if AOwner = nil then
     fCalcResource.WindowState := wsMaximized;
+
   fCalcResource.flLoaded := True;
+
   fCalcResource.pgcChange(nil);
   with fCalcResource do
     if fl then
@@ -307,7 +310,10 @@ begin
         4:
           qrRates.First;
       end;
+  if AOwner <> nil then
+    fCalcResource.Width := AOwner.ClientWidth;
   fCalcResource.Show;
+
 end;
 
 procedure TfCalcResource.btnShowDiffClick(Sender: TObject);
