@@ -32,7 +32,7 @@ type
     btnAdd: TSpeedButton;
     btnDelete: TSpeedButton;
     btn2: TSpeedButton;
-    FileOpenDialog1: TFileOpenDialog;
+    dlgOpen1: TOpenDialog;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -159,11 +159,11 @@ end;
 
 procedure TfFileStorage.btn4Click(Sender: TObject);
 begin
-  if FileOpenDialog1.Execute then
+  if dlgOpen1.Execute then
   begin
     qrTreeData.Edit;
-    qrTreeData.FieldByName('doc_path').AsString := FileOpenDialog1.FileName;
-    qrTreeData.FieldByName('doc_name').AsString := ExtractFileName(FileOpenDialog1.FileName);
+    qrTreeData.FieldByName('doc_path').AsString := dlgOpen1.FileName;
+    qrTreeData.FieldByName('doc_name').AsString := ExtractFileName(dlgOpen1.FileName);
     qrTreeData.FieldByName('doc_use_owner_path').AsInteger := 0;
     qrTreeData.Post;
   end;

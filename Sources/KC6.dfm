@@ -52,7 +52,7 @@ object fKC6: TfKC6
       41)
     object Button1: TButton
       Left = 350
-      Top = 6
+      Top = 8
       Width = 100
       Height = 25
       Anchors = [akRight, akBottom]
@@ -239,6 +239,14 @@ object fKC6: TfKC6
         TabOrder = 0
         Value = 0
         OnChange = EditKoefChange
+      end
+      object chkCopyTreeEstimates: TCheckBox
+        Left = 8
+        Top = 2
+        Width = 145
+        Height = 17
+        Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1089#1090#1088#1091#1082#1090#1091#1088#1091
+        TabOrder = 1
       end
     end
     object PanelBottom: TPanel
@@ -597,9 +605,11 @@ object fKC6: TfKC6
     SQL.Strings = (
       'SELECT '
       
-        '  CAST(CONCAT(sm.`OBJ_ID`, IF(sm.`SM_TYPE`=1, sm.`SM_ID`, ""), s' +
-        'm.`PARENT_ID`, sm.`SM_ID`, IF(d.`ID_TYPE_DATA` IN (10,11), d.`ID' +
-        '_TYPE_DATA`, '#39#39')) AS CHAR(255)) as SORT_ID,'
+        '  CAST(CONCAT(FN_getSortSM(sm.`SM_ID`), IF(d.`ID_TYPE_DATA` IN (' +
+        '10,11), d.`ID_TYPE_DATA`, '#39#39')) AS CHAR(255)) as SORT_ID,'
+      
+        '  CAST(CONCAT(FN_getSortSM(sm.`SM_ID`), d.`ID`) AS CHAR(255)) as' +
+        ' SORT_ID2,'
       '  1 AS INCITERATOR,'
       '  0 AS ITERATOR,'
       '  d.`NUM_ROW`,'
@@ -863,8 +873,11 @@ object fKC6: TfKC6
       '  '
       '  select '
       
-        '  CAST(CONCAT(sm.`OBJ_ID`, IF(sm.`SM_TYPE`=1, sm.`SM_ID`, ""), s' +
-        'm.`PARENT_ID`, sm.`SM_ID`) AS CHAR(255)) as SORT_ID,'
+        '  CAST(CONCAT(FN_getSortSM(sm.`SM_ID`)) AS CHAR(255)) as SORT_ID' +
+        ','
+      
+        '  CAST(CONCAT(FN_getSortSM(sm.`SM_ID`)) AS CHAR(255)) as SORT_ID' +
+        '2,'
       '  0 AS INCITERATOR,'
       '  0 AS ITERATOR,'
       '  NULL AS NUM_ROW,'
@@ -875,8 +888,10 @@ object fKC6: TfKC6
       
         '  NULL AS DATA_ESTIMATE_OR_ACT_ID, NULL AS ID_TABLES, sm.`SM_ID`' +
         ', NULL AS ID_RATE, NULL AS ID_REPLACED, NULL AS CntDONE, NULL AS' +
-        ' OBJ_COUNT_IN, EXISTS(SELECT SM_ID FROM `smetasourcedata` WHERE ' +
-        'SOURCE_ID=sm.SM_ID) AS SELECTED'
+        ' OBJ_COUNT_IN, '
+      
+        '  EXISTS(SELECT SM_ID FROM `smetasourcedata` WHERE SOURCE_ID=sm.' +
+        'SM_ID) AS SELECTED'
       '  FROM `smetasourcedata` sm'
       '  WHERE sm.`DELETED` = 0 AND'
       '        sm.`ACT` = 0 AND '
@@ -896,7 +911,7 @@ object fKC6: TfKC6
         ParamType = ptInput
         Value = Null
       end>
-    object strngfldDataSORT_ID: TStringField
+    object qrDataSORT_ID: TStringField
       FieldName = 'SORT_ID'
       Size = 255
     end
@@ -952,6 +967,10 @@ object fKC6: TfKC6
     object qrDataOBJ_COUNT_IN: TFloatField
       FieldName = 'OBJ_COUNT_IN'
       OnChange = qrDataOBJ_COUNT_INChange
+    end
+    object qrDataSORT_ID2: TStringField
+      FieldName = 'SORT_ID2'
+      Size = 255
     end
   end
   object dsData: TDataSource

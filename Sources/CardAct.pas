@@ -5,7 +5,8 @@ interface
 uses Windows, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls, DB, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Mask,
-  JvExMask, JvToolEdit, JvDBControls, Vcl.DBCtrls, Tools, Vcl.Buttons, System.Variants, System.DateUtils;
+  JvExMask, JvToolEdit, JvDBControls, Vcl.DBCtrls, Tools, Vcl.Buttons, System.Variants, System.DateUtils,
+  Vcl.Dialogs, System.UITypes;
 
 type
   TfCardAct = class(TForm)
@@ -211,7 +212,6 @@ begin
         try
           with qrTemp do
           begin
-            // -----
             try
               Active := False;
               SQL.Clear;
@@ -219,11 +219,6 @@ begin
                 + 'WHERE objcards.stroj_id = objstroj.stroj_id and objstroj.obj_region = objregion.obj_region_id and '
                 + 'objcards.obj_id = ' + qrAct.FieldByName('OBJ_ID').AsString + ';');
               Active := True;
-              {
-                PercentTransport := FieldByName('PercentTransport').AsString;
-                ReplaceDecimal(PercentTransport, ',', '.');
-                PercentTransportEquipment := '1';
-              }
 
               VAT := FieldByName('state_nds').AsInteger;
               // FieldByName('BEG_STROJ').AsDateTime
@@ -236,23 +231,26 @@ begin
                   PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
             end;
 
-            try
-              Active := False;
-              SQL.Clear;
-              SQL.Add('SELECT stavka_id FROM stavka WHERE year = ' + IntToStr(vYear) + ' and monat = ' +
-                IntToStr(vMonth) + ';');
-              Active := True;
+            if cbbType.ItemIndex = 1 then
+            begin
+              try
+                Active := False;
+                SQL.Clear;
+                SQL.Add('SELECT stavka_id FROM stavka WHERE year = ' + IntToStr(vYear) + ' and monat = ' +
+                  IntToStr(vMonth) + ';');
+                Active := True;
 
-              if IsEmpty then
-                Abort;
+                if IsEmpty then
+                  Abort;
 
-              IdStavka := FieldByName('stavka_id').Value;
-            except
-              on E: Exception do
-              begin
-                MessageBox(0, PChar('При запросе ID СТАВКИ возникла ошибка:' + sLineBreak + E.Message),
-                  PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
-                Exit;
+                IdStavka := FieldByName('stavka_id').Value;
+              except
+                on E: Exception do
+                begin
+                  MessageDlg('Для выбранной даты составления значения ставок отсутствуют.'#13 +
+                    'Загрузите ставки или укажите другую дату составления акта.', mtError, [mbOK], 0);
+                  Exit;
+                end;
               end;
             end;
             /// /-----

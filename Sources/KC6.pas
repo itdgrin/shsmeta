@@ -57,7 +57,7 @@ type
     qrDataID_TYPE_DATA: TIntegerField;
     qrDataSELECTED: TIntegerField;
     qrDataCHECKED: TBooleanField;
-    strngfldDataSORT_ID: TStringField;
+    qrDataSORT_ID: TStringField;
     qrDataITERATOR: TIntegerField;
     qrDataINCITERATOR: TIntegerField;
     qrDataSM_ID: TLongWordField;
@@ -72,6 +72,8 @@ type
     qrTreeData: TFDQuery;
     dsTreeData: TDataSource;
     tvEstimates: TJvDBTreeView;
+    chkCopyTreeEstimates: TCheckBox;
+    qrDataSORT_ID2: TStringField;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -174,6 +176,11 @@ begin
   CloseOpen(qrTreeData);
   tvEstimates.FullExpand;
   GetNameObject;
+  if Assigned(FormCalculationEstimate) then
+  begin
+    chkCopyTreeEstimates.Checked := True;
+    chkCopyTreeEstimates.Visible := FormCalculationEstimate.Act and (FormCalculationEstimate.TYPE_ACT = 1);
+  end;
   Show;
 end;
 
@@ -290,6 +297,7 @@ end;
 procedure TfKC6.Button1Click(Sender: TObject);
 var
   Key: Variant;
+  toAct: Integer;
 begin
   if MessageBox(0, PChar('Перенести выделенные данные в акт?'), PWideChar(Caption),
     MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mryes then
@@ -298,30 +306,38 @@ begin
       'delete from data_row_temp WHERE SM_ID IN (SELECT SM_ID FROM smetasourcedata WHERE SOURCE_ID IS NOT NULL AND (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ACT) OR PARENT_ID = :ID_ACT));';
     qrTemp.ParamByName('ID_ACT').Value := FormCalculationEstimate.IdEstimate;
     qrTemp.ExecSQL;
-    FastExecSQL('DELETE FROM materialcard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
+    FastExecSQL
+      ('DELETE FROM materialcard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
       VarArrayOf([]));
-    FastExecSQL('DELETE FROM mechanizmcard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
+    FastExecSQL
+      ('DELETE FROM mechanizmcard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
       VarArrayOf([]));
-    FastExecSQL('DELETE FROM devicescard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
+    FastExecSQL
+      ('DELETE FROM devicescard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
       VarArrayOf([]));
     FastExecSQL('DELETE FROM dumpcard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
       VarArrayOf([]));
-    FastExecSQL('DELETE FROM transpcard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
+    FastExecSQL
+      ('DELETE FROM transpcard_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
       VarArrayOf([]));
     FastExecSQL('DELETE FROM card_rate_temp WHERE DATA_ROW_ID NOT IN(SELECT DISTINCT ID FROM data_row_temp);',
       VarArrayOf([]));
 
-    Key := strngfldDataSORT_ID.Value;
+    Key := qrDataSORT_ID.Value;
     qrData.DisableControls;
     qrData.AfterScroll := nil;
     // qrData.OnCalcFields := nil;
+    if chkCopyTreeEstimates.Checked then
+      toAct := FormCalculationEstimate.IdEstimate
+    else
+      toAct := FormCalculationEstimate.qrRatesExSM_ID.Value;
     try
       qrData.First;
       while not qrData.Eof do
       begin
         if qrDataCHECKED.Value and (qrDataID_TYPE_DATA.Value > 0) then
           CopyToAct(Integer(qrDataSM_ID.Value), Integer(qrDataID_TYPE_DATA.Value), qrDataID_TABLES.Value,
-            Double(qrDataOBJ_COUNT_IN.Value), FormCalculationEstimate.IdEstimate);
+            Double(qrDataOBJ_COUNT_IN.Value), toAct);
         qrData.Next;
       end;
     finally
@@ -367,12 +383,39 @@ begin
 end;
 
 procedure TfKC6.grDataCellClick(Column: TColumn);
+var
+  SORT_ID, Checked: Variant;
+  TempBookmark: TBookMark;
 begin
   if Column.Field = qrDataCHECKED then
   begin
     qrData.Edit;
     qrDataCHECKED.Value := not qrDataCHECKED.Value;
     qrData.CheckBrowseMode;
+    SORT_ID := qrDataSORT_ID2.Value;
+    Checked := qrDataCHECKED.Value;
+    // Выделяем +/- такие же
+    qrData.DisableControls;
+    TempBookmark := grData.DataSource.DataSet.GetBookmark;
+    qrData.AfterScroll := nil;
+    try
+      qrData.First;
+      while not qrData.Eof do
+      begin
+        if Pos(SORT_ID, qrDataSORT_ID2.Value) = 1 then
+        begin
+          qrData.Edit;
+          qrDataCHECKED.Value := Checked;
+        end;
+        qrData.Next;
+      end;
+    finally
+      grData.DataSource.DataSet.GotoBookmark(TempBookmark);
+      grData.DataSource.DataSet.FreeBookmark(TempBookmark);
+      qrData.EnableControls;
+      qrData.AfterScroll := qrDataAfterScroll;
+    end;
+
   end;
 end;
 
@@ -478,17 +521,104 @@ end;
 
 procedure TfKC6.CopyToAct(const vIdEstimate, vIdTypeData, vIdTables: Integer; const vCnt: Double;
   const vIdAct: Integer);
+var
+  doReplace: Boolean;
+  mes: string;
+  // Функция проверки наличия такой же строки в акте
+  function checkExists(inFromEstimate, inAct, inTypeData, inIdTables: Integer): Boolean;
+  var
+    realAct: Integer;
+    vLocalEstimateID, vLocalActID, vPTMActID: Variant;
+  begin
+    Result := False;
+    realAct := inAct;
+    // Если копирование вместе со структурой, то конечный inAct меняется
+    if chkCopyTreeEstimates.Checked then
+    begin
+      vLocalEstimateID := FastSelectSQLOne
+        ('SELECT sm.`PARENT_ID` FROM `smetasourcedata` sm WHERE sm.`SM_ID`=:0', VarArrayOf([inFromEstimate]));
+
+      vLocalActID := FastSelectSQLOne
+        ('SELECT sm.`SM_ID` FROM `smetasourcedata` sm WHERE ((sm.`SOURCE_ID`=:0) OR'#13 +
+        '(sm.`SM_NUMBER`=(SELECT SM_NUMBER FROM `smetasourcedata` WHERE SM_ID=:1) AND sm.`NAME`=(SELECT `NAME` FROM `smetasourcedata` WHERE SM_ID=:2) AND sm.`SM_TYPE`=1)) AND sm.`PARENT_ID`=:3',
+        VarArrayOf([vLocalEstimateID, vLocalEstimateID, vLocalEstimateID, inAct]));
+      if VarIsNull(vLocalActID) then
+        Exit;
+
+      vPTMActID := FastSelectSQLOne
+        ('SELECT sm.`SM_ID` FROM `smetasourcedata` sm WHERE ((sm.`SOURCE_ID`=:0) OR'#13 +
+        '(sm.`SM_NUMBER`=(SELECT SM_NUMBER FROM `smetasourcedata` WHERE SM_ID=:1) AND sm.`NAME`=(SELECT `NAME` FROM `smetasourcedata` WHERE SM_ID=:2) AND sm.`SM_TYPE`=3)) AND sm.`PARENT_ID`=:3',
+        VarArrayOf([inFromEstimate, inFromEstimate, inFromEstimate, vLocalActID]));
+      if VarIsNull(vPTMActID) then
+        Exit;
+      realAct := vPTMActID;
+    end;
+    if not VarIsNull
+      (FastSelectSQLOne('SELECT ID FROM DATA_ROW_TEMP WHERE SM_ID=:0 AND ID_TYPE_DATA=:1 AND ID_TABLES=:2',
+      VarArrayOf([realAct, inTypeData, inIdTables]))) then
+      Result := True;
+    {
+      case inTypeData of
+      1:
+      ;
+      2:
+      ;
+      3:
+      ;
+      4:
+      ;
+      5:
+      ;
+      6, 7, 8, 9:
+      ;
+      10:
+      ;
+      11:
+      ;
+      end;
+    }
+  end;
+
 begin
   try
+    // По умолчанию всегда заменяем
+    doReplace := True;
+    // Если акт субподряда, то интерисуемся
+    if FormCalculationEstimate.TYPE_ACT = 1 then
+    begin
+      // Если строка уже добавлена
+      if checkExists(vIdEstimate, vIdAct, vIdTypeData, vIdTables) then
+      begin
+        // выводим диалог выбора
+        mes := 'Запись ' + string(strngfldDataOBJ_CODE.Value) + ' уже сожержится в акте.' + #13#10 +
+          'Произвести замену существующей записи?' + #13#10 + 'Да - запись будет обновлена;' + #13#10 +
+          'Нет - будет создана копия записи;' + #13#10 + 'Отмена - запись будет пропущена.';
+        case Application.MessageBox(PWideChar(mes), 'Журна 6-КС', MB_YESNOCANCEL + MB_ICONQUESTION +
+          MB_TOPMOST) of
+          IDCANCEL:
+            Exit;
+          IDYES:
+            begin
+              doReplace := True;
+            end;
+          IDNO:
+            doReplace := False;
+        end;
+      end;
+    end;
+
     with qrTemp do
     begin
       SQL.Clear;
-      SQL.Add('CALL DataToAct(:IdEstimate, :IdTypeData, :IdTables, :cnt, :vIdAct);');
+      SQL.Add('CALL DataToAct(:IdEstimate, :IdTypeData, :IdTables, :cnt, :vIdAct, :vCopyStruct, :inDoReplaceIfExists);');
       ParamByName('IdEstimate').Value := vIdEstimate;
       ParamByName('IdTypeData').Value := vIdTypeData;
       ParamByName('IdTables').Value := vIdTables;
       ParamByName('vIdAct').Value := vIdAct;
       ParamByName('cnt').Value := vCnt;
+      ParamByName('vCopyStruct').Value := chkCopyTreeEstimates.Checked;
+      // Если doReplace true - замена, false - создание копии в случае наличия записи
+      ParamByName('inDoReplaceIfExists').Value := doReplace;
       ExecSQL;
     end;
   except
@@ -531,7 +661,7 @@ var
   Key: Variant;
 begin
   fl := False;
-  Key := strngfldDataSORT_ID.Value;
+  Key := qrDataSORT_ID.Value;
   qrData.DisableControls;
   qrData.AfterScroll := nil;
   // qrData.OnCalcFields := nil;

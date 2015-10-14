@@ -713,8 +713,7 @@ type
     FYearEstimate: Integer;
     FRegion: Integer;
 
-    FNewRowIterator,
-    FNewNomManual: Integer;
+    FNewRowIterator, FNewNomManual: Integer;
 
     VisibleRightTables: String; // Настройка отобаржения нужной таблицы справа
 
@@ -784,7 +783,8 @@ type
 
     // Набор процедур для управление автозаменой
     procedure ClearAutoRep; // Очищает массив автозамены
-    procedure CheckNeedAutoRep(AID, AType, AMId, ARTId: Integer; ACode, AName: string); // Проверяет необходимость в замене
+    procedure CheckNeedAutoRep(AID, AType, AMId, ARTId: Integer; ACode, AName: string);
+    // Проверяет необходимость в замене
     procedure ShowAutoRep; // Показывает диалог замены для всех из массива
 
     procedure DeleteRowFromSmeta();
@@ -1857,8 +1857,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.dsRatesExDataChange(Sender: TObject;
-  Field: TField);
+procedure TFormCalculationEstimate.dsRatesExDataChange(Sender: TObject; Field: TField);
 begin
 
 end;
@@ -1875,48 +1874,45 @@ begin
 end;
 
 // Проверяет выполнялась ли ранее в смета замена по такому коду, если да то нуждается в автозамене
-procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType, AMId, ARTId: Integer;
-  ACode, AName: string);
+procedure TFormCalculationEstimate.CheckNeedAutoRep(AID, AType, AMId, ARTId: Integer; ACode, AName: string);
 var
   j: Integer;
 begin
-  if ((AType = 2) and not PMMatAutoRep.Checked) or
-     ((AType = 3) and not PMMechAutoRep.Checked) then
+  if ((AType = 2) and not PMMatAutoRep.Checked) or ((AType = 3) and not PMMechAutoRep.Checked) then
     Exit;
 
   qrTemp1.Active := False;
-  case Byte(PS.FindAutoRepInAllRate) of
-  0:
-  begin
-    case AType of
-      2:
-        qrTemp1.SQL.Text := 'SELECT mt.id FROM materialcard_temp mt, card_rate_temp cr ' +
-          ' where (mt.DATA_ROW_ID = cr.DATA_ROW_ID) and (mt.REPLACED = 1) and ' +
-          '(mt.MAT_ID = ' + INTTOSTR(AMId) + ') and ' +
-          '(cr.RATE_ID = ' + INTTOSTR(ARTId) + ')';
-      3:
-        qrTemp1.SQL.Text := 'SELECT mh.id FROM mechanizmcard_temp mh, card_rate_temp cr ' +
-          ' where (mh.DATA_ROW_ID = cr.DATA_ROW_ID) and (mh.REPLACED = 1) and ' +
-          '(mh.MECH_ID = ' + INTTOSTR(AMId) + ') and ' +
-          '(cr.RATE_ID = ' + INTTOSTR(ARTId) + ')';
-    else
-      Exit;
-    end;
-  end;
-  1:
-  begin
-    case AType of
-      2:
-        qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' +
-          '(REPLACED = 1) and (MAT_ID = ' + INTTOSTR(AMId) + ')';
-      3:
-        qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' +
-          '(REPLACED = 1) and (MECH_ID = ' + INTTOSTR(AMId) + ')';
-    else
-      Exit;
-    end;
-  end;
-  else Exit;
+  case byte(PS.FindAutoRepInAllRate) of
+    0:
+      begin
+        case AType of
+          2:
+            qrTemp1.SQL.Text := 'SELECT mt.id FROM materialcard_temp mt, card_rate_temp cr ' +
+              ' where (mt.DATA_ROW_ID = cr.DATA_ROW_ID) and (mt.REPLACED = 1) and ' + '(mt.MAT_ID = ' +
+              INTTOSTR(AMId) + ') and ' + '(cr.RATE_ID = ' + INTTOSTR(ARTId) + ')';
+          3:
+            qrTemp1.SQL.Text := 'SELECT mh.id FROM mechanizmcard_temp mh, card_rate_temp cr ' +
+              ' where (mh.DATA_ROW_ID = cr.DATA_ROW_ID) and (mh.REPLACED = 1) and ' + '(mh.MECH_ID = ' +
+              INTTOSTR(AMId) + ') and ' + '(cr.RATE_ID = ' + INTTOSTR(ARTId) + ')';
+        else
+          Exit;
+        end;
+      end;
+    1:
+      begin
+        case AType of
+          2:
+            qrTemp1.SQL.Text := 'SELECT id FROM materialcard_temp where ' + '(REPLACED = 1) and (MAT_ID = ' +
+              INTTOSTR(AMId) + ')';
+          3:
+            qrTemp1.SQL.Text := 'SELECT id FROM mechanizmcard_temp where ' + '(REPLACED = 1) and (MECH_ID = '
+              + INTTOSTR(AMId) + ')';
+        else
+          Exit;
+        end;
+      end;
+  else
+    Exit;
   end;
 
   qrTemp1.Active := True;
@@ -1954,14 +1950,14 @@ begin
     case FAutoRepArray[i].DataType of
       2:
         begin
-          case MessageBox(0, PChar('Хотите произвести замену материала ''' +
-            FAutoRepArray[i].Code + ' ' + FAutoRepArray[i].Name + '''?' +
-            sLineBreak + 'Замены данного материала ранее уже производились в смете.'), 'Автозамена',
+          case MessageBox(0, PChar('Хотите произвести замену материала ''' + FAutoRepArray[i].Code + ' ' +
+            FAutoRepArray[i].Name + '''?' + sLineBreak +
+            'Замены данного материала ранее уже производились в смете.'), 'Автозамена',
             MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
-                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
-                  FAutoRepArray[i].RTID, FAutoRepArray[i].ID, 0, 2, False, True);
+                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, FAutoRepArray[i].RTID,
+                  FAutoRepArray[i].ID, 0, 2, False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
                   begin
@@ -1977,14 +1973,14 @@ begin
         end;
       3:
         begin
-          case MessageBox(0, PChar('Хотите произвести замену механизма ''' +
-            FAutoRepArray[i].Code + ' ' + FAutoRepArray[i].Name + '''?' +
-            sLineBreak + 'Замены данного механизма ранее уже производились в смете.'), 'Автозамена',
+          case MessageBox(0, PChar('Хотите произвести замену механизма ''' + FAutoRepArray[i].Code + ' ' +
+            FAutoRepArray[i].Name + '''?' + sLineBreak +
+            'Замены данного механизма ранее уже производились в смете.'), 'Автозамена',
             MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
-                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate,
-                  FAutoRepArray[i].RTID, FAutoRepArray[i].ID, 0, 3, False, True);
+                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, FAutoRepArray[i].RTID,
+                  FAutoRepArray[i].ID, 0, 3, False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
                   begin
@@ -3025,8 +3021,7 @@ begin
     end;
   end;
 
-  if (qrRatesExID_TYPE_DATA.Value = -4) and
-     (qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) then
+  if (qrRatesExID_TYPE_DATA.Value = -4) and (qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) then
   begin
     qrRatesEx.Edit;
     qrRatesExNOM_ROW_MANUAL.AsVariant := Null;
@@ -3086,7 +3081,7 @@ end;
 procedure TFormCalculationEstimate.qrRatesExCODEChange(Sender: TField);
 var
   NewCode: string;
-  NewID: Integer;
+  newID: Integer;
   Point: TPoint;
 begin
   NewCode := AnsiUpperCase(qrRatesExOBJ_CODE.AsString);
@@ -3095,7 +3090,7 @@ begin
   if Length(NewCode) = 0 then
     Exit;
 
-  NewID := 0;
+  newID := 0;
 
   // Замена литинских на кирилические
   if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or
@@ -3134,10 +3129,10 @@ begin
         Exit;
       end
       else
-        NewID := qrTemp.Fields[0].AsInteger;
+        newID := qrTemp.Fields[0].AsInteger;
     end;
     qrTemp.Active := False;
-    if NewID = 0 then
+    if newID = 0 then
     begin
       MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
@@ -3162,9 +3157,9 @@ begin
     qrTemp.ParamByName('CODE').Value := NewCode;
     qrTemp.Active := True;
     if not qrTemp.IsEmpty then
-      NewID := qrTemp.Fields[0].AsInteger;
+      newID := qrTemp.Fields[0].AsInteger;
     qrTemp.Active := False;
-    if NewID = 0 then
+    if newID = 0 then
     begin
       MessageBox(0, 'Материал с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
@@ -3187,9 +3182,9 @@ begin
     qrTemp.ParamByName('CODE').Value := NewCode;
     qrTemp.Active := True;
     if not qrTemp.IsEmpty then
-      NewID := qrTemp.Fields[0].AsInteger;
+      newID := qrTemp.Fields[0].AsInteger;
     qrTemp.Active := False;
-    if NewID = 0 then
+    if newID = 0 then
     begin
       MessageBox(0, 'Механизм с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
@@ -3210,9 +3205,9 @@ begin
     qrTemp.ParamByName('CODE').Value := NewCode;
     qrTemp.Active := True;
     if not qrTemp.IsEmpty then
-      NewID := qrTemp.Fields[0].AsInteger;
+      newID := qrTemp.Fields[0].AsInteger;
     qrTemp.Active := False;
-    if NewID = 0 then
+    if newID = 0 then
     begin
       MessageBox(0, 'Оборудование с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
@@ -3280,16 +3275,17 @@ begin
 end;
 
 procedure TFormCalculationEstimate.qrRatesExNOM_ROW_MANUALChange(Sender: TField);
-var AutoCommitValue: Boolean;
-    ev: TDataSetNotifyEvent;
-    col: Integer;
+var
+  AutoCommitValue: Boolean;
+  ev: TDataSetNotifyEvent;
+  Col: Integer;
 begin
   qrRatesEx.Post;
 
   if qrRatesExID_TYPE_DATA.Value > 0 then
   begin
     qrRatesEx.DisableControls;
-    col := grRatesEx.Col;
+    Col := grRatesEx.Col;
     ev := qrRatesEx.AfterScroll;
     AutoCommitValue := DM.Read.Options.AutoCommit;
     try
@@ -3309,7 +3305,6 @@ begin
 
         OutputDataToTable(False);
 
-
         DM.Read.Commit;
       except
         DM.Read.Rollback;
@@ -3318,13 +3313,13 @@ begin
     finally
       DM.Read.Options.AutoCommit := AutoCommitValue;
       qrRatesEx.AfterScroll := ev;
-      grRatesEx.Col := col;
+      grRatesEx.Col := Col;
       qrRatesEx.EnableControls;
     end;
   end
   else
-    //будет использовано в Add процедурах
-    //позволяет ввести номер до добавления строки
+    // будет использовано в Add процедурах
+    // позволяет ввести номер до добавления строки
     if (qrRatesExID_TYPE_DATA.Value = -4) or (qrRatesExID_TYPE_DATA.Value = -5) then
       FNewNomManual := Sender.AsInteger;
 
@@ -3477,7 +3472,7 @@ begin
   DM.qrDifferent.Active := True;
   try
     if not DM.qrDifferent.Eof then
-      ShowMessage(IntToStr(DM.qrDifferent.Fields[0].AsInteger));
+      ShowMessage(INTTOSTR(DM.qrDifferent.Fields[0].AsInteger));
   finally
     DM.qrDifferent.Active := False;
   end;
@@ -3840,8 +3835,7 @@ var
 begin
   TmpSmType := 0;
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' +
-    'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
+  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' + 'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
   qrTemp.Active := True;
   if not qrTemp.Eof then
   begin
@@ -3906,8 +3900,7 @@ begin
     if (Sender as TComponent).Tag in [1, 2] then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
-        'FROM smetasourcedata WHERE (SM_ID = ' +
+      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (SM_ID = ' +
         qrRatesExSM_ID.Value.ToString + ')';
       qrTemp.Active := True;
       if not qrTemp.Eof then
@@ -3923,8 +3916,7 @@ begin
     if (Sender as TComponent).Tag = 3 then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
-        '(PARENT_ID = ' + FIdEstimate.ToString +
+      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '(PARENT_ID = ' + FIdEstimate.ToString +
         ') and (SM_TYPE = 1) and (DELETED = 0)';
       qrTemp.Active := True;
       while not qrTemp.Eof do
@@ -3951,8 +3943,7 @@ begin
       for i := 0 to LocalSmIdList.Count - 1 do
       begin
         SmIdList.Clear;
-        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
-          'FROM smetasourcedata WHERE (PARENT_ID = ' +
+        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (PARENT_ID = ' +
           LocalSmIdList[i].ToString + ') and (DELETED = 0)';
         qrTemp.Active := True;
         while not qrTemp.Eof do
@@ -4201,12 +4192,10 @@ begin
               end;
             -1, -2, -3:
               begin
-                EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
-                  '((PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
-                  '(SM_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
-                  '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' +
-                  'PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + '))) AND ' +
-                  '(DELETED = 0)';
+                EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '((PARENT_ID = ' +
+                  qrRatesExSM_ID.Value.ToString + ') OR ' + '(SM_ID = ' + qrRatesExSM_ID.Value.ToString +
+                  ') OR ' + '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' + 'PARENT_ID = ' +
+                  qrRatesExSM_ID.Value.ToString + '))) AND ' + '(DELETED = 0)';
                 WhereStr := '((ID in (select ID_TABLES from data_row_temp where ' +
                   '(ID_TYPE_DATA = 2) and (SM_ID in (' + EstimStr + ')))) or ' +
                   '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
@@ -4497,7 +4486,6 @@ end;
 
 procedure TFormCalculationEstimate.SaveData;
 var
-  FormCardAct: TfCardAct;
   AutoCommitValue: Boolean;
 begin
   AutoCommitValue := DM.Read.Options.AutoCommit;
@@ -4747,8 +4735,7 @@ end;
 // Добавление расценки в смету
 procedure TFormCalculationEstimate.AddRate(const ARateId: Integer);
 var
-  vMaxIdRate,
-  DataRowID: Integer;
+  vMaxIdRate, DataRowID: Integer;
   MaxMId: Integer;
   NewRateCode: string;
   vNormRas: Double;
@@ -4791,8 +4778,7 @@ begin
 
   qrTemp.SQL.Clear;
   qrTemp.SQL.Add('SELECT year,monat,DATE_BEG FROM stavka WHERE stavka_id = ' +
-    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' +
-    INTTOSTR(qrRatesExSM_ID.AsInteger) + ')');
+    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + INTTOSTR(qrRatesExSM_ID.AsInteger) + ')');
   qrTemp.Active := True;
   Month1 := qrTemp.FieldByName('monat').AsInteger;
   Year1 := qrTemp.FieldByName('year').AsInteger;
@@ -4854,7 +4840,7 @@ begin
 
         qrTemp1.SQL.Text := 'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ' +
           'ID, ID_CARD_RATE, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
-          'COAST_NO_NDS, COAST_NDS, PROC_TRANSP) values '+
+          'COAST_NO_NDS, COAST_NDS, PROC_TRANSP) values ' +
           '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :MAT_ID, :MAT_CODE, ' +
           ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, :PROC_TRANSP)';
         qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
@@ -4896,13 +4882,11 @@ begin
 
         if MaxMId > 0 then
         begin
-          qrTemp1.SQL.Text :=
-            'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
+          qrTemp1.SQL.Text := 'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
             'CONSIDERED, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
             'COAST_NO_NDS, COAST_NDS, PROC_TRANSP) values ' +
             '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
-            ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
-            ':COAST_NDS, :PROC_TRANSP)';
+            ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
           qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
           qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
           qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -5052,8 +5036,8 @@ begin
   if not CheckCursorInRate then
     Exit;
 
-  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag,
-    FNewRowIterator, FNewNomManual, True) then
+  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag, FNewRowIterator, FNewNomManual,
+    True) then
   begin
     OutputDataToTable(True);
   end;
@@ -5130,8 +5114,7 @@ end;
 
 procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
 begin
-  if GetDumpForm(qrRatesExSM_ID.AsInteger, -1, FNewRowIterator,
-    FNewNomManual, True) then
+  if GetDumpForm(qrRatesExSM_ID.AsInteger, -1, FNewRowIterator, FNewNomManual, True) then
     OutputDataToTable(True);
 end;
 
@@ -5341,14 +5324,12 @@ end;
 procedure TFormCalculationEstimate.PMDumpEditClick(Sender: TObject);
 begin
   if qrRatesExID_TYPE_DATA.AsInteger = 5 then
-    if GetDumpForm(qrRatesExSM_ID.AsInteger, qrDumpID.AsInteger,
-      FNewRowIterator, FNewNomManual, False) then
+    if GetDumpForm(qrRatesExSM_ID.AsInteger, qrDumpID.AsInteger, FNewRowIterator, FNewNomManual, False) then
       OutputDataToTable;
 
   if qrRatesExID_TYPE_DATA.AsInteger in [6, 7, 8, 9] then
-    if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger,
-      qrRatesExID_TYPE_DATA.AsInteger, FNewRowIterator,
-      FNewNomManual, False) then
+    if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger, qrRatesExID_TYPE_DATA.AsInteger,
+      FNewRowIterator, FNewNomManual, False) then
       OutputDataToTable;
 end;
 
@@ -5385,8 +5366,8 @@ begin
 
   // Нельзя удалить неучтенный материал из таблицы расценок
   PMDelete.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0);
-  PMAdd.Visible := CheckCursorInRate and not(Act and (TYPE_ACT=0));
-  PMInsertRow.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0) AND not(Act and (TYPE_ACT=0));
+  PMAdd.Visible := CheckCursorInRate and not(Act and (TYPE_ACT = 0));
+  PMInsertRow.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0) AND not(Act and (TYPE_ACT = 0));
 
   PMEdit.Visible := (qrRatesExID_TYPE_DATA.AsInteger in [5, 6, 7, 8, 9]) and CheckCursorInRate;
   PMCopy.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
@@ -5406,8 +5387,8 @@ begin
   qrTemp.Active := True;
   mainType := qrTemp.FieldByName('SM_TYPE').AsInteger;
   qrTemp.Active := False;
-  mAddPTM.Visible := (mainType <> 3) and not(Act and (TYPE_ACT=0));
-  mAddLocal.Visible := (mainType = 2) and not(Act and (TYPE_ACT=0));
+  mAddPTM.Visible := (mainType <> 3) and not(Act and (TYPE_ACT = 0));
+  mAddLocal.Visible := (mainType = 2) and not(Act and (TYPE_ACT = 0));
   mDelEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and
     ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or (qrRatesExID_TYPE_DATA.AsInteger <> -5));
   mEditEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and
@@ -6218,6 +6199,10 @@ var
   res: Variant;
 begin
   tmRate.Enabled := False;
+
+  if (Assigned(fKC6) and fKC6.Showing and fKC6.chkCopyTreeEstimates.Visible and
+    (not fKC6.chkCopyTreeEstimates.Checked)) then
+    fKC6.Button1.Enabled := (qrRatesExID_TYPE_DATA.Value = -3) or (qrRatesExID_TYPE_DATA.Value = -4);
 
   Panel1.Visible := (qrRatesExID_TYPE_DATA.Value = 1);
 
