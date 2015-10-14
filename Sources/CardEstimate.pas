@@ -516,6 +516,8 @@ begin
         qrMain.FieldByName('K_LOW_PLAN_PRIB').Value := qrTemp.FieldByName('K_LOW_PLAN_PRIB').Value;
         qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value :=
           qrTemp.FieldByName('APPLY_WINTERPRISE_FLAG').Value;
+        qrMain.FieldByName('ACT').Value := qrTemp.FieldByName('ACT').Value;
+        qrMain.FieldByName('TYPE_ACT').Value := qrTemp.FieldByName('TYPE_ACT').Value;
       end;
 
       if qrMain.State in [dsInsert] then
