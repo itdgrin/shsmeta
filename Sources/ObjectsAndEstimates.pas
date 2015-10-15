@@ -312,20 +312,20 @@ procedure TfObjectsAndEstimates.PopupMenuObjectsAddClick(Sender: TObject);
   var
     res: TModalResult;
 begin
-  FormCardObject.SetIdSelectRow(0);
-  res := FormCardObject.ShowModal;
+  fCardObject.SetIdSelectRow(0);
+  res := fCardObject.ShowModal;
 
   // Выводим данные в таблицу объектов
   FillingTableObjects;
 
   // Устанавливаем фокус
   dbgrdObjects.SetFocus;
-  qrObjects.Locate('IdObject', FormCardObject.OUT_ID_OBJECT, []);
+  qrObjects.Locate('IdObject', fCardObject.OUT_ID_OBJECT, []);
   // Если установлена настройка, то добавляем автоматом связку смет
-  if (res = mrOk) and PS.AutoCreateEstimates and (FormCardObject.OUT_ID_OBJECT <> 0) then
+  if (res = mrOk) and PS.AutoCreateEstimates and (fCardObject.OUT_ID_OBJECT <> 0) then
   begin
     FormCardEstimate.EditingRecord(False);
-    FormCardEstimate.ShowForm(FormCardObject.OUT_ID_OBJECT, 0, 2, False);
+    FormCardEstimate.ShowForm(fCardObject.OUT_ID_OBJECT, 0, 2, False);
     CloseOpen(qrTreeData);
   end;
 end;
@@ -341,7 +341,7 @@ begin
     Exit;
   end;
 
-  with FormCardObject, qrObjects do
+  with fCardObject, qrObjects do
   begin
     // Заносим значения в поля редактирования
     EditNumberObject.Text := FieldByName('NumberObject').AsVariant;

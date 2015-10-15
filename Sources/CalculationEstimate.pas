@@ -2747,7 +2747,7 @@ begin
   qrObjects.ParamByName('in_id').Value := IdObject;
   qrObjects.Active := True;
 
-  with FormCardObject, qrObjects do
+  with fCardObject, qrObjects do
   begin
     // «аносим значени€ в пол€ редактировани€
     EditNumberObject.Text := FieldByName('NumberObject').AsVariant;

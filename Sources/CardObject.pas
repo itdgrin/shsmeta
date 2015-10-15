@@ -10,7 +10,7 @@ uses
   FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus, Vcl.DBCtrls, System.UITypes, Vcl.Buttons, Vcl.Samples.Spin;
 
 type
-  TFormCardObject = class(TForm)
+  TfCardObject = class(TForm)
 
     DataSourceSF: TDataSource;
     DataSourceCO: TDataSource;
@@ -146,7 +146,7 @@ const
   CaptionForm = 'Карточка объекта';
 
 var
-  FormCardObject: TFormCardObject;
+  fCardObject: TfCardObject;
 
 implementation
 
@@ -155,7 +155,7 @@ uses Main, DataModule, Tools, CardObjectContractorServices, OrganizationsEx, Sup
 
 {$R *.dfm}
 
-procedure TFormCardObject.FormCreate(Sender: TObject);
+procedure TfCardObject.FormCreate(Sender: TObject);
 begin
   with Constraints do
   begin
@@ -170,7 +170,7 @@ begin
   Editing := False;
 end;
 
-procedure TFormCardObject.FormShow(Sender: TObject);
+procedure TfCardObject.FormShow(Sender: TObject);
 begin
   qrZP.Filtered := False;
   dbedtPER_TEPM_BUILD.ReadOnly := True;
@@ -412,7 +412,7 @@ begin
   end;
 end;
 
-procedure TFormCardObject.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfCardObject.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   if ButtonSave.Tag = 0 then
     if MessageBox(0, PChar('Закрыть окно без сохранения?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO +
@@ -422,12 +422,12 @@ begin
       CanClose := False;
 end;
 
-procedure TFormCardObject.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TfCardObject.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Editing := False;
 end;
 
-procedure TFormCardObject.ButtonSaveClick(Sender: TObject);
+procedure TfCardObject.ButtonSaveClick(Sender: TObject);
 var
   NumberObject, v2, v3, v4, v5, v6, v7, v8, v9, v12, v14, v15, v16, v17, v18, v19: string;
   CountField: Integer;
@@ -648,7 +648,7 @@ begin
   end;
 end;
 
-procedure TFormCardObject.btn1Click(Sender: TObject);
+procedure TfCardObject.btn1Click(Sender: TObject);
 var
   res: Variant;
 begin
@@ -662,7 +662,7 @@ begin
   end;
 end;
 
-procedure TFormCardObject.btn2Click(Sender: TObject);
+procedure TfCardObject.btn2Click(Sender: TObject);
 var
   res: Variant;
 begin
@@ -676,70 +676,70 @@ begin
   end;
 end;
 
-procedure TFormCardObject.ButtonCancelClick(Sender: TObject);
+procedure TfCardObject.ButtonCancelClick(Sender: TObject);
 begin
   ModalResult := mrCancel;
   Close;
 end;
 
-procedure TFormCardObject.ButtonListAgreementsClick(Sender: TObject);
+procedure TfCardObject.ButtonListAgreementsClick(Sender: TObject);
 begin
   ShowSuppAgreement(IdObject);
 end;
 
-procedure TFormCardObject.EditNumberObjectKeyPress(Sender: TObject; var Key: Char);
+procedure TfCardObject.EditNumberObjectKeyPress(Sender: TObject; var Key: Char);
 begin
   { if Key <> #8 then
     if (Key < '0') or (Key > '9') then // Запрещаем ввод символов кроме цифр
     Key := #0; }
 end;
 
-procedure TFormCardObject.EditingRecord(const Value: Boolean);
+procedure TfCardObject.EditingRecord(const Value: Boolean);
 begin
   Editing := Value;
 end;
 
-procedure TFormCardObject.SetIdSelectRow(const Value: Integer);
+procedure TfCardObject.SetIdSelectRow(const Value: Integer);
 begin
   IdObject := Value;
 end;
 
-procedure TFormCardObject.SetSourceFinance(const Value: Integer);
+procedure TfCardObject.SetSourceFinance(const Value: Integer);
 begin
   SourceFinance := Value;
 end;
 
-procedure TFormCardObject.SetCategory(const Value: Integer);
+procedure TfCardObject.SetCategory(const Value: Integer);
 begin
   CategoryObject := Value;
 end;
 
-procedure TFormCardObject.SetRegion(const Value: Integer);
+procedure TfCardObject.SetRegion(const Value: Integer);
 begin
   Region := Value;
 end;
 
-procedure TFormCardObject.SetVAT(const Value: Integer);
+procedure TfCardObject.SetVAT(const Value: Integer);
 begin
   VAT := Value;
 end;
 
-procedure TFormCardObject.SetBasePrice(const Value: Integer);
+procedure TfCardObject.SetBasePrice(const Value: Integer);
 begin
   BasePrice := Value;
 end;
 
-procedure TFormCardObject.SetTypeOXR(const Value: Integer);
+procedure TfCardObject.SetTypeOXR(const Value: Integer);
 begin
   TypeOXR := Value;
 end;
 
-procedure TFormCardObject.SetMAIS(const Value: Integer);
+procedure TfCardObject.SetMAIS(const Value: Integer);
 begin
   MAIS := Value;
 end;
 
-procedure TFormCardObject.SetColorDefaultToFields;
+procedure TfCardObject.SetColorDefaultToFields;
 begin
   EditCodeObject.Color := clWindow;
   EditNumberContract.Color := clWindow;
@@ -755,7 +755,7 @@ begin
   dblkcbbMAIS.Color := clWindow;
 end;
 
-procedure TFormCardObject.ClearAllFields;
+procedure TfCardObject.ClearAllFields;
 begin
   EditCodeObject.Text := '';
   EditNumberContract.Text := '';
@@ -775,7 +775,7 @@ begin
   dblkcbbMAIS.KeyValue := NULL;
 end;
 
-procedure TFormCardObject.DateTimePickerStartBuildingChange(Sender: TObject);
+procedure TfCardObject.DateTimePickerStartBuildingChange(Sender: TObject);
 begin
   // Автоматическое заполнение %в расхода
   // if not Editing then // только для новых записей
@@ -796,7 +796,7 @@ begin
   end;
 end;
 
-procedure TFormCardObject.dblkcbbRegionCloseUp(Sender: TObject);
+procedure TfCardObject.dblkcbbRegionCloseUp(Sender: TObject);
 begin
   if qrZP.IsEmpty then
     exit;
@@ -818,7 +818,7 @@ begin
   end;
 end;
 
-procedure TFormCardObject.GetValueDBLookupComboBoxTypeOXR(Sender: TObject);
+procedure TfCardObject.GetValueDBLookupComboBoxTypeOXR(Sender: TObject);
 var
   IdRegion: Integer;
   IdCategory: Integer;
@@ -855,7 +855,7 @@ begin
   end;
 end;
 
-procedure TFormCardObject.lbl2Click(Sender: TObject);
+procedure TfCardObject.lbl2Click(Sender: TObject);
 var
   res: Variant;
 begin
@@ -867,7 +867,7 @@ begin
   end;
 end;
 
-procedure TFormCardObject.N1Click(Sender: TObject);
+procedure TfCardObject.N1Click(Sender: TObject);
 begin
   dbedtPER_TEPM_BUILD.ReadOnly := False;
   dbedtPER_CONTRACTOR.ReadOnly := False;

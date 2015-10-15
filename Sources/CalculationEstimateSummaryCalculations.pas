@@ -207,7 +207,7 @@ end;
 
 procedure TfrCalculationEstimateSummaryCalculations.N5Click(Sender: TObject);
 begin
-  FormCardObject.ShowModal;
+  fCardObject.ShowModal;
 end;
 
 procedure TfrCalculationEstimateSummaryCalculations.pm1Popup(Sender: TObject);

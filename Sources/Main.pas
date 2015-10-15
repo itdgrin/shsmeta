@@ -2152,7 +2152,7 @@ end;
 
 procedure TFormMain.EditOriginalDataClick(Sender: TObject);
 begin
-  FormCardObject.ShowModal;
+  fCardObject.ShowModal;
 end;
 
 procedure TFormMain.Excel2Click(Sender: TObject);

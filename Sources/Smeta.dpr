@@ -17,7 +17,7 @@ uses
   About in 'About.pas' {fAbout},
   CalculationEstimate in 'CalculationEstimate.pas' {FormCalculationEstimate},
   ConnectDatabase in 'ConnectDatabase.pas' {FormConnectDatabase},
-  CardObject in 'CardObject.pas' {FormCardObject},
+  CardObject in 'CardObject.pas' {fCardObject},
   ProgramSettings in 'ProgramSettings.pas' {FormProgramSettings},
   Waiting in 'Waiting.pas' {FormWaiting},
   KC6 in 'KC6.pas' {fKC6},
@@ -142,7 +142,7 @@ begin
 
   Application.CreateForm(TDM, DM);
   Application.CreateForm(TFormMain, FormMain);
-  Application.CreateForm(TFormCardObject, FormCardObject);
+  Application.CreateForm(TfCardObject, fCardObject);
   Application.CreateForm(TFormWaiting, FormWaiting);
   Application.CreateForm(TFormRequisites, FormRequisites);
   Application.CreateForm(TFormSignatureSSR, FormSignatureSSR);

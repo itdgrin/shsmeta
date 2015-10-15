@@ -1,4 +1,4 @@
-object FormCardObject: TFormCardObject
+object fCardObject: TfCardObject
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]
@@ -245,6 +245,7 @@ object FormCardObject: TFormCardObject
       Height = 21
       Hint = #1063#1080#1089#1083#1086' '#1084#1077#1089#1103#1094#1077#1074
       Anchors = [akLeft, akTop, akRight]
+      NumbersOnly = True
       ParentShowHint = False
       ShowHint = True
       TabOrder = 2
