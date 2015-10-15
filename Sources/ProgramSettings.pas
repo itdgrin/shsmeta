@@ -5,7 +5,9 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls,
   ExtCtrls, UITypes,
-  Grids, IniFiles;
+  Grids, IniFiles, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
+  FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls;
 
 type
   TFormProgramSettings = class(TForm)
@@ -52,6 +54,12 @@ type
     chkAutoSaveCalcResourcesAfterExitCell: TCheckBox;
     chkShowNeedSaveDialog: TCheckBox;
     chkFindAutoRepInAllRate: TCheckBox;
+    lblOXROPR: TLabel;
+    qrOXROPR: TFDQuery;
+    dsOXROPR: TDataSource;
+    qrMainData: TFDQuery;
+    dsMainData: TDataSource;
+    dblkcbbOXROPR: TDBLookupComboBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -81,7 +89,7 @@ const
 
 implementation
 
-uses Main;
+uses Main, DataModule, Tools;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -96,6 +104,8 @@ begin
   ButtonSave.Tag := 0;
 
   GetSettings;
+  CloseOpen(qrMainData);
+  CloseOpen(qrOXROPR);
 
   // -----------------------------------------
 
@@ -325,6 +335,8 @@ begin
     'только после перезапуска программы!'), CaptionForm, MB_ICONINFORMATION + mb_OK + mb_TaskModal);
 
   ButtonSave.Tag := 1;
+  if qrMainData.State in [dsEdit, dsInsert] then
+    qrMainData.Post;
   Close;
 end;
 
@@ -361,7 +373,5 @@ begin
   chkShowNeedSaveDialog.Checked := PS.ShowNeedSaveDialog;
   chkFindAutoRepInAllRate.Checked := PS.FindAutoRepInAllRate;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.

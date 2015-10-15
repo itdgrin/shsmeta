@@ -639,7 +639,7 @@ begin
       FormCalculationEstimate.RecalcEstimate;
       FormCalculationEstimate.FillObjectInfo;
     end;
-
+    ModalResult := mrOk;
     Close;
   except
     on E: Exception do
@@ -678,6 +678,7 @@ end;
 
 procedure TFormCardObject.ButtonCancelClick(Sender: TObject);
 begin
+  ModalResult := mrCancel;
   Close;
 end;
 

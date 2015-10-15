@@ -309,9 +309,11 @@ begin
 end;
 
 procedure TfObjectsAndEstimates.PopupMenuObjectsAddClick(Sender: TObject);
+  var
+    res: TModalResult;
 begin
   FormCardObject.SetIdSelectRow(0);
-  FormCardObject.ShowModal;
+  res := FormCardObject.ShowModal;
 
   // Выводим данные в таблицу объектов
   FillingTableObjects;
@@ -320,7 +322,7 @@ begin
   dbgrdObjects.SetFocus;
   qrObjects.Locate('IdObject', FormCardObject.OUT_ID_OBJECT, []);
   // Если установлена настройка, то добавляем автоматом связку смет
-  if PS.AutoCreateEstimates and (FormCardObject.OUT_ID_OBJECT <> 0) then
+  if (res = mrOk) and PS.AutoCreateEstimates and (FormCardObject.OUT_ID_OBJECT <> 0) then
   begin
     FormCardEstimate.EditingRecord(False);
     FormCardEstimate.ShowForm(FormCardObject.OUT_ID_OBJECT, 0, 2, False);

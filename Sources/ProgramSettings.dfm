@@ -36,7 +36,7 @@ object FormProgramSettings: TFormProgramSettings
     Top = 8
     Width = 632
     Height = 351
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -247,6 +247,15 @@ object FormProgramSettings: TFormProgramSettings
     object TabSheet1: TTabSheet
       Caption = #1056#1072#1079#1085#1086#1077
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 28
+      object lblOXROPR: TLabel
+        Left = 3
+        Top = 239
+        Width = 279
+        Height = 13
+        Caption = #1042#1080#1076' '#1088#1072#1073#1086#1090' '#1076#1083#1103' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055' '#1088#1072#1089#1094#1077#1085#1086#1082' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102':'
+      end
       object GroupBoxRound: TGroupBox
         Left = 3
         Top = 3
@@ -290,7 +299,7 @@ object FormProgramSettings: TFormProgramSettings
         Width = 230
         Height = 25
         Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
-        TabOrder = 8
+        TabOrder = 10
         OnClick = ButtonDefaultOtherSettingsClick
       end
       object CheckBoxShowHint: TCheckBox
@@ -369,6 +378,23 @@ object FormProgramSettings: TFormProgramSettings
         Width = 494
         Height = 17
         Caption = #1048#1089#1082#1072#1090#1100' '#1072#1074#1090#1086#1079#1072#1084#1077#1085#1091' '#1087#1086' '#1074#1089#1077#1084' '#1088#1072#1089#1094#1077#1085#1082#1072#1084' '#1089#1084#1077#1090#1099
+        TabOrder = 8
+      end
+      object dblkcbbOXROPR: TDBLookupComboBox
+        Left = 285
+        Top = 238
+        Width = 336
+        Height = 21
+        Margins.Left = 0
+        Margins.Top = 2
+        Margins.Bottom = 2
+        Align = alCustom
+        DataField = 'def_work_id'
+        DataSource = dsMainData
+        DropDownRows = 10
+        KeyField = 'work_id'
+        ListField = 'NameWork'
+        ListSource = dsOXROPR
         TabOrder = 9
       end
     end
@@ -385,7 +411,7 @@ object FormProgramSettings: TFormProgramSettings
   end
   object ButtonSave: TButton
     Left = 434
-    Top = 373
+    Top = 372
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
@@ -396,7 +422,85 @@ object FormProgramSettings: TFormProgramSettings
   end
   object ColorDialog: TColorDialog
     Options = [cdFullOpen]
-    Left = 320
-    Top = 248
+    Left = 400
+    Top = 200
+  end
+  object qrOXROPR: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end
+      item
+        SourceDataType = dtUInt32
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtUInt64
+        TargetDataType = dtInt32
+      end
+      item
+        SourceDataType = dtInt64
+        TargetDataType = dtInt32
+      end>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.CountUpdatedRecords = False
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      
+        'SELECT work_id, work_name as "NameWork" FROM objworks ORDER BY w' +
+        'ork_id')
+    Left = 408
+    Top = 264
+  end
+  object dsOXROPR: TDataSource
+    DataSet = qrOXROPR
+    Left = 464
+    Top = 264
+  end
+  object qrMainData: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evRowsetSize, evCache, evRecordCountMode, evAutoFetchAll]
+    FetchOptions.RowsetSize = 500
+    FetchOptions.RecordCountMode = cmTotal
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end>
+    FormatOptions.DefaultParamDataType = ftBCD
+    FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ##0.########'
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.UpdateTableName = 'smeta.round_setup'
+    SQL.Strings = (
+      'SELECT * FROM round_setup')
+    Left = 523
+    Top = 40
+  end
+  object dsMainData: TDataSource
+    DataSet = qrMainData
+    Left = 523
+    Top = 86
   end
 end
