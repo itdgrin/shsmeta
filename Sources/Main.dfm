@@ -11290,6 +11290,7 @@
         ImageIndex = 15
         object ServiceSettings: TMenuItem
           Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
+          ImageIndex = 10
           OnClick = ServiceSettingsClick
         end
         object mN17: TMenuItem
@@ -11303,6 +11304,7 @@
         end
         object mN30: TMenuItem
           Caption = #1054#1082#1088#1091#1075#1083#1077#1085#1080#1103
+          ImageIndex = 64
           OnClick = mN30Click
         end
       end

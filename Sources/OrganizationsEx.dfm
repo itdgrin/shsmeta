@@ -281,6 +281,7 @@ object fOrganizationsEx: TfOrganizationsEx
       Top = 4
       Width = 59
       Height = 22
+      Anchors = [akTop, akRight]
       Caption = #1055#1086#1080#1089#1082
       Glyph.Data = {
         F6000000424DF600000000000000760000002800000010000000100000000100

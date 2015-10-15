@@ -640,7 +640,7 @@ begin
       FormCalculationEstimate.FillObjectInfo;
     end;
     ModalResult := mrOk;
-    Close;
+    //Close;
   except
     on E: Exception do
       MessageBox(0, PChar('При сохранении данных возникла ошибка:' + sLineBreak + sLineBreak + E.Message),

@@ -620,6 +620,9 @@ end;
 
 procedure TFrameRates.pmNCPopup(Sender: TObject);
 begin
+  if not CheckQrActiveEmpty(qrNormativ) then
+    Abort;
+
   if qrNormativ.State in [dsInsert] then
     qrNormativ.Post;
 

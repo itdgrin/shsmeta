@@ -34,6 +34,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure btn1Click(Sender: TObject);
     procedure btn2Click(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
     { Private declarations }
   public
@@ -93,6 +94,14 @@ begin
   fForemanList := nil;
 end;
 
+procedure TfForemanList.FormResize(Sender: TObject);
+begin
+  if qrMain.RecordCount > grMain.VisibleRowCount then
+    grMain.ScrollBars := ssVertical
+  else
+    grMain.ScrollBars := ssNone;
+end;
+
 procedure TfForemanList.FormShow(Sender: TObject);
 begin
   pnlSelect.Visible := Kind in [kdSelect];
@@ -128,6 +137,8 @@ end;
 procedure TfForemanList.qrMainCalcFields(DataSet: TDataSet);
 begin
   qrMainNUMPP.Value := qrMain.RecNo;
+  if qrMainNUMPP.Value = 0 then
+    qrMainNUMPP.Value := 1;
 end;
 
 end.

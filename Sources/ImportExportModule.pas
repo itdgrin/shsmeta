@@ -1159,7 +1159,7 @@ var i, j, ii,
       //Перенос коэффициентов связаных со строчкой
       DM.qrDifferent.Active := False;
       DM.qrDifferent.SQL.Text := 'Select * from calculation_coef' +
-        TmpTab + ' where (id_estimate = ' + IntToStr(PSmClipRec.SmID) + ') and ' +
+        TmpTab + ' where (SM_ID = ' + IntToStr(PSmClipRec.SmID) + ') and ' +
         '(id_type_data = ' + IntToStr(ADataType) + ') and ' +
         '(id_owner = ' + IntToStr(AOldId) + ')';
       DM.qrDifferent.Active := True;
@@ -1176,7 +1176,7 @@ var i, j, ii,
             Continue;
           end;
 
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_ESTIMATE' then
+          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
               ADestSmID;
@@ -1205,7 +1205,7 @@ var i, j, ii,
         AIterator := UpdateIterator(ADestSmID, AIterator, 0);
         //Добавление новой строки
         DM.qrDifferent1.SQL.Text :=
-          'INSERT INTO data_row_temp (ID, id_estimate, id_type_data, id_tables, NUM_ROW) ' +
+          'INSERT INTO data_row_temp (ID, SM_ID, id_type_data, id_tables, NUM_ROW) ' +
           'VALUE (GetNewID(:IDType), :id_estimate, :id_type_data, :id_tables, :NUM_ROW);';
         DM.qrDifferent1.ParamByName('IDType').Value := C_ID_DATA;
         DM.qrDifferent1.ParamByName('id_estimate').Value := ADestSmID;
@@ -1222,7 +1222,7 @@ var i, j, ii,
       DM.qrDifferent1.ParamByName('CalcMode').Value := G_CALCMODE;
       DM.qrDifferent1.ExecSQL;
 
-      DM.qrDifferent1.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, :TypeData_ID, :OWNER_ID, 0, 0);';
+      DM.qrDifferent1.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, :TypeData_ID, :OWNER_ID, 0);';
       DM.qrDifferent1.ParamByName('ESTIMATE_ID').Value := ADestSmID;
       DM.qrDifferent1.ParamByName('TypeData_ID').Value := ADataType;
       DM.qrDifferent1.ParamByName('OWNER_ID').Value := ANewId;
