@@ -3867,9 +3867,12 @@
     BeforeInsert = qrMechanizmBeforeInsert
     BeforeScroll = qrMechanizmBeforeScroll
     AfterScroll = qrMechanizmAfterScroll
+    CachedUpdates = True
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evItems]
+    FetchOptions.Items = [fiBlobs, fiDetails]
     FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdPrecision, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
@@ -3887,6 +3890,12 @@
       end>
     FormatOptions.MaxBcdPrecision = 19
     FormatOptions.MaxBcdScale = 8
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.UpdateNonBaseFields = True
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
       
@@ -4172,9 +4181,12 @@
     BeforeInsert = qrMechanizmBeforeInsert
     BeforeScroll = qrMaterialBeforeScroll
     AfterScroll = qrMaterialAfterScroll
+    CachedUpdates = True
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evItems]
+    FetchOptions.Items = [fiBlobs, fiDetails]
     FormatOptions.AssignedValues = [fvMapRules, fvMaxBcdPrecision, fvMaxBcdScale, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
@@ -4196,6 +4208,12 @@
       end>
     FormatOptions.MaxBcdPrecision = 19
     FormatOptions.MaxBcdScale = 8
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.UpdateNonBaseFields = True
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       
         'SELECT *, 0 as NUM, 0 as SCROLL, 0 as TITLE FROM materialcard WH' +
