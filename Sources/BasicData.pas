@@ -352,7 +352,7 @@ begin
       ' OR (SM_ID=:ID_ESTIMATE) OR (PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :ID_ESTIMATE)))'#13
       + ' /*AND id_type_data=:id_type_data AND id_owner=0*/ AND id_coef=:id_coef';
 
-    DM.qrDifferent.ParamByName('id_estimate').Value := qrCoef.FieldByName('id_estimate').Value;
+    DM.qrDifferent.ParamByName('id_estimate').Value := qrCoef.FieldByName('SM_ID').Value;
     { DM.qrDifferent.ParamByName('id_type_data').Value := qrCoef.FieldByName('id_type_data').Value; }
     DM.qrDifferent.ParamByName('id_coef').Value := qrCoef.FieldByName('id_coef').Value;
     DM.qrDifferent.ExecSQL;

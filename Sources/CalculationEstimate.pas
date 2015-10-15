@@ -4475,7 +4475,7 @@ function TFormCalculationEstimate.GetCountCoef(): Integer;
 begin
   qrTemp.Active := False;
   qrTemp.SQL.Text :=
-    'SELECT COUNT(*) AS CNT FROM calculation_coef_temp where id_estimate=:id_estimate and id_owner=:id_owner and id_type_data=:id_type_data';
+    'SELECT COUNT(*) AS CNT FROM calculation_coef_temp where SM_ID=:id_estimate and id_owner=:id_owner and id_type_data=:id_type_data';
   qrTemp.ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
   qrTemp.ParamByName('id_owner').Value := qrRatesExID_TABLES.AsInteger;
   qrTemp.ParamByName('id_type_data').Value := qrRatesExID_TYPE_DATA.AsInteger;
@@ -4594,12 +4594,12 @@ procedure TFormCalculationEstimate.PopupMenuCoefAddSetClick(Sender: TObject);
 begin
   if fCoefficients.ShowModal = mrOk then
   begin
-    if FormCalculationEstimate.GetCountCoef = 5 then
+    {if FormCalculationEstimate.GetCountCoef = 5 then
     begin
       MessageBox(0, PChar('Уже добавлено 5 наборов коэффициентов!' + sLineBreak + sLineBreak +
         'Добавление больше 5 наборов невозможно.'), 'Смета', MB_ICONINFORMATION + MB_OK + mb_TaskModal);
     end
-    else
+    else }
     begin
       AddCoefToRate(fCoefficients.qrCoef.FieldByName('coef_id').AsInteger);
       RecalcEstimate;
@@ -6589,12 +6589,12 @@ begin
           begin
             // Добавление во все содерожимое сметы, кроме пусконаладки
             FastExecSQL('INSERT INTO `calculation_coef_temp`(`calculation_coef_id`, ' +
-              '`id_estimate`, `id_type_data`, `id_owner`,'#13 +
+              '`SM_ID`, `id_type_data`, `id_owner`,'#13 +
               ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
               '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
-              '(SELECT GetNewID(:IDType),data_row_temp.ID_ESTIMATE,data_row_temp.ID_TYPE_DATA,data_row_temp.ID_TABLES,'#13
+              '(SELECT GetNewID(:IDType),data_row_temp.SM_ID,data_row_temp.ID_TYPE_DATA,data_row_temp.ID_TABLES,'#13
               + 'coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13 +
-              'FROM data_row_temp, coef WHERE data_row_temp.ID_ESTIMATE=:id_estimate AND data_row_temp.ID_TYPE_DATA<10 AND coef.coef_id=:coef_id)',
+              'FROM data_row_temp, coef WHERE ((data_row_temp.SM_ID=:id_estimate) OR (data_row_temp.SM_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID=:id_estimate))) AND data_row_temp.ID_TYPE_DATA<10 AND coef.coef_id=:coef_id)',
               VarArrayOf([C_ID_SMCOEF, qrRatesExSM_ID.Value, coef_id]));
           end;
           {
