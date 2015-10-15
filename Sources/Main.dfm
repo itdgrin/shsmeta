@@ -10919,7 +10919,7 @@
     Visible = False
   end
   object ArchivPanel: TPanel
-    Left = 240
+    Left = 241
     Top = 256
     Width = 361
     Height = 50

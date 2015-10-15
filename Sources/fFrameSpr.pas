@@ -154,6 +154,7 @@ type
       read FOnSprItemSelect write FOnSprItemSelect;
     property OnAfterLoad: TNotifyEvent read FOnAfterLoad write FOnAfterLoad;
     property SprLoaded: Boolean read FLoaded;
+    property BaseType: Byte read FBaseType;
   end;
 
 implementation
@@ -489,7 +490,7 @@ var i: Integer;
 begin
   Result := nil;
   for i := Low(FSprArray) to High(FSprArray) do
-    if SameText(ACode, FSprArray[i].Code) then
+    if SameText(ACode, FSprArray[i].Code) and not FSprArray[i].Manual then
     begin
       Result := @FSprArray[i];
       Exit;

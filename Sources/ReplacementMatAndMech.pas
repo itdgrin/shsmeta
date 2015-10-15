@@ -49,7 +49,7 @@ type
     MConsRep,              //Признак, что заменяет учтеный(1)\неучтеный(0)
     MAdded: Byte;          //Добавленный в расценку
     MSort: Integer;        //Поле для сортировки
-    DataID,                //Привязка к date_estimate ID И тип
+    DataID,                //Привязка к date_row ID И тип
     DataType: Integer;
   end;
 
@@ -276,11 +276,11 @@ begin
       grdRep.Cells[1, grdRep.RowCount - 1] := qrRep.Fields[1].AsString;
       grdRep.Cells[2, grdRep.RowCount - 1] := qrRep.Fields[2].AsString;
       grdRep.Cells[3, grdRep.RowCount - 1] := qrRep.Fields[3].AsString;
-      grdRep.Cells[4, grdRep.RowCount - 1] := IntToStr(qrRep.Fields[4].AsInteger);
-      grdRep.Cells[5, grdRep.RowCount - 1] := IntToStr(qrRep.Fields[5].AsInteger);
+      grdRep.Cells[5, grdRep.RowCount - 1] := IntToStr(qrRep.Fields[4].AsInteger);
+      grdRep.Cells[4, grdRep.RowCount - 1] := IntToStr(qrRep.Fields[5].AsInteger);
       grdRep.Cells[6, grdRep.RowCount - 1] := '1';
       grdRep.Cells[7, grdRep.RowCount - 1] := qrRep.Fields[0].AsString;
-
+      grdRep.Cells[8, grdRep.RowCount - 1] := '0';//-----------------------------------------------------------------------------
       grdRep.RowCount := grdRep.RowCount + 1;
     end;
     qrRep.Next;
@@ -427,16 +427,17 @@ var SprRec: PSprRecord;
 begin
   if (ACol = 1) then
   begin
+    //Ищет только в нормативной базе
     SprRec := Frame.FindCode(grdRep.Cells[1, ARow]);
     if Assigned(SprRec) then
     begin
-      grdRep.Cells[2, ARow] := SprRec^.Name;
-      grdRep.Cells[3, ARow] := SprRec^.Unt;
-      grdRep.Cells[4, ARow] := IntToStr(Round(SprRec^.CoastNDS));
-      grdRep.Cells[5, ARow] := IntToStr(Round(SprRec^.CoastNoNDS));
+      grdRep.Cells[2, ARow] := SprRec.Name;
+      grdRep.Cells[3, ARow] := SprRec.Unt;
+      grdRep.Cells[5, ARow] := IntToStr(Round(SprRec.CoastNDS));
+      grdRep.Cells[4, ARow] := IntToStr(Round(SprRec.CoastNoNDS));
       grdRep.Cells[6, ARow] := '1';
-      grdRep.Cells[7, ARow] := SprRec^.ID.ToString;
-
+      grdRep.Cells[7, ARow] := SprRec.ID.ToString;
+      grdRep.Cells[8, ARow] := '0';
       if grdRep.Cells[0, ARow] = '' then
       begin
         grdRep.Cells[0, ARow] := IntToStr(grdRep.RowCount - grdRep.FixedRows);
@@ -514,31 +515,26 @@ begin
   grdRep.ColWidths[1] := 90;
   grdRep.ColWidths[2] := 260;
   grdRep.ColWidths[3] := 70;
-  if ADataType = 4 then
-  begin
-    grdRep.ColWidths[4] := -1;
-    grdRep.ColWidths[5] := -1;
-  end
-  else
-  begin
-    grdRep.ColWidths[4] := 100;
-    grdRep.ColWidths[5] := 100;
-  end;
+  grdRep.ColWidths[4] := 100;
+  grdRep.ColWidths[5] := 100;
+
   //Скрывает колонку коэффициентов для режима добавления
   if FAddMode then
     grdRep.ColWidths[6] := -1
   else
     grdRep.ColWidths[6] := 70;
   grdRep.ColWidths[7] := -1;
+  grdRep.ColWidths[8] := -1;
 
   grdRep.Cells[0,0] := '№';
   grdRep.Cells[1,0] := 'Код';
   grdRep.Cells[2,0] := 'Наименование';
   grdRep.Cells[3,0] := 'Ед. изм.';
-  grdRep.Cells[4,0] := 'Цена с НДС, руб';
-  grdRep.Cells[5,0] := 'Цена без НДС, руб';
+  grdRep.Cells[4,0] := 'Цена без НДС, руб';
+  grdRep.Cells[5,0] := 'Цена с НДС, руб';
   grdRep.Cells[6,0] := 'Коэф. пер.';
   grdRep.Cells[7,0] := 'ID';
+  grdRep.Cells[8,0] := 'PriceID';
 
   grdRep.Col := 1;
   grdRep.Options := grdRep.Options + [goEditing];
@@ -698,7 +694,7 @@ begin
     edtSourceName.Text := qrRep.Fields[2].AsString;
     if FCurType = 2 then
     begin
-      //Тип вычисляется по коду
+      //Тип вычисляется по коду     ----------------------------------------------------------------------------------------------------
       if (edtSourceCode.Text <> '') and
          ((edtSourceCode.Text[1] = 'С') or (edtSourceCode.Text[1] = 'П')) then
         edtSourceName.Tag := 1
@@ -970,9 +966,9 @@ begin
 end;
 
 procedure TfrmReplacement.btnReplaceClick(Sender: TObject);
-var i, j, ind, iterator:  Integer;
+var i, j, ind, Iterator, NomManual:  Integer;
     Flag: Boolean;
-    IDArray: array of Integer;
+    IDArray, PriceIDArray: array of Integer;
     CoefArray: array of Double;
     DelOnly: Boolean;
 begin
@@ -1001,9 +997,6 @@ begin
   end;
 
   ind := 0;
-  SetLength(IDArray, ind);
-  SetLength(CoefArray, ind);
-
   //Формирует список заменяющих
   for i := grdRep.FixedRows to grdRep.RowCount - 2 do
     if (grdRep.Cells[7, i] <> '') then
@@ -1011,7 +1004,9 @@ begin
       Inc(ind);
       SetLength(IDArray, ind);
       SetLength(CoefArray, ind);
+      SetLength(PriceIDArray, ind);
       IDArray[ind - 1] := grdRep.Cells[7, i].ToInteger;
+      PriceIDArray[ind - 1] := StrToIntDef(grdRep.Cells[8, i], 0);
       CoefArray[ind - 1] := grdRep.Cells[6, i].ToDouble;
     end;
 
@@ -1033,13 +1028,18 @@ begin
       for j := Low(IDArray) to High(IDArray) do
       begin
         case FCurType of
-          2: qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, :IdRate, 1, :IdMS, 0, 0, 0, 0, 0, :CalcMode);';
-          3: qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, :IdRate, 1, :IdMS, 0, 0, 0, 0, 0, :CalcMode);';
+          2: qrTemp.SQL.Text :=
+            'CALL ReplacedMaterial(:IdEst, :IdRate, 1, :IdMS, ' +
+            '0, 0, 0, 0, 0, :CalcMode, :PriceID);';
+          3: qrTemp.SQL.Text :=
+            'CALL ReplacedMechanism(:IdEst, :IdRate, 1, :IdMS, ' +
+            '0, 0, 0, 0, 0, :CalcMode, :PriceID);';
         end;
         qrTemp.ParamByName('IdEst').Value := FEstimateID;
         qrTemp.ParamByName('IdRate').Value := FRateID;
         qrTemp.ParamByName('IdMS').Value := IDArray[j];
         qrTemp.ParamByName('CalcMode').Value := G_CALCMODE;
+        qrTemp.ParamByName('PriceID').Value := PriceIDArray[j];
         qrTemp.ExecSQL;
       end;
     end
@@ -1064,22 +1064,18 @@ begin
           //Перед удалением получает итератор истановленный в данный момент
           if (FEntryArray[i].MIdCardRate = 0) or (FEntryArray[i].MFromRate > 0) then
           begin
-            case FCurType of
-              2: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row_temp WHERE ' +
+            qrTemp.SQL.Text := 'SELECT NUM_ROW, NOM_ROW_MANUAL FROM data_row_temp WHERE ' +
                   '(SM_ID = :SM_ID) AND (ID_TABLES = :ID_TABLES) ' +
-                  'AND (ID_TYPE_DATA = 2)';
-              3: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row_temp WHERE ' +
-                  '(SM_ID = :SM_ID) AND (ID_TABLES = :ID_TABLES) ' +
-                  'AND (ID_TYPE_DATA = 3)';
-              4: qrTemp.SQL.Text := 'SELECT NUM_ROW FROM data_row_temp WHERE ' +
-                  '(SM_ID = :SM_ID) AND (ID_TABLES = :ID_TABLES) ' +
-                  'AND (ID_TYPE_DATA = 4)';
-            end;
+                  'AND (ID_TYPE_DATA = :ID_TYPE_DATA)';
             qrTemp.ParamByName('SM_ID').Value := FEntryArray[i].EID;
             qrTemp.ParamByName('ID_TABLES').Value := FEntryArray[i].MID;
+            qrTemp.ParamByName('ID_TYPE_DATA').Value := FCurType;
             qrTemp.Active := True;
             if not qrTemp.IsEmpty then
-              iterator := qrTemp.Fields[0].AsInteger;
+            begin
+              Iterator := qrTemp.Fields[0].AsInteger;
+              NomManual := qrTemp.Fields[1].AsInteger;
+            end;
             qrTemp.Active := False;
           end;
 
@@ -1126,19 +1122,21 @@ begin
             if (FEntryArray[i].MIdCardRate = 0) then
             begin
               case FCurType of
-                2:  qrTemp.SQL.Text := 'CALL AddMaterial(:IdEstimate, ' +
-                      ':IdMat, :MCount, :Iterator, :CALCMODE);';
-                3:  qrTemp.SQL.Text := 'CALL AddMechanizm(:IdEstimate, ' +
-                      ':IdMat, :MCount, :Iterator, :CALCMODE);';
-                4:  qrTemp.SQL.Text := 'CALL AddDevice(:IdEstimate, ' +
-                      ':IdMat, :MCount, :Iterator);';
+                2:  qrTemp.SQL.Text := 'CALL AddMaterial(:IdEstimate,' +
+                      ':IdMat,:MCount,:Iterator,:NomManual,:CALCMODE,:PriceID);';
+                3:  qrTemp.SQL.Text := 'CALL AddMechanizm(:IdEstimate,' +
+                      ':IdMat,:MCount,:Iterator,:NomManual,:CALCMODE,:PriceID);';
+                4:  qrTemp.SQL.Text := 'CALL AddDevice(:IdEstimate,' +
+                      ':IdMat,:MCount,:Iterator,:NomManual,:PriceID);';
               end;
               qrTemp.ParamByName('IdEstimate').Value := FEntryArray[i].EID;
               qrTemp.ParamByName('IdMat').Value := IDArray[j];
               qrTemp.ParamByName('MCount').Value := FEntryArray[i].MCount * CoefArray[j];
               qrTemp.ParamByName('Iterator').Value := iterator;
+              qrTemp.ParamByName('NomManual').Value := NomManual;
               if FCurType in [2,3] then
                 qrTemp.ParamByName('CalcMode').Value := G_CALCMODE;
+              qrTemp.ParamByName('PriceID').Value := PriceIDArray[j];
               qrTemp.ExecSQL;
               Continue;
             end;
@@ -1147,9 +1145,9 @@ begin
             begin
               case FCurType of
                 2: qrTemp.SQL.Text := 'CALL ReplacedMaterial(:IdEst, :IdRate, :RType, ' +
-                  ':IdMS, :IdMR, :MNorma, :MCount, :MFromRate, :Iterator, :CalcMode);';
+                  ':IdMS, :IdMR, :MNorma, :MCount, :MFromRate, :Iterator, :CalcMode, :PriceID);';
                 3: qrTemp.SQL.Text := 'CALL ReplacedMechanism(:IdEst, :IdRate, :RType, ' +
-                  ':IdMS, :IdMR, :MNorma, :MCount, :MFromRate, :Iterator, :CalcMode);';
+                  ':IdMS, :IdMR, :MNorma, :MCount, :MFromRate, :Iterator, :CalcMode, :PriceID);';
               end;
               qrTemp.ParamByName('IdEst').Value := FEntryArray[i].EID;
 
@@ -1188,6 +1186,7 @@ begin
 
               qrTemp.ParamByName('MFromRate').Value := FEntryArray[i].MFromRate;
               qrTemp.ParamByName('CalcMode').Value := G_CALCMODE;
+              qrTemp.ParamByName('PriceID').Value := PriceIDArray[j];
               qrTemp.ExecSQL;
               Continue;
             end;
@@ -1203,23 +1202,37 @@ begin
 end;
 
 procedure TfrmReplacement.btnSelectClick(Sender: TObject);
+var TmpRec: PSprRecord;
 begin
   //Выбор из справочника
   if (Frame.ListSpr.ItemIndex > -1) then
   begin
-    grdRep.Cells[1, grdRep.Row] :=
-      TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).Code;
-    grdRep.Cells[2, grdRep.Row] :=
-      TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).Name;
-    grdRep.Cells[3, grdRep.Row] :=
-      TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).Unt;
-    grdRep.Cells[4, grdRep.Row] :=
-      IntToStr(Round(TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).CoastNDS));
-    grdRep.Cells[5, grdRep.Row] :=
-      IntToStr(Round(TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).CoastNoNDS));
-    grdRep.Cells[7, grdRep.Row] :=
-      TSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data^).ID.ToString;
+    TmpRec := PSprRecord(Frame.ListSpr.Items[Frame.ListSpr.ItemIndex].Data);
+    grdRep.Cells[1, grdRep.Row] := TmpRec.Code;
+    grdRep.Cells[2, grdRep.Row] := TmpRec.Name;
+    grdRep.Cells[3, grdRep.Row] := TmpRec.Unt;
+    grdRep.Cells[8, grdRep.Row] := '0';
+    grdRep.Cells[4, grdRep.Row] := '';
+    grdRep.Cells[5, grdRep.Row] := '';
+    if Frame.BaseType = 1 then
+    begin
+      grdRep.Cells[5, grdRep.Row] := IntToStr(Round(TmpRec.CoastNDS));
+      grdRep.Cells[4, grdRep.Row] := IntToStr(Round(TmpRec.CoastNoNDS));
+    end
+    else
+    begin
+      if Frame.lvDetPrice.ItemIndex > -1 then
+      begin
+        grdRep.Cells[8, grdRep.Row] :=
+          Integer(Frame.lvDetPrice.Items[Frame.lvDetPrice.ItemIndex].Data).ToString;
+        grdRep.Cells[5, grdRep.Row] :=
+          Frame.lvDetPrice.Items[Frame.lvDetPrice.ItemIndex].SubItems[3];
+        grdRep.Cells[4, grdRep.Row] :=
+          Frame.lvDetPrice.Items[Frame.lvDetPrice.ItemIndex].SubItems[2];
+      end;
+    end;
 
+    grdRep.Cells[7, grdRep.Row] := TmpRec.ID.ToString;
     grdRep.Cells[6, grdRep.Row] := '1';
 
     if grdRep.Cells[0, grdRep.Row] = '' then
@@ -1281,6 +1294,7 @@ begin
   Frame.Align := alClient;
   Frame.ChangeDetailsPanel(1);
   Frame.ListSpr.OnDblClick := btnSelectClick;
+  Frame.lvDetPrice.OnDblClick := btnSelectClick;
 
   if (Length(edtSourceCode.Text) > 0) and
      (edtSourceCode.Text[1] = 'П') then

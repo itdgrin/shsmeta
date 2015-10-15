@@ -3702,9 +3702,10 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('CALL FromRareMaterial(:id_estimate, :id_mat, 0);');
+      SQL.Add('CALL FromRareMaterial(:id_estimate, :id_mat, 0, :CalcMode);');
       ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
       ParamByName('id_mat').Value := qrMaterialID.AsInteger;
+      ParamByName('CalcMode').Value := G_CALCMODE;
       ExecSQL;
     end;
 
