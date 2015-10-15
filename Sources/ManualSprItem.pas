@@ -176,6 +176,9 @@ begin
       DM.qrDifferent.Next;
     end;
   finally
+    if AListView.Items.Count > 0 then
+      AListView.ItemIndex := 0;
+
     DM.qrDifferent.Active := False;
   end;
 end;

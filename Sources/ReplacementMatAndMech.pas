@@ -655,12 +655,13 @@ begin
     begin
       if FMatMechSprID > 0 then
         qrRep.SQL.Text :=
-          'select MATERIAL_ID, MAT_CODE, MAT_NAME from material where MATERIAL_ID = ' +
-            IntToStr(FMatMechSprID)
+          'select MATERIAL_ID, MAT_CODE, MAT_NAME, MAT_TYPE from material ' +
+          'where MATERIAL_ID = ' + IntToStr(FMatMechSprID)
       else
         qrRep.SQL.Text :=
-          'select MAT_ID, MAT_CODE, MAT_NAME from materialcard_temp ' +
-            'where ID = ' + FMatMechID.ToString;
+          'select MATERIAL_ID, MAT_CODE, MAT_NAME, MAT_TYPE from material ' +
+          'where MATERIAL_ID = (select MAT_ID from materialcard_temp ' +
+            'where ID = ' + FMatMechID.ToString + ')';
     end;
     3:
     begin
@@ -694,11 +695,9 @@ begin
     edtSourceName.Text := qrRep.Fields[2].AsString;
     if FCurType = 2 then
     begin
-      //Тип вычисляется по коду     ----------------------------------------------------------------------------------------------------
-      if (edtSourceCode.Text <> '') and
-         ((edtSourceCode.Text[1] = 'С') or (edtSourceCode.Text[1] = 'П')) then
-        edtSourceName.Tag := 1
-       else edtSourceName.Tag := 2;
+      if qrRep.Fields[3].AsInteger = 2 then
+        edtSourceName.Tag := 2
+      else edtSourceName.Tag := 1;
     end;
   end;
   qrRep.Active := False;
