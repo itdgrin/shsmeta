@@ -491,7 +491,8 @@ object fKC6Journal: TfKC6Journal
       '       (PARENT_ID) as PARENT  '
       'FROM smetasourcedata'
       'WHERE ACT=0 AND '
-      '      OBJ_ID=:OBJ_ID'
+      '      OBJ_ID=:OBJ_ID AND'
+      '      DELETED = 0'
       'ORDER BY NAME')
     Left = 25
     Top = 64

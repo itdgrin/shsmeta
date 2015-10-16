@@ -34,13 +34,23 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
-Name: "installODBC"; Description: "Install MySQL ODBC Driver"; GroupDescription: "Other Software:"; Flags: unchecked
+Name: "installODBC"; Description: "Установить драйвер MySQL ODBC"; GroupDescription: "Установка дополнительных компонент системы:"; Flags: unchecked
+Name: "installMYSQL"; Description: "Установить MySQL сервер"; GroupDescription: "Установка дополнительных компонент системы:"; Flags: unchecked
 
 [Files]
 Source: "D:\Work\Minsk\SmetaSRC\Debug\Win32\Smeta.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\Work\Minsk\SmetaSRC\Debug\Win32\Smeta.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Work\Minsk\SmetaSRC\Debug\Win32\SmUpd.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Work\Minsk\SmetaSRC\SQL\mysql.exe"; DestDir: "{app}\SQL"; Flags: ignoreversion
+Source: "D:\Work\Minsk\SmetaSRC\SQL\mysqldump.exe"; DestDir: "{app}\SQL"; Flags: ignoreversion
 Source: "D:\Work\Minsk\SmetaSRC\libmySQL.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\Work\Minsk\SmetaSRC\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Work\Minsk\SmetaSRC\Normative documents\*"; DestDir: "{app}\Normative documents"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Work\Minsk\SmetaSRC\Programs remote control\*"; DestDir: "{app}\Programs remote control"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Work\Minsk\SmetaSRC\Reports\*"; DestDir: "{app}\Reports"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Work\Minsk\SmetaSRC\XLS\*"; DestDir: "{app}\XLS"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Work\Minsk\SmetaSRC\Arhiv\*"; DestDir: "{app}\Arhiv"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "d:\Work\Minsk\SmetaSRC\Components\mysql-connector-odbc-5.2.7-win32.msi"; DestDir: "{app}\Distr"; Flags: ignoreversion
+Source: "d:\Work\Minsk\SmetaSRC\Components\Setup-mysql5.2.exe"; DestDir: "{app}\Distr"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -50,6 +60,7 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: 
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
 
 [Run]
-Filename: "{app}\"; Description: "ODBC"; Tasks: installODBC
+Filename: "{app}\Distr\Setup-mysql5.2.exe"; Description: "MYSQL"; Tasks: installMYSQL
+Filename: "msiexec.exe"; Parameters: "/i ""{app}\Distr\mysql-connector-odbc-5.2.7-win32.msi"""; Description: "ODBC"; Tasks: installODBC
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 

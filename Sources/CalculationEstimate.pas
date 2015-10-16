@@ -1349,7 +1349,8 @@ begin
 
     fKC6Journal.LocateObject(IdObject);
     fKC6Journal.LocateEstimate(IdEstimate);
-    fKC6Journal.tvEstimates.SelectNode(IdEstimate).Expand(False);
+    if fKC6Journal.qrTreeData.FieldByName('SM_ID').Value <> IdEstimate then
+      fKC6Journal.tvEstimates.SelectNode(IdEstimate).Expand(False);
     fKC6Journal.tvEstimatesClick(Self);
 
     // Встраиваем форму
@@ -4595,12 +4596,12 @@ procedure TFormCalculationEstimate.PopupMenuCoefAddSetClick(Sender: TObject);
 begin
   if fCoefficients.ShowModal = mrOk then
   begin
-    {if FormCalculationEstimate.GetCountCoef = 5 then
-    begin
+    { if FormCalculationEstimate.GetCountCoef = 5 then
+      begin
       MessageBox(0, PChar('Уже добавлено 5 наборов коэффициентов!' + sLineBreak + sLineBreak +
-        'Добавление больше 5 наборов невозможно.'), 'Смета', MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-    end
-    else }
+      'Добавление больше 5 наборов невозможно.'), 'Смета', MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+      end
+      else }
     begin
       AddCoefToRate(fCoefficients.qrCoef.FieldByName('coef_id').AsInteger);
       RecalcEstimate;
@@ -4859,8 +4860,8 @@ begin
         qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
         qrTemp1.ExecSQL;
 
-        CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
-          ARateId, FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
+        CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, ARateId, FieldByName('MatCode').AsString,
+          FieldByName('MatName').AsString);
 
         Next;
       end;
@@ -4905,8 +4906,8 @@ begin
           qrTemp1.ExecSQL;
 
           if MaxMId > 0 then
-            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
-              ARateId, FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
+            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, ARateId,
+              FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
         end;
         Next;
       end;
@@ -4979,8 +4980,8 @@ begin
           qrTemp1.ExecSQL;
 
           if MaxMId > 0 then
-            CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger,
-              ARateId, FieldByName('MechCode').AsString, FieldByName('MechName').AsString);
+            CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger, ARateId,
+              FieldByName('MechCode').AsString, FieldByName('MechName').AsString);
         end;
 
         Next;

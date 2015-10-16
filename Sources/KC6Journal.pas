@@ -827,7 +827,9 @@ end;
 
 procedure TfKC6Journal.LocateObject(Object_ID: Integer);
 begin
+  qrObject.Locate('OBJ_ID', Object_ID, []);
   dblkcbbNAME.KeyValue := Object_ID;
+  CloseOpen(qrTreeData, False);
 end;
 
 procedure TfKC6Journal.pgcPageChange(Sender: TObject);
