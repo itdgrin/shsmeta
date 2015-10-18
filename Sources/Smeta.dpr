@@ -138,8 +138,7 @@ begin
 
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.Title := 'Смета';
-
+  Application.Title := 'SMR - HPP 2012';
   Application.CreateForm(TDM, DM);
   Application.CreateForm(TFormMain, FormMain);
   Application.CreateForm(TfCardObject, fCardObject);
