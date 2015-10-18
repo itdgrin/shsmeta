@@ -60,6 +60,8 @@ type
     qrMainData: TFDQuery;
     dsMainData: TDataSource;
     dblkcbbOXROPR: TDBLookupComboBox;
+    lblFontRow: TLabel;
+    dlgFont1: TFontDialog;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -77,6 +79,7 @@ type
     procedure ButtonDefaultOtherSettingsClick(Sender: TObject);
     procedure GetSettings;
     procedure StringGridDemoMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure lblFontRowClick(Sender: TObject);
 
   private
 
@@ -274,6 +277,9 @@ begin
       ShapeBackgroundSelectCell.Brush.Color := ReadInteger('Tables', BackgroundSelectCell, 2039583);
       ShapeFontSelectCell.Brush.Color := ReadInteger('Tables', FontSelectCell, 16777215);
       ShapeSelectRowUnfocusedTable.Brush.Color := ReadInteger('Tables', SelectRowUnfocusedTable, -16777201);
+      lblFontRow.Font.Name := 'Tahoma';
+      lblFontRow.Font.Size := 8;
+      lblFontRow.Font.Style := [];
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -328,7 +334,9 @@ begin
   PS.AutoSaveCalcResourcesAfterExitCell := chkAutoSaveCalcResourcesAfterExitCell.Checked;
   PS.ShowNeedSaveDialog := chkShowNeedSaveDialog.Checked;
   PS.FindAutoRepInAllRate := chkFindAutoRepInAllRate.Checked;
-
+  PS.GridFontName := lblFontRow.Font.Name;
+  PS.GridFontSize := lblFontRow.Font.Size;
+  PS.GridFontStyle := Byte(lblFontRow.Font.Style);
   FormMain.WriteSettingsToFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   MessageBox(0, PChar('Некоторые изменения могут быть применены ' + sLineBreak +
@@ -372,6 +380,19 @@ begin
   chkAutoSaveCalcResourcesAfterExitCell.Checked := PS.AutoSaveCalcResourcesAfterExitCell;
   chkShowNeedSaveDialog.Checked := PS.ShowNeedSaveDialog;
   chkFindAutoRepInAllRate.Checked := PS.FindAutoRepInAllRate;
+  lblFontRow.Font.Name := PS.GridFontName;
+  lblFontRow.Font.Size := PS.GridFontSize;
+  lblFontRow.Font.Style := TFontStyles(PS.GridFontStyle);
+end;
+
+procedure TFormProgramSettings.lblFontRowClick(Sender: TObject);
+begin
+  dlgFont1.Font := lblFontRow.Font;
+  if dlgFont1.Execute then
+  begin
+    lblFontRow.Font := dlgFont1.Font;
+    StringGridDemo.Font := dlgFont1.Font;
+  end;
 end;
 
 end.

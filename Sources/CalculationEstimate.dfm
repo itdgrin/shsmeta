@@ -1600,9 +1600,8 @@
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
             CanDelete = False
             EditControls = <>
-            AutoSizeRows = False
             RowsHeight = 17
-            TitleRowHeight = 30
+            TitleRowHeight = 17
             WordWrap = True
             OnCanEditCell = dbgrdMechanizmCanEditCell
             Columns = <
@@ -1648,7 +1647,7 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-                Width = 50
+                Width = 42
                 Visible = True
               end
               item
@@ -1889,9 +1888,8 @@
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
             CanDelete = False
             EditControls = <>
-            AutoSizeRows = False
             RowsHeight = 17
-            TitleRowHeight = 30
+            TitleRowHeight = 17
             WordWrap = True
             OnCanEditCell = dbgrdMaterialCanEditCell
             Columns = <
@@ -2140,9 +2138,8 @@
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
             CanDelete = False
             EditControls = <>
-            AutoSizeRows = False
             RowsHeight = 17
-            TitleRowHeight = 30
+            TitleRowHeight = 17
             WordWrap = True
             Columns = <
               item
@@ -2418,7 +2415,6 @@
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
             CanDelete = False
             EditControls = <>
-            AutoSizeRows = False
             RowsHeight = 17
             TitleRowHeight = 17
             Columns = <
@@ -2465,9 +2461,8 @@
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
             CanDelete = False
             EditControls = <>
-            AutoSizeRows = False
             RowsHeight = 17
-            TitleRowHeight = 30
+            TitleRowHeight = 17
             WordWrap = True
             Columns = <
               item
@@ -2602,9 +2597,8 @@
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
             CanDelete = False
             EditControls = <>
-            AutoSizeRows = False
             RowsHeight = 17
-            TitleRowHeight = 30
+            TitleRowHeight = 17
             WordWrap = True
             Columns = <
               item

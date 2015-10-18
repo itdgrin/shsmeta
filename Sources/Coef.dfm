@@ -28,13 +28,7 @@ object fCoefficients: TfCoefficients
     Anchors = [akLeft, akTop, akRight, akBottom]
     DataSource = dsCoef
     DrawingStyle = gdsClassic
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-    ParentFont = False
     PopupMenu = pm1
     TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET

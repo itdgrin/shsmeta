@@ -345,6 +345,7 @@ begin
   LoadDBGridSettings(grHistory);
   LoadDBGridSettings(grRates);
   LoadDBGridSettings(grNC);
+  LoadDBGridSettings(grSostav);
 
   PanelChangesAdditions.Visible := False;
 

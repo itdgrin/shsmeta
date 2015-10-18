@@ -495,6 +495,11 @@ begin
   DBGrid.TitleButtons := True;
   DBGrid.ShowCellHint := True;
   DBGrid.ShowHint := True;
+  if PS.GridFontName <> '' then
+    DBGrid.Font.Name := PS.GridFontName;
+  if PS.GridFontSize <> 0 then
+    DBGrid.Font.Size := PS.GridFontSize;
+  DBGrid.Font.Style := TFontStyles(PS.GridFontStyle);
   // DBGrid.ShowTitleHint := True;
   DBGrid.SelectColumnsDialogStrings.NoSelectionWarning := 'Должна быть выбрана хотя бы одна колонка!';
   DBGrid.SelectColumnsDialogStrings.Caption := 'Настройка видимости колонок';

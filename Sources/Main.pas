@@ -335,6 +335,9 @@ type
     ShowNeedSaveDialog: Boolean; // Запрос на сохранение сметы ПЕЧАТЬ-ССР-РАСЧЕТ СТОИМОСТИ
     ShowHint: Boolean;
     FindAutoRepInAllRate: Boolean; //Флаг необходимости поиска автозамены по всем расценкам
+    GridFontName: string ; //Стиль шрифта
+    GridFontSize: Integer;  //размер
+    GridFontStyle: Byte; //Стиль
   end;
 
 const
@@ -2307,6 +2310,9 @@ begin
       PS.AutosaveRateDescr := ReadBool('ESTIMATE', 'AutosaveRateDescr', true);
       PS.ShowNeedSaveDialog := ReadBool('ESTIMATE', 'ShowNeedSaveDialog', true);
       PS.FindAutoRepInAllRate := ReadBool('ESTIMATE', 'FindAutoRepInAllRate', false);
+      PS.GridFontName := ReadString('Tables', 'GridFontName', 'Tahoma');
+      PS.GridFontSize := ReadInteger('Tables', 'GridFontSize', 8);
+      PS.GridFontStyle := Byte(ReadInteger('Tables', 'GridFontStyle', 0));
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -2342,6 +2348,9 @@ begin
       WriteInteger('Tables', BackgroundSelectCell, PS.BackgroundSelectCell);
       WriteInteger('Tables', FontSelectCell, PS.FontSelectCell);
       WriteInteger('Tables', SelectRowUnfocusedTable, PS.SelectRowUnfocusedTable);
+      WriteString('Tables', 'GridFontName', PS.GridFontName);
+      WriteInteger('Tables', 'GridFontSize', PS.GridFontSize);
+      WriteInteger('Tables', 'GridFontStyle', PS.GridFontStyle);
 
       WriteInteger('Round', vRoundTo, PS.RoundTo);
 

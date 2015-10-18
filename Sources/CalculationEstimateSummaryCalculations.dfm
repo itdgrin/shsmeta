@@ -3,6 +3,12 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
   Top = 0
   Width = 824
   Height = 372
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  ParentFont = False
   TabOrder = 0
   object grSummaryCalculation: TJvDBGrid
     Left = 0
@@ -12,7 +18,13 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     Align = alClient
     DataSource = dsData
     DrawingStyle = gdsClassic
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    ParentFont = False
     ParentShowHint = False
     PopupMenu = pm1
     ShowHint = False
@@ -32,9 +44,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
     CanDelete = False
     EditControls = <>
-    AutoSizeRows = False
     RowsHeight = 17
-    TitleRowHeight = 34
+    TitleRowHeight = 17
     WordWrap = True
     WordWrapAllFields = True
     OnCanEditCell = grSummaryCalculationCanEditCell

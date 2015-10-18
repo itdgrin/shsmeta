@@ -74,28 +74,28 @@ object FormProgramSettings: TFormProgramSettings
         TabOrder = 0
         object LabelFontSelectRow: TLabel
           Left = 8
-          Top = 153
+          Top = 123
           Width = 168
           Height = 13
           Caption = #1062#1074#1077#1090' '#1090#1077#1082#1089#1090#1072' '#1074#1099#1076#1077#1083#1077#1085#1085#1086#1081' '#1089#1090#1088#1086#1082#1077
         end
         object LabelFontSelectCell: TLabel
           Left = 8
-          Top = 210
+          Top = 165
           Width = 143
           Height = 13
           Caption = #1058#1077#1082#1089#1090' '#1074' '#1074#1099#1076#1077#1083#1077#1085#1085#1086#1081' '#1103#1095#1077#1081#1082#1077
         end
         object ShapeFontRows: TShape
           Left = 257
-          Top = 94
+          Top = 79
           Width = 17
           Height = 17
           OnMouseDown = ShapeMouseDown
         end
         object ShapeBackgroundSelectRow: TShape
           Left = 257
-          Top = 132
+          Top = 102
           Width = 17
           Height = 17
           OnMouseDown = ShapeMouseDown
@@ -109,14 +109,14 @@ object FormProgramSettings: TFormProgramSettings
         end
         object LabelBackgroundSelectRow: TLabel
           Left = 8
-          Top = 134
+          Top = 104
           Width = 124
           Height = 13
           Caption = #1060#1086#1085' '#1074#1099#1076#1077#1083#1077#1085#1085#1086#1081' '#1089#1090#1088#1086#1082#1080
         end
         object LabelBackgroundSelectCell: TLabel
           Left = 8
-          Top = 191
+          Top = 146
           Width = 125
           Height = 13
           Caption = #1060#1086#1085' '#1074#1099#1076#1077#1083#1077#1085#1085#1086#1081' '#1103#1095#1077#1081#1082#1080
@@ -130,7 +130,7 @@ object FormProgramSettings: TFormProgramSettings
         end
         object ShapeBackgroundSelectCell: TShape
           Left = 257
-          Top = 189
+          Top = 144
           Width = 17
           Height = 17
           OnMouseDown = ShapeMouseDown
@@ -151,42 +151,42 @@ object FormProgramSettings: TFormProgramSettings
         end
         object ShapeFontSelectCell: TShape
           Left = 257
-          Top = 208
+          Top = 163
           Width = 17
           Height = 17
           OnMouseDown = ShapeMouseDown
         end
         object LabelBackgroundRows: TLabel
           Left = 8
-          Top = 77
+          Top = 62
           Width = 132
           Height = 13
           Caption = #1060#1086#1085' '#1085#1077#1074#1099#1076#1077#1083#1077#1085#1085#1099#1093' '#1089#1090#1088#1086#1082
         end
         object LabelFontRows: TLabel
           Left = 8
-          Top = 96
+          Top = 81
           Width = 176
           Height = 13
           Caption = #1062#1074#1077#1090' '#1090#1077#1082#1089#1090#1072' '#1085#1077#1074#1099#1076#1077#1083#1077#1085#1085#1099#1093' '#1089#1090#1088#1086#1082
         end
         object ShapeFontSelectRow: TShape
           Left = 257
-          Top = 151
+          Top = 121
           Width = 17
           Height = 17
           OnMouseDown = ShapeMouseDown
         end
         object ShapeBackgroundRows: TShape
           Left = 257
-          Top = 75
+          Top = 60
           Width = 17
           Height = 17
           OnMouseDown = ShapeMouseDown
         end
         object ShapeSelectRowUnfocusedTable: TShape
           Left = 257
-          Top = 246
+          Top = 186
           Width = 17
           Height = 17
           Brush.Color = clWindow
@@ -194,10 +194,25 @@ object FormProgramSettings: TFormProgramSettings
         end
         object LabelSelectRowUnfocusedTable: TLabel
           Left = 8
-          Top = 248
+          Top = 188
           Width = 218
           Height = 13
           Caption = #1042#1099#1076#1077#1083#1077#1085#1085#1072#1103' '#1089#1090#1088#1086#1082#1072' '#1074' '#1085#1077#1072#1082#1090#1080#1074#1085#1086#1081' '#1090#1072#1073#1083#1080#1094#1077
+        end
+        object lblFontRow: TLabel
+          Left = 8
+          Top = 216
+          Width = 171
+          Height = 13
+          Cursor = crHandPoint
+          Caption = #1057#1090#1080#1083#1100' '#1096#1088#1080#1092#1090#1072' '#1079#1072#1087#1080#1089#1077#1081' '#1074' '#1090#1072#1073#1083#1080#1094#1077
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          OnClick = lblFontRowClick
         end
         object Button3: TButton
           Left = 8
@@ -247,8 +262,6 @@ object FormProgramSettings: TFormProgramSettings
     object TabSheet1: TTabSheet
       Caption = #1056#1072#1079#1085#1086#1077
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 28
       object lblOXROPR: TLabel
         Left = 3
         Top = 239
@@ -502,5 +515,15 @@ object FormProgramSettings: TFormProgramSettings
     DataSet = qrMainData
     Left = 523
     Top = 86
+  end
+  object dlgFont1: TFontDialog
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Options = []
+    Left = 239
+    Top = 259
   end
 end

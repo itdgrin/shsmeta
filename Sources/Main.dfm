@@ -1,7 +1,7 @@
 ﻿object FormMain: TFormMain
   Left = 0
   Top = 0
-  Caption = #1057#1084#1077#1090#1072
+  Caption = 'SMR '#8211' HPP 2012 '
   ClientHeight = 477
   ClientWidth = 742
   Color = clBtnFace

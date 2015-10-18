@@ -53,7 +53,6 @@ object fPartsEstimates: TfPartsEstimates
     SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
     CanDelete = False
     EditControls = <>
-    AutoSizeRows = False
     ReduceFlicker = False
     RowsHeight = 17
     TitleRowHeight = 17
