@@ -1149,47 +1149,47 @@ var i, j, ii,
     var i: Integer;
     begin
       //Перенос коэффициентов связаных со строчкой
-      DM.qrDifferent.Active := False;
-      DM.qrDifferent.SQL.Text := 'Select * from calculation_coef' + TmpTab + ' where ' +
+      DM.qrDifferent2.Active := False;
+      DM.qrDifferent2.SQL.Text := 'Select * from calculation_coef' + TmpTab + ' where ' +
         '(SM_ID = ' + IntToStr(ASourceSmId) + ') and ' +
         '(id_type_data = ' + IntToStr(ADataType) + ') and ' +
         '(id_owner = ' + IntToStr(AOldId) + ')';
-      DM.qrDifferent.Active := True;
-      if not DM.qrDifferent.IsEmpty then
+      DM.qrDifferent2.Active := True;
+      if not DM.qrDifferent2.IsEmpty then
         DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'calculation_coef_temp');
       DM.qrDifferent1.Params.Clear;
-      while not DM.qrDifferent.Eof do
+      while not DM.qrDifferent2.Eof do
       begin
-        for i := 0 to DM.qrDifferent.Fields.Count - 1 do
+        for i := 0 to DM.qrDifferent2.Fields.Count - 1 do
         begin
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CALCULATION_COEF_ID' then
+          if UpperCase(DM.qrDifferent2.Fields[i].FieldName) = 'CALCULATION_COEF_ID' then
           begin
-            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMCOEF, IdConvert);
+            DM.qrDifferent1.ParamByName(DM.qrDifferent2.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent2.Fields[i].Value, C_ID_SMCOEF, IdConvert);
             Continue;
           end;
 
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
+          if UpperCase(DM.qrDifferent2.Fields[i].FieldName) = 'SM_ID' then
           begin
-            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent1.ParamByName(DM.qrDifferent2.Fields[i].FieldName).Value :=
               ADestSmID;
             Continue;
           end;
 
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_OWNER' then
+          if UpperCase(DM.qrDifferent2.Fields[i].FieldName) = 'ID_OWNER' then
           begin
-            DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
+            DM.qrDifferent1.ParamByName(DM.qrDifferent2.Fields[i].FieldName).Value :=
               ANewId;
             Continue;
           end;
 
-          DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-            DM.qrDifferent.Fields[i].Value;
+          DM.qrDifferent1.ParamByName(DM.qrDifferent2.Fields[i].FieldName).Value :=
+            DM.qrDifferent2.Fields[i].Value;
         end;
         DM.qrDifferent1.ExecSQL;
-        DM.qrDifferent.Next;
+        DM.qrDifferent2.Next;
       end;
-      DM.qrDifferent.Active := False;
+      DM.qrDifferent2.Active := False;
 
       //Пересчитываем добавленную строчку
       DM.qrDifferent1.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE, :CalcMode);';
@@ -1408,8 +1408,6 @@ begin
           DM.qrDifferent1.ExecSQL;
         end;
         end;
-        //Переносит коэффициенты, переносит строку в смету, выполняет пересчет строки
-        CoefEstimCalc(SmClipRec.SmID, SmClipRec.DataType, SmClipRec.DataID, NewId);
 
         //Для расценок копирует материалы и механизмы
         if SmClipRec.DataType = 1 then
@@ -1420,7 +1418,7 @@ begin
           DM.qrDifferent.SQL.Text :=
             'Select * from materialcard' + TmpTab + ' where ' +
               '(ID_CARD_RATE = ' + IntToStr(SmClipRec.DataID) + ') and ' +
-              '(SM_ID = ' + IntToStr(SmClipRec.SmID) + ') BY ID';
+              '(SM_ID = ' + IntToStr(SmClipRec.SmID) + ') ORDER BY ID';
           DM.qrDifferent.Active := True;
           while not DM.qrDifferent.Eof do
           begin
@@ -1593,8 +1591,16 @@ begin
           end;
           DM.qrDifferent.Active := False;
         end;
+
+        //Переносит коэффициенты, переносит строку в смету, выполняет пересчет строки
+        CoefEstimCalc(SmClipRec.SmID, SmClipRec.DataType, SmClipRec.DataID, NewId);
+
         Inc(AIterator);
       end;
+
+      DM.qrDifferent1.SQL.Text := 'CALL UpdateNomManual(:SM_ID, 0, 0);';
+      DM.qrDifferent1.ParamByName('SM_ID').Value := ADestSmID;
+      DM.qrDifferent1.ExecSQL;
 
       DM.qrDifferent1.Transaction.Commit;
       Result := True;
