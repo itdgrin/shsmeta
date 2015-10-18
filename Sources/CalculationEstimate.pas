@@ -5196,7 +5196,7 @@ begin
   qrTemp.ParamByName('NOM_ROW_MANUAL').Value := FNewNomManual;
   qrTemp.ExecSQL;
 
-  qrTemp.SQL.Text := 'CALL UpdateNomManual(:IdEstimate, 0);';
+  qrTemp.SQL.Text := 'CALL UpdateNomManual(:IdEstimate, 0, 0);';
   qrTemp.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
   qrTemp.ExecSQL;
 

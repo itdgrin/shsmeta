@@ -89,7 +89,7 @@ var XML : IXMLDocument;
     AutoCommitValue: Boolean;
 
   procedure GetStrAndExcec(ANode: IXMLNode; ATabName: string);
-  var i{, j}: Integer;
+  var i: Integer;
       As1, As2: string;
       FieldName: string;
       FieldValue: Variant;
@@ -106,8 +106,8 @@ var XML : IXMLDocument;
     end;
 
     DM.qrDifferent.Params.Clear; //Без очистки случаются неожиданные глюки
-    DM.qrDifferent.SQL.Text := 'Insert into ' + ATabName +
-      ' (' + As1 + ') values (' + As2 + ')';
+    DM.qrDifferent.SQL.Text :=
+      'Insert into ' + ATabName + ' (' + As1 + ') values (' + As2 + ')';
 
     for i := 0 to ANode.ChildNodes.Count - 1 do
     begin
@@ -121,7 +121,6 @@ var XML : IXMLDocument;
     DM.qrDifferent.ExecSQL;
   end;
 begin
-  {
   CoInitialize(nil);
 
   AutoCommitValue :=DM.qrDifferent.Transaction.Options.AutoCommit;
@@ -139,16 +138,14 @@ begin
       Node1 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Data_object');
 
       if Pos(',', VarToStr(Node1.ChildNodes.Nodes['PER_CONTRACTOR'].NodeValue)) > 0 then
-      begin
         raise Exception.Create('Запятая(,) неверный разделитель дробной части');
-      end;
 
       Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
         GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
       GetStrAndExcec(Node1, 'objcards');
       Node1 := nil;
 
-      //загрузка смет
+      //загрузка смет и актов
       Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smety');
       for j := 0 to Node2.ChildNodes.Count - 1 do
       begin
@@ -158,6 +155,8 @@ begin
           GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
         Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
           GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
+        Node1.ChildNodes.Nodes['SOURCE_ID'].NodeValue :=
+          GetNewId(Node1.ChildNodes.Nodes['SOURCE_ID'].NodeValue, C_ID_SM, IdConvert);
         Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue :=
           GetNewId(Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue, C_ID_SM, IdConvert);
 
@@ -166,47 +165,66 @@ begin
       end;
       Node2 := nil;
 
-      //загрузка Object_suppagreement
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Object_suppagreement');
+      //загрузка Data_row смет
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_data_row');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
           Node1 := Node2.ChildNodes.Nodes[j];
+          //замена IDшников
+          Node1.ChildNodes.Nodes['ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_DATA, IdConvert);
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
 
-          Node1.ChildNodes.Nodes['supp_agreement_id'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['supp_agreement_id'].NodeValue, C_ID_SUPPAG, IdConvert);
-          Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
+          i := 0;
+          case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
+            1: i := C_ID_SMRAT;
+            2: i := C_ID_SMMAT;
+            3: i := C_ID_SMMEC;
+            4: i := C_ID_SMDEV;
+            5: i := C_ID_SMDUM;
+            6, 7, 8, 9: i := C_ID_SMTR;
+          end;
 
-          GetStrAndExcec(Node1, 'supp_agreement');
+          if i > 0  then
+            Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
+              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue, i, IdConvert);
+
+          GetStrAndExcec(Node1, 'data_row');
           Node1 := nil;
         end;
       Node2 := nil;
 
-      //загрузка расценок смет
+      //загрузка расценок
       Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Rates');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
           Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMRAT, IdConvert);
-
+          Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue, C_ID_DATA, IdConvert);
           GetStrAndExcec(Node1, 'card_rate');
           Node1 := nil;
         end;
       Node2 := nil;
 
-      //загрузка материалов смет
+      //загрузка материалов
       Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Materials');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
           Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMMAT, IdConvert);
+          Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue, C_ID_DATA, IdConvert);
           Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue, C_ID_SMRAT, IdConvert);
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
@@ -223,9 +241,12 @@ begin
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
           Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMMEC, IdConvert);
+          Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue, C_ID_DATA, IdConvert);
           Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue, C_ID_SMRAT, IdConvert);
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
@@ -242,10 +263,12 @@ begin
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
           Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMDEV, IdConvert);
-
+          Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue, C_ID_DATA, IdConvert);
           GetStrAndExcec(Node1, 'devicescard');
           Node1 := nil;
         end;
@@ -257,10 +280,12 @@ begin
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
           Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMDUM, IdConvert);
-
+          Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue, C_ID_DATA, IdConvert);
           GetStrAndExcec(Node1, 'dumpcard');
           Node1 := nil;
         end;
@@ -272,10 +297,12 @@ begin
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
           Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
           Node1.ChildNodes.Nodes['ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMTR, IdConvert);
-
+          Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue, C_ID_DATA, IdConvert);
           GetStrAndExcec(Node1, 'transpcard');
           Node1 := nil;
         end;
@@ -290,8 +317,8 @@ begin
           //замена IDшников
           Node1.ChildNodes.Nodes['CALCULATION_COEF_ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['CALCULATION_COEF_ID'].NodeValue, C_ID_SMCOEF, IdConvert);
-          Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue, C_ID_SM, IdConvert);
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
 
           i := 0;
           case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
@@ -314,193 +341,19 @@ begin
         end;
       Node2 := nil;
 
-      //загрузка актов
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Acts');
+      //загрузка Object_suppagreement
+      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Object_suppagreement');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
           Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
-          Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_ACT, IdConvert);
-          Node1.ChildNodes.Nodes['ID_OBJECT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_OBJECT'].NodeValue, C_ID_OBJ, IdConvert);
 
-          GetStrAndExcec(Node1, 'card_acts');
-          Node1 := nil;
-        end;
-      Node2 := nil;
+          Node1.ChildNodes.Nodes['supp_agreement_id'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['supp_agreement_id'].NodeValue, C_ID_SUPPAG, IdConvert);
+          Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
 
-      //загрузка расценок актов
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Rates');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
-          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
-          Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMRAT, IdConvert);
-
-          GetStrAndExcec(Node1, 'card_rate_act');
-          Node1 := nil;
-        end;
-      Node2 := nil;
-
-      //загрузка материалов актов
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Materials');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
-          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
-          Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMMAT, IdConvert);
-          Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue, C_ID_SMRAT, IdConvert);
-          Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue, C_ID_SMMAT, IdConvert);
-
-          GetStrAndExcec(Node1, 'materialcard_act');
-          Node1 := nil;
-        end;
-      Node2 := nil;
-
-      //загрузка механизмов актов
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Mechanizms');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
-          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
-          Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMMEC, IdConvert);
-          Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_CARD_RATE'].NodeValue, C_ID_SMRAT, IdConvert);
-          Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue, C_ID_SMMEC,IdConvert);
-
-          GetStrAndExcec(Node1, 'mechanizmcard_act');
-          Node1 := nil;
-        end;
-      Node2 := nil;
-
-      //загрузка оборудования актов
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Devices');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
-          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
-          Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMDEV, IdConvert);
-
-          GetStrAndExcec(Node1, 'devicescard_act');
-          Node1 := nil;
-        end;
-      Node2 := nil;
-
-      //загрузка свалок актов
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Dumps');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
-          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
-          Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMDUM, IdConvert);
-
-          GetStrAndExcec(Node1, 'dumpcard_act');
-          Node1 := nil;
-        end;
-      Node2 := nil;
-
-      //загрузка транспорта актов
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_Transps');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
-          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
-          Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMTR, IdConvert);
-
-          GetStrAndExcec(Node1, 'transpcard_act');
-          Node1 := nil;
-        end;
-      Node2 := nil;
-
-      //загрузка Data_row смет
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_data_row');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
-          Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_DATA, IdConvert);
-          Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue, C_ID_SM, IdConvert);
-
-          i := 0;
-          case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
-            1: i := C_ID_SMRAT;
-            2: i := C_ID_SMMAT;
-            3: i := C_ID_SMMEC;
-            4: i := C_ID_SMDEV;
-            5: i := C_ID_SMDUM;
-            6, 7, 8, 9: i := C_ID_SMTR;
-          end;
-
-          if i > 0  then
-            Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
-              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue, i, IdConvert);
-
-          GetStrAndExcec(Node1, 'data_row');
-          Node1 := nil;
-        end;
-      Node2 := nil;
-
-      //загрузка Data_row аст
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Act_data_row');
-      if Assigned(Node2) then
-        for j := 0 to Node2.ChildNodes.Count - 1 do
-        begin
-          Node1 := Node2.ChildNodes.Nodes[j];
-          //замена IDшников
-          Node1.ChildNodes.Nodes['ID'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_DATA, IdConvert);
-          Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue, C_ID_SM, IdConvert);
-          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
-
-          i := 0;
-          case Node1.ChildNodes.Nodes['ID_TYPE_DATA'].NodeValue of
-            1: i := C_ID_SMRAT;
-            2: i := C_ID_SMMAT;
-            3: i := C_ID_SMMEC;
-            4: i := C_ID_SMDEV;
-            5: i := C_ID_SMDUM;
-            6, 7, 8, 9: i := C_ID_SMTR;
-          end;
-
-          if i > 0  then
-            Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue :=
-              GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue, i, IdConvert);
-
-          GetStrAndExcec(Node1, 'data_row');
+          GetStrAndExcec(Node1, 'supp_agreement');
           Node1 := nil;
         end;
       Node2 := nil;
@@ -514,10 +367,8 @@ begin
 
           Node1.ChildNodes.Nodes['TRAVEL_ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['TRAVEL_ID'].NodeValue, C_ID_TRAVEL, IdConvert);
-          Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue, C_ID_SM, IdConvert);
-          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
 
           GetStrAndExcec(Node1, 'travel');
           Node1 := nil;
@@ -533,10 +384,8 @@ begin
 
           Node1.ChildNodes.Nodes['TRAVEL_WORK_ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['TRAVEL_WORK_ID'].NodeValue, C_ID_TRWORK, IdConvert);
-          Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue, C_ID_SM, IdConvert);
-          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
 
           GetStrAndExcec(Node1, 'travel_work');
           Node1 := nil;
@@ -552,10 +401,8 @@ begin
 
           Node1.ChildNodes.Nodes['WORKER_DEPARTMENT_ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['WORKER_DEPARTMENT_ID'].NodeValue, C_ID_WORKDEP, IdConvert);
-          Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue, C_ID_SM, IdConvert);
-          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
 
           GetStrAndExcec(Node1, 'worker_deartment');
           Node1 := nil;
@@ -569,10 +416,8 @@ begin
         begin
           Node1 := Node2.ChildNodes.Nodes[j];
 
-          Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ESTIMATE'].NodeValue, C_ID_SM, IdConvert);
-          Node1.ChildNodes.Nodes['ID_ACT'].NodeValue :=
-            GetNewId(Node1.ChildNodes.Nodes['ID_ACT'].NodeValue, C_ID_ACT, IdConvert);
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
 
           GetStrAndExcec(Node1, 'summary_calculation');
           Node1 := nil;
@@ -593,7 +438,7 @@ begin
     DM.qrDifferent.Transaction.Options.AutoCommit := AutoCommitValue;
 
     CoUninitialize;
-  end;   }
+  end;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -606,7 +451,6 @@ var XML : IXMLDocument;
 
   procedure RowToNode(ANode: IXMLNode; AQ: TFDQuery);
   var i: Integer;
-      {S: Single;}
   begin
     for i := 0 to AQ.Fields.Count - 1 do
     begin
@@ -623,7 +467,7 @@ var XML : IXMLDocument;
     end;
   end;
 begin
-  {CoInitialize(nil);
+  CoInitialize(nil);
   ds := FormatSettings.DecimalSeparator;
   FormatSettings.DecimalSeparator := '.';
   try
@@ -635,8 +479,8 @@ begin
     //Выгрузка информации об объекте
     CurNode := XML.AddChild('Object');
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from objcards where obj_id = ' +
-      IntToStr(AIdObject);
+    DM.qrDifferent.SQL.Text :=
+      'Select * from objcards where obj_id = ' +  IntToStr(AIdObject);
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -653,8 +497,207 @@ begin
       Exit;
     end;
 
+    //Выгрузка информации об сметах и актах
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from supp_agreement where (OBJ_ID = ' +
+    DM.qrDifferent.SQL.Text := 'Select * from smetasourcedata where (obj_id = ' +
+      IntToStr(AIdObject) + ') and (DELETED=0) order by SM_ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Smety');
+      Node1.SetAttributeNS('Type', '', 'Сметы');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Smeta');
+
+        if DM.qrDifferent.FieldByName('ACT').AsInteger = 1 then
+          Node2.SetAttributeNS('Type', '', 'Акт')
+        else
+          Node2.SetAttributeNS('Type', '', 'Смета');
+
+        Node2.SetAttributeNS('Name', '', DM.qrDifferent.FieldByName('name').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+        Node2 := nil;
+      end;
+      Node1 := nil;
+    end
+    else
+    begin
+      XML.SaveToFile(AFileName);
+      Exit;
+    end;
+
+    TmpStr := '(SM_ID in ' +
+      '(select SM_ID from smetasourcedata where (obj_id = ' +
+      IntToStr(AIdObject) + ') and (DELETED=0)))';
+
+    //Выгрузка информации из data_row
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from data_row where ' + TmpStr + ' order by ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Smeta_data_row');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Line');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+        Node2 := nil;
+      end;
+      Node1 := nil;
+    end;
+
+    //Выгрузка информации об расценках
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from card_rate where ' + TmpStr + ' order by ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Smeta_Rates');
+      Node1.SetAttributeNS('Type', '', 'Расценки');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Rate');
+        Node2.SetAttributeNS('Type', '', 'Расценка');
+        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('RATE_CODE').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+        Node2 := nil;
+      end;
+      Node1 := nil;
+    end;
+
+    //Выгрузка информации об материалах
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from materialcard where ' + TmpStr + ' order by ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Smeta_Materials');
+      Node1.SetAttributeNS('Type', '', 'Материалы');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Material');
+        Node2.SetAttributeNS('Type', '', 'Материал');
+        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('MAT_CODE').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+        Node2 := nil;
+      end;
+      Node1 := nil;
+    end;
+
+    //Выгрузка информации об механизм
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from mechanizmcard where ' + TmpStr + ' order by ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Smeta_Mechanizms');
+      Node1.SetAttributeNS('Type', '', 'Механизмы');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Mechanizm');
+        Node2.SetAttributeNS('Type', '', 'Механизм');
+        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('MECH_CODE').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+        Node2 := nil;
+      end;
+      Node1 := nil;
+    end;
+
+    //Выгрузка информации об оборудовании
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from devicescard where ' + TmpStr + ' order by ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Smeta_Devices');
+      Node1.SetAttributeNS('Type', '', 'Оборудование');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Device');
+        Node2.SetAttributeNS('Type', '', 'Оборудование');
+        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('DEVICE_CODE').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+        Node2 := nil;
+      end;
+      Node1 := nil;
+    end;
+
+    //Выгрузка информации об свалках
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from dumpcard where ' + TmpStr + ' order by ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Smeta_Dumps');
+      Node1.SetAttributeNS('Type', '', 'Свалки');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Dumpe');
+        Node2.SetAttributeNS('Type', '', 'Свалка');
+        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('DUMP_CODE_JUST').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+        Node2 := nil;
+      end;
+      Node1 := nil;
+    end;
+
+    //Выгрузка информации об транспорте
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from transpcard where ' + TmpStr + ' order by ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Smeta_Transps');
+      Node1.SetAttributeNS('Type', '', 'Транспорт');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Transp');
+        Node2.SetAttributeNS('Type', '', 'Транспорт');
+        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('TRANSP_CODE_JUST').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+        Node2 := nil;
+      end;
+      Node1 := nil;
+    end;
+
+    //Выгрузка информации из calculation_coef
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from calculation_coef where ' + TmpStr +
+        ' order by calculation_coef_id';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Smeta_calculation_coef');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Line');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+        Node2 := nil;
+      end;
+      Node1 := nil;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from supp_agreement where (OBJ_ID = ' +
       IntToStr(AIdObject) + ') order by supp_agreement_id';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
@@ -671,383 +714,9 @@ begin
       Node1 := nil;
     end;
 
-    //Выгрузка информации об сметах
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from smetasourcedata where (obj_id = ' +
-      IntToStr(AIdObject) + ') and (DELETED=0) order by SM_ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Smety');
-      Node1.SetAttributeNS('Type', '', 'Сметы');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Smeta');
-        Node2.SetAttributeNS('Type', '', 'Смета');
-        Node2.SetAttributeNS('Name', '', DM.qrDifferent.FieldByName('name').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end
-    else
-    begin
-      XML.SaveToFile(AFileName);
-      Exit;
-    end;
-
-    TmpStr := '(ID_ESTIMATE in ' +
-      '(select SM_ID from smetasourcedata where (obj_id = ' +
-      IntToStr(AIdObject) + ')  and (DELETED=0)))';
-
-    //Выгрузка информации об расценках
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from card_rate where ID in ' +
-      '(select ID_TABLES from data_row where (ID_TYPE_DATA = 1) and ' + TmpStr +
-      ' and (ID_ACT is NULL)) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Smeta_Rates');
-      Node1.SetAttributeNS('Type', '', 'Смета_Расценки');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Rate');
-        Node2.SetAttributeNS('Type', '', 'Расценка');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('RATE_CODE').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об материалах
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from materialcard where (ID in ' +
-    '(select ID_TABLES from data_row where (ID_TYPE_DATA = 2) and ' + TmpStr +
-    ' and (ID_ACT is NULL))) or ' +
-    '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
-    '(ID_TYPE_DATA = 1) and ' + TmpStr + ' and (ID_ACT is NULL))) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Smeta_Materials');
-      Node1.SetAttributeNS('Type', '', 'Смета_Материалы');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Material');
-        Node2.SetAttributeNS('Type', '', 'Материал');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('MAT_CODE').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об механизм
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from mechanizmcard where (ID in ' +
-    '(select ID_TABLES from data_row where (ID_TYPE_DATA = 3) and ' + TmpStr +
-    ' and (ID_ACT is NULL))) or ' +
-    '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
-    '(ID_TYPE_DATA = 1) and ' + TmpStr + ' and (ID_ACT is NULL))) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Smeta_Mechanizms');
-      Node1.SetAttributeNS('Type', '', 'Смета_Механизмы');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Mechanizm');
-        Node2.SetAttributeNS('Type', '', 'Механизм');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('MECH_CODE').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об оборудовании
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from devicescard where ID in ' +
-    '(select ID_TABLES from data_row where (ID_TYPE_DATA = 4) and ' + TmpStr +
-    ' and (ID_ACT is NULL)) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Smeta_Devices');
-      Node1.SetAttributeNS('Type', '', 'Смета_Оборудование');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Device');
-        Node2.SetAttributeNS('Type', '', 'Оборудование');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('DEVICE_CODE').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об свалках
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from dumpcard where ID in ' +
-    '(select ID_TABLES from data_row where (ID_TYPE_DATA = 5) and ' + TmpStr +
-    ' and (ID_ACT is NULL)) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Smeta_Dumps');
-      Node1.SetAttributeNS('Type', '', 'Смета_Свалки');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Dumpe');
-        Node2.SetAttributeNS('Type', '', 'Свалка');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('DUMP_CODE_JUST').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об транспорте
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from transpcard where ID in ' +
-    '(select ID_TABLES from data_row where (ID_TYPE_DATA in (6,7,8,9)) and ' +
-    TmpStr + ' and (ID_ACT is NULL)) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Smeta_Transps');
-      Node1.SetAttributeNS('Type', '', 'Смета_Транспорт');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Transp');
-        Node2.SetAttributeNS('Type', '', 'Транспорт');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('TRANSP_CODE_JUST').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации из calculation_coef
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from calculation_coef where ' + TmpStr +
-      ' order by calculation_coef_id';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Smeta_calculation_coef');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Line');
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об актах
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from card_acts where (ID_OBJECT = ' +
-    IntToStr(AIdObject) + ') and (DEL_FLAG=0) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Acts');
-      Node1.SetAttributeNS('Type', '', 'Акты');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Act');
-        Node2.SetAttributeNS('Type', '', 'Акт');
-        Node2.SetAttributeNS('NAME', '', DM.qrDifferent.FieldByName('NAME').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об расценках
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from card_rate_act where ID_ACT in ' +
-    '(Select ID from card_acts where (ID_OBJECT = ' + IntToStr(AIdObject) +
-    ') and (DEL_FLAG=0)) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Act_Rates');
-      Node1.SetAttributeNS('Type', '', 'Акт_Расценки');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Rate');
-        Node2.SetAttributeNS('Type', '', 'Расценка');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('RATE_CODE').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об материалах
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from materialcard_act where ID_ACT in ' +
-    '(Select ID from card_acts where (ID_OBJECT = ' + IntToStr(AIdObject) +
-    ') and (DEL_FLAG=0)) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Act_Materials');
-      Node1.SetAttributeNS('Type', '', 'Акт_Материалы');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Material');
-        Node2.SetAttributeNS('Type', '', 'Материал');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('MAT_CODE').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об механизм
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from mechanizmcard_act where ID_ACT in ' +
-    '(Select ID from card_acts where (ID_OBJECT = ' + IntToStr(AIdObject) +
-    ') and (DEL_FLAG=0)) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Act_Mechanizms');
-      Node1.SetAttributeNS('Type', '', 'Акт_Механизмы');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Mechanizm');
-        Node2.SetAttributeNS('Type', '', 'Механизм');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('MECH_CODE').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об оборудовании
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from devicescard_act where ID_ACT in ' +
-    '(Select ID from card_acts where (ID_OBJECT = ' + IntToStr(AIdObject) +
-    ') and (DEL_FLAG=0)) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Act_Devices');
-      Node1.SetAttributeNS('Type', '', 'Акт_Оборудование');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Device');
-        Node2.SetAttributeNS('Type', '', 'Оборудование');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('DEVICE_CODE').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об свалках
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from dumpcard_act where ID_ACT in ' +
-    '(Select ID from card_acts where (ID_OBJECT = ' + IntToStr(AIdObject) +
-    ') and (DEL_FLAG=0)) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Act_Dumps');
-      Node1.SetAttributeNS('Type', '', 'Акт_Свалки');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Dumpe');
-        Node2.SetAttributeNS('Type', '', 'Свалка');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('DUMP_CODE_JUST').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации об транспорте
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from transpcard_act where (ID_ACT in ' +
-    '(Select ID from card_acts where (ID_OBJECT = ' + IntToStr(AIdObject) +
-    ') and (DEL_FLAG=0))) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Act_Transps');
-      Node1.SetAttributeNS('Type', '', 'Акт_Транспорт');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Transp');
-        Node2.SetAttributeNS('Type', '', 'Транспорт');
-        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('TRANSP_CODE_JUST').AsString);
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    //Выгрузка информации из data_row
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from data_row where ' + TmpStr +
-      ' and (ID_ACT is null) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Smeta_data_row');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Line');
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from data_row where ' +
-      '(ID_ACT in (Select ID from card_acts where (ID_OBJECT = ' +
-      IntToStr(AIdObject) + ') and (DEL_FLAG=0))) order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Act_data_row');
-      while not DM.qrDifferent.Eof do
-      begin
-        Node2 := Node1.AddChild('Line');
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
-        Node2 := nil;
-      end;
-      Node1 := nil;
-    end;
-
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from travel where ' + TmpStr +
-      ' or (ID_ACT in (Select ID from card_acts where (ID_OBJECT = ' +
-      IntToStr(AIdObject) + ') and (DEL_FLAG=0))) order by travel_id';
+    DM.qrDifferent.SQL.Text :=
+      'Select * from travel where ' + TmpStr + ' order by travel_id';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -1063,9 +732,8 @@ begin
     end;
 
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from travel_work where ' + TmpStr +
-      ' or (ID_ACT in (Select ID from card_acts where (ID_OBJECT = ' +
-      IntToStr(AIdObject) + ') and (DEL_FLAG=0))) order by travel_work_id';
+    DM.qrDifferent.SQL.Text :=
+      'Select * from travel_work where ' + TmpStr + ' order by travel_work_id';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -1081,9 +749,8 @@ begin
     end;
 
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from worker_deartment where ' + TmpStr +
-      ' or (ID_ACT in (Select ID from card_acts where (ID_OBJECT = ' +
-      IntToStr(AIdObject) + ') and (DEL_FLAG=0))) order by worker_department_id';
+    DM.qrDifferent.SQL.Text :=
+      'Select * from worker_deartment where ' + TmpStr + ' order by worker_department_id';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -1099,9 +766,8 @@ begin
     end;
 
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from summary_calculation where ' + TmpStr +
-      ' or (ID_ACT in (Select ID from card_acts where (ID_OBJECT = ' +
-      IntToStr(AIdObject) + ') and (DEL_FLAG=0)))';
+    DM.qrDifferent.SQL.Text :=
+      'Select * from summary_calculation where ' + TmpStr ;
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
@@ -1124,7 +790,7 @@ begin
     XML := nil;
     FormatSettings.DecimalSeparator := ds;
     CoUninitialize;
-  end;}
+  end;
 end;
 ////////////////////////////////////////////////////////////////////////////////
 
