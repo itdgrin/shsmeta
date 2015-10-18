@@ -30,10 +30,7 @@ uses DataModule, Tools;
 function GetNewId(const ALastID: Variant; const AType: Integer;
   var AIdConvert: TIDConvertArray): Variant;
 var i: Integer;
-   { TabName,
-    FieldName: string; }
 begin
-
   if VarIsNull(ALastID) or (ALastID = 0) then
   begin
     Result := ALastID;
@@ -47,7 +44,6 @@ begin
       Result := AIdConvert[AType][1][i];
       Exit;
     end;
-
 
   DM.qrDifferent2.Active := False;
   DM.qrDifferent2.SQL.Text := 'SELECT GetNewID(:IDType)';
@@ -125,12 +121,7 @@ var XML : IXMLDocument;
     DM.qrDifferent.ExecSQL;
   end;
 begin
-  for i := 1 to Length(IdConvert) do
-  begin
-    SetLength(IdConvert[i][0], 0);
-    SetLength(IdConvert[i][1], 0);
-  end;
-
+  {
   CoInitialize(nil);
 
   AutoCommitValue :=DM.qrDifferent.Transaction.Options.AutoCommit;
@@ -602,7 +593,7 @@ begin
     DM.qrDifferent.Transaction.Options.AutoCommit := AutoCommitValue;
 
     CoUninitialize;
-  end;
+  end;   }
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -632,7 +623,7 @@ var XML : IXMLDocument;
     end;
   end;
 begin
-  CoInitialize(nil);
+  {CoInitialize(nil);
   ds := FormatSettings.DecimalSeparator;
   FormatSettings.DecimalSeparator := '.';
   try
@@ -1133,15 +1124,16 @@ begin
     XML := nil;
     FormatSettings.DecimalSeparator := ds;
     CoUninitialize;
-  end;
+  end;}
 end;
 ////////////////////////////////////////////////////////////////////////////////
+
 //Выполняет вставку строки в смету
 function PasteSmetaRow(const ASmClipArray: array of TSmClipRec;
   ADestSmID, AIterator: Integer): Boolean;
 var i, j, ii,
     ind,
-    NewID,
+    NewID, NewRowID, NewRowID1,
     TmpID_N, TmpID_O: Integer;
     E1820COUNT: Extended;
     IdConvert: TIDConvertArray;
@@ -1149,22 +1141,23 @@ var i, j, ii,
     FromRateArray,
     AllFromRateArray: TFromRateArray;
     Flag: Boolean;
-    PSmClipRec: ^TSmClipRec;
+    SmClipRec: PSmClipRec;
     AutoCommitValue: Boolean;
 
     //Просто кусок кода который надо выполнить из разных мест
-    procedure CoefEstimCalc(ALocalType, ADataType, AOldId, ANewId: Integer);
+    procedure CoefEstimCalc(ASourceSmId, ADataType, AOldId, ANewId: Integer);
     var i: Integer;
     begin
       //Перенос коэффициентов связаных со строчкой
       DM.qrDifferent.Active := False;
-      DM.qrDifferent.SQL.Text := 'Select * from calculation_coef' +
-        TmpTab + ' where (SM_ID = ' + IntToStr(PSmClipRec.SmID) + ') and ' +
+      DM.qrDifferent.SQL.Text := 'Select * from calculation_coef' + TmpTab + ' where ' +
+        '(SM_ID = ' + IntToStr(ASourceSmId) + ') and ' +
         '(id_type_data = ' + IntToStr(ADataType) + ') and ' +
         '(id_owner = ' + IntToStr(AOldId) + ')';
       DM.qrDifferent.Active := True;
       if not DM.qrDifferent.IsEmpty then
         DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'calculation_coef_temp');
+      DM.qrDifferent1.Params.Clear;
       while not DM.qrDifferent.Eof do
       begin
         for i := 0 to DM.qrDifferent.Fields.Count - 1 do
@@ -1198,23 +1191,6 @@ var i, j, ii,
       end;
       DM.qrDifferent.Active := False;
 
-      //Все типы кроме 10, 11
-      if ALocalType > 0 then
-      begin
-        //Обновление нумерации в смете
-        AIterator := UpdateIterator(ADestSmID, AIterator, 0);
-        //Добавление новой строки
-        DM.qrDifferent1.SQL.Text :=
-          'INSERT INTO data_row_temp (ID, SM_ID, id_type_data, id_tables, NUM_ROW) ' +
-          'VALUE (GetNewID(:IDType), :id_estimate, :id_type_data, :id_tables, :NUM_ROW);';
-        DM.qrDifferent1.ParamByName('IDType').Value := C_ID_DATA;
-        DM.qrDifferent1.ParamByName('id_estimate').Value := ADestSmID;
-        DM.qrDifferent1.ParamByName('id_type_data').Value := ADataType;
-        DM.qrDifferent1.ParamByName('id_tables').Value := ANewId;
-        DM.qrDifferent1.ParamByName('NUM_ROW').Value := AIterator;
-        DM.qrDifferent1.ExecSQL;
-      end;
-
       //Пересчитываем добавленную строчку
       DM.qrDifferent1.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE, :CalcMode);';
       DM.qrDifferent1.ParamByName('ID').Value := ANewId;
@@ -1222,8 +1198,8 @@ var i, j, ii,
       DM.qrDifferent1.ParamByName('CalcMode').Value := G_CALCMODE;
       DM.qrDifferent1.ExecSQL;
 
-      DM.qrDifferent1.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, :TypeData_ID, :OWNER_ID, 0);';
-      DM.qrDifferent1.ParamByName('ESTIMATE_ID').Value := ADestSmID;
+      DM.qrDifferent1.SQL.Text := 'CALL CalcCalculation(:SM_ID, :TypeData_ID, :OWNER_ID, 0);';
+      DM.qrDifferent1.ParamByName('SM_ID').Value := ADestSmID;
       DM.qrDifferent1.ParamByName('TypeData_ID').Value := ADataType;
       DM.qrDifferent1.ParamByName('OWNER_ID').Value := ANewId;
       DM.qrDifferent1.ExecSQL;
@@ -1237,23 +1213,16 @@ begin
     try
       DM.qrDifferent1.UpdateTransaction.StartTransaction;
 
-      SetLength(AllFromRateArray, 0);
-      for i := 1 to Length(IdConvert) do
-      begin
-        SetLength(IdConvert[i][0], 0);
-        SetLength(IdConvert[i][1], 0);
-      end;
-
       for ii := Low(ASmClipArray) to High(ASmClipArray) do
       begin
-        PSmClipRec := @ASmClipArray[ii];
+        SmClipRec := @ASmClipArray[ii];
 
         //Расценка вставляется вместе с вынесенными, если при копировании
-        //зацепили такце и вынесенные, то они игнорируюся, что-бы не вставлялись дублем
+        //зацепили такие и вынесенные, то они игнорируюся, что-бы не вставлялись дублем
         Flag := False;
         for i := 0 to Length(AllFromRateArray) - 1 do
-          if (PSmClipRec.DataID = AllFromRateArray[i].OldId) and
-             (PSmClipRec.DataType = AllFromRateArray[i].DataType) then
+          if (SmClipRec.DataID = AllFromRateArray[i].OldId) and
+             (SmClipRec.DataType = AllFromRateArray[i].DataType) then
           begin
             Flag := True;
             Break;
@@ -1262,7 +1231,7 @@ begin
           Continue;
 
         ind := 0;
-        case PSmClipRec.DataType of
+        case SmClipRec.DataType of
           1: ind := C_ID_SMRAT;
           2: ind := C_ID_SMMAT;
           3: ind := C_ID_SMMEC;
@@ -1274,23 +1243,24 @@ begin
 
         if ind = 0 then
           raise Exception.Create('Неизвестный тип данных (' +
-            IntToStr(PSmClipRec.DataType) + ').');
+            IntToStr(SmClipRec.DataType) + ').');
 
         TmpTab := '_temp';
 
         //Поиск источника в БД
         if ind > 0 then
         begin
-          DM.qrDifferent.SQL.Text := 'Select * from ' +
-            CTabNameAndID[ind][0] + TmpTab + ' where ' + CTabNameAndID[ind][1] + ' = ' +
-            IntToStr(PSmClipRec.DataID);
+          DM.qrDifferent.SQL.Text :=
+            'Select * from ' + CTabNameAndID[ind][0] + TmpTab + ' where ' +
+            '(' + CTabNameAndID[ind][1] + ' = ' + IntToStr(SmClipRec.DataID) + ') and ' +
+            '(SM_ID = ' + IntToStr(SmClipRec.SmID) + ')';
         end
         else
         begin
-          DM.qrDifferent.SQL.Text := 'Select E1820_COUNT from data_row' + TmpTab +
-            ' where (ID_ACT is null) and ' +
-            '(ID_ESTIMATE = ' + IntToStr(PSmClipRec.SmID) +
-            ') and (ID_TYPE_DATA = ' + IntToStr(PSmClipRec.DataType) + ')';
+          DM.qrDifferent.SQL.Text :=
+            'Select E1820_COUNT from data_row' + TmpTab + ' where ' +
+            '(SM_ID = ' + IntToStr(SmClipRec.SmID) + ') and ' +
+            '(ID_TYPE_DATA = ' + IntToStr(SmClipRec.DataType) + ')';
         end;
         DM.qrDifferent.Active := True;
 
@@ -1302,16 +1272,17 @@ begin
 
           if ind > 0 then
           begin
-            DM.qrDifferent.SQL.Text := 'Select * from ' +
-              CTabNameAndID[ind][0] + TmpTab + ' where ' +
-              CTabNameAndID[ind][1] + ' = ' + IntToStr(PSmClipRec.DataID);
+            DM.qrDifferent.SQL.Text :=
+              'Select * from ' + CTabNameAndID[ind][0] + TmpTab + ' where ' +
+              '(' + CTabNameAndID[ind][1] + ' = ' + IntToStr(SmClipRec.DataID) + ') and ' +
+              '(SM_ID = ' + IntToStr(SmClipRec.SmID) + ')';
           end
           else
           begin
-            DM.qrDifferent.SQL.Text := 'Select E1820_COUNT from data_row' + TmpTab +
-              ' where (ID_ACT is null) and ' +
-              '(ID_ESTIMATE = ' + IntToStr(PSmClipRec.SmID) +
-              ') and (ID_TYPE_DATA = ' + IntToStr(PSmClipRec.DataType) + ')';
+            DM.qrDifferent.SQL.Text :=
+              'Select E1820_COUNT from data_row' + TmpTab + ' where ' +
+              '(SM_ID = ' + IntToStr(SmClipRec.SmID) + ') and ' +
+              '(ID_TYPE_DATA = ' + IntToStr(SmClipRec.DataType) + ')';
           end;
           DM.qrDifferent.Active := True;
 
@@ -1319,26 +1290,62 @@ begin
             raise Exception.Create('Источник отсутствует в БД.');
         end;
 
-        NewID := -1;
-
-        case PSmClipRec.DataType of
+        case SmClipRec.DataType of
         1, 2, 3, 4, 5, 6, 7, 8, 9:
         begin
-          DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent,
-            CTabNameAndID[ind][0] + '_temp');
+          NewID := GetNewId(DM.qrDifferent.FieldByName('ID').Value,
+           ind, IdConvert);
+          NewRowID := GetNewId(DM.qrDifferent.FieldByName('DATA_ROW_ID').Value,
+           C_ID_DATA, IdConvert);
+
+          //Обновление нумерации в смете
+          AIterator := UpdateIterator(ADestSmID, AIterator, 0);
+          //Добавление новой строки
+          DM.qrDifferent1.Params.Clear;
+          DM.qrDifferent1.SQL.Text :=
+            'INSERT INTO data_row_temp (ID, SM_ID, id_type_data, id_tables, NUM_ROW) ' +
+            'VALUE (:ID, :SM_ID, :id_type_data, :id_tables, :NUM_ROW);';
+          DM.qrDifferent1.ParamByName('ID').Value := NewRowID;
+          DM.qrDifferent1.ParamByName('SM_ID').Value := ADestSmID;
+          DM.qrDifferent1.ParamByName('id_type_data').Value := SmClipRec.DataType;
+          DM.qrDifferent1.ParamByName('id_tables').Value := NewID;
+          DM.qrDifferent1.ParamByName('NUM_ROW').Value := AIterator;
+          DM.qrDifferent1.ExecSQL;
+
+          DM.qrDifferent1.Params.Clear;
+          DM.qrDifferent1.SQL.Text :=
+            GetQueryStr(DM.qrDifferent, CTabNameAndID[ind][0] + '_temp');
+
           for i := 0 to DM.qrDifferent.Fields.Count - 1 do
           begin
             if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
             begin
-              NewID := GetNewId(DM.qrDifferent.Fields[i].Value, ind, IdConvert);
-              DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := NewID;
+              DM.qrDifferent1.ParamByName('ID').Value := NewID;
               Continue;
             end;
-            if PSmClipRec.DataType in [2, 3] then
+
+            if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
+            begin
+              DM.qrDifferent1.ParamByName('SM_ID').Value := ADestSmID;
+              Continue;
+            end;
+
+            if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'DATA_ROW_ID' then
+            begin
+              DM.qrDifferent1.ParamByName('DATA_ROW_ID').Value := NewRowID;
+              Continue;
+            end;
+
+            if SmClipRec.DataType in [2, 3] then
             begin
               //Гасим все специфические флаги
-              if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE') or
-                 (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED') or
+              if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE') then
+              begin
+                DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := Null;
+                Continue;
+              end;
+
+              if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED') or
                  (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'REPLACED') or
                  (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'FROM_RATE') or
                  (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CONS_REPLASED') or
@@ -1349,7 +1356,7 @@ begin
                 Continue;
               end;
 
-              if (PSmClipRec.DataType = 2) and
+              if (SmClipRec.DataType = 2) and
                  (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'CONSIDERED') then
               begin
                 DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value := 1;
@@ -1363,17 +1370,21 @@ begin
         end;
         10,11:
         begin
+          NewID := 0;
+          NewRowID := GetNewId(DM.qrDifferent.FieldByName('DATA_ROW_ID').Value,
+           C_ID_DATA, IdConvert);
+
           E1820COUNT := DM.qrDifferent.Fields[0].Value;
           DM.qrDifferent.Active := False;
           //Проверка на то, что 10 или 11 уже есть в смете
           DM.qrDifferent.SQL.Text :=
-            'Select E1820_COUNT from data_row' + TmpTab +' where ' +
-            '(ID_ESTIMATE = ' + IntToStr(ADestSmID) +
-            ') and (ID_TYPE_DATA = ' + IntToStr(PSmClipRec.DataType) + ')';
+            'Select E1820_COUNT from data_row' + TmpTab + ' where ' +
+            '(SM_ID = ' + IntToStr(ADestSmID) + ') and ' +
+            '(ID_TYPE_DATA = ' + IntToStr(SmClipRec.DataType) + ')';
           DM.qrDifferent.Active := True;
           if not DM.qrDifferent.IsEmpty then
           begin
-            if PSmClipRec.DataType = 10 then
+            if SmClipRec.DataType = 10 then
               raise Exception.Create('ЕТ18 уже присутствует с смете.')
             else
               raise Exception.Create('ЕТ20 уже присутствует с смете.');
@@ -1382,60 +1393,93 @@ begin
 
           //Добавление новой строки
           DM.qrDifferent1.SQL.Text :=
-            'INSERT INTO data_row_temp (ID, id_estimate, id_type_data, id_tables, ' +
-            'E1820_COUNT, NUM_ROW) VALUE (GetNewID(:IDType), :id_estimate, :id_type_data, ' +
-            ':id_tables, :E1820_COUNT, :NUM_ROW);';
-          DM.qrDifferent1.ParamByName('IDType').Value := C_ID_DATA;
-          DM.qrDifferent1.ParamByName('id_estimate').Value := ADestSmID;
-          DM.qrDifferent1.ParamByName('id_type_data').Value := PSmClipRec.DataType;
-          DM.qrDifferent1.ParamByName('id_tables').Value := 0;
+            'INSERT INTO data_row_temp (ID, SM_ID, id_type_data, ' +
+            'E1820_COUNT, NUM_ROW) VALUE (:ID, :SM_ID, :id_type_data, ' +
+            ':E1820_COUNT, :NUM_ROW);';
+          DM.qrDifferent1.ParamByName('ID').Value := NewRowID;
+          DM.qrDifferent1.ParamByName('SM_ID').Value := ADestSmID;
+          DM.qrDifferent1.ParamByName('id_type_data').Value := SmClipRec.DataType;
           DM.qrDifferent1.ParamByName('E1820_COUNT').Value := E1820COUNT;
           //Топятся в конец сметы
-          if PSmClipRec.DataType = 10 then
+          if SmClipRec.DataType = 10 then
               DM.qrDifferent1.ParamByName('NUM_ROW').Value := C_ET18ITER
           else
               DM.qrDifferent1.ParamByName('NUM_ROW').Value := C_ET20ITER;
           DM.qrDifferent1.ExecSQL;
-
-          DM.qrDifferent1.SQL.Text := 'CALL CalcCalculation(:ESTIMATE_ID, :TypeData_ID, :OWNER_ID, 0, 0);';
-          DM.qrDifferent1.ParamByName('ESTIMATE_ID').Value := ADestSmID;
-          DM.qrDifferent1.ParamByName('TypeData_ID').Value := PSmClipRec.DataType;
-          DM.qrDifferent1.ParamByName('OWNER_ID').Value := 0;
-          DM.qrDifferent1.ExecSQL;
         end;
         end;
         //Переносит коэффициенты, переносит строку в смету, выполняет пересчет строки
-        CoefEstimCalc(ind, PSmClipRec.DataType, PSmClipRec.DataID, NewId);
+        CoefEstimCalc(SmClipRec.SmID, SmClipRec.DataType, SmClipRec.DataID, NewId);
 
         //Для расценок копирует материалы и механизмы
-        if PSmClipRec.DataType = 1 then
+        if SmClipRec.DataType = 1 then
         begin
           SetLength(FromRateArray, 0);
+
           DM.qrDifferent.Active := False;
-          DM.qrDifferent.SQL.Text := 'Select * from materialcard' +
-            TmpTab + ' where ID_CARD_RATE = ' + IntToStr(PSmClipRec.DataID) +
-            ' ORDER BY ID';
+          DM.qrDifferent.SQL.Text :=
+            'Select * from materialcard' + TmpTab + ' where ' +
+              '(ID_CARD_RATE = ' + IntToStr(SmClipRec.DataID) + ') and ' +
+              '(SM_ID = ' + IntToStr(SmClipRec.SmID) + ') BY ID';
           DM.qrDifferent.Active := True;
-          if not DM.qrDifferent.IsEmpty then
-            DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'materialcard_temp');
           while not DM.qrDifferent.Eof do
           begin
+            TmpID_O := DM.qrDifferent.FieldByName('ID').Value;
+            TmpID_N := GetNewId(TmpID_O, C_ID_SMMAT, IdConvert);
+
+            //Если материал в расценке то NewRowID1 будут равен NewRowID
+            NewRowID1 := GetNewId(DM.qrDifferent.FieldByName('DATA_ROW_ID').Value,
+              C_ID_DATA, IdConvert);
+
+            if DM.qrDifferent.FieldByName('FROM_RATE').Value = 1 then
+            begin
+                Inc(AIterator);
+                //Обновление нумерации в смете
+                AIterator := UpdateIterator(ADestSmID, AIterator, 0);
+                //Добавление новой строки
+                DM.qrDifferent1.Params.Clear;
+                DM.qrDifferent1.SQL.Text :=
+                  'INSERT INTO data_row_temp (ID, SM_ID, id_type_data, id_tables, NUM_ROW) ' +
+                  'VALUE (:ID, :SM_ID, :id_type_data, :id_tables, :NUM_ROW);';
+                DM.qrDifferent1.ParamByName('ID').Value := NewRowID1;
+                DM.qrDifferent1.ParamByName('SM_ID').Value := ADestSmID;
+                DM.qrDifferent1.ParamByName('id_type_data').Value := 2;
+                DM.qrDifferent1.ParamByName('id_tables').Value := TmpID_N;
+                DM.qrDifferent1.ParamByName('NUM_ROW').Value := AIterator;
+                DM.qrDifferent1.ExecSQL;
+
+                j := Length(AllFromRateArray);
+                SetLength(AllFromRateArray, j + 1);
+                AllFromRateArray[j].DataType := 2;
+                AllFromRateArray[j].OldId := TmpID_O;
+            end;
+
+            DM.qrDifferent1.Params.Clear;
+            DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'materialcard_temp');
+
             for i := 0 to DM.qrDifferent.Fields.Count - 1 do
             begin
               if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
               begin
-                TmpID_O := DM.qrDifferent.Fields[i].Value;
-                TmpID_N := GetNewId(TmpID_O, C_ID_SMMAT, IdConvert);
-                DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-                  TmpID_N;
+                DM.qrDifferent1.ParamByName('ID').Value := TmpID_N;
                 Continue;
               end;
 
-              //Гасим все специфические флаги
+              if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
+              begin
+                DM.qrDifferent1.ParamByName('SM_ID').Value := ADestSmID;
+                Continue;
+              end;
+
+              if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'DATA_ROW_ID' then
+              begin
+                DM.qrDifferent1.ParamByName('DATA_ROW_ID').Value := NewRowID1;
+                Continue;
+              end;
+
               if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE') then
               begin
-                DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-                  NewID;
+                DM.qrDifferent1.ParamByName('ID_CARD_RATE').Value := NewID;
                 Continue;
               end;
 
@@ -1446,47 +1490,79 @@ begin
                 Continue;
               end;
 
-              if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'FROM_RATE') and
-                 (DM.qrDifferent.Fields[i].Value > 0) then
-              begin
-                j := Length(FromRateArray);
-                SetLength(FromRateArray, j + 1);
-                FromRateArray[j].LocalType := C_ID_SMMAT;
-                FromRateArray[j].DataType := 2;
-                FromRateArray[j].OldId := TmpID_O;
-                FromRateArray[j].NewId := TmpID_N;
-
-                j := Length(AllFromRateArray);
-                SetLength(AllFromRateArray, j + 1);
-                AllFromRateArray[j].DataType := 2;
-                AllFromRateArray[j].OldId := TmpID_O;
-              end;
-
               DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
                 DM.qrDifferent.Fields[i].Value;
             end;
             DM.qrDifferent1.ExecSQL;
 
+            if DM.qrDifferent.FieldByName('FROM_RATE').Value = 1 then
+              CoefEstimCalc(ADestSmID, 2, TmpID_O, TmpID_N);
+
             DM.qrDifferent.Next;
           end;
-
           DM.qrDifferent.Active := False;
-          DM.qrDifferent.SQL.Text := 'Select * from mechanizmcard' +
-            TmpTab + ' where ID_CARD_RATE = ' + IntToStr(PSmClipRec.DataID) +
-            ' ORDER BY ID';
+
+          DM.qrDifferent.SQL.Text := 'Select * from mechanizmcard' + TmpTab + ' where ' +
+            '(ID_CARD_RATE = ' + IntToStr(SmClipRec.DataID) + ') and ' +
+            '(SM_ID = ' + IntToStr(SmClipRec.SmID) + ') ORDER BY ID';
           DM.qrDifferent.Active := True;
-          if not DM.qrDifferent.IsEmpty then
-            DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'mechanizmcard_temp');
           while not DM.qrDifferent.Eof do
           begin
+            TmpID_O := DM.qrDifferent.FieldByName('ID').Value;
+            TmpID_N := GetNewId(TmpID_O, C_ID_SMMEC, IdConvert);
+
+            //Если материал в расценке то NewRowID1 будут равен NewRowID
+            NewRowID1 := GetNewId(DM.qrDifferent.FieldByName('DATA_ROW_ID').Value,
+              C_ID_DATA, IdConvert);
+
+            if DM.qrDifferent.FieldByName('FROM_RATE').Value = 1 then
+            begin
+                Inc(AIterator);
+                //Обновление нумерации в смете
+                AIterator := UpdateIterator(ADestSmID, AIterator, 0);
+                //Добавление новой строки
+                DM.qrDifferent1.Params.Clear;
+                DM.qrDifferent1.SQL.Text :=
+                  'INSERT INTO data_row_temp (ID, SM_ID, id_type_data, id_tables, NUM_ROW) ' +
+                  'VALUE (:ID, :SM_ID, :id_type_data, :id_tables, :NUM_ROW);';
+                DM.qrDifferent1.ParamByName('ID').Value := NewRowID1;
+                DM.qrDifferent1.ParamByName('SM_ID').Value := ADestSmID;
+                DM.qrDifferent1.ParamByName('id_type_data').Value := 3;
+                DM.qrDifferent1.ParamByName('id_tables').Value := TmpID_N;
+                DM.qrDifferent1.ParamByName('NUM_ROW').Value := AIterator;
+                DM.qrDifferent1.ExecSQL;
+
+                j := Length(AllFromRateArray);
+                SetLength(AllFromRateArray, j + 1);
+                AllFromRateArray[j].DataType := 3;
+                AllFromRateArray[j].OldId := TmpID_O;
+            end;
+
+            DM.qrDifferent1.Params.Clear;
+            DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'mechanizmcard_temp');
             for i := 0 to DM.qrDifferent.Fields.Count - 1 do
             begin
               if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
               begin
-                TmpID_O := DM.qrDifferent.Fields[i].Value;
-                TmpID_N := GetNewId(TmpID_O, C_ID_SMMEC, IdConvert);
-                DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
-                  TmpID_N;
+                DM.qrDifferent1.ParamByName('ID').Value := TmpID_N;
+                Continue;
+              end;
+
+              if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'SM_ID' then
+              begin
+                DM.qrDifferent1.ParamByName('SM_ID').Value := ADestSmID;
+                Continue;
+              end;
+
+              if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'DATA_ROW_ID' then
+              begin
+                DM.qrDifferent1.ParamByName('DATA_ROW_ID').Value := NewRowID1;
+                Continue;
+              end;
+
+              if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE') then
+              begin
+                DM.qrDifferent1.ParamByName('ID_CARD_RATE').Value := NewID;
                 Continue;
               end;
 
@@ -1505,38 +1581,17 @@ begin
                 Continue;
               end;
 
-              if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'FROM_RATE') and
-                 (DM.qrDifferent.Fields[i].Value > 0) then
-              begin
-                j := Length(FromRateArray);
-                SetLength(FromRateArray, j + 1);
-                FromRateArray[j].LocalType := C_ID_SMMEC;
-                FromRateArray[j].DataType := 3;
-                FromRateArray[j].OldId := TmpID_O;
-                FromRateArray[j].NewId := TmpID_N;
-
-                j := Length(AllFromRateArray);
-                SetLength(AllFromRateArray, j + 1);
-                AllFromRateArray[j].DataType := 3;
-                AllFromRateArray[j].OldId := TmpID_O;
-              end;
-
               DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
                 DM.qrDifferent.Fields[i].Value;
             end;
             DM.qrDifferent1.ExecSQL;
 
+            if DM.qrDifferent.FieldByName('FROM_RATE').Value = 1 then
+              CoefEstimCalc(ADestSmID, 3, TmpID_O, TmpID_N);
+
             DM.qrDifferent.Next;
           end;
           DM.qrDifferent.Active := False;
-          //Добавляет в смету вынесеные из расценки
-          //При вставке не контролируется порядок выноса, и возможно будет нарушен
-          for i := Low(FromRateArray) to High(FromRateArray) do
-          begin
-            Inc(AIterator);
-            CoefEstimCalc(FromRateArray[i].LocalType, FromRateArray[i].DataType,
-              FromRateArray[i].OldId, FromRateArray[i].NewId);
-          end;
         end;
         Inc(AIterator);
       end;
@@ -1564,13 +1619,7 @@ var IdConvert: TIDConvertArray;
     TmpStr: string;
     AutoCommitValue: Boolean;
 begin
-  Result := False;
-  for i := 1 to Length(IdConvert) do
-  begin
-    SetLength(IdConvert[i][0], 0);
-    SetLength(IdConvert[i][1], 0);
-  end;
-
+  {
   AutoCommitValue :=DM.qrDifferent1.Transaction.Options.AutoCommit;
   DM.qrDifferent1.Transaction.Options.AutoCommit := False;
   try
@@ -2077,7 +2126,7 @@ begin
     end;
   finally
     DM.qrDifferent1.Transaction.Options.AutoCommit := AutoCommitValue;
-  end;
+  end; }
 end;
 
 end.
