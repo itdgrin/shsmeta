@@ -473,6 +473,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>ManSprCardForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="ManualPriceSelect.pas">
+            <Form>fmManPriceSelect</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

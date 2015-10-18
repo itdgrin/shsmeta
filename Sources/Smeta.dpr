@@ -119,7 +119,8 @@ uses
   TranspPersSelect in 'TranspPersSelect.pas' {fTrPersSelect},
   CopyToOwnDialog in 'CopyToOwnDialog.pas' {fCopyToOwnDialog},
   SelectDialog in 'SelectDialog.pas' {fSelectDialog},
-  ManualSprItem in 'ManualSprItem.pas' {ManSprCardForm};
+  ManualSprItem in 'ManualSprItem.pas' {ManSprCardForm},
+  ManualPriceSelect in 'ManualPriceSelect.pas' {fmManPriceSelect};
 
 {$R *.res}
 var MHandle: THandle;

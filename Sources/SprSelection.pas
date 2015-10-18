@@ -123,7 +123,6 @@ begin
   inherited;
 end;
 
-
 procedure TfSprSelection.SelectSprItem(ASprRecord: PSprRecord);
 begin
   if Assigned(ASprRecord) then

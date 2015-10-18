@@ -90,6 +90,7 @@ end;
 constructor TFormAdditionData.Create(AOwner: TComponent; const vDataBase: Char);
 var
   TmpDate: TDateTime;
+  TmpBaseType: Byte;
 begin
   inherited Create(AOwner);
 
@@ -115,22 +116,27 @@ begin
   FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
 
-  FramePriceMaterial := TSprMaterial.Create(Self, True, True, TmpDate, FormCalculationEstimate.Region,
-    True, False);
+  TmpBaseType := 1;
+  if vDataBase = '1' then
+    TmpBaseType := 2;
+
+  FramePriceMaterial := TSprMaterial.Create(Self, True, True, TmpDate,
+    FormCalculationEstimate.Region, True, False, TmpBaseType);
   FramePriceMaterial.Parent := Self;
   FramePriceMaterial.LoadSpr;
   FramePriceMaterial.Align := alClient;
   FramePriceMaterial.Visible := False;
   SpeedButtonMaterial.Tag := Integer(FramePriceMaterial);
 
-  FramePriceMechanizm := TSprMechanizm.Create(Self, True, True, TmpDate);
+  FramePriceMechanizm := TSprMechanizm.Create(Self, True, True, TmpDate,
+    TmpBaseType);
   FramePriceMechanizm.Parent := Self;
   FramePriceMechanizm.LoadSpr;
   FramePriceMechanizm.Align := alClient;
   FramePriceMechanizm.Visible := False;
   SpeedButtonMechanizm.Tag := Integer(FramePriceMechanizm);
 
-  FrameEquipment := TSprEquipment.Create(Self, True, True);
+  FrameEquipment := TSprEquipment.Create(Self, True, True, TmpBaseType);
   FrameEquipment.Parent := Self;
   FrameEquipment.LoadSpr;
   FrameEquipment.Align := alClient;

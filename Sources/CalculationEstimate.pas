@@ -489,6 +489,12 @@ type
     btnKC6J: TSpeedButton;
     PMRenumSelected: TMenuItem;
     PMRenumPTM: TMenuItem;
+    qrMaterialBASE: TByteField;
+    qrMechanizmBASE: TByteField;
+    qrDevicesBASE: TByteField;
+    PMMatManPrice: TMenuItem;
+    PMMechManPrice: TMenuItem;
+    PMDevManPrice: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -695,6 +701,7 @@ type
     procedure dsRatesExDataChange(Sender: TObject; Field: TField);
     procedure grRatesExDblClick(Sender: TObject);
     procedure PMRenumPTMClick(Sender: TObject);
+    procedure PMMatManPriceClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
     HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
@@ -840,7 +847,8 @@ uses Main, DataModule, SignatureSSR, Waiting,
   KC6, CardAct, Tools, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
-  TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog;
+  TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog,
+  ManualPriceSelect;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -2018,8 +2026,11 @@ begin
   Result := False;
   // Вынесенные из расценки // или замененный
   if ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 1)) or
-    (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialDELETED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0)
-    or not(qrMaterialID.AsInteger > 0) or (qrMaterial.Eof) then
+    (qrMaterialREPLACED.AsInteger = 1) or
+    (qrMaterialDELETED.AsInteger = 1) or
+    (qrMaterialTITLE.AsInteger > 0) or
+    not(qrMaterialID.AsInteger > 0) or
+    (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -3668,6 +3679,78 @@ begin
   OutputDataToTable;
 end;
 
+procedure TFormCalculationEstimate.PMMatManPriceClick(Sender: TObject);
+var fmPrice: TfmManPriceSelect;
+    TmpDataType,
+    TmpSprID: Integer;
+    TmpCode,
+    TmpUnit,
+    TmpName: string;
+begin
+  TmpDataType := (Sender as TComponent).Tag;
+  case TmpDataType of
+    2:
+    begin
+      TmpSprID := qrMaterialMAT_ID.Value;
+      TmpCode := qrMaterialMAT_CODE.AsString;
+      TmpUnit := qrMaterialMAT_UNIT.AsString;
+      TmpName := qrMaterialMAT_NAME.AsString;
+    end;
+    3:
+    begin
+      TmpSprID := qrMechanizmMECH_ID.Value;
+      TmpCode := qrMechanizmMECH_CODE.AsString;
+      TmpUnit := qrMechanizmMECH_UNIT.AsString;
+      TmpName := qrMechanizmMECH_NAME.AsString;
+    end;
+    4:
+    begin
+      TmpSprID := qrDevicesDEVICE_ID.Value;
+      TmpCode := qrDevicesDEVICE_CODE.AsString;
+      TmpUnit := qrDevicesDEVICE_UNIT.AsString;
+      TmpName := qrDevicesDEVICE_NAME.AsString;
+    end;
+    else
+      raise Exception.Create('Неизвестный тип данных.');
+  end;
+
+  fmPrice := TfmManPriceSelect.Create(Self, TmpSprID, TmpDataType,
+    TmpCode, TmpUnit, TmpName);
+  try
+    if fmPrice.ShowModal = mrOk then
+    begin
+      case TmpDataType of
+        2:
+        begin
+          qrMaterial.Edit;
+          if NDSEstimate then
+            qrMaterialFCOAST_NDS.Value := fmPrice.CoastNDS
+          else
+            qrMaterialFCOAST_NO_NDS.Value := fmPrice.CoastNoNDS;
+        end;
+        3:
+        begin
+          qrMechanizm.Edit;
+          if NDSEstimate then
+            qrMechanizmFCOAST_NDS.Value := fmPrice.CoastNDS
+          else
+            qrMechanizmFCOAST_NO_NDS.Value := fmPrice.CoastNoNDS;
+        end;
+        4:
+        begin
+          qrDevices.Edit;
+          if NDSEstimate then
+            qrDevicesFCOAST_NDS.Value := fmPrice.CoastNDS
+          else
+            qrDevicesFCOAST_NO_NDS.Value := fmPrice.CoastNoNDS;
+        end;
+      end;
+    end;
+  finally
+    FreeAndNil(fmPrice);
+  end;
+end;
+
 procedure TFormCalculationEstimate.PMMatMechEditClick(Sender: TObject);
 begin
   if TMenuItem(Sender).Tag = 1 then
@@ -4694,6 +4777,9 @@ begin
   PMCalcMat.Enabled := (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FCOAST_NDS');
   // or
   // (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS');
+
+  PMMatManPrice.Visible := (qrMaterialBASE.Value > 0);
+  PMMatManPrice.Enabled := not CheckMatReadOnly;
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -4724,6 +4810,9 @@ begin
 
   PMCalcMech.Visible := NDSEstimate;
   PMCalcMech.Enabled := (dbgrdMechanizm.Columns[dbgrdMechanizm.Col - 1].FieldName = 'FCOAST_NDS');
+
+  PMMechManPrice.Visible := (qrMechanizmBASE.Value > 0);
+  PMMechManPrice.Enabled := not CheckMechReadOnly;
 end;
 
 function TFormCalculationEstimate.CheckCursorInRate: Boolean;
@@ -5320,6 +5409,8 @@ procedure TFormCalculationEstimate.pmDevicesPopup(Sender: TObject);
 begin
   PMCalcDevice.Visible := NDSEstimate;
   PMCalcDevice.Enabled := (dbgrdDevices.Columns[dbgrdDevices.Col - 1].FieldName = 'FCOAST_NDS');
+
+  PMDevManPrice.Visible := (qrDevicesBASE.Value > 0);
 end;
 
 // Общий пункт для свалок и транспорта
