@@ -264,6 +264,7 @@ begin
       //Запуск создания архива
       //К сожалению процесс создания архива не как не контролируется
       WinExecAndWait(C_BASETODUMP, nil, 0, TmpWaitResult);
+
       if (TmpWaitResult <> WAIT_OBJECT_0) or
         not TFile.Exists(FArhivPath + C_DUMPNAME) or
         (FileSize(FArhivPath + C_DUMPNAME) < 1024*1024*2) then //2мб чисто условно

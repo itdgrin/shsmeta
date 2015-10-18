@@ -332,11 +332,11 @@ begin
   begin
     cb := sizeof(TStartupInfo);
     dwFlags := STARTF_USESHOWWINDOW;
-    wShowWindow := SW_HIDE;
+    wShowWindow := SW_NORMAL;
   end;
 
-  result := CreateProcess(AAppName, ACmdLine, nil, nil, False, NORMAL_PRIORITY_CLASS, nil, nil,
-    Start, ProcInf);
+  result := CreateProcess(AAppName, ACmdLine, nil, nil, False,
+    NORMAL_PRIORITY_CLASS, nil, nil, Start, ProcInf);
 
   if ATimeout = 0 then
     ATimeout := INFINITE;
