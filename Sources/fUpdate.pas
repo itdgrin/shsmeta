@@ -15,7 +15,7 @@ uses
   IdAttachmentFile, IdExplicitTLSClientServerBase, Tools, GlobsAndConst, ArhivModule;
 
 type
-  TUpdateForm = class(TForm)
+  TUpdateForm = class(TSmForm)
     Panel1: TPanel;
     Panel2: TPanel;
     Label1: TLabel;
@@ -638,6 +638,7 @@ end;
 
 procedure TUpdateForm.FormCreate(Sender: TObject);
 begin
+  inherited;
   FCurVersion.Clear;
   FSR := TServiceResponse.Create;
   SqlErrorList := TStringList.Create;
