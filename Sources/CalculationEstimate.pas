@@ -1173,6 +1173,8 @@ begin
   // Временный костыль
   if (Assigned(fCalcResource)) then
     fCalcResource.Close;
+  if (Assigned(fKC6Journal)) then
+    fKC6Journal.Close;
 
   if SpeedButtonSummaryCalculation.Tag = 0 then
   begin
