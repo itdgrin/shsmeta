@@ -594,6 +594,9 @@ begin
 
   if not FAddMode then
     LoadEntry;
+
+  //Повторно обновляет стили
+  SetFormStyle;
 end;
 
 procedure TfrmReplacement.FormCreate(Sender: TObject);

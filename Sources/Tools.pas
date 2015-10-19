@@ -5,7 +5,7 @@ interface
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes,
   ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid, FireDAC.Stan.Option,
-  FireDAC.Stan.Param, Controls, Vcl.Buttons;
+  FireDAC.Stan.Param, Controls, Vcl.Buttons, Vcl.ComCtrls;
 
 // Общий тип классификации форм
 type
@@ -20,11 +20,18 @@ type
 
   // Будующий класс формы для наследования всех форм
   TSmForm = class(TForm)
-    procedure FormCreate(Sender: TObject);
+   // procedure FormCreate(Sender: TObject);
   private
+    procedure SetStyleForAllComponents(AComponent: TComponent);
   protected
+    procedure SetComponentStyle(AComponent: TComponent); virtual;
+    //Если у формы наследника переопределе конструктор, то все компоненты
+    //созданные в нем после вызова inherited не получат новый стиль
+    //В этом случае в конце переопределенного конструктора надо вызвать SetFormStyle повторно
+    procedure SetFormStyle; virtual;
   public
     FormKind: TKindForm;
+    constructor Create(AOwner: TComponent); override;
   end;
 
   TActivateEvent = procedure(ADataSet: TDataSet; ATag: Integer) of object;
@@ -50,6 +57,7 @@ type
   end;
 
   TSmClipData = class
+  private
   public
     SmClipArray: array of TSmClipRec;
     procedure CopyToClipBoard;
@@ -63,7 +71,7 @@ procedure LoadDBGridSettings(const DBGrid: TJvDBGrid);
 // Процедура рисования чекбокса на гриде
 procedure DrawGridCheckBox(Canvas: TCanvas; Rect: TRect; Checked: Boolean);
 
-// Удаление директории с содержимым !!!!Использовать остородно!!!!!
+// Удаление директории с содержимым !!!!Использовать осторожно!!!!!
 procedure KillDir(const ADirName: string);
 // Запускает процесс и ждет его завершения
 function WinExecAndWait(AAppName, ACmdLine: PChar; ATimeout: DWord; var AWaitResult: DWord): Boolean;
@@ -633,61 +641,93 @@ end;
 
 { TSmForm }
 
-procedure TSmForm.FormCreate(Sender: TObject);
-var
-  i: Integer;
+//procedure TSmForm.FormCreate(Sender: TObject);
+constructor TSmForm.Create(AOwner: TComponent);
+begin
+  inherited;
+  SetFormStyle;
+end;
+
+procedure TSmForm.SetFormStyle;
+
 begin
   Self.ShowHint := True;
-  for i := 0 to Self.ComponentCount - 1 do
+  SetStyleForAllComponents(Self);
+end;
+
+procedure TSmForm.SetStyleForAllComponents(AComponent: TComponent);
+var I: Integer;
+    s: string;
+begin
+  for I := 0 to AComponent.ComponentCount - 1 do
   begin
-    if Self.Components[i] is TButton then
-    begin
-      if PS.ControlsFontName <> '' then
-      begin
-        TButton(Self.Components[i]).Font.Name := PS.ControlsFontName;
-      end;
-      if PS.ControlsFontSize <> 0 then
-      begin
-        TButton(Self.Components[i]).Font.SIZE := PS.ControlsFontSize;
-      end;
-      TButton(Self.Components[i]).Font.Style := TFontStyles(PS.ControlsFontStyle);
-      if TButton(Self.Components[i]).Hint = '' then
-        TButton(Self.Components[i]).Hint := TButton(Self.Components[i]).Caption;
-      TButton(Self.Components[i]).ShowHint := True;
-    end
-    else if Self.Components[i] is TSpeedButton then
-    begin
-      if PS.ControlsFontName <> '' then
-      begin
-        TSpeedButton(Self.Components[i]).Font.Name := PS.ControlsFontName;
-      end;
-      if PS.ControlsFontSize <> 0 then
-      begin
-        TSpeedButton(Self.Components[i]).Font.SIZE := PS.ControlsFontSize;
-      end;
-      TSpeedButton(Self.Components[i]).Font.Style := TFontStyles(PS.ControlsFontStyle);
-      if TSpeedButton(Self.Components[i]).Hint = '' then
-        TSpeedButton(Self.Components[i]).Hint := TSpeedButton(Self.Components[i]).Caption;
-      TSpeedButton(Self.Components[i]).ShowHint := True;
-    end
-    else if Self.Components[i] is TBitBtn then
-    begin
-      if PS.ControlsFontName <> '' then
-      begin
-        TBitBtn(Self.Components[i]).Font.Name := PS.ControlsFontName;
-      end;
-      if PS.ControlsFontSize <> 0 then
-      begin
-        TBitBtn(Self.Components[i]).Font.SIZE := PS.ControlsFontSize;
-      end;
-      TBitBtn(Self.Components[i]).Font.Style := TFontStyles(PS.ControlsFontStyle);
-      if TBitBtn(Self.Components[i]).Hint = '' then
-        TBitBtn(Self.Components[i]).Hint := TBitBtn(Self.Components[i]).Caption;
-      TBitBtn(Self.Components[i]).ShowHint := True;
-    end
-    else if Self.Components[i] is TJvDBGrid then
-      LoadDBGridSettings(TJvDBGrid(Self.Components[i]));
+    s := AComponent.Components[I].Name;
+    SetComponentStyle(AComponent.Components[I]);
+    SetStyleForAllComponents(AComponent.Components[I]);
   end;
+end;
+
+procedure TSmForm.SetComponentStyle(AComponent: TComponent);
+begin
+  if AComponent is TButton then
+  begin
+    if PS.ControlsFontName <> '' then
+    begin
+      TButton(AComponent).Font.Name := PS.ControlsFontName;
+    end;
+    if PS.ControlsFontSize <> 0 then
+    begin
+      TButton(AComponent).Font.SIZE := PS.ControlsFontSize;
+    end;
+    TButton(AComponent).Font.Style := TFontStyles(PS.ControlsFontStyle);
+    if TButton(AComponent).Hint = '' then
+      TButton(AComponent).Hint := TButton(AComponent).Caption;
+    TButton(AComponent).ShowHint := True;
+  end
+  else if AComponent is TSpeedButton then
+  begin
+    if PS.ControlsFontName <> '' then
+    begin
+      TSpeedButton(AComponent).Font.Name := PS.ControlsFontName;
+    end;
+    if PS.ControlsFontSize <> 0 then
+    begin
+      TSpeedButton(AComponent).Font.SIZE := PS.ControlsFontSize;
+    end;
+    TSpeedButton(AComponent).Font.Style := TFontStyles(PS.ControlsFontStyle);
+    if TSpeedButton(AComponent).Hint = '' then
+      TSpeedButton(AComponent).Hint := TSpeedButton(AComponent).Caption;
+    TSpeedButton(AComponent).ShowHint := True;
+  end
+  else if AComponent is TBitBtn then
+  begin
+    if PS.ControlsFontName <> '' then
+    begin
+      TBitBtn(AComponent).Font.Name := PS.ControlsFontName;
+    end;
+    if PS.ControlsFontSize <> 0 then
+    begin
+      TBitBtn(AComponent).Font.SIZE := PS.ControlsFontSize;
+    end;
+    TBitBtn(AComponent).Font.Style := TFontStyles(PS.ControlsFontStyle);
+    if TBitBtn(AComponent).Hint = '' then
+      TBitBtn(AComponent).Hint := TBitBtn(AComponent).Caption;
+    TBitBtn(AComponent).ShowHint := True;
+  end
+  else if AComponent is TListView then
+  begin
+    if PS.ControlsFontName <> '' then
+    begin
+      TListView(AComponent).Font.Name := PS.GridFontName;
+    end;
+    if PS.ControlsFontSize <> 0 then
+    begin
+      TListView(AComponent).Font.SIZE := PS.GridFontSize;
+    end;
+    TListView(AComponent).Font.Style := TFontStyles(PS.GridFontStyle);
+  end
+  else if AComponent is TJvDBGrid then
+    LoadDBGridSettings(TJvDBGrid(AComponent));
 end;
 
 initialization
