@@ -651,6 +651,9 @@ begin
         TButton(Self.Components[i]).Font.SIZE := PS.ControlsFontSize;
       end;
       TButton(Self.Components[i]).Font.Style := TFontStyles(PS.ControlsFontStyle);
+      if TButton(Self.Components[i]).Hint = '' then
+        TButton(Self.Components[i]).Hint := TButton(Self.Components[i]).Caption;
+      TButton(Self.Components[i]).ShowHint := True;
     end
     else if Self.Components[i] is TSpeedButton then
     begin
@@ -663,6 +666,9 @@ begin
         TSpeedButton(Self.Components[i]).Font.SIZE := PS.ControlsFontSize;
       end;
       TSpeedButton(Self.Components[i]).Font.Style := TFontStyles(PS.ControlsFontStyle);
+      if TSpeedButton(Self.Components[i]).Hint = '' then
+        TSpeedButton(Self.Components[i]).Hint := TSpeedButton(Self.Components[i]).Caption;
+      TSpeedButton(Self.Components[i]).ShowHint := True;
     end
     else if Self.Components[i] is TBitBtn then
     begin
@@ -675,6 +681,9 @@ begin
         TBitBtn(Self.Components[i]).Font.SIZE := PS.ControlsFontSize;
       end;
       TBitBtn(Self.Components[i]).Font.Style := TFontStyles(PS.ControlsFontStyle);
+      if TBitBtn(Self.Components[i]).Hint = '' then
+        TBitBtn(Self.Components[i]).Hint := TBitBtn(Self.Components[i]).Caption;
+      TBitBtn(Self.Components[i]).ShowHint := True;
     end
     else if Self.Components[i] is TJvDBGrid then
       LoadDBGridSettings(TJvDBGrid(Self.Components[i]));
