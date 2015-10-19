@@ -16,6 +16,7 @@ object FormSaveEstimate: TFormSaveEstimate
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
     397
@@ -41,7 +42,7 @@ object FormSaveEstimate: TFormSaveEstimate
     Anchors = [akRight, akBottom]
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Default = True
-    TabOrder = 0
+    TabOrder = 3
     OnClick = ButtonSaveClick
   end
   object ButtonCancel: TButton
@@ -51,7 +52,7 @@ object FormSaveEstimate: TFormSaveEstimate
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 1
+    TabOrder = 2
     OnClick = ButtonCancelClick
   end
   object Panel1: TPanel
@@ -62,7 +63,7 @@ object FormSaveEstimate: TFormSaveEstimate
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 2
+    TabOrder = 0
     object LabelNumberEstimate: TLabel
       Left = 39
       Top = 6
@@ -88,7 +89,7 @@ object FormSaveEstimate: TFormSaveEstimate
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 3
+    TabOrder = 1
     object LabelNameEstimate: TLabel
       Left = 8
       Top = 6

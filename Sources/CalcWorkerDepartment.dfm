@@ -134,7 +134,6 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     ListSource = dsActList
     TabOrder = 1
     OnClick = dblkcbbActClick
-    ExplicitWidth = 344
   end
   object cbbSource: TComboBox
     Left = 79
@@ -183,7 +182,6 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     TabOrder = 2
     Visible = False
     OnClick = dblkcbbActClick
-    ExplicitWidth = 344
   end
   object chkEnableEditing: TCheckBox
     Left = 440

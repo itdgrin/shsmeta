@@ -4,10 +4,10 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, StdCtrls, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, fFrameOXROPR, fFrameSmeta, JvComponentBase, JvFormPlacement;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, fFrameOXROPR, fFrameSmeta, JvComponentBase, JvFormPlacement, Tools;
 
 type
-  TfOXROPR = class(TForm)
+  TfOXROPR = class(TSmForm)
     FormStorage: TJvFormStorage;
     procedure FormCreate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -45,6 +45,7 @@ end;
 
 procedure TfOXROPR.FormCreate(Sender: TObject);
 begin
+  inherited;
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   FrameOXROPR := TFrameOXROPR.Create(Self);
   FrameOXROPR.Parent := Self;

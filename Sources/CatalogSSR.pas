@@ -3,10 +3,10 @@ unit CatalogSSR;
 interface
 
 uses
-  Forms, Classes, Controls, ExtCtrls, fFrameSSR;
+  Forms, Classes, Controls, ExtCtrls, fFrameSSR, Tools;
 
 type
-  TFormCatalogSSR = class(TForm)
+  TFormCatalogSSR = class(TSmForm)
 
     Timer: TTimer;
 
@@ -57,6 +57,7 @@ begin
 
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(ButtonCaption, ButtonHint, Self);
+  inherited;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

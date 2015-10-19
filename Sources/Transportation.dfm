@@ -40,7 +40,7 @@ object FormTransportation: TFormTransportation
     BevelOuter = bvNone
     ParentBackground = False
     ShowCaption = False
-    TabOrder = 2
+    TabOrder = 0
     DesignSize = (
       445
       25)
@@ -80,7 +80,7 @@ object FormTransportation: TFormTransportation
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 0
+    TabOrder = 4
     OnClick = ButtonCancelClick
   end
   object Panel2: TPanel
@@ -163,7 +163,7 @@ object FormTransportation: TFormTransportation
       NumbersOnly = True
       ParentFont = False
       ReadOnly = True
-      TabOrder = 0
+      TabOrder = 3
       Text = '0'
     end
     object edtPriceNDS: TEdit
@@ -182,7 +182,7 @@ object FormTransportation: TFormTransportation
       NumbersOnly = True
       ParentFont = False
       ReadOnly = True
-      TabOrder = 1
+      TabOrder = 4
       Text = '0'
     end
     object grbGruz: TGroupBox
@@ -198,7 +198,7 @@ object FormTransportation: TFormTransportation
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 2
+      TabOrder = 0
       object Label6: TLabel
         Left = 14
         Top = 47
@@ -271,7 +271,7 @@ object FormTransportation: TFormTransportation
         Font.Style = []
         ItemIndex = 0
         ParentFont = False
-        TabOrder = 0
+        TabOrder = 1
         Text = #1090
         OnChange = cmbUnitChange
         Items.Strings = (
@@ -290,7 +290,7 @@ object FormTransportation: TFormTransportation
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 3
         OnChange = edtCountChange
         OnExit = EditExit
         OnKeyPress = EditKeyPress
@@ -325,7 +325,7 @@ object FormTransportation: TFormTransportation
         Font.Style = []
         ItemIndex = 0
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 0
         Text = 'I'
         OnChange = EditDistanceChange
         Items.Strings = (
@@ -361,7 +361,7 @@ object FormTransportation: TFormTransportation
       Caption = 
         ' '#1053#1072#1076#1073#1072#1074#1082#1080' '#1079#1072' '#1087#1077#1088#1077#1074#1086#1079#1082#1091' '#1075#1088#1091#1079#1086#1074' '#1074' '#1089#1087#1077#1094#1080#1072#1083#1080#1079#1080#1088#1086#1074#1072#1085#1085#1086#1084' '#1087#1086#1076#1074#1080#1078#1085#1086#1084' '#1089#1086#1089 +
         #1090#1072#1074#1077'  '
-      TabOrder = 3
+      TabOrder = 1
       object cmbKoef: TComboBox
         Left = 29
         Top = 15
@@ -371,7 +371,7 @@ object FormTransportation: TFormTransportation
         Style = csOwnerDrawVariable
         Enabled = False
         ItemHeight = 30
-        TabOrder = 0
+        TabOrder = 1
         OnChange = cmbKoefChange
         OnDrawItem = cmbKoefDrawItem
         OnMeasureItem = cmbKoefMeasureItem
@@ -394,7 +394,7 @@ object FormTransportation: TFormTransportation
         Height = 38
         Align = alLeft
         BevelOuter = bvNone
-        TabOrder = 1
+        TabOrder = 0
         object cbKoef: TCheckBox
           Left = 7
           Top = -1
@@ -420,7 +420,7 @@ object FormTransportation: TFormTransportation
       Font.Style = []
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine]
       ParentFont = False
-      TabOrder = 4
+      TabOrder = 2
       OnKeyPress = grdPriceKeyPress
       OnSelectCell = grdPriceSelectCell
       Alignment = taLeftJustify
@@ -442,7 +442,7 @@ object FormTransportation: TFormTransportation
     Align = alBottom
     BevelOuter = bvNone
     ShowCaption = False
-    TabOrder = 3
+    TabOrder = 2
   end
   object ButtonAdd: TButton
     Left = 214
@@ -452,7 +452,7 @@ object FormTransportation: TFormTransportation
     Anchors = [akRight, akBottom]
     Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     Default = True
-    TabOrder = 4
+    TabOrder = 3
     OnClick = ButtonAddClick
   end
   object qrTemp: TFDQuery

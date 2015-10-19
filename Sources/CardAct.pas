@@ -9,7 +9,7 @@ uses Windows, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls, DB, FireDA
   Vcl.Dialogs, System.UITypes;
 
 type
-  TfCardAct = class(TForm)
+  TfCardAct = class(TSmForm)
     PanelDate: TPanel;
     PanelName: TPanel;
     PanelDescription: TPanel;
@@ -43,7 +43,6 @@ type
   private
     cnt: Integer;
   public
-    Kind: TKindForm;
     id: Integer;
   end;
 
@@ -60,6 +59,7 @@ end;
 
 procedure TfCardAct.FormCreate(Sender: TObject);
 begin
+  inherited;
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
 end;
@@ -68,7 +68,7 @@ procedure TfCardAct.FormShow(Sender: TObject);
 begin
   qrMain.ParamByName('SM_ID').AsInteger := 0;
   qrMain.Active := True;
-  case Kind of
+  case FormKind of
     kdInsert:
       begin
         qrAct.ParamByName('id').AsInteger := 0;
@@ -102,7 +102,7 @@ procedure TfCardAct.btn1Click(Sender: TObject);
 begin
   if (not Assigned(fForemanList)) then
     fForemanList := TfForemanList.Create(FormMain);
-  fForemanList.Kind := kdSelect;
+  fForemanList.FormKind := kdSelect;
   if (fForemanList.ShowModal = mrOk) and (fForemanList.OutValue <> 0) then
   begin
     qrAct.Edit;
@@ -116,7 +116,7 @@ end;
 
 procedure TfCardAct.ButtonCloseClick(Sender: TObject);
 begin
-  case Kind of
+  case FormKind of
     kdInsert:
       begin
         if MessageBox(0, PChar('Если сейчас выйти, акт не будет сохранён.' + sLineBreak +
@@ -206,7 +206,7 @@ procedure TfCardAct.ButtonSaveClick(Sender: TObject);
 var
   NewID, MAIS_ID, IdStavka, VAT, vMonth, vYear, SM_NUMBER: Variant;
 begin
-  case Kind of
+  case FormKind of
     kdInsert:
       begin
         try
@@ -324,14 +324,14 @@ end;
 
 procedure TfCardAct.dbedtNAMEChange(Sender: TObject);
 begin
-  if not CheckQrActiveEmpty(qrAct) or (Kind <> kdInsert) then
+  if not CheckQrActiveEmpty(qrAct) or (FormKind <> kdInsert) then
     Exit;
   qrAct.FieldByName('DESCRIPTION').AsString := dbedtNAME.Text;
 end;
 
 procedure TfCardAct.edDateChange(Sender: TObject);
 begin
-  if not CheckQrActiveEmpty(qrAct) or (Kind <> kdInsert) then
+  if not CheckQrActiveEmpty(qrAct) or (FormKind <> kdInsert) then
     Exit;
   qrAct.FieldByName('NAME').AsString := 'Акт№' + IntToStr(cnt) + 'от' + qrAct.FieldByName('DATE').AsString +
     'для' + fObjectsAndEstimates.qrObjects.FieldByName('NumberObject').AsString + ' ' +

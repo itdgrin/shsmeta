@@ -13,6 +13,7 @@ object fCopyToOwnDialog: TfCopyToOwnDialog
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object lbl1: TLabel
@@ -26,8 +27,6 @@ object fCopyToOwnDialog: TfCopyToOwnDialog
     Margins.Right = 10
     Align = alTop
     Caption = #1091#1078#1077' '#1089#1086#1076#1077#1088#1078#1080#1090#1089#1103' '#1074' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1077'.'#13#10#13#10#1042#1099#1073#1077#1088#1080#1090#1077' '#1085#1077#1086#1073#1093#1086#1076#1080#1084#1086#1077' '#1076#1077#1081#1089#1090#1074#1080#1077':'
-    ExplicitLeft = 3
-    ExplicitTop = 22
     ExplicitWidth = 175
   end
   object lbl2: TLabel
@@ -41,7 +40,7 @@ object fCopyToOwnDialog: TfCopyToOwnDialog
     Margins.Right = 10
     Align = alTop
     Caption = #1047#1072#1087#1080#1089#1100' '#1089' '#1085#1072#1079#1074#1072#1085#1080#1077#1084':'
-    ExplicitLeft = 5
+    ExplicitWidth = 103
   end
   object btn1: TBitBtn
     Left = 8

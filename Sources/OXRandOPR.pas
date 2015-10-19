@@ -6,10 +6,10 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, Grids,
   DBGrids, DB, DBCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client, Tools;
 
 type
-  TFormOXRandOPR = class(TForm)
+  TFormOXRandOPR = class(TSmForm)
     PanelMenu: TPanel;
     Panel1: TPanel;
     Label1: TLabel;
@@ -66,6 +66,7 @@ uses Main, DataModule;
 
 procedure TFormOXRandOPR.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
   ClientHeight := FormMain.ClientHeight div 2;

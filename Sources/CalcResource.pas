@@ -9,10 +9,10 @@ uses
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Mask, JvDBGridFooter,
   JvComponentBase, JvFormPlacement, System.UITypes, Vcl.Buttons, FireDAC.UI.Intf, FireDAC.Comp.ScriptCommands,
-  FireDAC.Comp.Script;
+  FireDAC.Comp.Script, Tools;
 
 type
-  TfCalcResource = class(TForm)
+  TfCalcResource = class(TSmForm)
     pnlTop: TPanel;
     lbl1: TLabel;
     pgc: TPageControl;
@@ -242,7 +242,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools, ReplacementMatAndMech, CalculationEstimate, DataModule,
+uses Main, ReplacementMatAndMech, CalculationEstimate, DataModule,
   GlobsAndConst, TranspPersSelect;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil);
@@ -454,6 +454,7 @@ end;
 
 procedure TfCalcResource.FormCreate(Sender: TObject);
 begin
+  inherited;
   FOldGridProc := grMaterial.WindowProc;
   grMaterial.WindowProc := GridProc;
   LoadDBGridSettings(grMaterial);

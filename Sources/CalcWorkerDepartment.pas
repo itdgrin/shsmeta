@@ -3,14 +3,14 @@ unit CalcWorkerDepartment;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Tools,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.Mask, Vcl.DBCtrls, Vcl.Grids,
-  Vcl.DBGrids, JvExDBGrids, JvDBGrid, Tools, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  Vcl.DBGrids, JvExDBGrids, JvDBGrid, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvComponentBase, JvFormPlacement, System.UITypes;
 
 type
-  TfCalcWorkerDepartment = class(TForm)
+  TfCalcWorkerDepartment = class(TSmForm)
     lbl1: TLabel;
     dbedtPREPARER: TDBEdit;
     lbl4: TLabel;
@@ -141,6 +141,7 @@ end;
 
 procedure TfCalcWorkerDepartment.FormCreate(Sender: TObject);
 begin
+  inherited;
   LoadDBGridSettings(grCalc);
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);

@@ -6,10 +6,11 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.UITypes;
+  Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.UITypes,
+  Tools;
 
 type
-  TfCategoryList = class(TForm)
+  TfCategoryList = class(TSmForm)
     dsCategory: TDataSource;
     qrCategory: TFDQuery;
     grCategory: TJvDBGrid;
@@ -33,7 +34,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools, DataModule;
+uses Main, DataModule;
 
 procedure TfCategoryList.FormActivate(Sender: TObject);
 begin
@@ -51,6 +52,7 @@ end;
 
 procedure TfCategoryList.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, fCategoryList, 1);
   LoadDBGridSettings(grCategory);

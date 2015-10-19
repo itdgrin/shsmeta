@@ -7,11 +7,11 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, JvDBGridFooter, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
   JvDBGrid, Vcl.ExtCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvComponentBase, JvFormPlacement,
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvComponentBase, JvFormPlacement, Tools,
   Vcl.StdCtrls, Bde.DBTables, JvDBGridExport, System.UITypes;
 
 type
-  TfCalcResourceFactDiff = class(TForm)
+  TfCalcResourceFactDiff = class(TSmForm)
     pgc: TPageControl;
     ts2: TTabSheet;
     pnlMatClient: TPanel;
@@ -53,7 +53,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, DataModule, Tools, CalcResourceFact, CalculationEstimate, Waiting;
+uses Main, DataModule, CalcResourceFact, CalculationEstimate, Waiting;
 
 procedure TfCalcResourceFactDiff.Button1Click(Sender: TObject);
 begin
@@ -80,6 +80,7 @@ end;
 
 procedure TfCalcResourceFactDiff.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, fCalcResourceFactDiff, 1);
   LoadDBGridSettings(grMaterial);

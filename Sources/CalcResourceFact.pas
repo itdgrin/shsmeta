@@ -8,10 +8,10 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Mask, JvDBGridFooter,
-  JvComponentBase, JvFormPlacement, System.UITypes, Vcl.Buttons;
+  JvComponentBase, JvFormPlacement, System.UITypes, Vcl.Buttons, Tools;
 
 type
-  TfCalcResourceFact = class(TForm)
+  TfCalcResourceFact = class(TSmForm)
     pnlTop: TPanel;
     lbl1: TLabel;
     pgc: TPageControl;
@@ -165,7 +165,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools, CalculationEstimate, DataModule, CalcResourceFactDiff;
+uses Main, CalculationEstimate, DataModule, CalcResourceFactDiff;
 
 procedure ShowCalcResourceFact(const ID_ESTIMATE: Variant; const APage: Integer = 0;
   AOwner: TWinControl = nil);
@@ -330,6 +330,7 @@ end;
 
 procedure TfCalcResourceFact.FormCreate(Sender: TObject);
 begin
+  inherited;
   LoadDBGridSettings(grMaterial);
   LoadDBGridSettings(grMaterialBott);
   LoadDBGridSettings(grMech);

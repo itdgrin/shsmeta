@@ -12,6 +12,7 @@ object FormConnectDatabase: TFormConnectDatabase
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -57,7 +58,7 @@ object FormConnectDatabase: TFormConnectDatabase
     Width = 104
     Height = 25
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 3
+    TabOrder = 2
     OnClick = ButtonCancelClick
   end
   object ButtonConnect: TButton
@@ -67,7 +68,7 @@ object FormConnectDatabase: TFormConnectDatabase
     Height = 25
     Caption = #1055#1086#1076#1082#1083#1102#1095#1080#1090#1100#1089#1103
     Default = True
-    TabOrder = 2
+    TabOrder = 3
     OnClick = ButtonConnectClick
   end
   object EditUsername: TEdit

@@ -18,7 +18,7 @@ uses
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Clipbrd, JvExControls,
   JvAnimatedImage, JvGIFCtrl, FireDAC.Phys.MySQL, Vcl.ValEdit, Vcl.Buttons,
-  Vcl.Menus,
+  Vcl.Menus, Tools,
   fFrameMaterial,
   fFrameMechanizm,
   fFrameSpr,
@@ -66,7 +66,7 @@ type
     DataType: Integer;
   end;
 
-  TfrmReplacement = class(TForm)
+  TfrmReplacement = class(TSmForm)
     Panel1: TPanel;
     groupReplace: TGroupBox;
     Label2: TLabel;
@@ -118,6 +118,7 @@ type
     procedure pmSelectRateClick(Sender: TObject);
     procedure pmShowRepClick(Sender: TObject);
     procedure btnReplaceClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
 
   private
     FCurType: Byte;
@@ -169,7 +170,7 @@ implementation
 
 {$R *.dfm}
 
-uses DataModule, Tools, SprController;
+uses DataModule, SprController;
 
 procedure TfrmReplacement.PMEntryPopup(Sender: TObject);
 var PRec: ^TEntryRecord;
@@ -593,6 +594,12 @@ begin
 
   if not FAddMode then
     LoadEntry;
+end;
+
+procedure TfrmReplacement.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 //Подгружает информацию по объекту, смете и расценке, если надо

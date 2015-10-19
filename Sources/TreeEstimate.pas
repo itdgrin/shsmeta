@@ -7,10 +7,10 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.ComCtrls, JvExComCtrls, JvDBTreeView,
-  JvComponentBase, JvFormPlacement, Vcl.Menus;
+  JvComponentBase, JvFormPlacement, Vcl.Menus, Tools;
 
 type
-  TfTreeEstimate = class(TForm)
+  TfTreeEstimate = class(TSmForm)
     qrTreeEstimates: TFDQuery;
     dsTreeEstimates: TDataSource;
     tvEstimates: TJvDBTreeView;
@@ -26,6 +26,7 @@ type
     procedure tvEstimatesDblClick(Sender: TObject);
     procedure pmTreePopup(Sender: TObject);
     procedure mUseClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -37,13 +38,19 @@ var
 
 implementation
 
-uses Main, CalculationEstimate, DataModule, Tools;
+uses Main, CalculationEstimate, DataModule;
 
 {$R *.dfm}
 
 procedure TfTreeEstimate.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
+end;
+
+procedure TfTreeEstimate.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 procedure TfTreeEstimate.FormDestroy(Sender: TObject);

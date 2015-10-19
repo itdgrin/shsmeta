@@ -15,6 +15,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
   Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
+  OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13

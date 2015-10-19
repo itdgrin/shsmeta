@@ -13,7 +13,7 @@ uses
   CalculationEstimateSSR, CalculationEstimateSummaryCalculations, JvExDBGrids,
   JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression,
   GlobsAndConst, FireDAC.UI.Intf, JvExComCtrls, JvDBTreeView,
-  Generics.Collections,
+  Generics.Collections, Tools,
   Generics.Defaults,
   fFrameCalculator,
   Data.FmtBcd, dmReportU;
@@ -53,7 +53,7 @@ type
   end;
 
 type
-  TFormCalculationEstimate = class(TForm)
+  TFormCalculationEstimate = class(TSmForm)
 
     PanelTopMenu: TPanel;
 
@@ -844,7 +844,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   BasicData, ObjectsAndEstimates, Transportation,
   CalculationDump, SaveEstimate,
   AdditionData, CardMaterial,
-  KC6, CardAct, Tools, Coef, WinterPrice,
+  KC6, CardAct, Coef, WinterPrice,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
   TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog,
@@ -948,6 +948,7 @@ end;
 
 procedure TFormCalculationEstimate.FormCreate(Sender: TObject);
 begin
+  inherited;
   FOldGridProc := grRatesEx.WindowProc;
   grRatesEx.WindowProc := GridProc;
 
@@ -2026,11 +2027,8 @@ begin
   Result := False;
   // Вынесенные из расценки // или замененный
   if ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 1)) or
-    (qrMaterialREPLACED.AsInteger = 1) or
-    (qrMaterialDELETED.AsInteger = 1) or
-    (qrMaterialTITLE.AsInteger > 0) or
-    not(qrMaterialID.AsInteger > 0) or
-    (qrMaterial.Eof) then
+    (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialDELETED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0)
+    or not(qrMaterialID.AsInteger > 0) or (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -3534,7 +3532,7 @@ procedure TFormCalculationEstimate.nSelectWinterPriseClick(Sender: TObject);
 begin
   if (not Assigned(fWinterPrice)) then
     fWinterPrice := TfWinterPrice.Create(Self);
-  fWinterPrice.Kind := kdSelect;
+  fWinterPrice.FormKind := kdSelect;
   fWinterPrice.LicateID := qrRatesExZNORMATIVS_ID.Value;
   if (fWinterPrice.ShowModal = mrOk) and (fWinterPrice.OutValue <> 0) then
   begin
@@ -3680,70 +3678,67 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMMatManPriceClick(Sender: TObject);
-var fmPrice: TfmManPriceSelect;
-    TmpDataType,
-    TmpSprID: Integer;
-    TmpCode,
-    TmpUnit,
-    TmpName: string;
+var
+  fmPrice: TfmManPriceSelect;
+  TmpDataType, TmpSprID: Integer;
+  TmpCode, TmpUnit, TmpName: string;
 begin
   TmpDataType := (Sender as TComponent).Tag;
   case TmpDataType of
     2:
-    begin
-      TmpSprID := qrMaterialMAT_ID.Value;
-      TmpCode := qrMaterialMAT_CODE.AsString;
-      TmpUnit := qrMaterialMAT_UNIT.AsString;
-      TmpName := qrMaterialMAT_NAME.AsString;
-    end;
+      begin
+        TmpSprID := qrMaterialMAT_ID.Value;
+        TmpCode := qrMaterialMAT_CODE.AsString;
+        TmpUnit := qrMaterialMAT_UNIT.AsString;
+        TmpName := qrMaterialMAT_NAME.AsString;
+      end;
     3:
-    begin
-      TmpSprID := qrMechanizmMECH_ID.Value;
-      TmpCode := qrMechanizmMECH_CODE.AsString;
-      TmpUnit := qrMechanizmMECH_UNIT.AsString;
-      TmpName := qrMechanizmMECH_NAME.AsString;
-    end;
+      begin
+        TmpSprID := qrMechanizmMECH_ID.Value;
+        TmpCode := qrMechanizmMECH_CODE.AsString;
+        TmpUnit := qrMechanizmMECH_UNIT.AsString;
+        TmpName := qrMechanizmMECH_NAME.AsString;
+      end;
     4:
-    begin
-      TmpSprID := qrDevicesDEVICE_ID.Value;
-      TmpCode := qrDevicesDEVICE_CODE.AsString;
-      TmpUnit := qrDevicesDEVICE_UNIT.AsString;
-      TmpName := qrDevicesDEVICE_NAME.AsString;
-    end;
-    else
-      raise Exception.Create('Неизвестный тип данных.');
+      begin
+        TmpSprID := qrDevicesDEVICE_ID.Value;
+        TmpCode := qrDevicesDEVICE_CODE.AsString;
+        TmpUnit := qrDevicesDEVICE_UNIT.AsString;
+        TmpName := qrDevicesDEVICE_NAME.AsString;
+      end;
+  else
+    raise Exception.Create('Неизвестный тип данных.');
   end;
 
-  fmPrice := TfmManPriceSelect.Create(Self, TmpSprID, TmpDataType,
-    TmpCode, TmpUnit, TmpName);
+  fmPrice := TfmManPriceSelect.Create(Self, TmpSprID, TmpDataType, TmpCode, TmpUnit, TmpName);
   try
     if fmPrice.ShowModal = mrOk then
     begin
       case TmpDataType of
         2:
-        begin
-          qrMaterial.Edit;
-          if NDSEstimate then
-            qrMaterialFCOAST_NDS.Value := fmPrice.CoastNDS
-          else
-            qrMaterialFCOAST_NO_NDS.Value := fmPrice.CoastNoNDS;
-        end;
+          begin
+            qrMaterial.Edit;
+            if NDSEstimate then
+              qrMaterialFCOAST_NDS.Value := fmPrice.CoastNDS
+            else
+              qrMaterialFCOAST_NO_NDS.Value := fmPrice.CoastNoNDS;
+          end;
         3:
-        begin
-          qrMechanizm.Edit;
-          if NDSEstimate then
-            qrMechanizmFCOAST_NDS.Value := fmPrice.CoastNDS
-          else
-            qrMechanizmFCOAST_NO_NDS.Value := fmPrice.CoastNoNDS;
-        end;
+          begin
+            qrMechanizm.Edit;
+            if NDSEstimate then
+              qrMechanizmFCOAST_NDS.Value := fmPrice.CoastNDS
+            else
+              qrMechanizmFCOAST_NO_NDS.Value := fmPrice.CoastNoNDS;
+          end;
         4:
-        begin
-          qrDevices.Edit;
-          if NDSEstimate then
-            qrDevicesFCOAST_NDS.Value := fmPrice.CoastNDS
-          else
-            qrDevicesFCOAST_NO_NDS.Value := fmPrice.CoastNoNDS;
-        end;
+          begin
+            qrDevices.Edit;
+            if NDSEstimate then
+              qrDevicesFCOAST_NDS.Value := fmPrice.CoastNDS
+            else
+              qrDevicesFCOAST_NO_NDS.Value := fmPrice.CoastNoNDS;
+          end;
       end;
     end;
   finally
@@ -5515,7 +5510,7 @@ procedure TFormCalculationEstimate.lblForemanClick(Sender: TObject);
 begin
   if (not Assigned(fForemanList)) then
     fForemanList := TfForemanList.Create(FormMain);
-  fForemanList.Kind := kdSelect;
+  fForemanList.FormKind := kdSelect;
   if (fForemanList.ShowModal = mrOk) and (fForemanList.OutValue <> 0) then
   begin
     FastExecSQL('UPDATE smetasourcedata SET foreman_id=:0 WHERE SM_ID=:1',
@@ -5775,6 +5770,11 @@ begin
               qrRatesExWORK_ID.Value := FieldByName('work_id').Value;
             end;
           end;
+        end
+        else
+        begin
+          qrRatesExWORK_ID.Value := FastSelectSQLOne('SELECT def_work_id FROM round_setup LIMIT 1',
+            VarArrayOf([]));
         end;
       end;
   except

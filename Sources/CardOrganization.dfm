@@ -16,6 +16,7 @@ object fCardOrganization: TfCardOrganization
   Position = poMainFormCenter
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignSize = (
     455

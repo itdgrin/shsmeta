@@ -16,10 +16,11 @@ uses
   fFrameSmeta,
   fFrameMaterial,
   fFrameMechanizm,
+  Tools,
   System.SysUtils;
 
 type
-  TFormPricesReferenceData = class(TForm)
+  TFormPricesReferenceData = class(TSmForm)
 
     PanelPrices: TPanel;
     SpeedButtonPriceMaterials: TSpeedButton;
@@ -37,6 +38,7 @@ type
     procedure HideAllFrames;
 
     procedure SpeedButtonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     const CaptionButton = 'Цены по справоч. данным';
     const HintButton = 'Окно цены по справочным данным';
@@ -156,6 +158,12 @@ end;
 procedure TFormPricesReferenceData.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
+end;
+
+procedure TFormPricesReferenceData.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

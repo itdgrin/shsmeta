@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, ExtCtrls,
-  StdCtrls;
+  StdCtrls, Tools;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -13,7 +13,7 @@ type
   end;
 
 type
-  TFormDataTransfer = class(TForm)
+  TFormDataTransfer = class(TSmForm)
     PanelBottomButtons: TPanel;
     Button1: TButton;
     Button2: TButton;
@@ -60,6 +60,7 @@ end;
 
 procedure TFormDataTransfer.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
   ClientHeight := FormMain.ClientHeight div 2;

@@ -6,10 +6,10 @@ uses
   Windows, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls, DB, Grids, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  System.Variants, Vcl.Mask, Vcl.DBCtrls;
+  System.Variants, Vcl.Mask, Vcl.DBCtrls, Tools;
 
 type
-  TfCardOrganization = class(TForm)
+  TfCardOrganization = class(TSmForm)
     Bevel: TBevel;
     btnSave: TButton;
     btnClose: TButton;
@@ -46,6 +46,7 @@ type
     procedure btnSaveClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     SkeepAskBeforeClose: Boolean;
   end;
@@ -82,6 +83,12 @@ begin
     fOrganizationsEx.qrMain.Cancel;
     CanClose := True;
   end;
+end;
+
+procedure TfCardOrganization.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 procedure TfCardOrganization.FormDestroy(Sender: TObject);

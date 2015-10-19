@@ -234,6 +234,7 @@ end;
 
 procedure TfObjectsAndEstimates.FormCreate(Sender: TObject);
 begin
+  inherited;
   LoadDBGridSettings(dbgrdObjects);
   FormMain.PanelCover.Visible := True;
   // Настройка размеров и положения формы
@@ -725,7 +726,7 @@ var
   f: TfCardAct;
 begin
   f := TfCardAct.Create(nil);
-  f.Kind := kdEdit;
+  f.FormKind := kdEdit;
   f.id := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   f.ShowModal;
   CloseOpen(qrActsEx, False);
@@ -797,7 +798,7 @@ var
   FormCardAct: TfCardAct;
 begin
   FormCardAct := TfCardAct.Create(Self);
-  FormCardAct.Kind := kdInsert;
+  FormCardAct.FormKind := kdInsert;
   FormCardAct.cbbType.ItemIndex := (Sender as TMenuItem).Tag;
   FormCardAct.ShowModal;
   // OpenAct(0);

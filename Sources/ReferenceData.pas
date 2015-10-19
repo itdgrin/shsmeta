@@ -20,10 +20,11 @@ uses
   fFrameMechanizm,
   fFrameEquipment,
   fFrameSmeta,
+  Tools,
   GlobsAndConst;
 
 type
-  TFormReferenceData = class(TForm)
+  TFormReferenceData = class(TSmForm)
 
     PanelReferenceData: TPanel;
 
@@ -46,6 +47,7 @@ type
 
     function GetLeftIndentForFormSborniks(): Integer;
     function GetTopIndentForFormSborniks(): Integer;
+    procedure FormCreate(Sender: TObject);
   private const
     CaptionButton = 'Справочные данные';
 
@@ -171,6 +173,12 @@ begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButton);
   Action := caFree;
+end;
+
+procedure TFormReferenceData.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

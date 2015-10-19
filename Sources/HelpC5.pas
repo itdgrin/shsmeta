@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls, ExtCtrls,
-  Grids, DBGrids;
+  Grids, DBGrids, Tools;
 
 type
-  TFormHelpC5 = class(TForm)
+  TFormHelpC5 = class(TSmForm)
     PanelMenu: TPanel;
     PanelMenu1: TPanel;
     LabelObject: TLabel;
@@ -68,6 +68,7 @@ uses Main;
 
 procedure TFormHelpC5.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
   ClientHeight := FormMain.ClientHeight div 2;

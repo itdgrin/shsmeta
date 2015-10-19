@@ -7,10 +7,10 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, JvComponentBase, JvFormPlacement,
-  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.UITypes;
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.UITypes, Tools;
 
 type
-  TfNormativDictHelp = class(TForm)
+  TfNormativDictHelp = class(TSmForm)
     pgc1: TPageControl;
     ts1: TTabSheet;
     ts2: TTabSheet;
@@ -45,7 +45,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, DataModule, Tools;
+uses Main, DataModule;
 
 procedure TfNormativDictHelp.FormActivate(Sender: TObject);
 begin
@@ -63,6 +63,7 @@ end;
 
 procedure TfNormativDictHelp.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   LoadDBGridSettings(grMain1);

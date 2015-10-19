@@ -10,10 +10,10 @@ uses
   Forms,
   ExtCtrls,
   System.SysUtils,
-  fFramePriceTransportations;
+  fFramePriceTransportations, Tools;
 
 type
-  TFormTariffsTransportation = class(TForm)
+  TFormTariffsTransportation = class(TSmForm)
 
     procedure FormCreate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -93,6 +93,7 @@ begin
 
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
+  inherited;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

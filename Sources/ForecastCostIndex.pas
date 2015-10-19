@@ -8,10 +8,10 @@ uses
   System.DateUtils, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid,
-  Vcl.Imaging.pngimage, Vcl.Buttons, System.UITypes;
+  Vcl.Imaging.pngimage, Vcl.Buttons, System.UITypes, Tools;
 
 type
-  TfForecastCostIndex = class(TForm)
+  TfForecastCostIndex = class(TSmForm)
     pnlTop: TPanel;
     seYear: TSpinEdit;
     lbl1: TLabel;
@@ -47,7 +47,7 @@ var
 
 implementation
 
-uses DataModule, Main, Tools, FileStorage;
+uses DataModule, Main, FileStorage;
 
 {$R *.dfm}
 
@@ -72,6 +72,7 @@ end;
 
 procedure TfForecastCostIndex.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   seYear.Value := YearOf(Now);

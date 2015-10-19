@@ -11,7 +11,7 @@ uses
   Vcl.Menus, Tools, System.UITypes;
 
 type
-  TfWinterPrice = class(TForm)
+  TfWinterPrice = class(TSmForm)
     qrTreeData: TFDQuery;
     dsTreeData: TDataSource;
     tvEstimates: TJvDBTreeView;
@@ -90,7 +90,6 @@ type
     procedure changeEditMode;
   public
     OutValue, LicateID: Integer;
-    Kind: TKindForm;
   end;
 
 var
@@ -153,13 +152,14 @@ end;
 
 procedure TfWinterPrice.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  Kind := kdNone;
+  FormKind := kdNone;
   Action := caFree;
 end;
 
 procedure TfWinterPrice.FormCreate(Sender: TObject);
 begin
-  Kind := kdNone;
+  inherited;
+  FormKind := kdNone;
   editMode := True;
 
   LoadDBGridSettings(grRates);
@@ -183,7 +183,7 @@ end;
 
 procedure TfWinterPrice.FormShow(Sender: TObject);
 begin
-  case Kind of
+  case FormKind of
     kdSelect:
       btnSelect.Visible := True;
   else

@@ -7,10 +7,10 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, JvComponentBase, JvFormPlacement, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ExtCtrls, System.UITypes;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ExtCtrls, System.UITypes, Tools;
 
 type
-  TfHelpKfSt = class(TForm)
+  TfHelpKfSt = class(TSmForm)
     qrMainData: TFDQuery;
     dsMainData: TDataSource;
     FormStorage: TJvFormStorage;
@@ -37,7 +37,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools, DataModule;
+uses Main, DataModule;
 
 procedure TfHelpKfSt.FormActivate(Sender: TObject);
 begin
@@ -55,6 +55,7 @@ end;
 
 procedure TfHelpKfSt.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, fHelpKfSt, 1);
   LoadDBGridSettings(grMain1);

@@ -7,10 +7,10 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
   JvDBGrid, Vcl.Menus, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.UITypes, Vcl.Mask,
-  Vcl.DBCtrls, Graphics;
+  Vcl.DBCtrls, Graphics, Tools;
 
 type
-  TfPartsEstimates = class(TForm)
+  TfPartsEstimates = class(TSmForm)
     FormStorage: TJvFormStorage;
     qrMain: TFDQuery;
     dsMain: TDataSource;
@@ -39,12 +39,13 @@ var
 
 implementation
 
-uses Main, Tools, DataModule;
+uses Main, DataModule;
 
 {$R *.dfm}
 
 procedure TfPartsEstimates.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   LoadDBGridSettings(grMain);

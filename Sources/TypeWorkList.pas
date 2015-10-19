@@ -7,10 +7,10 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, JvComponentBase, JvFormPlacement, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.UITypes;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.UITypes, Tools;
 
 type
-  TfTypeWorkList = class(TForm)
+  TfTypeWorkList = class(TSmForm)
     grMain: TJvDBGrid;
     qrMain: TFDQuery;
     dsMain: TDataSource;
@@ -35,7 +35,7 @@ implementation
 
 {$R *.dfm}
 
-Uses Main, Tools, DataModule;
+Uses Main, DataModule;
 
 procedure TfTypeWorkList.FormActivate(Sender: TObject);
 begin
@@ -53,6 +53,7 @@ end;
 
 procedure TfTypeWorkList.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   LoadDBGridSettings(grMain);

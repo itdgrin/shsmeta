@@ -16,6 +16,7 @@ object fEditExpression: TfEditExpression
   KeyPreview = True
   OldCreateOrder = False
   OnClose = FormClose
+  OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   DesignSize = (

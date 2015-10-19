@@ -7,10 +7,10 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Menus,
-  System.UITypes;
+  System.UITypes, Tools;
 
 type
-  TfCategoriesObjects = class(TForm)
+  TfCategoriesObjects = class(TSmForm)
     FormStorage: TJvFormStorage;
     qrMain: TFDQuery;
     dsMain: TDataSource;
@@ -38,12 +38,13 @@ var
 
 implementation
 
-uses Main, DataModule, Tools;
+uses Main, DataModule;
 
 {$R *.dfm}
 
 procedure TfCategoriesObjects.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   LoadDBGridSettings(grMain);

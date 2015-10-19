@@ -7,10 +7,10 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  Vcl.DBCtrls, Vcl.ExtCtrls;
+  Vcl.DBCtrls, Vcl.ExtCtrls, Tools;
 
 type
-  TfOXROPRSetup = class(TForm)
+  TfOXROPRSetup = class(TSmForm)
     grONormaivs: TJvDBGrid;
     qrONormativs: TFDQuery;
     dsONormativs: TDataSource;
@@ -40,8 +40,6 @@ var
 
 implementation
 
-uses Tools;
-
 {$R *.dfm}
 
 procedure TfOXROPRSetup.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -51,6 +49,7 @@ end;
 
 procedure TfOXROPRSetup.FormCreate(Sender: TObject);
 begin
+  inherited;
   LoadDBGridSettings(grONormaivs);
   CloseOpen(qrWorkList);
   CloseOpen(qrONormativs);

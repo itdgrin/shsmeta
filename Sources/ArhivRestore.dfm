@@ -33,7 +33,6 @@ object frmArhRestore: TfrmArhRestore
     ParentBackground = False
     ParentFont = False
     TabOrder = 0
-    ExplicitWidth = 361
     object lbArchStatys: TLabel
       AlignWithMargins = True
       Left = 51

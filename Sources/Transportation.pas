@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, Grids,
-  ExtCtrls, DB,
+  ExtCtrls, DB, Tools,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, Clipbrd, JvExGrids, JvStringGrid, JvJCLUtils,
@@ -17,7 +17,7 @@ type
       Rect: TRect; State: TGridDrawState); override;
   end;
 
-  TFormTransportation = class(TForm)
+  TFormTransportation = class(TSmForm)
     Panel1: TPanel;
     EditJustificationNumber: TEdit;
     LabelJustification: TLabel;
@@ -127,7 +127,7 @@ function GetTranspForm(AIdEstimate, AIdTransp, ATranspType, AIterator, ANomManua
 
 implementation
 
-uses Main, CalculationEstimate, DataModule, Tools, GlobsAndConst;
+uses Main, CalculationEstimate, DataModule, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -576,6 +576,7 @@ end;
 
 procedure TFormTransportation.FormCreate(Sender: TObject);
 begin
+  inherited;
   grdPrice.RowHeights[0] := 30;
 
   grdPrice.ColWidths[0] := 40;

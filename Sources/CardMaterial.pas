@@ -4,11 +4,11 @@ interface
 
 uses
   Windows, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls, Grids, DB, FireDAC.Stan.Intf,
-  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, Tools,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
-  TFormCardMaterial = class(TForm)
+  TFormCardMaterial = class(TSmForm)
     StringGrid: TStringGrid;
     Memo: TMemo;
     PanelTop: TPanel;
@@ -37,7 +37,7 @@ var
 
 implementation
 
-uses Main, DataModule, Tools;
+uses Main, DataModule;
 
 const
   FormCaption = 'Карточка материала';
@@ -91,6 +91,7 @@ end;
 
 procedure TFormCardMaterial.FormCreate(Sender: TObject);
 begin
+  inherited;
   Caption := FormCaption;
 
   with StringGrid do

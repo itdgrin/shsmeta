@@ -60,7 +60,7 @@ object ManSprCardForm: TManSprCardForm
       Width = 754
       Height = 56
       Anchors = [akLeft, akTop, akRight]
-      TabOrder = 1
+      TabOrder = 2
     end
     object cbUnit: TComboBox
       Left = 200
@@ -69,7 +69,7 @@ object ManSprCardForm: TManSprCardForm
       Height = 21
       AutoDropDown = True
       Anchors = [akLeft, akTop, akRight]
-      TabOrder = 2
+      TabOrder = 1
     end
   end
   object gbAdditInfo: TGroupBox
@@ -79,7 +79,7 @@ object ManSprCardForm: TManSprCardForm
     Height = 89
     Align = alBottom
     Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1077' '#1076#1072#1085#1085#1099#1077' '
-    TabOrder = 1
+    TabOrder = 2
     object lbAdditInfo1: TLabel
       Left = 11
       Top = 20
@@ -141,35 +141,35 @@ object ManSprCardForm: TManSprCardForm
       Top = 44
       Width = 121
       Height = 21
-      TabOrder = 1
+      TabOrder = 4
     end
     object edtAdditInfo3: TEdit
       Left = 230
       Top = 17
       Width = 121
       Height = 21
-      TabOrder = 2
+      TabOrder = 1
     end
     object edtAdditInfo4: TEdit
       Left = 230
       Top = 44
       Width = 121
       Height = 21
-      TabOrder = 3
+      TabOrder = 5
     end
     object edtAdditInfo5: TEdit
       Left = 429
       Top = 17
       Width = 121
       Height = 21
-      TabOrder = 4
+      TabOrder = 2
     end
     object edtAdditInfo6: TEdit
       Left = 429
       Top = 40
       Width = 121
       Height = 21
-      TabOrder = 5
+      TabOrder = 3
     end
     object edtAdditInfo7: TEdit
       Left = 429
@@ -186,7 +186,7 @@ object ManSprCardForm: TManSprCardForm
     Height = 147
     Align = alClient
     Caption = ' '#1062#1077#1085#1072' '#1087#1086' '#1085#1072#1082#1083#1072#1076#1085#1099#1084' '
-    TabOrder = 2
+    TabOrder = 1
     object grPrices: TJvDBGrid
       Left = 2
       Top = 15
@@ -275,7 +275,7 @@ object ManSprCardForm: TManSprCardForm
       Height = 25
       Anchors = [akTop, akRight]
       Caption = #1054#1090#1084#1077#1085#1072
-      TabOrder = 0
+      TabOrder = 1
       OnClick = btnCloseClick
     end
     object btnSave: TButton
@@ -286,7 +286,7 @@ object ManSprCardForm: TManSprCardForm
       Anchors = [akTop, akRight]
       Caption = #1057#1086#1093#1085#1072#1085#1080#1090#1100
       Default = True
-      TabOrder = 1
+      TabOrder = 0
       OnClick = btnSaveClick
     end
   end

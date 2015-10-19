@@ -10,7 +10,7 @@ uses
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvComponentBase, JvFormPlacement, System.UITypes;
 
 type
-  TfCalcTravel = class(TForm)
+  TfCalcTravel = class(TSmForm)
     lbl1: TLabel;
     dbedtPREPARER: TDBEdit;
     lbl4: TLabel;
@@ -142,6 +142,7 @@ end;
 
 procedure TfCalcTravel.FormCreate(Sender: TObject);
 begin
+  inherited;
   LoadDBGridSettings(grCalc);
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);

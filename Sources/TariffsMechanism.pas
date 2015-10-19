@@ -3,10 +3,10 @@ unit TariffsMechanism;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, ExtCtrls, AppEvnts, SysUtils;
+  Windows, Messages, Classes, Controls, Forms, ExtCtrls, AppEvnts, SysUtils, Tools;
 
 type
-  TFormTariffsMechanism = class(TForm)
+  TFormTariffsMechanism = class(TSmForm)
 
     procedure FormCreate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -83,6 +83,7 @@ begin
 
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
+  inherited;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

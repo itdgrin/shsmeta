@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, Grids, DBGrids, StdCtrls,
-  ExtCtrls;
+  ExtCtrls, Tools;
 
 type
-  TFormSummaryCalculationSettings = class(TForm)
+  TFormSummaryCalculationSettings = class(TSmForm)
     Panel1: TPanel;
     Button1: TButton;
     Button2: TButton;
@@ -41,6 +41,7 @@ begin
     MinWidth := Width;
     MaxWidth := Width;
   end;
+  inherited;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

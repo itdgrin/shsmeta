@@ -14,6 +14,7 @@ object FormCalculationSettings: TFormCalculationSettings
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
     607
@@ -42,10 +43,6 @@ object FormCalculationSettings: TFormCalculationSettings
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = #1054#1089#1085#1086#1074#1085#1099#1077
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox1: TGroupBox
         Left = 5
         Top = 5
@@ -111,7 +108,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Height = 21
           Color = 14408667
           ReadOnly = True
-          TabOrder = 1
+          TabOrder = 2
         end
         object Edit3: TEdit
           Left = 74
@@ -120,7 +117,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Height = 21
           Color = 14408667
           ReadOnly = True
-          TabOrder = 2
+          TabOrder = 4
         end
         object Edit4: TEdit
           Left = 74
@@ -129,7 +126,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Height = 21
           Color = 14408667
           ReadOnly = True
-          TabOrder = 3
+          TabOrder = 6
         end
         object Edit5: TEdit
           Left = 74
@@ -138,7 +135,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Height = 21
           Color = 14408667
           ReadOnly = True
-          TabOrder = 4
+          TabOrder = 8
         end
         object Edit6: TEdit
           Left = 74
@@ -147,7 +144,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Height = 21
           Color = 14408667
           ReadOnly = True
-          TabOrder = 5
+          TabOrder = 10
         end
         object Button2: TButton
           Left = 543
@@ -155,7 +152,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 20
           Height = 21
           Caption = '...'
-          TabOrder = 6
+          TabOrder = 3
         end
         object Button3: TButton
           Left = 543
@@ -163,7 +160,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 20
           Height = 21
           Caption = '...'
-          TabOrder = 7
+          TabOrder = 5
         end
         object Button4: TButton
           Left = 543
@@ -171,7 +168,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 20
           Height = 21
           Caption = '...'
-          TabOrder = 8
+          TabOrder = 7
         end
         object Button5: TButton
           Left = 543
@@ -179,7 +176,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 20
           Height = 21
           Caption = '...'
-          TabOrder = 9
+          TabOrder = 11
         end
         object Button6: TButton
           Left = 543
@@ -187,7 +184,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 20
           Height = 21
           Caption = '...'
-          TabOrder = 10
+          TabOrder = 9
         end
         object Button1: TButton
           Left = 543
@@ -195,7 +192,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 20
           Height = 21
           Caption = '...'
-          TabOrder = 11
+          TabOrder = 1
         end
       end
       object GroupBox2: TGroupBox
@@ -272,7 +269,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 165
           Height = 17
           Caption = #1055#1088#1080' '#1079#1072#1082#1088#1099#1090#1080#1080' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
-          TabOrder = 4
+          TabOrder = 5
         end
         object CheckBoxEvery: TCheckBox
           Left = 287
@@ -280,7 +277,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 60
           Height = 17
           Caption = #1050#1072#1078#1076#1099#1077
-          TabOrder = 5
+          TabOrder = 6
           OnClick = CheckBoxEveryClick
         end
         object EditEvery: TEdit
@@ -289,7 +286,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 50
           Height = 21
           Enabled = False
-          TabOrder = 6
+          TabOrder = 4
           OnKeyPress = EditDeleteDataKeyPress
         end
         object CheckBoxDeleteData: TCheckBox
@@ -298,7 +295,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 135
           Height = 17
           Caption = #1059#1076#1072#1083#1080#1090#1100' '#1076#1072#1085#1085#1099#1077' '#1073#1086#1083#1077#1077
-          TabOrder = 7
+          TabOrder = 10
           OnClick = CheckBoxDeleteDataClick
         end
         object EditDeleteData: TEdit
@@ -307,7 +304,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 50
           Height = 21
           Enabled = False
-          TabOrder = 8
+          TabOrder = 7
           OnKeyPress = EditDeleteDataKeyPress
         end
         object Edit10: TEdit
@@ -317,7 +314,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Height = 21
           Color = 14408667
           ReadOnly = True
-          TabOrder = 9
+          TabOrder = 8
         end
         object Button8: TButton
           Left = 543
@@ -325,7 +322,7 @@ object FormCalculationSettings: TFormCalculationSettings
           Width = 20
           Height = 21
           Caption = '...'
-          TabOrder = 10
+          TabOrder = 9
         end
       end
     end

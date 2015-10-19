@@ -7,10 +7,10 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.ExtCtrls, Vcl.Grids, Vcl.DBGrids,
-  JvExDBGrids, JvDBGrid, Vcl.Buttons, Vcl.StdCtrls;
+  JvExDBGrids, JvDBGrid, Vcl.Buttons, Vcl.StdCtrls, Tools;
 
 type
-  TfSuppAgreement = class(TForm)
+  TfSuppAgreement = class(TSmForm)
     grMain: TJvDBGrid;
     pnl1: TPanel;
     pnl2: TPanel;
@@ -39,7 +39,7 @@ procedure ShowSuppAgreement(const AOBJ_ID: Integer);
 
 implementation
 
-uses Tools, DataModule, GlobsAndConst;
+uses DataModule, GlobsAndConst;
 
 {$R *.dfm}
 { TfSuppAgreement }
@@ -67,6 +67,7 @@ end;
 
 procedure TfSuppAgreement.FormCreate(Sender: TObject);
 begin
+  inherited;
   LoadDBGridSettings(grMain);
 end;
 

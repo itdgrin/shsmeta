@@ -460,7 +460,6 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
           DataSource = dsMainData
           DBGrid = grMaterial
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 427
         end
       end
     end
@@ -558,7 +557,6 @@ object fCalcResourceFactDiff: TfCalcResourceFactDiff
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 461
     object Button1: TButton
       Left = 4
       Top = 4

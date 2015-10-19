@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, Grids, DBGrids,
-  StdCtrls, Buttons,
+  StdCtrls, Buttons, Tools,
   ExtCtrls, Menus, Clipbrd, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client;
@@ -13,7 +13,7 @@ const
   ColumnsInTable = 3; // Число ВИДИМЫХ столбцов в таблице
 
 type
-  TFormTariffsIndex = class(TForm)
+  TFormTariffsIndex = class(TSmForm)
     DataSourceTariffsIndex: TDataSource;
 
     PopupMenu: TPopupMenu;
@@ -157,6 +157,7 @@ begin
   WidthColumnsToDBGrid(DBGrid);
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
+  inherited;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

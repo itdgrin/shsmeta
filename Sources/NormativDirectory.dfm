@@ -56,7 +56,6 @@ object fNormativDirectory: TfNormativDirectory
     ParentFont = False
     RowSelect = True
     Mirror = False
-    ExplicitHeight = 338
   end
   object grSostav: TJvDBGrid
     Left = 0
@@ -158,7 +157,6 @@ object fNormativDirectory: TfNormativDirectory
     Height = 38
     Align = alBottom
     TabOrder = 3
-    ExplicitTop = 450
     DesignSize = (
       646
       38)

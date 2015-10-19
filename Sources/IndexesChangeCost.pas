@@ -3,10 +3,10 @@ unit IndexesChangeCost;
 interface
 
 uses
-  Classes, Controls, Forms, ExtCtrls, SysUtils;
+  Classes, Controls, Forms, ExtCtrls, SysUtils, Tools;
 
 type
-  TFormIndexesChangeCost = class(TForm)
+  TFormIndexesChangeCost = class(TSmForm)
     Panel: TPanel;
 
     procedure FormCreate(Sender: TObject);
@@ -29,6 +29,7 @@ var
 
 procedure TFormIndexesChangeCost.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Настройка размеров и положения формы
 
   ClientWidth := FormMain.ClientWidth div 2;

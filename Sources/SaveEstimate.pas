@@ -6,10 +6,10 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, DB,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client, Tools;
 
 type
-  TFormSaveEstimate = class(TForm)
+  TFormSaveEstimate = class(TSmForm)
     Bevel1: TBevel;
     ButtonSave: TButton;
     ButtonCancel: TButton;
@@ -23,6 +23,7 @@ type
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
 
   private
     StrQuery: String;
@@ -56,6 +57,12 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
+
+procedure TFormSaveEstimate.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
+end;
 
 procedure TFormSaveEstimate.FormShow(Sender: TObject);
 var

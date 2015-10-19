@@ -284,7 +284,7 @@ procedure TFrameRates.btnSelectWinterPriceClick(Sender: TObject);
 begin
   if (not Assigned(fWinterPrice)) then
     fWinterPrice := TfWinterPrice.Create(Self);
-  fWinterPrice.Kind := kdSelect;
+  fWinterPrice.FormKind := kdSelect;
   if not VarIsNull(qrNormativ.FieldByName('ZNORMATIVS_ID').Value) then
     fWinterPrice.LicateID := qrNormativ.FieldByName('ZNORMATIVS_ID').Value;
   if (fWinterPrice.ShowModal = mrOk) and (fWinterPrice.OutValue <> 0) then
@@ -947,9 +947,9 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      StrQuery := 'SELECT work_id, s, po FROM onormativs where ((s <= "' +
-        qrNormativ.FieldByName('NumberNormative').AsString + '") and (po >= "' +
-        qrNormativ.FieldByName('NumberNormative').AsString + '"));';
+      StrQuery := 'SELECT work_id, s, po FROM onormativs where ((FN_NUM_TO_INT(s)<= FN_NUM_TO_INT("' +
+        qrNormativ.FieldByName('NumberNormative').AsString + '")) and (FN_NUM_TO_INT(po) >= FN_NUM_TO_INT("' +
+        qrNormativ.FieldByName('NumberNormative').AsString + '")));';
       SQL.Add(StrQuery);
       Active := true;
       // —делано допущение, что идут work_id по пор€дку от еденицы

@@ -15,10 +15,11 @@ uses
   fFrameMaterial,
   fFrameMechanizm,
   fFrameEquipment,
-  fFrameSmeta;
+  fFrameSmeta,
+  Tools;
 
 type
-  TFormOwnData = class(TForm)
+  TFormOwnData = class(TSmForm)
 
     PanelOwnData: TPanel;
 
@@ -36,6 +37,7 @@ type
     procedure HideAllFrames;
 
     procedure SpeedButtonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private const
     CaptionButton = 'Собственные данные';
 
@@ -147,6 +149,12 @@ end;
 procedure TFormOwnData.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
+end;
+
+procedure TFormOwnData.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

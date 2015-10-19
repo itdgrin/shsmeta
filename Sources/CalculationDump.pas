@@ -6,10 +6,10 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, Grids, ExtCtrls, DB,
   DBCtrls, Math, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Data.FmtBcd;
+  FireDAC.Comp.Client, Data.FmtBcd, Tools;
 
 type
-  TFormCalculationDump = class(TForm)
+  TFormCalculationDump = class(TSmForm)
     Bevel1: TBevel;
     Panel1: TPanel;
     LabelJustification: TLabel;
@@ -59,6 +59,7 @@ type
     procedure cmbUnitChange(Sender: TObject);
     procedure edtCoastNoNDSChange(Sender: TObject);
     procedure edtCoastNDSChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
 
   private
     Unit_Type: byte;
@@ -89,7 +90,7 @@ function GetDumpForm(AIdEstimate, AIdDump, AIterator, ANomManual: Integer; AInsM
 
 implementation
 
-uses Main, DataModule, CalculationEstimate, Tools, GlobsAndConst;
+uses Main, DataModule, CalculationEstimate, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -408,6 +409,12 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
+
+procedure TFormCalculationDump.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
+end;
 
 procedure TFormCalculationDump.FormShow(Sender: TObject);
 begin

@@ -8,10 +8,10 @@ uses
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Vcl.ComCtrls, JvExComCtrls, JvDBTreeView, Data.DB, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, Vcl.StdCtrls, Vcl.Buttons, JvComponentBase, JvFormPlacement, Vcl.Grids, Vcl.DBGrids,
-  JvExDBGrids, JvDBGrid, System.UITypes;
+  JvExDBGrids, JvDBGrid, System.UITypes, Tools;
 
 type
-  TfInstructionHelp = class(TForm)
+  TfInstructionHelp = class(TSmForm)
     pnl1: TPanel;
     qrTreeData: TFDQuery;
     dsTreeData: TDataSource;
@@ -47,7 +47,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools, DataModule, FileStorage;
+uses Main, DataModule, FileStorage;
 
 procedure TfInstructionHelp.btn2Click(Sender: TObject);
 begin
@@ -67,6 +67,7 @@ end;
 
 procedure TfInstructionHelp.FormCreate(Sender: TObject);
 begin
+  inherited;
   CloseOpen(qrTreeData);
 end;
 

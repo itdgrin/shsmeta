@@ -8,10 +8,10 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.ComCtrls, JvExComCtrls, JvDBTreeView, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   JvComponentBase, JvFormPlacement, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.ImgList, Vcl.DBCtrls,
-  JvDBControls, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Mask, Vcl.Buttons;
+  JvDBControls, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Mask, Vcl.Buttons, Tools;
 
 type
-  TfFileStorage = class(TForm)
+  TfFileStorage = class(TSmForm)
     qrTreeData: TFDQuery;
     dsTreeData: TDataSource;
     tvDocuments: TJvDBTreeView;
@@ -64,7 +64,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, DataModule, Tools, GlobsAndConst;
+uses Main, DataModule, GlobsAndConst;
 
 procedure RunDocument(const AData: TDataSet; const AShowLinkDialogIfEmpty: Boolean = True;
   const AField: string = 'doc_id');
@@ -206,6 +206,7 @@ end;
 
 procedure TfFileStorage.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   CloseOpen(qrTreeData);

@@ -6,11 +6,11 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, JvComponentBase,
   JvFormPlacement, Data.DB, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option,
-  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, Tools,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.UITypes;
 
 type
-  TfSelectDialog = class(TForm)
+  TfSelectDialog = class(TSmForm)
     dsMainData: TDataSource;
     FormStorage: TJvFormStorage;
     grMain1: TJvDBGrid;
@@ -30,7 +30,7 @@ function ShowSelectDialog(const ACapt: String{; const ADataSet: Pointer}): Boole
 
 implementation
 
-uses Main, Tools, DataModule, CalculationEstimate;
+uses Main, DataModule, CalculationEstimate;
 
 {$R *.dfm}
 
@@ -54,6 +54,7 @@ end;
 
 procedure TfSelectDialog.FormCreate(Sender: TObject);
 begin
+  inherited;
   LoadDBGridSettings(grMain1);
 end;
 

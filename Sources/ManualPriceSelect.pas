@@ -12,10 +12,10 @@ uses
   Vcl.Controls,
   Vcl.Forms,
   Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, System.Actions,
-  Vcl.ActnList;
+  Vcl.ActnList, Tools;
 
 type
-  TfmManPriceSelect = class(TForm)
+  TfmManPriceSelect = class(TSmForm)
     gbDetPrice: TGroupBox;
     lvDetPrice: TListView;
     pnlButtons: TPanel;
@@ -33,6 +33,7 @@ type
     procedure acSelectUpdate(Sender: TObject);
     procedure acSelectExecute(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     FDataType: Integer;
     FSprID: Integer;
@@ -100,6 +101,12 @@ begin
 
   //В процедуре используются типы контроллера справочников
   GetSprManualPrice(lvDetPrice, ASprID, ADataType - 1);
+end;
+
+procedure TfmManPriceSelect.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 end.

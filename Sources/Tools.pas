@@ -3,9 +3,9 @@ unit Tools;
 interface
 
 uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
-  System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes, EditExpression,
+  System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes,
   ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid, FireDAC.Stan.Option,
-  FireDAC.Stan.Param, Controls;
+  FireDAC.Stan.Param, Controls, Vcl.Buttons;
 
 // Общий тип классификации форм
 type
@@ -20,6 +20,7 @@ type
 
   // Будующий класс формы для наследования всех форм
   TSmForm = class(TForm)
+    procedure FormCreate(Sender: TObject);
   private
   protected
   public
@@ -496,10 +497,17 @@ begin
   DBGrid.ShowCellHint := True;
   DBGrid.ShowHint := True;
   if PS.GridFontName <> '' then
+  begin
     DBGrid.Font.Name := PS.GridFontName;
+    DBGrid.TitleFont.Name := PS.GridFontName;
+  end;
   if PS.GridFontSize <> 0 then
-    DBGrid.Font.Size := PS.GridFontSize;
+  begin
+    DBGrid.Font.SIZE := PS.GridFontSize;
+    DBGrid.TitleFont.SIZE := PS.GridFontSize;
+  end;
   DBGrid.Font.Style := TFontStyles(PS.GridFontStyle);
+  DBGrid.TitleFont.Style := TFontStyles(PS.GridFontStyle);
   // DBGrid.ShowTitleHint := True;
   DBGrid.SelectColumnsDialogStrings.NoSelectionWarning := 'Должна быть выбрана хотя бы одна колонка!';
   DBGrid.SelectColumnsDialogStrings.Caption := 'Настройка видимости колонок';
@@ -621,6 +629,56 @@ begin
   g := MixBytes((FG shr 8) and 255, (BG shr 8) and 255, T); // the same with green
   b := MixBytes((FG shr 16) and 255, (BG shr 16) and 255, T); // and blue, of course
   result := r + g * 256 + b * 65536; // finishing with combining all channels together
+end;
+
+{ TSmForm }
+
+procedure TSmForm.FormCreate(Sender: TObject);
+var
+  i: Integer;
+begin
+  Self.ShowHint := True;
+  for i := 0 to Self.ComponentCount - 1 do
+  begin
+    if Self.Components[i] is TButton then
+    begin
+      if PS.ControlsFontName <> '' then
+      begin
+        TButton(Self.Components[i]).Font.Name := PS.ControlsFontName;
+      end;
+      if PS.ControlsFontSize <> 0 then
+      begin
+        TButton(Self.Components[i]).Font.SIZE := PS.ControlsFontSize;
+      end;
+      TButton(Self.Components[i]).Font.Style := TFontStyles(PS.ControlsFontStyle);
+    end
+    else if Self.Components[i] is TSpeedButton then
+    begin
+      if PS.ControlsFontName <> '' then
+      begin
+        TSpeedButton(Self.Components[i]).Font.Name := PS.ControlsFontName;
+      end;
+      if PS.ControlsFontSize <> 0 then
+      begin
+        TSpeedButton(Self.Components[i]).Font.SIZE := PS.ControlsFontSize;
+      end;
+      TSpeedButton(Self.Components[i]).Font.Style := TFontStyles(PS.ControlsFontStyle);
+    end
+    else if Self.Components[i] is TBitBtn then
+    begin
+      if PS.ControlsFontName <> '' then
+      begin
+        TBitBtn(Self.Components[i]).Font.Name := PS.ControlsFontName;
+      end;
+      if PS.ControlsFontSize <> 0 then
+      begin
+        TBitBtn(Self.Components[i]).Font.SIZE := PS.ControlsFontSize;
+      end;
+      TBitBtn(Self.Components[i]).Font.Style := TFontStyles(PS.ControlsFontStyle);
+    end
+    else if Self.Components[i] is TJvDBGrid then
+      LoadDBGridSettings(TJvDBGrid(Self.Components[i]));
+  end;
 end;
 
 initialization

@@ -12,10 +12,10 @@ uses
   ExtCtrls,
   System.SysUtils,
   fFramePriceTransportations,
-  fFramePriceDumps, fFrameSmeta;
+  fFramePriceDumps, fFrameSmeta, Tools;
 
 type
-  TFormPricesOwnData = class(TForm)
+  TFormPricesOwnData = class(TSmForm)
 
     PanelPrices: TPanel;
     SpeedButtonPriceMaterials: TSpeedButton;
@@ -32,6 +32,7 @@ type
     procedure HideAllFrames;
 
     procedure SpeedButtonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     const CaptionButton = 'Цены по собств. данным';
     const HintButton = 'Окно цены по собственным данным';
@@ -143,6 +144,12 @@ end;
 procedure TFormPricesOwnData.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
+end;
+
+procedure TFormPricesOwnData.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

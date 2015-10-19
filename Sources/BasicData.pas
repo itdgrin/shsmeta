@@ -7,10 +7,10 @@ uses
   ExtCtrls, DB, DateUtils, DBCtrls, Menus, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Samples.Spin, System.UITypes, Vcl.Mask, Vcl.Grids,
-  Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.DBCGrids;
+  Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.DBCGrids, Tools;
 
 type
-  TFormBasicData = class(TForm)
+  TFormBasicData = class(TSmForm)
     LabelPercentTransportEquipment: TLabel;
     LabelK31: TLabel;
     LabelK32: TLabel;
@@ -126,7 +126,7 @@ var
 
 implementation
 
-uses Main, DataModule, CalculationEstimate, Tools, Coef, GlobsAndConst;
+uses Main, DataModule, CalculationEstimate, Coef, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -161,6 +161,7 @@ end;
 
 procedure TFormBasicData.FormCreate(Sender: TObject);
 begin
+  inherited;
   flLoaded := False;
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;

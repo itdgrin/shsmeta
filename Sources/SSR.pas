@@ -4,10 +4,10 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, fFrameSSR;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, fFrameSSR, Tools;
 
 type
-  TfSSR = class(TForm)
+  TfSSR = class(TSmForm)
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -74,6 +74,7 @@ begin
     FrameSSR.ReceivingAll;
   FrameSSR.Visible := True;
   FormMain.CreateButtonOpenWindow(BtnCaption, BtnCaption, Self, 1);
+  inherited;
 end;
 
 procedure TfSSR.FormDestroy(Sender: TObject);

@@ -3,10 +3,10 @@ unit About;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls, Tools;
 
 type
-  TfAbout = class(TForm)
+  TfAbout = class(TSmForm)
     pnl1: TPanel;
     imgProgramIcon: TImage;
     lblProductName: TLabel;
@@ -15,6 +15,7 @@ type
     lblComments: TLabel;
     btnOKButton: TButton;
     procedure FormShow(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -27,6 +28,12 @@ uses Main;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
+
+procedure TfAbout.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
+end;
 
 procedure TfAbout.FormShow(Sender: TObject);
 begin

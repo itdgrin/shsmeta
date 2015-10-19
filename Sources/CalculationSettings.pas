@@ -3,10 +3,11 @@ unit CalculationSettings;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, ComCtrls;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls,
+  ComCtrls, Tools;
 
 type
-  TFormCalculationSettings = class(TForm)
+  TFormCalculationSettings = class(TSmForm)
     PageControl1: TPageControl;
     TabSheet1: TTabSheet;
     Bevel1: TBevel;
@@ -55,6 +56,7 @@ type
     procedure CheckBoxDeleteDataClick(Sender: TObject);
     procedure EditDeleteDataKeyPress(Sender: TObject; var Key: Char);
     procedure CheckBoxEveryClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
 
   private
 
@@ -71,6 +73,12 @@ uses Main;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
+
+procedure TFormCalculationSettings.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
+end;
 
 procedure TFormCalculationSettings.FormShow(Sender: TObject);
 begin

@@ -134,7 +134,6 @@ object fCalcTravelWork: TfCalcTravelWork
     ListSource = dsActList
     TabOrder = 1
     OnClick = dblkcbbActClick
-    ExplicitWidth = 344
   end
   object cbbSource: TComboBox
     Left = 79
@@ -183,7 +182,6 @@ object fCalcTravelWork: TfCalcTravelWork
     TabOrder = 2
     Visible = False
     OnClick = dblkcbbActClick
-    ExplicitWidth = 344
   end
   object chkEnableEditing: TCheckBox
     Left = 450
@@ -200,7 +198,6 @@ object fCalcTravelWork: TfCalcTravelWork
     ParentFont = False
     TabOrder = 5
     OnClick = chkEnableEditingClick
-    ExplicitLeft = 582
   end
   object dsCalc: TDataSource
     DataSet = qrCalc

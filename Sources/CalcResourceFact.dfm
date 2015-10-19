@@ -156,6 +156,10 @@ object fCalcResourceFact: TfCalcResourceFact
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lbl2: TLabel
         Left = 0
         Top = 0
@@ -1244,6 +1248,10 @@ object fCalcResourceFact: TfCalcResourceFact
       Font.Style = []
       ImageIndex = 4
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pnlRatesTop: TPanel
         Left = 0
         Top = 0

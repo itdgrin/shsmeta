@@ -11,7 +11,7 @@ uses
   System.Types, System.UITypes, Vcl.Buttons, Tools;
 
 type
-  TfNormativDirectory = class(TForm)
+  TfNormativDirectory = class(TSmForm)
     qrMain: TFDQuery;
     dsMain: TDataSource;
     tvMain: TJvDBTreeView;
@@ -101,6 +101,7 @@ procedure TfNormativDirectory.FormCreate(Sender: TObject);
 var
   Point1: TPoint;
 begin
+  inherited;
   if dm.Connect.Connected then
   begin
     if not qrMain.Active then
@@ -317,6 +318,7 @@ var
   FirstChar: String;
   Path: String;
 begin
+  Exit; // заглушка
   if Assigned(FormReferenceData) then
     NumberNormativ := FormReferenceData.FrameRates.qrNormativ.FieldByName('NumberNormative').AsString
   else if Assigned(FormAdditionData) then

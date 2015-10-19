@@ -12,6 +12,7 @@ object fmManPriceSelect: TfmManPriceSelect
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object gbDetPrice: TGroupBox
@@ -21,7 +22,7 @@ object fmManPriceSelect: TfmManPriceSelect
     Height = 171
     Align = alClient
     Caption = '  '#1062#1077#1085#1099' '#1087#1086' '#1085#1072#1082#1083#1072#1076#1085#1099#1084'   '
-    TabOrder = 0
+    TabOrder = 1
     object lvDetPrice: TListView
       Left = 2
       Top = 15
@@ -68,7 +69,7 @@ object fmManPriceSelect: TfmManPriceSelect
     Width = 744
     Height = 36
     Align = alBottom
-    TabOrder = 1
+    TabOrder = 2
     DesignSize = (
       744
       36)
@@ -79,7 +80,7 @@ object fmManPriceSelect: TfmManPriceSelect
       Height = 25
       Anchors = [akTop, akRight]
       Caption = #1054#1090#1084#1077#1085#1072
-      TabOrder = 0
+      TabOrder = 1
       OnClick = btnCloseClick
     end
     object btnSelect: TButton
@@ -90,7 +91,7 @@ object fmManPriceSelect: TfmManPriceSelect
       Action = acSelect
       Anchors = [akTop, akRight]
       Default = True
-      TabOrder = 1
+      TabOrder = 0
     end
   end
   object gbMain: TGroupBox
@@ -99,7 +100,7 @@ object fmManPriceSelect: TfmManPriceSelect
     Width = 744
     Height = 105
     Align = alTop
-    TabOrder = 2
+    TabOrder = 0
     DesignSize = (
       744
       105)
@@ -139,7 +140,7 @@ object fmManPriceSelect: TfmManPriceSelect
       Height = 39
       Anchors = [akLeft, akTop, akRight]
       ReadOnly = True
-      TabOrder = 1
+      TabOrder = 2
     end
     object edtUnit: TEdit
       Left = 200
@@ -147,7 +148,7 @@ object fmManPriceSelect: TfmManPriceSelect
       Width = 534
       Height = 21
       ReadOnly = True
-      TabOrder = 2
+      TabOrder = 1
     end
   end
   object ActionList1: TActionList

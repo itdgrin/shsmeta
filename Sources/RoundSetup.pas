@@ -7,10 +7,10 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.Mask, JvExMask, JvSpin, JvDBSpinEdit,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client, Tools;
 
 type
-  TfRoundSetup = class(TForm)
+  TfRoundSetup = class(TSmForm)
     lbl1: TLabel;
     JvDBSpinEdit1: TJvDBSpinEdit;
     lbl2: TLabel;
@@ -46,7 +46,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, DataModule, Tools;
+uses Main, DataModule;
 
 procedure TfRoundSetup.btn1Click(Sender: TObject);
 begin
@@ -68,6 +68,7 @@ end;
 
 procedure TfRoundSetup.FormCreate(Sender: TObject);
 begin
+  inherited;
   CloseOpen(qrMainData);
 end;
 

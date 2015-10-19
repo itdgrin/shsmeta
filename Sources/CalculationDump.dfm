@@ -13,6 +13,7 @@ object FormCalculationDump: TFormCalculationDump
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
     524
@@ -37,7 +38,7 @@ object FormCalculationDump: TFormCalculationDump
     BevelOuter = bvNone
     ParentBackground = False
     ShowCaption = False
-    TabOrder = 4
+    TabOrder = 0
     DesignSize = (
       524
       25)
@@ -79,7 +80,7 @@ object FormCalculationDump: TFormCalculationDump
     BevelOuter = bvNone
     ParentBackground = False
     ShowCaption = False
-    TabOrder = 2
+    TabOrder = 3
     object Memo: TMemo
       Left = 0
       Top = 0
@@ -104,7 +105,7 @@ object FormCalculationDump: TFormCalculationDump
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 0
+    TabOrder = 5
     OnClick = ButtonCancelClick
   end
   object ButtonSave: TButton
@@ -115,7 +116,7 @@ object FormCalculationDump: TFormCalculationDump
     Anchors = [akRight, akBottom]
     Caption = #1044#1086#1073#1072#1074#1080#1090#1100
     Default = True
-    TabOrder = 3
+    TabOrder = 4
     OnClick = ButtonSaveClick
   end
   object Panel2: TPanel
@@ -172,7 +173,7 @@ object FormCalculationDump: TFormCalculationDump
     ParentBackground = False
     ParentFont = False
     ShowCaption = False
-    TabOrder = 5
+    TabOrder = 2
     TabStop = True
     DesignSize = (
       524
@@ -279,7 +280,7 @@ object FormCalculationDump: TFormCalculationDump
         Height = 21
         Alignment = taRightJustify
         NumbersOnly = True
-        TabOrder = 1
+        TabOrder = 2
         OnChange = edtCoastNDSChange
       end
       object edtCoastNoNDS: TEdit
@@ -289,7 +290,7 @@ object FormCalculationDump: TFormCalculationDump
         Height = 21
         Alignment = taRightJustify
         NumbersOnly = True
-        TabOrder = 2
+        TabOrder = 1
         OnChange = edtCoastNoNDSChange
       end
     end
@@ -360,7 +361,7 @@ object FormCalculationDump: TFormCalculationDump
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 2
         OnChange = edtYDWChange
         OnKeyPress = EditKeyPress
       end
@@ -376,7 +377,7 @@ object FormCalculationDump: TFormCalculationDump
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 1
         OnChange = edtCountChange
         OnKeyPress = EditKeyPress
       end

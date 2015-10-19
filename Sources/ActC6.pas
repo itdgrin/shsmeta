@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, ComCtrls, StdCtrls,
-  Grids, DBGrids;
+  Grids, DBGrids, Tools;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -13,7 +13,7 @@ type
   end;
 
 type
-  TFormActC6 = class(TForm)
+  TFormActC6 = class(TSmForm)
     ImageSplitterBottom: TImage;
     ImageSplitterTop: TImage;
     PanelMenu: TPanel;
@@ -111,6 +111,7 @@ begin
 
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
+  inherited;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

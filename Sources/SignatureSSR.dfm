@@ -58,7 +58,7 @@ object FormSignatureSSR: TFormSignatureSSR
     Width = 97
     Height = 25
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-    TabOrder = 0
+    TabOrder = 5
     OnClick = ButtonSaveClick
   end
   object ButtonCancel: TButton
@@ -67,7 +67,7 @@ object FormSignatureSSR: TFormSignatureSSR
     Width = 97
     Height = 25
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 1
+    TabOrder = 6
     OnClick = ButtonCancelClick
   end
   object Edit1: TEdit
@@ -75,34 +75,34 @@ object FormSignatureSSR: TFormSignatureSSR
     Top = 5
     Width = 250
     Height = 21
-    TabOrder = 2
+    TabOrder = 0
   end
   object Edit2: TEdit
     Left = 173
     Top = 32
     Width = 250
     Height = 21
-    TabOrder = 3
+    TabOrder = 1
   end
   object Edit3: TEdit
     Left = 173
     Top = 59
     Width = 250
     Height = 21
-    TabOrder = 4
+    TabOrder = 2
   end
   object Edit4: TEdit
     Left = 173
     Top = 86
     Width = 250
     Height = 21
-    TabOrder = 5
+    TabOrder = 3
   end
   object Edit5: TEdit
     Left = 173
     Top = 113
     Width = 250
     Height = 21
-    TabOrder = 6
+    TabOrder = 4
   end
 end

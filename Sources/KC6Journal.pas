@@ -12,7 +12,7 @@ uses
   JvExDBGrids, System.UITypes;
 
 type
-  TfKC6Journal = class(TForm)
+  TfKC6Journal = class(TSmForm)
     pgcPage: TPageControl;
     tsEstimate: TTabSheet;
     tsPTM: TTabSheet;
@@ -781,6 +781,7 @@ end;
 
 procedure TfKC6Journal.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   qrObject.Active := True;

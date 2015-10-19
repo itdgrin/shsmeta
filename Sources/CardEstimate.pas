@@ -6,10 +6,10 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, DB,
   ComCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, DateUtils, Vcl.Mask, Vcl.DBCtrls;
+  FireDAC.Comp.Client, DateUtils, Vcl.Mask, Vcl.DBCtrls, Tools;
 
 type
-  TFormCardEstimate = class(TForm)
+  TFormCardEstimate = class(TSmForm)
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
@@ -88,7 +88,7 @@ var
 
 implementation
 
-uses Main, DataModule, ObjectsAndEstimates, BasicData, Tools, GlobsAndConst;
+uses Main, DataModule, ObjectsAndEstimates, BasicData, GlobsAndConst;
 
 {$R *.dfm}
 
@@ -119,6 +119,7 @@ end;
 
 procedure TFormCardEstimate.FormCreate(Sender: TObject);
 begin
+  inherited;
   with Constraints do
   begin
     MinHeight := Height;

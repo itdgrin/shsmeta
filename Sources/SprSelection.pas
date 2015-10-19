@@ -15,17 +15,18 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
   Vcl.ComCtrls,
-  fFrameSpr,
+  fFrameSpr,   Tools,
   SprController,
   GlobsAndConst;
 
 type
-  TfSprSelection = class(TForm)
+  TfSprSelection = class(TSmForm)
     Panel4: TPanel;
     btnSelect: TButton;
     btnCancel: TButton;
     procedure btnCancelClick(Sender: TObject);
     procedure btnSelectClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     FFrameType: Integer;
     FFrame: TSprFrame;
@@ -121,6 +122,12 @@ destructor TfSprSelection.Destroy;
 begin
   FreeAndNil(FFrame);
   inherited;
+end;
+
+procedure TfSprSelection.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 procedure TfSprSelection.SelectSprItem(ASprRecord: PSprRecord);

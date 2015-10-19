@@ -194,6 +194,10 @@ object fKC6Journal: TfKC6Journal
       ImageIndex = 1
       ParentFont = False
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object dbgrdPTM: TJvDBGrid
         Left = 0
         Top = 0
@@ -233,6 +237,10 @@ object fKC6Journal: TfKC6Journal
       ImageIndex = 2
       ParentFont = False
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object dbgrdEstimate: TJvDBGrid
         Left = 0
         Top = 0

@@ -3,11 +3,11 @@ unit LogIn;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Tools,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, JvComponentBase, JvFormPlacement;
 
 type
-  TfLogIn = class(TForm)
+  TfLogIn = class(TSmForm)
     lbl1: TLabel;
     lbl2: TLabel;
     btn1: TBitBtn;
@@ -19,6 +19,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure btn2Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -32,7 +33,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools, DataModule, GlobsAndConst;
+uses Main, DataModule, GlobsAndConst;
 
 procedure TfLogIn.btn2Click(Sender: TObject);
 var
@@ -61,6 +62,12 @@ end;
 procedure TfLogIn.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
+end;
+
+procedure TfLogIn.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 procedure TfLogIn.FormDestroy(Sender: TObject);

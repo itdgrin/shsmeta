@@ -338,6 +338,9 @@ type
     GridFontName: string ; //Стиль шрифта
     GridFontSize: Integer;  //размер
     GridFontStyle: Byte; //Стиль
+    ControlsFontName: string ; //Стиль шрифта
+    ControlsFontSize: Integer;  //размер
+    ControlsFontStyle: Byte; //Стиль
   end;
 
 const
@@ -2310,9 +2313,14 @@ begin
       PS.AutosaveRateDescr := ReadBool('ESTIMATE', 'AutosaveRateDescr', true);
       PS.ShowNeedSaveDialog := ReadBool('ESTIMATE', 'ShowNeedSaveDialog', true);
       PS.FindAutoRepInAllRate := ReadBool('ESTIMATE', 'FindAutoRepInAllRate', false);
+
       PS.GridFontName := ReadString('Tables', 'GridFontName', 'Tahoma');
       PS.GridFontSize := ReadInteger('Tables', 'GridFontSize', 8);
       PS.GridFontStyle := Byte(ReadInteger('Tables', 'GridFontStyle', 0));
+
+      PS.ControlsFontName := ReadString('Controls', 'ControlsFontName', 'Tahoma');
+      PS.ControlsFontSize := ReadInteger('Controls', 'ControlsFontSize', 8);
+      PS.ControlsFontStyle := Byte(ReadInteger('Controls', 'ControlsFontStyle', 0));
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -2351,6 +2359,10 @@ begin
       WriteString('Tables', 'GridFontName', PS.GridFontName);
       WriteInteger('Tables', 'GridFontSize', PS.GridFontSize);
       WriteInteger('Tables', 'GridFontStyle', PS.GridFontStyle);
+
+      WriteString('Controls', 'ControlsFontName', PS.ControlsFontName);
+      WriteInteger('Controls', 'ControlsFontSize', PS.ControlsFontSize);
+      WriteInteger('Controls', 'ControlsFontStyle', PS.ControlsFontStyle);
 
       WriteInteger('Round', vRoundTo, PS.RoundTo);
 

@@ -3,12 +3,12 @@ unit CardIndexesChangeCost;
 interface
 
 uses
-  Windows, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls, FireDAC.Stan.Intf,
+  Windows, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls, FireDAC.Stan.Intf, Tools,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
-  TFormCardIndexesChangeCost = class(TForm)
+  TFormCardIndexesChangeCost = class(TSmForm)
     PanelCode: TPanel;
     LabelCode: TLabel;
     EditCode: TEdit;
@@ -51,6 +51,7 @@ const
 
 procedure TFormCardIndexesChangeCost.FormCreate(Sender: TObject);
 begin
+  inherited;
   Caption := FormCaption;
 end;
 

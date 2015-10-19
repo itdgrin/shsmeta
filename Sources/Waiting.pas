@@ -3,11 +3,11 @@ unit Waiting;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Tools,
   Dialogs, ExtCtrls, StdCtrls, gifImg, JvExControls, JvAnimatedImage, JvGIFCtrl;
 
 type
-  TFormWaiting = class(TForm)
+  TFormWaiting = class(TSmForm)
     Shape1: TShape;
     Label1: TLabel;
     JvGIFAnimator1: TJvGIFAnimator;

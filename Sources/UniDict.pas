@@ -11,7 +11,7 @@ uses
   Vcl.Mask, JvComponentBase, JvFormPlacement, System.UITypes;
 
 type
-  TfUniDict = class(TForm)
+  TfUniDict = class(TSmForm)
     qrUniDict: TFDQuery;
     dsUniDict: TDataSource;
     dbmmoparam_description: TDBMemo;
@@ -108,6 +108,7 @@ end;
 
 procedure TfUniDict.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, fUniDict, 1);
   LoadDBGridSettings(grUniDictParam);

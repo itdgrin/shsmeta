@@ -30,6 +30,10 @@ object fUsers: TfUsers
     object ts2: TTabSheet
       Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1080
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object spl2: TSplitter
         Left = 185
         Top = 36
@@ -106,6 +110,7 @@ object fUsers: TfUsers
           ListField = 'USER_NAME'
           ListSource = dsUser
           TabOrder = 0
+          ExplicitHeight = 351
         end
       end
       object pnl4: TPanel
@@ -233,6 +238,10 @@ object fUsers: TfUsers
     end
     object ts1: TTabSheet
       Caption = #1043#1088#1091#1087#1087#1099' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object spl1: TSplitter
         Left = 185
         Top = 36
@@ -270,6 +279,7 @@ object fUsers: TfUsers
           ListField = 'USER_GROUP_NAME'
           ListSource = dsUserGroup
           TabOrder = 0
+          ExplicitHeight = 351
         end
       end
       object pnl2: TPanel

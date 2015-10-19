@@ -2,7 +2,7 @@
   Left = 0
   Top = 0
   Caption = 'SMR '#8211' HPP 2012 '
-  ClientHeight = 477
+  ClientHeight = 497
   ClientWidth = 742
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -10891,7 +10891,7 @@
   end
   object PanelOpenWindows: TPanel
     Left = 0
-    Top = 450
+    Top = 470
     Width = 742
     Height = 27
     Hint = #1055#1072#1085#1077#1083#1100' '#1086#1090#1082#1088#1099#1090#1099#1093' '#1086#1082#1086#1085
@@ -10902,6 +10902,7 @@
     ParentShowHint = False
     ShowHint = True
     TabOrder = 3
+    ExplicitTop = 450
   end
   object PanelCover: TPanel
     Left = 440

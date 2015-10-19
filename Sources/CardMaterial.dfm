@@ -27,7 +27,7 @@ object FormCardMaterial: TFormCardMaterial
     DefaultDrawing = False
     RowCount = 2
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goEditing]
-    TabOrder = 0
+    TabOrder = 3
     OnDrawCell = StringGridDrawCell
   end
   object Memo: TMemo
@@ -56,7 +56,7 @@ object FormCardMaterial: TFormCardMaterial
     BevelOuter = bvNone
     Caption = 'PanelTop'
     ShowCaption = False
-    TabOrder = 2
+    TabOrder = 0
     DesignSize = (
       509
       25)
@@ -88,7 +88,7 @@ object FormCardMaterial: TFormCardMaterial
     BevelOuter = bvNone
     Caption = 'PanelBottom'
     ShowCaption = False
-    TabOrder = 3
+    TabOrder = 4
     DesignSize = (
       509
       41)
@@ -123,7 +123,7 @@ object FormCardMaterial: TFormCardMaterial
     BevelOuter = bvNone
     Caption = 'PanelSeparator'
     ShowCaption = False
-    TabOrder = 4
+    TabOrder = 2
   end
   object ADOQueryTemp: TFDQuery
     Connection = DM.Connect

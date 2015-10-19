@@ -5,12 +5,12 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, FireDAC.Stan.Intf,
-  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, Tools,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  Vcl.ExtCtrls, Vcl.DBCtrls, JvComponentBase, JvFormPlacement, Tools, Vcl.StdCtrls, Vcl.Buttons, System.UITypes;
+  Vcl.ExtCtrls, Vcl.DBCtrls, JvComponentBase, JvFormPlacement, Vcl.StdCtrls, Vcl.Buttons, System.UITypes;
 
 type
-  TfForemanList = class(TForm)
+  TfForemanList = class(TSmForm)
     grMain: TJvDBGrid;
     qrMain: TFDQuery;
     dsMain: TDataSource;
@@ -38,7 +38,6 @@ type
   private
     { Private declarations }
   public
-    Kind: TKindForm;
     OutValue: Integer;
   end;
 
@@ -80,7 +79,8 @@ end;
 
 procedure TfForemanList.FormCreate(Sender: TObject);
 begin
-  Kind := kdNone;
+  inherited;
+  FormKind := kdNone;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   LoadDBGridSettings(grMain);
@@ -104,7 +104,7 @@ end;
 
 procedure TfForemanList.FormShow(Sender: TObject);
 begin
-  pnlSelect.Visible := Kind in [kdSelect];
+  pnlSelect.Visible := FormKind in [kdSelect];
 end;
 
 procedure TfForemanList.grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;

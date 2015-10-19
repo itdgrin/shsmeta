@@ -3,10 +3,10 @@ unit TypesActs;
 interface
 
 uses
-  Classes, Controls, Forms, ExtCtrls, SysUtils;
+  Classes, Controls, Forms, ExtCtrls, SysUtils, Tools;
 
 type
-  TFormTypesActs = class(TForm)
+  TFormTypesActs = class(TSmForm)
     Panel: TPanel;
 
     procedure FormCreate(Sender: TObject);
@@ -29,6 +29,7 @@ var
 
 procedure TFormTypesActs.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Настройка размеров и положения формы
 
   ClientWidth := FormMain.ClientWidth div 2;

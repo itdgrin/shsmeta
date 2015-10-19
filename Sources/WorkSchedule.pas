@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, ComCtrls,
-  Grids, DBGrids;
+  Grids, DBGrids, Tools;
 
 type
-  TFormWorkSchedule = class(TForm)
+  TFormWorkSchedule = class(TSmForm)
     PanelMenu: TPanel;
     PanelBottom: TPanel;
     PanelMenu1: TPanel;
@@ -72,6 +72,7 @@ uses Main;
 
 procedure TFormWorkSchedule.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
   ClientHeight := FormMain.ClientHeight div 2;

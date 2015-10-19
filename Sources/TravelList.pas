@@ -11,7 +11,7 @@ uses
   System.UITypes, Vcl.Imaging.pngimage;
 
 type
-  TfTravelList = class(TForm)
+  TfTravelList = class(TSmForm)
     qrObject: TFDQuery;
     dsObject: TDataSource;
     pnlTop: TPanel;
@@ -110,6 +110,7 @@ procedure TfTravelList.FormCreate(Sender: TObject);
   end;
 
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
 

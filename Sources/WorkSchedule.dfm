@@ -115,7 +115,7 @@ object FormWorkSchedule: TFormWorkSchedule
     Height = 100
     Align = alBottom
     ParentBackground = False
-    TabOrder = 1
+    TabOrder = 2
     object Panel4: TPanel
       Left = 1
       Top = 74
@@ -124,7 +124,7 @@ object FormWorkSchedule: TFormWorkSchedule
       Align = alBottom
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 0
+      TabOrder = 3
       object Label1: TLabel
         Left = 8
         Top = 6
@@ -273,7 +273,7 @@ object FormWorkSchedule: TFormWorkSchedule
       Align = alBottom
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 3
+      TabOrder = 0
       DesignSize = (
         693
         25)
@@ -315,7 +315,7 @@ object FormWorkSchedule: TFormWorkSchedule
     Height = 27
     Align = alBottom
     ParentBackground = False
-    TabOrder = 2
+    TabOrder = 3
   end
   object DBGrid1: TDBGrid
     Left = 0
@@ -323,7 +323,7 @@ object FormWorkSchedule: TFormWorkSchedule
     Width = 695
     Height = 229
     Align = alClient
-    TabOrder = 3
+    TabOrder = 1
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11

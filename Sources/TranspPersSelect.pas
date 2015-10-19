@@ -14,10 +14,11 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
+  Tools,
   Clipbrd;
 
 type
-  TfTrPersSelect = class(TForm)
+  TfTrPersSelect = class(TSmForm)
     Panel4: TPanel;
     btnSelect: TButton;
     btnCancel: TButton;
@@ -33,6 +34,7 @@ type
     procedure edtrbTrPersKeyPress(Sender: TObject; var Key: Char);
     procedure edtrbTrPersExit(Sender: TObject);
     procedure rbTrPersClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     FSelectRb: Integer;
     FTranspPers: Double;
@@ -139,6 +141,12 @@ begin
   else
     Key := #0;
   end;
+end;
+
+procedure TfTrPersSelect.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 procedure TfTrPersSelect.rbTrPersClick(Sender: TObject);

@@ -5,12 +5,12 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls,
   ExtCtrls, System.DateUtils, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
-  FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Stan.Error, FireDAC.DatS, Tools,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus, Vcl.DBCtrls, System.UITypes, Vcl.Buttons, Vcl.Samples.Spin;
 
 type
-  TfCardObject = class(TForm)
+  TfCardObject = class(TSmForm)
 
     DataSourceSF: TDataSource;
     DataSourceCO: TDataSource;
@@ -150,13 +150,14 @@ var
 
 implementation
 
-uses Main, DataModule, Tools, CardObjectContractorServices, OrganizationsEx, SuppAgreement,
+uses Main, DataModule, CardObjectContractorServices, OrganizationsEx, SuppAgreement,
   GlobsAndConst, CalculationEstimate;
 
 {$R *.dfm}
 
 procedure TfCardObject.FormCreate(Sender: TObject);
 begin
+  inherited;
   with Constraints do
   begin
     MinHeight := Height;

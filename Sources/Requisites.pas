@@ -3,10 +3,10 @@ unit Requisites;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, DBCtrls, StdCtrls;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, DBCtrls, StdCtrls, Tools;
 
 type
-  TFormRequisites = class(TForm)
+  TFormRequisites = class(TSmForm)
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -49,6 +49,7 @@ uses Main;
 
 procedure TFormRequisites.FormCreate(Sender: TObject);
 begin
+  inherited;
   with Constraints do
   begin
     MinHeight := Height;

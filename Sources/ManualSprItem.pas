@@ -19,10 +19,10 @@ uses
   Vcl.DBGrids, JvExDBGrids, JvDBGrid, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Mask, Vcl.ExtCtrls;
+  FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Mask, Vcl.ExtCtrls, Tools;
 
 type
-  TManSprCardForm = class(TForm)
+  TManSprCardForm = class(TSmForm)
     gbMain: TGroupBox;
     lbCode: TLabel;
     edtCode: TEdit;
@@ -209,6 +209,7 @@ end;
 
 procedure TManSprCardForm.FormCreate(Sender: TObject);
 begin
+  inherited;
   FUnitIDList := TList<Integer>.Create;
   LoadData;
 end;

@@ -9,10 +9,10 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, JvExStdCtrls, JvCombobox,
-  JvDBCombobox, JvExControls, JvDBLookup, System.UITypes;
+  JvDBCombobox, JvExControls, JvDBLookup, System.UITypes, Tools;
 
 type
-  TfBuildZone = class(TForm)
+  TfBuildZone = class(TSmForm)
     Panel1: TPanel;
     gbZone: TGroupBox;
     grdZone: TJvDBGrid;
@@ -46,12 +46,13 @@ type
 
 
 implementation
-uses DataModule, Tools, Main;
+uses DataModule, Main;
 
 {$R *.dfm}
 
 procedure TfBuildZone.FormCreate(Sender: TObject);
 begin
+  inherited;
   LoadDBGridSettings(grdZone);
   LoadDBGridSettings(grdObject);
 

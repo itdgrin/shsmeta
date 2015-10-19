@@ -15,10 +15,11 @@ uses
   GlobsAndConst,
   Vcl.ComCtrls,
   Vcl.ExtCtrls,
+  Tools,
   Vcl.StdCtrls, Vcl.Imaging.pngimage;
 
 type
-  TfrmArhRestore = class(TForm)
+  TfrmArhRestore = class(TSmForm)
     ArchivPanel: TPanel;
     lbArchStatys: TLabel;
     pnlArchiv1: TPanel;
@@ -45,6 +46,7 @@ end;
 
 procedure TfrmArhRestore.FormCreate(Sender: TObject);
 begin
+  inherited;
   FCanClose := False;
 end;
 

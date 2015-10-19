@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   Vcl.Samples.Spin, Vcl.Mask, System.UITypes, JvDBGrid, JvExDBGrids, Vcl.DBCtrls, JvComponentBase,
-  JvFormPlacement, JvExComCtrls, JvDBTreeView;
+  JvFormPlacement, JvExComCtrls, JvDBTreeView, Tools;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -17,7 +17,7 @@ type
   end;
 
 type
-  TfKC6 = class(TForm)
+  TfKC6 = class(TSmForm)
 
     PanelObject: TPanel;
     LabelObject: TLabel;
@@ -121,7 +121,7 @@ var
 
 implementation
 
-uses Main, DataModule, DrawingTables, CalculationEstimate, Tools;
+uses Main, DataModule, DrawingTables, CalculationEstimate;
 
 {$R *.dfm}
 
@@ -142,6 +142,7 @@ end;
 
 procedure TfKC6.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Загружаем изображения для сплиттеров
   with DM.ImageListHorozontalDots do
   begin

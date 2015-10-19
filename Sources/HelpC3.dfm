@@ -94,7 +94,7 @@ object FormHelpC3: TFormHelpC3
         Width = 80
         Height = 17
         Caption = #1055#1086' '#1089#1090#1088#1086#1081#1082#1077
-        TabOrder = 0
+        TabOrder = 2
       end
       object CheckBox2: TCheckBox
         Left = 94
@@ -102,7 +102,7 @@ object FormHelpC3: TFormHelpC3
         Width = 100
         Height = 17
         Caption = #1055#1086' '#1082#1072#1090#1077#1075#1086#1088#1080#1103#1084
-        TabOrder = 1
+        TabOrder = 3
       end
       object RadioButton1: TRadioButton
         Tag = 1
@@ -112,7 +112,7 @@ object FormHelpC3: TFormHelpC3
         Height = 17
         Anchors = [akTop, akRight]
         Caption = #1057#1090#1088#1086#1082#1080' '#1089#1087#1088#1072#1074#1082#1080
-        TabOrder = 2
+        TabOrder = 1
       end
       object RadioButton2: TRadioButton
         Left = 463
@@ -122,7 +122,7 @@ object FormHelpC3: TFormHelpC3
         Anchors = [akTop, akRight]
         Caption = #1042#1089#1077' '#1089#1090#1088#1086#1082#1080
         Checked = True
-        TabOrder = 3
+        TabOrder = 0
         TabStop = True
       end
     end
@@ -135,7 +135,7 @@ object FormHelpC3: TFormHelpC3
     Align = alBottom
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 1
+    TabOrder = 2
     object Button1: TButton
       Left = 3
       Top = 1
@@ -152,7 +152,7 @@ object FormHelpC3: TFormHelpC3
     Width = 649
     Height = 270
     Align = alClient
-    TabOrder = 2
+    TabOrder = 1
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11

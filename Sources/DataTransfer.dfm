@@ -44,7 +44,7 @@ object FormDataTransfer: TFormDataTransfer
     Align = alBottom
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 0
+    TabOrder = 2
     object Button1: TButton
       Left = 3
       Top = 1
@@ -71,7 +71,7 @@ object FormDataTransfer: TFormDataTransfer
     end
     object Button4: TButton
       Left = 351
-      Top = 6
+      Top = 1
       Width = 110
       Height = 25
       Caption = #1059#1076#1072#1083#1080#1090#1100
@@ -86,7 +86,7 @@ object FormDataTransfer: TFormDataTransfer
     Align = alLeft
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 1
+    TabOrder = 0
     object TreeView1: TTreeView
       Left = 0
       Top = 0
@@ -105,7 +105,7 @@ object FormDataTransfer: TFormDataTransfer
     Align = alClient
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 2
+    TabOrder = 1
     object TreeView2: TTreeView
       Left = 0
       Top = 0

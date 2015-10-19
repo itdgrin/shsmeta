@@ -3,14 +3,14 @@ unit OrganizationsEx;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Tools,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Data.DB,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, JvComponentBase, JvFormPlacement, System.UITypes;
 
 type
-  TfOrganizationsEx = class(TForm)
+  TfOrganizationsEx = class(TSmForm)
     qrMain: TFDQuery;
     dsMain: TDataSource;
     grMain: TJvDBGrid;
@@ -52,7 +52,7 @@ implementation
 
 {$R *.dfm}
 
-uses Tools, cardOrganization, Main;
+uses cardOrganization, Main;
 
 function SelectOrganization(const ALocateValue: Variant): Variant;
 begin
@@ -95,6 +95,7 @@ end;
 
 procedure TfOrganizationsEx.FormCreate(Sender: TObject);
 begin
+  inherited;
   qrMain.Active := True;
   LoadDBGridSettings(grMain);
 end;

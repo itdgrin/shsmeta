@@ -131,7 +131,7 @@ object FormActC6: TFormActC6
       Align = alTop
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 2
+      TabOrder = 7
       object Label9: TLabel
         Left = 8
         Top = 6
@@ -169,7 +169,7 @@ object FormActC6: TFormActC6
       Align = alTop
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 3
+      TabOrder = 6
       object Label8: TLabel
         Left = 8
         Top = 6
@@ -186,7 +186,7 @@ object FormActC6: TFormActC6
       Align = alTop
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 4
+      TabOrder = 5
       object Label5: TLabel
         Left = 8
         Top = 6
@@ -235,7 +235,7 @@ object FormActC6: TFormActC6
       Align = alTop
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 5
+      TabOrder = 4
       DesignSize = (
         677
         25)
@@ -263,7 +263,7 @@ object FormActC6: TFormActC6
       Align = alTop
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 6
+      TabOrder = 3
       DesignSize = (
         677
         25)
@@ -291,7 +291,7 @@ object FormActC6: TFormActC6
       Align = alTop
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 7
+      TabOrder = 2
       DesignSize = (
         677
         25)
@@ -320,7 +320,7 @@ object FormActC6: TFormActC6
     Align = alBottom
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 1
+    TabOrder = 2
     object PanelBottomButtons: TPanel
       Left = 0
       Top = 66
@@ -329,7 +329,7 @@ object FormActC6: TFormActC6
       Align = alBottom
       BevelOuter = bvNone
       ParentBackground = False
-      TabOrder = 0
+      TabOrder = 1
     end
     object DBGrid2: TDBGrid
       Left = 0
@@ -337,7 +337,7 @@ object FormActC6: TFormActC6
       Width = 677
       Height = 66
       Align = alClient
-      TabOrder = 1
+      TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
       TitleFont.Height = -11
@@ -353,7 +353,7 @@ object FormActC6: TFormActC6
     Align = alClient
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 2
+    TabOrder = 1
     object DBGrid1: TDBGrid
       Left = 0
       Top = 0

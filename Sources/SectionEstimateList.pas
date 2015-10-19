@@ -7,10 +7,10 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   JvComponentBase, JvFormPlacement, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Grids,
-  Vcl.DBGrids, JvExDBGrids, JvDBGrid, System.UITypes;
+  Vcl.DBGrids, JvExDBGrids, JvDBGrid, System.UITypes, Tools;
 
 type
-  TfSectionEstimateList = class(TForm)
+  TfSectionEstimateList = class(TSmForm)
     qrMain: TFDQuery;
     dsMain: TDataSource;
     FormStorage: TJvFormStorage;
@@ -35,7 +35,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, Tools, DataModule;
+uses Main, DataModule;
 
 procedure TfSectionEstimateList.FormActivate(Sender: TObject);
 begin
@@ -53,6 +53,7 @@ end;
 
 procedure TfSectionEstimateList.FormCreate(Sender: TObject);
 begin
+  inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   LoadDBGridSettings(grMain);

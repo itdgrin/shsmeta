@@ -31,7 +31,7 @@ object FormTariffsIndex: TFormTariffsIndex
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
     PopupMenu = PopupMenu
     ReadOnly = True
-    TabOrder = 0
+    TabOrder = 1
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
@@ -54,7 +54,7 @@ object FormTariffsIndex: TFormTariffsIndex
     DoubleBuffered = True
     ParentBackground = False
     ParentDoubleBuffered = False
-    TabOrder = 1
+    TabOrder = 0
     DesignSize = (
       729
       25)

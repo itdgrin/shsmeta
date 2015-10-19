@@ -16,6 +16,7 @@ object fLogIn: TfLogIn
   OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
+  OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   PixelsPerInch = 96

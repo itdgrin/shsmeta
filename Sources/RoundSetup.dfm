@@ -201,7 +201,6 @@ object fRoundSetup: TfRoundSetup
     ParentFont = False
     TabOrder = 6
     OnClick = btn1Click
-    ExplicitTop = 169
   end
   object btn2: TBitBtn
     Left = 89
@@ -218,7 +217,6 @@ object fRoundSetup: TfRoundSetup
     ParentFont = False
     TabOrder = 5
     OnClick = btn2Click
-    ExplicitTop = 169
   end
   object JvDBSpinEdit6: TJvDBSpinEdit
     Left = 192

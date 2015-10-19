@@ -134,7 +134,7 @@ object fForemanList: TfForemanList
     end
     object btn2: TBitBtn
       Left = 190
-      Top = 3
+      Top = 4
       Width = 75
       Height = 25
       Caption = #1042#1099#1073#1088#1072#1090#1100

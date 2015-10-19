@@ -259,6 +259,10 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         Font.Style = []
         ParentFont = False
         TabOrder = 0
+        ExplicitTop = -6
+        DesignSize = (
+          705
+          25)
         object lbl3: TLabel
           Left = 8
           Top = 5
@@ -267,11 +271,17 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           Caption = #1055#1086#1080#1089#1082':'
         end
         object btnSearch: TSpeedButton
-          Left = 366
-          Top = 1
-          Width = 59
-          Height = 22
+          Left = 620
+          Top = 0
+          Width = 84
+          Height = 25
+          Anchors = [akTop, akRight]
           Caption = #1055#1086#1080#1089#1082
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
           Glyph.Data = {
             F6000000424DF600000000000000760000002800000010000000100000000100
             04000000000080000000C40E0000C40E00001000000000000000000000000000
@@ -281,13 +291,15 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             0008000000080000000800F000000F00000800F000800F00000800F000800F00
             00088000000000000088880F00080F0008888800000800000888888000888000
             88888880F08880F0888888800088800088888888888888888888}
+          ParentFont = False
           OnClick = btnSearchClick
         end
         object edtSearch: TEdit
-          Left = 158
+          Left = 165
           Top = 2
-          Width = 209
+          Width = 449
           Height = 21
+          Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
           TextHint = #1042#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090' '#1076#1083#1103' '#1087#1086#1080#1089#1082#1072'...'
           OnChange = edtSearchChange

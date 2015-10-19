@@ -3087,16 +3087,16 @@
     object Edit4: TEdit
       Left = 378
       Top = 2
-      Width = 390
+      Width = 374
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 3
     end
     object PanelCalculationYesNo: TPanel
       Tag = 1
-      Left = 774
+      Left = 758
       Top = 1
-      Width = 137
+      Width = 153
       Height = 23
       Cursor = crHandPoint
       Anchors = [akTop, akRight]
@@ -3153,9 +3153,9 @@
       OnClick = LabelNameEstimateClick
     end
     object btn1: TSpeedButton
-      Left = 774
+      Left = 758
       Top = 2
-      Width = 137
+      Width = 153
       Height = 22
       Hint = #1042#1099#1087#1086#1083#1085#1080#1090#1100' '#1087#1077#1088#1077#1088#1072#1089#1095#1077#1090
       Anchors = [akTop, akRight]
@@ -3163,12 +3163,11 @@
       ParentShowHint = False
       ShowHint = True
       OnClick = btn1Click
-      ExplicitLeft = 777
     end
     object EditNameEstimate: TEdit
       Left = 125
       Top = 2
-      Width = 643
+      Width = 627
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
@@ -3336,6 +3335,12 @@
       Width = 100
       Height = 53
       Align = alClient
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 0
       ExplicitWidth = 100
       ExplicitHeight = 53

@@ -3,10 +3,10 @@ unit SignatureSSR;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, Tools;
 
 type
-  TFormSignatureSSR = class(TForm)
+  TFormSignatureSSR = class(TSmForm)
     label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -46,6 +46,7 @@ uses Main;
 
 procedure TFormSignatureSSR.FormCreate(Sender: TObject);
 begin
+  inherited;
   with Constraints do
   begin
     MinHeight := Height;
@@ -83,8 +84,8 @@ end;
 procedure TFormSignatureSSR.ButtonSaveClick(Sender: TObject);
 begin
   ButtonSave.Tag := 1;
-  MessageBox(0, PChar('Сохраниение зделанных изменений' + #13#10 + 'в реквизитах и закрытие окошка.'), CaptionDialog,
-    MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+  MessageBox(0, PChar('Сохраниение зделанных изменений' + #13#10 + 'в реквизитах и закрытие окошка.'),
+    CaptionDialog, MB_ICONINFORMATION + MB_OK + mb_TaskModal);
   Close;
 end;
 

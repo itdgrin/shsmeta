@@ -7,10 +7,11 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtCtrls, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.DBCGrids, JvComponentBase, JvFormPlacement, System.UITypes;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.DBCGrids, JvComponentBase, JvFormPlacement,
+  System.UITypes, Tools;
 
 type
-  TfCardObjectContractorServices = class(TForm)
+  TfCardObjectContractorServices = class(TSmForm)
     pnlBott: TPanel;
     btnCancel: TBitBtn;
     btnSave: TBitBtn;
@@ -53,7 +54,7 @@ implementation
 
 {$R *.dfm}
 
-uses Tools, Main, DataModule;
+uses Main, DataModule;
 
 procedure ShowContractorServices;
 begin
@@ -115,6 +116,7 @@ end;
 
 procedure TfCardObjectContractorServices.FormCreate(Sender: TObject);
 begin
+  inherited;
   LoadDBGridSettings(grMain);
 end;
 

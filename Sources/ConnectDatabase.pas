@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls;
+  Dialogs, StdCtrls, ExtCtrls, Tools;
 
 type
-  TFormConnectDatabase = class(TForm)
+  TFormConnectDatabase = class(TSmForm)
     ButtonCancel: TButton;
     ButtonConnect: TButton;
     Bevel2: TBevel;
@@ -20,6 +20,7 @@ type
     procedure ButtonCancelClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ButtonConnectClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -65,6 +66,12 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
+
+procedure TFormConnectDatabase.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
+end;
 
 procedure TFormConnectDatabase.FormShow(Sender: TObject);
 begin

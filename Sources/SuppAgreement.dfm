@@ -69,9 +69,9 @@ object fSuppAgreement: TfSuppAgreement
       294
       29)
     object btnSearch: TSpeedButton
-      Left = 230
+      Left = 208
       Top = 3
-      Width = 59
+      Width = 81
       Height = 22
       Anchors = [akTop, akRight]
       Caption = #1055#1086#1080#1089#1082
@@ -89,7 +89,7 @@ object fSuppAgreement: TfSuppAgreement
     object edtSearch: TEdit
       Left = 4
       Top = 4
-      Width = 220
+      Width = 198
       Height = 21
       Align = alCustom
       Anchors = [akLeft, akTop, akRight]

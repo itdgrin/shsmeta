@@ -4,13 +4,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls,
-  ExtCtrls, UITypes,
+  ExtCtrls, UITypes, Tools,
   Grids, IniFiles, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls;
 
 type
-  TFormProgramSettings = class(TForm)
+  TFormProgramSettings = class(TSmForm)
     PageControl1: TPageControl;
     ButtonCancel: TButton;
     ButtonSave: TButton;
@@ -60,8 +60,10 @@ type
     qrMainData: TFDQuery;
     dsMainData: TDataSource;
     dblkcbbOXROPR: TDBLookupComboBox;
-    lblFontRow: TLabel;
     dlgFont1: TFontDialog;
+    grp1: TGroupBox;
+    lblFontRow: TLabel;
+    lblFontControls: TLabel;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -80,6 +82,7 @@ type
     procedure GetSettings;
     procedure StringGridDemoMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure lblFontRowClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
 
   private
 
@@ -92,7 +95,7 @@ const
 
 implementation
 
-uses Main, DataModule, Tools;
+uses Main, DataModule;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -158,6 +161,12 @@ begin
       CanClose := True
     else
       CanClose := False;
+end;
+
+procedure TFormProgramSettings.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -280,6 +289,9 @@ begin
       lblFontRow.Font.Name := 'Tahoma';
       lblFontRow.Font.Size := 8;
       lblFontRow.Font.Style := [];
+      lblFontControls.Font.Name := 'Tahoma';
+      lblFontControls.Font.Size := 8;
+      lblFontControls.Font.Style := [];
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -337,6 +349,9 @@ begin
   PS.GridFontName := lblFontRow.Font.Name;
   PS.GridFontSize := lblFontRow.Font.Size;
   PS.GridFontStyle := Byte(lblFontRow.Font.Style);
+  PS.ControlsFontName := lblFontControls.Font.Name;
+  PS.ControlsFontSize := lblFontControls.Font.Size;
+  PS.ControlsFontStyle := Byte(lblFontControls.Font.Style);
   FormMain.WriteSettingsToFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   MessageBox(0, PChar('Некоторые изменения могут быть применены ' + sLineBreak +
@@ -380,18 +395,22 @@ begin
   chkAutoSaveCalcResourcesAfterExitCell.Checked := PS.AutoSaveCalcResourcesAfterExitCell;
   chkShowNeedSaveDialog.Checked := PS.ShowNeedSaveDialog;
   chkFindAutoRepInAllRate.Checked := PS.FindAutoRepInAllRate;
+
   lblFontRow.Font.Name := PS.GridFontName;
   lblFontRow.Font.Size := PS.GridFontSize;
   lblFontRow.Font.Style := TFontStyles(PS.GridFontStyle);
+
+  lblFontControls.Font.Name := PS.ControlsFontName;
+  lblFontControls.Font.Size := PS.ControlsFontSize;
+  lblFontControls.Font.Style := TFontStyles(PS.ControlsFontStyle);
 end;
 
 procedure TFormProgramSettings.lblFontRowClick(Sender: TObject);
 begin
-  dlgFont1.Font := lblFontRow.Font;
+  dlgFont1.Font := (Sender AS TLabel).Font;
   if dlgFont1.Execute then
   begin
-    lblFontRow.Font := dlgFont1.Font;
-    StringGridDemo.Font := dlgFont1.Font;
+    (Sender AS TLabel).Font := dlgFont1.Font;
   end;
 end;
 

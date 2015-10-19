@@ -274,7 +274,7 @@ object FormHelpC5: TFormHelpC5
     Align = alBottom
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 1
+    TabOrder = 2
     object PanelBottomButtons: TPanel
       Left = 0
       Top = 25
@@ -282,7 +282,7 @@ object FormHelpC5: TFormHelpC5
       Height = 27
       Align = alBottom
       ParentBackground = False
-      TabOrder = 0
+      TabOrder = 1
     end
     object Panel1: TPanel
       Left = 0
@@ -291,7 +291,7 @@ object FormHelpC5: TFormHelpC5
       Height = 25
       Align = alBottom
       ParentBackground = False
-      TabOrder = 1
+      TabOrder = 0
       DesignSize = (
         692
         25)
@@ -318,7 +318,7 @@ object FormHelpC5: TFormHelpC5
     Width = 692
     Height = 195
     Align = alClient
-    TabOrder = 2
+    TabOrder = 1
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11

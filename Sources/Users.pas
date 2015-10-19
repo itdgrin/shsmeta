@@ -8,10 +8,10 @@ uses
   JvFormPlacement, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdCtrls, Vcl.Buttons, Vcl.ToolWin, Vcl.Mask, JvExComCtrls,
-  JvDBTreeView;
+  JvDBTreeView, Tools;
 
 type
-  TfUsers = class(TForm)
+  TfUsers = class(TSmForm)
     pgc1: TPageControl;
     ts1: TTabSheet;
     ts2: TTabSheet;
@@ -83,7 +83,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, DataModule, Tools, GlobsAndConst;
+uses Main, DataModule, GlobsAndConst;
 
 procedure TfUsers.btn2Click(Sender: TObject);
 begin
@@ -112,6 +112,7 @@ end;
 
 procedure TfUsers.FormCreate(Sender: TObject);
 begin
+  inherited;
   pgc1.ActivePageIndex := 0;
   CloseOpen(qrUserGroup);
   CloseOpen(qrUser);

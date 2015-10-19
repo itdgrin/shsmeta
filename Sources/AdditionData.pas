@@ -15,13 +15,14 @@ uses
   fFrameRates,
   Main,
   Waiting,
+  Tools,
   fFrameSmeta,
   fFrameMaterial,
   fFrameMechanizm,
   fFrameEquipment;
 
 type
-  TFormAdditionData = class(TForm)
+  TFormAdditionData = class(TSmForm)
 
     PanelTopMenu: TPanel;
 
@@ -38,6 +39,7 @@ type
 
     procedure HideAllFrames;
     procedure SpeedButtonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private const
     CaptionButton = 'Добавление данных';
 
@@ -174,6 +176,12 @@ begin
   FormMain.PanelCover.Visible := True;
   FormCalculationEstimate.WindowState := wsMaximized;
   FormMain.PanelCover.Visible := False;
+end;
+
+procedure TFormAdditionData.FormCreate(Sender: TObject);
+begin
+  inherited;
+  //
 end;
 
 procedure TFormAdditionData.FormDestroy(Sender: TObject);
