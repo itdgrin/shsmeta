@@ -621,7 +621,6 @@
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = dbgrdRates12DrawColumnCell
-          OnDblClick = grRatesExDblClick
           OnEnter = dbgrdRatesEnter
           OnExit = grRatesExExit
           OnKeyDown = dbgrdRatesKeyDown

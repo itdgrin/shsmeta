@@ -699,7 +699,6 @@ type
     procedure btnKC6JClick(Sender: TObject);
     procedure PMRenumSelectedClick(Sender: TObject);
     procedure dsRatesExDataChange(Sender: TObject; Field: TField);
-    procedure grRatesExDblClick(Sender: TObject);
     procedure PMRenumPTMClick(Sender: TObject);
     procedure PMMatManPriceClick(Sender: TObject);
   private const
@@ -3475,19 +3474,6 @@ begin
     ((Field = qrRatesExNOM_ROW_MANUAL) and ((qrRatesExID_TYPE_DATA.Value = -1) or
     (qrRatesExID_TYPE_DATA.Value = -2) or (qrRatesExID_TYPE_DATA.Value = -3))) or (Grid.Col = 1) then
     AllowEdit := False;
-end;
-
-procedure TFormCalculationEstimate.grRatesExDblClick(Sender: TObject);
-begin
-  DM.qrDifferent.SQL.Text := 'Select UpdateNomManual(:AAA)';
-  DM.qrDifferent.ParamByName('AAA').Value := qrRatesExSM_ID.Value;
-  DM.qrDifferent.Active := True;
-  try
-    if not DM.qrDifferent.Eof then
-      ShowMessage(INTTOSTR(DM.qrDifferent.Fields[0].AsInteger));
-  finally
-    DM.qrDifferent.Active := False;
-  end;
 end;
 
 procedure TFormCalculationEstimate.grRatesExExit(Sender: TObject);
