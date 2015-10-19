@@ -657,11 +657,9 @@ end;
 
 procedure TSmForm.SetStyleForAllComponents(AComponent: TComponent);
 var I: Integer;
-    s: string;
 begin
   for I := 0 to AComponent.ComponentCount - 1 do
   begin
-    s := AComponent.Components[I].Name;
     SetComponentStyle(AComponent.Components[I]);
     SetStyleForAllComponents(AComponent.Components[I]);
   end;
