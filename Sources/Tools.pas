@@ -2,7 +2,7 @@ unit Tools;
 
 interface
 
-uses DBGrids, Main, Graphics, Windows, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
+uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes,
   ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid, FireDAC.Stan.Option,
   FireDAC.Stan.Param, Controls, Vcl.Buttons, Vcl.ComCtrls;
@@ -22,6 +22,7 @@ type
   TSmForm = class(TForm)
    // procedure FormCreate(Sender: TObject);
   private
+    procedure WMUpdateFormStyle(var Mes: TMessage); message WM_UPDATEFORMSTYLE;
     procedure SetStyleForAllComponents(AComponent: TComponent);
   protected
     procedure SetComponentStyle(AComponent: TComponent); virtual;
@@ -726,6 +727,11 @@ begin
   end
   else if AComponent is TJvDBGrid then
     LoadDBGridSettings(TJvDBGrid(AComponent));
+end;
+
+procedure TSmForm.WMUpdateFormStyle(var Mes: TMessage);
+begin
+  SetFormStyle;
 end;
 
 initialization
