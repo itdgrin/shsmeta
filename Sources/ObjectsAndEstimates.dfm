@@ -259,7 +259,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         Font.Style = []
         ParentFont = False
         TabOrder = 0
-        ExplicitTop = -6
         DesignSize = (
           705
           25)

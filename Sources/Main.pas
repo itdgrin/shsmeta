@@ -753,7 +753,10 @@ begin
   ButtonsWindows[CountOpenWindows] := TSpeedButton.Create(Application);
   ButtonsWindows[CountOpenWindows].Parent := PanelOpenWindows;
   ButtonsWindows[CountOpenWindows].Align := alLeft;
-  ButtonsWindows[CountOpenWindows].Width := 140;
+  ButtonsWindows[CountOpenWindows].Font.Name := PS.ControlsFontName;
+  ButtonsWindows[CountOpenWindows].Font.Size := PS.ControlsFontSize;
+  ButtonsWindows[CountOpenWindows].Font.Style := TFontStyles(PS.ControlsFontStyle);
+  ButtonsWindows[CountOpenWindows].Width := GetTextWidth(CaptionButton, Handle) + 4;
   ButtonsWindows[CountOpenWindows].Height := 25;
   ButtonsWindows[CountOpenWindows].Top := 1;
   ButtonsWindows[CountOpenWindows].Caption := CaptionButton;
