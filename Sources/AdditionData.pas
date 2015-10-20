@@ -157,6 +157,8 @@ begin
   // FormMain.PanelCover.Visible := False;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
+
+  SetFormStyle;
 end;
 
 procedure TFormAdditionData.FormActivate(Sender: TObject);
@@ -173,9 +175,10 @@ procedure TFormAdditionData.FormClose(Sender: TObject; var Action: TCloseAction)
 begin
   Action := caFree;
 
-  FormMain.PanelCover.Visible := True;
+ // FormMain.PanelCover.Visible := True;
   FormCalculationEstimate.WindowState := wsMaximized;
-  FormMain.PanelCover.Visible := False;
+  FormCalculationEstimate.Refresh;
+//  FormMain.PanelCover.Visible := False;
 end;
 
 procedure TFormAdditionData.FormCreate(Sender: TObject);

@@ -245,7 +245,7 @@
               Left = 7
               Top = 5
               Width = 57
-              Height = 13
+              Height = 17
               Hint = #1054#1090#1082#1088#1099#1090#1100' '#1086#1082#1085#1086' '#1080#1089#1093#1086#1076#1085#1099#1093' '#1076#1072#1085#1085#1099#1093
               Margins.Left = 7
               Margins.Top = 5
@@ -263,6 +263,7 @@
               OnClick = LabelSbornikClick
               OnMouseEnter = LabelSbornikMouseEnter
               OnMouseLeave = LabelSbornikMouseLeave
+              ExplicitHeight = 13
             end
             object btnSelectCollection: TSpeedButton
               AlignWithMargins = True
@@ -485,10 +486,11 @@
               Left = 8
               Top = 3
               Width = 121
-              Height = 13
+              Height = 19
               Margins.Left = 8
               Align = alLeft
               Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077' '#1085#1072':'
+              ExplicitHeight = 13
             end
             object btnSelectWinterPrice: TSpeedButton
               AlignWithMargins = True

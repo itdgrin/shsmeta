@@ -1036,17 +1036,6 @@ begin
   // ¬ысота панели с нижней таблицей
   PanelTableBottom.Height := 110 + PanelBottom.Height;
 
-  // ”становка стил€ DBGrid таблицы
-  LoadDBGridSettings(dbgrdMaterial);
-  LoadDBGridSettings(dbgrdMechanizm);
-  LoadDBGridSettings(dbgrdDevices);
-  LoadDBGridSettings(dbgrdDescription);
-  LoadDBGridSettings(dbgrdDump);
-  LoadDBGridSettings(dbgrdTransp);
-  LoadDBGridSettings(dbgrdStartup);
-  LoadDBGridSettings(dbgrdCalculations);
-  LoadDBGridSettings(grRatesEx);
-
   // ѕо умолчанию будет предлагать добавить пуск и регулировку
   FAutoAddE18 := True;
   FAutoAddE20 := True;
@@ -1059,6 +1048,7 @@ begin
     FormMain.CreateButtonOpenWindow(CaptionButton[1], HintButton[1], Self, 1)
   else
     FormMain.CreateButtonOpenWindow(CaptionButton[2], HintButton[2], Self, 1);
+
   flLoaded := True;
 end;
 
@@ -4852,7 +4842,8 @@ begin
 
   qrTemp.SQL.Clear;
   qrTemp.SQL.Add('SELECT year,monat,DATE_BEG FROM stavka WHERE stavka_id = ' +
-    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + INTTOSTR(qrRatesExSM_ID.AsInteger) + ')');
+    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' +
+      INTTOSTR(qrRatesExSM_ID.AsInteger) + ')');
   qrTemp.Active := True;
   Month1 := qrTemp.FieldByName('monat').AsInteger;
   Year1 := qrTemp.FieldByName('year').AsInteger;
@@ -4876,12 +4867,17 @@ begin
       SQL.Clear;
       SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
         'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
-        'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
-        ' as "PriceNoVAT" ' + 'FROM materialnorm as TMatNorm ' +
+        'TMat.unit_id as "UnitId", mat_name as "MatName", ' +
+        PriceVAT + ' as "PriceVAT", ' + PriceNoVAT + ' as "PriceNoVAT", ' +
+        'TMat.BASE as "BASE" ' +
+        'FROM materialnorm as TMatNorm ' +
         'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
-        'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
-        '(TMatCoast.material_id = TMatNorm.material_id) and (monat = ' + INTTOSTR(Month1) + ') and (year = ' +
-        INTTOSTR(Year1) + ') WHERE (TMatNorm.normativ_id = ' + INTTOSTR(ARateId) + ') order by 1';
+        'LEFT JOIN units ON TMat.unit_id = units.unit_id ' +
+        'LEFT JOIN materialcoastg as TMatCoast ON ' +
+          '(TMatCoast.material_id = TMatNorm.material_id) and ' +
+          '(monat = ' + INTTOSTR(Month1) + ') and ' +
+          '(year = ' + INTTOSTR(Year1) + ') ' +
+        'WHERE (TMatNorm.normativ_id = ' + INTTOSTR(ARateId) + ') order by 1';
       Active := True;
 
       Filtered := False;
@@ -4914,9 +4910,10 @@ begin
 
         qrTemp1.SQL.Text := 'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ' +
           'ID, ID_CARD_RATE, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
-          'COAST_NO_NDS, COAST_NDS, PROC_TRANSP) values ' +
+          'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE) values ' +
           '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :MAT_ID, :MAT_CODE, ' +
-          ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, :PROC_TRANSP)';
+          ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' +
+          ':PROC_TRANSP, :BASE)';
         qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
         qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
         qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -4930,6 +4927,7 @@ begin
         qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
         qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
         qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
+        qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
         qrTemp1.ExecSQL;
 
         CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, ARateId, FieldByName('MatCode').AsString,
@@ -4956,11 +4954,13 @@ begin
 
         if MaxMId > 0 then
         begin
-          qrTemp1.SQL.Text := 'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
+          qrTemp1.SQL.Text := 'Insert into materialcard_temp ' +
+            '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
             'CONSIDERED, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
-            'COAST_NO_NDS, COAST_NDS, PROC_TRANSP) values ' +
+            'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE) values ' +
             '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
-            ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' + ':COAST_NDS, :PROC_TRANSP)';
+            ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
+            ':COAST_NDS, :PROC_TRANSP, :BASE)';
           qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
           qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
           qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -4975,6 +4975,7 @@ begin
           qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
           qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
           qrTemp1.ParamByName('PROC_TRANSP').Value := 0;
+          qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
           qrTemp1.ExecSQL;
 
           if MaxMId > 0 then
@@ -5005,13 +5006,16 @@ begin
         'mechnorm.norm_ras as "MechNorm", units.unit_name as "Unit", ' +
         'mech.mech_name as "MechName", mechcoast.coast1 as "CoastVAT", ' +
         'mechcoast.coast2 as "CoastNoVAT", mechcoast.zp1 as "SalaryVAT", ' +
-        'mechcoast.zp2 as "SalaryNoVAT", IFNULL(mech.MECH_PH, 0) as "MECH_PH" ' +
+        'mechcoast.zp2 as "SalaryNoVAT", IFNULL(mech.MECH_PH, 0) as "MECH_PH", ' +
+        'mech.BASE as "BASE" ' +
         'FROM mechanizmnorm as mechnorm ' +
         'JOIN mechanizm as mech ON mechnorm.mechanizm_id = mech.mechanizm_id ' +
-        'JOIN units ON mech.unit_id = units.unit_id ' + 'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
-        '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and  ' + '(monat = ' + INTTOSTR(Month1) +
-        ') and (year = ' + INTTOSTR(Year1) + ') WHERE (mechnorm.normativ_id = ' + INTTOSTR(ARateId) +
-        ') order by 1');
+        'JOIN units ON mech.unit_id = units.unit_id ' +
+        'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
+          '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and ' +
+          '(monat = ' + INTTOSTR(Month1) + ') and ' +
+          '(year = ' + INTTOSTR(Year1) + ') ' +
+        'WHERE (mechnorm.normativ_id = ' + INTTOSTR(ARateId) + ') order by 1');
 
       Active := True;
       First;
@@ -5031,9 +5035,9 @@ begin
           qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (SM_ID, DATA_ROW_ID, ' +
             'ID, ID_CARD_RATE, MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, ' +
             'MECH_UNIT, COAST_NO_NDS, COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, ' +
-            'NORMATIV) values (:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, ' +
+            'NORMATIV, BASE) values (:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, ' +
             ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
-            ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :NORMATIV)';
+            ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :NORMATIV, :BASE)';
           qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
           qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
           qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -5049,16 +5053,15 @@ begin
           qrTemp1.ParamByName('ZP_MACH_NO_NDS').Value := FieldByName('SalaryNoVAT').AsExtended;
           qrTemp1.ParamByName('ZP_MACH_NDS').Value := FieldByName('SalaryVAT').AsExtended;
           qrTemp1.ParamByName('NORMATIV').Value := FieldByName('MECH_PH').AsExtended;
+          qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
           qrTemp1.ExecSQL;
 
           if MaxMId > 0 then
             CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger, ARateId,
               FieldByName('MechCode').AsString, FieldByName('MechName').AsString);
         end;
-
         Next;
       end;
-
       Active := False;
     end;
   except
@@ -6615,8 +6618,6 @@ begin
       RDW_NOINTERNALPAINT);
     DM.FDGUIxWaitCursor1.ScreenCursor := gcrDefault;
   end;
-
-  Application.ProcessMessages;
 end;
 
 procedure TFormCalculationEstimate.ShowNeedSaveDialog;

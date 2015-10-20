@@ -92,8 +92,6 @@ var ev: TNotifyEvent;
 begin
   inherited Create(AOwner);
 
-  VSTSetting(VST); // НАСТРАИВАЕМ ЦВЕТА
-
   PanelMemo.Constraints.MinHeight := 35;
   SpeedButtonShowHide.Hint := 'Свернуть панель';
 

@@ -5,16 +5,12 @@ interface
 uses
   Windows, Grids, Main, VirtualTrees, Graphics, ExtCtrls, Buttons;
 
-// Windows, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Buttons, ExtCtrls, Menus, Clipbrd, DB, 
-// VirtualTrees, fFrameStatusBar;
-
 procedure StringGridDrawCellDefault(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
 procedure VSTAfterCellPaintDefault(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
   Column: TColumnIndex; CellRect: TRect; const CellText: string);
 procedure VSTBeforeCellPaintDefault(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode;
   Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect; var ContentRect: TRect);
 procedure VSTFocusChangedDefault(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
-procedure VSTSetting(const VST: TVirtualStringTree);
 procedure AutoWidthColumn(SG: TStringGrid; Nom: Integer); overload;
 procedure AutoWidthColumn(VST: TVirtualStringTree; Nom: Integer); overload;
 function FilteredString(const TextSearch, FieldFilter: string): string;
@@ -81,8 +77,6 @@ begin
     TargetCanvas.Font.Color := PS.FontSelectCell
   else
     TargetCanvas.Font.Color := clblack;
-
-  TargetCanvas.TextOut(CellRect.Left + 8, CellRect.Top + 2, CellText);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -121,19 +115,6 @@ begin
         Delete(ColumnText, pos(Sim, ColumnText), 1);
         Header.Columns[i].Text := ColumnText;
       end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure VSTSetting(const VST: TVirtualStringTree);
-begin
-  VST.Colors.SelectionTextColor := PS.FontSelectCell;
-
-  VST.Colors.UnfocusedSelectionColor := PS.SelectRowUnfocusedTable;
-  VST.Colors.UnfocusedSelectionBorderColor := PS.SelectRowUnfocusedTable;
-
-  VST.Colors.FocusedSelectionColor := PS.BackgroundSelectCell;
-  VST.Colors.FocusedSelectionBorderColor := PS.BackgroundSelectCell;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

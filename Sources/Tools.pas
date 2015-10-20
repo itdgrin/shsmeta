@@ -5,7 +5,7 @@ interface
 uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes,
   ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid, FireDAC.Stan.Option,
-  FireDAC.Stan.Param, Controls, Vcl.Buttons, Vcl.ComCtrls;
+  FireDAC.Stan.Param, Controls, Vcl.Buttons, Vcl.ComCtrls, VirtualTrees;
 
 // Общий тип классификации форм
 type
@@ -671,13 +671,9 @@ begin
   if AComponent is TButton then
   begin
     if PS.ControlsFontName <> '' then
-    begin
       TButton(AComponent).Font.Name := PS.ControlsFontName;
-    end;
     if PS.ControlsFontSize <> 0 then
-    begin
       TButton(AComponent).Font.SIZE := PS.ControlsFontSize;
-    end;
     TButton(AComponent).Font.Style := TFontStyles(PS.ControlsFontStyle);
     if TButton(AComponent).Hint = '' then
       TButton(AComponent).Hint := TButton(AComponent).Caption;
@@ -686,13 +682,9 @@ begin
   else if AComponent is TSpeedButton then
   begin
     if PS.ControlsFontName <> '' then
-    begin
       TSpeedButton(AComponent).Font.Name := PS.ControlsFontName;
-    end;
     if PS.ControlsFontSize <> 0 then
-    begin
       TSpeedButton(AComponent).Font.SIZE := PS.ControlsFontSize;
-    end;
     TSpeedButton(AComponent).Font.Style := TFontStyles(PS.ControlsFontStyle);
     if TSpeedButton(AComponent).Hint = '' then
       TSpeedButton(AComponent).Hint := TSpeedButton(AComponent).Caption;
@@ -701,13 +693,9 @@ begin
   else if AComponent is TBitBtn then
   begin
     if PS.ControlsFontName <> '' then
-    begin
       TBitBtn(AComponent).Font.Name := PS.ControlsFontName;
-    end;
     if PS.ControlsFontSize <> 0 then
-    begin
       TBitBtn(AComponent).Font.SIZE := PS.ControlsFontSize;
-    end;
     TBitBtn(AComponent).Font.Style := TFontStyles(PS.ControlsFontStyle);
     if TBitBtn(AComponent).Hint = '' then
       TBitBtn(AComponent).Hint := TBitBtn(AComponent).Caption;
@@ -716,14 +704,41 @@ begin
   else if AComponent is TListView then
   begin
     if PS.ControlsFontName <> '' then
-    begin
       TListView(AComponent).Font.Name := PS.GridFontName;
+    if PS.ControlsFontSize <> 0 then
+      TListView(AComponent).Font.SIZE := PS.GridFontSize;
+    TListView(AComponent).Font.Style := TFontStyles(PS.GridFontStyle);
+  end
+  else if AComponent is TStringGrid then
+  begin
+    if PS.ControlsFontName <> '' then
+      TStringGrid(AComponent).Font.Name := PS.GridFontName;
+    if PS.ControlsFontSize <> 0 then
+      TStringGrid(AComponent).Font.Size := PS.GridFontSize;
+    TStringGrid(AComponent).Font.Style := TFontStyles(PS.GridFontStyle);
+  end
+  else if AComponent is TVirtualStringTree then
+  begin
+    if PS.ControlsFontName <> '' then
+    begin
+      TVirtualStringTree(AComponent).Font.Name := PS.GridFontName;
+      TVirtualStringTree(AComponent).Header.Font.Name := PS.GridFontName;
     end;
     if PS.ControlsFontSize <> 0 then
     begin
-      TListView(AComponent).Font.SIZE := PS.GridFontSize;
+      TVirtualStringTree(AComponent).Font.Size := PS.GridFontSize;
+      TVirtualStringTree(AComponent).Header.Font.Size := PS.GridFontSize;
     end;
-    TListView(AComponent).Font.Style := TFontStyles(PS.GridFontStyle);
+    TVirtualStringTree(AComponent).Font.Style := TFontStyles(PS.GridFontStyle);
+    TVirtualStringTree(AComponent).Header.Font.Style := TFontStyles(PS.GridFontStyle);
+
+    TVirtualStringTree(AComponent).Colors.SelectionTextColor := PS.FontSelectCell;
+
+    TVirtualStringTree(AComponent).Colors.UnfocusedSelectionColor := PS.SelectRowUnfocusedTable;
+    TVirtualStringTree(AComponent).Colors.UnfocusedSelectionBorderColor := PS.SelectRowUnfocusedTable;
+
+    TVirtualStringTree(AComponent).Colors.FocusedSelectionColor := PS.BackgroundSelectCell;
+    TVirtualStringTree(AComponent).Colors.FocusedSelectionBorderColor := PS.BackgroundSelectCell;
   end
   else if AComponent is TJvDBGrid then
     LoadDBGridSettings(TJvDBGrid(AComponent));

@@ -151,6 +151,8 @@ begin
   FormMain.PanelCover.Visible := False;
 
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
+
+  SetFormStyle;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

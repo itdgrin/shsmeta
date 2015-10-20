@@ -48,9 +48,6 @@ const
 constructor TFrameIndexesChangeCost.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-
-  VSTSetting(VST);
-  // TableFilling;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

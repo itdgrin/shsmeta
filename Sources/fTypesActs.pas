@@ -48,9 +48,6 @@ const
 constructor TFrameTypesActs.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-
-  VSTSetting(VST);
-  // TableFilling;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

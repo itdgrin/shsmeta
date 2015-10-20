@@ -78,7 +78,6 @@ var ev: TNotifyEvent;
 begin
   inherited Create(AOwner);
   StrFilterData := '';
-  VSTSetting(VST); // Õ¿—“–¿»¬¿≈Ã ÷¬≈“¿
 
   DecodeDate(ADate,y,m,d);
   ev := edtYear.OnChange;
@@ -346,7 +345,8 @@ procedure TFramePriceTransportations.VSTBeforeCellPaint(Sender: TBaseVirtualTree
   Node: PVirtualNode; Column: TColumnIndex; CellPaintMode: TVTCellPaintMode; CellRect: TRect;
   var ContentRect: TRect);
 begin
-  VSTBeforeCellPaintDefault(Sender, TargetCanvas, Node, Column, CellPaintMode, CellRect, ContentRect);
+  VSTBeforeCellPaintDefault(Sender, TargetCanvas, Node, Column,
+    CellPaintMode, CellRect, ContentRect);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

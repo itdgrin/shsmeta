@@ -34,7 +34,7 @@ object FormAdditionData: TFormAdditionData
     object SpeedButtonRates: TSpeedButton
       Left = 1
       Top = 1
-      Width = 150
+      Width = 140
       Height = 25
       GroupIndex = 1
       Down = True
@@ -48,9 +48,9 @@ object FormAdditionData: TFormAdditionData
       OnClick = SpeedButtonClick
     end
     object SpeedButtonMaterial: TSpeedButton
-      Left = 157
+      Left = 143
       Top = 1
-      Width = 150
+      Width = 140
       Height = 25
       GroupIndex = 1
       Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
@@ -63,9 +63,9 @@ object FormAdditionData: TFormAdditionData
       OnClick = SpeedButtonClick
     end
     object SpeedButtonMechanizm: TSpeedButton
-      Left = 313
+      Left = 285
       Top = 1
-      Width = 150
+      Width = 140
       Height = 25
       GroupIndex = 1
       Caption = #1052#1077#1093#1072#1085#1080#1079#1084#1099
@@ -78,9 +78,9 @@ object FormAdditionData: TFormAdditionData
       OnClick = SpeedButtonClick
     end
     object SpeedButtonEquipment: TSpeedButton
-      Left = 469
+      Left = 427
       Top = 1
-      Width = 150
+      Width = 140
       Height = 25
       GroupIndex = 1
       Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077

@@ -419,9 +419,9 @@
           Caption = #1056#1072#1079#1088#1103#1076':'
         end
         object btnMaterials: TSpeedButton
-          Left = 536
+          Left = 505
           Top = -1
-          Width = 90
+          Width = 100
           Height = 25
           Hint = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
           Anchors = [akTop, akRight]
@@ -434,9 +434,9 @@
           OnClick = btnMaterialsClick
         end
         object btnMechanisms: TSpeedButton
-          Left = 629
+          Left = 607
           Top = -1
-          Width = 90
+          Width = 100
           Height = 25
           Hint = #1052#1077#1093#1072#1085#1080#1079#1084#1099' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
           Anchors = [akTop, akRight]
@@ -448,9 +448,9 @@
           OnClick = btnMechanismsClick
         end
         object btnEquipments: TSpeedButton
-          Left = 722
+          Left = 709
           Top = -1
-          Width = 90
+          Width = 100
           Height = 25
           Hint = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103' '#1087#1086' '#1088#1072#1089#1094#1077#1085#1082#1077
           Anchors = [akTop, akRight]
@@ -462,9 +462,9 @@
           OnClick = btnEquipmentsClick
         end
         object btnDescription: TSpeedButton
-          Left = 815
+          Left = 811
           Top = -1
-          Width = 90
+          Width = 100
           Height = 25
           Hint = #1054#1087#1080#1089#1072#1085#1080#1077' '#1088#1072#1073#1086#1090' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1077
           Anchors = [akTop, akRight]
@@ -1663,7 +1663,7 @@
                 FieldName = 'COAST_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '   '#1062#1077#1085#1072' ('#1057#1084')    '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' ('#1057#1084') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1672,7 +1672,7 @@
                 FieldName = 'COAST_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1062#1077#1085#1072' ('#1057#1084')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1681,7 +1681,7 @@
                 FieldName = 'PRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1057#1084')      '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. ('#1057#1084') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1690,7 +1690,7 @@
                 FieldName = 'PRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1057#1084')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1699,7 +1699,7 @@
                 FieldName = 'ZP_MACH_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057#1084')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057#1084') '#1089' '#1053#1044#1057', p.'
                 Width = 75
                 Visible = True
               end
@@ -1708,7 +1708,7 @@
                 FieldName = 'ZP_MACH_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057#1084')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 75
                 Visible = True
               end
@@ -1717,7 +1717,7 @@
                 FieldName = 'ZPPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057#1084')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = #1047#1055' '#1084#1072#1096'. ('#1057#1084') '#1089' '#1053#1044#1057', p.'
                 Width = 80
                 Visible = True
               end
@@ -1726,7 +1726,7 @@
                 FieldName = 'ZPPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1047#1055' '#1084#1072#1096'. ('#1057#1084')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = #1047#1055' '#1084#1072#1096'. ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 80
                 Visible = True
               end
@@ -1743,7 +1743,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 75
                 Visible = True
               end
@@ -1751,7 +1751,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 75
                 Visible = True
               end
@@ -1760,7 +1760,7 @@
                 FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')      '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 85
                 Visible = True
               end
@@ -1769,7 +1769,7 @@
                 FieldName = 'FPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 85
                 Visible = True
               end
@@ -1777,7 +1777,7 @@
                 Expanded = False
                 FieldName = 'FZP_MACH_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1092#1072#1082#1090')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', p.'
                 Width = 90
                 Visible = True
               end
@@ -1785,7 +1785,7 @@
                 Expanded = False
                 FieldName = 'FZP_MACH_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1092#1072#1082#1090')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 90
                 Visible = True
               end
@@ -1794,7 +1794,7 @@
                 FieldName = 'FZPPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1047#1055' '#1084#1072#1096'. ('#1092#1072#1082#1090')   '#1089' '#1053#1044#1057', p.'
+                Title.Caption = #1047#1055' '#1084#1072#1096'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', p.'
                 Width = 85
                 Visible = True
               end
@@ -1803,7 +1803,7 @@
                 FieldName = 'FZPPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1047#1055' '#1084#1072#1096'. ('#1092#1072#1082#1090')  '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = #1047#1055' '#1084#1072#1096'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 85
                 Visible = True
               end
@@ -1887,8 +1887,9 @@
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
             CanDelete = False
             EditControls = <>
+            AutoSizeRows = False
             RowsHeight = 17
-            TitleRowHeight = 17
+            TitleRowHeight = 40
             WordWrap = True
             OnCanEditCell = dbgrdMaterialCanEditCell
             Columns = <
@@ -1950,7 +1951,7 @@
                 FieldName = 'COAST_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '   '#1062#1077#1085#1072' ('#1057#1084')    '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' ('#1057#1084') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1959,7 +1960,7 @@
                 FieldName = 'COAST_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1062#1077#1085#1072' ('#1057#1084')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -1968,7 +1969,7 @@
                 FieldName = 'PRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '   '#1057#1090#1086#1080#1084'. ('#1057#1084')      '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. ('#1057#1084') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1977,7 +1978,7 @@
                 FieldName = 'PRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1057#1084')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -1995,7 +1996,7 @@
                 FieldName = 'TRANSP_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057#1084')  '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057#1084') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2021,7 +2022,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 75
                 Visible = True
               end
@@ -2029,7 +2030,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 75
                 Visible = True
               end
@@ -2038,7 +2039,7 @@
                 FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')     '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 85
                 Visible = True
               end
@@ -2047,7 +2048,7 @@
                 FieldName = 'FPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 85
                 Visible = True
               end
@@ -2055,7 +2056,7 @@
                 Expanded = False
                 FieldName = 'FTRANSP_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090')  '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 85
                 Visible = True
               end
@@ -2190,7 +2191,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -2198,7 +2199,7 @@
                 Expanded = False
                 FieldName = 'FCOAST_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1062#1077#1085#1072' ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -2206,7 +2207,7 @@
                 Expanded = False
                 FieldName = 'DEVICE_TRANSP_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090')  '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 90
                 Visible = True
               end
@@ -2223,7 +2224,7 @@
                 FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')     '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 90
                 Visible = True
               end
@@ -2232,7 +2233,7 @@
                 FieldName = 'FPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = ' '#1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090')    '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 90
                 Visible = True
               end
@@ -2361,7 +2362,7 @@
                 Expanded = False
                 FieldName = 'COAST_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1062#1077#1085#1072' '#1079#1072' '#1077#1076'.     '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' '#1079#1072' '#1077#1076'. '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 75
                 Visible = True
               end
@@ -2369,7 +2370,7 @@
                 Expanded = False
                 FieldName = 'COAST_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' '#1079#1072' '#1077#1076'.  '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' '#1079#1072' '#1077#1076'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 75
                 Visible = True
               end
@@ -2377,7 +2378,7 @@
                 Expanded = False
                 FieldName = 'PRICE_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '    '#1057#1090#1086#1080#1084'.        '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -2385,7 +2386,7 @@
                 Expanded = False
                 FieldName = 'PRICE_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '    '#1057#1090#1086#1080#1084'.     '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end>
@@ -2492,7 +2493,7 @@
                 Expanded = False
                 FieldName = 'CLASS'
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1050#1083#1072#1089#1089'  '#1075#1088#1091#1079#1072
+                Title.Caption = #1050#1083#1072#1089#1089'  '#1075#1088#1091#1079#1072
                 Width = 50
                 Visible = True
               end
@@ -2524,7 +2525,7 @@
                 Expanded = False
                 FieldName = 'COAST_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1062#1077#1085#1072' '#1079#1072' '#1077#1076'.     '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' '#1079#1072' '#1077#1076'. '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 75
                 Visible = True
               end
@@ -2532,7 +2533,7 @@
                 Expanded = False
                 FieldName = 'COAST_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' '#1079#1072' '#1077#1076'.  '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' '#1079#1072' '#1077#1076'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 75
                 Visible = True
               end
@@ -2540,7 +2541,7 @@
                 Expanded = False
                 FieldName = 'TRANSP_DIST'
                 Title.Alignment = taCenter
-                Title.Caption = '  '#1056#1072#1089#1090#1086#1103#1085#1080#1077',      '#1082#1084
+                Title.Caption = #1056#1072#1089#1090#1086#1103#1085#1080#1077', '#1082#1084
                 Width = 75
                 Visible = True
               end
@@ -2556,7 +2557,7 @@
                 Expanded = False
                 FieldName = 'PRICE_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '    '#1057#1090#1086#1080#1084'.        '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -2564,7 +2565,7 @@
                 Expanded = False
                 FieldName = 'PRICE_NO_NDS'
                 Title.Alignment = taCenter
-                Title.Caption = '    '#1057#1090#1086#1080#1084'.     '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end>

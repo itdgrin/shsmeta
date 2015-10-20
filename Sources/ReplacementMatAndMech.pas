@@ -512,12 +512,12 @@ begin
   inherited Create(nil);
 
   //Зачем этот код именно в Create не известно
-  grdRep.ColWidths[0] := 20;
+  grdRep.ColWidths[0] := 22;
   grdRep.ColWidths[1] := 90;
-  grdRep.ColWidths[2] := 260;
+  grdRep.ColWidths[2] := 240;
   grdRep.ColWidths[3] := 70;
-  grdRep.ColWidths[4] := 100;
-  grdRep.ColWidths[5] := 100;
+  grdRep.ColWidths[4] := 120;
+  grdRep.ColWidths[5] := 120;
 
   //Скрывает колонку коэффициентов для режима добавления
   if FAddMode then

@@ -118,13 +118,7 @@ type
 
     procedure FrameResize(Sender: TObject);
     procedure ReceivingSearch(vStr: string);
-    procedure StringGridNCClick(Sender: TObject);
-    procedure StringGridNCEnter(Sender: TObject);
-    procedure StringGridNCExit(Sender: TObject);
-    procedure StringGridNCKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure StringGridNCMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure StringGridNCMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure StringGridSWDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
+
     procedure VSTKeyPress(Sender: TObject; var Key: Char);
     procedure SplitterLeftMoved(Sender: TObject);
     procedure SplitterRightMoved(Sender: TObject);
@@ -862,46 +856,6 @@ procedure TFrameRates.SplitterTopMoved(Sender: TObject);
 begin
   ImageSplitterTop.Top := SplitterTop.Top;
   ImageSplitterTop.Left := SplitterTop.Left + (SplitterTop.Width - ImageSplitterTop.Width) div 2;
-end;
-
-procedure TFrameRates.StringGridNCClick(Sender: TObject);
-begin
-  (Sender as TStringGrid).Repaint;
-end;
-
-procedure TFrameRates.StringGridNCEnter(Sender: TObject);
-begin
-  (Sender as TStringGrid).Repaint;
-end;
-
-procedure TFrameRates.StringGridNCExit(Sender: TObject);
-begin
-  (Sender as TStringGrid).Repaint;
-end;
-
-procedure TFrameRates.StringGridNCKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  with (Sender as TStringGrid) do
-    if (Key = Ord(#39)) and (ColWidths[Col + 1] = -1) then
-      Key := Ord(#0);
-end;
-
-procedure TFrameRates.StringGridNCMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
-begin
-  (Sender as TStringGrid).Repaint;
-end;
-
-procedure TFrameRates.StringGridNCMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-begin
-  if ssLeft in Shift then
-    (Sender as TStringGrid).Repaint;
-end;
-
-procedure TFrameRates.StringGridSWDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
-  State: TGridDrawState);
-begin
-  StringGridDrawCellDefault(Sender, ACol, ARow, Rect, State);
 end;
 
 procedure TFrameRates.tmrFilterTimer(Sender: TObject);

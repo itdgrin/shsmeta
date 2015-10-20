@@ -61,6 +61,7 @@ object fmManPriceSelect: TfmManPriceSelect
       RowSelect = True
       TabOrder = 0
       ViewStyle = vsReport
+      OnDblClick = lvDetPriceDblClick
     end
   end
   object pnlButtons: TPanel

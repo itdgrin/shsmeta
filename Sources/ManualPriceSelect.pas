@@ -34,6 +34,7 @@ type
     procedure acSelectExecute(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure lvDetPriceDblClick(Sender: TObject);
   private
     FDataType: Integer;
     FSprID: Integer;
@@ -107,6 +108,13 @@ procedure TfmManPriceSelect.FormCreate(Sender: TObject);
 begin
   inherited;
   //
+end;
+
+procedure TfmManPriceSelect.lvDetPriceDblClick(Sender: TObject);
+begin
+  if lvDetPrice.ItemIndex = -1 then
+    Exit;
+  acSelectExecute(nil);
 end;
 
 end.

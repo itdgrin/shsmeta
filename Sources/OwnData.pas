@@ -37,7 +37,6 @@ type
     procedure HideAllFrames;
 
     procedure SpeedButtonClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
   private const
     CaptionButton = 'Собственные данные';
 
@@ -142,6 +141,8 @@ begin
   FormMain.PanelCover.Visible := False;
 
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
+
+  SetFormStyle;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -149,12 +150,6 @@ end;
 procedure TFormOwnData.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
-end;
-
-procedure TFormOwnData.FormCreate(Sender: TObject);
-begin
-  inherited;
-  //
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
