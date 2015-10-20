@@ -55,7 +55,6 @@ end;
 procedure TfSelectDialog.FormCreate(Sender: TObject);
 begin
   inherited;
-  LoadDBGridSettings(grMain1);
 end;
 
 procedure TfSelectDialog.grMain1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;

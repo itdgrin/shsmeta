@@ -107,7 +107,6 @@ begin
     if not qrMain.Active then
       qrMain.Active := True;
   end;
-  LoadDBGridSettings(grSostav);
 
   if Assigned(FormReferenceData) then
   begin

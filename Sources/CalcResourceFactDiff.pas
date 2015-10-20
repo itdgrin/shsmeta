@@ -83,7 +83,6 @@ begin
   inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, fCalcResourceFactDiff, 1);
-  LoadDBGridSettings(grMaterial);
 end;
 
 procedure TfCalcResourceFactDiff.FormDestroy(Sender: TObject);

@@ -145,8 +145,6 @@ type
     procedure grRatesExit(Sender: TObject);
     procedure qrNormativAfterScroll(DataSet: TDataSet);
     procedure tmrScrollTimer(Sender: TObject);
-    procedure grRatesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
-      State: TGridDrawState);
     procedure btnNextClick(Sender: TObject);
     procedure btnPrevClick(Sender: TObject);
     procedure qrNormativBeforeOpen(DataSet: TDataSet);
@@ -162,8 +160,6 @@ type
     procedure mAddClick(Sender: TObject);
     procedure qrNormativNewRecord(DataSet: TDataSet);
     procedure cbbTypeChange(Sender: TObject);
-    procedure grHistoryDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
-      State: TGridDrawState);
     procedure mNCAddClick(Sender: TObject);
     procedure mNCDelClick(Sender: TObject);
     procedure qrNormativBeforePost(DataSet: TDataSet);
@@ -334,12 +330,6 @@ begin
 
   DataBase := vDataBase;
   AllowAddition := vAllowAddition;
-
-  // ----------------------------------------
-  LoadDBGridSettings(grHistory);
-  LoadDBGridSettings(grRates);
-  LoadDBGridSettings(grNC);
-  LoadDBGridSettings(grSostav);
 
   PanelChangesAdditions.Visible := False;
 
@@ -1316,33 +1306,6 @@ begin
   end;
 end;
 
-procedure TFrameRates.grHistoryDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
-  Column: TColumn; State: TGridDrawState);
-begin
-  with (Sender AS TJvDBGrid).Canvas do
-  begin
-    Brush.Color := PS.BackgroundRows;
-    Font.Color := PS.FontRows;
-
-    // Строка в фокусе
-    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
-      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
-    begin
-      Brush.Color := PS.BackgroundSelectRow;
-      Font.Color := PS.FontSelectRow;
-    end;
-    // Ячейка в фокусе
-    if (gdSelected in State) then
-    begin
-      Brush.Color := PS.BackgroundSelectCell;
-      Font.Color := PS.FontSelectCell;
-      Font.Style := Font.Style + [fsBold];
-    end;
-  end;
-
-  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
-end;
-
 procedure TFrameRates.grNCCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
 begin
   AllowEdit := (Field = qrNC.FieldByName('OBJ_VALUE')) and (qrNC.FieldByName('FL_PART_NAME').AsInteger = 0);
@@ -1412,33 +1375,6 @@ begin
   // Если разрешено добавлять данные из фрейма
   if AllowAddition then
     FormCalculationEstimate.AddRate(qrNormativ.FieldByName('IdNormative').AsInteger);
-end;
-
-procedure TFrameRates.grRatesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
-  Column: TColumn; State: TGridDrawState);
-begin
-  with (Sender AS TJvDBGrid).Canvas do
-  begin
-    Brush.Color := PS.BackgroundRows;
-    Font.Color := PS.FontRows;
-
-    // Строка в фокусе
-    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
-      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord)) then
-    begin
-      Brush.Color := PS.BackgroundSelectRow;
-      Font.Color := PS.FontSelectRow;
-    end;
-    // Ячейка в фокусе
-    if (gdSelected in State) then
-    begin
-      Brush.Color := PS.BackgroundSelectCell;
-      Font.Color := PS.FontSelectCell;
-      Font.Style := Font.Style + [fsBold];
-    end;
-  end;
-
-  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TFrameRates.grRatesEnter(Sender: TObject);

@@ -66,11 +66,6 @@ begin
   inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
-  LoadDBGridSettings(grMain1);
-  LoadDBGridSettings(grMain2);
-  LoadDBGridSettings(grMain3);
-  LoadDBGridSettings(grMain4);
-  LoadDBGridSettings(grMain5);
   CloseOpen(qrMainData);
   pgc1Change(Sender);
 end;

@@ -53,8 +53,6 @@ uses DataModule, Main;
 procedure TfBuildZone.FormCreate(Sender: TObject);
 begin
   inherited;
-  LoadDBGridSettings(grdZone);
-  LoadDBGridSettings(grdObject);
 
   FRefID := TStringList.Create;
   cbRegions.Items.Clear;

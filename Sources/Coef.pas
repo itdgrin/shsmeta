@@ -91,7 +91,6 @@ end;
 procedure TfCoefficients.FormCreate(Sender: TObject);
 begin
   inherited;
-  LoadDBGridSettings(grCoef);
 end;
 
 procedure TfCoefficients.FormShow(Sender: TObject);

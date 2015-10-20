@@ -68,7 +68,6 @@ end;
 procedure TfSuppAgreement.FormCreate(Sender: TObject);
 begin
   inherited;
-  LoadDBGridSettings(grMain);
 end;
 
 procedure TfSuppAgreement.FormDestroy(Sender: TObject);

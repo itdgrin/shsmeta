@@ -76,7 +76,6 @@ begin
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   seYear.Value := YearOf(Now);
-  LoadDBGridSettings(grMain);
   dblkcbbDocument.KeyValue := 0;
   CloseOpen(qrDocument);
 end;

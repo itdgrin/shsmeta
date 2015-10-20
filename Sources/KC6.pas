@@ -152,8 +152,6 @@ begin
   PanelBottom.Constraints.MinHeight := 100;
   PanelTree.Constraints.MinHeight := 100;
   // PanelClient.Constraints.MinHeight := 175;
-  LoadDBGridSettings(dbgrd1);
-  LoadDBGridSettings(grData);
 end;
 
 procedure TfKC6.FormResize(Sender: TObject);
@@ -180,7 +178,7 @@ begin
   if Assigned(FormCalculationEstimate) then
   begin
     chkCopyTreeEstimates.Checked := True;
-    chkCopyTreeEstimates.Visible := FormCalculationEstimate.Act and (FormCalculationEstimate.TYPE_ACT = 1);
+    chkCopyTreeEstimates.Visible := FormCalculationEstimate.Act and (FormCalculationEstimate.getTYPE_ACT = 1);
   end;
   Show;
 end;
@@ -585,7 +583,7 @@ begin
     // По умолчанию всегда заменяем
     doReplace := True;
     // Если акт субподряда, то интерисуемся
-    if FormCalculationEstimate.TYPE_ACT = 1 then
+    if FormCalculationEstimate.getTYPE_ACT = 1 then
     begin
       // Если строка уже добавлена
       if checkExists(vIdEstimate, vIdAct, vIdTypeData, vIdTables) then

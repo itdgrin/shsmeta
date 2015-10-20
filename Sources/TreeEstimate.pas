@@ -104,7 +104,7 @@ begin
       FormCalculationEstimate.flChangeEstimate := True;
       FormCalculationEstimate.Close;
       if (not Assigned(FormCalculationEstimate)) then
-        FormCalculationEstimate := TFormCalculationEstimate.Create(False);
+        FormCalculationEstimate := TFormCalculationEstimate.Create(qrTreeEstimates.FieldByName('SM_ID').AsInteger);
       FormCalculationEstimate.EditNameEstimate.Text := qrTreeEstimates.FieldByName('NAME').AsString;
       FormCalculationEstimate.IdEstimate := qrTreeEstimates.FieldByName('SM_ID').AsInteger;
       // Создание временных таблиц

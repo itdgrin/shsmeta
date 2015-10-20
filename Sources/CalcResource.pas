@@ -457,13 +457,6 @@ begin
   inherited;
   FOldGridProc := grMaterial.WindowProc;
   grMaterial.WindowProc := GridProc;
-  LoadDBGridSettings(grMaterial);
-  LoadDBGridSettings(grMaterialBott);
-  LoadDBGridSettings(grMech);
-  LoadDBGridSettings(grMechBott);
-  LoadDBGridSettings(grDev);
-  LoadDBGridSettings(grDevBott);
-  LoadDBGridSettings(grRates);
 end;
 
 procedure TfCalcResource.FormDestroy(Sender: TObject);

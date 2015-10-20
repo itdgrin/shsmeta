@@ -277,9 +277,9 @@ object fOrganizationsEx: TfOrganizationsEx
       ParentFont = False
     end
     object btnSearch: TSpeedButton
-      Left = 726
+      Left = 710
       Top = 4
-      Width = 59
+      Width = 75
       Height = 22
       Anchors = [akTop, akRight]
       Caption = #1055#1086#1080#1089#1082
@@ -297,7 +297,7 @@ object fOrganizationsEx: TfOrganizationsEx
     object edtSearch: TEdit
       Left = 48
       Top = 5
-      Width = 672
+      Width = 656
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Font.Charset = DEFAULT_CHARSET

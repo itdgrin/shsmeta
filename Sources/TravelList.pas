@@ -127,9 +127,6 @@ begin
     defIdEstimate := FormCalculationEstimate.IdEstimate;
   end;
 
-  LoadDBGridSettings(grTravel);
-  LoadDBGridSettings(grTravelWork);
-  LoadDBGridSettings(grWorkerDepartment);
   pgc1.ActivePageIndex := 0;
 
   // Создаем форму расчета командировочных

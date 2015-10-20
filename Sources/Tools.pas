@@ -2,7 +2,8 @@ unit Tools;
 
 interface
 
-uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Client, Data.DB, System.Variants, Vcl.Forms,
+uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Client, Data.DB, System.Variants,
+  Vcl.Forms,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes,
   ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid, FireDAC.Stan.Option,
   FireDAC.Stan.Param, Controls, Vcl.Buttons, Vcl.ComCtrls, VirtualTrees;
@@ -18,17 +19,19 @@ type
     property DataLink;
   end;
 
-  // Ѕудующий класс формы дл€ наследовани€ всех форм
+  // класс формы дл€ наследовани€ всех форм
   TSmForm = class(TForm)
-   // procedure FormCreate(Sender: TObject);
+    // procedure FormCreate(Sender: TObject);
+    procedure DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     procedure WMUpdateFormStyle(var Mes: TMessage); message WM_UPDATEFORMSTYLE;
     procedure SetStyleForAllComponents(AComponent: TComponent);
   protected
     procedure SetComponentStyle(AComponent: TComponent); virtual;
-    //≈сли у формы наследника переопределе конструктор, то все компоненты
-    //созданные в нем после вызова inherited не получат новый стиль
-    //¬ этом случае в конце переопределенного конструктора надо вызвать SetFormStyle повторно
+    // ≈сли у формы наследника переопределе конструктор, то все компоненты
+    // созданные в нем после вызова inherited не получат новый стиль
+    // ¬ этом случае в конце переопределенного конструктора надо вызвать SetFormStyle повторно
     procedure SetFormStyle; virtual;
   public
     FormKind: TKindForm;
@@ -345,8 +348,8 @@ begin
     wShowWindow := SW_NORMAL;
   end;
 
-  result := CreateProcess(AAppName, ACmdLine, nil, nil, False,
-    NORMAL_PRIORITY_CLASS, nil, nil, Start, ProcInf);
+  result := CreateProcess(AAppName, ACmdLine, nil, nil, False, NORMAL_PRIORITY_CLASS, nil, nil,
+    Start, ProcInf);
 
   if ATimeout = 0 then
     ATimeout := INFINITE;
@@ -642,7 +645,7 @@ end;
 
 { TSmForm }
 
-//procedure TSmForm.FormCreate(Sender: TObject);
+// procedure TSmForm.FormCreate(Sender: TObject);
 constructor TSmForm.Create(AOwner: TComponent);
 begin
   inherited;
@@ -657,13 +660,47 @@ begin
 end;
 
 procedure TSmForm.SetStyleForAllComponents(AComponent: TComponent);
-var I: Integer;
+var
+  i: Integer;
 begin
-  for I := 0 to AComponent.ComponentCount - 1 do
+  for i := 0 to AComponent.ComponentCount - 1 do
   begin
-    SetComponentStyle(AComponent.Components[I]);
-    SetStyleForAllComponents(AComponent.Components[I]);
+    SetComponentStyle(AComponent.Components[i]);
+    SetStyleForAllComponents(AComponent.Components[i]);
   end;
+end;
+
+procedure TSmForm.DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+var
+  headerLines: Integer;
+begin
+  // ѕроцедура наложени€ стилей отрисовки таблиц по умолчанию
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    Brush.Color := PS.BackgroundRows;
+    Font.Color := PS.FontRows;
+
+    headerLines := 1;
+    if not (dgTitles in (Sender AS TJvDBGrid).Options) then
+      headerLines := 0;
+
+    // —трока в фокусе
+    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + headerLines)) then
+    begin
+      Brush.Color := PS.BackgroundSelectRow;
+      Font.Color := PS.FontSelectRow;
+    end;
+    // ячейка в фокусе
+    if (gdSelected in State) then
+    begin
+      Brush.Color := PS.BackgroundSelectCell;
+      Font.Color := PS.FontSelectCell;
+      Font.Style := Font.Style + [fsBold];
+    end;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TSmForm.SetComponentStyle(AComponent: TComponent);
@@ -741,7 +778,11 @@ begin
     TVirtualStringTree(AComponent).Colors.FocusedSelectionBorderColor := PS.BackgroundSelectCell;
   end
   else if AComponent is TJvDBGrid then
+  begin
     LoadDBGridSettings(TJvDBGrid(AComponent));
+    if not Assigned(TJvDBGrid(AComponent).OnDrawColumnCell) then
+      TJvDBGrid(AComponent).OnDrawColumnCell := DrawColumnCell;
+  end;
 end;
 
 procedure TSmForm.WMUpdateFormStyle(var Mes: TMessage);

@@ -235,7 +235,6 @@ end;
 procedure TfObjectsAndEstimates.FormCreate(Sender: TObject);
 begin
   inherited;
-  LoadDBGridSettings(dbgrdObjects);
   FormMain.PanelCover.Visible := True;
   // Настройка размеров и положения формы
   ClientWidth := FormMain.ClientWidth div 2;
@@ -310,8 +309,8 @@ begin
 end;
 
 procedure TfObjectsAndEstimates.PopupMenuObjectsAddClick(Sender: TObject);
-  var
-    res: TModalResult;
+var
+  res: TModalResult;
 begin
   fCardObject.SetIdSelectRow(0);
   res := fCardObject.ShowModal;
@@ -749,7 +748,7 @@ begin
   end;
 
   if (not Assigned(FormCalculationEstimate)) then
-    FormCalculationEstimate := TFormCalculationEstimate.Create(True);
+    FormCalculationEstimate := TFormCalculationEstimate.Create(qrActsEx.FieldByName('MASTER_ID').AsInteger);
 
   FormCalculationEstimate.lblForemanFIO.caption :=
     VarToStr(FastSelectSQLOne
@@ -768,7 +767,6 @@ begin
 
     FormCalculationEstimate.IdObject := IdObject;
     FormCalculationEstimate.IdEstimate := qrActsEx.FieldByName('MASTER_ID').AsInteger;
-    FormCalculationEstimate.TYPE_ACT := qrActsEx.FieldByName('TYPE_ACT').AsInteger;
     FormCalculationEstimate.SetActReadOnly(ActReadOnly);
     // Создание временных таблиц
     FormCalculationEstimate.CreateTempTables;
@@ -817,9 +815,9 @@ end;
 procedure TfObjectsAndEstimates.PMActsEditClick(Sender: TObject);
 begin
   // Если тип акта "итоговыми суммами", то игнорируем
-  if qrActsEx.FieldByName('TYPE_ACT').AsInteger = 2 then
+  if (qrActsEx.FieldByName('TYPE_ACT').AsInteger = 2) OR VarIsNull(qrActsEx.FieldByName('MASTER_ID').Value) or
+    (qrActsEx.FieldByName('PARENT_ID').Value = 0) then
     Exit;
-
 
   if (Assigned(FormCalculationEstimate)) then
   begin
@@ -828,7 +826,7 @@ begin
   end;
 
   if (not Assigned(FormCalculationEstimate)) then
-    FormCalculationEstimate := TFormCalculationEstimate.Create(True);
+    FormCalculationEstimate := TFormCalculationEstimate.Create(qrActsEx.FieldByName('MASTER_ID').AsInteger);
 
   FormCalculationEstimate.lblForemanFIO.caption :=
     VarToStr(FastSelectSQLOne
@@ -847,7 +845,6 @@ begin
 
     FormCalculationEstimate.IdObject := IdObject;
     FormCalculationEstimate.IdEstimate := qrActsEx.FieldByName('MASTER_ID').AsInteger;
-    FormCalculationEstimate.TYPE_ACT := qrActsEx.FieldByName('TYPE_ACT').AsInteger;
     FormCalculationEstimate.SetActReadOnly(ActReadOnly);
     // Создание временных таблиц
     FormCalculationEstimate.CreateTempTables;
@@ -1192,7 +1189,7 @@ begin
   end;
 
   if (not Assigned(FormCalculationEstimate)) then
-    FormCalculationEstimate := TFormCalculationEstimate.Create(False);
+    FormCalculationEstimate := TFormCalculationEstimate.Create(IdEstimate);
 
   with qrObjects do
   begin

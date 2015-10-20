@@ -282,64 +282,6 @@ object FormBasicData: TFormBasicData
       Visible = False
     end
   end
-  object EditPercentTransportEquipment: TEdit
-    Left = 383
-    Top = 108
-    Width = 80
-    Height = 21
-    Anchors = [akTop, akRight]
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 6
-  end
-  object EditK31: TEdit
-    Left = 383
-    Top = 158
-    Width = 80
-    Height = 21
-    Anchors = [akTop, akRight]
-    TabOrder = 9
-  end
-  object EditK32: TEdit
-    Left = 383
-    Top = 181
-    Width = 80
-    Height = 21
-    Anchors = [akTop, akRight]
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 10
-  end
-  object EditK33: TEdit
-    Left = 383
-    Top = 204
-    Width = 80
-    Height = 21
-    Anchors = [akTop, akRight]
-    TabOrder = 11
-  end
-  object EditK34: TEdit
-    Left = 383
-    Top = 227
-    Width = 80
-    Height = 21
-    Anchors = [akTop, akRight]
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 12
-  end
   object EditRegion: TEdit
     Left = 383
     Top = 36
@@ -410,14 +352,6 @@ object FormBasicData: TFormBasicData
     ParentFont = False
     TabOrder = 15
     OnClick = DBLookupComboBoxRegionDumpClick
-  end
-  object edtKZP: TEdit
-    Left = 383
-    Top = 135
-    Width = 80
-    Height = 21
-    Anchors = [akTop, akRight]
-    TabOrder = 7
   end
   object edtYear: TSpinEdit
     Left = 261
@@ -710,6 +644,60 @@ object FormBasicData: TFormBasicData
           Visible = True
         end>
     end
+  end
+  object dbedtcoef_tr_obor: TDBEdit
+    Left = 383
+    Top = 108
+    Width = 80
+    Height = 21
+    DataField = 'COEF_TR_OBOR'
+    DataSource = dsSmeta
+    TabOrder = 6
+  end
+  object dbedtKZP: TDBEdit
+    Left = 383
+    Top = 135
+    Width = 80
+    Height = 21
+    DataField = 'KZP'
+    DataSource = dsSmeta
+    TabOrder = 7
+  end
+  object dbedtK31: TDBEdit
+    Left = 383
+    Top = 158
+    Width = 80
+    Height = 21
+    DataField = 'K31'
+    DataSource = dsSmeta
+    TabOrder = 9
+  end
+  object dbedtK32: TDBEdit
+    Left = 383
+    Top = 181
+    Width = 80
+    Height = 21
+    DataField = 'K32'
+    DataSource = dsSmeta
+    TabOrder = 10
+  end
+  object dbedtK33: TDBEdit
+    Left = 383
+    Top = 204
+    Width = 80
+    Height = 21
+    DataField = 'K33'
+    DataSource = dsSmeta
+    TabOrder = 11
+  end
+  object dbedtK34: TDBEdit
+    Left = 383
+    Top = 227
+    Width = 80
+    Height = 21
+    DataField = 'K34'
+    DataSource = dsSmeta
+    TabOrder = 12
   end
   object dsDump: TDataSource
     DataSet = qrDump

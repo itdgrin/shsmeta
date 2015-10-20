@@ -3150,7 +3150,6 @@
       Width = 52
       Height = 13
       Caption = #1053#1072#1079#1074#1072#1085#1080#1077':'
-      OnClick = LabelNameEstimateClick
     end
     object btn1: TSpeedButton
       Left = 758

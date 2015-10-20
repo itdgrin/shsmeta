@@ -95,7 +95,6 @@
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
-        OnDrawColumnCell = grRatesDrawColumnCell
         OnDblClick = grRatesDblClick
         OnEnter = grRatesEnter
         OnExit = grRatesExit
@@ -688,7 +687,6 @@
                 TitleFont.Height = -11
                 TitleFont.Name = 'Tahoma'
                 TitleFont.Style = []
-                OnDrawColumnCell = grHistoryDrawColumnCell
                 OnResize = grNCResize
                 ScrollBars = ssNone
                 AutoSizeColumns = True
@@ -865,7 +863,6 @@
                 TitleFont.Height = -11
                 TitleFont.Name = 'Tahoma'
                 TitleFont.Style = []
-                OnDrawColumnCell = grRatesDrawColumnCell
                 AutoAppend = False
                 OnResize = grNCResize
                 ScrollBars = ssNone

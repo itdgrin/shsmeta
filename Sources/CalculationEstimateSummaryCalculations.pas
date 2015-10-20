@@ -125,7 +125,6 @@ function TfrCalculationEstimateSummaryCalculations.LoadData(const Args: Variant)
 begin
   Result := True;
   try
-    LoadDBGridSettings(grSummaryCalculation);
     qrData.Active := False;
     qrData.ParamByName('SM_ID').Value := Args;
     qrData.Active := True;

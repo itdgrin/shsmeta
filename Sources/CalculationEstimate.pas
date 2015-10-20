@@ -3,20 +3,14 @@ unit CalculationEstimate;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, ToolWin, ExtCtrls,
-  StdCtrls, Grids, DBGrids, Buttons, DB, Menus, ShellAPI, DateUtils,
-  IniFiles, ImgList, Clipbrd, Math, pngimage, FireDAC.Stan.Intf,
-  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
-  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls,
-  CalculationEstimateSSR, CalculationEstimateSummaryCalculations, JvExDBGrids,
-  JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression,
-  GlobsAndConst, FireDAC.UI.Intf, JvExComCtrls, JvDBTreeView,
-  Generics.Collections, Tools,
-  Generics.Defaults,
-  fFrameCalculator,
-  Data.FmtBcd, dmReportU;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, ToolWin,
+  ExtCtrls, StdCtrls, Grids, DBGrids, Buttons, DB, Menus, ShellAPI, DateUtils, IniFiles, ImgList, Clipbrd,
+  Math, pngimage, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
+  FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, Vcl.DBCtrls, CalculationEstimateSSR, CalculationEstimateSummaryCalculations,
+  JvExDBGrids, JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression, GlobsAndConst,
+  FireDAC.UI.Intf, JvExComCtrls, JvDBTreeView, Generics.Collections, Tools, Generics.Defaults,
+  fFrameCalculator, Data.FmtBcd, dmReportU;
 
 type
   TAutoRepRec = record
@@ -660,7 +654,6 @@ type
     procedure PMMechRestoreClick(Sender: TObject);
     procedure PMCopyClick(Sender: TObject);
     procedure PMPasteClick(Sender: TObject);
-    procedure LabelNameEstimateClick(Sender: TObject);
     procedure qrRatesExCalcFields(DataSet: TDataSet);
     procedure qrRatesExAfterOpen(DataSet: TDataSet);
     procedure PMAddRateOldClick(Sender: TObject);
@@ -702,8 +695,9 @@ type
     procedure PMRenumPTMClick(Sender: TObject);
     procedure PMMatManPriceClick(Sender: TObject);
   private const
-    CaptionButton: array [1 .. 2] of string = ('Расчёт сметы', 'Расчёт акта');
-    HintButton: array [1 .. 2] of string = ('Окно расчёта сметы', 'Окно расчёта акта');
+    CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта субподрядчика');
+    HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
+      'Окно расчёта акта субподрядчика');
   private
     flLoaded: Boolean;
 
@@ -753,6 +747,9 @@ type
 
     // Кастуный скролл в левом гриде
     FOldGridProc: TWndMethod;
+
+    TYPE_ACT: Integer; // Тип акта
+
     procedure GridProc(var Message: TMessage);
 
     // пересчитывает все относящееся к строке в таблице расценок
@@ -798,7 +795,7 @@ type
 
   public
     Act: Boolean;
-    TYPE_ACT: Integer; // Тип акта
+
     ConfirmCloseForm: Boolean;
     flChangeEstimate: Boolean; // Не даем закрыться окну при переключении между сметами.
     property IdObject: Integer read FIdObject write FIdObject;
@@ -818,7 +815,9 @@ type
     procedure RecalcEstimate;
     procedure FillObjectInfo;
     procedure ShowNeedSaveDialog;
-    constructor Create(const isAct: Boolean); reintroduce;
+    function getTYPE_ACT: Integer;
+    procedure LoadMain(const SM_ID: Integer);
+    constructor Create(const SM_ID: Integer); reintroduce;
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
 
@@ -965,11 +964,11 @@ begin
   begin
     Caption := CaptionButton[1] + ' - Разрешено редактирование документа';
     btnResCalc.Visible := True;
-
+    btnResCalc.Caption := 'Контрактная цена';
   end
   else
   begin
-    Caption := CaptionButton[2] + ' - Разрешено редактирование документа';
+    Caption := CaptionButton[2 + TYPE_ACT] + ' - Разрешено редактирование документа';
     SpeedButtonSSR.Visible := False;
     btnResCalc.Caption := 'Расчет';
     // btnResCalc.Visible := True;
@@ -1047,7 +1046,7 @@ begin
   if not Act then
     FormMain.CreateButtonOpenWindow(CaptionButton[1], HintButton[1], Self, 1)
   else
-    FormMain.CreateButtonOpenWindow(CaptionButton[2], HintButton[2], Self, 1);
+    FormMain.CreateButtonOpenWindow(CaptionButton[2 + TYPE_ACT], HintButton[2 + TYPE_ACT], Self, 1);
 
   flLoaded := True;
 end;
@@ -1072,7 +1071,7 @@ begin
   if not Act then
     FormMain.SelectButtonActiveWindow(CaptionButton[1])
   else
-    FormMain.SelectButtonActiveWindow(CaptionButton[2]);
+    FormMain.SelectButtonActiveWindow(CaptionButton[2 + TYPE_ACT]);
 end;
 
 procedure TFormCalculationEstimate.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1085,7 +1084,7 @@ begin
   if not Act then
     FormMain.DeleteButtonCloseWindow(CaptionButton[1])
   else
-    FormMain.DeleteButtonCloseWindow(CaptionButton[2]);
+    FormMain.DeleteButtonCloseWindow(CaptionButton[2 + TYPE_ACT]);
   if (not Assigned(fObjectsAndEstimates)) then
     fObjectsAndEstimates := TfObjectsAndEstimates.Create(FormMain);
 end;
@@ -1521,7 +1520,8 @@ begin
       if not Act then
         FormCalculationEstimate.Caption := CaptionButton[1] + ' - Запрещено редактирование документа'
       else
-        FormCalculationEstimate.Caption := CaptionButton[2] + ' - Запрещено редактирование документа'
+        FormCalculationEstimate.Caption := CaptionButton[2 + TYPE_ACT] +
+          ' - Запрещено редактирование документа'
     end
     else
     begin
@@ -1531,7 +1531,8 @@ begin
       if not Act then
         FormCalculationEstimate.Caption := CaptionButton[1] + ' - Разрешено редактирование документа'
       else
-        FormCalculationEstimate.Caption := CaptionButton[2] + ' - Разрешено редактирование документа';
+        FormCalculationEstimate.Caption := CaptionButton[2 + TYPE_ACT] +
+          ' - Разрешено редактирование документа';
     end;
   frSummaryCalculations.grSummaryCalculation.Repaint;
   if Assigned(fCalcResource) then
@@ -4338,7 +4339,7 @@ begin
   if not Act then
     docType := CaptionButton[1]
   else
-    docType := CaptionButton[2];
+    docType := CaptionButton[2 + TYPE_ACT];
 
   if (not ActReadOnly) and (PanelCalculationYesNo.Tag = 1) and ConfirmCloseForm then
     DialogResult := MessageBox(0, PChar('Сохранить изменения текущего документа - [' + docType + ']?'),
@@ -5536,11 +5537,6 @@ begin
   CloseOpen(qrCalculations);
 end;
 
-procedure TFormCalculationEstimate.LabelNameEstimateClick(Sender: TObject);
-begin
-
-end;
-
 // Открытие датасета таблицы материалов
 procedure TFormCalculationEstimate.FillingTableMaterials(const vIdCardRate, vIdMat: Integer);
 var
@@ -6116,6 +6112,11 @@ begin
   end;
 end;
 
+function TFormCalculationEstimate.getTYPE_ACT: Integer;
+begin
+  Result := TYPE_ACT;
+end;
+
 procedure TFormCalculationEstimate.ChangeGrigNDSStyle(aNDS: Boolean);
 begin
   with dbgrdMaterial do
@@ -6399,25 +6400,26 @@ begin
   end;
 end;
 
-constructor TFormCalculationEstimate.Create(const isAct: Boolean);
+constructor TFormCalculationEstimate.Create(const SM_ID: Integer);
 begin
-  Act := isAct;
+  LoadMain(SM_ID);
   inherited Create(Application);
 end;
 
-procedure TFormCalculationEstimate.CreateTempTables;
-var
-  Str: string;
+procedure TFormCalculationEstimate.LoadMain(const SM_ID: Integer);
 begin
-  Str := 'CALL CreateTempTables(1);'; // Данные сметы
+  // TODO
+  Act := FastSelectSQLOne('SELECT ACT FROM smetasourcedata WHERE SM_ID=:0', VarArrayOf([SM_ID])) = 1;
+  TYPE_ACT := FastSelectSQLOne('SELECT IFNULL(TYPE_ACT, 0) FROM smetasourcedata WHERE SM_ID=:0',
+    VarArrayOf([SM_ID]));
+  IdObject := FastSelectSQLOne('SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:0', VarArrayOf([SM_ID]));
+  IdEstimate := SM_ID;
+end;
 
+procedure TFormCalculationEstimate.CreateTempTables;
+begin
   try
-    with qrTemp do
-    begin
-      SQL.Clear;
-      SQL.Add(Str);
-      ExecSQL;
-    end;
+    FastExecSQL('CALL CreateTempTables(1);', VarArrayOf([]));
   except
     on e: Exception do
       MessageBox(0, PChar('При создании временных таблиц возникла ошибка:' + sLineBreak + sLineBreak +

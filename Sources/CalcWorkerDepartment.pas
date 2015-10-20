@@ -142,7 +142,6 @@ end;
 procedure TfCalcWorkerDepartment.FormCreate(Sender: TObject);
 begin
   inherited;
-  LoadDBGridSettings(grCalc);
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);
   dbchkFL_Full_month.OnClick := dblkcbbActClick;

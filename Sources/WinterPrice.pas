@@ -162,9 +162,6 @@ begin
   FormKind := kdNone;
   editMode := True;
 
-  LoadDBGridSettings(grRates);
-  LoadDBGridSettings(grChangeDate);
-
   changeEditMode;
 end;
 

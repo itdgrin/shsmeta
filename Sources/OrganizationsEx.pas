@@ -97,7 +97,6 @@ procedure TfOrganizationsEx.FormCreate(Sender: TObject);
 begin
   inherited;
   qrMain.Active := True;
-  LoadDBGridSettings(grMain);
 end;
 
 procedure TfOrganizationsEx.FormDestroy(Sender: TObject);

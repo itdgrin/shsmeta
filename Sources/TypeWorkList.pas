@@ -56,7 +56,6 @@ begin
   inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
-  LoadDBGridSettings(grMain);
   CloseOpen(qrMain);
 end;
 

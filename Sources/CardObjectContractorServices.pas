@@ -117,7 +117,6 @@ end;
 procedure TfCardObjectContractorServices.FormCreate(Sender: TObject);
 begin
   inherited;
-  LoadDBGridSettings(grMain);
 end;
 
 procedure TfCardObjectContractorServices.FormDestroy(Sender: TObject);

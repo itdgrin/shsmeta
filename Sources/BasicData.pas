@@ -15,11 +15,6 @@ type
     LabelK31: TLabel;
     LabelK32: TLabel;
     LabelK33: TLabel;
-    EditPercentTransportEquipment: TEdit;
-    EditK31: TEdit;
-    EditK32: TEdit;
-    EditK33: TEdit;
-    EditK34: TEdit;
     LabelEstimateForDate: TLabel;
     LabelRateWorker: TLabel;
     LabelRegion: TLabel;
@@ -44,7 +39,6 @@ type
     ADOQueryRegionDump: TFDQuery;
     qrTMP: TFDQuery;
     lbl1: TLabel;
-    edtKZP: TEdit;
     edtYear: TSpinEdit;
     pnl1: TPanel;
     lblRateMachinist: TLabel;
@@ -86,6 +80,12 @@ type
     pnl3: TPanel;
     btnSave: TButton;
     btnCancel: TButton;
+    dbedtcoef_tr_obor: TDBEdit;
+    dbedtKZP: TDBEdit;
+    dbedtK31: TDBEdit;
+    dbedtK32: TDBEdit;
+    dbedtK33: TDBEdit;
+    dbedtK34: TDBEdit;
 
     procedure FormShow(Sender: TObject);
 
@@ -165,7 +165,6 @@ begin
   flLoaded := False;
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
-  LoadDBGridSettings(grCoef);
 end;
 
 procedure TFormBasicData.FormShow(Sender: TObject);
@@ -209,20 +208,14 @@ begin
   begin
     Active := False;
     SQL.Clear;
-    SQL.Add('SELECT coef_tr_zatr, coef_tr_obor, k40, k41, k31, k32, k33, k34, IFNULL(nds, 0) AS NDS, kzp, stavka_id, date, dump_id, coef_orders '
+    SQL.Add('SELECT coef_tr_zatr, k40, k41, IFNULL(nds, 0) AS NDS, stavka_id, date, dump_id, coef_orders '
       + 'FROM smetasourcedata WHERE sm_id = :sm_id;');
     ParamByName('sm_id').Value := IdEstimate;
     Active := True;
 
     edtPercentTransport.Text := MyFloatToStr(FieldByName('coef_tr_zatr').AsFloat);
-    EditPercentTransportEquipment.Text := MyFloatToStr(FieldByName('coef_tr_obor').AsFloat);
     edtK40.Text := MyFloatToStr(FieldByName('K40').AsFloat);
     // EditK41.Text := MyFloatToStr(FieldByName('K41').AsFloat);
-    EditK31.Text := MyFloatToStr(FieldByName('K31').AsFloat);
-    EditK32.Text := MyFloatToStr(FieldByName('K32').AsFloat);
-    EditK33.Text := MyFloatToStr(FieldByName('K33').AsFloat);
-    EditK34.Text := MyFloatToStr(FieldByName('K34').AsFloat);
-    edtKZP.Text := MyFloatToStr(FieldByName('kzp').AsFloat);
 
     ComboBoxVAT.ItemIndex := FieldByName('nds').AsVariant;
 
@@ -577,15 +570,15 @@ begin
 
       ParamByName('stavka_id').Value := IdStavka;
       ParamByName('coef_tr_zatr').Value := edtPercentTransport.Text;
-      ParamByName('coef_tr_obor').Value := EditPercentTransportEquipment.Text;
+      ParamByName('coef_tr_obor').Value := qrSmeta.FieldByName('coef_tr_obor').Value;
       ParamByName('k40').Value := edtK40.Text;
       // ParamByName('k41').Value := EditK41.Text;
-      ParamByName('k31').Value := EditK31.Text;
-      ParamByName('k32').Value := EditK32.Text;
-      ParamByName('k33').Value := EditK33.Text;
-      ParamByName('k34').Value := EditK34.Text;
+      ParamByName('k31').Value := qrSmeta.FieldByName('k31').Value;
+      ParamByName('k32').Value := qrSmeta.FieldByName('K32').Value;
+      ParamByName('k33').Value := qrSmeta.FieldByName('K33').Value;
+      ParamByName('k34').Value := qrSmeta.FieldByName('K34').Value;
       ParamByName('K35').Value := dbedtK35.Text;
-      ParamByName('kzp').Value := edtKZP.Text;
+      ParamByName('kzp').Value := qrSmeta.FieldByName('kzp').Value;
       ParamByName('nds').Value := ComboBoxVAT.ItemIndex;
       ParamByName('dump_id').Value := dblkcbbDump.KeyValue;
       ParamByName('STAVKA_RAB').Value := qrSmeta.FieldByName('STAVKA_RAB').Value;
@@ -657,33 +650,33 @@ begin
   begin
     res := GetUniDictParamValue('K_KORR_ZP', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
     if VarIsNull(res) then
-      edtKZP.Text := '1'
+      qrSmeta.FieldByName('kzp').Value := 1
     else
-      edtKZP.Text := FloatToStr(res);
+      qrSmeta.FieldByName('kzp').Value := res;
 
     res := GetUniDictParamValue('K_OXR_OPR_270', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
     if VarIsNull(res) then
-      EditK31.Text := '1'
+      qrSmeta.FieldByName('k31').Value := 1
     else
-      EditK31.Text := FloatToStr(res);
+      qrSmeta.FieldByName('k31').Value := res;
 
     res := GetUniDictParamValue('K_PLAN_PRIB_270', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
     if VarIsNull(res) then
-      EditK32.Text := '1'
+      qrSmeta.FieldByName('K32').Value := 1
     else
-      EditK32.Text := FloatToStr(res);
+      qrSmeta.FieldByName('K32').Value := res;
 
     res := GetUniDictParamValue('K_VREM_ZDAN_SOOR', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
     if VarIsNull(res) then
-      EditK33.Text := '1'
+      qrSmeta.FieldByName('K33').Value := 1
     else
-      EditK33.Text := FloatToStr(res);
+      qrSmeta.FieldByName('K33').Value := res;
 
     res := GetUniDictParamValue('K_ZIM_UDOR_1', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
     if VarIsNull(res) then
-      EditK34.Text := '1'
+      qrSmeta.FieldByName('K34').Value := 1
     else
-      EditK34.Text := FloatToStr(res);
+      qrSmeta.FieldByName('K34').Value := res;
 
     res := GetUniDictParamValue('K_ZIM_UDOR_2', (ComboBoxMonth.ItemIndex + 1), edtYear.Value);
     if VarIsNull(res) then
@@ -745,8 +738,8 @@ begin
     exit;
   if dbchkcoef_orders.Checked then
   begin
-    edtKZP.Text := FloatToStr(GetUniDictParamValue('K_KORR_ZP', (ComboBoxMonth.ItemIndex + 1),
-      edtYear.Value));
+    qrSmeta.FieldByName('kzp').Value := GetUniDictParamValue('K_KORR_ZP', (ComboBoxMonth.ItemIndex + 1),
+      edtYear.Value);
     {
       if Assigned(FormCalculationEstimate) then
       tableName := 'calculation_coef_temp'
@@ -793,7 +786,7 @@ begin
   end
   else
   begin
-    edtKZP.Text := '1';
+    qrSmeta.FieldByName('kzp').Value := 1;
     {
       qrCoef.CheckBrowseMode;
 

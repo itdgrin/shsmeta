@@ -77,10 +77,6 @@ end;
 procedure TfTariffDict.FormCreate(Sender: TObject);
 begin
   inherited;
-  LoadDBGridSettings(grCategory);
-  LoadDBGridSettings(grStavka);
-  LoadDBGridSettings(grIndexes);
-
   seYear.Value := YearOf(Now);
   cbbFromMonth.ItemIndex := MonthOf(Now) - 1;
 

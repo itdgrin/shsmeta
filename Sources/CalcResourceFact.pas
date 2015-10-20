@@ -331,12 +331,7 @@ end;
 procedure TfCalcResourceFact.FormCreate(Sender: TObject);
 begin
   inherited;
-  LoadDBGridSettings(grMaterial);
-  LoadDBGridSettings(grMaterialBott);
-  LoadDBGridSettings(grMech);
-  LoadDBGridSettings(grMechBott);
-  LoadDBGridSettings(grDev);
-  LoadDBGridSettings(grDevBott);
+
 end;
 
 procedure TfCalcResourceFact.FormDestroy(Sender: TObject);

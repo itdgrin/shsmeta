@@ -50,7 +50,6 @@ end;
 procedure TfOXROPRSetup.FormCreate(Sender: TObject);
 begin
   inherited;
-  LoadDBGridSettings(grONormaivs);
   CloseOpen(qrWorkList);
   CloseOpen(qrONormativs);
 end;

@@ -792,11 +792,6 @@ begin
   cbbToMonth.ItemIndex := MonthOf(Now) - 1;
   seToYear.Value := YearOf(Now);
   SkipReload := False;
-  
-  LoadDBGridSettings(dbgrdData);
-  LoadDBGridSettings(dbgrd2);
-  LoadDBGridSettings(dbgrdPTM);
-  LoadDBGridSettings(dbgrdEstimate);
 
   pgcPage.ActivePageIndex := 0;
 end;

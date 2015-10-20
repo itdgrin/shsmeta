@@ -1,8 +1,8 @@
 object FormPricesReferenceData: TFormPricesReferenceData
   Left = 0
   Top = 0
-  ClientHeight = 436
-  ClientWidth = 762
+  ClientHeight = 109
+  ClientWidth = 764
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -22,7 +22,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
   object PanelPrices: TPanel
     Left = 0
     Top = 0
-    Width = 762
+    Width = 764
     Height = 25
     Align = alTop
     BevelOuter = bvNone
@@ -40,10 +40,15 @@ object FormPricesReferenceData: TFormPricesReferenceData
     TabOrder = 0
     ExplicitWidth = 733
     object SpeedButtonPriceMaterials: TSpeedButton
-      Left = 164
+      AlignWithMargins = True
+      Left = 148
       Top = 0
-      Width = 160
+      Width = 141
       Height = 25
+      Margins.Top = 0
+      Margins.Right = 0
+      Margins.Bottom = 0
+      Align = alLeft
       GroupIndex = 1
       Caption = #1062#1077#1085#1099' '#1085#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1099
       Font.Charset = DEFAULT_CHARSET
@@ -55,10 +60,15 @@ object FormPricesReferenceData: TFormPricesReferenceData
       OnClick = SpeedButtonClick
     end
     object SpeedButtonPriceMechanizms: TSpeedButton
-      Left = 326
+      AlignWithMargins = True
+      Left = 292
       Top = 0
-      Width = 160
+      Width = 141
       Height = 25
+      Margins.Top = 0
+      Margins.Right = 0
+      Margins.Bottom = 0
+      Align = alLeft
       GroupIndex = 1
       Caption = #1062#1077#1085#1099' '#1085#1072' '#1084#1077#1093#1072#1085#1080#1079#1084#1099
       Font.Charset = DEFAULT_CHARSET
@@ -70,10 +80,15 @@ object FormPricesReferenceData: TFormPricesReferenceData
       OnClick = SpeedButtonClick
     end
     object SpeedButtonPriceTransportation: TSpeedButton
-      Left = 488
+      AlignWithMargins = True
+      Left = 436
       Top = 0
-      Width = 180
+      Width = 181
       Height = 25
+      Margins.Top = 0
+      Margins.Right = 0
+      Margins.Bottom = 0
+      Align = alLeft
       GroupIndex = 1
       Caption = #1058#1072#1088#1080#1092#1099' '#1085#1072' '#1075#1088#1091#1079#1086#1087#1077#1088#1077#1074#1086#1079#1082#1080
       Font.Charset = DEFAULT_CHARSET
@@ -85,10 +100,15 @@ object FormPricesReferenceData: TFormPricesReferenceData
       OnClick = SpeedButtonClick
     end
     object SpeedButtonPriceDumps: TSpeedButton
-      Left = 670
+      AlignWithMargins = True
+      Left = 620
       Top = 0
-      Width = 160
+      Width = 141
       Height = 25
+      Margins.Top = 0
+      Margins.Right = 0
+      Margins.Bottom = 0
+      Align = alLeft
       GroupIndex = 1
       Caption = #1058#1072#1088#1080#1092#1099' '#1085#1072' '#1089#1074#1072#1083#1082#1080
       Font.Charset = DEFAULT_CHARSET
@@ -100,10 +120,15 @@ object FormPricesReferenceData: TFormPricesReferenceData
       OnClick = SpeedButtonClick
     end
     object btnZP: TSpeedButton
-      Left = 2
+      AlignWithMargins = True
+      Left = 3
       Top = 0
-      Width = 160
+      Width = 142
       Height = 25
+      Margins.Top = 0
+      Margins.Right = 0
+      Margins.Bottom = 0
+      Align = alLeft
       GroupIndex = 1
       Down = True
       Caption = #1058#1072#1088#1080#1092#1099' '#1087#1086' '#1079#1072#1088#1087#1083#1072#1090#1077

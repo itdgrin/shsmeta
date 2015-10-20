@@ -111,9 +111,7 @@ begin
   inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, fUniDict, 1);
-  LoadDBGridSettings(grUniDictParam);
   grUniDictParam.TitleArrow := False;
-  LoadDBGridSettings(gtUniDictType);
   CloseOpen(qrUniDictType);
   CloseOpen(qrUniDictTypeLook);
   seYear.Value := YearOf(Now);
