@@ -341,6 +341,9 @@ type
     ControlsFontName: string ; //Стиль шрифта
     ControlsFontSize: Integer;  //размер
     ControlsFontStyle: Byte; //Стиль
+    TextFontName: string ; //Стиль шрифта
+    TextFontSize: Integer;  //размер
+    TextFontStyle: Byte; //Стиль
   end;
 
 const
@@ -2324,6 +2327,10 @@ begin
       PS.ControlsFontName := ReadString('Controls', 'ControlsFontName', 'Tahoma');
       PS.ControlsFontSize := ReadInteger('Controls', 'ControlsFontSize', 8);
       PS.ControlsFontStyle := Byte(ReadInteger('Controls', 'ControlsFontStyle', 0));
+
+      PS.TextFontName := ReadString('Controls', 'TextFontName', 'Tahoma');
+      PS.TextFontSize := ReadInteger('Controls', 'TextFontSize', 8);
+      PS.TextFontStyle := Byte(ReadInteger('Controls', 'TextFontStyle', 0));
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -2366,6 +2373,10 @@ begin
       WriteString('Controls', 'ControlsFontName', PS.ControlsFontName);
       WriteInteger('Controls', 'ControlsFontSize', PS.ControlsFontSize);
       WriteInteger('Controls', 'ControlsFontStyle', PS.ControlsFontStyle);
+
+      WriteString('Controls', 'TextFontName', PS.TextFontName);
+      WriteInteger('Controls', 'TextFontSize', PS.TextFontSize);
+      WriteInteger('Controls', 'TextFontStyle', PS.TextFontStyle);
 
       WriteInteger('Round', vRoundTo, PS.RoundTo);
 

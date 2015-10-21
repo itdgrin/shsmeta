@@ -49,15 +49,17 @@ object FormProgramSettings: TFormProgramSettings
     object TabSheet3: TTabSheet
       Caption = #1058#1072#1073#1083#1080#1094#1099
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 28
       DesignSize = (
         624
         323)
       object Label1: TLabel
         Left = 287
         Top = 3
-        Width = 249
+        Width = 260
         Height = 13
-        Caption = #1055#1088#1080#1084#1077#1088' '#1090#1072#1073#1083#1080#1094#1099' '#1089' '#1085#1072#1089#1090#1088#1086#1077#1085#1085#1099#1084#1080' '#1089#1090#1080#1083#1103#1084#1080':'
+        Caption = #1055#1088#1080#1084#1077#1088' '#1101#1083#1077#1084#1077#1085#1090#1086#1074' '#1089' '#1085#1072#1089#1090#1088#1086#1077#1085#1085#1099#1084#1080' '#1089#1090#1080#1083#1103#1084#1080':'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -217,7 +219,7 @@ object FormProgramSettings: TFormProgramSettings
         end
         object grp1: TGroupBox
           Left = 3
-          Top = 207
+          Top = 208
           Width = 272
           Height = 107
           Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1096#1088#1080#1092#1090#1086#1074':'
@@ -231,10 +233,10 @@ object FormProgramSettings: TFormProgramSettings
           object lblFontRow: TLabel
             Left = 10
             Top = 20
-            Width = 171
+            Width = 98
             Height = 13
             Cursor = crHandPoint
-            Caption = #1057#1090#1080#1083#1100' '#1096#1088#1080#1092#1090#1072' '#1079#1072#1087#1080#1089#1077#1081' '#1074' '#1090#1072#1073#1083#1080#1094#1077
+            Caption = #1090#1072#1073#1083#1080#1095#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -246,10 +248,25 @@ object FormProgramSettings: TFormProgramSettings
           object lblFontControls: TLabel
             Left = 10
             Top = 39
-            Width = 240
+            Width = 165
             Height = 13
             Cursor = crHandPoint
-            Caption = #1057#1090#1080#1083#1100' '#1096#1088#1080#1092#1090#1072' '#1101#1083#1077#1084#1077#1085#1090#1086#1074' '#1091#1087#1088#1072#1074#1083#1077#1085#1080#1103' ('#1082#1085#1086#1087#1086#1082')'
+            Caption = #1101#1083#1077#1084#1077#1085#1090#1099' '#1091#1087#1088#1072#1074#1083#1077#1085#1080#1103' ('#1082#1085#1086#1087#1086#1082#1080')'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            OnClick = lblFontRowClick
+          end
+          object lblFontText: TLabel
+            Left = 10
+            Top = 58
+            Width = 165
+            Height = 13
+            Cursor = crHandPoint
+            Caption = #1090#1077#1082#1089#1090#1086#1074#1099#1077' '#1087#1086#1083#1083#1103' '#1074#1074#1086#1076#1072'/'#1074#1099#1074#1086#1076#1072
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -297,8 +314,24 @@ object FormProgramSettings: TFormProgramSettings
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 4
         OnClick = ButtonDefaultSettingsTablesClick
+      end
+      object btnExample: TButton
+        Left = 287
+        Top = 178
+        Width = 98
+        Height = 25
+        Caption = #1050#1085#1086#1087#1082#1072
+        TabOrder = 2
+      end
+      object edtExample: TEdit
+        Left = 391
+        Top = 178
+        Width = 230
+        Height = 21
+        TabOrder = 3
+        Text = #1055#1086#1083#1077' '#1074#1074#1086#1076#1072'/'#1074#1099#1074#1086#1076#1072
       end
     end
     object TabSheet1: TTabSheet
@@ -483,8 +516,8 @@ object FormProgramSettings: TFormProgramSettings
   end
   object ColorDialog: TColorDialog
     Options = [cdFullOpen]
-    Left = 400
-    Top = 200
+    Left = 304
+    Top = 280
   end
   object qrOXROPR: TFDQuery
     Connection = DM.Connect
@@ -522,13 +555,13 @@ object FormProgramSettings: TFormProgramSettings
       
         'SELECT work_id, work_name as "NameWork" FROM objworks ORDER BY w' +
         'ork_id')
-    Left = 408
-    Top = 264
+    Left = 336
+    Top = 280
   end
   object dsOXROPR: TDataSource
     DataSet = qrOXROPR
-    Left = 464
-    Top = 264
+    Left = 376
+    Top = 280
   end
   object qrMainData: TFDQuery
     Connection = DM.Connect
@@ -570,6 +603,8 @@ object FormProgramSettings: TFormProgramSettings
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
+    MinFontSize = 16
+    MaxFontSize = 6
     Options = []
     Left = 223
     Top = 211

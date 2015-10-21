@@ -996,7 +996,7 @@ end;
 procedure TfObjectsAndEstimates.PMImportDirClick(Sender: TObject);
 var
   TmpFiles: TStringDynArray;
-  i: Integer;
+  I: Integer;
   TmpStr: string;
 begin
   with TBrowseForFolder.Create(nil) do
@@ -1012,11 +1012,11 @@ begin
           FormWaiting.Show;
           Application.ProcessMessages;
           try
-            for i := Low(TmpFiles) to High(TmpFiles) do
+            for I := Low(TmpFiles) to High(TmpFiles) do
             begin
-              TmpStr := 'Импорт из файла: ' + ExtractFileName(TmpFiles[i]);
+              TmpStr := 'Импорт из файла: ' + ExtractFileName(TmpFiles[I]);
               FormWaiting.lbProcess.caption := TmpStr;
-              ImportObject(TmpFiles[i]);
+              ImportObject(TmpFiles[I]);
             end;
             ShowMessage('Импорт завершен успешно.');
           finally

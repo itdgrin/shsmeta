@@ -64,6 +64,9 @@ type
     grp1: TGroupBox;
     lblFontRow: TLabel;
     lblFontControls: TLabel;
+    lblFontText: TLabel;
+    btnExample: TButton;
+    edtExample: TEdit;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -292,9 +295,14 @@ begin
       lblFontControls.Font.Name := 'Tahoma';
       lblFontControls.Font.Size := 8;
       lblFontControls.Font.Style := [];
+      lblFontText.Font.Name := 'Tahoma';
+      lblFontText.Font.Size := 8;
+      lblFontText.Font.Style := [];
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
+    btnExample.Font := lblFontControls.Font;
+    edtExample.Font := lblFontText.Font;
   end;
 
   StringGridDemo.SetFocus;
@@ -352,6 +360,10 @@ begin
   PS.ControlsFontName := lblFontControls.Font.Name;
   PS.ControlsFontSize := lblFontControls.Font.Size;
   PS.ControlsFontStyle := Byte(lblFontControls.Font.Style);
+  PS.TextFontName := lblFontText.Font.Name;
+  PS.TextFontSize := lblFontText.Font.Size;
+  PS.TextFontStyle := Byte(lblFontText.Font.Style);
+
   FormMain.WriteSettingsToFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   MessageBox(0, PChar('Некоторые изменения могут быть применены ' + sLineBreak +
@@ -403,6 +415,10 @@ begin
   lblFontControls.Font.Name := PS.ControlsFontName;
   lblFontControls.Font.Size := PS.ControlsFontSize;
   lblFontControls.Font.Style := TFontStyles(PS.ControlsFontStyle);
+
+  lblFontText.Font.Name := PS.TextFontName;
+  lblFontText.Font.Size := PS.TextFontSize;
+  lblFontText.Font.Style := TFontStyles(PS.TextFontStyle);
 end;
 
 procedure TFormProgramSettings.lblFontRowClick(Sender: TObject);
@@ -412,6 +428,8 @@ begin
   begin
     (Sender AS TLabel).Font := dlgFont1.Font;
   end;
+  btnExample.Font := lblFontControls.Font;
+  edtExample.Font := lblFontText.Font;
 end;
 
 end.

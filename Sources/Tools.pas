@@ -3,7 +3,7 @@ unit Tools;
 interface
 
 uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Client, Data.DB, System.Variants,
-  Vcl.Forms,
+  Vcl.Forms, Vcl.DBCtrls, Vcl.Samples.Spin, JvSpin, JvDBSpinEdit,
   System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes,
   ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid, FireDAC.Stan.Option,
   FireDAC.Stan.Param, Controls, Vcl.Buttons, Vcl.ComCtrls, VirtualTrees;
@@ -22,8 +22,12 @@ type
   // класс формы для наследования всех форм
   TSmForm = class(TForm)
     // procedure FormCreate(Sender: TObject);
+
+    // Процедура стандартной отрисовки таблиц
     procedure DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    // Процедура стандартной сортировки таблиц
+    procedure TitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
   private
     procedure WMUpdateFormStyle(var Mes: TMessage); message WM_UPDATEFORMSTYLE;
     procedure SetStyleForAllComponents(AComponent: TComponent);
@@ -670,6 +674,46 @@ begin
   end;
 end;
 
+procedure TSmForm.TitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+var
+  s: string;
+  i: Integer;
+begin
+  if not CheckQrActiveEmpty(TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet)) then
+    Exit;
+
+  // Если заводом установлена "своя" сортировка, то не лезем...)
+  if not(dgTitleClick in (Sender AS TJvDBGrid).Options) then
+    Exit;
+
+  // Если выбранное поле не из набора, а расчетное или другое, то выходим...
+  if TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).FieldByName((Sender AS TJvDBGrid).SortedField)
+    .FieldKind <> fkData then
+    Exit;
+
+  s := '';
+  if (Sender AS TJvDBGrid).SortMarker = smDown then
+    s := ' DESC';
+
+  // Пытаемся найти строку с запросом сортировки
+  for i := TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL.Count - 1 downto 0 do
+  begin
+    if Pos(UpperCase('order by'), UpperCase(TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL[i])) <> 0
+    then
+    begin
+      // Строка найдена
+      TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL[i] := 'ORDER BY ' + (Sender AS TJvDBGrid)
+        .SortedField + s;
+      CloseOpen(TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet));
+      Exit;
+    end;
+  end;
+
+  TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet)
+    .SQL.Append('ORDER BY ' + (Sender AS TJvDBGrid).SortedField + s);
+  CloseOpen(TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet));
+end;
+
 procedure TSmForm.DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
   State: TGridDrawState);
 var
@@ -682,7 +726,7 @@ begin
     Font.Color := PS.FontRows;
 
     headerLines := 1;
-    if not (dgTitles in (Sender AS TJvDBGrid).Options) then
+    if not(dgTitles in (Sender AS TJvDBGrid).Options) then
       headerLines := 0;
 
     // Строка в фокусе
@@ -705,13 +749,19 @@ end;
 
 procedure TSmForm.SetComponentStyle(AComponent: TComponent);
 begin
+  // Настройка кнопок -->
   if AComponent is TButton then
   begin
+    // Меняем стили только там, где не изменены - приводит к обяз. перезапуску программы
+    // if (TButton(AComponent).Font.Name = 'Tahoma') and (TButton(AComponent).Font.SIZE = 8) and
+    // (TButton(AComponent).Font.Style = TFontStyles(0)) then
+    // begin
     if PS.ControlsFontName <> '' then
       TButton(AComponent).Font.Name := PS.ControlsFontName;
     if PS.ControlsFontSize <> 0 then
       TButton(AComponent).Font.SIZE := PS.ControlsFontSize;
     TButton(AComponent).Font.Style := TFontStyles(PS.ControlsFontStyle);
+    // end;
     if TButton(AComponent).Hint = '' then
       TButton(AComponent).Hint := TButton(AComponent).Caption;
     TButton(AComponent).ShowHint := True;
@@ -738,6 +788,8 @@ begin
       TBitBtn(AComponent).Hint := TBitBtn(AComponent).Caption;
     TBitBtn(AComponent).ShowHint := True;
   end
+  // <--
+  // Настройка таблиц и списков -->
   else if AComponent is TListView then
   begin
     if PS.ControlsFontName <> '' then
@@ -751,7 +803,7 @@ begin
     if PS.ControlsFontName <> '' then
       TStringGrid(AComponent).Font.Name := PS.GridFontName;
     if PS.ControlsFontSize <> 0 then
-      TStringGrid(AComponent).Font.Size := PS.GridFontSize;
+      TStringGrid(AComponent).Font.SIZE := PS.GridFontSize;
     TStringGrid(AComponent).Font.Style := TFontStyles(PS.GridFontStyle);
   end
   else if AComponent is TVirtualStringTree then
@@ -763,8 +815,8 @@ begin
     end;
     if PS.ControlsFontSize <> 0 then
     begin
-      TVirtualStringTree(AComponent).Font.Size := PS.GridFontSize;
-      TVirtualStringTree(AComponent).Header.Font.Size := PS.GridFontSize;
+      TVirtualStringTree(AComponent).Font.SIZE := PS.GridFontSize;
+      TVirtualStringTree(AComponent).Header.Font.SIZE := PS.GridFontSize;
     end;
     TVirtualStringTree(AComponent).Font.Style := TFontStyles(PS.GridFontStyle);
     TVirtualStringTree(AComponent).Header.Font.Style := TFontStyles(PS.GridFontStyle);
@@ -782,7 +834,93 @@ begin
     LoadDBGridSettings(TJvDBGrid(AComponent));
     if not Assigned(TJvDBGrid(AComponent).OnDrawColumnCell) then
       TJvDBGrid(AComponent).OnDrawColumnCell := DrawColumnCell;
-  end;
+    if not(Assigned(TJvDBGrid(AComponent).OnTitleBtnClick)) and (dgTitleClick in TJvDBGrid(AComponent).Options)
+    then
+      TJvDBGrid(AComponent).OnTitleBtnClick := TitleBtnClick;
+  end
+  // <--
+  // Настройка полей ввода/вывода -->
+  else if AComponent is TEdit then
+  begin
+    if PS.TextFontName <> '' then
+      TEdit(AComponent).Font.Name := PS.TextFontName;
+    if PS.TextFontSize <> 0 then
+      TEdit(AComponent).Font.SIZE := PS.TextFontSize;
+    TEdit(AComponent).Font.Style := TFontStyles(PS.TextFontStyle);
+  end
+  else if AComponent is TDBEdit then
+  begin
+    if PS.TextFontName <> '' then
+      TDBEdit(AComponent).Font.Name := PS.TextFontName;
+    if PS.TextFontSize <> 0 then
+      TDBEdit(AComponent).Font.SIZE := PS.TextFontSize;
+    TDBEdit(AComponent).Font.Style := TFontStyles(PS.TextFontStyle);
+  end
+  else if AComponent is TMemo then
+  begin
+    if PS.TextFontName <> '' then
+      TMemo(AComponent).Font.Name := PS.TextFontName;
+    if PS.TextFontSize <> 0 then
+      TMemo(AComponent).Font.SIZE := PS.TextFontSize;
+    TMemo(AComponent).Font.Style := TFontStyles(PS.TextFontStyle);
+  end
+  else if AComponent is TDBMemo then
+  begin
+    if PS.TextFontName <> '' then
+      TDBMemo(AComponent).Font.Name := PS.TextFontName;
+    if PS.TextFontSize <> 0 then
+      TDBMemo(AComponent).Font.SIZE := PS.TextFontSize;
+    TDBMemo(AComponent).Font.Style := TFontStyles(PS.TextFontStyle);
+  end
+  else if AComponent is TComboBox then
+  begin
+    if PS.TextFontName <> '' then
+      TComboBox(AComponent).Font.Name := PS.TextFontName;
+    if PS.TextFontSize <> 0 then
+      TComboBox(AComponent).Font.SIZE := PS.TextFontSize;
+    TComboBox(AComponent).Font.Style := TFontStyles(PS.TextFontStyle);
+  end
+  else if AComponent is TDBLookupComboBox then
+  begin
+    if PS.TextFontName <> '' then
+      TDBLookupComboBox(AComponent).Font.Name := PS.TextFontName;
+    if PS.TextFontSize <> 0 then
+      TDBLookupComboBox(AComponent).Font.SIZE := PS.TextFontSize;
+    TDBLookupComboBox(AComponent).Font.Style := TFontStyles(PS.TextFontStyle);
+  end
+  else if AComponent is TSpinEdit then
+  begin
+    if PS.TextFontName <> '' then
+      TSpinEdit(AComponent).Font.Name := PS.TextFontName;
+    if PS.TextFontSize <> 0 then
+      TSpinEdit(AComponent).Font.SIZE := PS.TextFontSize;
+    TSpinEdit(AComponent).Font.Style := TFontStyles(PS.TextFontStyle);
+  end
+  else if AComponent is TJvDBSpinEdit then
+  begin
+    if PS.TextFontName <> '' then
+      TJvDBSpinEdit(AComponent).Font.Name := PS.TextFontName;
+    if PS.TextFontSize <> 0 then
+      TJvDBSpinEdit(AComponent).Font.SIZE := PS.TextFontSize;
+    TJvDBSpinEdit(AComponent).Font.Style := TFontStyles(PS.TextFontStyle);
+  end
+  else if AComponent is TJvSpinEdit then
+  begin
+    if PS.TextFontName <> '' then
+      TJvSpinEdit(AComponent).Font.Name := PS.TextFontName;
+    if PS.TextFontSize <> 0 then
+      TJvSpinEdit(AComponent).Font.SIZE := PS.TextFontSize;
+    TJvSpinEdit(AComponent).Font.Style := TFontStyles(PS.TextFontStyle);
+  end
+  else if AComponent is TDateTimePicker then
+  begin
+    if PS.TextFontName <> '' then
+      TDateTimePicker(AComponent).Font.Name := PS.TextFontName;
+    if PS.TextFontSize <> 0 then
+      TDateTimePicker(AComponent).Font.SIZE := PS.TextFontSize;
+    TDateTimePicker(AComponent).Font.Style := TFontStyles(PS.TextFontStyle);
+  end
+  // <--
 end;
 
 procedure TSmForm.WMUpdateFormStyle(var Mes: TMessage);

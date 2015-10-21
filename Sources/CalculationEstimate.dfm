@@ -611,7 +611,7 @@
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pmTableLeft
           TabOrder = 0
@@ -1578,6 +1578,7 @@
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
             ParentCtl3D = False
             ParentFont = False
             PopupMenu = pmMechanizms
@@ -1869,6 +1870,7 @@
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
             ParentCtl3D = False
             ParentFont = False
             PopupMenu = pmMaterials
@@ -2118,6 +2120,7 @@
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
             ParentCtl3D = False
             ParentFont = False
             PopupMenu = pmDevices
@@ -2288,6 +2291,7 @@
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
             ParentCtl3D = False
             ParentFont = False
             PopupMenu = pmDumpTransp
@@ -2403,6 +2407,7 @@
             DataSource = dsDescription
             DefaultDrawing = False
             DrawingStyle = gdsClassic
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
             TabOrder = 3
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
@@ -2445,6 +2450,7 @@
             Font.Height = -11
             Font.Name = 'Tahoma'
             Font.Style = []
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
             ParentCtl3D = False
             ParentFont = False
             PopupMenu = pmDumpTransp
@@ -2585,6 +2591,7 @@
             DataSource = dsStartup
             DefaultDrawing = False
             DrawingStyle = gdsClassic
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
             ParentCtl3D = False
             ReadOnly = True
             TabOrder = 5

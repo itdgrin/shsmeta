@@ -10902,7 +10902,6 @@
     ParentShowHint = False
     ShowHint = True
     TabOrder = 3
-    ExplicitTop = 450
   end
   object PanelCover: TPanel
     Left = 440

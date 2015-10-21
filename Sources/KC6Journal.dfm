@@ -167,7 +167,7 @@ object fKC6Journal: TfKC6Journal
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
         ParentFont = False
         TabOrder = 1
         TitleFont.Charset = DEFAULT_CHARSET
@@ -194,10 +194,6 @@ object fKC6Journal: TfKC6Journal
       ImageIndex = 1
       ParentFont = False
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object dbgrdPTM: TJvDBGrid
         Left = 0
         Top = 0
@@ -237,10 +233,6 @@ object fKC6Journal: TfKC6Journal
       ImageIndex = 2
       ParentFont = False
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object dbgrdEstimate: TJvDBGrid
         Left = 0
         Top = 0
