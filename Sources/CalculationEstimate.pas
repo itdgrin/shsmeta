@@ -10,7 +10,7 @@ uses
   FireDAC.Comp.Client, Vcl.DBCtrls, CalculationEstimateSSR, CalculationEstimateSummaryCalculations,
   JvExDBGrids, JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression, GlobsAndConst,
   FireDAC.UI.Intf, JvExComCtrls, JvDBTreeView, Generics.Collections, Tools, Generics.Defaults,
-  fFrameCalculator, Data.FmtBcd, dmReportU;
+  fFrameCalculator, Data.FmtBcd, dmReportU, JvComponentBase, JvFormPlacement;
 
 type
   TAutoRepRec = record
@@ -489,6 +489,7 @@ type
     PMMatManPrice: TMenuItem;
     PMMechManPrice: TMenuItem;
     PMDevManPrice: TMenuItem;
+    FormStorage: TJvFormStorage;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -793,6 +794,8 @@ type
     procedure DeleteRowFromSmeta();
     procedure SaveData; // Процедура сохранения сметы/акта
 
+  protected
+    procedure SetFormStyle; override;
   public
     Act: Boolean;
 
@@ -942,6 +945,29 @@ begin
       end;
   end;
   FOldGridProc(Message);
+end;
+
+procedure TFormCalculationEstimate.SetFormStyle;
+var TitleRowH: Integer;
+begin
+  inherited;
+  TitleRowH := Trunc(dbgrdMaterial.RowsHeight * 1.85);
+  case dbgrdMaterial.Font.Size of
+  8,10,12,14:;
+  else Exit;
+  end;
+
+  dbgrdMaterial.AutoSizeRows := False;
+  dbgrdMechanizm.AutoSizeRows := False;
+  dbgrdDevices.AutoSizeRows := False;
+  dbgrdDump.AutoSizeRows := False;
+  dbgrdTransp.AutoSizeRows := False;
+
+  dbgrdMaterial.TitleRowHeight := TitleRowH;
+  dbgrdMechanizm.TitleRowHeight := TitleRowH;
+  dbgrdDevices.TitleRowHeight := TitleRowH;
+  dbgrdDump.TitleRowHeight := TitleRowH;
+  dbgrdTransp.TitleRowHeight := TitleRowH;
 end;
 
 procedure TFormCalculationEstimate.FormCreate(Sender: TObject);

@@ -625,6 +625,7 @@
           OnExit = grRatesExExit
           OnKeyDown = dbgrdRatesKeyDown
           AutoAppend = False
+          IniStorage = FormStorage
           MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -1592,6 +1593,7 @@
             OnKeyDown = dbgrdMechanizmKeyDown
             AutoAppend = False
             AutoSort = False
+            IniStorage = FormStorage
             BevelInner = bvNone
             BevelOuter = bvNone
             SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -1882,14 +1884,14 @@
             OnKeyDown = dbgrdMaterialKeyDown
             AutoAppend = False
             AutoSort = False
+            IniStorage = FormStorage
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
             CanDelete = False
             EditControls = <>
-            AutoSizeRows = False
             RowsHeight = 17
-            TitleRowHeight = 40
+            TitleRowHeight = 17
             WordWrap = True
             OnCanEditCell = dbgrdMaterialCanEditCell
             Columns = <
@@ -2131,6 +2133,7 @@
             OnKeyDown = dbgrdDevicesKeyDown
             AutoAppend = False
             AutoSort = False
+            IniStorage = FormStorage
             BevelInner = bvNone
             BevelOuter = bvNone
             SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -2300,14 +2303,14 @@
             OnKeyDown = dbgrdDumpKeyDown
             AutoAppend = False
             AutoSort = False
+            IniStorage = FormStorage
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
             CanDelete = False
             EditControls = <>
-            AutoSizeRows = False
             RowsHeight = 17
-            TitleRowHeight = 30
+            TitleRowHeight = 17
             WordWrap = True
             Columns = <
               item
@@ -2410,6 +2413,7 @@
             OnEnter = dbgrdRatesEnter
             AutoAppend = False
             AutoSort = False
+            IniStorage = FormStorage
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -2456,6 +2460,7 @@
             OnKeyDown = dbgrdDumpKeyDown
             AutoAppend = False
             AutoSort = False
+            IniStorage = FormStorage
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -2470,7 +2475,7 @@
                 FieldName = 'NUM'
                 Title.Alignment = taCenter
                 Title.Caption = #8470
-                Width = 25
+                Width = 28
                 Visible = True
               end
               item
@@ -2592,6 +2597,7 @@
             OnEnter = dbgrdRatesEnter
             AutoAppend = False
             AutoSort = False
+            IniStorage = FormStorage
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -2669,6 +2675,7 @@
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
         OnDrawColumnCell = dbgrdCalculationsDrawColumnCell
+        IniStorage = FormStorage
         OnResize = dbgrdCalculationsResize
         ScrollBars = ssNone
         AutoSizeColumns = True
@@ -5574,5 +5581,13 @@
         ParamType = ptInput
         Value = Null
       end>
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%'
+    Options = [fpActiveControl]
+    StoredValues = <>
+    Left = 168
+    Top = 128
   end
 end
