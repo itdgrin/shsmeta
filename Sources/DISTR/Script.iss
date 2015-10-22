@@ -5,7 +5,7 @@
 #define MyAppVersion "1.0"
 #define MyAppPublisher "БНТУ"
 #define MyAppURL ""
-#define MyAppExeName "Smeta.exe"
+#define MyAppExeName "SMR-HPP2012.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -38,7 +38,7 @@ Name: "installODBC"; Description: "Установить драйвер MySQL ODBC"; GroupDescript
 Name: "installMYSQL"; Description: "Установить MySQL сервер"; GroupDescription: "Установка дополнительных компонент системы:"; Flags: unchecked
 
 [Files]
-Source: "D:\Work\Minsk\SmetaSRC\Debug\Win32\Smeta.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Work\Minsk\SmetaSRC\Debug\Win32\SMR-HPP2012.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\Work\Minsk\SmetaSRC\Debug\Win32\SmUpd.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\Work\Minsk\SmetaSRC\SQL\mysql.exe"; DestDir: "{app}\SQL"; Flags: ignoreversion
 Source: "D:\Work\Minsk\SmetaSRC\SQL\mysqldump.exe"; DestDir: "{app}\SQL"; Flags: ignoreversion
@@ -58,11 +58,11 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{group}\Дополнительно\Установка MSQL-сервера"; Filename: "{app}\Distr\Setup-mysql5.2.exe"
 Name: "{group}\Дополнительно\Установка ODBC"; Filename: "{app}\Distr\mysql-connector-odbc-5.2.7-win32.msi"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; Comment: "НИЧ БНТУ"
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon; Comment: "НИЧ БНТУ"
 
 [Run]
 Filename: "{app}\Distr\Setup-mysql5.2.exe"; Description: "MYSQL"; Tasks: installMYSQL
 Filename: "msiexec.exe"; Parameters: "/i ""{app}\Distr\mysql-connector-odbc-5.2.7-win32.msi"" /passive"; Description: "ODBC"; Tasks: installODBC
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: postinstall
 

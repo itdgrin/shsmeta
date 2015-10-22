@@ -11,7 +11,6 @@ type
     imgProgramIcon: TImage;
     lblProductName: TLabel;
     lblVersion: TLabel;
-    lblCopyright: TLabel;
     lblComments: TLabel;
     btnOKButton: TButton;
     procedure FormShow(Sender: TObject);

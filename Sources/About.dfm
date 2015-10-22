@@ -4,7 +4,7 @@ object fAbout: TfAbout
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077'...'
-  ClientHeight = 215
+  ClientHeight = 150
   ClientWidth = 298
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,10 +18,10 @@ object fAbout: TfAbout
   PixelsPerInch = 96
   TextHeight = 13
   object pnl1: TPanel
-    Left = 8
+    Left = 9
     Top = 8
     Width = 281
-    Height = 161
+    Height = 105
     BevelInner = bvRaised
     BevelOuter = bvLowered
     Font.Charset = DEFAULT_CHARSET
@@ -35,8 +35,8 @@ object fAbout: TfAbout
     object imgProgramIcon: TImage
       Left = 8
       Top = 8
-      Width = 74
-      Height = 66
+      Width = 41
+      Height = 45
       Picture.Data = {
         055449636F6E0000010002002020000001002000A81000002600000010100000
         0100200068040000CE1000002800000020000000400000000100200000000000
@@ -213,11 +213,12 @@ object fAbout: TfAbout
       IsControl = True
     end
     object lblProductName: TLabel
-      Left = 88
-      Top = 16
-      Width = 82
-      Height = 13
-      Caption = #1056#1072#1089#1095#1077#1090' '#1089#1084#1077#1090#1099
+      Left = 55
+      Top = 8
+      Width = 218
+      Height = 26
+      Alignment = taCenter
+      Caption = #1055#1088#1086#1075#1088#1072#1084#1084#1085#1086'-'#1072#1087#1087#1072#1088#1072#1090#1085#1099#1081' '#1082#1086#1084#1087#1083#1077#1082#1089#13#10'SMR - HPP 2012'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -227,25 +228,12 @@ object fAbout: TfAbout
       IsControl = True
     end
     object lblVersion: TLabel
-      Left = 88
+      Left = 55
       Top = 40
-      Width = 46
+      Width = 218
       Height = 13
-      Caption = '0.9 Alpha'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      IsControl = True
-    end
-    object lblCopyright: TLabel
-      Left = 8
-      Top = 80
-      Width = 68
-      Height = 13
-      Caption = '2012-2015 (c)'
+      Alignment = taCenter
+      Caption = #1042#1077#1088#1089#1080#1103' 1.0'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -256,10 +244,11 @@ object fAbout: TfAbout
     end
     object lblComments: TLabel
       Left = 8
-      Top = 104
-      Width = 60
-      Height = 13
-      Caption = 'lblComments'
+      Top = 80
+      Width = 265
+      Height = 17
+      Alignment = taCenter
+      Caption = #1053#1048#1063' '#1041#1053#1058#1059', 2012-2015 (c)'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -272,7 +261,7 @@ object fAbout: TfAbout
   end
   object btnOKButton: TButton
     Left = 111
-    Top = 180
+    Top = 119
     Width = 75
     Height = 25
     Caption = 'OK'
