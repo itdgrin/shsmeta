@@ -5591,7 +5591,7 @@
   end
   object FormStorage: TJvFormStorage
     AppStorage = FormMain.AppIni
-    AppStoragePath = '%FORM_NAME%'
+    AppStoragePath = '%FORM_NAME%\'
     Options = [fpActiveControl]
     StoredValues = <>
     Left = 168

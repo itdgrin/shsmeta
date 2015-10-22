@@ -89,7 +89,7 @@ type
     editMode: Boolean;
     procedure changeEditMode;
   public
-    OutValue, LicateID: Integer;
+    OutValue, LicateID, Licate_ONDATE_ID, ZNORMATIVS_ONDATE_ID: Integer;
   end;
 
 var
@@ -109,10 +109,12 @@ end;
 procedure TfWinterPrice.btnSelectClick(Sender: TObject);
 begin
   OutValue := 0;
+  ZNORMATIVS_ONDATE_ID := 0;
   if Application.MessageBox('Вы действительно хотите заменить коэф. зимнего удорожания в выбранной расценке?',
     'Application.Title', MB_OKCANCEL + MB_ICONQUESTION + MB_TOPMOST) = IDOK then
   begin
     OutValue := qrTreeData.FieldByName('ZNORMATIVS_ID').AsInteger;
+    ZNORMATIVS_ONDATE_ID := qrZnormChangeDate.FieldByName('ID').AsInteger;
     ModalResult := mrOk;
   end;
 end;
@@ -191,6 +193,8 @@ begin
   CloseOpen(qrZnormChangeDate);
   if LicateID <> 0 then
     tvEstimates.SelectNode(LicateID).Expand(False);
+  if Licate_ONDATE_ID <> 0 then
+    qrZnormChangeDate.Locate('ID', Licate_ONDATE_ID, []);
 end;
 
 procedure TfWinterPrice.grRatesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;

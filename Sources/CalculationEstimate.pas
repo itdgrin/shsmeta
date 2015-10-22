@@ -948,13 +948,16 @@ begin
 end;
 
 procedure TFormCalculationEstimate.SetFormStyle;
-var TitleRowH: Integer;
+var
+  TitleRowH: Integer;
 begin
   inherited;
   TitleRowH := Trunc(dbgrdMaterial.RowsHeight * 1.85);
   case dbgrdMaterial.Font.Size of
-  8,10,12,14:;
-  else Exit;
+    8, 10, 12, 14:
+      ;
+  else
+    Exit;
   end;
 
   dbgrdMaterial.AutoSizeRows := False;
@@ -3534,15 +3537,24 @@ begin
 end;
 
 procedure TFormCalculationEstimate.nSelectWinterPriseClick(Sender: TObject);
+var
+  res: Variant;
 begin
   if (not Assigned(fWinterPrice)) then
     fWinterPrice := TfWinterPrice.Create(Self);
   fWinterPrice.FormKind := kdSelect;
   fWinterPrice.LicateID := qrRatesExZNORMATIVS_ID.Value;
+  res := FastSelectSQLOne('SELECT ZNORMATIVS_ONDATE_ID FROM card_rate_temp WHERE ID=:ID',
+    VarArrayOf([qrRatesExID_TABLES.AsInteger]));
+  if VarIsNull(res) then
+    res := 0;
+  fWinterPrice.Licate_ONDATE_ID := res;
+
   if (fWinterPrice.ShowModal = mrOk) and (fWinterPrice.OutValue <> 0) then
   begin
-    FastExecSQL('UPDATE card_rate_temp SET ZNORMATIVS_ID=:ZNORMATIVS_ID WHERE ID=:ID',
-      VarArrayOf([fWinterPrice.OutValue, qrRatesExID_TABLES.AsInteger]));
+    FastExecSQL
+      ('UPDATE card_rate_temp SET ZNORMATIVS_ID=:ZNORMATIVS_ID, ZNORMATIVS_ONDATE_ID=:ZNORMATIVS_ONDATE_ID WHERE ID=:ID',
+      VarArrayOf([fWinterPrice.OutValue, fWinterPrice.ZNORMATIVS_ONDATE_ID, qrRatesExID_TABLES.AsInteger]));
     qrRatesExZNORMATIVS_ID.Value := fWinterPrice.OutValue;
     FillingWinterPrice('');
     CloseOpen(qrCalculations);
@@ -4869,8 +4881,7 @@ begin
 
   qrTemp.SQL.Clear;
   qrTemp.SQL.Add('SELECT year,monat,DATE_BEG FROM stavka WHERE stavka_id = ' +
-    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' +
-      INTTOSTR(qrRatesExSM_ID.AsInteger) + ')');
+    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + INTTOSTR(qrRatesExSM_ID.AsInteger) + ')');
   qrTemp.Active := True;
   Month1 := qrTemp.FieldByName('monat').AsInteger;
   Year1 := qrTemp.FieldByName('year').AsInteger;
@@ -4894,17 +4905,13 @@ begin
       SQL.Clear;
       SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
         'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
-        'TMat.unit_id as "UnitId", mat_name as "MatName", ' +
-        PriceVAT + ' as "PriceVAT", ' + PriceNoVAT + ' as "PriceNoVAT", ' +
-        'TMat.BASE as "BASE" ' +
-        'FROM materialnorm as TMatNorm ' +
+        'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
+        ' as "PriceNoVAT", ' + 'TMat.BASE as "BASE" ' + 'FROM materialnorm as TMatNorm ' +
         'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
-        'LEFT JOIN units ON TMat.unit_id = units.unit_id ' +
-        'LEFT JOIN materialcoastg as TMatCoast ON ' +
-          '(TMatCoast.material_id = TMatNorm.material_id) and ' +
-          '(monat = ' + INTTOSTR(Month1) + ') and ' +
-          '(year = ' + INTTOSTR(Year1) + ') ' +
-        'WHERE (TMatNorm.normativ_id = ' + INTTOSTR(ARateId) + ') order by 1';
+        'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
+        '(TMatCoast.material_id = TMatNorm.material_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and ' +
+        '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (TMatNorm.normativ_id = ' + INTTOSTR(ARateId) +
+        ') order by 1';
       Active := True;
 
       Filtered := False;
@@ -4939,8 +4946,7 @@ begin
           'ID, ID_CARD_RATE, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
           'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE) values ' +
           '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :MAT_ID, :MAT_CODE, ' +
-          ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' +
-          ':PROC_TRANSP, :BASE)';
+          ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' + ':PROC_TRANSP, :BASE)';
         qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
         qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
         qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -4981,8 +4987,7 @@ begin
 
         if MaxMId > 0 then
         begin
-          qrTemp1.SQL.Text := 'Insert into materialcard_temp ' +
-            '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
+          qrTemp1.SQL.Text := 'Insert into materialcard_temp ' + '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
             'CONSIDERED, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
             'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE) values ' +
             '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
@@ -5033,16 +5038,13 @@ begin
         'mechnorm.norm_ras as "MechNorm", units.unit_name as "Unit", ' +
         'mech.mech_name as "MechName", mechcoast.coast1 as "CoastVAT", ' +
         'mechcoast.coast2 as "CoastNoVAT", mechcoast.zp1 as "SalaryVAT", ' +
-        'mechcoast.zp2 as "SalaryNoVAT", IFNULL(mech.MECH_PH, 0) as "MECH_PH", ' +
-        'mech.BASE as "BASE" ' +
+        'mechcoast.zp2 as "SalaryNoVAT", IFNULL(mech.MECH_PH, 0) as "MECH_PH", ' + 'mech.BASE as "BASE" ' +
         'FROM mechanizmnorm as mechnorm ' +
         'JOIN mechanizm as mech ON mechnorm.mechanizm_id = mech.mechanizm_id ' +
-        'JOIN units ON mech.unit_id = units.unit_id ' +
-        'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
-          '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and ' +
-          '(monat = ' + INTTOSTR(Month1) + ') and ' +
-          '(year = ' + INTTOSTR(Year1) + ') ' +
-        'WHERE (mechnorm.normativ_id = ' + INTTOSTR(ARateId) + ') order by 1');
+        'JOIN units ON mech.unit_id = units.unit_id ' + 'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
+        '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and ' +
+        '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (mechnorm.normativ_id = ' + INTTOSTR(ARateId) +
+        ') order by 1');
 
       Active := True;
       First;
