@@ -56,6 +56,8 @@ type
     dbedtEXAMINER: TDBEdit;
     dbedtPOST_EXAMINER: TDBEdit;
     dbedtSET_DRAWINGS: TDBEdit;
+    lblType: TLabel;
+    cbbType: TComboBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -70,6 +72,7 @@ type
     procedure EditingRecord(const Value: Boolean);
     procedure ComboBoxChange(Sender: TObject);
     procedure qrPartsAfterScroll(DataSet: TDataSet);
+    procedure cbbTypeCloseUp(Sender: TObject);
 
   private
     StrQuery: String;
@@ -158,7 +161,8 @@ begin
   else
     qrMain.Edit;
   // ----------------------------------------
-
+  lblType.Visible := TypeEstimate = 1;
+  cbbType.Visible := TypeEstimate = 1;
   case TypeEstimate of
     1, 2:
       begin
@@ -175,6 +179,14 @@ begin
         dblkcbbParts.Enabled := False;
         dblkcbbSections.Enabled := False;
         dblkcbbTypesWorks.Enabled := False;
+
+        if TypeEstimate = 1 then
+        begin
+          if VarIsNull(qrMain.FieldByName('SM_SUBTYPE').Value) then
+            cbbType.ItemIndex := 0
+          else
+            cbbType.ItemIndex := qrMain.FieldByName('SM_SUBTYPE').AsInteger - 1;
+        end;
 
         qrParts.Close;
         qrSections.Close;
@@ -298,6 +310,7 @@ procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
     qrMain.FieldByName('sm_type').AsInteger := aType;
     qrMain.FieldByName('obj_id').AsInteger := IdObject;
     qrMain.FieldByName('parent_id').AsInteger := aParentID;
+    qrMain.FieldByName('SM_SUBTYPE').Value := qrTemp.FieldByName('SM_SUBTYPE').Value;
     qrMain.FieldByName('ACT').Value := qrTemp.FieldByName('ACT').Value;
     qrMain.FieldByName('TYPE_ACT').Value := qrTemp.FieldByName('TYPE_ACT').Value;
     qrMain.FieldByName('FL_USE').Value := qrTemp.FieldByName('FL_USE').Value;
@@ -467,6 +480,8 @@ begin
       qrMain.FieldByName('obj_id').AsInteger := IdObject;
       qrMain.FieldByName('date').AsDateTime := DateCompose;
       qrMain.FieldByName('nds').AsInteger := VAT;
+      if TypeEstimate = 1 then
+        qrMain.FieldByName('SM_SUBTYPE').Value := cbbType.ItemIndex + 1;
 
       if TypeEstimate = 2 then
       begin
@@ -519,6 +534,8 @@ begin
           qrTemp.FieldByName('APPLY_WINTERPRISE_FLAG').Value;
         qrMain.FieldByName('ACT').Value := qrTemp.FieldByName('ACT').Value;
         qrMain.FieldByName('TYPE_ACT').Value := qrTemp.FieldByName('TYPE_ACT').Value;
+        if TypeEstimate = 3 then
+          qrMain.FieldByName('SM_SUBTYPE').Value := qrTemp.FieldByName('SM_SUBTYPE').Value;
       end;
 
       if qrMain.State in [dsInsert] then
@@ -550,6 +567,15 @@ begin
       MessageBox(0, PChar('При сохранении данных возникла ошибка:' + #13#10 + E.Message), PWideChar(Caption),
         MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
+  end;
+end;
+
+procedure TFormCardEstimate.cbbTypeCloseUp(Sender: TObject);
+begin
+  if TypeEstimate = 1 then
+  begin
+    qrMain.Edit;
+    qrMain.FieldByName('SM_SUBTYPE').Value := cbbType.ItemIndex + 1;
   end;
 end;
 

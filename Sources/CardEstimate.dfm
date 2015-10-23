@@ -48,15 +48,15 @@ object FormCardEstimate: TFormCardEstimate
     ParentFont = False
     TabOrder = 0
     object LabelNumberChapter: TLabel
-      Left = 189
-      Top = 5
+      Left = 167
+      Top = 6
       Width = 74
       Height = 13
       Caption = #8470' '#1075#1083#1072#1074#1099' '#1057#1057#1056':'
     end
     object LabelNumberRow: TLabel
-      Left = 390
-      Top = 5
+      Left = 327
+      Top = 6
       Width = 55
       Height = 13
       Caption = #8470' '#1089#1090#1088#1086#1082#1080':'
@@ -75,10 +75,17 @@ object FormCardEstimate: TFormCardEstimate
       Font.Style = []
       ParentFont = False
     end
+    object lblType: TLabel
+      Left = 447
+      Top = 6
+      Width = 22
+      Height = 13
+      Caption = #1058#1080#1087':'
+    end
     object dbedtSM_NUMBER: TDBEdit
       Left = 68
       Top = 2
-      Width = 115
+      Width = 93
       Height = 21
       Color = 14802912
       DataField = 'SM_NUMBER'
@@ -93,18 +100,18 @@ object FormCardEstimate: TFormCardEstimate
       TabOrder = 0
     end
     object dbedtCHAPTER: TDBEdit
-      Left = 269
+      Left = 247
       Top = 2
-      Width = 115
+      Width = 74
       Height = 21
       DataField = 'CHAPTER'
       DataSource = dsMain
       TabOrder = 1
     end
     object dbedtROW_NUMBER: TDBEdit
-      Left = 451
-      Top = 2
-      Width = 150
+      Left = 388
+      Top = 3
+      Width = 53
       Height = 21
       DataField = 'ROW_NUMBER'
       DataSource = dsMain
@@ -114,7 +121,23 @@ object FormCardEstimate: TFormCardEstimate
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      TabOrder = 3
+    end
+    object cbbType: TComboBox
+      Left = 475
+      Top = 2
+      Width = 126
+      Height = 21
+      Style = csDropDownList
+      ItemIndex = 0
       TabOrder = 2
+      Text = #1083#1086#1082#1072#1083#1100#1085#1072#1103
+      OnCloseUp = cbbTypeCloseUp
+      Items.Strings = (
+        #1083#1086#1082#1072#1083#1100#1085#1072#1103
+        #1055#1053#1056
+        #1076#1086#1087'. '#1088#1072#1073#1086#1090#1099
+        #1088#1077#1082#1086#1085#1089#1090#1088#1091#1082#1094#1080#1103)
     end
   end
   object Panel2: TPanel
