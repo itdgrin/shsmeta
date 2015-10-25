@@ -12,7 +12,8 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.SysUtils,
   IniFiles, IdMessage, IdSSLOpenSSL, IdMessageClient, IdSMTPBase, IdSMTP,
-  IdAttachmentFile, IdExplicitTLSClientServerBase, Tools, GlobsAndConst, ArhivModule;
+  IdAttachmentFile, IdExplicitTLSClientServerBase, Tools, GlobsAndConst,
+  ArhivModule;
 
 type
   TUpdateForm = class(TSmForm)
@@ -27,63 +28,41 @@ type
     Label2: TLabel;
     Panel3: TPanel;
     ProgressBar1: TProgressBar;
-    Memo1: TMemo;
+    memProcess: TMemo;
     Label3: TLabel;
     Label4: TLabel;
-    HTTP: TIdHTTP;
-    IdAntiFreeze1: TIdAntiFreeze;
-    ZipForge: TZipForge;
-    SQLScript: TFDScript;
-    qrTemp: TFDQuery;
     btnIterrupt: TButton;
+    TimerProgress: TTimer;
     procedure btnUpdateClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
-      AWorkCountMax: Int64);
-    procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
-    procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
-      AWorkCount: Int64);
-    procedure SQLScriptError(ASender: TObject; const AInitiator: IFDStanObject;
-      var AException: Exception);
-    procedure SQLScriptBeforeExecute(Sender: TObject);
-    procedure SQLScriptAfterExecute(Sender: TObject);
-    procedure SQLScriptProgress(Sender: TObject);
     procedure btnIterruptClick(Sender: TObject);
+    procedure TimerProgressTimer(Sender: TObject);
   private
     FCurVersion: TVersion; //Текущая версия приложения
-    FSR: TServiceResponse;
-    SqlErrorList: TStringList;
+    FSResponse: TServiceResponse;
 
-    FClientName: string; // Имя клиета
-    FSendReport: boolean; // Необходимость отправлять отчет об ошибках обновления
-
-    FStopUpdateProc,
-    FErrorUpdateProc: Boolean;
-
-    FLogFile: TLogFile;
+    FStopUpdateProc: Boolean;
 
     FArhiv: TBaseAppArhiv;
+    FUpdateThread: TUpdateThread;
 
     procedure ShowUpdateStatys;
     procedure StartUpdate;
-    procedure LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
-    function ExecSqlScript(ADirName: string; AUpdate: TNewVersion; AType: byte): Boolean;
-    procedure SendErrorReport;
-    function UpdateApp(const AUpdatePath: string): Boolean;
     procedure ShowStatys(const AStatysStr: string; AType: byte = 0);
     procedure SetButtonStyle(AStyle: Integer);
-    function CheckUpdateProc: Boolean;
-    { Private declarations }
+    function CheckNeedCreateArhiv: THandle;
+    procedure WMUpdateState(var Mes: TMessage); message WM_UPDATESTATE;
+    procedure WMUpdateProgress(var Mes: TMessage); message WM_UPDATEPROGRESS;
+    procedure OnThreadTerminate(Sender: TObject);
+    procedure UpdateState(AStrVal: string; AType: Byte);
   public
     //Устанавливает версии но не изменяет внешний вид
     procedure SetVersion(const AVersion: TVersion;
       const AServiceResponse: TServiceResponse);
-
     procedure SetArhiv(const AArhiv: TBaseAppArhiv);
-    { Public declarations }
   end;
 
 implementation
@@ -91,459 +70,69 @@ uses DataModule;
 
 {$R *.dfm}
 
-procedure TUpdateForm.SetArhiv(const AArhiv: TBaseAppArhiv);
-begin
-  FArhiv := AArhiv;
-end;
-
-procedure TUpdateForm.SendErrorReport;
-var i : integer;
-    Msg : TIdMessage;
-    SMTP : TIdSMTP;
-    SSLIOHandler : TIdSSLIOHandlerSocketOpenSSL;
-begin
-  Msg := TIdMessage.Create;
-  SMTP := TIdSMTP.Create;
-  SSLIOHandler := TIdSSLIOHandlerSocketOpenSSL.Create;
-  try
-    try
-      if FClientName = '' then
-        raise Exception.Create('Отчет не отправлен. Не указано имя клиента.');
-
-      SSLIOHandler.SSLOptions.Method := sslvSSLv3;
-      SMTP.IOHandler := SSLIOHandler;
-      SMTP.HeloName := 'Smeta';
-
-      SMTP.Host := 'smtp.gmail.com';
-      SMTP.Port := 465;
-
-      SMTP.AuthType := satDefault;
-      SMTP.Username := 'smetareport';
-      SMTP.Password := 'smeta1234';
-
-      SMTP.UseTLS := utUseImplicitTLS;
-
-      SMTP.Connect;
-
-      Msg.From.Address := 'smetareport@gmail.com';
-      Msg.From.Name := FClientName;
-      Msg.Recipients.EMailAddresses := C_SUPPORTMAIL;
-      Msg.Subject := 'Отчет об ошибках обновления';
-      for i := 0 to SqlErrorList.Count - 1 do
-        Msg.Body.Add(SqlErrorList[i] + '<br>');
-
-     //Без вложений
-      Msg.IsEncoded:=false;
-      Msg.ContentType := 'text/html; charset=UTF-8;';
-
-      SMTP.Send(Msg);
-      SMTP.Disconnect;
-    except
-      on e : Exception do
-        ShowStatys(e.Message);
-    end;
-  finally
-    Msg.Free;
-    SMTP.Free;
-    SSLIOHandler.Free;
-  end;
-end;
-
 procedure TUpdateForm.ShowStatys(const AStatysStr: string; AType: byte = 0);
 begin
   if AType = 0 then
-    Memo1.Lines.Add(AStatysStr)
+    memProcess.Lines.Add(AStatysStr)
   else
-    if Memo1.Lines.Count > 0 then
-      Memo1.Lines[Memo1.Lines.Count - 1] := AStatysStr;
-end;
-
-procedure TUpdateForm.LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
-var LoadPath, UpdName: string;
-    MStream: TMemoryStream;
-begin
-  LoadPath := ExtractFilePath(Application.ExeName) + C_UPDATEDIR;
-  UpdName := copy(AUpdate.Url, 1, Pos('?',AUpdate.Url) - 1);
-  UpdName := StringReplace(UpdName, '/','\', [rfReplaceAll]);
-  UpdName := ExtractFileName(UpdName);
-
-  Case AType of
-  0:LoadPath := LoadPath + 'cat' + IntToStr(AUpdate.Version) + '\';
-  1:LoadPath := LoadPath + 'user' + IntToStr(AUpdate.Version) + '\';
-  2:LoadPath := LoadPath + 'app' + IntToStr(AUpdate.Version) + '\';
-  End;
-  ForceDirectories(LoadPath);
-
-  ShowStatys('Обновление ' + IntToStr(AUpdate.Version) + ': ' + AUpdate.Comment);
-
-  MStream := TMemoryStream.Create;
-  try
-    try
-      HTTP.HandleRedirects := true;
-      HTTP.Request.UserAgent:='Mozilla/5.0 (Windows NT 6.1) '+
-        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36';
-      HTTP.Request.Accept:='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-      HTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
-      HTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
-
-      ShowStatys('Загрузка...');
-      HTTP.Get(C_UPDATESERV + AUpdate.Url, MStream);
-      MStream.SaveToFile(LoadPath + UpdName);
-      ShowStatys('Загружено успешно', 1);
-
-      if CheckUpdateProc then
-        Exit;
-
-      ShowStatys('Распаковка...');
-      ZipForge.BaseDir := LoadPath;
-      ZipForge.Options.OverwriteMode := omAlways;
-      ZipForge.FileName := LoadPath + UpdName;
-      ZipForge.OpenArchive;
-      ZipForge.ExtractFiles('*.*');
-      ZipForge.CloseArchive;
-
-      DeleteFile(LoadPath + UpdName);
-      ShowStatys('Распаковано успешно', 1);
-
-      if CheckUpdateProc then
-        Exit;
-
-      if AType in [0,1] then
-      begin
-        ShowStatys('Установка...');
-
-        if not ExecSqlScript(LoadPath, AUpdate, AType) then
-          raise Exception.Create('Не удалось выполнить скрипт!');
-
-        ShowStatys('Установлено успешно', 1);
-      end
-      else
-      begin
-        if UpdateApp(LoadPath) then
-          G_STARTUPDATER := 1;
-        G_NEWAPPVERS := AUpdate.Version;
-      end;
-    except
-      on e: Exception do
-      begin
-        FLogFile.Add(e.ClassName + ': ' + e.Message,
-          'Update Form (Type=' + IntToStr(Atype) +
-          '; Vers=' + IntToStr(AUpdate.Version) + ')');
-        FErrorUpdateProc := True;
-        ShowStatys(e.Message);
-
-        SqlErrorList.Insert(0, e.Message);
-        //Если установлен флаг отправляется отчет об ошибках
-        if FSendReport then
-        begin
-          ShowStatys('Отправка отчета об ошибках в техподдержку');
-          case AType of
-          0: SqlErrorList.Insert(0, 'Обновление справочников №' +
-            IntToStr(AUpdate.Version));
-          1: SqlErrorList.Insert(0, 'Обновление пользовательских таблиц №' +
-              IntToStr(AUpdate.Version));
-          2: SqlErrorList.Insert(0, 'Обновление приложения №' +
-              IntToStr(AUpdate.Version));
-          end;
-
-          SendErrorReport;
-        end;
-
-        ShowStatys('');
-        ShowStatys('Обновление завершилось ошибкой!');
-      end;
-    end;
-  finally
-    MStream.Free;
-    //После завершения обновлений папки с SQL скриптами удалются
-    if (AType in [0,1]) or
-      ((AType = 2) and (G_STARTUPDATER = 0)) then
-      KillDir(LoadPath);
-  end;
-end;
-
-function TUpdateForm.UpdateApp(const AUpdatePath: string): Boolean;
-begin
-  G_UPDPATH := AUpdatePath;
-  if TFile.Exists(G_UPDPATH + C_UPDATERNAME) then
-  begin
-    TFile.Copy(G_UPDPATH + C_UPDATERNAME,
-      ExtractFilePath(Application.ExeName) + C_UPDATERNAME, True);
-    TFile.Delete(G_UPDPATH + C_UPDATERNAME);
-  end;
-  Result := not TDirectory.IsEmpty(AUpdatePath);
-end;
-
-function TUpdateForm.ExecSqlScript(ADirName: string;
-  AUpdate: TNewVersion; AType: byte): Boolean;
-var TmpSR: TSearchRec;
-    found,
-    ScriptCount,
-    ScriptNo: integer;
-    ScriptResult: boolean;
-    VersTabName: string;
-begin
-  ScriptCount := 0;
-  ScriptNo := 0;
-  Result := True;
-
-  if AType = 0 then
-    VersTabName := 'versionref'
-  else
-    VersTabName := 'versionuser';
-
-  //Вычисляем общее кол-во скриптов в папке
-  found := FindFirst(ADirName + '*.sql', faAnyFile, TmpSR);
-  try
-    while (found = 0) do
-    begin
-      inc(ScriptCount);
-      found := FindNext(TmpSR);
-    end;
-  finally
-    FindClose(TmpSR);
-  end;
-
-  if (ScriptCount > 0) then
-  begin
-    found := FindFirst(ADirName + '*.sql', faAnyFile, TmpSR);
-    try
-      while (found = 0) do
-      begin
-        inc(ScriptNo);
-
-        //Проверка выполняется для случая когда одно обновление содержит несколько
-        //скриптов
-        ScriptResult := False;
-        qrTemp.SQL.Text := 'Select SCRIPTNAME from ' + VersTabName +
-          ' where (VERSION = ' + IntToStr(AUpdate.Version) +
-          ') and (SCRIPTNAME = ''' + TmpSR.name +
-          ''') and (EXECRESULT = 1)';
-        qrTemp.Active := True;
-        if not qrTemp.Eof then
-          ScriptResult := True;
-        qrTemp.Active := False;
-
-        //Если это скрипт уже выполнялся то он будет пропущен
-        if ScriptResult then
-        begin
-          found := FindNext(TmpSR);
-          Continue;
-        end;
-
-        SqlScript.SQLScriptFileName := ADirName + TmpSR.name;
-        SqlScript.ExecuteFile(SqlScript.SQLScriptFileName);
-        ScriptResult := (SqlScript.TotalErrors = 0) and (SqlErrorList.Count = 0);
-
-        qrTemp.SQL.Text := 'INSERT INTO ' + VersTabName +
-          ' (VERSION,SCRIPTNAME,EXECTIME,EXECRESULT,ERRORCOUNT,ERRORTEXT,COMMENT,' +
-          'SCRIPTCOUNT,SCRIPTNO) VALUES (:VERSION,:SCRIPTNAME,:EXECTIME,:EXECRESULT,' +
-          ':ERRORCOUNT,:ERRORTEXT,:COMMENT,:SCRIPTCOUNT,:SCRIPTNO)';
-        qrTemp.ParamByName('VERSION').Value := AUpdate.Version;
-        qrTemp.ParamByName('SCRIPTNAME').Value := TmpSR.name;
-        qrTemp.ParamByName('EXECTIME').Value := Now;
-        qrTemp.ParamByName('EXECRESULT').Value := byte(ScriptResult);
-        qrTemp.ParamByName('ERRORCOUNT').Value := SqlErrorList.Count;
-        qrTemp.ParamByName('ERRORTEXT').Value := copy(SqlErrorList.Text, 1, 250);
-        qrTemp.ParamByName('COMMENT').Value := AUpdate.Comment;
-        qrTemp.ParamByName('SCRIPTCOUNT').Value := ScriptCount;
-        qrTemp.ParamByName('SCRIPTNO').Value := ScriptNo;
-        qrTemp.ExecSQL;
-
-        //Если выполнение скрипта прошло с ошибками, то обновление завершается
-        if not ScriptResult then
-        begin
-          Result := False;
-          Exit;
-        end;
-
-        found := FindNext(TmpSR);
-      end;
-    finally
-      FindClose(TmpSR);
-    end;
-  end
-  else
-  begin
-    //Если обновление не содержит скриптов оно зашитывается как выполненое
-    ScriptResult := True;
-    qrTemp.SQL.Text := 'INSERT INTO ' + VersTabName +
-      ' (VERSION,SCRIPTNAME,EXECTIME,EXECRESULT,ERRORCOUNT,ERRORTEXT,COMMENT,' +
-      'SCRIPTCOUNT,SCRIPTNO) VALUES (:VERSION,:SCRIPTNAME,:EXECTIME,:EXECRESULT,' +
-      ':ERRORCOUNT,:ERRORTEXT,:COMMENT,:SCRIPTCOUNT,:SCRIPTNO)';
-    qrTemp.ParamByName('VERSION').Value := AUpdate.Version;
-    qrTemp.ParamByName('SCRIPTNAME').Value := '';
-    qrTemp.ParamByName('EXECTIME').Value := Now;
-    qrTemp.ParamByName('EXECRESULT').Value := byte(ScriptResult);
-    qrTemp.ParamByName('ERRORCOUNT').Value := SqlErrorList.Count;
-    qrTemp.ParamByName('ERRORTEXT').Value := copy(SqlErrorList.Text, 1, 250);
-    qrTemp.ParamByName('COMMENT').Value := AUpdate.Comment;
-    qrTemp.ParamByName('SCRIPTCOUNT').Value := ScriptCount;
-    qrTemp.ParamByName('SCRIPTNO').Value := ScriptNo;
-    qrTemp.ExecSQL;
-  end;
-end;
-
-function TUpdateForm.CheckUpdateProc: Boolean;
-begin
-   Application.ProcessMessages;
-   Result := FStopUpdateProc or FErrorUpdateProc;
+    if memProcess.Lines.Count > 0 then
+      memProcess.Lines[memProcess.Lines.Count - 1] := AStatysStr;
 end;
 
 procedure TUpdateForm.StartUpdate;
-var i: integer;
 begin
+  if Assigned(FUpdateThread) then
+    raise Exception.Create('Процесс обновления уже запущен.');;
+
+  //Подготовка глобальных флагов
   G_STARTUPDATER := 0;
   G_UPDPATH := '';
   G_NEWAPPVERS := FCurVersion.App;
   G_STARTAPP := False;
 
   FStopUpdateProc := False;
-  FErrorUpdateProc := False;
 
-  if Assigned(FArhiv) then
-  //Если последний архив старше 2х дней создается новый архив
-    if not ((Length(FArhiv.ArhFiles) > 0) and
-       ((Now - FArhiv.GetArhivTime(FArhiv.ArhFiles[0])) < 2)) then
-    begin
-      ShowStatys('Создание резервной копии');
-      ProgressBar1.Style := pbstMarquee;
-      ProgressBar1.Visible := True;
+  memProcess.Clear;
+  //Запуск процесса обновления
+  FUpdateThread := TUpdateThread.Create(Handle, FCurVersion, FSResponse,
+    Application.ExeName);
+  FUpdateThread.OnCreateArhivEvent := CheckNeedCreateArhiv;
+  FUpdateThread.OnTerminate := OnThreadTerminate;
+  FUpdateThread.Start;
+  //Установка стиля кнопочек
+  SetButtonStyle(2);
+end;
 
-      //Максимуи C_ARHCOUNT копии, что-бы не забивать место
-      for i := C_ARHCOUNT - 1 to High(FArhiv.ArhFiles) do
-        FArhiv.DeleteArhiv(FArhiv.ArhFiles[i]);
-     // FArhiv.CreateNewArhiv();
-
-      ProgressBar1.Visible := False;
-    end;
-
-  //Перед началом обновлений папка полностью очищается
-  KillDir(ExtractFilePath(Application.ExeName) + 'Updates');
-  ForceDirectories(ExtractFilePath(Application.ExeName) + 'Updates');
-  Memo1.Lines.Clear;
-  ShowStatys('Начало процесса обновления:');
-  SqlErrorList.Clear;
-  SqlScript.Tag := integer(SqlErrorList);
-
-  if FSR.CatalogCount > 0 then
+procedure TUpdateForm.TimerProgressTimer(Sender: TObject);
+var i, j: Integer;
+    s: string;
+begin
+  i := memProcess.Lines.Count - 1;
+  if (i > -1) and
+     (Length(memProcess.Lines[i]) > 0) then
   begin
-    ShowStatys('');
-    ShowStatys('***Обновление справочников***');
-
-    for i := 0 to FSR.CatalogCount - 1 do
-    begin
-      if CheckUpdateProc then
-        Break;
-      LoadAndSetUpdate(FSR.CatalogList[i], 0);
-    end;
-    if CheckUpdateProc then
-    begin
-      if FStopUpdateProc then
-      begin
-        ShowStatys('');
-        ShowStatys('Обновление прервано!');
-      end;
-      Exit;
-    end;
-
-    ShowStatys('***Справочники обновлены***');
+    j := Length(memProcess.Lines[i]);
+    s := Copy(memProcess.Lines[i], 1, j - TimerProgress.Tag);
+    TimerProgress.Tag := TimerProgress.Tag + 1;
+    if TimerProgress.Tag > 3 then
+      TimerProgress.Tag := 0;
+    for j := 1 to TimerProgress.Tag do
+      s := s + '.';
+    memProcess.Lines[i] := s;
+    memProcess.Refresh;
   end;
-
-  if FSR.UserCount > 0 then
-  begin
-    ShowStatys('');
-    ShowStatys('***Обновление пользовательских таблиц***');
-
-    for i := 0 to FSR.UserCount - 1 do
-    begin
-      if CheckUpdateProc then
-        Break;
-      LoadAndSetUpdate(FSR.UserList[i], 1);
-    end;
-
-    if CheckUpdateProc then
-    begin
-      if FStopUpdateProc then
-      begin
-        ShowStatys('');
-        ShowStatys('Обновление прервано!');
-      end;
-      Exit;
-    end;
-
-    ShowStatys('***Пользовательские таблицы обновлены***');
-  end;
-
-  if FSR.AppCount > 0 then
-  begin
-    ShowStatys('');
-    ShowStatys('***Обновление программы***');
-
-    for i := 0 to FSR.AppCount - 1 do
-    begin
-      if CheckUpdateProc then
-        Break;
-      LoadAndSetUpdate(FSR.AppList[i], 2);
-    end;
-
-    if CheckUpdateProc then
-    begin
-      if FStopUpdateProc then
-      begin
-        ShowStatys('');
-        ShowStatys('Обновление прервано!');
-      end;
-      Exit;
-    end;
-
-    if (G_STARTUPDATER = 0) then
-      ShowStatys('***Программа обновлена***');
-  end;
-
-  if (G_STARTUPDATER > 0) then
-  begin
-    ShowStatys('');
-    ShowStatys('Для завершения обновления нужен перезапуск программы!');
-  end;
-
-  ShowStatys('');
-  ShowStatys('Обновление прошло успешно!');
 end;
 
 procedure TUpdateForm.SetVersion(const AVersion: TVersion;
   const AServiceResponse: TServiceResponse);
 begin
-  FSR.Assign(AServiceResponse);
+  FSResponse.Assign(AServiceResponse);
   FCurVersion.Assign(AVersion);
 end;
 
-//Возникающие во время выполнения скрипта исключения заносятся в SqlErrorList
-procedure TUpdateForm.SQLScriptAfterExecute(Sender: TObject);
+procedure TUpdateForm.SetArhiv(const AArhiv: TBaseAppArhiv);
 begin
-  ProgressBar1.Visible := False;
-end;
-
-procedure TUpdateForm.SQLScriptBeforeExecute(Sender: TObject);
-begin
-  ProgressBar1.Style := pbstMarquee;
-  ProgressBar1.Visible := True;
-end;
-
-procedure TUpdateForm.SQLScriptError(ASender: TObject;
-  const AInitiator: IFDStanObject; var AException: Exception);
-begin
-  if SQLScript.Tag > 0 then
-  begin
-    TStringList(SQLScript.Tag).Add(
-      ExtractFileName(SQLScript.SQLScriptFileName) + ': ' + AException.Message);
-    Abort;
-  end;
-end;
-
-procedure TUpdateForm.SQLScriptProgress(Sender: TObject);
-begin
-  Application.ProcessMessages;
+  FArhiv := AArhiv;
 end;
 
 procedure TUpdateForm.SetButtonStyle(AStyle: Integer);
@@ -571,6 +160,14 @@ begin
       btnIterrupt.Visible := True;
       btnIterrupt.Left := Panel1.Width - btnIterrupt.Width - 8;
     end;
+    3:  //Ошибка обновления
+    begin
+      btnUpdate.Visible := False;
+      btnOk.Visible := False;
+      btnIterrupt.Visible := False;
+      btnCancel.Visible := True;
+      btnCancel.Left := Panel1.Width - btnCancel.Width - 8;
+    end;
     else //Обновлений нет
     begin
       btnUpdate.Visible := False;
@@ -580,6 +177,7 @@ begin
       btnOk.Left := Panel1.Width - btnOk.Width - 8;
     end;
   end;
+  Panel1.Refresh;
 end;
 
 //Устанавливает внешний вид окна обновления
@@ -591,25 +189,25 @@ begin
   label4.Caption := 'пользовательских таблиц: ' + IntToStr(FCurVersion.User);
 
   //Вид нижних кнопочек
-  SetButtonStyle(FSR.UpdeteStatys);
+  SetButtonStyle(FSResponse.UpdeteStatys);
 
-  memo1.Lines.Clear;
+  memProcess.Lines.Clear;
   //Текстовка в мемо
-  case FSR.UpdeteStatys of
+  case FSResponse.UpdeteStatys of
     1:  //Обновления есть
     begin
       ShowStatys('Доступны новые обновления на сервере:');
 
-      if FCurVersion.App < FSR.AppVersion then
-        ShowStatys('верся программы :' + IntToStr(FSR.AppVersion));
+      if FCurVersion.App < FSResponse.AppVersion then
+        ShowStatys('верся программы :' + IntToStr(FSResponse.AppVersion));
 
-      if FCurVersion.Catalog < FSR.CatalogVersion then
+      if FCurVersion.Catalog < FSResponse.CatalogVersion then
         ShowStatys('верся справочников :' +
-          IntToStr(FSR.CatalogVersion));
+          IntToStr(FSResponse.CatalogVersion));
 
-      if FCurVersion.User < FSR.UserVersion then
+      if FCurVersion.User < FSResponse.UserVersion then
         ShowStatys('верся пользовательских таблиц :' +
-          IntToStr(FSR.UserVersion));
+          IntToStr(FSResponse.UserVersion));
     end;
     else //Обновлений нет
     begin
@@ -620,80 +218,124 @@ end;
 
 procedure TUpdateForm.btnIterruptClick(Sender: TObject);
 begin
-  FStopUpdateProc := True;
+  if Assigned(FUpdateThread) then
+  begin
+    FStopUpdateProc := True;
+    FUpdateThread.Terminate;
+  end;
 end;
 
 procedure TUpdateForm.btnOkClick(Sender: TObject);
 begin
-  close;
+  Close;
 end;
 
 procedure TUpdateForm.btnUpdateClick(Sender: TObject);
 begin
-  SetButtonStyle(2);
-  Application.ProcessMessages;
   StartUpdate;
-  SetButtonStyle(0);
 end;
 
 procedure TUpdateForm.FormCreate(Sender: TObject);
 begin
-  inherited;
-  FCurVersion.Clear;
-  FSR := TServiceResponse.Create;
-  SqlErrorList := TStringList.Create;
-
-  FLogFile := TLogFile.Create;
-  FLogFile.Active := true;
-  FLogFile.FileDir := ExtractFilePath(Application.ExeName) + C_LOGDIR;
-  FLogFile.FileName := C_UPDATELOG;
+  FSResponse := TServiceResponse.Create;
 end;
 
 procedure TUpdateForm.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(FSR);
-  FreeAndNil(SqlErrorList);
-  FreeAndNil(FLogFile);
+  FreeAndNil(FSResponse);
 end;
 
 procedure TUpdateForm.FormShow(Sender: TObject);
-var
-  ini: TIniFile;
 begin
-  ini := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
-  try
-    FClientName := ini.ReadString('system', 'clientname', '');
-    FSendReport := ini.ReadBool('system', 'sendreport', False);
-  finally
-    FreeAndNil(ini);
+  ShowUpdateStatys;
+end;
+
+function TUpdateForm.CheckNeedCreateArhiv: THandle;
+var i: Integer;
+begin
+  Result := 0;
+  if Assigned(FArhiv) then
+    //Если последний архив старше 2х дней создается новый архив
+    if not ((Length(FArhiv.ArhFiles) > 0) and
+       ((Now - FArhiv.GetArhivTime(FArhiv.ArhFiles[0])) < 2)) then
+    begin
+      //Максимуи C_ARHCOUNT копии, что-бы не забивать место
+      for i := C_ARHCOUNT - 1 to High(FArhiv.ArhFiles) do
+        FArhiv.DeleteArhiv(FArhiv.ArhFiles[i]);
+      if Assigned(Owner) and (Owner is TForm) then
+        FArhiv.CreateNewArhiv(TForm(Owner).Handle);
+      Result := FArhiv.CreateArhHandle;
+    end;
+end;
+
+procedure TUpdateForm.WMUpdateState(var Mes: TMessage);
+begin
+  UpdateState(string(PChar(Mes.WParam)), Integer(Mes.LParam));
+end;
+
+procedure TUpdateForm.UpdateState(AStrVal: string; AType: Byte);
+begin
+  //1 - Добавить новую строку
+  //2 - Добавить новую строку + отображать прогресс
+  //3 - Обновить последнюю строку
+  //4 - Обновить последнюю строку + отображать прогресс
+  TimerProgress.Enabled := False;
+  if (memProcess.Lines.Count > 0) and
+     (Length(memProcess.Lines[memProcess.Lines.Count - 1]) > 0) then
+    memProcess.Lines[memProcess.Lines.Count - 1] :=
+      Copy(memProcess.Lines[memProcess.Lines.Count - 1], 1,
+        Length(memProcess.Lines[memProcess.Lines.Count - 1]) - TimerProgress.Tag);
+  TimerProgress.Tag := 0;
+  case AType of
+  1, 2: memProcess.Lines.Add(AStrVal);
+  3, 4:
+  begin
+    if memProcess.Lines.Count > 0 then
+      memProcess.Lines[memProcess.Lines.Count - 1] := AStrVal;
   end;
- ShowUpdateStatys;
+  end;
+
+  if AType in [2, 4] then
+    TimerProgress.Enabled := True;
 end;
 
-procedure TUpdateForm.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
-  AWorkCount: Int64);
+procedure TUpdateForm.WMUpdateProgress(var Mes: TMessage);
 begin
-  if AWorkMode = wmRead then
-    ProgressBar1.Position := AWorkCount div 100;
-
-end;
-
-procedure TUpdateForm.HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
-  AWorkCountMax: Int64);
-begin
-  if AWorkMode = wmRead then
+  case Integer(Mes.LParam) of
+  1:
   begin
     ProgressBar1.Style := pbstNormal;
-    ProgressBar1.Visible := True;
     ProgressBar1.Position := 0;
-    ProgressBar1.Max := AWorkCountMax div 100;
+    ProgressBar1.Max := Integer(Mes.WParam);
+    ProgressBar1.Visible := True;
+  end;
+  2: ProgressBar1.Position := Integer(Mes.WParam);
+  3: ProgressBar1.Visible := False;
+  4:
+  begin
+    ProgressBar1.Style := pbstMarquee;
+    ProgressBar1.Visible := True;
+  end;
   end;
 end;
 
-procedure TUpdateForm.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+procedure TUpdateForm.OnThreadTerminate(Sender: TObject);
+var ex: TObject;
 begin
-  ProgressBar1.Visible := False;
-  ProgressBar1.Position := 0;
+  ex := TThread(Sender).FatalException;
+  if Assigned(ex) then
+    SetButtonStyle(3)
+  else
+  begin
+    if FStopUpdateProc and
+       not TUpdateThread(Sender).UpdateResult then
+    begin
+      UpdateState('', 1);
+      UpdateState('Прервано', 1);
+    end;
+    SetButtonStyle(0);
+  end;
 end;
+
 
 end.

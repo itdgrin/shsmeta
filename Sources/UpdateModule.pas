@@ -3,8 +3,31 @@ unit UpdateModule;
 interface
 
 uses
-  System.Classes, System.SysUtils, Vcl.Forms, DateUtils, SyncObjs,
-  Winapi.Windows, IdHTTP, XMLIntf, XMLDoc,  ActiveX, GlobsAndConst;
+  System.Classes,
+  System.SysUtils,
+  System.IOUtils,
+  Vcl.Forms,
+  DateUtils,
+  SyncObjs,
+  Winapi.Windows,
+  IdHTTP,
+  XMLIntf,
+  XMLDoc,
+  ActiveX,
+  IdComponent,
+  IdMessage,
+  IdSSLOpenSSL,
+  IdMessageClient,
+  IdSMTPBase,
+  IdSMTP,
+  IdAttachmentFile,
+  IdExplicitTLSClientServerBase,
+  ZipForge,
+  FireDAC.Comp.Client,
+  FireDAC.Comp.Script,
+  FireDAC.Stan.Intf,
+  GlobsAndConst,
+  ArhivModule;
 
 type
   TLogFile = class(TObject)
@@ -101,7 +124,7 @@ type
     function AddUser(const ANewVersion: TNewVersion): integer;
   end;
 
-  TUpdateThread = class(TThread)
+  TChackUpdateThread = class(TThread)
   private
     FCurVersion : TVersion; //Текушая версия программы
     FCurVersionCS: TCriticalSection;
@@ -136,7 +159,70 @@ type
     procedure SetCurVersion(AVersion: TVersion);
   end;
 
+  TCreateArhiveEvent = function(): THandle of object;
+
+  TUpdateThread = class(TThread)
+  private
+    FCurVersion : TVersion;
+    FResponse: TServiceResponse;
+    FMainHandle: HWND;
+    FExeName: string;
+
+    FArhivThreadHandle: THandle;
+    FOnCreateArhivEvent: TCreateArhiveEvent;
+
+    FClientName: string; // Имя клиета
+    FSendReport: boolean; // Необходимость отправлять отчет об ошибках обновления
+    FSqlErrorList: TStringList;
+
+    FZipForge: TZipForge;
+
+    FConnect: TFDConnection;
+    FTrans: TFDTransaction;
+    FQuery: TFDQuery;
+    FSQLScript: TFDScript;
+
+    FHTTP: TIdHTTP;
+
+    FUpdPath: string;
+    FUpdPathFlag: boolean;
+    FUpdVersion: Integer;
+
+    FUpdateResult: Boolean;
+
+    procedure CheckNeedCreateArhiv;
+    procedure GetIniData(AExeName: string);
+    procedure SendErrorReport;
+    function ExecSqlScript(ADirName: string; AUpdate: TNewVersion;
+      AType: byte): Boolean;
+    procedure LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
+    procedure SQLScriptError(ASender: TObject;
+      const AInitiator: IFDStanObject; var AException: Exception);
+    function UpdateApp(const AUpdatePath: string): Boolean;
+    procedure SetUpdPath;
+    procedure SetUpdFlags;
+    procedure ShowStatys(AStrValue: string; AType: Integer);
+    procedure HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
+      AWorkCountMax: Int64);
+    procedure HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+    procedure HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
+      AWorkCount: Int64);
+
+    procedure BackupUserData;
+    procedure RestoreUserData;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(AMainHandle: HWND; ACurVersion: TVersion;
+      AResponse: TServiceResponse; AExeName: string); overload;
+    destructor Destroy; override;
+
+    property OnCreateArhivEvent: TCreateArhiveEvent write FOnCreateArhivEvent;
+    property UpdateResult: Boolean read FUpdateResult;
+  end;
+
 implementation
+uses IniFiles, Tools;
 
 { TVersion }
 procedure TVersion.Clear;
@@ -226,14 +312,14 @@ end;
 
 { UpdateThread }
 
-procedure TUpdateThread.GetLogName;
+procedure TChackUpdateThread.GetLogName;
 begin
   //В принципе обращаться к Application в потоке некрасиво
   FLogFile.FileDir := ExtractFilePath(Application.ExeName) + C_LOGDIR;
   FLogFile.FileName := C_UPDATELOG;
 end;
 
-constructor TUpdateThread.Create(AVersion: TVersion;
+constructor TChackUpdateThread.Create(AVersion: TVersion;
   AMainHandle: HWND);
 begin
   inherited Create(true);
@@ -246,6 +332,7 @@ begin
 
   FLogFile := TLogFile.Create;
   FLogFile.Active := true;
+  GetLogName;
 
   FUREvent := TEvent.Create(nil, true, false, '');
   FTermEvent := TEvent.Create(nil, true, false, '');
@@ -259,7 +346,7 @@ begin
   Resume;
 end;
 
-destructor TUpdateThread.Destroy;
+destructor TChackUpdateThread.Destroy;
 begin
   FreeAndNil(FResponse);
   FreeAndNil(FCurVersionCS);
@@ -270,30 +357,28 @@ begin
   inherited;
 end;
 
-procedure TUpdateThread.UserRequest;
+procedure TChackUpdateThread.UserRequest;
 begin
   FUREvent.SetEvent;
 end;
 
-procedure TUpdateThread.Terminate;
+procedure TChackUpdateThread.Terminate;
 begin
   inherited Terminate;
   FTermEvent.SetEvent;
 end;
 
-procedure TUpdateThread.SetCurVersion(AVersion: TVersion);
+procedure TChackUpdateThread.SetCurVersion(AVersion: TVersion);
 begin
   FCurVersionCS.Enter;
   try
-    FCurVersion.App := AVersion.App;
-    FCurVersion.Catalog := AVersion.Catalog;
-    FCurVersion.User := AVersion.User;
+    FCurVersion.Assign(AVersion);
   finally
     FCurVersionCS.Leave;
   end;
 end;
 
-procedure TUpdateThread.UserBlok;
+procedure TChackUpdateThread.UserBlok;
 begin
   FUserBlokCS.Enter;
   try
@@ -303,7 +388,7 @@ begin
   end;
 end;
 
-procedure TUpdateThread.ParsXMLResult(const AStrimPage: TMemoryStream;
+procedure TChackUpdateThread.ParsXMLResult(const AStrimPage: TMemoryStream;
       var ASResponse: TServiceResponse);
 var XML : IXMLDocument;
     TempNode, TempNode1, CatNode, UsNode, AppNode: IXMLNode;
@@ -390,7 +475,7 @@ begin
     except
       on e: Exception do
       begin
-        FLogFile.Add(e.ClassName + ': ' + e.Message, 'Update Thread (pars XML mode)');
+        FLogFile.Add(e.ClassName + ': ' + e.Message, 'ChackUpdateThread (pars XML)');
       end;
     end;
   finally
@@ -399,7 +484,7 @@ begin
   end;
 end;
 
-procedure TUpdateThread.GetVersion;
+procedure TChackUpdateThread.GetVersion;
 var HTTP: TIdHTTP;
     StrimPage: TMemoryStream;
 begin
@@ -439,7 +524,7 @@ begin
     except
       on e: Exception do
       begin
-        FLogFile.Add(e.ClassName + ': ' + e.Message, 'Update Thread (get version mode)');
+        FLogFile.Add(e.ClassName + ': ' + e.Message, 'ChackUpdateThread (get version)');
       end;
     end;
   finally
@@ -450,7 +535,6 @@ begin
   FCurVersionCS.Enter;
   try
     FResponse.UserRequest := FUserRequest;
-    //Если FUserRequest = True по сообщение будет отправлено в любом случае
     if (FCurVersion.App < FResponse.AppVersion) or
        (FCurVersion.Catalog < FResponse.CatalogVersion) or
        (FCurVersion.User < FResponse.UserVersion) or
@@ -461,7 +545,7 @@ begin
   end;
 end;
 
-procedure TUpdateThread.Execute;
+procedure TChackUpdateThread.Execute;
 var Handles: array [0..1] of THandle;
 begin
   Synchronize(GetLogName);
@@ -482,7 +566,7 @@ begin
   except
     on e: Exception do
     begin
-      FLogFile.Add(e.ClassName + ': ' + e.Message, 'Update Thread (execute mode)');
+      FLogFile.Add(e.ClassName + ': ' + e.Message, 'ChackUpdateThread (execute)');
     end;
   end;
 end;
@@ -547,7 +631,7 @@ end;
 
 destructor TServiceResponse.Destroy;
 begin
-  clear;
+  Clear;
   inherited;
 end;
 
@@ -651,6 +735,680 @@ begin
     raise Exception.Create(format('List index out of bounds (%d)',[AIndex]));
   FUserList[AIndex].Version := AValue.Version;
   FUserList[AIndex].Url := AValue.Url;
+end;
+
+{ TUpdateThread }
+
+constructor TUpdateThread.Create(AMainHandle: HWND; ACurVersion: TVersion;
+  AResponse: TServiceResponse; AExeName: string);
+begin
+  inherited Create(True);
+
+  FMainHandle := AMainHandle;
+  FExeName := AExeName;
+
+  FCurVersion.Assign(ACurVersion);
+
+  FResponse := TServiceResponse.Create;
+  FResponse.Assign(AResponse);
+
+  FSqlErrorList := TStringList.Create;
+  GetIniData(AExeName);
+
+  FZipForge := TZipForge.Create(nil);
+
+  FConnect := TFDConnection.Create(nil);
+  FConnect.Params.Text := G_CONNECTSTR;
+
+  FTrans := TFDTransaction.Create(nil);
+  FTrans.Connection := FConnect;
+
+  FQuery := TFDQuery.Create(nil);
+  FQuery.Connection := FConnect;
+
+  FSQLScript := TFDScript.Create(nil);
+  FSQLScript.Connection := FConnect;
+  FSQLScript.OnError := SQLScriptError;
+  FConnect.Connected := True;
+  
+  FHTTP := TIdHTTP.Create(nil);
+  FHTTP.OnWorkBegin := HTTPWorkBegin;
+  FHTTP.OnWork := HTTPWork;
+  FHTTP.OnWorkEnd := HTTPWorkEnd;
+end;
+
+destructor TUpdateThread.Destroy;
+begin
+  FreeAndNil(FResponse);
+  FreeAndNil(FSqlErrorList);
+  FreeAndNil(FZipForge);
+  FreeAndNil(FConnect);
+  FreeAndNil(FTrans);
+  FreeAndNil(FQuery);
+  FreeAndNil(FSQLScript);
+  FreeAndNil(FHTTP);
+  inherited;
+end;
+
+procedure TUpdateThread.CheckNeedCreateArhiv;
+begin
+  FArhivThreadHandle := 0;
+  if Assigned(FOnCreateArhivEvent) then
+    FArhivThreadHandle := FOnCreateArhivEvent();
+end;
+
+procedure TUpdateThread.Execute;
+var i: Integer;
+begin
+  FUpdateResult := False;
+  //Создается архив БД, если это необходимо
+  Synchronize(CheckNeedCreateArhiv);
+
+  //Ожидание окончания создания архива
+  if WaitForSingleObject(FArhivThreadHandle, 0) = WAIT_TIMEOUT then
+    ShowStatys('Создание архива БД', 2);
+
+  while WaitForSingleObject(FArhivThreadHandle, 2000) = WAIT_TIMEOUT do
+    if Terminated then Exit;
+
+  if Terminated then Exit;
+
+  //Подготавлявается папка обновлений
+  KillDir(ExtractFilePath(FExeName) + C_UPDATEDIR);
+  ForceDirectories(ExtractFilePath(FExeName) + C_UPDATEDIR);
+  ShowStatys('', 1);
+  //Копия пользовательских данных
+  BackupUserData;
+  try
+    if FResponse.CatalogCount > 0 then
+    begin
+      ShowStatys('Обновление справочников', 3);
+      ShowStatys('', 1);
+      for i := 0 to FResponse.CatalogCount - 1 do
+      begin
+        if Terminated then Exit;
+        LoadAndSetUpdate(FResponse.CatalogList[i], 0);
+      end;
+    end;
+
+    if FResponse.UserCount > 0 then
+    begin
+      ShowStatys('Обновление пользовательских таблиц', 3);
+      ShowStatys('', 1);
+      for i := 0 to FResponse.UserCount - 1 do
+      begin
+        if Terminated then Exit;
+        LoadAndSetUpdate(FResponse.UserList[i], 1);
+      end;
+    end;
+
+    if FResponse.AppCount > 0 then
+    begin
+      ShowStatys('Обновление программы', 3);
+      ShowStatys('', 1);
+      for i := 0 to FResponse.AppCount - 1 do
+      begin
+        if Terminated then Exit;
+        LoadAndSetUpdate(FResponse.AppList[i], 2);
+      end;
+
+      if (G_STARTUPDATER > 0) then
+        ShowStatys('Для завершения обновления нужен перезапуск программы!', 1);
+    end;
+  finally
+    RestoreUserData;
+  end;
+
+  ShowStatys('Обновление прошло успешно!', 3);
+  FUpdateResult := True;
+end;
+
+procedure TUpdateThread.GetIniData(AExeName: string);
+var
+  ini: TIniFile;
+begin
+  ini := TIniFile.Create(ChangeFileExt(AExeName, '.ini'));
+  try
+    FClientName := ini.ReadString('system', 'clientname', '');
+    FSendReport := ini.ReadBool('system', 'sendreport', False);
+  finally
+    FreeAndNil(ini);
+  end;
+end;
+
+procedure TUpdateThread.SendErrorReport;
+var i : integer;
+    Msg : TIdMessage;
+    SMTP : TIdSMTP;
+    SSLIOHandler : TIdSSLIOHandlerSocketOpenSSL;
+begin
+  Msg := TIdMessage.Create;
+  SMTP := TIdSMTP.Create;
+  SSLIOHandler := TIdSSLIOHandlerSocketOpenSSL.Create;
+  try
+    try
+      if FClientName = '' then
+        raise Exception.Create('Отчет не отправлен. Не указано имя клиента.');
+
+      SSLIOHandler.SSLOptions.Method := sslvSSLv3;
+      SMTP.IOHandler := SSLIOHandler;
+      SMTP.HeloName := 'Smeta';
+
+      SMTP.Host := 'smtp.gmail.com';
+      SMTP.Port := 465;
+
+      SMTP.AuthType := satDefault;
+      SMTP.Username := 'smetareport';
+      SMTP.Password := 'smeta1234';
+
+      SMTP.UseTLS := utUseImplicitTLS;
+
+      SMTP.Connect;
+
+      Msg.From.Address := 'smetareport@gmail.com';
+      Msg.From.Name := FClientName;
+      Msg.Recipients.EMailAddresses := C_SUPPORTMAIL;
+      Msg.Subject := 'Отчет об ошибках обновления';
+      for i := 0 to FSqlErrorList.Count - 1 do
+        Msg.Body.Add(FSqlErrorList[i] + '<br>');
+
+     //Без вложений
+      Msg.IsEncoded := False;
+      Msg.ContentType := 'text/html; charset=UTF-8;';
+
+      SMTP.Send(Msg);
+      SMTP.Disconnect;
+    except
+      on e : Exception do
+        ShowStatys('Error: ' + e.Message, 1);
+    end;
+  finally
+    FreeAndNil(Msg);
+    FreeAndNil(SMTP);
+    FreeAndNil(SSLIOHandler);
+  end;
+end;
+
+function TUpdateThread.ExecSqlScript(ADirName: string;
+  AUpdate: TNewVersion; AType: byte): Boolean;
+var TmpSR: TSearchRec;
+    found,
+    ScriptCount,
+    ScriptNo: integer;
+    ScriptResult: boolean;
+    VersTabName: string;
+begin
+  ScriptCount := 0;
+  ScriptNo := 0;
+  Result := True;
+
+  if AType = 0 then
+    VersTabName := 'versionref'
+  else
+    VersTabName := 'versionuser';
+
+  //Вычисляем общее кол-во скриптов в папке
+  found := System.SysUtils.FindFirst(ADirName + '*.sql', faAnyFile, TmpSR);
+  try
+    while (found = 0) do
+    begin
+      inc(ScriptCount);
+      found := System.SysUtils.FindNext(TmpSR);
+    end;
+  finally
+    System.SysUtils.FindClose(TmpSR);
+  end;
+
+  if (ScriptCount > 0) then
+  begin
+    found := System.SysUtils.FindFirst(ADirName + '*.sql', faAnyFile, TmpSR);
+    try
+      while (found = 0) do
+      begin
+        inc(ScriptNo);
+
+        //Проверка выполняется для случая когда одно обновление содержит несколько
+        //скриптов
+        ScriptResult := False;
+        FQuery.SQL.Text := 'Select SCRIPTNAME from ' + VersTabName + ' where ' +
+          '(VERSION = ' + IntToStr(AUpdate.Version) + ') and ' +
+          '(SCRIPTNAME = ''' + TmpSR.name + ''') and ' +
+          '(EXECRESULT = 1)';
+        FQuery.Active := True;
+        if not FQuery.Eof then
+          ScriptResult := True;
+        FQuery.Active := False;
+
+        //Если это скрипт уже выполнялся то он будет пропущен
+        if ScriptResult then
+        begin
+          found := FindNext(TmpSR);
+          Continue;
+        end;
+
+        FSqlScript.SQLScriptFileName := ADirName + TmpSR.name;
+        FSqlScript.ExecuteFile(FSqlScript.SQLScriptFileName);
+        ScriptResult := (FSqlScript.TotalErrors = 0) and (FSqlErrorList.Count = 0);
+
+        FQuery.SQL.Text := 'INSERT INTO ' + VersTabName +
+          ' (VERSION,SCRIPTNAME,EXECTIME,EXECRESULT,ERRORCOUNT,ERRORTEXT,COMMENT,' +
+          'SCRIPTCOUNT,SCRIPTNO) VALUES (:VERSION,:SCRIPTNAME,:EXECTIME,:EXECRESULT,' +
+          ':ERRORCOUNT,:ERRORTEXT,:COMMENT,:SCRIPTCOUNT,:SCRIPTNO)';
+        FQuery.ParamByName('VERSION').Value := AUpdate.Version;
+        FQuery.ParamByName('SCRIPTNAME').Value := TmpSR.name;
+        FQuery.ParamByName('EXECTIME').Value := Now;
+        FQuery.ParamByName('EXECRESULT').Value := byte(ScriptResult);
+        FQuery.ParamByName('ERRORCOUNT').Value := FSqlErrorList.Count;
+        FQuery.ParamByName('ERRORTEXT').Value := copy(FSqlErrorList.Text, 1, 250);
+        FQuery.ParamByName('COMMENT').Value := AUpdate.Comment;
+        FQuery.ParamByName('SCRIPTCOUNT').Value := ScriptCount;
+        FQuery.ParamByName('SCRIPTNO').Value := ScriptNo;
+        FQuery.ExecSQL;
+
+        //Если выполнение скрипта прошло с ошибками, то обновление завершается
+        if not ScriptResult then
+        begin
+          Result := False;
+          Exit;
+        end;
+
+        found := System.SysUtils.FindNext(TmpSR);
+      end;
+    finally
+      System.SysUtils.FindClose(TmpSR);
+    end;
+  end
+  else
+  begin
+    //Если обновление не содержит скриптов оно зашитывается как выполненое
+    ScriptResult := True;
+    FQuery.SQL.Text := 'INSERT INTO ' + VersTabName +
+      ' (VERSION,SCRIPTNAME,EXECTIME,EXECRESULT,ERRORCOUNT,ERRORTEXT,COMMENT,' +
+      'SCRIPTCOUNT,SCRIPTNO) VALUES (:VERSION,:SCRIPTNAME,:EXECTIME,:EXECRESULT,' +
+      ':ERRORCOUNT,:ERRORTEXT,:COMMENT,:SCRIPTCOUNT,:SCRIPTNO)';
+    FQuery.ParamByName('VERSION').Value := AUpdate.Version;
+    FQuery.ParamByName('SCRIPTNAME').Value := '';
+    FQuery.ParamByName('EXECTIME').Value := Now;
+    FQuery.ParamByName('EXECRESULT').Value := byte(ScriptResult);
+    FQuery.ParamByName('ERRORCOUNT').Value := FSqlErrorList.Count;
+    FQuery.ParamByName('ERRORTEXT').Value := copy(FSqlErrorList.Text, 1, 250);
+    FQuery.ParamByName('COMMENT').Value := AUpdate.Comment;
+    FQuery.ParamByName('SCRIPTCOUNT').Value := ScriptCount;
+    FQuery.ParamByName('SCRIPTNO').Value := ScriptNo;
+    FQuery.ExecSQL;
+  end;
+end;
+
+procedure TUpdateThread.LoadAndSetUpdate(AUpdate: TNewVersion; AType: byte);
+var LoadPath, UpdName: string;
+    MStream: TMemoryStream;
+begin
+  LoadPath := ExtractFilePath(FExeName) + C_UPDATEDIR;
+  UpdName := copy(AUpdate.Url, 1, Pos('?',AUpdate.Url) - 1);
+  UpdName := StringReplace(UpdName, '/','\', [rfReplaceAll]);
+  UpdName := ExtractFileName(UpdName);
+
+  case AType of
+  0:LoadPath := LoadPath + 'cat' + IntToStr(AUpdate.Version) + '\';
+  1:LoadPath := LoadPath + 'user' + IntToStr(AUpdate.Version) + '\';
+  2:LoadPath := LoadPath + 'app' + IntToStr(AUpdate.Version) + '\';
+  end;
+  ForceDirectories(LoadPath);
+
+  ShowStatys('Обновление ' + IntToStr(AUpdate.Version) + ': ' + AUpdate.Comment, 3);
+  ShowStatys('', 1);
+  MStream := TMemoryStream.Create;
+  try
+    try
+      FHTTP.HandleRedirects := true;
+      FHTTP.Request.UserAgent:='Mozilla/5.0 (Windows NT 6.1) '+
+        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36';
+      FHTTP.Request.Accept:='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+      FHTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
+      FHTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
+
+      ShowStatys('Загрузка', 4);
+      FHTTP.Get(C_UPDATESERV + AUpdate.Url, MStream);
+      MStream.SaveToFile(LoadPath + UpdName);
+
+      if Terminated then Exit;
+
+      ShowStatys('Распаковка', 4);
+      FZipForge.BaseDir := LoadPath;
+      FZipForge.Options.OverwriteMode := omAlways;
+      FZipForge.FileName := LoadPath + UpdName;
+      FZipForge.OpenArchive;
+      FZipForge.ExtractFiles('*.*');
+      FZipForge.CloseArchive;
+
+      System.SysUtils.DeleteFile(LoadPath + UpdName);
+
+      if Terminated then Exit;
+
+      if AType in [0,1] then
+      begin
+        ShowStatys('Установка',4);
+        if not ExecSqlScript(LoadPath, AUpdate, AType) then
+          raise Exception.Create('Не удалось выполнить скрипт!');
+      end
+      else
+      begin
+        FUpdPathFlag := UpdateApp(LoadPath);
+        FUpdVersion := AUpdate.Version;
+        Synchronize(SetUpdFlags);
+      end;
+    except
+      on e: Exception do
+      begin
+        ShowStatys('Error: ' + e.Message, 1);
+        FSqlErrorList.Insert(0, e.Message);
+        //Если установлен флаг отправляется отчет об ошибках
+        if FSendReport then
+        begin
+          ShowStatys('Отправка отчета об ошибках в техподдержку', 2);
+          case AType of
+          0: FSqlErrorList.Insert(0, 'Обновление справочников №' +
+            IntToStr(AUpdate.Version));
+          1: FSqlErrorList.Insert(0, 'Обновление пользовательских таблиц №' +
+              IntToStr(AUpdate.Version));
+          2: FSqlErrorList.Insert(0, 'Обновление приложения №' +
+              IntToStr(AUpdate.Version));
+          end;
+
+          SendErrorReport;
+        end;
+
+        ShowStatys('', 1);
+        ShowStatys('Обновление завершилось ошибкой!', 1);
+        raise;
+      end;
+    end;
+  finally
+    MStream.Free;
+    //После завершения обновлений папки с SQL скриптами удалются
+    if (AType in [0,1]) or ((AType = 2) and (G_STARTUPDATER = 0)) then
+      KillDir(LoadPath);
+  end;
+end;
+
+procedure TUpdateThread.SQLScriptError(ASender: TObject;
+  const AInitiator: IFDStanObject; var AException: Exception);
+begin
+  FSqlErrorList.Add(ExtractFileName(FSQLScript.SQLScriptFileName) + ': ' +
+    AException.Message);
+  Abort;
+end;
+
+function TUpdateThread.UpdateApp(const AUpdatePath: string): Boolean;
+begin
+  FUpdPath := AUpdatePath;
+  Synchronize(SetUpdPath);
+  if TFile.Exists(G_UPDPATH + C_UPDATERNAME) then
+  begin
+    TFile.Copy(G_UPDPATH + C_UPDATERNAME,
+      ExtractFilePath(FExeName) + C_UPDATERNAME, True);
+    TFile.Delete(G_UPDPATH + C_UPDATERNAME);
+  end;
+  Result := not TDirectory.IsEmpty(AUpdatePath);
+end;
+
+procedure TUpdateThread.SetUpdPath;
+begin
+  G_UPDPATH := FUpdPath;
+end;
+
+procedure TUpdateThread.SetUpdFlags;
+begin
+  if FUpdPathFlag then
+    G_STARTUPDATER := 1;
+  G_NEWAPPVERS := FUpdVersion;
+end;
+
+procedure TUpdateThread.ShowStatys(AStrValue: string; AType: Integer);
+begin
+  //1 - Добавить новую строку
+  //2 - Добавить новую строку + отображать прогресс
+  //3 - Обновить последнюю строку
+  //4 - Обновить последнюю строку + отображать прогресс
+  SendMessage(FMainHandle, WM_UPDATESTATE, WParam(PChar(AStrValue)), LParam(AType));
+end;
+
+procedure TUpdateThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
+  AWorkCount: Int64);
+begin
+  if AWorkMode = wmRead then
+    SendMessage(FMainHandle, WM_UPDATESTATE, WParam(AWorkCount div 100), LParam(2));
+end;
+
+procedure TUpdateThread.HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
+  AWorkCountMax: Int64);
+begin
+  if (AWorkMode = wmRead) and ((AWorkCountMax mod 100) = 0) then
+    SendMessage(FMainHandle, WM_UPDATESTATE, WParam(AWorkCountMax div 100), LParam(1));
+end;
+
+procedure TUpdateThread.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
+begin
+  SendMessage(FMainHandle, WM_UPDATESTATE, WParam(0), LParam(3));
+end;
+
+procedure TUpdateThread.BackupUserData;
+begin
+  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS material_tmp LIKE material';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS mechanizm_tmp LIKE mechanizm';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS devices_tmp LIKE devices';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS units_tmp LIKE units';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS normativg_tmp LIKE normativg';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS materialnorm_tmp LIKE materialnorm';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS mechanizmnorm_tmp LIKE mechanizmnorm';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS normativwork_tmp LIKE normativwork';
+  FQuery.ExecSQL;
+
+  FQuery.SQL.Text :=
+    'Insert into material_tmp (`MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,' +
+    '`UNIT_ID`,`BASE`) ' +
+    'Select `MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,`UNIT_ID`,`BASE` ' +
+    'from material m where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `MAT_CODE` = m.`MAT_CODE`,`MAT_NAME` = m.`MAT_NAME`,' +
+    '`MAT_TYPE` = m.`MAT_TYPE`,`UNIT_ID` = m.`UNIT_ID`,`BASE` = m.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into mechanizm_tmp (`MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,' +
+    '`DESCRIPTION`,`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE`) ' +
+    'Select `MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,`DESCRIPTION`,' +
+    '`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE` ' +
+    'from mechanizm m where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `MECH_CODE` = m.`MECH_CODE`,' +
+    '`MECH_NAME` = m.`MECH_NAME`,`UNIT_ID` = m.`UNIT_ID`,' +
+    '`DESCRIPTION` = m.`DESCRIPTION`,`MECH_PH` = m.`MECH_PH`,' +
+    '`TYPE_MEH_SMEN_HOUR` = m.`TYPE_MEH_SMEN_HOUR`,`BASE` = m.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into devices_tmp (`DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,' +
+    '`UNIT`,`BASE`) ' +
+    'Select `DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,`UNIT`,`BASE` ' +
+    'from devices d where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `DEVICE_CODE1` = d.`DEVICE_CODE1`,' +
+    '`DEVICE_CODE2` = d.`DEVICE_CODE2`,`NAME` = d.`NAME`,' +
+    '`UNIT` = d.`UNIT`,`BASE` = d.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into units_tmp (`UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE`) ' +
+    'Select `UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE` ' +
+    'from units u where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `UNIT_NAME` = u.`UNIT_NAME`, ' +
+    '`UNIT_FULL_NAME` = u.`UNIT_FULL_NAME`,`BASE` = u.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into normativg_tmp (`SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
+    '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
+    '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`) ' +
+    'Select `SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
+    '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
+    '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`' +
+    'from normativg n where `NORM_BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `SORT_NUM` = n.`SORT_NUM`,`NORM_NUM` = n.`NORM_NUM`,' +
+    '`NORM_CAPTION` = n.`NORM_CAPTION`,`UNIT_ID` = n.`UNIT_ID`,' +
+    '`NORM_ACTIVE` = n.`NORM_ACTIVE`,`date_beginer` = n.`date_beginer`,' +
+    '`date_end` = n.`date_end`,`prikaz` = n.`prikaz`,' +
+    '`normativ_directory_id` = n.`normativ_directory_id`,' +
+    '`NORM_BASE` = n.`NORM_BASE`,`NORM_TYPE` = n.`NORM_TYPE`,' +
+    '`work_id` = n.`work_id`,`ZNORMATIVS_ID` = n.`ZNORMATIVS_ID`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into materialnorm_tmp (`ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`,' +
+    '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE`) ' +
+    'Select `ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`, ' +
+    '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE` from materialnorm m where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
+	  '`MATERIAL_ID` = m.`MATERIAL_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
+	  '`TO_YEAR` = m.`TO_YEAR`,`DATE_BEG` = m.`DATE_BEG`,' +
+    '`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into mechanizmnorm_tmp (`ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`,' +
+    '`DATE_BEG`,`DATE_END`,`BASE`) ' +
+    'Select `ID`,`NORMATIV_ID`,`MECHANIZM_ID`,`NORM_RAS`, ' +
+    '`DATE_BEG`,`DATE_END`,`BASE` from mechanizmnorm m where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
+	  '`MECHANIZM_ID` = m.`MECHANIZM_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
+	  '`DATE_BEG` = m.`DATE_BEG`,`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into normativwork_tmp (`ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,' +
+    '`DATE_END`,`BASE`) ' +
+    'Select `ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,`DATE_END`,`BASE` ' +
+    'from normativwork n where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = n.`NORMATIV_ID`,' +
+    '`WORK_ID` = n.`WORK_ID`,`WORK_ID` = n.`WORK_ID`,' +
+    '`NORMA` = n.`NORMA`,`DATE_BEG` = n.`DATE_BEG`,' +
+    '`DATE_END` = n.`DATE_END`,`BASE` = n.`BASE`';
+  FQuery.ExecSQL;
+
+  FQuery.SQL.Text := 'Delete from material where `BASE` = 1';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'Delete from mechanizm_tmp where `BASE` = 1';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'Delete from devices_tmp where `BASE` = 1';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'Delete from units_tmp where `BASE` = 1';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'Delete from normativg_tmp where `NORM_BASE` = 1';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'Delete from materialnorm_tmp where `BASE` = 1';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'Delete from mechanizmnorm_tmp where `BASE` = 1';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'Delete from normativwork_tmp where `BASE` = 1';
+  FQuery.ExecSQL;
+end;
+
+procedure TUpdateThread.RestoreUserData;
+begin
+  FQuery.SQL.Text :=
+    'Insert into material (`MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,' +
+    '`UNIT_ID`,`BASE`) ' +
+    'Select `MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,`UNIT_ID`,`BASE` ' +
+    'from material_tmp m where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `MAT_CODE` = m.`MAT_CODE`,`MAT_NAME` = m.`MAT_NAME`,' +
+    '`MAT_TYPE` = m.`MAT_TYPE`,`UNIT_ID` = m.`UNIT_ID`,`BASE` = m.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into mechanizm (`MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,' +
+    '`DESCRIPTION`,`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE`) ' +
+    'Select `MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,`DESCRIPTION`,' +
+    '`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE` ' +
+    'from mechanizm_tmp m where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `MECH_CODE` = m.`MECH_CODE`,' +
+    '`MECH_NAME` = m.`MECH_NAME`,`UNIT_ID` = m.`UNIT_ID`,' +
+    '`DESCRIPTION` = m.`DESCRIPTION`,`MECH_PH` = m.`MECH_PH`,' +
+    '`TYPE_MEH_SMEN_HOUR` = m.`TYPE_MEH_SMEN_HOUR`,`BASE` = m.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into devices (`DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,' +
+    '`UNIT`,`BASE`) ' +
+    'Select `DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,`UNIT`,`BASE` ' +
+    'from devices_tmp d where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `DEVICE_CODE1` = d.`DEVICE_CODE1`,' +
+    '`DEVICE_CODE2` = d.`DEVICE_CODE2`,`NAME` = d.`NAME`,' +
+    '`UNIT` = d.`UNIT`,`BASE` = d.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into units (`UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE`) ' +
+    'Select `UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE` ' +
+    'from units_tmp u where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `UNIT_NAME` = u.`UNIT_NAME`, ' +
+    '`UNIT_FULL_NAME` = u.`UNIT_FULL_NAME`,`BASE` = u.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into normativg (`SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
+    '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
+    '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`) ' +
+    'Select `SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
+    '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
+    '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`' +
+    'from normativg_tmp n where `NORM_BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `SORT_NUM` = n.`SORT_NUM`,`NORM_NUM` = n.`NORM_NUM`,' +
+    '`NORM_CAPTION` = n.`NORM_CAPTION`,`UNIT_ID` = n.`UNIT_ID`,' +
+    '`NORM_ACTIVE` = n.`NORM_ACTIVE`,`date_beginer` = n.`date_beginer`,' +
+    '`date_end` = n.`date_end`,`prikaz` = n.`prikaz`,' +
+    '`normativ_directory_id` = n.`normativ_directory_id`,' +
+    '`NORM_BASE` = n.`NORM_BASE`,`NORM_TYPE` = n.`NORM_TYPE`,' +
+    '`work_id` = n.`work_id`,`ZNORMATIVS_ID` = n.`ZNORMATIVS_ID`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into materialnorm (`ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`,' +
+    '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE`) ' +
+    'Select `ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`, ' +
+    '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE` from materialnorm_tmp m where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
+	  '`MATERIAL_ID` = m.`MATERIAL_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
+	  '`TO_YEAR` = m.`TO_YEAR`,`DATE_BEG` = m.`DATE_BEG`,' +
+    '`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into mechanizmnorm (`ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`,' +
+    '`DATE_BEG`,`DATE_END`,`BASE`) ' +
+    'Select `ID`,`NORMATIV_ID`,`MECHANIZM_ID`,`NORM_RAS`, ' +
+    '`DATE_BEG`,`DATE_END`,`BASE` from mechanizmnorm_tmp m where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
+	  '`MECHANIZM_ID` = m.`MECHANIZM_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
+	  '`DATE_BEG` = m.`DATE_BEG`,`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text :=
+    'Insert into normativwork (`ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,' +
+    '`DATE_END`,`BASE`) ' +
+    'Select `ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,`DATE_END`,`BASE` ' +
+    'from normativwork_tmp n where `BASE` = 1 ' +
+    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = n.`NORMATIV_ID`,' +
+    '`WORK_ID` = n.`WORK_ID`,`WORK_ID` = n.`WORK_ID`,' +
+    '`NORMA` = n.`NORMA`,`DATE_BEG` = n.`DATE_BEG`,' +
+    '`DATE_END` = n.`DATE_END`,`BASE` = n.`BASE`';
+  FQuery.ExecSQL;
+
+  FQuery.SQL.Text := 'DROP TABLE material_tmp';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'DROP TABLE mechanizm_tmp';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'DROP TABLE devices_tmp';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'DROP TABLE units_tmp';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'DROP TABLE normativg_tmp';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'DROP TABLE materialnorm_tmp';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'DROP TABLE mechanizmnorm_tmp';
+  FQuery.ExecSQL;
+  FQuery.SQL.Text := 'DROP TABLE normativwork_tmp';
+  FQuery.ExecSQL;
 end;
 
 end.

@@ -1041,7 +1041,7 @@
     Left = 28
     Top = 184
   end
-  object ADOQueryTemp: TFDQuery
+  object qrTemp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write

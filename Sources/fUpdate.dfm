@@ -7,13 +7,14 @@ object UpdateForm: TUpdateForm
   ClientWidth = 343
   Color = clBtnFace
   DefaultMonitor = dmMainForm
+  DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesigned
+  Position = poMainFormCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -99,7 +100,7 @@ object UpdateForm: TUpdateForm
     Width = 343
     Height = 50
     Align = alTop
-    Color = clHighlight
+    Color = clSkyBlue
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -116,7 +117,7 @@ object UpdateForm: TUpdateForm
       Alignment = taCenter
       Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1077
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindow
+      Font.Color = clWindowText
       Font.Height = -20
       Font.Name = 'Arial'
       Font.Style = []
@@ -348,7 +349,7 @@ object UpdateForm: TUpdateForm
       Visible = False
     end
   end
-  object Memo1: TMemo
+  object memProcess: TMemo
     Left = 0
     Top = 105
     Width = 343
@@ -368,67 +369,11 @@ object UpdateForm: TUpdateForm
     ScrollBars = ssVertical
     TabOrder = 4
   end
-  object HTTP: TIdHTTP
-    OnWork = HTTPWork
-    OnWorkBegin = HTTPWorkBegin
-    OnWorkEnd = HTTPWorkEnd
-    AllowCookies = True
-    ProxyParams.BasicAuthentication = False
-    ProxyParams.ProxyPort = 0
-    Request.ContentLength = -1
-    Request.ContentRangeEnd = -1
-    Request.ContentRangeStart = -1
-    Request.ContentRangeInstanceLength = -1
-    Request.Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-    Request.BasicAuthentication = False
-    Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
-    Request.Ranges.Units = 'bytes'
-    Request.Ranges = <>
-    HTTPOptions = [hoForceEncodeParams]
-    Left = 224
-    Top = 120
-  end
-  object IdAntiFreeze1: TIdAntiFreeze
-    Left = 272
-    Top = 120
-  end
-  object ZipForge: TZipForge
-    ExtractCorruptedFiles = False
-    CompressionLevel = clFastest
-    CompressionMode = 1
-    CurrentVersion = '6.50 '
-    SpanningMode = smNone
-    SpanningOptions.AdvancedNaming = False
-    SpanningOptions.FirstVolumeSize = 0
-    SpanningOptions.VolumeSize = vsAutoDetect
-    SpanningOptions.CustomVolumeSize = 65536
-    Options.FlushBuffers = True
-    Options.OEMFileNames = True
-    InMemory = False
-    Zip64Mode = zmDisabled
-    UnicodeFilenames = False
-    EncryptionMethod = caPkzipClassic
-    Left = 176
-    Top = 120
-  end
-  object SQLScript: TFDScript
-    SQLScripts = <>
-    Connection = DM.Connect
-    Transaction = DM.Write
-    Params = <>
-    Macros = <>
-    OnProgress = SQLScriptProgress
-    OnError = SQLScriptError
-    BeforeExecute = SQLScriptBeforeExecute
-    AfterExecute = SQLScriptAfterExecute
-    Left = 176
-    Top = 184
-  end
-  object qrTemp: TFDQuery
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    Left = 232
-    Top = 184
+  object TimerProgress: TTimer
+    Enabled = False
+    Interval = 300
+    OnTimer = TimerProgressTimer
+    Left = 256
+    Top = 144
   end
 end

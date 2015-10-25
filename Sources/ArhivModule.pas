@@ -72,6 +72,8 @@ type
     property ArhFiles: TStringDynArray read FArhFiles;
     property CreateArhInProgress: Boolean Index 0 read GetInProgress;
     property RestoreArhInProgress: Boolean Index 1 read GetInProgress;
+    property CreateArhHandle: THandle read FCreateArhHandle;
+    property RestoreArhHandle: THandle read FRestoreArhHandle;
   end;
 
 implementation

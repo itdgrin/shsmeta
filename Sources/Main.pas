@@ -287,7 +287,7 @@ type
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
-    FUpdateThread: TUpdateThread; // Нить проверки обновлений
+    FChackUpdateThread: TChackUpdateThread; // Нить проверки обновлений
     SystemInfoResult: Boolean;
 
     FCurVersion: TVersion; // текущая версия приложения и БД
@@ -452,7 +452,7 @@ procedure TFormMain.ShowUpdateForm(const AResp: TServiceResponse);
 var
   UPForm: TUpdateForm;
 begin
-  UPForm := TUpdateForm.Create(nil);
+  UPForm := TUpdateForm.Create(Self);
   try
     UPForm.SetVersion(FCurVersion, AResp);
     UPForm.SetArhiv(FArhiv);
@@ -625,11 +625,11 @@ begin
   FreeAndNil(SprControl);
   FreeAndNil(FArhiv);
   DM.Connect.Connected := False;
-  if Assigned(FUpdateThread) then
+  if Assigned(FChackUpdateThread) then
   begin // Выполнить Terminate обязательно так как он переопределен
-    FUpdateThread.Terminate;
-    FUpdateThread.WaitFor;
-    FreeAndNil(FUpdateThread);
+    FChackUpdateThread.Terminate;
+    FChackUpdateThread.WaitFor;
+    FreeAndNil(FChackUpdateThread);
   end;
 end;
 
@@ -685,7 +685,7 @@ begin
 
   try
     GetSystemInfo;
-    SystemInfoResult := true;
+    SystemInfoResult := True;
   except
     on e: Exception do
       ShowMessage('Ошибка инициализации системы: ' + e.Message);
@@ -693,12 +693,12 @@ begin
 
   // Запуск ниточки для мониторигра обновлений
   if SystemInfoResult and not DebugMode then
-    FUpdateThread := TUpdateThread.Create(FCurVersion, Self.Handle)
+    FChackUpdateThread := TChackUpdateThread.Create(FCurVersion, Self.Handle)
   else
   begin
     if not SystemInfoResult then
       ShowMessage('Обновления недоступны.');
-    FUpdateThread := nil;
+    FChackUpdateThread := nil;
     ServiceUpdate.Enabled := False;
   end;
 
@@ -876,8 +876,10 @@ end;
 
 procedure TFormMain.ServiceUpdateClick(Sender: TObject);
 begin
-  if Assigned(FUpdateThread) then
-    FUpdateThread.UserRequest;
+  if Assigned(FChackUpdateThread) then
+  begin
+    FChackUpdateThread.UserRequest;
+  end;
 end;
 
 procedure TFormMain.ServiceUpdNormClick(Sender: TObject);
