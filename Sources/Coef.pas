@@ -39,6 +39,7 @@ type
     qrCoefcoef_type_id: TIntegerField;
     qrCoefoxropr: TBCDField;
     qrCoefplanprib: TBCDField;
+    qrCoefZP_MASH: TBCDField;
     procedure FormShow(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure btnAddClick(Sender: TObject);
@@ -47,7 +48,6 @@ type
     procedure N3Click(Sender: TObject);
     procedure qrCoefAfterPost(DataSet: TDataSet);
     procedure qrCoefNewRecord(DataSet: TDataSet);
-    procedure FormCreate(Sender: TObject);
     procedure grCoefDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
     procedure dbnvgr1Click(Sender: TObject; Button: TNavigateBtn);
@@ -86,11 +86,6 @@ procedure TfCoefficients.dbnvgr1Click(Sender: TObject; Button: TNavigateBtn);
 begin
   if Button = nbInsert then
     qrCoef.Append;
-end;
-
-procedure TfCoefficients.FormCreate(Sender: TObject);
-begin
-  inherited;
 end;
 
 procedure TfCoefficients.FormShow(Sender: TObject);

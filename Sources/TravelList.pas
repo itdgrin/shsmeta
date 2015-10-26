@@ -333,7 +333,7 @@ begin
   DataSet.FieldByName('OnDate').AsDateTime := Now;
   if defIdEstimate <> 0 then
   begin
-    DataSet.FieldByName('id_estimate').Value := defIdEstimate;
+    DataSet.FieldByName('SM_ID').Value := defIdEstimate;
     DataSet.FieldByName('SOURCE_TYPE').Value := 1;
     DataSet.FieldByName('NAME').Value := FastSelectSQLOne('SELECT NAME FROM smetasourcedata WHERE SM_ID=:0',
       VarArrayOf([defIdEstimate]));

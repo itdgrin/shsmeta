@@ -163,14 +163,14 @@ begin
     cbbSource.ItemIndex := 1;
     dblkcbbAct.Visible := False;
     dblkcbbSmeta.Visible := True;
-    dblkcbbSmeta.KeyValue := fTravelList.qrTravelWork.FieldByName('ID_ESTIMATE').Value;
+    dblkcbbSmeta.KeyValue := fTravelList.qrTravelWork.FieldByName('SM_ID').Value;
   end
   else
   begin
     cbbSource.ItemIndex := 0;
     dblkcbbAct.Visible := True;
     dblkcbbSmeta.Visible := False;
-    dblkcbbAct.KeyValue := fTravelList.qrTravelWork.FieldByName('ID_ACT').Value;
+    dblkcbbAct.KeyValue := fTravelList.qrTravelWork.FieldByName('SM_ID').Value;
   end;
   // Заполняем параметры расчета
   case cbbSource.ItemIndex of

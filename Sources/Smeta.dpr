@@ -120,7 +120,8 @@ uses
   CopyToOwnDialog in 'CopyToOwnDialog.pas' {fCopyToOwnDialog},
   SelectDialog in 'SelectDialog.pas' {fSelectDialog},
   ManualSprItem in 'ManualSprItem.pas' {ManSprCardForm},
-  ManualPriceSelect in 'ManualPriceSelect.pas' {fmManPriceSelect};
+  ManualPriceSelect in 'ManualPriceSelect.pas' {fmManPriceSelect},
+  DebugTables in 'DebugTables.pas' {fDebugTables};
 
 {$R *.res}
 var MHandle: THandle;

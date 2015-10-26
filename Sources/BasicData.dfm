@@ -584,7 +584,7 @@ object FormBasicData: TFormBasicData
           FieldName = 'coef_name'
           Title.Alignment = taCenter
           Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-          Width = 112
+          Width = 98
           Visible = True
         end
         item
@@ -592,7 +592,7 @@ object FormBasicData: TFormBasicData
           FieldName = 'osn_zp'
           Title.Alignment = taCenter
           Title.Caption = #1047#1055
-          Width = 51
+          Width = 45
           Visible = True
         end
         item
@@ -600,7 +600,7 @@ object FormBasicData: TFormBasicData
           FieldName = 'eksp_mach'
           Title.Alignment = taCenter
           Title.Caption = #1069#1052#1080#1052
-          Width = 51
+          Width = 45
           Visible = True
         end
         item
@@ -608,7 +608,7 @@ object FormBasicData: TFormBasicData
           FieldName = 'mat_res'
           Title.Alignment = taCenter
           Title.Caption = #1052#1056
-          Width = 51
+          Width = 45
           Visible = True
         end
         item
@@ -616,7 +616,7 @@ object FormBasicData: TFormBasicData
           FieldName = 'work_pers'
           Title.Alignment = taCenter
           Title.Caption = #1058#1047' '#1088#1072#1073'.'
-          Width = 51
+          Width = 45
           Visible = True
         end
         item
@@ -624,7 +624,7 @@ object FormBasicData: TFormBasicData
           FieldName = 'work_mach'
           Title.Alignment = taCenter
           Title.Caption = #1058#1047' '#1084#1072#1096'.'
-          Width = 51
+          Width = 45
           Visible = True
         end
         item
@@ -632,7 +632,7 @@ object FormBasicData: TFormBasicData
           FieldName = 'oxropr'
           Title.Alignment = taCenter
           Title.Caption = #1054#1061#1056#1080#1054#1055#1056
-          Width = 51
+          Width = 45
           Visible = True
         end
         item
@@ -640,7 +640,14 @@ object FormBasicData: TFormBasicData
           FieldName = 'planprib'
           Title.Alignment = taCenter
           Title.Caption = #1055#1055
-          Width = 35
+          Width = 31
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'ZP_MASH'
+          Title.Caption = #1047#1055' '#1084#1072#1096'.'
+          Width = 53
           Visible = True
         end>
     end
@@ -850,7 +857,8 @@ object FormBasicData: TFormBasicData
       '  `WORK_PERS`,'
       '  `WORK_MACH`,'
       '  `OXROPR`,'
-      '  `PLANPRIB`'
+      '  `PLANPRIB`, '
+      '  `ZP_MASH`'
       'FROM '
       '  `calculation_coef`'
       'WHERE `id_type_data` < 0  AND'

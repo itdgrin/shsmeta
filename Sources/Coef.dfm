@@ -3,7 +3,7 @@ object fCoefficients: TfCoefficients
   Top = 0
   Caption = #1053#1072#1073#1086#1088#1099' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074' '#1082' '#1089#1090#1072#1090#1100#1103#1084' '#1079#1072#1090#1088#1072#1090
   ClientHeight = 393
-  ClientWidth = 612
+  ClientWidth = 749
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,17 +13,16 @@ object fCoefficients: TfCoefficients
   KeyPreview = True
   OldCreateOrder = False
   Position = poOwnerFormCenter
-  OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
-    612
+    749
     393)
   PixelsPerInch = 96
   TextHeight = 13
   object grCoef: TJvDBGrid
     Left = 8
     Top = 12
-    Width = 596
+    Width = 733
     Height = 336
     Anchors = [akLeft, akTop, akRight, akBottom]
     DataSource = dsCoef
@@ -67,7 +66,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'osn_zp'
         Title.Alignment = taCenter
         Title.Caption = #1047#1055
-        Width = 63
+        Width = 72
         Visible = True
       end
       item
@@ -75,7 +74,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'eksp_mach'
         Title.Alignment = taCenter
         Title.Caption = #1069#1052#1080#1052
-        Width = 63
+        Width = 72
         Visible = True
       end
       item
@@ -83,7 +82,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'mat_res'
         Title.Alignment = taCenter
         Title.Caption = #1052#1056
-        Width = 63
+        Width = 72
         Visible = True
       end
       item
@@ -91,7 +90,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'work_pers'
         Title.Alignment = taCenter
         Title.Caption = #1058#1047' '#1088#1072#1073'.'
-        Width = 63
+        Width = 72
         Visible = True
       end
       item
@@ -99,7 +98,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'work_mach'
         Title.Alignment = taCenter
         Title.Caption = #1058#1047' '#1084#1072#1096'.'
-        Width = 63
+        Width = 72
         Visible = True
       end
       item
@@ -107,7 +106,7 @@ object fCoefficients: TfCoefficients
         FieldName = 'oxropr'
         Title.Alignment = taCenter
         Title.Caption = #1054#1061#1056#1080#1054#1055#1056
-        Width = 63
+        Width = 72
         Visible = True
       end
       item
@@ -115,22 +114,31 @@ object fCoefficients: TfCoefficients
         FieldName = 'planprib'
         Title.Alignment = taCenter
         Title.Caption = #1055#1055
-        Width = 55
+        Width = 63
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'ZP_MASH'
+        Title.Alignment = taCenter
+        Title.Caption = #1047#1055' '#1084#1072#1096'.'
+        Width = 74
         Visible = True
       end>
   end
   object pnl1: TPanel
     Left = 8
     Top = 350
-    Width = 596
+    Width = 733
     Height = 35
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 1
+    ExplicitWidth = 596
     DesignSize = (
-      596
+      733
       35)
     object btnClose: TButton
-      Left = 516
+      Left = 653
       Top = 4
       Width = 75
       Height = 25
@@ -138,6 +146,7 @@ object fCoefficients: TfCoefficients
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 2
       OnClick = btnCloseClick
+      ExplicitLeft = 516
     end
     object dbnvgr1: TDBNavigator
       Left = 0
@@ -166,7 +175,7 @@ object fCoefficients: TfCoefficients
       OnClick = dbnvgr1Click
     end
     object btnAdd: TButton
-      Left = 433
+      Left = 570
       Top = 4
       Width = 77
       Height = 25
@@ -175,6 +184,7 @@ object fCoefficients: TfCoefficients
       Default = True
       TabOrder = 1
       OnClick = btnAddClick
+      ExplicitLeft = 433
     end
   end
   object qrCoef: TFDQuery
@@ -192,7 +202,7 @@ object fCoefficients: TfCoefficients
     SQL.Strings = (
       
         'SELECT coef_id, coef_name, osn_zp, eksp_mach, mat_res, work_pers' +
-        ' , work_mach, coef_type_id, oxropr, planprib'
+        ' , work_mach, coef_type_id, oxropr, planprib, ZP_MASH'
       'FROM coef '
       'ORDER BY IFNULL(coef_type_id, 999999999), coef_name')
     Left = 25
@@ -281,6 +291,14 @@ object fCoefficients: TfCoefficients
       KeyFields = 'coef_type_id'
       Size = 50
       Lookup = True
+    end
+    object qrCoefZP_MASH: TBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'ZP_MASH'
+      Origin = 'ZP_MASH'
+      DisplayFormat = '#0.00'
+      Precision = 5
+      Size = 2
     end
   end
   object dsCoef: TDataSource

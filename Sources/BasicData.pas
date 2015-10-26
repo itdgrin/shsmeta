@@ -208,8 +208,8 @@ begin
   begin
     Active := False;
     SQL.Clear;
-    SQL.Add('SELECT coef_tr_zatr, k40, k41, IFNULL(nds, 0) AS NDS, stavka_id, date, dump_id, coef_orders '
-      + 'FROM smetasourcedata WHERE sm_id = :sm_id;');
+    SQL.Add('SELECT coef_tr_zatr, k40, k41, IFNULL(nds, 0) AS NDS, stavka_id, date, dump_id, coef_orders ' +
+      'FROM smetasourcedata WHERE sm_id = :sm_id;');
     ParamByName('sm_id').Value := IdEstimate;
     Active := True;
 
@@ -418,6 +418,7 @@ begin
         qrCoef.FieldByName('WORK_MACH').Value := fCoefficients.qrCoef.FieldByName('WORK_MACH').Value;
         qrCoef.FieldByName('OXROPR').Value := fCoefficients.qrCoef.FieldByName('OXROPR').Value;
         qrCoef.FieldByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
+        qrCoef.FieldByName('ZP_MASH').Value := fCoefficients.qrCoef.FieldByName('ZP_MASH').Value;
         qrCoef.Post;
 
         if Assigned(FormCalculationEstimate) then
@@ -429,25 +430,25 @@ begin
         FastExecSQL('INSERT INTO `calculation_coef' + tableName + '`(`calculation_coef_id`, ' +
           '`SM_ID`, `id_type_data`, `id_owner`,'#13 +
           ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
-          '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
+          '  `WORK_MACH`, `OXROPR`, `PLANPRIB`, `ZP_MASH`)'#13 +
           '(SELECT GetNewID(:IDType),SM_ID,ID_TYPE_DATA,ID_TABLES,'#13 +
-          ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB'#13 +
-          'FROM data_row' + tableName + ' WHERE SM_ID=:id_estimate AND ID_TYPE_DATA<10)',
+          ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB,:ZP_MASH'#13
+          + 'FROM data_row' + tableName + ' WHERE SM_ID=:id_estimate AND ID_TYPE_DATA<10)',
           VarArrayOf([C_ID_SMCOEF, fCoefficients.qrCoef.FieldByName('coef_id').Value,
           fCoefficients.qrCoef.FieldByName('COEF_NAME').Value, fCoefficients.qrCoef.FieldByName('OSN_ZP')
           .Value, fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value,
           fCoefficients.qrCoef.FieldByName('MAT_RES').Value, fCoefficients.qrCoef.FieldByName('WORK_PERS')
           .Value, fCoefficients.qrCoef.FieldByName('WORK_MACH').Value,
           fCoefficients.qrCoef.FieldByName('OXROPR').Value, fCoefficients.qrCoef.FieldByName('PLANPRIB')
-          .Value, qrSmeta.FieldByName('SM_ID').Value]));
+          .Value, fCoefficients.qrCoef.FieldByName('ZP_MASH').Value, qrSmeta.FieldByName('SM_ID').Value]));
 
         // Каскадно добавляем выбранный кф. на все зависимые сметы
         DM.qrDifferent.SQL.Text := 'INSERT INTO `calculation_coef' + tableName + '`(`calculation_coef_id`, ' +
           '`SM_ID`, `id_type_data`, `id_owner`,'#13 +
           ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
-          '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
+          '  `WORK_MACH`, `OXROPR`, `PLANPRIB`, `ZP_MASH`)'#13 +
           'VALUE(GetNewID(:IDType), :id_estimate,:id_type_data,:id_owner,'#13 +
-          ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB)';
+          ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB,:ZP_MASH)';
         DM.qrDifferent.ParamByName('IDType').Value := C_ID_SMCOEF;
         DM.qrDifferent.ParamByName('id_type_data').Value := qrSmeta.FieldByName('SM_TYPE').Value * -1;
         DM.qrDifferent.ParamByName('id_owner').Value := 0;
@@ -460,6 +461,7 @@ begin
         DM.qrDifferent.ParamByName('WORK_MACH').Value := fCoefficients.qrCoef.FieldByName('WORK_MACH').Value;
         DM.qrDifferent.ParamByName('OXROPR').Value := fCoefficients.qrCoef.FieldByName('OXROPR').Value;
         DM.qrDifferent.ParamByName('PLANPRIB').Value := fCoefficients.qrCoef.FieldByName('PLANPRIB').Value;
+        DM.qrDifferent.ParamByName('ZP_MASH').Value := fCoefficients.qrCoef.FieldByName('ZP_MASH').Value;
 
         DM.qrDifferent1.Active := False;
         DM.qrDifferent1.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE (PARENT_ID=:ID_ESTIMATE)'#13 +
@@ -476,17 +478,18 @@ begin
           FastExecSQL('INSERT INTO `calculation_coef' + tableName + '`(`calculation_coef_id`, ' +
             '`SM_ID`, `id_type_data`, `id_owner`,'#13 +
             ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
-            '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
+            '  `WORK_MACH`, `OXROPR`, `PLANPRIB`, `ZP_MASH`)'#13 +
             '(SELECT GetNewID(:IDType),SM_ID,ID_TYPE_DATA,ID_TABLES,'#13 +
-            ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB'#13 +
-            'FROM data_row' + tableName + ' WHERE SM_ID=:id_estimate AND ID_TYPE_DATA<10)',
+            ':id_coef,:COEF_NAME,:OSN_ZP,:EKSP_MACH,:MAT_RES,:WORK_PERS,:WORK_MACH,:OXROPR,:PLANPRIB,:ZP_MASH'#13
+            + 'FROM data_row' + tableName + ' WHERE SM_ID=:id_estimate AND ID_TYPE_DATA<10)',
             VarArrayOf([C_ID_SMCOEF, fCoefficients.qrCoef.FieldByName('coef_id').Value,
             fCoefficients.qrCoef.FieldByName('COEF_NAME').Value, fCoefficients.qrCoef.FieldByName('OSN_ZP')
             .Value, fCoefficients.qrCoef.FieldByName('EKSP_MACH').Value,
             fCoefficients.qrCoef.FieldByName('MAT_RES').Value, fCoefficients.qrCoef.FieldByName('WORK_PERS')
             .Value, fCoefficients.qrCoef.FieldByName('WORK_MACH').Value,
             fCoefficients.qrCoef.FieldByName('OXROPR').Value, fCoefficients.qrCoef.FieldByName('PLANPRIB')
-            .Value, DM.qrDifferent1.FieldByName('SM_ID').Value]));
+            .Value, fCoefficients.qrCoef.FieldByName('ZP_MASH').Value,
+            DM.qrDifferent1.FieldByName('SM_ID').Value]));
 
           DM.qrDifferent1.Next;
         end;

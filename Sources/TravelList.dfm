@@ -2349,20 +2349,11 @@ object fTravelList: TfTravelList
     SQL.Strings = (
       'SELECT '
       '  `travel`.*,'
-      
-        '  IF(`travel`.`SOURCE_TYPE`, `smetasourcedata`.`NAME`, `card_act' +
-        's`.`NAME`) AS NAME'
+      '  `smetasourcedata`.`NAME` AS NAME'
       'FROM `travel`'
       
-        '  LEFT JOIN `smetasourcedata` ON `smetasourcedata`.`SM_ID`=`trav' +
-        'el`.`ID_ESTIMATE`  AND `smetasourcedata`.`OBJ_ID`=:OBJ_ID AND `s' +
-        'metasourcedata`.`SM_TYPE`<>3 AND `travel`.`SOURCE_TYPE` = 1'
-      
-        '  LEFT JOIN `card_acts` ON `card_acts`.`ID`=`travel`.`id_act` AN' +
-        'D `card_acts`.`ID_OBJECT`=:OBJ_ID AND `travel`.`SOURCE_TYPE` = 0'
-      
-        'WHERE ((`card_acts`.`ID` IS NOT NULL) OR (`smetasourcedata`.`SM_' +
-        'ID` IS NOT NULL))')
+        '  INNER JOIN `smetasourcedata` ON `smetasourcedata`.`SM_ID`=`tra' +
+        'vel`.`SM_ID`  AND `smetasourcedata`.`OBJ_ID`=:OBJ_ID')
     Left = 25
     Top = 96
     ParamData = <
@@ -2398,22 +2389,12 @@ object fTravelList: TfTravelList
     SQL.Strings = (
       'SELECT '
       '  `travel_work`.*,'
-      
-        '  IF(`travel_work`.`SOURCE_TYPE`, `smetasourcedata`.`NAME`, `car' +
-        'd_acts`.`NAME`) AS NAME'
+      '  `smetasourcedata`.`NAME` AS NAME'
       'FROM `travel_work`'
       
-        '  LEFT JOIN `smetasourcedata` ON `smetasourcedata`.`SM_ID`=`trav' +
-        'el_work`.`ID_ESTIMATE` AND `smetasourcedata`.`OBJ_ID`=:OBJ_ID AN' +
-        'D `smetasourcedata`.`SM_TYPE`<>3 AND `travel_work`.`SOURCE_TYPE`' +
-        ' = 1'
-      
-        '  LEFT JOIN `card_acts` ON `card_acts`.`ID`=`travel_work`.`id_ac' +
-        't` AND `card_acts`.`ID_OBJECT`=:OBJ_ID AND `travel_work`.`SOURCE' +
-        '_TYPE` = 0'
-      
-        'WHERE ((`card_acts`.`ID` IS NOT NULL) OR (`smetasourcedata`.`SM_' +
-        'ID` IS NOT NULL))')
+        '  INNER JOIN `smetasourcedata` ON `smetasourcedata`.`SM_ID`=`tra' +
+        'vel_work`.`SM_ID` AND `smetasourcedata`.`OBJ_ID`=:OBJ_ID'
+      '')
     Left = 25
     Top = 152
     ParamData = <
@@ -2449,22 +2430,11 @@ object fTravelList: TfTravelList
     SQL.Strings = (
       'SELECT '
       '  `worker_deartment`.*,'
-      
-        '  IF(`worker_deartment`.`SOURCE_TYPE`, `smetasourcedata`.`NAME`,' +
-        ' `card_acts`.`NAME`) AS NAME'
+      '  `smetasourcedata`.`NAME` AS NAME'
       'FROM `worker_deartment`'
       
-        '  LEFT JOIN `smetasourcedata` ON `smetasourcedata`.`SM_ID`=`work' +
-        'er_deartment`.`ID_ESTIMATE` AND `smetasourcedata`.`OBJ_ID`=:OBJ_' +
-        'ID AND `smetasourcedata`.`SM_TYPE`<>3 AND `worker_deartment`.`SO' +
-        'URCE_TYPE` = 1'
-      
-        '  LEFT JOIN `card_acts` ON `card_acts`.`ID`=`worker_deartment`.`' +
-        'id_act` AND `card_acts`.`ID_OBJECT`=:OBJ_ID AND `worker_deartmen' +
-        't`.`SOURCE_TYPE` = 0'
-      
-        'WHERE ((`card_acts`.`ID` IS NOT NULL) OR (`smetasourcedata`.`SM_' +
-        'ID` IS NOT NULL))')
+        '  INNER JOIN `smetasourcedata` ON `smetasourcedata`.`SM_ID`=`wor' +
+        'ker_deartment`.`SM_ID` AND `smetasourcedata`.`OBJ_ID`=:OBJ_ID')
     Left = 25
     Top = 200
     ParamData = <

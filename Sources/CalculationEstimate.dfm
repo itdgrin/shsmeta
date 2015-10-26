@@ -2681,7 +2681,6 @@
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
-        OnDrawColumnCell = dbgrdCalculationsDrawColumnCell
         IniStorage = FormStorage
         OnResize = dbgrdCalculationsResize
         ScrollBars = ssNone
@@ -4749,6 +4748,10 @@
       item
         SourceDataType = dtBlob
         TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
       end>
     FormatOptions.FmtDisplayNumeric = '### ### ### ##0.####'
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]

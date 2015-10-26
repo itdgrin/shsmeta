@@ -127,9 +127,9 @@ object fCalcTravelWork: TfCalcTravelWork
     Width = 469
     Height = 21
     Anchors = [akLeft, akTop, akRight]
-    DataField = 'id_act'
+    DataField = 'SM_ID'
     DataSource = fTravelList.dsTravelWork
-    KeyField = 'ID'
+    KeyField = 'SM_ID'
     ListField = 'NAME'
     ListSource = dsActList
     TabOrder = 1
@@ -168,7 +168,7 @@ object fCalcTravelWork: TfCalcTravelWork
     Width = 469
     Height = 21
     Anchors = [akLeft, akTop, akRight]
-    DataField = 'id_estimate'
+    DataField = 'SM_ID'
     DataSource = fTravelList.dsTravelWork
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -240,19 +240,13 @@ object fCalcTravelWork: TfCalcTravelWork
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       
-        'CALL `CalcTravelWork`(:ID_ESTIMATE, :ID_ACT, :FLFullMonth, :SUTK' +
-        'I_KOMANDIR, :HOUR_IN_DAY, :NORMAT, :NORMATF, :TOTAL, :TOTALF);')
+        'CALL `CalcTravelWork`(:ID_ESTIMATE, :FLFullMonth, :SUTKI_KOMANDI' +
+        'R, :HOUR_IN_DAY, :NORMAT, :NORMATF, :TOTAL, :TOTALF);')
     Left = 35
     Top = 94
     ParamData = <
       item
         Name = 'ID_ESTIMATE'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = Null
-      end
-      item
-        Name = 'ID_ACT'
         DataType = ftInteger
         ParamType = ptInput
         Value = Null
@@ -314,11 +308,13 @@ object fCalcTravelWork: TfCalcTravelWork
       end>
     SQL.Strings = (
       'SELECT '
-      '  `card_acts`.`ID`,'
-      '  `card_acts`.`NAME`'
+      '  `smetasourcedata`.`SM_ID`,'
+      
+        '  CONCAT(`smetasourcedata`.`SM_NUMBER`, '#39' '#39', `smetasourcedata`.`' +
+        'NAME`) AS NAME'
       'FROM '
-      '  `card_acts`'
-      'WHERE `ID_OBJECT`=:OBJ_ID;')
+      '  `smetasourcedata`'
+      'WHERE `OBJ_ID`=:OBJ_ID AND `SM_TYPE`=2 AND ACT=1;')
     Left = 233
     Top = 96
     ParamData = <
@@ -354,7 +350,7 @@ object fCalcTravelWork: TfCalcTravelWork
         'NAME`) AS NAME'
       'FROM '
       '  `smetasourcedata`'
-      'WHERE `OBJ_ID`=:OBJ_ID AND `SM_TYPE`<>3;')
+      'WHERE `OBJ_ID`=:OBJ_ID AND `SM_TYPE`<>3 AND ACT=0;')
     Left = 233
     Top = 152
     ParamData = <

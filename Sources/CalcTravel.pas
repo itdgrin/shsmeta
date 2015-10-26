@@ -164,28 +164,26 @@ begin
     cbbSource.ItemIndex := 1;
     dblkcbbAct.Visible := False;
     dblkcbbSmeta.Visible := True;
-    dblkcbbSmeta.KeyValue := fTravelList.qrTravel.FieldByName('ID_ESTIMATE').Value;
+    dblkcbbSmeta.KeyValue := fTravelList.qrTravel.FieldByName('SM_ID').Value;
   end
   else
   begin
     cbbSource.ItemIndex := 0;
     dblkcbbAct.Visible := True;
     dblkcbbSmeta.Visible := False;
-    dblkcbbAct.KeyValue := fTravelList.qrTravel.FieldByName('ID_ACT').Value;
+    dblkcbbAct.KeyValue := fTravelList.qrTravel.FieldByName('SM_ID').Value;
   end;
   // «аполн€ем параметры расчета
   case cbbSource.ItemIndex of
     // акт
     0:
       begin
-        qrCalc.ParamByName('ID_ACT').Value := fTravelList.qrTravel.FieldByName('ID_ACT').Value;
-        qrCalc.ParamByName('ID_ESTIMATE').Value := null;
+        qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrTravel.FieldByName('SM_ID').Value;
       end;
     // смета
     1:
-      begin
-        qrCalc.ParamByName('ID_ACT').Value := null;
-        qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrTravel.FieldByName('ID_ESTIMATE').Value;
+      begin;
+        qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrTravel.FieldByName('SM_ID').Value;
       end;
   end;
   qrCalc.ParamByName('FLFullMonth').Value := fTravelList.qrTravel.FieldByName('FL_Full_month').Value;
@@ -209,8 +207,7 @@ begin
   qrCalc.ParamByName('TOTAL').Value := fTravelList.qrTravel.FieldByName('TOTAL').Value;
   qrCalc.ParamByName('TOTALF').Value := fTravelList.qrTravel.FieldByName('TOTALF').Value;
 
-  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
-    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
+  if not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
     CloseOpen(qrCalc)
   else if qrCalc.Active then
     qrCalc.Active := False;

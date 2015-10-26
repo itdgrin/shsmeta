@@ -675,8 +675,6 @@ type
     procedure qrRatesExBeforeScroll(DataSet: TDataSet);
     procedure PMSetTransPercClick(Sender: TObject);
     procedure grRatesExExit(Sender: TObject);
-    procedure dbgrdCalculationsDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
-      Column: TColumn; State: TGridDrawState);
     procedure qrCalculationsAfterOpen(DataSet: TDataSet);
     procedure dbgrdCalculationsResize(Sender: TObject);
     procedure dbmmoCAPTIONExit(Sender: TObject);
@@ -6687,8 +6685,8 @@ begin
           grRatesEx.DataSource.DataSet.Bookmark := Items[X];
           qrTemp.Active := False;
           qrTemp.SQL.Text :=
-            'INSERT INTO calculation_coef_temp(calculation_coef_id,SM_ID,id_type_data,id_owner,id_coef,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB)'#13
-            + 'SELECT GetNewID(:IDType), :SM_ID, :id_type_data, :id_owner, coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13
+            'INSERT INTO calculation_coef_temp(calculation_coef_id,SM_ID,id_type_data,id_owner,id_coef,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB,ZP_MASH)'#13
+            + 'SELECT GetNewID(:IDType), :SM_ID, :id_type_data, :id_owner, coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB,ZP_MASH'#13
             + 'FROM coef WHERE coef.coef_id=:coef_id';
           qrTemp.ParamByName('IDType').Value := C_ID_SMCOEF;
           qrTemp.ParamByName('SM_ID').AsInteger := qrRatesExSM_ID.Value;
@@ -6703,9 +6701,9 @@ begin
             FastExecSQL('INSERT INTO `calculation_coef_temp`(`calculation_coef_id`, ' +
               '`SM_ID`, `id_type_data`, `id_owner`,'#13 +
               ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
-              '  `WORK_MACH`, `OXROPR`, `PLANPRIB`)'#13 +
+              '  `WORK_MACH`, `OXROPR`, `PLANPRIB`, `ZP_MASH`)'#13 +
               '(SELECT GetNewID(:IDType),data_row_temp.SM_ID,data_row_temp.ID_TYPE_DATA,data_row_temp.ID_TABLES,'#13
-              + 'coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB'#13 +
+              + 'coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB,coef.ZP_MASH'#13 +
               'FROM data_row_temp, coef WHERE ((data_row_temp.SM_ID=:id_estimate) OR (data_row_temp.SM_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID=:id_estimate))) AND data_row_temp.ID_TYPE_DATA<10 AND coef.coef_id=:coef_id)',
               VarArrayOf([C_ID_SMCOEF, qrRatesExSM_ID.Value, coef_id]));
           end;
@@ -6816,33 +6814,6 @@ begin
       MessageBox(0, PChar('При добавлении механизма возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-end;
-
-procedure TFormCalculationEstimate.dbgrdCalculationsDrawColumnCell(Sender: TObject; const Rect: TRect;
-  DataCol: Integer; Column: TColumn; State: TGridDrawState);
-begin
-  with (Sender AS TJvDBGrid).Canvas do
-  begin
-    Brush.Color := PS.BackgroundRows;
-    Font.Color := PS.FontRows;
-
-    // Строка в фокусе
-    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
-      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
-    begin
-      Brush.Color := PS.BackgroundSelectRow;
-      Font.Color := PS.FontSelectRow;
-    end;
-    // Ячейка в фокусе
-    if (gdSelected in State) then
-    begin
-      Brush.Color := PS.BackgroundSelectCell;
-      Font.Color := PS.FontSelectCell;
-      Font.Style := Font.Style + [fsBold];
-    end;
-  end;
-
-  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TFormCalculationEstimate.dbgrdCalculationsResize(Sender: TObject);

@@ -173,6 +173,7 @@ type
     mN25: TMenuItem;
     mN38: TMenuItem;
     FormStorage: TJvFormStorage;
+    mDebug1: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -284,6 +285,7 @@ type
     procedure mN38Click(Sender: TObject);
     procedure mReportClick(Sender: TObject);
     procedure HelpSupportClick(Sender: TObject);
+    procedure mDebug1Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -334,16 +336,16 @@ type
     // Автоматический пост записи при переходе внутри редактируемой записи на форме расчета стоимости ресурсов
     ShowNeedSaveDialog: Boolean; // Запрос на сохранение сметы ПЕЧАТЬ-ССР-РАСЧЕТ СТОИМОСТИ
     ShowHint: Boolean;
-    FindAutoRepInAllRate: Boolean; //Флаг необходимости поиска автозамены по всем расценкам
-    GridFontName: string ; //Стиль шрифта
-    GridFontSize: Integer;  //размер
-    GridFontStyle: Byte; //Стиль
-    ControlsFontName: string ; //Стиль шрифта
-    ControlsFontSize: Integer;  //размер
-    ControlsFontStyle: Byte; //Стиль
-    TextFontName: string ; //Стиль шрифта
-    TextFontSize: Integer;  //размер
-    TextFontStyle: Byte; //Стиль
+    FindAutoRepInAllRate: Boolean; // Флаг необходимости поиска автозамены по всем расценкам
+    GridFontName: string; // Стиль шрифта
+    GridFontSize: integer; // размер
+    GridFontStyle: Byte; // Стиль
+    ControlsFontName: string; // Стиль шрифта
+    ControlsFontSize: integer; // размер
+    ControlsFontStyle: Byte; // Стиль
+    TextFontName: string; // Стиль шрифта
+    TextFontSize: integer; // размер
+    TextFontStyle: Byte; // Стиль
   end;
 
 const
@@ -435,7 +437,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex, About, 
   SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList,
   NormativDictHelp, BuildZone, HelpKfSt, Users, RoundSetup, InstructionHelp, TypeWorkList,
   SectionEstimateList,
-  SprSelection;
+  SprSelection, DebugTables;
 
 {$R *.dfm}
 
@@ -1134,6 +1136,13 @@ begin {
     fUniDict.qrUniDictType.Locate('unidicttype_id', 7, []);
     fUniDict.Show; }
   ShowContractorServices;
+end;
+
+procedure TFormMain.mDebug1Click(Sender: TObject);
+begin
+  if (not Assigned(fDebugTables)) then
+    fDebugTables := TfDebugTables.Create(Self);
+  fDebugTables.Show;
 end;
 
 procedure TFormMain.mLogInClick(Sender: TObject);
@@ -2320,7 +2329,7 @@ begin
       PS.ShowHint := ReadBool('ShowHint', vShowHint, true);
       PS.AutosaveRateDescr := ReadBool('ESTIMATE', 'AutosaveRateDescr', true);
       PS.ShowNeedSaveDialog := ReadBool('ESTIMATE', 'ShowNeedSaveDialog', true);
-      PS.FindAutoRepInAllRate := ReadBool('ESTIMATE', 'FindAutoRepInAllRate', false);
+      PS.FindAutoRepInAllRate := ReadBool('ESTIMATE', 'FindAutoRepInAllRate', False);
 
       PS.GridFontName := ReadString('Tables', 'GridFontName', 'Tahoma');
       PS.GridFontSize := ReadInteger('Tables', 'GridFontSize', 8);

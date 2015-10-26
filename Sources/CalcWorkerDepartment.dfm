@@ -127,9 +127,9 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     Width = 459
     Height = 21
     Anchors = [akLeft, akTop, akRight]
-    DataField = 'id_act'
+    DataField = 'SM_ID'
     DataSource = fTravelList.dsWorkerDepartment
-    KeyField = 'ID'
+    KeyField = 'SM_ID'
     ListField = 'NAME'
     ListSource = dsActList
     TabOrder = 1
@@ -168,7 +168,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     Width = 459
     Height = 21
     Anchors = [akLeft, akTop, akRight]
-    DataField = 'id_estimate'
+    DataField = 'SM_ID'
     DataSource = fTravelList.dsWorkerDepartment
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -240,8 +240,8 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       
-        'CALL `CalcWorkerDepartment`(:ID_ESTIMATE, :ID_ACT, :FLFullMonth,' +
-        ' :PLACE_COUNT, :EMbyHVR, :EMbyKM, '
+        'CALL `CalcWorkerDepartment`(:ID_ESTIMATE, :FLFullMonth, :PLACE_C' +
+        'OUNT, :EMbyHVR, :EMbyKM, '
       
         '                            :RoadALength, :RoadGLength, :RoadGrL' +
         'ength, :RoadASpeed, :RoadGSpeed, '
@@ -262,11 +262,6 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     ParamData = <
       item
         Name = 'ID_ESTIMATE'
-        ParamType = ptInput
-        Value = Null
-      end
-      item
-        Name = 'ID_ACT'
         ParamType = ptInput
         Value = Null
       end
@@ -417,11 +412,13 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
       end>
     SQL.Strings = (
       'SELECT '
-      '  `card_acts`.`ID`,'
-      '  `card_acts`.`NAME`'
+      '  `smetasourcedata`.`SM_ID`,'
+      
+        '  CONCAT(`smetasourcedata`.`SM_NUMBER`, '#39' '#39', `smetasourcedata`.`' +
+        'NAME`) AS NAME'
       'FROM '
-      '  `card_acts`'
-      'WHERE `ID_OBJECT`=:OBJ_ID;')
+      '  `smetasourcedata`'
+      'WHERE `OBJ_ID`=:OBJ_ID AND `SM_TYPE`=2 AND ACT=1;')
     Left = 233
     Top = 96
     ParamData = <
@@ -457,7 +454,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
         'NAME`) AS NAME'
       'FROM '
       '  `smetasourcedata`'
-      'WHERE `OBJ_ID`=:OBJ_ID AND `SM_TYPE`<>3;')
+      'WHERE `OBJ_ID`=:OBJ_ID AND `SM_TYPE`<>3 AND ACT=0;')
     Left = 233
     Top = 152
     ParamData = <
