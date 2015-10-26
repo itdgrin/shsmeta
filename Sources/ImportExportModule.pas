@@ -454,6 +454,7 @@ var XML : IXMLDocument;
   begin
     for i := 0 to AQ.Fields.Count - 1 do
     begin
+      try
         if (AQ.Fields[i].DataType in [ftFloat, ftCurrency, ftBCD, ftFMTBcd,
           ftExtended, ftSingle]) then
           ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
@@ -461,9 +462,20 @@ var XML : IXMLDocument;
         else if AQ.Fields[i].DataType = ftDate then
           ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
             FormatDateTime('yy/mm/dd', AQ.Fields[i].AsDateTime)
+        else if AQ.Fields[i].DataType = ftString then
+          ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
+            StripCharsInSet(AQ.Fields[i].AsString, [#0..#9,#11,#12,#14..#31,#127])
         else
           ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
             AQ.Fields[i].Value;
+      except
+        on e: Exception do
+        begin
+          e.Message := e.Message + sLineBreak +
+            '"' + AQ.Fields[i].AsString +'"';
+          raise;
+        end;
+      end;
     end;
   end;
 begin
@@ -956,6 +968,7 @@ begin
             raise Exception.Create('Источник отсутствует в БД.');
         end;
 
+        NewID := 0;
         case SmClipRec.DataType of
         1, 2, 3, 4, 5, 6, 7, 8, 9:
         begin

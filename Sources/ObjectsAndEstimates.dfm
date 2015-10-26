@@ -743,8 +743,8 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         'SELECT (YEAR(date)*12+MONTH(date)) AS PARENT_ID, SM_ID AS MASTER' +
         '_ID, '
       
-        '  CONCAT(IF(FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), TRIM(name), IF(DELETED=1,' +
-        ' "-", "")) AS ITEAM_NAME,'
+        '  CONCAT(IF(FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), IFNULL(TRIM(name), ""), I' +
+        'F(DELETED=1, "-", "")) AS ITEAM_NAME,'
       '  DELETED, FL_USE, DATE, NAME, TYPE_ACT'
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2'
@@ -885,8 +885,8 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     FetchOptions.Cache = [fiBlobs, fiMeta]
     SQL.Strings = (
       
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME, IF(' +
-        'DELETED=1, "-", "")) as NAME,'
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(IFNULL(SM_NUMBER, ""), " "' +
+        ',  IFNULL(NAME, ""), IF(DELETED=1, "-", "")) as NAME,'
       '       PARENT_ID as PARENT, DELETED'
       'FROM smetasourcedata'
       'WHERE /*SM_TYPE=2'
@@ -897,8 +897,8 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       '/*'
       'UNION ALL'
       
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME, IF(' +
-        'DELETED=1, "-", "")) as NAME,'
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(IFNULL(SM_NUMBER, ""), " "' +
+        ',  IFNULL(NAME, ""), IF(DELETED=1, "-", "")) as NAME,'
       '       PARENT_ID as PARENT, DELETED '
       'FROM smetasourcedata'
       'WHERE SM_TYPE<>2 AND '

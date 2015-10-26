@@ -4480,9 +4480,11 @@ begin
         // Средний разряд рабочих-строителей
 
         EditCategory.Text :=
-          MyFloatToStr
-          (GetRankBuilders(VarToStr(FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:1',
-          VarArrayOf([qrRatesExID_TABLES.AsInteger])))));
+          MyFloatToStr(
+            GetRankBuilders(
+              VarToStr(
+                FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:1',
+                  VarArrayOf([qrRatesExID_TABLES.AsInteger])))));
 
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(qrRatesExOBJ_CODE.AsString);
@@ -5817,7 +5819,8 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 1;');
+      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' +
+        vIdNormativ + ' and work_id = 1;');
       Active := True;
 
       if FieldByName('norma').Value <> Null then

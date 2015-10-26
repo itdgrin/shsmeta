@@ -10,6 +10,7 @@ uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Clie
 
 // Общий тип классификации форм
 type
+
   TKindForm = (kdNone, kdInsert, kdEdit, kdSelect);
 
   // Для выноса в паблик некоторых свойств грида
@@ -117,8 +118,24 @@ function MixColors(FG, BG: TColor; T: byte): TColor;
 procedure Exec(AParam: string);
 // Функция получения ширины текста в пикселях внутри окна
 function GetTextWidth(Text: string; W: HWND): Integer;
+//Киляет указанные символы из строки
+function StripCharsInSet(s:string; c:TSysCharSet):string;
 
 implementation
+
+function StripCharsInSet(s:string; c:TSysCharSet):string;
+var i,j:Integer;
+begin
+  SetLength(result,Length(s));
+  j:=0;
+  for i:=1 to Length(s) do
+    if not CharInSet(s[i], c) then
+    begin
+     inc(j);
+     result[j]:=s[i];
+    end;
+  SetLength(result,j);
+end;
 
 function GetTextWidth(Text: string; W: HWND): Integer;
 var
