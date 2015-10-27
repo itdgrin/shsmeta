@@ -317,7 +317,7 @@ var
   FirstChar: String;
   Path: String;
 begin
-  Exit; // заглушка
+  // Exit; // заглушка
   if Assigned(FormReferenceData) then
     NumberNormativ := FormReferenceData.FrameRates.qrNormativ.FieldByName('NumberNormative').AsString
   else if Assigned(FormAdditionData) then

@@ -51,11 +51,11 @@ object fNormativDirectory: TfNormativDirectory
     Font.Name = 'Tahoma'
     Font.Style = []
     TabOrder = 1
-    OnDblClick = tvMainDblClick
     PopupMenu = pm1
     ParentFont = False
     RowSelect = True
     Mirror = False
+    ExplicitTop = 25
   end
   object grSostav: TJvDBGrid
     Left = 0
