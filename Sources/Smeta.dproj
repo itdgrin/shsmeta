@@ -88,7 +88,7 @@
 $(PostBuildEvent)]]></PostBuildEvent>
         <DCC_Optimize>true</DCC_Optimize>
         <VerInfo_Build>0</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=SMR - HPP 2012;FileVersion=1.0.0.0;InternalName=SMR - HPP 2012;LegalCopyright=;LegalTrademarks=;OriginalFilename=SMR-HPP2012.exe;ProductName=SMR - HPP 2012;ProductVersion=1.0.0.0;Comments=НИЧ БНТУ</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=SMR - HPP 2012;FileVersion=1.0.0.0;InternalName=SMR - HPP 2012;LegalCopyright=БНТУ;LegalTrademarks=;OriginalFilename=SMR-HPP2012.exe;ProductName=SMR - HPP 2012;ProductVersion=1.0.0.0;Comments=НИЧ БНТУ</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -177,7 +177,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>FormBasicData</Form>
         </DCCReference>
         <DCCReference Include="CardEstimate.pas">
-            <Form>FormCardEstimate</Form>
+            <Form>fCardEstimate</Form>
         </DCCReference>
         <DCCReference Include="ObjectsAndEstimates.pas">
             <Form>fObjectsAndEstimates</Form>
@@ -506,7 +506,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     <VersionInfo Name="MajorVer">1</VersionInfo>
                     <VersionInfo Name="MinorVer">0</VersionInfo>
                     <VersionInfo Name="Release">0</VersionInfo>
-                    <VersionInfo Name="Build">6728</VersionInfo>
+                    <VersionInfo Name="Build">6734</VersionInfo>
                     <VersionInfo Name="Debug">True</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -518,7 +518,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Расчёт сметы</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">1.0.0.6728</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.6734</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">Estimate</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">© 2013 Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks"/>

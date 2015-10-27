@@ -14,6 +14,7 @@
 AppId={{218AA622-38F4-49CF-8C37-40C6E0AA0DE6}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
+AppCopyright=амрс
 ;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}

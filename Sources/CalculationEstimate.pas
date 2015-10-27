@@ -2708,10 +2708,10 @@ begin
   qrTemp.Active := True;
   mainType := qrTemp.FieldByName('SM_TYPE').AsInteger;
   qrTemp.Active := False;
-  with FormCardEstimate do
+  with fCardEstimate do
   begin
     EditingRecord(True);
-    FormCardEstimate.ShowForm(IdObject, qrRatesExSM_ID.AsInteger, mainType);
+    fCardEstimate.ShowForm(IdObject, qrRatesExSM_ID.AsInteger, mainType);
     CloseOpen(qrRatesEx);
   end;
 end;
@@ -2820,8 +2820,8 @@ end;
 
 procedure TFormCalculationEstimate.mAddLocalClick(Sender: TObject);
 begin
-  FormCardEstimate.EditingRecord(False);
-  FormCardEstimate.ShowForm(IdObject, IdEstimate, 1);
+  fCardEstimate.EditingRecord(False);
+  fCardEstimate.ShowForm(IdObject, IdEstimate, 1);
   CloseOpen(qrRatesEx);
 end;
 
@@ -2835,12 +2835,12 @@ begin
   SM_TYPE := qrTemp.FieldByName('SM_TYPE').AsInteger;
   PARENT_ID := qrTemp.FieldByName('PARENT_ID').AsInteger;
   qrTemp.Active := False;
-  FormCardEstimate.EditingRecord(False);
+  fCardEstimate.EditingRecord(False);
   case SM_TYPE of
     1:
-      FormCardEstimate.ShowForm(IdObject, qrRatesExSM_ID.AsInteger, 3);
+      fCardEstimate.ShowForm(IdObject, qrRatesExSM_ID.AsInteger, 3);
     3:
-      FormCardEstimate.ShowForm(IdObject, PARENT_ID, 3);
+      fCardEstimate.ShowForm(IdObject, PARENT_ID, 3);
   end;
   CloseOpen(qrRatesEx);
 end;
@@ -4480,11 +4480,9 @@ begin
         // Средний разряд рабочих-строителей
 
         EditCategory.Text :=
-          MyFloatToStr(
-            GetRankBuilders(
-              VarToStr(
-                FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:1',
-                  VarArrayOf([qrRatesExID_TABLES.AsInteger])))));
+          MyFloatToStr
+          (GetRankBuilders(VarToStr(FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:1',
+          VarArrayOf([qrRatesExID_TABLES.AsInteger])))));
 
         // Запоняем строку зимнего удорожания
         FillingWinterPrice(qrRatesExOBJ_CODE.AsString);
@@ -5819,8 +5817,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' +
-        vIdNormativ + ' and work_id = 1;');
+      SQL.Add('SELECT norma FROM normativwork WHERE normativ_id = ' + vIdNormativ + ' and work_id = 1;');
       Active := True;
 
       if FieldByName('norma').Value <> Null then
@@ -6706,8 +6703,8 @@ begin
               ' `id_coef`, `COEF_NAME`, `OSN_ZP`, `EKSP_MACH`, `MAT_RES`, `WORK_PERS`,'#13 +
               '  `WORK_MACH`, `OXROPR`, `PLANPRIB`, `ZP_MASH`)'#13 +
               '(SELECT GetNewID(:IDType),data_row_temp.SM_ID,data_row_temp.ID_TYPE_DATA,data_row_temp.ID_TABLES,'#13
-              + 'coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB,coef.ZP_MASH'#13 +
-              'FROM data_row_temp, coef WHERE ((data_row_temp.SM_ID=:id_estimate) OR (data_row_temp.SM_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID=:id_estimate))) AND data_row_temp.ID_TYPE_DATA<10 AND coef.coef_id=:coef_id)',
+              + 'coef_id,COEF_NAME,OSN_ZP,EKSP_MACH,MAT_RES,WORK_PERS,WORK_MACH,OXROPR,PLANPRIB,coef.ZP_MASH'#13
+              + 'FROM data_row_temp, coef WHERE ((data_row_temp.SM_ID=:id_estimate) OR (data_row_temp.SM_ID IN (SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID=:id_estimate))) AND data_row_temp.ID_TYPE_DATA<10 AND coef.coef_id=:coef_id)',
               VarArrayOf([C_ID_SMCOEF, qrRatesExSM_ID.Value, coef_id]));
           end;
           {

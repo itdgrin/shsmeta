@@ -10,7 +10,6 @@ type
     pnl1: TPanel;
     imgProgramIcon: TImage;
     lblProductName: TLabel;
-    lblVersion: TLabel;
     lblComments: TLabel;
     btnOKButton: TButton;
     procedure FormShow(Sender: TObject);

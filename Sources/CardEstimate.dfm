@@ -1,4 +1,4 @@
-object FormCardEstimate: TFormCardEstimate
+object fCardEstimate: TfCardEstimate
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]

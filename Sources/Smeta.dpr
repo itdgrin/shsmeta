@@ -33,7 +33,7 @@ uses
   DataTransfer in 'DataTransfer.pas' {FormDataTransfer},
   CalculationSettings in 'CalculationSettings.pas' {FormCalculationSettings},
   BasicData in 'BasicData.pas' {FormBasicData},
-  CardEstimate in 'CardEstimate.pas' {FormCardEstimate},
+  CardEstimate in 'CardEstimate.pas' {fCardEstimate},
   ObjectsAndEstimates in 'ObjectsAndEstimates.pas' {fObjectsAndEstimates},
   Transportation in 'Transportation.pas' {FormTransportation},
   SaveEstimate in 'SaveEstimate.pas' {FormSaveEstimate},
@@ -150,7 +150,7 @@ begin
   Application.CreateForm(TFormSummaryCalculationSettings, FormSummaryCalculationSettings);
   Application.CreateForm(TFormCalculationSettings, FormCalculationSettings);
   Application.CreateForm(TFormBasicData, FormBasicData);
-  Application.CreateForm(TFormCardEstimate, FormCardEstimate);
+  Application.CreateForm(TfCardEstimate, fCardEstimate);
   Application.CreateForm(TFormSaveEstimate, FormSaveEstimate);
   Application.CreateForm(TFormCardMaterial, FormCardMaterial);
   Application.CreateForm(TFormTypesActs, FormTypesActs);

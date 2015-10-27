@@ -324,8 +324,8 @@ begin
   // Если установлена настройка, то добавляем автоматом связку смет
   if (res = mrOk) and PS.AutoCreateEstimates and (fCardObject.OUT_ID_OBJECT <> 0) then
   begin
-    FormCardEstimate.EditingRecord(False);
-    FormCardEstimate.ShowForm(fCardObject.OUT_ID_OBJECT, 0, 2, False);
+    fCardEstimate.EditingRecord(False);
+    fCardEstimate.ShowForm(fCardObject.OUT_ID_OBJECT, 0, 2, False);
     CloseOpen(qrTreeData);
   end;
 end;
@@ -1065,8 +1065,8 @@ end;
 procedure TfObjectsAndEstimates.PopupMenuEstimatesAddClick(Sender: TObject);
 begin
   // (Sender as TMenuItem).Tag - Устанавливаем тип сметы (1-локальная, 2-объектная, 3-ПТМ)
-  FormCardEstimate.EditingRecord(False);
-  FormCardEstimate.ShowForm(IdObject, IdEstimate, (Sender as TMenuItem).Tag);
+  fCardEstimate.EditingRecord(False);
+  fCardEstimate.ShowForm(IdObject, IdEstimate, (Sender as TMenuItem).Tag);
   CloseOpen(qrTreeData);
 end;
 
@@ -1119,11 +1119,11 @@ end;
 
 procedure TfObjectsAndEstimates.PMEstimatesEditClick(Sender: TObject);
 begin
-  with FormCardEstimate do
+  with fCardEstimate do
   begin
     EditingRecord(True);
 
-    FormCardEstimate.ShowForm(IdObject, IdEstimate, qrTreeData.FieldByName('SM_TYPE').AsInteger);
+    fCardEstimate.ShowForm(IdObject, IdEstimate, qrTreeData.FieldByName('SM_TYPE').AsInteger);
     CloseOpen(qrTreeData);
     tvEstimates.Selected.Text := qrTreeData.FieldByName('NAME').AsString;
   end;

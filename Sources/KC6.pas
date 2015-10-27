@@ -401,7 +401,7 @@ begin
       qrData.First;
       while not qrData.Eof do
       begin
-        if Pos(SORT_ID, qrDataSORT_ID2.Value) = 1 then
+        if Pos(SORT_ID, qrDataSORT_ID2.AsString) = 1 then
         begin
           qrData.Edit;
           qrDataCHECKED.Value := Checked;

@@ -9,7 +9,7 @@ uses
   FireDAC.Comp.Client, DateUtils, Vcl.Mask, Vcl.DBCtrls, Tools;
 
 type
-  TFormCardEstimate = class(TSmForm)
+  TfCardEstimate = class(TSmForm)
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
@@ -75,7 +75,7 @@ type
     procedure cbbTypeCloseUp(Sender: TObject);
 
   private
-    StrQuery: String;
+    StrQuery, NewLocalNumberEstimate: String;
     Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
     SkeepEvent: Boolean;
 
@@ -87,7 +87,7 @@ type
   end;
 
 var
-  FormCardEstimate: TFormCardEstimate;
+  fCardEstimate: TfCardEstimate;
 
 implementation
 
@@ -105,12 +105,12 @@ begin
   Result := vString;
 end;
 
-procedure TFormCardEstimate.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TfCardEstimate.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Editing := False;
 end;
 
-procedure TFormCardEstimate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfCardEstimate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   if btnSave.Tag = 0 then
     if MessageBox(0, PChar('Закрыть окно без сохранения?'), PWideChar(Caption),
@@ -120,7 +120,7 @@ begin
       CanClose := False;
 end;
 
-procedure TFormCardEstimate.FormCreate(Sender: TObject);
+procedure TfCardEstimate.FormCreate(Sender: TObject);
 begin
   inherited;
   with Constraints do
@@ -141,7 +141,7 @@ begin
   Editing := False;
 end;
 
-procedure TFormCardEstimate.FormShow(Sender: TObject);
+procedure TfCardEstimate.FormShow(Sender: TObject);
 begin
   dbedtCHAPTER.Enabled := True;
   dbedtCHAPTER.Color := clWindow;
@@ -241,7 +241,7 @@ begin
   SkeepEvent := False;
 end;
 
-procedure TFormCardEstimate.ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer;
+procedure TfCardEstimate.ShowForm(const vIdObject, vIdEstimate, vTypeEstimate: Integer;
   const ShowBasicData: Boolean = True);
 begin
   IdObject := vIdObject;
@@ -266,17 +266,17 @@ begin
   end;
 end;
 
-procedure TFormCardEstimate.EditingRecord(const Value: Boolean);
+procedure TfCardEstimate.EditingRecord(const Value: Boolean);
 begin
   Editing := Value;
 end;
 
-procedure TFormCardEstimate.btnCloseClick(Sender: TObject);
+procedure TfCardEstimate.btnCloseClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFormCardEstimate.btnSaveClick(Sender: TObject);
+procedure TfCardEstimate.btnSaveClick(Sender: TObject);
   procedure CopyCoef(FromID, ToID: Integer);
   begin
     // Копируем все наборы КФ. родетельской сметы
@@ -570,16 +570,36 @@ begin
   end;
 end;
 
-procedure TFormCardEstimate.cbbTypeCloseUp(Sender: TObject);
+procedure TfCardEstimate.cbbTypeCloseUp(Sender: TObject);
 begin
   if TypeEstimate = 1 then
   begin
     qrMain.Edit;
     qrMain.FieldByName('SM_SUBTYPE').Value := cbbType.ItemIndex + 1;
+
+    NewLocalNumberEstimate := qrMain.FieldByName('SM_NUMBER').AsString;
+    while Pos('.', NewLocalNumberEstimate) > 0 do
+      Delete(NewLocalNumberEstimate, 1, 1);
+
+    case cbbType.ItemIndex of
+      // Локальная
+      0:
+        qrMain.FieldByName('NAME').AsString := 'Локальная смета №' + NewLocalNumberEstimate;
+      // ПНР
+      1:
+        qrMain.FieldByName('NAME').AsString := 'Смета №' + NewLocalNumberEstimate + ' Пусконаладочные работы';
+      // доп. работы
+      2:
+        qrMain.FieldByName('NAME').AsString := 'Локальная смета №' + NewLocalNumberEstimate + ' Доп. работы';
+      // Реконструкция
+      3:
+        qrMain.FieldByName('NAME').AsString := 'Локальная смета №' + NewLocalNumberEstimate +
+          ' Реконструкция';
+    end;
   end;
 end;
 
-procedure TFormCardEstimate.ComboBoxChange(Sender: TObject);
+procedure TfCardEstimate.ComboBoxChange(Sender: TObject);
 begin
   if SkeepEvent or not CheckQrActiveEmpty(qrMain) or not CheckQrActiveEmpty(qrParts) or
     not CheckQrActiveEmpty(qrSections) or not CheckQrActiveEmpty(qrTypesWorks) then
@@ -592,7 +612,7 @@ begin
   // qrMain.CheckBrowseMode;
 end;
 
-procedure TFormCardEstimate.CreateNumberEstimate;
+procedure TfCardEstimate.CreateNumberEstimate;
 var
   NumberEstimate, str: String;
 begin
@@ -643,6 +663,8 @@ begin
         while Pos('.', str) > 0 do
           Delete(str, 1, 1);
 
+        NewLocalNumberEstimate := str;
+
         qrMain.FieldByName('SM_NUMBER').AsString := NumberEstimate + '.' + IntToStr(StrToInt(str) + 1);
         qrMain.FieldByName('NAME').AsString := 'Локальная смета №' + IntToStr(StrToInt(str) + 1);
       end;
@@ -682,7 +704,7 @@ begin
   end;
 end;
 
-procedure TFormCardEstimate.qrPartsAfterScroll(DataSet: TDataSet);
+procedure TfCardEstimate.qrPartsAfterScroll(DataSet: TDataSet);
 begin
   ComboBoxChange(nil);
 end;
