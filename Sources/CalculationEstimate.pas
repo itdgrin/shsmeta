@@ -792,6 +792,8 @@ type
     procedure DeleteRowFromSmeta();
     procedure SaveData; // Процедура сохранения сметы/акта
 
+    function GetSMSubType(ASM_ID: Integer): Integer;
+
   protected
     procedure SetFormStyle; override;
   public
@@ -3107,6 +3109,24 @@ begin
     qrRatesExREPLACED_COUNT.Value := GetReplacedCount(qrRatesExID_TABLES.Value);
 end;
 
+function TFormCalculationEstimate.GetSMSubType(ASM_ID: Integer): Integer;
+begin
+  Result := 0;
+  qrTemp.Active := False;
+  qrTemp.SQL.Clear;
+  qrTemp.SQL.Text :=
+    'Select SM_SUBTYPE from smetasourcedata where SM_ID = ' +
+    '(Select PARENT_ID from smetasourcedata where SM_ID = :SM_ID)';
+  qrTemp.ParamByName('SM_ID').Value := qrRatesExSM_ID.Value;
+  qrTemp.Active := True;
+  try
+    if not qrTemp.Eof then
+      Result := qrTemp.Fields[0].AsInteger;
+  finally
+    qrTemp.Active := False;
+  end;
+end;
+
 procedure TFormCalculationEstimate.qrRatesExCODEChange(Sender: TField);
 var
   NewCode: string;
@@ -3122,8 +3142,8 @@ begin
   newID := 0;
 
   // Замена литинских на кирилические
-  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or
-    (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
+  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or
+     (NewCode[1] = 'Ц') or (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
   begin
     if (NewCode[1] = 'E') or (NewCode[1] = 'T') then
       NewCode[1] := 'Е';
@@ -3132,6 +3152,26 @@ begin
 
     if NewCode[1] = 'W' then
       NewCode[1] := 'Ц';
+
+    case GetSMSubType(qrRatesExSM_ID.Value) of
+    1:
+      if NewCode[1] = '0' then
+      begin
+        MessageBox(0, 'Ввод пусконаладки не допустим!', CaptionForm,
+          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+        qrRatesExOBJ_CODE.AsString := '';
+        Exit;
+      end;
+    2:
+      if NewCode[1] <> '0' then
+      begin
+        MessageBox(0, 'Ввод расценки не допустим!', CaptionForm,
+          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+        qrRatesExOBJ_CODE.AsString := '';
+        Exit;
+      end;
+    end;
+
     qrTemp.Active := False;
     qrTemp.SQL.Clear;
     qrTemp.SQL.Add('SELECT normativ_id, norm_num FROM normativg WHERE ' +
@@ -3163,8 +3203,12 @@ begin
     qrTemp.Active := False;
     if newID = 0 then
     begin
-      MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
-        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+      if NewCode[1] = '0' then
+        MessageBox(0, 'Пусконаладка с указанным кодом не найдена!', CaptionForm,
+          MB_ICONINFORMATION + MB_OK + mb_TaskModal)
+      else
+        MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
+          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
       qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
@@ -3630,6 +3674,21 @@ begin
               DataObj.SmClipArray[j].SmID := qrRatesExSM_ID.Value;
               DataObj.SmClipArray[j].DataID := qrRatesExID_TABLES.Value;
               DataObj.SmClipArray[j].DataType := qrRatesExID_TYPE_DATA.Value;
+              DataObj.SmClipArray[j].RateType := 0;
+              if DataObj.SmClipArray[j].DataType = 1 then
+              begin
+                qrTemp.Active := False;
+                qrTemp.SQL.Text := 'Select NORM_TYPE from card_rate_temp ' +
+                  'where ID = ' + DataObj.SmClipArray[j].DataID.ToString;
+                qrTemp.Active := True;
+                try
+                  if not qrTemp.Eof then
+                    DataObj.SmClipArray[j].RateType := qrTemp.Fields[0].AsInteger;
+                finally
+                  qrTemp.Active := False;
+                end;
+              end;
+
             end;
           end;
         end;
@@ -3964,7 +4023,8 @@ begin
       if FNewRowIterator > 0 then
         TmpIterator := FNewRowIterator;
 
-      if PasteSmetaRow(DataObj.SmClipArray, qrRatesExSM_ID.Value, TmpIterator) then
+      if PasteSmetaRow(DataObj.SmClipArray, qrRatesExSM_ID.Value,
+        TmpIterator, GetSMSubType(qrRatesExSM_ID.Value)) then
         OutputDataToTable(True);
     end;
   finally
@@ -6603,7 +6663,8 @@ begin
   DM.FDGUIxWaitCursor1.ScreenCursor := gcrHourGlass;
   try
     SendMessage(Application.MainForm.ClientHandle, WM_SETREDRAW, 0, 0);
-    FormAdditionData := TFormAdditionData.Create(FormMain, vDataBase);
+    FormAdditionData := TFormAdditionData.Create(FormMain, vDataBase,
+      GetSMSubType(qrRatesExSM_ID.Value));
     FormAdditionData.WindowState := wsNormal;
 
     // Сворачиваем окно

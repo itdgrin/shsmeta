@@ -15,6 +15,7 @@ type
     SmID,
     DataID,
     DataType: Integer;
+    RateType: Integer; //Расценка или пусконаладка(флаг для легкой обработки SubType сметы)
   end;
 
   PSmClipRec = ^TSmClipRec;

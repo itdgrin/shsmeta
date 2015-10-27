@@ -192,7 +192,8 @@ type
   public
     procedure ReceivingAll; override;
     procedure CheckCurPeriod; override;
-    constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean); reintroduce;
+    constructor Create(AOwner: TComponent; const vDataBase: Char;
+      const vAllowAddition: Boolean; ASMSubType: Integer = 0); reintroduce;
 
   end;
 
@@ -298,7 +299,9 @@ begin
   ReceivingSearch('');
 end;
 
-constructor TFrameRates.Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean);
+constructor TFrameRates.Create(AOwner: TComponent; const vDataBase:
+  Char; const vAllowAddition: Boolean; ASMSubType: Integer);
+var ev: TNotifyEvent;
 begin
   inherited Create(AOwner);
 
@@ -353,9 +356,6 @@ begin
 
     ImageListArrowsLeft.GetBitmap(0, SpeedButtonShowHideRightPanel.Glyph);
   end;
-
-  // ----------------------------------------
-
   // Õ¿—“–Œ… ¿ œ¿Õ≈À≈… B  ÕŒœŒ 
 
   PanelRight.Constraints.MinWidth := 35;
@@ -368,6 +368,26 @@ begin
   SplitterRight.Visible := False;
   PanelRight.Visible := False;
   PanelRight.Constraints.MinWidth := 100;
+
+  if ASMSubType in [1,2] then
+  begin
+    ev := rb1.OnClick;
+    try
+      rb1.OnClick := nil;
+      rb2.OnClick := nil;
+
+      if ASMSubType = 1 then
+        rb1.Checked := True;
+      if ASMSubType = 2 then
+        rb2.Checked := True;
+
+      rb1.Visible := False;
+      rb2.Visible := False;
+    finally
+      rb1.OnClick := ev;
+      rb2.OnClick := ev;
+    end;
+  end;
 
   CloseOpen(qrObjWorks);
 

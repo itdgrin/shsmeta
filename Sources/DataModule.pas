@@ -29,6 +29,7 @@ type
     qrDifferent1: TFDQuery;
     qrDifferent2: TFDQuery;
     ilIcons_16x16: TImageList;
+    qrDifferent3: TFDQuery;
 
   private
     { Private declarations }

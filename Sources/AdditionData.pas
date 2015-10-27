@@ -31,7 +31,8 @@ type
     SpeedButtonMechanizm: TSpeedButton;
     SpeedButtonEquipment: TSpeedButton;
 
-    constructor Create(AOwner: TComponent; const vDataBase: Char); reintroduce;
+    constructor Create(AOwner: TComponent; const vDataBase: Char;
+      ASMSubType: Integer = 0); reintroduce;
 
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -39,7 +40,6 @@ type
 
     procedure HideAllFrames;
     procedure SpeedButtonClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
   private const
     CaptionButton = 'Добавление данных';
 
@@ -80,7 +80,7 @@ begin
   begin
     FormMain.PanelCover.Visible := True;
     inherited;
-    ShowWindow(FormAdditionData.Handle, SW_HIDE); // Скрываем панель свёрнутой формы
+    ShowWindow(Self.Handle, SW_HIDE); // Скрываем панель свёрнутой формы
     FormMain.PanelCover.Visible := False;
   end
   else
@@ -89,7 +89,8 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-constructor TFormAdditionData.Create(AOwner: TComponent; const vDataBase: Char);
+constructor TFormAdditionData.Create(AOwner: TComponent; const vDataBase: Char;
+  ASMSubType: Integer);
 var
   TmpDate: TDateTime;
   TmpBaseType: Byte;
@@ -112,7 +113,7 @@ begin
 
   // ----------------------------------------
 
-  FrameRates := TFrameRates.Create(Self, vDataBase, True);
+  FrameRates := TFrameRates.Create(Self, vDataBase, True, ASMSubType);
   FrameRates.Parent := Self;
   FrameRates.Align := alClient;
   FrameRates.Visible := False;
@@ -145,16 +146,9 @@ begin
   FrameEquipment.Visible := False;
   SpeedButtonEquipment.Tag := Integer(FrameEquipment);
 
-  // FormWaiting.Show;
-  Application.ProcessMessages;
-  try
-    SpeedButtonClick(SpeedButtonRates);
-  finally
-    // FormWaiting.Close;
-  end;
+  SpeedButtonClick(SpeedButtonRates);
   FrameRates.Visible := True;
 
-  // FormMain.PanelCover.Visible := False;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
 
@@ -175,16 +169,8 @@ procedure TFormAdditionData.FormClose(Sender: TObject; var Action: TCloseAction)
 begin
   Action := caFree;
 
- // FormMain.PanelCover.Visible := True;
   FormCalculationEstimate.WindowState := wsMaximized;
   FormCalculationEstimate.Refresh;
-//  FormMain.PanelCover.Visible := False;
-end;
-
-procedure TFormAdditionData.FormCreate(Sender: TObject);
-begin
-  inherited;
-  //
 end;
 
 procedure TFormAdditionData.FormDestroy(Sender: TObject);
@@ -193,8 +179,6 @@ begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormAdditionData.HideAllFrames;
 begin
@@ -231,6 +215,5 @@ begin
   end;
 
 end;
-// ---------------------------------------------------------------------------------------------------------------------
 
 end.

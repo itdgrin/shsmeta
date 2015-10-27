@@ -19,7 +19,7 @@ type
   procedure ImportObject(const AFileName: string);
   procedure ExportObject(const AIdObject: Integer; const AFileName: string);
   function PasteSmetaRow(const ASmClipArray: array of TSmClipRec;
-    ADestSmID, AIterator: Integer): Boolean;
+    ADestSmID, AIterator, ASMSubType: Integer): Boolean;
   function GetCopySmeta(const ASoursSmetaID: Integer): boolean;
 
 implementation
@@ -808,7 +808,7 @@ end;
 
 //Выполняет вставку строки в смету
 function PasteSmetaRow(const ASmClipArray: array of TSmClipRec;
-  ADestSmID, AIterator: Integer): Boolean;
+  ADestSmID, AIterator, ASMSubType: Integer): Boolean;
 var i, j, ii,
     ind,
     NewID, NewRowID, NewRowID1,
@@ -821,53 +821,55 @@ var i, j, ii,
     Flag: Boolean;
     SmClipRec: PSmClipRec;
     AutoCommitValue: Boolean;
+    InsertCount: Integer;
 
     //Просто кусок кода который надо выполнить из разных мест
     procedure CoefEstimCalc(ASourceSmId, ADataType, AOldId, ANewId: Integer);
     var i: Integer;
     begin
       //Перенос коэффициентов связаных со строчкой
-      DM.qrDifferent2.Active := False;
-      DM.qrDifferent2.SQL.Text := 'Select * from calculation_coef' + TmpTab + ' where ' +
+      DM.qrDifferent3.Active := False;
+      DM.qrDifferent3.SQL.Text := 'Select * from calculation_coef' + TmpTab + ' where ' +
         '(SM_ID = ' + IntToStr(ASourceSmId) + ') and ' +
         '(id_type_data = ' + IntToStr(ADataType) + ') and ' +
         '(id_owner = ' + IntToStr(AOldId) + ')';
-      DM.qrDifferent2.Active := True;
-      if not DM.qrDifferent2.IsEmpty then
-        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent, 'calculation_coef_temp');
+      DM.qrDifferent3.Active := True;
       DM.qrDifferent1.Params.Clear;
-      while not DM.qrDifferent2.Eof do
+      if not DM.qrDifferent3.IsEmpty then
+        DM.qrDifferent1.SQL.Text := GetQueryStr(DM.qrDifferent3, 'calculation_coef_temp');
+
+      while not DM.qrDifferent3.Eof do
       begin
-        for i := 0 to DM.qrDifferent2.Fields.Count - 1 do
+        for i := 0 to DM.qrDifferent3.Fields.Count - 1 do
         begin
-          if UpperCase(DM.qrDifferent2.Fields[i].FieldName) = 'CALCULATION_COEF_ID' then
+          if UpperCase(DM.qrDifferent3.Fields[i].FieldName) = 'CALCULATION_COEF_ID' then
           begin
-            DM.qrDifferent1.ParamByName(DM.qrDifferent2.Fields[i].FieldName).Value :=
-              GetNewId(DM.qrDifferent2.Fields[i].Value, C_ID_SMCOEF, IdConvert);
+            DM.qrDifferent1.ParamByName(DM.qrDifferent3.Fields[i].FieldName).Value :=
+              GetNewId(DM.qrDifferent3.Fields[i].Value, C_ID_SMCOEF, IdConvert);
             Continue;
           end;
 
-          if UpperCase(DM.qrDifferent2.Fields[i].FieldName) = 'SM_ID' then
+          if UpperCase(DM.qrDifferent3.Fields[i].FieldName) = 'SM_ID' then
           begin
-            DM.qrDifferent1.ParamByName(DM.qrDifferent2.Fields[i].FieldName).Value :=
+            DM.qrDifferent1.ParamByName(DM.qrDifferent3.Fields[i].FieldName).Value :=
               ADestSmID;
             Continue;
           end;
 
-          if UpperCase(DM.qrDifferent2.Fields[i].FieldName) = 'ID_OWNER' then
+          if UpperCase(DM.qrDifferent3.Fields[i].FieldName) = 'ID_OWNER' then
           begin
-            DM.qrDifferent1.ParamByName(DM.qrDifferent2.Fields[i].FieldName).Value :=
+            DM.qrDifferent1.ParamByName(DM.qrDifferent3.Fields[i].FieldName).Value :=
               ANewId;
             Continue;
           end;
 
-          DM.qrDifferent1.ParamByName(DM.qrDifferent2.Fields[i].FieldName).Value :=
-            DM.qrDifferent2.Fields[i].Value;
+          DM.qrDifferent1.ParamByName(DM.qrDifferent3.Fields[i].FieldName).Value :=
+            DM.qrDifferent3.Fields[i].Value;
         end;
         DM.qrDifferent1.ExecSQL;
-        DM.qrDifferent2.Next;
+        DM.qrDifferent3.Next;
       end;
-      DM.qrDifferent2.Active := False;
+      DM.qrDifferent3.Active := False;
 
       //Пересчитываем добавленную строчку
       DM.qrDifferent1.SQL.Text := 'CALL CalcRowInRateTab(:ID, :TYPE, :CalcMode);';
@@ -890,10 +892,14 @@ begin
   try
     try
       DM.qrDifferent1.UpdateTransaction.StartTransaction;
-
+      InsertCount := 0;
       for ii := Low(ASmClipArray) to High(ASmClipArray) do
       begin
         SmClipRec := @ASmClipArray[ii];
+
+        if ((SmClipRec.RateType = 0) and (ASMSubType = 2)) or
+           ((SmClipRec.RateType = 1) and (ASMSubType = 1)) then
+          Continue;
 
         //Расценка вставляется вместе с вынесенными, если при копировании
         //зацепили такие и вынесенные, то они игнорируюся, что-бы не вставлялись дублем
@@ -1274,6 +1280,7 @@ begin
         //Переносит коэффициенты, переносит строку в смету, выполняет пересчет строки
         CoefEstimCalc(SmClipRec.SmID, SmClipRec.DataType, SmClipRec.DataID, NewId);
 
+        Inc(InsertCount);
         Inc(AIterator);
       end;
 
@@ -1282,7 +1289,7 @@ begin
       DM.qrDifferent1.ExecSQL;
 
       DM.qrDifferent1.Transaction.Commit;
-      Result := True;
+      Result := InsertCount > 0;
     except
       DM.qrDifferent1.Transaction.Rollback;
       raise;
