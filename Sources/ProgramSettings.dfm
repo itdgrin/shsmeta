@@ -483,6 +483,22 @@ object FormProgramSettings: TFormProgramSettings
         ListSource = dsOXROPR
         TabOrder = 9
       end
+      object chkAddRateType1ToLocal: TCheckBox
+        Left = 3
+        Top = 264
+        Width = 279
+        Height = 17
+        Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1087#1091#1089#1082#1086#1085#1072#1083#1072#1076#1082#1091' '#1074' '#1083#1086#1082#1072#1083#1100#1085#1099#1077
+        TabOrder = 11
+      end
+      object chkAddRateType0ToPNR: TCheckBox
+        Left = 3
+        Top = 287
+        Width = 350
+        Height = 17
+        Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1088#1072#1089#1094#1077#1085#1082#1080' '#1074' '#1087#1091#1089#1082#1086#1085#1072#1083#1072#1076#1082#1091
+        TabOrder = 12
+      end
     end
   end
   object ButtonCancel: TButton

@@ -3111,7 +3111,7 @@ end;
 
 function TFormCalculationEstimate.GetSMSubType(ASM_ID: Integer): Integer;
 begin
-  Result := 0;
+  Result := 0; //”словный тип сметы в который можно добавл€ть все
   qrTemp.Active := False;
   qrTemp.SQL.Clear;
   qrTemp.SQL.Text :=
@@ -3125,6 +3125,9 @@ begin
   finally
     qrTemp.Active := False;
   end;
+  if ((Result = 1) and (PS.AddRateType1ToLocal)) or
+     ((Result = 2) and (PS.AddRateType0ToPNR))  then
+    Result := 0;
 end;
 
 procedure TFormCalculationEstimate.qrRatesExCODEChange(Sender: TField);

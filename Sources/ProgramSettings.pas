@@ -67,6 +67,8 @@ type
     lblFontText: TLabel;
     btnExample: TButton;
     edtExample: TEdit;
+    chkAddRateType1ToLocal: TCheckBox;
+    chkAddRateType0ToPNR: TCheckBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -115,8 +117,6 @@ begin
   GetSettings;
   CloseOpen(qrMainData);
   CloseOpen(qrOXROPR);
-
-  // -----------------------------------------
 
   // Ќастраиваем демонстрационную таблицу
   with StringGridDemo do
@@ -354,6 +354,9 @@ begin
   PS.AutoSaveCalcResourcesAfterExitCell := chkAutoSaveCalcResourcesAfterExitCell.Checked;
   PS.ShowNeedSaveDialog := chkShowNeedSaveDialog.Checked;
   PS.FindAutoRepInAllRate := chkFindAutoRepInAllRate.Checked;
+  PS.AddRateType1ToLocal := chkAddRateType1ToLocal.Checked;
+  PS.AddRateType0ToPNR := chkAddRateType0ToPNR.Checked;
+
   PS.GridFontName := lblFontRow.Font.Name;
   PS.GridFontSize := lblFontRow.Font.Size;
   PS.GridFontStyle := Byte(lblFontRow.Font.Style);
@@ -407,6 +410,8 @@ begin
   chkAutoSaveCalcResourcesAfterExitCell.Checked := PS.AutoSaveCalcResourcesAfterExitCell;
   chkShowNeedSaveDialog.Checked := PS.ShowNeedSaveDialog;
   chkFindAutoRepInAllRate.Checked := PS.FindAutoRepInAllRate;
+  chkAddRateType1ToLocal.Checked := PS.AddRateType1ToLocal;
+  chkAddRateType0ToPNR.Checked := PS.AddRateType0ToPNR;
 
   lblFontRow.Font.Name := PS.GridFontName;
   lblFontRow.Font.Size := PS.GridFontSize;

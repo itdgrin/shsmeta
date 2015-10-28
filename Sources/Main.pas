@@ -346,6 +346,8 @@ type
     TextFontName: string; // Стиль шрифта
     TextFontSize: integer; // размер
     TextFontStyle: Byte; // Стиль
+    AddRateType1ToLocal: Boolean; //Разрешение добавлять пусконаладку в локальную смету
+    AddRateType0ToPNR: Boolean; //Разрешение добавлять расценки в ПНР смету
   end;
 
 const
@@ -2342,6 +2344,8 @@ begin
       PS.TextFontName := ReadString('Controls', 'TextFontName', 'Tahoma');
       PS.TextFontSize := ReadInteger('Controls', 'TextFontSize', 8);
       PS.TextFontStyle := Byte(ReadInteger('Controls', 'TextFontStyle', 0));
+      PS.AddRateType1ToLocal := ReadBool('ESTIMATE', 'AddRateType1ToLocal', False);
+      PS.AddRateType0ToPNR := ReadBool('ESTIMATE', 'AddRateType0ToPNR', False);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -2399,6 +2403,8 @@ begin
       WriteBool('ESTIMATE', 'AutosaveRateDescr', PS.AutosaveRateDescr);
       WriteBool('ESTIMATE', 'ShowNeedSaveDialog', PS.ShowNeedSaveDialog);
       WriteBool('ESTIMATE', 'FindAutoRepInAllRate', PS.FindAutoRepInAllRate);
+      WriteBool('ESTIMATE', 'AddRateType1ToLocal', PS.AddRateType1ToLocal);
+      WriteBool('ESTIMATE', 'AddRateType0ToPNR', PS.AddRateType0ToPNR);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
