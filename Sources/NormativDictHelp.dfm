@@ -56,6 +56,7 @@ object fNormativDictHelp: TfNormativDictHelp
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        PopupMenu = pm1
         ReadOnly = True
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
@@ -109,7 +110,13 @@ object fNormativDictHelp: TfNormativDictHelp
       Caption = 
         #1055#1077#1088#1077#1095#1077#1085#1100' '#1089#1073#1086#1088#1085#1080#1082#1086#1074' '#1085#1086#1088#1084#1072#1090#1080#1074#1086#1074' '#1088#1072#1089#1093#1086#1076#1072' '#1088#1077#1089#1091#1088#1089#1086#1074' '#1074' '#1085#1072#1090#1091#1088#1072#1083#1100#1085#1086#1084' '#1074#1099#1088 +
         #1072#1078#1077#1085#1080#1080' '#1085#1072' '#1084#1086#1085#1090#1072#1078' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
       ImageIndex = 1
+      ParentFont = False
       TabVisible = False
       object grMain4: TJvDBGrid
         Left = 0
@@ -125,6 +132,7 @@ object fNormativDictHelp: TfNormativDictHelp
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        PopupMenu = pm1
         ReadOnly = True
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
@@ -179,7 +187,13 @@ object fNormativDictHelp: TfNormativDictHelp
       Caption = 
         #1055#1077#1088#1077#1095#1077#1085#1100' '#1089#1073#1086#1088#1085#1080#1082#1086#1074' '#1085#1086#1088#1084#1072#1090#1080#1074#1086#1074' '#1088#1072#1089#1093#1086#1076#1072' '#1088#1077#1089#1091#1088#1089#1086#1074' '#1074' '#1085#1072#1090#1091#1088#1072#1083#1100#1085#1086#1084' '#1074#1099#1088 +
         #1072#1078#1077#1085#1080#1080' '#1085#1072' '#1088#1077#1084#1086#1085#1090' '#1086#1073#1098#1077#1082#1090#1086#1074
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
       ImageIndex = 2
+      ParentFont = False
       TabVisible = False
       object grMain3: TJvDBGrid
         Left = 0
@@ -195,6 +209,7 @@ object fNormativDictHelp: TfNormativDictHelp
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        PopupMenu = pm1
         ReadOnly = True
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
@@ -263,6 +278,7 @@ object fNormativDictHelp: TfNormativDictHelp
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        PopupMenu = pm1
         ReadOnly = True
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
@@ -337,6 +353,7 @@ object fNormativDictHelp: TfNormativDictHelp
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        PopupMenu = pm1
         ReadOnly = True
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
@@ -388,7 +405,67 @@ object fNormativDictHelp: TfNormativDictHelp
       end
     end
   end
+  object pnlSelDir: TPanel
+    Left = 280
+    Top = 80
+    Width = 137
+    Height = 116
+    TabOrder = 1
+    Visible = False
+    object lbl1: TLabel
+      AlignWithMargins = True
+      Left = 6
+      Top = 4
+      Width = 125
+      Height = 13
+      Margins.Left = 5
+      Margins.Right = 5
+      Margins.Bottom = 0
+      Align = alTop
+      Caption = #1059#1082#1072#1078#1080#1090#1077' '#1088#1072#1079#1076#1077#1083':'
+      ExplicitLeft = 4
+      ExplicitWidth = 88
+    end
+    object lstSelDict: TListBox
+      AlignWithMargins = True
+      Left = 6
+      Top = 22
+      Width = 125
+      Height = 59
+      Margins.Left = 5
+      Margins.Top = 5
+      Margins.Right = 5
+      Margins.Bottom = 0
+      Align = alTop
+      ItemHeight = 13
+      Items.Strings = (
+        '1'
+        '2'
+        '3'
+        '4')
+      TabOrder = 0
+    end
+    object btnSelDirOk: TBitBtn
+      Left = 6
+      Top = 85
+      Width = 64
+      Height = 25
+      Caption = #1042#1099#1073#1088#1072#1090#1100
+      TabOrder = 1
+      OnClick = btnSelDirOkClick
+    end
+    object btnSelDirCancel: TBitBtn
+      Left = 71
+      Top = 85
+      Width = 60
+      Height = 25
+      Caption = #1054#1090#1084#1077#1085#1072
+      TabOrder = 2
+      OnClick = btnSelDirCancelClick
+    end
+  end
   object qrMainData: TFDQuery
+    AfterScroll = qrMainDataAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -434,5 +511,13 @@ object fNormativDictHelp: TfNormativDictHelp
     StoredValues = <>
     Left = 24
     Top = 264
+  end
+  object pm1: TPopupMenu
+    Left = 204
+    Top = 158
+    object mN1: TMenuItem
+      Caption = #1054#1090#1082#1088#1099#1090#1100' '#1076#1086#1082#1091#1084#1077#1085#1090
+      OnClick = mN1Click
+    end
   end
 end

@@ -42,7 +42,7 @@ begin
   if AShowDialog then
   begin
     try
-      fEditExpression := TfEditExpression.Create(nil);
+      fEditExpression := TfEditExpression.Create(nil, NULL);
       if Trim(AFormula) <> '' then
         fEditExpression.edtFormula.Text := Trim(AFormula);
       if (fEditExpression.ShowModal = mrOk) and (Trim(fEditExpression.edtFormula.Text) <> '') then

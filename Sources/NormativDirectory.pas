@@ -334,7 +334,7 @@ begin
     NumberNormativ := 'E121_p4'
   else if (NumberNormativ > 'Е29-6-1') and (NumberNormativ < 'Е29-92-12') then
     NumberNormativ := 'E29_p1'
-  else if (NumberNormativ > 'Е29-93-1') and (NumberNormativ < 'Е29-277-1') then
+  else if (NumberNormativ > 'Е29-93-1') and (NumberNormativ < { 'Е29-277-1' } 'Е29-277-2') then
     NumberNormativ := 'E29_p2'
   else if (NumberNormativ > 'Е35-9-1') and (NumberNormativ < 'Е35-233-2') then
     NumberNormativ := 'E35_p1'
@@ -363,7 +363,9 @@ begin
     if FirstChar = 'Е' then
       NumberNormativ := 'E' + NumberNormativ
     else if FirstChar = 'С' then
-      NumberNormativ := 'C' + NumberNormativ;
+      NumberNormativ := 'C' + NumberNormativ
+    else if FirstChar = '0' then
+      NumberNormativ := '0' + NumberNormativ;
 
     // Удаляем символы начиная с первого символа '-' и до конца строки
     Delete(NumberNormativ, Pos('-', NumberNormativ), Length(NumberNormativ) - Pos('-', NumberNormativ) + 1);

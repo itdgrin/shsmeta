@@ -187,7 +187,7 @@ var
   G_CONNECTSTR: string = 'DriverID=MySQL' + sLineBreak +
                          'User_name=root' + sLineBreak +
                          'Password=serg' + sLineBreak +
-                         'SERVER=localhost' + sLineBreak +
+                         'SERVER=xxx' + sLineBreak +
                          'DATABASE=smeta' + sLineBreak +
                          'CharacterSet=cp1251' + sLineBreak +
                          'TinyIntFormat=Integer';

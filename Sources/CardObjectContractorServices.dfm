@@ -13,7 +13,6 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
-  OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnResize = FormResize
   PixelsPerInch = 96

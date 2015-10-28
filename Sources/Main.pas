@@ -651,8 +651,8 @@ begin
   try
     if not DM.Connect.Connected then
     begin
-      DM.Connect.Params.Text := G_CONNECTSTR;
-      DM.Connect.Connected := true;
+      // DM.Connect.Params.Text := G_CONNECTSTR;
+      // DM.Connect.Connected := true;
 
       mLogInClick(nil);
       if G_USER_ID = 0 then
@@ -689,7 +689,7 @@ begin
 
   try
     GetSystemInfo;
-    SystemInfoResult := True;
+    SystemInfoResult := true;
   except
     on e: Exception do
       ShowMessage('Ошибка инициализации системы: ' + e.Message);
@@ -1149,10 +1149,20 @@ end;
 
 procedure TFormMain.mLogInClick(Sender: TObject);
 begin
+  if FArhiv.CreateArhInProgress then
+  begin
+    Application.MessageBox('В данный момент идет создание архива. ' + #13#10 +
+      'Дождитесь окончания операции.', 'Смета', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+    Exit;
+  end;
+
   if (not Assigned(fLogIn)) then
     fLogIn := TfLogIn.Create(FormMain);
   if fLogIn.ShowModal <> mrOk then
+  begin
+    OnCloseQuery := nil;
     Close;
+  end;
 end;
 
 procedure TFormMain.mhfybkbotafqkjd1Click(Sender: TObject);
@@ -1171,8 +1181,12 @@ end;
 
 procedure TFormMain.mN111Click(Sender: TObject);
 begin
+  if (Assigned(fNormativDictHelp)) then
+    // fNormativDictHelp.Close;
+    FreeAndNil(fNormativDictHelp);
   if (not Assigned(fNormativDictHelp)) then
-    fNormativDictHelp := TfNormativDictHelp.Create(FormMain);
+    fNormativDictHelp := TfNormativDictHelp.Create(FormMain,
+      VarArrayOf([(Sender as TMenuItem).Caption, (Sender as TMenuItem).Caption]));
   fNormativDictHelp.pgc1.ActivePageIndex := (Sender as TMenuItem).Tag;
   fNormativDictHelp.pgc1Change(nil);
   fNormativDictHelp.Show;

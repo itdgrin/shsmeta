@@ -33,6 +33,9 @@ type
     procedure WMUpdateFormStyle(var Mes: TMessage); message WM_UPDATEFORMSTYLE;
     procedure SetStyleForAllComponents(AComponent: TComponent);
   protected
+    HintButton: string; // Подсказка в кнопке на панели
+    CaptionButton: string; // Название кнопки на панели
+    InitParams: Variant; // Входные параметры
     procedure SetComponentStyle(AComponent: TComponent); virtual;
     // Если у формы наследника переопределе конструктор, то все компоненты
     // созданные в нем после вызова inherited не получат новый стиль
@@ -40,7 +43,8 @@ type
     procedure SetFormStyle; virtual;
   public
     FormKind: TKindForm;
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TComponent); reintroduce; overload;
+    constructor Create(AOwner: TComponent; const AInitParams: Variant); reintroduce;  overload;
   end;
 
   TActivateEvent = procedure(ADataSet: TDataSet; ATag: Integer) of object;
@@ -667,9 +671,10 @@ end;
 { TSmForm }
 
 // procedure TSmForm.FormCreate(Sender: TObject);
-constructor TSmForm.Create(AOwner: TComponent);
+constructor TSmForm.Create(AOwner: TComponent; const AInitParams: Variant);
 begin
-  inherited;
+  InitParams := AInitParams; // Инициализационные параметны
+  inherited Create(AOwner);
   SetFormStyle;
 end;
 
@@ -729,6 +734,13 @@ begin
   TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet)
     .SQL.Append('ORDER BY ' + (Sender AS TJvDBGrid).SortedField + s);
   CloseOpen(TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet));
+end;
+
+constructor TSmForm.Create(AOwner: TComponent);
+begin
+  InitParams := NULL; // Инициализационные параметны
+  inherited Create(AOwner);
+  SetFormStyle;
 end;
 
 procedure TSmForm.DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;

@@ -55,7 +55,6 @@ object fNormativDirectory: TfNormativDirectory
     ParentFont = False
     RowSelect = True
     Mirror = False
-    ExplicitTop = 25
   end
   object grSostav: TJvDBGrid
     Left = 0

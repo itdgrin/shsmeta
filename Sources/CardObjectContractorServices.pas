@@ -27,7 +27,6 @@ type
     qrMainNO: TLargeintField;
     FormStorage: TJvFormStorage;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
@@ -59,7 +58,7 @@ uses Main, DataModule;
 procedure ShowContractorServices;
 begin
   if (not Assigned(fCardObjectContractorServices)) then
-    fCardObjectContractorServices := TfCardObjectContractorServices.Create(nil);
+    fCardObjectContractorServices := TfCardObjectContractorServices.Create(nil, NULL);
   fCardObjectContractorServices.CheckMask := 0;
   fCardObjectContractorServices.qrMain.ParamByName('MONTH').AsInteger := 1; // !!!
   fCardObjectContractorServices.qrMain.ParamByName('YEAR').AsInteger := 2015; // !!!
@@ -76,7 +75,7 @@ var
 begin
   Result := Null;
   if (not Assigned(fCardObjectContractorServices)) then
-    fCardObjectContractorServices := TfCardObjectContractorServices.Create(nil);
+    fCardObjectContractorServices := TfCardObjectContractorServices.Create(nil, NULL);
   fCardObjectContractorServices.CheckMask := aCONTRACTOR_SERV;
   fCardObjectContractorServices.qrMain.ParamByName('MONTH').AsInteger := 1; // !!!
   fCardObjectContractorServices.qrMain.ParamByName('YEAR').AsInteger := 2015; // !!!
@@ -112,11 +111,6 @@ end;
 procedure TfCardObjectContractorServices.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caFree;
-end;
-
-procedure TfCardObjectContractorServices.FormCreate(Sender: TObject);
-begin
-  inherited;
 end;
 
 procedure TfCardObjectContractorServices.FormDestroy(Sender: TObject);

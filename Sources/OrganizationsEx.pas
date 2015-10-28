@@ -58,7 +58,7 @@ function SelectOrganization(const ALocateValue: Variant): Variant;
 begin
   Result := Null;
   if (not Assigned(fOrganizationsEx)) then
-    fOrganizationsEx := TfOrganizationsEx.Create(nil);
+    fOrganizationsEx := TfOrganizationsEx.Create(nil, NULL);
   fOrganizationsEx.grMain.OnDblClick := fOrganizationsEx.btnSelect.OnClick;
   if not VarIsNull(ALocateValue) then
     fOrganizationsEx.qrMain.Locate('client_id', ALocateValue, []);
