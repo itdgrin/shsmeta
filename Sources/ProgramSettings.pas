@@ -4,17 +4,17 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls,
-  ExtCtrls, UITypes, Tools,
+  ExtCtrls, UITypes, Tools, FileCtrl,
   Grids, IniFiles, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Buttons;
 
 type
   TFormProgramSettings = class(TSmForm)
-    PageControl1: TPageControl;
+    pcSettings: TPageControl;
     ButtonCancel: TButton;
     ButtonSave: TButton;
-    TabSheet3: TTabSheet;
+    tsTables: TTabSheet;
     GroupBoxColor: TGroupBox;
     LabelFontSelectRow: TLabel;
     LabelFontSelectCell: TLabel;
@@ -38,7 +38,7 @@ type
     ColorDialog: TColorDialog;
     ButtonDefaultSettingsTables: TButton;
     Label1: TLabel;
-    TabSheet1: TTabSheet;
+    tsAll: TTabSheet;
     GroupBoxRound: TGroupBox;
     LabelRound1: TLabel;
     ComboBoxRound: TComboBox;
@@ -69,6 +69,13 @@ type
     edtExample: TEdit;
     chkAddRateType1ToLocal: TCheckBox;
     chkAddRateType0ToPNR: TCheckBox;
+    tsUpdate: TTabSheet;
+    rbInetServer: TRadioButton;
+    rbLocalMirror: TRadioButton;
+    gbLocalMirrorSettings: TGroupBox;
+    edtLocalMirrorPath: TEdit;
+    sbOpenDir: TSpeedButton;
+    lbMirrorPath: TLabel;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -88,6 +95,8 @@ type
     procedure StringGridDemoMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure lblFontRowClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure rbInetServerClick(Sender: TObject);
+    procedure sbOpenDirClick(Sender: TObject);
 
   private
 
@@ -264,6 +273,28 @@ begin
   end;
 end;
 
+procedure TFormProgramSettings.sbOpenDirClick(Sender: TObject);
+var DirStr: string;
+begin
+  if Win32MajorVersion >= 6 then
+  with TFileOpenDialog.Create(nil) do
+    try
+      Title := 'Выбор папки';
+      Options := [fdoPickFolders, fdoPathMustExist, fdoForceFileSystem]; // YMMV
+      OkButtonLabel := 'Выбор';
+      DefaultFolder := edtLocalMirrorPath.Text;
+      FileName := edtLocalMirrorPath.Text;
+      if Execute then
+        edtLocalMirrorPath.Text := ExcludeTrailingPathDelimiter(FileName);
+    finally
+      Free;
+    end
+  else
+    if SelectDirectory('Select Directory', ExtractFileDrive(DirStr), DirStr,
+               [sdNewUI, sdNewFolder]) then
+      edtLocalMirrorPath.Text := ExcludeTrailingPathDelimiter(DirStr);
+end;
+
 // ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFormProgramSettings.ButtonDefaultSettingsTablesClick(Sender: TObject);
@@ -435,6 +466,13 @@ begin
   end;
   btnExample.Font := lblFontControls.Font;
   edtExample.Font := lblFontText.Font;
+end;
+
+procedure TFormProgramSettings.rbInetServerClick(Sender: TObject);
+begin
+  gbLocalMirrorSettings.Enabled := rbLocalMirror.Checked;
+  if rbLocalMirror.Checked then
+    edtLocalMirrorPath.SetFocus;
 end;
 
 end.

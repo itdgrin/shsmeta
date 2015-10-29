@@ -32,12 +32,12 @@ object FormProgramSettings: TFormProgramSettings
     ExplicitLeft = 8
     ExplicitTop = 326
   end
-  object PageControl1: TPageControl
+  object pcSettings: TPageControl
     Left = 8
     Top = 8
     Width = 632
     Height = 351
-    ActivePage = TabSheet3
+    ActivePage = tsTables
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -46,7 +46,7 @@ object FormProgramSettings: TFormProgramSettings
     Font.Style = []
     ParentFont = False
     TabOrder = 0
-    object TabSheet3: TTabSheet
+    object tsTables: TTabSheet
       Caption = #1058#1072#1073#1083#1080#1094#1099
       ImageIndex = 2
       DesignSize = (
@@ -332,7 +332,73 @@ object FormProgramSettings: TFormProgramSettings
         Text = #1055#1086#1083#1077' '#1074#1074#1086#1076#1072'/'#1074#1099#1074#1086#1076#1072
       end
     end
-    object TabSheet1: TTabSheet
+    object tsUpdate: TTabSheet
+      Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1103
+      ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 28
+      DesignSize = (
+        624
+        323)
+      object rbInetServer: TRadioButton
+        Left = 16
+        Top = 16
+        Width = 401
+        Height = 17
+        Caption = #1054#1073#1085#1086#1074#1083#1103#1090#1100#1089#1103' '#1089' '#1080#1085#1090#1077#1088#1085#1077#1090'-'#1089#1077#1088#1074#1077#1088#1072' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
+        Checked = True
+        TabOrder = 0
+        TabStop = True
+        OnClick = rbInetServerClick
+      end
+      object rbLocalMirror: TRadioButton
+        Left = 16
+        Top = 39
+        Width = 401
+        Height = 17
+        Caption = #1054#1073#1085#1086#1074#1083#1103#1090#1100#1089#1103' '#1089' '#1079#1077#1088#1082#1072#1083#1072' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
+        TabOrder = 1
+        OnClick = rbInetServerClick
+      end
+      object gbLocalMirrorSettings: TGroupBox
+        Left = 16
+        Top = 62
+        Width = 585
+        Height = 53
+        Anchors = [akLeft, akTop, akRight]
+        Caption = ' '#1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1079#1077#1088#1082#1072#1083#1072' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081' '
+        Enabled = False
+        TabOrder = 2
+        DesignSize = (
+          585
+          53)
+        object sbOpenDir: TSpeedButton
+          Left = 543
+          Top = 18
+          Width = 23
+          Height = 22
+          Anchors = [akTop, akRight]
+          Caption = '...'
+          OnClick = sbOpenDirClick
+        end
+        object lbMirrorPath: TLabel
+          Left = 8
+          Top = 21
+          Width = 29
+          Height = 13
+          Caption = #1055#1091#1090#1100':'
+        end
+        object edtLocalMirrorPath: TEdit
+          Left = 43
+          Top = 19
+          Width = 494
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          TabOrder = 0
+        end
+      end
+    end
+    object tsAll: TTabSheet
       Caption = #1056#1072#1079#1085#1086#1077
       ImageIndex = 1
       object lblOXROPR: TLabel
@@ -496,7 +562,7 @@ object FormProgramSettings: TFormProgramSettings
         Top = 287
         Width = 350
         Height = 17
-        Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1088#1072#1089#1094#1077#1085#1082#1080' '#1074' '#1087#1091#1089#1082#1086#1085#1072#1083#1072#1076#1082#1091
+        Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1088#1072#1089#1094#1077#1085#1082#1080' '#1074' '#1055#1053#1056
         TabOrder = 12
       end
     end
@@ -530,8 +596,8 @@ object FormProgramSettings: TFormProgramSettings
   end
   object ColorDialog: TColorDialog
     Options = [cdFullOpen]
-    Left = 304
-    Top = 280
+    Left = 592
+    Top = 192
   end
   object qrOXROPR: TFDQuery
     Connection = DM.Connect
@@ -569,13 +635,13 @@ object FormProgramSettings: TFormProgramSettings
       
         'SELECT work_id, work_name as "NameWork" FROM objworks ORDER BY w' +
         'ork_id')
-    Left = 336
-    Top = 280
+    Left = 592
+    Top = 248
   end
   object dsOXROPR: TDataSource
     DataSet = qrOXROPR
-    Left = 376
-    Top = 280
+    Left = 592
+    Top = 304
   end
   object qrMainData: TFDQuery
     Connection = DM.Connect
@@ -603,12 +669,12 @@ object FormProgramSettings: TFormProgramSettings
     UpdateOptions.UpdateTableName = 'smeta.round_setup'
     SQL.Strings = (
       'SELECT * FROM round_setup')
-    Left = 523
-    Top = 40
+    Left = 595
+    Top = 32
   end
   object dsMainData: TDataSource
     DataSet = qrMainData
-    Left = 523
+    Left = 595
     Top = 86
   end
   object dlgFont1: TFontDialog
@@ -620,7 +686,7 @@ object FormProgramSettings: TFormProgramSettings
     MinFontSize = 16
     MaxFontSize = 6
     Options = []
-    Left = 223
-    Top = 211
+    Left = 591
+    Top = 139
   end
 end

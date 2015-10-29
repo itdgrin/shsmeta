@@ -125,7 +125,44 @@ function GetTextWidth(Text: string; W: HWND): Integer;
 //Киляет указанные символы из строки
 function StripCharsInSet(s:string; c:TSysCharSet):string;
 
+//"Тихие" операции надо объектами файловой системы
+function FullRename(ASource, ATarget: string): Boolean;
+function FullCopy(ASource, ATarget: string): Boolean;
+function FullRemove(ASource: string): Boolean;
+
 implementation
+
+function FullRename(ASource, ATarget: string): Boolean;
+var SHFileOpStruct : TSHFileOpStruct;
+begin
+  FillChar(SHFileOpStruct, SizeOf(TSHFileOpStruct), 0);
+  SHFileOpStruct.wFunc := FO_RENAME;
+  SHFileOpStruct.pFrom := PChar(ExcludeTrailingPathDelimiter(ASource) + #0);
+  SHFileOpStruct.pTo := PChar(ExcludeTrailingPathDelimiter(ATarget) + #0);
+  SHFileOpStruct.fFlags := FOF_SILENT or FOF_NOCONFIRMATION or FOF_NOERRORUI;
+  Result := SHFileOperation(SHFileOpStruct) = 0;
+end;
+
+function FullCopy(ASource, ATarget: string): Boolean;
+var SHFileOpStruct : TSHFileOpStruct;
+begin
+  FillChar(SHFileOpStruct, SizeOf(TSHFileOpStruct), 0);
+  SHFileOpStruct.wFunc := FO_COPY;
+  SHFileOpStruct.pFrom := PChar(ExcludeTrailingPathDelimiter(ASource) + #0);
+  SHFileOpStruct.pTo := PChar(ExcludeTrailingPathDelimiter(ATarget) + #0);
+  SHFileOpStruct.fFlags := FOF_SILENT or FOF_NOCONFIRMATION or FOF_NOERRORUI;
+  Result := SHFileOperation(SHFileOpStruct) = 0;
+end;
+
+function FullRemove(ASource: string): Boolean;
+var SHFileOpStruct : TSHFileOpStruct;
+begin
+  FillChar(SHFileOpStruct, SizeOf(TSHFileOpStruct), 0);
+  SHFileOpStruct.wFunc := FO_DELETE;
+  SHFileOpStruct.pFrom := PChar(ExcludeTrailingPathDelimiter(ASource) + #0);
+  SHFileOpStruct.fFlags := FOF_SILENT or FOF_NOCONFIRMATION or FOF_NOERRORUI;
+  Result := SHFileOperation(SHFileOpStruct) = 0;
+end;
 
 function StripCharsInSet(s:string; c:TSysCharSet):string;
 var i,j:Integer;

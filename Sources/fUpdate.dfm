@@ -15,6 +15,7 @@ object UpdateForm: TUpdateForm
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -22,9 +23,9 @@ object UpdateForm: TUpdateForm
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
-    Top = 354
+    Top = 359
     Width = 343
-    Height = 43
+    Height = 38
     Align = alBottom
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -333,7 +334,7 @@ object UpdateForm: TUpdateForm
   end
   object Panel3: TPanel
     Left = 0
-    Top = 336
+    Top = 341
     Width = 343
     Height = 18
     Align = alBottom
@@ -353,7 +354,7 @@ object UpdateForm: TUpdateForm
     Left = 0
     Top = 105
     Width = 343
-    Height = 231
+    Height = 236
     Align = alClient
     DoubleBuffered = True
     Font.Charset = DEFAULT_CHARSET

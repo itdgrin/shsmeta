@@ -115,7 +115,7 @@ const
   //использоваться для резервного копирования
   //Любый добавления в приложении которые необходимо
   //резервировать должны быть в него внесены
-  С_APPSTRUCT: array [0..8] of TAppElement =
+  С_APPSTRUCT: array [0..10] of TAppElement =
     ((EName: 'smeta.exe'; EType: 0),
      (EName: 'smeta.ini'; EType: 0),
      (EName: 'libmysql.dll'; EType: 0),
@@ -124,7 +124,9 @@ const
      (EName: C_ARHDIR + '\' + C_DUMPTOBASE; EType: 0),
      (EName: 'sql'; EType: 1),
      (EName: 'settings'; EType: 1),
-     (EName: 'reports'; EType: 1));
+     (EName: 'reports'; EType: 1),
+     (EName: 'xls'; EType: 1),
+     (EName: 'docs'; EType: 1));
   //Допустимое кол-во архивов
   C_ARHCOUNT = 5;
 //******************************************************************************

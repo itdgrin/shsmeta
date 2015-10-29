@@ -466,6 +466,12 @@ begin
   finally
     UPForm.Free;
   end;
+
+  if G_STARTAPP then
+  begin
+    ShowMessage('Для заверщения обновления программа будет перезапущена.');
+    Close;
+  end;
 end;
 
 // Вывод исключений из вспомогательных потоков
@@ -565,18 +571,19 @@ end;
 
 procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
+  if not G_STARTAPP then
+    case Application.MessageBox('Вы действительно хотите закрыть программу?', 'Смета',
+      MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
+      IDYES:
+        begin
+          CanClose := true;
+        end;
+      IDNO:
+        begin
+          CanClose := False;
+        end;
+    end;
 
-  case Application.MessageBox('Вы действительно хотите закрыть программу?', 'Смета',
-    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
-    IDYES:
-      begin
-        CanClose := true;
-      end;
-    IDNO:
-      begin
-        CanClose := False;
-      end;
-  end;
   if FArhiv.CreateArhInProgress then
   begin
     Application.MessageBox('В данный момент идет создание архива. ' + #13#10 +

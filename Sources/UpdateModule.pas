@@ -401,7 +401,7 @@ begin
   try
     try
       XML.LoadFromStream(AStrimPage);
-
+      XML.SaveToFile('d:\123.xml');
       TempNode := XML.ChildNodes.FindNode('updates');
       if TempNode = nil then
         raise Exception.Create('Не найдена нода <updates>');
@@ -816,10 +816,13 @@ begin
   //Подготавлявается папка обновлений
   KillDir(ExtractFilePath(FExeName) + C_UPDATEDIR);
   ForceDirectories(ExtractFilePath(FExeName) + C_UPDATEDIR);
-  ShowStatys('', 1);
-  //Копия пользовательских данных
-  BackupUserData;
+
   try
+    //Копия пользовательских данных
+    BackupUserData;
+
+    ShowStatys('', 1);
+
     if FResponse.CatalogCount > 0 then
     begin
       ShowStatys('Обновление справочников', 3);
@@ -859,7 +862,8 @@ begin
     RestoreUserData;
   end;
 
-  ShowStatys('Обновление прошло успешно!', 3);
+  ShowStatys('', 1);
+  ShowStatys('Обновление прошло успешно!', 1);
   FUpdateResult := True;
 end;
 
@@ -1118,8 +1122,6 @@ begin
           SendErrorReport;
         end;
 
-        ShowStatys('', 1);
-        ShowStatys('Обновление завершилось ошибкой!', 1);
         raise;
       end;
     end;
@@ -1145,9 +1147,10 @@ begin
   Synchronize(SetUpdPath);
   if TFile.Exists(G_UPDPATH + C_UPDATERNAME) then
   begin
-    TFile.Copy(G_UPDPATH + C_UPDATERNAME,
-      ExtractFilePath(FExeName) + C_UPDATERNAME, True);
-    TFile.Delete(G_UPDPATH + C_UPDATERNAME);
+    if FullCopy(G_UPDPATH + C_UPDATERNAME, ExtractFilePath(FExeName) + C_UPDATERNAME) then
+      TFile.Delete(G_UPDPATH + C_UPDATERNAME)
+    else
+      raise Exception.Create('Не удалось скопировать ' + C_UPDATERNAME);
   end;
   Result := not TDirectory.IsEmpty(AUpdatePath);
 end;
@@ -1160,7 +1163,10 @@ end;
 procedure TUpdateThread.SetUpdFlags;
 begin
   if FUpdPathFlag then
+  begin
     G_STARTUPDATER := 1;
+    G_STARTAPP := True;
+  end;
   G_NEWAPPVERS := FUpdVersion;
 end;
 
@@ -1176,239 +1182,260 @@ end;
 procedure TUpdateThread.HTTPWork(ASender: TObject; AWorkMode: TWorkMode;
   AWorkCount: Int64);
 begin
-  if AWorkMode = wmRead then
-    SendMessage(FMainHandle, WM_UPDATESTATE, WParam(AWorkCount div 100), LParam(2));
+  if (AWorkMode = wmRead) then
+    SendMessage(FMainHandle, WM_UPDATEPROGRESS, WParam(AWorkCount div 100), LParam(2));
 end;
 
 procedure TUpdateThread.HTTPWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
   AWorkCountMax: Int64);
 begin
-  if (AWorkMode = wmRead) and ((AWorkCountMax mod 100) = 0) then
-    SendMessage(FMainHandle, WM_UPDATESTATE, WParam(AWorkCountMax div 100), LParam(1));
+  if (AWorkMode = wmRead) then
+    SendMessage(FMainHandle, WM_UPDATEPROGRESS, WParam(AWorkCountMax div 100), LParam(1));
 end;
 
 procedure TUpdateThread.HTTPWorkEnd(ASender: TObject; AWorkMode: TWorkMode);
 begin
-  SendMessage(FMainHandle, WM_UPDATESTATE, WParam(0), LParam(3));
+  SendMessage(FMainHandle, WM_UPDATEPROGRESS, WParam(0), LParam(3));
 end;
 
 procedure TUpdateThread.BackupUserData;
 begin
-  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS material_tmp LIKE material';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS mechanizm_tmp LIKE mechanizm';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS devices_tmp LIKE devices';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS units_tmp LIKE units';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS normativg_tmp LIKE normativg';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS materialnorm_tmp LIKE materialnorm';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS mechanizmnorm_tmp LIKE mechanizmnorm';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS normativwork_tmp LIKE normativwork';
-  FQuery.ExecSQL;
+  try
+    ShowStatys('Создание копии собственных данных', 2);
 
-  FQuery.SQL.Text :=
-    'Insert into material_tmp (`MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,' +
-    '`UNIT_ID`,`BASE`) ' +
-    'Select `MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,`UNIT_ID`,`BASE` ' +
-    'from material m where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `MAT_CODE` = m.`MAT_CODE`,`MAT_NAME` = m.`MAT_NAME`,' +
-    '`MAT_TYPE` = m.`MAT_TYPE`,`UNIT_ID` = m.`UNIT_ID`,`BASE` = m.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into mechanizm_tmp (`MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,' +
-    '`DESCRIPTION`,`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE`) ' +
-    'Select `MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,`DESCRIPTION`,' +
-    '`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE` ' +
-    'from mechanizm m where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `MECH_CODE` = m.`MECH_CODE`,' +
-    '`MECH_NAME` = m.`MECH_NAME`,`UNIT_ID` = m.`UNIT_ID`,' +
-    '`DESCRIPTION` = m.`DESCRIPTION`,`MECH_PH` = m.`MECH_PH`,' +
-    '`TYPE_MEH_SMEN_HOUR` = m.`TYPE_MEH_SMEN_HOUR`,`BASE` = m.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into devices_tmp (`DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,' +
-    '`UNIT`,`BASE`) ' +
-    'Select `DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,`UNIT`,`BASE` ' +
-    'from devices d where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `DEVICE_CODE1` = d.`DEVICE_CODE1`,' +
-    '`DEVICE_CODE2` = d.`DEVICE_CODE2`,`NAME` = d.`NAME`,' +
-    '`UNIT` = d.`UNIT`,`BASE` = d.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into units_tmp (`UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE`) ' +
-    'Select `UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE` ' +
-    'from units u where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `UNIT_NAME` = u.`UNIT_NAME`, ' +
-    '`UNIT_FULL_NAME` = u.`UNIT_FULL_NAME`,`BASE` = u.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into normativg_tmp (`SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
-    '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
-    '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`) ' +
-    'Select `SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
-    '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
-    '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`' +
-    'from normativg n where `NORM_BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `SORT_NUM` = n.`SORT_NUM`,`NORM_NUM` = n.`NORM_NUM`,' +
-    '`NORM_CAPTION` = n.`NORM_CAPTION`,`UNIT_ID` = n.`UNIT_ID`,' +
-    '`NORM_ACTIVE` = n.`NORM_ACTIVE`,`date_beginer` = n.`date_beginer`,' +
-    '`date_end` = n.`date_end`,`prikaz` = n.`prikaz`,' +
-    '`normativ_directory_id` = n.`normativ_directory_id`,' +
-    '`NORM_BASE` = n.`NORM_BASE`,`NORM_TYPE` = n.`NORM_TYPE`,' +
-    '`work_id` = n.`work_id`,`ZNORMATIVS_ID` = n.`ZNORMATIVS_ID`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into materialnorm_tmp (`ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`,' +
-    '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE`) ' +
-    'Select `ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`, ' +
-    '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE` from materialnorm m where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
-	  '`MATERIAL_ID` = m.`MATERIAL_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
-	  '`TO_YEAR` = m.`TO_YEAR`,`DATE_BEG` = m.`DATE_BEG`,' +
-    '`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into mechanizmnorm_tmp (`ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`,' +
-    '`DATE_BEG`,`DATE_END`,`BASE`) ' +
-    'Select `ID`,`NORMATIV_ID`,`MECHANIZM_ID`,`NORM_RAS`, ' +
-    '`DATE_BEG`,`DATE_END`,`BASE` from mechanizmnorm m where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
-	  '`MECHANIZM_ID` = m.`MECHANIZM_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
-	  '`DATE_BEG` = m.`DATE_BEG`,`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into normativwork_tmp (`ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,' +
-    '`DATE_END`,`BASE`) ' +
-    'Select `ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,`DATE_END`,`BASE` ' +
-    'from normativwork n where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = n.`NORMATIV_ID`,' +
-    '`WORK_ID` = n.`WORK_ID`,`WORK_ID` = n.`WORK_ID`,' +
-    '`NORMA` = n.`NORMA`,`DATE_BEG` = n.`DATE_BEG`,' +
-    '`DATE_END` = n.`DATE_END`,`BASE` = n.`BASE`';
-  FQuery.ExecSQL;
+    FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS material_tmp LIKE material';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS mechanizm_tmp LIKE mechanizm';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS devices_tmp LIKE devices';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS units_tmp LIKE units';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS normativg_tmp LIKE normativg';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS materialnorm_tmp LIKE materialnorm';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS mechanizmnorm_tmp LIKE mechanizmnorm';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'CREATE TABLE IF NOT EXISTS normativwork_tmp LIKE normativwork';
+    FQuery.ExecSQL;
 
-  FQuery.SQL.Text := 'Delete from material where `BASE` = 1';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'Delete from mechanizm_tmp where `BASE` = 1';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'Delete from devices_tmp where `BASE` = 1';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'Delete from units_tmp where `BASE` = 1';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'Delete from normativg_tmp where `NORM_BASE` = 1';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'Delete from materialnorm_tmp where `BASE` = 1';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'Delete from mechanizmnorm_tmp where `BASE` = 1';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'Delete from normativwork_tmp where `BASE` = 1';
-  FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into material_tmp (`MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,' +
+      '`UNIT_ID`,`BASE`) ' +
+      'Select `MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,`UNIT_ID`,`BASE` ' +
+      'from material m where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `MAT_CODE` = m.`MAT_CODE`,`MAT_NAME` = m.`MAT_NAME`,' +
+      '`MAT_TYPE` = m.`MAT_TYPE`,`UNIT_ID` = m.`UNIT_ID`,`BASE` = m.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into mechanizm_tmp (`MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,' +
+      '`DESCRIPTION`,`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE`) ' +
+      'Select `MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,`DESCRIPTION`,' +
+      '`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE` ' +
+      'from mechanizm m where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `MECH_CODE` = m.`MECH_CODE`,' +
+      '`MECH_NAME` = m.`MECH_NAME`,`UNIT_ID` = m.`UNIT_ID`,' +
+      '`DESCRIPTION` = m.`DESCRIPTION`,`MECH_PH` = m.`MECH_PH`,' +
+      '`TYPE_MEH_SMEN_HOUR` = m.`TYPE_MEH_SMEN_HOUR`,`BASE` = m.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into devices_tmp (`DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,' +
+      '`UNIT`,`BASE`) ' +
+      'Select `DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,`UNIT`,`BASE` ' +
+      'from devices d where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `DEVICE_CODE1` = d.`DEVICE_CODE1`,' +
+      '`DEVICE_CODE2` = d.`DEVICE_CODE2`,`NAME` = d.`NAME`,' +
+      '`UNIT` = d.`UNIT`,`BASE` = d.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into units_tmp (`UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE`) ' +
+      'Select `UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE` ' +
+      'from units u where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `UNIT_NAME` = u.`UNIT_NAME`, ' +
+      '`UNIT_FULL_NAME` = u.`UNIT_FULL_NAME`,`BASE` = u.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into normativg_tmp (`SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
+      '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
+      '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`) ' +
+      'Select `SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
+      '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
+      '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`' +
+      'from normativg n where `NORM_BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `SORT_NUM` = n.`SORT_NUM`,`NORM_NUM` = n.`NORM_NUM`,' +
+      '`NORM_CAPTION` = n.`NORM_CAPTION`,`UNIT_ID` = n.`UNIT_ID`,' +
+      '`NORM_ACTIVE` = n.`NORM_ACTIVE`,`date_beginer` = n.`date_beginer`,' +
+      '`date_end` = n.`date_end`,`prikaz` = n.`prikaz`,' +
+      '`normativ_directory_id` = n.`normativ_directory_id`,' +
+      '`NORM_BASE` = n.`NORM_BASE`,`NORM_TYPE` = n.`NORM_TYPE`,' +
+      '`work_id` = n.`work_id`,`ZNORMATIVS_ID` = n.`ZNORMATIVS_ID`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into materialnorm_tmp (`ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`,' +
+      '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE`) ' +
+      'Select `ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`, ' +
+      '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE` from materialnorm m where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
+      '`MATERIAL_ID` = m.`MATERIAL_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
+      '`TO_YEAR` = m.`TO_YEAR`,`DATE_BEG` = m.`DATE_BEG`,' +
+      '`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into mechanizmnorm_tmp (`ID`,`NORMATIV_ID`,`MECHANIZM_ID`,`NORM_RAS`,' +
+      '`DATE_BEG`,`DATE_END`,`BASE`) ' +
+      'Select `ID`,`NORMATIV_ID`,`MECHANIZM_ID`,`NORM_RAS`, ' +
+      '`DATE_BEG`,`DATE_END`,`BASE` from mechanizmnorm m where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
+      '`MECHANIZM_ID` = m.`MECHANIZM_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
+      '`DATE_BEG` = m.`DATE_BEG`,`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into normativwork_tmp (`ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,' +
+      '`DATE_END`,`BASE`) ' +
+      'Select `ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,`DATE_END`,`BASE` ' +
+      'from normativwork n where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `NORMATIV_ID` = n.`NORMATIV_ID`,' +
+      '`WORK_ID` = n.`WORK_ID`,`WORK_ID` = n.`WORK_ID`,' +
+      '`NORMA` = n.`NORMA`,`DATE_BEG` = n.`DATE_BEG`,' +
+      '`DATE_END` = n.`DATE_END`,`BASE` = n.`BASE`';
+    FQuery.ExecSQL;
+
+    FQuery.SQL.Text := 'Delete from material where `BASE` = 1';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'Delete from mechanizm where `BASE` = 1';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'Delete from devices where `BASE` = 1';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'Delete from units where `BASE` = 1';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'Delete from normativg where `NORM_BASE` = 1';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'Delete from materialnorm where `BASE` = 1';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'Delete from mechanizmnorm where `BASE` = 1';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'Delete from normativwork where `BASE` = 1';
+    FQuery.ExecSQL;
+  except
+    on e: Exception do
+    begin
+      ShowStatys('Error: ' + e.Message, 1);
+
+      raise;
+    end;
+  end;
 end;
 
 procedure TUpdateThread.RestoreUserData;
 begin
-  FQuery.SQL.Text :=
-    'Insert into material (`MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,' +
-    '`UNIT_ID`,`BASE`) ' +
-    'Select `MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,`UNIT_ID`,`BASE` ' +
-    'from material_tmp m where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `MAT_CODE` = m.`MAT_CODE`,`MAT_NAME` = m.`MAT_NAME`,' +
-    '`MAT_TYPE` = m.`MAT_TYPE`,`UNIT_ID` = m.`UNIT_ID`,`BASE` = m.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into mechanizm (`MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,' +
-    '`DESCRIPTION`,`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE`) ' +
-    'Select `MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,`DESCRIPTION`,' +
-    '`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE` ' +
-    'from mechanizm_tmp m where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `MECH_CODE` = m.`MECH_CODE`,' +
-    '`MECH_NAME` = m.`MECH_NAME`,`UNIT_ID` = m.`UNIT_ID`,' +
-    '`DESCRIPTION` = m.`DESCRIPTION`,`MECH_PH` = m.`MECH_PH`,' +
-    '`TYPE_MEH_SMEN_HOUR` = m.`TYPE_MEH_SMEN_HOUR`,`BASE` = m.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into devices (`DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,' +
-    '`UNIT`,`BASE`) ' +
-    'Select `DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,`UNIT`,`BASE` ' +
-    'from devices_tmp d where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `DEVICE_CODE1` = d.`DEVICE_CODE1`,' +
-    '`DEVICE_CODE2` = d.`DEVICE_CODE2`,`NAME` = d.`NAME`,' +
-    '`UNIT` = d.`UNIT`,`BASE` = d.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into units (`UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE`) ' +
-    'Select `UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE` ' +
-    'from units_tmp u where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `UNIT_NAME` = u.`UNIT_NAME`, ' +
-    '`UNIT_FULL_NAME` = u.`UNIT_FULL_NAME`,`BASE` = u.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into normativg (`SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
-    '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
-    '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`) ' +
-    'Select `SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
-    '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
-    '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`' +
-    'from normativg_tmp n where `NORM_BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `SORT_NUM` = n.`SORT_NUM`,`NORM_NUM` = n.`NORM_NUM`,' +
-    '`NORM_CAPTION` = n.`NORM_CAPTION`,`UNIT_ID` = n.`UNIT_ID`,' +
-    '`NORM_ACTIVE` = n.`NORM_ACTIVE`,`date_beginer` = n.`date_beginer`,' +
-    '`date_end` = n.`date_end`,`prikaz` = n.`prikaz`,' +
-    '`normativ_directory_id` = n.`normativ_directory_id`,' +
-    '`NORM_BASE` = n.`NORM_BASE`,`NORM_TYPE` = n.`NORM_TYPE`,' +
-    '`work_id` = n.`work_id`,`ZNORMATIVS_ID` = n.`ZNORMATIVS_ID`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into materialnorm (`ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`,' +
-    '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE`) ' +
-    'Select `ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`, ' +
-    '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE` from materialnorm_tmp m where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
-	  '`MATERIAL_ID` = m.`MATERIAL_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
-	  '`TO_YEAR` = m.`TO_YEAR`,`DATE_BEG` = m.`DATE_BEG`,' +
-    '`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into mechanizmnorm (`ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`,' +
-    '`DATE_BEG`,`DATE_END`,`BASE`) ' +
-    'Select `ID`,`NORMATIV_ID`,`MECHANIZM_ID`,`NORM_RAS`, ' +
-    '`DATE_BEG`,`DATE_END`,`BASE` from mechanizmnorm_tmp m where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
-	  '`MECHANIZM_ID` = m.`MECHANIZM_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
-	  '`DATE_BEG` = m.`DATE_BEG`,`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text :=
-    'Insert into normativwork (`ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,' +
-    '`DATE_END`,`BASE`) ' +
-    'Select `ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,`DATE_END`,`BASE` ' +
-    'from normativwork_tmp n where `BASE` = 1 ' +
-    'On DUPLICATE KEY UPDATE `NORMATIV_ID` = n.`NORMATIV_ID`,' +
-    '`WORK_ID` = n.`WORK_ID`,`WORK_ID` = n.`WORK_ID`,' +
-    '`NORMA` = n.`NORMA`,`DATE_BEG` = n.`DATE_BEG`,' +
-    '`DATE_END` = n.`DATE_END`,`BASE` = n.`BASE`';
-  FQuery.ExecSQL;
+  try
+    ShowStatys('Восстановление собственных данных', 2);
+    FQuery.SQL.Text :=
+      'Insert into material (`MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,' +
+      '`UNIT_ID`,`BASE`) ' +
+      'Select `MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,`UNIT_ID`,`BASE` ' +
+      'from material_tmp m where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `MAT_CODE` = m.`MAT_CODE`,`MAT_NAME` = m.`MAT_NAME`,' +
+      '`MAT_TYPE` = m.`MAT_TYPE`,`UNIT_ID` = m.`UNIT_ID`,`BASE` = m.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into mechanizm (`MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,' +
+      '`DESCRIPTION`,`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE`) ' +
+      'Select `MECHANIZM_ID`,`MECH_CODE`,`MECH_NAME`,`UNIT_ID`,`DESCRIPTION`,' +
+      '`MECH_PH`,`TYPE_MEH_SMEN_HOUR`,`BASE` ' +
+      'from mechanizm_tmp m where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `MECH_CODE` = m.`MECH_CODE`,' +
+      '`MECH_NAME` = m.`MECH_NAME`,`UNIT_ID` = m.`UNIT_ID`,' +
+      '`DESCRIPTION` = m.`DESCRIPTION`,`MECH_PH` = m.`MECH_PH`,' +
+      '`TYPE_MEH_SMEN_HOUR` = m.`TYPE_MEH_SMEN_HOUR`,`BASE` = m.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into devices (`DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,' +
+      '`UNIT`,`BASE`) ' +
+      'Select `DEVICE_ID`,`DEVICE_CODE1`,`DEVICE_CODE2`,`NAME`,`UNIT`,`BASE` ' +
+      'from devices_tmp d where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `DEVICE_CODE1` = d.`DEVICE_CODE1`,' +
+      '`DEVICE_CODE2` = d.`DEVICE_CODE2`,`NAME` = d.`NAME`,' +
+      '`UNIT` = d.`UNIT`,`BASE` = d.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into units (`UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE`) ' +
+      'Select `UNIT_ID`,`UNIT_NAME`,`UNIT_FULL_NAME`,`BASE` ' +
+      'from units_tmp u where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `UNIT_NAME` = u.`UNIT_NAME`, ' +
+      '`UNIT_FULL_NAME` = u.`UNIT_FULL_NAME`,`BASE` = u.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into normativg (`SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
+      '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
+      '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`) ' +
+      'Select `SORT_NUM`,`NORMATIV_ID`,`NORM_NUM`,' +
+      '`NORM_CAPTION`,`UNIT_ID`,`NORM_ACTIVE`,`date_beginer`,`date_end`,`prikaz`,' +
+      '`normativ_directory_id`,`NORM_BASE`,`NORM_TYPE`,`work_id`,`ZNORMATIVS_ID`' +
+      'from normativg_tmp n where `NORM_BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `SORT_NUM` = n.`SORT_NUM`,`NORM_NUM` = n.`NORM_NUM`,' +
+      '`NORM_CAPTION` = n.`NORM_CAPTION`,`UNIT_ID` = n.`UNIT_ID`,' +
+      '`NORM_ACTIVE` = n.`NORM_ACTIVE`,`date_beginer` = n.`date_beginer`,' +
+      '`date_end` = n.`date_end`,`prikaz` = n.`prikaz`,' +
+      '`normativ_directory_id` = n.`normativ_directory_id`,' +
+      '`NORM_BASE` = n.`NORM_BASE`,`NORM_TYPE` = n.`NORM_TYPE`,' +
+      '`work_id` = n.`work_id`,`ZNORMATIVS_ID` = n.`ZNORMATIVS_ID`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into materialnorm (`ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`,' +
+      '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE`) ' +
+      'Select `ID`,`NORMATIV_ID`,`MATERIAL_ID`,`NORM_RAS`, ' +
+      '`TO_YEAR`,`DATE_BEG`,`DATE_END`,`BASE` from materialnorm_tmp m where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
+      '`MATERIAL_ID` = m.`MATERIAL_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
+      '`TO_YEAR` = m.`TO_YEAR`,`DATE_BEG` = m.`DATE_BEG`,' +
+      '`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into mechanizmnorm (`ID`,`NORMATIV_ID`,`MECHANIZM_ID`,`NORM_RAS`,' +
+      '`DATE_BEG`,`DATE_END`,`BASE`) ' +
+      'Select `ID`,`NORMATIV_ID`,`MECHANIZM_ID`,`NORM_RAS`, ' +
+      '`DATE_BEG`,`DATE_END`,`BASE` from mechanizmnorm_tmp m where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `NORMATIV_ID` = m.`NORMATIV_ID`,' +
+      '`MECHANIZM_ID` = m.`MECHANIZM_ID`,`NORM_RAS` = m.`NORM_RAS`,' +
+      '`DATE_BEG` = m.`DATE_BEG`,`DATE_END` = m.`DATE_END`,`BASE` = m.`BASE`';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text :=
+      'Insert into normativwork (`ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,' +
+      '`DATE_END`,`BASE`) ' +
+      'Select `ID`,`NORMATIV_ID`,`WORK_ID`,`NORMA`,`DATE_BEG`,`DATE_END`,`BASE` ' +
+      'from normativwork_tmp n where `BASE` = 1 ' +
+      'On DUPLICATE KEY UPDATE `NORMATIV_ID` = n.`NORMATIV_ID`,' +
+      '`WORK_ID` = n.`WORK_ID`,`WORK_ID` = n.`WORK_ID`,' +
+      '`NORMA` = n.`NORMA`,`DATE_BEG` = n.`DATE_BEG`,' +
+      '`DATE_END` = n.`DATE_END`,`BASE` = n.`BASE`';
+    FQuery.ExecSQL;
 
-  FQuery.SQL.Text := 'DROP TABLE material_tmp';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'DROP TABLE mechanizm_tmp';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'DROP TABLE devices_tmp';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'DROP TABLE units_tmp';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'DROP TABLE normativg_tmp';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'DROP TABLE materialnorm_tmp';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'DROP TABLE mechanizmnorm_tmp';
-  FQuery.ExecSQL;
-  FQuery.SQL.Text := 'DROP TABLE normativwork_tmp';
-  FQuery.ExecSQL;
+    FQuery.SQL.Text := 'DROP TABLE material_tmp';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'DROP TABLE mechanizm_tmp';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'DROP TABLE devices_tmp';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'DROP TABLE units_tmp';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'DROP TABLE normativg_tmp';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'DROP TABLE materialnorm_tmp';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'DROP TABLE mechanizmnorm_tmp';
+    FQuery.ExecSQL;
+    FQuery.SQL.Text := 'DROP TABLE normativwork_tmp';
+    FQuery.ExecSQL;
+  except
+    on e: Exception do
+    begin
+      ShowStatys('Error: ' + e.Message, 1);
+
+      raise;
+    end;
+  end;
 end;
 
 end.

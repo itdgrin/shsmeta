@@ -13,11 +13,10 @@ uses
   GlobsAndConst in 'GlobsAndConst.pas';
 
 var MHandle: THandle;
-    i: integer;
+    i, j: integer;
     TmpFiles: TStringDynArray;
     DestPath,
     UpdPath,
-    TmpStr,
     FileName: string;
     TxFile: TextFile;
     ini: TIniFile;
@@ -36,6 +35,17 @@ var MHandle: THandle;
       FileFolderOperation.pFrom := PChar(ExcludeTrailingPathDelimiter(ADirName) + #0);
       FileFolderOperation.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
       SHFileOperation(FileFolderOperation);
+    end;
+
+    function FullCopy(ASource, ATarget: string): Boolean;
+    var SHFileOpStruct : TSHFileOpStruct;
+    begin
+      FillChar(SHFileOpStruct, SizeOf(TSHFileOpStruct), 0);
+      SHFileOpStruct.wFunc := FO_COPY;
+      SHFileOpStruct.pFrom := PChar(ExcludeTrailingPathDelimiter(ASource) + #0);
+      SHFileOpStruct.pTo := PChar(ExcludeTrailingPathDelimiter(ATarget) + #0);
+      SHFileOpStruct.fFlags := FOF_SILENT or FOF_NOCONFIRMATION or FOF_NOERRORUI;
+      Result := SHFileOperation(SHFileOpStruct) = 0;
     end;
 begin
     MHandle := OpenMutex(MUTEX_ALL_ACCESS, False, '5q7b3g1p0b5n3x6v9e6s');
@@ -98,14 +108,21 @@ begin
         end;
 
         //∆дет пока отпустит все файлы
-        Sleep(5000);
+        Sleep(3000);
         TmpFiles := TDirectory.GetFiles(UpdPath, '*', TSearchOption.soAllDirectories);
         for i := Low(TmpFiles) to High(TmpFiles) do
         begin
           try
             FileName := StringReplace(TmpFiles[i], UpdPath, '', [rfReplaceAll, rfIgnoreCase]);
             ForceDirectories(ExtractFileDir(DestPath + FileName));
-            TFile.Copy(TmpFiles[i], DestPath + FileName, True);
+            j := 0;
+            while not FullCopy(TmpFiles[i], DestPath + FileName) do
+            begin
+              if j > 2 then
+                Break;
+              Sleep(1000);
+              inc(j)
+            end;
           except
             //“упо гаситс€ сообщение!!!!
             {on e : Exception do

@@ -5,15 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.Variants, System.Classes, Vcl.Graphics,
   System.IOUtils, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.pngimage, Vcl.ExtCtrls,
-  Vcl.StdCtrls, UpdateModule, Vcl.ComCtrls, IdAntiFreezeBase, Vcl.IdAntiFreeze,
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, ZipForge,
-  Data.DB, FireDAC.Stan.Intf, FireDAC.Comp.Script, FireDAC.UI.Intf, FireDAC.Stan.Async,
-  FireDAC.Comp.ScriptCommands, FireDAC.Stan.Option, FireDAC.Stan.Param,
-  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.SysUtils,
-  IniFiles, IdMessage, IdSSLOpenSSL, IdMessageClient, IdSMTPBase, IdSMTP,
-  IdAttachmentFile, IdExplicitTLSClientServerBase, Tools, GlobsAndConst,
-  ArhivModule;
+  Vcl.StdCtrls, UpdateModule, Vcl.ComCtrls, System.SysUtils,
+  IniFiles, Tools, GlobsAndConst, ArhivModule;
 
 type
   TUpdateForm = class(TSmForm)
@@ -40,6 +33,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure btnIterruptClick(Sender: TObject);
     procedure TimerProgressTimer(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     FCurVersion: TVersion; //“екуща€ верси€ приложени€
     FSResponse: TServiceResponse;
@@ -199,14 +193,14 @@ begin
       ShowStatys('ƒоступны новые обновлени€ на сервере:');
 
       if FCurVersion.App < FSResponse.AppVersion then
-        ShowStatys('верс€ программы :' + IntToStr(FSResponse.AppVersion));
+        ShowStatys('верси€ программы :' + IntToStr(FSResponse.AppVersion));
 
       if FCurVersion.Catalog < FSResponse.CatalogVersion then
-        ShowStatys('верс€ справочников :' +
+        ShowStatys('верси€ справочников :' +
           IntToStr(FSResponse.CatalogVersion));
 
       if FCurVersion.User < FSResponse.UserVersion then
-        ShowStatys('верс€ пользовательских таблиц :' +
+        ShowStatys('верси€ пользовательских таблиц :' +
           IntToStr(FSResponse.UserVersion));
     end;
     else //ќбновлений нет
@@ -233,6 +227,13 @@ end;
 procedure TUpdateForm.btnUpdateClick(Sender: TObject);
 begin
   StartUpdate;
+end;
+
+procedure TUpdateForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  if Assigned(FUpdateThread) and
+     (WaitForSingleObject(FUpdateThread.Handle,0) = WAIT_TIMEOUT) then
+    CanClose := False;
 end;
 
 procedure TUpdateForm.FormCreate(Sender: TObject);
@@ -270,7 +271,12 @@ end;
 
 procedure TUpdateForm.WMUpdateState(var Mes: TMessage);
 begin
-  UpdateState(string(PChar(Mes.WParam)), Integer(Mes.LParam));
+  try
+    UpdateState(string(PChar(Mes.WParam)), Integer(Mes.LParam));
+  except
+    on e: Exception do
+      Application.ShowException(e);
+  end;
 end;
 
 procedure TUpdateForm.UpdateState(AStrVal: string; AType: Byte);
@@ -301,21 +307,27 @@ end;
 
 procedure TUpdateForm.WMUpdateProgress(var Mes: TMessage);
 begin
-  case Integer(Mes.LParam) of
-  1:
-  begin
-    ProgressBar1.Style := pbstNormal;
-    ProgressBar1.Position := 0;
-    ProgressBar1.Max := Integer(Mes.WParam);
-    ProgressBar1.Visible := True;
-  end;
-  2: ProgressBar1.Position := Integer(Mes.WParam);
-  3: ProgressBar1.Visible := False;
-  4:
-  begin
-    ProgressBar1.Style := pbstMarquee;
-    ProgressBar1.Visible := True;
-  end;
+  try
+    case Integer(Mes.LParam) of
+    1:
+    begin
+      ProgressBar1.Style := pbstNormal;
+      ProgressBar1.Position := 0;
+      ProgressBar1.Max := Integer(Mes.WParam);
+      ProgressBar1.Visible := True;
+    end;
+    2: ProgressBar1.Position := Integer(Mes.WParam);
+    3: ProgressBar1.Visible := False;
+    4:
+    begin
+      ProgressBar1.Style := pbstMarquee;
+      ProgressBar1.Visible := True;
+    end;
+    else ProgressBar1.Visible := False;
+    end;
+  except
+    on e: Exception do
+      Application.ShowException(e);
   end;
 end;
 
@@ -324,7 +336,11 @@ var ex: TObject;
 begin
   ex := TThread(Sender).FatalException;
   if Assigned(ex) then
+  begin
+    UpdateState('', 1);
+    UpdateState('ќбновление завершилось ошибкой!', 1);
     SetButtonStyle(3)
+  end
   else
   begin
     if FStopUpdateProc and
