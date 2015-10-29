@@ -106,7 +106,16 @@ procedure TfLogIn.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
 begin
   if ([ssCtrl, ssShift] = Shift) and (Key = VK_RETURN) then
   begin
+    if not ServerOnline then
+    begin
+      Application.MessageBox('Сервер не доступен!' + #13#10 + 'Настройте подключение к серверу.',
+        'SMR - HPP 2012', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+
+      pgc1.ActivePageIndex := 1;
+      Exit;
+    end;
     G_USER_ID := -1;
+    G_CONNECTSTR := dm.Connect.Params.Text; // Передаем назад строку подключения
     ModalResult := mrOk;
   end;
 end;

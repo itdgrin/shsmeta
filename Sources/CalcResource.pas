@@ -155,6 +155,8 @@ type
     mN13: TMenuItem;
     mN14: TMenuItem;
     FDScript1: TFDScript;
+    qrMechDataNUMPP: TIntegerField;
+    qrDevicesNUMPP: TIntegerField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -220,6 +222,8 @@ type
     procedure mN3Click(Sender: TObject);
     procedure grDevColExit(Sender: TObject);
     procedure mN12Click(Sender: TObject);
+    procedure qrMechDataCalcFields(DataSet: TDataSet);
+    procedure qrDevicesCalcFields(DataSet: TDataSet);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -1409,6 +1413,13 @@ begin
   end;
 end;
 
+procedure TfCalcResource.qrDevicesCalcFields(DataSet: TDataSet);
+begin
+  qrDevicesNUMPP.Value := qrDevices.RecNo;
+  if qrDevicesNUMPP.Value = 0 then
+    qrDevicesNUMPP.Value := 1;
+end;
+
 procedure TfCalcResource.qrDevicesCOASTChange(Sender: TField);
 begin
   qrDevices.FieldByName('PRICE').Value :=
@@ -1811,6 +1822,13 @@ begin
     qrMechData.Cancel;
     Abort;
   end;
+end;
+
+procedure TfCalcResource.qrMechDataCalcFields(DataSet: TDataSet);
+begin
+  qrMechDataNUMPP.Value := qrMechData.RecNo;
+  if qrMechDataNUMPP.Value = 0 then
+    qrMechDataNUMPP.Value := 1;
 end;
 
 procedure TfCalcResource.qrMechDataCOASTChange(Sender: TField);
