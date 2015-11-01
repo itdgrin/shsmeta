@@ -23,8 +23,6 @@ type
     FHandle: HWND;
     FArhivPath,
     FAppPath: string;
-
-    procedure CopyAppTo(const ASourceDir, ADestDir: string);
   protected
     procedure Execute; override;
   public
@@ -76,9 +74,39 @@ type
     property RestoreArhHandle: THandle read FRestoreArhHandle;
   end;
 
+  procedure CopyAppTo(const ASourceDir, ADestDir: string);
+
 implementation
 
 uses  Tools, fUpdate, Forms;
+
+
+procedure CopyAppTo(const ASourceDir, ADestDir: string);
+var i: Integer;
+begin
+  for i:= Low(С_APPSTRUCT) to High(С_APPSTRUCT) do
+  begin
+    if С_APPSTRUCT[i].EType = 0 then //Файлы просто копируются
+    begin
+      if TFile.Exists(ASourceDir + С_APPSTRUCT[i].EName) then
+      begin
+        //Позволяет использовать имена файлов типа Dirname\Filename.ext
+        ForceDirectories(ExtractFileDir(ADestDir + С_APPSTRUCT[i].EName));
+        TFile.Copy(ASourceDir + С_APPSTRUCT[i].EName,
+          ADestDir + С_APPSTRUCT[i].EName, True);
+      end;
+    end;
+
+    if С_APPSTRUCT[i].EType = 1 then //Файлы просто копируются
+    begin
+      if TDirectory.Exists(ASourceDir + С_APPSTRUCT[i].EName) then
+      begin
+        TDirectory.Copy(ASourceDir + С_APPSTRUCT[i].EName,
+          ADestDir + С_APPSTRUCT[i].EName);
+      end;
+    end;
+  end;
+end;
 
 { TBaseAppArhiv }
 
@@ -327,33 +355,6 @@ begin
       KillDir(FArhivPath + C_TMPDIR);
 
     SendMessage(FHandle, WM_ARCHIVEPROGRESS, 0, 2);
-  end;
-end;
-
-procedure TThreadCreateArchiv.CopyAppTo(const ASourceDir, ADestDir: string);
-var i: Integer;
-begin
-  for i:= Low(С_APPSTRUCT) to High(С_APPSTRUCT) do
-  begin
-    if С_APPSTRUCT[i].EType = 0 then //Файлы просто копируются
-    begin
-      if TFile.Exists(ASourceDir + С_APPSTRUCT[i].EName) then
-      begin
-        //Позволяет использовать имена файлов типа Dirname\Filename.ext
-        ForceDirectories(ExtractFileDir(ADestDir + С_APPSTRUCT[i].EName));
-        TFile.Copy(ASourceDir + С_APPSTRUCT[i].EName,
-          ADestDir + С_APPSTRUCT[i].EName, True);
-      end;
-    end;
-
-    if С_APPSTRUCT[i].EType = 1 then //Файлы просто копируются
-    begin
-      if TDirectory.Exists(ASourceDir + С_APPSTRUCT[i].EName) then
-      begin
-        TDirectory.Copy(ASourceDir + С_APPSTRUCT[i].EName,
-          ADestDir + С_APPSTRUCT[i].EName);
-      end;
-    end;
   end;
 end;
 

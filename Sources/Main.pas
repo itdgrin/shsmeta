@@ -289,18 +289,22 @@ type
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
-    FChackUpdateThread: TChackUpdateThread; // Нить проверки обновлений
-    SystemInfoResult: Boolean;
 
+    FChackUpdateThread: TChackUpdateThread; // Нить проверки обновлений
+    FCreateMirrorThread: TCreateMirrorThread; //Нить создания зеркала
+    FUpdateType: Byte; //0 - обновление с сервера; 1 - Обновление с зеркала
+    FCreateMirror: Boolean; //Флаг создания зеркала обновлений
+    FCreateMirrorPath: string; //Путь куда помещать обновления
+    FMirrorPath: string; //Папка из которой следует обновляться при FUpdateType = 1
     FCurVersion: TVersion; // текущая версия приложения и БД
-    DebugMode: Boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
+    FDebugMode: Boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
     FileReportPath: string; // путь к папке с отчетами(дабы не захламлять датамодуль лишними модулями)
 
     // Объект отвечает за создание бэкапов и их восстановление
     FArhiv: TBaseAppArhiv;
 
-    procedure GetSystemInfo;
+    procedure GetUpdateSystemInfo;
     procedure OnUpdate(var Mes: TMessage); message WM_SHOW_SPLASH;
     procedure ThreadEXCEPTION(var Mes: TMessage); message WM_EXCEPTION;
     procedure ARCHIVEPROGRESS(var Mes: TMessage); message WM_ARCHIVEPROGRESS;
@@ -312,7 +316,7 @@ type
     procedure FormShowEvent1(Sender: TObject);
     procedure FormShowEvent2(Sender: TObject);
   public
-
+    procedure IniUpdateSystem;
   end;
 
   TProgramSettings = record
@@ -460,11 +464,12 @@ begin
   try
     UPForm.SetVersion(FCurVersion, AResp);
     UPForm.SetArhiv(FArhiv);
+    UPForm.UpdateType := FUpdateType;
 
     UPForm.ShowModal;
-    GetSystemInfo;
+    GetUpdateSystemInfo;
   finally
-    UPForm.Free;
+    FreeAndNil(UPForm);
   end;
 
   if G_STARTAPP then
@@ -530,29 +535,41 @@ begin
     else
       ShowUpdateForm(Resp);
   finally
-    Resp.Free;
+    FreeAndNil(Resp);
   end;
 end;
 
 // Загрузка системной информации из smeta.ini и текущей версии приложения
-procedure TFormMain.GetSystemInfo;
+procedure TFormMain.GetUpdateSystemInfo;
 var
   ini: TIniFile;
 begin
-  ini := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
+  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) +  С_UPD_INI);
   try
-    if not ini.SectionExists('system') then
+    if not ini.SectionExists('System') then
     begin
-      ini.WriteInteger('system', 'version', 0);
-      ini.WriteString('system', 'clientname', '');
-      ini.WriteBool('system', 'sendreport', False);
-      ini.WriteBool('system', 'debugmode', true);
+      ini.WriteInteger('System', 'version', 0);
+      ini.WriteInteger('System', 'UpdateType', 0);
+      ini.WriteBool('System', 'CreateMirror', False);
+      ini.WriteString('System', 'CreateMirrorPath', '');
+      ini.WriteString('System', 'MirrorPath', '');
+
+      ini.WriteString('System', 'clientname', '');
+      ini.WriteBool('System', 'sendreport', False);
+
+      ini.WriteBool('System', 'debugmode', true);
     end;
-    FCurVersion.App := ini.ReadInteger('system', 'version', 0);
-    DebugMode := ini.ReadBool('system', 'debugmode', true);
+    FCurVersion.App := ini.ReadInteger('System', 'version', 0);
+    FDebugMode := ini.ReadBool('System', 'debugmode', true);
+
+    FUpdateType := ini.ReadInteger('System', 'UpdateType', 0);
+    FCreateMirror := ini.ReadBool('System', 'CreateMirror', False);
+    FCreateMirrorPath := ini.ReadString('System', 'CreateMirrorPath', '');
+    FMirrorPath := ini.ReadString('System', 'MirrorPath', '');
   finally
     FreeAndNil(ini);
   end;
+
   DM.qrDifferent.Active := False;
   DM.qrDifferent.SQL.Text := 'SELECT max(version) FROM versionref WHERE ' +
     '(execresult > 0) and (SCRIPTCOUNT = SCRIPTNO)';
@@ -595,12 +612,6 @@ end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  FCurVersion.Clear;
-
-  SystemInfoResult := False;
-
-  CountOpenWindows := 0;
-
   Width := Screen.Width;
   Height := Screen.Height;
 
@@ -642,6 +653,9 @@ begin
     FChackUpdateThread.WaitFor;
     FreeAndNil(FChackUpdateThread);
   end;
+
+  if Assigned(FCreateMirrorThread) then
+    FreeAndNil(FCreateMirrorThread);
 end;
 
 procedure TFormMain.FormResize(Sender: TObject);
@@ -651,6 +665,36 @@ begin
     UpdatePanel.Left := ClientWidth - UpdatePanel.Width;
     UpdatePanel.Top := PanelOpenWindows.Top - UpdatePanel.Height;
   end;
+end;
+
+procedure TFormMain.IniUpdateSystem;
+begin
+  if Assigned(FChackUpdateThread) then
+  begin // Выполнить Terminate обязательно так как он переопределен
+    FChackUpdateThread.Terminate;
+    FChackUpdateThread.WaitFor;
+    FreeAndNil(FChackUpdateThread);
+  end;
+
+  if Assigned(FCreateMirrorThread) then
+    FreeAndNil(FCreateMirrorThread);
+
+  GetUpdateSystemInfo;
+
+  // Запуск ниточки для мониторигра обновлений
+  if not FDebugMode then
+    FChackUpdateThread := TChackUpdateThread.Create(Self.Handle, FCurVersion,
+      FUpdateType, FMirrorPath)
+  else
+  begin
+    FChackUpdateThread := nil;
+    ServiceUpdate.Enabled := False;
+  end;
+
+  if FCreateMirror then
+    FCreateMirrorThread :=
+      TCreateMirrorThread.Create(FCreateMirrorPath, Application.ExeName,
+        FCurVersion.App);
 end;
 
 procedure TFormMain.FormShow(Sender: TObject);
@@ -694,24 +738,7 @@ begin
     end;
   end;
 
-  try
-    GetSystemInfo;
-    SystemInfoResult := true;
-  except
-    on e: Exception do
-      ShowMessage('Ошибка инициализации системы: ' + e.Message);
-  end;
-
-  // Запуск ниточки для мониторигра обновлений
-  if SystemInfoResult and not DebugMode then
-    FChackUpdateThread := TChackUpdateThread.Create(FCurVersion, Self.Handle)
-  else
-  begin
-    if not SystemInfoResult then
-      ShowMessage('Обновления недоступны.');
-    FChackUpdateThread := nil;
-    ServiceUpdate.Enabled := False;
-  end;
+  IniUpdateSystem;
 
   PanelCover.Visible := true;
 
@@ -879,7 +906,11 @@ var
 begin
   FormProgramSettings := TFormProgramSettings.Create(nil);
   try
-    FormProgramSettings.ShowModal;
+    if FormProgramSettings.ShowModal = mrOk then
+    begin
+      //Каждый раз после изменения настроек переинициализируется система обновлений
+      IniUpdateSystem;
+    end;
   finally
     FreeAndNil(FormProgramSettings);
   end;

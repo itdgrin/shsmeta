@@ -3544,6 +3544,7 @@
     StorageOptions.BooleanStringTrueValues = 'TRUE, YES, Y'
     StorageOptions.BooleanStringFalseValues = 'FALSE, NO, N'
     FileName = 'Smeta.ini'
+    FlushOnDestroy = False
     DefaultSection = 'JvAppIniFileStorage'
     SubStorages = <>
     Left = 32

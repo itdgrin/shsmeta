@@ -6,6 +6,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.IOUtils,
+  System.Types,
   Vcl.Forms,
   DateUtils,
   SyncObjs,
@@ -132,6 +133,9 @@ type
     FMainHandle: HWND;
     FLogFile: TLogFile;
 
+    FUpdType: Byte;
+    FMirrorPath: string;
+
     FUREvent, FTermEvent: TEvent;
 
     FResponse: TServiceResponse; //Ответ службы
@@ -147,13 +151,17 @@ type
       var ASResponse: TServiceResponse);
 
     procedure GetLogName;
+    procedure GetInetUpdate(var ASResponse: TServiceResponse);
+    procedure GetMirrorUpdate(var ASResponse: TServiceResponse);
+
     { Private declarations }
   protected
     procedure Execute; override;
   public
     procedure UserRequest;
     procedure Terminate;
-    constructor Create(AVersion: TVersion; AMainHandle: HWND); overload;
+    constructor Create(AMainHandle: HWND; AVersion: TVersion;
+      AUpdType: Byte; const AMirrorPath: string); overload;
     destructor Destroy; override;
     procedure UserBlok;
     procedure SetCurVersion(AVersion: TVersion);
@@ -167,6 +175,7 @@ type
     FResponse: TServiceResponse;
     FMainHandle: HWND;
     FExeName: string;
+    FUpdateType: Byte;
 
     FArhivThreadHandle: THandle;
     FOnCreateArhivEvent: TCreateArhiveEvent;
@@ -214,11 +223,28 @@ type
     procedure Execute; override;
   public
     constructor Create(AMainHandle: HWND; ACurVersion: TVersion;
-      AResponse: TServiceResponse; AExeName: string); overload;
+      AResponse: TServiceResponse; AExeName: string;
+      AUpdateType: Byte); overload;
     destructor Destroy; override;
 
     property OnCreateArhivEvent: TCreateArhiveEvent write FOnCreateArhivEvent;
     property UpdateResult: Boolean read FUpdateResult;
+  end;
+
+  //Создает зеркало обновлений при необходимости
+  TCreateMirrorThread = class(TThread)
+  private
+    FMirrorPath,
+    FExeName: string;
+    FLogFile: TLogFile;
+    FZipForge: TZipForge;
+    FCurAppVersion: Integer;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(const AMirrorPath, AExeName: string;
+      ACurAppVersion: Integer); overload;
+    destructor Destroy; override;
   end;
 
 implementation
@@ -274,7 +300,7 @@ begin
         Rewrite(FFile);
     end;
 
-  lMessage := '[' + DateToStr(Date);
+  lMessage := '[' + DateTimeToStr(Now);
   if ATag <> '' then lMessage:= lMessage + ' : '+ ATag;
   lMessage := lMessage + ']';
   lMessage:= lMessage + ' ' + AText;
@@ -319,16 +345,18 @@ begin
   FLogFile.FileName := C_UPDATELOG;
 end;
 
-constructor TChackUpdateThread.Create(AVersion: TVersion;
-  AMainHandle: HWND);
+constructor TChackUpdateThread.Create(AMainHandle: HWND; AVersion: TVersion;
+  AUpdType: Byte; const AMirrorPath: string);
 begin
-  inherited Create(true);
+  inherited Create(False);
+  Priority :=  tpLower;
 
   //Текущая версия приложения;
   FCurVersion := AVersion;
   FCurVersionCS := TCriticalSection.Create;
-
   FMainHandle := AMainHandle;
+  FUpdType := AUpdType;
+  FMirrorPath := IncludeTrailingPathDelimiter(AMirrorPath);
 
   FLogFile := TLogFile.Create;
   FLogFile.Active := true;
@@ -341,9 +369,6 @@ begin
 
   FUserBlok := False;
   FUserBlokCS := TCriticalSection.Create;
-
-  Priority :=  tpLower;
-  Resume;
 end;
 
 destructor TChackUpdateThread.Destroy;
@@ -394,114 +419,80 @@ var XML : IXMLDocument;
     TempNode, TempNode1, CatNode, UsNode, AppNode: IXMLNode;
     i: Integer;
     TempNV: TNewVersion;
-    Resp: TServiceResponse;
 begin
   XML := TXMLDocument.Create(nil);
-  Resp := TServiceResponse.Create;
   try
-    try
-      XML.LoadFromStream(AStrimPage);
-      XML.SaveToFile('d:\123.xml');
-      TempNode := XML.ChildNodes.FindNode('updates');
-      if TempNode = nil then
-        raise Exception.Create('Не найдена нода <updates>');
-      CatNode := TempNode.ChildNodes.FindNode('catalog_updates');
-      if CatNode = nil then
-        raise Exception.Create('Не найдена нода <catalog_updates>');
-      UsNode := TempNode.ChildNodes.FindNode('user_updates');
-      if UsNode = nil then
-        raise Exception.Create('Не найдена нода <user_updates>');
-      AppNode := TempNode.ChildNodes.FindNode('app_updates');
-      if AppNode = nil then
-        raise Exception.Create('Не найдена нода <app_updates>');
+    XML.LoadFromStream(AStrimPage);
+    TempNode := XML.ChildNodes.FindNode('updates');
+    if TempNode = nil then
+      raise Exception.Create('Не найдена нода <updates>');
+    CatNode := TempNode.ChildNodes.FindNode('catalog_updates');
+    if CatNode = nil then
+      raise Exception.Create('Не найдена нода <catalog_updates>');
+    UsNode := TempNode.ChildNodes.FindNode('user_updates');
+    if UsNode = nil then
+      raise Exception.Create('Не найдена нода <user_updates>');
+    AppNode := TempNode.ChildNodes.FindNode('app_updates');
+    if AppNode = nil then
+      raise Exception.Create('Не найдена нода <app_updates>');
 
-      TempNode := nil;
-      TempNode := AppNode.ChildNodes.FindNode('available');
-      if TempNode = nil then
-        raise Exception.Create('Не найдена нода <app_updates><available>');
-      if TempNode.Text = 'yes' then
-      begin
-        Resp.UpdeteStatys := 1;
-        TempNV.Version := StrToInt(AppNode.ChildNodes.FindNode('version').Text);
-        TempNV.Url := AppNode.ChildNodes.FindNode('url').Text;
-        Resp.AddApp(TempNV);
-        TempNode1 := nil;
-      end;
+    TempNode := AppNode.ChildNodes.FindNode('available');
+    if TempNode = nil then
+      raise Exception.Create('Не найдена нода <app_updates><available>');
+    if TempNode.Text = 'yes' then
+    begin
+      TempNV.Version := StrToInt(AppNode.ChildNodes.FindNode('version').Text);
+      TempNV.Url := AppNode.ChildNodes.FindNode('url').Text;
+      ASResponse.AddApp(TempNV);
+    end;
 
-      TempNode := nil;
-      TempNode := CatNode.ChildNodes.FindNode('available');
-      if TempNode = nil then
-        raise Exception.Create('Не найдена нода <catalog_updates><available>');
-      if TempNode.Text = 'yes' then
+    TempNode := CatNode.ChildNodes.FindNode('available');
+    if TempNode = nil then
+      raise Exception.Create('Не найдена нода <catalog_updates><available>');
+    if TempNode.Text = 'yes' then
+    begin
+      for i := 0 to CatNode.ChildNodes.Count - 1 do
       begin
-        Resp.UpdeteStatys := 1;
-        for i := 0 to CatNode.ChildNodes.Count - 1 do
+        if CatNode.ChildNodes[i].NodeName = 'update' then
         begin
-          if CatNode.ChildNodes[i].NodeName = 'update' then
-          begin
-            TempNode1 := CatNode.ChildNodes.Get(i);
-            TempNV.Version := StrToInt(TempNode1.ChildNodes.FindNode('version').Text);
-            TempNV.Url := TempNode1.ChildNodes.FindNode('url').Text;
-            TempNV.Comment := TempNode1.ChildNodes.FindNode('comment').Text;
-            Resp.AddCatalog(TempNV);
-            TempNode1 := nil;
-          end;
+          TempNode1 := CatNode.ChildNodes.Get(i);
+          TempNV.Version := StrToInt(TempNode1.ChildNodes.FindNode('version').Text);
+          TempNV.Url := TempNode1.ChildNodes.FindNode('url').Text;
+          TempNV.Comment := TempNode1.ChildNodes.FindNode('comment').Text;
+          ASResponse.AddCatalog(TempNV);
         end;
-      end;
-
-      TempNode := nil;
-      TempNode := UsNode.ChildNodes.FindNode('available');
-      if TempNode = nil then
-        raise Exception.Create('Не найдена нода <user_updates><available>');
-      if TempNode.Text = 'yes' then
-      begin
-        Resp.UpdeteStatys := 1;
-        for i := 0 to UsNode.ChildNodes.Count - 1 do
-        begin
-          if UsNode.ChildNodes[i].NodeName = 'update' then
-          begin
-            TempNode1 := UsNode.ChildNodes.Get(i);
-            TempNV.Version := StrToInt(TempNode1.ChildNodes.FindNode('version').Text);
-            TempNV.Url := TempNode1.ChildNodes.FindNode('url').Text;
-            TempNV.Comment := TempNode1.ChildNodes.FindNode('comment').Text;
-            Resp.AddUser(TempNV);
-            TempNode1 := nil;
-          end;
-        end;
-      end;
-      TempNode := nil;
-
-     ASResponse.Assign(Resp);
-    except
-      on e: Exception do
-      begin
-        FLogFile.Add(e.ClassName + ': ' + e.Message, 'ChackUpdateThread (pars XML)');
       end;
     end;
-  finally
-    Resp.Free;
-    XML := nil;
+
+    TempNode := UsNode.ChildNodes.FindNode('available');
+    if TempNode = nil then
+      raise Exception.Create('Не найдена нода <user_updates><available>');
+    if TempNode.Text = 'yes' then
+    begin
+      for i := 0 to UsNode.ChildNodes.Count - 1 do
+      begin
+        if UsNode.ChildNodes[i].NodeName = 'update' then
+        begin
+          TempNode1 := UsNode.ChildNodes.Get(i);
+          TempNV.Version := StrToInt(TempNode1.ChildNodes.FindNode('version').Text);
+          TempNV.Url := TempNode1.ChildNodes.FindNode('url').Text;
+          TempNV.Comment := TempNode1.ChildNodes.FindNode('comment').Text;
+          ASResponse.AddUser(TempNV);
+        end;
+      end;
+    end;
+  except
+    on e: Exception do
+    begin
+      FLogFile.Add(e.ClassName + ': ' + e.Message, 'ChackUpdateThread (pars XML)');
+    end;
   end;
 end;
 
-procedure TChackUpdateThread.GetVersion;
+procedure TChackUpdateThread.GetInetUpdate(var ASResponse: TServiceResponse);
 var HTTP: TIdHTTP;
     StrimPage: TMemoryStream;
 begin
-  FResponse.Clear;
-
-  FUserRequest := false;
-  //Снимаем сигнальное состояние порверки по требованию если оно установлено
-  if FUREvent.WaitFor(0) = wrSignaled then
-  begin
-    FUserBlok := False;
-    FUREvent.ResetEvent;
-    FUserRequest := true;
-  end;
-
-  //Если пользователь запретил, запроса не происходит
-  if FUserBlok then exit;
-
   HTTP := TIdHTTP.Create(nil);
   HTTP.ConnectTimeout := 3000;
   StrimPage := TMemoryStream.Create;
@@ -519,8 +510,7 @@ begin
         'app_version=' + IntToStr(FCurVersion.App) + '&' +
         'catalog_version=' + IntToStr(FCurVersion.Catalog), StrimPage);
 
-      ParsXMLResult(StrimPage, FResponse);
-
+      ParsXMLResult(StrimPage, ASResponse);
     except
       on e: Exception do
       begin
@@ -531,6 +521,59 @@ begin
     HTTP.Free;
     StrimPage.Free;
   end;
+end;
+
+procedure TChackUpdateThread.GetMirrorUpdate(var ASResponse: TServiceResponse);
+var TmpFiles: TStringDynArray;
+    I: Integer;
+    MaxAppVers: Integer;
+    TmpStr: string;
+    TempNV: TNewVersion;
+begin
+  TmpFiles := TDirectory.GetFiles(FMirrorPath, C_UPD_MIRRORMASK,
+    TSearchOption.soTopDirectoryOnly);
+
+  MaxAppVers := 0;
+  for I := Low(TmpFiles) to High(TmpFiles) do
+  begin
+    TmpStr := ExtractFileName(TmpFiles[i]);
+    TmpStr := StringReplace(TmpStr, C_UPD_MIRRORPAT1, '', [rfReplaceAll]);
+    TmpStr := StringReplace(TmpStr, C_UPD_MIRRORPAT2, '', [rfReplaceAll]);
+    if MaxAppVers < StrToIntDef(TmpStr, 0) then
+      MaxAppVers := StrToIntDef(TmpStr, 0);
+  end;
+  if MaxAppVers > 0 then
+  begin
+    TempNV.Version := MaxAppVers;
+    TempNV.Url := FMirrorPath + Format(C_UPD_MIRRORNAME, [MaxAppVers]);
+    FResponse.AddApp(TempNV);
+  end;
+end;
+
+procedure TChackUpdateThread.GetVersion;
+begin
+  FResponse.Clear;
+
+  FUserRequest := false;
+  //Снимаем сигнальное состояние порверки по требованию если оно установлено
+  if FUREvent.WaitFor(0) = wrSignaled then
+  begin
+    FUserBlok := False;
+    FUREvent.ResetEvent;
+    FUserRequest := true;
+  end;
+
+  //Если пользователь запретил, запроса не происходит
+  if FUserBlok then exit;
+
+  if FUpdType = 0 then
+  begin
+    GetInetUpdate(FResponse);
+  end
+  else
+  begin
+    GetMirrorUpdate(FResponse);
+  end;
 
   FCurVersionCS.Enter;
   try
@@ -539,7 +582,14 @@ begin
        (FCurVersion.Catalog < FResponse.CatalogVersion) or
        (FCurVersion.User < FResponse.UserVersion) or
        FUserRequest then
-       SendMessage(FMainHandle, WM_SHOW_SPLASH, 0, LParam(FResponse));
+    begin
+      if (FCurVersion.App < FResponse.AppVersion) or
+         (FCurVersion.Catalog < FResponse.CatalogVersion) or
+         (FCurVersion.User < FResponse.UserVersion) then
+        FResponse.UpdeteStatys := 1;
+
+      SendMessage(FMainHandle, WM_SHOW_SPLASH, 0, LParam(FResponse));
+    end;
   finally
     FCurVersionCS.Leave;
   end;
@@ -614,6 +664,8 @@ end;
 
 procedure TServiceResponse.Clear;
 begin
+  FUpdeteStatys := 0;
+
   FAppCount := 0;
   FCatalogCount := 0;
   FUserCount := 0;
@@ -740,12 +792,14 @@ end;
 { TUpdateThread }
 
 constructor TUpdateThread.Create(AMainHandle: HWND; ACurVersion: TVersion;
-  AResponse: TServiceResponse; AExeName: string);
+      AResponse: TServiceResponse; AExeName: string;
+      AUpdateType: Byte);
 begin
   inherited Create(True);
 
   FMainHandle := AMainHandle;
   FExeName := AExeName;
+  FUpdateType := AUpdateType;
 
   FCurVersion.Assign(ACurVersion);
 
@@ -770,7 +824,7 @@ begin
   FSQLScript.Connection := FConnect;
   FSQLScript.OnError := SQLScriptError;
   FConnect.Connected := True;
-  
+
   FHTTP := TIdHTTP.Create(nil);
   FHTTP.OnWorkBegin := HTTPWorkBegin;
   FHTTP.OnWork := HTTPWork;
@@ -801,15 +855,19 @@ procedure TUpdateThread.Execute;
 var i: Integer;
 begin
   FUpdateResult := False;
-  //Создается архив БД, если это необходимо
-  Synchronize(CheckNeedCreateArhiv);
 
-  //Ожидание окончания создания архива
-  if WaitForSingleObject(FArhivThreadHandle, 0) = WAIT_TIMEOUT then
-    ShowStatys('Создание архива БД', 2);
+  if FUpdateType = 0 then
+  begin
+    //Создается архив БД, если это необходимо
+    Synchronize(CheckNeedCreateArhiv);
 
-  while WaitForSingleObject(FArhivThreadHandle, 2000) = WAIT_TIMEOUT do
-    if Terminated then Exit;
+    //Ожидание окончания создания архива
+    if WaitForSingleObject(FArhivThreadHandle, 0) = WAIT_TIMEOUT then
+      ShowStatys('Создание архива БД', 2);
+
+    while WaitForSingleObject(FArhivThreadHandle, 2000) = WAIT_TIMEOUT do
+      if Terminated then Exit;
+  end;
 
   if Terminated then Exit;
 
@@ -819,29 +877,32 @@ begin
 
   try
     //Копия пользовательских данных
-    BackupUserData;
-
-    ShowStatys('', 1);
-
-    if FResponse.CatalogCount > 0 then
+    if FUpdateType = 0 then
     begin
-      ShowStatys('Обновление справочников', 3);
+      BackupUserData;
+
       ShowStatys('', 1);
-      for i := 0 to FResponse.CatalogCount - 1 do
+
+      if FResponse.CatalogCount > 0 then
       begin
-        if Terminated then Exit;
-        LoadAndSetUpdate(FResponse.CatalogList[i], 0);
+        ShowStatys('Обновление справочников', 3);
+        ShowStatys('', 1);
+        for i := 0 to FResponse.CatalogCount - 1 do
+        begin
+          if Terminated then Exit;
+          LoadAndSetUpdate(FResponse.CatalogList[i], 0);
+        end;
       end;
-    end;
 
-    if FResponse.UserCount > 0 then
-    begin
-      ShowStatys('Обновление пользовательских таблиц', 3);
-      ShowStatys('', 1);
-      for i := 0 to FResponse.UserCount - 1 do
+      if FResponse.UserCount > 0 then
       begin
-        if Terminated then Exit;
-        LoadAndSetUpdate(FResponse.UserList[i], 1);
+        ShowStatys('Обновление пользовательских таблиц', 3);
+        ShowStatys('', 1);
+        for i := 0 to FResponse.UserCount - 1 do
+        begin
+          if Terminated then Exit;
+          LoadAndSetUpdate(FResponse.UserList[i], 1);
+        end;
       end;
     end;
 
@@ -856,13 +917,17 @@ begin
       end;
 
       if (G_STARTUPDATER > 0) then
-        ShowStatys('Для завершения обновления нужен перезапуск программы!', 1);
+      begin
+        ShowStatys('Для завершения обновления нужен перезапуск программы!', 3);
+        ShowStatys('', 1);
+      end;
     end;
   finally
-    RestoreUserData;
+    if FUpdateType = 0 then
+      RestoreUserData;
   end;
 
-  ShowStatys('', 1);
+  ShowStatys('', 3);
   ShowStatys('Обновление прошло успешно!', 1);
   FUpdateResult := True;
 end;
@@ -871,7 +936,7 @@ procedure TUpdateThread.GetIniData(AExeName: string);
 var
   ini: TIniFile;
 begin
-  ini := TIniFile.Create(ChangeFileExt(AExeName, '.ini'));
+  ini := TIniFile.Create(ExtractFilePath((AExeName) + С_UPD_INI));
   try
     FClientName := ini.ReadString('system', 'clientname', '');
     FSendReport := ini.ReadBool('system', 'sendreport', False);
@@ -1048,33 +1113,46 @@ var LoadPath, UpdName: string;
     MStream: TMemoryStream;
 begin
   LoadPath := ExtractFilePath(FExeName) + C_UPDATEDIR;
-  UpdName := copy(AUpdate.Url, 1, Pos('?',AUpdate.Url) - 1);
-  UpdName := StringReplace(UpdName, '/','\', [rfReplaceAll]);
-  UpdName := ExtractFileName(UpdName);
+  if FUpdateType = 0 then
+  begin
+    UpdName := copy(AUpdate.Url, 1, Pos('?',AUpdate.Url) - 1);
+    UpdName := StringReplace(UpdName, '/','\', [rfReplaceAll]);
+    UpdName := ExtractFileName(UpdName);
+  end
+  else
+    UpdName := ExtractFileName(AUpdate.Url);
 
   case AType of
   0:LoadPath := LoadPath + 'cat' + IntToStr(AUpdate.Version) + '\';
   1:LoadPath := LoadPath + 'user' + IntToStr(AUpdate.Version) + '\';
   2:LoadPath := LoadPath + 'app' + IntToStr(AUpdate.Version) + '\';
   end;
-  ForceDirectories(LoadPath);
 
-  ShowStatys('Обновление ' + IntToStr(AUpdate.Version) + ': ' + AUpdate.Comment, 3);
-  ShowStatys('', 1);
   MStream := TMemoryStream.Create;
   try
+    ForceDirectories(LoadPath);
+
+    ShowStatys('Обновление ' + IntToStr(AUpdate.Version) + ': ' + AUpdate.Comment, 3);
+    ShowStatys('', 1);
+
     try
-      FHTTP.HandleRedirects := true;
-      FHTTP.Request.UserAgent:='Mozilla/5.0 (Windows NT 6.1) '+
-        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36';
-      FHTTP.Request.Accept:='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-      FHTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
-      FHTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
-
       ShowStatys('Загрузка', 4);
-      FHTTP.Get(C_UPDATESERV + AUpdate.Url, MStream);
-      MStream.SaveToFile(LoadPath + UpdName);
+      if FUpdateType = 0 then
+      begin
+        FHTTP.HandleRedirects := true;
+        FHTTP.Request.UserAgent:='Mozilla/5.0 (Windows NT 6.1) '+
+          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36';
+        FHTTP.Request.Accept:='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+        FHTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
+        FHTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
 
+        FHTTP.Get(C_UPDATESERV + AUpdate.Url, MStream);
+        MStream.SaveToFile(LoadPath + UpdName);
+      end
+      else
+      begin
+        TFile.Copy(AUpdate.Url, LoadPath + UpdName);
+      end;
       if Terminated then Exit;
 
       ShowStatys('Распаковка', 4);
@@ -1126,7 +1204,7 @@ begin
       end;
     end;
   finally
-    MStream.Free;
+    FreeAndNil(MStream);
     //После завершения обновлений папки с SQL скриптами удалются
     if (AType in [0,1]) or ((AType = 2) and (G_STARTUPDATER = 0)) then
       KillDir(LoadPath);
@@ -1162,12 +1240,12 @@ end;
 
 procedure TUpdateThread.SetUpdFlags;
 begin
+  G_NEWAPPVERS := FUpdVersion;
   if FUpdPathFlag then
   begin
     G_STARTUPDATER := 1;
     G_STARTAPP := True;
   end;
-  G_NEWAPPVERS := FUpdVersion;
 end;
 
 procedure TUpdateThread.ShowStatys(AStrValue: string; AType: Integer);
@@ -1330,7 +1408,8 @@ end;
 procedure TUpdateThread.RestoreUserData;
 begin
   try
-    ShowStatys('Восстановление собственных данных', 2);
+    ShowStatys('Восстановление собственных данных', 4);
+    ShowStatys('', 1);
     FQuery.SQL.Text :=
       'Insert into material (`MATERIAL_ID`,`MAT_CODE`,`MAT_NAME`,`MAT_TYPE`,' +
       '`UNIT_ID`,`BASE`) ' +
@@ -1434,6 +1513,92 @@ begin
       ShowStatys('Error: ' + e.Message, 1);
 
       raise;
+    end;
+  end;
+end;
+
+{ TCreateMirrorThread }
+
+constructor TCreateMirrorThread.Create(const AMirrorPath, AExeName: string;
+  ACurAppVersion: Integer);
+begin
+  inherited Create(False);
+  FMirrorPath := IncludeTrailingPathDelimiter(AMirrorPath);
+  FExeName := AExeName;
+  FCurAppVersion := ACurAppVersion;
+
+  FLogFile := TLogFile.Create;
+  FLogFile.Active := true;
+
+  FLogFile.FileDir := ExtractFilePath(FExeName) + C_LOGDIR;
+  FLogFile.FileName := C_UPDATELOG;
+
+  FZipForge := TZipForge.Create(nil);
+end;
+
+destructor TCreateMirrorThread.Destroy;
+begin
+  FreeAndNil(FZipForge);
+  FreeAndNil(FLogFile);
+  inherited;
+end;
+
+procedure TCreateMirrorThread.Execute;
+var TmpPath,
+    TmpName: String;
+    TmpFiles: TStringDynArray;
+    I: Integer;
+begin
+  try
+    if FMirrorPath = '' then
+      Exit;
+
+    if not TDirectory.Exists(FMirrorPath) then
+      ForceDirectories(FMirrorPath);
+
+    TmpName := Format(C_UPD_MIRRORNAME, [FCurAppVersion]);
+
+    if TFile.Exists(FMirrorPath + TmpName) then
+      Exit;
+
+    TmpPath := ExtractFilePath(FExeName) + C_UPDATEDIR + C_UPDMIRRORTMP;
+    //Подготавливаем временну папку
+    if TDirectory.Exists(TmpPath) then
+      FullRemove(TmpPath);
+    try
+      TDirectory.CreateDirectory(TmpPath);
+
+      CopyAppTo(ExtractFilePath(FExeName), TmpPath);
+      TFile.Delete(TmpPath + С_UPD_INI);
+
+      if Terminated then
+        Exit;
+
+      FZipForge.FileName := TmpPath + TmpName;
+      FZipForge.Options.CreateDirs := true;
+      FZipForge.Options.OverwriteMode := omAlways;
+      FZipForge.OpenArchive(fmCreate);
+      FZipForge.BaseDir := TmpPath;
+      FZipForge.AddFiles('*');
+      FZipForge.CloseArchive;
+
+      if Terminated then
+        Exit;
+
+      TmpFiles := TDirectory.GetFiles(FMirrorPath, C_UPD_MIRRORMASK,
+        TSearchOption.soTopDirectoryOnly);
+
+      for I := Low(TmpFiles) to High(TmpFiles) do
+        FullRemove(TmpFiles[i]);
+
+      TFile.Copy(TmpPath + TmpName, FMirrorPath + TmpName);
+    finally
+      FullRemove(TmpPath);
+    end;
+  except
+    on e: Exception do
+    begin
+      FLogFile.Add(e.ClassName + ': ' + e.Message, 'CreateMirrorThread');
     end;
   end;
 end;

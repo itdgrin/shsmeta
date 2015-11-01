@@ -335,15 +335,94 @@ object FormProgramSettings: TFormProgramSettings
     object tsUpdate: TTabSheet
       Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1103
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 28
       DesignSize = (
         624
         323)
+      object gbLocalMirrorSettings: TGroupBox
+        Left = 3
+        Top = 98
+        Width = 585
+        Height = 55
+        Anchors = [akLeft, akTop, akRight]
+        Caption = '   '
+        Enabled = False
+        TabOrder = 2
+        DesignSize = (
+          585
+          55)
+        object sbOpenDir: TSpeedButton
+          Tag = 1
+          Left = 543
+          Top = 20
+          Width = 23
+          Height = 22
+          Anchors = [akTop, akRight]
+          Caption = '...'
+          OnClick = sbOpenDirClick
+        end
+        object lbMirrorPath: TLabel
+          Left = 8
+          Top = 23
+          Width = 29
+          Height = 13
+          Caption = #1055#1091#1090#1100':'
+        end
+        object edtLocalMirrorPath: TEdit
+          Left = 43
+          Top = 21
+          Width = 494
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          TabOrder = 0
+        end
+      end
+      object gbInetServSettings: TGroupBox
+        Left = 3
+        Top = 18
+        Width = 598
+        Height = 75
+        Caption = '    '
+        TabOrder = 3
+        DesignSize = (
+          598
+          75)
+        object sbOpenDir1: TSpeedButton
+          Left = 543
+          Top = 41
+          Width = 23
+          Height = 22
+          Anchors = [akTop, akRight]
+          Caption = '...'
+          OnClick = sbOpenDirClick
+        end
+        object lbCreateMirrorPath: TLabel
+          Left = 8
+          Top = 44
+          Width = 29
+          Height = 13
+          Caption = #1055#1091#1090#1100':'
+        end
+        object cbCreateLocalMirror: TCheckBox
+          Left = 43
+          Top = 20
+          Width = 297
+          Height = 17
+          Caption = #1057#1086#1079#1076#1072#1074#1072#1090#1100' '#1079#1077#1088#1082#1072#1083#1086' '#1076#1083#1103' '#1086#1073#1085#1086#1083#1077#1085#1080#1081' '#1074' '#1083#1086#1082#1072#1083#1100#1085#1086#1081' '#1089#1077#1090#1080
+          TabOrder = 0
+        end
+        object edtCreateMirrorPath: TEdit
+          Left = 43
+          Top = 42
+          Width = 494
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          TabOrder = 1
+        end
+      end
       object rbInetServer: TRadioButton
         Left = 16
         Top = 16
-        Width = 401
+        Width = 257
         Height = 17
         Caption = #1054#1073#1085#1086#1074#1083#1103#1090#1100#1089#1103' '#1089' '#1080#1085#1090#1077#1088#1085#1077#1090'-'#1089#1077#1088#1074#1077#1088#1072' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
         Checked = True
@@ -353,49 +432,12 @@ object FormProgramSettings: TFormProgramSettings
       end
       object rbLocalMirror: TRadioButton
         Left = 16
-        Top = 39
-        Width = 401
+        Top = 95
+        Width = 203
         Height = 17
         Caption = #1054#1073#1085#1086#1074#1083#1103#1090#1100#1089#1103' '#1089' '#1079#1077#1088#1082#1072#1083#1072' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
         TabOrder = 1
         OnClick = rbInetServerClick
-      end
-      object gbLocalMirrorSettings: TGroupBox
-        Left = 16
-        Top = 62
-        Width = 585
-        Height = 53
-        Anchors = [akLeft, akTop, akRight]
-        Caption = ' '#1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1079#1077#1088#1082#1072#1083#1072' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081' '
-        Enabled = False
-        TabOrder = 2
-        DesignSize = (
-          585
-          53)
-        object sbOpenDir: TSpeedButton
-          Left = 543
-          Top = 18
-          Width = 23
-          Height = 22
-          Anchors = [akTop, akRight]
-          Caption = '...'
-          OnClick = sbOpenDirClick
-        end
-        object lbMirrorPath: TLabel
-          Left = 8
-          Top = 21
-          Width = 29
-          Height = 13
-          Caption = #1055#1091#1090#1100':'
-        end
-        object edtLocalMirrorPath: TEdit
-          Left = 43
-          Top = 19
-          Width = 494
-          Height = 21
-          Anchors = [akLeft, akTop, akRight]
-          TabOrder = 0
-        end
       end
     end
     object tsAll: TTabSheet
@@ -446,9 +488,9 @@ object FormProgramSettings: TFormProgramSettings
         end
       end
       object ButtonDefaultOtherSettings: TButton
-        Left = 391
+        Left = 287
         Top = 295
-        Width = 230
+        Width = 334
         Height = 25
         Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
         TabOrder = 10
@@ -560,7 +602,7 @@ object FormProgramSettings: TFormProgramSettings
       object chkAddRateType0ToPNR: TCheckBox
         Left = 3
         Top = 287
-        Width = 350
+        Width = 279
         Height = 17
         Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1088#1072#1089#1094#1077#1085#1082#1080' '#1074' '#1055#1053#1056
         TabOrder = 12

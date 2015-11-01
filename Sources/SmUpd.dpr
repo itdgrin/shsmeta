@@ -17,7 +17,8 @@ var MHandle: THandle;
     TmpFiles: TStringDynArray;
     DestPath,
     UpdPath,
-    FileName: string;
+    FileName,
+    AppName: string;
     TxFile: TextFile;
     ini: TIniFile;
 
@@ -83,7 +84,13 @@ begin
 
           if (ParamStr(i) = C_UPD_START) then
             StartApp := True;
+
+          if (Pos(C_UPD_APP, ParamStr(i)) = 1) then
+            AppName := Copy(ParamStr(i), Length(C_UPD_APP) + 2, MAX_PATH);
         end;
+
+        UpdPath := StringReplace(UpdPath, '"', '', [rfReplaceAll]);
+        AppName := StringReplace(AppName, '"', '', [rfReplaceAll]);
 
         if (UpdType = 0) or (UpdPath = '') then
           Exit;
@@ -135,17 +142,16 @@ begin
 
         if (UpdType = 1) then
         begin
-          //Жестко забито имя!!! можно добавить отдельный параметр
-          ini := TIniFile.Create(DestPath +  'Smeta.ini');
+          ini := TIniFile.Create(DestPath +  С_UPD_INI);
           try
-            ini.WriteInteger('system', 'version', NewAppVers);
+            ini.WriteInteger('System', 'Version', NewAppVers);
           finally
             FreeAndNil(ini);
           end;
         end;
 
         if StartApp then
-          ShellExecute(0,'open', PChar(DestPath + 'Smeta.exe'),
+          ShellExecute(0,'open', PChar(DestPath + AppName),
             nil, nil ,SW_SHOWNORMAL);
       except
         on e: Exception do

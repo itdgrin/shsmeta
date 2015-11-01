@@ -76,6 +76,11 @@ type
     edtLocalMirrorPath: TEdit;
     sbOpenDir: TSpeedButton;
     lbMirrorPath: TLabel;
+    gbInetServSettings: TGroupBox;
+    cbCreateLocalMirror: TCheckBox;
+    edtCreateMirrorPath: TEdit;
+    sbOpenDir1: TSpeedButton;
+    lbCreateMirrorPath: TLabel;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -99,7 +104,8 @@ type
     procedure sbOpenDirClick(Sender: TObject);
 
   private
-
+    procedure LoadUpdateSettings;
+    procedure SaveUpdateSettings;
   public
 
   end;
@@ -109,7 +115,7 @@ const
 
 implementation
 
-uses Main, DataModule;
+uses Main, GlobsAndConst, DataModule;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -275,24 +281,38 @@ end;
 
 procedure TFormProgramSettings.sbOpenDirClick(Sender: TObject);
 var DirStr: string;
+    TmpType: Byte;
+    TmpDialog: TFileOpenDialog;
 begin
+  TmpType := TComponent(Sender).Tag;
   if Win32MajorVersion >= 6 then
-  with TFileOpenDialog.Create(nil) do
+  begin
+    TmpDialog := TFileOpenDialog.Create(nil);
     try
-      Title := 'Выбор папки';
-      Options := [fdoPickFolders, fdoPathMustExist, fdoForceFileSystem]; // YMMV
-      OkButtonLabel := 'Выбор';
-      DefaultFolder := edtLocalMirrorPath.Text;
-      FileName := edtLocalMirrorPath.Text;
-      if Execute then
-        edtLocalMirrorPath.Text := ExcludeTrailingPathDelimiter(FileName);
+      TmpDialog.Title := 'Выбор папки';
+      TmpDialog.Options := [fdoPickFolders, fdoPathMustExist, fdoForceFileSystem];
+      TmpDialog.OkButtonLabel := 'Выбор';
+      if TmpType = 0 then
+        TmpDialog.DefaultFolder := edtCreateMirrorPath.Text
+      else
+        TmpDialog.DefaultFolder := edtLocalMirrorPath.Text;
+      TmpDialog.FileName := TmpDialog.DefaultFolder;
+      if TmpDialog.Execute then
+        if TmpType = 0 then
+          edtCreateMirrorPath.Text := ExcludeTrailingPathDelimiter(TmpDialog.FileName)
+        else
+          edtLocalMirrorPath.Text := ExcludeTrailingPathDelimiter(TmpDialog.FileName);
     finally
-      Free;
+      FreeAndNil(TmpDialog);
     end
+  end
   else
     if SelectDirectory('Select Directory', ExtractFileDrive(DirStr), DirStr,
                [sdNewUI, sdNewFolder]) then
-      edtLocalMirrorPath.Text := ExcludeTrailingPathDelimiter(DirStr);
+      if TmpType = 0 then
+        edtCreateMirrorPath.Text := ExcludeTrailingPathDelimiter(DirStr)
+      else
+        edtLocalMirrorPath.Text := ExcludeTrailingPathDelimiter(DirStr);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -400,13 +420,17 @@ begin
 
   FormMain.WriteSettingsToFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
+  SaveUpdateSettings;
+
+  //Например какие????
   MessageBox(0, PChar('Некоторые изменения могут быть применены ' + sLineBreak +
     'только после перезапуска программы!'), CaptionForm, MB_ICONINFORMATION + mb_OK + mb_TaskModal);
 
   ButtonSave.Tag := 1;
   if qrMainData.State in [dsEdit, dsInsert] then
     qrMainData.Post;
-  Close;
+
+  ModalResult := mrOk;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -455,6 +479,57 @@ begin
   lblFontText.Font.Name := PS.TextFontName;
   lblFontText.Font.Size := PS.TextFontSize;
   lblFontText.Font.Style := TFontStyles(PS.TextFontStyle);
+
+  LoadUpdateSettings;
+end;
+
+procedure TFormProgramSettings.LoadUpdateSettings;
+var ini: TIniFile;
+begin
+  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) +  С_UPD_INI);
+  try
+    if ini.ReadInteger('System', 'UpdateType', 0) = 0 then
+      rbInetServer.Checked := True
+    else
+      rbLocalMirror.Checked := True;
+
+    if rbInetServer.Checked then
+    begin
+      cbCreateLocalMirror.Checked := ini.ReadBool('System', 'CreateMirror', False);
+      edtCreateMirrorPath.Text := ini.ReadString('System', 'CreateMirrorPath', '');
+    end
+    else
+    begin
+      edtLocalMirrorPath.Text := ini.ReadString('System', 'MirrorPath', '');
+    end;
+  finally
+    FreeAndNil(ini);
+    rbInetServerClick(nil);
+  end;
+end;
+
+procedure TFormProgramSettings.SaveUpdateSettings;
+var ini: TIniFile;
+begin
+  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) +  С_UPD_INI);
+  try
+    if rbInetServer.Checked then
+    begin
+      ini.WriteInteger('System', 'UpdateType', 0);
+      ini.WriteBool('System', 'CreateMirror', cbCreateLocalMirror.Checked);
+      ini.WriteString('System', 'CreateMirrorPath', edtCreateMirrorPath.Text);
+      ini.WriteString('System', 'MirrorPath', '');
+    end
+    else
+    begin
+      ini.WriteInteger('System', 'UpdateType', 1);
+      ini.WriteBool('System', 'CreateMirror', False);
+      ini.WriteString('System', 'CreateMirrorPath', '');
+      ini.WriteString('System', 'MirrorPath', edtLocalMirrorPath.Text);
+    end;
+  finally
+    FreeAndNil(ini);
+  end;
 end;
 
 procedure TFormProgramSettings.lblFontRowClick(Sender: TObject);
@@ -470,8 +545,18 @@ end;
 
 procedure TFormProgramSettings.rbInetServerClick(Sender: TObject);
 begin
+  gbInetServSettings.Enabled := rbInetServer.Checked;
+  cbCreateLocalMirror.Enabled := rbInetServer.Checked;
+  edtCreateMirrorPath.Enabled := rbInetServer.Checked;
+  sbOpenDir1.Enabled := rbInetServer.Checked;
+  lbCreateMirrorPath.Enabled := rbInetServer.Checked;
+
   gbLocalMirrorSettings.Enabled := rbLocalMirror.Checked;
-  if rbLocalMirror.Checked then
+  edtLocalMirrorPath.Enabled := rbLocalMirror.Checked;
+  sbOpenDir.Enabled := rbLocalMirror.Checked;
+  lbMirrorPath.Enabled := rbLocalMirror.Checked;
+
+  if (rbLocalMirror.Checked) and (rbLocalMirror.Focused) then
     edtLocalMirrorPath.SetFocus;
 end;
 

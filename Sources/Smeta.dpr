@@ -176,6 +176,7 @@ begin
       PrmStr := PrmStr + C_UPD_VERS + '=' + IntToStr(G_NEWAPPVERS) + ' ';
     if G_STARTAPP then //Запуск приложения после того как апдейтер отработает
       PrmStr := PrmStr + C_UPD_START + ' ';
+    PrmStr := PrmStr + C_UPD_APP + '="' + ExtractFileName(Application.ExeName) + '" ';
 
     ShellExecute(0,'open',
       PChar(ExtractFilePath(Application.ExeName) + C_UPDATERNAME),

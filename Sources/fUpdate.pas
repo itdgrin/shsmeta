@@ -37,6 +37,7 @@ type
   private
     FCurVersion: TVersion; //Текущая версия приложения
     FSResponse: TServiceResponse;
+    FUpdateType: Byte;
 
     FStopUpdateProc: Boolean;
 
@@ -57,6 +58,7 @@ type
     procedure SetVersion(const AVersion: TVersion;
       const AServiceResponse: TServiceResponse);
     procedure SetArhiv(const AArhiv: TBaseAppArhiv);
+    property UpdateType: Byte read FUpdateType write FUpdateType;
   end;
 
 implementation
@@ -89,7 +91,7 @@ begin
   memProcess.Clear;
   //Запуск процесса обновления
   FUpdateThread := TUpdateThread.Create(Handle, FCurVersion, FSResponse,
-    Application.ExeName);
+    Application.ExeName, FUpdateType);
   FUpdateThread.OnCreateArhivEvent := CheckNeedCreateArhiv;
   FUpdateThread.OnTerminate := OnThreadTerminate;
   FUpdateThread.Start;
