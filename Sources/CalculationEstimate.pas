@@ -4434,6 +4434,7 @@ procedure TFormCalculationEstimate.FormCloseQuery(Sender: TObject; var CanClose:
 var
   DialogResult: Integer;
   docType: String;
+  Tmp: Integer;
 begin
   DialogResult := mrNone;
 
@@ -4442,9 +4443,13 @@ begin
   else
     docType := CaptionButton[2 + TYPE_ACT];
 
+  Tmp := MB_YESNOCANCEL;
+  if G_STARTAPP then
+    Tmp := MB_YESNO;
+
   if (not ActReadOnly) and (PanelCalculationYesNo.Tag = 1) and ConfirmCloseForm then
     DialogResult := MessageBox(0, PChar('Сохранить изменения текущего документа - [' + docType + ']?'),
-      'Смета', MB_ICONINFORMATION + MB_YESNOCANCEL + mb_TaskModal);
+      'Смета', MB_ICONINFORMATION + Tmp + mb_TaskModal);
 
   if DialogResult = mrCancel then
   begin

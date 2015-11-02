@@ -299,7 +299,9 @@ begin
   3, 4:
   begin
     if memProcess.Lines.Count > 0 then
-      memProcess.Lines[memProcess.Lines.Count - 1] := AStrVal;
+      memProcess.Lines[memProcess.Lines.Count - 1] := AStrVal
+    else
+      memProcess.Lines.Add(AStrVal);
   end;
   end;
 

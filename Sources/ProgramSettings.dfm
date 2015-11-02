@@ -341,24 +341,25 @@ object FormProgramSettings: TFormProgramSettings
       object gbLocalMirrorSettings: TGroupBox
         Left = 3
         Top = 98
-        Width = 585
+        Width = 598
         Height = 55
         Anchors = [akLeft, akTop, akRight]
         Caption = '   '
         Enabled = False
         TabOrder = 3
         DesignSize = (
-          585
+          598
           55)
         object sbOpenDir: TSpeedButton
           Tag = 1
-          Left = 543
+          Left = 556
           Top = 20
           Width = 23
           Height = 22
           Anchors = [akTop, akRight]
           Caption = '...'
           OnClick = sbOpenDirClick
+          ExplicitLeft = 543
         end
         object lbMirrorPath: TLabel
           Left = 8
@@ -370,10 +371,11 @@ object FormProgramSettings: TFormProgramSettings
         object edtLocalMirrorPath: TEdit
           Left = 43
           Top = 21
-          Width = 494
+          Width = 507
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 0
+          ExplicitWidth = 494
         end
       end
       object gbInetServSettings: TGroupBox
