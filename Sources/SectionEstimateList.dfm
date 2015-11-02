@@ -10,10 +10,8 @@ object fSectionEstimateList: TfSectionEstimateList
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  FormStyle = fsMDIChild
   OldCreateOrder = False
   Position = poMainFormCenter
-  Visible = True
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
@@ -42,10 +40,8 @@ object fSectionEstimateList: TfSectionEstimateList
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
-    OnDrawColumnCell = grMainDrawColumnCell
     AutoAppend = False
     IniStorage = FormStorage
-    OnTitleBtnClick = grMainTitleBtnClick
     AutoSizeColumns = True
     AutoSizeColumnIndex = 1
     SelectColumnsDialogStrings.Caption = 'Select columns'

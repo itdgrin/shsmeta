@@ -29,6 +29,7 @@ type
       State: TGridDrawState);
     // Процедура стандартной сортировки таблиц
     procedure TitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
+    procedure GridResize(Sender: TObject); // Процедура управляет показом скроллов в таблице
   private
     procedure WMUpdateFormStyle(var Mes: TMessage); message WM_UPDATEFORMSTYLE;
     procedure SetStyleForAllComponents(AComponent: TComponent);
@@ -44,7 +45,7 @@ type
   public
     FormKind: TKindForm;
     constructor Create(AOwner: TComponent); reintroduce; overload;
-    constructor Create(AOwner: TComponent; const AInitParams: Variant); reintroduce;  overload;
+    constructor Create(AOwner: TComponent; const AInitParams: Variant); reintroduce; overload;
   end;
 
   TActivateEvent = procedure(ADataSet: TDataSet; ATag: Integer) of object;
@@ -122,10 +123,10 @@ function MixColors(FG, BG: TColor; T: byte): TColor;
 procedure Exec(AParam: string);
 // Функция получения ширины текста в пикселях внутри окна
 function GetTextWidth(Text: string; W: HWND): Integer;
-//Киляет указанные символы из строки
-function StripCharsInSet(s:string; c:TSysCharSet):string;
+// Киляет указанные символы из строки
+function StripCharsInSet(s: string; c: TSysCharSet): string;
 
-//"Тихие" операции надо объектами файловой системы
+// "Тихие" операции надо объектами файловой системы
 function FullRename(ASource, ATarget: string): Boolean;
 function FullCopy(ASource, ATarget: string): Boolean;
 function FullRemove(ASource: string): Boolean;
@@ -133,7 +134,8 @@ function FullRemove(ASource: string): Boolean;
 implementation
 
 function FullRename(ASource, ATarget: string): Boolean;
-var SHFileOpStruct : TSHFileOpStruct;
+var
+  SHFileOpStruct: TSHFileOpStruct;
 begin
   FillChar(SHFileOpStruct, SizeOf(TSHFileOpStruct), 0);
   SHFileOpStruct.wFunc := FO_RENAME;
@@ -144,7 +146,8 @@ begin
 end;
 
 function FullCopy(ASource, ATarget: string): Boolean;
-var SHFileOpStruct : TSHFileOpStruct;
+var
+  SHFileOpStruct: TSHFileOpStruct;
 begin
   FillChar(SHFileOpStruct, SizeOf(TSHFileOpStruct), 0);
   SHFileOpStruct.wFunc := FO_COPY;
@@ -155,7 +158,8 @@ begin
 end;
 
 function FullRemove(ASource: string): Boolean;
-var SHFileOpStruct : TSHFileOpStruct;
+var
+  SHFileOpStruct: TSHFileOpStruct;
 begin
   FillChar(SHFileOpStruct, SizeOf(TSHFileOpStruct), 0);
   SHFileOpStruct.wFunc := FO_DELETE;
@@ -164,18 +168,19 @@ begin
   Result := SHFileOperation(SHFileOpStruct) = 0;
 end;
 
-function StripCharsInSet(s:string; c:TSysCharSet):string;
-var i,j:Integer;
+function StripCharsInSet(s: string; c: TSysCharSet): string;
+var
+  i, j: Integer;
 begin
-  SetLength(result,Length(s));
-  j:=0;
-  for i:=1 to Length(s) do
+  SetLength(Result, Length(s));
+  j := 0;
+  for i := 1 to Length(s) do
     if not CharInSet(s[i], c) then
     begin
-     inc(j);
-     result[j]:=s[i];
+      inc(j);
+      Result[j] := s[i];
     end;
-  SetLength(result,j);
+  SetLength(Result, j);
 end;
 
 function GetTextWidth(Text: string; W: HWND): Integer;
@@ -184,9 +189,9 @@ var
   sz: SIZE;
 begin
   DC := GetDC(W);
-  GetTextExtentPoint32(DC, PChar(Text), length(Text), sz);
+  GetTextExtentPoint32(DC, PChar(Text), Length(Text), sz);
   ReleaseDC(W, DC);
-  result := sz.cx;
+  Result := sz.cx;
 end;
 
 function Expand(const AParam: string): string;
@@ -194,8 +199,8 @@ var
   buf: array [0 .. $FF] of char;
   SIZE: Integer;
 begin
-  SIZE := ExpandEnvironmentStrings(PChar(AParam), buf, sizeof(buf));
-  result := copy(buf, 1, SIZE);
+  SIZE := ExpandEnvironmentStrings(PChar(AParam), buf, SizeOf(buf));
+  Result := copy(buf, 1, SIZE);
 end;
 
 procedure Exec(AParam: string);
@@ -295,17 +300,17 @@ var
   DataPtr: Pointer;
   i: Integer;
 begin
-  if length(SmClipArray) = 0 then
+  if Length(SmClipArray) = 0 then
     Exit;
 
-  Data := GlobalAlloc(GMEM_MOVEABLE, sizeof(Integer) + sizeof(TSmClipRec) * length(SmClipArray));
+  Data := GlobalAlloc(GMEM_MOVEABLE, SizeOf(Integer) + SizeOf(TSmClipRec) * Length(SmClipArray));
   try
     DataPtr := GlobalLock(Data);
     try
-      i := length(SmClipArray);
-      Move(i, DataPtr^, sizeof(Integer));
-      DataPtr := Ptr(Cardinal(DataPtr) + sizeof(Integer));
-      Move(SmClipArray[0], DataPtr^, sizeof(TSmClipRec) * length(SmClipArray));
+      i := Length(SmClipArray);
+      Move(i, DataPtr^, SizeOf(Integer));
+      DataPtr := Ptr(Cardinal(DataPtr) + SizeOf(Integer));
+      Move(SmClipArray[0], DataPtr^, SizeOf(TSmClipRec) * Length(SmClipArray));
       ClipBoard.SetAsHandle(G_SMETADATA, Data);
     finally
       GlobalUnlock(Data);
@@ -327,12 +332,12 @@ begin
     Exit;
   DataPtr := GlobalLock(Data);
   try
-    Move(DataPtr^, i, sizeof(Integer));
+    Move(DataPtr^, i, SizeOf(Integer));
     SetLength(SmClipArray, i);
     if i = 0 then
       Exit;
-    DataPtr := Ptr(Cardinal(DataPtr) + sizeof(Integer));
-    Move(DataPtr^, SmClipArray[0], sizeof(TSmClipRec) * length(SmClipArray));
+    DataPtr := Ptr(Cardinal(DataPtr) + SizeOf(Integer));
+    Move(DataPtr^, SmClipArray[0], SizeOf(TSmClipRec) * Length(SmClipArray));
   finally
     GlobalUnlock(Data);
   end;
@@ -343,7 +348,7 @@ var
   qr: TFDQuery;
   i: Integer;
 begin
-  result := Null;
+  Result := Null;
   qr := TFDQuery.Create(nil);
   try
     // Получаем только 1 запись
@@ -364,7 +369,7 @@ begin
     qr.Active := True;
     qr.First;
     if qr.FieldCount > 0 then
-      result := qr.Fields[0].Value;
+      Result := qr.Fields[0].Value;
     qr.Active := False;
   finally
     FreeAndNil(qr);
@@ -402,15 +407,15 @@ var
   ProcInf: TProcessInformation;
   Start: TStartupInfo;
 begin
-  FillChar(Start, sizeof(TStartupInfo), 0);
+  FillChar(Start, SizeOf(TStartupInfo), 0);
   with Start do
   begin
-    cb := sizeof(TStartupInfo);
+    cb := SizeOf(TStartupInfo);
     dwFlags := STARTF_USESHOWWINDOW;
     wShowWindow := SW_HIDE;
   end;
 
-  result := CreateProcess(AAppName, ACmdLine, nil, nil, False, NORMAL_PRIORITY_CLASS, nil, nil,
+  Result := CreateProcess(AAppName, ACmdLine, nil, nil, False, NORMAL_PRIORITY_CLASS, nil, nil,
     Start, ProcInf);
 
   if ATimeout = 0 then
@@ -430,7 +435,7 @@ procedure KillDir(const ADirName: string);
 var
   FileFolderOperation: TSHFileOpStruct;
 begin
-  FillChar(FileFolderOperation, sizeof(FileFolderOperation), 0);
+  FillChar(FileFolderOperation, SizeOf(FileFolderOperation), 0);
   FileFolderOperation.wFunc := FO_DELETE;
   FileFolderOperation.pFrom := PChar(ExcludeTrailingPathDelimiter(ADirName) + #0);
   FileFolderOperation.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
@@ -439,9 +444,9 @@ end;
 
 function CheckQrActiveEmpty(const ADataSet: TDataSet): Boolean;
 begin
-  result := True;
+  Result := True;
   if not ADataSet.Active or ADataSet.IsEmpty then
-    result := False;
+    Result := False;
 end;
 
 procedure CloseOpen(const Query: TFDQuery; ADisableControls: Boolean = True);
@@ -475,7 +480,7 @@ var
   Res: Variant;
   i: Integer;
 begin
-  result := Null;
+  Result := Null;
   if not CheckQrActiveEmpty(Query) then
     Exit;
 
@@ -505,7 +510,7 @@ begin
 
     if key <> Null then
       Query.Locate(Query.Fields[0].FieldName, key, []);
-    result := Res;
+    Result := Res;
   finally
     Query.AfterScroll := e;
     Query.EnableControls;
@@ -530,7 +535,7 @@ begin
   begin
     TotWidth := TotWidth + DBGrid.Columns[i].Width;
     // if DBGrid.Columns[i].Field.Tag <> 0 then
-    Inc(ResizableColumnCount);
+    inc(ResizableColumnCount);
   end;
 
   if dgColLines in DBGrid.Options then
@@ -607,7 +612,7 @@ begin
   DS := FormatSettings.DecimalSeparator;
   try
     FormatSettings.DecimalSeparator := '.';
-    result := FloatToStr(Value);
+    Result := FloatToStr(Value);
   finally
     FormatSettings.DecimalSeparator := DS;
   end;
@@ -620,10 +625,10 @@ begin
   DS := FormatSettings.DecimalSeparator;
   try
     FormatSettings.DecimalSeparator := '.';
-    if not TextToFloat(Value, result, FormatSettings) then
+    if not TextToFloat(Value, Result, FormatSettings) then
     begin
       FormatSettings.DecimalSeparator := ',';
-      result := StrToFloat(Value);
+      Result := StrToFloat(Value);
     end;
   finally
     FormatSettings.DecimalSeparator := DS;
@@ -637,7 +642,7 @@ begin
   DS := FormatSettings.DecimalSeparator;
   try
     FormatSettings.DecimalSeparator := '.';
-    result := CurrToStr(Value);
+    Result := CurrToStr(Value);
   finally
     FormatSettings.DecimalSeparator := DS;
   end;
@@ -650,10 +655,10 @@ begin
   DS := FormatSettings.DecimalSeparator;
   try
     FormatSettings.DecimalSeparator := '.';
-    if not TextToFloat(Value, result, FormatSettings) then
+    if not TextToFloat(Value, Result, FormatSettings) then
     begin
       FormatSettings.DecimalSeparator := ',';
-      result := StrToCurr(Value);
+      Result := StrToCurr(Value);
     end;
   finally
     FormatSettings.DecimalSeparator := DS;
@@ -667,11 +672,11 @@ begin
   DS := FormatSettings.DecimalSeparator;
   try
     FormatSettings.DecimalSeparator := '.';
-    if not TextToFloat(Value, result, FormatSettings) then
+    if not TextToFloat(Value, Result, FormatSettings) then
     begin
       FormatSettings.DecimalSeparator := ',';
-      if not TextToFloat(Value, result, FormatSettings) then
-        result := DefRes;
+      if not TextToFloat(Value, Result, FormatSettings) then
+        Result := DefRes;
     end;
   finally
     FormatSettings.DecimalSeparator := DS;
@@ -680,20 +685,20 @@ end;
 
 function GetUniDictParamValue(const AParamName: string; const AMonth, AYear: Integer): Variant;
 begin
-  result := FastSelectSQLOne('SELECT `FN_getParamValue`(:inPARAM_CODE, :inMONTH, :inYEAR)',
+  Result := FastSelectSQLOne('SELECT `FN_getParamValue`(:inPARAM_CODE, :inMONTH, :inYEAR)',
     VarArrayOf([AParamName, AMonth, AYear]));
 end;
 
 function UpdateIterator(ADestSmID, AIterator, AFromRate: Integer): Integer;
 begin
-  result := FastSelectSQLOne('Select UpdateIterator(:IdEstimate, :AIterator, :AFromRate)',
+  Result := FastSelectSQLOne('Select UpdateIterator(:IdEstimate, :AIterator, :AFromRate)',
     VarArrayOf([ADestSmID, AIterator, AFromRate]));
 end;
 
 function MixColors(FG, BG: TColor; T: byte): TColor;
   function MixBytes(FG, BG, TRANS: byte): byte;
   begin
-    result := round(BG + (FG - BG) / 255 * TRANS);
+    Result := round(BG + (FG - BG) / 255 * TRANS);
   end;
 
 var
@@ -702,7 +707,7 @@ begin
   r := MixBytes(FG and 255, BG and 255, T); // extracting and mixing Red
   g := MixBytes((FG shr 8) and 255, (BG shr 8) and 255, T); // the same with green
   b := MixBytes((FG shr 16) and 255, (BG shr 16) and 255, T); // and blue, of course
-  result := r + g * 256 + b * 65536; // finishing with combining all channels together
+  Result := r + g * 256 + b * 65536; // finishing with combining all channels together
 end;
 
 { TSmForm }
@@ -775,7 +780,7 @@ end;
 
 constructor TSmForm.Create(AOwner: TComponent);
 begin
-  InitParams := NULL; // Инициализационные параметны
+  InitParams := Null; // Инициализационные параметны
   inherited Create(AOwner);
   SetFormStyle;
 end;
@@ -811,6 +816,16 @@ begin
     end;
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TSmForm.GridResize(Sender: TObject);
+begin
+  {
+    if (Sender AS TJvDBGrid).DataSource.DataSet.RecordCount > (Sender AS TJvDBGrid).VisibleRowCount then
+    (Sender AS TJvDBGrid).ScrollBars := ssBoth
+    else
+    (Sender AS TJvDBGrid).ScrollBars := ssHorizontal;
+  }
 end;
 
 procedure TSmForm.SetComponentStyle(AComponent: TComponent);
@@ -900,6 +915,8 @@ begin
     LoadDBGridSettings(TJvDBGrid(AComponent));
     if not Assigned(TJvDBGrid(AComponent).OnDrawColumnCell) then
       TJvDBGrid(AComponent).OnDrawColumnCell := DrawColumnCell;
+    if not Assigned(TJvDBGrid(AComponent).OnResize) then
+      TJvDBGrid(AComponent).OnResize := GridResize;
     if not(Assigned(TJvDBGrid(AComponent).OnTitleBtnClick)) and (dgTitleClick in TJvDBGrid(AComponent).Options)
     then
       TJvDBGrid(AComponent).OnTitleBtnClick := TitleBtnClick;

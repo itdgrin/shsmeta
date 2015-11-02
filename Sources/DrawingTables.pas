@@ -26,9 +26,11 @@ procedure StringGridDrawCellDefault(Sender: TObject; ACol, ARow: Integer; Rect: 
 begin
   // Так как свойство таблицы DefaultDrawing отключено (иначе ячейка таблицы будет обведена пунктирной линией)
   // необходимо самому прорисовывать шапку и все строки таблицы
-
   with (Sender as TStringGrid) do
   begin
+    Canvas.Font.Size := PS.GridFontSize;
+    Canvas.Font.Name := PS.GridFontName;
+    Canvas.Font.Style := TFontStyles(PS.GridFontStyle);
     // Прорисовка шапки таблицы
     if (ARow = 0) or (ACol = 0) then
     begin

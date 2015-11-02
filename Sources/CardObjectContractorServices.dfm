@@ -80,7 +80,7 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgEditing, dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
@@ -90,7 +90,6 @@ object fCardObjectContractorServices: TfCardObjectContractorServices
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
-    OnDrawColumnCell = grMainDrawColumnCell
     AutoAppend = False
     PostOnEnterKey = True
     ScrollBars = ssNone

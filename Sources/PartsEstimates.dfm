@@ -41,10 +41,8 @@ object fPartsEstimates: TfPartsEstimates
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
-    OnDrawColumnCell = grMainDrawColumnCell
     AutoAppend = False
     IniStorage = FormStorage
-    OnTitleBtnClick = grMainTitleBtnClick
     ScrollBars = ssNone
     AutoSizeColumns = True
     AutoSizeColumnIndex = 1
