@@ -346,7 +346,7 @@ object FormProgramSettings: TFormProgramSettings
         Anchors = [akLeft, akTop, akRight]
         Caption = '   '
         Enabled = False
-        TabOrder = 2
+        TabOrder = 3
         DesignSize = (
           585
           55)
@@ -382,7 +382,7 @@ object FormProgramSettings: TFormProgramSettings
         Width = 598
         Height = 75
         Caption = '    '
-        TabOrder = 3
+        TabOrder = 1
         DesignSize = (
           598
           75)
@@ -436,7 +436,7 @@ object FormProgramSettings: TFormProgramSettings
         Width = 203
         Height = 17
         Caption = #1054#1073#1085#1086#1074#1083#1103#1090#1100#1089#1103' '#1089' '#1079#1077#1088#1082#1072#1083#1072' '#1086#1073#1085#1086#1074#1083#1077#1085#1080#1081
-        TabOrder = 1
+        TabOrder = 2
         OnClick = rbInetServerClick
       end
     end
@@ -493,7 +493,7 @@ object FormProgramSettings: TFormProgramSettings
         Width = 334
         Height = 25
         Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
-        TabOrder = 10
+        TabOrder = 12
         OnClick = ButtonDefaultOtherSettingsClick
       end
       object CheckBoxShowHint: TCheckBox
@@ -597,7 +597,7 @@ object FormProgramSettings: TFormProgramSettings
         Width = 279
         Height = 17
         Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1087#1091#1089#1082#1086#1085#1072#1083#1072#1076#1082#1091' '#1074' '#1083#1086#1082#1072#1083#1100#1085#1099#1077
-        TabOrder = 11
+        TabOrder = 10
       end
       object chkAddRateType0ToPNR: TCheckBox
         Left = 3
@@ -605,7 +605,7 @@ object FormProgramSettings: TFormProgramSettings
         Width = 279
         Height = 17
         Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1088#1072#1089#1094#1077#1085#1082#1080' '#1074' '#1055#1053#1056
-        TabOrder = 12
+        TabOrder = 11
       end
     end
   end

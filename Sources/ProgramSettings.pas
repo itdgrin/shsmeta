@@ -7,7 +7,7 @@ uses
   ExtCtrls, UITypes, Tools, FileCtrl,
   Grids, IniFiles, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Buttons;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Buttons, Vcl.DBGrids, JvExDBGrids, JvDBGrid;
 
 type
   TFormProgramSettings = class(TSmForm)
@@ -205,6 +205,9 @@ begin
 
   with (Sender as TStringGrid) do
   begin
+    Canvas.Font.Size := lblFontRow.Font.Size;
+    Canvas.Font.Name := lblFontRow.Font.Name;
+    Canvas.Font.Style := lblFontRow.Font.Style;
     // Прорисовка шапки таблицы
     if (ARow = 0) or (ACol = 0) then
     begin
@@ -538,6 +541,7 @@ begin
   if dlgFont1.Execute then
   begin
     (Sender AS TLabel).Font := dlgFont1.Font;
+    StringGridDemo.Repaint;
   end;
   btnExample.Font := lblFontControls.Font;
   edtExample.Font := lblFontText.Font;

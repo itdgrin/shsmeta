@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdCtrls, Vcl.Buttons, Vcl.Grids, Vcl.DBGrids,
-  JvExDBGrids, JvDBGrid, Vcl.ExtCtrls, DataModule, Tools, Main, JvComponentBase, JvFormPlacement;
+  JvExDBGrids, JvDBGrid, Vcl.ExtCtrls, DataModule, Tools, Main, JvComponentBase, JvFormPlacement, Vcl.Menus;
 
 type
   TfDebugTables = class(TSmForm)
@@ -23,12 +23,19 @@ type
     FormStorage: TJvFormStorage;
     chkAutoUpdate: TCheckBox;
     tmr1: TTimer;
+    lbl1: TLabel;
+    edtTableName: TEdit;
+    btnAddTable: TBitBtn;
+    pm1: TPopupMenu;
+    mN1: TMenuItem;
     procedure btnRefreshClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure tmr1Timer(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
+    procedure btnAddTableClick(Sender: TObject);
+    procedure mN1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -41,6 +48,11 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TfDebugTables.btnAddTableClick(Sender: TObject);
+begin
+  lst.Items.Add(Trim(edtTableName.Text));
+end;
 
 procedure TfDebugTables.btnRefreshClick(Sender: TObject);
 var
@@ -75,12 +87,19 @@ end;
 
 procedure TfDebugTables.FormDeactivate(Sender: TObject);
 begin
-  fDebugTables.AlphaBlendValue := 140;
+  fDebugTables.AlphaBlendValue := 160;
 end;
 
 procedure TfDebugTables.FormDestroy(Sender: TObject);
 begin
   fDebugTables := nil;
+end;
+
+procedure TfDebugTables.mN1Click(Sender: TObject);
+begin
+  if lst.ItemIndex = -1 then
+    Exit;
+  lst.DeleteSelected;
 end;
 
 procedure TfDebugTables.tmr1Timer(Sender: TObject);

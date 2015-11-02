@@ -2284,9 +2284,9 @@ object fCalcResource: TfCalcResource
       '  COALESCE(RATE_COUNT, 0) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       ''
       
-        '  data_row_temp.TRUD / COALESCE(RATE_COUNT, 0) AS TRUD_ONE, /* '#1090 +
-        #1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' '#1085#1072' '#1077#1076'. */'
-      '  data_row_temp.TRUD AS TRUD, /* '#1090#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' */'
+        '  ROUND(data_row_temp.TRUD / COALESCE(RATE_COUNT, 0), 2) AS TRUD' +
+        '_ONE, /* '#1090#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' '#1085#1072' '#1077#1076'. */'
+      '  ROUND(data_row_temp.TRUD, 2) AS TRUD, /* '#1090#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099' */'
       '  data_row_temp.K_TRUD, /* '#1082#1086#1101#1092'. '#1082' '#1076#1088#1091#1076' */'
       
         '  (SELECT norma FROM normativwork WHERE normativ_id = card_rate_' +

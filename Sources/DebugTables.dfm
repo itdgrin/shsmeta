@@ -35,10 +35,6 @@ object fDebugTables: TfDebugTables
     Height = 417
     Align = alClient
     TabOrder = 2
-    ExplicitLeft = 0
-    ExplicitTop = 41
-    ExplicitWidth = 487
-    ExplicitHeight = 247
     object spl1: TSplitter
       Left = 0
       Top = 0
@@ -80,10 +76,16 @@ object fDebugTables: TfDebugTables
     Height = 33
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 487
     DesignSize = (
       722
       33)
+    object lbl1: TLabel
+      Left = 175
+      Top = 9
+      Width = 99
+      Height = 13
+      Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1090#1072#1073#1083#1080#1094#1099':'
+    end
     object btnRefresh: TBitBtn
       Left = 641
       Top = 4
@@ -91,9 +93,8 @@ object fDebugTables: TfDebugTables
       Height = 25
       Anchors = [akTop, akRight]
       Caption = #1054#1073#1085#1086#1074#1080#1090#1100
-      TabOrder = 0
+      TabOrder = 1
       OnClick = btnRefreshClick
-      ExplicitLeft = 406
     end
     object chkAutoUpdate: TCheckBox
       Left = 10
@@ -101,7 +102,23 @@ object fDebugTables: TfDebugTables
       Width = 167
       Height = 17
       Caption = #1054#1073#1085#1086#1074#1083#1103#1090#1100' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
-      TabOrder = 1
+      TabOrder = 3
+    end
+    object edtTableName: TEdit
+      Left = 280
+      Top = 6
+      Width = 121
+      Height = 21
+      TabOrder = 2
+    end
+    object btnAddTable: TBitBtn
+      Left = 407
+      Top = 4
+      Width = 75
+      Height = 25
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      TabOrder = 0
+      OnClick = btnAddTableClick
     end
   end
   object lst: TListBox
@@ -114,7 +131,10 @@ object fDebugTables: TfDebugTables
     Items.Strings = (
       'data_row_temp'
       'calculation_coef_temp')
+    PopupMenu = pm1
     TabOrder = 1
+    ExplicitLeft = -1
+    ExplicitTop = 31
   end
   object ds1: TDataSource
     DataSet = qr1
@@ -145,5 +165,13 @@ object fDebugTables: TfDebugTables
     OnTimer = tmr1Timer
     Left = 460
     Top = 209
+  end
+  object pm1: TPopupMenu
+    Left = 24
+    Top = 128
+    object mN1: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      OnClick = mN1Click
+    end
   end
 end
