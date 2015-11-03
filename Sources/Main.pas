@@ -626,10 +626,10 @@ begin
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   // Объект для управления архивом
-  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
-    C_ARHDIR);
-  // путь к папке с отчетами (Вадим)
+  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName),
+    ExtractFilePath(Application.ExeName) + C_ARHDIR);
 
+  // путь к папке с отчетами (Вадим)
   // {$IFDEF DEBUG}
   // FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
   // - 12) + C_REPORTDIR;

@@ -2518,10 +2518,11 @@ begin
         sLineBreak + 'Подтверждаете удаление?';
     -3:
       TextWarning := 'Вы действительно хотите удалить раздел ПТМ с номером: ' + NumberEstimate;
+    else Exit;
   end;
 
-  if MessageBox(0, PChar(TextWarning), PWideChar(Caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo
-  then
+  if MessageBox(0, PChar(TextWarning), PWideChar(Caption),
+    MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
     Exit;
 
   try
@@ -5565,12 +5566,18 @@ begin
   qrTemp.Active := False;
   mAddPTM.Visible := (mainType <> 3) and not(Act and (TYPE_ACT = 0));
   mAddLocal.Visible := (mainType = 2) and not(Act and (TYPE_ACT = 0));
-  mDelEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and
-    ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or (qrRatesExID_TYPE_DATA.AsInteger <> -5));
-  mEditEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and
-    ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or (qrRatesExID_TYPE_DATA.AsInteger <> -5));
-  mBaseData.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and
-    ((qrRatesExID_TYPE_DATA.AsInteger <> -4) or (qrRatesExID_TYPE_DATA.AsInteger <> -5));;
+  mDelEstimate.Visible :=
+    (qrRatesExID_TYPE_DATA.AsInteger < 0) and
+    (qrRatesExID_TYPE_DATA.AsInteger <> -4) and
+    (qrRatesExID_TYPE_DATA.AsInteger <> -5);
+  mEditEstimate.Visible :=
+    (qrRatesExID_TYPE_DATA.AsInteger < 0) and
+    (qrRatesExID_TYPE_DATA.AsInteger <> -4) and
+    (qrRatesExID_TYPE_DATA.AsInteger <> -5);
+  mBaseData.Visible :=
+    (qrRatesExID_TYPE_DATA.AsInteger < 0) and
+    (qrRatesExID_TYPE_DATA.AsInteger <> -4) and
+    (qrRatesExID_TYPE_DATA.AsInteger <> -5);
   mBaseData.Caption := 'Исходные данные - ' + qrRatesExOBJ_CODE.AsString;
 end;
 
