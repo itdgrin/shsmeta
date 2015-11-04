@@ -557,6 +557,11 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       ImageIndex = 52
       OnClick = mN6Click
     end
+    object mObjectAccess: TMenuItem
+      Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1087#1088#1072#1074' '#1076#1086#1089#1090#1091#1087#1072
+      ImageIndex = 65
+      OnClick = mObjectAccessClick
+    end
   end
   object pmEstimates: TPopupMenu
     Images = DM.ilIcons_16x16
@@ -640,6 +645,11 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
       OnClick = mShowDeletedEstimatesClick
     end
+    object mEstimateAccess: TMenuItem
+      Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1087#1088#1072#1074' '#1076#1086#1089#1090#1091#1087#1072
+      ImageIndex = 65
+      OnClick = mEstimateAccessClick
+    end
   end
   object pmActs: TPopupMenu
     Images = DM.ilIcons_16x16
@@ -719,8 +729,14 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1091#1076#1072#1083#1077#1085#1085#1099#1077
       OnClick = mShowDeletedActsClick
     end
+    object mActAccess: TMenuItem
+      Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1087#1088#1072#1074' '#1076#1086#1089#1090#1091#1087#1072
+      ImageIndex = 65
+      OnClick = mActAccessClick
+    end
   end
   object qrActsEx: TFDQuery
+    BeforeOpen = qrObjectsBeforeOpen
     AfterOpen = qrActsExAfterOpen
     AfterScroll = qrActsExAfterOpen
     MasterSource = dsObjects
@@ -745,12 +761,16 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       
         '  CONCAT(IF(FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), IFNULL(TRIM(name), ""), I' +
         'F(DELETED=1, "-", "")) AS ITEAM_NAME,'
-      '  DELETED, FL_USE, DATE, NAME, TYPE_ACT'
+      '  DELETED, FL_USE, DATE, NAME, TYPE_ACT, USER_ID'
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2'
       '  AND OBJ_ID=:OBJ_ID'
       '  AND ((DELETED=0) OR (:SHOW_DELETED=1))'
       '  AND ACT=1'
+      
+        '  AND ((:USER_ID=1) OR (USER_ID=:USER_ID) OR EXISTS(SELECT USER_' +
+        'ID FROM user_access WHERE DOC_TYPE_ID=1 AND MASTER_ID=SM_ID AND ' +
+        '((USER_ID=0) OR (USER_ID=:USER_ID)) LIMIT 1))'
       ''
       'UNION ALL'
       ''
@@ -773,12 +793,16 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       'END)) AS ITEAM_NAME,'
       
         '0 AS DELETED, NULL AS FL_USE, DATE, NULL AS NAME, NULL AS TYPE_A' +
-        'CT'
+        'CT, NULL AS USER_ID'
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2'
       '  AND OBJ_ID=:OBJ_ID'
       '  AND ((DELETED=0) OR (:SHOW_DELETED=1))'
       '  AND ACT=1'
+      
+        '  AND ((:USER_ID=1) OR (USER_ID=:USER_ID) OR EXISTS(SELECT USER_' +
+        'ID FROM user_access WHERE DOC_TYPE_ID=1 AND MASTER_ID=SM_ID AND ' +
+        '((USER_ID=0) OR (USER_ID=:USER_ID)) LIMIT 1))'
       'GROUP BY (YEAR(date)*12+MONTH(date))'
       'ORDER BY DATE, 3')
     Left = 377
@@ -791,9 +815,14 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       item
         Name = 'SHOW_DELETED'
         ParamType = ptInput
+      end
+      item
+        Name = 'USER_ID'
+        ParamType = ptInput
       end>
   end
   object qrObjects: TFDQuery
+    BeforeOpen = qrObjectsBeforeOpen
     AfterOpen = qrObjectsAfterOpen
     AfterScroll = qrObjectsAfterScroll
     Connection = DM.Connect
@@ -840,7 +869,8 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       '       encrypt                AS "CodeObject",'
       '       calc_econom            AS "CalculationEconom",'
       '       obj_id,'
-      '       objcards.DEL_FLAG'
+      '       objcards.DEL_FLAG,'
+      '       objcards.USER_ID'
       'FROM   objcards,'
       '       istfin,'
       '       objcategory,'
@@ -852,6 +882,11 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       '       AND objcards.base_norm_id = baseprices.base_id'
       '       AND objcards.stroj_id = objstroj.stroj_id'
       '       AND ((objcards.DEL_FLAG=0) OR (:SHOW_DELETED=1))'
+      
+        '       AND ((:USER_ID=1) OR (objcards.USER_ID=:USER_ID) OR EXIST' +
+        'S(SELECT USER_ID FROM user_access WHERE DOC_TYPE_ID=2 AND MASTER' +
+        '_ID=objcards.obj_id AND ((USER_ID=0) OR (USER_ID=:USER_ID)) LIMI' +
+        'T 1))'
       'ORDER BY num, num_dog,objcards.full_name')
     Left = 33
     Top = 72
@@ -861,6 +896,10 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         DataType = ftString
         ParamType = ptInput
         Value = '0'
+      end
+      item
+        Name = 'USER_ID'
+        ParamType = ptInput
       end>
   end
   object dsActs: TDataSource
@@ -874,6 +913,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     Top = 392
   end
   object qrTreeData: TFDQuery
+    BeforeOpen = qrObjectsBeforeOpen
     AfterOpen = qrTreeDataAfterOpen
     AfterScroll = qrTreeDataAfterOpen
     MasterSource = dsObjects
@@ -887,26 +927,16 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       
         'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(IFNULL(SM_NUMBER, ""), " "' +
         ',  IFNULL(NAME, ""), IF(DELETED=1, "-", "")) as NAME,'
-      '       PARENT_ID as PARENT, DELETED'
+      '       PARENT_ID as PARENT, DELETED, USER_ID'
       'FROM smetasourcedata'
-      'WHERE /*SM_TYPE=2'
-      '  AND*/ OBJ_ID=:OBJ_ID'
+      'WHERE OBJ_ID=:OBJ_ID'
       '  AND ((DELETED=0) OR (:SHOW_DELETED=1))'
       '  AND ACT=0'
-      'ORDER BY NAME'
-      '/*'
-      'UNION ALL'
       
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(IFNULL(SM_NUMBER, ""), " "' +
-        ',  IFNULL(NAME, ""), IF(DELETED=1, "-", "")) as NAME,'
-      '       PARENT_ID as PARENT, DELETED '
-      'FROM smetasourcedata'
-      'WHERE SM_TYPE<>2 AND '
-      '      OBJ_ID=:OBJ_ID'
-      '      AND ((DELETED=0) OR (:SHOW_DELETED=1))'
-      '  AND ACT=0'
-      ''
-      '*/')
+        '  AND ((:USER_ID=1) OR (USER_ID=:USER_ID) OR EXISTS(SELECT USER_' +
+        'ID FROM user_access WHERE DOC_TYPE_ID=1 AND MASTER_ID=SM_ID AND ' +
+        '((USER_ID=0) OR (USER_ID=:USER_ID)) LIMIT 1))'
+      'ORDER BY NAME')
     Left = 25
     Top = 344
     ParamData = <
@@ -922,6 +952,10 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         DataType = ftInteger
         ParamType = ptInput
         Value = 0
+      end
+      item
+        Name = 'USER_ID'
+        ParamType = ptInput
       end>
   end
   object SaveDialog: TSaveDialog

@@ -613,12 +613,13 @@ begin
         NEW_ID := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_OBJ]));
         SQL.Add('INSERT INTO objcards (obj_id, num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '
           + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
-          ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV) ' +
+          ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV, USER_ID) ' +
           'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "'
           + v6 + '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 + '", :snds, "' +
           v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
-          '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV);');
+          '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV, :USER_ID);');
         ParamByName('NEW_ID').Value := NEW_ID;
+        ParamByName('USER_ID').Value := G_USER_ID;
         OUT_ID_OBJECT := NEW_ID;
       end;
       ParamByName('PER_TEMP_BUILD').Value := qrMain.FieldByName('PER_TEMP_BUILD').Value;

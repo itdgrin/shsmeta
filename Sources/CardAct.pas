@@ -158,6 +158,7 @@ procedure TfCardAct.ButtonSaveClick(Sender: TObject);
     qrMain.FieldByName('obj_id').AsInteger := qrTemp.FieldByName('obj_id').Value;
     qrMain.FieldByName('parent_id').AsInteger := aParentID;
     qrMain.FieldByName('ACT').Value := qrTemp.FieldByName('ACT').Value;
+    qrMain.FieldByName('USER_ID').Value := qrTemp.FieldByName('USER_ID').Value;
     qrMain.FieldByName('TYPE_ACT').Value := qrTemp.FieldByName('TYPE_ACT').Value;
     qrMain.FieldByName('FL_USE').Value := qrTemp.FieldByName('FL_USE').Value;
     qrMain.FieldByName('DESCRIPTION').Value := qrTemp.FieldByName('DESCRIPTION').Value;
@@ -269,9 +270,9 @@ begin
 
             SQL.Clear;
             SQL.Add('INSERT INTO smetasourcedata (SM_ID,OBJ_ID,name,description,date,foreman_id,ACT,'#13 +
-              'TYPE_ACT,SM_TYPE,PARENT_ID,MAIS_ID,nds,stavka_id,KZP,k31,k32,k33,k34,k35,coef_tr_obor,SM_NUMBER) '
+              'TYPE_ACT,SM_TYPE,PARENT_ID,MAIS_ID,nds,stavka_id,KZP,k31,k32,k33,k34,k35,coef_tr_obor,SM_NUMBER,USER_ID) '
               + 'VALUE (:ID, :OBJ_ID, :name, :description, :date, :foreman_id, 1, :TYPE_ACT, 2, 0,'#13 +
-              ':MAIS_ID,:nds,:stavka_id,:KZP,:k31,:k32,:k33,:k34,:k35,:coef_tr_obor,:SM_NUMBER);');
+              ':MAIS_ID,:nds,:stavka_id,:KZP,:k31,:k32,:k33,:k34,:k35,:coef_tr_obor,:SM_NUMBER,:USER_ID);');
             ParamByName('ID').Value := NewID;
             ParamByName('name').Value := dbedtNAME.Text;
             ParamByName('description').Value := dbmmoDESCRIPTION.Text;
@@ -282,6 +283,7 @@ begin
             ParamByName('MAIS_ID').Value := MAIS_ID;
             ParamByName('nds').Value := VAT;
             ParamByName('stavka_id').Value := IdStavka;
+            ParamByName('USER_ID').Value := G_USER_ID;
             ParamByName('KZP').Value := GetUniDictParamValue('K_KORR_ZP', vMonth, vYear);
             ParamByName('k31').Value := GetUniDictParamValue('K_OXR_OPR_270', vMonth, vYear);
             ParamByName('k32').Value := GetUniDictParamValue('K_PLAN_PRIB_270', vMonth, vYear);

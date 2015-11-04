@@ -114,7 +114,7 @@ begin
       pgc1.ActivePageIndex := 1;
       Exit;
     end;
-    G_USER_ID := -1;
+    G_USER_ID := 1;
     G_CONNECTSTR := dm.Connect.Params.Text; // Передаем назад строку подключения
     ModalResult := mrOk;
   end;

@@ -311,6 +311,7 @@ procedure TfCardEstimate.btnSaveClick(Sender: TObject);
     qrMain.FieldByName('obj_id').AsInteger := IdObject;
     qrMain.FieldByName('parent_id').AsInteger := aParentID;
     qrMain.FieldByName('SM_SUBTYPE').Value := qrTemp.FieldByName('SM_SUBTYPE').Value;
+    qrMain.FieldByName('USER_ID').Value := qrTemp.FieldByName('USER_ID').Value;
     qrMain.FieldByName('ACT').Value := qrTemp.FieldByName('ACT').Value;
     qrMain.FieldByName('TYPE_ACT').Value := qrTemp.FieldByName('TYPE_ACT').Value;
     qrMain.FieldByName('FL_USE').Value := qrTemp.FieldByName('FL_USE').Value;
@@ -480,6 +481,7 @@ begin
       qrMain.FieldByName('obj_id').AsInteger := IdObject;
       qrMain.FieldByName('date').AsDateTime := DateCompose;
       qrMain.FieldByName('nds').AsInteger := VAT;
+      qrMain.FieldByName('USER_ID').AsInteger := G_USER_ID;
       if TypeEstimate = 1 then
         qrMain.FieldByName('SM_SUBTYPE').Value := cbbType.ItemIndex + 1;
 

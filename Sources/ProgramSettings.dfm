@@ -375,7 +375,6 @@ object FormProgramSettings: TFormProgramSettings
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 0
-          ExplicitWidth = 494
         end
       end
       object gbInetServSettings: TGroupBox

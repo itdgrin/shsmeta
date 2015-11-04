@@ -283,23 +283,26 @@ begin
 end;
 
 procedure TFormProgramSettings.sbOpenDirClick(Sender: TObject);
-var DirStr: string;
-    TmpType: Byte;
-    TmpDialog: TFileOpenDialog;
+var
+  DirStr: string;
+  TmpType: Byte;
+  TmpDialog: TFileOpenDialog; // TFileOpenDialog есть только в Vista и выше, нужен обычный TOpenDialog
 begin
   TmpType := TComponent(Sender).Tag;
   if Win32MajorVersion >= 6 then
   begin
-    TmpDialog := TFileOpenDialog.Create(nil);
+    TmpDialog := TFileOpenDialog.Create(nil); // TOpenDialog
     try
       TmpDialog.Title := 'Выбор папки';
       TmpDialog.Options := [fdoPickFolders, fdoPathMustExist, fdoForceFileSystem];
       TmpDialog.OkButtonLabel := 'Выбор';
       if TmpType = 0 then
         TmpDialog.DefaultFolder := edtCreateMirrorPath.Text
+        // TmpDialog.InitialDir := edtCreateMirrorPath.Text
       else
         TmpDialog.DefaultFolder := edtLocalMirrorPath.Text;
-      TmpDialog.FileName := TmpDialog.DefaultFolder;
+      // TmpDialog.InitialDir := edtLocalMirrorPath.Text;
+      TmpDialog.FileName := TmpDialog.DefaultFolder; // TmpDialog.InitialDir;
       if TmpDialog.Execute then
         if TmpType = 0 then
           edtCreateMirrorPath.Text := ExcludeTrailingPathDelimiter(TmpDialog.FileName)
@@ -309,13 +312,11 @@ begin
       FreeAndNil(TmpDialog);
     end
   end
-  else
-    if SelectDirectory('Select Directory', ExtractFileDrive(DirStr), DirStr,
-               [sdNewUI, sdNewFolder]) then
-      if TmpType = 0 then
-        edtCreateMirrorPath.Text := ExcludeTrailingPathDelimiter(DirStr)
-      else
-        edtLocalMirrorPath.Text := ExcludeTrailingPathDelimiter(DirStr);
+  else if SelectDirectory('Select Directory', ExtractFileDrive(DirStr), DirStr, [sdNewUI, sdNewFolder]) then
+    if TmpType = 0 then
+      edtCreateMirrorPath.Text := ExcludeTrailingPathDelimiter(DirStr)
+    else
+      edtLocalMirrorPath.Text := ExcludeTrailingPathDelimiter(DirStr);
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -425,7 +426,7 @@ begin
 
   SaveUpdateSettings;
 
-  //Например какие????
+  // Например какие????
   MessageBox(0, PChar('Некоторые изменения могут быть применены ' + sLineBreak +
     'только после перезапуска программы!'), CaptionForm, MB_ICONINFORMATION + mb_OK + mb_TaskModal);
 
@@ -487,9 +488,10 @@ begin
 end;
 
 procedure TFormProgramSettings.LoadUpdateSettings;
-var ini: TIniFile;
+var
+  ini: TIniFile;
 begin
-  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) +  С_UPD_INI);
+  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + С_UPD_INI);
   try
     if ini.ReadInteger('System', 'UpdateType', 0) = 0 then
       rbInetServer.Checked := True
@@ -512,9 +514,10 @@ begin
 end;
 
 procedure TFormProgramSettings.SaveUpdateSettings;
-var ini: TIniFile;
+var
+  ini: TIniFile;
 begin
-  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) +  С_UPD_INI);
+  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + С_UPD_INI);
   try
     if rbInetServer.Checked then
     begin

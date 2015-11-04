@@ -103,6 +103,9 @@ type
     mN7: TMenuItem;
     mN10: TMenuItem;
     mN11: TMenuItem;
+    mObjectAccess: TMenuItem;
+    mEstimateAccess: TMenuItem;
+    mActAccess: TMenuItem;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -164,6 +167,10 @@ type
     procedure mDeleteActClick(Sender: TObject);
     procedure mDeleteObjectClick(Sender: TObject);
     procedure PMCopySmetaClick(Sender: TObject);
+    procedure qrObjectsBeforeOpen(DataSet: TDataSet);
+    procedure mObjectAccessClick(Sender: TObject);
+    procedure mEstimateAccessClick(Sender: TObject);
+    procedure mActAccessClick(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
 
@@ -187,7 +194,7 @@ var
 implementation
 
 uses Main, DataModule, CardObject, CardEstimate, CalculationEstimate, Waiting,
-  BasicData, DrawingTables, KC6, CardAct, ImportExportModule, GlobsAndConst;
+  BasicData, DrawingTables, KC6, CardAct, ImportExportModule, GlobsAndConst, UserAccess;
 
 {$R *.dfm}
 
@@ -393,6 +400,14 @@ begin
   mRepair.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
   mDelete.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 0;
   mDeleteObject.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
+  mObjectAccess.Visible := not qrObjects.IsEmpty;
+end;
+
+procedure TfObjectsAndEstimates.mActAccessClick(Sender: TObject);
+begin
+  if (not Assigned(fUserAccess)) then
+    fUserAccess := TfUserAccess.Create(Self, VarArrayOf([1, qrActsEx.FieldByName('SM_ID').Value]));
+  fUserAccess.ShowModal;
 end;
 
 procedure TfObjectsAndEstimates.mADD6KCClick(Sender: TObject);
@@ -545,6 +560,13 @@ begin
   dbgrdObjects.ShowColumnsDialog;
 end;
 
+procedure TfObjectsAndEstimates.mObjectAccessClick(Sender: TObject);
+begin
+  if (not Assigned(fUserAccess)) then
+    fUserAccess := TfUserAccess.Create(Self, VarArrayOf([2, qrObjects.FieldByName('IdObject').Value]));
+  fUserAccess.ShowModal;
+end;
+
 procedure TfObjectsAndEstimates.mDeleteObjectClick(Sender: TObject);
 var
   NumberObject: string;
@@ -580,6 +602,13 @@ begin
   end;
 
   FillingTableObjects;
+end;
+
+procedure TfObjectsAndEstimates.mEstimateAccessClick(Sender: TObject);
+begin
+  if (not Assigned(fUserAccess)) then
+    fUserAccess := TfUserAccess.Create(Self, VarArrayOf([1, qrTreeData.FieldByName('SM_ID').Value]));
+  fUserAccess.ShowModal;
 end;
 
 procedure TfObjectsAndEstimates.mReapirEstimateClick(Sender: TObject);
@@ -630,6 +659,12 @@ begin
     dbgrdObjects.Tag := IdObject;
   CloseOpen(qrTreeData, False);
   CloseOpen(qrActsEx, False);
+end;
+
+procedure TfObjectsAndEstimates.qrObjectsBeforeOpen(DataSet: TDataSet);
+begin
+  if (DataSet as TFDQuery).FindParam('USER_ID') <> nil then
+    (DataSet as TFDQuery).ParamByName('USER_ID').Value := G_USER_ID;
 end;
 
 procedure TfObjectsAndEstimates.qrTreeDataAfterOpen(DataSet: TDataSet);
@@ -880,6 +915,7 @@ begin
     (qrActsEx.FieldByName('FL_USE').AsInteger = 1);
   mCopy.Visible := PMActsOpen.Visible;
   mDeleteAct.Visible := PMActsOpen.Visible and (qrActsEx.FieldByName('DELETED').AsInteger = 1);
+  mActAccess.Visible := PMActsOpen.Visible;
 end;
 
 function TfObjectsAndEstimates.GetNumberEstimate(): string;
@@ -1140,6 +1176,8 @@ begin
   PMEstimatesAddObject.Enabled := False;
   PMEstimatesAddLocal.Enabled := False;
   PMEstimatesAddPTM.Enabled := False;
+
+  mEstimateAccess.Visible := not qrTreeData.IsEmpty;
 
   if qrTreeData.IsEmpty then
   begin

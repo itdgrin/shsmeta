@@ -122,7 +122,8 @@ uses
   ManualSprItem in 'ManualSprItem.pas' {ManSprCardForm},
   ManualPriceSelect in 'ManualPriceSelect.pas' {fmManPriceSelect},
   DebugTables in 'DebugTables.pas' {fDebugTables},
-  fFrameLoading in 'fFrameLoading.pas' {FrameLoading: TFrame};
+  fFrameLoading in 'fFrameLoading.pas' {FrameLoading: TFrame},
+  UserAccess in 'UserAccess.pas' {fUserAccess};
 
 {$R *.res}
 var MHandle: THandle;
