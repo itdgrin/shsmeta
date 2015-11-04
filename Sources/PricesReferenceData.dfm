@@ -38,7 +38,6 @@ object FormPricesReferenceData: TFormPricesReferenceData
     ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 0
-    ExplicitWidth = 764
     object SpeedButtonPriceMaterials: TSpeedButton
       AlignWithMargins = True
       Left = 148
@@ -145,6 +144,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
       Top = 0
       Width = 205
       Height = 25
+      GroupIndex = 1
       Caption = #1058#1072#1088#1080#1092#1099' '#1085#1072' '#1087#1086#1075#1088#1091#1079#1082#1091'/'#1088#1072#1079#1075#1088#1091#1079#1086#1082#1091
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
