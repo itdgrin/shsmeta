@@ -87,6 +87,7 @@ inherited FramePriceDumps: TFramePriceDumps
         OnFocusChanged = VSTFocusChanged
         OnGetText = VSTGetText
         OnKeyPress = VSTKeyPress
+        ExplicitTop = 32
         Columns = <
           item
             Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coResizable, coShowDropMark, coVisible, coFixed]

@@ -14,18 +14,10 @@ type
     procedure ReceivingAll; Virtual; Abstract;
     procedure CheckCurPeriod; Virtual; Abstract;
     property Loaded: boolean read fLoaded;
-    constructor Create(AOwner: TComponent); override;
   end;
 
 implementation
 
 {$R *.dfm}
-{ TSmetaFrame }
-
-constructor TSmetaFrame.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  fLoaded := false;
-end;
 
 end.

@@ -121,7 +121,8 @@ uses
   SelectDialog in 'SelectDialog.pas' {fSelectDialog},
   ManualSprItem in 'ManualSprItem.pas' {ManSprCardForm},
   ManualPriceSelect in 'ManualPriceSelect.pas' {fmManPriceSelect},
-  DebugTables in 'DebugTables.pas' {fDebugTables};
+  DebugTables in 'DebugTables.pas' {fDebugTables},
+  fFrameLoading in 'fFrameLoading.pas' {FrameLoading: TFrame};
 
 {$R *.res}
 var MHandle: THandle;

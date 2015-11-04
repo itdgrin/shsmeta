@@ -216,6 +216,8 @@ var
   //Переменные для увязки периодов справочников
   G_CURYEAR,
   G_CURMONTH: Integer;
+  //Значение НДС принимаемое по умолчанию в программе
+  G_NDS: Double = 20;
 
 implementation
 

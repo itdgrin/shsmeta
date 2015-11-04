@@ -2,7 +2,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
   Left = 0
   Top = 0
   ClientHeight = 109
-  ClientWidth = 764
+  ClientWidth = 986
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -22,7 +22,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
   object PanelPrices: TPanel
     Left = 0
     Top = 0
-    Width = 764
+    Width = 986
     Height = 25
     Align = alTop
     BevelOuter = bvNone
@@ -38,7 +38,7 @@ object FormPricesReferenceData: TFormPricesReferenceData
     ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 0
-    ExplicitWidth = 733
+    ExplicitWidth = 764
     object SpeedButtonPriceMaterials: TSpeedButton
       AlignWithMargins = True
       Left = 148
@@ -132,6 +132,20 @@ object FormPricesReferenceData: TFormPricesReferenceData
       GroupIndex = 1
       Down = True
       Caption = #1058#1072#1088#1080#1092#1099' '#1087#1086' '#1079#1072#1088#1087#1083#1072#1090#1077
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      OnClick = SpeedButtonClick
+    end
+    object btnLoading: TSpeedButton
+      Left = 764
+      Top = 0
+      Width = 205
+      Height = 25
+      Caption = #1058#1072#1088#1080#1092#1099' '#1085#1072' '#1087#1086#1075#1088#1091#1079#1082#1091'/'#1088#1072#1079#1075#1088#1091#1079#1086#1082#1091
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11

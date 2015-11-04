@@ -129,7 +129,7 @@ begin
     qrTemp.Active := True;
     EstMonth := qrTemp.FieldByName('Month').AsInteger;
     EstYear := qrTemp.FieldByName('Year').AsInteger;
-    FNds := 20;
+    FNds := Trunc(G_NDS);
     qrTemp.Active := False;
   except
     on E: Exception do

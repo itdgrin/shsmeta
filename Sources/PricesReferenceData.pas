@@ -16,6 +16,7 @@ uses
   fFrameSmeta,
   fFrameMaterial,
   fFrameMechanizm,
+  fFrameLoading,
   Tools,
   System.SysUtils;
 
@@ -28,6 +29,7 @@ type
     SpeedButtonPriceTransportation: TSpeedButton;
     SpeedButtonPriceDumps: TSpeedButton;
     btnZP: TSpeedButton;
+    btnLoading: TSpeedButton;
 
     constructor Create(AOwner: TComponent; const vDataBase: Char; const vPriceColumn: Boolean); reintroduce;
 
@@ -43,14 +45,13 @@ type
     const CaptionButton = 'Цены по справоч. данным';
     const HintButton = 'Окно цены по справочным данным';
   private
-    procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
-
-  private
     FramePriceMaterials: TSprMaterial;
     FramePriceMechanizms: TSprMechanizm;
     FramePriceTransportations: TFramePriceTransportations;
     FramePriceDumps: TFramePriceDumps;
+    FramePriceLoading: TFrameLoading;
 
+    procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
   end;
 
 var
@@ -145,14 +146,20 @@ begin
   fTariffDict.Visible := False;
   btnZP.Tag := Integer(fTariffDict);
 
+  FramePriceLoading := TFrameLoading.Create(Self, Date);
+  FramePriceLoading.Parent := Self;
+  FramePriceLoading.align := alClient;
+  FramePriceLoading.Visible := False;
+  btnLoading.Tag := Integer(FramePriceLoading);
+
   SpeedButtonClick(btnZP);
   fTariffDict.Visible := True;
+
+  SetFormStyle;
 
   FormMain.PanelCover.Visible := False;
 
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
-
-  SetFormStyle;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -198,6 +205,7 @@ begin
   FramePriceTransportations.Visible := False;
   FramePriceDumps.Visible := False;
   fTariffDict.Visible := False;
+  FramePriceLoading.Visible := False;
 end;
 
 

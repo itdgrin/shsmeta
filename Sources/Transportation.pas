@@ -97,8 +97,7 @@ type
     //Цена за единицу
     CoastNoNds,
     CoastNds: TBcd;
-    Nds,
-    DefNDS: TBcd;
+    Nds: TBcd;
     Distance: integer;
     //Класс груза
     FClass: Byte;
@@ -596,8 +595,6 @@ begin
   grdPrice.ColWidths[CPriceNDS] := 80;
   grdPrice.Cells[CPriceNDS,0] := 'Стоимость' + sLineBreak + 'с НДС, руб.';
 
-  //По умолчанию НДС 20%
-  DefNDS := 20;
   FClass := cmbClass.ItemIndex + 1;
   FCoef := 1;
 end;
@@ -796,7 +793,7 @@ begin
   end;
 
   for i := grdPrice.FixedRows to grdPrice.RowCount - 1 do
-    grdPrice.Cells[CNDS,i] := BcdToStr(DefNDS);
+    grdPrice.Cells[CNDS,i] := FloatToStr(G_NDS);
 
   try
     with qrTemp do

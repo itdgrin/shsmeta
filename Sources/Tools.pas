@@ -22,8 +22,6 @@ type
 
   // класс формы дл€ наследовани€ всех форм
   TSmForm = class(TForm)
-    // procedure FormCreate(Sender: TObject);
-
     // ѕроцедура стандартной отрисовки таблиц
     procedure DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
@@ -720,8 +718,12 @@ begin
   SetFormStyle;
 end;
 
-procedure TSmForm.SetFormStyle;
+constructor TSmForm.Create(AOwner: TComponent);
+begin
+  Create(AOwner, Null);
+end;
 
+procedure TSmForm.SetFormStyle;
 begin
   Self.ShowHint := True;
   SetStyleForAllComponents(Self);
@@ -776,13 +778,6 @@ begin
   TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet)
     .SQL.Append('ORDER BY ' + (Sender AS TJvDBGrid).SortedField + s);
   CloseOpen(TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet));
-end;
-
-constructor TSmForm.Create(AOwner: TComponent);
-begin
-  InitParams := Null; // »нициализационные параметны
-  inherited Create(AOwner);
-  SetFormStyle;
 end;
 
 procedure TSmForm.DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
