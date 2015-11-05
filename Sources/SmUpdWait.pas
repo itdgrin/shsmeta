@@ -24,7 +24,6 @@ type
     JvGIFAnimator1: TJvGIFAnimator;
     Label1: TLabel;
     Shape1: TShape;
-    Timer1: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure OnTerminate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);

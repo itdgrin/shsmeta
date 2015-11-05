@@ -273,9 +273,4 @@ object fWait: TfWait
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object Timer1: TTimer
-    Interval = 100
-    Left = 288
-    Top = 16
-  end
 end
