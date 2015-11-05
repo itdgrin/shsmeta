@@ -34,6 +34,8 @@ type
     procedure qrMainCheckedChange(Sender: TField);
     procedure qrMainAfterOpen(DataSet: TDataSet);
     procedure FormResize(Sender: TObject);
+    procedure grMainDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
   private
     flLoading: Boolean;
   public
@@ -122,6 +124,12 @@ begin
     grMain.ScrollBars := ssVertical
   else
     grMain.ScrollBars := ssNone;
+end;
+
+procedure TfCardObjectContractorServices.grMainDrawColumnCell(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+//
 end;
 
 procedure TfCardObjectContractorServices.qrMainAfterOpen(DataSet: TDataSet);

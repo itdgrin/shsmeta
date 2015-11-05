@@ -3543,8 +3543,7 @@
   object AppIni: TJvAppIniFileStorage
     StorageOptions.BooleanStringTrueValues = 'TRUE, YES, Y'
     StorageOptions.BooleanStringFalseValues = 'FALSE, NO, N'
-    FileName = 'Smeta.ini'
-    FlushOnDestroy = False
+    FileName = 'Smeta_form.ini'
     DefaultSection = 'JvAppIniFileStorage'
     SubStorages = <>
     Left = 32

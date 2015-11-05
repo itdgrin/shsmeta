@@ -400,7 +400,9 @@ begin
   mRepair.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
   mDelete.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 0;
   mDeleteObject.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
-  mObjectAccess.Visible := not qrObjects.IsEmpty;
+  mObjectAccess.Visible := not qrObjects.IsEmpty and
+    ((G_USER_ID = 1) OR (qrObjects.FieldByName('USER_ID').AsInteger = G_USER_ID) OR
+    VarIsNull(qrObjects.FieldByName('USER_ID').Value));
 end;
 
 procedure TfObjectsAndEstimates.mActAccessClick(Sender: TObject);
@@ -915,7 +917,9 @@ begin
     (qrActsEx.FieldByName('FL_USE').AsInteger = 1);
   mCopy.Visible := PMActsOpen.Visible;
   mDeleteAct.Visible := PMActsOpen.Visible and (qrActsEx.FieldByName('DELETED').AsInteger = 1);
-  mActAccess.Visible := PMActsOpen.Visible;
+  mActAccess.Visible := PMActsOpen.Visible and
+    ((G_USER_ID = 1) OR (qrActsEx.FieldByName('USER_ID').AsInteger = G_USER_ID) OR
+    VarIsNull(qrActsEx.FieldByName('USER_ID').Value));
 end;
 
 function TfObjectsAndEstimates.GetNumberEstimate(): string;
@@ -1177,7 +1181,9 @@ begin
   PMEstimatesAddLocal.Enabled := False;
   PMEstimatesAddPTM.Enabled := False;
 
-  mEstimateAccess.Visible := not qrTreeData.IsEmpty;
+  mEstimateAccess.Visible := not qrTreeData.IsEmpty and
+    ((G_USER_ID = 1) OR (qrTreeData.FieldByName('USER_ID').AsInteger = G_USER_ID) OR
+    VarIsNull(qrTreeData.FieldByName('USER_ID').Value));
 
   if qrTreeData.IsEmpty then
   begin

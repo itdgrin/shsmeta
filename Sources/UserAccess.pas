@@ -141,8 +141,10 @@ begin
     begin
       if qrMain.FieldByName('SELECTED').Value then
       begin
-        FastExecSQL('INSERT INTO user_access(DOC_TYPE_ID, MASTER_ID, USER_ID) VALUE(:0, :1, :2)',
-          VarArrayOf([DOC_TYPE_ID, MASTER_ID, qrMain.FieldByName('USER_ID').Value]));
+        FastExecSQL
+          ('INSERT INTO user_access(DOC_TYPE_ID, MASTER_ID, USER_ID, ACCESS_TYPE) VALUE(:0, :1, :2, 1+:3)',
+          VarArrayOf([DOC_TYPE_ID, MASTER_ID, qrMain.FieldByName('USER_ID').Value,
+          qrMain.FieldByName('SELECTED_WRITE').Value]));
         // Каскадно на все зависящие документы
         case DOC_TYPE_ID of
           // Смета/акт

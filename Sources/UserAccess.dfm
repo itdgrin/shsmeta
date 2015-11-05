@@ -44,8 +44,6 @@ object fUserAccess: TfUserAccess
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 6
-    ExplicitTop = 225
-    ExplicitWidth = 275
     DesignSize = (
       286
       41)
@@ -58,7 +56,6 @@ object fUserAccess: TfUserAccess
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 1
       OnClick = btnCancelClick
-      ExplicitLeft = 192
     end
     object btnSave: TBitBtn
       Left = 122
@@ -69,7 +66,6 @@ object fUserAccess: TfUserAccess
       Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
       TabOrder = 0
       OnClick = btnSaveClick
-      ExplicitLeft = 111
     end
   end
   object rbAll: TRadioButton
@@ -153,7 +149,6 @@ object fUserAccess: TfUserAccess
     Anchors = [akTop, akRight]
     Caption = #1088#1072#1079#1088#1077#1096#1080#1090#1100' '#1079#1072#1087#1080#1089#1100
     TabOrder = 3
-    ExplicitLeft = 153
   end
   object dblkcbb1: TDBLookupComboBox
     Left = 87
@@ -165,7 +160,6 @@ object fUserAccess: TfUserAccess
     ListField = 'USER_NAME'
     ListSource = dsUser
     TabOrder = 1
-    ExplicitWidth = 180
   end
   object rbFromList: TRadioButton
     Left = 8

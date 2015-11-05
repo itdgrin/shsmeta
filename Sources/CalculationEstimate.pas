@@ -1717,7 +1717,7 @@ begin
     NumberNormativ := 'E121_p4'
   else if (NumberNormativ > 'Е29-6-1') and (NumberNormativ < 'Е29-92-12') then
     NumberNormativ := 'E29_p1'
-  else if (NumberNormativ > 'Е29-93-1') and (NumberNormativ < {'Е29-277-1'}'Е29-277-2') then
+  else if (NumberNormativ > 'Е29-93-1') and (NumberNormativ < { 'Е29-277-1' } 'Е29-277-2') then
     NumberNormativ := 'E29_p2'
   else if (NumberNormativ > 'Е35-9-1') and (NumberNormativ < 'Е35-233-2') then
     NumberNormativ := 'E35_p1'
@@ -2518,11 +2518,12 @@ begin
         sLineBreak + 'Подтверждаете удаление?';
     -3:
       TextWarning := 'Вы действительно хотите удалить раздел ПТМ с номером: ' + NumberEstimate;
-    else Exit;
+  else
+    Exit;
   end;
 
-  if MessageBox(0, PChar(TextWarning), PWideChar(Caption),
-    MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+  if MessageBox(0, PChar(TextWarning), PWideChar(Caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo
+  then
     Exit;
 
   try
@@ -3114,11 +3115,10 @@ end;
 
 function TFormCalculationEstimate.GetSMSubType(ASM_ID: Integer): Integer;
 begin
-  Result := 0; //Условный тип сметы в который можно добавлять все
+  Result := 0; // Условный тип сметы в который можно добавлять все
   qrTemp.Active := False;
   qrTemp.SQL.Clear;
-  qrTemp.SQL.Text :=
-    'Select SM_SUBTYPE from smetasourcedata where SM_ID = ' +
+  qrTemp.SQL.Text := 'Select SM_SUBTYPE from smetasourcedata where SM_ID = ' +
     '(Select PARENT_ID from smetasourcedata where SM_ID = :SM_ID)';
   qrTemp.ParamByName('SM_ID').Value := qrRatesExSM_ID.Value;
   qrTemp.Active := True;
@@ -3128,8 +3128,7 @@ begin
   finally
     qrTemp.Active := False;
   end;
-  if ((Result = 1) and (PS.AddRateType1ToLocal)) or
-     ((Result = 2) and (PS.AddRateType0ToPNR))  then
+  if ((Result = 1) and (PS.AddRateType1ToLocal)) or ((Result = 2) and (PS.AddRateType0ToPNR)) then
     Result := 0;
 end;
 
@@ -3148,8 +3147,8 @@ begin
   newID := 0;
 
   // Замена литинских на кирилические
-  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or
-     (NewCode[1] = 'Ц') or (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
+  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or
+    (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
   begin
     if (NewCode[1] = 'E') or (NewCode[1] = 'T') then
       NewCode[1] := 'Е';
@@ -3160,22 +3159,21 @@ begin
       NewCode[1] := 'Ц';
 
     case GetSMSubType(qrRatesExSM_ID.Value) of
-    1:
-      if NewCode[1] = '0' then
-      begin
-        MessageBox(0, 'Ввод пусконаладки не допустим!', CaptionForm,
-          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-        qrRatesExOBJ_CODE.AsString := '';
-        Exit;
-      end;
-    2:
-      if NewCode[1] <> '0' then
-      begin
-        MessageBox(0, 'Ввод расценки не допустим!', CaptionForm,
-          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-        qrRatesExOBJ_CODE.AsString := '';
-        Exit;
-      end;
+      1:
+        if NewCode[1] = '0' then
+        begin
+          MessageBox(0, 'Ввод пусконаладки не допустим!', CaptionForm,
+            MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+          qrRatesExOBJ_CODE.AsString := '';
+          Exit;
+        end;
+      2:
+        if NewCode[1] <> '0' then
+        begin
+          MessageBox(0, 'Ввод расценки не допустим!', CaptionForm, MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+          qrRatesExOBJ_CODE.AsString := '';
+          Exit;
+        end;
     end;
 
     qrTemp.Active := False;
@@ -3408,10 +3406,8 @@ end;
 
 procedure TFormCalculationEstimate.qrRatesWORK_IDChange(Sender: TField);
 begin
-  qrTemp.SQL.Text := 'UPDATE card_rate_temp SET WORK_ID = :p1 WHERE ID = :p2';
-  qrTemp.ParamByName('p1').AsInteger := qrRatesExWORK_ID.Value;
-  qrTemp.ParamByName('p2').AsInteger := qrRatesExID_TABLES.Value;
-  qrTemp.ExecSQL;
+  FastExecSQL('UPDATE card_rate_temp SET WORK_ID = :p1 WHERE ID = :p2',
+    VarArrayOf([qrRatesExWORK_ID.Value, qrRatesExID_TABLES.Value]));
   CloseOpen(qrCalculations);
 end;
 
@@ -3684,8 +3680,8 @@ begin
               if DataObj.SmClipArray[j].DataType = 1 then
               begin
                 qrTemp.Active := False;
-                qrTemp.SQL.Text := 'Select NORM_TYPE from card_rate_temp ' +
-                  'where ID = ' + DataObj.SmClipArray[j].DataID.ToString;
+                qrTemp.SQL.Text := 'Select NORM_TYPE from card_rate_temp ' + 'where ID = ' +
+                  DataObj.SmClipArray[j].DataID.ToString;
                 qrTemp.Active := True;
                 try
                   if not qrTemp.Eof then
@@ -4029,8 +4025,8 @@ begin
       if FNewRowIterator > 0 then
         TmpIterator := FNewRowIterator;
 
-      if PasteSmetaRow(DataObj.SmClipArray, qrRatesExSM_ID.Value,
-        TmpIterator, GetSMSubType(qrRatesExSM_ID.Value)) then
+      if PasteSmetaRow(DataObj.SmClipArray, qrRatesExSM_ID.Value, TmpIterator,
+        GetSMSubType(qrRatesExSM_ID.Value)) then
         OutputDataToTable(True);
     end;
   finally
@@ -5566,17 +5562,11 @@ begin
   qrTemp.Active := False;
   mAddPTM.Visible := (mainType <> 3) and not(Act and (TYPE_ACT = 0));
   mAddLocal.Visible := (mainType = 2) and not(Act and (TYPE_ACT = 0));
-  mDelEstimate.Visible :=
-    (qrRatesExID_TYPE_DATA.AsInteger < 0) and
-    (qrRatesExID_TYPE_DATA.AsInteger <> -4) and
-    (qrRatesExID_TYPE_DATA.AsInteger <> -5);
-  mEditEstimate.Visible :=
-    (qrRatesExID_TYPE_DATA.AsInteger < 0) and
-    (qrRatesExID_TYPE_DATA.AsInteger <> -4) and
-    (qrRatesExID_TYPE_DATA.AsInteger <> -5);
-  mBaseData.Visible :=
-    (qrRatesExID_TYPE_DATA.AsInteger < 0) and
-    (qrRatesExID_TYPE_DATA.AsInteger <> -4) and
+  mDelEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4)
+    and (qrRatesExID_TYPE_DATA.AsInteger <> -5);
+  mEditEstimate.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4)
+    and (qrRatesExID_TYPE_DATA.AsInteger <> -5);
+  mBaseData.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4) and
     (qrRatesExID_TYPE_DATA.AsInteger <> -5);
   mBaseData.Caption := 'Исходные данные - ' + qrRatesExOBJ_CODE.AsString;
 end;
@@ -5857,12 +5847,14 @@ begin
             Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
             if ShowSelectDialog('Выбор типа ОХРиОПР и ПП' { , Pointer(qrTemp) } ) then
             begin
+              //
               qrRatesExWORK_ID.Value := FieldByName('work_id').Value;
             end;
           end;
         end
         else
         begin
+          //
           qrRatesExWORK_ID.Value := FastSelectSQLOne('SELECT def_work_id FROM round_setup LIMIT 1',
             VarArrayOf([]));
         end;
@@ -6356,7 +6348,9 @@ begin
             if ShowSelectDialog('Выбор зимнего удорожания' { , Pointer(qrTemp) } ) then
             begin
               EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
-              qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
+              FastExecSQL('UPDATE card_rate_temp SET ZNORMATIVS_ID=:0 WHERE ID=:1',
+                VarArrayOf([qrTemp.FieldByName('ZNORMATIVS_ID').Value, qrRatesExID_TABLES.Value]));
+              qrRatesExZNORMATIVS_ID.AsInteger := qrTemp.FieldByName('ZNORMATIVS_ID').AsInteger;
             end;
           end;
         end;
@@ -6680,8 +6674,7 @@ begin
   DM.FDGUIxWaitCursor1.ScreenCursor := gcrHourGlass;
   try
     SendMessage(Application.MainForm.ClientHandle, WM_SETREDRAW, 0, 0);
-    FormAdditionData := TFormAdditionData.Create(FormMain, vDataBase,
-      GetSMSubType(qrRatesExSM_ID.Value));
+    FormAdditionData := TFormAdditionData.Create(FormMain, vDataBase, GetSMSubType(qrRatesExSM_ID.Value));
     FormAdditionData.WindowState := wsNormal;
 
     // Сворачиваем окно

@@ -56,7 +56,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         ReadOnly = True
         Title.Alignment = taCenter
         Title.Caption = #1058#1080#1087
-        Width = 90
+        Width = 100
         Visible = True
       end
       item
@@ -65,7 +65,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         ReadOnly = True
         Title.Alignment = taCenter
         Title.Caption = #1053#1086#1084#1077#1088
-        Width = 90
+        Width = 100
         Visible = True
       end
       item
@@ -74,7 +74,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         ReadOnly = True
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-        Width = 90
+        Width = 100
         Visible = True
       end
       item
@@ -82,6 +82,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         ReadOnly = True
         Title.Alignment = taCenter
         Title.Caption = #1054#1073#1098#1105#1084' '#1055#1058#1052
+        Width = -1
         Visible = False
       end
       item
@@ -89,8 +90,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Expanded = False
         FieldName = 'STOIM'
         Title.Alignment = taCenter
-        Title.Caption = #1042#1089#1077#1075#1086
-        Width = 90
+        Title.Caption = #1042#1057#1045#1043#1054
+        Width = 100
         Visible = True
       end
       item
@@ -98,8 +99,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Expanded = False
         FieldName = 'ST_OHROPR'
         Title.Alignment = taCenter
-        Title.Caption = #1042#1089#1077#1075#1086' '#1089' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055
-        Width = 90
+        Title.Caption = #1042#1057#1045#1043#1054' '#1057' '#1054#1061#1056#1080#1054#1055#1056
+        Width = 100
         Visible = True
       end
       item
@@ -107,7 +108,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Expanded = False
         FieldName = 'STOIM_SMR'
         Title.Alignment = taCenter
-        Title.Caption = #1042#1089#1077#1075#1086' '#1057#1052#1056
+        Title.Caption = #1042#1057#1045#1043#1054' '#1057#1052#1056
+        Width = 100
         Visible = True
       end
       item
@@ -115,7 +117,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Expanded = False
         FieldName = 'ZP'
         Title.Alignment = taCenter
-        Title.Caption = #1047#1072#1088#1087#1083#1072#1090#1072
+        Title.Caption = #1047#1055
         Width = 90
         Visible = True
       end
