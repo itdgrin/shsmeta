@@ -228,6 +228,7 @@ begin
     0,1:
     begin
       FMainDataType := 2;
+      TmpMatType := 1;
       if FSprDataType = 0 then
       begin
         Caption := Caption + ' материала';
@@ -258,6 +259,7 @@ begin
     end;
   end;
 
+  TmpUnit := 0;
   DM.qrDifferent.Active := True;
   try
     if DM.qrDifferent.IsEmpty then
@@ -369,15 +371,11 @@ begin
     Result := FUnitIDList[i]
   else
   begin
-    DM.qrDifferent.SQL.Text := 'Select MAX(UNIT_ID) from units where (UNIT_ID > ' +
-      IntToStr(С_MANIDDELIMETER) + ')';
+    DM.qrDifferent.SQL.Text := 'Select GetNewManualID(:TypeID)';
+    DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_UNIT;
     DM.qrDifferent.Active := True;
     try
-      if (not DM.qrDifferent.Eof) and
-         (DM.qrDifferent.Fields[0].AsInteger > С_MANIDDELIMETER) then
-        TmpID := DM.qrDifferent.Fields[0].AsInteger + 1
-      else
-        TmpID := С_MANIDDELIMETER + 1;
+      TmpID := DM.qrDifferent.Fields[0].AsInteger;
     finally
       DM.qrDifferent.Active := False;
     end;
@@ -439,24 +437,15 @@ begin
 
       if FNewItem or (not FNewItem and (FBase = 0)) then
       begin
+        DM.qrDifferent.SQL.Text := 'Select GetNewManualID(:TypeID)';
         case FSprDataType of
-        0,1:
-          DM.qrDifferent.SQL.Text := 'Select MAX(MATERIAL_ID) from material ' +
-            'where (MATERIAL_ID > ' + IntToStr(С_MANIDDELIMETER) + ')';
-        2:
-          DM.qrDifferent.SQL.Text := 'Select MAX(MECHANIZM_ID) from mechanizm ' +
-            'where (MECHANIZM_ID > ' + IntToStr(С_MANIDDELIMETER) + ')';
-        3:
-          DM.qrDifferent.SQL.Text := 'Select MAX(DEVICE_ID) from devices ' +
-            'where (DEVICE_ID > ' + IntToStr(С_MANIDDELIMETER) + ')';
+        0,1: DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_MAT;
+        2: DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_MECH;
+        3: DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_DEV;
         end;
         DM.qrDifferent.Active := True;
         try
-          if (not DM.qrDifferent.Eof) and
-             (DM.qrDifferent.Fields[0].AsInteger > С_MANIDDELIMETER) then
-            FSprID := DM.qrDifferent.Fields[0].AsInteger + 1
-          else
-            FSprID := С_MANIDDELIMETER + 1;
+          FSprID := DM.qrDifferent.Fields[0].AsInteger;
         finally
           DM.qrDifferent.Active := False;
         end;

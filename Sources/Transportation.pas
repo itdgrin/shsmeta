@@ -118,11 +118,12 @@ type
     TranspType: integer;
     InsMode: boolean; // признак вставкисвалки
     IsSaved: boolean;
+    TranspDistance: Integer;
   end;
 
   // Вызов окна транспорта. InsMode - признак вставкисвалки  в смету
-function GetTranspForm(AIdEstimate, AIdTransp, ATranspType, AIterator, ANomManual: Integer;
-  AInsMode: boolean): boolean;
+function GetTranspForm(AIdEstimate, AIdTransp, ATranspType, AIterator,
+  ANomManual, ATranspDistance: Integer; AInsMode: boolean): boolean;
 
 implementation
 
@@ -130,7 +131,8 @@ uses Main, CalculationEstimate, DataModule, GlobsAndConst;
 
 {$R *.dfm}
 
-function GetTranspForm(AIdEstimate, AIdTransp, ATranspType, AIterator, ANomManual: Integer;
+function GetTranspForm(AIdEstimate, AIdTransp, ATranspType,
+  AIterator, ANomManual, ATranspDistance: Integer;
   AInsMode: boolean): boolean;
 var
   FormTransp: TFormTransportation;
@@ -144,7 +146,8 @@ begin
     FormTransp.IdTransp := AIdTransp;
     FormTransp.InsMode := AInsMode;
     FormTransp.TranspType := ATranspType;
-    FormTransp.IsSaved := false;
+    FormTransp.IsSaved := False;
+    FormTransp.TranspDistance := ATranspDistance;
     FormTransp.ShowModal;
     Result := FormTransp.IsSaved;
   finally
@@ -660,6 +663,7 @@ begin
     edtYDW.Enabled := (0 <> cmbUnit.ItemIndex);
     edtCount.Text := BcdToStr(CCount);
     edtYDW.Text := BcdToStr(Ydw);
+    Distance := TranspDistance;
     EditDistance.Text := BcdToStr(Distance);
     if TranspType in [7, 9] then
       cmbClass.Enabled := false;
@@ -671,8 +675,6 @@ begin
     LoadTranspInfo(IdTransp);
     ButtonAdd.Caption := 'Сохранить';
   end;
-
-  EditDistance.SetFocus;
 end;
 
 procedure TFormTransportation.LoadTranspInfo(aIdTransp: integer);

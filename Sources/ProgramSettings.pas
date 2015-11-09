@@ -81,6 +81,7 @@ type
     edtCreateMirrorPath: TEdit;
     sbOpenDir1: TSpeedButton;
     lbCreateMirrorPath: TLabel;
+    chkUseBoldFontForName: TCheckBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -411,6 +412,7 @@ begin
   PS.FindAutoRepInAllRate := chkFindAutoRepInAllRate.Checked;
   PS.AddRateType1ToLocal := chkAddRateType1ToLocal.Checked;
   PS.AddRateType0ToPNR := chkAddRateType0ToPNR.Checked;
+  PS.UseBoldFontForName := chkUseBoldFontForName.Checked;
 
   PS.GridFontName := lblFontRow.Font.Name;
   PS.GridFontSize := lblFontRow.Font.Size;
@@ -471,6 +473,7 @@ begin
   chkFindAutoRepInAllRate.Checked := PS.FindAutoRepInAllRate;
   chkAddRateType1ToLocal.Checked := PS.AddRateType1ToLocal;
   chkAddRateType0ToPNR.Checked := PS.AddRateType0ToPNR;
+  chkUseBoldFontForName.Checked := PS.UseBoldFontForName;
 
   lblFontRow.Font.Name := PS.GridFontName;
   lblFontRow.Font.Size := PS.GridFontSize;

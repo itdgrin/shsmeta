@@ -290,7 +290,7 @@ object FormTransportation: TFormTransportation
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 2
         OnChange = edtCountChange
         OnExit = EditExit
         OnKeyPress = EditKeyPress
@@ -307,7 +307,7 @@ object FormTransportation: TFormTransportation
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        TabOrder = 2
+        TabOrder = 4
         OnChange = edtCountChange
         OnExit = EditExit
         OnKeyPress = EditKeyPress
@@ -347,7 +347,7 @@ object FormTransportation: TFormTransportation
         Font.Style = []
         NumbersOnly = True
         ParentFont = False
-        TabOrder = 4
+        TabOrder = 3
         OnChange = EditDistanceChange
         OnExit = EditExit
       end

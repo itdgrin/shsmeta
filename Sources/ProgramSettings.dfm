@@ -388,7 +388,7 @@ object FormProgramSettings: TFormProgramSettings
           598
           75)
         object sbOpenDir1: TSpeedButton
-          Left = 543
+          Left = 556
           Top = 41
           Width = 23
           Height = 22
@@ -412,7 +412,7 @@ object FormProgramSettings: TFormProgramSettings
           TabOrder = 0
         end
         object edtCreateMirrorPath: TEdit
-          Left = 43
+          Left = 56
           Top = 42
           Width = 494
           Height = 21
@@ -444,9 +444,11 @@ object FormProgramSettings: TFormProgramSettings
     object tsAll: TTabSheet
       Caption = #1056#1072#1079#1085#1086#1077
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 28
       object lblOXROPR: TLabel
         Left = 3
-        Top = 239
+        Top = 229
         Width = 279
         Height = 13
         Caption = #1042#1080#1076' '#1088#1072#1073#1086#1090' '#1076#1083#1103' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055' '#1088#1072#1089#1094#1077#1085#1086#1082' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102':'
@@ -489,9 +491,9 @@ object FormProgramSettings: TFormProgramSettings
         end
       end
       object ButtonDefaultOtherSettings: TButton
-        Left = 287
+        Left = 304
         Top = 295
-        Width = 334
+        Width = 317
         Height = 25
         Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
         TabOrder = 12
@@ -499,7 +501,7 @@ object FormProgramSettings: TFormProgramSettings
       end
       object CheckBoxShowHint: TCheckBox
         Left = 3
-        Top = 55
+        Top = 54
         Width = 286
         Height = 17
         Caption = #1055#1086#1082#1072#1079#1099#1074#1072#1090#1100' '#1074#1089#1087#1083#1099#1074#1072#1102#1097#1091#1102' '#1087#1086#1076#1089#1082#1072#1079#1082#1091' '#1074' '#1090#1072#1073#1083#1080#1094#1072#1093
@@ -507,7 +509,7 @@ object FormProgramSettings: TFormProgramSettings
       end
       object chkAutoCreateEstimates: TCheckBox
         Left = 3
-        Top = 78
+        Top = 75
         Width = 334
         Height = 17
         Caption = #1057#1086#1079#1076#1072#1074#1072#1090#1100' '#1085#1072#1073#1086#1088' '#1054#1073#1098#1077#1082#1090#1085#1072#1103'-'#1051#1086#1082#1072#1083#1100#1085#1072#1103'-'#1055#1058#1052' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080
@@ -517,7 +519,7 @@ object FormProgramSettings: TFormProgramSettings
       end
       object chkAutoExpandTreeEstimates: TCheckBox
         Left = 3
-        Top = 101
+        Top = 97
         Width = 310
         Height = 17
         Caption = #1056#1072#1089#1082#1088#1099#1074#1072#1090#1100' '#1072#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080' '#1076#1077#1088#1077#1074#1086' '#1089#1084#1077#1090'/'#1072#1082#1090#1086#1074' '#1086#1073#1098#1077#1082#1090#1072
@@ -527,7 +529,7 @@ object FormProgramSettings: TFormProgramSettings
       end
       object chkCalcResourcesAutoSave: TCheckBox
         Left = 3
-        Top = 124
+        Top = 119
         Width = 470
         Height = 17
         Caption = 
@@ -539,7 +541,7 @@ object FormProgramSettings: TFormProgramSettings
       end
       object chkAutosaveRateDescr: TCheckBox
         Left = 3
-        Top = 170
+        Top = 162
         Width = 470
         Height = 17
         Caption = #1040#1074#1090#1086#1089#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1087#1088#1080' '#1080#1079#1084#1077#1085#1077#1085#1080#1080' '#1086#1087#1080#1089#1072#1085#1080#1103' '#1088#1072#1089#1094#1077#1085#1082#1080
@@ -549,7 +551,7 @@ object FormProgramSettings: TFormProgramSettings
       end
       object chkAutoSaveCalcResourcesAfterExitCell: TCheckBox
         Left = 3
-        Top = 147
+        Top = 140
         Width = 598
         Height = 17
         Caption = 
@@ -559,7 +561,7 @@ object FormProgramSettings: TFormProgramSettings
       end
       object chkShowNeedSaveDialog: TCheckBox
         Left = 3
-        Top = 193
+        Top = 184
         Width = 350
         Height = 17
         Caption = #1047#1072#1087#1088#1086#1089' '#1085#1072' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1089#1084#1077#1090#1099' '#1055#1045#1063#1040#1058#1068'-'#1057#1057#1056'-'#1056#1040#1057#1063#1045#1058' '#1057#1058#1054#1048#1052#1054#1057#1058#1048
@@ -569,7 +571,7 @@ object FormProgramSettings: TFormProgramSettings
       end
       object chkFindAutoRepInAllRate: TCheckBox
         Left = 3
-        Top = 216
+        Top = 205
         Width = 494
         Height = 17
         Caption = #1048#1089#1082#1072#1090#1100' '#1072#1074#1090#1086#1079#1072#1084#1077#1085#1091' '#1087#1086' '#1074#1089#1077#1084' '#1088#1072#1089#1094#1077#1085#1082#1072#1084' '#1089#1084#1077#1090#1099
@@ -577,7 +579,7 @@ object FormProgramSettings: TFormProgramSettings
       end
       object dblkcbbOXROPR: TDBLookupComboBox
         Left = 285
-        Top = 238
+        Top = 225
         Width = 336
         Height = 21
         Margins.Left = 0
@@ -594,7 +596,7 @@ object FormProgramSettings: TFormProgramSettings
       end
       object chkAddRateType1ToLocal: TCheckBox
         Left = 3
-        Top = 264
+        Top = 250
         Width = 279
         Height = 17
         Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1087#1091#1089#1082#1086#1085#1072#1083#1072#1076#1082#1091' '#1074' '#1083#1086#1082#1072#1083#1100#1085#1099#1077
@@ -602,11 +604,27 @@ object FormProgramSettings: TFormProgramSettings
       end
       object chkAddRateType0ToPNR: TCheckBox
         Left = 3
-        Top = 287
+        Top = 273
         Width = 279
         Height = 17
         Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1088#1072#1089#1094#1077#1085#1082#1080' '#1074' '#1055#1053#1056
         TabOrder = 11
+      end
+      object chkUseBoldFontForName: TCheckBox
+        Left = 3
+        Top = 293
+        Width = 295
+        Height = 17
+        Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1078#1080#1088#1085#1099#1081' '#1096#1088#1080#1092#1090' '#1076#1083#1103' '#1085#1072#1079#1074#1072#1085#1080#1081' '#1074' '#1089#1084#1077#1090#1077
+        Checked = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        State = cbChecked
+        TabOrder = 13
       end
     end
   end

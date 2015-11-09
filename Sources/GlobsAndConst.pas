@@ -58,7 +58,7 @@ const
   C_ET18ITER = 2000000000;
   C_ET20ITER = 2000000001;
 
-  //ID типов для функции GetNewID
+  //типы ID для функции GetNewID
   C_ID_OBJ     = 1;  //1 - объект
   C_ID_SM      = 2;  //2 - смета
   C_ID_SMRAT   = 3;  //3 - смета расценка
@@ -75,6 +75,16 @@ const
   C_ID_WORKDEP = 14; //14 - Расчет перевозки рабочих
   C_ID_SUPPAG  = 15; //15 - Дополнительные соглашения
   C_ID_DOC     = 16; //16 - Хранилище документов
+
+  //типы ID для функции GetNewManualID
+  C_MANID_UNIT       = 1;
+  C_MANID_MAT        = 2;
+  C_MANID_MECH       = 3;
+  C_MANID_DEV        = 4;
+  C_MANID_NORM       = 5;
+  C_MANID_NORM_MAT   = 6;
+  C_MANID_NORM_MECH  = 7;
+  C_MANID_NORM_WORK  = 8;
 
   CTabNameAndID: array [1..15, 0..1] of string =
     (('objcards', 'obj_id'),
@@ -93,10 +103,21 @@ const
     ('worker_deartment', 'worker_department_id'),
     ('supp_agreement', 'supp_agreement_id'));
 
+  CManTabNameAndID: array [1..8, 0..1] of string =
+    (('normativg', 'NORMATIV_ID'),
+    ('materialnorm', 'ID'),
+    ('mechanizmnorm', 'ID'),
+    ('normativwork', 'ID'),
+    ('material', 'MATERIAL_ID'),
+    ('mechanizm', 'MECHANIZM_ID'),
+    ('devices', 'DEVICE_ID'),
+    ('units', 'UNIT_ID'));
+
   С_MANIDDELIMETER = 1000000000; //Разделитель ID для собственных данных в справочниках.
 
 type
   TIDConvertArray = array [1..15, 0..1] of array of Integer;
+  TManIDConvertArray = array [1..8, 0..1] of array of Integer;
 //******************************************************************************
 
 //******************************************************************************

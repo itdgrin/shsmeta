@@ -82,11 +82,13 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure ImportObject(const AFileName: string);
 var XML : IXMLDocument;
-    CurNode, Node1, Node2: IXMLNode;
+    CurNode, MainNode, Node1, Node2: IXMLNode;
     i, j: Integer;
     IdConvert: TIDConvertArray;
+    ManIdConvert: TManIDConvertArray;
     ds: char;
     AutoCommitValue: Boolean;
+    ManSprLoad: Boolean;
 
   procedure GetStrAndExcec(ANode: IXMLNode; ATabName: string);
   var i: Integer;
@@ -134,8 +136,32 @@ begin
     try
       XML := TXMLDocument.Create(nil);
       XML.LoadFromFile(AFileName);
+
+      MainNode := XML.ChildNodes.FindNode('Object');
+      if not Assigned(MainNode) then
+        raise Exception.Create('Главная нода не найдена.');
+
+      //загрузка собственных справочников
+      ManSprLoad := False;
+
+      if Assigned(MainNode.ChildNodes.FindNode('Manual_Rates')) or
+         Assigned(MainNode.ChildNodes.FindNode('Manual_Materials')) or
+         Assigned(MainNode.ChildNodes.FindNode('Manual_Mechanizms')) or
+         Assigned(MainNode.ChildNodes.FindNode('Manual_Devices')) or
+         Assigned(MainNode.ChildNodes.FindNode('Manual_Units')) then
+      begin
+        if MessageBox(0, PChar('Объект "' + VarToStr(MainNode.Attributes['Name']) +
+          '" содержит собственные справочные данные, загрузить их?'),
+          'Импорт объекта',
+          MB_ICONINFORMATION + MB_YESNO + MB_TASKMODAL) = mrYes then
+        begin
+          ManSprLoad := True;
+
+        end;
+      end;
+
       //загрузка объекта
-      Node1 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Data_object');
+      Node1 := MainNode.ChildNodes.FindNode('Data_object');
 
       if Pos(',', VarToStr(Node1.ChildNodes.Nodes['PER_CONTRACTOR'].NodeValue)) > 0 then
         raise Exception.Create('Запятая(,) неверный разделитель дробной части');
@@ -146,7 +172,7 @@ begin
       Node1 := nil;
 
       //загрузка смет и актов
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smety');
+      Node2 := MainNode.ChildNodes.FindNode('Smety');
       for j := 0 to Node2.ChildNodes.Count - 1 do
       begin
         Node1 := Node2.ChildNodes.Nodes[j];
@@ -166,7 +192,7 @@ begin
       Node2 := nil;
 
       //загрузка Data_row смет
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_data_row');
+      Node2 := MainNode.ChildNodes.FindNode('Smeta_data_row');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -197,7 +223,7 @@ begin
       Node2 := nil;
 
       //загрузка расценок
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Rates');
+      Node2 := MainNode.ChildNodes.FindNode('Smeta_Rates');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -214,7 +240,7 @@ begin
       Node2 := nil;
 
       //загрузка материалов
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Materials');
+      Node2 := MainNode.ChildNodes.FindNode('Smeta_Materials');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -236,7 +262,7 @@ begin
       Node2 := nil;
 
       //загрузка механизмов смет
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Mechanizms');
+      Node2 := MainNode.ChildNodes.FindNode('Smeta_Mechanizms');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -258,7 +284,7 @@ begin
       Node2 := nil;
 
       //загрузка оборудования смет
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Devices');
+      Node2 := MainNode.ChildNodes.FindNode('Smeta_Devices');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -275,7 +301,7 @@ begin
       Node2 := nil;
 
       //загрузка свалок смет
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Dumps');
+      Node2 := MainNode.ChildNodes.FindNode('Smeta_Dumps');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -292,7 +318,7 @@ begin
       Node2 := nil;
 
       //загрузка транспорта смет
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_Transps');
+      Node2 := MainNode.ChildNodes.FindNode('Smeta_Transps');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -309,7 +335,7 @@ begin
       Node2 := nil;
 
       //загрузка Data_estimate смет
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Smeta_calculation_coef');
+      Node2 := MainNode.ChildNodes.FindNode('Smeta_calculation_coef');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -342,7 +368,7 @@ begin
       Node2 := nil;
 
       //загрузка Object_suppagreement
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Object_suppagreement');
+      Node2 := MainNode.ChildNodes.FindNode('Object_suppagreement');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -359,7 +385,7 @@ begin
       Node2 := nil;
 
       //загрузка Travel
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Travel');
+      Node2 := MainNode.ChildNodes.FindNode('Travel');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -376,7 +402,7 @@ begin
       Node2 := nil;
 
       //загрузка Travel_work
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Travel_work');
+      Node2 := MainNode.ChildNodes.FindNode('Travel_work');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -393,7 +419,7 @@ begin
       Node2 := nil;
 
       //загрузка Worker_deartment
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Worker_deartment');
+      Node2 := MainNode.ChildNodes.FindNode('Worker_deartment');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -410,7 +436,7 @@ begin
       Node2 := nil;
 
       //загрузка Summary_calculation
-      Node2 := XML.ChildNodes.FindNode('Object').ChildNodes.FindNode('Summary_calculation');
+      Node2 := MainNode.ChildNodes.FindNode('Summary_calculation');
       if Assigned(Node2) then
         for j := 0 to Node2.ChildNodes.Count - 1 do
         begin
@@ -447,7 +473,12 @@ procedure ExportObject(const AIdObject: Integer; const AFileName: string);
 var XML : IXMLDocument;
     CurNode, Node1, Node2: IXMLNode;
     ds: char;
-    TmpStr: string;
+    TmpStr,
+    NormIdStr,
+    SmIdStr,
+    UnitStr: string;
+    UnitList: TStringList;
+    i: Integer;
 
   procedure RowToNode(ANode: IXMLNode; AQ: TFDQuery);
   var i: Integer;
@@ -482,6 +513,7 @@ begin
   CoInitialize(nil);
   ds := FormatSettings.DecimalSeparator;
   FormatSettings.DecimalSeparator := '.';
+  UnitList := TStringList.Create;
   try
     XML := TXMLDocument.Create(nil);
     XML.Active := True;
@@ -501,7 +533,6 @@ begin
 
       Node1 := CurNode.AddChild('Data_object');
       RowToNode(Node1, DM.qrDifferent);
-      Node1 := nil;
     end
     else
     begin
@@ -509,6 +540,7 @@ begin
       Exit;
     end;
 
+    SmIdStr := '';
     //Выгрузка информации об сметах и актах
     DM.qrDifferent.Active := False;
     DM.qrDifferent.SQL.Text := 'Select * from smetasourcedata where (obj_id = ' +
@@ -517,9 +549,12 @@ begin
     if not DM.qrDifferent.IsEmpty then
     begin
       Node1 := CurNode.AddChild('Smety');
-      Node1.SetAttributeNS('Type', '', 'Сметы');
+      Node1.SetAttributeNS('Type', '', 'Сметы (акты)');
       while not DM.qrDifferent.Eof do
       begin
+        if SmIdStr <> '' then
+          SmIdStr := SmIdStr + ',';
+        SmIdStr := SmIdStr + DM.qrDifferent.FieldByName('SM_ID').AsString;
         Node2 := Node1.AddChild('Smeta');
 
         if DM.qrDifferent.FieldByName('ACT').AsInteger = 1 then
@@ -530,9 +565,7 @@ begin
         Node2.SetAttributeNS('Name', '', DM.qrDifferent.FieldByName('name').AsString);
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end
     else
     begin
@@ -540,9 +573,7 @@ begin
       Exit;
     end;
 
-    TmpStr := '(SM_ID in ' +
-      '(select SM_ID from smetasourcedata where (obj_id = ' +
-      IntToStr(AIdObject) + ') and (DELETED=0)))';
+    TmpStr := '(SM_ID in (' + SmIdStr + '))';
 
     //Выгрузка информации из data_row
     DM.qrDifferent.Active := False;
@@ -552,14 +583,13 @@ begin
     if not DM.qrDifferent.IsEmpty then
     begin
       Node1 := CurNode.AddChild('Smeta_data_row');
+      Node1.SetAttributeNS('Type', '', 'Строки сметы (акта)');
       while not DM.qrDifferent.Eof do
       begin
         Node2 := Node1.AddChild('Line');
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     //Выгрузка информации об расценках
@@ -578,9 +608,7 @@ begin
         Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('RATE_CODE').AsString);
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     //Выгрузка информации об материалах
@@ -599,9 +627,7 @@ begin
         Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('MAT_CODE').AsString);
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     //Выгрузка информации об механизм
@@ -620,9 +646,7 @@ begin
         Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('MECH_CODE').AsString);
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     //Выгрузка информации об оборудовании
@@ -641,9 +665,7 @@ begin
         Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('DEVICE_CODE').AsString);
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     //Выгрузка информации об свалках
@@ -662,9 +684,7 @@ begin
         Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('DUMP_CODE_JUST').AsString);
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     //Выгрузка информации об транспорте
@@ -683,9 +703,7 @@ begin
         Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('TRANSP_CODE_JUST').AsString);
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     //Выгрузка информации из calculation_coef
@@ -697,14 +715,13 @@ begin
     if not DM.qrDifferent.IsEmpty then
     begin
       Node1 := CurNode.AddChild('Smeta_calculation_coef');
+      Node1.SetAttributeNS('Type', '', 'Коэффициенты по смете (акту)');
       while not DM.qrDifferent.Eof do
       begin
         Node2 := Node1.AddChild('Line');
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     DM.qrDifferent.Active := False;
@@ -721,9 +738,7 @@ begin
         Node2 := Node1.AddChild('Line');
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     DM.qrDifferent.Active := False;
@@ -738,9 +753,7 @@ begin
         Node2 := Node1.AddChild('Line');
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     DM.qrDifferent.Active := False;
@@ -755,9 +768,7 @@ begin
         Node2 := Node1.AddChild('Line');
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     DM.qrDifferent.Active := False;
@@ -772,9 +783,7 @@ begin
         Node2 := Node1.AddChild('Line');
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
     end;
 
     DM.qrDifferent.Active := False;
@@ -784,22 +793,201 @@ begin
     if not DM.qrDifferent.IsEmpty then
     begin
       Node1 := CurNode.AddChild('Summary_calculation');
+      Node1.SetAttributeNS('Type', '', 'Суммации по смете (акту)');
       while not DM.qrDifferent.Eof do
       begin
         Node2 := Node1.AddChild('Line');
         RowToNode(Node2, DM.qrDifferent);
         DM.qrDifferent.Next;
-        Node2 := nil;
       end;
-      Node1 := nil;
+    end;
+
+    //Раздел содержащий информацию о собственных справочных данных
+    NormIdStr := '';
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select normativg.* from normativg, (Select distinct RATE_ID from ' +
+        'card_rate where (BASE = 1) and ' + TmpStr +') as ratecard ' +
+      'where normativg.NORMATIV_ID = ratecard.RATE_ID order by NORMATIV_ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Manual_Rates');
+      Node1.SetAttributeNS('Type', '', 'Собственные справочные расценки');
+      while not DM.qrDifferent.Eof do
+      begin
+        if NormIdStr <> '' then
+          NormIdStr := NormIdStr + ',';
+        NormIdStr := NormIdStr + DM.qrDifferent.FieldByName('NORMATIV_ID').AsString;
+
+        if (DM.qrDifferent.FieldByName('UNIT_ID').AsInteger > С_MANIDDELIMETER) and
+           (UnitList.IndexOf(DM.qrDifferent.FieldByName('UNIT_ID').AsString) = -1) then
+          UnitList.Add(DM.qrDifferent.FieldByName('UNIT_ID').AsString);
+
+        Node2 := Node1.AddChild('Rate');
+        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('NORM_NUM').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from materialnorm where NORMATIV_ID in (' + NormIdStr + ') order by ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Manual_MatNorms');
+      Node1.SetAttributeNS('Type', '', 'Материалы расценок');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('MatNorm');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from mechanizmnorm where NORMATIV_ID in (' + NormIdStr + ') order by ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Manual_MechNorms');
+      Node1.SetAttributeNS('Type', '', 'Механизмы расценок');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('MechNorm');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from normativwork where NORMATIV_ID in (' + NormIdStr + ') order by ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Manual_NormWorks');
+      Node1.SetAttributeNS('Type', '', 'Работы по расценкам');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('NormWork');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select material.* from material, (Select distinct MAT_ID from ' +
+        'materialcard where (BASE = 1) and ' + TmpStr +') as matcard ' +
+        'where material.MATERIAL_ID = matcard.MAT_ID ' +
+      'union ' +
+      'Select material.* from material, (Select MATERIAL_ID from ' +
+        'materialnorm where (NORMATIV_ID in (' + NormIdStr + ')) and ' +
+        '(MATERIAL_ID > ' + IntToStr(С_MANIDDELIMETER) + ')) as matnorm ' +
+        'where material.MATERIAL_ID = matnorm.MATERIAL_ID ' +
+      'order by MATERIAL_ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Manual_Materials');
+      Node1.SetAttributeNS('Type', '', 'Собственные справочные материалы');
+      while not DM.qrDifferent.Eof do
+      begin
+        if (DM.qrDifferent.FieldByName('UNIT_ID').AsInteger > С_MANIDDELIMETER) and
+           (UnitList.IndexOf(DM.qrDifferent.FieldByName('UNIT_ID').AsString) = -1) then
+          UnitList.Add(DM.qrDifferent.FieldByName('UNIT_ID').AsString);
+
+        Node2 := Node1.AddChild('Material');
+        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('MAT_CODE').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select mechanizm.* from mechanizm, (Select distinct MECH_ID from ' +
+        'mechanizmcard where (BASE = 1) and ' + TmpStr +') as mechcard ' +
+        'where mechanizm.MECHANIZM_ID = mechcard.MECH_ID ' +
+      'union ' +
+      'Select mechanizm.* from mechanizm, (Select MECHANIZM_ID from ' +
+        'mechanizmnorm where (NORMATIV_ID in (' + NormIdStr + ')) and ' +
+        '(MECHANIZM_ID > ' + IntToStr(С_MANIDDELIMETER) + ')) as matnorm ' +
+        'where mechanizm.MECHANIZM_ID = matnorm.MECHANIZM_ID ' +
+      'order by MECHANIZM_ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Manual_Mechanizms');
+      Node1.SetAttributeNS('Type', '', 'Собственные справочные механизмы');
+      while not DM.qrDifferent.Eof do
+      begin
+        if (DM.qrDifferent.FieldByName('UNIT_ID').AsInteger > С_MANIDDELIMETER) and
+           (UnitList.IndexOf(DM.qrDifferent.FieldByName('UNIT_ID').AsString) = -1) then
+          UnitList.Add(DM.qrDifferent.FieldByName('UNIT_ID').AsString);
+
+        Node2 := Node1.AddChild('Mechanizm');
+        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('MECH_CODE').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select devices.* from devices, (Select distinct DEVICE_ID from ' +
+        'devicescard where (BASE = 1) and ' + TmpStr +') as davcard ' +
+      'where devices.DEVICE_ID = davcard.DEVICE_ID order by DEVICE_ID';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Manual_Devices');
+      Node1.SetAttributeNS('Type', '', 'Собственное справочное оборудование');
+      while not DM.qrDifferent.Eof do
+      begin
+        if (DM.qrDifferent.FieldByName('UNIT').AsInteger > С_MANIDDELIMETER) and
+           (UnitList.IndexOf(DM.qrDifferent.FieldByName('UNIT').AsString) = -1) then
+          UnitList.Add(DM.qrDifferent.FieldByName('UNIT').AsString);
+
+        Node2 := Node1.AddChild('Device');
+        Node2.SetAttributeNS('CODE', '', DM.qrDifferent.FieldByName('DEVICE_CODE1').AsString);
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+    DM.qrDifferent.Active := False;
+
+    UnitStr := '';
+    for i := 0 to UnitList.Count - 1 do
+    begin
+      if UnitStr <> '' then
+        UnitStr := UnitStr + ',';
+      UnitStr := UnitStr + UnitList[i];
+    end;
+
+    DM.qrDifferent.SQL.Text :=
+      'Select * from units where UNIT_ID in (' + UnitStr + ')';
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Manual_Units');
+      Node1.SetAttributeNS('Type', '', 'Собственные единицы измерения');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Unit');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
     end;
 
     XML.SaveToFile(AFileName);
   finally
-    Node2 := nil;
-    Node1 := nil;
-    CurNode := nil;
-    XML := nil;
+    DM.qrDifferent.Active := False;
+    FreeAndNil(UnitList);
     FormatSettings.DecimalSeparator := ds;
     CoUninitialize;
   end;

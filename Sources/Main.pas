@@ -352,6 +352,7 @@ type
     TextFontStyle: Byte; // Стиль
     AddRateType1ToLocal: Boolean; // Разрешение добавлять пусконаладку в локальную смету
     AddRateType0ToPNR: Boolean; // Разрешение добавлять расценки в ПНР смету
+    UseBoldFontForName: Boolean;
   end;
 
 const
@@ -2414,6 +2415,7 @@ begin
       PS.TextFontStyle := Byte(ReadInteger('Controls', 'TextFontStyle', 0));
       PS.AddRateType1ToLocal := ReadBool('ESTIMATE', 'AddRateType1ToLocal', False);
       PS.AddRateType0ToPNR := ReadBool('ESTIMATE', 'AddRateType0ToPNR', False);
+      PS.UseBoldFontForName := ReadBool('ESTIMATE', 'UseBoldFontForName', True);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -2473,6 +2475,7 @@ begin
       WriteBool('ESTIMATE', 'FindAutoRepInAllRate', PS.FindAutoRepInAllRate);
       WriteBool('ESTIMATE', 'AddRateType1ToLocal', PS.AddRateType1ToLocal);
       WriteBool('ESTIMATE', 'AddRateType0ToPNR', PS.AddRateType0ToPNR);
+      WriteBool('ESTIMATE', 'UseBoldFontForName', PS.UseBoldFontForName);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти

@@ -188,7 +188,7 @@ type
     PageNumber, PageRowCount: Integer; // номер текущей страницы / кол-во записей на странице
     DataBase: Char; // Справочные или собственные данные
     AllowAddition: Boolean; // Разрешено/запрещено добавлять записи из фрейма
-    function GetNewID(ATab, AKey: string): Variant;
+    function GetNewID(ATypeID: Integer): Variant;
   public
     procedure ReceivingAll; override;
     procedure CheckCurPeriod; override;
@@ -464,12 +464,9 @@ begin
   FormCalculationEstimate.AddRate(qrNormativ.FieldByName('IdNormative').AsInteger);
 end;
 
-function TFrameRates.GetNewID(ATab, AKey: string): Variant;
+function TFrameRates.GetNewID(ATypeID: Integer): Variant;
 begin
-  Result := FastSelectSQLOne('SELECT MAX(' + AKey + ') + 1 FROM ' + ATab + ' ' +
-    'WHERE ' + AKey + '>=:0', VarArrayOf([С_MANIDDELIMETER]));
-  if VarIsNull(Result) then
-    Result := С_MANIDDELIMETER + 1;
+  Result := FastSelectSQLOne('Select GetNewManualID(:0)', VarArrayOf([ATypeID]));
 end;
 
 procedure TFrameRates.mCopyToOwnBaseClick(Sender: TObject);
@@ -509,7 +506,7 @@ begin
       end;
       dm.Read.StartTransaction;
       // Копируем расценку
-      newID := GetNewID('normativg', 'NORMATIV_ID');
+      newID := GetNewID(C_MANID_NORM);
       FastExecSQL
         ('INSERT INTO normativg(NORMATIV_ID, SORT_NUM, NORM_NUM, NORM_CAPTION, UNIT_ID, ' +
          'NORM_ACTIVE, normativ_directory_id, NORM_BASE, NORM_TYPE, work_id, ' +
@@ -519,7 +516,7 @@ begin
         VarArrayOf([newID, OBJ_NAME, Now, qrNormativ.FieldByName('IdNormative').Value]));
 
       // Копируем материалы
-      newID1 := GetNewID('materialnorm', 'ID');
+      newID1 := GetNewID(C_MANID_NORM_MAT);
       qrTemp.Active := False;
       qrTemp.SQL.Text := 'SELECT MATERIAL_ID, NORM_RAS ' +
         'FROM materialnorm WHERE NORMATIV_ID=' +
@@ -537,11 +534,12 @@ begin
       qrTemp.Active := False;
 
       // Копируем механизмы
-      newID1 := GetNewID('mechanizmnorm', 'ID');
+      newID1 := GetNewID(C_MANID_NORM_MECH);
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT MECHANIZM_ID, NORM_RAS ' +
+      qrTemp.SQL.Text :=
+        'SELECT MECHANIZM_ID, NORM_RAS ' +
         'FROM mechanizmnorm WHERE NORMATIV_ID=' +
-        qrNormativ.FieldByName('IdNormative').AsString;
+          qrNormativ.FieldByName('IdNormative').AsString;
       qrTemp.Active := True;
       while not qrTemp.Eof do
       begin
@@ -555,11 +553,12 @@ begin
       qrTemp.Active := False;
 
       // Копируем затраты труда
-      newID1 := GetNewID('normativwork', 'ID');
+      newID1 := GetNewID(C_MANID_NORM_WORK);
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT WORK_ID, NORMA FROM normativwork ' +
+      qrTemp.SQL.Text :=
+        'SELECT WORK_ID, NORMA FROM normativwork ' +
         'WHERE NORMATIV_ID=' +
-        qrNormativ.FieldByName('IdNormative').AsString;
+          qrNormativ.FieldByName('IdNormative').AsString;
       qrTemp.Active := True;
       while not qrTemp.Eof do
       begin
@@ -602,7 +601,7 @@ end;
 procedure TFrameRates.mN31Click(Sender: TObject);
 var newID1: Variant;
 begin
-  newID1 := GetNewID('normativwork', 'ID');
+  newID1 := GetNewID(C_MANID_NORM_WORK);
   FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA) ' +
     'VALUE(:0,:1,:2,0)', VarArrayOf([newID1,
     qrNormativ.FieldByName('IdNormative').Value, (Sender as TComponent).Tag]));
@@ -616,7 +615,7 @@ var
 begin
   for i := 1 to 3 do
   begin
-    newID1 := GetNewID('normativwork', 'ID');
+    newID1 := GetNewID(C_MANID_NORM_WORK);
     FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA) ' +
       'VALUE(:0,:1,:2,0)',
       VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, i]));
@@ -635,7 +634,7 @@ begin
         res := SelectMechanizm;
         if not VarIsNull(res) then
         begin
-          newID1 := GetNewID('mechanizmnorm', 'ID');
+          newID1 := GetNewID(C_MANID_NORM_MECH);
           FastExecSQL('INSERT INTO mechanizmnorm (ID, NORMATIV_ID, MECHANIZM_ID, NORM_RAS) ' +
             'VALUE(:0,:1,:2,"1")',
             VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res]));
@@ -647,7 +646,7 @@ begin
         res := SelectMaterial;
         if not VarIsNull(res) then
         begin
-          newID1 := GetNewID('materialnorm', 'ID');
+          newID1 := GetNewID(C_MANID_NORM_MAT);
           FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS) ' +
             'VALUE(:0,:1,:2,"1")',
             VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res]));
@@ -659,7 +658,7 @@ begin
         res := SelectMaterial;
         if not VarIsNull(res) then
         begin
-          newID1 := GetNewID('materialnorm', 'ID');
+          newID1 := GetNewID(C_MANID_NORM_MAT);
           FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS) ' +
             'VALUE(:0,:1,:2,"1")',
             VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res]));
@@ -826,7 +825,7 @@ begin
       VarArrayOf([qrNormativ.FieldByName('Unit').Value]));
     if VarIsNull(res) then
     begin
-      newID := GetNewID('units', 'UNIT_ID');
+      newID := GetNewID(C_MANID_UNIT);
       FastExecSQL('INSERT INTO units(UNIT_NAME, BASE, UNIT_ID) VALUE(:0, 1, :1)',
         VarArrayOf([qrNormativ.FieldByName('Unit').Value, newID]));
       res := newID;

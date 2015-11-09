@@ -3364,7 +3364,7 @@
   end
   object pmSummaryCalculation: TPopupMenu
     Left = 424
-    Top = 472
+    Top = 480
     object N1: TMenuItem
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072
     end
@@ -5247,7 +5247,7 @@
   end
   object pmWinterPrise: TPopupMenu
     Left = 560
-    Top = 472
+    Top = 480
     object nSelectWinterPrise: TMenuItem
       Caption = #1042#1099#1073#1088#1072#1090#1100' '#1080#1079' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
       OnClick = nSelectWinterPriseClick
@@ -5582,7 +5582,7 @@
       '       AND objcards.base_norm_id = baseprices.base_id'
       '       AND objcards.stroj_id = objstroj.stroj_id'
       '       AND obj_id=:in_id')
-    Left = 81
+    Left = 73
     Top = 120
     ParamData = <
       item
@@ -5597,7 +5597,19 @@
     AppStoragePath = '%FORM_NAME%\'
     Options = [fpActiveControl]
     StoredValues = <>
-    Left = 168
-    Top = 128
+    Left = 136
+    Top = 120
+  end
+  object pmAddTransp: TPopupMenu
+    Left = 688
+    Top = 488
+    object pmAddTranspCargo: TMenuItem
+      Caption = #1055#1077#1088#1077#1074#1086#1079#1082#1072' '#1075#1088#1091#1079#1072
+      OnClick = PMAddTranspClick
+    end
+    object pmAddTranspTrash: TMenuItem
+      Caption = #1055#1077#1088#1077#1074#1086#1079#1082#1072' '#1084#1091#1089#1086#1088#1072
+      OnClick = PMAddTranspClick
+    end
   end
 end

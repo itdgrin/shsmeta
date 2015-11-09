@@ -490,6 +490,9 @@ type
     PMMechManPrice: TMenuItem;
     PMDevManPrice: TMenuItem;
     FormStorage: TJvFormStorage;
+    pmAddTransp: TPopupMenu;
+    pmAddTranspCargo: TMenuItem;
+    pmAddTranspTrash: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -746,6 +749,7 @@ type
 
     // Кастуный скролл в левом гриде
     FOldGridProc: TWndMethod;
+    FTranspDistance: Integer;
 
     TYPE_ACT: Integer; // Тип акта
 
@@ -1055,8 +1059,15 @@ begin
 
   dbgrdCalculations.Constraints.MinHeight := 50;
   PanelClientLeft.Constraints.MinWidth := 30;
+
   dbmmoCAPTION.Constraints.MinHeight := 45;
   MemoRight.Constraints.MinHeight := 45;
+
+  if PS.UseBoldFontForName then
+  begin
+    dbmmoCAPTION.Font.Style := dbmmoCAPTION.Font.Style + [fsBold];
+    MemoRight.Font.Style := MemoRight.Font.Style + [fsBold];
+  end;
 
   ConfirmCloseForm := True;
 
@@ -3034,9 +3045,9 @@ begin
   tmRate.Enabled := False;
   tmRate.Enabled := True;
 
-  // для поля ввода ставит курсор на пользовательский помер
-  if qrRatesExID_TYPE_DATA.Value = -4 then
-    grRatesEx.Col := 2;
+  // для поля ввода ставит курсор на пользовательский номер
+  //if qrRatesExID_TYPE_DATA.Value = -4 then
+  //  grRatesEx.Col := 2;
 end;
 
 procedure TFormCalculationEstimate.qrRatesExBeforeScroll(DataSet: TDataSet);
@@ -3056,10 +3067,15 @@ begin
     end;
   end;
 
-  if (qrRatesExID_TYPE_DATA.Value = -4) and (qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) then
+  if (qrRatesExID_TYPE_DATA.Value = -4) and
+     ((qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) or
+      (qrRatesExOBJ_CODE.AsVariant <> Null)) then
   begin
     qrRatesEx.Edit;
     qrRatesExNOM_ROW_MANUAL.AsVariant := Null;
+    qrRatesEx.Edit;
+    qrRatesExOBJ_CODE.AsVariant := Null;
+    qrRatesEx.Post;
   end;
 end;
 
@@ -3138,12 +3154,12 @@ var
   newID: Integer;
   Point: TPoint;
 begin
-  NewCode := AnsiUpperCase(qrRatesExOBJ_CODE.AsString);
-  grRatesEx.EditorMode := False;
+  NewCode := Trim(AnsiUpperCase(qrRatesExOBJ_CODE.AsString));
 
   if Length(NewCode) = 0 then
     Exit;
 
+  grRatesEx.EditorMode := False;
   newID := 0;
 
   // Замена литинских на кирилические
@@ -3213,12 +3229,47 @@ begin
       else
         MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
           MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-      qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
 
     AddRate(newID);
+    Exit;
+  end;
+
+  //перевозка грузов и мусора
+  if (Length(NewCode) >= 4) and
+     ((NewCode[1] = 'С') or (NewCode[1] = 'C')) and
+     ((Copy(NewCode, 2, 3) = '310') or
+      (Copy(NewCode, 2, 3) = '311')) then
+  begin
+    if (Copy(NewCode, 2, 3) = '310') then
+    begin
+      pmAddTranspCargo.Tag := 6;
+      pmAddTranspTrash.Tag := 7;
+    end
+    else
+    begin
+      pmAddTranspCargo.Tag := 8;
+      pmAddTranspTrash.Tag := 9;
+    end;
+    qrRatesExOBJ_CODE.AsString := '';
     grRatesEx.EditorMode := True;
+
+    FTranspDistance := StrToIntDef(Copy(NewCode, 6, 255), 0);
+
+    Point.X := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Left;
+    Point.Y := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Bottom + 1;
+    pmAddTransp.Popup(grRatesEx.ClientToScreen(Point).X, grRatesEx.ClientToScreen(Point).Y);
+    Exit;
+  end;
+
+  //перевозка грузов и мусора
+  if (Length(NewCode) >= 2) and
+     (Copy(NewCode, 1, 2) = 'БС') then
+  begin
+    qrRatesExOBJ_CODE.AsString := '';
+    grRatesEx.EditorMode := True;
+    PMAddDumpClick(nil);
     Exit;
   end;
 
@@ -3240,17 +3291,15 @@ begin
     begin
       MessageBox(0, 'Материал с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-      qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
 
     AddMaterial(newID, 0);
-    grRatesEx.EditorMode := True;
     Exit;
   end;
+
   if (NewCode[1] = 'М') or (NewCode[1] = 'M') or (NewCode[1] = 'V') then // M кирилическая и латинская
   begin
-
     if (NewCode[1] = 'M') or (NewCode[1] = 'V') then
       NewCode[1] := 'М';
     qrTemp.Active := False;
@@ -3265,12 +3314,10 @@ begin
     begin
       MessageBox(0, 'Механизм с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-      qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
 
     AddMechanizm(newID, 0);
-    grRatesEx.EditorMode := True;
     Exit;
   end;
 
@@ -3288,17 +3335,14 @@ begin
     begin
       MessageBox(0, 'Оборудование с указанным кодом не найден!', CaptionForm,
         MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-      qrRatesExOBJ_CODE.AsString := '';
       Exit;
     end;
     AddDevice(newID, 0);
-    grRatesEx.EditorMode := True;
     Exit;
   end;
 
   MessageBox(0, 'По указанному коду ничего не найдено!', CaptionForm,
     MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-  qrRatesExOBJ_CODE.AsString := '';
 end;
 
 procedure TFormCalculationEstimate.qrRatesExCOUNTChange(Sender: TField);
@@ -5207,8 +5251,8 @@ begin
   if not CheckCursorInRate then
     Exit;
 
-  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag, FNewRowIterator, FNewNomManual,
-    True) then
+  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag,
+    FNewRowIterator, FNewNomManual, FTranspDistance, True) then
   begin
     OutputDataToTable(True);
   end;
@@ -5502,7 +5546,7 @@ begin
 
   if qrRatesExID_TYPE_DATA.AsInteger in [6, 7, 8, 9] then
     if GetTranspForm(qrRatesExSM_ID.AsInteger, qrTranspID.AsInteger, qrRatesExID_TYPE_DATA.AsInteger,
-      FNewRowIterator, FNewNomManual, False) then
+      FNewRowIterator, FNewNomManual, FTranspDistance, False) then
       OutputDataToTable;
 end;
 
@@ -5569,6 +5613,8 @@ begin
   mBaseData.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4) and
     (qrRatesExID_TYPE_DATA.AsInteger <> -5);
   mBaseData.Caption := 'Исходные данные - ' + qrRatesExOBJ_CODE.AsString;
+  //Просто удачное место, что-бы погасить растояние перевозки заданное при ручном вводе
+  FTranspDistance := 0;
 end;
 
 procedure TFormCalculationEstimate.EstimateBasicDataClick(Sender: TObject);
