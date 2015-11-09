@@ -927,7 +927,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       
         'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(IFNULL(SM_NUMBER, ""), " "' +
         ',  IFNULL(NAME, ""), IF(DELETED=1, "-", "")) as NAME,'
-      '       PARENT_ID as PARENT, DELETED, USER_ID'
+      '       PARENT_ID as PARENT, DELETED, USER_ID, SM_NUMBER'
       'FROM smetasourcedata'
       'WHERE OBJ_ID=:OBJ_ID'
       '  AND ((DELETED=0) OR (:SHOW_DELETED=1))'

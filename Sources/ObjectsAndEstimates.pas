@@ -125,7 +125,6 @@ type
     procedure PMEstimatesBasicDataClick(Sender: TObject);
     procedure PMEstimateExpandClick(Sender: TObject);
     procedure PMEstimateCollapseClick(Sender: TObject);
-    function GetNumberEstimate(): string;
     procedure pmEstimatesPopup(Sender: TObject);
     procedure PMEstimateExpandSelectedClick(Sender: TObject);
     procedure PMActsAddClick(Sender: TObject);
@@ -182,7 +181,6 @@ type
     // TypeEstimate: Integer;
   public
     ActReadOnly: Boolean;
-    IdEstimate: Integer;
     function getCurObject: Integer;
   protected
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -268,7 +266,6 @@ begin
 
   // Выводим данные в таблицу объектов
   FillingTableObjects;
-  IdEstimate := 0;
 
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
@@ -673,7 +670,6 @@ procedure TfObjectsAndEstimates.qrTreeDataAfterOpen(DataSet: TDataSet);
 begin
   if not CheckQrActiveEmpty(qrTreeData) then
     Exit;
-  IdEstimate := Integer(qrTreeData.FieldByName('SM_ID').AsInteger);
   if PS.AutoExpandTreeEstimates then
     tvEstimates.FullExpand
 end;
@@ -922,26 +918,6 @@ begin
     VarIsNull(qrActsEx.FieldByName('USER_ID').Value));
 end;
 
-function TfObjectsAndEstimates.GetNumberEstimate(): string;
-begin
-  try
-    with DM.qrDifferent do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT sm_number FROM smetasourcedata WHERE sm_id = :sm_id;');
-      ParamByName('sm_id').Value := IdEstimate;
-      Active := True;
-
-      Result := FieldByName('sm_number').AsString;
-    end;
-  except
-    on e: Exception do
-      MessageBox(0, PChar('При получении номера сметы возникла ошибка:' + sLineBreak + sLineBreak +
-        e.message), PWideChar(caption), MB_ICONERROR + mb_OK + mb_TaskModal);
-  end;
-end;
-
 procedure TfObjectsAndEstimates.tvActsCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;
   State: TCustomDrawState; var DefaultDraw: Boolean);
 begin
@@ -1106,21 +1082,21 @@ procedure TfObjectsAndEstimates.PopupMenuEstimatesAddClick(Sender: TObject);
 begin
   // (Sender as TMenuItem).Tag - Устанавливаем тип сметы (1-локальная, 2-объектная, 3-ПТМ)
   fCardEstimate.EditingRecord(False);
-  fCardEstimate.ShowForm(IdObject, IdEstimate, (Sender as TMenuItem).Tag);
+  fCardEstimate.ShowForm(IdObject, qrTreeData.FieldByName('SM_ID').AsInteger, (Sender as TMenuItem).Tag);
   CloseOpen(qrTreeData);
 end;
 
 procedure TfObjectsAndEstimates.PMEstimatesBasicDataClick(Sender: TObject);
 begin
-  if (IdEstimate > 0) and (IdObject > 0) then
-    FormBasicData.ShowForm(IdObject, IdEstimate);
+  if (qrTreeData.FieldByName('SM_ID').AsInteger > 0) and (IdObject > 0) then
+    FormBasicData.ShowForm(IdObject, qrTreeData.FieldByName('SM_ID').AsInteger);
 end;
 
 procedure TfObjectsAndEstimates.PMEstimatesDeleteClick(Sender: TObject);
 var
   NumberEstimate, { StrIdEstimate, StrIdRates, } TextWarning: String;
 begin
-  NumberEstimate := GetNumberEstimate;
+  NumberEstimate := qrTreeData.FieldByName('SM_NUMBER').AsString;
 
   case qrTreeData.FieldByName('SM_TYPE').AsInteger of
     1:
@@ -1140,16 +1116,8 @@ begin
     Exit;
 
   try
-    with DM.qrDifferent do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('CALL DeleteEstimate(:IdEstimate);');
-      ParamByName('IdEstimate').Value := IdEstimate;
-      ExecSQL;
-      Active := False;
-      CloseOpen(qrTreeData);
-    end;
+    FastExecSQL('CALL DeleteEstimate(:IdEstimate)', VarArrayOf([qrTreeData.FieldByName('SM_ID').AsInteger]));
+    CloseOpen(qrTreeData);
   except
     on e: Exception do
       MessageBox(0, PChar('При удалении сметы возникла ошибка:' + sLineBreak + e.message), PWideChar(caption),
@@ -1163,7 +1131,8 @@ begin
   begin
     EditingRecord(True);
 
-    fCardEstimate.ShowForm(IdObject, IdEstimate, qrTreeData.FieldByName('SM_TYPE').AsInteger);
+    fCardEstimate.ShowForm(IdObject, qrTreeData.FieldByName('SM_ID').AsInteger,
+      qrTreeData.FieldByName('SM_TYPE').AsInteger);
     CloseOpen(qrTreeData);
     tvEstimates.Selected.Text := qrTreeData.FieldByName('NAME').AsString;
   end;
@@ -1233,7 +1202,7 @@ begin
   end;
 
   if (not Assigned(FormCalculationEstimate)) then
-    FormCalculationEstimate := TFormCalculationEstimate.Create(IdEstimate);
+    FormCalculationEstimate := TFormCalculationEstimate.Create(qrTreeData.FieldByName('SM_ID').AsInteger);
 
   with qrObjects do
   begin
@@ -1246,7 +1215,7 @@ begin
     FormCalculationEstimate.EditNameEstimate.Text := qrTreeData.FieldByName('NAME').AsString;
 
     FormCalculationEstimate.IdObject := IdObject;
-    FormCalculationEstimate.IdEstimate := IdEstimate;
+    FormCalculationEstimate.IdEstimate := qrTreeData.FieldByName('SM_ID').AsInteger;
     // Создание временных таблиц
     FormCalculationEstimate.CreateTempTables;
     // Заполненя временных таблиц, заполнение формы

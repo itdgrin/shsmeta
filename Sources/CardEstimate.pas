@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, DB,
   ComCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, DateUtils, Vcl.Mask, Vcl.DBCtrls, Tools;
+  FireDAC.Comp.Client, DateUtils, Vcl.Mask, Vcl.DBCtrls, Tools, JvComponentBase, JvFormPlacement;
 
 type
   TfCardEstimate = class(TSmForm)
@@ -17,7 +17,6 @@ type
     Panel5: TPanel;
 
     LabelNumberEstimate: TLabel;
-    LabelNumberChapter: TLabel;
     LabelNumberRow: TLabel;
     LabelNameEstimate: TLabel;
     LabelCompose: TLabel;
@@ -49,7 +48,6 @@ type
     dsMain: TDataSource;
     dbedtSM_NUMBER: TDBEdit;
     dbedtNAME: TDBEdit;
-    dbedtCHAPTER: TDBEdit;
     dbedtROW_NUMBER: TDBEdit;
     dbedtPREPARER: TDBEdit;
     dbedtPOST_PREPARER: TDBEdit;
@@ -58,6 +56,11 @@ type
     dbedtSET_DRAWINGS: TDBEdit;
     lblType: TLabel;
     cbbType: TComboBox;
+    chkAddChapterNumber: TCheckBox;
+    pnl1: TPanel;
+    cbb1: TComboBox;
+    lblNumberChapter: TLabel;
+    FormStorage: TJvFormStorage;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -143,16 +146,12 @@ end;
 
 procedure TfCardEstimate.FormShow(Sender: TObject);
 begin
-  dbedtCHAPTER.Enabled := True;
-  dbedtCHAPTER.Color := clWindow;
   dbedtROW_NUMBER.Enabled := True;
   dbedtROW_NUMBER.Color := clWindow;
 
   qrMain.Active := False;
   qrMain.ParamByName('SM_ID').AsInteger := IdEstimate;
   qrMain.Active := True;
-
-  dbedtCHAPTER.SetFocus; // Устанавливаем фокус
 
   btnSave.Tag := 0;
 
@@ -163,6 +162,9 @@ begin
   // ----------------------------------------
   lblType.Visible := TypeEstimate = 1;
   cbbType.Visible := TypeEstimate = 1;
+
+  pnl1.Visible := TypeEstimate = 2;
+  cbb1.ItemIndex := qrMain.FieldByName('CHAPTER').AsInteger - 1;
   case TypeEstimate of
     1, 2:
       begin
@@ -208,8 +210,6 @@ begin
         dblkcbbSections.Enabled := True;
         dblkcbbTypesWorks.Enabled := True;
 
-        dbedtCHAPTER.Enabled := False;
-        dbedtCHAPTER.Color := $00E1DFE0;
         dbedtROW_NUMBER.Enabled := False;
         dbedtROW_NUMBER.Color := $00E1DFE0;
 
@@ -573,6 +573,9 @@ begin
 end;
 
 procedure TfCardEstimate.cbbTypeCloseUp(Sender: TObject);
+var
+  CHAPTER_NAME, TMP_NAME: string;
+  pos_id: Integer;
 begin
   if TypeEstimate = 1 then
   begin
@@ -598,6 +601,25 @@ begin
         qrMain.FieldByName('NAME').AsString := 'Локальная смета №' + NewLocalNumberEstimate +
           ' Реконструкция';
     end;
+  end;
+
+  if TypeEstimate = 2 then
+  begin
+    qrMain.Edit;
+    qrMain.FieldByName('CHAPTER').Value := cbb1.ItemIndex + 1;
+
+    if chkAddChapterNumber.Checked then
+    begin
+      CHAPTER_NAME := cbb1.Text;
+      // Удаляем весь текст названия после слова ГЛАВА
+      pos_id := Pos('ГЛАВА', qrMain.FieldByName('NAME').AsString);
+      TMP_NAME := qrMain.FieldByName('NAME').AsString;
+      if pos_id <> 0 then
+        Delete(TMP_NAME, pos_id - 1, Length(TMP_NAME) - pos_id + 2);
+      qrMain.FieldByName('NAME').AsString := TMP_NAME + ' ' + CHAPTER_NAME;
+    end
+    else
+      CHAPTER_NAME := '';
   end;
 end;
 

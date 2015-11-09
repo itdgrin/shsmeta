@@ -566,7 +566,7 @@ begin
       Active := False;
       SQL.Clear;
       SQL.Add('UPDATE smetasourcedata SET stavka_id = :stavka_id, coef_tr_zatr = :coef_tr_zatr, coef_orders=:coef_orders, '
-        + 'coef_tr_obor=:coef_tr_obor, k40=:k40, k41=:k41, k31=:k31, k32=:k32, k33=:k33, k34=:k34, growth_index=:growth_index, '
+        + 'coef_tr_obor=:coef_tr_obor, /*k40=:k40,*/ k41=:k41, k31=:k31, k32=:k32, k33=:k33, k34=:k34, growth_index=:growth_index, '
         + 'K_LOW_OHROPR=:K_LOW_OHROPR, K_LOW_PLAN_PRIB=:K_LOW_PLAN_PRIB, APPLY_LOW_COEF_OHROPR_FLAG=:APPLY_LOW_COEF_OHROPR_FLAG, '
         + 'nds=:nds, dump_id=:dump_id, kzp=:kzp, STAVKA_RAB=:STAVKA_RAB, MAIS_ID=:MAIS_ID, K35=:K35, APPLY_WINTERPRISE_FLAG=:APPLY_WINTERPRISE_FLAG, '
         + 'WINTERPRICE_TYPE=:WINTERPRICE_TYPE ' + 'WHERE sm_id = :sm_id;');
@@ -574,13 +574,13 @@ begin
       ParamByName('stavka_id').Value := IdStavka;
       ParamByName('coef_tr_zatr').Value := edtPercentTransport.Text;
       ParamByName('coef_tr_obor').Value := qrSmeta.FieldByName('coef_tr_obor').Value;
-      ParamByName('k40').Value := edtK40.Text;
+      // ParamByName('k40').Value := edtK40.Text;
       // ParamByName('k41').Value := EditK41.Text;
       ParamByName('k31').Value := qrSmeta.FieldByName('k31').Value;
       ParamByName('k32').Value := qrSmeta.FieldByName('K32').Value;
       ParamByName('k33').Value := qrSmeta.FieldByName('K33').Value;
       ParamByName('k34').Value := qrSmeta.FieldByName('K34').Value;
-      ParamByName('K35').Value := dbedtK35.Text;
+      ParamByName('K35').Value := qrSmeta.FieldByName('K35').Value;
       ParamByName('kzp').Value := qrSmeta.FieldByName('kzp').Value;
       ParamByName('nds').Value := ComboBoxVAT.ItemIndex;
       ParamByName('dump_id').Value := dblkcbbDump.KeyValue;

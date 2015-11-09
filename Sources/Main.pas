@@ -291,11 +291,11 @@ type
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
 
     FChackUpdateThread: TChackUpdateThread; // Нить проверки обновлений
-    FCreateMirrorThread: TCreateMirrorThread; //Нить создания зеркала
-    FUpdateType: Byte; //0 - обновление с сервера; 1 - Обновление с зеркала
-    FCreateMirror: Boolean; //Флаг создания зеркала обновлений
-    FCreateMirrorPath: string; //Путь куда помещать обновления
-    FMirrorPath: string; //Папка из которой следует обновляться при FUpdateType = 1
+    FCreateMirrorThread: TCreateMirrorThread; // Нить создания зеркала
+    FUpdateType: Byte; // 0 - обновление с сервера; 1 - Обновление с зеркала
+    FCreateMirror: Boolean; // Флаг создания зеркала обновлений
+    FCreateMirrorPath: string; // Путь куда помещать обновления
+    FMirrorPath: string; // Папка из которой следует обновляться при FUpdateType = 1
     FCurVersion: TVersion; // текущая версия приложения и БД
     FDebugMode: Boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
@@ -350,8 +350,8 @@ type
     TextFontName: string; // Стиль шрифта
     TextFontSize: integer; // размер
     TextFontStyle: Byte; // Стиль
-    AddRateType1ToLocal: Boolean; //Разрешение добавлять пусконаладку в локальную смету
-    AddRateType0ToPNR: Boolean; //Разрешение добавлять расценки в ПНР смету
+    AddRateType1ToLocal: Boolean; // Разрешение добавлять пусконаладку в локальную смету
+    AddRateType0ToPNR: Boolean; // Разрешение добавлять расценки в ПНР смету
   end;
 
 const
@@ -544,7 +544,7 @@ procedure TFormMain.GetUpdateSystemInfo;
 var
   ini: TIniFile;
 begin
-  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) +  С_UPD_INI);
+  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + С_UPD_INI);
   try
     if not ini.SectionExists('System') then
     begin
@@ -626,8 +626,8 @@ begin
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   // Объект для управления архивом
-  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName),
-    ExtractFilePath(Application.ExeName) + C_ARHDIR);
+  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
+    C_ARHDIR);
 
   // путь к папке с отчетами (Вадим)
   // {$IFDEF DEBUG}
@@ -683,8 +683,7 @@ begin
 
   // Запуск ниточки для мониторигра обновлений
   if not FDebugMode then
-    FChackUpdateThread := TChackUpdateThread.Create(Self.Handle, FCurVersion,
-      FUpdateType, FMirrorPath)
+    FChackUpdateThread := TChackUpdateThread.Create(Self.Handle, FCurVersion, FUpdateType, FMirrorPath)
   else
   begin
     FChackUpdateThread := nil;
@@ -692,9 +691,8 @@ begin
   end;
 
   if FCreateMirror then
-    FCreateMirrorThread :=
-      TCreateMirrorThread.Create(FCreateMirrorPath, Application.ExeName,
-        FCurVersion.App);
+    FCreateMirrorThread := TCreateMirrorThread.Create(FCreateMirrorPath, Application.ExeName,
+      FCurVersion.App);
 end;
 
 procedure TFormMain.FormShow(Sender: TObject);
@@ -908,7 +906,7 @@ begin
   try
     if FormProgramSettings.ShowModal = mrOk then
     begin
-      //Каждый раз после изменения настроек переинициализируется система обновлений
+      // Каждый раз после изменения настроек переинициализируется система обновлений
       IniUpdateSystem;
     end;
   finally
@@ -985,12 +983,13 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_WINTER_RS_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_WINTER_RS_OBJ(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger,
+        FileReportPath);
     end
     else
     begin
@@ -1093,14 +1092,15 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
       // **************************************************************************************************************************************
 
-      ShellExecute(Handle, nil, 'report.exe', PChar('S' + INTTOSTR(fObjectsAndEstimates.IdEstimate)),
+      ShellExecute(Handle, nil, 'report.exe',
+        PChar('S' + INTTOSTR(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger)),
         PChar(FileReportPath + 'report\'), SW_maximIZE);
 
       // **************************************************************************************************************************************
@@ -1347,12 +1347,13 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_CALC_SMETA_OBJ_GRAPH_C(fObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_CALC_SMETA_OBJ_GRAPH_C(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger,
+        FileReportPath);
     end
     else
     begin
@@ -1364,7 +1365,8 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_CALC_SMETA_OBJ_GRAPH_C(fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.Report_CALC_SMETA_OBJ_GRAPH_C(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID')
+          .AsInteger, FileReportPath);
       end;
     end;
   finally
@@ -1443,12 +1445,13 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_SMETA_LSR_FROM_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_SMETA_LSR_FROM_OBJ(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger,
+        FileReportPath);
     end
     else
     begin
@@ -1460,7 +1463,8 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_SMETA_LSR_FROM_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.Report_SMETA_LSR_FROM_OBJ(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger,
+          FileReportPath);
       end;
     end;
   finally
@@ -1475,12 +1479,13 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_SMETA_LSR_TRUD(fObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_SMETA_LSR_TRUD(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger,
+        FileReportPath);
     end
     else
     begin
@@ -1492,7 +1497,8 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_SMETA_LSR_TRUD(fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.Report_SMETA_LSR_TRUD(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger,
+          FileReportPath);
       end;
     end;
   finally
@@ -1507,12 +1513,13 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_SMETA_LSR_ZIM(fObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_SMETA_LSR_ZIM(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger,
+        FileReportPath);
     end
     else
     begin
@@ -1524,7 +1531,8 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_SMETA_LSR_ZIM(fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.Report_SMETA_LSR_ZIM(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger,
+          FileReportPath);
       end;
     end;
   finally
@@ -1539,12 +1547,13 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_SMETA_RES_FROM_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_SMETA_RES_FROM_OBJ(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger,
+        FileReportPath);
     end
     else
     begin
@@ -1556,7 +1565,8 @@ begin
           Exit;
         end;
 
-        dmReportF.Report_SMETA_RES_FROM_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.Report_SMETA_RES_FROM_OBJ(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger,
+          FileReportPath);
       end;
     end;
   finally
@@ -1572,12 +1582,13 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_RSMO_OBJ(0, fObjectsAndEstimates.IdEstimate, 0, FileReportPath);
+      dmReportF.Report_RSMO_OBJ(0, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, 0,
+        FileReportPath);
     end
     else
     begin
@@ -1604,12 +1615,13 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_RSMO_OBJ(1, fObjectsAndEstimates.IdEstimate, 0, FileReportPath);
+      dmReportF.Report_RSMO_OBJ(1, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, 0,
+        FileReportPath);
     end
     else
     begin
@@ -1636,12 +1648,13 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_RSMEH_OBJ(0, fObjectsAndEstimates.IdEstimate, 0, FileReportPath);
+      dmReportF.Report_RSMEH_OBJ(0, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, 0,
+        FileReportPath);
     end
     else
     begin
@@ -1694,12 +1707,13 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_VED_OBRAB_RASHRES_SMET_OBJ(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID')
+        .AsInteger, FileReportPath);
     end
     else
     begin
@@ -1867,38 +1881,39 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
       // **************************************************************************************************************************************
       if (Sender as TMenuItem).Name = 'jsMenu1' then
-        dmReportF.JSReport(1, fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(1, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, FileReportPath);
       // Ведомость объемов работ и расхода ресурсов
       if (Sender as TMenuItem).Name = 'jsMenu2' then
-        dmReportF.JSReport(2, fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(2, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, FileReportPath);
       // Ведомость объемов работ и расхода ресурсов (по локальным сметам)
       if (Sender as TMenuItem).Name = 'jsMenu3' then
-        dmReportF.JSReport(3, fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(3, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, FileReportPath);
       // Ведомость объемов работ и расхода ресурсов (по объектным сметам)
       if (Sender as TMenuItem).Name = 'jsMenu4' then
-        dmReportF.JSReport(4, fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(4, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, FileReportPath);
       // !!! Ведомость объемов работ и расхода ресурсов (в стоимостном выражении)
       if (Sender as TMenuItem).Name = 'jsMenu5' then
-        dmReportF.JSReport(5, fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(5, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, FileReportPath);
       // Ведомость ресурсов по смете
 
       if (Sender as TMenuItem).Name = 'JSMenu6' then
-        dmReportF.JSReport(6, fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(6, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, FileReportPath);
       if (Sender as TMenuItem).Name = 'JSMenu7' then
-        dmReportF.JSReport(7, fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(7, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, FileReportPath);
       if (Sender as TMenuItem).Name = 'JSMenu8' then
-        dmReportF.JSReport(8, fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(8, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, FileReportPath);
       if (Sender as TMenuItem).Name = 'JSMenu9' then
-        dmReportF.JSReport(9, fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(9, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, FileReportPath);
       if (Sender as TMenuItem).Name = 'JSMenu10' then
-        dmReportF.JSReport(10, fObjectsAndEstimates.IdEstimate, FileReportPath);
+        dmReportF.JSReport(10, fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger,
+          FileReportPath);
       // **************************************************************************************************************************************
     end
     else
@@ -1978,12 +1993,12 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_ZP_OBJ(fObjectsAndEstimates.IdEstimate, FileReportPath);
+      dmReportF.Report_ZP_OBJ(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, FileReportPath);
     end
     else
     begin
@@ -2081,7 +2096,7 @@ procedure TFormMain.MenuListsSectionsEstimatesClick(Sender: TObject);
 begin
   if (not Assigned(fSectionEstimateList)) then
     fSectionEstimateList := TfSectionEstimateList.Create(FormMain);
-  //fSectionEstimateList.FormStyle := fsNormal;
+  // fSectionEstimateList.FormStyle := fsNormal;
   fSectionEstimateList.Show;
 end;
 
@@ -2089,7 +2104,7 @@ procedure TFormMain.MenuListsTypesWorksClick(Sender: TObject);
 begin
   if (not Assigned(fTypeWorkList)) then
     fTypeWorkList := TfTypeWorkList.Create(FormMain);
-  //fTypeWorkList.FormStyle := fsNormal;
+  // fTypeWorkList.FormStyle := fsNormal;
   fTypeWorkList.Show;
 end;
 
@@ -2238,14 +2253,15 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_EXCEL(fObjectsAndEstimates.IdEstimate, 1);
+      dmReportF.Report_EXCEL(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, 1);
 
-      ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(fObjectsAndEstimates.IdEstimate)),
+      ShellExecute(Handle, nil, 'report.exe',
+        PChar('E' + INTTOSTR(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger)),
         PChar(GetCurrentDir + '\reports\report\'), SW_maximIZE);
 
     end
@@ -2275,12 +2291,12 @@ begin
   try
     if Assigned(fObjectsAndEstimates) then
     begin
-      if fObjectsAndEstimates.IdEstimate = 0 then
+      if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
         ShowMessage('Не выбрана смета');
         Exit;
       end;
-      dmReportF.Report_EXCEL(fObjectsAndEstimates.IdEstimate, 2);
+      dmReportF.Report_EXCEL(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').AsInteger, 2);
     end
     else
     begin

@@ -82,7 +82,6 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         ReadOnly = True
         Title.Alignment = taCenter
         Title.Caption = #1054#1073#1098#1105#1084' '#1055#1058#1052
-        Width = -1
         Visible = False
       end
       item
@@ -118,34 +117,22 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         FieldName = 'ZP'
         Title.Alignment = taCenter
         Title.Caption = #1047#1055
-        Width = 90
+        Width = 100
         Visible = True
       end
       item
-        Alignment = taRightJustify
         Expanded = False
-        FieldName = 'TRUD'
         Title.Alignment = taCenter
-        Title.Caption = #1058#1088#1091#1076#1086#1105#1084#1082#1086#1089#1090#1100
-        Width = 90
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
-        FieldName = 'TRUD_MASH'
-        Title.Alignment = taCenter
-        Title.Caption = #1058#1088#1091#1076'. '#1084#1072#1096'.'
-        Width = 90
-        Visible = True
+        Title.Caption = #1047#1055' '#1087#1086' '#1087#1088'.5'
+        Visible = False
       end
       item
         Alignment = taRightJustify
         Expanded = False
         FieldName = 'EMiM'
         Title.Alignment = taCenter
-        Title.Caption = #1069#1052#1080#1052
-        Width = 90
+        Title.Caption = #1069#1084#1080#1052
+        Width = 100
         Visible = True
       end
       item
@@ -153,8 +140,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Expanded = False
         FieldName = 'ZP_MASH'
         Title.Alignment = taCenter
-        Title.Caption = #1047#1055' '#1084#1072#1096'.'
-        Width = 90
+        Title.Caption = #1047#1055' '#1084#1072#1096
+        Width = 100
         Visible = True
       end
       item
@@ -162,8 +149,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Expanded = False
         FieldName = 'MR'
         Title.Alignment = taCenter
-        Title.Caption = #1052#1072#1090#1077#1088#1080#1072#1083
-        Width = 90
+        Title.Caption = #1052#1072#1090'-'#1083#1099
+        Width = 100
         Visible = True
       end
       item
@@ -171,8 +158,44 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Expanded = False
         FieldName = 'TRANSP'
         Title.Alignment = taCenter
-        Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-        Width = 90
+        Title.Caption = #1058#1088'-'#1090' '#1084#1072#1090'-'#1083#1099
+        Width = 100
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'MR_DEVICE'
+        Title.Alignment = taCenter
+        Title.Caption = #1054#1073#1086#1088#1091#1076'-'#1077
+        Width = 100
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'TRANSP_DEVICE'
+        Title.Alignment = taCenter
+        Title.Caption = #1058#1088'-'#1090' '#1086#1073#1086#1088#1091#1076'-'#1077
+        Width = 100
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'TRUD'
+        Title.Alignment = taCenter
+        Title.Caption = #1058#1088#1091#1076'-'#1090#1099' '#1088#1072#1073
+        Width = 100
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'TRUD_MASH'
+        Title.Alignment = taCenter
+        Title.Caption = #1058#1088#1091#1076'-'#1090#1099' '#1084#1072#1096
+        Width = 100
         Visible = True
       end
       item
@@ -181,7 +204,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         FieldName = 'OHROPR'
         Title.Alignment = taCenter
         Title.Caption = #1054#1061#1056#1080#1054#1055#1056
-        Width = 90
+        Width = 100
         Visible = True
       end
       item
@@ -190,7 +213,25 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         FieldName = 'PLAN_PRIB'
         Title.Alignment = taCenter
         Title.Caption = #1055#1083#1072#1085'. '#1087#1088#1080#1073'.'
-        Width = 90
+        Width = 100
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'TEMP_BUILD'
+        Title.Alignment = taCenter
+        Title.Caption = #1042#1088#1077#1084'. '#1079#1076'. '#1080'  '#1089#1086#1086#1088#1091#1078'.'
+        Width = 100
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'TEMP_RET'
+        Title.Alignment = taCenter
+        Title.Caption = #1042#1086#1079#1074#1088'. '#1084#1072#1090'.'
+        Width = 100
         Visible = True
       end
       item
@@ -198,8 +239,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Expanded = False
         FieldName = 'ZIM_UDOR'
         Title.Alignment = taCenter
-        Title.Caption = #1047#1080#1084'. '#1091#1076#1086#1088'.'
-        Width = 90
+        Title.Caption = #1047#1080#1084#1085'. '#1091#1076#1086#1088'.'
+        Width = 100
         Visible = True
       end
       item
@@ -207,26 +248,112 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Expanded = False
         FieldName = 'ZP_ZIM_UDOR'
         Title.Alignment = taCenter
-        Title.Caption = #1047#1055' '#1079#1080#1084'. '#1091#1076#1086#1088'.'
-        Width = 90
+        Title.Caption = #1047#1055' '#1074' '#1079#1080#1084#1085#1080#1093
+        Width = 100
         Visible = True
       end
       item
         Alignment = taRightJustify
         Expanded = False
-        FieldName = 'MR_DEVICE'
+        FieldName = 'TRUD_ZIM'
         Title.Alignment = taCenter
-        Title.Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
-        Width = 90
+        Title.Caption = #1058#1088#1091#1076'. '#1079#1080#1084'.'
+        Width = 100
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'GEN_PODR'
+        Title.Alignment = taCenter
+        Title.Caption = #1043#1077#1085'. '#1087#1086#1076#1088#1103#1076'.'
+        Width = 100
         Visible = True
       end
       item
         Alignment = taRightJustify
         Expanded = False
-        FieldName = 'TRANSP_DEVICE'
+        FieldName = 'SOC_STRAH'
         Title.Alignment = taCenter
-        Title.Caption = #1058#1088'. '#1086#1073#1086#1088#1091#1076'.'
-        Width = 90
+        Title.Caption = #1057#1086#1094#1089#1090#1088#1072#1093
+        Width = 100
+        Visible = True
+      end
+      item
+        Expanded = False
+        Title.Alignment = taCenter
+        Title.Caption = #1056#1072#1079#1098#1077#1079#1076#1085#1099#1077
+        Visible = False
+      end
+      item
+        Expanded = False
+        Title.Alignment = taCenter
+        Title.Caption = #1055#1077#1088#1077#1074#1086#1079#1082#1072
+        Visible = False
+      end
+      item
+        Expanded = False
+        Title.Alignment = taCenter
+        Title.Caption = #1050#1086#1084#1072#1085#1076#1080#1088'-'#1077
+        Visible = False
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'MR_DUMP'
+        Title.Alignment = taCenter
+        Title.Caption = #1057#1074#1072#1083#1082#1072
+        Width = 100
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'DUMP_COUNT'
+        Title.Alignment = taCenter
+        Title.Caption = #1057#1074#1072#1083#1082#1072'('#1052#1047')'
+        Width = 100
+        Visible = True
+      end
+      item
+        Expanded = False
+        Title.Alignment = taCenter
+        Title.Caption = #1060#1047#1055
+        Visible = False
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'ZEM_NAL'
+        Title.Alignment = taCenter
+        Title.Caption = #1047#1077#1084'. '#1085#1072#1083#1086#1075
+        Width = 100
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'VEDOMS_NAL'
+        Title.Alignment = taCenter
+        Title.Caption = #1057#1083#1091#1078#1073'. '#1074#1077#1076'. '#1082#1086#1085#1090#1088'.'
+        Width = 100
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'NDS'
+        Title.Alignment = taCenter
+        Title.Caption = #1053#1044#1057
+        Width = 100
+        Visible = True
+      end
+      item
+        Alignment = taRightJustify
+        Expanded = False
+        FieldName = 'DEBET_NAL'
+        Title.Alignment = taCenter
+        Title.Caption = #1053#1072#1083#1086#1075' '#1086#1090' '#1074#1099#1088#1091#1095#1082#1080
+        Width = 100
         Visible = True
       end
       item
@@ -260,55 +387,11 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       item
         Alignment = taRightJustify
         Expanded = False
-        FieldName = 'MR_DUMP'
-        Title.Alignment = taCenter
-        Title.Caption = #1057#1074#1072#1083#1082#1072
-        Width = 90
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
-        FieldName = 'DUMP_COUNT'
-        Title.Alignment = taCenter
-        Title.Caption = #1057#1074#1072#1083#1082#1072'('#1052#1047')'
-        Width = 90
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
-        FieldName = 'TEMP_BUILD'
-        Title.Alignment = taCenter
-        Title.Caption = 'B'#1088#1077#1084#1077#1085#1085#1099#1077' ('#1090#1080#1090#1091#1083#1100#1085#1099#1077') '#1079#1076#1072#1085#1080#1103' '#1080' '#1089#1086#1086#1088#1091#1078#1077#1085#1080#1103
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
-        FieldName = 'TEMP_RET'
-        Title.Alignment = taCenter
-        Title.Caption = #1042#1086#1079#1074#1088'. '#1084#1072#1090'.'
-        Width = 90
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
         FieldName = 'NormaAVG'
         ReadOnly = True
         Title.Alignment = taCenter
         Title.Caption = #1057#1088'. '#1088#1072#1079#1088#1103#1076
-        Width = 90
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
-        FieldName = 'MR_DUMP'
-        Title.Alignment = taCenter
-        Title.Caption = #1055#1088#1086#1095#1080#1077
-        Width = 90
+        Width = 100
         Visible = True
       end
       item
@@ -317,56 +400,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         FieldName = 'PR_352'
         Title.Alignment = taCenter
         Title.Caption = #1055#1088'. '#8470'352'
-        Width = 90
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
-        FieldName = 'TRUD_ZIM'
-        Title.Alignment = taCenter
-        Title.Caption = #1058#1088#1091#1076'. '#1079#1080#1084'.'
-        Width = 90
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
-        FieldName = 'SOC_STRAH'
-        Title.Alignment = taCenter
-        Title.Caption = #1057#1086#1094#1089#1090#1088#1072#1093
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
-        FieldName = 'ZEM_NAL'
-        Title.Alignment = taCenter
-        Title.Caption = #1047#1077#1084#1077#1083#1100#1085#1099#1081' '#1085#1072#1083#1086#1075
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
-        FieldName = 'VEDOMS_NAL'
-        Title.Alignment = taCenter
-        Title.Caption = #1057#1083#1091#1078#1073#1072' '#1074#1077#1076#1086#1084#1089#1090#1074#1077#1085#1085#1086#1075#1086' '#1082#1086#1085#1090#1088#1086#1083#1103
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
-        FieldName = 'NDS'
-        Title.Alignment = taCenter
-        Title.Caption = #1053#1044#1057
-        Visible = True
-      end
-      item
-        Alignment = taRightJustify
-        Expanded = False
-        FieldName = 'DEBET_NAL'
-        Title.Alignment = taCenter
-        Title.Caption = #1053#1072#1083#1086#1075' '#1086#1090' '#1074#1099#1088#1091#1095#1082#1080
+        Width = 100
         Visible = True
       end>
   end
@@ -437,6 +471,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR)) AS STOIM_SMR,'
       '  SUM(IFNULL(d.TEMP_BUILDF, d.TEMP_BUILD)) AS TEMP_BUILD,'
       '  SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR)) AS STOIM_SMR,'
+      '  SUM(IFNULL(d.GEN_PODRF, d.GEN_PODR)) AS GEN_PODR,'
       ''
       ''
       '  SUM(IFNULL(d.ZP, 0)) AS ZPF,'
@@ -466,7 +501,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  SUM(IFNULL(d.VEDOMS_NAL, 0)) AS VEDOMS_NALF,'
       '  SUM(IFNULL(d.STOIM_SMR, 0)) AS STOIM_SMRF,'
       '  SUM(IFNULL(d.TEMP_BUILD, 0)) AS TEMP_BUILDF,'
-      '  SUM(IFNULL(d.STOIM_SMR, 0)) AS STOIM_SMRF'
+      '  SUM(IFNULL(d.STOIM_SMR, 0)) AS STOIM_SMRF,  '
+      '  SUM(IFNULL(d.GEN_PODR, 0)) AS GEN_PODRF'
       ''
       'FROM typesm, objcards o, smetasourcedata s'
       'LEFT JOIN summary_calculation d ON d.SM_ID IN'
@@ -592,7 +628,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  VEDOMS_NALF= IF(:VEDOMS_NAL=VEDOMS_NAL, NULL, :VEDOMS_NAL),'
       '  STOIM_SMRF= IF(:STOIM_SMR=STOIM_SMR, NULL, :STOIM_SMR),'
       '  TEMP_BUILDF= IF(:TEMP_BUILD=TEMP_BUILD, NULL, :TEMP_BUILD),'
-      '  STOIM_SMRF= IF(:STOIM_SMR=STOIM_SMR, NULL, :STOIM_SMR)'
+      '  STOIM_SMRF= IF(:STOIM_SMR=STOIM_SMR, NULL, :STOIM_SMR),'
+      '  GEN_PODRF =  IF(:GEN_PODR=GEN_PODR, NULL, :GEN_PODR),'
       'WHERE   SM_ID = :id_estimate;')
     Left = 32
     Top = 160

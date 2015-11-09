@@ -4,7 +4,7 @@ object fCardEstimate: TfCardEstimate
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1089#1084#1077#1090#1099
-  ClientHeight = 243
+  ClientHeight = 271
   ClientWidth = 604
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,12 +19,12 @@ object fCardEstimate: TfCardEstimate
   OnShow = FormShow
   DesignSize = (
     604
-    243)
+    271)
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel: TBevel
     Left = 0
-    Top = 202
+    Top = 230
     Width = 604
     Height = 41
     Align = alBottom
@@ -47,15 +47,8 @@ object fCardEstimate: TfCardEstimate
     ParentBackground = False
     ParentFont = False
     TabOrder = 0
-    object LabelNumberChapter: TLabel
-      Left = 167
-      Top = 6
-      Width = 74
-      Height = 13
-      Caption = #8470' '#1075#1083#1072#1074#1099' '#1057#1057#1056':'
-    end
     object LabelNumberRow: TLabel
-      Left = 327
+      Left = 167
       Top = 6
       Width = 55
       Height = 13
@@ -76,7 +69,7 @@ object fCardEstimate: TfCardEstimate
       ParentFont = False
     end
     object lblType: TLabel
-      Left = 447
+      Left = 327
       Top = 6
       Width = 22
       Height = 13
@@ -99,19 +92,10 @@ object fCardEstimate: TfCardEstimate
       ReadOnly = True
       TabOrder = 0
     end
-    object dbedtCHAPTER: TDBEdit
-      Left = 247
-      Top = 2
-      Width = 74
-      Height = 21
-      DataField = 'CHAPTER'
-      DataSource = dsMain
-      TabOrder = 1
-    end
     object dbedtROW_NUMBER: TDBEdit
-      Left = 388
-      Top = 3
-      Width = 53
+      Left = 228
+      Top = 2
+      Width = 93
       Height = 21
       DataField = 'ROW_NUMBER'
       DataSource = dsMain
@@ -121,12 +105,12 @@ object fCardEstimate: TfCardEstimate
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 3
+      TabOrder = 1
     end
     object cbbType: TComboBox
-      Left = 475
+      Left = 355
       Top = 2
-      Width = 126
+      Width = 246
       Height = 21
       Style = csDropDownList
       ItemIndex = 0
@@ -142,13 +126,14 @@ object fCardEstimate: TfCardEstimate
   end
   object Panel2: TPanel
     Left = 0
-    Top = 100
+    Top = 125
     Width = 604
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 4
+    TabOrder = 5
+    ExplicitTop = 124
     object LabelNameEstimate: TLabel
       Left = 10
       Top = 5
@@ -174,13 +159,14 @@ object fCardEstimate: TfCardEstimate
   end
   object Panel3: TPanel
     Left = 0
-    Top = 125
+    Top = 150
     Width = 604
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 5
+    TabOrder = 6
+    ExplicitTop = 149
     object LabelCompose: TLabel
       Left = 10
       Top = 5
@@ -222,13 +208,14 @@ object fCardEstimate: TfCardEstimate
   end
   object Panel4: TPanel
     Left = 0
-    Top = 150
+    Top = 175
     Width = 604
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 6
+    TabOrder = 7
+    ExplicitTop = 174
     object LabelChecked: TLabel
       Left = 9
       Top = 5
@@ -276,13 +263,14 @@ object fCardEstimate: TfCardEstimate
   end
   object Panel5: TPanel
     Left = 0
-    Top = 175
+    Top = 200
     Width = 604
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 7
+    TabOrder = 8
+    ExplicitTop = 199
     object LabelSetDrawing: TLabel
       Left = 6
       Top = 5
@@ -308,7 +296,7 @@ object fCardEstimate: TfCardEstimate
   end
   object btnSave: TButton
     Left = 390
-    Top = 210
+    Top = 238
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
@@ -320,22 +308,24 @@ object fCardEstimate: TfCardEstimate
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 8
+    TabOrder = 9
     OnClick = btnSaveClick
+    ExplicitTop = 210
   end
   object btnClose: TButton
     Left = 496
-    Top = 210
+    Top = 238
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 9
+    TabOrder = 10
     OnClick = btnCloseClick
+    ExplicitTop = 210
   end
   object PanelPart: TPanel
     Left = 0
-    Top = 25
+    Top = 50
     Width = 604
     Height = 25
     Align = alTop
@@ -347,7 +337,8 @@ object fCardEstimate: TfCardEstimate
     Font.Style = []
     ParentBackground = False
     ParentFont = False
-    TabOrder = 1
+    TabOrder = 2
+    ExplicitTop = 49
     object LabelPart: TLabel
       Left = 28
       Top = 5
@@ -377,13 +368,14 @@ object fCardEstimate: TfCardEstimate
   end
   object PanelSection: TPanel
     Left = 0
-    Top = 50
+    Top = 75
     Width = 604
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 2
+    TabOrder = 3
+    ExplicitTop = 74
     object LabelSection: TLabel
       Left = 22
       Top = 5
@@ -413,13 +405,14 @@ object fCardEstimate: TfCardEstimate
   end
   object PanelTypeWork: TPanel
     Left = 0
-    Top = 75
+    Top = 100
     Width = 604
     Height = 25
     Align = alTop
     BevelOuter = bvNone
     ParentBackground = False
-    TabOrder = 3
+    TabOrder = 4
+    ExplicitTop = 99
     object LabelTypeWork: TLabel
       Left = 6
       Top = 5
@@ -447,12 +440,62 @@ object fCardEstimate: TfCardEstimate
       TabOrder = 0
     end
   end
+  object chkAddChapterNumber: TCheckBox
+    Left = 8
+    Top = 246
+    Width = 213
+    Height = 17
+    Anchors = [akLeft, akBottom]
+    Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1085#1072#1079#1074#1072#1085#1080#1077' '#1090#1080#1087' '#1075#1083#1072#1074#1099' '#1057#1057#1056
+    TabOrder = 11
+    ExplicitTop = 276
+  end
+  object pnl1: TPanel
+    Left = 0
+    Top = 25
+    Width = 604
+    Height = 25
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 1
+    ExplicitLeft = 8
+    ExplicitTop = 24
+    object lblNumberChapter: TLabel
+      Left = 11
+      Top = 6
+      Width = 74
+      Height = 13
+      Caption = #8470' '#1075#1083#1072#1074#1099' '#1057#1057#1056':'
+    end
+    object cbb1: TComboBox
+      Left = 91
+      Top = 4
+      Width = 510
+      Height = 21
+      Style = csDropDownList
+      TabOrder = 0
+      OnCloseUp = cbbTypeCloseUp
+      Items.Strings = (
+        #1043#1051#1040#1042#1040' 1  '#1055#1054#1044#1043#1054#1058#1054#1042#1050#1040' '#1058#1045#1056#1056#1048#1058#1054#1056#1048#1048' '#1057#1058#1056#1054#1048#1058#1045#1051#1068#1057#1058#1042#1040
+        #1043#1051#1040#1042#1040' 2 '#1054#1057#1053#1054#1042#1053#1067#1045' '#1054#1041#1066#1045#1050#1058#1067' '#1057#1058#1056#1054#1048#1058#1045#1051#1068#1057#1058#1042#1040
+        #1043#1051#1040#1042#1040' 3 '#1054#1041#1066#1045#1050#1058#1067' '#1055#1054#1044#1057#1054#1041#1053#1054#1043#1054' '#1048' '#1054#1041#1057#1051#1059#1046#1048#1042#1040#1070#1065#1045#1043#1054' '#1053#1040#1047#1053#1040#1063#1045#1053#1048#1071
+        #1043#1051#1040#1042#1040' 4 '#1054#1041#1066#1045#1050#1058#1067' '#1069#1053#1045#1056#1043#1045#1058#1048#1063#1045#1057#1050#1054#1043#1054' '#1061#1054#1047#1071#1049#1057#1058#1042#1040
+        #1043#1051#1040#1042#1040' 5 '#1054#1041#1066#1045#1050#1058#1067' '#1058#1056#1040#1053#1057#1055#1054#1056#1058#1053#1054#1043#1054' '#1061#1054#1047#1071#1049#1057#1058#1042#1040' '#1048' '#1057#1042#1071#1047#1048
+        
+          #1043#1051#1040#1042#1040' 6 '#1053#1040#1056#1059#1046#1053#1067#1045' '#1057#1045#1058#1048' '#1048' '#1057#1054#1054#1056#1059#1046#1045#1053#1048#1071' '#1042#1054#1044#1054#1057#1053#1040#1041#1046#1045#1053#1048#1071', '#1050#1040#1053#1040#1051#1048#1047#1040#1062#1048#1048', '#1058 +
+          #1045#1055#1054#1057#1053#1040#1041#1046#1045#1053#1048#1071' '#1048' '#1043#1040#1047#1054#1057#1053#1040#1041#1046#1045#1053#1048#1071
+        #1043#1051#1040#1042#1040' 7 '#1041#1051#1040#1043#1054#1059#1057#1058#1056#1054#1049#1057#1058#1042#1054' '#1048' '#1054#1047#1045#1051#1045#1053#1045#1053#1048#1045' '#1058#1045#1056#1056#1048#1058#1054#1056#1048#1048
+        #1043#1051#1040#1042#1040' 8 '#1042#1056#1045#1052#1045#1053#1053#1067#1045' '#1047#1044#1040#1053#1048#1071' '#1048' '#1057#1054#1054#1056#1059#1046#1045#1053#1048#1071
+        #1043#1051#1040#1042#1040' 9 '#1055#1056#1054#1063#1048#1045' '#1056#1040#1041#1054#1058#1067' '#1048' '#1047#1040#1058#1056#1040#1058#1067
+        #1043#1051#1040#1042#1040' 10 '#1057#1056#1045#1044#1057#1058#1042#1040' '#1047#1040#1050#1040#1047#1063#1048#1050#1040', '#1047#1040#1057#1058#1056#1054#1049#1065#1048#1050#1040
+        #1043#1051#1040#1042#1040' 11 '#1055#1054#1044#1043#1054#1058#1054#1042#1050#1040' '#1069#1050#1057#1055#1051#1059#1040#1058#1040#1062#1048#1054#1053#1053#1067#1061' '#1050#1040#1044#1056#1054#1042)
+    end
+  end
   object qrTemp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 25
-    Top = 200
+    Left = 185
   end
   object qrParts: TFDQuery
     Connection = DM.Connect
@@ -486,12 +529,12 @@ object fCardEstimate: TfCardEstimate
       'WHERE `CODE`<>0'
       'ORDER BY `CODE`;')
     Left = 497
-    Top = 18
+    Top = 42
   end
   object dsParts: TDataSource
     DataSet = qrParts
     Left = 536
-    Top = 18
+    Top = 42
   end
   object qrSections: TFDQuery
     Connection = DM.Connect
@@ -520,12 +563,12 @@ object fCardEstimate: TfCardEstimate
       'WHERE -`CODE`<>0'
       'ORDER BY `CODE`;')
     Left = 361
-    Top = 42
+    Top = 66
   end
   object dsSections: TDataSource
     DataSet = qrSections
     Left = 400
-    Top = 42
+    Top = 66
   end
   object qrTypesWorks: TFDQuery
     Connection = DM.Connect
@@ -562,12 +605,12 @@ object fCardEstimate: TfCardEstimate
       'WHERE `CODE`<>0'
       'ORDER BY `CODE`;')
     Left = 233
-    Top = 74
+    Top = 98
   end
   object dsTypesWorks: TDataSource
     DataSet = qrTypesWorks
     Left = 280
-    Top = 74
+    Top = 98
   end
   object qrMain: TFDQuery
     Connection = DM.Connect
@@ -580,8 +623,8 @@ object fCardEstimate: TfCardEstimate
       'SELECT * '
       'FROM smetasourcedata'
       'WHERE SM_ID=:SM_ID')
-    Left = 105
-    Top = 202
+    Left = 17
+    Top = 58
     ParamData = <
       item
         Name = 'SM_ID'
@@ -592,7 +635,17 @@ object fCardEstimate: TfCardEstimate
   end
   object dsMain: TDataSource
     DataSet = qrMain
-    Left = 144
-    Top = 202
+    Left = 48
+    Top = 58
+  end
+  object FormStorage: TJvFormStorage
+    AppStorage = FormMain.AppIni
+    AppStoragePath = '%FORM_NAME%\'
+    Options = []
+    StoredProps.Strings = (
+      'chkAddChapterNumber.Checked')
+    StoredValues = <>
+    Left = 24
+    Top = 136
   end
 end
