@@ -122,9 +122,11 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       end
       item
         Expanded = False
+        FieldName = 'ZP_PR'
         Title.Alignment = taCenter
         Title.Caption = #1047#1055' '#1087#1086' '#1087#1088'.5'
-        Visible = False
+        Width = 100
+        Visible = True
       end
       item
         Alignment = taRightJustify
@@ -280,21 +282,27 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       end
       item
         Expanded = False
+        FieldName = 'TRAVEL_WORK'
         Title.Alignment = taCenter
         Title.Caption = #1056#1072#1079#1098#1077#1079#1076#1085#1099#1077
-        Visible = False
+        Width = 100
+        Visible = True
       end
       item
         Expanded = False
+        FieldName = 'WORKER_DEPARTMENT'
         Title.Alignment = taCenter
         Title.Caption = #1055#1077#1088#1077#1074#1086#1079#1082#1072
-        Visible = False
+        Width = 100
+        Visible = True
       end
       item
         Expanded = False
+        FieldName = 'TRAVEL'
         Title.Alignment = taCenter
         Title.Caption = #1050#1086#1084#1072#1085#1076#1080#1088'-'#1077
-        Visible = False
+        Width = 100
+        Visible = True
       end
       item
         Alignment = taRightJustify
@@ -316,9 +324,11 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       end
       item
         Expanded = False
+        FieldName = 'FZP'
         Title.Alignment = taCenter
         Title.Caption = #1060#1047#1055
-        Visible = False
+        Width = 100
+        Visible = True
       end
       item
         Alignment = taRightJustify
@@ -471,8 +481,14 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR)) AS STOIM_SMR,'
       '  SUM(IFNULL(d.TEMP_BUILDF, d.TEMP_BUILD)) AS TEMP_BUILD,'
       '  SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR)) AS STOIM_SMR,'
-      '  SUM(IFNULL(d.GEN_PODRF, d.GEN_PODR)) AS GEN_PODR,'
-      ''
+      '  SUM(IFNULL(d.GEN_PODRF, d.GEN_PODR)) AS GEN_PODR, '
+      '  SUM(IFNULL(d.ZP_PRF, d.ZP_PR)) AS ZP_PR,'
+      '  SUM(IFNULL(d.FZPF, d.FZP)) AS FZP,'
+      '  SUM(IFNULL(d.TRAVELF, d.TRAVEL)) AS TRAVEL,'
+      '  SUM(IFNULL(d.TRAVEL_WORKF, d.TRAVEL_WORK)) AS TRAVEL_WORK,'
+      
+        '  SUM(IFNULL(d.WORKER_DEPARTMENTF, d.WORKER_DEPARTMENT)) AS WORK' +
+        'ER_DEPARTMENT,'
       ''
       '  SUM(IFNULL(d.ZP, 0)) AS ZPF,'
       '  SUM(IFNULL(d.EMiM, 0)) AS EMiMF,'
@@ -502,7 +518,12 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  SUM(IFNULL(d.STOIM_SMR, 0)) AS STOIM_SMRF,'
       '  SUM(IFNULL(d.TEMP_BUILD, 0)) AS TEMP_BUILDF,'
       '  SUM(IFNULL(d.STOIM_SMR, 0)) AS STOIM_SMRF,  '
-      '  SUM(IFNULL(d.GEN_PODR, 0)) AS GEN_PODRF'
+      '  SUM(IFNULL(d.GEN_PODR, 0)) AS GEN_PODRF,'
+      '  SUM(IFNULL(d.ZP_PR, 0)) AS ZP_PRF,'
+      '  SUM(IFNULL(d.FZP, 0)) AS FZPF,'
+      '  SUM(IFNULL(d.TRAVEL, 0)) AS TRAVELF,'
+      '  SUM(IFNULL(d.TRAVEL_WORK, 0)) AS TRAVEL_WORKF,'
+      '  SUM(IFNULL(d.WORKER_DEPARTMENT, 0)) AS WORKER_DEPARTMENTF'
       ''
       'FROM typesm, objcards o, smetasourcedata s'
       'LEFT JOIN summary_calculation d ON d.SM_ID IN'
@@ -630,6 +651,15 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  TEMP_BUILDF= IF(:TEMP_BUILD=TEMP_BUILD, NULL, :TEMP_BUILD),'
       '  STOIM_SMRF= IF(:STOIM_SMR=STOIM_SMR, NULL, :STOIM_SMR),'
       '  GEN_PODRF =  IF(:GEN_PODR=GEN_PODR, NULL, :GEN_PODR),'
+      '  ZP_PRF =  IF(:ZP_PR=ZP_PR, NULL, :ZP_PR),'
+      '  FZPF  =  IF(:FZP=FZP, NULL, :FZP),'
+      ' TRAVELF  =  IF(:TRAVEL=TRAVEL, NULL, :TRAVEL),'
+      
+        ' TRAVEL_WORKF  =  IF(TRAVEL_WORK=TRAVEL_WORK, NULL, :TRAVEL_WORK' +
+        '),'
+      
+        ' WORKER_DEPARTMENTF  =  IF(:WORKER_DEPARTMENT=WORKER_DEPARTMENT,' +
+        ' NULL, :WORKER_DEPARTMENT)'
       'WHERE   SM_ID = :id_estimate;')
     Left = 32
     Top = 160

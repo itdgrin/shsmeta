@@ -57,7 +57,7 @@ begin
   if not CheckQrActiveEmpty(qrData) or (qrData.FieldByName('sm_type').AsInteger <> 3) or
     (FormCalculationEstimate.PanelCalculationYesNo.Tag = 0) or (Field = grSummaryCalculation.Columns[0].Field)
     or (Field = grSummaryCalculation.Columns[1].Field) or (Field = grSummaryCalculation.Columns[2].Field) or
-    (Field = grSummaryCalculation.Columns[3].Field) or (Field = grSummaryCalculation.Columns[26].Field) then
+    (Field = grSummaryCalculation.Columns[3].Field) or (Field = grSummaryCalculation.Columns[40].Field) then
     Exit;
 
   Result := True;

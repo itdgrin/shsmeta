@@ -47,7 +47,7 @@ Source: "D:\Work\Minsk\SmetaSRC\libmySQL.dll"; DestDir: "{app}"; Flags: ignoreve
 Source: "D:\Work\Minsk\SmetaSRC\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\Work\Minsk\SmetaSRC\Normative documents\*"; DestDir: "{app}\Normative documents"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\Work\Minsk\SmetaSRC\Programs remote control\*"; DestDir: "{app}\Programs remote control"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Work\Minsk\SmetaSRC\Reports\*"; DestDir: "{app}\Reports"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Work\Minsk\Reports\*"; DestDir: "{app}\Reports"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\Work\Minsk\SmetaSRC\XLS\*"; DestDir: "{app}\XLS"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\Work\Minsk\SmetaSRC\Arhiv\*"; DestDir: "{app}\Arhiv"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "d:\Work\Minsk\SmetaSRC\Components\mysql-connector-odbc-5.2.7-win32.msi"; DestDir: "{app}\Distr"; Flags: ignoreversion
