@@ -3034,6 +3034,16 @@
         Text = #1047#1086#1085#1072' '#1088#1072#1089#1094#1077#1085#1086#1082
         ExplicitHeight = 21
       end
+      object btnWinterPriceSelect: TBitBtn
+        Left = 885
+        Top = 2
+        Width = 20
+        Height = 20
+        Hint = #1042#1099#1073#1086#1088' '#1080#1079' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072' '#1079#1080#1084#1085#1080#1093' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1081
+        Caption = '...'
+        TabOrder = 4
+        OnClick = nSelectWinterPriseClick
+      end
     end
   end
   object PanelData: TPanel

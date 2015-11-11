@@ -493,6 +493,7 @@ type
     pmAddTransp: TPopupMenu;
     pmAddTranspCargo: TMenuItem;
     pmAddTranspTrash: TMenuItem;
+    btnWinterPriceSelect: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -1547,6 +1548,7 @@ begin
 
   // EditWinterPrice.Left := lblWinterPrice.Left + lblWinterPrice.Width + 6;
   EditWinterPrice.Width := newWith;
+  btnWinterPriceSelect.Left := EditWinterPrice.Left + EditWinterPrice.Width - 4 {- btnWinterPriceSelect.Width};
 end;
 
 procedure TFormCalculationEstimate.PanelCalculationYesNoClick(Sender: TObject);

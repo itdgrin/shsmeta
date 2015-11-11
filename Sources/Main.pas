@@ -1199,8 +1199,8 @@ begin
     fLogIn := TfLogIn.Create(FormMain);
   if fLogIn.ShowModal <> mrOk then
   begin
-    OnCloseQuery := nil;
-    Close;
+    //OnCloseQuery := nil;
+    //Close;
   end;
 end;
 
