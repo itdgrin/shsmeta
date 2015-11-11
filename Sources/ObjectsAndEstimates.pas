@@ -191,8 +191,11 @@ var
 
 implementation
 
-uses Main, DataModule, CardObject, CardEstimate, CalculationEstimate, Waiting,
-  BasicData, DrawingTables, KC6, CardAct, ImportExportModule, GlobsAndConst, UserAccess;
+uses
+  Main, DataModule, CardObject, CardEstimate,
+  CalculationEstimate, Waiting, BasicData, DrawingTables,
+  KC6, CardAct, ImportExportModule, GlobsAndConst,
+  UserAccess, SprController;
 
 {$R *.dfm}
 
@@ -987,9 +990,11 @@ end;
 procedure TfObjectsAndEstimates.PMImportObjectClick(Sender: TObject);
 var
   TmpStr: string;
+  UpdateSpr: Boolean;
 begin
   if OpenDialog.Execute(FormMain.Handle) then
   begin
+    UpdateSpr := False;
     FormMain.PanelCover.Visible := True;
     FormWaiting.Height := 110;
     FormWaiting.Show;
@@ -997,9 +1002,14 @@ begin
     try
       TmpStr := 'Импорт из файла: ' + ExtractFileName(OpenDialog.FileName);
       FormWaiting.lbProcess.caption := TmpStr;
-      ImportObject(OpenDialog.FileName);
+      UpdateSpr := ImportObject(OpenDialog.FileName);
       ShowMessage('Импорт завершен успешно.');
     finally
+      if UpdateSpr then
+      begin
+        FreeAndNil(SprControl);
+        SprControl := TSprControl.Create(FormMain.Handle);
+      end;
       FormWaiting.Close;
       FormWaiting.Height := 88;
       FormWaiting.lbProcess.caption := '';
@@ -1014,6 +1024,7 @@ var
   TmpFiles: TStringDynArray;
   I: Integer;
   TmpStr: string;
+  UpdateSpr: Boolean;
 begin
   with TBrowseForFolder.Create(nil) do
     try
@@ -1022,29 +1033,33 @@ begin
         TmpFiles := TDirectory.GetFiles(Folder, '*.xml', TSearchOption.soTopDirectoryOnly);
         if Length(TmpFiles) = 0 then
           Exit;
+
+        UpdateSpr := False;
+        FormMain.PanelCover.Visible := True;
+        FormWaiting.Height := 110;
+        FormWaiting.Show;
+        Application.ProcessMessages;
         try
-          FormMain.PanelCover.Visible := True;
-          FormWaiting.Height := 110;
-          FormWaiting.Show;
-          Application.ProcessMessages;
-          try
-            for I := Low(TmpFiles) to High(TmpFiles) do
-            begin
-              TmpStr := 'Импорт из файла: ' + ExtractFileName(TmpFiles[I]);
-              FormWaiting.lbProcess.caption := TmpStr;
-              ImportObject(TmpFiles[I]);
-            end;
-            ShowMessage('Импорт завершен успешно.');
-          finally
-            FormWaiting.Close;
-            FormWaiting.Height := 88;
-            FormWaiting.lbProcess.caption := '';
-            FormMain.PanelCover.Visible := False;
+          for I := Low(TmpFiles) to High(TmpFiles) do
+          begin
+            TmpStr := 'Импорт из файла: ' + ExtractFileName(TmpFiles[I]);
+            FormWaiting.lbProcess.caption := TmpStr;
+            if ImportObject(TmpFiles[I]) then
+              UpdateSpr := True;
           end;
-          FillingTableObjects;
+          ShowMessage('Импорт завершен успешно.');
         finally
-          SetLength(TmpFiles, 0);
+          if UpdateSpr then
+          begin
+            FreeAndNil(SprControl);
+            SprControl := TSprControl.Create(FormMain.Handle);
+          end;
+          FormWaiting.Close;
+          FormWaiting.Height := 88;
+          FormWaiting.lbProcess.caption := '';
+          FormMain.PanelCover.Visible := False;
         end;
+        FillingTableObjects;
       end;
     finally
       Free;

@@ -123,7 +123,8 @@ uses
   ManualPriceSelect in 'ManualPriceSelect.pas' {fmManPriceSelect},
   DebugTables in 'DebugTables.pas' {fDebugTables},
   fFrameLoading in 'fFrameLoading.pas' {FrameLoading: TFrame},
-  UserAccess in 'UserAccess.pas' {fUserAccess};
+  UserAccess in 'UserAccess.pas' {fUserAccess},
+  RC6 in 'RC6.pas';
 
 {$R *.res}
 var MHandle: THandle;

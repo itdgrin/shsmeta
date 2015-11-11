@@ -16,7 +16,7 @@ type
   end;
   TFromRateArray = array of TFromRateRec;
 
-  procedure ImportObject(const AFileName: string);
+  function ImportObject(const AFileName: string): Boolean;
   procedure ExportObject(const AIdObject: Integer; const AFileName: string);
   function PasteSmetaRow(const ASmClipArray: array of TSmClipRec;
     ADestSmID, AIterator, ASMSubType: Integer): Boolean;
@@ -49,16 +49,51 @@ begin
   DM.qrDifferent2.SQL.Text := 'SELECT GetNewID(:IDType)';
   DM.qrDifferent2.ParamByName('IDType').Value := AType;
   DM.qrDifferent2.Active := True;
-  if not DM.qrDifferent2.IsEmpty then
-    Result := DM.qrDifferent2.Fields[0].AsInteger
-  else
-    raise Exception.Create('Не удалось получить новый ID.');
+  Result := DM.qrDifferent2.Fields[0].AsInteger;
+  DM.qrDifferent2.Active := False;
 
   SetLength(AIdConvert[AType][0], Length(AIdConvert[AType][0]) + 1);
   SetLength(AIdConvert[AType][1], Length(AIdConvert[AType][1]) + 1);
 
   AIdConvert[AType][0][Length(AIdConvert[AType][0]) - 1] := ALastID;
   AIdConvert[AType][1][Length(AIdConvert[AType][1]) - 1] := Result;
+end;
+
+function GetNewManId(const ALastID: Variant; const AType: Integer;
+  var AIdConvert: TManIDConvertArray; AInsertMode: Boolean): Variant;
+var i: Integer;
+begin
+  if VarIsNull(ALastID) or (ALastID = 0) then
+  begin
+    Result := ALastID;
+    Exit;
+  end;
+
+  //Сперва проверяется на наличие этого ID
+  for i := 0 to Length(AIdConvert[AType][0]) - 1 do
+    if AIdConvert[AType][0][i] = ALastID then
+    begin
+      Result := AIdConvert[AType][1][i];
+      Exit;
+    end;
+
+  if AInsertMode then
+  begin
+    DM.qrDifferent2.Active := False;
+    DM.qrDifferent2.SQL.Text := 'SELECT GetNewManualID(:IDType)';
+    DM.qrDifferent2.ParamByName('IDType').Value := AType;
+    DM.qrDifferent2.Active := True;
+    Result := DM.qrDifferent2.Fields[0].AsInteger;
+    DM.qrDifferent2.Active := False;
+
+    SetLength(AIdConvert[AType][0], Length(AIdConvert[AType][0]) + 1);
+    SetLength(AIdConvert[AType][1], Length(AIdConvert[AType][1]) + 1);
+
+    AIdConvert[AType][0][Length(AIdConvert[AType][0]) - 1] := ALastID;
+    AIdConvert[AType][1][Length(AIdConvert[AType][1]) - 1] := Result;
+  end
+  else
+    Result := 0;
 end;
 
 //Формирует строку запроса
@@ -80,15 +115,15 @@ begin
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
-procedure ImportObject(const AFileName: string);
+function ImportObject(const AFileName: string): Boolean;
 var XML : IXMLDocument;
-    CurNode, MainNode, Node1, Node2: IXMLNode;
+    MainNode, Node1, Node2: IXMLNode;
     i, j: Integer;
     IdConvert: TIDConvertArray;
     ManIdConvert: TManIDConvertArray;
     ds: char;
     AutoCommitValue: Boolean;
-    ManSprLoad: Boolean;
+    IgnoreRates: TStringList;
 
   procedure GetStrAndExcec(ANode: IXMLNode; ATabName: string);
   var i: Integer;
@@ -123,12 +158,14 @@ var XML : IXMLDocument;
     DM.qrDifferent.ExecSQL;
   end;
 begin
+  Result := False;
   CoInitialize(nil);
 
   AutoCommitValue :=DM.qrDifferent.Transaction.Options.AutoCommit;
   DM.qrDifferent.Transaction.Options.AutoCommit := False;
   DM.qrDifferent.Active := False;
 
+  IgnoreRates := TStringList.Create;
   ds := FormatSettings.DecimalSeparator;
   FormatSettings.DecimalSeparator := '.';
   DM.qrDifferent.Transaction.StartTransaction;
@@ -141,9 +178,6 @@ begin
       if not Assigned(MainNode) then
         raise Exception.Create('Главная нода не найдена.');
 
-      //загрузка собственных справочников
-      ManSprLoad := False;
-
       if Assigned(MainNode.ChildNodes.FindNode('Manual_Rates')) or
          Assigned(MainNode.ChildNodes.FindNode('Manual_Materials')) or
          Assigned(MainNode.ChildNodes.FindNode('Manual_Mechanizms')) or
@@ -155,8 +189,276 @@ begin
           'Импорт объекта',
           MB_ICONINFORMATION + MB_YESNO + MB_TASKMODAL) = mrYes then
         begin
-          ManSprLoad := True;
+          Node2 := MainNode.ChildNodes.FindNode('Manual_Units');
+          if Assigned(Node2) then
+            for j := 0 to Node2.ChildNodes.Count - 1 do
+            begin
+              Node1 := Node2.ChildNodes.Nodes[j];
 
+              DM.qrDifferent2.Active := False;
+              DM.qrDifferent2.SQL.Text :=
+                'SELECT UNIT_ID from units where lower(UNIT_NAME) = lower(:NAME)';
+              DM.qrDifferent2.ParamByName('NAME').Value :=
+                Node1.ChildNodes.Nodes['UNIT_NAME'].NodeValue;
+              DM.qrDifferent2.Active := True;
+              if not DM.qrDifferent2.Eof then
+              begin
+                SetLength(ManIdConvert[C_MANID_UNIT][0],
+                  Length(ManIdConvert[C_MANID_UNIT][0]) + 1);
+                SetLength(ManIdConvert[C_MANID_UNIT][1],
+                  Length(ManIdConvert[C_MANID_UNIT][1]) + 1);
+
+                ManIdConvert[C_MANID_UNIT][0]
+                  [Length(ManIdConvert[C_MANID_UNIT][0]) - 1] :=
+                    Node1.ChildNodes.Nodes['UNIT_ID'].NodeValue;
+                ManIdConvert[C_MANID_UNIT][1]
+                  [Length(ManIdConvert[C_MANID_UNIT][1]) - 1] :=
+                    DM.qrDifferent2.Fields[0].AsInteger;
+                //Если найдеено совпадение, единица в бд не вносится
+                Continue;
+              end;
+              DM.qrDifferent2.Active := False;
+
+              Node1.ChildNodes.Nodes['UNIT_ID'].NodeValue :=
+                GetNewManId(Node1.ChildNodes.Nodes['UNIT_ID'].NodeValue,
+                  C_MANID_UNIT, ManIdConvert, True);
+              GetStrAndExcec(Node1, 'units');
+            end;
+
+          Node2 := MainNode.ChildNodes.FindNode('Manual_Materials');
+          if Assigned(Node2) then
+            for j := 0 to Node2.ChildNodes.Count - 1 do
+            begin
+              Node1 := Node2.ChildNodes.Nodes[j];
+
+              DM.qrDifferent2.Active := False;
+              DM.qrDifferent2.SQL.Text :=
+                'SELECT MATERIAL_ID from material where ' +
+                '(MAT_CODE = :MAT_CODE) and (MAT_TYPE = :MAT_TYPE) and ' +
+                '(MAT_NAME = :MAT_NAME)';
+              DM.qrDifferent2.ParamByName('MAT_CODE').Value :=
+                Node1.ChildNodes.Nodes['MAT_CODE'].NodeValue;
+              DM.qrDifferent2.ParamByName('MAT_TYPE').Value :=
+                Node1.ChildNodes.Nodes['MAT_TYPE'].NodeValue;
+              DM.qrDifferent2.ParamByName('MAT_NAME').Value :=
+                Node1.ChildNodes.Nodes['MAT_NAME'].NodeValue;
+              DM.qrDifferent2.Active := True;
+              if not DM.qrDifferent2.Eof then
+              begin
+                SetLength(ManIdConvert[C_MANID_MAT][0],
+                  Length(ManIdConvert[C_MANID_MAT][0]) + 1);
+                SetLength(ManIdConvert[C_MANID_MAT][1],
+                  Length(ManIdConvert[C_MANID_MAT][1]) + 1);
+
+                ManIdConvert[C_MANID_MAT][0]
+                  [Length(ManIdConvert[C_MANID_MAT][0]) - 1] :=
+                    Node1.ChildNodes.Nodes['MATERIAL_ID'].NodeValue;
+                ManIdConvert[C_MANID_MAT][1]
+                  [Length(ManIdConvert[C_MANID_MAT][1]) - 1] :=
+                    DM.qrDifferent2.Fields[0].AsInteger;
+                Continue;
+              end;
+              DM.qrDifferent2.Active := False;
+
+              Node1.ChildNodes.Nodes['MATERIAL_ID'].NodeValue :=
+                GetNewManId(Node1.ChildNodes.Nodes['MATERIAL_ID'].NodeValue,
+                  C_MANID_MAT, ManIdConvert, True);
+              GetStrAndExcec(Node1, 'material');
+              Result := True;
+            end;
+
+          Node2 := MainNode.ChildNodes.FindNode('Manual_Mechanizms');
+          if Assigned(Node2) then
+            for j := 0 to Node2.ChildNodes.Count - 1 do
+            begin
+              Node1 := Node2.ChildNodes.Nodes[j];
+
+              DM.qrDifferent2.Active := False;
+              DM.qrDifferent2.SQL.Text :=
+                'SELECT MECHANIZM_ID from mechanizm where ' +
+                '(MECH_CODE = :MECH_CODE) and (MECH_NAME = :MECH_NAME)';
+              DM.qrDifferent2.ParamByName('MECH_CODE').Value :=
+                Node1.ChildNodes.Nodes['MECH_CODE'].NodeValue;
+              DM.qrDifferent2.ParamByName('MECH_NAME').Value :=
+                Node1.ChildNodes.Nodes['MECH_NAME'].NodeValue;
+              DM.qrDifferent2.Active := True;
+              if not DM.qrDifferent2.Eof then
+              begin
+                SetLength(ManIdConvert[C_MANID_MECH][0],
+                  Length(ManIdConvert[C_MANID_MECH][0]) + 1);
+                SetLength(ManIdConvert[C_MANID_MECH][1],
+                  Length(ManIdConvert[C_MANID_MECH][1]) + 1);
+
+                ManIdConvert[C_MANID_MECH][0]
+                  [Length(ManIdConvert[C_MANID_MECH][0]) - 1] :=
+                    Node1.ChildNodes.Nodes['MECHANIZM_ID'].NodeValue;
+                ManIdConvert[C_MANID_MECH][1]
+                  [Length(ManIdConvert[C_MANID_MECH][1]) - 1] :=
+                    DM.qrDifferent2.Fields[0].AsInteger;
+                Continue;
+              end;
+              DM.qrDifferent2.Active := False;
+
+              Node1.ChildNodes.Nodes['MECHANIZM_ID'].NodeValue :=
+                GetNewManId(Node1.ChildNodes.Nodes['MECHANIZM_ID'].NodeValue,
+                  C_MANID_MECH, ManIdConvert, True);
+              GetStrAndExcec(Node1, 'mechanizm');
+              Result := True;
+            end;
+
+          Node2 := MainNode.ChildNodes.FindNode('Manual_Devices');
+          if Assigned(Node2) then
+            for j := 0 to Node2.ChildNodes.Count - 1 do
+            begin
+              Node1 := Node2.ChildNodes.Nodes[j];
+
+              DM.qrDifferent2.Active := False;
+              DM.qrDifferent2.SQL.Text :=
+                'SELECT DEVICE_ID from devices where ' +
+                '(DEVICE_CODE1 = :DEVICE_CODE1) and (NAME = :NAME)';
+              DM.qrDifferent2.ParamByName('DEVICE_CODE1').Value :=
+                Node1.ChildNodes.Nodes['DEVICE_CODE1'].NodeValue;
+              DM.qrDifferent2.ParamByName('NAME').Value :=
+                Node1.ChildNodes.Nodes['NAME'].NodeValue;
+              DM.qrDifferent2.Active := True;
+              if not DM.qrDifferent2.Eof then
+              begin
+                SetLength(ManIdConvert[C_MANID_DEV][0],
+                  Length(ManIdConvert[C_MANID_DEV][0]) + 1);
+                SetLength(ManIdConvert[C_MANID_DEV][1],
+                  Length(ManIdConvert[C_MANID_DEV][1]) + 1);
+
+                ManIdConvert[C_MANID_DEV][0]
+                  [Length(ManIdConvert[C_MANID_DEV][0]) - 1] :=
+                    Node1.ChildNodes.Nodes['DEVICE_ID'].NodeValue;
+                ManIdConvert[C_MANID_DEV][1]
+                  [Length(ManIdConvert[C_MANID_DEV][1]) - 1] :=
+                    DM.qrDifferent2.Fields[0].AsInteger;
+                Continue;
+              end;
+              DM.qrDifferent2.Active := False;
+
+              Node1.ChildNodes.Nodes['DEVICE_ID'].NodeValue :=
+                GetNewManId(Node1.ChildNodes.Nodes['DEVICE_ID'].NodeValue,
+                  C_MANID_DEV, ManIdConvert, True);
+              GetStrAndExcec(Node1, 'devices');
+              Result := True;
+            end;
+
+          Node2 := MainNode.ChildNodes.FindNode('Manual_Rates');
+          if Assigned(Node2) then
+            for j := 0 to Node2.ChildNodes.Count - 1 do
+            begin
+              Node1 := Node2.ChildNodes.Nodes[j];
+
+              DM.qrDifferent2.Active := False;
+              DM.qrDifferent2.SQL.Text :=
+                'SELECT NORMATIV_ID from normativg where ' +
+                '(NORM_NUM = :NORM_NUM) and (NORM_CAPTION = :NORM_CAPTION) and ' +
+                '(NORM_TYPE = :NORM_TYPE) and ' +
+                '(normativ_directory_id = :normativ_directory_id) and ' +
+                '(NORM_BASE = 1)';
+              DM.qrDifferent2.ParamByName('NORM_NUM').Value :=
+                Node1.ChildNodes.Nodes['NORM_NUM'].NodeValue;
+              DM.qrDifferent2.ParamByName('NORM_CAPTION').Value :=
+                Node1.ChildNodes.Nodes['NORM_CAPTION'].NodeValue;
+              DM.qrDifferent2.ParamByName('NORM_TYPE').Value :=
+                Node1.ChildNodes.Nodes['NORM_TYPE'].NodeValue;
+              DM.qrDifferent2.ParamByName('normativ_directory_id').Value :=
+                Node1.ChildNodes.Nodes['NORMATIV_DIRECTORY_ID'].NodeValue;
+              DM.qrDifferent2.Active := True;
+              if not DM.qrDifferent2.Eof then
+              begin
+                SetLength(ManIdConvert[C_MANID_NORM][0],
+                  Length(ManIdConvert[C_MANID_NORM][0]) + 1);
+                SetLength(ManIdConvert[C_MANID_NORM][1],
+                  Length(ManIdConvert[C_MANID_NORM][1]) + 1);
+
+                ManIdConvert[C_MANID_NORM][0]
+                  [Length(ManIdConvert[C_MANID_NORM][0]) - 1] :=
+                    Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue;
+                ManIdConvert[C_MANID_NORM][1]
+                  [Length(ManIdConvert[C_MANID_NORM][1]) - 1] :=
+                    DM.qrDifferent2.Fields[0].AsInteger;
+
+                IgnoreRates.Add(Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue);
+
+                Continue;
+              end;
+              DM.qrDifferent2.Active := False;
+
+              Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue :=
+                GetNewManId(Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue,
+                  C_MANID_NORM, ManIdConvert, True);
+              GetStrAndExcec(Node1, 'normativg');
+              Result := True;
+            end;
+
+          Node2 := MainNode.ChildNodes.FindNode('Manual_MatNorms');
+          if Assigned(Node2) then
+            for j := 0 to Node2.ChildNodes.Count - 1 do
+            begin
+              Node1 := Node2.ChildNodes.Nodes[j];
+
+              if IgnoreRates.IndexOf(Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue) > -1 then
+                Continue;
+
+              Node1.ChildNodes.Nodes['ID'].NodeValue :=
+                GetNewManId(Node1.ChildNodes.Nodes['ID'].NodeValue,
+                  C_MANID_NORM_MAT, ManIdConvert, True);
+
+              Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue :=
+                GetNewManId(Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue,
+                  C_MANID_NORM, ManIdConvert, False);
+
+              if Node1.ChildNodes.Nodes['MATERIAL_ID'].NodeValue > С_MANIDDELIMETER then
+                GetNewManId(Node1.ChildNodes.Nodes['MATERIAL_ID'].NodeValue,
+                  C_MANID_MAT, ManIdConvert, False);
+              GetStrAndExcec(Node1, 'materialnorm');
+            end;
+
+          Node2 := MainNode.ChildNodes.FindNode('Manual_MechNorms');
+          if Assigned(Node2) then
+            for j := 0 to Node2.ChildNodes.Count - 1 do
+            begin
+              Node1 := Node2.ChildNodes.Nodes[j];
+
+              if IgnoreRates.IndexOf(Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue) > -1 then
+                Continue;
+
+              Node1.ChildNodes.Nodes['ID'].NodeValue :=
+                GetNewManId(Node1.ChildNodes.Nodes['ID'].NodeValue,
+                  C_MANID_NORM_MECH, ManIdConvert, True);
+
+              Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue :=
+                GetNewManId(Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue,
+                  C_MANID_NORM, ManIdConvert, False);
+
+              if Node1.ChildNodes.Nodes['MECHANIZM_ID'].NodeValue > С_MANIDDELIMETER then
+                GetNewManId(Node1.ChildNodes.Nodes['MECHANIZM_ID'].NodeValue,
+                  C_MANID_MECH, ManIdConvert, False);
+              GetStrAndExcec(Node1, 'mechanizmnorm');
+            end;
+
+          Node2 := MainNode.ChildNodes.FindNode('Manual_NormWorks');
+          if Assigned(Node2) then
+            for j := 0 to Node2.ChildNodes.Count - 1 do
+            begin
+              Node1 := Node2.ChildNodes.Nodes[j];
+
+              if IgnoreRates.IndexOf(Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue) > -1 then
+                Continue;
+
+              Node1.ChildNodes.Nodes['ID'].NodeValue :=
+                GetNewManId(Node1.ChildNodes.Nodes['ID'].NodeValue,
+                  C_MANID_NORM_WORK, ManIdConvert, True);
+
+              Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue :=
+                GetNewManId(Node1.ChildNodes.Nodes['NORMATIV_ID'].NodeValue,
+                  C_MANID_NORM, ManIdConvert, False);
+
+              GetStrAndExcec(Node1, 'normativwork');
+            end;
         end;
       end;
 
@@ -169,7 +471,6 @@ begin
       Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
         GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
       GetStrAndExcec(Node1, 'objcards');
-      Node1 := nil;
 
       //загрузка смет и актов
       Node2 := MainNode.ChildNodes.FindNode('Smety');
@@ -187,9 +488,7 @@ begin
           GetNewId(Node1.ChildNodes.Nodes['PARENT_ID'].NodeValue, C_ID_SM, IdConvert);
 
         GetStrAndExcec(Node1, 'smetasourcedata');
-        Node1 := nil;
       end;
-      Node2 := nil;
 
       //загрузка Data_row смет
       Node2 := MainNode.ChildNodes.FindNode('Smeta_data_row');
@@ -218,9 +517,7 @@ begin
               GetNewId(Node1.ChildNodes.Nodes['ID_TABLES'].NodeValue, i, IdConvert);
 
           GetStrAndExcec(Node1, 'data_row');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка расценок
       Node2 := MainNode.ChildNodes.FindNode('Smeta_Rates');
@@ -234,10 +531,14 @@ begin
             GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMRAT, IdConvert);
           Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue, C_ID_DATA, IdConvert);
+
+          if Node1.ChildNodes.Nodes['RATE_ID'].NodeValue > С_MANIDDELIMETER then
+            Node1.ChildNodes.Nodes['RATE_ID'].NodeValue :=
+              GetNewManId(Node1.ChildNodes.Nodes['RATE_ID'].NodeValue,
+                C_MANID_NORM, ManIdConvert, False);
+
           GetStrAndExcec(Node1, 'card_rate');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка материалов
       Node2 := MainNode.ChildNodes.FindNode('Smeta_Materials');
@@ -256,10 +557,13 @@ begin
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue, C_ID_SMMAT, IdConvert);
 
+          if Node1.ChildNodes.Nodes['MAT_ID'].NodeValue > С_MANIDDELIMETER then
+            Node1.ChildNodes.Nodes['MAT_ID'].NodeValue :=
+              GetNewManId(Node1.ChildNodes.Nodes['MAT_ID'].NodeValue,
+                C_MANID_MAT, ManIdConvert, False);
+
           GetStrAndExcec(Node1, 'materialcard');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка механизмов смет
       Node2 := MainNode.ChildNodes.FindNode('Smeta_Mechanizms');
@@ -278,10 +582,13 @@ begin
           Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['ID_REPLACED'].NodeValue, C_ID_SMMEC, IdConvert);
 
+          if Node1.ChildNodes.Nodes['MECH_ID'].NodeValue > С_MANIDDELIMETER then
+            Node1.ChildNodes.Nodes['MECH_ID'].NodeValue :=
+              GetNewManId(Node1.ChildNodes.Nodes['MECH_ID'].NodeValue,
+                C_MANID_MECH, ManIdConvert, False);
+
           GetStrAndExcec(Node1, 'mechanizmcard');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка оборудования смет
       Node2 := MainNode.ChildNodes.FindNode('Smeta_Devices');
@@ -295,10 +602,14 @@ begin
             GetNewId(Node1.ChildNodes.Nodes['ID'].NodeValue, C_ID_SMDEV, IdConvert);
           Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue, C_ID_DATA, IdConvert);
+
+          if Node1.ChildNodes.Nodes['DEVICE_ID'].NodeValue > С_MANIDDELIMETER then
+            Node1.ChildNodes.Nodes['DEVICE_ID'].NodeValue :=
+              GetNewManId(Node1.ChildNodes.Nodes['DEVICE_ID'].NodeValue,
+                C_MANID_DEV, ManIdConvert, False);
+
           GetStrAndExcec(Node1, 'devicescard');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка свалок смет
       Node2 := MainNode.ChildNodes.FindNode('Smeta_Dumps');
@@ -313,9 +624,7 @@ begin
           Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue, C_ID_DATA, IdConvert);
           GetStrAndExcec(Node1, 'dumpcard');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка транспорта смет
       Node2 := MainNode.ChildNodes.FindNode('Smeta_Transps');
@@ -330,9 +639,7 @@ begin
           Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue :=
             GetNewId(Node1.ChildNodes.Nodes['DATA_ROW_ID'].NodeValue, C_ID_DATA, IdConvert);
           GetStrAndExcec(Node1, 'transpcard');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка Data_estimate смет
       Node2 := MainNode.ChildNodes.FindNode('Smeta_calculation_coef');
@@ -363,9 +670,7 @@ begin
           Node1.ChildNodes.Nodes['ID_COEF'].NodeValue := null;
 
           GetStrAndExcec(Node1, 'calculation_coef');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка Object_suppagreement
       Node2 := MainNode.ChildNodes.FindNode('Object_suppagreement');
@@ -380,9 +685,7 @@ begin
             GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
 
           GetStrAndExcec(Node1, 'supp_agreement');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка Travel
       Node2 := MainNode.ChildNodes.FindNode('Travel');
@@ -397,9 +700,7 @@ begin
             GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
 
           GetStrAndExcec(Node1, 'travel');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка Travel_work
       Node2 := MainNode.ChildNodes.FindNode('Travel_work');
@@ -414,9 +715,7 @@ begin
             GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
 
           GetStrAndExcec(Node1, 'travel_work');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка Worker_deartment
       Node2 := MainNode.ChildNodes.FindNode('Worker_deartment');
@@ -431,9 +730,7 @@ begin
             GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
 
           GetStrAndExcec(Node1, 'worker_deartment');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       //загрузка Summary_calculation
       Node2 := MainNode.ChildNodes.FindNode('Summary_calculation');
@@ -446,9 +743,7 @@ begin
             GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
 
           GetStrAndExcec(Node1, 'summary_calculation');
-          Node1 := nil;
         end;
-      Node2 := nil;
 
       DM.qrDifferent.Transaction.Commit;
     except
@@ -456,12 +751,9 @@ begin
       raise;
     end;
   finally
-    Node2 := nil;
-    Node1 := nil;
-    CurNode := nil;
-    XML := nil;
     FormatSettings.DecimalSeparator := ds;
     DM.qrDifferent.Transaction.Options.AutoCommit := AutoCommitValue;
+    FreeAndNil(IgnoreRates);
 
     CoUninitialize;
   end;
