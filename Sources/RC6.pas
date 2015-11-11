@@ -284,7 +284,7 @@ begin
   try
     if AKey = '' then
     begin
-      ADataStream.Seek(ACount, soFromCurrent);
+      ADataStream.Seek(ACount, soCurrent);
       Exit;
     end;
     RC6Initialize(AKey);
@@ -312,7 +312,7 @@ begin
   try
     if AKey = '' then
     begin
-      ADataStream.Seek(ACount, soFromCurrent);
+      ADataStream.Seek(ACount, soCurrent);
       Exit;
     end;
     RC6Initialize(AKey);

@@ -106,6 +106,7 @@ type
     mObjectAccess: TMenuItem;
     mEstimateAccess: TMenuItem;
     mActAccess: TMenuItem;
+    PMExportAllObject: TMenuItem;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
