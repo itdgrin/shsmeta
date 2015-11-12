@@ -19,7 +19,6 @@ type
     qrCalc: TFDQuery;
     dblkcbbAct: TDBLookupComboBox;
     cbbSource: TComboBox;
-    dbchkFL_Full_month: TDBCheckBox;
     qrActList: TFDQuery;
     dsActList: TDataSource;
     qrSmetaList: TFDQuery;
@@ -144,7 +143,6 @@ begin
   inherited;
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);
-  dbchkFL_Full_month.OnClick := dblkcbbActClick;
 end;
 
 procedure TfCalcTravelWork.FormDestroy(Sender: TObject);
@@ -173,29 +171,14 @@ begin
     dblkcbbAct.KeyValue := fTravelList.qrTravelWork.FieldByName('SM_ID').Value;
   end;
   // «аполн€ем параметры расчета
-  case cbbSource.ItemIndex of
-    // акт
-    0:
-      begin
-        qrCalc.ParamByName('ID_ACT').Value := fTravelList.qrTravelWork.FieldByName('ID_ACT').Value;
-        qrCalc.ParamByName('ID_ESTIMATE').Value := null;
-      end;
-    // смета
-    1:
-      begin
-        qrCalc.ParamByName('ID_ACT').Value := null;
-        qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrTravelWork.FieldByName('ID_ESTIMATE').Value;
-      end;
-  end;
-  qrCalc.ParamByName('FLFullMonth').Value := fTravelList.qrTravelWork.FieldByName('FL_Full_month').Value;
+  qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrTravel.FieldByName('SM_ID').Value;
   qrCalc.ParamByName('SUTKI_KOMANDIR').Value := fTravelList.qrTravelWork.FieldByName('SUTKI_KOMANDIR').Value;
   qrCalc.ParamByName('HOUR_IN_DAY').Value := fTravelList.qrTravelWork.FieldByName('HOUR_IN_DAY').Value;
   qrCalc.ParamByName('NORMAT').Value := fTravelList.qrTravelWork.FieldByName('NORMAT').Value;
   qrCalc.ParamByName('NORMATF').Value := fTravelList.qrTravelWork.FieldByName('NORMATF').Value;
   qrCalc.ParamByName('TOTAL').Value := fTravelList.qrTravelWork.FieldByName('TOTAL').Value;
   qrCalc.ParamByName('TOTALF').Value := fTravelList.qrTravelWork.FieldByName('TOTALF').Value;
-  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
-    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
+  if not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
     CloseOpen(qrCalc)
   else if qrCalc.Active then
     qrCalc.Active := False;

@@ -14,7 +14,7 @@ type
     grSummaryCalculation: TJvDBGrid;
     qrData: TFDQuery;
     dsData: TDataSource;
-    pm1: TPopupMenu;
+    pm: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
     N4: TMenuItem;
@@ -25,6 +25,7 @@ type
     mN4: TMenuItem;
     mN5: TMenuItem;
     mN6: TMenuItem;
+    mN7: TMenuItem;
     procedure grSummaryCalculationDblClick(Sender: TObject);
     procedure N5Click(Sender: TObject);
     procedure grSummaryCalculationCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
@@ -34,9 +35,10 @@ type
     procedure mN3Click(Sender: TObject);
     procedure qrDataAfterCancel(DataSet: TDataSet);
     procedure mN4Click(Sender: TObject);
-    procedure pm1Popup(Sender: TObject);
+    procedure pmPopup(Sender: TObject);
     procedure mN5Click(Sender: TObject);
     procedure mN6Click(Sender: TObject);
+    procedure mN7Click(Sender: TObject);
   private
     SM_ID: Integer;
     function CanEditField(Field: TField): Boolean;
@@ -48,7 +50,7 @@ implementation
 
 {$R *.dfm}
 
-uses BasicData, CardObject, Main, CalculationEstimate;
+uses BasicData, CardObject, Main, CalculationEstimate, TravelList;
 
 function TfrCalculationEstimateSummaryCalculations.CanEditField(Field: TField): Boolean;
 begin
@@ -204,12 +206,19 @@ begin
   end;
 end;
 
+procedure TfrCalculationEstimateSummaryCalculations.mN7Click(Sender: TObject);
+begin
+  if (not Assigned(fTravelList)) then
+    fTravelList := TfTravelList.Create(Self);
+  fTravelList.Show;
+end;
+
 procedure TfrCalculationEstimateSummaryCalculations.N5Click(Sender: TObject);
 begin
   fCardObject.ShowModal;
 end;
 
-procedure TfrCalculationEstimateSummaryCalculations.pm1Popup(Sender: TObject);
+procedure TfrCalculationEstimateSummaryCalculations.pmPopup(Sender: TObject);
 begin
   mN3.Visible := FormCalculationEstimate.PanelCalculationYesNo.Tag = 1;
   mN4.Visible := CanEditField(grSummaryCalculation.SelectedField);

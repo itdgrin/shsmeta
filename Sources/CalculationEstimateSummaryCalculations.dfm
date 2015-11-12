@@ -26,7 +26,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ParentFont = False
     ParentShowHint = False
-    PopupMenu = pm1
+    PopupMenu = pm
     ShowHint = False
     TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET
@@ -412,6 +412,14 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Title.Caption = #1055#1088'. '#8470'352'
         Width = 100
         Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'NORMAT'
+        Title.Alignment = taCenter
+        Title.Caption = #1053#1086#1088#1084#1072#1090#1080#1074#1085#1072#1103' '#1090#1088#1091#1076#1086#1077#1084#1082#1086#1089#1090#1100
+        Width = 100
+        Visible = True
       end>
   end
   object qrData: TFDQuery
@@ -489,7 +497,9 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       
         '  SUM(IFNULL(d.WORKER_DEPARTMENTF, d.WORKER_DEPARTMENT)) AS WORK' +
         'ER_DEPARTMENT,'
+      '  SUM(IFNULL(d.NORMATF, d.NORMAT)) AS NORMAT,'
       ''
+      '  SUM(IFNULL(d.NORMAT, 0)) AS NORMATF,'
       '  SUM(IFNULL(d.ZP, 0)) AS ZPF,'
       '  SUM(IFNULL(d.EMiM, 0)) AS EMiMF,'
       '  SUM(IFNULL(d.MR, 0)) AS MRF,'
@@ -566,8 +576,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     Left = 48
     Top = 40
   end
-  object pm1: TPopupMenu
-    OnPopup = pm1Popup
+  object pm: TPopupMenu
+    OnPopup = pmPopup
     Left = 80
     Top = 40
     object mN3: TMenuItem
@@ -600,6 +610,10 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     object mN6: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1074#1089#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
       OnClick = mN6Click
+    end
+    object mN7: TMenuItem
+      Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1088#1072#1089#1095#1077#1090#1072' '#1082#1086#1084#1072#1085#1076#1080#1088#1086#1074#1086#1095#1085#1099#1093'/'#1087#1077#1088#1077#1074#1086#1079#1082#1080'/'#1088#1072#1079#1098#1077#1079#1076#1085#1086#1075#1086
+      OnClick = mN7Click
     end
   end
   object FormStorage: TJvFormStorage
@@ -659,7 +673,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         '),'
       
         ' WORKER_DEPARTMENTF  =  IF(:WORKER_DEPARTMENT=WORKER_DEPARTMENT,' +
-        ' NULL, :WORKER_DEPARTMENT)'
+        ' NULL, :WORKER_DEPARTMENT),'
+      ' NORMATF = IF(:NORMAT=NORMAT, NULL, :NORMAT)'
       'WHERE   SM_ID = :id_estimate;')
     Left = 32
     Top = 160

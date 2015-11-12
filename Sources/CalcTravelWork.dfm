@@ -51,8 +51,9 @@ object fCalcTravelWork: TfCalcTravelWork
   object dbedtPREPARER: TDBEdit
     Left = 79
     Top = 35
-    Width = 210
+    Width = 365
     Height = 21
+    Anchors = [akLeft, akTop, akRight]
     DataField = 'PREPARER'
     DataSource = fTravelList.dsTravelWork
     Font.Charset = DEFAULT_CHARSET
@@ -78,7 +79,7 @@ object fCalcTravelWork: TfCalcTravelWork
     Font.Style = []
     Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 5
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
@@ -132,7 +133,7 @@ object fCalcTravelWork: TfCalcTravelWork
     KeyField = 'SM_ID'
     ListField = 'NAME'
     ListSource = dsActList
-    TabOrder = 1
+    TabOrder = 2
     OnClick = dblkcbbActClick
   end
   object cbbSource: TComboBox
@@ -149,18 +150,6 @@ object fCalcTravelWork: TfCalcTravelWork
     Items.Strings = (
       #1072#1082#1090
       #1089#1084#1077#1090#1072)
-  end
-  object dbchkFL_Full_month: TDBCheckBox
-    Left = 295
-    Top = 35
-    Width = 146
-    Height = 17
-    Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072' '#1087#1086#1083#1085#1099#1081' '#1084#1077#1089#1103#1094
-    DataField = 'FL_Full_month'
-    DataSource = fTravelList.dsTravelWork
-    TabOrder = 4
-    ValueChecked = '1'
-    ValueUnchecked = '0'
   end
   object dblkcbbSmeta: TDBLookupComboBox
     Left = 143
@@ -179,7 +168,7 @@ object fCalcTravelWork: TfCalcTravelWork
     ListField = 'NAME'
     ListSource = dsSmetaList
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 1
     Visible = False
     OnClick = dblkcbbActClick
   end
@@ -196,7 +185,7 @@ object fCalcTravelWork: TfCalcTravelWork
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 4
     OnClick = chkEnableEditingClick
   end
   object dsCalc: TDataSource
@@ -240,19 +229,13 @@ object fCalcTravelWork: TfCalcTravelWork
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       
-        'CALL `CalcTravelWork`(:ID_ESTIMATE, :FLFullMonth, :SUTKI_KOMANDI' +
-        'R, :HOUR_IN_DAY, :NORMAT, :NORMATF, :TOTAL, :TOTALF);')
+        'CALL `CalcTravelWork`(:ID_ESTIMATE, :SUTKI_KOMANDIR, :HOUR_IN_DA' +
+        'Y, :NORMAT, :NORMATF, :TOTAL, :TOTALF);')
     Left = 35
     Top = 94
     ParamData = <
       item
         Name = 'ID_ESTIMATE'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = Null
-      end
-      item
-        Name = 'FLFULLMONTH'
         DataType = ftInteger
         ParamType = ptInput
         Value = Null

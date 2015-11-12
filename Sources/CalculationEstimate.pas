@@ -3390,7 +3390,7 @@ begin
     // Переходим на следующую строку после ввода кол-ва
     qrRatesEx.Next;
     // ...в колонку ввода кода расценки
-    grRatesEx.Col := 2;
+    grRatesEx.Col := 3;
   finally
     grRatesEx.SelectedRows.Clear;
     qrRatesEx.EnableControls;

@@ -51,8 +51,9 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
   object dbedtPREPARER: TDBEdit
     Left = 79
     Top = 35
-    Width = 210
+    Width = 355
     Height = 21
+    Anchors = [akLeft, akTop, akRight]
     DataField = 'PREPARER'
     DataSource = fTravelList.dsWorkerDepartment
     Font.Charset = DEFAULT_CHARSET
@@ -78,7 +79,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     Font.Style = []
     Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 5
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
@@ -132,7 +133,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     KeyField = 'SM_ID'
     ListField = 'NAME'
     ListSource = dsActList
-    TabOrder = 1
+    TabOrder = 2
     OnClick = dblkcbbActClick
   end
   object cbbSource: TComboBox
@@ -149,18 +150,6 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     Items.Strings = (
       #1072#1082#1090
       #1089#1084#1077#1090#1072)
-  end
-  object dbchkFL_Full_month: TDBCheckBox
-    Left = 295
-    Top = 35
-    Width = 146
-    Height = 17
-    Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072' '#1087#1086#1083#1085#1099#1081' '#1084#1077#1089#1103#1094
-    DataField = 'FL_Full_month'
-    DataSource = fTravelList.dsWorkerDepartment
-    TabOrder = 4
-    ValueChecked = '1'
-    ValueUnchecked = '0'
   end
   object dblkcbbSmeta: TDBLookupComboBox
     Left = 143
@@ -179,7 +168,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     ListField = 'NAME'
     ListSource = dsSmetaList
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 1
     Visible = False
     OnClick = dblkcbbActClick
   end
@@ -196,7 +185,7 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 4
     OnClick = chkEnableEditingClick
   end
   object dsCalc: TDataSource
@@ -240,8 +229,8 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       
-        'CALL `CalcWorkerDepartment`(:ID_ESTIMATE, :FLFullMonth, :PLACE_C' +
-        'OUNT, :EMbyHVR, :EMbyKM, '
+        'CALL `CalcWorkerDepartment`(:ID_ESTIMATE, :PLACE_COUNT, :EMbyHVR' +
+        ', :EMbyKM, '
       
         '                            :RoadALength, :RoadGLength, :RoadGrL' +
         'ength, :RoadASpeed, :RoadGSpeed, '
@@ -264,10 +253,6 @@ object fCalcWorkerDepartment: TfCalcWorkerDepartment
         Name = 'ID_ESTIMATE'
         ParamType = ptInput
         Value = Null
-      end
-      item
-        Name = 'FLFULLMONTH'
-        ParamType = ptInput
       end
       item
         Name = 'PLACE_COUNT'

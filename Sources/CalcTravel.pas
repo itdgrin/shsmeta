@@ -19,7 +19,6 @@ type
     qrCalc: TFDQuery;
     dblkcbbAct: TDBLookupComboBox;
     cbbSource: TComboBox;
-    dbchkFL_Full_month: TDBCheckBox;
     qrActList: TFDQuery;
     dsActList: TDataSource;
     qrSmetaList: TFDQuery;
@@ -145,7 +144,6 @@ begin
   inherited;
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);
-  dbchkFL_Full_month.OnClick := dblkcbbActClick;
 end;
 
 procedure TfCalcTravel.FormDestroy(Sender: TObject);
@@ -174,19 +172,7 @@ begin
     dblkcbbAct.KeyValue := fTravelList.qrTravel.FieldByName('SM_ID').Value;
   end;
   // «аполн€ем параметры расчета
-  case cbbSource.ItemIndex of
-    // акт
-    0:
-      begin
-        qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrTravel.FieldByName('SM_ID').Value;
-      end;
-    // смета
-    1:
-      begin;
-        qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrTravel.FieldByName('SM_ID').Value;
-      end;
-  end;
-  qrCalc.ParamByName('FLFullMonth').Value := fTravelList.qrTravel.FieldByName('FL_Full_month').Value;
+  qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrTravel.FieldByName('SM_ID').Value;
   qrCalc.ParamByName('SUTKI_KOMANDIR').Value := fTravelList.qrTravel.FieldByName('SUTKI_KOMANDIR').Value;
   qrCalc.ParamByName('HOUSING_KOMANDIR').Value := fTravelList.qrTravel.FieldByName('HOUSING_KOMANDIR').Value;
   qrCalc.ParamByName('STOIM_KM').Value := fTravelList.qrTravel.FieldByName('STOIM_KM').Value;

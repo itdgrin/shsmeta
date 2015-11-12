@@ -51,8 +51,9 @@ object fCalcTravel: TfCalcTravel
   object dbedtPREPARER: TDBEdit
     Left = 79
     Top = 35
-    Width = 210
+    Width = 354
     Height = 21
+    Anchors = [akLeft, akTop, akRight]
     DataField = 'PREPARER'
     DataSource = fTravelList.dsTravel
     Font.Charset = DEFAULT_CHARSET
@@ -78,7 +79,7 @@ object fCalcTravel: TfCalcTravel
     Font.Style = []
     Options = [dgTitles, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 5
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
@@ -140,7 +141,7 @@ object fCalcTravel: TfCalcTravel
     KeyField = 'SM_ID'
     ListField = 'NAME'
     ListSource = dsActList
-    TabOrder = 1
+    TabOrder = 2
     OnClick = dblkcbbActClick
   end
   object cbbSource: TComboBox
@@ -157,18 +158,6 @@ object fCalcTravel: TfCalcTravel
     Items.Strings = (
       #1072#1082#1090
       #1089#1084#1077#1090#1072)
-  end
-  object dbchkFL_Full_month: TDBCheckBox
-    Left = 295
-    Top = 35
-    Width = 146
-    Height = 17
-    Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072' '#1087#1086#1083#1085#1099#1081' '#1084#1077#1089#1103#1094
-    DataField = 'FL_Full_month'
-    DataSource = fTravelList.dsTravel
-    TabOrder = 4
-    ValueChecked = '1'
-    ValueUnchecked = '0'
   end
   object dblkcbbSmeta: TDBLookupComboBox
     Left = 143
@@ -187,7 +176,7 @@ object fCalcTravel: TfCalcTravel
     ListField = 'NAME'
     ListSource = dsSmetaList
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 1
     Visible = False
     OnClick = dblkcbbActClick
   end
@@ -204,7 +193,7 @@ object fCalcTravel: TfCalcTravel
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 4
     OnClick = chkEnableEditingClick
   end
   object dsCalc: TDataSource
@@ -249,7 +238,7 @@ object fCalcTravel: TfCalcTravel
     SQL.Strings = (
       
         'CALL `CalcTravel`(:ID_ESTIMATE, :STOIM_KM, :KM, :SUTKI_KOMANDIR,' +
-        ' :FLFullMonth, :HOUSING_KOMANDIR, :HOUR_IN_DAY, '
+        ' :HOUSING_KOMANDIR, :HOUR_IN_DAY, '
       
         '                  :COUNT_WORK_DAY_IN_MONTH, :CUNT_DAY_IN_MONTH, ' +
         ':NORMAT, :NORMATF, :SUTKI, :SUTKIF, :KVARTIR, :KVARTIRF,'
@@ -274,10 +263,6 @@ object fCalcTravel: TfCalcTravel
       end
       item
         Name = 'SUTKI_KOMANDIR'
-        ParamType = ptInput
-      end
-      item
-        Name = 'FLFULLMONTH'
         ParamType = ptInput
       end
       item

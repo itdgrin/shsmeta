@@ -19,7 +19,6 @@ type
     qrCalc: TFDQuery;
     dblkcbbAct: TDBLookupComboBox;
     cbbSource: TComboBox;
-    dbchkFL_Full_month: TDBCheckBox;
     qrActList: TFDQuery;
     dsActList: TDataSource;
     qrSmetaList: TFDQuery;
@@ -84,7 +83,7 @@ end;
 
 procedure TfCalcWorkerDepartment.dblkcbbActClick(Sender: TObject);
 begin
-  if Assigned(fTravelList) and (Sender is TDBLookupComboBox)  then
+  if Assigned(fTravelList) and (Sender is TDBLookupComboBox) then
     fTravelList.qrWorkerDepartment.FieldByName('NAME').AsString := (Sender as TDBLookupComboBox).Text;
   Application.ProcessMessages;
   InitParams;
@@ -144,7 +143,6 @@ begin
   inherited;
   CloseOpen(qrActList);
   CloseOpen(qrSmetaList);
-  dbchkFL_Full_month.OnClick := dblkcbbActClick;
 end;
 
 procedure TfCalcWorkerDepartment.FormDestroy(Sender: TObject);
@@ -163,33 +161,17 @@ begin
     cbbSource.ItemIndex := 1;
     dblkcbbAct.Visible := False;
     dblkcbbSmeta.Visible := True;
-    dblkcbbSmeta.KeyValue := fTravelList.qrWorkerDepartment.FieldByName('ID_ESTIMATE').Value;
+    dblkcbbSmeta.KeyValue := fTravelList.qrWorkerDepartment.FieldByName('SM_ID').Value;
   end
   else
   begin
     cbbSource.ItemIndex := 0;
     dblkcbbAct.Visible := True;
     dblkcbbSmeta.Visible := False;
-    dblkcbbAct.KeyValue := fTravelList.qrWorkerDepartment.FieldByName('ID_ACT').Value;
+    dblkcbbAct.KeyValue := fTravelList.qrWorkerDepartment.FieldByName('SM_ID').Value;
   end;
   // Заполняем параметры расчета
-  case cbbSource.ItemIndex of
-    // акт
-    0:
-      begin
-        qrCalc.ParamByName('ID_ACT').Value := fTravelList.qrWorkerDepartment.FieldByName('ID_ACT').Value;
-        qrCalc.ParamByName('ID_ESTIMATE').Value := null;
-      end;
-    // смета
-    1:
-      begin
-        qrCalc.ParamByName('ID_ACT').Value := null;
-        qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrWorkerDepartment.FieldByName
-          ('ID_ESTIMATE').Value;
-      end;
-  end;
-  qrCalc.ParamByName('FLFullMonth').Value := fTravelList.qrWorkerDepartment.FieldByName
-    ('FL_Full_month').Value;
+  qrCalc.ParamByName('ID_ESTIMATE').Value := fTravelList.qrWorkerDepartment.FieldByName('SM_ID').Value;
   qrCalc.ParamByName('PLACE_COUNT').Value := fTravelList.qrWorkerDepartment.FieldByName('PLACE_COUNT').Value;
   qrCalc.ParamByName('EMbyHVR').Value := fTravelList.qrWorkerDepartment.FieldByName('EMbyHVR').Value;
   qrCalc.ParamByName('EMbyKM').Value := fTravelList.qrWorkerDepartment.FieldByName('EMbyKM').Value;
@@ -211,12 +193,18 @@ begin
   qrCalc.ParamByName('NORMAT').Value := fTravelList.qrWorkerDepartment.FieldByName('NORMAT').Value;
   qrCalc.ParamByName('NORMATF').Value := fTravelList.qrWorkerDepartment.FieldByName('NORMATF').Value;
 
-  qrCalc.ParamByName('NORM_WORKER_COUNT').Value := fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNT').Value;
-  qrCalc.ParamByName('NORM_WORKER_COUNTF').Value := fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNTF').Value;
-  qrCalc.ParamByName('NORM_AUTO_COUNT').Value := fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNT').Value;
-  qrCalc.ParamByName('NORM_AUTO_COUNTF').Value := fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNTF').Value;
-  qrCalc.ParamByName('FULL_AUTO_TIME').Value := fTravelList.qrWorkerDepartment.FieldByName('FULL_AUTO_TIME').Value;
-  qrCalc.ParamByName('FULL_AUTO_TIMEF').Value := fTravelList.qrWorkerDepartment.FieldByName('FULL_AUTO_TIMEF').Value;
+  qrCalc.ParamByName('NORM_WORKER_COUNT').Value := fTravelList.qrWorkerDepartment.FieldByName
+    ('NORM_WORKER_COUNT').Value;
+  qrCalc.ParamByName('NORM_WORKER_COUNTF').Value := fTravelList.qrWorkerDepartment.FieldByName
+    ('NORM_WORKER_COUNTF').Value;
+  qrCalc.ParamByName('NORM_AUTO_COUNT').Value := fTravelList.qrWorkerDepartment.FieldByName
+    ('NORM_AUTO_COUNT').Value;
+  qrCalc.ParamByName('NORM_AUTO_COUNTF').Value := fTravelList.qrWorkerDepartment.FieldByName
+    ('NORM_AUTO_COUNTF').Value;
+  qrCalc.ParamByName('FULL_AUTO_TIME').Value := fTravelList.qrWorkerDepartment.FieldByName
+    ('FULL_AUTO_TIME').Value;
+  qrCalc.ParamByName('FULL_AUTO_TIMEF').Value := fTravelList.qrWorkerDepartment.FieldByName
+    ('FULL_AUTO_TIMEF').Value;
   qrCalc.ParamByName('AUTO_HVR').Value := fTravelList.qrWorkerDepartment.FieldByName('AUTO_HVR').Value;
   qrCalc.ParamByName('AUTO_HVRF').Value := fTravelList.qrWorkerDepartment.FieldByName('AUTO_HVRF').Value;
   qrCalc.ParamByName('AUTOKM').Value := fTravelList.qrWorkerDepartment.FieldByName('AUTOKM').Value;
@@ -224,8 +212,7 @@ begin
   qrCalc.ParamByName('TOTAL').Value := fTravelList.qrWorkerDepartment.FieldByName('TOTAL').Value;
   qrCalc.ParamByName('TOTALF').Value := fTravelList.qrWorkerDepartment.FieldByName('TOTALF').Value;
 
-  if not VarIsNull(qrCalc.ParamByName('ID_ACT').Value) or
-    not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
+  if not VarIsNull(qrCalc.ParamByName('ID_ESTIMATE').Value) then
     CloseOpen(qrCalc)
   else if qrCalc.Active then
     qrCalc.Active := False;
@@ -334,7 +321,8 @@ begin
   if (qrCalc.RecNo = 20) and (qrCalc.FieldByName('TOTAL').Value <> qrCalc.FieldByName('TOTAL').OldValue) then
   begin
     fTravelList.qrWorkerDepartment.Edit;
-    fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNT').Value := qrCalc.FieldByName('TOTAL').Value;
+    fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNT').Value :=
+      qrCalc.FieldByName('TOTAL').Value;
   end;
   // Если изменили формулу
   if (qrCalc.RecNo = 20) and (qrCalc.FieldByName('CALC').Value <> qrCalc.FieldByName('CALC').OldValue) then
@@ -347,7 +335,8 @@ begin
     end
     else
     begin
-      fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNTF').Value := qrCalc.FieldByName('CALC').Value;
+      fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNTF').Value :=
+        qrCalc.FieldByName('CALC').Value;
       fTravelList.qrWorkerDepartment.FieldByName('NORM_WORKER_COUNT').Value :=
         CalcExpression(qrCalc.FieldByName('CALC').AsString, False);
     end;
@@ -371,7 +360,8 @@ begin
     end
     else
     begin
-      fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNTF').Value := qrCalc.FieldByName('CALC').Value;
+      fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNTF').Value :=
+        qrCalc.FieldByName('CALC').Value;
       fTravelList.qrWorkerDepartment.FieldByName('NORM_AUTO_COUNT').Value :=
         CalcExpression(qrCalc.FieldByName('CALC').AsString, False);
     end;
