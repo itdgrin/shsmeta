@@ -636,6 +636,7 @@
           RowsHeight = 17
           TitleRowHeight = 17
           OnCanEditCell = grRatesExCanEditCell
+          OnSelectColumns = grRatesExSelectColumns
           Columns = <
             item
               Expanded = False

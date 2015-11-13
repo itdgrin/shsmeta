@@ -124,7 +124,8 @@ uses
   DebugTables in 'DebugTables.pas' {fDebugTables},
   fFrameLoading in 'fFrameLoading.pas' {FrameLoading: TFrame},
   UserAccess in 'UserAccess.pas' {fUserAccess},
-  RC6 in 'RC6.pas';
+  RC6 in 'RC6.pas',
+  uSelectColumn in 'uSelectColumn.pas' {fSelectColumn};
 
 {$R *.res}
 var MHandle: THandle;

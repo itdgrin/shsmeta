@@ -697,6 +697,8 @@ type
     procedure dsRatesExDataChange(Sender: TObject; Field: TField);
     procedure PMRenumPTMClick(Sender: TObject);
     procedure PMMatManPriceClick(Sender: TObject);
+    procedure grRatesExSelectColumns(Grid: TJvDBGrid;
+      var DefaultDialog: Boolean);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта субподрядчика');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -854,7 +856,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
   TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog,
-  ManualPriceSelect;
+  ManualPriceSelect, uSelectColumn;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -3589,6 +3591,52 @@ end;
 procedure TFormCalculationEstimate.grRatesExExit(Sender: TObject);
 begin
   (Sender as TJvDBGrid).DataSource.DataSet.CheckBrowseMode;
+end;
+
+procedure TFormCalculationEstimate.grRatesExSelectColumns(Grid: TJvDBGrid;
+  var DefaultDialog: Boolean);
+var
+  R, WorkArea: TRect;
+  Frm: TfSelectColumn;
+  Pt: TPoint;
+  CheckColumns: TCheckColumnArray;
+  I: Integer;
+begin
+  if grRatesEx.Columns.Count >= 5 then
+  begin
+    SetLength(CheckColumns, 5);
+
+    for I := Low(CheckColumns) to High(CheckColumns) do
+    begin
+      CheckColumns[I].Key := grRatesEx.Columns[I].Visible;
+      CheckColumns[I].Value := grRatesEx.Columns[I].Title.Caption;
+    end;
+
+    R := grRatesEx.CellRect(0, 0);
+    Frm := TfSelectColumn.Create(Application);
+    try
+      if not IsRectEmpty(R) then
+      begin
+        Pt := grRatesEx.ClientToScreen(Point(R.Left, R.Bottom + 1));
+        WorkArea := Screen.MonitorFromWindow(Handle).WorkareaRect;
+        if Pt.X + Frm.Width > WorkArea.Right then
+          Pt.X := WorkArea.Right - Frm.Width;
+        if Pt.Y + Frm.Height > WorkArea.Bottom then
+          Pt.Y := WorkArea.Bottom - Frm.Height;
+        Frm.SetBounds(Pt.X, Pt.Y, Frm.Width, Frm.Height);
+      end;
+      Frm.Columns := CheckColumns;
+      if Frm.ShowModal = mrOk then
+      begin
+        for I := Low(CheckColumns) to High(CheckColumns) do
+          grRatesEx.Columns[I].Visible := CheckColumns[I].Key;
+      end;
+    finally
+      DefaultDialog := Frm.DefaultDialog;
+      FreeAndNil(Frm);
+    end;
+    Invalidate;
+  end;
 end;
 
 procedure TFormCalculationEstimate.ReplacementClick(Sender: TObject);
