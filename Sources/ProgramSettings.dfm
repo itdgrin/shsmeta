@@ -412,9 +412,9 @@ object FormProgramSettings: TFormProgramSettings
           TabOrder = 0
         end
         object edtCreateMirrorPath: TEdit
-          Left = 56
-          Top = 42
-          Width = 494
+          Left = 43
+          Top = 43
+          Width = 507
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
@@ -444,8 +444,6 @@ object FormProgramSettings: TFormProgramSettings
     object tsAll: TTabSheet
       Caption = #1056#1072#1079#1085#1086#1077
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 28
       object lblOXROPR: TLabel
         Left = 3
         Top = 229

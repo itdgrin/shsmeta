@@ -1123,53 +1123,58 @@ begin
       end;
     end;
 
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text :=
-      'Select * from materialnorm where NORMATIV_ID in (' + NormIdStr + ') order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
+    if NormIdStr <> '' then
     begin
-      Node1 := CurNode.AddChild('Manual_MatNorms');
-      Node1.SetAttributeNS('Type', '', 'Материалы расценок');
-      while not DM.qrDifferent.Eof do
+      DM.qrDifferent.Active := False;
+      DM.qrDifferent.SQL.Text :=
+        'Select * from materialnorm where NORMATIV_ID in (' + NormIdStr + ') order by ID';
+      DM.qrDifferent.Active := True;
+      if not DM.qrDifferent.IsEmpty then
       begin
-        Node2 := Node1.AddChild('MatNorm');
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
+        Node1 := CurNode.AddChild('Manual_MatNorms');
+        Node1.SetAttributeNS('Type', '', 'Материалы расценок');
+        while not DM.qrDifferent.Eof do
+        begin
+          Node2 := Node1.AddChild('MatNorm');
+          RowToNode(Node2, DM.qrDifferent);
+          DM.qrDifferent.Next;
+        end;
       end;
-    end;
 
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text :=
-      'Select * from mechanizmnorm where NORMATIV_ID in (' + NormIdStr + ') order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Manual_MechNorms');
-      Node1.SetAttributeNS('Type', '', 'Механизмы расценок');
-      while not DM.qrDifferent.Eof do
+      DM.qrDifferent.Active := False;
+      DM.qrDifferent.SQL.Text :=
+        'Select * from mechanizmnorm where NORMATIV_ID in (' + NormIdStr + ') order by ID';
+      DM.qrDifferent.Active := True;
+      if not DM.qrDifferent.IsEmpty then
       begin
-        Node2 := Node1.AddChild('MechNorm');
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
+        Node1 := CurNode.AddChild('Manual_MechNorms');
+        Node1.SetAttributeNS('Type', '', 'Механизмы расценок');
+        while not DM.qrDifferent.Eof do
+        begin
+          Node2 := Node1.AddChild('MechNorm');
+          RowToNode(Node2, DM.qrDifferent);
+          DM.qrDifferent.Next;
+        end;
       end;
-    end;
 
-    DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text :=
-      'Select * from normativwork where NORMATIV_ID in (' + NormIdStr + ') order by ID';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
-    begin
-      Node1 := CurNode.AddChild('Manual_NormWorks');
-      Node1.SetAttributeNS('Type', '', 'Работы по расценкам');
-      while not DM.qrDifferent.Eof do
+      DM.qrDifferent.Active := False;
+      DM.qrDifferent.SQL.Text :=
+        'Select * from normativwork where NORMATIV_ID in (' + NormIdStr + ') order by ID';
+      DM.qrDifferent.Active := True;
+      if not DM.qrDifferent.IsEmpty then
       begin
-        Node2 := Node1.AddChild('NormWork');
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
+        Node1 := CurNode.AddChild('Manual_NormWorks');
+        Node1.SetAttributeNS('Type', '', 'Работы по расценкам');
+        while not DM.qrDifferent.Eof do
+        begin
+          Node2 := Node1.AddChild('NormWork');
+          RowToNode(Node2, DM.qrDifferent);
+          DM.qrDifferent.Next;
+        end;
       end;
-    end;
+    end
+    else
+      NormIdStr := '-1';
 
     DM.qrDifferent.Active := False;
     DM.qrDifferent.SQL.Text :=
@@ -1261,18 +1266,21 @@ begin
       UnitStr := UnitStr + UnitList[i];
     end;
 
-    DM.qrDifferent.SQL.Text :=
-      'Select * from units where UNIT_ID in (' + UnitStr + ')';
-    DM.qrDifferent.Active := True;
-    if not DM.qrDifferent.IsEmpty then
+    if UnitStr <> '' then
     begin
-      Node1 := CurNode.AddChild('Manual_Units');
-      Node1.SetAttributeNS('Type', '', 'Собственные единицы измерения');
-      while not DM.qrDifferent.Eof do
+      DM.qrDifferent.SQL.Text :=
+        'Select * from units where UNIT_ID in (' + UnitStr + ')';
+      DM.qrDifferent.Active := True;
+      if not DM.qrDifferent.IsEmpty then
       begin
-        Node2 := Node1.AddChild('Unit');
-        RowToNode(Node2, DM.qrDifferent);
-        DM.qrDifferent.Next;
+        Node1 := CurNode.AddChild('Manual_Units');
+        Node1.SetAttributeNS('Type', '', 'Собственные единицы измерения');
+        while not DM.qrDifferent.Eof do
+        begin
+          Node2 := Node1.AddChild('Unit');
+          RowToNode(Node2, DM.qrDifferent);
+          DM.qrDifferent.Next;
+        end;
       end;
     end;
 

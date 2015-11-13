@@ -525,6 +525,8 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     end
     object PMExportAllObject: TMenuItem
       Caption = #1069#1082#1089#1087#1086#1088#1090' '#1074#1089#1077#1093' '#1086#1073#1098#1077#1082#1090#1086#1074' '#1074' '#1087#1072#1087#1082#1091
+      ImageIndex = 33
+      OnClick = PMExportAllObjectClick
     end
     object PMImportObject: TMenuItem
       Caption = #1048#1084#1087#1086#1088#1090' '#1086#1073#1098#1077#1082#1090#1072

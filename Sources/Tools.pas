@@ -2,11 +2,12 @@ unit Tools;
 
 interface
 
-uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Client, Data.DB, System.Variants,
-  Vcl.Forms, Vcl.DBCtrls, Vcl.Samples.Spin, JvSpin, JvDBSpinEdit,
-  System.Classes, System.SysUtils, ComObj, Vcl.Dialogs, System.UITypes,
-  ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd, GlobsAndConst, JvDBGrid, FireDAC.Stan.Option,
-  FireDAC.Stan.Param, Controls, Vcl.Buttons, Vcl.ComCtrls, VirtualTrees;
+uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Client,
+  Data.DB, System.Variants, Vcl.Forms, Vcl.DBCtrls, Vcl.Samples.Spin,
+  JvSpin, JvDBSpinEdit, System.Classes, System.SysUtils, ComObj, Vcl.Dialogs,
+  System.UITypes, ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd,
+  GlobsAndConst, JvDBGrid, FireDAC.Stan.Option, FireDAC.Stan.Param, Controls,
+  Vcl.Buttons, Vcl.ComCtrls, VirtualTrees, Vcl.FileCtrl;
 
 // Общий тип классификации форм
 type
@@ -128,8 +129,38 @@ function StripCharsInSet(s: string; c: TSysCharSet): string;
 function FullRename(ASource, ATarget: string): Boolean;
 function FullCopy(ASource, ATarget: string): Boolean;
 function FullRemove(ASource: string): Boolean;
+//Диалог выбора директории
+function GetDirDialog(var ADir: string): Boolean;
 
 implementation
+
+function GetDirDialog(var ADir: string): Boolean;
+var TmpDialog: TFileOpenDialog; // TFileOpenDialog есть только в Vista и выше, нужен обычный TOpenDialog
+begin
+  Result := False;
+  if Win32MajorVersion >= 6 then
+  begin
+    TmpDialog := TFileOpenDialog.Create(nil); // TOpenDialog
+    try
+      TmpDialog.Title := 'Выбор папки';
+      TmpDialog.Options := [fdoPickFolders, fdoPathMustExist, fdoForceFileSystem];
+      TmpDialog.OkButtonLabel := 'Выбор';
+      TmpDialog.DefaultFolder := ADir;
+      TmpDialog.FileName := TmpDialog.DefaultFolder;
+      if TmpDialog.Execute then
+      begin
+        ADir := ExcludeTrailingPathDelimiter(TmpDialog.FileName);
+        Result := True;
+      end;
+    finally
+      FreeAndNil(TmpDialog);
+    end
+  end
+  else
+    Result :=
+      SelectDirectory('Select Directory', ExtractFileDrive(ADir), ADir,
+        [sdNewUI, sdNewFolder]);
+end;
 
 function FullRename(ASource, ATarget: string): Boolean;
 var

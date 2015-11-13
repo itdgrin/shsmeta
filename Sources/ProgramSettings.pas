@@ -287,37 +287,19 @@ procedure TFormProgramSettings.sbOpenDirClick(Sender: TObject);
 var
   DirStr: string;
   TmpType: Byte;
-  TmpDialog: TFileOpenDialog; // TFileOpenDialog есть только в Vista и выше, нужен обычный TOpenDialog
 begin
   TmpType := TComponent(Sender).Tag;
-  if Win32MajorVersion >= 6 then
-  begin
-    TmpDialog := TFileOpenDialog.Create(nil); // TOpenDialog
-    try
-      TmpDialog.Title := 'Выбор папки';
-      TmpDialog.Options := [fdoPickFolders, fdoPathMustExist, fdoForceFileSystem];
-      TmpDialog.OkButtonLabel := 'Выбор';
-      if TmpType = 0 then
-        TmpDialog.DefaultFolder := edtCreateMirrorPath.Text
-        // TmpDialog.InitialDir := edtCreateMirrorPath.Text
-      else
-        TmpDialog.DefaultFolder := edtLocalMirrorPath.Text;
-      // TmpDialog.InitialDir := edtLocalMirrorPath.Text;
-      TmpDialog.FileName := TmpDialog.DefaultFolder; // TmpDialog.InitialDir;
-      if TmpDialog.Execute then
-        if TmpType = 0 then
-          edtCreateMirrorPath.Text := ExcludeTrailingPathDelimiter(TmpDialog.FileName)
-        else
-          edtLocalMirrorPath.Text := ExcludeTrailingPathDelimiter(TmpDialog.FileName);
-    finally
-      FreeAndNil(TmpDialog);
-    end
-  end
-  else if SelectDirectory('Select Directory', ExtractFileDrive(DirStr), DirStr, [sdNewUI, sdNewFolder]) then
+
+  if TmpType = 0 then
+    DirStr := edtCreateMirrorPath.Text
+  else
+    DirStr := edtLocalMirrorPath.Text;
+
+  if GetDirDialog(DirStr) then
     if TmpType = 0 then
-      edtCreateMirrorPath.Text := ExcludeTrailingPathDelimiter(DirStr)
+      edtCreateMirrorPath.Text := DirStr
     else
-      edtLocalMirrorPath.Text := ExcludeTrailingPathDelimiter(DirStr);
+      edtLocalMirrorPath.Text := DirStr;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------

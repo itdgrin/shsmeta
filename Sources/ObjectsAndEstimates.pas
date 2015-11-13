@@ -171,6 +171,7 @@ type
     procedure mObjectAccessClick(Sender: TObject);
     procedure mEstimateAccessClick(Sender: TObject);
     procedure mActAccessClick(Sender: TObject);
+    procedure PMExportAllObjectClick(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
 
@@ -957,6 +958,56 @@ begin
   CloseOpen(qrObjects);
 end;
 
+procedure TfObjectsAndEstimates.PMExportAllObjectClick(Sender: TObject);
+var DirStr,
+    XMLName: string;
+    ObjIndex: Integer;
+    TempBookmark: TBookMark;
+    TmpStr: string;
+begin
+  DirStr := '';
+  ObjIndex := 0;
+  if GetDirDialog(DirStr) then
+  begin
+    TempBookmark := qrObjects.GetBookmark;
+    qrObjects.DisableControls;
+
+    FormMain.PanelCover.Visible := True;
+    FormWaiting.Height := 110;
+    FormWaiting.Show;
+    Application.ProcessMessages;
+    try
+      qrObjects.First;
+      while not qrObjects.Eof do
+      begin
+        if qrObjects.FieldByName('DEL_FLAG').AsInteger = 0 then
+        begin
+          Inc(ObjIndex);
+          XMLName := DirStr + '\Object' + IntToStr(ObjIndex) + '_' +
+            StringReplace(qrObjects.FieldByName('Name').AsString,
+              ' ', '_', [rfReplaceAll]) + '.xml';
+          TmpStr := 'Экспорт объекта: ' + qrObjects.FieldByName('Name').AsString;
+          FormWaiting.lbProcess.caption := TmpStr;
+          Application.ProcessMessages;
+          ExportObject(qrObjects.Fields[0].AsInteger, XMLName);
+        end;
+        qrObjects.Next;
+      end;
+      ShowMessage('Экспорт завершен.');
+    finally
+      FormWaiting.Close;
+      FormWaiting.Height := 88;
+      FormWaiting.lbProcess.caption := '';
+      FormMain.PanelCover.Visible := False;
+
+      qrObjects.GotoBookmark(TempBookmark);
+      qrObjects.FreeBookmark(TempBookmark);
+
+      qrObjects.EnableControls;
+    end;
+  end;
+end;
+
 procedure TfObjectsAndEstimates.PMExportObjectClick(Sender: TObject);
 var
   TmpStr, XMLName: string;
@@ -1022,49 +1073,46 @@ end;
 
 procedure TfObjectsAndEstimates.PMImportDirClick(Sender: TObject);
 var
+  DirStr: string;
   TmpFiles: TStringDynArray;
   I: Integer;
   TmpStr: string;
   UpdateSpr: Boolean;
 begin
-  with TBrowseForFolder.Create(nil) do
-    try
-      if Execute then
-      begin
-        TmpFiles := TDirectory.GetFiles(Folder, '*.xml', TSearchOption.soTopDirectoryOnly);
-        if Length(TmpFiles) = 0 then
-          Exit;
+  DirStr := '';
+  if GetDirDialog(DirStr) then
+  begin
+    TmpFiles := TDirectory.GetFiles(DirStr, '*.xml', TSearchOption.soTopDirectoryOnly);
+    if Length(TmpFiles) = 0 then
+      Exit;
 
-        UpdateSpr := False;
-        FormMain.PanelCover.Visible := True;
-        FormWaiting.Height := 110;
-        FormWaiting.Show;
-        Application.ProcessMessages;
-        try
-          for I := Low(TmpFiles) to High(TmpFiles) do
-          begin
-            TmpStr := 'Импорт из файла: ' + ExtractFileName(TmpFiles[I]);
-            FormWaiting.lbProcess.caption := TmpStr;
-            if ImportObject(TmpFiles[I]) then
-              UpdateSpr := True;
-          end;
-          ShowMessage('Импорт завершен успешно.');
-        finally
-          if UpdateSpr then
-          begin
-            FreeAndNil(SprControl);
-            SprControl := TSprControl.Create(FormMain.Handle);
-          end;
-          FormWaiting.Close;
-          FormWaiting.Height := 88;
-          FormWaiting.lbProcess.caption := '';
-          FormMain.PanelCover.Visible := False;
-        end;
-        FillingTableObjects;
+    UpdateSpr := False;
+    FormMain.PanelCover.Visible := True;
+    FormWaiting.Height := 110;
+    FormWaiting.Show;
+    Application.ProcessMessages;
+    try
+      for I := Low(TmpFiles) to High(TmpFiles) do
+      begin
+        TmpStr := 'Импорт из файла: ' + ExtractFileName(TmpFiles[I]);
+        FormWaiting.lbProcess.caption := TmpStr;
+        if ImportObject(TmpFiles[I]) then
+          UpdateSpr := True;
       end;
+      ShowMessage('Импорт завершен успешно.');
     finally
-      Free;
+      if UpdateSpr then
+      begin
+        FreeAndNil(SprControl);
+        SprControl := TSprControl.Create(FormMain.Handle);
+      end;
+      FormWaiting.Close;
+      FormWaiting.Height := 88;
+      FormWaiting.lbProcess.caption := '';
+      FormMain.PanelCover.Visible := False;
     end;
+    FillingTableObjects;
+  end;
 end;
 
 procedure TfObjectsAndEstimates.PMEstimateExpandClick(Sender: TObject);
