@@ -125,7 +125,7 @@ type
 const
 //******************************************************************************
 //  константы необходимые для работа системы обновления
-  С_UPD_INI = 'Update.ini';
+  С_UPD_NAME = 'Update';
   //Интервал времени через который происходит опрос сервака
   C_GETVERSINTERVAL = 1200000;
   //Сообщение отсылаемое главному окну по завершению проверки обновлений
@@ -140,6 +140,8 @@ const
   C_UPD_MIRRORMASK = 'AppVersion*.zip';
   C_UPD_MIRRORPAT1 = 'AppVersion';
   C_UPD_MIRRORPAT2 = '.zip';
+
+  C_REGKEY = 'SOFTWARE\Smeta';
 //******************************************************************************
 
   //Имена папок внутри архива
@@ -159,7 +161,7 @@ const
   С_APPSTRUCT: array [0..11] of TAppElement =
     ((EName: 'smeta.exe'; EType: 0),
      (EName: 'smeta.ini'; EType: 0),
-     (EName: С_UPD_INI; EType: 0),
+     (EName: С_UPD_NAME + '.ini'; EType: 0),
      (EName: 'libmysql.dll'; EType: 0),
      (EName: C_UPDATERNAME; EType: 0),
      (EName: C_ARHDIR + '\' + C_BASETODUMP; EType: 0),

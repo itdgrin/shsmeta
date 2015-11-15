@@ -936,7 +936,7 @@ procedure TUpdateThread.GetIniData(AExeName: string);
 var
   ini: TIniFile;
 begin
-  ini := TIniFile.Create(ExtractFilePath((AExeName) + Ñ_UPD_INI));
+  ini := TIniFile.Create(ExtractFilePath((AExeName) + Ñ_UPD_NAME + '.ini'));
   try
     FClientName := ini.ReadString('system', 'clientname', '');
     FSendReport := ini.ReadBool('system', 'sendreport', False);
@@ -1569,7 +1569,7 @@ begin
       TDirectory.CreateDirectory(TmpPath);
 
       CopyAppTo(ExtractFilePath(FExeName), TmpPath);
-      TFile.Delete(TmpPath + Ñ_UPD_INI);
+      TFile.Delete(TmpPath + Ñ_UPD_NAME + '.ini');
 
       if Terminated then
         Exit;

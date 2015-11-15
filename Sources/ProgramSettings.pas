@@ -3,11 +3,13 @@ unit ProgramSettings;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, StdCtrls,
-  ExtCtrls, UITypes, Tools, FileCtrl,
-  Grids, IniFiles, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
-  FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Buttons, Vcl.DBGrids, JvExDBGrids, JvDBGrid;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ComCtrls, StdCtrls, ExtCtrls, UITypes, Tools, FileCtrl, Grids,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.Buttons, Vcl.DBGrids, JvExDBGrids,
+  JvDBGrid;
 
 type
   TFormProgramSettings = class(TSmForm)
@@ -116,7 +118,7 @@ const
 
 implementation
 
-uses Main, GlobsAndConst, DataModule;
+uses Main, GlobsAndConst, DataModule, System.Win.Registry, System.IniFiles;
 
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
@@ -473,53 +475,73 @@ begin
 end;
 
 procedure TFormProgramSettings.LoadUpdateSettings;
-var
-  ini: TIniFile;
+var Reg: TRegistry;
 begin
-  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + Ñ_UPD_INI);
+  Reg := TRegistry.Create(KEY_ALL_ACCESS);
   try
-    if ini.ReadInteger('System', 'UpdateType', 0) = 0 then
-      rbInetServer.Checked := True
-    else
-      rbLocalMirror.Checked := True;
-
-    if rbInetServer.Checked then
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    if Reg.OpenKey(C_REGKEY + '\' + Ñ_UPD_NAME, True) then
     begin
-      cbCreateLocalMirror.Checked := ini.ReadBool('System', 'CreateMirror', False);
-      edtCreateMirrorPath.Text := ini.ReadString('System', 'CreateMirrorPath', '');
+      if not Reg.ValueExists('UpdateType') then
+        Reg.WriteInteger('UpdateType', 0);
+      if not Reg.ValueExists('CreateMirror') then
+        Reg.WriteBool('CreateMirror', False);
+      if not Reg.ValueExists('CreateMirrorPath') then
+        Reg.WriteString('CreateMirrorPath', '');
+      if not Reg.ValueExists('MirrorPath') then
+        Reg.WriteString('MirrorPath', '');
+
+      if Reg.ReadInteger('UpdateType') = 0 then
+        rbInetServer.Checked := True
+      else
+        rbLocalMirror.Checked := True;
+
+      if rbInetServer.Checked then
+      begin
+        cbCreateLocalMirror.Checked := Reg.ReadBool('CreateMirror');
+        edtCreateMirrorPath.Text := Reg.ReadString('CreateMirrorPath');
+      end
+      else
+      begin
+        edtLocalMirrorPath.Text := Reg.ReadString('MirrorPath');
+      end;
     end
     else
-    begin
-      edtLocalMirrorPath.Text := ini.ReadString('System', 'MirrorPath', '');
-    end;
+      MessageDlg('Unable to create key!', mtError, mbOKCancel, 0);
   finally
-    FreeAndNil(ini);
-    rbInetServerClick(nil);
+    Reg.CloseKey;
+    FreeAndNil(Reg);
   end;
 end;
 
 procedure TFormProgramSettings.SaveUpdateSettings;
-var
-  ini: TIniFile;
+var Reg: TRegistry;
 begin
-  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + Ñ_UPD_INI);
+  Reg := TRegistry.Create(KEY_ALL_ACCESS);
   try
-    if rbInetServer.Checked then
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    if Reg.OpenKey(C_REGKEY + '\' + Ñ_UPD_NAME, True) then
     begin
-      ini.WriteInteger('System', 'UpdateType', 0);
-      ini.WriteBool('System', 'CreateMirror', cbCreateLocalMirror.Checked);
-      ini.WriteString('System', 'CreateMirrorPath', edtCreateMirrorPath.Text);
-      ini.WriteString('System', 'MirrorPath', '');
+      if rbInetServer.Checked then
+      begin
+        Reg.WriteInteger('UpdateType', 0);
+        Reg.WriteBool('CreateMirror', cbCreateLocalMirror.Checked);
+        Reg.WriteString('CreateMirrorPath', edtCreateMirrorPath.Text);
+        Reg.WriteString('MirrorPath', '');
+      end
+      else
+      begin
+        Reg.WriteInteger('UpdateType', 1);
+        Reg.WriteBool('CreateMirror', False);
+        Reg.WriteString('CreateMirrorPath', '');
+        Reg.WriteString('MirrorPath', edtLocalMirrorPath.Text);
+      end;
     end
     else
-    begin
-      ini.WriteInteger('System', 'UpdateType', 1);
-      ini.WriteBool('System', 'CreateMirror', False);
-      ini.WriteString('System', 'CreateMirrorPath', '');
-      ini.WriteString('System', 'MirrorPath', edtLocalMirrorPath.Text);
-    end;
+      MessageDlg('Unable to create key!', mtError, mbOKCancel, 0);
   finally
-    FreeAndNil(ini);
+    Reg.CloseKey;
+    FreeAndNil(Reg);
   end;
 end;
 

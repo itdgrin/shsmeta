@@ -9,7 +9,8 @@ uses
   DBGrids, ShellAPI, DateUtils, IniFiles, Grids,
   UpdateModule, ArhivModule, Data.DB, GlobsAndConst,
   Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage,
-  JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg;
+  JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg,
+  System.UITypes;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
@@ -299,6 +300,8 @@ type
     FCurVersion: TVersion; // текущая версия приложения и БД
     FDebugMode: Boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
+    FFirstStart: Boolean;
+
     FileReportPath: string; // путь к папке с отчетами(дабы не захламлять датамодуль лишними модулями)
 
     // Объект отвечает за создание бэкапов и их восстановление
@@ -432,19 +435,22 @@ var
 
 implementation
 
-uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex, About, CalculationEstimate,
-  ConnectDatabase, CardObject,
-  DataModule, Login, Waiting, ActC6, WorkSchedule, HelpC3, HelpC5, CatalogSSR,
-  OXRandOPR, DataTransfer, CalculationSettings, ProgramSettings, ObjectsAndEstimates, OwnData, ReferenceData,
-  PricesOwnData, CardObjectContractorServices,
-  PricesReferenceData, AdditionData, PartsEstimates, TypesActs, IndexesChangeCost, CategoriesObjects,
-  KC6Journal, CalcResource, CalcTravel, UniDict, TravelList,
-  Tools, fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict, OXROPRSetup, OrganizationsEx, KC6,
-  NormativDirectory, ForecastCostIndex, FileStorage, ForemanList, OXROPR,
-  SprController, SSR, ArhivRestore, FireDAC.UI.Intf, CategoryList,
-  NormativDictHelp, BuildZone, HelpKfSt, Users, RoundSetup, InstructionHelp, TypeWorkList,
-  SectionEstimateList,
-  SprSelection, DebugTables;
+uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex,
+  About, CalculationEstimate, ConnectDatabase, CardObject, DataModule,
+  Login, Waiting, ActC6, WorkSchedule, HelpC3, HelpC5, CatalogSSR,
+  OXRandOPR, DataTransfer, CalculationSettings, ProgramSettings,
+  ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
+  CardObjectContractorServices, PricesReferenceData, AdditionData,
+  PartsEstimates, TypesActs, IndexesChangeCost, CategoriesObjects,
+  KC6Journal, CalcResource, CalcTravel, UniDict, TravelList, Tools,
+  fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict,
+  OXROPRSetup, OrganizationsEx, KC6, NormativDirectory, ForecastCostIndex,
+  FileStorage, ForemanList, OXROPR, SprController, SSR, ArhivRestore,
+  FireDAC.UI.Intf, CategoryList, NormativDictHelp, BuildZone, HelpKfSt,
+  Users, RoundSetup, InstructionHelp, TypeWorkList, SectionEstimateList,
+  SprSelection,
+  DebugTables,
+  System.Win.Registry;
 
 {$R *.dfm}
 
@@ -542,10 +548,11 @@ end;
 
 // Загрузка системной информации из smeta.ini и текущей версии приложения
 procedure TFormMain.GetUpdateSystemInfo;
-var
-  ini: TIniFile;
+var ini: TIniFile;
+    Reg: TRegistry;
+    CurrKey: string;
 begin
-  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + С_UPD_INI);
+  ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + С_UPD_NAME + '.ini');
   try
     if not ini.SectionExists('System') then
     begin
@@ -563,12 +570,72 @@ begin
     FCurVersion.App := ini.ReadInteger('System', 'version', 0);
     FDebugMode := ini.ReadBool('System', 'debugmode', true);
 
-    FUpdateType := ini.ReadInteger('System', 'UpdateType', 0);
-    FCreateMirror := ini.ReadBool('System', 'CreateMirror', False);
-    FCreateMirrorPath := ini.ReadString('System', 'CreateMirrorPath', '');
-    FMirrorPath := ini.ReadString('System', 'MirrorPath', '');
   finally
     FreeAndNil(ini);
+  end;
+
+  Reg := TRegistry.Create(KEY_ALL_ACCESS);
+  try
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    CurrKey := C_REGKEY + '\' + С_UPD_NAME;
+
+    if Reg.OpenKey(CurrKey, True) then
+    begin
+      if not Reg.ValueExists('UpdateType') then
+        Reg.WriteInteger('UpdateType', 0);
+      if not Reg.ValueExists('CreateMirror') then
+        Reg.WriteBool('CreateMirror', False);
+      if not Reg.ValueExists('CreateMirrorPath') then
+        Reg.WriteString('CreateMirrorPath', '');
+      if not Reg.ValueExists('MirrorPath') then
+        Reg.WriteString('MirrorPath', '');
+
+      FUpdateType := Reg.ReadInteger('UpdateType');
+      FCreateMirror := Reg.ReadBool('CreateMirror');
+      FCreateMirrorPath := Reg.ReadString('CreateMirrorPath');
+      FMirrorPath := Reg.ReadString('MirrorPath');
+    end
+    else
+      MessageDlg('Unable to create key!', mtError, mbOKCancel, 0);
+    Reg.CloseKey;
+    //Временная фишка, что-бы занилить старые настройки
+    if Reg.OpenKey(C_REGKEY, True) then
+    begin
+      FFirstStart := not Reg.ValueExists('FirstStart');
+      Reg.WriteInteger('FirstStart', 0);
+    end
+    else
+      MessageDlg('Unable to create key!', mtError, mbOKCancel, 0);
+  finally
+    Reg.CloseKey;
+    FreeAndNil(Reg);
+  end;
+
+  if FFirstStart then
+  begin
+    ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Smeta.ini');
+    try
+      try
+        ini.EraseSection('FormCalculationEstimate\TFormCalculationEstimatedbgrdMechanizm');
+        ini.EraseSection('FormCalculationEstimate\TFormCalculationEstimatedbgrdMaterial');
+        ini.EraseSection('FormCalculationEstimate\TFormCalculationEstimatedbgrdDevices');
+      except
+      end;
+    finally
+      FreeAndNil(ini);
+    end;
+
+    ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Smeta_form.ini');
+    try
+      try
+        ini.EraseSection('FormCalculationEstimate\TFormCalculationEstimatedbgrdMechanizm');
+        ini.EraseSection('FormCalculationEstimate\TFormCalculationEstimatedbgrdMaterial');
+        ini.EraseSection('FormCalculationEstimate\TFormCalculationEstimatedbgrdDevices');
+      except
+      end;
+    finally
+      FreeAndNil(ini);
+    end;
   end;
 
   DM.qrDifferent.Active := False;

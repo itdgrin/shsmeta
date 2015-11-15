@@ -351,7 +351,7 @@
       Color = clBtnFace
       ParentColor = False
       ResizeStyle = rsUpdate
-      ExplicitTop = 0
+      ExplicitTop = 222
     end
     object PanelClient: TPanel
       Left = 0
@@ -1485,39 +1485,11 @@
           Cursor = crVSplit
           AutoSize = True
         end
-        object SplitterRightMemo: TSplitter
-          Left = 0
-          Top = 180
-          Width = 546
-          Height = 5
-          Cursor = crVSplit
-          Align = alBottom
-          ResizeStyle = rsUpdate
-          ExplicitTop = 164
-        end
-        object MemoRight: TMemo
-          Left = 0
-          Top = 185
-          Width = 546
-          Height = 15
-          Align = alBottom
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          ReadOnly = True
-          ScrollBars = ssVertical
-          TabOrder = 1
-          OnChange = MemoRightChange
-          OnExit = MemoRightExit
-        end
         object PanelClientRightTables: TPanel
           Left = 0
           Top = 0
           Width = 546
-          Height = 180
+          Height = 200
           Align = alClient
           BevelOuter = bvNone
           Caption = 'PanelClientRightTables'
@@ -1525,6 +1497,8 @@
           ShowCaption = False
           TabOrder = 0
           OnResize = PanelClientRightTablesResize
+          ExplicitLeft = 1
+          ExplicitTop = -34
           object ImageSplitterRight1: TImage
             Left = 208
             Top = 97
@@ -1563,6 +1537,16 @@
             ExplicitTop = 65
             ExplicitWidth = 482
           end
+          object SplitterRightMemo: TSplitter
+            Left = 0
+            Top = 175
+            Width = 546
+            Height = 6
+            Cursor = crVSplit
+            Align = alBottom
+            ResizeStyle = rsUpdate
+            ExplicitTop = 169
+          end
           object dbgrdMechanizm: TJvDBGrid
             Left = 0
             Top = 29
@@ -1591,13 +1575,14 @@
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdMechanizmDrawColumnCell
             OnEnter = dbgrdRatesEnter
-            OnExit = dbgrdMechanizmExit
             OnKeyDown = dbgrdMechanizmKeyDown
             AutoAppend = False
             AutoSort = False
             IniStorage = FormStorage
             BevelInner = bvNone
             BevelOuter = bvNone
+            MaxColumnWidth = 300
+            MinColumnWidth = 30
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -1614,7 +1599,7 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #8470
-                Width = 25
+                Width = 34
                 Visible = True
               end
               item
@@ -1625,6 +1610,15 @@
                 Title.Caption = #1050#1086#1076
                 Width = 85
                 Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MECH_NAME'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+                Width = -1
+                Visible = False
               end
               item
                 Expanded = False
@@ -1883,11 +1877,12 @@
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdMaterialDrawColumnCell
             OnEnter = dbgrdRatesEnter
-            OnExit = dbgrdMaterialExit
             OnKeyDown = dbgrdMaterialKeyDown
             AutoAppend = False
             AutoSort = False
             IniStorage = FormStorage
+            MaxColumnWidth = 300
+            MinColumnWidth = 30
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -1903,7 +1898,7 @@
                 FieldName = 'NUM'
                 Title.Alignment = taCenter
                 Title.Caption = #8470
-                Width = 25
+                Width = 30
                 Visible = True
               end
               item
@@ -1914,6 +1909,15 @@
                 Title.Caption = #1050#1086#1076
                 Width = 85
                 Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'MAT_NAME'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+                Width = -1
+                Visible = False
               end
               item
                 Expanded = False
@@ -2133,13 +2137,14 @@
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
             OnEnter = dbgrdRatesEnter
-            OnExit = dbgrdDevicesExit
             OnKeyDown = dbgrdDevicesKeyDown
             AutoAppend = False
             AutoSort = False
             IniStorage = FormStorage
             BevelInner = bvNone
             BevelOuter = bvNone
+            MaxColumnWidth = 300
+            MinColumnWidth = 30
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -2155,7 +2160,7 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #8470
-                Width = 25
+                Width = 30
                 Visible = True
               end
               item
@@ -2166,6 +2171,15 @@
                 Title.Caption = #1050#1086#1076
                 Width = 85
                 Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'DEVICE_NAME'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+                Width = -1
+                Visible = False
               end
               item
                 Expanded = False
@@ -2438,9 +2452,9 @@
           end
           object dbgrdTransp: TJvDBGrid
             Left = 0
-            Top = 145
+            Top = 144
             Width = 546
-            Height = 30
+            Height = 25
             Align = alTop
             Ctl3D = False
             DataSource = dsTransp
@@ -2586,7 +2600,7 @@
             Left = 0
             Top = 129
             Width = 546
-            Height = 16
+            Height = 15
             Align = alTop
             Ctl3D = False
             DataSource = dsStartup
@@ -2647,6 +2661,22 @@
                 Width = 50
                 Visible = True
               end>
+          end
+          object dbmmoRight: TDBMemo
+            Left = 0
+            Top = 181
+            Width = 546
+            Height = 19
+            Align = alBottom
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 7
           end
         end
       end
@@ -2889,7 +2919,7 @@
       OnResize = Panel1Resize
       object lbl1: TLabel
         AlignWithMargins = True
-        Left = 334
+        Left = 622
         Top = 5
         Width = 108
         Height = 14
@@ -2897,7 +2927,8 @@
         Margins.Bottom = 5
         Align = alLeft
         Caption = #1054#1061#1056' '#1054#1055#1056' '#1080' '#1055#1083'. '#1087#1088#1080#1073'.:'
-        ExplicitHeight = 13
+        ExplicitLeft = 736
+        ExplicitTop = 8
       end
       object lblZone: TLabel
         AlignWithMargins = True
@@ -2932,7 +2963,7 @@
       end
       object lblWinterPrice: TLabel
         AlignWithMargins = True
-        Left = 609
+        Left = 495
         Top = 5
         Width = 121
         Height = 14
@@ -2940,6 +2971,7 @@
         Margins.Bottom = 5
         Align = alLeft
         Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077' '#1085#1072':'
+        ExplicitLeft = 609
         ExplicitHeight = 13
       end
       object EditWinterPrice: TEdit
@@ -2969,7 +3001,7 @@
       end
       object dblkcbbOXROPR: TDBLookupComboBox
         AlignWithMargins = True
-        Left = 445
+        Left = 331
         Top = 2
         Width = 158
         Height = 21
@@ -2984,6 +3016,7 @@
         ListField = 'NameWork'
         ListSource = dsOXROPR
         TabOrder = 2
+        ExplicitLeft = 445
       end
       object edtTypeWork: TEdit
         AlignWithMargins = True
@@ -3837,7 +3870,6 @@
   end
   object qrDescription: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
-    AfterScroll = qrDescriptionAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -3967,6 +3999,7 @@
       AutoGenerateValue = arDefault
       FieldName = 'MECH_NAME'
       Origin = 'MECH_NAME'
+      OnChange = MechRowChange
       Size = 32767
     end
     object qrMechanizmMECH_UNIT: TStringField
@@ -4304,6 +4337,7 @@
       AutoGenerateValue = arDefault
       FieldName = 'MAT_NAME'
       Origin = 'MAT_NAME'
+      OnChange = MatRowChange
       Size = 32767
     end
     object qrMaterialMAT_CODE: TStringField
@@ -4528,7 +4562,6 @@
   object qrDevices: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
     BeforeScroll = qrDevicesBeforeScroll
-    AfterScroll = qrDevicesAfterScroll
     OnCalcFields = qrMechanizmCalcFields
     Connection = DM.Connect
     Transaction = DM.Read
@@ -4800,7 +4833,6 @@
   end
   object qrDump: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
-    AfterScroll = qrDumpAfterScroll
     OnCalcFields = qrMechanizmCalcFields
     Connection = DM.Connect
     Transaction = DM.Read
@@ -4825,7 +4857,7 @@
     UpdateOptions.KeyFields = 'ID'
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
-      'SELECT * FROM dumpcard WHERE (ID = :IDValue) ORDER BY ID;')
+      'SELECT * FROM dumpcard_temp WHERE (ID = :IDValue) ORDER BY ID;')
     Left = 712
     Top = 85
     ParamData = <
@@ -4985,7 +5017,6 @@
   end
   object qrTransp: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
-    AfterScroll = qrTranspAfterScroll
     OnCalcFields = qrTranspCalcFields
     Connection = DM.Connect
     Transaction = DM.Read
@@ -5145,7 +5176,6 @@
   end
   object qrStartup: TFDQuery
     BeforeInsert = qrMechanizmBeforeInsert
-    AfterScroll = qrStartupAfterScroll
     OnCalcFields = qrMechanizmCalcFields
     Connection = DM.Connect
     Transaction = DM.Read

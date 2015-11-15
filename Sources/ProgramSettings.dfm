@@ -335,6 +335,10 @@ object FormProgramSettings: TFormProgramSettings
     object tsUpdate: TTabSheet
       Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1103
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         624
         323)
@@ -444,6 +448,10 @@ object FormProgramSettings: TFormProgramSettings
     object tsAll: TTabSheet
       Caption = #1056#1072#1079#1085#1086#1077
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lblOXROPR: TLabel
         Left = 3
         Top = 229
