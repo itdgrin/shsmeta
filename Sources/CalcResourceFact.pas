@@ -191,8 +191,8 @@ begin
   end
   else
     // Создаём кнопку от этого окна (на главной форме внизу)
-    FormMain.CreateButtonOpenWindow('Расчет стоимости фактических ресурсов',
-      'Расчет стоимости фактических ресурсов', fCalcResourceFact, 1);
+    FormMain.CreateButtonOpenWindow('Расчет фактической стоимости ресурсов',
+      'Расчет фактической стоимости ресурсов', fCalcResourceFact, 1);
 
   // Если вызвали с доп параметром (на что положить) , то скрываем все вкладки
   { for pageID := 0 to fCalcResourceFact.pgc.PageCount - 1 do
@@ -318,7 +318,7 @@ begin
   // каскадирование с переносом этой формы на передний план
   FormMain.CascadeForActiveWindow;
   // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow('Расчет стоимости ресурсов');
+  FormMain.SelectButtonActiveWindow('Расчет фактической стоимости ресурсов');
 end;
 
 procedure TfCalcResourceFact.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -329,7 +329,7 @@ end;
 procedure TfCalcResourceFact.FormDestroy(Sender: TObject);
 begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow('Расчет стоимости ресурсов');
+  FormMain.DeleteButtonCloseWindow('Расчет фактической стоимости ресурсов');
   fCalcResourceFact := nil;
 end;
 
