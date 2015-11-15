@@ -254,7 +254,7 @@ begin
   begin
     if defIdEstimate <> 0 then
     begin
-      if not qrTravel.Locate('id_estimate', defIdEstimate, []) then
+      if not qrTravel.Locate('SM_ID', defIdEstimate, []) then
         qrTravel.Insert;
     end;
   end;
@@ -348,7 +348,7 @@ begin
   begin
     if defIdEstimate <> 0 then
     begin
-      if not qrTravelWork.Locate('id_estimate', defIdEstimate, []) then
+      if not qrTravelWork.Locate('SM_ID', defIdEstimate, []) then
         qrTravelWork.Insert;
     end;
   end;
@@ -405,7 +405,7 @@ begin
   begin
     if defIdEstimate <> 0 then
     begin
-      if not qrWorkerDepartment.Locate('id_estimate', defIdEstimate, []) then
+      if not qrWorkerDepartment.Locate('SM_ID', defIdEstimate, []) then
         qrWorkerDepartment.Insert;
     end;
   end;

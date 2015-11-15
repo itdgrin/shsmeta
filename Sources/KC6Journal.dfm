@@ -486,8 +486,8 @@ object fKC6Journal: TfKC6Journal
     FetchOptions.Cache = [fiBlobs, fiMeta]
     SQL.Strings = (
       
-        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(SM_NUMBER, " ",  NAME) as ' +
-        'NAME, DATE,'
+        'SELECT SM_ID, SM_TYPE, OBJ_ID, CONCAT(IFNULL(SM_NUMBER, ""), " "' +
+        ',  IFNULL(NAME, "")) as NAME, DATE,'
       '       (PARENT_ID) as PARENT  '
       'FROM smetasourcedata'
       'WHERE ACT=0 AND '
@@ -947,7 +947,7 @@ object fKC6Journal: TfKC6Journal
         TargetDataType = dtAnsiString
       end>
     FormatOptions.DefaultParamDataType = ftBCD
-    FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ###'
+    FormatOptions.FmtDisplayNumeric = '### ### ### ### ###'
     Left = 201
     Top = 136
   end
@@ -970,7 +970,7 @@ object fKC6Journal: TfKC6Journal
         TargetDataType = dtAnsiString
       end>
     FormatOptions.DefaultParamDataType = ftBCD
-    FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ###'
+    FormatOptions.FmtDisplayNumeric = '### ### ### ### ###'
     Left = 289
     Top = 136
   end

@@ -129,13 +129,14 @@ function StripCharsInSet(s: string; c: TSysCharSet): string;
 function FullRename(ASource, ATarget: string): Boolean;
 function FullCopy(ASource, ATarget: string): Boolean;
 function FullRemove(ASource: string): Boolean;
-//ƒиалог выбора директории
+// ƒиалог выбора директории
 function GetDirDialog(var ADir: string): Boolean;
 
 implementation
 
 function GetDirDialog(var ADir: string): Boolean;
-var TmpDialog: TFileOpenDialog; // TFileOpenDialog есть только в Vista и выше, нужен обычный TOpenDialog
+var
+  TmpDialog: TFileOpenDialog; // TFileOpenDialog есть только в Vista и выше, нужен обычный TOpenDialog
 begin
   Result := False;
   if Win32MajorVersion >= 6 then
@@ -157,9 +158,7 @@ begin
     end
   end
   else
-    Result :=
-      SelectDirectory('Select Directory', ExtractFileDrive(ADir), ADir,
-        [sdNewUI, sdNewFolder]);
+    Result := SelectDirectory('Select Directory', ExtractFileDrive(ADir), ADir, [sdNewUI, sdNewFolder]);
 end;
 
 function FullRename(ASource, ATarget: string): Boolean;
@@ -799,16 +798,34 @@ begin
     then
     begin
       // —трока найдена
-      TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL[i] := 'ORDER BY ' + (Sender AS TJvDBGrid)
-        .SortedField + s;
+      if (Sender AS TJvDBGrid).SortedField <> '' then
+      begin
+        // ≈сли сортируем некий код, то буквенные значени€ всегда выше в списке
+        if (Sender AS TJvDBGrid).SortedField = 'CODE' then
+          TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL[i] := 'ORDER BY CODE+1,' +
+            (Sender AS TJvDBGrid).SortedField + s
+        else
+          TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL[i] := 'ORDER BY ' + (Sender AS TJvDBGrid)
+            .SortedField + s;
+      end
+      else
+        TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL[i] := 'ORDER BY 1';
       CloseOpen(TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet));
       Exit;
     end;
   end;
-
-  TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet)
-    .SQL.Append('ORDER BY ' + (Sender AS TJvDBGrid).SortedField + s);
-  CloseOpen(TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet));
+  if (Sender AS TJvDBGrid).SortedField <> '' then
+  begin
+    if (Sender AS TJvDBGrid).SortedField = 'CODE' then
+      TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet)
+        .SQL.Append('ORDER BY CODE+1' + (Sender AS TJvDBGrid).SortedField + s)
+    else
+      TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet)
+        .SQL.Append('ORDER BY ' + (Sender AS TJvDBGrid).SortedField + s);
+    CloseOpen(TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet));
+  end
+  else
+    TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL.Append('ORDER BY 1');
 end;
 
 procedure TSmForm.DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;

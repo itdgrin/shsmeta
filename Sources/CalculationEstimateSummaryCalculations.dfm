@@ -558,9 +558,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) '
       '  AND o.OBJ_ID=s.OBJ_ID'
       'GROUP BY s.SM_ID, s.OBJ_ID, TYPE_NAME, s.SM_NUMBER, SM_NAME'
-      
-        'ORDER BY CONCAT(IF(s.SM_TYPE=1, s.SM_ID, ""), s.PARENT_ID, s.SM_' +
-        'ID);')
+      'ORDER BY FN_getSortSM(s.SM_ID);')
     Left = 9
     Top = 40
     ParamData = <

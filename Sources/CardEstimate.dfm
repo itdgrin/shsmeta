@@ -133,7 +133,6 @@ object fCardEstimate: TfCardEstimate
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 5
-    ExplicitTop = 124
     object LabelNameEstimate: TLabel
       Left = 10
       Top = 5
@@ -166,7 +165,6 @@ object fCardEstimate: TfCardEstimate
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 6
-    ExplicitTop = 149
     object LabelCompose: TLabel
       Left = 10
       Top = 5
@@ -215,7 +213,6 @@ object fCardEstimate: TfCardEstimate
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 7
-    ExplicitTop = 174
     object LabelChecked: TLabel
       Left = 9
       Top = 5
@@ -270,7 +267,6 @@ object fCardEstimate: TfCardEstimate
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 8
-    ExplicitTop = 199
     object LabelSetDrawing: TLabel
       Left = 6
       Top = 5
@@ -310,7 +306,6 @@ object fCardEstimate: TfCardEstimate
     ParentFont = False
     TabOrder = 9
     OnClick = btnSaveClick
-    ExplicitTop = 210
   end
   object btnClose: TButton
     Left = 496
@@ -321,7 +316,6 @@ object fCardEstimate: TfCardEstimate
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 10
     OnClick = btnCloseClick
-    ExplicitTop = 210
   end
   object PanelPart: TPanel
     Left = 0
@@ -338,7 +332,6 @@ object fCardEstimate: TfCardEstimate
     ParentBackground = False
     ParentFont = False
     TabOrder = 2
-    ExplicitTop = 49
     object LabelPart: TLabel
       Left = 28
       Top = 5
@@ -375,7 +368,6 @@ object fCardEstimate: TfCardEstimate
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 3
-    ExplicitTop = 74
     object LabelSection: TLabel
       Left = 22
       Top = 5
@@ -412,7 +404,6 @@ object fCardEstimate: TfCardEstimate
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 4
-    ExplicitTop = 99
     object LabelTypeWork: TLabel
       Left = 6
       Top = 5
@@ -448,7 +439,7 @@ object fCardEstimate: TfCardEstimate
     Anchors = [akLeft, akBottom]
     Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1085#1072#1079#1074#1072#1085#1080#1077' '#1090#1080#1087' '#1075#1083#1072#1074#1099' '#1057#1057#1056
     TabOrder = 11
-    ExplicitTop = 276
+    OnClick = cbbTypeCloseUp
   end
   object pnl1: TPanel
     Left = 0
@@ -458,8 +449,6 @@ object fCardEstimate: TfCardEstimate
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = 8
-    ExplicitTop = 24
     object lblNumberChapter: TLabel
       Left = 11
       Top = 6

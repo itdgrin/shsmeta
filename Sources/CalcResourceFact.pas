@@ -112,7 +112,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure edtMatCodeFilterChange(Sender: TObject);
     procedure edtMatCodeFilterClick(Sender: TObject);
@@ -122,7 +121,6 @@ type
     procedure qrMainDataBeforeOpen(DataSet: TDataSet);
     procedure pmPopup(Sender: TObject);
     procedure grMaterialCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
-    procedure grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
     procedure mDeteteClick(Sender: TObject);
     procedure mRestoreClick(Sender: TObject);
     procedure grMaterialDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
@@ -328,12 +326,6 @@ begin
   Action := caFree;
 end;
 
-procedure TfCalcResourceFact.FormCreate(Sender: TObject);
-begin
-  inherited;
-
-end;
-
 procedure TfCalcResourceFact.FormDestroy(Sender: TObject);
 begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
@@ -414,19 +406,6 @@ begin
       MixColors(clMoneyGreen, (Sender AS TJvDBGrid).Canvas.Brush.Color, 100);
 
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
-end;
-
-procedure TfCalcResourceFact.grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
-var
-  s: string;
-begin
-  if not CheckQrActiveEmpty(qrMainData) then
-    Exit;
-  s := '';
-  if (Sender as TJvDBGrid).SortMarker = smDown then
-    s := ' DESC';
-  qrMainData.SQL[qrMainData.SQL.Count - 1] := 'ORDER BY ' + (Sender as TJvDBGrid).SortedField + s;
-  CloseOpen(qrMainData);
 end;
 
 procedure TfCalcResourceFact.grMechBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;

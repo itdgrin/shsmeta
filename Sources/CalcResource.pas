@@ -173,7 +173,6 @@ type
     procedure mReplaceClick(Sender: TObject);
     procedure grMaterialCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
     procedure qrMaterialDataBeforePost(DataSet: TDataSet);
-    procedure grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
     procedure mDeteteClick(Sender: TObject);
     procedure mRestoreClick(Sender: TObject);
     procedure grMaterialDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
@@ -183,7 +182,6 @@ type
     procedure grMechDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
     procedure qrMechDataBeforePost(DataSet: TDataSet);
-    procedure grMechTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
     procedure qrDevicesBeforePost(DataSet: TDataSet);
     procedure grDevDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
@@ -212,8 +210,6 @@ type
     procedure qrMaterialDataCOASTChange(Sender: TField);
     procedure qrMechDataCOASTChange(Sender: TField);
     procedure qrDevicesCOASTChange(Sender: TField);
-    procedure grDevTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
-    procedure grRatesTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
     procedure grMaterialExit(Sender: TObject);
     procedure grMaterialKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure grDevBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
@@ -548,11 +544,6 @@ begin
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-procedure TfCalcResource.grDevTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
-begin
-  DoSort(qrDevices, grDev);
-end;
-
 procedure TfCalcResource.grMaterialBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
@@ -717,11 +708,6 @@ begin
   FOldGridProc(Message);
 end;
 
-procedure TfCalcResource.grMaterialTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
-begin
-  DoSort(qrMaterialData, grMaterial);
-end;
-
 procedure TfCalcResource.grMechBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
@@ -819,11 +805,6 @@ begin
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-procedure TfCalcResource.grMechTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
-begin
-  DoSort(qrMechData, grMech);
-end;
-
 procedure TfCalcResource.grRatesDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
@@ -851,11 +832,6 @@ begin
   if qrRates.FieldByName('DELETED').AsInteger = 1 then
     grRates.Canvas.Font.Style := grRates.Canvas.Font.Style + [fsStrikeOut];
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
-end;
-
-procedure TfCalcResource.grRatesTitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
-begin
-  DoSort(qrRates, grRates);
 end;
 
 procedure TfCalcResource.JvDBGridFooter1Calculate(Sender: TJvDBGridFooter; const FieldName: string;

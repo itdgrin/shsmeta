@@ -398,7 +398,7 @@ object fCalcTravel: TfCalcTravel
         'NAME`) AS NAME'
       'FROM '
       '  `smetasourcedata`'
-      'WHERE `OBJ_ID`=:OBJ_ID AND `SM_TYPE`<>3 AND ACT=0;')
+      'WHERE `OBJ_ID`=:OBJ_ID AND `SM_TYPE`=2 AND ACT=0;')
     Left = 233
     Top = 152
     ParamData = <

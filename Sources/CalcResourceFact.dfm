@@ -13,7 +13,6 @@ object fCalcResourceFact: TfCalcResourceFact
   OldCreateOrder = False
   OnActivate = FormActivate
   OnClose = FormClose
-  OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
@@ -156,10 +155,6 @@ object fCalcResourceFact: TfCalcResourceFact
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl2: TLabel
         Left = 0
         Top = 0
@@ -252,7 +247,6 @@ object fCalcResourceFact: TfCalcResourceFact
           TitleFont.Style = []
           OnDrawColumnCell = grMaterialDrawColumnCell
           IniStorage = FormStorage
-          OnTitleBtnClick = grMaterialTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -299,7 +293,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 51
               Visible = True
             end
@@ -315,7 +309,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               FieldName = 'PRICE'
               Title.Alignment = taCenter
-              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
               Width = 51
               Visible = True
             end
@@ -481,7 +475,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 65
               Visible = True
             end
@@ -587,7 +581,6 @@ object fCalcResourceFact: TfCalcResourceFact
           TitleFont.Style = []
           OnDrawColumnCell = grMaterialDrawColumnCell
           IniStorage = FormStorage
-          OnTitleBtnClick = grMaterialTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -635,7 +628,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 91
               Visible = True
             end
@@ -651,7 +644,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               FieldName = 'PRICE'
               Title.Alignment = taCenter
-              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
               Width = 91
               Visible = True
             end
@@ -797,7 +790,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 90
               Visible = True
             end
@@ -955,7 +948,6 @@ object fCalcResourceFact: TfCalcResourceFact
           TitleFont.Style = []
           OnDrawColumnCell = grMaterialDrawColumnCell
           IniStorage = FormStorage
-          OnTitleBtnClick = grMaterialTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1003,7 +995,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 47
               Visible = True
             end
@@ -1019,7 +1011,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               FieldName = 'PRICE'
               Title.Alignment = taCenter
-              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
               Width = 47
               Visible = True
             end
@@ -1186,7 +1178,7 @@ object fCalcResourceFact: TfCalcResourceFact
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 71
               Visible = True
             end
@@ -1248,10 +1240,6 @@ object fCalcResourceFact: TfCalcResourceFact
       Font.Style = []
       ImageIndex = 4
       ParentFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlRatesTop: TPanel
         Left = 0
         Top = 0

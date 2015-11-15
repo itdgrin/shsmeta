@@ -1386,6 +1386,8 @@ begin
   // Для сметы
   else
   begin
+    FormWaiting.Show;
+    Application.ProcessMessages;
     if (not Assigned(fKC6Journal)) then
       fKC6Journal := TfKC6Journal.Create(FormCalculationEstimate);
 
@@ -1401,6 +1403,7 @@ begin
     fKC6Journal.BorderStyle := bsNone;
 
     fKC6Journal.Show;
+    FormWaiting.Close;
   end;
 end;
 

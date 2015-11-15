@@ -260,7 +260,6 @@ object fCalcResource: TfCalcResource
           AutoAppend = False
           IniStorage = FormStorage
           MultiSelect = True
-          OnTitleBtnClick = grMaterialTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -315,7 +314,7 @@ object fCalcResource: TfCalcResource
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 52
               Visible = True
             end
@@ -323,7 +322,7 @@ object fCalcResource: TfCalcResource
               Expanded = False
               FieldName = 'PRICE'
               Title.Alignment = taCenter
-              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
               Width = 52
               Visible = True
             end
@@ -525,7 +524,7 @@ object fCalcResource: TfCalcResource
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 49
               Visible = True
             end
@@ -646,7 +645,6 @@ object fCalcResource: TfCalcResource
           OnKeyDown = grMaterialKeyDown
           AutoAppend = False
           IniStorage = FormStorage
-          OnTitleBtnClick = grMechTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -702,7 +700,7 @@ object fCalcResource: TfCalcResource
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 90
               Visible = True
             end
@@ -710,7 +708,7 @@ object fCalcResource: TfCalcResource
               Expanded = False
               FieldName = 'PRICE'
               Title.Alignment = taCenter
-              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
               Width = 90
               Visible = True
             end
@@ -879,7 +877,7 @@ object fCalcResource: TfCalcResource
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 68
               Visible = True
             end
@@ -1056,7 +1054,6 @@ object fCalcResource: TfCalcResource
           OnKeyDown = grMaterialKeyDown
           AutoAppend = False
           IniStorage = FormStorage
-          OnTitleBtnClick = grDevTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1112,7 +1109,7 @@ object fCalcResource: TfCalcResource
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 45
               Visible = True
             end
@@ -1120,7 +1117,7 @@ object fCalcResource: TfCalcResource
               Expanded = False
               FieldName = 'PRICE'
               Title.Alignment = taCenter
-              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
               Width = 45
               Visible = True
             end
@@ -1316,7 +1313,7 @@ object fCalcResource: TfCalcResource
               Expanded = False
               FieldName = 'COAST'
               Title.Alignment = taCenter
-              Title.Caption = #1062#1077#1085#1072
+              Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
               Width = 50
               Visible = True
             end
@@ -1416,7 +1413,6 @@ object fCalcResource: TfCalcResource
           OnDrawColumnCell = grRatesDrawColumnCell
           AutoAppend = False
           IniStorage = FormStorage
-          OnTitleBtnClick = grRatesTitleBtnClick
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1799,6 +1795,7 @@ object fCalcResource: TfCalcResource
       AutoGenerateValue = arDefault
       FieldName = 'DOC_DATE'
       Origin = 'DOC_DATE'
+      EditMask = '!99/99/0000;1;_'
     end
     object strngfldMaterialDataDOC_NUM: TStringField
       AutoGenerateValue = arDefault
@@ -2174,6 +2171,7 @@ object fCalcResource: TfCalcResource
       AutoGenerateValue = arDefault
       FieldName = 'DOC_DATE'
       Origin = 'DOC_DATE'
+      EditMask = '!99/99/0000;1;_'
     end
     object strngfldDevicesDOC_NUM: TStringField
       AutoGenerateValue = arDefault

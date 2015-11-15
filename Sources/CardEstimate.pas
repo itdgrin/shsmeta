@@ -164,6 +164,8 @@ begin
   cbbType.Visible := TypeEstimate = 1;
 
   pnl1.Visible := TypeEstimate = 2;
+  chkAddChapterNumber.Visible := TypeEstimate = 2;
+
   cbb1.ItemIndex := qrMain.FieldByName('CHAPTER').AsInteger - 1;
   case TypeEstimate of
     1, 2:
@@ -577,6 +579,9 @@ var
   CHAPTER_NAME, TMP_NAME: string;
   pos_id: Integer;
 begin
+  if not CheckQrActiveEmpty(qrMain) then
+    Exit;
+
   if TypeEstimate = 1 then
   begin
     qrMain.Edit;
@@ -616,10 +621,18 @@ begin
       TMP_NAME := qrMain.FieldByName('NAME').AsString;
       if pos_id <> 0 then
         Delete(TMP_NAME, pos_id - 1, Length(TMP_NAME) - pos_id + 2);
-      qrMain.FieldByName('NAME').AsString := TMP_NAME + ' ' + CHAPTER_NAME;
+      qrMain.FieldByName('NAME').AsString := Trim(TMP_NAME) + ' ' + CHAPTER_NAME;
     end
     else
+    begin
       CHAPTER_NAME := '';
+      // Удаляем весь текст названия после слова ГЛАВА
+      pos_id := Pos('ГЛАВА', qrMain.FieldByName('NAME').AsString);
+      TMP_NAME := qrMain.FieldByName('NAME').AsString;
+      if pos_id <> 0 then
+        Delete(TMP_NAME, pos_id - 1, Length(TMP_NAME) - pos_id + 2);
+      qrMain.FieldByName('NAME').AsString := Trim(TMP_NAME) + ' ' + CHAPTER_NAME;
+    end;
   end;
 end;
 
