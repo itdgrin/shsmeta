@@ -1465,7 +1465,7 @@ procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
   ShowNeedSaveDialog;
   if not Act then
-    ShellExecute(Handle, nil, 'report.exe', PChar('E' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+    ShellExecute(Handle, nil, 'rs.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
       PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
 end;
 

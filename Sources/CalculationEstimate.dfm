@@ -1497,8 +1497,6 @@
           ShowCaption = False
           TabOrder = 0
           OnResize = PanelClientRightTablesResize
-          ExplicitLeft = 1
-          ExplicitTop = -34
           object ImageSplitterRight1: TImage
             Left = 208
             Top = 97
@@ -1617,7 +1615,6 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-                Width = -1
                 Visible = False
               end
               item
@@ -1916,7 +1913,6 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-                Width = -1
                 Visible = False
               end
               item
@@ -2178,7 +2174,6 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
-                Width = -1
                 Visible = False
               end
               item
@@ -2927,8 +2922,7 @@
         Margins.Bottom = 5
         Align = alLeft
         Caption = #1054#1061#1056' '#1054#1055#1056' '#1080' '#1055#1083'. '#1087#1088#1080#1073'.:'
-        ExplicitLeft = 736
-        ExplicitTop = 8
+        ExplicitHeight = 13
       end
       object lblZone: TLabel
         AlignWithMargins = True
@@ -2971,7 +2965,6 @@
         Margins.Bottom = 5
         Align = alLeft
         Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077' '#1085#1072':'
-        ExplicitLeft = 609
         ExplicitHeight = 13
       end
       object EditWinterPrice: TEdit
@@ -3016,7 +3009,6 @@
         ListField = 'NameWork'
         ListSource = dsOXROPR
         TabOrder = 2
-        ExplicitLeft = 445
       end
       object edtTypeWork: TEdit
         AlignWithMargins = True
