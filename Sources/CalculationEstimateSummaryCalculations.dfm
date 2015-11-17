@@ -420,6 +420,13 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Title.Caption = #1053#1086#1088#1084#1072#1090#1080#1074#1085#1072#1103' '#1090#1088#1091#1076#1086#1077#1084#1082#1086#1089#1090#1100
         Width = 100
         Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'Si'
+        Title.Alignment = taCenter
+        Width = 100
+        Visible = True
       end>
   end
   object qrData: TFDQuery
@@ -498,7 +505,9 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         '  SUM(IFNULL(d.WORKER_DEPARTMENTF, d.WORKER_DEPARTMENT)) AS WORK' +
         'ER_DEPARTMENT,'
       '  SUM(IFNULL(d.NORMATF, d.NORMAT)) AS NORMAT,'
+      '  SUM(IFNULL(d.SiF, d.Si)) AS Si,'
       ''
+      '  SUM(IFNULL(d.Si, 0)) AS SiF,'
       '  SUM(IFNULL(d.NORMAT, 0)) AS NORMATF,'
       '  SUM(IFNULL(d.ZP, 0)) AS ZPF,'
       '  SUM(IFNULL(d.EMiM, 0)) AS EMiMF,'
@@ -550,12 +559,18 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       'WHERE '
       '  s.SM_TYPE=typesm.ID AND '
       '  s.DELETED=0 AND'
+      
+        '  s.OBJ_ID = (SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:SM' +
+        '_ID) AND'
+      '  s.ACT= (SELECT ACT FROM smetasourcedata WHERE SM_ID=:SM_ID)'
+      '/*'
       '  ((s.SM_ID = :SM_ID) OR'
       '           (s.PARENT_ID = :SM_ID) OR '
       '           (s.PARENT_ID IN ('
       '             SELECT SM_ID'
       '             FROM smetasourcedata'
       '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) '
+      '*/'
       '  AND o.OBJ_ID=s.OBJ_ID'
       'GROUP BY s.SM_ID, s.OBJ_ID, TYPE_NAME, s.SM_NUMBER, SM_NAME'
       'ORDER BY FN_getSortSM(s.SM_ID);')
@@ -672,7 +687,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       
         ' WORKER_DEPARTMENTF  =  IF(:WORKER_DEPARTMENT=WORKER_DEPARTMENT,' +
         ' NULL, :WORKER_DEPARTMENT),'
-      ' NORMATF = IF(:NORMAT=NORMAT, NULL, :NORMAT)'
+      ' NORMATF = IF(:NORMAT=NORMAT, NULL, :NORMAT),'
+      ' SiF = IF(:Si=Si, NULL, :Si)'
       'WHERE   SM_ID = :id_estimate;')
     Left = 32
     Top = 160
