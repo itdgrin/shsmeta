@@ -454,8 +454,9 @@ var TmpArray: array of byte;
     I: Integer;
 begin
   TmpCount := SizeOf(Char) * Length(AStr);
-  SetLength(TmpArray, TmpCount);
+  SetLength(TmpArray, TmpCount + 1);
   Move(PChar(AStr)[0], TmpArray[0], TmpCount);
+  TmpArray[High(TmpArray)] := 0;
   for I := 0 to TmpCount div 16 - 1 do
     RC6DecryptECB(FData, @TmpArray[16 * I], @TmpArray[16 * I]);
   Result := String(PChar(TmpArray));
