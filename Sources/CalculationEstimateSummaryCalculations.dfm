@@ -427,6 +427,46 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Title.Alignment = taCenter
         Width = 100
         Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'MAT_ZAK'
+        Title.Alignment = taCenter
+        Title.Caption = #1052#1072#1090'-'#1083' '#1079#1072#1082#1072#1079#1095#1080#1082#1072
+        Width = 100
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'TRANSP_ZAK'
+        Title.Alignment = taCenter
+        Title.Caption = #1058#1088'-'#1090' '#1084#1072#1090'-'#1083#1072' '#1079#1072#1082#1072#1079#1095#1080#1082#1072
+        Width = 100
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'MR_DEVICE_ZAK'
+        Title.Alignment = taCenter
+        Title.Caption = #1054#1073#1086#1088#1091#1076'-'#1077' '#1079#1072#1082#1072#1079#1095#1080#1082#1072
+        Width = 100
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'TRANSP_DEVICE_ZAK'
+        Title.Alignment = taCenter
+        Title.Caption = #1058#1088'-'#1090' '#1086#1073#1086#1088#1091#1076'-'#1103' '#1079#1072#1082#1072#1079#1095#1080#1082#1072
+        Width = 100
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'OTHER'
+        Title.Alignment = taCenter
+        Title.Caption = #1055#1088#1086#1095#1080#1077
+        Width = 100
+        Visible = True
       end>
   end
   object qrData: TFDQuery
@@ -448,7 +488,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         SourceDataType = dtFmtBCD
         TargetDataType = dtDouble
       end>
-    FormatOptions.FmtDisplayNumeric = '### ### ### ##0.####'
+    FormatOptions.FmtDisplayNumeric = '### ### ### ##0.##'
     FormatOptions.FmtEditNumeric = '########################.########'
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvCheckReadOnly]
     UpdateOptions.EnableDelete = False
@@ -505,9 +545,23 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         '  SUM(IFNULL(d.WORKER_DEPARTMENTF, d.WORKER_DEPARTMENT)) AS WORK' +
         'ER_DEPARTMENT,'
       '  SUM(IFNULL(d.NORMATF, d.NORMAT)) AS NORMAT,'
-      '  SUM(IFNULL(d.SiF, d.Si)) AS Si,'
+      '  AVG(IFNULL(d.SiF, d.Si)) AS Si,'
+      '  SUM(IFNULL(d.MAT_ZAKF, d.MAT_ZAK)) AS MAT_ZAK,'
+      '  SUM(IFNULL(d.TRANSP_ZAKF, d.TRANSP_ZAK)) AS TRANSP_ZAK,'
+      
+        '  SUM(IFNULL(d.MR_DEVICE_ZAKF, d.MR_DEVICE_ZAK)) AS MR_DEVICE_ZA' +
+        'K,'
+      
+        '  SUM(IFNULL(d.TRANSP_DEVICE_ZAKF, d.TRANSP_DEVICE_ZAK)) AS TRAN' +
+        'SP_DEVICE_ZAK,'
+      '  SUM(IFNULL(d.OTHERF, d.OTHER)) AS OTHER,'
       ''
-      '  SUM(IFNULL(d.Si, 0)) AS SiF,'
+      '  SUM(IFNULL(d.OTHER, 0)) AS OTHERF,'
+      '  SUM(IFNULL(d.TRANSP_DEVICE_ZAK, 0)) AS TRANSP_DEVICE_ZAKF,'
+      '  SUM(IFNULL(d.MR_DEVICE_ZAK, 0)) AS MR_DEVICE_ZAKF,'
+      '  SUM(IFNULL(d.TRANSP_ZAK, 0)) AS TRANSP_ZAKF,'
+      '  SUM(IFNULL(d.MAT_ZAK, 0)) AS MAT_ZAKF,'
+      '  AVG(IFNULL(d.Si, 0)) AS SiF,'
       '  SUM(IFNULL(d.NORMAT, 0)) AS NORMATF,'
       '  SUM(IFNULL(d.ZP, 0)) AS ZPF,'
       '  SUM(IFNULL(d.EMiM, 0)) AS EMiMF,'
@@ -680,15 +734,24 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  GEN_PODRF =  IF(:GEN_PODR=GEN_PODR, NULL, :GEN_PODR),'
       '  ZP_PRF =  IF(:ZP_PR=ZP_PR, NULL, :ZP_PR),'
       '  FZPF  =  IF(:FZP=FZP, NULL, :FZP),'
-      ' TRAVELF  =  IF(:TRAVEL=TRAVEL, NULL, :TRAVEL),'
+      '  TRAVELF  =  IF(:TRAVEL=TRAVEL, NULL, :TRAVEL),'
       
-        ' TRAVEL_WORKF  =  IF(TRAVEL_WORK=TRAVEL_WORK, NULL, :TRAVEL_WORK' +
-        '),'
+        '  TRAVEL_WORKF  =  IF(TRAVEL_WORK=TRAVEL_WORK, NULL, :TRAVEL_WOR' +
+        'K),'
       
-        ' WORKER_DEPARTMENTF  =  IF(:WORKER_DEPARTMENT=WORKER_DEPARTMENT,' +
-        ' NULL, :WORKER_DEPARTMENT),'
-      ' NORMATF = IF(:NORMAT=NORMAT, NULL, :NORMAT),'
-      ' SiF = IF(:Si=Si, NULL, :Si)'
+        '  WORKER_DEPARTMENTF  =  IF(:WORKER_DEPARTMENT=WORKER_DEPARTMENT' +
+        ', NULL, :WORKER_DEPARTMENT),'
+      '  NORMATF = IF(:NORMAT=NORMAT, NULL, :NORMAT),'
+      '  SiF = IF(:Si=Si, NULL, :Si),'
+      '  OTHERF = IF(:OTHER=OTHER, NULL, :OTHER),'
+      
+        '  TRANSP_DEVICE_ZAKF = IF(:TRANSP_DEVICE_ZAK=TRANSP_DEVICE_ZAK, ' +
+        'NULL, :TRANSP_DEVICE_ZAK),'
+      
+        '  MR_DEVICE_ZAKF = IF(:MR_DEVICE_ZAK=MR_DEVICE_ZAK, NULL, :MR_DE' +
+        'VICE_ZAK),'
+      '  TRANSP_ZAKF = IF(:TRANSP_ZAK=TRANSP_ZAK, NULL, :TRANSP_ZAK),'
+      '  MAT_ZAKF = IF(:MAT_ZAK=MAT_ZAK, NULL, :MAT_ZAK)'
       'WHERE   SM_ID = :id_estimate;')
     Left = 32
     Top = 160
