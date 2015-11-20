@@ -773,7 +773,10 @@ begin
 
       mLogInClick(nil);
       if G_USER_ID = 0 then
+      begin
+        PostMessage(Handle, WM_QUIT, 0, 0);
         Exit;
+      end;
 
       // Загрузка справочников
       FormWaiting.Height := 110;

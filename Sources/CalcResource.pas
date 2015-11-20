@@ -1085,13 +1085,13 @@ begin
     grMechBott.Options := grMechBott.Options - [dgMultiSelect]; }
   case pgc.ActivePageIndex of
     1:
-      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMaterialData.FieldByName('MAT_ID')
+      frmReplace := TfrmReplacement.Create(IDEstimate, 0, 0, qrMaterialData.FieldByName('MAT_ID')
         .AsInteger, 2, False, False);
     2:
-      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrMechData.FieldByName('MECH_ID').AsInteger,
+      frmReplace := TfrmReplacement.Create(IDEstimate, 0, 0, qrMechData.FieldByName('MECH_ID').AsInteger,
         3, False, False);
     3:
-      frmReplace := TfrmReplacement.Create(0, IDEstimate, 0, 0, qrDevices.FieldByName('DEVICE_ID').AsInteger,
+      frmReplace := TfrmReplacement.Create(IDEstimate, 0, 0, qrDevices.FieldByName('DEVICE_ID').AsInteger,
         4, False, False);
   end;
   if Assigned(frmReplace) then

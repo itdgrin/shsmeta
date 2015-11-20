@@ -1967,7 +1967,7 @@ begin
             MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
-                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, FAutoRepArray[i].RTID,
+                frmReplace := TfrmReplacement.Create(IdEstimate, FAutoRepArray[i].RTID,
                   FAutoRepArray[i].ID, 0, 2, False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
@@ -1990,7 +1990,7 @@ begin
             MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
-                frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, FAutoRepArray[i].RTID,
+                frmReplace := TfrmReplacement.Create(IdEstimate, FAutoRepArray[i].RTID,
                   FAutoRepArray[i].ID, 0, 3, False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
@@ -3531,16 +3531,16 @@ begin
 
     for I := Low(CheckColumns) to High(CheckColumns) do
     begin
-      CheckColumns[I].Key := grRatesEx.Columns[I].Visible;
-      CheckColumns[I].Value := grRatesEx.Columns[I].Title.Caption;
+      CheckColumns[I].Key := Grid.Columns[I].Visible;
+      CheckColumns[I].Value := Grid.Columns[I].Title.Caption;
     end;
 
-    R := grRatesEx.CellRect(0, 0);
+    R := Grid.CellRect(0, 0);
     Frm := TfSelectColumn.Create(Application);
     try
       if not IsRectEmpty(R) then
       begin
-        Pt := grRatesEx.ClientToScreen(Point(R.Left, R.Bottom + 1));
+        Pt := Grid.ClientToScreen(Point(R.Left, R.Bottom + 1));
         WorkArea := Screen.MonitorFromWindow(Handle).WorkareaRect;
         if Pt.X + Frm.Width > WorkArea.Right then
           Pt.X := WorkArea.Right - Frm.Width;
@@ -3552,13 +3552,13 @@ begin
       if Frm.ShowModal = mrOk then
       begin
         for I := Low(CheckColumns) to High(CheckColumns) do
-          grRatesEx.Columns[I].Visible := CheckColumns[I].Key;
+          Grid.Columns[I].Visible := CheckColumns[I].Key;
       end;
     finally
       DefaultDialog := Frm.DefaultDialog;
       FreeAndNil(Frm);
     end;
-    Invalidate;
+    Grid.Invalidate;
   end;
 end;
 
@@ -3568,13 +3568,13 @@ var
 begin
   case TMenuItem(Sender).Tag of
     0:
-      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMaterialID.AsInteger, 0, 2,
+      frmReplace := TfrmReplacement.Create(IdEstimate, 0, qrMaterialID.AsInteger, 0, 2,
         False, False);
     1:
-      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrMechanizmID.AsInteger, 0, 3,
+      frmReplace := TfrmReplacement.Create(IdEstimate, 0, qrMechanizmID.AsInteger, 0, 3,
         False, False);
     2:
-      frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, 0, qrDevicesID.AsInteger, 0, 4,
+      frmReplace := TfrmReplacement.Create(IdEstimate, 0, qrDevicesID.AsInteger, 0, 4,
         False, False);
   else
     Exit;
@@ -3731,7 +3731,7 @@ begin
   else
     IdRate := qrRatesExSM_ID.AsInteger;
 
-  frmReplace := TfrmReplacement.Create(IdObject, IdEstimate, IdRate, 0, 0, TMenuItem(Sender).Tag,
+  frmReplace := TfrmReplacement.Create(IdEstimate, IdRate, 0, 0, TMenuItem(Sender).Tag,
     True, False);
 
   try
@@ -4015,7 +4015,8 @@ var
 begin
   TmpSmType := 0;
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' + 'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
+  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' +
+    'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
   qrTemp.Active := True;
   if not qrTemp.Eof then
   begin
@@ -4081,7 +4082,8 @@ begin
     if (Sender as TComponent).Tag in [1, 2] then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (SM_ID = ' +
+      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
+        'FROM smetasourcedata WHERE (SM_ID = ' +
         qrRatesExSM_ID.Value.ToString + ')';
       qrTemp.Active := True;
       if not qrTemp.Eof then
@@ -4097,7 +4099,8 @@ begin
     if (Sender as TComponent).Tag = 3 then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '(PARENT_ID = ' + FIdEstimate.ToString +
+      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
+        '(PARENT_ID = ' + FIdEstimate.ToString +
         ') and (SM_TYPE = 1) and (DELETED = 0)';
       qrTemp.Active := True;
       while not qrTemp.Eof do
@@ -4124,7 +4127,8 @@ begin
       for i := 0 to LocalSmIdList.Count - 1 do
       begin
         SmIdList.Clear;
-        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (PARENT_ID = ' +
+        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
+          'FROM smetasourcedata WHERE (PARENT_ID = ' +
           LocalSmIdList[i].ToString + ') and (DELETED = 0)';
         qrTemp.Active := True;
         while not qrTemp.Eof do
@@ -4373,10 +4377,12 @@ begin
               end;
             -1, -2, -3:
               begin
-                EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '((PARENT_ID = ' +
-                  qrRatesExSM_ID.Value.ToString + ') OR ' + '(SM_ID = ' + qrRatesExSM_ID.Value.ToString +
-                  ') OR ' + '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' + 'PARENT_ID = ' +
-                  qrRatesExSM_ID.Value.ToString + '))) AND ' + '(DELETED = 0)';
+                EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
+                  '((PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
+                  '(SM_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
+                  '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' +
+                   'PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + '))) AND ' +
+                   '(DELETED = 0)';
                 WhereStr := '((ID in (select ID_TABLES from data_row_temp where ' +
                   '(ID_TYPE_DATA = 2) and (SM_ID in (' + EstimStr + ')))) or ' +
                   '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +

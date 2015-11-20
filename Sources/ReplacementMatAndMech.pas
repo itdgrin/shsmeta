@@ -160,7 +160,7 @@ type
     function SpecialCompareStr(AStr1, AStr2: string): Boolean;
     { Private declarations }
   public
-    constructor Create(const AObjectID, AEstimateID, ARateID,
+    constructor Create(const AEstimateID, ARateID,
       AMatMechID, AMatMechSprID: Integer; ADataType: Byte;
       AAdd, AAutoRep: Boolean); reintroduce;
     { Public declarations }
@@ -499,7 +499,7 @@ begin
   DefaultDraw := True;
 end;
 
-constructor TfrmReplacement.Create(const AObjectID, AEstimateID, ARateID,
+constructor TfrmReplacement.Create(const AEstimateID, ARateID,
   AMatMechID, AMatMechSprID: Integer; ADataType: Byte;
   AAdd, AAutoRep: Boolean);
 begin
@@ -547,7 +547,6 @@ begin
   FYear := 0;
   FRegion := 0;
 
-  FObjectID := AObjectID;
   FEstimateID := AEstimateID;
   FRateID := ARateID;
   FRateStrID := 0;
@@ -601,8 +600,7 @@ end;
 
 procedure TfrmReplacement.FormCreate(Sender: TObject);
 begin
-  inherited;
-  //
+
 end;
 
 //Подгружает информацию по объекту, смете и расценке, если надо
@@ -610,37 +608,49 @@ procedure TfrmReplacement.LoadObjEstInfo;
 begin
   qrRep.Active := False;
 
-  if FObjectID > 0 then
-    qrRep.SQL.Text := 'SELECT ob.region_id, reg.region_name, ob.NAME ' +
-      'FROM objcards as ob, regions as reg ' +
-      'WHERE (ob.region_id = reg.region_id) and ' +
-      '(ob.obj_id = ' + IntToStr(FObjectID) + ');'
-  else
-    qrRep.SQL.Text := 'SELECT ob.region_id, reg.region_name, ob.NAME ' +
+  if FEstimateID > 0 then
+    qrRep.SQL.Text := 'SELECT ob.region_id, reg.region_name, ob.NAME, ob.obj_id ' +
       'FROM objcards as ob, regions as reg ' +
       'WHERE (ob.region_id = reg.region_id) and ' +
       '(ob.obj_id = (SELECT obj_id FROM smetasourcedata WHERE sm_id = ' +
-      IntToStr(FEstimateID) + '));';
+      IntToStr(FEstimateID) + '));'
+  else  //Берет первую попавщуюся смету от болды
+    qrRep.SQL.Text := 'SELECT ob.region_id, reg.region_name, ob.NAME, ob.obj_id ' +
+      'FROM objcards as ob, regions as reg ' +
+      'WHERE (ob.region_id = reg.region_id) and ' +
+      '(ob.obj_id = (SELECT obj_id FROM smetasourcedata WHERE ' +
+        'sm_id = (Select sm_id from data_row_temp limit 1)));';
+
   qrRep.Active := True;
   if not qrRep.IsEmpty then
   begin
     FRegion := qrRep.Fields[0].AsInteger;
     FRegionName := qrRep.Fields[1].AsString;
     FObjectName := qrRep.Fields[2].AsString;
+    FObjectID := qrRep.Fields[3].AsInteger;
   end;
   qrRep.Active := False;
 
-  qrRep.SQL.Text := 'SELECT IFNULL(monat,0) as monat, ' +
-    'IFNULL(year,0) as year, CONCAT(SM_NUMBER, " ",  NAME) as SMNAME ' +
-    'FROM smetasourcedata ' +
-    'LEFT JOIN stavka ON stavka.stavka_id = smetasourcedata.stavka_id ' +
-    'WHERE sm_id = ' + IntToStr(FEstimateID) + ';';
+  if FEstimateID > 0 then
+    qrRep.SQL.Text := 'SELECT IFNULL(monat,0) as monat, ' +
+      'IFNULL(year,0) as year, CONCAT(SM_NUMBER, " ",  NAME) as SMNAME ' +
+      'FROM smetasourcedata ' +
+      'LEFT JOIN stavka ON stavka.stavka_id = smetasourcedata.stavka_id ' +
+      'WHERE sm_id = ' + IntToStr(FEstimateID) + ';'
+  else
+    qrRep.SQL.Text := 'SELECT IFNULL(monat,0) as monat, ' +
+      'IFNULL(year,0) as year, CONCAT(SM_NUMBER, " ",  NAME) as SMNAME ' +
+      'FROM smetasourcedata ' +
+      'LEFT JOIN stavka ON stavka.stavka_id = smetasourcedata.stavka_id ' +
+      'WHERE sm_id = (Select sm_id from data_row_temp limit 1);';
+
   qrRep.Active := True;
   if not qrRep.IsEmpty then
   begin
     FMonth := qrRep.Fields[0].AsInteger;
     FYear := qrRep.Fields[1].AsInteger;
-    FEstimateName := qrRep.Fields[2].AsString;
+    if FEstimateID > 0 then
+      FEstimateName := qrRep.Fields[2].AsString;
   end;
   qrRep.Active := False;
 
@@ -840,7 +850,7 @@ begin
   WhereStr := '';
 
   //Поиск по смете
-  if (FEstimateName <> '') then
+  if (FEstimateID > 0) then
   begin
     groupEntry.Caption := ' Вхождения в ' + FEstimateName + ':';
     WhereStr := ' AND ((SM.SM_ID = ' + FEstimateID.ToString + ') OR ' +
@@ -1290,11 +1300,11 @@ begin
     2:
     begin
       tmp := (edtSourceName.Tag = 1) or FAddMode;
-      Frame := TSprMaterial.Create(Self, True, False,
+      Frame := TSprMaterial.Create(Self, False, False,
         EncodeDate(FYear, FMonth, 1), FRegion, tmp, not tmp);
     end;
     //Механизмы
-    3: Frame := TSprMechanizm.Create(Self, True, False,
+    3: Frame := TSprMechanizm.Create(Self, False, False,
         EncodeDate(FYear, FMonth, 1));
     //Оборудование
     4: Frame := TSprEquipment.Create(Self, True, False);
