@@ -32,6 +32,7 @@ type
   private
     procedure WMUpdateFormStyle(var Mes: TMessage); message WM_UPDATEFORMSTYLE;
     procedure SetStyleForAllComponents(AComponent: TComponent);
+    procedure JvDBGridSelectColumns(Grid: TJvDBGrid; var DefaultDialog: Boolean);
   protected
     HintButton: string; // Подсказка в кнопке на панели
     CaptionButton: string; // Название кнопки на панели
@@ -133,6 +134,8 @@ function FullRemove(ASource: string): Boolean;
 function GetDirDialog(var ADir: string): Boolean;
 
 implementation
+
+uses uSelectColumn;
 
 function GetDirDialog(var ADir: string): Boolean;
 var
@@ -615,9 +618,6 @@ begin
   end;
   DBGrid.Font.Style := TFontStyles(PS.GridFontStyle);
   DBGrid.TitleFont.Style := TFontStyles(PS.GridFontStyle);
-  // DBGrid.ShowTitleHint := True;
-  DBGrid.SelectColumnsDialogStrings.NoSelectionWarning := 'Должна быть выбрана хотя бы одна колонка!';
-  DBGrid.SelectColumnsDialogStrings.Caption := 'Настройка видимости колонок';
 end;
 
 // Процедури рисования чекбокса на гриде
@@ -828,6 +828,48 @@ begin
     TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL.Append('ORDER BY 1');
 end;
 
+procedure TSmForm.JvDBGridSelectColumns(Grid: TJvDBGrid; var DefaultDialog: Boolean);
+var
+  R, WorkArea: TRect;
+  Frm: TfSelectColumn;
+  Pt: TPoint;
+  CheckColumns: TCheckColumnArray;
+  I: Integer;
+begin
+  SetLength(CheckColumns, Grid.Columns.Count);
+
+  for I := Low(CheckColumns) to High(CheckColumns) do
+  begin
+    CheckColumns[I].Key := Grid.Columns[I].Visible;
+    CheckColumns[I].Value := Grid.Columns[I].Title.Caption;
+  end;
+
+  R := Grid.CellRect(0, 0);
+  Frm := TfSelectColumn.Create(Application);
+  try
+    if not IsRectEmpty(R) then
+    begin
+      Pt := Grid.ClientToScreen(System.Classes.Point(R.Left, R.Bottom + 1));
+      WorkArea := Screen.MonitorFromWindow(Handle).WorkareaRect;
+      if Pt.X + Frm.Width > WorkArea.Right then
+        Pt.X := WorkArea.Right - Frm.Width;
+      if Pt.Y + Frm.Height > WorkArea.Bottom then
+        Pt.Y := WorkArea.Bottom - Frm.Height;
+      Frm.SetBounds(Pt.X, Pt.Y, Frm.Width, Frm.Height);
+    end;
+    Frm.Columns := CheckColumns;
+    if Frm.ShowModal = mrOk then
+    begin
+      for I := Low(CheckColumns) to High(CheckColumns) do
+        Grid.Columns[I].Visible := CheckColumns[I].Key;
+    end;
+  finally
+    DefaultDialog := Frm.DefaultDialog;
+    FreeAndNil(Frm);
+  end;
+  Grid.Invalidate;
+end;
+
 procedure TSmForm.DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
   State: TGridDrawState);
 var
@@ -960,6 +1002,8 @@ begin
       TJvDBGrid(AComponent).OnDrawColumnCell := DrawColumnCell;
     if not Assigned(TJvDBGrid(AComponent).OnResize) then
       TJvDBGrid(AComponent).OnResize := GridResize;
+    if not Assigned(TJvDBGrid(AComponent).OnSelectColumns) then
+      TJvDBGrid(AComponent).OnSelectColumns := JvDBGridSelectColumns;
     if not(Assigned(TJvDBGrid(AComponent).OnTitleBtnClick)) and (dgTitleClick in TJvDBGrid(AComponent).Options)
     then
       TJvDBGrid(AComponent).OnTitleBtnClick := TitleBtnClick;
