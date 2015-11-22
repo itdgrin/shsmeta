@@ -467,6 +467,22 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Title.Caption = #1055#1088#1086#1095#1080#1077
         Width = 100
         Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'TRANSP_DUMP'
+        Title.Alignment = taCenter
+        Title.Caption = #1055#1077#1088#1077#1074#1086#1079#1082#1072' '#1084#1091#1089#1086#1088#1072' '#1057'310/'#1057'311'
+        Width = 100
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'TRANSP_CARGO'
+        Title.Alignment = taCenter
+        Title.Caption = #1055#1077#1088#1077#1074#1086#1079#1082#1072' '#1075#1088#1091#1079#1086#1074' '#1057'310/'#1057'311'
+        Width = 100
+        Visible = True
       end>
   end
   object qrData: TFDQuery
@@ -488,8 +504,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         SourceDataType = dtFmtBCD
         TargetDataType = dtDouble
       end>
-    FormatOptions.FmtDisplayNumeric = '### ### ### ##0.##'
-    FormatOptions.FmtEditNumeric = '########################.########'
+    FormatOptions.FmtDisplayNumeric = '### ### ### ##0.####'
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvCheckReadOnly]
     UpdateOptions.EnableDelete = False
     UpdateOptions.EnableInsert = False
@@ -555,7 +570,11 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         '  SUM(IFNULL(d.TRANSP_DEVICE_ZAKF, d.TRANSP_DEVICE_ZAK)) AS TRAN' +
         'SP_DEVICE_ZAK,'
       '  SUM(IFNULL(d.OTHERF, d.OTHER)) AS OTHER,'
+      '  SUM(IFNULL(d.TRANSP_DUMPF, d.TRANSP_DUMP)) AS TRANSP_DUMP,'
+      '  SUM(IFNULL(d.TRANSP_CARGOF, d.TRANSP_CARGO)) AS TRANSP_CARGO,'
       ''
+      '  SUM(IFNULL(d.TRANSP_CARGO, 0)) AS TRANSP_CARGOF,'
+      '  SUM(IFNULL(d.TRANSP_DUMP, 0)) AS TRANSP_DUMPF,'
       '  SUM(IFNULL(d.OTHER, 0)) AS OTHERF,'
       '  SUM(IFNULL(d.TRANSP_DEVICE_ZAK, 0)) AS TRANSP_DEVICE_ZAKF,'
       '  SUM(IFNULL(d.MR_DEVICE_ZAK, 0)) AS MR_DEVICE_ZAKF,'
@@ -751,7 +770,13 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         '  MR_DEVICE_ZAKF = IF(:MR_DEVICE_ZAK=MR_DEVICE_ZAK, NULL, :MR_DE' +
         'VICE_ZAK),'
       '  TRANSP_ZAKF = IF(:TRANSP_ZAK=TRANSP_ZAK, NULL, :TRANSP_ZAK),'
-      '  MAT_ZAKF = IF(:MAT_ZAK=MAT_ZAK, NULL, :MAT_ZAK)'
+      '  MAT_ZAKF = IF(:MAT_ZAK=MAT_ZAK, NULL, :MAT_ZAK),'
+      
+        '  TRANSP_CARGOF = IF(:TRANSP_CARGO=TRANSP_CARGO, NULL, :TRANSP_C' +
+        'ARGO),'
+      
+        '  TRANSP_DUMPF = IF(:TRANSP_DUMP=TRANSP_DUMP, NULL, :TRANSP_DUMP' +
+        ')'
       'WHERE   SM_ID = :id_estimate;')
     Left = 32
     Top = 160
