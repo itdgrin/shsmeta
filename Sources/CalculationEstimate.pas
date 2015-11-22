@@ -687,8 +687,7 @@ type
     procedure dsRatesExDataChange(Sender: TObject; Field: TField);
     procedure PMRenumPTMClick(Sender: TObject);
     procedure PMMatManPriceClick(Sender: TObject);
-    procedure grRatesExSelectColumns(Grid: TJvDBGrid;
-      var DefaultDialog: Boolean);
+    procedure grRatesExSelectColumns(Grid: TJvDBGrid; var DefaultDialog: Boolean);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта субподрядчика');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -1437,7 +1436,6 @@ begin
     end;
   finally
     DM.Read.Options.AutoCommit := AutoCommitValue;
-
     qrRatesEx.EnableControls;
     qrRatesEx.AfterScroll := e;
     CloseOpen(qrRatesEx);
@@ -1543,7 +1541,8 @@ begin
 
   // EditWinterPrice.Left := lblWinterPrice.Left + lblWinterPrice.Width + 6;
   EditWinterPrice.Width := newWith;
-  btnWinterPriceSelect.Left := EditWinterPrice.Left + EditWinterPrice.Width - 4 {- btnWinterPriceSelect.Width};
+  btnWinterPriceSelect.Left := EditWinterPrice.Left + EditWinterPrice.Width -
+    4 { - btnWinterPriceSelect.Width };
 end;
 
 procedure TFormCalculationEstimate.PanelCalculationYesNoClick(Sender: TObject);
@@ -1967,8 +1966,8 @@ begin
             MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
-                frmReplace := TfrmReplacement.Create(IdEstimate, FAutoRepArray[i].RTID,
-                  FAutoRepArray[i].ID, 0, 2, False, True);
+                frmReplace := TfrmReplacement.Create(IdEstimate, FAutoRepArray[i].RTID, FAutoRepArray[i].ID,
+                  0, 2, False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
                   begin
@@ -1990,8 +1989,8 @@ begin
             MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
             mrOk:
               begin
-                frmReplace := TfrmReplacement.Create(IdEstimate, FAutoRepArray[i].RTID,
-                  FAutoRepArray[i].ID, 0, 3, False, True);
+                frmReplace := TfrmReplacement.Create(IdEstimate, FAutoRepArray[i].RTID, FAutoRepArray[i].ID,
+                  0, 3, False, True);
                 try
                   if (frmReplace.ShowModal = mrYes) then
                   begin
@@ -2028,11 +2027,8 @@ begin
   Result := False;
   // Вынесенные из расценки // или замененный
   if ((qrMaterialFROM_RATE.AsInteger = 1) and (qrRatesExID_TYPE_DATA.AsInteger = 1)) or
-     (qrMaterialREPLACED.AsInteger = 1) or
-     (qrMaterialDELETED.AsInteger = 1) or
-     (qrMaterialTITLE.AsInteger > 0) or
-     not(qrMaterialID.AsInteger > 0) or
-     (qrMaterial.Eof) then
+    (qrMaterialREPLACED.AsInteger = 1) or (qrMaterialDELETED.AsInteger = 1) or (qrMaterialTITLE.AsInteger > 0)
+    or not(qrMaterialID.AsInteger > 0) or (qrMaterial.Eof) then
     Result := True;
 end;
 
@@ -2044,26 +2040,28 @@ end;
 
 // включение режима расширенного редактирования оборудования
 procedure TFormCalculationEstimate.SetDevEditMode;
-var I: Integer;
+var
+  i: Integer;
 begin
-  for I := 0 to dbgrdDevices.Columns.Count - 1 do
-    if (dbgrdDevices.Columns[I].FieldName.ToUpper = 'DEVICE_NAME') or
-       (dbgrdDevices.Columns[I].FieldName.ToUpper = 'NDS') then
-      dbgrdDevices.Columns[I].ReadOnly := False;
+  for i := 0 to dbgrdDevices.Columns.Count - 1 do
+    if (dbgrdDevices.Columns[i].FieldName.ToUpper = 'DEVICE_NAME') or
+      (dbgrdDevices.Columns[i].FieldName.ToUpper = 'NDS') then
+      dbgrdDevices.Columns[i].ReadOnly := False;
 
   dbmmoRight.Color := $00AFFEFC;
   dbmmoRight.ReadOnly := False;
 end;
 
 procedure TFormCalculationEstimate.SetDevNoEditMode;
-var I: Integer;
+var
+  i: Integer;
 begin
   if not dbmmoRight.ReadOnly then
   begin
-    for I := 0 to dbgrdDevices.Columns.Count - 1 do
-    if (dbgrdDevices.Columns[I].FieldName.ToUpper = 'DEVICE_NAME') or
-       (dbgrdDevices.Columns[I].FieldName.ToUpper = 'NDS') then
-      dbgrdDevices.Columns[I].ReadOnly := True;
+    for i := 0 to dbgrdDevices.Columns.Count - 1 do
+      if (dbgrdDevices.Columns[i].FieldName.ToUpper = 'DEVICE_NAME') or
+        (dbgrdDevices.Columns[i].FieldName.ToUpper = 'NDS') then
+        dbgrdDevices.Columns[i].ReadOnly := True;
 
     dbmmoRight.Color := clWindow;
     dbmmoRight.ReadOnly := True;
@@ -2072,20 +2070,21 @@ end;
 
 // включение режима расширенного редактирования материалов
 procedure TFormCalculationEstimate.SetMatEditMode;
-var I: Integer;
+var
+  i: Integer;
 begin
   if CheckMatReadOnly then
     Exit;
 
-  for I := 0 to dbgrdMaterial.Columns.Count - 1 do
-    if (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'MAT_NAME') or
-       (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'MAT_NORMA') or
-       (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'MAT_COUNT') or
-       (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'COAST_NDS') or
-       (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'COAST_NO_NDS') or
-       (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'PROC_TRANSP') or
-       (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'NDS') then
-      dbgrdMaterial.Columns[I].ReadOnly := False;
+  for i := 0 to dbgrdMaterial.Columns.Count - 1 do
+    if (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_NAME') or
+      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_NORMA') or
+      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_COUNT') or
+      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'COAST_NDS') or
+      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or
+      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'PROC_TRANSP') or
+      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'NDS') then
+      dbgrdMaterial.Columns[i].ReadOnly := False;
 
   dbmmoRight.Color := $00AFFEFC;
   dbmmoRight.ReadOnly := False;
@@ -2093,19 +2092,20 @@ end;
 
 // отключение режима расширенного редактирования материалов
 procedure TFormCalculationEstimate.SetMatNoEditMode;
-var I: Integer;
+var
+  i: Integer;
 begin
   if not dbmmoRight.ReadOnly then
   begin
-    for I := 0 to dbgrdMaterial.Columns.Count - 1 do
-      if (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'MAT_NAME') or
-         (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'MAT_NORMA') or
-         (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'MAT_COUNT') or
-         (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'COAST_NDS') or
-         (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'COAST_NO_NDS') or
-         (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'PROC_TRANSP') or
-         (dbgrdMaterial.Columns[I].FieldName.ToUpper = 'NDS') then
-        dbgrdMaterial.Columns[I].ReadOnly := True;
+    for i := 0 to dbgrdMaterial.Columns.Count - 1 do
+      if (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_NAME') or
+        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_NORMA') or
+        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_COUNT') or
+        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'COAST_NDS') or
+        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or
+        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'PROC_TRANSP') or
+        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'NDS') then
+        dbgrdMaterial.Columns[i].ReadOnly := True;
 
     dbmmoRight.Color := clWindow;
     dbmmoRight.ReadOnly := True;
@@ -2194,8 +2194,7 @@ begin
 
       if (CField = 'MAT_NAME') then
       begin
-        qrTemp.SQL.Text := 'UPDATE materialcard_temp set ' +
-          'MAT_NAME=:MAT_NAME WHERE ID=:ID;';
+        qrTemp.SQL.Text := 'UPDATE materialcard_temp set ' + 'MAT_NAME=:MAT_NAME WHERE ID=:ID;';
         qrTemp.ParamByName('ID').Value := qrMaterialID.AsInteger;
         qrTemp.ParamByName('MAT_NAME').Value := CValue;
         qrTemp.ExecSQL;
@@ -2635,8 +2634,7 @@ begin
 
       if (CField = 'MECH_NAME') then
       begin
-        qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set ' +
-          'MECH_NAME=:MECH_NAME WHERE ID=:ID;';
+        qrTemp.SQL.Text := 'UPDATE mechanizmcard_temp set ' + 'MECH_NAME=:MECH_NAME WHERE ID=:ID;';
         qrTemp.ParamByName('ID').Value := qrMechanizmID.Value;
         qrTemp.ParamByName('MECH_NAME').Value := CValue;
         qrTemp.ExecSQL;
@@ -2991,8 +2989,8 @@ begin
   tmRate.Enabled := True;
 
   // для поля ввода ставит курсор на пользовательский номер
-  //if qrRatesExID_TYPE_DATA.Value = -4 then
-  //  grRatesEx.Col := 2;
+  // if qrRatesExID_TYPE_DATA.Value = -4 then
+  // grRatesEx.Col := 2;
 end;
 
 procedure TFormCalculationEstimate.qrRatesExBeforeScroll(DataSet: TDataSet);
@@ -3012,9 +3010,8 @@ begin
     end;
   end;
 
-  if (qrRatesExID_TYPE_DATA.Value = -4) and
-     ((qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) or
-      (qrRatesExOBJ_CODE.AsVariant <> Null)) then
+  if (qrRatesExID_TYPE_DATA.Value = -4) and ((qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) or
+    (qrRatesExOBJ_CODE.AsVariant <> Null)) then
   begin
     qrRatesEx.Edit;
     qrRatesExNOM_ROW_MANUAL.AsVariant := Null;
@@ -3181,11 +3178,9 @@ begin
     Exit;
   end;
 
-  //перевозка грузов и мусора
-  if (Length(NewCode) >= 4) and
-     ((NewCode[1] = 'С') or (NewCode[1] = 'C')) and
-     ((Copy(NewCode, 2, 3) = '310') or
-      (Copy(NewCode, 2, 3) = '311')) then
+  // перевозка грузов и мусора
+  if (Length(NewCode) >= 4) and ((NewCode[1] = 'С') or (NewCode[1] = 'C')) and
+    ((Copy(NewCode, 2, 3) = '310') or (Copy(NewCode, 2, 3) = '311')) then
   begin
     if (Copy(NewCode, 2, 3) = '310') then
     begin
@@ -3208,9 +3203,8 @@ begin
     Exit;
   end;
 
-  //перевозка грузов и мусора
-  if (Length(NewCode) >= 2) and
-     (Copy(NewCode, 1, 2) = 'БС') then
+  // перевозка грузов и мусора
+  if (Length(NewCode) >= 2) and (Copy(NewCode, 1, 2) = 'БС') then
   begin
     qrRatesExOBJ_CODE.AsString := '';
     grRatesEx.EditorMode := True;
@@ -3516,23 +3510,22 @@ begin
   (Sender as TJvDBGrid).DataSource.DataSet.CheckBrowseMode;
 end;
 
-procedure TFormCalculationEstimate.grRatesExSelectColumns(Grid: TJvDBGrid;
-  var DefaultDialog: Boolean);
+procedure TFormCalculationEstimate.grRatesExSelectColumns(Grid: TJvDBGrid; var DefaultDialog: Boolean);
 var
   R, WorkArea: TRect;
   Frm: TfSelectColumn;
   Pt: TPoint;
   CheckColumns: TCheckColumnArray;
-  I: Integer;
+  i: Integer;
 begin
   if grRatesEx.Columns.Count >= 5 then
   begin
     SetLength(CheckColumns, 5);
 
-    for I := Low(CheckColumns) to High(CheckColumns) do
+    for i := Low(CheckColumns) to High(CheckColumns) do
     begin
-      CheckColumns[I].Key := Grid.Columns[I].Visible;
-      CheckColumns[I].Value := Grid.Columns[I].Title.Caption;
+      CheckColumns[i].Key := Grid.Columns[i].Visible;
+      CheckColumns[i].Value := Grid.Columns[i].Title.Caption;
     end;
 
     R := Grid.CellRect(0, 0);
@@ -3551,8 +3544,8 @@ begin
       Frm.Columns := CheckColumns;
       if Frm.ShowModal = mrOk then
       begin
-        for I := Low(CheckColumns) to High(CheckColumns) do
-          Grid.Columns[I].Visible := CheckColumns[I].Key;
+        for i := Low(CheckColumns) to High(CheckColumns) do
+          Grid.Columns[i].Visible := CheckColumns[i].Key;
       end;
     finally
       DefaultDialog := Frm.DefaultDialog;
@@ -3568,14 +3561,11 @@ var
 begin
   case TMenuItem(Sender).Tag of
     0:
-      frmReplace := TfrmReplacement.Create(IdEstimate, 0, qrMaterialID.AsInteger, 0, 2,
-        False, False);
+      frmReplace := TfrmReplacement.Create(IdEstimate, 0, qrMaterialID.AsInteger, 0, 2, False, False);
     1:
-      frmReplace := TfrmReplacement.Create(IdEstimate, 0, qrMechanizmID.AsInteger, 0, 3,
-        False, False);
+      frmReplace := TfrmReplacement.Create(IdEstimate, 0, qrMechanizmID.AsInteger, 0, 3, False, False);
     2:
-      frmReplace := TfrmReplacement.Create(IdEstimate, 0, qrDevicesID.AsInteger, 0, 4,
-        False, False);
+      frmReplace := TfrmReplacement.Create(IdEstimate, 0, qrDevicesID.AsInteger, 0, 4, False, False);
   else
     Exit;
   end;
@@ -3731,8 +3721,7 @@ begin
   else
     IdRate := qrRatesExSM_ID.AsInteger;
 
-  frmReplace := TfrmReplacement.Create(IdEstimate, IdRate, 0, 0, TMenuItem(Sender).Tag,
-    True, False);
+  frmReplace := TfrmReplacement.Create(IdEstimate, IdRate, 0, 0, TMenuItem(Sender).Tag, True, False);
 
   try
     if (frmReplace.ShowModal = mrYes) then
@@ -3923,22 +3912,23 @@ end;
 
 // включение режима расширенного редактирования механизма
 procedure TFormCalculationEstimate.SetMechEditMode;
-var I: Integer;
+var
+  i: Integer;
 begin
   if CheckMechReadOnly then
     Exit;
 
-  for I := 0 to dbgrdMechanizm.Columns.Count - 1 do
-    if (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'MECH_NAME') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'MECH_NORMA') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'MECH_COUNT') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'COAST_NDS') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'COAST_NO_NDS') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'ZP_MACH_NDS') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'ZP_MACH_NO_NDS') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'NORMATIV') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'NDS') then
-      dbgrdMechanizm.Columns[I].ReadOnly := False;
+  for i := 0 to dbgrdMechanizm.Columns.Count - 1 do
+    if (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_NAME') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_NORMA') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_COUNT') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'COAST_NDS') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'ZP_MACH_NDS') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'ZP_MACH_NO_NDS') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'NORMATIV') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'NDS') then
+      dbgrdMechanizm.Columns[i].ReadOnly := False;
 
   dbmmoRight.Color := $00AFFEFC;
   dbmmoRight.ReadOnly := False;
@@ -3946,21 +3936,22 @@ end;
 
 // отключение режима расширенного редактирования механизма
 procedure TFormCalculationEstimate.SetMechNoEditMode;
-var I: Integer;
+var
+  i: Integer;
 begin
   if not dbmmoRight.ReadOnly then
   begin
-    for I := 0 to dbgrdMechanizm.Columns.Count - 1 do
-    if (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'MECH_NAME') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'MECH_NORMA') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'MECH_COUNT') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'COAST_NDS') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'COAST_NO_NDS') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'ZP_MACH_NDS') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'ZP_MACH_NO_NDS') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'NORMATIV') or
-       (dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'NDS') then
-      dbgrdMechanizm.Columns[I].ReadOnly := True;
+    for i := 0 to dbgrdMechanizm.Columns.Count - 1 do
+      if (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_NAME') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_NORMA') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_COUNT') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'COAST_NDS') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'ZP_MACH_NDS') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'ZP_MACH_NO_NDS') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'NORMATIV') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'NDS') then
+        dbgrdMechanizm.Columns[i].ReadOnly := True;
 
     dbmmoRight.Color := clWindow;
     dbmmoRight.ReadOnly := True;
@@ -4015,8 +4006,7 @@ var
 begin
   TmpSmType := 0;
   qrTemp.Active := False;
-  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' +
-    'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
+  qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata ' + 'WHERE (SM_ID = ' + FIdEstimate.ToString + ')';
   qrTemp.Active := True;
   if not qrTemp.Eof then
   begin
@@ -4082,8 +4072,7 @@ begin
     if (Sender as TComponent).Tag in [1, 2] then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
-        'FROM smetasourcedata WHERE (SM_ID = ' +
+      qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (SM_ID = ' +
         qrRatesExSM_ID.Value.ToString + ')';
       qrTemp.Active := True;
       if not qrTemp.Eof then
@@ -4099,8 +4088,7 @@ begin
     if (Sender as TComponent).Tag = 3 then
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
-        '(PARENT_ID = ' + FIdEstimate.ToString +
+      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '(PARENT_ID = ' + FIdEstimate.ToString +
         ') and (SM_TYPE = 1) and (DELETED = 0)';
       qrTemp.Active := True;
       while not qrTemp.Eof do
@@ -4127,8 +4115,7 @@ begin
       for i := 0 to LocalSmIdList.Count - 1 do
       begin
         SmIdList.Clear;
-        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' +
-          'FROM smetasourcedata WHERE (PARENT_ID = ' +
+        qrTemp.SQL.Text := 'SELECT SM_ID, SM_TYPE, PARENT_ID ' + 'FROM smetasourcedata WHERE (PARENT_ID = ' +
           LocalSmIdList[i].ToString + ') and (DELETED = 0)';
         qrTemp.Active := True;
         while not qrTemp.Eof do
@@ -4377,12 +4364,10 @@ begin
               end;
             -1, -2, -3:
               begin
-                EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' +
-                  '((PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
-                  '(SM_ID = ' + qrRatesExSM_ID.Value.ToString + ') OR ' +
-                  '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' +
-                   'PARENT_ID = ' + qrRatesExSM_ID.Value.ToString + '))) AND ' +
-                   '(DELETED = 0)';
+                EstimStr := 'SELECT SM_ID FROM smetasourcedata WHERE ' + '((PARENT_ID = ' +
+                  qrRatesExSM_ID.Value.ToString + ') OR ' + '(SM_ID = ' + qrRatesExSM_ID.Value.ToString +
+                  ') OR ' + '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' + 'PARENT_ID = ' +
+                  qrRatesExSM_ID.Value.ToString + '))) AND ' + '(DELETED = 0)';
                 WhereStr := '((ID in (select ID_TABLES from data_row_temp where ' +
                   '(ID_TYPE_DATA = 2) and (SM_ID in (' + EstimStr + ')))) or ' +
                   '(ID_CARD_RATE in (select ID_TABLES from data_row where ' +
@@ -4687,7 +4672,23 @@ begin
       Exit;
     try
       DM.Read.StartTransaction;
-      FastExecSQL('CALL SaveAllDataEstimate(:id_estimate);', VarArrayOf([IdEstimate]));
+      if Act then
+        FastExecSQL('CALL SaveAllDataEstimate(:id_estimate);', VarArrayOf([IdEstimate]))
+      else
+      begin
+        qrTemp.Active := False;
+        qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE OBJ_ID=:OBJ_ID AND SM_TYPE=2';
+        qrTemp.ParamByName('OBJ_ID').Value := IdObject;
+        qrTemp.Active := True;
+        qrTemp.First;
+        while not qrTemp.Eof do
+        begin
+          FastExecSQL('CALL SaveAllDataEstimate(:id_estimate);',
+            VarArrayOf([qrTemp.FieldByName('SM_ID').Value]));
+          qrTemp.Next;
+        end;
+        qrTemp.Active := False;
+      end;
       DM.Read.Commit;
     except
       on e: Exception do
@@ -4729,9 +4730,7 @@ begin
     PMTrPerc5.Enabled := False;
   end;
 
-  if (Pos('С530', TmpCode) > 0) or
-     (Pos('С533', TmpCode) > 0) or
-     (Pos('С544', TmpCode) > 0) then
+  if (Pos('С530', TmpCode) > 0) or (Pos('С533', TmpCode) > 0) or (Pos('С544', TmpCode) > 0) then
   begin
     PMTrPerc2.Enabled := False;
     PMTrPerc4.Enabled := False;
@@ -4941,7 +4940,7 @@ var
   vNormRas: Double;
   Month1, Year1: Integer;
   PriceVAT, PriceNoVAT: string;
-  PT: Real;
+  Pt: Real;
 begin
   if not CheckCursorInRate then
     Exit;
@@ -5026,9 +5025,9 @@ begin
         qrTemp1.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
         qrTemp1.ParamByName('MatCode').Value := FieldByName('MatCode').AsString;
         qrTemp1.Active := True;
-        PT := 0;
+        Pt := 0;
         if not qrTemp1.Eof then
-          PT := qrTemp1.Fields[0].AsFloat;
+          Pt := qrTemp1.Fields[0].AsFloat;
         qrTemp1.Active := False;
 
         qrTemp1.SQL.Text := 'SELECT GetNewID(:IDType)';
@@ -5056,7 +5055,7 @@ begin
         qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
         qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
         qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
-        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := PT;
+        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := Pt;
         qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
         qrTemp1.ExecSQL;
 
@@ -5239,8 +5238,8 @@ begin
   if not CheckCursorInRate then
     Exit;
 
-  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag,
-    FNewRowIterator, FNewNomManual, FTranspDistance, True) then
+  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag, FNewRowIterator, FNewNomManual,
+    FTranspDistance, True) then
   begin
     OutputDataToTable(True);
   end;
@@ -5601,7 +5600,7 @@ begin
   mBaseData.Visible := (qrRatesExID_TYPE_DATA.AsInteger < 0) and (qrRatesExID_TYPE_DATA.AsInteger <> -4) and
     (qrRatesExID_TYPE_DATA.AsInteger <> -5);
   mBaseData.Caption := 'Исходные данные - ' + qrRatesExOBJ_CODE.AsString;
-  //Просто удачное место, что-бы погасить растояние перевозки заданное при ручном вводе
+  // Просто удачное место, что-бы погасить растояние перевозки заданное при ручном вводе
   FTranspDistance := 0;
 end;
 
@@ -5714,9 +5713,8 @@ begin
 
   for i := 0 to dbgrdMaterial.Columns.Count - 1 do
     if (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_NORMA') or
-       (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'KOEFMR') then
-      dbgrdMaterial.Columns[i].Visible :=
-        (qrRatesExID_TYPE_DATA.Value = 1) or
+      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'KOEFMR') then
+      dbgrdMaterial.Columns[i].Visible := (qrRatesExID_TYPE_DATA.Value = 1) or
         ((qrRatesExID_TYPE_DATA.Value = 2) and (qrRatesExID_REPLACED.Value > 0) and
         (qrRatesExCONS_REPLASED.Value = 0));
 
@@ -5788,15 +5786,13 @@ begin
   // Открытие датасета для заполнения таблицы материалов
   qrMechanizm.Active := False;
   // Заполняет Mechanizms_temp
-  qrMechanizm.SQL.Text :=
-    'call GetMechanizms(' + INTTOSTR(fType) + ',' + INTTOSTR(fID) + ',' +
+  qrMechanizm.SQL.Text := 'call GetMechanizms(' + INTTOSTR(fType) + ',' + INTTOSTR(fID) + ',' +
     INTTOSTR(G_SHOWMODE) + ')';
   qrMechanizm.ExecSQL;
 
   qrMechanizm.Active := False;
   // Открывает Mechanizms_temp
-  qrMechanizm.SQL.Text :=
-    'SELECT * FROM mechanizms_temp ORDER BY SRTYPE, TITLE DESC, ID';
+  qrMechanizm.SQL.Text := 'SELECT * FROM mechanizms_temp ORDER BY SRTYPE, TITLE DESC, ID';
   qrMechanizm.Active := True;
   i := 0;
   // Нумерация строк, внутри подгрупп
@@ -5818,7 +5814,7 @@ begin
 
   for i := 0 to dbgrdMechanizm.Columns.Count - 1 do
     if (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_NORMA') or
-       (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'KOEF') then
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'KOEF') then
       dbgrdMechanizm.Columns[i].Visible := (qrRatesExID_TYPE_DATA.AsInteger = 1);
 
   qrMechanizm.First;
@@ -6252,79 +6248,66 @@ begin
 end;
 
 procedure TFormCalculationEstimate.ChangeGrigNDSStyle(aNDS: Boolean);
-var I: Integer;
+var
+  i: Integer;
 begin
   with dbgrdMaterial do
   begin
     // в зависимости от ндс скрывает одни и показывает другие калонки
-    for I := 0 to Columns.Count - 1 do
+    for i := 0 to Columns.Count - 1 do
     begin
-      if (Columns[I].FieldName.ToUpper = 'COAST_NDS') or
-         (Columns[I].FieldName.ToUpper = 'PRICE_NDS') or
-         (Columns[I].FieldName.ToUpper = 'TRANSP_NDS') or
-         (Columns[I].FieldName.ToUpper = 'NDS') or
-         (Columns[I].FieldName.ToUpper = 'FCOAST_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FPRICE_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FTRANSP_NDS') then
-        Columns[I].Visible := aNDS;
+      if (Columns[i].FieldName.ToUpper = 'COAST_NDS') or (Columns[i].FieldName.ToUpper = 'PRICE_NDS') or
+        (Columns[i].FieldName.ToUpper = 'TRANSP_NDS') or (Columns[i].FieldName.ToUpper = 'NDS') or
+        (Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or (Columns[i].FieldName.ToUpper = 'FPRICE_NDS') or
+        (Columns[i].FieldName.ToUpper = 'FTRANSP_NDS') then
+        Columns[i].Visible := aNDS;
 
-      if (Columns[I].FieldName.ToUpper = 'COAST_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'PRICE_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'TRANSP_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FCOAST_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FPRICE_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FTRANSP_NO_NDS') then
-        Columns[I].Visible := not aNDS;
+      if (Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or (Columns[i].FieldName.ToUpper = 'PRICE_NO_NDS') or
+        (Columns[i].FieldName.ToUpper = 'TRANSP_NO_NDS') or (Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS')
+        or (Columns[i].FieldName.ToUpper = 'FPRICE_NO_NDS') or
+        (Columns[i].FieldName.ToUpper = 'FTRANSP_NO_NDS') then
+        Columns[i].Visible := not aNDS;
     end;
   end;
 
   with dbgrdMechanizm do
   begin
-    for I := 0 to Columns.Count - 1 do
+    for i := 0 to Columns.Count - 1 do
     begin
-      if (Columns[I].FieldName.ToUpper = 'MECH_UNIT') then
-        Columns[I].Visible := False;
+      if (Columns[i].FieldName.ToUpper = 'MECH_UNIT') then
+        Columns[i].Visible := False;
 
-      if (Columns[I].FieldName.ToUpper = 'COAST_NDS') or
-         (Columns[I].FieldName.ToUpper = 'PRICE_NDS') or
-         (Columns[I].FieldName.ToUpper = 'ZP_MACH_NDS') or
-         (Columns[I].FieldName.ToUpper = 'ZPPRICE_NDS') or
-         (Columns[I].FieldName.ToUpper = 'NDS') or
-         (Columns[I].FieldName.ToUpper = 'FCOAST_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FPRICE_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FZP_MACH_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FZPPRICE_NDS') then
-        Columns[I].Visible := aNDS;
+      if (Columns[i].FieldName.ToUpper = 'COAST_NDS') or (Columns[i].FieldName.ToUpper = 'PRICE_NDS') or
+        (Columns[i].FieldName.ToUpper = 'ZP_MACH_NDS') or (Columns[i].FieldName.ToUpper = 'ZPPRICE_NDS') or
+        (Columns[i].FieldName.ToUpper = 'NDS') or (Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or
+        (Columns[i].FieldName.ToUpper = 'FPRICE_NDS') or (Columns[i].FieldName.ToUpper = 'FZP_MACH_NDS') or
+        (Columns[i].FieldName.ToUpper = 'FZPPRICE_NDS') then
+        Columns[i].Visible := aNDS;
 
-      if (Columns[I].FieldName.ToUpper = 'COAST_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'PRICE_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'ZP_MACH_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'ZPPRICE_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FCOAST_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FPRICE_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FZPPRICE_NO_NDS') then
-        Columns[I].Visible := not aNDS;
+      if (Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or (Columns[i].FieldName.ToUpper = 'PRICE_NO_NDS') or
+        (Columns[i].FieldName.ToUpper = 'ZP_MACH_NO_NDS') or (Columns[i].FieldName.ToUpper = 'ZPPRICE_NO_NDS')
+        or (Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS') or
+        (Columns[i].FieldName.ToUpper = 'FPRICE_NO_NDS') or (Columns[i].FieldName.ToUpper = 'FZP_MACH_NO_NDS')
+        or (Columns[i].FieldName.ToUpper = 'FZPPRICE_NO_NDS') then
+        Columns[i].Visible := not aNDS;
     end;
   end;
 
   with dbgrdDevices do
   begin
-    for I := 0 to Columns.Count - 1 do
+    for i := 0 to Columns.Count - 1 do
     begin
-      if (Columns[I].FieldName.ToUpper = 'DEVICE_UNIT') then
-        Columns[I].Visible := False;
+      if (Columns[i].FieldName.ToUpper = 'DEVICE_UNIT') then
+        Columns[i].Visible := False;
 
-      if (Columns[I].FieldName.ToUpper = 'FCOAST_NDS') or
-         (Columns[I].FieldName.ToUpper = 'DEVICE_TRANSP_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FPRICE_NDS') or
-         (Columns[I].FieldName.ToUpper = 'NDS') then
-        Columns[I].Visible := aNDS;
+      if (Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or (Columns[i].FieldName.ToUpper = 'DEVICE_TRANSP_NDS')
+        or (Columns[i].FieldName.ToUpper = 'FPRICE_NDS') or (Columns[i].FieldName.ToUpper = 'NDS') then
+        Columns[i].Visible := aNDS;
 
-      if (Columns[I].FieldName.ToUpper = 'FCOAST_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'DEVICE_TRANSP_NO_NDS') or
-         (Columns[I].FieldName.ToUpper = 'FPRICE_NO_NDS') then
-        Columns[I].Visible := not aNDS;
+      if (Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS') or
+        (Columns[i].FieldName.ToUpper = 'DEVICE_TRANSP_NO_NDS') or
+        (Columns[i].FieldName.ToUpper = 'FPRICE_NO_NDS') then
+        Columns[i].Visible := not aNDS;
     end;
   end;
 
@@ -6586,20 +6569,33 @@ begin
   GetMonthYearCalculationEstimate;
   GetSourceData; // Выводим информациию об исходных данных сметы
   try
-    with qrTemp do
+    if Act then
     begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('CALL OpenAllDataEstimate(:IdEstimate);');
-      ParamByName('IdEstimate').Value := IdEstimate;
       try
-        ExecSQL;
+        FastExecSQL('CALL OpenAllDataEstimate(:IdEstimate);', VarArrayOf([IdEstimate]));
       except
-        qrTemp.SQL.Text := 'SELECT @sql as QR;';
-        qrTemp.Active := True;
-        ShowMessage(qrTemp.FieldByName('QR').AsString);
+        ShowMessage(FastSelectSQLOne('SELECT @sql as QR;', VarArrayOf([])));
       end;
-      Active := False;
+    end
+    // Если открываем смету, то открываем весь объект
+    else
+    begin
+      qrTemp.Active := False;
+      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE OBJ_ID=:OBJ_ID AND SM_TYPE=2 AND ACT=0';
+      qrTemp.ParamByName('OBJ_ID').Value := IdObject;
+      qrTemp.Active := True;
+      qrTemp.First;
+      while not qrTemp.Eof do
+      begin
+        try
+          FastExecSQL('CALL OpenAllDataEstimate(:IdEstimate);',
+            VarArrayOf([qrTemp.FieldByName('SM_ID').Value]));
+        except
+          ShowMessage(FastSelectSQLOne('SELECT @sql as QR;', VarArrayOf([])));
+        end;
+        qrTemp.Next;
+      end;
+      qrTemp.Active := False;
     end;
   except
     on e: Exception do
@@ -6980,8 +6976,8 @@ end;
 procedure TFormCalculationEstimate.dbgrdDevicesDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
-  if ((Sender as TJvDBGrid).MaxColumnWidth > 0) and
-     (Column.Width >= (Sender as TJvDBGrid).MaxColumnWidth) then
+  if ((Sender as TJvDBGrid).MaxColumnWidth > 0) and (Column.Width >= (Sender as TJvDBGrid).MaxColumnWidth)
+  then
     Column.Width := (Sender as TJvDBGrid).MaxColumnWidth - 1;
 
   with (Sender as TJvDBGrid).Canvas do
@@ -6996,8 +6992,7 @@ begin
     // Подсветка полей стоимости
     if (Sender as TJvDBGrid).Name = 'dbgrdTransp' then
     begin
-      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or
-         (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
+      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
         Brush.Color := $00FBFEBC;
     end
     else if (Sender as TJvDBGrid).Name = 'dbgrdTransp' then
@@ -7049,23 +7044,20 @@ end;
 
 procedure TFormCalculationEstimate.dbgrdMaterialCanEditCell(Grid: TJvDBGrid; Field: TField;
   var AllowEdit: Boolean);
-var I: Integer;
+var
+  i: Integer;
 begin
   // Перечень полей которые можно редактировать всегда
-  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or
-     (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
-     (Field.FieldName.ToUpper = 'FTRANSP_NDS') or
-     (Field.FieldName.ToUpper = 'FTRANSP_NO_NDS') or
-     (Field.FieldName.ToUpper = 'MAT_PROC_PODR') or
-     (Field.FieldName.ToUpper = 'MAT_PROC_ZAC') or
-     (Field.FieldName.ToUpper = 'TRANSP_PROC_PODR') or
-     (Field.FieldName.ToUpper = 'TRANSP_PROC_ZAC') then
+  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
+    (Field.FieldName.ToUpper = 'FTRANSP_NDS') or (Field.FieldName.ToUpper = 'FTRANSP_NO_NDS') or
+    (Field.FieldName.ToUpper = 'MAT_PROC_PODR') or (Field.FieldName.ToUpper = 'MAT_PROC_ZAC') or
+    (Field.FieldName.ToUpper = 'TRANSP_PROC_PODR') or (Field.FieldName.ToUpper = 'TRANSP_PROC_ZAC') then
     Exit;
-  //Просто одно из полей (норма), что-бы понять включен ли режим редактирования
-  for I := 0 to dbgrdMaterial.Columns.Count - 1 do
-    if dbgrdMaterial.Columns[I].FieldName.ToUpper = 'MAT_NORMA' then
+  // Просто одно из полей (норма), что-бы понять включен ли режим редактирования
+  for i := 0 to dbgrdMaterial.Columns.Count - 1 do
+    if dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_NORMA' then
     begin
-      AllowEdit := not dbgrdMaterial.Columns[I].ReadOnly;
+      AllowEdit := not dbgrdMaterial.Columns[i].ReadOnly;
       Break;
     end;
 end;
@@ -7075,9 +7067,9 @@ procedure TFormCalculationEstimate.dbgrdMaterialDrawColumnCell(Sender: TObject; 
 var
   Str: string;
 begin
-  //Преодоление глюка
-  if ((Sender as TJvDBGrid).MaxColumnWidth > 0) and
-     (Column.Width >= (Sender as TJvDBGrid).MaxColumnWidth) then
+  // Преодоление глюка
+  if ((Sender as TJvDBGrid).MaxColumnWidth > 0) and (Column.Width >= (Sender as TJvDBGrid).MaxColumnWidth)
+  then
     Column.Width := (Sender as TJvDBGrid).MaxColumnWidth - 1;
 
   // Порядок строчек очень важен для данной процедуры
@@ -7091,22 +7083,18 @@ begin
       Brush.Color := $00F0F0FF;
 
     // Подсветка полей стоимости
-    if (Column.FieldName.ToUpper = 'PRICE_NDS') or
-       (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or
-       (Column.FieldName.ToUpper = 'FPRICE_NDS') or
-       (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
+    if (Column.FieldName.ToUpper = 'PRICE_NDS') or (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or
+      (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
     begin
       // Та стоимость которая используется в расчете подсвечивается берюзовым
       // другая серым
-      if (Column.FieldName.ToUpper = 'PRICE_NDS') or
-         (Column.FieldName.ToUpper = 'PRICE_NO_NDS') then
+      if (Column.FieldName.ToUpper = 'PRICE_NDS') or (Column.FieldName.ToUpper = 'PRICE_NO_NDS') then
         if (qrMaterialFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00DDDDDD
         else
           Brush.Color := $00FBFEBC;
 
-      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or
-         (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
+      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
         if (qrMaterialFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00FBFEBC
         else
@@ -7114,11 +7102,9 @@ begin
     end;
 
     // Подсветка красным пустых значений  норма, цена и %трансп
-    if ((Column.FieldName.ToUpper = 'MAT_NORMA') or
-       (Column.FieldName.ToUpper = 'COAST_NDS') or
-       (Column.FieldName.ToUpper = 'COAST_NO_NDS') or
-       (Column.FieldName.ToUpper = 'PROC_TRANSP')) and
-       (Column.Field.AsInteger = 0) then
+    if ((Column.FieldName.ToUpper = 'MAT_NORMA') or (Column.FieldName.ToUpper = 'COAST_NDS') or
+      (Column.FieldName.ToUpper = 'COAST_NO_NDS') or (Column.FieldName.ToUpper = 'PROC_TRANSP')) and
+      (Column.Field.AsInteger = 0) then
     begin
       Brush.Color := $008080FF;
     end;
@@ -7134,8 +7120,7 @@ begin
     end;
 
     // Подсветка зеленым фактических транспортных расходов в режиме ручного ввода
-    if (Column.FieldName.ToUpper = 'FTRANSP_NDS') or
-       (Column.FieldName.ToUpper = 'FTRANSP_NO_NDS') then
+    if (Column.FieldName.ToUpper = 'FTRANSP_NDS') or (Column.FieldName.ToUpper = 'FTRANSP_NO_NDS') then
     begin
       if qrMaterialFTRANSCOUNT.Value > 0 then
       begin
@@ -7167,14 +7152,11 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (FIdReplasedMat > 0) and
-       (qrMaterialID.Value = FIdReplasedMat) and
-       (dbgrdMaterial = FLastEntegGrd) then
+    if (FIdReplasedMat > 0) and (qrMaterialID.Value = FIdReplasedMat) and (dbgrdMaterial = FLastEntegGrd) then
       Font.Style := Font.Style + [fsBold];
 
     // Подсветка замененяющего материала
-    if (FIdReplasingMat > 0) and
-       (FIdReplasingMat = qrMaterialID_REPLACED.Value) and
+    if (FIdReplasingMat > 0) and (FIdReplasingMat = qrMaterialID_REPLACED.Value) and
       (dbgrdMaterial = FLastEntegGrd) then
       Font.Style := Font.Style + [fsBold];
 
@@ -7199,15 +7181,11 @@ begin
     if ((qrMaterialFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1)) or
       (qrMaterialREPLACED.Value = 1) or (qrMaterialDELETED.Value = 1) then
     begin
-      if (Column.FieldName.ToUpper = 'MAT_COUNT') or
-         (Column.FieldName.ToUpper = 'PRICE_NDS') or
-         (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or
-         (Column.FieldName.ToUpper = 'TRANSP_NDS') or
-         (Column.FieldName.ToUpper = 'TRANSP_NO_NDS') or
-         (Column.FieldName.ToUpper = 'FPRICE_NDS') or
-         (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or
-         (Column.FieldName.ToUpper = 'FTRANSP_NDS') or
-         (Column.FieldName.ToUpper = 'FTRANSP_NO_NDS') then
+      if (Column.FieldName.ToUpper = 'MAT_COUNT') or (Column.FieldName.ToUpper = 'PRICE_NDS') or
+        (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or (Column.FieldName.ToUpper = 'TRANSP_NDS') or
+        (Column.FieldName.ToUpper = 'TRANSP_NO_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NDS') or
+        (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or (Column.FieldName.ToUpper = 'FTRANSP_NDS') or
+        (Column.FieldName.ToUpper = 'FTRANSP_NO_NDS') then
         Str := '';
     end;
 
@@ -7242,23 +7220,20 @@ begin
     SetMatEditMode;
 end;
 
-
 procedure TFormCalculationEstimate.dbgrdMechanizmCanEditCell(Grid: TJvDBGrid; Field: TField;
   var AllowEdit: Boolean);
-var I: integer;
+var
+  i: Integer;
 begin
-  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or
-     (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
-     (Field.FieldName.ToUpper = 'FZP_MACH_NDS') or
-     (Field.FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
-     (Field.FieldName.ToUpper = 'PROC_PODR') or
-     (Field.FieldName.ToUpper = 'PROC_ZAC') then
+  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
+    (Field.FieldName.ToUpper = 'FZP_MACH_NDS') or (Field.FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
+    (Field.FieldName.ToUpper = 'PROC_PODR') or (Field.FieldName.ToUpper = 'PROC_ZAC') then
     Exit;
 
-  for I := 0 to dbgrdMechanizm.Columns.Count - 1 do
-    if dbgrdMechanizm.Columns[I].FieldName.ToUpper = 'MECH_NORMA' then
+  for i := 0 to dbgrdMechanizm.Columns.Count - 1 do
+    if dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_NORMA' then
     begin
-      AllowEdit := not dbgrdMechanizm.Columns[I].ReadOnly;
+      AllowEdit := not dbgrdMechanizm.Columns[i].ReadOnly;
       Break;
     end;
 end;
@@ -7268,8 +7243,8 @@ procedure TFormCalculationEstimate.dbgrdMechanizmDrawColumnCell(Sender: TObject;
 var
   Str: string;
 begin
-  if ((Sender as TJvDBGrid).MaxColumnWidth > 0) and
-     (Column.Width >= (Sender as TJvDBGrid).MaxColumnWidth) then
+  if ((Sender as TJvDBGrid).MaxColumnWidth > 0) and (Column.Width >= (Sender as TJvDBGrid).MaxColumnWidth)
+  then
     Column.Width := (Sender as TJvDBGrid).MaxColumnWidth - 1;
 
   with dbgrdMechanizm.Canvas do
@@ -7282,40 +7257,32 @@ begin
       Brush.Color := $00F0F0FF;
 
     // Подсветка полей стоимости
-    if (Column.FieldName.ToUpper = 'PRICE_NDS') or
-       (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or
-       (Column.FieldName.ToUpper = 'ZPPRICE_NDS') or
-       (Column.FieldName.ToUpper = 'ZPPRICE_NO_NDS') or
-       (Column.FieldName.ToUpper = 'FPRICE_NDS') or
-       (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or
-       (Column.FieldName.ToUpper = 'FZPPRICE_NDS') or
-       (Column.FieldName.ToUpper = 'FZPPRICE_NO_NDS') then
+    if (Column.FieldName.ToUpper = 'PRICE_NDS') or (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or
+      (Column.FieldName.ToUpper = 'ZPPRICE_NDS') or (Column.FieldName.ToUpper = 'ZPPRICE_NO_NDS') or
+      (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or
+      (Column.FieldName.ToUpper = 'FZPPRICE_NDS') or (Column.FieldName.ToUpper = 'FZPPRICE_NO_NDS') then
     begin
       // Та стоимость которая используется в расчете подсвечивается берюзовым
       // другая серым
-      if (Column.FieldName.ToUpper = 'PRICE_NDS') or
-         (Column.FieldName.ToUpper = 'PRICE_NO_NDS') then
+      if (Column.FieldName.ToUpper = 'PRICE_NDS') or (Column.FieldName.ToUpper = 'PRICE_NO_NDS') then
         if (qrMechanizmFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00DDDDDD
         else
           Brush.Color := $00FBFEBC;
 
-      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or
-         (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
+      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
         if (qrMechanizmFPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00FBFEBC
         else
           Brush.Color := $00DDDDDD;
 
-      if (Column.FieldName.ToUpper = 'ZPPRICE_NDS') or
-         (Column.FieldName.ToUpper = 'ZPPRICE_NO_NDS') then
+      if (Column.FieldName.ToUpper = 'ZPPRICE_NDS') or (Column.FieldName.ToUpper = 'ZPPRICE_NO_NDS') then
         if (qrMechanizmFZPPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00DDDDDD
         else
           Brush.Color := $00FBFEBC;
 
-      if (Column.FieldName.ToUpper = 'FZPPRICE_NDS') or
-         (Column.FieldName.ToUpper = 'FZPPRICE_NO_NDS') then
+      if (Column.FieldName.ToUpper = 'FZPPRICE_NDS') or (Column.FieldName.ToUpper = 'FZPPRICE_NO_NDS') then
         if (qrMechanizmFZPPRICE_NO_NDS.Value > 0) then
           Brush.Color := $00FBFEBC
         else
@@ -7323,10 +7290,8 @@ begin
     end;
 
     // Подсветка красным пустых значений
-    if ((Column.FieldName.ToUpper = 'MECH_NORMA') or
-        (Column.FieldName.ToUpper = 'COAST_NDS') or
-        (Column.FieldName.ToUpper = 'COAST_NO_NDS')) and
-       (Column.Field.AsInteger = 0) then
+    if ((Column.FieldName.ToUpper = 'MECH_NORMA') or (Column.FieldName.ToUpper = 'COAST_NDS') or
+      (Column.FieldName.ToUpper = 'COAST_NO_NDS')) and (Column.Field.AsInteger = 0) then
     begin
       Brush.Color := $008080FF;
     end;
@@ -7362,16 +7327,13 @@ begin
     end;
 
     // Подсветка замененного механизма
-    if (FIdReplasedMech > 0) and
-       (qrMechanizmID.Value = FIdReplasedMech) and
-       (dbgrdMechanizm = FLastEntegGrd)
+    if (FIdReplasedMech > 0) and (qrMechanizmID.Value = FIdReplasedMech) and (dbgrdMechanizm = FLastEntegGrd)
     then
       Font.Style := Font.Style + [fsBold];
 
     // Подсветка замененяющего механизма
-    if (FIdReplasingMech > 0) and
-       (FIdReplasingMech = qrMechanizmID_REPLACED.Value) and
-       (dbgrdMechanizm = FLastEntegGrd) then
+    if (FIdReplasingMech > 0) and (FIdReplasingMech = qrMechanizmID_REPLACED.Value) and
+      (dbgrdMechanizm = FLastEntegGrd) then
       Font.Style := Font.Style + [fsBold];
 
     Str := '';
@@ -7394,16 +7356,11 @@ begin
     if ((qrMechanizmFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1)) or
       (qrMechanizmREPLACED.Value = 1) or (qrMechanizmDELETED.Value = 1) then
     begin
-      if (Column.FieldName.ToUpper = 'MECH_COUNT') or
-         (Column.FieldName.ToUpper = 'PRICE_NDS') or
-         (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or
-         (Column.FieldName.ToUpper = 'ZPPRICE_NDS') or
-         (Column.FieldName.ToUpper = 'ZPPRICE_NO_NDS') or
-         (Column.FieldName.ToUpper = 'FPRICE_NDS') or
-         (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or
-         (Column.FieldName.ToUpper = 'FZPPRICE_NDS') or
-         (Column.FieldName.ToUpper = 'FZPPRICE_NO_NDS') or
-         (Column.FieldName.ToUpper = 'TERYDOZATR') then
+      if (Column.FieldName.ToUpper = 'MECH_COUNT') or (Column.FieldName.ToUpper = 'PRICE_NDS') or
+        (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or (Column.FieldName.ToUpper = 'ZPPRICE_NDS') or
+        (Column.FieldName.ToUpper = 'ZPPRICE_NO_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NDS') or
+        (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or (Column.FieldName.ToUpper = 'FZPPRICE_NDS') or
+        (Column.FieldName.ToUpper = 'FZPPRICE_NO_NDS') or (Column.FieldName.ToUpper = 'TERYDOZATR') then
         Str := '';
     end;
 
@@ -7487,28 +7444,25 @@ begin
     // Вынесение за расценку имеет приоритет над заменой
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = FLastEntegGrd) then
     begin
-      if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and
-         (qrRatesExID_TYPE_DATA.AsInteger = 2) and
-         ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)) then
+      if (qrRatesExID_TABLES.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2) and
+        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)) then
         Font.Style := Font.Style + [fsBold];
     end;
 
     // Подсветка заменяющего для пэшки
     if btnMaterials.Down and qrMaterial.Active and (dbgrdMaterial = FLastEntegGrd) then
     begin
-      if (qrRatesExID_REPLACED.AsInteger = qrMaterialID.AsInteger) and
-         (qrRatesExID_TYPE_DATA.AsInteger = 2) and
-         (qrMaterialCONSIDERED.AsInteger = 0) and
-         ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)) then
+      if (qrRatesExID_REPLACED.AsInteger = qrMaterialID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 2)
+        and (qrMaterialCONSIDERED.AsInteger = 0) and
+        ((grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)) then
         Font.Style := Font.Style + [fsBold];
     end;
 
     // Подсветка вынесенного за расценку механизма
     if btnMechanisms.Down and qrMechanizm.Active and (dbgrdMechanizm = FLastEntegGrd) then
     begin
-      if (qrRatesExID_TABLES.AsInteger = qrMechanizmID.AsInteger) and
-         (qrRatesExID_TYPE_DATA.AsInteger = 3) and
-         (grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) then
+      if (qrRatesExID_TABLES.AsInteger = qrMechanizmID.AsInteger) and (qrRatesExID_TYPE_DATA.AsInteger = 3)
+        and (grRatesEx.Row <> TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1) then
         Font.Style := Font.Style + [fsBold];
     end;
 

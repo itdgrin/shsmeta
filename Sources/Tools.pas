@@ -830,26 +830,26 @@ end;
 
 procedure TSmForm.JvDBGridSelectColumns(Grid: TJvDBGrid; var DefaultDialog: Boolean);
 var
-  R, WorkArea: TRect;
+  r, WorkArea: TRect;
   Frm: TfSelectColumn;
   Pt: TPoint;
   CheckColumns: TCheckColumnArray;
-  I: Integer;
+  i: Integer;
 begin
   SetLength(CheckColumns, Grid.Columns.Count);
 
-  for I := Low(CheckColumns) to High(CheckColumns) do
+  for i := Low(CheckColumns) to High(CheckColumns) do
   begin
-    CheckColumns[I].Key := Grid.Columns[I].Visible;
-    CheckColumns[I].Value := Grid.Columns[I].Title.Caption;
+    CheckColumns[i].key := Grid.Columns[i].Visible;
+    CheckColumns[i].Value := Grid.Columns[i].Title.Caption;
   end;
 
-  R := Grid.CellRect(0, 0);
+  r := Grid.CellRect(0, 0);
   Frm := TfSelectColumn.Create(Application);
   try
-    if not IsRectEmpty(R) then
+    if not IsRectEmpty(r) then
     begin
-      Pt := Grid.ClientToScreen(System.Classes.Point(R.Left, R.Bottom + 1));
+      Pt := Grid.ClientToScreen(System.Classes.Point(r.Left, r.Bottom + 1));
       WorkArea := Screen.MonitorFromWindow(Handle).WorkareaRect;
       if Pt.X + Frm.Width > WorkArea.Right then
         Pt.X := WorkArea.Right - Frm.Width;
@@ -860,8 +860,8 @@ begin
     Frm.Columns := CheckColumns;
     if Frm.ShowModal = mrOk then
     begin
-      for I := Low(CheckColumns) to High(CheckColumns) do
-        Grid.Columns[I].Visible := CheckColumns[I].Key;
+      for i := Low(CheckColumns) to High(CheckColumns) do
+        Grid.Columns[i].Visible := CheckColumns[i].key;
     end;
   finally
     DefaultDialog := Frm.DefaultDialog;

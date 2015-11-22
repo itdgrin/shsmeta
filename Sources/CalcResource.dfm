@@ -148,10 +148,6 @@ object fCalcResource: TfCalcResource
     OnChange = pgcChange
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl2: TLabel
         Left = 0
         Top = 0
@@ -972,10 +968,6 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl5: TSplitter
         Left = 0
         Top = 205
@@ -1928,9 +1920,6 @@ object fCalcResource: TfCalcResource
       '  MECH_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
       '  SUM(COALESCE(MECH_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       ''
-      '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      ''
       
         '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
         '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
@@ -1960,8 +1949,8 @@ object fCalcResource: TfCalcResource
         'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) /*AND REPLACED = 0*/ AN' +
         'D COALESCE(MECH_COUNT, 0) <> 0'
       
-        'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, COAST, ZP_1, DELET' +
-        'ED, PROC_ZAC, PROC_PODR, MECH_ID, REPLACED, FREPLACED'
+        'GROUP BY CODE, NAME, UNIT, COAST, ZP_1, DELETED, PROC_ZAC, PROC_' +
+        'PODR, MECH_ID, REPLACED, FREPLACED'
       'ORDER BY 1, REPLACED DESC, 2')
     Left = 99
     Top = 168
@@ -2003,17 +1992,6 @@ object fCalcResource: TfCalcResource
       ProviderFlags = []
       OnChange = qrMechDataCOASTChange
       Precision = 46
-    end
-    object qrMechDataDOC_DATE: TDateField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_DATE'
-      Origin = 'DOC_DATE'
-    end
-    object strngfldMechDataDOC_NUM: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'DOC_NUM'
-      Origin = 'DOC_NUM'
-      Size = 50
     end
     object qrMechDataCOAST: TFMTBCDField
       AutoGenerateValue = arDefault
@@ -2337,23 +2315,18 @@ object fCalcResource: TfCalcResource
       'WHERE '
       'data_row_temp.ID_TYPE_DATA = 1 AND'
       'card_rate_temp.ID = data_row_temp.ID_TABLES AND'
-      '  ((smetasourcedata.SM_ID = :SM_ID) OR'
+      '  /*((smetasourcedata.SM_ID = :SM_ID) OR'
       '           (smetasourcedata.PARENT_ID = :SM_ID) OR '
       '           (smetasourcedata.PARENT_ID IN ('
       '             SELECT SM_ID'
       '             FROM smetasourcedata'
-      '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND '
+      '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND */'
       'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
       'data_row_temp.SM_ID = smetasourcedata.SM_ID'
       ''
       'ORDER BY 5')
     Left = 211
     Top = 168
-    ParamData = <
-      item
-        Name = 'SM_ID'
-        ParamType = ptInput
-      end>
   end
   object dsRates: TDataSource
     DataSet = qrRates
