@@ -4738,8 +4738,13 @@ begin
       // Для сметы
       begin
         qrTemp.Active := False;
-        qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE OBJ_ID=:OBJ_ID AND SM_TYPE=2 AND ACT=0';
+        qrTemp.SQL.Text :=
+          'SELECT SM_ID FROM smetasourcedata WHERE OBJ_ID=:OBJ_ID AND SM_TYPE=2 AND ACT=:ACT';
         qrTemp.ParamByName('OBJ_ID').Value := IdObject;
+        if Act then
+          qrTemp.ParamByName('ACT').Value := 1
+        else
+          qrTemp.ParamByName('ACT').Value := 0;
         qrTemp.Active := True;
         qrTemp.First;
         while not qrTemp.Eof do
@@ -6642,8 +6647,12 @@ begin
     else
     begin
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE OBJ_ID=:OBJ_ID AND SM_TYPE=2 AND ACT=0';
+      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE OBJ_ID=:OBJ_ID AND SM_TYPE=2 AND ACT=:ACT';
       qrTemp.ParamByName('OBJ_ID').Value := IdObject;
+      if Act then
+        qrTemp.ParamByName('ACT').Value := 1
+      else
+        qrTemp.ParamByName('ACT').Value := 0;
       qrTemp.Active := True;
       qrTemp.First;
       while not qrTemp.Eof do

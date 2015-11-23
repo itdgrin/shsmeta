@@ -630,20 +630,22 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '             WHERE PARENT_ID = s.SM_ID AND DELETED=0)))'
       '  ) '
       'WHERE '
-      '  s.SM_TYPE=typesm.ID AND '
-      '  s.DELETED=0 AND'
+      '  s.SM_TYPE = typesm.ID AND '
+      '  s.DELETED = 0 AND'
       
         '  s.OBJ_ID = (SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:SM' +
         '_ID) AND'
-      '  s.ACT= (SELECT ACT FROM smetasourcedata WHERE SM_ID=:SM_ID)'
-      '/*'
+      
+        '  s.ACT = (SELECT ACT FROM smetasourcedata WHERE SM_ID=:SM_ID) A' +
+        'ND'
+      '  ((s.ACT = 0) OR (s.ACT = 1 AND '
       '  ((s.SM_ID = :SM_ID) OR'
       '           (s.PARENT_ID = :SM_ID) OR '
       '           (s.PARENT_ID IN ('
       '             SELECT SM_ID'
       '             FROM smetasourcedata'
       '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) '
-      '*/'
+      '  ))'
       '  AND o.OBJ_ID=s.OBJ_ID'
       'GROUP BY s.SM_ID, s.OBJ_ID, TYPE_NAME, s.SM_NUMBER, SM_NAME'
       'ORDER BY FN_getSortSM(s.SM_ID);')
