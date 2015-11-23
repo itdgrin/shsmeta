@@ -85,7 +85,7 @@ end;
 procedure TfSelectColumn.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  FDefaultDialog := (Shift = [ssCtrl]) and (Key = 68);
+  FDefaultDialog := (Shift = [ssCtrl]) and (Key = 68); //(Ctrl + D)
 end;
 
 procedure TfSelectColumn.FormKeyPress(Sender: TObject; var Key: Char);

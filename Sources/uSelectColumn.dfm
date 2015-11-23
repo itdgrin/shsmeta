@@ -31,8 +31,6 @@ object fSelectColumn: TfSelectColumn
     DragMode = dmAutomatic
     ItemHeight = 13
     TabOrder = 0
-    ExplicitWidth = 189
-    ExplicitHeight = 54
   end
   object Panel1: TPanel
     Left = 0
@@ -42,8 +40,6 @@ object fSelectColumn: TfSelectColumn
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 128
-    ExplicitWidth = 189
     DesignSize = (
       190
       32)

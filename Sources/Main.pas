@@ -450,7 +450,8 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex,
   Users, RoundSetup, InstructionHelp, TypeWorkList, SectionEstimateList,
   SprSelection,
   DebugTables,
-  System.Win.Registry;
+  System.Win.Registry,
+  SerialKeyModule;
 
 {$R *.dfm}
 
@@ -697,6 +698,7 @@ begin
   FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
     C_ARHDIR);
 
+  GerLocalKey(ExtractFileDrive(Application.ExeName));
   // путь к папке с отчетами (Вадим)
   // {$IFDEF DEBUG}
   // FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))

@@ -125,7 +125,8 @@ uses
   fFrameLoading in 'fFrameLoading.pas' {FrameLoading: TFrame},
   UserAccess in 'UserAccess.pas' {fUserAccess},
   RC6 in 'RC6.pas',
-  uSelectColumn in 'uSelectColumn.pas' {fSelectColumn};
+  uSelectColumn in 'uSelectColumn.pas' {fSelectColumn},
+  SerialKeyModule in 'SerialKeyModule.pas';
 
 {$R *.res}
 var MHandle: THandle;
