@@ -494,6 +494,7 @@ type
     btnWinterPriceSelect: TBitBtn;
     dbmmoRight: TDBMemo;
     SplitterRightMemo: TSplitter;
+    qrRatesExRecalc: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -1403,44 +1404,102 @@ var
   e: TDataSetNotifyEvent;
   AutoCommitValue: Boolean;
 begin
-  qrRatesEx.DisableControls;
-  e := qrRatesEx.AfterScroll;
-  qrRatesEx.AfterScroll := nil;
-  AutoCommitValue := DM.Read.Options.AutoCommit;
-  DM.Read.Options.AutoCommit := False;
-  try
-    if CheckQrActiveEmpty(qrRatesEx) then
-      Key := qrRatesEx.Fields[0].Value;
-    qrRatesEx.First;
-    DM.Read.StartTransaction;
+  // Перерасчет для сметы
+  if not Act then
+  begin
+    AutoCommitValue := DM.Read.Options.AutoCommit;
+    DM.Read.Options.AutoCommit := False;
     try
-      while not qrRatesEx.Eof do
-      begin
-        if qrRatesExID_TYPE_DATA.Value > 0 then
+      DM.Read.StartTransaction;
+      qrTemp.Active := False;
+      qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE OBJ_ID=:OBJ_ID AND SM_TYPE=2 AND ACT=:ACT';
+      qrTemp.ParamByName('OBJ_ID').Value := IdObject;
+      if Act then
+        qrTemp.ParamByName('ACT').Value := 1
+      else
+        qrTemp.ParamByName('ACT').Value := 0;
+      qrTemp.Active := True;
+      qrTemp.First;
+      try
+        while not qrTemp.Eof do
         begin
-          FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
-            VarArrayOf([qrRatesExID_TABLES.Value, qrRatesExID_TYPE_DATA.Value]));
-          FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0)',
-            VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value]));
+          qrRatesExRecalc.Active := False;
+          qrRatesExRecalc.ParamByName('EAID').Value := qrTemp.FieldByName('SM_ID').Value;
+          if Act then
+            qrRatesExRecalc.ParamByName('vIsACT').Value := 1
+          else
+            qrRatesExRecalc.ParamByName('vIsACT').Value := 0;
+          qrRatesExRecalc.Active := True;
+          qrRatesExRecalc.First;
+          while not qrRatesExRecalc.Eof do
+          begin
+            if qrRatesExRecalc.FieldByName('ID_TYPE_DATA').Value > 0 then
+            begin
+              FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
+                VarArrayOf([qrRatesExRecalc.FieldByName('ID_TABLES').Value,
+                qrRatesExRecalc.FieldByName('ID_TYPE_DATA').Value]));
+              FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0)',
+                VarArrayOf([qrRatesExRecalc.FieldByName('SM_ID').Value,
+                qrRatesExRecalc.FieldByName('ID_TYPE_DATA').Value,
+                qrRatesExRecalc.FieldByName('ID_TABLES').Value]));
+            end;
+            qrRatesExRecalc.Next;
+          end;
+          qrTemp.Next;
         end;
-        qrRatesEx.Next;
+        qrTemp.Active := False;
+        DM.Read.Commit;
+      except
+        DM.Read.Rollback;
+        raise;
       end;
-
-      if Key <> Null then
-        qrRatesEx.Locate(qrRatesEx.Fields[0].FieldName, Key, []);
-
-      DM.Read.Commit;
-    except
-      DM.Read.Rollback;
-      raise;
+    finally
+      DM.Read.Options.AutoCommit := AutoCommitValue;
+      CloseOpen(qrCalculations);
     end;
-  finally
-    DM.Read.Options.AutoCommit := AutoCommitValue;
-    qrRatesEx.EnableControls;
-    qrRatesEx.AfterScroll := e;
-    CloseOpen(qrRatesEx);
-    grRatesEx.SelectedRows.Clear;
-    CloseOpen(qrCalculations);
+  end
+  else
+  // Для акта пока работает старый перерасчет
+  begin
+    qrRatesEx.DisableControls;
+    e := qrRatesEx.AfterScroll;
+    qrRatesEx.AfterScroll := nil;
+    AutoCommitValue := DM.Read.Options.AutoCommit;
+    DM.Read.Options.AutoCommit := False;
+    try
+      if CheckQrActiveEmpty(qrRatesEx) then
+        Key := qrRatesEx.Fields[0].Value;
+      qrRatesEx.First;
+      DM.Read.StartTransaction;
+      try
+        while not qrRatesEx.Eof do
+        begin
+          if qrRatesExID_TYPE_DATA.Value > 0 then
+          begin
+            FastExecSQL('CALL CalcRowInRateTab(:ID, :TYPE, 1);',
+              VarArrayOf([qrRatesExID_TABLES.Value, qrRatesExID_TYPE_DATA.Value]));
+            FastExecSQL('CALL CalcCalculation(:SM_ID, :ID_TYPE_DATA, :ID_TABLES, 0)',
+              VarArrayOf([qrRatesExSM_ID.Value, qrRatesExID_TYPE_DATA.Value, qrRatesExID_TABLES.Value]));
+          end;
+          qrRatesEx.Next;
+        end;
+
+        if Key <> Null then
+          qrRatesEx.Locate(qrRatesEx.Fields[0].FieldName, Key, []);
+
+        DM.Read.Commit;
+      except
+        DM.Read.Rollback;
+        raise;
+      end;
+    finally
+      DM.Read.Options.AutoCommit := AutoCommitValue;
+      qrRatesEx.EnableControls;
+      qrRatesEx.AfterScroll := e;
+      CloseOpen(qrRatesEx);
+      grRatesEx.SelectedRows.Clear;
+      CloseOpen(qrCalculations);
+    end;
   end;
 end;
 
@@ -4672,12 +4731,14 @@ begin
       Exit;
     try
       DM.Read.StartTransaction;
+      // Для акта
       if Act then
         FastExecSQL('CALL SaveAllDataEstimate(:id_estimate);', VarArrayOf([IdEstimate]))
       else
+      // Для сметы
       begin
         qrTemp.Active := False;
-        qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE OBJ_ID=:OBJ_ID AND SM_TYPE=2';
+        qrTemp.SQL.Text := 'SELECT SM_ID FROM smetasourcedata WHERE OBJ_ID=:OBJ_ID AND SM_TYPE=2 AND ACT=0';
         qrTemp.ParamByName('OBJ_ID').Value := IdObject;
         qrTemp.Active := True;
         qrTemp.First;
