@@ -1,11 +1,7 @@
 unit SerialKeyModule;
 
 interface
-uses Winapi.Windows, System.SysUtils;
-
-function GerLocalKey(const ADrive: string): TBytes;
-
-implementation
+uses Winapi.Windows, System.SysUtils, System.AnsiStrings, RC6;
 
 const
   SMART_GET_VERSION = $074080;
@@ -31,6 +27,17 @@ const
   SMART_CMD = $B0;
 
 type
+  //Контейнер для хранения лицензионной информации
+  TSerialKeyInfo = record
+    UserName: string;
+    UserKey: TBytes;
+    DataBegin: TDateTime;
+    DateEnd: TDateTime;
+    SerialKey: String;
+  end;
+
+  TSerialKeyData = TBytes;
+
   TIdeRegs = packed record
     bFeaturesReg,
     bSectorCountReg,
@@ -73,6 +80,22 @@ type
     dwReserved: array[1..4] of DWord;
   end;
 
+//Возвращает локальные данные для отправки на сервак или получения локального ключа
+procedure GerLocalData(const ADrive: string; var AKey: TBytes);
+//Получение локального ключа
+procedure GerLocalKey(var AKey: TBytes);
+//Получиние номера HDD по букве диска
+function GetHDDNumberByLetter(const ADrive: string): DWord;
+//Получиние серийника HDD !!! не работает без прав админа
+function GetHDDSerialByNum(ANum: DWord;
+  var ASerial, ARevision, AModel: AnsiString): DWord;
+procedure CorrectDevInfo(var _params: TSendCmdOutParams);
+//Получает серийник логического диска
+function GetDiskSerialNum(const ADrive: string): DWord;
+
+
+implementation
+
 procedure CorrectDevInfo(var _params: TSendCmdOutParams);
   asm
   lea edi, _params.bBuffer
@@ -93,7 +116,6 @@ procedure CorrectDevInfo(var _params: TSendCmdOutParams);
   stosw
   loop @@ModelNumLoop
 end;
-
 
 //Получает номер физического диска по букве логического
 function GetHDDNumberByLetter(const ADrive: string): DWord;
@@ -121,7 +143,8 @@ begin
 end;
 
 //Не обрабатывает никаких исключений
-function GetHDDSerialByNum(ANum: DWord; var ASerial, ARevision, AModel: string): DWord;
+function GetHDDSerialByNum(ANum: DWord;
+  var ASerial, ARevision, AModel: AnsiString): DWord;
 var
   tmp: AnsiString;
   dev: THandle;
@@ -146,7 +169,6 @@ begin
         scip.irDriveRegs.bSectorNumberReg := 1;
         scip.irDriveRegs.bDriveHeadReg := $A0;
         scip.irDriveRegs.bCommandReg := ID_CMD;
-
         if DeviceIoControl(dev, SMART_RCV_DRIVE_DATA, @scip, SizeOf(scip),
           @scop, SizeOf(scop), ret, nil) then
         begin
@@ -155,15 +177,15 @@ begin
             CorrectDevInfo(scop);
             SetLength(tmp, 20);
             Move(scop.bBuffer[21], tmp[1], 20);
-            ASerial := TEncoding.Default.GetString(TBytes(tmp)).Trim;
+            ASerial := System.AnsiStrings.Trim(tmp);
 
             SetLength(tmp, 8);
             Move(scop.bBuffer[47], tmp[1], 8);
-            ARevision := TEncoding.Default.GetString(TBytes(tmp)).Trim;
+            ARevision := System.AnsiStrings.Trim(tmp);
 
             SetLength(tmp, 40);
             Move(scop.bBuffer[55], tmp[1], 40);
-            AModel := TEncoding.Default.GetString(TBytes(tmp)).Trim;
+            AModel := System.AnsiStrings.Trim(tmp);
             Result := 0;
           end
           else
@@ -182,36 +204,56 @@ end;
 
 function GetDiskSerialNum(const ADrive: string): DWord;
 var
- sz,fs: DWord;
+  sz,fs: DWord;
 begin
  GetVolumeInformation(PChar(ADrive), nil, 0, @Result, sz, fs, nil, 0);
 end;
 
-function GerLocalKey(const ADrive: string): TBytes;
-const LKeyLen = 64;
+procedure GerLocalData(const ADrive: string; var AKey: TBytes);
+const LKeyLen = 16;
 var Num: DWord;
     Serial,
     Revision,
     Model,
-    TmpStr: string;
+    TmpStr: AnsiString;
     I, TmpLen: Integer;
 begin
-  SetLength(Result, LKeyLen);
-  Num := GetHDDNumberByLetter(ADrive);
-  if GetHDDSerialByNum(Num, Serial, Revision, Model) = 0 then
-    TmpStr := Serial + Revision + Model
-  else
-    TmpStr := IntToStr(GetDiskSerialNum(ADrive));
+  SetLength(AKey, LKeyLen);
+  FillChar(AKey[0], LKeyLen, 0);
 
-  TmpLen := Length(TmpStr) * SizeOf(Char);
-  if TmpLen > LKeyLen then
-    Move(TmpStr[1], Result[0], LKeyLen)
+  //Num := GetHDDNumberByLetter(ADrive);
+  //if GetHDDSerialByNum(Num, Serial, Revision, Model) = 0 then
+  // TmpStr := Serial + Revision + Model
+  //else
+  TmpStr := IntToStr(GetDiskSerialNum(ADrive));
+
+  TmpLen := Length(TmpStr) * SizeOf(AnsiChar);
+  if TmpLen >= LKeyLen then
+    Move(TmpStr[1], AKey[0], LKeyLen)
   else
   begin
     for I := 0 to LKeyLen div TmpLen - 1 do
-      Move(TmpStr[1], Result[I * TmpLen], TmpLen);
-    Move(TmpStr[1], Result[(LKeyLen div TmpLen) * TmpLen],
+      Move(TmpStr[1], AKey[I * TmpLen], TmpLen);
+    Move(TmpStr[1], AKey[(LKeyLen div TmpLen) * TmpLen],
       LKeyLen - (LKeyLen div TmpLen) * TmpLen);
+  end;
+
+  for I := Low(AKey) to High(AKey) - 1 do
+    AKey[I + 1] := AKey[I + 1] xor AKey[I];
+end;
+
+procedure GerLocalKey(var AKey: TBytes);
+const
+  TmpKey: array[0..15] of byte =
+    ($42,$72,$65,$67,$6f,$72,$69,$6f,$56,$69,$63,$74,$6f,$72,$69,$61);
+var
+  RC6Encryptor: TRC6Encryptor;
+begin
+  RC6Encryptor := TRC6Encryptor.Create(TmpKey);
+  try
+    AKey := RC6Encryptor.BytesEncrypt(AKey);
+  finally
+    FreeAndNil(RC6Encryptor);
   end;
 end;
 

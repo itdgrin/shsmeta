@@ -117,7 +117,7 @@ begin
 
     if (UpdType = 1) then
     begin
-      ini := TIniFile.Create(DestPath +  Ñ_UPD_INI);
+      ini := TIniFile.Create(DestPath +  Ñ_UPD_NAME + '.ini');
       try
         ini.WriteInteger('System', 'Version', NewAppVers);
       finally

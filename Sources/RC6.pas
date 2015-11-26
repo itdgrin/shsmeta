@@ -11,17 +11,11 @@ unit RC6;
 
 interface
 uses
-  Sysutils, System.Classes;
+  Winapi.Windows, Sysutils, System.Classes;
 
 const
   NUMROUNDS = 20; { number of rounds must be between 16-24 }
 type
-  {$IFDEF VER120}
-    dword= longword;
-  {$ELSE}
-    dword= longint;
-  {$ENDIF}
-
   TRC6Data= record
     InitBlock: array[0..15] of byte;    { initial IV }
     LastBlock: array[0..15] of byte;    { current IV }
@@ -40,6 +34,9 @@ type
 
     function StrEncrypt(const AStr: string): string;
     function StrDecrypt(const AStr: string): string;
+
+    function BytesEncrypt(const Bytes: TBytes): TBytes;
+    function BytesDecrypt(const Bytes: TBytes): TBytes;
   end;
 
   function LRot16(X: word; c: integer): word; assembler;
@@ -460,6 +457,30 @@ begin
   for I := 0 to TmpCount div 16 - 1 do
     RC6DecryptECB(FData, @TmpArray[16 * I], @TmpArray[16 * I]);
   Result := String(PChar(TmpArray));
+end;
+
+function TRC6Encryptor.BytesDecrypt(const Bytes: TBytes): TBytes;
+var TmpCount: Integer;
+    I: Integer;
+begin
+  TmpCount := Length(Bytes);
+  if TmpCount mod 16 > 0 then
+    TmpCount := TmpCount + 16 - (TmpCount mod 16);
+  SetLength(Result, TmpCount);
+  Move(Bytes[0], Result[0], Length(Bytes));
+  for I := 0 to TmpCount div 16 - 1 do
+    RC6EncryptECB(FData, @Result[16 * I], @Result[16 * I]);
+end;
+
+function TRC6Encryptor.BytesEncrypt(const Bytes: TBytes): TBytes;
+var TmpCount: Integer;
+    I: Integer;
+begin
+  TmpCount := Length(Bytes);
+  SetLength(Result, TmpCount);
+  Move(Bytes[0], Result[0], TmpCount);
+  for I := 0 to TmpCount div 16 - 1 do
+    RC6DecryptECB(FData, @Result[16 * I], @Result[16 * I]);
 end;
 
 end.

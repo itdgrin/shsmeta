@@ -680,6 +680,7 @@ begin
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
+var Tmp: TBytes;
 begin
   Width := Screen.Width;
   Height := Screen.Height;
@@ -698,7 +699,8 @@ begin
   FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
     C_ARHDIR);
 
-  GerLocalKey(ExtractFileDrive(Application.ExeName));
+  GerLocalData(ExtractFileDrive(Application.ExeName), Tmp);
+  GerLocalKey(Tmp);
   // путь к папке с отчетами (Вадим)
   // {$IFDEF DEBUG}
   // FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))

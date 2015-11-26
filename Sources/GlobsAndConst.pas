@@ -159,8 +159,8 @@ const
   //Любый добавления в приложении которые необходимо
   //резервировать должны быть в него внесены
   С_APPSTRUCT: array [0..11] of TAppElement =
-    ((EName: 'smeta.exe'; EType: 0),
-     (EName: 'smeta.ini'; EType: 0),
+    ((EName: 'SMR-HPP2012.exe'; EType: 0),
+     (EName: 'SMR-HPP2012.ini'; EType: 0),
      (EName: С_UPD_NAME + '.ini'; EType: 0),
      (EName: 'libmysql.dll'; EType: 0),
      (EName: C_UPDATERNAME; EType: 0),
@@ -198,6 +198,8 @@ const
   //обновление хода обновления
   WM_UPDATESTATE = WM_USER + 8;
   WM_UPDATEPROGRESS = WM_USER + 9;
+  //Уведомление о проверки лицензии
+  WM_CHECKLICENCE = WM_USER + 10;
 
 //******************************************************************************
 
