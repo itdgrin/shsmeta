@@ -1521,7 +1521,7 @@ end;
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
   ShowNeedSaveDialog;
-  if not Act then
+  //if not Act then
     ShellExecute(Handle, nil, 'rs.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
       PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
 end;
@@ -1673,8 +1673,8 @@ begin
   if not flLoaded then
     Exit;
 
-  btn3.Visible := not Act;
-  btnCalcFact.Visible := Act;
+ // btn3.Visible := not Act;
+  //btnCalcFact.Visible := Act;
 
   btnCount := 0;
 
