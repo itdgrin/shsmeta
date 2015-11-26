@@ -92,6 +92,7 @@ type
     btn2: TBitBtn;
     cbbFromMonth: TComboBox;
     seYear: TSpinEdit;
+    btnCardObjectAdditional: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -123,6 +124,7 @@ type
     procedure btn2Click(Sender: TObject);
     procedure btn1Click(Sender: TObject);
     procedure ButtonListAgreementsClick(Sender: TObject);
+    procedure btnCardObjectAdditionalClick(Sender: TObject);
 
   private
     Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
@@ -151,7 +153,7 @@ var
 implementation
 
 uses Main, DataModule, CardObjectContractorServices, OrganizationsEx, SuppAgreement,
-  GlobsAndConst, CalculationEstimate;
+  GlobsAndConst, CalculationEstimate, CardObjectAdditional;
 
 {$R *.dfm}
 
@@ -608,6 +610,10 @@ begin
           '", state_nds = :snds, region_id = "' + v14 + '", base_norm_id = "' + v15 + '", stroj_id = "' + v16
           + '", encrypt = "' + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
           '", PER_TEMP_BUILD=:PER_TEMP_BUILD, PER_CONTRACTOR=:PER_CONTRACTOR, '#13 +
+          'FL_CALC_TRAVEL=:FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK=:FL_CALC_TRAVEL_WORK,'#13 +
+          'FL_CALC_WORKER_DEPARTMENT=:FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL=:FL_CALC_ZEM_NAL,'#13 +
+          'FL_CALC_VEDOMS_NAL=:FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE=:FL_APPLY_WINTERPRICE,'#13 +
+          'WINTERPRICE_TYPE=:WINTERPRICE_TYPE,'#13 +
           'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK, CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
           IntToStr(IdObject) + '";')
       else
@@ -615,11 +621,14 @@ begin
         NEW_ID := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_OBJ]));
         SQL.Add('INSERT INTO objcards (obj_id, num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '
           + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
-          ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV, USER_ID) '
+          ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV, USER_ID,'#13
+          + 'FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK, FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL, FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE, WINTERPRICE_TYPE)'#13
           + 'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 +
           '", "' + v6 + '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 +
           '", :snds, "' + v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
-          '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV, :USER_ID);');
+          '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV, :USER_ID,'#13 +
+          ':FL_CALC_TRAVEL, :FL_CALC_TRAVEL_WORK, :FL_CALC_WORKER_DEPARTMENT, :FL_CALC_ZEM_NAL, :FL_CALC_VEDOMS_NAL, :FL_APPLY_WINTERPRICE, :WINTERPRICE_TYPE'#13
+          + ');');
         ParamByName('NEW_ID').Value := NEW_ID;
         ParamByName('USER_ID').Value := G_USER_ID;
         OUT_ID_OBJECT := NEW_ID;
@@ -631,6 +640,14 @@ begin
       ParamByName('cust_id').Value := qrMain.FieldByName('cust_id').AsInteger;
       ParamByName('general_id').Value := qrMain.FieldByName('general_id').AsInteger;
       ParamByName('snds').Value := ComboBoxVAT.ItemIndex;
+
+      ParamByName('FL_CALC_TRAVEL').Value := qrMain.FieldByName('FL_CALC_TRAVEL').Value;
+      ParamByName('FL_CALC_TRAVEL_WORK').Value := qrMain.FieldByName('FL_CALC_TRAVEL_WORK').Value;
+      ParamByName('FL_CALC_WORKER_DEPARTMENT').Value := qrMain.FieldByName('FL_CALC_WORKER_DEPARTMENT').Value;
+      ParamByName('FL_CALC_ZEM_NAL').Value := qrMain.FieldByName('FL_CALC_ZEM_NAL').Value;
+      ParamByName('FL_CALC_VEDOMS_NAL').Value := qrMain.FieldByName('FL_CALC_VEDOMS_NAL').Value;
+      ParamByName('FL_APPLY_WINTERPRICE').Value := qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value;
+      ParamByName('WINTERPRICE_TYPE').Value := qrMain.FieldByName('WINTERPRICE_TYPE').Value;
       ExecSQL;
     end;
 
@@ -678,6 +695,13 @@ begin
     qrMain.Edit;
     qrMain.FieldByName('cust_id').Value := res;
   end;
+end;
+
+procedure TfCardObject.btnCardObjectAdditionalClick(Sender: TObject);
+begin
+  if (not Assigned(fCardObjectAdditional)) then
+    fCardObjectAdditional := TfCardObjectAdditional.Create(Self);
+  fCardObjectAdditional.ShowModal;
 end;
 
 procedure TfCardObject.ButtonCancelClick(Sender: TObject);

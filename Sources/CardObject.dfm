@@ -518,7 +518,7 @@ object fCardObject: TfCardObject
     Anchors = [akRight, akBottom]
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Default = True
-    TabOrder = 18
+    TabOrder = 19
     OnClick = ButtonSaveClick
   end
   object ButtonCancel: TButton
@@ -528,7 +528,7 @@ object fCardObject: TfCardObject
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 19
+    TabOrder = 20
     OnClick = ButtonCancelClick
   end
   object GroupBoxVAT: TGroupBox
@@ -686,6 +686,15 @@ object fCardObject: TfCardObject
       ParentFont = False
       TabOrder = 0
     end
+  end
+  object btnCardObjectAdditional: TBitBtn
+    Left = 8
+    Top = 537
+    Width = 113
+    Height = 25
+    Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
+    TabOrder = 18
+    OnClick = btnCardObjectAdditionalClick
   end
   object DataSourceSF: TDataSource
     DataSet = ADOQuerySF

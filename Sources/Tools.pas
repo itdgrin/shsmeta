@@ -7,7 +7,7 @@ uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Clie
   JvSpin, JvDBSpinEdit, System.Classes, System.SysUtils, ComObj, Vcl.Dialogs,
   System.UITypes, ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd,
   GlobsAndConst, JvDBGrid, FireDAC.Stan.Option, FireDAC.Stan.Param, Controls,
-  Vcl.Buttons, Vcl.ComCtrls, VirtualTrees, Vcl.FileCtrl;
+  Vcl.Buttons, Vcl.ComCtrls, VirtualTrees, Vcl.FileCtrl, System.Types;
 
 // Общий тип классификации форм
 type
@@ -132,10 +132,20 @@ function FullCopy(ASource, ATarget: string): Boolean;
 function FullRemove(ASource: string): Boolean;
 // Диалог выбора директории
 function GetDirDialog(var ADir: string): Boolean;
+// Функция выбора строки по условию
+function strIf(BoolExpression: Boolean; ifTrue, ifFalse: string): string;
 
 implementation
 
 uses uSelectColumn;
+
+function strIf(BoolExpression: Boolean; ifTrue, ifFalse: string): string;
+begin
+  if BoolExpression then
+    Result := ifTrue
+  else
+    Result := ifFalse;
+end;
 
 function GetDirDialog(var ADir: string): Boolean;
 var
@@ -243,28 +253,57 @@ end;
 procedure DoSort(const Query: TFDQuery; Grid: TJvDBGrid);
 var
   s: string;
-  key: Variant;
+  { key: Variant; }
+  i: Integer;
 begin
   try
     if not CheckQrActiveEmpty(Query) then
       Exit;
+
+    // Если выбранное поле не из набора, а расчетное или другое, то выходим...
+    if (Grid.SortedField <> '') and (Query.FieldByName(Grid.SortedField).FieldKind <> fkData) then
+      Exit;
+
     s := '';
-    key := Query.Fields[0].Value;
+    { key := Query.Fields[0].Value; }
     if Grid.SortMarker = smDown then
       s := ' DESC';
+
+    // Пытаемся найти строку с запросом сортировки
+    for i := Query.SQL.Count - 1 downto 0 do
+    begin
+      if Pos(UpperCase('order by'), UpperCase(Query.SQL[i])) <> 0 then
+      begin
+        // Строка найдена
+        if Grid.SortedField <> '' then
+        begin
+          // Если сортируем некий код, то буквенные значения всегда выше в списке
+          if Grid.SortedField = 'CODE' then
+            Query.SQL[i] := 'ORDER BY CODE+1,' + Grid.SortedField + s
+          else
+            Query.SQL[i] := 'ORDER BY ' + Grid.SortedField + s;
+        end
+        else
+          Query.SQL[i] := 'ORDER BY 1';
+        CloseOpen(Query);
+        Exit;
+      end;
+    end;
     if Grid.SortedField <> '' then
     begin
-      // Если сортируем некий код, то буквенные значения всегда выше в списке
       if Grid.SortedField = 'CODE' then
-        Query.SQL[Query.SQL.Count - 1] := 'ORDER BY CODE+1,' + Grid.SortedField + s
+        Query.SQL.Append('ORDER BY CODE+1' + Grid.SortedField + s)
       else
-        Query.SQL[Query.SQL.Count - 1] := 'ORDER BY ' + Grid.SortedField + s
+        Query.SQL.Append('ORDER BY ' + Grid.SortedField + s);
+      CloseOpen(Query);
     end
     else
-      Query.SQL[Query.SQL.Count - 1] := 'ORDER BY 1';
-    Query.Active := True;
-    if key <> Null then
+      Query.SQL.Append('ORDER BY 1');
+    {
+      Query.Active := True;
+      if key <> Null then
       Query.Locate(Query.Fields[0].FieldName, key, []);
+    }
   except
 
   end;

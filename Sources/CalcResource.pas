@@ -155,6 +155,7 @@ type
     FDScript1: TFDScript;
     qrMechDataNUMPP: TIntegerField;
     qrDevicesNUMPP: TIntegerField;
+    mEdit: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -218,6 +219,7 @@ type
     procedure mN12Click(Sender: TObject);
     procedure qrMechDataCalcFields(DataSet: TDataSet);
     procedure qrDevicesCalcFields(DataSet: TDataSet);
+    procedure mEditClick(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -241,7 +243,7 @@ implementation
 {$R *.dfm}
 
 uses Main, ReplacementMatAndMech, CalculationEstimate, DataModule,
-  GlobsAndConst, TranspPersSelect;
+  GlobsAndConst, TranspPersSelect, CalcResourceEdit;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil);
 var
@@ -283,7 +285,7 @@ begin
 
   fCalcResource.pnlTop.Visible := AOwner = nil;
 
-  //fCalcResource.pgc.ActivePageIndex := 0;
+  // fCalcResource.pgc.ActivePageIndex := 0;
   fCalcResource.pgc.ActivePageIndex := APage;
 
   if AOwner = nil then
@@ -1040,6 +1042,176 @@ begin
   end;
 end;
 
+procedure TfCalcResource.mEditClick(Sender: TObject);
+var
+  TempBookmark: TBookMark;
+  X: Integer;
+  Script: TStringList;
+begin
+  if (not Assigned(fCalcResourceEdit)) then
+    fCalcResourceEdit := TfCalcResourceEdit.Create(Self, pgc.ActivePageIndex);
+  if fCalcResourceEdit.ShowModal = mrOk then
+  begin
+    Script := TStringList.Create;
+    case pgc.ActivePageIndex of
+
+      // Расчет материалов
+      1:
+        begin
+          grMaterial.DataSource.DataSet.DisableControls;
+          qrMaterialDetail.DisableControls;
+          TempBookmark := grMaterial.DataSource.DataSet.GetBookmark;
+          try
+            if grMaterial.SelectedRows.Count = 0 then
+              grMaterial.SelectedRows.CurrentRowSelected := True;
+
+            for X := 0 to grMaterial.SelectedRows.Count - 1 do
+            begin
+              if grMaterial.SelectedRows.IndexOf(grMaterial.SelectedRows.Items[X]) > -1 then
+              begin
+                grMaterial.DataSource.DataSet.GotoBookmark(Pointer(grMaterial.SelectedRows.Items[X]));
+                qrMaterialDetail.Active := False;
+                qrMaterialDetail.Active := True;
+                qrMaterialDetail.First;
+                while not qrMaterialDetail.Eof do
+                begin
+                  Script.Add('UPDATE materialcard_temp set ID=ID' +
+                    strIf(fCalcResourceEdit.chkMatCoast.Checked,
+                    ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtMatCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
+                    + strIf(fCalcResourceEdit.chkMatTransp.Checked,
+                    ',PROC_TRANSP=' + fCalcResourceEdit.edtMatTransp.Text, '') +
+                    strIf(fCalcResourceEdit.chkMatNaklDate.Checked,
+                    ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMatNaklDate.Date) +
+                    '''', '') + strIf(fCalcResourceEdit.chkMatNakl.Checked,
+                    ',DOC_NUM=''' + fCalcResourceEdit.edtMatNakl.Text + '''', '') +
+                    strIf(fCalcResourceEdit.chkMatZakPodr.Checked,
+                    ',MAT_PROC_PODR=' + fCalcResourceEdit.edtMatPodr.Text + ',MAT_PROC_ZAC=' +
+                    fCalcResourceEdit.edtMatZak.Text, '') +
+                    strIf(fCalcResourceEdit.chkMatTranspZakPodr.Checked,
+                    ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtMatTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
+                    fCalcResourceEdit.edtMatTranspZak.Text, '') + ' WHERE ID=' +
+                    qrMaterialDetail.FieldByName('ID').AsString + ';');
+
+                  qrMaterialDetail.Next;
+                end;
+              end;
+            end;
+            FDScript1.ExecuteScript(TStrings(Script));
+          finally
+            grMaterial.DataSource.DataSet.GotoBookmark(TempBookmark);
+            grMaterial.DataSource.DataSet.FreeBookmark(TempBookmark);
+            grMaterial.DataSource.DataSet.EnableControls;
+            qrMaterialDetail.EnableControls;
+            FormCalculationEstimate.RecalcEstimate;
+            pgcChange(nil);
+          end;
+        end;
+
+      // Расчет механизмов
+      2:
+        begin
+          grMech.DataSource.DataSet.DisableControls;
+          qrMechDetail.DisableControls;
+          TempBookmark := grMech.DataSource.DataSet.GetBookmark;
+          try
+            if grMech.SelectedRows.Count = 0 then
+              grMech.SelectedRows.CurrentRowSelected := True;
+
+            for X := 0 to grMech.SelectedRows.Count - 1 do
+            begin
+              if grMech.SelectedRows.IndexOf(grMech.SelectedRows.Items[X]) > -1 then
+              begin
+                grMech.DataSource.DataSet.GotoBookmark(Pointer(grMech.SelectedRows.Items[X]));
+                qrMechDetail.Active := False;
+                qrMechDetail.Active := True;
+                qrMechDetail.First;
+                while not qrMechDetail.Eof do
+                begin
+                  Script.Add('UPDATE mechanizmcard_temp set ID=ID' +
+                    strIf(fCalcResourceEdit.chkMechCoast.Checked,
+                    ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtMechCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
+                    + strIf(fCalcResourceEdit.chkMechZPMash.Checked,
+                    ',FZP_MACH_NO_NDS=' + fCalcResourceEdit.edtMechZPMash.Text +
+                    ',FZP_MACH_NDS=FZP_MACH_NO_NDS', '') + strIf(fCalcResourceEdit.chkMechNaklDate.Checked,
+                    ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMechNaklDate.Date) +
+                    '''', '') + strIf(fCalcResourceEdit.chkMechNakl.Checked,
+                    ',DOC_NUM=''' + fCalcResourceEdit.edtMechNakl.Text + '''', '') +
+                    strIf(fCalcResourceEdit.chkMechZakPodr.Checked,
+                    ',PROC_PODR=' + fCalcResourceEdit.edtMechPodr.Text + ',PROC_ZAC=' +
+                    fCalcResourceEdit.edtMechZak.Text, '') + ' WHERE ID=' + qrMechDetail.FieldByName('ID')
+                    .AsString + ';');
+
+                  qrMechDetail.Next;
+                end;
+              end;
+            end;
+            FDScript1.ExecuteScript(TStrings(Script));
+          finally
+            grMech.DataSource.DataSet.GotoBookmark(TempBookmark);
+            grMech.DataSource.DataSet.FreeBookmark(TempBookmark);
+            grMech.DataSource.DataSet.EnableControls;
+            qrMechDetail.EnableControls;
+            FormCalculationEstimate.RecalcEstimate;
+            pgcChange(nil);
+          end;
+        end;
+
+      // Расчет оборудования
+      3:
+        begin
+          grDev.DataSource.DataSet.DisableControls;
+          qrDevicesDetail.DisableControls;
+          TempBookmark := grDev.DataSource.DataSet.GetBookmark;
+          try
+            if grDev.SelectedRows.Count = 0 then
+              grDev.SelectedRows.CurrentRowSelected := True;
+
+            for X := 0 to grDev.SelectedRows.Count - 1 do
+            begin
+              if grDev.SelectedRows.IndexOf(grDev.SelectedRows.Items[X]) > -1 then
+              begin
+                grDev.DataSource.DataSet.GotoBookmark(Pointer(grDev.SelectedRows.Items[X]));
+                qrDevicesDetail.Active := False;
+                qrDevicesDetail.Active := True;
+                qrDevicesDetail.First;
+                while not qrDevicesDetail.Eof do
+                begin
+                  Script.Add('UPDATE devicescard_temp set ID=ID' +
+                    strIf(fCalcResourceEdit.chkDevCoast.Checked,
+                    ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtDevCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
+                    + strIf(fCalcResourceEdit.chkDevTransp.Checked,
+                    ',DEVICE_TRANSP_NO_NDS=' + fCalcResourceEdit.edtDevTransp.Text +
+                    ', DEVICE_TRANSP_NDS=DEVICE_TRANSP_NO_NDS', '') +
+                    strIf(fCalcResourceEdit.chkDevNaklDate.Checked,
+                    ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpDevNaklDate.Date) +
+                    '''', '') + strIf(fCalcResourceEdit.chkDevNakl.Checked,
+                    ',DOC_NUM=''' + fCalcResourceEdit.edtDevNakl.Text + '''', '') +
+                    strIf(fCalcResourceEdit.chkDevZakPodr.Checked,
+                    ',PROC_PODR=' + fCalcResourceEdit.edtDevPodr.Text + ',PROC_ZAC=' +
+                    fCalcResourceEdit.edtDevZak.Text, '') +
+                    strIf(fCalcResourceEdit.chkDevTranspZakPodr.Checked,
+                    ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtDevTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
+                    fCalcResourceEdit.edtDevTranspZak.Text, '') + ' WHERE ID=' +
+                    qrDevicesDetail.FieldByName('ID').AsString + ';');
+
+                  qrDevicesDetail.Next;
+                end;
+              end;
+            end;
+            FDScript1.ExecuteScript(TStrings(Script));
+          finally
+            grDev.DataSource.DataSet.GotoBookmark(TempBookmark);
+            grDev.DataSource.DataSet.FreeBookmark(TempBookmark);
+            grDev.DataSource.DataSet.EnableControls;
+            qrDevicesDetail.EnableControls;
+            FormCalculationEstimate.RecalcEstimate;
+            pgcChange(nil);
+          end;
+        end;
+    end;
+  end;
+end;
+
 procedure TfCalcResource.mN3Click(Sender: TObject);
 begin
   if Application.MessageBox('Восстановить исходные значения строки?', 'Расчет стоимости ресурсов',
@@ -1083,14 +1255,14 @@ begin
     grMechBott.Options := grMechBott.Options - [dgMultiSelect]; }
   case pgc.ActivePageIndex of
     1:
-      frmReplace := TfrmReplacement.Create({IDEstimate}0, 0, 0, qrMaterialData.FieldByName('MAT_ID')
+      frmReplace := TfrmReplacement.Create( { IDEstimate } 0, 0, 0, qrMaterialData.FieldByName('MAT_ID')
         .AsInteger, 2, False, False);
     2:
-      frmReplace := TfrmReplacement.Create({IDEstimate}0, 0, 0, qrMechData.FieldByName('MECH_ID').AsInteger,
-        3, False, False);
+      frmReplace := TfrmReplacement.Create( { IDEstimate } 0, 0, 0, qrMechData.FieldByName('MECH_ID')
+        .AsInteger, 3, False, False);
     3:
-      frmReplace := TfrmReplacement.Create({IDEstimate}0, 0, 0, qrDevices.FieldByName('DEVICE_ID').AsInteger,
-        4, False, False);
+      frmReplace := TfrmReplacement.Create( { IDEstimate } 0, 0, 0, qrDevices.FieldByName('DEVICE_ID')
+        .AsInteger, 4, False, False);
   end;
   if Assigned(frmReplace) then
     try
@@ -1256,7 +1428,8 @@ begin
         mRestore.Visible := qrMaterialData.FieldByName('DELETED').AsInteger = 1;
         mReplace.Visible := True;
         mPROC_TRANSP.Visible := True;
-        //grMaterial.SelectedRows.CurrentRowSelected := True;
+        // grMaterial.SelectedRows.CurrentRowSelected := True;
+        mEdit.Visible := CheckQrActiveEmpty(qrMaterialData);
       end;
     // Расчет механизмов
     2:
@@ -1265,6 +1438,7 @@ begin
         mRestore.Visible := qrMechData.FieldByName('DELETED').AsInteger = 1;
         mReplace.Visible := True;
         mPROC_TRANSP.Visible := False;
+        mEdit.Visible := CheckQrActiveEmpty(qrMechData);
       end;
     // Расчет оборудования
     3:
@@ -1273,6 +1447,7 @@ begin
         mRestore.Visible := qrDevices.FieldByName('DELETED').AsInteger = 1;
         mReplace.Visible := True;
         mPROC_TRANSP.Visible := False;
+        mEdit.Visible := CheckQrActiveEmpty(qrDevices);
       end;
     // Расчет з\п
     4:
@@ -1281,6 +1456,7 @@ begin
         mRestore.Visible := qrRates.FieldByName('DELETED').AsInteger = 1;
         mReplace.Visible := False;
         mPROC_TRANSP.Visible := False;
+        mEdit.Visible := False;
       end;
   end;
 
@@ -1414,16 +1590,16 @@ begin
         // Если в режиме без НДС
         0:
           begin
-            priceQ := 'FCOAST_NO_NDS=:01, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100),'#13;
+            priceQ := 'FCOAST_NO_NDS=:01, FCOAST_NDS=FCOAST_NO_NDS /*FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100)*/,'#13;
             priceQ1 :=
-              'DEVICE_TRANSP_NO_NDS=:02, DEVICE_TRANSP_NDS=DEVICE_TRANSP_NO_NDS+(DEVICE_TRANSP_NO_NDS*NDS/100),'#13;
+              'DEVICE_TRANSP_NO_NDS=:02, DEVICE_TRANSP_NDS=DEVICE_TRANSP_NO_NDS /*DEVICE_TRANSP_NO_NDS+(DEVICE_TRANSP_NO_NDS*NDS/100)*/,'#13;
           end;
         // С НДС
         1:
           begin
-            priceQ := 'FCOAST_NDS=:01, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS),'#13;
+            priceQ := 'FCOAST_NDS=:01, FCOAST_NO_NDS=FCOAST_NDS /*FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS)*/,'#13;
             priceQ1 :=
-              'DEVICE_TRANSP_NDS=:02, DEVICE_TRANSP_NO_NDS=DEVICE_TRANSP_NDS-(DEVICE_TRANSP_NDS/(100+NDS)*NDS),'#13;
+              'DEVICE_TRANSP_NDS=:02, DEVICE_TRANSP_NO_NDS=DEVICE_TRANSP_NDS /*DEVICE_TRANSP_NDS-(DEVICE_TRANSP_NDS/(100+NDS)*NDS)*/,'#13;
           end;
       end;
 
@@ -1861,14 +2037,16 @@ begin
         // Если в режиме без НДС
         0:
           begin
-            priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100)'#13;
-            priceQ1 := 'FZP_MACH_NO_NDS=:1, FZP_MACH_NDS=FZP_MACH_NO_NDS+(FZP_MACH_NO_NDS*NDS/100)'#13;
+            priceQ := 'FCOAST_NO_NDS=:1, FCOAST_NDS=FCOAST_NO_NDS /*FCOAST_NO_NDS+(FCOAST_NO_NDS*NDS/100)*/'#13;
+            priceQ1 :=
+              'FZP_MACH_NO_NDS=:1, FZP_MACH_NDS=FZP_MACH_NO_NDS /*FZP_MACH_NO_NDS+(FZP_MACH_NO_NDS*NDS/100)*/'#13;
           end;
         // С НДС
         1:
           begin
-            priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS)'#13;
-            priceQ1 := 'FZP_MACH_NDS=:1, FZP_MACH_NO_NDS=FZP_MACH_NDS-(FZP_MACH_NDS/(100+NDS)*NDS)'#13;
+            priceQ := 'FCOAST_NDS=:1, FCOAST_NO_NDS=FCOAST_NDS /*FCOAST_NDS-(FCOAST_NDS/(100+NDS)*NDS)*/'#13;
+            priceQ1 :=
+              'FZP_MACH_NDS=:1, FZP_MACH_NO_NDS=FZP_MACH_NDS /*FZP_MACH_NDS-(FZP_MACH_NDS/(100+NDS)*NDS)*/'#13;
           end;
       end;
 
@@ -1923,8 +2101,3 @@ begin
 end;
 
 end.
-
-
-
-
-

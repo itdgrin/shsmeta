@@ -126,7 +126,9 @@ uses
   UserAccess in 'UserAccess.pas' {fUserAccess},
   RC6 in 'RC6.pas',
   uSelectColumn in 'uSelectColumn.pas' {fSelectColumn},
-  SerialKeyModule in 'SerialKeyModule.pas';
+  SerialKeyModule in 'SerialKeyModule.pas',
+  CardObjectAdditional in 'CardObjectAdditional.pas' {fCardObjectAdditional},
+  CalcResourceEdit in 'CalcResourceEdit.pas' {fCalcResourceEdit};
 
 {$R *.res}
 var MHandle: THandle;

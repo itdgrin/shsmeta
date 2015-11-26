@@ -631,6 +631,7 @@ object fCalcResource: TfCalcResource
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pm
           TabOrder = 0
@@ -645,6 +646,7 @@ object fCalcResource: TfCalcResource
           OnKeyDown = grMaterialKeyDown
           AutoAppend = False
           IniStorage = FormStorage
+          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1041,6 +1043,7 @@ object fCalcResource: TfCalcResource
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
@@ -1054,6 +1057,7 @@ object fCalcResource: TfCalcResource
           OnKeyDown = grMaterialKeyDown
           AutoAppend = False
           IniStorage = FormStorage
+          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1655,6 +1659,10 @@ object fCalcResource: TfCalcResource
     object N2: TMenuItem
       Caption = #1042#1099#1076#1077#1083#1080#1090#1100' '#1074#1089#1077
       OnClick = N2Click
+    end
+    object mEdit: TMenuItem
+      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      OnClick = mEditClick
     end
     object N4: TMenuItem
       Caption = '-'

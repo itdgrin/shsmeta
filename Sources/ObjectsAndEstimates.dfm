@@ -414,8 +414,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           RowSelect = True
           OnCustomDrawItem = tvEstimatesCustomDrawItem
           Mirror = False
-          ExplicitLeft = -1
-          ExplicitTop = 19
         end
       end
       object PanelActs: TPanel

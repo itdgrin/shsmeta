@@ -1673,7 +1673,9 @@ begin
   if not flLoaded then
     Exit;
 
+  //btn3.Visible := not Act;
  // btn3.Visible := not Act;
+  btnCalcFact.Visible := Act;
   //btnCalcFact.Visible := Act;
 
   btnCount := 0;

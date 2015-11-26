@@ -530,7 +530,10 @@ procedure TfObjectsAndEstimates.mDeleteEstimateClick(Sender: TObject);
 begin
   if MessageDlg('Удалить запись?', mtWarning, mbYesNo, 0) <> mrYes then
     Exit;
-  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=1 WHERE SM_ID=:SM_ID';
+  // DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=1 WHERE SM_ID=:SM_ID OR PARENT_ID=:SM_ID';
+  // Плохой временный вариант - перебор всей таблицы
+  DM.qrDifferent.SQL.Text :=
+    'UPDATE smetasourcedata SET DELETED=1 WHERE FN_getSortSM(SM_ID) LIKE CONCAT(FN_getSortSM(:SM_ID), "%")';
   DM.qrDifferent.ParamByName('SM_ID').AsInteger := qrTreeData.FieldByName('SM_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
   CloseOpen(qrTreeData, False);
@@ -617,11 +620,13 @@ end;
 
 procedure TfObjectsAndEstimates.mReapirEstimateClick(Sender: TObject);
 begin
-  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=0 WHERE SM_ID=:SM_ID';
+  // DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=0 WHERE SM_ID=:SM_ID OR PARENT_ID=:SM_ID';
+  // Плохой временный вариант - перебор всей таблицы
+  DM.qrDifferent.SQL.Text :=
+    'UPDATE smetasourcedata SET DELETED=0 WHERE FN_getSortSM(SM_ID) LIKE CONCAT(FN_getSortSM(:SM_ID), "%")';
   DM.qrDifferent.ParamByName('SM_ID').AsInteger := qrTreeData.FieldByName('SM_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
-  CloseOpen(qrTreeData);
-  tvEstimates.Selected.Text := qrTreeData.FieldByName('NAME').AsString;
+  CloseOpen(qrTreeData, False);
 end;
 
 procedure TfObjectsAndEstimates.mShowDeletedActsClick(Sender: TObject);
@@ -844,9 +849,14 @@ procedure TfObjectsAndEstimates.PMActsDeleteClick(Sender: TObject);
 begin
   if MessageDlg('Удалить запись?', mtWarning, mbYesNo, 0) <> mrYes then
     Exit;
-  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=1 WHERE SM_ID=:ID';
+  // DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=1 WHERE SM_ID=:ID OR PARENT_ID=:ID';
+  // Плохой временный вариант - перебор всей таблицы
+  DM.qrDifferent.SQL.Text :=
+    'UPDATE smetasourcedata SET DELETED=1 WHERE FN_getSortSM(SM_ID) LIKE CONCAT(FN_getSortSM(:ID), "%")';
   DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
+  // Пометить так же ПТМ если удаляем объектную
+  // ТОДО
   CloseOpen(qrActsEx, False);
 end;
 
@@ -944,9 +954,14 @@ end;
 
 procedure TfObjectsAndEstimates.mRepActClick(Sender: TObject);
 begin
-  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=0 WHERE SM_ID=:ID';
+  // DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET DELETED=0 WHERE SM_ID=:ID OR PARENT_ID=:ID';
+  // Плохой временный вариант - перебор всей таблицы
+  DM.qrDifferent.SQL.Text :=
+    'UPDATE smetasourcedata SET DELETED=0 WHERE FN_getSortSM(SM_ID) LIKE CONCAT(FN_getSortSM(:ID), "%")';
   DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
+  // Пометить так же ПТМ если удаляем объектную
+  // ТОДО
   CloseOpen(qrActsEx, False);
 end;
 
@@ -959,11 +974,11 @@ begin
 end;
 
 procedure TfObjectsAndEstimates.PMExportAllObjectClick(Sender: TObject);
-var DirStr,
-    XMLName: string;
-    ObjIndex: Integer;
-    TempBookmark: TBookMark;
-    TmpStr: string;
+var
+  DirStr, XMLName: string;
+  ObjIndex: Integer;
+  TempBookmark: TBookMark;
+  TmpStr: string;
 begin
   DirStr := '';
   ObjIndex := 0;
@@ -984,8 +999,7 @@ begin
         begin
           Inc(ObjIndex);
           XMLName := DirStr + '\Object' + IntToStr(ObjIndex) + '_' +
-            StringReplace(qrObjects.FieldByName('Name').AsString,
-              ' ', '_', [rfReplaceAll]) + '.xml';
+            StringReplace(qrObjects.FieldByName('Name').AsString, ' ', '_', [rfReplaceAll]) + '.xml';
           TmpStr := 'Экспорт объекта: ' + qrObjects.FieldByName('Name').AsString;
           FormWaiting.lbProcess.caption := TmpStr;
           Application.ProcessMessages;
