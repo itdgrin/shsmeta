@@ -1241,7 +1241,7 @@ end;
 procedure TFormCalculationEstimate.SpeedButtonSSRClick(Sender: TObject);
 begin
   ShowNeedSaveDialog;
-  ShellExecute(Handle, nil, 'report.exe', PChar('C' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
+  ShellExecute(Handle, nil, 'ssr.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
     PChar(GetCurrentDir + '\REPORTS\'), SW_maximIZE);
   Exit;
 
