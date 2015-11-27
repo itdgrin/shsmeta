@@ -37,7 +37,7 @@ object FormProgramSettings: TFormProgramSettings
     Top = 8
     Width = 632
     Height = 351
-    ActivePage = tsTables
+    ActivePage = tsSmeta
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -335,10 +335,6 @@ object FormProgramSettings: TFormProgramSettings
     object tsUpdate: TTabSheet
       Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1103
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         624
         323)
@@ -445,20 +441,113 @@ object FormProgramSettings: TFormProgramSettings
         OnClick = rbInetServerClick
       end
     end
-    object tsAll: TTabSheet
-      Caption = #1056#1072#1079#1085#1086#1077
-      ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+    object tsSmeta: TTabSheet
+      Caption = #1057#1084#1077#1090#1072'/'#1040#1082#1090
+      ImageIndex = 2
+      ExplicitLeft = 12
+      ExplicitTop = 28
       object lblOXROPR: TLabel
         Left = 3
-        Top = 229
+        Top = 75
         Width = 279
         Height = 13
         Caption = #1042#1080#1076' '#1088#1072#1073#1086#1090' '#1076#1083#1103' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055' '#1088#1072#1089#1094#1077#1085#1086#1082' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102':'
       end
+      object chkAutosaveRateDescr: TCheckBox
+        Left = 3
+        Top = 8
+        Width = 470
+        Height = 17
+        Caption = #1040#1074#1090#1086#1089#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1087#1088#1080' '#1080#1079#1084#1077#1085#1077#1085#1080#1080' '#1086#1087#1080#1089#1072#1085#1080#1103' '#1088#1072#1089#1094#1077#1085#1082#1080
+        Checked = True
+        State = cbChecked
+        TabOrder = 0
+      end
+      object chkShowNeedSaveDialog: TCheckBox
+        Left = 3
+        Top = 30
+        Width = 350
+        Height = 17
+        Caption = #1047#1072#1087#1088#1086#1089' '#1085#1072' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1089#1084#1077#1090#1099' '#1055#1045#1063#1040#1058#1068'-'#1057#1057#1056'-'#1056#1040#1057#1063#1045#1058' '#1057#1058#1054#1048#1052#1054#1057#1058#1048
+        Checked = True
+        State = cbChecked
+        TabOrder = 1
+      end
+      object chkFindAutoRepInAllRate: TCheckBox
+        Left = 3
+        Top = 51
+        Width = 494
+        Height = 17
+        Caption = #1048#1089#1082#1072#1090#1100' '#1072#1074#1090#1086#1079#1072#1084#1077#1085#1091' '#1087#1086' '#1074#1089#1077#1084' '#1088#1072#1089#1094#1077#1085#1082#1072#1084' '#1089#1084#1077#1090#1099
+        TabOrder = 2
+      end
+      object dblkcbbOXROPR: TDBLookupComboBox
+        Left = 285
+        Top = 71
+        Width = 336
+        Height = 21
+        Margins.Left = 0
+        Margins.Top = 2
+        Margins.Bottom = 2
+        Align = alCustom
+        DataField = 'def_work_id'
+        DataSource = dsMainData
+        DropDownRows = 10
+        KeyField = 'work_id'
+        ListField = 'NameWork'
+        ListSource = dsOXROPR
+        TabOrder = 3
+      end
+      object chkAddRateType1ToLocal: TCheckBox
+        Left = 3
+        Top = 96
+        Width = 279
+        Height = 17
+        Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1087#1091#1089#1082#1086#1085#1072#1083#1072#1076#1082#1091' '#1074' '#1083#1086#1082#1072#1083#1100#1085#1099#1077
+        TabOrder = 4
+      end
+      object chkAddRateType0ToPNR: TCheckBox
+        Left = 3
+        Top = 119
+        Width = 279
+        Height = 17
+        Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1088#1072#1089#1094#1077#1085#1082#1080' '#1074' '#1055#1053#1056
+        TabOrder = 5
+      end
+      object chkUseBoldFontForName: TCheckBox
+        Left = 3
+        Top = 139
+        Width = 295
+        Height = 17
+        Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1078#1080#1088#1085#1099#1081' '#1096#1088#1080#1092#1090' '#1076#1083#1103' '#1085#1072#1079#1074#1072#1085#1080#1081' '#1074' '#1089#1084#1077#1090#1077
+        Checked = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        State = cbChecked
+        TabOrder = 6
+      end
+      object chkAutoScrollToNextRow: TCheckBox
+        Left = 3
+        Top = 162
+        Width = 534
+        Height = 17
+        Caption = #1055#1077#1088#1077#1093#1086#1076#1080#1090#1100' '#1085#1072' '#1089#1083#1077#1076#1091#1102#1097#1091#1102' '#1089#1090#1088#1086#1082#1091' '#1087#1086#1089#1083#1077' '#1080#1079#1084#1077#1085#1077#1085#1080#1103' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1072
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 7
+      end
+    end
+    object tsAll: TTabSheet
+      Caption = #1056#1072#1079#1085#1086#1077
+      ImageIndex = 1
       object GroupBoxRound: TGroupBox
         Left = 3
         Top = 3
@@ -502,7 +591,7 @@ object FormProgramSettings: TFormProgramSettings
         Width = 317
         Height = 25
         Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1085#1072#1089#1090#1088#1086#1081#1082#1080' '#1087#1086' '#1091#1084#1086#1083#1095#1072#1085#1080#1102
-        TabOrder = 12
+        TabOrder = 6
         OnClick = ButtonDefaultOtherSettingsClick
       end
       object CheckBoxShowHint: TCheckBox
@@ -545,16 +634,6 @@ object FormProgramSettings: TFormProgramSettings
         State = cbChecked
         TabOrder = 4
       end
-      object chkAutosaveRateDescr: TCheckBox
-        Left = 3
-        Top = 162
-        Width = 470
-        Height = 17
-        Caption = #1040#1074#1090#1086#1089#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1087#1088#1080' '#1080#1079#1084#1077#1085#1077#1085#1080#1080' '#1086#1087#1080#1089#1072#1085#1080#1103' '#1088#1072#1089#1094#1077#1085#1082#1080
-        Checked = True
-        State = cbChecked
-        TabOrder = 6
-      end
       object chkAutoSaveCalcResourcesAfterExitCell: TCheckBox
         Left = 3
         Top = 140
@@ -564,73 +643,6 @@ object FormProgramSettings: TFormProgramSettings
           #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074' - '#1072#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1086#1077' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1080#1079#1084#1077#1085#1077#1085#1080#1081' '#1087 +
           #1088#1080' '#1087#1077#1088#1077#1093#1086#1076#1077' '#1074#1085#1091#1090#1088#1080' '#1088#1077#1076#1072#1082#1090#1080#1088#1091#1077#1084#1086#1081' '#1079#1072#1087#1080#1089#1080
         TabOrder = 5
-      end
-      object chkShowNeedSaveDialog: TCheckBox
-        Left = 3
-        Top = 184
-        Width = 350
-        Height = 17
-        Caption = #1047#1072#1087#1088#1086#1089' '#1085#1072' '#1089#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1089#1084#1077#1090#1099' '#1055#1045#1063#1040#1058#1068'-'#1057#1057#1056'-'#1056#1040#1057#1063#1045#1058' '#1057#1058#1054#1048#1052#1054#1057#1058#1048
-        Checked = True
-        State = cbChecked
-        TabOrder = 7
-      end
-      object chkFindAutoRepInAllRate: TCheckBox
-        Left = 3
-        Top = 205
-        Width = 494
-        Height = 17
-        Caption = #1048#1089#1082#1072#1090#1100' '#1072#1074#1090#1086#1079#1072#1084#1077#1085#1091' '#1087#1086' '#1074#1089#1077#1084' '#1088#1072#1089#1094#1077#1085#1082#1072#1084' '#1089#1084#1077#1090#1099
-        TabOrder = 8
-      end
-      object dblkcbbOXROPR: TDBLookupComboBox
-        Left = 285
-        Top = 225
-        Width = 336
-        Height = 21
-        Margins.Left = 0
-        Margins.Top = 2
-        Margins.Bottom = 2
-        Align = alCustom
-        DataField = 'def_work_id'
-        DataSource = dsMainData
-        DropDownRows = 10
-        KeyField = 'work_id'
-        ListField = 'NameWork'
-        ListSource = dsOXROPR
-        TabOrder = 9
-      end
-      object chkAddRateType1ToLocal: TCheckBox
-        Left = 3
-        Top = 250
-        Width = 279
-        Height = 17
-        Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1087#1091#1089#1082#1086#1085#1072#1083#1072#1076#1082#1091' '#1074' '#1083#1086#1082#1072#1083#1100#1085#1099#1077
-        TabOrder = 10
-      end
-      object chkAddRateType0ToPNR: TCheckBox
-        Left = 3
-        Top = 273
-        Width = 279
-        Height = 17
-        Caption = #1056#1072#1079#1088#1077#1096#1080#1090#1100' '#1076#1086#1073#1072#1074#1083#1103#1090#1100' '#1088#1072#1089#1094#1077#1085#1082#1080' '#1074' '#1055#1053#1056
-        TabOrder = 11
-      end
-      object chkUseBoldFontForName: TCheckBox
-        Left = 3
-        Top = 293
-        Width = 295
-        Height = 17
-        Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1078#1080#1088#1085#1099#1081' '#1096#1088#1080#1092#1090' '#1076#1083#1103' '#1085#1072#1079#1074#1072#1085#1080#1081' '#1074' '#1089#1084#1077#1090#1077
-        Checked = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        State = cbChecked
-        TabOrder = 13
       end
     end
   end

@@ -52,16 +52,11 @@ type
     chkAutoCreateEstimates: TCheckBox;
     chkAutoExpandTreeEstimates: TCheckBox;
     chkCalcResourcesAutoSave: TCheckBox;
-    chkAutosaveRateDescr: TCheckBox;
     chkAutoSaveCalcResourcesAfterExitCell: TCheckBox;
-    chkShowNeedSaveDialog: TCheckBox;
-    chkFindAutoRepInAllRate: TCheckBox;
-    lblOXROPR: TLabel;
     qrOXROPR: TFDQuery;
     dsOXROPR: TDataSource;
     qrMainData: TFDQuery;
     dsMainData: TDataSource;
-    dblkcbbOXROPR: TDBLookupComboBox;
     dlgFont1: TFontDialog;
     grp1: TGroupBox;
     lblFontRow: TLabel;
@@ -69,8 +64,6 @@ type
     lblFontText: TLabel;
     btnExample: TButton;
     edtExample: TEdit;
-    chkAddRateType1ToLocal: TCheckBox;
-    chkAddRateType0ToPNR: TCheckBox;
     tsUpdate: TTabSheet;
     rbInetServer: TRadioButton;
     rbLocalMirror: TRadioButton;
@@ -83,7 +76,16 @@ type
     edtCreateMirrorPath: TEdit;
     sbOpenDir1: TSpeedButton;
     lbCreateMirrorPath: TLabel;
+    tsSmeta: TTabSheet;
+    chkAutosaveRateDescr: TCheckBox;
+    chkShowNeedSaveDialog: TCheckBox;
+    chkFindAutoRepInAllRate: TCheckBox;
+    lblOXROPR: TLabel;
+    dblkcbbOXROPR: TDBLookupComboBox;
+    chkAddRateType1ToLocal: TCheckBox;
+    chkAddRateType0ToPNR: TCheckBox;
     chkUseBoldFontForName: TCheckBox;
+    chkAutoScrollToNextRow: TCheckBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -397,6 +399,7 @@ begin
   PS.AddRateType1ToLocal := chkAddRateType1ToLocal.Checked;
   PS.AddRateType0ToPNR := chkAddRateType0ToPNR.Checked;
   PS.UseBoldFontForName := chkUseBoldFontForName.Checked;
+  PS.AutoScrollToNextRow := chkAutoScrollToNextRow.Checked;
 
   PS.GridFontName := lblFontRow.Font.Name;
   PS.GridFontSize := lblFontRow.Font.Size;
@@ -458,6 +461,7 @@ begin
   chkAddRateType1ToLocal.Checked := PS.AddRateType1ToLocal;
   chkAddRateType0ToPNR.Checked := PS.AddRateType0ToPNR;
   chkUseBoldFontForName.Checked := PS.UseBoldFontForName;
+  chkAutoScrollToNextRow.Checked := PS.AutoScrollToNextRow;
 
   lblFontRow.Font.Name := PS.GridFontName;
   lblFontRow.Font.Size := PS.GridFontSize;

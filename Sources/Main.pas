@@ -358,6 +358,7 @@ type
     AddRateType1ToLocal: Boolean; // Разрешение добавлять пусконаладку в локальную смету
     AddRateType0ToPNR: Boolean; // Разрешение добавлять расценки в ПНР смету
     UseBoldFontForName: Boolean;
+    AutoScrollToNextRow: Boolean;
   end;
 
 const
@@ -2501,6 +2502,7 @@ begin
       PS.AddRateType1ToLocal := ReadBool('ESTIMATE', 'AddRateType1ToLocal', False);
       PS.AddRateType0ToPNR := ReadBool('ESTIMATE', 'AddRateType0ToPNR', False);
       PS.UseBoldFontForName := ReadBool('ESTIMATE', 'UseBoldFontForName', True);
+      PS.AutoScrollToNextRow := ReadBool('ESTIMATE', 'AutoScrollToNextRow', False);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -2561,6 +2563,7 @@ begin
       WriteBool('ESTIMATE', 'AddRateType1ToLocal', PS.AddRateType1ToLocal);
       WriteBool('ESTIMATE', 'AddRateType0ToPNR', PS.AddRateType0ToPNR);
       WriteBool('ESTIMATE', 'UseBoldFontForName', PS.UseBoldFontForName);
+      WriteBool('ESTIMATE', 'AutoScrollToNextRow', PS.AutoScrollToNextRow);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти

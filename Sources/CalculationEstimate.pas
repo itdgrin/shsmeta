@@ -3383,15 +3383,18 @@ begin
   qrTemp.ExecSQL;
   // Пересчитывает все величины по данной строке
   ReCalcRowRates;
-  qrRatesEx.DisableControls;
-  try
-    // Переходим на следующую строку после ввода кол-ва
-    qrRatesEx.Next;
-    // ...в колонку ввода кода расценки
-    grRatesEx.Col := 3;
-  finally
-    grRatesEx.SelectedRows.Clear;
-    qrRatesEx.EnableControls;
+  if PS.AutoScrollToNextRow then
+  begin
+    qrRatesEx.DisableControls;
+    try
+      // Переходим на следующую строку после ввода кол-ва
+      qrRatesEx.Next;
+      // ...в колонку ввода кода расценки
+      grRatesEx.Col := 3;
+    finally
+      grRatesEx.SelectedRows.Clear;
+      qrRatesEx.EnableControls;
+    end;
   end;
 end;
 
