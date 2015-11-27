@@ -175,6 +175,7 @@ type
     mN38: TMenuItem;
     FormStorage: TJvFormStorage;
     mDebug1: TMenuItem;
+    pmLicenseKey: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -287,6 +288,7 @@ type
     procedure mReportClick(Sender: TObject);
     procedure HelpSupportClick(Sender: TObject);
     procedure mDebug1Click(Sender: TObject);
+    procedure pmLicenseKeyClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -451,7 +453,8 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex,
   SprSelection,
   DebugTables,
   System.Win.Registry,
-  SerialKeyModule;
+  SerialKeyModule,
+  fLicense;
 
 {$R *.dfm}
 
@@ -680,7 +683,6 @@ begin
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
-var Tmp: TBytes;
 begin
   Width := Screen.Width;
   Height := Screen.Height;
@@ -699,8 +701,6 @@ begin
   FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
     C_ARHDIR);
 
-  GerLocalData(ExtractFileDrive(Application.ExeName), Tmp);
-  GerLocalKey(Tmp);
   // путь к папке с отчетами (Вадим)
   // {$IFDEF DEBUG}
   // FileReportPath := Copy(ExtractFilePath(Application.ExeName), 1, Length(ExtractFilePath(Application.ExeName))
@@ -2248,6 +2248,17 @@ begin
   if (MessageBox(Self.Handle, PChar('Удалить резервную копию от ' + StringReplace(Mi.Parent.Caption, '&', '',
     [rfReplaceAll]) + '?'), 'Резервное копирование', MB_YESNO + MB_ICONQUESTION) = IDYES) then
     FArhiv.DeleteArhiv(string(Mi.Parent.Tag));
+end;
+
+procedure TFormMain.pmLicenseKeyClick(Sender: TObject);
+var LicenseForm: TLicenseForm;
+begin
+  LicenseForm := TLicenseForm.Create(Self);
+  try
+    LicenseForm.ShowModal;
+  finally
+    FreeAndNil(LicenseForm);
+  end;
 end;
 
 procedure TFormMain.PMRestoreBackupClick(Sender: TObject);

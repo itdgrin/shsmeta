@@ -1,7 +1,7 @@
 unit SerialKeyModule;
 
 interface
-uses Winapi.Windows, System.SysUtils, System.AnsiStrings, RC6;
+uses Winapi.Windows, System.SysUtils, System.AnsiStrings, System.Classes, RC6;
 
 const
   SMART_GET_VERSION = $074080;
@@ -33,7 +33,7 @@ type
     UserKey: TBytes;
     DataBegin: TDateTime;
     DateEnd: TDateTime;
-    SerialKey: String;
+    SerialNumber: String;
   end;
 
   TSerialKeyData = TBytes;
@@ -81,9 +81,10 @@ type
   end;
 
 //Возвращает локальные данные для отправки на сервак или получения локального ключа
-procedure GerLocalData(const ADrive: string; var AKey: TBytes);
+procedure GetLocalData(const ADrive: string; var AData: TBytes);
+procedure GetLocalDataFile(const AData: TBytes; AStream: TStream);
 //Получение локального ключа
-procedure GerLocalKey(var AKey: TBytes);
+procedure GetLocalKey(var AKey: TBytes);
 //Получиние номера HDD по букве диска
 function GetHDDNumberByLetter(const ADrive: string): DWord;
 //Получиние серийника HDD !!! не работает без прав админа
@@ -209,40 +210,40 @@ begin
  GetVolumeInformation(PChar(ADrive), nil, 0, @Result, sz, fs, nil, 0);
 end;
 
-procedure GerLocalData(const ADrive: string; var AKey: TBytes);
+procedure GetLocalData(const ADrive: string; var AData: TBytes);
 const LKeyLen = 16;
-var Num: DWord;
-    Serial,
-    Revision,
-    Model,
-    TmpStr: AnsiString;
+var //Num: DWord;
+    //Serial,
+   // Revision,
+   // Model,
+    TmpBytes: TBytes;
     I, TmpLen: Integer;
 begin
-  SetLength(AKey, LKeyLen);
-  FillChar(AKey[0], LKeyLen, 0);
+  SetLength(AData, LKeyLen);
+  FillChar(AData[0], LKeyLen, 0);
 
   //Num := GetHDDNumberByLetter(ADrive);
   //if GetHDDSerialByNum(Num, Serial, Revision, Model) = 0 then
   // TmpStr := Serial + Revision + Model
   //else
-  TmpStr := IntToStr(GetDiskSerialNum(ADrive));
+  TmpBytes := TEncoding.Default.GetBytes(IntToStr(GetDiskSerialNum(ADrive)));
 
-  TmpLen := Length(TmpStr) * SizeOf(AnsiChar);
+  TmpLen := Length(TmpBytes);
   if TmpLen >= LKeyLen then
-    Move(TmpStr[1], AKey[0], LKeyLen)
+    Move(TmpBytes[0], AData[0], LKeyLen)
   else
   begin
     for I := 0 to LKeyLen div TmpLen - 1 do
-      Move(TmpStr[1], AKey[I * TmpLen], TmpLen);
-    Move(TmpStr[1], AKey[(LKeyLen div TmpLen) * TmpLen],
+      Move(TmpBytes[0], AData[I * TmpLen], TmpLen);
+    Move(TmpBytes[0], AData[(LKeyLen div TmpLen) * TmpLen],
       LKeyLen - (LKeyLen div TmpLen) * TmpLen);
   end;
 
-  for I := Low(AKey) to High(AKey) - 1 do
-    AKey[I + 1] := AKey[I + 1] xor AKey[I];
+  for I := Low(AData) to High(AData) - 1 do
+    AData[I + 1] := AData[I + 1] xor AData[I];
 end;
 
-procedure GerLocalKey(var AKey: TBytes);
+procedure GetLocalKey(var AKey: TBytes);
 const
   TmpKey: array[0..15] of byte =
     ($42,$72,$65,$67,$6f,$72,$69,$6f,$56,$69,$63,$74,$6f,$72,$69,$61);
@@ -255,6 +256,26 @@ begin
   finally
     FreeAndNil(RC6Encryptor);
   end;
+end;
+
+procedure GetLocalDataFile(const AData: TBytes; AStream: TStream);
+const FLen = 256;
+var TmpBytes: TBytes;
+    I, J: Integer;
+begin
+  SetLength(TmpBytes, FLen);
+  Randomize;
+  for I := Low(TmpBytes) to High(TmpBytes) do
+    TmpBytes[I] := Byte(Random(FLen));
+  J := TmpBytes[0];
+  if J = 0 then
+    J := 1;
+  if J + Length(AData) > FLen - 1 then
+    J := FLen - Length(AData) - 1;
+  Move(AData[0], TmpBytes[J], Length(AData));
+  for I := Low(TmpBytes) to High(TmpBytes) - 1 do
+    TmpBytes[I + 1] := TmpBytes[I + 1] xor TmpBytes[I];
+  AStream.Write(TmpBytes, FLen);
 end;
 
 end.
