@@ -168,7 +168,6 @@ begin
   Application.CreateForm(TfKC6, fKC6);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
-  Application.CreateForm(TLicenseForm, LicenseForm);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€

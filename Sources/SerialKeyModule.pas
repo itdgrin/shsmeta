@@ -4,6 +4,10 @@ interface
 uses Winapi.Windows, System.SysUtils, System.AnsiStrings, System.Classes, RC6;
 
 const
+
+  ConstKey: array[0..15] of byte =
+    ($42,$72,$65,$67,$6f,$72,$69,$6f,$56,$69,$63,$74,$6f,$72,$69,$61);
+
   SMART_GET_VERSION = $074080;
   SMART_SEND_DRIVE_COMMAND = $07C084;
   SMART_RCV_DRIVE_DATA = $07C088;
@@ -82,7 +86,8 @@ type
 
 //Возвращает локальные данные для отправки на сервак или получения локального ключа
 procedure GetLocalData(const ADrive: string; var AData: TBytes);
-procedure GetLocalDataFile(const AData: TBytes; AStream: TStream);
+procedure GetLocalDataFile(const ASerialKey: string; const AData: TBytes;
+  AStream: TStream);
 //Получение локального ключа
 procedure GetLocalKey(var AKey: TBytes);
 //Получиние номера HDD по букве диска
@@ -244,13 +249,10 @@ begin
 end;
 
 procedure GetLocalKey(var AKey: TBytes);
-const
-  TmpKey: array[0..15] of byte =
-    ($42,$72,$65,$67,$6f,$72,$69,$6f,$56,$69,$63,$74,$6f,$72,$69,$61);
 var
   RC6Encryptor: TRC6Encryptor;
 begin
-  RC6Encryptor := TRC6Encryptor.Create(TmpKey);
+  RC6Encryptor := TRC6Encryptor.Create(ConstKey);
   try
     AKey := RC6Encryptor.BytesEncrypt(AKey);
   finally
@@ -258,24 +260,41 @@ begin
   end;
 end;
 
-procedure GetLocalDataFile(const AData: TBytes; AStream: TStream);
+procedure GetLocalDataFile(const ASerialKey: string; const AData: TBytes;
+  AStream: TStream);
 const FLen = 256;
+      FKeyLen = 16;
 var TmpBytes: TBytes;
     I, J: Integer;
+    RC6Encryptor: TRC6Encryptor;
 begin
-  SetLength(TmpBytes, FLen);
+  if Length(ASerialKey) <> FKeyLen then
+    raise Exception.Create('Serial key is not correct.');
+
+  SetLength(TmpBytes, FKeyLen + FLen);
+
   Randomize;
   for I := Low(TmpBytes) to High(TmpBytes) do
-    TmpBytes[I] := Byte(Random(FLen));
+    TmpBytes[I] := Byte(Random(256));
+
   J := TmpBytes[0];
   if J = 0 then
     J := 1;
   if J + Length(AData) > FLen - 1 then
     J := FLen - Length(AData) - 1;
+
   Move(AData[0], TmpBytes[J], Length(AData));
-  for I := Low(TmpBytes) to High(TmpBytes) - 1 do
-    TmpBytes[I + 1] := TmpBytes[I + 1] xor TmpBytes[I];
-  AStream.Write(TmpBytes, FLen);
+  Move(TEncoding.ASCII.GetBytes(ASerialKey)[0], TmpBytes[FLen], FKeyLen);
+
+  RC6Encryptor := TRC6Encryptor.Create(ConstKey);
+  try
+    TmpBytes := RC6Encryptor.BytesEncrypt(TmpBytes);
+    TmpBytes := RC6Encryptor.BytesDecrypt(TmpBytes);
+  finally
+    FreeAndNil(RC6Encryptor);
+  end;
+
+  AStream.Write(TmpBytes, Length(TmpBytes));
 end;
 
 end.

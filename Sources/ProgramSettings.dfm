@@ -37,7 +37,7 @@ object FormProgramSettings: TFormProgramSettings
     Top = 8
     Width = 632
     Height = 351
-    ActivePage = tsSmeta
+    ActivePage = tsTables
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -444,8 +444,6 @@ object FormProgramSettings: TFormProgramSettings
     object tsSmeta: TTabSheet
       Caption = #1057#1084#1077#1090#1072'/'#1040#1082#1090
       ImageIndex = 2
-      ExplicitLeft = 12
-      ExplicitTop = 28
       object lblOXROPR: TLabel
         Left = 3
         Top = 75
@@ -543,6 +541,14 @@ object FormProgramSettings: TFormProgramSettings
         Font.Style = []
         ParentFont = False
         TabOrder = 7
+      end
+      object chkUseOldFormuls: TCheckBox
+        Left = 3
+        Top = 185
+        Width = 470
+        Height = 17
+        Caption = #1048#1089#1087#1086#1083#1100#1079#1086#1074#1072#1090#1100' '#1076#1083#1103' '#1088#1072#1089#1095#1077#1090#1072' '#1092#1086#1088#1084#1091#1083#1099' '#1080#1079' '#1089#1090#1072#1088#1086#1081' '#1087#1088#1086#1075#1088#1072#1084#1084#1099' '
+        TabOrder = 8
       end
     end
     object tsAll: TTabSheet

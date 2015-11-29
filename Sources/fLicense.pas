@@ -3,10 +3,28 @@ unit fLicense;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.Menus, Vcl.StdCtrls,
-  Vcl.ExtCtrls, JvExControls, JvLabel, JvExStdCtrls, JvHtControls,
-  Vcl.Imaging.pngimage;
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  System.IOUtils,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ComCtrls,
+  Vcl.Menus,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  JvExControls,
+  JvLabel,
+  JvExStdCtrls,
+  JvHtControls,
+  Vcl.Imaging.pngimage,
+  System.Actions,
+  Vcl.ActnList,
+  System.Types;
 
 type
   TLicenseForm = class(TForm)
@@ -38,26 +56,59 @@ type
     Label2: TLabel;
     Label3: TLabel;
     pmNewLicense: TPopupMenu;
-    N1: TMenuItem;
-    N2: TMenuItem;
+    pmLoadKeyFromInet: TMenuItem;
+    pmLoadKeyFromLocal: TMenuItem;
+    OpenDialog: TOpenDialog;
+    SaveDialog: TSaveDialog;
+    lbSelectLicense: TJvLabel;
+    cbSelectLicense: TComboBox;
+    btnDeleteLicense: TButton;
+    ActionList: TActionList;
+    actDelLicense: TAction;
     procedure btnNewLicenseDropDownClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure edtSerial1Change(Sender: TObject);
     procedure edtSerial1Enter(Sender: TObject);
     procedure edtSerial1Exit(Sender: TObject);
-    procedure N1Click(Sender: TObject);
+    procedure pmLoadKeyFromInetClick(Sender: TObject);
+    procedure btnSaveDataFileClick(Sender: TObject);
+    procedure pmLoadKeyFromLocalClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure actDelLicenseUpdate(Sender: TObject);
+    procedure actDelLicenseExecute(Sender: TObject);
+
   private
-    { Private declarations }
+    FCurLicenseFile: string;
+    FLicenseList: TStringDynArray;
+    function GetSerialNumber(var ASNumber: string): Boolean;
+    procedure UpdateLicenseInfo;
+    function GetCurLicenseFile: string;
+    procedure SetCurLicenseFile(const ALicenseFile: string);
   public
     { Public declarations }
   end;
 
-var
-  LicenseForm: TLicenseForm;
-
 implementation
+uses
+ System.Win.Registry,
+ SerialKeyModule,
+ GlobsAndConst;
 
 {$R *.dfm}
+
+procedure TLicenseForm.actDelLicenseExecute(Sender: TObject);
+begin
+  if TFile.Exists(FCurLicenseFile) then
+  begin
+    TFile.Delete(FCurLicenseFile);
+  end;
+  UpdateLicenseInfo;
+end;
+
+procedure TLicenseForm.actDelLicenseUpdate(Sender: TObject);
+begin
+  actDelLicense.Enabled := FCurLicenseFile <> EmptyStr;
+end;
 
 procedure TLicenseForm.btnCloseClick(Sender: TObject);
 begin
@@ -71,6 +122,168 @@ begin
   Point.Y := btnNewLicense.Top + btnNewLicense.Height;
   Point := MainPanel.ClientToScreen(Point);
   pmNewLicense.Popup(Point.X, Point.Y);
+end;
+
+function TLicenseForm.GetSerialNumber(var ASNumber: string): Boolean;
+begin
+  ASNumber :=
+    edtSerial1.Text + edtSerial2.Text + edtSerial3.Text + edtSerial4.Text;
+  if Length(ASNumber) <> 16 then
+  begin
+    ShowMessage('Введите правильный серийный номер.');
+    edtSerial1.SetFocus;
+    Result := False;
+    Exit;
+  end;
+  Result := True;
+end;
+
+procedure TLicenseForm.pmLoadKeyFromInetClick(Sender: TObject);
+var SNumber: string;
+begin
+  if not GetSerialNumber(SNumber) then
+    Exit;
+
+end;
+
+function TLicenseForm.GetCurLicenseFile: string;
+var Reg: TRegistry;
+    CurKey: string;
+begin
+  Result := '';
+  Reg := TRegistry.Create(KEY_ALL_ACCESS);
+  try
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    CurKey := C_REGKEY + '\' + C_LICENSEKEY;
+
+    if Reg.OpenKey(CurKey, True) then
+    begin
+      if not Reg.ValueExists('UpdateType') then
+        Result := Reg.ReadString('UpdateType');
+    end
+    else
+      raise Exception.Create('Unable to create key!');
+
+    Reg.CloseKey;
+  finally
+    Reg.CloseKey;
+    FreeAndNil(Reg);
+  end;
+end;
+
+procedure TLicenseForm.SetCurLicenseFile(const ALicenseFile: string);
+var Reg: TRegistry;
+    CurKey: string;
+begin
+  Reg := TRegistry.Create(KEY_ALL_ACCESS);
+  try
+    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    CurKey := C_REGKEY + '\' + C_LICENSEKEY;
+
+    if Reg.OpenKey(CurKey, True) then
+      Reg.WriteString('CurLicense', ALicenseFile)
+    else
+      raise Exception.Create('Unable to create key!');
+
+    Reg.CloseKey;
+  finally
+    Reg.CloseKey;
+    FreeAndNil(Reg);
+  end;
+end;
+
+procedure TLicenseForm.pmLoadKeyFromLocalClick(Sender: TObject);
+var LicensePath,
+    FileName: string;
+    Ind: Integer;
+    TmpName,
+    TmpExt: string;
+begin
+  if OpenDialog.Execute(Self.Handle) then
+  begin
+    LicensePath := ExtractFilePath(Application.ExeName) + C_LICENSEDIR;
+    FileName := ExtractFileName(OpenDialog.FileName);
+    if TDirectory.Exists(LicensePath) then
+      TDirectory.CreateDirectory(LicensePath);
+    //Если файл с таким именем существует, изменяет имя при копировании
+    if TFile.Exists(LicensePath + FileName) then
+    begin
+      Ind := 1;
+      TmpName := ChangeFileExt(FileName, '');
+      TmpExt := ExtractFileExt(FileName);
+      while TFile.Exists(LicensePath + TmpName + Ind.ToString + TmpExt) do
+        Inc(Ind);
+      FileName := LicensePath + TmpName + Ind.ToString + TmpExt;
+    end;
+
+    TFile.Copy(OpenDialog.FileName, LicensePath + FileName);
+    SetCurLicenseFile(LicensePath + FileName);
+    UpdateLicenseInfo;
+  end;
+end;
+
+procedure TLicenseForm.btnSaveDataFileClick(Sender: TObject);
+var SNumber: string;
+    FStream: TFileStream;
+    LocalData: TBytes;
+begin
+  if not GetSerialNumber(SNumber) then
+    Exit;
+
+  if SaveDialog.Execute(Self.Handle) then
+  begin
+    SaveDialog.FileName := ChangeFileExt(SaveDialog.FileName, '.dat');
+    FStream := TFileStream.Create(SaveDialog.FileName, fmCreate);
+    try
+      GetLocalData(ExtractFileDrive(Application.ExeName), LocalData);
+      GetLocalDataFile(SNumber, LocalData, FStream);
+    finally
+      FreeAndNil(FStream);
+    end;
+  end;
+end;
+
+procedure TLicenseForm.UpdateLicenseInfo;
+var LicensePath: string;
+    Flag: Integer;
+    I: Integer;
+begin
+  LicensePath := ExtractFilePath(Application.ExeName) + C_LICENSEDIR;
+  //Получение списка файлов лицензии
+  FLicenseList :=
+    TDirectory.GetFiles(LicensePath, '*.xml', TSearchOption.soTopDirectoryOnly);
+  //Получение текущей  лицензии
+  FCurLicenseFile := GetCurLicenseFile;
+  cbSelectLicense.Items.Clear;
+
+  if Length(FLicenseList) = 0 then
+  begin
+    if FCurLicenseFile <> '' then
+    begin
+      FCurLicenseFile := '';
+      SetCurLicenseFile(FCurLicenseFile);
+    end;
+  end
+  else
+  begin
+    Flag := 0;
+    for I := Low(FLicenseList) to High(FLicenseList) do
+    begin
+      cbSelectLicense.Items.Add(ExtractFileName(FLicenseList[I]));
+      if FLicenseList[I].ToLower = FCurLicenseFile.ToLower then
+        Flag := I;
+    end;
+    cbSelectLicense.ItemIndex := Flag;
+
+    //Устанавливает текущей первую лицензиию, если текущая не найдена
+    if FLicenseList[Flag].ToLower <> FCurLicenseFile.ToLower then
+    begin
+      FCurLicenseFile := FLicenseList[Flag];
+      SetCurLicenseFile(FCurLicenseFile);
+    end;
+  end;
+
+  //Добавить расшифровку текущего ключа
 end;
 
 procedure TLicenseForm.edtSerial1Change(Sender: TObject);
@@ -91,9 +304,9 @@ begin
   UnloadKeyboardLayout((Sender as TEdit).Tag);
 end;
 
-procedure TLicenseForm.N1Click(Sender: TObject);
+procedure TLicenseForm.FormShow(Sender: TObject);
 begin
-  //Передача данных через иент на сервер и сохрание ответа
+  UpdateLicenseInfo;
 end;
 
 end.

@@ -2,7 +2,7 @@ object LicenseForm: TLicenseForm
   Left = 0
   Top = 0
   Caption = #1051#1080#1094#1077#1085#1079#1080#1103' SMR '#8211' HPP 2012 '
-  ClientHeight = 284
+  ClientHeight = 293
   ClientWidth = 493
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,39 +12,37 @@ object LicenseForm: TLicenseForm
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object ButtonPanel: TPanel
     Left = 0
-    Top = 243
+    Top = 252
     Width = 493
     Height = 41
     Align = alBottom
     ParentBackground = False
     TabOrder = 0
-    ExplicitLeft = 8
-    ExplicitTop = 266
-    ExplicitWidth = 614
+    ExplicitTop = 243
     DesignSize = (
       493
       41)
     object btnClose: TButton
-      Left = 376
-      Top = 8
-      Width = 107
-      Height = 25
+      Left = 381
+      Top = 7
+      Width = 106
+      Height = 26
       Anchors = [akTop, akRight]
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 0
       OnClick = btnCloseClick
-      ExplicitLeft = 400
     end
   end
   object MainPanel: TPanel
     Left = 0
     Top = 0
     Width = 493
-    Height = 243
+    Height = 252
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -53,13 +51,9 @@ object LicenseForm: TLicenseForm
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    ExplicitLeft = 8
-    ExplicitTop = 2
-    ExplicitWidth = 508
-    ExplicitHeight = 277
     DesignSize = (
       493
-      243)
+      252)
     object Bevel1: TBevel
       Left = 73
       Top = 24
@@ -288,7 +282,7 @@ object LicenseForm: TLicenseForm
     end
     object lbUserNameTitle: TJvLabel
       Left = 9
-      Top = 82
+      Top = 102
       Width = 63
       Height = 16
       Caption = #1042#1083#1072#1076#1077#1083#1077#1094':'
@@ -302,7 +296,7 @@ object LicenseForm: TLicenseForm
     end
     object lbActDateTitle: TJvLabel
       Left = 10
-      Top = 101
+      Top = 121
       Width = 101
       Height = 16
       Caption = #1044#1072#1090#1072' '#1072#1082#1090#1080#1074#1072#1094#1080#1080':'
@@ -316,7 +310,7 @@ object LicenseForm: TLicenseForm
     end
     object lbEndDateTitle: TJvLabel
       Left = 10
-      Top = 120
+      Top = 140
       Width = 102
       Height = 16
       Caption = #1044#1072#1090#1072' '#1086#1082#1086#1085#1095#1072#1085#1080#1103':'
@@ -330,7 +324,7 @@ object LicenseForm: TLicenseForm
     end
     object lbLicenFileTitle: TJvLabel
       Left = 10
-      Top = 139
+      Top = 159
       Width = 97
       Height = 16
       Caption = #1060#1072#1081#1083' '#1083#1080#1094#1077#1085#1079#1080#1080':'
@@ -344,7 +338,7 @@ object LicenseForm: TLicenseForm
     end
     object lbLicenFile: TJvLabel
       Left = 130
-      Top = 139
+      Top = 159
       Width = 17
       Height = 16
       Caption = '---'
@@ -358,7 +352,7 @@ object LicenseForm: TLicenseForm
     end
     object lbEndDate: TJvLabel
       Left = 130
-      Top = 120
+      Top = 140
       Width = 17
       Height = 16
       Caption = '---'
@@ -372,7 +366,7 @@ object LicenseForm: TLicenseForm
     end
     object lbActDate: TJvLabel
       Left = 130
-      Top = 101
+      Top = 121
       Width = 17
       Height = 16
       Caption = '---'
@@ -386,7 +380,7 @@ object LicenseForm: TLicenseForm
     end
     object lbUserName: TJvLabel
       Left = 130
-      Top = 82
+      Top = 102
       Width = 17
       Height = 16
       Caption = '---'
@@ -400,45 +394,58 @@ object LicenseForm: TLicenseForm
     end
     object Bevel2: TBevel
       Left = 9
-      Top = 161
+      Top = 168
       Width = 474
       Height = 15
       Anchors = [akLeft, akTop, akRight]
       Shape = bsBottomLine
       Style = bsRaised
-      ExplicitWidth = 489
     end
     object lbSerialTitle: TLabel
       Left = 10
-      Top = 187
+      Top = 194
       Width = 88
       Height = 13
       Caption = #1057#1077#1088#1080#1081#1085#1099#1081' '#1085#1086#1084#1077#1088':'
     end
     object Label1: TLabel
       Left = 163
-      Top = 187
+      Top = 194
       Width = 4
       Height = 13
       Caption = '-'
     end
     object Label2: TLabel
       Left = 231
-      Top = 187
+      Top = 194
       Width = 4
       Height = 13
       Caption = '-'
     end
     object Label3: TLabel
       Left = 299
-      Top = 187
+      Top = 194
       Width = 4
       Height = 13
       Caption = '-'
     end
+    object lbSelectLicense: TJvLabel
+      Left = 10
+      Top = 73
+      Width = 133
+      Height = 16
+      Caption = #1042#1099#1073#1088#1072#1085#1085#1099#1103' '#1083#1080#1094#1077#1085#1079#1080#1103':'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      Transparent = True
+    end
     object btnNewLicense: TButton
       Left = 9
-      Top = 211
+      Top = 218
       Width = 167
       Height = 26
       Caption = #1055#1086#1083#1091#1095#1077#1085#1080#1077' '#1085#1086#1074#1086#1081' '#1083#1080#1094#1077#1085#1079#1080#1080
@@ -454,18 +461,20 @@ object LicenseForm: TLicenseForm
     end
     object btnSaveDataFile: TButton
       Left = 182
-      Top = 211
+      Top = 218
       Width = 184
       Height = 26
       Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1083#1086#1082#1072#1083#1100#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
       TabOrder = 5
+      OnClick = btnSaveDataFileClick
     end
     object edtSerial1: TEdit
       Left = 100
-      Top = 184
+      Top = 191
       Width = 62
       Height = 21
       TabStop = False
+      Alignment = taCenter
       CharCase = ecUpperCase
       MaxLength = 4
       TabOrder = 0
@@ -475,9 +484,10 @@ object LicenseForm: TLicenseForm
     end
     object edtSerial2: TEdit
       Left = 168
-      Top = 184
+      Top = 191
       Width = 62
       Height = 21
+      Alignment = taCenter
       CharCase = ecUpperCase
       MaxLength = 4
       TabOrder = 1
@@ -487,9 +497,10 @@ object LicenseForm: TLicenseForm
     end
     object edtSerial3: TEdit
       Left = 236
-      Top = 184
+      Top = 191
       Width = 62
       Height = 21
+      Alignment = taCenter
       CharCase = ecUpperCase
       MaxLength = 4
       TabOrder = 2
@@ -499,9 +510,10 @@ object LicenseForm: TLicenseForm
     end
     object edtSerial4: TEdit
       Left = 304
-      Top = 184
+      Top = 191
       Width = 62
       Height = 21
+      Alignment = taCenter
       CharCase = ecUpperCase
       MaxLength = 4
       TabOrder = 3
@@ -509,16 +521,52 @@ object LicenseForm: TLicenseForm
       OnEnter = edtSerial1Enter
       OnExit = edtSerial1Exit
     end
+    object cbSelectLicense: TComboBox
+      Left = 149
+      Top = 71
+      Width = 196
+      Height = 21
+      Style = csDropDownList
+      TabOrder = 6
+    end
+    object btnDeleteLicense: TButton
+      Left = 372
+      Top = 218
+      Width = 115
+      Height = 26
+      Action = actDelLicense
+      TabOrder = 7
+    end
   end
   object pmNewLicense: TPopupMenu
-    Left = 408
-    Top = 192
-    object N1: TMenuItem
+    Left = 424
+    Top = 120
+    object pmLoadKeyFromInet: TMenuItem
       Caption = #1055#1086#1083#1091#1095#1080#1090#1100' '#1092#1072#1081#1083' '#1083#1080#1094#1077#1085#1079#1080#1080' '#1095#1077#1088#1077#1079' '#1048#1085#1090#1077#1088#1085#1077#1090
-      OnClick = N1Click
+      OnClick = pmLoadKeyFromInetClick
     end
-    object N2: TMenuItem
+    object pmLoadKeyFromLocal: TMenuItem
       Caption = #1059#1082#1072#1079#1072#1090#1100' '#1087#1091#1090#1100' '#1082' '#1092#1072#1081#1083#1091' '#1085#1072' '#1076#1080#1089#1082#1077
+      OnClick = pmLoadKeyFromLocalClick
+    end
+  end
+  object OpenDialog: TOpenDialog
+    Filter = #1060#1072#1081#1083' '#1083#1080#1094#1077#1085#1079#1080#1080'|*.key'
+    Left = 280
+    Top = 120
+  end
+  object SaveDialog: TSaveDialog
+    Filter = #1060#1072#1081#1083' '#1083#1086#1082#1072#1083#1100#1085#1099#1081' '#1076#1072#1085#1085#1099#1093'|*.dat'
+    Left = 352
+    Top = 120
+  end
+  object ActionList: TActionList
+    Left = 216
+    Top = 120
+    object actDelLicense: TAction
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1083#1080#1094#1077#1085#1079#1080#1102
+      OnExecute = actDelLicenseExecute
+      OnUpdate = actDelLicenseUpdate
     end
   end
 end

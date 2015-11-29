@@ -86,6 +86,7 @@ type
     chkAddRateType0ToPNR: TCheckBox;
     chkUseBoldFontForName: TCheckBox;
     chkAutoScrollToNextRow: TCheckBox;
+    chkUseOldFormuls: TCheckBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -400,6 +401,8 @@ begin
   PS.AddRateType0ToPNR := chkAddRateType0ToPNR.Checked;
   PS.UseBoldFontForName := chkUseBoldFontForName.Checked;
   PS.AutoScrollToNextRow := chkAutoScrollToNextRow.Checked;
+  PS.UseOldFormuls := chkUseOldFormuls.Checked;
+  G_CALCMODE := Byte(PS.UseOldFormuls);
 
   PS.GridFontName := lblFontRow.Font.Name;
   PS.GridFontSize := lblFontRow.Font.Size;
@@ -462,6 +465,7 @@ begin
   chkAddRateType0ToPNR.Checked := PS.AddRateType0ToPNR;
   chkUseBoldFontForName.Checked := PS.UseBoldFontForName;
   chkAutoScrollToNextRow.Checked := PS.AutoScrollToNextRow;
+  chkUseOldFormuls.Checked := PS.UseOldFormuls;
 
   lblFontRow.Font.Name := PS.GridFontName;
   lblFontRow.Font.Size := PS.GridFontSize;

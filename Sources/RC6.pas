@@ -459,7 +459,7 @@ begin
   Result := String(PChar(TmpArray));
 end;
 
-function TRC6Encryptor.BytesDecrypt(const Bytes: TBytes): TBytes;
+function TRC6Encryptor.BytesEncrypt(const Bytes: TBytes): TBytes;
 var TmpCount: Integer;
     I: Integer;
 begin
@@ -472,7 +472,7 @@ begin
     RC6EncryptECB(FData, @Result[16 * I], @Result[16 * I]);
 end;
 
-function TRC6Encryptor.BytesEncrypt(const Bytes: TBytes): TBytes;
+function TRC6Encryptor.BytesDecrypt(const Bytes: TBytes): TBytes;
 var TmpCount: Integer;
     I: Integer;
 begin

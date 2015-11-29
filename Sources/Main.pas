@@ -359,6 +359,7 @@ type
     AddRateType0ToPNR: Boolean; // Разрешение добавлять расценки в ПНР смету
     UseBoldFontForName: Boolean;
     AutoScrollToNextRow: Boolean;
+    UseOldFormuls: Boolean;
   end;
 
 const
@@ -555,7 +556,7 @@ end;
 procedure TFormMain.GetUpdateSystemInfo;
 var ini: TIniFile;
     Reg: TRegistry;
-    CurrKey: string;
+    CurKey: string;
 begin
   ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + С_UPD_NAME + '.ini');
   try
@@ -582,9 +583,9 @@ begin
   Reg := TRegistry.Create(KEY_ALL_ACCESS);
   try
     Reg.RootKey := HKEY_LOCAL_MACHINE;
-    CurrKey := C_REGKEY + '\' + С_UPD_NAME;
+    CurKey := C_REGKEY + '\' + С_UPD_NAME;
 
-    if Reg.OpenKey(CurrKey, True) then
+    if Reg.OpenKey(CurKey, True) then
     begin
       if not Reg.ValueExists('UpdateType') then
         Reg.WriteInteger('UpdateType', 0);
@@ -2503,6 +2504,8 @@ begin
       PS.AddRateType0ToPNR := ReadBool('ESTIMATE', 'AddRateType0ToPNR', False);
       PS.UseBoldFontForName := ReadBool('ESTIMATE', 'UseBoldFontForName', True);
       PS.AutoScrollToNextRow := ReadBool('ESTIMATE', 'AutoScrollToNextRow', False);
+      PS.UseOldFormuls := ReadBool('ESTIMATE', 'UseOldFormuls', False);
+      G_CALCMODE := Byte(PS.UseOldFormuls);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
@@ -2564,6 +2567,7 @@ begin
       WriteBool('ESTIMATE', 'AddRateType0ToPNR', PS.AddRateType0ToPNR);
       WriteBool('ESTIMATE', 'UseBoldFontForName', PS.UseBoldFontForName);
       WriteBool('ESTIMATE', 'AutoScrollToNextRow', PS.AutoScrollToNextRow);
+      WriteBool('ESTIMATE', 'UseOldFormuls', PS.UseOldFormuls);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти
