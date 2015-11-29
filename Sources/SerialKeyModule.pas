@@ -39,8 +39,10 @@ type
     DateEnd: TDateTime;
     SerialNumber: String;
   end;
+  PSerialKeyInfo = ^TSerialKeyInfo;
 
   TSerialKeyData = TBytes;
+  PSerialKeyData = ^TSerialKeyData;
 
   TIdeRegs = packed record
     bFeaturesReg,
@@ -84,12 +86,6 @@ type
     dwReserved: array[1..4] of DWord;
   end;
 
-//Возвращает локальные данные для отправки на сервак или получения локального ключа
-procedure GetLocalData(const ADrive: string; var AData: TBytes);
-procedure GetLocalDataFile(const ASerialKey: string; const AData: TBytes;
-  AStream: TStream);
-//Получение локального ключа
-procedure GetLocalKey(var AKey: TBytes);
 //Получиние номера HDD по букве диска
 function GetHDDNumberByLetter(const ADrive: string): DWord;
 //Получиние серийника HDD !!! не работает без прав админа
@@ -98,6 +94,19 @@ function GetHDDSerialByNum(ANum: DWord;
 procedure CorrectDevInfo(var _params: TSendCmdOutParams);
 //Получает серийник логического диска
 function GetDiskSerialNum(const ADrive: string): DWord;
+//Получение локального ключа
+procedure GetLocalKey(var AKey: TBytes);
+//Возвращает локальные данные для отправки на сервак или получения локального ключа
+procedure GetLocalData(const ADrive: string; var AData: TBytes);
+//Записывает лакальные данные в файл (поток)
+procedure GetLocalDataFile(const ASerialKey: string; const AData: TBytes;
+  AStream: TStream);
+//Создает ключ-файл
+procedure CreateKeyFile(const AFileName: string; const AKey: TBytes;
+  const ASerialKeyInfo: TSerialKeyInfo; const ASerialKeyData: TSerialKeyData);
+//Извлекает данные из ключ-файла
+procedure GetSerialKeyInfo(const AFileName: string; const AKey: TBytes;
+  var APSerialKeyInfo: PSerialKeyInfo; var APSerialKeyData: PSerialKeyData);
 
 
 implementation
@@ -289,12 +298,41 @@ begin
   RC6Encryptor := TRC6Encryptor.Create(ConstKey);
   try
     TmpBytes := RC6Encryptor.BytesEncrypt(TmpBytes);
-    TmpBytes := RC6Encryptor.BytesDecrypt(TmpBytes);
   finally
     FreeAndNil(RC6Encryptor);
   end;
 
   AStream.Write(TmpBytes, Length(TmpBytes));
+end;
+
+procedure CreateKeyFile(const AFileName: string; const AKey: TBytes;
+  const ASerialKeyInfo: TSerialKeyInfo; const ASerialKeyData: TSerialKeyData);
+var  RC6Encryptor: TRC6Encryptor;
+     TmpStream: TMemoryStream;
+     TmpBytes: TBytes;
+     TmpStr: string;
+begin
+  TmpStream := TMemoryStream.Create;
+  try
+    SetLength(TmpBytes, 256);
+    TmpStr := Copy(ASerialKeyInfo.UserName, 1, 128);
+    Move(TmpStr[1], TmpBytes[0], Length(TmpStr) * SizeOf(Char));
+    TmpStream.Write(TmpBytes, 256);
+    TmpStream.Write(ASerialKeyInfo.UserKey, Length(ASerialKeyInfo.UserKey));
+    TmpStream.Write(ASerialKeyInfo.DataBegin, SizeOf(ASerialKeyInfo.DataBegin));
+    TmpStream.Write(ASerialKeyInfo.DateEnd, SizeOf(ASerialKeyInfo.DateEnd));
+  finally
+    FreeAndNil(TmpStream);
+  end;
+end;
+
+procedure GetSerialKeyInfo(const AFileName: string; const AKey: TBytes;
+  var APSerialKeyInfo: PSerialKeyInfo; var APSerialKeyData: PSerialKeyData);
+var  RC6Encryptor: TRC6Encryptor;
+     TmpStream: TMemoryStream;
+begin
+
+
 end;
 
 end.

@@ -23,7 +23,6 @@ object LicenseForm: TLicenseForm
     Align = alBottom
     ParentBackground = False
     TabOrder = 0
-    ExplicitTop = 243
     DesignSize = (
       493
       41)

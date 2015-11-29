@@ -5266,7 +5266,8 @@ begin
         sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  if ((Pos('е18', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(10)) and FAutoAddE18) or
+  //автоматическая вставка пуска и регулировки, отключена по просьбе заказчика
+  {if ((Pos('е18', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(10)) and FAutoAddE18) or
     ((Pos('е20', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(11)) and FAutoAddE20) then
   begin
     if (Pos('е18', AnsiLowerCase(NewRateCode)) > 0) then
@@ -5293,7 +5294,7 @@ begin
           end;
       end;
   end
-  else
+  else}
     OutputDataToTable(True);
   // Проверка нескольких настроек ОХРиОПР и ПП
   // ТОДО
@@ -5369,13 +5370,14 @@ begin
 
   qrTemp.Active := False;
   qrTemp.SQL.Text := 'INSERT INTO data_row_temp ' +
-    '(ID, SM_ID, id_type_data, NUM_ROW, NOM_ROW_MANUAL) VALUE ' +
-    '(GetNewID(:IDType), :SM_ID, :SType, :NUM_ROW, :NOM_ROW_MANUAL);';
+    '(ID, SM_ID, id_type_data, NUM_ROW, NOM_ROW_MANUAL, E1820_COUNT) VALUE ' +
+    '(GetNewID(:IDType), :SM_ID, :SType, :NUM_ROW, :NOM_ROW_MANUAL, :E1820_COUNT);';
   qrTemp.ParamByName('IDType').Value := C_ID_DATA;
   qrTemp.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
   qrTemp.ParamByName('SType').Value := (Sender as TComponent).Tag;
   qrTemp.ParamByName('NUM_ROW').Value := Iterator;
   qrTemp.ParamByName('NOM_ROW_MANUAL').Value := FNewNomManual;
+  qrTemp.ParamByName('E1820_COUNT').Value := 1;
   qrTemp.ExecSQL;
 
   qrTemp.SQL.Text := 'CALL UpdateNomManual(:IdEstimate, 0, 0);';

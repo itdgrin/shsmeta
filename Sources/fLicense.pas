@@ -100,6 +100,11 @@ procedure TLicenseForm.actDelLicenseExecute(Sender: TObject);
 begin
   if TFile.Exists(FCurLicenseFile) then
   begin
+    if Application.MessageBox('Удалить текущую лицезию?',
+        PChar(Application.Title),
+        MB_OKCANCEL + MB_ICONQUESTION + MB_TOPMOST) = mrCancel then
+      Exit;
+
     TFile.Delete(FCurLicenseFile);
   end;
   UpdateLicenseInfo;
@@ -249,9 +254,10 @@ var LicensePath: string;
     I: Integer;
 begin
   LicensePath := ExtractFilePath(Application.ExeName) + C_LICENSEDIR;
+  TDirectory.CreateDirectory(LicensePath);
   //Получение списка файлов лицензии
   FLicenseList :=
-    TDirectory.GetFiles(LicensePath, '*.xml', TSearchOption.soTopDirectoryOnly);
+    TDirectory.GetFiles(LicensePath, '*.key', TSearchOption.soTopDirectoryOnly);
   //Получение текущей  лицензии
   FCurLicenseFile := GetCurLicenseFile;
   cbSelectLicense.Items.Clear;
@@ -293,15 +299,15 @@ begin
 end;
 
 procedure TLicenseForm.edtSerial1Enter(Sender: TObject);
-var
-  Layout: array[0.. KL_NAMELENGTH] of char;
+//var
+//  Layout: array[0.. KL_NAMELENGTH] of char;
 begin
- (Sender as TEdit).Tag := LoadKeyboardLayout(StrCopy(Layout,'00000409'),KLF_ACTIVATE);
+// (Sender as TEdit).Tag := LoadKeyboardLayout(StrCopy(Layout,'00000409'),KLF_ACTIVATE);
 end;
 
 procedure TLicenseForm.edtSerial1Exit(Sender: TObject);
 begin
-  UnloadKeyboardLayout((Sender as TEdit).Tag);
+//  UnloadKeyboardLayout((Sender as TEdit).Tag);
 end;
 
 procedure TLicenseForm.FormShow(Sender: TObject);
