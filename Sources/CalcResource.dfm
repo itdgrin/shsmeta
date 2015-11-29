@@ -2080,17 +2080,14 @@ object fCalcResource: TfCalcResource
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
         SourceDataType = dtMemo
         TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtByteString
-        TargetDataType = dtAnsiString
       end>
+    FormatOptions.DefaultParamDataType = ftBCD
     UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False
@@ -2377,7 +2374,7 @@ object fCalcResource: TfCalcResource
     MasterSource = dsMaterialData
     MasterFields = 
       'MAT_ID;COAST;PROC_TRANSP;MAT_PROC_PODR;MAT_PROC_ZAC;TRANSP_PROC_' +
-      'PODR;TRANSP_PROC_ZAC'
+      'PODR;TRANSP_PROC_ZAC;DOC_DATE;DOC_NUM'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -2453,6 +2450,8 @@ object fCalcResource: TfCalcResource
       '  AND TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC'
       '  AND TRANSP_PROC_PODR = :TRANSP_PROC_PODR'
       '  AND PROC_TRANSP = :PROC_TRANSP'
+      '  AND IFNULL(DOC_DATE,0) = IFNULL(:DOC_DATE,0)'
+      '  AND IFNULL(DOC_NUM,"") = IFNULL(:DOC_NUM,"")'
       'join smetasourcedata S1 ON S1.SM_ID = d.SM_ID'
       'join smetasourcedata S2 ON S2.SM_ID = S1.PARENT_ID'
       'WHERE'
@@ -2496,6 +2495,14 @@ object fCalcResource: TfCalcResource
       end
       item
         Name = 'PROC_TRANSP'
+        ParamType = ptInput
+      end
+      item
+        Name = 'DOC_DATE'
+        ParamType = ptInput
+      end
+      item
+        Name = 'DOC_NUM'
         ParamType = ptInput
       end
       item
@@ -2651,7 +2658,7 @@ object fCalcResource: TfCalcResource
     BeforeOpen = qrMaterialDataBeforeOpen
     BeforePost = qrDevicesDetailBeforePost
     MasterSource = dsDevices
-    MasterFields = 'DEVICE_ID'
+    MasterFields = 'DEVICE_ID;DOC_DATE;DOC_NUM'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -2701,6 +2708,8 @@ object fCalcResource: TfCalcResource
       
         'join devicescard_temp AS m on d.ID_TYPE_DATA = 4 AND m.ID = d.ID' +
         '_TABLES AND m.DEVICE_ID = :DEVICE_ID'
+      '  AND IFNULL(DOC_DATE,0) = IFNULL(:DOC_DATE,0)'
+      '  AND IFNULL(DOC_NUM,"") = IFNULL(:DOC_NUM,"")'
       'join smetasourcedata S1 ON S1.SM_ID = d.SM_ID'
       'join smetasourcedata S2 ON S2.SM_ID = S1.PARENT_ID'
       'ORDER BY SM_NAME, PTM_NAME, F1, CODE')
@@ -2716,6 +2725,14 @@ object fCalcResource: TfCalcResource
       item
         Name = 'DEVICE_ID'
         DataType = ftBCD
+        ParamType = ptInput
+      end
+      item
+        Name = 'DOC_DATE'
+        ParamType = ptInput
+      end
+      item
+        Name = 'DOC_NUM'
         ParamType = ptInput
       end>
   end

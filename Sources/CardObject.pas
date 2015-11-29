@@ -7,7 +7,8 @@ uses
   ExtCtrls, System.DateUtils, DB, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, Tools,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus, Vcl.DBCtrls, System.UITypes, Vcl.Buttons, Vcl.Samples.Spin;
+  FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus, Vcl.DBCtrls, System.UITypes, Vcl.Buttons, Vcl.Samples.Spin,
+  JvExMask, JvToolEdit, JvDBControls;
 
 type
   TfCardObject = class(TSmForm)
@@ -21,7 +22,6 @@ type
     GroupBoxShortDescription: TGroupBox;
     GroupBoxFullDescription: TGroupBox;
     GroupBoxDateBuilding: TGroupBox;
-    GroupBoxSourseFinance: TGroupBox;
     GroupBoxClient: TGroupBox;
     GroupBoxContractor: TGroupBox;
     GroupBoxCategoryObject: TGroupBox;
@@ -42,8 +42,6 @@ type
     LabelCountMonth: TLabel;
 
     DateTimePickerDataCreateContract: TDateTimePicker;
-
-    DBLookupComboBoxSourseFinance: TDBLookupComboBox;
     dblkcbbCategoryObject: TDBLookupComboBox;
     dblkcbbZonePrices: TDBLookupComboBox;
     dblkcbbTypeOXR: TDBLookupComboBox;
@@ -92,6 +90,10 @@ type
     btn2: TBitBtn;
     cbbFromMonth: TComboBox;
     seYear: TSpinEdit;
+    lbl3: TLabel;
+    dblkcbbSourseFinance: TDBLookupComboBox;
+    lbl4: TLabel;
+    JvDBDateEdit1: TJvDBDateEdit;
     btnCardObjectAdditional: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -125,6 +127,7 @@ type
     procedure btn1Click(Sender: TObject);
     procedure ButtonListAgreementsClick(Sender: TObject);
     procedure btnCardObjectAdditionalClick(Sender: TObject);
+    procedure qrMainNewRecord(DataSet: TDataSet);
 
   private
     Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
@@ -238,7 +241,7 @@ begin
       Active := True;
     end;
 
-    with DBLookupComboBoxSourseFinance do
+    with dblkcbbSourseFinance do
     begin
       ListSource := DataSourceSF;
       ListField := 'name';
@@ -388,7 +391,7 @@ begin
   // Выставляем начальные значения в выпадающих списках
   if Editing then
   begin
-    DBLookupComboBoxSourseFinance.KeyValue := SourceFinance;
+    dblkcbbSourseFinance.KeyValue := SourceFinance;
     dblkcbbCategoryObject.KeyValue := CategoryObject;
     dblkcbbRegion.KeyValue := Region;
     ComboBoxVAT.ItemIndex := qrMain.FieldByName('state_nds').AsInteger;
@@ -438,6 +441,8 @@ var
   CountField: Integer;
   NEW_ID: Variant;
 begin
+  ButtonSave.SetFocus; // Заглушка для датасета
+
   NEW_ID := NULL;
   CountField := 0;
   // ПРОВЕРКА ЧТОБЫ НЕ БЫЛО ПУСТЫХ ЗНАЧЕНИЙ
@@ -518,8 +523,8 @@ begin
   end;
 
   // Источник финансирования
-  if DBLookupComboBoxSourseFinance.KeyValue <> NULL then
-    v9 := DBLookupComboBoxSourseFinance.KeyValue
+  if dblkcbbSourseFinance.KeyValue <> NULL then
+    v9 := dblkcbbSourseFinance.KeyValue
   else
   begin
     v9 := 'Null';
@@ -613,7 +618,7 @@ begin
           'FL_CALC_TRAVEL=:FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK=:FL_CALC_TRAVEL_WORK,'#13 +
           'FL_CALC_WORKER_DEPARTMENT=:FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL=:FL_CALC_ZEM_NAL,'#13 +
           'FL_CALC_VEDOMS_NAL=:FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE=:FL_APPLY_WINTERPRICE,'#13 +
-          'WINTERPRICE_TYPE=:WINTERPRICE_TYPE,'#13 +
+          'WINTERPRICE_TYPE=:WINTERPRICE_TYPE, BEG_STROJ2=:BEG_STROJ2,'#13 +
           'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK, CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
           IntToStr(IdObject) + '";')
       else
@@ -622,13 +627,13 @@ begin
         SQL.Add('INSERT INTO objcards (obj_id, num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '
           + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
           ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV, USER_ID,'#13
-          + 'FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK, FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL, FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE, WINTERPRICE_TYPE)'#13
+          + 'FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK, FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL, FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE, WINTERPRICE_TYPE,BEG_STROJ2)'#13
           + 'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 +
           '", "' + v6 + '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 +
           '", :snds, "' + v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV, :USER_ID,'#13 +
-          ':FL_CALC_TRAVEL, :FL_CALC_TRAVEL_WORK, :FL_CALC_WORKER_DEPARTMENT, :FL_CALC_ZEM_NAL, :FL_CALC_VEDOMS_NAL, :FL_APPLY_WINTERPRICE, :WINTERPRICE_TYPE'#13
-          + ');');
+          ':FL_CALC_TRAVEL, :FL_CALC_TRAVEL_WORK, :FL_CALC_WORKER_DEPARTMENT, :FL_CALC_ZEM_NAL, :FL_CALC_VEDOMS_NAL, :FL_APPLY_WINTERPRICE, :WINTERPRICE_TYPE,'#13
+          + ':BEG_STROJ2);');
         ParamByName('NEW_ID').Value := NEW_ID;
         ParamByName('USER_ID').Value := G_USER_ID;
         OUT_ID_OBJECT := NEW_ID;
@@ -648,6 +653,8 @@ begin
       ParamByName('FL_CALC_VEDOMS_NAL').Value := qrMain.FieldByName('FL_CALC_VEDOMS_NAL').Value;
       ParamByName('FL_APPLY_WINTERPRICE').Value := qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value;
       ParamByName('WINTERPRICE_TYPE').Value := qrMain.FieldByName('WINTERPRICE_TYPE').Value;
+      ParamByName('BEG_STROJ2').Value := qrMain.FieldByName('BEG_STROJ2').Value;
+
       ExecSQL;
     end;
 
@@ -774,7 +781,7 @@ begin
   EditShortDescription.Color := clWindow;
   MemoFullDescription.Color := clWindow;
   EditCountMonth.Color := clWindow;
-  DBLookupComboBoxSourseFinance.Color := clWindow;
+  dblkcbbSourseFinance.Color := clWindow;
   dblkcbbCategoryObject.Color := clWindow;
   dblkcbbRegion.Color := clWindow;
   dblkcbbZonePrices.Color := clWindow;
@@ -794,7 +801,7 @@ begin
   DateTimePickerDataCreateContract.Date := Now;
   cbbFromMonth.ItemIndex := MonthOf(Now) - 1;
   seYear.Value := YearOf(Now);
-  DBLookupComboBoxSourseFinance.KeyValue := NULL;
+  dblkcbbSourseFinance.KeyValue := NULL;
   dblkcbbCategoryObject.KeyValue := NULL;
   dblkcbbRegion.KeyValue := NULL;
   dblkcbbZonePrices.KeyValue := NULL;
@@ -899,6 +906,18 @@ procedure TfCardObject.N1Click(Sender: TObject);
 begin
   dbedtPER_TEPM_BUILD.ReadOnly := False;
   dbedtPER_CONTRACTOR.ReadOnly := False;
+end;
+
+procedure TfCardObject.qrMainNewRecord(DataSet: TDataSet);
+begin
+  // Устанавливаем начальные значения
+  qrMain.FieldByName('FL_CALC_TRAVEL').Value := 0;
+  qrMain.FieldByName('FL_CALC_WORKER_DEPARTMENT').Value := 0;
+  qrMain.FieldByName('FL_CALC_TRAVEL_WORK').Value := 0;
+  qrMain.FieldByName('FL_CALC_ZEM_NAL').Value := 0;
+  qrMain.FieldByName('FL_CALC_VEDOMS_NAL').Value := 0;
+  qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value := 0;
+  qrMain.FieldByName('WINTERPRICE_TYPE').Value := 0;
 end;
 
 end.
