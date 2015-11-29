@@ -107,6 +107,11 @@ type
     mEstimateAccess: TMenuItem;
     mActAccess: TMenuItem;
     PMExportAllObject: TMenuItem;
+    pnl2: TPanel;
+    btnFromMonthDone: TBitBtn;
+    btnCalcContract: TBitBtn;
+    btnReg: TBitBtn;
+    btnReportC3: TBitBtn;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

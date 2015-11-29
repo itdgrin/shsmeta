@@ -3,7 +3,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
   Top = 0
   Caption = #1054#1073#1098#1077#1082#1090#1099' '#1080' '#1089#1084#1077#1090#1099
   ClientHeight = 518
-  ClientWidth = 705
+  ClientWidth = 787
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -25,7 +25,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
   object PanelMain: TPanel
     Left = 0
     Top = 0
-    Width = 705
+    Width = 787
     Height = 518
     Align = alClient
     BevelOuter = bvNone
@@ -38,6 +38,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     ParentFont = False
     ShowCaption = False
     TabOrder = 0
+    ExplicitWidth = 705
     object ImageSplitterCenter: TImage
       Left = 304
       Top = 125
@@ -48,7 +49,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     object SplitterCenter: TSplitter
       Left = 0
       Top = 321
-      Width = 705
+      Width = 787
       Height = 5
       Cursor = crVSplit
       Align = alTop
@@ -59,7 +60,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     object PanelObjects: TPanel
       Left = 0
       Top = 0
-      Width = 705
+      Width = 787
       Height = 321
       Align = alTop
       BevelOuter = bvNone
@@ -72,10 +73,11 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       ParentFont = False
       ShowCaption = False
       TabOrder = 0
+      ExplicitWidth = 705
       object dbgrdObjects: TJvDBGrid
         Left = 0
         Top = 25
-        Width = 705
+        Width = 787
         Height = 268
         Align = alClient
         DataSource = dsObjects
@@ -231,7 +233,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       object dbmmoFullName: TDBMemo
         Left = 0
         Top = 293
-        Width = 705
+        Width = 787
         Height = 28
         Align = alBottom
         DataField = 'FullName'
@@ -245,11 +247,12 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 2
+        ExplicitWidth = 705
       end
       object pnl1: TPanel
         Left = 0
         Top = 0
-        Width = 705
+        Width = 787
         Height = 25
         Align = alTop
         Font.Charset = DEFAULT_CHARSET
@@ -259,8 +262,9 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         Font.Style = []
         ParentFont = False
         TabOrder = 0
+        ExplicitWidth = 705
         DesignSize = (
-          705
+          787
           25)
         object lbl3: TLabel
           Left = 8
@@ -270,7 +274,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           Caption = #1055#1086#1080#1089#1082':'
         end
         object btnSearch: TSpeedButton
-          Left = 620
+          Left = 702
           Top = 0
           Width = 84
           Height = 25
@@ -292,17 +296,19 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             88888880F08880F0888888800088800088888888888888888888}
           ParentFont = False
           OnClick = btnSearchClick
+          ExplicitLeft = 620
         end
         object edtSearch: TEdit
           Left = 165
           Top = 2
-          Width = 449
+          Width = 531
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
           TextHint = #1042#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090' '#1076#1083#1103' '#1087#1086#1080#1089#1082#1072'...'
           OnChange = edtSearchChange
           OnKeyDown = edtSearchKeyDown
+          ExplicitWidth = 449
         end
         object cbbSearch: TComboBox
           Left = 45
@@ -323,7 +329,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     object PanelBottom: TPanel
       Left = 0
       Top = 326
-      Width = 705
+      Width = 787
       Height = 192
       Align = alClient
       BevelOuter = bvNone
@@ -337,6 +343,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       ShowCaption = False
       TabOrder = 1
       OnResize = PanelBottomResize
+      ExplicitWidth = 705
       object ImageSplitterBottomCenter: TImage
         Left = 513
         Top = 73
@@ -419,7 +426,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       object PanelActs: TPanel
         Left = 363
         Top = 0
-        Width = 342
+        Width = 424
         Height = 192
         Align = alClient
         BevelOuter = bvNone
@@ -431,10 +438,11 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         ParentBackground = False
         ParentFont = False
         TabOrder = 1
+        ExplicitWidth = 342
         object lblActs: TLabel
           Left = 0
           Top = 0
-          Width = 342
+          Width = 424
           Height = 13
           Align = alTop
           Alignment = taCenter
@@ -449,9 +457,9 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         end
         object tvActs: TJvDBTreeView
           Left = 0
-          Top = 13
-          Width = 342
-          Height = 179
+          Top = 46
+          Width = 424
+          Height = 146
           DataSource = dsActs
           MasterField = 'MASTER_ID'
           DetailField = 'PARENT_ID'
@@ -469,13 +477,59 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          TabOrder = 0
+          TabOrder = 1
           OnDblClick = PMActsEditClick
           PopupMenu = pmActs
           ParentFont = False
           RowSelect = True
           OnCustomDrawItem = tvActsCustomDrawItem
           Mirror = False
+          ExplicitTop = 13
+          ExplicitWidth = 342
+          ExplicitHeight = 179
+        end
+        object pnl2: TPanel
+          Left = 0
+          Top = 13
+          Width = 424
+          Height = 33
+          Align = alTop
+          BevelOuter = bvNone
+          TabOrder = 0
+          ExplicitTop = 288
+          ExplicitWidth = 705
+          object btnFromMonthDone: TBitBtn
+            Left = 292
+            Top = 4
+            Width = 125
+            Height = 25
+            Caption = #1042#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1079#1072' '#1084#1077#1089#1103#1094
+            TabOrder = 3
+          end
+          object btnCalcContract: TBitBtn
+            Left = 151
+            Top = 4
+            Width = 138
+            Height = 25
+            Caption = #1056#1072#1089#1095#1077#1090' '#1076#1086#1075#1086#1074#1086#1088#1085#1086#1081' '#1094#1077#1085#1099
+            TabOrder = 2
+          end
+          object btnReg: TBitBtn
+            Left = 92
+            Top = 4
+            Width = 56
+            Height = 25
+            Caption = #1056#1077#1077#1089#1090#1088#1099
+            TabOrder = 1
+          end
+          object btnReportC3: TBitBtn
+            Left = 4
+            Top = 4
+            Width = 85
+            Height = 25
+            Caption = #1057#1087#1088#1072#1074#1082#1072' '#1057'-3'
+            TabOrder = 0
+          end
         end
       end
     end
