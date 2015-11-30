@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Tools, DataModule, CardObject, Vcl.ExtCtrls, Vcl.DBCtrls,
-  Vcl.StdCtrls, Vcl.Buttons, Vcl.Mask, JvExMask, JvToolEdit, JvDBControls;
+  Vcl.StdCtrls, Vcl.Buttons, Vcl.Mask, JvExMask, JvToolEdit, JvDBControls, JvSpin, JvDBSpinEdit;
 
 type
   TfCardObjectAdditional = class(TSmForm)
@@ -19,6 +19,10 @@ type
     dbrgrpCOEF_ORDERS: TDBRadioGroup;
     pnl1: TPanel;
     btn1: TBitBtn;
+    dbchkFL_CALC_VEDOMS_NAL1: TDBCheckBox;
+    JvDBSpinEdit1: TJvDBSpinEdit;
+    dbchkFL_CALC_VEDOMS_NAL2: TDBCheckBox;
+    JvDBSpinEdit2: TJvDBSpinEdit;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure btn1Click(Sender: TObject);

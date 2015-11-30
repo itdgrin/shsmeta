@@ -107,11 +107,11 @@ type
     mEstimateAccess: TMenuItem;
     mActAccess: TMenuItem;
     PMExportAllObject: TMenuItem;
-    pnl2: TPanel;
-    btnFromMonthDone: TBitBtn;
-    btnCalcContract: TBitBtn;
-    btnReg: TBitBtn;
+    GridPanel1: TGridPanel;
     btnReportC3: TBitBtn;
+    btnReg: TBitBtn;
+    btnCalcContract: TBitBtn;
+    btnFromMonthDone: TBitBtn;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -374,7 +374,7 @@ begin
     CheckBoxCalculationEconom.Checked := FieldByName('CalculationEconom').AsVariant;
 
     if FieldByName('TermConstruction').AsVariant <> Null then
-      EditCountMonth.Text := FieldByName('TermConstruction').AsVariant;
+      edtCountMonth.Text := FieldByName('TermConstruction').AsVariant;
 
     // Для выпадающих списков
     if FieldByName('IdIstFin').AsVariant <> Null then

@@ -488,47 +488,113 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           ExplicitWidth = 342
           ExplicitHeight = 179
         end
-        object pnl2: TPanel
+        object GridPanel1: TGridPanel
           Left = 0
           Top = 13
           Width = 424
           Height = 33
           Align = alTop
           BevelOuter = bvNone
+          ColumnCollection = <
+            item
+              Value = 25.000000000000000000
+            end
+            item
+              Value = 25.000000000000000000
+            end
+            item
+              Value = 25.000000000000000000
+            end
+            item
+              Value = 25.000000000000000000
+            end>
+          ControlCollection = <
+            item
+              Column = 0
+              Control = btnReportC3
+              Row = 0
+            end
+            item
+              Column = 1
+              Control = btnReg
+              Row = 0
+            end
+            item
+              Column = 2
+              Control = btnCalcContract
+              Row = 0
+            end
+            item
+              Column = 3
+              Control = btnFromMonthDone
+              Row = 0
+            end>
+          RowCollection = <
+            item
+              Value = 100.000000000000000000
+            end>
           TabOrder = 0
-          ExplicitTop = 288
-          ExplicitWidth = 705
-          object btnFromMonthDone: TBitBtn
-            Left = 292
-            Top = 4
-            Width = 125
-            Height = 25
-            Caption = #1042#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1079#1072' '#1084#1077#1089#1103#1094
-            TabOrder = 3
-          end
-          object btnCalcContract: TBitBtn
-            Left = 151
-            Top = 4
-            Width = 138
-            Height = 25
-            Caption = #1056#1072#1089#1095#1077#1090' '#1076#1086#1075#1086#1074#1086#1088#1085#1086#1081' '#1094#1077#1085#1099
-            TabOrder = 2
-          end
-          object btnReg: TBitBtn
-            Left = 92
-            Top = 4
-            Width = 56
-            Height = 25
-            Caption = #1056#1077#1077#1089#1090#1088#1099
-            TabOrder = 1
-          end
+          ExplicitLeft = 104
+          ExplicitTop = 94
+          ExplicitWidth = 185
           object btnReportC3: TBitBtn
-            Left = 4
-            Top = 4
-            Width = 85
-            Height = 25
+            AlignWithMargins = True
+            Left = 3
+            Top = 3
+            Width = 100
+            Height = 27
+            Align = alClient
             Caption = #1057#1087#1088#1072#1074#1082#1072' '#1057'-3'
             TabOrder = 0
+            ExplicitLeft = 1
+            ExplicitTop = 8
+            ExplicitWidth = 45
+            ExplicitHeight = 25
+          end
+          object btnReg: TBitBtn
+            AlignWithMargins = True
+            Left = 106
+            Top = 3
+            Width = 103
+            Height = 27
+            Margins.Left = 0
+            Align = alClient
+            Caption = #1056#1077#1077#1089#1090#1088#1099
+            TabOrder = 1
+            ExplicitLeft = 135
+            ExplicitTop = 2
+            ExplicitWidth = 45
+            ExplicitHeight = 25
+          end
+          object btnCalcContract: TBitBtn
+            AlignWithMargins = True
+            Left = 212
+            Top = 3
+            Width = 103
+            Height = 27
+            Margins.Left = 0
+            Align = alClient
+            Caption = #1056#1072#1089#1095#1077#1090' '#1076#1086#1075#1086#1074#1086#1088#1085#1086#1081' '#1094#1077#1085#1099
+            TabOrder = 2
+            ExplicitLeft = 240
+            ExplicitTop = 2
+            ExplicitWidth = 45
+            ExplicitHeight = 25
+          end
+          object btnFromMonthDone: TBitBtn
+            AlignWithMargins = True
+            Left = 318
+            Top = 3
+            Width = 103
+            Height = 27
+            Margins.Left = 0
+            Align = alClient
+            Caption = #1042#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1079#1072' '#1084#1077#1089#1103#1094
+            TabOrder = 3
+            ExplicitLeft = 321
+            ExplicitTop = -4
+            ExplicitWidth = 107
+            ExplicitHeight = 31
           end
         end
       end

@@ -2816,7 +2816,7 @@ begin
     CheckBoxCalculationEconom.Checked := FieldByName('CalculationEconom').AsVariant;
 
     if FieldByName('TermConstruction').AsVariant <> Null then
-      EditCountMonth.Text := FieldByName('TermConstruction').AsVariant;
+      edtCountMonth.Text := FieldByName('TermConstruction').AsVariant;
 
     // Для выпадающих списков
     if FieldByName('IdIstFin').AsVariant <> Null then

@@ -3122,6 +3122,10 @@
         Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077' '#1083#1080#1094#1077#1085#1079#1080#1077#1081
         OnClick = pmLicenseKeyClick
       end
+      object mN3: TMenuItem
+        Caption = #1057#1072#1081#1090' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
+        OnClick = mN3Click
+      end
     end
     object MenuHelp: TMenuItem
       Caption = #1057#1087#1088#1072#1074#1082#1072

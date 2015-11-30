@@ -34,12 +34,10 @@ type
     EditNumberObject: TEdit;
     EditNumberContract: TEdit;
     EditShortDescription: TEdit;
-    EditCountMonth: TEdit;
 
     LabelNumberContract: TLabel;
     Label2: TLabel;
     LabelStartBuilding: TLabel;
-    LabelCountMonth: TLabel;
 
     DateTimePickerDataCreateContract: TDateTimePicker;
     dblkcbbCategoryObject: TDBLookupComboBox;
@@ -95,6 +93,8 @@ type
     lbl4: TLabel;
     JvDBDateEdit1: TJvDBDateEdit;
     btnCardObjectAdditional: TBitBtn;
+    lblCountMonth: TLabel;
+    edtCountMonth: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -128,6 +128,8 @@ type
     procedure ButtonListAgreementsClick(Sender: TObject);
     procedure btnCardObjectAdditionalClick(Sender: TObject);
     procedure qrMainNewRecord(DataSet: TDataSet);
+    procedure dbedtPER_TEPM_BUILDKeyPress(Sender: TObject; var Key: Char);
+    procedure dbedtPER_CONTRACTORKeyPress(Sender: TObject; var Key: Char);
 
   private
     Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
@@ -513,8 +515,8 @@ begin
   end;
 
   // Срок строительства (месяцы)
-  if EditCountMonth.Text <> '' then
-    v8 := EditCountMonth.Text
+  if edtCountMonth.Text <> '' then
+    v8 := edtCountMonth.Text
   else
   begin
     v8 := 'Null';
@@ -608,6 +610,7 @@ begin
       SQL.Clear;
       OUT_ID_OBJECT := IdObject;
       if Editing then
+      begin
         SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = "' + v2 + '", date_dog = "' + v3
           + '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
           '", srok_stroj = ' + v8 + ', ' + ' fin_id = ' + v9 +
@@ -618,22 +621,42 @@ begin
           'FL_CALC_TRAVEL=:FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK=:FL_CALC_TRAVEL_WORK,'#13 +
           'FL_CALC_WORKER_DEPARTMENT=:FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL=:FL_CALC_ZEM_NAL,'#13 +
           'FL_CALC_VEDOMS_NAL=:FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE=:FL_APPLY_WINTERPRICE,'#13 +
+          'Fl_NAL_USN=:Fl_NAL_USN, NAL_USN=:NAL_USN, Fl_SPEC_SCH=:Fl_SPEC_SCH, SPEC_SCH=:SPEC_SCH,'#13 +
           'WINTERPRICE_TYPE=:WINTERPRICE_TYPE, BEG_STROJ2=:BEG_STROJ2,'#13 +
           'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK, CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
-          IntToStr(IdObject) + '";')
+          IntToStr(IdObject) + '";');
+        // Если поменялось зимнее удорожание
+        if (qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value <> qrMain.FieldByName('FL_APPLY_WINTERPRICE')
+          .OldValue) OR (qrMain.FieldByName('WINTERPRICE_TYPE').Value <>
+          qrMain.FieldByName('WINTERPRICE_TYPE').OldValue) then
+        begin
+          // Обновляем все сметы объекта
+          FastExecSQL
+            ('UPDATE smetasourcedata SET APPLY_WINTERPRISE_FLAG=:0, WINTERPRICE_TYPE=:1 WHERE OBJ_ID=:2',
+            VarArrayOf([qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value,
+            qrMain.FieldByName('WINTERPRICE_TYPE').Value, IdObject]));
+          Application.MessageBox('Внимание! Была изменена настройка зимнего удорожания.' + #13#10 +
+            'Для применения настройки необходимо открыть смету и выполнить перерасчет.', 'Настройка расчета',
+            MB_OK + MB_ICONWARNING + MB_TOPMOST);
+
+        end;
+
+      end
       else
       begin
         NEW_ID := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_OBJ]));
         SQL.Add('INSERT INTO objcards (obj_id, num, num_dog, date_dog, agr_list, full_name, name, beg_stroj, srok_stroj, '
           + ' fin_id, cust_id, general_id, cat_id, state_nds, region_id, base_norm_id, stroj_id, encrypt,' +
           ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV, USER_ID,'#13
-          + 'FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK, FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL, FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE, WINTERPRICE_TYPE,BEG_STROJ2)'#13
-          + 'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 +
-          '", "' + v6 + '", "' + v7 + '", ' + v8 + ', ' + v9 + ', :cust_id, :general_id, "' + v12 +
-          '", :snds, "' + v14 + '", "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
+          + 'FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK, FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL,'#13 +
+          'FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE, WINTERPRICE_TYPE,BEG_STROJ2,'#13 +
+          'Fl_NAL_USN, NAL_USN, Fl_SPEC_SCH, SPEC_SCH)'#13 + 'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2
+          + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 + '", "' + v7 + '", ' + v8 + ', ' + v9 +
+          ', :cust_id, :general_id, "' + v12 + '", :snds, "' + v14 + '", "' + v15 + '", "' + v16 + '", "' +
+          v17 + '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV, :USER_ID,'#13 +
           ':FL_CALC_TRAVEL, :FL_CALC_TRAVEL_WORK, :FL_CALC_WORKER_DEPARTMENT, :FL_CALC_ZEM_NAL, :FL_CALC_VEDOMS_NAL, :FL_APPLY_WINTERPRICE, :WINTERPRICE_TYPE,'#13
-          + ':BEG_STROJ2);');
+          + ':BEG_STROJ2,:Fl_NAL_USN, :NAL_USN, :Fl_SPEC_SCH, :SPEC_SCH);');
         ParamByName('NEW_ID').Value := NEW_ID;
         ParamByName('USER_ID').Value := G_USER_ID;
         OUT_ID_OBJECT := NEW_ID;
@@ -654,6 +677,10 @@ begin
       ParamByName('FL_APPLY_WINTERPRICE').Value := qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value;
       ParamByName('WINTERPRICE_TYPE').Value := qrMain.FieldByName('WINTERPRICE_TYPE').Value;
       ParamByName('BEG_STROJ2').Value := qrMain.FieldByName('BEG_STROJ2').Value;
+      ParamByName('Fl_NAL_USN').Value := qrMain.FieldByName('Fl_NAL_USN').Value;
+      ParamByName('NAL_USN').Value := qrMain.FieldByName('NAL_USN').Value;
+      ParamByName('Fl_SPEC_SCH').Value := qrMain.FieldByName('Fl_SPEC_SCH').Value;
+      ParamByName('SPEC_SCH').Value := qrMain.FieldByName('SPEC_SCH').Value;
 
       ExecSQL;
     end;
@@ -780,7 +807,7 @@ begin
   EditNumberContract.Color := clWindow;
   EditShortDescription.Color := clWindow;
   MemoFullDescription.Color := clWindow;
-  EditCountMonth.Color := clWindow;
+  edtCountMonth.Color := clWindow;
   dblkcbbSourseFinance.Color := clWindow;
   dblkcbbCategoryObject.Color := clWindow;
   dblkcbbRegion.Color := clWindow;
@@ -796,7 +823,7 @@ begin
   EditNumberContract.Text := '';
   EditShortDescription.Text := '';
   MemoFullDescription.Text := '';
-  EditCountMonth.Text := '';
+  edtCountMonth.Text := '';
   CheckBoxCalculationEconom.Checked := False;
   DateTimePickerDataCreateContract.Date := Now;
   cbbFromMonth.ItemIndex := MonthOf(Now) - 1;
@@ -829,6 +856,18 @@ begin
       dblkcbbMAIS.KeyValue := qrMAIS.FieldByName('MAIS_ID').AsInteger;
     end;
   end;
+end;
+
+procedure TfCardObject.dbedtPER_CONTRACTORKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+    ButtonSave.SetFocus;
+end;
+
+procedure TfCardObject.dbedtPER_TEPM_BUILDKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+    dbedtPER_CONTRACTOR.SetFocus;
 end;
 
 procedure TfCardObject.dblkcbbRegionCloseUp(Sender: TObject);
@@ -918,6 +957,11 @@ begin
   qrMain.FieldByName('FL_CALC_VEDOMS_NAL').Value := 0;
   qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value := 0;
   qrMain.FieldByName('WINTERPRICE_TYPE').Value := 0;
+
+  qrMain.FieldByName('Fl_NAL_USN').Value := 0;
+  qrMain.FieldByName('NAL_USN').Value := 0;
+  qrMain.FieldByName('Fl_SPEC_SCH').Value := 0;
+  qrMain.FieldByName('SPEC_SCH').Value := 0;
 end;
 
 end.

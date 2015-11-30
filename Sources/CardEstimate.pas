@@ -340,6 +340,8 @@ procedure TfCardEstimate.btnSaveClick(Sender: TObject);
     qrMain.FieldByName('K_LOW_OHROPR').Value := qrTemp.FieldByName('K_LOW_OHROPR').Value;
     qrMain.FieldByName('K_LOW_PLAN_PRIB').Value := qrTemp.FieldByName('K_LOW_PLAN_PRIB').Value;
     qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value := qrTemp.FieldByName('APPLY_WINTERPRISE_FLAG').Value;
+    qrMain.FieldByName('WINTERPRICE_TYPE').Value := qrTemp.FieldByName('WINTERPRICE_TYPE').Value;
+
     case aType of
       1:
         begin
@@ -368,7 +370,7 @@ var
   vYear, vMonth: Integer;
 
   VAT: Integer;
-  IdStavka, MAIS_ID: Variant;
+  IdStavka, MAIS_ID, APPLY_WINTERPRISE_FLAG, WINTERPRICE_TYPE: Variant;
   PercentTransport, PercentTransportEquipment: String;
   K40, K41, K31, K32, K33, K34, K35: String;
 
@@ -385,7 +387,7 @@ begin
     try
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT objcards.MAIS_ID, state_nds, BEG_STROJ, objregion.percent_transport as "PercentTransport" FROM objcards, objstroj, objregion '
+      SQL.Add('SELECT objcards.FL_APPLY_WINTERPRICE, objcards.WINTERPRICE_TYPE, objcards.MAIS_ID, state_nds, BEG_STROJ, objregion.percent_transport as "PercentTransport" FROM objcards, objstroj, objregion '
         + 'WHERE objcards.stroj_id = objstroj.stroj_id and objstroj.obj_region = objregion.obj_region_id and '
         + 'objcards.obj_id = ' + IntToStr(IdObject) + ';');
       Active := True;
@@ -393,6 +395,8 @@ begin
       PercentTransport := FieldByName('PercentTransport').AsString;
       ReplaceDecimal(PercentTransport, ',', '.');
       PercentTransportEquipment := '1';
+      APPLY_WINTERPRISE_FLAG := FieldByName('FL_APPLY_WINTERPRICE').Value;
+      WINTERPRICE_TYPE := FieldByName('WINTERPRICE_TYPE').Value;
 
       VAT := FieldByName('state_nds').AsInteger;
       // При создании сметы дата для расценок проставляетсся как у объекта
@@ -505,6 +509,8 @@ begin
         qrMain.FieldByName('coef_tr_obor').Value := 2;
         // индекс роста цен
         // qrMain.FieldByName('growth_index').Value := GetUniDictParamValue('GROWTH_INDEX', vMonth, vYear);
+        qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value := APPLY_WINTERPRISE_FLAG;
+        qrMain.FieldByName('WINTERPRICE_TYPE').Value := WINTERPRICE_TYPE;
       end
       else
       begin
@@ -536,6 +542,7 @@ begin
         qrMain.FieldByName('K_LOW_PLAN_PRIB').Value := qrTemp.FieldByName('K_LOW_PLAN_PRIB').Value;
         qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value :=
           qrTemp.FieldByName('APPLY_WINTERPRISE_FLAG').Value;
+        qrMain.FieldByName('WINTERPRICE_TYPE').Value := qrTemp.FieldByName('WINTERPRICE_TYPE').Value;
         qrMain.FieldByName('ACT').Value := qrTemp.FieldByName('ACT').Value;
         qrMain.FieldByName('TYPE_ACT').Value := qrTemp.FieldByName('TYPE_ACT').Value;
         if TypeEstimate = 3 then
@@ -747,5 +754,3 @@ begin
 end;
 
 end.
-
-

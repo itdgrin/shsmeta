@@ -2,7 +2,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
   Left = 0
   Top = 0
   Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1086#1073#1098#1077#1082#1090#1072' - '#1076#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
-  ClientHeight = 249
+  ClientHeight = 295
   ClientWidth = 353
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,14 +19,13 @@ object fCardObjectAdditional: TfCardObjectAdditional
   TextHeight = 13
   object pnl1: TPanel
     Left = 0
-    Top = 208
+    Top = 254
     Width = 353
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
-    ExplicitLeft = -8
-    ExplicitTop = 314
+    ExplicitTop = 208
     DesignSize = (
       353
       41)
@@ -46,12 +45,12 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Left = 7
     Top = 7
     Width = 339
-    Height = 115
+    Height = 160
     Margins.Left = 7
     Margins.Top = 7
     Margins.Right = 7
     Align = alTop
-    Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1089#1074#1086#1076#1085#1086#1075#1086' '#1089#1084#1077#1090#1085#1086#1075#1086' '#1088#1072#1089#1095#1077#1090#1072':'
+    Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1076#1083#1103' '#1088#1072#1089#1095#1077#1090#1072' '#1074' '#1090#1077#1082#1091#1097#1080#1093' '#1094#1077#1085#1072#1093':'
     TabOrder = 0
     object dbchkFL_CALC_TRAVEL: TDBCheckBox
       Left = 10
@@ -113,11 +112,57 @@ object fCardObjectAdditional: TfCardObjectAdditional
       ValueChecked = '1'
       ValueUnchecked = '0'
     end
+    object dbchkFL_CALC_VEDOMS_NAL1: TDBCheckBox
+      Left = 10
+      Top = 109
+      Width = 119
+      Height = 17
+      Caption = #1053#1072#1083#1086#1075' '#1087#1088#1080' '#1059#1057#1053', %:'
+      DataField = 'Fl_NAL_USN'
+      DataSource = fCardObject.dsMain
+      TabOrder = 6
+      ValueChecked = '1'
+      ValueUnchecked = '0'
+    end
+    object JvDBSpinEdit1: TJvDBSpinEdit
+      Left = 199
+      Top = 107
+      Width = 66
+      Height = 21
+      MaxValue = 100.000000000000000000
+      ValueType = vtFloat
+      TabOrder = 5
+      DataField = 'NAL_USN'
+      DataSource = fCardObject.dsMain
+    end
+    object dbchkFL_CALC_VEDOMS_NAL2: TDBCheckBox
+      Left = 10
+      Top = 132
+      Width = 183
+      Height = 17
+      Caption = #1055#1077#1088#1077#1095#1080#1089#1083#1077#1085#1080#1103' '#1085#1072' '#1089#1087#1077#1094'.'#1089#1095#1077#1090', %:'
+      DataField = 'Fl_SPEC_SCH'
+      DataSource = fCardObject.dsMain
+      TabOrder = 8
+      ValueChecked = '1'
+      ValueUnchecked = '0'
+    end
+    object JvDBSpinEdit2: TJvDBSpinEdit
+      Left = 199
+      Top = 130
+      Width = 66
+      Height = 21
+      MaxValue = 100.000000000000000000
+      ValueType = vtFloat
+      TabOrder = 7
+      DataField = 'SPEC_SCH'
+      DataSource = fCardObject.dsMain
+    end
   end
   object dbchkAPPLY_WINTERPRISE_FLAG: TDBCheckBox
     AlignWithMargins = True
     Left = 7
-    Top = 127
+    Top = 173
     Width = 343
     Height = 17
     Margins.Left = 7
@@ -131,13 +176,12 @@ object fCardObjectAdditional: TfCardObjectAdditional
     ValueChecked = '1'
     ValueUnchecked = '0'
     OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-    ExplicitLeft = 2
-    ExplicitTop = 218
+    ExplicitTop = 127
   end
   object dbrgrpCOEF_ORDERS: TDBRadioGroup
     AlignWithMargins = True
     Left = 7
-    Top = 147
+    Top = 193
     Width = 339
     Height = 61
     Margins.Left = 7
@@ -161,6 +205,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Values.Strings = (
       '0'
       '1')
-    ExplicitTop = 255
+    ExplicitTop = 147
   end
 end

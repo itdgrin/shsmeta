@@ -46,6 +46,19 @@ object fCardObject: TfCardObject
     Height = 13
     Caption = #1044#1072#1090#1072' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
   end
+  object lblCountMonth: TLabel
+    Left = 303
+    Top = 192
+    Width = 86
+    Height = 40
+    Caption = #1057#1088#1086#1082' '#1089#1090#1088#1086#1080#1090'-'#1074#1072', '#13#10#1084#1077#1089'.'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
   object GroupBoxObject: TGroupBox
     Left = 8
     Top = 1
@@ -223,9 +236,6 @@ object fCardObject: TfCardObject
     Font.Style = []
     ParentFont = False
     TabOrder = 4
-    DesignSize = (
-      325
-      49)
     object LabelStartBuilding: TLabel
       Left = 8
       Top = 23
@@ -238,32 +248,6 @@ object fCardObject: TfCardObject
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-    end
-    object LabelCountMonth: TLabel
-      Left = 195
-      Top = 15
-      Width = 86
-      Height = 26
-      Caption = #1057#1088#1086#1082' '#1089#1090#1088#1086#1080#1090'-'#1074#1072', '#13#10#1084#1077#1089'.'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-    end
-    object EditCountMonth: TEdit
-      Left = 287
-      Top = 20
-      Width = 33
-      Height = 21
-      Hint = #1063#1080#1089#1083#1086' '#1084#1077#1089#1103#1094#1077#1074
-      Anchors = [akLeft, akTop, akRight]
-      NumbersOnly = True
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 2
-      OnKeyPress = EditNumberObjectKeyPress
     end
     object cbbFromMonth: TComboBox
       Left = 51
@@ -326,7 +310,7 @@ object fCardObject: TfCardObject
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 9
+    TabOrder = 10
     object dblkcbbCUST_ID: TDBLookupComboBox
       Left = 8
       Top = 18
@@ -373,7 +357,7 @@ object fCardObject: TfCardObject
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 10
+    TabOrder = 11
     object dblkcbbGENERAL: TDBLookupComboBox
       Left = 8
       Top = 18
@@ -422,7 +406,7 @@ object fCardObject: TfCardObject
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 11
+    TabOrder = 12
     object dblkcbbCategoryObject: TDBLookupComboBox
       Left = 8
       Top = 20
@@ -444,7 +428,7 @@ object fCardObject: TfCardObject
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 14
+    TabOrder = 15
     object DBLookupComboBoxBasePrices: TDBLookupComboBox
       Left = 8
       Top = 20
@@ -471,7 +455,7 @@ object fCardObject: TfCardObject
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 15
+    TabOrder = 16
     object dblkcbbZonePrices: TDBLookupComboBox
       Left = 8
       Top = 16
@@ -487,7 +471,7 @@ object fCardObject: TfCardObject
     Width = 217
     Height = 43
     Caption = #1058#1080#1087' '#1054#1061#1056' '#1054#1055#1056' '#1080' '#1087#1083#1072#1085'. '#1087#1088#1080#1073#1099#1083#1080':'
-    TabOrder = 16
+    TabOrder = 17
     object dblkcbbTypeOXR: TDBLookupComboBox
       Left = 8
       Top = 16
@@ -510,10 +494,8 @@ object fCardObject: TfCardObject
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-    Default = True
-    TabOrder = 20
+    TabOrder = 21
     OnClick = ButtonSaveClick
-    ExplicitTop = 537
   end
   object ButtonCancel: TButton
     Left = 338
@@ -522,9 +504,8 @@ object fCardObject: TfCardObject
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 21
+    TabOrder = 22
     OnClick = ButtonCancelClick
-    ExplicitTop = 537
   end
   object GroupBoxVAT: TGroupBox
     Left = 338
@@ -532,7 +513,7 @@ object fCardObject: TfCardObject
     Width = 111
     Height = 49
     Caption = #1062#1077#1085#1099' '#1085#1072' '#1084#1072#1090'. '#1084#1077#1093'.'
-    TabOrder = 12
+    TabOrder = 13
     DesignSize = (
       111
       49)
@@ -562,7 +543,7 @@ object fCardObject: TfCardObject
     Width = 218
     Height = 49
     Caption = #1056#1077#1075#1080#1086#1085':'
-    TabOrder = 13
+    TabOrder = 14
     object dblkcbbRegion: TDBLookupComboBox
       Left = 8
       Top = 20
@@ -593,7 +574,7 @@ object fCardObject: TfCardObject
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 18
+    TabOrder = 19
     object lbl1: TLabel
       Left = 8
       Top = 17
@@ -624,7 +605,7 @@ object fCardObject: TfCardObject
     end
     object dbedtPER_TEPM_BUILD: TDBEdit
       Left = 180
-      Top = 14
+      Top = 17
       Width = 55
       Height = 21
       DataField = 'PER_TEMP_BUILD'
@@ -636,7 +617,8 @@ object fCardObject: TfCardObject
       Font.Style = []
       ParentFont = False
       PopupMenu = pm1
-      TabOrder = 0
+      TabOrder = 1
+      OnKeyPress = dbedtPER_TEPM_BUILDKeyPress
     end
     object dbedtPER_CONTRACTOR: TDBEdit
       Left = 375
@@ -652,7 +634,8 @@ object fCardObject: TfCardObject
       Font.Style = []
       ParentFont = False
       PopupMenu = pm1
-      TabOrder = 1
+      TabOrder = 0
+      OnKeyPress = dbedtPER_CONTRACTORKeyPress
     end
   end
   object grp2: TGroupBox
@@ -667,7 +650,7 @@ object fCardObject: TfCardObject
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 17
+    TabOrder = 18
     object dblkcbbMAIS: TDBLookupComboBox
       Left = 8
       Top = 15
@@ -693,7 +676,7 @@ object fCardObject: TfCardObject
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 8
+    TabOrder = 9
   end
   object JvDBDateEdit1: TJvDBDateEdit
     Left = 176
@@ -702,24 +685,37 @@ object fCardObject: TfCardObject
     Height = 21
     DataField = 'BEG_STROJ2'
     DataSource = dsMain
+    DialogTitle = #1059#1082#1072#1078#1080#1090#1077' '#1076#1072#1090#1091
     ShowNullDate = False
     TabOrder = 7
   end
   object btnCardObjectAdditional: TBitBtn
     Left = 8
     Top = 528
-    Width = 113
+    Width = 208
     Height = 25
     Anchors = [akLeft, akBottom]
-    Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1086
-    TabOrder = 19
+    Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1077' '#1076#1072#1085#1085#1099#1077' '#1076#1083#1103' '#1088#1072#1089#1095#1077#1090#1072
+    TabOrder = 20
     OnClick = btnCardObjectAdditionalClick
-    ExplicitTop = 545
+  end
+  object edtCountMonth: TEdit
+    Left = 395
+    Top = 194
+    Width = 46
+    Height = 21
+    Hint = #1063#1080#1089#1083#1086' '#1084#1077#1089#1103#1094#1077#1074
+    Anchors = [akLeft, akTop, akRight]
+    NumbersOnly = True
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 8
+    OnKeyPress = EditNumberObjectKeyPress
   end
   object DataSourceSF: TDataSource
     DataSet = ADOQuerySF
-    Left = 248
-    Top = 145
+    Left = 264
+    Top = 113
   end
   object DataSourceCO: TDataSource
     DataSet = ADOQueryCO
@@ -762,8 +758,8 @@ object fCardObject: TfCardObject
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 209
-    Top = 145
+    Left = 217
+    Top = 113
   end
   object ADOQueryCO: TFDQuery
     Connection = DM.Connect

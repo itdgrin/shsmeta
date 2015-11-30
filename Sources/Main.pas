@@ -176,6 +176,7 @@ type
     FormStorage: TJvFormStorage;
     mDebug1: TMenuItem;
     pmLicenseKey: TMenuItem;
+    mN3: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -289,6 +290,7 @@ type
     procedure HelpSupportClick(Sender: TObject);
     procedure mDebug1Click(Sender: TObject);
     procedure pmLicenseKeyClick(Sender: TObject);
+    procedure mN3Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -1401,6 +1403,11 @@ begin
   if (not Assigned(fObjectsAndEstimates)) then
     fObjectsAndEstimates := TfObjectsAndEstimates.Create(Self);
   fObjectsAndEstimates.Show;
+end;
+
+procedure TFormMain.mN3Click(Sender: TObject);
+begin
+  Exec('http://85.143.218.164:3113/');
 end;
 
 procedure TFormMain.mUsersClick(Sender: TObject);
