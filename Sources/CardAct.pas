@@ -185,6 +185,7 @@ procedure TfCardAct.ButtonSaveClick(Sender: TObject);
     qrMain.FieldByName('K_LOW_OHROPR').Value := qrTemp.FieldByName('K_LOW_OHROPR').Value;
     qrMain.FieldByName('K_LOW_PLAN_PRIB').Value := qrTemp.FieldByName('K_LOW_PLAN_PRIB').Value;
     qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value := qrTemp.FieldByName('APPLY_WINTERPRISE_FLAG').Value;
+    qrMain.FieldByName('WINTERPRICE_TYPE').Value := qrTemp.FieldByName('WINTERPRICE_TYPE').Value;
     case aType of
       1:
         begin
@@ -206,7 +207,7 @@ procedure TfCardAct.ButtonSaveClick(Sender: TObject);
   end;
 
 var
-  NewID, MAIS_ID, IdStavka, VAT, vMonth, vYear, SM_NUMBER: Variant;
+  NewID, MAIS_ID, IdStavka, VAT, vMonth, vYear, SM_NUMBER, WINTERPRICE_TYPE, APPLY_WINTERPRISE_FLAG: Variant;
 begin
   case FormKind of
     kdInsert:
@@ -217,15 +218,16 @@ begin
             try
               Active := False;
               SQL.Clear;
-              SQL.Add('SELECT objcards.MAIS_ID, state_nds, BEG_STROJ, objregion.percent_transport as "PercentTransport" FROM objcards, objstroj, objregion '
+              SQL.Add('SELECT objcards.FL_APPLY_WINTERPRICE,objcards.WINTERPRICE_TYPE,objcards.MAIS_ID, state_nds, BEG_STROJ FROM objcards, objstroj, objregion '
                 + 'WHERE objcards.stroj_id = objstroj.stroj_id and objstroj.obj_region = objregion.obj_region_id and '
                 + 'objcards.obj_id = ' + qrAct.FieldByName('OBJ_ID').AsString + ';');
               Active := True;
 
+              APPLY_WINTERPRISE_FLAG := FieldByName('FL_APPLY_WINTERPRICE').Value;
+              WINTERPRICE_TYPE := FieldByName('WINTERPRICE_TYPE').Value;
               VAT := FieldByName('state_nds').AsInteger;
-              // FieldByName('BEG_STROJ').AsDateTime
-              vMonth := MonthOf(edDate.Date);
-              vYear := YearOf(edDate.Date);
+              vMonth := MonthOf(FieldByName('BEG_STROJ').AsDateTime); // edDate.Date
+              vYear := YearOf(FieldByName('BEG_STROJ').AsDateTime); // edDate.Date
               MAIS_ID := FieldByName('MAIS_ID').Value;
             except
               on E: Exception do
@@ -255,7 +257,6 @@ begin
                 end;
               end;
             end;
-            /// /-----
 
             NewID := FastSelectSQLOne('SELECT GetNewID(:IDType)', VarArrayOf([C_ID_SM]));
 
@@ -271,9 +272,9 @@ begin
 
             SQL.Clear;
             SQL.Add('INSERT INTO smetasourcedata (SM_ID,OBJ_ID,name,description,date,foreman_id,ACT,'#13 +
-              'TYPE_ACT,SM_TYPE,PARENT_ID,MAIS_ID,nds,stavka_id,KZP,k31,k32,k33,k34,k35,coef_tr_obor,SM_NUMBER,USER_ID) '
+              'TYPE_ACT,SM_TYPE,PARENT_ID,MAIS_ID,nds,stavka_id,KZP,k31,k32,k33,k34,k35,coef_tr_obor,SM_NUMBER,USER_ID,APPLY_WINTERPRISE_FLAG,WINTERPRICE_TYPE) '
               + 'VALUE (:ID, :OBJ_ID, :name, :description, :date, :foreman_id, 1, :TYPE_ACT, 2, 0,'#13 +
-              ':MAIS_ID,:nds,:stavka_id,:KZP,:k31,:k32,:k33,:k34,:k35,:coef_tr_obor,:SM_NUMBER,:USER_ID);');
+              ':MAIS_ID,:nds,:stavka_id,:KZP,:k31,:k32,:k33,:k34,:k35,:coef_tr_obor,:SM_NUMBER,:USER_ID,:APPLY_WINTERPRISE_FLAG,:WINTERPRICE_TYPE);');
             ParamByName('ID').Value := NewID;
             ParamByName('name').Value := dbedtNAME.Text;
             ParamByName('description').Value := dbmmoDESCRIPTION.Text;
@@ -293,6 +294,8 @@ begin
             ParamByName('k35').Value := GetUniDictParamValue('K_ZIM_UDOR_2', vMonth, vYear);
             ParamByName('coef_tr_obor').Value := 2;
             ParamByName('SM_NUMBER').Value := SM_NUMBER;
+            ParamByName('APPLY_WINTERPRISE_FLAG').Value := APPLY_WINTERPRISE_FLAG;
+            ParamByName('WINTERPRICE_TYPE').Value := WINTERPRICE_TYPE;
 
             ExecSQL;
             if qrAct.State in [dsInsert] then
@@ -305,7 +308,7 @@ begin
           begin
             // Создаем разделы по умолчанию
             // добавляем Локальную
-            NewID := addParentEstimate(NewID, 1);;
+            NewID := addParentEstimate(NewID, 1);
             // и раздел ПТМ
             addParentEstimate(NewID, 3);
           end;

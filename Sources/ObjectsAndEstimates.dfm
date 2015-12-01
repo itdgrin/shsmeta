@@ -38,7 +38,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     ParentFont = False
     ShowCaption = False
     TabOrder = 0
-    ExplicitWidth = 705
     object ImageSplitterCenter: TImage
       Left = 304
       Top = 125
@@ -73,7 +72,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       ParentFont = False
       ShowCaption = False
       TabOrder = 0
-      ExplicitWidth = 705
       object dbgrdObjects: TJvDBGrid
         Left = 0
         Top = 25
@@ -247,7 +245,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 2
-        ExplicitWidth = 705
       end
       object pnl1: TPanel
         Left = 0
@@ -262,7 +259,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         Font.Style = []
         ParentFont = False
         TabOrder = 0
-        ExplicitWidth = 705
         DesignSize = (
           787
           25)
@@ -308,7 +304,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           TextHint = #1042#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090' '#1076#1083#1103' '#1087#1086#1080#1089#1082#1072'...'
           OnChange = edtSearchChange
           OnKeyDown = edtSearchKeyDown
-          ExplicitWidth = 449
         end
         object cbbSearch: TComboBox
           Left = 45
@@ -343,7 +338,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       ShowCaption = False
       TabOrder = 1
       OnResize = PanelBottomResize
-      ExplicitWidth = 705
       object ImageSplitterBottomCenter: TImage
         Left = 513
         Top = 73
@@ -438,7 +432,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         ParentBackground = False
         ParentFont = False
         TabOrder = 1
-        ExplicitWidth = 342
         object lblActs: TLabel
           Left = 0
           Top = 0
@@ -484,9 +477,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           RowSelect = True
           OnCustomDrawItem = tvActsCustomDrawItem
           Mirror = False
-          ExplicitTop = 13
-          ExplicitWidth = 342
-          ExplicitHeight = 179
         end
         object GridPanel1: TGridPanel
           Left = 0
@@ -534,9 +524,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
               Value = 100.000000000000000000
             end>
           TabOrder = 0
-          ExplicitLeft = 104
-          ExplicitTop = 94
-          ExplicitWidth = 185
           object btnReportC3: TBitBtn
             AlignWithMargins = True
             Left = 3
@@ -546,10 +533,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Align = alClient
             Caption = #1057#1087#1088#1072#1074#1082#1072' '#1057'-3'
             TabOrder = 0
-            ExplicitLeft = 1
-            ExplicitTop = 8
-            ExplicitWidth = 45
-            ExplicitHeight = 25
           end
           object btnReg: TBitBtn
             AlignWithMargins = True
@@ -561,10 +544,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Align = alClient
             Caption = #1056#1077#1077#1089#1090#1088#1099
             TabOrder = 1
-            ExplicitLeft = 135
-            ExplicitTop = 2
-            ExplicitWidth = 45
-            ExplicitHeight = 25
           end
           object btnCalcContract: TBitBtn
             AlignWithMargins = True
@@ -576,10 +555,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Align = alClient
             Caption = #1056#1072#1089#1095#1077#1090' '#1076#1086#1075#1086#1074#1086#1088#1085#1086#1081' '#1094#1077#1085#1099
             TabOrder = 2
-            ExplicitLeft = 240
-            ExplicitTop = 2
-            ExplicitWidth = 45
-            ExplicitHeight = 25
           end
           object btnFromMonthDone: TBitBtn
             AlignWithMargins = True
@@ -591,10 +566,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Align = alClient
             Caption = #1042#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1079#1072' '#1084#1077#1089#1103#1094
             TabOrder = 3
-            ExplicitLeft = 321
-            ExplicitTop = -4
-            ExplicitWidth = 107
-            ExplicitHeight = 31
           end
         end
       end

@@ -444,7 +444,7 @@ begin
            MemoryFreeLibrary(pDll);
       end;
     except
-      PostMessage(AHandle, )
+      //PostMessage(AHandle, )
     end;
   finally
     FreeAndNil(KeyDll);

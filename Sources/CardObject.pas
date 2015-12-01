@@ -95,6 +95,8 @@ type
     btnCardObjectAdditional: TBitBtn;
     lblCountMonth: TLabel;
     edtCountMonth: TEdit;
+    se1: TSpinEdit;
+    cbb1: TComboBox;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);

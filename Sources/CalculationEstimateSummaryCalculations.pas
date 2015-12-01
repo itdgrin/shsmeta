@@ -7,7 +7,8 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
-  Tools, Vcl.Menus, JvDBGrid, JvExDBGrids, JvComponentBase, JvFormPlacement, System.UITypes;
+  Tools, Vcl.Menus, JvDBGrid, JvExDBGrids, JvComponentBase, JvFormPlacement, System.UITypes, Vcl.DBCtrls,
+  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask, Vcl.Buttons, System.DateUtils;
 
 type
   TfrCalculationEstimateSummaryCalculations = class(TFrame)
@@ -26,6 +27,23 @@ type
     mN5: TMenuItem;
     mN6: TMenuItem;
     mN7: TMenuItem;
+    pnlIndex: TPanel;
+    dbchkFL_APPLY_INDEX: TDBCheckBox;
+    dblkcbbindex_type_id: TDBLookupComboBox;
+    lbl1: TLabel;
+    dblkcbbindex_type_date_id: TDBLookupComboBox;
+    lbl2: TLabel;
+    dbedtindex_type_id: TDBEdit;
+    pnl2: TPanel;
+    img1: TImage;
+    qrIndexType: TFDQuery;
+    dsIndexType: TDataSource;
+    qrIndexTypeDate: TFDQuery;
+    dsIndexTypeDate: TDataSource;
+    qrObject: TFDQuery;
+    dsObject: TDataSource;
+    btnSaveIndex: TBitBtn;
+    btnCancelIndex: TBitBtn;
     procedure grSummaryCalculationDblClick(Sender: TObject);
     procedure N5Click(Sender: TObject);
     procedure grSummaryCalculationCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
@@ -39,6 +57,14 @@ type
     procedure mN5Click(Sender: TObject);
     procedure mN6Click(Sender: TObject);
     procedure mN7Click(Sender: TObject);
+    procedure img1Click(Sender: TObject);
+    procedure dbchkFL_APPLY_INDEXClick(Sender: TObject);
+    procedure btnCancelIndexClick(Sender: TObject);
+    procedure btnSaveIndexClick(Sender: TObject);
+    procedure qrObjectAfterCancel(DataSet: TDataSet);
+    procedure qrObjectBeforeEdit(DataSet: TDataSet);
+    procedure dblkcbbindex_type_idClick(Sender: TObject);
+    procedure qrObjectAfterOpen(DataSet: TDataSet);
   private
     SM_ID: Integer;
     function CanEditField(Field: TField): Boolean;
@@ -51,6 +77,16 @@ implementation
 {$R *.dfm}
 
 uses BasicData, CardObject, Main, CalculationEstimate, TravelList;
+
+procedure TfrCalculationEstimateSummaryCalculations.btnCancelIndexClick(Sender: TObject);
+begin
+  qrObject.Cancel;
+end;
+
+procedure TfrCalculationEstimateSummaryCalculations.btnSaveIndexClick(Sender: TObject);
+begin
+  qrObject.Post;
+end;
 
 function TfrCalculationEstimateSummaryCalculations.CanEditField(Field: TField): Boolean;
 begin
@@ -65,6 +101,120 @@ begin
   Result := True;
 end;
 
+procedure TfrCalculationEstimateSummaryCalculations.dbchkFL_APPLY_INDEXClick(Sender: TObject);
+begin
+  dblkcbbindex_type_id.Enabled := dbchkFL_APPLY_INDEX.Checked;
+  dblkcbbindex_type_date_id.Enabled := dbchkFL_APPLY_INDEX.Checked;
+  dbedtindex_type_id.Enabled := dbchkFL_APPLY_INDEX.Checked;
+end;
+
+procedure TfrCalculationEstimateSummaryCalculations.dblkcbbindex_type_idClick(Sender: TObject);
+var
+  index: Double;
+  i, fromMonth, fromYear, toMonth, toYear, endStroj: Integer;
+begin
+  // Процедура расчета индекса
+  index := 1;
+  fromMonth := MonthOf(qrObject.FieldByName('BEG_STROJ').AsDateTime);
+  fromYear := YearOf(qrObject.FieldByName('BEG_STROJ').AsDateTime);
+  toMonth := MonthOf(qrObject.FieldByName('BEG_STROJ2').AsDateTime);
+  toYear := YearOf(qrObject.FieldByName('BEG_STROJ2').AsDateTime);
+  endStroj := toMonth + toYear * 12 + qrObject.FieldByName('SROK_STROJ').AsInteger;
+  try
+    case qrObject.FieldByName('index_type_id').Value of
+      // Прогнозный
+      1:
+        case qrObject.FieldByName('index_type_date_id').Value of
+          // На дату составления сметы
+          1:
+            begin
+              qrObject.FieldByName('index_value').Value := index;
+            end;
+          // На дату начала строительства
+          2:
+            begin
+              // Цикл от даты составления сметы до начала строительства
+              for i := fromMonth + fromYear * 12 to toMonth + toYear * 12 - 1 do
+              begin
+                index := index * GetUniDictParamValue(qrIndexType.FieldByName('unidictparam_code').AsString,
+                  fromMonth, fromYear);
+                if fromMonth = 12 then
+                begin
+                  fromMonth := 1;
+                  fromYear := fromYear + 1;
+                end
+                else
+                  fromMonth := fromMonth + 1;
+              end;
+            end;
+          // На дату окончания строительства
+          3:
+            begin
+              // Цикл от даты составления сметы до окончания строительства
+              for i := fromMonth + fromYear * 12 to endStroj - 1 do
+              begin
+                index := index * GetUniDictParamValue(qrIndexType.FieldByName('unidictparam_code').AsString,
+                  fromMonth, fromYear);
+                if fromMonth = 12 then
+                begin
+                  fromMonth := 1;
+                  fromYear := fromYear + 1;
+                end
+                else
+                  fromMonth := fromMonth + 1;
+              end;
+            end;
+        end;
+      // Статистический
+      2:
+        case qrObject.FieldByName('index_type_date_id').Value of
+          // На дату составления сметы
+          1:
+            begin
+              qrObject.FieldByName('index_value').Value := index;
+            end;
+          // На дату начала строительства
+          2:
+            begin
+              // Цикл от даты составления сметы до начала строительства
+              for i := fromMonth + fromYear * 12 to toMonth + toYear * 12 - 1 do
+              begin
+                index := index * GetUniDictParamValue(qrIndexType.FieldByName('unidictparam_code').AsString,
+                  fromMonth, fromYear) / 100;
+                if fromMonth = 12 then
+                begin
+                  fromMonth := 1;
+                  fromYear := fromYear + 1;
+                end
+                else
+                  fromMonth := fromMonth + 1;
+              end;
+            end;
+          // На дату окончания строительства
+          3:
+            begin
+              // Цикл от даты составления сметы до окончания строительства
+              for i := fromMonth + fromYear * 12 to endStroj - 1 do
+              begin
+                index := index * GetUniDictParamValue(qrIndexType.FieldByName('unidictparam_code').AsString,
+                  fromMonth, fromYear) / 100;
+                if fromMonth = 12 then
+                begin
+                  fromMonth := 1;
+                  fromYear := fromYear + 1;
+                end
+                else
+                  fromMonth := fromMonth + 1;
+              end;
+            end;
+        end;
+    end;
+    qrObject.FieldByName('index_value').Value := index;
+  except
+    qrObject.FieldByName('index_value').Value := index;
+  end;
+end;
+
 procedure TfrCalculationEstimateSummaryCalculations.grSummaryCalculationCanEditCell(Grid: TJvDBGrid;
   Field: TField; var AllowEdit: Boolean);
 begin
@@ -77,7 +227,7 @@ var
 begin
   Key := qrData.FieldByName('id_estimate').Value;
   FormBasicData.ShowForm(qrData.FieldByName('OBJ_ID').AsInteger, qrData.FieldByName('id_estimate').AsInteger);
-  LoadData(SM_ID);
+  LoadData(VarArrayOf([SM_ID, qrData.FieldByName('OBJ_ID').AsInteger]));
   qrData.Locate('id_estimate', Key, []);
 end;
 
@@ -123,14 +273,26 @@ begin
   grSummaryCalculation.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
+procedure TfrCalculationEstimateSummaryCalculations.img1Click(Sender: TObject);
+begin
+  pnlIndex.Visible := not pnlIndex.Visible;
+end;
+
 function TfrCalculationEstimateSummaryCalculations.LoadData(const Args: Variant): Boolean;
 begin
   Result := True;
   try
     qrData.Active := False;
-    qrData.ParamByName('SM_ID').Value := Args;
+    qrData.ParamByName('SM_ID').Value := Args[0];
     qrData.Active := True;
-    SM_ID := Args;
+    SM_ID := Args[0];
+    qrIndexType.Active := False;
+    qrIndexType.Active := True;
+    qrIndexTypeDate.Active := False;
+    qrIndexTypeDate.Active := True;
+    qrObject.Active := False;
+    qrObject.ParamByName('OBJ_ID').Value := Args[1];
+    qrObject.Active := True;
   except
     Result := False;
   end;
@@ -154,15 +316,15 @@ end;
 
 procedure TfrCalculationEstimateSummaryCalculations.mN5Click(Sender: TObject);
 var
-  I: Integer;
+  i: Integer;
 begin
   if Application.MessageBox('Вы действительно хотите сбросить все значения строки на стандартные?',
     'Сводный расчет', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
   begin
     qrData.Edit;
-    for I := 4 to grSummaryCalculation.Columns.Count - 1 do
-      if grSummaryCalculation.Columns[I].Field <> nil then
-        qrData.FieldByName(grSummaryCalculation.Columns[I].Field.FieldName).Value := Null;
+    for i := 4 to grSummaryCalculation.Columns.Count - 1 do
+      if grSummaryCalculation.Columns[i].Field <> nil then
+        qrData.FieldByName(grSummaryCalculation.Columns[i].Field.FieldName).Value := Null;
     qrData.Post;
   end;
 end;
@@ -170,7 +332,7 @@ end;
 procedure TfrCalculationEstimateSummaryCalculations.mN6Click(Sender: TObject);
 var
   Key: Variant;
-  I: Integer;
+  i: Integer;
   SQL, sep: string;
 begin
   if Application.MessageBox('Вы действительно хотите сбросить все значения на стандартные?', 'Сводный расчет',
@@ -186,12 +348,12 @@ begin
         begin
           SQL := '';
           sep := ',';
-          for I := 4 to grSummaryCalculation.Columns.Count - 1 do
+          for i := 4 to grSummaryCalculation.Columns.Count - 1 do
           begin
-            if I = (grSummaryCalculation.Columns.Count - 1) then
+            if i = (grSummaryCalculation.Columns.Count - 1) then
               sep := '';
-            if grSummaryCalculation.Columns[I].Field <> nil then
-              SQL := SQL + grSummaryCalculation.Columns[I].Field.FieldName + 'F=NULL' + sep + ''#13;
+            if grSummaryCalculation.Columns[i].Field <> nil then
+              SQL := SQL + grSummaryCalculation.Columns[i].Field.FieldName + 'F=NULL' + sep + ''#13;
           end;
           FastExecSQL('UPDATE summary_calculation SET'#13 + SQL + 'WHERE SM_ID=:0',
             VarArrayOf([qrData.FieldByName('id_estimate').Value]));
@@ -235,6 +397,23 @@ procedure TfrCalculationEstimateSummaryCalculations.qrDataAfterPost(DataSet: TDa
 begin
   CloseOpen(qrData);
   grSummaryCalculation.Options := grSummaryCalculation.Options - [dgEditing];
+end;
+
+procedure TfrCalculationEstimateSummaryCalculations.qrObjectAfterCancel(DataSet: TDataSet);
+begin
+  btnSaveIndex.Visible := False;
+  btnCancelIndex.Visible := False;
+end;
+
+procedure TfrCalculationEstimateSummaryCalculations.qrObjectAfterOpen(DataSet: TDataSet);
+begin
+  dbchkFL_APPLY_INDEXClick(nil);
+end;
+
+procedure TfrCalculationEstimateSummaryCalculations.qrObjectBeforeEdit(DataSet: TDataSet);
+begin
+  btnSaveIndex.Visible := True;
+  btnCancelIndex.Visible := True;
 end;
 
 end.

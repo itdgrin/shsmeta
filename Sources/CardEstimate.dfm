@@ -602,6 +602,7 @@ object fCardEstimate: TfCardEstimate
     Top = 98
   end
   object qrMain: TFDQuery
+    OnNewRecord = qrMainNewRecord
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write

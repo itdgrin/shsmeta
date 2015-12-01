@@ -76,6 +76,7 @@ type
     procedure ComboBoxChange(Sender: TObject);
     procedure qrPartsAfterScroll(DataSet: TDataSet);
     procedure cbbTypeCloseUp(Sender: TObject);
+    procedure qrMainNewRecord(DataSet: TDataSet);
 
   private
     StrQuery, NewLocalNumberEstimate: String;
@@ -746,6 +747,13 @@ begin
         qrMain.FieldByName('SM_NUMBER').AsString := 'Ж000';
       end;
   end;
+end;
+
+procedure TfCardEstimate.qrMainNewRecord(DataSet: TDataSet);
+begin
+  // По умолчанию номер главы = 3
+  if TypeEstimate = 2 then
+    qrMain.FieldByName('CHAPTER').AsInteger := 3;
 end;
 
 procedure TfCardEstimate.qrPartsAfterScroll(DataSet: TDataSet);

@@ -12,9 +12,9 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
   TabOrder = 0
   object grSummaryCalculation: TJvDBGrid
     Left = 0
-    Top = 0
+    Top = 52
     Width = 824
-    Height = 372
+    Height = 320
     Align = alClient
     DataSource = dsData
     DrawingStyle = gdsClassic
@@ -28,7 +28,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     ParentShowHint = False
     PopupMenu = pm
     ShowHint = False
-    TabOrder = 0
+    TabOrder = 2
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
@@ -485,6 +485,161 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         Visible = True
       end>
   end
+  object pnlIndex: TPanel
+    Left = 0
+    Top = 0
+    Width = 824
+    Height = 36
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 0
+    object lbl1: TLabel
+      Left = 285
+      Top = 9
+      Width = 45
+      Height = 13
+      Caption = #1053#1072' '#1076#1072#1090#1091':'
+    end
+    object lbl2: TLabel
+      Left = 549
+      Top = 9
+      Width = 52
+      Height = 13
+      Caption = #1047#1085#1072#1095#1077#1085#1080#1077':'
+    end
+    object dbchkFL_APPLY_INDEX: TDBCheckBox
+      Left = 8
+      Top = 8
+      Width = 121
+      Height = 17
+      Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1080#1085#1076#1077#1082#1089':'
+      DataField = 'FL_APPLY_INDEX'
+      DataSource = dsObject
+      TabOrder = 2
+      ValueChecked = '1'
+      ValueUnchecked = '0'
+      OnClick = dbchkFL_APPLY_INDEXClick
+    end
+    object dblkcbbindex_type_id: TDBLookupComboBox
+      Left = 125
+      Top = 9
+      Width = 154
+      Height = 21
+      DataField = 'index_type_id'
+      DataSource = dsObject
+      KeyField = 'index_type_id'
+      ListField = 'index_type_name'
+      ListSource = dsIndexType
+      TabOrder = 3
+      OnClick = dblkcbbindex_type_idClick
+    end
+    object dblkcbbindex_type_date_id: TDBLookupComboBox
+      Left = 336
+      Top = 9
+      Width = 207
+      Height = 21
+      DataField = 'index_type_date_id'
+      DataSource = dsObject
+      KeyField = 'index_type_date_id'
+      ListField = 'index_type_date_name'
+      ListSource = dsIndexTypeDate
+      TabOrder = 4
+      OnClick = dblkcbbindex_type_idClick
+    end
+    object dbedtindex_type_id: TDBEdit
+      Left = 607
+      Top = 9
+      Width = 72
+      Height = 21
+      DataField = 'index_value'
+      DataSource = dsObject
+      TabOrder = 5
+    end
+    object btnSaveIndex: TBitBtn
+      Left = 685
+      Top = 7
+      Width = 75
+      Height = 25
+      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      TabOrder = 0
+      Visible = False
+      OnClick = btnSaveIndexClick
+    end
+    object btnCancelIndex: TBitBtn
+      Left = 762
+      Top = 7
+      Width = 75
+      Height = 25
+      Caption = #1054#1090#1084#1077#1085#1072
+      TabOrder = 1
+      Visible = False
+      OnClick = btnCancelIndexClick
+    end
+  end
+  object pnl2: TPanel
+    Left = 0
+    Top = 36
+    Width = 824
+    Height = 16
+    Align = alTop
+    BevelKind = bkFlat
+    BevelOuter = bvNone
+    TabOrder = 1
+    ExplicitTop = 41
+    object img1: TImage
+      Left = 0
+      Top = 0
+      Width = 820
+      Height = 12
+      Cursor = crHandPoint
+      Align = alClient
+      Center = True
+      ParentShowHint = False
+      Picture.Data = {
+        07544269746D61703E040000424D3E0400000000000036000000280000003900
+        000006000000010018000000000008040000202E0000202E0000000000000000
+        0000FFFFFF393939393939393939393939393939393939393939393939393939
+        393939393939FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFF39393939393939393939393939393939393939393939393939
+        3939393939393939FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFF3939393939393939393939393939393939393939393939
+        39393939393939393939FFFFFF00FFFFFFFFFFFF393939393939393939393939
+        393939393939393939393939393939FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF39393939393939393939
+        3939393939393939393939393939393939FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF3939393939393939
+        39393939393939393939393939393939393939FFFFFFFFFFFF00FFFFFFFFFFFF
+        FFFFFF393939393939393939393939393939393939393939FFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFF393939393939393939393939393939393939393939FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFF393939393939393939393939393939393939393939FFFFFFFF
+        FFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFF3939393939393939393939393939
+        39FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF393939393939393939393939
+        393939FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF39393939393939393939
+        3939393939FFFFFFFFFFFFFFFFFFFFFFFF00FFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FF393939393939393939FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFF393939393939393939FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFF393939393939393939FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00FFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF393939FFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF393939FFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF393939FFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFF00}
+      ShowHint = False
+      Transparent = True
+      OnClick = img1Click
+      ExplicitLeft = 520
+      ExplicitTop = 8
+      ExplicitWidth = 105
+      ExplicitHeight = 105
+    end
+  end
   object qrData: TFDQuery
     AfterPost = qrDataAfterPost
     AfterCancel = qrDataAfterCancel
@@ -708,6 +863,8 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     AppStorage = FormMain.AppIni
     AppStoragePath = '%FORM_NAME%\'
     Options = []
+    StoredProps.Strings = (
+      'pnlIndex.Visible')
     StoredValues = <>
     Left = 32
     Top = 96
@@ -782,5 +939,92 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       'WHERE   SM_ID = :id_estimate;')
     Left = 32
     Top = 160
+  end
+  object qrIndexType: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvCheckReadOnly]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.CheckReadOnly = False
+    SQL.Strings = (
+      'select * from index_type')
+    Left = 169
+    Top = 8
+  end
+  object dsIndexType: TDataSource
+    DataSet = qrIndexType
+    Left = 208
+    Top = 8
+  end
+  object qrIndexTypeDate: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvCheckReadOnly]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.CheckReadOnly = False
+    SQL.Strings = (
+      'SELECT * FROM index_type_date')
+    Left = 425
+    Top = 8
+  end
+  object dsIndexTypeDate: TDataSource
+    DataSet = qrIndexTypeDate
+    Left = 464
+    Top = 8
+  end
+  object qrObject: TFDQuery
+    AfterOpen = qrObjectAfterOpen
+    BeforeEdit = qrObjectBeforeEdit
+    AfterPost = qrObjectAfterCancel
+    AfterCancel = qrObjectAfterCancel
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <>
+    FormatOptions.DefaultParamDataType = ftBCD
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvCheckReadOnly]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.CheckReadOnly = False
+    SQL.Strings = (
+      'SELECT * FROM objcards WHERE OBJ_ID=:OBJ_ID LIMIT 1')
+    Left = 641
+    Top = 104
+    ParamData = <
+      item
+        Name = 'OBJ_ID'
+        ParamType = ptInput
+      end>
+  end
+  object dsObject: TDataSource
+    DataSet = qrObject
+    Left = 680
+    Top = 104
   end
 end

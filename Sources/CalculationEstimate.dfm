@@ -3396,6 +3396,17 @@
         Width = 100
         Height = 53
       end
+      inherited pnl1: TPanel
+        Width = 100
+        ExplicitWidth = 100
+      end
+      inherited pnl2: TPanel
+        Width = 100
+        ExplicitWidth = 100
+        inherited img1: TImage
+          Width = 96
+        end
+      end
     end
   end
   object pmSummaryCalculation: TPopupMenu

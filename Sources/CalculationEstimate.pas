@@ -1211,7 +1211,7 @@ begin
     PanelSSR.Visible := False;
 
     // Инициализация заполнения фрейма данными
-    frSummaryCalculations.LoadData(IdEstimate);
+    frSummaryCalculations.LoadData(VarArrayOf([IdEstimate, IdObject]));
 
     // Делаем кнопки верхнего правого меню неактивными
     BottomTopMenuEnabled(False);
@@ -1521,9 +1521,9 @@ end;
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
 begin
   ShowNeedSaveDialog;
-  //if not Act then
-    ShellExecute(Handle, nil, 'rs.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
-      PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
+  // if not Act then
+  ShellExecute(Handle, nil, 'rs.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
+    PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
 end;
 
 procedure TFormCalculationEstimate.btnCalcFactClick(Sender: TObject);
@@ -1673,10 +1673,10 @@ begin
   if not flLoaded then
     Exit;
 
-  //btn3.Visible := not Act;
- // btn3.Visible := not Act;
+  // btn3.Visible := not Act;
+  // btn3.Visible := not Act;
   btnCalcFact.Visible := Act;
-  //btnCalcFact.Visible := Act;
+  // btnCalcFact.Visible := Act;
 
   btnCount := 0;
 
@@ -5266,36 +5266,36 @@ begin
         sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  //автоматическая вставка пуска и регулировки, отключена по просьбе заказчика
-  {if ((Pos('е18', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(10)) and FAutoAddE18) or
+  // автоматическая вставка пуска и регулировки, отключена по просьбе заказчика
+  { if ((Pos('е18', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(10)) and FAutoAddE18) or
     ((Pos('е20', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(11)) and FAutoAddE20) then
-  begin
+    begin
     if (Pos('е18', AnsiLowerCase(NewRateCode)) > 0) then
-      case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е18 в смету?'), CaptionForm,
-        MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
-        mrOk:
-          PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE18);
-        mrCancel:
-          begin
-            FAutoAddE18 := False;
-            OutputDataToTable(True);
-          end;
-      end;
+    case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е18 в смету?'), CaptionForm,
+    MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
+    mrOk:
+    PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE18);
+    mrCancel:
+    begin
+    FAutoAddE18 := False;
+    OutputDataToTable(True);
+    end;
+    end;
 
     if (Pos('е20', AnsiLowerCase(NewRateCode)) > 0) then
-      case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е20 в смету?'), CaptionForm,
-        MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
-        mrOk:
-          PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE20);
-        mrCancel:
-          begin
-            FAutoAddE18 := False;
-            OutputDataToTable(True);
-          end;
-      end;
-  end
-  else}
+    case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е20 в смету?'), CaptionForm,
+    MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
+    mrOk:
+    PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE20);
+    mrCancel:
+    begin
+    FAutoAddE18 := False;
     OutputDataToTable(True);
+    end;
+    end;
+    end
+    else }
+  OutputDataToTable(True);
   // Проверка нескольких настроек ОХРиОПР и ПП
   // ТОДО
 
@@ -5727,8 +5727,10 @@ end;
 
 procedure TFormCalculationEstimate.Label1Click(Sender: TObject);
 begin
-  if Act then
+  {
+    if Act then
     Exit;
+  }
   FormBasicData.ShowForm(IdObject, IdEstimate);
   GetSourceData;
   GridRatesRowSellect;
