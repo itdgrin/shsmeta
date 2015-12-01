@@ -129,7 +129,8 @@ uses
   SerialKeyModule in 'SerialKeyModule.pas',
   CardObjectAdditional in 'CardObjectAdditional.pas' {fCardObjectAdditional},
   CalcResourceEdit in 'CalcResourceEdit.pas' {fCalcResourceEdit},
-  fLicense in 'fLicense.pas' {LicenseForm};
+  fLicense in 'fLicense.pas' {LicenseForm},
+  uMemoryLoader in 'uMemoryLoader.pas';
 
 {$R *.res}
 var MHandle: THandle;

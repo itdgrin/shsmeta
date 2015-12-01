@@ -31,13 +31,15 @@ const
   SMART_CMD = $B0;
 
 type
+  TSmAssigned = function (AValue: Pointer): Boolean;
+  TCheckKey = function (ABeginDate, AEndDate: TDateTime): Boolean;
+
   //Контейнер для хранения лицензионной информации
   TSerialKeyInfo = record
     UserName: string;
     UserKey: TBytes;
-    DataBegin: TDateTime;
+    DateBegin: TDateTime;
     DateEnd: TDateTime;
-    SerialNumber: String;
   end;
   PSerialKeyInfo = ^TSerialKeyInfo;
 
@@ -87,29 +89,33 @@ type
   end;
 
 //Получиние номера HDD по букве диска
-function GetHDDNumberByLetter(const ADrive: string): DWord;
+function GetHDDNumberByLetter(ADrive: string): DWord;
 //Получиние серийника HDD !!! не работает без прав админа
 function GetHDDSerialByNum(ANum: DWord;
   var ASerial, ARevision, AModel: AnsiString): DWord;
 procedure CorrectDevInfo(var _params: TSendCmdOutParams);
 //Получает серийник логического диска
-function GetDiskSerialNum(const ADrive: string): DWord;
+function GetDiskSerialNum(ADrive: string): DWord;
 //Получение локального ключа
 procedure GetLocalKey(var AKey: TBytes);
 //Возвращает локальные данные для отправки на сервак или получения локального ключа
-procedure GetLocalData(const ADrive: string; var AData: TBytes);
+procedure GetLocalData(ADrive: string; var AData: TBytes);
 //Записывает лакальные данные в файл (поток)
 procedure GetLocalDataFile(const ASerialKey: string; const AData: TBytes;
   AStream: TStream);
 //Создает ключ-файл
 procedure CreateKeyFile(const AFileName: string; const AKey: TBytes;
-  const ASerialKeyInfo: TSerialKeyInfo; const ASerialKeyData: TSerialKeyData);
+  const ASerialKeyInfo: TSerialKeyInfo; AKeyDll: TMemoryStream);
 //Извлекает данные из ключ-файла
 procedure GetSerialKeyInfo(const AFileName: string; const AKey: TBytes;
-  var APSerialKeyInfo: PSerialKeyInfo; var APSerialKeyData: PSerialKeyData);
-
+  var ASerialKeyInfo: TSerialKeyInfo; AKeyDll: TMemoryStream);
+//Проверяет валидность ключфайла
+function CheckLicenseFile(const AFileName: string; var ASI: TSerialKeyInfo): Boolean;
+function LicenseAssigned(const AFileName: string; AHandle: THandle; AValue: Pointer): Boolean;
 
 implementation
+
+uses uMemoryLoader;
 
 procedure CorrectDevInfo(var _params: TSendCmdOutParams);
   asm
@@ -133,7 +139,7 @@ procedure CorrectDevInfo(var _params: TSendCmdOutParams);
 end;
 
 //Получает номер физического диска по букве логического
-function GetHDDNumberByLetter(const ADrive: string): DWord;
+function GetHDDNumberByLetter(ADrive: string): DWord;
 const
   IOCTL_STORAGE_GET_DEVICE_NUMBER = $2D1080;
 var
@@ -217,14 +223,14 @@ begin
   end;
 end;
 
-function GetDiskSerialNum(const ADrive: string): DWord;
+function GetDiskSerialNum(ADrive: string): DWord;
 var
   sz,fs: DWord;
 begin
  GetVolumeInformation(PChar(ADrive), nil, 0, @Result, sz, fs, nil, 0);
 end;
 
-procedure GetLocalData(const ADrive: string; var AData: TBytes);
+procedure GetLocalData(ADrive: string; var AData: TBytes);
 const LKeyLen = 16;
 var //Num: DWord;
     //Serial,
@@ -240,7 +246,8 @@ begin
   //if GetHDDSerialByNum(Num, Serial, Revision, Model) = 0 then
   // TmpStr := Serial + Revision + Model
   //else
-  TmpBytes := TEncoding.Default.GetBytes(IntToStr(GetDiskSerialNum(ADrive)));
+  i := GetDiskSerialNum(ADrive);
+  TmpBytes := TEncoding.ASCII.GetBytes(IntToStr(i));
 
   TmpLen := Length(TmpBytes);
   if TmpLen >= LKeyLen then
@@ -306,33 +313,142 @@ begin
 end;
 
 procedure CreateKeyFile(const AFileName: string; const AKey: TBytes;
-  const ASerialKeyInfo: TSerialKeyInfo; const ASerialKeyData: TSerialKeyData);
+  const ASerialKeyInfo: TSerialKeyInfo; AKeyDll: TMemoryStream);
 var  RC6Encryptor: TRC6Encryptor;
-     TmpStream: TMemoryStream;
+     TmpStream1, TmpStream2: TMemoryStream;
      TmpBytes: TBytes;
      TmpStr: string;
 begin
-  TmpStream := TMemoryStream.Create;
+  TmpStream1 := TMemoryStream.Create;
+  TmpStream2 := TMemoryStream.Create;
+  RC6Encryptor := TRC6Encryptor.Create(AKey);
   try
     SetLength(TmpBytes, 256);
     TmpStr := Copy(ASerialKeyInfo.UserName, 1, 128);
     Move(TmpStr[1], TmpBytes[0], Length(TmpStr) * SizeOf(Char));
-    TmpStream.Write(TmpBytes, 256);
-    TmpStream.Write(ASerialKeyInfo.UserKey, Length(ASerialKeyInfo.UserKey));
-    TmpStream.Write(ASerialKeyInfo.DataBegin, SizeOf(ASerialKeyInfo.DataBegin));
-    TmpStream.Write(ASerialKeyInfo.DateEnd, SizeOf(ASerialKeyInfo.DateEnd));
+    TmpStream1.Write(TmpBytes, Length(TmpBytes));
+    SetLength(TmpBytes, Length(ASerialKeyInfo.UserKey));
+    Move(ASerialKeyInfo.UserKey[0], TmpBytes[0], Length(ASerialKeyInfo.UserKey));
+    SetLength(TmpBytes, 16);
+    TmpStream1.Write(TmpBytes, Length(TmpBytes));
+    TmpStream1.Write(ASerialKeyInfo.DateBegin, SizeOf(ASerialKeyInfo.DateBegin));
+    TmpStream1.Write(ASerialKeyInfo.DateEnd, SizeOf(ASerialKeyInfo.DateEnd));
+    AKeyDll.Position := 0;
+    TmpStream1.CopyFrom(AKeyDll, AKeyDll.Size);
+    RC6Encryptor.StreamEncrypt(TmpStream1, TmpStream2, True);
+    TmpStream2.SaveToFile(AFileName);
   finally
-    FreeAndNil(TmpStream);
+    FreeAndNil(RC6Encryptor);
+    FreeAndNil(TmpStream1);
+    FreeAndNil(TmpStream2);
   end;
 end;
 
 procedure GetSerialKeyInfo(const AFileName: string; const AKey: TBytes;
-  var APSerialKeyInfo: PSerialKeyInfo; var APSerialKeyData: PSerialKeyData);
+  var ASerialKeyInfo: TSerialKeyInfo; AKeyDll: TMemoryStream);
 var  RC6Encryptor: TRC6Encryptor;
-     TmpStream: TMemoryStream;
+     TmpStream1, TmpStream2: TMemoryStream;
+     TmpBytes: TBytes;
 begin
+  TmpStream1 := TMemoryStream.Create;
+  TmpStream2 := TMemoryStream.Create;
+  RC6Encryptor := TRC6Encryptor.Create(AKey);
+  try
+    TmpStream1.LoadFromFile(AFileName);
+    RC6Encryptor.StreamDecrypt(TmpStream1, TmpStream2, True);
+    TmpStream2.Position := 0;
+    SetLength(TmpBytes, 256);
+    TmpStream2.Read(TmpBytes, 256);
+    ASerialKeyInfo.UserName := String(PChar(TmpBytes));
+    SetLength(ASerialKeyInfo.UserKey, 16);
+    TmpStream2.Read(ASerialKeyInfo.UserKey, 16);
+    TmpStream2.Read(ASerialKeyInfo.DateBegin, SizeOf(ASerialKeyInfo.DateBegin));
+    TmpStream2.Read(ASerialKeyInfo.DateEnd, SizeOf(ASerialKeyInfo.DateEnd));
+    if Assigned(AKeyDll) then
+      AKeyDll.CopyFrom(TmpStream2, TmpStream2.Size - TmpStream2.Position);
+  finally
+    FreeAndNil(RC6Encryptor);
+    FreeAndNil(TmpStream1);
+    FreeAndNil(TmpStream2);
+  end;
+end;
 
+function CheckLicenseFile(const AFileName: string; var ASI: TSerialKeyInfo): Boolean;
+var LocalKey: TBytes;
+    KeyDll: TMemoryStream;
+    CheckKey: TCheckKey;
+    pDll : pointer;
+begin
+  Result := False;
+  KeyDll := TMemoryStream.Create;
+  try
+    try
+      GetLocalData(ExtractFileDrive(ParamStr(0)), LocalKey);
+      GetLocalKey(LocalKey);
 
+      GetSerialKeyInfo(AFileName, LocalKey, ASI, KeyDll);
+
+      pDll := MemoryLoadLibary(KeyDll.Memory);
+      try
+        if pDll = nil then
+          Abort;
+
+        @CheckKey := MemoryGetProcAddress(pDll, 'CheckKey');
+        if @CheckKey = nil then
+          Abort;
+
+        Result := CheckKey(ASI.DateBegin, ASI.DateEnd);
+      finally
+        if pDll <> nil then
+           MemoryFreeLibrary(pDll);
+      end;
+    except
+    end;
+  finally
+    FreeAndNil(KeyDll);
+  end;
+end;
+
+function LicenseAssigned(const AFileName: string; AHandle: THandle;
+  AValue: Pointer): Boolean;
+var LocalKey: TBytes;
+    KeyDll: TMemoryStream;
+    CheckKey: TCheckKey;
+    SmAssigned: TSmAssigned;
+    SI: TSerialKeyInfo;
+    pDll : pointer;
+begin
+  KeyDll := TMemoryStream.Create;
+  try
+    try
+      GetLocalData(ExtractFileDrive(ParamStr(0)), LocalKey);
+      GetLocalKey(LocalKey);
+
+      GetSerialKeyInfo(AFileName, LocalKey, SI, KeyDll);
+
+      pDll := MemoryLoadLibary(KeyDll.Memory);
+      try
+        if pDll = nil then
+          Abort;
+
+        @CheckKey := MemoryGetProcAddress(pDll, 'CheckKey');
+        @SmAssigned := MemoryGetProcAddress(pDll, 'SmAssigned');
+        if (@CheckKey = nil) or (@SmAssigned = nil) then
+          Abort;
+
+        if not CheckKey(SI.DateBegin, SI.DateEnd) then
+          Abort;
+        Result := SmAssigned(AValue);
+      finally
+        if pDll <> nil then
+           MemoryFreeLibrary(pDll);
+      end;
+    except
+      PostMessage(AHandle, )
+    end;
+  finally
+    FreeAndNil(KeyDll);
+  end;
 end;
 
 end.

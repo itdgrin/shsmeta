@@ -65,6 +65,7 @@ type
     btnDeleteLicense: TButton;
     ActionList: TActionList;
     actDelLicense: TAction;
+    asdasdsa1: TMenuItem;
     procedure btnNewLicenseDropDownClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure edtSerial1Change(Sender: TObject);
@@ -76,14 +77,19 @@ type
     procedure FormShow(Sender: TObject);
     procedure actDelLicenseUpdate(Sender: TObject);
     procedure actDelLicenseExecute(Sender: TObject);
+    procedure asdasdsa1Click(Sender: TObject);
+    procedure cbSelectLicenseChange(Sender: TObject);
 
   private
     FCurLicenseFile: string;
+    FLicenseResult: Boolean;
     FLicenseList: TStringDynArray;
+
     function GetSerialNumber(var ASNumber: string): Boolean;
     procedure UpdateLicenseInfo;
     function GetCurLicenseFile: string;
     procedure SetCurLicenseFile(const ALicenseFile: string);
+    procedure CheckCurLicense;
   public
     { Public declarations }
   end;
@@ -92,7 +98,8 @@ implementation
 uses
  System.Win.Registry,
  SerialKeyModule,
- GlobsAndConst;
+ GlobsAndConst,
+ uMemoryLoader;
 
 {$R *.dfm}
 
@@ -113,6 +120,56 @@ end;
 procedure TLicenseForm.actDelLicenseUpdate(Sender: TObject);
 begin
   actDelLicense.Enabled := FCurLicenseFile <> EmptyStr;
+end;
+
+procedure TLicenseForm.asdasdsa1Click(Sender: TObject);
+var SI: TSerialKeyInfo;
+    aa: TBytes;
+    KeyDll: TMemoryStream;
+    I: Integer;
+begin
+  KeyDll := TMemoryStream.Create;
+  try
+    KeyDll.LoadFromFile('d:\SmKey.dll');;
+
+    SI.UserName := 'Тестовый пользователь "Смета Смета Смета"';
+    SI.DateBegin := now - 1;
+    SI.DateEnd := now + 356;
+    SetLength(SI.UserKey, 16);
+    Randomize;
+    for I := Low(SI.UserKey) to High(SI.UserKey) do
+      SI.UserKey[I] := Random(256);
+
+    GetLocalData(ExtractFileDrive(Application.ExeName), aa);
+    GetLocalKey(aa);
+    CreateKeyFile('d:\NewTestKey.key', aa, SI, KeyDll);
+  finally
+    FreeAndNil(KeyDll);
+  end;
+end;
+
+procedure TLicenseForm.CheckCurLicense;
+var SI: TSerialKeyInfo;
+begin
+  FLicenseResult := CheckLicenseFile(FCurLicenseFile, SI);
+  if FLicenseResult  then
+  begin
+    lbState.Caption := 'Есть действующия лицензия';
+    lbState.Font.Color := clGreen;
+    lbUserName.Caption := SI.UserName;
+    lbActDate.Caption := DateToStr(SI.DateBegin);
+    lbEndDate.Caption := DateToStr(SI.DateEnd);
+    lbLicenFile.Caption := FCurLicenseFile;
+  end
+  else
+  begin
+    lbState.Caption := 'Отсутствует действующия лицензия';
+    lbState.Font.Color := clRed;
+    lbUserName.Caption := '---';
+    lbActDate.Caption := '---';
+    lbEndDate.Caption := '---';
+    lbLicenFile.Caption := '---';
+  end;
 end;
 
 procedure TLicenseForm.btnCloseClick(Sender: TObject);
@@ -163,8 +220,8 @@ begin
 
     if Reg.OpenKey(CurKey, True) then
     begin
-      if not Reg.ValueExists('UpdateType') then
-        Result := Reg.ReadString('UpdateType');
+      if Reg.ValueExists('CurLicense') then
+        Result := Reg.ReadString('CurLicense');
     end
     else
       raise Exception.Create('Unable to create key!');
@@ -218,7 +275,7 @@ begin
       TmpExt := ExtractFileExt(FileName);
       while TFile.Exists(LicensePath + TmpName + Ind.ToString + TmpExt) do
         Inc(Ind);
-      FileName := LicensePath + TmpName + Ind.ToString + TmpExt;
+      FileName := TmpName + Ind.ToString + TmpExt;
     end;
 
     TFile.Copy(OpenDialog.FileName, LicensePath + FileName);
@@ -246,6 +303,21 @@ begin
       FreeAndNil(FStream);
     end;
   end;
+end;
+
+procedure TLicenseForm.cbSelectLicenseChange(Sender: TObject);
+begin
+  if cbSelectLicense.ItemIndex = -1 then
+  begin
+    FCurLicenseFile := '';
+    SetCurLicenseFile(FCurLicenseFile);
+  end
+  else
+  begin
+    FCurLicenseFile := FLicenseList[cbSelectLicense.ItemIndex];
+    SetCurLicenseFile(FCurLicenseFile);
+  end;
+  UpdateLicenseInfo;
 end;
 
 procedure TLicenseForm.UpdateLicenseInfo;
@@ -289,7 +361,7 @@ begin
     end;
   end;
 
-  //Добавить расшифровку текущего ключа
+  CheckCurLicense;
 end;
 
 procedure TLicenseForm.edtSerial1Change(Sender: TObject);

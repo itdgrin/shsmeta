@@ -29,8 +29,8 @@ type
   public
     constructor Create(AKey: array of byte);
     destructor Destroy; override;
-    procedure StreamEncrypt(AStreamIn, AStreamOut: TMemoryStream);
-    procedure StreamDecrypt(AStreamIn, AStreamOut: TMemoryStream);
+    procedure StreamEncrypt(AStreamIn, AStreamOut: TMemoryStream; AEndTerminator: Boolean);
+    procedure StreamDecrypt(AStreamIn, AStreamOut: TMemoryStream; AEndTerminator: Boolean);
 
     function StrEncrypt(const AStr: string): string;
     function StrDecrypt(const AStr: string): string;
@@ -160,48 +160,48 @@ begin
   RC6Burn(Data);
 end;
 
-procedure RC6Init;
+procedure RC6Init(var Data: TRC6Data; Key: pointer; Len: integer; IV: pointer);
 var
   xKeyD: array[0..63] of DWord;
   i, j, k, xKeyLen: integer;
   A, B: DWord;
 begin
-  if (Len<= 0) or (Len> 256) then
+  if (Len <= 0) or (Len > 256) then
     raise Exception.Create('RC6: Key length must be between 1 and 256 bytes');
   with Data do
   begin
     if IV= nil then
     begin
-      FillChar(InitBlock,16,0);
-      FillChar(LastBlock,16,0);
+      FillChar(InitBlock, 16 ,0);
+      FillChar(LastBlock, 16, 0);
     end
     else
     begin
       Move(IV^,InitBlock,16);
       Move(IV^,LastBlock,16);
     end;
-    FillChar(xKeyD,Sizeof(xKeyD),0);
-    Move(Key^,xKeyD,Len);
-    xKeyLen:= Len div 4;
+    FillChar(xKeyD, SizeOf(xKeyD),0);
+    Move(Key^, xKeyD, Len);
+    xKeyLen := Len div 4;
     if (Len mod 4)<> 0 then
       Inc(xKeyLen);
-    Move(sBox,KeyD,((NUMROUNDS*2)+4)*4);
-    i:= 0; j:= 0;
-    A:= 0; B:= 0;
-    if xKeyLen> ((NUMROUNDS*2)+4) then
-      k:= xKeyLen*3
+    Move(sBox, KeyD, ((NUMROUNDS * 2) + 4) * 4);
+    i := 0; j := 0;
+    A := 0; B := 0;
+    if xKeyLen > ((NUMROUNDS * 2) + 4) then
+      k := xKeyLen * 3
     else
-      k:= ((NUMROUNDS*2)+4)*3;
-    for k:= 1 to k do
+      k := ((NUMROUNDS * 2) + 4) * 3;
+    for k := 1 to k do
     begin
-      A:= LRot32(KeyD[i]+A+B,3);
-      KeyD[i]:= A;
-      B:= LRot32(xKeyD[j]+A+B,A+B);
+      A := LRot32(KeyD[i] + A + B, 3);
+      KeyD[i] := A;
+      B:= LRot32(xKeyD[j] + A + B, A + B);
       xKeyD[j]:= B;
-      i:= (i+1) mod ((NUMROUNDS*2)+4);
-      j:= (j+1) mod xKeyLen;
+      i := (i + 1) mod ((NUMROUNDS * 2) + 4);
+      j := (j + 1) mod xKeyLen;
     end;
-    FillChar(xKeyD,Sizeof(xKeyD),0);
+    FillChar(xKeyD, Sizeof(xKeyD), 0);
   end;
 end;
 
@@ -210,7 +210,7 @@ begin
   FillChar(Data,Sizeof(Data),0);
 end;
 
-procedure RC6EncryptECB;
+procedure RC6EncryptECB(var Data: TRC6Data; InData, OutData: pointer);
 var
   A, B, C, D, t, u: DWord;
   i: integer;
@@ -361,7 +361,7 @@ begin
   inherited Create;
   SetLength(FKey, Length(AKey));
   Move(AKey[0], FKey[0], Length(AKey));
-  RC6Init(FData,@FKey,Sizeof(FKey),nil);
+  RC6Init(FData, @FKey[0], Length(FKey), nil);
 end;
 
 destructor TRC6Encryptor.Destroy;
@@ -370,7 +370,8 @@ begin
   inherited;
 end;
 
-procedure TRC6Encryptor.StreamDecrypt(AStreamIn, AStreamOut: TMemoryStream);
+procedure TRC6Encryptor.StreamDecrypt(AStreamIn, AStreamOut: TMemoryStream;
+  AEndTerminator: Boolean);
 var Block: array[0..15] of byte;
     i, j,
     AddCount: Integer;
@@ -383,41 +384,48 @@ begin
   begin
     AStreamIn.Read(Block, Sizeof(Block));
     RC6DecryptECB(FData,@Block,@Block);
-    if i = (AStreamIn.Size div 16 - 1) then
-      for j := High(Block) downto Low(Block) do
-      begin
-        if (Block[j] = 0) then
-          continue;
-        if (Block[j] = 1) then
-          AddCount := High(Block) - j + 1;
-        Break;
-      end;
+    if AEndTerminator then
+    begin
+      if i = (AStreamIn.Size div 16 - 1) then
+        for j := High(Block) downto Low(Block) do
+        begin
+          if (Block[j] = 0) then
+            continue;
+          if (Block[j] = 1) then
+            AddCount := High(Block) - j + 1;
+          Break;
+        end;
+    end;
     AStreamOut.Write(Block, Sizeof(Block));
   end;
   if AddCount > 0 then
     AStreamOut.SetSize(AStreamOut.Size - AddCount);
 end;
 
-procedure TRC6Encryptor.StreamEncrypt(AStreamIn, AStreamOut: TMemoryStream);
+procedure TRC6Encryptor.StreamEncrypt(AStreamIn, AStreamOut: TMemoryStream;
+  AEndTerminator: Boolean);
 var Block: array[0..15] of byte;
     InSize, OutSize: Int64;
     i: Integer;
 begin
   InSize := AStreamIn.Size;
-  OutSize := AStreamIn.Size + 1;
+  OutSize := AStreamIn.Size;
+  if AEndTerminator then
+    OutSize := OutSize + 1;
   if OutSize mod 16 > 0 then
     OutSize := OutSize + 16 - (OutSize mod 16);
   AStreamIn.SetSize(OutSize);
+  if AEndTerminator then
+  begin
+    AStreamIn.Seek(-16, soFromEnd);
+    AStreamIn.Read(Block, Sizeof(Block));
+    Block[InSize mod 16] := 1;
+    for i := (InSize mod 16) + 1 to High(Block) do
+      Block[i] := 0;
+    AStreamIn.Seek(-16, soFromEnd);
+    AStreamIn.Write(Block, Sizeof(Block));
+  end;
   AStreamOut.SetSize(OutSize);
-
-  AStreamIn.Seek(-16, soFromEnd);
-  AStreamIn.Read(Block, Sizeof(Block));
-  Block[InSize mod 16] := 1;
-  for i := (InSize mod 16) + 1 to High(Block) do
-    Block[i] := 0;
-  AStreamIn.Seek(-16, soFromEnd);
-  AStreamIn.Write(Block, Sizeof(Block));
-
   AStreamIn.Position := 0;
   AStreamOut.Position := 0;
   for i := 0 to OutSize div 16 - 1 do
@@ -462,14 +470,19 @@ end;
 function TRC6Encryptor.BytesEncrypt(const Bytes: TBytes): TBytes;
 var TmpCount: Integer;
     I: Integer;
+    P: Pointer;
 begin
   TmpCount := Length(Bytes);
   if TmpCount mod 16 > 0 then
     TmpCount := TmpCount + 16 - (TmpCount mod 16);
   SetLength(Result, TmpCount);
   Move(Bytes[0], Result[0], Length(Bytes));
+  p := @Result[0];
   for I := 0 to TmpCount div 16 - 1 do
     RC6EncryptECB(FData, @Result[16 * I], @Result[16 * I]);
+
+  if p = nil then
+    Result[0] := 0;
 end;
 
 function TRC6Encryptor.BytesDecrypt(const Bytes: TBytes): TBytes;
