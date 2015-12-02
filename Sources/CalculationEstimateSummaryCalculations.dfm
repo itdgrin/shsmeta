@@ -1,7 +1,7 @@
 object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCalculations
   Left = 0
   Top = 0
-  Width = 824
+  Width = 1116
   Height = 372
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,9 +12,9 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
   TabOrder = 0
   object grSummaryCalculation: TJvDBGrid
     Left = 0
-    Top = 52
-    Width = 824
-    Height = 320
+    Top = 62
+    Width = 1116
+    Height = 310
     Align = alClient
     DataSource = dsData
     DrawingStyle = gdsClassic
@@ -488,108 +488,279 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
   object pnlIndex: TPanel
     Left = 0
     Top = 0
-    Width = 824
-    Height = 36
+    Width = 1116
+    Height = 46
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitWidth = 1215
     object lbl1: TLabel
-      Left = 285
-      Top = 9
+      Left = 647
+      Top = 0
       Width = 45
       Height = 13
       Caption = #1053#1072' '#1076#1072#1090#1091':'
     end
     object lbl2: TLabel
-      Left = 549
-      Top = 9
+      Left = 814
+      Top = 0
       Width = 52
       Height = 13
       Caption = #1047#1085#1072#1095#1077#1085#1080#1077':'
     end
     object dbchkFL_APPLY_INDEX: TDBCheckBox
-      Left = 8
-      Top = 8
+      Left = 509
+      Top = -2
       Width = 121
       Height = 17
       Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1080#1085#1076#1077#1082#1089':'
       DataField = 'FL_APPLY_INDEX'
       DataSource = dsObject
-      TabOrder = 2
+      TabOrder = 0
       ValueChecked = '1'
       ValueUnchecked = '0'
       OnClick = dbchkFL_APPLY_INDEXClick
     end
     object dblkcbbindex_type_id: TDBLookupComboBox
-      Left = 125
-      Top = 9
-      Width = 154
+      Left = 509
+      Top = 16
+      Width = 132
       Height = 21
       DataField = 'index_type_id'
       DataSource = dsObject
       KeyField = 'index_type_id'
       ListField = 'index_type_name'
       ListSource = dsIndexType
-      TabOrder = 3
+      TabOrder = 6
       OnClick = dblkcbbindex_type_idClick
     end
     object dblkcbbindex_type_date_id: TDBLookupComboBox
-      Left = 336
-      Top = 9
-      Width = 207
+      Left = 647
+      Top = 16
+      Width = 161
       Height = 21
       DataField = 'index_type_date_id'
       DataSource = dsObject
       KeyField = 'index_type_date_id'
       ListField = 'index_type_date_name'
       ListSource = dsIndexTypeDate
-      TabOrder = 4
+      TabOrder = 7
       OnClick = dblkcbbindex_type_idClick
     end
     object dbedtindex_type_id: TDBEdit
-      Left = 607
-      Top = 9
-      Width = 72
+      Left = 814
+      Top = 16
+      Width = 131
       Height = 21
       DataField = 'index_value'
       DataSource = dsObject
-      TabOrder = 5
+      TabOrder = 8
     end
     object btnSaveIndex: TBitBtn
-      Left = 685
-      Top = 7
-      Width = 75
+      Left = 951
+      Top = 12
+      Width = 82
       Height = 25
       Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-      TabOrder = 0
+      TabOrder = 4
       Visible = False
       OnClick = btnSaveIndexClick
     end
     object btnCancelIndex: TBitBtn
-      Left = 762
-      Top = 7
-      Width = 75
+      Left = 1035
+      Top = 12
+      Width = 79
       Height = 25
       Caption = #1054#1090#1084#1077#1085#1072
-      TabOrder = 1
+      TabOrder = 5
       Visible = False
       OnClick = btnCancelIndexClick
+    end
+    object grp1: TGroupBox
+      Left = 151
+      Top = 0
+      Width = 162
+      Height = 42
+      Caption = #1044#1072#1090#1072' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
+      TabOrder = 2
+      object cbbMonthBeginStroj: TComboBox
+        Left = 5
+        Top = 15
+        Width = 98
+        Height = 21
+        Style = csDropDownList
+        DropDownCount = 12
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ItemIndex = 8
+        ParentFont = False
+        TabOrder = 0
+        Text = #1057#1077#1085#1090#1103#1073#1088#1100
+        OnChange = dblkcbbindex_type_idClick
+        Items.Strings = (
+          #1071#1085#1074#1072#1088#1100
+          #1060#1077#1074#1088#1072#1083#1100
+          #1052#1072#1088#1090
+          #1040#1087#1088#1077#1083#1100
+          #1052#1072#1081
+          #1048#1102#1085#1100
+          #1048#1102#1083#1100
+          #1040#1074#1075#1091#1089#1090
+          #1057#1077#1085#1090#1103#1073#1088#1100
+          #1054#1082#1090#1103#1073#1088#1100
+          #1053#1086#1103#1073#1088#1100
+          #1044#1077#1082#1072#1073#1088#1100)
+      end
+      object seYearBeginStroj: TSpinEdit
+        Left = 108
+        Top = 15
+        Width = 50
+        Height = 22
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        MaxValue = 2100
+        MinValue = 2012
+        ParentFont = False
+        TabOrder = 1
+        Value = 2015
+        OnChange = dblkcbbindex_type_idClick
+      end
+    end
+    object grp2: TGroupBox
+      Left = 314
+      Top = 0
+      Width = 181
+      Height = 42
+      Caption = #1044#1072#1090#1072' '#1086#1082#1086#1085#1095#1072#1085#1080#1103' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
+      TabOrder = 3
+      object seYearEndStroj: TSpinEdit
+        Left = 127
+        Top = 15
+        Width = 50
+        Height = 22
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        MaxValue = 2100
+        MinValue = 2012
+        ParentFont = False
+        TabOrder = 1
+        Value = 2015
+        OnChange = dblkcbbindex_type_idClick
+      end
+      object cbbMonthEndStroj: TComboBox
+        Left = 7
+        Top = 15
+        Width = 114
+        Height = 21
+        Style = csDropDownList
+        DropDownCount = 12
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ItemIndex = 8
+        ParentFont = False
+        TabOrder = 0
+        Text = #1057#1077#1085#1090#1103#1073#1088#1100
+        OnChange = dblkcbbindex_type_idClick
+        Items.Strings = (
+          #1071#1085#1074#1072#1088#1100
+          #1060#1077#1074#1088#1072#1083#1100
+          #1052#1072#1088#1090
+          #1040#1087#1088#1077#1083#1100
+          #1052#1072#1081
+          #1048#1102#1085#1100
+          #1048#1102#1083#1100
+          #1040#1074#1075#1091#1089#1090
+          #1057#1077#1085#1090#1103#1073#1088#1100
+          #1054#1082#1090#1103#1073#1088#1100
+          #1053#1086#1103#1073#1088#1100
+          #1044#1077#1082#1072#1073#1088#1100)
+      end
+    end
+    object grp3: TGroupBox
+      Left = 0
+      Top = 0
+      Width = 150
+      Height = 42
+      Caption = #1044#1072#1090#1072' '#1089#1086#1089#1090#1072#1074#1083#1077#1085#1080#1103' '#1089#1084#1077#1090#1099':'
+      TabOrder = 1
+      object cbbMonthSmeta: TComboBox
+        Left = 5
+        Top = 15
+        Width = 87
+        Height = 21
+        Style = csDropDownList
+        DropDownCount = 12
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ItemIndex = 8
+        ParentFont = False
+        TabOrder = 0
+        Text = #1057#1077#1085#1090#1103#1073#1088#1100
+        OnChange = dblkcbbindex_type_idClick
+        Items.Strings = (
+          #1071#1085#1074#1072#1088#1100
+          #1060#1077#1074#1088#1072#1083#1100
+          #1052#1072#1088#1090
+          #1040#1087#1088#1077#1083#1100
+          #1052#1072#1081
+          #1048#1102#1085#1100
+          #1048#1102#1083#1100
+          #1040#1074#1075#1091#1089#1090
+          #1057#1077#1085#1090#1103#1073#1088#1100
+          #1054#1082#1090#1103#1073#1088#1100
+          #1053#1086#1103#1073#1088#1100
+          #1044#1077#1082#1072#1073#1088#1100)
+      end
+      object seYearSmeta: TSpinEdit
+        Left = 95
+        Top = 15
+        Width = 50
+        Height = 22
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        MaxValue = 2100
+        MinValue = 2012
+        ParentFont = False
+        TabOrder = 1
+        Value = 2015
+        OnChange = dblkcbbindex_type_idClick
+      end
     end
   end
   object pnl2: TPanel
     Left = 0
-    Top = 36
-    Width = 824
+    Top = 46
+    Width = 1116
     Height = 16
     Align = alTop
     BevelKind = bkFlat
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 41
+    Visible = False
+    ExplicitTop = 36
+    ExplicitWidth = 824
     object img1: TImage
       Left = 0
       Top = 0
-      Width = 820
+      Width = 1112
       Height = 12
       Cursor = crHandPoint
       Align = alClient
@@ -674,105 +845,269 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  s.OBJ_ID,'
       '  typesm.NAME AS TYPE_NAME, '
       '  s.SM_NUMBER, '
-      '  s.NAME AS SM_NAME,'
-      '  SUM(IFNULL(d.ZPF, d.ZP)) AS ZP,'
-      '  SUM(IFNULL(d.EMiMF, d.EMiM)) AS EMiM,'
-      '  SUM(IFNULL(d.MRF, d.MR)) AS MR,'
-      '  SUM(IFNULL(d.TRUDF, d.TRUD)) AS TRUD,'
-      '  SUM(IFNULL(d.TRUD_MASHF, d.TRUD_MASH)) AS TRUD_MASH,'
-      '  SUM(IFNULL(d.ZP_MASHF, d.ZP_MASH)) AS ZP_MASH,'
-      '  SUM(IFNULL(d.TRANSPF, d.TRANSP)) AS TRANSP,'
-      '  SUM(IFNULL(d.STOIMF, d.STOIM)) AS STOIM,'
-      '  SUM(IFNULL(d.OHROPRF, d.OHROPR)) AS OHROPR,'
-      '  SUM(IFNULL(d.PLAN_PRIBF, d.PLAN_PRIB)) AS PLAN_PRIB,'
-      '  SUM(IFNULL(d.ST_OHROPRF, d.ST_OHROPR)) AS ST_OHROPR,'
-      '  SUM(IFNULL(d.ZIM_UDORF, d.ZIM_UDOR)) AS ZIM_UDOR,'
-      '  SUM(IFNULL(d.ZP_ZIM_UDORF, d.ZP_ZIM_UDOR)) AS ZP_ZIM_UDOR,'
-      '  SUM(IFNULL(d.MR_DEVICEF, d.MR_DEVICE)) AS MR_DEVICE,'
+      '  s.NAME AS SM_NAME, '
       
-        '  SUM(IFNULL(d.TRANSP_DEVICEF, d.TRANSP_DEVICE)) AS TRANSP_DEVIC' +
-        'E,'
-      '  SUM(IFNULL(d.MR_DUMPF, d.MR_DUMP)) AS MR_DUMP,'
-      '  SUM(IFNULL(d.DUMP_COUNTF, d.DUMP_COUNT)) AS DUMP_COUNT,'
-      '  SUM(IFNULL(d.TEMP_RETF, d.TEMP_RET)) AS TEMP_RET,'
+        '  ROUND( SUM(IFNULL(d.ZPF, d.ZP * IF(o.FL_APPLY_INDEX, o.index_v' +
+        'alue, 1 ))), rs.round_RATE) AS ZP,'
+      
+        '  ROUND( SUM(IFNULL(d.EMiMF, d.EMiM * IF(o.FL_APPLY_INDEX, o.ind' +
+        'ex_value, 1) )), rs.round_RATE) AS EMiM,'
+      
+        '  ROUND( SUM(IFNULL(d.MRF, d.MR * IF(o.FL_APPLY_INDEX, o.index_v' +
+        'alue, 1) )), rs.round_RATE) AS MR,'
+      
+        '  ROUND( SUM(IFNULL(d.TRUDF, d.TRUD * IF(o.FL_APPLY_INDEX, o.ind' +
+        'ex_value, 1) )), rs.round_RATE) AS TRUD,'
+      
+        '  ROUND( SUM(IFNULL(d.TRUD_MASHF, d.TRUD_MASH * IF(o.FL_APPLY_IN' +
+        'DEX, o.index_value, 1) )), rs.round_RATE) AS TRUD_MASH,'
+      
+        '  ROUND( SUM(IFNULL(d.ZP_MASHF, d.ZP_MASH * IF(o.FL_APPLY_INDEX,' +
+        ' o.index_value, 1) )), rs.round_RATE) AS ZP_MASH,'
+      
+        '  ROUND( SUM(IFNULL(d.TRANSPF, d.TRANSP * IF(o.FL_APPLY_INDEX, o' +
+        '.index_value, 1) )), rs.round_RATE) AS TRANSP,'
+      
+        '  ROUND( SUM(IFNULL(d.STOIMF, d.STOIM * IF(o.FL_APPLY_INDEX, o.i' +
+        'ndex_value, 1) )), rs.round_RATE) AS STOIM,'
+      
+        '  ROUND( SUM(IFNULL(d.OHROPRF, d.OHROPR * IF(o.FL_APPLY_INDEX, o' +
+        '.index_value, 1) )), rs.round_RATE) AS OHROPR,'
+      
+        '  ROUND( SUM(IFNULL(d.PLAN_PRIBF, d.PLAN_PRIB * IF(o.FL_APPLY_IN' +
+        'DEX, o.index_value, 1) )), rs.round_RATE) AS PLAN_PRIB,'
+      
+        '  ROUND( SUM(IFNULL(d.ST_OHROPRF, d.ST_OHROPR * IF(o.FL_APPLY_IN' +
+        'DEX, o.index_value, 1) )), rs.round_RATE) AS ST_OHROPR,'
+      
+        '  ROUND( SUM(IFNULL(d.ZIM_UDORF, d.ZIM_UDOR * IF(o.FL_APPLY_INDE' +
+        'X, o.index_value, 1) )), rs.round_RATE) AS ZIM_UDOR,'
+      
+        '  ROUND( SUM(IFNULL(d.ZP_ZIM_UDORF, d.ZP_ZIM_UDOR * IF(o.FL_APPL' +
+        'Y_INDEX, o.index_value, 1) )), rs.round_RATE) AS ZP_ZIM_UDOR,'
+      
+        '  ROUND( SUM(IFNULL(d.MR_DEVICEF, d.MR_DEVICE * IF(o.FL_APPLY_IN' +
+        'DEX, o.index_value, 1) )), rs.round_RATE) AS MR_DEVICE,'
+      
+        '  ROUND( SUM(IFNULL(d.TRANSP_DEVICEF, d.TRANSP_DEVICE * IF(o.FL_' +
+        'APPLY_INDEX, o.index_value, 1) )), rs.round_RATE) AS TRANSP_DEVI' +
+        'CE,'
+      
+        '  ROUND( SUM(IFNULL(d.MR_DUMPF, d.MR_DUMP * IF(o.FL_APPLY_INDEX,' +
+        ' o.index_value, 1) )), rs.round_RATE) AS MR_DUMP,'
+      
+        '  ROUND( SUM(IFNULL(d.DUMP_COUNTF, d.DUMP_COUNT * IF(o.FL_APPLY_' +
+        'INDEX, o.index_value, 1) )), rs.round_RATE) AS DUMP_COUNT,'
+      
+        '  ROUND( SUM(IFNULL(d.TEMP_RETF, d.TEMP_RET * IF(o.FL_APPLY_INDE' +
+        'X, o.index_value, 1) )), rs.round_RATE) AS TEMP_RET,'
       '  AVG(IFNULL(d.NormaAVGF, d.NormaAVG)) AS NormaAVG,'
-      '  SUM(IFNULL(d.PR_352F, d.PR_352)) AS PR_352,'
-      '  SUM(IFNULL(d.TRUD_ZIMF, d.TRUD_ZIM)) AS TRUD_ZIM,'
-      '  SUM(IFNULL(d.SOC_STRAHF, d.SOC_STRAH)) AS SOC_STRAH,'
-      '  SUM(IFNULL(d.ZEM_NALF, d.ZEM_NAL)) AS ZEM_NAL,'
-      '  SUM(IFNULL(d.NDSF, d.NDS)) AS NDS,'
-      '  SUM(IFNULL(d.DEBET_NALF, d.DEBET_NAL)) AS DEBET_NAL,'
-      '  SUM(IFNULL(d.VEDOMS_NALF, d.VEDOMS_NAL)) AS VEDOMS_NAL,'
-      '  SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR)) AS STOIM_SMR,'
-      '  SUM(IFNULL(d.TEMP_BUILDF, d.TEMP_BUILD)) AS TEMP_BUILD,'
-      '  SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR)) AS STOIM_SMR,'
-      '  SUM(IFNULL(d.GEN_PODRF, d.GEN_PODR)) AS GEN_PODR, '
-      '  SUM(IFNULL(d.ZP_PRF, d.ZP_PR)) AS ZP_PR,'
-      '  SUM(IFNULL(d.FZPF, d.FZP)) AS FZP,'
-      '  SUM(IFNULL(d.TRAVELF, d.TRAVEL)) AS TRAVEL,'
-      '  SUM(IFNULL(d.TRAVEL_WORKF, d.TRAVEL_WORK)) AS TRAVEL_WORK,'
       
-        '  SUM(IFNULL(d.WORKER_DEPARTMENTF, d.WORKER_DEPARTMENT)) AS WORK' +
-        'ER_DEPARTMENT,'
-      '  SUM(IFNULL(d.NORMATF, d.NORMAT)) AS NORMAT,'
+        '  ROUND( SUM(IFNULL(d.PR_352F, d.PR_352 * IF(o.FL_APPLY_INDEX, o' +
+        '.index_value, 1) )), rs.round_RATE) AS PR_352,'
+      
+        '  ROUND( SUM(IFNULL(d.TRUD_ZIMF, d.TRUD_ZIM * IF(o.FL_APPLY_INDE' +
+        'X, o.index_value, 1) )), rs.round_RATE) AS TRUD_ZIM,'
+      
+        '  ROUND( SUM(IFNULL(d.SOC_STRAHF, d.SOC_STRAH * IF(o.FL_APPLY_IN' +
+        'DEX, o.index_value, 1) )), rs.round_RATE) AS SOC_STRAH,'
+      
+        '  ROUND( SUM(IFNULL(d.ZEM_NALF, d.ZEM_NAL * IF(o.FL_APPLY_INDEX,' +
+        ' o.index_value, 1) )), rs.round_RATE) AS ZEM_NAL,'
+      
+        '  ROUND( SUM(IFNULL(d.NDSF, d.NDS * IF(o.FL_APPLY_INDEX, o.index' +
+        '_value, 1) )), rs.round_RATE) AS NDS,'
+      
+        '  ROUND( SUM(IFNULL(d.DEBET_NALF, d.DEBET_NAL * IF(o.FL_APPLY_IN' +
+        'DEX, o.index_value, 1) )), rs.round_RATE) AS DEBET_NAL,'
+      
+        '  ROUND( SUM(IFNULL(d.VEDOMS_NALF, d.VEDOMS_NAL * IF(o.FL_APPLY_' +
+        'INDEX, o.index_value, 1) )), rs.round_RATE) AS VEDOMS_NAL,'
+      
+        '  ROUND( SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR * IF(o.FL_APPLY_IN' +
+        'DEX, o.index_value, 1) )), rs.round_RATE) AS STOIM_SMR,'
+      
+        '  ROUND( SUM(IFNULL(d.TEMP_BUILDF, d.TEMP_BUILD * IF(o.FL_APPLY_' +
+        'INDEX, o.index_value, 1) )), rs.round_RATE) AS TEMP_BUILD,'
+      
+        '  ROUND( SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR * IF(o.FL_APPLY_IN' +
+        'DEX, o.index_value, 1) )), rs.round_RATE) AS STOIM_SMR,'
+      
+        '  ROUND( SUM(IFNULL(d.GEN_PODRF, d.GEN_PODR * IF(o.FL_APPLY_INDE' +
+        'X, o.index_value, 1) )), rs.round_RATE) AS GEN_PODR, '
+      
+        '  ROUND( SUM(IFNULL(d.ZP_PRF, d.ZP_PR * IF(o.FL_APPLY_INDEX, o.i' +
+        'ndex_value, 1) )), rs.round_RATE) AS ZP_PR,'
+      
+        '  ROUND( SUM(IFNULL(d.FZPF, d.FZP * IF(o.FL_APPLY_INDEX, o.index' +
+        '_value, 1) )), rs.round_RATE) AS FZP,'
+      
+        '  ROUND( SUM(IFNULL(d.TRAVELF, d.TRAVEL * IF(o.FL_APPLY_INDEX, o' +
+        '.index_value, 1) )), rs.round_RATE) AS TRAVEL,'
+      
+        '  ROUND( SUM(IFNULL(d.TRAVEL_WORKF, d.TRAVEL_WORK * IF(o.FL_APPL' +
+        'Y_INDEX, o.index_value, 1) )), rs.round_RATE) AS TRAVEL_WORK,'
+      
+        '  ROUND( SUM(IFNULL(d.WORKER_DEPARTMENTF, d.WORKER_DEPARTMENT * ' +
+        'IF(o.FL_APPLY_INDEX, o.index_value, 1) )), rs.round_RATE) AS WOR' +
+        'KER_DEPARTMENT,'
+      
+        '  SUM(IFNULL(d.NORMATF, d.NORMAT * IF(o.FL_APPLY_INDEX, o.index_' +
+        'value, 1) )) AS NORMAT,'
       '  AVG(IFNULL(d.SiF, d.Si)) AS Si,'
-      '  SUM(IFNULL(d.MAT_ZAKF, d.MAT_ZAK)) AS MAT_ZAK,'
-      '  SUM(IFNULL(d.TRANSP_ZAKF, d.TRANSP_ZAK)) AS TRANSP_ZAK,'
       
-        '  SUM(IFNULL(d.MR_DEVICE_ZAKF, d.MR_DEVICE_ZAK)) AS MR_DEVICE_ZA' +
-        'K,'
+        '  ROUND( SUM(IFNULL(d.MAT_ZAKF, d.MAT_ZAK * IF(o.FL_APPLY_INDEX,' +
+        ' o.index_value, 1) )), rs.round_RATE) AS MAT_ZAK,'
       
-        '  SUM(IFNULL(d.TRANSP_DEVICE_ZAKF, d.TRANSP_DEVICE_ZAK)) AS TRAN' +
-        'SP_DEVICE_ZAK,'
-      '  SUM(IFNULL(d.OTHERF, d.OTHER)) AS OTHER,'
-      '  SUM(IFNULL(d.TRANSP_DUMPF, d.TRANSP_DUMP)) AS TRANSP_DUMP,'
-      '  SUM(IFNULL(d.TRANSP_CARGOF, d.TRANSP_CARGO)) AS TRANSP_CARGO,'
+        '  ROUND( SUM(IFNULL(d.TRANSP_ZAKF, d.TRANSP_ZAK * IF(o.FL_APPLY_' +
+        'INDEX, o.index_value, 1) )), rs.round_RATE) AS TRANSP_ZAK,'
+      
+        '  ROUND( SUM(IFNULL(d.MR_DEVICE_ZAKF, d.MR_DEVICE_ZAK * IF(o.FL_' +
+        'APPLY_INDEX, o.index_value, 1) )), rs.round_RATE) AS MR_DEVICE_Z' +
+        'AK,'
+      
+        '  ROUND( SUM(IFNULL(d.TRANSP_DEVICE_ZAKF, d.TRANSP_DEVICE_ZAK * ' +
+        'IF(o.FL_APPLY_INDEX, o.index_value, 1) )), rs.round_RATE) AS TRA' +
+        'NSP_DEVICE_ZAK,'
+      
+        '  ROUND( SUM(IFNULL(d.OTHERF, d.OTHER * IF(o.FL_APPLY_INDEX, o.i' +
+        'ndex_value, 1) )), rs.round_RATE) AS OTHER,'
+      
+        '  ROUND( SUM(IFNULL(d.TRANSP_DUMPF, d.TRANSP_DUMP * IF(o.FL_APPL' +
+        'Y_INDEX, o.index_value, 1) )), rs.round_RATE) AS TRANSP_DUMP,'
+      
+        '  ROUND( SUM(IFNULL(d.TRANSP_CARGOF, d.TRANSP_CARGO * IF(o.FL_AP' +
+        'PLY_INDEX, o.index_value, 1) )), rs.round_RATE) AS TRANSP_CARGO,'
       ''
-      '  SUM(IFNULL(d.TRANSP_CARGO, 0)) AS TRANSP_CARGOF,'
-      '  SUM(IFNULL(d.TRANSP_DUMP, 0)) AS TRANSP_DUMPF,'
-      '  SUM(IFNULL(d.OTHER, 0)) AS OTHERF,'
-      '  SUM(IFNULL(d.TRANSP_DEVICE_ZAK, 0)) AS TRANSP_DEVICE_ZAKF,'
-      '  SUM(IFNULL(d.MR_DEVICE_ZAK, 0)) AS MR_DEVICE_ZAKF,'
-      '  SUM(IFNULL(d.TRANSP_ZAK, 0)) AS TRANSP_ZAKF,'
-      '  SUM(IFNULL(d.MAT_ZAK, 0)) AS MAT_ZAKF,'
+      
+        '  ROUND( SUM(IFNULL(d.TRANSP_CARGO * IF(o.FL_APPLY_INDEX, o.inde' +
+        'x_value, 1) , 0)), rs.round_RATE) AS TRANSP_CARGOF,'
+      
+        '  ROUND( SUM(IFNULL(d.TRANSP_DUMP * IF(o.FL_APPLY_INDEX, o.index' +
+        '_value, 1) , 0)), rs.round_RATE) AS TRANSP_DUMPF,'
+      
+        '  ROUND( SUM(IFNULL(d.OTHER * IF(o.FL_APPLY_INDEX, o.index_value' +
+        ', 1) , 0)), rs.round_RATE) AS OTHERF,'
+      
+        '  ROUND( SUM(IFNULL(d.TRANSP_DEVICE_ZAK * IF(o.FL_APPLY_INDEX, o' +
+        '.index_value, 1) , 0)), rs.round_RATE) AS TRANSP_DEVICE_ZAKF,'
+      
+        '  ROUND( SUM(IFNULL(d.MR_DEVICE_ZAK * IF(o.FL_APPLY_INDEX, o.ind' +
+        'ex_value, 1) , 0)), rs.round_RATE) AS MR_DEVICE_ZAKF,'
+      
+        '  ROUND( SUM(IFNULL(d.TRANSP_ZAK * IF(o.FL_APPLY_INDEX, o.index_' +
+        'value, 1) , 0)), rs.round_RATE) AS TRANSP_ZAKF,'
+      
+        '  ROUND( SUM(IFNULL(d.MAT_ZAK * IF(o.FL_APPLY_INDEX, o.index_val' +
+        'ue, 1) , 0)), rs.round_RATE) AS MAT_ZAKF,'
       '  AVG(IFNULL(d.Si, 0)) AS SiF,'
-      '  SUM(IFNULL(d.NORMAT, 0)) AS NORMATF,'
-      '  SUM(IFNULL(d.ZP, 0)) AS ZPF,'
-      '  SUM(IFNULL(d.EMiM, 0)) AS EMiMF,'
-      '  SUM(IFNULL(d.MR, 0)) AS MRF,'
-      '  SUM(IFNULL(d.TRUD, 0)) AS TRUDF,'
-      '  SUM(IFNULL(d.TRUD_MASH, 0)) AS TRUD_MASHF,'
-      '  SUM(IFNULL(d.ZP_MASH, 0)) AS ZP_MASHF,'
-      '  SUM(IFNULL(d.TRANSP, 0)) AS TRANSPF,'
-      '  SUM(IFNULL(d.STOIM, 0)) AS STOIMF,'
-      '  SUM(IFNULL(d.OHROPR, 0)) AS OHROPRF,'
-      '  SUM(IFNULL(d.PLAN_PRIB, 0)) AS PLAN_PRIBF,'
-      '  SUM(IFNULL(d.ST_OHROPR, 0)) AS ST_OHROPRF,'
-      '  SUM(IFNULL(d.ZIM_UDOR, 0)) AS ZIM_UDORF,'
-      '  SUM(IFNULL(d.ZP_ZIM_UDOR, 0)) AS ZP_ZIM_UDORF,'
-      '  SUM(IFNULL(d.MR_DEVICE, 0)) AS MR_DEVICEF,'
-      '  SUM(IFNULL(d.TRANSP_DEVICE, 0)) AS TRANSP_DEVICEF,'
-      '  SUM(IFNULL(d.MR_DUMP, 0)) AS MR_DUMPF,'
-      '  SUM(IFNULL(d.DUMP_COUNT, 0)) AS DUMP_COUNTF,'
-      '  SUM(IFNULL(d.TEMP_RET, 0)) AS TEMP_RETF,'
-      '  SUM(IFNULL(d.PR_352, 0)) AS PR_352F,'
-      '  SUM(IFNULL(d.TRUD_ZIM, 0)) AS TRUD_ZIMF,'
-      '  SUM(IFNULL(d.SOC_STRAH, 0)) AS SOC_STRAHF,'
-      '  SUM(IFNULL(d.ZEM_NAL, 0)) AS ZEM_NALF,'
-      '  SUM(IFNULL(d.NDS, 0)) AS NDSF,'
-      '  SUM(IFNULL(d.DEBET_NAL, 0)) AS DEBET_NALF,'
-      '  SUM(IFNULL(d.VEDOMS_NAL, 0)) AS VEDOMS_NALF,'
-      '  SUM(IFNULL(d.STOIM_SMR, 0)) AS STOIM_SMRF,'
-      '  SUM(IFNULL(d.TEMP_BUILD, 0)) AS TEMP_BUILDF,'
-      '  SUM(IFNULL(d.STOIM_SMR, 0)) AS STOIM_SMRF,  '
-      '  SUM(IFNULL(d.GEN_PODR, 0)) AS GEN_PODRF,'
-      '  SUM(IFNULL(d.ZP_PR, 0)) AS ZP_PRF,'
-      '  SUM(IFNULL(d.FZP, 0)) AS FZPF,'
-      '  SUM(IFNULL(d.TRAVEL, 0)) AS TRAVELF,'
-      '  SUM(IFNULL(d.TRAVEL_WORK, 0)) AS TRAVEL_WORKF,'
-      '  SUM(IFNULL(d.WORKER_DEPARTMENT, 0)) AS WORKER_DEPARTMENTF'
+      
+        '  SUM(IFNULL(d.NORMAT * IF(o.FL_APPLY_INDEX, o.index_value, 1) ,' +
+        ' 0)) AS NORMATF,'
+      
+        '  ROUND( SUM(IFNULL(d.ZP * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ') , 0)), rs.round_RATE) AS ZPF,'
+      
+        '  ROUND( SUM(IFNULL(d.EMiM * IF(o.FL_APPLY_INDEX, o.index_value,' +
+        ' 1) , 0)), rs.round_RATE) AS EMiMF,'
+      
+        '  ROUND( SUM(IFNULL(d.MR * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ') , 0)), rs.round_RATE) AS MRF,'
+      
+        '  ROUND( SUM(IFNULL(d.TRUD * IF(o.FL_APPLY_INDEX, o.index_value,' +
+        ' 1) , 0)), rs.round_RATE) AS TRUDF,'
+      
+        '  ROUND( SUM(IFNULL(d.TRUD_MASH * IF(o.FL_APPLY_INDEX, o.index_v' +
+        'alue, 1) , 0)), rs.round_RATE) AS TRUD_MASHF,'
+      
+        '  ROUND( SUM(IFNULL(d.ZP_MASH * IF(o.FL_APPLY_INDEX, o.index_val' +
+        'ue, 1) , 0)), rs.round_RATE) AS ZP_MASHF,'
+      
+        '  ROUND( SUM(IFNULL(d.TRANSP * IF(o.FL_APPLY_INDEX, o.index_valu' +
+        'e, 1) , 0)), rs.round_RATE) AS TRANSPF,'
+      
+        '  ROUND( SUM(IFNULL(d.STOIM * IF(o.FL_APPLY_INDEX, o.index_value' +
+        ', 1) , 0)), rs.round_RATE) AS STOIMF,'
+      
+        '  ROUND( SUM(IFNULL(d.OHROPR * IF(o.FL_APPLY_INDEX, o.index_valu' +
+        'e, 1) , 0)), rs.round_RATE) AS OHROPRF,'
+      
+        '  ROUND( SUM(IFNULL(d.PLAN_PRIB * IF(o.FL_APPLY_INDEX, o.index_v' +
+        'alue, 1) , 0)), rs.round_RATE) AS PLAN_PRIBF,'
+      
+        '  ROUND( SUM(IFNULL(d.ST_OHROPR * IF(o.FL_APPLY_INDEX, o.index_v' +
+        'alue, 1) , 0)), rs.round_RATE) AS ST_OHROPRF,'
+      
+        '  ROUND( SUM(IFNULL(d.ZIM_UDOR * IF(o.FL_APPLY_INDEX, o.index_va' +
+        'lue, 1) , 0)), rs.round_RATE) AS ZIM_UDORF,'
+      
+        '  ROUND( SUM(IFNULL(d.ZP_ZIM_UDOR * IF(o.FL_APPLY_INDEX, o.index' +
+        '_value, 1) , 0)), rs.round_RATE) AS ZP_ZIM_UDORF,'
+      
+        '  ROUND( SUM(IFNULL(d.MR_DEVICE * IF(o.FL_APPLY_INDEX, o.index_v' +
+        'alue, 1) , 0)), rs.round_RATE) AS MR_DEVICEF,'
+      
+        '  ROUND( SUM(IFNULL(d.TRANSP_DEVICE * IF(o.FL_APPLY_INDEX, o.ind' +
+        'ex_value, 1) , 0)), rs.round_RATE) AS TRANSP_DEVICEF,'
+      
+        '  ROUND( SUM(IFNULL(d.MR_DUMP * IF(o.FL_APPLY_INDEX, o.index_val' +
+        'ue, 1) , 0)), rs.round_RATE) AS MR_DUMPF,'
+      
+        '  ROUND( SUM(IFNULL(d.DUMP_COUNT * IF(o.FL_APPLY_INDEX, o.index_' +
+        'value, 1) , 0)), rs.round_RATE) AS DUMP_COUNTF,'
+      
+        '  ROUND( SUM(IFNULL(d.TEMP_RET * IF(o.FL_APPLY_INDEX, o.index_va' +
+        'lue, 1) , 0)), rs.round_RATE) AS TEMP_RETF,'
+      
+        '  ROUND( SUM(IFNULL(d.PR_352 * IF(o.FL_APPLY_INDEX, o.index_valu' +
+        'e, 1) , 0)), rs.round_RATE) AS PR_352F,'
+      
+        '  ROUND( SUM(IFNULL(d.TRUD_ZIM * IF(o.FL_APPLY_INDEX, o.index_va' +
+        'lue, 1) , 0)), rs.round_RATE) AS TRUD_ZIMF,'
+      
+        '  ROUND( SUM(IFNULL(d.SOC_STRAH * IF(o.FL_APPLY_INDEX, o.index_v' +
+        'alue, 1) , 0)), rs.round_RATE) AS SOC_STRAHF,'
+      
+        '  ROUND( SUM(IFNULL(d.ZEM_NAL * IF(o.FL_APPLY_INDEX, o.index_val' +
+        'ue, 1) , 0)), rs.round_RATE) AS ZEM_NALF,'
+      
+        '  ROUND( SUM(IFNULL(d.NDS * IF(o.FL_APPLY_INDEX, o.index_value, ' +
+        '1) , 0)), rs.round_RATE) AS NDSF,'
+      
+        '  ROUND( SUM(IFNULL(d.DEBET_NAL * IF(o.FL_APPLY_INDEX, o.index_v' +
+        'alue, 1) , 0)), rs.round_RATE) AS DEBET_NALF,'
+      
+        '  ROUND( SUM(IFNULL(d.VEDOMS_NAL * IF(o.FL_APPLY_INDEX, o.index_' +
+        'value, 1) , 0)), rs.round_RATE) AS VEDOMS_NALF,'
+      
+        '  ROUND( SUM(IFNULL(d.STOIM_SMR * IF(o.FL_APPLY_INDEX, o.index_v' +
+        'alue, 1) , 0)), rs.round_RATE) AS STOIM_SMRF,'
+      
+        '  ROUND( SUM(IFNULL(d.TEMP_BUILD * IF(o.FL_APPLY_INDEX, o.index_' +
+        'value, 1) , 0)), rs.round_RATE) AS TEMP_BUILDF,'
+      
+        '  ROUND( SUM(IFNULL(d.STOIM_SMR * IF(o.FL_APPLY_INDEX, o.index_v' +
+        'alue, 1) , 0)), rs.round_RATE) AS STOIM_SMRF,  '
+      
+        '  ROUND( SUM(IFNULL(d.GEN_PODR * IF(o.FL_APPLY_INDEX, o.index_va' +
+        'lue, 1) , 0)), rs.round_RATE) AS GEN_PODRF,'
+      
+        '  ROUND( SUM(IFNULL(d.ZP_PR * IF(o.FL_APPLY_INDEX, o.index_value' +
+        ', 1) , 0)), rs.round_RATE) AS ZP_PRF,'
+      
+        '  ROUND( SUM(IFNULL(d.FZP * IF(o.FL_APPLY_INDEX, o.index_value, ' +
+        '1) , 0)), rs.round_RATE) AS FZPF,'
+      
+        '  ROUND( SUM(IFNULL(d.TRAVEL * IF(o.FL_APPLY_INDEX, o.index_valu' +
+        'e, 1) , 0)), rs.round_RATE) AS TRAVELF,'
+      
+        '  ROUND( SUM(IFNULL(d.TRAVEL_WORK * IF(o.FL_APPLY_INDEX, o.index' +
+        '_value, 1) , 0)), rs.round_RATE) AS TRAVEL_WORKF,'
+      
+        '  ROUND( SUM(IFNULL(d.WORKER_DEPARTMENT * IF(o.FL_APPLY_INDEX, o' +
+        '.index_value, 1) , 0)), rs.round_RATE) AS WORKER_DEPARTMENTF'
       ''
-      'FROM typesm, objcards o, smetasourcedata s'
+      'FROM typesm, round_setup rs, objcards o, smetasourcedata s'
       'LEFT JOIN summary_calculation d ON d.SM_ID IN'
       '  (SELECT SM_ID'
       '   FROM smetasourcedata '
@@ -863,8 +1198,6 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     AppStorage = FormMain.AppIni
     AppStoragePath = '%FORM_NAME%\'
     Options = []
-    StoredProps.Strings = (
-      'pnlIndex.Visible')
     StoredValues = <>
     Left = 32
     Top = 96
@@ -955,13 +1288,13 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     UpdateOptions.CheckReadOnly = False
     SQL.Strings = (
       'select * from index_type')
-    Left = 169
-    Top = 8
+    Left = 529
+    Top = 56
   end
   object dsIndexType: TDataSource
     DataSet = qrIndexType
-    Left = 208
-    Top = 8
+    Left = 568
+    Top = 56
   end
   object qrIndexTypeDate: TFDQuery
     Connection = DM.Connect
@@ -986,19 +1319,19 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     UpdateOptions.CheckReadOnly = False
     SQL.Strings = (
       'SELECT * FROM index_type_date')
-    Left = 425
-    Top = 8
+    Left = 673
+    Top = 56
   end
   object dsIndexTypeDate: TDataSource
     DataSet = qrIndexTypeDate
-    Left = 464
-    Top = 8
+    Left = 712
+    Top = 56
   end
   object qrObject: TFDQuery
     AfterOpen = qrObjectAfterOpen
     BeforeEdit = qrObjectBeforeEdit
-    AfterPost = qrObjectAfterCancel
-    AfterCancel = qrObjectAfterCancel
+    AfterPost = qrObjectAfterOpen
+    AfterCancel = qrObjectAfterOpen
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write

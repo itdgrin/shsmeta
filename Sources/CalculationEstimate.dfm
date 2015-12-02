@@ -3394,17 +3394,17 @@
       ExplicitHeight = 53
       inherited grSummaryCalculation: TJvDBGrid
         Width = 100
-        Height = 53
+        Height = 1
       end
-      inherited pnl1: TPanel
+      inherited pnlIndex: TPanel
         Width = 100
-        ExplicitWidth = 100
       end
       inherited pnl2: TPanel
         Width = 100
         ExplicitWidth = 100
         inherited img1: TImage
           Width = 96
+          ExplicitWidth = 96
         end
       end
     end

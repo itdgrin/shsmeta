@@ -2815,9 +2815,6 @@ begin
     seYear.OnChange := e;
     CheckBoxCalculationEconom.Checked := FieldByName('CalculationEconom').AsVariant;
 
-    if FieldByName('TermConstruction').AsVariant <> Null then
-      edtCountMonth.Text := FieldByName('TermConstruction').AsVariant;
-
     // Для выпадающих списков
     if FieldByName('IdIstFin').AsVariant <> Null then
       SetSourceFinance(FieldByName('IdIstFin').AsVariant);

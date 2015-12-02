@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   Tools, Vcl.Menus, JvDBGrid, JvExDBGrids, JvComponentBase, JvFormPlacement, System.UITypes, Vcl.DBCtrls,
-  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask, Vcl.Buttons, System.DateUtils;
+  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Mask, Vcl.Buttons, System.DateUtils, Vcl.Samples.Spin;
 
 type
   TfrCalculationEstimateSummaryCalculations = class(TFrame)
@@ -44,6 +44,15 @@ type
     dsObject: TDataSource;
     btnSaveIndex: TBitBtn;
     btnCancelIndex: TBitBtn;
+    grp1: TGroupBox;
+    cbbMonthBeginStroj: TComboBox;
+    seYearBeginStroj: TSpinEdit;
+    grp2: TGroupBox;
+    seYearEndStroj: TSpinEdit;
+    cbbMonthEndStroj: TComboBox;
+    grp3: TGroupBox;
+    cbbMonthSmeta: TComboBox;
+    seYearSmeta: TSpinEdit;
     procedure grSummaryCalculationDblClick(Sender: TObject);
     procedure N5Click(Sender: TObject);
     procedure grSummaryCalculationCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
@@ -61,12 +70,12 @@ type
     procedure dbchkFL_APPLY_INDEXClick(Sender: TObject);
     procedure btnCancelIndexClick(Sender: TObject);
     procedure btnSaveIndexClick(Sender: TObject);
-    procedure qrObjectAfterCancel(DataSet: TDataSet);
     procedure qrObjectBeforeEdit(DataSet: TDataSet);
     procedure dblkcbbindex_type_idClick(Sender: TObject);
     procedure qrObjectAfterOpen(DataSet: TDataSet);
   private
     SM_ID: Integer;
+    SkipReload: Boolean;
     function CanEditField(Field: TField): Boolean;
   public
     function LoadData(const Args: Variant): Boolean;
@@ -111,107 +120,72 @@ end;
 procedure TfrCalculationEstimateSummaryCalculations.dblkcbbindex_type_idClick(Sender: TObject);
 var
   index: Double;
-  i, fromMonth, fromYear, toMonth, toYear, endStroj: Integer;
+  i, k, fromMonth, fromYear, toMonth, toYear, endStroj: Integer;
 begin
   // Процедура расчета индекса
+  if SkipReload then
+    Exit;
+
   index := 1;
-  fromMonth := MonthOf(qrObject.FieldByName('BEG_STROJ').AsDateTime);
-  fromYear := YearOf(qrObject.FieldByName('BEG_STROJ').AsDateTime);
-  toMonth := MonthOf(qrObject.FieldByName('BEG_STROJ2').AsDateTime);
-  toYear := YearOf(qrObject.FieldByName('BEG_STROJ2').AsDateTime);
-  endStroj := toMonth + toYear * 12 + qrObject.FieldByName('SROK_STROJ').AsInteger;
+  k := 1;
+
+  fromMonth := cbbMonthSmeta.ItemIndex + 1;
+  fromYear := seYearSmeta.Value;
+  toMonth := cbbMonthBeginStroj.ItemIndex + 1;
+  toYear := seYearBeginStroj.Value;
+  //endStroj := toMonth + toYear * 12 + qrObject.FieldByName('SROK_STROJ').AsInteger;
+  endStroj := cbbMonthEndStroj.ItemIndex + seYearEndStroj.Value * 12 + 2;
+
+  if qrObject.FieldByName('index_type_id').AsInteger = 2 then
+    k := 100;
+
   try
-    case qrObject.FieldByName('index_type_id').Value of
-      // Прогнозный
+    case qrObject.FieldByName('index_type_date_id').Value of
+      // На дату составления сметы
       1:
-        case qrObject.FieldByName('index_type_date_id').Value of
-          // На дату составления сметы
-          1:
-            begin
-              qrObject.FieldByName('index_value').Value := index;
-            end;
-          // На дату начала строительства
-          2:
-            begin
-              // Цикл от даты составления сметы до начала строительства
-              for i := fromMonth + fromYear * 12 to toMonth + toYear * 12 - 1 do
-              begin
-                index := index * GetUniDictParamValue(qrIndexType.FieldByName('unidictparam_code').AsString,
-                  fromMonth, fromYear);
-                if fromMonth = 12 then
-                begin
-                  fromMonth := 1;
-                  fromYear := fromYear + 1;
-                end
-                else
-                  fromMonth := fromMonth + 1;
-              end;
-            end;
-          // На дату окончания строительства
-          3:
-            begin
-              // Цикл от даты составления сметы до окончания строительства
-              for i := fromMonth + fromYear * 12 to endStroj - 1 do
-              begin
-                index := index * GetUniDictParamValue(qrIndexType.FieldByName('unidictparam_code').AsString,
-                  fromMonth, fromYear);
-                if fromMonth = 12 then
-                begin
-                  fromMonth := 1;
-                  fromYear := fromYear + 1;
-                end
-                else
-                  fromMonth := fromMonth + 1;
-              end;
-            end;
+        begin
+          qrObject.FieldByName('index_value').Value := index;
         end;
-      // Статистический
+      // На дату начала строительства
       2:
-        case qrObject.FieldByName('index_type_date_id').Value of
-          // На дату составления сметы
-          1:
+        begin
+          // Цикл от даты составления сметы до начала строительства
+          for i := fromMonth + fromYear * 12 to toMonth + toYear * 12 - 1 do
+          begin
+            index := index * GetUniDictParamValue(qrIndexType.FieldByName('unidictparam_code').AsString,
+              fromMonth, fromYear) / k;
+            if fromMonth = 12 then
             begin
-              qrObject.FieldByName('index_value').Value := index;
-            end;
-          // На дату начала строительства
-          2:
+              fromMonth := 1;
+              fromYear := fromYear + 1;
+            end
+            else
+              fromMonth := fromMonth + 1;
+          end;
+        end;
+      // На дату окончания строительства
+      3:
+        begin
+          // Цикл от даты составления сметы до окончания строительства
+          for i := fromMonth + fromYear * 12 to endStroj - 1 do
+          begin
+            index := index * GetUniDictParamValue(qrIndexType.FieldByName('unidictparam_code').AsString,
+              fromMonth, fromYear) / k;
+            if fromMonth = 12 then
             begin
-              // Цикл от даты составления сметы до начала строительства
-              for i := fromMonth + fromYear * 12 to toMonth + toYear * 12 - 1 do
-              begin
-                index := index * GetUniDictParamValue(qrIndexType.FieldByName('unidictparam_code').AsString,
-                  fromMonth, fromYear) / 100;
-                if fromMonth = 12 then
-                begin
-                  fromMonth := 1;
-                  fromYear := fromYear + 1;
-                end
-                else
-                  fromMonth := fromMonth + 1;
-              end;
-            end;
-          // На дату окончания строительства
-          3:
-            begin
-              // Цикл от даты составления сметы до окончания строительства
-              for i := fromMonth + fromYear * 12 to endStroj - 1 do
-              begin
-                index := index * GetUniDictParamValue(qrIndexType.FieldByName('unidictparam_code').AsString,
-                  fromMonth, fromYear) / 100;
-                if fromMonth = 12 then
-                begin
-                  fromMonth := 1;
-                  fromYear := fromYear + 1;
-                end
-                else
-                  fromMonth := fromMonth + 1;
-              end;
-            end;
+              fromMonth := 1;
+              fromYear := fromYear + 1;
+            end
+            else
+              fromMonth := fromMonth + 1;
+          end;
         end;
     end;
-    qrObject.FieldByName('index_value').Value := index;
+    qrObject.Edit;
+    qrObject.FieldByName('index_value').Value :=
+      FastSelectSQLOne('SELECT ROUND(:x,round_INDEX) FROM round_setup LIMIT 1', VarArrayOf([index]));
   except
-    qrObject.FieldByName('index_value').Value := index;
+    qrObject.FieldByName('index_value').Value := 1;
   end;
 end;
 
@@ -282,6 +256,7 @@ function TfrCalculationEstimateSummaryCalculations.LoadData(const Args: Variant)
 begin
   Result := True;
   try
+    SkipReload := True;
     qrData.Active := False;
     qrData.ParamByName('SM_ID').Value := Args[0];
     qrData.Active := True;
@@ -293,6 +268,7 @@ begin
     qrObject.Active := False;
     qrObject.ParamByName('OBJ_ID').Value := Args[1];
     qrObject.Active := True;
+    SkipReload := False;
   except
     Result := False;
   end;
@@ -399,15 +375,24 @@ begin
   grSummaryCalculation.Options := grSummaryCalculation.Options - [dgEditing];
 end;
 
-procedure TfrCalculationEstimateSummaryCalculations.qrObjectAfterCancel(DataSet: TDataSet);
+procedure TfrCalculationEstimateSummaryCalculations.qrObjectAfterOpen(DataSet: TDataSet);
+var
+  endDate: TDate;
 begin
   btnSaveIndex.Visible := False;
   btnCancelIndex.Visible := False;
-end;
 
-procedure TfrCalculationEstimateSummaryCalculations.qrObjectAfterOpen(DataSet: TDataSet);
-begin
   dbchkFL_APPLY_INDEXClick(nil);
+  endDate := IncMonth(qrObject.FieldByName('BEG_STROJ2').AsDateTime, qrObject.FieldByName('SROK_STROJ')
+    .AsInteger - 1);
+  cbbMonthSmeta.ItemIndex := MonthOf(qrObject.FieldByName('BEG_STROJ').AsDateTime) - 1;
+  seYearSmeta.Value := YearOf(qrObject.FieldByName('BEG_STROJ').AsDateTime);
+  cbbMonthBeginStroj.ItemIndex := MonthOf(qrObject.FieldByName('BEG_STROJ2').AsDateTime) - 1;
+  seYearBeginStroj.Value := YearOf(qrObject.FieldByName('BEG_STROJ2').AsDateTime);
+  cbbMonthEndStroj.ItemIndex := MonthOf(endDate) - 1;
+  seYearEndStroj.Value := YearOf(endDate);
+
+  CloseOpen(qrData);
 end;
 
 procedure TfrCalculationEstimateSummaryCalculations.qrObjectBeforeEdit(DataSet: TDataSet);

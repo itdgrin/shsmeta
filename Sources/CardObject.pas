@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, Tools,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, Vcl.Mask, Vcl.Menus, Vcl.DBCtrls, System.UITypes, Vcl.Buttons, Vcl.Samples.Spin,
-  JvExMask, JvToolEdit, JvDBControls;
+  JvExMask, JvToolEdit, JvDBControls, JvSpin, JvDBSpinEdit;
 
 type
   TfCardObject = class(TSmForm)
@@ -90,13 +90,13 @@ type
     seYear: TSpinEdit;
     lbl3: TLabel;
     dblkcbbSourseFinance: TDBLookupComboBox;
-    lbl4: TLabel;
-    JvDBDateEdit1: TJvDBDateEdit;
     btnCardObjectAdditional: TBitBtn;
     lblCountMonth: TLabel;
-    edtCountMonth: TEdit;
-    se1: TSpinEdit;
-    cbb1: TComboBox;
+    grp3: TGroupBox;
+    cbbMonthBeginStroj: TComboBox;
+    seYearBeginStroj: TSpinEdit;
+    lbl4: TLabel;
+    dbseCountMonth: TJvDBSpinEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -132,6 +132,8 @@ type
     procedure qrMainNewRecord(DataSet: TDataSet);
     procedure dbedtPER_TEPM_BUILDKeyPress(Sender: TObject; var Key: Char);
     procedure dbedtPER_CONTRACTORKeyPress(Sender: TObject; var Key: Char);
+    procedure cbbMonthBeginStrojChange(Sender: TObject);
+    procedure qrMainAfterOpen(DataSet: TDataSet);
 
   private
     Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
@@ -383,6 +385,7 @@ begin
 
   if not Editing then
   begin
+    // Услуги генподрядчика
     DM.qrDifferent.SQL.Text := 'SELECT SUM(FN_getParamValue(code, :month, :year)) AS VALUE'#13 +
       'FROM unidictparam WHERE id_unidicttype=7';
     DM.qrDifferent.ParamByName('month').AsInteger := cbbFromMonth.ItemIndex + 1;
@@ -441,7 +444,7 @@ end;
 
 procedure TfCardObject.ButtonSaveClick(Sender: TObject);
 var
-  NumberObject, v2, v3, v4, v5, v6, v7, v8, v9, v12, v14, v15, v16, v17, v18, v19: string;
+  NumberObject, v2, v3, v4, v5, v6, v7, v9, v12, v14, v15, v16, v17, v18, v19: string;
   CountField: Integer;
   NEW_ID: Variant;
 begin
@@ -514,16 +517,6 @@ begin
       'Загрузите ставки или укажите другую дату составления сметы.', mtError, [mbOK], 0);
     cbbFromMonth.SetFocus;
     exit;
-  end;
-
-  // Срок строительства (месяцы)
-  if edtCountMonth.Text <> '' then
-    v8 := edtCountMonth.Text
-  else
-  begin
-    v8 := 'Null';
-    // EditCountMonth.Color := ColorWarningField;
-    // Inc(CountField);
   end;
 
   // Источник финансирования
@@ -615,7 +608,7 @@ begin
       begin
         SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = "' + v2 + '", date_dog = "' + v3
           + '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
-          '", srok_stroj = ' + v8 + ', ' + ' fin_id = ' + v9 +
+          '", srok_stroj = :srok_stroj, ' + ' fin_id = ' + v9 +
           ', cust_id = :cust_id, general_id = :general_id, cat_id = "' + v12 +
           '", state_nds = :snds, region_id = "' + v14 + '", base_norm_id = "' + v15 + '", stroj_id = "' + v16
           + '", encrypt = "' + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
@@ -653,7 +646,7 @@ begin
           + 'FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK, FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL,'#13 +
           'FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE, WINTERPRICE_TYPE,BEG_STROJ2,'#13 +
           'Fl_NAL_USN, NAL_USN, Fl_SPEC_SCH, SPEC_SCH)'#13 + 'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2
-          + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 + '", "' + v7 + '", ' + v8 + ', ' + v9 +
+          + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 + '", "' + v7 + '", :srok_stroj, ' + v9 +
           ', :cust_id, :general_id, "' + v12 + '", :snds, "' + v14 + '", "' + v15 + '", "' + v16 + '", "' +
           v17 + '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV, :USER_ID,'#13 +
@@ -683,6 +676,7 @@ begin
       ParamByName('NAL_USN').Value := qrMain.FieldByName('NAL_USN').Value;
       ParamByName('Fl_SPEC_SCH').Value := qrMain.FieldByName('Fl_SPEC_SCH').Value;
       ParamByName('SPEC_SCH').Value := qrMain.FieldByName('SPEC_SCH').Value;
+      ParamByName('srok_stroj').Value := qrMain.FieldByName('srok_stroj').Value;
 
       ExecSQL;
     end;
@@ -703,6 +697,12 @@ begin
       MessageBox(0, PChar('При сохранении данных возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
         CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+end;
+
+procedure TfCardObject.cbbMonthBeginStrojChange(Sender: TObject);
+begin
+  qrMain.FieldByName('BEG_STROJ2').Value := StrToDate('01.' + IntToStr(cbbMonthBeginStroj.ItemIndex + 1) + '.'
+    + IntToStr(seYearBeginStroj.Value));
 end;
 
 procedure TfCardObject.btn1Click(Sender: TObject);
@@ -809,7 +809,6 @@ begin
   EditNumberContract.Color := clWindow;
   EditShortDescription.Color := clWindow;
   MemoFullDescription.Color := clWindow;
-  edtCountMonth.Color := clWindow;
   dblkcbbSourseFinance.Color := clWindow;
   dblkcbbCategoryObject.Color := clWindow;
   dblkcbbRegion.Color := clWindow;
@@ -825,11 +824,12 @@ begin
   EditNumberContract.Text := '';
   EditShortDescription.Text := '';
   MemoFullDescription.Text := '';
-  edtCountMonth.Text := '';
   CheckBoxCalculationEconom.Checked := False;
   DateTimePickerDataCreateContract.Date := Now;
   cbbFromMonth.ItemIndex := MonthOf(Now) - 1;
   seYear.Value := YearOf(Now);
+  cbbMonthBeginStroj.ItemIndex := cbbFromMonth.ItemIndex;
+  seYearBeginStroj.Value := seYear.Value;
   dblkcbbSourseFinance.KeyValue := NULL;
   dblkcbbCategoryObject.KeyValue := NULL;
   dblkcbbRegion.KeyValue := NULL;
@@ -857,6 +857,13 @@ begin
         qrMAIS.Next;
       dblkcbbMAIS.KeyValue := qrMAIS.FieldByName('MAIS_ID').AsInteger;
     end;
+  end;
+  // Если дата начала строительства при изменении оказалась раньше, то устанавливаем по дате составления сметы
+  if (cbbMonthBeginStroj.ItemIndex + seYearBeginStroj.Value * 12) <
+    (cbbFromMonth.ItemIndex + seYear.Value * 12) then
+  begin
+    cbbMonthBeginStroj.ItemIndex := cbbFromMonth.ItemIndex;
+    seYearBeginStroj.Value := seYear.Value;
   end;
 end;
 
@@ -947,6 +954,12 @@ procedure TfCardObject.N1Click(Sender: TObject);
 begin
   dbedtPER_TEPM_BUILD.ReadOnly := False;
   dbedtPER_CONTRACTOR.ReadOnly := False;
+end;
+
+procedure TfCardObject.qrMainAfterOpen(DataSet: TDataSet);
+begin
+  cbbMonthBeginStroj.ItemIndex := MonthOf(qrMain.FieldByName('BEG_STROJ2').AsDateTime) - 1;
+  seYearBeginStroj.Value := YearOf(qrMain.FieldByName('BEG_STROJ2').AsDateTime);
 end;
 
 procedure TfCardObject.qrMainNewRecord(DataSet: TDataSet);
