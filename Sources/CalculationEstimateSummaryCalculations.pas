@@ -183,7 +183,7 @@ begin
     end;
     qrObject.Edit;
     qrObject.FieldByName('index_value').Value :=
-      FastSelectSQLOne('SELECT ROUND(:x,round_INDEX) FROM round_setup LIMIT 1', VarArrayOf([index]));
+      FastSelectSQLOne('SELECT ROUND(:x, round_INDEX) FROM round_setup LIMIT 1', VarArrayOf([index]));
   except
     qrObject.FieldByName('index_value').Value := 1;
   end;
@@ -257,6 +257,9 @@ begin
   Result := True;
   try
     SkipReload := True;
+    grp1.Enabled := PS.AllowObjectDatesChange;
+    grp2.Enabled := PS.AllowObjectDatesChange;
+    grp3.Enabled := PS.AllowObjectDatesChange;
     qrData.Active := False;
     qrData.ParamByName('SM_ID').Value := Args[0];
     qrData.Active := True;

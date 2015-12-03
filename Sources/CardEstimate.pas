@@ -753,7 +753,7 @@ procedure TfCardEstimate.qrMainNewRecord(DataSet: TDataSet);
 begin
   // По умолчанию номер главы = 3
   if TypeEstimate = 2 then
-    qrMain.FieldByName('CHAPTER').AsInteger := 3;
+    qrMain.FieldByName('CHAPTER').AsInteger := 2;
 end;
 
 procedure TfCardEstimate.qrPartsAfterScroll(DataSet: TDataSet);

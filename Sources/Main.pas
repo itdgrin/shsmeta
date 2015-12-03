@@ -362,6 +362,7 @@ type
     UseBoldFontForName: Boolean;
     AutoScrollToNextRow: Boolean;
     UseOldFormuls: Boolean;
+    AllowObjectDatesChange: Boolean; //Разрешить изменение дат расчета индексов в Сводном расчете
   end;
 
 const
@@ -2511,6 +2512,7 @@ begin
       PS.AddRateType0ToPNR := ReadBool('ESTIMATE', 'AddRateType0ToPNR', False);
       PS.UseBoldFontForName := ReadBool('ESTIMATE', 'UseBoldFontForName', True);
       PS.AutoScrollToNextRow := ReadBool('ESTIMATE', 'AutoScrollToNextRow', False);
+      PS.AllowObjectDatesChange := ReadBool('ESTIMATE', 'AllowObjectDatesChange', False);
       PS.UseOldFormuls := ReadBool('ESTIMATE', 'UseOldFormuls', False);
       G_CALCMODE := Byte(PS.UseOldFormuls);
     end;
@@ -2575,6 +2577,7 @@ begin
       WriteBool('ESTIMATE', 'UseBoldFontForName', PS.UseBoldFontForName);
       WriteBool('ESTIMATE', 'AutoScrollToNextRow', PS.AutoScrollToNextRow);
       WriteBool('ESTIMATE', 'UseOldFormuls', PS.UseOldFormuls);
+      WriteBool('ESTIMATE', 'AllowObjectDatesChange', PS.AllowObjectDatesChange);
     end;
   finally
     FreeAndNil(IFile); // Удаляем открытый файл из памяти

@@ -87,6 +87,7 @@ type
     chkUseBoldFontForName: TCheckBox;
     chkAutoScrollToNextRow: TCheckBox;
     chkUseOldFormuls: TCheckBox;
+    chkAllowObjectDatesChange: TCheckBox;
 
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -190,7 +191,7 @@ end;
 procedure TFormProgramSettings.FormCreate(Sender: TObject);
 begin
   inherited;
-  //
+  pcSettings.ActivePageIndex := 0;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -402,6 +403,8 @@ begin
   PS.UseBoldFontForName := chkUseBoldFontForName.Checked;
   PS.AutoScrollToNextRow := chkAutoScrollToNextRow.Checked;
   PS.UseOldFormuls := chkUseOldFormuls.Checked;
+  PS.AllowObjectDatesChange := chkAllowObjectDatesChange.Checked;
+
   G_CALCMODE := Byte(PS.UseOldFormuls);
 
   PS.GridFontName := lblFontRow.Font.Name;
@@ -466,6 +469,7 @@ begin
   chkUseBoldFontForName.Checked := PS.UseBoldFontForName;
   chkAutoScrollToNextRow.Checked := PS.AutoScrollToNextRow;
   chkUseOldFormuls.Checked := PS.UseOldFormuls;
+  chkAllowObjectDatesChange.Checked := PS.AllowObjectDatesChange;
 
   lblFontRow.Font.Name := PS.GridFontName;
   lblFontRow.Font.Size := PS.GridFontSize;

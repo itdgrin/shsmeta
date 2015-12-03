@@ -493,7 +493,6 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 1215
     object lbl1: TLabel
       Left = 647
       Top = 0
@@ -755,8 +754,6 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     BevelOuter = bvNone
     TabOrder = 1
     Visible = False
-    ExplicitTop = 36
-    ExplicitWidth = 824
     object img1: TImage
       Left = 0
       Top = 0
