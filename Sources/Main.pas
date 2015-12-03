@@ -10,7 +10,12 @@ uses
   UpdateModule, ArhivModule, Data.DB, GlobsAndConst,
   Vcl.Imaging.pngimage, JvComponentBase, JvAppStorage, JvAppIniStorage,
   JvFormPlacement, Vcl.Clipbrd, JvGIF, Vcl.Imaging.GIFImg,
-  System.UITypes;
+  System.UITypes,
+  RC6,
+  uMemoryLoader,
+  hwid_impl,
+  winioctl,
+  System.AnsiStrings;
 
 type
   TLayeredWndAttr = function(hwnd: integer; color: integer; level: integer; mode: integer): integer; stdcall;
@@ -310,11 +315,14 @@ type
 
     // Объект отвечает за создание бэкапов и их восстановление
     FArhiv: TBaseAppArhiv;
+    FCheckLicenseFlag: Boolean;
+    FLicenseClose: Boolean;
 
     procedure GetUpdateSystemInfo;
     procedure OnUpdate(var Mes: TMessage); message WM_SHOW_SPLASH;
     procedure ThreadEXCEPTION(var Mes: TMessage); message WM_EXCEPTION;
     procedure ARCHIVEPROGRESS(var Mes: TMessage); message WM_ARCHIVEPROGRESS;
+    procedure CHECKLICENCE(var Mes: TMessage); message WM_CHECKLICENCE;
     procedure ShowSplashForm;
     procedure ShowUpdateForm(const AResp: TServiceResponse);
 
@@ -323,7 +331,7 @@ type
     procedure FormShowEvent1(Sender: TObject);
     procedure FormShowEvent2(Sender: TObject);
   public
-    procedure IniUpdateSystem;
+    procedure IniSystem;
   end;
 
   TProgramSettings = record
@@ -535,6 +543,27 @@ begin
   end;
 end;
 
+procedure TFormMain.CHECKLICENCE(var Mes: TMessage);
+var LicenseForm: TLicenseForm;
+begin
+  if FCheckLicenseFlag then
+    Exit;
+
+  LicenseForm := TLicenseForm.Create(Self);
+  try
+    FCheckLicenseFlag := True;
+    LicenseForm.ShowModal;
+  finally
+    FreeAndNil(LicenseForm);
+    FCheckLicenseFlag := False;
+    if not CheckCurLicense  then
+    begin
+      FLicenseClose := True;
+      PostMessage(Handle, WM_CLOSE, 0, 0);
+    end;
+  end;
+end;
+
 // Уведомление о доступности новых обновлений
 procedure TFormMain.OnUpdate(var Mes: TMessage);
 var
@@ -559,7 +588,6 @@ end;
 procedure TFormMain.GetUpdateSystemInfo;
 var ini: TIniFile;
     Reg: TRegistry;
-    CurKey: string;
 begin
   ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + С_UPD_NAME + '.ini');
   try
@@ -585,10 +613,9 @@ begin
 
   Reg := TRegistry.Create(KEY_ALL_ACCESS);
   try
-    Reg.RootKey := HKEY_LOCAL_MACHINE;
-    CurKey := C_REGKEY + '\' + С_UPD_NAME;
+    Reg.RootKey := C_REGROOT;
 
-    if Reg.OpenKey(CurKey, True) then
+    if Reg.OpenKey(C_REGKEY + '\' + С_UPD_NAME, True) then
     begin
       if not Reg.ValueExists('UpdateType') then
         Reg.WriteInteger('UpdateType', 0);
@@ -607,6 +634,15 @@ begin
     else
       MessageDlg('Unable to create key!', mtError, mbOKCancel, 0);
     Reg.CloseKey;
+
+    if Reg.OpenKey(C_REGKEY + '\' + C_LICENSEKEY, True) then
+    begin
+      if Reg.ValueExists('CurLicense') then
+        G_CURLISENSE := Reg.ReadString('CurLicense');
+    end
+    else
+      MessageDlg('Unable to create key!', mtError, mbOKCancel, 0);
+
     //Временная фишка, что-бы занилить старые настройки
     if Reg.OpenKey(C_REGKEY, True) then
     begin
@@ -665,7 +701,7 @@ end;
 
 procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  if not G_STARTAPP then
+  if (not G_STARTAPP) and (not FLicenseClose) then
     case Application.MessageBox('Вы действительно хотите закрыть программу?', 'Смета',
       MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) of
       IDYES:
@@ -703,7 +739,8 @@ begin
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   // Объект для управления архивом
-  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
+  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName),
+    ExtractFilePath(Application.ExeName) +
     C_ARHDIR);
 
   // путь к папке с отчетами (Вадим)
@@ -744,7 +781,7 @@ begin
   end;
 end;
 
-procedure TFormMain.IniUpdateSystem;
+procedure TFormMain.IniSystem;
 begin
   if Assigned(FChackUpdateThread) then
   begin // Выполнить Terminate обязательно так как он переопределен
@@ -757,6 +794,9 @@ begin
     FreeAndNil(FCreateMirrorThread);
 
   GetUpdateSystemInfo;
+
+  if not CheckCurLicense then
+    PostMessage(Handle, WM_CHECKLICENCE, 0, 0);
 
   // Запуск ниточки для мониторигра обновлений
   if not FDebugMode then
@@ -783,7 +823,7 @@ begin
       mLogInClick(nil);
       if G_USER_ID = 0 then
       begin
-        PostMessage(Handle, WM_QUIT, 0, 0);
+        Application.Terminate;
         Exit;
       end;
 
@@ -813,10 +853,11 @@ begin
       e.Message := 'Ошибка подключения к базе:' + sLineBreak + e.Message;
       Application.ShowException(e);
       Application.Terminate;
+      Exit;
     end;
   end;
 
-  IniUpdateSystem;
+  IniSystem;
 
   PanelCover.Visible := true;
 
@@ -941,6 +982,7 @@ var
   i: integer;
   Mi, TmpMi, TmpMi2: TMenuItem;
 begin
+  LicenseAssigned(nil);
   Mi := TMenuItem(Sender);
   // Первые 3и пункта существуют всегда, остальные добавляются при необходимости
   for i := 3 to Mi.Count - 1 do
@@ -982,12 +1024,13 @@ procedure TFormMain.ServiceSettingsClick(Sender: TObject);
 var
   FormProgramSettings: TFormProgramSettings;
 begin
+  LicenseAssigned(nil);
   FormProgramSettings := TFormProgramSettings.Create(nil);
   try
     if FormProgramSettings.ShowModal = mrOk then
     begin
       // Каждый раз после изменения настроек переинициализируется система обновлений
-      IniUpdateSystem;
+      IniSystem;
     end;
   finally
     FreeAndNil(FormProgramSettings);
@@ -996,7 +1039,7 @@ end;
 
 procedure TFormMain.ServiceUpdateClick(Sender: TObject);
 begin
-  if Assigned(FChackUpdateThread) then
+  if LicenseAssigned(FChackUpdateThread) then
   begin
     FChackUpdateThread.UserRequest;
   end;
@@ -1057,11 +1100,10 @@ end;
 
 procedure TFormMain.vk2Click(Sender: TObject);
 begin
-
   // dmReportF.Report_WINTER_RS_OBJ(FormObjectsAndEstimates.IdEstimate, FileReportPath);
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(fObjectsAndEstimates) then
+    if LicenseAssigned(fObjectsAndEstimates) then
     begin
       if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
@@ -1092,13 +1134,13 @@ procedure TFormMain.TariffsTransportationClick(Sender: TObject);
 begin
   PanelCover.Visible := true;
 
-  if (not Assigned(FormTariffsTransportation)) then
+  if (not LicenseAssigned(FormTariffsTransportation)) then
     FormTariffsTransportation := TFormTariffsTransportation.Create(Self);
 end;
 
 procedure TFormMain.TariffsMechanismClick(Sender: TObject);
 begin
-  if not Assigned(FormCalculationEstimate) then
+  if not LicenseAssigned(FormCalculationEstimate) then
   begin
     MessageBox(0, PChar('Cначала надо выбрать смету.'), FormNamePriceMechanizms,
       MB_ICONINFORMATION + MB_OK + mb_TaskModal);
@@ -1107,7 +1149,7 @@ begin
 
   PanelCover.Visible := true;
 
-  if (not Assigned(FormTariffsMechanism)) then
+  if (not LicenseAssigned(FormTariffsMechanism)) then
     FormTariffsMechanism := TFormTariffsMechanism.Create(Self);
 end;
 
@@ -1115,7 +1157,7 @@ procedure TFormMain.TariffsDumpClick(Sender: TObject);
 begin
   PanelCover.Visible := true;
 
-  if (not Assigned(FormTariffsDump)) then
+  if (not LicenseAssigned(FormTariffsDump)) then
     FormTariffsDump := TFormTariffsDump.Create(Self);
 end;
 
@@ -1126,7 +1168,7 @@ begin
   FormWaiting.Show;
   Application.ProcessMessages;
 
-  if (not Assigned(FormTariffsIndex)) then
+  if (not LicenseAssigned(FormTariffsIndex)) then
     FormTariffsIndex := TFormTariffsIndex.Create(Self);
 
   FormTariffsIndex.Show;
@@ -1141,7 +1183,7 @@ begin
   FormWaiting.Show;
   Application.ProcessMessages;
 
-  if (not Assigned(FormActC6)) then
+  if (not LicenseAssigned(FormActC6)) then
     FormActC6 := TFormActC6.Create(Self);
 
   FormActC6.Show;
@@ -1156,7 +1198,7 @@ begin
   FormWaiting.Show;
   Application.ProcessMessages;
 
-  if (not Assigned(FormWorkSchedule)) then
+  if (not LicenseAssigned(FormWorkSchedule)) then
     FormWorkSchedule := TFormWorkSchedule.Create(Self);
 
   FormWorkSchedule.Show;
@@ -1170,7 +1212,7 @@ begin
 
   Screen.Cursor := crSQLWait;
   try
-    if Assigned(fObjectsAndEstimates) then
+    if LicenseAssigned(fObjectsAndEstimates) then
     begin
       if not CheckQrActiveEmpty(fObjectsAndEstimates.qrTreeData) then
       begin
@@ -1244,7 +1286,7 @@ end;
 
 procedure TFormMain.mCalcResourcesClick(Sender: TObject);
 begin
-  if Assigned(FormCalculationEstimate) then
+  if LicenseAssigned(FormCalculationEstimate) then
     ShowCalcResource(FormCalculationEstimate.IdEstimate);
 end;
 
@@ -1285,21 +1327,21 @@ end;
 
 procedure TFormMain.mhfybkbotafqkjd1Click(Sender: TObject);
 begin
-  if (not Assigned(fFileStorage)) then
+  if (not LicenseAssigned(fFileStorage)) then
     fFileStorage := TfFileStorage.Create(Self);
   fFileStorage.Show;
 end;
 
 procedure TFormMain.mN110Click(Sender: TObject);
 begin
-  if (not Assigned(fSSR)) then
+  if (not LicenseAssigned(fSSR)) then
     fSSR := TfSSR.Create((Sender as TMenuItem).Tag, (Sender as TMenuItem).Caption);
   fSSR.Show;
 end;
 
 procedure TFormMain.mN111Click(Sender: TObject);
 begin
-  if (Assigned(fNormativDictHelp)) then
+  if (LicenseAssigned(fNormativDictHelp)) then
     // fNormativDictHelp.Close;
     FreeAndNil(fNormativDictHelp);
   if (not Assigned(fNormativDictHelp)) then
@@ -1312,14 +1354,14 @@ end;
 
 procedure TFormMain.mN15Click(Sender: TObject);
 begin
-  if (not Assigned(fTariffDict)) then
+  if (not LicenseAssigned(fTariffDict)) then
     fTariffDict := TfTariffDict.Create(Self);
   fTariffDict.Show;
 end;
 
 procedure TFormMain.mN17Click(Sender: TObject);
 begin
-  if (not Assigned(fOXROPRSetup)) then
+  if (not LicenseAssigned(fOXROPRSetup)) then
     fOXROPRSetup := TfOXROPRSetup.Create(Self);
   fOXROPRSetup.Show;
 end;
@@ -1333,14 +1375,14 @@ end;
 
 procedure TFormMain.mN23Click(Sender: TObject);
 begin
-  if (not Assigned(fForecastCostIndex)) then
+  if (not LicenseAssigned(fForecastCostIndex)) then
     fForecastCostIndex := TfForecastCostIndex.Create(nil);
   fForecastCostIndex.Show;
 end;
 
 procedure TFormMain.mN24Click(Sender: TObject);
 begin
-  if (not Assigned(fForemanList)) then
+  if (not LicenseAssigned(fForemanList)) then
     fForemanList := TfForemanList.Create(FormMain);
   fForemanList.Show;
 end;
@@ -1952,7 +1994,7 @@ begin
     if s <> '1' then
     Exit;
   }
-  if (not Assigned(fUniDict)) then
+  if (not LicenseAssigned(fUniDict)) then
     fUniDict := TfUniDict.Create(Self);
   fUniDict.FormStyle := fsMDIChild;
   fUniDict.WindowState := wsMaximized;
@@ -2195,14 +2237,14 @@ end;
 
 procedure TFormMain.MenuOrganizationsClick(Sender: TObject);
 begin
-  if (not Assigned(fOrganizationsEx)) then
+  if (not LicenseAssigned(fOrganizationsEx)) then
     fOrganizationsEx := TfOrganizationsEx.Create(FormMain);
   fOrganizationsEx.Show;
 end;
 
 procedure TFormMain.HRRReferenceDataClick(Sender: TObject);
 begin
-  if (not Assigned(FormReferenceData)) then
+  if (not LicenseAssigned(FormReferenceData)) then
     FormReferenceData := TFormReferenceData.Create(Self, '0', False)
   else
     FormReferenceData.Show;
@@ -2210,14 +2252,14 @@ end;
 
 procedure TFormMain.HRROwnDataClick(Sender: TObject);
 begin
-  if (not Assigned(FormOwnData)) then
+  if (not LicenseAssigned(FormOwnData)) then
     FormOwnData := TFormOwnData.Create(Self, '1', False);
 end;
 
 procedure TFormMain.HRRPricesClick(Sender: TObject);
 begin
   // Справочные
-  if (not Assigned(FormPricesReferenceData)) then
+  if (not LicenseAssigned(FormPricesReferenceData)) then
     FormPricesReferenceData := TFormPricesReferenceData.Create(Self, 'g', true);
   { Собственные
     if (not Assigned(FormPricesOwnData)) then

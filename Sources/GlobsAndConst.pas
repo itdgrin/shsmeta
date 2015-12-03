@@ -1,7 +1,7 @@
 unit GlobsAndConst;
 
 interface
-uses Winapi.Messages;
+uses Winapi.Messages, Winapi.Windows;
 
 type
   TAppElement = record
@@ -144,6 +144,7 @@ const
   C_UPD_MIRRORPAT1 = 'AppVersion';
   C_UPD_MIRRORPAT2 = '.zip';
 
+  C_REGROOT = HKEY_CURRENT_USER;
   C_REGKEY = 'SOFTWARE\Smeta';
 //******************************************************************************
 
@@ -246,6 +247,8 @@ var
   G_CURMONTH: Integer;
   //Значение НДС принимаемое по умолчанию в программе
   G_NDS: Double = 20;
+  //Имя текущего файла лицензии
+  G_CURLISENSE: string = '';
 
 implementation
 

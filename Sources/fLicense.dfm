@@ -12,6 +12,7 @@ object LicenseForm: TLicenseForm
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -548,10 +549,6 @@ object LicenseForm: TLicenseForm
     object pmLoadKeyFromLocal: TMenuItem
       Caption = #1059#1082#1072#1079#1072#1090#1100' '#1087#1091#1090#1100' '#1082' '#1092#1072#1081#1083#1091' '#1085#1072' '#1076#1080#1089#1082#1077
       OnClick = pmLoadKeyFromLocalClick
-    end
-    object asdasdsa1: TMenuItem
-      Caption = 'asdasdsa'
-      OnClick = asdasdsa1Click
     end
   end
   object OpenDialog: TOpenDialog

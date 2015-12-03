@@ -24,7 +24,11 @@ uses
   Vcl.Imaging.pngimage,
   System.Actions,
   Vcl.ActnList,
-  System.Types;
+  System.Types,
+  RC6,
+  hwid_impl,
+  winioctl,
+  System.AnsiStrings;
 
 type
   TLicenseForm = class(TForm)
@@ -65,7 +69,6 @@ type
     btnDeleteLicense: TButton;
     ActionList: TActionList;
     actDelLicense: TAction;
-    asdasdsa1: TMenuItem;
     procedure btnNewLicenseDropDownClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure edtSerial1Change(Sender: TObject);
@@ -77,8 +80,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure actDelLicenseUpdate(Sender: TObject);
     procedure actDelLicenseExecute(Sender: TObject);
-    procedure asdasdsa1Click(Sender: TObject);
     procedure cbSelectLicenseChange(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
 
   private
     FCurLicenseFile: string;
@@ -122,53 +125,37 @@ begin
   actDelLicense.Enabled := FCurLicenseFile <> EmptyStr;
 end;
 
-procedure TLicenseForm.asdasdsa1Click(Sender: TObject);
-var SI: TSerialKeyInfo;
-    aa: TBytes;
-    KeyDll: TMemoryStream;
-    I: Integer;
-begin
-  KeyDll := TMemoryStream.Create;
-  try
-    KeyDll.LoadFromFile('d:\SmKey.dll');;
-
-    SI.UserName := 'Тестовый пользователь "Смета Смета Смета"';
-    SI.DateBegin := now - 1;
-    SI.DateEnd := now + 356;
-    SetLength(SI.UserKey, 16);
-    Randomize;
-    for I := Low(SI.UserKey) to High(SI.UserKey) do
-      SI.UserKey[I] := Random(256);
-
-    GetLocalData(ExtractFileDrive(Application.ExeName), aa);
-    GetLocalKey(aa);
-    CreateKeyFile('d:\NewTestKey.key', aa, SI, KeyDll);
-  finally
-    FreeAndNil(KeyDll);
-  end;
-end;
-
 procedure TLicenseForm.CheckCurLicense;
 var SI: TSerialKeyInfo;
+    ExceptFlag: Boolean;
 begin
-  FLicenseResult := CheckLicenseFile(FCurLicenseFile, SI);
+  FLicenseResult := CheckLicenseFile(FCurLicenseFile, SI, ExceptFlag);
+  if not ExceptFlag then
+  begin
+    lbUserName.Caption := SI.UserName;
+    lbActDate.Caption := DateToStr(SI.DateBegin);
+    lbEndDate.Caption := DateToStr(SI.DateEnd);
+  end
+  else
+  begin
+    lbUserName.Caption := '---';
+    lbActDate.Caption := '---';
+    lbEndDate.Caption := '---';
+    lbLicenFile.Caption := '---';
+  end;
+
+  if FCurLicenseFile <> '' then
+    lbLicenFile.Caption := FCurLicenseFile;
+
   if FLicenseResult  then
   begin
     lbState.Caption := 'Есть действующия лицензия';
     lbState.Font.Color := clGreen;
-    lbUserName.Caption := SI.UserName;
-    lbActDate.Caption := DateToStr(SI.DateBegin);
-    lbEndDate.Caption := DateToStr(SI.DateEnd);
-    lbLicenFile.Caption := FCurLicenseFile;
   end
   else
   begin
     lbState.Caption := 'Отсутствует действующия лицензия';
     lbState.Font.Color := clRed;
-    lbUserName.Caption := '---';
-    lbActDate.Caption := '---';
-    lbEndDate.Caption := '---';
-    lbLicenFile.Caption := '---';
   end;
 end;
 
@@ -215,7 +202,7 @@ begin
   Result := '';
   Reg := TRegistry.Create(KEY_ALL_ACCESS);
   try
-    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    Reg.RootKey := C_REGROOT;
     CurKey := C_REGKEY + '\' + C_LICENSEKEY;
 
     if Reg.OpenKey(CurKey, True) then
@@ -239,7 +226,7 @@ var Reg: TRegistry;
 begin
   Reg := TRegistry.Create(KEY_ALL_ACCESS);
   try
-    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    Reg.RootKey := C_REGROOT;
     CurKey := C_REGKEY + '\' + C_LICENSEKEY;
 
     if Reg.OpenKey(CurKey, True) then
@@ -307,16 +294,10 @@ end;
 
 procedure TLicenseForm.cbSelectLicenseChange(Sender: TObject);
 begin
-  if cbSelectLicense.ItemIndex = -1 then
-  begin
-    FCurLicenseFile := '';
-    SetCurLicenseFile(FCurLicenseFile);
-  end
-  else
-  begin
+  FCurLicenseFile := '';
+  if cbSelectLicense.ItemIndex > -1 then
     FCurLicenseFile := FLicenseList[cbSelectLicense.ItemIndex];
-    SetCurLicenseFile(FCurLicenseFile);
-  end;
+  SetCurLicenseFile(FCurLicenseFile);
   UpdateLicenseInfo;
 end;
 
@@ -380,6 +361,12 @@ end;
 procedure TLicenseForm.edtSerial1Exit(Sender: TObject);
 begin
 //  UnloadKeyboardLayout((Sender as TEdit).Tag);
+end;
+
+procedure TLicenseForm.FormDestroy(Sender: TObject);
+begin
+  if G_CURLISENSE <> FCurLicenseFile then
+    G_CURLISENSE := FCurLicenseFile;
 end;
 
 procedure TLicenseForm.FormShow(Sender: TObject);

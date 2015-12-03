@@ -1,10 +1,18 @@
 unit SerialKeyModule;
 
 interface
-uses Winapi.Windows, System.SysUtils, System.AnsiStrings, System.Classes, RC6;
+uses
+  Winapi.Windows,
+  System.SysUtils,
+  System.AnsiStrings,
+  System.Classes,
+  Dialogs,
+  RC6,
+  hwid_impl,
+  winioctl;
 
 const
-
+  KeyLen = 16;
   ConstKey: array[0..15] of byte =
     ($42,$72,$65,$67,$6f,$72,$69,$6f,$56,$69,$63,$74,$6f,$72,$69,$61);
 
@@ -89,7 +97,7 @@ type
   end;
 
 //Получиние номера HDD по букве диска
-function GetHDDNumberByLetter(ADrive: string): DWord;
+function GetHDDNumberByLetter(ADrive: string): DWord; inline;
 //Получиние серийника HDD !!! не работает без прав админа
 function GetHDDSerialByNum(ANum: DWord;
   var ASerial, ARevision, AModel: AnsiString): DWord;
@@ -97,25 +105,30 @@ procedure CorrectDevInfo(var _params: TSendCmdOutParams);
 //Получает серийник логического диска
 function GetDiskSerialNum(ADrive: string): DWord;
 //Получение локального ключа
-procedure GetLocalKey(var AKey: TBytes);
+procedure GetLocalKey(var AKey: TBytes); inline;
 //Возвращает локальные данные для отправки на сервак или получения локального ключа
-procedure GetLocalData(ADrive: string; var AData: TBytes);
+procedure GetLocalData(ADrive: string; var AData: TBytes); inline;
 //Записывает лакальные данные в файл (поток)
 procedure GetLocalDataFile(const ASerialKey: string; const AData: TBytes;
   AStream: TStream);
+procedure GetLocalDataFromFile(var ASerialKey: string; var AData: TBytes;
+  AStream: TStream);
+
 //Создает ключ-файл
 procedure CreateKeyFile(const AFileName: string; const AKey: TBytes;
   const ASerialKeyInfo: TSerialKeyInfo; AKeyDll: TMemoryStream);
 //Извлекает данные из ключ-файла
 procedure GetSerialKeyInfo(const AFileName: string; const AKey: TBytes;
-  var ASerialKeyInfo: TSerialKeyInfo; AKeyDll: TMemoryStream);
+  var ASerialKeyInfo: TSerialKeyInfo; AKeyDll: TMemoryStream); inline;
 //Проверяет валидность ключфайла
-function CheckLicenseFile(const AFileName: string; var ASI: TSerialKeyInfo): Boolean;
-function LicenseAssigned(const AFileName: string; AHandle: THandle; AValue: Pointer): Boolean;
+function CheckLicenseFile(const AFileName: string; var ASI: TSerialKeyInfo;
+  var ExceptFlag: Boolean): Boolean; inline;
+function CheckCurLicense: Boolean; inline;
+function LicenseAssigned(AValue: Pointer): Boolean; inline;
 
 implementation
 
-uses uMemoryLoader;
+uses uMemoryLoader, GlobsAndConst;
 
 procedure CorrectDevInfo(var _params: TSendCmdOutParams);
   asm
@@ -150,10 +163,9 @@ var
     PartitionNumber :DWord;
   end;
 begin
-  Result := 1000;
+  Result := 0;
   hDevice := CreateFile(PChar('\\.\' + ADrive),
-    GENERIC_READ or GENERIC_WRITE,
-    FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
+    0, FILE_SHARE_READ or FILE_SHARE_WRITE, nil, OPEN_EXISTING, 0, 0);
   if (hDevice <> INVALID_HANDLE_VALUE) and
       DeviceIoControl(hDevice, IOCTL_STORAGE_GET_DEVICE_NUMBER,
         nil, 0, @DeviceInfo, SizeOf(DeviceInfo), BytesReturned, nil) then
@@ -232,33 +244,28 @@ end;
 
 procedure GetLocalData(ADrive: string; var AData: TBytes);
 const LKeyLen = 16;
-var //Num: DWord;
-    //Serial,
-   // Revision,
-   // Model,
-    TmpBytes: TBytes;
-    I, TmpLen: Integer;
+var Ind: Integer;
+    I: Integer;
+    Dest: tresults_array_dv;
 begin
   SetLength(AData, LKeyLen);
   FillChar(AData[0], LKeyLen, 0);
 
-  //Num := GetHDDNumberByLetter(ADrive);
-  //if GetHDDSerialByNum(Num, Serial, Revision, Model) = 0 then
-  // TmpStr := Serial + Revision + Model
-  //else
-  i := GetDiskSerialNum(ADrive);
-  TmpBytes := TEncoding.ASCII.GetBytes(IntToStr(i));
-
-  TmpLen := Length(TmpBytes);
-  if TmpLen >= LKeyLen then
-    Move(TmpBytes[0], AData[0], LKeyLen)
-  else
+  Ind := GetHDDNumberByLetter(ADrive);
+  GetHardDriveComputerID(Dest);
+  if Length(Dest) > Ind then
   begin
-    for I := 0 to LKeyLen div TmpLen - 1 do
-      Move(TmpBytes[0], AData[I * TmpLen], TmpLen);
-    Move(TmpBytes[0], AData[(LKeyLen div TmpLen) * TmpLen],
-      LKeyLen - (LKeyLen div TmpLen) * TmpLen);
+    for I := Low(AData) to High(AData) do
+    begin
+      if Length(Dest[Ind].DriveSerialNumber) >= I then
+        AData[I] := Byte(Dest[Ind].DriveSerialNumber[I + 1]);
+      if Length(Dest[Ind].DriveModelNumber) >= I then
+        AData[I] := AData[I] xor Byte(Dest[Ind].DriveModelNumber[I + 1]);
+    end;
   end;
+
+  for I := Low(AData) to High(AData) do
+    AData[I] := AData[I] xor ConstKey[I];
 
   for I := Low(AData) to High(AData) - 1 do
     AData[I + 1] := AData[I + 1] xor AData[I];
@@ -279,15 +286,14 @@ end;
 procedure GetLocalDataFile(const ASerialKey: string; const AData: TBytes;
   AStream: TStream);
 const FLen = 256;
-      FKeyLen = 16;
 var TmpBytes: TBytes;
     I, J: Integer;
     RC6Encryptor: TRC6Encryptor;
 begin
-  if Length(ASerialKey) <> FKeyLen then
+  if Length(ASerialKey) <> KeyLen then
     raise Exception.Create('Serial key is not correct.');
 
-  SetLength(TmpBytes, FKeyLen + FLen);
+  SetLength(TmpBytes, KeyLen + FLen);
 
   Randomize;
   for I := Low(TmpBytes) to High(TmpBytes) do
@@ -296,11 +302,11 @@ begin
   J := TmpBytes[0];
   if J = 0 then
     J := 1;
-  if J + Length(AData) > FLen - 1 then
-    J := FLen - Length(AData) - 1;
+  if J + KeyLen > FLen - 1 then
+    J := FLen - KeyLen - 1;
 
-  Move(AData[0], TmpBytes[J], Length(AData));
-  Move(TEncoding.ASCII.GetBytes(ASerialKey)[0], TmpBytes[FLen], FKeyLen);
+  Move(AData[0], TmpBytes[J], KeyLen);
+  Move(TEncoding.ASCII.GetBytes(ASerialKey)[0], TmpBytes[FLen], KeyLen);
 
   RC6Encryptor := TRC6Encryptor.Create(ConstKey);
   try
@@ -311,6 +317,40 @@ begin
 
   AStream.Write(TmpBytes, Length(TmpBytes));
 end;
+
+procedure GetLocalDataFromFile(var ASerialKey: string; var AData: TBytes;
+  AStream: TStream);
+const FLen = 256;
+var TmpBytes: TBytes;
+    Tmp: TBytes;
+    J: Integer;
+    RC6Encryptor: TRC6Encryptor;
+begin
+  SetLength(TmpBytes, AStream.Size);
+  AStream.Position := 0;
+  AStream.Read(TmpBytes, AStream.Size);
+
+  RC6Encryptor := TRC6Encryptor.Create(ConstKey);
+  try
+    TmpBytes := RC6Encryptor.BytesDecrypt(TmpBytes);
+  finally
+    FreeAndNil(RC6Encryptor);
+  end;
+
+  SetLength(Tmp, KeyLen);
+  Move(TmpBytes[FLen], Tmp[0], KeyLen);
+  ASerialKey := TEncoding.ASCII.GetString(Tmp);
+
+  J := TmpBytes[0];
+  if J = 0 then
+    J := 1;
+  if J + KeyLen > FLen - 1 then
+    J := FLen - KeyLen - 1;
+
+  SetLength(AData, KeyLen);
+  Move(TmpBytes[J], AData[0], KeyLen);
+end;
+
 
 procedure CreateKeyFile(const AFileName: string; const AKey: TBytes;
   const ASerialKeyInfo: TSerialKeyInfo; AKeyDll: TMemoryStream);
@@ -373,12 +413,14 @@ begin
   end;
 end;
 
-function CheckLicenseFile(const AFileName: string; var ASI: TSerialKeyInfo): Boolean;
+function CheckLicenseFile(const AFileName: string; var ASI: TSerialKeyInfo;
+  var ExceptFlag: Boolean): Boolean;
 var LocalKey: TBytes;
     KeyDll: TMemoryStream;
     CheckKey: TCheckKey;
     pDll : pointer;
 begin
+  ExceptFlag := False;
   Result := False;
   KeyDll := TMemoryStream.Create;
   try
@@ -403,14 +445,21 @@ begin
            MemoryFreeLibrary(pDll);
       end;
     except
+      ExceptFlag := True;
     end;
   finally
     FreeAndNil(KeyDll);
   end;
 end;
 
-function LicenseAssigned(const AFileName: string; AHandle: THandle;
-  AValue: Pointer): Boolean;
+function CheckCurLicense: Boolean;
+var SI: TSerialKeyInfo;
+    ExceptFlag: Boolean;
+begin
+  Result := CheckLicenseFile(G_CURLISENSE, SI, ExceptFlag);
+end;
+
+function LicenseAssigned(AValue: Pointer): Boolean;
 var LocalKey: TBytes;
     KeyDll: TMemoryStream;
     CheckKey: TCheckKey;
@@ -418,13 +467,14 @@ var LocalKey: TBytes;
     SI: TSerialKeyInfo;
     pDll : pointer;
 begin
+  Result := False;
   KeyDll := TMemoryStream.Create;
   try
     try
       GetLocalData(ExtractFileDrive(ParamStr(0)), LocalKey);
       GetLocalKey(LocalKey);
 
-      GetSerialKeyInfo(AFileName, LocalKey, SI, KeyDll);
+      GetSerialKeyInfo(G_CURLISENSE, LocalKey, SI, KeyDll);
 
       pDll := MemoryLoadLibary(KeyDll.Memory);
       try
@@ -444,7 +494,7 @@ begin
            MemoryFreeLibrary(pDll);
       end;
     except
-      //PostMessage(AHandle, )
+      raise Exception.Create('Отсутствует действующия лицензия');
     end;
   finally
     FreeAndNil(KeyDll);

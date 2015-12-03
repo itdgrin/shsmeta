@@ -130,7 +130,9 @@ uses
   CardObjectAdditional in 'CardObjectAdditional.pas' {fCardObjectAdditional},
   CalcResourceEdit in 'CalcResourceEdit.pas' {fCalcResourceEdit},
   fLicense in 'fLicense.pas' {LicenseForm},
-  uMemoryLoader in 'uMemoryLoader.pas';
+  uMemoryLoader in 'uMemoryLoader.pas',
+  hwid_impl in 'hwid_impl.pas',
+  winioctl in 'winioctl.pas';
 
 {$R *.res}
 var MHandle: THandle;

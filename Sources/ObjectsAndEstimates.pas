@@ -11,7 +11,12 @@ uses
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, tools, System.UITypes,
   JvExDBGrids, JvDBGrid, JvExComCtrls, JvDBTreeView, Vcl.Buttons, JvHint,
   JvComponentBase, Vcl.DBCtrls, JvAppStorage, JvAppIniStorage, Vcl.Mask, JvExMask, JvToolEdit, JvMaskEdit,
-  JvExStdCtrls, JvCombobox, JvDBSearchComboBox, JvFormPlacement, System.DateUtils;
+  JvExStdCtrls, JvCombobox, JvDBSearchComboBox, JvFormPlacement, System.DateUtils,
+  RC6,
+  uMemoryLoader,
+  hwid_impl,
+  winioctl,
+  System.AnsiStrings;
 
 type
   TSplitter = class(ExtCtrls.TSplitter)
@@ -202,7 +207,7 @@ uses
   Main, DataModule, CardObject, CardEstimate,
   CalculationEstimate, Waiting, BasicData, DrawingTables,
   KC6, CardAct, ImportExportModule, GlobsAndConst,
-  UserAccess, SprController;
+  UserAccess, SprController, SerialKeyModule;
 
 {$R *.dfm}
 
@@ -355,6 +360,9 @@ begin
     Exit;
   end;
 
+  if not LicenseAssigned(fCardObject) then
+    Exit;
+
   with fCardObject, qrObjects do
   begin
     // Заносим значения в поля редактирования
@@ -401,6 +409,8 @@ end;
 
 procedure TfObjectsAndEstimates.pmObjectsPopup(Sender: TObject);
 begin
+  LicenseAssigned(nil);
+
   mRepair.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
   mDelete.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 0;
   mDeleteObject.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
@@ -869,7 +879,7 @@ begin
     (qrActsEx.FieldByName('PARENT_ID').Value = 0) then
     Exit;
 
-  if (Assigned(FormCalculationEstimate)) then
+  if (LicenseAssigned(FormCalculationEstimate)) then
   begin
     FormCalculationEstimate.flChangeEstimate := True;
     FormCalculationEstimate.Close;
@@ -916,6 +926,7 @@ end;
 
 procedure TfObjectsAndEstimates.pmActsPopup(Sender: TObject);
 begin
+  LicenseAssigned(nil);
   // Если не выделена смета или выделена, но не объектная
   PMActsOpen.Visible := not(VarIsNull(qrActsEx.FieldByName('MASTER_ID').Value)) and
     (qrActsEx.FieldByName('PARENT_ID').Value <> 0);
@@ -1220,6 +1231,8 @@ end;
 
 procedure TfObjectsAndEstimates.pmEstimatesPopup(Sender: TObject);
 begin
+  LicenseAssigned(nil);
+
   PMEstimatesEdit.Enabled := False;
   PMEstimatesDelete.Enabled := False;
   PMEstimatesBasicData.Enabled := False;
@@ -1275,7 +1288,7 @@ begin
   // Открываем форму ожидания
   // FormWaiting.Show;
   Application.ProcessMessages;
-  if (Assigned(FormCalculationEstimate)) then
+  if (LicenseAssigned(FormCalculationEstimate)) then
   begin
     FormCalculationEstimate.flChangeEstimate := True;
     FormCalculationEstimate.Close;

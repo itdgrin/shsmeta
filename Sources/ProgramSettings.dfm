@@ -444,6 +444,10 @@ object FormProgramSettings: TFormProgramSettings
     object tsSmeta: TTabSheet
       Caption = #1057#1084#1077#1090#1072'/'#1040#1082#1090
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lblOXROPR: TLabel
         Left = 3
         Top = 75
@@ -562,6 +566,10 @@ object FormProgramSettings: TFormProgramSettings
     object tsAll: TTabSheet
       Caption = #1056#1072#1079#1085#1086#1077
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBoxRound: TGroupBox
         Left = 3
         Top = 3

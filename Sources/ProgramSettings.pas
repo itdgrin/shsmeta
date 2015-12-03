@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, StdCtrls, ExtCtrls, UITypes, Tools, FileCtrl, Grids,
+  Dialogs, ComCtrls, StdCtrls, ExtCtrls, UITypes, Tools, Grids,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
@@ -491,7 +491,7 @@ var Reg: TRegistry;
 begin
   Reg := TRegistry.Create(KEY_ALL_ACCESS);
   try
-    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    Reg.RootKey := C_REGROOT;
     if Reg.OpenKey(C_REGKEY + '\' + Ñ_UPD_NAME, True) then
     begin
       if not Reg.ValueExists('UpdateType') then
@@ -531,7 +531,7 @@ var Reg: TRegistry;
 begin
   Reg := TRegistry.Create(KEY_ALL_ACCESS);
   try
-    Reg.RootKey := HKEY_LOCAL_MACHINE;
+    Reg.RootKey := C_REGROOT;
     if Reg.OpenKey(C_REGKEY + '\' + Ñ_UPD_NAME, True) then
     begin
       if rbInetServer.Checked then
