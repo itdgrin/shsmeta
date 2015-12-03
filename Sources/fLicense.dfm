@@ -457,6 +457,7 @@ object LicenseForm: TLicenseForm
       ParentFont = False
       Style = bsSplitButton
       TabOrder = 4
+      OnClick = btnNewLicenseDropDownClick
       OnDropDownClick = btnNewLicenseDropDownClick
     end
     object btnSaveDataFile: TButton
