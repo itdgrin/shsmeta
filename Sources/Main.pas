@@ -296,6 +296,7 @@ type
     procedure mDebug1Click(Sender: TObject);
     procedure pmLicenseKeyClick(Sender: TObject);
     procedure mN3Click(Sender: TObject);
+    procedure PMRestoreOldBackupClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -982,7 +983,6 @@ var
   i: integer;
   Mi, TmpMi, TmpMi2: TMenuItem;
 begin
-  LicenseAssigned(nil);
   Mi := TMenuItem(Sender);
   // Первые 3и пункта существуют всегда, остальные добавляются при необходимости
   for i := 3 to Mi.Count - 1 do
@@ -2105,7 +2105,8 @@ end;
 
 procedure TFormMain.MenuServiceClick(Sender: TObject);
 begin
-  ServiceBackup.Enabled := not FArhiv.CreateArhInProgress and not FArhiv.RestoreArhInProgress;
+  ServiceBackup.Enabled := not FArhiv.CreateArhInProgress and
+                           not FArhiv.RestoreArhInProgress;
 end;
 
 procedure TFormMain.MenuSetCoefficientsClick(Sender: TObject);
@@ -2286,6 +2287,7 @@ procedure TFormMain.PMAddNewBackupClick(Sender: TObject);
 var
   i: integer;
 begin
+  LicenseAssigned(nil);
   // Максимуи C_ARHCOUNT копии, что-бы не забивать место
   for i := C_ARHCOUNT - 1 to High(FArhiv.ArhFiles) do
     FArhiv.DeleteArhiv(FArhiv.ArhFiles[i]);
@@ -2336,6 +2338,11 @@ begin
         Close;
     end;
   end;
+end;
+
+procedure TFormMain.PMRestoreOldBackupClick(Sender: TObject);
+begin
+  LicenseAssigned(nil);
 end;
 
 // По горизонтали

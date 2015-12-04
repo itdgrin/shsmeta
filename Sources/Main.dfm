@@ -3082,6 +3082,7 @@
         object PMRestoreOldBackup: TMenuItem
           Caption = 'PMRestoreOldBackup'
           Visible = False
+          OnClick = PMRestoreOldBackupClick
           object PMRestoreBackup: TMenuItem
             Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
             OnClick = PMRestoreBackupClick

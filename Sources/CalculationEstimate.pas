@@ -7097,11 +7097,12 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-    FillRect(Rect);
-    if Column.Alignment = taRightJustify then
-      TextRect(Rect, Rect.Right - 2 - TextWidth(Column.Field.AsString), Rect.Top + 2, Column.Field.AsString)
-    else
-      TextRect(Rect, Rect.Left + 2, Rect.Top + 2, Column.Field.AsString);
+   // FillRect(Rect);
+    (Sender as TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  //  if Column.Alignment = taRightJustify then
+  //    TextRect(Rect, Rect.Right - 2 - TextWidth(Column.Field.DisplayText), Rect.Top + 2, Column.Field.DisplayText)
+  //  else
+  //    TextRect(Rect, Rect.Left + 2, Rect.Top + 2, Column.Field.DisplayText);
   end;
 end;
 
@@ -7180,7 +7181,7 @@ begin
     // ѕодсветка красным пустых значений  норма, цена и %трансп
     if ((Column.FieldName.ToUpper = 'MAT_NORMA') or (Column.FieldName.ToUpper = 'COAST_NDS') or
       (Column.FieldName.ToUpper = 'COAST_NO_NDS') or (Column.FieldName.ToUpper = 'PROC_TRANSP')) and
-      (Column.Field.AsInteger = 0) then
+      (Column.Field.Value = 0) then
     begin
       Brush.Color := $008080FF;
     end;
@@ -7245,12 +7246,12 @@ begin
       Font.Style := Font.Style + [fsBold];
       if Column.Index = 1 then
         if Assigned(Column.Field) then
-          Str := Column.Field.AsString;
+          Str := Column.Field.DisplayText;
     end
     else
     begin
       if Assigned(Column.Field) then
-        Str := Column.Field.AsString;
+        Str := Column.Field.DisplayText;
     end;
 
     // Ќе отображает кол-во и суммы дл€ замененных или вынесеных
@@ -7367,7 +7368,7 @@ begin
 
     // ѕодсветка красным пустых значений
     if ((Column.FieldName.ToUpper = 'MECH_NORMA') or (Column.FieldName.ToUpper = 'COAST_NDS') or
-      (Column.FieldName.ToUpper = 'COAST_NO_NDS')) and (Column.Field.AsInteger = 0) then
+      (Column.FieldName.ToUpper = 'COAST_NO_NDS')) and (Column.Field.Value = 0) then
     begin
       Brush.Color := $008080FF;
     end;
@@ -7421,12 +7422,12 @@ begin
       Font.Style := Font.Style + [fsBold];
       if Column.Index = 1 then
         if Assigned(Column.Field) then
-          Str := Column.Field.AsString;
+          Str := Column.Field.DisplayText;
     end
     else
     begin
       if Assigned(Column.Field) then
-        Str := Column.Field.AsString;
+        Str := Column.Field.DisplayText;
     end;
 
     if ((qrMechanizmFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1)) or

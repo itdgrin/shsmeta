@@ -3398,6 +3398,7 @@
       end
       inherited pnlIndex: TPanel
         Width = 100
+        ExplicitWidth = 100
       end
       inherited pnl2: TPanel
         Width = 100
@@ -4113,6 +4114,8 @@
       FieldName = 'COAST_NO_NDS'
       Origin = 'COAST_NO_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmCOAST_NDS: TFMTBCDField
@@ -4120,6 +4123,8 @@
       FieldName = 'COAST_NDS'
       Origin = 'COAST_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmZP_MACH_NO_NDS: TFMTBCDField
@@ -4127,6 +4132,8 @@
       FieldName = 'ZP_MACH_NO_NDS'
       Origin = 'ZP_MACH_NO_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmZP_MACH_NDS: TFMTBCDField
@@ -4134,30 +4141,40 @@
       FieldName = 'ZP_MACH_NDS'
       Origin = 'ZP_MACH_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmPRICE_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PRICE_NO_NDS'
       Origin = 'PRICE_NO_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmPRICE_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PRICE_NDS'
       Origin = 'PRICE_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmZPPRICE_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'ZPPRICE_NO_NDS'
       Origin = 'ZPPRICE_NO_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmZPPRICE_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'ZPPRICE_NDS'
       Origin = 'ZPPRICE_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmFCOAST_NO_NDS: TFMTBCDField
@@ -4165,6 +4182,8 @@
       FieldName = 'FCOAST_NO_NDS'
       Origin = 'FCOAST_NO_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmFCOAST_NDS: TFMTBCDField
@@ -4172,6 +4191,8 @@
       FieldName = 'FCOAST_NDS'
       Origin = 'FCOAST_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmFZP_MACH_NO_NDS: TFMTBCDField
@@ -4179,6 +4200,8 @@
       FieldName = 'FZP_MACH_NO_NDS'
       Origin = 'FZP_MACH_NO_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmFZP_MACH_NDS: TFMTBCDField
@@ -4186,6 +4209,8 @@
       FieldName = 'FZP_MACH_NDS'
       Origin = 'FZP_MACH_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmFPRICE_NO_NDS: TFMTBCDField
@@ -4193,6 +4218,8 @@
       FieldName = 'FPRICE_NO_NDS'
       Origin = 'FPRICE_NO_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmFPRICE_NDS: TFMTBCDField
@@ -4200,6 +4227,8 @@
       FieldName = 'FPRICE_NDS'
       Origin = 'FPRICE_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmFZPPRICE_NO_NDS: TFMTBCDField
@@ -4207,6 +4236,8 @@
       FieldName = 'FZPPRICE_NO_NDS'
       Origin = 'FZPPRICE_NO_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmFZPPRICE_NDS: TFMTBCDField
@@ -4214,6 +4245,8 @@
       FieldName = 'FZPPRICE_NDS'
       Origin = 'FZPPRICE_NDS'
       OnChange = MechRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMechanizmNORMATIV: TFMTBCDField
@@ -4464,6 +4497,8 @@
       FieldName = 'COAST_NO_NDS'
       Origin = 'COAST_NO_NDS'
       OnChange = MatRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialCOAST_NDS: TFMTBCDField
@@ -4471,6 +4506,8 @@
       FieldName = 'COAST_NDS'
       Origin = 'COAST_NDS'
       OnChange = MatRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialTRANSP_NO_NDS: TFMTBCDField
@@ -4478,6 +4515,8 @@
       FieldName = 'TRANSP_NO_NDS'
       Origin = 'TRANSP_NO_NDS'
       OnChange = MatRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialPROC_TRANSP: TFMTBCDField
@@ -4492,18 +4531,24 @@
       FieldName = 'TRANSP_NDS'
       Origin = 'TRANSP_NDS'
       OnChange = MatRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialPRICE_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PRICE_NO_NDS'
       Origin = 'PRICE_NO_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialPRICE_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PRICE_NDS'
       Origin = 'PRICE_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialFCOAST_NO_NDS: TFMTBCDField
@@ -4511,6 +4556,8 @@
       FieldName = 'FCOAST_NO_NDS'
       Origin = 'FCOAST_NO_NDS'
       OnChange = MatRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialFCOAST_NDS: TFMTBCDField
@@ -4518,6 +4565,8 @@
       FieldName = 'FCOAST_NDS'
       Origin = 'FCOAST_NDS'
       OnChange = MatRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialFTRANSP_NO_NDS: TFMTBCDField
@@ -4525,6 +4574,8 @@
       FieldName = 'FTRANSP_NO_NDS'
       Origin = 'FTRANSP_NO_NDS'
       OnChange = MatRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialFTRANSP_NDS: TFMTBCDField
@@ -4532,18 +4583,24 @@
       FieldName = 'FTRANSP_NDS'
       Origin = 'FTRANSP_NDS'
       OnChange = MatRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialFPRICE_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'FPRICE_NO_NDS'
       Origin = 'FPRICE_NO_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialFPRICE_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'FPRICE_NDS'
       Origin = 'FPRICE_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrMaterialKOEFMR: TFloatField
@@ -4663,6 +4720,8 @@
       FieldName = 'FCOAST_NO_NDS'
       Origin = 'FCOAST_NO_NDS'
       OnChange = DevRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDevicesFCOAST_NDS: TFMTBCDField
@@ -4670,6 +4729,8 @@
       FieldName = 'FCOAST_NDS'
       Origin = 'FCOAST_NDS'
       OnChange = DevRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDevicesNDS: TWordField
@@ -4683,6 +4744,8 @@
       FieldName = 'FPRICE_NDS'
       Origin = 'FPRICE_NDS'
       OnChange = DevRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDevicesFPRICE_NO_NDS: TFMTBCDField
@@ -4690,6 +4753,8 @@
       FieldName = 'FPRICE_NO_NDS'
       Origin = 'FPRICE_NO_NDS'
       OnChange = DevRowChange
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDevicesPROC_PODR: TWordField
@@ -4937,12 +5002,16 @@
       AutoGenerateValue = arDefault
       FieldName = 'COAST_NO_NDS'
       Origin = 'COAST_NO_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDumpCOAST_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'COAST_NDS'
       Origin = 'COAST_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDumpWORK_COUNT: TFMTBCDField
@@ -4966,36 +5035,48 @@
       AutoGenerateValue = arDefault
       FieldName = 'PRICE_NDS'
       Origin = 'PRICE_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDumpPRICE_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PRICE_NO_NDS'
       Origin = 'PRICE_NO_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDumpFCOAST_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'FCOAST_NDS'
       Origin = 'FCOAST_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDumpFCOAST_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'FCOAST_NO_NDS'
       Origin = 'FCOAST_NO_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDumpFPRICE_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'FPRICE_NDS'
       Origin = 'FPRICE_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDumpFPRICE_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'FPRICE_NO_NDS'
       Origin = 'FPRICE_NO_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrDumpID: TIntegerField
@@ -5130,12 +5211,16 @@
       AutoGenerateValue = arDefault
       FieldName = 'COAST_NO_NDS'
       Origin = 'COAST_NO_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrTranspCOAST_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'COAST_NDS'
       Origin = 'COAST_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrTranspCARG_COUNT: TFMTBCDField
@@ -5159,12 +5244,16 @@
       AutoGenerateValue = arDefault
       FieldName = 'PRICE_NDS'
       Origin = 'PRICE_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrTranspPRICE_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'PRICE_NO_NDS'
       Origin = 'PRICE_NO_NDS'
+      DisplayFormat = '#,0'
+      EditFormat = '#0'
       Precision = 24
     end
     object qrTranspKOEF: TFMTBCDField
