@@ -150,7 +150,7 @@ begin
   FrameRates.Visible := True;
 
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self);
+  FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
 
   SetFormStyle;
 end;

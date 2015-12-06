@@ -6803,7 +6803,8 @@ begin
   DM.FDGUIxWaitCursor1.ScreenCursor := gcrHourGlass;
   try
     SendMessage(Application.MainForm.ClientHandle, WM_SETREDRAW, 0, 0);
-    FormAdditionData := TFormAdditionData.Create(FormMain, vDataBase, GetSMSubType(qrRatesExSM_ID.Value));
+    FormAdditionData :=
+      TFormAdditionData.Create(Self, vDataBase, GetSMSubType(qrRatesExSM_ID.Value));
     FormAdditionData.WindowState := wsNormal;
 
     // Сворачиваем окно
