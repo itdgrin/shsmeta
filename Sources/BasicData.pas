@@ -229,9 +229,12 @@ begin
     // ----------------------------------------
 
     Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT monat, year, stavka_m_rab, stavka_m_mach FROM stavka WHERE stavka_id = :stavka_id;');
+    SQL.Text :=
+      'SELECT s.monat, s.year, CASE `objstroj`.`obj_region` WHEN 3 THEN IFNULL(FN_getParamValue("STAVKA_RAB_M", s.monat, s.year), 0) ELSE IFNULL(FN_getParamValue("STAVKA_RAB_RB", s.monat, s.year), 0) END AS stavka_m_rab'#13
+      + 'FROM `objcards`, `objstroj`, stavka AS s'#13 +
+      'WHERE s.stavka_id = :stavka_id AND `objcards`.`stroj_id` = `objstroj`.`stroj_id` and `obj_id` = :vOBJ_ID';
     ParamByName('stavka_id').Value := IdStavka;
+    ParamByName('vOBJ_ID').Value := IdObject;
     Active := True;
 
     if not Eof then
@@ -242,7 +245,7 @@ begin
       edtYear.Value := FieldByName('year').AsInteger;
       if VarIsNull(qrSmeta.FieldByName('STAVKA_RAB').Value) then
         qrSmeta.FieldByName('STAVKA_RAB').Value := FieldByName('stavka_m_rab').AsVariant;
-      edtRateMachinist.Text := FieldByName('stavka_m_mach').AsVariant;
+      // edtRateMachinist.Text := FieldByName('stavka_m_mach').AsVariant;
       edtYear.OnChange := ComboBoxMonthORYearChange;
       ComboBoxMonth.OnChange := ComboBoxMonthORYearChange;
     end;
@@ -643,14 +646,14 @@ begin
       + 'FROM `objcards`, `objstroj`'#13 +
       'WHERE `objcards`.`stroj_id` = `objstroj`.`stroj_id` and `obj_id` = :vOBJ_ID';
     ParamByName('MONTH').Value := ComboBoxMonth.ItemIndex + 1;
-    ParamByName('YEAR').Value :=  edtYear.Value;
+    ParamByName('YEAR').Value := edtYear.Value;
     ParamByName('vOBJ_ID').Value := IdObject;
     Active := True;
 
     if not Eof then
     begin
       qrSmeta.FieldByName('STAVKA_RAB').AsVariant := FieldByName('RES').AsVariant;
-      //edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
+      // edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
     end;
   end;
 
