@@ -25,7 +25,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
-    ExplicitTop = 208
     DesignSize = (
       353
       41)
@@ -143,9 +142,16 @@ object fCardObjectAdditional: TfCardObjectAdditional
       Caption = #1055#1077#1088#1077#1095#1080#1089#1083#1077#1085#1080#1103' '#1085#1072' '#1089#1087#1077#1094'.'#1089#1095#1077#1090', %:'
       DataField = 'Fl_SPEC_SCH'
       DataSource = fCardObject.dsMain
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 8
       ValueChecked = '1'
       ValueUnchecked = '0'
+      OnClick = dbchkFL_CALC_VEDOMS_NAL2Click
     end
     object JvDBSpinEdit2: TJvDBSpinEdit
       Left = 199
@@ -176,7 +182,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
     ValueChecked = '1'
     ValueUnchecked = '0'
     OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-    ExplicitTop = 127
   end
   object dbrgrpCOEF_ORDERS: TDBRadioGroup
     AlignWithMargins = True
@@ -205,6 +210,5 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Values.Strings = (
       '0'
       '1')
-    ExplicitTop = 147
   end
 end

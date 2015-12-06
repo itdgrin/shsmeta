@@ -638,14 +638,19 @@ begin
   with qrTMP do
   begin
     Active := False;
-    SQL.Clear;
-    SQL.Add('SELECT stavka_m_rab as "RateWorker", stavka_m_mach as "RateMachinist" FROM stavka WHERE year = '
-      + vYear + ' and monat = ' + vMonth + ';');
+    SQL.Text :=
+      'SELECT CASE `objstroj`.`obj_region` WHEN 3 THEN IFNULL(FN_getParamValue("STAVKA_RAB_M", :MONTH, :YEAR), 0) ELSE IFNULL(FN_getParamValue("STAVKA_RAB_RB", :MONTH, :YEAR), 0) END AS RES'#13
+      + 'FROM `objcards`, `objstroj`'#13 +
+      'WHERE `objcards`.`stroj_id` = `objstroj`.`stroj_id` and `obj_id` = :vOBJ_ID';
+    ParamByName('MONTH').Value := ComboBoxMonth.ItemIndex + 1;
+    ParamByName('YEAR').Value :=  edtYear.Value;
+    ParamByName('vOBJ_ID').Value := IdObject;
     Active := True;
+
     if not Eof then
     begin
-      qrSmeta.FieldByName('STAVKA_RAB').AsVariant := FieldByName('RateWorker').AsVariant;
-      edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
+      qrSmeta.FieldByName('STAVKA_RAB').AsVariant := FieldByName('RES').AsVariant;
+      //edtRateMachinist.Text := FieldByName('RateMachinist').AsVariant;
     end;
   end;
 
@@ -845,4 +850,3 @@ begin
 end;
 
 end.
-

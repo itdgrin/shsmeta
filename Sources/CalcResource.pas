@@ -220,6 +220,7 @@ type
     procedure qrMechDataCalcFields(DataSet: TDataSet);
     procedure qrDevicesCalcFields(DataSet: TDataSet);
     procedure mEditClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -457,6 +458,7 @@ begin
   inherited;
   FOldGridProc := grMaterial.WindowProc;
   grMaterial.WindowProc := GridProc;
+  pgc.ActivePageIndex := 0;
 end;
 
 procedure TfCalcResource.FormDestroy(Sender: TObject);
@@ -464,6 +466,35 @@ begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
   FormMain.DeleteButtonCloseWindow('Расчет стоимости ресурсов');
   fCalcResource := nil;
+end;
+
+procedure TfCalcResource.FormShow(Sender: TObject);
+begin
+case pgc.ActivePageIndex of
+    // Расчет стоимости
+    0:
+      ;
+    // Расчет материалов
+    1:
+      begin
+        DoSort(qrMaterialData, grMaterial);
+      end;
+    // Расчет механизмов
+    2:
+      begin
+        DoSort(qrMechData, grMech);
+      end;
+    // Расчет оборудования
+    3:
+      begin
+        DoSort(qrDevices, grDev);
+      end;
+    // Расчет з\п
+    4:
+      begin
+        DoSort(qrRates, grRates);
+      end;
+  end;
 end;
 
 procedure TfCalcResource.grDevBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -1389,22 +1420,22 @@ begin
     1:
       begin
         CloseOpen(qrMaterialData);
-        CloseOpen(qrMaterialDetail);
         DoSort(qrMaterialData, grMaterial);
+        CloseOpen(qrMaterialDetail);
       end;
     // Расчет механизмов
     2:
       begin
         CloseOpen(qrMechData);
-        CloseOpen(qrMechDetail);
         DoSort(qrMechData, grMech);
+        CloseOpen(qrMechDetail);
       end;
     // Расчет оборудования
     3:
       begin
         CloseOpen(qrDevices);
-        CloseOpen(qrDevicesDetail);
         DoSort(qrDevices, grDev);
+        CloseOpen(qrDevicesDetail);
       end;
     // Расчет з\п
     4:

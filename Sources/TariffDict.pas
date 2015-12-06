@@ -29,14 +29,6 @@ type
     dsCategory: TDataSource;
     qrStavka: TFDQuery;
     dsStavka: TDataSource;
-    qrStavkaSTAVKA_ID: TWordField;
-    qrStavkaYEAR: TWordField;
-    qrStavkaMONAT: TWordField;
-    qrStavkaSTAVKA_RB_RAB: TIntegerField;
-    qrStavkaSTAVKA_RB_MACH: TIntegerField;
-    qrStavkaSTAVKA_M_RAB: TIntegerField;
-    qrStavkaSTAVKA_M_MACH: TIntegerField;
-    qrStavkaMONTH_YEAR: TDateField;
     pnlTop1: TPanel;
     pnlClient1: TPanel;
     grIndexes: TJvDBGrid;
@@ -45,7 +37,6 @@ type
     seYear: TSpinEdit;
     cbbFromMonth: TComboBox;
     dsIndexes: TDataSource;
-    qrStavkaMONTH_YEAR2: TDateField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -123,8 +114,8 @@ begin
     0:
       begin
         CloseOpen(qrStavka);
-        qrCategory.ParamByName('IN_STAVKA').AsFloat := qrStavkaSTAVKA_M_RAB.Value;
-        qrCategory.ParamByName('IN_DATE').AsDate := qrStavkaMONTH_YEAR.Value;
+        qrCategory.ParamByName('IN_STAVKA').AsFloat := qrStavka.FieldByName('STAVKA_M_RAB').Value;
+        qrCategory.ParamByName('IN_DATE').AsDate := qrStavka.FieldByName('MONTH_YEAR').Value;
         CloseOpen(qrCategory);
       end;
     // Статистические индексы
@@ -137,8 +128,8 @@ end;
 
 procedure TfTariffDict.qrStavkaAfterScroll(DataSet: TDataSet);
 begin
-  qrCategory.ParamByName('IN_STAVKA').AsFloat := qrStavkaSTAVKA_M_RAB.Value;
-  qrCategory.ParamByName('IN_DATE').AsDate := qrStavkaMONTH_YEAR.Value;
+  qrCategory.ParamByName('IN_STAVKA').AsFloat := qrStavka.FieldByName('STAVKA_M_RAB').Value;
+  qrCategory.ParamByName('IN_DATE').AsDate := qrStavka.FieldByName('MONTH_YEAR').Value;
   CloseOpen(qrCategory);
 end;
 

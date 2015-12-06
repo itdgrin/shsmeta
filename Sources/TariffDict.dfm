@@ -40,10 +40,6 @@ object fTariffDict: TfTariffDict
     OnChange = pgcChange
     object ts1: TTabSheet
       Caption = #1058#1072#1088#1080#1092#1099' '#1087#1086' '#1079#1072#1088#1087#1083#1072#1090#1077
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl1: TSplitter
         Left = 180
         Top = 30
@@ -266,10 +262,6 @@ object fTariffDict: TfTariffDict
     object ts2: TTabSheet
       Caption = #1057#1090#1072#1090#1080#1089#1090#1080#1095#1077#1089#1082#1080#1077' '#1080#1085#1076#1077#1082#1089#1099
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlTop1: TPanel
         Left = 0
         Top = 0
@@ -462,10 +454,24 @@ object fTariffDict: TfTariffDict
       '  `STAVKA_ID`,'
       '  `YEAR`,'
       '  `MONAT`,'
+      '/*'
       '  `STAVKA_RB_RAB`,'
       '  `STAVKA_RB_MACH`,'
       '  `STAVKA_M_RAB`,'
       '  `STAVKA_M_MACH`,'
+      '*/'
+      
+        '  IFNULL(FN_getParamValue("STAVKA_RAB_RB", `MONAT`, `YEAR`), STA' +
+        'VKA_RB_RAB) AS STAVKA_RB_RAB,'
+      
+        '  IFNULL(FN_getParamValue("STAVKA_MASH_RB", `MONAT`, `YEAR`), ST' +
+        'AVKA_RB_MACH) AS STAVKA_RB_MACH,'
+      
+        '  IFNULL(FN_getParamValue("STAVKA_RAB_M", `MONAT`, `YEAR`), STAV' +
+        'KA_M_RAB) AS STAVKA_M_RAB,'
+      
+        '  IFNULL(FN_getParamValue("STAVKA_RAB_M", `MONAT`, `YEAR`), STAV' +
+        'KA_M_MACH) AS STAVKA_M_MACH,'
       '  CONVERT(CONCAT(`YEAR`,'#39'-'#39',`MONAT`,'#39'-01'#39'), DATE) AS MONTH_YEAR,'
       '  CONVERT(CONCAT(`YEAR`,'#39'-'#39',`MONAT`,'#39'-01'#39'), DATE) AS MONTH_YEAR2'
       'FROM '
@@ -473,65 +479,6 @@ object fTariffDict: TfTariffDict
       'ORDER BY `YEAR` DESC, `MONAT` DESC  ')
     Left = 463
     Top = 342
-    object qrStavkaSTAVKA_ID: TWordField
-      AutoGenerateValue = arAutoInc
-      FieldName = 'STAVKA_ID'
-      Origin = 'STAVKA_ID'
-      ProviderFlags = [pfInWhere, pfInKey]
-      DisplayFormat = '### ### ### ### ### ### ##0.####'
-    end
-    object qrStavkaYEAR: TWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'YEAR'
-      Origin = 'YEAR'
-      DisplayFormat = '### ### ### ### ### ### ##0.####'
-    end
-    object qrStavkaMONAT: TWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'MONAT'
-      Origin = 'MONAT'
-      DisplayFormat = '### ### ### ### ### ### ##0.####'
-    end
-    object qrStavkaSTAVKA_RB_RAB: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'STAVKA_RB_RAB'
-      Origin = 'STAVKA_RB_RAB'
-      DisplayFormat = '### ### ### ### ### ### ##0.####'
-    end
-    object qrStavkaSTAVKA_RB_MACH: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'STAVKA_RB_MACH'
-      Origin = 'STAVKA_RB_MACH'
-      DisplayFormat = '### ### ### ### ### ### ##0.####'
-    end
-    object qrStavkaSTAVKA_M_RAB: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'STAVKA_M_RAB'
-      Origin = 'STAVKA_M_RAB'
-      DisplayFormat = '### ### ### ### ### ### ##0.####'
-    end
-    object qrStavkaSTAVKA_M_MACH: TIntegerField
-      AutoGenerateValue = arDefault
-      FieldName = 'STAVKA_M_MACH'
-      Origin = 'STAVKA_M_MACH'
-      DisplayFormat = '### ### ### ### ### ### ##0.####'
-    end
-    object qrStavkaMONTH_YEAR: TDateField
-      AutoGenerateValue = arDefault
-      FieldName = 'MONTH_YEAR'
-      Origin = 'MONTH_YEAR'
-      ProviderFlags = []
-      ReadOnly = True
-      DisplayFormat = 'yyyy MMMM'
-    end
-    object qrStavkaMONTH_YEAR2: TDateField
-      AutoGenerateValue = arDefault
-      FieldName = 'MONTH_YEAR2'
-      Origin = 'MONTH_YEAR2'
-      ProviderFlags = []
-      ReadOnly = True
-      DisplayFormat = '1 mmmm yyyy'
-    end
   end
   object dsStavka: TDataSource
     DataSet = qrStavka

@@ -298,7 +298,10 @@ begin
       CloseOpen(Query);
     end
     else
+    begin
       Query.SQL.Append('ORDER BY 1');
+      CloseOpen(Query);
+    end;
     {
       Query.Active := True;
       if key <> Null then

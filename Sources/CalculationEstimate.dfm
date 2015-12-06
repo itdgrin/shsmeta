@@ -271,7 +271,7 @@
       Font.Style = []
       ParentFont = False
       Visible = False
-      OnClick = btnResMatClick
+      OnClick = btnResCalcClick
       ExplicitTop = 8
     end
     object btnKC6J: TSpeedButton

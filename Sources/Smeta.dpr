@@ -132,7 +132,8 @@ uses
   fLicense in 'fLicense.pas' {LicenseForm},
   uMemoryLoader in 'uMemoryLoader.pas',
   hwid_impl in 'hwid_impl.pas',
-  winioctl in 'winioctl.pas';
+  winioctl in 'winioctl.pas',
+  ContractPrice in 'ContractPrice.pas' {fContractPrice};
 
 {$R *.res}
 var MHandle: THandle;

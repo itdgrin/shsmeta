@@ -52,6 +52,20 @@ object fCardObject: TfCardObject
     Font.Style = []
     ParentFont = False
   end
+  object lbl5: TLabel
+    Left = 8
+    Top = 548
+    Width = 208
+    Height = 13
+    Alignment = taCenter
+    Caption = #1054#1041#1071#1047#1040#1058#1045#1051#1068#1053#1054' '#1044#1051#1071' '#1047#1040#1055#1054#1051#1053#1045#1053#1048#1071
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
   object GroupBoxDateBuilding: TGroupBox
     Left = 8
     Top = 139
@@ -487,6 +501,12 @@ object fCardObject: TfCardObject
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 21
     OnClick = ButtonSaveClick
   end
@@ -569,8 +589,8 @@ object fCardObject: TfCardObject
     ParentFont = False
     TabOrder = 19
     object lbl1: TLabel
-      Left = 8
-      Top = 17
+      Left = 3
+      Top = 25
       Width = 172
       Height = 13
       Caption = #1042#1088#1077#1084#1077#1085#1085#1099#1077' '#1079#1076#1072#1085#1080#1103' '#1080' '#1089#1086#1086#1088#1091#1078#1077#1085#1080#1103':'
@@ -673,7 +693,7 @@ object fCardObject: TfCardObject
   end
   object btnCardObjectAdditional: TBitBtn
     Left = 8
-    Top = 528
+    Top = 523
     Width = 208
     Height = 25
     Anchors = [akLeft, akBottom]

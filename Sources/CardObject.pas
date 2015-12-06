@@ -97,6 +97,7 @@ type
     seYearBeginStroj: TSpinEdit;
     lbl4: TLabel;
     dbseCountMonth: TJvDBSpinEdit;
+    lbl5: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);

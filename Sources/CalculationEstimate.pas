@@ -689,6 +689,7 @@ type
     procedure PMRenumPTMClick(Sender: TObject);
     procedure PMMatManPriceClick(Sender: TObject);
     procedure grRatesExSelectColumns(Grid: TJvDBGrid; var DefaultDialog: Boolean);
+    procedure btnResCalcClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта субподрядчика');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -846,7 +847,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
   TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog,
-  ManualPriceSelect, uSelectColumn;
+  ManualPriceSelect, uSelectColumn, ContractPrice;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -1332,6 +1333,13 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.btnResCalcClick(Sender: TObject);
+begin
+  if (not Assigned(fContractPrice)) then
+    fContractPrice := TfContractPrice.Create(FormMain, VarArrayOf([IdObject, IdEstimate]));
+  fContractPrice.Show;
+end;
+
 procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
 begin
   if (Sender as TSpeedButton).Tag = 77 then
@@ -1340,7 +1348,6 @@ begin
   else
     ShowCalcResource(FormCalculationEstimate.IdEstimate, (Sender as TSpeedButton).Tag,
       FormCalculationEstimate);
-
 end;
 
 procedure TFormCalculationEstimate.btnEquipmentsClick(Sender: TObject);

@@ -235,7 +235,7 @@ begin
                   PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
             end;
 
-            if cbbType.ItemIndex = 1 then
+            //if cbbType.ItemIndex = 1 then
             begin
               try
                 Active := False;
