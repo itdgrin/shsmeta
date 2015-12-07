@@ -3,7 +3,7 @@ object fContractPrice: TfContractPrice
   Top = 0
   Caption = #1050#1086#1085#1090#1088#1072#1082#1090#1085#1072#1103' '#1094#1077#1085#1072
   ClientHeight = 346
-  ClientWidth = 573
+  ClientWidth = 1008
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,12 +20,14 @@ object fContractPrice: TfContractPrice
   object pnlTop: TPanel
     Left = 0
     Top = 0
-    Width = 573
-    Height = 113
+    Width = 1008
+    Height = 100
     Align = alTop
+    BevelOuter = bvNone
     TabOrder = 0
-    ExplicitLeft = -1
-    ExplicitTop = -5
+    DesignSize = (
+      1008
+      100)
     object lbl1: TLabel
       Left = 8
       Top = 8
@@ -33,55 +35,372 @@ object fContractPrice: TfContractPrice
       Height = 13
       Caption = #1054#1073#1098#1077#1082#1090':'
     end
-    object lbl2: TLabel
-      Left = 8
-      Top = 27
-      Width = 212
-      Height = 13
-      Caption = #1044#1072#1090#1072' '#1088#1072#1079#1088#1072#1073#1086#1090#1082#1080' '#1089#1084#1077#1090#1085#1086#1081' '#1076#1086#1082#1091#1084#1077#1085#1090#1072#1094#1080#1080':'
-    end
-    object lbl3: TLabel
-      Left = 264
-      Top = 27
-      Width = 148
-      Height = 13
-      Caption = #1044#1072#1090#1072' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
-    end
     object lbl4: TLabel
-      Left = 418
+      Left = 786
       Top = 27
-      Width = 136
-      Height = 13
-      Caption = #1057#1088#1086#1082' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072', '#1084#1077#1089'.:'
+      Width = 42
+      Height = 21
+      Caption = #1043#1088#1072#1092#1080#1082':'
     end
-    object rgShowProgress: TRadioGroup
+    object grp3: TGroupBox
       Left = 8
-      Top = 46
-      Width = 289
-      Height = 43
-      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1075#1088#1072#1092#1080#1082':'
-      Columns = 2
+      Top = 27
+      Width = 225
+      Height = 42
+      Caption = #1044#1072#1090#1072' '#1088#1072#1079#1088#1072#1073#1086#1090#1082#1080' '#1089#1084#1077#1090#1085#1086#1081' '#1076#1086#1082#1091#1084#1077#1085#1090#1072#1094#1080#1080':'
+      Enabled = False
+      TabOrder = 1
+      object cbbMonthSmeta: TComboBox
+        Left = 5
+        Top = 15
+        Width = 158
+        Height = 21
+        Style = csDropDownList
+        DropDownCount = 12
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 0
+        Items.Strings = (
+          #1071#1085#1074#1072#1088#1100
+          #1060#1077#1074#1088#1072#1083#1100
+          #1052#1072#1088#1090
+          #1040#1087#1088#1077#1083#1100
+          #1052#1072#1081
+          #1048#1102#1085#1100
+          #1048#1102#1083#1100
+          #1040#1074#1075#1091#1089#1090
+          #1057#1077#1085#1090#1103#1073#1088#1100
+          #1054#1082#1090#1103#1073#1088#1100
+          #1053#1086#1103#1073#1088#1100
+          #1044#1077#1082#1072#1073#1088#1100)
+      end
+      object seYearSmeta: TSpinEdit
+        Left = 169
+        Top = 15
+        Width = 50
+        Height = 22
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        MaxValue = 2100
+        MinValue = 2012
+        ParentFont = False
+        TabOrder = 1
+        Value = 2015
+      end
+    end
+    object grp1: TGroupBox
+      Left = 236
+      Top = 27
+      Width = 162
+      Height = 42
+      Caption = #1044#1072#1090#1072' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
+      Enabled = False
+      TabOrder = 2
+      object cbbMonthBeginStroj: TComboBox
+        Left = 5
+        Top = 15
+        Width = 98
+        Height = 21
+        Style = csDropDownList
+        DropDownCount = 12
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 0
+        Items.Strings = (
+          #1071#1085#1074#1072#1088#1100
+          #1060#1077#1074#1088#1072#1083#1100
+          #1052#1072#1088#1090
+          #1040#1087#1088#1077#1083#1100
+          #1052#1072#1081
+          #1048#1102#1085#1100
+          #1048#1102#1083#1100
+          #1040#1074#1075#1091#1089#1090
+          #1057#1077#1085#1090#1103#1073#1088#1100
+          #1054#1082#1090#1103#1073#1088#1100
+          #1053#1086#1103#1073#1088#1100
+          #1044#1077#1082#1072#1073#1088#1100)
+      end
+      object seYearBeginStroj: TSpinEdit
+        Left = 108
+        Top = 15
+        Width = 50
+        Height = 22
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        MaxValue = 2100
+        MinValue = 2012
+        ParentFont = False
+        TabOrder = 1
+        Value = 2015
+      end
+    end
+    object grp2: TGroupBox
+      Left = 599
+      Top = 27
+      Width = 181
+      Height = 42
+      Caption = #1044#1072#1090#1072' '#1086#1082#1086#1085#1095#1072#1085#1080#1103' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
+      Enabled = False
+      TabOrder = 4
+      object seYearEndStroj: TSpinEdit
+        Left = 127
+        Top = 15
+        Width = 50
+        Height = 22
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        MaxValue = 2100
+        MinValue = 2012
+        ParentFont = False
+        TabOrder = 1
+        Value = 2015
+      end
+      object cbbMonthEndStroj: TComboBox
+        Left = 7
+        Top = 15
+        Width = 114
+        Height = 21
+        Style = csDropDownList
+        DropDownCount = 12
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 0
+        Items.Strings = (
+          #1071#1085#1074#1072#1088#1100
+          #1060#1077#1074#1088#1072#1083#1100
+          #1052#1072#1088#1090
+          #1040#1087#1088#1077#1083#1100
+          #1052#1072#1081
+          #1048#1102#1085#1100
+          #1048#1102#1083#1100
+          #1040#1074#1075#1091#1089#1090
+          #1057#1077#1085#1090#1103#1073#1088#1100
+          #1054#1082#1090#1103#1073#1088#1100
+          #1053#1086#1103#1073#1088#1100
+          #1044#1077#1082#1072#1073#1088#1100)
+      end
+    end
+    object grp4: TGroupBox
+      Left = 401
+      Top = 27
+      Width = 192
+      Height = 42
+      Caption = #1053#1086#1088#1084#1072#1090#1080#1074#1085#1099#1081' '#1089#1088#1086#1082' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
+      Enabled = False
+      TabOrder = 3
+      object lbl5: TLabel
+        Left = 159
+        Top = 18
+        Width = 20
+        Height = 13
+        Caption = ' '#1084#1077#1089
+      end
+      object dbedtSROK_STROJ: TDBEdit
+        Left = 7
+        Top = 15
+        Width = 146
+        Height = 21
+        DataField = 'SROK_STROJ'
+        DataSource = dsOBJ
+        ReadOnly = True
+        TabOrder = 0
+      end
+    end
+    object dbedtFULL_NAME: TDBEdit
+      Left = 57
+      Top = 5
+      Width = 942
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      DataField = 'FULL_NAME'
+      DataSource = dsOBJ
+      ReadOnly = True
+      TabOrder = 0
+      ExplicitWidth = 649
+    end
+    object dbchkFL_CONTRACT_PRICE: TDBCheckBox
+      Left = 103
+      Top = 75
+      Width = 189
+      Height = 17
+      Caption = #1050#1086#1085#1090#1088#1072#1082#1090#1085#1072#1103' '#1094#1077#1085#1072' '#1089#1092#1086#1088#1084#1080#1088#1086#1074#1072#1085#1072
+      DataField = 'FL_CONTRACT_PRICE_DONE'
+      DataSource = dsOBJ
+      TabOrder = 10
+      ValueChecked = '1'
+      ValueUnchecked = '0'
+    end
+    object dbchkFL_CONTRACT_PRICE1: TDBCheckBox
+      Left = 13
+      Top = 75
+      Width = 84
+      Height = 17
+      Caption = #1056#1091#1095#1085#1086#1081' '#1074#1074#1086#1076
+      DataField = 'FL_CONTRACT_PRICE_USER_DATA'
+      DataSource = dsOBJ
+      TabOrder = 9
+      ValueChecked = '1'
+      ValueUnchecked = '0'
+    end
+    object dbrgrpCONTRACT_PRICE_TYPE: TDBRadioGroup
+      Left = 960
+      Top = 27
+      Width = 39
+      Height = 42
+      Anchors = [akLeft, akTop, akRight]
+      Caption = #1056#1072#1089#1095#1077#1090':'
+      Columns = 3
+      DataField = 'CONTRACT_PRICE_TYPE'
+      DataSource = dsOBJ
+      Items.Strings = (
+        #1087#1086' '#1055#1058#1052
+        #1087#1086' '#1089#1084#1077#1090#1072#1084
+        #1087#1086' '#1086#1073#1098#1077#1082#1090#1091)
+      TabOrder = 5
+      Values.Strings = (
+        '1'
+        '2'
+        '3')
+      OnClick = dbrgrpCONTRACT_PRICE_TYPEClick
+    end
+    object pnl1: TPanel
+      Left = 298
+      Top = 75
+      Width = 519
+      Height = 21
+      BevelOuter = bvNone
+      TabOrder = 11
+      object lbl2: TLabel
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 68
+        Height = 15
+        Align = alLeft
+        Caption = #1042#1080#1076' '#1080#1085#1076#1077#1082#1089#1072':'
+        ExplicitLeft = 64
+        ExplicitTop = 16
+        ExplicitHeight = 13
+      end
+      object lbl3: TLabel
+        AlignWithMargins = True
+        Left = 209
+        Top = 3
+        Width = 145
+        Height = 15
+        Align = alLeft
+        Caption = #1056#1072#1089#1095#1077#1090' '#1080#1085#1076#1077#1082#1089#1072#1094#1080#1080' '#1085#1072' '#1076#1072#1090#1091':'
+        ExplicitHeight = 13
+      end
+      object dblkcbbindex_type_id: TDBLookupComboBox
+        Left = 74
+        Top = 0
+        Width = 132
+        Height = 21
+        Align = alLeft
+        DataField = 'index_type_id'
+        DataSource = dsOBJ
+        KeyField = 'index_type_id'
+        ListField = 'index_type_name'
+        ListSource = dsIndexType
+        TabOrder = 0
+        ExplicitLeft = 124
+        ExplicitTop = 5
+      end
+      object dblkcbbindex_type_date_id: TDBLookupComboBox
+        Left = 357
+        Top = 0
+        Width = 161
+        Height = 21
+        Align = alLeft
+        DataField = 'index_type_date_id'
+        DataSource = dsOBJ
+        KeyField = 'index_type_date_id'
+        ListField = 'index_type_date_name'
+        ListSource = dsIndexTypeDate
+        TabOrder = 1
+        ExplicitLeft = 399
+        ExplicitTop = 1
+      end
+    end
+    object btn1: TBitBtn
+      Left = 756
+      Top = 71
+      Width = 122
+      Height = 25
+      Anchors = [akTop, akRight]
+      Caption = #1043#1088#1072#1092#1080#1082' '#1087#1083#1072#1090#1077#1078#1077#1081
+      TabOrder = 7
+    end
+    object btnRecalc: TBitBtn
+      Left = 879
+      Top = 71
+      Width = 122
+      Height = 25
+      Anchors = [akTop, akRight]
+      Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100' '#1088#1072#1089#1095#1077#1090
+      TabOrder = 8
+      OnClick = btnRecalcClick
+    end
+    object cbbViewType: TComboBox
+      Left = 786
+      Top = 42
+      Width = 168
+      Height = 21
+      Style = csDropDownList
+      DropDownCount = 12
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ItemIndex = 0
+      ParentFont = False
+      TabOrder = 6
+      Text = #1074' '#1088#1091#1073#1083#1103#1093
       Items.Strings = (
         #1074' '#1088#1091#1073#1083#1103#1093
         #1074' '#1087#1088#1086#1094#1077#1085#1090#1072#1093' '#1086#1090' '#1086#1073#1098#1077#1084#1072)
-      TabOrder = 0
     end
   end
   object pnlClient: TPanel
     Left = 0
-    Top = 113
-    Width = 573
-    Height = 233
+    Top = 100
+    Width = 1008
+    Height = 246
     Align = alClient
     TabOrder = 1
-    ExplicitTop = 8
-    ExplicitHeight = 113
-    object JvDBGrid1: TJvDBGrid
+    ExplicitTop = 113
+    ExplicitWidth = 573
+    ExplicitHeight = 233
+    object grMain: TJvDBGrid
       Left = 1
       Top = 1
-      Width = 571
-      Height = 231
+      Width = 1006
+      Height = 244
       Align = alClient
+      DataSource = dsMain
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
@@ -97,14 +416,18 @@ object fContractPrice: TfContractPrice
       Columns = <
         item
           Expanded = False
+          FieldName = 'SM_NUMBER'
           Title.Alignment = taCenter
+          Title.Caption = ' '
+          Width = 40
           Visible = True
         end
         item
           Expanded = False
+          FieldName = 'NAME'
           Title.Alignment = taCenter
           Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-          Width = 79
+          Width = 250
           Visible = True
         end
         item
@@ -130,10 +453,11 @@ object fContractPrice: TfContractPrice
   end
   object dsMain: TDataSource
     DataSet = qrMain
-    Left = 424
-    Top = 176
+    Left = 416
+    Top = 224
   end
   object qrMain: TFDQuery
+    BeforeOpen = qrOBJBeforeOpen
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -157,251 +481,121 @@ object fContractPrice: TfContractPrice
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
-      'SELECT '
       
-        'CONCAT(IF(((sm.`SM_ID` = :SM_ID) OR (sm.`PARENT_ID` = :SM_ID)), ' +
-        #39#39', :SM_ID), sm.`PARENT_ID`, sm.`SM_ID`, d.`ID`) as SORT_ID,'
-      'CASE d.`ID_TYPE_DATA` '
-      '  WHEN 1 THEN cr.`RATE_CODE`'
-      '  WHEN 2 THEN mat.`MAT_CODE`'
-      '  WHEN 3 THEN mech.`MECH_CODE`'
-      '  WHEN 4 THEN dev.`DEVICE_CODE`'
-      '  WHEN 5 THEN dmp.`DUMP_CODE_JUST`'
-      '  WHEN 6 THEN tr.`TRANSP_CODE_JUST`'
-      '  WHEN 7 THEN tr.`TRANSP_CODE_JUST`'
-      '  WHEN 8 THEN tr.`TRANSP_CODE_JUST`'
-      '  WHEN 9 THEN tr.`TRANSP_CODE_JUST`'
-      '  WHEN 10 THEN ('#39#1045#1058'18'#39')'
-      '  WHEN 11 THEN ('#39#1045#1058'20'#39')'
-      'END AS OBJ_CODE, '
-      'CASE d.`ID_TYPE_DATA` '
-      '  WHEN 1 THEN cr.`RATE_CAPTION`'
-      '  WHEN 2 THEN mat.`MAT_NAME`'
-      '  WHEN 3 THEN mech.`MECH_NAME`'
-      '  WHEN 4 THEN dev.`DEVICE_NAME`'
-      '  WHEN 5 THEN dmp.`DUMP_NAME`'
-      '  WHEN 6 THEN tr.`TRANSP_JUST`'
-      '  WHEN 7 THEN tr.`TRANSP_JUST`'
-      '  WHEN 8 THEN tr.`TRANSP_JUST`'
-      '  WHEN 9 THEN tr.`TRANSP_JUST`'
-      '  WHEN 10 THEN ('#39#1045#1058'18'#39')'
-      '  WHEN 11 THEN ('#39#1045#1058'20'#39')'
-      'END AS OBJ_NAME, '
-      'IF(:BY_COUNT=1,'
-      'CASE d.`ID_TYPE_DATA` '
-      '  WHEN 1 THEN cr.`RATE_COUNT`'
-      '  WHEN 2 THEN mat.`MAT_COUNT`'
-      '  WHEN 3 THEN mech.`MECH_COUNT`'
-      '  WHEN 4 THEN dev.`DEVICE_COUNT`'
-      '  WHEN 5 THEN dmp.`DUMP_COUNT`'
-      '  WHEN 6 THEN tr.`TRANSP_COUNT`'
-      '  WHEN 7 THEN tr.`TRANSP_COUNT`'
-      '  WHEN 8 THEN tr.`TRANSP_COUNT`'
-      '  WHEN 9 THEN tr.`TRANSP_COUNT`'
-      '  WHEN 10 THEN d.`E1820_COUNT`'
-      '  WHEN 11 THEN d.`E1820_COUNT`'
+        'SELECT FN_getSortSM(s.`SM_ID`), s.`SM_NUMBER`, s.`NAME`, s.`SM_I' +
+        'D`, s.`SM_TYPE`'
+      'FROM `objcards` as o, `smetasourcedata` as s'
+      'WHERE o.`OBJ_ID` = :OBJ_ID'
       
-        'END, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`ST_OHROPR`, d.`STOIM`)+' +
-        'IF(:FL_INCL_WINTER=1, (d.`ZIM_UDOR` + d.`ZP_ZIM_UDOR`) * sm.`APP' +
-        'LY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'
-      'IF(:BY_COUNT=1,'
-      'CASE d.`ID_TYPE_DATA`'
-      
-        '  WHEN 1 THEN (SELECT SUM(`card_rate_act`.`RATE_COUNT`) FROM `ca' +
-        'rd_rate_act`, `data_act` WHERE `card_rate_act`.`ID`=`data_act`.`' +
-        'ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `d' +
-        'ata_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=' +
-        'd.`ID_ESTIMATE`)'
-      
-        '  WHEN 2 THEN (SELECT SUM(`materialcard_act`.`MAT_COUNT`) FROM `' +
-        'materialcard_act`, `data_act` WHERE `materialcard_act`.`ID`=`dat' +
-        'a_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA' +
-        '` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ES' +
-        'TIMATE`=d.`ID_ESTIMATE`)'
-      
-        '  WHEN 3 THEN (SELECT SUM(`mechanizmcard_act`.`MECH_COUNT`) FROM' +
-        ' `mechanizmcard_act`, `data_act` WHERE `mechanizmcard_act`.`ID`=' +
-        '`data_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_' +
-        'DATA` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`I' +
-        'D_ESTIMATE`=d.`ID_ESTIMATE`)'
-      
-        '  WHEN 4 THEN (SELECT SUM(`devicescard_act`.`DEVICE_COUNT`) FROM' +
-        ' `devicescard_act`, `data_act` WHERE `devicescard_act`.`ID`=`dat' +
-        'a_act`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA' +
-        '` AND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ES' +
-        'TIMATE`=d.`ID_ESTIMATE`)'
-      
-        '  WHEN 5 THEN (SELECT SUM(`dumpcard_act`.`DUMP_COUNT`) FROM `dum' +
-        'pcard_act`, `data_act` WHERE `dumpcard_act`.`ID`=`data_act`.`ID_' +
-        'TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data' +
-        '_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`' +
-        'ID_ESTIMATE`)'
-      
-        '  WHEN 6 THEN (SELECT SUM(`transpcard_act`.`TRANSP_COUNT`) FROM ' +
-        '`transpcard_act`, `data_act` WHERE `transpcard_act`.`ID`=`data_a' +
-        'ct`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` A' +
-        'ND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIM' +
-        'ATE`=d.`ID_ESTIMATE`)'
-      
-        '  WHEN 7 THEN (SELECT SUM(`transpcard_act`.`TRANSP_COUNT`) FROM ' +
-        '`transpcard_act`, `data_act` WHERE `transpcard_act`.`ID`=`data_a' +
-        'ct`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` A' +
-        'ND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIM' +
-        'ATE`=d.`ID_ESTIMATE`)'
-      
-        '  WHEN 8 THEN (SELECT SUM(`transpcard_act`.`TRANSP_COUNT`) FROM ' +
-        '`transpcard_act`, `data_act` WHERE `transpcard_act`.`ID`=`data_a' +
-        'ct`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` A' +
-        'ND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIM' +
-        'ATE`=d.`ID_ESTIMATE`)'
-      
-        '  WHEN 9 THEN (SELECT SUM(`transpcard_act`.`TRANSP_COUNT`) FROM ' +
-        '`transpcard_act`, `data_act` WHERE `transpcard_act`.`ID`=`data_a' +
-        'ct`.`ID_TABLES` AND `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` A' +
-        'ND `data_act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIM' +
-        'ATE`=d.`ID_ESTIMATE`)'
-      
-        '  WHEN 10 THEN (SELECT SUM(`data_act`.`E1820_COUNT`) FROM `data_' +
-        'act` WHERE `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_' +
-        'act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`I' +
-        'D_ESTIMATE`)'
-      
-        '  WHEN 11 THEN (SELECT SUM(`data_act`.`E1820_COUNT`) FROM `data_' +
-        'act` WHERE `data_act`.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND `data_' +
-        'act`.`ID_TABLES`=d.`ID_TABLES` AND `data_act`.`ID_ESTIMATE`=d.`I' +
-        'D_ESTIMATE`)'
-      
-        'END, ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, `data_act`.`ST' +
-        '_OHROPR`, `data_act`.`STOIM`)+IF(:FL_INCL_WINTER=1, (`data_act`.' +
-        '`ZIM_UDOR` + `data_act`.`ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_F' +
-        'LAG`, 0.0)) FROM `data_act` WHERE d.`ID_TABLES`=`data_act`.`ID_T' +
-        'ABLES` AND d.`ID_TYPE_DATA`=`data_act`.`ID_TYPE_DATA` AND d.`ID_' +
-        'ESTIMATE`=`data_act`.`ID_ESTIMATE`))) AS OBJ_COUNT_DONE,'
-      'CASE d.`ID_TYPE_DATA` '
-      '  WHEN 1 THEN cr.`RATE_UNIT`'
-      '  WHEN 2 THEN mat.`MAT_UNIT`'
-      '  WHEN 3 THEN mech.`MECH_UNIT`'
-      '  WHEN 4 THEN dev.`DEVICE_UNIT`'
-      '  WHEN 5 THEN dmp.`DUMP_UNIT`'
-      '  WHEN 6 THEN tr.`CARG_UNIT`'
-      '  WHEN 7 THEN tr.`CARG_UNIT`'
-      '  WHEN 8 THEN tr.`CARG_UNIT`'
-      '  WHEN 9 THEN tr.`CARG_UNIT`'
-      '  WHEN 10 THEN ('#39#1096#1090'.'#39')'
-      '  WHEN 11 THEN ('#39#1096#1090'.'#39')'
-      'END AS OBJ_UNIT, '
-      'd.`ID_TYPE_DATA` as ID_TYPE_DATA,'
-      'd.`ID` as DATA_ESTIMATE_OR_ACT_ID,'
-      'd.`ID_TABLES` AS ID_TABLES,'
-      'sm.`SM_ID`'
-      'FROM `smetasourcedata` sm, `data_estimate` d'
-      
-        'LEFT JOIN `card_rate` cr ON d.`ID_TYPE_DATA` = 1 AND cr.`ID` = d' +
-        '.`ID_TABLES`'
-      
-        'LEFT JOIN `materialcard` mat ON d.`ID_TYPE_DATA` = 2 AND mat.`ID' +
-        '` = d.`ID_TABLES`'
-      
-        'LEFT JOIN `mechanizmcard` mech ON d.`ID_TYPE_DATA` = 3 AND mech.' +
-        '`ID` = d.`ID_TABLES`'
-      
-        'LEFT JOIN `devicescard` dev ON d.`ID_TYPE_DATA` = 4 AND dev.`ID`' +
-        ' = d.`ID_TABLES`'
-      
-        'LEFT JOIN `dumpcard` dmp ON d.`ID_TYPE_DATA` = 5 AND dmp.`ID` = ' +
-        'd.`ID_TABLES`'
-      
-        'LEFT JOIN `transpcard` tr ON d.`ID_TYPE_DATA` IN (6,7,8,9) AND t' +
-        'r.`ID` = d.`ID_TABLES`'
-      'WHERE sm.`SM_ID`=d.`ID_ESTIMATE` AND'
-      '      ((sm.`SM_ID` = :SM_ID) OR '
-      '       (sm.`PARENT_ID` = :SM_ID) OR'
-      '       (sm.`PARENT_ID` IN '
-      '        (SELECT `smetasourcedata`.`SM_ID` '
-      '         FROM `smetasourcedata` '
-      '         WHERE `smetasourcedata`.`PARENT_ID` = :SM_ID)))'
-      'UNION ALL'
-      '/* '#1042#1099#1074#1086#1076#1080#1084' '#1079#1072#1084#1077#1085#1103#1102#1097#1080#1077' '#1084#1072#1090#1077#1088#1080#1072#1083#1099' */'
-      'SELECT '
-      
-        'CONCAT(IF(((sm.`SM_ID` = :SM_ID) OR (sm.`PARENT_ID` = :SM_ID)), ' +
-        #39#39', :SM_ID), sm.`PARENT_ID`, sm.`SM_ID`, d.`ID`, mat.`ID`) as SO' +
-        'RT_ID,'
-      'CONCAT('#39'   '#39', mat.`MAT_CODE`) AS OBJ_CODE, '
-      'mat.`MAT_NAME` AS OBJ_NAME,'
-      '/*'#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1076#1086#1089#1090#1072#1077#1090#1089#1103' '#1085#1077#1074#1077#1088#1085#1086'*/'
-      
-        'IF(:BY_COUNT=1, mat.`MAT_COUNT`, ROUND(IF(:FL_INCL_OHROPR_PLPR=1' +
-        ', d.`ST_OHROPR`, d.`STOIM`)+IF(:FL_INCL_WINTER=1, (d.`ZIM_UDOR` ' +
-        '+ d.`ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_' +
-        'COUNT, '
-      'mat.`MAT_UNIT` AS OBJ_UNIT, '
-      'd.`ID_TYPE_DATA` as ID_TYPE_DATA,'
-      'd.`ID` as DATA_ESTIMATE_OR_ACT_ID,'
-      'd.`ID_TABLES` AS ID_TABLES,'
-      'sm.`SM_ID`'
-      'FROM `smetasourcedata` sm, `data_estimate` d'
-      'JOIN `card_rate` cr ON cr.`ID` = d.`ID_TABLES`'
-      
-        'JOIN `materialcard` mat ON cr.`ID` = d.`ID_TABLES` AND mat.`ID_C' +
-        'ARD_RATE` = d.`ID_TABLES` AND mat.`ID_REPLACED` > 0'
-      'WHERE sm.`SM_ID`=d.`ID_ESTIMATE` AND'
-      '      d.`ID_TYPE_DATA` = 1 AND'
-      '      ((sm.`SM_ID` = :SM_ID) OR '
-      '       (sm.`PARENT_ID` = :SM_ID) OR'
-      '       (sm.`PARENT_ID` IN '
-      '        (SELECT `smetasourcedata`.`SM_ID` '
-      '         FROM `smetasourcedata` '
-      '         WHERE `smetasourcedata`.`PARENT_ID` = :SM_ID)))'
-      'UNION ALL'
-      '/* '#1047#1072#1075#1086#1083#1086#1074#1082#1080' '#1088#1072#1079#1076#1077#1083#1086#1074' */'
-      'select CONCAT('
-      
-        'IF(((sm.`SM_ID` = :SM_ID) OR (sm.`PARENT_ID` = :SM_ID)), '#39#39', :SM' +
-        '_ID), sm.`PARENT_ID`, sm.`SM_ID`) as SORT_ID,'
-      
-        'CONCAT(sm.`SM_NUMBER`, '#39' '#39', sm.`NAME`) AS OBJ_CODE, NULL AS OBJ_' +
-        'NAME, '
-      
-        'IF(:BY_COUNT=1, NULL, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, sm.`S_ST_' +
-        'OHROPR`, sm.`S_STOIM`)+IF(:FL_INCL_WINTER=1, (sm.`S_ZIM_UDOR` + ' +
-        'sm.`S_ZP_ZIM_UDOR`) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ' +
-        '_COUNT, '
-      'NULL AS OBJ_UNIT,(sm.`SM_TYPE` * -1) as ID_TYPE_DATA,'
-      'NULL AS DATA_ESTIMATE_OR_ACT_ID, NULL AS ID_TABLES, sm.`SM_ID`'
-      'FROM `smetasourcedata` sm'
-      'WHERE ((sm.`PARENT_ID` = :SM_ID) OR'
-      '       (sm.`PARENT_ID` IN '
-      '        (SELECT `smetasourcedata`.`SM_ID` '
-      '         FROM `smetasourcedata` '
-      '         WHERE `smetasourcedata`.`PARENT_ID` = :SM_ID)))'
-      'ORDER BY SORT_ID')
-    Left = 384
-    Top = 176
+        '  AND ((o.`CONTRACT_PRICE_TYPE` = 1) OR (o.`CONTRACT_PRICE_TYPE`' +
+        ' = 2 AND s.`SM_TYPE` <> 3) OR (o.`CONTRACT_PRICE_TYPE` = 3 AND s' +
+        '.`SM_TYPE` = 2))'
+      '  AND s.`OBJ_ID` = o.`OBJ_ID`'
+      '  AND s.`ACT` = 0'
+      '  AND s.`DELETED` = 0'
+      'ORDER BY 1')
+    Left = 376
+    Top = 224
     ParamData = <
       item
-        Name = 'SM_ID'
-        DataType = ftInteger
+        Name = 'OBJ_ID'
+        DataType = ftBCD
         ParamType = ptInput
-        Value = 344
-      end
-      item
-        Name = 'BY_COUNT'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = 1
-      end
-      item
-        Name = 'FL_INCL_OHROPR_PLPR'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = 1
-      end
-      item
-        Name = 'FL_INCL_WINTER'
-        DataType = ftInteger
-        ParamType = ptInput
-        Value = 1
       end>
+  end
+  object qrOBJ: TFDQuery
+    BeforeOpen = qrOBJBeforeOpen
+    AfterOpen = qrOBJAfterOpen
+    AfterPost = qrOBJAfterPost
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    FormatOptions.DefaultParamDataType = ftBCD
+    UpdateOptions.AssignedValues = [uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.UpdateChangedFields = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    SQL.Strings = (
+      'SELECT * FROM objcards WHERE OBJ_ID=:OBJ_ID')
+    Left = 184
+    Top = 280
+    ParamData = <
+      item
+        Name = 'OBJ_ID'
+        DataType = ftBCD
+        ParamType = ptInput
+      end>
+  end
+  object dsOBJ: TDataSource
+    DataSet = qrOBJ
+    Left = 200
+    Top = 280
+  end
+  object qrIndexType: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvCheckReadOnly]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.CheckReadOnly = False
+    SQL.Strings = (
+      'select * from index_type')
+    Left = 25
+    Top = 280
+  end
+  object dsIndexType: TDataSource
+    DataSet = qrIndexType
+    Left = 24
+    Top = 280
+  end
+  object qrIndexTypeDate: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvCheckReadOnly]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.CheckReadOnly = False
+    SQL.Strings = (
+      'SELECT * FROM index_type_date')
+    Left = 105
+    Top = 280
+  end
+  object dsIndexTypeDate: TDataSource
+    DataSet = qrIndexTypeDate
+    Left = 103
+    Top = 280
   end
 end

@@ -446,8 +446,9 @@ object fTariffDict: TfTariffDict
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FormatOptions.AssignedValues = [fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvDefaultParamDataType, fvFmtDisplayDate, fvFmtDisplayNumeric]
     FormatOptions.DefaultParamDataType = ftBCD
+    FormatOptions.FmtDisplayDate = 'MMMM YYYY'
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ##0.####'
     SQL.Strings = (
       'SELECT '

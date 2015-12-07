@@ -791,7 +791,7 @@ type
     procedure SaveData; // Процедура сохранения сметы/акта
 
     function GetSMSubType(ASM_ID: Integer): Integer;
-
+    procedure CloseOtherTabs;
   protected
     procedure SetFormStyle; override;
   public
@@ -1160,10 +1160,7 @@ end;
 procedure TFormCalculationEstimate.SpeedButtonLocalEstimateClick(Sender: TObject);
 begin
   // Временный костыль
-  if (Assigned(fCalcResource)) then
-    fCalcResource.Close;
-  if (Assigned(fKC6Journal)) then
-    fKC6Journal.Close;
+  CloseOtherTabs;
 
   if SpeedButtonLocalEstimate.Tag = 0 then
   begin
@@ -1193,10 +1190,7 @@ end;
 procedure TFormCalculationEstimate.SpeedButtonSummaryCalculationClick(Sender: TObject);
 begin
   // Временный костыль
-  if (Assigned(fCalcResource)) then
-    fCalcResource.Close;
-  if (Assigned(fKC6Journal)) then
-    fKC6Journal.Close;
+  CloseOtherTabs;
 
   if SpeedButtonSummaryCalculation.Tag = 0 then
   begin
@@ -1336,7 +1330,10 @@ end;
 procedure TFormCalculationEstimate.btnResCalcClick(Sender: TObject);
 begin
   if (not Assigned(fContractPrice)) then
-    fContractPrice := TfContractPrice.Create(FormMain, VarArrayOf([IdObject, IdEstimate]));
+    fContractPrice := TfContractPrice.Create(FormCalculationEstimate, VarArrayOf([IdObject, IdEstimate]));
+  fContractPrice.Parent := FormCalculationEstimate;
+  fContractPrice.Align := alClient;
+  fContractPrice.BorderStyle := bsNone;
   fContractPrice.Show;
 end;
 
@@ -2014,6 +2011,17 @@ end;
 procedure TFormCalculationEstimate.ClearAutoRep;
 begin
   SetLength(FAutoRepArray, 0);
+end;
+
+procedure TFormCalculationEstimate.CloseOtherTabs;
+begin
+  // Временный костыль
+  if (Assigned(fCalcResource)) then
+    fCalcResource.Close;
+  if (Assigned(fKC6Journal)) then
+    fKC6Journal.Close;
+   if (Assigned(fContractPrice)) then
+    fContractPrice.Close;
 end;
 
 procedure TFormCalculationEstimate.ShowAutoRep;
@@ -6810,8 +6818,7 @@ begin
   DM.FDGUIxWaitCursor1.ScreenCursor := gcrHourGlass;
   try
     SendMessage(Application.MainForm.ClientHandle, WM_SETREDRAW, 0, 0);
-    FormAdditionData :=
-      TFormAdditionData.Create(Self, vDataBase, GetSMSubType(qrRatesExSM_ID.Value));
+    FormAdditionData := TFormAdditionData.Create(Self, vDataBase, GetSMSubType(qrRatesExSM_ID.Value));
     FormAdditionData.WindowState := wsNormal;
 
     // Сворачиваем окно
@@ -7105,12 +7112,12 @@ begin
       Font.Color := PS.FontSelectCell;
     end;
 
-   // FillRect(Rect);
+    // FillRect(Rect);
     (Sender as TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
-  //  if Column.Alignment = taRightJustify then
-  //    TextRect(Rect, Rect.Right - 2 - TextWidth(Column.Field.DisplayText), Rect.Top + 2, Column.Field.DisplayText)
-  //  else
-  //    TextRect(Rect, Rect.Left + 2, Rect.Top + 2, Column.Field.DisplayText);
+    // if Column.Alignment = taRightJustify then
+    // TextRect(Rect, Rect.Right - 2 - TextWidth(Column.Field.DisplayText), Rect.Top + 2, Column.Field.DisplayText)
+    // else
+    // TextRect(Rect, Rect.Left + 2, Rect.Top + 2, Column.Field.DisplayText);
   end;
 end;
 
