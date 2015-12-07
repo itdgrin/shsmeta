@@ -10,8 +10,8 @@ uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Clie
   Vcl.Buttons, Vcl.ComCtrls, VirtualTrees, Vcl.FileCtrl, System.Types;
 
 // Общий тип классификации форм
-type
 
+type
   TKindForm = (kdNone, kdInsert, kdEdit, kdSelect);
 
   // Для выноса в паблик некоторых свойств грида
@@ -148,6 +148,7 @@ begin
 end;
 
 function GetDirDialog(var ADir: string): Boolean;
+{$WARN SYMBOL_PLATFORM OFF}
 var
   TmpDialog: TFileOpenDialog; // TFileOpenDialog есть только в Vista и выше, нужен обычный TOpenDialog
 begin
@@ -172,6 +173,7 @@ begin
   end
   else
     Result := SelectDirectory('Select Directory', ExtractFileDrive(ADir), ADir, [sdNewUI, sdNewFolder]);
+{$WARN SYMBOL_PLATFORM ON}
 end;
 
 function FullRename(ASource, ATarget: string): Boolean;
