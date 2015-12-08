@@ -690,6 +690,10 @@ type
     procedure PMMatManPriceClick(Sender: TObject);
     procedure grRatesExSelectColumns(Grid: TJvDBGrid; var DefaultDialog: Boolean);
     procedure btnResCalcClick(Sender: TObject);
+    procedure dbgrdCanEditCell(Grid: TJvDBGrid; Field: TField;
+      var AllowEdit: Boolean);
+    procedure dbmmoEnter(Sender: TObject);
+    procedure pmPopup(Sender: TObject);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта субподрядчика');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -792,8 +796,10 @@ type
 
     function GetSMSubType(ASM_ID: Integer): Integer;
     procedure CloseOtherTabs;
+    function GetEdited: Boolean;
   protected
     procedure SetFormStyle; override;
+    procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
   public
     Act: Boolean;
 
@@ -819,12 +825,8 @@ type
     function getTYPE_ACT: Integer;
     procedure LoadMain(const SM_ID: Integer);
     constructor Create(const SM_ID: Integer); reintroduce;
-  protected
-    procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
-
-  const
-    Indent = '     ';
-
+    //Свойство возможности редактировать смету
+    property Edited: Boolean read GetEdited;
   end;
 
 var
@@ -877,6 +879,23 @@ procedure TSplitter.Paint();
 begin
   // inherited;
   FormCalculationEstimate.RepaintImagesForSplitters();
+end;
+
+function TFormCalculationEstimate.GetEdited: Boolean;
+begin
+  Result := True;
+  if not Act then
+  begin
+    qrTemp.SQL.Text := 'SELECT FL_CONTRACT_PRICE_DONE FROM objcards WHERE OBJ_ID=:OBJ_ID';
+    qrTemp.ParamByName('OBJ_ID').AsInteger := IdObject;
+    qrTemp.Active := True;
+    try
+      if not qrTemp.IsEmpty then
+        Result := qrTemp.Fields[0].AsInteger = 0;
+    finally
+      qrTemp.Active := False;
+    end;
+  end;
 end;
 
 procedure TFormCalculationEstimate.Wheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer;
@@ -1509,6 +1528,9 @@ end;
 
 procedure TFormCalculationEstimate.btn1Click(Sender: TObject);
 begin
+  if not Edited then
+    Exit;
+
   if Application.MessageBox('Произвести перерасчет?', 'Перерасчет', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
     <> IDYES then
     Exit;
@@ -3573,7 +3595,7 @@ end;
 procedure TFormCalculationEstimate.grRatesExCanEditCell(Grid: TJvDBGrid; Field: TField;
   var AllowEdit: Boolean);
 begin
-  AllowEdit := True;
+  AllowEdit := Edited;
   if ((Field = qrRatesExOBJ_CODE) and (qrRatesExID_TYPE_DATA.Value <> -4) and
     (qrRatesExID_TYPE_DATA.Value <> -5)) or
     ((Field = qrRatesExNOM_ROW_MANUAL) and ((qrRatesExID_TYPE_DATA.Value = -1) or
@@ -4606,9 +4628,6 @@ begin
 
   CalcPrice := '00';
 
-  PMDelete.Enabled := True;
-  PMEdit.Enabled := False;
-
   // Загрузка необходимых данных по строке в таблице расценок
   GridRatesRowLoad;
   // РАЗВЁРТЫВАНИЕ ВЫБРАННОЙ РАСЦЕНКИ В ТАБЛИЦАХ СПРАВА
@@ -4687,7 +4706,6 @@ begin
       end;
     5: // Свалки
       begin
-        PMEdit.Enabled := True;
         btnDump.Enabled := True;
         // BtnChange := True;
         btnDump.Down := True;
@@ -4700,7 +4718,6 @@ begin
       end;
     6, 7, 8, 9: // Транспорт
       begin
-        PMEdit.Enabled := True;
         btnTransp.Enabled := True;
         // BtnChange := True;
         btnTransp.Down := True;
@@ -4866,6 +4883,12 @@ begin
   qrMaterialFTRANSCOUNT.Value := 0;
 end;
 
+procedure TFormCalculationEstimate.pmPopup(Sender: TObject);
+begin
+  if not Edited then
+    Abort;
+end;
+
 procedure TFormCalculationEstimate.PopupMenuCoefAddSetClick(Sender: TObject);
 begin
   if fCoefficients.ShowModal = mrOk then
@@ -4917,6 +4940,9 @@ end;
 
 procedure TFormCalculationEstimate.pmCoefPopup(Sender: TObject);
 begin
+  if not Edited then
+    Abort;
+
   PopupMenuCoefDeleteSet.Enabled := (qrCalculations.FieldByName('ID').AsInteger > 0);
   PopupMenuCoefOrders.Visible := (qrRatesExID_TYPE_DATA.Value = 1) and (qrRatesExCOEF_ORDERS.Value = 1);
   PopupMenuCoefOrders.Checked := FastSelectSQLOne('SELECT COEF_ORDERS FROM card_rate_temp WHERE ID=:0',
@@ -4927,6 +4953,9 @@ end;
 // вид всплывающего меню материалов
 procedure TFormCalculationEstimate.pmMaterialsPopup(Sender: TObject);
 begin
+  if not Edited then
+    Abort;
+
   PMMatEdit.Enabled := (not CheckMatReadOnly);
 
   PMTransPerc.Enabled := (not CheckMatReadOnly);
@@ -4976,6 +5005,9 @@ end;
 // Настройка вида всплывающего меню таблицы механизмов
 procedure TFormCalculationEstimate.pmMechanizmsPopup(Sender: TObject);
 begin
+  if not Edited then
+    Abort;
+
   PMMechEdit.Enabled := (not CheckMechReadOnly);
 
   PMMechFromRates.Enabled := (not CheckMechReadOnly) and (qrRatesExID_TYPE_DATA.AsInteger = 1);
@@ -5603,6 +5635,9 @@ end;
 
 procedure TFormCalculationEstimate.pmDevicesPopup(Sender: TObject);
 begin
+  if not Edited then
+    Abort;
+
   PMCalcDevice.Visible := NDSEstimate;
   PMCalcDevice.Enabled := (dbgrdDevices.Columns[dbgrdDevices.Col - 1].FieldName = 'FCOAST_NDS');
 
@@ -5648,27 +5683,33 @@ end;
 procedure TFormCalculationEstimate.pmTableLeftPopup(Sender: TObject);
 var
   mainType: Integer;
+  Edt: Boolean;
+  I: integer;
 begin
   // Вынесено сюда так как mousedown работает глючно
-  if (grRatesEx.SelectedRows.Count > 0) and not(grRatesEx.SelectedRows.CurrentRowSelected) then
+  if (grRatesEx.SelectedRows.Count > 0) and
+     not(grRatesEx.SelectedRows.CurrentRowSelected) then
     grRatesEx.SelectedRows.Clear;
+
+  Edt := Edited;
+  for I := 0 to (Sender as TPopupMenu).Items.Count - 1 do
+    (Sender as TPopupMenu).Items[I].Enabled := Edt;
+
+  PMCopy.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
+  PMPaste.Enabled :=
+   ((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -5) or
+    (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -3)) and
+    ClipBoard.HasFormat(G_SMETADATA) and Edt;
+
 
   // Нельзя удалить неучтенный материал из таблицы расценок
   PMDelete.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0);
   PMAdd.Visible := CheckCursorInRate and not(Act and (TYPE_ACT = 0));
   PMInsertRow.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0) AND not(Act and (TYPE_ACT = 0));
-
   PMEdit.Visible := (qrRatesExID_TYPE_DATA.AsInteger in [5, 6, 7, 8, 9]) and CheckCursorInRate;
-  PMCopy.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
-  PMPaste.Enabled := ((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -5) or
-    (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -3)) and
-    ClipBoard.HasFormat(G_SMETADATA);
-
   PMCopy.Visible := not Act;
   PMPaste.Visible := not Act;
-
   mCopyToOwnBase.Visible := qrRatesExID_TYPE_DATA.Value in [1, 2, 3 { , 4 } ];
-
   // Разрешаем добавлять разделы ПТМ только когда курсор установлен на локальной смете
   // или открыта изначально локальная
   qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata WHERE SM_ID=:ID';
@@ -7064,6 +7105,12 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.dbgrdCanEditCell(Grid: TJvDBGrid;
+  Field: TField; var AllowEdit: Boolean);
+begin
+  AllowEdit := Edited;
+end;
+
 procedure TFormCalculationEstimate.dbgrdDevicesDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
@@ -7139,6 +7186,9 @@ procedure TFormCalculationEstimate.dbgrdMaterialCanEditCell(Grid: TJvDBGrid; Fie
 var
   i: Integer;
 begin
+  AllowEdit := Edited;
+  if not AllowEdit then Exit;
+
   // Перечень полей которые можно редактировать всегда
   if (Field.FieldName.ToUpper = 'FCOAST_NDS') or (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
     (Field.FieldName.ToUpper = 'FTRANSP_NDS') or (Field.FieldName.ToUpper = 'FTRANSP_NO_NDS') or
@@ -7317,6 +7367,9 @@ procedure TFormCalculationEstimate.dbgrdMechanizmCanEditCell(Grid: TJvDBGrid; Fi
 var
   i: Integer;
 begin
+  AllowEdit := Edited;
+  if not AllowEdit then Exit;
+
   if (Field.FieldName.ToUpper = 'FCOAST_NDS') or (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
     (Field.FieldName.ToUpper = 'FZP_MACH_NDS') or (Field.FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
     (Field.FieldName.ToUpper = 'PROC_PODR') or (Field.FieldName.ToUpper = 'PROC_ZAC') then
@@ -7586,6 +7639,12 @@ begin
     Key := 0;
 
   grRatesEx.ReadOnly := PanelCalculationYesNo.Tag = 0;
+end;
+
+procedure TFormCalculationEstimate.dbmmoEnter(Sender: TObject);
+begin
+  if not Edited then
+    (Sender as TDBMemo).ReadOnly := True;
 end;
 
 procedure TFormCalculationEstimate.dbmmoCAPTIONExit(Sender: TObject);

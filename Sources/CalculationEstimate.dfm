@@ -597,6 +597,7 @@
           ParentFont = False
           ScrollBars = ssVertical
           TabOrder = 1
+          OnEnter = dbmmoEnter
           OnExit = dbmmoCAPTIONExit
         end
         object grRatesEx: TJvDBGrid
@@ -2149,6 +2150,7 @@
             RowsHeight = 17
             TitleRowHeight = 17
             WordWrap = True
+            OnCanEditCell = dbgrdCanEditCell
             Columns = <
               item
                 Expanded = False
@@ -2326,6 +2328,7 @@
             RowsHeight = 17
             TitleRowHeight = 17
             WordWrap = True
+            OnCanEditCell = dbgrdCanEditCell
             Columns = <
               item
                 Expanded = False
@@ -2436,6 +2439,7 @@
             EditControls = <>
             RowsHeight = 17
             TitleRowHeight = 17
+            OnCanEditCell = dbgrdCanEditCell
             Columns = <
               item
                 Expanded = False
@@ -2485,6 +2489,7 @@
             RowsHeight = 17
             TitleRowHeight = 17
             WordWrap = True
+            OnCanEditCell = dbgrdCanEditCell
             Columns = <
               item
                 Expanded = False
@@ -2623,6 +2628,7 @@
             RowsHeight = 17
             TitleRowHeight = 17
             WordWrap = True
+            OnCanEditCell = dbgrdCanEditCell
             Columns = <
               item
                 Expanded = False
@@ -2672,6 +2678,7 @@
             ReadOnly = True
             ScrollBars = ssVertical
             TabOrder = 7
+            OnEnter = dbmmoEnter
           end
         end
       end
@@ -2717,6 +2724,7 @@
         EditControls = <>
         RowsHeight = 17
         TitleRowHeight = 17
+        OnCanEditCell = dbgrdCanEditCell
         Columns = <
           item
             Expanded = False
@@ -5092,6 +5100,7 @@
     Top = 85
   end
   object pmDumpTransp: TPopupMenu
+    OnPopup = pmPopup
     Left = 144
     Top = 488
     object PMDumpEdit: TMenuItem
