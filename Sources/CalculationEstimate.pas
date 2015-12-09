@@ -495,6 +495,8 @@ type
     dbmmoRight: TDBMemo;
     SplitterRightMemo: TSplitter;
     qrRatesExRecalc: TFDQuery;
+    pmMarkRow: TMenuItem;
+    qrRatesExMarkRow: TShortintField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -694,6 +696,8 @@ type
       var AllowEdit: Boolean);
     procedure dbmmoEnter(Sender: TObject);
     procedure pmPopup(Sender: TObject);
+    procedure pmMarkRowClick(Sender: TObject);
+    procedure qrRatesExMarkRowChange(Sender: TField);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта субподрядчика');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -796,7 +800,7 @@ type
 
     function GetSMSubType(ASM_ID: Integer): Integer;
     procedure CloseOtherTabs;
-    function GetEdited: Boolean;
+    function GetEditable: Boolean;
   protected
     procedure SetFormStyle; override;
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -826,7 +830,7 @@ type
     procedure LoadMain(const SM_ID: Integer);
     constructor Create(const SM_ID: Integer); reintroduce;
     //Свойство возможности редактировать смету
-    property Edited: Boolean read GetEdited;
+    property Editable: Boolean read GetEditable;
   end;
 
 var
@@ -881,7 +885,7 @@ begin
   FormCalculationEstimate.RepaintImagesForSplitters();
 end;
 
-function TFormCalculationEstimate.GetEdited: Boolean;
+function TFormCalculationEstimate.GetEditable: Boolean;
 begin
   Result := True;
   if not Act then
@@ -1528,7 +1532,7 @@ end;
 
 procedure TFormCalculationEstimate.btn1Click(Sender: TObject);
 begin
-  if not Edited then
+  if not Editable then
     Exit;
 
   if Application.MessageBox('Произвести перерасчет?', 'Перерасчет', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST)
@@ -3432,6 +3436,14 @@ begin
   end;
 end;
 
+procedure TFormCalculationEstimate.qrRatesExMarkRowChange(Sender: TField);
+begin
+  qrTemp.SQL.Text := 'UPDATE data_row_temp set MarkRow=:MarkRow WHERE ID=:ID;';
+  qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
+  qrTemp.ParamByName('MarkRow').Value := Sender.Value;
+  qrTemp.ExecSQL;
+end;
+
 procedure TFormCalculationEstimate.qrRatesExNOM_ROW_MANUALChange(Sender: TField);
 var
   AutoCommitValue: Boolean;
@@ -3595,7 +3607,7 @@ end;
 procedure TFormCalculationEstimate.grRatesExCanEditCell(Grid: TJvDBGrid; Field: TField;
   var AllowEdit: Boolean);
 begin
-  AllowEdit := Edited;
+  AllowEdit := Editable;
   if ((Field = qrRatesExOBJ_CODE) and (qrRatesExID_TYPE_DATA.Value <> -4) and
     (qrRatesExID_TYPE_DATA.Value <> -5)) or
     ((Field = qrRatesExNOM_ROW_MANUAL) and ((qrRatesExID_TYPE_DATA.Value = -1) or
@@ -4885,7 +4897,7 @@ end;
 
 procedure TFormCalculationEstimate.pmPopup(Sender: TObject);
 begin
-  if not Edited then
+  if not Editable then
     Abort;
 end;
 
@@ -4940,7 +4952,7 @@ end;
 
 procedure TFormCalculationEstimate.pmCoefPopup(Sender: TObject);
 begin
-  if not Edited then
+  if not Editable then
     Abort;
 
   PopupMenuCoefDeleteSet.Enabled := (qrCalculations.FieldByName('ID').AsInteger > 0);
@@ -4953,7 +4965,7 @@ end;
 // вид всплывающего меню материалов
 procedure TFormCalculationEstimate.pmMaterialsPopup(Sender: TObject);
 begin
-  if not Edited then
+  if not Editable then
     Abort;
 
   PMMatEdit.Enabled := (not CheckMatReadOnly);
@@ -5005,7 +5017,7 @@ end;
 // Настройка вида всплывающего меню таблицы механизмов
 procedure TFormCalculationEstimate.pmMechanizmsPopup(Sender: TObject);
 begin
-  if not Edited then
+  if not Editable then
     Abort;
 
   PMMechEdit.Enabled := (not CheckMechReadOnly);
@@ -5635,7 +5647,7 @@ end;
 
 procedure TFormCalculationEstimate.pmDevicesPopup(Sender: TObject);
 begin
-  if not Edited then
+  if not Editable then
     Abort;
 
   PMCalcDevice.Visible := NDSEstimate;
@@ -5680,6 +5692,17 @@ begin
   FNewRowIterator := TmpIterator;
 end;
 
+procedure TFormCalculationEstimate.pmMarkRowClick(Sender: TObject);
+begin
+  if qrRatesExMarkRow.Value = 0 then
+    qrRatesExMarkRow.Value := 1
+  else
+    qrRatesExMarkRow.Value := 0;
+
+ pmMarkRow.Checked := qrRatesExMarkRow.Value > 0;
+ grRatesEx.Repaint;
+end;
+
 procedure TFormCalculationEstimate.pmTableLeftPopup(Sender: TObject);
 var
   mainType: Integer;
@@ -5691,7 +5714,7 @@ begin
      not(grRatesEx.SelectedRows.CurrentRowSelected) then
     grRatesEx.SelectedRows.Clear;
 
-  Edt := Edited;
+  Edt := Editable;
   for I := 0 to (Sender as TPopupMenu).Items.Count - 1 do
     (Sender as TPopupMenu).Items[I].Enabled := Edt;
 
@@ -5710,6 +5733,10 @@ begin
   PMCopy.Visible := not Act;
   PMPaste.Visible := not Act;
   mCopyToOwnBase.Visible := qrRatesExID_TYPE_DATA.Value in [1, 2, 3 { , 4 } ];
+
+  pmMarkRow.Visible := qrRatesExID_TYPE_DATA.AsInteger > 0;
+  pmMarkRow.Checked := qrRatesExMarkRow.Value > 0;
+
   // Разрешаем добавлять разделы ПТМ только когда курсор установлен на локальной смете
   // или открыта изначально локальная
   qrTemp.SQL.Text := 'SELECT SM_TYPE FROM smetasourcedata WHERE SM_ID=:ID';
@@ -7108,7 +7135,7 @@ end;
 procedure TFormCalculationEstimate.dbgrdCanEditCell(Grid: TJvDBGrid;
   Field: TField; var AllowEdit: Boolean);
 begin
-  AllowEdit := Edited;
+  AllowEdit := Editable;
 end;
 
 procedure TFormCalculationEstimate.dbgrdDevicesDrawColumnCell(Sender: TObject; const Rect: TRect;
@@ -7186,7 +7213,7 @@ procedure TFormCalculationEstimate.dbgrdMaterialCanEditCell(Grid: TJvDBGrid; Fie
 var
   i: Integer;
 begin
-  AllowEdit := Edited;
+  AllowEdit := Editable;
   if not AllowEdit then Exit;
 
   // Перечень полей которые можно редактировать всегда
@@ -7367,7 +7394,7 @@ procedure TFormCalculationEstimate.dbgrdMechanizmCanEditCell(Grid: TJvDBGrid; Fi
 var
   i: Integer;
 begin
-  AllowEdit := Edited;
+  AllowEdit := Editable;
   if not AllowEdit then Exit;
 
   if (Field.FieldName.ToUpper = 'FCOAST_NDS') or (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
@@ -7579,6 +7606,9 @@ begin
       Font.Style := Font.Style + [fsBold];
     end;
 
+    if qrRatesExMarkRow.Value > 0 then
+      Font.Color := clRed;
+
     if gdFocused in State then // Ячейка в фокусе
     begin
       Brush.Color := PS.BackgroundSelectCell;
@@ -7643,7 +7673,7 @@ end;
 
 procedure TFormCalculationEstimate.dbmmoEnter(Sender: TObject);
 begin
-  if not Edited then
+  if not Editable then
     (Sender as TDBMemo).ReadOnly := True;
 end;
 
