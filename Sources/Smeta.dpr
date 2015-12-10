@@ -133,7 +133,8 @@ uses
   uMemoryLoader in 'uMemoryLoader.pas',
   hwid_impl in 'hwid_impl.pas',
   winioctl in 'winioctl.pas',
-  ContractPrice in 'ContractPrice.pas' {fContractPrice};
+  ContractPrice in 'ContractPrice.pas' {fContractPrice},
+  ContractPriceEdit in 'ContractPriceEdit.pas' {fContractPriceEdit};
 
 {$R *.res}
 var MHandle: THandle;

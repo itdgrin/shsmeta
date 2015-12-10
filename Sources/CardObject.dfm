@@ -55,7 +55,7 @@ object fCardObject: TfCardObject
   object lbl5: TLabel
     Left = 8
     Top = 548
-    Width = 208
+    Width = 191
     Height = 13
     Alignment = taCenter
     Caption = #1054#1041#1071#1047#1040#1058#1045#1051#1068#1053#1054' '#1044#1051#1071' '#1047#1040#1055#1054#1051#1053#1045#1053#1048#1071
@@ -562,6 +562,8 @@ object fCardObject: TfCardObject
       Top = 20
       Width = 202
       Height = 21
+      DataField = 'REGION_ID'
+      DataSource = dsMain
       TabOrder = 0
       OnCloseUp = dblkcbbRegionCloseUp
     end

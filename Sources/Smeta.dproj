@@ -516,6 +516,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>fContractPrice</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="ContractPriceEdit.pas">
+            <Form>fContractPriceEdit</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

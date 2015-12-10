@@ -459,6 +459,15 @@ begin
 
   NumberObject := EditNumberObject.Text;
 
+  if qrMain.FieldByName('BEG_STROJ').AsDateTime > qrMain.FieldByName('BEG_STROJ2').AsDateTime then
+  begin
+    ActiveControl := cbbMonthBeginStroj;
+    MessageDlg
+      ('Дата начала строительства должна быть больше или равна дате составления сметной документации!',
+      mtError, [mbOK], 0);
+    Exit;
+  end;
+
   // Шифр объекта
   if EditCodeObject.Text <> '' then
     v17 := EditCodeObject.Text
@@ -517,7 +526,7 @@ begin
     MessageDlg('Для выбранной даты составления сметы значения ставок отсутствуют.'#13 +
       'Загрузите ставки или укажите другую дату составления сметы.', mtError, [mbOK], 0);
     cbbFromMonth.SetFocus;
-    exit;
+    Exit;
   end;
 
   // Источник финансирования
@@ -540,9 +549,7 @@ begin
   end;
 
   // Регион
-  if dblkcbbRegion.KeyValue <> NULL then
-    v14 := dblkcbbRegion.KeyValue
-  else
+  if dblkcbbRegion.KeyValue = NULL then
   begin
     dblkcbbRegion.Color := ColorWarningField;
     Inc(CountField);
@@ -596,7 +603,7 @@ begin
     MessageBox(0, PChar('Вы заполнили не все поля!' + sLineBreak +
       'Поля выделенные красным не заполнены или заполнены неправильно.'), CaptionForm,
       MB_ICONWARNING + MB_OK + mb_TaskModal);
-    exit;
+    Exit;
   end;
 
   try
@@ -611,7 +618,7 @@ begin
           + '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
           '", srok_stroj = :srok_stroj, ' + ' fin_id = ' + v9 +
           ', cust_id = :cust_id, general_id = :general_id, cat_id = "' + v12 +
-          '", state_nds = :snds, region_id = "' + v14 + '", base_norm_id = "' + v15 + '", stroj_id = "' + v16
+          '", state_nds = :snds, region_id = :region_id, base_norm_id = "' + v15 + '", stroj_id = "' + v16
           + '", encrypt = "' + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
           '", PER_TEMP_BUILD=:PER_TEMP_BUILD, PER_CONTRACTOR=:PER_CONTRACTOR, '#13 +
           'FL_CALC_TRAVEL=:FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK=:FL_CALC_TRAVEL_WORK,'#13 +
@@ -648,7 +655,7 @@ begin
           'FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE, WINTERPRICE_TYPE,BEG_STROJ2,'#13 +
           'Fl_NAL_USN, NAL_USN, Fl_SPEC_SCH, SPEC_SCH)'#13 + 'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2
           + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 + '", "' + v7 + '", :srok_stroj, ' + v9 +
-          ', :cust_id, :general_id, "' + v12 + '", :snds, "' + v14 + '", "' + v15 + '", "' + v16 + '", "' +
+          ', :cust_id, :general_id, "' + v12 + '", :snds, :region_id, "' + v15 + '", "' + v16 + '", "' +
           v17 + '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV, :USER_ID,'#13 +
           ':FL_CALC_TRAVEL, :FL_CALC_TRAVEL_WORK, :FL_CALC_WORKER_DEPARTMENT, :FL_CALC_ZEM_NAL, :FL_CALC_VEDOMS_NAL, :FL_APPLY_WINTERPRICE, :WINTERPRICE_TYPE,'#13
@@ -678,6 +685,7 @@ begin
       ParamByName('Fl_SPEC_SCH').Value := qrMain.FieldByName('Fl_SPEC_SCH').Value;
       ParamByName('SPEC_SCH').Value := qrMain.FieldByName('SPEC_SCH').Value;
       ParamByName('srok_stroj').Value := qrMain.FieldByName('srok_stroj').Value;
+      ParamByName('region_id').Value := qrMain.FieldByName('region_id').Value;
 
       ExecSQL;
     end;
@@ -883,7 +891,7 @@ end;
 procedure TfCardObject.dblkcbbRegionCloseUp(Sender: TObject);
 begin
   if qrZP.IsEmpty then
-    exit;
+    Exit;
   // Автоматическая подстановка зоны расценок "Минск" при выборе региона "Минск"
   if dblkcbbRegion.KeyValue = 7 then
   begin
@@ -908,7 +916,7 @@ var
   IdCategory: Integer;
 begin
   if (dblkcbbCategoryObject.KeyValue = NULL) or (dblkcbbZonePrices.KeyValue = NULL) then
-    exit;
+    Exit;
 
   // Тип ОХР и ОПР и План прибыли
 
