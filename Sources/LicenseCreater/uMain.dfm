@@ -2,7 +2,7 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = #1057#1086#1079#1076#1072#1085#1080#1077' '#1092#1072#1081#1083#1086#1074' '#1083#1080#1094#1077#1085#1079#1080#1080
-  ClientHeight = 227
+  ClientHeight = 260
   ClientWidth = 481
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,7 +13,7 @@ object MainForm: TMainForm
   OldCreateOrder = False
   DesignSize = (
     481
-    227)
+    260)
   PixelsPerInch = 96
   TextHeight = 13
   object SpeedButton1: TSpeedButton
@@ -77,6 +77,13 @@ object MainForm: TMainForm
     Height = 13
     Caption = #1044#1072#1090#1072' '#1086#1082#1086#1085#1095#1072#1085#1080#1103':'
   end
+  object lbLocalID: TLabel
+    Left = 29
+    Top = 225
+    Width = 81
+    Height = 13
+    Caption = 'ID '#1082#1086#1084#1087#1100#1102#1090#1077#1088#1072':'
+  end
   object edtLocalDate: TEdit
     Left = 8
     Top = 27
@@ -105,7 +112,7 @@ object MainForm: TMainForm
   end
   object Button1: TButton
     Left = 302
-    Top = 191
+    Top = 213
     Width = 142
     Height = 25
     Anchors = [akTop, akRight]
@@ -140,6 +147,16 @@ object MainForm: TMainForm
     Date = 42341.939811527780000000
     Time = 42341.939811527780000000
     TabOrder = 6
+  end
+  object edtLocalID: TEdit
+    Left = 116
+    Top = 222
+    Width = 121
+    Height = 21
+    Alignment = taRightJustify
+    MaxLength = 16
+    NumbersOnly = True
+    TabOrder = 7
   end
   object OpenDialog1: TOpenDialog
     Filter = #1060#1072#1081#1083' '#1083#1086#1082#1072#1083#1100#1085#1099#1081' '#1076#1072#1085#1085#1099#1093'|*.dat'

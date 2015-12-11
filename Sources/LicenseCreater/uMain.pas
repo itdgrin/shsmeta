@@ -37,6 +37,8 @@ type
     edtUser: TEdit;
     dateAct: TDateTimePicker;
     dateEnd: TDateTimePicker;
+    lbLocalID: TLabel;
+    edtLocalID: TEdit;
     procedure SpeedButton1Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
   private
@@ -76,6 +78,7 @@ begin
       SI.UserName := edtUser.Text;
       SI.DateBegin := dateAct.Date;
       SI.DateEnd := dateEnd.Date;
+      SI.LocalID := StrToInt64Def(edtLocalID.Text,0);
       SetLength(SI.UserKey, 16);
       FillChar(SI.UserKey[0], Length(SI.UserKey), 0);
       LocalData.LoadFromFile(edtLocalDate.Text);
