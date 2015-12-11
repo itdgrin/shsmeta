@@ -197,13 +197,12 @@ type
 
     procedure HelpAboutClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure EditOriginalDataClick(Sender: TObject);
 
     procedure CascadeForActiveWindow();
     procedure FormCreate(Sender: TObject);
 
-    procedure CreateButtonOpenWindow(const CaptionButton, HintButton: String; const AForm: TForm;
-      AEventType: Byte = 0);
+    function CreateButtonOpenWindow(const CaptionButton, HintButton: String;
+      const AForm: TForm; AEventType: Byte = 0): TSpeedButton;
     procedure DeleteButtonCloseWindow(const CaptionButton: String);
     procedure SelectButtonActiveWindow(const CaptionButton: String);
     procedure ReplaceButtonOpenWindow(const AFrom, ATo: TForm);
@@ -887,8 +886,7 @@ begin
 end;
 
 procedure TFormMain.FormShowEvent2(Sender: TObject);
-var
-  TmpForm: TForm;
+var TmpForm: TForm;
 begin
   // PanelCover.Visible := true;
   try
@@ -908,31 +906,31 @@ begin
   TForm(Sender).BringToFront;
 end;
 
-procedure TFormMain.CreateButtonOpenWindow(const CaptionButton, HintButton: String; const AForm: TForm;
-  AEventType: Byte = 0);
+function TFormMain.CreateButtonOpenWindow(const CaptionButton, HintButton: String; const AForm: TForm;
+  AEventType: Byte = 0): TSpeedButton;
 begin
-  ButtonsWindows[CountOpenWindows] := TSpeedButton.Create(Application);
-  ButtonsWindows[CountOpenWindows].Parent := PanelOpenWindows;
-  ButtonsWindows[CountOpenWindows].Align := alLeft;
-  ButtonsWindows[CountOpenWindows].Font.Name := PS.ControlsFontName;
-  ButtonsWindows[CountOpenWindows].Font.Size := PS.ControlsFontSize;
-  ButtonsWindows[CountOpenWindows].Font.Style := TFontStyles(PS.ControlsFontStyle);
-  ButtonsWindows[CountOpenWindows].Width := GetTextWidth(CaptionButton, Handle) + 4;
-  ButtonsWindows[CountOpenWindows].Height := 25;
-  ButtonsWindows[CountOpenWindows].Top := 1;
-  ButtonsWindows[CountOpenWindows].Caption := CaptionButton;
-  ButtonsWindows[CountOpenWindows].GroupIndex := 1;
-  ButtonsWindows[CountOpenWindows].Down := true;
-  ButtonsWindows[CountOpenWindows].ShowHint := true;
-  ButtonsWindows[CountOpenWindows].Hint := HintButton;
+  Result := TSpeedButton.Create(Application);
+  Result.Parent := PanelOpenWindows;
+  Result.Align := alLeft;
+  Result.Font.Name := PS.ControlsFontName;
+  Result.Font.Size := PS.ControlsFontSize;
+  Result.Font.Style := TFontStyles(PS.ControlsFontStyle);
+  Result.Width := GetTextWidth(CaptionButton, Handle) + 4;
+  Result.Height := 25;
+  Result.Top := 1;
+  Result.Caption := CaptionButton;
+  Result.GroupIndex := 1;
+  Result.Down := True;
+  Result.ShowHint := True;
+  Result.Hint := HintButton;
 
   if (AEventType = 1) then
-    ButtonsWindows[CountOpenWindows].OnClick := ButtonClickEvent2
+    Result.OnClick := ButtonClickEvent2
   else
-    ButtonsWindows[CountOpenWindows].OnClick := ButtonClickEvent1;
+    Result.OnClick := ButtonClickEvent1;
 
-  ButtonsWindows[CountOpenWindows].Tag := integer(AForm);
-
+  Result.Tag := integer(AForm);
+  ButtonsWindows[CountOpenWindows] := Result;
   Inc(CountOpenWindows);
 end;
 
@@ -2385,11 +2383,6 @@ var
 begin
   for i := 0 to MDIChildCount - 1 do
     MDIChildren[i].WindowState := wsNormal;
-end;
-
-procedure TFormMain.EditOriginalDataClick(Sender: TObject);
-begin
-  fCardObject.ShowModal;
 end;
 
 procedure TFormMain.Excel2Click(Sender: TObject);

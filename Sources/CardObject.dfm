@@ -12,7 +12,6 @@ object fCardObject: TfCardObject
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
@@ -171,7 +170,6 @@ object fCardObject: TfCardObject
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
-      OnKeyPress = EditNumberObjectKeyPress
     end
     object EditCodeObject: TEdit
       Left = 104
@@ -185,7 +183,6 @@ object fCardObject: TfCardObject
       Font.Style = []
       ParentFont = False
       TabOrder = 1
-      OnKeyPress = EditNumberObjectKeyPress
     end
   end
   object GroupBoxContract: TGroupBox
@@ -234,7 +231,7 @@ object fCardObject: TfCardObject
   end
   object ButtonListAgreements: TButton
     Left = 232
-    Top = 190
+    Top = 192
     Width = 216
     Height = 25
     Caption = #1044#1086#1087'. '#1089#1086#1075#1083#1072#1096#1077#1085#1080#1103
@@ -785,7 +782,7 @@ object fCardObject: TfCardObject
   end
   object DataSourceSF: TDataSource
     DataSet = ADOQuerySF
-    Left = 264
+    Left = 272
     Top = 97
   end
   object DataSourceCO: TDataSource
@@ -829,7 +826,7 @@ object fCardObject: TfCardObject
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 217
+    Left = 201
     Top = 97
   end
   object ADOQueryCO: TFDQuery
@@ -882,7 +879,6 @@ object fCardObject: TfCardObject
   end
   object qrMain: TFDQuery
     AutoCalcFields = False
-    AfterOpen = qrMainAfterOpen
     OnNewRecord = qrMainNewRecord
     Connection = DM.Connect
     Transaction = DM.Read
@@ -932,7 +928,7 @@ object fCardObject: TfCardObject
   end
   object dsClients: TDataSource
     DataSet = qrClients
-    Left = 72
+    Left = 152
     Top = 253
   end
   object qrClients: TFDQuery
@@ -945,7 +941,7 @@ object fCardObject: TfCardObject
     UpdateOptions.AssignedValues = [uvUpdateNonBaseFields]
     SQL.Strings = (
       'SELECT * FROM clients')
-    Left = 39
+    Left = 103
     Top = 253
   end
 end

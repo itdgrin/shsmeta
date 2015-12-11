@@ -112,11 +112,10 @@ type
     mEstimateAccess: TMenuItem;
     mActAccess: TMenuItem;
     PMExportAllObject: TMenuItem;
-    GridPanel1: TGridPanel;
+    pnlActButtons: TPanel;
     btnReportC3: TBitBtn;
-    btnReg: TBitBtn;
-    btnCalcContract: TBitBtn;
-    btnFromMonthDone: TBitBtn;
+    btnReportC2B: TBitBtn;
+    Bevel1: TBevel;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -182,10 +181,9 @@ type
     procedure mEstimateAccessClick(Sender: TObject);
     procedure mActAccessClick(Sender: TObject);
     procedure PMExportAllObjectClick(Sender: TObject);
+    procedure btnReportC2BClick(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
-
-  const
     HintButton = 'Окно объектов и смет';
   private
     IdObject: Integer;
@@ -207,7 +205,8 @@ uses
   Main, DataModule, CardObject, CardEstimate,
   CalculationEstimate, Waiting, BasicData, DrawingTables,
   KC6, CardAct, ImportExportModule, GlobsAndConst,
-  UserAccess, SprController, SerialKeyModule;
+  UserAccess, SprController, SerialKeyModule,
+  fReportC2B;
 
 {$R *.dfm}
 
@@ -329,82 +328,50 @@ end;
 
 procedure TfObjectsAndEstimates.PopupMenuObjectsAddClick(Sender: TObject);
 var
+  fCardObject: TfCardObject;
   res: TModalResult;
+  IdObj: Integer;
 begin
-  fCardObject.SetIdSelectRow(0);
-  res := fCardObject.ShowModal;
+  fCardObject := TfCardObject.Create(Self);
+  try
+    res := fCardObject.ShowModal;
+    IdObj := fCardObject.IdObject;
+  finally
+    FreeAndNil(fCardObject);
+  end;
 
   // Выводим данные в таблицу объектов
   FillingTableObjects;
-
   // Устанавливаем фокус
   dbgrdObjects.SetFocus;
-  qrObjects.Locate('IdObject', fCardObject.OUT_ID_OBJECT, []);
+  qrObjects.Locate('IdObject', IdObj, []);
   // Если установлена настройка, то добавляем автоматом связку смет
-  if (res = mrOk) and PS.AutoCreateEstimates and (fCardObject.OUT_ID_OBJECT <> 0) then
+  if (res = mrOk) and PS.AutoCreateEstimates and (IdObj <> 0) then
   begin
     fCardEstimate.EditingRecord(False);
-    fCardEstimate.ShowForm(fCardObject.OUT_ID_OBJECT, 0, 2, False);
+    fCardEstimate.ShowForm(IdObj, 0, 2, False);
     CloseOpen(qrTreeData);
   end;
 end;
 
 procedure TfObjectsAndEstimates.PopupMenuObjectsEditClick(Sender: TObject);
-var
-  e: TNotifyEvent;
+var fCardObject: TfCardObject;
 begin
   if qrObjects.RecordCount <= 0 then
   begin
-    MessageBox(0, PChar('Нет объектов для редактирования!'), CaptionForm,
+    MessageBox(0, PChar('Нет объектов для редактирования!'), PChar(Caption),
       MB_ICONINFORMATION + mb_OK + mb_TaskModal);
     Exit;
   end;
 
-  if not LicenseAssigned(fCardObject) then
-    Exit;
-
-  with fCardObject, qrObjects do
-  begin
-    // Заносим значения в поля редактирования
-    EditNumberObject.Text := FieldByName('NumberObject').AsVariant;
-    EditCodeObject.Text := FieldByName('CodeObject').AsVariant;
-    EditNumberContract.Text := FieldByName('NumberContract').AsString;
-    DateTimePickerDataCreateContract.Date := FieldByName('DateContract').AsVariant;
-    EditShortDescription.Text := FieldByName('Name').AsVariant;
-    MemoFullDescription.Text := FieldByName('FullName').AsVariant;
-    e := cbbFromMonth.OnChange;
-    cbbFromMonth.OnChange := nil;
-    seYear.OnChange := nil;
-    cbbFromMonth.ItemIndex := MonthOf(FieldByName('BeginConstruction').AsDateTime) - 1;
-    seYear.Value := YearOf(FieldByName('BeginConstruction').AsDateTime);
-    cbbFromMonth.OnChange := e;
-    seYear.OnChange := e;
-    CheckBoxCalculationEconom.Checked := FieldByName('CalculationEconom').AsVariant;
-
-    // Для выпадающих списков
-    if FieldByName('IdIstFin').AsVariant <> Null then
-      SetSourceFinance(FieldByName('IdIstFin').AsVariant);
-
-    SetCategory(FieldByName('IdCategory').AsVariant);
-    SetRegion(FieldByName('IdRegion').AsVariant);
-    SetVAT(FieldByName('VAT').AsVariant);
-    SetBasePrice(FieldByName('IdBasePrice').AsVariant);
-    SetTypeOXR(FieldByName('IdOXROPR').AsVariant);
-    SetMAIS(FieldByName('IdMAIS').AsVariant);
-
-    // ID выделенной записи
-    SetIdSelectRow(Fields[0].AsVariant);
-
-    // Даём знать форме, что будет операция редактирования и чтобы не очищались поля
-    EditingRecord(True);
-
-    ShowModal;
+  fCardObject := TfCardObject.Create(Self);
+  try
+    fCardObject.IdObject := qrObjects.Fields[0].AsVariant;
+    if mrOk = fCardObject.ShowModal then
+      FillingTableObjects;
+  finally
+    FreeAndNil(fCardObject);
   end;
-
-  FillingTableObjects;
-
-  // Устанавливаем фокус
-  dbgrdObjects.SetFocus;
 end;
 
 procedure TfObjectsAndEstimates.pmObjectsPopup(Sender: TObject);
@@ -517,8 +484,8 @@ var
 begin
   if qrObjects.RecordCount <= 0 then
   begin
-    MessageBox(0, PChar('Нет объектов для удаления!'), CaptionForm, MB_ICONINFORMATION + mb_OK +
-      mb_TaskModal);
+    MessageBox(0, PChar('Нет объектов для удаления!'), PChar(Caption),
+      MB_ICONINFORMATION + mb_OK + mb_TaskModal);
     Exit;
   end;
 
@@ -526,7 +493,7 @@ begin
 
   ResultDialog := MessageBox(0, PChar('Вы действительно хотите удалить объект с номером: ' + NumberObject +
     sLineBreak + 'Внимание! Все сметы связанные с объектом будут удалены!' + sLineBreak + sLineBreak +
-    'Подтверждаете удаление?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+    'Подтверждаете удаление?'), PChar(Caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
 
   if ResultDialog = mrNo then
     Exit;
@@ -593,7 +560,7 @@ var
 begin
   if qrObjects.RecordCount <= 0 then
   begin
-    MessageBox(0, PChar('Нет объектов для удаления!'), CaptionForm, MB_ICONINFORMATION + mb_OK +
+    MessageBox(0, PChar('Нет объектов для удаления!'), PChar(Caption), MB_ICONINFORMATION + mb_OK +
       mb_TaskModal);
     Exit;
   end;
@@ -602,7 +569,7 @@ begin
 
   ResultDialog := MessageBox(0, PChar('Вы действительно хотите удалить объект с номером: ' + NumberObject +
     sLineBreak + 'Внимание! Все сметы связанные с объектом будут удалены!' + sLineBreak + sLineBreak +
-    'Подтверждаете удаление?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
+    'Подтверждаете удаление?'), PChar(Caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal);
 
   if ResultDialog = mrNo then
     Exit;
@@ -616,8 +583,8 @@ begin
   except
     on e: Exception do
       MessageBox(0, PChar('При удалении объекта возникла ошибка.' + sLineBreak +
-        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + e.message), CaptionForm,
-        MB_ICONERROR + mb_OK + mb_TaskModal);
+        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + e.message),
+        PChar(Caption), MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
 
   FillingTableObjects;
@@ -699,6 +666,16 @@ end;
 procedure TfObjectsAndEstimates.PanelBottomResize(Sender: TObject);
 begin
   PanelEstimates.Width := ((Sender as TPanel).Width - SplitterBottomCenter.Width) div 2;
+end;
+
+procedure TfObjectsAndEstimates.btnReportC2BClick(Sender: TObject);
+begin
+  if not LicenseAssigned(FormReportC2B) then
+  begin
+    FormReportC2B := TFormReportC2B.Create(FormMain);
+    FormReportC2B.OwnPointer := @FormReportC2B;
+  end;
+  FormReportC2B.OwnPanelButtonClick;
 end;
 
 procedure TfObjectsAndEstimates.btnSearchClick(Sender: TObject);

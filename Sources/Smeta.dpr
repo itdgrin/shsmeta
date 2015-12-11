@@ -134,7 +134,8 @@ uses
   hwid_impl in 'hwid_impl.pas',
   winioctl in 'winioctl.pas',
   ContractPrice in 'ContractPrice.pas' {fContractPrice},
-  ContractPriceEdit in 'ContractPriceEdit.pas' {fContractPriceEdit};
+  ContractPriceEdit in 'ContractPriceEdit.pas' {fContractPriceEdit},
+  fReportC2B in 'fReportC2B.pas' {FormReportC2B};
 
 {$R *.res}
 var MHandle: THandle;
@@ -156,7 +157,6 @@ begin
   Application.Title := 'SMR - HPP 2012';
   Application.CreateForm(TDM, DM);
   Application.CreateForm(TFormMain, FormMain);
-  Application.CreateForm(TfCardObject, fCardObject);
   Application.CreateForm(TFormWaiting, FormWaiting);
   Application.CreateForm(TFormRequisites, FormRequisites);
   Application.CreateForm(TFormSignatureSSR, FormSignatureSSR);

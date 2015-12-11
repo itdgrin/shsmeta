@@ -28,10 +28,11 @@ uses
   RC6,
   hwid_impl,
   winioctl,
-  System.AnsiStrings;
+  System.AnsiStrings,
+  Tools;
 
 type
-  TLicenseForm = class(TForm)
+  TLicenseForm = class(TSmForm)
     ButtonPanel: TPanel;
     MainPanel: TPanel;
     imgLicense: TImage;

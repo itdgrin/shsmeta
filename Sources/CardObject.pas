@@ -101,22 +101,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
     procedure ButtonSaveClick(Sender: TObject);
     procedure ButtonCancelClick(Sender: TObject);
-
-    procedure EditNumberObjectKeyPress(Sender: TObject; var Key: Char);
-
-    procedure EditingRecord(const Value: Boolean);
-    procedure SetIdSelectRow(const Value: Integer);
-    procedure SetSourceFinance(const Value: Integer);
-    procedure SetCategory(const Value: Integer);
-    procedure SetRegion(const Value: Integer);
-    procedure SetVAT(const Value: Integer);
-    procedure SetBasePrice(const Value: Integer);
-    procedure SetTypeOXR(const Value: Integer);
-    procedure SetMAIS(const Value: Integer);
 
     procedure SetColorDefaultToFields;
     procedure ClearAllFields;
@@ -134,36 +121,37 @@ type
     procedure dbedtPER_TEPM_BUILDKeyPress(Sender: TObject; var Key: Char);
     procedure dbedtPER_CONTRACTORKeyPress(Sender: TObject; var Key: Char);
     procedure cbbMonthBeginStrojChange(Sender: TObject);
-    procedure qrMainAfterOpen(DataSet: TDataSet);
 
   private
-    Editing: Boolean; // Для отслеживания режима добавления или редактирования записи
-    IdObject: Integer; // ID выделенной строки в таблице
-    StrQuery: String;
+    FEditing: Boolean; // Для отслеживания режима добавления или редактирования записи
+    FIdObject: Integer; // ID выделенной строки в таблице
+    FStrQuery: String;
 
     // ДЛЯ УСТАНОВКА ЗНАЧЕНИЙ В ВЫПАДАЮЩИХ СПИСКАХ ПРИ РЕДАКТИРОВАНИИ ЗАПИСИ
+    FSourceFinance: Integer;
+    FCategoryObject: Integer;
+    FRegion: Integer;
+    FVAT: Integer;
+    FBasePrice: Integer;
+    FTypeOXR: Integer;
+    FMAIS: Integer;
 
-    SourceFinance: Integer;
-    CategoryObject: Integer;
-    Region: Integer;
-    VAT: Integer;
-    BasePrice: Integer;
-    TypeOXR: Integer;
-    MAIS: Integer;
+    procedure SetIdObject(AValue: Integer);
   public
-    OUT_ID_OBJECT: Variant;
+    property IdObject: Integer read FIdObject write SetIdObject;
   end;
-
-const
-  CaptionForm = 'Карточка объекта';
-
-var
-  fCardObject: TfCardObject;
 
 implementation
 
-uses Main, DataModule, CardObjectContractorServices, OrganizationsEx, SuppAgreement,
-  GlobsAndConst, CalculationEstimate, CardObjectAdditional;
+uses
+  Main,
+  DataModule,
+  CardObjectContractorServices,
+  OrganizationsEx,
+  SuppAgreement,
+  GlobsAndConst,
+  CalculationEstimate,
+  CardObjectAdditional;
 
 {$R *.dfm}
 
@@ -177,13 +165,10 @@ begin
     MinWidth := Width;
     MaxWidth := Width;
   end;
-
-  Caption := CaptionForm;
-
-  Editing := False;
 end;
 
 procedure TfCardObject.FormShow(Sender: TObject);
+var e: TNotifyEvent;
 begin
   qrZP.Filtered := False;
   dbedtPER_TEPM_BUILD.ReadOnly := True;
@@ -192,28 +177,72 @@ begin
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
 
-  qrMain.ParamByName('OBJ_ID').AsInteger := IdObject;
+  qrMain.ParamByName('OBJ_ID').AsInteger := FIdObject;
   CloseOpen(qrMain);
   CloseOpen(qrClients);
+
+  if FIdObject > 0 then
+  begin
+    // Заносим значения в поля редактирования
+    EditNumberObject.Text := qrMain.FieldByName('num').AsVariant;
+    EditCodeObject.Text := qrMain.FieldByName('encrypt').AsVariant;
+    EditNumberContract.Text := qrMain.FieldByName('num_dog').AsString;
+    DateTimePickerDataCreateContract.Date := qrMain.FieldByName('date_dog').AsVariant;
+    EditShortDescription.Text := qrMain.FieldByName('name').AsVariant;
+    MemoFullDescription.Text := qrMain.FieldByName('full_name').AsVariant;
+
+    e := cbbFromMonth.OnChange;
+    try
+      cbbFromMonth.OnChange := nil;
+      seYear.OnChange := nil;
+      cbbFromMonth.ItemIndex := MonthOf(qrMain.FieldByName('beg_stroj').AsDateTime) - 1;
+      seYear.Value := YearOf(qrMain.FieldByName('beg_stroj').AsDateTime);
+    finally
+      cbbFromMonth.OnChange := e;
+      seYear.OnChange := e;
+    end;
+
+    e := cbbMonthBeginStroj.OnChange;
+    try
+      cbbMonthBeginStroj.OnChange := nil;
+      seYearBeginStroj.OnChange := nil;
+      cbbMonthBeginStroj.ItemIndex := MonthOf(qrMain.FieldByName('BEG_STROJ2').AsDateTime) - 1;
+      seYearBeginStroj.Value := YearOf(qrMain.FieldByName('BEG_STROJ2').AsDateTime);
+    finally
+      cbbMonthBeginStroj.OnChange := e;
+      seYearBeginStroj.OnChange := e;
+    end;
+
+    CheckBoxCalculationEconom.Checked := qrMain.FieldByName('calc_econom').AsVariant;
+    // Для выпадающих списков
+    if qrMain.FieldByName('fin_id').AsVariant <> Null then
+      FSourceFinance := qrMain.FieldByName('fin_id').AsVariant;
+
+    FCategoryObject := qrMain.FieldByName('cat_id').AsVariant;
+    FRegion := qrMain.FieldByName('region_id').AsVariant;
+    FVAT := qrMain.FieldByName('state_nds').AsVariant;
+    FBasePrice := qrMain.FieldByName('base_norm_id').AsVariant;
+    FTypeOXR := qrMain.FieldByName('stroj_id').AsVariant;
+    FMAIS := qrMain.FieldByName('mais_id').AsVariant;
+  end;
+
   // Устанавливаем фокус
   if EditCodeObject.Focused then
     EditCodeObject.SetFocus;
 
   ButtonSave.Tag := 0;
 
-  // -----------------------------------------
-
   SetColorDefaultToFields; // Устанавливаем начальный цвет полям редактирования
 
   // Очистка полей формы
-  if not Editing then
+  if not FEditing then
   begin
     ClearAllFields;
     // Заполнение % временных зданий и сооружений, услуги генподрядчика
     DateTimePickerStartBuildingChange(Sender);
   end;
 
-  if not Editing then
+  if not FEditing then
     try
       with ADOQueryDifferent do
       begin
@@ -221,9 +250,9 @@ begin
         Active := False;
         SQL.Clear;
 
-        StrQuery := 'SELECT max(num) as "MaxNumber", count(*) as "CountObject" FROM objcards;';
+        FStrQuery := 'SELECT max(num) as "MaxNumber", count(*) as "CountObject" FROM objcards;';
 
-        SQL.Add(StrQuery);
+        SQL.Add(FStrQuery);
         Active := True;
 
         if FieldByName('CountObject').AsVariant > 0 then
@@ -234,7 +263,7 @@ begin
     except
       on E: Exception do
         MessageBox(0, PChar('При формировании НОМЕРА ОБЪЕКТА возникла ошибка:' + sLineBreak + E.Message),
-          CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+          PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
     end;;
 
   // ИСТОЧНИК ФИНАНСИРОВАНИЯ
@@ -257,7 +286,7 @@ begin
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе списка ИСТОЧНИКИ ФИНАНСИРОВАНИЯ возникла ошибка:' + sLineBreak +
-        E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        E.Message), PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // КАТЕГОРИЯ ОБЪЕКТА
@@ -280,7 +309,7 @@ begin
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе списка КАТЕГОРИИ ОБЪЕКТА возникла ошибка:' + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // РЕГИОН
@@ -303,7 +332,7 @@ begin
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе списка РЕГИОНОВ возникла ошибка:' + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // БАЗА РАСЦЕНОК
@@ -323,13 +352,13 @@ begin
       ListField := 'base_name';
       KeyField := 'base_id';
       // Автоматическая подстановка Базы расценок в новую запись
-      if not qrBP.IsEmpty and not Editing then
+      if not qrBP.IsEmpty and not FEditing then
         KeyValue := qrBP.FieldByName('base_id').AsInteger;
     end;
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе списка БАЗ РАСЦЕНОК возникла ошибка:' + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // ЗОНА РАСЦЕНОК
@@ -352,7 +381,7 @@ begin
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе списка ЗОН РАСЦЕНОК возникла ошибка:' + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   try
@@ -372,7 +401,7 @@ begin
     end;
 
     // Автоматический выбор последнего МАИС
-    if not Editing then
+    if not FEditing then
     begin
       while not(qrMAIS.Eof) and (seYear.Value <= YearOf(qrMAIS.FieldByName('onDate').AsDateTime)) do
         qrMAIS.Next;
@@ -380,11 +409,11 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При запросе списка МАИСов возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе списка МАИСов возникла ошибка:' + sLineBreak + E.Message),
+        PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
-  if not Editing then
+  if not FEditing then
   begin
     // Услуги генподрядчика
     DM.qrDifferent.SQL.Text := 'SELECT SUM(FN_getParamValue(code, :month, :year)) AS VALUE'#13 +
@@ -397,21 +426,21 @@ begin
   end;
 
   // Выставляем начальные значения в выпадающих списках
-  if Editing then
+  if FEditing then
   begin
-    dblkcbbSourseFinance.KeyValue := SourceFinance;
-    dblkcbbCategoryObject.KeyValue := CategoryObject;
-    dblkcbbRegion.KeyValue := Region;
+    dblkcbbSourseFinance.KeyValue := FSourceFinance;
+    dblkcbbCategoryObject.KeyValue := FCategoryObject;
+    dblkcbbRegion.KeyValue := FRegion;
     ComboBoxVAT.ItemIndex := qrMain.FieldByName('state_nds').AsInteger;
-    DBLookupComboBoxBasePrices.KeyValue := BasePrice;
-    dblkcbbMAIS.KeyValue := MAIS;
+    DBLookupComboBoxBasePrices.KeyValue := FBasePrice;
+    dblkcbbMAIS.KeyValue := FMAIS;
 
     try
       with ADOQueryDifferent do
       begin
         Active := False;
         SQL.Clear;
-        SQL.Add('SELECT obj_region FROM objstroj WHERE stroj_id = ' + IntToStr(TypeOXR) + ';');
+        SQL.Add('SELECT obj_region FROM objstroj WHERE stroj_id = ' + IntToStr(FTypeOXR) + ';');
         Active := True;
       end;
 
@@ -419,39 +448,32 @@ begin
     except
       on E: Exception do
         MessageBox(0, PChar('При установке значения в ЗОНЕ РАСЦЕНОК возникла ошибка:' + sLineBreak +
-          E.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+          E.Message), PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
 
     GetValueDBLookupComboBoxTypeOXR(nil);
 
-    dblkcbbTypeOXR.KeyValue := TypeOXR;
+    dblkcbbTypeOXR.KeyValue := FTypeOXR;
   end;
 end;
 
 procedure TfCardObject.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   if ButtonSave.Tag = 0 then
-    if MessageBox(0, PChar('Закрыть окно без сохранения?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO +
+    if MessageBox(0, PChar('Закрыть окно без сохранения?'), PChar(Caption), MB_ICONINFORMATION + MB_YESNO +
       mb_TaskModal) = mrYes then
       CanClose := True
     else
       CanClose := False;
 end;
 
-procedure TfCardObject.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  Editing := False;
-end;
-
 procedure TfCardObject.ButtonSaveClick(Sender: TObject);
 var
   NumberObject, v2, v3, v4, v5, v6, v7, v9, v12, v14, v15, v16, v17, v18, v19: string;
   CountField: Integer;
-  NEW_ID: Variant;
+  NEW_ID: Integer;
 begin
   ButtonSave.SetFocus; // Заглушка для датасета
-
-  NEW_ID := NULL;
   CountField := 0;
   // ПРОВЕРКА ЧТОБЫ НЕ БЫЛО ПУСТЫХ ЗНАЧЕНИЙ
 
@@ -601,7 +623,7 @@ begin
   if CountField > 0 then
   begin
     MessageBox(0, PChar('Вы заполнили не все поля!' + sLineBreak +
-      'Поля выделенные красным не заполнены или заполнены неправильно.'), CaptionForm,
+      'Поля выделенные красным не заполнены или заполнены неправильно.'), PChar(Caption),
       MB_ICONWARNING + MB_OK + mb_TaskModal);
     Exit;
   end;
@@ -611,8 +633,7 @@ begin
     begin
       Active := False;
       SQL.Clear;
-      OUT_ID_OBJECT := IdObject;
-      if Editing then
+      if FEditing then
       begin
         SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = "' + v2 + '", date_dog = "' + v3
           + '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
@@ -627,7 +648,7 @@ begin
           'Fl_NAL_USN=:Fl_NAL_USN, NAL_USN=:NAL_USN, Fl_SPEC_SCH=:Fl_SPEC_SCH, SPEC_SCH=:SPEC_SCH,'#13 +
           'WINTERPRICE_TYPE=:WINTERPRICE_TYPE, BEG_STROJ2=:BEG_STROJ2,'#13 +
           'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK, CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
-          IntToStr(IdObject) + '";');
+          IntToStr(FIdObject) + '";');
         // Если поменялось зимнее удорожание
         if (qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value <> qrMain.FieldByName('FL_APPLY_WINTERPRICE')
           .OldValue) OR (qrMain.FieldByName('WINTERPRICE_TYPE').Value <>
@@ -637,7 +658,7 @@ begin
           FastExecSQL
             ('UPDATE smetasourcedata SET APPLY_WINTERPRISE_FLAG=:0, WINTERPRICE_TYPE=:1 WHERE OBJ_ID=:2',
             VarArrayOf([qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value,
-            qrMain.FieldByName('WINTERPRICE_TYPE').Value, IdObject]));
+            qrMain.FieldByName('WINTERPRICE_TYPE').Value, FIdObject]));
           Application.MessageBox('Внимание! Была изменена настройка зимнего удорожания.' + #13#10 +
             'Для применения настройки необходимо открыть смету и выполнить перерасчет.', 'Настройка расчета',
             MB_OK + MB_ICONWARNING + MB_TOPMOST);
@@ -662,7 +683,7 @@ begin
           + ':BEG_STROJ2,:Fl_NAL_USN, :NAL_USN, :Fl_SPEC_SCH, :SPEC_SCH);');
         ParamByName('NEW_ID').Value := NEW_ID;
         ParamByName('USER_ID').Value := G_USER_ID;
-        OUT_ID_OBJECT := NEW_ID;
+        FIdObject := NEW_ID;
       end;
       ParamByName('PER_TEMP_BUILD').Value := qrMain.FieldByName('PER_TEMP_BUILD').Value;
       ParamByName('PER_CONTRACTOR').Value := qrMain.FieldByName('PER_CONTRACTOR').Value;
@@ -700,17 +721,17 @@ begin
       FormCalculationEstimate.FillObjectInfo;
     end;
     ModalResult := mrOk;
-    // Close;
   except
     on E: Exception do
       MessageBox(0, PChar('При сохранении данных возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
 procedure TfCardObject.cbbMonthBeginStrojChange(Sender: TObject);
 begin
-  qrMain.FieldByName('BEG_STROJ2').Value := StrToDate('01.' + IntToStr(cbbMonthBeginStroj.ItemIndex + 1) + '.'
+  qrMain.FieldByName('BEG_STROJ2').Value :=
+    StrToDate('01.' + IntToStr(cbbMonthBeginStroj.ItemIndex + 1) + '.'
     + IntToStr(seYearBeginStroj.Value));
 end;
 
@@ -743,10 +764,18 @@ begin
 end;
 
 procedure TfCardObject.btnCardObjectAdditionalClick(Sender: TObject);
+var fCardObjectAdditional: TfCardObjectAdditional;
 begin
-  if (not Assigned(fCardObjectAdditional)) then
-    fCardObjectAdditional := TfCardObjectAdditional.Create(Self);
-  fCardObjectAdditional.ShowModal;
+  fCardObjectAdditional := TfCardObjectAdditional.Create(Self);
+  try
+    fCardObjectAdditional.ShowModal;
+    if fCardObjectAdditional.dbchkFL_CALC_VEDOMS_NAL2.Checked and
+      (VarIsNull(qrMain.FieldByName('SPEC_SCH').Value) or
+      (qrMain.FieldByName('SPEC_SCH').Value = 0)) then
+      qrMain.FieldByName('SPEC_SCH').Value := 1.5;
+  finally
+     FreeAndNil(fCardObjectAdditional);
+  end;
 end;
 
 procedure TfCardObject.ButtonCancelClick(Sender: TObject);
@@ -757,59 +786,7 @@ end;
 
 procedure TfCardObject.ButtonListAgreementsClick(Sender: TObject);
 begin
-  ShowSuppAgreement(IdObject);
-end;
-
-procedure TfCardObject.EditNumberObjectKeyPress(Sender: TObject; var Key: Char);
-begin
-  { if Key <> #8 then
-    if (Key < '0') or (Key > '9') then // Запрещаем ввод символов кроме цифр
-    Key := #0; }
-end;
-
-procedure TfCardObject.EditingRecord(const Value: Boolean);
-begin
-  Editing := Value;
-end;
-
-procedure TfCardObject.SetIdSelectRow(const Value: Integer);
-begin
-  IdObject := Value;
-end;
-
-procedure TfCardObject.SetSourceFinance(const Value: Integer);
-begin
-  SourceFinance := Value;
-end;
-
-procedure TfCardObject.SetCategory(const Value: Integer);
-begin
-  CategoryObject := Value;
-end;
-
-procedure TfCardObject.SetRegion(const Value: Integer);
-begin
-  Region := Value;
-end;
-
-procedure TfCardObject.SetVAT(const Value: Integer);
-begin
-  VAT := Value;
-end;
-
-procedure TfCardObject.SetBasePrice(const Value: Integer);
-begin
-  BasePrice := Value;
-end;
-
-procedure TfCardObject.SetTypeOXR(const Value: Integer);
-begin
-  TypeOXR := Value;
-end;
-
-procedure TfCardObject.SetMAIS(const Value: Integer);
-begin
-  MAIS := Value;
+  ShowSuppAgreement(FIdObject);
 end;
 
 procedure TfCardObject.SetColorDefaultToFields;
@@ -825,6 +802,13 @@ begin
   DBLookupComboBoxBasePrices.Color := clWindow;
   dblkcbbTypeOXR.Color := clWindow;
   dblkcbbMAIS.Color := clWindow;
+end;
+
+procedure TfCardObject.SetIdObject(AValue: Integer);
+begin
+  FIdObject := AValue;
+  if FIdObject > 0 then
+    FEditing := True;
 end;
 
 procedure TfCardObject.ClearAllFields;
@@ -943,7 +927,7 @@ begin
   except
     on E: Exception do
       MessageBox(0, PChar('При запросе списка ОХР и ОПР возникла ошибка:' + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -963,12 +947,6 @@ procedure TfCardObject.N1Click(Sender: TObject);
 begin
   dbedtPER_TEPM_BUILD.ReadOnly := False;
   dbedtPER_CONTRACTOR.ReadOnly := False;
-end;
-
-procedure TfCardObject.qrMainAfterOpen(DataSet: TDataSet);
-begin
-  cbbMonthBeginStroj.ItemIndex := MonthOf(qrMain.FieldByName('BEG_STROJ2').AsDateTime) - 1;
-  seYearBeginStroj.Value := YearOf(qrMain.FieldByName('BEG_STROJ2').AsDateTime);
 end;
 
 procedure TfCardObject.qrMainNewRecord(DataSet: TDataSet);

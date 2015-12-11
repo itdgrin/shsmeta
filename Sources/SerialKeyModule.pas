@@ -46,6 +46,7 @@ type
   TSerialKeyInfo = record
     UserName: string;
     UserKey: TBytes;
+    LocalID: Int64;
     DateBegin: TDateTime;
     DateEnd: TDateTime;
   end;
@@ -373,6 +374,7 @@ begin
     TmpStream1.Write(TmpBytes, Length(TmpBytes));
     TmpStream1.Write(ASerialKeyInfo.DateBegin, SizeOf(ASerialKeyInfo.DateBegin));
     TmpStream1.Write(ASerialKeyInfo.DateEnd, SizeOf(ASerialKeyInfo.DateEnd));
+    TmpStream1.Write(ASerialKeyInfo.LocalID, SizeOf(ASerialKeyInfo.LocalID));
     AKeyDll.Position := 0;
     TmpStream1.CopyFrom(AKeyDll, AKeyDll.Size);
     RC6Encryptor.StreamEncrypt(TmpStream1, TmpStream2, True);
@@ -404,6 +406,8 @@ begin
     TmpStream2.Read(ASerialKeyInfo.UserKey, 16);
     TmpStream2.Read(ASerialKeyInfo.DateBegin, SizeOf(ASerialKeyInfo.DateBegin));
     TmpStream2.Read(ASerialKeyInfo.DateEnd, SizeOf(ASerialKeyInfo.DateEnd));
+    if TmpStream1.Size > 130352 then //Для поддержку устаревшего варианта ключа
+      TmpStream1.Read(ASerialKeyInfo.LocalID, SizeOf(ASerialKeyInfo.LocalID));
     if Assigned(AKeyDll) then
       AKeyDll.CopyFrom(TmpStream2, TmpStream2.Size - TmpStream2.Position);
   finally

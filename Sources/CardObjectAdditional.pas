@@ -23,20 +23,14 @@ type
     JvDBSpinEdit1: TJvDBSpinEdit;
     dbchkFL_CALC_VEDOMS_NAL2: TDBCheckBox;
     JvDBSpinEdit2: TJvDBSpinEdit;
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormDestroy(Sender: TObject);
     procedure btn1Click(Sender: TObject);
     procedure dbchkAPPLY_WINTERPRISE_FLAGClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure dbchkFL_CALC_VEDOMS_NAL2Click(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
   end;
-
-var
-  fCardObjectAdditional: TfCardObjectAdditional;
 
 implementation
 
@@ -51,23 +45,6 @@ procedure TfCardObjectAdditional.dbchkAPPLY_WINTERPRISE_FLAGClick(Sender: TObjec
 begin
   dbrgrpCOEF_ORDERS.Visible := dbchkAPPLY_WINTERPRISE_FLAG.Checked;
   dbchkAPPLY_WINTERPRISE_FLAG.Top := dbrgrpCOEF_ORDERS.Top - 1;
-end;
-
-procedure TfCardObjectAdditional.dbchkFL_CALC_VEDOMS_NAL2Click(Sender: TObject);
-begin
-  if dbchkFL_CALC_VEDOMS_NAL2.Checked and (VarIsNull(fCardObject.qrMain.FieldByName('SPEC_SCH').Value) or
-    (fCardObject.qrMain.FieldByName('SPEC_SCH').Value = 0)) then
-    fCardObject.qrMain.FieldByName('SPEC_SCH').Value := 1.5;
-end;
-
-procedure TfCardObjectAdditional.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  Action := caFree;
-end;
-
-procedure TfCardObjectAdditional.FormDestroy(Sender: TObject);
-begin
-  fCardObjectAdditional := nil;
 end;
 
 procedure TfCardObjectAdditional.FormShow(Sender: TObject);

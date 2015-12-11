@@ -12,8 +12,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
-  OnClose = FormClose
-  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -151,7 +149,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
       TabOrder = 8
       ValueChecked = '1'
       ValueUnchecked = '0'
-      OnClick = dbchkFL_CALC_VEDOMS_NAL2Click
     end
     object JvDBSpinEdit2: TJvDBSpinEdit
       Left = 199

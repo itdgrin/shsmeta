@@ -355,8 +355,15 @@ begin
 end;
 
 procedure TfrCalculationEstimateSummaryCalculations.N5Click(Sender: TObject);
+var fCardObject: TfCardObject;
 begin
-  fCardObject.ShowModal;
+  fCardObject := TfCardObject.Create(Self);
+  try
+    fCardObject.IdObject := qrObject.FieldByName('OBJ_ID').Value;
+    fCardObject.ShowModal;
+  finally
+    FreeAndNil(fCardObject);
+  end;
 end;
 
 procedure TfrCalculationEstimateSummaryCalculations.pmPopup(Sender: TObject);

@@ -467,7 +467,6 @@ type
     PMSetTransPerc4: TMenuItem;
     edtTypeWork: TEdit;
     edtZone: TEdit;
-    qrObjects: TFDQuery;
     qrRatesExCOEF_ORDERS: TIntegerField;
     qrMaterialFTRANSCOUNT: TFMTBCDField;
     PMUseTransPerc: TMenuItem;
@@ -2830,50 +2829,14 @@ begin
 end;
 
 procedure TFormCalculationEstimate.mN14Click(Sender: TObject);
-var
-  e: TNotifyEvent;
+var fCardObject: TfCardObject;
 begin
-  // Карточка объекта
-  qrObjects.Active := False;
-  qrObjects.ParamByName('in_id').Value := IdObject;
-  qrObjects.Active := True;
-
-  with fCardObject, qrObjects do
-  begin
-    // Заносим значения в поля редактирования
-    EditNumberObject.Text := FieldByName('NumberObject').AsVariant;
-    EditCodeObject.Text := FieldByName('CodeObject').AsVariant;
-    EditNumberContract.Text := FieldByName('NumberContract').AsString;
-    DateTimePickerDataCreateContract.Date := FieldByName('DateContract').AsVariant;
-    EditShortDescription.Text := FieldByName('Name').AsVariant;
-    MemoFullDescription.Text := FieldByName('FullName').AsVariant;
-    e := cbbFromMonth.OnChange;
-    cbbFromMonth.OnChange := nil;
-    seYear.OnChange := nil;
-    cbbFromMonth.ItemIndex := MonthOf(FieldByName('BeginConstruction').AsDateTime) - 1;
-    seYear.Value := YearOf(FieldByName('BeginConstruction').AsDateTime);
-    cbbFromMonth.OnChange := e;
-    seYear.OnChange := e;
-    CheckBoxCalculationEconom.Checked := FieldByName('CalculationEconom').AsVariant;
-
-    // Для выпадающих списков
-    if FieldByName('IdIstFin').AsVariant <> Null then
-      SetSourceFinance(FieldByName('IdIstFin').AsVariant);
-
-    SetCategory(FieldByName('IdCategory').AsVariant);
-    SetRegion(FieldByName('IdRegion').AsVariant);
-    SetVAT(FieldByName('VAT').AsVariant);
-    SetBasePrice(FieldByName('IdBasePrice').AsVariant);
-    SetTypeOXR(FieldByName('IdOXROPR').AsVariant);
-    SetMAIS(FieldByName('IdMAIS').AsVariant);
-
-    // ID выделенной записи
-    SetIdSelectRow(Fields[0].AsVariant);
-
-    // Даём знать форме, что будет операция редактирования и чтобы не очищались поля
-    EditingRecord(True);
-
-    ShowModal;
+  fCardObject := TfCardObject.Create(Self);
+  try
+    fCardObject.IdObject := IdObject;
+    fCardObject.ShowModal;
+  finally
+    FreeAndNil(fCardObject);
   end;
 end;
 
@@ -3438,10 +3401,8 @@ end;
 
 procedure TFormCalculationEstimate.qrRatesExMarkRowChange(Sender: TField);
 begin
-  qrTemp.SQL.Text := 'UPDATE data_row_temp set MarkRow=:MarkRow WHERE ID=:ID;';
-  qrTemp.ParamByName('ID').Value := qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger;
-  qrTemp.ParamByName('MarkRow').Value := Sender.Value;
-  qrTemp.ExecSQL;
+  FastExecSQL('UPDATE data_row_temp set MarkRow=:MarkRow WHERE ID=:ID;',
+    VarArrayOf([Sender.Value, qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger]));
 end;
 
 procedure TFormCalculationEstimate.qrRatesExNOM_ROW_MANUALChange(Sender: TField);
