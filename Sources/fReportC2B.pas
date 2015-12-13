@@ -51,12 +51,17 @@ type
     tsRegActs: TTabSheet;
     qrActs: TFDQuery;
     dsActs: TDataSource;
+    cbActs: TDBLookupComboBox;
+    lbPIBeginTitle: TLabel;
+    lbPIBegin: TLabel;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure actObjectUpdateUpdate(Sender: TObject);
     procedure btnObjInfoClick(Sender: TObject);
     procedure cbObjNameClick(Sender: TObject);
+    procedure qrObjectBeforeOpen(DataSet: TDataSet);
+    procedure pcReportTypeChange(Sender: TObject);
   private const
     CaptionButton = 'Отчет С2-Б';
     HintButton = 'Окно отчета С2-Б';
@@ -64,6 +69,7 @@ type
     FOwnPanelButton: TSpeedButton;
     FOwnPointer: Pointer;
     FObjectID: Integer;
+    function GetPI(ADateS, ADatePo: TDateTime): Double;
     { Private declarations }
   public
     procedure OwnPanelButtonClick;
@@ -96,7 +102,7 @@ begin
   try
     fCardObject.IdObject := qrObject.FieldByName('obj_id').AsInteger;
     if fCardObject.ShowModal = mrOk then
-      CloseOpen(qrObject, True);
+      CloseOpen(qrObject);
   finally
     FreeAndNil(fCardObject);
   end;
@@ -130,8 +136,16 @@ begin
     else
       lbDateEndStroj.Caption := '---';
 
+    lbPIBegin.Caption :=
+      FloatToStr(GetPI(qrObject.FieldByName('beg_stroj').AsDateTime,
+        IncMonth(qrObject.FieldByName('beg_stroj2').AsDateTime, -1)));
+
     edtObjContNum.Text := qrObject.FieldByName('num_dog').AsString;
     edtObjContDate.Text := qrObject.FieldByName('date_dog').AsString;
+
+
+    qrActs.ParamByName('OBJ_ID').Value := qrObject.FieldByName('obj_id').AsInteger;
+    CloseOpen(qrActs);
   end
   else
   begin
@@ -139,8 +153,10 @@ begin
     lbDateBegStroj.Caption := '---';
     lbSrokStroj.Caption := '---';
     lbDateEndStroj.Caption := '---';
+    lbPIBegin.Caption := '---';
     edtObjContNum.Text := '';
     edtObjContDate.Text := '';
+    qrActs.Active := False;
   end;
 end;
 
@@ -167,11 +183,18 @@ begin
   FOwnPanelButton :=
     FormMain.CreateButtonOpenWindow(CaptionButton, HintButton, Self, 1);
 
+  FObjectID := 0;
+  if not VarIsNull(InitParams) then
+    FObjectID := InitParams;
+
   if not qrObject.Active then
     qrObject.Active := True;
 
   if FObjectID > 0 then
+  begin
     qrObject.Locate('obj_id', FObjectID, []);
+    cbObjName.Enabled := False;
+  end;
 
   cbObjName.KeyValue := qrObject.FieldByName('obj_id').Value;
   cbObjName.OnClick(cbObjName);
@@ -187,6 +210,31 @@ procedure TFormReportC2B.OwnPanelButtonClick;
 begin
   if Assigned(FOwnPanelButton) then
     FOwnPanelButton.OnClick(FOwnPanelButton);
+end;
+
+procedure TFormReportC2B.pcReportTypeChange(Sender: TObject);
+begin
+  if pcReportType.ActivePage = tsRepObj then
+  begin
+      lbShowTypeTitle.Parent := pnlRepObjDate;
+      cbShowType.Parent := pnlRepObjDate;
+  end;
+  if pcReportType.ActivePage = tsRepAct then
+  begin
+      lbShowTypeTitle.Parent := pnlRepActDate;
+      cbShowType.Parent := pnlRepActDate;
+  end;
+end;
+
+procedure TFormReportC2B.qrObjectBeforeOpen(DataSet: TDataSet);
+begin
+  if (DataSet as TFDQuery).FindParam('USER_ID') <> nil then
+    (DataSet as TFDQuery).ParamByName('USER_ID').Value := G_USER_ID;
+end;
+
+function TFormReportC2B.GetPI(ADateS, ADatePo: TDateTime): Double;
+begin
+  Result := 0;
 end;
 
 end.

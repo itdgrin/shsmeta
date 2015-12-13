@@ -672,7 +672,7 @@ procedure TfObjectsAndEstimates.btnReportC2BClick(Sender: TObject);
 begin
   if not LicenseAssigned(FormReportC2B) then
   begin
-    FormReportC2B := TFormReportC2B.Create(FormMain);
+    FormReportC2B := TFormReportC2B.Create(FormMain, IdObject);
     FormReportC2B.OwnPointer := @FormReportC2B;
   end;
   FormReportC2B.OwnPanelButtonClick;
