@@ -1,4 +1,4 @@
-{ .$ DEFINE DUBUG }
+{ .$. DEFINE DUBUG1 }
 unit ContractPrice;
 
 interface
@@ -89,8 +89,10 @@ begin
   // Расчет
   if (not Assigned(fContractPriceEdit)) then
     fContractPriceEdit := TfContractPriceEdit.Create(Self,
-      VarArrayOf([idObject, idEstimate, qrOBJ.FieldByName('CONTRACT_PRICE_TYPE_ID').Value]));
-  fContractPriceEdit.Show;
+      VarArrayOf([idObject, qrMain.FieldByName('SM_ID').Value,
+      qrOBJ.FieldByName('CONTRACT_PRICE_TYPE_ID').Value]));
+  fContractPriceEdit.ShowModal;
+  CloseOpen(qrMain);
 end;
 
 function TfContractPrice.canEditRow: Boolean;
@@ -176,17 +178,6 @@ begin
 end;
 
 procedure TfContractPrice.ReloadMain;
-  procedure addCol(const Grid: TJvDBGrid; fieldName, titleCaption: String; const Width: Integer);
-  var
-    col: TColumn;
-  begin
-    col := Grid.Columns.Add;
-    col.Title.Caption := titleCaption;
-    col.Title.Alignment := taCenter;
-    col.Width := Width;
-    col.fieldName := fieldName;
-  end;
-
 var
   i: Integer;
   tmpDate: TDate;
@@ -202,16 +193,17 @@ begin
   begin
     tmpDate := IncMonth(qrOBJ.FieldByName('BEG_STROJ2').AsDateTime, i);
     FN := 'M' + IntToStr(MonthOf(tmpDate)) + 'Y' + IntToStr(YearOf(tmpDate));
-    addCol(grMain, FN, AnsiUpperCase(FormatDateTime('mmmm yyyy', tmpDate)), 80);
-    // TODO
-    MONTH_FIELDS := MONTH_FIELDS + '  0 AS ' + FN + ','#13#10;
+    addCol(grMain, FN, AnsiUpperCase(FormatDateTime('mmmm yyyy', tmpDate)), 90);
+    MONTH_FIELDS := MONTH_FIELDS +
+      '  (SELECT IFNULL(cp.CONTRACT_PRICE, 0) FROM contract_price AS cp WHERE cp.SM_ID=s.SM_ID AND cp.Ondate="'
+      + FormatDateTime('yyyy-mm-dd', tmpDate) + '") AS ' + FN + ','#13#10;
   end;
   // Обрезаем лишнюю часть
   MONTH_FIELDS := Copy(MONTH_FIELDS, 1, Length(MONTH_FIELDS) - 3);
   qrMain.SQL.Text := StringReplace(qrMain.SQL.Text, '#MONTH_FIELDS#', MONTH_FIELDS,
     [rfReplaceAll, rfIgnoreCase]);
 {$IFDEF DEBUG}
-  ShowMessage(qrMain.SQL.Text);
+  // ShowMessage(qrMain.SQL.Text);
 {$ENDIF}
   CloseOpen(qrMain);
 end;

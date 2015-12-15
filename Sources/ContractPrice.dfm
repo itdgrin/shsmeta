@@ -375,6 +375,7 @@ object fContractPrice: TfContractPrice
       Height = 263
       Align = alClient
       DataSource = dsMain
+      Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
@@ -426,8 +427,9 @@ object fContractPrice: TfContractPrice
       '  s.`NAME`,'
       '  s.`SM_TYPE`,'
       
-        '  ROUND( SUM(IFNULL(d.STOIMF, d.STOIM)), rs.round_RATE) AS TOTAL' +
-        ','
+        '  (SELECT SUM(CONTRACT_PRICE) FROM contract_price WHERE SM_ID=s.' +
+        'SM_ID AND OnDate BETWEEN o.BEG_STROJ2 AND DATE_ADD(o.BEG_STROJ2,' +
+        ' INTERVAL  (o.SROK_STROJ - 1) MONTH)) AS TOTAL,'
       '#MONTH_FIELDS#'
       'FROM `objcards` as o, round_setup rs, `smetasourcedata` as s'
       'LEFT JOIN summary_calculation d ON d.SM_ID IN'
@@ -498,7 +500,7 @@ object fContractPrice: TfContractPrice
   end
   object dsOBJ: TDataSource
     DataSet = qrOBJ
-    Left = 192
+    Left = 208
     Top = 280
   end
   object qrIndexType: TFDQuery

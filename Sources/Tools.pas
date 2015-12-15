@@ -134,10 +134,23 @@ function FullRemove(ASource: string): Boolean;
 function GetDirDialog(var ADir: string): Boolean;
 // Функция выбора строки по условию
 function strIf(BoolExpression: Boolean; ifTrue, ifFalse: string): string;
+// Процедура добавления колонки в таблицу
+procedure addCol(const Grid: TJvDBGrid; fieldName, titleCaption: String; const Width: Integer);
 
 implementation
 
 uses uSelectColumn;
+
+procedure addCol(const Grid: TJvDBGrid; fieldName, titleCaption: String; const Width: Integer);
+var
+  col: TColumn;
+begin
+  col := Grid.Columns.Add;
+  col.Title.Caption := titleCaption;
+  col.Title.Alignment := taCenter;
+  col.Width := Width;
+  col.fieldName := fieldName;
+end;
 
 function strIf(BoolExpression: Boolean; ifTrue, ifFalse: string): string;
 begin
