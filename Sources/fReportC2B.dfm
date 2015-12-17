@@ -2,7 +2,7 @@ object FormReportC2B: TFormReportC2B
   Left = 0
   Top = 0
   Caption = #1054#1090#1095#1077#1090' '#1057'2-'#1041
-  ClientHeight = 403
+  ClientHeight = 482
   ClientWidth = 857
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -31,7 +31,6 @@ object FormReportC2B: TFormReportC2B
     Font.Style = []
     ParentFont = False
     TabOrder = 0
-    ExplicitWidth = 783
     object gbObject: TGroupBox
       Left = 1
       Top = 1
@@ -46,7 +45,6 @@ object FormReportC2B: TFormReportC2B
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      ExplicitWidth = 781
       DesignSize = (
         855
         94)
@@ -115,16 +113,15 @@ object FormReportC2B: TFormReportC2B
       object lbDateSmetDocTitle: TLabel
         Left = 12
         Top = 57
-        Width = 216
+        Width = 212
         Height = 13
         Anchors = [akTop, akRight]
         Caption = #1044#1072#1090#1072' '#1088#1072#1079#1088#1072#1073#1086#1090#1082#1080' '#1089#1084#1077#1090#1085#1086#1081' '#1076#1086#1082#1091#1084#1077#1085#1090#1072#1094#1080#1080':'
-        ExplicitLeft = 11
       end
       object lbDateBegStrojTitle: TLabel
         Left = 12
         Top = 76
-        Width = 152
+        Width = 148
         Height = 13
         Anchors = [akTop, akRight]
         Caption = #1044#1072#1090#1072' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
@@ -134,7 +131,6 @@ object FormReportC2B: TFormReportC2B
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        ExplicitLeft = 11
       end
       object lbDateSmetDoc: TLabel
         Left = 230
@@ -171,7 +167,7 @@ object FormReportC2B: TFormReportC2B
       object lbSrokStrojTitle: TLabel
         Left = 345
         Top = 57
-        Width = 125
+        Width = 121
         Height = 13
         Anchors = [akTop, akRight]
         Caption = #1057#1088#1086#1082' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072', '#1084':'
@@ -181,12 +177,11 @@ object FormReportC2B: TFormReportC2B
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        ExplicitLeft = 344
       end
       object lbDateEndStrojTitle: TLabel
         Left = 345
         Top = 76
-        Width = 170
+        Width = 166
         Height = 13
         Anchors = [akTop, akRight]
         Caption = #1044#1072#1090#1072' '#1086#1082#1086#1085#1095#1072#1085#1080#1103' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
@@ -196,7 +191,6 @@ object FormReportC2B: TFormReportC2B
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        ExplicitLeft = 344
       end
       object lbSrokStroj: TLabel
         Left = 518
@@ -279,7 +273,6 @@ object FormReportC2B: TFormReportC2B
         ParentFont = False
         TabOrder = 0
         OnClick = cbObjNameClick
-        ExplicitWidth = 331
       end
       object edtObjContNum: TEdit
         Left = 483
@@ -297,7 +290,6 @@ object FormReportC2B: TFormReportC2B
         ReadOnly = True
         TabOrder = 1
         Text = 'edtObjContNum'
-        ExplicitLeft = 409
       end
       object edtObjContDate: TEdit
         Left = 598
@@ -315,7 +307,6 @@ object FormReportC2B: TFormReportC2B
         ReadOnly = True
         TabOrder = 2
         Text = 'edtObjContDate'
-        ExplicitLeft = 524
       end
     end
   end
@@ -323,7 +314,7 @@ object FormReportC2B: TFormReportC2B
     Left = 0
     Top = 96
     Width = 857
-    Height = 307
+    Height = 386
     ActivePage = tsRepAct
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
@@ -334,22 +325,20 @@ object FormReportC2B: TFormReportC2B
     ParentFont = False
     TabOrder = 1
     OnChange = pcReportTypeChange
-    ExplicitWidth = 783
-    object tsRepObj: TTabSheet
-      Caption = #1055#1086' '#1086#1073#1098#1077#1082#1090#1091
+    object tsRepAct: TTabSheet
+      Caption = #1055#1086' '#1072#1082#1090#1091
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
-      ImageIndex = 1
+      ImageIndex = 2
       ParentFont = False
-      ExplicitWidth = 775
-      object pnlRepObj: TPanel
+      object pnlRepAct: TPanel
         Left = 0
         Top = 0
         Width = 849
-        Height = 279
+        Height = 358
         Align = alClient
         BevelKind = bkTile
         BevelOuter = bvNone
@@ -361,7 +350,271 @@ object FormReportC2B: TFormReportC2B
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        ExplicitWidth = 775
+        object pnlRepActDate: TPanel
+          Left = 0
+          Top = 0
+          Width = 845
+          Height = 36
+          Align = alTop
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+          DesignSize = (
+            845
+            36)
+          object lbRepActTitle: TLabel
+            Left = 13
+            Top = 10
+            Width = 157
+            Height = 13
+            Caption = #1056#1072#1073#1086#1090#1099' '#1074#1099#1087#1086#1083#1085#1077#1085#1085#1099#1077' '#1087#1086' '#1072#1082#1090#1091':'
+          end
+          object lbShowTypeTitle: TLabel
+            Left = 605
+            Top = 10
+            Width = 107
+            Height = 13
+            Anchors = [akTop, akRight]
+            Caption = #1056#1077#1078#1080#1084' '#1086#1090#1086#1073#1088#1072#1078#1077#1085#1080#1103':'
+            ExplicitLeft = 531
+          end
+          object cbActs: TDBLookupComboBox
+            Left = 176
+            Top = 7
+            Width = 377
+            Height = 21
+            KeyField = 'SM_ID'
+            ListField = 'NAME'
+            ListSource = dsActs
+            TabOrder = 0
+          end
+          object cbShowType: TDBLookupComboBox
+            Left = 716
+            Top = 7
+            Width = 100
+            Height = 21
+            Anchors = [akTop, akRight]
+            KeyField = 'CONTRACT_PRICE_TYPE_ID'
+            ListField = 'CONTRACT_PRICE_TYPE_NAME'
+            ListSource = dsCONTRACT_PRICE_TYPE
+            TabOrder = 1
+            OnClick = cbShowTypeClick
+          end
+        end
+        object pnlGrids: TPanel
+          Left = 0
+          Top = 36
+          Width = 845
+          Height = 287
+          Align = alTop
+          Anchors = [akLeft, akTop, akRight, akBottom]
+          TabOrder = 1
+          object grLeft: TJvDBGrid
+            Left = 1
+            Top = 1
+            Width = 815
+            Height = 285
+            Align = alLeft
+            DataSource = dsLeft
+            DrawingStyle = gdsClassic
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+            ParentFont = False
+            TabOrder = 0
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            AutoAppend = False
+            AutoSort = False
+            AutoSizeColumnIndex = 0
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            CanDelete = False
+            EditControls = <>
+            RowsHeight = 17
+            TitleRowHeight = 17
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'SmName'
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1101#1083#1077#1084#1077#1085#1090#1072
+                Width = 184
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'Unit'
+                Title.Alignment = taCenter
+                Title.Caption = #1045#1076'. '#1080#1079#1084'.'
+                Width = 58
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'SmCount'
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1083'-'#1074#1086
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'SmTotalPrice'
+                Title.Alignment = taCenter
+                Title.Caption = #1042#1089#1077#1075#1086
+                Width = 90
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'ActCount'
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1083'-'#1074#1086
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'ActTotalPrice'
+                Title.Alignment = taCenter
+                Title.Caption = #1055#1086' '#1072#1082#1090#1091
+                Width = 90
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'AllActsCount'
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1083'-'#1074#1086
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'AllActsTotalPrice'
+                Title.Alignment = taCenter
+                Title.Caption = #1057' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088'-'#1074#1072
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'ManthActsCount'
+                Title.Alignment = taCenter
+                Title.Caption = #1050#1086#1083'-'#1074#1086
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'ManthActsTotalPrice'
+                Title.Alignment = taCenter
+                Title.Caption = #1047#1072' '#1084#1077#1089#1103#1094
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'RestPrice'
+                Title.Alignment = taCenter
+                Title.Caption = #1054#1089#1090#1072#1090#1086#1082
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'DevFromBeg'
+                Title.Alignment = taCenter
+                Title.Caption = #1054#1090#1082#1083#1102' '#1089' '#1085#1072#1095'. '#1089#1090#1088'-'#1074#1072
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'DevForMonth'
+                Title.Alignment = taCenter
+                Title.Caption = #1054#1090#1082#1083'. '#1079#1072' '#1084#1077#1089#1103#1094
+                Width = 90
+                Visible = True
+              end>
+          end
+          object grRight: TJvDBGrid
+            AlignWithMargins = True
+            Left = 818
+            Top = 1
+            Width = 26
+            Height = 285
+            Margins.Left = 2
+            Margins.Top = 0
+            Margins.Right = 0
+            Margins.Bottom = 0
+            Align = alClient
+            DataSource = dsRight
+            TabOrder = 1
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            AutoSizeColumns = True
+            AutoSizeColumnIndex = 0
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            EditControls = <>
+            RowsHeight = 17
+            TitleRowHeight = 17
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'DevItem'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1090#1072#1090#1100#1080' '#1086#1090#1082#1083#1086#1085#1077#1085#1080#1081
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'ItemSumm'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1091#1084#1084#1072
+                Width = 90
+                Visible = True
+              end>
+          end
+        end
+      end
+    end
+    object tsRepObj: TTabSheet
+      Caption = #1055#1086' '#1086#1073#1098#1077#1082#1090#1091
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ImageIndex = 1
+      ParentFont = False
+      object pnlRepObj: TPanel
+        Left = 0
+        Top = 0
+        Width = 849
+        Height = 358
+        Align = alClient
+        BevelKind = bkTile
+        BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentBackground = False
+        ParentFont = False
+        TabOrder = 0
         object pnlRepObjDate: TPanel
           Left = 0
           Top = 0
@@ -375,47 +628,12 @@ object FormReportC2B: TFormReportC2B
           Font.Style = []
           ParentFont = False
           TabOrder = 0
-          ExplicitWidth = 771
-          DesignSize = (
-            845
-            36)
-          object lbShowTypeTitle: TLabel
-            Left = 605
-            Top = 10
-            Width = 107
-            Height = 13
-            Anchors = [akTop, akRight]
-            Caption = #1056#1077#1078#1080#1084' '#1086#1090#1086#1073#1088#1072#1078#1077#1085#1080#1103':'
-            ExplicitLeft = 531
-          end
           object lbRepObjDataTitle: TLabel
             Left = 13
             Top = 10
             Width = 59
             Height = 13
             Caption = #1044#1072#1085#1085#1099#1077' '#1087#1086':'
-          end
-          object cbShowType: TComboBox
-            Left = 717
-            Top = 7
-            Width = 99
-            Height = 21
-            Style = csDropDownList
-            Anchors = [akTop, akRight]
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ItemIndex = 0
-            ParentFont = False
-            TabOrder = 0
-            Text = #1055#1086' '#1055#1058#1052
-            Items.Strings = (
-              #1055#1086' '#1055#1058#1052
-              #1055#1086' '#1083#1086#1082#1072#1083#1100#1085#1086#1081
-              #1055#1086' '#1086#1073#1098#1077#1082#1090#1085#1086#1081)
-            ExplicitLeft = 643
           end
           object cbRepObjMonth: TComboBox
             Left = 78
@@ -431,7 +649,7 @@ object FormReportC2B: TFormReportC2B
             Font.Style = []
             ItemIndex = 8
             ParentFont = False
-            TabOrder = 1
+            TabOrder = 0
             Text = #1057#1077#1085#1090#1103#1073#1088#1100
             Items.Strings = (
               #1071#1085#1074#1072#1088#1100
@@ -460,69 +678,8 @@ object FormReportC2B: TFormReportC2B
             MaxValue = 2100
             MinValue = 2012
             ParentFont = False
-            TabOrder = 2
+            TabOrder = 1
             Value = 2015
-          end
-        end
-      end
-    end
-    object tsRepAct: TTabSheet
-      Caption = #1055#1086' '#1072#1082#1090#1091
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ImageIndex = 2
-      ParentFont = False
-      ExplicitWidth = 775
-      object pnlRepAct: TPanel
-        Left = 0
-        Top = 0
-        Width = 849
-        Height = 279
-        Align = alClient
-        BevelKind = bkTile
-        BevelOuter = bvNone
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentBackground = False
-        ParentFont = False
-        TabOrder = 0
-        ExplicitWidth = 775
-        object pnlRepActDate: TPanel
-          Left = 0
-          Top = 0
-          Width = 845
-          Height = 36
-          Align = alTop
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 0
-          ExplicitWidth = 771
-          object lbRepActTitle: TLabel
-            Left = 13
-            Top = 10
-            Width = 157
-            Height = 13
-            Caption = #1056#1072#1073#1086#1090#1099' '#1074#1099#1087#1086#1083#1085#1077#1085#1085#1099#1077' '#1087#1086' '#1072#1082#1090#1091':'
-          end
-          object cbActs: TDBLookupComboBox
-            Left = 176
-            Top = 7
-            Width = 377
-            Height = 21
-            KeyField = 'SM_ID'
-            ListField = 'NAME'
-            ListSource = dsActs
-            TabOrder = 0
           end
         end
       end
@@ -530,7 +687,6 @@ object FormReportC2B: TFormReportC2B
     object tsRegActs: TTabSheet
       Caption = #1056#1077#1077#1089#1090#1088' '#1072#1082#1090#1086#1074
       ImageIndex = 2
-      ExplicitWidth = 775
     end
   end
   object qrObject: TFDQuery
@@ -547,7 +703,11 @@ object FormReportC2B: TFormReportC2B
         'um_name, '
       '    beg_stroj,'
       '    beg_stroj2,'
-      '    srok_stroj'
+      '    srok_stroj,'
+      
+        '    FN_getIndex(beg_stroj, DATE_ADD(beg_stroj2, INTERVAL -1 MONT' +
+        'H), 1) as pibeg,'
+      '    CONTRACT_PRICE_TYPE_ID'
       'FROM objcards '
       'WHERE (DEL_FLAG=0) AND'
       '      ((:USER_ID=1) OR '
@@ -563,6 +723,7 @@ object FormReportC2B: TFormReportC2B
       item
         Name = 'USER_ID'
         ParamType = ptInput
+        Value = Null
       end>
   end
   object dsObject: TDataSource
@@ -601,5 +762,129 @@ object FormReportC2B: TFormReportC2B
     DataSet = qrActs
     Left = 684
     Top = 240
+  end
+  object mtLeft: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired]
+    UpdateOptions.CheckRequired = False
+    StoreDefs = True
+    Left = 244
+    Top = 284
+    object mtLeftSmName: TStringField
+      FieldName = 'SmName'
+      Size = 100
+    end
+    object mtLeftUnit: TStringField
+      FieldName = 'Unit'
+    end
+    object mtLeftSmCount: TFloatField
+      FieldName = 'SmCount'
+    end
+    object mtLeftSmTotalPrice: TCurrencyField
+      FieldName = 'SmTotalPrice'
+      currency = False
+    end
+    object mtLeftActCount: TFloatField
+      FieldName = 'ActCount'
+    end
+    object mtLeftActTotalPrice: TCurrencyField
+      FieldName = 'ActTotalPrice'
+    end
+    object mtLeftAllActsCount: TFloatField
+      FieldName = 'AllActsCount'
+    end
+    object mtLeftAllActsTotalPrice: TCurrencyField
+      FieldName = 'AllActsTotalPrice'
+    end
+    object mtLeftManthActsCount: TFloatField
+      FieldName = 'ManthActsCount'
+    end
+    object mtLeftManthActsTotalPrice: TCurrencyField
+      FieldName = 'ManthActsTotalPrice'
+    end
+    object mtLeftRestPrice: TCurrencyField
+      FieldName = 'RestPrice'
+    end
+    object mtLeftDevFromBeg: TCurrencyField
+      FieldName = 'DevFromBeg'
+    end
+    object mtLeftDevForMonth: TCurrencyField
+      FieldName = 'DevForMonth'
+    end
+    object mtLeftSmId: TIntegerField
+      FieldKind = fkCalculated
+      FieldName = 'SmId'
+      Calculated = True
+    end
+    object mtLeftSmType: TIntegerField
+      FieldName = 'SmType'
+    end
+  end
+  object mtRight: TFDMemTable
+    Active = True
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired]
+    UpdateOptions.CheckRequired = False
+    Left = 348
+    Top = 276
+    object mtRightDevItem: TStringField
+      FieldName = 'DevItem'
+    end
+    object mtRightItemSumm: TCurrencyField
+      FieldName = 'ItemSumm'
+    end
+  end
+  object dsLeft: TDataSource
+    DataSet = mtLeft
+    Left = 248
+    Top = 336
+  end
+  object dsRight: TDataSource
+    DataSet = mtRight
+    Left = 352
+    Top = 336
+  end
+  object qrTemp1: TFDQuery
+    Connection = DM.Connect
+    Left = 452
+    Top = 276
+  end
+  object dsCONTRACT_PRICE_TYPE: TDataSource
+    DataSet = qrCONTRACT_PRICE_TYPE
+    Left = 688
+    Top = 320
+  end
+  object qrCONTRACT_PRICE_TYPE: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvCheckReadOnly]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.EnableInsert = False
+    UpdateOptions.CheckReadOnly = False
+    SQL.Strings = (
+      'select * from CONTRACT_PRICE_TYPE '
+      'WHERE CONTRACT_PRICE_TYPE_ID >= :CONTRACT_PRICE_TYPE_ID'
+      'ORDER BY CONTRACT_PRICE_TYPE_ID')
+    Left = 737
+    Top = 304
+    ParamData = <
+      item
+        Name = 'CONTRACT_PRICE_TYPE_ID'
+        ParamType = ptInput
+      end>
   end
 end
