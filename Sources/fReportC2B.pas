@@ -73,7 +73,7 @@ type
     mtLeftDevFromBeg: TCurrencyField;
     mtLeftDevForMonth: TCurrencyField;
     mtRightDevItem: TStringField;
-    mtRightItemSumm: TCurrencyField;
+    mtRightActSumm: TCurrencyField;
     qrTemp1: TFDQuery;
     mtLeftSmId: TIntegerField;
     dsCONTRACT_PRICE_TYPE: TDataSource;
@@ -89,6 +89,8 @@ type
     grRight: TJvDBGrid;
     lbShowTypeTitle: TLabel;
     cbShowType: TDBLookupComboBox;
+    mtRightAllSumm: TCurrencyField;
+    mtRightManthSumm: TCurrencyField;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -98,6 +100,8 @@ type
     procedure qrObjectBeforeOpen(DataSet: TDataSet);
     procedure pcReportTypeChange(Sender: TObject);
     procedure cbShowTypeClick(Sender: TObject);
+    procedure grLeftDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
   private const
     CaptionButton = 'Отчет С2-Б';
     HintButton = 'Окно отчета С2-Б';
@@ -126,6 +130,32 @@ uses
   System.DateUtils, Main, DataModule, CardObject, GlobsAndConst;
 
 {$R *.dfm}
+
+const DevItems: array[1..24] of string =
+  ('Суммы, учитываемые при расчетах в связи с корректировкой контрактной цены, в т.ч.',
+   '- Отклонение в стоимости эксплуатации машин и механизмов',
+   '- Отклонение в стоимости материалов',
+   '- Отклонение в стоимости транспорта',
+   '- Отклонение в стоимости прочих затрат',
+   '- Отклонение в стоимости налогов и отчислений, уплачиваемых подрядчиком',
+   '- Отклонение в стоимости материалов заказчика',
+   '- Отклонение в стоимости Налога при упрощенной системе',
+   '- Отклонение в стоимости НДС',
+   '- Отклонение в стоимости оборудования подрядчика с налогами',
+   '- Компенсация стоимости материалов предыдущего месяца',
+   '- Компенсация стоимости аренды машин и механизмов',
+   'Суммы, учитываемые при расчетах, в т.ч.',
+   '- Зачет целевого аванса (-)',
+   '- Зачет текущего аванса (-)',
+   '- Индексация аванса (-)',
+   '- Mатериалы поставки генподрядчика (-)',
+   '- Bозмещение стоимости (электроэнергия. вода. газ. тепло) (-)',
+   '- Другие (-)',
+   'BCEГO К OПЛATE:',
+   'Сумма налога при упрощенной системе налогообложения по ставке, %',
+   'HДC, ставка, %',
+   'Mатериалы заказчика с НДС',
+   'Итого объем работ для статистической отчетности подрядной организации');
 
 procedure TFormReportC2B.actObjectUpdateUpdate(Sender: TObject);
 begin
@@ -256,6 +286,17 @@ begin
   FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
+procedure TFormReportC2B.grLeftDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  if mtLeftSmId.Value = -1 then
+  begin
+    (Sender as TJvDBGrid).Canvas.Font.Style :=
+      (Sender as TJvDBGrid).Canvas.Font.Style + [fsBold];
+  end;
+  TSmForm.DrawColumnCell(Sender, Rect, DataCol, Column, State);
+end;
+
 procedure TFormReportC2B.OwnPanelButtonClick;
 begin
   if Assigned(FOwnPanelButton) then
@@ -264,6 +305,9 @@ end;
 
 procedure TFormReportC2B.pcReportTypeChange(Sender: TObject);
 begin
+
+  grLeft.Columns[1].Visible := False;
+  grLeft.Columns[2].Visible := False;
   if pcReportType.ActivePage = tsRepObj then
   begin
       lbShowTypeTitle.Parent := pnlRepObjDate;
@@ -272,11 +316,15 @@ begin
 
       grLeft.Columns[4].Visible := False;
       grLeft.Columns[5].Visible := False;
-      grLeft.Columns[6].Visible := True;
+      grLeft.Columns[6].Visible := False;//True;
       grLeft.Columns[7].Visible := True;
-      grLeft.Columns[8].Visible := True;
+      grLeft.Columns[8].Visible := False;//True;
       grLeft.Columns[9].Visible := True;
       grLeft.Columns[10].Visible := True;
+
+      grRight.Columns[1].Visible := True;
+      grRight.Columns[2].Visible := False;
+      grRight.Columns[3].Visible := False;
   end;
   if pcReportType.ActivePage = tsRepAct then
   begin
@@ -284,13 +332,17 @@ begin
       cbShowType.Parent := pnlRepActDate;
       pnlGrids.Parent := pnlRepAct;
 
-      grLeft.Columns[4].Visible := True;
+      grLeft.Columns[4].Visible := False;//True;
       grLeft.Columns[5].Visible := True;
       grLeft.Columns[6].Visible := False;
       grLeft.Columns[7].Visible := False;
       grLeft.Columns[8].Visible := False;
       grLeft.Columns[9].Visible := False;
       grLeft.Columns[10].Visible := False;
+
+      grRight.Columns[1].Visible := False;
+      grRight.Columns[2].Visible := True;
+      grRight.Columns[3].Visible := True;
   end;
 
   BuildReport();
@@ -306,16 +358,24 @@ procedure TFormReportC2B.BuildReport();
 var RepType: Integer;
     ShowTypeStr: string;
     ContPriceTypeStr: string;
+    CurActId: Integer;
     SelectPriceStr,
-    SelectPriceStr1,
-    SelectPriceStr2,
-    SelectPriceStr3: string;
-    LeftArray: array of TLeftRec;
-    I, J, Ind: Integer;
-    TmpPrice: Currency;
+    SelectSmStr,
+    SelectCurAct,
+    SelectAllActs,
+    SelectMonthActs: string;
+    CurManthDateBegin,
+    CurManthDateEnd: TDateTime;
+
+    SumSmTotalPrice, SumActTotalPrice,
+    SumAllActsTotalPrice, SumManthActsTotalPrice,
+    SumRestPrice: Double;
+
+    I: Integer;
 begin
   RepType := pcReportType.ActivePageIndex;
 
+  //Заполнение левой таблицы
   case cbShowType.KeyValue of
   2: ShowTypeStr := '2,1';
   3: ShowTypeStr := '2';
@@ -328,116 +388,262 @@ begin
   else ContPriceTypeStr := '3';
   end;
 
+  if VarIsNull(cbActs.KeyValue) then
+    CurActId := 0
+  else
+    CurActId := cbActs.KeyValue;
+
+  CurManthDateBegin := EncodeDate(seRepObjYear.Value, cbRepObjMonth.ItemIndex + 1, 1);
+  CurManthDateEnd :=  IncMonth(CurManthDateBegin, 1) - 1;
+
   if not mtLeft.Active then
     mtLeft.Active :=True;
   mtLeft.EmptyDataSet;
 
   mtLeft.BeginBatch();
   try
-    SelectPriceStr1 :=
-      'Select SM_ID SM_ID, Sum(CONTRACT_PRICE) CPRICE from contract_price cprice ' +
-      'where (OnDate BETWEEN :DateBergin AND :DateEnd) and ' +
-        '(SM_ID IN (SELECT SM_ID FROM smetasourcedata ' +
-          'WHERE (OBJ_ID = :OBJ_ID) and (SM_TYPE in (' + ContPriceTypeStr + '))))' +
+    //Получение контрактной цены
+    SelectPriceStr :=
+      'Select s.SM_ID SM_ID, Sum(cp.CONTRACT_PRICE) CPRICE ' +
+      'from smetasourcedata s left join contract_price cp ' +
+      'on cp.SM_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' +
+        '(DELETED=0) AND (SM_TYPE in (' + ContPriceTypeStr + ')) AND ' +
+        '(OBJ_ID = :OBJ_ID)  and (ACT = 0) AND ' +
+        '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
+        '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
+        '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+          'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+      'where (cp.OnDate BETWEEN :DateBergin AND :DateEnd) and ' +
+        '(s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
       'group by SM_ID';
-
-    SelectPriceStr2 :=
-      'Select PARENT_ID SM_ID, kctab.CPRICE CPRICE from ' +
-      'smetasourcedata sm, (' + SelectPriceStr1 + ') kctab ' +
-      'where sm.SM_ID = kctab.SM_ID ' +
-      'group by SM_ID';
-
-    SelectPriceStr3 :=
-      'Select PARENT_ID SM_ID, kctab.CPRICE CPRICE from ' +
-      'smetasourcedata sm, (' + SelectPriceStr2 + ') kctab ' +
-      'where sm.SM_ID = kctab.SM_ID ' +
-      'group by SM_ID';
-
-    SelectPriceStr := SelectPriceStr1 + ' union ' +
-      SelectPriceStr2 + ' union ' + SelectPriceStr3;
-
-    qrTemp1.SQL.Text :=
+    //Получение списка смет с ценами
+    SelectSmStr :=
       'SELECT FN_getSortSM(sm.SM_ID) SortSM, sm.SM_TYPE SM_TYPE, ' +
         'CONCAT(IF(sm.SM_TYPE = 2, "", IF(sm.SM_TYPE = 1, "  ", "    ")), ' +
           'IFNULL(sm.SM_NUMBER, ""), " ",  IFNULL(sm.NAME, "")) SmNAME, ' +
-        'sm.SM_NUMBER SM_NUMBER, sm.SM_ID SM_ID, cp.CPRICE, sm.PARENT_ID PARENT_ID ' +
+        'sm.SM_NUMBER SM_NUMBER, sm.SM_ID SM_ID, cp.CPRICE CPRICE, ' +
+        'sm.PARENT_ID PARENT_ID ' +
       'FROM smetasourcedata sm ' +
       'LEFT JOIN (' + SelectPriceStr + ') cp on sm.SM_ID = cp.SM_ID ' +
       'WHERE sm.SM_ID IN (SELECT SM_ID FROM smetasourcedata ' +
         'WHERE (SM_ID = sm.SM_ID) OR (PARENT_ID = sm.SM_ID) OR ' +
         '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
           'WHERE PARENT_ID = sm.SM_ID))) ' +
-      'AND sm.SM_TYPE in (' + ShowTypeStr + ') and sm.DELETED=0 ' +
+      'AND sm.DELETED=0 ' +
       'and sm.ACT = 0 AND sm.OBJ_ID = :OBJ_ID ' +
+      'union ' +
+      'Select 99999999999 SortSM, null SM_TYPE, null SmNAME, null SM_NUMBER, ' +
+        'null SM_ID, null CPRICE, null PARENT_ID';
+    //Получения стоимости текущего акта
+    SelectCurAct :=
+      'Select s.SM_ID SM_ID, Sum(at.ACTPRICE) ACTPRICE ' +
+      'from smetasourcedata s left join ' +
+	      '(Select s.SOURCE_ID SOURCE_ID, SUM(IFNULL(d.STOIMF, d.STOIM )) AS ACTPRICE ' +
+        'FROM smetasourcedata s, summary_calculation d ' +
+        'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
+        '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
+          '(SELECT SM_ID FROM smetasourcedata WHERE (DELETED=0) AND ' +
+          '(smetasourcedata.PARENT_ID IN ' +
+          '(SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :SM_ID AND DELETED=0)))) ' +
+        'GROUP BY SOURCE_ID) at ' +
+      'on at.SOURCE_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+        'WHERE (DELETED=0) AND ' +
+          '(OBJ_ID = :OBJ_ID)  and (ACT = 0) AND ' +
+          '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+            'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+      'where (s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
+      'group by SM_ID ' +
+      'union ' +  //union нужен так как MySql не поддерживает full outer join
+      'Select s.SM_ID SM_ID, Sum(at.ACTPRICE) ACTPRICE ' +
+      'from smetasourcedata s right join ' +
+	      '(Select s.SOURCE_ID SOURCE_ID, SUM(IFNULL(d.STOIMF, d.STOIM )) AS ACTPRICE ' +
+        'FROM smetasourcedata s, summary_calculation d ' +
+        'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
+        '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
+          '(SELECT SM_ID FROM smetasourcedata WHERE (DELETED=0) AND ' +
+          '(smetasourcedata.PARENT_ID IN ' +
+          '(SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :SM_ID AND DELETED=0)))) ' +
+        'GROUP BY SOURCE_ID) at ' +
+      'on at.SOURCE_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+        'WHERE (DELETED=0) AND ' +
+          '(OBJ_ID = :OBJ_ID)  and (ACT = 0) AND ' +
+          '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+            'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+      'where (s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
+      'group by SM_ID';
+    //Получения стоимости по всем актам
+    SelectAllActs :=
+      'Select s.SM_ID SM_ID, Sum(at.AllACTSPRICE) AllACTSPRICE ' +
+      'from smetasourcedata s left join ' +
+	      '(Select s.SOURCE_ID SOURCE_ID, SUM(IFNULL(d.STOIMF, d.STOIM )) AS AllACTSPRICE ' +
+        'FROM smetasourcedata s, summary_calculation d ' +
+        'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
+        '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
+          '(Select SM_ID FROM smetasourcedata ' +
+          'WHERE (DELETED = 0) AND (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+            'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+              'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+              '(SM_TYPE = 2) AND (DATE BETWEEN :AllActsDateBegin AND :AllActsDateEnd))))))) ' +
+        'GROUP BY SOURCE_ID) at ' +
+      'on at.SOURCE_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+        'WHERE (DELETED=0) AND ' +
+          '(OBJ_ID = :OBJ_ID)  and (ACT = 0) AND ' +
+          '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+            'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+      'where (s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
+      'group by SM_ID ' +
+      'union ' +  //union нужен так как MySql не поддерживает full outer join
+      'Select s.SM_ID SM_ID, Sum(at.AllACTSPRICE) AllACTSPRICE ' +
+      'from smetasourcedata s right join ' +
+	      '(Select s.SOURCE_ID SOURCE_ID, SUM(IFNULL(d.STOIMF, d.STOIM )) AS AllACTSPRICE ' +
+        'FROM smetasourcedata s, summary_calculation d ' +
+        'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
+        '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
+          '(Select SM_ID FROM smetasourcedata ' +
+          'WHERE (DELETED = 0) AND (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+            'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+              'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+              '(SM_TYPE = 2) AND (DATE BETWEEN :AllActsDateBegin AND :AllActsDateEnd))))))) ' +
+        'GROUP BY SOURCE_ID) at ' +
+      'on at.SOURCE_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+        'WHERE (DELETED=0) AND ' +
+          '(OBJ_ID = :OBJ_ID)  and (ACT = 0) AND ' +
+          '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+            'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+      'where (s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
+      'group by SM_ID';
+    //Получения стоимости по актамза месяц
+    SelectMonthActs :=
+      'Select s.SM_ID SM_ID, Sum(at.MONTHACTSPRICE) MONTHACTSPRICE ' +
+      'from smetasourcedata s left join ' +
+	      '(Select s.SOURCE_ID SOURCE_ID, SUM(IFNULL(d.STOIMF, d.STOIM )) AS MONTHACTSPRICE ' +
+        'FROM smetasourcedata s, summary_calculation d ' +
+        'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
+        '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
+          '(Select SM_ID FROM smetasourcedata ' +
+          'WHERE (DELETED = 0) AND (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+            'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+              'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+              '(SM_TYPE = 2) AND (DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd))))))) ' +
+        'GROUP BY SOURCE_ID) at ' +
+      'on at.SOURCE_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+        'WHERE (DELETED=0) AND ' +
+          '(OBJ_ID = :OBJ_ID)  and (ACT = 0) AND ' +
+          '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+            'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+      'where (s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
+      'group by SM_ID ' +
+      'union ' +  //union нужен так как MySql не поддерживает full outer join
+      'Select s.SM_ID SM_ID, Sum(at.MONTHACTSPRICE) MONTHACTSPRICE ' +
+      'from smetasourcedata s right join ' +
+	      '(Select s.SOURCE_ID SOURCE_ID, SUM(IFNULL(d.STOIMF, d.STOIM )) AS MONTHACTSPRICE ' +
+        'FROM smetasourcedata s, summary_calculation d ' +
+        'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
+        '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
+          '(Select SM_ID FROM smetasourcedata ' +
+          'WHERE (DELETED = 0) AND (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+            'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+              'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+              '(SM_TYPE = 2) AND (DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd))))))) ' +
+        'GROUP BY SOURCE_ID) at ' +
+      'on at.SOURCE_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+        'WHERE (DELETED=0) AND ' +
+          '(OBJ_ID = :OBJ_ID)  and (ACT = 0) AND ' +
+          '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
+          '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
+            'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+      'where (s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
+      'group by SM_ID';
+
+    qrTemp1.SQL.Text := 'Select SortSM, SM_TYPE, SmNAME, SM_NUMBER, SmTab.SM_ID SM_ID, ' +
+      'CPRICE, PARENT_ID, ACTPRICE, AllACTSPRICE, MONTHACTSPRICE ' +
+      'from (' + SelectSmStr + ') SmTab ' +
+      'LEFT JOIN (' + SelectCurAct + ') CurActTab ON SmTab.SM_ID = CurActTab.SM_ID ' +
+      'LEFT JOIN (' + SelectAllActs + ') AllActsTab ON SmTab.SM_ID = AllActsTab.SM_ID ' +
+      'LEFT JOIN (' + SelectMonthActs + ') MonthActsTab ON SmTab.SM_ID = MonthActsTab.SM_ID ' +
+      'WHERE (SM_TYPE in (' + ShowTypeStr + ')) OR (SM_TYPE is NULL) ' +
       'ORDER BY 1,4,5';
     qrTemp1.ParamByName('OBJ_ID').Value := FObjectID;
     qrTemp1.ParamByName('DateBergin').AsDate := FBeginDate;
     qrTemp1.ParamByName('DateEnd').AsDate := FEndDate;
+    qrTemp1.ParamByName('SM_ID').Value := CurActId;
+    qrTemp1.ParamByName('AllActsDateBegin').AsDate := FBeginDate;
+    qrTemp1.ParamByName('AllActsDateEnd').AsDate := CurManthDateEnd;
+    qrTemp1.ParamByName('MonthActsDateBegin').AsDate := CurManthDateBegin;
+    qrTemp1.ParamByName('MonthActsDateEnd').AsDate := CurManthDateEnd;
     qrTemp1.Active := True;
-    Ind := 0;
+
+    SumSmTotalPrice := 0;
+    SumActTotalPrice := 0;
+    SumAllActsTotalPrice := 0;
+    SumManthActsTotalPrice := 0;
+    SumRestPrice := 0;
+
     while not qrTemp1.Eof do
     begin
-      inc(Ind);
-      SetLength(LeftArray, Ind);
-      LeftArray[Ind - 1].SmId := qrTemp1.FieldByName('SM_ID').AsInteger;
-      LeftArray[Ind - 1].ParId := qrTemp1.FieldByName('PARENT_ID').AsInteger;
-      LeftArray[Ind - 1].SmType := qrTemp1.FieldByName('SM_TYPE').AsInteger;
-      LeftArray[Ind - 1].Price := qrTemp1.FieldByName('CPRICE').AsFloat;
-
       mtLeft.Append;
       mtLeftSmName.Value := qrTemp1.FieldByName('SmNAME').AsAnsiString;
-      mtLeftSmId.Value := LeftArray[Ind - 1].SmId;
-      mtLeftSmType.Value := LeftArray[Ind - 1].SmType;
-      mtLeftSmTotalPrice.Value := LeftArray[Ind - 1].Price;
+      mtLeftSmId.Value := qrTemp1.FieldByName('SM_ID').AsInteger;
+      mtLeftSmType.Value := qrTemp1.FieldByName('SM_TYPE').AsInteger;
+      mtLeftSmTotalPrice.Value := qrTemp1.FieldByName('CPRICE').AsFloat;
+      mtLeftActTotalPrice.Value := qrTemp1.FieldByName('ACTPRICE').AsFloat;
+      mtLeftAllActsTotalPrice.Value := qrTemp1.FieldByName('AllACTSPRICE').AsFloat;
+      mtLeftManthActsTotalPrice.Value := qrTemp1.FieldByName('MONTHACTSPRICE').AsFloat;
+      mtLeftRestPrice.Value := mtLeftSmTotalPrice.Value - mtLeftAllActsTotalPrice.Value;
+
+      if mtLeftSmType.Value = 2 then
+      begin
+        SumSmTotalPrice := SumSmTotalPrice + mtLeftSmTotalPrice.Value;
+        SumActTotalPrice := SumActTotalPrice + mtLeftActTotalPrice.Value;
+        SumAllActsTotalPrice := SumAllActsTotalPrice + mtLeftAllActsTotalPrice.Value;
+        SumManthActsTotalPrice := SumManthActsTotalPrice + mtLeftManthActsTotalPrice.Value;
+        SumRestPrice := SumRestPrice + mtLeftRestPrice.Value;
+      end;
+
       mtLeft.Post;
 
       qrTemp1.Next;
     end;
     qrTemp1.Close;
 
-    //Расчет цен локальных смет
-    for I := Low(LeftArray) to High(LeftArray) do
-    begin
-      if (LeftArray[I].SmType = 1) and (LeftArray[I].Price = 0) then
-      begin
-        TmpPrice := 0;
-        for J := Low(LeftArray) to High(LeftArray) do
-          if LeftArray[J].ParId = LeftArray[I].SmId then
-            TmpPrice := TmpPrice + LeftArray[J].Price;
-        LeftArray[I].Price := TmpPrice;
-      end;
-    end;
-
-    //Расчет цен объектных смет
-    for I := Low(LeftArray) to High(LeftArray) do
-    begin
-      if (LeftArray[I].SmType = 2) and (LeftArray[I].Price = 0) then
-      begin
-        TmpPrice := 0;
-        for J := Low(LeftArray) to High(LeftArray) do
-          if LeftArray[J].ParId = LeftArray[I].SmId then
-            TmpPrice := TmpPrice + LeftArray[J].Price;
-        LeftArray[I].Price := TmpPrice;
-      end;
-    end;
-
-    mtLeft.First;
-    if not mtLeft.IsEmpty then
-    begin
-      for I := Low(LeftArray) to High(LeftArray) do
-      begin
-        if (mtLeftSmType.Value in [1,2]) and
-           (mtLeftSmTotalPrice.Value = 0) then
-        begin
-          mtLeft.Edit;
-          mtLeftSmTotalPrice.Value := LeftArray[I].Price;
-          mtLeft.Post;
-        end;
-        mtLeft.Next;
-      end;
-    end;
+    mtLeft.Append;
+    mtLeftSmName.Value := 'Итого';
+    mtLeftSmId.Value := -1;
+    mtLeftSmTotalPrice.Value := SumSmTotalPrice;
+    mtLeftActTotalPrice.Value := SumActTotalPrice;
+    mtLeftAllActsTotalPrice.Value := SumAllActsTotalPrice;
+    mtLeftManthActsTotalPrice.Value := SumManthActsTotalPrice;
+    mtLeftRestPrice.Value := SumRestPrice;
+    mtLeft.Post;
   finally
     mtLeft.EndBatch;
+  end;
+
+  //Заполнение правой таблицы
+  if not mtRight.Active then
+    mtRight.Active :=True;
+  mtRight.EmptyDataSet;
+  mtRight.BeginBatch();
+  try
+    for I := Low(DevItems) to High(DevItems) do
+    begin
+      mtRight.Append;
+      mtRightDevItem.Value := DevItems[I];
+      mtRight.Post;
+    end;
+  finally
+    mtRight.EndBatch;
   end;
 end;
 

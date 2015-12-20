@@ -23,9 +23,6 @@ type
 
   // класс формы для наследования всех форм
   TSmForm = class(TForm)
-    // Процедура стандартной отрисовки таблиц
-    procedure DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
-      State: TGridDrawState);
     // Процедура стандартной сортировки таблиц
     procedure TitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
     procedure GridResize(Sender: TObject); // Процедура управляет показом скроллов в таблице
@@ -44,6 +41,9 @@ type
     procedure SetFormStyle; virtual;
   public
     FormKind: TKindForm;
+    // Процедура стандартной отрисовки таблиц
+    class procedure DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
     constructor Create(AOwner: TComponent); reintroduce; overload;
     constructor Create(AOwner: TComponent; const AInitParams: Variant); reintroduce; overload;
   end;
@@ -839,6 +839,9 @@ begin
   if not(dgTitleClick in (Sender AS TJvDBGrid).Options) then
     Exit;
 
+  if (Sender AS TJvDBGrid).SortedField = '' then
+    Exit;
+
   // Если выбранное поле не из набора, а расчетное или другое, то выходим...
   if TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).FieldByName((Sender AS TJvDBGrid).SortedField)
     .FieldKind <> fkData then
@@ -927,7 +930,7 @@ begin
   Grid.Invalidate;
 end;
 
-procedure TSmForm.DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+class procedure TSmForm.DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
   State: TGridDrawState);
 var
   headerLines: Integer;

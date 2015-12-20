@@ -391,6 +391,7 @@ object FormReportC2B: TFormReportC2B
             ListField = 'NAME'
             ListSource = dsActs
             TabOrder = 0
+            OnClick = cbShowTypeClick
           end
           object cbShowType: TDBLookupComboBox
             Left = 716
@@ -420,6 +421,7 @@ object FormReportC2B: TFormReportC2B
             Height = 285
             Align = alLeft
             DataSource = dsLeft
+            DefaultDrawing = False
             DrawingStyle = gdsClassic
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -434,8 +436,10 @@ object FormReportC2B: TFormReportC2B
             TitleFont.Height = -11
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
+            OnDrawColumnCell = grLeftDrawColumnCell
             AutoAppend = False
             AutoSort = False
+            AutoSizeColumns = True
             AutoSizeColumnIndex = 0
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
@@ -474,7 +478,7 @@ object FormReportC2B: TFormReportC2B
                 FieldName = 'SmTotalPrice'
                 Title.Alignment = taCenter
                 Title.Caption = #1042#1089#1077#1075#1086
-                Width = 90
+                Width = 100
                 Visible = True
               end
               item
@@ -490,7 +494,7 @@ object FormReportC2B: TFormReportC2B
                 FieldName = 'ActTotalPrice'
                 Title.Alignment = taCenter
                 Title.Caption = #1055#1086' '#1072#1082#1090#1091
-                Width = 90
+                Width = 100
                 Visible = True
               end
               item
@@ -505,6 +509,7 @@ object FormReportC2B: TFormReportC2B
                 FieldName = 'AllActsTotalPrice'
                 Title.Alignment = taCenter
                 Title.Caption = #1057' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088'-'#1074#1072
+                Width = 100
                 Visible = True
               end
               item
@@ -519,6 +524,7 @@ object FormReportC2B: TFormReportC2B
                 FieldName = 'ManthActsTotalPrice'
                 Title.Alignment = taCenter
                 Title.Caption = #1047#1072' '#1084#1077#1089#1103#1094
+                Width = 100
                 Visible = True
               end
               item
@@ -526,6 +532,7 @@ object FormReportC2B: TFormReportC2B
                 FieldName = 'RestPrice'
                 Title.Alignment = taCenter
                 Title.Caption = #1054#1089#1090#1072#1090#1086#1082
+                Width = 100
                 Visible = True
               end
               item
@@ -540,7 +547,7 @@ object FormReportC2B: TFormReportC2B
                 FieldName = 'DevForMonth'
                 Title.Alignment = taCenter
                 Title.Caption = #1054#1090#1082#1083'. '#1079#1072' '#1084#1077#1089#1103#1094
-                Width = 90
+                Width = 100
                 Visible = True
               end>
           end
@@ -580,10 +587,24 @@ object FormReportC2B: TFormReportC2B
               end
               item
                 Expanded = False
-                FieldName = 'ItemSumm'
+                FieldName = 'ActSumm'
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1091#1084#1084#1072
                 Width = 90
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'AllSumm'
+                Title.Alignment = taCenter
+                Title.Caption = #1057' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088'-'#1074#1072
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'ManthSumm'
+                Title.Alignment = taCenter
+                Title.Caption = #1047#1072' '#1084#1077#1089#1103#1094
                 Visible = True
               end>
           end
@@ -651,6 +672,7 @@ object FormReportC2B: TFormReportC2B
             ParentFont = False
             TabOrder = 0
             Text = #1057#1077#1085#1090#1103#1073#1088#1100
+            OnChange = cbShowTypeClick
             Items.Strings = (
               #1071#1085#1074#1072#1088#1100
               #1060#1077#1074#1088#1072#1083#1100
@@ -680,6 +702,7 @@ object FormReportC2B: TFormReportC2B
             ParentFont = False
             TabOrder = 1
             Value = 2015
+            OnChange = cbShowTypeClick
           end
         end
       end
@@ -786,7 +809,9 @@ object FormReportC2B: TFormReportC2B
       FieldName = 'SmCount'
     end
     object mtLeftSmTotalPrice: TCurrencyField
+      DisplayWidth = 10
       FieldName = 'SmTotalPrice'
+      DisplayFormat = '#,0'
       currency = False
     end
     object mtLeftActCount: TFloatField
@@ -794,52 +819,77 @@ object FormReportC2B: TFormReportC2B
     end
     object mtLeftActTotalPrice: TCurrencyField
       FieldName = 'ActTotalPrice'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtLeftAllActsCount: TFloatField
       FieldName = 'AllActsCount'
     end
     object mtLeftAllActsTotalPrice: TCurrencyField
       FieldName = 'AllActsTotalPrice'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtLeftManthActsCount: TFloatField
       FieldName = 'ManthActsCount'
     end
     object mtLeftManthActsTotalPrice: TCurrencyField
       FieldName = 'ManthActsTotalPrice'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtLeftRestPrice: TCurrencyField
       FieldName = 'RestPrice'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtLeftDevFromBeg: TCurrencyField
       FieldName = 'DevFromBeg'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtLeftDevForMonth: TCurrencyField
       FieldName = 'DevForMonth'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtLeftSmId: TIntegerField
-      FieldKind = fkCalculated
       FieldName = 'SmId'
-      Calculated = True
     end
     object mtLeftSmType: TIntegerField
       FieldName = 'SmType'
     end
   end
   object mtRight: TFDMemTable
-    Active = True
+    FieldDefs = <>
+    IndexDefs = <>
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
     ResourceOptions.AssignedValues = [rvSilentMode]
     ResourceOptions.SilentMode = True
     UpdateOptions.AssignedValues = [uvCheckRequired]
     UpdateOptions.CheckRequired = False
+    StoreDefs = True
     Left = 348
     Top = 276
     object mtRightDevItem: TStringField
       FieldName = 'DevItem'
+      Size = 150
     end
-    object mtRightItemSumm: TCurrencyField
-      FieldName = 'ItemSumm'
+    object mtRightActSumm: TCurrencyField
+      FieldName = 'ActSumm'
+      DisplayFormat = '#,0'
+      currency = False
+    end
+    object mtRightAllSumm: TCurrencyField
+      FieldName = 'AllSumm'
+      DisplayFormat = '#,0'
+      currency = False
+    end
+    object mtRightManthSumm: TCurrencyField
+      FieldName = 'ManthSumm'
+      DisplayFormat = '#,0'
+      currency = False
     end
   end
   object dsLeft: TDataSource
