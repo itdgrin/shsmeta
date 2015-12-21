@@ -3,7 +3,7 @@ object fContractPrice: TfContractPrice
   Top = 0
   Caption = #1050#1086#1085#1090#1088#1072#1082#1090#1085#1072#1103' '#1094#1077#1085#1072
   ClientHeight = 346
-  ClientWidth = 1184
+  ClientWidth = 891
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,30 +20,34 @@ object fContractPrice: TfContractPrice
   object pnlTop: TPanel
     Left = 0
     Top = 0
-    Width = 1184
+    Width = 891
     Height = 81
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitLeft = -1
+    ExplicitTop = -5
+    ExplicitWidth = 1184
     DesignSize = (
-      1184
+      891
       81)
-    object lbl4: TLabel
-      Left = 783
-      Top = 3
+    object lblViewType: TLabel
+      Left = 599
+      Top = 4
       Width = 42
       Height = 13
       Caption = #1043#1088#1072#1092#1080#1082':'
     end
-    object lbl1: TLabel
-      Left = 1050
+    object lblCalcType: TLabel
+      Left = 757
       Top = 3
       Width = 39
       Height = 13
       Anchors = [akTop, akRight]
       Caption = #1056#1072#1089#1095#1077#1090':'
+      ExplicitLeft = 1050
     end
-    object grp3: TGroupBox
+    object grpSmetaStart: TGroupBox
       Left = 8
       Top = 3
       Width = 225
@@ -96,7 +100,7 @@ object fContractPrice: TfContractPrice
         Value = 2015
       end
     end
-    object grp1: TGroupBox
+    object grpBuildStart: TGroupBox
       Left = 236
       Top = 3
       Width = 162
@@ -149,60 +153,7 @@ object fContractPrice: TfContractPrice
         Value = 2015
       end
     end
-    object grp2: TGroupBox
-      Left = 596
-      Top = 3
-      Width = 181
-      Height = 42
-      Caption = #1044#1072#1090#1072' '#1086#1082#1086#1085#1095#1072#1085#1080#1103' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
-      Enabled = False
-      TabOrder = 3
-      object seYearEndStroj: TSpinEdit
-        Left = 127
-        Top = 15
-        Width = 50
-        Height = 22
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        MaxValue = 2100
-        MinValue = 2012
-        ParentFont = False
-        TabOrder = 1
-        Value = 2015
-      end
-      object cbbMonthEndStroj: TComboBox
-        Left = 7
-        Top = 15
-        Width = 114
-        Height = 21
-        Style = csDropDownList
-        DropDownCount = 12
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 0
-        Items.Strings = (
-          #1071#1085#1074#1072#1088#1100
-          #1060#1077#1074#1088#1072#1083#1100
-          #1052#1072#1088#1090
-          #1040#1087#1088#1077#1083#1100
-          #1052#1072#1081
-          #1048#1102#1085#1100
-          #1048#1102#1083#1100
-          #1040#1074#1075#1091#1089#1090
-          #1057#1077#1085#1090#1103#1073#1088#1100
-          #1054#1082#1090#1103#1073#1088#1100
-          #1053#1086#1103#1073#1088#1100
-          #1044#1077#1082#1072#1073#1088#1100)
-      end
-    end
-    object grp4: TGroupBox
+    object grpSrok: TGroupBox
       Left = 401
       Top = 3
       Width = 192
@@ -210,7 +161,7 @@ object fContractPrice: TfContractPrice
       Caption = #1053#1086#1088#1084#1072#1090#1080#1074#1085#1099#1081' '#1089#1088#1086#1082' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
       Enabled = False
       TabOrder = 2
-      object lbl5: TLabel
+      object lblMonth: TLabel
         Left = 159
         Top = 18
         Width = 20
@@ -236,9 +187,10 @@ object fContractPrice: TfContractPrice
       Caption = #1050#1086#1085#1090#1088#1072#1082#1090#1085#1072#1103' '#1094#1077#1085#1072' '#1089#1092#1086#1088#1084#1080#1088#1086#1074#1072#1085#1072
       DataField = 'FL_CONTRACT_PRICE_DONE'
       DataSource = dsOBJ
-      TabOrder = 8
+      TabOrder = 7
       ValueChecked = '1'
       ValueUnchecked = '0'
+      OnClick = dbchkFL_CONTRACT_PRICE1Click
     end
     object dbchkFL_CONTRACT_PRICE1: TDBCheckBox
       Left = 8
@@ -248,39 +200,30 @@ object fContractPrice: TfContractPrice
       Caption = #1056#1091#1095#1085#1086#1081' '#1074#1074#1086#1076
       DataField = 'FL_CONTRACT_PRICE_USER_DATA'
       DataSource = dsOBJ
-      TabOrder = 7
+      TabOrder = 6
       ValueChecked = '1'
       ValueUnchecked = '0'
+      OnClick = dbchkFL_CONTRACT_PRICE1Click
     end
-    object pnl1: TPanel
+    object pnlIndex: TPanel
       Left = 298
-      Top = 51
-      Width = 519
+      Top = 50
+      Width = 351
       Height = 21
       BevelOuter = bvNone
-      TabOrder = 9
-      object lbl2: TLabel
+      TabOrder = 5
+      object lblTypeIndex: TLabel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 68
+        Width = 202
         Height = 15
         Align = alLeft
-        Caption = #1042#1080#1076' '#1080#1085#1076#1077#1082#1089#1072':'
-        ExplicitHeight = 13
-      end
-      object lbl3: TLabel
-        AlignWithMargins = True
-        Left = 209
-        Top = 3
-        Width = 145
-        Height = 15
-        Align = alLeft
-        Caption = #1056#1072#1089#1095#1077#1090' '#1080#1085#1076#1077#1082#1089#1072#1094#1080#1080' '#1085#1072' '#1076#1072#1090#1091':'
-        ExplicitHeight = 13
+        Caption = #1048#1085#1076#1077#1082#1089' '#1085#1072' '#1076#1072#1090#1091' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
+        ExplicitTop = 4
       end
       object dblkcbbindex_type_id: TDBLookupComboBox
-        Left = 74
+        Left = 208
         Top = 0
         Width = 132
         Height = 21
@@ -291,43 +234,34 @@ object fContractPrice: TfContractPrice
         ListField = 'index_type_name'
         ListSource = dsIndexType
         TabOrder = 0
-      end
-      object dblkcbbindex_type_date_id: TDBLookupComboBox
-        Left = 357
-        Top = 0
-        Width = 161
-        Height = 21
-        Align = alLeft
-        DataField = 'index_type_date_id'
-        DataSource = dsOBJ
-        KeyField = 'index_type_date_id'
-        ListField = 'index_type_date_name'
-        ListSource = dsIndexTypeDate
-        TabOrder = 1
+        OnCloseUp = dblkcbbindex_type_idCloseUp
+        ExplicitLeft = 74
       end
     end
-    object btn1: TBitBtn
-      Left = 940
-      Top = 20
+    object btnContractPays: TBitBtn
+      Left = 647
+      Top = 51
       Width = 121
       Height = 25
+      Anchors = [akTop, akRight]
       Caption = #1043#1088#1072#1092#1080#1082' '#1087#1083#1072#1090#1077#1078#1077#1081
-      TabOrder = 4
-      OnClick = btn1Click
+      TabOrder = 8
+      OnClick = btnContractPaysClick
     end
-    object btnRecalc: TBitBtn
-      Left = 1060
+    object btnCalc: TBitBtn
+      Left = 774
       Top = 51
-      Width = 122
+      Width = 115
       Height = 25
       Anchors = [akTop, akRight]
       Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100' '#1088#1072#1089#1095#1077#1090
-      TabOrder = 10
-      OnClick = btnRecalcClick
+      TabOrder = 9
+      OnClick = btnCalcClick
+      ExplicitLeft = 1067
     end
     object cbbViewType: TComboBox
-      Left = 783
-      Top = 22
+      Left = 599
+      Top = 23
       Width = 151
       Height = 21
       Style = csDropDownList
@@ -339,14 +273,15 @@ object fContractPrice: TfContractPrice
       Font.Style = []
       ItemIndex = 0
       ParentFont = False
-      TabOrder = 5
+      TabOrder = 4
       Text = #1074' '#1088#1091#1073#1083#1103#1093
+      OnCloseUp = cbbViewTypeCloseUp
       Items.Strings = (
         #1074' '#1088#1091#1073#1083#1103#1093
         #1074' '#1087#1088#1086#1094#1077#1085#1090#1072#1093' '#1086#1090' '#1086#1073#1098#1077#1084#1072)
     end
     object dblkcbbindex_type_id1: TDBLookupComboBox
-      Left = 1050
+      Left = 757
       Top = 22
       Width = 132
       Height = 21
@@ -357,37 +292,43 @@ object fContractPrice: TfContractPrice
       KeyField = 'CONTRACT_PRICE_TYPE_ID'
       ListField = 'CONTRACT_PRICE_TYPE_NAME'
       ListSource = dsCONTRACT_PRICE_TYPE
-      TabOrder = 6
+      TabOrder = 3
       OnCloseUp = dblkcbbindex_type_id1CloseUp
+      ExplicitLeft = 1050
     end
   end
   object pnlClient: TPanel
     Left = 0
     Top = 81
-    Width = 1184
+    Width = 891
     Height = 265
     Align = alClient
     TabOrder = 1
+    ExplicitWidth = 1184
     object grMain: TJvDBGrid
       Left = 1
       Top = 1
-      Width = 1182
+      Width = 889
       Height = 263
       Align = alClient
       DataSource = dsMain
       Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
+      PopupMenu = pm1
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
+      OnDrawColumnCell = grMainDrawColumnCell
+      OnDblClick = btnCalcClick
       SelectColumnsDialogStrings.Caption = 'Select columns'
       SelectColumnsDialogStrings.OK = '&OK'
       SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
       EditControls = <>
       RowsHeight = 17
       TitleRowHeight = 17
+      OnCanEditCell = grMainCanEditCell
     end
   end
   object dsMain: TDataSource
@@ -397,6 +338,8 @@ object fContractPrice: TfContractPrice
   end
   object qrMain: TFDQuery
     BeforeOpen = qrOBJBeforeOpen
+    BeforePost = qrMainBeforePost
+    AfterScroll = qrMainAfterScroll
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -421,28 +364,56 @@ object fContractPrice: TfContractPrice
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'SELECT '
-      '  FN_getSortSM(s.`SM_ID`), '
+      '  FN_getSortSM(s.`SM_ID`) AS SORT_ID, '
       '  s.`SM_ID`, '
       '  s.`SM_NUMBER`, '
       '  s.`NAME`,'
       '  s.`SM_TYPE`,'
+      '  IF(:VIEW_TYPE=0,'
       
-        '  (SELECT SUM(CONTRACT_PRICE) FROM contract_price WHERE SM_ID=s.' +
-        'SM_ID AND OnDate BETWEEN o.BEG_STROJ2 AND DATE_ADD(o.BEG_STROJ2,' +
-        ' INTERVAL  (o.SROK_STROJ - 1) MONTH)) AS TOTAL,'
-      '#MONTH_FIELDS#'
-      'FROM `objcards` as o, round_setup rs, `smetasourcedata` as s'
-      'LEFT JOIN summary_calculation d ON d.SM_ID IN'
+        '  (SELECT SUM(CONTRACT_PRICE) FROM contract_price WHERE SM_ID IN' +
+        ' '
       '  (SELECT SM_ID'
       '   FROM smetasourcedata '
       '   WHERE DELETED=0 AND'
+      '     CASE o.CONTRACT_PRICE_TYPE_ID'
+      '     WHEN 1 THEN SM_TYPE=3'
+      '     WHEN 2 THEN SM_TYPE=1'
+      '     WHEN 3 THEN SM_TYPE=2'
+      '     END'
+      '   AND '
       '    ((smetasourcedata.SM_ID = s.SM_ID) OR'
-      '           (smetasourcedata.PARENT_ID = s.SM_ID) OR '
-      '           (smetasourcedata.PARENT_ID IN ('
-      '             SELECT SM_ID'
-      '             FROM smetasourcedata'
-      '             WHERE PARENT_ID = s.SM_ID AND DELETED=0)))'
-      '  ) '
+      '     (smetasourcedata.PARENT_ID = s.SM_ID) OR '
+      '     (smetasourcedata.PARENT_ID IN ('
+      '        SELECT SM_ID'
+      '        FROM smetasourcedata'
+      '        WHERE PARENT_ID = s.SM_ID AND DELETED=0)))'
+      
+        '  ) AND OnDate BETWEEN o.BEG_STROJ2 AND DATE_ADD(o.BEG_STROJ2, I' +
+        'NTERVAL (o.SROK_STROJ - 1) MONTH)),'
+      '  (SELECT SUM(CP.PER_NORM_STROJ) / COUNT(*) * o.SROK_STROJ'
+      '   FROM smetasourcedata'
+      '   JOIN objcards AS o ON o.OBJ_ID=smetasourcedata.OBJ_ID'
+      
+        '   LEFT JOIN contract_price AS CP ON CP.SM_ID=smetasourcedata.SM' +
+        '_ID AND CP.OnDate BETWEEN o.BEG_STROJ2 AND DATE_ADD(o.BEG_STROJ2' +
+        ', INTERVAL (o.SROK_STROJ - 1) MONTH)'
+      '   WHERE DELETED=0 AND'
+      '     CASE o.CONTRACT_PRICE_TYPE_ID'
+      '     WHEN 1 THEN SM_TYPE=3'
+      '     WHEN 2 THEN SM_TYPE=1'
+      '     WHEN 3 THEN SM_TYPE=2'
+      '     END'
+      '   AND '
+      '    ((smetasourcedata.SM_ID = s.SM_ID) OR'
+      '     (smetasourcedata.PARENT_ID = s.SM_ID) OR '
+      '     (smetasourcedata.PARENT_ID IN ('
+      '        SELECT SM_ID'
+      '        FROM smetasourcedata'
+      '        WHERE PARENT_ID = s.SM_ID AND DELETED=0)))'
+      '  )) AS TOTAL,'
+      '#MONTH_FIELDS#'
+      'FROM `objcards` as o, round_setup rs, `smetasourcedata` as s'
       'WHERE o.`OBJ_ID` = :OBJ_ID'
       
         '  AND ((o.`CONTRACT_PRICE_TYPE_ID` = 1) OR (o.`CONTRACT_PRICE_TY' +
@@ -456,6 +427,10 @@ object fContractPrice: TfContractPrice
     Left = 376
     Top = 224
     ParamData = <
+      item
+        Name = 'VIEW_TYPE'
+        ParamType = ptInput
+      end
       item
         Name = 'OBJ_ID'
         DataType = ftBCD
@@ -526,37 +501,6 @@ object fContractPrice: TfContractPrice
     Left = 24
     Top = 280
   end
-  object qrIndexTypeDate: TFDQuery
-    Connection = DM.Connect
-    Transaction = DM.Read
-    UpdateTransaction = DM.Write
-    FetchOptions.AssignedValues = [evCache]
-    FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric, fvFmtEditNumeric]
-    FormatOptions.OwnMapRules = True
-    FormatOptions.MapRules = <
-      item
-        SourceDataType = dtByteString
-        TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtFmtBCD
-        TargetDataType = dtDouble
-      end>
-    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvCheckReadOnly]
-    UpdateOptions.EnableDelete = False
-    UpdateOptions.EnableInsert = False
-    UpdateOptions.CheckReadOnly = False
-    SQL.Strings = (
-      'SELECT * FROM index_type_date')
-    Left = 121
-    Top = 280
-  end
-  object dsIndexTypeDate: TDataSource
-    DataSet = qrIndexTypeDate
-    Left = 119
-    Top = 280
-  end
   object dsCONTRACT_PRICE_TYPE: TDataSource
     DataSet = qrCONTRACT_PRICE_TYPE
     Left = 296
@@ -579,5 +523,13 @@ object fContractPrice: TfContractPrice
       'select * from CONTRACT_PRICE_TYPE')
     Left = 289
     Top = 280
+  end
+  object pm1: TPopupMenu
+    Left = 312
+    Top = 145
+    object mN1: TMenuItem
+      Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100' '#1087#1077#1088#1077#1088#1072#1089#1095#1077#1090
+      OnClick = mN1Click
+    end
   end
 end

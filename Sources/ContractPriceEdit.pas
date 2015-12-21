@@ -7,7 +7,8 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Tools, DataModule, Vcl.ExtCtrls, Vcl.Grids, Vcl.DBGrids, JvExDBGrids,
   JvDBGrid, Vcl.StdCtrls, Vcl.Mask, Vcl.DBCtrls, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.DateUtils, Main;
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.DateUtils, Main, Vcl.Buttons, System.UITypes,
+  JvComponentBase, JvFormPlacement;
 
 type
   TfContractPriceEdit = class(TSmForm)
@@ -44,6 +45,17 @@ type
     dbtxtSROK_STROJ: TDBText;
     qrMain: TFDQuery;
     dsMain: TDataSource;
+    lbl11: TLabel;
+    dbtxtINDEX_NAME: TDBText;
+    lbl12: TLabel;
+    lbl13: TLabel;
+    lbl14: TLabel;
+    lbl15: TLabel;
+    dbedtSUM_START: TDBEdit;
+    dbedtSUM_START1: TDBEdit;
+    dbedtSUM_START2: TDBEdit;
+    dbedtSUM_START3: TDBEdit;
+    FormStorage: TJvFormStorage;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -55,7 +67,7 @@ type
       State: TGridDrawState);
     procedure qrMainAfterPost(DataSet: TDataSet);
   private
-    idObject, idEstimate, calcType: Integer;
+    idObject, idEstimate: Integer;
     procedure ReloadMain;
   public
     { Public declarations }
@@ -80,7 +92,6 @@ var
 begin
   idObject := InitParams[0];
   idEstimate := InitParams[1];
-  calcType := InitParams[2];
 
   qrHead.Active := True;
   // —оздаем мес€ца расчета, если не созданы
@@ -117,7 +128,7 @@ begin
     Font.Color := PS.FontRows;
 
     if not(qrMain.FieldByName('EDITABLE').Value = 1) or (DataCol <= 1) then
-      Brush.Color := clBtnFace; //сlSilver
+      Brush.Color := clBtnFace; // сlSilver
 
     headerLines := 1;
     if not(dgTitles in (Sender AS TJvDBGrid).Options) then
@@ -137,8 +148,8 @@ begin
       Font.Color := PS.FontSelectCell;
       Font.Style := Font.Style + [fsbold];
     end;
-    {if (qrMain.FieldByName('EDITABLE').Value = 1) and (DataCol > 1) then
-      Brush.Color := MixColors(clMoneyGreen, Brush.Color, 80);  }
+    { if (qrMain.FieldByName('EDITABLE').Value = 1) and (DataCol > 1) then
+      Brush.Color := MixColors(clMoneyGreen, Brush.Color, 80); }
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
@@ -174,7 +185,9 @@ var
   i: Integer;
   tmpDate: TDate;
   FN: string;
+  flSumNoIndexChange: Boolean;
 begin
+  flSumNoIndexChange := False;
   if qrMain.FieldByName('EDITABLE').AsInteger = 1 then
   begin
     for i := 0 to qrHead.FieldByName('SROK_STROJ').AsInteger - 1 do
@@ -212,11 +225,18 @@ begin
                 VarArrayOf([qrMain.FieldByName(FN).Value, idEstimate]));
             end;
           10:
-            FastExecSQL('UPDATE contract_price SET SUM_NO_INDEX=:0 WHERE SM_ID=:1 AND OnDate="' +
-              FormatDateTime('yyyy-mm-dd', tmpDate) + '"',
-              VarArrayOf([qrMain.FieldByName(FN).Value, idEstimate]));
+            begin
+              FastExecSQL('UPDATE contract_price SET SUM_NO_INDEX=:0 WHERE SM_ID=:1 AND OnDate="' +
+                FormatDateTime('yyyy-mm-dd', tmpDate) + '"',
+                VarArrayOf([qrMain.FieldByName(FN).Value, idEstimate]));
+              // ¬озводим флаг - требование пересчитать все остальные мес€ца
+              flSumNoIndexChange := True;
+            end;
         end;
     end;
+    // пересчитать все мес€ца
+    if flSumNoIndexChange then
+      FastExecSQL('UPDATE contract_price SET SM_ID=:0 WHERE SM_ID=:1', VarArrayOf([idEstimate, idEstimate]));
     CloseOpen(qrMain);
   end;
 end;

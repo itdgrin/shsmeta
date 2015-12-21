@@ -135,7 +135,8 @@ uses
   winioctl in 'winioctl.pas',
   ContractPrice in 'ContractPrice.pas' {fContractPrice},
   ContractPriceEdit in 'ContractPriceEdit.pas' {fContractPriceEdit},
-  fReportC2B in 'fReportC2B.pas' {FormReportC2B};
+  fReportC2B in 'fReportC2B.pas' {FormReportC2B},
+  ContractPays in 'ContractPays.pas' {fContractPays};
 
 {$R *.res}
 var MHandle: THandle;

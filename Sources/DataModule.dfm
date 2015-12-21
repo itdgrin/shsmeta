@@ -1146,7 +1146,9 @@ object DM: TDM
       'CharacterSet=cp1251'
       'TinyIntFormat=Integer'
       'DriverID=MySQL')
-    FormatOptions.AssignedValues = [fvSortOptions, fvStrsTrim2Len]
+    FormatOptions.AssignedValues = [fvFmtDisplayNumeric, fvFmtEditNumeric, fvSortOptions, fvStrsTrim2Len]
+    FormatOptions.FmtDisplayNumeric = '###,##0.########'
+    FormatOptions.FmtEditNumeric = '0.########'
     TxOptions.DisconnectAction = xdRollback
     LoginPrompt = False
     Transaction = Read

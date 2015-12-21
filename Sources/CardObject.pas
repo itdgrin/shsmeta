@@ -469,7 +469,7 @@ end;
 
 procedure TfCardObject.ButtonSaveClick(Sender: TObject);
 var
-  NumberObject, v2, v3, v4, v5, v6, v7, v9, v12, v14, v15, v16, v17, v18, v19: string;
+  NumberObject, v2, v3, v4, v5, v6, v7, v9, v12, v15, v16, v17, v18, v19: string;
   CountField: Integer;
   NEW_ID: Integer;
 begin
