@@ -25,9 +25,6 @@ object fContractPrice: TfContractPrice
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitLeft = -1
-    ExplicitTop = -5
-    ExplicitWidth = 1184
     DesignSize = (
       891
       81)
@@ -220,7 +217,7 @@ object fContractPrice: TfContractPrice
         Height = 15
         Align = alLeft
         Caption = #1048#1085#1076#1077#1082#1089' '#1085#1072' '#1076#1072#1090#1091' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072':'
-        ExplicitTop = 4
+        ExplicitHeight = 13
       end
       object dblkcbbindex_type_id: TDBLookupComboBox
         Left = 208
@@ -235,7 +232,6 @@ object fContractPrice: TfContractPrice
         ListSource = dsIndexType
         TabOrder = 0
         OnCloseUp = dblkcbbindex_type_idCloseUp
-        ExplicitLeft = 74
       end
     end
     object btnContractPays: TBitBtn
@@ -257,7 +253,6 @@ object fContractPrice: TfContractPrice
       Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100' '#1088#1072#1089#1095#1077#1090
       TabOrder = 9
       OnClick = btnCalcClick
-      ExplicitLeft = 1067
     end
     object cbbViewType: TComboBox
       Left = 599
@@ -294,7 +289,6 @@ object fContractPrice: TfContractPrice
       ListSource = dsCONTRACT_PRICE_TYPE
       TabOrder = 3
       OnCloseUp = dblkcbbindex_type_id1CloseUp
-      ExplicitLeft = 1050
     end
   end
   object pnlClient: TPanel
@@ -304,7 +298,6 @@ object fContractPrice: TfContractPrice
     Height = 265
     Align = alClient
     TabOrder = 1
-    ExplicitWidth = 1184
     object grMain: TJvDBGrid
       Left = 1
       Top = 1
@@ -313,7 +306,7 @@ object fContractPrice: TfContractPrice
       Align = alClient
       DataSource = dsMain
       Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
-      PopupMenu = pm1
+      PopupMenu = pm
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
@@ -524,12 +517,13 @@ object fContractPrice: TfContractPrice
     Left = 289
     Top = 280
   end
-  object pm1: TPopupMenu
+  object pm: TPopupMenu
+    OnPopup = pmPopup
     Left = 312
     Top = 145
-    object mN1: TMenuItem
+    object mRecalcAll: TMenuItem
       Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100' '#1087#1077#1088#1077#1088#1072#1089#1095#1077#1090
-      OnClick = mN1Click
+      OnClick = mRecalcAllClick
     end
   end
 end

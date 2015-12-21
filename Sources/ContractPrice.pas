@@ -44,8 +44,8 @@ type
     qrCONTRACT_PRICE_TYPE: TFDQuery;
     dblkcbbindex_type_id1: TDBLookupComboBox;
     lblCalcType: TLabel;
-    pm1: TPopupMenu;
-    mN1: TMenuItem;
+    pm: TPopupMenu;
+    mRecalcAll: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -62,8 +62,9 @@ type
     procedure dbchkFL_CONTRACT_PRICE1Click(Sender: TObject);
     procedure dblkcbbindex_type_idCloseUp(Sender: TObject);
     procedure cbbViewTypeCloseUp(Sender: TObject);
-    procedure mN1Click(Sender: TObject);
+    procedure mRecalcAllClick(Sender: TObject);
     procedure qrMainBeforePost(DataSet: TDataSet);
+    procedure pmPopup(Sender: TObject);
 
   private
     idObject, idEstimate: Integer;
@@ -227,13 +228,18 @@ begin
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-procedure TfContractPrice.mN1Click(Sender: TObject);
+procedure TfContractPrice.mRecalcAllClick(Sender: TObject);
 begin
   qrMain.CheckBrowseMode;
   FastExecSQL('UPDATE `contract_price` SET SM_ID=SM_ID WHERE SM_ID IN (SELECT SM_ID'#13 +
     'FROM `smetasourcedata` WHERE OBJ_ID=:0)', VarArrayOf([idObject]));
   FastExecSQL('UPDATE `contract_pay` SET OBJ_ID=OBJ_ID WHERE OBJ_ID=:0', VarArrayOf([idObject]));
   CloseOpen(qrMain);
+end;
+
+procedure TfContractPrice.pmPopup(Sender: TObject);
+begin
+  mRecalcAll.Visible := not dbchkFL_CONTRACT_PRICE1.Checked and not dbchkFL_CONTRACT_PRICE.Checked;
 end;
 
 procedure TfContractPrice.qrMainAfterScroll(DataSet: TDataSet);
@@ -252,9 +258,17 @@ begin
     tmpDate := IncMonth(qrOBJ.FieldByName('BEG_STROJ2').AsDateTime, i);
     FN := 'M' + IntToStr(MonthOf(tmpDate)) + 'Y' + IntToStr(YearOf(tmpDate));
     if qrMain.FieldByName(FN).Value <> qrMain.FieldByName(FN).OldValue then
-      FastExecSQL('UPDATE contract_price SET contract_price=:0 WHERE SM_ID=:1 AND OnDate="' +
-        FormatDateTime('yyyy-mm-dd', tmpDate) + '"',
-        VarArrayOf([qrMain.FieldByName(FN).Value, qrMain.FieldByName('SM_ID').Value]));
+      case cbbViewType.ItemIndex of
+        0:
+          FastExecSQL('UPDATE contract_price SET contract_price=:0 WHERE SM_ID=:1 AND OnDate="' +
+            FormatDateTime('yyyy-mm-dd', tmpDate) + '"',
+            VarArrayOf([qrMain.FieldByName(FN).Value, qrMain.FieldByName('SM_ID').Value]));
+        1:
+          FastExecSQL
+            ('UPDATE contract_price SET PER_NORM_STROJ=:0, PER_NORM_DEVICE=PER_NORM_STROJ WHERE SM_ID=:1 AND OnDate="'
+            + FormatDateTime('yyyy-mm-dd', tmpDate) + '"',
+            VarArrayOf([qrMain.FieldByName(FN).Value, qrMain.FieldByName('SM_ID').Value]));
+      end;
   end;
   CloseOpen(qrMain);
 end;
