@@ -16,6 +16,7 @@ object FormReportC2B: TFormReportC2B
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object pnlObject: TPanel
@@ -334,6 +335,10 @@ object FormReportC2B: TFormReportC2B
       Font.Style = []
       ImageIndex = 2
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pnlRepAct: TPanel
         Left = 0
         Top = 0
@@ -410,15 +415,15 @@ object FormReportC2B: TFormReportC2B
           Left = 0
           Top = 36
           Width = 845
-          Height = 287
+          Height = 277
           Align = alTop
           Anchors = [akLeft, akTop, akRight, akBottom]
           TabOrder = 1
           object grLeft: TJvDBGrid
             Left = 1
             Top = 1
-            Width = 815
-            Height = 285
+            Width = 587
+            Height = 275
             Align = alLeft
             DataSource = dsLeft
             DefaultDrawing = False
@@ -539,7 +544,7 @@ object FormReportC2B: TFormReportC2B
                 Expanded = False
                 FieldName = 'DevFromBeg'
                 Title.Alignment = taCenter
-                Title.Caption = #1054#1090#1082#1083#1102' '#1089' '#1085#1072#1095'. '#1089#1090#1088'-'#1074#1072
+                Title.Caption = #1054#1090#1082#1083'. '#1089' '#1085#1072#1095'. '#1089#1090#1088'-'#1074#1072
                 Visible = True
               end
               item
@@ -553,24 +558,27 @@ object FormReportC2B: TFormReportC2B
           end
           object grRight: TJvDBGrid
             AlignWithMargins = True
-            Left = 818
+            Left = 590
             Top = 1
-            Width = 26
-            Height = 285
+            Width = 254
+            Height = 275
             Margins.Left = 2
             Margins.Top = 0
             Margins.Right = 0
             Margins.Bottom = 0
             Align = alClient
             DataSource = dsRight
+            DrawingStyle = gdsClassic
+            ReadOnly = True
             TabOrder = 1
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
+            AutoSort = False
             AutoSizeColumns = True
-            AutoSizeColumnIndex = 0
+            AutoSizeColumnIndex = 1
             SelectColumnsDialogStrings.Caption = 'Select columns'
             SelectColumnsDialogStrings.OK = '&OK'
             SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -578,6 +586,13 @@ object FormReportC2B: TFormReportC2B
             RowsHeight = 17
             TitleRowHeight = 17
             Columns = <
+              item
+                Expanded = False
+                FieldName = 'Num'
+                Title.Caption = #8470
+                Width = 20
+                Visible = True
+              end
               item
                 Expanded = False
                 FieldName = 'DevItem'
@@ -590,7 +605,7 @@ object FormReportC2B: TFormReportC2B
                 FieldName = 'ActSumm'
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1091#1084#1084#1072
-                Width = 90
+                Width = 100
                 Visible = True
               end
               item
@@ -598,6 +613,7 @@ object FormReportC2B: TFormReportC2B
                 FieldName = 'AllSumm'
                 Title.Alignment = taCenter
                 Title.Caption = #1057' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088'-'#1074#1072
+                Width = 100
                 Visible = True
               end
               item
@@ -605,8 +621,42 @@ object FormReportC2B: TFormReportC2B
                 FieldName = 'ManthSumm'
                 Title.Alignment = taCenter
                 Title.Caption = #1047#1072' '#1084#1077#1089#1103#1094
+                Width = 100
                 Visible = True
               end>
+          end
+        end
+        object pnlMemos: TPanel
+          Left = 0
+          Top = 313
+          Width = 845
+          Height = 41
+          Align = alClient
+          TabOrder = 2
+          object memLeft: TDBMemo
+            Left = 1
+            Top = 1
+            Width = 587
+            Height = 39
+            Align = alLeft
+            DataField = 'SmName'
+            DataSource = dsLeft
+            TabOrder = 0
+          end
+          object memRight: TDBMemo
+            AlignWithMargins = True
+            Left = 590
+            Top = 1
+            Width = 254
+            Height = 39
+            Margins.Left = 2
+            Margins.Top = 0
+            Margins.Right = 0
+            Margins.Bottom = 0
+            Align = alClient
+            DataField = 'DevItem'
+            DataSource = dsRight
+            TabOrder = 1
           end
         end
       end
@@ -620,6 +670,10 @@ object FormReportC2B: TFormReportC2B
       Font.Style = []
       ImageIndex = 1
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pnlRepObj: TPanel
         Left = 0
         Top = 0
@@ -710,6 +764,10 @@ object FormReportC2B: TFormReportC2B
     object tsRegActs: TTabSheet
       Caption = #1056#1077#1077#1089#1090#1088' '#1072#1082#1090#1086#1074
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
   end
   object qrObject: TFDQuery
@@ -730,6 +788,9 @@ object FormReportC2B: TFormReportC2B
       
         '    FN_getIndex(beg_stroj, DATE_ADD(beg_stroj2, INTERVAL -1 MONT' +
         'H), 1) as pibeg,'
+      
+        '    FN_getIndex(beg_stroj2, DATE_ADD(beg_stroj2, INTERVAL +srok_' +
+        'stroj MONTH), 1) as piend,'
       '    CONTRACT_PRICE_TYPE_ID'
       'FROM objcards '
       'WHERE (DEL_FLAG=0) AND'
@@ -872,6 +933,9 @@ object FormReportC2B: TFormReportC2B
     StoreDefs = True
     Left = 348
     Top = 276
+    object mtRightNum: TIntegerField
+      FieldName = 'Num'
+    end
     object mtRightDevItem: TStringField
       FieldName = 'DevItem'
       Size = 150

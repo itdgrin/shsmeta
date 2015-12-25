@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  System.Classes, System.UITypes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.Buttons, Vcl.StdCtrls, Tools, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Vcl.Mask, Vcl.DBCtrls,
@@ -13,14 +13,7 @@ uses
   Vcl.DBGrids, JvExDBGrids, JvDBGrid;
 
 type
-  TLeftRec = record
-    SmId: Integer;
-    ParId: Integer;
-    SmType: Integer;
-    Price: Currency;
-  end;
-
-  TFormReportC2B = class(TSmForm)
+   TFormReportC2B = class(TSmForm)
     pnlObject: TPanel;
     gbObject: TGroupBox;
     qrObject: TFDQuery;
@@ -91,6 +84,10 @@ type
     cbShowType: TDBLookupComboBox;
     mtRightAllSumm: TCurrencyField;
     mtRightManthSumm: TCurrencyField;
+    mtRightNum: TIntegerField;
+    pnlMemos: TPanel;
+    memLeft: TDBMemo;
+    memRight: TDBMemo;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -102,6 +99,7 @@ type
     procedure cbShowTypeClick(Sender: TObject);
     procedure grLeftDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure FormResize(Sender: TObject);
   private const
     CaptionButton = 'Отчет С2-Б';
     HintButton = 'Окно отчета С2-Б';
@@ -112,6 +110,11 @@ type
     FDocDate,
     FBeginDate,
     FEndDate: TDateTime;
+
+    FPIBegin,
+    FPIEnd,
+    FPICur: Double;
+
     procedure BuildReport();
     { Private declarations }
   public
@@ -131,7 +134,7 @@ uses
 
 {$R *.dfm}
 
-const DevItems: array[1..24] of string =
+const DevItems: array[1..24] of AnsiString =
   ('Суммы, учитываемые при расчетах в связи с корректировкой контрактной цены, в т.ч.',
    '- Отклонение в стоимости эксплуатации машин и механизмов',
    '- Отклонение в стоимости материалов',
@@ -205,6 +208,8 @@ begin
       lbDateEndStroj.Caption := '---';
 
     lbPIBegin.Caption := FloatToStr(qrObject.FieldByName('pibeg').AsFloat);
+    FPIBegin := qrObject.FieldByName('pibeg').AsFloat;
+    FPIEnd := qrObject.FieldByName('piend').AsFloat;
 
     edtObjContNum.Text := qrObject.FieldByName('num_dog').AsString;
     edtObjContDate.Text := qrObject.FieldByName('date_dog').AsString;
@@ -286,6 +291,12 @@ begin
   FormMain.DeleteButtonCloseWindow(CaptionButton);
 end;
 
+procedure TFormReportC2B.FormResize(Sender: TObject);
+begin
+  grLeft.Width := 5 * (Width div 9);
+  memLeft.Width := grLeft.Width;
+end;
+
 procedure TFormReportC2B.grLeftDrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
@@ -313,6 +324,7 @@ begin
       lbShowTypeTitle.Parent := pnlRepObjDate;
       cbShowType.Parent := pnlRepObjDate;
       pnlGrids.Parent := pnlRepObj;
+      pnlMemos.Parent := pnlRepObj;
 
       grLeft.Columns[4].Visible := False;
       grLeft.Columns[5].Visible := False;
@@ -322,15 +334,16 @@ begin
       grLeft.Columns[9].Visible := True;
       grLeft.Columns[10].Visible := True;
 
-      grRight.Columns[1].Visible := True;
       grRight.Columns[2].Visible := False;
-      grRight.Columns[3].Visible := False;
+      grRight.Columns[3].Visible := True;
+      grRight.Columns[4].Visible := True;
   end;
   if pcReportType.ActivePage = tsRepAct then
   begin
       lbShowTypeTitle.Parent := pnlRepActDate;
       cbShowType.Parent := pnlRepActDate;
       pnlGrids.Parent := pnlRepAct;
+      pnlMemos.Parent := pnlRepAct;
 
       grLeft.Columns[4].Visible := False;//True;
       grLeft.Columns[5].Visible := True;
@@ -340,9 +353,9 @@ begin
       grLeft.Columns[9].Visible := False;
       grLeft.Columns[10].Visible := False;
 
-      grRight.Columns[1].Visible := False;
       grRight.Columns[2].Visible := True;
-      grRight.Columns[3].Visible := True;
+      grRight.Columns[3].Visible := False;
+      grRight.Columns[4].Visible := False;
   end;
 
   BuildReport();
@@ -355,15 +368,19 @@ begin
 end;
 
 procedure TFormReportC2B.BuildReport();
-var RepType: Integer;
+var //RepType: Integer;
     ShowTypeStr: string;
     ContPriceTypeStr: string;
     CurActId: Integer;
-    SelectPriceStr,
-    SelectSmStr,
-    SelectCurAct,
-    SelectAllActs,
-    SelectMonthActs: string;
+    SelPriceStr,
+    SelSmStr,
+    SelCurAct,
+    SelAllActs,
+    SelMonthActs,
+    SelRightSm,
+    SelRightCurAct,
+    SelRightAllActs,
+    SelRightMonthActs: string;
     CurManthDateBegin,
     CurManthDateEnd: TDateTime;
 
@@ -373,7 +390,7 @@ var RepType: Integer;
 
     I: Integer;
 begin
-  RepType := pcReportType.ActivePageIndex;
+ // RepType := pcReportType.ActivePageIndex;
 
   //Заполнение левой таблицы
   case cbShowType.KeyValue of
@@ -395,6 +412,12 @@ begin
 
   CurManthDateBegin := EncodeDate(seRepObjYear.Value, cbRepObjMonth.ItemIndex + 1, 1);
   CurManthDateEnd :=  IncMonth(CurManthDateBegin, 1) - 1;
+  qrTemp1.SQL.Text := 'Select FN_getIndex(:DateBeg, :DateEnd, 1)';
+  qrTemp1.ParamByName('DateBeg').Value :=  FBeginDate;
+  qrTemp1.ParamByName('DateEnd').Value := CurManthDateBegin;
+  qrTemp1.Active := True;
+  FPICur := qrTemp1.Fields[0].AsFloat;
+  qrTemp1.Active := False;
 
   if not mtLeft.Active then
     mtLeft.Active :=True;
@@ -403,7 +426,7 @@ begin
   mtLeft.BeginBatch();
   try
     //Получение контрактной цены
-    SelectPriceStr :=
+    SelPriceStr :=
       'Select s.SM_ID SM_ID, Sum(cp.CONTRACT_PRICE) CPRICE ' +
       'from smetasourcedata s left join contract_price cp ' +
       'on cp.SM_ID IN (SELECT SM_ID FROM smetasourcedata WHERE ' +
@@ -412,19 +435,19 @@ begin
         '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
         '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
         '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
-          'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+          'WHERE PARENT_ID = s.SM_ID)))) ' +
       'where (cp.OnDate BETWEEN :DateBergin AND :DateEnd) and ' +
         '(s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
       'group by SM_ID';
     //Получение списка смет с ценами
-    SelectSmStr :=
+    SelSmStr :=
       'SELECT FN_getSortSM(sm.SM_ID) SortSM, sm.SM_TYPE SM_TYPE, ' +
         'CONCAT(IF(sm.SM_TYPE = 2, "", IF(sm.SM_TYPE = 1, "  ", "    ")), ' +
           'IFNULL(sm.SM_NUMBER, ""), " ",  IFNULL(sm.NAME, "")) SmNAME, ' +
         'sm.SM_NUMBER SM_NUMBER, sm.SM_ID SM_ID, cp.CPRICE CPRICE, ' +
         'sm.PARENT_ID PARENT_ID ' +
       'FROM smetasourcedata sm ' +
-      'LEFT JOIN (' + SelectPriceStr + ') cp on sm.SM_ID = cp.SM_ID ' +
+      'LEFT JOIN (' + SelPriceStr + ') cp on sm.SM_ID = cp.SM_ID ' +
       'WHERE sm.SM_ID IN (SELECT SM_ID FROM smetasourcedata ' +
         'WHERE (SM_ID = sm.SM_ID) OR (PARENT_ID = sm.SM_ID) OR ' +
         '(PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
@@ -435,16 +458,15 @@ begin
       'Select 99999999999 SortSM, null SM_TYPE, null SmNAME, null SM_NUMBER, ' +
         'null SM_ID, null CPRICE, null PARENT_ID';
     //Получения стоимости текущего акта
-    SelectCurAct :=
+    SelCurAct :=
       'Select s.SM_ID SM_ID, Sum(at.ACTPRICE) ACTPRICE ' +
       'from smetasourcedata s left join ' +
 	      '(Select s.SOURCE_ID SOURCE_ID, SUM(IFNULL(d.STOIMF, d.STOIM )) AS ACTPRICE ' +
         'FROM smetasourcedata s, summary_calculation d ' +
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
         '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
-          '(SELECT SM_ID FROM smetasourcedata WHERE (DELETED=0) AND ' +
-          '(smetasourcedata.PARENT_ID IN ' +
-          '(SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :SM_ID AND DELETED=0)))) ' +
+          '(SELECT SM_ID FROM smetasourcedata WHERE (smetasourcedata.PARENT_ID IN ' +
+          '(SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :SM_ID)))) ' +
         'GROUP BY SOURCE_ID) at ' +
       'on at.SOURCE_ID IN (SELECT SM_ID FROM smetasourcedata ' +
         'WHERE (DELETED=0) AND ' +
@@ -452,7 +474,7 @@ begin
           '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
           '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
           '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
-            'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+            'WHERE PARENT_ID = s.SM_ID)))) ' +
       'where (s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
       'group by SM_ID ' +
       'union ' +  //union нужен так как MySql не поддерживает full outer join
@@ -462,9 +484,8 @@ begin
         'FROM smetasourcedata s, summary_calculation d ' +
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
         '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
-          '(SELECT SM_ID FROM smetasourcedata WHERE (DELETED=0) AND ' +
-          '(smetasourcedata.PARENT_ID IN ' +
-          '(SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :SM_ID AND DELETED=0)))) ' +
+          '(SELECT SM_ID FROM smetasourcedata WHERE (smetasourcedata.PARENT_ID IN ' +
+          '(SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :SM_ID)))) ' +
         'GROUP BY SOURCE_ID) at ' +
       'on at.SOURCE_ID IN (SELECT SM_ID FROM smetasourcedata ' +
         'WHERE (DELETED=0) AND ' +
@@ -472,11 +493,11 @@ begin
           '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
           '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
           '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
-            'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+            'WHERE PARENT_ID = s.SM_ID)))) ' +
       'where (s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
       'group by SM_ID';
     //Получения стоимости по всем актам
-    SelectAllActs :=
+    SelAllActs :=
       'Select s.SM_ID SM_ID, Sum(at.AllACTSPRICE) AllACTSPRICE ' +
       'from smetasourcedata s left join ' +
 	      '(Select s.SOURCE_ID SOURCE_ID, SUM(IFNULL(d.STOIMF, d.STOIM )) AS AllACTSPRICE ' +
@@ -484,7 +505,7 @@ begin
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
         '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
           '(Select SM_ID FROM smetasourcedata ' +
-          'WHERE (DELETED = 0) AND (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+          'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
             'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
               'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
               '(SM_TYPE = 2) AND (DATE BETWEEN :AllActsDateBegin AND :AllActsDateEnd))))))) ' +
@@ -495,7 +516,7 @@ begin
           '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
           '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
           '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
-            'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+            'WHERE PARENT_ID = s.SM_ID)))) ' +
       'where (s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
       'group by SM_ID ' +
       'union ' +  //union нужен так как MySql не поддерживает full outer join
@@ -506,7 +527,7 @@ begin
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
         '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
           '(Select SM_ID FROM smetasourcedata ' +
-          'WHERE (DELETED = 0) AND (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+          'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
             'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
               'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
               '(SM_TYPE = 2) AND (DATE BETWEEN :AllActsDateBegin AND :AllActsDateEnd))))))) ' +
@@ -517,11 +538,11 @@ begin
           '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
           '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
           '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
-            'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+            'WHERE PARENT_ID = s.SM_ID)))) ' +
       'where (s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
       'group by SM_ID';
     //Получения стоимости по актамза месяц
-    SelectMonthActs :=
+    SelMonthActs :=
       'Select s.SM_ID SM_ID, Sum(at.MONTHACTSPRICE) MONTHACTSPRICE ' +
       'from smetasourcedata s left join ' +
 	      '(Select s.SOURCE_ID SOURCE_ID, SUM(IFNULL(d.STOIMF, d.STOIM )) AS MONTHACTSPRICE ' +
@@ -529,7 +550,7 @@ begin
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
         '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
           '(Select SM_ID FROM smetasourcedata ' +
-          'WHERE (DELETED = 0) AND (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+          'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
             'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
               'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
               '(SM_TYPE = 2) AND (DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd))))))) ' +
@@ -540,7 +561,7 @@ begin
           '((smetasourcedata.SM_ID = s.SM_ID) OR ' +
           '(smetasourcedata.PARENT_ID = s.SM_ID) OR ' +
           '(smetasourcedata.PARENT_ID IN (SELECT SM_ID FROM smetasourcedata ' +
-            'WHERE PARENT_ID = s.SM_ID AND DELETED=0)))) ' +
+            'WHERE PARENT_ID = s.SM_ID)))) ' +
       'where (s.OBJ_ID = :OBJ_ID) and (s.DELETED=0) and (s.ACT = 0) ' +
       'group by SM_ID ' +
       'union ' +  //union нужен так как MySql не поддерживает full outer join
@@ -551,7 +572,7 @@ begin
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
         '(d.SM_ID = s.SM_ID) AND (s.SM_ID in ' +
           '(Select SM_ID FROM smetasourcedata ' +
-          'WHERE (DELETED = 0) AND (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+          'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
             'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
               'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
               '(SM_TYPE = 2) AND (DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd))))))) ' +
@@ -568,10 +589,10 @@ begin
 
     qrTemp1.SQL.Text := 'Select SortSM, SM_TYPE, SmNAME, SM_NUMBER, SmTab.SM_ID SM_ID, ' +
       'CPRICE, PARENT_ID, ACTPRICE, AllACTSPRICE, MONTHACTSPRICE ' +
-      'from (' + SelectSmStr + ') SmTab ' +
-      'LEFT JOIN (' + SelectCurAct + ') CurActTab ON SmTab.SM_ID = CurActTab.SM_ID ' +
-      'LEFT JOIN (' + SelectAllActs + ') AllActsTab ON SmTab.SM_ID = AllActsTab.SM_ID ' +
-      'LEFT JOIN (' + SelectMonthActs + ') MonthActsTab ON SmTab.SM_ID = MonthActsTab.SM_ID ' +
+      'from (' + SelSmStr + ') SmTab ' +
+      'LEFT JOIN (' + SelCurAct + ') CurActTab ON SmTab.SM_ID = CurActTab.SM_ID ' +
+      'LEFT JOIN (' + SelAllActs + ') AllActsTab ON SmTab.SM_ID = AllActsTab.SM_ID ' +
+      'LEFT JOIN (' + SelMonthActs + ') MonthActsTab ON SmTab.SM_ID = MonthActsTab.SM_ID ' +
       'WHERE (SM_TYPE in (' + ShowTypeStr + ')) OR (SM_TYPE is NULL) ' +
       'ORDER BY 1,4,5';
     qrTemp1.ParamByName('OBJ_ID').Value := FObjectID;
@@ -601,7 +622,6 @@ begin
       mtLeftAllActsTotalPrice.Value := qrTemp1.FieldByName('AllACTSPRICE').AsFloat;
       mtLeftManthActsTotalPrice.Value := qrTemp1.FieldByName('MONTHACTSPRICE').AsFloat;
       mtLeftRestPrice.Value := mtLeftSmTotalPrice.Value - mtLeftAllActsTotalPrice.Value;
-
       if mtLeftSmType.Value = 2 then
       begin
         SumSmTotalPrice := SumSmTotalPrice + mtLeftSmTotalPrice.Value;
@@ -610,9 +630,7 @@ begin
         SumManthActsTotalPrice := SumManthActsTotalPrice + mtLeftManthActsTotalPrice.Value;
         SumRestPrice := SumRestPrice + mtLeftRestPrice.Value;
       end;
-
       mtLeft.Post;
-
       qrTemp1.Next;
     end;
     qrTemp1.Close;
@@ -636,10 +654,233 @@ begin
   mtRight.EmptyDataSet;
   mtRight.BeginBatch();
   try
+    SelRightSm :=
+      'Select Round(SUM(IFNULL(d.EMiMF, d.EMiM)) * :CurPi) AS SmEMiM, ' +
+             'Round(SUM(IFNULL(d.MRF, d.MR)) * :CurPi) AS SmMr, ' +
+             'Round(SUM(IFNULL(d.TRANSPF, d.TRANSP) + ' +
+               'IFNULL(d.TRANSP_DUMPF, d.TRANSP_DUMP) + ' +
+               'IFNULL(d.TRANSP_CARGOF, d.TRANSP_CARGO)) * :CurPi) AS SmTransp, ' +
+             'Round(SUM(IFNULL(d.OTHERF, d.OTHER)) * :CurPi) AS SmOther, ' +
+             'Round(SUM(IFNULL(d.ZEM_NALF, d.ZEM_NAL) + ' +
+               'IFNULL(d.VEDOMS_NAL, d.VEDOMS_NAL)) * :CurPi) AS SmNal, ' +
+             'Round(SUM(IFNULL(d.MAT_ZAKF, d.MAT_ZAK)) * :CurPi) AS SmMATZAK, ' +
+             'Round(SUM(0)) AS SmNalYpr, ' +
+             'Round(SUM(IFNULL(d.NDSF, d.NDS)) * :CurPi) AS SmNDS, ' +
+             'Round(SUM(IFNULL(d.MR_DEVICEF, d.MR_DEVICE)) * :CurPi) AS SmDevice, ' +
+             'Round(SUM(0) * :CurPi) AS SmKompMat, ' +
+             'Round(SUM(0) * :CurPi) AS SmKompMech ' +
+      'FROM smetasourcedata s, summary_calculation d ' +
+      'WHERE (s.DELETED = 0) AND (s.ACT = 0) AND ' +
+            '(s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID)';
+
+    SelRightCurAct :=
+      'Select Round(SUM(IFNULL(d.EMiMF, d.EMiM))) AS CurActEMiM, ' +
+             'Round(SUM(IFNULL(d.MRF, d.MR))) AS CurActMr, ' +
+             'Round(SUM(IFNULL(d.TRANSPF, d.TRANSP) + ' +
+               'IFNULL(d.TRANSP_DUMPF, d.TRANSP_DUMP) + ' +
+               'IFNULL(d.TRANSP_CARGOF, d.TRANSP_CARGO))) AS CurActTransp, ' +
+             'Round(SUM(IFNULL(d.OTHERF, d.OTHER))) AS CurActOther, ' +
+             'Round(SUM(IFNULL(d.ZEM_NALF, d.ZEM_NAL) + ' +
+               'IFNULL(d.VEDOMS_NAL, d.VEDOMS_NAL))) AS CurActNal, ' +
+             'Round(SUM(IFNULL(d.MAT_ZAKF, d.MAT_ZAK))) AS CurActMATZAK, ' +
+             'Round(SUM(0)) AS CurActNalYpr, ' +
+             'Round(SUM(IFNULL(d.NDSF, d.NDS))) AS CurActNDS, ' +
+             'Round(SUM(IFNULL(d.MR_DEVICEF, d.MR_DEVICE))) AS CurActDevice, ' +
+             'Round(SUM(0)) AS CurActKompMat, ' +
+             'Round(SUM(0)) AS CurActKompMech ' +
+        'FROM smetasourcedata s, summary_calculation d ' +
+        'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID) AND ' +
+              '(s.ACT = 1) AND (s.SM_ID in (SELECT SM_ID FROM smetasourcedata WHERE ' +
+                '(smetasourcedata.PARENT_ID IN ' +
+                '(SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :SM_ID))))';
+
+    SelRightAllActs :=
+      'Select Round(SUM(IFNULL(d.EMiMF, d.EMiM))) AS AllActsEMiM, ' +
+               'Round(SUM(IFNULL(d.MRF, d.MR)) ) AS AllActsMr, ' +
+               'Round(SUM(IFNULL(d.TRANSPF, d.TRANSP) + ' +
+                   'IFNULL(d.TRANSP_DUMPF, d.TRANSP_DUMP) + ' +
+                   'IFNULL(d.TRANSP_CARGOF, d.TRANSP_CARGO))) AS AllActsTransp, ' +
+               'Round(SUM(IFNULL(d.OTHERF, d.OTHER))) AS AllActsOther, ' +
+               'Round(SUM(IFNULL(d.ZEM_NALF, d.ZEM_NAL) + ' +
+                   'IFNULL(d.VEDOMS_NAL, d.VEDOMS_NAL))) AS AllActsNal, ' +
+               'Round(SUM(IFNULL(d.MAT_ZAKF, d.MAT_ZAK))) AS AllActsMATZAK, ' +
+               'Round(SUM(0)) AS AllActsNalYpr, ' +
+               'Round(SUM(IFNULL(d.NDSF, d.NDS))) AS AllActsNDS, ' +
+               'Round(SUM(IFNULL(d.MR_DEVICEF, d.MR_DEVICE))) AS AllActsDevice, ' +
+               'Round(SUM(0)) AS AllActsKompMat, ' +
+             'Round(SUM(0)) AS AllActsKompMech ' +
+        'FROM smetasourcedata s, summary_calculation d ' +
+        'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID) AND ' +
+              '(s.ACT = 1) AND (s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
+                'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+                  'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+                  '(SM_TYPE = 2) AND (DATE BETWEEN :AllActsDateBegin AND :AllActsDateEnd)))))))';
+
+    SelRightMonthActs :=
+      'Select Round(SUM(IFNULL(d.EMiMF, d.EMiM))) AS MonActsEMiM, ' +
+             'Round(SUM(IFNULL(d.MRF, d.MR)) ) AS MonActsMr, ' +
+             'Round(SUM(IFNULL(d.TRANSPF, d.TRANSP) + ' +
+               'IFNULL(d.TRANSP_DUMPF, d.TRANSP_DUMP) + ' +
+               'IFNULL(d.TRANSP_CARGOF, d.TRANSP_CARGO))) AS MonActsTransp, ' +
+             'Round(SUM(IFNULL(d.OTHERF, d.OTHER))) AS MonActsOther, ' +
+             'Round(SUM(IFNULL(d.ZEM_NALF, d.ZEM_NAL) + ' +
+               'IFNULL(d.VEDOMS_NAL, d.VEDOMS_NAL))) AS MonActsNal, ' +
+             'Round(SUM(IFNULL(d.MAT_ZAKF, d.MAT_ZAK))) AS MonActsMATZAK, ' +
+             'Round(SUM(0)) AS MonActsNalYpr, ' +
+             'Round(SUM(IFNULL(d.NDSF, d.NDS))) AS MonActsNDS, ' +
+             'Round(SUM(IFNULL(d.MR_DEVICEF, d.MR_DEVICE))) AS MonActsDevice, ' +
+             'Round(SUM(0)) AS MonActsKompMat, ' +
+             'Round(SUM(0)) AS MonActsKompMech ' +
+        'FROM smetasourcedata s, summary_calculation d ' +
+        'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID) AND ' +
+              '(s.ACT = 1) AND (s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
+                'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+                  'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
+                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+                  '(SM_TYPE = 2) AND (DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd)))))))';
+
+
+    qrTemp1.SQL.Text :=
+      'Select ' +
+      '(SmEMiM + SmMr + SmTransp + SmOther + SmNal + ' +
+       'SmMATZAK + SmNalYpr + SmNDS + SmDevice - ' +
+       'CurActEMiM - CurActMr - CurActTransp - CurActOther - CurActNal - ' +
+       'CurActMATZAK - CurActNalYpr - CurActNDS - CurActDevice) DevCurActSum, ' +
+      '(SmEMiM - CurActEMiM) DevCurActEMiM, ' +
+      '(SmMr - CurActMr) DevCurActMr, ' +
+      '(SmTransp - CurActTransp) DevCurActTransp, ' +
+      '(SmOther - CurActOther) DevCurActOther, ' +
+      '(SmNal - CurActNal) DevCurActNal, ' +
+      '(SmMATZAK - CurActMATZAK) DevCurActMATZAK, ' +
+      '(SmNalYpr - CurActNalYpr) DevCurActNalYpr, ' +
+      '(SmNDS - CurActNDS) DevCurActNDS, ' +
+      '(SmDevice - CurActDevice) DevCurActDevice, ' +
+      '(SmKompMat - CurActKompMat) DevCurActKompMat, ' +
+      '(SmKompMech - CurActKompMech) DevCurActKompMech, ' +
+
+      '(SmEMiM + SmMr + SmTransp + SmOther + SmNal + ' +
+       'SmMATZAK + SmNalYpr + SmNDS + SmDevice - ' +
+       'AllActsEMiM - AllActsMr - AllActsTransp - AllActsOther - AllActsNal - ' +
+       'AllActsMATZAK - AllActsNalYpr - AllActsNDS - AllActsDevice) DevAllActsSum, ' +
+      '(SmEMiM - AllActsEMiM) DevAllActsEMiM, ' +
+      '(SmMr - AllActsMr) DevAllActsMr, ' +
+      '(SmTransp - AllActsTransp) DevAllActsTransp, ' +
+      '(SmOther - AllActsOther) DevAllActsOther, ' +
+      '(SmNal - AllActsNal) DevAllActsNal, ' +
+      '(SmMATZAK - AllActsMATZAK) DevAllActsMATZAK, ' +
+      '(SmNalYpr - AllActsNalYpr) DevAllActsNalYpr, ' +
+      '(SmNDS - AllActsNDS) DevAllActsNDS, ' +
+      '(SmDevice - AllActsDevice) DevAllActsDevice, ' +
+      '(SmKompMat - AllActsKompMat) DevAllActsKompMat, ' +
+      '(SmKompMech - AllActsKompMech) DevAllActsKompMech, ' +
+
+      '(SmEMiM + SmMr + SmTransp + SmOther + SmNal + ' +
+       'SmMATZAK + SmNalYpr + SmNDS + SmDevice - ' +
+       'MonActsEMiM - MonActsMr - MonActsTransp - MonActsOther - MonActsNal - ' +
+       'MonActsMATZAK - MonActsNalYpr - MonActsNDS - MonActsDevice) DevMonActsSum, ' +
+      '(SmEMiM - MonActsEMiM) DevMonActsEMiM, ' +
+      '(SmMr - MonActsMr) DevMonActsMr, ' +
+      '(SmTransp - MonActsTransp) DevMonActsTransp, ' +
+      '(SmOther - MonActsOther) DevMonActsOther, ' +
+      '(SmNal - MonActsNal) DevMonActsNal, ' +
+      '(SmMATZAK - MonActsMATZAK) DevMonActsMATZAK, ' +
+      '(SmNalYpr - MonActsNalYpr) DevMonActsNalYpr, ' +
+      '(SmNDS - MonActsNDS) DevMonActsNDS, ' +
+      '(SmDevice - MonActsDevice) DevMonActsDevice, ' +
+      '(SmKompMat - MonActsKompMat) DevMonActsKompMat, ' +
+      '(SmKompMech - MonActsKompMech) DevMonActsKompMech ' +
+
+      'from (' + SelRightSm + ') sm, (' + SelRightCurAct + ') curact, ' +
+           '(' + SelRightAllActs + ') allacts, (' + SelRightMonthActs + ') monacts';
+    qrTemp1.ParamByName('OBJ_ID').Value := FObjectID;
+    qrTemp1.ParamByName('CurPi').Value := FPICur;
+    qrTemp1.ParamByName('SM_ID').Value := CurActId;
+    qrTemp1.ParamByName('AllActsDateBegin').AsDate := FBeginDate;
+    qrTemp1.ParamByName('AllActsDateEnd').AsDate := CurManthDateEnd;
+    qrTemp1.ParamByName('MonthActsDateBegin').AsDate := CurManthDateBegin;
+    qrTemp1.ParamByName('MonthActsDateEnd').AsDate := CurManthDateEnd;
+    qrTemp1.Active := True;
+
     for I := Low(DevItems) to High(DevItems) do
     begin
       mtRight.Append;
+      mtRightNum.Value := I;
       mtRightDevItem.Value := DevItems[I];
+      case I of
+      1:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActSum').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsSum').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsSum').AsFloat;
+      end;
+      2:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActEMiM').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsEMiM').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsEMiM').AsFloat;
+      end;
+      3:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActMr').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsMr').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsMr').AsFloat;
+      end;
+      4:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActTransp').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsTransp').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsTransp').AsFloat;
+      end;
+      5:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActOther').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsOther').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsOther').AsFloat;
+      end;
+      6:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActNal').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsNal').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsNal').AsFloat;
+      end;
+      7:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActMATZAK').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsMATZAK').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsMATZAK').AsFloat;
+      end;
+      8:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActNalYpr').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsNalYpr').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsNalYpr').AsFloat;
+      end;
+      9:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActNDS').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsNDS').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsNDS').AsFloat;
+      end;
+      10:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActDevice').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsDevice').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsDevice').AsFloat;
+      end;
+      11:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActKompMat').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsKompMat').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsKompMat').AsFloat;
+      end;
+      12:
+      begin
+        mtRightActSumm.Value := qrTemp1.FieldByName('DevCurActKompMech').AsFloat;
+        mtRightAllSumm.Value := qrTemp1.FieldByName('DevAllActsKompMech').AsFloat;
+        mtRightManthSumm.Value := qrTemp1.FieldByName('DevMonActsKompMech').AsFloat;
+      end;
+      end;
       mtRight.Post;
     end;
   finally
