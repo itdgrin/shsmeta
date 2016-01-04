@@ -466,7 +466,6 @@ end;
 function LicenseAssigned(AValue: Pointer): Boolean;
 var LocalKey: TBytes;
     KeyDll: TMemoryStream;
-    CheckKey: TCheckKey;
     SmAssigned: TSmAssigned;
     SI: TSerialKeyInfo;
     pDll : pointer;
@@ -485,13 +484,10 @@ begin
         if pDll = nil then
           Abort;
 
-        @CheckKey := MemoryGetProcAddress(pDll, 'CheckKey');
         @SmAssigned := MemoryGetProcAddress(pDll, 'SmAssigned');
-        if (@CheckKey = nil) or (@SmAssigned = nil) then
+        if (@SmAssigned = nil) then
           Abort;
 
-        if not CheckKey(SI.DateBegin, SI.DateEnd) then
-          Abort;
         Result := SmAssigned(AValue);
       finally
         if pDll <> nil then
