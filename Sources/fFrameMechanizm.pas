@@ -14,13 +14,13 @@ type
     procedure ListSprResize(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
+    procedure PMAddToClick(Sender: TObject);
   private
     FZpColIndex,
     FTrColIndex: Integer;
     { Private declarations }
   private
     { Private declarations }
-    FAllowAddition: Boolean;
   protected
     function GetSprType: Integer; override;
     function CheckFindCode(AFindCode: string): string; override;
@@ -122,6 +122,12 @@ begin
       ListSpr.Columns[FZpColIndex].Width := 120;
     ListSpr.Columns[FTrColIndex].Width := 120;
   end;
+end;
+
+procedure TSprMechanizm.PMAddToClick(Sender: TObject);
+begin
+  inherited;
+  ListSprDblClick(ListSpr);
 end;
 
 end.

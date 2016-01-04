@@ -16,9 +16,9 @@ type
     lbRegion: TLabel;
     procedure ListSprDblClick(Sender: TObject);
     procedure rbMatClick(Sender: TObject);
+    procedure PMAddToClick(Sender: TObject);
   private
     { Private declarations }
-    FAllowAddition: Boolean;
   protected
     function GetSprType: Integer; override;
     function GetRegion: Integer; override;
@@ -125,6 +125,12 @@ begin
   cmbRegion.Enabled := False;
   rbMat.Enabled := False;
   rbJBI.Enabled := False;
+end;
+
+procedure TSprMaterial.PMAddToClick(Sender: TObject);
+begin
+  inherited;
+  ListSprDblClick(ListSpr);
 end;
 
 procedure TSprMaterial.rbMatClick(Sender: TObject);

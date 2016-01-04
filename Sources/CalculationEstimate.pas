@@ -702,6 +702,7 @@ type
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
       'Окно расчёта акта субподрядчика');
   private
+    FMesCaption: string; //Заголовок для сообщений окна
     flLoaded: Boolean;
 
     ActReadOnly: Boolean;
@@ -800,6 +801,9 @@ type
     function GetSMSubType(ASM_ID: Integer): Integer;
     procedure CloseOtherTabs;
     function GetEditable: Boolean;
+
+    function AddNewManualData(ASprType: Integer; const ANewCode: string;
+      var ANewID: Integer): Boolean;
   protected
     procedure SetFormStyle; override;
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -852,7 +856,8 @@ uses Main, DataModule, SignatureSSR, Waiting,
   ReplacementMatAndMech, CardEstimate, KC6Journal,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
   TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog,
-  ManualPriceSelect, uSelectColumn, ContractPrice;
+  ManualPriceSelect, uSelectColumn, ContractPrice,
+  ManualSprItem, SprController;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -1012,12 +1017,14 @@ begin
   if not Act then
   begin
     Caption := CaptionButton[1] + ' - Разрешено редактирование документа';
+    FMesCaption := CaptionButton[1];
     btnResCalc.Visible := True;
     btnResCalc.Caption := 'Контрактная цена';
   end
   else
   begin
     Caption := CaptionButton[2 + TYPE_ACT] + ' - Разрешено редактирование документа';
+    FMesCaption := CaptionButton[2 + TYPE_ACT];
     SpeedButtonSSR.Visible := False;
     btnResCalc.Caption := 'Расчет';
     // btnResCalc.Visible := True;
@@ -1870,8 +1877,10 @@ begin
 
   if not FileExists(Path) then
   begin
-    MessageBox(0, PChar('Вы пытаетесь открыть файл:' + sLineBreak + sLineBreak + Path + sLineBreak +
-      sLineBreak + 'которого не существует!'), CaptionForm, MB_ICONWARNING + MB_OK + mb_TaskModal);
+    MessageBox(0, PChar('Вы пытаетесь открыть файл:' +
+      sLineBreak + sLineBreak + Path + sLineBreak +
+      sLineBreak + 'которого не существует!'),
+      PChar(FMesCaption), MB_ICONWARNING + MB_OK + mb_TaskModal);
     Exit;
   end;
 
@@ -2622,7 +2631,8 @@ begin
     Exit;
   end;
 
-  if MessageBox(0, PChar(TextWarning), PWideChar(Caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo
+  if MessageBox(0, PChar(TextWarning), PChar(FMesCaption),
+    MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo
   then
     Exit;
 
@@ -2637,7 +2647,8 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При удалении сметы возникла ошибка:' + sLineBreak + e.Message), PWideChar(Caption),
+      MessageBox(0, PChar('При удалении сметы возникла ошибка:' +
+        sLineBreak + e.Message), PChar(FMesCaption),
         MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -3157,6 +3168,8 @@ var
   NewCode: string;
   newID: Integer;
   Point: TPoint;
+  MatType: integer;
+  MatStr: string;
 begin
   NewCode := Trim(AnsiUpperCase(qrRatesExOBJ_CODE.AsString));
 
@@ -3167,11 +3180,14 @@ begin
   newID := 0;
 
   // Замена литинских на кирилические
-  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'Ц') or
-    (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
+  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or
+     (NewCode[1] = 'У') or (NewCode[1] = 'T') or
+     (NewCode[1] = 'Ц') or (NewCode[1] = 'W') or
+     (NewCode[1] = '0') then // E кирилическая и латинская
   begin
-    if (NewCode[1] = 'E') or (NewCode[1] = 'T') then
-      NewCode[1] := 'Е';
+    if (NewCode[1] = 'E') or (NewCode[1] = 'T') or
+       (NewCode[1] = 'У') then
+      NewCode[1] := 'Е'; // E кирилическая
     if NewCode[1] = 'W' then
       NewCode[1] := 'Ц';
 
@@ -3182,7 +3198,7 @@ begin
       1:
         if NewCode[1] = '0' then
         begin
-          MessageBox(0, 'Ввод пусконаладки не допустим!', CaptionForm,
+          MessageBox(0, 'Ввод пусконаладки не допустим!', PChar(FMesCaption),
             MB_ICONINFORMATION + MB_OK + mb_TaskModal);
           qrRatesExOBJ_CODE.AsString := '';
           Exit;
@@ -3190,7 +3206,8 @@ begin
       2:
         if NewCode[1] <> '0' then
         begin
-          MessageBox(0, 'Ввод расценки не допустим!', CaptionForm, MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+          MessageBox(0, 'Ввод расценки не допустим!', PChar(FMesCaption),
+            MB_ICONINFORMATION + MB_OK + mb_TaskModal);
           qrRatesExOBJ_CODE.AsString := '';
           Exit;
         end;
@@ -3228,11 +3245,11 @@ begin
     if newID = 0 then
     begin
       if NewCode[1] = '0' then
-        MessageBox(0, 'Пусконаладка с указанным кодом не найдена!', CaptionForm,
-          MB_ICONINFORMATION + MB_OK + mb_TaskModal)
+        MessageBox(0, 'Пусконаладка с указанным кодом не найдена!',
+          PChar(FMesCaption), MB_ICONINFORMATION + MB_OK + mb_TaskModal)
       else
-        MessageBox(0, 'Расценка с указанным кодом не найдена!', CaptionForm,
-          MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+        MessageBox(0, 'Расценка с указанным кодом не найдена!',
+          PChar(FMesCaption), MB_ICONINFORMATION + MB_OK + mb_TaskModal);
       Exit;
     end;
 
@@ -3280,6 +3297,18 @@ begin
     if NewCode[1] = 'C' then
       NewCode[1] := 'С';
 
+    if (NewCode[1] = 'С') then
+    begin
+      MatType := CMatIndex;
+      MatStr := 'Материал'
+    end
+    else
+    begin
+      MatType := CJBIIndex;
+      MatStr := 'ЖБИ';
+    end;
+
+
     qrTemp.Active := False;
     qrTemp.SQL.Clear;
     qrTemp.SQL.Add('SELECT MATERIAL_ID FROM material WHERE MAT_CODE = :CODE;');
@@ -3290,9 +3319,12 @@ begin
     qrTemp.Active := False;
     if newID = 0 then
     begin
-      MessageBox(0, 'Материал с указанным кодом не найден!', CaptionForm,
-        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-      Exit;
+      if MessageBox(0, PChar(MatStr + 'с указанным кодом не найден! ' + sLineBreak +
+        'Добавить новый ' + MatStr.ToLower + ' в справочник?'),
+        PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal) = mrOk then
+        AddNewManualData(MatType, NewCode, newID);
+      if newID = 0 then
+        Exit;
     end;
 
     AddMaterial(newID, 0);
@@ -3313,9 +3345,12 @@ begin
     qrTemp.Active := False;
     if newID = 0 then
     begin
-      MessageBox(0, 'Механизм с указанным кодом не найден!', CaptionForm,
-        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-      Exit;
+      if MessageBox(0, PChar('Механизм с указанным кодом не найден! ' + sLineBreak +
+        'Добавить новый механизм в справочник?'),
+        PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal) = mrOk then
+        AddNewManualData(CMechIndex, NewCode, newID);
+      if newID = 0 then
+        Exit;
     end;
 
     AddMechanizm(newID, 0);
@@ -3334,16 +3369,20 @@ begin
     qrTemp.Active := False;
     if newID = 0 then
     begin
-      MessageBox(0, 'Оборудование с указанным кодом не найден!', CaptionForm,
-        MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-      Exit;
+      if MessageBox(0, PChar('Оборудование с указанным кодом не найдено!' + sLineBreak +
+        'Добавить новое оборудование в справочник?'), PChar(FMesCaption),
+         MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal) = mrOk then
+        AddNewManualData(CDevIndex, NewCode, newID);
+
+      if newID = 0 then
+        Exit;
     end;
     AddDevice(newID, 0);
     Exit;
   end;
 
-  MessageBox(0, 'По указанному коду ничего не найдено!', CaptionForm,
-    MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+  MessageBox(0, 'По указанному коду ничего не найдено!',
+    PChar(FMesCaption), MB_ICONINFORMATION + MB_OK + mb_TaskModal);
 end;
 
 procedure TFormCalculationEstimate.qrRatesExCOUNTChange(Sender: TField);
@@ -3804,8 +3843,8 @@ end;
 
 procedure TFormCalculationEstimate.PMMatDeleteClick(Sender: TObject);
 begin
-  if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrMaterialMAT_CODE.AsString + '?'), CaptionForm,
-    MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+  if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrMaterialMAT_CODE.AsString + '?'),
+    PChar(FMesCaption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
     Exit;
 
   try
@@ -3824,7 +3863,7 @@ begin
   except
     on e: Exception do
       MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   OutputDataToTable;
@@ -3923,7 +3962,7 @@ begin
   except
     on e: Exception do
       MessageBox(0, PChar('При восстановлении материала возникла ошибка:' + sLineBreak + sLineBreak +
-        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -3945,7 +3984,7 @@ begin
   except
     on e: Exception do
       MessageBox(0, PChar('При вынесении материала из расценки возникла ошибка:' + sLineBreak + sLineBreak +
-        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -3958,7 +3997,7 @@ end;
 procedure TFormCalculationEstimate.PMMechDeleteClick(Sender: TObject);
 begin
   if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrMechanizmMECH_CODE.AsString + '?'),
-    CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+    PChar(FMesCaption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
     Exit;
 
   try
@@ -3975,7 +4014,7 @@ begin
   except
     on e: Exception do
       MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   OutputDataToTable;
@@ -4047,7 +4086,7 @@ begin
   except
     on e: Exception do
       MessageBox(0, PChar('При вынесении механизма из расценки возникла ошибка:' + sLineBreak + sLineBreak +
-        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4067,7 +4106,7 @@ begin
   except
     on e: Exception do
       MessageBox(0, PChar('При восстановлении механизма возникла ошибка:' + sLineBreak + sLineBreak +
-        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -4769,8 +4808,9 @@ begin
         DM.Read.Rollback;
         qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
         qrTemp.Active := True;
-        MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' + sLineBreak + sLineBreak +
-          e.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), CaptionForm,
+        MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' +
+          sLineBreak + sLineBreak + e.Message + sLineBreak +
+          qrTemp.FieldByName('ECode').AsString), PChar(FMesCaption),
           MB_ICONERROR + MB_OK + mb_TaskModal);
         Abort;
       end;
@@ -5054,8 +5094,9 @@ begin
   except
     on e: Exception do
     begin
-      MessageBox(0, PChar('При добавлении расценки во временную таблицу возникла ошибка:' + sLineBreak +
-        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При добавлении расценки во временную таблицу возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
       Exit;
     end;
   end;
@@ -5208,8 +5249,9 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При занесении материалов во временную таблицу возникла ошибка:' + sLineBreak +
-        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При занесении материалов во временную таблицу возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // Заносим во временную таблицу mechanizmcard_temp механизмы находящиеся в расценке
@@ -5279,8 +5321,9 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При занесении механизмов во временную таблицу возникла ошибка:' + sLineBreak +
-        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При занесении механизмов во временную таблицу возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // автоматическая вставка пуска и регулировки, отключена по просьбе заказчика
@@ -5288,7 +5331,7 @@ begin
     ((Pos('е20', AnsiLowerCase(NewRateCode)) > 0) and (not CheckE1820(11)) and FAutoAddE20) then
     begin
     if (Pos('е18', AnsiLowerCase(NewRateCode)) > 0) then
-    case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е18 в смету?'), CaptionForm,
+    case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е18 в смету?'), PChar(FMesCaption),
     MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
     mrOk:
     PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE18);
@@ -5300,7 +5343,7 @@ begin
     end;
 
     if (Pos('е20', AnsiLowerCase(NewRateCode)) > 0) then
-    case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е20 в смету?'), CaptionForm,
+    case MessageBox(0, PChar('Дабавить пуск и регулировку отопления по Е20 в смету?'), PChar(FMesCaption),
     MB_ICONQUESTION + MB_OKCANCEL + mb_TaskModal) of
     mrOk:
     PMAddAdditionHeatingE18Click(PMAddAdditionHeatingE20);
@@ -5453,8 +5496,9 @@ begin
           end;
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении расценки возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении расценки возникла ошибка:' +
+              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+              MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       2: // Материал
         try
@@ -5470,8 +5514,9 @@ begin
 
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении материала возникла ошибка:' +
+              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+              MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       3: // Механизм
         try
@@ -5487,8 +5532,9 @@ begin
 
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении механизма возникла ошибка:' +
+              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+              MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       4: // Оборудование
         try
@@ -5503,8 +5549,9 @@ begin
 
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении оборудования возникла ошибка:' +
+              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+              MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       5: // Свалка
         try
@@ -5518,8 +5565,9 @@ begin
           end;
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении свалки возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
-              CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении свалки возникла ошибка:' +
+              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+              MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       6, 7, 8, 9: // Транспорт
         try
@@ -5533,8 +5581,9 @@ begin
           end;
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' +
+              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+              MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       10, 11: // Пуск и регулировка
         try
@@ -5554,8 +5603,9 @@ begin
           end;
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' +
+              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+              MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
     end;
 end;
@@ -5569,8 +5619,8 @@ begin
   if grRatesEx.SelectedRows.Count > 1 then
   begin
     if MessageBox(0, PChar('Вы действительно хотите удалить выбранные записи(' +
-      INTTOSTR(grRatesEx.SelectedRows.Count) + ')?'), CaptionForm, MB_ICONINFORMATION + MB_YESNO +
-      mb_TaskModal) = mrNo then
+      INTTOSTR(grRatesEx.SelectedRows.Count) + ')?'), PChar(FMesCaption),
+      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
       Exit;
 
     grRatesEx.DataSource.DataSet.DisableControls;
@@ -5590,8 +5640,9 @@ begin
   end
   else
   begin
-    if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrRatesExOBJ_CODE.AsString + '?'),
-      CaptionForm, MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+    if MessageBox(0, PChar('Вы действительно хотите удалить ' +
+      qrRatesExOBJ_CODE.AsString + '?'), PChar(FMesCaption),
+      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
       Exit;
     DeleteRowFromSmeta();
   end;
@@ -5998,8 +6049,9 @@ begin
       end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении значений ОХРиОПР:' + sLineBreak + sLineBreak + e.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении значений ОХРиОПР:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6031,8 +6083,9 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении значения "Средний разряд" возникла ошибка:' + sLineBreak + sLineBreak
-        + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении значения "Средний разряд" возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6053,8 +6106,9 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении значения "ЗТ строителей" возникла ошибка:' + sLineBreak + sLineBreak
-        + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении значения "ЗТ строителей" возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6075,8 +6129,9 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении значения "ЗТ машинистов" возникла ошибка:' + sLineBreak + sLineBreak
-        + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении значения "ЗТ машинистов" возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6162,8 +6217,9 @@ begin
     Result := TW;
   except
     on e: Exception do
-      MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' + sLineBreak + sLineBreak +
-        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6312,8 +6368,8 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При запросе месяца и года из таблицы СТАВКА возникла ошибка:' + sLineBreak +
-        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе месяца и года из таблицы СТАВКА возникла ошибка:' +
+        sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6353,8 +6409,9 @@ begin
 
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении исходных данных возникла ошибка:' + sLineBreak + sLineBreak +
-        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении исходных данных возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6513,8 +6570,9 @@ begin
       end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' + sLineBreak +
-        sLineBreak + e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6675,8 +6733,9 @@ begin
     FastExecSQL('CALL CreateTempTables(1);', VarArrayOf([]));
   except
     on e: Exception do
-      MessageBox(0, PChar('При создании временных таблиц возникла ошибка:' + sLineBreak + sLineBreak +
-        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При создании временных таблиц возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6719,8 +6778,9 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При открытии данных возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При открытии данных возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // Заполнение таблицы расценок
@@ -6995,8 +7055,9 @@ begin
     OutputDataToTable(True);
   except
     on e: Exception do
-      MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
-        e.Message), CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -7025,8 +7086,9 @@ begin
     OutputDataToTable(True);
   except
     on e: Exception do
-      MessageBox(0, PChar('При добавлении материала возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При добавлении материала возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -7055,8 +7117,9 @@ begin
     OutputDataToTable(True);
   except
     on e: Exception do
-      MessageBox(0, PChar('При добавлении механизма возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При добавлении механизма возникла ошибка:' +
+        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
+        MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -7652,6 +7715,23 @@ begin
     else
       qrRatesEx.Cancel;
     qrRatesEx.CheckBrowseMode;
+  end;
+end;
+
+function TFormCalculationEstimate.AddNewManualData(ASprType: Integer;
+  const ANewCode: string; var ANewID: Integer): Boolean;
+var SprCard: TManSprCardForm;
+begin
+  Result := False;
+  SprCard := TManSprCardForm.Create(Self, 0, ASprType, ANewCode);
+  try
+    if SprCard.ShowModal = mrOk then
+    begin
+      ANewID := SprCard.SprID;
+      Result := True;
+    end;
+  finally
+    FreeAndNil(SprCard);
   end;
 end;
 

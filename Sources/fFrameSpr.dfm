@@ -524,6 +524,7 @@ object SprFrame: TSprFrame
     TabOrder = 2
     ViewStyle = vsReport
     OnCustomDrawItem = ListSprCustomDrawItem
+    OnDblClick = ListSprDblClick
     OnResize = ListSprResize
     OnSelectItem = ListSprSelectItem
   end
@@ -667,6 +668,12 @@ object SprFrame: TSprFrame
     OnPopup = pmListSprPopup
     Left = 128
     Top = 120
+    object PMAddTo: TMenuItem
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1088#1072#1089#1095#1077#1090
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
     object PMAddManual: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       OnClick = PMAddManualClick

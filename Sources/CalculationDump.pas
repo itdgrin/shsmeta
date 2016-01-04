@@ -60,7 +60,6 @@ type
     procedure edtCoastNoNDSChange(Sender: TObject);
     procedure edtCoastNDSChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-
   private
     Unit_Type: byte;
     EstMonth, EstYear, EstDumpId: integer;
@@ -81,9 +80,6 @@ type
     InsMode: boolean; //признак вставкисвалки  в смету
     IsSaved: boolean;
   end;
-
-const
-  CaptionForm = 'Расчёт свалки';
 
 //Вызов окна свалок. InsMode - признак вставкисвалки  в смету
 function GetDumpForm(AIdEstimate, AIdDump, AIterator, ANomManual: Integer; AInsMode: boolean): boolean;
@@ -134,7 +130,7 @@ begin
   except
     on E: Exception do
       MessageBox(0, PChar('При получении данных по смете возникла ошибка:' +
-        sLineBreak + sLineBreak + E.Message), CaptionForm,
+        sLineBreak + sLineBreak + E.Message), PChar(Caption),
         MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -172,7 +168,7 @@ begin
   except
     on E: Exception do
       MessageBox(0, PChar('При получении данных по свалке ошибка:' +
-      sLineBreak + sLineBreak + E.Message), CaptionForm,
+      sLineBreak + sLineBreak + E.Message), PChar(Caption),
       MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
   Loading := false;
@@ -337,7 +333,7 @@ begin
   except
     on E: Exception do
       MessageBox(0, PChar('При получении цен по свалке возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
-        CaptionForm, MB_ICONERROR + MB_OK + mb_TaskModal);
+        PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   CalculationCost;
@@ -463,7 +459,7 @@ begin
     end;
   except
     on E: Exception do
-      MessageBox(0, PChar('При получении списка свалок возникла ошибка:' + sLineBreak + E.Message), CaptionForm,
+      MessageBox(0, PChar('При получении списка свалок возникла ошибка:' + sLineBreak + E.Message), PChar(Caption),
         MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;

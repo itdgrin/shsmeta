@@ -11,9 +11,9 @@ uses
 type
   TSprEquipment = class(TSprFrame)
     procedure ListSprDblClick(Sender: TObject);
+    procedure PMAddToClick(Sender: TObject);
   private
     { Private declarations }
-    FAllowAddition: Boolean;
   protected
      function GetSprType: Integer; override;
   public
@@ -59,6 +59,12 @@ begin
   if FAllowAddition and (ListSpr.ItemIndex > -1) then
     FormCalculationEstimate.AddDevice(
       TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID, TmpPriceID);
+end;
+
+procedure TSprEquipment.PMAddToClick(Sender: TObject);
+begin
+  inherited;
+  ListSprDblClick(ListSpr);
 end;
 
 end.

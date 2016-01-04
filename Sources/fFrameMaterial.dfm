@@ -303,4 +303,9 @@ inherited SprMaterial: TSprMaterial
       end
     end
   end
+  inherited pmListSpr: TPopupMenu
+    inherited PMAddTo: TMenuItem
+      OnClick = PMAddToClick
+    end
+  end
 end

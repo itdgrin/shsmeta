@@ -59,7 +59,6 @@ type
     btnClose: TButton;
     btnSave: TButton;
     mtPricesID: TIntegerField;
-    procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure mtPricesDOC_DATESetText(Sender: TField; const Text: string);
     procedure btnCloseClick(Sender: TObject);
@@ -77,7 +76,8 @@ type
     function ValidateData: Boolean;
   public
     constructor Create(AOwner: TComponent;
-      const ASprID, ADataType: Integer); reintroduce;
+      const ASprID, ADataType: Integer; ANewCode: string = ''); reintroduce;
+    property SprID: Integer read FSprID;
   end;
 
   procedure DelSprItem(ASprID, ADataType: Integer);
@@ -93,7 +93,7 @@ procedure DelSprItem(ASprID, ADataType: Integer);
 var AutoCommitValue: Boolean;
     MainDataType: Integer;
 begin
-  if not ADataType in [0,1,2,3] then
+  if not ADataType in [CMatIndex, CJBIIndex, CMechIndex, CDevIndex] then
     raise Exception.Create(Format('Неизвестный тип данных (%d)',[ADataType]));
 
   DM.qrDifferent.Active := False;
@@ -103,20 +103,20 @@ begin
     DM.Read.StartTransaction;
     try
       case ADataType of
-        0, 1: DM.qrDifferent.SQL.Text :=
+        CMatIndex, CJBIIndex: DM.qrDifferent.SQL.Text :=
             'Delete from material where (MATERIAL_ID = :ID) and (BASE = 1)';
-        2: DM.qrDifferent.SQL.Text :=
+        CMechIndex: DM.qrDifferent.SQL.Text :=
             'Delete from mechanizm where (MECHANIZM_ID = :ID) and (BASE = 1)';
-        3: DM.qrDifferent.SQL.Text :=
+        CDevIndex: DM.qrDifferent.SQL.Text :=
             'Delete from devices where (DEVICE_ID = :ID) and (BASE = 1)';
       end;
       DM.qrDifferent.ParamByName('ID').Value := ASprID;
       DM.qrDifferent.ExecSQL;
 
       case ADataType of
-        0, 1: MainDataType := 2;
-        2: MainDataType := 3;
-        3: MainDataType := 4;
+        CMatIndex, CJBIIndex: MainDataType := 2;
+        CMechIndex: MainDataType := 3;
+        CDevIndex: MainDataType := 4;
         else MainDataType := 0;
       end;
 
@@ -150,9 +150,9 @@ var MainDataType: Integer;
     Item: TListItem;
 begin
   case ADataType of
-    0, 1: MainDataType := 2;
-    2: MainDataType := 3;
-    3: MainDataType := 4;
+    CMatIndex, CJBIIndex: MainDataType := 2;
+    CMechIndex: MainDataType := 3;
+    CDevIndex: MainDataType := 4;
     else MainDataType := 0;
   end;
   AListView.Items.Clear;
@@ -197,21 +197,21 @@ begin
 end;
 
 constructor TManSprCardForm.Create(AOwner: TComponent;
-  const ASprID, ADataType: Integer);
+  const ASprID, ADataType: Integer; ANewCode: string);
 begin
-  if not ADataType in [0,1,2,3] then
+  if not ADataType in [CMatIndex, CJBIIndex, CMechIndex, CDevIndex] then
     raise Exception.Create(Format('Неизвестный тип данных (%d)',[ADataType]));
 
   FSprDataType := ADataType;
   FSprID := ASprID;
-  inherited Create(AOwner);
-end;
 
-procedure TManSprCardForm.FormCreate(Sender: TObject);
-begin
-  inherited;
+  inherited Create(AOwner);
+
   FUnitIDList := TList<Integer>.Create;
   LoadData;
+
+  if FNewItem then
+    edtCode.Text := ANewCode;
 end;
 
 procedure TManSprCardForm.FormDestroy(Sender: TObject);
@@ -225,16 +225,16 @@ var TmpUnit: Integer;
 begin
   DM.qrDifferent.Active := False;
   case FSprDataType of
-    0,1:
+    CMatIndex, CJBIIndex:
     begin
       FMainDataType := 2;
       TmpMatType := 1;
-      if FSprDataType = 0 then
+      if FSprDataType = CMatIndex then
       begin
         Caption := Caption + ' материала';
         TmpMatType := 1;
       end;
-      if FSprDataType = 1 then
+      if FSprDataType = CJBIIndex then
       begin
         Caption := Caption + ' ЖБИ';
         TmpMatType := 2;
@@ -243,14 +243,14 @@ begin
         'from material where (MATERIAL_ID = ' + IntToStr(FSprID) + ') and ' +
         '(MAT_TYPE = ' + IntToStr(TmpMatType) + ')';
     end;
-    2:
+    CMechIndex:
     begin
       FMainDataType := 3;
       Caption := Caption + ' механизма';
       DM.qrDifferent.SQL.Text := 'Select MECH_CODE, MECH_NAME, UNIT_ID, BASE ' +
         'from mechanizm where MECHANIZM_ID = ' + IntToStr(FSprID);
     end;
-    3:
+    CDevIndex:
     begin
       FMainDataType := 4;
       Caption := Caption + ' оборудования';
@@ -439,9 +439,9 @@ begin
       begin
         DM.qrDifferent.SQL.Text := 'Select GetNewManualID(:TypeID)';
         case FSprDataType of
-        0,1: DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_MAT;
-        2: DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_MECH;
-        3: DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_DEV;
+        CMatIndex, CJBIIndex: DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_MAT;
+        CMechIndex: DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_MECH;
+        CDevIndex: DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_DEV;
         end;
         DM.qrDifferent.Active := True;
         try
@@ -452,16 +452,16 @@ begin
 
         DM.qrDifferent.Params.Clear;
         case FSprDataType of
-          0: DM.qrDifferent.SQL.Text :=
+          CMatIndex: DM.qrDifferent.SQL.Text :=
               'Insert into material (MATERIAL_ID, MAT_CODE, MAT_NAME, UNIT_ID, BASE, MAT_TYPE) values ' +
               '(:ID, :CODE, :NAME, :UNITID, 1, 1)';
-          1: DM.qrDifferent.SQL.Text :=
+          CJBIIndex: DM.qrDifferent.SQL.Text :=
               'Insert into material (MATERIAL_ID, MAT_CODE, MAT_NAME, UNIT_ID, BASE, MAT_TYPE) values ' +
               '(:ID, :CODE, :NAME, :UNITID, 1, 2)';
-          2: DM.qrDifferent.SQL.Text :=
+          CMechIndex: DM.qrDifferent.SQL.Text :=
               'Insert into mechanizm (MECHANIZM_ID, MECH_CODE, MECH_NAME, UNIT_ID, BASE) values ' +
               '(:ID, :CODE, :NAME, :UNITID, 1)';
-          3: DM.qrDifferent.SQL.Text :=
+          CDevIndex: DM.qrDifferent.SQL.Text :=
               'Insert into devices (DEVICE_ID, DEVICE_CODE1, DEVICE_CODE2, NAME, UNIT, BASE) values ' +
               '(:ID, :CODE, '''', :NAME, :UNITID, 1)';
         end;
@@ -474,15 +474,15 @@ begin
       else
       begin
         case FSprDataType of
-          0, 1: DM.qrDifferent.SQL.Text :=
+          CMatIndex, CJBIIndex: DM.qrDifferent.SQL.Text :=
               'Update material set ' +
               'MAT_CODE = :CODE, MAT_NAME = :NAME, UNIT_ID = :UNITID ' +
               'where MATERIAL_ID = :ID';
-          2: DM.qrDifferent.SQL.Text :=
+          CMechIndex: DM.qrDifferent.SQL.Text :=
               'Update mechanizm set ' +
               'MECH_CODE = :CODE, MECH_NAME = :NAME, UNIT_ID = :UNITID ' +
               'where MECHANIZM_ID = :ID';
-          3: DM.qrDifferent.SQL.Text :=
+          CDevIndex: DM.qrDifferent.SQL.Text :=
               'Update devices set ' +
               'DEVICE_CODE1 = :CODE, NAME = :NAME, UNIT = :UNITID ' +
               'where DEVICE_ID = :ID';

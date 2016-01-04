@@ -27,7 +27,8 @@ uses
   Generics.Defaults,
   System.IOUtils,
   GlobsAndConst,
-  SprController;
+  SprController,
+  Tools;
 
 type
   TSortRec = TPair<Integer, Pointer>;
@@ -77,6 +78,8 @@ type
     edtYear: TSpinEdit;
     lbMonth: TLabel;
     cmbMonth: TComboBox;
+    N1: TMenuItem;
+    PMAddTo: TMenuItem;
     procedure SpeedButtonShowHideClick(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
@@ -97,6 +100,7 @@ type
     procedure sbtFindSettingsClick(Sender: TObject);
     procedure lvDetPriceResize(Sender: TObject);
     procedure PMStrictEqualClick(Sender: TObject);
+    procedure ListSprDblClick(Sender: TObject);
 
   private const
     FAdjecEnding2 = 'ее.€€.а€.ое.ие.ые.ой.ей.им.ым.юю.ую.ей.ой.ем.ом.их.ых.ый.ий';
@@ -115,6 +119,7 @@ type
     procedure FillingDetailsPanel(ASprRecord: PSprRecord);
 
   protected
+    FAllowAddition: Boolean;
     //“ип справочника
     FSprType: Integer;
     FPriceColumn: Boolean;
@@ -161,7 +166,7 @@ implementation
 
 {$R *.dfm}
 
-uses DataModule, Tools, ManualSprItem;
+uses DataModule, ManualSprItem;
 
 { TSprFrame }
 
@@ -397,6 +402,7 @@ end;
 
 procedure TSprFrame.pmListSprPopup(Sender: TObject);
 begin
+  PMAddTo.Visible := FAllowAddition;
   PMAddManual.Enabled := (FBaseType = 2);
   PMEditManual.Enabled := Assigned(ListSpr.Selected);
   PMDelManual.Enabled := (FBaseType = 2) and Assigned(ListSpr.Selected);
@@ -788,6 +794,11 @@ begin
     end;
   end;
   DefaultDraw := True;
+end;
+
+procedure TSprFrame.ListSprDblClick(Sender: TObject);
+begin
+  //
 end;
 
 procedure TSprFrame.ListSprResize(Sender: TObject);
