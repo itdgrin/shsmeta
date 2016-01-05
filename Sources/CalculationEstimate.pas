@@ -496,6 +496,10 @@ type
     qrRatesExRecalc: TFDQuery;
     pmMarkRow: TMenuItem;
     qrRatesExMarkRow: TShortintField;
+    PMMatSprCard: TMenuItem;
+    qrMaterialMAT_TYPE: TIntegerField;
+    PMMechSprCard: TMenuItem;
+    PMDevSprCard: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -697,6 +701,7 @@ type
     procedure pmPopup(Sender: TObject);
     procedure pmMarkRowClick(Sender: TObject);
     procedure qrRatesExMarkRowChange(Sender: TField);
+    procedure PMMatSprCardClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта субподрядчика');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -802,7 +807,7 @@ type
     procedure CloseOtherTabs;
     function GetEditable: Boolean;
 
-    function AddNewManualData(ASprType: Integer; const ANewCode: string;
+    function SprManualData(ASprType: Integer; const ANewCode: string;
       var ANewID: Integer): Boolean;
   protected
     procedure SetFormStyle; override;
@@ -3308,7 +3313,6 @@ begin
       MatStr := 'ЖБИ';
     end;
 
-
     qrTemp.Active := False;
     qrTemp.SQL.Clear;
     qrTemp.SQL.Add('SELECT MATERIAL_ID FROM material WHERE MAT_CODE = :CODE;');
@@ -3319,10 +3323,10 @@ begin
     qrTemp.Active := False;
     if newID = 0 then
     begin
-      if MessageBox(0, PChar(MatStr + 'с указанным кодом не найден! ' + sLineBreak +
+      if MessageBox(0, PChar(MatStr + ' с указанным кодом не найден! ' + sLineBreak +
         'Добавить новый ' + MatStr.ToLower + ' в справочник?'),
         PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal) = mrOk then
-        AddNewManualData(MatType, NewCode, newID);
+        SprManualData(MatType, NewCode, newID);
       if newID = 0 then
         Exit;
     end;
@@ -3348,7 +3352,7 @@ begin
       if MessageBox(0, PChar('Механизм с указанным кодом не найден! ' + sLineBreak +
         'Добавить новый механизм в справочник?'),
         PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal) = mrOk then
-        AddNewManualData(CMechIndex, NewCode, newID);
+        SprManualData(CMechIndex, NewCode, newID);
       if newID = 0 then
         Exit;
     end;
@@ -3372,7 +3376,7 @@ begin
       if MessageBox(0, PChar('Оборудование с указанным кодом не найдено!' + sLineBreak +
         'Добавить новое оборудование в справочник?'), PChar(FMesCaption),
          MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal) = mrOk then
-        AddNewManualData(CDevIndex, NewCode, newID);
+        SprManualData(CDevIndex, NewCode, newID);
 
       if newID = 0 then
         Exit;
@@ -3964,6 +3968,35 @@ begin
       MessageBox(0, PChar('При восстановлении материала возникла ошибка:' + sLineBreak + sLineBreak +
         e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+end;
+
+procedure TFormCalculationEstimate.PMMatSprCardClick(Sender: TObject);
+var SprType: Integer;
+    TmpID: Integer;
+begin
+  case (Sender as TComponent).Tag of
+  2:
+  begin
+    TmpID := qrMaterialMAT_ID.AsInteger;
+    SprType := CMatIndex;
+    if qrMaterialMAT_TYPE.AsInteger = 2 then
+      SprType := CJBIIndex;
+  end;
+  3:
+  begin
+    TmpID := qrMechanizmMECH_ID.AsInteger;
+    SprType := CMechIndex;
+  end;
+  4:
+  begin
+    TmpID := qrDevicesDEVICE_ID.AsInteger;
+    SprType := CDevIndex;
+  end
+  else
+    raise Exception.Create('Неизвестный тип данных.');
+  end;
+
+  SprManualData(SprType, '', TmpID);
 end;
 
 procedure TFormCalculationEstimate.PMMatFromRatesClick(Sender: TObject);
@@ -5013,6 +5046,9 @@ begin
 
   PMMatManPrice.Visible := (qrMaterialBASE.Value > 0);
   PMMatManPrice.Enabled := not CheckMatReadOnly;
+
+  PMMatSprCard.Visible := (qrMaterialBASE.Value > 0);
+  PMMatSprCard.Enabled := not CheckMatReadOnly;
 end;
 
 // Настройка вида всплывающего меню таблицы механизмов
@@ -5049,6 +5085,9 @@ begin
 
   PMMechManPrice.Visible := (qrMechanizmBASE.Value > 0);
   PMMechManPrice.Enabled := not CheckMechReadOnly;
+
+  PMMechSprCard.Visible := (qrMechanizmBASE.Value > 0);
+  PMMechSprCard.Enabled := not CheckMechReadOnly;
 end;
 
 function TFormCalculationEstimate.CheckCursorInRate: Boolean;
@@ -5131,7 +5170,8 @@ begin
       SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
         'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
         'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
-        ' as "PriceNoVAT", ' + 'TMat.BASE as "BASE" ' + 'FROM materialnorm as TMatNorm ' +
+        ' as "PriceNoVAT", TMat.BASE as "BASE", TMat.MAT_TYPE as "MAT_TYPE" ' +
+        'FROM materialnorm as TMatNorm ' +
         'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
         'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
         '(TMatCoast.material_id = TMatNorm.material_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and ' +
@@ -5169,9 +5209,10 @@ begin
 
         qrTemp1.SQL.Text := 'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ' +
           'ID, ID_CARD_RATE, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
-          'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE) values ' +
+          'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
           '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :MAT_ID, :MAT_CODE, ' +
-          ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' + ':PROC_TRANSP, :BASE)';
+          ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' +
+          ':PROC_TRANSP, :BASE, :MAT_TYPE)';
         qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
         qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
         qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -5186,6 +5227,7 @@ begin
         qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
         qrTemp1.ParamByName('PROC_TRANSP').AsFloat := Pt;
         qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
+        qrTemp1.ParamByName('MAT_TYPE').Value := FieldByName('MAT_TYPE').Value;
         qrTemp1.ExecSQL;
 
         CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, ARateId, FieldByName('MatCode').AsString,
@@ -5212,12 +5254,13 @@ begin
 
         if MaxMId > 0 then
         begin
-          qrTemp1.SQL.Text := 'Insert into materialcard_temp ' + '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
+          qrTemp1.SQL.Text := 'Insert into materialcard_temp ' +
+            '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
             'CONSIDERED, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
-            'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE) values ' +
+            'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
             '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
             ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
-            ':COAST_NDS, :PROC_TRANSP, :BASE)';
+            ':COAST_NDS, :PROC_TRANSP, :BASE, :MAT_TYPE)';
           qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
           qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
           qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -5233,6 +5276,7 @@ begin
           qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
           qrTemp1.ParamByName('PROC_TRANSP').Value := 0;
           qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
+          qrTemp1.ParamByName('MAT_TYPE').Value := FieldByName('MAT_TYPE').Value;
           qrTemp1.ExecSQL;
 
           if MaxMId > 0 then
@@ -5666,6 +5710,7 @@ begin
   PMCalcDevice.Enabled := (dbgrdDevices.Columns[dbgrdDevices.Col - 1].FieldName = 'FCOAST_NDS');
 
   PMDevManPrice.Visible := (qrDevicesBASE.Value > 0);
+  PMDevSprCard.Visible := (qrDevicesBASE.Value > 0);
 end;
 
 // Общий пункт для свалок и транспорта
@@ -7718,12 +7763,12 @@ begin
   end;
 end;
 
-function TFormCalculationEstimate.AddNewManualData(ASprType: Integer;
+function TFormCalculationEstimate.SprManualData(ASprType: Integer;
   const ANewCode: string; var ANewID: Integer): Boolean;
 var SprCard: TManSprCardForm;
 begin
   Result := False;
-  SprCard := TManSprCardForm.Create(Self, 0, ASprType, ANewCode);
+  SprCard := TManSprCardForm.Create(Self, ANewID, ASprType, ANewCode);
   try
     if SprCard.ShowModal = mrOk then
     begin
