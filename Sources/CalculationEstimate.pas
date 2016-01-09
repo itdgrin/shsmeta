@@ -3175,6 +3175,7 @@ var
   Point: TPoint;
   MatType: integer;
   MatStr: string;
+  MesRes: Integer;
 begin
   NewCode := Trim(AnsiUpperCase(qrRatesExOBJ_CODE.AsString));
 
@@ -3250,11 +3251,17 @@ begin
     if newID = 0 then
     begin
       if NewCode[1] = '0' then
-        MessageBox(0, 'Пусконаладка с указанным кодом не найдена!',
-          PChar(FMesCaption), MB_ICONINFORMATION + MB_OK + mb_TaskModal)
+        MesRes := MessageBox(0, 'Пусконаладка с указанным кодом не найдена!' +
+          sLineBreak + 'Открыть справочник?',
+          PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal)
       else
-        MessageBox(0, 'Расценка с указанным кодом не найдена!',
-          PChar(FMesCaption), MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+        MesRes := MessageBox(0, 'Расценка с указанным кодом не найдена!' +
+          sLineBreak + 'Открыть справочник?',
+          PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal);
+
+      if MesRes = mrOk then
+        PMAddRatMatMechEquipOwnClick(nil);
+
       Exit;
     end;
 

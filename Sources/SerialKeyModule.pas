@@ -98,7 +98,7 @@ type
   end;
 
 //Получиние номера HDD по букве диска
-function GetHDDNumberByLetter(ADrive: string): DWord; inline;
+function GetHDDNumberByLetter(ADrive: string): DWord; //inline;
 //Получиние серийника HDD !!! не работает без прав админа
 function GetHDDSerialByNum(ANum: DWord;
   var ASerial, ARevision, AModel: AnsiString): DWord;
@@ -106,9 +106,9 @@ procedure CorrectDevInfo(var _params: TSendCmdOutParams);
 //Получает серийник логического диска
 function GetDiskSerialNum(ADrive: string): DWord;
 //Получение локального ключа
-procedure GetLocalKey(var AKey: TBytes); inline;
+procedure GetLocalKey(var AKey: TBytes); //inline;
 //Возвращает локальные данные для отправки на сервак или получения локального ключа
-procedure GetLocalData(ADrive: string; var AData: TBytes); inline;
+procedure GetLocalData(ADrive: string; var AData: TBytes); //inline;
 //Записывает лакальные данные в файл (поток)
 procedure GetLocalDataFile(const ASerialKey: string; const AData: TBytes;
   AStream: TStream);
@@ -120,12 +120,12 @@ procedure CreateKeyFile(const AFileName: string; const AKey: TBytes;
   const ASerialKeyInfo: TSerialKeyInfo; AKeyDll: TMemoryStream);
 //Извлекает данные из ключ-файла
 procedure GetSerialKeyInfo(const AFileName: string; const AKey: TBytes;
-  var ASerialKeyInfo: TSerialKeyInfo; AKeyDll: TMemoryStream); inline;
+  var ASerialKeyInfo: TSerialKeyInfo; AKeyDll: TMemoryStream); //inline;
 //Проверяет валидность ключфайла
 function CheckLicenseFile(const AFileName: string; var ASI: TSerialKeyInfo;
-  var ExceptFlag: Boolean): Boolean; inline;
-function CheckCurLicense: Boolean; inline;
-function LicenseAssigned(AValue: Pointer): Boolean; inline;
+  var ExceptFlag: Boolean): Boolean; //inline;
+function CheckCurLicense: Boolean; //inline;
+function LicenseAssigned(AValue: Pointer): Boolean; //inline;
 
 implementation
 
