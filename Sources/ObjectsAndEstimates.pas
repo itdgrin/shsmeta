@@ -112,10 +112,11 @@ type
     mEstimateAccess: TMenuItem;
     mActAccess: TMenuItem;
     PMExportAllObject: TMenuItem;
-    pnlActButtons: TPanel;
+    pnlActButtons: TGridPanel;
     btnReportC3: TBitBtn;
     btnReportC2B: TBitBtn;
-    Bevel1: TBevel;
+    btnReport1: TBitBtn;
+    btnReport2: TBitBtn;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

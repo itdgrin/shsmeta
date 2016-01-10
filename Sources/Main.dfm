@@ -3268,6 +3268,7 @@
     end
     object mReport: TMenuItem
       Caption = #1055#1077#1095#1072#1090#1100
+      ShortCut = 120
       OnClick = mReportClick
     end
     object N11: TMenuItem

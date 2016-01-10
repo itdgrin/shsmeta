@@ -588,8 +588,8 @@ object fCardObject: TfCardObject
     ParentFont = False
     TabOrder = 19
     object lbl1: TLabel
-      Left = 3
-      Top = 25
+      Left = 8
+      Top = 17
       Width = 172
       Height = 13
       Caption = #1042#1088#1077#1084#1077#1085#1085#1099#1077' '#1079#1076#1072#1085#1080#1103' '#1080' '#1089#1086#1086#1088#1091#1078#1077#1085#1080#1103':'
@@ -616,9 +616,9 @@ object fCardObject: TfCardObject
       OnClick = lbl2Click
     end
     object dbedtPER_TEPM_BUILD: TDBEdit
-      Left = 180
-      Top = 17
-      Width = 55
+      Left = 183
+      Top = 14
+      Width = 52
       Height = 21
       DataField = 'PER_TEMP_BUILD'
       DataSource = dsMain
@@ -629,7 +629,7 @@ object fCardObject: TfCardObject
       Font.Style = []
       ParentFont = False
       PopupMenu = pm1
-      TabOrder = 1
+      TabOrder = 0
       OnKeyPress = dbedtPER_TEPM_BUILDKeyPress
     end
     object dbedtPER_CONTRACTOR: TDBEdit
@@ -646,7 +646,7 @@ object fCardObject: TfCardObject
       Font.Style = []
       ParentFont = False
       PopupMenu = pm1
-      TabOrder = 0
+      TabOrder = 1
       OnKeyPress = dbedtPER_CONTRACTORKeyPress
     end
   end
@@ -668,6 +668,8 @@ object fCardObject: TfCardObject
       Top = 15
       Width = 426
       Height = 21
+      DataField = 'MAIS_ID'
+      DataSource = dsMain
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -722,7 +724,7 @@ object fCardObject: TfCardObject
     end
     object cbbMonthBeginStroj: TComboBox
       Left = 51
-      Top = 19
+      Top = 20
       Width = 100
       Height = 21
       Style = csDropDownList
@@ -734,7 +736,7 @@ object fCardObject: TfCardObject
       Font.Style = []
       ItemIndex = 0
       ParentFont = False
-      TabOrder = 0
+      TabOrder = 1
       Text = #1071#1085#1074#1072#1088#1100
       OnChange = cbbMonthBeginStrojChange
       Items.Strings = (
@@ -764,7 +766,7 @@ object fCardObject: TfCardObject
       MaxValue = 2100
       MinValue = 2012
       ParentFont = False
-      TabOrder = 1
+      TabOrder = 0
       Value = 2015
       OnChange = cbbMonthBeginStrojChange
     end

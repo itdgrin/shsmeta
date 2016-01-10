@@ -19,7 +19,6 @@ type
     btn2: TBitBtn;
     procedure grMain1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
-    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -50,11 +49,6 @@ begin
   finally
     FreeAndNil(fSelectDialog);
   end;
-end;
-
-procedure TfSelectDialog.FormCreate(Sender: TObject);
-begin
-  inherited;
 end;
 
 procedure TfSelectDialog.grMain1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;

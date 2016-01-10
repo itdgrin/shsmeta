@@ -46,6 +46,7 @@ type
     lblCalcType: TLabel;
     pm: TPopupMenu;
     mRecalcAll: TMenuItem;
+    btnShowResources: TBitBtn;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -65,6 +66,7 @@ type
     procedure mRecalcAllClick(Sender: TObject);
     procedure qrMainBeforePost(DataSet: TDataSet);
     procedure pmPopup(Sender: TObject);
+    procedure btnShowResourcesClick(Sender: TObject);
 
   private
     idObject, idEstimate: Integer;
@@ -84,7 +86,7 @@ implementation
 
 {$R *.dfm}
 
-uses ContractPriceEdit, ContractPays;
+uses ContractPriceEdit, ContractPays, CalcResource;
 
 procedure TfContractPrice.btnContractPaysClick(Sender: TObject);
 begin
@@ -93,6 +95,23 @@ begin
   if (not Assigned(fContractPays)) then
     fContractPays := TfContractPays.Create(Self, VarArrayOf([idObject]));
   fContractPays.ShowModal;
+end;
+
+procedure TfContractPrice.btnShowResourcesClick(Sender: TObject);
+begin
+  if btnShowResources.Tag = 0 then
+  begin
+    btnShowResources.Tag := 1;
+    btnShowResources.Caption := 'Закрыть расчет затрат';
+    ShowCalcResource(qrMain.FieldByName('SM_ID').Value, 0, Self, False, False, True);
+  end
+  else
+  begin
+    btnShowResources.Tag := 0;
+    btnShowResources.Caption := 'Показать расчет затрат';
+    if (Assigned(fCalcResource)) then
+      fCalcResource.Close;
+  end;
 end;
 
 procedure TfContractPrice.btnCalcClick(Sender: TObject);
@@ -245,6 +264,9 @@ end;
 procedure TfContractPrice.qrMainAfterScroll(DataSet: TDataSet);
 begin
   btnCalc.Enabled := canEditRow and not dbchkFL_CONTRACT_PRICE1.Checked;
+  if (btnShowResources.Tag = 1) and Assigned(fCalcResource) then
+    ShowCalcResource(qrMain.FieldByName('SM_ID').Value, fCalcResource.pgc.ActivePageIndex, Self,
+      False, False, True);
 end;
 
 procedure TfContractPrice.qrMainBeforePost(DataSet: TDataSet);

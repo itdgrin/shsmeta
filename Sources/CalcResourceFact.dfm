@@ -155,10 +155,6 @@ object fCalcResourceFact: TfCalcResourceFact
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lbl2: TLabel
         Left = 0
         Top = 0
@@ -176,10 +172,6 @@ object fCalcResourceFact: TfCalcResourceFact
     object ts2: TTabSheet
       Caption = #1060#1072#1082#1090#1080#1095#1077#1089#1082#1080#1077'  '#1084#1072#1090#1077#1088#1080#1072#1083#1099
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl2: TSplitter
         Left = 0
         Top = 193
@@ -245,6 +237,7 @@ object fCalcResourceFact: TfCalcResourceFact
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pm
           TabOrder = 0
@@ -255,6 +248,7 @@ object fCalcResourceFact: TfCalcResourceFact
           TitleFont.Style = []
           OnDrawColumnCell = grMaterialDrawColumnCell
           IniStorage = FormStorage
+          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -547,10 +541,6 @@ object fCalcResourceFact: TfCalcResourceFact
     object ts3: TTabSheet
       Caption = #1060#1072#1082#1090#1080#1095#1077#1089#1082#1080#1077' '#1084#1077#1093#1072#1085#1080#1079#1084#1099
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl4: TSplitter
         Left = 0
         Top = 209
@@ -583,6 +573,7 @@ object fCalcResourceFact: TfCalcResourceFact
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           PopupMenu = pm
           TabOrder = 0
@@ -593,6 +584,7 @@ object fCalcResourceFact: TfCalcResourceFact
           TitleFont.Style = []
           OnDrawColumnCell = grMaterialDrawColumnCell
           IniStorage = FormStorage
+          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -886,10 +878,6 @@ object fCalcResourceFact: TfCalcResourceFact
     object ts4: TTabSheet
       Caption = #1060#1072#1082#1090#1080#1095#1077#1089#1082#1086#1077' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl5: TSplitter
         Left = 0
         Top = 209
@@ -955,6 +943,7 @@ object fCalcResourceFact: TfCalcResourceFact
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
+          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
@@ -964,6 +953,7 @@ object fCalcResourceFact: TfCalcResourceFact
           TitleFont.Style = []
           OnDrawColumnCell = grMaterialDrawColumnCell
           IniStorage = FormStorage
+          MultiSelect = True
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
@@ -1256,10 +1246,6 @@ object fCalcResourceFact: TfCalcResourceFact
       Font.Style = []
       ImageIndex = 4
       ParentFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object pnlRatesTop: TPanel
         Left = 0
         Top = 0
@@ -1291,10 +1277,12 @@ object fCalcResourceFact: TfCalcResourceFact
     Top = 168
     object mN4: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+      ShortCut = 116
       OnClick = mN4Click
     end
     object mN5: TMenuItem
       Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
+      ShortCut = 16500
       OnClick = mN5Click
     end
     object mN6: TMenuItem
@@ -1306,10 +1294,12 @@ object fCalcResourceFact: TfCalcResourceFact
     end
     object N1: TMenuItem
       Caption = #1042#1099#1076#1077#1083#1080#1090#1100
+      ShortCut = 113
       OnClick = N1Click
     end
     object N2: TMenuItem
       Caption = #1042#1099#1076#1077#1083#1080#1090#1100' '#1074#1089#1077
+      ShortCut = 8305
       OnClick = N2Click
     end
     object N4: TMenuItem
@@ -1317,6 +1307,7 @@ object fCalcResourceFact: TfCalcResourceFact
     end
     object mDetete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      ShortCut = 119
       OnClick = mDeteteClick
     end
     object mRestore: TMenuItem

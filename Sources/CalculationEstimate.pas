@@ -77,12 +77,12 @@ type
     Panel1: TPanel;
     PanelSSR: TPanel;
     PanelData: TPanel;
-    Label1: TLabel;
-    Label6: TLabel;
+    lblSourceData: TLabel;
+    lblDescr: TLabel;
     EditVAT: TEdit;
     EditMonth: TEdit;
-    Edit4: TEdit;
-    PanelCalculationYesNo: TPanel;
+    edtDescr: TEdit;
+    pnlCalculationYesNo: TPanel;
     pmSummaryCalculation: TPopupMenu;
     N1: TMenuItem;
     N2: TMenuItem;
@@ -439,7 +439,7 @@ type
     btnResMech: TSpeedButton;
     btnResDev: TSpeedButton;
     btnResZP: TSpeedButton;
-    btnResCalc: TSpeedButton;
+    btnContractPrice: TSpeedButton;
     PMTransPerc: TMenuItem;
     PMTrPerc1: TMenuItem;
     PMTrPerc2: TMenuItem;
@@ -500,6 +500,9 @@ type
     qrMaterialMAT_TYPE: TIntegerField;
     PMMechSprCard: TMenuItem;
     PMDevSprCard: TMenuItem;
+    pnlActSourceData: TPanel;
+    lbl2: TLabel;
+    edtActDate: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -509,7 +512,7 @@ type
     procedure SpeedButtonLocalEstimateClick(Sender: TObject);
     procedure SpeedButtonSummaryCalculationClick(Sender: TObject);
     procedure SpeedButtonSSRClick(Sender: TObject);
-    procedure PanelCalculationYesNoClick(Sender: TObject);
+    procedure pnlCalculationYesNoClick(Sender: TObject);
     procedure BottomTopMenuEnabled(const Value: Boolean);
 
     procedure RepaintImagesForSplitters();
@@ -560,7 +563,7 @@ type
     procedure EstimateBasicDataClick(Sender: TObject);
     procedure LabelObjectClick(Sender: TObject);
     procedure LabelEstimateClick(Sender: TObject);
-    procedure Label1Click(Sender: TObject);
+    procedure lblSourceDataClick(Sender: TObject);
     procedure Panel1Resize(Sender: TObject);
     procedure PanelTopMenuResize(Sender: TObject);
     procedure SettingVisibleRightTables;
@@ -694,20 +697,20 @@ type
     procedure PMRenumPTMClick(Sender: TObject);
     procedure PMMatManPriceClick(Sender: TObject);
     procedure grRatesExSelectColumns(Grid: TJvDBGrid; var DefaultDialog: Boolean);
-    procedure btnResCalcClick(Sender: TObject);
-    procedure dbgrdCanEditCell(Grid: TJvDBGrid; Field: TField;
-      var AllowEdit: Boolean);
+    procedure btnContractPriceClick(Sender: TObject);
+    procedure dbgrdCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
     procedure dbmmoEnter(Sender: TObject);
     procedure pmPopup(Sender: TObject);
     procedure pmMarkRowClick(Sender: TObject);
     procedure qrRatesExMarkRowChange(Sender: TField);
     procedure PMMatSprCardClick(Sender: TObject);
+    procedure PanelDataResize(Sender: TObject);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта субподрядчика');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
       'Окно расчёта акта субподрядчика');
   private
-    FMesCaption: string; //Заголовок для сообщений окна
+    FMesCaption: string; // Заголовок для сообщений окна
     flLoaded: Boolean;
 
     ActReadOnly: Boolean;
@@ -807,8 +810,7 @@ type
     procedure CloseOtherTabs;
     function GetEditable: Boolean;
 
-    function SprManualData(ASprType: Integer; const ANewCode: string;
-      var ANewID: Integer): Boolean;
+    function SprManualData(ASprType: Integer; const ANewCode: string; var ANewID: Integer): Boolean;
   protected
     procedure SetFormStyle; override;
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -837,7 +839,7 @@ type
     function getTYPE_ACT: Integer;
     procedure LoadMain(const SM_ID: Integer);
     constructor Create(const SM_ID: Integer); reintroduce;
-    //Свойство возможности редактировать смету
+    // Свойство возможности редактировать смету
     property Editable: Boolean read GetEditable;
   end;
 
@@ -862,7 +864,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
   TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog,
   ManualPriceSelect, uSelectColumn, ContractPrice,
-  ManualSprItem, SprController;
+  ManualSprItem, SprController, SmReport;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -1023,16 +1025,15 @@ begin
   begin
     Caption := CaptionButton[1] + ' - Разрешено редактирование документа';
     FMesCaption := CaptionButton[1];
-    btnResCalc.Visible := True;
-    btnResCalc.Caption := 'Контрактная цена';
+    btnContractPrice.Visible := True;
+    btnContractPrice.Caption := 'Контрактная цена';
   end
   else
   begin
     Caption := CaptionButton[2 + TYPE_ACT] + ' - Разрешено редактирование документа';
     FMesCaption := CaptionButton[2 + TYPE_ACT];
     SpeedButtonSSR.Visible := False;
-    btnResCalc.Caption := 'Расчет';
-    // btnResCalc.Visible := True;
+    btnContractPrice.Caption := 'Расчет';
   end;
 
   lblForeman.Visible := Act;
@@ -1212,12 +1213,12 @@ begin
     // Делаем кнопки верхнего правого меню активными
     BottomTopMenuEnabled(True);
 
-    PanelCalculationYesNo.Enabled := True;
+    pnlCalculationYesNo.Enabled := True;
 
-    if PanelCalculationYesNo.Tag = 1 then
-      PanelCalculationYesNo.Color := clLime
+    if pnlCalculationYesNo.Tag = 1 then
+      pnlCalculationYesNo.Color := clLime
     else
-      PanelCalculationYesNo.Color := clRed;
+      pnlCalculationYesNo.Color := clRed;
   end;
 end;
 
@@ -1245,12 +1246,12 @@ begin
     // Делаем кнопки верхнего правого меню неактивными
     BottomTopMenuEnabled(False);
 
-    PanelCalculationYesNo.Enabled := True;
+    pnlCalculationYesNo.Enabled := True;
 
-    if PanelCalculationYesNo.Tag = 1 then
-      PanelCalculationYesNo.Color := clLime
+    if pnlCalculationYesNo.Tag = 1 then
+      pnlCalculationYesNo.Color := clLime
     else
-      PanelCalculationYesNo.Color := clRed;
+      pnlCalculationYesNo.Color := clRed;
   end;
 end;
 
@@ -1293,8 +1294,8 @@ begin
     // Делаем кнопки верхнего правого меню неактивными
     BottomTopMenuEnabled(False);
 
-    PanelCalculationYesNo.Enabled := False;
-    PanelCalculationYesNo.Color := clSilver;
+    pnlCalculationYesNo.Enabled := False;
+    pnlCalculationYesNo.Color := clSilver;
   end;
 end;
 
@@ -1361,8 +1362,12 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.btnResCalcClick(Sender: TObject);
+procedure TFormCalculationEstimate.btnContractPriceClick(Sender: TObject);
 begin
+  if Assigned(fContractPrice) then
+    Exit;
+
+  CloseOtherTabs;
   if (not Assigned(fContractPrice)) then
     fContractPrice := TfContractPrice.Create(FormCalculationEstimate, VarArrayOf([IdObject, IdEstimate]));
   fContractPrice.Parent := FormCalculationEstimate;
@@ -1373,6 +1378,12 @@ end;
 
 procedure TFormCalculationEstimate.btnResMatClick(Sender: TObject);
 begin
+  // CloseOtherTabs;
+  if Assigned(fContractPrice) then
+  begin
+    fContractPrice.Close;
+    FreeAndNil(fContractPrice);
+  end;
   if (Sender as TSpeedButton).Tag = 77 then
     ShellExecute(Handle, nil, 'report.exe', PChar('K' + INTTOSTR(FormCalculationEstimate.IdEstimate)),
       PChar(GetCurrentDir + '\reports\'), SW_maximIZE)
@@ -1404,6 +1415,7 @@ end;
 
 procedure TFormCalculationEstimate.btnKC6JClick(Sender: TObject);
 begin
+  CloseOtherTabs;
   if Act then
   // для акта
   begin
@@ -1555,16 +1567,31 @@ begin
       FastExecSQL('CALL UpdateSmetaCosts(:IDESTIMATE);', VarArrayOf([IdEstimate]));
   end;
   RecalcEstimate;
+
   if pnlSummaryCalculations.Visible then
-    frSummaryCalculations.LoadData(IdEstimate);
+    frSummaryCalculations.LoadData(VarArrayOf([IdEstimate, IdObject]));
+
+  if Assigned(fContractPrice) then
+    fContractPrice.mRecalcAllClick(nil);
 end;
 
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
+var
+  doc: OleVariant;
+  fileName: string;
 begin
   ShowNeedSaveDialog;
-  // if not Act then
-  ShellExecute(Handle, nil, 'rs.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
+  fileName := ExtractFilePath(Application.ExeName) + C_REPORTDIR + 'ШАБЛОН ПОЛНЫЙ.xls';
+  doc := dmSmReport.loadDocument(fileName);
+  dmSmReport.qrSR.Active := False;
+  dmSmReport.qrSR.ParamByName('SM_ID').Value := IdEstimate;
+  dmSmReport.qrSR.Active := True;
+  dmSmReport.loadParams(dmSmReport.qrSR, doc, 5);
+  dmSmReport.showDocument(doc);
+  {
+    ShellExecute(Handle, nil, 'rs.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
     PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
+  }
 end;
 
 procedure TFormCalculationEstimate.btnCalcFactClick(Sender: TObject);
@@ -1645,9 +1672,9 @@ begin
     4 { - btnWinterPriceSelect.Width };
 end;
 
-procedure TFormCalculationEstimate.PanelCalculationYesNoClick(Sender: TObject);
+procedure TFormCalculationEstimate.pnlCalculationYesNoClick(Sender: TObject);
 begin
-  with PanelCalculationYesNo do
+  with pnlCalculationYesNo do
     if Tag = 1 then
     begin
       Tag := 0;
@@ -1691,6 +1718,11 @@ begin
     dbgrdMechanizm.Height := dbgrdMaterial.Height;
     dbgrdDevices.Height := dbgrdMaterial.Height;
   end;
+end;
+
+procedure TFormCalculationEstimate.PanelDataResize(Sender: TObject);
+begin
+  edtDescr.Width := pnlCalculationYesNo.Left - edtDescr.Left - 6;
 end;
 
 procedure TFormCalculationEstimate.PanelNoDataResize(Sender: TObject);
@@ -1761,7 +1793,7 @@ begin
   btnResMat.Caption := StringReplace(btnResMat.Caption, ' ', ''#13, [rfReplaceAll]);
   btnResMech.Caption := StringReplace(btnResMech.Caption, ' ', ''#13, [rfReplaceAll]);
   btnResDev.Caption := StringReplace(btnResDev.Caption, ' ', ''#13, [rfReplaceAll]);
-  btnResCalc.Caption := StringReplace(btnResCalc.Caption, ' ', ''#13, [rfReplaceAll]);
+  btnContractPrice.Caption := StringReplace(btnContractPrice.Caption, ' ', ''#13, [rfReplaceAll]);
 
   dbmmoRight.Height := dbmmoCAPTION.Height;
 end;
@@ -1882,10 +1914,8 @@ begin
 
   if not FileExists(Path) then
   begin
-    MessageBox(0, PChar('Вы пытаетесь открыть файл:' +
-      sLineBreak + sLineBreak + Path + sLineBreak +
-      sLineBreak + 'которого не существует!'),
-      PChar(FMesCaption), MB_ICONWARNING + MB_OK + mb_TaskModal);
+    MessageBox(0, PChar('Вы пытаетесь открыть файл:' + sLineBreak + sLineBreak + Path + sLineBreak +
+      sLineBreak + 'которого не существует!'), PChar(FMesCaption), MB_ICONWARNING + MB_OK + mb_TaskModal);
     Exit;
   end;
 
@@ -2056,11 +2086,20 @@ procedure TFormCalculationEstimate.CloseOtherTabs;
 begin
   // Временный костыль
   if (Assigned(fCalcResource)) then
+  begin
     fCalcResource.Close;
+    FreeAndNil(fCalcResource);
+  end;
   if (Assigned(fKC6Journal)) then
+  begin
     fKC6Journal.Close;
-   if (Assigned(fContractPrice)) then
+    FreeAndNil(fKC6Journal);
+  end;
+  if (Assigned(fContractPrice)) then
+  begin
     fContractPrice.Close;
+    FreeAndNil(fContractPrice);
+  end;
 end;
 
 procedure TFormCalculationEstimate.ShowAutoRep;
@@ -2636,8 +2675,7 @@ begin
     Exit;
   end;
 
-  if MessageBox(0, PChar(TextWarning), PChar(FMesCaption),
-    MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo
+  if MessageBox(0, PChar(TextWarning), PChar(FMesCaption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo
   then
     Exit;
 
@@ -2652,8 +2690,7 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При удалении сметы возникла ошибка:' +
-        sLineBreak + e.Message), PChar(FMesCaption),
+      MessageBox(0, PChar('При удалении сметы возникла ошибка:' + sLineBreak + e.Message), PChar(FMesCaption),
         MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
@@ -2845,7 +2882,8 @@ begin
 end;
 
 procedure TFormCalculationEstimate.mN14Click(Sender: TObject);
-var fCardObject: TfCardObject;
+var
+  fCardObject: TfCardObject;
 begin
   fCardObject := TfCardObject.Create(Self);
   try
@@ -3173,7 +3211,7 @@ var
   NewCode: string;
   newID: Integer;
   Point: TPoint;
-  MatType: integer;
+  MatType: Integer;
   MatStr: string;
   MesRes: Integer;
 begin
@@ -3186,13 +3224,10 @@ begin
   newID := 0;
 
   // Замена литинских на кирилические
-  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or
-     (NewCode[1] = 'У') or (NewCode[1] = 'T') or
-     (NewCode[1] = 'Ц') or (NewCode[1] = 'W') or
-     (NewCode[1] = '0') then // E кирилическая и латинская
+  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'У') or (NewCode[1] = 'T') or
+    (NewCode[1] = 'Ц') or (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
   begin
-    if (NewCode[1] = 'E') or (NewCode[1] = 'T') or
-       (NewCode[1] = 'У') then
+    if (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'У') then
       NewCode[1] := 'Е'; // E кирилическая
     if NewCode[1] = 'W' then
       NewCode[1] := 'Ц';
@@ -3251,12 +3286,10 @@ begin
     if newID = 0 then
     begin
       if NewCode[1] = '0' then
-        MesRes := MessageBox(0, 'Пусконаладка с указанным кодом не найдена!' +
-          sLineBreak + 'Открыть справочник?',
-          PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal)
+        MesRes := MessageBox(0, 'Пусконаладка с указанным кодом не найдена!' + sLineBreak +
+          'Открыть справочник?', PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal)
       else
-        MesRes := MessageBox(0, 'Расценка с указанным кодом не найдена!' +
-          sLineBreak + 'Открыть справочник?',
+        MesRes := MessageBox(0, 'Расценка с указанным кодом не найдена!' + sLineBreak + 'Открыть справочник?',
           PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal);
 
       if MesRes = mrOk then
@@ -3330,9 +3363,9 @@ begin
     qrTemp.Active := False;
     if newID = 0 then
     begin
-      if MessageBox(0, PChar(MatStr + ' с указанным кодом не найден! ' + sLineBreak +
-        'Добавить новый ' + MatStr.ToLower + ' в справочник?'),
-        PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal) = mrOk then
+      if MessageBox(0, PChar(MatStr + ' с указанным кодом не найден! ' + sLineBreak + 'Добавить новый ' +
+        MatStr.ToLower + ' в справочник?'), PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL +
+        mb_TaskModal) = mrOk then
         SprManualData(MatType, NewCode, newID);
       if newID = 0 then
         Exit;
@@ -3357,8 +3390,8 @@ begin
     if newID = 0 then
     begin
       if MessageBox(0, PChar('Механизм с указанным кодом не найден! ' + sLineBreak +
-        'Добавить новый механизм в справочник?'),
-        PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal) = mrOk then
+        'Добавить новый механизм в справочник?'), PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL +
+        mb_TaskModal) = mrOk then
         SprManualData(CMechIndex, NewCode, newID);
       if newID = 0 then
         Exit;
@@ -3381,8 +3414,8 @@ begin
     if newID = 0 then
     begin
       if MessageBox(0, PChar('Оборудование с указанным кодом не найдено!' + sLineBreak +
-        'Добавить новое оборудование в справочник?'), PChar(FMesCaption),
-         MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal) = mrOk then
+        'Добавить новое оборудование в справочник?'), PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL +
+        mb_TaskModal) = mrOk then
         SprManualData(CDevIndex, NewCode, newID);
 
       if newID = 0 then
@@ -3392,8 +3425,8 @@ begin
     Exit;
   end;
 
-  MessageBox(0, 'По указанному коду ничего не найдено!',
-    PChar(FMesCaption), MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+  MessageBox(0, 'По указанному коду ничего не найдено!', PChar(FMesCaption),
+    MB_ICONINFORMATION + MB_OK + mb_TaskModal);
 end;
 
 procedure TFormCalculationEstimate.qrRatesExCOUNTChange(Sender: TField);
@@ -3978,27 +4011,28 @@ begin
 end;
 
 procedure TFormCalculationEstimate.PMMatSprCardClick(Sender: TObject);
-var SprType: Integer;
-    TmpID: Integer;
+var
+  SprType: Integer;
+  TmpID: Integer;
 begin
   case (Sender as TComponent).Tag of
-  2:
-  begin
-    TmpID := qrMaterialMAT_ID.AsInteger;
-    SprType := CMatIndex;
-    if qrMaterialMAT_TYPE.AsInteger = 2 then
-      SprType := CJBIIndex;
-  end;
-  3:
-  begin
-    TmpID := qrMechanizmMECH_ID.AsInteger;
-    SprType := CMechIndex;
-  end;
-  4:
-  begin
-    TmpID := qrDevicesDEVICE_ID.AsInteger;
-    SprType := CDevIndex;
-  end
+    2:
+      begin
+        TmpID := qrMaterialMAT_ID.AsInteger;
+        SprType := CMatIndex;
+        if qrMaterialMAT_TYPE.AsInteger = 2 then
+          SprType := CJBIIndex;
+      end;
+    3:
+      begin
+        TmpID := qrMechanizmMECH_ID.AsInteger;
+        SprType := CMechIndex;
+      end;
+    4:
+      begin
+        TmpID := qrDevicesDEVICE_ID.AsInteger;
+        SprType := CDevIndex;
+      end
   else
     raise Exception.Create('Неизвестный тип данных.');
   end;
@@ -4609,7 +4643,7 @@ begin
   if G_STARTAPP then
     Tmp := MB_YESNO;
 
-  if (not ActReadOnly) and (PanelCalculationYesNo.Tag = 1) and ConfirmCloseForm then
+  if (not ActReadOnly) and (pnlCalculationYesNo.Tag = 1) and ConfirmCloseForm then
     DialogResult := MessageBox(0, PChar('Сохранить изменения текущего документа - [' + docType + ']?'),
       'Смета', MB_ICONINFORMATION + Tmp + mb_TaskModal);
 
@@ -4848,9 +4882,8 @@ begin
         DM.Read.Rollback;
         qrTemp.SQL.Text := 'SELECT @ErrorCode AS ECode';
         qrTemp.Active := True;
-        MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' +
-          sLineBreak + sLineBreak + e.Message + sLineBreak +
-          qrTemp.FieldByName('ECode').AsString), PChar(FMesCaption),
+        MessageBox(0, PChar('При сохранении данных сметы возникла ошибка:' + sLineBreak + sLineBreak +
+          e.Message + sLineBreak + qrTemp.FieldByName('ECode').AsString), PChar(FMesCaption),
           MB_ICONERROR + MB_OK + mb_TaskModal);
         Abort;
       end;
@@ -5140,9 +5173,8 @@ begin
   except
     on e: Exception do
     begin
-      MessageBox(0, PChar('При добавлении расценки во временную таблицу возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При добавлении расценки во временную таблицу возникла ошибка:' + sLineBreak +
+        sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
       Exit;
     end;
   end;
@@ -5178,9 +5210,8 @@ begin
         'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
         'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
         ' as "PriceNoVAT", TMat.BASE as "BASE", TMat.MAT_TYPE as "MAT_TYPE" ' +
-        'FROM materialnorm as TMatNorm ' +
-        'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
-        'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
+        'FROM materialnorm as TMatNorm ' + 'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id '
+        + 'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
         '(TMatCoast.material_id = TMatNorm.material_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and ' +
         '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (TMatNorm.normativ_id = ' + INTTOSTR(ARateId) +
         ') order by 1';
@@ -5218,8 +5249,7 @@ begin
           'ID, ID_CARD_RATE, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
           'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
           '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :MAT_ID, :MAT_CODE, ' +
-          ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' +
-          ':PROC_TRANSP, :BASE, :MAT_TYPE)';
+          ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' + ':PROC_TRANSP, :BASE, :MAT_TYPE)';
         qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
         qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
         qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -5261,8 +5291,7 @@ begin
 
         if MaxMId > 0 then
         begin
-          qrTemp1.SQL.Text := 'Insert into materialcard_temp ' +
-            '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
+          qrTemp1.SQL.Text := 'Insert into materialcard_temp ' + '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
             'CONSIDERED, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
             'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
             '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
@@ -5300,9 +5329,8 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При занесении материалов во временную таблицу возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При занесении материалов во временную таблицу возникла ошибка:' + sLineBreak +
+        sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // Заносим во временную таблицу mechanizmcard_temp механизмы находящиеся в расценке
@@ -5372,9 +5400,8 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При занесении механизмов во временную таблицу возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При занесении механизмов во временную таблицу возникла ошибка:' + sLineBreak +
+        sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // автоматическая вставка пуска и регулировки, отключена по просьбе заказчика
@@ -5547,9 +5574,8 @@ begin
           end;
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении расценки возникла ошибка:' +
-              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-              MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении расценки возникла ошибка:' + sLineBreak + sLineBreak +
+              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       2: // Материал
         try
@@ -5565,9 +5591,8 @@ begin
 
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении материала возникла ошибка:' +
-              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-              MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak +
+              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       3: // Механизм
         try
@@ -5583,9 +5608,8 @@ begin
 
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении механизма возникла ошибка:' +
-              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-              MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak +
+              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       4: // Оборудование
         try
@@ -5600,9 +5624,8 @@ begin
 
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении оборудования возникла ошибка:' +
-              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-              MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
+              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       5: // Свалка
         try
@@ -5616,9 +5639,8 @@ begin
           end;
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении свалки возникла ошибка:' +
-              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-              MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении свалки возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
+              PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       6, 7, 8, 9: // Транспорт
         try
@@ -5632,9 +5654,8 @@ begin
           end;
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' +
-              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-              MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
+              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
       10, 11: // Пуск и регулировка
         try
@@ -5654,9 +5675,8 @@ begin
           end;
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' +
-              sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-              MB_ICONERROR + MB_OK + mb_TaskModal);
+            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
+              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
     end;
 end;
@@ -5670,8 +5690,8 @@ begin
   if grRatesEx.SelectedRows.Count > 1 then
   begin
     if MessageBox(0, PChar('Вы действительно хотите удалить выбранные записи(' +
-      INTTOSTR(grRatesEx.SelectedRows.Count) + ')?'), PChar(FMesCaption),
-      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+      INTTOSTR(grRatesEx.SelectedRows.Count) + ')?'), PChar(FMesCaption), MB_ICONINFORMATION + MB_YESNO +
+      mb_TaskModal) = mrNo then
       Exit;
 
     grRatesEx.DataSource.DataSet.DisableControls;
@@ -5691,9 +5711,8 @@ begin
   end
   else
   begin
-    if MessageBox(0, PChar('Вы действительно хотите удалить ' +
-      qrRatesExOBJ_CODE.AsString + '?'), PChar(FMesCaption),
-      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
+    if MessageBox(0, PChar('Вы действительно хотите удалить ' + qrRatesExOBJ_CODE.AsString + '?'),
+      PChar(FMesCaption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo then
       Exit;
     DeleteRowFromSmeta();
   end;
@@ -5763,31 +5782,28 @@ begin
   else
     qrRatesExMarkRow.Value := 0;
 
- pmMarkRow.Checked := qrRatesExMarkRow.Value > 0;
- grRatesEx.Repaint;
+  pmMarkRow.Checked := qrRatesExMarkRow.Value > 0;
+  grRatesEx.Repaint;
 end;
 
 procedure TFormCalculationEstimate.pmTableLeftPopup(Sender: TObject);
 var
   mainType: Integer;
   Edt: Boolean;
-  I: integer;
+  i: Integer;
 begin
   // Вынесено сюда так как mousedown работает глючно
-  if (grRatesEx.SelectedRows.Count > 0) and
-     not(grRatesEx.SelectedRows.CurrentRowSelected) then
+  if (grRatesEx.SelectedRows.Count > 0) and not(grRatesEx.SelectedRows.CurrentRowSelected) then
     grRatesEx.SelectedRows.Clear;
 
   Edt := Editable;
-  for I := 0 to (Sender as TPopupMenu).Items.Count - 1 do
-    (Sender as TPopupMenu).Items[I].Enabled := Edt;
+  for i := 0 to (Sender as TPopupMenu).Items.Count - 1 do
+    (Sender as TPopupMenu).Items[i].Enabled := Edt;
 
   PMCopy.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
-  PMPaste.Enabled :=
-   ((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -5) or
+  PMPaste.Enabled := ((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -5) or
     (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -3)) and
     ClipBoard.HasFormat(G_SMETADATA) and Edt;
-
 
   // Нельзя удалить неучтенный материал из таблицы расценок
   PMDelete.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0);
@@ -5865,11 +5881,14 @@ begin
   fTreeEstimate.qrTreeEstimates.ParamByName('obj_id').Value := IdObject;
   CloseOpen(fTreeEstimate.qrTreeEstimates);
   fTreeEstimate.tvEstimates.FullExpand;
-  fTreeEstimate.qrTreeEstimates.Locate('SM_ID', qrRatesExSM_ID.Value, []);
+  if Assigned(fContractPrice) then
+    fTreeEstimate.qrTreeEstimates.Locate('SM_ID', fContractPrice.qrMain.FieldByName('SM_ID').Value, [])
+  else
+    fTreeEstimate.qrTreeEstimates.Locate('SM_ID', qrRatesExSM_ID.Value, []);
   fTreeEstimate.Show;
 end;
 
-procedure TFormCalculationEstimate.Label1Click(Sender: TObject);
+procedure TFormCalculationEstimate.lblSourceDataClick(Sender: TObject);
 begin
   {
     if Act then
@@ -6101,9 +6120,8 @@ begin
       end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении значений ОХРиОПР:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении значений ОХРиОПР:' + sLineBreak + sLineBreak + e.Message),
+        PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6135,9 +6153,8 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении значения "Средний разряд" возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении значения "Средний разряд" возникла ошибка:' + sLineBreak + sLineBreak
+        + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6158,9 +6175,8 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении значения "ЗТ строителей" возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении значения "ЗТ строителей" возникла ошибка:' + sLineBreak + sLineBreak
+        + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6181,9 +6197,8 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении значения "ЗТ машинистов" возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении значения "ЗТ машинистов" возникла ошибка:' + sLineBreak + sLineBreak
+        + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6269,9 +6284,8 @@ begin
     Result := TW;
   except
     on e: Exception do
-      MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('Ошибка при вычислении «' + '», в таблице вычислений:' + sLineBreak + sLineBreak +
+        e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6420,8 +6434,8 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При запросе месяца и года из таблицы СТАВКА возникла ошибка:' +
-        sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При запросе месяца и года из таблицы СТАВКА возникла ошибка:' + sLineBreak +
+        e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6461,9 +6475,8 @@ begin
 
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении исходных данных возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении исходных данных возникла ошибка:' + sLineBreak + sLineBreak +
+        e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6622,9 +6635,8 @@ begin
       end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' + sLineBreak +
+        sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6765,18 +6777,25 @@ end;
 
 constructor TFormCalculationEstimate.Create(const SM_ID: Integer);
 begin
-  LoadMain(SM_ID);
   inherited Create(Application);
+  LoadMain(SM_ID);
 end;
 
 procedure TFormCalculationEstimate.LoadMain(const SM_ID: Integer);
 begin
+  // Процедура открытия сметы / акта, загрузки всех параметров
   // TODO
   Act := FastSelectSQLOne('SELECT ACT FROM smetasourcedata WHERE SM_ID=:0', VarArrayOf([SM_ID])) = 1;
   TYPE_ACT := FastSelectSQLOne('SELECT IFNULL(TYPE_ACT, 0) FROM smetasourcedata WHERE SM_ID=:0',
     VarArrayOf([SM_ID]));
   IdObject := FastSelectSQLOne('SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:0', VarArrayOf([SM_ID]));
   IdEstimate := SM_ID;
+  pnlActSourceData.Visible := Act;
+  if Act then
+  begin
+    edtActDate.Text := FormatDateTime('mmmm yyyy',
+      FastSelectSQLOne('SELECT DATE FROM smetasourcedata WHERE SM_ID=:0', VarArrayOf([SM_ID])));
+  end;
 end;
 
 procedure TFormCalculationEstimate.CreateTempTables;
@@ -6785,9 +6804,8 @@ begin
     FastExecSQL('CALL CreateTempTables(1);', VarArrayOf([]));
   except
     on e: Exception do
-      MessageBox(0, PChar('При создании временных таблиц возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При создании временных таблиц возникла ошибка:' + sLineBreak + sLineBreak +
+        e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -6830,9 +6848,8 @@ begin
     end;
   except
     on e: Exception do
-      MessageBox(0, PChar('При открытии данных возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При открытии данных возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
+        PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // Заполнение таблицы расценок
@@ -7107,9 +7124,8 @@ begin
     OutputDataToTable(True);
   except
     on e: Exception do
-      MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При добавлении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
+        e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -7138,9 +7154,8 @@ begin
     OutputDataToTable(True);
   except
     on e: Exception do
-      MessageBox(0, PChar('При добавлении материала возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При добавлении материала возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
+        PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -7169,9 +7184,8 @@ begin
     OutputDataToTable(True);
   except
     on e: Exception do
-      MessageBox(0, PChar('При добавлении механизма возникла ошибка:' +
-        sLineBreak + sLineBreak + e.Message), PChar(FMesCaption),
-        MB_ICONERROR + MB_OK + mb_TaskModal);
+      MessageBox(0, PChar('При добавлении механизма возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
+        PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
@@ -7208,8 +7222,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.dbgrdCanEditCell(Grid: TJvDBGrid;
-  Field: TField; var AllowEdit: Boolean);
+procedure TFormCalculationEstimate.dbgrdCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
 begin
   AllowEdit := Editable;
 end;
@@ -7290,7 +7303,8 @@ var
   i: Integer;
 begin
   AllowEdit := Editable;
-  if not AllowEdit then Exit;
+  if not AllowEdit then
+    Exit;
 
   // Перечень полей которые можно редактировать всегда
   if (Field.FieldName.ToUpper = 'FCOAST_NDS') or (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
@@ -7471,7 +7485,8 @@ var
   i: Integer;
 begin
   AllowEdit := Editable;
-  if not AllowEdit then Exit;
+  if not AllowEdit then
+    Exit;
 
   if (Field.FieldName.ToUpper = 'FCOAST_NDS') or (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
     (Field.FieldName.ToUpper = 'FZP_MACH_NDS') or (Field.FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
@@ -7744,7 +7759,7 @@ begin
   if Key = 45 then
     Key := 0;
 
-  grRatesEx.ReadOnly := PanelCalculationYesNo.Tag = 0;
+  grRatesEx.ReadOnly := pnlCalculationYesNo.Tag = 0;
 end;
 
 procedure TFormCalculationEstimate.dbmmoEnter(Sender: TObject);
@@ -7770,9 +7785,10 @@ begin
   end;
 end;
 
-function TFormCalculationEstimate.SprManualData(ASprType: Integer;
-  const ANewCode: string; var ANewID: Integer): Boolean;
-var SprCard: TManSprCardForm;
+function TFormCalculationEstimate.SprManualData(ASprType: Integer; const ANewCode: string;
+  var ANewID: Integer): Boolean;
+var
+  SprCard: TManSprCardForm;
 begin
   Result := False;
   SprCard := TManSprCardForm.Create(Self, ANewID, ASprType, ANewCode);

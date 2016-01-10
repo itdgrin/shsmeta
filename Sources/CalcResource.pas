@@ -9,7 +9,7 @@ uses
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Mask, JvDBGridFooter,
   JvComponentBase, JvFormPlacement, System.UITypes, Vcl.Buttons, FireDAC.UI.Intf, FireDAC.Comp.ScriptCommands,
-  FireDAC.Comp.Script, Tools;
+  FireDAC.Comp.Script, Tools, Vcl.OleCtnrs, Vcl.OleServer, ExcelXP, JvExGrids, JvStringGrid, ActiveX, ComObj;
 
 type
   TfCalcResource = class(TSmForm)
@@ -21,7 +21,6 @@ type
     ts3: TTabSheet;
     ts4: TTabSheet;
     ts5: TTabSheet;
-    lbl2: TLabel;
     pnlMatTop: TPanel;
     edtMatCodeFilter: TEdit;
     edtMatNameFilter: TEdit;
@@ -146,16 +145,58 @@ type
     mN8: TMenuItem;
     mN9: TMenuItem;
     mN11: TMenuItem;
-    mN3: TMenuItem;
+    mRestoreValues: TMenuItem;
     mN10: TMenuItem;
     mN12: TMenuItem;
     N5305335341: TMenuItem;
     mN13: TMenuItem;
     mN14: TMenuItem;
-    FDScript1: TFDScript;
+    fdScript: TFDScript;
     qrMechDataNUMPP: TIntegerField;
     qrDevicesNUMPP: TIntegerField;
     mEdit: TMenuItem;
+    mtRS: TFDMemTable;
+    dsRS: TDataSource;
+    qrmtf1: TStringField;
+    qrmtf2: TStringField;
+    qrmtf3: TStringField;
+    qrmtf4: TStringField;
+    qrmtf5: TStringField;
+    qrmtf6: TStringField;
+    pgcRS: TPageControl;
+    ts6: TTabSheet;
+    ts7: TTabSheet;
+    ts8: TTabSheet;
+    ts9: TTabSheet;
+    grRS: TJvDBGrid;
+    grTravel: TJvDBGrid;
+    grTravelWork: TJvDBGrid;
+    grWorkerDepartment: TJvDBGrid;
+    mtTravel: TFDMemTable;
+    qr1: TStringField;
+    qr2: TStringField;
+    qr3: TStringField;
+    qr4: TStringField;
+    dsTravel: TDataSource;
+    mtTravelWork: TFDMemTable;
+    qr7: TStringField;
+    qr8: TStringField;
+    qr9: TStringField;
+    qr10: TStringField;
+    dsTravelWork: TDataSource;
+    mtWorkerDepartment: TFDMemTable;
+    qr13: TStringField;
+    qr14: TStringField;
+    qr15: TStringField;
+    qr16: TStringField;
+    dsWorkerDepartment: TDataSource;
+    ts10: TTabSheet;
+    grVars: TJvDBGrid;
+    mtVars: TFDMemTable;
+    qr5: TStringField;
+    qr6: TStringField;
+    dsVars: TDataSource;
+    qrVarsf3: TStringField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -204,7 +245,6 @@ type
     procedure qrMechDetailBeforePost(DataSet: TDataSet);
     procedure qrDevicesDetailBeforePost(DataSet: TDataSet);
     procedure pnlCalculationYesNoClick(Sender: TObject);
-    procedure btnShowDiffClick(Sender: TObject);
     procedure qrMaterialDataCalcFields(DataSet: TDataSet);
     procedure qrMaterialDataCOASTChange(Sender: TField);
     procedure qrMechDataCOASTChange(Sender: TField);
@@ -214,7 +254,7 @@ type
     procedure grDevBottDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
     procedure PMTrPerc0Click(Sender: TObject);
-    procedure mN3Click(Sender: TObject);
+    procedure mRestoreValuesClick(Sender: TObject);
     procedure grDevColExit(Sender: TObject);
     procedure mN12Click(Sender: TObject);
     procedure qrMechDataCalcFields(DataSet: TDataSet);
@@ -225,7 +265,8 @@ type
     Footer: Variant;
     IDEstimate: Integer;
     flLoaded: Boolean;
-
+    Editable: Boolean;
+    ShowFullObject: Boolean;
     FOldGridProc: TWndMethod;
     procedure GridProc(var Message: TMessage);
 
@@ -237,16 +278,18 @@ type
 var
   fCalcResource: TfCalcResource;
 
-procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil);
+procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil;
+  AEditable: Boolean = True; AShowFullObject: Boolean = True; AShowTabs: Boolean = False);
 
 implementation
 
 {$R *.dfm}
 
 uses Main, ReplacementMatAndMech, CalculationEstimate, DataModule,
-  GlobsAndConst, TranspPersSelect, CalcResourceEdit;
+  GlobsAndConst, TranspPersSelect, CalcResourceEdit, Waiting, SmReport;
 
-procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil);
+procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil;
+  AEditable: Boolean = True; AShowFullObject: Boolean = True; AShowTabs: Boolean = False);
 var
   pageID: Integer;
   fl: Boolean;
@@ -273,6 +316,8 @@ begin
 
   fCalcResource.flLoaded := False;
   fCalcResource.IDEstimate := ID_ESTIMATE;
+  fCalcResource.Editable := AEditable;
+  fCalcResource.ShowFullObject := AShowFullObject;
   fCalcResource.qrEstimate.ParamByName('SM_ID').Value := ID_ESTIMATE;
   fCalcResource.qrEstimate.Active := True;
   fCalcResource.cbbFromMonth.ItemIndex := fCalcResource.qrEstimate.FieldByName('MONTH').AsInteger - 1;
@@ -282,11 +327,9 @@ begin
 
   // Если вызвали с доп параметром (на что положить) , то скрываем все вкладки
   for pageID := 0 to fCalcResource.pgc.PageCount - 1 do
-    fCalcResource.pgc.Pages[pageID].TabVisible := AOwner = nil;
+    fCalcResource.pgc.Pages[pageID].TabVisible := AShowTabs;
 
   fCalcResource.pnlTop.Visible := AOwner = nil;
-
-  // fCalcResource.pgc.ActivePageIndex := 0;
   fCalcResource.pgc.ActivePageIndex := APage;
 
   if AOwner = nil then
@@ -314,36 +357,6 @@ begin
   if AOwner <> nil then
     fCalcResource.Width := AOwner.ClientWidth;
   fCalcResource.Show;
-
-end;
-
-procedure TfCalcResource.btnShowDiffClick(Sender: TObject);
-begin
-  case pgc.ActivePageIndex of
-    // Расчет стоимости
-    0:
-      ;
-    // Расчет материалов
-    1:
-      begin
-
-      end;
-    // Расчет механизмов
-    2:
-      begin
-
-      end;
-    // Расчет оборудования
-    3:
-      begin
-
-      end;
-    // Расчет з\п
-    4:
-      begin
-
-      end;
-  end;
 end;
 
 procedure TfCalcResource.CalcFooter;
@@ -372,7 +385,7 @@ function TfCalcResource.CanEditField(Field: TField): Boolean;
 begin
   Result := False;
 
-  if (pnlCalculationYesNo.Tag = 0) or (not flLoaded) then
+  if (pnlCalculationYesNo.Tag = 0) or (not flLoaded) or (not Editable) then
     Exit;
 
   case pgc.ActivePageIndex of
@@ -469,11 +482,178 @@ begin
 end;
 
 procedure TfCalcResource.FormShow(Sender: TObject);
+  procedure RangeRead(AFileName: string);
+  var
+    Rows, i: Integer;
+    flSkipOther: Boolean;
+    WorkSheet: OLEVariant;
+    FData: Variant;
+    ExcelApp: OLEVariant;
+  begin
+    ExcelApp := dmSmReport.loadDocument(AFileName);
+    dmSmReport.qrSR.Active := False;
+    dmSmReport.qrSR.ParamByName('SM_ID').Value := IDEstimate;
+    dmSmReport.qrSR.Active := True;
+    dmSmReport.loadParams(dmSmReport.qrSR, ExcelApp, 5);
+    try
+      // Заполнение расчета стоимости---------------------------------------------------------------
+      WorkSheet := ExcelApp.ActiveWorkbook.Worksheets[1];
+      // определяем количество строк и столбцов таблицы
+      Rows := WorkSheet.UsedRange.Rows.Count;
+      // Cols := WorkSheet.UsedRange.Columns.Count;
+      // считываем данные всего диапазона
+      FData := WorkSheet.UsedRange.Value;
+      mtRS.Active := True;
+      mtRS.DisableControls;
+      flSkipOther := False;
+      // выводим данные в таблицу
+      for i := 7 to Rows - 1 do
+      begin
+        // try
+        if flSkipOther then
+        begin
+          Break;
+          // Continue;
+        end;
+        // Берутся только те строки, которые отмечены в спецколонке L признаком
+        // =1 или
+        // =2 и при этом значение не пустое и не 0
+        if (FData[i + 1, 12] = '1') or ((FData[i + 1, 12] = '2') and (VarToStr(FData[i + 1, 8]) <> '0'))
+        { and (FData[i + 1, 8] <> '') and
+          (FData[i + 1, 8] <> '0')) } then
+        begin
+          mtRS.Append;
+          mtRS.Fields[0].Value := IIF(FData[i + 1, 2] = '0', Null, FData[i + 1, 2]);
+          mtRS.Fields[1].Value := IIF(FData[i + 1, 7] = '0', Null, FData[i + 1, 7]);
+          mtRS.Fields[2].Value := IIF(FData[i + 1, 8] = '0', Null, FData[i + 1, 8]);
+          mtRS.Fields[3].Value := IIF(FData[i + 1, 9] = '0', Null, FData[i + 1, 9]);
+          mtRS.Fields[4].Value := IIF(FData[i + 1, 10] = '0', Null, FData[i + 1, 10]);
+          mtRS.Fields[5].Value := IIF(FData[i + 1, 11] = '0', Null, FData[i + 1, 11]);
+        end;
+        // Признак конца документа, дальше все игнорим
+        if Pos('BCEГO К OПЛATE:', FData[i + 1, 2]) <> 0 then
+          flSkipOther := True;
+        // except
+
+        // end;
+      end;
+      mtRS.First;
+      mtRS.EnableControls;
+
+      // Заполнение расчета командировочных---------------------------------------------------------------
+      WorkSheet := ExcelApp.ActiveWorkbook.Worksheets[2];
+      // считываем данные всего диапазона
+      FData := WorkSheet.UsedRange.Value;
+      mtTravel.Active := True;
+      mtTravel.DisableControls;
+      // выводим данные в таблицу
+      for i := 6 to 23 do
+      begin
+        mtTravel.Append;
+        mtTravel.Fields[0].Value := IIF(FData[i + 1, 1] = '0', Null, FData[i + 1, 1]);
+        mtTravel.Fields[1].Value := IIF(FData[i + 1, 2] = '0', Null, FData[i + 1, 2]);
+        mtTravel.Fields[2].Value := IIF(FData[i + 1, 7] = '0', Null, FData[i + 1, 7]);
+        mtTravel.Fields[3].Value := IIF(FData[i + 1, 8] = '0', Null, FData[i + 1, 8]);
+      end;
+      mtTravel.First;
+      mtTravel.EnableControls;
+
+      // Заполнение расчета разъездного---------------------------------------------------------------
+      WorkSheet := ExcelApp.ActiveWorkbook.Worksheets[3];
+      // считываем данные всего диапазона
+      FData := WorkSheet.UsedRange.Value;
+      mtTravelWork.Active := True;
+      mtTravelWork.DisableControls;
+      // выводим данные в таблицу
+      for i := 6 to 15 do
+      begin
+        mtTravelWork.Append;
+        mtTravelWork.Fields[0].Value := IIF(FData[i + 1, 1] = '0', Null, FData[i + 1, 1]);
+        mtTravelWork.Fields[1].Value := IIF(FData[i + 1, 2] = '0', Null, FData[i + 1, 2]);
+        mtTravelWork.Fields[2].Value := IIF(FData[i + 1, 7] = '0', Null, FData[i + 1, 7]);
+        mtTravelWork.Fields[3].Value := IIF(FData[i + 1, 8] = '0', Null, FData[i + 1, 8]);
+      end;
+      mtTravelWork.First;
+      mtTravelWork.EnableControls;
+
+      // Заполнение расчета перевозки ---------------------------------------------------------------
+      WorkSheet := ExcelApp.ActiveWorkbook.Worksheets[4];
+      // считываем данные всего диапазона
+      FData := WorkSheet.UsedRange.Value;
+      mtWorkerDepartment.Active := True;
+      mtWorkerDepartment.DisableControls;
+      // выводим данные в таблицу
+      for i := 6 to 36 do
+      begin
+        mtWorkerDepartment.Append;
+        mtWorkerDepartment.Fields[0].Value := IIF(FData[i + 1, 1] = '0', Null, FData[i + 1, 1]);
+        mtWorkerDepartment.Fields[1].Value := IIF(FData[i + 1, 2] = '0', Null, FData[i + 1, 2]);
+        mtWorkerDepartment.Fields[2].Value := IIF(FData[i + 1, 7] = '0', Null, FData[i + 1, 7]);
+        mtWorkerDepartment.Fields[3].Value := IIF(FData[i + 1, 8] = '0', Null, FData[i + 1, 8]);
+      end;
+      mtWorkerDepartment.First;
+      mtWorkerDepartment.EnableControls;
+
+      // Заполнение расчета переменных ---------------------------------------------------------------
+      WorkSheet := ExcelApp.ActiveWorkbook.Worksheets[5];
+      // считываем данные всего диапазона
+      FData := WorkSheet.UsedRange.Value;
+      mtVars.Active := True;
+      mtVars.DisableControls;
+      // выводим данные в таблицу
+      for i := 1 to 30 do
+      begin
+        mtVars.Append;
+        mtVars.Fields[0].Value := IIF(FData[i + 1, 1] = '0', Null, FData[i + 1, 1]);
+        mtVars.Fields[1].Value := IIF(FData[i + 1, 2] = '0', Null, FData[i + 1, 2]);
+        mtVars.Fields[2].Value := IIF(FData[i + 1, 3] = '0', Null, FData[i + 1, 3]);
+      end;
+      mtVars.First;
+      mtVars.EnableControls;
+    finally
+      WorkSheet := Unassigned;
+    end;
+  end;
+
+var
+  fileName: string;
 begin
-case pgc.ActivePageIndex of
+  case pgc.ActivePageIndex of
     // Расчет стоимости
     0:
-      ;
+      begin
+        { if OleContainer1.State <> osEmpty then
+          Exit; }
+        try
+          FormWaiting.Show;
+          Application.ProcessMessages;
+          fileName := ExtractFilePath(Application.ExeName) + C_REPORTDIR + 'ШАБЛОН ПОЛНЫЙ.xls';
+          if not FileExists(fileName) then
+          begin
+            Application.MessageBox(PChar('Не найден файл шабона!'#13 + fileName), 'Cводный расчет',
+              MB_OK + MB_ICONSTOP + MB_TOPMOST);
+            Exit;
+          end;
+          // dmSmReport.test(fileName, IDEstimate);
+          RangeRead(fileName); // записываем переменные и получаем обратно результат
+        finally
+          FormWaiting.Close;
+          pgc.SetFocus;
+        end;
+        // Проходим по всем тулбарам связанного с контейнером приложения
+        // и устанавливаем всем невидимость, чтоб не мешали ...
+        {
+          for i := 1 to OleContainer1.OleObject.CommandBars.Count do
+          if OleContainer1.OleObject.CommandBars.Item[i].Visible then
+          OleContainer1.OleObject.CommandBars.Item[i].Visible := False;
+        }      {
+          if osEmpty = OleContainer1.State then
+          Exit;
+          OleContainer1.DoVerb(ovShow); // not in FormCreate, in or after FormShow
+          ev := 2;
+          OleContainer1.OleObject.Protect(ev);
+          OleContainer1.OleObject.ActiveWindow.ToggleRibbon; }
+      end;
     // Расчет материалов
     1:
       begin
@@ -1062,7 +1242,7 @@ begin
 
       end;
     end;
-    FDScript1.ExecuteScript(TStrings(Script));
+    fdScript.ExecuteScript(TStrings(Script));
   finally
     grMaterial.DataSource.DataSet.GotoBookmark(TempBookmark);
     grMaterial.DataSource.DataSet.FreeBookmark(TempBookmark);
@@ -1127,7 +1307,7 @@ begin
                 end;
               end;
             end;
-            FDScript1.ExecuteScript(TStrings(Script));
+            fdScript.ExecuteScript(TStrings(Script));
           finally
             grMaterial.DataSource.DataSet.GotoBookmark(TempBookmark);
             grMaterial.DataSource.DataSet.FreeBookmark(TempBookmark);
@@ -1176,7 +1356,7 @@ begin
                 end;
               end;
             end;
-            FDScript1.ExecuteScript(TStrings(Script));
+            fdScript.ExecuteScript(TStrings(Script));
           finally
             grMech.DataSource.DataSet.GotoBookmark(TempBookmark);
             grMech.DataSource.DataSet.FreeBookmark(TempBookmark);
@@ -1229,7 +1409,7 @@ begin
                 end;
               end;
             end;
-            FDScript1.ExecuteScript(TStrings(Script));
+            fdScript.ExecuteScript(TStrings(Script));
           finally
             grDev.DataSource.DataSet.GotoBookmark(TempBookmark);
             grDev.DataSource.DataSet.FreeBookmark(TempBookmark);
@@ -1243,7 +1423,7 @@ begin
   end;
 end;
 
-procedure TfCalcResource.mN3Click(Sender: TObject);
+procedure TfCalcResource.mRestoreValuesClick(Sender: TObject);
 begin
   if Application.MessageBox('Восстановить исходные значения строки?', 'Расчет стоимости ресурсов',
     MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
@@ -1415,7 +1595,9 @@ begin
   case pgc.ActivePageIndex of
     // Расчет стоимости
     0:
-      ;
+      begin
+        // pgcRS.ActivePageIndex := 0;
+      end;
     // Расчет материалов
     1:
       begin
@@ -1448,6 +1630,7 @@ end;
 
 procedure TfCalcResource.pmPopup(Sender: TObject);
 begin
+
   case pgc.ActivePageIndex of
     // Расчет стоимости
     0:
@@ -1455,39 +1638,43 @@ begin
     // Расчет материалов
     1:
       begin
-        mDetete.Visible := qrMaterialData.FieldByName('DELETED').AsInteger = 0;
-        mRestore.Visible := qrMaterialData.FieldByName('DELETED').AsInteger = 1;
-        mReplace.Visible := True;
-        mPROC_TRANSP.Visible := True;
+        mDetete.Visible := (qrMaterialData.FieldByName('DELETED').AsInteger = 0) and Editable;
+        mRestore.Visible := (qrMaterialData.FieldByName('DELETED').AsInteger = 1) and Editable;
+        mReplace.Visible := True and Editable;
+        mPROC_TRANSP.Visible := True and Editable;
+        mRestoreValues.Visible := True and Editable;
         // grMaterial.SelectedRows.CurrentRowSelected := True;
-        mEdit.Visible := CheckQrActiveEmpty(qrMaterialData);
+        mEdit.Visible := CheckQrActiveEmpty(qrMaterialData) and Editable;
       end;
     // Расчет механизмов
     2:
       begin
-        mDetete.Visible := qrMechData.FieldByName('DELETED').AsInteger = 0;
-        mRestore.Visible := qrMechData.FieldByName('DELETED').AsInteger = 1;
-        mReplace.Visible := True;
-        mPROC_TRANSP.Visible := False;
-        mEdit.Visible := CheckQrActiveEmpty(qrMechData);
+        mDetete.Visible := (qrMechData.FieldByName('DELETED').AsInteger = 0) and Editable;
+        mRestore.Visible := (qrMechData.FieldByName('DELETED').AsInteger = 1) and Editable;
+        mReplace.Visible := True and Editable;
+        mRestoreValues.Visible := True and Editable;
+        mPROC_TRANSP.Visible := False and Editable;
+        mEdit.Visible := CheckQrActiveEmpty(qrMechData) and Editable;
       end;
     // Расчет оборудования
     3:
       begin
-        mDetete.Visible := qrDevices.FieldByName('DELETED').AsInteger = 0;
-        mRestore.Visible := qrDevices.FieldByName('DELETED').AsInteger = 1;
-        mReplace.Visible := True;
-        mPROC_TRANSP.Visible := False;
-        mEdit.Visible := CheckQrActiveEmpty(qrDevices);
+        mDetete.Visible := (qrDevices.FieldByName('DELETED').AsInteger = 0) and Editable;
+        mRestore.Visible := (qrDevices.FieldByName('DELETED').AsInteger = 1) and Editable;
+        mReplace.Visible := True and Editable;
+        mRestoreValues.Visible := True and Editable;
+        mPROC_TRANSP.Visible := False and Editable;
+        mEdit.Visible := CheckQrActiveEmpty(qrDevices) and Editable;
       end;
     // Расчет з\п
     4:
       begin
-        mDetete.Visible := qrRates.FieldByName('DELETED').AsInteger = 0;
-        mRestore.Visible := qrRates.FieldByName('DELETED').AsInteger = 1;
-        mReplace.Visible := False;
-        mPROC_TRANSP.Visible := False;
-        mEdit.Visible := False;
+        mDetete.Visible := (qrRates.FieldByName('DELETED').AsInteger = 0) and Editable;
+        mRestore.Visible := (qrRates.FieldByName('DELETED').AsInteger = 1) and Editable;
+        mReplace.Visible := False and Editable;
+        mRestoreValues.Visible := True and Editable;
+        mPROC_TRANSP.Visible := False and Editable;
+        mEdit.Visible := False and Editable;
       end;
   end;
 
@@ -1728,6 +1915,8 @@ begin
     (DataSet as TFDQuery).ParamByName('NDS').AsInteger := cbbNDS.ItemIndex;
   if (DataSet as TFDQuery).FindParam('SHOW_DELETED') <> nil then
     (DataSet as TFDQuery).ParamByName('SHOW_DELETED').Value := mShowDeleted.Checked;
+  if (DataSet as TFDQuery).FindParam('SHOW_FULL_OBJECT') <> nil then
+    (DataSet as TFDQuery).ParamByName('SHOW_FULL_OBJECT').Value := ShowFullObject;
 end;
 
 procedure TfCalcResource.qrMaterialDataBeforePost(DataSet: TDataSet);
@@ -2140,5 +2329,8 @@ begin
   qrMaterialData.FieldByName('PROC_TRANSP').Value := TrPr;
 end;
 
-end.
+initialization
 
+ReportMemoryLeaksOnShutdown := True;
+
+end.

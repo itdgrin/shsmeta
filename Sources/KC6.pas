@@ -54,12 +54,8 @@ type
     strngfldDataOBJ_CODE: TStringField;
     strngfldDataOBJ_UNIT: TStringField;
     qrDataOBJ_COUNT_OUT: TFloatField;
-    qrDataID_TYPE_DATA: TIntegerField;
-    qrDataSELECTED: TIntegerField;
     qrDataCHECKED: TBooleanField;
     qrDataSORT_ID: TStringField;
-    qrDataITERATOR: TIntegerField;
-    qrDataINCITERATOR: TIntegerField;
     qrDataSM_ID: TLongWordField;
     qrDataID_TABLES: TLongWordField;
     dbmmoOBJ_NAME: TDBMemo;
@@ -74,6 +70,10 @@ type
     tvEstimates: TJvDBTreeView;
     chkCopyTreeEstimates: TCheckBox;
     qrDataSORT_ID2: TStringField;
+    qrDataID_TYPE_DATA: TLargeintField;
+    qrDataSELECTED: TLargeintField;
+    qrDataINCITERATOR: TLargeintField;
+    qrDataITERATOR: TLargeintField;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -249,7 +249,7 @@ end;
 procedure TfKC6.qrDataCalcFields(DataSet: TDataSet);
 begin
   if qrDataID_TYPE_DATA.Value > 0 then
-    qrDataOBJ_COUNT_OUT.Value := qrDataOBJ_COUNT.AsFloat - qrDataCntDONE.AsFloat - qrDataOBJ_COUNT_IN.AsFloat;
+    qrDataOBJ_COUNT_OUT.Value := round((qrDataOBJ_COUNT.Value - qrDataCntDONE.Value - qrDataOBJ_COUNT_IN.Value)*100000000)/100000000;
   qrDataCHECKED.OnChange := nil;
   if qrDataSELECTED.Value = 0 then
     qrDataCHECKED.Value := False

@@ -584,22 +584,9 @@ object fKC6: TfKC6
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
-        SourceDataType = dtMemo
-        TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtInt64
-        TargetDataType = dtInt32
-      end
-      item
-        SourceDataType = dtUInt64
-        TargetDataType = dtInt32
-      end
-      item
         SourceDataType = dtFmtBCD
         TargetDataType = dtDouble
       end>
-    FormatOptions.StrsTrim2Len = True
     FormatOptions.FmtDisplayDateTime = 'mmyyyy'
     FormatOptions.FmtDisplayDate = 'mmyyyy'
     SQL.Strings = (
@@ -903,7 +890,9 @@ object fKC6: TfKC6
     ParamData = <
       item
         Name = 'ID_ACT'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'ID_OBJECT'
@@ -930,23 +919,11 @@ object fKC6: TfKC6
       FieldName = 'OBJ_COUNT_OUT'
       Calculated = True
     end
-    object qrDataID_TYPE_DATA: TIntegerField
-      FieldName = 'ID_TYPE_DATA'
-    end
-    object qrDataSELECTED: TIntegerField
-      FieldName = 'SELECTED'
-    end
     object qrDataCHECKED: TBooleanField
       FieldKind = fkCalculated
       FieldName = 'CHECKED'
       OnChange = qrDataCHECKEDChange
       Calculated = True
-    end
-    object qrDataITERATOR: TIntegerField
-      FieldName = 'ITERATOR'
-    end
-    object qrDataINCITERATOR: TIntegerField
-      FieldName = 'INCITERATOR'
     end
     object qrDataSM_ID: TLongWordField
       FieldName = 'SM_ID'
@@ -972,10 +949,22 @@ object fKC6: TfKC6
       FieldName = 'SORT_ID2'
       Size = 255
     end
+    object qrDataID_TYPE_DATA: TLargeintField
+      FieldName = 'ID_TYPE_DATA'
+    end
+    object qrDataSELECTED: TLargeintField
+      FieldName = 'SELECTED'
+    end
+    object qrDataINCITERATOR: TLargeintField
+      FieldName = 'INCITERATOR'
+    end
+    object qrDataITERATOR: TLargeintField
+      FieldName = 'ITERATOR'
+    end
   end
   object dsData: TDataSource
     DataSet = qrData
-    Left = 536
+    Left = 520
     Top = 175
   end
   object qrTemp: TFDQuery

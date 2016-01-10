@@ -377,6 +377,7 @@ var
 
   NameEstimate: String;
   NewID: Integer;
+  obj_region: Variant;
 begin
   CountWarning := 0;
   vMonth := MonthOf(Now);
@@ -512,6 +513,14 @@ begin
         // qrMain.FieldByName('growth_index').Value := GetUniDictParamValue('GROWTH_INDEX', vMonth, vYear);
         qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value := APPLY_WINTERPRISE_FLAG;
         qrMain.FieldByName('WINTERPRICE_TYPE').Value := WINTERPRICE_TYPE;
+
+        obj_region := FastSelectSQLOne
+          ('SELECT `objstroj`.`obj_region` FROM `objcards`, `objstroj` WHERE `objcards`.`stroj_id` = `objstroj`.`stroj_id` and `obj_id` = :0',
+          VarArrayOf([IdObject]));
+        if obj_region = 3 then
+          qrMain.FieldByName('STAVKA_RAB').Value := GetUniDictParamValue('STAVKA_RAB_M', vMonth, vYear)
+        else
+          qrMain.FieldByName('STAVKA_RAB').Value := GetUniDictParamValue('STAVKA_RAB_RB', vMonth, vYear);
       end
       else
       begin
@@ -762,7 +771,3 @@ begin
 end;
 
 end.
-
-
-
-

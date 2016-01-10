@@ -74,9 +74,9 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       TabOrder = 0
       object dbgrdObjects: TJvDBGrid
         Left = 0
-        Top = 25
+        Top = 26
         Width = 787
-        Height = 268
+        Height = 267
         Align = alClient
         DataSource = dsObjects
         Font.Charset = DEFAULT_CHARSET
@@ -250,7 +250,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         Left = 0
         Top = 0
         Width = 787
-        Height = 25
+        Height = 26
         Align = alTop
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -261,7 +261,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         TabOrder = 0
         DesignSize = (
           787
-          25)
+          26)
         object lbl3: TLabel
           Left = 8
           Top = 5
@@ -450,9 +450,10 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         end
         object tvActs: TJvDBTreeView
           Left = 0
-          Top = 47
+          Top = 46
           Width = 424
-          Height = 145
+          Height = 146
+          BevelInner = bvSpace
           DataSource = dsActs
           MasterField = 'MASTER_ID'
           DetailField = 'PARENT_ID'
@@ -470,49 +471,135 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = []
-          TabOrder = 0
+          TabOrder = 1
           OnDblClick = PMActsEditClick
           PopupMenu = pmActs
           ParentFont = False
           RowSelect = True
           OnCustomDrawItem = tvActsCustomDrawItem
           Mirror = False
+          ExplicitTop = 47
+          ExplicitHeight = 145
         end
-        object pnlActButtons: TPanel
+        object pnlActButtons: TGridPanel
           Left = 0
           Top = 13
           Width = 424
-          Height = 34
+          Height = 33
           Align = alTop
-          BevelOuter = bvNone
-          TabOrder = 1
-          object Bevel1: TBevel
-            Left = 0
-            Top = 0
-            Width = 424
-            Height = 33
-            Align = alTop
-            Shape = bsTopLine
-          end
+          BevelOuter = bvLowered
+          ColumnCollection = <
+            item
+              Value = 25.000000000000000000
+            end
+            item
+              Value = 25.000000000000000000
+            end
+            item
+              Value = 25.000000000000000000
+            end
+            item
+              Value = 25.000000000000000000
+            end>
+          ControlCollection = <
+            item
+              Column = 0
+              Control = btnReportC3
+              Row = 0
+            end
+            item
+              Column = 1
+              Control = btnReportC2B
+              Row = 0
+            end
+            item
+              Column = 2
+              Control = btnReport1
+              Row = 0
+            end
+            item
+              Column = 3
+              Control = btnReport2
+              Row = 0
+            end>
+          RowCollection = <
+            item
+              Value = 100.000000000000000000
+            end>
+          TabOrder = 0
+          ExplicitLeft = 1
+          ExplicitTop = 49
           object btnReportC3: TBitBtn
             AlignWithMargins = True
             Left = 4
-            Top = 5
-            Width = 90
-            Height = 25
+            Top = 3
+            Width = 102
+            Height = 27
+            Margins.Top = 2
+            Margins.Right = 0
+            Margins.Bottom = 2
+            Align = alClient
             Caption = #1057#1087#1088#1072#1074#1082#1072' '#1057'-3'
+            Enabled = False
             TabOrder = 0
+            ExplicitLeft = 1
+            ExplicitTop = -2
+            ExplicitWidth = 105
+            ExplicitHeight = 29
           end
           object btnReportC2B: TBitBtn
             AlignWithMargins = True
-            Left = 98
-            Top = 5
-            Width = 90
-            Height = 25
-            Margins.Left = 0
+            Left = 109
+            Top = 3
+            Width = 102
+            Height = 27
+            Margins.Top = 2
+            Margins.Right = 0
+            Margins.Bottom = 2
+            Align = alClient
             Caption = #1060#1086#1088#1084#1072' '#1057'-2'#1041
             TabOrder = 1
             OnClick = btnReportC2BClick
+            ExplicitLeft = 121
+            ExplicitTop = 4
+            ExplicitWidth = 75
+            ExplicitHeight = 25
+          end
+          object btnReport1: TBitBtn
+            AlignWithMargins = True
+            Left = 214
+            Top = 3
+            Width = 102
+            Height = 27
+            Margins.Top = 2
+            Margins.Right = 0
+            Margins.Bottom = 2
+            Align = alClient
+            Caption = #1042#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1079#1072' '#1084#1077#1089#1103#1094
+            Enabled = False
+            TabOrder = 2
+            ExplicitLeft = 264
+            ExplicitTop = 24
+            ExplicitWidth = 75
+            ExplicitHeight = 25
+          end
+          object btnReport2: TBitBtn
+            AlignWithMargins = True
+            Left = 319
+            Top = 3
+            Width = 104
+            Height = 27
+            Margins.Top = 2
+            Margins.Right = 0
+            Margins.Bottom = 2
+            Align = alClient
+            Caption = #1057#1087#1080#1089#1072#1085#1080#1077' '#1084#1072#1090'. '#1079#1072' '#1084#1077#1089#1103#1094
+            Enabled = False
+            TabOrder = 3
+            ExplicitLeft = 264
+            ExplicitTop = 24
+            ExplicitWidth = 75
+            ExplicitHeight = 23
           end
         end
       end
@@ -531,21 +618,25 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     object PopupMenuObjectsAdd: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       ImageIndex = 39
+      ShortCut = 116
       OnClick = PopupMenuObjectsAddClick
     end
     object PopupMenuObjectsEdit: TMenuItem
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1086#1073#1098#1077#1082#1090#1072
       ImageIndex = 44
+      ShortCut = 115
       OnClick = PopupMenuObjectsEditClick
     end
     object mDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       ImageIndex = 38
+      ShortCut = 119
       OnClick = mDeleteClick
     end
     object mDeleteObject: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
       ImageIndex = 36
+      ShortCut = 8311
       OnClick = mDeleteObjectClick
     end
     object mRepair: TMenuItem

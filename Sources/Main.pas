@@ -201,8 +201,8 @@ type
     procedure CascadeForActiveWindow();
     procedure FormCreate(Sender: TObject);
 
-    function CreateButtonOpenWindow(const CaptionButton, HintButton: String;
-      const AForm: TForm; AEventType: Byte = 0): TSpeedButton;
+    function CreateButtonOpenWindow(const CaptionButton, HintButton: String; const AForm: TForm;
+      AEventType: Byte = 0): TSpeedButton;
     procedure DeleteButtonCloseWindow(const CaptionButton: String);
     procedure SelectButtonActiveWindow(const CaptionButton: String);
     procedure ReplaceButtonOpenWindow(const AFrom, ATo: TForm);
@@ -370,7 +370,7 @@ type
     UseBoldFontForName: Boolean;
     AutoScrollToNextRow: Boolean;
     UseOldFormuls: Boolean;
-    AllowObjectDatesChange: Boolean; //Разрешить изменение дат расчета индексов в Сводном расчете
+    AllowObjectDatesChange: Boolean; // Разрешить изменение дат расчета индексов в Сводном расчете
   end;
 
 const
@@ -467,7 +467,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex,
   DebugTables,
   System.Win.Registry,
   SerialKeyModule,
-  fLicense;
+  fLicense, SmReport;
 
 {$R *.dfm}
 
@@ -544,21 +544,22 @@ begin
 end;
 
 procedure TFormMain.CHECKLICENCE(var Mes: TMessage);
-var LicenseForm: TLicenseForm;
+var
+  LicenseForm: TLicenseForm;
 begin
   if FCheckLicenseFlag then
     Exit;
 
   LicenseForm := TLicenseForm.Create(Self);
   try
-    FCheckLicenseFlag := True;
+    FCheckLicenseFlag := true;
     LicenseForm.ShowModal;
   finally
     FreeAndNil(LicenseForm);
     FCheckLicenseFlag := False;
-    if not CheckCurLicense  then
+    if not CheckCurLicense then
     begin
-      FLicenseClose := True;
+      FLicenseClose := true;
       PostMessage(Handle, WM_CLOSE, 0, 0);
     end;
   end;
@@ -586,8 +587,9 @@ end;
 
 // Загрузка системной информации из smeta.ini и текущей версии приложения
 procedure TFormMain.GetUpdateSystemInfo;
-var ini: TIniFile;
-    Reg: TRegistry;
+var
+  ini: TIniFile;
+  Reg: TRegistry;
 begin
   ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + С_UPD_NAME + '.ini');
   try
@@ -615,7 +617,7 @@ begin
   try
     Reg.RootKey := C_REGROOT;
 
-    if Reg.OpenKey(C_REGKEY + '\' + С_UPD_NAME, True) then
+    if Reg.OpenKey(C_REGKEY + '\' + С_UPD_NAME, true) then
     begin
       if not Reg.ValueExists('UpdateType') then
         Reg.WriteInteger('UpdateType', 0);
@@ -635,7 +637,7 @@ begin
       MessageDlg('Unable to create key!', mtError, mbOKCancel, 0);
     Reg.CloseKey;
 
-    if Reg.OpenKey(C_REGKEY + '\' + C_LICENSEKEY, True) then
+    if Reg.OpenKey(C_REGKEY + '\' + C_LICENSEKEY, true) then
     begin
       if Reg.ValueExists('CurLicense') then
         G_CURLISENSE := Reg.ReadString('CurLicense');
@@ -643,8 +645,8 @@ begin
     else
       MessageDlg('Unable to create key!', mtError, mbOKCancel, 0);
 
-    //Временная фишка, что-бы занилить старые настройки
-    if Reg.OpenKey(C_REGKEY, True) then
+    // Временная фишка, что-бы занилить старые настройки
+    if Reg.OpenKey(C_REGKEY, true) then
     begin
       FFirstStart := not Reg.ValueExists('FirstStart');
       Reg.WriteInteger('FirstStart', 0);
@@ -721,6 +723,9 @@ begin
 
     CanClose := False;
   end;
+
+  if VarIsNull(dmSmReport.ADocument) then
+    dmSmReport.closeDocument(dmSmReport.ADocument);
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -739,8 +744,7 @@ begin
   ReadSettingsFromFile(ExtractFilePath(Application.ExeName) + FileProgramSettings);
 
   // Объект для управления архивом
-  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName),
-    ExtractFilePath(Application.ExeName) +
+  FArhiv := TBaseAppArhiv.Create(ExtractFilePath(Application.ExeName), ExtractFilePath(Application.ExeName) +
     C_ARHDIR);
 
   // путь к папке с отчетами (Вадим)
@@ -832,15 +836,22 @@ begin
       FormWaiting.lbProcess.Caption := 'Загрузка справочников:';
       FormWaiting.Show;
       Application.ProcessMessages;
-      // Справочник сборников расценок
-      FormWaiting.lbProcess.Caption := 'Загрузка справочников:'#13 + 'перечень сборников';
-      Application.ProcessMessages;
 
+      FormWaiting.lbProcess.Caption := 'Загрузка справочников:'#13 + 'справочники НРР';
+      Application.ProcessMessages;
       // Объект для загрузки справочников
       SprControl := TSprControl.Create(Handle);
 
+      // Справочник сборников расценок
+      FormWaiting.lbProcess.Caption := 'Загрузка справочников:'#13 + 'перечень сборников';
+      Application.ProcessMessages;
       if (not Assigned(fNormativDirectory)) then
         fNormativDirectory := TfNormativDirectory.Create(Self);
+
+      // Подргужаем Excel
+      FormWaiting.lbProcess.Caption := 'Загрузка справочников:'#13 + 'объекты отчетов';
+      Application.ProcessMessages;
+      dmSmReport.doCreateDoc;
       //
       FormWaiting.Close;
       FormWaiting.Height := 88;
@@ -886,7 +897,8 @@ begin
 end;
 
 procedure TFormMain.FormShowEvent2(Sender: TObject);
-var TmpForm: TForm;
+var
+  TmpForm: TForm;
 begin
   // PanelCover.Visible := true;
   try
@@ -920,8 +932,8 @@ begin
   Result.Top := 1;
   Result.Caption := CaptionButton;
   Result.GroupIndex := 1;
-  Result.Down := True;
-  Result.ShowHint := True;
+  Result.Down := true;
+  Result.ShowHint := true;
   Result.Hint := HintButton;
 
   if (AEventType = 1) then
@@ -1318,8 +1330,8 @@ begin
     fLogIn := TfLogIn.Create(FormMain);
   if fLogIn.ShowModal <> mrOk then
   begin
-    //OnCloseQuery := nil;
-    //Close;
+    // OnCloseQuery := nil;
+    // Close;
   end;
 end;
 
@@ -2103,8 +2115,7 @@ end;
 
 procedure TFormMain.MenuServiceClick(Sender: TObject);
 begin
-  ServiceBackup.Enabled := not FArhiv.CreateArhInProgress and
-                           not FArhiv.RestoreArhInProgress;
+  ServiceBackup.Enabled := not FArhiv.CreateArhInProgress and not FArhiv.RestoreArhInProgress;
 end;
 
 procedure TFormMain.MenuSetCoefficientsClick(Sender: TObject);
@@ -2303,7 +2314,8 @@ begin
 end;
 
 procedure TFormMain.pmLicenseKeyClick(Sender: TObject);
-var LicenseForm: TLicenseForm;
+var
+  LicenseForm: TLicenseForm;
 begin
   LicenseForm := TLicenseForm.Create(Self);
   try
@@ -2552,7 +2564,7 @@ begin
       PS.TextFontStyle := Byte(ReadInteger('Controls', 'TextFontStyle', 0));
       PS.AddRateType1ToLocal := ReadBool('ESTIMATE', 'AddRateType1ToLocal', False);
       PS.AddRateType0ToPNR := ReadBool('ESTIMATE', 'AddRateType0ToPNR', False);
-      PS.UseBoldFontForName := ReadBool('ESTIMATE', 'UseBoldFontForName', True);
+      PS.UseBoldFontForName := ReadBool('ESTIMATE', 'UseBoldFontForName', true);
       PS.AutoScrollToNextRow := ReadBool('ESTIMATE', 'AutoScrollToNextRow', False);
       PS.AllowObjectDatesChange := ReadBool('ESTIMATE', 'AllowObjectDatesChange', False);
       PS.UseOldFormuls := ReadBool('ESTIMATE', 'UseOldFormuls', False);

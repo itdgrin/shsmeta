@@ -136,7 +136,8 @@ uses
   ContractPrice in 'ContractPrice.pas' {fContractPrice},
   ContractPriceEdit in 'ContractPriceEdit.pas' {fContractPriceEdit},
   fReportC2B in 'fReportC2B.pas' {FormReportC2B},
-  ContractPays in 'ContractPays.pas' {fContractPays};
+  ContractPays in 'ContractPays.pas' {fContractPays},
+  SmReport in 'SmReport.pas' {dmSmReport: TDataModule};
 
 {$R *.res}
 var MHandle: THandle;
@@ -174,6 +175,7 @@ begin
   Application.CreateForm(TfKC6, fKC6);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
+  Application.CreateForm(TdmSmReport, dmSmReport);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€

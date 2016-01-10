@@ -604,17 +604,17 @@ begin
     // Расчет материалов
     1:
       begin
-
+        grMaterial.SelectAll;
       end;
     // Расчет механизмов
     2:
       begin
-
+        grMech.SelectAll;
       end;
     // Расчет оборудования
     3:
       begin
-
+        grDev.SelectAll;
       end;
     // Расчет з\п
     4:
@@ -890,4 +890,3 @@ begin
 end;
 
 end.
-

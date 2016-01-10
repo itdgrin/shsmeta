@@ -184,7 +184,7 @@ object fContractPrice: TfContractPrice
       Caption = #1050#1086#1085#1090#1088#1072#1082#1090#1085#1072#1103' '#1094#1077#1085#1072' '#1089#1092#1086#1088#1084#1080#1088#1086#1074#1072#1085#1072
       DataField = 'FL_CONTRACT_PRICE_DONE'
       DataSource = dsOBJ
-      TabOrder = 7
+      TabOrder = 8
       ValueChecked = '1'
       ValueUnchecked = '0'
       OnClick = dbchkFL_CONTRACT_PRICE1Click
@@ -197,7 +197,7 @@ object fContractPrice: TfContractPrice
       Caption = #1056#1091#1095#1085#1086#1081' '#1074#1074#1086#1076
       DataField = 'FL_CONTRACT_PRICE_USER_DATA'
       DataSource = dsOBJ
-      TabOrder = 6
+      TabOrder = 7
       ValueChecked = '1'
       ValueUnchecked = '0'
       OnClick = dbchkFL_CONTRACT_PRICE1Click
@@ -208,7 +208,7 @@ object fContractPrice: TfContractPrice
       Width = 351
       Height = 21
       BevelOuter = bvNone
-      TabOrder = 5
+      TabOrder = 6
       object lblTypeIndex: TLabel
         AlignWithMargins = True
         Left = 3
@@ -241,7 +241,7 @@ object fContractPrice: TfContractPrice
       Height = 25
       Anchors = [akTop, akRight]
       Caption = #1043#1088#1072#1092#1080#1082' '#1087#1083#1072#1090#1077#1078#1077#1081
-      TabOrder = 8
+      TabOrder = 9
       OnClick = btnContractPaysClick
     end
     object btnCalc: TBitBtn
@@ -251,7 +251,7 @@ object fContractPrice: TfContractPrice
       Height = 25
       Anchors = [akTop, akRight]
       Caption = #1042#1099#1087#1086#1083#1085#1080#1090#1100' '#1088#1072#1089#1095#1077#1090
-      TabOrder = 9
+      TabOrder = 10
       OnClick = btnCalcClick
     end
     object cbbViewType: TComboBox
@@ -268,7 +268,7 @@ object fContractPrice: TfContractPrice
       Font.Style = []
       ItemIndex = 0
       ParentFont = False
-      TabOrder = 4
+      TabOrder = 5
       Text = #1074' '#1088#1091#1073#1083#1103#1093
       OnCloseUp = cbbViewTypeCloseUp
       Items.Strings = (
@@ -287,8 +287,18 @@ object fContractPrice: TfContractPrice
       KeyField = 'CONTRACT_PRICE_TYPE_ID'
       ListField = 'CONTRACT_PRICE_TYPE_NAME'
       ListSource = dsCONTRACT_PRICE_TYPE
-      TabOrder = 3
+      TabOrder = 4
       OnCloseUp = dblkcbbindex_type_id1CloseUp
+    end
+    object btnShowResources: TBitBtn
+      Left = 608
+      Top = 22
+      Width = 143
+      Height = 25
+      Anchors = [akTop, akRight]
+      Caption = #1055#1086#1082#1072#1079#1072#1090#1100' '#1088#1072#1089#1095#1077#1090' '#1079#1072#1090#1088#1072#1090
+      TabOrder = 3
+      OnClick = btnShowResourcesClick
     end
   end
   object pnlClient: TPanel

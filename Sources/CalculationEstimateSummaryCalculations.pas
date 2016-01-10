@@ -102,7 +102,7 @@ begin
   Result := False;
 
   if not CheckQrActiveEmpty(qrData) or (qrData.FieldByName('sm_type').AsInteger <> 3) or
-    (FormCalculationEstimate.PanelCalculationYesNo.Tag = 0) or (Field = grSummaryCalculation.Columns[0].Field)
+    (FormCalculationEstimate.pnlCalculationYesNo.Tag = 0) or (Field = grSummaryCalculation.Columns[0].Field)
     or (Field = grSummaryCalculation.Columns[1].Field) or (Field = grSummaryCalculation.Columns[2].Field) or
     (Field = grSummaryCalculation.Columns[3].Field) or (Field = grSummaryCalculation.Columns[40].Field) then
     Exit;
@@ -368,10 +368,10 @@ end;
 
 procedure TfrCalculationEstimateSummaryCalculations.pmPopup(Sender: TObject);
 begin
-  mN3.Visible := FormCalculationEstimate.PanelCalculationYesNo.Tag = 1;
+  mN3.Visible := FormCalculationEstimate.pnlCalculationYesNo.Tag = 1;
   mN4.Visible := CanEditField(grSummaryCalculation.SelectedField);
-  mN5.Visible := FormCalculationEstimate.PanelCalculationYesNo.Tag = 1;
-  mN6.Visible := FormCalculationEstimate.PanelCalculationYesNo.Tag = 1;
+  mN5.Visible := FormCalculationEstimate.pnlCalculationYesNo.Tag = 1;
+  mN6.Visible := FormCalculationEstimate.pnlCalculationYesNo.Tag = 1;
 end;
 
 procedure TfrCalculationEstimateSummaryCalculations.qrDataAfterCancel(DataSet: TDataSet);

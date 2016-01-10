@@ -250,7 +250,7 @@
       ExplicitTop = 4
       ExplicitHeight = 25
     end
-    object btnResCalc: TSpeedButton
+    object btnContractPrice: TSpeedButton
       Tag = 77
       AlignWithMargins = True
       Left = 697
@@ -271,7 +271,7 @@
       Font.Style = []
       ParentFont = False
       Visible = False
-      OnClick = btnResCalcClick
+      OnClick = btnContractPriceClick
       ExplicitTop = 8
     end
     object btnKC6J: TSpeedButton
@@ -288,7 +288,7 @@
       GroupIndex = 1
       Caption = #1046#1091#1088#1085#1072#1083' 6-KC'
       OnClick = btnKC6JClick
-      ExplicitLeft = 186
+      ExplicitTop = 4
     end
     object btnCalcFact: TBitBtn
       AlignWithMargins = True
@@ -2922,7 +2922,7 @@
       OnResize = Panel1Resize
       object lbl1: TLabel
         AlignWithMargins = True
-        Left = 622
+        Left = 334
         Top = 5
         Width = 108
         Height = 14
@@ -2965,7 +2965,7 @@
       end
       object lblWinterPrice: TLabel
         AlignWithMargins = True
-        Left = 495
+        Left = 609
         Top = 5
         Width = 121
         Height = 14
@@ -3002,7 +3002,7 @@
       end
       object dblkcbbOXROPR: TDBLookupComboBox
         AlignWithMargins = True
-        Left = 331
+        Left = 445
         Top = 2
         Width = 158
         Height = 21
@@ -3089,16 +3089,20 @@
     BevelOuter = bvNone
     ParentBackground = False
     TabOrder = 2
+    OnResize = PanelDataResize
     DesignSize = (
       918
       25)
-    object Label1: TLabel
+    object lblSourceData: TLabel
+      AlignWithMargins = True
       Left = 8
-      Top = 6
+      Top = 3
       Width = 114
-      Height = 13
+      Height = 19
       Cursor = crHandPoint
       Hint = #1054#1090#1082#1088#1099#1090#1100' '#1086#1082#1085#1086' '#1080#1089#1093#1086#1076#1085#1099#1093' '#1076#1072#1085#1085#1099#1093
+      Margins.Left = 8
+      Align = alLeft
       Caption = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077':'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clNavy
@@ -3108,48 +3112,66 @@
       ParentFont = False
       ParentShowHint = False
       ShowHint = True
-      OnClick = Label1Click
+      OnClick = lblSourceDataClick
+      ExplicitHeight = 13
     end
-    object Label6: TLabel
-      Left = 307
-      Top = 6
+    object lblDescr: TLabel
+      AlignWithMargins = True
+      Left = 505
+      Top = 3
       Width = 65
-      Height = 13
+      Height = 19
+      Align = alLeft
       Caption = #1055#1088#1080#1084#1077#1095#1072#1085#1080#1077':'
+      ExplicitLeft = 521
+      ExplicitHeight = 13
     end
     object EditVAT: TEdit
-      Left = 248
+      AlignWithMargins = True
+      Left = 245
       Top = 2
       Width = 50
       Height = 21
+      Margins.Left = 0
+      Margins.Top = 2
+      Margins.Bottom = 2
+      Align = alLeft
+      BevelInner = bvLowered
+      BevelOuter = bvSpace
+      Color = 8454143
+      ReadOnly = True
+      TabOrder = 3
+      Text = #1073#1077#1079' '#1053#1044#1057
+    end
+    object EditMonth: TEdit
+      AlignWithMargins = True
+      Left = 125
+      Top = 2
+      Width = 117
+      Height = 21
+      Margins.Left = 0
+      Margins.Top = 2
+      Margins.Bottom = 2
+      Align = alLeft
       BevelInner = bvLowered
       BevelOuter = bvSpace
       Color = 8454143
       ReadOnly = True
       TabOrder = 2
-      Text = #1073#1077#1079' '#1053#1044#1057
-    end
-    object EditMonth: TEdit
-      Left = 125
-      Top = 2
-      Width = 117
-      Height = 21
-      BevelInner = bvLowered
-      BevelOuter = bvSpace
-      Color = 8454143
-      ReadOnly = True
-      TabOrder = 1
       Text = #1071#1085#1074#1072#1088#1100' 2012 '#1075#1086#1076#1072
     end
-    object Edit4: TEdit
-      Left = 378
+    object edtDescr: TEdit
+      AlignWithMargins = True
+      Left = 576
       Top = 2
-      Width = 374
+      Width = 176
       Height = 21
-      Anchors = [akLeft, akTop, akRight]
-      TabOrder = 3
+      Margins.Top = 2
+      Margins.Bottom = 2
+      Align = alLeft
+      TabOrder = 4
     end
-    object PanelCalculationYesNo: TPanel
+    object pnlCalculationYesNo: TPanel
       Tag = 1
       Left = 758
       Top = 1
@@ -3160,8 +3182,41 @@
       Caption = #1056#1072#1089#1095#1105#1090#1099' '#1088#1072#1079#1088#1077#1096#1077#1085#1099
       Color = 8454016
       ParentBackground = False
+      TabOrder = 1
+      OnClick = pnlCalculationYesNoClick
+    end
+    object pnlActSourceData: TPanel
+      Left = 298
+      Top = 0
+      Width = 204
+      Height = 25
+      Align = alLeft
+      BevelOuter = bvNone
       TabOrder = 0
-      OnClick = PanelCalculationYesNoClick
+      Visible = False
+      object lbl2: TLabel
+        Left = 1
+        Top = 3
+        Width = 112
+        Height = 13
+        Caption = #1056#1072#1073#1086#1090#1099' '#1074#1099#1087#1086#1083#1085#1077#1085#1099' '#1074':'
+      end
+      object edtActDate: TEdit
+        Left = 116
+        Top = 2
+        Width = 85
+        Height = 21
+        Margins.Left = 0
+        Margins.Top = 2
+        Margins.Bottom = 2
+        Align = alCustom
+        BevelInner = bvLowered
+        BevelOuter = bvSpace
+        Color = 8454143
+        ReadOnly = True
+        TabOrder = 0
+        Text = #1071#1085#1074#1072#1088#1100' 2012 '#1075#1086#1076#1072
+      end
     end
   end
   object PanelEstimate: TPanel
@@ -3466,10 +3521,12 @@
         Caption = #1056#1072#1089#1094#1077#1085#1082#1091'/'#1052#1072#1090#1077#1088#1080#1072#1083'/'#1052#1077#1093#1072#1085#1080#1079#1084'/'#1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
         object PMAddRatMatMechEquipRef: TMenuItem
           Caption = #1057#1087#1088#1072#1074#1086#1095#1085#1072#1103
+          ShortCut = 32817
           OnClick = PMAddRatMatMechEquipRefClick
         end
         object PMAddRatMatMechEquipOwn: TMenuItem
           Caption = #1057#1086#1073#1089#1090#1074#1077#1085#1085#1072#1103
+          ShortCut = 32818
           OnClick = PMAddRatMatMechEquipOwnClick
         end
       end
@@ -3556,20 +3613,24 @@
     end
     object PMInsertRow: TMenuItem
       Caption = #1042#1089#1090#1072#1074#1080#1090#1100' '#1089#1090#1088#1086#1082#1091
+      ShortCut = 116
       OnClick = PMInsertRowClick
     end
     object PMCopy: TMenuItem
       Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
       ImageIndex = 35
+      ShortCut = 16451
       OnClick = PMCopyClick
     end
     object PMPaste: TMenuItem
       Caption = #1042#1089#1090#1072#1074#1080#1090#1100
+      ShortCut = 16470
       OnClick = PMPasteClick
     end
     object PMDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       ImageIndex = 38
+      ShortCut = 119
       OnClick = PMDeleteClick
     end
     object mN12: TMenuItem
@@ -3712,6 +3773,7 @@
       AutoHotkeys = maAutomatic
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       ImageIndex = 44
+      ShortCut = 115
       OnClick = PMMatMechEditClick
     end
     object PMTransPerc: TMenuItem
@@ -3780,6 +3842,7 @@
     object PMMatAddToRate: TMenuItem
       Tag = 2
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1091
+      ShortCut = 116
       OnClick = PMMatAddToRateClick
     end
     object PMMatReplace: TMenuItem
@@ -3789,6 +3852,7 @@
     object PMMatDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       ImageIndex = 38
+      ShortCut = 119
       OnClick = PMMatDeleteClick
     end
     object PMMatRestore: TMenuItem
@@ -3819,10 +3883,12 @@
     end
     object PopupMenuCoefAddSet: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1085#1072#1073#1086#1088' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074
+      ShortCut = 116
       OnClick = PopupMenuCoefAddSetClick
     end
     object PopupMenuCoefDeleteSet: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1085#1072#1073#1086#1088' '#1082#1086#1101#1092#1092#1080#1094#1080#1077#1085#1090#1086#1074
+      ShortCut = 119
       OnClick = PopupMenuCoefDeleteSetClick
     end
     object PopupMenuCoefOrders: TMenuItem
@@ -3841,6 +3907,7 @@
       Tag = 1
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
       ImageIndex = 44
+      ShortCut = 115
       OnClick = PMMatMechEditClick
     end
     object PMMechSprCard: TMenuItem
@@ -3873,11 +3940,13 @@
     object PMMechAddToRate: TMenuItem
       Tag = 3
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1088#1072#1089#1094#1077#1085#1082#1091
+      ShortCut = 116
       OnClick = PMMatAddToRateClick
     end
     object PMMechDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       ImageIndex = 38
+      ShortCut = 119
       OnClick = PMMechDeleteClick
     end
     object PMMechRestore: TMenuItem
@@ -4838,6 +4907,7 @@
     Top = 480
     object PMDevEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      ShortCut = 115
       OnClick = PMDevEditClick
     end
     object PMDevSprCard: TMenuItem

@@ -168,7 +168,8 @@ begin
 end;
 
 procedure TfCardObject.FormShow(Sender: TObject);
-var e: TNotifyEvent;
+var
+  e: TNotifyEvent;
 begin
   qrZP.Filtered := False;
   dbedtPER_TEPM_BUILD.ReadOnly := True;
@@ -261,8 +262,8 @@ begin
           EditNumberObject.Text := '1';
       end;
     except
-      on E: Exception do
-        MessageBox(0, PChar('При формировании НОМЕРА ОБЪЕКТА возникла ошибка:' + sLineBreak + E.Message),
+      on e: Exception do
+        MessageBox(0, PChar('При формировании НОМЕРА ОБЪЕКТА возникла ошибка:' + sLineBreak + e.Message),
           PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
     end;;
 
@@ -284,9 +285,9 @@ begin
       KeyField := 'fin_id';
     end;
   except
-    on E: Exception do
+    on e: Exception do
       MessageBox(0, PChar('При запросе списка ИСТОЧНИКИ ФИНАНСИРОВАНИЯ возникла ошибка:' + sLineBreak +
-        E.Message), PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
+        e.Message), PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
   // КАТЕГОРИЯ ОБЪЕКТА
@@ -307,8 +308,8 @@ begin
       KeyField := 'cat_id';
     end;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе списка КАТЕГОРИИ ОБЪЕКТА возникла ошибка:' + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При запросе списка КАТЕГОРИИ ОБЪЕКТА возникла ошибка:' + sLineBreak + e.Message),
         PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
@@ -330,8 +331,8 @@ begin
       KeyField := 'region_id';
     end;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе списка РЕГИОНОВ возникла ошибка:' + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При запросе списка РЕГИОНОВ возникла ошибка:' + sLineBreak + e.Message),
         PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
@@ -356,8 +357,8 @@ begin
         KeyValue := qrBP.FieldByName('base_id').AsInteger;
     end;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе списка БАЗ РАСЦЕНОК возникла ошибка:' + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При запросе списка БАЗ РАСЦЕНОК возникла ошибка:' + sLineBreak + e.Message),
         PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
@@ -379,8 +380,8 @@ begin
       KeyField := 'obj_region_id';
     end;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе списка ЗОН РАСЦЕНОК возникла ошибка:' + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При запросе списка ЗОН РАСЦЕНОК возникла ошибка:' + sLineBreak + e.Message),
         PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
@@ -408,8 +409,8 @@ begin
       dblkcbbMAIS.KeyValue := qrMAIS.FieldByName('MAIS_ID').AsInteger;
     end;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе списка МАИСов возникла ошибка:' + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При запросе списка МАИСов возникла ошибка:' + sLineBreak + e.Message),
         PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 
@@ -446,9 +447,9 @@ begin
 
       dblkcbbZonePrices.KeyValue := DataSourceDifferent.DataSet.FieldByName('obj_region').AsVariant;
     except
-      on E: Exception do
+      on e: Exception do
         MessageBox(0, PChar('При установке значения в ЗОНЕ РАСЦЕНОК возникла ошибка:' + sLineBreak +
-          E.Message), PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
+          e.Message), PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
     end;
 
     GetValueDBLookupComboBoxTypeOXR(nil);
@@ -460,8 +461,8 @@ end;
 procedure TfCardObject.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   if ButtonSave.Tag = 0 then
-    if MessageBox(0, PChar('Закрыть окно без сохранения?'), PChar(Caption), MB_ICONINFORMATION + MB_YESNO +
-      mb_TaskModal) = mrYes then
+    if MessageBox(0, PChar('Закрыть окно без сохранения?'), PChar(Caption),
+      MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
       CanClose := True
     else
       CanClose := False;
@@ -552,7 +553,7 @@ begin
   end;
 
   // Источник финансирования
-  if dblkcbbSourseFinance.KeyValue <> NULL then
+  if dblkcbbSourseFinance.KeyValue <> Null then
     v9 := dblkcbbSourseFinance.KeyValue
   else
   begin
@@ -562,7 +563,7 @@ begin
   end;
 
   // Категория объекта
-  if dblkcbbCategoryObject.KeyValue <> NULL then
+  if dblkcbbCategoryObject.KeyValue <> Null then
     v12 := dblkcbbCategoryObject.KeyValue
   else
   begin
@@ -571,7 +572,7 @@ begin
   end;
 
   // Регион
-  if dblkcbbRegion.KeyValue = NULL then
+  if dblkcbbRegion.KeyValue = Null then
   begin
     dblkcbbRegion.Color := ColorWarningField;
     Inc(CountField);
@@ -579,7 +580,7 @@ begin
 
   // База расценок
   with DBLookupComboBoxBasePrices do
-    if KeyValue <> NULL then
+    if KeyValue <> Null then
       v15 := KeyValue
     else
     begin
@@ -589,7 +590,7 @@ begin
 
   // Зона расценок
   with dblkcbbZonePrices do
-    if KeyValue = NULL then
+    if KeyValue = Null then
     begin
       Color := ColorWarningField;
       Inc(CountField);
@@ -597,7 +598,7 @@ begin
 
   // Тип ОХР и ОПР и план прибыли
   with dblkcbbTypeOXR do
-    if KeyValue <> NULL then
+    if KeyValue <> Null then
       v16 := KeyValue
     else
     begin
@@ -606,7 +607,7 @@ begin
     end;
 
   with dblkcbbMAIS do
-    if KeyValue <> NULL then
+    if KeyValue <> Null then
       v19 := KeyValue
     else
     begin
@@ -639,8 +640,8 @@ begin
           + '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
           '", srok_stroj = :srok_stroj, ' + ' fin_id = ' + v9 +
           ', cust_id = :cust_id, general_id = :general_id, cat_id = "' + v12 +
-          '", state_nds = :snds, region_id = :region_id, base_norm_id = "' + v15 + '", stroj_id = "' + v16
-          + '", encrypt = "' + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
+          '", state_nds = :snds, region_id = :region_id, base_norm_id = "' + v15 + '", stroj_id = "' + v16 +
+          '", encrypt = "' + v17 + '", calc_econom = "' + v18 + '", MAIS_ID = "' + v19 +
           '", PER_TEMP_BUILD=:PER_TEMP_BUILD, PER_CONTRACTOR=:PER_CONTRACTOR, '#13 +
           'FL_CALC_TRAVEL=:FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK=:FL_CALC_TRAVEL_WORK,'#13 +
           'FL_CALC_WORKER_DEPARTMENT=:FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL=:FL_CALC_ZEM_NAL,'#13 +
@@ -665,6 +666,10 @@ begin
 
         end;
 
+        // Обновляем МАИС на всех зависимых сметах/актах
+        if qrMain.FieldByName('MAIS_ID').OldValue <> qrMain.FieldByName('MAIS_ID').Value then
+          FastExecSQL('UPDATE smetasourcedata SET MAIS_ID=:0 WHERE OBJ_ID=:1',
+            VarArrayOf([qrMain.FieldByName('MAIS_ID').Value, FIdObject]));
       end
       else
       begin
@@ -676,8 +681,8 @@ begin
           'FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE, WINTERPRICE_TYPE,BEG_STROJ2,'#13 +
           'Fl_NAL_USN, NAL_USN, Fl_SPEC_SCH, SPEC_SCH)'#13 + 'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2
           + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 + '", "' + v7 + '", :srok_stroj, ' + v9 +
-          ', :cust_id, :general_id, "' + v12 + '", :snds, :region_id, "' + v15 + '", "' + v16 + '", "' +
-          v17 + '", "' + v18 + '", "' + v19 +
+          ', :cust_id, :general_id, "' + v12 + '", :snds, :region_id, "' + v15 + '", "' + v16 + '", "' + v17 +
+          '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV, :USER_ID,'#13 +
           ':FL_CALC_TRAVEL, :FL_CALC_TRAVEL_WORK, :FL_CALC_WORKER_DEPARTMENT, :FL_CALC_ZEM_NAL, :FL_CALC_VEDOMS_NAL, :FL_APPLY_WINTERPRICE, :WINTERPRICE_TYPE,'#13
           + ':BEG_STROJ2,:Fl_NAL_USN, :NAL_USN, :Fl_SPEC_SCH, :SPEC_SCH);');
@@ -700,7 +705,9 @@ begin
       ParamByName('FL_CALC_VEDOMS_NAL').Value := qrMain.FieldByName('FL_CALC_VEDOMS_NAL').Value;
       ParamByName('FL_APPLY_WINTERPRICE').Value := qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value;
       ParamByName('WINTERPRICE_TYPE').Value := qrMain.FieldByName('WINTERPRICE_TYPE').Value;
-      ParamByName('BEG_STROJ2').Value := qrMain.FieldByName('BEG_STROJ2').Value;
+      ParamByName('BEG_STROJ2').Value := StrToDate('01.' + IntToStr(cbbMonthBeginStroj.ItemIndex + 1) + '.' +
+        IntToStr(seYearBeginStroj.Value));
+      // BEG_STROJ2 поправить позже глюк, должно быть в датасете qrMain.FieldByName('BEG_STROJ2').Value;
       ParamByName('Fl_NAL_USN').Value := qrMain.FieldByName('Fl_NAL_USN').Value;
       ParamByName('NAL_USN').Value := qrMain.FieldByName('NAL_USN').Value;
       ParamByName('Fl_SPEC_SCH').Value := qrMain.FieldByName('Fl_SPEC_SCH').Value;
@@ -722,16 +729,15 @@ begin
     end;
     ModalResult := mrOk;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При сохранении данных возникла ошибка:' + sLineBreak + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При сохранении данных возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
         PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;
 
 procedure TfCardObject.cbbMonthBeginStrojChange(Sender: TObject);
 begin
-  qrMain.FieldByName('BEG_STROJ2').Value :=
-    StrToDate('01.' + IntToStr(cbbMonthBeginStroj.ItemIndex + 1) + '.'
+  qrMain.FieldByName('BEG_STROJ2').Value := StrToDate('01.' + IntToStr(cbbMonthBeginStroj.ItemIndex + 1) + '.'
     + IntToStr(seYearBeginStroj.Value));
 end;
 
@@ -764,17 +770,17 @@ begin
 end;
 
 procedure TfCardObject.btnCardObjectAdditionalClick(Sender: TObject);
-var fCardObjectAdditional: TfCardObjectAdditional;
+var
+  fCardObjectAdditional: TfCardObjectAdditional;
 begin
   fCardObjectAdditional := TfCardObjectAdditional.Create(Self);
   try
     fCardObjectAdditional.ShowModal;
     if fCardObjectAdditional.dbchkFL_CALC_VEDOMS_NAL2.Checked and
-      (VarIsNull(qrMain.FieldByName('SPEC_SCH').Value) or
-      (qrMain.FieldByName('SPEC_SCH').Value = 0)) then
+      (VarIsNull(qrMain.FieldByName('SPEC_SCH').Value) or (qrMain.FieldByName('SPEC_SCH').Value = 0)) then
       qrMain.FieldByName('SPEC_SCH').Value := 1.5;
   finally
-     FreeAndNil(fCardObjectAdditional);
+    FreeAndNil(fCardObjectAdditional);
   end;
 end;
 
@@ -823,13 +829,13 @@ begin
   seYear.Value := YearOf(Now);
   cbbMonthBeginStroj.ItemIndex := cbbFromMonth.ItemIndex;
   seYearBeginStroj.Value := seYear.Value;
-  dblkcbbSourseFinance.KeyValue := NULL;
-  dblkcbbCategoryObject.KeyValue := NULL;
-  dblkcbbRegion.KeyValue := NULL;
-  dblkcbbZonePrices.KeyValue := NULL;
-  DBLookupComboBoxBasePrices.KeyValue := NULL;
-  dblkcbbTypeOXR.KeyValue := NULL;
-  dblkcbbMAIS.KeyValue := NULL;
+  dblkcbbSourseFinance.KeyValue := Null;
+  dblkcbbCategoryObject.KeyValue := Null;
+  dblkcbbRegion.KeyValue := Null;
+  dblkcbbZonePrices.KeyValue := Null;
+  DBLookupComboBoxBasePrices.KeyValue := Null;
+  dblkcbbTypeOXR.KeyValue := Null;
+  dblkcbbMAIS.KeyValue := Null;
 end;
 
 procedure TfCardObject.DateTimePickerStartBuildingChange(Sender: TObject);
@@ -857,6 +863,7 @@ begin
   begin
     cbbMonthBeginStroj.ItemIndex := cbbFromMonth.ItemIndex;
     seYearBeginStroj.Value := seYear.Value;
+    cbbMonthBeginStrojChange(nil);
   end;
 end;
 
@@ -899,7 +906,7 @@ var
   IdRegion: Integer;
   IdCategory: Integer;
 begin
-  if (dblkcbbCategoryObject.KeyValue = NULL) or (dblkcbbZonePrices.KeyValue = NULL) then
+  if (dblkcbbCategoryObject.KeyValue = Null) or (dblkcbbZonePrices.KeyValue = Null) then
     Exit;
 
   // Тип ОХР и ОПР и План прибыли
@@ -925,8 +932,8 @@ begin
     end;
     dblkcbbTypeOXR.KeyValue := (IdRegion - 1) * 4 + IdCategory;
   except
-    on E: Exception do
-      MessageBox(0, PChar('При запросе списка ОХР и ОПР возникла ошибка:' + sLineBreak + E.Message),
+    on e: Exception do
+      MessageBox(0, PChar('При запросе списка ОХР и ОПР возникла ошибка:' + sLineBreak + e.Message),
         PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
 end;

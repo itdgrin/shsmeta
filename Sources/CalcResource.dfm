@@ -2,8 +2,8 @@ object fCalcResource: TfCalcResource
   Left = 0
   Top = 0
   Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080' '#1088#1077#1089#1091#1088#1089#1086#1074' ['#1088#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077' '#1079#1072#1087#1088#1077#1097#1077#1085#1086']'
-  ClientHeight = 362
-  ClientWidth = 616
+  ClientHeight = 394
+  ClientWidth = 748
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,12 +22,12 @@ object fCalcResource: TfCalcResource
   object pnlTop: TPanel
     Left = 0
     Top = 0
-    Width = 616
+    Width = 748
     Height = 56
     Align = alTop
     TabOrder = 0
     DesignSize = (
-      616
+      748
       56)
     object lbl1: TLabel
       Left = 8
@@ -46,7 +46,7 @@ object fCalcResource: TfCalcResource
     object edtEstimateName: TEdit
       Left = 49
       Top = 5
-      Width = 437
+      Width = 569
       Height = 21
       TabStop = False
       Anchors = [akLeft, akTop, akRight]
@@ -99,7 +99,7 @@ object fCalcResource: TfCalcResource
       Value = 2014
     end
     object cbbNDS: TComboBox
-      Left = 544
+      Left = 676
       Top = 29
       Width = 67
       Height = 21
@@ -117,7 +117,7 @@ object fCalcResource: TfCalcResource
     end
     object pnlCalculationYesNo: TPanel
       Tag = 1
-      Left = 492
+      Left = 624
       Top = 3
       Width = 120
       Height = 23
@@ -133,8 +133,8 @@ object fCalcResource: TfCalcResource
   object pgc: TPageControl
     Left = 0
     Top = 56
-    Width = 616
-    Height = 306
+    Width = 748
+    Height = 338
     ActivePage = ts1
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
@@ -144,33 +144,393 @@ object fCalcResource: TfCalcResource
     Font.Style = []
     MultiLine = True
     ParentFont = False
-    PopupMenu = pm
     TabOrder = 1
     OnChange = pgcChange
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object lbl2: TLabel
+      object pgcRS: TPageControl
         Left = 0
         Top = 0
-        Width = 608
-        Height = 278
+        Width = 740
+        Height = 310
+        ActivePage = ts6
         Align = alClient
-        Alignment = taCenter
-        AutoSize = False
-        Caption = #1042' '#1088#1072#1079#1088#1072#1073#1086#1090#1082#1077'...'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        Layout = tlCenter
-        ExplicitWidth = 80
-        ExplicitHeight = 13
+        TabOrder = 0
+        TabPosition = tpBottom
+        object ts6: TTabSheet
+          Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
+          object grRS: TJvDBGrid
+            Left = 0
+            Top = 0
+            Width = 732
+            Height = 284
+            Align = alClient
+            DataSource = dsRS
+            DrawingStyle = gdsClassic
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 0
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            AutoAppend = False
+            AutoSizeColumns = True
+            AutoSizeColumnIndex = 0
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            EditControls = <>
+            AutoSizeRows = False
+            RowsHeight = 17
+            TitleRowHeight = 36
+            WordWrap = True
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'f1'
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1089#1090#1072#1090#1077#1081' '#1079#1072#1090#1088#1072#1090
+                Width = 110
+                Visible = True
+              end
+              item
+                Alignment = taCenter
+                Expanded = False
+                FieldName = 'f2'
+                Title.Alignment = taCenter
+                Title.Caption = '%,'#1082#1086#1101#1092'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Alignment = taRightJustify
+                Expanded = False
+                FieldName = 'f3'
+                Title.Alignment = taCenter
+                Title.Caption = #1089#1090#1086#1080#1084#1086#1089#1090#1100' '#1085#1072' '#1076#1072#1090#1091' '#1089#1086#1089#1090#1072#1074#1083#1077#1085#1080#1103' '#1089#1084#1077#1090#1099', '#1088#1091#1073
+                Width = 140
+                Visible = True
+              end
+              item
+                Alignment = taRightJustify
+                Expanded = False
+                FieldName = 'f4'
+                Title.Alignment = taCenter
+                Title.Caption = #1089#1090#1086#1080#1084#1086#1089#1090#1100' '#1085#1072' '#1076#1072#1090#1091' '#1085#1072#1095#1072#1083#1072' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072', '#1088#1091#1073
+                Width = 140
+                Visible = True
+              end
+              item
+                Alignment = taRightJustify
+                Expanded = False
+                FieldName = 'f5'
+                Title.Alignment = taCenter
+                Title.Caption = #1089#1090#1086#1080#1084#1086#1089#1090#1100' '#1085#1072' '#1076#1072#1090#1091' '#1074#1099#1087#1086#1083#1085#1077#1085#1080#1103' '#1088#1072#1073#1086#1090', '#1088#1091#1073
+                Width = 140
+                Visible = True
+              end
+              item
+                Alignment = taRightJustify
+                Expanded = False
+                FieldName = 'f6'
+                Title.Alignment = taCenter
+                Title.Caption = #1060#1047#1055
+                Width = 100
+                Visible = True
+              end>
+          end
+        end
+        object ts7: TTabSheet
+          Caption = #1056#1072#1089#1095#1077#1090' '#1082#1086#1084#1072#1085#1076#1080#1088#1086#1074#1086#1095#1085#1099#1093
+          ImageIndex = 1
+          object grTravel: TJvDBGrid
+            Left = 0
+            Top = 0
+            Width = 732
+            Height = 284
+            Align = alClient
+            DataSource = dsTravel
+            DrawingStyle = gdsClassic
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 0
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            AutoAppend = False
+            AutoSizeColumns = True
+            AutoSizeColumnIndex = 1
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            EditControls = <>
+            AutoSizeRows = False
+            RowsHeight = 17
+            TitleRowHeight = 34
+            WordWrap = True
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'f1'
+                Title.Alignment = taCenter
+                Title.Caption = #8470#1087#1087
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'f2'
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1079#1072#1090#1088#1072#1090
+                Width = 462
+                Visible = True
+              end
+              item
+                Alignment = taRightJustify
+                Expanded = False
+                FieldName = 'f3'
+                Title.Alignment = taCenter
+                Title.Caption = #1056#1072#1089#1095#1077#1090
+                Width = 100
+                Visible = True
+              end
+              item
+                Alignment = taRightJustify
+                Expanded = False
+                FieldName = 'f4'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+                Width = 100
+                Visible = True
+              end>
+          end
+        end
+        object ts8: TTabSheet
+          Caption = #1056#1072#1089#1095#1077#1090' '#1088#1072#1079#1098#1077#1079#1076#1085#1086#1075#1086' '#1093#1072#1088#1072#1082#1090#1077#1088#1072' '#1088#1072#1073#1086#1090
+          ImageIndex = 2
+          object grTravelWork: TJvDBGrid
+            Left = 0
+            Top = 0
+            Width = 732
+            Height = 284
+            Align = alClient
+            DataSource = dsTravelWork
+            DrawingStyle = gdsClassic
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 0
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            AutoAppend = False
+            AutoSizeColumns = True
+            AutoSizeColumnIndex = 1
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            EditControls = <>
+            AutoSizeRows = False
+            RowsHeight = 17
+            TitleRowHeight = 34
+            WordWrap = True
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'f1'
+                Title.Alignment = taCenter
+                Title.Caption = #8470#1087#1087
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'f2'
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1079#1072#1090#1088#1072#1090
+                Width = 462
+                Visible = True
+              end
+              item
+                Alignment = taRightJustify
+                Expanded = False
+                FieldName = 'f3'
+                Title.Alignment = taCenter
+                Title.Caption = #1056#1072#1089#1095#1077#1090
+                Width = 100
+                Visible = True
+              end
+              item
+                Alignment = taRightJustify
+                Expanded = False
+                FieldName = 'f4'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+                Width = 100
+                Visible = True
+              end>
+          end
+        end
+        object ts9: TTabSheet
+          Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072#1090#1088#1072#1090' '#1085#1072' '#1087#1077#1088#1077#1074#1086#1079#1082#1091' '#1088#1072#1073#1086#1095#1080#1093
+          ImageIndex = 3
+          object grWorkerDepartment: TJvDBGrid
+            Left = 0
+            Top = 0
+            Width = 732
+            Height = 284
+            Align = alClient
+            DataSource = dsWorkerDepartment
+            DrawingStyle = gdsClassic
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 0
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            AutoAppend = False
+            AutoSizeColumns = True
+            AutoSizeColumnIndex = 1
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            EditControls = <>
+            AutoSizeRows = False
+            RowsHeight = 17
+            TitleRowHeight = 34
+            WordWrap = True
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'f1'
+                Title.Alignment = taCenter
+                Title.Caption = #8470#1087#1087
+                Width = 50
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'f2'
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1079#1072#1090#1088#1072#1090
+                Width = 462
+                Visible = True
+              end
+              item
+                Alignment = taRightJustify
+                Expanded = False
+                FieldName = 'f3'
+                Title.Alignment = taCenter
+                Title.Caption = #1056#1072#1089#1095#1077#1090
+                Width = 100
+                Visible = True
+              end
+              item
+                Alignment = taRightJustify
+                Expanded = False
+                FieldName = 'f4'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+                Width = 100
+                Visible = True
+              end>
+          end
+        end
+        object ts10: TTabSheet
+          Caption = #1055#1077#1088#1077#1084#1077#1085#1085#1099#1077
+          ImageIndex = 4
+          object grVars: TJvDBGrid
+            Left = 0
+            Top = 0
+            Width = 732
+            Height = 284
+            Align = alClient
+            DataSource = dsVars
+            DrawingStyle = gdsClassic
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 0
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -11
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            AutoAppend = False
+            AutoSizeColumns = True
+            AutoSizeColumnIndex = 0
+            SelectColumnsDialogStrings.Caption = 'Select columns'
+            SelectColumnsDialogStrings.OK = '&OK'
+            SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+            EditControls = <>
+            AutoSizeRows = False
+            RowsHeight = 17
+            TitleRowHeight = 34
+            WordWrap = True
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'f1'
+                Title.Alignment = taCenter
+                Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077' '#1087#1077#1088#1077#1084#1077#1085#1085#1086#1081
+                Width = 413
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'f2'
+                Title.Alignment = taCenter
+                Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+                Width = 150
+                Visible = True
+              end
+              item
+                Alignment = taRightJustify
+                Expanded = False
+                FieldName = 'f3'
+                Title.Alignment = taCenter
+                Title.Caption = #1047#1085#1072#1095#1077#1085#1080#1077
+                Width = 150
+                Visible = True
+              end>
+          end
+        end
       end
     end
     object ts2: TTabSheet
@@ -178,20 +538,21 @@ object fCalcResource: TfCalcResource
       ImageIndex = 1
       object spl2: TSplitter
         Left = 0
-        Top = 191
-        Width = 608
+        Top = 223
+        Width = 740
         Height = 5
         Cursor = crVSplit
         Align = alBottom
         Color = clBtnFace
         ParentColor = False
         ExplicitLeft = 3
+        ExplicitTop = 191
         ExplicitWidth = 602
       end
       object pnlMatTop: TPanel
         Left = 0
         Top = 0
-        Width = 608
+        Width = 740
         Height = 29
         Align = alTop
         BevelOuter = bvNone
@@ -203,7 +564,7 @@ object fCalcResource: TfCalcResource
         ParentFont = False
         TabOrder = 0
         DesignSize = (
-          608
+          740
           29)
         object edtMatCodeFilter: TEdit
           Left = 4
@@ -218,7 +579,7 @@ object fCalcResource: TfCalcResource
         object edtMatNameFilter: TEdit
           Left = 131
           Top = 2
-          Width = 472
+          Width = 604
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
@@ -230,8 +591,8 @@ object fCalcResource: TfCalcResource
       object pnlMatClient: TPanel
         Left = 0
         Top = 29
-        Width = 608
-        Height = 162
+        Width = 740
+        Height = 194
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
@@ -239,8 +600,8 @@ object fCalcResource: TfCalcResource
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
-          Width = 608
-          Height = 143
+          Width = 740
+          Height = 175
           Align = alClient
           DataSource = dsMaterialData
           DrawingStyle = gdsClassic
@@ -279,7 +640,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'NUMPP'
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1087#1087
-              Width = 14
+              Width = 17
               Visible = True
             end
             item
@@ -287,7 +648,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 16
+              Width = 20
               Visible = True
             end
             item
@@ -295,7 +656,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = 56
+              Width = 68
               Visible = True
             end
             item
@@ -304,7 +665,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 20
+              Width = 26
               Visible = True
             end
             item
@@ -312,7 +673,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 18
+              Width = 22
               Visible = True
             end
             item
@@ -320,7 +681,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
-              Width = 52
+              Width = 63
               Visible = True
             end
             item
@@ -328,7 +689,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
-              Width = 52
+              Width = 63
               Visible = True
             end
             item
@@ -336,7 +697,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = 35
+              Width = 42
               Visible = True
             end
             item
@@ -344,7 +705,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 52
+              Width = 63
               Visible = True
             end
             item
@@ -352,7 +713,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 35
+              Width = 42
               Visible = True
             end
             item
@@ -360,7 +721,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 54
+              Width = 66
               Visible = True
             end
             item
@@ -368,7 +729,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'MAT_PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 35
+              Width = 42
               Visible = True
             end
             item
@@ -376,7 +737,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'MAT_PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 42
+              Width = 50
               Visible = True
             end
             item
@@ -384,7 +745,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 45
+              Width = 54
               Visible = True
             end
             item
@@ -392,14 +753,14 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP_PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 51
+              Width = 71
               Visible = True
             end>
         end
         object JvDBGridFooter1: TJvDBGridFooter
           Left = 0
-          Top = 143
-          Width = 608
+          Top = 175
+          Width = 740
           Height = 19
           SizeGrip = True
           Columns = <
@@ -418,8 +779,8 @@ object fCalcResource: TfCalcResource
       end
       object pnlMatBott: TPanel
         Left = 0
-        Top = 196
-        Width = 608
+        Top = 228
+        Width = 740
         Height = 82
         Align = alBottom
         Caption = 'pnlMatBott'
@@ -433,7 +794,7 @@ object fCalcResource: TfCalcResource
         object spl1: TSplitter
           Left = 1
           Top = 22
-          Width = 606
+          Width = 738
           Height = 5
           Cursor = crVSplit
           Align = alTop
@@ -444,7 +805,7 @@ object fCalcResource: TfCalcResource
         object grMaterialBott: TJvDBGrid
           Left = 1
           Top = 27
-          Width = 606
+          Width = 738
           Height = 54
           Align = alClient
           Constraints.MinHeight = 40
@@ -482,7 +843,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'F1'
               Title.Alignment = taCenter
               Title.Caption = #8470#1087#1087
-              Width = 49
+              Width = 60
               Visible = True
             end
             item
@@ -490,7 +851,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'SM_NAME'
               Title.Alignment = taCenter
               Title.Caption = #1057#1084#1077#1090#1072
-              Width = 51
+              Width = 62
               Visible = True
             end
             item
@@ -498,7 +859,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PTM_NAME'
               Title.Alignment = taCenter
               Title.Caption = #1055#1058#1052
-              Width = 60
+              Width = 74
               Visible = True
             end
             item
@@ -506,7 +867,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
-              Width = 49
+              Width = 60
               Visible = True
             end
             item
@@ -514,7 +875,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1098#1077#1084' '#1088#1072#1073#1086#1090
-              Width = 49
+              Width = 60
               Visible = True
             end
             item
@@ -522,7 +883,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT_DONE'
               Title.Alignment = taCenter
               Title.Caption = #1056#1072#1089#1093#1086#1076
-              Width = 49
+              Width = 60
               Visible = True
             end
             item
@@ -530,7 +891,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
-              Width = 49
+              Width = 60
               Visible = True
             end
             item
@@ -538,7 +899,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = 28
+              Width = 35
               Visible = True
             end
             item
@@ -546,7 +907,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 32
+              Width = 39
               Visible = True
             end
             item
@@ -554,7 +915,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'MAT_PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 32
+              Width = 39
               Visible = True
             end
             item
@@ -562,7 +923,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'MAT_PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 40
+              Width = 48
               Visible = True
             end
             item
@@ -570,7 +931,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 43
+              Width = 52
               Visible = True
             end
             item
@@ -578,14 +939,14 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP_PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 46
+              Width = 60
               Visible = True
             end>
         end
         object dbmmoNAME: TDBMemo
           Left = 1
           Top = 1
-          Width = 606
+          Width = 738
           Height = 21
           Align = alTop
           Constraints.MinHeight = 21
@@ -607,18 +968,19 @@ object fCalcResource: TfCalcResource
       ImageIndex = 2
       object spl4: TSplitter
         Left = 0
-        Top = 205
-        Width = 608
+        Top = 237
+        Width = 740
         Height = 5
         Cursor = crVSplit
         Align = alBottom
         ExplicitTop = 209
+        ExplicitWidth = 608
       end
       object pnlMechClient: TPanel
         Left = 0
         Top = 29
-        Width = 608
-        Height = 176
+        Width = 740
+        Height = 208
         Align = alClient
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
@@ -626,8 +988,8 @@ object fCalcResource: TfCalcResource
         object grMech: TJvDBGrid
           Left = 0
           Top = 0
-          Width = 608
-          Height = 157
+          Width = 740
+          Height = 189
           Align = alClient
           DataSource = dsMechData
           DrawingStyle = gdsClassic
@@ -668,7 +1030,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'NUMPP'
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1087#1087
-              Width = 28
+              Width = 35
               Visible = True
             end
             item
@@ -676,7 +1038,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 38
+              Width = 46
               Visible = True
             end
             item
@@ -692,7 +1054,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 25
+              Width = 31
               Visible = True
             end
             item
@@ -700,7 +1062,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 21
+              Width = 27
               Visible = True
             end
             item
@@ -708,7 +1070,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
-              Width = 90
+              Width = 110
               Visible = True
             end
             item
@@ -716,7 +1078,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
-              Width = 90
+              Width = 110
               Visible = True
             end
             item
@@ -724,7 +1086,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'ZP_1'
               Title.Alignment = taCenter
               Title.Caption = #1047#1072#1088#1087#1083'. '#1084#1072#1096'.'
-              Width = 90
+              Width = 110
               Visible = True
             end
             item
@@ -732,7 +1094,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'ZP_2'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090'-'#1089#1090#1100' '#1079#1072#1088#1087#1083#1072#1090#1099
-              Width = 96
+              Width = 117
               Visible = True
             end
             item
@@ -740,7 +1102,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 56
+              Width = 68
               Visible = True
             end
             item
@@ -748,14 +1110,14 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 48
+              Width = 60
               Visible = True
             end>
         end
         object JvDBGridFooter2: TJvDBGridFooter
           Left = 0
-          Top = 157
-          Width = 608
+          Top = 189
+          Width = 740
           Height = 19
           SizeGrip = True
           Columns = <
@@ -782,8 +1144,8 @@ object fCalcResource: TfCalcResource
       end
       object pnlMechBott: TPanel
         Left = 0
-        Top = 210
-        Width = 608
+        Top = 242
+        Width = 740
         Height = 68
         Align = alBottom
         Caption = 'pnlMatBott'
@@ -791,15 +1153,16 @@ object fCalcResource: TfCalcResource
         object spl3: TSplitter
           Left = 1
           Top = 22
-          Width = 606
+          Width = 738
           Height = 5
           Cursor = crVSplit
           Align = alTop
+          ExplicitWidth = 606
         end
         object grMechBott: TJvDBGrid
           Left = 1
           Top = 27
-          Width = 606
+          Width = 738
           Height = 40
           Align = alClient
           Constraints.MinHeight = 40
@@ -838,7 +1201,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'F1'
               Title.Alignment = taCenter
               Title.Caption = #8470#1087#1087
-              Width = 68
+              Width = 83
               Visible = True
             end
             item
@@ -846,7 +1209,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'SM_NAME'
               Title.Alignment = taCenter
               Title.Caption = #1057#1084#1077#1090#1072
-              Width = 54
+              Width = 65
               Visible = True
             end
             item
@@ -854,7 +1217,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PTM_NAME'
               Title.Alignment = taCenter
               Title.Caption = #1055#1058#1052
-              Width = 59
+              Width = 71
               Visible = True
             end
             item
@@ -862,6 +1225,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
+              Width = 78
               Visible = True
             end
             item
@@ -869,7 +1233,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1098#1077#1084' '#1088#1072#1073#1086#1090
-              Width = 68
+              Width = 83
               Visible = True
             end
             item
@@ -877,7 +1241,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT_DONE'
               Title.Alignment = taCenter
               Title.Caption = #1056#1072#1089#1093#1086#1076
-              Width = 68
+              Width = 83
               Visible = True
             end
             item
@@ -885,7 +1249,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
-              Width = 68
+              Width = 83
               Visible = True
             end
             item
@@ -893,7 +1257,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'ZP_MASH'
               Title.Alignment = taCenter
               Title.Caption = #1047#1055' '#1084#1072#1096'.'
-              Width = 39
+              Width = 47
               Visible = True
             end
             item
@@ -901,7 +1265,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 44
+              Width = 53
               Visible = True
             end
             item
@@ -909,14 +1273,14 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 48
+              Width = 66
               Visible = True
             end>
         end
         object dbmmoNAME1: TDBMemo
           Left = 1
           Top = 1
-          Width = 606
+          Width = 738
           Height = 21
           Align = alTop
           Constraints.MinHeight = 21
@@ -935,13 +1299,13 @@ object fCalcResource: TfCalcResource
       object pnlMechTop: TPanel
         Left = 0
         Top = 0
-        Width = 608
+        Width = 740
         Height = 29
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
         DesignSize = (
-          608
+          740
           29)
         object edtMechCodeFilter: TEdit
           Left = 4
@@ -962,7 +1326,7 @@ object fCalcResource: TfCalcResource
         object edtMechNameFilter: TEdit
           Left = 131
           Top = 2
-          Width = 472
+          Width = 604
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
@@ -975,23 +1339,20 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl5: TSplitter
         Left = 0
-        Top = 205
-        Width = 608
+        Top = 237
+        Width = 740
         Height = 5
         Cursor = crVSplit
         Align = alBottom
         ExplicitTop = 209
+        ExplicitWidth = 608
       end
       object pnlDevTop: TPanel
         Left = 0
         Top = 0
-        Width = 608
+        Width = 740
         Height = 29
         Align = alTop
         BevelOuter = bvNone
@@ -1003,7 +1364,7 @@ object fCalcResource: TfCalcResource
         ParentFont = False
         TabOrder = 0
         DesignSize = (
-          608
+          740
           29)
         object edt1: TEdit
           Left = 4
@@ -1017,7 +1378,7 @@ object fCalcResource: TfCalcResource
         object edt2: TEdit
           Left = 131
           Top = 2
-          Width = 472
+          Width = 604
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
@@ -1028,8 +1389,8 @@ object fCalcResource: TfCalcResource
       object pnlDevClient: TPanel
         Left = 0
         Top = 29
-        Width = 608
-        Height = 176
+        Width = 740
+        Height = 208
         Align = alClient
         BevelOuter = bvNone
         Font.Charset = DEFAULT_CHARSET
@@ -1042,8 +1403,8 @@ object fCalcResource: TfCalcResource
         object grDev: TJvDBGrid
           Left = 0
           Top = 0
-          Width = 608
-          Height = 157
+          Width = 740
+          Height = 189
           Align = alClient
           DataSource = dsDevices
           DrawingStyle = gdsClassic
@@ -1083,7 +1444,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'NUMPP'
               Title.Alignment = taCenter
               Title.Caption = #8470' '#1087#1087
-              Width = 39
+              Width = 47
               Visible = True
             end
             item
@@ -1091,7 +1452,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 45
+              Width = 54
               Visible = True
             end
             item
@@ -1107,7 +1468,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 45
+              Width = 54
               Visible = True
             end
             item
@@ -1115,7 +1476,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 45
+              Width = 54
               Visible = True
             end
             item
@@ -1123,7 +1484,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
-              Width = 45
+              Width = 54
               Visible = True
             end
             item
@@ -1131,7 +1492,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
-              Width = 45
+              Width = 54
               Visible = True
             end
             item
@@ -1146,7 +1507,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 40
+              Width = 48
               Visible = True
             end
             item
@@ -1154,7 +1515,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 45
+              Width = 54
               Visible = True
             end
             item
@@ -1162,7 +1523,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 41
+              Width = 49
               Visible = True
             end
             item
@@ -1170,7 +1531,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 41
+              Width = 49
               Visible = True
             end
             item
@@ -1178,7 +1539,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 44
+              Width = 53
               Visible = True
             end
             item
@@ -1186,7 +1547,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 49
+              Width = 60
               Visible = True
             end
             item
@@ -1194,14 +1555,14 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP_PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 55
+              Width = 81
               Visible = True
             end>
         end
         object JvDBGridFooter3: TJvDBGridFooter
           Left = 0
-          Top = 157
-          Width = 608
+          Top = 189
+          Width = 740
           Height = 19
           SizeGrip = True
           Columns = <
@@ -1224,8 +1585,8 @@ object fCalcResource: TfCalcResource
       end
       object pnlDevBott: TPanel
         Left = 0
-        Top = 210
-        Width = 608
+        Top = 242
+        Width = 740
         Height = 68
         Align = alBottom
         Font.Charset = DEFAULT_CHARSET
@@ -1238,15 +1599,16 @@ object fCalcResource: TfCalcResource
         object spl6: TSplitter
           Left = 1
           Top = 22
-          Width = 606
+          Width = 738
           Height = 5
           Cursor = crVSplit
           Align = alTop
+          ExplicitWidth = 606
         end
         object grDevBott: TJvDBGrid
           Left = 1
           Top = 27
-          Width = 606
+          Width = 738
           Height = 40
           Align = alClient
           Constraints.MinHeight = 40
@@ -1279,7 +1641,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'F1'
               Title.Alignment = taCenter
               Title.Caption = #8470#1087#1087
-              Width = 50
+              Width = 61
               Visible = True
             end
             item
@@ -1287,7 +1649,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'SM_NAME'
               Title.Alignment = taCenter
               Title.Caption = #1057#1084#1077#1090#1072
-              Width = 50
+              Width = 61
               Visible = True
             end
             item
@@ -1295,7 +1657,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PTM_NAME'
               Title.Alignment = taCenter
               Title.Caption = #1055#1058#1052
-              Width = 55
+              Width = 67
               Visible = True
             end
             item
@@ -1303,7 +1665,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
-              Width = 50
+              Width = 61
               Visible = True
             end
             item
@@ -1311,7 +1673,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1098#1077#1084' '#1088#1072#1073#1086#1090
-              Width = 50
+              Width = 61
               Visible = True
             end
             item
@@ -1319,7 +1681,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT_DONE'
               Title.Alignment = taCenter
               Title.Caption = #1056#1072#1089#1093#1086#1076
-              Width = 50
+              Width = 61
               Visible = True
             end
             item
@@ -1327,7 +1689,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
-              Width = 50
+              Width = 61
               Visible = True
             end
             item
@@ -1335,7 +1697,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 29
+              Width = 36
               Visible = True
             end
             item
@@ -1343,7 +1705,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 48
+              Width = 59
               Visible = True
             end
             item
@@ -1351,6 +1713,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
+              Width = 78
               Visible = True
             end
             item
@@ -1358,7 +1721,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 40
+              Width = 48
               Visible = True
             end
             item
@@ -1366,14 +1729,14 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP_PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 42
+              Width = 56
               Visible = True
             end>
         end
         object dbmmoNAME2: TDBMemo
           Left = 1
           Top = 1
-          Width = 606
+          Width = 738
           Height = 21
           Align = alTop
           Constraints.MinHeight = 21
@@ -1396,16 +1759,16 @@ object fCalcResource: TfCalcResource
       object pnlRatesClient: TPanel
         Left = 0
         Top = 0
-        Width = 608
-        Height = 278
+        Width = 740
+        Height = 310
         Align = alClient
         Caption = 'pnlRatesClient'
         TabOrder = 0
         object grRates: TJvDBGrid
           Left = 1
           Top = 1
-          Width = 606
-          Height = 212
+          Width = 738
+          Height = 244
           Align = alClient
           DataSource = dsRates
           DrawingStyle = gdsClassic
@@ -1442,7 +1805,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'F2'
               Title.Alignment = taCenter
               Title.Caption = #8470
-              Width = 57
+              Width = 69
               Visible = True
             end
             item
@@ -1450,7 +1813,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'F1'
               Title.Alignment = taCenter
               Title.Caption = #8470#1087#1087
-              Width = 21
+              Width = 27
               Visible = True
             end
             item
@@ -1458,7 +1821,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'SM_NAME'
               Title.Alignment = taCenter
               Title.Caption = #1057#1084#1077#1090#1072
-              Width = 42
+              Width = 50
               Visible = True
             end
             item
@@ -1466,7 +1829,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PTM_NAME'
               Title.Alignment = taCenter
               Title.Caption = #1055#1058#1052
-              Width = 40
+              Width = 48
               Visible = True
             end
             item
@@ -1474,7 +1837,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
-              Width = 14
+              Width = 17
               Visible = True
             end
             item
@@ -1482,7 +1845,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 18
+              Width = 22
               Visible = True
             end
             item
@@ -1491,7 +1854,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 19
+              Width = 23
               Visible = True
             end
             item
@@ -1499,7 +1862,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRUD_ONE'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1091#1076'-'#1090#1099' '#1085#1072' '#1077#1076'.'
-              Width = 51
+              Width = 62
               Visible = True
             end
             item
@@ -1507,7 +1870,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'K_TRUD'
               Title.Alignment = taCenter
               Title.Caption = #1050#1092' '#1082' '#1090#1088#1091#1076
-              Width = 51
+              Width = 62
               Visible = True
             end
             item
@@ -1515,7 +1878,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRUD'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099
-              Width = 36
+              Width = 43
               Visible = True
             end
             item
@@ -1523,7 +1886,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'Rank'
               Title.Alignment = taCenter
               Title.Caption = #1056#1072#1079#1088#1103#1076
-              Width = 51
+              Width = 62
               Visible = True
             end
             item
@@ -1531,7 +1894,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'MRCOEF'
               Title.Alignment = taCenter
               Title.Caption = #1052#1077#1078#1088#1072#1079#1088'. '#1082#1092
-              Width = 36
+              Width = 43
               Visible = True
             end
             item
@@ -1539,7 +1902,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'Tariff'
               Title.Alignment = taCenter
               Title.Caption = #1058#1072#1088#1080#1092
-              Width = 56
+              Width = 68
               Visible = True
             end
             item
@@ -1547,7 +1910,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'K_ZP'
               Title.Alignment = taCenter
               Title.Caption = #1050'-'#1092
-              Width = 39
+              Width = 47
               Visible = True
             end
             item
@@ -1555,14 +1918,13 @@ object fCalcResource: TfCalcResource
               FieldName = 'ZP'
               Title.Alignment = taCenter
               Title.Caption = #1047#1072#1088#1087#1083#1072#1090#1072
-              Width = 44
               Visible = True
             end>
         end
         object JvDBGridFooter4: TJvDBGridFooter
           Left = 1
-          Top = 213
-          Width = 606
+          Top = 245
+          Width = 738
           Height = 19
           SizeGrip = True
           Columns = <
@@ -1584,8 +1946,8 @@ object fCalcResource: TfCalcResource
         end
         object dbmmoNAME3: TDBMemo
           Left = 1
-          Top = 232
-          Width = 606
+          Top = 264
+          Width = 738
           Height = 45
           Align = alBottom
           DataField = 'NAME'
@@ -1599,11 +1961,12 @@ object fCalcResource: TfCalcResource
   end
   object pm: TPopupMenu
     OnPopup = pmPopup
-    Left = 556
-    Top = 168
-    object mN3: TMenuItem
+    Left = 212
+    Top = 264
+    object mRestoreValues: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1080#1089#1093#1086#1076#1085#1099#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
-      OnClick = mN3Click
+      ShortCut = 16466
+      OnClick = mRestoreValuesClick
     end
     object mPROC_TRANSP: TMenuItem
       Caption = '% '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1072
@@ -1663,14 +2026,17 @@ object fCalcResource: TfCalcResource
     end
     object N1: TMenuItem
       Caption = #1042#1099#1076#1077#1083#1080#1090#1100
+      ShortCut = 113
       OnClick = N1Click
     end
     object N2: TMenuItem
       Caption = #1042#1099#1076#1077#1083#1080#1090#1100' '#1074#1089#1077
+      ShortCut = 8305
       OnClick = N2Click
     end
     object mEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      ShortCut = 115
       OnClick = mEditClick
     end
     object N4: TMenuItem
@@ -1678,6 +2044,7 @@ object fCalcResource: TfCalcResource
     end
     object mDetete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
+      ShortCut = 119
       OnClick = mDeteteClick
     end
     object mRestore: TMenuItem
@@ -1723,43 +2090,53 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'SELECT '
-      '  MIN(IF(ID_REPLACED<>0, ID_REPLACED, ID)),'
-      '  MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  SUM(COALESCE(MAT_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      '  MIN(IF(m.ID_REPLACED<>0, m.ID_REPLACED, ID)),'
+      '  m.MAT_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  m.MAT_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  m.MAT_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  SUM(COALESCE(m.MAT_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       ''
-      '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
+      '  m.DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
+      '  m.DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
+      '  m.PROC_TRANSP, /* % '#1090#1088#1072#1085#1089#1087'. */'
       
-        '  IF(:NDS=1, IF(FCOAST_NDS<>0, 1, 0), IF(FCOAST_NO_NDS<>0, 1, 0)' +
-        ') AS FCOAST, /* '#1062#1077#1085#1072' F */ '
+        '  IF(:NDS=1, IF(m.FCOAST_NDS<>0, 1, 0), IF(FCOAST_NO_NDS<>0, 1, ' +
+        '0)) AS FCOAST, /* '#1062#1077#1085#1072' F */ '
       
-        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
-        '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
+        '  IF(:NDS=1, IF(m.FCOAST_NDS<>0, m.FCOAST_NDS, m.COAST_NDS), IF(' +
+        'm.FCOAST_NO_NDS<>0, m.FCOAST_NO_NDS, m.COAST_NO_NDS)) AS COAST, ' +
+        '/* '#1062#1077#1085#1072' */ '
       
-        '  SUM(ROUND(IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS),' +
-        ' IF(FPRICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS))/**COALESCE(M' +
-        'AT_COUNT, 0)*/)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
+        '  SUM(ROUND(IF(:NDS=1, IF(m.FPRICE_NDS<>0, m.FPRICE_NDS, m.PRICE' +
+        '_NDS), IF(m.FPRICE_NO_NDS<>0, m.FPRICE_NO_NDS, m.PRICE_NO_NDS))/' +
+        '**COALESCE(m.MAT_COUNT, 0)*/)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
       
-        '  SUM(ROUND(IF(:NDS=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, IF(FCOAST' +
-        '_NDS<>0, FTRANSP_NDS, TRANSP_NDS)), IF(FTRANSP_NO_NDS<>0, FTRANS' +
-        'P_NO_NDS, IF(FCOAST_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS))))' +
-        ') AS TRANSP, /* '#1090#1088#1072#1085#1089#1087'. */ '
-      '  DELETED,'
-      '  MAT_PROC_ZAC,'
-      '  MAT_PROC_PODR,'
-      '  TRANSP_PROC_ZAC,'
-      '  TRANSP_PROC_PODR,'
-      '  MAT_ID,'
-      '  REPLACED,'
-      '  (ID_REPLACED<>0) AS FREPLACED'
+        '  SUM(ROUND(IF(:NDS=1, IF(m.FTRANSP_NDS<>0, m.FTRANSP_NDS, IF(m.' +
+        'FCOAST_NDS<>0, m.FTRANSP_NDS, m.TRANSP_NDS)), IF(m.FTRANSP_NO_ND' +
+        'S<>0, m.FTRANSP_NO_NDS, IF(m.FCOAST_NO_NDS<>0, m.FTRANSP_NO_NDS,' +
+        ' m.TRANSP_NO_NDS))))) AS TRANSP, /* '#1090#1088#1072#1085#1089#1087'. */ '
+      '  m.DELETED,'
+      '  m.MAT_PROC_ZAC,'
+      '  m.MAT_PROC_PODR,'
+      '  m.TRANSP_PROC_ZAC,'
+      '  m.TRANSP_PROC_PODR,'
+      '  m.MAT_ID,'
+      '  m.REPLACED,'
+      '  (m.ID_REPLACED<>0) AS FREPLACED'
       'FROM '
-      '  materialcard_temp'
-      
-        'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) /*AND REPLACED = 0*/ AN' +
-        'D CONSIDERED=1 AND COALESCE(MAT_COUNT, 0) <> 0'
+      '  materialcard_temp AS m, smetasourcedata'
+      'WHERE ((m.DELETED = 0) OR (:SHOW_DELETED)) '
+      '/*AND m.REPLACED = 0*/ '
+      '  AND m.CONSIDERED=1 '
+      '  AND COALESCE(m.MAT_COUNT, 0) <> 0'
+      '  AND ((:SHOW_FULL_OBJECT) OR'
+      '   (smetasourcedata.SM_ID = :SM_ID) OR'
+      '   (smetasourcedata.PARENT_ID = :SM_ID) OR '
+      '   (smetasourcedata.PARENT_ID IN ('
+      '      SELECT SM_ID'
+      '      FROM smetasourcedata'
+      '      WHERE PARENT_ID = :SM_ID AND DELETED=0))) '
+      '  AND m.SM_ID = smetasourcedata.SM_ID'
       
         'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, FCOAS' +
         'T, COAST, DELETED,  '
@@ -1780,6 +2157,14 @@ object fCalcResource: TfCalcResource
       item
         Name = 'SHOW_DELETED'
         DataType = ftBCD
+        ParamType = ptInput
+      end
+      item
+        Name = 'SHOW_FULL_OBJECT'
+        ParamType = ptInput
+      end
+      item
+        Name = 'SM_ID'
         ParamType = ptInput
       end>
     object strngfldMaterialDataCODE: TStringField
@@ -1931,40 +2316,49 @@ object fCalcResource: TfCalcResource
     UpdateOptions.CheckUpdatable = False
     SQL.Strings = (
       'SELECT '
-      '  MIN(IF(ID_REPLACED<>0, ID_REPLACED, ID)),'
-      '  MECH_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  MECH_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  MECH_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  SUM(COALESCE(MECH_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      '  MIN(IF(m.ID_REPLACED<>0, m.ID_REPLACED, m.ID)),'
+      '  m.MECH_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  m.MECH_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  m.MECH_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  SUM(COALESCE(m.MECH_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       ''
       
-        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST' +
-        '_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST, /* '#1062#1077#1085#1072' */ '
+        '  IF(:NDS=1, IF(m.FCOAST_NDS<>0, m.FCOAST_NDS, m.COAST_NDS), IF(' +
+        'm.FCOAST_NO_NDS<>0, m.FCOAST_NO_NDS, m.COAST_NO_NDS)) AS COAST, ' +
+        '/* '#1062#1077#1085#1072' */ '
       
-        '  SUM(IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, PRICE_NDS), IF(FP' +
-        'RICE_NO_NDS<>0, FPRICE_NO_NDS, PRICE_NO_NDS))) AS PRICE, /* '#1057#1090#1086#1080 +
-        #1084#1086#1089#1090#1100' */  '
+        '  SUM(IF(:NDS=1, IF(m.FPRICE_NDS<>0, m.FPRICE_NDS, m.PRICE_NDS),' +
+        ' IF(m.FPRICE_NO_NDS<>0, m.FPRICE_NO_NDS, m.PRICE_NO_NDS))) AS PR' +
+        'ICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */  '
       '  '
       
-        '  IF(:NDS=1, IF(FZP_MACH_NDS<>0, FZP_MACH_NDS, ZP_MACH_NDS), IF(' +
-        'FZP_MACH_NO_NDS<>0, FZP_MACH_NO_NDS, ZP_MACH_NO_NDS)) AS ZP_1, /' +
-        '* '#1047#1055' '#1084#1072#1096#1080#1085#1080#1089#1090#1072' */ '
+        '  IF(:NDS=1, IF(m.FZP_MACH_NDS<>0, m.FZP_MACH_NDS, m.ZP_MACH_NDS' +
+        '), IF(m.FZP_MACH_NO_NDS<>0, m.FZP_MACH_NO_NDS, m.ZP_MACH_NO_NDS)' +
+        ') AS ZP_1, /* '#1047#1055' '#1084#1072#1096#1080#1085#1080#1089#1090#1072' */ '
       
-        '  SUM(IF(:NDS=1, IF(FZPPRICE_NDS <>0, FZPPRICE_NDS, ZPPRICE_NDS)' +
-        ', IF(FZPPRICE_NO_NDS<>0, FZPPRICE_NO_NDS, ZPPRICE_NO_NDS))) AS Z' +
-        'P_2, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1047#1055' '#1084#1072#1096#1080#1085#1080#1089#1090#1072' */ '
+        '  SUM(IF(:NDS=1, IF(m.FZPPRICE_NDS <>0, m.FZPPRICE_NDS, m.ZPPRIC' +
+        'E_NDS), IF(m.FZPPRICE_NO_NDS<>0, m.FZPPRICE_NO_NDS, m.ZPPRICE_NO' +
+        '_NDS))) AS ZP_2, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' '#1047#1055' '#1084#1072#1096#1080#1085#1080#1089#1090#1072' */ '
       ' '
-      '  DELETED,'
-      '  PROC_ZAC,'
-      '  PROC_PODR,'
-      '  MECH_ID,'
-      '  REPLACED,'
-      '  (ID_REPLACED<>0) AS FREPLACED'
+      '  m.DELETED,'
+      '  m.PROC_ZAC,'
+      '  m.PROC_PODR,'
+      '  m.MECH_ID,'
+      '  m.REPLACED,'
+      '  (m.ID_REPLACED<>0) AS FREPLACED'
       'FROM '
-      '  mechanizmcard_temp'
-      
-        'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) /*AND REPLACED = 0*/ AN' +
-        'D COALESCE(MECH_COUNT, 0) <> 0'
+      '  mechanizmcard_temp AS m, smetasourcedata'
+      'WHERE ((m.DELETED = 0) OR (:SHOW_DELETED)) '
+      '/*AND m.REPLACED = 0*/ '
+      '  AND COALESCE(m.MECH_COUNT, 0) <> 0'
+      '  AND ((:SHOW_FULL_OBJECT) OR'
+      '   (smetasourcedata.SM_ID = :SM_ID) OR'
+      '   (smetasourcedata.PARENT_ID = :SM_ID) OR '
+      '   (smetasourcedata.PARENT_ID IN ('
+      '      SELECT SM_ID'
+      '      FROM smetasourcedata'
+      '      WHERE PARENT_ID = :SM_ID AND DELETED=0))) '
+      '  AND m.SM_ID = smetasourcedata.SM_ID'
       
         'GROUP BY CODE, NAME, UNIT, COAST, ZP_1, DELETED, PROC_ZAC, PROC_' +
         'PODR, MECH_ID, REPLACED, FREPLACED'
@@ -1983,6 +2377,14 @@ object fCalcResource: TfCalcResource
         DataType = ftInteger
         ParamType = ptInput
         Value = 0
+      end
+      item
+        Name = 'SHOW_FULL_OBJECT'
+        ParamType = ptInput
+      end
+      item
+        Name = 'SM_ID'
+        ParamType = ptInput
       end>
     object strngfldMechDataCODE: TStringField
       AutoGenerateValue = arDefault
@@ -2104,31 +2506,40 @@ object fCalcResource: TfCalcResource
     SQL.Strings = (
       '/* '#1054#1041#1054#1056#1059#1044#1054#1042#1040#1053#1048#1045' */'
       'SELECT '
-      '  DEVICE_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
-      '  DEVICE_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
-      '  DEVICE_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
-      '  SUM(COALESCE(DEVICE_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
+      '  d.DEVICE_CODE AS CODE, /* '#1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077'*/'
+      '  d.DEVICE_NAME AS NAME, /* '#1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' */'
+      '  d.DEVICE_UNIT AS UNIT, /* '#1045#1076'. '#1080#1079#1084#1077#1088#1077#1085#1080#1103' */'
+      '  SUM(COALESCE(d.DEVICE_COUNT, 0)) AS CNT, /* '#1050#1086#1083'-'#1074#1086' */'
       ''
-      '  DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
-      '  DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
+      '  d.DOC_DATE, /* '#1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
+      '  d.DOC_NUM, /* '#1053#1086#1084#1077#1088' '#1076#1086#1082#1091#1084#1077#1085#1090#1072' */'
       ''
       
-        '  IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, 0), IF(FCOAST_NO_NDS<' +
-        '>0, FCOAST_NO_NDS, 0)) AS COAST, /* '#1062#1077#1085#1072' */ '
+        '  IF(:NDS=1, IF(d.FCOAST_NDS<>0, d.FCOAST_NDS, 0), IF(d.FCOAST_N' +
+        'O_NDS<>0, d.FCOAST_NO_NDS, 0)) AS COAST, /* '#1062#1077#1085#1072' */ '
       
-        '  SUM(IF(:NDS=1, IF(FPRICE_NDS<>0, FPRICE_NDS, 0), IF(FPRICE_NO_' +
-        'NDS<>0, FPRICE_NO_NDS, 0))) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
+        '  SUM(IF(:NDS=1, IF(d.FPRICE_NDS<>0, d.FPRICE_NDS, 0), IF(d.FPRI' +
+        'CE_NO_NDS<>0, d.FPRICE_NO_NDS, 0))) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
       
-        '  SUM(IF(:NDS=1, IF(DEVICE_TRANSP_NDS<>0, DEVICE_TRANSP_NDS, 0),' +
-        ' IF(DEVICE_TRANSP_NO_NDS<>0, DEVICE_TRANSP_NO_NDS, 0))) AS TRANS' +
-        'P,  /* '#1090#1088#1072#1085#1089#1087'. */'
-      '  PROC_ZAC,'
-      '  PROC_PODR,'
-      '  TRANSP_PROC_ZAC,'
-      '  TRANSP_PROC_PODR,'
+        '  SUM(IF(:NDS=1, IF(d.DEVICE_TRANSP_NDS<>0, d.DEVICE_TRANSP_NDS,' +
+        ' 0), IF(d.DEVICE_TRANSP_NO_NDS<>0, d.DEVICE_TRANSP_NO_NDS, 0))) ' +
+        'AS TRANSP,  /* '#1090#1088#1072#1085#1089#1087'. */'
+      '  d.PROC_ZAC,'
+      '  d.PROC_PODR,'
+      '  d.TRANSP_PROC_ZAC,'
+      '  d.TRANSP_PROC_PODR,'
       '  0 AS DELETED,'
-      '  DEVICE_ID'
-      'FROM devicescard_temp'
+      '  d.DEVICE_ID'
+      'FROM devicescard_temp AS d, smetasourcedata'
+      'WHERE '
+      '  ((:SHOW_FULL_OBJECT) OR'
+      '   (smetasourcedata.SM_ID = :SM_ID) OR'
+      '   (smetasourcedata.PARENT_ID = :SM_ID) OR '
+      '   (smetasourcedata.PARENT_ID IN ('
+      '      SELECT SM_ID'
+      '      FROM smetasourcedata'
+      '      WHERE PARENT_ID = :SM_ID AND DELETED=0))) '
+      '  AND d.SM_ID = smetasourcedata.SM_ID'
       
         'GROUP BY CODE,NAME,UNIT,DOC_DATE,DOC_NUM,COAST,PROC_ZAC,PROC_POD' +
         'R,TRANSP_PROC_ZAC,TRANSP_PROC_PODR,DELETED,DEVICE_ID'
@@ -2141,6 +2552,14 @@ object fCalcResource: TfCalcResource
         DataType = ftString
         ParamType = ptInput
         Value = '1'
+      end
+      item
+        Name = 'SHOW_FULL_OBJECT'
+        ParamType = ptInput
+      end
+      item
+        Name = 'SM_ID'
+        ParamType = ptInput
       end>
     object strngfldDevicesCODE: TStringField
       FieldName = 'CODE'
@@ -2329,18 +2748,29 @@ object fCalcResource: TfCalcResource
       'WHERE '
       'data_row_temp.ID_TYPE_DATA = 1 AND'
       'card_rate_temp.ID = data_row_temp.ID_TABLES AND'
-      '  /*((smetasourcedata.SM_ID = :SM_ID) OR'
-      '           (smetasourcedata.PARENT_ID = :SM_ID) OR '
-      '           (smetasourcedata.PARENT_ID IN ('
-      '             SELECT SM_ID'
-      '             FROM smetasourcedata'
-      '             WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND */'
-      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID AND'
-      'data_row_temp.SM_ID = smetasourcedata.SM_ID'
+      '  ((:SHOW_FULL_OBJECT) OR'
+      '   (smetasourcedata.SM_ID = :SM_ID) OR'
+      '   (smetasourcedata.PARENT_ID = :SM_ID) OR '
+      '   (smetasourcedata.PARENT_ID IN ('
+      '      SELECT SM_ID'
+      '      FROM smetasourcedata'
+      '      WHERE PARENT_ID = :SM_ID AND DELETED=0))) AND'
+      'data_row_temp.SM_ID = smetasourcedata.SM_ID AND'
+      'stavka.STAVKA_ID = smetasourcedata.STAVKA_ID '
+      ''
       ''
       'ORDER BY 5')
     Left = 211
     Top = 168
+    ParamData = <
+      item
+        Name = 'SHOW_FULL_OBJECT'
+        ParamType = ptInput
+      end
+      item
+        Name = 'SM_ID'
+        ParamType = ptInput
+      end>
   end
   object dsRates: TDataSource
     DataSet = qrRates
@@ -2374,8 +2804,8 @@ object fCalcResource: TfCalcResource
       'dbmmoNAME2.Height'
       'dbmmoNAME3.Height')
     StoredValues = <>
-    Left = 552
-    Top = 216
+    Left = 280
+    Top = 320
   end
   object qrMaterialDetail: TFDQuery
     BeforeOpen = qrMaterialDataBeforeOpen
@@ -2750,7 +3180,7 @@ object fCalcResource: TfCalcResource
     Left = 155
     Top = 312
   end
-  object FDScript1: TFDScript
+  object fdScript: TFDScript
     SQLScripts = <>
     Connection = DM.Connect
     Transaction = DM.Read
@@ -2762,7 +3192,166 @@ object fCalcResource: TfCalcResource
     ResourceOptions.AssignedValues = [rvMacroCreate, rvMacroExpand, rvDirectExecute, rvPersistent]
     ResourceOptions.MacroCreate = False
     ResourceOptions.DirectExecute = True
-    Left = 268
-    Top = 173
+    Left = 212
+    Top = 317
+  end
+  object mtRS: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired]
+    UpdateOptions.CheckRequired = False
+    StoreDefs = True
+    Left = 356
+    Top = 120
+    object qrmtf1: TStringField
+      FieldName = 'f1'
+      Size = 512
+    end
+    object qrmtf2: TStringField
+      FieldName = 'f2'
+    end
+    object qrmtf3: TStringField
+      FieldName = 'f3'
+    end
+    object qrmtf4: TStringField
+      FieldName = 'f4'
+    end
+    object qrmtf5: TStringField
+      FieldName = 'f5'
+    end
+    object qrmtf6: TStringField
+      FieldName = 'f6'
+    end
+  end
+  object dsRS: TDataSource
+    DataSet = mtRS
+    Left = 356
+    Top = 168
+  end
+  object mtTravel: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired]
+    UpdateOptions.CheckRequired = False
+    StoreDefs = True
+    Left = 404
+    Top = 120
+    object qr1: TStringField
+      FieldName = 'f1'
+    end
+    object qr2: TStringField
+      FieldName = 'f2'
+      Size = 512
+    end
+    object qr3: TStringField
+      FieldName = 'f3'
+    end
+    object qr4: TStringField
+      FieldName = 'f4'
+    end
+  end
+  object dsTravel: TDataSource
+    DataSet = mtTravel
+    Left = 404
+    Top = 168
+  end
+  object mtTravelWork: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired]
+    UpdateOptions.CheckRequired = False
+    StoreDefs = True
+    Left = 468
+    Top = 120
+    object qr7: TStringField
+      FieldName = 'f1'
+    end
+    object qr8: TStringField
+      FieldName = 'f2'
+      Size = 512
+    end
+    object qr9: TStringField
+      FieldName = 'f3'
+    end
+    object qr10: TStringField
+      FieldName = 'f4'
+    end
+  end
+  object dsTravelWork: TDataSource
+    DataSet = mtTravelWork
+    Left = 468
+    Top = 168
+  end
+  object mtWorkerDepartment: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired]
+    UpdateOptions.CheckRequired = False
+    StoreDefs = True
+    Left = 556
+    Top = 120
+    object qr13: TStringField
+      FieldName = 'f1'
+    end
+    object qr14: TStringField
+      FieldName = 'f2'
+      Size = 512
+    end
+    object qr15: TStringField
+      FieldName = 'f3'
+    end
+    object qr16: TStringField
+      FieldName = 'f4'
+    end
+  end
+  object dsWorkerDepartment: TDataSource
+    DataSet = mtWorkerDepartment
+    Left = 556
+    Top = 168
+  end
+  object mtVars: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired]
+    UpdateOptions.CheckRequired = False
+    StoreDefs = True
+    Left = 628
+    Top = 120
+    object qr5: TStringField
+      FieldName = 'f1'
+      Size = 512
+    end
+    object qr6: TStringField
+      FieldName = 'f2'
+      Size = 100
+    end
+    object qrVarsf3: TStringField
+      FieldName = 'f3'
+    end
+  end
+  object dsVars: TDataSource
+    DataSet = mtVars
+    Left = 628
+    Top = 168
   end
 end

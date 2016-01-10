@@ -38,7 +38,7 @@ var
 
 implementation
 
-uses Main, CalculationEstimate, DataModule;
+uses Main, CalculationEstimate, DataModule, ContractPrice;
 
 {$R *.dfm}
 
@@ -91,7 +91,9 @@ end;
 
 procedure TfTreeEstimate.tvEstimatesClick(Sender: TObject);
 begin
-  if Assigned(FormCalculationEstimate) then
+  if Assigned(fContractPrice) then
+    fContractPrice.qrMain.Locate('SM_ID', qrTreeEstimates.FieldByName('SM_ID').AsInteger, [])
+  else if Assigned(FormCalculationEstimate) then
     FormCalculationEstimate.qrRatesEx.Locate('SM_ID', qrTreeEstimates.FieldByName('SM_ID').AsInteger, []);
 end;
 
@@ -104,7 +106,8 @@ begin
       FormCalculationEstimate.flChangeEstimate := True;
       FormCalculationEstimate.Close;
       if (not Assigned(FormCalculationEstimate)) then
-        FormCalculationEstimate := TFormCalculationEstimate.Create(qrTreeEstimates.FieldByName('SM_ID').AsInteger);
+        FormCalculationEstimate := TFormCalculationEstimate.Create(qrTreeEstimates.FieldByName('SM_ID')
+          .AsInteger);
       FormCalculationEstimate.EditNameEstimate.Text := qrTreeEstimates.FieldByName('NAME').AsString;
       FormCalculationEstimate.IdEstimate := qrTreeEstimates.FieldByName('SM_ID').AsInteger;
       // Создание временных таблиц

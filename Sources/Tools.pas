@@ -134,6 +134,7 @@ function FullRemove(ASource: string): Boolean;
 function GetDirDialog(var ADir: string): Boolean;
 // Функция выбора строки по условию
 function strIf(BoolExpression: Boolean; ifTrue, ifFalse: string): string;
+function IIF(BoolExpression: Boolean; ifTrue, ifFalse: Variant): Variant;
 // Процедура добавления колонки в таблицу
 procedure addCol(const Grid: TJvDBGrid; fieldName, titleCaption: String; const Width: Integer);
 
@@ -150,6 +151,14 @@ begin
   col.Title.Alignment := taCenter;
   col.Width := Width;
   col.fieldName := fieldName;
+end;
+
+function IIF(BoolExpression: Boolean; ifTrue, ifFalse: Variant): Variant;
+begin
+  if BoolExpression then
+    Result := ifTrue
+  else
+    Result := ifFalse;
 end;
 
 function strIf(BoolExpression: Boolean; ifTrue, ifFalse: string): string;

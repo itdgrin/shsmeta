@@ -136,7 +136,9 @@ object fTariffDict: TfTariffDict
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          OnCellClick = grStavkaCellClick
           OnDrawColumnCell = grStavkaDrawColumnCell
+          OnKeyUp = grStavkaKeyDown
           AutoSizeColumns = True
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'

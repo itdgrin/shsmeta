@@ -45,6 +45,8 @@ type
     procedure grStavkaDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
     procedure seYearChange(Sender: TObject);
+    procedure grStavkaCellClick(Column: TColumn);
+    procedure grStavkaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -80,6 +82,11 @@ begin
   fTariffDict := nil;
 end;
 
+procedure TfTariffDict.grStavkaCellClick(Column: TColumn);
+begin
+  qrStavkaAfterScroll(qrStavka);
+end;
+
 procedure TfTariffDict.grStavkaDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
@@ -107,6 +114,11 @@ begin
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
+procedure TfTariffDict.grStavkaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  qrStavkaAfterScroll(qrStavka);
+end;
+
 procedure TfTariffDict.pgcChange(Sender: TObject);
 begin
   case pgc.ActivePageIndex of
@@ -128,7 +140,11 @@ end;
 
 procedure TfTariffDict.qrStavkaAfterScroll(DataSet: TDataSet);
 begin
-  qrCategory.ParamByName('IN_STAVKA').AsFloat := qrStavka.FieldByName('STAVKA_M_RAB').Value;
+  if grStavka.Col <= 2 then
+    qrCategory.ParamByName('IN_STAVKA').AsFloat := qrStavka.FieldByName('STAVKA_M_RAB').Value
+  else
+    qrCategory.ParamByName('IN_STAVKA').AsFloat := qrStavka.FieldByName('STAVKA_RB_RAB').Value;
+
   qrCategory.ParamByName('IN_DATE').AsDate := qrStavka.FieldByName('MONTH_YEAR').Value;
   CloseOpen(qrCategory);
 end;

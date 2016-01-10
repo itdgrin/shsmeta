@@ -13,7 +13,6 @@ object fSelectDialog: TfSelectDialog
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
-  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object grMain1: TJvDBGrid
@@ -29,7 +28,7 @@ object fSelectDialog: TfSelectDialog
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
     ParentFont = False
     ReadOnly = True
     TabOrder = 0
