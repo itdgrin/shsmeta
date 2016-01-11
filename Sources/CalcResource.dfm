@@ -2074,7 +2074,7 @@ object fCalcResource: TfCalcResource
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache, evAutoFetchAll]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -2156,16 +2156,21 @@ object fCalcResource: TfCalcResource
       end
       item
         Name = 'SHOW_DELETED'
-        DataType = ftBCD
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'SHOW_FULL_OBJECT'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'SM_ID'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end>
     object strngfldMaterialDataCODE: TStringField
       AutoGenerateValue = arDefault
@@ -2299,7 +2304,7 @@ object fCalcResource: TfCalcResource
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -2491,7 +2496,7 @@ object fCalcResource: TfCalcResource
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -2674,7 +2679,7 @@ object fCalcResource: TfCalcResource
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -2819,7 +2824,7 @@ object fCalcResource: TfCalcResource
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache, evAutoFetchAll]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -2909,12 +2914,14 @@ object fCalcResource: TfCalcResource
       end
       item
         Name = 'MAT_ID'
-        DataType = ftBCD
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'COAST'
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'MAT_PROC_ZAC'
@@ -3008,7 +3015,7 @@ object fCalcResource: TfCalcResource
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache, evAutoFetchAll]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -3103,7 +3110,7 @@ object fCalcResource: TfCalcResource
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache, evAutoFetchAll]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item

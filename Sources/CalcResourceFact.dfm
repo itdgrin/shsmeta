@@ -149,7 +149,6 @@ object fCalcResourceFact: TfCalcResourceFact
     Font.Style = []
     MultiLine = True
     ParentFont = False
-    PopupMenu = pm
     TabOrder = 1
     OnChange = pgcChange
     object ts1: TTabSheet
@@ -260,6 +259,12 @@ object fCalcResourceFact: TfCalcResourceFact
           Columns = <
             item
               Expanded = False
+              FieldName = 'SELECTED'
+              Width = 21
+              Visible = True
+            end
+            item
+              Expanded = False
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
@@ -271,7 +276,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'NAME'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-              Width = 56
+              Width = 54
               Visible = True
             end
             item
@@ -280,7 +285,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 20
+              Width = 19
               Visible = True
             end
             item
@@ -288,7 +293,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 18
+              Width = 17
               Visible = True
             end
             item
@@ -296,7 +301,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
-              Width = 51
+              Width = 49
               Visible = True
             end
             item
@@ -304,7 +309,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'forecast_cost_index'
               Title.Alignment = taCenter
               Title.Caption = #1048#1085#1076#1077#1082#1089' '#1088#1086#1089#1090#1072
-              Width = 57
+              Width = 55
               Visible = True
             end
             item
@@ -312,7 +317,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
-              Width = 51
+              Width = 49
               Visible = True
             end
             item
@@ -320,7 +325,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
-              Width = 35
+              Width = 34
               Visible = True
             end
             item
@@ -328,35 +333,35 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 51
+              Width = 49
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PROC_ZAC'
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 35
+              Width = 34
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PROC_PODR'
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 41
+              Width = 39
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 44
+              Width = 42
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_PODR'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 51
+              Width = 49
               Visible = True
             end
             item
@@ -364,7 +369,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 35
+              Width = 34
               Visible = True
             end
             item
@@ -372,7 +377,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 55
+              Width = 54
               Visible = True
             end>
         end
@@ -598,10 +603,16 @@ object fCalcResourceFact: TfCalcResourceFact
           Columns = <
             item
               Expanded = False
+              FieldName = 'SELECTED'
+              Width = 23
+              Visible = True
+            end
+            item
+              Expanded = False
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 39
+              Width = 37
               Visible = True
             end
             item
@@ -625,7 +636,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 22
+              Width = 21
               Visible = True
             end
             item
@@ -633,7 +644,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
-              Width = 91
+              Width = 87
               Visible = True
             end
             item
@@ -641,7 +652,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'forecast_cost_index'
               Title.Alignment = taCenter
               Title.Caption = #1048#1085#1076#1077#1082#1089' '#1088#1086#1089#1090#1072
-              Width = 59
+              Width = 56
               Visible = True
             end
             item
@@ -649,7 +660,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
-              Width = 91
+              Width = 87
               Visible = True
             end
             item
@@ -657,7 +668,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'COAST_ZP'
               Title.Alignment = taCenter
               Title.Caption = #1047#1072#1088#1087#1083'. '#1084#1072#1096'.'
-              Width = 91
+              Width = 87
               Visible = True
             end
             item
@@ -665,7 +676,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PRICE_ZP'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090'-'#1089#1090#1100' '#1079#1072#1088#1087#1083#1072#1090#1099
-              Width = 98
+              Width = 95
               Visible = True
             end
             item
@@ -673,7 +684,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 57
+              Width = 55
               Visible = True
             end
             item
@@ -681,7 +692,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 47
+              Width = 46
               Visible = True
             end>
         end
@@ -945,6 +956,7 @@ object fCalcResourceFact: TfCalcResourceFact
           Font.Style = []
           Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
           ParentFont = False
+          PopupMenu = pm
           TabOrder = 0
           TitleFont.Charset = DEFAULT_CHARSET
           TitleFont.Color = clWindowText
@@ -967,10 +979,16 @@ object fCalcResourceFact: TfCalcResourceFact
           Columns = <
             item
               Expanded = False
+              FieldName = 'SELECTED'
+              Width = 25
+              Visible = True
+            end
+            item
+              Expanded = False
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1076
-              Width = 47
+              Width = 45
               Visible = True
             end
             item
@@ -986,7 +1004,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'UNIT'
               Title.Alignment = taCenter
               Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-              Width = 47
+              Width = 45
               Visible = True
             end
             item
@@ -994,7 +1012,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1050#1086#1083'-'#1074#1086
-              Width = 47
+              Width = 45
               Visible = True
             end
             item
@@ -1002,7 +1020,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
-              Width = 47
+              Width = 45
               Visible = True
             end
             item
@@ -1010,7 +1028,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'forecast_cost_index'
               Title.Alignment = taCenter
               Title.Caption = #1048#1085#1076#1077#1082#1089' '#1088#1086#1089#1090#1072
-              Width = 57
+              Width = 55
               Visible = True
             end
             item
@@ -1018,7 +1036,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'PRICE'
               Title.Alignment = taCenter
               Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
-              Width = 47
+              Width = 45
               Visible = True
             end
             item
@@ -1033,7 +1051,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 42
+              Width = 40
               Visible = True
             end
             item
@@ -1041,7 +1059,7 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'DOC_DATE'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#1076#1072#1090#1072
-              Width = 47
+              Width = 45
               Visible = True
             end
             item
@@ -1049,35 +1067,35 @@ object fCalcResourceFact: TfCalcResourceFact
               FieldName = 'DOC_NUM'
               Title.Alignment = taCenter
               Title.Caption = #1053#1072#1082#1083'. '#8470
-              Width = 43
+              Width = 41
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PROC_ZAC'
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 43
+              Width = 41
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'PROC_PODR'
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 46
+              Width = 44
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 50
+              Width = 48
               Visible = True
             end
             item
               Expanded = False
               FieldName = 'TRANSP_PROC_PODR'
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 54
+              Width = 52
               Visible = True
             end>
         end
@@ -1273,42 +1291,61 @@ object fCalcResourceFact: TfCalcResourceFact
   end
   object pm: TPopupMenu
     OnPopup = pmPopup
-    Left = 556
-    Top = 168
-    object mN4: TMenuItem
+    Left = 156
+    Top = 216
+    object mInsert: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
-      ShortCut = 116
-      OnClick = mN4Click
+      object mInsertFromDict: TMenuItem
+        Caption = #1048#1079' '#1085#1086#1088#1084#1072#1090#1080#1074#1085#1086#1075#1086' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
+      end
+      object mInsertFromOunDict: TMenuItem
+        Caption = #1048#1079' '#1089#1086#1073#1090#1074#1077#1085#1085#1086#1075#1086' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
+      end
+      object mInsertEmpty: TMenuItem
+        Caption = #1055#1088#1086#1080#1079#1074#1086#1083#1100#1085#1091#1102' '#1089#1090#1088#1086#1082#1091
+        ShortCut = 116
+        OnClick = mInsertEmptyClick
+      end
     end
-    object mN5: TMenuItem
+    object mDoCopy: TMenuItem
       Caption = #1057#1086#1079#1076#1072#1090#1100' '#1082#1086#1087#1080#1102
       ShortCut = 16500
-      OnClick = mN5Click
+      OnClick = mDoCopyClick
     end
-    object mN6: TMenuItem
+    object mUpdate: TMenuItem
       Caption = #1054#1073#1085#1086#1074#1080#1090#1100
-      OnClick = mN6Click
+      OnClick = mUpdateClick
+    end
+    object mEdit: TMenuItem
+      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
+      ShortCut = 115
+      OnClick = mEditClick
     end
     object mN3: TMenuItem
       Caption = '-'
     end
-    object N1: TMenuItem
+    object mSelect: TMenuItem
       Caption = #1042#1099#1076#1077#1083#1080#1090#1100
       ShortCut = 113
-      OnClick = N1Click
+      OnClick = mSelectClick
     end
-    object N2: TMenuItem
+    object mSelectAll: TMenuItem
       Caption = #1042#1099#1076#1077#1083#1080#1090#1100' '#1074#1089#1077
       ShortCut = 8305
-      OnClick = N2Click
+      OnClick = mSelectAllClick
     end
     object N4: TMenuItem
       Caption = '-'
     end
-    object mDetete: TMenuItem
+    object mDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       ShortCut = 119
-      OnClick = mDeteteClick
+      OnClick = mDeleteClick
+    end
+    object mDeleteReal: TMenuItem
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
+      ShortCut = 8311
+      OnClick = mDeleteRealClick
     end
     object mRestore: TMenuItem
       Caption = #1042#1086#1089#1089#1090#1072#1085#1086#1074#1080#1090#1100
@@ -1326,6 +1363,7 @@ object fCalcResourceFact: TfCalcResourceFact
   object qrMainData: TFDQuery
     BeforeOpen = qrMainDataBeforeOpen
     AfterOpen = qrMainDataAfterOpen
+    AfterEdit = qrMainDataAfterEdit
     OnNewRecord = qrMainDataNewRecord
     Connection = DM.Connect
     Transaction = DM.Read
@@ -1341,7 +1379,6 @@ object fCalcResourceFact: TfCalcResourceFact
       end>
     FormatOptions.DefaultParamDataType = ftBCD
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
-    UpdateOptions.EnableDelete = False
     UpdateOptions.UpdateChangedFields = False
     UpdateOptions.CheckReadOnly = False
     UpdateOptions.CheckUpdatable = False
@@ -1372,7 +1409,8 @@ object fCalcResourceFact: TfCalcResourceFact
       '  f.SRC_OBJECT_ID,'
       '  f.forecast_cost_index,'
       '  f.ID_TYPE_DATA,'
-      '  f.ID_ACT'
+      '  f.ID_ACT,'
+      '  0 AS SELECTED'
       'FROM fact_data f'
       '/*'
       
@@ -1556,6 +1594,9 @@ object fCalcResourceFact: TfCalcResourceFact
       FieldName = 'ID_ACT'
       Origin = 'ID_ACT'
     end
+    object qrMainDataSELECTED: TBooleanField
+      FieldName = 'SELECTED'
+    end
   end
   object dsMainData: TDataSource
     DataSet = qrMainData
@@ -1571,8 +1612,8 @@ object fCalcResourceFact: TfCalcResourceFact
       'pnlMechBott.Height'
       'pnlDevBott.Height')
     StoredValues = <>
-    Left = 552
-    Top = 216
+    Left = 96
+    Top = 168
   end
   object qrMaterialDetail: TFDQuery
     BeforeOpen = qrMainDataBeforeOpen
@@ -1865,5 +1906,20 @@ object fCalcResourceFact: TfCalcResourceFact
     DataSet = qrDevicesDetail
     Left = 155
     Top = 312
+  end
+  object fdScript: TFDScript
+    SQLScripts = <>
+    Connection = DM.Connect
+    Transaction = DM.Read
+    Params = <>
+    Macros = <>
+    FetchOptions.AssignedValues = [evItems, evAutoClose, evAutoFetchAll]
+    FetchOptions.AutoClose = False
+    FetchOptions.Items = [fiBlobs, fiDetails]
+    ResourceOptions.AssignedValues = [rvMacroCreate, rvMacroExpand, rvDirectExecute, rvPersistent]
+    ResourceOptions.MacroCreate = False
+    ResourceOptions.DirectExecute = True
+    Left = 100
+    Top = 213
   end
 end

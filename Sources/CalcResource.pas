@@ -1054,7 +1054,6 @@ begin
   except
 
   end;
-
   CalcValue := Footer[Sender.DataSource.DataSet.FieldByName(FieldName).Index];
 end;
 

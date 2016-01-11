@@ -2859,6 +2859,7 @@
         BevelOuter = bvNone
         ParentBackground = False
         TabOrder = 1
+        Visible = False
         object Label10: TLabel
           Left = 6
           Top = 5
@@ -2975,7 +2976,7 @@
         Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077' '#1085#1072':'
         ExplicitHeight = 13
       end
-      object EditWinterPrice: TEdit
+      object edtWinterPrice: TEdit
         AlignWithMargins = True
         Left = 733
         Top = 2
@@ -5681,7 +5682,6 @@
   end
   object dsRatesEx: TDataSource
     DataSet = qrRatesEx
-    OnDataChange = dsRatesExDataChange
     Left = 24
     Top = 264
   end
@@ -5729,6 +5729,7 @@
   end
   object dsTypeData: TDataSource
     DataSet = qrTypeData
+    OnDataChange = dsTypeDataDataChange
     Left = 112
     Top = 264
   end

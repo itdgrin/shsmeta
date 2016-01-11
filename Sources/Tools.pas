@@ -562,7 +562,7 @@ begin
     Query.Active := False;
     Query.Active := True;
     if key <> Null then
-      Query.Locate(Query.Fields[0].FieldName, key, []);
+      Query.Locate(Query.Fields[0].fieldName, key, []);
   finally
     // Query.AfterScroll := E;
     if ADisableControls then
@@ -600,13 +600,15 @@ begin
     begin
       for i := 0 to Query.FieldCount - 1 do
         if (Query.Fields[i].DataType in [ftInteger, ftFloat, ftBCD, ftFMTBcd, ftLargeint]) and
-          not(VarIsNull(Query.Fields[i].Value)) then
+          not(VarIsNull(Query.Fields[i].Value)) and
+          ((Query.FindField('DELETED') = nil) or ((Query.FindField('DELETED') <> nil) and
+          (Query.FindField('DELETED').Value = 0))) then
           Res[i] := Res[i] + Query.Fields[i].AsFloat;
       Query.Next;
     end;
 
     if key <> Null then
-      Query.Locate(Query.Fields[0].FieldName, key, []);
+      Query.Locate(Query.Fields[0].fieldName, key, []);
     Result := Res;
   finally
     Query.AfterScroll := e;

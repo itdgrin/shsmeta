@@ -8,7 +8,8 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Mask, JvDBGridFooter,
-  JvComponentBase, JvFormPlacement, System.UITypes, Vcl.Buttons, Tools;
+  JvComponentBase, JvFormPlacement, System.UITypes, Vcl.Buttons, Tools, FireDAC.UI.Intf,
+  FireDAC.Comp.ScriptCommands, FireDAC.Comp.Script;
 
 type
   TfCalcResourceFact = class(TSmForm)
@@ -25,9 +26,9 @@ type
     edtMatCodeFilter: TEdit;
     edtMatNameFilter: TEdit;
     pm: TPopupMenu;
-    N1: TMenuItem;
-    N2: TMenuItem;
-    mDetete: TMenuItem;
+    mSelect: TMenuItem;
+    mSelectAll: TMenuItem;
+    mDelete: TMenuItem;
     N4: TMenuItem;
     mRestore: TMenuItem;
     pnlMatClient: TPanel;
@@ -103,12 +104,19 @@ type
     qrMainDataPRICE_ZP: TFMTBCDField;
     qrMainDataSRC_OBJECT_ID: TIntegerField;
     mN3: TMenuItem;
-    mN4: TMenuItem;
-    mN5: TMenuItem;
-    mN6: TMenuItem;
+    mInsert: TMenuItem;
+    mDoCopy: TMenuItem;
+    mUpdate: TMenuItem;
     qrMainDataforecast_cost_index: TFMTBCDField;
     qrMainDataID_TYPE_DATA: TIntegerField;
     qrMainDataID_ACT: TLongWordField;
+    mEdit: TMenuItem;
+    fdScript: TFDScript;
+    mInsertFromDict: TMenuItem;
+    mInsertFromOunDict: TMenuItem;
+    mInsertEmpty: TMenuItem;
+    mDeleteReal: TMenuItem;
+    qrMainDataSELECTED: TBooleanField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -121,12 +129,12 @@ type
     procedure qrMainDataBeforeOpen(DataSet: TDataSet);
     procedure pmPopup(Sender: TObject);
     procedure grMaterialCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
-    procedure mDeteteClick(Sender: TObject);
+    procedure mDeleteClick(Sender: TObject);
     procedure mRestoreClick(Sender: TObject);
     procedure grMaterialDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
-    procedure N1Click(Sender: TObject);
-    procedure N2Click(Sender: TObject);
+    procedure mSelectClick(Sender: TObject);
+    procedure mSelectAllClick(Sender: TObject);
     procedure qrMainDataPROC_ZACChange(Sender: TField);
     procedure qrMainDataPROC_PODRChange(Sender: TField);
     procedure qrMainDataTRANSP_PROC_ZACChange(Sender: TField);
@@ -140,10 +148,13 @@ type
     procedure qrMainDataPROC_TRANSPChange(Sender: TField);
     procedure qrMainDataCNTChange(Sender: TField);
     procedure qrMainDataPRICEChange(Sender: TField);
-    procedure mN4Click(Sender: TObject);
-    procedure mN5Click(Sender: TObject);
-    procedure mN6Click(Sender: TObject);
+    procedure mDoCopyClick(Sender: TObject);
+    procedure mUpdateClick(Sender: TObject);
     procedure qrMainDataNewRecord(DataSet: TDataSet);
+    procedure mEditClick(Sender: TObject);
+    procedure mInsertEmptyClick(Sender: TObject);
+    procedure qrMainDataAfterEdit(DataSet: TDataSet);
+    procedure mDeleteRealClick(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -163,7 +174,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, CalculationEstimate, DataModule, CalcResourceFactDiff;
+uses Main, CalculationEstimate, DataModule, CalcResourceFactDiff, CalcResourceEdit;
 
 procedure ShowCalcResourceFact(const ID_ESTIMATE: Variant; const APage: Integer = 0;
   AOwner: TWinControl = nil);
@@ -445,7 +456,7 @@ begin
 
 end;
 
-procedure TfCalcResourceFact.mDeteteClick(Sender: TObject);
+procedure TfCalcResourceFact.mDeleteClick(Sender: TObject);
 begin
   case pgc.ActivePageIndex of
     // Расчет материалов
@@ -458,12 +469,157 @@ begin
   end;
 end;
 
-procedure TfCalcResourceFact.mN4Click(Sender: TObject);
+procedure TfCalcResourceFact.mEditClick(Sender: TObject);
+var
+  TempBookmark: TBookMark;
+  X: Integer;
+  Script: TStringList;
+begin
+  if (not Assigned(fCalcResourceEdit)) then
+    fCalcResourceEdit := TfCalcResourceEdit.Create(Self, pgc.ActivePageIndex);
+  if fCalcResourceEdit.ShowModal = mrOk then
+  begin
+    Script := TStringList.Create;
+    case pgc.ActivePageIndex of
+
+      // Расчет материалов
+      1:
+        begin
+          grMaterial.DataSource.DataSet.DisableControls;
+          TempBookmark := grMaterial.DataSource.DataSet.GetBookmark;
+          try
+            if grMaterial.SelectedRows.Count = 0 then
+              grMaterial.SelectedRows.CurrentRowSelected := True;
+
+            for X := 0 to grMaterial.SelectedRows.Count - 1 do
+            begin
+              if grMaterial.SelectedRows.IndexOf(grMaterial.SelectedRows.Items[X]) > -1 then
+              begin
+                grMaterial.DataSource.DataSet.GotoBookmark(Pointer(grMaterial.SelectedRows.Items[X]));
+                Script.Add('UPDATE fact_data SET fact_data_id=fact_data_id' +
+                  strIf(fCalcResourceEdit.chkMatCoast.Checked,
+                  ',FCOAST=1, COAST=' + fCalcResourceEdit.edtMatCoast.Text +
+                  ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
+                  strIf(fCalcResourceEdit.chkMatTransp.Checked,
+                  ',PROC_TRANSP=' + fCalcResourceEdit.edtMatTransp.Text, '') +
+                  strIf(fCalcResourceEdit.chkMatNaklDate.Checked,
+                  ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMatNaklDate.Date) + '''',
+                  '') + strIf(fCalcResourceEdit.chkMatNakl.Checked,
+                  ',DOC_NUM=''' + fCalcResourceEdit.edtMatNakl.Text + '''', '') +
+                  strIf(fCalcResourceEdit.chkMatZakPodr.Checked,
+                  ',PROC_PODR=' + fCalcResourceEdit.edtMatPodr.Text + ',PROC_ZAC=' +
+                  fCalcResourceEdit.edtMatZak.Text, '') + strIf(fCalcResourceEdit.chkMatTranspZakPodr.Checked,
+                  ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtMatTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
+                  fCalcResourceEdit.edtMatTranspZak.Text, '') + ' WHERE fact_data_id=' +
+                  qrMainData.FieldByName('fact_data_id').AsString + ';');
+              end;
+            end;
+            fdScript.ExecuteScript(TStrings(Script));
+          finally
+            grMaterial.DataSource.DataSet.GotoBookmark(TempBookmark);
+            grMaterial.DataSource.DataSet.FreeBookmark(TempBookmark);
+            grMaterial.DataSource.DataSet.EnableControls;
+          end;
+        end;
+
+      // Расчет механизмов
+      2:
+        begin
+          grMech.DataSource.DataSet.DisableControls;
+          TempBookmark := grMech.DataSource.DataSet.GetBookmark;
+          try
+            if grMech.SelectedRows.Count = 0 then
+              grMech.SelectedRows.CurrentRowSelected := True;
+
+            for X := 0 to grMech.SelectedRows.Count - 1 do
+            begin
+              if grMech.SelectedRows.IndexOf(grMech.SelectedRows.Items[X]) > -1 then
+              begin
+                grMech.DataSource.DataSet.GotoBookmark(Pointer(grMech.SelectedRows.Items[X]));
+                Script.Add('UPDATE fact_data set fact_data_id=fact_data_id' +
+                  strIf(fCalcResourceEdit.chkMechCoast.Checked,
+                  ',FCOAST=1, COAST=' + fCalcResourceEdit.edtMechCoast.Text +
+                  ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
+                  strIf(fCalcResourceEdit.chkMechZPMash.Checked,
+                  ',COAST_ZP=' + fCalcResourceEdit.edtMechZPMash.Text +
+                  ', PRICE_ZP=ROUND(CNT*COAST_ZP*IFNULL(forecast_cost_index, 1))', '') +
+                  strIf(fCalcResourceEdit.chkMechNaklDate.Checked,
+                  ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMechNaklDate.Date) +
+                  '''', '') + strIf(fCalcResourceEdit.chkMechNakl.Checked,
+                  ',DOC_NUM=''' + fCalcResourceEdit.edtMechNakl.Text + '''', '') +
+                  strIf(fCalcResourceEdit.chkMechZakPodr.Checked,
+                  ',PROC_PODR=' + fCalcResourceEdit.edtMechPodr.Text + ',PROC_ZAC=' +
+                  fCalcResourceEdit.edtMechZak.Text, '') + ' WHERE fact_data_id=' +
+                  qrMainData.FieldByName('fact_data_id').AsString + ';');
+              end;
+            end;
+            fdScript.ExecuteScript(TStrings(Script));
+          finally
+            grMech.DataSource.DataSet.GotoBookmark(TempBookmark);
+            grMech.DataSource.DataSet.FreeBookmark(TempBookmark);
+            grMech.DataSource.DataSet.EnableControls;
+          end;
+        end;
+
+      // Расчет оборудования
+      3:
+        begin
+          grDev.DataSource.DataSet.DisableControls;
+          TempBookmark := grDev.DataSource.DataSet.GetBookmark;
+          try
+            if grDev.SelectedRows.Count = 0 then
+              grDev.SelectedRows.CurrentRowSelected := True;
+
+            for X := 0 to grDev.SelectedRows.Count - 1 do
+            begin
+              if grDev.SelectedRows.IndexOf(grDev.SelectedRows.Items[X]) > -1 then
+              begin
+                grDev.DataSource.DataSet.GotoBookmark(Pointer(grDev.SelectedRows.Items[X]));
+                Script.Add('UPDATE fact_data set fact_data_id=fact_data_id' +
+                  strIf(fCalcResourceEdit.chkDevCoast.Checked,
+                  ',FCOAST=1, COAST=' + fCalcResourceEdit.edtDevCoast.Text +
+                  ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
+                  strIf(fCalcResourceEdit.chkDevTransp.Checked,
+                  ',TRANSP=' + fCalcResourceEdit.edtDevTransp.Text, '') +
+                  strIf(fCalcResourceEdit.chkDevNaklDate.Checked,
+                  ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpDevNaklDate.Date) + '''',
+                  '') + strIf(fCalcResourceEdit.chkDevNakl.Checked,
+                  ',DOC_NUM=''' + fCalcResourceEdit.edtDevNakl.Text + '''', '') +
+                  strIf(fCalcResourceEdit.chkDevZakPodr.Checked,
+                  ',PROC_PODR=' + fCalcResourceEdit.edtDevPodr.Text + ',PROC_ZAC=' +
+                  fCalcResourceEdit.edtDevZak.Text, '') + strIf(fCalcResourceEdit.chkDevTranspZakPodr.Checked,
+                  ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtDevTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
+                  fCalcResourceEdit.edtDevTranspZak.Text, '') + ' WHERE fact_data_id=' +
+                  qrMainData.FieldByName('fact_data_id').AsString + ';');
+              end;
+            end;
+            fdScript.ExecuteScript(TStrings(Script));
+          finally
+            grDev.DataSource.DataSet.GotoBookmark(TempBookmark);
+            grDev.DataSource.DataSet.FreeBookmark(TempBookmark);
+            grDev.DataSource.DataSet.EnableControls;
+          end;
+        end;
+    end;
+    pgcChange(nil);
+  end;
+end;
+
+procedure TfCalcResourceFact.mInsertEmptyClick(Sender: TObject);
 begin
   qrMainData.Insert;
 end;
 
-procedure TfCalcResourceFact.mN5Click(Sender: TObject);
+procedure TfCalcResourceFact.mDeleteRealClick(Sender: TObject);
+begin
+  if Application.MessageBox('Вы действительно хотите удалить запись?', PChar(Caption),
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+  begin
+    qrMainData.Delete;
+  end;
+end;
+
+procedure TfCalcResourceFact.mDoCopyClick(Sender: TObject);
 begin
   FastExecSQL('INSERT INTO fact_data'#13 +
     '(ID_ACT,ID_TYPE_DATA,ID_TABLES,CODE,NAME,CNT,UNIT,forecast_cost_index,'#13 +
@@ -476,14 +632,14 @@ begin
   CloseOpen(qrMainData);
 end;
 
-procedure TfCalcResourceFact.mN6Click(Sender: TObject);
+procedure TfCalcResourceFact.mUpdateClick(Sender: TObject);
 begin
   case pgc.ActivePageIndex of
     // Расчет материалов
     1:
       begin
         FastExecSQL
-          ('DELETE FROM fact_data WHERE ID_ACT=:ID_ACT AND ID_TABLES IS NOT NULL AND ID_TYPE_DATA=2;',
+          ('DELETE FROM fact_data WHERE ID_ACT=:ID_ACT AND ID_TABLES IS NOT NULL AND ID_TYPE_DATA=2 AND FCOAST=0;',
           VarArrayOf([FormCalculationEstimate.IDEstimate]));
         FastExecSQL('INSERT INTO fact_data'#13 +
           '(ID_ACT,ID_TYPE_DATA,ID_TABLES,CODE,NAME,CNT,UNIT,DOC_DATE,DOC_NUM,forecast_cost_index,'#13 +
@@ -496,17 +652,18 @@ begin
           + '  SUM(ROUND(IF(:NDS3=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))*COALESCE(MAT_COUNT, 0))) AS PRICE,'#13
           + '  SUM(IF(:NDS4=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS), IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS))) AS TRANSP,'#13
           + '  DELETED,MAT_PROC_ZAC,MAT_PROC_PODR,TRANSP_PROC_ZAC,TRANSP_PROC_PODR,NDS,MAT_ID'#13 +
-          'FROM materialcard_temp'#13 + 'WHERE ((DELETED = 0) OR (:SHOW_DELETED))'#13 +
-          'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, FCOAST, COAST, DELETED,'#13 +
+          'FROM materialcard_temp'#13 +
+          'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) AND NOT EXISTS(SELECT fact_data_id FROM fact_data WHERE ID_ACT=:ID_ACT1 AND ID_TYPE_DATA=:ID_TYPE_DATA1 AND ID_TABLES=ID)'#13
+          + 'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, PROC_TRANSP, FCOAST, COAST, DELETED,'#13 +
           'MAT_PROC_ZAC, MAT_PROC_PODR, TRANSP_PROC_ZAC, TRANSP_PROC_PODR, NDS, MAT_ID)',
           VarArrayOf([FormCalculationEstimate.IDEstimate, 2, cbbNDS.ItemIndex, cbbNDS.ItemIndex,
-          cbbNDS.ItemIndex, cbbNDS.ItemIndex, mShowDeleted.Checked]));
+          cbbNDS.ItemIndex, cbbNDS.ItemIndex, mShowDeleted.Checked, FormCalculationEstimate.IDEstimate, 2]));
       end;
     // Расчет механизмов
     2:
       begin
         FastExecSQL
-          ('DELETE FROM fact_data WHERE ID_ACT=:ID_ACT AND ID_TABLES IS NOT NULL AND ID_TYPE_DATA=3;',
+          ('DELETE FROM fact_data WHERE ID_ACT=:ID_ACT AND ID_TABLES IS NOT NULL AND ID_TYPE_DATA=3 AND FCOAST=0;',
           VarArrayOf([FormCalculationEstimate.IDEstimate]));
         FastExecSQL('INSERT INTO fact_data'#13 +
           '(ID_ACT,ID_TYPE_DATA,ID_TABLES,CODE,NAME,CNT,UNIT,DOC_DATE,DOC_NUM,forecast_cost_index,'#13 +
@@ -521,16 +678,16 @@ begin
           + '  IF(:NDS3=1, IF(FZP_MACH_NDS<>0, FZP_MACH_NDS, ZP_MACH_NDS), IF(FZP_MACH_NO_NDS<>0, FZP_MACH_NO_NDS, ZP_MACH_NO_NDS)) AS COAST_ZP, /* ЗП машиниста */'#13
           + '  SUM(IF(:NDS4=1, IF(FZPPRICE_NDS <>0, FZPPRICE_NDS, ZPPRICE_NDS), IF(FZPPRICE_NO_NDS<>0, FZPPRICE_NO_NDS, ZPPRICE_NO_NDS))) AS PRICE_ZP, /* Стоимость ЗП машиниста */'#13
           + '  DELETED,PROC_ZAC,PROC_PODR,NDS,MECH_ID'#13 + 'FROM  mechanizmcard_temp'#13 +
-          'WHERE ((DELETED = 0) OR (:SHOW_DELETED))'#13 +
-          'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, COAST, COAST_ZP, DELETED, PROC_ZAC, PROC_PODR, NDS, MECH_ID)',
+          'WHERE ((DELETED = 0) OR (:SHOW_DELETED)) AND NOT EXISTS(SELECT fact_data_id FROM fact_data WHERE ID_ACT=:ID_ACT1 AND ID_TYPE_DATA=:ID_TYPE_DATA1 AND ID_TABLES=ID)'#13
+          + 'GROUP BY CODE, NAME, UNIT, DOC_DATE, DOC_NUM, COAST, COAST_ZP, DELETED, PROC_ZAC, PROC_PODR, NDS, MECH_ID)',
           VarArrayOf([FormCalculationEstimate.IDEstimate, 3, cbbNDS.ItemIndex, cbbNDS.ItemIndex,
-          cbbNDS.ItemIndex, cbbNDS.ItemIndex, mShowDeleted.Checked]));
+          cbbNDS.ItemIndex, cbbNDS.ItemIndex, mShowDeleted.Checked, FormCalculationEstimate.IDEstimate, 3]));
       end;
     // Расчет оборудования
     3:
       begin
         FastExecSQL
-          ('DELETE FROM fact_data WHERE ID_ACT=:ID_ACT AND ID_TABLES IS NOT NULL AND ID_TYPE_DATA=4;',
+          ('DELETE FROM fact_data WHERE ID_ACT=:ID_ACT AND ID_TABLES IS NOT NULL AND ID_TYPE_DATA=4 AND FCOAST=0;',
           VarArrayOf([FormCalculationEstimate.IDEstimate]));
         FastExecSQL('INSERT INTO fact_data'#13 +
           '(ID_ACT,ID_TYPE_DATA,ID_TABLES,CODE,NAME,CNT,UNIT,DOC_DATE,DOC_NUM,forecast_cost_index,'#13 +
@@ -542,9 +699,10 @@ begin
           + '  SUM(IF(:NDS3=1, IF(DEVICE_TRANSP_NDS<>0, DEVICE_TRANSP_NDS, 0), IF(DEVICE_TRANSP_NO_NDS<>0, DEVICE_TRANSP_NO_NDS, 0))) AS TRANSP,'#13
           + '  0 AS DELETED,PROC_ZAC,PROC_PODR,TRANSP_PROC_ZAC,TRANSP_PROC_PODR,NDS,DEVICE_ID'#13 +
           'FROM devicescard_temp'#13 +
-          'GROUP BY CODE,NAME,UNIT,DOC_DATE,DOC_NUM,COAST,PROC_ZAC,PROC_PODR,TRANSP_PROC_ZAC,TRANSP_PROC_PODR,DELETED, DEVICE_ID, NDS)',
+          'WHERE NOT EXISTS(SELECT fact_data_id FROM fact_data WHERE ID_ACT=:ID_ACT1 AND ID_TYPE_DATA=:ID_TYPE_DATA1 AND ID_TABLES=ID)'#13
+          + 'GROUP BY CODE,NAME,UNIT,DOC_DATE,DOC_NUM,COAST,PROC_ZAC,PROC_PODR,TRANSP_PROC_ZAC,TRANSP_PROC_PODR,DELETED, DEVICE_ID, NDS)',
           VarArrayOf([FormCalculationEstimate.IDEstimate, 4, cbbNDS.ItemIndex, cbbNDS.ItemIndex,
-          cbbNDS.ItemIndex]));
+          cbbNDS.ItemIndex, FormCalculationEstimate.IDEstimate, 4]));
       end;
   end;
   CloseOpen(qrMainData);
@@ -566,7 +724,7 @@ begin
   end;
 end;
 
-procedure TfCalcResourceFact.N1Click(Sender: TObject);
+procedure TfCalcResourceFact.mSelectClick(Sender: TObject);
 begin
   case pgc.ActivePageIndex of
     // Расчет стоимости
@@ -595,7 +753,7 @@ begin
   end;
 end;
 
-procedure TfCalcResourceFact.N2Click(Sender: TObject);
+procedure TfCalcResourceFact.mSelectAllClick(Sender: TObject);
 begin
   case pgc.ActivePageIndex of
     // Расчет стоимости
@@ -660,6 +818,8 @@ begin
 end;
 
 procedure TfCalcResourceFact.pmPopup(Sender: TObject);
+var
+  Editable: Boolean;
 begin
   case pgc.ActivePageIndex of
     // Расчет стоимости
@@ -668,15 +828,19 @@ begin
     // Расчет материалов ...
     1, 2, 3:
       begin
-        mDetete.Visible := qrMainData.FieldByName('DELETED').AsInteger = 0;
+        mDelete.Visible := qrMainData.FieldByName('DELETED').AsInteger = 0;
         mRestore.Visible := qrMainData.FieldByName('DELETED').AsInteger = 1;
+        mDeleteReal.Visible := qrMainData.FieldByName('DELETED').AsInteger = 1;
       end;
   end;
-  mN4.Enabled := pnlCalculationYesNo.Tag = 1;
-  mN5.Enabled := pnlCalculationYesNo.Tag = 1;
-  mN6.Enabled := pnlCalculationYesNo.Tag = 1;
-  mDetete.Enabled := pnlCalculationYesNo.Tag = 1;
-  mRestore.Enabled := pnlCalculationYesNo.Tag = 1;
+  Editable := pnlCalculationYesNo.Tag = 1;
+  mDoCopy.Enabled := Editable;
+  mInsert.Enabled := Editable;
+  mUpdate.Enabled := Editable;
+  mEdit.Enabled := Editable;
+  mDelete.Enabled := Editable;
+  mDeleteReal.Visible := Editable;
+  mRestore.Enabled := Editable;
 end;
 
 procedure TfCalcResourceFact.pnlCalculationYesNoClick(Sender: TObject);
@@ -718,12 +882,17 @@ begin
   end;
 end;
 
+procedure TfCalcResourceFact.qrMainDataAfterEdit(DataSet: TDataSet);
+begin
+  qrMainData.FieldByName('FCOAST').Value := 1;
+end;
+
 procedure TfCalcResourceFact.qrMainDataAfterOpen(DataSet: TDataSet);
 begin
   if qrMainData.Active and qrMainData.IsEmpty and flTryUpdateOnce then
   begin
     flTryUpdateOnce := False;
-    mN6Click(nil);
+    mUpdateClick(nil);
   end;
 
   if CheckQrActiveEmpty(DataSet) then

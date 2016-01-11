@@ -199,4 +199,8 @@ begin
   end;
 end;
 
+initialization
+  ReportMemoryLeaksOnShutdown:=true;
+
+
 end.

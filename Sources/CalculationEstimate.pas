@@ -121,7 +121,7 @@ type
     LabelNameEstimate: TLabel;
     PopupMenuCoefSeparator1: TMenuItem;
     PopupMenuCoefCopy: TMenuItem;
-    EditWinterPrice: TEdit;
+    edtWinterPrice: TEdit;
     PopupMenuTableLeftTechnicalPart1: TMenuItem;
     PopupMenuTableLeftTechnicalPart2: TMenuItem;
     PopupMenuTableLeftTechnicalPart3: TMenuItem;
@@ -693,7 +693,6 @@ type
     procedure PMNumRowClick(Sender: TObject);
     procedure btnKC6JClick(Sender: TObject);
     procedure PMRenumSelectedClick(Sender: TObject);
-    procedure dsRatesExDataChange(Sender: TObject; Field: TField);
     procedure PMRenumPTMClick(Sender: TObject);
     procedure PMMatManPriceClick(Sender: TObject);
     procedure grRatesExSelectColumns(Grid: TJvDBGrid; var DefaultDialog: Boolean);
@@ -705,6 +704,7 @@ type
     procedure qrRatesExMarkRowChange(Sender: TField);
     procedure PMMatSprCardClick(Sender: TObject);
     procedure PanelDataResize(Sender: TObject);
+    procedure dsTypeDataDataChange(Sender: TObject; Field: TField);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта субподрядчика');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -1670,8 +1670,8 @@ begin
   dblkcbbOXROPR.Width := newWith;
 
   // EditWinterPrice.Left := lblWinterPrice.Left + lblWinterPrice.Width + 6;
-  EditWinterPrice.Width := newWith;
-  btnWinterPriceSelect.Left := EditWinterPrice.Left + EditWinterPrice.Width -
+  edtWinterPrice.Width := newWith;
+  btnWinterPriceSelect.Left := edtWinterPrice.Left + edtWinterPrice.Width -
     4 { - btnWinterPriceSelect.Width };
 end;
 
@@ -2004,7 +2004,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.dsRatesExDataChange(Sender: TObject; Field: TField);
+procedure TFormCalculationEstimate.dsTypeDataDataChange(Sender: TObject; Field: TField);
 begin
 
 end;
@@ -3789,7 +3789,7 @@ begin
     FastExecSQL('UPDATE card_rate_temp SET ZNORMATIVS_ID=NULL WHERE ID=:ID',
       VarArrayOf([qrRatesExID_TABLES.AsInteger]));
     qrRatesExZNORMATIVS_ID.Value := 0;
-    EditWinterPrice.Text := '';
+    edtWinterPrice.Text := '';
     FillingWinterPrice(qrRatesExOBJ_CODE.AsString);
     CloseOpen(qrCalculations);
   end;
@@ -4734,7 +4734,7 @@ var
 begin
   // Средний разряд рабочих-строителей
   EditCategory.Text := '';
-  EditWinterPrice.Text := '';
+  edtWinterPrice.Text := '';
 
   PopupMenuCoefAddSet.Enabled := True;
   PopupMenuCoefDeleteSet.Enabled := True;
@@ -6694,9 +6694,9 @@ begin
         ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesExZNORMATIVS_ID.AsInteger;
         Active := True;
         if VarIsNull(FieldByName('Name').Value) then
-          EditWinterPrice.Text := 'не найден'
+          edtWinterPrice.Text := 'не найден'
         else
-          EditWinterPrice.Text := FieldByName('Name').AsString;
+          edtWinterPrice.Text := FieldByName('Name').AsString;
       end
     else
       with qrTemp do
@@ -6723,7 +6723,7 @@ begin
         begin
           if RecordCount = 1 then
           begin
-            EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
+            edtWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
             qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
           end
           else
@@ -6734,7 +6734,7 @@ begin
             Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
             if ShowSelectDialog('Выбор зимнего удорожания' { , Pointer(qrTemp) } ) then
             begin
-              EditWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
+              edtWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
               FastExecSQL('UPDATE card_rate_temp SET ZNORMATIVS_ID=:0 WHERE ID=:1',
                 VarArrayOf([qrTemp.FieldByName('ZNORMATIVS_ID').Value, qrRatesExID_TABLES.Value]));
               qrRatesExZNORMATIVS_ID.AsInteger := qrTemp.FieldByName('ZNORMATIVS_ID').AsInteger;
@@ -6798,8 +6798,9 @@ begin
   // Скрываем колонки зименого удорожания если не нужны
   dbgrdCalculations.Columns[13].Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   dbgrdCalculations.Columns[14].Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
-  EditWinterPrice.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
+  edtWinterPrice.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   lblWinterPrice.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
+  btnWinterPriceSelect.Visible := qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1;
   dbgrdCalculations.Columns[13].Width := 64;
   dbgrdCalculations.Columns[14].Width := 64;
   FixDBGridColumnsWidth(dbgrdCalculations);
