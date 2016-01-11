@@ -497,18 +497,17 @@ begin
               begin
                 grMaterial.DataSource.DataSet.GotoBookmark(Pointer(grMaterial.SelectedRows.Items[X]));
                 Script.Add('UPDATE fact_data SET fact_data_id=fact_data_id' +
-                  strIf(fCalcResourceEdit.chkMatCoast.Checked,
+                  IIF(fCalcResourceEdit.chkMatCoast.Checked,
                   ',FCOAST=1, COAST=' + fCalcResourceEdit.edtMatCoast.Text +
                   ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
-                  strIf(fCalcResourceEdit.chkMatTransp.Checked,
+                  IIF(fCalcResourceEdit.chkMatTransp.Checked,
                   ',PROC_TRANSP=' + fCalcResourceEdit.edtMatTransp.Text, '') +
-                  strIf(fCalcResourceEdit.chkMatNaklDate.Checked,
-                  ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMatNaklDate.Date) + '''',
-                  '') + strIf(fCalcResourceEdit.chkMatNakl.Checked,
-                  ',DOC_NUM=''' + fCalcResourceEdit.edtMatNakl.Text + '''', '') +
-                  strIf(fCalcResourceEdit.chkMatZakPodr.Checked,
+                  IIF(fCalcResourceEdit.chkMatNaklDate.Checked, ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd',
+                  fCalcResourceEdit.dtpMatNaklDate.Date) + '''', '') +
+                  IIF(fCalcResourceEdit.chkMatNakl.Checked, ',DOC_NUM=''' + fCalcResourceEdit.edtMatNakl.Text
+                  + '''', '') + IIF(fCalcResourceEdit.chkMatZakPodr.Checked,
                   ',PROC_PODR=' + fCalcResourceEdit.edtMatPodr.Text + ',PROC_ZAC=' +
-                  fCalcResourceEdit.edtMatZak.Text, '') + strIf(fCalcResourceEdit.chkMatTranspZakPodr.Checked,
+                  fCalcResourceEdit.edtMatZak.Text, '') + IIF(fCalcResourceEdit.chkMatTranspZakPodr.Checked,
                   ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtMatTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
                   fCalcResourceEdit.edtMatTranspZak.Text, '') + ' WHERE fact_data_id=' +
                   qrMainData.FieldByName('fact_data_id').AsString + ';');
@@ -537,17 +536,17 @@ begin
               begin
                 grMech.DataSource.DataSet.GotoBookmark(Pointer(grMech.SelectedRows.Items[X]));
                 Script.Add('UPDATE fact_data set fact_data_id=fact_data_id' +
-                  strIf(fCalcResourceEdit.chkMechCoast.Checked,
+                  IIF(fCalcResourceEdit.chkMechCoast.Checked,
                   ',FCOAST=1, COAST=' + fCalcResourceEdit.edtMechCoast.Text +
                   ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
-                  strIf(fCalcResourceEdit.chkMechZPMash.Checked,
+                  IIF(fCalcResourceEdit.chkMechZPMash.Checked,
                   ',COAST_ZP=' + fCalcResourceEdit.edtMechZPMash.Text +
                   ', PRICE_ZP=ROUND(CNT*COAST_ZP*IFNULL(forecast_cost_index, 1))', '') +
-                  strIf(fCalcResourceEdit.chkMechNaklDate.Checked,
-                  ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMechNaklDate.Date) +
-                  '''', '') + strIf(fCalcResourceEdit.chkMechNakl.Checked,
+                  IIF(fCalcResourceEdit.chkMechNaklDate.Checked, ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd',
+                  fCalcResourceEdit.dtpMechNaklDate.Date) + '''', '') +
+                  IIF(fCalcResourceEdit.chkMechNakl.Checked,
                   ',DOC_NUM=''' + fCalcResourceEdit.edtMechNakl.Text + '''', '') +
-                  strIf(fCalcResourceEdit.chkMechZakPodr.Checked,
+                  IIF(fCalcResourceEdit.chkMechZakPodr.Checked,
                   ',PROC_PODR=' + fCalcResourceEdit.edtMechPodr.Text + ',PROC_ZAC=' +
                   fCalcResourceEdit.edtMechZak.Text, '') + ' WHERE fact_data_id=' +
                   qrMainData.FieldByName('fact_data_id').AsString + ';');
@@ -576,18 +575,17 @@ begin
               begin
                 grDev.DataSource.DataSet.GotoBookmark(Pointer(grDev.SelectedRows.Items[X]));
                 Script.Add('UPDATE fact_data set fact_data_id=fact_data_id' +
-                  strIf(fCalcResourceEdit.chkDevCoast.Checked,
+                  IIF(fCalcResourceEdit.chkDevCoast.Checked,
                   ',FCOAST=1, COAST=' + fCalcResourceEdit.edtDevCoast.Text +
                   ', PRICE=ROUND(CNT*COAST*IFNULL(forecast_cost_index, 1))', '') +
-                  strIf(fCalcResourceEdit.chkDevTransp.Checked,
+                  IIF(fCalcResourceEdit.chkDevTransp.Checked,
                   ',TRANSP=' + fCalcResourceEdit.edtDevTransp.Text, '') +
-                  strIf(fCalcResourceEdit.chkDevNaklDate.Checked,
-                  ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpDevNaklDate.Date) + '''',
-                  '') + strIf(fCalcResourceEdit.chkDevNakl.Checked,
-                  ',DOC_NUM=''' + fCalcResourceEdit.edtDevNakl.Text + '''', '') +
-                  strIf(fCalcResourceEdit.chkDevZakPodr.Checked,
+                  IIF(fCalcResourceEdit.chkDevNaklDate.Checked, ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd',
+                  fCalcResourceEdit.dtpDevNaklDate.Date) + '''', '') +
+                  IIF(fCalcResourceEdit.chkDevNakl.Checked, ',DOC_NUM=''' + fCalcResourceEdit.edtDevNakl.Text
+                  + '''', '') + IIF(fCalcResourceEdit.chkDevZakPodr.Checked,
                   ',PROC_PODR=' + fCalcResourceEdit.edtDevPodr.Text + ',PROC_ZAC=' +
-                  fCalcResourceEdit.edtDevZak.Text, '') + strIf(fCalcResourceEdit.chkDevTranspZakPodr.Checked,
+                  fCalcResourceEdit.edtDevZak.Text, '') + IIF(fCalcResourceEdit.chkDevTranspZakPodr.Checked,
                   ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtDevTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
                   fCalcResourceEdit.edtDevTranspZak.Text, '') + ' WHERE fact_data_id=' +
                   qrMainData.FieldByName('fact_data_id').AsString + ';');

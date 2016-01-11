@@ -478,8 +478,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           RowSelect = True
           OnCustomDrawItem = tvActsCustomDrawItem
           Mirror = False
-          ExplicitTop = 47
-          ExplicitHeight = 145
         end
         object pnlActButtons: TGridPanel
           Left = 0
@@ -527,8 +525,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
               Value = 100.000000000000000000
             end>
           TabOrder = 0
-          ExplicitLeft = 1
-          ExplicitTop = 49
           object btnReportC3: TBitBtn
             AlignWithMargins = True
             Left = 4
@@ -542,10 +538,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Caption = #1057#1087#1088#1072#1074#1082#1072' '#1057'-3'
             Enabled = False
             TabOrder = 0
-            ExplicitLeft = 1
-            ExplicitTop = -2
-            ExplicitWidth = 105
-            ExplicitHeight = 29
           end
           object btnReportC2B: TBitBtn
             AlignWithMargins = True
@@ -560,10 +552,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Caption = #1060#1086#1088#1084#1072' '#1057'-2'#1041
             TabOrder = 1
             OnClick = btnReportC2BClick
-            ExplicitLeft = 121
-            ExplicitTop = 4
-            ExplicitWidth = 75
-            ExplicitHeight = 25
           end
           object btnReport1: TBitBtn
             AlignWithMargins = True
@@ -578,10 +566,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Caption = #1042#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1079#1072' '#1084#1077#1089#1103#1094
             Enabled = False
             TabOrder = 2
-            ExplicitLeft = 264
-            ExplicitTop = 24
-            ExplicitWidth = 75
-            ExplicitHeight = 25
           end
           object btnReport2: TBitBtn
             AlignWithMargins = True
@@ -596,10 +580,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Caption = #1057#1087#1080#1089#1072#1085#1080#1077' '#1084#1072#1090'. '#1079#1072' '#1084#1077#1089#1103#1094
             Enabled = False
             TabOrder = 3
-            ExplicitLeft = 264
-            ExplicitTop = 24
-            ExplicitWidth = 75
-            ExplicitHeight = 23
           end
         end
       end
@@ -634,7 +614,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       OnClick = mDeleteClick
     end
     object mDeleteObject: TMenuItem
-      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1073#1077#1079#1074#1086#1079#1074#1088#1072#1090#1085#1086
       ImageIndex = 36
       ShortCut = 8311
       OnClick = mDeleteObjectClick
@@ -724,16 +704,19 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     object PMEstimatesEdit: TMenuItem
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1089#1084#1077#1090#1099
       ImageIndex = 44
+      ShortCut = 115
       OnClick = PMEstimatesEditClick
     end
     object mDeleteEstimate: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       ImageIndex = 38
+      ShortCut = 119
       OnClick = mDeleteEstimateClick
     end
     object PMEstimatesDelete: TMenuItem
-      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1073#1077#1079#1074#1086#1079#1074#1088#1072#1090#1085#1086
       ImageIndex = 36
+      ShortCut = 8311
       OnClick = PMEstimatesDeleteClick
     end
     object mReapirEstimate: TMenuItem
@@ -820,11 +803,13 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     object PMActsDelete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100
       ImageIndex = 38
+      ShortCut = 119
       OnClick = PMActsDeleteClick
     end
     object mDeleteAct: TMenuItem
-      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1087#1086#1083#1085#1086#1089#1090#1100#1102
+      Caption = #1059#1076#1072#1083#1080#1090#1100' '#1073#1077#1079#1074#1086#1079#1074#1088#1072#1090#1085#1086
       ImageIndex = 36
+      ShortCut = 8311
       OnClick = mDeleteActClick
     end
     object mRepAct: TMenuItem
@@ -834,6 +819,7 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     end
     object pmActProperty: TMenuItem
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1072#1082#1090#1072
+      ShortCut = 115
       OnClick = pmActPropertyClick
     end
     object mN5: TMenuItem

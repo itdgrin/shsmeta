@@ -1285,19 +1285,17 @@ begin
                 qrMaterialDetail.First;
                 while not qrMaterialDetail.Eof do
                 begin
-                  Script.Add('UPDATE materialcard_temp set ID=ID' +
-                    strIf(fCalcResourceEdit.chkMatCoast.Checked,
+                  Script.Add('UPDATE materialcard_temp set ID=ID' + IIF(fCalcResourceEdit.chkMatCoast.Checked,
                     ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtMatCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
-                    + strIf(fCalcResourceEdit.chkMatTransp.Checked,
+                    + IIF(fCalcResourceEdit.chkMatTransp.Checked,
                     ',PROC_TRANSP=' + fCalcResourceEdit.edtMatTransp.Text, '') +
-                    strIf(fCalcResourceEdit.chkMatNaklDate.Checked,
+                    IIF(fCalcResourceEdit.chkMatNaklDate.Checked,
                     ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMatNaklDate.Date) +
-                    '''', '') + strIf(fCalcResourceEdit.chkMatNakl.Checked,
+                    '''', '') + IIF(fCalcResourceEdit.chkMatNakl.Checked,
                     ',DOC_NUM=''' + fCalcResourceEdit.edtMatNakl.Text + '''', '') +
-                    strIf(fCalcResourceEdit.chkMatZakPodr.Checked,
+                    IIF(fCalcResourceEdit.chkMatZakPodr.Checked,
                     ',MAT_PROC_PODR=' + fCalcResourceEdit.edtMatPodr.Text + ',MAT_PROC_ZAC=' +
-                    fCalcResourceEdit.edtMatZak.Text, '') +
-                    strIf(fCalcResourceEdit.chkMatTranspZakPodr.Checked,
+                    fCalcResourceEdit.edtMatZak.Text, '') + IIF(fCalcResourceEdit.chkMatTranspZakPodr.Checked,
                     ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtMatTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
                     fCalcResourceEdit.edtMatTranspZak.Text, '') + ' WHERE ID=' +
                     qrMaterialDetail.FieldByName('ID').AsString + ';');
@@ -1338,15 +1336,15 @@ begin
                 while not qrMechDetail.Eof do
                 begin
                   Script.Add('UPDATE mechanizmcard_temp set ID=ID' +
-                    strIf(fCalcResourceEdit.chkMechCoast.Checked,
+                    IIF(fCalcResourceEdit.chkMechCoast.Checked,
                     ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtMechCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
-                    + strIf(fCalcResourceEdit.chkMechZPMash.Checked,
+                    + IIF(fCalcResourceEdit.chkMechZPMash.Checked,
                     ',FZP_MACH_NO_NDS=' + fCalcResourceEdit.edtMechZPMash.Text +
-                    ',FZP_MACH_NDS=FZP_MACH_NO_NDS', '') + strIf(fCalcResourceEdit.chkMechNaklDate.Checked,
+                    ',FZP_MACH_NDS=FZP_MACH_NO_NDS', '') + IIF(fCalcResourceEdit.chkMechNaklDate.Checked,
                     ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpMechNaklDate.Date) +
-                    '''', '') + strIf(fCalcResourceEdit.chkMechNakl.Checked,
+                    '''', '') + IIF(fCalcResourceEdit.chkMechNakl.Checked,
                     ',DOC_NUM=''' + fCalcResourceEdit.edtMechNakl.Text + '''', '') +
-                    strIf(fCalcResourceEdit.chkMechZakPodr.Checked,
+                    IIF(fCalcResourceEdit.chkMechZakPodr.Checked,
                     ',PROC_PODR=' + fCalcResourceEdit.edtMechPodr.Text + ',PROC_ZAC=' +
                     fCalcResourceEdit.edtMechZak.Text, '') + ' WHERE ID=' + qrMechDetail.FieldByName('ID')
                     .AsString + ';');
@@ -1386,20 +1384,18 @@ begin
                 qrDevicesDetail.First;
                 while not qrDevicesDetail.Eof do
                 begin
-                  Script.Add('UPDATE devicescard_temp set ID=ID' +
-                    strIf(fCalcResourceEdit.chkDevCoast.Checked,
+                  Script.Add('UPDATE devicescard_temp set ID=ID' + IIF(fCalcResourceEdit.chkDevCoast.Checked,
                     ',FCOAST_NO_NDS=' + fCalcResourceEdit.edtDevCoast.Text + ',FCOAST_NDS=FCOAST_NO_NDS', '')
-                    + strIf(fCalcResourceEdit.chkDevTransp.Checked,
+                    + IIF(fCalcResourceEdit.chkDevTransp.Checked,
                     ',DEVICE_TRANSP_NO_NDS=' + fCalcResourceEdit.edtDevTransp.Text +
                     ', DEVICE_TRANSP_NDS=DEVICE_TRANSP_NO_NDS', '') +
-                    strIf(fCalcResourceEdit.chkDevNaklDate.Checked,
+                    IIF(fCalcResourceEdit.chkDevNaklDate.Checked,
                     ',DOC_DATE=''' + FormatDateTime('yyyy-mm-dd', fCalcResourceEdit.dtpDevNaklDate.Date) +
-                    '''', '') + strIf(fCalcResourceEdit.chkDevNakl.Checked,
+                    '''', '') + IIF(fCalcResourceEdit.chkDevNakl.Checked,
                     ',DOC_NUM=''' + fCalcResourceEdit.edtDevNakl.Text + '''', '') +
-                    strIf(fCalcResourceEdit.chkDevZakPodr.Checked,
+                    IIF(fCalcResourceEdit.chkDevZakPodr.Checked,
                     ',PROC_PODR=' + fCalcResourceEdit.edtDevPodr.Text + ',PROC_ZAC=' +
-                    fCalcResourceEdit.edtDevZak.Text, '') +
-                    strIf(fCalcResourceEdit.chkDevTranspZakPodr.Checked,
+                    fCalcResourceEdit.edtDevZak.Text, '') + IIF(fCalcResourceEdit.chkDevTranspZakPodr.Checked,
                     ',TRANSP_PROC_PODR=' + fCalcResourceEdit.edtDevTranspPodr.Text + ',TRANSP_PROC_ZAC=' +
                     fCalcResourceEdit.edtDevTranspZak.Text, '') + ' WHERE ID=' +
                     qrDevicesDetail.FieldByName('ID').AsString + ';');

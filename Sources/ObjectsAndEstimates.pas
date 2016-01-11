@@ -381,7 +381,7 @@ begin
 
   mRepair.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
   mDelete.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 0;
-  mDeleteObject.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
+  //mDeleteObject.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
   mObjectAccess.Visible := not qrObjects.IsEmpty and
     ((G_USER_ID = 1) OR (qrObjects.FieldByName('USER_ID').AsInteger = G_USER_ID) OR
     VarIsNull(qrObjects.FieldByName('USER_ID').Value));
@@ -918,7 +918,7 @@ begin
   mREM6KC.Visible := PMActsOpen.Visible and (qrActsEx.FieldByName('DELETED').AsInteger = 0) and
     (qrActsEx.FieldByName('FL_USE').AsInteger = 1);
   mCopy.Visible := PMActsOpen.Visible;
-  mDeleteAct.Visible := PMActsOpen.Visible and (qrActsEx.FieldByName('DELETED').AsInteger = 1);
+  mDeleteAct.Visible := PMActsOpen.Visible;
   mActAccess.Visible := PMActsOpen.Visible and
     ((G_USER_ID = 1) OR (qrActsEx.FieldByName('USER_ID').AsInteger = G_USER_ID) OR
     VarIsNull(qrActsEx.FieldByName('USER_ID').Value));
@@ -1251,7 +1251,6 @@ begin
     PMEstimatesAddPTM.Enabled := True;
   mDeleteEstimate.Visible := qrTreeData.FieldByName('DELETED').AsInteger = 0;
   mReapirEstimate.Visible := qrTreeData.FieldByName('DELETED').AsInteger = 1;
-  PMEstimatesDelete.Visible := qrTreeData.FieldByName('DELETED').AsInteger = 1;
 end;
 
 procedure TfObjectsAndEstimates.tvEstimatesCustomDrawItem(Sender: TCustomTreeView; Node: TTreeNode;

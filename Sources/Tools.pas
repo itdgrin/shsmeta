@@ -25,7 +25,8 @@ type
   TSmForm = class(TForm)
     // Процедура стандартной сортировки таблиц
     procedure TitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
-    procedure GridResize(Sender: TObject); // Процедура управляет показом скроллов в таблице
+    // Процедура управляет показом скроллов в таблице
+    procedure GridResize(Sender: TObject);
   private
     procedure WMUpdateFormStyle(var Mes: TMessage); message WM_UPDATEFORMSTYLE;
     procedure SetStyleForAllComponents(AComponent: TComponent);
@@ -132,8 +133,7 @@ function FullCopy(ASource, ATarget: string): Boolean;
 function FullRemove(ASource: string): Boolean;
 // Диалог выбора директории
 function GetDirDialog(var ADir: string): Boolean;
-// Функция выбора строки по условию
-function strIf(BoolExpression: Boolean; ifTrue, ifFalse: string): string;
+// Функция выбора значения по условию
 function IIF(BoolExpression: Boolean; ifTrue, ifFalse: Variant): Variant;
 // Процедура добавления колонки в таблицу
 procedure addCol(const Grid: TJvDBGrid; fieldName, titleCaption: String; const Width: Integer);
@@ -154,14 +154,6 @@ begin
 end;
 
 function IIF(BoolExpression: Boolean; ifTrue, ifFalse: Variant): Variant;
-begin
-  if BoolExpression then
-    Result := ifTrue
-  else
-    Result := ifFalse;
-end;
-
-function strIf(BoolExpression: Boolean; ifTrue, ifFalse: string): string;
 begin
   if BoolExpression then
     Result := ifTrue
