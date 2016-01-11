@@ -7088,6 +7088,10 @@ begin
     FormAdditionData := TFormAdditionData.Create(Self, vDataBase, GetSMSubType(qrRatesExSM_ID.Value));
     FormAdditionData.WindowState := wsNormal;
 
+    FormAdditionData.FramePriceMaterial.OnSelect := AddMaterial;
+    FormAdditionData.FramePriceMechanizm.OnSelect := AddMechanizm;
+    FormAdditionData.FrameEquipment.OnSelect := AddDevice;
+
     // Сворачиваем окно
     WindowState := wsNormal;
     // Ставим форму в левый верхний угол

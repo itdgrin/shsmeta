@@ -14,9 +14,7 @@ type
     rbMat: TRadioButton;
     rbJBI: TRadioButton;
     lbRegion: TLabel;
-    procedure ListSprDblClick(Sender: TObject);
     procedure rbMatClick(Sender: TObject);
-    procedure PMAddToClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -106,31 +104,12 @@ begin
   Result := AFindCode;
 end;
 
-procedure TSprMaterial.ListSprDblClick(Sender: TObject);
-var TmpPriceID: Integer;
-begin
-  inherited;
-  TmpPriceID := 0;
-  if lvDetPrice.ItemIndex > -1 then
-    TmpPriceID := Integer(lvDetPrice.Items[lvDetPrice.ItemIndex].Data);
-
-  if FAllowAddition and (ListSpr.ItemIndex > -1) then
-    FormCalculationEstimate.AddMaterial(
-      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID, TmpPriceID);
-end;
-
 procedure TSprMaterial.OnLoadStart;
 begin
   inherited;
   cmbRegion.Enabled := False;
   rbMat.Enabled := False;
   rbJBI.Enabled := False;
-end;
-
-procedure TSprMaterial.PMAddToClick(Sender: TObject);
-begin
-  inherited;
-  ListSprDblClick(ListSpr);
 end;
 
 procedure TSprMaterial.rbMatClick(Sender: TObject);

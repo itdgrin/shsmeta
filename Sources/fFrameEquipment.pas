@@ -10,8 +10,6 @@ uses
 
 type
   TSprEquipment = class(TSprFrame)
-    procedure ListSprDblClick(Sender: TObject);
-    procedure PMAddToClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -46,25 +44,6 @@ end;
 function TSprEquipment.GetSprType: Integer;
 begin
   Result := CDevIndex;
-end;
-
-procedure TSprEquipment.ListSprDblClick(Sender: TObject);
-var TmpPriceID: Integer;
-begin
-  inherited;
-  TmpPriceID := 0;
-  if lvDetPrice.ItemIndex > -1 then
-    TmpPriceID := Integer(lvDetPrice.Items[lvDetPrice.ItemIndex].Data);
-
-  if FAllowAddition and (ListSpr.ItemIndex > -1) then
-    FormCalculationEstimate.AddDevice(
-      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID, TmpPriceID);
-end;
-
-procedure TSprEquipment.PMAddToClick(Sender: TObject);
-begin
-  inherited;
-  ListSprDblClick(ListSpr);
 end;
 
 end.

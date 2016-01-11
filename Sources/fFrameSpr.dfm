@@ -635,6 +635,7 @@ object SprFrame: TSprFrame
           RowSelect = True
           TabOrder = 0
           ViewStyle = vsReport
+          OnDblClick = ListSprDblClick
           OnResize = lvDetPriceResize
         end
       end
@@ -670,6 +671,7 @@ object SprFrame: TSprFrame
     Top = 120
     object PMAddTo: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074' '#1088#1072#1089#1095#1077#1090
+      OnClick = PMAddToClick
     end
     object N1: TMenuItem
       Caption = '-'

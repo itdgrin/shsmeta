@@ -10,11 +10,9 @@ uses
 
 type
   TSprMechanizm = class(TSprFrame)
-    procedure ListSprDblClick(Sender: TObject);
     procedure ListSprResize(Sender: TObject);
     procedure ListSprCustomDrawItem(Sender: TCustomListView; Item: TListItem;
       State: TCustomDrawState; var DefaultDraw: Boolean);
-    procedure PMAddToClick(Sender: TObject);
   private
     FZpColIndex,
     FTrColIndex: Integer;
@@ -100,19 +98,6 @@ begin
   end;
 end;
 
-procedure TSprMechanizm.ListSprDblClick(Sender: TObject);
-var TmpPriceID: Integer;
-begin
-  inherited;
-  TmpPriceID := 0;
-  if lvDetPrice.ItemIndex > -1 then
-    TmpPriceID := Integer(lvDetPrice.Items[lvDetPrice.ItemIndex].Data);
-
-  if FAllowAddition and (ListSpr.ItemIndex > -1) then
-    FormCalculationEstimate.AddMechanizm(
-      TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID, TmpPriceID);
-end;
-
 procedure TSprMechanizm.ListSprResize(Sender: TObject);
 begin
   inherited;
@@ -122,12 +107,6 @@ begin
       ListSpr.Columns[FZpColIndex].Width := 120;
     ListSpr.Columns[FTrColIndex].Width := 120;
   end;
-end;
-
-procedure TSprMechanizm.PMAddToClick(Sender: TObject);
-begin
-  inherited;
-  ListSprDblClick(ListSpr);
 end;
 
 end.

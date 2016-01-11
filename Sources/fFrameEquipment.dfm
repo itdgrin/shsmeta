@@ -235,18 +235,4 @@ inherited SprEquipment: TSprEquipment
       TabOrder = 0
     end
   end
-  inherited PanelDetails: TPanel
-    inherited gbDetails: TGroupBox
-      inherited gbDetPrice: TGroupBox
-        inherited lvDetPrice: TListView
-          OnDblClick = ListSprDblClick
-        end
-      end
-    end
-  end
-  inherited pmListSpr: TPopupMenu
-    inherited PMAddTo: TMenuItem
-      OnClick = PMAddToClick
-    end
-  end
 end

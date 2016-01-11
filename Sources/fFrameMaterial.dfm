@@ -288,19 +288,9 @@ inherited SprMaterial: TSprMaterial
       TabOrder = 0
     end
   end
-  inherited ListSpr: TListView
-    OnDblClick = ListSprDblClick
-  end
   inherited PanelDetails: TPanel
     inherited SpeedButtonShowHide: TSpeedButton
       ExplicitWidth = 743
-    end
-    inherited gbDetails: TGroupBox
-      inherited gbDetPrice: TGroupBox
-        inherited lvDetPrice: TListView
-          OnDblClick = ListSprDblClick
-        end
-      end
     end
   end
   inherited pmListSpr: TPopupMenu

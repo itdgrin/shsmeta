@@ -33,6 +33,8 @@ uses
 type
   TSortRec = TPair<Integer, Pointer>;
 
+  TNotifySprSelectEvent = procedure(const ASprID, APriceID: Integer) of object;
+
   TSprItemSelectEvent = procedure(ASprRecord: PSprRecord) of object;
 
   //Базовый класс для построения справочников
@@ -101,6 +103,7 @@ type
     procedure lvDetPriceResize(Sender: TObject);
     procedure PMStrictEqualClick(Sender: TObject);
     procedure ListSprDblClick(Sender: TObject);
+    procedure PMAddToClick(Sender: TObject);
 
   private const
     FAdjecEnding2 = 'ее.яя.ая.ое.ие.ые.ой.ей.им.ым.юю.ую.ей.ой.ем.ом.их.ых.ый.ий';
@@ -110,6 +113,7 @@ type
     FLoaded: Boolean;
     FSprArray: TSprArray;
     FOnAfterLoad: TNotifyEvent;
+    FOnSelect: TNotifySprSelectEvent;
 
     procedure WMSprLoad(var Mes: TMessage); message WM_SPRLOAD;
     procedure WMPriceLoad(var Mes: TMessage); message WM_PRICELOAD;
@@ -127,7 +131,7 @@ type
     FNoEdCol: Boolean;
     FOnSprItemSelect: TSprItemSelectEvent;
     FBaseType: Byte; //0 - оба типа, 1 - норматичная, 2 - собственная
-    
+
     function GetSprType: Integer; virtual; abstract;
     function GetRegion: Integer; virtual;
     //Заполняет таблицу исходя из поискового запроса
@@ -160,6 +164,7 @@ type
     property OnAfterLoad: TNotifyEvent read FOnAfterLoad write FOnAfterLoad;
     property SprLoaded: Boolean read FLoaded;
     property BaseType: Byte read FBaseType;
+    property OnSelect: TNotifySprSelectEvent read FOnSelect write FOnSelect;
   end;
 
 implementation
@@ -389,6 +394,11 @@ begin
   finally
     FreeAndNil(SprCard);
   end;
+end;
+
+procedure TSprFrame.PMAddToClick(Sender: TObject);
+begin
+  ListSprDblClick(ListSpr);
 end;
 
 procedure TSprFrame.PMDelManualClick(Sender: TObject);
@@ -797,8 +807,14 @@ begin
 end;
 
 procedure TSprFrame.ListSprDblClick(Sender: TObject);
+var TmpPriceID: Integer;
 begin
-  //
+  TmpPriceID := 0;
+  if lvDetPrice.ItemIndex > -1 then
+    TmpPriceID := Integer(lvDetPrice.Items[lvDetPrice.ItemIndex].Data);
+
+  if FAllowAddition and (ListSpr.ItemIndex > -1) and Assigned(FOnSelect) then
+    FOnSelect(TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID, TmpPriceID);
 end;
 
 procedure TSprFrame.ListSprResize(Sender: TObject);
