@@ -763,6 +763,8 @@ type
 
     TYPE_ACT: Integer; // Тип акта
 
+    FReplaceRowID: Integer; //ID строки сметы, которая будет заменяться
+
     procedure GridProc(var Message: TMessage);
 
     // пересчитывает все относящееся к строке в таблице расценок
@@ -811,6 +813,7 @@ type
     function GetEditable: Boolean;
 
     function SprManualData(ASprType: Integer; const ANewCode: string; var ANewID: Integer): Boolean;
+    procedure ReplaceSmRow(ASmRowId: Integer; var AIterator, AManualNom: integer);
   protected
     procedure SetFormStyle; override;
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -3126,8 +3129,9 @@ begin
     end;
   end;
 
-  if (qrRatesExID_TYPE_DATA.Value = -4) and ((qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) or
-    (qrRatesExOBJ_CODE.AsVariant <> Null)) then
+  if (qrRatesExID_TYPE_DATA.Value = -4) and
+     ((qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) or
+      (qrRatesExOBJ_CODE.AsVariant <> Null)) then
   begin
     qrRatesEx.Edit;
     qrRatesExNOM_ROW_MANUAL.AsVariant := Null;
@@ -3215,218 +3219,227 @@ var
   MatStr: string;
   MesRes: Integer;
 begin
-  NewCode := Trim(AnsiUpperCase(qrRatesExOBJ_CODE.AsString));
+  try
+    if qrRatesExID_TYPE_DATA.Value > 0 then
+      FReplaceRowID := qrRatesExDATA_ESTIMATE_OR_ACT_ID.Value;
 
-  if Length(NewCode) = 0 then
-    Exit;
+    NewCode := Trim(AnsiUpperCase(qrRatesExOBJ_CODE.AsString));
 
-  grRatesEx.EditorMode := False;
-  newID := 0;
+    if Length(NewCode) = 0 then
+      Exit;
 
-  // Замена литинских на кирилические
-  if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'У') or (NewCode[1] = 'T') or
-    (NewCode[1] = 'Ц') or (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
-  begin
-    if (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'У') then
-      NewCode[1] := 'Е'; // E кирилическая
-    if NewCode[1] = 'W' then
-      NewCode[1] := 'Ц';
+    grRatesEx.EditorMode := False;
+    newID := 0;
 
-    if NewCode[1] = 'W' then
-      NewCode[1] := 'Ц';
-
-    case GetSMSubType(qrRatesExSM_ID.Value) of
-      1:
-        if NewCode[1] = '0' then
-        begin
-          MessageBox(0, 'Ввод пусконаладки не допустим!', PChar(FMesCaption),
-            MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-          qrRatesExOBJ_CODE.AsString := '';
-          Exit;
-        end;
-      2:
-        if NewCode[1] <> '0' then
-        begin
-          MessageBox(0, 'Ввод расценки не допустим!', PChar(FMesCaption),
-            MB_ICONINFORMATION + MB_OK + mb_TaskModal);
-          qrRatesExOBJ_CODE.AsString := '';
-          Exit;
-        end;
-    end;
-
-    qrTemp.Active := False;
-    qrTemp.SQL.Clear;
-    qrTemp.SQL.Add('SELECT normativ_id, norm_num FROM normativg WHERE ' +
-      '(norm_num = :norm_num1) or (norm_num = :norm_num2) order by norm_num;');
-    qrTemp.ParamByName('norm_num1').Value := NewCode;
-    qrTemp.ParamByName('norm_num2').Value := NewCode + '*';
-    qrTemp.Active := True;
-    if not qrTemp.IsEmpty then
+    // Замена литинских на кирилические
+    if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'У') or (NewCode[1] = 'T') or
+      (NewCode[1] = 'Ц') or (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
     begin
-      if qrTemp.RecordCount > 1 then
-      begin
-        PMAddRateOld.Caption := qrTemp.Fields[1].AsString;
-        PMAddRateOld.Tag := qrTemp.Fields[0].AsInteger;
-        qrTemp.Next;
-        PMAddRateNew.Caption := qrTemp.Fields[1].AsString;
-        PMAddRateNew.Tag := qrTemp.Fields[0].AsInteger;
-        qrTemp.Active := False;
-        qrRatesExOBJ_CODE.AsString := '';
+      if (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'У') then
+        NewCode[1] := 'Е'; // E кирилическая
+      if NewCode[1] = 'W' then
+        NewCode[1] := 'Ц';
 
-        Point.X := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Left;
-        Point.Y := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Bottom + 1;
-        pmAddRate.Popup(grRatesEx.ClientToScreen(Point).X, grRatesEx.ClientToScreen(Point).Y);
+      if NewCode[1] = 'W' then
+        NewCode[1] := 'Ц';
+
+      case GetSMSubType(qrRatesExSM_ID.Value) of
+        1:
+          if NewCode[1] = '0' then
+          begin
+            MessageBox(0, 'Ввод пусконаладки не допустим!', PChar(FMesCaption),
+              MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+            qrRatesExOBJ_CODE.AsString := '';
+            Exit;
+          end;
+        2:
+          if NewCode[1] <> '0' then
+          begin
+            MessageBox(0, 'Ввод расценки не допустим!', PChar(FMesCaption),
+              MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+            qrRatesExOBJ_CODE.AsString := '';
+            Exit;
+          end;
+      end;
+
+      qrTemp.Active := False;
+      qrTemp.SQL.Clear;
+      qrTemp.SQL.Add('SELECT normativ_id, norm_num FROM normativg WHERE ' +
+        '(norm_num = :norm_num1) or (norm_num = :norm_num2) order by norm_num;');
+      qrTemp.ParamByName('norm_num1').Value := NewCode;
+      qrTemp.ParamByName('norm_num2').Value := NewCode + '*';
+      qrTemp.Active := True;
+      if not qrTemp.IsEmpty then
+      begin
+        if qrTemp.RecordCount > 1 then
+        begin
+          PMAddRateOld.Caption := qrTemp.Fields[1].AsString;
+          PMAddRateOld.Tag := qrTemp.Fields[0].AsInteger;
+          qrTemp.Next;
+          PMAddRateNew.Caption := qrTemp.Fields[1].AsString;
+          PMAddRateNew.Tag := qrTemp.Fields[0].AsInteger;
+          qrTemp.Active := False;
+          qrRatesExOBJ_CODE.AsString := '';
+
+          Point.X := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Left;
+          Point.Y := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Bottom + 1;
+          pmAddRate.Popup(grRatesEx.ClientToScreen(Point).X, grRatesEx.ClientToScreen(Point).Y);
+
+          Exit;
+        end
+        else
+          newID := qrTemp.Fields[0].AsInteger;
+      end;
+      qrTemp.Active := False;
+      if newID = 0 then
+      begin
+        if NewCode[1] = '0' then
+          MesRes := MessageBox(0, 'Пусконаладка с указанным кодом не найдена!' + sLineBreak +
+            'Открыть справочник?', PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal)
+        else
+          MesRes := MessageBox(0, 'Расценка с указанным кодом не найдена!' + sLineBreak + 'Открыть справочник?',
+            PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal);
+
+        if MesRes = mrOk then
+          PMAddRatMatMechEquipOwnClick(nil);
 
         Exit;
-      end
-      else
-        newID := qrTemp.Fields[0].AsInteger;
-    end;
-    qrTemp.Active := False;
-    if newID = 0 then
-    begin
-      if NewCode[1] = '0' then
-        MesRes := MessageBox(0, 'Пусконаладка с указанным кодом не найдена!' + sLineBreak +
-          'Открыть справочник?', PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal)
-      else
-        MesRes := MessageBox(0, 'Расценка с указанным кодом не найдена!' + sLineBreak + 'Открыть справочник?',
-          PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal);
+      end;
 
-      if MesRes = mrOk then
-        PMAddRatMatMechEquipOwnClick(nil);
-
+      AddRate(newID);
       Exit;
     end;
 
-    AddRate(newID);
-    Exit;
-  end;
-
-  // перевозка грузов и мусора
-  if (Length(NewCode) >= 4) and ((NewCode[1] = 'С') or (NewCode[1] = 'C')) and
-    ((Copy(NewCode, 2, 3) = '310') or (Copy(NewCode, 2, 3) = '311')) then
-  begin
-    if (Copy(NewCode, 2, 3) = '310') then
+    // перевозка грузов и мусора
+    if (Length(NewCode) >= 4) and ((NewCode[1] = 'С') or (NewCode[1] = 'C')) and
+      ((Copy(NewCode, 2, 3) = '310') or (Copy(NewCode, 2, 3) = '311')) then
     begin
-      pmAddTranspCargo.Tag := 6;
-      pmAddTranspTrash.Tag := 7;
-    end
-    else
-    begin
-      pmAddTranspCargo.Tag := 8;
-      pmAddTranspTrash.Tag := 9;
-    end;
-    qrRatesExOBJ_CODE.AsString := '';
-    grRatesEx.EditorMode := True;
+      if (Copy(NewCode, 2, 3) = '310') then
+      begin
+        pmAddTranspCargo.Tag := 6;
+        pmAddTranspTrash.Tag := 7;
+      end
+      else
+      begin
+        pmAddTranspCargo.Tag := 8;
+        pmAddTranspTrash.Tag := 9;
+      end;
+      qrRatesExOBJ_CODE.AsString := '';
+      grRatesEx.EditorMode := True;
 
-    FTranspDistance := StrToIntDef(Copy(NewCode, 6, 255), 0);
+      FTranspDistance := StrToIntDef(Copy(NewCode, 6, 255), 0);
 
-    Point.X := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Left;
-    Point.Y := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Bottom + 1;
-    pmAddTransp.Popup(grRatesEx.ClientToScreen(Point).X, grRatesEx.ClientToScreen(Point).Y);
-    Exit;
-  end;
-
-  // перевозка грузов и мусора
-  if (Length(NewCode) >= 2) and (Copy(NewCode, 1, 2) = 'БС') then
-  begin
-    qrRatesExOBJ_CODE.AsString := '';
-    grRatesEx.EditorMode := True;
-    PMAddDumpClick(nil);
-    Exit;
-  end;
-
-  if (NewCode[1] = 'С') or (NewCode[1] = 'C') or // C кирилическая и латинская
-    ((Length(NewCode) > 1) and (NewCode[1] = '5') and CharInSet(NewCode[2], ['7', '8'])) then
-  begin
-    if NewCode[1] = 'C' then
-      NewCode[1] := 'С';
-
-    if (NewCode[1] = 'С') then
-    begin
-      MatType := CMatIndex;
-      MatStr := 'Материал'
-    end
-    else
-    begin
-      MatType := CJBIIndex;
-      MatStr := 'ЖБИ';
+      Point.X := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Left;
+      Point.Y := grRatesEx.CellRect(grRatesEx.Col, grRatesEx.Row).Bottom + 1;
+      pmAddTransp.Popup(grRatesEx.ClientToScreen(Point).X, grRatesEx.ClientToScreen(Point).Y);
+      Exit;
     end;
 
-    qrTemp.Active := False;
-    qrTemp.SQL.Clear;
-    qrTemp.SQL.Add('SELECT MATERIAL_ID FROM material WHERE MAT_CODE = :CODE;');
-    qrTemp.ParamByName('CODE').Value := NewCode;
-    qrTemp.Active := True;
-    if not qrTemp.IsEmpty then
-      newID := qrTemp.Fields[0].AsInteger;
-    qrTemp.Active := False;
-    if newID = 0 then
+    // перевозка грузов и мусора
+    if (Length(NewCode) >= 2) and (Copy(NewCode, 1, 2) = 'БС') then
     begin
-      if MessageBox(0, PChar(MatStr + ' с указанным кодом не найден! ' + sLineBreak + 'Добавить новый ' +
-        MatStr.ToLower + ' в справочник?'), PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL +
-        mb_TaskModal) = mrOk then
-        SprManualData(MatType, NewCode, newID);
+      qrRatesExOBJ_CODE.AsString := '';
+      grRatesEx.EditorMode := True;
+      PMAddDumpClick(nil);
+      Exit;
+    end;
+
+    if (NewCode[1] = 'С') or (NewCode[1] = 'C') or // C кирилическая и латинская
+      ((Length(NewCode) > 1) and (NewCode[1] = '5') and CharInSet(NewCode[2], ['7', '8'])) then
+    begin
+      if NewCode[1] = 'C' then
+        NewCode[1] := 'С';
+
+      if (NewCode[1] = 'С') then
+      begin
+        MatType := CMatIndex;
+        MatStr := 'Материал'
+      end
+      else
+      begin
+        MatType := CJBIIndex;
+        MatStr := 'ЖБИ';
+      end;
+
+      qrTemp.Active := False;
+      qrTemp.SQL.Clear;
+      qrTemp.SQL.Add('SELECT MATERIAL_ID FROM material WHERE MAT_CODE = :CODE;');
+      qrTemp.ParamByName('CODE').Value := NewCode;
+      qrTemp.Active := True;
+      if not qrTemp.IsEmpty then
+        newID := qrTemp.Fields[0].AsInteger;
+      qrTemp.Active := False;
       if newID = 0 then
-        Exit;
+      begin
+        if MessageBox(0, PChar(MatStr + ' с указанным кодом не найден! ' + sLineBreak + 'Добавить новый ' +
+          MatStr.ToLower + ' в справочник?'), PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL +
+          mb_TaskModal) = mrOk then
+          SprManualData(MatType, NewCode, newID);
+        if newID = 0 then
+          Exit;
+      end;
+
+      AddMaterial(newID, 0);
+      Exit;
     end;
 
-    AddMaterial(newID, 0);
-    Exit;
-  end;
-
-  if (NewCode[1] = 'М') or (NewCode[1] = 'M') or (NewCode[1] = 'V') then // M кирилическая и латинская
-  begin
-    if (NewCode[1] = 'M') or (NewCode[1] = 'V') then
-      NewCode[1] := 'М';
-    qrTemp.Active := False;
-    qrTemp.SQL.Clear;
-    qrTemp.SQL.Add('SELECT MECHANIZM_ID FROM mechanizm WHERE MECH_CODE = :CODE;');
-    qrTemp.ParamByName('CODE').Value := NewCode;
-    qrTemp.Active := True;
-    if not qrTemp.IsEmpty then
-      newID := qrTemp.Fields[0].AsInteger;
-    qrTemp.Active := False;
-    if newID = 0 then
+    if (NewCode[1] = 'М') or (NewCode[1] = 'M') or (NewCode[1] = 'V') then // M кирилическая и латинская
     begin
-      if MessageBox(0, PChar('Механизм с указанным кодом не найден! ' + sLineBreak +
-        'Добавить новый механизм в справочник?'), PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL +
-        mb_TaskModal) = mrOk then
-        SprManualData(CMechIndex, NewCode, newID);
+      if (NewCode[1] = 'M') or (NewCode[1] = 'V') then
+        NewCode[1] := 'М';
+      qrTemp.Active := False;
+      qrTemp.SQL.Clear;
+      qrTemp.SQL.Add('SELECT MECHANIZM_ID FROM mechanizm WHERE MECH_CODE = :CODE;');
+      qrTemp.ParamByName('CODE').Value := NewCode;
+      qrTemp.Active := True;
+      if not qrTemp.IsEmpty then
+        newID := qrTemp.Fields[0].AsInteger;
+      qrTemp.Active := False;
       if newID = 0 then
-        Exit;
+      begin
+        if MessageBox(0, PChar('Механизм с указанным кодом не найден! ' + sLineBreak +
+          'Добавить новый механизм в справочник?'), PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL +
+          mb_TaskModal) = mrOk then
+          SprManualData(CMechIndex, NewCode, newID);
+        if newID = 0 then
+          Exit;
+      end;
+
+      AddMechanizm(newID, 0);
+      Exit;
     end;
 
-    AddMechanizm(newID, 0);
-    Exit;
-  end;
-
-  if CharInSet(NewCode[1], ['1', '9']) then
-  begin
-    qrTemp.Active := False;
-    qrTemp.SQL.Clear;
-    qrTemp.SQL.Add('SELECT DEVICE_ID FROM devices WHERE DEVICE_CODE1 = :CODE;');
-    qrTemp.ParamByName('CODE').Value := NewCode;
-    qrTemp.Active := True;
-    if not qrTemp.IsEmpty then
-      newID := qrTemp.Fields[0].AsInteger;
-    qrTemp.Active := False;
-    if newID = 0 then
+    if CharInSet(NewCode[1], ['1', '9']) then
     begin
-      if MessageBox(0, PChar('Оборудование с указанным кодом не найдено!' + sLineBreak +
-        'Добавить новое оборудование в справочник?'), PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL +
-        mb_TaskModal) = mrOk then
-        SprManualData(CDevIndex, NewCode, newID);
-
+      qrTemp.Active := False;
+      qrTemp.SQL.Clear;
+      qrTemp.SQL.Add('SELECT DEVICE_ID FROM devices WHERE DEVICE_CODE1 = :CODE;');
+      qrTemp.ParamByName('CODE').Value := NewCode;
+      qrTemp.Active := True;
+      if not qrTemp.IsEmpty then
+        newID := qrTemp.Fields[0].AsInteger;
+      qrTemp.Active := False;
       if newID = 0 then
-        Exit;
-    end;
-    AddDevice(newID, 0);
-    Exit;
-  end;
+      begin
+        if MessageBox(0, PChar('Оборудование с указанным кодом не найдено!' + sLineBreak +
+          'Добавить новое оборудование в справочник?'), PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL +
+          mb_TaskModal) = mrOk then
+          SprManualData(CDevIndex, NewCode, newID);
 
-  MessageBox(0, 'По указанному коду ничего не найдено!', PChar(FMesCaption),
-    MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+        if newID = 0 then
+          Exit;
+      end;
+      AddDevice(newID, 0);
+      Exit;
+    end;
+
+    MessageBox(0, 'По указанному коду ничего не найдено!', PChar(FMesCaption),
+      MB_ICONINFORMATION + MB_OK + mb_TaskModal);
+  finally
+    if (qrRatesExID_TYPE_DATA.Value > 0) and
+       (qrRatesEx.State in [dsEdit]) then
+      qrRatesEx.Cancel;
+  end;
 end;
 
 procedure TFormCalculationEstimate.qrRatesExCOUNTChange(Sender: TField);
@@ -3652,8 +3665,10 @@ procedure TFormCalculationEstimate.grRatesExCanEditCell(Grid: TJvDBGrid; Field: 
   var AllowEdit: Boolean);
 begin
   AllowEdit := Editable;
-  if ((Field = qrRatesExOBJ_CODE) and (qrRatesExID_TYPE_DATA.Value <> -4) and
-    (qrRatesExID_TYPE_DATA.Value <> -5)) or
+  if ((Field = qrRatesExOBJ_CODE) and
+      (qrRatesExID_TYPE_DATA.Value <> -4) and
+      (qrRatesExID_TYPE_DATA.Value <> -5) and
+      (qrRatesExID_TYPE_DATA.Value < 0)) or
     ((Field = qrRatesExNOM_ROW_MANUAL) and ((qrRatesExID_TYPE_DATA.Value = -1) or
     (qrRatesExID_TYPE_DATA.Value = -2) or (qrRatesExID_TYPE_DATA.Value = -3))) or (Grid.Col = 1) then
     AllowEdit := False;
@@ -3809,6 +3824,12 @@ var
   TempBookmark: TBookMark;
   i, j: Integer;
 begin
+  if grRatesEx.EditorMode then
+  begin
+    grRatesEx.InplaceEditor.CopyToClipboard;
+    Exit;
+  end;
+
   if not(qrRatesExID_TYPE_DATA.Value > 0) or Act then
     Exit;
 
@@ -4211,8 +4232,14 @@ var
   DataObj: TSmClipData;
   TmpIterator: Integer;
 begin
+  if grRatesEx.EditorMode then
+  begin
+    grRatesEx.InplaceEditor.PasteFromClipboard;
+    Exit;
+  end;
+
   if not((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -5) or
-    (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -3)) or Act then
+    (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -3)) then
     Exit;
 
   DataObj := TSmClipData.Create;
@@ -5138,6 +5165,44 @@ begin
   // или шапка жешки или строка ввода
 end;
 
+procedure TFormCalculationEstimate.ReplaceSmRow(ASmRowId: Integer; var AIterator, AManualNom: integer);
+var TempBookmark: TBookMark;
+    ev: TDataSetNotifyEvent;
+    ev2: TFieldNotifyEvent;
+begin
+  if ASmRowId = 0 then
+    Exit;
+
+  TempBookmark := qrRatesEx.GetBookmark;
+  qrRatesEx.DisableControls;
+  ev := qrRatesEx.AfterScroll;
+  ev2 := qrRatesExNOM_ROW_MANUAL.OnChange;
+  try
+    qrRatesEx.AfterScroll := nil;
+    qrRatesExNOM_ROW_MANUAL.OnChange := nil;
+
+    qrRatesEx.First;
+    while not qrRatesEx.Eof do
+    begin
+      if (qrRatesExDATA_ESTIMATE_OR_ACT_ID.Value = ASmRowId) then
+      begin
+        AIterator := qrRatesExITERATOR.Value;
+        AManualNom := qrRatesExNOM_ROW_MANUAL.Value;
+        DeleteRowFromSmeta();
+        Exit;
+      end;
+      qrRatesEx.Next;
+    end;
+  finally
+    qrRatesEx.GotoBookmark(TempBookmark);
+    qrRatesEx.FreeBookmark(TempBookmark);
+
+    qrRatesEx.AfterScroll := ev;
+    qrRatesExNOM_ROW_MANUAL.OnChange := ev2;
+    qrRatesEx.EnableControls;
+  end;
+end;
+
 // Добавление расценки в смету
 procedure TFormCalculationEstimate.AddRate(const ARateId: Integer);
 var
@@ -5148,260 +5213,280 @@ var
   Month1, Year1: Integer;
   PriceVAT, PriceNoVAT: string;
   Pt: Real;
+  AutoCommitValue: Boolean;
 begin
   if not CheckCursorInRate then
     Exit;
 
-  // Добавляем найденную расценку во временную таблицу card_rate_temp
+  AutoCommitValue := DM.Connect.Transaction.Options.AutoCommit;
+  DM.Connect.Transaction.Options.AutoCommit := False;
+  DM.Connect.Transaction.StartTransaction;
   try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('CALL AddRate(:id_estimate, :id_rate, :cnt, :iterator, :nommanual);');
-      ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
-      ParamByName('id_rate').Value := ARateId;
-      ParamByName('cnt').Value := 0;
-      ParamByName('iterator').Value := FNewRowIterator;
-      ParamByName('nommanual').Value := FNewNomManual;
-      Active := True;
-      vMaxIdRate := FieldByName('id').AsInteger;
-      NewRateCode := FieldByName('RATE_CODE').AsString;
-      DataRowID := FieldByName('DATA_ROW_ID').AsInteger;
-      Active := False;
-    end;
-  except
-    on e: Exception do
-    begin
-      MessageBox(0, PChar('При добавлении расценки во временную таблицу возникла ошибка:' + sLineBreak +
-        sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
-      Exit;
-    end;
-  end;
+    try
+      ReplaceSmRow(FReplaceRowID, FNewRowIterator, FNewNomManual);
 
-  // Подкоговка автозамены
-  ClearAutoRep;
-
-  qrTemp.SQL.Clear;
-  qrTemp.SQL.Add('SELECT year,monat,DATE_BEG FROM stavka WHERE stavka_id = ' +
-    '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + INTTOSTR(qrRatesExSM_ID.AsInteger) + ')');
-  qrTemp.Active := True;
-  Month1 := qrTemp.FieldByName('monat').AsInteger;
-  Year1 := qrTemp.FieldByName('year').AsInteger;
-  qrTemp.Active := False;
-
-  // Заносим во временную таблицу materialcard_temp материалы находящиеся в расценке
-  try
-    with qrTemp do
-    begin
-
-      SQL.Clear;
-      SQL.Add('SELECT region_id FROM objcards WHERE obj_id = ' + INTTOSTR(IdObject));
-      Active := True;
-      if not Eof then
-      begin
-        PriceVAT := 'coast' + FieldByName('region_id').AsString + '_2';
-        PriceNoVAT := 'coast' + FieldByName('region_id').AsString + '_1';
-      end;
-      Active := False;
-
-      SQL.Clear;
-      SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
-        'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
-        'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
-        ' as "PriceNoVAT", TMat.BASE as "BASE", TMat.MAT_TYPE as "MAT_TYPE" ' +
-        'FROM materialnorm as TMatNorm ' + 'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id '
-        + 'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
-        '(TMatCoast.material_id = TMatNorm.material_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and ' +
-        '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (TMatNorm.normativ_id = ' + INTTOSTR(ARateId) +
-        ') order by 1';
-      Active := True;
-
-      Filtered := False;
-      Filter := 'MatCode LIKE ''С%''';
-      Filtered := True;
-
-      First;
-
-      while not Eof do
-      begin
-        // Получение процента транспорта для материала
-        qrTemp1.Active := False;
-        qrTemp1.SQL.Clear;
-        qrTemp1.SQL.Add('SELECT GetTranspPers(:IdEstimate, :MatCode);');
-        qrTemp1.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
-        qrTemp1.ParamByName('MatCode').Value := FieldByName('MatCode').AsString;
-        qrTemp1.Active := True;
-        Pt := 0;
-        if not qrTemp1.Eof then
-          Pt := qrTemp1.Fields[0].AsFloat;
-        qrTemp1.Active := False;
-
-        qrTemp1.SQL.Text := 'SELECT GetNewID(:IDType)';
-        qrTemp1.ParamByName('IDType').Value := C_ID_SMMAT;
-        qrTemp1.Active := True;
-        MaxMId := 0;
-        if not qrTemp1.Eof then
-          MaxMId := qrTemp1.Fields[0].AsInteger;
-        qrTemp1.Active := False;
-
-        qrTemp1.SQL.Text := 'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ' +
-          'ID, ID_CARD_RATE, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
-          'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
-          '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :MAT_ID, :MAT_CODE, ' +
-          ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' + ':PROC_TRANSP, :BASE, :MAT_TYPE)';
-        qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
-        qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
-        qrTemp1.ParamByName('ID').Value := MaxMId;
-        qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
-        qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
-        qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
-        qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
-        vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
-        qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
-        qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
-        qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
-        qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
-        qrTemp1.ParamByName('PROC_TRANSP').AsFloat := Pt;
-        qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
-        qrTemp1.ParamByName('MAT_TYPE').Value := FieldByName('MAT_TYPE').Value;
-        qrTemp1.ExecSQL;
-
-        CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, ARateId, FieldByName('MatCode').AsString,
-          FieldByName('MatName').AsString);
-
-        Next;
-      end;
-
-      Filtered := False;
-      Filter := 'MatCode LIKE ''П%''';
-      Filtered := True;
-
-      First;
-
-      while not Eof do
-      begin
-        qrTemp1.SQL.Text := 'SELECT GetNewID(:IDType)';
-        qrTemp1.ParamByName('IDType').Value := C_ID_SMMAT;
-        qrTemp1.Active := True;
-        MaxMId := 0;
-        if not qrTemp1.Eof then
-          MaxMId := qrTemp1.Fields[0].AsInteger;
-        qrTemp1.Active := False;
-
-        if MaxMId > 0 then
+      // Добавляем найденную расценку во временную таблицу card_rate_temp
+      try
+        with qrTemp do
         begin
-          qrTemp1.SQL.Text := 'Insert into materialcard_temp ' + '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
-            'CONSIDERED, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
-            'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
-            '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
-            ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
-            ':COAST_NDS, :PROC_TRANSP, :BASE, :MAT_TYPE)';
-          qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
-          qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
-          qrTemp1.ParamByName('ID').Value := MaxMId;
-          qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
-          qrTemp1.ParamByName('CONSIDERED').Value := 0;
-          qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
-          qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
-          qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
-          vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
-          qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
-          qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
-          qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
-          qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
-          qrTemp1.ParamByName('PROC_TRANSP').Value := 0;
-          qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
-          qrTemp1.ParamByName('MAT_TYPE').Value := FieldByName('MAT_TYPE').Value;
-          qrTemp1.ExecSQL;
-
-          if MaxMId > 0 then
-            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, ARateId,
-              FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
+          Active := False;
+          SQL.Clear;
+          SQL.Add('CALL AddRate(:id_estimate, :id_rate, :cnt, :iterator, :nommanual);');
+          ParamByName('id_estimate').Value := qrRatesExSM_ID.AsInteger;
+          ParamByName('id_rate').Value := ARateId;
+          ParamByName('cnt').Value := 0;
+          ParamByName('iterator').Value := FNewRowIterator;
+          ParamByName('nommanual').Value := FNewNomManual;
+          Active := True;
+          vMaxIdRate := FieldByName('id').AsInteger;
+          NewRateCode := FieldByName('RATE_CODE').AsString;
+          DataRowID := FieldByName('DATA_ROW_ID').AsInteger;
+          Active := False;
         end;
-        Next;
-      end;
-
-      Filtered := False;
-      Filter := '';
-
-      Active := False;
-    end;
-  except
-    on e: Exception do
-      MessageBox(0, PChar('При занесении материалов во временную таблицу возникла ошибка:' + sLineBreak +
-        sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
-
-  // Заносим во временную таблицу mechanizmcard_temp механизмы находящиеся в расценке
-  try
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('SELECT DISTINCT mech.mechanizm_id as "MechId", mech.mech_code as "MechCode", ' +
-        'mechnorm.norm_ras as "MechNorm", units.unit_name as "Unit", ' +
-        'mech.mech_name as "MechName", mechcoast.coast1 as "CoastVAT", ' +
-        'mechcoast.coast2 as "CoastNoVAT", mechcoast.zp1 as "SalaryVAT", ' +
-        'mechcoast.zp2 as "SalaryNoVAT", IFNULL(mech.MECH_PH, 0) as "MECH_PH", ' + 'mech.BASE as "BASE" ' +
-        'FROM mechanizmnorm as mechnorm ' +
-        'JOIN mechanizm as mech ON mechnorm.mechanizm_id = mech.mechanizm_id ' +
-        'JOIN units ON mech.unit_id = units.unit_id ' + 'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
-        '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and ' +
-        '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (mechnorm.normativ_id = ' + INTTOSTR(ARateId) +
-        ') order by 1');
-
-      Active := True;
-      First;
-
-      while not Eof do
-      begin
-        qrTemp1.SQL.Text := 'SELECT GetNewID(:IDType)';
-        qrTemp1.ParamByName('IDType').Value := C_ID_SMMEC;
-        qrTemp1.Active := True;
-        MaxMId := 0;
-        if not qrTemp1.Eof then
-          MaxMId := qrTemp1.Fields[0].AsInteger;
-        qrTemp1.Active := False;
-
-        if MaxMId > 0 then
+      except
+        on e: Exception do
         begin
-          qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (SM_ID, DATA_ROW_ID, ' +
-            'ID, ID_CARD_RATE, MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, ' +
-            'MECH_UNIT, COAST_NO_NDS, COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, ' +
-            'NORMATIV, BASE) values (:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, ' +
-            ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
-            ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :NORMATIV, :BASE)';
-          qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
-          qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
-          qrTemp1.ParamByName('ID').Value := MaxMId;
-          qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
-          qrTemp1.ParamByName('MECH_ID').Value := FieldByName('MechId').AsInteger;
-          qrTemp1.ParamByName('MECH_CODE').Value := FieldByName('MechCode').AsString;
-          qrTemp1.ParamByName('MECH_NAME').Value := FieldByName('MechName').AsString;
-          vNormRas := MyStrToFloatDef(FieldByName('MechNorm').AsString, 0);
-          qrTemp1.ParamByName('MECH_NORMA').Value := vNormRas;
-          qrTemp1.ParamByName('MECH_UNIT').Value := FieldByName('Unit').AsString;
-          qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('CoastNoVAT').AsExtended;
-          qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('CoastVAT').AsExtended;
-          qrTemp1.ParamByName('ZP_MACH_NO_NDS').Value := FieldByName('SalaryNoVAT').AsExtended;
-          qrTemp1.ParamByName('ZP_MACH_NDS').Value := FieldByName('SalaryVAT').AsExtended;
-          qrTemp1.ParamByName('NORMATIV').Value := FieldByName('MECH_PH').AsExtended;
-          qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
-          qrTemp1.ExecSQL;
-
-          if MaxMId > 0 then
-            CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger, ARateId,
-              FieldByName('MechCode').AsString, FieldByName('MechName').AsString);
+          MessageBox(0, 'При добавлении расценки во временную таблицу возникла ошибка.',
+            PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+          raise;
         end;
-        Next;
       end;
-      Active := False;
+
+      // Подкоговка автозамены
+      ClearAutoRep;
+
+      qrTemp.SQL.Clear;
+      qrTemp.SQL.Add('SELECT year,monat,DATE_BEG FROM stavka WHERE stavka_id = ' +
+        '(SELECT stavka_id FROM smetasourcedata WHERE sm_id = ' + INTTOSTR(qrRatesExSM_ID.AsInteger) + ')');
+      qrTemp.Active := True;
+      Month1 := qrTemp.FieldByName('monat').AsInteger;
+      Year1 := qrTemp.FieldByName('year').AsInteger;
+      qrTemp.Active := False;
+
+      // Заносим во временную таблицу materialcard_temp материалы находящиеся в расценке
+      try
+        with qrTemp do
+        begin
+
+          SQL.Clear;
+          SQL.Add('SELECT region_id FROM objcards WHERE obj_id = ' + INTTOSTR(IdObject));
+          Active := True;
+          if not Eof then
+          begin
+            PriceVAT := 'coast' + FieldByName('region_id').AsString + '_2';
+            PriceNoVAT := 'coast' + FieldByName('region_id').AsString + '_1';
+          end;
+          Active := False;
+
+          SQL.Clear;
+          SQL.Text := 'SELECT DISTINCT TMat.material_id as "MatId", TMat.mat_code as "MatCode", ' +
+            'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
+            'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
+            ' as "PriceNoVAT", TMat.BASE as "BASE", TMat.MAT_TYPE as "MAT_TYPE" ' +
+            'FROM materialnorm as TMatNorm ' + 'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id '
+            + 'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
+            '(TMatCoast.material_id = TMatNorm.material_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and ' +
+            '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (TMatNorm.normativ_id = ' + INTTOSTR(ARateId) +
+            ') order by 1';
+          Active := True;
+
+          Filtered := False;
+          Filter := 'MatCode LIKE ''С%''';
+          Filtered := True;
+
+          First;
+
+          while not Eof do
+          begin
+            // Получение процента транспорта для материала
+            qrTemp1.Active := False;
+            qrTemp1.SQL.Clear;
+            qrTemp1.SQL.Add('SELECT GetTranspPers(:IdEstimate, :MatCode);');
+            qrTemp1.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
+            qrTemp1.ParamByName('MatCode').Value := FieldByName('MatCode').AsString;
+            qrTemp1.Active := True;
+            Pt := 0;
+            if not qrTemp1.Eof then
+              Pt := qrTemp1.Fields[0].AsFloat;
+            qrTemp1.Active := False;
+
+            qrTemp1.SQL.Text := 'SELECT GetNewID(:IDType)';
+            qrTemp1.ParamByName('IDType').Value := C_ID_SMMAT;
+            qrTemp1.Active := True;
+            MaxMId := 0;
+            if not qrTemp1.Eof then
+              MaxMId := qrTemp1.Fields[0].AsInteger;
+            qrTemp1.Active := False;
+
+            qrTemp1.SQL.Text := 'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ' +
+              'ID, ID_CARD_RATE, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
+              'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
+              '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :MAT_ID, :MAT_CODE, ' +
+              ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' + ':PROC_TRANSP, :BASE, :MAT_TYPE)';
+            qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
+            qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
+            qrTemp1.ParamByName('ID').Value := MaxMId;
+            qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
+            qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
+            qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
+            qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
+            vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
+            qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
+            qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
+            qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
+            qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
+            qrTemp1.ParamByName('PROC_TRANSP').AsFloat := Pt;
+            qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
+            qrTemp1.ParamByName('MAT_TYPE').Value := FieldByName('MAT_TYPE').Value;
+            qrTemp1.ExecSQL;
+
+            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
+              ARateId, FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
+
+            Next;
+          end;
+
+          Filtered := False;
+          Filter := 'MatCode LIKE ''П%''';
+          Filtered := True;
+
+          First;
+
+          while not Eof do
+          begin
+            qrTemp1.SQL.Text := 'SELECT GetNewID(:IDType)';
+            qrTemp1.ParamByName('IDType').Value := C_ID_SMMAT;
+            qrTemp1.Active := True;
+            MaxMId := 0;
+            if not qrTemp1.Eof then
+              MaxMId := qrTemp1.Fields[0].AsInteger;
+            qrTemp1.Active := False;
+
+            if MaxMId > 0 then
+            begin
+              qrTemp1.SQL.Text := 'Insert into materialcard_temp ' + '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
+                'CONSIDERED, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
+                'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
+                '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
+                ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
+                ':COAST_NDS, :PROC_TRANSP, :BASE, :MAT_TYPE)';
+              qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
+              qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
+              qrTemp1.ParamByName('ID').Value := MaxMId;
+              qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
+              qrTemp1.ParamByName('CONSIDERED').Value := 0;
+              qrTemp1.ParamByName('MAT_ID').Value := FieldByName('MatId').AsInteger;
+              qrTemp1.ParamByName('MAT_CODE').Value := FieldByName('MatCode').AsString;
+              qrTemp1.ParamByName('MAT_NAME').Value := FieldByName('MatName').AsString;
+              vNormRas := MyStrToFloatDef(FieldByName('MatNorm').AsString, 0);
+              qrTemp1.ParamByName('MAT_NORMA').Value := vNormRas;
+              qrTemp1.ParamByName('MAT_UNIT').Value := FieldByName('MatUnit').AsString;
+              qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('PriceNoVAT').AsExtended;
+              qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('PriceVAT').AsExtended;
+              qrTemp1.ParamByName('PROC_TRANSP').Value := 0;
+              qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
+              qrTemp1.ParamByName('MAT_TYPE').Value := FieldByName('MAT_TYPE').Value;
+              qrTemp1.ExecSQL;
+
+              CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, ARateId,
+                FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
+            end;
+            Next;
+          end;
+
+          Filtered := False;
+          Filter := '';
+
+          Active := False;
+        end;
+      except
+        on e: Exception do
+        begin
+          MessageBox(0, 'При занесении материалов во временную таблицу возникла ошибка.',
+            PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+          raise;
+        end;
+      end;
+
+      // Заносим во временную таблицу mechanizmcard_temp механизмы находящиеся в расценке
+      try
+        with qrTemp do
+        begin
+          Active := False;
+          SQL.Clear;
+          SQL.Add('SELECT DISTINCT mech.mechanizm_id as "MechId", mech.mech_code as "MechCode", ' +
+            'mechnorm.norm_ras as "MechNorm", units.unit_name as "Unit", ' +
+            'mech.mech_name as "MechName", mechcoast.coast1 as "CoastVAT", ' +
+            'mechcoast.coast2 as "CoastNoVAT", mechcoast.zp1 as "SalaryVAT", ' +
+            'mechcoast.zp2 as "SalaryNoVAT", IFNULL(mech.MECH_PH, 0) as "MECH_PH", ' + 'mech.BASE as "BASE" ' +
+            'FROM mechanizmnorm as mechnorm ' +
+            'JOIN mechanizm as mech ON mechnorm.mechanizm_id = mech.mechanizm_id ' +
+            'JOIN units ON mech.unit_id = units.unit_id ' + 'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
+            '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and ' +
+            '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (mechnorm.normativ_id = ' + INTTOSTR(ARateId) +
+            ') order by 1');
+
+          Active := True;
+          First;
+
+          while not Eof do
+          begin
+            qrTemp1.SQL.Text := 'SELECT GetNewID(:IDType)';
+            qrTemp1.ParamByName('IDType').Value := C_ID_SMMEC;
+            qrTemp1.Active := True;
+            MaxMId := 0;
+            if not qrTemp1.Eof then
+              MaxMId := qrTemp1.Fields[0].AsInteger;
+            qrTemp1.Active := False;
+
+            if MaxMId > 0 then
+            begin
+              qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (SM_ID, DATA_ROW_ID, ' +
+                'ID, ID_CARD_RATE, MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, ' +
+                'MECH_UNIT, COAST_NO_NDS, COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, ' +
+                'NORMATIV, BASE) values (:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, ' +
+                ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
+                ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :NORMATIV, :BASE)';
+              qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
+              qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
+              qrTemp1.ParamByName('ID').Value := MaxMId;
+              qrTemp1.ParamByName('ID_CARD_RATE').Value := vMaxIdRate;
+              qrTemp1.ParamByName('MECH_ID').Value := FieldByName('MechId').AsInteger;
+              qrTemp1.ParamByName('MECH_CODE').Value := FieldByName('MechCode').AsString;
+              qrTemp1.ParamByName('MECH_NAME').Value := FieldByName('MechName').AsString;
+              vNormRas := MyStrToFloatDef(FieldByName('MechNorm').AsString, 0);
+              qrTemp1.ParamByName('MECH_NORMA').Value := vNormRas;
+              qrTemp1.ParamByName('MECH_UNIT').Value := FieldByName('Unit').AsString;
+              qrTemp1.ParamByName('COAST_NO_NDS').Value := FieldByName('CoastNoVAT').AsExtended;
+              qrTemp1.ParamByName('COAST_NDS').Value := FieldByName('CoastVAT').AsExtended;
+              qrTemp1.ParamByName('ZP_MACH_NO_NDS').Value := FieldByName('SalaryNoVAT').AsExtended;
+              qrTemp1.ParamByName('ZP_MACH_NDS').Value := FieldByName('SalaryVAT').AsExtended;
+              qrTemp1.ParamByName('NORMATIV').Value := FieldByName('MECH_PH').AsExtended;
+              qrTemp1.ParamByName('BASE').Value := FieldByName('BASE').Value;
+              qrTemp1.ExecSQL;
+
+              CheckNeedAutoRep(MaxMId, 3, FieldByName('MechId').AsInteger, ARateId,
+                FieldByName('MechCode').AsString, FieldByName('MechName').AsString);
+            end;
+            Next;
+          end;
+          Active := False;
+        end;
+      except
+        on e: Exception do
+        begin
+          MessageBox(0, 'При занесении механизмов во временную таблицу возникла ошибка.',
+            PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+          raise;
+        end;
+      end;
+      DM.Connect.Transaction.Commit;
+    except
+      DM.Connect.Transaction.Rollback;
+      raise;
     end;
-  except
-    on e: Exception do
-      MessageBox(0, PChar('При занесении механизмов во временную таблицу возникла ошибка:' + sLineBreak +
-        sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+  finally
+    DM.Connect.Transaction.Options.AutoCommit := AutoCommitValue;
   end;
 
   // автоматическая вставка пуска и регулировки, отключена по просьбе заказчика
@@ -5448,9 +5533,16 @@ begin
   if not CheckCursorInRate then
     Exit;
 
-  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag, FNewRowIterator, FNewNomManual,
-    FTranspDistance, True) then
+  if FReplaceRowID > 0 then
   begin
+    FNewRowIterator := qrRatesExITERATOR.Value;
+    FNewNomManual := qrRatesExNOM_ROW_MANUAL.Value;
+  end;
+
+  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag,
+    FNewRowIterator, FNewNomManual, FTranspDistance, True) then
+  begin
+    ReplaceSmRow(FReplaceRowID, FNewRowIterator, FNewNomManual);
     OutputDataToTable(True);
   end;
 end;
@@ -5527,8 +5619,17 @@ end;
 
 procedure TFormCalculationEstimate.PMAddDumpClick(Sender: TObject);
 begin
+  if FReplaceRowID > 0 then
+  begin
+    FNewRowIterator := qrRatesExITERATOR.Value;
+    FNewNomManual := qrRatesExNOM_ROW_MANUAL.Value;
+  end;
+
   if GetDumpForm(qrRatesExSM_ID.AsInteger, -1, FNewRowIterator, FNewNomManual, True) then
+  begin
+    ReplaceSmRow(FReplaceRowID, FNewRowIterator, FNewNomManual);
     OutputDataToTable(True);
+  end;
 end;
 
 procedure TFormCalculationEstimate.PMAddRateOldClick(Sender: TObject);
@@ -5675,7 +5776,7 @@ begin
           end;
         except
           on e: Exception do
-            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
+            MessageBox(0, PChar('При удалении пусконаладки возникла ошибка:' + sLineBreak + sLineBreak +
               e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
         end;
     end;
@@ -5793,17 +5894,23 @@ var
   i: Integer;
 begin
   // Вынесено сюда так как mousedown работает глючно
-  if (grRatesEx.SelectedRows.Count > 0) and not(grRatesEx.SelectedRows.CurrentRowSelected) then
+  if (grRatesEx.SelectedRows.Count > 0) and
+     not(grRatesEx.SelectedRows.CurrentRowSelected) then
     grRatesEx.SelectedRows.Clear;
 
   Edt := Editable;
-  for i := 0 to (Sender as TPopupMenu).Items.Count - 1 do
-    (Sender as TPopupMenu).Items[i].Enabled := Edt;
+  if (Sender is TPopupMenu) then
+    for i := 0 to (Sender as TPopupMenu).Items.Count - 1 do
+      (Sender as TPopupMenu).Items[i].Enabled := Edt;
 
   PMCopy.Enabled := (qrRatesExID_TYPE_DATA.AsInteger > 0);
   PMPaste.Enabled := ((qrRatesExID_TYPE_DATA.AsInteger > 0) or (qrRatesExID_TYPE_DATA.AsInteger = -5) or
     (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -3)) and
     ClipBoard.HasFormat(G_SMETADATA) and Edt;
+
+  //Финт для преодаления глюка работы с горячими клавишами
+  PMCopy.Enabled := PMCopy.Enabled or grRatesEx.EditorMode;
+  PMPaste.Enabled := PMPaste.Enabled or grRatesEx.EditorMode;
 
   // Нельзя удалить неучтенный материал из таблицы расценок
   PMDelete.Visible := (qrRatesExID_TYPE_DATA.AsInteger > 0);
@@ -5835,6 +5942,8 @@ begin
   mBaseData.Caption := 'Исходные данные - ' + qrRatesExOBJ_CODE.AsString;
   // Просто удачное место, что-бы погасить растояние перевозки заданное при ручном вводе
   FTranspDistance := 0;
+  //Гасит замену строки если решили воспользоваться справочниками
+  FReplaceRowID := 0;
 end;
 
 procedure TFormCalculationEstimate.EstimateBasicDataClick(Sender: TObject);
@@ -6737,11 +6846,11 @@ begin
     edtRateActiveDate.Text := '';
   end;
 
-  if (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -5) then
-  begin
-    // в режиме добавления строки редактируется код, а не количество
-    qrRatesExOBJ_CODE.ReadOnly := False;
-  end;
+  //Код можно редактировать везде кроме шапок смет
+  qrRatesExOBJ_CODE.ReadOnly :=
+     not((qrRatesExID_TYPE_DATA.AsInteger = -4) or
+     (qrRatesExID_TYPE_DATA.AsInteger = -5) or
+     (qrRatesExID_TYPE_DATA.AsInteger > 0));
 
   // Для строк шапок и строк вставки
   if qrRatesExID_TYPE_DATA.AsInteger < 0 then
@@ -6754,7 +6863,6 @@ begin
 
   // Можно редактировать кол-во для любой строки
   qrRatesExOBJ_COUNT.ReadOnly := False;
-  qrRatesExOBJ_CODE.ReadOnly := True;
 
   // заполняет таблицы справа
   GridRatesRowSellect;
@@ -7108,6 +7216,8 @@ begin
     if not CheckCursorInRate then
       Exit;
 
+    ReplaceSmRow(FReplaceRowID, FNewRowIterator, FNewNomManual);
+
     with qrTemp do
     begin
       Active := False;
@@ -7135,6 +7245,8 @@ begin
   try
     if not CheckCursorInRate then
       Exit;
+
+    ReplaceSmRow(FReplaceRowID, FNewRowIterator, FNewNomManual);
 
     with qrTemp do
     begin
@@ -7165,6 +7277,8 @@ begin
   try
     if not CheckCursorInRate then
       Exit;
+
+    ReplaceSmRow(FReplaceRowID, FNewRowIterator, FNewNomManual);
 
     with qrTemp do
     begin
