@@ -182,7 +182,9 @@ type
     mDebug1: TMenuItem;
     pmLicenseKey: TMenuItem;
     mN3: TMenuItem;
-    N2: TMenuItem;
+    mTest_1: TMenuItem;
+    mTesting: TMenuItem;
+    mRecucle1: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -297,7 +299,7 @@ type
     procedure pmLicenseKeyClick(Sender: TObject);
     procedure mN3Click(Sender: TObject);
     procedure PMRestoreOldBackupClick(Sender: TObject);
-    procedure N2Click(Sender: TObject);
+    procedure mTest_1Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -1285,15 +1287,15 @@ begin
   end;
 end;
 
-procedure TFormMain.N2Click(Sender: TObject);
-var Form1: TForm1;
+procedure TFormMain.mTest_1Click(Sender: TObject);
+var Form: TTest_Form1;
 begin
-  Form1 := TForm1.Create(Self);
+  Form := TTest_Form1.Create(Self);
   try
-    if Form1.ShowModal = mrOk then
-      ShowMessage(Form1.SprRect.Name);
+    if Form.ShowModal = mrOk then
+      ShowMessage(Form.SprRect.Name);
   finally
-    FreeAndNil(Form1);
+    FreeAndNil(Form);
   end;
 
 end;

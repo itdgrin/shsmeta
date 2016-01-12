@@ -18,7 +18,7 @@ uses
   SprController;
 
 type
-  TForm1 = class(TForm)
+  TTest_Form1 = class(TForm)
     Button1: TButton;
     Button2: TButton;
     procedure Button1Click(Sender: TObject);
@@ -38,7 +38,7 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm1.AddMaterial(AMatId, AManPriceID: Integer;
+procedure TTest_Form1.AddMaterial(AMatId, AManPriceID: Integer;
       APriceDate: TDateTime;
       ASprRecord: TSprRecord);
 begin
@@ -46,17 +46,17 @@ begin
   ModalResult := mrOk;
 end;
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TTest_Form1.Button1Click(Sender: TObject);
 begin
   FMatSpr.ListSprDblClick(FMatSpr.ListSpr);
 end;
 
-procedure TForm1.Button2Click(Sender: TObject);
+procedure TTest_Form1.Button2Click(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TTest_Form1.FormCreate(Sender: TObject);
 begin
   FMatSpr := TSprMaterial.Create(Self, True, Date, 7, True, False, 0);
   FMatSpr.Parent := Self;
