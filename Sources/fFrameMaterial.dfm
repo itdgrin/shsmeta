@@ -293,9 +293,4 @@ inherited SprMaterial: TSprMaterial
       ExplicitWidth = 743
     end
   end
-  inherited pmListSpr: TPopupMenu
-    inherited PMAddTo: TMenuItem
-      OnClick = PMAddToClick
-    end
-  end
 end

@@ -16,8 +16,7 @@ type
      function GetSprType: Integer; override;
   public
     { Public declarations }
-    constructor Create(AOwner: TComponent;
-      const APriceColumn, vAllowAddition: Boolean;
+    constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
       ABaseType: Byte = 0); reintroduce;
   end;
 
@@ -27,11 +26,10 @@ implementation
 
 uses CalculationEstimate, SprController;
 
-constructor TSprEquipment.Create(AOwner: TComponent;
-      const APriceColumn, vAllowAddition: Boolean; ABaseType: Byte);
+constructor TSprEquipment.Create(AOwner: TComponent; const APriceColumn: Boolean;
+  ABaseType: Byte);
 var y, m: Integer;
 begin
-  FAllowAddition := vAllowAddition;
   //FNoEdCol := True;
   y := G_CURYEAR;
   m := G_CURMONTH;

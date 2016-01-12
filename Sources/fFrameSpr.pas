@@ -33,7 +33,8 @@ uses
 type
   TSortRec = TPair<Integer, Pointer>;
 
-  TNotifySprSelectEvent = procedure(const ASprID, APriceID: Integer) of object;
+  TNotifySprSelectEvent = procedure(ASprID, APriceID: Integer;
+    APriceDate: TDateTime; ASprRecord: TSprRecord) of object;
 
   TSprItemSelectEvent = procedure(ASprRecord: PSprRecord) of object;
 
@@ -123,7 +124,6 @@ type
     procedure FillingDetailsPanel(ASprRecord: PSprRecord);
 
   protected
-    FAllowAddition: Boolean;
     //Тип справочника
     FSprType: Integer;
     FPriceColumn: Boolean;
@@ -412,7 +412,7 @@ end;
 
 procedure TSprFrame.pmListSprPopup(Sender: TObject);
 begin
-  PMAddTo.Visible := FAllowAddition;
+  PMAddTo.Visible := Assigned(OnSelect);
   PMAddManual.Enabled := (FBaseType = 2);
   PMEditManual.Enabled := Assigned(ListSpr.Selected);
   PMDelManual.Enabled := (FBaseType = 2) and Assigned(ListSpr.Selected);
@@ -441,15 +441,7 @@ begin
   SetLength(FSprArray, SprControl.SprCount[FSprType]);
   for I := Low(FSprArray) to High(FSprArray) do
   begin
-    FSprArray[I].ID := SprControl.SprList[FSprType][I].ID;
-    FSprArray[I].Code := SprControl.SprList[FSprType][I].Code;
-    FSprArray[I].Name := SprControl.SprList[FSprType][I].Name;
-    FSprArray[I].Unt := SprControl.SprList[FSprType][I].Unt;
-    FSprArray[I].CoastNDS := SprControl.SprList[FSprType][I].CoastNDS;
-    FSprArray[I].CoastNoNDS := SprControl.SprList[FSprType][I].CoastNoNDS;
-    FSprArray[I].ZpMach := SprControl.SprList[FSprType][I].ZpMach;
-    FSprArray[I].TrZatr := SprControl.SprList[FSprType][I].TrZatr;
-    FSprArray[I].Manual := SprControl.SprList[FSprType][I].Manual;
+    FSprArray[I].CopyFrom(SprControl.SprList[FSprType][I]^);
   end;
 end;
 
@@ -808,13 +800,16 @@ end;
 
 procedure TSprFrame.ListSprDblClick(Sender: TObject);
 var TmpPriceID: Integer;
+    TmpDate: TDateTime;
 begin
+  TmpDate := EncodeDate(edtYear.Value, cmbMonth.ItemIndex + 1, 1);
   TmpPriceID := 0;
   if lvDetPrice.ItemIndex > -1 then
     TmpPriceID := Integer(lvDetPrice.Items[lvDetPrice.ItemIndex].Data);
 
-  if FAllowAddition and (ListSpr.ItemIndex > -1) and Assigned(FOnSelect) then
-    FOnSelect(TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID, TmpPriceID);
+  if (ListSpr.ItemIndex > -1) and Assigned(FOnSelect) then
+    FOnSelect(TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^).ID, TmpPriceID,
+      TmpDate, TSprRecord(ListSpr.Items[ListSpr.ItemIndex].Data^));
 end;
 
 procedure TSprFrame.ListSprResize(Sender: TObject);

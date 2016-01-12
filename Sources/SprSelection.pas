@@ -98,17 +98,17 @@ begin
   2:
   begin
     Caption := 'Выбор материала';
-    FFrame := TSprMaterial.Create(Self, False, False, 0, 0, True, False); //Стартует с материалов
+    FFrame := TSprMaterial.Create(Self, False, 0, 0, True, False); //Стартует с материалов
   end;
   3:
   begin
     Caption := 'Выбор механизма';
-    FFrame := TSprMechanizm.Create(Self, False, False, 0);
+    FFrame := TSprMechanizm.Create(Self, False, 0);
   end;
   4:
   begin
     Caption := 'Выбор оборудования';
-    FFrame := TSprEquipment.Create(Self, False, False);
+    FFrame := TSprEquipment.Create(Self, False);
   end;
   end;
   FFrame.Parent := Self;

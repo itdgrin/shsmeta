@@ -33,6 +33,7 @@ type
     ZpMach,
     TrZatr: Extended;
     Manual: Boolean;
+    procedure CopyFrom(ASprRec: TSprRecord);
   end;
 
   PSprRecord = ^TSprRecord;
@@ -103,6 +104,20 @@ var SprControl: TSprControl;
 implementation
 
 uses Forms;
+
+{ TSprRecord }
+procedure TSprRecord.CopyFrom(ASprRec: TSprRecord);
+begin
+  ID := ASprRec.ID;
+  Code := ASprRec.Code;
+  Name := ASprRec.Name;
+  Unt := ASprRec.Unt;
+  CoastNDS := ASprRec.CoastNDS;
+  CoastNoNDS := ASprRec.CoastNoNDS;
+  ZpMach := ASprRec.ZpMach;
+  TrZatr := ASprRec.TrZatr;
+  Manual := ASprRec.Manual;
+end;
 
 { TSprControl }
 

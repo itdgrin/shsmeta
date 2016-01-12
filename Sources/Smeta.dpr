@@ -137,7 +137,8 @@ uses
   ContractPriceEdit in 'ContractPriceEdit.pas' {fContractPriceEdit},
   fReportC2B in 'fReportC2B.pas' {FormReportC2B},
   ContractPays in 'ContractPays.pas' {fContractPays},
-  SmReport in 'SmReport.pas' {dmSmReport: TDataModule};
+  SmReport in 'SmReport.pas' {dmSmReport: TDataModule},
+  uTestForRoma in 'uTestForRoma.pas' {Form1};
 
 {$R *.res}
 var MHandle: THandle;

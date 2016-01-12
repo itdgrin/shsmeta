@@ -1300,14 +1300,13 @@ begin
     2:
     begin
       tmp := (edtSourceName.Tag = 1) or FAddMode;
-      Frame := TSprMaterial.Create(Self, True, False,
+      Frame := TSprMaterial.Create(Self, True,
         EncodeDate(FYear, FMonth, 1), FRegion, tmp, not tmp);
     end;
     //Механизмы
-    3: Frame := TSprMechanizm.Create(Self, True, False,
-        EncodeDate(FYear, FMonth, 1));
+    3: Frame := TSprMechanizm.Create(Self, True, EncodeDate(FYear, FMonth, 1));
     //Оборудование
-    4: Frame := TSprEquipment.Create(Self, True, False);
+    4: Frame := TSprEquipment.Create(Self, True);
   end;
   Frame.Parent := groupCatalog;
   Frame.Align := alClient;

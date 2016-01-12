@@ -25,8 +25,7 @@ type
     procedure SprStyle; override;
   public
     { Public declarations }
-    constructor Create(AOwner: TComponent;
-      const APriceColumn, vAllowAddition: Boolean;
+    constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
       const AStarDate: TDateTime; ABaseType: Byte = 0); reintroduce;
   end;
 
@@ -36,11 +35,9 @@ implementation
 
 uses CalculationEstimate, SprController;
 
-constructor TSprMechanizm.Create(AOwner: TComponent;
-      const APriceColumn, vAllowAddition: Boolean;
+constructor TSprMechanizm.Create(AOwner: TComponent; const APriceColumn: Boolean;
       const AStarDate: TDateTime; ABaseType: Byte);
 begin
-  FAllowAddition := vAllowAddition;
  // FNoEdCol := False;
   inherited Create(AOwner, APriceColumn, AStarDate, ABaseType);
 end;

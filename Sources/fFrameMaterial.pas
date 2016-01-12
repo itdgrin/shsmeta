@@ -26,10 +26,8 @@ type
     procedure SprStyle; override;
   public
     { Public declarations }
-    constructor Create(AOwner: TComponent;
-      const APriceColumn, vAllowAddition: Boolean;
-      const AStarDate: TDateTime;
-      const ARegion: Integer;
+    constructor Create(AOwner: TComponent; const APriceColumn: Boolean;
+      const AStarDate: TDateTime; const ARegion: Integer;
       const AMat, AJBI: Boolean; ABaseType: Byte = 0); reintroduce;
   end;
 
@@ -40,12 +38,11 @@ implementation
 uses CalculationEstimate, SprController;
 
 constructor TSprMaterial.Create(AOwner: TComponent;
-      const APriceColumn, vAllowAddition: Boolean;
+      const APriceColumn: Boolean;
       const AStarDate: TDateTime;
       const ARegion: Integer;
       const AMat, AJBI: Boolean; ABaseType: Byte);
 begin
-  FAllowAddition := vAllowAddition;
   inherited Create(AOwner, APriceColumn, AStarDate, ABaseType);
 
   if (cmbRegion.Items.Count >= ARegion) and (ARegion > 0) then

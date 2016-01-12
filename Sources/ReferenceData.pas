@@ -126,21 +126,21 @@ begin
   FrameRates.Visible := False;
   SpeedButtonRates.Tag := Integer(FrameRates);
 
-  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date, 1, True, False, 1);
+  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, Date, 1, True, False, 1);
   FramePriceMaterials.Parent := Self;
   FramePriceMaterials.LoadSpr;
   FramePriceMaterials.Align := alClient;
   FramePriceMaterials.Visible := False;
   SpeedButtonMaterials.Tag := Integer(FramePriceMaterials);
 
-  FramePriceMechanizms := TSprMechanizm.Create(Self, vPriceColumn, False, Date, 1);
+  FramePriceMechanizms := TSprMechanizm.Create(Self, vPriceColumn, Date, 1);
   FramePriceMechanizms.Parent := Self;
   FramePriceMechanizms.LoadSpr;
   FramePriceMechanizms.Align := alClient;
   FramePriceMechanizms.Visible := False;
   SpeedButtonMechanizms.Tag := Integer(FramePriceMechanizms);
 
-  FrameEquipments := TSprEquipment.Create(Self, vPriceColumn, False, 1);
+  FrameEquipments := TSprEquipment.Create(Self, vPriceColumn, 1);
   FrameEquipments.Parent := Self;
   FrameEquipments.LoadSpr;
   FrameEquipments.Align := alClient;

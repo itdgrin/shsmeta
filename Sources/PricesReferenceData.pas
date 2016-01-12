@@ -111,7 +111,7 @@ begin
 
   // ----------------------------------------
 
-  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, False, Date,
+  FramePriceMaterials := TSprMaterial.Create(Self, vPriceColumn, Date,
     1, True, False);
   FramePriceMaterials.Parent := Self;
   FramePriceMaterials.LoadSpr;
@@ -119,7 +119,7 @@ begin
   FramePriceMaterials.Visible := False;
   SpeedButtonPriceMaterials.Tag := Integer(FramePriceMaterials);
 
-  FramePriceMechanizms := TSprMechanizm.Create(Self, vPriceColumn, False, Date);
+  FramePriceMechanizms := TSprMechanizm.Create(Self, vPriceColumn, Date);
   FramePriceMechanizms.Parent := Self;
   FramePriceMechanizms.LoadSpr;
   FramePriceMechanizms.Align := alClient;

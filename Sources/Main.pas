@@ -182,6 +182,7 @@ type
     mDebug1: TMenuItem;
     pmLicenseKey: TMenuItem;
     mN3: TMenuItem;
+    N2: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -296,6 +297,7 @@ type
     procedure pmLicenseKeyClick(Sender: TObject);
     procedure mN3Click(Sender: TObject);
     procedure PMRestoreOldBackupClick(Sender: TObject);
+    procedure N2Click(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -467,7 +469,8 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex,
   DebugTables,
   System.Win.Registry,
   SerialKeyModule,
-  fLicense, SmReport;
+  fLicense, SmReport,
+  uTestForRoma;
 
 {$R *.dfm}
 
@@ -1280,6 +1283,19 @@ begin
   finally
     Screen.Cursor := crDefault;
   end;
+end;
+
+procedure TFormMain.N2Click(Sender: TObject);
+var Form1: TForm1;
+begin
+  Form1 := TForm1.Create(Self);
+  try
+    if Form1.ShowModal = mrOk then
+      ShowMessage(Form1.SprRect.Name);
+  finally
+    FreeAndNil(Form1);
+  end;
+
 end;
 
 procedure TFormMain.mBuildZoneClick(Sender: TObject);

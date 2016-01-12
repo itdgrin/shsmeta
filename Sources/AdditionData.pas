@@ -123,7 +123,7 @@ begin
   if vDataBase = '1' then
     TmpBaseType := 2;
 
-  FramePriceMaterial := TSprMaterial.Create(Self, True, True, TmpDate,
+  FramePriceMaterial := TSprMaterial.Create(Self, True, TmpDate,
     FormCalculationEstimate.Region, True, False, TmpBaseType);
   FramePriceMaterial.Parent := Self;
   FramePriceMaterial.LoadSpr;
@@ -131,15 +131,14 @@ begin
   FramePriceMaterial.Visible := False;
   SpeedButtonMaterial.Tag := Integer(FramePriceMaterial);
 
-  FramePriceMechanizm := TSprMechanizm.Create(Self, True, True, TmpDate,
-    TmpBaseType);
+  FramePriceMechanizm := TSprMechanizm.Create(Self, True, TmpDate, TmpBaseType);
   FramePriceMechanizm.Parent := Self;
   FramePriceMechanizm.LoadSpr;
   FramePriceMechanizm.Align := alClient;
   FramePriceMechanizm.Visible := False;
   SpeedButtonMechanizm.Tag := Integer(FramePriceMechanizm);
 
-  FrameEquipment := TSprEquipment.Create(Self, True, True, TmpBaseType);
+  FrameEquipment := TSprEquipment.Create(Self, True, TmpBaseType);
   FrameEquipment.Parent := Self;
   FrameEquipment.LoadSpr;
   FrameEquipment.Align := alClient;

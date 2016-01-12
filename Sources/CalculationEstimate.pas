@@ -10,7 +10,7 @@ uses
   FireDAC.Comp.Client, Vcl.DBCtrls, CalculationEstimateSSR, CalculationEstimateSummaryCalculations,
   JvExDBGrids, JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression, GlobsAndConst,
   FireDAC.UI.Intf, JvExComCtrls, JvDBTreeView, Generics.Collections, Tools, Generics.Defaults,
-  fFrameCalculator, Data.FmtBcd, dmReportU, JvComponentBase, JvFormPlacement;
+  fFrameCalculator, Data.FmtBcd, dmReportU, JvComponentBase, JvFormPlacement, SprController;
 
 type
   TAutoRepRec = record
@@ -591,9 +591,12 @@ type
     procedure OutputDataToTable(ANewRow: Boolean = False); // Заполнение таблицы расценок
 
     procedure AddRate(const ARateId: Integer);
-    procedure AddMaterial(const AMatId, AManPriceID: Integer);
-    procedure AddMechanizm(const AMechId, AManPriceID: Integer);
-    procedure AddDevice(const AEquipId, AManPriceID: Integer);
+    procedure AddMaterial(AMatId, AManPriceID: Integer; APriceDate: TDateTime;
+      ASprRecord: TSprRecord);
+    procedure AddMechanizm(AMechId, AManPriceID: Integer; APriceDate: TDateTime;
+      ASprRecord: TSprRecord);
+    procedure AddDevice(AEquipId, AManPriceID: Integer; APriceDate: TDateTime;
+      ASprRecord: TSprRecord);
 
     procedure PMMechFromRatesClick(Sender: TObject);
     procedure dbgrdRates12DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -867,7 +870,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
   TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog,
   ManualPriceSelect, uSelectColumn, ContractPrice,
-  ManualSprItem, SprController, SmReport;
+  ManualSprItem, SmReport;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -3218,6 +3221,7 @@ var
   MatType: Integer;
   MatStr: string;
   MesRes: Integer;
+  TmpSprRec: TSprRecord;
 begin
   try
     if qrRatesExID_TYPE_DATA.Value > 0 then
@@ -3379,7 +3383,7 @@ begin
           Exit;
       end;
 
-      AddMaterial(newID, 0);
+      AddMaterial(newID, 0, 0, TmpSprRec);
       Exit;
     end;
 
@@ -3405,7 +3409,7 @@ begin
           Exit;
       end;
 
-      AddMechanizm(newID, 0);
+      AddMechanizm(newID, 0, 0, TmpSprRec);
       Exit;
     end;
 
@@ -3429,7 +3433,7 @@ begin
         if newID = 0 then
           Exit;
       end;
-      AddDevice(newID, 0);
+      AddDevice(newID, 0, 0, TmpSprRec);
       Exit;
     end;
 
@@ -7214,7 +7218,8 @@ begin
   CloseOpen(qrCalculations);
 end;
 
-procedure TFormCalculationEstimate.AddDevice(const AEquipId, AManPriceID: Integer);
+procedure TFormCalculationEstimate.AddDevice(AEquipId, AManPriceID: Integer;
+  APriceDate: TDateTime; ASprRecord: TSprRecord);
 // Добавление оборудования к смете
 begin
   try
@@ -7245,7 +7250,8 @@ begin
 end;
 
 // Добавление материала к смете
-procedure TFormCalculationEstimate.AddMaterial(const AMatId, AManPriceID: Integer);
+procedure TFormCalculationEstimate.AddMaterial(AMatId, AManPriceID: Integer;
+  APriceDate: TDateTime; ASprRecord: TSprRecord);
 begin
   try
     if not CheckCursorInRate then
@@ -7277,7 +7283,8 @@ begin
 end;
 
 // Добавление механизма к смете
-procedure TFormCalculationEstimate.AddMechanizm(const AMechId, AManPriceID: Integer);
+procedure TFormCalculationEstimate.AddMechanizm(AMechId, AManPriceID: Integer;
+  APriceDate: TDateTime; ASprRecord: TSprRecord);
 begin
   try
     if not CheckCursorInRate then
