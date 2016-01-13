@@ -26,22 +26,28 @@ type
     btnCancel: TButton;
     procedure btnCancelClick(Sender: TObject);
     procedure btnSelectClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
   private
-    FFrameType: Integer;
     FFrame: TSprFrame;
-    FSelectID: Variant;
-    procedure SelectSprItem(ASprRecord: PSprRecord);
+    FSelectionValue: TSprRecord;
+    procedure SprSelection(ASprId, AManPriceID: Integer;
+      APriceDate: TDateTime;
+      ASprRecord: TSprRecord);
   public
-    property SelectID: Variant read FSelectID;
-    constructor Create(AType: Integer); reintroduce;
+    property SelectionValue: TSprRecord read FSelectionValue;
+    constructor Create(AType: Integer; AShowPrice: Boolean; ABaseType: Byte;
+      AStarDate: TDateTime; ARegion: Integer); reintroduce;
     destructor Destroy; override;
   end;
 
-function SelectMaterial(): Variant; //Не дает выбора между материалами и жби
-function SelectMechanizm(): Variant;
-function SelectDevice(): Variant;
-function SelectFromSpr(AType: Integer): Variant;
+//Не дает выбора между материалами и жби
+//ABaseType 1 - нормативная база, 2 - собственная база, 0 - обе
+function SelectMaterial(AShowPrice: Boolean = False; ABaseType: Byte = 0;
+  AStarDate: TDateTime = 0; ARegion: Integer = 0): TSprRecord;
+function SelectMechanizm(AShowPrice: Boolean = False; ABaseType: Byte = 0;
+  AStarDate: TDateTime = 0): TSprRecord;
+function SelectDevice(ABaseType: Byte = 0): TSprRecord;
+function SelectFromSpr(AType: Integer; AShowPrice: Boolean; ABaseType: Byte;
+  AStarDate: TDateTime; ARegion: Integer): TSprRecord;
 
 implementation
 
@@ -49,31 +55,36 @@ uses fFrameMaterial, fFrameMechanizm, fFrameEquipment;
 
 {$R *.dfm}
 
-function SelectMaterial(): Variant;
+function SelectMaterial(AShowPrice: Boolean; ABaseType: Byte;
+  AStarDate: TDateTime; ARegion: Integer): TSprRecord;
 begin
-  Result := SelectFromSpr(2);
+  Result := SelectFromSpr(2, AShowPrice, ABaseType, AStarDate, ARegion);
 end;
 
-function SelectMechanizm(): Variant;
+function SelectMechanizm(AShowPrice: Boolean; ABaseType: Byte;
+  AStarDate: TDateTime): TSprRecord;
 begin
-  Result := SelectFromSpr(3);
+  Result := SelectFromSpr(3, AShowPrice, ABaseType, AStarDate, 0);
 end;
 
-function SelectDevice(): Variant;
+function SelectDevice(ABaseType: Byte): TSprRecord;
 begin
-  Result := SelectFromSpr(4);
+  Result := SelectFromSpr(4, False, ABaseType, 0, 0);
 end;
 
-function SelectFromSpr(AType: Integer): Variant;
+function SelectFromSpr(AType: Integer; AShowPrice: Boolean; ABaseType: Byte;
+  AStarDate: TDateTime; ARegion: Integer): TSprRecord;
 var fSprSelection: TfSprSelection;
 begin
-  Result := null;
+  Result := Default(TSprRecord);
+
   if not AType in [2,3,4] then
     raise Exception.Create('Неизвестный тип справочника');
-  fSprSelection := TfSprSelection.Create(AType);
+  fSprSelection :=
+    TfSprSelection.Create(AType, AShowPrice, ABaseType, AStarDate, ARegion);
   try
     if fSprSelection.ShowModal = mrOk then
-      Result := fSprSelection.SelectID;
+      Result := fSprSelection.SelectionValue;
   finally
     FreeAndNil(fSprSelection);
   end;
@@ -86,35 +97,41 @@ end;
 
 procedure TfSprSelection.btnSelectClick(Sender: TObject);
 begin
-  ModalResult := mrOk;
+  FFrame.ListSprDblClick(FFrame.ListSpr);
 end;
 
-constructor TfSprSelection.Create(AType: Integer);
+constructor TfSprSelection.Create(AType: Integer; AShowPrice: Boolean; ABaseType: Byte;
+  AStarDate: TDateTime; ARegion: Integer);
 begin
   inherited Create(nil);
-  FSelectID := null;
-  FFrameType := AType;
-  case FFrameType of
+
+  if AStarDate = 0 then
+    AStarDate := Date;
+  if ARegion = 0 then
+    ARegion := 7;
+
+  case AType of
   2:
   begin
     Caption := 'Выбор материала';
-    FFrame := TSprMaterial.Create(Self, False, 0, 0, True, False); //Стартует с материалов
+    //Стартует с материалов
+    FFrame :=
+      TSprMaterial.Create(Self, AShowPrice, AStarDate, ARegion, True, False, ABaseType);
   end;
   3:
   begin
     Caption := 'Выбор механизма';
-    FFrame := TSprMechanizm.Create(Self, False, 0);
+    FFrame := TSprMechanizm.Create(Self, AShowPrice, AStarDate, ABaseType);
   end;
   4:
   begin
     Caption := 'Выбор оборудования';
-    FFrame := TSprEquipment.Create(Self, False);
+    FFrame := TSprEquipment.Create(Self, AShowPrice, ABaseType);
   end;
   end;
   FFrame.Parent := Self;
   FFrame.Align := alClient;
-  FFrame.OnSprItemSelect := SelectSprItem;
-  FFrame.ListSpr.OnDblClick := btnSelectClick;
+  FFrame.OnSelect := SprSelection;
   FFrame.LoadSpr;
 end;
 
@@ -124,18 +141,12 @@ begin
   inherited;
 end;
 
-procedure TfSprSelection.FormCreate(Sender: TObject);
+procedure TfSprSelection.SprSelection(ASprId, AManPriceID: Integer;
+  APriceDate: TDateTime; ASprRecord: TSprRecord);
 begin
-  inherited;
-  //
-end;
+  FSelectionValue.CopyFrom(ASprRecord);
+  ModalResult := mrOk;
 
-procedure TfSprSelection.SelectSprItem(ASprRecord: PSprRecord);
-begin
-  if Assigned(ASprRecord) then
-    FSelectID := ASprRecord.ID
-  else
-    FSelectID := null;
 end;
 
 end.

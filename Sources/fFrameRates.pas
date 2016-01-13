@@ -199,8 +199,8 @@ type
 
 implementation
 
-uses Main, DataModule, DrawingTables, CalculationEstimate, Tools, NormativDirectory, SprSelection,
-  WinterPrice, CopyToOwnDialog, GlobsAndConst;
+uses Main, DataModule, DrawingTables, CalculationEstimate, Tools, NormativDirectory,
+  SprSelection, WinterPrice, CopyToOwnDialog, GlobsAndConst, SprController;
 
 {$R *.dfm}
 
@@ -625,43 +625,43 @@ end;
 
 procedure TFrameRates.mNCAddClick(Sender: TObject);
 var
-  res: Variant;
+  res: TSprRecord;
   newID1: Variant;
 begin
   case qrNC.FieldByName('OBJ_TYPE').AsInteger of
     1:
       begin
         res := SelectMechanizm;
-        if not VarIsNull(res) then
+        if res.ID > 0 then
         begin
           newID1 := GetNewID(C_MANID_NORM_MECH);
           FastExecSQL('INSERT INTO mechanizmnorm (ID, NORMATIV_ID, MECHANIZM_ID, NORM_RAS, BASE) ' +
             'VALUE(:0,:1,:2,"1", 1)',
-            VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res]));
+            VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res.ID]));
           CloseOpen(qrNC);
         end;
       end;
     2:
       begin
         res := SelectMaterial;
-        if not VarIsNull(res) then
+        if res.ID > 0 then
         begin
           newID1 := GetNewID(C_MANID_NORM_MAT);
           FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
             'VALUE(:0,:1,:2,"1", 1)',
-            VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res]));
+            VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res.ID]));
           CloseOpen(qrNC);
         end;
       end;
     3:
       begin
         res := SelectMaterial;
-        if not VarIsNull(res) then
+        if res.ID > 0 then
         begin
           newID1 := GetNewID(C_MANID_NORM_MAT);
           FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
             'VALUE(:0,:1,:2,"1",1)',
-            VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res]));
+            VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res.ID]));
           CloseOpen(qrNC);
         end;
       end;

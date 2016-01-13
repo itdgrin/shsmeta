@@ -12,7 +12,6 @@ object fSprSelection: TfSprSelection
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
-  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object Panel4: TPanel

@@ -115,7 +115,7 @@ type
     FSprArray: TSprArray;
     FOnAfterLoad: TNotifyEvent;
     FOnSelect: TNotifySprSelectEvent;
-
+    FCurCount: Integer;
     procedure WMSprLoad(var Mes: TMessage); message WM_SPRLOAD;
     procedure WMPriceLoad(var Mes: TMessage); message WM_PRICELOAD;
     procedure CopySprArray;
@@ -683,13 +683,16 @@ begin
     TArray.Sort<TSortRec>(FSortArray,
       TComparer<TSortRec>.Construct(CompareRel));
 
+    FCurCount := Length(FSortArray);
     ListSpr.Items.BeginUpdate;
     try
-      for i := 0 to Length(FSortArray) - 1 do
+      for i := 0 to FCurCount - 1 do
       begin
         //—оздаем пустые итемы, заполним их при отображении
         Item := ListSpr.Items.Add;
         Item.Data := FSortArray[i].Value;
+        if i > 2000 then
+          Break;
       end;
     finally
       ListSpr.Items.EndUpdate;
@@ -850,7 +853,7 @@ begin
     begin
       FillingDetailsPanel(Item.Data);
       StatusBar.Panels[0].Text := '   ' +
-        (Item.Index + 1).ToString + '/' + ListSpr.Items.Count.ToString;
+        (Item.Index + 1).ToString + '/' + FCurCount.ToString;
       lvDetPrice.Items.Clear;
     end;
   end;
