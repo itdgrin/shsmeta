@@ -9,7 +9,7 @@ uses
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.DBCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Menus, Vcl.Samples.Spin, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.Mask, JvDBGridFooter,
   JvComponentBase, JvFormPlacement, System.UITypes, Vcl.Buttons, Tools, FireDAC.UI.Intf,
-  FireDAC.Comp.ScriptCommands, FireDAC.Comp.Script;
+  FireDAC.Comp.ScriptCommands, FireDAC.Comp.Script, System.DateUtils;
 
 type
   TfCalcResourceFact = class(TSmForm)
@@ -116,7 +116,6 @@ type
     mInsertFromOunDict: TMenuItem;
     mInsertEmpty: TMenuItem;
     mDeleteReal: TMenuItem;
-    qrMainDataSELECTED: TBooleanField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -155,6 +154,7 @@ type
     procedure mInsertEmptyClick(Sender: TObject);
     procedure qrMainDataAfterEdit(DataSet: TDataSet);
     procedure mDeleteRealClick(Sender: TObject);
+    procedure mInsertFromDictClick(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -174,7 +174,8 @@ implementation
 
 {$R *.dfm}
 
-uses Main, CalculationEstimate, DataModule, CalcResourceFactDiff, CalcResourceEdit;
+uses Main, CalculationEstimate, DataModule, CalcResourceFactDiff, CalcResourceEdit, SprSelection,
+  SprController;
 
 procedure ShowCalcResourceFact(const ID_ESTIMATE: Variant; const APage: Integer = 0;
   AOwner: TWinControl = nil);
@@ -608,6 +609,54 @@ begin
   qrMainData.Insert;
 end;
 
+procedure TfCalcResourceFact.mInsertFromDictClick(Sender: TObject);
+var
+  res: TSprRecord;
+  idRegion: Integer;
+  priceDate: TDate;
+begin
+  idRegion := FastSelectSQLOne
+    ('SELECT o.REGION_ID FROM objcards o, smetasourcedata s WHERE s.SM_ID=:0 and o.OBJ_ID=s.OBJ_ID',
+    VarArrayOf([IDEstimate]));
+  priceDate := Now;
+  case pgc.ActivePageIndex of
+    // Расчет материалов
+    1:
+      begin
+        res := SelectFromSpr(2, True, 0, priceDate, idRegion);
+      end;
+    // Расчет механизмов
+    2:
+      begin
+        res := SelectFromSpr(3, True, 0, priceDate, idRegion);
+      end;
+    // Расчет оборудования
+    3:
+      begin
+        res := SelectFromSpr(4, True, 0, priceDate, idRegion);
+      end;
+  end;
+  if res.ID > 0 then
+  begin
+    qrMainData.CheckBrowseMode;
+    qrMainData.Insert;
+    qrMainData.FieldByName('CODE').Value := res.Code;
+    qrMainData.FieldByName('NAME').Value := res.Name;
+    // qrMainData.FieldByName('CNT').Value := Null;
+    qrMainData.FieldByName('UNIT').Value := res.Unt;
+    qrMainData.FieldByName('PROC_TRANSP').Value := res.TrZatr;
+    qrMainData.FieldByName('COAST').Value := IIF(cbbNDS.ItemIndex = 0, res.CoastNoNDS, res.CoastNDS);
+    // qrMainData.FieldByName('PRICE').Value := Null;
+    qrMainData.FieldByName('TRANSP').Value := res.TrZatr;
+    // qrMainData.FieldByName('NDS').Value := Null;
+    // qrMainData.FieldByName('DOC_NUM').Value := Null;
+    // qrMainData.FieldByName('DOC_DATE').Value := Null;
+    qrMainData.FieldByName('COAST_ZP').Value := res.ZpMach;
+    // qrMainData.FieldByName('PRICE_ZP').Value := Null;
+    qrMainData.Post;
+  end;
+end;
+
 procedure TfCalcResourceFact.mDeleteRealClick(Sender: TObject);
 begin
   if Application.MessageBox('Вы действительно хотите удалить запись?', PChar(Caption),
@@ -962,6 +1011,12 @@ begin
   qrMainData.FieldByName('FCOAST').Value := 0;
   qrMainData.FieldByName('DELETED').Value := 0;
   qrMainData.FieldByName('ID_ACT').Value := FormCalculationEstimate.IDEstimate;
+  qrMainData.FieldByName('SRC_OBJECT_ID').Value := null;
+  // !qrMainData.FieldByName('NDS').Value := GetUniDictParamValue('NDS', !MonthOf(Now), !YearOf(Now));
+  qrMainData.FieldByName('PROC_ZAC').Value := 0;
+  qrMainData.FieldByName('PROC_PODR').Value := 100;
+  qrMainData.FieldByName('TRANSP_PROC_ZAC').Value := 0;
+  qrMainData.FieldByName('TRANSP_PROC_PODR').Value := 100;
   case pgc.ActivePageIndex of
     // Расчет материалов
     1:

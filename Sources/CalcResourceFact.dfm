@@ -1296,10 +1296,12 @@ object fCalcResourceFact: TfCalcResourceFact
     object mInsert: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       object mInsertFromDict: TMenuItem
-        Caption = #1048#1079' '#1085#1086#1088#1084#1072#1090#1080#1074#1085#1086#1075#1086' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
+        Caption = #1048#1079' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
+        OnClick = mInsertFromDictClick
       end
       object mInsertFromOunDict: TMenuItem
-        Caption = #1048#1079' '#1089#1086#1073#1090#1074#1077#1085#1085#1086#1075#1086' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
+        Caption = #1048#1079' '#1089#1086#1073'c'#1090#1074#1077#1085#1085#1086#1075#1086' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072
+        Visible = False
       end
       object mInsertEmpty: TMenuItem
         Caption = #1055#1088#1086#1080#1079#1074#1086#1083#1100#1085#1091#1102' '#1089#1090#1088#1086#1082#1091
@@ -1370,7 +1372,7 @@ object fCalcResourceFact: TfCalcResourceFact
     UpdateTransaction = DM.Write
     FetchOptions.AssignedValues = [evCache, evAutoFetchAll]
     FetchOptions.Cache = [fiBlobs, fiMeta]
-    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType, fvFmtDisplayNumeric]
+    FormatOptions.AssignedValues = [fvMapRules, fvDefaultParamDataType]
     FormatOptions.OwnMapRules = True
     FormatOptions.MapRules = <
       item
@@ -1593,9 +1595,6 @@ object fCalcResourceFact: TfCalcResourceFact
       AutoGenerateValue = arDefault
       FieldName = 'ID_ACT'
       Origin = 'ID_ACT'
-    end
-    object qrMainDataSELECTED: TBooleanField
-      FieldName = 'SELECTED'
     end
   end
   object dsMainData: TDataSource
