@@ -185,6 +185,7 @@ type
     mTest_1: TMenuItem;
     mTesting: TMenuItem;
     mRecucle1: TMenuItem;
+    mReportPrint: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -300,6 +301,7 @@ type
     procedure mN3Click(Sender: TObject);
     procedure PMRestoreOldBackupClick(Sender: TObject);
     procedure mTest_1Click(Sender: TObject);
+    procedure mReportPrintClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -455,7 +457,7 @@ var
 implementation
 
 uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex,
-  About, CalculationEstimate, ConnectDatabase, CardObject, DataModule,
+  About, CalculationEstimate, CardObject, DataModule,
   Login, Waiting, ActC6, WorkSchedule, HelpC3, HelpC5, CatalogSSR,
   OXRandOPR, DataTransfer, CalculationSettings, ProgramSettings,
   ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
@@ -471,8 +473,8 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex,
   DebugTables,
   System.Win.Registry,
   SerialKeyModule,
-  fLicense, SmReport,
-  uTestForRoma;
+  fLicense, SmReportData,
+  uTestForRoma, SmReportMain;
 
 {$R *.dfm}
 
@@ -1037,10 +1039,10 @@ end;
 
 procedure TFormMain.ServiceSettingsClick(Sender: TObject);
 var
-  FormProgramSettings: TFormProgramSettings;
+  FormProgramSettings: TfProgramSettings;
 begin
   LicenseAssigned(nil);
-  FormProgramSettings := TFormProgramSettings.Create(nil);
+  FormProgramSettings := TfProgramSettings.Create(nil);
   try
     if FormProgramSettings.ShowModal = mrOk then
     begin
@@ -2204,6 +2206,13 @@ begin
         PChar(FileReportPath), SW_maximIZE);
 
   end;
+end;
+
+procedure TFormMain.mReportPrintClick(Sender: TObject);
+begin
+  if (not Assigned(fSmReportMain)) then
+    fSmReportMain := TfSmReportMain.Create(FormMain);
+  fSmReportMain.Show;
 end;
 
 procedure TFormMain.mTranspNormClick(Sender: TObject);

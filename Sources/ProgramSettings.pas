@@ -12,7 +12,7 @@ uses
   JvDBGrid;
 
 type
-  TFormProgramSettings = class(TSmForm)
+  TfProgramSettings = class(TSmForm)
     pcSettings: TPageControl;
     ButtonCancel: TButton;
     ButtonSave: TButton;
@@ -127,7 +127,7 @@ uses Main, GlobsAndConst, DataModule, System.Win.Registry, System.IniFiles;
 {$R *.dfm}
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.FormShow(Sender: TObject);
+procedure TfProgramSettings.FormShow(Sender: TObject);
 var
   i: Integer;
 begin
@@ -178,7 +178,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfProgramSettings.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   if ButtonSave.Tag = 0 then
     if MessageBox(0, PChar('Вы уверены что хотите выйти без сохранения?'), CaptionForm,
@@ -188,7 +188,7 @@ begin
       CanClose := False;
 end;
 
-procedure TFormProgramSettings.FormCreate(Sender: TObject);
+procedure TfProgramSettings.FormCreate(Sender: TObject);
 begin
   inherited;
   pcSettings.ActivePageIndex := 0;
@@ -196,7 +196,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.StringGridDemoClick(Sender: TObject);
+procedure TfProgramSettings.StringGridDemoClick(Sender: TObject);
 begin
   with (Sender as TStringGrid) do
     Repaint;
@@ -204,7 +204,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.StringGridDemoDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
+procedure TfProgramSettings.StringGridDemoDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
   State: TGridDrawState);
 begin
   // Так как свойство таблицы DefaultDrawing отключено (иначе ячейка таблицы будет обведена пунктирной линией)
@@ -252,7 +252,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.StringGridDemoEnter(Sender: TObject);
+procedure TfProgramSettings.StringGridDemoEnter(Sender: TObject);
 begin
   with (Sender as TStringGrid) do
     Repaint;
@@ -260,13 +260,13 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.StringGridDemoExit(Sender: TObject);
+procedure TfProgramSettings.StringGridDemoExit(Sender: TObject);
 begin
   with (Sender as TStringGrid) do
     Repaint;
 end;
 
-procedure TFormProgramSettings.StringGridDemoMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TfProgramSettings.StringGridDemoMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
   with (Sender as TStringGrid) do
     Repaint;
@@ -274,7 +274,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.ShapeMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
+procedure TfProgramSettings.ShapeMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
   X, Y: Integer);
 begin
   if Button <> mbLeft then
@@ -289,7 +289,7 @@ begin
   end;
 end;
 
-procedure TFormProgramSettings.sbOpenDirClick(Sender: TObject);
+procedure TfProgramSettings.sbOpenDirClick(Sender: TObject);
 var
   DirStr: string;
   TmpType: Byte;
@@ -310,7 +310,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.ButtonDefaultSettingsTablesClick(Sender: TObject);
+procedure TfProgramSettings.ButtonDefaultSettingsTablesClick(Sender: TObject);
 var
   Path: string;
   IFile: TIniFile;
@@ -354,7 +354,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.ButtonDefaultOtherSettingsClick(Sender: TObject);
+procedure TfProgramSettings.ButtonDefaultOtherSettingsClick(Sender: TObject);
 var
   Path: string;
   IFile: TIniFile;
@@ -378,7 +378,7 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.ButtonSaveClick(Sender: TObject);
+procedure TfProgramSettings.ButtonSaveClick(Sender: TObject);
 begin
   PS.BackgroundHead := ShapeBackgroundHead.Brush.Color;
   PS.FontHead := ShapeFontHead.Brush.Color;
@@ -434,14 +434,14 @@ end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.ButtonCancelClick(Sender: TObject);
+procedure TfProgramSettings.ButtonCancelClick(Sender: TObject);
 begin
   Close;
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-procedure TFormProgramSettings.GetSettings;
+procedure TfProgramSettings.GetSettings;
 begin
   ShapeBackgroundHead.Brush.Color := PS.BackgroundHead;
   ShapeFontHead.Brush.Color := PS.FontHead;
@@ -486,7 +486,7 @@ begin
   LoadUpdateSettings;
 end;
 
-procedure TFormProgramSettings.LoadUpdateSettings;
+procedure TfProgramSettings.LoadUpdateSettings;
 var Reg: TRegistry;
 begin
   Reg := TRegistry.Create(KEY_ALL_ACCESS);
@@ -526,7 +526,7 @@ begin
   end;
 end;
 
-procedure TFormProgramSettings.SaveUpdateSettings;
+procedure TfProgramSettings.SaveUpdateSettings;
 var Reg: TRegistry;
 begin
   Reg := TRegistry.Create(KEY_ALL_ACCESS);
@@ -557,7 +557,7 @@ begin
   end;
 end;
 
-procedure TFormProgramSettings.lblFontRowClick(Sender: TObject);
+procedure TfProgramSettings.lblFontRowClick(Sender: TObject);
 begin
   dlgFont1.Font := (Sender AS TLabel).Font;
   if dlgFont1.Execute then
@@ -569,7 +569,7 @@ begin
   edtExample.Font := lblFontText.Font;
 end;
 
-procedure TFormProgramSettings.rbInetServerClick(Sender: TObject);
+procedure TfProgramSettings.rbInetServerClick(Sender: TObject);
 begin
   gbInetServSettings.Enabled := rbInetServer.Checked;
   cbCreateLocalMirror.Enabled := rbInetServer.Checked;

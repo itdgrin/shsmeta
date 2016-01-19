@@ -3547,6 +3547,10 @@
         end
       end
     end
+    object mReportPrint: TMenuItem
+      Caption = #1055#1077#1095#1072#1090#1100' '#1086#1090#1095#1077#1090#1086#1074
+      OnClick = mReportPrintClick
+    end
   end
   object TimerCover: TTimer
     Enabled = False

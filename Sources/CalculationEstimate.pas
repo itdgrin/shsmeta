@@ -870,7 +870,7 @@ uses Main, DataModule, SignatureSSR, Waiting,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
   TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog,
   ManualPriceSelect, uSelectColumn, ContractPrice,
-  ManualSprItem, SmReport;
+  ManualSprItem, SmReportData;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -1587,6 +1587,8 @@ var
   fileName: string;
 begin
   ShowNeedSaveDialog;
+  ShowCalcResource(IdEstimate, 0, Self);
+  {
   fileName := ExtractFilePath(Application.ExeName) + C_REPORTDIR + 'ÿ¿¡ÀŒÕ œŒÀÕ€….xls';
   doc := dmSmReport.loadDocument(fileName);
   dmSmReport.qrSR.Active := False;
@@ -1594,6 +1596,7 @@ begin
   dmSmReport.qrSR.Active := True;
   dmSmReport.loadParams(dmSmReport.qrSR, doc, 5);
   dmSmReport.showDocument(doc);
+  }
   {
     ShellExecute(Handle, nil, 'rs.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
     PChar(GetCurrentDir + '\reports\'), SW_maximIZE);

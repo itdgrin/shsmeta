@@ -1,4 +1,4 @@
-unit SmReport;
+unit SmReportData;
 
 interface
 

@@ -197,6 +197,8 @@ type
     qr6: TStringField;
     dsVars: TDataSource;
     qrVarsf3: TStringField;
+    pnlTop2: TPanel;
+    btnShowTemplate: TBitBtn;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -261,12 +263,14 @@ type
     procedure qrDevicesCalcFields(DataSet: TDataSet);
     procedure mEditClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure btnShowTemplateClick(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
     flLoaded: Boolean;
     Editable: Boolean;
     ShowFullObject: Boolean;
+    ExcelApp: OLEVariant;
     FOldGridProc: TWndMethod;
     procedure GridProc(var Message: TMessage);
 
@@ -286,7 +290,7 @@ implementation
 {$R *.dfm}
 
 uses Main, ReplacementMatAndMech, CalculationEstimate, DataModule,
-  GlobsAndConst, TranspPersSelect, CalcResourceEdit, Waiting, SmReport;
+  GlobsAndConst, TranspPersSelect, CalcResourceEdit, Waiting, SmReportData;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil;
   AEditable: Boolean = True; AShowFullObject: Boolean = True; AShowTabs: Boolean = False);
@@ -357,6 +361,11 @@ begin
   if AOwner <> nil then
     fCalcResource.Width := AOwner.ClientWidth;
   fCalcResource.Show;
+end;
+
+procedure TfCalcResource.btnShowTemplateClick(Sender: TObject);
+begin
+  dmSmReport.showDocument(ExcelApp);
 end;
 
 procedure TfCalcResource.CalcFooter;
@@ -488,7 +497,6 @@ procedure TfCalcResource.FormShow(Sender: TObject);
     flSkipOther: Boolean;
     WorkSheet: OLEVariant;
     FData: Variant;
-    ExcelApp: OLEVariant;
   begin
     ExcelApp := dmSmReport.loadDocument(AFileName);
     dmSmReport.qrSR.Active := False;
@@ -1585,6 +1593,8 @@ end;
 
 procedure TfCalcResource.pgcChange(Sender: TObject);
 begin
+  pnlTop2.Visible := (pgc.ActivePageIndex = 0) and (Parent = FormCalculationEstimate);
+
   if not flLoaded then
     Exit;
   case pgc.ActivePageIndex of

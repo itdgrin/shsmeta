@@ -45,8 +45,8 @@ type
     // Процедура стандартной отрисовки таблиц
     class procedure DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
-    constructor Create(AOwner: TComponent); reintroduce; overload;
     constructor Create(AOwner: TComponent; const AInitParams: Variant); reintroduce; overload;
+    constructor Create(AOwner: TComponent); reintroduce; overload;
   end;
 
   TActivateEvent = procedure(ADataSet: TDataSet; ATag: Integer) of object;

@@ -16,9 +16,8 @@ uses
   TariffsIndex in 'TariffsIndex.pas' {FormTariffsIndex},
   About in 'About.pas' {fAbout},
   CalculationEstimate in 'CalculationEstimate.pas' {FormCalculationEstimate},
-  ConnectDatabase in 'ConnectDatabase.pas' {FormConnectDatabase},
   CardObject in 'CardObject.pas' {fCardObject},
-  ProgramSettings in 'ProgramSettings.pas' {FormProgramSettings},
+  ProgramSettings in 'ProgramSettings.pas' {fProgramSettings},
   Waiting in 'Waiting.pas' {FormWaiting},
   KC6 in 'KC6.pas' {fKC6},
   ActC6 in 'ActC6.pas' {FormActC6},
@@ -137,8 +136,11 @@ uses
   ContractPriceEdit in 'ContractPriceEdit.pas' {fContractPriceEdit},
   fReportC2B in 'fReportC2B.pas' {FormReportC2B},
   ContractPays in 'ContractPays.pas' {fContractPays},
-  SmReport in 'SmReport.pas' {dmSmReport: TDataModule},
-  uTestForRoma in 'uTestForRoma.pas' {Test_Form1};
+  SmReportData in 'SmReportData.pas' {dmSmReport: TDataModule},
+  uTestForRoma in 'uTestForRoma.pas' {Test_Form1},
+  SmReportMain in 'SmReportMain.pas' {fSmReportMain},
+  SmReportParams in 'SmReportParams.pas' {fSmReportParams},
+  SmReportParamsEdit in 'SmReportParamsEdit.pas' {fSmReportParamsEdit};
 
 {$R *.res}
 var MHandle: THandle;

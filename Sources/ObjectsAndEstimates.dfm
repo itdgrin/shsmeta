@@ -564,8 +564,8 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Margins.Bottom = 2
             Align = alClient
             Caption = #1042#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1079#1072' '#1084#1077#1089#1103#1094
-            Enabled = False
             TabOrder = 2
+            OnClick = btnReport1Click
           end
           object btnReport2: TBitBtn
             AlignWithMargins = True

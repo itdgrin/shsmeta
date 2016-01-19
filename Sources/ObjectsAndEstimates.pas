@@ -183,6 +183,7 @@ type
     procedure mActAccessClick(Sender: TObject);
     procedure PMExportAllObjectClick(Sender: TObject);
     procedure btnReportC2BClick(Sender: TObject);
+    procedure btnReport1Click(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
     HintButton = 'Окно объектов и смет';
@@ -207,7 +208,7 @@ uses
   CalculationEstimate, Waiting, BasicData, DrawingTables,
   KC6, CardAct, ImportExportModule, GlobsAndConst,
   UserAccess, SprController, SerialKeyModule,
-  fReportC2B;
+  fReportC2B, SmReportMain;
 
 {$R *.dfm}
 
@@ -667,6 +668,13 @@ end;
 procedure TfObjectsAndEstimates.PanelBottomResize(Sender: TObject);
 begin
   PanelEstimates.Width := ((Sender as TPanel).Width - SplitterBottomCenter.Width) div 2;
+end;
+
+procedure TfObjectsAndEstimates.btnReport1Click(Sender: TObject);
+begin
+  if (not Assigned(fSmReportMain)) then
+    fSmReportMain := TfSmReportMain.Create(FormMain, 2);
+  fSmReportMain.Show;
 end;
 
 procedure TfObjectsAndEstimates.btnReportC2BClick(Sender: TObject);

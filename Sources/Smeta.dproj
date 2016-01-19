@@ -127,14 +127,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="CalculationEstimate.pas">
             <Form>FormCalculationEstimate</Form>
         </DCCReference>
-        <DCCReference Include="ConnectDatabase.pas">
-            <Form>FormConnectDatabase</Form>
-        </DCCReference>
         <DCCReference Include="CardObject.pas">
             <Form>fCardObject</Form>
         </DCCReference>
         <DCCReference Include="ProgramSettings.pas">
-            <Form>FormProgramSettings</Form>
+            <Form>fProgramSettings</Form>
         </DCCReference>
         <DCCReference Include="Waiting.pas">
             <Form>FormWaiting</Form>
@@ -530,13 +527,25 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>fContractPays</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="SmReport.pas">
+        <DCCReference Include="SmReportData.pas">
             <Form>dmSmReport</Form>
             <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="uTestForRoma.pas">
             <Form>Test_Form1</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="SmReportMain.pas">
+            <Form>fSmReportMain</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="SmReportParams.pas">
+            <Form>fSmReportParams</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="SmReportParamsEdit.pas">
+            <Form>fSmReportParamsEdit</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">
@@ -563,7 +572,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                     <VersionInfo Name="MajorVer">1</VersionInfo>
                     <VersionInfo Name="MinorVer">0</VersionInfo>
                     <VersionInfo Name="Release">0</VersionInfo>
-                    <VersionInfo Name="Build">6757</VersionInfo>
+                    <VersionInfo Name="Build">6760</VersionInfo>
                     <VersionInfo Name="Debug">True</VersionInfo>
                     <VersionInfo Name="PreRelease">False</VersionInfo>
                     <VersionInfo Name="Special">False</VersionInfo>
@@ -575,7 +584,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <VersionInfoKeys>
                     <VersionInfoKeys Name="CompanyName">Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="FileDescription">Расчёт сметы</VersionInfoKeys>
-                    <VersionInfoKeys Name="FileVersion">1.0.0.6757</VersionInfoKeys>
+                    <VersionInfoKeys Name="FileVersion">1.0.0.6760</VersionInfoKeys>
                     <VersionInfoKeys Name="InternalName">Estimate</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalCopyright">© 2013 Янович Игорь</VersionInfoKeys>
                     <VersionInfoKeys Name="LegalTrademarks"/>
