@@ -17,7 +17,6 @@ type
     Panel5: TPanel;
 
     LabelNumberEstimate: TLabel;
-    LabelNumberRow: TLabel;
     LabelNameEstimate: TLabel;
     LabelCompose: TLabel;
     LabelPostCompose: TLabel;
@@ -48,7 +47,6 @@ type
     dsMain: TDataSource;
     dbedtSM_NUMBER: TDBEdit;
     dbedtNAME: TDBEdit;
-    dbedtROW_NUMBER: TDBEdit;
     dbedtPREPARER: TDBEdit;
     dbedtPOST_PREPARER: TDBEdit;
     dbedtEXAMINER: TDBEdit;
@@ -58,9 +56,15 @@ type
     cbbType: TComboBox;
     chkAddChapterNumber: TCheckBox;
     pnl1: TPanel;
-    cbb1: TComboBox;
     lblNumberChapter: TLabel;
     FormStorage: TJvFormStorage;
+    LabelNumberRow: TLabel;
+    dbcbbCHAPTER: TDBLookupComboBox;
+    dbcbbSUBCHAPTER: TDBLookupComboBox;
+    qrSSRChap: TFDQuery;
+    dsSSRChap: TDataSource;
+    qrSSRSubChap: TFDQuery;
+    dsSSRSubChap: TDataSource;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -77,6 +81,7 @@ type
     procedure qrPartsAfterScroll(DataSet: TDataSet);
     procedure cbbTypeCloseUp(Sender: TObject);
     procedure qrMainNewRecord(DataSet: TDataSet);
+    procedure dbcbbCHAPTERClick(Sender: TObject);
 
   private
     StrQuery, NewLocalNumberEstimate: String;
@@ -135,26 +140,22 @@ begin
     MaxWidth := Width;
   end;
 
-  Caption := PWideChar(Caption);
-
   btnSave.Tag := 0;
-
-  Left := FormMain.Left + (FormMain.Width - Width) div 2;
-  Top := FormMain.Top + (FormMain.Height - Height) div 2;
-
   Editing := False;
 end;
 
 procedure TfCardEstimate.FormShow(Sender: TObject);
 begin
-  dbedtROW_NUMBER.Enabled := True;
-  dbedtROW_NUMBER.Color := clWindow;
-
   qrMain.Active := False;
   qrMain.ParamByName('SM_ID').AsInteger := IdEstimate;
   qrMain.Active := True;
 
   btnSave.Tag := 0;
+
+  //Глава сср выбирается только в объектной смете
+  pnl1.Visible := TypeEstimate = 2;
+  qrSSRChap.Active := TypeEstimate = 2;
+  qrSSRSubChap.Active := TypeEstimate = 2;
 
   if not Editing then
     qrMain.Append
@@ -164,10 +165,8 @@ begin
   lblType.Visible := TypeEstimate = 1;
   cbbType.Visible := TypeEstimate = 1;
 
-  pnl1.Visible := TypeEstimate = 2;
   chkAddChapterNumber.Visible := TypeEstimate = 2;
 
-  cbb1.ItemIndex := qrMain.FieldByName('CHAPTER').AsInteger - 1;
   case TypeEstimate of
     1, 2:
       begin
@@ -212,9 +211,6 @@ begin
         dblkcbbParts.Enabled := True;
         dblkcbbSections.Enabled := True;
         dblkcbbTypesWorks.Enabled := True;
-
-        dbedtROW_NUMBER.Enabled := False;
-        dbedtROW_NUMBER.Color := $00E1DFE0;
 
         if not qrParts.Active then
           CloseOpen(qrParts);
@@ -628,11 +624,10 @@ begin
   if TypeEstimate = 2 then
   begin
     qrMain.Edit;
-    qrMain.FieldByName('CHAPTER').Value := cbb1.ItemIndex + 1;
 
     if chkAddChapterNumber.Checked then
     begin
-      CHAPTER_NAME := cbb1.Text;
+      CHAPTER_NAME := dbcbbCHAPTER.Text;
       // Удаляем весь текст названия после слова ГЛАВА
       pos_id := Pos('ГЛАВА', qrMain.FieldByName('NAME').AsString);
       TMP_NAME := qrMain.FieldByName('NAME').AsString;
@@ -655,14 +650,21 @@ end;
 
 procedure TfCardEstimate.ComboBoxChange(Sender: TObject);
 begin
-  if SkeepEvent or not CheckQrActiveEmpty(qrMain) or not CheckQrActiveEmpty(qrParts) or
-    not CheckQrActiveEmpty(qrSections) or not CheckQrActiveEmpty(qrTypesWorks) then
+  if SkeepEvent or
+     not CheckQrActiveEmpty(qrMain) or
+     not CheckQrActiveEmpty(qrParts) or
+     not CheckQrActiveEmpty(qrSections) or
+     not CheckQrActiveEmpty(qrTypesWorks) then
     Exit;
   qrMain.Edit;
-  qrMain.FieldByName('SM_NUMBER').AsString := 'Ж' + qrParts.FieldByName('CODE1').AsString +
-    qrSections.FieldByName('CODE1').AsString + qrTypesWorks.FieldByName('CODE1').AsString;
-  qrMain.FieldByName('NAME').AsString := qrParts.FieldByName('NAME').AsString + qrSections.FieldByName('NAME')
-    .AsString + qrTypesWorks.FieldByName('NAME').AsString;
+  qrMain.FieldByName('SM_NUMBER').AsString :=
+    'Ж' + qrParts.FieldByName('CODE1').AsString +
+    qrSections.FieldByName('CODE1').AsString +
+    qrTypesWorks.FieldByName('CODE1').AsString;
+  qrMain.FieldByName('NAME').AsString :=
+    qrParts.FieldByName('NAME').AsString +
+    qrSections.FieldByName('NAME').AsString +
+    qrTypesWorks.FieldByName('NAME').AsString;
   // qrMain.CheckBrowseMode;
 end;
 
@@ -758,11 +760,20 @@ begin
   end;
 end;
 
+procedure TfCardEstimate.dbcbbCHAPTERClick(Sender: TObject);
+begin
+  qrMain.FieldByName('ROW_NUMBER').Value := Null;
+  cbbTypeCloseUp(chkAddChapterNumber);
+end;
+
 procedure TfCardEstimate.qrMainNewRecord(DataSet: TDataSet);
 begin
-  // По умолчанию номер главы = 3
+  // По умолчанию номер главы
   if TypeEstimate = 2 then
+  begin
     qrMain.FieldByName('CHAPTER').AsInteger := 2;
+    qrMain.FieldByName('ROW_NUMBER').AsInteger := Null;
+  end;
 end;
 
 procedure TfCardEstimate.qrPartsAfterScroll(DataSet: TDataSet);

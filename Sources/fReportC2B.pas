@@ -319,10 +319,6 @@ end;
 procedure TFormReportC2B.FormCreate(Sender: TObject);
 var D: Word;
 begin
-  ClientWidth := FormMain.ClientWidth div 2;
-  ClientHeight := FormMain.ClientHeight div 2;
-  Top := 30;
-  Left := 30;
   WindowState := wsMaximized;
   // Создаём кнопку от этого окна (на главной форме внизу)
   FOwnPanelButton :=
@@ -339,6 +335,12 @@ begin
   begin
     qrObject.Locate('obj_id', FObjectID, []);
     cbObjName.Enabled := False;
+  end
+  else
+  begin
+    ShowMessage('Не задан объект!');
+    PostMessage(Handle, WM_CLOSE, 0, 0);
+    Exit;
   end;
 
   cbObjName.KeyValue := qrObject.FieldByName('obj_id').Value;

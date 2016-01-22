@@ -4,7 +4,7 @@ object fCardEstimate: TfCardEstimate
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1089#1084#1077#1090#1099
-  ClientHeight = 271
+  ClientHeight = 292
   ClientWidth = 604
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,18 +13,19 @@ object fCardEstimate: TfCardEstimate
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
   DesignSize = (
     604
-    271)
+    292)
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel: TBevel
     Left = 0
-    Top = 230
+    Top = 251
     Width = 604
     Height = 41
     Align = alBottom
@@ -47,16 +48,9 @@ object fCardEstimate: TfCardEstimate
     ParentBackground = False
     ParentFont = False
     TabOrder = 0
-    object LabelNumberRow: TLabel
-      Left = 167
-      Top = 6
-      Width = 55
-      Height = 13
-      Caption = #8470' '#1089#1090#1088#1086#1082#1080':'
-    end
     object LabelNumberEstimate: TLabel
-      Left = 11
-      Top = 5
+      Left = 28
+      Top = 6
       Width = 51
       Height = 13
       AutoSize = False
@@ -69,15 +63,15 @@ object fCardEstimate: TfCardEstimate
       ParentFont = False
     end
     object lblType: TLabel
-      Left = 327
-      Top = 6
+      Left = 192
+      Top = 7
       Width = 22
       Height = 13
       Caption = #1058#1080#1087':'
     end
     object dbedtSM_NUMBER: TDBEdit
-      Left = 68
-      Top = 2
+      Left = 86
+      Top = 3
       Width = 93
       Height = 21
       Color = 14802912
@@ -92,29 +86,14 @@ object fCardEstimate: TfCardEstimate
       ReadOnly = True
       TabOrder = 0
     end
-    object dbedtROW_NUMBER: TDBEdit
-      Left = 228
-      Top = 2
-      Width = 93
-      Height = 21
-      DataField = 'ROW_NUMBER'
-      DataSource = dsMain
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 1
-    end
     object cbbType: TComboBox
-      Left = 355
-      Top = 2
-      Width = 246
+      Left = 220
+      Top = 3
+      Width = 126
       Height = 21
       Style = csDropDownList
       ItemIndex = 0
-      TabOrder = 2
+      TabOrder = 1
       Text = #1083#1086#1082#1072#1083#1100#1085#1072#1103
       OnCloseUp = cbbTypeCloseUp
       Items.Strings = (
@@ -126,7 +105,7 @@ object fCardEstimate: TfCardEstimate
   end
   object Panel2: TPanel
     Left = 0
-    Top = 125
+    Top = 147
     Width = 604
     Height = 25
     Align = alTop
@@ -134,16 +113,16 @@ object fCardEstimate: TfCardEstimate
     ParentBackground = False
     TabOrder = 5
     object LabelNameEstimate: TLabel
-      Left = 10
+      Left = 27
       Top = 5
       Width = 52
       Height = 13
       Caption = #1053#1072#1079#1074#1072#1085#1080#1077':'
     end
     object dbedtNAME: TDBEdit
-      Left = 68
+      Left = 86
       Top = 3
-      Width = 533
+      Width = 515
       Height = 21
       DataField = 'NAME'
       DataSource = dsMain
@@ -158,7 +137,7 @@ object fCardEstimate: TfCardEstimate
   end
   object Panel3: TPanel
     Left = 0
-    Top = 150
+    Top = 172
     Width = 604
     Height = 25
     Align = alTop
@@ -166,7 +145,7 @@ object fCardEstimate: TfCardEstimate
     ParentBackground = False
     TabOrder = 6
     object LabelCompose: TLabel
-      Left = 10
+      Left = 27
       Top = 5
       Width = 52
       Height = 13
@@ -180,9 +159,9 @@ object fCardEstimate: TfCardEstimate
       Caption = #1044#1086#1083#1078#1085#1086#1089#1090#1100':'
     end
     object dbedtPREPARER: TDBEdit
-      Left = 68
+      Left = 86
       Top = 2
-      Width = 230
+      Width = 212
       Height = 21
       DataField = 'PREPARER'
       DataSource = dsMain
@@ -206,7 +185,7 @@ object fCardEstimate: TfCardEstimate
   end
   object Panel4: TPanel
     Left = 0
-    Top = 175
+    Top = 197
     Width = 604
     Height = 25
     Align = alTop
@@ -214,7 +193,7 @@ object fCardEstimate: TfCardEstimate
     ParentBackground = False
     TabOrder = 7
     object LabelChecked: TLabel
-      Left = 9
+      Left = 26
       Top = 5
       Width = 53
       Height = 13
@@ -228,9 +207,9 @@ object fCardEstimate: TfCardEstimate
       Caption = #1044#1086#1083#1078#1085#1086#1089#1090#1100':'
     end
     object dbedtEXAMINER: TDBEdit
-      Left = 68
+      Left = 86
       Top = 2
-      Width = 230
+      Width = 212
       Height = 21
       DataField = 'EXAMINER'
       DataSource = dsMain
@@ -260,7 +239,7 @@ object fCardEstimate: TfCardEstimate
   end
   object Panel5: TPanel
     Left = 0
-    Top = 200
+    Top = 222
     Width = 604
     Height = 25
     Align = alTop
@@ -292,7 +271,7 @@ object fCardEstimate: TfCardEstimate
   end
   object btnSave: TButton
     Left = 390
-    Top = 238
+    Top = 259
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
@@ -309,7 +288,7 @@ object fCardEstimate: TfCardEstimate
   end
   object btnClose: TButton
     Left = 496
-    Top = 238
+    Top = 259
     Width = 100
     Height = 25
     Anchors = [akRight, akBottom]
@@ -319,7 +298,7 @@ object fCardEstimate: TfCardEstimate
   end
   object PanelPart: TPanel
     Left = 0
-    Top = 50
+    Top = 72
     Width = 604
     Height = 25
     Align = alTop
@@ -333,16 +312,16 @@ object fCardEstimate: TfCardEstimate
     ParentFont = False
     TabOrder = 2
     object LabelPart: TLabel
-      Left = 28
+      Left = 45
       Top = 5
       Width = 34
       Height = 13
       Caption = #1063#1072#1089#1090#1100':'
     end
     object dblkcbbParts: TDBLookupComboBox
-      Left = 68
+      Left = 86
       Top = 3
-      Width = 533
+      Width = 515
       Height = 21
       DataField = 'PART_ID'
       DataSource = dsMain
@@ -361,7 +340,7 @@ object fCardEstimate: TfCardEstimate
   end
   object PanelSection: TPanel
     Left = 0
-    Top = 75
+    Top = 97
     Width = 604
     Height = 25
     Align = alTop
@@ -369,16 +348,16 @@ object fCardEstimate: TfCardEstimate
     ParentBackground = False
     TabOrder = 3
     object LabelSection: TLabel
-      Left = 22
+      Left = 39
       Top = 5
       Width = 40
       Height = 13
       Caption = #1056#1072#1079#1076#1077#1083':'
     end
     object dblkcbbSections: TDBLookupComboBox
-      Left = 68
+      Left = 86
       Top = 3
-      Width = 533
+      Width = 515
       Height = 21
       DataField = 'SECTION_ID'
       DataSource = dsMain
@@ -397,7 +376,7 @@ object fCardEstimate: TfCardEstimate
   end
   object PanelTypeWork: TPanel
     Left = 0
-    Top = 100
+    Top = 122
     Width = 604
     Height = 25
     Align = alTop
@@ -405,16 +384,16 @@ object fCardEstimate: TfCardEstimate
     ParentBackground = False
     TabOrder = 4
     object LabelTypeWork: TLabel
-      Left = 6
+      Left = 23
       Top = 5
       Width = 56
       Height = 13
       Caption = #1042#1080#1076' '#1088#1072#1073#1086#1090':'
     end
     object dblkcbbTypesWorks: TDBLookupComboBox
-      Left = 68
+      Left = 86
       Top = 3
-      Width = 533
+      Width = 515
       Height = 21
       DataField = 'TYPE_WORK_ID'
       DataSource = dsMain
@@ -433,7 +412,7 @@ object fCardEstimate: TfCardEstimate
   end
   object chkAddChapterNumber: TCheckBox
     Left = 8
-    Top = 246
+    Top = 267
     Width = 213
     Height = 17
     Anchors = [akLeft, akBottom]
@@ -445,46 +424,70 @@ object fCardEstimate: TfCardEstimate
     Left = 0
     Top = 25
     Width = 604
-    Height = 25
+    Height = 47
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
     object lblNumberChapter: TLabel
-      Left = 11
+      Left = 5
       Top = 6
       Width = 74
       Height = 13
       Caption = #8470' '#1075#1083#1072#1074#1099' '#1057#1057#1056':'
     end
-    object cbb1: TComboBox
-      Left = 91
-      Top = 4
-      Width = 510
+    object LabelNumberRow: TLabel
+      Left = 24
+      Top = 29
+      Width = 55
+      Height = 13
+      Caption = #8470' '#1089#1090#1088#1086#1082#1080':'
+    end
+    object dbcbbCHAPTER: TDBLookupComboBox
+      Left = 86
+      Top = 2
+      Width = 515
       Height = 21
-      Style = csDropDownList
+      DataField = 'CHAPTER'
+      DataSource = dsMain
+      DropDownRows = 20
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'CID'
+      ListField = 'chap_name'
+      ListSource = dsSSRChap
+      ParentFont = False
       TabOrder = 0
-      OnCloseUp = cbbTypeCloseUp
-      Items.Strings = (
-        #1043#1051#1040#1042#1040' 1  '#1055#1054#1044#1043#1054#1058#1054#1042#1050#1040' '#1058#1045#1056#1056#1048#1058#1054#1056#1048#1048' '#1057#1058#1056#1054#1048#1058#1045#1051#1068#1057#1058#1042#1040
-        #1043#1051#1040#1042#1040' 2 '#1054#1057#1053#1054#1042#1053#1067#1045' '#1054#1041#1066#1045#1050#1058#1067' '#1057#1058#1056#1054#1048#1058#1045#1051#1068#1057#1058#1042#1040
-        #1043#1051#1040#1042#1040' 3 '#1054#1041#1066#1045#1050#1058#1067' '#1055#1054#1044#1057#1054#1041#1053#1054#1043#1054' '#1048' '#1054#1041#1057#1051#1059#1046#1048#1042#1040#1070#1065#1045#1043#1054' '#1053#1040#1047#1053#1040#1063#1045#1053#1048#1071
-        #1043#1051#1040#1042#1040' 4 '#1054#1041#1066#1045#1050#1058#1067' '#1069#1053#1045#1056#1043#1045#1058#1048#1063#1045#1057#1050#1054#1043#1054' '#1061#1054#1047#1071#1049#1057#1058#1042#1040
-        #1043#1051#1040#1042#1040' 5 '#1054#1041#1066#1045#1050#1058#1067' '#1058#1056#1040#1053#1057#1055#1054#1056#1058#1053#1054#1043#1054' '#1061#1054#1047#1071#1049#1057#1058#1042#1040' '#1048' '#1057#1042#1071#1047#1048
-        
-          #1043#1051#1040#1042#1040' 6 '#1053#1040#1056#1059#1046#1053#1067#1045' '#1057#1045#1058#1048' '#1048' '#1057#1054#1054#1056#1059#1046#1045#1053#1048#1071' '#1042#1054#1044#1054#1057#1053#1040#1041#1046#1045#1053#1048#1071', '#1050#1040#1053#1040#1051#1048#1047#1040#1062#1048#1048', '#1058 +
-          #1045#1055#1054#1057#1053#1040#1041#1046#1045#1053#1048#1071' '#1048' '#1043#1040#1047#1054#1057#1053#1040#1041#1046#1045#1053#1048#1071
-        #1043#1051#1040#1042#1040' 7 '#1041#1051#1040#1043#1054#1059#1057#1058#1056#1054#1049#1057#1058#1042#1054' '#1048' '#1054#1047#1045#1051#1045#1053#1045#1053#1048#1045' '#1058#1045#1056#1056#1048#1058#1054#1056#1048#1048
-        #1043#1051#1040#1042#1040' 8 '#1042#1056#1045#1052#1045#1053#1053#1067#1045' '#1047#1044#1040#1053#1048#1071' '#1048' '#1057#1054#1054#1056#1059#1046#1045#1053#1048#1071
-        #1043#1051#1040#1042#1040' 9 '#1055#1056#1054#1063#1048#1045' '#1056#1040#1041#1054#1058#1067' '#1048' '#1047#1040#1058#1056#1040#1058#1067
-        #1043#1051#1040#1042#1040' 10 '#1057#1056#1045#1044#1057#1058#1042#1040' '#1047#1040#1050#1040#1047#1063#1048#1050#1040', '#1047#1040#1057#1058#1056#1054#1049#1065#1048#1050#1040
-        #1043#1051#1040#1042#1040' 11 '#1055#1054#1044#1043#1054#1058#1054#1042#1050#1040' '#1069#1050#1057#1055#1051#1059#1040#1058#1040#1062#1048#1054#1053#1053#1067#1061' '#1050#1040#1044#1056#1054#1042)
+      OnClick = dbcbbCHAPTERClick
+    end
+    object dbcbbSUBCHAPTER: TDBLookupComboBox
+      Left = 86
+      Top = 26
+      Width = 515
+      Height = 21
+      DataField = 'ROW_NUMBER'
+      DataSource = dsMain
+      DropDownRows = 20
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      KeyField = 'SCID'
+      ListField = 'syb_name'
+      ListSource = dsSSRSubChap
+      ParentFont = False
+      TabOrder = 1
     end
   end
   object qrTemp: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 185
+    Left = 305
+    Top = 248
   end
   object qrParts: TFDQuery
     Connection = DM.Connect
@@ -517,13 +520,13 @@ object fCardEstimate: TfCardEstimate
       '  `parts_estimates`'
       'WHERE `CODE`<>0'
       'ORDER BY `CODE`;')
-    Left = 497
-    Top = 42
+    Left = 289
+    Top = 74
   end
   object dsParts: TDataSource
     DataSet = qrParts
-    Left = 536
-    Top = 42
+    Left = 328
+    Top = 74
   end
   object qrSections: TFDQuery
     Connection = DM.Connect
@@ -551,13 +554,13 @@ object fCardEstimate: TfCardEstimate
       '  `sections_estimates`'
       'WHERE -`CODE`<>0'
       'ORDER BY `CODE`;')
-    Left = 361
-    Top = 66
+    Left = 417
+    Top = 90
   end
   object dsSections: TDataSource
     DataSet = qrSections
-    Left = 400
-    Top = 66
+    Left = 456
+    Top = 90
   end
   object qrTypesWorks: TFDQuery
     Connection = DM.Connect
@@ -593,13 +596,13 @@ object fCardEstimate: TfCardEstimate
       '  `types_works`'
       'WHERE `CODE`<>0'
       'ORDER BY `CODE`;')
-    Left = 233
-    Top = 98
+    Left = 201
+    Top = 114
   end
   object dsTypesWorks: TDataSource
     DataSet = qrTypesWorks
-    Left = 280
-    Top = 98
+    Left = 240
+    Top = 114
   end
   object qrMain: TFDQuery
     OnNewRecord = qrMainNewRecord
@@ -613,8 +616,8 @@ object fCardEstimate: TfCardEstimate
       'SELECT * '
       'FROM smetasourcedata'
       'WHERE SM_ID=:SM_ID')
-    Left = 17
-    Top = 58
+    Left = 225
+    Top = 242
     ParamData = <
       item
         Name = 'SM_ID'
@@ -625,8 +628,8 @@ object fCardEstimate: TfCardEstimate
   end
   object dsMain: TDataSource
     DataSet = qrMain
-    Left = 48
-    Top = 58
+    Left = 240
+    Top = 250
   end
   object FormStorage: TJvFormStorage
     AppStorage = FormMain.AppIni
@@ -635,7 +638,64 @@ object fCardEstimate: TfCardEstimate
     StoredProps.Strings = (
       'chkAddChapterNumber.Checked')
     StoredValues = <>
-    Left = 24
-    Top = 136
+    Left = 152
+    Top = 240
+  end
+  object qrSSRChap: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    SQL.Strings = (
+      'SELECT `CID`, CONCAT("'#1043#1051#1040#1042#1040' ",`CID`, ". ", `CNAME`) AS chap_name'
+      'FROM `ssr_chapters`'
+      'WHERE `SCID` is null ORDER BY `CID`;')
+    Left = 353
+    Top = 18
+  end
+  object dsSSRChap: TDataSource
+    DataSet = qrSSRChap
+    Left = 392
+    Top = 18
+  end
+  object qrSSRSubChap: TFDQuery
+    MasterSource = dsSSRChap
+    MasterFields = 'CID'
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvMapRules, fvFmtDisplayNumeric]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtByteString
+        TargetDataType = dtAnsiString
+      end>
+    SQL.Strings = (
+      
+        'SELECT `SCID`, IF(not(`SCID` is null), CONCAT(`SCID`, ". ", `CNA' +
+        'ME`), "") AS syb_name'
+      'FROM `ssr_chapters`'
+      'WHERE (`CID` = :CID) ORDER BY `SCID`;')
+    Left = 481
+    Top = 18
+    ParamData = <
+      item
+        Name = 'CID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object dsSSRSubChap: TDataSource
+    DataSet = qrSSRSubChap
+    Left = 520
+    Top = 18
   end
 end

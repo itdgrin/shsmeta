@@ -316,7 +316,7 @@ object FormReportC2B: TFormReportC2B
     Top = 96
     Width = 857
     Height = 386
-    ActivePage = tsRegActs
+    ActivePage = tsRepAct
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -597,11 +597,6 @@ object FormReportC2B: TFormReportC2B
               item
                 Expanded = False
                 FieldName = 'DevItem'
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clWindowText
-                Font.Height = -11
-                Font.Name = 'Tahoma'
-                Font.Style = []
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1090#1072#1090#1100#1080' '#1086#1090#1082#1083#1086#1085#1077#1085#1080#1081
                 Visible = True
@@ -645,8 +640,6 @@ object FormReportC2B: TFormReportC2B
           Font.Style = []
           ParentFont = False
           TabOrder = 2
-          ExplicitTop = 313
-          ExplicitHeight = 41
           object memLeft: TDBMemo
             Left = 1
             Top = 1
@@ -663,7 +656,6 @@ object FormReportC2B: TFormReportC2B
             ParentFont = False
             ReadOnly = True
             TabOrder = 0
-            ExplicitHeight = 39
           end
           object memRight: TDBMemo
             AlignWithMargins = True
@@ -686,8 +678,6 @@ object FormReportC2B: TFormReportC2B
             ParentFont = False
             ReadOnly = True
             TabOrder = 1
-            ExplicitTop = 16
-            ExplicitHeight = 24
           end
         end
       end
@@ -914,11 +904,6 @@ object FormReportC2B: TFormReportC2B
             item
               Expanded = False
               FieldName = 'Num'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
               Title.Caption = #8470
               Width = 20
               Visible = True
@@ -942,11 +927,6 @@ object FormReportC2B: TFormReportC2B
             item
               Expanded = False
               FieldName = 'YearSumm'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -11
-              Font.Name = 'Tahoma'
-              Font.Style = []
               Title.Alignment = taCenter
               Title.Caption = #1057' '#1085#1072#1095#1072#1083#1072' '#1075#1086#1076#1072
               Width = 100
@@ -982,8 +962,6 @@ object FormReportC2B: TFormReportC2B
           ParentFont = False
           ReadOnly = True
           TabOrder = 2
-          ExplicitLeft = 2
-          ExplicitTop = 320
         end
       end
     end
