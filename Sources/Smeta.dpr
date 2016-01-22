@@ -65,7 +65,6 @@ uses
   Tools in 'Tools.pas',
   KC6Journal in 'KC6Journal.pas' {fKC6Journal},
   CalculationEstimateSummaryCalculations in 'CalculationEstimateSummaryCalculations.pas' {frCalculationEstimateSummaryCalculations: TFrame},
-  CalculationEstimateSSR in 'CalculationEstimateSSR.pas' {frCalculationEstimateSSR: TFrame},
   CalcResourceFact in 'CalcResourceFact.pas' {fCalcResourceFact},
   CalculationDump in 'CalculationDump.pas' {FormCalculationDump},
   CalcTravel in 'CalcTravel.pas' {fCalcTravel},
@@ -140,7 +139,8 @@ uses
   uTestForRoma in 'uTestForRoma.pas' {Test_Form1},
   SmReportMain in 'SmReportMain.pas' {fSmReportMain},
   SmReportParams in 'SmReportParams.pas' {fSmReportParams},
-  SmReportParamsEdit in 'SmReportParamsEdit.pas' {fSmReportParamsEdit};
+  SmReportParamsEdit in 'SmReportParamsEdit.pas' {fSmReportParamsEdit},
+  fReportSSR in 'fReportSSR.pas' {FormReportSSR};
 
 {$R *.res}
 var MHandle: THandle;

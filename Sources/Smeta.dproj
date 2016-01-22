@@ -281,10 +281,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>frCalculationEstimateSummaryCalculations</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="CalculationEstimateSSR.pas">
-            <Form>frCalculationEstimateSSR</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="CalcResourceFact.pas">
             <Form>fCalcResourceFact</Form>
         </DCCReference>
@@ -546,6 +542,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DCCReference>
         <DCCReference Include="SmReportParamsEdit.pas">
             <Form>fSmReportParamsEdit</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="fReportSSR.pas">
+            <Form>FormReportSSR</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

@@ -7,7 +7,7 @@ uses
   ExtCtrls, StdCtrls, Grids, DBGrids, Buttons, DB, Menus, ShellAPI, DateUtils, IniFiles, ImgList, Clipbrd,
   Math, pngimage, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Vcl.DBCtrls, CalculationEstimateSSR, CalculationEstimateSummaryCalculations,
+  FireDAC.Comp.Client, Vcl.DBCtrls, CalculationEstimateSummaryCalculations,
   JvExDBGrids, JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression, GlobsAndConst,
   FireDAC.UI.Intf, JvExComCtrls, JvDBTreeView, Generics.Collections, Tools, Generics.Defaults,
   fFrameCalculator, Data.FmtBcd, dmReportU, JvComponentBase, JvFormPlacement, SprController;
@@ -172,7 +172,6 @@ type
     qrDescription: TFDQuery;
     qrTemp: TFDQuery;
     qrTemp1: TFDQuery;
-    frSSR: TfrCalculationEstimateSSR;
     dsDescription: TDataSource;
     qrMechanizm: TFDQuery;
     dsMechanizm: TDataSource;
@@ -1280,29 +1279,6 @@ begin
   ShellExecute(Handle, nil, 'ssr.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
     PChar(GetCurrentDir + '\REPORTS\'), SW_maximIZE);
   Exit;
-
-  if SpeedButtonSSR.Tag = 0 then
-  begin
-    SpeedButtonSSR.Down := True;
-
-    SpeedButtonLocalEstimate.Tag := 0;
-    SpeedButtonSummaryCalculation.Tag := 0;
-    SpeedButtonSSR.Tag := 1;
-
-    // Настройка видимости панелей
-    PanelLocalEstimate.Visible := False;
-    pnlSummaryCalculations.Visible := False;
-    PanelSSR.Visible := True;
-
-    // Инициализация заполнения фрейма данными
-    frSSR.LoadData(IdObject);
-
-    // Делаем кнопки верхнего правого меню неактивными
-    BottomTopMenuEnabled(False);
-
-    pnlCalculationYesNo.Enabled := False;
-    pnlCalculationYesNo.Color := clSilver;
-  end;
 end;
 
 procedure TFormCalculationEstimate.btnStartupClick(Sender: TObject);

@@ -3395,41 +3395,6 @@
     Caption = 'PanelSSR'
     ParentBackground = False
     TabOrder = 5
-    inline frSSR: TfrCalculationEstimateSSR
-      Left = 0
-      Top = 0
-      Width = 95
-      Height = 53
-      Align = alClient
-      TabOrder = 0
-      ExplicitWidth = 95
-      ExplicitHeight = 53
-      inherited pnlSSR: TPanel
-        Width = 95
-        Height = 53
-        ExplicitWidth = 95
-        ExplicitHeight = 53
-        inherited spl1: TSplitter
-          Width = 95
-          ExplicitWidth = 95
-        end
-        inherited pnlTop: TPanel
-          Width = 95
-          ExplicitWidth = 95
-          inherited edt1: TEdit
-            Width = 0
-            ExplicitWidth = 0
-          end
-          inherited mmo1: TMemo
-            Width = 0
-            ExplicitWidth = 0
-          end
-        end
-        inherited dbgrd1: TDBGrid
-          Width = 95
-        end
-      end
-    end
   end
   object pnlSummaryCalculations: TPanel
     Left = 290
