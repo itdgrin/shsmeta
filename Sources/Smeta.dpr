@@ -140,6 +140,8 @@ uses
   SmReportMain in 'SmReportMain.pas' {fSmReportMain},
   SmReportParams in 'SmReportParams.pas' {fSmReportParams},
   SmReportParamsEdit in 'SmReportParamsEdit.pas' {fSmReportParamsEdit},
+  SmReportParamSelect in 'SmReportParamSelect.pas' {fSmReportParamSelect},
+  SmReportListSQL in 'SmReportListSQL.pas' {fSmReportListSQL},
   fReportSSR in 'fReportSSR.pas' {FormReportSSR};
 
 {$R *.res}

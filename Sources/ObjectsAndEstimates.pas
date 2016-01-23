@@ -184,6 +184,7 @@ type
     procedure PMExportAllObjectClick(Sender: TObject);
     procedure btnReportC2BClick(Sender: TObject);
     procedure btnReport1Click(Sender: TObject);
+    procedure btnReport2Click(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
     HintButton = 'Окно объектов и смет';
@@ -674,6 +675,13 @@ procedure TfObjectsAndEstimates.btnReport1Click(Sender: TObject);
 begin
   if (not Assigned(fSmReportMain)) then
     fSmReportMain := TfSmReportMain.Create(FormMain, 2);
+  fSmReportMain.Show;
+end;
+
+procedure TfObjectsAndEstimates.btnReport2Click(Sender: TObject);
+begin
+  if (not Assigned(fSmReportMain)) then
+    fSmReportMain := TfSmReportMain.Create(FormMain, 7);
   fSmReportMain.Show;
 end;
 

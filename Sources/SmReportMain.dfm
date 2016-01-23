@@ -90,7 +90,7 @@ object fSmReportMain: TfSmReportMain
       DataSource = dsTreeCategory
       MasterField = 'REPORT_CATEGORY_ID'
       DetailField = 'PARENT_ID'
-      ItemField = 'REPORT_CATEGORY_NAME'
+      ItemField = 'LABEL'
       StartMasterValue = '0'
       UseFilter = True
       PersistentNode = True
@@ -248,7 +248,11 @@ object fSmReportMain: TfSmReportMain
     FetchOptions.Cache = [fiBlobs, fiMeta]
     UpdateOptions.UpdateTableName = 'smeta.report_category'
     SQL.Strings = (
-      'SELECT *'
+      'SELECT report_category.*, '
+      
+        'CONCAT(REPORT_CATEGORY_NAME, " (", (SELECT COUNT(*) FROM REPORT ' +
+        'WHERE REPORT.TREE_PATH LIKE CONCAT(report_category.TREE_PATH, "%' +
+        '")), ")") AS LABEL'
       'FROM report_category'
       'ORDER BY REPORT_CATEGORY_NAME')
     Left = 30
@@ -295,7 +299,7 @@ object fSmReportMain: TfSmReportMain
     AfterOpen = qrReportAfterScroll
     AfterScroll = qrReportAfterScroll
     MasterSource = dsTreeCategory
-    MasterFields = 'REPORT_CATEGORY_ID'
+    MasterFields = 'TREE_PATH'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -305,14 +309,16 @@ object fSmReportMain: TfSmReportMain
     SQL.Strings = (
       'SELECT *'
       'FROM report'
-      'WHERE REPORT_CATEGORY_ID = :REPORT_CATEGORY_ID'
+      'WHERE TREE_PATH LIKE CONCAT(:TREE_PATH, "%")'
       'ORDER BY REPORT_NAME')
     Left = 30
     Top = 98
     ParamData = <
       item
-        Name = 'REPORT_CATEGORY_ID'
+        Name = 'TREE_PATH'
+        DataType = ftString
         ParamType = ptInput
+        Value = Null
       end>
   end
   object dsReport: TDataSource
@@ -361,459 +367,17 @@ object fSmReportMain: TfSmReportMain
     PreviewOptions.Zoom = 1.000000000000000000
     PrintOptions.Printer = 'Default'
     PrintOptions.PrintOnSheet = 0
-    ReportOptions.CreateDate = 42385.845885347190000000
-    ReportOptions.LastChange = 42388.955177916700000000
+    ReportOptions.CreateDate = 42385.845885347200000000
+    ReportOptions.LastChange = 42392.018654502300000000
     ScriptLanguage = 'PascalScript'
-    ScriptText.Strings = (
-      'begin'
-      ''
-      'end.')
+    StoreInDFM = False
     Left = 224
     Top = 27
-    Datasets = <
-      item
-        DataSet = frxDS
-        DataSetName = 'DS'
-      end>
-    Variables = <>
-    Style = <>
-    object Data: TfrxDataPage
-      Height = 1000.000000000000000000
-      Width = 1000.000000000000000000
-    end
-    object Page1: TfrxReportPage
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -13
-      Font.Name = 'Times New Roman'
-      Font.Style = []
-      Orientation = poLandscape
-      PaperWidth = 279.400000000000000000
-      PaperHeight = 215.900000000000000000
-      PaperSize = 1
-      LeftMargin = 10.000000000000000000
-      RightMargin = 10.000000000000000000
-      TopMargin = 10.000000000000000000
-      BottomMargin = 10.000000000000000000
-      object MasterData1: TfrxMasterData
-        Height = 18.897650000000000000
-        Top = 336.378170000000000000
-        Width = 980.410081999999900000
-        DataSet = frxDS
-        DataSetName = 'DS'
-        RowCount = 0
-        Stretched = True
-        object Memo13: TfrxMemoView
-          Width = 309.921460000000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          StretchMode = smActualHeight
-          DataField = 'NAME'
-          DataSet = frxDS
-          DataSetName = 'DS'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          Memo.UTF8W = (
-            '[DS."NAME"]')
-          ParentFont = False
-        end
-        object DSTOTAL_STOIM_SMR: TfrxMemoView
-          Left = 309.921460000000000000
-          Width = 94.488188980000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          StretchMode = smMaxHeight
-          DataField = 'TOTAL_STOIM_SMR'
-          DataSet = frxDS
-          DataSetName = 'DS'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haRight
-          Memo.UTF8W = (
-            '[DS."TOTAL_STOIM_SMR"]')
-          ParentFont = False
-        end
-        object Memo1: TfrxMemoView
-          Left = 404.409710000000000000
-          Width = 94.488188980000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          StretchMode = smMaxHeight
-          DataField = 'OTHER'
-          DataSet = frxDS
-          DataSetName = 'DS'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haRight
-          Memo.UTF8W = (
-            '[DS."OTHER"]')
-          ParentFont = False
-        end
-        object DSTOTAL_STAT: TfrxMemoView
-          Left = 498.897960000000000000
-          Width = 102.047248980000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          StretchMode = smMaxHeight
-          DataField = 'TOTAL_STAT'
-          DataSet = frxDS
-          DataSetName = 'DS'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haRight
-          Memo.UTF8W = (
-            '[DS."TOTAL_STAT"]')
-          ParentFont = False
-        end
-        object DSTOTAL_AND_DEBET_NAL: TfrxMemoView
-          Left = 600.945270000000000000
-          Width = 94.488188980000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          StretchMode = smMaxHeight
-          DataField = 'TOTAL_AND_DEBET_NAL'
-          DataSet = frxDS
-          DataSetName = 'DS'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haRight
-          Memo.UTF8W = (
-            '[DS."TOTAL_AND_DEBET_NAL"]')
-          ParentFont = False
-        end
-        object Memo14: TfrxMemoView
-          Left = 695.433520000000000000
-          Width = 94.488188976378000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          StretchMode = smMaxHeight
-          DataField = 'NDS'
-          DataSet = frxDS
-          DataSetName = 'DS'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haRight
-          Memo.UTF8W = (
-            '[DS."NDS"]')
-          ParentFont = False
-        end
-        object DSTOTAL_WORK: TfrxMemoView
-          Left = 789.921770000000000000
-          Width = 94.488188980000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          StretchMode = smMaxHeight
-          DataField = 'TOTAL_WORK'
-          DataSet = frxDS
-          DataSetName = 'DS'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haRight
-          Memo.UTF8W = (
-            '[DS."TOTAL_WORK"]')
-          ParentFont = False
-        end
-        object Memo16: TfrxMemoView
-          Left = 884.410020000000000000
-          Width = 94.488188980000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          StretchMode = smMaxHeight
-          DataField = 'STOIM'
-          DataSet = frxDS
-          DataSetName = 'DS'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haRight
-          Memo.UTF8W = (
-            '[DS."STOIM"]')
-          ParentFont = False
-        end
-      end
-      object GroupHeader1: TfrxGroupHeader
-        Height = 18.897650000000000000
-        Top = 234.330860000000000000
-        Width = 980.410081999999900000
-        Condition = 'DS."TYPE_ACT"'
-        StartNewPage = True
-        object DSFOREMAN_ID: TfrxMemoView
-          Width = 978.898270000000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          Color = cl3DLight
-          DataSet = frxDS
-          DataSetName = 'DS'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftTop]
-          Memo.UTF8W = (
-            #1058#1080#1087' '#1072#1082#1090#1072': [DS."TYPE_ACT"]')
-          ParentFont = False
-        end
-      end
-      object GroupHeader2: TfrxGroupHeader
-        Height = 37.795300000000000000
-        Top = 275.905690000000000000
-        Width = 980.410081999999900000
-        Condition = 'DS."OBJ_ID"'
-        object DSOBJ_ID: TfrxMemoView
-          Width = 978.898270000000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          DataSet = frxDS
-          DataSetName = 'DS'
-          Memo.UTF8W = (
-            #1054#1073#1098#1077#1082#1090': [DS."OBJ_NAME"]')
-        end
-        object Memo15: TfrxMemoView
-          Top = 18.897650000000000000
-          Width = 978.898270000000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          Memo.UTF8W = (
-            
-              #1047#1072#1082#1072#1079#1095#1080#1082': [DS."FOREMAN_FULL"] '#1044#1086#1075#1086#1074#1086#1088' '#8470': [DS."NUM_DOG"] '#1086#1090' [DS."' +
-              'DATE_DOG"]')
-        end
-      end
-      object ReportTitle1: TfrxReportTitle
-        Height = 75.590600000000000000
-        Top = 18.897650000000000000
-        Width = 980.410081999999900000
-        object Memo2: TfrxMemoView
-          Width = 491.338900000000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -16
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftBottom]
-          Memo.UTF8W = (
-            '[DS."ORGANIZATION_NAME"]')
-          ParentFont = False
-        end
-        object Memo3: TfrxMemoView
-          Top = 18.897650000000000000
-          Width = 491.338900000000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          HAlign = haCenter
-          Memo.UTF8W = (
-            #1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1086#1088#1075#1072#1085#1080#1079#1072#1094#1080#1080)
-          ParentFont = False
-        end
-        object Memo4: TfrxMemoView
-          Top = 37.795300000000000000
-          Width = 978.898270000000000000
-          Height = 18.897650000000000000
-          ShowHint = False
-          DisplayFormat.FormatStr = 'MMMM yyyy'
-          DisplayFormat.Kind = fkDateTime
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -16
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          HAlign = haCenter
-          Memo.UTF8W = (
-            #1056#1045#1045#1057#1058#1056' '#1042#1067#1055#1054#1051#1053#1045#1053#1053#1067#1061' '#1056#1040#1041#1054#1058' '#1047#1040' [DS."DATE"]')
-          ParentFont = False
-        end
-      end
-      object PageHeader1: TfrxPageHeader
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlack
-        Font.Height = -13
-        Font.Name = 'Times New Roman'
-        Font.Style = []
-        Height = 56.692950000000000000
-        ParentFont = False
-        Top = 117.165430000000000000
-        Width = 980.410081999999900000
-        object Memo5: TfrxMemoView
-          Width = 309.921460000000000000
-          Height = 56.692950000000000000
-          ShowHint = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haCenter
-          Memo.UTF8W = (
-            #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077)
-          ParentFont = False
-          VAlign = vaCenter
-        end
-        object Memo6: TfrxMemoView
-          Left = 309.921460000000000000
-          Width = 94.488188980000000000
-          Height = 56.692950000000000000
-          ShowHint = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haCenter
-          Memo.UTF8W = (
-            #1042#1057#1045#1043#1054' '#1057#1052#1056)
-          ParentFont = False
-          VAlign = vaCenter
-        end
-        object Memo7: TfrxMemoView
-          Left = 404.409710000000000000
-          Width = 94.488188980000000000
-          Height = 56.692950000000000000
-          ShowHint = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haCenter
-          Memo.UTF8W = (
-            #1048#1058#1054#1043#1054' '#1087#1088#1086#1095#1080#1093)
-          ParentFont = False
-          VAlign = vaCenter
-        end
-        object Memo8: TfrxMemoView
-          Left = 498.897960000000000000
-          Width = 102.047248980000000000
-          Height = 56.692950000000000000
-          ShowHint = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haCenter
-          Memo.UTF8W = (
-            #1054#1073#1098#1077#1084' '#1088#1072#1073#1086#1090' '#1076#1083#1103' '#1089#1090#1072#1090#1080#1089#1090#1080#1095#1077#1089#1082#1086#1081' '#1086#1090#1095#1077#1090#1085#1086#1089#1090#1080)
-          ParentFont = False
-          VAlign = vaCenter
-        end
-        object Memo9: TfrxMemoView
-          Left = 600.945270000000000000
-          Width = 94.488188980000000000
-          Height = 56.692950000000000000
-          ShowHint = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haCenter
-          Memo.UTF8W = (
-            #1048#1058#1054#1043#1054' '#1073#1077#1079' '#1053#1044#1057)
-          ParentFont = False
-          VAlign = vaCenter
-        end
-        object Memo10: TfrxMemoView
-          Left = 695.433520000000000000
-          Width = 94.488188980000000000
-          Height = 56.692950000000000000
-          ShowHint = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haCenter
-          Memo.UTF8W = (
-            #1053#1044#1057)
-          ParentFont = False
-          VAlign = vaCenter
-        end
-        object Memo11: TfrxMemoView
-          Left = 789.921770000000000000
-          Width = 94.488188980000000000
-          Height = 56.692950000000000000
-          ShowHint = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haCenter
-          Memo.UTF8W = (
-            #1048#1058#1054#1043#1054' '#1089' '#1053#1044#1057)
-          ParentFont = False
-          VAlign = vaCenter
-        end
-        object Memo12: TfrxMemoView
-          Left = 884.410020000000000000
-          Width = 94.488188980000000000
-          Height = 56.692950000000000000
-          ShowHint = False
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -13
-          Font.Name = 'Times New Roman'
-          Font.Style = []
-          Frame.Typ = [ftLeft, ftRight, ftTop, ftBottom]
-          HAlign = haCenter
-          Memo.UTF8W = (
-            #1042#1057#1045#1043#1054' '#1050' '#1054#1055#1051#1040#1058#1045)
-          ParentFont = False
-          VAlign = vaCenter
-        end
-      end
-    end
   end
   object frxDS: TfrxDBDataset
     UserName = 'DS'
     CloseDataSource = True
-    DataSet = qrReportData
+    OpenDataSource = False
     BCDToCurrency = False
     Left = 264
     Top = 27
@@ -872,7 +436,6 @@ object fSmReportMain: TfSmReportMain
   end
   object qrReportData: TFDQuery
     BeforeOpen = qrReportDataBeforeOpen
-    MasterFields = 'REPORT_CATEGORY_ID'
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -888,7 +451,9 @@ object fSmReportMain: TfSmReportMain
       '  o.`FULL_NAME` AS OBJ_NAME,'
       '  o.`DATE_DOG`,'
       '  o.`NUM_DOG`,'
-      '  CONCAT(cl.`NAME`, " (", cl.`FULL_NAME`, ")")  AS CUST_NAME,'
+      
+        '  CONCAT(IFNULL(cl.`NAME`, ""), " (", IFNULL(cl.`FULL_NAME`, "")' +
+        ', ")")  AS CUST_NAME,'
       '  CONCAT('
       '    IFNULL(f.`foreman_first_name`, ""), " ", '
       '    IFNULL(f.`foreman_name`, ""), " ", '
@@ -938,8 +503,8 @@ object fSmReportMain: TfSmReportMain
       '  AND s.ACT=1'
       'GROUP BY s.SM_ID '
       'ORDER BY s.FOREMAN_ID, s.OBJ_ID, s.`TYPE_ACT`, s.`DATE`')
-    Left = 182
-    Top = 106
+    Left = 222
+    Top = 130
     ParamData = <
       item
         Name = 'ORGANIZATION_NAME'
@@ -973,6 +538,256 @@ object fSmReportMain: TfSmReportMain
       end
       item
         Name = 'CUST'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object qrActMat: TFDQuery
+    BeforeOpen = qrReportDataBeforeOpen
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvSE2Null, fvDefaultParamDataType]
+    FormatOptions.StrsEmpty2Null = True
+    FormatOptions.DefaultParamDataType = ftVariant
+    SQL.Strings = (
+      '/*'#1063#1072#1089#1090#1100' '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072'*/'
+      'SELECT'
+      '  1 AS GR_TYPE,'
+      '  o.`FULL_NAME`,'
+      '  IFNULL(:ORGANIZATION_NAME, "") AS ORGANIZATION_NAME,'
+      '  IFNULL(:MOL_FIO, "") AS MOL_FIO,'
+      '  IFNULL(:MOL_DOLJ, "") AS MOL_DOLJ,'
+      '  IFNULL(:INJ_PTO, "") AS INJ_PTO,'
+      '  sm_m.`DATE`,'
+      '  MAT_CODE,MAT_NAME,'
+      '  SUM(COALESCE(MAT_COUNT, 0)*MAT_PROC_PODR/100.0) AS CNT, '
+      '  MAT_UNIT,'
+      '  `materialcard`.DOC_DATE,'
+      '  `materialcard`.DOC_NUM,'
+      
+        ' /* IF(sm.`NDS`=1, IF(FCOAST_NDS<>0, 1, 0), IF(FCOAST_NO_NDS<>0,' +
+        ' 1, 0)) AS FCOAST,*/'
+      
+        '  IF(sm.`NDS`=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FC' +
+        'OAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST_S,'
+      
+        '/*  SUM(ROUND(IF(sm.`NDS`=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST' +
+        '_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))*COALES' +
+        'CE(MAT_COUNT, 0))) AS PRICE,'
+      
+        '  SUM(IF(sm.`NDS`=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS)' +
+        ', IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS))) AS TRAN' +
+        'SP,*/'
+      
+        '  SUM(IFNULL(f.`CNT`*f.`PROC_PODR`/100.0, COALESCE(MAT_COUNT, 0)' +
+        '*MAT_PROC_PODR/100.0)) AS CNT_F,'
+      
+        '  IFNULL(f.`COAST`, IF(sm.`NDS`=1, IF(FCOAST_NDS<>0, FCOAST_NDS,' +
+        ' COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)))' +
+        ' AS COAST_F'
+      'FROM `objcards` o'
+      'INNER JOIN `smetasourcedata` sm_m ON sm_m.`OBJ_ID`=o.`OBJ_ID` '
+      '  AND sm_m.`ACT` = 1 '
+      '  AND sm_m.`SM_TYPE` = 2'
+      '  AND sm_m.`DELETED` = 0'
+      
+        '  AND ((:MONTH_YEAR IS NULL) OR (MONTH(sm_m.`DATE`)=MONTH(:MONTH' +
+        '_YEAR) AND YEAR(sm_m.`DATE`)=YEAR(:MONTH_YEAR)))'
+      
+        'INNER JOIN `smetasourcedata` sm ON (sm.`PARENT_ID` = sm_m.`SM_ID' +
+        '`) OR (sm.`PARENT_ID` IN (SELECT SM_ID FROM `smetasourcedata` WH' +
+        'ERE PARENT_ID=sm_m.SM_ID))'
+      '  AND sm.`ACT` = 1 '
+      '  AND sm.`DELETED` = 0'
+      'INNER JOIN `materialcard` ON `materialcard`.`SM_ID`=sm.`SM_ID` '
+      '  AND `materialcard`.`DELETED` = 0 '
+      '  AND `materialcard`.MAT_PROC_PODR > 0'
+      '  AND `materialcard`.`CONSIDERED` = 1'
+      'LEFT JOIN fact_data f ON (f.DELETED = 0) '
+      '  AND f.ID_TYPE_DATA = 2 '
+      '  AND f.ID_ACT = sm_m.`SM_ID` '
+      '  AND f.ID_TABLES = `materialcard`.`ID` '
+      '  AND f.ID_TABLES is not null  '
+      'WHERE o.`OBJ_ID`=:OBJECT'
+      
+        'GROUP BY o.`FULL_NAME`, sm_m.`DATE`, MAT_CODE, MAT_NAME, MAT_UNI' +
+        'T, DOC_DATE, DOC_NUM, COAST_S, MAT_ID, SRC_OBJECT_ID'
+      ''
+      'UNION ALL'
+      ''
+      'SELECT'
+      '  1 AS GR_TYPE,'
+      '  o.`FULL_NAME`,'
+      '  IFNULL(:ORGANIZATION_NAME, "") AS ORGANIZATION_NAME,'
+      '  IFNULL(:MOL_FIO, "") AS MOL_FIO,'
+      '  IFNULL(:MOL_DOLJ, "") AS MOL_DOLJ,'
+      '  IFNULL(:INJ_PTO, "") AS INJ_PTO,'
+      '  sm_m.`DATE`,'
+      '  f.`CODE` AS MAT_CODE, f.`NAME` AS MAT_NAME,'
+      '  NULL AS CNT, '
+      '  f.`UNIT`,'
+      '  f.`DOC_DATE`,'
+      '  f.`DOC_NUM`,'
+      '  NULL AS COAST_S,'
+      '  SUM(IFNULL(f.`CNT`*f.`PROC_PODR`/100.0, 0)) AS CNT_F,'
+      '  IFNULL(f.`COAST`, 0) AS COAST_F'
+      'FROM `objcards` o'
+      'INNER JOIN `smetasourcedata` sm_m ON sm_m.`OBJ_ID`=o.`OBJ_ID` '
+      '  AND sm_m.`ACT` = 1 '
+      '  AND sm_m.`SM_TYPE` = 2'
+      '  AND sm_m.`DELETED` = 0'
+      
+        '  AND ((:MONTH_YEAR IS NULL) OR (MONTH(sm_m.`DATE`)=MONTH(:MONTH' +
+        '_YEAR) AND YEAR(sm_m.`DATE`)=YEAR(:MONTH_YEAR)))'
+      'INNER JOIN fact_data f ON (f.DELETED = 0) '
+      '  AND f.ID_TYPE_DATA = 2 '
+      '  AND f.ID_ACT = sm_m.`SM_ID` '
+      '  AND f.ID_TABLES is null '
+      '  AND f.`PROC_PODR` > 0 '
+      'WHERE o.`OBJ_ID`=:OBJECT'
+      
+        'GROUP BY o.`FULL_NAME`, sm_m.`DATE`, MAT_CODE, MAT_NAME, UNIT, D' +
+        'OC_DATE, DOC_NUM, COAST_S, COAST_F, SRC_OBJECT_ID'
+      ''
+      '/*'#1063#1072#1089#1090#1100' '#1079#1072#1082#1072#1079#1095#1080#1082#1072'*/'
+      'UNION ALL'
+      'SELECT'
+      '  2 AS GR_TYPE,  '
+      '  o.`FULL_NAME`,'
+      '  IFNULL(:ORGANIZATION_NAME, "") AS ORGANIZATION_NAME,'
+      '  IFNULL(:MOL_FIO, "") AS MOL_FIO,'
+      '  IFNULL(:MOL_DOLJ, "") AS MOL_DOLJ,'
+      '  IFNULL(:INJ_PTO, "") AS INJ_PTO,'
+      '  sm_m.`DATE`,'
+      '  MAT_CODE,MAT_NAME,'
+      '  SUM(COALESCE(MAT_COUNT, 0)*MAT_PROC_ZAC/100.0) AS CNT, '
+      '  MAT_UNIT,'
+      '  `materialcard`.DOC_DATE,'
+      '  `materialcard`.DOC_NUM,'
+      
+        '/*  IF(sm.`NDS`=1, IF(FCOAST_NDS<>0, 1, 0), IF(FCOAST_NO_NDS<>0,' +
+        ' 1, 0)) AS FCOAST,*/'
+      
+        '  IF(sm.`NDS`=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FC' +
+        'OAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)) AS COAST_S,'
+      
+        '/*  SUM(ROUND(IF(sm.`NDS`=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST' +
+        '_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))*COALES' +
+        'CE(MAT_COUNT, 0))) AS PRICE,'
+      
+        '  SUM(IF(sm.`NDS`=1, IF(FTRANSP_NDS<>0, FTRANSP_NDS, TRANSP_NDS)' +
+        ', IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS))) AS TRAN' +
+        'SP,*/'
+      
+        '  SUM(IFNULL(f.`CNT`*f.`PROC_ZAC`/100.0, COALESCE(MAT_COUNT, 0)*' +
+        'MAT_PROC_ZAC/100.0)) AS CNT_F,'
+      
+        '  IFNULL(f.`COAST`, IF(sm.`NDS`=1, IF(FCOAST_NDS<>0, FCOAST_NDS,' +
+        ' COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)))' +
+        ' AS COAST_F'
+      'FROM `objcards` o'
+      'INNER JOIN `smetasourcedata` sm_m ON sm_m.`OBJ_ID`=o.`OBJ_ID` '
+      '  AND sm_m.`ACT` = 1 '
+      '  AND sm_m.`SM_TYPE` = 2'
+      '  AND sm_m.`DELETED` = 0'
+      
+        '  AND ((:MONTH_YEAR IS NULL) OR (MONTH(sm_m.`DATE`)=MONTH(:MONTH' +
+        '_YEAR) AND YEAR(sm_m.`DATE`)=YEAR(:MONTH_YEAR)))'
+      
+        'INNER JOIN `smetasourcedata` sm ON (sm.`PARENT_ID` = sm_m.`SM_ID' +
+        '`) OR (sm.`PARENT_ID` IN (SELECT SM_ID FROM `smetasourcedata` WH' +
+        'ERE PARENT_ID=sm_m.SM_ID))'
+      '  AND sm.`ACT` = 1 '
+      '  AND sm.`DELETED` = 0'
+      'INNER JOIN `materialcard` ON `materialcard`.`SM_ID`=sm.`SM_ID` '
+      '  AND `materialcard`.`DELETED` = 0 '
+      '  AND `materialcard`.MAT_PROC_ZAC > 0'
+      '  AND `materialcard`.`CONSIDERED` = 1'
+      'LEFT JOIN fact_data f ON (f.DELETED = 0) '
+      '  AND f.ID_TYPE_DATA = 2 '
+      '  AND f.ID_ACT = sm_m.`SM_ID` '
+      '  AND f.ID_TABLES = `materialcard`.`ID` '
+      '  AND f.ID_TABLES is not null   '
+      'WHERE o.`OBJ_ID`=:OBJECT'
+      
+        'GROUP BY o.`FULL_NAME`, sm_m.`DATE`, MAT_CODE, MAT_NAME, MAT_UNI' +
+        'T, DOC_DATE, DOC_NUM, COAST_S, MAT_ID, SRC_OBJECT_ID'
+      ''
+      'UNION ALL'
+      ''
+      'SELECT'
+      '  2 AS GR_TYPE,'
+      '  o.`FULL_NAME`,'
+      '  IFNULL(:ORGANIZATION_NAME, "") AS ORGANIZATION_NAME,'
+      '  IFNULL(:MOL_FIO, "") AS MOL_FIO,'
+      '  IFNULL(:MOL_DOLJ, "") AS MOL_DOLJ,'
+      '  IFNULL(:INJ_PTO, "") AS INJ_PTO,'
+      '  sm_m.`DATE`,'
+      '  f.`CODE` AS MAT_CODE, f.`NAME` AS MAT_NAME,'
+      '  NULL AS CNT, '
+      '  f.`UNIT`,'
+      '  f.`DOC_DATE`,'
+      '  f.`DOC_NUM`,'
+      '  NULL AS COAST_S,'
+      '  SUM(IFNULL(f.`CNT`*f.`PROC_ZAC`/100.0, 0)) AS CNT_F,'
+      '  IFNULL(f.`COAST`, 0) AS COAST_F'
+      'FROM `objcards` o'
+      'INNER JOIN `smetasourcedata` sm_m ON sm_m.`OBJ_ID`=o.`OBJ_ID` '
+      '  AND sm_m.`ACT` = 1 '
+      '  AND sm_m.`SM_TYPE` = 2'
+      '  AND sm_m.`DELETED` = 0'
+      
+        '  AND ((:MONTH_YEAR IS NULL) OR (MONTH(sm_m.`DATE`)=MONTH(:MONTH' +
+        '_YEAR) AND YEAR(sm_m.`DATE`)=YEAR(:MONTH_YEAR)))'
+      'INNER JOIN fact_data f ON (f.DELETED = 0) '
+      '  AND f.ID_TYPE_DATA = 2 '
+      '  AND f.ID_ACT = sm_m.`SM_ID` '
+      '  AND f.ID_TABLES is null  '
+      '  AND f.`PROC_ZAC` > 0'
+      'WHERE o.`OBJ_ID`=:OBJECT'
+      
+        'GROUP BY o.`FULL_NAME`, sm_m.`DATE`, MAT_CODE, MAT_NAME, UNIT, D' +
+        'OC_DATE, DOC_NUM, COAST_S, COAST_F, SRC_OBJECT_ID'
+      'ORDER BY GR_TYPE, MAT_NAME')
+    Left = 286
+    Top = 130
+    ParamData = <
+      item
+        Name = 'ORGANIZATION_NAME'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'MOL_FIO'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'MOL_DOLJ'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'INJ_PTO'
+        DataType = ftString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'MONTH_YEAR'
+        DataType = ftDate
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'OBJECT'
         DataType = ftInteger
         ParamType = ptInput
         Value = Null

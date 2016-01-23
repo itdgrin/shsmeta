@@ -15,7 +15,7 @@ object fSmReportParams: TfSmReportParams
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object lbl1: TLabel
+  object lblHint: TLabel
     AlignWithMargins = True
     Left = 10
     Top = 87

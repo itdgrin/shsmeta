@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<TfrxReport Version="4.13.2" DotMatrixReport="False" IniFile="\Software\Fast Reports" PreviewOptions.Buttons="4095" PreviewOptions.Zoom="1" PrintOptions.Printer="Default" PrintOptions.PrintOnSheet="0" ReportOptions.CreateDate="42385.8458853472" ReportOptions.Description.Text="" ReportOptions.LastChange="42388.9539724769" ScriptLanguage="PascalScript" ScriptText.Text="begin&#13;&#10;&#13;&#10;end." PropData="044C65667403E00003546F70021B0844617461736574730101062120446174615365743D2266727844532220446174615365744E616D653D224453220000095661726961626C65730100055374796C650100">
+<TfrxReport Version="4.13.2" DotMatrixReport="False" IniFile="\Software\Fast Reports" PreviewOptions.Buttons="4095" PreviewOptions.Zoom="1" PrintOptions.Printer="Default" PrintOptions.PrintOnSheet="0" ReportOptions.CreateDate="42385.8458853472" ReportOptions.Description.Text="" ReportOptions.LastChange="42389.9907062269" ScriptLanguage="PascalScript" ScriptText.Text="begin&#13;&#10;&#13;&#10;end." StoreInDFM="False" PropData="044C65667403E00003546F70021B0844617461736574730101062120446174615365743D2266727844532220446174615365744E616D653D224453220000095661726961626C65730100055374796C650100">
   <TfrxDataPage Name="Data" Height="1000" Left="0" Top="0" Width="1000"/>
   <TfrxReportPage Name="Page1" Font.Charset="1" Font.Color="0" Font.Height="-13" Font.Name="Times New Roman" Font.Style="0" Orientation="poLandscape" PaperWidth="279.4" PaperHeight="215.9" PaperSize="1" LeftMargin="10" RightMargin="10" TopMargin="10" BottomMargin="10" ColumnWidth="0" ColumnPositions.Text="" HGuides.Text="" VGuides.Text="">
     <TfrxMasterData Name="MasterData1" Height="18.89765" Left="0" Top="336.37817" Width="980.410082" ColumnWidth="0" ColumnGap="0" DataSet="frxDS" DataSetName="DS" RowCount="0" Stretched="True">
@@ -17,7 +17,7 @@
     </TfrxGroupHeader>
     <TfrxGroupHeader Name="GroupHeader2" Height="37.7953" Left="0" Top="275.90569" Width="980.410082" Condition="DS.&#34;OBJ_ID&#34;">
       <TfrxMemoView Name="DSOBJ_ID" Left="0" Top="0" Width="978.89827" Height="18.89765" ShowHint="False" DataSet="frxDS" DataSetName="DS" Text="Объект: [DS.&#34;OBJ_NAME&#34;]"/>
-      <TfrxMemoView Name="Memo15" Left="0" Top="18.89765" Width="978.89827" Height="18.89765" ShowHint="False" Text="Заказчик: [DS.&#34;FOREMAN_FULL&#34;] Договор №: [DS.&#34;NUM_DOG&#34;] от [DS.&#34;DATE_DOG&#34;]"/>
+      <TfrxMemoView Name="Memo15" Left="0" Top="18.89765" Width="978.89827" Height="18.89765" ShowHint="False" Text="Заказчик: [DS.&#34;CUST_NAME&#34;] Договор №: [DS.&#34;NUM_DOG&#34;] от [DS.&#34;DATE_DOG&#34;]"/>
     </TfrxGroupHeader>
     <TfrxReportTitle Name="ReportTitle1" Height="75.5906" Left="0" Top="18.89765" Width="980.410082">
       <TfrxMemoView Name="Memo2" Left="0" Top="0" Width="491.3389" Height="18.89765" ShowHint="False" Font.Charset="1" Font.Color="0" Font.Height="-16" Font.Name="Times New Roman" Font.Style="0" Frame.Typ="8" ParentFont="False" Text="[DS.&#34;ORGANIZATION_NAME&#34;]"/>

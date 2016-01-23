@@ -25,7 +25,6 @@ type
     qrReportParamREPORT_LIST_SQL_ID: TIntegerField;
     qrReportParamPOS: TIntegerField;
     qrReportParamFL_ALLOW_ALL: TBooleanField;
-    qrReportParamLIST_SQL: TMemoField;
     qrReportParamFL_REQUIRED: TBooleanField;
     qrReportParamType: TFDQuery;
     qrReportParamLookType: TStringField;
@@ -52,12 +51,12 @@ implementation
 
 procedure TfSmReportParamsEdit.btnCloseClick(Sender: TObject);
 begin
-  qrReportParam.CheckBrowseMode;
   Close;
 end;
 
 procedure TfSmReportParamsEdit.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  qrReportParam.CheckBrowseMode;
   Action := caFree;
 end;
 

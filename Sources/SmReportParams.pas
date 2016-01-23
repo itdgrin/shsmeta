@@ -9,12 +9,12 @@ uses
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   Vcl.Mask, JvExMask, JvSpin, JvDBSpinEdit, GlobsAndConst, System.DateUtils, Vcl.Buttons, JvExControls,
-  JvDBLookup;
+  JvDBLookup, SmReportParamSelect;
 
 type
   TfSmReportParams = class(TSmForm)
     qrReportParam: TFDQuery;
-    lbl1: TLabel;
+    lblHint: TLabel;
     procedure qrReportParamAfterOpen(DataSet: TDataSet);
     procedure FormCreate(Sender: TObject);
   private
@@ -48,45 +48,122 @@ end;
 
 procedure TfSmReportParams.OnChangeParam(Sender: TObject);
 var
-  paramId: Integer;
+  paramId, paramType, i, j, tmpMonth, tmpYear: Integer;
+  res: Variant;
 begin
   paramId := TControl(Sender).Tag;
+  paramType := Params[paramId, 2];
+  // Выбираем по типу
+  case paramType of
+    // Целое число +
+    1:
+      begin
+        if Sender is TJvSpinEdit then
+        begin
+          Params[paramId, 0] := TJvSpinEdit(Sender).Value;
+        end;
+      end;
+    // Строка +
+    2:
+      begin
+        if Sender is TEdit then
+        begin
+          Params[paramId, 0] := string((Sender as TEdit).Text);
+        end
+      end;
+    // Дата
+    3:
+      ;
+    // Месяц/год  +
+    4:
+      begin
+        for i := 0 to TWinControl(Sender).Parent.ComponentCount - 1 do
+          // Ищем TComboBox и TJvSpinEdit на родителе для сбоки даты
+          if TWinControl(Sender).Parent.Components[i] is TComboBox then
+            tmpMonth := TComboBox(TWinControl(Sender).Parent.Components[i]).ItemIndex + 1
+          else if TWinControl(Sender).Parent.Components[i] is TJvSpinEdit then
+            tmpYear := Trunc(TJvSpinEdit(TWinControl(Sender).Parent.Components[i]).Value);
+
+        Params[paramId, 0] := StrToDate('01.' + IntToStr(tmpMonth) + '.' + IntToStr(tmpYear));
+      end;
+    // Список +
+    5:
+      begin
+        if Sender is TJvDBLookupCombo then
+        begin
+          Params[paramId, 0] := TJvDBLookupCombo(Sender).KeyValue;
+          // Снимаем галочку Все, если установлена
+          for i := 0 to TWinControl(Sender).Parent.Parent.ComponentCount - 1 do
+            if TWinControl(Sender).Parent.Parent.Components[i] is TCheckBox then
+              TCheckBox(TWinControl(Sender).Parent.Parent.Components[i]).Checked :=
+                IIF(TJvDBLookupCombo(Sender).KeyValue = Null, True, False);
+        end
+        else if Sender is TCheckBox then
+        begin
+          if TCheckBox(Sender).Checked then
+          begin
+            Params[paramId, 0] := Null;
+            // Ищем поле TJvDBLookupCombo для прорисовки выбранного значения
+            for i := 0 to TWinControl(Sender).Parent.ComponentCount - 1 do
+              if TWinControl(Sender).Parent.Components[i] is TPanel then
+                for j := 0 to TWinControl(Sender).Parent.Components[i].ComponentCount - 1 do
+                  if TWinControl(Sender).Parent.Components[i].Components[j] is TJvDBLookupCombo then
+                    TJvDBLookupCombo(TWinControl(Sender).Parent.Components[i].Components[j]).KeyValue := Null;
+          end;
+        end;
+      end;
+    // Список с выбором из справочника +
+    6:
+      begin
+        if Sender is TBitBtn then
+        begin
+          res := TfSmReportParamSelect.Select(Params[paramId, 1], Params[paramId, 0]);
+          if not VarIsNull(res) then
+          begin
+            Params[paramId, 0] := res[0];
+            // Ищем поле TEdit для прорисовки выбранного значения res[1]
+            for i := 0 to TWinControl(Sender).Parent.ComponentCount - 1 do
+              if TWinControl(Sender).Parent.Components[i] is TEdit then
+                TEdit(TWinControl(Sender).Parent.Components[i]).Text := res[1];
+            // Снимаем галочку Все, если установлена
+            for i := 0 to TWinControl(Sender).Parent.Parent.ComponentCount - 1 do
+              if TWinControl(Sender).Parent.Parent.Components[i] is TCheckBox then
+                TCheckBox(TWinControl(Sender).Parent.Parent.Components[i]).Checked := False;
+          end;
+        end
+        else if Sender is TCheckBox then
+        begin
+          if TCheckBox(Sender).Checked then
+          begin
+            Params[paramId, 0] := Null;
+            // Ищем поле TEdit для прорисовки выбранного значения
+            for i := 0 to TWinControl(Sender).Parent.ComponentCount - 1 do
+              if TWinControl(Sender).Parent.Components[i] is TPanel then
+                for j := 0 to TWinControl(Sender).Parent.Components[i].ComponentCount - 1 do
+                  if TWinControl(Sender).Parent.Components[i].Components[j] is TEdit then
+                    TEdit(TWinControl(Sender).Parent.Components[i].Components[j]).Text := '<Все>';
+          end;
+        end;
+      end;
+  end;
   // Процедура синхронизации параметров
-  if Sender is TEdit then
-  begin
-    Params[paramId] := string((Sender as TEdit).Text);
-  end
-  else if Sender is TCheckBox then
+  if Sender is TCheckBox then
   begin
     if TCheckBox(Sender).Checked then
-      Params[paramId] := Null;
-  end
-  else if Sender is TBitBtn then
-  begin
-    ShowMessage('ToDo');
-    Params[paramId] := 0;
-  end
-  else if Sender is TJvDBLookupCombo then
-  begin
-    Params[paramId] := TJvDBLookupCombo(Sender).KeyValue;
-  end
-  else if Sender is TComboBox then
-  begin
-    ShowMessage('ToDo');
-    Params[paramId] := StrToDate('01.' + IntToStr(TComboBox(Sender).ItemIndex + 1) + '.' + '2015');
-  end
-  else if Sender is TJvSpinEdit then
-  begin
-    ShowMessage('ToDo');
-    { Params[paramId] := StrToDate('01.01'  + IntToStr(TComboBox(Sender).ItemIndex + 1)  + '.' +
-      IntToStr(Integer(TJvSpinEdit(Sender).Value))); }
+      Params[paramId, 0] := Null;
   end;
 end;
 
 procedure TfSmReportParams.qrReportParamAfterOpen(DataSet: TDataSet);
+var
+  i, j: Integer;
 begin
   // Создаем массив параметров
-  Params := VarArrayCreate([0, qrReportParam.RecordCount - 1], varVariant);
+  Params := VarArrayCreate([0, qrReportParam.RecordCount - 1, 0, 2], varVariant);
+  // Инициализируем
+  for i := 0 to qrReportParam.RecordCount - 1 do
+    for j := 0 to 2 do
+      Params[i, j] := Null;
 end;
 
 procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
@@ -155,7 +232,8 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
     newSubPanel.Caption := '';
     newSubPanel.BevelOuter := bvNone;
     newSubPanel.BevelKind := bkNone;
-
+    // Записываем тип параметра
+    Params[AParamId, 2] := AType;
     case AType of
       // Целое число
       1:
@@ -225,6 +303,9 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
             cbbMonth.Items.Add(arraymes[i, 1]);
           cbbMonth.ItemIndex := MonthOf(Now) - 1;
           cbbMonth.OnChange := OnChangeParam;
+
+          Params[AParamId, 0] := StrToDate('01.' + IntToStr(cbbMonth.ItemIndex + 1) + '.' +
+            IntToStr(Trunc(seYear.Value)));
         end;
       // Список
       5:
@@ -255,6 +336,7 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
           lcb.LookupSource := ds;
           lcb.DisplayEmpty := '<Все>';
           lcb.Tag := AParamId;
+          lcb.DropDownCount := IIF(qr.RecordCount > 20, 20, qr.RecordCount + 1);
           lcb.OnChange := OnChangeParam;
         end;
       // Список с выбором из справочника
@@ -289,6 +371,8 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
           newEdit.Enabled := False;
           if qrReportParam.FieldByName('FL_ALLOW_ALL').Value = 1 then
             newEdit.Text := '<Все>';
+          // Код списка
+          Params[AParamId, 1] := qrReportParam.FieldByName('REPORT_LIST_SQL_ID').Value;
         end;
     end;
 
@@ -329,20 +413,31 @@ procedure TfSmReportParams.WriteReportParams(AQuery: TFDQuery);
 // Процедура для записи значений параметров в датасет
 var
   paramId: Integer;
-  ParamName: string;
+  ParamName, ErrorParams, msg: string;
 begin
   if not CheckQrActiveEmpty(qrReportParam) then
     Exit;
-
+  ErrorParams := '';
   qrReportParam.First;
   paramId := 0;
   while not qrReportParam.Eof do
   begin
+    // Проверяем параметр на заполненность, если обязательный
+    if (qrReportParam.FieldByName('FL_REQUIRED').AsInteger = 1) and
+      (qrReportParam.FieldByName('FL_ALLOW_ALL').AsInteger = 0) and VarIsNull(Params[paramId, 0]) then
+      ErrorParams := ErrorParams + ' - ' + qrReportParam.FieldByName('REPORT_PARAM_LABEL').AsString + ''#13;
+
     ParamName := qrReportParam.FieldByName('REPORT_PARAM_NAME').AsString;
     if AQuery.FindParam(ParamName) <> nil then
-      AQuery.ParamByName(ParamName).Value := Params[paramId];
+      AQuery.ParamByName(ParamName).Value := Params[paramId, 0];
     Inc(paramId);
     qrReportParam.Next;
+  end;
+  if ErrorParams <> '' then
+  begin
+    msg := 'Не указаны обязательные для заполнения параметры отчета:'#13 + ErrorParams;
+    Application.MessageBox(PChar(msg), 'Параметры отчета', MB_OK + MB_ICONSTOP + MB_TOPMOST);
+    Abort;
   end;
 end;
 

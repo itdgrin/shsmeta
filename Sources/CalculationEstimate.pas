@@ -1558,9 +1558,9 @@ begin
 end;
 
 procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
-var
+{var
   doc: OleVariant;
-  fileName: string;
+  fileName: string; }
 begin
   ShowNeedSaveDialog;
   ShowCalcResource(IdEstimate, 0, Self);

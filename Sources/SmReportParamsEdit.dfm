@@ -92,7 +92,7 @@ object fSmReportParamsEdit: TfSmReportParamsEdit
         FieldName = 'REPORT_PARAM_LABEL'
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1072
-        Width = 138
+        Width = 148
         Visible = True
       end
       item
@@ -100,7 +100,7 @@ object fSmReportParamsEdit: TfSmReportParamsEdit
         FieldName = 'REPORT_PARAM_NAME'
         Title.Alignment = taCenter
         Title.Caption = #1055#1077#1088#1077#1084#1077#1085#1085#1072#1103
-        Width = 132
+        Width = 140
         Visible = True
       end
       item
@@ -108,7 +108,7 @@ object fSmReportParamsEdit: TfSmReportParamsEdit
         FieldName = 'LookType'
         Title.Alignment = taCenter
         Title.Caption = #1058#1080#1087
-        Width = 85
+        Width = 90
         Visible = True
       end
       item
@@ -116,7 +116,7 @@ object fSmReportParamsEdit: TfSmReportParamsEdit
         FieldName = 'LookList'
         Title.Alignment = taCenter
         Title.Caption = #1057#1087#1080#1089#1086#1082
-        Width = 87
+        Width = 92
         Visible = True
       end
       item
@@ -124,7 +124,6 @@ object fSmReportParamsEdit: TfSmReportParamsEdit
         FieldName = 'FL_REQUIRED'
         Title.Alignment = taCenter
         Title.Caption = #1054#1073#1103#1079#1072#1090#1077#1083#1100#1085#1086#1077
-        Width = 82
         Visible = True
       end
       item
@@ -132,7 +131,7 @@ object fSmReportParamsEdit: TfSmReportParamsEdit
         FieldName = 'FL_ALLOW_ALL'
         Title.Alignment = taCenter
         Title.Caption = #1042#1086#1079#1084#1086#1078#1085#1086' '#1042#1089#1077
-        Width = 79
+        Width = 75
         Visible = True
       end
       item
@@ -140,7 +139,7 @@ object fSmReportParamsEdit: TfSmReportParamsEdit
         FieldName = 'POS'
         Title.Alignment = taCenter
         Title.Caption = #1055#1086#1079#1080#1094#1080#1103
-        Width = 71
+        Width = 52
         Visible = True
       end>
   end
@@ -184,6 +183,7 @@ object fSmReportParamsEdit: TfSmReportParamsEdit
       FieldName = 'REPORT_PARAM_ID'
       Origin = 'REPORT_PARAM_ID'
       ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = True
       DisplayFormat = '###,##0.########'
       EditFormat = '0.########'
     end
@@ -232,12 +232,6 @@ object fSmReportParamsEdit: TfSmReportParamsEdit
       FieldName = 'FL_ALLOW_ALL'
       Origin = 'FL_ALLOW_ALL'
     end
-    object qrReportParamLIST_SQL: TMemoField
-      AutoGenerateValue = arDefault
-      FieldName = 'LIST_SQL'
-      Origin = 'LIST_SQL'
-      BlobType = ftMemo
-    end
     object qrReportParamFL_REQUIRED: TBooleanField
       AutoGenerateValue = arDefault
       FieldName = 'FL_REQUIRED'
@@ -282,8 +276,8 @@ object fSmReportParamsEdit: TfSmReportParamsEdit
       'SELECT *'
       'FROM report_param_type'
       'ORDER BY REPORT_PARAM_TYPE_NAME')
-    Left = 190
-    Top = 98
+    Left = 118
+    Top = 146
   end
   object qrReportListSql: TFDQuery
     BeforeOpen = qrReportParamBeforeOpen
@@ -298,7 +292,7 @@ object fSmReportParamsEdit: TfSmReportParamsEdit
       'SELECT *'
       'FROM report_list_sql'
       'ORDER BY REPORT_LIST_SQL_NAME')
-    Left = 190
-    Top = 154
+    Left = 206
+    Top = 146
   end
 end

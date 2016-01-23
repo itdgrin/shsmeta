@@ -172,6 +172,7 @@ procedure TfCardAct.ButtonSaveClick(Sender: TObject);
     qrMain.FieldByName('k34').Value := qrTemp.FieldByName('k34').Value;
     qrMain.FieldByName('k35').Value := qrTemp.FieldByName('k35').Value;
     qrMain.FieldByName('kzp').Value := qrTemp.FieldByName('kzp').Value;
+    qrMain.FieldByName('DATE').Value := qrTemp.FieldByName('DATE').Value;
     qrMain.FieldByName('coef_tr_zatr').Value := qrTemp.FieldByName('coef_tr_zatr').Value;
     qrMain.FieldByName('coef_tr_obor').Value := qrTemp.FieldByName('coef_tr_obor').Value;
     qrMain.FieldByName('stavka_id').Value := qrTemp.FieldByName('stavka_id').Value;

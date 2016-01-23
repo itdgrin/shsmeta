@@ -48,6 +48,7 @@ type
     frxCSV: TfrxCSVExport;
     qrReportData: TFDQuery;
     mReportCopy: TMenuItem;
+    qrActMat: TFDQuery;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -67,6 +68,7 @@ type
     procedure qrReportDataBeforeOpen(DataSet: TDataSet);
   private
     ReportParams: TfSmReportParams;
+    procedure WMSysCommand(var Msg: TWMSysCommand); message WM_SYSCOMMAND;
   public
   end;
 
@@ -77,7 +79,7 @@ implementation
 
 {$R *.dfm}
 
-uses SmReportParamsEdit;
+uses SmReportParamsEdit, SmReportListSQL;
 
 procedure TfSmReportMain.btnPreviewClick(Sender: TObject);
 var
@@ -90,16 +92,41 @@ begin
     2:
       begin
         tmpReportName := ExtractFileDir(Application.ExeName) + '\Reports\rst_foreman.fr3';
+        frxDS.DataSet := qrReportData;
       end;
     // Реестры по типам актов
     3:
       begin
         tmpReportName := ExtractFileDir(Application.ExeName) + '\Reports\rst_type_act.fr3';
+        frxDS.DataSet := qrReportData;
       end;
-
+    // Акт списания материалов С-29 смета свод
+    5:
+      begin
+        tmpReportName := ExtractFileDir(Application.ExeName) + '\Reports\c_39_s.fr3';
+        frxDS.DataSet := qrActMat;
+        qrActMat.Filter := 'CNT<>0 AND CNT IS NOT NULL';
+        qrActMat.Filtered := True;
+      end;
+    // Акт списания материалов С-29 факт свод
+    6:
+      begin
+        tmpReportName := ExtractFileDir(Application.ExeName) + '\Reports\c_39_f.fr3';
+        frxDS.DataSet := qrActMat;
+        qrActMat.Filter := 'CNT_F<>0 AND CNT_F IS NOT NULL';
+        qrActMat.Filtered := True;
+      end;
+    // Акт списания материалов С-29 норм
+    7:
+      begin
+        tmpReportName := ExtractFileDir(Application.ExeName) + '\Reports\c_39.fr3';
+        frxDS.DataSet := qrActMat;
+        qrActMat.Filter := '';
+        qrActMat.Filtered := False;
+      end;
   end;
   frxReport.LoadFromFile(tmpReportName);
-
+  frxDS.DataSet.Active := True;
   frxReport.PrepareReport();
   frxReport.ShowPreparedReport;
 
@@ -126,6 +153,9 @@ procedure TfSmReportMain.FormCreate(Sender: TObject);
 begin
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
+  // Добавление системного меню
+  AppendMenu(GetSystemMenu(Handle, False), MF_SEPARATOR, 0, '');
+  AppendMenu(GetSystemMenu(Handle, False), MF_STRING, 5555, 'Настройка списков');
 
   // Создаем окно параметров отчета
   if (not Assigned(ReportParams)) then
@@ -145,6 +175,18 @@ begin
   end;
 end;
 
+procedure TfSmReportMain.WMSysCommand(var Msg: TWMSysCommand);
+begin
+  if Msg.CmdType = 5555 then
+  begin
+    if (not Assigned(fSmReportListSQL)) then
+      fSmReportListSQL := TfSmReportListSQL.Create(Self);
+    fSmReportListSQL.ShowModal;
+  end
+  else
+    inherited;
+end;
+
 procedure TfSmReportMain.FormDestroy(Sender: TObject);
 begin
   // Удаляем кнопку от этого окна (на главной форме внизу)
@@ -155,53 +197,35 @@ end;
 procedure TfSmReportMain.mCategoryAddClick(Sender: TObject);
 var
   s: string;
-  flOk: Boolean;
 begin
   // Добавление раздела
-  flOk := False;
-  while not flOk do
-  begin
-    s := InputBox('Создание раздела', 'Укажите название раздела:', '');
+  s := InputBox('Создание раздела', 'Укажите название раздела:', '');
 
-    if TRIM(s) <> '' then
-    begin
-      qrTreeCategory.Insert;
-      qrTreeCategory.FieldByName('REPORT_CATEGORY_NAME').AsString := s;
-      qrTreeCategory.FieldByName('PARENT_ID').AsInteger := 0;
-      qrTreeCategory.Post;
-      flOk := True;
-    end
-    else
-      Application.MessageBox('Название раздела не может быть пустым!', 'Создание раздела',
-        MB_OK + MB_ICONSTOP + MB_TOPMOST);
-  end;
+  if TRIM(s) <> '' then
+  begin
+    qrTreeCategory.Insert;
+    qrTreeCategory.FieldByName('REPORT_CATEGORY_NAME').AsString := s;
+    qrTreeCategory.FieldByName('PARENT_ID').AsInteger := 0;
+    qrTreeCategory.Post;
+  end
 end;
 
 procedure TfSmReportMain.mCategoryAddSubClick(Sender: TObject);
 var
   s: string;
   PARENT_ID: Integer;
-  flOk: Boolean;
 begin
   // Добавление подраздела
-  flOk := False;
-  while not flOk do
-  begin
-    s := InputBox('Создание подраздела', 'Укажите название подраздела:', '');
+  s := InputBox('Создание подраздела', 'Укажите название подраздела:', '');
 
-    if TRIM(s) <> '' then
-    begin
-      PARENT_ID := qrTreeCategory.FieldByName('REPORT_CATEGORY_ID').AsInteger;
-      qrTreeCategory.Insert;
-      qrTreeCategory.FieldByName('REPORT_CATEGORY_NAME').AsString := s;
-      qrTreeCategory.FieldByName('PARENT_ID').AsInteger := PARENT_ID;
-      qrTreeCategory.Post;
-      flOk := True;
-    end
-    else
-      Application.MessageBox('Название подраздела не может быть пустым!', 'Создание подраздела',
-        MB_OK + MB_ICONSTOP + MB_TOPMOST);
-  end;
+  if TRIM(s) <> '' then
+  begin
+    PARENT_ID := qrTreeCategory.FieldByName('REPORT_CATEGORY_ID').AsInteger;
+    qrTreeCategory.Insert;
+    qrTreeCategory.FieldByName('REPORT_CATEGORY_NAME').AsString := s;
+    qrTreeCategory.FieldByName('PARENT_ID').AsInteger := PARENT_ID;
+    qrTreeCategory.Post;
+  end
 end;
 
 procedure TfSmReportMain.mCategoryDelClick(Sender: TObject);
@@ -242,27 +266,18 @@ end;
 procedure TfSmReportMain.mReportAddClick(Sender: TObject);
 var
   s: string;
-  flOk: Boolean;
 begin
   // Добавление отчета
-  flOk := False;
-  while not flOk do
-  begin
-    s := InputBox('Создание отчета', 'Укажите название отчета:', '');
+  s := InputBox('Создание отчета', 'Укажите название отчета:', '');
 
-    if TRIM(s) <> '' then
-    begin
-      qrReport.Insert;
-      qrReport.FieldByName('REPORT_NAME').AsString := s;
-      qrReport.FieldByName('REPORT_CATEGORY_ID').AsInteger := qrTreeCategory.FieldByName('REPORT_CATEGORY_ID')
-        .AsInteger;
-      qrReport.Post;
-      flOk := True;
-    end
-    else
-      Application.MessageBox('Название отчета не может быть пустым!', 'Создание отчета',
-        MB_OK + MB_ICONSTOP + MB_TOPMOST);
-  end;
+  if TRIM(s) <> '' then
+  begin
+    qrReport.Insert;
+    qrReport.FieldByName('REPORT_NAME').AsString := s;
+    qrReport.FieldByName('REPORT_CATEGORY_ID').AsInteger := qrTreeCategory.FieldByName('REPORT_CATEGORY_ID')
+      .AsInteger;
+    qrReport.Post;
+  end
 end;
 
 procedure TfSmReportMain.mReportCopyClick(Sender: TObject);
@@ -331,7 +346,7 @@ end;
 procedure TfSmReportMain.qrReportDataBeforeOpen(DataSet: TDataSet);
 begin
   // Заполняем параметры
-  ReportParams.WriteReportParams(qrReportData);
+  ReportParams.WriteReportParams(TFDQuery(DataSet));
 end;
 
 end.
