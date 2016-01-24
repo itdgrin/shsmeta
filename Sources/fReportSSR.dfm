@@ -49,7 +49,9 @@ object FormReportSSR: TFormReportSSR
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
+      OnDrawColumnCell = grSSRDrawColumnCell
       AutoAppend = False
+      AlternateRowColor = 13290146
       SelectColumnsDialogStrings.Caption = 'Select columns'
       SelectColumnsDialogStrings.OK = '&OK'
       SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -358,42 +360,68 @@ object FormReportSSR: TFormReportSSR
     end
     object mtSSRZP: TCurrencyField
       FieldName = 'ZP'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSRZP5: TCurrencyField
       FieldName = 'ZP5'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSREMiM: TCurrencyField
       FieldName = 'EMiM'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSRZPMash: TCurrencyField
       FieldName = 'ZPMash'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSRMat: TCurrencyField
       FieldName = 'Mat'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSRMatTransp: TCurrencyField
       FieldName = 'MatTransp'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSROXROPR: TCurrencyField
       FieldName = 'OXROPR'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSRPlanPrib: TCurrencyField
       FieldName = 'PlanPrib'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSRDevices: TCurrencyField
       FieldName = 'Devices'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSRTransp: TCurrencyField
       FieldName = 'Transp'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSROther: TCurrencyField
       FieldName = 'Other'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSRTotal: TCurrencyField
       FieldName = 'Total'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSRTrud: TCurrencyField
       FieldName = 'Trud'
+      DisplayFormat = '#,0'
+      currency = False
     end
     object mtSSRCID: TIntegerField
       FieldName = 'CID'

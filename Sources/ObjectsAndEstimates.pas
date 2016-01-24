@@ -117,6 +117,7 @@ type
     btnReportC2B: TBitBtn;
     btnReport1: TBitBtn;
     btnReport2: TBitBtn;
+    pmSSRTest: TMenuItem;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -185,6 +186,7 @@ type
     procedure btnReportC2BClick(Sender: TObject);
     procedure btnReport1Click(Sender: TObject);
     procedure btnReport2Click(Sender: TObject);
+    procedure pmSSRTestClick(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
     HintButton = 'Окно объектов и смет';
@@ -209,7 +211,7 @@ uses
   CalculationEstimate, Waiting, BasicData, DrawingTables,
   KC6, CardAct, ImportExportModule, GlobsAndConst,
   UserAccess, SprController, SerialKeyModule,
-  fReportC2B, SmReportMain;
+  fReportC2B, SmReportMain, fReportSSR;
 
 {$R *.dfm}
 
@@ -387,6 +389,17 @@ begin
   mObjectAccess.Visible := not qrObjects.IsEmpty and
     ((G_USER_ID = 1) OR (qrObjects.FieldByName('USER_ID').AsInteger = G_USER_ID) OR
     VarIsNull(qrObjects.FieldByName('USER_ID').Value));
+end;
+
+procedure TfObjectsAndEstimates.pmSSRTestClick(Sender: TObject);
+var ReportSSR: TFormReportSSR;
+begin
+  ReportSSR := TFormReportSSR.Create(Self, IdObject);
+  try
+    ReportSSR.ShowModal;
+  finally
+    FreeAndNil(ReportSSR);
+  end;
 end;
 
 procedure TfObjectsAndEstimates.mActAccessClick(Sender: TObject);

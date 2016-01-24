@@ -772,7 +772,7 @@ begin
   if TypeEstimate = 2 then
   begin
     qrMain.FieldByName('CHAPTER').AsInteger := 2;
-    qrMain.FieldByName('ROW_NUMBER').AsInteger := Null;
+    qrMain.FieldByName('ROW_NUMBER').Value := Null;
   end;
 end;
 
