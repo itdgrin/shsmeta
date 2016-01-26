@@ -291,7 +291,7 @@ object FormReportSSR: TFormReportSSR
       ListField = 'num_name'
       NullValueKey = 16411
       ParentFont = False
-      TabOrder = 0
+      TabOrder = 2
       OnClick = cbObjNameClick
     end
     object edtObjContNum: TEdit
@@ -308,7 +308,7 @@ object FormReportSSR: TFormReportSSR
       Font.Style = []
       ParentFont = False
       ReadOnly = True
-      TabOrder = 1
+      TabOrder = 0
       Text = 'edtObjContNum'
     end
     object edtObjContDate: TEdit
@@ -325,7 +325,7 @@ object FormReportSSR: TFormReportSSR
       Font.Style = []
       ParentFont = False
       ReadOnly = True
-      TabOrder = 2
+      TabOrder = 1
       Text = 'edtObjContDate'
     end
   end

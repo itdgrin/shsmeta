@@ -63,12 +63,11 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure cbbFromMonthChange(Sender: TObject);
-    procedure tvEstimatesClick(Sender: TObject);
     procedure qrDetailCalcFields(DataSet: TDataSet);
     procedure FormActivate(Sender: TObject);
     procedure qrObjectAfterScroll(DataSet: TDataSet);
-    procedure dbgrdDataDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
-      State: TGridDrawState);
+    procedure tvEstimatesClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     SkipReload: Boolean;
     procedure UpdateNumPP;
@@ -774,33 +773,6 @@ begin
   end;
 end;
 
-procedure TfKC6Journal.dbgrdDataDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
-  Column: TColumn; State: TGridDrawState);
-begin
-  with (Sender AS TJvDBGrid).Canvas do
-  begin
-    Brush.Color := PS.BackgroundRows;
-    Font.Color := PS.FontRows;
-
-    // Строка в фокусе
-    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
-      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
-    begin
-      Brush.Color := PS.BackgroundSelectRow;
-      Font.Color := PS.FontSelectRow;
-    end;
-    // Ячейка в фокусе
-    if (gdSelected in State) then
-    begin
-      Brush.Color := PS.BackgroundSelectCell;
-      Font.Color := PS.FontSelectCell;
-      Font.Style := Font.Style + [fsBold];
-    end;
-  end;
-
-  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
-end;
-
 procedure TfKC6Journal.FormActivate(Sender: TObject);
 begin
   // Если нажата клавиша Ctrl и выбираем форму, то делаем
@@ -819,24 +791,30 @@ procedure TfKC6Journal.FormCreate(Sender: TObject);
 begin
   inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
+  // FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
+
+  SkipReload := True;
+
   qrObject.Active := True;
   qrTreeData.Active := True;
   qrDetail.Active := True;
-  
-  SkipReload := True;
+
+
   cbbToMonth.ItemIndex := MonthOf(Now) - 1;
   seToYear.Value := YearOf(Now);
-  SkipReload := False;
+
+  LocateObject(InitParams[0]);
 
   pgcPage.ActivePageIndex := 0;
+  SkipReload := False;
+  //pgcPageChange(Self);
 end;
 
 procedure TfKC6Journal.FormDestroy(Sender: TObject);
 begin
   fKC6Journal := nil;
   // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(Caption);
+  // FormMain.DeleteButtonCloseWindow(Caption);
 end;
 
 procedure TfKC6Journal.FormResize(Sender: TObject);
@@ -844,10 +822,12 @@ begin
   FixDBGridColumnsWidth(dbgrd2);
 end;
 
-procedure TfKC6Journal.tvEstimatesClick(Sender: TObject);
+procedure TfKC6Journal.FormShow(Sender: TObject);
 begin
-  cbbFromMonthChange(Self);
-  UpdateNumPP;
+  if qrTreeData.FieldByName('SM_ID').Value <> InitParams[1] then
+      tvEstimates.SelectNode(InitParams[1]).Expand(False);
+  LocateEstimate(InitParams[1]);
+  pgcPageChange(Self);
 end;
 
 procedure TfKC6Journal.LocateEstimate(Estimate_ID: Integer);
@@ -878,13 +858,16 @@ begin
 end;
 
 procedure TfKC6Journal.qrObjectAfterScroll(DataSet: TDataSet);
+var
+  SkipReload_old: Boolean;
 begin
   if not qrTreeData.Active then
     Exit;
+  SkipReload_old := SkipReload;
   SkipReload := True;
   cbbFromMonth.ItemIndex := MonthOf(qrObject.FieldByName('date').AsDateTime) - 1;
   seFromYear.Value := YearOf(qrObject.FieldByName('date').AsDateTime);
-  SkipReload := False;
+  SkipReload := SkipReload_old;
   cbbFromMonthChange(Self);
 end;
 
@@ -900,11 +883,17 @@ begin
   cbbFromMonthChange(Self);
 end;
 
+procedure TfKC6Journal.tvEstimatesClick(Sender: TObject);
+begin
+  cbbFromMonthChange(Self);
+  UpdateNumPP;
+end;
+
 procedure TfKC6Journal.UpdateNumPP;
 var
   NumPP: Integer;
 begin
-  if not CheckQrActiveEmpty(qrData) then
+  if not CheckQrActiveEmpty(qrData) or SkipReload then
     Exit;
   // Устанавливаем №пп
   qrData.DisableControls;

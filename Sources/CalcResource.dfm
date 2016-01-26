@@ -169,6 +169,9 @@ object fCalcResource: TfCalcResource
     ExplicitHeight = 338
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 310
       object pgcRS: TPageControl
         Left = 0
@@ -187,7 +190,6 @@ object fCalcResource: TfCalcResource
           Margins.Right = 0
           Margins.Bottom = 0
           Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-          ExplicitHeight = 284
           object grRS: TJvDBGrid
             Left = 0
             Top = 0
@@ -280,7 +282,6 @@ object fCalcResource: TfCalcResource
         object ts7: TTabSheet
           Caption = #1056#1072#1089#1095#1077#1090' '#1082#1086#1084#1072#1085#1076#1080#1088#1086#1074#1086#1095#1085#1099#1093
           ImageIndex = 1
-          ExplicitHeight = 284
           object grTravel: TJvDBGrid
             Left = 0
             Top = 0
@@ -354,7 +355,6 @@ object fCalcResource: TfCalcResource
         object ts8: TTabSheet
           Caption = #1056#1072#1089#1095#1077#1090' '#1088#1072#1079#1098#1077#1079#1076#1085#1086#1075#1086' '#1093#1072#1088#1072#1082#1090#1077#1088#1072' '#1088#1072#1073#1086#1090
           ImageIndex = 2
-          ExplicitHeight = 284
           object grTravelWork: TJvDBGrid
             Left = 0
             Top = 0
@@ -428,7 +428,6 @@ object fCalcResource: TfCalcResource
         object ts9: TTabSheet
           Caption = #1056#1072#1089#1095#1077#1090' '#1079#1072#1090#1088#1072#1090' '#1085#1072' '#1087#1077#1088#1077#1074#1086#1079#1082#1091' '#1088#1072#1073#1086#1095#1080#1093
           ImageIndex = 3
-          ExplicitHeight = 284
           object grWorkerDepartment: TJvDBGrid
             Left = 0
             Top = 0
@@ -502,7 +501,6 @@ object fCalcResource: TfCalcResource
         object ts10: TTabSheet
           Caption = #1055#1077#1088#1077#1084#1077#1085#1085#1099#1077
           ImageIndex = 4
-          ExplicitHeight = 284
           object grVars: TJvDBGrid
             Left = 0
             Top = 0
@@ -569,7 +567,6 @@ object fCalcResource: TfCalcResource
     object ts2: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
       ImageIndex = 1
-      ExplicitHeight = 310
       object spl2: TSplitter
         Left = 0
         Top = 186
@@ -631,7 +628,6 @@ object fCalcResource: TfCalcResource
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
-        ExplicitHeight = 194
         object grMaterial: TJvDBGrid
           Left = 0
           Top = 0
@@ -827,7 +823,6 @@ object fCalcResource: TfCalcResource
         Font.Style = []
         ParentFont = False
         TabOrder = 2
-        ExplicitTop = 228
         object spl1: TSplitter
           Left = 1
           Top = 22
@@ -1003,7 +998,6 @@ object fCalcResource: TfCalcResource
     object ts3: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
       ImageIndex = 2
-      ExplicitHeight = 310
       object spl4: TSplitter
         Left = 0
         Top = 200
@@ -1023,7 +1017,6 @@ object fCalcResource: TfCalcResource
         BevelOuter = bvNone
         Caption = 'pnlMatClient'
         TabOrder = 1
-        ExplicitHeight = 208
         object grMech: TJvDBGrid
           Left = 0
           Top = 0
@@ -1190,7 +1183,6 @@ object fCalcResource: TfCalcResource
         Align = alBottom
         Caption = 'pnlMatBott'
         TabOrder = 2
-        ExplicitTop = 242
         object spl3: TSplitter
           Left = 1
           Top = 22
@@ -1380,6 +1372,9 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
       ExplicitHeight = 310
       object spl5: TSplitter
         Left = 0
@@ -1442,7 +1437,6 @@ object fCalcResource: TfCalcResource
         Font.Style = []
         ParentFont = False
         TabOrder = 1
-        ExplicitHeight = 208
         object grDev: TJvDBGrid
           Left = 0
           Top = 0
@@ -1801,7 +1795,6 @@ object fCalcResource: TfCalcResource
       Font.Style = []
       ImageIndex = 4
       ParentFont = False
-      ExplicitHeight = 310
       object pnlRatesClient: TPanel
         Left = 0
         Top = 0
@@ -1810,7 +1803,6 @@ object fCalcResource: TfCalcResource
         Align = alClient
         Caption = 'pnlRatesClient'
         TabOrder = 0
-        ExplicitHeight = 310
         object grRates: TJvDBGrid
           Left = 1
           Top = 1

@@ -11,12 +11,11 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf,
-  FireDAC.DApt.Intf, Data.DB,
+  FireDAC.DApt.Intf, Data.DB, System.UITypes,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   Vcl.Grids, Vcl.DBGrids,
-  JvExDBGrids, JvDBGrid,
-  Vcl.ExtCtrls, FireDAC.Stan.Async, FireDAC.DApt, Vcl.Buttons, Vcl.StdCtrls,
-  Vcl.DBCtrls;
+  JvExDBGrids, JvDBGrid, FireDAC.Stan.Async, FireDAC.DApt, Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Buttons,
+  Vcl.ExtCtrls;
 
 type
   TFormReportSSR = class(TSmForm)

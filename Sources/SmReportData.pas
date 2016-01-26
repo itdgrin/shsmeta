@@ -13,6 +13,7 @@ type
     qrSR: TFDQuery;
     procedure DataModuleCreate(Sender: TObject);
   private
+
   public
     ADocument: OleVariant;
     { Функция заполения параметров шаблона:
@@ -64,17 +65,19 @@ end;
 procedure TdmSmReport.DataModuleCreate(Sender: TObject);
 begin
   // doCreateDoc;
+  ADocument := Null;
 end;
 
 procedure TdmSmReport.doCreateDoc;
 begin
   // TODO Это бы дело в поток запустить и вообще шикарно...
   try
-    if not(ADocument = Unassigned) then
+    if not(VarIsNull(ADocument)) then
       Exit;
 
     ADocument := CreateOleObject('Excel.Application');
     ADocument.Application.EnableEvents := False;
+    ADocument.DisplayAlerts := False;
   except
 
   end;
@@ -82,21 +85,23 @@ end;
 
 function TdmSmReport.loadDocument(AFileName: string): OleVariant;
 var
-  outDocument: OleVariant;
+  WorkBook: OleVariant;
 begin
   Result := Null;
   try
     if VarIsNull(ADocument) then
     begin
       // Создаем новый объект
-      outDocument := CreateOleObject('Excel.Application');
-      outDocument.Application.EnableEvents := False;
-    end
-    else
-      outDocument := ADocument;
+      ADocument := CreateOleObject('Excel.Application');
+      ADocument.Application.EnableEvents := False;
+      ADocument.DisplayAlerts := False;
+    end;
 
-    outDocument.Workbooks.Open(AFileName);
-    Result := outDocument;
+    //if not ADocument.ActiveWorkbook then
+    //ADocument.ActiveWorkbook.Close(SaveChanges := False);
+    ADocument.Workbooks.Open(AFileName);
+
+    Result := ADocument;
   except
     on E: Exception do
     begin
@@ -200,7 +205,7 @@ begin
 end;
 
 initialization
-  ReportMemoryLeaksOnShutdown:=true;
 
+ReportMemoryLeaksOnShutdown := False;
 
 end.

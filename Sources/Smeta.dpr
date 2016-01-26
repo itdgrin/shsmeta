@@ -142,7 +142,8 @@ uses
   SmReportParamsEdit in 'SmReportParamsEdit.pas' {fSmReportParamsEdit},
   SmReportParamSelect in 'SmReportParamSelect.pas' {fSmReportParamSelect},
   SmReportListSQL in 'SmReportListSQL.pas' {fSmReportListSQL},
-  fReportSSR in 'fReportSSR.pas' {FormReportSSR};
+  fReportSSR in 'fReportSSR.pas' {FormReportSSR},
+  C3 in 'C3.pas' {fC3};
 
 {$R *.res}
 var MHandle: THandle;

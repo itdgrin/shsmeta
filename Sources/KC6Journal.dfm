@@ -16,6 +16,7 @@ object fKC6Journal: TfKC6Journal
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnResize = FormResize
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pgcPage: TPageControl
@@ -77,6 +78,7 @@ object fKC6Journal: TfKC6Journal
         UseFilter = True
         PersistentNode = True
         ReadOnly = True
+        HideSelection = False
         Indent = 19
         Align = alTop
         TabOrder = 0
@@ -105,7 +107,6 @@ object fKC6Journal: TfKC6Journal
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
-        OnDrawColumnCell = dbgrdDataDrawColumnCell
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -175,7 +176,6 @@ object fKC6Journal: TfKC6Journal
         TitleFont.Height = -11
         TitleFont.Name = 'Tahoma'
         TitleFont.Style = []
-        OnDrawColumnCell = dbgrdDataDrawColumnCell
         SelectColumnsDialogStrings.Caption = 'Select columns'
         SelectColumnsDialogStrings.OK = '&OK'
         SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'

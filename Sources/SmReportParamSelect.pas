@@ -27,7 +27,7 @@ type
     procedure edtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
   public
-    class function Select(AFromListID, ACodeLocate: Variant): Variant;
+    class function Select(AListIDorListName, ACodeLocate: Variant): Variant;
   end;
 
 implementation
@@ -58,16 +58,31 @@ end;
 
 procedure TfSmReportParamSelect.FormCreate(Sender: TObject);
 begin
-  // InitParams[0] - код списка REPORT_LIST_SQL_ID
+  // InitParams[0] - код списка REPORT_LIST_SQL_ID/строка, название списка
   // InitParams[1] - CODE для локейта
-  qrParamList.SQL.Text :=
-    VarToStr(FastSelectSQLOne('SELECT REPORT_LIST_SQL_SRC FROM report_list_sql WHERE REPORT_LIST_SQL_ID=:0',
-    VarArrayOf([InitParams[0]])));
-  grParamList.Columns[0].Title.Caption :=
-    VarToStrDef(FastSelectSQLOne
-    ('SELECT REPORT_LIST_SQL_DESCR FROM report_list_sql WHERE REPORT_LIST_SQL_ID=:0',
-    VarArrayOf([InitParams[0]])), '  ');
-  qrParamList.Active := True;
+  if VarIsNumeric(InitParams[0]) then
+  begin
+    qrParamList.SQL.Text :=
+      VarToStr(FastSelectSQLOne('SELECT REPORT_LIST_SQL_SRC FROM report_list_sql WHERE REPORT_LIST_SQL_ID=:0',
+      VarArrayOf([InitParams[0]])));
+    grParamList.Columns[0].Title.Caption :=
+      VarToStrDef(FastSelectSQLOne
+      ('SELECT REPORT_LIST_SQL_DESCR FROM report_list_sql WHERE REPORT_LIST_SQL_ID=:0',
+      VarArrayOf([InitParams[0]])), '  ');
+    qrParamList.Active := True;
+  end
+  else
+  begin
+    qrParamList.SQL.Text :=
+      VarToStr(FastSelectSQLOne
+      ('SELECT REPORT_LIST_SQL_SRC FROM report_list_sql WHERE TRIM(UPPER(REPORT_LIST_SQL_NAME))=TRIM(UPPER(:0)) LIMIT 1',
+      VarArrayOf([InitParams[0]])));
+    grParamList.Columns[0].Title.Caption :=
+      VarToStrDef(FastSelectSQLOne
+      ('SELECT REPORT_LIST_SQL_DESCR FROM report_list_sql WHERE TRIM(UPPER(REPORT_LIST_SQL_NAME))=TRIM(UPPER(:0)) LIMIT 1',
+      VarArrayOf([InitParams[0]])), '  ');
+    qrParamList.Active := True;
+  end;
   if not VarIsNull(InitParams[1]) then
     qrParamList.Locate('CODE', InitParams[1], []);
 end;
@@ -77,7 +92,7 @@ begin
   ModalResult := mrOk;
 end;
 
-class function TfSmReportParamSelect.Select(AFromListID, ACodeLocate: Variant): Variant;
+class function TfSmReportParamSelect.Select(AListIDorListName, ACodeLocate: Variant): Variant;
 // Функция выбора значения из списка
 // AFromListID - REPORT_LIST_SQL_ID - код списка
 // ACodeLocate - CODE для локейта
@@ -86,7 +101,7 @@ var
   form: TfSmReportParamSelect;
 begin
   Result := Null;
-  form := TfSmReportParamSelect.Create(nil, VarArrayOf([AFromListID, ACodeLocate]));
+  form := TfSmReportParamSelect.Create(nil, VarArrayOf([AListIDorListName, ACodeLocate]));
   try
     if form.ShowModal = mrOk then
       Result := VarArrayOf([form.qrParamList.FieldByName('CODE').Value,

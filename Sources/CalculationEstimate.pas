@@ -1411,13 +1411,7 @@ begin
     FormWaiting.Show;
     Application.ProcessMessages;
     if (not Assigned(fKC6Journal)) then
-      fKC6Journal := TfKC6Journal.Create(FormCalculationEstimate);
-
-    fKC6Journal.LocateObject(IdObject);
-    fKC6Journal.LocateEstimate(IdEstimate);
-    if fKC6Journal.qrTreeData.FieldByName('SM_ID').Value <> IdEstimate then
-      fKC6Journal.tvEstimates.SelectNode(IdEstimate).Expand(False);
-    fKC6Journal.tvEstimatesClick(Self);
+      fKC6Journal := TfKC6Journal.Create(FormCalculationEstimate, VarArrayOf([IdObject, IdEstimate]));
 
     // Встраиваем форму
     fKC6Journal.Parent := FormCalculationEstimate;

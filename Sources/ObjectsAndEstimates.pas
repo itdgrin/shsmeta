@@ -187,6 +187,7 @@ type
     procedure btnReport1Click(Sender: TObject);
     procedure btnReport2Click(Sender: TObject);
     procedure pmSSRTestClick(Sender: TObject);
+    procedure btnReportC3Click(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
     HintButton = 'Окно объектов и смет';
@@ -211,7 +212,7 @@ uses
   CalculationEstimate, Waiting, BasicData, DrawingTables,
   KC6, CardAct, ImportExportModule, GlobsAndConst,
   UserAccess, SprController, SerialKeyModule,
-  fReportC2B, SmReportMain, fReportSSR;
+  fReportC2B, SmReportMain, fReportSSR, C3;
 
 {$R *.dfm}
 
@@ -706,6 +707,13 @@ begin
     FormReportC2B.OwnPointer := @FormReportC2B;
   end;
   FormReportC2B.OwnPanelButtonClick;
+end;
+
+procedure TfObjectsAndEstimates.btnReportC3Click(Sender: TObject);
+begin
+  if (not Assigned(fC3)) then
+    fC3 := TfC3.Create(Self, IdObject);
+  fC3.Show;
 end;
 
 procedure TfObjectsAndEstimates.btnSearchClick(Sender: TObject);

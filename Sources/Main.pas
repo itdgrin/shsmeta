@@ -1981,8 +1981,7 @@ begin
       fKC6Journal.LocateObject(fObjectsAndEstimates.getCurObject);
     fKC6Journal.LocateEstimate(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').Value);
     fKC6Journal.tvEstimates.SelectNode(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').Value)
-      .Expand(False);
-    fKC6Journal.tvEstimatesClick(Self);
+      .Expand(True);
     fKC6Journal.Show;
   end
   else
@@ -2001,8 +2000,7 @@ begin
         fKC6Journal := TfKC6Journal.Create(Self);
       fKC6Journal.LocateObject(FormCalculationEstimate.IdObject);
       fKC6Journal.LocateEstimate(FormCalculationEstimate.IdEstimate);
-      fKC6Journal.tvEstimates.SelectNode(FormCalculationEstimate.IdEstimate).Expand(False);
-      fKC6Journal.tvEstimatesClick(Self);
+      fKC6Journal.tvEstimates.SelectNode(FormCalculationEstimate.IdEstimate).Expand(True);
       fKC6Journal.Show;
     end;
   end;
