@@ -302,6 +302,7 @@ type
     procedure PMRestoreOldBackupClick(Sender: TObject);
     procedure mTest_1Click(Sender: TObject);
     procedure mReportPrintClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -708,6 +709,12 @@ begin
   DM.qrDifferent.Active := False;
 end;
 
+procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  //if VarIsNull(dmSmReport.ADocument) then
+  dmSmReport.closeDocument(dmSmReport.ADocument);
+end;
+
 procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   if (not G_STARTAPP) and (not FLicenseClose) then
@@ -730,9 +737,6 @@ begin
 
     CanClose := False;
   end;
-
-  if VarIsNull(dmSmReport.ADocument) then
-    dmSmReport.closeDocument(dmSmReport.ADocument);
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);

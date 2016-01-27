@@ -251,8 +251,8 @@ object fSmReportMain: TfSmReportMain
       'SELECT report_category.*, '
       
         'CONCAT(REPORT_CATEGORY_NAME, " (", (SELECT COUNT(*) FROM REPORT ' +
-        'WHERE REPORT.TREE_PATH LIKE CONCAT(report_category.TREE_PATH, "%' +
-        '")), ")") AS LABEL'
+        'WHERE DELETED = 0 AND REPORT.TREE_PATH LIKE CONCAT(report_catego' +
+        'ry.TREE_PATH, "%")), ")") AS LABEL'
       'FROM report_category'
       'ORDER BY REPORT_CATEGORY_NAME')
     Left = 30
@@ -310,6 +310,7 @@ object fSmReportMain: TfSmReportMain
       'SELECT *'
       'FROM report'
       'WHERE TREE_PATH LIKE CONCAT(:TREE_PATH, "%")'
+      '  AND ((DELETED = 0) OR (:SHOW_DELETED))'
       'ORDER BY REPORT_NAME')
     Left = 30
     Top = 98
@@ -319,6 +320,12 @@ object fSmReportMain: TfSmReportMain
         DataType = ftString
         ParamType = ptInput
         Value = Null
+      end
+      item
+        Name = 'SHOW_DELETED'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 0
       end>
   end
   object dsReport: TDataSource

@@ -165,14 +165,8 @@ object fCalcResource: TfCalcResource
     ParentFont = False
     TabOrder = 2
     OnChange = pgcChange
-    ExplicitTop = 80
-    ExplicitHeight = 338
     object ts1: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 310
       object pgcRS: TPageControl
         Left = 0
         Top = 0
@@ -183,7 +177,6 @@ object fCalcResource: TfCalcResource
         MultiLine = True
         TabOrder = 0
         TabPosition = tpBottom
-        ExplicitHeight = 310
         object ts6: TTabSheet
           Margins.Left = 0
           Margins.Top = 0
@@ -610,7 +603,7 @@ object fCalcResource: TfCalcResource
         object edtMatNameFilter: TEdit
           Left = 131
           Top = 2
-          Width = 604
+          Width = 606
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           TabOrder = 1
@@ -806,7 +799,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsMaterialData
           DBGrid = grMaterial
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 175
         end
       end
       object pnlMatBott: TPanel
@@ -1172,7 +1164,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsMechData
           DBGrid = grMech
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 189
         end
       end
       object pnlMechBott: TPanel
@@ -1375,7 +1366,7 @@ object fCalcResource: TfCalcResource
       ExplicitLeft = 0
       ExplicitTop = 0
       ExplicitWidth = 0
-      ExplicitHeight = 310
+      ExplicitHeight = 0
       object spl5: TSplitter
         Left = 0
         Top = 200
@@ -1618,7 +1609,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsDevices
           DBGrid = grDev
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 189
         end
       end
       object pnlDevBott: TPanel
@@ -1634,7 +1624,6 @@ object fCalcResource: TfCalcResource
         Font.Style = []
         ParentFont = False
         TabOrder = 2
-        ExplicitTop = 242
         object spl6: TSplitter
           Left = 1
           Top = 22
@@ -1982,7 +1971,6 @@ object fCalcResource: TfCalcResource
           DataSource = dsRates
           DBGrid = grRates
           OnCalculate = JvDBGridFooter1Calculate
-          ExplicitTop = 245
         end
         object dbmmoNAME3: TDBMemo
           Left = 1
@@ -1995,7 +1983,6 @@ object fCalcResource: TfCalcResource
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 2
-          ExplicitTop = 264
         end
       end
     end

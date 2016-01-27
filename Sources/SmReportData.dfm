@@ -1,8 +1,8 @@
 object dmSmReport: TdmSmReport
   OldCreateOrder = False
   OnCreate = DataModuleCreate
-  Height = 409
-  Width = 539
+  Height = 167
+  Width = 282
   object qrSR: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read

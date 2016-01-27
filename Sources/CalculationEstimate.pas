@@ -447,7 +447,6 @@ type
     PMTrPerc5: TMenuItem;
     PMTrPerc0: TMenuItem;
     btnCalcFact: TBitBtn;
-    btn3: TBitBtn;
     lblForeman: TLabel;
     lblForemanFIO: TLabel;
     qrRatesExCONS_REPLASED: TIntegerField;
@@ -502,6 +501,7 @@ type
     pnlActSourceData: TPanel;
     lbl2: TLabel;
     edtActDate: TEdit;
+    btnRS: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -590,12 +590,9 @@ type
     procedure OutputDataToTable(ANewRow: Boolean = False); // Заполнение таблицы расценок
 
     procedure AddRate(const ARateId: Integer);
-    procedure AddMaterial(AMatId, AManPriceID: Integer; APriceDate: TDateTime;
-      ASprRecord: TSprRecord);
-    procedure AddMechanizm(AMechId, AManPriceID: Integer; APriceDate: TDateTime;
-      ASprRecord: TSprRecord);
-    procedure AddDevice(AEquipId, AManPriceID: Integer; APriceDate: TDateTime;
-      ASprRecord: TSprRecord);
+    procedure AddMaterial(AMatId, AManPriceID: Integer; APriceDate: TDateTime; ASprRecord: TSprRecord);
+    procedure AddMechanizm(AMechId, AManPriceID: Integer; APriceDate: TDateTime; ASprRecord: TSprRecord);
+    procedure AddDevice(AEquipId, AManPriceID: Integer; APriceDate: TDateTime; ASprRecord: TSprRecord);
 
     procedure PMMechFromRatesClick(Sender: TObject);
     procedure dbgrdRates12DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
@@ -672,7 +669,6 @@ type
     procedure btnResMatClick(Sender: TObject);
     procedure PMTrPerc0Click(Sender: TObject);
     procedure PMTransPercClick(Sender: TObject);
-    procedure btn2Click(Sender: TObject);
     procedure btnCalcFactClick(Sender: TObject);
     procedure lblForemanClick(Sender: TObject);
     procedure PMInsertRowClick(Sender: TObject);
@@ -707,6 +703,7 @@ type
     procedure PMMatSprCardClick(Sender: TObject);
     procedure PanelDataResize(Sender: TObject);
     procedure dsTypeDataDataChange(Sender: TObject; Field: TField);
+    procedure btnRSClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта субподрядчика');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -765,7 +762,7 @@ type
 
     TYPE_ACT: Integer; // Тип акта
 
-    FReplaceRowID: Integer; //ID строки сметы, которая будет заменяться
+    FReplaceRowID: Integer; // ID строки сметы, которая будет заменяться
 
     procedure GridProc(var Message: TMessage);
 
@@ -815,7 +812,7 @@ type
     function GetEditable: Boolean;
 
     function SprManualData(ASprType: Integer; const ANewCode: string; var ANewID: Integer): Boolean;
-    procedure ReplaceSmRow(ASmRowId: Integer; var AIterator, AManualNom: integer);
+    procedure ReplaceSmRow(ASmRowId: Integer; var AIterator, AManualNom: Integer);
   protected
     procedure SetFormStyle; override;
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
@@ -1374,6 +1371,28 @@ begin
       FormCalculationEstimate);
 end;
 
+procedure TFormCalculationEstimate.btnRSClick(Sender: TObject);
+{ var
+  doc: OleVariant;
+  fileName: string; }
+begin
+  ShowNeedSaveDialog;
+  ShowCalcResource(IdEstimate, 0, Self);
+  {
+    fileName := ExtractFilePath(Application.ExeName) + C_REPORTDIR + 'ШАБЛОН ПОЛНЫЙ.xls';
+    doc := dmSmReport.loadDocument(fileName);
+    dmSmReport.qrSR.Active := False;
+    dmSmReport.qrSR.ParamByName('SM_ID').Value := IdEstimate;
+    dmSmReport.qrSR.Active := True;
+    dmSmReport.loadParams(dmSmReport.qrSR, doc, 5);
+    dmSmReport.showDocument(doc);
+  }
+  {
+    ShellExecute(Handle, nil, 'rs.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
+    PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
+  }
+end;
+
 procedure TFormCalculationEstimate.btnEquipmentsClick(Sender: TObject);
 var
   s: string;
@@ -1398,6 +1417,7 @@ end;
 procedure TFormCalculationEstimate.btnKC6JClick(Sender: TObject);
 begin
   CloseOtherTabs;
+
   if Act then
   // для акта
   begin
@@ -1408,6 +1428,7 @@ begin
   // Для сметы
   else
   begin
+    ShowNeedSaveDialog;
     FormWaiting.Show;
     Application.ProcessMessages;
     if (not Assigned(fKC6Journal)) then
@@ -1549,28 +1570,6 @@ begin
 
   if Assigned(fContractPrice) then
     fContractPrice.mRecalcAllClick(nil);
-end;
-
-procedure TFormCalculationEstimate.btn2Click(Sender: TObject);
-{var
-  doc: OleVariant;
-  fileName: string; }
-begin
-  ShowNeedSaveDialog;
-  ShowCalcResource(IdEstimate, 0, Self);
-  {
-  fileName := ExtractFilePath(Application.ExeName) + C_REPORTDIR + 'ШАБЛОН ПОЛНЫЙ.xls';
-  doc := dmSmReport.loadDocument(fileName);
-  dmSmReport.qrSR.Active := False;
-  dmSmReport.qrSR.ParamByName('SM_ID').Value := IdEstimate;
-  dmSmReport.qrSR.Active := True;
-  dmSmReport.loadParams(dmSmReport.qrSR, doc, 5);
-  dmSmReport.showDocument(doc);
-  }
-  {
-    ShellExecute(Handle, nil, 'rs.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
-    PChar(GetCurrentDir + '\reports\'), SW_maximIZE);
-  }
 end;
 
 procedure TFormCalculationEstimate.btnCalcFactClick(Sender: TObject);
@@ -3105,9 +3104,8 @@ begin
     end;
   end;
 
-  if (qrRatesExID_TYPE_DATA.Value = -4) and
-     ((qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) or
-      (qrRatesExOBJ_CODE.AsVariant <> Null)) then
+  if (qrRatesExID_TYPE_DATA.Value = -4) and ((qrRatesExNOM_ROW_MANUAL.AsVariant <> Null) or
+    (qrRatesExOBJ_CODE.AsVariant <> Null)) then
   begin
     qrRatesEx.Edit;
     qrRatesExNOM_ROW_MANUAL.AsVariant := Null;
@@ -3274,8 +3272,8 @@ begin
           MesRes := MessageBox(0, 'Пусконаладка с указанным кодом не найдена!' + sLineBreak +
             'Открыть справочник?', PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal)
         else
-          MesRes := MessageBox(0, 'Расценка с указанным кодом не найдена!' + sLineBreak + 'Открыть справочник?',
-            PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal);
+          MesRes := MessageBox(0, 'Расценка с указанным кодом не найдена!' + sLineBreak +
+            'Открыть справочник?', PChar(FMesCaption), MB_ICONINFORMATION + MB_OKCANCEL + mb_TaskModal);
 
         if MesRes = mrOk then
           PMAddRatMatMechEquipOwnClick(nil);
@@ -3413,8 +3411,7 @@ begin
     MessageBox(0, 'По указанному коду ничего не найдено!', PChar(FMesCaption),
       MB_ICONINFORMATION + MB_OK + mb_TaskModal);
   finally
-    if (qrRatesExID_TYPE_DATA.Value > 0) and
-       (qrRatesEx.State in [dsEdit]) then
+    if (qrRatesExID_TYPE_DATA.Value > 0) and (qrRatesEx.State in [dsEdit]) then
       qrRatesEx.Cancel;
   end;
 end;
@@ -3642,10 +3639,8 @@ procedure TFormCalculationEstimate.grRatesExCanEditCell(Grid: TJvDBGrid; Field: 
   var AllowEdit: Boolean);
 begin
   AllowEdit := Editable;
-  if ((Field = qrRatesExOBJ_CODE) and
-      (qrRatesExID_TYPE_DATA.Value <> -4) and
-      (qrRatesExID_TYPE_DATA.Value <> -5) and
-      (qrRatesExID_TYPE_DATA.Value < 0)) or
+  if ((Field = qrRatesExOBJ_CODE) and (qrRatesExID_TYPE_DATA.Value <> -4) and
+    (qrRatesExID_TYPE_DATA.Value <> -5) and (qrRatesExID_TYPE_DATA.Value < 0)) or
     ((Field = qrRatesExNOM_ROW_MANUAL) and ((qrRatesExID_TYPE_DATA.Value = -1) or
     (qrRatesExID_TYPE_DATA.Value = -2) or (qrRatesExID_TYPE_DATA.Value = -3))) or (Grid.Col = 1) then
     AllowEdit := False;
@@ -3853,7 +3848,7 @@ begin
             end;
           end;
         end;
-        DataObj.CopyToClipBoard;
+        DataObj.CopyToClipboard;
         grRatesEx.DataSource.DataSet.GotoBookmark(TempBookmark);
         grRatesEx.DataSource.DataSet.FreeBookmark(TempBookmark);
       end;
@@ -5142,10 +5137,11 @@ begin
   // или шапка жешки или строка ввода
 end;
 
-procedure TFormCalculationEstimate.ReplaceSmRow(ASmRowId: Integer; var AIterator, AManualNom: integer);
-var TempBookmark: TBookMark;
-    ev: TDataSetNotifyEvent;
-    ev2: TFieldNotifyEvent;
+procedure TFormCalculationEstimate.ReplaceSmRow(ASmRowId: Integer; var AIterator, AManualNom: Integer);
+var
+  TempBookmark: TBookMark;
+  ev: TDataSetNotifyEvent;
+  ev2: TFieldNotifyEvent;
 begin
   if ASmRowId = 0 then
     Exit;
@@ -5223,8 +5219,8 @@ begin
       except
         on e: Exception do
         begin
-          MessageBox(0, 'При добавлении расценки во временную таблицу возникла ошибка.',
-            PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+          MessageBox(0, 'При добавлении расценки во временную таблицу возникла ошибка.', PChar(FMesCaption),
+            MB_ICONERROR + MB_OK + mb_TaskModal);
           raise;
         end;
       end;
@@ -5260,10 +5256,11 @@ begin
             'TMatNorm.norm_ras as "MatNorm", units.unit_name as "MatUnit", ' +
             'TMat.unit_id as "UnitId", mat_name as "MatName", ' + PriceVAT + ' as "PriceVAT", ' + PriceNoVAT +
             ' as "PriceNoVAT", TMat.BASE as "BASE", TMat.MAT_TYPE as "MAT_TYPE" ' +
-            'FROM materialnorm as TMatNorm ' + 'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id '
-            + 'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
-            '(TMatCoast.material_id = TMatNorm.material_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and ' +
-            '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (TMatNorm.normativ_id = ' + INTTOSTR(ARateId) +
+            'FROM materialnorm as TMatNorm ' +
+            'JOIN material as TMat ON TMat.material_id = TMatNorm.material_id ' +
+            'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
+            '(TMatCoast.material_id = TMatNorm.material_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and '
+            + '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (TMatNorm.normativ_id = ' + INTTOSTR(ARateId) +
             ') order by 1';
           Active := True;
 
@@ -5299,7 +5296,8 @@ begin
               'ID, ID_CARD_RATE, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
               'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
               '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :MAT_ID, :MAT_CODE, ' +
-              ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' + ':PROC_TRANSP, :BASE, :MAT_TYPE)';
+              ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' +
+              ':PROC_TRANSP, :BASE, :MAT_TYPE)';
             qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
             qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
             qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -5317,8 +5315,8 @@ begin
             qrTemp1.ParamByName('MAT_TYPE').Value := FieldByName('MAT_TYPE').Value;
             qrTemp1.ExecSQL;
 
-            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger,
-              ARateId, FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
+            CheckNeedAutoRep(MaxMId, 2, FieldByName('MatId').AsInteger, ARateId,
+              FieldByName('MatCode').AsString, FieldByName('MatName').AsString);
 
             Next;
           end;
@@ -5341,8 +5339,8 @@ begin
 
             if MaxMId > 0 then
             begin
-              qrTemp1.SQL.Text := 'Insert into materialcard_temp ' + '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, ' +
-                'CONSIDERED, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
+              qrTemp1.SQL.Text := 'Insert into materialcard_temp ' + '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, '
+                + 'CONSIDERED, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
                 'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
                 '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
                 ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
@@ -5379,8 +5377,8 @@ begin
       except
         on e: Exception do
         begin
-          MessageBox(0, 'При занесении материалов во временную таблицу возникла ошибка.',
-            PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+          MessageBox(0, 'При занесении материалов во временную таблицу возникла ошибка.', PChar(FMesCaption),
+            MB_ICONERROR + MB_OK + mb_TaskModal);
           raise;
         end;
       end;
@@ -5395,13 +5393,13 @@ begin
             'mechnorm.norm_ras as "MechNorm", units.unit_name as "Unit", ' +
             'mech.mech_name as "MechName", mechcoast.coast1 as "CoastVAT", ' +
             'mechcoast.coast2 as "CoastNoVAT", mechcoast.zp1 as "SalaryVAT", ' +
-            'mechcoast.zp2 as "SalaryNoVAT", IFNULL(mech.MECH_PH, 0) as "MECH_PH", ' + 'mech.BASE as "BASE" ' +
-            'FROM mechanizmnorm as mechnorm ' +
+            'mechcoast.zp2 as "SalaryNoVAT", IFNULL(mech.MECH_PH, 0) as "MECH_PH", ' + 'mech.BASE as "BASE" '
+            + 'FROM mechanizmnorm as mechnorm ' +
             'JOIN mechanizm as mech ON mechnorm.mechanizm_id = mech.mechanizm_id ' +
             'JOIN units ON mech.unit_id = units.unit_id ' + 'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
-            '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and ' +
-            '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (mechnorm.normativ_id = ' + INTTOSTR(ARateId) +
-            ') order by 1');
+            '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and ' + '(monat = ' + INTTOSTR(Month1) +
+            ') and ' + '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (mechnorm.normativ_id = ' +
+            INTTOSTR(ARateId) + ') order by 1');
 
           Active := True;
           First;
@@ -5452,8 +5450,8 @@ begin
       except
         on e: Exception do
         begin
-          MessageBox(0, 'При занесении механизмов во временную таблицу возникла ошибка.',
-            PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+          MessageBox(0, 'При занесении механизмов во временную таблицу возникла ошибка.', PChar(FMesCaption),
+            MB_ICONERROR + MB_OK + mb_TaskModal);
           raise;
         end;
       end;
@@ -5516,8 +5514,8 @@ begin
     FNewNomManual := qrRatesExNOM_ROW_MANUAL.Value;
   end;
 
-  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag,
-    FNewRowIterator, FNewNomManual, FTranspDistance, True) then
+  if GetTranspForm(qrRatesExSM_ID.AsInteger, -1, (Sender as TMenuItem).Tag, FNewRowIterator, FNewNomManual,
+    FTranspDistance, True) then
   begin
     ReplaceSmRow(FReplaceRowID, FNewRowIterator, FNewNomManual);
     OutputDataToTable(True);
@@ -5871,8 +5869,7 @@ var
   i: Integer;
 begin
   // Вынесено сюда так как mousedown работает глючно
-  if (grRatesEx.SelectedRows.Count > 0) and
-     not(grRatesEx.SelectedRows.CurrentRowSelected) then
+  if (grRatesEx.SelectedRows.Count > 0) and not(grRatesEx.SelectedRows.CurrentRowSelected) then
     grRatesEx.SelectedRows.Clear;
 
   Edt := Editable;
@@ -5885,7 +5882,7 @@ begin
     (qrRatesExID_TYPE_DATA.AsInteger = -4) or (qrRatesExID_TYPE_DATA.AsInteger = -3)) and
     ClipBoard.HasFormat(G_SMETADATA) and Edt;
 
-  //Финт для преодаления глюка работы с горячими клавишами
+  // Финт для преодаления глюка работы с горячими клавишами
   PMCopy.Enabled := PMCopy.Enabled or grRatesEx.EditorMode;
   PMPaste.Enabled := PMPaste.Enabled or grRatesEx.EditorMode;
 
@@ -5919,7 +5916,7 @@ begin
   mBaseData.Caption := 'Исходные данные - ' + qrRatesExOBJ_CODE.AsString;
   // Просто удачное место, что-бы погасить растояние перевозки заданное при ручном вводе
   FTranspDistance := 0;
-  //Гасит замену строки если решили воспользоваться справочниками
+  // Гасит замену строки если решили воспользоваться справочниками
   FReplaceRowID := 0;
 end;
 
@@ -6660,70 +6657,71 @@ procedure TFormCalculationEstimate.FillingWinterPrice(vNumber: string);
 var
   mes: string;
 begin
-  try
-    if qrRatesExZNORMATIVS_ID.AsInteger <> 0 then
-      with qrTemp do
-      begin
-        Active := False;
-        SQL.Clear;
-        SQL.Add('SELECT CONCAT(num, " ", name) as "Name" ' +
-          'FROM znormativs WHERE znormativs.ZNORMATIVS_ID=:ZNORMATIVS_ID LIMIT 1;');
-        ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesExZNORMATIVS_ID.AsInteger;
-        Active := True;
-        if VarIsNull(FieldByName('Name').Value) then
-          edtWinterPrice.Text := 'не найден'
-        else
-          edtWinterPrice.Text := FieldByName('Name').AsString;
-      end
-    else
-      with qrTemp do
-      begin
-        Active := False;
-        SQL.Clear;
-        SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name",'#13 +
-          'CONCAT(s, " - ", po) AS DESCRIPTION,'#13 +
-          'CONCAT(coef, "% / ", coef_zp, "%") AS VALUE, coef as "Coef", coef_zp as "CoefZP", FN_NUM_TO_INT(s) as "From", FN_NUM_TO_INT(po) as "On" '
-          + 'FROM znormativs, znormativs_detail, znormativs_value ' +
-          'WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID  ' +
-          'AND znormativs.ZNORMATIVS_ID = znormativs_value.ZNORMATIVS_ID ' + 'AND znormativs.DEL_FLAG = 0 ' +
-          'AND znormativs_value.ZNORMATIVS_ONDATE_ID = (' + '  SELECT znormativs_ondate.ID' +
-          '    FROM znormativs_ondate' +
-          '    WHERE `znormativs_ondate`.`onDate` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = (SELECT STAVKA_ID FROM smetasourcedata WHERE SM_ID='
-          + qrRatesExSM_ID.AsString + '))' +
-          '    AND `znormativs_ondate`.`DEL_FLAG` = 0 ORDER BY `znormativs_ondate`.`onDate` DESC LIMIT 1) AND FN_NUM_TO_INT("'
-          + vNumber + '")<=FN_NUM_TO_INT(po) AND FN_NUM_TO_INT("' + vNumber +
-          '")>=FN_NUM_TO_INT(s) AND REPLACE(SUBSTRING(s FROM 1 FOR 1), "E", "Е")=REPLACE(SUBSTRING("' +
-          vNumber + '" FROM 1 FOR 1), "E", "Е")' + ';');
-        Active := True;
-        First;
-        if not Eof then
+  if qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1 then
+    try
+      if qrRatesExZNORMATIVS_ID.AsInteger <> 0 then
+        with qrTemp do
         begin
-          if RecordCount = 1 then
-          begin
-            edtWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
-            qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
-          end
+          Active := False;
+          SQL.Clear;
+          SQL.Add('SELECT CONCAT(num, " ", name) as "Name" ' +
+            'FROM znormativs WHERE znormativs.ZNORMATIVS_ID=:ZNORMATIVS_ID LIMIT 1;');
+          ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesExZNORMATIVS_ID.AsInteger;
+          Active := True;
+          if VarIsNull(FieldByName('Name').Value) then
+            edtWinterPrice.Text := 'не найден'
           else
-          // Если нашлось более одной записи, показываем диалог
+            edtWinterPrice.Text := FieldByName('Name').AsString;
+        end
+      else
+        with qrTemp do
+        begin
+          Active := False;
+          SQL.Clear;
+          SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name",'#13 +
+            'CONCAT(s, " - ", po) AS DESCRIPTION,'#13 +
+            'CONCAT(coef, "% / ", coef_zp, "%") AS VALUE, coef as "Coef", coef_zp as "CoefZP", FN_NUM_TO_INT(s) as "From", FN_NUM_TO_INT(po) as "On" '
+            + 'FROM znormativs, znormativs_detail, znormativs_value ' +
+            'WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID  ' +
+            'AND znormativs.ZNORMATIVS_ID = znormativs_value.ZNORMATIVS_ID ' + 'AND znormativs.DEL_FLAG = 0 '
+            + 'AND znormativs_value.ZNORMATIVS_ONDATE_ID = (' + '  SELECT znormativs_ondate.ID' +
+            '    FROM znormativs_ondate' +
+            '    WHERE `znormativs_ondate`.`onDate` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = (SELECT STAVKA_ID FROM smetasourcedata WHERE SM_ID='
+            + qrRatesExSM_ID.AsString + '))' +
+            '    AND `znormativs_ondate`.`DEL_FLAG` = 0 ORDER BY `znormativs_ondate`.`onDate` DESC LIMIT 1) AND FN_NUM_TO_INT("'
+            + vNumber + '")<=FN_NUM_TO_INT(po) AND FN_NUM_TO_INT("' + vNumber +
+            '")>=FN_NUM_TO_INT(s) AND REPLACE(SUBSTRING(s FROM 1 FOR 1), "E", "Е")=REPLACE(SUBSTRING("' +
+            vNumber + '" FROM 1 FOR 1), "E", "Е")' + ';');
+          Active := True;
+          First;
+          if not Eof then
           begin
-            mes := 'Расценка "' + qrRatesExOBJ_CODE.AsString +
-              '" относится к нескольким настройкам зимнего удорожания. Укажите необходимый вид.';
-            Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
-            if ShowSelectDialog('Выбор зимнего удорожания' { , Pointer(qrTemp) } ) then
+            if RecordCount = 1 then
             begin
               edtWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
-              FastExecSQL('UPDATE card_rate_temp SET ZNORMATIVS_ID=:0 WHERE ID=:1',
-                VarArrayOf([qrTemp.FieldByName('ZNORMATIVS_ID').Value, qrRatesExID_TABLES.Value]));
-              qrRatesExZNORMATIVS_ID.AsInteger := qrTemp.FieldByName('ZNORMATIVS_ID').AsInteger;
+              qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
+            end
+            else
+            // Если нашлось более одной записи, показываем диалог
+            begin
+              mes := 'Расценка "' + qrRatesExOBJ_CODE.AsString +
+                '" относится к нескольким настройкам зимнего удорожания. Укажите необходимый вид.';
+              Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+              if ShowSelectDialog('Выбор зимнего удорожания' { , Pointer(qrTemp) } ) then
+              begin
+                edtWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
+                FastExecSQL('UPDATE card_rate_temp SET ZNORMATIVS_ID=:0 WHERE ID=:1',
+                  VarArrayOf([qrTemp.FieldByName('ZNORMATIVS_ID').Value, qrRatesExID_TABLES.Value]));
+                qrRatesExZNORMATIVS_ID.AsInteger := qrTemp.FieldByName('ZNORMATIVS_ID').AsInteger;
+              end;
             end;
           end;
         end;
-      end;
-  except
-    on e: Exception do
-      MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' + sLineBreak +
-        sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
-  end;
+    except
+      on e: Exception do
+        MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' + sLineBreak +
+          sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+    end;
 end;
 
 procedure TFormCalculationEstimate.TestOnNoDataNew(ADataSet: TDataSet);
@@ -6824,11 +6822,9 @@ begin
     edtRateActiveDate.Text := '';
   end;
 
-  //Код можно редактировать везде кроме шапок смет
-  qrRatesExOBJ_CODE.ReadOnly :=
-     not((qrRatesExID_TYPE_DATA.AsInteger = -4) or
-     (qrRatesExID_TYPE_DATA.AsInteger = -5) or
-     (qrRatesExID_TYPE_DATA.AsInteger > 0));
+  // Код можно редактировать везде кроме шапок смет
+  qrRatesExOBJ_CODE.ReadOnly := not((qrRatesExID_TYPE_DATA.AsInteger = -4) or
+    (qrRatesExID_TYPE_DATA.AsInteger = -5) or (qrRatesExID_TYPE_DATA.AsInteger > 0));
 
   // Для строк шапок и строк вставки
   if qrRatesExID_TYPE_DATA.AsInteger < 0 then
@@ -7191,8 +7187,8 @@ begin
   CloseOpen(qrCalculations);
 end;
 
-procedure TFormCalculationEstimate.AddDevice(AEquipId, AManPriceID: Integer;
-  APriceDate: TDateTime; ASprRecord: TSprRecord);
+procedure TFormCalculationEstimate.AddDevice(AEquipId, AManPriceID: Integer; APriceDate: TDateTime;
+  ASprRecord: TSprRecord);
 // Добавление оборудования к смете
 begin
   try
@@ -7223,8 +7219,8 @@ begin
 end;
 
 // Добавление материала к смете
-procedure TFormCalculationEstimate.AddMaterial(AMatId, AManPriceID: Integer;
-  APriceDate: TDateTime; ASprRecord: TSprRecord);
+procedure TFormCalculationEstimate.AddMaterial(AMatId, AManPriceID: Integer; APriceDate: TDateTime;
+  ASprRecord: TSprRecord);
 begin
   try
     if not CheckCursorInRate then
@@ -7256,8 +7252,8 @@ begin
 end;
 
 // Добавление механизма к смете
-procedure TFormCalculationEstimate.AddMechanizm(AMechId, AManPriceID: Integer;
-  APriceDate: TDateTime; ASprRecord: TSprRecord);
+procedure TFormCalculationEstimate.AddMechanizm(AMechId, AManPriceID: Integer; APriceDate: TDateTime;
+  ASprRecord: TSprRecord);
 begin
   try
     if not CheckCursorInRate then

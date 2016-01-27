@@ -34,6 +34,7 @@ type
     function showDocument(ADocument: OleVariant): Boolean;
     function test(AFileName: string; SM_ID: Integer): Boolean;
     procedure doCreateDoc;
+    function WorkBookIndex(WorkBookName: Ansistring): Integer;
   end;
 
 var
@@ -50,7 +51,8 @@ begin
   Result := False;
   try
     ADocument.DisplayAlerts := False;
-    ADocument.ActiveWorkbook.Close(SaveChanges := ASaveChanges);
+    if ADocument.WorkBooks.Count > 0 then
+      ADocument.ActiveWorkbook.Close(SaveChanges := ASaveChanges);
     ADocument.Application.Quit;
     ADocument := Unassigned;
     Result := True;
@@ -83,9 +85,23 @@ begin
   end;
 end;
 
-function TdmSmReport.loadDocument(AFileName: string): OleVariant;
+function TdmSmReport.WorkBookIndex(WorkBookName: Ansistring): Integer;
 var
-  WorkBook: OleVariant;
+  i, n: Integer;
+begin
+  // проверка на наличие книги с этим именем
+  n := 0;
+  // if VarIsEmpty(ADocument) = False then
+  for i := 1 to ADocument.WorkBooks.Count do
+    if ADocument.WorkBooks[i].FullName = WorkBookName then
+    begin
+      n := i;
+      break;
+    end;
+  WorkBookIndex := n;
+end;
+
+function TdmSmReport.loadDocument(AFileName: string): OleVariant;
 begin
   Result := Null;
   try
@@ -97,9 +113,9 @@ begin
       ADocument.DisplayAlerts := False;
     end;
 
-    //if not ADocument.ActiveWorkbook then
-    //ADocument.ActiveWorkbook.Close(SaveChanges := False);
-    ADocument.Workbooks.Open(AFileName);
+    { проверка на открыую книгу }
+    if WorkBookIndex(AFileName) = 0 then
+      ADocument.WorkBooks.Open(AFileName);
 
     Result := ADocument;
   except

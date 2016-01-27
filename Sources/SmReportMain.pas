@@ -68,6 +68,8 @@ type
     procedure qrReportDataBeforeOpen(DataSet: TDataSet);
   private
     ReportParams: TfSmReportParams;
+    flAdmin: Boolean;
+    flSkipReload: Boolean;
     procedure WMSysCommand(var Msg: TWMSysCommand); message WM_SYSCOMMAND;
   public
   end;
@@ -155,7 +157,10 @@ begin
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   // Добавление системного меню
   AppendMenu(GetSystemMenu(Handle, False), MF_SEPARATOR, 0, '');
-  AppendMenu(GetSystemMenu(Handle, False), MF_STRING, 5555, 'Настройка списков');
+  AppendMenu(GetSystemMenu(Handle, False), MF_STRING, 5555, 'Настройка справоника списков');
+  flAdmin := False;
+  AppendMenu(GetSystemMenu(Handle, False), MF_STRING + MF_ENABLED, 5556, 'Режим администратора');
+  CheckMenuItem(GetSystemMenu(Handle, False), 5556, MF_UNCHECKED);
 
   // Создаем окно параметров отчета
   if (not Assigned(ReportParams)) then
@@ -177,14 +182,29 @@ end;
 
 procedure TfSmReportMain.WMSysCommand(var Msg: TWMSysCommand);
 begin
-  if Msg.CmdType = 5555 then
-  begin
-    if (not Assigned(fSmReportListSQL)) then
-      fSmReportListSQL := TfSmReportListSQL.Create(Self);
-    fSmReportListSQL.ShowModal;
-  end
+  case Msg.CmdType of
+    5555:
+      begin
+        if (not Assigned(fSmReportListSQL)) then
+          fSmReportListSQL := TfSmReportListSQL.Create(Self);
+        fSmReportListSQL.ShowModal;
+      end;
+    5556:
+      begin
+        flAdmin := not flAdmin;
+        if flAdmin then
+          CheckMenuItem(GetSystemMenu(Handle, False), Msg.CmdType, MF_CHECKED)
+        else
+          CheckMenuItem(GetSystemMenu(Handle, False), Msg.CmdType, MF_UNCHECKED);
+        qrReport.ParamByName('SHOW_DELETED').Value := flAdmin;
+        flSkipReload := True;
+        CloseOpen(qrReport);
+        flSkipReload := False;
+        qrReportAfterScroll(qrReport);
+      end
   else
     inherited;
+  end;
 end;
 
 procedure TfSmReportMain.FormDestroy(Sender: TObject);
@@ -336,6 +356,8 @@ end;
 
 procedure TfSmReportMain.qrReportAfterScroll(DataSet: TDataSet);
 begin
+  if flSkipReload then
+    Exit;
   ReportParams.Visible := not qrReport.IsEmpty;
   btnPreview.Enabled := not qrReport.IsEmpty;
   if not CheckQrActiveEmpty(qrReport) then

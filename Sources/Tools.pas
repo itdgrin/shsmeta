@@ -7,7 +7,7 @@ uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Clie
   JvSpin, JvDBSpinEdit, System.Classes, System.SysUtils, ComObj, Vcl.Dialogs,
   System.UITypes, ShellAPI, Vcl.Grids, DataModule, Vcl.StdCtrls, Vcl.Clipbrd,
   GlobsAndConst, JvDBGrid, FireDAC.Stan.Option, FireDAC.Stan.Param, Controls,
-  Vcl.Buttons, Vcl.ComCtrls, VirtualTrees, Vcl.FileCtrl, System.Types;
+  Vcl.Buttons, Vcl.ComCtrls, VirtualTrees, Vcl.FileCtrl, System.Types, Registry;
 
 // Общий тип классификации форм
 
@@ -138,9 +138,95 @@ function IIF(BoolExpression: Boolean; ifTrue, ifFalse: Variant): Variant;
 // Процедура добавления колонки в таблицу
 procedure addCol(const Grid: TJvDBGrid; fieldName, titleCaption: String; const Width: Integer);
 
+// Функции записи/чтения реестра:
+procedure SetGlob(const AParamName: String; const AValue: Variant);
+function GetGlob(const AParamName: String): Variant;
+function GetGlobDef(const AParamName: String; const ADefValue: Variant): Variant;
+
 implementation
 
 uses uSelectColumn;
+
+procedure SetGlob(const AParamName: String; const AValue: Variant);
+var
+  Reg: TRegistry;
+  CurKey: string;
+begin
+  Reg := TRegistry.Create(KEY_ALL_ACCESS);
+  try
+    Reg.RootKey := C_REGROOT;
+    CurKey := C_REGKEY + '\Report\Params';
+    Reg.OpenKey(CurKey, True);
+    try
+      case VarType(AValue) of
+        varByte, varSmallint, varInteger:
+          Reg.WriteInteger(AParamName, AValue);
+        varSingle, varDouble:
+          Reg.WriteFloat(AParamName, AValue);
+        varCurrency:
+          Reg.WriteCurrency(AParamName, AValue);
+        varDate:
+          Reg.WriteDateTime(AParamName, AValue);
+        varBoolean:
+          Reg.WriteBool(AParamName, AValue);
+        varOleStr, varStrArg, varString:
+          Reg.WriteString(AParamName, AValue);
+      end;
+      Reg.WriteInteger(AParamName + '()', VarType(AValue));
+    finally
+      Reg.CloseKey;
+      FreeAndNil(Reg);
+    end;
+  except
+  end;
+end;
+
+function GetGlobDef(const AParamName: String; const ADefValue: Variant): Variant;
+var
+  K: Integer;
+  s: String;
+  Reg: TRegistry;
+  CurKey: string;
+begin
+  Result := Null;
+  Reg := TRegistry.Create(KEY_ALL_ACCESS);
+  CurKey := C_REGKEY + '\Report\Params';
+  try
+    Reg.OpenKey(CurKey, True);
+    try
+      s := AParamName + '()';
+      if Reg.ValueExists(s) then
+      begin
+        K := Reg.ReadInteger(s);
+        case K of
+          varByte, varSmallint, varInteger:
+            Result := Reg.ReadInteger(AParamName);
+          varSingle, varDouble:
+            Result := Reg.ReadFloat(AParamName);
+          varCurrency:
+            Result := Reg.ReadCurrency(AParamName);
+          varDate:
+            Result := Reg.ReadDateTime(AParamName);
+          varBoolean:
+            Result := Reg.ReadBool(AParamName);
+          varOleStr, varStrArg, varString:
+            Result := Reg.ReadString(AParamName);
+        end;
+      end;
+    finally
+      Reg.CloseKey;
+      FreeAndNil(Reg);
+    end;
+  except
+  end;
+  if VarIsNull(Result) then
+    Result := ADefValue;
+end;
+
+function GetGlob(const AParamName: String): Variant;
+begin
+  Result := GetGlobDef(AParamName, Null);
+end;
 
 procedure addCol(const Grid: TJvDBGrid; fieldName, titleCaption: String; const Width: Integer);
 var

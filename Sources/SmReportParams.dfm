@@ -55,7 +55,9 @@ object fSmReportParams: TfSmReportParams
     ParamData = <
       item
         Name = 'REPORT_ID'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end>
   end
 end

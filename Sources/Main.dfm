@@ -15,6 +15,7 @@
   OldCreateOrder = False
   Position = poDesigned
   WindowState = wsMaximized
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy

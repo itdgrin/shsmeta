@@ -61,6 +61,7 @@ begin
         if Sender is TJvSpinEdit then
         begin
           Params[paramId, 0] := TJvSpinEdit(Sender).Value;
+          SetGlob(Params[paramId, 3], Params[paramId, 0]);
         end;
       end;
     // Строка +
@@ -69,6 +70,7 @@ begin
         if Sender is TEdit then
         begin
           Params[paramId, 0] := string((Sender as TEdit).Text);
+          SetGlob(Params[paramId, 3], Params[paramId, 0]);
         end
       end;
     // Дата
@@ -77,6 +79,8 @@ begin
     // Месяц/год  +
     4:
       begin
+        tmpMonth := MonthOf(Now);
+        tmpYear := YearOf(Now);
         for i := 0 to TWinControl(Sender).Parent.ComponentCount - 1 do
           // Ищем TComboBox и TJvSpinEdit на родителе для сбоки даты
           if TWinControl(Sender).Parent.Components[i] is TComboBox then
@@ -85,6 +89,7 @@ begin
             tmpYear := Trunc(TJvSpinEdit(TWinControl(Sender).Parent.Components[i]).Value);
 
         Params[paramId, 0] := StrToDate('01.' + IntToStr(tmpMonth) + '.' + IntToStr(tmpYear));
+        SetGlob(Params[paramId, 3], Params[paramId, 0]);
       end;
     // Список +
     5:
@@ -92,6 +97,7 @@ begin
         if Sender is TJvDBLookupCombo then
         begin
           Params[paramId, 0] := TJvDBLookupCombo(Sender).KeyValue;
+          SetGlob(Params[paramId, 3], Params[paramId, 0]);
           // Снимаем галочку Все, если установлена
           for i := 0 to TWinControl(Sender).Parent.Parent.ComponentCount - 1 do
             if TWinControl(Sender).Parent.Parent.Components[i] is TCheckBox then
@@ -103,6 +109,7 @@ begin
           if TCheckBox(Sender).Checked then
           begin
             Params[paramId, 0] := Null;
+            SetGlob(Params[paramId, 3], Params[paramId, 0]);
             // Ищем поле TJvDBLookupCombo для прорисовки выбранного значения
             for i := 0 to TWinControl(Sender).Parent.ComponentCount - 1 do
               if TWinControl(Sender).Parent.Components[i] is TPanel then
@@ -115,12 +122,28 @@ begin
     // Список с выбором из справочника +
     6:
       begin
-        if Sender is TBitBtn then
+        if Sender is TCheckBox then
+        begin
+          if TCheckBox(Sender).Checked then
+          begin
+            Params[paramId, 0] := Null;
+            SetGlob(Params[paramId, 3], Params[paramId, 0]);
+            // Ищем поле TEdit для прорисовки выбранного значения
+            for i := 0 to TWinControl(Sender).Parent.ComponentCount - 1 do
+              if TWinControl(Sender).Parent.Components[i] is TPanel then
+                for j := 0 to TWinControl(Sender).Parent.Components[i].ComponentCount - 1 do
+                  if TWinControl(Sender).Parent.Components[i].Components[j] is TEdit then
+                    TEdit(TWinControl(Sender).Parent.Components[i].Components[j]).Text := '<Все>';
+          end;
+        end
+        else if Sender is TBitBtn then
         begin
           res := TfSmReportParamSelect.Select(Params[paramId, 1], Params[paramId, 0]);
           if not VarIsNull(res) then
           begin
             Params[paramId, 0] := res[0];
+            SetGlob(Params[paramId, 3], Params[paramId, 0]);
+            SetGlob(Params[paramId, 3] + '_text', res[1]);
             // Ищем поле TEdit для прорисовки выбранного значения res[1]
             for i := 0 to TWinControl(Sender).Parent.ComponentCount - 1 do
               if TWinControl(Sender).Parent.Components[i] is TEdit then
@@ -131,19 +154,6 @@ begin
                 TCheckBox(TWinControl(Sender).Parent.Parent.Components[i]).Checked := False;
           end;
         end
-        else if Sender is TCheckBox then
-        begin
-          if TCheckBox(Sender).Checked then
-          begin
-            Params[paramId, 0] := Null;
-            // Ищем поле TEdit для прорисовки выбранного значения
-            for i := 0 to TWinControl(Sender).Parent.ComponentCount - 1 do
-              if TWinControl(Sender).Parent.Components[i] is TPanel then
-                for j := 0 to TWinControl(Sender).Parent.Components[i].ComponentCount - 1 do
-                  if TWinControl(Sender).Parent.Components[i].Components[j] is TEdit then
-                    TEdit(TWinControl(Sender).Parent.Components[i].Components[j]).Text := '<Все>';
-          end;
-        end;
       end;
   end;
   // Процедура синхронизации параметров
@@ -159,10 +169,14 @@ var
   i, j: Integer;
 begin
   // Создаем массив параметров
-  Params := VarArrayCreate([0, qrReportParam.RecordCount - 1, 0, 2], varVariant);
+  // 0 - код/значение
+  // 1 - REPORT_LIST_SQL_ID, если список
+  // 2 - тип переменной
+  // 3 - название переменной REPORT_PARAM_NAME
+  Params := VarArrayCreate([0, qrReportParam.RecordCount - 1, 0, 3], varVariant);
   // Инициализируем
   for i := 0 to qrReportParam.RecordCount - 1 do
-    for j := 0 to 2 do
+    for j := 0 to 3 do
       Params[i, j] := Null;
 end;
 
@@ -234,6 +248,8 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
     newSubPanel.BevelKind := bkNone;
     // Записываем тип параметра
     Params[AParamId, 2] := AType;
+    // Записываем название параметра
+    Params[AParamId, 3] := qrReportParam.FieldByName('REPORT_PARAM_NAME').Value;
     case AType of
       // Целое число
       1:
@@ -250,6 +266,8 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
           seYear.Width := 100;
           seYear.Tag := AParamId;
           seYear.OnChange := OnChangeParam;
+          seYear.Value := GetGlobDef(Params[AParamId, 3], 0);
+          Params[AParamId, 0] := GetGlobDef(Params[AParamId, 3], 0);
         end;
       // Строка
       2:
@@ -264,6 +282,8 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
           newEdit.Color := clInfoBk;
           newEdit.Tag := AParamId;
           newEdit.OnChange := OnChangeParam;
+          newEdit.Text := GetGlobDef(Params[AParamId, 3], '');
+          Params[AParamId, 0] := GetGlobDef(Params[AParamId, 3], '');
         end;
       // Дата
       3:
@@ -282,7 +302,7 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
           seYear.Align := alRight;
           seYear.Color := clInfoBk;
           seYear.Width := 60;
-          seYear.Value := YearOf(Now);
+          seYear.Value := YearOf(GetGlobDef(Params[AParamId, 3], Now));
           seYear.Tag := AParamId;
           seYear.OnChange := OnChangeParam;
 
@@ -301,11 +321,10 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
           cbbMonth.Tag := AParamId;
           for i := 1 to 12 do
             cbbMonth.Items.Add(arraymes[i, 1]);
-          cbbMonth.ItemIndex := MonthOf(Now) - 1;
+          cbbMonth.ItemIndex := MonthOf(GetGlobDef(Params[AParamId, 3], Now)) - 1;
           cbbMonth.OnChange := OnChangeParam;
 
-          Params[AParamId, 0] := StrToDate('01.' + IntToStr(cbbMonth.ItemIndex + 1) + '.' +
-            IntToStr(Trunc(seYear.Value)));
+          Params[AParamId, 0] := GetGlobDef(Params[AParamId, 3], Now);
         end;
       // Список
       5:
@@ -338,6 +357,9 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
           lcb.Tag := AParamId;
           lcb.DropDownCount := IIF(qr.RecordCount > 20, 20, qr.RecordCount + 1);
           lcb.OnChange := OnChangeParam;
+          lcb.KeyValue := GetGlob(Params[AParamId, 3]);
+
+          Params[AParamId, 0] := lcb.KeyValue;
         end;
       // Список с выбором из справочника
       6:
@@ -369,10 +391,13 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
           newEdit.Color := clInfoBk;
           newEdit.ReadOnly := True;
           newEdit.Enabled := False;
-          if qrReportParam.FieldByName('FL_ALLOW_ALL').Value = 1 then
+          if not VarIsNull(GetGlob(Params[AParamId, 3])) then
+            newEdit.Text := GetGlobDef(Params[AParamId, 3] + '_text', '')
+          else if qrReportParam.FieldByName('FL_ALLOW_ALL').Value = 1 then
             newEdit.Text := '<Все>';
           // Код списка
           Params[AParamId, 1] := qrReportParam.FieldByName('REPORT_LIST_SQL_ID').Value;
+          Params[AParamId, 0] := GetGlob(Params[AParamId, 3]);
         end;
     end;
 
