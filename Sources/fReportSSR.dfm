@@ -42,7 +42,6 @@ object FormReportSSR: TFormReportSSR
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ReadOnly = True
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
@@ -59,11 +58,12 @@ object FormReportSSR: TFormReportSSR
       EditControls = <>
       RowsHeight = 17
       TitleRowHeight = 17
+      OnCanEditCell = grSSRCanEditCell
       Columns = <
         item
           Expanded = False
           FieldName = 'Num'
-          ReadOnly = False
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #8470
           Width = 50
@@ -72,7 +72,6 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'Percent'
-          ReadOnly = False
           Title.Alignment = taCenter
           Title.Caption = '%'
           Width = 30
@@ -97,6 +96,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'Name'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
           Width = 400
@@ -105,6 +105,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'ZP'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1047#1055
           Width = 100
@@ -113,6 +114,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'ZP5'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1047#1055' '#1087#1086' '#1087#1088'. '#8470'5'
           Width = 100
@@ -121,6 +123,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'EMiM'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1069#1052#1080#1052
           Width = 100
@@ -129,6 +132,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'ZPMash'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1047#1055' '#1084#1072#1096#1080#1085#1080#1089#1090#1072
           Width = 100
@@ -137,6 +141,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'Mat'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099
           Width = 100
@@ -145,6 +150,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'MatTransp'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1052#1072#1090'. '#1090#1088#1072#1085#1089#1087#1086#1088#1090
           Width = 100
@@ -153,6 +159,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'OXROPR'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1054#1061#1056' '#1080' '#1054#1055#1056
           Width = 100
@@ -161,6 +168,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'PlanPrib'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1055#1083#1072#1085'. '#1087#1088#1080#1073'.'
           Width = 100
@@ -169,6 +177,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'Devices'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1054#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1077
           Width = 100
@@ -177,6 +186,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'Transp'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
           Width = 100
@@ -185,6 +195,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'Other'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1055#1088#1086#1095#1077#1077
           Width = 100
@@ -193,6 +204,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'Total'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1042#1089#1077#1075#1086
           Width = 100
@@ -201,6 +213,7 @@ object FormReportSSR: TFormReportSSR
         item
           Expanded = False
           FieldName = 'Trud'
+          ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1058#1088#1091#1076#1086#1079#1072#1090#1088#1072#1090#1099
           Width = 100
@@ -281,7 +294,6 @@ object FormReportSSR: TFormReportSSR
       Width = 355
       Height = 21
       Anchors = [akLeft, akTop, akRight]
-      DataSource = dsObject
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -289,6 +301,7 @@ object FormReportSSR: TFormReportSSR
       Font.Style = []
       KeyField = 'obj_id'
       ListField = 'num_name'
+      ListSource = dsObject
       NullValueKey = 16411
       ParentFont = False
       TabOrder = 2
@@ -346,12 +359,15 @@ object FormReportSSR: TFormReportSSR
     end
     object mtSSRPepcent: TFloatField
       FieldName = 'Percent'
+      OnChange = mtSSRKoefChange
     end
     object mtSSRKoef1: TFloatField
       FieldName = 'Koef1'
+      OnChange = mtSSRKoefChange
     end
     object mtSSRKoef2: TFloatField
       FieldName = 'Koef2'
+      OnChange = mtSSRKoefChange
     end
     object mtSSRName: TStringField
       DisplayWidth = 200
