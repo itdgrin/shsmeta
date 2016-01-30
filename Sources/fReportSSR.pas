@@ -20,11 +20,28 @@ uses
 type
   TKoefRec = record
     LineNom: string;
-    Pers: Double;
-    Koef1: Double;
-    Koef2: Double;
+    Pers: Variant;
+    Koef1: Variant;
+    Koef2: Variant;
   end;
   TKoefArray = array of TKoefRec;
+
+  TRepSSRLine = record
+    ZP,
+    ZP5,
+    EMiM,
+    ZPMash,
+    Mat,
+    MatTransp,
+    OXROPR,
+    PlanPrib,
+    Devices,
+    Transp,
+    Other,
+    Total,
+    Trud: Double;
+    procedure CalcTotal;
+  end;
 
   TFormReportSSR = class(TSmForm)
     pnlGrid: TPanel;
@@ -65,6 +82,7 @@ type
     mtSSRSM_ID: TIntegerField;
     mtSSRSM_TYPE: TIntegerField;
     mtSSRItog: TSmallintField;
+    UpdateTimer: TTimer;
     procedure qrObjectBeforeOpen(DataSet: TDataSet);
     procedure FormCreate(Sender: TObject);
     procedure btnObjInfoClick(Sender: TObject);
@@ -74,10 +92,15 @@ type
     procedure mtSSRKoefChange(Sender: TField);
     procedure grSSRCanEditCell(Grid: TJvDBGrid; Field: TField;
       var AllowEdit: Boolean);
+    procedure UpdateTimerTimer(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     FObjectID: Integer;
     FKoefArray: TKoefArray;
+
     procedure GetSSRReport();
+    procedure RecalcReport();
+    procedure CalcTotal();
     procedure InitKoefArray(var AArray: TKoefArray);
     function FindLineNom(const AArray: TKoefArray; const ALineNom: string): Integer;
     procedure AddNewKoef(const AKoef: TKoefRec);
@@ -92,6 +115,29 @@ uses Main, DataModule, CardObject, GlobsAndConst;
 
 {$R *.dfm}
 
+const SSRItems: array[0..12, 0..2] of string =
+  (('90.1','СРЕДСТВА НА НЕПРЕДВИДЕННЫЕ РАБОТЫ И ЗАТРАТЫ','0'),
+   ('90.11','ИТОГО С УЧЕТОМ НЕПРЕДВИДЕННЫХ','1'),
+   ('90.12','НАЛОГИ И ОТЧИСЛЕНИЯ В СООТВЕТСТВИИ С ДЕЙСТВУЮЩИМ ЗАКОНОДАТЕЛЬСТВОМ НА ДАТУ РАЗРАБОТКИ СМЕТНОЙ ДОКУМЕНТАЦИИ','0'),
+   ('90.12.0.1','.       в т.ч.  Инновационный фонд','0'),
+   ('90.12.0.2','.       Налог от выручки при упрощенной системе налогообложения','0'),
+   ('90.12.0.3','.       НДС (для объектов не освобожденных от НДС)','0'),
+   ('90.12.0.4','.       Госпошлина','0'),
+   ('90.13','ИТОГО С УЧЕТОМ НАЛОГОВ','1'),
+   ('90.14','СРЕДСТВА, УЧИТЫВАЮЩИЕ ПРИМЕНЕНИЕ ПРОГНОЗНЫХ ИНДЕКСОВ ЦЕН В СТРОИТЕЛЬСТВЕ','0'),
+   ('90.15','ИТОГО ПО СВОДНОМУ СМЕТНОМУ РАСЧЕТУ','1'),
+   ('90.19','ВОЗВРАТНЫЕ СУММЫ','0'),
+   ('90.20','СМЕТНАЯ СТОИМОСТЬ ДОЛЕВОГО УЧАСТИЯ В СТРОИТЕЛЬСТВЕ ОБЪЕКТОВ ИЛИ ИХ ЧАСТЕЙ ВСПОМОГАТЕЛЬНОГО ПРОИЗВОДСТВА И НАЗНАЧЕНИЯ, ПРЕДНАЗНАЧЕННЫХ ДЛЯ ОБСЛУЖИВАНИЯ НЕСКОЛЬКИХ ЗАКАЗЧИКОВ, ЗАСТРОЙЩИКОВ','0'),
+   ('90.30','ВСЕГО К УТВЕРЖДЕНИЮ','1'));
+
+{ TRepSSRLine }
+
+procedure TRepSSRLine.CalcTotal;
+begin
+  Total := ZP + EMiM + Mat + MatTransp + OXROPR +
+    PlanPrib + Devices + Transp + Other;
+end;
+
 procedure TFormReportSSR.btnObjInfoClick(Sender: TObject);
 var fCardObject: TfCardObject;
 begin
@@ -103,6 +149,11 @@ begin
   finally
     FreeAndNil(fCardObject);
   end;
+end;
+
+procedure TFormReportSSR.Button1Click(Sender: TObject);
+begin
+  UpdateTimer.OnTimer(UpdateTimer);
 end;
 
 procedure TFormReportSSR.cbObjNameClick(Sender: TObject);
@@ -166,11 +217,17 @@ end;
 procedure TFormReportSSR.AddNewKoef(const AKoef: TKoefRec);
 begin
   qrTemp.Active := False;
+  qrTemp.Params.Clear;
   qrTemp.SQL.Text := 'Insert into ssr_calc (OBJ_ID, LINE_NUM, PERS, KOEF1, KOEF2) ' +
     'values (:OBJ_ID, :LINE_NUM, :PERS, :KOEF1, :KOEF2)';
   qrTemp.ParamByName('OBJ_ID').Value := FObjectID;
   qrTemp.ParamByName('LINE_NUM').Value := AKoef.LineNom;
-  qrTemp.ParamByName('PERS').Value := AKoef.Pers/100;
+
+  qrTemp.ParamByName('PERS').DataType := TFieldType.ftFloat;
+  qrTemp.ParamByName('KOEF1').DataType := TFieldType.ftFloat;
+  qrTemp.ParamByName('KOEF2').DataType := TFieldType.ftFloat;
+
+  qrTemp.ParamByName('PERS').Value := AKoef.Pers;
   qrTemp.ParamByName('KOEF1').Value := AKoef.Koef1;
   qrTemp.ParamByName('KOEF2').Value := AKoef.Koef2;
   qrTemp.ExecSQL;
@@ -179,14 +236,39 @@ end;
 procedure TFormReportSSR.UpdateNewKoef(const AKoef: TKoefRec);
 begin
   qrTemp.Active := False;
+  qrTemp.Params.Clear;
   qrTemp.SQL.Text := 'Update ssr_calc set PERS = :PERS, KOEF1 = :KOEF1, ' +
     'KOEF2 = :KOEF2 where (OBJ_ID = :OBJ_ID) and (LINE_NUM = :LINE_NUM)';
-  qrTemp.ParamByName('PERS').Value := AKoef.Pers/100;
+
+  qrTemp.ParamByName('PERS').DataType := TFieldType.ftFloat;
+  qrTemp.ParamByName('KOEF1').DataType := TFieldType.ftFloat;
+  qrTemp.ParamByName('KOEF2').DataType := TFieldType.ftFloat;
+
+  qrTemp.ParamByName('PERS').Value := AKoef.Pers;
   qrTemp.ParamByName('KOEF1').Value := AKoef.Koef1;
   qrTemp.ParamByName('KOEF2').Value := AKoef.Koef2;
   qrTemp.ParamByName('OBJ_ID').Value := FObjectID;
   qrTemp.ParamByName('LINE_NUM').Value := AKoef.LineNom;
   qrTemp.ExecSQL;
+end;
+
+procedure TFormReportSSR.UpdateTimerTimer(Sender: TObject);
+var TempBookmark: TBookMark;
+begin
+  UpdateTimer.Enabled := False;
+
+  try
+    mtSSR.DisableControls;
+    TempBookmark := mtSSR.GetBookmark;
+    RecalcReport();
+  finally
+    if mtSSR.BookmarkValid(TempBookmark) then
+    begin
+      mtSSR.GotoBookmark(TempBookmark);
+      mtSSR.FreeBookmark(TempBookmark);
+    end;
+    mtSSR.EnableControls;
+  end;
 end;
 
 procedure TFormReportSSR.InitKoefArray(var AArray: TKoefArray);
@@ -201,9 +283,9 @@ begin
   begin
     SetLength(AArray, I + 1);
     AArray[I].LineNom := qrTemp.FieldByName('LINE_NUM').AsString;
-    AArray[I].Pers := qrTemp.FieldByName('PERS').AsFloat;
-    AArray[I].Koef1 := qrTemp.FieldByName('KOEF1').AsFloat;
-    AArray[I].Koef2 := qrTemp.FieldByName('KOEF2').AsFloat;
+    AArray[I].Pers := qrTemp.FieldByName('PERS').Value;
+    AArray[I].Koef1 := qrTemp.FieldByName('KOEF1').Value;
+    AArray[I].Koef2 := qrTemp.FieldByName('KOEF2').Value;
     Inc(I);
     qrTemp.Next;
   end;
@@ -215,7 +297,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '8.1';
-    AArray[I].Pers := 0.084;
+    AArray[I].Pers := 8.4;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -227,7 +309,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '8.2';
-    AArray[I].Pers := 0.15;
+    AArray[I].Pers := 15;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -239,7 +321,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '9.1';
-    AArray[I].Pers := 0.0581;
+    AArray[I].Pers := 5.81;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -251,7 +333,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '9.2';
-    AArray[I].Pers := 0.34;
+    AArray[I].Pers := 34;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -263,11 +345,92 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '9.3';
-    AArray[I].Pers := 0.097;
+    AArray[I].Pers := 9.7;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
   end;
+
+  I := FindLineNom(AArray, '9.10');
+  if I = -1 then
+  begin
+    I := Length(AArray);
+    SetLength(AArray, Length(AArray) + 1);
+    AArray[I].LineNom := '9.10';
+    AArray[I].Pers := 0.306;
+    AArray[I].Koef1 := 1;
+    AArray[I].Koef2 := 1;
+    AddNewKoef(AArray[I]);
+  end;
+
+  I := FindLineNom(AArray, '10.1');
+  if I = -1 then
+  begin
+    I := Length(AArray);
+    SetLength(AArray, Length(AArray) + 1);
+    AArray[I].LineNom := '10.1';
+    AArray[I].Pers := 1.8;
+    AArray[I].Koef1 := 1;
+    AArray[I].Koef2 := 1;
+    AddNewKoef(AArray[I]);
+  end;
+
+  I := FindLineNom(AArray, '10.2');
+  if I = -1 then
+  begin
+    I := Length(AArray);
+    SetLength(AArray, Length(AArray) + 1);
+    AArray[I].LineNom := '10.2';
+    AArray[I].Pers := 0.09;
+    AArray[I].Koef1 := 1;
+    AArray[I].Koef2 := 1;
+    AddNewKoef(AArray[I]);
+  end;
+
+  I := FindLineNom(AArray, '10.3');
+  if I = -1 then
+  begin
+    I := Length(AArray);
+    SetLength(AArray, Length(AArray) + 1);
+    AArray[I].LineNom := '10.3';
+    AArray[I].Pers := 0.2;
+    AArray[I].Koef1 := 1;
+    AArray[I].Koef2 := 1;
+    AddNewKoef(AArray[I]);
+  end;
+
+  I := FindLineNom(AArray, '10.7');
+  if I = -1 then
+  begin
+    I := Length(AArray);
+    SetLength(AArray, Length(AArray) + 1);
+    AArray[I].LineNom := '10.7';
+    AArray[I].Pers := 0.35;
+    AArray[I].Koef1 := 1;
+    AArray[I].Koef2 := 1;
+    AddNewKoef(AArray[I]);
+  end;
+
+  I := FindLineNom(AArray, '90.1');
+  if I = -1 then
+  begin
+    I := Length(AArray);
+    SetLength(AArray, Length(AArray) + 1);
+    AArray[I].LineNom := '90.1';
+    AArray[I].Pers := 3;
+    AArray[I].Koef1 := 1;
+    AArray[I].Koef2 := 1;
+    AddNewKoef(AArray[I]);
+  end;
+end;
+
+procedure TFormReportSSR.CalcTotal();
+begin
+  mtSSRTotal.Value :=
+    mtSSRZP.Value + mtSSREMiM.Value + mtSSRMat.Value +
+    mtSSRMatTransp.Value + mtSSROXROPR.Value +
+    mtSSRPlanPrib.Value + mtSSRDevices.Value +
+    mtSSRTransp.Value + mtSSROther.Value;
 end;
 
 procedure TFormReportSSR.mtSSRKoefChange(Sender: TField);
@@ -283,34 +446,24 @@ begin
     IsNew := True;
   end;
   FKoefArray[I].LineNom := mtSSRNum.AsString;
-  FKoefArray[I].Pers := mtSSRPepcent.Value;
-  FKoefArray[I].Koef1 := mtSSRKoef1.Value;
-  FKoefArray[I].Koef2 := mtSSRKoef2.Value;
+  FKoefArray[I].Pers := TField(mtSSRPepcent).Value;
+  FKoefArray[I].Koef1 := TField(mtSSRKoef1).Value;
+  FKoefArray[I].Koef2 := TField(mtSSRKoef2).Value;
   if IsNew then
     AddNewKoef(FKoefArray[I])
   else
     UpdateNewKoef(FKoefArray[I]);
 
-  //Добавить процедуру пересчета отчета
+  mtSSR.Post;
+  UpdateTimer.Enabled := False;
+  UpdateTimer.Enabled := True;
+
 end;
 
 procedure TFormReportSSR.GetSSRReport();
 var SmStr, CaptStr: string;
     LastC, LastSC: Integer;
     I, J: Integer;
-
-    CZP, CZP5, CEMiM, CZPMash, CMat,
-    CMatTransp, COXROPR, CPlanPrib,
-    CDevices, CTransp, COther, CTrud,
-    CTotal: Double;
-
-    AllZP, AllZP5, AllEMiM, AllZPMash, AllMat,
-    AllMatTransp, AllOXROPR, AllPlanPrib,
-    AllDevices, AllTransp, AllOther, AllTrud,
-    AllTotal: Double;
-
-    TmpKoef: TKoefRec;
-
     ev: TFieldNotifyEvent;
 
 procedure AddItog();
@@ -334,27 +487,15 @@ begin
   end;
 end;
 
-procedure AddTotal();
-begin
-  mtSSRTotal.Value :=
-    mtSSRZP.Value + mtSSREMiM.Value + mtSSRMat.Value +
-    mtSSRMatTransp.Value + mtSSROXROPR.Value +
-    mtSSRPlanPrib.Value + mtSSRDevices.Value +
-    mtSSRTransp.Value + mtSSROther.Value;
-end;
-
 procedure AddKoef(ALineNom: string);
 var I: Integer;
 begin
   I :=  FindLineNom(FKoefArray, ALineNom);
   if I > -1 then
   begin
-    if FKoefArray[I].Pers > 0 then
-      mtSSRPepcent.Value := FKoefArray[I].Pers * 100;
-    if FKoefArray[I].Koef1 > 0 then
-      mtSSRKoef1.Value := FKoefArray[I].Koef1;
-    if FKoefArray[I].Koef2 > 0 then
-      mtSSRKoef2.Value := FKoefArray[I].Koef2;
+    TField(mtSSRPepcent).Value := FKoefArray[I].Pers;
+    TField(mtSSRKoef1).Value := FKoefArray[I].Koef1;
+    TField(mtSSRKoef2).Value := FKoefArray[I].Koef2;
   end;
 end;
 
@@ -430,332 +571,350 @@ begin
     'order by sc.CID, SCID, SM_SORT';
 
   InitKoefArray(FKoefArray);
+
+  if not mtSSR.Active then
+    mtSSR.Active :=True;
+  mtSSR.EmptyDataSet;
+
   ev := mtSSRPepcent.OnChange;
+  mtSSR.BeginBatch();
   try
     mtSSRPepcent.OnChange := nil;
     mtSSRKoef1.OnChange := nil;
     mtSSRKoef2.OnChange := nil;
 
-    if not mtSSR.Active then
-      mtSSR.Active :=True;
-    mtSSR.EmptyDataSet;
+    //Получение данных по сметам
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := CaptStr;
+    qrTemp.ParamByName('OBJ_ID').Value := FObjectID;
+    qrTemp.Active := True;
+    LastC := 0;
+    LastSC := 0;
 
-    mtSSR.BeginBatch();
-    try
-      //Получение данных по сметам
-      qrTemp.Active := False;
-      qrTemp.SQL.Text := CaptStr;
-      qrTemp.ParamByName('OBJ_ID').Value := FObjectID;
-      qrTemp.Active := True;
-      LastC := 0;
-      LastSC := 0;
-
-      while not qrTemp.Eof do
+    while not qrTemp.Eof do
+    begin
+      //Добавляет строку 8.2
+      if LastC <> qrTemp.FieldByName('CID').AsInteger then
       begin
-        //Добавляет строку главы
-        if LastC <> qrTemp.FieldByName('CID').AsInteger then
+        if (LastC = 8) then
         begin
-          if LastC > 0 then
-            AddItog();
-
-          LastC := qrTemp.FieldByName('CID').AsInteger;
-          LastSC := 0;
-          I := 0;
-          J := 0;
-
           mtSSR.Append;
-          mtSSRNum.AsString := LastC.ToString + '.' + LastSC.ToString;
-
+          mtSSRNum.AsString := '8.2';
           AddKoef(mtSSRNum.AsString);
-
           mtSSRName.AsString :=
-            'ГЛАВА ' + LastC.ToString + ' ' + qrTemp.FieldByName('CNAME').AsString;
+            'в т.ч. ВОЗВРАТ МАТЕРИАЛОВ, ИЗДЕЛИЙ И КОНСТРУКЦИЙ ОТ РАЗБОРКИ ВРЕМЕННЫХ ЗДАНИЙ И СООРУЖЕНИЙ';
 
-          mtSSRCID.Value := LastC;
-          mtSSRSCID.Value := LastSC;
+          mtSSRCID.Value := 8;
+          mtSSRSCID.Value := 2;
 
           mtSSR.Post;
         end;
 
-        //Добавляет строку строки
-        if LastSC <> qrTemp.FieldByName('SCID').AsInteger then
-        begin
-          LastSC := qrTemp.FieldByName('SCID').AsInteger;
-          I := 0;
-          J := 0;
+        if LastC > 0 then
+          AddItog();
 
+        if (LastC = 9) and (LastSC = 1)then
+        begin
           mtSSR.Append;
-          mtSSRNum.AsString := LastC.ToString + '.' + LastSC.ToString;
+          mtSSRNum.AsString := '9.96';
           AddKoef(mtSSRNum.AsString);
+          mtSSRName.AsString :=
+            'в т.ч. ВОЗВРАТ МАТЕРИАЛОВ';
 
-          mtSSRName.AsString := qrTemp.FieldByName('CNAME').AsString;
-
-          mtSSRCID.Value := qrTemp.FieldByName('CID').AsInteger;
-          mtSSRSCID.Value := qrTemp.FieldByName('SCID').AsInteger;
-
-          mtSSR.Post;
-        end;
-
-        if qrTemp.FieldByName('SM_ID').AsInteger > 0 then
-        begin
-
-          mtSSR.Append;
-          if qrTemp.FieldByName('SM_TYPE').AsInteger = 2 then
-          begin
-            inc(I);
-            mtSSRNum.AsString :=
-              LastC.ToString + '.' + LastSC.ToString + '.' + I.ToString;
-          end
-          else
-          begin
-            inc(J);
-            mtSSRNum.AsString :=
-              LastC.ToString + '.' + LastSC.ToString + '.' +
-              I.ToString + '.' + J.ToString;
-          end;
-
-          mtSSRName.AsString := qrTemp.FieldByName('SM_NAME').AsString;
-
-          mtSSRZP.Value := qrTemp.FieldByName('ZP').AsFloat;
-          mtSSRZP5.Value := qrTemp.FieldByName('ZP_PR').AsFloat;
-          mtSSREMiM.Value := qrTemp.FieldByName('EMiM').AsFloat;
-          mtSSRZPMash.Value := qrTemp.FieldByName('ZP_MASH').AsFloat;
-          mtSSRMat.Value := qrTemp.FieldByName('MR').AsFloat;
-          mtSSRMatTransp.Value := qrTemp.FieldByName('TRANSP').AsFloat;
-          mtSSROXROPR.Value := qrTemp.FieldByName('OHROPR').AsFloat;
-          mtSSRPlanPrib.Value := qrTemp.FieldByName('PLAN_PRIB').AsFloat;
-          mtSSRDevices.Value := qrTemp.FieldByName('MR_DEVICE').AsFloat;
-          mtSSRTransp.Value := qrTemp.FieldByName('TRANSP_DEVICE').AsFloat;
-          mtSSROther.Value := qrTemp.FieldByName('OTHER').AsFloat;
-          mtSSRTrud.Value := qrTemp.FieldByName('TRUD').AsFloat;
-          AddTotal();
-
-          mtSSRCID.Value := qrTemp.FieldByName('CID').AsInteger;
-          mtSSRSCID.Value := qrTemp.FieldByName('SCID').AsInteger;
-          mtSSRSM_ID.Value := qrTemp.FieldByName('SM_ID').AsInteger;
-          mtSSRSM_TYPE.Value := qrTemp.FieldByName('SM_TYPE').AsInteger;
+          mtSSRCID.Value := 9;
+          mtSSRSCID.Value := 96;
 
           mtSSR.Post;
         end;
 
-        qrTemp.Next;
+        LastC := qrTemp.FieldByName('CID').AsInteger;
+        LastSC := 0;
+        I := 0;
+        J := 0;
+
+        mtSSR.Append;
+        mtSSRNum.AsString := LastC.ToString + '.' + LastSC.ToString;
+        AddKoef(mtSSRNum.AsString);
+        mtSSRName.AsString :=
+          'ГЛАВА ' + LastC.ToString + ' ' + qrTemp.FieldByName('CNAME').AsString;
+
+        mtSSRCID.Value := LastC;
+        mtSSRSCID.Value := LastSC;
+
+        mtSSR.Post;
       end;
-      qrTemp.Active := False;
 
-      if LastC > 0 then
-        AddItog();
+      //Добавляет строку строки
+      if LastSC <> qrTemp.FieldByName('SCID').AsInteger then
+      begin
+        LastSC := qrTemp.FieldByName('SCID').AsInteger;
+        I := 0;
+        J := 0;
 
-    finally
-      mtSSR.EndBatch;
+        mtSSR.Append;
+        mtSSRNum.AsString := LastC.ToString + '.' + LastSC.ToString;
+        AddKoef(mtSSRNum.AsString);
+        mtSSRName.AsString := qrTemp.FieldByName('CNAME').AsString;
+        mtSSRCID.Value := qrTemp.FieldByName('CID').AsInteger;
+        mtSSRSCID.Value := qrTemp.FieldByName('SCID').AsInteger;
+        mtSSR.Post;
+      end;
+
+      if qrTemp.FieldByName('SM_ID').AsInteger > 0 then
+      begin
+
+        mtSSR.Append;
+        if qrTemp.FieldByName('SM_TYPE').AsInteger = 2 then
+        begin
+          inc(I);
+          mtSSRNum.AsString :=
+            LastC.ToString + '.' + LastSC.ToString + '.' + I.ToString;
+        end
+        else
+        begin
+          inc(J);
+          mtSSRNum.AsString :=
+            LastC.ToString + '.' + LastSC.ToString + '.' +
+            I.ToString + '.' + J.ToString;
+        end;
+
+        mtSSRName.AsString := qrTemp.FieldByName('SM_NAME').AsString;
+
+        mtSSRZP.Value := qrTemp.FieldByName('ZP').AsFloat;
+        mtSSRZP5.Value := qrTemp.FieldByName('ZP_PR').AsFloat;
+        mtSSREMiM.Value := qrTemp.FieldByName('EMiM').AsFloat;
+        mtSSRZPMash.Value := qrTemp.FieldByName('ZP_MASH').AsFloat;
+        mtSSRMat.Value := qrTemp.FieldByName('MR').AsFloat;
+        mtSSRMatTransp.Value := qrTemp.FieldByName('TRANSP').AsFloat;
+        mtSSROXROPR.Value := qrTemp.FieldByName('OHROPR').AsFloat;
+        mtSSRPlanPrib.Value := qrTemp.FieldByName('PLAN_PRIB').AsFloat;
+        mtSSRDevices.Value := qrTemp.FieldByName('MR_DEVICE').AsFloat;
+        mtSSRTransp.Value := qrTemp.FieldByName('TRANSP_DEVICE').AsFloat;
+        mtSSROther.Value := qrTemp.FieldByName('OTHER').AsFloat;
+        mtSSRTrud.Value := qrTemp.FieldByName('TRUD').AsFloat;
+        CalcTotal();
+
+        mtSSRCID.Value := qrTemp.FieldByName('CID').AsInteger;
+        mtSSRSCID.Value := qrTemp.FieldByName('SCID').AsInteger;
+        mtSSRSM_ID.Value := qrTemp.FieldByName('SM_ID').AsInteger;
+        mtSSRSM_TYPE.Value := qrTemp.FieldByName('SM_TYPE').AsInteger;
+
+        mtSSR.Post;
+      end;
+
+      qrTemp.Next;
+    end;
+    qrTemp.Active := False;
+
+    if LastC > 0 then
+      AddItog();
+
+    for I := Low(SSRItems) to High(SSRItems) do
+    begin
+      mtSSR.Append;
+      mtSSRNum.AsString := SSRItems[I][0];
+      mtSSRName.AsString := SSRItems[I][1];
+      mtSSRItog.Value := StrToIntDef(SSRItems[I][2], 0);
+      if mtSSRItog.Value = 0 then
+        AddKoef(mtSSRNum.AsString);
+      mtSSR.Post;
     end;
 
-    mtSSR.BeginBatch();
-    try
-      CZP := 0;
-      CZP5 := 0;
-      CEMiM := 0;
-      CZPMash := 0;
-      CMat := 0;
-      CMatTransp := 0;
-      COXROPR := 0;
-      CPlanPrib := 0;
-      CDevices := 0;
-      CTransp := 0;
-      COther := 0;
-      CTotal := 0;
-      CTrud := 0;
-
-      //Полуение итогов по строкам
-      mtSSR.Last;
-      while not mtSSR.Bof do
-      begin
-        if mtSSRSM_ID.Value = 0 then
-        begin
-          if (CTotal + CTrud) > 0 then
-          begin
-            //Добавить поддержку коэффициентов по строке
-            mtSSR.Edit;
-            mtSSRZP.Value := CZP;
-            mtSSRZP5.Value := CZP5;
-            mtSSREMiM.Value := CEMiM;
-            mtSSRZPMash.Value := CZPMash;
-            mtSSRMat.Value := CMat;
-            mtSSRMatTransp.Value := CMatTransp;
-            mtSSROXROPR.Value := COXROPR;
-            mtSSRPlanPrib.Value := CPlanPrib;
-            mtSSRDevices.Value := CDevices;
-            mtSSRTransp.Value := CTransp;
-            mtSSROther.Value := COther;
-            mtSSRTotal.Value := CTotal;
-            mtSSRTrud.Value := CTrud;
-            mtSSR.Post;
-          end;
-
-          CZP := 0;
-          CZP5 := 0;
-          CEMiM := 0;
-          CZPMash := 0;
-          CMat := 0;
-          CMatTransp := 0;
-          COXROPR := 0;
-          CPlanPrib := 0;
-          CDevices := 0;
-          CTransp := 0;
-          COther := 0;
-          CTotal := 0;
-          CTrud := 0;
-        end;
-
-        if (mtSSRSM_ID.Value > 0) and (mtSSRSM_TYPE.Value = 2) then
-        begin
-          CZP := CZP + mtSSRZP.Value;
-          CZP5 := CZP5 + mtSSRZP5.Value;
-          CEMiM := CEMiM + mtSSREMiM.Value;
-          CZPMash := CZPMash + mtSSRZPMash.Value;
-          CMat := CMat + mtSSRMat.Value;
-          CMatTransp := CMatTransp + mtSSRMatTransp.Value;
-          COXROPR := COXROPR + mtSSROXROPR.Value;
-          CPlanPrib := CPlanPrib + mtSSRPlanPrib.Value;
-          CDevices := CDevices + mtSSRDevices.Value;
-          CTransp := CTransp + mtSSRTransp.Value;
-          COther := COther + mtSSROther.Value;
-          CTotal := CTotal + mtSSRTotal.Value;
-          CTrud := CTrud + mtSSRTrud.Value;
-        end;
-
-        mtSSR.Prior;
-      end;
-
-      CZP := 0;
-      CZP5 := 0;
-      CEMiM := 0;
-      CZPMash := 0;
-      CMat := 0;
-      CMatTransp := 0;
-      COXROPR := 0;
-      CPlanPrib := 0;
-      CDevices := 0;
-      CTransp := 0;
-      COther := 0;
-      CTotal := 0;
-      CTrud := 0;
-
-      AllZP := 0;
-      AllZP5 := 0;
-      AllEMiM := 0;
-      AllZPMash := 0;
-      AllMat := 0;
-      AllMatTransp := 0;
-      AllOXROPR := 0;
-      AllPlanPrib := 0;
-      AllDevices := 0;
-      AllTransp := 0;
-      AllOther := 0;
-      AllTotal := 0;
-      AllTrud := 0;
-
-      //Подбивает итог по кождой из глав до главы 7
-      while not mtSSR.Eof do
-      begin
-        if (mtSSRItog.Value = 2) then  //Итог по 1-7
-        begin
-          mtSSR.Edit;
-          mtSSRZP.Value := AllZP;
-          mtSSRZP5.Value := AllZP5;
-          mtSSREMiM.Value := AllEMiM;
-          mtSSRZPMash.Value := AllZPMash;
-          mtSSRMat.Value := AllMat;
-          mtSSRMatTransp.Value := AllMatTransp;
-          mtSSROXROPR.Value := AllOXROPR;
-          mtSSRPlanPrib.Value := AllPlanPrib;
-          mtSSRDevices.Value := AllDevices;
-          mtSSRTransp.Value := AllTransp;
-          mtSSROther.Value := AllOther;
-          mtSSRTotal.Value := AllTotal;
-          mtSSRTrud.Value := AllTrud;
-          mtSSR.Post;
-
-          Break;
-        end;
-
-        if (mtSSRItog.Value = 1) then
-        begin
-          if (CTotal + CTrud) > 0 then
-          begin
-            mtSSR.Edit;
-            mtSSRZP.Value := CZP;
-            mtSSRZP5.Value := CZP5;
-            mtSSREMiM.Value := CEMiM;
-            mtSSRZPMash.Value := CZPMash;
-            mtSSRMat.Value := CMat;
-            mtSSRMatTransp.Value := CMatTransp;
-            mtSSROXROPR.Value := COXROPR;
-            mtSSRPlanPrib.Value := CPlanPrib;
-            mtSSRDevices.Value := CDevices;
-            mtSSRTransp.Value := CTransp;
-            mtSSROther.Value := COther;
-            mtSSRTotal.Value := CTotal;
-            mtSSRTrud.Value := CTrud;
-            mtSSR.Post;
-          end;
-
-          AllZP := AllZP + CZP;
-          AllZP5 := AllZP5 + CZP5;
-          AllEMiM := AllEMiM + CEMiM;
-          AllZPMash := AllZPMash + CZPMash;
-          AllMat := AllMat + CMat;
-          AllMatTransp := AllMatTransp + CMatTransp;
-          AllOXROPR := AllOXROPR + COXROPR;
-          AllPlanPrib := AllPlanPrib + CPlanPrib;
-          AllDevices := AllDevices + CDevices;
-          AllTransp := AllTransp + CTransp;
-          AllOther := AllOther + COther;
-          AllTotal := AllTotal+ CTotal;
-          AllTrud := AllTrud + CTrud;
-
-          CZP := 0;
-          CZP5 := 0;
-          CEMiM := 0;
-          CZPMash := 0;
-          CMat := 0;
-          CMatTransp := 0;
-          COXROPR := 0;
-          CPlanPrib := 0;
-          CDevices := 0;
-          CTransp := 0;
-          COther := 0;
-          CTotal := 0;
-          CTrud := 0;
-        end;
-
-        if (mtSSRSM_ID.Value = 0) and (mtSSRItog.Value = 0) then
-        begin
-          CZP := CZP + mtSSRZP.Value;
-          CZP5 := CZP5 + mtSSRZP5.Value;
-          CEMiM := CEMiM + mtSSREMiM.Value;
-          CZPMash := CZPMash + mtSSRZPMash.Value;
-          CMat := CMat + mtSSRMat.Value;
-          CMatTransp := CMatTransp + mtSSRMatTransp.Value;
-          COXROPR := COXROPR + mtSSROXROPR.Value;
-          CPlanPrib := CPlanPrib + mtSSRPlanPrib.Value;
-          CDevices := CDevices + mtSSRDevices.Value;
-          CTransp := CTransp + mtSSRTransp.Value;
-          COther := COther + mtSSROther.Value;
-          CTotal := CTotal + mtSSRTotal.Value;
-          CTrud := CTrud + mtSSRTrud.Value;
-        end;
-
-        mtSSR.Next;
-      end;
-
-      mtSSR.First;
-    finally
-      mtSSR.EndBatch;
-    end;
   finally
+    mtSSR.EndBatch;
     mtSSRPepcent.OnChange := ev;
     mtSSRKoef1.OnChange := ev;
     mtSSRKoef2.OnChange := ev;
+  end;
+
+  RecalcReport();
+  mtSSR.First;
+end;
+
+procedure TFormReportSSR.RecalcReport();
+var I: Integer;
+    TmpLine,
+    TmpLine2,
+    Line795: TRepSSRLine;
+    SmCount: Integer;
+    Bookmark82, Bookmark996: TBookMark;
+    Total81: Double;
+
+procedure AssignLine(const ALine: TRepSSRLine);
+begin
+  mtSSRZP.Value := ALine.ZP;
+  mtSSRZP5.Value := ALine.ZP5;
+  mtSSREMiM.Value := ALine.EMiM;
+  mtSSRZPMash.Value := ALine.ZPMash;
+  mtSSRMat.Value := ALine.Mat;
+  mtSSRMatTransp.Value := ALine.MatTransp;
+  mtSSROXROPR.Value := ALine.OXROPR;
+  mtSSRPlanPrib.Value := ALine.PlanPrib;
+  mtSSRDevices.Value := ALine.Devices;
+  mtSSRTransp.Value := ALine.Transp;
+  mtSSROther.Value := ALine.Other;
+  mtSSRTotal.Value := ALine.Total;
+  mtSSRTrud.Value := ALine.Trud;
+end;
+
+procedure SummToLine(var ALine: TRepSSRLine);
+begin
+  ALine.ZP := ALine.ZP + mtSSRZP.Value;
+  ALine.ZP5 := ALine.ZP5 + mtSSRZP5.Value;
+  ALine.EMiM := ALine.EMiM + mtSSREMiM.Value;
+  ALine.ZPMash := ALine.ZPMash + mtSSRZPMash.Value;
+  ALine.Mat := ALine.Mat + mtSSRMat.Value;
+  ALine.MatTransp := ALine.MatTransp + mtSSRMatTransp.Value;
+  ALine.OXROPR := ALine.OXROPR + mtSSROXROPR.Value;
+  ALine.PlanPrib := ALine.PlanPrib + mtSSRPlanPrib.Value;
+  ALine.Devices := ALine.Devices + mtSSRDevices.Value;
+  ALine.Transp := ALine.Transp + mtSSRTransp.Value;
+  ALine.Other := ALine.Other + mtSSROther.Value;
+  ALine.Total := ALine.Total + mtSSRTotal.Value;
+  ALine.Trud := ALine.Trud + mtSSRTrud.Value;
+end;
+
+procedure CalcLineWithKoef(var ALine: TRepSSRLine);
+var Perc, Koef1, Koef2: Double;
+
+function VarIsAssign(AValue: Variant): Boolean;
+begin
+  Result := VarIsOrdinal(AValue) or VarIsFloat(AValue);
+end;
+
+begin
+  Perc := 1;
+  Koef1 := 1;
+  Koef2 := 1;
+
+  if VarIsAssign(TField(mtSSRPepcent).Value) then
+    Perc := mtSSRPepcent.Value / 100;
+  if VarIsAssign(TField(mtSSRKoef1).Value) then
+    Koef1 := mtSSRKoef1.Value;
+  if VarIsAssign(TField(mtSSRKoef2).Value) then
+    Koef2 := mtSSRKoef2.Value;
+
+  ALine.ZP := ALine.ZP * Perc * Koef1 * Koef2;
+  ALine.ZP5 := ALine.ZP5 * Perc * Koef1 * Koef2;
+  ALine.EMiM := ALine.EMiM * Perc * Koef1 * Koef2;
+  ALine.ZPMash := ALine.ZPMash * Perc * Koef1 * Koef2;
+  ALine.Mat := ALine.Mat * Perc * Koef1 * Koef2;
+  ALine.MatTransp := ALine.MatTransp * Perc * Koef1 * Koef2;
+  ALine.OXROPR := ALine.OXROPR * Perc * Koef1 * Koef2;
+  ALine.PlanPrib := ALine.PlanPrib * Perc * Koef1 * Koef2;
+  ALine.Devices := ALine.Devices * Perc * Koef1 * Koef2;
+  ALine.Transp := ALine.Transp * Perc * Koef1 * Koef2;
+  ALine.Other := ALine.Other * Perc * Koef1 * Koef2;
+  ALine.CalcTotal;
+  ALine.Trud := ALine.Trud * Perc * Koef1 * Koef2;
+end;
+
+begin
+  mtSSR.DisableControls;
+  try
+    TmpLine := default(TRepSSRLine);
+    SmCount := 0;
+    Total81 := 0;
+    //Полуение итогов по строкам
+    mtSSR.Last;
+    while not mtSSR.Bof do
+    begin
+      if (mtSSRSM_ID.Value = 0) and (mtSSRItog.Value = 0) then
+      begin
+        CalcLineWithKoef(TmpLine);
+        if (TmpLine.Total + TmpLine.Trud) > 0 then
+        begin
+          mtSSR.Edit;
+          AssignLine(TmpLine);
+          mtSSR.Post;
+        end;
+
+        if mtSSRNum.AsString = '8.1' then
+          Total81 := TmpLine.Total;
+
+        if mtSSRNum.AsString = '8.2' then
+          Bookmark82 := mtSSR.GetBookmark;
+
+        if mtSSRNum.AsString = '9.96' then
+          Bookmark996 := mtSSR.GetBookmark;
+
+        TmpLine := default(TRepSSRLine);
+        SmCount := 0;
+      end;
+
+      if (mtSSRSM_ID.Value > 0) and (mtSSRSM_TYPE.Value = 2) then
+      begin
+        SummToLine(TmpLine);
+        Inc(SmCount);
+      end;
+
+      mtSSR.Prior;
+    end;
+
+    TmpLine := default(TRepSSRLine);
+    TmpLine2 := default(TRepSSRLine);
+
+    //Подбивает итог по кождой из глав до главы 7
+    while not mtSSR.Eof do
+    begin
+      if (mtSSRItog.Value = 2) then  //Итог по 1-11
+      begin
+        mtSSR.Edit;
+        AssignLine(TmpLine2);
+        mtSSR.Post;
+
+        if mtSSRNum.AsString = '7.95' then
+          Line795 := TmpLine2;
+
+        if mtSSRNum.AsString = '11.95' then
+          Break;
+      end;
+
+      if (mtSSRItog.Value = 1) then
+      begin
+        if (TmpLine.Total + TmpLine.Trud) > 0 then
+        begin
+          mtSSR.Edit;
+          AssignLine(TmpLine);
+          mtSSR.Post;
+        end;
+        SummToLine(TmpLine2);
+        TmpLine := default(TRepSSRLine);
+      end;
+
+      if (mtSSRSM_ID.Value = 0) and (mtSSRItog.Value = 0) then
+        SummToLine(TmpLine);
+
+      mtSSR.Next;
+    end;
+
+    //Расчет пункта 8.2  и 9.96
+    if mtSSR.BookmarkValid(Bookmark82) then
+    begin
+      mtSSR.GotoBookmark(Bookmark82);
+      TmpLine := default(TRepSSRLine);
+      TmpLine.Mat := Total81;
+      CalcLineWithKoef(TmpLine);
+      if (TmpLine.Total + TmpLine.Trud) > 0 then
+      begin
+        mtSSR.Edit;
+        AssignLine(TmpLine);
+        mtSSR.Post;
+      end;
+      if mtSSR.BookmarkValid(Bookmark996) then
+      begin
+        mtSSR.GotoBookmark(Bookmark996);
+        CalcLineWithKoef(TmpLine);
+        if (TmpLine.Total + TmpLine.Trud) > 0 then
+        begin
+          mtSSR.Edit;
+          AssignLine(TmpLine);
+          mtSSR.Post;
+        end;
+      end;
+    end;
+  finally
+    mtSSR.EnableControls;
   end;
 end;
 

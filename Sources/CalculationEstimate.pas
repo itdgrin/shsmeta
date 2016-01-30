@@ -4367,11 +4367,12 @@ var
   AutoCommitValue: Boolean;
 begin
   TempBookmark := qrRatesEx.GetBookmark;
-  qrRatesEx.DisableControls;
   ev := qrRatesEx.AfterScroll;
   ev2 := qrRatesExNOM_ROW_MANUAL.OnChange;
   AutoCommitValue := DM.Read.Options.AutoCommit;
   try
+    qrRatesEx.DisableControls;
+
     DM.Read.Options.AutoCommit := False;
     qrRatesEx.AfterScroll := nil;
     qrRatesExNOM_ROW_MANUAL.OnChange := nil;
@@ -7777,12 +7778,19 @@ begin
     if Column.Index = 0 then
       Brush.Color := grRatesEx.FixedColor;
 
-    // Подсвечиваем расченку с добавленными материалами/механизмами
+    // Подсвечиваем расценку с добавленными материалами/механизмами
     if qrRatesExADDED_COUNT.Value > 0 then
       Font.Color := clBlue;
-
-    if (grRatesEx.SelectedRows.CurrentRowSelected) and (grRatesEx.SelectedRows.Count > 1) then
+    //Подсветка отрицательного кол-ва
+    if qrRatesExOBJ_COUNT.Value < 0 then
       Font.Color := clRed;
+    //Подсветка отмеченных строк
+    if qrRatesExMarkRow.Value > 0 then
+      Font.Color := clPurple;
+    //Подсветка выделения
+    if (grRatesEx.SelectedRows.CurrentRowSelected) and
+       (grRatesEx.SelectedRows.Count > 1) then
+      Font.Color := $008080FF;
 
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and
       (grRatesEx.Row = TMyDBGrid(grRatesEx).DataLink.ActiveRecord + 1)
@@ -7791,9 +7799,6 @@ begin
     begin
       Font.Style := Font.Style + [fsBold];
     end;
-
-    if qrRatesExMarkRow.Value > 0 then
-      Font.Color := clRed;
 
     if gdFocused in State then // Ячейка в фокусе
     begin

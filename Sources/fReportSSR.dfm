@@ -510,4 +510,11 @@ object FormReportSSR: TFormReportSSR
     Left = 288
     Top = 108
   end
+  object UpdateTimer: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = UpdateTimerTimer
+    Left = 480
+    Top = 140
+  end
 end
