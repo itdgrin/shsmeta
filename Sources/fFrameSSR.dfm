@@ -59,7 +59,7 @@ inherited FrameSSR: TFrameSSR
         Caption = #1055#1086#1080#1089#1082':'
       end
       object lbPrikazRef: TLabel
-        Left = 700
+        Left = 690
         Top = 6
         Width = 100
         Height = 13
@@ -77,7 +77,7 @@ inherited FrameSSR: TFrameSSR
       object EditSearch: TEdit
         Left = 46
         Top = 3
-        Width = 648
+        Width = 638
         Height = 21
         Hint = 
           #1042#1074#1077#1076#1080#1090#1077' '#1089#1083#1086#1074#1072' '#1095#1077#1088#1077#1079' '#1087#1088#1086#1073#1077#1083' '#1080' '#1085#1072#1078#1084#1080#1090#1077' - Enter, '#1076#1083#1103' '#1086#1095#1080#1089#1090#1082#1080' '#1085#1072#1078#1084#1080#1090 +

@@ -226,8 +226,8 @@ begin
   begin
     Active := False;
 
-    StrQuery := 'SELECT * FROM ssrdetail WHERE ssr_id = ' + IntToStr(ComboBox.ItemIndex + 1) +
-      ' ORDER BY number_id ASC;';
+    StrQuery := 'SELECT * FROM ssrdetail WHERE ssr_id = ' +
+      IntToStr(ComboBox.ItemIndex + 1) + ' ORDER BY number_id ASC;';
 
     SQL.Clear;
     SQL.Add(StrQuery);

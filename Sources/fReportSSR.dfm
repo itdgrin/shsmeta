@@ -50,6 +50,7 @@ object FormReportSSR: TFormReportSSR
       TitleFont.Style = []
       OnDrawColumnCell = grSSRDrawColumnCell
       AutoAppend = False
+      AutoSort = False
       AlternateRowColor = 13290146
       SelectColumnsDialogStrings.Caption = 'Select columns'
       SelectColumnsDialogStrings.OK = '&OK'
@@ -486,7 +487,16 @@ object FormReportSSR: TFormReportSSR
       
         '    FN_getIndex(beg_stroj2, DATE_ADD(beg_stroj2, INTERVAL +srok_' +
         'stroj MONTH), 1) as piend,'
-      '    CONTRACT_PRICE_TYPE_ID'
+      '    CONTRACT_PRICE_TYPE_ID,'
+      
+        '    FN_getParamValue("K_VREM_ZDAN_SOOR", MONTH(beg_stroj), YEAR(' +
+        'beg_stroj)) as KVREM,'
+      
+        '    FN_getParamValue("K_ZIM_UDOR_1", MONTH(beg_stroj), YEAR(beg_' +
+        'stroj)) as KZIM,'
+      
+        '    FN_getParamValue("SOC_STRAH", MONTH(beg_stroj), YEAR(beg_str' +
+        'oj)) as KSOCSTRAX'
       'FROM objcards '
       'WHERE (DEL_FLAG=0) AND'
       '      ((:USER_ID=1) OR '

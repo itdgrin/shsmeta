@@ -23,6 +23,7 @@ type
     Pers: Variant;
     Koef1: Variant;
     Koef2: Variant;
+    SprID: Variant;
   end;
   TKoefArray = array of TKoefRec;
 
@@ -97,6 +98,9 @@ type
   private
     FObjectID: Integer;
     FKoefArray: TKoefArray;
+    FKVrem,
+    FKZim: Double;
+    FKSocStrax: Double;
 
     procedure GetSSRReport();
     procedure RecalcReport();
@@ -192,6 +196,10 @@ begin
     PostMessage(Handle, WM_CLOSE, 0, 0);
     Exit;
   end;
+  //Месячные величины участвующие в отчете
+  FKVrem := qrObject.FieldByName('KVREM').AsFloat;
+  FKZim := qrObject.FieldByName('KZIM').AsFloat;
+  FKSocStrax := qrObject.FieldByName('KSOCSTRAX').AsFloat;
 
   cbObjName.KeyValue := qrObject.FieldByName('obj_id').Value;
   cbObjName.OnClick(cbObjName);
@@ -218,18 +226,21 @@ procedure TFormReportSSR.AddNewKoef(const AKoef: TKoefRec);
 begin
   qrTemp.Active := False;
   qrTemp.Params.Clear;
-  qrTemp.SQL.Text := 'Insert into ssr_calc (OBJ_ID, LINE_NUM, PERS, KOEF1, KOEF2) ' +
-    'values (:OBJ_ID, :LINE_NUM, :PERS, :KOEF1, :KOEF2)';
+  qrTemp.SQL.Text := 'Insert into ssr_calc ' +
+    '(OBJ_ID, LINE_NUM, PERS, KOEF1, KOEF2, SPR_ID) ' +
+    'values (:OBJ_ID, :LINE_NUM, :PERS, :KOEF1, :KOEF2, :SPR_ID)';
   qrTemp.ParamByName('OBJ_ID').Value := FObjectID;
   qrTemp.ParamByName('LINE_NUM').Value := AKoef.LineNom;
 
   qrTemp.ParamByName('PERS').DataType := TFieldType.ftFloat;
   qrTemp.ParamByName('KOEF1').DataType := TFieldType.ftFloat;
   qrTemp.ParamByName('KOEF2').DataType := TFieldType.ftFloat;
+  qrTemp.ParamByName('SPR_ID').DataType := TFieldType.ftInteger;
 
   qrTemp.ParamByName('PERS').Value := AKoef.Pers;
   qrTemp.ParamByName('KOEF1').Value := AKoef.Koef1;
   qrTemp.ParamByName('KOEF2').Value := AKoef.Koef2;
+  qrTemp.ParamByName('SPR_ID').Value := AKoef.SprID;
   qrTemp.ExecSQL;
 end;
 
@@ -237,16 +248,20 @@ procedure TFormReportSSR.UpdateNewKoef(const AKoef: TKoefRec);
 begin
   qrTemp.Active := False;
   qrTemp.Params.Clear;
-  qrTemp.SQL.Text := 'Update ssr_calc set PERS = :PERS, KOEF1 = :KOEF1, ' +
-    'KOEF2 = :KOEF2 where (OBJ_ID = :OBJ_ID) and (LINE_NUM = :LINE_NUM)';
+  qrTemp.SQL.Text :=
+    'Update ssr_calc set PERS = :PERS, KOEF1 = :KOEF1, ' +
+    'KOEF2 = :KOEF2, SPR_ID = :SPR_ID ' +
+    'where (OBJ_ID = :OBJ_ID) and (LINE_NUM = :LINE_NUM)';
 
   qrTemp.ParamByName('PERS').DataType := TFieldType.ftFloat;
   qrTemp.ParamByName('KOEF1').DataType := TFieldType.ftFloat;
   qrTemp.ParamByName('KOEF2').DataType := TFieldType.ftFloat;
+  qrTemp.ParamByName('SPR_ID').DataType := TFieldType.ftInteger;
 
   qrTemp.ParamByName('PERS').Value := AKoef.Pers;
   qrTemp.ParamByName('KOEF1').Value := AKoef.Koef1;
   qrTemp.ParamByName('KOEF2').Value := AKoef.Koef2;
+  qrTemp.ParamByName('SPR_ID').Value := AKoef.SprID;
   qrTemp.ParamByName('OBJ_ID').Value := FObjectID;
   qrTemp.ParamByName('LINE_NUM').Value := AKoef.LineNom;
   qrTemp.ExecSQL;
@@ -286,6 +301,7 @@ begin
     AArray[I].Pers := qrTemp.FieldByName('PERS').Value;
     AArray[I].Koef1 := qrTemp.FieldByName('KOEF1').Value;
     AArray[I].Koef2 := qrTemp.FieldByName('KOEF2').Value;
+    AArray[I].SprID := qrTemp.FieldByName('SPR_ID').Value;
     Inc(I);
     qrTemp.Next;
   end;
@@ -297,9 +313,17 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '8.1';
-    AArray[I].Pers := 8.4;
+    AArray[I].SprID := 191;
+
+    qrTemp.SQL.Text := 'select COEF_NORM from ssrdetail where ID = :ID';
+    qrTemp.ParamByName('ID').Value := AArray[I].SprID;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      AArray[I].Pers := qrTemp.Fields[0].Value;
+    qrTemp.Active := False;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
+
     AddNewKoef(AArray[I]);
   end;
 
@@ -321,9 +345,17 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '9.1';
-    AArray[I].Pers := 5.81;
+    AArray[I].SprID := 88;
+
+    qrTemp.SQL.Text := 'select COEF_NORM from ssrdetail where ID = :ID';
+    qrTemp.ParamByName('ID').Value := AArray[I].SprID;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      AArray[I].Pers := qrTemp.Fields[0].Value;
+    qrTemp.Active := False;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
+
     AddNewKoef(AArray[I]);
   end;
 
@@ -333,7 +365,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '9.2';
-    AArray[I].Pers := 34;
+    AArray[I].Pers := FKSocStrax;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -345,7 +377,15 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '9.3';
-    AArray[I].Pers := 9.7;
+    AArray[I].SprID := 2;
+
+    qrTemp.SQL.Text := 'select VALUE from ssrcost where ID = :ID';
+    qrTemp.ParamByName('ID').Value := AArray[I].SprID;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      AArray[I].Pers := qrTemp.Fields[0].Value;
+    qrTemp.Active := False;
+
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -460,6 +500,7 @@ begin
 
 end;
 
+//Процедура добавляет в расчет все необходимые строки и вытягивает инфу по сметам
 procedure TFormReportSSR.GetSSRReport();
 var SmStr, CaptStr: string;
     LastC, LastSC: Integer;
@@ -613,7 +654,7 @@ begin
         if LastC > 0 then
           AddItog();
 
-        if (LastC = 9) and (LastSC = 1)then
+        if (LastC = 9) then
         begin
           mtSSR.Append;
           mtSSRNum.AsString := '9.96';
@@ -727,18 +768,43 @@ begin
     mtSSRKoef2.OnChange := ev;
   end;
 
+  //Выполняет последующие расчеты и суммации
   RecalcReport();
   mtSSR.First;
 end;
 
+//Выполняет последующие расчеты и суммации
 procedure TFormReportSSR.RecalcReport();
 var I: Integer;
     TmpLine,
-    TmpLine2,
-    Line795: TRepSSRLine;
+    TmpLine1,
+    AllLine,
+    Line795,
+    Line895,
+    Line98: TRepSSRLine;
     SmCount: Integer;
     Bookmark82, Bookmark996: TBookMark;
-    Total81: Double;
+    Mat81: Double;
+    KZp, KEmim, KEmimZp, KMr: Double;
+
+procedure NullLine();
+begin
+  mtSSR.Edit;
+  TField(mtSSRZP).Value := Null;
+  TField(mtSSRZP5).Value := Null;
+  TField(mtSSREMiM).Value := Null;
+  TField(mtSSRZPMash).Value := Null;
+  TField(mtSSRMat).Value := Null;
+  TField(mtSSRMatTransp).Value := Null;
+  TField(mtSSROXROPR).Value := Null;
+  TField(mtSSRPlanPrib).Value := Null;
+  TField(mtSSRDevices).Value := Null;
+  TField(mtSSRTransp).Value := Null;
+  TField(mtSSROther).Value := Null;
+  TField(mtSSRTotal).Value := Null;
+  TField(mtSSRTrud).Value := Null;
+  mtSSR.Post;
+end;
 
 procedure AssignLine(const ALine: TRepSSRLine);
 begin
@@ -755,6 +821,16 @@ begin
   mtSSROther.Value := ALine.Other;
   mtSSRTotal.Value := ALine.Total;
   mtSSRTrud.Value := ALine.Trud;
+end;
+
+procedure AssignLineIfNoNull(const ALine: TRepSSRLine);
+begin
+  if (ALine.Total + ALine.Trud) > 0 then
+  begin
+    mtSSR.Edit;
+    AssignLine(ALine);
+    mtSSR.Post;
+  end;
 end;
 
 procedure SummToLine(var ALine: TRepSSRLine);
@@ -814,29 +890,26 @@ begin
   try
     TmpLine := default(TRepSSRLine);
     SmCount := 0;
-    Total81 := 0;
+    Mat81 := 0;
     //Полуение итогов по строкам
     mtSSR.Last;
     while not mtSSR.Bof do
     begin
       if (mtSSRSM_ID.Value = 0) and (mtSSRItog.Value = 0) then
       begin
-        CalcLineWithKoef(TmpLine);
-        if (TmpLine.Total + TmpLine.Trud) > 0 then
-        begin
-          mtSSR.Edit;
-          AssignLine(TmpLine);
-          mtSSR.Post;
-        end;
-
-        if mtSSRNum.AsString = '8.1' then
-          Total81 := TmpLine.Total;
+        //Для 8.1 расчет отличается
+        if mtSSRNum.AsString <> '8.1' then
+          CalcLineWithKoef(TmpLine);
+        AssignLineIfNoNull(TmpLine);
 
         if mtSSRNum.AsString = '8.2' then
           Bookmark82 := mtSSR.GetBookmark;
 
         if mtSSRNum.AsString = '9.96' then
           Bookmark996 := mtSSR.GetBookmark;
+
+        if mtSSRNum.AsString = '9.8' then
+          Line98 := TmpLine;
 
         TmpLine := default(TRepSSRLine);
         SmCount := 0;
@@ -852,7 +925,7 @@ begin
     end;
 
     TmpLine := default(TRepSSRLine);
-    TmpLine2 := default(TRepSSRLine);
+    AllLine := default(TRepSSRLine);
 
     //Подбивает итог по кождой из глав до главы 7
     while not mtSSR.Eof do
@@ -860,11 +933,14 @@ begin
       if (mtSSRItog.Value = 2) then  //Итог по 1-11
       begin
         mtSSR.Edit;
-        AssignLine(TmpLine2);
+        AssignLine(AllLine);
         mtSSR.Post;
 
         if mtSSRNum.AsString = '7.95' then
-          Line795 := TmpLine2;
+          Line795 := AllLine;
+
+        if mtSSRNum.AsString = '8.95' then
+          Line895 := AllLine;
 
         if mtSSRNum.AsString = '11.95' then
           Break;
@@ -872,18 +948,121 @@ begin
 
       if (mtSSRItog.Value = 1) then
       begin
-        if (TmpLine.Total + TmpLine.Trud) > 0 then
-        begin
-          mtSSR.Edit;
-          AssignLine(TmpLine);
-          mtSSR.Post;
-        end;
-        SummToLine(TmpLine2);
+        AssignLineIfNoNull(TmpLine);
+        SummToLine(AllLine);
         TmpLine := default(TRepSSRLine);
       end;
 
       if (mtSSRSM_ID.Value = 0) and (mtSSRItog.Value = 0) then
+      begin
         SummToLine(TmpLine);
+
+        if mtSSRNum.AsString = '8.1' then
+        begin
+          NullLine();
+          TmpLine1 := default(TRepSSRLine);
+          I := FindLineNom(FKoefArray, mtSSRNum.AsString);
+          if I > -1 then
+          begin
+            KZp := 0;
+            KEmim := 0;
+            KEmimZp := 0;
+            KMr := 0;
+
+            qrTemp.SQL.Text :=
+              'select COEF_ZP, COEF_EK_MASH, COEF_ZP_MASH, COEF_MAT from ssrdetail where ID = :ID';
+            qrTemp.ParamByName('ID').Value := FKoefArray[I].SprID;
+            qrTemp.Active := True;
+            if not qrTemp.IsEmpty then
+            begin
+              KZp := qrTemp.Fields[0].Value;
+              KEmim := qrTemp.Fields[1].Value;
+              KEmimZp := qrTemp.Fields[2].Value;
+              KMr := qrTemp.Fields[3].Value;
+            end;
+            qrTemp.Active := False;
+
+            TmpLine1.ZP := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KZp * FKVrem;
+            TmpLine1.EMiM := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KEmim * FKVrem;
+            TmpLine1.ZPMash := TmpLine1.EMiM * KEmimZp;
+            TmpLine1.Mat := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KMr * FKVrem;
+          end;
+          CalcLineWithKoef(TmpLine1);
+          Mat81 := TmpLine1.Mat;
+          AssignLineIfNoNull(TmpLine1);
+          SummToLine(TmpLine);
+        end;
+
+        if mtSSRNum.AsString = '9.1' then
+        begin
+          NullLine();
+          TmpLine1 := default(TRepSSRLine);
+          I := FindLineNom(FKoefArray, mtSSRNum.AsString);
+          if I > -1 then
+          begin
+            KZp := 0;
+            KEmim := 0;
+            KEmimZp := 0;
+            KMr := 0;
+
+            qrTemp.SQL.Text :=
+              'select COEF_ZP, COEF_EK_MASH, COEF_ZP_MASH, COEF_MAT from ssrdetail where ID = :ID';
+            qrTemp.ParamByName('ID').Value := FKoefArray[I].SprID;
+            qrTemp.Active := True;
+            if not qrTemp.IsEmpty then
+            begin
+              KZp := qrTemp.Fields[0].Value;
+              KEmim := qrTemp.Fields[1].Value;
+              KEmimZp := qrTemp.Fields[2].Value;
+              KMr := qrTemp.Fields[3].Value;
+            end;
+            qrTemp.Active := False;
+
+            TmpLine1.ZP := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KZp * FKZim;
+            TmpLine1.EMiM := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KEmim * FKZim;
+            TmpLine1.ZPMash := TmpLine1.EMiM * KEmimZp;
+            TmpLine1.Mat := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KMr * FKZim;
+          end;
+          CalcLineWithKoef(TmpLine1);
+          AssignLineIfNoNull(TmpLine1);
+          SummToLine(TmpLine);
+        end;
+
+        if mtSSRNum.AsString = '9.2' then
+        begin
+          NullLine();
+          TmpLine1 := default(TRepSSRLine);
+          TmpLine1.Other := (Line795.ZP + Line795.ZPMash +
+            Line98.ZP + Line98.ZPMash);
+          CalcLineWithKoef(TmpLine1);
+          AssignLineIfNoNull(TmpLine1);
+          SummToLine(TmpLine);
+        end;
+
+        if mtSSRNum.AsString = '9.3' then
+        begin
+          NullLine();
+          TmpLine1 := default(TRepSSRLine);
+          TmpLine1.Other := (Line795.ZP - Line795.ZP5 + Line795.ZPMash);
+          CalcLineWithKoef(TmpLine1);
+          AssignLineIfNoNull(TmpLine1);
+          SummToLine(TmpLine);
+        end;
+
+        if mtSSRNum.AsString = '9.10' then
+        begin
+          NullLine();
+          TmpLine1 := default(TRepSSRLine);
+          TmpLine1.Other :=
+           (Line895.ZP - Line895.ZP5 + Line895.EMiM +
+            Line895.Mat + Line895.MatTransp + Line895.OXROPR +
+            Line895.PlanPrib + Line895.Other);
+          CalcLineWithKoef(TmpLine1);
+          AssignLineIfNoNull(TmpLine1);
+          SummToLine(TmpLine);
+        end;
+
+      end;
 
       mtSSR.Next;
     end;
@@ -893,7 +1072,7 @@ begin
     begin
       mtSSR.GotoBookmark(Bookmark82);
       TmpLine := default(TRepSSRLine);
-      TmpLine.Mat := Total81;
+      TmpLine.Mat := Mat81;
       CalcLineWithKoef(TmpLine);
       if (TmpLine.Total + TmpLine.Trud) > 0 then
       begin
