@@ -195,6 +195,11 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
     lcb: TJvDBLookupCombo;
     i: Integer;
   begin
+    // Записываем тип параметра
+    Params[AParamId, 2] := AType;
+    // Записываем название параметра
+    Params[AParamId, 3] := qrReportParam.FieldByName('REPORT_PARAM_NAME').Value;
+
     newPanel := TPanel.Create(Self);
     newPanel.Parent := Self;
     newPanel.Tag := qrReportParam.FieldByName('REPORT_PARAM_ID').AsInteger;
@@ -229,7 +234,7 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
       newCheck.Caption := 'Все';
       newCheck.Width := 35;
       newCheck.Align := alRight;
-      newCheck.Checked := True;
+      newCheck.Checked := VarIsNull(GetGlob(Params[AParamId, 3]));
       newCheck.Hint := 'Выбрать все значения по данному параметру';
       newCheck.ShowHint := True;
       newCheck.OnClick := OnChangeParam;
@@ -246,10 +251,7 @@ procedure TfSmReportParams.ReloadReportParams(AReport: Integer);
     newSubPanel.Caption := '';
     newSubPanel.BevelOuter := bvNone;
     newSubPanel.BevelKind := bkNone;
-    // Записываем тип параметра
-    Params[AParamId, 2] := AType;
-    // Записываем название параметра
-    Params[AParamId, 3] := qrReportParam.FieldByName('REPORT_PARAM_NAME').Value;
+
     case AType of
       // Целое число
       1:

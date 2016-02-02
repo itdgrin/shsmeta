@@ -159,7 +159,7 @@ begin
     Reg.OpenKey(CurKey, True);
     try
       case VarType(AValue) of
-        varByte, varSmallint, varInteger:
+        varByte, varSmallint, varInteger, varLongWord:
           Reg.WriteInteger(AParamName, AValue);
         varSingle, varDouble:
           Reg.WriteFloat(AParamName, AValue);
@@ -171,6 +171,8 @@ begin
           Reg.WriteBool(AParamName, AValue);
         varOleStr, varStrArg, varString:
           Reg.WriteString(AParamName, AValue);
+      else
+        Reg.WriteInteger(AParamName, AValue);
       end;
       Reg.WriteInteger(AParamName + '()', VarType(AValue));
     finally
@@ -199,7 +201,7 @@ begin
       begin
         K := Reg.ReadInteger(s);
         case K of
-          varByte, varSmallint, varInteger:
+          varByte, varSmallint, varInteger, varLongWord:
             Result := Reg.ReadInteger(AParamName);
           varSingle, varDouble:
             Result := Reg.ReadFloat(AParamName);
