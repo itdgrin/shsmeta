@@ -1,10 +1,11 @@
 object fSelectDialog: TfSelectDialog
   Left = 0
   Top = 0
-  BorderStyle = bsDialog
-  Caption = 'fSelectDialog'
-  ClientHeight = 338
-  ClientWidth = 459
+  ActiveControl = grMain
+  BorderIcons = [biSystemMenu]
+  Caption = #1044#1080#1072#1083#1086#1075' '#1074#1099#1073#1086#1088#1072' '#1079#1085#1072#1095#1077#1085#1080#1103' '#1080#1079' DataSet '
+  ClientHeight = 328
+  ClientWidth = 503
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,13 +16,13 @@ object fSelectDialog: TfSelectDialog
   Position = poMainFormCenter
   PixelsPerInch = 96
   TextHeight = 13
-  object grMain1: TJvDBGrid
+  object grMain: TJvDBGrid
     Left = 0
     Top = 0
-    Width = 459
-    Height = 301
+    Width = 503
+    Height = 291
     Align = alClient
-    DataSource = dsMainData
+    DataSource = dsMain
     DrawingStyle = gdsClassic
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -37,7 +38,7 @@ object fSelectDialog: TfSelectDialog
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
-    OnDrawColumnCell = grMain1DrawColumnCell
+    OnDblClick = grMainDblClick
     AutoAppend = False
     IniStorage = FormStorage
     AutoSizeColumns = True
@@ -59,7 +60,7 @@ object fSelectDialog: TfSelectDialog
         FieldName = 'NAME'
         Title.Alignment = taCenter
         Title.Caption = #1053#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077
-        Width = 275
+        Width = 271
         Visible = True
       end
       item
@@ -67,29 +68,30 @@ object fSelectDialog: TfSelectDialog
         FieldName = 'VALUE'
         Title.Alignment = taCenter
         Title.Caption = #1047#1085#1072#1095#1077#1085#1080#1077
-        Width = 109
+        Width = 114
         Visible = True
       end
       item
         Expanded = False
         FieldName = 'DESCRIPTION'
+        Title.Alignment = taCenter
         Title.Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072
-        Width = 56
+        Width = 99
         Visible = True
       end>
   end
-  object pnl1: TPanel
+  object pnlBot: TPanel
     Left = 0
-    Top = 301
-    Width = 459
+    Top = 291
+    Width = 503
     Height = 37
     Align = alBottom
     TabOrder = 1
     DesignSize = (
-      459
+      503
       37)
-    object btn1: TBitBtn
-      Left = 374
+    object btnCancel: TBitBtn
+      Left = 418
       Top = 6
       Width = 75
       Height = 25
@@ -98,19 +100,19 @@ object fSelectDialog: TfSelectDialog
       ModalResult = 2
       TabOrder = 1
     end
-    object btn2: TBitBtn
-      Left = 293
+    object btnOk: TBitBtn
+      Left = 337
       Top = 6
       Width = 75
       Height = 25
       Anchors = [akRight, akBottom]
       Caption = #1042#1099#1073#1088#1072#1090#1100
+      Default = True
       ModalResult = 1
       TabOrder = 0
     end
   end
-  object dsMainData: TDataSource
-    DataSet = FormCalculationEstimate.qrTemp
+  object dsMain: TDataSource
     Left = 51
     Top = 96
   end
@@ -119,7 +121,7 @@ object fSelectDialog: TfSelectDialog
     AppStoragePath = '%FORM_NAME%\'
     Options = []
     StoredProps.Strings = (
-      'grMain1.RowsHeight')
+      'grMain.RowsHeight')
     StoredValues = <>
     Left = 48
     Top = 144

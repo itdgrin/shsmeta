@@ -1768,7 +1768,7 @@ begin
         'DOC_DATE=:5,DOC_NUM=:6'#13 + 'WHERE '#13 + 'PROC_ZAC=:11 AND PROC_PODR=:12'#13 +
         'AND TRANSP_PROC_ZAC=:13 AND TRANSP_PROC_PODR=:14'#13 +
         'AND IF(:NDS=1, FCOAST_NDS, FCOAST_NO_NDS)=:15 AND DEVICE_ID=:16'#13 +
-        'AND IF(:NDS1=1, DEVICE_TRANSP_NDS, DEVICE_TRANSP_NO_NDS)=:17 AND DOC_DATE=:18 AND IFNULL(DOC_NUM, "")=:19',
+        'AND IF(:NDS1=1, DEVICE_TRANSP_NDS, DEVICE_TRANSP_NO_NDS)=:17 AND IFNULL(DOC_DATE, 0)=IFNULL(:18, 0) AND IFNULL(DOC_NUM, "")=:19',
         VarArrayOf([FieldByName('TRANSP').AsFloat, FieldByName('COAST').AsFloat,
         FieldByName('TRANSP_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
         FieldByName('PROC_PODR').Value, FieldByName('PROC_ZAC').Value, FieldByName('DOC_DATE').Value,
@@ -1936,12 +1936,12 @@ begin
   begin
     with qrMaterialData do
     begin
-      FastExecSQL('UPDATE materialcard_temp SET'#13 + 'TRANSP_PROC_PODR=:1, TRANSP_PROC_ZAC=:2,'#13 +
-        'MAT_PROC_PODR=:3, MAT_PROC_ZAC=:4, DELETED=:5,'#13 + 'PROC_TRANSP=:7,DOC_DATE=:8,DOC_NUM=:88'#13 +
-        'WHERE PROC_TRANSP=:9 AND DELETED=:10'#13 + 'AND MAT_PROC_ZAC=:11 AND MAT_PROC_PODR=:12'#13 +
+      FastExecSQL('UPDATE materialcard_temp SET TRANSP_PROC_PODR=:1, TRANSP_PROC_ZAC=:2,'#13 +
+        'MAT_PROC_PODR=:3, MAT_PROC_ZAC=:4, DELETED=:5, PROC_TRANSP=:7, DOC_DATE=:8, DOC_NUM=:88'#13 +
+        'WHERE PROC_TRANSP=:9 AND DELETED=:10 AND MAT_PROC_ZAC=:11 AND MAT_PROC_PODR=:12'#13 +
         'AND TRANSP_PROC_ZAC=:13 AND TRANSP_PROC_PODR=:14'#13 +
         'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:15 AND MAT_ID=:16'#13
-        + 'AND DOC_DATE=:17 AND IFNULL(DOC_NUM, "")=:18',
+        + 'AND IFNULL(DOC_DATE, 0)=IFNULL(:17, 0) AND IFNULL(DOC_NUM, "")=:18',
         VarArrayOf([FieldByName('TRANSP_PROC_PODR').Value, FieldByName('TRANSP_PROC_ZAC').Value,
         FieldByName('MAT_PROC_PODR').Value, FieldByName('MAT_PROC_ZAC').Value, FieldByName('DELETED').Value,
         FieldByName('PROC_TRANSP').AsFloat, FieldByName('DOC_DATE').Value, FieldByName('DOC_NUM').AsString,
@@ -1965,7 +1965,7 @@ begin
         FastExecSQL('UPDATE materialcard_temp SET'#13 + priceQ + ' WHERE PROC_TRANSP=:4 AND DELETED=:5'#13 +
           'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 + 'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13
           + 'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MAT_ID=:11'#13
-          + 'AND DOC_DATE=:17 AND IFNULL(DOC_NUM, "")=:18',
+          + 'AND IFNULL(DOC_DATE, 0)=IFNULL(:17, 0) AND IFNULL(DOC_NUM, "")=:18',
           VarArrayOf([FieldByName('COAST').AsFloat, FieldByName('PROC_TRANSP').Value,
           FieldByName('DELETED').Value, FieldByName('MAT_PROC_ZAC').Value, FieldByName('MAT_PROC_PODR').Value,
           FieldByName('TRANSP_PROC_ZAC').Value, FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex,
@@ -1978,7 +1978,7 @@ begin
           + 'AND MAT_PROC_ZAC=:6 AND MAT_PROC_PODR=:7'#13 +
           'AND TRANSP_PROC_ZAC=:8 AND TRANSP_PROC_PODR=:9'#13 +
           'AND IF(:NDS=1, IF(FCOAST_NDS<>0, FCOAST_NDS, COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS))=:10 AND MAT_ID=:11'#13
-          + 'AND DOC_DATE=:17 AND IFNULL(DOC_NUM, "")=:18',
+          + 'AND IFNULL(DOC_DATE, 0)=IFNULL(:17, 0) AND IFNULL(DOC_NUM, "")=:18',
           VarArrayOf([FieldByName('PROC_TRANSP').Value, FieldByName('DELETED').Value,
           FieldByName('MAT_PROC_ZAC').Value, FieldByName('MAT_PROC_PODR').Value,
           FieldByName('TRANSP_PROC_ZAC').Value, FieldByName('TRANSP_PROC_PODR').Value, cbbNDS.ItemIndex,
@@ -2339,4 +2339,3 @@ initialization
 ReportMemoryLeaksOnShutdown := True;
 
 end.
-

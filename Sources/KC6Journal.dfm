@@ -802,7 +802,10 @@ object fKC6Journal: TfKC6Journal
       end>
     FormatOptions.DefaultParamDataType = ftBCD
     SQL.Strings = (
-      'SELECT TRIM(sm.`NAME`) as docname, '
+      
+        'SELECT TRIM((SELECT NAME FROM smetasourcedata WHERE SM_ID=(SELEC' +
+        'T PARENT_ID FROM smetasourcedata WHERE SM_ID=sm.PARENT_ID))) as ' +
+        'docname, '
       
         '       (SELECT DATE FROM smetasourcedata WHERE SM_ID=(SELECT PAR' +
         'ENT_ID FROM smetasourcedata WHERE SM_ID=sm.PARENT_ID)) AS MONTHY' +

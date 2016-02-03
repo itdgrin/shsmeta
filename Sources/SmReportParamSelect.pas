@@ -27,7 +27,7 @@ type
     procedure edtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
   public
-    class function Select(AListIDorListName, ACodeLocate: Variant): Variant;
+    class function Select(AListIDorListName, ACodeLocate: Variant; MultiSelect: Boolean = False): Variant;
   end;
 
 implementation
@@ -92,7 +92,8 @@ begin
   ModalResult := mrOk;
 end;
 
-class function TfSmReportParamSelect.Select(AListIDorListName, ACodeLocate: Variant): Variant;
+class function TfSmReportParamSelect.Select(AListIDorListName, ACodeLocate: Variant;
+  MultiSelect: Boolean = False): Variant;
 // Функция выбора значения из списка
 // AFromListID - REPORT_LIST_SQL_ID - код списка
 // ACodeLocate - CODE для локейта
@@ -104,8 +105,15 @@ begin
   form := TfSmReportParamSelect.Create(nil, VarArrayOf([AListIDorListName, ACodeLocate]));
   try
     if form.ShowModal = mrOk then
-      Result := VarArrayOf([form.qrParamList.FieldByName('CODE').Value,
-        form.qrParamList.FieldByName('VALUE').Value]);
+    begin
+      if MultiSelect then
+      begin
+        //TODO режим с мультиселектом
+      end
+      else
+        Result := VarArrayOf([form.qrParamList.FieldByName('CODE').Value,
+          form.qrParamList.FieldByName('VALUE').Value]);
+    end;
   finally
     FreeAndNil(form);
   end;

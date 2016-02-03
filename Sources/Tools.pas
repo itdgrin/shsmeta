@@ -14,6 +14,8 @@ uses DBGrids, Main, Graphics, Winapi.Windows, Winapi.Messages, FireDAC.Comp.Clie
 type
   TKindForm = (kdNone, kdInsert, kdEdit, kdSelect);
 
+  TGlobParamType = (gptReportParam, gptFormParam);
+
   // Для выноса в паблик некоторых свойств грида
   TMyDBGrid = class(TJvDBGrid)
   public
@@ -139,15 +141,18 @@ function IIF(BoolExpression: Boolean; ifTrue, ifFalse: Variant): Variant;
 procedure addCol(const Grid: TJvDBGrid; fieldName, titleCaption: String; const Width: Integer);
 
 // Функции записи/чтения реестра:
-procedure SetGlob(const AParamName: String; const AValue: Variant);
-function GetGlob(const AParamName: String): Variant;
-function GetGlobDef(const AParamName: String; const ADefValue: Variant): Variant;
+procedure SetGlob(const AParamName: String; const AValue: Variant;
+  const AGlobParamType: TGlobParamType = gptReportParam);
+function GetGlob(const AParamName: String; const AGlobParamType: TGlobParamType = gptReportParam): Variant;
+function GetGlobDef(const AParamName: String; const ADefValue: Variant;
+  const AGlobParamType: TGlobParamType = gptReportParam): Variant;
 
 implementation
 
 uses uSelectColumn;
 
-procedure SetGlob(const AParamName: String; const AValue: Variant);
+procedure SetGlob(const AParamName: String; const AValue: Variant;
+  const AGlobParamType: TGlobParamType = gptReportParam);
 var
   Reg: TRegistry;
   CurKey: string;
@@ -155,7 +160,12 @@ begin
   Reg := TRegistry.Create(KEY_ALL_ACCESS);
   try
     Reg.RootKey := C_REGROOT;
-    CurKey := C_REGKEY + '\Report\Params';
+    case AGlobParamType of
+      gptReportParam:
+        CurKey := C_REGKEY + '\Report\Params';
+      gptFormParam:
+        CurKey := C_REGKEY + '\Forms';
+    end;
     Reg.OpenKey(CurKey, True);
     try
       case VarType(AValue) of
@@ -183,7 +193,8 @@ begin
   end;
 end;
 
-function GetGlobDef(const AParamName: String; const ADefValue: Variant): Variant;
+function GetGlobDef(const AParamName: String; const ADefValue: Variant;
+  const AGlobParamType: TGlobParamType = gptReportParam): Variant;
 var
   K: Integer;
   s: String;
@@ -192,8 +203,13 @@ var
 begin
   Result := Null;
   Reg := TRegistry.Create(KEY_ALL_ACCESS);
-  CurKey := C_REGKEY + '\Report\Params';
   try
+    case AGlobParamType of
+      gptReportParam:
+        CurKey := C_REGKEY + '\Report\Params';
+      gptFormParam:
+        CurKey := C_REGKEY + '\Forms';
+    end;
     Reg.OpenKey(CurKey, True);
     try
       s := AParamName + '()';
@@ -225,9 +241,9 @@ begin
     Result := ADefValue;
 end;
 
-function GetGlob(const AParamName: String): Variant;
+function GetGlob(const AParamName: String; const AGlobParamType: TGlobParamType = gptReportParam): Variant;
 begin
-  Result := GetGlobDef(AParamName, Null);
+  Result := GetGlobDef(AParamName, Null, AGlobParamType);
 end;
 
 procedure addCol(const Grid: TJvDBGrid; fieldName, titleCaption: String; const Width: Integer);
@@ -542,7 +558,23 @@ begin
     end;
     // Заполняем запрос параметрами
     for i := 0 to qr.ParamCount - 1 do
-      qr.Params.Items[i].Value := AParams[i];
+      case VarType(AParams[i]) of
+        varByte, varSmallint, varInteger, varLongWord:
+          qr.Params.Items[i].AsInteger := AParams[i];
+        varSingle, varDouble:
+          qr.Params.Items[i].AsFloat := AParams[i];
+        varCurrency:
+          qr.Params.Items[i].AsCurrency := AParams[i];
+        varDate:
+          qr.Params.Items[i].AsDateTime := AParams[i];
+        varBoolean:
+          qr.Params.Items[i].AsBoolean := AParams[i];
+        varOleStr, varStrArg, varString:
+          qr.Params.Items[i].AsString := AParams[i];
+      else
+        qr.Params.Items[i].Value := AParams[i];
+      end;
+    // qr.Params.Items[i].Value := AParams[i];
     qr.Active := True;
     qr.First;
     if qr.FieldCount > 0 then
@@ -560,6 +592,7 @@ var
 begin
   qr := TFDQuery.Create(nil);
   try
+    qr.ResourceOptions.ParamCreate := True;
     qr.Connection := DM.Connect;
     qr.UpdateTransaction := DM.Write;
     qr.Transaction := DM.Read;
@@ -571,7 +604,28 @@ begin
     end;
     // Заполняем запрос параметрами
     for i := 0 to qr.ParamCount - 1 do
-      qr.Params.Items[i].Value := AParams[i];
+    begin
+      case VarType(AParams[i]) of
+        varByte, varSmallint, varInteger, varLongWord:
+          qr.Params.Items[i].AsInteger := AParams[i];
+        varSingle, varDouble:
+          qr.Params.Items[i].AsFloat := AParams[i];
+        varCurrency:
+          qr.Params.Items[i].AsCurrency := AParams[i];
+        varDate:
+          qr.Params.Items[i].AsDateTime := AParams[i];
+        varBoolean:
+          qr.Params.Items[i].AsBoolean := AParams[i];
+        varOleStr, varStrArg, varString:
+          qr.Params.Items[i].AsString := AParams[i];
+      else
+        qr.Params.Items[i].Value := AParams[i];
+      end;
+      { if VarIsNull(qr.Params.Items[i].Value) then
+        qr.Params.Items[i].Clear; }
+
+    end;
+    // qr.Params.Items[i].Value := AParams[i];
     qr.ExecSQL;
   finally
     FreeAndNil(qr);

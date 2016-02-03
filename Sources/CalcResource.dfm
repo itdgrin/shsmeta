@@ -1363,10 +1363,6 @@ object fCalcResource: TfCalcResource
     object ts4: TTabSheet
       Caption = #1056#1072#1089#1095#1077#1090' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object spl5: TSplitter
         Left = 0
         Top = 200
@@ -2413,11 +2409,15 @@ object fCalcResource: TfCalcResource
       end
       item
         Name = 'SHOW_FULL_OBJECT'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'SM_ID'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end>
     object strngfldMechDataCODE: TStringField
       AutoGenerateValue = arDefault
@@ -2588,11 +2588,15 @@ object fCalcResource: TfCalcResource
       end
       item
         Name = 'SHOW_FULL_OBJECT'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'SM_ID'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end>
     object strngfldDevicesCODE: TStringField
       FieldName = 'CODE'
@@ -2798,11 +2802,15 @@ object fCalcResource: TfCalcResource
     ParamData = <
       item
         Name = 'SHOW_FULL_OBJECT'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'SM_ID'
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end>
   end
   object dsRates: TDataSource
@@ -2948,41 +2956,57 @@ object fCalcResource: TfCalcResource
       end
       item
         Name = 'COAST'
+        DataType = ftFloat
         ParamType = ptInput
         Value = Null
       end
       item
         Name = 'MAT_PROC_ZAC'
+        DataType = ftFloat
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'MAT_PROC_PODR'
+        DataType = ftFloat
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'TRANSP_PROC_ZAC'
+        DataType = ftFloat
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'TRANSP_PROC_PODR'
+        DataType = ftFloat
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'PROC_TRANSP'
+        DataType = ftFloat
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'DOC_DATE'
+        DataType = ftDate
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'DOC_NUM'
+        DataType = ftString
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'SHOW_DELETED'
-        DataType = ftBCD
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end>
   end
   object dsMaterialDetail: TDataSource
@@ -3114,13 +3138,15 @@ object fCalcResource: TfCalcResource
       end
       item
         Name = 'MECH_ID'
-        DataType = ftBCD
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'SHOW_DELETED'
-        DataType = ftBCD
+        DataType = ftInteger
         ParamType = ptInput
+        Value = Null
       end>
   end
   object dsMechDetail: TDataSource
@@ -3200,14 +3226,19 @@ object fCalcResource: TfCalcResource
         Name = 'DEVICE_ID'
         DataType = ftBCD
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'DOC_DATE'
+        DataType = ftDate
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'DOC_NUM'
+        DataType = ftString
         ParamType = ptInput
+        Value = Null
       end>
   end
   object dsDevicesDetail: TDataSource

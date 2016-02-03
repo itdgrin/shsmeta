@@ -11,21 +11,18 @@ uses
 
 type
   TfSelectDialog = class(TSmForm)
-    dsMainData: TDataSource;
+    dsMain: TDataSource;
     FormStorage: TJvFormStorage;
-    grMain1: TJvDBGrid;
-    pnl1: TPanel;
-    btn1: TBitBtn;
-    btn2: TBitBtn;
-    procedure grMain1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
-      State: TGridDrawState);
+    grMain: TJvDBGrid;
+    pnlBot: TPanel;
+    btnCancel: TBitBtn;
+    btnOk: TBitBtn;
+    procedure grMainDblClick(Sender: TObject);
   private
-    { Private declarations }
   public
-    { Public declarations }
   end;
 
-function ShowSelectDialog(const ACapt: String{; const ADataSet: Pointer}): Boolean;
+function ShowSelectDialog(const ACapt: String; const ADataSet: TFDQuery): Boolean;
 
 implementation
 
@@ -33,49 +30,27 @@ uses Main, DataModule, CalculationEstimate;
 
 {$R *.dfm}
 
-function ShowSelectDialog(const ACapt: String{; const ADataSet: Pointer}): Boolean;
+function ShowSelectDialog(const ACapt: String; const ADataSet: TFDQuery): Boolean;
 var
-  fSelectDialog: TfSelectDialog;
+  f: TfSelectDialog;
 begin
   Result := False;
-  fSelectDialog := nil;
+  f := nil;
   try
-    if (not Assigned(fSelectDialog)) then
-      fSelectDialog := TfSelectDialog.Create(nil);
-    fSelectDialog.Caption := ACapt;
-    //fSelectDialog.dsMainData.DataSet := TFDQuery(ADataSet);
-    if fSelectDialog.ShowModal = mrOk then
+    if (not Assigned(f)) then
+      f := TfSelectDialog.Create(nil);
+    f.Caption := ACapt;
+    f.dsMain.DataSet := ADataSet;
+    if f.ShowModal = mrOk then
       Result := True;
   finally
-    FreeAndNil(fSelectDialog);
+    FreeAndNil(f);
   end;
 end;
 
-procedure TfSelectDialog.grMain1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
-  Column: TColumn; State: TGridDrawState);
+procedure TfSelectDialog.grMainDblClick(Sender: TObject);
 begin
-  with (Sender AS TJvDBGrid).Canvas do
-  begin
-    Brush.Color := PS.BackgroundRows;
-    Font.Color := PS.FontRows;
-
-    // Строка в фокусе
-    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
-      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + 1)) then
-    begin
-      Brush.Color := PS.BackgroundSelectRow;
-      Font.Color := PS.FontSelectRow;
-    end;
-    // Ячейка в фокусе
-    if (gdSelected in State) then
-    begin
-      Brush.Color := PS.BackgroundSelectCell;
-      Font.Color := PS.FontSelectCell;
-      Font.Style := Font.Style + [fsBold];
-    end;
-  end;
-
-  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+  ModalResult := mrOk;
 end;
 
 end.

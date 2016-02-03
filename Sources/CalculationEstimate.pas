@@ -899,19 +899,16 @@ begin
 end;
 
 function TFormCalculationEstimate.GetEditable: Boolean;
+var
+  res: Variant;
 begin
   Result := True;
   if not Act then
   begin
-    qrTemp.SQL.Text := 'SELECT FL_CONTRACT_PRICE_DONE FROM objcards WHERE OBJ_ID=:OBJ_ID';
-    qrTemp.ParamByName('OBJ_ID').AsInteger := IdObject;
-    qrTemp.Active := True;
-    try
-      if not qrTemp.IsEmpty then
-        Result := qrTemp.Fields[0].AsInteger = 0;
-    finally
-      qrTemp.Active := False;
-    end;
+    res := FastSelectSQLOne('SELECT FL_CONTRACT_PRICE_DONE FROM objcards WHERE OBJ_ID=:0',
+      VarArrayOf([IdObject]));
+    if not VarIsNull(res) then
+      Result := res = 0;
   end;
 end;
 
@@ -1377,6 +1374,7 @@ procedure TFormCalculationEstimate.btnRSClick(Sender: TObject);
   fileName: string; }
 begin
   ShowNeedSaveDialog;
+  CloseOtherTabs;
   ShowCalcResource(IdEstimate, 0, Self);
   {
     fileName := ExtractFilePath(Application.ExeName) + C_REPORTDIR + 'ШАБЛОН ПОЛНЫЙ.xls';
@@ -6188,7 +6186,7 @@ begin
             mes := 'Расценка "' + qrRatesExOBJ_CODE.AsString +
               '" относится к нескольким настройкам ОХРиОПР и ПП. Укажите необходимый тип.';
             Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
-            if ShowSelectDialog('Выбор типа ОХРиОПР и ПП' { , Pointer(qrTemp) } ) then
+            if ShowSelectDialog('Выбор типа ОХРиОПР и ПП', qrTemp) then
             begin
               //
               qrRatesExWORK_ID.Value := FieldByName('work_id').Value;
@@ -6658,71 +6656,72 @@ procedure TFormCalculationEstimate.FillingWinterPrice(vNumber: string);
 var
   mes: string;
 begin
-  if qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1 then
-    try
-      if qrRatesExZNORMATIVS_ID.AsInteger <> 0 then
-        with qrTemp do
-        begin
-          Active := False;
-          SQL.Clear;
-          SQL.Add('SELECT CONCAT(num, " ", name) as "Name" ' +
-            'FROM znormativs WHERE znormativs.ZNORMATIVS_ID=:ZNORMATIVS_ID LIMIT 1;');
-          ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesExZNORMATIVS_ID.AsInteger;
-          Active := True;
-          if VarIsNull(FieldByName('Name').Value) then
-            edtWinterPrice.Text := 'не найден'
-          else
-            edtWinterPrice.Text := FieldByName('Name').AsString;
-        end
+  // ФТ-7 if qrRatesExAPPLY_WINTERPRISE_FLAG.AsInteger = 1 then
+  try
+    if qrRatesExZNORMATIVS_ID.AsInteger <> 0 then
+    begin
+      qrTemp.Active := False;
+      qrTemp.SQL.Text := 'SELECT CONCAT(IFNULL(num, ""), " ", name) as "Name" ' +
+        'FROM znormativs WHERE znormativs.ZNORMATIVS_ID=:ZNORMATIVS_ID LIMIT 1;';
+      qrTemp.ParamByName('ZNORMATIVS_ID').AsInteger := qrRatesExZNORMATIVS_ID.AsInteger;
+      qrTemp.Active := True;
+      if VarIsNull(qrTemp.FieldByName('Name').Value) then
+        edtWinterPrice.Text := 'не найден'
       else
-        with qrTemp do
+        edtWinterPrice.Text := qrTemp.FieldByName('Name').AsString;
+    end
+    else
+    begin
+      qrTemp.Active := False;
+      qrTemp.SQL.Text := 'SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name",'#13 +
+        'CONCAT(s, " - ", po) AS DESCRIPTION,'#13 +
+        'CONCAT(coef, "% / ", coef_zp, "%") AS VALUE, coef as "Coef", coef_zp as "CoefZP", FN_NUM_TO_INT(s) as "From", FN_NUM_TO_INT(po) as "On" '
+        + 'FROM znormativs, znormativs_detail, znormativs_value ' +
+        'WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID  ' +
+        'AND znormativs.ZNORMATIVS_ID = znormativs_value.ZNORMATIVS_ID ' + 'AND znormativs.DEL_FLAG = 0 ' +
+        'AND znormativs_value.ZNORMATIVS_ONDATE_ID = (' + '  SELECT znormativs_ondate.ID' +
+        '    FROM znormativs_ondate' +
+        '    WHERE `znormativs_ondate`.`onDate` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = (SELECT STAVKA_ID FROM smetasourcedata WHERE SM_ID='
+        + qrRatesExSM_ID.AsString + '))' +
+        '    AND `znormativs_ondate`.`DEL_FLAG` = 0 ORDER BY `znormativs_ondate`.`onDate` DESC LIMIT 1) AND FN_NUM_TO_INT("'
+        + vNumber + '")<=FN_NUM_TO_INT(po) AND FN_NUM_TO_INT("' + vNumber +
+        '")>=FN_NUM_TO_INT(s) AND REPLACE(SUBSTRING(s FROM 1 FOR 1), "E", "Е")=REPLACE(SUBSTRING("' + vNumber
+        + '" FROM 1 FOR 1), "E", "Е")' + ';';
+      qrTemp.Active := True;
+      qrTemp.First;
+      if not qrTemp.Eof then
+      begin
+        if qrTemp.RecordCount = 1 then
         begin
-          Active := False;
-          SQL.Clear;
-          SQL.Add('SELECT znormativs.ZNORMATIVS_ID, num as "Number", name as "Name",'#13 +
-            'CONCAT(s, " - ", po) AS DESCRIPTION,'#13 +
-            'CONCAT(coef, "% / ", coef_zp, "%") AS VALUE, coef as "Coef", coef_zp as "CoefZP", FN_NUM_TO_INT(s) as "From", FN_NUM_TO_INT(po) as "On" '
-            + 'FROM znormativs, znormativs_detail, znormativs_value ' +
-            'WHERE znormativs.ZNORMATIVS_ID=znormativs_detail.ZNORMATIVS_ID  ' +
-            'AND znormativs.ZNORMATIVS_ID = znormativs_value.ZNORMATIVS_ID ' + 'AND znormativs.DEL_FLAG = 0 '
-            + 'AND znormativs_value.ZNORMATIVS_ONDATE_ID = (' + '  SELECT znormativs_ondate.ID' +
-            '    FROM znormativs_ondate' +
-            '    WHERE `znormativs_ondate`.`onDate` <= (SELECT CONVERT(CONCAT(stavka.YEAR,"-",stavka.MONAT,"-01"), DATE) FROM stavka WHERE stavka.STAVKA_ID = (SELECT STAVKA_ID FROM smetasourcedata WHERE SM_ID='
-            + qrRatesExSM_ID.AsString + '))' +
-            '    AND `znormativs_ondate`.`DEL_FLAG` = 0 ORDER BY `znormativs_ondate`.`onDate` DESC LIMIT 1) AND FN_NUM_TO_INT("'
-            + vNumber + '")<=FN_NUM_TO_INT(po) AND FN_NUM_TO_INT("' + vNumber +
-            '")>=FN_NUM_TO_INT(s) AND REPLACE(SUBSTRING(s FROM 1 FOR 1), "E", "Е")=REPLACE(SUBSTRING("' +
-            vNumber + '" FROM 1 FOR 1), "E", "Е")' + ';');
-          Active := True;
-          First;
-          if not Eof then
+          edtWinterPrice.Text := qrTemp.FieldByName('Number').AsString + ' ' +
+            qrTemp.FieldByName('Name').AsString;
+          FastExecSQL('UPDATE card_rate_temp SET ZNORMATIVS_ID=:0 WHERE ID=:1',
+            VarArrayOf([qrTemp.FieldByName('ZNORMATIVS_ID').Value, qrRatesExID_TABLES.Value]));
+          qrRatesExZNORMATIVS_ID.AsInteger := qrTemp.FieldByName('ZNORMATIVS_ID').AsInteger;
+        end
+        else
+        // Если нашлось более одной записи, показываем диалог
+        begin
+          mes := 'Расценка "' + qrRatesExOBJ_CODE.AsString +
+            '" относится к нескольким настройкам зимнего удорожания. Укажите необходимый вид.';
+          Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+          if ShowSelectDialog('Выбор зимнего удорожания', qrTemp) then
           begin
-            if RecordCount = 1 then
-            begin
-              edtWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
-              qrRatesExZNORMATIVS_ID.AsInteger := FieldByName('ZNORMATIVS_ID').AsInteger;
-            end
-            else
-            // Если нашлось более одной записи, показываем диалог
-            begin
-              mes := 'Расценка "' + qrRatesExOBJ_CODE.AsString +
-                '" относится к нескольким настройкам зимнего удорожания. Укажите необходимый вид.';
-              Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
-              if ShowSelectDialog('Выбор зимнего удорожания' { , Pointer(qrTemp) } ) then
-              begin
-                edtWinterPrice.Text := FieldByName('Number').AsVariant + ' ' + FieldByName('Name').AsVariant;
-                FastExecSQL('UPDATE card_rate_temp SET ZNORMATIVS_ID=:0 WHERE ID=:1',
-                  VarArrayOf([qrTemp.FieldByName('ZNORMATIVS_ID').Value, qrRatesExID_TABLES.Value]));
-                qrRatesExZNORMATIVS_ID.AsInteger := qrTemp.FieldByName('ZNORMATIVS_ID').AsInteger;
-              end;
-            end;
+            edtWinterPrice.Text := qrTemp.FieldByName('Number').AsString + ' ' +
+              qrTemp.FieldByName('Name').AsString;
+            FastExecSQL('UPDATE card_rate_temp SET ZNORMATIVS_ID=:0 WHERE ID=:1',
+              VarArrayOf([qrTemp.FieldByName('ZNORMATIVS_ID').Value, qrRatesExID_TABLES.Value]));
+            qrRatesExZNORMATIVS_ID.AsInteger := qrTemp.FieldByName('ZNORMATIVS_ID').AsInteger;
+            CloseOpen(qrCalculations);
           end;
         end;
-    except
-      on e: Exception do
-        MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' + sLineBreak +
-          sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      end;
     end;
+  except
+    on e: Exception do
+      MessageBox(0, PChar('При получении значений зимнего удорожания возникла ошибка:' + sLineBreak +
+        sLineBreak + e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+  end;
 end;
 
 procedure TFormCalculationEstimate.TestOnNoDataNew(ADataSet: TDataSet);
@@ -7781,15 +7780,14 @@ begin
     // Подсвечиваем расценку с добавленными материалами/механизмами
     if qrRatesExADDED_COUNT.Value > 0 then
       Font.Color := clBlue;
-    //Подсветка отрицательного кол-ва
+    // Подсветка отрицательного кол-ва
     if qrRatesExOBJ_COUNT.Value < 0 then
       Font.Color := clRed;
-    //Подсветка отмеченных строк
+    // Подсветка отмеченных строк
     if qrRatesExMarkRow.Value > 0 then
       Font.Color := clPurple;
-    //Подсветка выделения
-    if (grRatesEx.SelectedRows.CurrentRowSelected) and
-       (grRatesEx.SelectedRows.Count > 1) then
+    // Подсветка выделения
+    if (grRatesEx.SelectedRows.CurrentRowSelected) and (grRatesEx.SelectedRows.Count > 1) then
       Font.Color := $008080FF;
 
     if Assigned(TMyDBGrid(grRatesEx).DataLink) and

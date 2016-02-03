@@ -361,7 +361,8 @@ begin
 end;
 
 procedure TfObjectsAndEstimates.PopupMenuObjectsEditClick(Sender: TObject);
-var fCardObject: TfCardObject;
+var
+  fCardObject: TfCardObject;
 begin
   if qrObjects.RecordCount <= 0 then
   begin
@@ -386,14 +387,15 @@ begin
 
   mRepair.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
   mDelete.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 0;
-  //mDeleteObject.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
+  // mDeleteObject.Visible := qrObjects.FieldByName('DEL_FLAG').AsInteger = 1;
   mObjectAccess.Visible := not qrObjects.IsEmpty and
     ((G_USER_ID = 1) OR (qrObjects.FieldByName('USER_ID').AsInteger = G_USER_ID) OR
     VarIsNull(qrObjects.FieldByName('USER_ID').Value));
 end;
 
 procedure TfObjectsAndEstimates.pmSSRTestClick(Sender: TObject);
-var ReportSSR: TFormReportSSR;
+var
+  ReportSSR: TFormReportSSR;
 begin
   ReportSSR := TFormReportSSR.Create(Self, IdObject);
   try
@@ -423,11 +425,16 @@ begin
   if Application.MessageBox('Копировать выбранный акт?', 'Смета', MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) <> IDYES
   then
     Exit;
-
-  DM.qrDifferent.SQL.Text := 'CALL CopyAct(:ID);';
-  DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('ID').AsInteger;
-  DM.qrDifferent.ExecSQL;
-  CloseOpen(qrActsEx, False);
+  FormMain.PanelCover.Visible := True;
+  FormWaiting.Show;
+  Application.ProcessMessages;
+  try
+    if GetCopySmeta(qrActsEx.FieldByName('MASTER_ID').AsInteger, True) then
+      CloseOpen(qrActsEx, False);
+  finally
+    FormWaiting.Close;
+    FormMain.PanelCover.Visible := False;
+  end;
 end;
 
 procedure TfObjectsAndEstimates.mCopyObjectClick(Sender: TObject);
@@ -444,7 +451,7 @@ begin
     tmpFileName := GetEnvironmentVariable('temp') + '\' + 'tmpobj.xml';
     if TFile.Exists(tmpFileName) then
       TFile.Delete(tmpFileName);
-    FormWaiting.lbProcess.caption := 'Копирование объекта: ' + qrObjects.FieldByName('Name').AsString;
+    FormWaiting.lbProcess.Caption := 'Копирование объекта: ' + qrObjects.FieldByName('Name').AsString;
 
     qrObjects.Edit;
     qrObjects.FieldByName('Name').AsString := old_name + '*';
@@ -464,7 +471,7 @@ begin
       TFile.Delete(tmpFileName);
     FormWaiting.Close;
     FormWaiting.Height := 88;
-    FormWaiting.lbProcess.caption := '';
+    FormWaiting.lbProcess.Caption := '';
     FormMain.PanelCover.Visible := False;
   end;
   FillingTableObjects;
@@ -490,7 +497,7 @@ begin
   except
     on e: Exception do
       MessageBox(0, PChar('При удалении акта возникла ошибка:' + sLineBreak + sLineBreak + e.message),
-        PWideChar(caption), MB_ICONERROR + mb_OK + mb_TaskModal);
+        PWideChar(Caption), MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
 end;
 
@@ -577,8 +584,8 @@ var
 begin
   if qrObjects.RecordCount <= 0 then
   begin
-    MessageBox(0, PChar('Нет объектов для удаления!'), PChar(Caption), MB_ICONINFORMATION + mb_OK +
-      mb_TaskModal);
+    MessageBox(0, PChar('Нет объектов для удаления!'), PChar(Caption),
+      MB_ICONINFORMATION + mb_OK + mb_TaskModal);
     Exit;
   end;
 
@@ -600,8 +607,8 @@ begin
   except
     on e: Exception do
       MessageBox(0, PChar('При удалении объекта возникла ошибка.' + sLineBreak +
-        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + e.message),
-        PChar(Caption), MB_ICONERROR + mb_OK + mb_TaskModal);
+        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + e.message), PChar(Caption),
+        MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
 
   FillingTableObjects;
@@ -820,7 +827,7 @@ begin
   if (not Assigned(FormCalculationEstimate)) then
     FormCalculationEstimate := TFormCalculationEstimate.Create(qrActsEx.FieldByName('MASTER_ID').AsInteger);
 
-  FormCalculationEstimate.lblForemanFIO.caption :=
+  FormCalculationEstimate.lblForemanFIO.Caption :=
     VarToStr(FastSelectSQLOne
     ('select CONCAT(IFNULL(foreman_first_name, ""), " ", IFNULL(foreman_name, ""), " ", IFNULL(foreman_second_name, ""))'#13
     + 'from smetasourcedata LEFT JOIN foreman ON smetasourcedata.foreman_id=foreman.foreman_id where SM_ID=:0',
@@ -848,7 +855,7 @@ begin
 
   if not ActReadOnly then
   begin
-    fKC6.caption := 'Выборка данных';
+    fKC6.Caption := 'Выборка данных';
     if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт акта',
       MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
       fKC6.MyShow(IdObject);
@@ -903,7 +910,7 @@ begin
   if (not Assigned(FormCalculationEstimate)) then
     FormCalculationEstimate := TFormCalculationEstimate.Create(qrActsEx.FieldByName('MASTER_ID').AsInteger);
 
-  FormCalculationEstimate.lblForemanFIO.caption :=
+  FormCalculationEstimate.lblForemanFIO.Caption :=
     VarToStr(FastSelectSQLOne
     ('select CONCAT(IFNULL(foreman_first_name, ""), " ", IFNULL(foreman_name, ""), " ", IFNULL(foreman_second_name, ""))'#13
     + 'from smetasourcedata LEFT JOIN foreman ON smetasourcedata.foreman_id=foreman.foreman_id where SM_ID=:0',
@@ -931,7 +938,7 @@ begin
 
   if not ActReadOnly and (qrActsEx.FieldByName('TYPE_ACT').AsInteger = 0) then
   begin
-    fKC6.caption := 'Выборка данных';
+    fKC6.Caption := 'Выборка данных';
     if MessageBox(0, PChar('Произвести выборку данных из сметы?'), 'Расчёт акта',
       MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrYes then
       fKC6.MyShow(IdObject);
@@ -1029,7 +1036,7 @@ begin
           XMLName := DirStr + '\Object' + IntToStr(ObjIndex) + '_' +
             StringReplace(qrObjects.FieldByName('Name').AsString, ' ', '_', [rfReplaceAll]) + '.xml';
           TmpStr := 'Экспорт объекта: ' + qrObjects.FieldByName('Name').AsString;
-          FormWaiting.lbProcess.caption := TmpStr;
+          FormWaiting.lbProcess.Caption := TmpStr;
           Application.ProcessMessages;
           ExportObject(qrObjects.Fields[0].AsInteger, XMLName);
         end;
@@ -1039,7 +1046,7 @@ begin
     finally
       FormWaiting.Close;
       FormWaiting.Height := 88;
-      FormWaiting.lbProcess.caption := '';
+      FormWaiting.lbProcess.Caption := '';
       FormMain.PanelCover.Visible := False;
 
       qrObjects.GotoBookmark(TempBookmark);
@@ -1068,14 +1075,14 @@ begin
     Application.ProcessMessages;
     try
       TmpStr := 'Экспорт объекта: ' + qrObjects.FieldByName('Name').AsString;
-      FormWaiting.lbProcess.caption := TmpStr;
+      FormWaiting.lbProcess.Caption := TmpStr;
       Application.ProcessMessages;
       ExportObject(qrObjects.Fields[0].AsInteger, XMLName);
       ShowMessage('Экспорт завершен.');
     finally
       FormWaiting.Close;
       FormWaiting.Height := 88;
-      FormWaiting.lbProcess.caption := '';
+      FormWaiting.lbProcess.Caption := '';
       FormMain.PanelCover.Visible := False;
     end;
   end;
@@ -1095,7 +1102,7 @@ begin
     Application.ProcessMessages;
     try
       TmpStr := 'Импорт из файла: ' + ExtractFileName(OpenDialog.FileName);
-      FormWaiting.lbProcess.caption := TmpStr;
+      FormWaiting.lbProcess.Caption := TmpStr;
       UpdateSpr := ImportObject(OpenDialog.FileName);
       ShowMessage('Импорт завершен успешно.');
     finally
@@ -1106,7 +1113,7 @@ begin
       end;
       FormWaiting.Close;
       FormWaiting.Height := 88;
-      FormWaiting.lbProcess.caption := '';
+      FormWaiting.lbProcess.Caption := '';
       FormMain.PanelCover.Visible := False;
     end;
     FillingTableObjects;
@@ -1137,7 +1144,7 @@ begin
       for I := Low(TmpFiles) to High(TmpFiles) do
       begin
         TmpStr := 'Импорт из файла: ' + ExtractFileName(TmpFiles[I]);
-        FormWaiting.lbProcess.caption := TmpStr;
+        FormWaiting.lbProcess.Caption := TmpStr;
         if ImportObject(TmpFiles[I]) then
           UpdateSpr := True;
       end;
@@ -1150,7 +1157,7 @@ begin
       end;
       FormWaiting.Close;
       FormWaiting.Height := 88;
-      FormWaiting.lbProcess.caption := '';
+      FormWaiting.lbProcess.Caption := '';
       FormMain.PanelCover.Visible := False;
     end;
     FillingTableObjects;
@@ -1179,7 +1186,7 @@ begin
   except
     on e: Exception do
       MessageBox(0, PChar('Запрос на получение данных об объектах не был выполнен.' + sLineBreak +
-        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + e.message), PWideChar(caption),
+        'Подробнее об ошибке смотрите ниже:' + sLineBreak + sLineBreak + e.message), PWideChar(Caption),
         MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
 end;
@@ -1217,7 +1224,7 @@ begin
       TextWarning := 'Вы действительно хотите удалить раздел ПТМ с номером: ' + NumberEstimate;
   end;
 
-  if MessageBox(0, PChar(TextWarning), PWideChar(caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo
+  if MessageBox(0, PChar(TextWarning), PWideChar(Caption), MB_ICONINFORMATION + MB_YESNO + mb_TaskModal) = mrNo
   then
     Exit;
 
@@ -1226,7 +1233,7 @@ begin
     CloseOpen(qrTreeData);
   except
     on e: Exception do
-      MessageBox(0, PChar('При удалении сметы возникла ошибка:' + sLineBreak + e.message), PWideChar(caption),
+      MessageBox(0, PChar('При удалении сметы возникла ошибка:' + sLineBreak + e.message), PWideChar(Caption),
         MB_ICONERROR + mb_OK + mb_TaskModal);
   end;
 end;
@@ -1275,9 +1282,9 @@ begin
   PMEstimateCollapse.Enabled := True;
 
   if qrTreeData.FieldByName('SM_TYPE').AsInteger = 3 then
-    PMEstimatesEdit.caption := 'Карточка ПТМ'
+    PMEstimatesEdit.Caption := 'Карточка ПТМ'
   else
-    PMEstimatesEdit.caption := 'Карточка сметы';
+    PMEstimatesEdit.Caption := 'Карточка сметы';
 
   if qrTreeData.FieldByName('SM_TYPE').AsInteger = 2 then
   begin
