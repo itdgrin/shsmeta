@@ -76,7 +76,7 @@ type
     MenuListsPartsEstimates: TMenuItem;
     MenuListsSectionsEstimates: TMenuItem;
     MenuListsTypesWorks: TMenuItem;
-    MenuListsTypesActs: TMenuItem;
+    mTypeAct: TMenuItem;
     MenuListsIndexesChangeCost: TMenuItem;
     MenuLists—ategoriesObjects: TMenuItem;
     N61: TMenuItem;
@@ -230,7 +230,6 @@ type
     procedure MenuOrganizationsClick(Sender: TObject);
     procedure MenuListsSectionsEstimatesClick(Sender: TObject);
     procedure MenuListsTypesWorksClick(Sender: TObject);
-    procedure MenuListsTypesActsClick(Sender: TObject);
     procedure MenuListsIndexesChangeCostClick(Sender: TObject);
     procedure MenuLists—ategoriesObjectsClick(Sender: TObject);
     procedure N61Click(Sender: TObject);
@@ -303,6 +302,7 @@ type
     procedure mTest_1Click(Sender: TObject);
     procedure mReportPrintClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure mTypeActClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -463,7 +463,7 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex,
   OXRandOPR, DataTransfer, CalculationSettings, ProgramSettings,
   ObjectsAndEstimates, OwnData, ReferenceData, PricesOwnData,
   CardObjectContractorServices, PricesReferenceData, AdditionData,
-  PartsEstimates, TypesActs, IndexesChangeCost, CategoriesObjects,
+  PartsEstimates, IndexesChangeCost, CategoriesObjects,
   KC6Journal, CalcResource, CalcTravel, UniDict, TravelList, Tools,
   fUpdate, EditExpression, dmReportU, Coef, WinterPrice, TariffDict,
   OXROPRSetup, OrganizationsEx, KC6, NormativDirectory, ForecastCostIndex,
@@ -711,7 +711,7 @@ end;
 
 procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  //if VarIsNull(dmSmReport.ADocument) then
+  // if VarIsNull(dmSmReport.ADocument) then
   dmSmReport.closeDocument(dmSmReport.ADocument);
 end;
 
@@ -1294,7 +1294,8 @@ begin
 end;
 
 procedure TFormMain.mTest_1Click(Sender: TObject);
-var Form: TTest_Form1;
+var
+  Form: TTest_Form1;
 begin
   Form := TTest_Form1.Create(Self);
   try
@@ -1985,7 +1986,7 @@ begin
       fKC6Journal.LocateObject(fObjectsAndEstimates.getCurObject);
     fKC6Journal.LocateEstimate(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').Value);
     fKC6Journal.tvEstimates.SelectNode(fObjectsAndEstimates.qrTreeData.FieldByName('SM_ID').Value)
-      .Expand(True);
+      .Expand(true);
     fKC6Journal.Show;
   end
   else
@@ -2004,7 +2005,7 @@ begin
         fKC6Journal := TfKC6Journal.Create(Self);
       fKC6Journal.LocateObject(FormCalculationEstimate.IdObject);
       fKC6Journal.LocateEstimate(FormCalculationEstimate.IdEstimate);
-      fKC6Journal.tvEstimates.SelectNode(FormCalculationEstimate.IdEstimate).Expand(True);
+      fKC6Journal.tvEstimates.SelectNode(FormCalculationEstimate.IdEstimate).Expand(true);
       fKC6Journal.Show;
     end;
   end;
@@ -2232,12 +2233,12 @@ begin
   end;
 end;
 
-// <-- ‚˚ÁÓ‚˚ ÓÚ˜ÂÚÓ‚ (¬‡‰ËÏ)
-
-procedure TFormMain.MenuListsTypesActsClick(Sender: TObject);
+procedure TFormMain.mTypeActClick(Sender: TObject);
 begin
-  FormTypesActs.ShowModal;
+//
 end;
+
+// <-- ‚˚ÁÓ‚˚ ÓÚ˜ÂÚÓ‚ (¬‡‰ËÏ)
 
 procedure TFormMain.MenuListsIndexesChangeCostClick(Sender: TObject);
 begin

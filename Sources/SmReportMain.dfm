@@ -590,8 +590,8 @@ object fSmReportMain: TfSmReportMain
         ', IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS))) AS TRAN' +
         'SP,*/'
       
-        '  SUM(IFNULL(f.`CNT`*f.`PROC_PODR`/100.0, COALESCE(MAT_COUNT, 0)' +
-        '*MAT_PROC_PODR/100.0)) AS CNT_F,'
+        '  SUM(IFNULL(f.`CNT`*f.`PROC_PODR`/100.0, /*COALESCE(MAT_COUNT, ' +
+        '0)*MAT_PROC_PODR/100.0*/0)) AS CNT_F,'
       
         '  IFNULL(f.`COAST`, IF(sm.`NDS`=1, IF(FCOAST_NDS<>0, FCOAST_NDS,' +
         ' COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)))' +
@@ -690,8 +690,8 @@ object fSmReportMain: TfSmReportMain
         ', IF(FTRANSP_NO_NDS<>0, FTRANSP_NO_NDS, TRANSP_NO_NDS))) AS TRAN' +
         'SP,*/'
       
-        '  SUM(IFNULL(f.`CNT`*f.`PROC_ZAC`/100.0, COALESCE(MAT_COUNT, 0)*' +
-        'MAT_PROC_ZAC/100.0)) AS CNT_F,'
+        '  SUM(IFNULL(f.`CNT`*f.`PROC_ZAC`/100.0, /*COALESCE(MAT_COUNT, 0' +
+        ')*MAT_PROC_ZAC/100.0*/0)) AS CNT_F,'
       
         '  IFNULL(f.`COAST`, IF(sm.`NDS`=1, IF(FCOAST_NDS<>0, FCOAST_NDS,' +
         ' COAST_NDS), IF(FCOAST_NO_NDS<>0, FCOAST_NO_NDS, COAST_NO_NDS)))' +

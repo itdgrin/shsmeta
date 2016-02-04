@@ -53,10 +53,8 @@ uses
   AdditionData in 'AdditionData.pas' {FormAdditionData},
   CardMaterial in 'CardMaterial.pas' {FormCardMaterial},
   CardOrganization in 'CardOrganization.pas' {fCardOrganization},
-  fTypesActs in 'fTypesActs.pas' {FrameTypesActs: TFrame},
   fIndexesChangeCost in 'fIndexesChangeCost.pas' {FrameIndexesChangeCost: TFrame},
   PartsEstimates in 'PartsEstimates.pas' {fPartsEstimates},
-  TypesActs in 'TypesActs.pas' {FormTypesActs},
   IndexesChangeCost in 'IndexesChangeCost.pas' {FormIndexesChangeCost},
   CategoriesObjects in 'CategoriesObjects.pas' {fCategoriesObjects},
   CardTypesActs in 'CardTypesActs.pas' {FormCardTypesActs},
@@ -143,7 +141,8 @@ uses
   SmReportParamSelect in 'SmReportParamSelect.pas' {fSmReportParamSelect},
   SmReportListSQL in 'SmReportListSQL.pas' {fSmReportListSQL},
   fReportSSR in 'fReportSSR.pas' {FormReportSSR},
-  C3 in 'C3.pas' {fC3};
+  C3 in 'C3.pas' {fC3},
+  TypeAct in 'TypeAct.pas' {fTypeAct};
 
 {$R *.res}
 var MHandle: THandle;
@@ -166,6 +165,7 @@ begin
   Application.CreateForm(TDM, DM);
   Application.CreateForm(TFormMain, FormMain);
   Application.CreateForm(TFormWaiting, FormWaiting);
+  Application.CreateForm(TdmSmReport, dmSmReport);
   Application.CreateForm(TFormRequisites, FormRequisites);
   Application.CreateForm(TFormSignatureSSR, FormSignatureSSR);
   Application.CreateForm(TFormSummaryCalculationSettings, FormSummaryCalculationSettings);
@@ -174,14 +174,12 @@ begin
   Application.CreateForm(TfCardEstimate, fCardEstimate);
   Application.CreateForm(TFormSaveEstimate, FormSaveEstimate);
   Application.CreateForm(TFormCardMaterial, FormCardMaterial);
-  Application.CreateForm(TFormTypesActs, FormTypesActs);
   Application.CreateForm(TFormCardTypesActs, FormCardTypesActs);
   Application.CreateForm(TFormCardIndexesChangeCost, FormCardIndexesChangeCost);
   Application.CreateForm(TFormIndexesChangeCost, FormIndexesChangeCost);
   Application.CreateForm(TfKC6, fKC6);
   Application.CreateForm(TdmReportF, dmReportF);
   Application.CreateForm(TfCoefficients, fCoefficients);
-  Application.CreateForm(TdmSmReport, dmSmReport);
   Application.Run;
 
   //«апуск Updater дл€ завершени€ обновлени€ приложени€
