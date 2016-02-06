@@ -3127,6 +3127,10 @@
         Caption = #1057#1072#1081#1090' '#1087#1088#1086#1075#1088#1072#1084#1084#1099
         OnClick = mN3Click
       end
+      object pmTestSlava: TMenuItem
+        Caption = #1058#1077#1089#1090' '#1057#1083#1072#1074#1072
+        OnClick = pmTestSlavaClick
+      end
     end
     object MenuHelp: TMenuItem
       Caption = #1057#1087#1088#1072#1074#1082#1072

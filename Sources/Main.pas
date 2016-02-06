@@ -186,6 +186,7 @@ type
     mTesting: TMenuItem;
     mRecucle1: TMenuItem;
     mReportPrint: TMenuItem;
+    pmTestSlava: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -302,6 +303,7 @@ type
     procedure mTest_1Click(Sender: TObject);
     procedure mReportPrintClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure pmTestSlavaClick(Sender: TObject);
     procedure mTypeActClick(Sender: TObject);
   private
     CountOpenWindows: integer;
@@ -475,7 +477,10 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex,
   System.Win.Registry,
   SerialKeyModule,
   fLicense, SmReportData,
-  uTestForRoma, SmReportMain;
+  uTestForRoma, SmReportMain,
+  IdHTTP,
+  IdGlobal,
+  IdCoderMIME;
 
 {$R *.dfm}
 
@@ -2383,6 +2388,74 @@ end;
 procedure TFormMain.PMRestoreOldBackupClick(Sender: TObject);
 begin
   LicenseAssigned(nil);
+end;
+
+const
+  {TestKey: array[0..31] of byte =
+    ($01, $23, $45, $67, $89, $ab, $cd, $ef,
+     $01, $12, $23, $34, $45, $56, $67, $78,
+     $89, $9a, $ab, $bc, $cd, $de, $ef, $f0,
+     $10, $32, $54, $76, $98, $ba, $dc, $fe);
+
+  TestDate: array[0..3] of LongWord =
+    ($35241302, $79685746, $bdac9b8a, $f1e0dfce);
+  TestDate1: array[0..3] of LongWord =
+    ($161824c8, $89e4d7f0, $a116ad20, $485d4e67);
+    }
+
+  TestDate: array[0..15] of byte =
+    (36, 42, 77, 37, 64, 73, 57, 56, 119, 85, 3, 71, 30, 89, 119, 69);
+  TestDate1: array[0..15] of byte =
+    (72, 98, 245, 166, 209, 131, 234, 19, 140, 141, 135, 142, 158, 1, 5, 154);
+
+procedure TFormMain.pmTestSlavaClick(Sender: TObject);
+var RC6: TRC6Encryptor;
+    ResDate, ResDate1: array[0..3] of LongWord;
+    TmByte: TBytes;
+    HTTP: TIdHTTP;
+    StrimPage: TMemoryStream;
+    TmpStr: string;
+begin
+
+  move(TestDate[0], ResDate1[0], Sizeof(ResDate1));
+  if ResDate1[0] = 0  then
+    Sleep(1);
+
+  SetLength(TmByte, 16);
+  move(TestDate[0], TmByte[0], Sizeof(TestDate));
+
+  HTTP := TIdHTTP.Create(nil);
+  HTTP.ConnectTimeout := 3000;
+  StrimPage := TMemoryStream.Create;
+  try
+      HTTP.HandleRedirects := true;
+      HTTP.Request.UserAgent:='Mozilla/5.0 (Windows NT 6.1) '+
+        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36';
+      HTTP.Request.Accept:='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+      HTTP.Request.AcceptLanguage:='ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,ar;q=0.2';
+      HTTP.Request.AcceptCharSet:='windows-1251,utf-8;q=0.7,*;q=0.7';
+
+      TmpStr := TIdEncoderMIME.EncodeBytes(TIdBytes(TmByte));
+      HTTP.Get('http://85.143.218.164:3113/api/v1/gen/rc6test_encrypt?in_data=' +
+        TIdEncoderMIME.EncodeBytes(TIdBytes(TmByte)), StrimPage);
+
+      StrimPage.SaveToFile('d:\1234567.txt');
+  finally
+    HTTP.Free;
+    StrimPage.Free;
+  end;
+
+  RC6 := TRC6Encryptor.Create(ConstKey);
+  try
+    TmByte := RC6.BytesEncrypt(TmByte);
+  finally
+    FreeAndNil(RC6);
+  end;
+  move(TmByte[0], ResDate[0], Sizeof(ResDate));
+  move(TestDate1[0], ResDate1[0], Sizeof(ResDate1));
+  if ResDate[0] = ResDate1[0] then
+    Sleep(1);
+
 end;
 
 // По горизонтали

@@ -42,6 +42,7 @@ type
     Total,
     Trud: Double;
     procedure CalcTotal;
+    procedure Summ(ARepSSRLine: TRepSSRLine);
   end;
 
   TFormReportSSR = class(TSmForm)
@@ -123,10 +124,10 @@ const SSRItems: array[0..12, 0..2] of string =
   (('90.1','СРЕДСТВА НА НЕПРЕДВИДЕННЫЕ РАБОТЫ И ЗАТРАТЫ','0'),
    ('90.11','ИТОГО С УЧЕТОМ НЕПРЕДВИДЕННЫХ','1'),
    ('90.12','НАЛОГИ И ОТЧИСЛЕНИЯ В СООТВЕТСТВИИ С ДЕЙСТВУЮЩИМ ЗАКОНОДАТЕЛЬСТВОМ НА ДАТУ РАЗРАБОТКИ СМЕТНОЙ ДОКУМЕНТАЦИИ','0'),
-   ('90.12.0.1','.       в т.ч.  Инновационный фонд','0'),
-   ('90.12.0.2','.       Налог от выручки при упрощенной системе налогообложения','0'),
-   ('90.12.0.3','.       НДС (для объектов не освобожденных от НДС)','0'),
-   ('90.12.0.4','.       Госпошлина','0'),
+   ('90.12.0.1','.   в т.ч. Инновационный фонд','0'),
+   ('90.12.0.2','.   Налог от выручки при упрощенной системе налогообложения','0'),
+   ('90.12.0.3','.   НДС (для объектов не освобожденных от НДС)','0'),
+   ('90.12.0.4','.   Госпошлина','0'),
    ('90.13','ИТОГО С УЧЕТОМ НАЛОГОВ','1'),
    ('90.14','СРЕДСТВА, УЧИТЫВАЮЩИЕ ПРИМЕНЕНИЕ ПРОГНОЗНЫХ ИНДЕКСОВ ЦЕН В СТРОИТЕЛЬСТВЕ','0'),
    ('90.15','ИТОГО ПО СВОДНОМУ СМЕТНОМУ РАСЧЕТУ','1'),
@@ -140,6 +141,23 @@ procedure TRepSSRLine.CalcTotal;
 begin
   Total := ZP + EMiM + Mat + MatTransp + OXROPR +
     PlanPrib + Devices + Transp + Other;
+end;
+
+procedure TRepSSRLine.Summ(ARepSSRLine: TRepSSRLine);
+begin
+  ZP := ZP + ARepSSRLine.ZP;
+  ZP5 := ZP5 + ARepSSRLine.ZP5;
+  EMiM := EMiM + ARepSSRLine.EMiM;
+  ZPMash := ZPMash + ARepSSRLine.ZPMash;
+  Mat := Mat + ARepSSRLine.Mat;
+  MatTransp := MatTransp + ARepSSRLine.MatTransp;
+  OXROPR := OXROPR + ARepSSRLine.OXROPR;
+  PlanPrib := PlanPrib + ARepSSRLine.PlanPrib;
+  Devices := Devices + ARepSSRLine.Devices;
+  Transp := Transp + ARepSSRLine.Transp;
+  Other := Other + ARepSSRLine.Other;
+  Total := Total + ARepSSRLine.Total;
+  Trud := Trud + ARepSSRLine.Trud;
 end;
 
 procedure TFormReportSSR.btnObjInfoClick(Sender: TObject);
@@ -409,7 +427,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '10.1';
-    AArray[I].Pers := 1.8;
+    AArray[I].Pers := 1; //??????
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -421,7 +439,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '10.2';
-    AArray[I].Pers := 0.09;
+    AArray[I].Pers := 0.09; //???????
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -433,7 +451,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '10.3';
-    AArray[I].Pers := 0.2;
+    AArray[I].Pers := 0.2; //????????????
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -445,7 +463,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '10.7';
-    AArray[I].Pers := 0.35;
+    AArray[I].Pers := 0.35; //????????????????
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -457,7 +475,14 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '90.1';
-    AArray[I].Pers := 3;
+    AArray[I].SprID := 4;
+
+    qrTemp.SQL.Text := 'select VALUE from ssrreserve where ID = :ID';
+    qrTemp.ParamByName('ID').Value := AArray[I].SprID;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      AArray[I].Pers := qrTemp.Fields[0].Value;
+    qrTemp.Active := False;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -779,12 +804,33 @@ var I: Integer;
     TmpLine,
     TmpLine1,
     AllLine,
+    Line190,
     Line795,
+    Line81,
+    Line82,
     Line895,
-    Line98: TRepSSRLine;
+    Line91,
+    Line92,
+    Line93,
+    Line94,
+    Line95,
+    Line96,
+    Line97,
+    Line98,
+    Line910,
+    Line911,
+    Line990,
+    Line995,
+    Line101,
+    Line103,
+    Line104,
+    Line105,
+    Line1195: TRepSSRLine;
     SmCount: Integer;
-    Bookmark82, Bookmark996: TBookMark;
-    Mat81: Double;
+    Bookmark82,
+    Bookmark996,
+    Bookmark9012,
+    TmpBookmark: TBookMark;
     KZp, KEmim, KEmimZp, KMr: Double;
 
 procedure NullLine();
@@ -886,17 +932,41 @@ begin
 end;
 
 begin
+  TmpLine := default(TRepSSRLine);
+  TmpLine1 := default(TRepSSRLine);
+  AllLine := default(TRepSSRLine);
+  Line190 := default(TRepSSRLine);
+  Line795 := default(TRepSSRLine);
+  Line81 := default(TRepSSRLine);
+  Line82 := default(TRepSSRLine);
+  Line895 := default(TRepSSRLine);
+  Line91 := default(TRepSSRLine);
+  Line92 := default(TRepSSRLine);
+  Line93 := default(TRepSSRLine);
+  Line94 := default(TRepSSRLine);
+  Line95 := default(TRepSSRLine);
+  Line96 := default(TRepSSRLine);
+  Line97 := default(TRepSSRLine);
+  Line98 := default(TRepSSRLine);
+  Line910 := default(TRepSSRLine);
+  Line911 := default(TRepSSRLine);
+  Line990 := default(TRepSSRLine);
+  Line995 := default(TRepSSRLine);
+  Line101 := default(TRepSSRLine);
+  Line103 := default(TRepSSRLine);
+  Line104 := default(TRepSSRLine);
+  Line105 := default(TRepSSRLine);
+  Line1195 := default(TRepSSRLine);
+
   mtSSR.DisableControls;
   try
-    TmpLine := default(TRepSSRLine);
-    SmCount := 0;
-    Mat81 := 0;
     //Полуение итогов по строкам
     mtSSR.Last;
     while not mtSSR.Bof do
     begin
       if (mtSSRSM_ID.Value = 0) and (mtSSRItog.Value = 0) then
       begin
+        NullLine(); //Зануляем все строки и главы
         //Для 8.1 расчет отличается
         if mtSSRNum.AsString <> '8.1' then
           CalcLineWithKoef(TmpLine);
@@ -908,12 +978,29 @@ begin
         if mtSSRNum.AsString = '9.96' then
           Bookmark996 := mtSSR.GetBookmark;
 
+        if mtSSRNum.AsString = '9.4' then
+          Line94 := TmpLine;
+        if mtSSRNum.AsString = '9.5' then
+          Line95 := TmpLine;
+        if mtSSRNum.AsString = '9.6' then
+          Line96 := TmpLine;
+        if mtSSRNum.AsString = '9.7' then
+          Line97 := TmpLine;
         if mtSSRNum.AsString = '9.8' then
           Line98 := TmpLine;
+        if mtSSRNum.AsString = '9.10' then
+          Line910 := TmpLine;
+        if mtSSRNum.AsString = '10.4' then
+          Line104 := TmpLine;
+        if mtSSRNum.AsString = '10.5' then
+          Line105 := TmpLine;
 
         TmpLine := default(TRepSSRLine);
         SmCount := 0;
       end;
+
+      if (mtSSRItog.Value > 0) then
+        NullLine(); //Зануляем все итоги
 
       if (mtSSRSM_ID.Value > 0) and (mtSSRSM_TYPE.Value = 2) then
       begin
@@ -942,6 +1029,12 @@ begin
         if mtSSRNum.AsString = '8.95' then
           Line895 := AllLine;
 
+        if mtSSRNum.AsString = '9.95' then
+          Line995 := AllLine;
+
+       if mtSSRNum.AsString = '11.95' then
+          Line1195 := AllLine;
+
         if mtSSRNum.AsString = '11.95' then
           Break;
       end;
@@ -951,6 +1044,12 @@ begin
         AssignLineIfNoNull(TmpLine);
         SummToLine(AllLine);
         TmpLine := default(TRepSSRLine);
+
+        if mtSSRNum.AsString = '1.90' then
+          Line190 := AllLine;
+
+        if mtSSRNum.AsString = '9.90' then
+          Line990 := AllLine;
       end;
 
       if (mtSSRSM_ID.Value = 0) and (mtSSRItog.Value = 0) then
@@ -960,7 +1059,6 @@ begin
         if mtSSRNum.AsString = '8.1' then
         begin
           NullLine();
-          TmpLine1 := default(TRepSSRLine);
           I := FindLineNom(FKoefArray, mtSSRNum.AsString);
           if I > -1 then
           begin
@@ -982,21 +1080,19 @@ begin
             end;
             qrTemp.Active := False;
 
-            TmpLine1.ZP := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KZp * FKVrem;
-            TmpLine1.EMiM := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KEmim * FKVrem;
-            TmpLine1.ZPMash := TmpLine1.EMiM * KEmimZp;
-            TmpLine1.Mat := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KMr * FKVrem;
+            Line81.ZP := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KZp * FKVrem;
+            Line81.EMiM := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KEmim * FKVrem;
+            Line81.ZPMash := Line81.EMiM * KEmimZp;
+            Line81.Mat := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KMr * FKVrem;
           end;
-          CalcLineWithKoef(TmpLine1);
-          Mat81 := TmpLine1.Mat;
-          AssignLineIfNoNull(TmpLine1);
+          CalcLineWithKoef(Line81);
+          AssignLineIfNoNull(Line81);
           SummToLine(TmpLine);
         end;
 
         if mtSSRNum.AsString = '9.1' then
         begin
           NullLine();
-          TmpLine1 := default(TRepSSRLine);
           I := FindLineNom(FKoefArray, mtSSRNum.AsString);
           if I > -1 then
           begin
@@ -1018,79 +1114,143 @@ begin
             end;
             qrTemp.Active := False;
 
-            TmpLine1.ZP := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KZp * FKZim;
-            TmpLine1.EMiM := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KEmim * FKZim;
-            TmpLine1.ZPMash := TmpLine1.EMiM * KEmimZp;
-            TmpLine1.Mat := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KMr * FKZim;
+            Line91.ZP := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KZp * FKZim;
+            Line91.EMiM := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KEmim * FKZim;
+            Line91.ZPMash := Line91.EMiM * KEmimZp;
+            Line91.Mat := (Line795.ZP - Line795.ZP5 + Line795.ZPMash) * KMr * FKZim;
           end;
-          CalcLineWithKoef(TmpLine1);
-          AssignLineIfNoNull(TmpLine1);
+          CalcLineWithKoef(Line91);
+          AssignLineIfNoNull(Line91);
           SummToLine(TmpLine);
         end;
 
         if mtSSRNum.AsString = '9.2' then
         begin
           NullLine();
-          TmpLine1 := default(TRepSSRLine);
-          TmpLine1.Other := (Line795.ZP + Line795.ZPMash +
+          Line92.Other := (Line795.ZP + Line795.ZPMash +
             Line98.ZP + Line98.ZPMash);
-          CalcLineWithKoef(TmpLine1);
-          AssignLineIfNoNull(TmpLine1);
+          CalcLineWithKoef(Line92);
+          AssignLineIfNoNull(Line92);
           SummToLine(TmpLine);
         end;
 
         if mtSSRNum.AsString = '9.3' then
         begin
           NullLine();
-          TmpLine1 := default(TRepSSRLine);
-          TmpLine1.Other := (Line795.ZP - Line795.ZP5 + Line795.ZPMash);
-          CalcLineWithKoef(TmpLine1);
-          AssignLineIfNoNull(TmpLine1);
+          Line93.Other := (Line795.ZP - Line795.ZP5 + Line795.ZPMash);
+          CalcLineWithKoef(Line93);
+          AssignLineIfNoNull(Line93);
           SummToLine(TmpLine);
         end;
 
         if mtSSRNum.AsString = '9.10' then
         begin
           NullLine();
-          TmpLine1 := default(TRepSSRLine);
-          TmpLine1.Other :=
+          Line910.Other :=
            (Line895.ZP - Line895.ZP5 + Line895.EMiM +
             Line895.Mat + Line895.MatTransp + Line895.OXROPR +
             Line895.PlanPrib + Line895.Other);
+          CalcLineWithKoef(Line910);
+          AssignLineIfNoNull(Line910);
+          SummToLine(TmpLine);
+        end;
+
+        if mtSSRNum.AsString = '10.1' then
+        begin
+          NullLine();
+          Line101.Other := (Line895.Total - Line895.ZP5);
+          CalcLineWithKoef(Line101);
+          AssignLineIfNoNull(Line101);
+          SummToLine(TmpLine);
+        end;
+
+        if mtSSRNum.AsString = '10.2' then
+        begin
+          NullLine();
+          TmpLine1 := default(TRepSSRLine);
+          TmpLine1.Other := (Line995.ZP - Line995.ZP5 + Line995.EMiM +
+            Line995.Mat + Line995.MatTransp + Line995.OXROPR + Line995.PlanPrib +
+            Line995.Other - (Line190.ZP  + Line190.EMiM + Line190.Mat +
+            Line190.MatTransp + Line190.OXROPR + Line190.PlanPrib + Line190.Other));
           CalcLineWithKoef(TmpLine1);
           AssignLineIfNoNull(TmpLine1);
           SummToLine(TmpLine);
         end;
 
-      end;
+        if mtSSRNum.AsString = '10.3' then
+        begin
+          NullLine();
+          Line103.Other := (Line995.ZP - Line995.ZP5 + Line995.EMiM +
+            Line995.Mat + Line995.MatTransp + Line995.OXROPR + Line995.PlanPrib +
+            Line995.Other);
+          CalcLineWithKoef(Line103);
+          AssignLineIfNoNull(Line103);
+          SummToLine(TmpLine);
+        end;
 
+        if mtSSRNum.AsString = '10.7' then
+        begin
+          NullLine();
+          TmpLine1 := default(TRepSSRLine);
+          TmpLine1.Other := (Line895.ZP + Line895.EMiM + Line895.Mat +
+            Line895.MatTransp + Line895.OXROPR + Line895.PlanPrib +
+            Line895.Other + Line990.Total);
+          CalcLineWithKoef(TmpLine1);
+          AssignLineIfNoNull(TmpLine1);
+          SummToLine(TmpLine);
+        end;
+      end;
       mtSSR.Next;
     end;
 
+    TmpBookmark := mtSSR.GetBookmark;
     //Расчет пункта 8.2  и 9.96
     if mtSSR.BookmarkValid(Bookmark82) then
     begin
       mtSSR.GotoBookmark(Bookmark82);
-      TmpLine := default(TRepSSRLine);
-      TmpLine.Mat := Mat81;
-      CalcLineWithKoef(TmpLine);
-      if (TmpLine.Total + TmpLine.Trud) > 0 then
-      begin
-        mtSSR.Edit;
-        AssignLine(TmpLine);
-        mtSSR.Post;
-      end;
+      Line82.Mat := Line81.Mat;
+      CalcLineWithKoef(Line82);
+      AssignLineIfNoNull(Line82);
       if mtSSR.BookmarkValid(Bookmark996) then
       begin
         mtSSR.GotoBookmark(Bookmark996);
+        TmpLine := Line82;   //Возможнно это лишнее
         CalcLineWithKoef(TmpLine);
-        if (TmpLine.Total + TmpLine.Trud) > 0 then
-        begin
-          mtSSR.Edit;
-          AssignLine(TmpLine);
-          mtSSR.Post;
-        end;
+        AssignLineIfNoNull(TmpLine);
       end;
+    end;
+    mtSSR.GotoBookmark(TmpBookmark);
+    mtSSR.FreeBookmark(TmpBookmark);
+
+    //Расчет оставшихся строк 90
+    while not mtSSR.Eof do
+    begin
+      if mtSSRNum.AsString = '90.1' then
+        begin
+          NullLine();
+          TmpLine := default(TRepSSRLine);
+          TmpLine.ZP := Line1195.ZP - Line1195.ZP5;
+          TmpLine.EMiM := Line1195.EMiM;
+          TmpLine.ZPMash := Line1195.ZPMash;
+          TmpLine.Mat := Line1195.Mat;
+          TmpLine.MatTransp := Line1195.MatTransp;
+          TmpLine.OXROPR := Line1195.OXROPR;
+          TmpLine.PlanPrib := Line1195.PlanPrib;
+          TmpLine.Devices := Line1195.Devices;
+          TmpLine.Transp := Line1195.Transp;
+          TmpLine.Other := Line1195.Other;
+          CalcLineWithKoef(TmpLine);
+          AssignLineIfNoNull(TmpLine);
+
+          mtSSR.Next;
+          if not mtSSR.Eof and (mtSSRNum.AsString = '90.11') then
+          begin
+            TmpLine.Summ(Line1195);
+            AssignLineIfNoNull(TmpLine);
+          end;
+          Continue;
+        end;
+      mtSSR.Next;
     end;
   finally
     mtSSR.EnableControls;
