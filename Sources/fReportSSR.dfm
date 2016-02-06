@@ -51,6 +51,7 @@ object FormReportSSR: TFormReportSSR
       OnDrawColumnCell = grSSRDrawColumnCell
       AutoAppend = False
       AutoSort = False
+      FixedCols = 1
       AlternateRowColor = 13290146
       SelectColumnsDialogStrings.Caption = 'Select columns'
       SelectColumnsDialogStrings.OK = '&OK'
@@ -67,7 +68,7 @@ object FormReportSSR: TFormReportSSR
           ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #8470
-          Width = 50
+          Width = 60
           Visible = True
         end
         item

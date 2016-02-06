@@ -121,7 +121,7 @@ uses Main, DataModule, CardObject, GlobsAndConst;
 {$R *.dfm}
 
 const SSRItems: array[0..12, 0..2] of string =
-  (('90.1','СРЕДСТВА НА НЕПРЕДВИДЕННЫЕ РАБОТЫ И ЗАТРАТЫ','0'),
+  (('90.10','СРЕДСТВА НА НЕПРЕДВИДЕННЫЕ РАБОТЫ И ЗАТРАТЫ','0'),
    ('90.11','ИТОГО С УЧЕТОМ НЕПРЕДВИДЕННЫХ','1'),
    ('90.12','НАЛОГИ И ОТЧИСЛЕНИЯ В СООТВЕТСТВИИ С ДЕЙСТВУЮЩИМ ЗАКОНОДАТЕЛЬСТВОМ НА ДАТУ РАЗРАБОТКИ СМЕТНОЙ ДОКУМЕНТАЦИИ','0'),
    ('90.12.0.1','.   в т.ч. Инновационный фонд','0'),
@@ -469,12 +469,12 @@ begin
     AddNewKoef(AArray[I]);
   end;
 
-  I := FindLineNom(AArray, '90.1');
+  I := FindLineNom(AArray, '90.10');
   if I = -1 then
   begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
-    AArray[I].LineNom := '90.1';
+    AArray[I].LineNom := '90.10';
     AArray[I].SprID := 4;
 
     qrTemp.SQL.Text := 'select VALUE from ssrreserve where ID = :ID';
@@ -483,6 +483,49 @@ begin
     if not qrTemp.IsEmpty then
       AArray[I].Pers := qrTemp.Fields[0].Value;
     qrTemp.Active := False;
+    AArray[I].Koef1 := 1;
+    AArray[I].Koef2 := 1;
+    AddNewKoef(AArray[I]);
+  end;
+
+  I := FindLineNom(AArray, '90.10');
+  if I = -1 then
+  begin
+    I := Length(AArray);
+    SetLength(AArray, Length(AArray) + 1);
+    AArray[I].LineNom := '90.10';
+    AArray[I].SprID := 4;
+
+    qrTemp.SQL.Text := 'select VALUE from ssrreserve where ID = :ID';
+    qrTemp.ParamByName('ID').Value := AArray[I].SprID;
+    qrTemp.Active := True;
+    if not qrTemp.IsEmpty then
+      AArray[I].Pers := qrTemp.Fields[0].Value;
+    qrTemp.Active := False;
+    AArray[I].Koef1 := 1;
+    AArray[I].Koef2 := 1;
+    AddNewKoef(AArray[I]);
+  end;
+
+  I := FindLineNom(AArray, '90.12.0.3');
+  if I = -1 then
+  begin
+    I := Length(AArray);
+    SetLength(AArray, Length(AArray) + 1);
+    AArray[I].LineNom := '90.12.0.3';
+    AArray[I].Pers := 0.2;
+    AArray[I].Koef1 := 1;
+    AArray[I].Koef2 := 1;
+    AddNewKoef(AArray[I]);
+  end;
+
+  I := FindLineNom(AArray, '90.12.0.4');
+  if I = -1 then
+  begin
+    I := Length(AArray);
+    SetLength(AArray, Length(AArray) + 1);
+    AArray[I].LineNom := '90.12.0.4';
+    AArray[I].Pers := 0.015;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -522,7 +565,6 @@ begin
   mtSSR.Post;
   UpdateTimer.Enabled := False;
   UpdateTimer.Enabled := True;
-
 end;
 
 //Процедура добавляет в расчет все необходимые строки и вытягивает инфу по сметам
@@ -800,7 +842,7 @@ end;
 
 //Выполняет последующие расчеты и суммации
 procedure TFormReportSSR.RecalcReport();
-var I: Integer;
+var I, J: Integer;
     TmpLine,
     TmpLine1,
     AllLine,
@@ -819,19 +861,27 @@ var I: Integer;
     Line98,
     Line910,
     Line911,
+    Line912,
     Line990,
     Line995,
     Line101,
     Line103,
     Line104,
     Line105,
-    Line1195: TRepSSRLine;
+    Line1195,
+    Line9011: TRepSSRLine;
     SmCount: Integer;
     Bookmark82,
     Bookmark996,
     Bookmark9012,
     TmpBookmark: TBookMark;
     KZp, KEmim, KEmimZp, KMr: Double;
+    TmpKoef, TmpKoef1: TKoefRec;
+
+function VarIsAssign(AValue: Variant): Boolean;
+begin
+  Result := VarIsOrdinal(AValue) or VarIsFloat(AValue);
+end;
 
 procedure NullLine();
 begin
@@ -899,11 +949,6 @@ end;
 procedure CalcLineWithKoef(var ALine: TRepSSRLine);
 var Perc, Koef1, Koef2: Double;
 
-function VarIsAssign(AValue: Variant): Boolean;
-begin
-  Result := VarIsOrdinal(AValue) or VarIsFloat(AValue);
-end;
-
 begin
   Perc := 1;
   Koef1 := 1;
@@ -950,6 +995,7 @@ begin
   Line98 := default(TRepSSRLine);
   Line910 := default(TRepSSRLine);
   Line911 := default(TRepSSRLine);
+  Line912 := default(TRepSSRLine);
   Line990 := default(TRepSSRLine);
   Line995 := default(TRepSSRLine);
   Line101 := default(TRepSSRLine);
@@ -957,6 +1003,7 @@ begin
   Line104 := default(TRepSSRLine);
   Line105 := default(TRepSSRLine);
   Line1195 := default(TRepSSRLine);
+  Line9011 := default(TRepSSRLine);
 
   mtSSR.DisableControls;
   try
@@ -988,8 +1035,10 @@ begin
           Line97 := TmpLine;
         if mtSSRNum.AsString = '9.8' then
           Line98 := TmpLine;
-        if mtSSRNum.AsString = '9.10' then
-          Line910 := TmpLine;
+        if mtSSRNum.AsString = '9.11' then
+          Line911 := TmpLine;
+        if mtSSRNum.AsString = '9.12' then
+          Line912 := TmpLine;
         if mtSSRNum.AsString = '10.4' then
           Line104 := TmpLine;
         if mtSSRNum.AsString = '10.5' then
@@ -1218,6 +1267,8 @@ begin
         CalcLineWithKoef(TmpLine);
         AssignLineIfNoNull(TmpLine);
       end;
+      mtSSR.FreeBookmark(Bookmark82);
+      mtSSR.FreeBookmark(Bookmark996);
     end;
     mtSSR.GotoBookmark(TmpBookmark);
     mtSSR.FreeBookmark(TmpBookmark);
@@ -1225,34 +1276,202 @@ begin
     //Расчет оставшихся строк 90
     while not mtSSR.Eof do
     begin
-      if mtSSRNum.AsString = '90.1' then
-        begin
-          NullLine();
-          TmpLine := default(TRepSSRLine);
-          TmpLine.ZP := Line1195.ZP - Line1195.ZP5;
-          TmpLine.EMiM := Line1195.EMiM;
-          TmpLine.ZPMash := Line1195.ZPMash;
-          TmpLine.Mat := Line1195.Mat;
-          TmpLine.MatTransp := Line1195.MatTransp;
-          TmpLine.OXROPR := Line1195.OXROPR;
-          TmpLine.PlanPrib := Line1195.PlanPrib;
-          TmpLine.Devices := Line1195.Devices;
-          TmpLine.Transp := Line1195.Transp;
-          TmpLine.Other := Line1195.Other;
-          CalcLineWithKoef(TmpLine);
-          AssignLineIfNoNull(TmpLine);
+      if mtSSRNum.AsString = '90.10' then
+      begin
+        NullLine();
+        TmpLine := default(TRepSSRLine);
+        TmpLine.ZP := Line1195.ZP - Line1195.ZP5;
+        TmpLine.EMiM := Line1195.EMiM;
+        TmpLine.ZPMash := Line1195.ZPMash;
+        TmpLine.Mat := Line1195.Mat;
+        TmpLine.MatTransp := Line1195.MatTransp;
+        TmpLine.OXROPR := Line1195.OXROPR;
+        TmpLine.PlanPrib := Line1195.PlanPrib;
+        TmpLine.Devices := Line1195.Devices;
+        TmpLine.Transp := Line1195.Transp;
+        TmpLine.Other := Line1195.Other;
+        CalcLineWithKoef(TmpLine);
+        AssignLineIfNoNull(TmpLine);
 
-          mtSSR.Next;
-          if not mtSSR.Eof and (mtSSRNum.AsString = '90.11') then
-          begin
-            TmpLine.Summ(Line1195);
-            AssignLineIfNoNull(TmpLine);
-          end;
-          Continue;
+        mtSSR.Next;
+        if not mtSSR.Eof and (mtSSRNum.AsString = '90.11') then
+        begin
+          TmpLine.Summ(Line1195);
+          Line9011 := TmpLine;
+          AssignLineIfNoNull(TmpLine);
         end;
+      end;
+
+      if mtSSRNum.AsString = '90.12' then
+      begin
+        Bookmark9012 := mtSSR.GetBookmark;
+
+        I := FindLineNom(FKoefArray, '90.10');
+        //Коэф по строке 90.10
+        TmpKoef.Pers := 1;
+        TmpKoef.Koef1 := 1;
+        TmpKoef.Koef2 := 1;
+        if I > -1 then
+        begin
+          if VarIsAssign(FKoefArray[I].Pers) then
+            TmpKoef.Pers := FKoefArray[I].Pers;
+          if VarIsAssign(FKoefArray[I].Koef1) then
+            TmpKoef.Koef1 := FKoefArray[I].Koef1;
+          if VarIsAssign(FKoefArray[I].Koef2) then
+            TmpKoef.Koef2 := FKoefArray[I].Koef2;
+        end;
+
+        TmpLine1 := default(TRepSSRLine);
+
+        mtSSR.Next;
+        if (I > -1 ) and not mtSSR.Eof and (mtSSRNum.AsString = '90.12.0.1') then
+        begin
+          J := FindLineNom(FKoefArray, '90.12.0.1');
+          TmpKoef1.Pers := 1;
+          TmpKoef1.Koef1 := 1;
+          TmpKoef1.Koef2 := 1;
+          if J > -1 then
+          begin
+            if VarIsAssign(FKoefArray[J].Pers) then
+              TmpKoef1.Pers := FKoefArray[J].Pers;
+            if VarIsAssign(FKoefArray[J].Koef1) then
+              TmpKoef1.Koef1 := FKoefArray[J].Koef1;
+            if VarIsAssign(FKoefArray[J].Koef2) then
+              TmpKoef1.Koef2 := FKoefArray[J].Koef2;
+          end;
+
+          TmpLine := default(TRepSSRLine);
+          NullLine();
+          TmpLine.Other :=
+            (Line795.ZP + Line795.EMiM + Line795.Mat +
+              Line795.MatTransp + Line795.OXROPR * 0.421 + Line795.Other +
+              Line81.Total + Line91.Total + Line92.Total + Line93.Total +
+              Line94.Total + Line95.Total + Line97.Total + Line98.Total) *
+            (1 + TmpKoef.Pers * TmpKoef.Koef1 * TmpKoef.Koef2) * TmpKoef1.Pers +
+            (Line910.Total + Line911.Total + Line912.Total) *
+            (1 + TmpKoef.Pers * TmpKoef.Koef1 * TmpKoef.Koef2) * TmpKoef1.Koef1/100 +
+            (Line101.Total + Line103.Total) * 0.85 *
+            (1 + TmpKoef.Pers * TmpKoef.Koef1 * TmpKoef.Koef2) * TmpKoef1.Koef2/100;
+          TmpLine.CalcTotal;
+          AssignLineIfNoNull(TmpLine);
+          TmpLine1.Summ(TmpLine);
+        end;
+
+        mtSSR.Next;
+        if (I > -1 ) and not mtSSR.Eof and (mtSSRNum.AsString = '90.12.0.2') then
+        begin
+          J := FindLineNom(FKoefArray, '90.12.0.2');
+          TmpKoef1.Pers := 1;
+          TmpKoef1.Koef1 := 1;
+          TmpKoef1.Koef2 := 1;
+          if J > -1 then
+          begin
+            if VarIsAssign(FKoefArray[J].Pers) then
+              TmpKoef1.Pers := FKoefArray[J].Pers;
+            if VarIsAssign(FKoefArray[J].Koef1) then
+              TmpKoef1.Koef1 := FKoefArray[J].Koef1;
+            if VarIsAssign(FKoefArray[J].Koef2) then
+              TmpKoef1.Koef2 := FKoefArray[J].Koef2;
+          end;
+
+          TmpLine := default(TRepSSRLine);
+          NullLine();
+          TmpLine.Other :=
+            (Line795.Total + Line81.Total + Line91.Total + Line92.Total +
+              Line93.Total + Line94.Total + Line95.Total + Line96.Total +
+              Line97.Total + Line98.Total + Line910.Total+ Line911.Total +
+               (Line795.Total - Line795.ZP5 + Line81.Total + Line91.Total +
+               Line92.Total + Line93.Total + Line94.Total + Line95.Total +
+               Line96.Total + Line97.Total + Line98.Total + Line910.Total+
+               Line911.Total) * (TmpKoef.Pers * TmpKoef.Koef1 * TmpKoef.Koef2) -
+               Line82.Total) * TmpKoef1.Pers;
+          TmpLine.CalcTotal;
+          AssignLineIfNoNull(TmpLine);
+          TmpLine1.Summ(TmpLine);
+        end;
+
+        mtSSR.Next;
+        if (I > -1 ) and not mtSSR.Eof and (mtSSRNum.AsString = '90.12.0.3') then
+        begin
+          J := FindLineNom(FKoefArray, '90.12.0.3');
+          TmpKoef1.Pers := 1;
+          TmpKoef1.Koef1 := 1;
+          TmpKoef1.Koef2 := 1;
+          if J > -1 then
+          begin
+            if VarIsAssign(FKoefArray[J].Pers) then
+              TmpKoef1.Pers := FKoefArray[J].Pers;
+            if VarIsAssign(FKoefArray[J].Koef1) then
+              TmpKoef1.Koef1 := FKoefArray[J].Koef1;
+            if VarIsAssign(FKoefArray[J].Koef2) then
+              TmpKoef1.Koef2 := FKoefArray[J].Koef2;
+          end;
+
+          TmpLine := default(TRepSSRLine);
+          NullLine();
+          TmpLine.Other :=
+            (Line9011.Total - Line82.Total - Line911.Total - Line104.Total -
+            Line105.Total - TmpLine1.Total {V901201+V901202}) * TmpKoef1.Pers;
+          TmpLine.CalcTotal;
+          AssignLineIfNoNull(TmpLine);
+          TmpLine1.Summ(TmpLine);
+        end;
+
+        mtSSR.Next;
+        if (I > -1 ) and not mtSSR.Eof and (mtSSRNum.AsString = '90.12.0.4') then
+        begin
+          J := FindLineNom(FKoefArray, '90.12.0.4');
+          TmpKoef1.Pers := 1;
+          TmpKoef1.Koef1 := 1;
+          TmpKoef1.Koef2 := 1;
+          if J > -1 then
+          begin
+            if VarIsAssign(FKoefArray[J].Pers) then
+              TmpKoef1.Pers := FKoefArray[J].Pers;
+            if VarIsAssign(FKoefArray[J].Koef1) then
+              TmpKoef1.Koef1 := FKoefArray[J].Koef1;
+            if VarIsAssign(FKoefArray[J].Koef2) then
+              TmpKoef1.Koef2 := FKoefArray[J].Koef2;
+          end;
+
+          TmpLine := default(TRepSSRLine);
+          NullLine();
+          TmpLine.Other :=
+            (Line795.Total - Line795.Devices - Line795.Transp + Line81.Total +
+            Line91.Total + Line92.Total + Line93.Total + Line94.Total +
+            Line95.Total + Line97.Total + Line98.Total +
+            (Line795.Total - Line795.ZP5 - Line795.Devices - Line795.Transp +
+            Line81.Total + Line91.Total + Line92.Total + Line93.Total +
+            Line94.Total + Line95.Total + Line96.Total + Line97.Total +
+            Line98.Total + Line910.Total+ Line911.Total) *
+            (TmpKoef.Pers * TmpKoef.Koef1 * TmpKoef.Koef2)) * TmpKoef1.Pers;
+          TmpLine.CalcTotal;
+          AssignLineIfNoNull(TmpLine);
+          TmpLine1.Summ(TmpLine);
+        end;
+
+        TmpBookmark := mtSSR.GetBookmark;
+        mtSSR.GotoBookmark(Bookmark9012);
+        NullLine();
+        AssignLineIfNoNull(TmpLine1);
+        mtSSR.GotoBookmark(TmpBookmark);
+        mtSSR.FreeBookmark(Bookmark9012);
+        mtSSR.FreeBookmark(TmpBookmark);
+
+        mtSSR.Next;
+        if not mtSSR.Eof and (mtSSRNum.AsString = '90.13') then
+        begin
+          TmpLine1.Summ(Line9011);
+          AssignLineIfNoNull(TmpLine1);
+        end;
+      end;
+
+
+
       mtSSR.Next;
     end;
   finally
+
     mtSSR.EnableControls;
   end;
 end;
@@ -1270,51 +1489,55 @@ begin
   // Процедура наложения стилей отрисовки таблиц по умолчанию
   with (Sender AS TJvDBGrid).Canvas do
   begin
-    Brush.Color := PS.BackgroundRows;
-    Font.Color := PS.FontRows;
-
-    headerLines := 1;
-    if not(dgTitles in (Sender AS TJvDBGrid).Options) then
-      headerLines := 0;
-
-    if (mtSSRSM_ID.Value = 0) then //Шапки глав
+    if Column.Index >= grSSR.FixedCols then
     begin
-      Brush.Color := $00E3E3CE;
-      if mtSSRSCID.Value = 0 then
+      Brush.Color := PS.BackgroundRows;
+      Font.Color := PS.FontRows;
+
+      headerLines := 1;
+      if not(dgTitles in (Sender AS TJvDBGrid).Options) then
+        headerLines := 0;
+
+      if (mtSSRSM_ID.Value = 0) then //Шапки глав
       begin
-        Font.Style := Font.Style + [fsBold];
-        Brush.Color := $00CACAA2;
+        Brush.Color := $00E3E3CE;
+        if mtSSRSCID.Value = 0 then
+        begin
+          Font.Style := Font.Style + [fsBold];
+          Brush.Color := $00CACAA2;
+        end;
       end;
-    end;
 
-    if (mtSSRItog.Value > 0) then  //Итоги
-    begin
-      Brush.Color := clNavy;
-      Font.Color := clWhite;
-      Font.Style := Font.Style + [fsBold];
-    end;
+      if (mtSSRItog.Value > 0) then  //Итоги
+      begin
+        Brush.Color := clNavy;
+        Font.Color := clWhite;
+        Font.Style := Font.Style + [fsBold];
+      end;
 
-    if (mtSSRSM_ID.Value > 0) and (mtSSRName.Index = Column.Index) then
-    begin
-      if (mtSSRSM_TYPE.Value = 2) then
-        Brush.Color := $00CACEC8
-      else
-        Brush.Color := $00DEE1E3;
-    end;
+      if (mtSSRSM_ID.Value > 0) and (mtSSRName.Index = Column.Index) then
+      begin
+        if (mtSSRSM_TYPE.Value = 2) then
+          Brush.Color := $00CACEC8
+        else
+          Brush.Color := $00DEE1E3;
+      end;
 
-    // Строка в фокусе
-    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
-      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + headerLines)) then
-    begin
-      Brush.Color := PS.BackgroundSelectRow;
-      Font.Color := PS.FontSelectRow;
-    end;
-    // Ячейка в фокусе
-    if (gdSelected in State) then
-    begin
-      Brush.Color := PS.BackgroundSelectCell;
-      Font.Color := PS.FontSelectCell;
-      Font.Style := Font.Style + [fsBold];
+      // Строка в фокусе
+      if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+        ((Sender AS TJvDBGrid).Row =
+          TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + headerLines)) then
+      begin
+        Brush.Color := PS.BackgroundSelectRow;
+        Font.Color := PS.FontSelectRow;
+      end;
+      // Ячейка в фокусе
+      if (gdSelected in State) then
+      begin
+        Brush.Color := PS.BackgroundSelectCell;
+        Font.Color := PS.FontSelectCell;
+        Font.Style := Font.Style + [fsBold];
+      end;
     end;
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);

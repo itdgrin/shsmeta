@@ -2480,7 +2480,7 @@
     Visible = False
   end
   object ArchivPanel: TPanel
-    Left = 240
+    Left = 241
     Top = 247
     Width = 361
     Height = 50
@@ -2497,8 +2497,8 @@
     OnMouseDown = UpdatePanelMouseDown
     object lbArchStatys: TLabel
       AlignWithMargins = True
-      Left = 51
-      Top = 6
+      Left = 53
+      Top = 7
       Width = 39
       Height = 16
       Margins.Left = 5
@@ -2706,13 +2706,14 @@
       Top = 25
       Width = 304
       Height = 20
+      BevelOuter = bvNone
       TabOrder = 0
       object pgArchiv: TProgressBar
         AlignWithMargins = True
-        Left = 3
-        Top = 3
-        Width = 298
-        Height = 14
+        Left = 2
+        Top = 2
+        Width = 300
+        Height = 16
         Margins.Left = 2
         Margins.Top = 2
         Margins.Right = 2
@@ -2721,6 +2722,10 @@
         Style = pbstMarquee
         MarqueeInterval = 70
         TabOrder = 0
+        ExplicitLeft = 3
+        ExplicitTop = 3
+        ExplicitWidth = 298
+        ExplicitHeight = 14
       end
     end
   end
