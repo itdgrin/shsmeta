@@ -1083,26 +1083,29 @@ begin
   // Процедура наложения стилей отрисовки таблиц по умолчанию
   with (Sender AS TJvDBGrid).Canvas do
   begin
-    Brush.Color := PS.BackgroundRows;
-    Font.Color := PS.FontRows;
-
-    headerLines := 1;
-    if not(dgTitles in (Sender AS TJvDBGrid).Options) then
-      headerLines := 0;
-
-    // Строка в фокусе
-    if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
-      ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + headerLines)) then
+    if Column.Index >= (Sender AS TJvDBGrid).FixedCols then
     begin
-      Brush.Color := PS.BackgroundSelectRow;
-      Font.Color := PS.FontSelectRow;
-    end;
-    // Ячейка в фокусе
-    if (gdSelected in State) then
-    begin
-      Brush.Color := PS.BackgroundSelectCell;
-      Font.Color := PS.FontSelectCell;
-      Font.Style := Font.Style + [fsBold];
+      Brush.Color := PS.BackgroundRows;
+      Font.Color := PS.FontRows;
+
+      headerLines := 1;
+      if not(dgTitles in (Sender AS TJvDBGrid).Options) then
+        headerLines := 0;
+
+      // Строка в фокусе
+      if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
+        ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + headerLines)) then
+      begin
+        Brush.Color := PS.BackgroundSelectRow;
+        Font.Color := PS.FontSelectRow;
+      end;
+      // Ячейка в фокусе
+      if (gdSelected in State) then
+      begin
+        Brush.Color := PS.BackgroundSelectCell;
+        Font.Color := PS.FontSelectCell;
+        Font.Style := Font.Style + [fsBold];
+      end;
     end;
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);

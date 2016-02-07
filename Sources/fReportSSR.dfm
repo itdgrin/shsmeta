@@ -13,6 +13,7 @@ object FormReportSSR: TFormReportSSR
   OldCreateOrder = False
   Position = poDesigned
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object pnlGrid: TPanel
@@ -42,6 +43,7 @@ object FormReportSSR: TFormReportSSR
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      PopupMenu = pmSSR
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
@@ -527,5 +529,13 @@ object FormReportSSR: TFormReportSSR
     OnTimer = UpdateTimerTimer
     Left = 480
     Top = 140
+  end
+  object pmSSR: TPopupMenu
+    Left = 344
+    Top = 196
+    object pmSSRIndex: TMenuItem
+      Caption = #1056#1072#1089#1095#1077#1090' '#1080#1085#1076#1077#1082#1089#1072#1094#1080#1080' '#1057#1057#1056
+      OnClick = pmSSRIndexClick
+    end
   end
 end

@@ -142,7 +142,8 @@ uses
   SmReportListSQL in 'SmReportListSQL.pas' {fSmReportListSQL},
   fReportSSR in 'fReportSSR.pas' {FormReportSSR},
   C3 in 'C3.pas' {fC3},
-  TypeAct in 'TypeAct.pas' {fTypeAct};
+  TypeAct in 'TypeAct.pas' {fTypeAct},
+  fReportSSRPI in 'fReportSSRPI.pas' {FormReportSSRPI};
 
 {$R *.res}
 var MHandle: THandle;

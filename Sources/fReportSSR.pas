@@ -15,7 +15,7 @@ uses
   FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   Vcl.Grids, Vcl.DBGrids,
   JvExDBGrids, JvDBGrid, FireDAC.Stan.Async, FireDAC.DApt, Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Buttons,
-  Vcl.ExtCtrls;
+  Vcl.ExtCtrls, fReportSSRPI, Vcl.Menus;
 
 type
   TKoefRec = record
@@ -85,6 +85,8 @@ type
     mtSSRSM_TYPE: TIntegerField;
     mtSSRItog: TSmallintField;
     UpdateTimer: TTimer;
+    pmSSR: TPopupMenu;
+    pmSSRIndex: TMenuItem;
     procedure qrObjectBeforeOpen(DataSet: TDataSet);
     procedure FormCreate(Sender: TObject);
     procedure btnObjInfoClick(Sender: TObject);
@@ -96,12 +98,15 @@ type
       var AllowEdit: Boolean);
     procedure UpdateTimerTimer(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure pmSSRIndexClick(Sender: TObject);
   private
     FObjectID: Integer;
     FKoefArray: TKoefArray;
     FKVrem,
     FKZim: Double;
     FKSocStrax: Double;
+    ReportSSRPI: TFormReportSSRPI;
 
     procedure GetSSRReport();
     procedure RecalcReport();
@@ -221,7 +226,14 @@ begin
 
   cbObjName.KeyValue := qrObject.FieldByName('obj_id').Value;
   cbObjName.OnClick(cbObjName);
+
+  ReportSSRPI := TFormReportSSRPI.Create(Self, FObjectID);
   GetSSRReport();
+end;
+
+procedure TFormReportSSR.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(ReportSSRPI);
 end;
 
 procedure TFormReportSSR.qrObjectBeforeOpen(DataSet: TDataSet);
@@ -565,6 +577,14 @@ begin
   mtSSR.Post;
   UpdateTimer.Enabled := False;
   UpdateTimer.Enabled := True;
+end;
+
+procedure TFormReportSSR.pmSSRIndexClick(Sender: TObject);
+begin
+  if ReportSSRPI.ShowModal = mrYes then
+  begin
+    GetSSRReport();
+  end;
 end;
 
 //Процедура добавляет в расчет все необходимые строки и вытягивает инфу по сметам
@@ -1465,8 +1485,6 @@ begin
           AssignLineIfNoNull(TmpLine1);
         end;
       end;
-
-
 
       mtSSR.Next;
     end;
