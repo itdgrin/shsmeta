@@ -414,7 +414,7 @@ end;
 
 procedure TfObjectsAndEstimates.mADD6KCClick(Sender: TObject);
 begin
-  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET FL_USE=1 WHERE SM_ID=:ID';
+  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET FL_USE=1 WHERE FN_getSortSM(SM_ID) LIKE CONCAT(FN_getSortSM(:ID), "%")';
   DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);
@@ -811,7 +811,8 @@ end;
 procedure TfObjectsAndEstimates.PMActsOpenClick(Sender: TObject);
 begin
   // Если тип акта "итоговыми суммами", то игнорируем
-  if qrActsEx.FieldByName('TYPE_ACT').AsInteger = 2 then
+  if (qrActsEx.FieldByName('TYPE_ACT').AsInteger = 2) or VarIsNull(qrActsEx.FieldByName('TYPE_ACT').Value)
+  then
     Exit;
 
   ActReadOnly := True;
@@ -896,8 +897,8 @@ end;
 procedure TfObjectsAndEstimates.PMActsEditClick(Sender: TObject);
 begin
   // Если тип акта "итоговыми суммами", то игнорируем
-  if (qrActsEx.FieldByName('TYPE_ACT').AsInteger = 2) OR VarIsNull(qrActsEx.FieldByName('MASTER_ID').Value) or
-    (qrActsEx.FieldByName('PARENT_ID').Value = 0) then
+  if VarIsNull(qrActsEx.FieldByName('TYPE_ACT').Value) OR (qrActsEx.FieldByName('TYPE_ACT').AsInteger = 2) OR
+    VarIsNull(qrActsEx.FieldByName('MASTER_ID').Value) or (qrActsEx.FieldByName('PARENT_ID').Value = 0) then
     Exit;
 
   if (LicenseAssigned(FormCalculationEstimate)) then
@@ -950,7 +951,7 @@ begin
   LicenseAssigned(nil);
   // Если не выделена смета или выделена, но не объектная
   PMActsOpen.Visible := not(VarIsNull(qrActsEx.FieldByName('MASTER_ID').Value)) and
-    (qrActsEx.FieldByName('PARENT_ID').Value <> 0);
+    (qrActsEx.FieldByName('PARENT_ID').Value <> 0) and not(VarIsNull(qrActsEx.FieldByName('TYPE_ACT').Value));
   PMActsAdd.Visible := not(qrObjects.IsEmpty);
   PMActsEdit.Visible := PMActsOpen.Visible;
   PMActsDelete.Visible := PMActsOpen.Visible and (qrActsEx.FieldByName('DELETED').AsInteger = 0);
@@ -980,7 +981,7 @@ end;
 
 procedure TfObjectsAndEstimates.mREM6KCClick(Sender: TObject);
 begin
-  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET FL_USE=0 WHERE SM_ID=:ID';
+  DM.qrDifferent.SQL.Text := 'UPDATE smetasourcedata SET FL_USE=0 WHERE FN_getSortSM(SM_ID) LIKE CONCAT(FN_getSortSM(:ID), "%")';
   DM.qrDifferent.ParamByName('ID').AsInteger := qrActsEx.FieldByName('MASTER_ID').AsInteger;
   DM.qrDifferent.ExecSQL;
   CloseOpen(qrActsEx, False);

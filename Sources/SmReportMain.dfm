@@ -487,7 +487,7 @@ object fSmReportMain: TfSmReportMain
       'LEFT JOIN summary_calculation d ON d.SM_ID IN'
       '  (SELECT SM_ID'
       '   FROM smetasourcedata '
-      '   WHERE DELETED=0 AND'
+      '   WHERE DELETED=0'
       '    ((smetasourcedata.SM_ID = s.SM_ID) OR'
       '           (smetasourcedata.PARENT_ID = s.SM_ID) OR '
       '           (smetasourcedata.PARENT_ID IN ('
@@ -506,8 +506,9 @@ object fSmReportMain: TfSmReportMain
       '  AND ((:FOREMAN IS NULL) OR (s.`FOREMAN_ID` = :FOREMAN))'
       '  AND ((:TYPE_ACT IS NULL) OR (s.`TYPE_ACT_ID` = :TYPE_ACT))'
       '  AND ((:CUST IS NULL) OR (o.CUST_ID = :CUST))'
-      '  AND s.DELETED=0'
-      '  AND s.ACT=1'
+      '  AND s.DELETED = 0'
+      '  AND s.FL_USE = 1'
+      '  AND s.ACT = 1'
       'GROUP BY s.SM_ID '
       'ORDER BY s.FOREMAN_ID, s.OBJ_ID, s.`TYPE_ACT`, s.`DATE`')
     Left = 222
@@ -601,6 +602,7 @@ object fSmReportMain: TfSmReportMain
       '  AND sm_m.`ACT` = 1 '
       '  AND sm_m.`SM_TYPE` = 2'
       '  AND sm_m.`DELETED` = 0'
+      '  AND sm_m.`FL_USE` = 1'
       
         '  AND ((:MONTH_YEAR IS NULL) OR (MONTH(sm_m.`DATE`)=MONTH(:MONTH' +
         '_YEAR) AND YEAR(sm_m.`DATE`)=YEAR(:MONTH_YEAR)))'
@@ -610,6 +612,7 @@ object fSmReportMain: TfSmReportMain
         'ERE PARENT_ID=sm_m.SM_ID))'
       '  AND sm.`ACT` = 1 '
       '  AND sm.`DELETED` = 0'
+      '  AND sm.`FL_USE` = 1'
       'INNER JOIN `materialcard` ON `materialcard`.`SM_ID`=sm.`SM_ID` '
       '  AND `materialcard`.`DELETED` = 0 '
       '  AND `materialcard`.MAT_PROC_PODR > 0'
@@ -647,6 +650,7 @@ object fSmReportMain: TfSmReportMain
       '  AND sm_m.`ACT` = 1 '
       '  AND sm_m.`SM_TYPE` = 2'
       '  AND sm_m.`DELETED` = 0'
+      '  AND sm_m.`FL_USE` = 1'
       
         '  AND ((:MONTH_YEAR IS NULL) OR (MONTH(sm_m.`DATE`)=MONTH(:MONTH' +
         '_YEAR) AND YEAR(sm_m.`DATE`)=YEAR(:MONTH_YEAR)))'
@@ -701,6 +705,7 @@ object fSmReportMain: TfSmReportMain
       '  AND sm_m.`ACT` = 1 '
       '  AND sm_m.`SM_TYPE` = 2'
       '  AND sm_m.`DELETED` = 0'
+      '  AND sm_m.`FL_USE` = 1'
       
         '  AND ((:MONTH_YEAR IS NULL) OR (MONTH(sm_m.`DATE`)=MONTH(:MONTH' +
         '_YEAR) AND YEAR(sm_m.`DATE`)=YEAR(:MONTH_YEAR)))'
@@ -710,6 +715,7 @@ object fSmReportMain: TfSmReportMain
         'ERE PARENT_ID=sm_m.SM_ID))'
       '  AND sm.`ACT` = 1 '
       '  AND sm.`DELETED` = 0'
+      '  AND sm.`FL_USE` = 1'
       'INNER JOIN `materialcard` ON `materialcard`.`SM_ID`=sm.`SM_ID` '
       '  AND `materialcard`.`DELETED` = 0 '
       '  AND `materialcard`.MAT_PROC_ZAC > 0'
@@ -747,6 +753,7 @@ object fSmReportMain: TfSmReportMain
       '  AND sm_m.`ACT` = 1 '
       '  AND sm_m.`SM_TYPE` = 2'
       '  AND sm_m.`DELETED` = 0'
+      '  AND sm_m.`FL_USE` = 1'
       
         '  AND ((:MONTH_YEAR IS NULL) OR (MONTH(sm_m.`DATE`)=MONTH(:MONTH' +
         '_YEAR) AND YEAR(sm_m.`DATE`)=YEAR(:MONTH_YEAR)))'

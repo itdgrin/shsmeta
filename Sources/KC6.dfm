@@ -290,20 +290,20 @@ object fKC6: TfKC6
         TitleRowHeight = 17
         Columns = <
           item
+            Expanded = False
+            FieldName = 'Number'
+            Title.Alignment = taCenter
+            Title.Caption = #8470' '#1087#1087
+            Width = 47
+            Visible = True
+          end
+          item
             Alignment = taCenter
             Expanded = False
             FieldName = 'date'
             Title.Alignment = taCenter
             Title.Caption = #1052#1077#1089#1103#1094
             Width = 70
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'Number'
-            Title.Alignment = taCenter
-            Title.Caption = #8470' '#1087#1087
-            Width = 121
             Visible = True
           end
           item
@@ -467,7 +467,10 @@ object fKC6: TfKC6
     FormatOptions.FmtDisplayDateTime = 'mmyyyy'
     FormatOptions.FmtDisplayDate = 'mmyyyy'
     SQL.Strings = (
-      'SELECT TRIM(sm.`NAME`) as docname, '
+      
+        'SELECT (SELECT NAME FROM smetasourcedata WHERE SM_ID=(SELECT PAR' +
+        'ENT_ID FROM smetasourcedata WHERE SM_ID=sm.PARENT_ID)) as docnam' +
+        'e, '
       
         '       (SELECT DATE FROM smetasourcedata WHERE SM_ID=(SELECT PAR' +
         'ENT_ID FROM smetasourcedata WHERE SM_ID=sm.PARENT_ID)) AS DATE,'
@@ -675,7 +678,8 @@ object fKC6: TfKC6
         ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
       
         'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
-        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0) '
+        'J_ID=:ID_OBJECT AND ACT=1 AND ((TYPE_ACT<>0) OR (DELETED=1) OR (' +
+        'FL_USE=0)))), 0) '
       
         '    WHEN 2 THEN IFNULL((SELECT SUM(a.MAT_COUNT) FROM `materialca' +
         'rd` a WHERE a.`ID`=mat.`ID` AND a.`SM_ID` NOT IN '
@@ -685,7 +689,8 @@ object fKC6: TfKC6
         ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
       
         'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
-        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
+        'J_ID=:ID_OBJECT AND ACT=1 AND ((TYPE_ACT<>0) OR (DELETED=1) OR (' +
+        'FL_USE=0)))), 0)'
       
         '    WHEN 3 THEN IFNULL((SELECT SUM(a.MECH_COUNT) FROM `mechanizm' +
         'card` a WHERE a.`ID`=mech.`ID` AND a.`SM_ID` NOT IN '
@@ -695,7 +700,8 @@ object fKC6: TfKC6
         ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
       
         'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
-        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
+        'J_ID=:ID_OBJECT AND ACT=1 AND ((TYPE_ACT<>0) OR (DELETED=1) OR (' +
+        'FL_USE=0)))), 0)'
       
         '    WHEN 4 THEN IFNULL((SELECT SUM(a.DEVICE_COUNT) FROM `devices' +
         'card` a WHERE a.`ID`=dev.`ID` AND a.`SM_ID` NOT IN '
@@ -705,7 +711,8 @@ object fKC6: TfKC6
         ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
       
         'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
-        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
+        'J_ID=:ID_OBJECT AND ACT=1 AND ((TYPE_ACT<>0) OR (DELETED=1) OR (' +
+        'FL_USE=0)))), 0)'
       
         '    WHEN 5 THEN IFNULL((SELECT SUM(a.DUMP_COUNT) FROM `dumpcard`' +
         ' a WHERE a.`ID`=dmp.`ID` AND a.`SM_ID` NOT IN '
@@ -715,7 +722,8 @@ object fKC6: TfKC6
         ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
       
         'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
-        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
+        'J_ID=:ID_OBJECT AND ACT=1 AND ((TYPE_ACT<>0) OR (DELETED=1) OR (' +
+        'FL_USE=0)))), 0)'
       
         '    WHEN 6 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
         'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
@@ -725,7 +733,8 @@ object fKC6: TfKC6
         ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
       
         'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
-        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
+        'J_ID=:ID_OBJECT AND ACT=1 AND ((TYPE_ACT<>0) OR (DELETED=1) OR (' +
+        'FL_USE=0)))), 0)'
       
         '    WHEN 7 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
         'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
@@ -735,7 +744,8 @@ object fKC6: TfKC6
         ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
       
         'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
-        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
+        'J_ID=:ID_OBJECT AND ACT=1 AND ((TYPE_ACT<>0) OR (DELETED=1) OR (' +
+        'FL_USE=0)))), 0)'
       
         '    WHEN 8 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
         'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
@@ -745,7 +755,8 @@ object fKC6: TfKC6
         ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
       
         'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
-        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
+        'J_ID=:ID_OBJECT AND ACT=1 AND ((TYPE_ACT<>0) OR (DELETED=1) OR (' +
+        'FL_USE=0)))), 0)'
       
         '    WHEN 9 THEN IFNULL((SELECT SUM(a.TRANSP_COUNT) FROM `transpc' +
         'ard` a WHERE a.`ID`=tr.`ID` AND a.`SM_ID` NOT IN '
@@ -755,7 +766,8 @@ object fKC6: TfKC6
         ' = :ID_ACT)) AND a.`SM_ID` <> sm.`SM_ID`'
       
         'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
-        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
+        'J_ID=:ID_OBJECT AND ACT=1 AND ((TYPE_ACT<>0) OR (DELETED=1) OR (' +
+        'FL_USE=0)))), 0)'
       
         '    WHEN 10 THEN IFNULL((SELECT SUM(a.E1820_COUNT) FROM `data_ro' +
         'w` a WHERE a.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND a.`SM_ID` NOT I' +
@@ -767,7 +779,8 @@ object fKC6: TfKC6
         '_ID=a.`SM_ID`) = d.`SM_ID`'
       
         'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
-        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
+        'J_ID=:ID_OBJECT AND ACT=1 AND ((TYPE_ACT<>0) OR (DELETED=1) OR (' +
+        'FL_USE=0)))), 0)'
       
         '    WHEN 11 THEN IFNULL((SELECT SUM(a.E1820_COUNT) FROM `data_ro' +
         'w` a WHERE a.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND a.`SM_ID` NOT I' +
@@ -779,7 +792,8 @@ object fKC6: TfKC6
         '_ID=a.`SM_ID`) = d.`SM_ID`'
       
         'AND a.SM_ID NOT IN (SELECT SM_ID FROM `smetasourcedata` WHERE OB' +
-        'J_ID=:ID_OBJECT AND ACT=1 AND TYPE_ACT<>0)), 0)'
+        'J_ID=:ID_OBJECT AND ACT=1 AND ((TYPE_ACT<>0) OR (DELETED=1) OR (' +
+        'FL_USE=0)))), 0)'
       '  END AS CntDONE, '
       '/* '#1055#1088#1086#1094#1077#1085#1090#1086#1074#1082#1072' */'
       '  IFNULL('
@@ -883,7 +897,6 @@ object fKC6: TfKC6
       '  WHERE sm.`DELETED` = 0 AND'
       '        sm.`ACT` = 0 AND '
       '        sm.`OBJ_ID`=:ID_OBJECT'
-      '                '
       '  ORDER BY SORT_ID, NUM_ROW, ID_TYPE_DATA;')
     Left = 481
     Top = 176

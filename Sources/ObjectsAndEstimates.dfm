@@ -415,6 +415,8 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           RowSelect = True
           OnCustomDrawItem = tvEstimatesCustomDrawItem
           Mirror = False
+          ExplicitLeft = -6
+          ExplicitTop = 1
         end
       end
       object PanelActs: TPanel
@@ -880,8 +882,8 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     UpdateOptions.KeyFields = 'ID'
     SQL.Strings = (
       
-        'SELECT (YEAR(date)*12+MONTH(date)) AS PARENT_ID, SM_ID AS MASTER' +
-        '_ID, '
+        'SELECT IF(PERFOM_ID=1, 1000000000, 0) + (YEAR(date)*12+MONTH(dat' +
+        'e)) AS PARENT_ID, SM_ID AS MASTER_ID, '
       
         '  CONCAT(IF(FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), IFNULL(TRIM(name), ""), I' +
         'F(DELETED=1, "-", "")) AS ITEAM_NAME,'
@@ -928,21 +930,47 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         'ID FROM user_access WHERE DOC_TYPE_ID=1 AND MASTER_ID=SM_ID AND ' +
         '((USER_ID=0) OR (USER_ID=:USER_ID)) LIMIT 1))'
       'GROUP BY (YEAR(date)*12+MONTH(date))'
+      ''
+      'UNION ALL'
+      ''
+      'SELECT DISTINCT (YEAR(date)*12+MONTH(date)) AS PARENT_ID, '
+      '1000000000+(YEAR(date)*12+MONTH(date)) AS MASTER_ID,'
+      '"'#1057#1091#1073#1087#1086#1076#1088#1103#1076'" AS ITEAM_NAME,'
+      
+        '0 AS DELETED, NULL AS FL_USE, DATE, NULL AS NAME, NULL AS TYPE_A' +
+        'CT, NULL AS USER_ID'
+      'FROM smetasourcedata'
+      'WHERE SM_TYPE=2'
+      '  AND OBJ_ID=:OBJ_ID'
+      '  AND ((DELETED=0) OR (:SHOW_DELETED=1))'
+      '  AND ACT=1'
+      '  AND PERFOM_ID = 1'
+      
+        '  AND ((:USER_ID=1) OR (USER_ID=:USER_ID) OR EXISTS(SELECT USER_' +
+        'ID FROM user_access WHERE DOC_TYPE_ID=1 AND MASTER_ID=SM_ID AND ' +
+        '((USER_ID=0) OR (USER_ID=:USER_ID)) LIMIT 1))'
+      'GROUP BY (YEAR(date)*12+MONTH(date))'
       'ORDER BY DATE, 3')
     Left = 377
     Top = 344
     ParamData = <
       item
         Name = 'OBJ_ID'
+        DataType = ftString
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'SHOW_DELETED'
+        DataType = ftBCD
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'USER_ID'
+        DataType = ftBCD
         ParamType = ptInput
+        Value = Null
       end>
   end
   object qrObjects: TFDQuery
