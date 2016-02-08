@@ -876,7 +876,6 @@ begin
   FormCardAct.FormKind := kdInsert;
   FormCardAct.cbbType.ItemIndex := (Sender as TMenuItem).Tag;
   FormCardAct.ShowModal;
-  // OpenAct(0);
 end;
 
 procedure TfObjectsAndEstimates.PMActsDeleteClick(Sender: TObject);

@@ -13,10 +13,12 @@ object fSmReportParamSelect: TfSmReportParamSelect
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poMainFormCenter
   ShowHint = True
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 13
   object pnlBot: TPanel
@@ -72,6 +74,7 @@ object fSmReportParamSelect: TfSmReportParamSelect
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
     OnDblClick = grParamListDblClick
+    OnKeyDown = grParamListKeyDown
     AutoAppend = False
     ScrollBars = ssVertical
     AutoSizeColumns = True
@@ -109,46 +112,17 @@ object fSmReportParamSelect: TfSmReportParamSelect
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
-    object btnSearch: TSpeedButton
-      AlignWithMargins = True
-      Left = 216
-      Top = 2
-      Width = 66
-      Height = 23
-      Margins.Top = 2
-      Margins.Right = 2
-      Margins.Bottom = 2
-      Align = alRight
-      Caption = #1055#1086#1080#1089#1082
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      Glyph.Data = {
-        F6000000424DF600000000000000760000002800000010000000100000000100
-        04000000000080000000C40E0000C40E00001000000000000000000000000000
-        8000008000000080800080000000800080008080000080808000C0C0C0000000
-        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00888888888888
-        8888888888888888888800000888880000080F000888880F00080F000888880F
-        0008000000080000000800F000000F00000800F000800F00000800F000800F00
-        00088000000000000088880F00080F0008888800000800000888888000888000
-        88888880F08880F0888888800088800088888888888888888888}
-      ParentFont = False
-      OnClick = btnSearchClick
-    end
     object edtSearch: TEdit
       AlignWithMargins = True
       Left = 3
       Top = 3
-      Width = 210
+      Width = 278
       Height = 21
-      Margins.Right = 0
       Align = alClient
       TabOrder = 0
       TextHint = #1042#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090' '#1076#1083#1103' '#1087#1086#1080#1089#1082#1072'...'
       OnChange = edtSearchChange
-      OnKeyDown = edtSearchKeyDown
+      ExplicitWidth = 210
     end
   end
   object qrParamList: TFDQuery

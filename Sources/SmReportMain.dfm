@@ -504,7 +504,7 @@ object fSmReportMain: TfSmReportMain
         '  AND ((:MONTH_YEAR IS NULL) OR (MONTH(s.DATE)=MONTH(:MONTH_YEAR' +
         ') AND YEAR(s.DATE)=YEAR(:MONTH_YEAR)))'
       '  AND ((:FOREMAN IS NULL) OR (s.`FOREMAN_ID` = :FOREMAN))'
-      '  AND ((:TYPE_ACT IS NULL) OR (s.`TYPE_ACT` = :TYPE_ACT))'
+      '  AND ((:TYPE_ACT IS NULL) OR (s.`TYPE_ACT_ID` = :TYPE_ACT))'
       '  AND ((:CUST IS NULL) OR (o.CUST_ID = :CUST))'
       '  AND s.DELETED=0'
       '  AND s.ACT=1'

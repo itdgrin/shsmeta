@@ -19,12 +19,11 @@ type
     btnOk: TBitBtn;
     pnlTop: TPanel;
     edtSearch: TEdit;
-    btnSearch: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure grParamListDblClick(Sender: TObject);
-    procedure btnSearchClick(Sender: TObject);
     procedure edtSearchChange(Sender: TObject);
-    procedure edtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure grParamListKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
   public
     class function Select(AListIDorListName, ACodeLocate: Variant; MultiSelect: Boolean = False): Variant;
@@ -34,26 +33,10 @@ implementation
 
 {$R *.dfm}
 
-procedure TfSmReportParamSelect.btnSearchClick(Sender: TObject);
-begin
-  qrParamList.Filter := 'UPPER(VALUE) LIKE UPPER(''%' + Trim(edtSearch.Text) + '%'')';
-  if (btnSearch.Tag = 0) and qrParamList.FindFirst then
-    btnSearch.Tag := 1
-  else if not qrParamList.FindNext then
-  begin
-    btnSearch.Tag := 0;
-  end;
-end;
-
 procedure TfSmReportParamSelect.edtSearchChange(Sender: TObject);
 begin
-  btnSearch.Tag := 0;
-end;
-
-procedure TfSmReportParamSelect.edtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  if Key = VK_RETURN then
-    btnSearch.Click;
+  qrParamList.Filter := 'UPPER(VALUE) LIKE UPPER(''%' + Trim(edtSearch.Text) + '%'')';
+  qrParamList.Filtered := True;
 end;
 
 procedure TfSmReportParamSelect.FormCreate(Sender: TObject);
@@ -87,9 +70,25 @@ begin
     qrParamList.Locate('CODE', InitParams[1], []);
 end;
 
+procedure TfSmReportParamSelect.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if ActiveControl = edtSearch then
+    case Key of
+      VK_UP:
+        qrParamList.Prior;
+      VK_DOWN:
+        qrParamList.Next;
+    end;
+end;
+
 procedure TfSmReportParamSelect.grParamListDblClick(Sender: TObject);
 begin
   ModalResult := mrOk;
+end;
+
+procedure TfSmReportParamSelect.grParamListKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  ActiveControl := edtSearch;
 end;
 
 class function TfSmReportParamSelect.Select(AListIDorListName, ACodeLocate: Variant;
@@ -108,7 +107,7 @@ begin
     begin
       if MultiSelect then
       begin
-        //TODO режим с мультиселектом
+        // TODO режим с мультиселектом
       end
       else
         Result := VarArrayOf([form.qrParamList.FieldByName('CODE').Value,

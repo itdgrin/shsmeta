@@ -2722,10 +2722,6 @@
         Style = pbstMarquee
         MarqueeInterval = 70
         TabOrder = 0
-        ExplicitLeft = 3
-        ExplicitTop = 3
-        ExplicitWidth = 298
-        ExplicitHeight = 14
       end
     end
   end

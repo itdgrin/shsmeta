@@ -785,12 +785,12 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       ImageIndex = 39
       object PMActsAdd: TMenuItem
-        Caption = #1040#1082#1090
+        Caption = #1040#1082#1090' '#1087#1086' '#1089#1084#1077#1090#1077
         OnClick = PMActsAddClick
       end
       object mN10: TMenuItem
         Tag = 1
-        Caption = #1040#1082#1090' '#1089#1091#1073#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
+        Caption = #1040#1082#1090' '#1085#1072' '#1076#1086#1087'. '#1088#1072#1073#1086#1090#1099
         OnClick = PMActsAddClick
       end
       object mN11: TMenuItem

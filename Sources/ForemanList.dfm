@@ -2,7 +2,7 @@ object fForemanList: TfForemanList
   Left = 0
   Top = 0
   Caption = #1057#1087#1080#1089#1086#1082' '#1087#1088#1086#1088#1072#1073#1086#1074
-  ClientHeight = 451
+  ClientHeight = 447
   ClientWidth = 351
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -25,7 +25,7 @@ object fForemanList: TfForemanList
     Left = 3
     Top = 3
     Width = 345
-    Height = 380
+    Height = 376
     Align = alClient
     DataSource = dsMain
     Font.Charset = DEFAULT_CHARSET
@@ -40,7 +40,6 @@ object fForemanList: TfForemanList
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
-    OnDrawColumnCell = grMainDrawColumnCell
     IniStorage = FormStorage
     AutoSizeColumns = True
     SelectColumnsDialogStrings.Caption = 'Select columns'
@@ -87,7 +86,7 @@ object fForemanList: TfForemanList
   object dbnvgr1: TDBNavigator
     AlignWithMargins = True
     Left = 3
-    Top = 389
+    Top = 385
     Width = 345
     Height = 25
     DataSource = dsMain
@@ -109,10 +108,11 @@ object fForemanList: TfForemanList
     ShowHint = True
     TabOrder = 1
     TabStop = True
+    ExplicitTop = 389
   end
   object pnlSelect: TPanel
     Left = 0
-    Top = 417
+    Top = 413
     Width = 351
     Height = 34
     Align = alBottom
@@ -123,6 +123,7 @@ object fForemanList: TfForemanList
     Font.Style = []
     ParentFont = False
     TabOrder = 2
+    ExplicitTop = 417
     object btn1: TBitBtn
       Left = 271
       Top = 4
@@ -198,7 +199,7 @@ object fForemanList: TfForemanList
   object FormStorage: TJvFormStorage
     AppStorage = FormMain.AppIni
     AppStoragePath = '%FORM_NAME%\'
-    Options = []
+    Options = [fpSize]
     StoredValues = <>
     Left = 32
     Top = 224

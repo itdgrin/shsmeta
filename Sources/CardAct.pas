@@ -6,40 +6,60 @@ uses Windows, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls, DB, FireDA
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Mask,
   JvExMask, JvToolEdit, JvDBControls, Vcl.DBCtrls, Tools, Vcl.Buttons, System.Variants, System.DateUtils,
-  Vcl.Dialogs, System.UITypes;
+  Vcl.Dialogs, System.UITypes, JvExControls, JvDBLookup;
 
 type
   TfCardAct = class(TSmForm)
-    PanelDate: TPanel;
-    PanelName: TPanel;
-    PanelDescription: TPanel;
-    LabelDate: TLabel;
-    LabelName: TLabel;
-    LabelDescription: TLabel;
     ButtonSave: TButton;
-    ButtonClose: TButton;
     Bevel: TBevel;
     qrTemp: TFDQuery;
-    edDate: TJvDBDateEdit;
     qrAct: TFDQuery;
     dsAct: TDataSource;
-    dbmmoDESCRIPTION: TDBMemo;
-    dbedtNAME: TDBEdit;
-    pnl1: TPanel;
+    qrMain: TFDQuery;
+    btnClose: TButton;
+    lblDate: TLabel;
+    cbbType: TComboBox;
+    edDate: TJvDBDateEdit;
+    lbl2: TLabel;
+    cbbPERFOM_ID: TComboBox;
+    bvl1: TBevel;
     lbl1: TLabel;
     dbedtNAME1: TDBEdit;
-    btn1: TSpeedButton;
-    lbl2: TLabel;
-    cbbType: TComboBox;
-    qrMain: TFDQuery;
+    btnSelectForeman: TBitBtn;
+    lblName: TLabel;
+    dbedtNAME: TDBEdit;
+    lblDescription: TLabel;
+    dbmmoDESCRIPTION: TDBMemo;
+    bvl2: TBevel;
+    lbl3: TLabel;
+    lbl4: TLabel;
+    lbl5: TLabel;
+    lbl6: TLabel;
+    cbbPASSED_ID: TComboBox;
+    cbbRECEIVED_ID: TComboBox;
+    qrClients: TFDQuery;
+    dsClients: TDataSource;
+    dblkcbbSUB_CLIENT_ID: TDBLookupComboBox;
+    btnSelectOrganization: TBitBtn;
+    dsTYPE_ACT: TDataSource;
+    qrTYPE_ACT: TFDQuery;
+    dblkcbbTYPE_ACT_ID: TDBLookupComboBox;
+    btnSelectTypeAct: TBitBtn;
     procedure FormShow(Sender: TObject);
-    procedure ButtonCloseClick(Sender: TObject);
+    procedure btnCloseClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure edDateChange(Sender: TObject);
     procedure dbedtNAMEChange(Sender: TObject);
-    procedure btn1Click(Sender: TObject);
+    procedure btnSelectForemanClick(Sender: TObject);
+    procedure btnSelectOrganizationClick(Sender: TObject);
+    procedure cbbPASSED_IDChange(Sender: TObject);
+    procedure cbbRECEIVED_IDChange(Sender: TObject);
+    procedure cbbPERFOM_IDChange(Sender: TObject);
+    procedure btnSelectTypeActClick(Sender: TObject);
+    procedure cbbTypeCloseUp(Sender: TObject);
+    procedure cbbTypeChange(Sender: TObject);
   private
     cnt: Integer;
   public
@@ -48,7 +68,8 @@ type
 
 implementation
 
-uses Main, DataModule, CalculationEstimate, GlobsAndConst, ForemanList, ObjectsAndEstimates;
+uses Main, DataModule, CalculationEstimate, GlobsAndConst, ForemanList, ObjectsAndEstimates, OrganizationsEx,
+  TypeAct;
 
 {$R *.dfm}
 
@@ -62,6 +83,8 @@ begin
   inherited;
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
+  qrClients.Active := True;
+  qrTYPE_ACT.Active := True;
 end;
 
 procedure TfCardAct.FormShow(Sender: TObject);
@@ -94,12 +117,15 @@ begin
         qrAct.ParamByName('id').AsInteger := id;
         CloseOpen(qrAct);
         cbbType.ItemIndex := qrAct.FieldByName('TYPE_ACT').AsInteger;
-        cbbType.Enabled := False;
+        cbbPERFOM_ID.ItemIndex := qrAct.FieldByName('PERFOM_ID').AsInteger;
+        cbbPASSED_ID.ItemIndex := qrAct.FieldByName('PASSED_ID').AsInteger;
+        cbbRECEIVED_ID.ItemIndex := qrAct.FieldByName('RECEIVED_ID').AsInteger;
+        cbbType.Enabled := cbbType.ItemIndex = 2;
       end;
   end;
 end;
 
-procedure TfCardAct.btn1Click(Sender: TObject);
+procedure TfCardAct.btnSelectForemanClick(Sender: TObject);
 begin
   if (not Assigned(fForemanList)) then
     fForemanList := TfForemanList.Create(FormMain);
@@ -115,7 +141,35 @@ begin
   end;
 end;
 
-procedure TfCardAct.ButtonCloseClick(Sender: TObject);
+procedure TfCardAct.btnSelectTypeActClick(Sender: TObject);
+begin
+  if (not Assigned(fTypeAct)) then
+    fTypeAct := TfTypeAct.Create(Self);
+  fTypeAct.FormKind := kdSelect;
+  if fTypeAct.ShowModal = mrOk then
+  begin
+    CloseOpen(qrTYPE_ACT);
+    dblkcbbTYPE_ACT_ID.KeyValue := fTypeAct.qrMain.FieldByName('TYPE_ACT_ID').Value;
+    qrAct.Edit;
+    qrAct.FieldByName('TYPE_ACT_ID').Value := fTypeAct.qrMain.FieldByName('TYPE_ACT_ID').Value;
+  end;
+end;
+
+procedure TfCardAct.btnSelectOrganizationClick(Sender: TObject);
+var
+  res: Variant;
+begin
+  res := SelectOrganization(dblkcbbSUB_CLIENT_ID.KeyValue);
+  if not VarIsNull(res) then
+  begin
+    CloseOpen(qrClients);
+    dblkcbbSUB_CLIENT_ID.KeyValue := res;
+    qrAct.Edit;
+    qrAct.FieldByName('SUB_CLIENT_ID').Value := res;
+  end;
+end;
+
+procedure TfCardAct.btnCloseClick(Sender: TObject);
 begin
   case FormKind of
     kdInsert:
@@ -161,9 +215,9 @@ procedure TfCardAct.ButtonSaveClick(Sender: TObject);
     qrMain.FieldByName('ACT').Value := qrTemp.FieldByName('ACT').Value;
     qrMain.FieldByName('USER_ID').Value := qrTemp.FieldByName('USER_ID').Value;
     qrMain.FieldByName('TYPE_ACT').Value := qrTemp.FieldByName('TYPE_ACT').Value;
+    qrMain.FieldByName('TYPE_ACT_ID').Value := qrTemp.FieldByName('TYPE_ACT_ID').Value;
     qrMain.FieldByName('FL_USE').Value := qrTemp.FieldByName('FL_USE').Value;
     qrMain.FieldByName('DESCRIPTION').Value := qrTemp.FieldByName('DESCRIPTION').Value;
-    qrMain.FieldByName('FOREMAN_ID').Value := qrTemp.FieldByName('FOREMAN_ID').Value;
     qrMain.FieldByName('k40').Value := qrTemp.FieldByName('k40').Value;
     qrMain.FieldByName('k41').Value := qrTemp.FieldByName('k41').Value;
     qrMain.FieldByName('k31').Value := qrTemp.FieldByName('k31').Value;
@@ -236,7 +290,7 @@ begin
                   PWideChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
             end;
 
-            //if cbbType.ItemIndex = 1 then
+            // if cbbType.ItemIndex = 1 then
             begin
               try
                 Active := False;
@@ -273,9 +327,11 @@ begin
 
             SQL.Clear;
             SQL.Add('INSERT INTO smetasourcedata (SM_ID,OBJ_ID,name,description,date,foreman_id,ACT,'#13 +
-              'TYPE_ACT,SM_TYPE,PARENT_ID,MAIS_ID,nds,stavka_id,KZP,k31,k32,k33,k34,k35,coef_tr_obor,SM_NUMBER,USER_ID,APPLY_WINTERPRISE_FLAG,WINTERPRICE_TYPE) '
-              + 'VALUE (:ID, :OBJ_ID, :name, :description, :date, :foreman_id, 1, :TYPE_ACT, 2, 0,'#13 +
-              ':MAIS_ID,:nds,:stavka_id,:KZP,:k31,:k32,:k33,:k34,:k35,:coef_tr_obor,:SM_NUMBER,:USER_ID,:APPLY_WINTERPRISE_FLAG,:WINTERPRICE_TYPE);');
+              'TYPE_ACT,SM_TYPE,PARENT_ID,MAIS_ID,nds,stavka_id,KZP,k31,k32,k33,k34,k35,coef_tr_obor,SM_NUMBER,USER_ID,APPLY_WINTERPRISE_FLAG,WINTERPRICE_TYPE,'#13
+              + 'TYPE_ACT_ID, PERFOM_ID, SUB_CLIENT_ID, PASSED_ID, RECEIVED_ID) ' +
+              'VALUE (:ID, :OBJ_ID, :name, :description, :date, :foreman_id, 1, :TYPE_ACT, 2, 0,'#13 +
+              ':MAIS_ID,:nds,:stavka_id,:KZP,:k31,:k32,:k33,:k34,:k35,:coef_tr_obor,:SM_NUMBER,:USER_ID,:APPLY_WINTERPRISE_FLAG,:WINTERPRICE_TYPE,'#13
+              + ':TYPE_ACT_ID, :PERFOM_ID, :SUB_CLIENT_ID, :PASSED_ID, :RECEIVED_ID);');
             ParamByName('ID').Value := NewID;
             ParamByName('name').Value := dbedtNAME.Text;
             ParamByName('description').Value := dbmmoDESCRIPTION.Text;
@@ -297,7 +353,11 @@ begin
             ParamByName('SM_NUMBER').Value := SM_NUMBER;
             ParamByName('APPLY_WINTERPRISE_FLAG').Value := APPLY_WINTERPRISE_FLAG;
             ParamByName('WINTERPRICE_TYPE').Value := WINTERPRICE_TYPE;
-
+            ParamByName('TYPE_ACT_ID').Value := dblkcbbTYPE_ACT_ID.KeyValue;
+            ParamByName('PERFOM_ID').Value := cbbPERFOM_ID.ItemIndex;
+            ParamByName('SUB_CLIENT_ID').Value := dblkcbbSUB_CLIENT_ID.KeyValue;
+            ParamByName('PASSED_ID').Value := cbbPASSED_ID.ItemIndex;
+            ParamByName('RECEIVED_ID').Value := cbbRECEIVED_ID.ItemIndex;
             ExecSQL;
             if qrAct.State in [dsInsert] then
               qrAct.Cancel;
@@ -329,11 +389,52 @@ begin
   end;
 end;
 
+procedure TfCardAct.cbbPERFOM_IDChange(Sender: TObject);
+begin
+  // Принадлежность
+  qrAct.Edit;
+  qrAct.FieldByName('PERFOM_ID').AsInteger := cbbPERFOM_ID.ItemIndex;
+end;
+
+procedure TfCardAct.cbbPASSED_IDChange(Sender: TObject);
+begin
+  // Акт сдал
+  qrAct.Edit;
+  qrAct.FieldByName('PASSED_ID').AsInteger := cbbPASSED_ID.ItemIndex;
+end;
+
+procedure TfCardAct.cbbRECEIVED_IDChange(Sender: TObject);
+begin
+  // Акт принял
+  qrAct.Edit;
+  qrAct.FieldByName('RECEIVED_ID').AsInteger := cbbRECEIVED_ID.ItemIndex;
+end;
+
+procedure TfCardAct.cbbTypeChange(Sender: TObject);
+begin
+  // Тип акта
+  qrAct.Edit;
+  qrAct.FieldByName('TYPE_ACT').AsInteger := cbbType.ItemIndex;
+end;
+
+procedure TfCardAct.cbbTypeCloseUp(Sender: TObject);
+begin
+  if (qrAct.FieldByName('TYPE_ACT').AsInteger = 2) and (cbbType.ItemIndex = 0) then
+  begin
+    cbbType.ItemIndex := qrAct.FieldByName('TYPE_ACT').AsInteger;
+    Application.MessageBox('Изменение типа акта на выбранный запрещено!', PChar(Caption),
+      MB_OK + MB_ICONWARNING + MB_TOPMOST);
+    Abort;
+  end;
+end;
+
 procedure TfCardAct.dbedtNAMEChange(Sender: TObject);
 begin
-  if not CheckQrActiveEmpty(qrAct) or (FormKind <> kdInsert) then
+  { Оставляем пустое описание
+    if not CheckQrActiveEmpty(qrAct) or =(FormKind <> kdInsert) then
     Exit;
-  qrAct.FieldByName('DESCRIPTION').AsString := dbedtNAME.Text;
+    qrAct.FieldByName('DESCRIPTION').AsString := dbedtNAME.Text;
+  }
 end;
 
 procedure TfCardAct.edDateChange(Sender: TObject);
