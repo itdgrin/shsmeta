@@ -1793,9 +1793,6 @@ end;
 // TODO: если AIsAct (новый параметр, необяз.) = True, то при копировании не нужно назначать
 // новые ID для таблиц card_rate, materialcard, transpcard и др. зависящих от data_row,
 // чтобы сохранились связи с записями из сметы. Копировать 1 в 1 из источника.
-// Но, есть еще небольшой ньюанс: это правило должно рабоать, если также поле источника
-// smetasourcedata.TYPE_ACT = 0.
-// Иначе - как обычное копирование сметы как и сейчас (т.е. игнорировать AIsAct)
 function GetCopySmeta(const ASoursSmetaID: Integer; const AIsAct: Boolean = False): boolean;
 var IdConvert: TIDConvertArray;
     i, j: Integer;
