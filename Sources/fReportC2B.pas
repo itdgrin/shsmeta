@@ -590,7 +590,7 @@ begin
           '(Select SM_ID FROM smetasourcedata WHERE (PARENT_ID in ' +
           '(Select SM_ID FROM smetasourcedata WHERE (PARENT_ID in ' +
           '(Select SM_ID FROM smetasourcedata WHERE (OBJ_ID = :OBJ_ID) AND ' +
-            '(DELETED = 0) AND (ACT = 1) AND (SM_TYPE = 2) AND ' +
+            '(DELETED = 0) AND (ACT = 1) AND (FL_USE=1) AND (SM_TYPE = 2) AND ' +
             '(DATE BETWEEN :AllActsDateBegin AND :AllActsDateEnd))))))) ' +
         'GROUP BY SOURCE_ID) at ' +
       'on at.SOURCE_ID IN (SELECT SM_ID FROM smetasourcedata ' +
@@ -610,7 +610,7 @@ begin
           '(Select SM_ID FROM smetasourcedata WHERE (PARENT_ID in ' +
           '(Select SM_ID FROM smetasourcedata WHERE (PARENT_ID in ' +
           '(Select SM_ID FROM smetasourcedata WHERE (OBJ_ID = :OBJ_ID) AND ' +
-          '(DELETED = 0) AND (ACT = 1) AND (SM_TYPE = 2) AND ' +
+          '(DELETED = 0) AND (ACT = 1) AND (FL_USE=1) AND (SM_TYPE = 2) AND ' +
           '(DATE BETWEEN :AllActsDateBegin AND :AllActsDateEnd))))))) ' +
         'GROUP BY SM_ID';
 
@@ -625,7 +625,7 @@ begin
           '(Select SM_ID FROM smetasourcedata WHERE (PARENT_ID in ' +
           '(Select SM_ID FROM smetasourcedata WHERE (PARENT_ID in ' +
           '(Select SM_ID FROM smetasourcedata WHERE (OBJ_ID = :OBJ_ID) AND ' +
-            '(DELETED = 0) AND (ACT = 1) AND (SM_TYPE = 2) AND ' +
+            '(DELETED = 0) AND (ACT = 1) AND (FL_USE=1) AND (SM_TYPE = 2) AND ' +
             '(DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd))))))) ' +
         'GROUP BY SOURCE_ID) at ' +
       'on at.SOURCE_ID IN (SELECT SM_ID FROM smetasourcedata ' +
@@ -645,7 +645,7 @@ begin
           '(Select SM_ID FROM smetasourcedata WHERE (PARENT_ID in ' +
           '(Select SM_ID FROM smetasourcedata WHERE (PARENT_ID in ' +
           '(Select SM_ID FROM smetasourcedata WHERE (OBJ_ID = :OBJ_ID) AND ' +
-            '(DELETED = 0) AND (ACT = 1) AND (SM_TYPE = 2) AND ' +
+            '(DELETED = 0) AND (ACT = 1) AND (FL_USE=1) AND (SM_TYPE = 2) AND ' +
             '(DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd))))))) ' +
       'GROUP BY SM_ID';
 
@@ -688,7 +688,7 @@ begin
              'Round(SUM(COALESCE(d.TOTAL_STATF, d.TOTAL_STAT, 0))) AS CurActTotalStat ' +
         'FROM smetasourcedata s, summary_calculation d ' +
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID) AND ' +
-              '(s.ACT = 1) AND (s.SM_ID in (SELECT SM_ID FROM smetasourcedata WHERE ' +
+              '(s.ACT = 1) AND (FL_USE=1) AND (s.SM_ID in (SELECT SM_ID FROM smetasourcedata WHERE ' +
                 '(smetasourcedata.PARENT_ID IN ' +
                 '(SELECT SM_ID FROM smetasourcedata WHERE PARENT_ID = :SM_ID))))';
 
@@ -716,10 +716,10 @@ begin
              'Round(SUM(COALESCE(d.TOTAL_STATF, d.TOTAL_STAT, 0))) AS AllActsTotalStat ' +
         'FROM smetasourcedata s, summary_calculation d ' +
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID) AND ' +
-              '(s.ACT = 1) AND (s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
+              '(s.ACT = 1) AND (FL_USE=1) AND (s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
                 'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
                   'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
-                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND (FL_USE=1) AND ' +
                   '(SM_TYPE = 2) AND (DATE BETWEEN :AllActsDateBegin AND :AllActsDateEnd)))))))';
 
     //—уммы по актам с начала года до текущего мес€ца
@@ -746,10 +746,10 @@ begin
              'Round(SUM(COALESCE(d.TOTAL_STATF, d.TOTAL_STAT, 0))) AS YearActsTotalStat ' +
         'FROM smetasourcedata s, summary_calculation d ' +
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID) AND ' +
-              '(s.ACT = 1) AND (s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
+              '(s.ACT = 1) AND (FL_USE=1) AND (s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
                 'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
                   'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
-                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND (FL_USE=1) AND ' +
                   '(SM_TYPE = 2) AND (DATE BETWEEN :YearActsDateBegin AND :MonthActsDateEnd)))))))';
 
     //—уммы по актам за текущий мас€ца
@@ -776,10 +776,10 @@ begin
              'Round(SUM(COALESCE(d.TOTAL_STATF, d.TOTAL_STAT, 0))) AS MonActsTotalStat ' +
         'FROM smetasourcedata s, summary_calculation d ' +
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID) AND ' +
-              '(s.ACT = 1) AND (s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
+              '(s.ACT = 1) AND (FL_USE=1) AND (s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
                 'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
                   'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
-                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND (FL_USE=1) AND ' +
                   '(SM_TYPE = 2) AND (DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd)))))))';
 
     //—уммы по актам за текущий мас€ца
@@ -813,11 +813,11 @@ begin
              'Round(SUM(COALESCE(d.TOTAL_STATF, d.TOTAL_STAT, 0))) AS MonActsTotalStat ' +
         'FROM smetasourcedata s, summary_calculation d ' +
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID) AND ' +
-              '(s.ACT = 1) AND ((s.TYPE_ACT = :TYPE_ACT1) or (s.TYPE_ACT = :TYPE_ACT2)) AND ' +
+              '(s.ACT = 1) AND (FL_USE=1) AND ((s.TYPE_ACT = :TYPE_ACT1) or (s.TYPE_ACT = :TYPE_ACT2)) AND ' +
               '(s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
                 'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
                   'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
-                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND (FL_USE=1) AND ' +
                   '(SM_TYPE = 2) AND ' +
                   '(DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd))))))) ' +
         'GROUP BY SSM_ID, SNAME';
@@ -846,11 +846,11 @@ begin
              'Round(SUM(COALESCE(d.TOTAL_STATF, d.TOTAL_STAT, 0))) AS MonActsTotalStat ' +
         'FROM smetasourcedata s, summary_calculation d ' +
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID) AND ' +
-              '(s.ACT = 1) AND ((s.TYPE_ACT = :TYPE_ACT1) or (s.TYPE_ACT = :TYPE_ACT2)) AND ' +
+              '(s.ACT = 1) AND (FL_USE=1) AND ((s.TYPE_ACT = :TYPE_ACT1) or (s.TYPE_ACT = :TYPE_ACT2)) AND ' +
               '(s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
                 'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
                   'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
-                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND (FL_USE=1) AND ' +
                   '(SM_TYPE = 2) AND ' +
                   '(DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd)))))))';
  //*****************************************************************************

@@ -1896,7 +1896,8 @@ begin
             Continue;
           end;
 
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA') then
           begin
             j := 0;
             case DM.qrDifferent.Fields[i].Value of
@@ -1908,7 +1909,7 @@ begin
               6, 7, 8, 9: j := C_ID_SMTR;
             end;
 
-            if j > 0  then
+            if (j > 0) then
               DM.qrDifferent1.ParamByName('ID_TABLES').Value :=
                 GetNewId(DM.qrDifferent.FieldByName('ID_TABLES').Value, j, IdConvert)
             else
@@ -1942,7 +1943,8 @@ begin
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
             Continue;
           end;
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID') then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMRAT, IdConvert);
@@ -1980,7 +1982,8 @@ begin
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
             Continue;
           end;
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID') then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMMAT, IdConvert);
@@ -1992,13 +1995,15 @@ begin
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_DATA, IdConvert);
             Continue;
           end;
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE') then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMRAT, IdConvert);
             Continue;
           end;
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED') then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMMAT, IdConvert);
@@ -2030,7 +2035,8 @@ begin
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
             Continue;
           end;
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID') then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMMEC, IdConvert);
@@ -2042,13 +2048,15 @@ begin
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_DATA, IdConvert);
             Continue;
           end;
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_CARD_RATE') then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMRAT, IdConvert);
             Continue;
           end;
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_REPLACED') then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMMEC, IdConvert);
@@ -2080,7 +2088,8 @@ begin
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
             Continue;
           end;
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID') then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMDEV, IdConvert);
@@ -2118,7 +2127,8 @@ begin
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
             Continue;
           end;
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID') then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMDUM, IdConvert);
@@ -2156,7 +2166,8 @@ begin
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SM, IdConvert);
             Continue;
           end;
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID') then
           begin
             DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
               GetNewId(DM.qrDifferent.Fields[i].Value, C_ID_SMTR, IdConvert);
@@ -2206,7 +2217,8 @@ begin
             Continue;
           end;
 
-          if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA' then
+          if not AIsAct and
+             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA') then
           begin
             j := 0;
 

@@ -335,6 +335,10 @@ object FormReportC2B: TFormReportC2B
       Font.Style = []
       ImageIndex = 2
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pnlRepAct: TPanel
         Left = 0
         Top = 0
@@ -691,6 +695,10 @@ object FormReportC2B: TFormReportC2B
       Font.Style = []
       ImageIndex = 1
       ParentFont = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object pnlRepObj: TPanel
         Left = 0
         Top = 0
@@ -1028,7 +1036,7 @@ object FormReportC2B: TFormReportC2B
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2'
       '  AND OBJ_ID=:OBJ_ID'
-      '  AND ACT=1'
+      '  AND ACT=1 AND FL_USE=1 AND DELETED=0'
       'ORDER BY DATE, NAME ')
     Left = 732
     Top = 240

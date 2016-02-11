@@ -5,7 +5,7 @@ object FormReportSSRPI: TFormReportSSRPI
     #1057#1088#1077#1076#1089#1090#1074#1072', '#1091#1095#1080#1090#1099#1074#1072#1102#1097#1080#1077' '#1087#1088#1080#1084#1077#1085#1077#1085#1080#1077' '#1087#1088#1086#1075#1085#1086#1079#1085#1099#1093' '#1080#1085#1076#1077#1082#1089#1086#1074' '#1094#1077#1085' '#1074' '#1089#1090#1088#1086#1080 +
     #1090#1077#1083#1100#1089#1090#1074#1077
   ClientHeight = 512
-  ClientWidth = 780
+  ClientWidth = 818
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,18 +14,20 @@ object FormReportSSRPI: TFormReportSSRPI
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnClose = FormClose
   OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlTop: TPanel
     Left = 0
     Top = 0
-    Width = 780
+    Width = 818
     Height = 177
     Align = alTop
     TabOrder = 0
-    ExplicitLeft = -200
-    ExplicitTop = -56
+    ExplicitLeft = -1
+    ExplicitTop = -5
     object Label1: TLabel
       Left = 4
       Top = 8
@@ -107,112 +109,135 @@ object FormReportSSRPI: TFormReportSSRPI
       Height = 3
       Shape = bsBottomLine
     end
+    object SpeedButton1: TSpeedButton
+      Left = 593
+      Top = 94
+      Width = 21
+      Height = 21
+      Caption = '...'
+      OnClick = SpeedButton1Click
+    end
     object edtSmDate: TDBEdit
       Left = 215
       Top = 6
       Width = 80
-      Height = 18
+      Height = 21
+      Color = clBtnFace
       DataField = 'SmDate'
       DataSource = dsLine
+      ReadOnly = True
       TabOrder = 0
     end
     object edtBeginDate: TDBEdit
       Left = 454
       Top = 6
       Width = 80
-      Height = 18
+      Height = 21
+      Color = clBtnFace
       DataField = 'BeginDate'
       DataSource = dsLine
+      ReadOnly = True
       TabOrder = 1
     end
     object edtSrok: TDBEdit
       Left = 722
       Top = 6
       Width = 49
-      Height = 18
+      Height = 21
+      Color = clBtnFace
       DataField = 'Srok'
       DataSource = dsLine
+      ReadOnly = True
       TabOrder = 2
     end
     object edtTotalWithNal: TDBEdit
       Left = 465
       Top = 37
       Width = 121
-      Height = 18
+      Height = 21
+      Color = clBtnFace
       DataField = 'TotalWithNal'
       DataSource = dsLine
+      ReadOnly = True
       TabOrder = 3
     end
     object edtVozvrat: TDBEdit
       Left = 465
       Top = 56
       Width = 121
-      Height = 18
+      Height = 21
+      Color = clBtnFace
       DataField = 'Vozvrat'
       DataSource = dsLine
+      ReadOnly = True
       TabOrder = 4
     end
     object edtDevWithNDS: TDBEdit
       Left = 465
       Top = 75
       Width = 121
-      Height = 18
+      Height = 21
+      Color = clBtnFace
       DataField = 'DevWithNDS'
       DataSource = dsLine
+      ReadOnly = True
       TabOrder = 5
     end
     object edtNoIndex: TDBEdit
       Left = 465
       Top = 94
       Width = 121
-      Height = 18
+      Height = 21
       DataField = 'NoIndex'
       DataSource = dsLine
       TabOrder = 6
+      OnKeyDown = edtKeyDown
     end
     object edtTotalIndex: TDBEdit
       Left = 465
       Top = 113
       Width = 121
-      Height = 18
+      Height = 21
+      Color = clBtnFace
       DataField = 'TotalIndex'
       DataSource = dsLine
+      ReadOnly = True
       TabOrder = 7
     end
     object edtPIOnBegin: TDBEdit
       Left = 465
       Top = 132
       Width = 121
-      Height = 18
+      Height = 21
+      Color = clBtnFace
       DataField = 'PIOnBegin'
       DataSource = dsLine
+      ReadOnly = True
       TabOrder = 8
     end
     object edtTotal: TDBEdit
       Left = 465
       Top = 151
       Width = 121
-      Height = 18
+      Height = 21
+      Color = clBtnFace
       DataField = 'Total'
       DataSource = dsLine
+      ReadOnly = True
       TabOrder = 9
     end
   end
   object pnlCenter: TPanel
     Left = 0
     Top = 177
-    Width = 780
+    Width = 818
     Height = 280
     Align = alClient
     TabOrder = 1
-    ExplicitLeft = 8
-    ExplicitTop = 107
-    ExplicitWidth = 721
-    ExplicitHeight = 238
     object grTab: TJvDBGrid
       Left = 1
       Top = 1
-      Width = 778
+      Width = 816
       Height = 278
       Align = alClient
       DataSource = dsTab
@@ -233,6 +258,7 @@ object FormReportSSRPI: TFormReportSSRPI
       EditControls = <>
       RowsHeight = 17
       TitleRowHeight = 17
+      OnCanEditCell = grTabCanEditCell
       Columns = <
         item
           Expanded = False
@@ -255,11 +281,10 @@ object FormReportSSRPI: TFormReportSSRPI
   object pnlBottom: TPanel
     Left = 0
     Top = 457
-    Width = 780
+    Width = 818
     Height = 55
     Align = alBottom
     TabOrder = 2
-    ExplicitTop = 336
     object Label12: TLabel
       Left = 76
       Top = 9
@@ -283,6 +308,7 @@ object FormReportSSRPI: TFormReportSSRPI
       Top = 6
       Width = 121
       Height = 21
+      Color = clBtnFace
       DataField = 'Index1'
       DataSource = dsLine
       TabOrder = 0
@@ -292,64 +318,119 @@ object FormReportSSRPI: TFormReportSSRPI
       Top = 28
       Width = 121
       Height = 21
+      Color = clBtnFace
       DataField = 'Index2'
       DataSource = dsLine
       TabOrder = 1
+    end
+  end
+  object pnlNoIndex: TPanel
+    Left = 152
+    Top = 114
+    Width = 434
+    Height = 143
+    BevelKind = bkSoft
+    TabOrder = 3
+    Visible = False
+    object Label7: TLabel
+      Left = 10
+      Top = 16
+      Width = 289
+      Height = 13
+      Caption = #1057#1090#1086#1084#1086#1089#1090#1100' '#1086#1073#1086#1088#1091#1076#1086#1074#1072#1085#1080#1103' '#1079#1072#1082#1072#1079#1095#1080#1082#1072' '#1089' '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1086#1084' '#1080' '#1053#1044#1057
+    end
+    object Label14: TLabel
+      Left = 21
+      Top = 35
+      Width = 276
+      Height = 13
+      Caption = #1057#1090#1086#1084#1086#1089#1090#1100' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074' '#1079#1072#1082#1072#1079#1095#1080#1082#1072' '#1089' '#1090#1088#1072#1085#1089#1087#1086#1088#1090#1086#1084' '#1080' '#1053#1044#1057
+    end
+    object Label15: TLabel
+      Left = 157
+      Top = 54
+      Width = 140
+      Height = 13
+      Caption = #1055#1088#1086#1095#1080#1077' '#1079#1072#1090#1088#1072#1090#1099' '#1080#1079' '#1075#1083#1072#1074#1099' 1'
+    end
+    object Label16: TLabel
+      Left = 145
+      Top = 73
+      Width = 151
+      Height = 13
+      Caption = #1047#1072#1090#1088#1072#1090#1099' '#1085#1072' '#1055#1048#1056' '#1080' '#1101#1082#1089#1087#1077#1088#1090#1080#1079#1091
+    end
+    object Label17: TLabel
+      Left = 213
+      Top = 92
+      Width = 83
+      Height = 13
+      Caption = #1044#1088#1091#1075#1080#1077' '#1079#1072#1090#1088#1072#1090#1099
+    end
+    object btnHideNoIndex: TButton
+      Left = 349
+      Top = 113
+      Width = 75
+      Height = 22
+      Caption = #1057#1082#1088#1099#1090#1100
+      TabOrder = 0
+      OnClick = btnHideNoIndexClick
+    end
+    object edtDevZakNDS: TDBEdit
+      Left = 302
+      Top = 13
+      Width = 121
+      Height = 21
+      DataField = 'DevZakNDS'
+      DataSource = dsLine
+      TabOrder = 1
+      OnKeyDown = edtKeyDown
+    end
+    object edtMatZakNDS: TDBEdit
+      Left = 302
+      Top = 32
+      Width = 121
+      Height = 21
+      DataField = 'MatZakNDS'
+      DataSource = dsLine
+      TabOrder = 2
+      OnKeyDown = edtKeyDown
+    end
+    object edtOtherChap1: TDBEdit
+      Left = 302
+      Top = 51
+      Width = 121
+      Height = 21
+      DataField = 'OtherChap1'
+      DataSource = dsLine
+      TabOrder = 3
+      OnKeyDown = edtKeyDown
+    end
+    object edtPIRExp: TDBEdit
+      Left = 302
+      Top = 70
+      Width = 121
+      Height = 21
+      DataField = 'PIRExp'
+      DataSource = dsLine
+      TabOrder = 4
+      OnKeyDown = edtKeyDown
+    end
+    object edtOtherNoIndex: TDBEdit
+      Left = 302
+      Top = 89
+      Width = 121
+      Height = 21
+      DataField = 'OtherNoIndex'
+      DataSource = dsLine
+      TabOrder = 5
+      OnKeyDown = edtKeyDown
     end
   end
   object qrTemp: TFDQuery
     Connection = DM.Connect
     Left = 624
     Top = 32
-  end
-  object mtLine: TFDMemTable
-    FieldDefs = <>
-    IndexDefs = <>
-    FetchOptions.AssignedValues = [evMode]
-    FetchOptions.Mode = fmAll
-    ResourceOptions.AssignedValues = [rvSilentMode]
-    ResourceOptions.SilentMode = True
-    UpdateOptions.AssignedValues = [uvCheckRequired]
-    UpdateOptions.CheckRequired = False
-    StoreDefs = True
-    Left = 624
-    Top = 80
-    object mtLineSmDate: TDateField
-      FieldName = 'SmDate'
-    end
-    object mtLineBeginDate: TDateField
-      FieldName = 'BeginDate'
-    end
-    object mtLineSrok: TSmallintField
-      FieldName = 'Srok'
-    end
-    object mtLineTotalWithNal: TCurrencyField
-      FieldName = 'TotalWithNal'
-    end
-    object mtLineVozvrat: TCurrencyField
-      FieldName = 'Vozvrat'
-    end
-    object mtLineDevWithNDS: TCurrencyField
-      FieldName = 'DevWithNDS'
-    end
-    object mtLineNoIndex: TCurrencyField
-      FieldName = 'NoIndex'
-    end
-    object mtLineTotalIndex: TCurrencyField
-      FieldName = 'TotalIndex'
-    end
-    object mtLinePIOnBegin: TFloatField
-      FieldName = 'PIOnBegin'
-    end
-    object mtLineTotal: TCurrencyField
-      FieldName = 'Total'
-    end
-    object mtLineIndex1: TCurrencyField
-      FieldName = 'Index1'
-    end
-    object mtLineIndex2: TCurrencyField
-      FieldName = 'Index2'
-    end
   end
   object mtTab: TFDMemTable
     FieldDefs = <>
@@ -367,9 +448,11 @@ object FormReportSSRPI: TFormReportSSRPI
       FieldName = 'Name'
       Size = 100
     end
-    object mtTabSumm: TExtendedField
+    object mtTabSumm: TFloatField
       FieldName = 'Summ'
-      Precision = 19
+    end
+    object mtTabLineNum: TWideStringField
+      FieldName = 'LineNum'
     end
   end
   object dsLine: TDataSource
@@ -381,5 +464,77 @@ object FormReportSSRPI: TFormReportSSRPI
     DataSet = mtTab
     Left = 672
     Top = 128
+  end
+  object mtLine: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    FormatOptions.AssignedValues = [fvFmtDisplayNumeric]
+    FormatOptions.FmtDisplayNumeric = '0,#'
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired]
+    UpdateOptions.CheckRequired = False
+    StoreDefs = True
+    Left = 624
+    Top = 80
+    object mtLineSmDate: TDateField
+      FieldName = 'SmDate'
+    end
+    object mtLineBeginDate: TDateField
+      FieldName = 'BeginDate'
+    end
+    object mtLineSrok: TSmallintField
+      FieldName = 'Srok'
+    end
+    object mtLineTotalWithNal: TFloatField
+      FieldName = 'TotalWithNal'
+    end
+    object mtLineVozvrat: TFloatField
+      FieldName = 'Vozvrat'
+    end
+    object mtLineDevWithNDS: TFloatField
+      FieldName = 'DevWithNDS'
+    end
+    object mtLineNoIndex: TFloatField
+      FieldName = 'NoIndex'
+      OnChange = mtLineNoIndexChange
+    end
+    object mtLineTotalIndex: TFloatField
+      FieldName = 'TotalIndex'
+    end
+    object mtLineMatZakNDS: TFloatField
+      FieldName = 'MatZakNDS'
+      OnChange = mtLineDevZakNDSChange
+    end
+    object mtLinePIOnBegin: TFloatField
+      FieldName = 'PIOnBegin'
+    end
+    object mtLineIndex1: TFloatField
+      FieldName = 'Index1'
+    end
+    object mtLineIndex2: TFloatField
+      FieldName = 'Index2'
+    end
+    object mtLineDevZakNDS: TFloatField
+      FieldName = 'DevZakNDS'
+      OnChange = mtLineDevZakNDSChange
+    end
+    object mtLineOtherChap1: TFloatField
+      FieldName = 'OtherChap1'
+      OnChange = mtLineDevZakNDSChange
+    end
+    object mtLinePIRExp: TFloatField
+      FieldName = 'PIRExp'
+      OnChange = mtLineDevZakNDSChange
+    end
+    object mtLineOtherNoIndex: TFloatField
+      FieldName = 'OtherNoIndex'
+      OnChange = mtLineDevZakNDSChange
+    end
+    object mtLineTotal: TFloatField
+      FieldName = 'Total'
+    end
   end
 end

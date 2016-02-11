@@ -20,6 +20,34 @@ type
 
   PSmClipRec = ^TSmClipRec;
 
+  //Типы контейнеров для отчета ССР
+  TKoefRec = record
+    LineNom: string;
+    Pers: Variant;
+    Koef1: Variant;
+    Koef2: Variant;
+    SprID: Variant;
+  end;
+  TKoefArray = array of TKoefRec;
+
+  TRepSSRLine = record
+    ZP,
+    ZP5,
+    EMiM,
+    ZPMash,
+    Mat,
+    MatTransp,
+    OXROPR,
+    PlanPrib,
+    Devices,
+    Transp,
+    Other,
+    Total,
+    Trud: Double;
+    procedure CalcTotal;
+    procedure Summ(ARepSSRLine: TRepSSRLine);
+  end;
+
 const
 //******************************************************************************
 // константы общего назначения
@@ -126,6 +154,10 @@ type
 //******************************************************************************
 // константы необходимые для работа системы резервного копирования
 const
+//Константы для отображения полей БД
+  C_NUMMASK = '###,##0.########';
+  C_DISPFORMAT = '###,##0.########';
+  C_EDITFORMAT = '#####0.########';
 //******************************************************************************
 //  константы необходимые для работа системы обновления
   С_UPD_NAME = 'Update';
@@ -251,5 +283,30 @@ var
   G_CURLISENSE: string = '';
 
 implementation
+
+{ TRepSSRLine }
+
+procedure TRepSSRLine.CalcTotal;
+begin
+  Total := ZP + EMiM + Mat + MatTransp + OXROPR +
+    PlanPrib + Devices + Transp + Other;
+end;
+
+procedure TRepSSRLine.Summ(ARepSSRLine: TRepSSRLine);
+begin
+  ZP := ZP + ARepSSRLine.ZP;
+  ZP5 := ZP5 + ARepSSRLine.ZP5;
+  EMiM := EMiM + ARepSSRLine.EMiM;
+  ZPMash := ZPMash + ARepSSRLine.ZPMash;
+  Mat := Mat + ARepSSRLine.Mat;
+  MatTransp := MatTransp + ARepSSRLine.MatTransp;
+  OXROPR := OXROPR + ARepSSRLine.OXROPR;
+  PlanPrib := PlanPrib + ARepSSRLine.PlanPrib;
+  Devices := Devices + ARepSSRLine.Devices;
+  Transp := Transp + ARepSSRLine.Transp;
+  Other := Other + ARepSSRLine.Other;
+  Total := Total + ARepSSRLine.Total;
+  Trud := Trud + ARepSSRLine.Trud;
+end;
 
 end.

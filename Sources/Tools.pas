@@ -147,9 +147,18 @@ function GetGlob(const AParamName: String; const AGlobParamType: TGlobParamType 
 function GetGlobDef(const AParamName: String; const ADefValue: Variant;
   const AGlobParamType: TGlobParamType = gptReportParam): Variant;
 
+//Округления для расчетов в программе
+function SmRound(AValue: Extended): Extended;
+
 implementation
 
 uses uSelectColumn;
+
+//Заготовка пустышка
+function SmRound(AValue: Extended): Extended;
+begin
+  Result := Round(AValue);
+end;
 
 procedure SetGlob(const AParamName: String; const AValue: Variant;
   const AGlobParamType: TGlobParamType = gptReportParam);
@@ -1298,6 +1307,13 @@ begin
       TDateTimePicker(AComponent).Font.SIZE := PS.TextFontSize;
     TDateTimePicker(AComponent).Font.Style := TFontStyles(PS.TextFontStyle);
   end
+  else if AComponent is TNumericField then
+  begin
+    if TNumericField(AComponent).DisplayFormat = '' then
+      TNumericField(AComponent).DisplayFormat := C_DISPFORMAT;
+    if TNumericField(AComponent).EditFormat = '' then
+      TNumericField(AComponent).EditFormat := C_EDITFORMAT;
+  end;
   // <--
 end;
 
