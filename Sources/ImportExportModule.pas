@@ -1790,7 +1790,7 @@ begin
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
-// TODO: если AIsAct (новый параметр, необяз.) = True, то при копировании не нужно назначать
+// если AIsAct (новый параметр, необяз.) = True, то при копировании не нужно назначать
 // новые ID для таблиц card_rate, materialcard, transpcard и др. зависящих от data_row,
 // чтобы сохранились связи с записями из сметы. Копировать 1 в 1 из источника.
 function GetCopySmeta(const ASoursSmetaID: Integer; const AIsAct: Boolean = False): boolean;

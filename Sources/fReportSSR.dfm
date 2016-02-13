@@ -378,70 +378,44 @@ object FormReportSSR: TFormReportSSR
       FieldName = 'Name'
       Size = 200
     end
-    object mtSSRZP: TCurrencyField
+    object mtSSRZP: TFloatField
       FieldName = 'ZP'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSRZP5: TCurrencyField
+    object mtSSRZP5: TFloatField
       FieldName = 'ZP5'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSREMiM: TCurrencyField
+    object mtSSREMiM: TFloatField
       FieldName = 'EMiM'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSRZPMash: TCurrencyField
+    object mtSSRZPMash: TFloatField
       FieldName = 'ZPMash'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSRMat: TCurrencyField
+    object mtSSRMat: TFloatField
       FieldName = 'Mat'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSRMatTransp: TCurrencyField
+    object mtSSRMatTransp: TFloatField
       FieldName = 'MatTransp'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSROXROPR: TCurrencyField
+    object mtSSROXROPR: TFloatField
       FieldName = 'OXROPR'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSRPlanPrib: TCurrencyField
+    object mtSSRPlanPrib: TFloatField
       FieldName = 'PlanPrib'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSRDevices: TCurrencyField
+    object mtSSRDevices: TFloatField
       FieldName = 'Devices'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSRTransp: TCurrencyField
+    object mtSSRTransp: TFloatField
       FieldName = 'Transp'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSROther: TCurrencyField
+    object mtSSROther: TFloatField
       FieldName = 'Other'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSRTotal: TCurrencyField
+    object mtSSRTotal: TFloatField
       FieldName = 'Total'
-      DisplayFormat = '#,0'
-      currency = False
     end
-    object mtSSRTrud: TCurrencyField
+    object mtSSRTrud: TFloatField
       FieldName = 'Trud'
-      DisplayFormat = '#,0'
-      currency = False
     end
     object mtSSRCID: TIntegerField
       FieldName = 'CID'
@@ -527,12 +501,28 @@ object FormReportSSR: TFormReportSSR
     Enabled = False
     Interval = 100
     OnTimer = UpdateTimerTimer
-    Left = 480
-    Top = 140
+    Left = 424
+    Top = 108
   end
   object pmSSR: TPopupMenu
-    Left = 344
-    Top = 196
+    OnPopup = pmSSRPopup
+    Left = 352
+    Top = 108
+    object pmTempBuilds: TMenuItem
+      Tag = 2
+      Caption = #1042#1088#1077#1084#1077#1085#1085#1099#1077' '#1079#1076#1072#1085#1080#1103' '#1080' '#1089#1086#1086#1088#1091#1078#1077#1085#1080#1103
+      OnClick = pmTempBuildsClick
+    end
+    object pmZimUdor: TMenuItem
+      Tag = 1
+      Caption = #1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
+      OnClick = pmTempBuildsClick
+    end
+    object pmRazRaboti: TMenuItem
+      Tag = 5
+      Caption = #1055#1086#1076#1074#1080#1078#1085#1099#1081' '#1080' '#1088#1072#1079#1098#1077#1079#1076#1085#1086#1081' '#1093#1072#1088#1072#1082#1090#1077#1088' '#1088#1072#1073#1086#1090
+      OnClick = pmTempBuildsClick
+    end
     object pmSSRIndex: TMenuItem
       Caption = #1056#1072#1089#1095#1077#1090' '#1080#1085#1076#1077#1082#1089#1072#1094#1080#1080' '#1057#1057#1056
       OnClick = pmSSRIndexClick

@@ -41,7 +41,7 @@ type
     FMatCode: string;
     FSelectType: Byte;
   public
-    constructor Create(AOwner: TComponent); overload;
+    constructor Create(AOwner: TComponent); override;
     property TranspPers: Double read FTranspPers;
     property MatCode: string read FMatCode;
     property SelectType: Byte read FSelectType;

@@ -4,24 +4,23 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, fFrameSSR, Tools;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, fFrameSSR, Tools, Vcl.StdCtrls,
+  Vcl.ExtCtrls;
 
 type
   TfSSR = class(TSmForm)
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    pnlBottons: TPanel;
+    btnSelect: TButton;
+    btnCancel: TButton;
     procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure FormActivate(Sender: TObject);
   private
-    FrameSSR: TFrameSSR;
-    SSRID: Integer;
-    BtnCaption: string;
+    FFrameSSR: TFrameSSR;
+    FSSRID: Integer;
+    FSprID: Integer;
+    procedure GetSprID(AValue: Integer);
   public
-    constructor Create(const ID: Integer; const ToolBtnCaption: string); reintroduce;
+    property SprID: Integer read FSprID;
   end;
-
-var
-  fSSR: TfSSR;
 
 implementation
 
@@ -29,37 +28,32 @@ implementation
 
 uses Main;
 
-constructor TfSSR.Create(const ID: Integer; const ToolBtnCaption: string);
+procedure TfSSR.GetSprID(AValue: Integer);
 begin
-  SSRID := ID;
-  BtnCaption := ToolBtnCaption;
-  inherited Create(Application);
-  Caption := ToolBtnCaption;
-end;
-
-procedure TfSSR.FormActivate(Sender: TObject);
-begin
-  // Если нажата клавиша Ctrl и выбираем форму, то делаем
-  // каскадирование с переносом этой формы на передний план
-  FormMain.CascadeForActiveWindow;
-  // Делаем нажатой кнопку активной формы (на главной форме внизу)
-  FormMain.SelectButtonActiveWindow(BtnCaption);
-end;
-
-procedure TfSSR.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  Action := caFree;
+  FSprID := AValue;
+  btnSelect.Enabled := FSprID > 0;
 end;
 
 procedure TfSSR.FormCreate(Sender: TObject);
 begin
-  FrameSSR := TFrameSSR.Create(Self);
-  FrameSSR.Parent := Self;
-  FrameSSR.Align := alClient;
-  FrameSSR.PanelMenu.Visible := False;
-  FrameSSR.ComboBox.ItemIndex := SSRID - 1;
-  with FrameSSR do
-    case SSRID of
+  FSSRID := InitParams[0];
+  Caption := InitParams[1];
+  pnlBottons.Visible := InitParams[2];
+
+  FFrameSSR := TFrameSSR.Create(Self);
+  FFrameSSR.Parent := Self;
+  FFrameSSR.Align := alClient;
+  FFrameSSR.PanelMenu.Visible := False;
+  FFrameSSR.ComboBox.ItemIndex := FSSRID - 1;
+
+  if pnlBottons.Visible then
+  begin
+    FFrameSSR.OnSelectSprItem := GetSprID;
+    GetSprID(0);
+  end;
+
+  with FFrameSSR do
+    case FSSRID of
       1:
         lbPrikazRef.Caption := 'НРР 8.01.103 - 2012';
       2:
@@ -68,20 +62,11 @@ begin
       lbPrikazRef.Caption := '';
     end;
 
-  if (SSRID >= 3) and (SSRID <= 5) then
-    FrameSSR.ReceivingAll2
+  if (FSSRID >= 3) and (FSSRID <= 5) then
+    FFrameSSR.ReceivingAll2
   else
-    FrameSSR.ReceivingAll;
-  FrameSSR.Visible := True;
-  FormMain.CreateButtonOpenWindow(BtnCaption, BtnCaption, Self, 1);
-  inherited;
-end;
-
-procedure TfSSR.FormDestroy(Sender: TObject);
-begin
-  // Удаляем кнопку от этого окна (на главной форме внизу)
-  FormMain.DeleteButtonCloseWindow(BtnCaption);
-  fSSR := nil;
+    FFrameSSR.ReceivingAll;
+  FFrameSSR.Visible := True;
 end;
 
 end.

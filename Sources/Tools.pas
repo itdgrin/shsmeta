@@ -47,8 +47,8 @@ type
     // Процедура стандартной отрисовки таблиц
     class procedure DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
-    constructor Create(AOwner: TComponent; const AInitParams: Variant); reintroduce; overload;
-    constructor Create(AOwner: TComponent); reintroduce; overload;
+    constructor Create(AOwner: TComponent; const AInitParams: Variant); overload;
+    constructor Create(AOwner: TComponent); overload; override;
   end;
 
   TActivateEvent = procedure(ADataSet: TDataSet; ATag: Integer) of object;
@@ -376,7 +376,11 @@ end;
 procedure Exec(AParam: string);
 begin
   AParam := Expand(AParam);
-  ShellExecute(Application.Handle, 'open', PChar(AParam), nil, nil, SW_SHOWMAXIMIZED);
+  if FileExists(AParam) then
+    ShellExecute(Application.Handle, 'open', PChar(AParam), nil, nil, SW_SHOWMAXIMIZED)
+  else
+    ShowMessage('Файл не найден.');
+
 end;
 
 procedure DoSort(const Query: TFDQuery; Grid: TJvDBGrid);

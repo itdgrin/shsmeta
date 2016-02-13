@@ -44,7 +44,7 @@ begin
     end;
 
     Canvas.FillRect(Rect);
-    Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
+    Canvas.TextRect(Rect, Rect.Left + 3, Rect.Top + 3, Cells[ACol, ARow]);
 
     // Если таблица в фокусе и строка не равна первой строке
     if Focused and (Row = ARow) and (Row > 0) and (ACol > 0) then
@@ -62,7 +62,7 @@ begin
       end;
 
       Canvas.FillRect(Rect);
-      Canvas.TextOut(Rect.Left + 3, Rect.Top + 3, Cells[ACol, Row]);
+      Canvas.TextRect(Rect, Rect.Left + 3, Rect.Top + 3, Cells[ACol, Row]);
     end;
   end;
 end;

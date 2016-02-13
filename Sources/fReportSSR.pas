@@ -28,19 +28,19 @@ type
     mtSSRPepcent: TFloatField;
     mtSSRKoef1: TFloatField;
     mtSSRKoef2: TFloatField;
-    mtSSRTransp: TCurrencyField;
-    mtSSROXROPR: TCurrencyField;
-    mtSSRPlanPrib: TCurrencyField;
-    mtSSRDevices: TCurrencyField;
-    mtSSRZP: TCurrencyField;
-    mtSSRZP5: TCurrencyField;
-    mtSSREMiM: TCurrencyField;
-    mtSSRZPMash: TCurrencyField;
-    mtSSRMat: TCurrencyField;
-    mtSSRMatTransp: TCurrencyField;
-    mtSSROther: TCurrencyField;
-    mtSSRTotal: TCurrencyField;
-    mtSSRTrud: TCurrencyField;
+    mtSSRTransp: TFloatField;
+    mtSSROXROPR: TFloatField;
+    mtSSRPlanPrib: TFloatField;
+    mtSSRDevices: TFloatField;
+    mtSSRZP: TFloatField;
+    mtSSRZP5: TFloatField;
+    mtSSREMiM: TFloatField;
+    mtSSRZPMash: TFloatField;
+    mtSSRMat: TFloatField;
+    mtSSRMatTransp: TFloatField;
+    mtSSROther: TFloatField;
+    mtSSRTotal: TFloatField;
+    mtSSRTrud: TFloatField;
     gbObject: TGroupBox;
     lbObjName: TLabel;
     cbObjName: TDBLookupComboBox;
@@ -61,6 +61,9 @@ type
     UpdateTimer: TTimer;
     pmSSR: TPopupMenu;
     pmSSRIndex: TMenuItem;
+    pmTempBuilds: TMenuItem;
+    pmZimUdor: TMenuItem;
+    pmRazRaboti: TMenuItem;
     procedure qrObjectBeforeOpen(DataSet: TDataSet);
     procedure FormCreate(Sender: TObject);
     procedure btnObjInfoClick(Sender: TObject);
@@ -74,6 +77,8 @@ type
     procedure Button1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure pmSSRIndexClick(Sender: TObject);
+    procedure pmTempBuildsClick(Sender: TObject);
+    procedure pmSSRPopup(Sender: TObject);
   private
     FObjectID: Integer;
     FKoefArray: TKoefArray;
@@ -95,7 +100,7 @@ type
 
 implementation
 
-uses Main, DataModule, CardObject;
+uses Main, DataModule, CardObject, SSR;
 
 {$R *.dfm}
 
@@ -249,6 +254,7 @@ end;
 
 procedure TFormReportSSR.UpdateTimerTimer(Sender: TObject);
 var TempBookmark: TBookMark;
+    tmp: LongInt;
 begin
   UpdateTimer.Enabled := False;
 
@@ -533,6 +539,66 @@ procedure TFormReportSSR.pmSSRIndexClick(Sender: TObject);
 begin
   if FReportSSRPI.ShowModal = mrYes then
     UpdateTimerTimer(nil);
+end;
+
+procedure TFormReportSSR.pmSSRPopup(Sender: TObject);
+begin
+  pmTempBuilds.Visible := mtSSRNum.AsString = '8.1';
+  pmZimUdor.Visible := mtSSRNum.AsString = '9.1';
+  pmSSRIndex.Visible := mtSSRNum.AsString = '90.14';
+end;
+
+procedure TFormReportSSR.pmTempBuildsClick(Sender: TObject);
+var fSSR: TfSSR;
+    I: Integer;
+    IsNew: Boolean;
+    TmpStr: string;
+begin
+  case (Sender as TMenuItem).Tag of
+  1: TmpStr := 'Сметные нормы для дополнительных затрат при производстве работ в зимнее время';
+  2: TmpStr := 'Сметные нормы затрат на строительство временных зданий и сооружений';
+  5: TmpStr := 'Затраты, связанные с подвижным и разъездным характером работ';
+  end;
+
+  fSSR := TfSSR.Create(Self, VarArrayOf([(Sender as TMenuItem).Tag, TmpStr, True]));
+  try
+    if fSSR.ShowModal = mrOk then
+    begin
+        IsNew := False;
+        I := FindLineNom(FKoefArray, mtSSRNum.AsString);
+        if I = -1 then
+        begin
+          I := Length(FKoefArray);
+          SetLength(FKoefArray, I + 1);
+          IsNew := True;
+        end;
+
+        FKoefArray[I].LineNom := mtSSRNum.AsString;
+        FKoefArray[I].SprID := fSSR.SprID;
+        case (Sender as TMenuItem).Tag of
+        1, 2: qrTemp.SQL.Text := 'select COEF_NORM from ssrdetail where ID = :ID';
+        5: qrTemp.SQL.Text := 'select VALUE from ssrcost where ID = :ID';
+        end;
+        qrTemp.ParamByName('ID').Value := FKoefArray[I].SprID;
+        qrTemp.Active := True;
+        if not qrTemp.IsEmpty then
+          FKoefArray[I].Pers := qrTemp.Fields[0].Value;
+        qrTemp.Active := False;
+        FKoefArray[I].Koef1 := TField(mtSSRKoef1).Value;
+        FKoefArray[I].Koef2 := TField(mtSSRKoef2).Value;
+
+        if IsNew then
+          AddNewKoef(FKoefArray[I])
+        else
+          UpdateNewKoef(FKoefArray[I]);
+
+        //Приведет по ситу к повторному выполнению всех операторов + пересчету отчета
+        mtSSR.Edit;
+        TField(mtSSRPepcent).Value := FKoefArray[I].Pers;
+    end;
+  finally
+    FreeAndNil(fSSR);
+  end;
 end;
 
 //Процедура добавляет в расчет все необходимые строки и вытягивает инфу по сметам
@@ -839,7 +905,6 @@ var I, J: Integer;
     Line1195,
     Line9011,
     Line9013: TRepSSRLine;
-    SmCount: Integer;
     Bookmark82,
     Bookmark996,
     Bookmark9012,
@@ -930,19 +995,19 @@ begin
   if VarIsAssign(TField(mtSSRKoef2).Value) then
     Koef2 := mtSSRKoef2.Value;
 
-  ALine.ZP := ALine.ZP * Perc * Koef1 * Koef2;
-  ALine.ZP5 := ALine.ZP5 * Perc * Koef1 * Koef2;
-  ALine.EMiM := ALine.EMiM * Perc * Koef1 * Koef2;
-  ALine.ZPMash := ALine.ZPMash * Perc * Koef1 * Koef2;
-  ALine.Mat := ALine.Mat * Perc * Koef1 * Koef2;
-  ALine.MatTransp := ALine.MatTransp * Perc * Koef1 * Koef2;
-  ALine.OXROPR := ALine.OXROPR * Perc * Koef1 * Koef2;
-  ALine.PlanPrib := ALine.PlanPrib * Perc * Koef1 * Koef2;
-  ALine.Devices := ALine.Devices * Perc * Koef1 * Koef2;
-  ALine.Transp := ALine.Transp * Perc * Koef1 * Koef2;
-  ALine.Other := ALine.Other * Perc * Koef1 * Koef2;
+  ALine.ZP := SmRound(ALine.ZP * Perc * Koef1 * Koef2);
+  ALine.ZP5 := SmRound(ALine.ZP5 * Perc * Koef1 * Koef2);
+  ALine.EMiM := SmRound(ALine.EMiM * Perc * Koef1 * Koef2);
+  ALine.ZPMash := SmRound(ALine.ZPMash * Perc * Koef1 * Koef2);
+  ALine.Mat := SmRound(ALine.Mat * Perc * Koef1 * Koef2);
+  ALine.MatTransp := SmRound(ALine.MatTransp * Perc * Koef1 * Koef2);
+  ALine.OXROPR := SmRound(ALine.OXROPR * Perc * Koef1 * Koef2);
+  ALine.PlanPrib := SmRound(ALine.PlanPrib * Perc * Koef1 * Koef2);
+  ALine.Devices := SmRound(ALine.Devices * Perc * Koef1 * Koef2);
+  ALine.Transp := SmRound(ALine.Transp * Perc * Koef1 * Koef2);
+  ALine.Other := SmRound(ALine.Other * Perc * Koef1 * Koef2);
   ALine.CalcTotal;
-  ALine.Trud := ALine.Trud * Perc * Koef1 * Koef2;
+  ALine.Trud := SmRound(ALine.Trud * Perc * Koef1 * Koef2);
 end;
 
 begin
@@ -1015,7 +1080,6 @@ begin
           Line105 := TmpLine;
 
         TmpLine := default(TRepSSRLine);
-        SmCount := 0;
       end;
 
       if (mtSSRItog.Value > 0) then
@@ -1024,7 +1088,6 @@ begin
       if (mtSSRSM_ID.Value > 0) and (mtSSRSM_TYPE.Value = 2) then
       begin
         SummToLine(TmpLine);
-        Inc(SmCount);
       end;
 
       mtSSR.Prior;
@@ -1177,7 +1240,7 @@ begin
         if mtSSRNum.AsString = '10.1' then
         begin
           NullLine();
-          Line101.Other := (Line895.Total - Line895.ZP5);
+          Line101.Other := (Line995.Total - Line995.ZP5);
           CalcLineWithKoef(Line101);
           AssignLineIfNoNull(Line101);
           SummToLine(TmpLine);
@@ -1314,7 +1377,7 @@ begin
         TmpLine := default(TRepSSRLine);
         NullLine();
         TmpLine.Other :=
-          (Line795.ZP + Line795.EMiM + Line795.Mat +
+          SmRound((Line795.ZP + Line795.EMiM + Line795.Mat +
             Line795.MatTransp + Line795.OXROPR * 0.421 + Line795.Other +
             Line81.Total + Line91.Total + Line92.Total + Line93.Total +
             Line94.Total + Line95.Total + Line97.Total + Line98.Total) *
@@ -1322,7 +1385,7 @@ begin
           (Line910.Total + Line911.Total + Line912.Total) *
           (1 + TmpKoef.Pers * TmpKoef.Koef1 * TmpKoef.Koef2) * TmpKoef1.Koef1/100 +
           (Line101.Total + Line103.Total) * 0.85 *
-          (1 + TmpKoef.Pers * TmpKoef.Koef1 * TmpKoef.Koef2) * TmpKoef1.Koef2/100;
+          (1 + TmpKoef.Pers * TmpKoef.Koef1 * TmpKoef.Koef2) * TmpKoef1.Koef2/100);
         TmpLine.CalcTotal;
         AssignLineIfNoNull(TmpLine);
         TmpLine1.Summ(TmpLine);
@@ -1348,14 +1411,14 @@ begin
         TmpLine := default(TRepSSRLine);
         NullLine();
         TmpLine.Other :=
-          (Line795.Total + Line81.Total + Line91.Total + Line92.Total +
+          SmRound((Line795.Total + Line81.Total + Line91.Total + Line92.Total +
             Line93.Total + Line94.Total + Line95.Total + Line96.Total +
             Line97.Total + Line98.Total + Line910.Total+ Line911.Total +
              (Line795.Total - Line795.ZP5 + Line81.Total + Line91.Total +
              Line92.Total + Line93.Total + Line94.Total + Line95.Total +
              Line96.Total + Line97.Total + Line98.Total + Line910.Total+
              Line911.Total) * (TmpKoef.Pers * TmpKoef.Koef1 * TmpKoef.Koef2) -
-             Line82.Total) * TmpKoef1.Pers;
+             Line82.Total) * TmpKoef1.Pers);
         TmpLine.CalcTotal;
         AssignLineIfNoNull(TmpLine);
         TmpLine1.Summ(TmpLine);
@@ -1381,8 +1444,8 @@ begin
         TmpLine := default(TRepSSRLine);
         NullLine();
         TmpLine.Other :=
-          (Line9011.Total - Line82.Total - Line911.Total - Line104.Total -
-          Line105.Total - TmpLine1.Total {V901201+V901202}) * TmpKoef1.Pers;
+          SmRound((Line9011.Total - Line82.Total - Line911.Total - Line104.Total -
+          Line105.Total - TmpLine1.Total {V901201+V901202}) * TmpKoef1.Pers);
         TmpLine.CalcTotal;
         AssignLineIfNoNull(TmpLine);
         TmpLine1.Summ(TmpLine);
@@ -1408,14 +1471,14 @@ begin
         TmpLine := default(TRepSSRLine);
         NullLine();
         TmpLine.Other :=
-          (Line795.Total - Line795.Devices - Line795.Transp + Line81.Total +
+          SmRound((Line795.Total - Line795.Devices - Line795.Transp + Line81.Total +
           Line91.Total + Line92.Total + Line93.Total + Line94.Total +
           Line95.Total + Line97.Total + Line98.Total +
           (Line795.Total - Line795.ZP5 - Line795.Devices - Line795.Transp +
           Line81.Total + Line91.Total + Line92.Total + Line93.Total +
           Line94.Total + Line95.Total + Line96.Total + Line97.Total +
           Line98.Total + Line910.Total+ Line911.Total) *
-          (TmpKoef.Pers * TmpKoef.Koef1 * TmpKoef.Koef2)) * TmpKoef1.Pers;
+          (TmpKoef.Pers * TmpKoef.Koef1 * TmpKoef.Koef2)) * TmpKoef1.Pers);
         TmpLine.CalcTotal;
         AssignLineIfNoNull(TmpLine);
         TmpLine1.Summ(TmpLine);
@@ -1446,7 +1509,7 @@ begin
         FReportSSRPI.CalcPIIndex();
         TmpLine := default(TRepSSRLine);
         NullLine();
-        TmpLine.Other := FReportSSRPI.Result;
+        TmpLine.Other := SmRound(FReportSSRPI.Result);
         TmpLine.CalcTotal;
         AssignLineIfNoNull(TmpLine);
 

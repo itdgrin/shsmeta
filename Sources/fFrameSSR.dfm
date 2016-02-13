@@ -5,8 +5,6 @@ inherited FrameSSR: TFrameSSR
   ParentBackground = False
   ParentDoubleBuffered = False
   ParentFont = False
-  OnEnter = FrameEnter
-  OnExit = FrameExit
   ExplicitWidth = 797
   ExplicitHeight = 335
   object Panel: TPanel
@@ -150,7 +148,7 @@ inherited FrameSSR: TFrameSSR
       end
       object StringGrid: TStringGrid
         Left = 0
-        Top = 0
+        Top = 6
         Width = 225
         Height = 239
         ColCount = 2
@@ -169,6 +167,7 @@ inherited FrameSSR: TFrameSSR
         OnKeyPress = StringGridKeyPress
         OnMouseDown = StringGridMouseDown
         OnMouseMove = StringGridMouseMove
+        OnSelectCell = StringGridSelectCell
       end
       object StringGrid2: TStringGrid
         Left = 231
@@ -191,6 +190,7 @@ inherited FrameSSR: TFrameSSR
         OnKeyPress = StringGridKeyPress
         OnMouseDown = StringGridMouseDown
         OnMouseMove = StringGridMouseMove
+        OnSelectCell = StringGrid2SelectCell
       end
     end
   end

@@ -16,6 +16,9 @@ type
   end;
 
 type
+
+  TSelectSprItemEvent = procedure(ASprID: Integer) of object;
+
   TFrameSSR = class(TSmetaFrame)
 
     CopyCell: TMenuItem;
@@ -62,8 +65,6 @@ type
     procedure EditSearchEnter(Sender: TObject);
     procedure EditSearchKeyPress(Sender: TObject; var Key: Char);
 
-    procedure FrameEnter(Sender: TObject);
-    procedure FrameExit(Sender: TObject);
     procedure PanelStringGridResize(Sender: TObject);
 
     procedure StringGridGlobalClick(Sender: TObject);
@@ -84,17 +85,23 @@ type
     procedure StringGrid2Click(Sender: TObject);
     procedure StringGridClick(Sender: TObject);
     procedure lbPrikazRefClick(Sender: TObject);
+    procedure StringGridSelectCell(Sender: TObject; ACol, ARow: Integer;
+      var CanSelect: Boolean);
+    procedure StringGrid2SelectCell(Sender: TObject; ACol, ARow: Integer;
+      var CanSelect: Boolean);
 
   private
     StrQuery: String; // Для формирования строки запроса к БД
     StrQuickSearch: String;
     NomColumn: Integer;
-
     AllowUseFilter: Boolean; // Блокировка фильтрации в ADOQuery
+    FOnSelectSprItem: TSelectSprItemEvent;
   public
     procedure ReceivingAll; override;
-    procedure CheckCurPeriod; override;
     constructor Create(AOwner: TComponent); override;
+
+    property OnSelectSprItem: TSelectSprItemEvent
+      read FOnSelectSprItem write FOnSelectSprItem;
   end;
 
 implementation
@@ -157,7 +164,7 @@ begin
 
   with StringGrid do
   begin
-    ColCount := 8; // Столбцов в таблице
+    ColCount := 9; // Столбцов в таблице
     RowCount := 2; // Строк в таблице
 
     FixedCols := 1;
@@ -172,6 +179,8 @@ begin
     Cells[5, 0] := 'ЗП маш.';
     Cells[6, 0] := 'Материалы';
     Cells[7, 0] := 'Кф. пер. к трудоём.';
+    Cells[8, 0] := 'ID';
+
 
     // Ширина ВИДИМЫХ столбцов
     ColWidths[0] := 40;
@@ -182,6 +191,7 @@ begin
     ColWidths[5] := 85;
     ColWidths[6] := 100;
     ColWidths[7] := 110;
+    ColWidths[8] := -1;
   end;
 end;
 
@@ -193,7 +203,7 @@ begin
 
   with StringGrid2 do
   begin
-    ColCount := 4; // Столбцов в таблице
+    ColCount := 5; // Столбцов в таблице
     RowCount := 2; // Строк в таблице
 
     FixedCols := 1;
@@ -204,18 +214,15 @@ begin
     Cells[1, 0] := 'Номер';
     Cells[2, 0] := 'Вид строительства';
     Cells[3, 0] := 'Значение';
+    Cells[4, 0] := 'ID';
 
     // Ширина ВИДИМЫХ столбцов
     ColWidths[0] := 40;
     ColWidths[1] := 40;
     ColWidths[2] := 150;
     ColWidths[3] := 60;
+    ColWidths[4] := -1;
   end;
-end;
-
-procedure TFrameSSR.CheckCurPeriod;
-begin
-
 end;
 
 procedure TFrameSSR.ReceivingAll;
@@ -244,8 +251,6 @@ begin
 
   fLoaded := True;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameSSR.ReceivingAll2;
 var
@@ -326,6 +331,7 @@ begin
       SG.Cells[5, i] := '';
       SG.Cells[6, i] := '';
       SG.Cells[7, i] := '';
+      SG.Cells[8, i] := '';
 
       SG.Row := 1;
 
@@ -353,7 +359,7 @@ begin
 
         with SG do
         begin
-          if FieldByName('coef_norm').AsVariant = NULL then
+          if FieldByName('coef_norm').AsString = NULL then
           begin
             nom := 0;
             Cells[0, i] := '';
@@ -361,40 +367,42 @@ begin
           else
             Cells[0, i] := IntToStr(nom);
 
-          if FieldByName('name').AsVariant <> '' then
-            Cells[1, i] := FieldByName('name').AsVariant
+          if FieldByName('name').AsString <> '' then
+            Cells[1, i] := FieldByName('name').AsString
           else
             Cells[1, i] := '';
 
-          if FieldByName('coef_norm').AsVariant <> NULL then
-            Cells[2, i] := FieldByName('coef_norm').AsVariant
+          if FieldByName('coef_norm').AsString <> NULL then
+            Cells[2, i] := FieldByName('coef_norm').AsString
           else
             Cells[2, i] := '';
 
-          if FieldByName('coef_zp').AsVariant <> NULL then
-            Cells[3, i] := FieldByName('coef_zp').AsVariant
+          if FieldByName('coef_zp').AsString <> NULL then
+            Cells[3, i] := FieldByName('coef_zp').AsString
           else
             Cells[3, i] := '';
 
-          if FieldByName('coef_ek_mash').AsVariant <> NULL then
-            Cells[4, i] := FieldByName('coef_ek_mash').AsVariant
+          if FieldByName('coef_ek_mash').AsString <> NULL then
+            Cells[4, i] := FieldByName('coef_ek_mash').AsString
           else
             Cells[4, i] := '';
 
-          if FieldByName('coef_zp_mash').AsVariant <> NULL then
-            Cells[5, i] := FieldByName('coef_zp_mash').AsVariant
+          if FieldByName('coef_zp_mash').AsString <> NULL then
+            Cells[5, i] := FieldByName('coef_zp_mash').AsString
           else
             Cells[5, i] := '';
 
-          if FieldByName('coef_mat').AsVariant <> NULL then
-            Cells[6, i] := FieldByName('coef_mat').AsVariant
+          if FieldByName('coef_mat').AsString <> NULL then
+            Cells[6, i] := FieldByName('coef_mat').AsString
           else
             Cells[6, i] := '';
 
-          if FieldByName('coef_work').AsVariant <> NULL then
-            Cells[7, i] := FieldByName('coef_work').AsVariant
+          if FieldByName('coef_work').AsString <> NULL then
+            Cells[7, i] := FieldByName('coef_work').AsString
           else
             Cells[7, i] := '';
+
+          Cells[8, i] := FieldByName('ID').AsString;
         end;
 
         Inc(i);
@@ -429,7 +437,7 @@ begin
   try
     i := 1;
 
-    if AQ.RecordCount = 0 then
+    if AQ.IsEmpty then
     begin
       SG.RowCount := 2;
 
@@ -437,7 +445,7 @@ begin
       SG.Cells[1, i] := '';
       SG.Cells[2, 1] := 'Записей не найдено!';
       SG.Cells[3, i] := '';
-
+      SG.Cells[4, i] := '';
       SG.Row := 1;
 
       Memo.Clear;
@@ -457,7 +465,7 @@ begin
       begin
         Application.ProcessMessages;
 
-        if AQ.RecordCount = 0 then
+        if AQ.IsEmpty then
           Exit;
 
         AllowUseFilter := False;
@@ -466,13 +474,15 @@ begin
         begin
           Cells[0, i] := IntToStr(i);
 
-          Cells[1, i] := FieldByName('number').AsVariant;
+          Cells[1, i] := FieldByName('number').AsString;
 
-          if FieldByName('name').AsVariant <> NULL then
-            Cells[2, i] := FieldByName('name').AsVariant;
+          if FieldByName('name').AsString <> NULL then
+            Cells[2, i] := FieldByName('name').AsString;
 
-          if FieldByName('value').AsVariant <> NULL then
-            Cells[3, i] := FieldByName('value').AsVariant;
+          if FieldByName('value').AsString <> NULL then
+            Cells[3, i] := FieldByName('value').AsString;
+
+          Cells[4, i] := FieldByName('ID').AsString;
         end;
 
         Inc(i);
@@ -512,7 +522,7 @@ begin
 
       while not Eof do
       begin
-        ComboBox.Items.Add(FieldByName('name').AsVariant);
+        ComboBox.Items.Add(FieldByName('name').AsString);
 
         Next;
       end;
@@ -576,7 +586,7 @@ begin
     StringSearch := '';
 
     for i := 0 to CountWords - 1 do
-      StringSearch := StringSearch + 'Name LIKE ''%' + Words[i] + '%'' and ';
+      StringSearch := StringSearch + 'Lower(Name) LIKE Lower(''%' + Words[i] + '%'') and ';
 
     Delete(StringSearch, Length(StringSearch) - 4, 5);
 
@@ -592,28 +602,6 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFrameSSR.FrameEnter(Sender: TObject);
-begin
-  with FrameStatusBar do
-  begin
-    InsertText(0, IntToStr(ADOQuery.RecordCount)); // Количество записей в таблице
-    InsertText(1, IntToStr(StringGrid.Row)); // Номер выделенной записи в таблице
-    EditSearch.SetFocus;
-  end;
-end;
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-procedure TFrameSSR.FrameExit(Sender: TObject);
-begin
-  with FrameStatusBar do
-  begin
-    InsertText(0, '');
-    InsertText(1, '');
-    InsertText(2, '');
-  end;
-end;
 
 procedure TFrameSSR.lbPrikazRefClick(Sender: TObject);
 begin
@@ -661,7 +649,19 @@ begin
   StringGridDrawCellDefault(Sender, ACol, ARow, Rect, State);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+procedure TFrameSSR.StringGrid2SelectCell(Sender: TObject; ACol, ARow: Integer;
+  var CanSelect: Boolean);
+var TmpId: Integer;
+begin
+  if ARow <> StringGrid2.Row then
+  begin
+    TmpId := 0;
+    if StrToFloatDef(StringGrid2.Cells[3, ARow], 0) > 0 then
+      TmpId := StrToIntDef(StringGrid2.Cells[4, ARow], 0);
+    if Assigned(FOnSelectSprItem) then
+      FOnSelectSprItem(TmpId);
+  end;
+end;
 
 procedure TFrameSSR.StringGridClick(Sender: TObject);
 begin
@@ -675,8 +675,6 @@ begin
   StringGridGlobalClick(Sender);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFrameSSR.StringGrid2Click(Sender: TObject);
 begin
   // Выводим название в Memo под таблицей
@@ -688,8 +686,6 @@ begin
 
   StringGridGlobalClick(Sender);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameSSR.StringGridGlobalClick(Sender: TObject);
 var
@@ -710,8 +706,6 @@ begin
         Cells[i, 0] := Str;
       end;
 
-  // -----------------------------------------
-
   (Sender as TStringGrid).Repaint;
 
   // Если перешли на другой столбец (колонку), то очищаем строку быстрого поиска
@@ -723,8 +717,6 @@ begin
 
   NomColumn := (Sender as TStringGrid).Col;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameSSR.StringGridDrawCell(Sender: TObject; ACol, ARow: Integer; Rect: TRect;
   State: TGridDrawState);
@@ -752,15 +744,9 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFrameSSR.StringGridEnter(Sender: TObject);
 begin
   (Sender as TStringGrid).Repaint;
-
-  FrameStatusBar.InsertText(0, IntToStr(ADOQuery.RecordCount));
-  FrameStatusBar.InsertText(1, IntToStr((Sender as TStringGrid).Row));
-  FrameStatusBar.InsertText(2, IntToStr(-1));
 
   with (Sender as TStringGrid) do
     Memo.Text := Cells[2, Row];
@@ -769,17 +755,12 @@ begin
   // LoadKeyboardLayout('00000409', KLF_ACTIVATE); // Английский
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFrameSSR.StringGridExit(Sender: TObject);
 begin
   (Sender as TStringGrid).Repaint;
 
   StrQuickSearch := '';
-  FrameStatusBar.InsertText(2, '');
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameSSR.StringGridMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState;
   X, Y: Integer);
@@ -787,15 +768,25 @@ begin
   (Sender as TStringGrid).Repaint;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFrameSSR.StringGridMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
   if ssLeft in Shift then
     (Sender as TStringGrid).Repaint;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+procedure TFrameSSR.StringGridSelectCell(Sender: TObject; ACol, ARow: Integer;
+  var CanSelect: Boolean);
+var TmpId: Integer;
+begin
+  if ARow <> StringGrid.Row then
+  begin
+    TmpId := 0;
+    if StrToFloatDef(StringGrid.Cells[2, ARow], 0) > 0 then
+      TmpId := StrToIntDef(StringGrid.Cells[8, ARow], 0);
+    if Assigned(FOnSelectSprItem) then
+      FOnSelectSprItem(TmpId);
+  end;
+end;
 
 procedure TFrameSSR.StringGridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
@@ -803,8 +794,6 @@ begin
     if (Key = Ord(#39)) and (ColWidths[Col + 1] = -1) then
       Key := Ord(#0);
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameSSR.StringGridKeyPress(Sender: TObject; var Key: Char);
 var
@@ -839,8 +828,6 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
-
 procedure TFrameSSR.SpeedButtonClick(Sender: TObject);
 begin
   with (Sender as TSpeedButton) do
@@ -853,8 +840,6 @@ begin
       ReceivingAll;
   end;
 end;
-
-// ---------------------------------------------------------------------------------------------------------------------
 
 procedure TFrameSSR.SpeedButtonShowHideClick(Sender: TObject);
 begin

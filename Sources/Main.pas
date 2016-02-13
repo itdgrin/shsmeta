@@ -1373,10 +1373,15 @@ begin
 end;
 
 procedure TFormMain.mN110Click(Sender: TObject);
+var fSSR: TfSSR;
 begin
-  if (not LicenseAssigned(fSSR)) then
-    fSSR := TfSSR.Create((Sender as TMenuItem).Tag, (Sender as TMenuItem).Caption);
-  fSSR.Show;
+  fSSR := TfSSR.Create(Self,
+    VarArrayOf([(Sender as TMenuItem).Tag, (Sender as TMenuItem).Caption, False]));
+  try
+    fSSR.ShowModal;
+  finally
+    FreeAndNil(fSSR);
+  end;
 end;
 
 procedure TFormMain.mN111Click(Sender: TObject);
