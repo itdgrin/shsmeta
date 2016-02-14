@@ -318,7 +318,7 @@ type
     FCurVersion: TVersion; // текущая версия приложения и БД
     FDebugMode: Boolean; // Режим отладки приложения (блокирует некоторай функционал во время его отладки)
 
-    FFirstStart: Boolean;
+    FFirstStart: Integer;
 
     FileReportPath: string; // путь к папке с отчетами(дабы не захламлять датамодуль лишними модулями)
 
@@ -661,8 +661,10 @@ begin
     // Временная фишка, что-бы занилить старые настройки
     if Reg.OpenKey(C_REGKEY, true) then
     begin
-      FFirstStart := not Reg.ValueExists('FirstStart');
-      Reg.WriteInteger('FirstStart', 0);
+      FFirstStart := 0;
+      if Reg.ValueExists('FirstStart') then
+        FFirstStart := Reg.ReadInteger('FirstStart');
+      Reg.WriteInteger('FirstStart', 2)
     end
     else
       MessageDlg('Unable to create key!', mtError, mbOKCancel, 0);
@@ -671,9 +673,9 @@ begin
     FreeAndNil(Reg);
   end;
 
-  if FFirstStart then
+  if FFirstStart = 1 then
   begin
-    ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Smeta.ini');
+    ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'Smeta_form.ini');
     try
       try
         ini.EraseSection('FormCalculationEstimate\TFormCalculationEstimatedbgrdMechanizm');

@@ -254,7 +254,6 @@ end;
 
 procedure TFormReportSSR.UpdateTimerTimer(Sender: TObject);
 var TempBookmark: TBookMark;
-    tmp: LongInt;
 begin
   UpdateTimer.Enabled := False;
 

@@ -2210,6 +2210,52 @@
               end
               item
                 Expanded = False
+                FieldName = 'COAST_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1062#1077#1085#1072' '#1089' '#1053#1044#1057', '#1088'.'
+                Visible = False
+              end
+              item
+                Expanded = False
+                FieldName = 'COAST_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = -1
+                Visible = False
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057', '#1088'.'
+                Width = -1
+                Visible = False
+              end
+              item
+                Expanded = False
+                FieldName = 'TRANSP_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = -1
+                Visible = False
+              end
+              item
+                Expanded = False
+                FieldName = 'PRICE_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1089' '#1053#1044#1057', '#1088'.'
+                Width = -1
+                Visible = False
+              end
+              item
+                Expanded = False
+                FieldName = 'PRICE_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Visible = False
+              end
+              item
+                Expanded = False
                 FieldName = 'FCOAST_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
@@ -2260,17 +2306,17 @@
               end
               item
                 Expanded = False
-                FieldName = 'PROC_PODR'
+                FieldName = 'PROC_ZAC'
                 Title.Alignment = taCenter
-                Title.Caption = #1054#1073'. '#1087#1086#1076#1088', %'
+                Title.Caption = #1054#1073'. '#1079#1072#1082'., %'
                 Width = 50
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'PROC_ZAC'
+                FieldName = 'PROC_PODR'
                 Title.Alignment = taCenter
-                Title.Caption = #1054#1073'. '#1079#1072#1082'., %'
+                Title.Caption = #1054#1073'. '#1087#1086#1076#1088', %'
                 Width = 50
                 Visible = True
               end
@@ -4777,6 +4823,36 @@
       OnChange = DevRowChange
       Precision = 24
     end
+    object qrDevicesCOAST_NDS: TFMTBCDField
+      FieldName = 'COAST_NDS'
+      Precision = 24
+    end
+    object qrDevicesCOAST_NO_NDS: TFMTBCDField
+      FieldName = 'COAST_NO_NDS'
+      Precision = 24
+    end
+    object qrDevicesNDS: TWordField
+      AutoGenerateValue = arDefault
+      FieldName = 'NDS'
+      Origin = 'NDS'
+      OnChange = DevRowChange
+    end
+    object qrDevicesTRANSP_NDS: TFMTBCDField
+      FieldName = 'TRANSP_NDS'
+      Precision = 24
+    end
+    object qrDevicesTRANSP_NO_NDS: TFMTBCDField
+      FieldName = 'TRANSP_NO_NDS'
+      Precision = 24
+    end
+    object qrDevicesPRICE_NDS: TFMTBCDField
+      FieldName = 'PRICE_NDS'
+      Precision = 24
+    end
+    object qrDevicesPRICE_NO_NDS: TFMTBCDField
+      FieldName = 'PRICE_NO_NDS'
+      Precision = 24
+    end
     object qrDevicesFCOAST_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'FCOAST_NO_NDS'
@@ -4795,11 +4871,11 @@
       EditFormat = '#0'
       Precision = 24
     end
-    object qrDevicesNDS: TWordField
-      AutoGenerateValue = arDefault
-      FieldName = 'NDS'
-      Origin = 'NDS'
-      OnChange = DevRowChange
+    object qrDevicesFTRANSP_NDS: TFMTBCDField
+      FieldName = 'FTRANSP_NDS'
+    end
+    object qrDevicesFTRANSP_NO_NDS: TFMTBCDField
+      FieldName = 'FTRANSP_NO_NDS'
     end
     object qrDevicesFPRICE_NDS: TFMTBCDField
       AutoGenerateValue = arDefault

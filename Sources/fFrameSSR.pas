@@ -98,6 +98,7 @@ type
     FOnSelectSprItem: TSelectSprItemEvent;
   public
     procedure ReceivingAll; override;
+    procedure CheckCurPeriod; override;
     constructor Create(AOwner: TComponent); override;
 
     property OnSelectSprItem: TSelectSprItemEvent
@@ -867,6 +868,12 @@ begin
 end;
 
 // ---------------------------------------------------------------------------------------------------------------------
+
+procedure TFrameSSR.CheckCurPeriod;
+begin
+  inherited;
+  //
+end;
 
 procedure TFrameSSR.ComboBoxClick(Sender: TObject);
 begin

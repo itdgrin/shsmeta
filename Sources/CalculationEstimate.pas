@@ -502,6 +502,14 @@ type
     lbl2: TLabel;
     edtActDate: TEdit;
     btnRS: TSpeedButton;
+    qrDevicesCOAST_NDS: TFMTBCDField;
+    qrDevicesCOAST_NO_NDS: TFMTBCDField;
+    qrDevicesPRICE_NDS: TFMTBCDField;
+    qrDevicesPRICE_NO_NDS: TFMTBCDField;
+    qrDevicesTRANSP_NDS: TFMTBCDField;
+    qrDevicesTRANSP_NO_NDS: TFMTBCDField;
+    qrDevicesFTRANSP_NDS: TFMTBCDField;
+    qrDevicesFTRANSP_NO_NDS: TFMTBCDField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -5808,7 +5816,8 @@ begin
     Abort;
 
   PMCalcDevice.Visible := NDSEstimate;
-  PMCalcDevice.Enabled := (dbgrdDevices.Columns[dbgrdDevices.Col - 1].FieldName = 'FCOAST_NDS');
+  PMCalcDevice.Enabled :=
+    (dbgrdDevices.Columns[dbgrdDevices.Col - 1].FieldName = 'FCOAST_NDS');
 
   PMDevManPrice.Visible := (qrDevicesBASE.Value > 0);
   PMDevSprCard.Visible := (qrDevicesBASE.Value > 0);
@@ -7341,7 +7350,8 @@ begin
     // Подсветка полей стоимости
     if (Sender as TJvDBGrid).Name = 'dbgrdTransp' then
     begin
-      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
+      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or
+         (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
         Brush.Color := $00FBFEBC;
     end
     else if (Sender as TJvDBGrid).Name = 'dbgrdTransp' then
