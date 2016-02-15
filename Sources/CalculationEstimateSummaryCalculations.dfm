@@ -838,9 +838,9 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
     SQL.Strings = (
       'SELECT '
       '  s.SM_ID AS id_estimate, '
-      '  typesm.id as sm_type,'
+      '  sm_type.id as sm_type,'
       '  s.OBJ_ID,'
-      '  typesm.NAME AS TYPE_NAME, '
+      '  sm_type.NAME AS TYPE_NAME, '
       '  s.SM_NUMBER, '
       '  s.NAME AS SM_NAME, '
       
@@ -1104,7 +1104,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
         '  ROUND( SUM(IFNULL(d.WORKER_DEPARTMENT * IF(o.FL_APPLY_INDEX, o' +
         '.index_value, 1) , 0)), rs.round_RATE) AS WORKER_DEPARTMENTF'
       ''
-      'FROM typesm, round_setup rs, objcards o, smetasourcedata s'
+      'FROM sm_type, round_setup rs, objcards o, smetasourcedata s'
       'LEFT JOIN summary_calculation d ON d.SM_ID IN'
       '  (SELECT SM_ID'
       '   FROM smetasourcedata '
@@ -1117,7 +1117,7 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '             WHERE PARENT_ID = s.SM_ID AND DELETED=0)))'
       '  ) '
       'WHERE '
-      '  s.SM_TYPE = typesm.ID AND '
+      '  s.SM_TYPE = sm_type.ID AND '
       '  s.DELETED = 0 AND'
       
         '  s.OBJ_ID = (SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:SM' +

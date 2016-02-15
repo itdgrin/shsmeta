@@ -2,8 +2,8 @@ object fRoundSetup: TfRoundSetup
   Left = 0
   Top = 0
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1080' '#1086#1082#1088#1091#1075#1083#1077#1085#1080#1081
-  ClientHeight = 237
-  ClientWidth = 253
+  ClientHeight = 326
+  ClientWidth = 678
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,8 +16,8 @@ object fRoundSetup: TfRoundSetup
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignSize = (
-    253
-    237)
+    678
+    326)
   PixelsPerInch = 96
   TextHeight = 13
   object lbl1: TLabel
@@ -94,7 +94,7 @@ object fRoundSetup: TfRoundSetup
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 1
+    TabOrder = 2
     DataField = 'round_INDEX'
     DataSource = dsMainData
   end
@@ -110,7 +110,7 @@ object fRoundSetup: TfRoundSetup
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 3
     object lbl3: TLabel
       Left = 7
       Top = 22
@@ -182,13 +182,13 @@ object fRoundSetup: TfRoundSetup
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 4
     DataField = 'round_CNT_RESOURCES'
     DataSource = dsMainData
   end
   object btn1: TBitBtn
-    Left = 170
-    Top = 204
+    Left = 595
+    Top = 293
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -199,12 +199,14 @@ object fRoundSetup: TfRoundSetup
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 7
     OnClick = btn1Click
+    ExplicitLeft = 170
+    ExplicitTop = 204
   end
   object btn2: TBitBtn
-    Left = 89
-    Top = 204
+    Left = 514
+    Top = 293
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -215,8 +217,10 @@ object fRoundSetup: TfRoundSetup
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 5
+    TabOrder = 6
     OnClick = btn2Click
+    ExplicitLeft = 89
+    ExplicitTop = 204
   end
   object JvDBSpinEdit6: TJvDBSpinEdit
     Left = 192
@@ -230,9 +234,91 @@ object fRoundSetup: TfRoundSetup
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 5
     DataField = 'round_GROW_INDEX'
     DataSource = dsMainData
+  end
+  object grMainEx: TJvDBGrid
+    Left = 251
+    Top = 8
+    Width = 419
+    Height = 279
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    DataSource = dsMainEx
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 1
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+    AutoSizeColumns = True
+    AutoSizeColumnIndex = 0
+    SelectColumnsDialogStrings.Caption = 'Select columns'
+    SelectColumnsDialogStrings.OK = '&OK'
+    SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+    EditControls = <>
+    RowsHeight = 17
+    TitleRowHeight = 17
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'DESCRIPTION'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Title.Alignment = taCenter
+        Title.Caption = #1054#1087#1080#1089#1072#1085#1080#1077
+        Width = 217
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'ACCURACY'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Title.Alignment = taCenter
+        Title.Caption = #1058#1086#1095#1085#1086#1089#1090#1100
+        Width = 57
+        Visible = True
+      end
+      item
+        Alignment = taCenter
+        Expanded = False
+        FieldName = 'LOOK_TYPE'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Title.Alignment = taCenter
+        Title.Caption = #1058#1080#1087
+        Width = 126
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'NAME'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Title.Alignment = taCenter
+        Title.Caption = #1050#1086#1076
+        Width = -1
+        Visible = False
+      end>
   end
   object qrMainData: TFDQuery
     Connection = DM.Connect
@@ -267,5 +353,99 @@ object fRoundSetup: TfRoundSetup
     DataSet = qrMainData
     Left = 99
     Top = 78
+  end
+  object qrMainEx: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evRowsetSize, evCache, evRecordCountMode, evAutoFetchAll]
+    FetchOptions.RowsetSize = 500
+    FetchOptions.RecordCountMode = cmTotal
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.UpdateTableName = 'smeta.round_ex'
+    SQL.Strings = (
+      'SELECT * FROM round_ex')
+    Left = 315
+    Top = 72
+    object qrMainExNAME: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'NAME'
+      Origin = 'NAME'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Size = 250
+    end
+    object qrMainExACCURACY: TFloatField
+      AutoGenerateValue = arDefault
+      FieldName = 'ACCURACY'
+      Origin = 'ACCURACY'
+      DisplayFormat = '### ### ### ### ### ### ##0.########'
+      EditFormat = '0.########'
+    end
+    object qrMainExROUND_TYPE: TIntegerField
+      AutoGenerateValue = arDefault
+      FieldName = 'ROUND_TYPE'
+      Origin = 'ROUND_TYPE'
+      DisplayFormat = '###,##0.########'
+      EditFormat = '0.########'
+    end
+    object qrMainExDESCRIPTION: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'DESCRIPTION'
+      Origin = 'DESCRIPTION'
+      Size = 500
+    end
+    object qrMainExLOOK_TYPE: TStringField
+      FieldKind = fkLookup
+      FieldName = 'LOOK_TYPE'
+      LookupDataSet = qrRoundType
+      LookupKeyFields = 'ID'
+      LookupResultField = 'NAME'
+      KeyFields = 'ROUND_TYPE'
+      Lookup = True
+    end
+  end
+  object dsMainEx: TDataSource
+    DataSet = qrMainEx
+    Left = 315
+    Top = 118
+  end
+  object qrRoundType: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evRowsetSize, evCache, evRecordCountMode, evAutoFetchAll]
+    FetchOptions.RowsetSize = 500
+    FetchOptions.RecordCountMode = cmTotal
+    FetchOptions.Cache = [fiBlobs, fiMeta]
+    FormatOptions.AssignedValues = [fvMapRules]
+    FormatOptions.OwnMapRules = True
+    FormatOptions.MapRules = <
+      item
+        SourceDataType = dtMemo
+        TargetDataType = dtAnsiString
+      end
+      item
+        SourceDataType = dtFmtBCD
+        TargetDataType = dtDouble
+      end>
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvCheckReadOnly, uvCheckUpdatable]
+    UpdateOptions.EnableDelete = False
+    SQL.Strings = (
+      'SELECT * FROM round_type')
+    Left = 363
+    Top = 72
   end
 end

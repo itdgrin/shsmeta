@@ -1129,16 +1129,19 @@ object dmSmReport: TdmSmReport
       'LEFT JOIN summary_calculation d ON d.SM_ID IN'
       '  (SELECT SM_ID'
       '   FROM smetasourcedata '
-      '   WHERE DELETED=0 AND'
-      '    ((smetasourcedata.SM_ID = s.SM_ID) OR'
+      '   WHERE DELETED=0 '
+      '     AND IFNULL(SM_SUBTYPE, 0)<>2'
+      '     AND ((smetasourcedata.SM_ID = s.SM_ID) OR'
       '           (smetasourcedata.PARENT_ID = s.SM_ID) OR '
       '           (smetasourcedata.PARENT_ID IN ('
       '             SELECT SM_ID'
       '             FROM smetasourcedata'
-      '             WHERE PARENT_ID = s.SM_ID AND DELETED=0)))'
+      
+        '             WHERE PARENT_ID = s.SM_ID AND DELETED=0 AND IFNULL(' +
+        'SM_SUBTYPE, 0)<>2)))'
       '  ) '
-      'WHERE '
-      '  s.SM_ID = :SM_ID  '
+      'WHERE s.SM_ID = :SM_ID'
+      '  AND IFNULL(s.SM_SUBTYPE, 0) <> 2'
       '  AND o.OBJ_ID=s.OBJ_ID'
       'GROUP BY s.`SM_ID`;')
     Left = 59
@@ -1148,7 +1151,7 @@ object dmSmReport: TdmSmReport
         Name = 'SM_ID'
         DataType = ftInteger
         ParamType = ptInput
-        Value = 586
+        Value = 440
       end>
   end
 end

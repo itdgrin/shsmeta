@@ -1120,6 +1120,7 @@ begin
         Font.Style := Font.Style + [fsBold];
       end;
     end;
+    //(Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;

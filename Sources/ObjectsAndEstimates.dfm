@@ -900,7 +900,8 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         'e)) AS PARENT_ID, SM_ID AS MASTER_ID, '
       
         '  CONCAT(IF(FL_USE=1, "", "'#1041#1077#1079' 6'#1050#1057' "), IFNULL(TRIM(name), ""), I' +
-        'F(DELETED=1, "-", "")) AS ITEAM_NAME,'
+        'F(DELETED=1, "-", ""), CASE TYPE_ACT WHEN 1 THEN "['#1085#1072' '#1076#1086#1087'. '#1088#1072#1073#1086#1090 +
+        #1099']" WHEN 2 THEN "['#1080#1090#1086#1075'. '#1089#1091#1084#1084'.]" ELSE "" END) AS ITEAM_NAME,'
       '  DELETED, FL_USE, DATE, NAME, TYPE_ACT, USER_ID'
       'FROM smetasourcedata'
       'WHERE SM_TYPE=2'

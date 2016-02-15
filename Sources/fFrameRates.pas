@@ -115,6 +115,10 @@ type
     pnlSaveCancel: TPanel;
     btnSave: TBitBtn;
     btnCancel: TBitBtn;
+    pnl1: TPanel;
+    JvDBGrid1: TJvDBGrid;
+    dsHeader_1: TDataSource;
+    qrHeader_1: TFDQuery;
 
     procedure FrameResize(Sender: TObject);
     procedure ReceivingSearch(vStr: string);
@@ -1026,6 +1030,7 @@ begin
       .Expand(False);
     fNormativDirectory.skipReload := False;
   end;
+  CloseOpen(qrHeader_1);
 end;
 
 procedure TFrameRates.VSTKeyPress(Sender: TObject; var Key: Char);

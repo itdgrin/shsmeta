@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.Buttons, Vcl.Mask, JvExMask, JvSpin, JvDBSpinEdit,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client, Tools;
+  FireDAC.Comp.Client, Tools, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid;
 
 type
   TfRoundSetup = class(TSmForm)
@@ -28,6 +28,15 @@ type
     dsMainData: TDataSource;
     lbl6: TLabel;
     JvDBSpinEdit6: TJvDBSpinEdit;
+    grMainEx: TJvDBGrid;
+    qrMainEx: TFDQuery;
+    dsMainEx: TDataSource;
+    qrMainExACCURACY: TFloatField;
+    qrMainExDESCRIPTION: TStringField;
+    qrMainExROUND_TYPE: TIntegerField;
+    qrRoundType: TFDQuery;
+    qrMainExLOOK_TYPE: TStringField;
+    qrMainExNAME: TStringField;
     procedure btn1Click(Sender: TObject);
     procedure btn2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -69,7 +78,9 @@ end;
 procedure TfRoundSetup.FormCreate(Sender: TObject);
 begin
   inherited;
+  CloseOpen(qrRoundType);
   CloseOpen(qrMainData);
+  CloseOpen(qrMainEx);
 end;
 
 procedure TfRoundSetup.FormDestroy(Sender: TObject);

@@ -932,12 +932,72 @@
     Align = alBottom
     DoubleBuffered = True
     ParentDoubleBuffered = False
-    TabOrder = 1
+    TabOrder = 2
     ExplicitTop = 511
     ExplicitWidth = 754
     inherited StatusBar: TStatusBar
       Width = 754
       ExplicitWidth = 754
+    end
+  end
+  object pnl1: TPanel
+    Left = 116
+    Top = 27
+    Width = 623
+    Height = 149
+    Anchors = [akLeft, akTop, akRight]
+    Caption = #1053#1086#1074#1072#1103' '#1096#1072#1087#1082#1072
+    TabOrder = 1
+    object JvDBGrid1: TJvDBGrid
+      Left = 1
+      Top = 1
+      Width = 621
+      Height = 111
+      Align = alTop
+      DataSource = dsHeader_1
+      DrawingStyle = gdsClassic
+      FixedColor = clActiveCaption
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      Options = [dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
+      ParentFont = False
+      TabOrder = 0
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -11
+      TitleFont.Name = 'Tahoma'
+      TitleFont.Style = []
+      FixedCols = 1
+      ScrollBars = ssNone
+      AutoSizeColumns = True
+      AutoSizeColumnIndex = 1
+      SelectColumnsDialogStrings.Caption = 'Select columns'
+      SelectColumnsDialogStrings.OK = '&OK'
+      SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+      EditControls = <>
+      RowsHeight = 17
+      TitleRowHeight = 17
+      Columns = <
+        item
+          Expanded = False
+          FieldName = 'CODE'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Width = 131
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'VALUE'
+          Width = 484
+          Visible = True
+        end>
     end
   end
   object qrNC: TFDQuery
@@ -1226,5 +1286,63 @@
     DataSet = qrObjWorks
     Left = 200
     Top = 120
+  end
+  object dsHeader_1: TDataSource
+    DataSet = qrHeader_1
+    Left = 416
+    Top = 112
+  end
+  object qrHeader_1: TFDQuery
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    UpdateOptions.AssignedValues = [uvCheckReadOnly]
+    UpdateOptions.CheckReadOnly = False
+    SQL.Strings = (
+      'SELECT "'#1057#1073#1086#1088#1085#1080#1082'" AS CODE, :sborn AS VALUE'
+      'UNION ALL'
+      'SELECT "'#1050#1086#1076' '#1088#1072#1089#1094#1077#1085#1082#1080'" AS CODE, :rate AS VALUE'
+      'UNION ALL'
+      'SELECT "'#1045#1076'. '#1080#1079#1084'." AS CODE, :unit AS VALUE'
+      'UNION ALL'
+      'SELECT "'#1057#1090#1072#1090#1091#1089'" AS CODE, :stat AS VALUE'
+      'UNION ALL'
+      'SELECT "'#1058#1080#1087' '#1054#1061#1056' '#1080' '#1054#1055#1056'" AS CODE, :ohr AS VALUE'
+      'UNION ALL'
+      'SELECT "'#1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077'" AS CODE, :zim AS VALUE')
+    Left = 372
+    Top = 112
+    ParamData = <
+      item
+        Name = 'SBORN'
+        DataType = ftBlob
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'RATE'
+        DataType = ftBlob
+        ParamType = ptInput
+      end
+      item
+        Name = 'UNIT'
+        DataType = ftBlob
+        ParamType = ptInput
+      end
+      item
+        Name = 'STAT'
+        DataType = ftBlob
+        ParamType = ptInput
+      end
+      item
+        Name = 'OHR'
+        DataType = ftBlob
+        ParamType = ptInput
+      end
+      item
+        Name = 'ZIM'
+        DataType = ftBlob
+        ParamType = ptInput
+      end>
   end
 end
