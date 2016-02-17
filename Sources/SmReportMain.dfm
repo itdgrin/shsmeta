@@ -374,7 +374,7 @@ object fSmReportMain: TfSmReportMain
     PreviewOptions.Zoom = 1.000000000000000000
     PrintOptions.Printer = 'Default'
     PrintOptions.PrintOnSheet = 0
-    ReportOptions.CreateDate = 42385.845885347200000000
+    ReportOptions.CreateDate = 42385.845885347190000000
     ReportOptions.LastChange = 42392.018654502300000000
     ScriptLanguage = 'PascalScript'
     StoreInDFM = False
@@ -467,28 +467,22 @@ object fSmReportMain: TfSmReportMain
       '    IFNULL(f.`foreman_second_name`, "")) AS FOREMAN_FULL,'
       '  IFNULL(:ORGANIZATION_NAME, "") AS ORGANIZATION_NAME,'
       
-        '  ROUND( SUM(IFNULL(d.TOTAL_STOIM_SMRF, d.TOTAL_STOIM_SMR)), rs.' +
-        'round_RATE) AS TOTAL_STOIM_SMR,'
+        '  SUM(IFNULL(d.TOTAL_STOIM_SMRF, d.TOTAL_STOIM_SMR)) AS TOTAL_ST' +
+        'OIM_SMR,'
+      '  SUM(IFNULL(d.OTHERF, d.OTHER)) AS OTHER,'
+      '  SUM(IFNULL(d.TOTAL_STATF, d.TOTAL_STAT)) AS TOTAL_STAT,'
       
-        '  ROUND( SUM(IFNULL(d.OTHERF, d.OTHER)), rs.round_RATE) AS OTHER' +
-        ','
-      
-        '  ROUND( SUM(IFNULL(d.TOTAL_STATF, d.TOTAL_STAT)), rs.round_RATE' +
-        ') AS TOTAL_STAT,'
-      
-        '  ROUND( SUM(IFNULL(d.TOTAL_AND_DEBET_NALF, d.TOTAL_AND_DEBET_NA' +
-        'L)), rs.round_RATE) AS TOTAL_AND_DEBET_NAL,'
-      '  ROUND( SUM(IFNULL(d.NDSF, d.NDS)), rs.round_RATE) AS NDS,'
-      
-        '  ROUND( SUM(IFNULL(d.TOTAL_WORKF, d.TOTAL_WORK)), rs.round_RATE' +
-        ') AS TOTAL_WORK,'
-      '  ROUND( SUM(IFNULL(d.STOIMF, d.STOIM)), rs.round_RATE) AS STOIM'
+        '  SUM(IFNULL(d.TOTAL_AND_DEBET_NALF, d.TOTAL_AND_DEBET_NAL)) AS ' +
+        'TOTAL_AND_DEBET_NAL,'
+      '  SUM(IFNULL(d.NDSF, d.NDS)) AS NDS,'
+      '  SUM(IFNULL(d.TOTAL_WORKF, d.TOTAL_WORK)) AS TOTAL_WORK,'
+      '  SUM(IFNULL(d.STOIMF, d.STOIM)) AS STOIM'
       'FROM `round_setup` rs, smetasourcedata s'
       'LEFT JOIN summary_calculation d ON d.SM_ID IN'
       '  (SELECT SM_ID'
       '   FROM smetasourcedata '
       '   WHERE DELETED=0'
-      '    ((smetasourcedata.SM_ID = s.SM_ID) OR'
+      '    AND ((smetasourcedata.SM_ID = s.SM_ID) OR'
       '           (smetasourcedata.PARENT_ID = s.SM_ID) OR '
       '           (smetasourcedata.PARENT_ID IN ('
       '             SELECT SM_ID'

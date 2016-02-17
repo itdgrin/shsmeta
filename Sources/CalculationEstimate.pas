@@ -713,9 +713,9 @@ type
     procedure dsTypeDataDataChange(Sender: TObject; Field: TField);
     procedure btnRSClick(Sender: TObject);
   private const
-    CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта субподрядчика');
+    CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта на доп. работы');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
-      'Окно расчёта акта субподрядчика');
+      'Окно расчёта акта на доп. работы');
   private
     FMesCaption: string; // Заголовок для сообщений окна
     flLoaded: Boolean;

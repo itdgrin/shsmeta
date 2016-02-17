@@ -38,7 +38,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
     ParentFont = False
     ShowCaption = False
     TabOrder = 0
-    ExplicitWidth = 787
     object ImageSplitterCenter: TImage
       Left = 304
       Top = 125
@@ -73,7 +72,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       ParentFont = False
       ShowCaption = False
       TabOrder = 0
-      ExplicitWidth = 787
       object dbgrdObjects: TJvDBGrid
         Left = 0
         Top = 26
@@ -247,7 +245,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 2
-        ExplicitWidth = 787
       end
       object pnl1: TPanel
         Left = 0
@@ -262,7 +259,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         Font.Style = []
         ParentFont = False
         TabOrder = 0
-        ExplicitWidth = 787
         DesignSize = (
           789
           26)
@@ -308,7 +304,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           TextHint = #1042#1074#1077#1076#1080#1090#1077' '#1090#1077#1082#1089#1090' '#1076#1083#1103' '#1087#1086#1080#1089#1082#1072'...'
           OnChange = edtSearchChange
           OnKeyDown = edtSearchKeyDown
-          ExplicitWidth = 531
         end
         object cbbSearch: TComboBox
           Left = 45
@@ -343,7 +338,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       ShowCaption = False
       TabOrder = 1
       OnResize = PanelBottomResize
-      ExplicitWidth = 787
       object ImageSplitterBottomCenter: TImage
         Left = 513
         Top = 73
@@ -438,7 +432,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
         ParentBackground = False
         ParentFont = False
         TabOrder = 1
-        ExplicitWidth = 424
         object lblActs: TLabel
           Left = 0
           Top = 0
@@ -485,7 +478,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
           RowSelect = True
           OnCustomDrawItem = tvActsCustomDrawItem
           Mirror = False
-          ExplicitWidth = 424
         end
         object pnlActButtons: TGridPanel
           Left = 0
@@ -533,7 +525,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
               Value = 100.000000000000000000
             end>
           TabOrder = 0
-          ExplicitWidth = 424
           object btnReportC3: TBitBtn
             AlignWithMargins = True
             Left = 4
@@ -547,7 +538,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Caption = #1057#1087#1088#1072#1074#1082#1072' '#1057'-3'
             TabOrder = 0
             OnClick = btnReportC3Click
-            ExplicitWidth = 102
           end
           object btnReportC2B: TBitBtn
             AlignWithMargins = True
@@ -562,8 +552,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Caption = #1060#1086#1088#1084#1072' '#1057'-2'#1041
             TabOrder = 1
             OnClick = btnReportC2BClick
-            ExplicitLeft = 109
-            ExplicitWidth = 102
           end
           object btnReport1: TBitBtn
             AlignWithMargins = True
@@ -578,8 +566,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Caption = #1042#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1079#1072' '#1084#1077#1089#1103#1094
             TabOrder = 2
             OnClick = btnReport1Click
-            ExplicitLeft = 214
-            ExplicitWidth = 102
           end
           object btnReport2: TBitBtn
             AlignWithMargins = True
@@ -594,8 +580,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
             Caption = #1057#1087#1080#1089#1072#1085#1080#1077' '#1084#1072#1090'. '#1079#1072' '#1084#1077#1089#1103#1094
             TabOrder = 3
             OnClick = btnReport2Click
-            ExplicitLeft = 319
-            ExplicitWidth = 104
           end
         end
       end

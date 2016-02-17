@@ -2220,7 +2220,6 @@
                 FieldName = 'COAST_NO_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = -1
                 Visible = False
               end
               item
@@ -2228,7 +2227,6 @@
                 FieldName = 'TRANSP_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057', '#1088'.'
-                Width = -1
                 Visible = False
               end
               item
@@ -2236,7 +2234,6 @@
                 FieldName = 'TRANSP_NO_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = -1
                 Visible = False
               end
               item
@@ -2244,7 +2241,6 @@
                 FieldName = 'PRICE_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1090#1086#1080#1084'. '#1089' '#1053#1044#1057', '#1088'.'
-                Width = -1
                 Visible = False
               end
               item
