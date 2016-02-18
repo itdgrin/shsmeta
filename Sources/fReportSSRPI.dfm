@@ -26,8 +26,6 @@ object FormReportSSRPI: TFormReportSSRPI
     Height = 177
     Align = alTop
     TabOrder = 0
-    ExplicitLeft = -1
-    ExplicitTop = -5
     object Label1: TLabel
       Left = 4
       Top = 8

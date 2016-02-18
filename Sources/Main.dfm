@@ -2928,7 +2928,6 @@
   object MainMenu: TMainMenu
     Images = DM.ilIcons_16x16
     Left = 32
-    Top = 8
     object MenuFile: TMenuItem
       Caption = #1060#1072#1081#1083
       object mN38: TMenuItem
@@ -3562,14 +3561,14 @@
     Interval = 100
     OnTimer = TimerCoverTimer
     Left = 32
-    Top = 56
+    Top = 48
   end
   object TimerUpdate: TTimer
     Enabled = False
     Interval = 300
     OnTimer = TimerUpdateTimer
     Left = 32
-    Top = 120
+    Top = 96
   end
   object AppIni: TJvAppIniFileStorage
     StorageOptions.BooleanStringTrueValues = 'TRUE, YES, Y'
@@ -3578,7 +3577,7 @@
     DefaultSection = 'JvAppIniFileStorage'
     SubStorages = <>
     Left = 32
-    Top = 176
+    Top = 144
   end
   object FormStorage: TJvFormStorage
     AppStorage = AppIni
@@ -3586,6 +3585,6 @@
     Options = []
     StoredValues = <>
     Left = 32
-    Top = 224
+    Top = 192
   end
 end

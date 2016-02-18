@@ -179,21 +179,20 @@ begin
     qrTemp.ParamByName('OBJ_ID').Value := FObjectID;
     qrTemp.ExecSQL;
 
+    qrTemp.SQL.Text :=
+        'Insert into ssr_month_proc (OBJ_ID, SYEAR, SMONTH, PROC_STROI, PROC_DEV) ' +
+        'values (:OBJ_ID, :SYEAR, :SMONTH, :PROC_STROI, :PROC_DEV);';
     mtTab.First;
     for J := 1 to mtLineSrok.Value do
     begin
       TmpDate := IncMonth(mtLineBeginDate.Value, J - 1);
       DecodeDate(TmpDate, Y, M, D);
-
-      qrTemp.SQL.Text :=
-        'Insert into ssr_month_proc (OBJ_ID, SYEAR, SMONTH, PROC_STROI, PROC_DEV) ' +
-        'values (:OBJ_ID, :SYEAR, :SMONTH, :PROC_STROI, :PROC_DEV);';
       qrTemp.ParamByName('OBJ_ID').Value := FObjectID;
       qrTemp.ParamByName('SYEAR').Value := Y;
       qrTemp.ParamByName('SMONTH').Value := M;
-      qrTemp.ParamByName('PROC_STROI').Value := mtTab.FieldByName('month' + J.ToString).Value;
+      qrTemp.ParamByName('PROC_STROI').Value := mtTab.FieldByName('month' + J.ToString).AsFloat;
       mtTab.Next;
-      qrTemp.ParamByName('PROC_DEV').Value := mtTab.FieldByName('month' + J.ToString).Value;
+      qrTemp.ParamByName('PROC_DEV').Value := mtTab.FieldByName('month' + J.ToString).AsFloat;
       mtTab.Prior;
       qrTemp.ExecSQL;
     end;

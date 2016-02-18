@@ -1333,3 +1333,4 @@ initialization
 G_SMETADATA := RegisterClipBoardFormat(C_SMETADATA);
 
 end.
+

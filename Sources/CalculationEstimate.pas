@@ -579,8 +579,6 @@ type
     procedure SpeedButtonModeTablesClick(Sender: TObject);
     procedure GetMonthYearCalculationEstimate;
     procedure GetSourceData;
-    procedure FillingWinterPrice(vNumber: string);
-    procedure FillingOHROPR(vNumber: string);
 
     procedure PMDeleteClick(Sender: TObject);
     procedure PanelNoDataResize(Sender: TObject);
@@ -821,10 +819,15 @@ type
 
     function SprManualData(ASprType: Integer; const ANewCode: string; var ANewID: Integer): Boolean;
     procedure ReplaceSmRow(ASmRowId: Integer; var AIterator, AManualNom: Integer);
+
+    procedure FillingWinterPrice(const vNumber: string);
+    procedure FillingOHROPR(const vNumber: string);
+    function GetOHROPRId(const ANumRate: string): Integer;
   protected
     procedure SetFormStyle; override;
     procedure WMSysCommand(var Msg: TMessage); message WM_SYSCOMMAND;
   public
+
     Act: Boolean;
 
     ConfirmCloseForm: Boolean;
@@ -4497,6 +4500,7 @@ begin
   end;
 end;
 
+//Групповое изменение процента транспорта для материалов сметы
 procedure TFormCalculationEstimate.PMSetTransPercClick(Sender: TObject);
 var
   fTrPersSelect: TfTrPersSelect;
@@ -4570,7 +4574,7 @@ begin
           begin
             case SelType of
               1:
-                UpdateStr := 'PROC_TRANSP = GetTranspPers(' + EstimStr + ', ''' + MatCode + ''')';
+                UpdateStr := 'PROC_TRANSP = GetTranspPers(' + EstimStr + ', ''' + MatCode + ''', 0)';
               2:
                 UpdateStr := 'PROC_TRANSP = ' + TransPr.ToString;
             end;
@@ -4581,7 +4585,7 @@ begin
                 '(MAT_CODE like ''С533%'') or (MAT_CODE like ''С534%''))';
           end
           else
-            UpdateStr := 'PROC_TRANSP = GetTranspPers(' + EstimStr + ', MAT_CODE)';
+            UpdateStr := 'PROC_TRANSP = GetTranspPers(' + EstimStr + ', MAT_CODE, ID_CARD_RATE)';
 
           qrTemp.Active := False;
           qrTemp.SQL.Text := 'update materialcard_temp set ' + UpdateStr + ' where ' + WhereStr;
@@ -4954,8 +4958,8 @@ begin
       TmpCode := 'С000-0000';
   end;
 
-  TrPr := FastSelectSQLOne('SELECT GetTranspPers(:IdEstimate, :MatCode);',
-    VarArrayOf([qrRatesExSM_ID.AsInteger, TmpCode]));
+  TrPr := FastSelectSQLOne('SELECT GetTranspPers(:IdEstimate, :MatCode, :RateID);',
+    VarArrayOf([qrRatesExSM_ID.AsInteger, TmpCode, qrMaterialID_CARD_RATE.AsInteger]));
   if VarIsNull(TrPr) then
     TrPr := 0;
 
@@ -5194,6 +5198,7 @@ var
   PriceVAT, PriceNoVAT: string;
   Pt: Real;
   AutoCommitValue: Boolean;
+  Work_ID: integer;
 begin
   if not CheckCursorInRate then
     Exit;
@@ -5221,6 +5226,7 @@ begin
           vMaxIdRate := FieldByName('id').AsInteger;
           NewRateCode := FieldByName('RATE_CODE').AsString;
           DataRowID := FieldByName('DATA_ROW_ID').AsInteger;
+          Work_ID := FieldByName('WORK_ID').AsInteger;
           Active := False;
         end;
       except
@@ -5232,7 +5238,15 @@ begin
         end;
       end;
 
-      // Подкоговка автозамены
+      if Work_ID = 0 then
+      begin
+        Work_ID := GetOHROPRId(NewRateCode);
+        qrTemp.SQL.Text := 'Update card_rate_temp set WORK_ID = :WORK_ID where ID = :ID';
+        qrTemp.ParamByName('WORK_ID').Value := Work_ID;
+        qrTemp.ParamByName('ID').Value := vMaxIdRate;
+        qrTemp.ExecSQL;
+      end;
+
       ClearAutoRep;
 
       qrTemp.SQL.Clear;
@@ -5282,9 +5296,10 @@ begin
             // Получение процента транспорта для материала
             qrTemp1.Active := False;
             qrTemp1.SQL.Clear;
-            qrTemp1.SQL.Add('SELECT GetTranspPers(:IdEstimate, :MatCode);');
+            qrTemp1.SQL.Add('SELECT GetTranspPers(:IdEstimate, :MatCode, :RateID);');
             qrTemp1.ParamByName('IdEstimate').Value := qrRatesExSM_ID.AsInteger;
             qrTemp1.ParamByName('MatCode').Value := FieldByName('MatCode').AsString;
+            qrTemp1.ParamByName('RateID').Value := vMaxIdRate;
             qrTemp1.Active := True;
             Pt := 0;
             if not qrTemp1.Eof then
@@ -6155,65 +6170,80 @@ begin
   qrMechanizmAfterScroll(qrMechanizm);
 end;
 
-procedure TFormCalculationEstimate.FillingOHROPR(vNumber: string);
-// Находим охр и опр по настройке
-var
-  mes, COL1NAME, COL2NAME: string;
-  MAIS: Integer;
+function TFormCalculationEstimate.GetOHROPRId(const ANumRate: string): Integer;
+var mes: string;
+    COL1NAME, COL2NAME: string;
+    MAIS: Integer;
 begin
   try
-    if qrRatesExWORK_ID.AsInteger = 0 then
-      with qrTemp do
+    if COL1NAME = '' then
+      COL1NAME := FastSelectSQLOne
+        ('SELECT objstroj.COL1NAME FROM objstroj, objcards WHERE ' +
+         'objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID',
+        VarArrayOf([IdObject]));
+    if COL2NAME = '' then
+      COL2NAME := FastSelectSQLOne
+        ('SELECT objstroj.COL2NAME FROM objstroj, objcards ' +
+         'WHERE objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID',
+        VarArrayOf([IdObject]));
+    if MAIS = 0 then
+      MAIS := FastSelectSQLOne
+        ('SELECT IFNULL(smetasourcedata.`MAIS_ID`, objcards.`MAIS_ID`) FROM ' +
+         'smetasourcedata, objcards WHERE sm_id = :0 AND objcards.`obj_id` = ' +
+         'smetasourcedata.`OBJ_ID`',
+        VarArrayOf([qrRatesExSM_ID.Value]));
+    qrTemp.Active := False;
+    qrTemp.SQL.Text := 'SELECT DISTINCT objworks.work_id as work_id, work_name as NAME,'#13 +
+      'CONCAT(objdetailex.' + COL1NAME + ', "% / ", objdetailex.' + COL2NAME + ', "%") AS VALUE,'#13 +
+      'CONCAT(s, " - ", po) AS DESCRIPTION'#13 +
+      'FROM onormativs, objworks, objdetailex WHERE objdetailex.NUMBER=objworks.work_id ' +
+      'AND objdetailex.MAIS_ID=:MAIS AND objworks.WORK_ID=onormativs.WORK_ID AND ' +
+      'FN_NUM_TO_INT(:ncode)>=FN_NUM_TO_INT(s) and FN_NUM_TO_INT(:ncode)<=FN_NUM_TO_INT(po)';
+    qrTemp.ParamByName('ncode').AsString := ANumRate;
+    qrTemp.ParamByName('MAIS').AsInteger := MAIS;
+    qrTemp.Active := True;
+    qrTemp.First;
+    if not qrTemp.Eof then
+    begin
+      if qrTemp.RecordCount = 1 then
       begin
-        COL1NAME := FastSelectSQLOne
-          ('SELECT objstroj.COL1NAME FROM objstroj, objcards WHERE objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID',
-          VarArrayOf([IdObject]));
-        COL2NAME := FastSelectSQLOne
-          ('SELECT objstroj.COL2NAME FROM objstroj, objcards WHERE objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID',
-          VarArrayOf([IdObject]));
-        MAIS := FastSelectSQLOne
-          ('SELECT IFNULL(smetasourcedata.`MAIS_ID`, objcards.`MAIS_ID`) FROM smetasourcedata, objcards WHERE sm_id = :0 AND objcards.`obj_id` = smetasourcedata.`OBJ_ID`',
-          VarArrayOf([qrRatesExSM_ID.Value]));
-        Active := False;
-        SQL.Text := 'SELECT DISTINCT objworks.work_id as work_id, work_name as NAME,'#13 +
-          'CONCAT(objdetailex.' + COL1NAME + ', "% / ", objdetailex.' + COL2NAME + ', "%") AS VALUE,'#13 +
-          'CONCAT(s, " - ", po) AS DESCRIPTION'#13 +
-          'FROM onormativs, objworks, objdetailex WHERE objdetailex.NUMBER=objworks.work_id AND objdetailex.MAIS_ID=:MAIS AND objworks.WORK_ID=onormativs.WORK_ID AND FN_NUM_TO_INT(:ncode)>=FN_NUM_TO_INT(s) and FN_NUM_TO_INT(:ncode)<=FN_NUM_TO_INT(po)';
-        ParamByName('ncode').AsString := vNumber;
-        ParamByName('MAIS').AsInteger := MAIS;
-        Active := True;
-        First;
-        if not Eof then
+        Result := qrTemp.FieldByName('work_id').Value;
+      end
+      else
+      // Если нашлось более одной записи, показываем диалог
+      begin
+        mes := 'Расценка "' + qrRatesExOBJ_CODE.AsString +
+          '" относится к нескольким настройкам ОХРиОПР и ПП. Укажите необходимый тип.';
+        Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+        if ShowSelectDialog('Выбор типа ОХРиОПР и ПП', qrTemp) then
         begin
-          if RecordCount = 1 then
-          begin
-            qrRatesExWORK_ID.Value := FieldByName('work_id').Value;
-          end
-          else
-          // Если нашлось более одной записи, показываем диалог
-          begin
-            mes := 'Расценка "' + qrRatesExOBJ_CODE.AsString +
-              '" относится к нескольким настройкам ОХРиОПР и ПП. Укажите необходимый тип.';
-            Application.MessageBox(PWideChar(mes), 'Расчет', MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
-            if ShowSelectDialog('Выбор типа ОХРиОПР и ПП', qrTemp) then
-            begin
-              //
-              qrRatesExWORK_ID.Value := FieldByName('work_id').Value;
-            end;
-          end;
-        end
-        else
-        begin
-          //
-          qrRatesExWORK_ID.Value := FastSelectSQLOne('SELECT def_work_id FROM round_setup LIMIT 1',
-            VarArrayOf([]));
+          Result := qrTemp.FieldByName('work_id').Value;
         end;
       end;
+    end
+    else
+    begin
+      Result := FastSelectSQLOne('SELECT def_work_id FROM round_setup LIMIT 1',
+        VarArrayOf([]));
+    end;
   except
     on e: Exception do
       MessageBox(0, PChar('При получении значений ОХРиОПР:' + sLineBreak + sLineBreak + e.Message),
         PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
+end;
+
+procedure TFormCalculationEstimate.FillingOHROPR(const vNumber: string);
+// Находим охр и опр по настройке
+var TmpId: Integer;
+begin
+  if qrRatesExWORK_ID.AsInteger = 0 then
+  begin
+    TmpId := GetOHROPRId(vNumber);
+    if TmpId > 0 then
+      qrRatesExWORK_ID.AsInteger := TmpId;
+  end;
+
 end;
 
 procedure TFormCalculationEstimate.FillingTableDescription(const vIdNormativ: Integer);
@@ -6661,7 +6691,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.FillingWinterPrice(vNumber: string);
+procedure TFormCalculationEstimate.FillingWinterPrice(const vNumber: string);
 var
   mes: string;
 begin

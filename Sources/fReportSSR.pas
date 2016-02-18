@@ -64,6 +64,8 @@ type
     pmTempBuilds: TMenuItem;
     pmZimUdor: TMenuItem;
     pmRazRaboti: TMenuItem;
+    pmEdinZakaz: TMenuItem;
+    pmNepredvid: TMenuItem;
     procedure qrObjectBeforeOpen(DataSet: TDataSet);
     procedure FormCreate(Sender: TObject);
     procedure btnObjInfoClick(Sender: TObject);
@@ -362,15 +364,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '9.3';
-    AArray[I].SprID := 2;
-
-    qrTemp.SQL.Text := 'select VALUE from ssrcost where ID = :ID';
-    qrTemp.ParamByName('ID').Value := AArray[I].SprID;
-    qrTemp.Active := True;
-    if not qrTemp.IsEmpty then
-      AArray[I].Pers := qrTemp.Fields[0].Value;
-    qrTemp.Active := False;
-
+    AArray[I].Pers := '9.7';
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -394,7 +388,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '10.1';
-    AArray[I].Pers := 1; //??????
+    AArray[I].Pers := 1.8;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -406,7 +400,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '10.2';
-    AArray[I].Pers := 0.09; //???????
+    AArray[I].Pers := 0.09;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -442,33 +436,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '90.10';
-    AArray[I].SprID := 4;
-
-    qrTemp.SQL.Text := 'select VALUE from ssrreserve where ID = :ID';
-    qrTemp.ParamByName('ID').Value := AArray[I].SprID;
-    qrTemp.Active := True;
-    if not qrTemp.IsEmpty then
-      AArray[I].Pers := qrTemp.Fields[0].Value;
-    qrTemp.Active := False;
-    AArray[I].Koef1 := 1;
-    AArray[I].Koef2 := 1;
-    AddNewKoef(AArray[I]);
-  end;
-
-  I := FindLineNom(AArray, '90.10');
-  if I = -1 then
-  begin
-    I := Length(AArray);
-    SetLength(AArray, Length(AArray) + 1);
-    AArray[I].LineNom := '90.10';
-    AArray[I].SprID := 4;
-
-    qrTemp.SQL.Text := 'select VALUE from ssrreserve where ID = :ID';
-    qrTemp.ParamByName('ID').Value := AArray[I].SprID;
-    qrTemp.Active := True;
-    if not qrTemp.IsEmpty then
-      AArray[I].Pers := qrTemp.Fields[0].Value;
-    qrTemp.Active := False;
+    AArray[I].Pers := 3;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -544,6 +512,9 @@ procedure TFormReportSSR.pmSSRPopup(Sender: TObject);
 begin
   pmTempBuilds.Visible := mtSSRNum.AsString = '8.1';
   pmZimUdor.Visible := mtSSRNum.AsString = '9.1';
+  pmRazRaboti.Visible := mtSSRNum.AsString = '9.3';
+  pmEdinZakaz.Visible := mtSSRNum.AsString = '10.1';
+  pmNepredvid.Visible := mtSSRNum.AsString = '90.10';
   pmSSRIndex.Visible := mtSSRNum.AsString = '90.14';
 end;
 
@@ -556,6 +527,8 @@ begin
   case (Sender as TMenuItem).Tag of
   1: TmpStr := 'Сметные нормы для дополнительных затрат при производстве работ в зимнее время';
   2: TmpStr := 'Сметные нормы затрат на строительство временных зданий и сооружений';
+  3: TmpStr := 'Резерв на непредвиденные затраты';
+  4: TmpStr := 'Содержание единых заказчиков';
   5: TmpStr := 'Затраты, связанные с подвижным и разъездным характером работ';
   end;
 
@@ -576,6 +549,8 @@ begin
         FKoefArray[I].SprID := fSSR.SprID;
         case (Sender as TMenuItem).Tag of
         1, 2: qrTemp.SQL.Text := 'select COEF_NORM from ssrdetail where ID = :ID';
+        3: qrTemp.SQL.Text := 'select VALUE from ssrclients where ID = :ID';
+        4: qrTemp.SQL.Text := 'select VALUE from ssrreserve where ID = :ID';
         5: qrTemp.SQL.Text := 'select VALUE from ssrcost where ID = :ID';
         end;
         qrTemp.ParamByName('ID').Value := FKoefArray[I].SprID;
@@ -651,7 +626,7 @@ begin
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) SM_TYPE, ' +
     '(Select CHAPTER FROM smetasourcedata WHERE SM_ID = ' +
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) CHAPTER, ' +
-    '(Select ROW_NUMBER FROM smetasourcedata WHERE SM_ID = ' +
+    '(Select IFNULL(ROW_NUMBER, 1) FROM smetasourcedata WHERE SM_ID = ' +
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) ROW_NUMBER, ' +
     'Round(SUM(COALESCE(d.ZPF, d.ZP, 0))) ZP, ' +
     'Round(SUM(COALESCE(d.ZP_PRF, d.ZP_PR, 0))) ZP_PR, ' +
@@ -680,7 +655,7 @@ begin
     '(Select SM_TYPE FROM smetasourcedata WHERE SM_ID = s.PARENT_ID) SM_TYPE, ' +
     '(Select CHAPTER FROM smetasourcedata WHERE SM_ID = ' +
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) CHAPTER, ' +
-    '(Select ROW_NUMBER FROM smetasourcedata WHERE SM_ID = ' +
+    '(Select IFNULL(ROW_NUMBER, 1) FROM smetasourcedata WHERE SM_ID = ' +
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) ROW_NUMBER, ' +
     'Round(SUM(COALESCE(d.ZPF, d.ZP, 0))) ZP, ' +
     'Round(SUM(COALESCE(d.ZP_PRF, d.ZP_PR, 0))) ZP_PR, ' +
@@ -954,7 +929,7 @@ end;
 
 procedure AssignLineIfNoNull(const ALine: TRepSSRLine);
 begin
-  if (ALine.Total + ALine.Trud) > 0 then
+  if (ALine.Total <> 0) or (ALine.Trud <> 0) then
   begin
     mtSSR.Edit;
     AssignLine(ALine);
@@ -1346,7 +1321,7 @@ begin
         if I > -1 then
         begin
           if VarIsAssign(FKoefArray[I].Pers) then
-            TmpKoef.Pers := FKoefArray[I].Pers;
+            TmpKoef.Pers := FKoefArray[I].Pers / 100;
           if VarIsAssign(FKoefArray[I].Koef1) then
             TmpKoef.Koef1 := FKoefArray[I].Koef1;
           if VarIsAssign(FKoefArray[I].Koef2) then
@@ -1366,7 +1341,7 @@ begin
         if J > -1 then
         begin
           if VarIsAssign(FKoefArray[J].Pers) then
-            TmpKoef1.Pers := FKoefArray[J].Pers;
+            TmpKoef1.Pers := FKoefArray[J].Pers / 100;
           if VarIsAssign(FKoefArray[J].Koef1) then
             TmpKoef1.Koef1 := FKoefArray[J].Koef1;
           if VarIsAssign(FKoefArray[J].Koef2) then
@@ -1400,7 +1375,7 @@ begin
         if J > -1 then
         begin
           if VarIsAssign(FKoefArray[J].Pers) then
-            TmpKoef1.Pers := FKoefArray[J].Pers;
+            TmpKoef1.Pers := FKoefArray[J].Pers / 100;
           if VarIsAssign(FKoefArray[J].Koef1) then
             TmpKoef1.Koef1 := FKoefArray[J].Koef1;
           if VarIsAssign(FKoefArray[J].Koef2) then
@@ -1433,7 +1408,7 @@ begin
         if J > -1 then
         begin
           if VarIsAssign(FKoefArray[J].Pers) then
-            TmpKoef1.Pers := FKoefArray[J].Pers;
+            TmpKoef1.Pers := FKoefArray[J].Pers / 100;
           if VarIsAssign(FKoefArray[J].Koef1) then
             TmpKoef1.Koef1 := FKoefArray[J].Koef1;
           if VarIsAssign(FKoefArray[J].Koef2) then
@@ -1444,7 +1419,7 @@ begin
         NullLine();
         TmpLine.Other :=
           SmRound((Line9011.Total - Line82.Total - Line911.Total - Line104.Total -
-          Line105.Total - TmpLine1.Total {V901201+V901202}) * TmpKoef1.Pers);
+          Line105.Total + TmpLine1.Total {V901201+V901202}) * TmpKoef1.Pers);
         TmpLine.CalcTotal;
         AssignLineIfNoNull(TmpLine);
         TmpLine1.Summ(TmpLine);

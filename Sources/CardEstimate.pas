@@ -763,6 +763,7 @@ end;
 procedure TfCardEstimate.dbcbbCHAPTERClick(Sender: TObject);
 begin
   qrMain.FieldByName('ROW_NUMBER').Value := Null;
+  qrMain.FieldByName('ROW_NUMBER').AsInteger := 1;
   cbbTypeCloseUp(chkAddChapterNumber);
 end;
 
@@ -773,6 +774,7 @@ begin
   begin
     qrMain.FieldByName('CHAPTER').AsInteger := 2;
     qrMain.FieldByName('ROW_NUMBER').Value := Null;
+    qrMain.FieldByName('ROW_NUMBER').AsInteger := 1;
   end;
 end;
 
