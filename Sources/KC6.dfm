@@ -344,7 +344,7 @@ object fKC6: TfKC6
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
-      Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgTitleClick, dgTitleHotTrack]
+      Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgTitleHotTrack]
       ParentFont = False
       TabOrder = 1
       TitleFont.Charset = DEFAULT_CHARSET
