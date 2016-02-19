@@ -74,6 +74,9 @@ type
     qrDataSELECTED: TLargeintField;
     qrDataINCITERATOR: TLargeintField;
     qrDataITERATOR: TLargeintField;
+    chkAutoCalc: TCheckBox;
+    rbByCount: TRadioButton;
+    rbByCountOut: TRadioButton;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -111,6 +114,8 @@ type
     procedure grDataCellClick(Column: TColumn);
   private
     IdObject: Integer;
+    flF2: Boolean;
+    procedure RecalcRow;
   public const
     Indent = '     ';
 
@@ -249,7 +254,8 @@ end;
 procedure TfKC6.qrDataCalcFields(DataSet: TDataSet);
 begin
   if qrDataID_TYPE_DATA.Value > 0 then
-    qrDataOBJ_COUNT_OUT.Value := round((qrDataOBJ_COUNT.Value - qrDataCntDONE.Value - qrDataOBJ_COUNT_IN.Value)*100000000)/100000000;
+    qrDataOBJ_COUNT_OUT.Value :=
+      round((qrDataOBJ_COUNT.Value - qrDataCntDONE.Value - qrDataOBJ_COUNT_IN.Value) * 100000000) / 100000000;
   qrDataCHECKED.OnChange := nil;
   if qrDataSELECTED.Value = 0 then
     qrDataCHECKED.Value := False
@@ -481,6 +487,13 @@ begin
       qrDataSELECTED.Value := 0;
     qrData.Next;
   end;
+  if Key = VK_F2 then
+  begin
+    flF2 := True;
+    RecalcRow;
+    flF2 := False;
+    Abort;
+  end;
 end;
 
 procedure TfKC6.grDataKeyPress(Sender: TObject; var Key: Char);
@@ -659,6 +672,9 @@ var
   fl: Boolean;
   Key: Variant;
 begin
+  if not chkAutoCalc.Checked then
+    Exit;
+
   fl := False;
   Key := qrDataSORT_ID.Value;
   qrData.DisableControls;
@@ -671,9 +687,7 @@ begin
       if qrDataCHECKED.Value and (qrDataID_TYPE_DATA.Value > 0) then
       begin
         fl := True;
-        qrData.Edit;
-        qrDataOBJ_COUNT_IN.Value := (EditKoef.Value / 100) *
-          (Double(qrDataOBJ_COUNT.Value) - Double(qrDataCntDONE.Value));
+        RecalcRow;
       end;
       qrData.Next;
     end;
@@ -685,10 +699,20 @@ begin
   end;
   // Высчитываем на текущей строке
   if not fl then
-  begin
+    RecalcRow;
+end;
+
+procedure TfKC6.RecalcRow;
+begin
+  if (qrDataOBJ_COUNT_IN.AsFloat <> 0) and flF2 then
+    Exit;
+  qrData.Edit;
+  if rbByCountOut.Checked then
     qrDataOBJ_COUNT_IN.Value := (EditKoef.Value / 100) *
       (Double(qrDataOBJ_COUNT.Value) - Double(qrDataCntDONE.Value));
-  end;
+  if rbByCount.Checked then
+    qrDataOBJ_COUNT_IN.Value := (EditKoef.Value / 100) * (Double(qrDataOBJ_COUNT.Value));
+  qrData.CheckBrowseMode;
 end;
 
 end.

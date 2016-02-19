@@ -940,10 +940,10 @@
       ExplicitWidth = 754
     end
   end
-  object pnl1: TPanel
-    Left = 116
+  object pnlHead: TPanel
+    Left = 117
     Top = 27
-    Width = 623
+    Width = 622
     Height = 149
     Anchors = [akLeft, akTop, akRight]
     Caption = #1053#1086#1074#1072#1103' '#1096#1072#1087#1082#1072
@@ -951,8 +951,8 @@
     object JvDBGrid1: TJvDBGrid
       Left = 1
       Top = 1
-      Width = 621
-      Height = 111
+      Width = 620
+      Height = 130
       Align = alTop
       DataSource = dsHeader_1
       DrawingStyle = gdsClassic
@@ -962,7 +962,7 @@
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = []
-      Options = [dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
+      Options = [dgIndicator, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleHotTrack]
       ParentFont = False
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
@@ -970,6 +970,7 @@
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
+      OnDblClick = JvDBGrid1DblClick
       FixedCols = 1
       ScrollBars = ssNone
       AutoSizeColumns = True
@@ -978,24 +979,20 @@
       SelectColumnsDialogStrings.OK = '&OK'
       SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
       EditControls = <>
-      RowsHeight = 17
-      TitleRowHeight = 17
+      AutoSizeRows = False
+      RowsHeight = 20
+      TitleRowHeight = 20
       Columns = <
         item
           Expanded = False
           FieldName = 'CODE'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
           Width = 131
           Visible = True
         end
         item
           Expanded = False
           FieldName = 'VALUE'
-          Width = 484
+          Width = 471
           Visible = True
         end>
     end
@@ -1293,56 +1290,63 @@
     Top = 112
   end
   object qrHeader_1: TFDQuery
+    BeforeOpen = qrHeader_1BeforeOpen
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FormatOptions.AssignedValues = [fvDefaultParamDataType]
     UpdateOptions.AssignedValues = [uvCheckReadOnly]
     UpdateOptions.CheckReadOnly = False
     SQL.Strings = (
-      'SELECT "'#1057#1073#1086#1088#1085#1080#1082'" AS CODE, :sborn AS VALUE'
+      'SELECT "'#1057#1073#1086#1088#1085#1080#1082'" AS CODE, :sborn AS VALUE, 1 AS CODE'
       'UNION ALL'
-      'SELECT "'#1050#1086#1076' '#1088#1072#1089#1094#1077#1085#1082#1080'" AS CODE, :rate AS VALUE'
+      'SELECT "'#1050#1086#1076' '#1088#1072#1089#1094#1077#1085#1082#1080'" AS CODE, :rate AS VALUE, 2 AS CODE'
       'UNION ALL'
-      'SELECT "'#1045#1076'. '#1080#1079#1084'." AS CODE, :unit AS VALUE'
+      'SELECT "'#1045#1076'. '#1080#1079#1084'." AS CODE, :unit AS VALUE, 3 AS CODE'
       'UNION ALL'
-      'SELECT "'#1057#1090#1072#1090#1091#1089'" AS CODE, :stat AS VALUE'
+      'SELECT "'#1057#1090#1072#1090#1091#1089'" AS CODE, :stat AS VALUE, 4 AS CODE'
       'UNION ALL'
-      'SELECT "'#1058#1080#1087' '#1054#1061#1056' '#1080' '#1054#1055#1056'" AS CODE, :ohr AS VALUE'
+      'SELECT "'#1058#1080#1087' '#1054#1061#1056' '#1080' '#1054#1055#1056'" AS CODE, :ohr AS VALUE, 5 AS CODE'
       'UNION ALL'
-      'SELECT "'#1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077'" AS CODE, :zim AS VALUE')
+      'SELECT "'#1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077'" AS CODE, :zim AS VALUE, 6 AS CODE')
     Left = 372
     Top = 112
     ParamData = <
       item
         Name = 'SBORN'
-        DataType = ftBlob
+        DataType = ftString
         ParamType = ptInput
         Value = Null
       end
       item
         Name = 'RATE'
-        DataType = ftBlob
+        DataType = ftString
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'UNIT'
-        DataType = ftBlob
+        DataType = ftString
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'STAT'
-        DataType = ftBlob
+        DataType = ftString
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'OHR'
-        DataType = ftBlob
+        DataType = ftString
         ParamType = ptInput
+        Value = Null
       end
       item
         Name = 'ZIM'
-        DataType = ftBlob
+        DataType = ftString
         ParamType = ptInput
+        Value = Null
       end>
   end
 end

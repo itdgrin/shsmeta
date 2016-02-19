@@ -115,7 +115,7 @@ type
     pnlSaveCancel: TPanel;
     btnSave: TBitBtn;
     btnCancel: TBitBtn;
-    pnl1: TPanel;
+    pnlHead: TPanel;
     JvDBGrid1: TJvDBGrid;
     dsHeader_1: TDataSource;
     qrHeader_1: TFDQuery;
@@ -185,6 +185,8 @@ type
     procedure qrNormativAfterPost(DataSet: TDataSet);
     procedure qrNormativBeforeEdit(DataSet: TDataSet);
     procedure grNCEnter(Sender: TObject);
+    procedure qrHeader_1BeforeOpen(DataSet: TDataSet);
+    procedure JvDBGrid1DblClick(Sender: TObject);
   private
     StrQuery: String; // Для формирования строки запроса к БД
     flNewRecord: Boolean; // Признак новой записи
@@ -196,8 +198,8 @@ type
   public
     procedure ReceivingAll; override;
     procedure CheckCurPeriod; override;
-    constructor Create(AOwner: TComponent; const vDataBase: Char;
-      const vAllowAddition: Boolean; ASMSubType: Integer = 0); reintroduce;
+    constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean;
+      ASMSubType: Integer = 0); reintroduce;
 
   end;
 
@@ -303,9 +305,10 @@ begin
   ReceivingSearch('');
 end;
 
-constructor TFrameRates.Create(AOwner: TComponent; const vDataBase:
-  Char; const vAllowAddition: Boolean; ASMSubType: Integer);
-var ev: TNotifyEvent;
+constructor TFrameRates.Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean;
+  ASMSubType: Integer);
+var
+  ev: TNotifyEvent;
 begin
   inherited Create(AOwner);
 
@@ -325,6 +328,7 @@ begin
     grNC.PopupMenu := nil;
   end;
 
+  pnlHead.Visible := not(vDataBase = '1');
   btnSelectWinterPrice.Visible := vDataBase = '1';
   btnSelectCollection.Visible := vDataBase = '1';
   cbbType.Visible := vDataBase = '1';
@@ -373,7 +377,7 @@ begin
   PanelRight.Visible := False;
   PanelRight.Constraints.MinWidth := 100;
 
-  if ASMSubType in [1,2] then
+  if ASMSubType in [1, 2] then
   begin
     ev := rb1.OnClick;
     try
@@ -381,9 +385,9 @@ begin
       rb2.OnClick := nil;
 
       if ASMSubType = 1 then
-        rb1.Checked := True;
+        rb1.Checked := true;
       if ASMSubType = 2 then
-        rb2.Checked := True;
+        rb2.Checked := true;
 
       rb1.Visible := False;
       rb2.Visible := False;
@@ -511,28 +515,25 @@ begin
       dm.Read.StartTransaction;
       // Копируем расценку
       newID := GetNewID(C_MANID_NORM);
-      FastExecSQL
-        ('INSERT INTO normativg(NORMATIV_ID, SORT_NUM, NORM_NUM, NORM_CAPTION, UNIT_ID, ' +
-         'NORM_ACTIVE, normativ_directory_id, NORM_BASE, NORM_TYPE, work_id, ' +
-         'ZNORMATIVS_ID, date_beginer)'#13 +
-         '(SELECT :0, null,:1,NORM_CAPTION,UNIT_ID,1,normativ_directory_id,1,' +
-         'NORM_TYPE,work_id,ZNORMATIVS_ID, :2 FROM normativg WHERE NORMATIV_ID = :3);',
+      FastExecSQL('INSERT INTO normativg(NORMATIV_ID, SORT_NUM, NORM_NUM, NORM_CAPTION, UNIT_ID, ' +
+        'NORM_ACTIVE, normativ_directory_id, NORM_BASE, NORM_TYPE, work_id, ' +
+        'ZNORMATIVS_ID, date_beginer)'#13 +
+        '(SELECT :0, null,:1,NORM_CAPTION,UNIT_ID,1,normativ_directory_id,1,' +
+        'NORM_TYPE,work_id,ZNORMATIVS_ID, :2 FROM normativg WHERE NORMATIV_ID = :3);',
         VarArrayOf([newID, OBJ_NAME, Now, qrNormativ.FieldByName('IdNormative').Value]));
 
       // Копируем материалы
       newID1 := GetNewID(C_MANID_NORM_MAT);
       qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT MATERIAL_ID, NORM_RAS ' +
-        'FROM materialnorm WHERE NORMATIV_ID=' +
+      qrTemp.SQL.Text := 'SELECT MATERIAL_ID, NORM_RAS ' + 'FROM materialnorm WHERE NORMATIV_ID=' +
         qrNormativ.FieldByName('IdNormative').AsString;
-      qrTemp.Active := True;
+      qrTemp.Active := true;
       while not qrTemp.Eof do
       begin
-        FastExecSQL
-          ('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
-           'VALUES (:0,:1,:2,:3,1)',
-        VarArrayOf([newID1, newID, qrTemp.Fields[0].Value, qrTemp.Fields[1].Value]));
-        inc(newID1);
+        FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
+          'VALUES (:0,:1,:2,:3,1)', VarArrayOf([newID1, newID, qrTemp.Fields[0].Value,
+          qrTemp.Fields[1].Value]));
+        Inc(newID1);
         qrTemp.Next;
       end;
       qrTemp.Active := False;
@@ -540,18 +541,15 @@ begin
       // Копируем механизмы
       newID1 := GetNewID(C_MANID_NORM_MECH);
       qrTemp.Active := False;
-      qrTemp.SQL.Text :=
-        'SELECT MECHANIZM_ID, NORM_RAS ' +
-        'FROM mechanizmnorm WHERE NORMATIV_ID=' +
-          qrNormativ.FieldByName('IdNormative').AsString;
-      qrTemp.Active := True;
+      qrTemp.SQL.Text := 'SELECT MECHANIZM_ID, NORM_RAS ' + 'FROM mechanizmnorm WHERE NORMATIV_ID=' +
+        qrNormativ.FieldByName('IdNormative').AsString;
+      qrTemp.Active := true;
       while not qrTemp.Eof do
       begin
-        FastExecSQL
-          ('INSERT INTO mechanizmnorm (ID, NORMATIV_ID, MECHANIZM_ID, NORM_RAS, BASE) ' +
-           'VALUES (:0,:1,:2,:3,1)',
-          VarArrayOf([newID1, newID, qrTemp.Fields[0].Value, qrTemp.Fields[1].Value]));
-        inc(newID1);
+        FastExecSQL('INSERT INTO mechanizmnorm (ID, NORMATIV_ID, MECHANIZM_ID, NORM_RAS, BASE) ' +
+          'VALUES (:0,:1,:2,:3,1)', VarArrayOf([newID1, newID, qrTemp.Fields[0].Value,
+          qrTemp.Fields[1].Value]));
+        Inc(newID1);
         qrTemp.Next;
       end;
       qrTemp.Active := False;
@@ -559,18 +557,15 @@ begin
       // Копируем затраты труда
       newID1 := GetNewID(C_MANID_NORM_WORK);
       qrTemp.Active := False;
-      qrTemp.SQL.Text :=
-        'SELECT WORK_ID, NORMA FROM normativwork ' +
-        'WHERE NORMATIV_ID=' +
-          qrNormativ.FieldByName('IdNormative').AsString;
-      qrTemp.Active := True;
+      qrTemp.SQL.Text := 'SELECT WORK_ID, NORMA FROM normativwork ' + 'WHERE NORMATIV_ID=' +
+        qrNormativ.FieldByName('IdNormative').AsString;
+      qrTemp.Active := true;
       while not qrTemp.Eof do
       begin
-        FastExecSQL
-          ('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' +
-           'VALUES (:0,:1,:2,:3,1)',
-          VarArrayOf([newID1, newID, qrTemp.Fields[0].Value, qrTemp.Fields[1].Value]));
-        inc(newID1);
+        FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' +
+          'VALUES (:0,:1,:2,:3,1)', VarArrayOf([newID1, newID, qrTemp.Fields[0].Value,
+          qrTemp.Fields[1].Value]));
+        Inc(newID1);
         qrTemp.Next;
       end;
       qrTemp.Active := False;
@@ -603,12 +598,12 @@ begin
 end;
 
 procedure TFrameRates.mN31Click(Sender: TObject);
-var newID1: Variant;
+var
+  newID1: Variant;
 begin
   newID1 := GetNewID(C_MANID_NORM_WORK);
-  FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' +
-    'VALUE(:0,:1,:2,0,1)', VarArrayOf([newID1,
-    qrNormativ.FieldByName('IdNormative').Value, (Sender as TComponent).Tag]));
+  FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' + 'VALUE(:0,:1,:2,0,1)',
+    VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, (Sender as TComponent).Tag]));
   CloseOpen(qrNC);
 end;
 
@@ -620,8 +615,7 @@ begin
   for i := 1 to 3 do
   begin
     newID1 := GetNewID(C_MANID_NORM_WORK);
-    FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' +
-      'VALUE(:0,:1,:2, 0,1)',
+    FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' + 'VALUE(:0,:1,:2, 0,1)',
       VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, i]));
   end;
   CloseOpen(qrNC);
@@ -640,8 +634,8 @@ begin
         begin
           newID1 := GetNewID(C_MANID_NORM_MECH);
           FastExecSQL('INSERT INTO mechanizmnorm (ID, NORMATIV_ID, MECHANIZM_ID, NORM_RAS, BASE) ' +
-            'VALUE(:0,:1,:2,"1", 1)',
-            VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res.ID]));
+            'VALUE(:0,:1,:2,"1", 1)', VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value,
+            res.ID]));
           CloseOpen(qrNC);
         end;
       end;
@@ -652,8 +646,8 @@ begin
         begin
           newID1 := GetNewID(C_MANID_NORM_MAT);
           FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
-            'VALUE(:0,:1,:2,"1", 1)',
-            VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res.ID]));
+            'VALUE(:0,:1,:2,"1", 1)', VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value,
+            res.ID]));
           CloseOpen(qrNC);
         end;
       end;
@@ -664,8 +658,8 @@ begin
         begin
           newID1 := GetNewID(C_MANID_NORM_MAT);
           FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
-            'VALUE(:0,:1,:2,"1",1)',
-            VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, res.ID]));
+            'VALUE(:0,:1,:2,"1",1)', VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value,
+            res.ID]));
           CloseOpen(qrNC);
         end;
       end;
@@ -721,6 +715,16 @@ procedure TFrameRates.pnlNaviatorResize(Sender: TObject);
 begin
   btnPrev.Width := (pnlNaviator.ClientWidth - pnlNaviator.ControlCount - 1) div pnlNaviator.ControlCount;
   btnNext.Width := (pnlNaviator.ClientWidth - pnlNaviator.ControlCount - 1) div pnlNaviator.ControlCount;
+end;
+
+procedure TFrameRates.qrHeader_1BeforeOpen(DataSet: TDataSet);
+begin
+  qrHeader_1.ParamByName('sborn').Value := EditCollection.Text;
+  qrHeader_1.ParamByName('rate').Value := qrNormativ.FieldByName('NumberNormative').AsString;
+  qrHeader_1.ParamByName('unit').Value := qrNormativ.FieldByName('UNIT').AsString;
+  qrHeader_1.ParamByName('stat').Value := Edit5.Text;
+  qrHeader_1.ParamByName('ohr').Value := dblkcbbwork_id.Text;
+  qrHeader_1.ParamByName('zim').Value := EditWinterPrice.Text;
 end;
 
 procedure TFrameRates.qrHistoryAfterOpen(DataSet: TDataSet);
@@ -1471,6 +1475,14 @@ procedure TFrameRates.grRatesExit(Sender: TObject);
 begin
   FrameStatusBar.InsertText(2, '');
   // R EditRate.Text := '';
+end;
+
+procedure TFrameRates.JvDBGrid1DblClick(Sender: TObject);
+begin
+  case qrHeader_1.FieldByName('CODE').AsInteger = 1 of
+    1:
+      LabelSbornikClick(Sender);
+  end;
 end;
 
 end.

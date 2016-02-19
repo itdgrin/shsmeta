@@ -5,7 +5,7 @@ object fKC6: TfKC6
   BorderIcons = [biSystemMenu]
   Caption = #1046#1091#1088#1085#1072#1083' 6-'#1050#1057
   ClientHeight = 428
-  ClientWidth = 564
+  ClientWidth = 657
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -29,7 +29,7 @@ object fKC6: TfKC6
   object splTop: TSplitter
     Left = 0
     Top = 125
-    Width = 564
+    Width = 657
     Height = 5
     Cursor = crVSplit
     Align = alTop
@@ -40,18 +40,19 @@ object fKC6: TfKC6
   object PanelBottomButton: TPanel
     Left = 0
     Top = 387
-    Width = 564
+    Width = 657
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     Caption = 'Panel3'
     ShowCaption = False
     TabOrder = 3
+    ExplicitWidth = 564
     DesignSize = (
-      564
+      657
       41)
     object Button1: TButton
-      Left = 350
+      Left = 443
       Top = 8
       Width = 100
       Height = 25
@@ -66,9 +67,10 @@ object fKC6: TfKC6
       ParentFont = False
       TabOrder = 0
       OnClick = Button1Click
+      ExplicitLeft = 350
     end
     object ButtonCancel: TButton
-      Left = 456
+      Left = 549
       Top = 8
       Width = 100
       Height = 25
@@ -76,12 +78,13 @@ object fKC6: TfKC6
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 1
       OnClick = ButtonCancelClick
+      ExplicitLeft = 456
     end
   end
   object PanelObject: TPanel
     Left = 0
     Top = 0
-    Width = 564
+    Width = 657
     Height = 25
     Align = alTop
     BevelOuter = bvNone
@@ -89,8 +92,9 @@ object fKC6: TfKC6
     ShowCaption = False
     TabOrder = 0
     TabStop = True
+    ExplicitWidth = 564
     DesignSize = (
-      564
+      657
       25)
     object LabelObject: TLabel
       Left = 8
@@ -102,29 +106,31 @@ object fKC6: TfKC6
     object EditObject: TEdit
       Left = 57
       Top = 2
-      Width = 504
+      Width = 597
       Height = 21
       TabStop = False
       Anchors = [akLeft, akTop, akRight]
       Color = 14802912
       ReadOnly = True
       TabOrder = 0
+      ExplicitWidth = 504
     end
   end
   object PanelTree: TPanel
     Left = 0
     Top = 25
-    Width = 564
+    Width = 657
     Height = 100
     Align = alTop
     BevelOuter = bvNone
     Caption = 'PanelTree'
     ShowCaption = False
     TabOrder = 1
+    ExplicitWidth = 564
     object tvEstimates: TJvDBTreeView
       Left = 0
       Top = 0
-      Width = 564
+      Width = 657
       Height = 100
       DataSource = dsTreeData
       MasterField = 'SM_ID'
@@ -149,18 +155,20 @@ object fKC6: TfKC6
       RowSelect = True
       OnCustomDrawItem = tvEstimatesCustomDrawItem
       Mirror = False
+      ExplicitWidth = 564
     end
   end
   object PanelClient: TPanel
     Left = 0
     Top = 130
-    Width = 564
+    Width = 657
     Height = 257
     Align = alClient
     BevelOuter = bvNone
     Caption = 'PanelClient'
     ShowCaption = False
     TabOrder = 2
+    ExplicitWidth = 564
     object ImageSplitterBottom: TImage
       Left = 312
       Top = 106
@@ -171,7 +179,7 @@ object fKC6: TfKC6
     object splBottom: TSplitter
       Left = 0
       Top = 96
-      Width = 564
+      Width = 657
       Height = 5
       Cursor = crVSplit
       Align = alBottom
@@ -182,7 +190,7 @@ object fKC6: TfKC6
     object PanelKoef: TPanel
       Left = 0
       Top = 0
-      Width = 564
+      Width = 657
       Height = 25
       Align = alTop
       BevelOuter = bvNone
@@ -195,19 +203,21 @@ object fKC6: TfKC6
       ParentFont = False
       ShowCaption = False
       TabOrder = 0
+      ExplicitWidth = 564
       DesignSize = (
-        564
+        657
         25)
       object LabelKoef: TLabel
-        Left = 305
+        Left = 398
         Top = 6
         Width = 115
         Height = 13
         Anchors = [akTop, akRight]
         Caption = #1055#1088#1086#1094#1077#1085#1090' '#1087#1077#1088#1077#1088#1072#1089#1095#1105#1090#1072':'
+        ExplicitLeft = 305
       end
       object Label1: TLabel
-        Left = 496
+        Left = 589
         Top = 4
         Width = 60
         Height = 16
@@ -221,9 +231,10 @@ object fKC6: TfKC6
         Font.Style = [fsBold, fsUnderline]
         ParentFont = False
         OnClick = Label1Click
+        ExplicitLeft = 496
       end
       object EditKoef: TSpinEdit
-        Left = 426
+        Left = 519
         Top = 1
         Width = 64
         Height = 22
@@ -236,9 +247,10 @@ object fKC6: TfKC6
         MaxValue = 100
         MinValue = 0
         ParentFont = False
-        TabOrder = 0
-        Value = 0
+        TabOrder = 2
+        Value = 100
         OnChange = EditKoefChange
+        ExplicitLeft = 426
       end
       object chkCopyTreeEstimates: TCheckBox
         Left = 8
@@ -246,23 +258,55 @@ object fKC6: TfKC6
         Width = 145
         Height = 17
         Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1089#1090#1088#1091#1082#1090#1091#1088#1091
+        TabOrder = 3
+      end
+      object chkAutoCalc: TCheckBox
+        Left = 233
+        Top = 1
+        Width = 159
+        Height = 24
+        Anchors = [akTop, akRight]
+        Caption = #1040#1074#1090#1086#1084#1072#1090#1080#1095#1077#1089#1082#1080#1081' '#1087#1077#1088#1077#1089#1095#1077#1090' '#1086#1090#1084#1077#1095#1077#1085#1085#1099#1093' '#1089#1090#1088#1086#1082
         TabOrder = 1
+        WordWrap = True
+        ExplicitLeft = 223
+      end
+      object rbByCount: TRadioButton
+        Left = 146
+        Top = -4
+        Width = 81
+        Height = 17
+        Anchors = [akTop, akRight]
+        Caption = #1087#1086' '#1086#1073#1098#1077#1084#1091
+        Checked = True
+        TabOrder = 0
+        TabStop = True
+      end
+      object rbByCountOut: TRadioButton
+        Left = 146
+        Top = 11
+        Width = 81
+        Height = 17
+        Anchors = [akTop, akRight]
+        Caption = #1087#1086' '#1086#1089#1090#1072#1090#1082#1091
+        TabOrder = 4
       end
     end
     object PanelBottom: TPanel
       Left = 0
       Top = 133
-      Width = 564
+      Width = 657
       Height = 124
       Align = alBottom
       BevelOuter = bvNone
       Caption = 'PanelBottom'
       ShowCaption = False
       TabOrder = 3
+      ExplicitWidth = 564
       object dbgrd1: TJvDBGrid
         Left = 0
         Top = 0
-        Width = 564
+        Width = 657
         Height = 124
         Align = alClient
         DataSource = dsOtherActs
@@ -335,7 +379,7 @@ object fKC6: TfKC6
     object grData: TJvDBGrid
       Left = 0
       Top = 25
-      Width = 564
+      Width = 657
       Height = 71
       Align = alClient
       DataSource = dsData
@@ -374,7 +418,7 @@ object fKC6: TfKC6
           ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1042' '#1072#1082#1090
-          Width = 36
+          Width = 43
           Visible = True
         end
         item
@@ -383,7 +427,7 @@ object fKC6: TfKC6
           ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #8470' '#1087'/'#1087
-          Width = 35
+          Width = 42
           Visible = True
         end
         item
@@ -391,7 +435,7 @@ object fKC6: TfKC6
           FieldName = 'OBJ_CODE'
           Title.Alignment = taCenter
           Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
-          Width = 130
+          Width = 150
           Visible = True
         end
         item
@@ -400,7 +444,7 @@ object fKC6: TfKC6
           ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1050#1086#1083'-'#1074#1086
-          Width = 56
+          Width = 66
           Visible = True
         end
         item
@@ -408,7 +452,7 @@ object fKC6: TfKC6
           FieldName = 'OBJ_UNIT'
           Title.Alignment = taCenter
           Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-          Width = 62
+          Width = 72
           Visible = True
         end
         item
@@ -417,7 +461,7 @@ object fKC6: TfKC6
           ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1042#1099#1087#1086#1083#1085#1077#1085#1086
-          Width = 68
+          Width = 79
           Visible = True
         end
         item
@@ -425,7 +469,7 @@ object fKC6: TfKC6
           FieldName = 'OBJ_COUNT_IN'
           Title.Alignment = taCenter
           Title.Caption = #1055#1088#1086#1094#1077#1085#1090#1086#1074#1082#1072
-          Width = 85
+          Width = 99
           Visible = True
         end
         item
@@ -434,14 +478,14 @@ object fKC6: TfKC6
           ReadOnly = True
           Title.Alignment = taCenter
           Title.Caption = #1054#1089#1090#1072#1090#1086#1082
-          Width = 68
+          Width = 82
           Visible = True
         end>
     end
     object dbmmoOBJ_NAME: TDBMemo
       Left = 0
       Top = 101
-      Width = 564
+      Width = 657
       Height = 32
       Align = alBottom
       DataField = 'OBJ_NAME'
@@ -449,6 +493,7 @@ object fKC6: TfKC6
       ReadOnly = True
       ScrollBars = ssVertical
       TabOrder = 2
+      ExplicitWidth = 564
     end
   end
   object qrOtherActs: TFDQuery
