@@ -946,12 +946,13 @@
     Width = 622
     Height = 149
     Anchors = [akLeft, akTop, akRight]
+    BevelOuter = bvNone
     Caption = #1053#1086#1074#1072#1103' '#1096#1072#1087#1082#1072
     TabOrder = 1
     object JvDBGrid1: TJvDBGrid
-      Left = 1
-      Top = 1
-      Width = 620
+      Left = 0
+      Top = 0
+      Width = 622
       Height = 130
       Align = alTop
       DataSource = dsHeader_1
@@ -970,7 +971,8 @@
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
-      OnDblClick = JvDBGrid1DblClick
+      OnCellClick = JvDBGrid1CellClick
+      OnDrawColumnCell = JvDBGrid1DrawColumnCell
       FixedCols = 1
       ScrollBars = ssNone
       AutoSizeColumns = True
@@ -992,7 +994,7 @@
         item
           Expanded = False
           FieldName = 'VALUE'
-          Width = 471
+          Width = 473
           Visible = True
         end>
     end
@@ -1298,17 +1300,17 @@
     UpdateOptions.AssignedValues = [uvCheckReadOnly]
     UpdateOptions.CheckReadOnly = False
     SQL.Strings = (
-      'SELECT "'#1057#1073#1086#1088#1085#1080#1082'" AS CODE, :sborn AS VALUE, 1 AS CODE'
+      'SELECT "'#1057#1073#1086#1088#1085#1080#1082'" AS CODE, :sborn AS VALUE, 1 AS CODE1'
       'UNION ALL'
-      'SELECT "'#1050#1086#1076' '#1088#1072#1089#1094#1077#1085#1082#1080'" AS CODE, :rate AS VALUE, 2 AS CODE'
+      'SELECT "'#1050#1086#1076' '#1088#1072#1089#1094#1077#1085#1082#1080'" AS CODE, :rate AS VALUE, 2 AS CODE1'
       'UNION ALL'
-      'SELECT "'#1045#1076'. '#1080#1079#1084'." AS CODE, :unit AS VALUE, 3 AS CODE'
+      'SELECT "'#1045#1076'. '#1080#1079#1084'." AS CODE, :unit AS VALUE, 3 AS CODE1'
       'UNION ALL'
-      'SELECT "'#1057#1090#1072#1090#1091#1089'" AS CODE, :stat AS VALUE, 4 AS CODE'
+      'SELECT "'#1057#1090#1072#1090#1091#1089'" AS CODE, :stat AS VALUE, 4 AS CODE1'
       'UNION ALL'
-      'SELECT "'#1058#1080#1087' '#1054#1061#1056' '#1080' '#1054#1055#1056'" AS CODE, :ohr AS VALUE, 5 AS CODE'
+      'SELECT "'#1058#1080#1087' '#1054#1061#1056' '#1080' '#1054#1055#1056'" AS CODE, :ohr AS VALUE, 5 AS CODE1'
       'UNION ALL'
-      'SELECT "'#1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077'" AS CODE, :zim AS VALUE, 6 AS CODE')
+      'SELECT "'#1047#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077'" AS CODE, :zim AS VALUE, 6 AS CODE1')
     Left = 372
     Top = 112
     ParamData = <

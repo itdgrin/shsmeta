@@ -3,7 +3,7 @@ object fCardObject: TfCardObject
   Top = 0
   BorderIcons = [biSystemMenu]
   Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1086#1073#1098#1077#1082#1090#1072
-  ClientHeight = 561
+  ClientHeight = 524
   ClientWidth = 456
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,12 +17,12 @@ object fCardObject: TfCardObject
   OnShow = FormShow
   DesignSize = (
     456
-    561)
+    524)
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel1: TBevel
     Left = 0
-    Top = 520
+    Top = 483
     Width = 456
     Height = 41
     Align = alBottom
@@ -49,20 +49,6 @@ object fCardObject: TfCardObject
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    ParentFont = False
-  end
-  object lbl5: TLabel
-    Left = 8
-    Top = 548
-    Width = 191
-    Height = 13
-    Alignment = taCenter
-    Caption = #1054#1041#1071#1047#1040#1058#1045#1051#1068#1053#1054' '#1044#1051#1071' '#1047#1040#1055#1054#1051#1053#1045#1053#1048#1071
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
     ParentFont = False
   end
   object GroupBoxDateBuilding: TGroupBox
@@ -493,7 +479,7 @@ object fCardObject: TfCardObject
   end
   object ButtonSave: TButton
     Left = 222
-    Top = 528
+    Top = 491
     Width = 110
     Height = 25
     Anchors = [akRight, akBottom]
@@ -504,18 +490,20 @@ object fCardObject: TfCardObject
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 21
+    TabOrder = 20
     OnClick = ButtonSaveClick
+    ExplicitTop = 528
   end
   object ButtonCancel: TButton
     Left = 338
-    Top = 528
+    Top = 491
     Width = 110
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = #1054#1090#1084#1077#1085#1072
-    TabOrder = 22
+    TabOrder = 21
     OnClick = ButtonCancelClick
+    ExplicitTop = 528
   end
   object GroupBoxVAT: TGroupBox
     Left = 338
@@ -574,82 +562,6 @@ object fCardObject: TfCardObject
     TabOrder = 8
     Visible = False
   end
-  object grp1: TGroupBox
-    Left = 8
-    Top = 476
-    Width = 441
-    Height = 41
-    Caption = #1056#1072#1089#1093#1086#1076#1099', %'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 19
-    object lbl1: TLabel
-      Left = 8
-      Top = 17
-      Width = 172
-      Height = 13
-      Caption = #1042#1088#1077#1084#1077#1085#1085#1099#1077' '#1079#1076#1072#1085#1080#1103' '#1080' '#1089#1086#1086#1088#1091#1078#1077#1085#1080#1103':'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-    end
-    object lbl2: TLabel
-      Left = 241
-      Top = 17
-      Width = 128
-      Height = 13
-      Cursor = crHandPoint
-      Caption = #1059#1089#1083#1091#1075#1080' '#1075#1077#1085'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072':'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clNavy
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsUnderline]
-      ParentFont = False
-      OnClick = lbl2Click
-    end
-    object dbedtPER_TEPM_BUILD: TDBEdit
-      Left = 183
-      Top = 14
-      Width = 52
-      Height = 21
-      DataField = 'PER_TEMP_BUILD'
-      DataSource = dsMain
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      PopupMenu = pm1
-      TabOrder = 0
-      OnKeyPress = dbedtPER_TEPM_BUILDKeyPress
-    end
-    object dbedtPER_CONTRACTOR: TDBEdit
-      Left = 375
-      Top = 14
-      Width = 59
-      Height = 21
-      DataField = 'PER_CONTRACTOR'
-      DataSource = dsMain
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      PopupMenu = pm1
-      TabOrder = 1
-      OnKeyPress = dbedtPER_CONTRACTORKeyPress
-    end
-  end
   object grp2: TGroupBox
     Left = 8
     Top = 434
@@ -694,13 +606,20 @@ object fCardObject: TfCardObject
   end
   object btnCardObjectAdditional: TBitBtn
     Left = 8
-    Top = 523
+    Top = 491
     Width = 208
     Height = 25
     Anchors = [akLeft, akBottom]
-    Caption = #1044#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1077' '#1076#1072#1085#1085#1099#1077' '#1076#1083#1103' '#1088#1072#1089#1095#1077#1090#1072
-    TabOrder = 20
+    Caption = #1055#1088#1086#1095#1080#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1099' '#1088#1072#1089#1095#1077#1090#1072
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 19
     OnClick = btnCardObjectAdditionalClick
+    ExplicitTop = 528
   end
   object grp3: TGroupBox
     Left = 232
@@ -919,14 +838,6 @@ object fCardObject: TfCardObject
     DataSet = qrMain
     Left = 384
     Top = 69
-  end
-  object pm1: TPopupMenu
-    Left = 24
-    Top = 401
-    object N1: TMenuItem
-      Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1085#1080#1077
-      OnClick = N1Click
-    end
   end
   object dsClients: TDataSource
     DataSet = qrClients

@@ -69,15 +69,8 @@ type
     qrZP: TFDQuery;
     qrMAIS: TFDQuery;
     dsMAIS: TDataSource;
-    grp1: TGroupBox;
-    lbl1: TLabel;
-    lbl2: TLabel;
-    dbedtPER_TEPM_BUILD: TDBEdit;
-    dbedtPER_CONTRACTOR: TDBEdit;
     qrMain: TFDQuery;
     dsMain: TDataSource;
-    pm1: TPopupMenu;
-    N1: TMenuItem;
     grp2: TGroupBox;
     dblkcbbMAIS: TDBLookupComboBox;
     dblkcbbCUST_ID: TDBLookupComboBox;
@@ -97,7 +90,6 @@ type
     seYearBeginStroj: TSpinEdit;
     lbl4: TLabel;
     dbseCountMonth: TJvDBSpinEdit;
-    lbl5: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -109,17 +101,13 @@ type
     procedure ClearAllFields;
 
     procedure GetValueDBLookupComboBoxTypeOXR(Sender: TObject);
-    procedure N1Click(Sender: TObject);
     procedure dblkcbbRegionCloseUp(Sender: TObject);
     procedure DateTimePickerStartBuildingChange(Sender: TObject);
-    procedure lbl2Click(Sender: TObject);
     procedure btn2Click(Sender: TObject);
     procedure btn1Click(Sender: TObject);
     procedure ButtonListAgreementsClick(Sender: TObject);
     procedure btnCardObjectAdditionalClick(Sender: TObject);
     procedure qrMainNewRecord(DataSet: TDataSet);
-    procedure dbedtPER_TEPM_BUILDKeyPress(Sender: TObject; var Key: Char);
-    procedure dbedtPER_CONTRACTORKeyPress(Sender: TObject; var Key: Char);
     procedure cbbMonthBeginStrojChange(Sender: TObject);
 
   private
@@ -172,8 +160,6 @@ var
   e: TNotifyEvent;
 begin
   qrZP.Filtered := False;
-  dbedtPER_TEPM_BUILD.ReadOnly := True;
-  dbedtPER_CONTRACTOR.ReadOnly := True;
 
   Left := FormMain.Left + (FormMain.Width - Width) div 2;
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
@@ -417,13 +403,13 @@ begin
   if not FEditing then
   begin
     // Услуги генподрядчика
-    DM.qrDifferent.SQL.Text := 'SELECT SUM(FN_getParamValue(code, :month, :year)) AS VALUE'#13 +
+    { DM.qrDifferent.SQL.Text := 'SELECT SUM(FN_getParamValue(code, :month, :year)) AS VALUE'#13 +
       'FROM unidictparam WHERE id_unidicttype=7';
-    DM.qrDifferent.ParamByName('month').AsInteger := cbbFromMonth.ItemIndex + 1;
-    DM.qrDifferent.ParamByName('year').AsInteger := seYear.Value;
-    DM.qrDifferent.Active := True;
-    qrMain.FieldByName('PER_CONTRACTOR').Value := DM.qrDifferent.FieldByName('VALUE').Value;
-    DM.qrDifferent.Active := False;
+      DM.qrDifferent.ParamByName('month').AsInteger := cbbFromMonth.ItemIndex + 1;
+      DM.qrDifferent.ParamByName('year').AsInteger := seYear.Value;
+      DM.qrDifferent.Active := True; }
+    qrMain.FieldByName('PER_CONTRACTOR').Value := 0 { DM.qrDifferent.FieldByName('VALUE').Value };
+    { DM.qrDifferent.Active := False; }
   end;
 
   // Выставляем начальные значения в выпадающих списках
@@ -648,7 +634,12 @@ begin
           'FL_CALC_VEDOMS_NAL=:FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE=:FL_APPLY_WINTERPRICE,'#13 +
           'Fl_NAL_USN=:Fl_NAL_USN, NAL_USN=:NAL_USN, Fl_SPEC_SCH=:Fl_SPEC_SCH, SPEC_SCH=:SPEC_SCH,'#13 +
           'WINTERPRICE_TYPE=:WINTERPRICE_TYPE, BEG_STROJ2=:BEG_STROJ2,'#13 +
-          'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK, CONTRACTOR_SERV=:CONTRACTOR_SERV WHERE obj_id = "' +
+          'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK, CONTRACTOR_SERV=:CONTRACTOR_SERV,'#13 +
+          'PER_NPZ=:PER_NPZ, FL_K_ZP=:FL_K_ZP, FL_K_OHR=:FL_K_OHR, FL_K_PP=:FL_K_PP,'#13 +
+          'PER_WINTERPRICE=:PER_WINTERPRICE, FL_DIFF_MAT=:FL_DIFF_MAT, FL_DIFF_TRANSP=:FL_DIFF_TRANSP,'#13 +
+          'FL_DIFF_EMIM=:FL_DIFF_EMIM, FL_DIFF_OTHER=:FL_DIFF_OTHER, FL_DIFF_NAL=:FL_DIFF_NAL,'#13 +
+          'FL_DIFF_MAT_ZAK=:FL_DIFF_MAT_ZAK, FL_DIFF_NAL_USN=:FL_DIFF_NAL_USN, FL_DIFF_NDS=:FL_DIFF_NDS,'#13 +
+          'FL_DIFF_DEVICE_PODR_WITH_NAL=:FL_DIFF_DEVICE_PODR_WITH_NAL'#13 + 'WHERE obj_id = "' +
           IntToStr(FIdObject) + '";');
         // Если поменялось зимнее удорожание
         if (qrMain.FieldByName('FL_APPLY_WINTERPRICE').Value <> qrMain.FieldByName('FL_APPLY_WINTERPRICE')
@@ -679,13 +670,17 @@ begin
           ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV, USER_ID,'#13
           + 'FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK, FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL,'#13 +
           'FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE, WINTERPRICE_TYPE,BEG_STROJ2,'#13 +
-          'Fl_NAL_USN, NAL_USN, Fl_SPEC_SCH, SPEC_SCH)'#13 + 'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2
-          + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "' + v6 + '", "' + v7 + '", :srok_stroj, ' + v9 +
-          ', :cust_id, :general_id, "' + v12 + '", :snds, :region_id, "' + v15 + '", "' + v16 + '", "' + v17 +
-          '", "' + v18 + '", "' + v19 +
+          'Fl_NAL_USN, NAL_USN, Fl_SPEC_SCH, SPEC_SCH, PER_NPZ, FL_K_ZP, FL_K_OHR, FL_K_PP,'#13 +
+          'PER_WINTERPRICE, FL_DIFF_MAT, FL_DIFF_TRANSP, FL_DIFF_EMIM, FL_DIFF_OTHER, FL_DIFF_NAL,'#13 +
+          'FL_DIFF_MAT_ZAK, FL_DIFF_NAL_USN, FL_DIFF_NDS, FL_DIFF_DEVICE_PODR_WITH_NAL)'#13 +
+          'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "'
+          + v6 + '", "' + v7 + '", :srok_stroj, ' + v9 + ', :cust_id, :general_id, "' + v12 +
+          '", :snds, :region_id, "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV, :USER_ID,'#13 +
           ':FL_CALC_TRAVEL, :FL_CALC_TRAVEL_WORK, :FL_CALC_WORKER_DEPARTMENT, :FL_CALC_ZEM_NAL, :FL_CALC_VEDOMS_NAL, :FL_APPLY_WINTERPRICE, :WINTERPRICE_TYPE,'#13
-          + ':BEG_STROJ2,:Fl_NAL_USN, :NAL_USN, :Fl_SPEC_SCH, :SPEC_SCH);');
+          + ':BEG_STROJ2,:Fl_NAL_USN, :NAL_USN, :Fl_SPEC_SCH, :SPEC_SCH, :PER_NPZ, :FL_K_ZP, :FL_K_OHR,'#13 +
+          ':FL_K_PP, :PER_WINTERPRICE, :FL_DIFF_MAT, :FL_DIFF_TRANSP, :FL_DIFF_EMIM, :FL_DIFF_OTHER,'#13 +
+          ':FL_DIFF_NAL, :FL_DIFF_MAT_ZAK, :FL_DIFF_NAL_USN, :FL_DIFF_NDS, :FL_DIFF_DEVICE_PODR_WITH_NAL);');
         ParamByName('NEW_ID').Value := NEW_ID;
         ParamByName('USER_ID').Value := G_USER_ID;
         FIdObject := NEW_ID;
@@ -714,7 +709,21 @@ begin
       ParamByName('SPEC_SCH').Value := qrMain.FieldByName('SPEC_SCH').Value;
       ParamByName('srok_stroj').Value := qrMain.FieldByName('srok_stroj').Value;
       ParamByName('region_id').Value := qrMain.FieldByName('region_id').Value;
-
+      ParamByName('PER_NPZ').Value := qrMain.FieldByName('PER_NPZ').Value;
+      ParamByName('FL_K_ZP').Value := qrMain.FieldByName('FL_K_ZP').Value;
+      ParamByName('FL_K_OHR').Value := qrMain.FieldByName('FL_K_OHR').Value;
+      ParamByName('FL_K_PP').Value := qrMain.FieldByName('FL_K_PP').Value;
+      ParamByName('PER_WINTERPRICE').Value := qrMain.FieldByName('PER_WINTERPRICE').Value;
+      ParamByName('FL_DIFF_MAT').Value := qrMain.FieldByName('FL_DIFF_MAT').Value;
+      ParamByName('FL_DIFF_TRANSP').Value := qrMain.FieldByName('FL_DIFF_TRANSP').Value;
+      ParamByName('FL_DIFF_EMIM').Value := qrMain.FieldByName('FL_DIFF_EMIM').Value;
+      ParamByName('FL_DIFF_OTHER').Value := qrMain.FieldByName('FL_DIFF_OTHER').Value;
+      ParamByName('FL_DIFF_NAL').Value := qrMain.FieldByName('FL_DIFF_NAL').Value;
+      ParamByName('FL_DIFF_MAT_ZAK').Value := qrMain.FieldByName('FL_DIFF_MAT_ZAK').Value;
+      ParamByName('FL_DIFF_NAL_USN').Value := qrMain.FieldByName('FL_DIFF_NAL_USN').Value;
+      ParamByName('FL_DIFF_NDS').Value := qrMain.FieldByName('FL_DIFF_NDS').Value;
+      ParamByName('FL_DIFF_DEVICE_PODR_WITH_NAL').Value :=
+        qrMain.FieldByName('FL_DIFF_DEVICE_PODR_WITH_NAL').Value;
       ExecSQL;
     end;
 
@@ -775,10 +784,11 @@ var
 begin
   fCardObjectAdditional := TfCardObjectAdditional.Create(Self);
   try
+    fCardObjectAdditional.fCardObject := Self;
     fCardObjectAdditional.ShowModal;
     if fCardObjectAdditional.dbchkFL_CALC_VEDOMS_NAL2.Checked and
       (VarIsNull(qrMain.FieldByName('SPEC_SCH').Value) or (qrMain.FieldByName('SPEC_SCH').Value = 0)) then
-      qrMain.FieldByName('SPEC_SCH').Value := 1.5;
+      qrMain.FieldByName('SPEC_SCH').Value := 0 { 1.5 };
   finally
     FreeAndNil(fCardObjectAdditional);
   end;
@@ -867,18 +877,6 @@ begin
   end;
 end;
 
-procedure TfCardObject.dbedtPER_CONTRACTORKeyPress(Sender: TObject; var Key: Char);
-begin
-  if Key = #13 then
-    ButtonSave.SetFocus;
-end;
-
-procedure TfCardObject.dbedtPER_TEPM_BUILDKeyPress(Sender: TObject; var Key: Char);
-begin
-  if Key = #13 then
-    dbedtPER_CONTRACTOR.SetFocus;
-end;
-
 procedure TfCardObject.dblkcbbRegionCloseUp(Sender: TObject);
 begin
   if qrZP.IsEmpty then
@@ -936,24 +934,6 @@ begin
       MessageBox(0, PChar('При запросе списка ОХР и ОПР возникла ошибка:' + sLineBreak + e.Message),
         PChar(Caption), MB_ICONERROR + MB_OK + mb_TaskModal);
   end;
-end;
-
-procedure TfCardObject.lbl2Click(Sender: TObject);
-var
-  res: Variant;
-begin
-  res := EditContractorServices(qrMain.FieldByName('CONTRACTOR_SERV').AsInteger);
-  if not VarIsNull(res) then
-  begin
-    qrMain.FieldByName('CONTRACTOR_SERV').Value := res[0];
-    qrMain.FieldByName('PER_CONTRACTOR').Value := res[1];
-  end;
-end;
-
-procedure TfCardObject.N1Click(Sender: TObject);
-begin
-  dbedtPER_TEPM_BUILD.ReadOnly := False;
-  dbedtPER_CONTRACTOR.ReadOnly := False;
 end;
 
 procedure TfCardObject.qrMainNewRecord(DataSet: TDataSet);

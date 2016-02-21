@@ -186,7 +186,9 @@ type
     procedure qrNormativBeforeEdit(DataSet: TDataSet);
     procedure grNCEnter(Sender: TObject);
     procedure qrHeader_1BeforeOpen(DataSet: TDataSet);
-    procedure JvDBGrid1DblClick(Sender: TObject);
+    procedure JvDBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
+    procedure JvDBGrid1CellClick(Column: TColumn);
   private
     StrQuery: String; // Для формирования строки запроса к БД
     flNewRecord: Boolean; // Признак новой записи
@@ -1477,12 +1479,28 @@ begin
   // R EditRate.Text := '';
 end;
 
-procedure TFrameRates.JvDBGrid1DblClick(Sender: TObject);
+procedure TFrameRates.JvDBGrid1CellClick(Column: TColumn);
 begin
-  case qrHeader_1.FieldByName('CODE').AsInteger = 1 of
+  case qrHeader_1.FieldByName('CODE1').AsInteger of
     1:
-      LabelSbornikClick(Sender);
+      LabelSbornikClick(nil);
   end;
+end;
+
+procedure TFrameRates.JvDBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+  Column: TColumn; State: TGridDrawState);
+begin
+  inherited;
+  with (Sender AS TJvDBGrid).Canvas do
+  begin
+    if qrHeader_1.FieldByName('CODE1').AsInteger = 1 then
+    begin
+      Font.Style := Font.Style + [fsUnderline];
+      Font.Style := Font.Style + [fsBold];
+      Font.Color := clNavy;
+    end;
+  end;
+  (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 end.
