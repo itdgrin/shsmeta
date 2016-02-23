@@ -26,6 +26,31 @@ uses
   Vcl.Samples.Spin,
   Data.DB;
 
+const
+  G_CONNECTSTR: string = 'DriverID=MySQL' + sLineBreak +
+                         'User_name=root' + sLineBreak +
+                         'Password=serg' + sLineBreak +
+                         'SERVER=xxx' + sLineBreak +
+                         'DATABASE=smeta' + sLineBreak +
+                         'CharacterSet=cp1251' + sLineBreak +
+                         'TinyIntFormat=Integer';
+
+  arraymes: array[1..12, 1..2] of string =
+    (('Январь',   'Января'),
+    ('Февраль',  'Февраля'),
+    ('Март',     'Марта'),
+    ('Апрель',   'Апреля'),
+    ('Май',      'Мая'),
+    ('Июнь',     'Июня'),
+    ('Июль',     'Июля'),
+    ('Август',   'Августа'),
+    ('Сентябрь', 'Сентября'),
+    ('Октябрь',  'Октября'),
+    ('Ноябрь',   'Ноября'),
+    ('Декабрь',  'Декабря'));
+
+  C_MANID_MAT        = 2;
+
 type
   TMainForm = class(TForm)
     MainMenu: TMainMenu;
@@ -102,7 +127,7 @@ implementation
 
 {$R *.dfm}
 
-uses DataModule, GlobsAndConst;
+uses DataModule;
 
 procedure TMainForm.actCloseExecute(Sender: TObject);
 begin

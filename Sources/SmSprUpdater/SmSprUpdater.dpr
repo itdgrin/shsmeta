@@ -1,17 +1,18 @@
 program SmSprUpdater;
 
+{$SETPEFlAGS $0001}
+
 uses
   Vcl.Forms,
-  DataModule in '..\DataModule.pas' {DM: TDataModule},
   uMain in 'uMain.pas' {MainForm},
-  GlobsAndConst in '..\GlobsAndConst.pas';
+  DataModule in 'DataModule.pas' {DM: TDataModule};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TDM, DM);
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TDM, DM);
   Application.Run;
 end.
