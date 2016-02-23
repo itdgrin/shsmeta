@@ -143,7 +143,6 @@ begin
   edtYearJBI.Value := Y;
 end;
 
-
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FUnitsName);
@@ -158,7 +157,12 @@ begin
     TmpStr :=
       StringReplace(G_CONNECTSTR, 'xxx', 'localhost', [rfReplaceAll, rfIgnoreCase]);
     DM.Connect.Params.Text := TmpStr;
-    DM.Connect.Connected := true;
+    try
+      DM.Connect.Connected := true;
+    except
+      on e: exception do
+        Application.ShowException(e);
+    end;
   end;
 end;
 

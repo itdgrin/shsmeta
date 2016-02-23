@@ -2,8 +2,8 @@ program SmSprUpdater;
 
 uses
   Vcl.Forms,
-  uMain in 'uMain.pas' {MainForm},
   DataModule in '..\DataModule.pas' {DM: TDataModule},
+  uMain in 'uMain.pas' {MainForm},
   GlobsAndConst in '..\GlobsAndConst.pas';
 
 {$R *.res}

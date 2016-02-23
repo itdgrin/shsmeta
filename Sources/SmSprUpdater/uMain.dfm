@@ -26,7 +26,6 @@ object MainForm: TMainForm
     ActivePage = tsMaterial
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 686
     object tsMaterial: TTabSheet
       Caption = #1052#1072#1090#1077#1088#1080#1072#1083#1099' '#1080' '#1046#1041#1048
       Font.Charset = DEFAULT_CHARSET
@@ -35,7 +34,6 @@ object MainForm: TMainForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 678
       object pnlUpdMat: TPanel
         Left = 0
         Top = 0
@@ -52,7 +50,6 @@ object MainForm: TMainForm
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        ExplicitWidth = 678
         DesignSize = (
           741
           46)
@@ -70,7 +67,7 @@ object MainForm: TMainForm
           ParentFont = False
         end
         object btnUpdMat: TButton
-          Left = 635
+          Left = 631
           Top = 16
           Width = 93
           Height = 25
@@ -83,12 +80,11 @@ object MainForm: TMainForm
           Font.Style = []
           ParentFont = False
           TabOrder = 0
-          ExplicitLeft = 568
         end
         object edtUpdMat: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 445
+          Width = 441
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -96,20 +92,18 @@ object MainForm: TMainForm
           RightButton.Visible = True
           TabOrder = 1
           OnRightButtonClick = edtRightButtonClick
-          ExplicitWidth = 378
         end
         object cbMonthMat: TComboBox
-          Left = 455
+          Left = 451
           Top = 20
           Width = 100
           Height = 21
           Style = csDropDownList
           Anchors = [akTop, akRight]
           TabOrder = 2
-          ExplicitLeft = 388
         end
         object edtYearMat: TSpinEdit
-          Left = 559
+          Left = 555
           Top = 19
           Width = 73
           Height = 22
@@ -118,7 +112,6 @@ object MainForm: TMainForm
           MinValue = 2000
           TabOrder = 3
           Value = 2000
-          ExplicitLeft = 492
         end
       end
       object pnlUpdMatPrice: TPanel
@@ -137,7 +130,6 @@ object MainForm: TMainForm
         ParentBackground = False
         ParentFont = False
         TabOrder = 1
-        ExplicitWidth = 678
         DesignSize = (
           741
           46)
@@ -157,7 +149,7 @@ object MainForm: TMainForm
         object edtUpdMatPrice: TButtonedEdit
           Left = 8
           Top = 20
-          Width = 443
+          Width = 439
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -165,30 +157,27 @@ object MainForm: TMainForm
           RightButton.Visible = True
           TabOrder = 0
           OnRightButtonClick = edtRightButtonClick
-          ExplicitWidth = 376
         end
         object btnUpdMatPrice: TButton
-          Left = 635
+          Left = 631
           Top = 17
           Width = 93
           Height = 25
           Action = actUpdMatPrice
           Anchors = [akTop, akRight]
           TabOrder = 1
-          ExplicitLeft = 568
         end
         object cbMonthMatPrice: TComboBox
-          Left = 455
+          Left = 451
           Top = 20
           Width = 100
           Height = 21
           Style = csDropDownList
           Anchors = [akTop, akRight]
           TabOrder = 2
-          ExplicitLeft = 388
         end
         object edtYearMatPrice: TSpinEdit
-          Left = 559
+          Left = 555
           Top = 19
           Width = 73
           Height = 22
@@ -197,7 +186,6 @@ object MainForm: TMainForm
           MinValue = 2000
           TabOrder = 3
           Value = 2000
-          ExplicitLeft = 492
         end
       end
       object pnlUpdMatNoTrans: TPanel
@@ -210,7 +198,6 @@ object MainForm: TMainForm
         BevelOuter = bvNone
         ParentBackground = False
         TabOrder = 2
-        ExplicitWidth = 678
         DesignSize = (
           741
           46)
@@ -230,7 +217,7 @@ object MainForm: TMainForm
         object edtUpdMatNoTrans: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 626
+          Width = 622
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -240,7 +227,7 @@ object MainForm: TMainForm
           OnRightButtonClick = edtRightButtonClick
         end
         object btnUpdMatNoTrans: TButton
-          Left = 635
+          Left = 631
           Top = 17
           Width = 93
           Height = 25
@@ -259,7 +246,6 @@ object MainForm: TMainForm
         BevelOuter = bvNone
         ParentBackground = False
         TabOrder = 3
-        ExplicitWidth = 678
         DesignSize = (
           741
           46)
@@ -279,7 +265,7 @@ object MainForm: TMainForm
         object edtUpdJBI: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 445
+          Width = 441
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -289,7 +275,7 @@ object MainForm: TMainForm
           OnRightButtonClick = edtRightButtonClick
         end
         object btnUpdJBI: TButton
-          Left = 635
+          Left = 631
           Top = 18
           Width = 93
           Height = 25
@@ -298,7 +284,7 @@ object MainForm: TMainForm
           TabOrder = 1
         end
         object cbMonthJBI: TComboBox
-          Left = 455
+          Left = 451
           Top = 20
           Width = 100
           Height = 21
@@ -307,7 +293,7 @@ object MainForm: TMainForm
           TabOrder = 2
         end
         object edtYearJBI: TSpinEdit
-          Left = 559
+          Left = 555
           Top = 19
           Width = 73
           Height = 22
@@ -318,7 +304,7 @@ object MainForm: TMainForm
           Value = 2000
         end
         object cboxUpdJBIName: TCheckBox
-          Left = 455
+          Left = 451
           Top = 0
           Width = 202
           Height = 17
@@ -337,7 +323,6 @@ object MainForm: TMainForm
         BevelOuter = bvNone
         ParentBackground = False
         TabOrder = 4
-        ExplicitWidth = 678
         DesignSize = (
           741
           46)
@@ -357,7 +342,7 @@ object MainForm: TMainForm
         object edtUpdMatNoPrice: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 445
+          Width = 441
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -365,30 +350,27 @@ object MainForm: TMainForm
           RightButton.Visible = True
           TabOrder = 0
           OnRightButtonClick = edtRightButtonClick
-          ExplicitWidth = 378
         end
         object Button1: TButton
-          Left = 635
+          Left = 631
           Top = 17
           Width = 93
           Height = 25
           Action = actUpdMatNoPrice
           Anchors = [akTop, akRight]
           TabOrder = 1
-          ExplicitLeft = 568
         end
         object cbMonthMatNoPrice: TComboBox
-          Left = 455
+          Left = 451
           Top = 20
           Width = 100
           Height = 21
           Style = csDropDownList
           Anchors = [akTop, akRight]
           TabOrder = 2
-          ExplicitLeft = 388
         end
         object edtYearMatNoPrice: TSpinEdit
-          Left = 559
+          Left = 555
           Top = 19
           Width = 73
           Height = 22
@@ -397,10 +379,9 @@ object MainForm: TMainForm
           MinValue = 2000
           TabOrder = 3
           Value = 2000
-          ExplicitLeft = 492
         end
         object cboxUpdMatName: TCheckBox
-          Left = 455
+          Left = 451
           Top = 0
           Width = 202
           Height = 17
@@ -413,12 +394,10 @@ object MainForm: TMainForm
     object tsMechanism: TTabSheet
       Caption = #1069#1082#1089#1087#1083#1091#1072#1090#1072#1094#1080#1103' '#1084#1072#1096#1080#1085
       ImageIndex = 1
-      ExplicitWidth = 678
     end
     object tsTransp: TTabSheet
       Caption = #1054#1090#1093#1086#1076#1099' '#1080' '#1090#1088#1072#1085#1089#1087#1086#1088#1090
       ImageIndex = 2
-      ExplicitWidth = 678
     end
   end
   object MainMenu: TMainMenu
@@ -464,7 +443,7 @@ object MainForm: TMainForm
     Left = 396
     Top = 312
     Bitmap = {
-      494C010101000800280010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101010008002C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
