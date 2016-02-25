@@ -1,4 +1,4 @@
-unit uMain;
+unit fSprLoader;
 
 interface
 
@@ -26,33 +26,8 @@ uses
   Vcl.Samples.Spin,
   Data.DB;
 
-const
-  G_CONNECTSTR: string = 'DriverID=MySQL' + sLineBreak +
-                         'User_name=root' + sLineBreak +
-                         'Password=serg' + sLineBreak +
-                         'SERVER=xxx' + sLineBreak +
-                         'DATABASE=smeta' + sLineBreak +
-                         'CharacterSet=cp1251' + sLineBreak +
-                         'TinyIntFormat=Integer';
-
-  arraymes: array[1..12, 1..2] of string =
-    (('Январь',   'Января'),
-    ('Февраль',  'Февраля'),
-    ('Март',     'Марта'),
-    ('Апрель',   'Апреля'),
-    ('Май',      'Мая'),
-    ('Июнь',     'Июня'),
-    ('Июль',     'Июля'),
-    ('Август',   'Августа'),
-    ('Сентябрь', 'Сентября'),
-    ('Октябрь',  'Октября'),
-    ('Ноябрь',   'Ноября'),
-    ('Декабрь',  'Декабря'));
-
-  C_MANID_MAT        = 2;
-
 type
-  TMainForm = class(TForm)
+  TSprLoaderForm = class(TForm)
     MainMenu: TMainMenu;
     ActionList: TActionList;
     actClose: TAction;
@@ -89,7 +64,7 @@ type
     pnlUpdMatNoPrice: TPanel;
     Label1: TLabel;
     edtUpdMatNoPrice: TButtonedEdit;
-    Button1: TButton;
+    btnUpdMatNoPrice: TButton;
     actUpdMatNoTrans: TAction;
     cbMonthMatNoPrice: TComboBox;
     edtYearMatNoPrice: TSpinEdit;
@@ -99,6 +74,16 @@ type
     edtYearJBI: TSpinEdit;
     cboxUpdMatName: TCheckBox;
     cboxUpdJBIName: TCheckBox;
+    pnlUpdMech: TPanel;
+    lbUpdMechTitle: TLabel;
+    edtUpdMech: TButtonedEdit;
+    btnUpdMech: TButton;
+    cbMonthMech: TComboBox;
+    edtYearMech: TSpinEdit;
+    cboxUpdMechName: TCheckBox;
+    btnClearMechPrice: TButton;
+    actUpdMech: TAction;
+    actClearMechPrice: TAction;
     procedure actCloseExecute(Sender: TObject);
     procedure edtRightButtonClick(Sender: TObject);
     procedure actUpdMatExecute(Sender: TObject);
@@ -109,6 +94,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure actUpdMatNoTransExecute(Sender: TObject);
+    procedure actClearMechPriceExecute(Sender: TObject);
+    procedure actUpdMechExecute(Sender: TObject);
   private
     FUnitsName, FUnitsID: TStringList;
     procedure ChackFileExsist(const AFileName: string);
@@ -116,31 +103,46 @@ type
     function AddNewUnit(AUnitName: string): Integer;
     function AddNewMat(ACode, AName, AUnit: string; ADate: TDateTime;
       AJBI, ANoUpdate: Boolean): Integer;
+    function AddNewMech(ACode, AName: string; ADate: TDateTime; ANoUpdate: Boolean): Integer;
   public
     { Public declarations }
   end;
-
-var
-  MainForm: TMainForm;
 
 implementation
 
 {$R *.dfm}
 
-uses DataModule;
+uses DataModule, GlobsAndConst;
 
-procedure TMainForm.actCloseExecute(Sender: TObject);
+procedure TSprLoaderForm.actClearMechPriceExecute(Sender: TObject);
+begin
+  if Application.MessageBox(
+    PChar('Очистить цены механизмов за ' + cbMonthMech.Text + ' ' +
+    edtYearMech.Value.ToString + '?'),
+    'Загрузка данных', MB_OKCANCEL + MB_ICONQUESTION) = mrCancel then
+    Exit;
+
+  DM.qrDifferent.SQL.Text :=
+    'Delete from mechanizmcoastg where (YEAR = :YEAR) and (MONAT = :MONAT)';
+  DM.qrDifferent.ParamByName('YEAR').Value := edtYearMech.Value;
+  DM.qrDifferent.ParamByName('MONAT').Value := cbMonthMech.ItemIndex + 1;
+  DM.qrDifferent.ExecSQL;
+
+  ShowMessage('Выполнено успешно.');
+end;
+
+procedure TSprLoaderForm.actCloseExecute(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TMainForm.edtRightButtonClick(Sender: TObject);
+procedure TSprLoaderForm.edtRightButtonClick(Sender: TObject);
 begin
   if OpenDialog.Execute(Self.Handle) then
     (Sender as  TButtonedEdit).Text := OpenDialog.FileName;
 end;
 
-procedure TMainForm.FormCreate(Sender: TObject);
+procedure TSprLoaderForm.FormCreate(Sender: TObject);
 var Y, M, D: Word;
     I: Integer;
 begin
@@ -155,6 +157,7 @@ begin
     cbMonthMatNoPrice.Items.Add(arraymes[I][1]);
     cbMonthMatPrice.Items.Add(arraymes[I][1]);
     cbMonthJBI.Items.Add(arraymes[I][1]);
+    cbMonthMech.Items.Add(arraymes[I][1]);
   end;
 
   DecodeDate(Date, Y, M, D);
@@ -166,15 +169,17 @@ begin
   edtYearMatPrice.Value := Y;
   cbMonthJBI.ItemIndex := M - 1;
   edtYearJBI.Value := Y;
+  cbMonthMech.ItemIndex := M - 1;
+  edtYearMech.Value := Y;
 end;
 
-procedure TMainForm.FormDestroy(Sender: TObject);
+procedure TSprLoaderForm.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FUnitsName);
   FreeAndNil(FUnitsID);
 end;
 
-procedure TMainForm.FormShow(Sender: TObject);
+procedure TSprLoaderForm.FormShow(Sender: TObject);
 var TmpStr: string;
 begin
   if not DM.Connect.Connected then
@@ -191,7 +196,7 @@ begin
   end;
 end;
 
-procedure TMainForm.LoadUnits;
+procedure TSprLoaderForm.LoadUnits;
 begin
   FUnitsName.Clear;
   FUnitsID.Clear;
@@ -210,7 +215,7 @@ begin
   end;
 end;
 
-function TMainForm.AddNewUnit(AUnitName: string): Integer;
+function TSprLoaderForm.AddNewUnit(AUnitName: string): Integer;
 var NextID: Integer;
 begin
   NextID := 1;
@@ -228,7 +233,7 @@ begin
   Result := NextID;
 end;
 
-procedure TMainForm.actUpdJBIExecute(Sender: TObject);
+procedure TSprLoaderForm.actUpdJBIExecute(Sender: TObject);
 var ExlApp,
     WorkSheet1,
     WorkSheet2: OleVariant;
@@ -380,7 +385,58 @@ begin
   end;
 end;
 
-function TMainForm.AddNewMat(ACode, AName, AUnit: string; ADate: TDateTime;
+function TSprLoaderForm.AddNewMech(ACode, AName: string; ADate: TDateTime;
+  ANoUpdate: Boolean): Integer;
+begin
+  //Проверяет есть ли такой уже в базе
+  DM.qrDifferent.SQL.Text :=
+    'Select MECHANIZM_ID from mechanizm where (MECH_CODE = :MECH_CODE) and (BASE = 0)';
+  Result := -1;
+  DM.qrDifferent.ParamByName('MECH_CODE').Value := ACode;
+  DM.qrDifferent.Active := True;
+  try
+    if not DM.qrDifferent.IsEmpty then
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+  finally
+    DM.qrDifferent.Active := False;
+  end;
+
+  if Result = -1 then
+  begin
+    DM.qrDifferent.SQL.Text := 'Select GetNewSprID(:TypeID, 0)';
+    DM.qrDifferent.ParamByName('TypeID').Value := C_MANID_MECH;
+    DM.qrDifferent.Active := True;
+    try
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+    finally
+      DM.qrDifferent.Active := False;
+    end;
+
+    DM.qrDifferent.SQL.Text :=
+      'Insert into mechanizm ' +
+      '(MECHANIZM_ID, MECH_CODE, MECH_NAME, UNIT_ID) ' +
+      'values ' +
+      '(:MECHANIZM_ID, :MECH_CODE, :MECH_NAME, :UNIT_ID)';
+    DM.qrDifferent.ParamByName('MECH_CODE').Value := ACode;
+    DM.qrDifferent.ParamByName('MECH_NAME').Value := AName;
+    DM.qrDifferent.ParamByName('MECHANIZM_ID').Value := Result;
+    DM.qrDifferent.ParamByName('UNIT_ID').Value := 0;
+    DM.qrDifferent.ExecSQL;
+  end
+  else
+  begin
+    if not ANoUpdate then
+    begin
+      DM.qrDifferent.SQL.Text :=
+        'Update mechanizm set MECH_NAME = :MECH_NAME where MECHANIZM_ID = :MECHANIZM_ID';
+      DM.qrDifferent.ParamByName('MECH_NAME').Value := AName;
+      DM.qrDifferent.ParamByName('MECHANIZM_ID').Value := Result;
+      DM.qrDifferent.ExecSQL;
+    end;
+  end;
+end;
+
+function TSprLoaderForm.AddNewMat(ACode, AName, AUnit: string; ADate: TDateTime;
     AJBI, ANoUpdate: Boolean): Integer;
 var J,
     TmpUnitID,
@@ -425,9 +481,10 @@ begin
       'Insert into material ' +
       '(MATERIAL_ID, MAT_CODE, MAT_NAME, MAT_TYPE, UNIT_ID, BASE, date_beginer) ' +
       'values ' +
-      '(GetNewSprID(:TypeID, 0), :MAT_CODE, :MAT_NAME, :TYPE, :UNIT_ID, 0, :date_beginer)';
+      '(:MATERIAL_ID, :MAT_CODE, :MAT_NAME, :TYPE, :UNIT_ID, 0, :date_beginer)';
     DM.qrDifferent.ParamByName('MAT_CODE').Value := ACode;
     DM.qrDifferent.ParamByName('MAT_NAME').Value := AName;
+    DM.qrDifferent.ParamByName('MATERIAL_ID').Value := Result;
     DM.qrDifferent.ParamByName('TYPE').Value := MType;
     DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID.ToString;
     DM.qrDifferent.ParamByName('date_beginer').Value := ADate;
@@ -449,7 +506,7 @@ begin
   end;
 end;
 
-procedure TMainForm.actUpdMatExecute(Sender: TObject);
+procedure TSprLoaderForm.actUpdMatExecute(Sender: TObject);
 var ExlApp, WorkSheet: OleVariant;
     FData: OleVariant;
     I, Rows: Integer;
@@ -526,7 +583,7 @@ begin
   end;
 end;
 
-procedure TMainForm.actUpdMatNoPriceExecute(Sender: TObject);
+procedure TSprLoaderForm.actUpdMatNoPriceExecute(Sender: TObject);
 var ExlApp, WorkSheet: OleVariant;
     FData: OleVariant;
     I, J, Rows: Integer;
@@ -650,7 +707,7 @@ begin
   end;
 end;
 
-procedure TMainForm.actUpdMatNoTransExecute(Sender: TObject);
+procedure TSprLoaderForm.actUpdMatNoTransExecute(Sender: TObject);
 var ExlApp, WorkSheet: OleVariant;
     FData: OleVariant;
     I,
@@ -732,7 +789,7 @@ begin
   end;
 end;
 
-procedure TMainForm.actUpdMatPriceExecute(Sender: TObject);
+procedure TSprLoaderForm.actUpdMatPriceExecute(Sender: TObject);
 var ExlApp,
     WorkSheet1,
     WorkSheet2: OleVariant;
@@ -880,7 +937,113 @@ begin
   end;
 end;
 
-procedure TMainForm.ChackFileExsist(const AFileName: string);
+procedure TSprLoaderForm.actUpdMechExecute(Sender: TObject);
+var ExlApp,
+    WorkSheet: OleVariant;
+    FData: OleVariant;
+    I, J,
+    Rows: Integer;
+    TmpCode,
+    TmpName: string;
+    TmpMechID: Integer;
+
+    TmpDate: TDateTime;
+    AutoCommitValue: Boolean;
+begin
+  if Application.MessageBox(
+    PChar('Загрузить данные из ''' + edtUpdMech.Text + ''' в справочник цен механизмов?'),
+    'Загрузка данных', MB_OKCANCEL + MB_ICONQUESTION) = mrCancel then
+    Exit;
+  ChackFileExsist(edtUpdMech.Text);
+
+  TmpDate := EncodeDate(edtYearMech.Value, cbMonthMech.ItemIndex + 1, 1);
+
+  CoInitialize(nil);
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  J := 0;
+  try
+    Screen.Cursor := crHourGlass;
+    ExlApp := Unassigned;
+    try
+      ExlApp := CreateOleObject('Excel.Application');
+      ExlApp.Visible:=false;
+      ExlApp.DisplayAlerts := False;
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка инициализации Excel:' + e.Message);
+    end;
+
+    try
+      ExlApp.WorkBooks.Open(edtUpdMech.Text);
+      WorkSheet := ExlApp.ActiveWorkbook.ActiveSheet;
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка открытия Excel документа:' + e.Message);
+    end;
+
+    Rows := WorkSheet.UsedRange.Rows.Count;
+
+
+    FData :=
+      WorkSheet.Range[WorkSheet.Cells[9, 1].Address,
+      WorkSheet.Cells[Rows, 6].Address].Value;
+
+    DM.Read.StartTransaction;
+    try
+      DM.qrDifferent1.SQL.Text :=
+        'Insert into mechanizmcoastg ' +
+        '(MECHANIZM_ID, `YEAR`, `MONAT`, COAST1, ZP1, COAST2, ZP2) ' +
+        'values ' +
+        '(:MECHANIZM_ID, :YEAR, :MONAT, :COAST1, :ZP1, :COAST2, :ZP2)';
+
+      for I := 1 to Rows - 8 do
+      begin
+        J := I;
+        TmpCode :=  trim(StringReplace(VarToStr(FData[I,1]), '*', '', [rfReplaceAll]));
+        TmpName := trim(VarToStr(FData[I,2]));
+
+        if (TmpCode <> '') then
+        begin
+          TmpMechID :=
+            AddNewMech(TmpCode, TmpName, TmpDate, not cboxUpdMechName.Checked);
+
+          DM.qrDifferent1.ParamByName('MECHANIZM_ID').Value := TmpMechID;
+          DM.qrDifferent1.ParamByName('YEAR').Value := edtYearMatPrice.Value;
+          DM.qrDifferent1.ParamByName('MONAT').Value := cbMonthMatPrice.ItemIndex + 1;
+          DM.qrDifferent1.ParamByName('COAST1').Value := FData[I,3];
+          DM.qrDifferent1.ParamByName('ZP1').Value := FData[I,4];
+          DM.qrDifferent1.ParamByName('COAST2').Value := FData[I,5];
+          DM.qrDifferent1.ParamByName('ZP2').Value := FData[I,6];
+          DM.qrDifferent1.ExecSQL;
+        end;
+
+      end;
+      DM.Read.Commit;
+      ShowMessage('Загрузка успешно завершена.');
+    except
+      on e: Exception do
+      begin
+        DM.Read.Rollback;
+        raise Exception.Create('Ошибка на строке ' + (J + 8).ToString + ':' +
+          sLineBreak + e.Message);
+      end;
+    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+    if not VarIsEmpty(ExlApp) then
+    begin
+      ExlApp.ActiveWorkbook.Close;
+      ExlApp.Quit;
+    end;
+    Screen.Cursor := crDefault;
+    WorkSheet := Unassigned;
+    ExlApp := Unassigned;
+    CoUninitialize;
+  end;
+end;
+
+procedure TSprLoaderForm.ChackFileExsist(const AFileName: string);
 begin
   if not TFile.Exists(AFileName) then
     raise Exception.Create('Файл ''' + AFileName + ''' не найден.');

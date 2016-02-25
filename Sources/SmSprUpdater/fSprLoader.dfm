@@ -1,4 +1,4 @@
-object MainForm: TMainForm
+object SprLoaderForm: TSprLoaderForm
   Left = 0
   Top = 0
   Caption = #1054#1073#1085#1086#1074#1083#1077#1085#1080#1077' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1086#1074' '#1041#1044
@@ -67,7 +67,7 @@ object MainForm: TMainForm
           ParentFont = False
         end
         object btnUpdMat: TButton
-          Left = 631
+          Left = 619
           Top = 16
           Width = 93
           Height = 25
@@ -84,7 +84,7 @@ object MainForm: TMainForm
         object edtUpdMat: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 441
+          Width = 429
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -94,7 +94,7 @@ object MainForm: TMainForm
           OnRightButtonClick = edtRightButtonClick
         end
         object cbMonthMat: TComboBox
-          Left = 451
+          Left = 439
           Top = 20
           Width = 100
           Height = 21
@@ -103,7 +103,7 @@ object MainForm: TMainForm
           TabOrder = 2
         end
         object edtYearMat: TSpinEdit
-          Left = 555
+          Left = 543
           Top = 19
           Width = 73
           Height = 22
@@ -149,7 +149,7 @@ object MainForm: TMainForm
         object edtUpdMatPrice: TButtonedEdit
           Left = 8
           Top = 20
-          Width = 439
+          Width = 427
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -159,7 +159,7 @@ object MainForm: TMainForm
           OnRightButtonClick = edtRightButtonClick
         end
         object btnUpdMatPrice: TButton
-          Left = 631
+          Left = 619
           Top = 17
           Width = 93
           Height = 25
@@ -168,7 +168,7 @@ object MainForm: TMainForm
           TabOrder = 1
         end
         object cbMonthMatPrice: TComboBox
-          Left = 451
+          Left = 439
           Top = 20
           Width = 100
           Height = 21
@@ -177,7 +177,7 @@ object MainForm: TMainForm
           TabOrder = 2
         end
         object edtYearMatPrice: TSpinEdit
-          Left = 555
+          Left = 543
           Top = 19
           Width = 73
           Height = 22
@@ -217,7 +217,7 @@ object MainForm: TMainForm
         object edtUpdMatNoTrans: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 622
+          Width = 610
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -227,7 +227,7 @@ object MainForm: TMainForm
           OnRightButtonClick = edtRightButtonClick
         end
         object btnUpdMatNoTrans: TButton
-          Left = 631
+          Left = 619
           Top = 17
           Width = 93
           Height = 25
@@ -265,7 +265,7 @@ object MainForm: TMainForm
         object edtUpdJBI: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 441
+          Width = 429
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -275,7 +275,7 @@ object MainForm: TMainForm
           OnRightButtonClick = edtRightButtonClick
         end
         object btnUpdJBI: TButton
-          Left = 631
+          Left = 619
           Top = 18
           Width = 93
           Height = 25
@@ -284,7 +284,7 @@ object MainForm: TMainForm
           TabOrder = 1
         end
         object cbMonthJBI: TComboBox
-          Left = 451
+          Left = 439
           Top = 20
           Width = 100
           Height = 21
@@ -293,7 +293,7 @@ object MainForm: TMainForm
           TabOrder = 2
         end
         object edtYearJBI: TSpinEdit
-          Left = 555
+          Left = 543
           Top = 19
           Width = 73
           Height = 22
@@ -304,7 +304,7 @@ object MainForm: TMainForm
           Value = 2000
         end
         object cboxUpdJBIName: TCheckBox
-          Left = 451
+          Left = 439
           Top = 0
           Width = 202
           Height = 17
@@ -342,7 +342,7 @@ object MainForm: TMainForm
         object edtUpdMatNoPrice: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 441
+          Width = 429
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -351,8 +351,8 @@ object MainForm: TMainForm
           TabOrder = 0
           OnRightButtonClick = edtRightButtonClick
         end
-        object Button1: TButton
-          Left = 631
+        object btnUpdMatNoPrice: TButton
+          Left = 619
           Top = 17
           Width = 93
           Height = 25
@@ -361,7 +361,7 @@ object MainForm: TMainForm
           TabOrder = 1
         end
         object cbMonthMatNoPrice: TComboBox
-          Left = 451
+          Left = 439
           Top = 20
           Width = 100
           Height = 21
@@ -370,7 +370,7 @@ object MainForm: TMainForm
           TabOrder = 2
         end
         object edtYearMatNoPrice: TSpinEdit
-          Left = 555
+          Left = 543
           Top = 19
           Width = 73
           Height = 22
@@ -381,7 +381,7 @@ object MainForm: TMainForm
           Value = 2000
         end
         object cboxUpdMatName: TCheckBox
-          Left = 451
+          Left = 439
           Top = 0
           Width = 202
           Height = 17
@@ -394,10 +394,105 @@ object MainForm: TMainForm
     object tsMechanism: TTabSheet
       Caption = #1069#1082#1089#1087#1083#1091#1072#1090#1072#1094#1080#1103' '#1084#1072#1096#1080#1085
       ImageIndex = 1
+      object pnlUpdMech: TPanel
+        Left = 0
+        Top = 0
+        Width = 745
+        Height = 78
+        Align = alTop
+        BevelKind = bkTile
+        BevelOuter = bvNone
+        ParentBackground = False
+        TabOrder = 0
+        DesignSize = (
+          741
+          74)
+        object lbUpdMechTitle: TLabel
+          Left = 8
+          Top = 1
+          Width = 168
+          Height = 13
+          Caption = #1047#1072#1075#1088#1091#1079#1082#1072' '#1094#1077#1085' '#1085#1072' '#1084#1077#1093#1072#1085#1080#1079#1084#1099':'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object edtUpdMech: TButtonedEdit
+          Left = 6
+          Top = 20
+          Width = 429
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          Images = ImageList
+          RightButton.ImageIndex = 0
+          RightButton.Visible = True
+          TabOrder = 0
+          OnRightButtonClick = edtRightButtonClick
+          ExplicitWidth = 437
+        end
+        object btnUpdMech: TButton
+          Left = 619
+          Top = 16
+          Width = 93
+          Height = 25
+          Action = actUpdMech
+          Anchors = [akTop, akRight]
+          TabOrder = 1
+          ExplicitLeft = 627
+        end
+        object cbMonthMech: TComboBox
+          Left = 439
+          Top = 20
+          Width = 100
+          Height = 21
+          Style = csDropDownList
+          Anchors = [akTop, akRight]
+          TabOrder = 2
+        end
+        object edtYearMech: TSpinEdit
+          Left = 543
+          Top = 19
+          Width = 73
+          Height = 22
+          Anchors = [akTop, akRight]
+          MaxValue = 3000
+          MinValue = 2000
+          TabOrder = 3
+          Value = 2000
+          ExplicitLeft = 551
+        end
+        object cboxUpdMechName: TCheckBox
+          Left = 439
+          Top = 0
+          Width = 186
+          Height = 17
+          Anchors = [akTop, akRight]
+          Caption = #1054#1073#1085#1086#1074#1083#1103#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1103' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
+          TabOrder = 4
+          ExplicitLeft = 447
+        end
+        object btnClearMechPrice: TButton
+          Left = 439
+          Top = 46
+          Width = 177
+          Height = 25
+          Action = actClearMechPrice
+          Anchors = [akTop, akRight]
+          TabOrder = 5
+          ExplicitLeft = 447
+        end
+      end
     end
     object tsTransp: TTabSheet
       Caption = #1054#1090#1093#1086#1076#1099' '#1080' '#1090#1088#1072#1085#1089#1087#1086#1088#1090
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
   end
   object MainMenu: TMainMenu
@@ -438,12 +533,20 @@ object MainForm: TMainForm
       Caption = #1047#1072#1075#1088#1091#1079#1082#1072
       OnExecute = actUpdMatNoTransExecute
     end
+    object actUpdMech: TAction
+      Caption = #1047#1072#1075#1088#1091#1079#1082#1072
+      OnExecute = actUpdMechExecute
+    end
+    object actClearMechPrice: TAction
+      Caption = #1054#1095#1080#1089#1090#1080#1090#1100' '#1094#1077#1085#1099' '#1079#1072' '#1084#1077#1089#1103#1094
+      OnExecute = actClearMechPriceExecute
+    end
   end
   object ImageList: TImageList
     Left = 396
     Top = 312
     Bitmap = {
-      494C0101010008002C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010101000800380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
