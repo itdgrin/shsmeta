@@ -187,6 +187,7 @@ type
     mRecucle1: TMenuItem;
     mReportPrint: TMenuItem;
     pmTestSlava: TMenuItem;
+    pmLoadSpr: TMenuItem;
     procedure TariffsTransportationClick(Sender: TObject);
     procedure TariffsMechanismClick(Sender: TObject);
     procedure TariffsDumpClick(Sender: TObject);
@@ -305,6 +306,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure pmTestSlavaClick(Sender: TObject);
     procedure mTypeActClick(Sender: TObject);
+    procedure pmLoadSprClick(Sender: TObject);
   private
     CountOpenWindows: integer;
     ButtonsWindows: array [0 .. 11] of TSpeedButton;
@@ -480,7 +482,8 @@ uses TariffsTransportanion, TariffsMechanism, TariffsDump, TariffsIndex,
   uTestForRoma, SmReportMain, TypeAct,
   IdHTTP,
   IdGlobal,
-  IdCoderMIME;
+  IdCoderMIME,
+  fSprLoader;
 
 {$R *.dfm}
 
@@ -2366,6 +2369,17 @@ begin
     LicenseForm.ShowModal;
   finally
     FreeAndNil(LicenseForm);
+  end;
+end;
+
+procedure TFormMain.pmLoadSprClick(Sender: TObject);
+var SprLoaderForm: TSprLoaderForm;
+begin
+  SprLoaderForm := TSprLoaderForm.Create(Self);
+  try
+    SprLoaderForm.ShowModal;
+  finally
+    FreeAndNil(SprLoaderForm);
   end;
 end;
 

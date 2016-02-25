@@ -143,7 +143,8 @@ uses
   fReportSSR in 'fReportSSR.pas' {FormReportSSR},
   C3 in 'C3.pas' {fC3},
   TypeAct in 'TypeAct.pas' {fTypeAct},
-  fReportSSRPI in 'fReportSSRPI.pas' {FormReportSSRPI};
+  fReportSSRPI in 'fReportSSRPI.pas' {FormReportSSRPI},
+  fSprLoader in 'SmSprUpdater\fSprLoader.pas' {SprLoaderForm};
 
 {$R *.res}
 var MHandle: THandle;

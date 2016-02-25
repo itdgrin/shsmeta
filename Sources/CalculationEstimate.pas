@@ -6175,6 +6175,7 @@ var mes: string;
     COL1NAME, COL2NAME: string;
     MAIS: Integer;
 begin
+  Result := 1;
   try
     if COL1NAME = '' then
       COL1NAME := FastSelectSQLOne

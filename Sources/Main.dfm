@@ -3131,6 +3131,10 @@
         Caption = #1058#1077#1089#1090' '#1057#1083#1072#1074#1072
         OnClick = pmTestSlavaClick
       end
+      object pmLoadSpr: TMenuItem
+        Caption = #1059#1087#1088#1072#1074#1083#1077#1085#1080#1077' '#1089#1087#1088#1072#1074#1086#1095#1085#1080#1082#1072#1084#1080
+        OnClick = pmLoadSprClick
+      end
     end
     object MenuHelp: TMenuItem
       Caption = #1057#1087#1088#1072#1074#1082#1072
