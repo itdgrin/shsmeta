@@ -30,8 +30,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    ExplicitTop = 254
-    ExplicitWidth = 353
     DesignSize = (
       412
       41)
@@ -50,7 +48,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
       ParentFont = False
       TabOrder = 1
       OnClick = btn1Click
-      ExplicitLeft = 271
     end
     object btn2: TBitBtn
       Left = 249
@@ -85,8 +82,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Font.Style = []
     ParentFont = False
     TabOrder = 0
-    ExplicitTop = 2
-    ExplicitHeight = 718
     object GridPanel1: TGridPanel
       Left = 0
       Top = 0
@@ -128,11 +123,11 @@ object fCardObjectAdditional: TfCardObjectAdditional
           SizeStyle = ssAuto
         end>
       TabOrder = 0
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
       object lbl1: TLabel
+        Tag = 2
         AlignWithMargins = True
         Left = 7
         Top = 3
@@ -169,8 +164,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         TabOrder = 0
         DataField = 'PER_TEMP_BUILD'
         DataSource = fCardObject.dsMain
-        ExplicitLeft = 536
-        ExplicitTop = 2
       end
     end
     object GridPanel2: TGridPanel
@@ -210,7 +203,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 1
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -253,7 +245,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel3: TGridPanel
@@ -293,7 +284,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 3
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -334,8 +324,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         TabOrder = 0
         DataField = 'PER_CONTRACTOR'
         DataSource = fCardObject.dsMain
-        ExplicitLeft = 527
-        ExplicitTop = 2
       end
     end
     object GridPanel4: TGridPanel
@@ -375,7 +363,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 4
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -414,8 +401,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         TabOrder = 0
         DataField = 'PER_NPZ'
         DataSource = fCardObject.dsMain
-        ExplicitLeft = 500
-        ExplicitTop = 2
       end
     end
     object pnl2: TPanel
@@ -434,7 +419,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
       ParentBackground = False
       ParentFont = False
       TabOrder = 5
-      ExplicitWidth = 551
     end
     object GridPanel5: TGridPanel
       Left = 0
@@ -459,7 +443,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         end
         item
           Column = 1
-          Control = dbchkFL_APPLY_WINTERPRICE
+          Control = JvDBSpinEdit7
           Row = 0
         end>
       Font.Charset = DEFAULT_CHARSET
@@ -473,7 +457,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 6
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -495,28 +478,24 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ExplicitWidth = 178
         ExplicitHeight = 13
       end
-      object dbchkFL_APPLY_WINTERPRICE: TDBCheckBox
-        Left = 365
-        Top = 1
-        Width = 13
-        Height = 17
-        Margins.Left = 7
-        Anchors = []
-        BiDiMode = bdLeftToRight
-        DataField = 'FL_K_ZP'
-        DataSource = fCardObject.dsMain
+      object JvDBSpinEdit7: TJvDBSpinEdit
+        Left = 339
+        Top = 0
+        Width = 65
+        Height = 20
+        MaxValue = 100.000000000000000000
+        ValueType = vtFloat
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        ParentBiDiMode = False
+        Anchors = []
         ParentFont = False
         TabOrder = 0
-        ValueChecked = '1'
-        ValueUnchecked = '0'
-        OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
+        DataField = 'K_ZP'
+        DataSource = fCardObject.dsMain
+        ExplicitLeft = 332
       end
     end
     object GridPanel6: TGridPanel
@@ -542,7 +521,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         end
         item
           Column = 1
-          Control = dbchkFL_APPLY_WINTERPRICE1
+          Control = jvdbspndtK_PP
           Row = 0
         end>
       Font.Charset = DEFAULT_CHARSET
@@ -556,7 +535,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 8
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -578,28 +556,24 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ExplicitWidth = 182
         ExplicitHeight = 13
       end
-      object dbchkFL_APPLY_WINTERPRICE1: TDBCheckBox
-        Left = 365
-        Top = 1
-        Width = 13
-        Height = 17
-        Margins.Left = 7
-        Anchors = []
-        BiDiMode = bdLeftToRight
-        DataField = 'FL_K_PP'
-        DataSource = fCardObject.dsMain
+      object jvdbspndtK_PP: TJvDBSpinEdit
+        Left = 339
+        Top = 0
+        Width = 65
+        Height = 20
+        MaxValue = 100.000000000000000000
+        ValueType = vtFloat
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        ParentBiDiMode = False
+        Anchors = []
         ParentFont = False
         TabOrder = 0
-        ValueChecked = '1'
-        ValueUnchecked = '0'
-        OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
+        DataField = 'K_PP'
+        DataSource = fCardObject.dsMain
+        ExplicitLeft = 332
       end
     end
     object GridPanel7: TGridPanel
@@ -625,7 +599,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         end
         item
           Column = 1
-          Control = dbchkFL_APPLY_WINTERPRICE2
+          Control = JvDBSpinEdit8
           Row = 0
         end>
       Font.Charset = DEFAULT_CHARSET
@@ -639,7 +613,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 7
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -661,28 +634,24 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ExplicitWidth = 139
         ExplicitHeight = 13
       end
-      object dbchkFL_APPLY_WINTERPRICE2: TDBCheckBox
-        Left = 365
-        Top = 1
-        Width = 13
-        Height = 17
-        Margins.Left = 7
-        Anchors = []
-        BiDiMode = bdLeftToRight
-        DataField = 'FL_K_OHR'
-        DataSource = fCardObject.dsMain
+      object JvDBSpinEdit8: TJvDBSpinEdit
+        Left = 339
+        Top = 0
+        Width = 65
+        Height = 20
+        MaxValue = 100.000000000000000000
+        ValueType = vtFloat
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
-        ParentBiDiMode = False
+        Anchors = []
         ParentFont = False
         TabOrder = 0
-        ValueChecked = '1'
-        ValueUnchecked = '0'
-        OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
+        DataField = 'K_OHR'
+        DataSource = fCardObject.dsMain
+        ExplicitLeft = 332
       end
     end
     object pnl3: TPanel
@@ -701,7 +670,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
       ParentBackground = False
       ParentFont = False
       TabOrder = 9
-      ExplicitWidth = 551
     end
     object GridPanel8: TGridPanel
       Left = 0
@@ -740,7 +708,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 10
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -783,7 +750,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel9: TGridPanel
@@ -823,7 +789,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 11
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -866,7 +831,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel10: TGridPanel
@@ -906,7 +870,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 12
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -927,8 +890,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         TabOrder = 0
         DataField = 'NAL_USN'
         DataSource = fCardObject.dsMain
-        ExplicitLeft = 500
-        ExplicitTop = 2
       end
       object dbchkFl_SPEC_SCH: TDBCheckBox
         AlignWithMargins = True
@@ -950,7 +911,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         TabOrder = 1
         ValueChecked = '1'
         ValueUnchecked = '0'
-        ExplicitWidth = 478
       end
     end
     object GridPanel11: TGridPanel
@@ -993,7 +953,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           SizeStyle = ssAuto
         end>
       TabOrder = 13
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -1014,8 +973,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         TabOrder = 0
         DataField = 'SPEC_SCH'
         DataSource = fCardObject.dsMain
-        ExplicitLeft = 500
-        ExplicitTop = 2
       end
       object dbchkFL_CALC_VEDOMS_NAL2: TDBCheckBox
         AlignWithMargins = True
@@ -1037,7 +994,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         TabOrder = 1
         ValueChecked = '1'
         ValueUnchecked = '0'
-        ExplicitWidth = 478
       end
     end
     object pnl4: TPanel
@@ -1056,7 +1012,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
       ParentBackground = False
       ParentFont = False
       TabOrder = 14
-      ExplicitWidth = 551
     end
     object pnl5: TPanel
       Left = 0
@@ -1074,7 +1029,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
       ParentBackground = False
       ParentFont = False
       TabOrder = 18
-      ExplicitWidth = 551
     end
     object GridPanel12: TGridPanel
       Left = 0
@@ -1113,7 +1067,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 15
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -1156,7 +1109,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel13: TGridPanel
@@ -1196,7 +1148,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 17
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -1239,7 +1190,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel14: TGridPanel
@@ -1279,7 +1229,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 16
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -1322,7 +1271,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel15: TGridPanel
@@ -1362,7 +1310,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 19
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -1405,7 +1352,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel16: TGridPanel
@@ -1445,8 +1391,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 22
-      ExplicitTop = 461
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -1489,7 +1433,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel17: TGridPanel
@@ -1529,7 +1472,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 23
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -1572,7 +1514,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel18: TGridPanel
@@ -1612,8 +1553,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 21
-      ExplicitLeft = 3
-      ExplicitTop = 447
       DesignSize = (
         412
         20)
@@ -1656,7 +1595,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel19: TGridPanel
@@ -1696,7 +1634,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 20
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -1739,7 +1676,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object pnl6: TPanel
@@ -1819,8 +1755,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 25
-      ExplicitLeft = 1
-      ExplicitTop = 568
       DesignSize = (
         412
         20)
@@ -1863,7 +1797,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel21: TGridPanel
@@ -1903,8 +1836,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 26
-      ExplicitTop = 566
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -1947,7 +1878,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel22: TGridPanel
@@ -1987,8 +1917,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 28
-      ExplicitTop = 606
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -2031,7 +1959,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel23: TGridPanel
@@ -2071,8 +1998,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 27
-      ExplicitTop = 586
-      ExplicitWidth = 551
       DesignSize = (
         412
         20)
@@ -2115,7 +2040,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitLeft = 521
       end
     end
     object GridPanel24: TGridPanel
@@ -2158,7 +2082,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           SizeStyle = ssAuto
         end>
       TabOrder = 2
-      ExplicitWidth = 551
       object JvDBSpinEdit2: TJvDBSpinEdit
         AlignWithMargins = True
         Left = 339
@@ -2180,8 +2103,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         TabOrder = 1
         DataField = 'PER_WINTERPRICE'
         DataSource = fCardObject.dsMain
-        ExplicitLeft = 180
-        ExplicitTop = 1
       end
       object pnl7: TPanel
         Left = 0
@@ -2237,6 +2158,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
           ParentFont = False
           TabOrder = 0
           object lbl22: TLabel
+            Tag = 1
             Left = 0
             Top = 3
             Width = 159
@@ -2249,7 +2171,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
             Font.Name = 'Tahoma'
             Font.Style = [fsUnderline]
             ParentFont = False
-            OnClick = lbl22Click
+            OnClick = lbl1Click
           end
         end
       end

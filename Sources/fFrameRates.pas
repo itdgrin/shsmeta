@@ -727,6 +727,7 @@ begin
   qrHeader_1.ParamByName('stat').Value := Edit5.Text;
   qrHeader_1.ParamByName('ohr').Value := dblkcbbwork_id.Text;
   qrHeader_1.ParamByName('zim').Value := EditWinterPrice.Text;
+  qrHeader_1.ParamByName('name').Value := dbmmoCaptionNormative.Text;
 end;
 
 procedure TFrameRates.qrHistoryAfterOpen(DataSet: TDataSet);

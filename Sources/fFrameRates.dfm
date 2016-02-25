@@ -940,9 +940,9 @@
   end
   object pnlHead: TPanel
     Left = 117
-    Top = 27
+    Top = 25
     Width = 622
-    Height = 149
+    Height = 151
     Anchors = [akLeft, akTop, akRight]
     BevelOuter = bvNone
     Caption = #1053#1086#1074#1072#1103' '#1096#1072#1087#1082#1072
@@ -951,7 +951,7 @@
       Left = 0
       Top = 0
       Width = 622
-      Height = 130
+      Height = 152
       Align = alTop
       DataSource = dsHeader_1
       DrawingStyle = gdsClassic
@@ -1302,6 +1302,8 @@
       'UNION ALL'
       'SELECT "'#1050#1086#1076' '#1088#1072#1089#1094#1077#1085#1082#1080'" AS CODE, :rate AS VALUE, 2 AS CODE1'
       'UNION ALL'
+      'SELECT "'#1053#1072#1079#1074#1072#1085#1080#1077'" AS CODE, :name AS VALUE, 7 AS CODE1'
+      'UNION ALL'
       'SELECT "'#1045#1076'. '#1080#1079#1084'." AS CODE, :unit AS VALUE, 3 AS CODE1'
       'UNION ALL'
       'SELECT "'#1057#1090#1072#1090#1091#1089'" AS CODE, :stat AS VALUE, 4 AS CODE1'
@@ -1323,6 +1325,10 @@
         DataType = ftString
         ParamType = ptInput
         Value = Null
+      end
+      item
+        Name = 'NAME'
+        ParamType = ptInput
       end
       item
         Name = 'UNIT'

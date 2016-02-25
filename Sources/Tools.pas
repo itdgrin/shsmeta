@@ -147,14 +147,14 @@ function GetGlob(const AParamName: String; const AGlobParamType: TGlobParamType 
 function GetGlobDef(const AParamName: String; const ADefValue: Variant;
   const AGlobParamType: TGlobParamType = gptReportParam): Variant;
 
-//Округления для расчетов в программе
+// Округления для расчетов в программе
 function SmRound(AValue: Extended): Extended;
 
 implementation
 
 uses uSelectColumn;
 
-//Заготовка пустышка
+// Заготовка пустышка
 function SmRound(AValue: Extended): Extended;
 begin
   Result := Round(AValue);
@@ -699,7 +699,7 @@ var
   // E: TDataSetNotifyEvent;
 begin
   // E := Query.AfterScroll;
-  if ADisableControls then
+  if ADisableControls and not(Query.ControlsDisabled) then
     Query.DisableControls;
   try
     // Query.AfterScroll := nil;
@@ -712,7 +712,7 @@ begin
       Query.Locate(Query.Fields[0].fieldName, key, []);
   finally
     // Query.AfterScroll := E;
-    if ADisableControls then
+    if ADisableControls and Query.ControlsDisabled then
       Query.EnableControls;
   end;
 end;
@@ -729,13 +729,12 @@ begin
     Exit;
 
   e := Query.AfterScroll;
-  Query.DisableControls;
+  if not Query.ControlsDisabled then
+    Query.DisableControls;
   try
     // Выключаем событие на всякий случай
     Query.AfterScroll := nil;
-    key := Null;
-    if CheckQrActiveEmpty(Query) then
-      key := Query.Fields[0].Value;
+    key := Query.Fields[0].Value;
     // Создаем массив возвращаемых значений
     Res := VarArrayCreate([0, Query.FieldCount - 1], varDouble);
     // Инициализируем начальными значениями
@@ -758,8 +757,9 @@ begin
       Query.Locate(Query.Fields[0].fieldName, key, []);
     Result := Res;
   finally
+    if Query.ControlsDisabled then
+      Query.EnableControls;
     Query.AfterScroll := e;
-    Query.EnableControls;
   end;
 end;
 
@@ -941,7 +941,7 @@ end;
 function MixColors(FG, BG: TColor; T: byte): TColor;
   function MixBytes(FG, BG, TRANS: byte): byte;
   begin
-    Result := round(BG + (FG - BG) / 255 * TRANS);
+    Result := Round(BG + (FG - BG) / 255 * TRANS);
   end;
 
 var
@@ -1107,7 +1107,8 @@ begin
 
       // Строка в фокусе
       if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and
-        ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + headerLines)) then
+        ((Sender AS TJvDBGrid).Row = TMyDBGrid((Sender AS TJvDBGrid)).DataLink.ActiveRecord + headerLines))
+      then
       begin
         Brush.Color := PS.BackgroundSelectRow;
         Font.Color := PS.FontSelectRow;
@@ -1120,7 +1121,7 @@ begin
         Font.Style := Font.Style + [fsBold];
       end;
     end;
-    //(Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
+    // (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
   end;
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
@@ -1333,4 +1334,3 @@ initialization
 G_SMETADATA := RegisterClipBoardFormat(C_SMETADATA);
 
 end.
-

@@ -33,7 +33,6 @@ type
     GroupBoxZonePrices: TGroupBox;
     EditNumberObject: TEdit;
     EditNumberContract: TEdit;
-    EditShortDescription: TEdit;
 
     LabelNumberContract: TLabel;
     Label2: TLabel;
@@ -49,8 +48,6 @@ type
     ButtonListAgreements: TButton;
     ButtonSave: TButton;
     ButtonCancel: TButton;
-
-    MemoFullDescription: TMemo;
     ComboBoxVAT: TComboBox;
     DataSourceBP: TDataSource;
     dsTO: TDataSource;
@@ -90,6 +87,8 @@ type
     seYearBeginStroj: TSpinEdit;
     lbl4: TLabel;
     dbseCountMonth: TJvDBSpinEdit;
+    dbmmoFULL_NAME: TDBMemo;
+    dbedtname: TDBEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -175,8 +174,6 @@ begin
     EditCodeObject.Text := qrMain.FieldByName('encrypt').AsVariant;
     EditNumberContract.Text := qrMain.FieldByName('num_dog').AsString;
     DateTimePickerDataCreateContract.Date := qrMain.FieldByName('date_dog').AsVariant;
-    EditShortDescription.Text := qrMain.FieldByName('name').AsVariant;
-    MemoFullDescription.Text := qrMain.FieldByName('full_name').AsVariant;
 
     e := cbbFromMonth.OnChange;
     try
@@ -456,7 +453,7 @@ end;
 
 procedure TfCardObject.ButtonSaveClick(Sender: TObject);
 var
-  NumberObject, v2, v3, v4, v5, v6, v7, v9, v12, v15, v16, v17, v18, v19: string;
+  NumberObject, v2, v3, v4, v7, v9, v12, v15, v16, v17, v18, v19: string;
   CountField: Integer;
   NEW_ID: Integer;
 begin
@@ -502,26 +499,6 @@ begin
 
   // Список дополнительных соглашений
   v4 := '0'; // ???????????????????????
-
-  // Полное наименование объекта
-  if MemoFullDescription.Text <> '' then
-    v5 := MemoFullDescription.Text
-  else
-  begin
-    v5 := '';
-    // MemoFullDescription.Color := ColorWarningField;
-    // Inc(CountField);
-  end;
-
-  // Краткое наименование объекта
-  if EditShortDescription.Text <> '' then
-    v6 := EditShortDescription.Text
-  else
-  begin
-    v6 := '';
-    // EditShortDescription.Color := ColorWarningField;
-    // Inc(CountField);
-  end;
 
   // Дата начала строительства
   DateTimeToString(v7, 'yyyy-mm-dd', StrToDate('01.' + IntToStr(cbbFromMonth.ItemIndex + 1) + '.' +
@@ -623,7 +600,7 @@ begin
       if FEditing then
       begin
         SQL.Add('UPDATE objcards SET num = "' + NumberObject + '", num_dog = "' + v2 + '", date_dog = "' + v3
-          + '", agr_list = "' + v4 + '", full_name = "' + v5 + '", name = "' + v6 + '", beg_stroj = "' + v7 +
+          + '", agr_list = "' + v4 + '", full_name = :full_name, name = :name, beg_stroj = "' + v7 +
           '", srok_stroj = :srok_stroj, ' + ' fin_id = ' + v9 +
           ', cust_id = :cust_id, general_id = :general_id, cat_id = "' + v12 +
           '", state_nds = :snds, region_id = :region_id, base_norm_id = "' + v15 + '", stroj_id = "' + v16 +
@@ -635,7 +612,7 @@ begin
           'Fl_NAL_USN=:Fl_NAL_USN, NAL_USN=:NAL_USN, Fl_SPEC_SCH=:Fl_SPEC_SCH, SPEC_SCH=:SPEC_SCH,'#13 +
           'WINTERPRICE_TYPE=:WINTERPRICE_TYPE, BEG_STROJ2=:BEG_STROJ2,'#13 +
           'PER_TEMP_BUILD_BACK=:PER_TEMP_BUILD_BACK, CONTRACTOR_SERV=:CONTRACTOR_SERV,'#13 +
-          'PER_NPZ=:PER_NPZ, FL_K_ZP=:FL_K_ZP, FL_K_OHR=:FL_K_OHR, FL_K_PP=:FL_K_PP,'#13 +
+          'PER_NPZ=:PER_NPZ, K_ZP=:K_ZP, K_OHR=:K_OHR, K_PP=:K_PP,'#13 +
           'PER_WINTERPRICE=:PER_WINTERPRICE, FL_DIFF_MAT=:FL_DIFF_MAT, FL_DIFF_TRANSP=:FL_DIFF_TRANSP,'#13 +
           'FL_DIFF_EMIM=:FL_DIFF_EMIM, FL_DIFF_OTHER=:FL_DIFF_OTHER, FL_DIFF_NAL=:FL_DIFF_NAL,'#13 +
           'FL_DIFF_MAT_ZAK=:FL_DIFF_MAT_ZAK, FL_DIFF_NAL_USN=:FL_DIFF_NAL_USN, FL_DIFF_NDS=:FL_DIFF_NDS,'#13 +
@@ -670,16 +647,16 @@ begin
           ' calc_econom, MAIS_ID, PER_TEMP_BUILD, PER_CONTRACTOR, PER_TEMP_BUILD_BACK, CONTRACTOR_SERV, USER_ID,'#13
           + 'FL_CALC_TRAVEL, FL_CALC_TRAVEL_WORK, FL_CALC_WORKER_DEPARTMENT, FL_CALC_ZEM_NAL,'#13 +
           'FL_CALC_VEDOMS_NAL, FL_APPLY_WINTERPRICE, WINTERPRICE_TYPE,BEG_STROJ2,'#13 +
-          'Fl_NAL_USN, NAL_USN, Fl_SPEC_SCH, SPEC_SCH, PER_NPZ, FL_K_ZP, FL_K_OHR, FL_K_PP,'#13 +
+          'Fl_NAL_USN, NAL_USN, Fl_SPEC_SCH, SPEC_SCH, PER_NPZ, K_ZP, K_OHR, K_PP,'#13 +
           'PER_WINTERPRICE, FL_DIFF_MAT, FL_DIFF_TRANSP, FL_DIFF_EMIM, FL_DIFF_OTHER, FL_DIFF_NAL,'#13 +
           'FL_DIFF_MAT_ZAK, FL_DIFF_NAL_USN, FL_DIFF_NDS, FL_DIFF_DEVICE_PODR_WITH_NAL)'#13 +
-          'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 + '", "' + v5 + '", "'
-          + v6 + '", "' + v7 + '", :srok_stroj, ' + v9 + ', :cust_id, :general_id, "' + v12 +
+          'VALUE (:NEW_ID, "' + NumberObject + '", "' + v2 + '", "' + v3 + '", "' + v4 +
+          '", :full_name, :name, "' + v7 + '", :srok_stroj, ' + v9 + ', :cust_id, :general_id, "' + v12 +
           '", :snds, :region_id, "' + v15 + '", "' + v16 + '", "' + v17 + '", "' + v18 + '", "' + v19 +
           '", :PER_TEMP_BUILD, :PER_CONTRACTOR, :PER_TEMP_BUILD_BACK, :CONTRACTOR_SERV, :USER_ID,'#13 +
           ':FL_CALC_TRAVEL, :FL_CALC_TRAVEL_WORK, :FL_CALC_WORKER_DEPARTMENT, :FL_CALC_ZEM_NAL, :FL_CALC_VEDOMS_NAL, :FL_APPLY_WINTERPRICE, :WINTERPRICE_TYPE,'#13
-          + ':BEG_STROJ2,:Fl_NAL_USN, :NAL_USN, :Fl_SPEC_SCH, :SPEC_SCH, :PER_NPZ, :FL_K_ZP, :FL_K_OHR,'#13 +
-          ':FL_K_PP, :PER_WINTERPRICE, :FL_DIFF_MAT, :FL_DIFF_TRANSP, :FL_DIFF_EMIM, :FL_DIFF_OTHER,'#13 +
+          + ':BEG_STROJ2,:Fl_NAL_USN, :NAL_USN, :Fl_SPEC_SCH, :SPEC_SCH, :PER_NPZ, :K_ZP, :K_OHR,'#13 +
+          ':K_PP, :PER_WINTERPRICE, :FL_DIFF_MAT, :FL_DIFF_TRANSP, :FL_DIFF_EMIM, :FL_DIFF_OTHER,'#13 +
           ':FL_DIFF_NAL, :FL_DIFF_MAT_ZAK, :FL_DIFF_NAL_USN, :FL_DIFF_NDS, :FL_DIFF_DEVICE_PODR_WITH_NAL);');
         ParamByName('NEW_ID').Value := NEW_ID;
         ParamByName('USER_ID').Value := G_USER_ID;
@@ -710,9 +687,9 @@ begin
       ParamByName('srok_stroj').Value := qrMain.FieldByName('srok_stroj').Value;
       ParamByName('region_id').Value := qrMain.FieldByName('region_id').Value;
       ParamByName('PER_NPZ').Value := qrMain.FieldByName('PER_NPZ').Value;
-      ParamByName('FL_K_ZP').Value := qrMain.FieldByName('FL_K_ZP').Value;
-      ParamByName('FL_K_OHR').Value := qrMain.FieldByName('FL_K_OHR').Value;
-      ParamByName('FL_K_PP').Value := qrMain.FieldByName('FL_K_PP').Value;
+      ParamByName('K_ZP').Value := qrMain.FieldByName('K_ZP').Value;
+      ParamByName('K_OHR').Value := qrMain.FieldByName('K_OHR').Value;
+      ParamByName('K_PP').Value := qrMain.FieldByName('K_PP').Value;
       ParamByName('PER_WINTERPRICE').Value := qrMain.FieldByName('PER_WINTERPRICE').Value;
       ParamByName('FL_DIFF_MAT').Value := qrMain.FieldByName('FL_DIFF_MAT').Value;
       ParamByName('FL_DIFF_TRANSP').Value := qrMain.FieldByName('FL_DIFF_TRANSP').Value;
@@ -724,6 +701,7 @@ begin
       ParamByName('FL_DIFF_NDS').Value := qrMain.FieldByName('FL_DIFF_NDS').Value;
       ParamByName('FL_DIFF_DEVICE_PODR_WITH_NAL').Value :=
         qrMain.FieldByName('FL_DIFF_DEVICE_PODR_WITH_NAL').Value;
+      ParamByName('full_name').Value := qrMain.FieldByName('full_name').Value;
       ExecSQL;
     end;
 
@@ -809,8 +787,8 @@ procedure TfCardObject.SetColorDefaultToFields;
 begin
   EditCodeObject.Color := clWindow;
   EditNumberContract.Color := clWindow;
-  EditShortDescription.Color := clWindow;
-  MemoFullDescription.Color := clWindow;
+  dbedtname.Color := clWindow;
+  dbmmoFULL_NAME.Color := clWindow;
   dblkcbbSourseFinance.Color := clWindow;
   dblkcbbCategoryObject.Color := clWindow;
   dblkcbbRegion.Color := clWindow;
@@ -831,8 +809,6 @@ procedure TfCardObject.ClearAllFields;
 begin
   EditCodeObject.Text := '';
   EditNumberContract.Text := '';
-  EditShortDescription.Text := '';
-  MemoFullDescription.Text := '';
   CheckBoxCalculationEconom.Checked := False;
   DateTimePickerDataCreateContract.Date := Now;
   cbbFromMonth.ItemIndex := MonthOf(Now) - 1;

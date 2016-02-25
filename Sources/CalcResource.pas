@@ -1062,7 +1062,8 @@ begin
   except
 
   end;
-  CalcValue := Footer[Sender.DataSource.DataSet.FieldByName(FieldName).Index];
+  if VarIsArray(Footer) then
+    CalcValue := Footer[Sender.DataSource.DataSet.FieldByName(FieldName).Index];
 end;
 
 procedure TfCalcResource.mDeteteClick(Sender: TObject);
@@ -1597,6 +1598,7 @@ begin
 
   if not flLoaded then
     Exit;
+
   case pgc.ActivePageIndex of
     // Расчет стоимости
     0:
@@ -1607,28 +1609,27 @@ begin
     1:
       begin
         CloseOpen(qrMaterialData);
-        DoSort(qrMaterialData, grMaterial);
-        CloseOpen(qrMaterialDetail);
+        if not qrMaterialDetail.Active then
+          CloseOpen(qrMaterialDetail);
       end;
     // Расчет механизмов
     2:
       begin
         CloseOpen(qrMechData);
-        DoSort(qrMechData, grMech);
-        CloseOpen(qrMechDetail);
+        if not qrMechDetail.Active then
+          CloseOpen(qrMechDetail);
       end;
     // Расчет оборудования
     3:
       begin
         CloseOpen(qrDevices);
-        DoSort(qrDevices, grDev);
-        CloseOpen(qrDevicesDetail);
+        if not qrDevicesDetail.Active then
+          CloseOpen(qrDevicesDetail);
       end;
     // Расчет з\п
     4:
       begin
         CloseOpen(qrRates);
-        DoSort(qrRates, grRates);
       end;
   end;
 end;
@@ -1837,6 +1838,7 @@ begin
     end;
     // Вызываем переасчет всей сметы
     FormCalculationEstimate.RecalcEstimate;
+    qrDevicesDetail.Cancel;
     pgcChange(nil);
   end
   else
@@ -1908,8 +1910,25 @@ end;
 
 procedure TfCalcResource.qrMaterialDataAfterOpen(DataSet: TDataSet);
 begin
-  if CheckQrActiveEmpty(DataSet) then
-    CalcFooter;
+  DataSet.Tag := 1;
+  CalcFooter;
+  case pgc.ActivePageIndex of
+    // Расчет стоимости
+    0:
+      ;
+    // Расчет материалов
+    1:
+      grMaterial.SelectedRows.Clear;
+    // Расчет механизмов
+    2:
+      grMech.SelectedRows.Clear;
+    // Расчет оборудования
+    3:
+      grDev.SelectedRows.Clear;
+    // Расчет з\п
+    4:
+      ;
+  end;
 end;
 
 procedure TfCalcResource.qrMaterialDataBeforeOpen(DataSet: TDataSet);
@@ -2131,6 +2150,7 @@ begin
     end;
     // Вызываем переасчет всей сметы
     FormCalculationEstimate.RecalcEstimate;
+    qrMaterialDetail.Cancel;
     pgcChange(nil);
   end
   else
@@ -2294,6 +2314,7 @@ begin
     end;
     // Вызываем переасчет всей сметы
     FormCalculationEstimate.RecalcEstimate;
+    qrMechDetail.Cancel;
     pgcChange(nil);
   end
   else

@@ -244,23 +244,19 @@ object fCardObject: TfCardObject
     Font.Style = []
     ParentFont = False
     TabOrder = 2
-    DesignSize = (
-      441
-      56)
-    object MemoFullDescription: TMemo
-      Left = 8
-      Top = 13
-      Width = 426
-      Height = 37
-      Anchors = [akLeft, akTop, akRight]
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      MaxLength = 1000
-      ParentFont = False
+    object dbmmoFULL_NAME: TDBMemo
+      Left = 2
+      Top = 15
+      Width = 437
+      Height = 39
+      Align = alClient
+      DataField = 'FULL_NAME'
+      DataSource = dsMain
       TabOrder = 0
+      ExplicitLeft = 88
+      ExplicitTop = 24
+      ExplicitWidth = 185
+      ExplicitHeight = 89
     end
   end
   object GroupBoxShortDescription: TGroupBox
@@ -270,22 +266,19 @@ object fCardObject: TfCardObject
     Height = 41
     Caption = #1050#1088#1072#1090#1082#1086#1077' '#1085#1072#1080#1084#1077#1085#1086#1074#1072#1085#1080#1077' '#1086#1073#1098#1077#1082#1090#1072':'
     TabOrder = 3
-    DesignSize = (
-      441
-      41)
-    object EditShortDescription: TEdit
-      Left = 8
+    object dbedtname: TDBEdit
+      Left = 2
       Top = 15
-      Width = 426
-      Height = 21
-      Anchors = [akLeft, akTop, akRight]
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
+      Width = 437
+      Height = 24
+      Align = alClient
+      DataField = 'name'
+      DataSource = dsMain
       TabOrder = 0
+      ExplicitLeft = 72
+      ExplicitTop = 24
+      ExplicitWidth = 121
+      ExplicitHeight = 21
     end
   end
   object GroupBoxClient: TGroupBox
@@ -492,7 +485,6 @@ object fCardObject: TfCardObject
     ParentFont = False
     TabOrder = 20
     OnClick = ButtonSaveClick
-    ExplicitTop = 528
   end
   object ButtonCancel: TButton
     Left = 338
@@ -503,7 +495,6 @@ object fCardObject: TfCardObject
     Caption = #1054#1090#1084#1077#1085#1072
     TabOrder = 21
     OnClick = ButtonCancelClick
-    ExplicitTop = 528
   end
   object GroupBoxVAT: TGroupBox
     Left = 338
@@ -619,7 +610,6 @@ object fCardObject: TfCardObject
     ParentFont = False
     TabOrder = 19
     OnClick = btnCardObjectAdditionalClick
-    ExplicitTop = 528
   end
   object grp3: TGroupBox
     Left = 232

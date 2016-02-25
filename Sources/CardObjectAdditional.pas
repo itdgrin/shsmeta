@@ -28,13 +28,10 @@ type
     pnl2: TPanel;
     GridPanel5: TGridPanel;
     lbl5: TLabel;
-    dbchkFL_APPLY_WINTERPRICE: TDBCheckBox;
     GridPanel6: TGridPanel;
     lbl6: TLabel;
-    dbchkFL_APPLY_WINTERPRICE1: TDBCheckBox;
     GridPanel7: TGridPanel;
     lbl7: TLabel;
-    dbchkFL_APPLY_WINTERPRICE2: TDBCheckBox;
     pnl3: TPanel;
     GridPanel8: TGridPanel;
     lbl8: TLabel;
@@ -96,6 +93,9 @@ type
     lbl22: TLabel;
     lbl23: TLabel;
     btn2: TBitBtn;
+    JvDBSpinEdit7: TJvDBSpinEdit;
+    JvDBSpinEdit8: TJvDBSpinEdit;
+    jvdbspndtK_PP: TJvDBSpinEdit;
     procedure btn1Click(Sender: TObject);
     procedure dbchkAPPLY_WINTERPRISE_FLAGClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -103,7 +103,6 @@ type
     procedure lbl1Click(Sender: TObject);
     procedure lbl4Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure lbl22Click(Sender: TObject);
   private
 
   public
@@ -118,6 +117,7 @@ uses CardObjectContractorServices, SSR, Main;
 
 procedure TfCardObjectAdditional.btn1Click(Sender: TObject);
 begin
+  { TODO  ПРИМЕНИТЬ/ЗАКРЫТЬ обработка старых значений -oOwner -cCategory : ActionItem }
   Close;
 end;
 
@@ -150,24 +150,42 @@ end;
 procedure TfCardObjectAdditional.lbl1Click(Sender: TObject);
 var
   fSSR: TfSSR;
+  TmpStr: string;
+  per: Variant;
 begin
-  fSSR := TfSSR.Create(Self,
-    VarArrayOf([2, 'Сметные нормы затрат на строительство временных зданий и сооружений', True]));
-  try
-    fSSR.ShowModal;
-  finally
-    FreeAndNil(fSSR);
+  case (Sender as TLabel).Tag of
+    1:
+      TmpStr := 'Сметные нормы для дополнительных затрат при производстве работ в зимнее время';
+    2:
+      TmpStr := 'Сметные нормы затрат на строительство временных зданий и сооружений';
+    3:
+      TmpStr := 'Резерв на непредвиденные затраты';
+    4:
+      TmpStr := 'Содержание единых заказчиков';
+    5:
+      TmpStr := 'Затраты, связанные с подвижным и разъездным характером работ';
   end;
-end;
 
-procedure TfCardObjectAdditional.lbl22Click(Sender: TObject);
-var
-  fSSR: TfSSR;
-begin
-  fSSR := TfSSR.Create(Self,
-    VarArrayOf([1, 'НДЗ 1 (по видам строительства)', True]));
+  fSSR := TfSSR.Create(Self, VarArrayOf([(Sender as TLabel).Tag, TmpStr, True]));
   try
-    fSSR.ShowModal;
+    if fSSR.ShowModal = mrOk then
+    begin
+      per := FastSelectSQLOne('select COEF_NORM from ssrdetail where ID=:0', VarArrayOf([fSSR.SprID]));
+      fCardObject.qrMain.Edit;
+      case (Sender as TLabel).Tag of
+        1:
+          begin
+            // TODO сохранить fSSR.SprID
+            fCardObject.qrMain.FieldByName('PER_WINTERPRICE').Value := per;
+          end;
+        2:
+          begin
+            // TODO сохранить fSSR.SprID
+            fCardObject.qrMain.FieldByName('PER_TEMP_BUILD').Value := per;
+          end;
+      end;
+    end;
+
   finally
     FreeAndNil(fSSR);
   end;
