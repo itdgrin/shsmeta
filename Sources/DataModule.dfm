@@ -1,6 +1,6 @@
 object DM: TDM
   OldCreateOrder = False
-  Height = 253
+  Height = 259
   Width = 490
   object ImageListArrowsTop: TImageList
     ColorDepth = cd24Bit
