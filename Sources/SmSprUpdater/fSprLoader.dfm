@@ -23,7 +23,7 @@ object SprLoaderForm: TSprLoaderForm
     Top = 0
     Width = 753
     Height = 463
-    ActivePage = tsMaterial
+    ActivePage = tsTransp
     Align = alClient
     TabOrder = 0
     object tsMaterial: TTabSheet
@@ -67,7 +67,7 @@ object SprLoaderForm: TSprLoaderForm
           ParentFont = False
         end
         object btnUpdMat: TButton
-          Left = 619
+          Left = 611
           Top = 16
           Width = 93
           Height = 25
@@ -84,7 +84,7 @@ object SprLoaderForm: TSprLoaderForm
         object edtUpdMat: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 429
+          Width = 421
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -94,7 +94,7 @@ object SprLoaderForm: TSprLoaderForm
           OnRightButtonClick = edtRightButtonClick
         end
         object cbMonthMat: TComboBox
-          Left = 439
+          Left = 431
           Top = 20
           Width = 100
           Height = 21
@@ -103,7 +103,7 @@ object SprLoaderForm: TSprLoaderForm
           TabOrder = 2
         end
         object edtYearMat: TSpinEdit
-          Left = 543
+          Left = 535
           Top = 19
           Width = 73
           Height = 22
@@ -149,7 +149,7 @@ object SprLoaderForm: TSprLoaderForm
         object edtUpdMatPrice: TButtonedEdit
           Left = 8
           Top = 20
-          Width = 427
+          Width = 419
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -159,7 +159,7 @@ object SprLoaderForm: TSprLoaderForm
           OnRightButtonClick = edtRightButtonClick
         end
         object btnUpdMatPrice: TButton
-          Left = 619
+          Left = 611
           Top = 17
           Width = 93
           Height = 25
@@ -168,7 +168,7 @@ object SprLoaderForm: TSprLoaderForm
           TabOrder = 1
         end
         object cbMonthMatPrice: TComboBox
-          Left = 439
+          Left = 431
           Top = 20
           Width = 100
           Height = 21
@@ -177,7 +177,7 @@ object SprLoaderForm: TSprLoaderForm
           TabOrder = 2
         end
         object edtYearMatPrice: TSpinEdit
-          Left = 543
+          Left = 535
           Top = 19
           Width = 73
           Height = 22
@@ -217,7 +217,7 @@ object SprLoaderForm: TSprLoaderForm
         object edtUpdMatNoTrans: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 610
+          Width = 602
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -227,7 +227,7 @@ object SprLoaderForm: TSprLoaderForm
           OnRightButtonClick = edtRightButtonClick
         end
         object btnUpdMatNoTrans: TButton
-          Left = 619
+          Left = 611
           Top = 17
           Width = 93
           Height = 25
@@ -265,7 +265,7 @@ object SprLoaderForm: TSprLoaderForm
         object edtUpdJBI: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 429
+          Width = 421
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -275,7 +275,7 @@ object SprLoaderForm: TSprLoaderForm
           OnRightButtonClick = edtRightButtonClick
         end
         object btnUpdJBI: TButton
-          Left = 619
+          Left = 611
           Top = 18
           Width = 93
           Height = 25
@@ -284,7 +284,7 @@ object SprLoaderForm: TSprLoaderForm
           TabOrder = 1
         end
         object cbMonthJBI: TComboBox
-          Left = 439
+          Left = 431
           Top = 20
           Width = 100
           Height = 21
@@ -293,7 +293,7 @@ object SprLoaderForm: TSprLoaderForm
           TabOrder = 2
         end
         object edtYearJBI: TSpinEdit
-          Left = 543
+          Left = 535
           Top = 19
           Width = 73
           Height = 22
@@ -304,7 +304,7 @@ object SprLoaderForm: TSprLoaderForm
           Value = 2000
         end
         object cboxUpdJBIName: TCheckBox
-          Left = 439
+          Left = 431
           Top = 0
           Width = 202
           Height = 17
@@ -326,7 +326,7 @@ object SprLoaderForm: TSprLoaderForm
         DesignSize = (
           741
           46)
-        object Label1: TLabel
+        object lbUpdMatNoPriceTitle: TLabel
           Left = 8
           Top = 1
           Width = 178
@@ -342,7 +342,7 @@ object SprLoaderForm: TSprLoaderForm
         object edtUpdMatNoPrice: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 429
+          Width = 421
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -352,7 +352,7 @@ object SprLoaderForm: TSprLoaderForm
           OnRightButtonClick = edtRightButtonClick
         end
         object btnUpdMatNoPrice: TButton
-          Left = 619
+          Left = 611
           Top = 17
           Width = 93
           Height = 25
@@ -361,7 +361,7 @@ object SprLoaderForm: TSprLoaderForm
           TabOrder = 1
         end
         object cbMonthMatNoPrice: TComboBox
-          Left = 439
+          Left = 431
           Top = 20
           Width = 100
           Height = 21
@@ -370,7 +370,7 @@ object SprLoaderForm: TSprLoaderForm
           TabOrder = 2
         end
         object edtYearMatNoPrice: TSpinEdit
-          Left = 543
+          Left = 535
           Top = 19
           Width = 73
           Height = 22
@@ -381,7 +381,7 @@ object SprLoaderForm: TSprLoaderForm
           Value = 2000
         end
         object cboxUpdMatName: TCheckBox
-          Left = 439
+          Left = 431
           Top = 0
           Width = 202
           Height = 17
@@ -423,7 +423,7 @@ object SprLoaderForm: TSprLoaderForm
         object edtUpdMech: TButtonedEdit
           Left = 6
           Top = 20
-          Width = 429
+          Width = 421
           Height = 21
           Anchors = [akLeft, akTop, akRight]
           Images = ImageList
@@ -431,20 +431,18 @@ object SprLoaderForm: TSprLoaderForm
           RightButton.Visible = True
           TabOrder = 0
           OnRightButtonClick = edtRightButtonClick
-          ExplicitWidth = 437
         end
         object btnUpdMech: TButton
-          Left = 619
+          Left = 611
           Top = 16
           Width = 93
           Height = 25
           Action = actUpdMech
           Anchors = [akTop, akRight]
           TabOrder = 1
-          ExplicitLeft = 627
         end
         object cbMonthMech: TComboBox
-          Left = 439
+          Left = 431
           Top = 20
           Width = 100
           Height = 21
@@ -453,7 +451,7 @@ object SprLoaderForm: TSprLoaderForm
           TabOrder = 2
         end
         object edtYearMech: TSpinEdit
-          Left = 543
+          Left = 535
           Top = 19
           Width = 73
           Height = 22
@@ -462,37 +460,434 @@ object SprLoaderForm: TSprLoaderForm
           MinValue = 2000
           TabOrder = 3
           Value = 2000
-          ExplicitLeft = 551
         end
         object cboxUpdMechName: TCheckBox
-          Left = 439
+          Left = 431
           Top = 0
           Width = 186
           Height = 17
           Anchors = [akTop, akRight]
           Caption = #1054#1073#1085#1086#1074#1083#1103#1090#1100' '#1085#1072#1079#1074#1072#1085#1080#1103' '#1084#1077#1093#1072#1085#1080#1079#1084#1086#1074
           TabOrder = 4
-          ExplicitLeft = 447
         end
         object btnClearMechPrice: TButton
-          Left = 439
+          Left = 431
           Top = 46
           Width = 177
           Height = 25
           Action = actClearMechPrice
           Anchors = [akTop, akRight]
           TabOrder = 5
-          ExplicitLeft = 447
         end
       end
     end
     object tsTransp: TTabSheet
       Caption = #1054#1090#1093#1086#1076#1099' '#1080' '#1090#1088#1072#1085#1089#1087#1086#1088#1090
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      object pnlUpdCargoBoard: TPanel
+        Left = 0
+        Top = 50
+        Width = 745
+        Height = 50
+        Align = alTop
+        BevelKind = bkTile
+        BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentBackground = False
+        ParentFont = False
+        TabOrder = 0
+        DesignSize = (
+          741
+          46)
+        object lbpnlUpdCargoBoardTitle: TLabel
+          Left = 8
+          Top = 1
+          Width = 388
+          Height = 13
+          Caption = #1047#1072#1075#1088#1091#1079#1082#1072' '#1090#1072#1088#1080#1092#1086#1074' '#1085#1072' '#1087#1077#1088#1077#1074#1086#1079#1082#1091' '#1075#1088#1091#1079#1086#1074' '#1073#1086#1088#1090#1086#1074#1099#1084#1080' '#1072#1074#1090#1086#1084#1086#1073#1080#1083#1103#1084#1080
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object btnUpdCargoBoard: TButton
+          Left = 611
+          Top = 16
+          Width = 93
+          Height = 25
+          Action = actUpdCargoBoard
+          Anchors = [akTop, akRight]
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+        end
+        object edtUpdCargoBoard: TButtonedEdit
+          Left = 6
+          Top = 20
+          Width = 421
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          Images = ImageList
+          RightButton.ImageIndex = 0
+          RightButton.Visible = True
+          TabOrder = 1
+          OnRightButtonClick = edtRightButtonClick
+        end
+        object cbMonthCargoBoard: TComboBox
+          Left = 431
+          Top = 20
+          Width = 100
+          Height = 21
+          Style = csDropDownList
+          Anchors = [akTop, akRight]
+          TabOrder = 2
+        end
+        object edtYearCargoBoard: TSpinEdit
+          Left = 535
+          Top = 19
+          Width = 73
+          Height = 22
+          Anchors = [akTop, akRight]
+          MaxValue = 3000
+          MinValue = 2000
+          TabOrder = 3
+          Value = 2000
+        end
+      end
+      object pnlUpdTransKoef: TPanel
+        Left = 0
+        Top = 100
+        Width = 745
+        Height = 50
+        Align = alTop
+        BevelKind = bkTile
+        BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentBackground = False
+        ParentFont = False
+        TabOrder = 1
+        DesignSize = (
+          741
+          46)
+        object lbUpdTransKoefTitle: TLabel
+          Left = 8
+          Top = 1
+          Width = 416
+          Height = 13
+          Caption = #1047#1072#1075#1088#1091#1079#1082#1072' '#1085#1072#1076#1073#1072#1074#1082#1080' '#1082' '#1090#1072#1088#1080#1092#1072#1084' '#1085#1072' '#1087#1077#1088#1077#1074#1086#1079#1082#1091' '#1073#1086#1088#1090#1086#1074#1099#1084#1080' '#1072#1074#1090#1086#1084#1086#1073#1080#1083#1103#1084#1080
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object btnUpdTransKoef: TButton
+          Left = 611
+          Top = 16
+          Width = 93
+          Height = 25
+          Action = actUpdTransKoef
+          Anchors = [akTop, akRight]
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+        end
+        object edtUpdTransKoef: TButtonedEdit
+          Left = 6
+          Top = 20
+          Width = 421
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          Images = ImageList
+          RightButton.ImageIndex = 0
+          RightButton.Visible = True
+          TabOrder = 1
+          OnRightButtonClick = edtRightButtonClick
+        end
+        object cbMonthTransKoef: TComboBox
+          Left = 431
+          Top = 20
+          Width = 100
+          Height = 21
+          Style = csDropDownList
+          Anchors = [akTop, akRight]
+          TabOrder = 2
+        end
+        object edtYearTransKoef: TSpinEdit
+          Left = 535
+          Top = 19
+          Width = 73
+          Height = 22
+          Anchors = [akTop, akRight]
+          MaxValue = 3000
+          MinValue = 2000
+          TabOrder = 3
+          Value = 2000
+        end
+      end
+      object pnlUpdDump: TPanel
+        Left = 0
+        Top = 200
+        Width = 745
+        Height = 50
+        Align = alTop
+        BevelKind = bkTile
+        BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentBackground = False
+        ParentFont = False
+        TabOrder = 2
+        ExplicitLeft = 24
+        ExplicitTop = 310
+        DesignSize = (
+          741
+          46)
+        object lbUpdDumpTitle: TLabel
+          Left = 8
+          Top = 1
+          Width = 303
+          Height = 13
+          Caption = #1047#1072#1075#1088#1091#1079#1082#1072' '#1090#1072#1088#1080#1092#1086#1074' '#1085#1072' '#1087#1088#1080#1077#1084' '#1080' '#1079#1072#1093#1086#1088#1072#1085#1077#1085#1080#1077' '#1086#1090#1093#1086#1076#1086#1074
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object btnUpdDump: TButton
+          Left = 611
+          Top = 16
+          Width = 93
+          Height = 25
+          Action = actUpdDump
+          Anchors = [akTop, akRight]
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+        end
+        object edtUpdDump: TButtonedEdit
+          Left = 6
+          Top = 20
+          Width = 421
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          Images = ImageList
+          RightButton.ImageIndex = 0
+          RightButton.Visible = True
+          TabOrder = 1
+          OnRightButtonClick = edtRightButtonClick
+        end
+        object cbMonthDump: TComboBox
+          Left = 431
+          Top = 20
+          Width = 100
+          Height = 21
+          Style = csDropDownList
+          Anchors = [akTop, akRight]
+          TabOrder = 2
+        end
+        object edtYearDump: TSpinEdit
+          Left = 535
+          Top = 19
+          Width = 73
+          Height = 22
+          Anchors = [akTop, akRight]
+          MaxValue = 3000
+          MinValue = 2000
+          TabOrder = 3
+          Value = 2000
+        end
+      end
+      object pnlUpdCargo: TPanel
+        Left = 0
+        Top = 0
+        Width = 745
+        Height = 50
+        Align = alTop
+        BevelKind = bkTile
+        BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentBackground = False
+        ParentFont = False
+        TabOrder = 3
+        DesignSize = (
+          741
+          46)
+        object lbUpdCargoTitle: TLabel
+          Left = 8
+          Top = 1
+          Width = 400
+          Height = 13
+          Caption = #1047#1072#1075#1088#1091#1079#1082#1072' '#1090#1072#1088#1080#1092#1086#1074' '#1085#1072' '#1087#1077#1088#1077#1074#1086#1079#1082#1091' '#1075#1088#1091#1079#1086#1074' '#1072#1074#1090#1086#1084#1086#1073#1080#1083#1103#1084#1080'-'#1089#1072#1084#1086#1089#1074#1072#1083#1072#1084#1080
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object btnUpdCargo: TButton
+          Left = 614
+          Top = 17
+          Width = 93
+          Height = 25
+          Action = actUpdCargo
+          Anchors = [akTop, akRight]
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+        end
+        object edtUpdCargo: TButtonedEdit
+          Left = 6
+          Top = 20
+          Width = 421
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          Images = ImageList
+          RightButton.ImageIndex = 0
+          RightButton.Visible = True
+          TabOrder = 1
+          OnRightButtonClick = edtRightButtonClick
+        end
+        object cbMonthCargo: TComboBox
+          Left = 431
+          Top = 20
+          Width = 100
+          Height = 21
+          Style = csDropDownList
+          Anchors = [akTop, akRight]
+          TabOrder = 2
+        end
+        object edtYearCargo: TSpinEdit
+          Left = 535
+          Top = 19
+          Width = 73
+          Height = 22
+          Anchors = [akTop, akRight]
+          MaxValue = 3000
+          MinValue = 2000
+          TabOrder = 3
+          Value = 2000
+        end
+      end
+      object pnlUpdTarif: TPanel
+        Left = 0
+        Top = 150
+        Width = 745
+        Height = 50
+        Align = alTop
+        BevelKind = bkTile
+        BevelOuter = bvNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentBackground = False
+        ParentFont = False
+        TabOrder = 4
+        ExplicitLeft = -3
+        ExplicitTop = 206
+        DesignSize = (
+          741
+          46)
+        object lbUpdTarifTitle: TLabel
+          Left = 8
+          Top = 1
+          Width = 349
+          Height = 13
+          Caption = #1047#1072#1075#1088#1091#1079#1082#1072' '#1090#1072#1088#1080#1092#1086#1074' '#1085#1072' '#1087#1086#1075#1088#1091#1079#1086#1095#1085#1099#1077' '#1080' '#1088#1072#1079#1075#1088#1091#1079#1086#1095#1085#1099#1077' '#1088#1072#1073#1086#1090#1099
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object btnUpdTarif: TButton
+          Left = 611
+          Top = 16
+          Width = 93
+          Height = 25
+          Action = actUpdTarif
+          Anchors = [akTop, akRight]
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+        end
+        object edtUpdTarif: TButtonedEdit
+          Left = 6
+          Top = 20
+          Width = 421
+          Height = 21
+          Anchors = [akLeft, akTop, akRight]
+          Images = ImageList
+          RightButton.ImageIndex = 0
+          RightButton.Visible = True
+          TabOrder = 1
+          OnRightButtonClick = edtRightButtonClick
+        end
+        object cbMonthTarif: TComboBox
+          Left = 431
+          Top = 20
+          Width = 100
+          Height = 21
+          Style = csDropDownList
+          Anchors = [akTop, akRight]
+          TabOrder = 2
+        end
+        object edtYearTarif: TSpinEdit
+          Left = 535
+          Top = 19
+          Width = 73
+          Height = 22
+          Anchors = [akTop, akRight]
+          MaxValue = 3000
+          MinValue = 2000
+          TabOrder = 3
+          Value = 2000
+        end
+      end
     end
   end
   object MainMenu: TMainMenu
@@ -537,16 +932,36 @@ object SprLoaderForm: TSprLoaderForm
       Caption = #1047#1072#1075#1088#1091#1079#1082#1072
       OnExecute = actUpdMechExecute
     end
+    object actUpdCargo: TAction
+      Caption = #1047#1072#1075#1088#1091#1079#1082#1072
+      OnExecute = actUpdCargoExecute
+    end
+    object actUpdCargoBoard: TAction
+      Caption = #1047#1072#1075#1088#1091#1079#1082#1072
+      OnExecute = actUpdCargoBoardExecute
+    end
     object actClearMechPrice: TAction
       Caption = #1054#1095#1080#1089#1090#1080#1090#1100' '#1094#1077#1085#1099' '#1079#1072' '#1084#1077#1089#1103#1094
       OnExecute = actClearMechPriceExecute
+    end
+    object actUpdTransKoef: TAction
+      Caption = #1047#1072#1075#1088#1091#1079#1082#1072
+      OnExecute = actUpdTransKoefExecute
+    end
+    object actUpdDump: TAction
+      Caption = #1047#1072#1075#1088#1091#1079#1082#1072
+      OnExecute = actUpdDumpExecute
+    end
+    object actUpdTarif: TAction
+      Caption = #1047#1072#1075#1088#1091#1079#1082#1072
+      OnExecute = actUpdTarifExecute
     end
   end
   object ImageList: TImageList
     Left = 396
     Top = 312
     Bitmap = {
-      494C010101000800380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010101000800400010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

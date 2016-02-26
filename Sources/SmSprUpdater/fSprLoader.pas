@@ -62,7 +62,7 @@ type
     cbMonthMat: TComboBox;
     edtYearMat: TSpinEdit;
     pnlUpdMatNoPrice: TPanel;
-    Label1: TLabel;
+    lbUpdMatNoPriceTitle: TLabel;
     edtUpdMatNoPrice: TButtonedEdit;
     btnUpdMatNoPrice: TButton;
     actUpdMatNoTrans: TAction;
@@ -84,6 +84,41 @@ type
     btnClearMechPrice: TButton;
     actUpdMech: TAction;
     actClearMechPrice: TAction;
+    pnlUpdCargoBoard: TPanel;
+    lbpnlUpdCargoBoardTitle: TLabel;
+    btnUpdCargoBoard: TButton;
+    edtUpdCargoBoard: TButtonedEdit;
+    cbMonthCargoBoard: TComboBox;
+    edtYearCargoBoard: TSpinEdit;
+    actUpdCargoBoard: TAction;
+    pnlUpdTransKoef: TPanel;
+    lbUpdTransKoefTitle: TLabel;
+    btnUpdTransKoef: TButton;
+    edtUpdTransKoef: TButtonedEdit;
+    cbMonthTransKoef: TComboBox;
+    edtYearTransKoef: TSpinEdit;
+    actUpdTransKoef: TAction;
+    pnlUpdDump: TPanel;
+    lbUpdDumpTitle: TLabel;
+    btnUpdDump: TButton;
+    edtUpdDump: TButtonedEdit;
+    cbMonthDump: TComboBox;
+    edtYearDump: TSpinEdit;
+    actUpdDump: TAction;
+    pnlUpdCargo: TPanel;
+    lbUpdCargoTitle: TLabel;
+    btnUpdCargo: TButton;
+    edtUpdCargo: TButtonedEdit;
+    cbMonthCargo: TComboBox;
+    edtYearCargo: TSpinEdit;
+    actUpdCargo: TAction;
+    pnlUpdTarif: TPanel;
+    lbUpdTarifTitle: TLabel;
+    btnUpdTarif: TButton;
+    edtUpdTarif: TButtonedEdit;
+    cbMonthTarif: TComboBox;
+    edtYearTarif: TSpinEdit;
+    actUpdTarif: TAction;
     procedure actCloseExecute(Sender: TObject);
     procedure edtRightButtonClick(Sender: TObject);
     procedure actUpdMatExecute(Sender: TObject);
@@ -96,6 +131,11 @@ type
     procedure actUpdMatNoTransExecute(Sender: TObject);
     procedure actClearMechPriceExecute(Sender: TObject);
     procedure actUpdMechExecute(Sender: TObject);
+    procedure actUpdCargoBoardExecute(Sender: TObject);
+    procedure actUpdTransKoefExecute(Sender: TObject);
+    procedure actUpdDumpExecute(Sender: TObject);
+    procedure actUpdCargoExecute(Sender: TObject);
+    procedure actUpdTarifExecute(Sender: TObject);
   private
     FUnitsName, FUnitsID: TStringList;
     procedure ChackFileExsist(const AFileName: string);
@@ -104,6 +144,7 @@ type
     function AddNewMat(ACode, AName, AUnit: string; ADate: TDateTime;
       AJBI, ANoUpdate: Boolean): Integer;
     function AddNewMech(ACode, AName: string; ADate: TDateTime; ANoUpdate: Boolean): Integer;
+    function AddNewDump(AName, AUnit: string; ACode, OblID: Integer; ANoUpdate: Boolean): Integer;
   public
     { Public declarations }
   end;
@@ -158,6 +199,11 @@ begin
     cbMonthMatPrice.Items.Add(arraymes[I][1]);
     cbMonthJBI.Items.Add(arraymes[I][1]);
     cbMonthMech.Items.Add(arraymes[I][1]);
+    cbMonthCargo.Items.Add(arraymes[I][1]);
+    cbMonthCargoBoard.Items.Add(arraymes[I][1]);
+    cbMonthTransKoef.Items.Add(arraymes[I][1]);
+    cbMonthTarif.Items.Add(arraymes[I][1]);
+    cbMonthDump.Items.Add(arraymes[I][1]);
   end;
 
   DecodeDate(Date, Y, M, D);
@@ -171,6 +217,16 @@ begin
   edtYearJBI.Value := Y;
   cbMonthMech.ItemIndex := M - 1;
   edtYearMech.Value := Y;
+  cbMonthCargo.ItemIndex := M - 1;
+  edtYearCargo.Value := Y;
+  cbMonthCargoBoard.ItemIndex := M - 1;
+  edtYearCargoBoard.Value := Y;
+  cbMonthTransKoef.ItemIndex := M - 1;
+  edtYearTransKoef.Value := Y;
+  cbMonthTarif.ItemIndex := M - 1;
+  edtYearTarif.Value := Y;
+  cbMonthDump.ItemIndex := M - 1;
+  edtYearDump.Value := Y;
 end;
 
 procedure TSprLoaderForm.FormDestroy(Sender: TObject);
@@ -231,6 +287,384 @@ begin
   FUnitsID.Add(IntToStr(NextID));
   FUnitsName.Add(AUnitName.ToLower);
   Result := NextID;
+end;
+
+procedure TSprLoaderForm.actUpdCargoBoardExecute(Sender: TObject);
+var ExlApp,
+    WorkSheet1,
+    WorkSheet2: OleVariant;
+    FData,
+    FDataPriceNDS,
+    FDataPriceNoNDS: OleVariant;
+    I, J,
+    Rows1, Rows2: Integer;
+    TmpDistance: string;
+    AutoCommitValue: Boolean;
+begin
+  if Application.MessageBox(
+    PChar('Загрузить данные из ''' + edtUpdCargoBoard.Text + ''' в справочник ' +
+      'тарифов на перевозку бортовыми автомобилями?' +
+    sLineBreak + 'Старые тарифы за ' + cbMonthCargoBoard.Text + ' ' +
+    edtYearCargoBoard.Value.ToString + ' будут удалены.'),
+    'Загрузка данных', MB_OKCANCEL + MB_ICONQUESTION) = mrCancel then
+    Exit;
+  ChackFileExsist(edtUpdCargoBoard.Text);
+
+  CoInitialize(nil);
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  J := 0;
+  try
+    Screen.Cursor := crHourGlass;
+    ExlApp := Unassigned;
+    try
+      ExlApp := CreateOleObject('Excel.Application');
+      ExlApp.Visible:=false;
+      ExlApp.DisplayAlerts := False;
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка инициализации Excel:' + e.Message);
+    end;
+
+    try
+      ExlApp.WorkBooks.Open(edtUpdCargoBoard.Text);
+      WorkSheet1 := ExlApp.ActiveWorkbook.Sheets.Item[1];
+      WorkSheet2 := ExlApp.ActiveWorkbook.Sheets.Item[2];
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка открытия Excel документа:' + e.Message);
+    end;
+
+    Rows1 := WorkSheet1.UsedRange.Rows.Count;
+    Rows2 := WorkSheet2.UsedRange.Rows.Count;
+
+    if Rows2 <> Rows1 then
+      raise Exception.Create('Таблицы с НДС и без НДС разной длинны.');
+
+    FData :=
+      WorkSheet1.Range[WorkSheet1.Cells[8, 1].Address,
+      WorkSheet1.Cells[Rows1, 1].Address].Value;
+
+    FDataPriceNoNDS :=
+      WorkSheet1.Range[WorkSheet1.Cells[8, 2].Address,
+      WorkSheet1.Cells[Rows1, 5].Address].Value;
+
+    FDataPriceNDS :=
+      WorkSheet2.Range[WorkSheet2.Cells[8, 2].Address,
+      WorkSheet2.Cells[Rows1, 5].Address].Value;
+
+    DM.Read.StartTransaction;
+    try
+      DM.qrDifferent.SQL.Text :=
+        'Delete from transfercargoboard where (YEAR = :YEAR) and (MONAT = :MONAT)';
+      DM.qrDifferent.ParamByName('YEAR').Value := edtYearCargoBoard.Value;
+      DM.qrDifferent.ParamByName('MONAT').Value := cbMonthCargoBoard.ItemIndex + 1;
+      DM.qrDifferent.ExecSQL;
+
+      DM.qrDifferent1.SQL.Text :=
+        'Insert into transfercargoboard ' +
+        '(`YEAR`, `MONAT`, `DISTANCE`, CLASS1_1, CLASS1_2, CLASS2_1, ' +
+        'CLASS2_2, CLASS3_1, CLASS3_2, CLASS4_1, CLASS4_2, SORT) ' +
+        'values ' +
+        '(:YEAR, :MONAT, :DISTANCE, :CLASS1_1, :CLASS1_2, :CLASS2_1, ' +
+        ':CLASS2_2, :CLASS3_1, :CLASS3_2, :CLASS4_1, :CLASS4_2, :SORT)';
+
+      for I := 1 to Rows1 - 7 do
+      begin
+        J := I;
+        TmpDistance := trim(VarToStr(FData[I,1]));
+
+        if (TmpDistance <> '') then
+        begin
+          DM.qrDifferent1.ParamByName('YEAR').Value := edtYearCargoBoard.Value;
+          DM.qrDifferent1.ParamByName('MONAT').Value := cbMonthCargoBoard.ItemIndex + 1;
+          DM.qrDifferent1.ParamByName('DISTANCE').Value := TmpDistance;
+          DM.qrDifferent1.ParamByName('CLASS1_1').Value := FDataPriceNoNDS[I,1];
+          DM.qrDifferent1.ParamByName('CLASS1_2').Value := FDataPriceNDS[I,1];
+          DM.qrDifferent1.ParamByName('CLASS2_1').Value := FDataPriceNoNDS[I,2];
+          DM.qrDifferent1.ParamByName('CLASS2_2').Value := FDataPriceNDS[I,2];
+          DM.qrDifferent1.ParamByName('CLASS3_1').Value := FDataPriceNoNDS[I,3];
+          DM.qrDifferent1.ParamByName('CLASS3_2').Value := FDataPriceNDS[I,3];
+          DM.qrDifferent1.ParamByName('CLASS4_1').Value := FDataPriceNoNDS[I,4];
+          DM.qrDifferent1.ParamByName('CLASS4_2').Value := FDataPriceNDS[I,4];
+          DM.qrDifferent1.ParamByName('SORT').Value := J;
+          DM.qrDifferent1.ExecSQL;
+        end;
+      end;
+      DM.Read.Commit;
+      ShowMessage('Загрузка успешно завершена.');
+    except
+      on e: Exception do
+      begin
+        DM.Read.Rollback;
+        raise Exception.Create('Ошибка на строке ' + (J + 7).ToString + ':' +
+          sLineBreak + e.Message);
+      end;
+    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+    if not VarIsEmpty(ExlApp) then
+    begin
+      ExlApp.ActiveWorkbook.Close;
+      ExlApp.Quit;
+    end;
+    Screen.Cursor := crDefault;
+    WorkSheet1 := Unassigned;
+    WorkSheet2 := Unassigned;
+    ExlApp := Unassigned;
+    CoUninitialize;
+  end;
+end;
+
+procedure TSprLoaderForm.actUpdCargoExecute(Sender: TObject);
+var ExlApp,
+    WorkSheet1,
+    WorkSheet2: OleVariant;
+    FData,
+    FDataPriceNDS,
+    FDataPriceNoNDS: OleVariant;
+    I, J,
+    Rows1, Rows2: Integer;
+    TmpDistance: string;
+    AutoCommitValue: Boolean;
+begin
+  if Application.MessageBox(
+    PChar('Загрузить данные из ''' + edtUpdCargo.Text + ''' в справочник ' +
+      'тарифов на перевозку грузов автомобилями-самосвалами?' +
+    sLineBreak + 'Старые тарифы за ' + cbMonthCargo.Text + ' ' +
+    edtYearCargo.Value.ToString + ' будут удалены.'),
+    'Загрузка данных', MB_OKCANCEL + MB_ICONQUESTION) = mrCancel then
+    Exit;
+  ChackFileExsist(edtUpdCargo.Text);
+
+  CoInitialize(nil);
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  J := 0;
+  try
+    Screen.Cursor := crHourGlass;
+    ExlApp := Unassigned;
+    try
+      ExlApp := CreateOleObject('Excel.Application');
+      ExlApp.Visible:=false;
+      ExlApp.DisplayAlerts := False;
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка инициализации Excel:' + e.Message);
+    end;
+
+    try
+      ExlApp.WorkBooks.Open(edtUpdCargo.Text);
+      WorkSheet1 := ExlApp.ActiveWorkbook.Sheets.Item[1];
+      WorkSheet2 := ExlApp.ActiveWorkbook.Sheets.Item[2];
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка открытия Excel документа:' + e.Message);
+    end;
+
+    Rows1 := WorkSheet1.UsedRange.Rows.Count;
+    Rows2 := WorkSheet2.UsedRange.Rows.Count;
+
+    if Rows2 <> Rows1 then
+      raise Exception.Create('Таблицы с НДС и без НДС разной длинны.');
+
+    FData :=
+      WorkSheet1.Range[WorkSheet1.Cells[8, 1].Address,
+      WorkSheet1.Cells[Rows1, 1].Address].Value;
+
+    FDataPriceNoNDS :=
+      WorkSheet1.Range[WorkSheet1.Cells[8, 2].Address,
+      WorkSheet1.Cells[Rows1, 5].Address].Value;
+
+    FDataPriceNDS :=
+      WorkSheet2.Range[WorkSheet2.Cells[8, 2].Address,
+      WorkSheet2.Cells[Rows1, 5].Address].Value;
+
+    DM.Read.StartTransaction;
+    try
+      DM.qrDifferent.SQL.Text :=
+        'Delete from transfercargo where (YEAR = :YEAR) and (MONAT = :MONAT)';
+      DM.qrDifferent.ParamByName('YEAR').Value := edtYearCargo.Value;
+      DM.qrDifferent.ParamByName('MONAT').Value := cbMonthCargo.ItemIndex + 1;
+      DM.qrDifferent.ExecSQL;
+
+      DM.qrDifferent1.SQL.Text :=
+        'Insert into transfercargo ' +
+        '(`YEAR`, `MONAT`, `DISTANCE`, CLASS1_1, CLASS1_2, CLASS2_1, ' +
+        'CLASS2_2, CLASS3_1, CLASS3_2, CLASS4_1, CLASS4_2, SORT) ' +
+        'values ' +
+        '(:YEAR, :MONAT, :DISTANCE, :CLASS1_1, :CLASS1_2, :CLASS2_1, ' +
+        ':CLASS2_2, :CLASS3_1, :CLASS3_2, :CLASS4_1, :CLASS4_2, :SORT)';
+
+      for I := 1 to Rows1 - 7 do
+      begin
+        J := I;
+        TmpDistance := trim(VarToStr(FData[I,1]));
+
+        if (TmpDistance <> '') then
+        begin
+          DM.qrDifferent1.ParamByName('YEAR').Value := edtYearCargo.Value;
+          DM.qrDifferent1.ParamByName('MONAT').Value := cbMonthCargo.ItemIndex + 1;
+          DM.qrDifferent1.ParamByName('DISTANCE').Value := TmpDistance;
+          DM.qrDifferent1.ParamByName('CLASS1_1').Value := FDataPriceNoNDS[I,1];
+          DM.qrDifferent1.ParamByName('CLASS1_2').Value := FDataPriceNDS[I,1];
+          DM.qrDifferent1.ParamByName('CLASS2_1').Value := FDataPriceNoNDS[I,2];
+          DM.qrDifferent1.ParamByName('CLASS2_2').Value := FDataPriceNDS[I,2];
+          DM.qrDifferent1.ParamByName('CLASS3_1').Value := FDataPriceNoNDS[I,3];
+          DM.qrDifferent1.ParamByName('CLASS3_2').Value := FDataPriceNDS[I,3];
+          DM.qrDifferent1.ParamByName('CLASS4_1').Value := FDataPriceNoNDS[I,4];
+          DM.qrDifferent1.ParamByName('CLASS4_2').Value := FDataPriceNDS[I,4];
+          DM.qrDifferent1.ParamByName('SORT').Value := J;
+          DM.qrDifferent1.ExecSQL;
+        end;
+      end;
+      DM.Read.Commit;
+      ShowMessage('Загрузка успешно завершена.');
+    except
+      on e: Exception do
+      begin
+        DM.Read.Rollback;
+        raise Exception.Create('Ошибка на строке ' + (J + 7).ToString + ':' +
+          sLineBreak + e.Message);
+      end;
+    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+    if not VarIsEmpty(ExlApp) then
+    begin
+      ExlApp.ActiveWorkbook.Close;
+      ExlApp.Quit;
+    end;
+    Screen.Cursor := crDefault;
+    WorkSheet1 := Unassigned;
+    WorkSheet2 := Unassigned;
+    ExlApp := Unassigned;
+    CoUninitialize;
+  end;
+end;
+
+procedure TSprLoaderForm.actUpdDumpExecute(Sender: TObject);
+var ExlApp,
+    WorkSheet: OleVariant;
+    FData: OleVariant;
+    I, Rows: Integer;
+    OblName,
+    DumpName,
+    UnitName: string;
+    OblID,
+    DumpID,
+    TmpCode: Integer;
+    TmpDate: TDateTime;
+
+    AutoCommitValue: Boolean;
+begin
+  if Application.MessageBox(
+    PChar('Загрузить данные из ''' + edtUpdDump.Text + ''' в справочник ' +
+      'тарифов на прием и захоранение отходов?' +
+    sLineBreak + 'Старые тарифы за ' + cbMonthDump.Text + ' ' +
+    edtYearDump.Value.ToString + ' будут удалены.'),
+    'Загрузка данных', MB_OKCANCEL + MB_ICONQUESTION) = mrCancel then
+    Exit;
+  ChackFileExsist(edtUpdDump.Text);
+
+  TmpDate := EncodeDate(edtYearDump.Value, cbMonthDump.ItemIndex + 1, 1);
+  LoadUnits;
+
+  CoInitialize(nil);
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  try
+    Screen.Cursor := crHourGlass;
+    ExlApp := Unassigned;
+    try
+      ExlApp := CreateOleObject('Excel.Application');
+      ExlApp.Visible:=false;
+      ExlApp.DisplayAlerts := False;
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка инициализации Excel:' + e.Message);
+    end;
+
+    try
+      ExlApp.WorkBooks.Open(edtUpdDump.Text);
+      WorkSheet := ExlApp.ActiveWorkbook.ActiveSheet;
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка открытия Excel документа:' + e.Message);
+    end;
+
+    Rows := WorkSheet.UsedRange.Rows.Count;
+
+    FData :=
+      WorkSheet.Range[WorkSheet.Cells[9, 1].Address,
+      WorkSheet.Cells[Rows, 5].Address].Value;
+
+    DM.Read.StartTransaction;
+    try
+      DM.qrDifferent1.SQL.Text :=
+        'Delete from dumpcoast where (DATE_BEG = :DATE_BEG)';
+      DM.qrDifferent1.ParamByName('DATE_BEG').Value := TmpDate;
+      DM.qrDifferent1.ExecSQL;
+
+      DM.qrDifferent1.SQL.Text :=
+        'Insert into dumpcoast (`DUMP_ID`, `DATE_BEG`, `COAST1`, `COAST2`) ' +
+        'values (:DUMP_ID, :DATE_BEG, :COAST1, :COAST2)';
+
+      OblName := '';
+      OblID := 0;
+      for I := 1 to Rows - 8 do
+      begin
+        if trim(VarToStr(FData[I,3])) = '' then  //Если нет цены то ожидается что это строчка облости
+        begin
+          OblName := trim(VarToStr(FData[I,2])).ToLower;
+          if OblName = 'брестская область' then
+            OblID := 1
+          else if OblName = 'витебская область' then
+            OblID := 2
+          else if OblName = 'гомельская область' then
+            OblID := 3
+          else if OblName = 'гродненская область' then
+            OblID := 4
+          else if OblName = 'минская область' then
+            OblID := 5
+          else if OblName = 'могилевская область' then
+            OblID := 6
+          else if OblName = 'город минск' then
+            OblID := 7
+          else
+            raise Exception.Create('Неизвестная область');
+          Continue;
+        end;
+
+        TmpCode := StrToIntDef(VarToStr(FData[I,1]), 0);
+        DumpName := trim(VarToStr(FData[I,2]));
+        UnitName := trim(VarToStr(FData[I,3]));
+
+        DumpID := AddNewDump(DumpName, UnitName, TmpCode, OblID, False);
+        DM.qrDifferent1.ParamByName('DUMP_ID').Value := DumpID;
+        DM.qrDifferent1.ParamByName('DATE_BEG').Value := TmpDate;
+        DM.qrDifferent1.ParamByName('COAST1').Value := FData[I,4];
+        DM.qrDifferent1.ParamByName('COAST2').Value := FData[I,5];
+        DM.qrDifferent1.ExecSQL;
+      end;
+      DM.Read.Commit;
+      ShowMessage('Загрузка успешно завершена.');
+    except
+      DM.Read.Rollback;
+      raise;
+    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+    if not VarIsEmpty(ExlApp) then
+    begin
+      ExlApp.ActiveWorkbook.Close;
+      ExlApp.Quit;
+    end;
+    Screen.Cursor := crDefault;
+    WorkSheet := Unassigned;
+    ExlApp := Unassigned;
+    CoUninitialize;
+  end;
 end;
 
 procedure TSprLoaderForm.actUpdJBIExecute(Sender: TObject);
@@ -501,6 +935,71 @@ begin
       DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID.ToString;
       DM.qrDifferent.ParamByName('date_beginer').Value := ADate;
       DM.qrDifferent.ParamByName('MATERIAL_ID').Value := Result;
+      DM.qrDifferent.ExecSQL;
+    end;
+  end;
+end;
+
+function TSprLoaderForm.AddNewDump(AName, AUnit: string; ACode, OblID: Integer;
+  ANoUpdate: Boolean): Integer;
+var J,
+    TmpUnitID: Integer;
+begin
+  //Получает код ед. изм.
+  J := FUnitsName.IndexOf(AUnit.ToLower);
+  if J > -1 then
+    TmpUnitID := StrToInt(FUnitsID[J])
+  else
+    TmpUnitID := AddNewUnit(AUnit);
+
+  //Проверяет есть ли такой уже в базе
+  DM.qrDifferent.SQL.Text :=
+    'Select DUMP_ID from dump where (Lower(DUMP_NAME) = Lower(:DUMP_NAME)) and ' +
+    '(REGION_ID = :REGION_ID)';
+  Result := -1;
+  DM.qrDifferent.ParamByName('DUMP_NAME').Value := AName;
+  DM.qrDifferent.ParamByName('REGION_ID').Value := OblID;
+  DM.qrDifferent.Active := True;
+  try
+    if not DM.qrDifferent.IsEmpty then
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+  finally
+    DM.qrDifferent.Active := False;
+  end;
+
+  if Result = -1 then
+  begin
+    DM.qrDifferent.SQL.Text :=
+      'Insert into dump ' +
+      '(`REGION_ID`, `DUMP_NAME`, `UNIT_ID`, `DUMP_CODE`) ' +
+      'values ' +
+      '(:REGION_ID, :DUMP_NAME, :UNIT_ID, :DUMP_CODE)';
+
+    DM.qrDifferent.ParamByName('REGION_ID').Value := OblID;
+    DM.qrDifferent.ParamByName('DUMP_NAME').Value := AName;
+    DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID;
+    DM.qrDifferent.ParamByName('DUMP_CODE').Value := ACode;
+    DM.qrDifferent.ExecSQL;
+
+    DM.qrDifferent.SQL.Text := 'Select last_insert_id()';
+    DM.qrDifferent.Active := True;
+    try
+      Result := DM.qrDifferent.Fields[0].AsInteger;
+    finally
+      DM.qrDifferent.Active := False;
+    end;
+  end
+  else
+  begin
+    if not ANoUpdate then
+    begin
+      DM.qrDifferent.SQL.Text :=
+        'Update dump set UNIT_ID = :UNIT_ID, DUMP_CODE = :DUMP_CODE ' +
+        'where (Lower(DUMP_NAME) = Lower(:DUMP_NAME)) and (REGION_ID = :REGION_ID)';
+      DM.qrDifferent.ParamByName('UNIT_ID').Value := TmpUnitID;
+      DM.qrDifferent.ParamByName('DUMP_CODE').Value := ACode;
+      DM.qrDifferent.ParamByName('DUMP_NAME').Value := AName;
+      DM.qrDifferent.ParamByName('REGION_ID').Value := OblID;
       DM.qrDifferent.ExecSQL;
     end;
   end;
@@ -984,7 +1483,6 @@ begin
 
     Rows := WorkSheet.UsedRange.Rows.Count;
 
-
     FData :=
       WorkSheet.Range[WorkSheet.Cells[9, 1].Address,
       WorkSheet.Cells[Rows, 6].Address].Value;
@@ -1009,8 +1507,8 @@ begin
             AddNewMech(TmpCode, TmpName, TmpDate, not cboxUpdMechName.Checked);
 
           DM.qrDifferent1.ParamByName('MECHANIZM_ID').Value := TmpMechID;
-          DM.qrDifferent1.ParamByName('YEAR').Value := edtYearMatPrice.Value;
-          DM.qrDifferent1.ParamByName('MONAT').Value := cbMonthMatPrice.ItemIndex + 1;
+          DM.qrDifferent1.ParamByName('YEAR').Value := edtYearMech.Value;
+          DM.qrDifferent1.ParamByName('MONAT').Value := cbMonthMech.ItemIndex + 1;
           DM.qrDifferent1.ParamByName('COAST1').Value := FData[I,3];
           DM.qrDifferent1.ParamByName('ZP1').Value := FData[I,4];
           DM.qrDifferent1.ParamByName('COAST2').Value := FData[I,5];
@@ -1028,6 +1526,109 @@ begin
         raise Exception.Create('Ошибка на строке ' + (J + 8).ToString + ':' +
           sLineBreak + e.Message);
       end;
+    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+    if not VarIsEmpty(ExlApp) then
+    begin
+      ExlApp.ActiveWorkbook.Close;
+      ExlApp.Quit;
+    end;
+    Screen.Cursor := crDefault;
+    WorkSheet := Unassigned;
+    ExlApp := Unassigned;
+    CoUninitialize;
+  end;
+end;
+
+procedure TSprLoaderForm.actUpdTarifExecute(Sender: TObject);
+begin
+  beep;
+end;
+
+procedure TSprLoaderForm.actUpdTransKoefExecute(Sender: TObject);
+var ExlApp,
+    WorkSheet: OleVariant;
+    FData: OleVariant;
+    I, Rows: Integer;
+    TmpStr, TmpStr1: string;
+    AutoCommitValue: Boolean;
+begin
+  if Application.MessageBox(
+    PChar('Загрузить данные из ''' + edtUpdTransKoef.Text + ''' в справочник ' +
+      'надбавок к тарифам на перевозку бортовыми автомобилями?' +
+    sLineBreak + 'Старые надбавки за ' + cbMonthTransKoef.Text + ' ' +
+    edtYearTransKoef.Value.ToString + ' будут удалены.'),
+    'Загрузка данных', MB_OKCANCEL + MB_ICONQUESTION) = mrCancel then
+    Exit;
+  ChackFileExsist(edtUpdTransKoef.Text);
+
+  CoInitialize(nil);
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  try
+    Screen.Cursor := crHourGlass;
+    ExlApp := Unassigned;
+    try
+      ExlApp := CreateOleObject('Excel.Application');
+      ExlApp.Visible:=false;
+      ExlApp.DisplayAlerts := False;
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка инициализации Excel:' + e.Message);
+    end;
+
+    try
+      ExlApp.WorkBooks.Open(edtUpdTransKoef.Text);
+      WorkSheet := ExlApp.ActiveWorkbook.ActiveSheet;
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка открытия Excel документа:' + e.Message);
+    end;
+
+    Rows := WorkSheet.UsedRange.Rows.Count;
+
+    FData :=
+      WorkSheet.Range[WorkSheet.Cells[5, 1].Address,
+      WorkSheet.Cells[Rows, 2].Address].Value;
+
+    DM.Read.StartTransaction;
+    try
+      DM.qrDifferent.SQL.Text :=
+        'Delete from transferkoef where (YEAR = :YEAR) and (MONAT = :MONAT)';
+      DM.qrDifferent.ParamByName('YEAR').Value := edtYearTransKoef.Value;
+      DM.qrDifferent.ParamByName('MONAT').Value := cbMonthTransKoef.ItemIndex + 1;
+      DM.qrDifferent.ExecSQL;
+
+      DM.qrDifferent1.SQL.Text :=
+        'Insert into transferkoef (`koef`, `description`, `YEAR`, `MONAT`) ' +
+        'values (:koef, :description, :YEAR, :MONAT)';
+
+      for I := 1 to Rows - 4 do
+      begin
+        if trim(VarToStr(FData[I,2])) = '' then
+        begin
+          TmpStr1 := trim(VarToStr(FData[I,1]));
+          Continue;
+        end;
+
+        TmpStr := VarToStr(FData[I,1]);
+        if Pos('   ', TmpStr) = 1 then
+          TmpStr := TmpStr1 + ' ' + Trim(TmpStr);
+        TmpStr := Trim(TmpStr);
+
+        DM.qrDifferent1.ParamByName('YEAR').Value := edtYearTransKoef.Value;
+        DM.qrDifferent1.ParamByName('MONAT').Value := cbMonthTransKoef.ItemIndex + 1;
+        DM.qrDifferent1.ParamByName('koef').Value :=
+          1 + StrToIntDef(VarToStr(FData[I,2]), 0)/100;
+        DM.qrDifferent1.ParamByName('description').Value := TmpStr;
+        DM.qrDifferent1.ExecSQL;
+      end;
+      DM.Read.Commit;
+      ShowMessage('Загрузка успешно завершена.');
+    except
+      DM.Read.Rollback;
+      raise;
     end;
   finally
     DM.Read.Options.AutoCommit := AutoCommitValue;
