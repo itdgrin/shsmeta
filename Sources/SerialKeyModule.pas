@@ -7,6 +7,8 @@ uses
   System.AnsiStrings,
   System.Classes,
   Dialogs,
+  IdCoderMIME,
+  IdGlobal,
   RC6,
   hwid_impl,
   winioctl;
@@ -290,6 +292,7 @@ const FLen = 256;
 var TmpBytes: TBytes;
     I, J: Integer;
     RC6Encryptor: TRC6Encryptor;
+    TmpStr: String;
 begin
   if Length(ASerialKey) <> KeyLen then
     raise Exception.Create('Serial key is not correct.');
@@ -306,8 +309,9 @@ begin
   if J + KeyLen > FLen - 1 then
     J := FLen - KeyLen - 1;
 
+
   Move(AData[0], TmpBytes[J], KeyLen);
-  Move(TEncoding.ASCII.GetBytes(ASerialKey)[0], TmpBytes[FLen], KeyLen);
+  Move(TEncoding.UTF8.GetBytes(ASerialKey)[0], TmpBytes[FLen], KeyLen);
 
   RC6Encryptor := TRC6Encryptor.Create(ConstKey);
   try
@@ -315,6 +319,8 @@ begin
   finally
     FreeAndNil(RC6Encryptor);
   end;
+
+  TmpStr := TIdEncoderMIME.EncodeBytes(TIdBytes(TmpBytes));
 
   AStream.Write(TmpBytes, Length(TmpBytes));
 end;
@@ -340,7 +346,7 @@ begin
 
   SetLength(Tmp, KeyLen);
   Move(TmpBytes[FLen], Tmp[0], KeyLen);
-  ASerialKey := TEncoding.ASCII.GetString(Tmp);
+  ASerialKey := TEncoding.UTF8.GetString(Tmp);
 
   J := TmpBytes[0];
   if J = 0 then
