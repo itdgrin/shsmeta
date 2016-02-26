@@ -124,6 +124,7 @@ object fTypeAct: TfTypeAct
     ShowHint = True
     TabOrder = 1
     TabStop = True
+    OnClick = dbnvgr1Click
   end
   object FormStorage: TJvFormStorage
     AppStorage = FormMain.AppIni

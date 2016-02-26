@@ -30,6 +30,7 @@ type
     procedure grMainCanEditCell(Grid: TJvDBGrid; Field: TField; var AllowEdit: Boolean);
     procedure FormActivate(Sender: TObject);
     procedure grMainDblClick(Sender: TObject);
+    procedure dbnvgr1Click(Sender: TObject; Button: TNavigateBtn);
   private
   public
   end;
@@ -40,6 +41,12 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TfTypeAct.dbnvgr1Click(Sender: TObject; Button: TNavigateBtn);
+begin
+  if Button = nbInsert then
+    qrMain.Append;
+end;
 
 procedure TfTypeAct.FormActivate(Sender: TObject);
 begin

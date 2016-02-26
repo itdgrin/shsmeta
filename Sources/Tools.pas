@@ -987,7 +987,7 @@ end;
 
 procedure TSmForm.TitleBtnClick(Sender: TObject; ACol: Integer; Field: TField);
 var
-  s: string;
+  s, sf: string;
   i: Integer;
 begin
   if not CheckQrActiveEmpty(TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet)) then
@@ -1001,9 +1001,21 @@ begin
     Exit;
 
   // Если выбранное поле не из набора, а расчетное или другое, то выходим...
-  if TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).FieldByName((Sender AS TJvDBGrid).SortedField)
+  { if TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).FieldByName((Sender AS TJvDBGrid).SortedField)
     .FieldKind <> fkData then
     Exit;
+  }
+  case TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).FieldByName((Sender AS TJvDBGrid).SortedField)
+    .FieldKind of
+    fkData:
+      sf := (Sender AS TJvDBGrid).SortedField;
+    fkLookup:
+      sf := TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).FieldByName((Sender AS TJvDBGrid).SortedField)
+        .KeyFields;
+    // Если выбранное поле не из набора, а расчетное или другое, то выходим...
+  else
+    Exit;
+  end;
 
   s := '';
   if (Sender AS TJvDBGrid).SortMarker = smDown then
@@ -1016,15 +1028,13 @@ begin
     then
     begin
       // Строка найдена
-      if (Sender AS TJvDBGrid).SortedField <> '' then
+      if sf <> '' then
       begin
         // Если сортируем некий код, то буквенные значения всегда выше в списке
-        if (Sender AS TJvDBGrid).SortedField = 'CODE' then
-          TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL[i] := 'ORDER BY CODE+1,' +
-            (Sender AS TJvDBGrid).SortedField + s
+        if sf = 'CODE' then
+          TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL[i] := 'ORDER BY CODE+1,' + sf + s
         else
-          TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL[i] := 'ORDER BY ' + (Sender AS TJvDBGrid)
-            .SortedField + s;
+          TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL[i] := 'ORDER BY ' + sf + s;
       end
       else
         TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL[i] := 'ORDER BY 1';
@@ -1032,14 +1042,12 @@ begin
       Exit;
     end;
   end;
-  if (Sender AS TJvDBGrid).SortedField <> '' then
+  if sf <> '' then
   begin
-    if (Sender AS TJvDBGrid).SortedField = 'CODE' then
-      TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet)
-        .SQL.Append('ORDER BY CODE+1' + (Sender AS TJvDBGrid).SortedField + s)
+    if sf = 'CODE' then
+      TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL.Append('ORDER BY CODE+1' + sf + s)
     else
-      TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet)
-        .SQL.Append('ORDER BY ' + (Sender AS TJvDBGrid).SortedField + s);
+      TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet).SQL.Append('ORDER BY ' + sf + s);
     CloseOpen(TFDQuery((Sender AS TJvDBGrid).DataSource.DataSet));
   end
   else

@@ -69,7 +69,7 @@ object fOXROPRSetup: TfOXROPRSetup
       item
         DropDownRows = 22
         Expanded = False
-        FieldName = 'WorkLooK'
+        FieldName = 'WORK_NAME'
         Title.Alignment = taCenter
         Title.Caption = #1058#1080#1087' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1055#1055
         Width = 188
@@ -124,6 +124,7 @@ object fOXROPRSetup: TfOXROPRSetup
     FormatOptions.AssignedValues = [fvDefaultParamDataType, fvFmtDisplayNumeric]
     FormatOptions.DefaultParamDataType = ftBCD
     FormatOptions.FmtDisplayNumeric = '### ### ### ### ### ### ##0.####'
+    UpdateOptions.UpdateTableName = 'onormativs'
     SQL.Strings = (
       'SELECT '
       '  `ID`,'
@@ -185,7 +186,7 @@ object fOXROPRSetup: TfOXROPRSetup
     end
     object strngfldONormativsWorkLooK: TStringField
       FieldKind = fkLookup
-      FieldName = 'WorkLooK'
+      FieldName = 'WORK_NAME'
       LookupDataSet = qrWorkList
       LookupKeyFields = 'WORK_ID'
       LookupResultField = 'WORK_NAME'
