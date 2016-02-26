@@ -90,6 +90,7 @@ object fForemanList: TfForemanList
     Width = 345
     Height = 25
     DataSource = dsMain
+    VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbInsert, nbDelete, nbEdit, nbPost, nbCancel]
     Align = alBottom
     Hints.Strings = (
       #1053#1072' '#1087#1077#1088#1074#1091#1102' '#1079#1072#1087#1080#1089#1100
@@ -108,7 +109,6 @@ object fForemanList: TfForemanList
     ShowHint = True
     TabOrder = 1
     TabStop = True
-    ExplicitTop = 389
   end
   object pnlSelect: TPanel
     Left = 0
@@ -123,7 +123,6 @@ object fForemanList: TfForemanList
     Font.Style = []
     ParentFont = False
     TabOrder = 2
-    ExplicitTop = 417
     object btn1: TBitBtn
       Left = 271
       Top = 4
@@ -150,10 +149,16 @@ object fForemanList: TfForemanList
     end
   end
   object qrMain: TFDQuery
+    AutoCalcFields = False
+    BeforeScroll = qrMainBeforeScroll
+    AfterScroll = qrMainAfterScroll
     OnCalcFields = qrMainCalcFields
+    OnNewRecord = qrMainNewRecord
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
+    FetchOptions.AssignedValues = [evRecordCountMode, evAutoFetchAll]
+    FetchOptions.RecordCountMode = cmTotal
     UpdateOptions.UpdateTableName = 'smeta.foreman'
     UpdateOptions.KeyFields = 'foreman_id'
     SQL.Strings = (
@@ -173,12 +178,6 @@ object fForemanList: TfForemanList
       Origin = 'foreman_name'
       Size = 100
     end
-    object strngfldMainforeman_first_name: TStringField
-      AutoGenerateValue = arDefault
-      FieldName = 'foreman_first_name'
-      Origin = 'foreman_first_name'
-      Size = 11
-    end
     object strngfldMainforeman_second_name: TStringField
       AutoGenerateValue = arDefault
       FieldName = 'foreman_second_name'
@@ -189,6 +188,12 @@ object fForemanList: TfForemanList
       FieldKind = fkCalculated
       FieldName = 'NUMPP'
       Calculated = True
+    end
+    object qrMainforeman_first_name: TStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'foreman_first_name'
+      Origin = 'foreman_first_name'
+      Size = 100
     end
   end
   object dsMain: TDataSource

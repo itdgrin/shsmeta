@@ -168,6 +168,7 @@ object fCardOrganization: TfCardOrganization
     Height = 21
     DataField = 'UNN'
     DataSource = fOrganizationsEx.dsMain
+    MaxLength = 9
     TabOrder = 1
   end
   object dbedtACCOUNT: TDBEdit
@@ -177,6 +178,7 @@ object fCardOrganization: TfCardOrganization
     Height = 21
     DataField = 'ACCOUNT'
     DataSource = fOrganizationsEx.dsMain
+    MaxLength = 13
     TabOrder = 5
   end
   object dbedtOKPO: TDBEdit
@@ -186,6 +188,7 @@ object fCardOrganization: TfCardOrganization
     Height = 21
     DataField = 'OKPO'
     DataSource = fOrganizationsEx.dsMain
+    MaxLength = 12
     TabOrder = 6
   end
   object dbedtADDRESS: TDBEdit
