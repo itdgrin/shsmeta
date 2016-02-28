@@ -8,7 +8,7 @@ uses
   JvFormPlacement, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
   FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdCtrls, Vcl.Buttons, Vcl.ToolWin, Vcl.Mask, JvExComCtrls,
-  JvDBTreeView, Tools;
+  JvDBTreeView, Tools, Vcl.Grids, Vcl.DBGrids, JvExDBGrids, JvDBGrid, JvComCtrls, JvCheckTreeView;
 
 type
   TfUsers = class(TSmForm)
@@ -20,23 +20,21 @@ type
     qrUserGroup: TFDQuery;
     dsUserGroup: TDataSource;
     pnl1: TPanel;
-    dblklst1: TDBLookupListBox;
     lbl1: TLabel;
     pnl2: TPanel;
     lbl2: TLabel;
     tlb3: TToolBar;
-    btn2: TToolButton;
-    btn1: TToolButton;
-    btn3: TToolButton;
-    btn4: TToolButton;
+    btnAddGroup: TToolButton;
+    btnCopyGroup: TToolButton;
+    btnEditGroup: TToolButton;
+    btnDelGroup: TToolButton;
     tlb1: TToolBar;
-    btn5: TToolButton;
-    btn6: TToolButton;
-    btn7: TToolButton;
-    btn8: TToolButton;
+    btnAddUser: TToolButton;
+    btnCopyUser: TToolButton;
+    btnEditUser: TToolButton;
+    btnDelUser: TToolButton;
     pnl3: TPanel;
     lbl3: TLabel;
-    dblklst2: TDBLookupListBox;
     spl2: TSplitter;
     pnl4: TPanel;
     lbl4: TLabel;
@@ -56,20 +54,30 @@ type
     edt1: TEdit;
     qrTreeData: TFDQuery;
     dsTreeData: TDataSource;
-    tvDocuments: TJvDBTreeView;
-    JvDBTreeView1: TJvDBTreeView;
+    JvDBGrid1: TJvDBGrid;
+    JvDBGrid2: TJvDBGrid;
+    btnCancel: TToolButton;
+    btnCancelGr: TToolButton;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure btn7Click(Sender: TObject);
-    procedure btn3Click(Sender: TObject);
+    procedure btnEditUserClick(Sender: TObject);
+    procedure btnEditGroupClick(Sender: TObject);
     procedure qrUserAfterScroll(DataSet: TDataSet);
     procedure qrUserBeforePost(DataSet: TDataSet);
     procedure pgc1Changing(Sender: TObject; var AllowChange: Boolean);
     procedure qrUserAfterEdit(DataSet: TDataSet);
     procedure qrUserAfterPost(DataSet: TDataSet);
-    procedure btn5Click(Sender: TObject);
-    procedure btn2Click(Sender: TObject);
+    procedure btnAddUserClick(Sender: TObject);
+    procedure btnAddGroupClick(Sender: TObject);
+    procedure btnCopyUserClick(Sender: TObject);
+    procedure btnDelUserClick(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
+    procedure btnDelGroupClick(Sender: TObject);
+    procedure btnCopyGroupClick(Sender: TObject);
+    procedure btnCancelGrClick(Sender: TObject);
+    procedure qrUserGroupAfterPost(DataSet: TDataSet);
+    procedure qrUserGroupAfterEdit(DataSet: TDataSet);
   private
     { Private declarations }
   public
@@ -85,24 +93,84 @@ implementation
 
 uses Main, DataModule, GlobsAndConst;
 
-procedure TfUsers.btn2Click(Sender: TObject);
+procedure TfUsers.btnAddGroupClick(Sender: TObject);
 begin
   qrUserGroup.Insert;
 end;
 
-procedure TfUsers.btn3Click(Sender: TObject);
+procedure TfUsers.btnEditGroupClick(Sender: TObject);
 begin
   pnl2.Enabled := not pnl2.Enabled;
+  if qrUserGroup.State in [dsEdit, dsInsert] then
+    qrUserGroup.Post
+  else
+    qrUserGroup.Edit;
 end;
 
-procedure TfUsers.btn5Click(Sender: TObject);
+procedure TfUsers.btnAddUserClick(Sender: TObject);
 begin
   qrUser.Insert;
 end;
 
-procedure TfUsers.btn7Click(Sender: TObject);
+procedure TfUsers.btnCancelClick(Sender: TObject);
+begin
+  qrUser.Cancel;
+end;
+
+procedure TfUsers.btnCancelGrClick(Sender: TObject);
+begin
+  qrUserGroup.Cancel;
+end;
+
+procedure TfUsers.btnCopyGroupClick(Sender: TObject);
+begin
+  // Создание копии группы
+  if Application.MessageBox(PChar('Создать копию группы ' + qrUserGroup.FieldByName('USER_GROUP_NAME')
+    .AsString + '?'), PChar(Caption), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+  begin
+    FastExecSQL('CALL CopyUserGroup(:0);', VarArrayOf([qrUserGroup.FieldByName('USER_GROUP_ID').Value]));
+    CloseOpen(qrUserGroup);
+  end;
+end;
+
+procedure TfUsers.btnCopyUserClick(Sender: TObject);
+begin
+  // Создание копии пользователя
+  if Application.MessageBox(PChar('Создать копию пользователя ' + qrUser.FieldByName('USER_NAME').AsString +
+    '?'), PChar(Caption), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+  begin
+    FastExecSQL('CALL CopyUser(:0);', VarArrayOf([qrUser.FieldByName('USER_ID').Value]));
+    CloseOpen(qrUser);
+  end;
+end;
+
+procedure TfUsers.btnDelGroupClick(Sender: TObject);
+begin
+  // Создание копии группы
+  if Application.MessageBox(PChar('Удалить группу ' + qrUserGroup.FieldByName('USER_GROUP_NAME').AsString +
+    '?'), PChar(Caption), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+  begin
+    qrUserGroup.Delete;
+  end;
+end;
+
+procedure TfUsers.btnDelUserClick(Sender: TObject);
+begin
+  // Создание копии пользователя
+  if Application.MessageBox(PChar('Удалить пользователя ' + qrUser.FieldByName('USER_NAME').AsString + '?'),
+    PChar(Caption), MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+  begin
+    qrUser.Delete;
+  end;
+end;
+
+procedure TfUsers.btnEditUserClick(Sender: TObject);
 begin
   pnl4.Enabled := not pnl4.Enabled;
+  if qrUser.State in [dsEdit, dsInsert] then
+    qrUser.Post
+  else
+    qrUser.Edit;
 end;
 
 procedure TfUsers.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -134,14 +202,22 @@ end;
 
 procedure TfUsers.qrUserAfterEdit(DataSet: TDataSet);
 begin
-  btn7.Caption := 'Сохранить';
-  btn7.ImageIndex := 56;
+  btnEditUser.Caption := 'Сохранить';
+  btnEditUser.ImageIndex := 56;
+  btnCancel.Visible := True;
+  btnDelUser.Visible := False;
+  btnAddUser.Visible := False;
+  btnCopyUser.Visible := False;
 end;
 
 procedure TfUsers.qrUserAfterPost(DataSet: TDataSet);
 begin
-  btn7.Caption := 'Редактировать';
-  btn7.ImageIndex := 44;
+  btnEditUser.Caption := 'Редактировать';
+  btnEditUser.ImageIndex := 44;
+  btnCancel.Visible := False;
+  btnDelUser.Visible := True;
+  btnAddUser.Visible := True;
+  btnCopyUser.Visible := True;
 end;
 
 procedure TfUsers.qrUserAfterScroll(DataSet: TDataSet);
@@ -158,6 +234,26 @@ begin
     edt1.SetFocus;
     Abort;
   end;
+end;
+
+procedure TfUsers.qrUserGroupAfterEdit(DataSet: TDataSet);
+begin
+  btnEditGroup.Caption := 'Сохранить';
+  btnEditGroup.ImageIndex := 56;
+  btnCancelGr.Visible := True;
+  btnDelGroup.Visible := False;
+  btnAddGroup.Visible := False;
+  btnCopyGroup.Visible := False;
+end;
+
+procedure TfUsers.qrUserGroupAfterPost(DataSet: TDataSet);
+begin
+  btnEditGroup.Caption := 'Редактировать';
+  btnEditGroup.ImageIndex := 44;
+  btnCancelGr.Visible := False;
+  btnDelGroup.Visible := True;
+  btnAddGroup.Visible := True;
+  btnCopyGroup.Visible := True;
 end;
 
 end.

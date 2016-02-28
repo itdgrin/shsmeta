@@ -1537,14 +1537,6 @@ object fCalcResource: TfCalcResource
             end
             item
               Expanded = False
-              FieldName = 'PRICE'
-              Title.Alignment = taCenter
-              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
-              Width = 54
-              Visible = True
-            end
-            item
-              Expanded = False
               FieldName = 'PROC_TRANSP'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089#1087'.'
@@ -1556,6 +1548,14 @@ object fCalcResource: TfCalcResource
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
               Width = 48
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'PRICE'
+              Title.Alignment = taCenter
+              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100', '#1088#1091#1073'.'
+              Width = 54
               Visible = True
             end
             item
@@ -1688,7 +1688,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'F1'
               Title.Alignment = taCenter
               Title.Caption = #8470#1087#1087
-              Width = 61
+              Width = 56
               Visible = True
             end
             item
@@ -1696,7 +1696,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'SM_NAME'
               Title.Alignment = taCenter
               Title.Caption = #1057#1084#1077#1090#1072
-              Width = 61
+              Width = 56
               Visible = True
             end
             item
@@ -1704,7 +1704,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PTM_NAME'
               Title.Alignment = taCenter
               Title.Caption = #1055#1058#1052
-              Width = 67
+              Width = 61
               Visible = True
             end
             item
@@ -1712,7 +1712,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CODE'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1086#1089#1085#1086#1074#1072#1085#1080#1077
-              Width = 61
+              Width = 56
               Visible = True
             end
             item
@@ -1720,7 +1720,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT'
               Title.Alignment = taCenter
               Title.Caption = #1054#1073#1098#1077#1084' '#1088#1072#1073#1086#1090
-              Width = 61
+              Width = 56
               Visible = True
             end
             item
@@ -1728,7 +1728,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'CNT_DONE'
               Title.Alignment = taCenter
               Title.Caption = #1056#1072#1089#1093#1086#1076
-              Width = 61
+              Width = 56
               Visible = True
             end
             item
@@ -1736,7 +1736,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'COAST'
               Title.Alignment = taCenter
               Title.Caption = #1062#1077#1085#1072', '#1088#1091#1073'.'
-              Width = 61
+              Width = 56
               Visible = True
             end
             item
@@ -1744,7 +1744,15 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP'
               Title.Alignment = taCenter
               Title.Caption = #1058#1088#1072#1085#1089#1087#1086#1088#1090
-              Width = 36
+              Width = 33
+              Visible = True
+            end
+            item
+              Expanded = False
+              FieldName = 'PRICE'
+              Title.Alignment = taCenter
+              Title.Caption = #1057#1090#1086#1080#1084#1086#1089#1090#1100
+              Width = 59
               Visible = True
             end
             item
@@ -1752,7 +1760,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 59
+              Width = 54
               Visible = True
             end
             item
@@ -1760,7 +1768,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 78
+              Width = 71
               Visible = True
             end
             item
@@ -1768,7 +1776,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP_PROC_ZAC'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1079#1072#1082#1072#1079#1095#1080#1082#1072
-              Width = 48
+              Width = 44
               Visible = True
             end
             item
@@ -1776,7 +1784,7 @@ object fCalcResource: TfCalcResource
               FieldName = 'TRANSP_PROC_PODR'
               Title.Alignment = taCenter
               Title.Caption = '% '#1090#1088#1072#1085#1089'. '#1087#1086#1076#1088#1103#1076#1095#1080#1082#1072
-              Width = 56
+              Width = 51
               Visible = True
             end>
         end
@@ -3253,6 +3261,9 @@ object fCalcResource: TfCalcResource
         '  IF(:NDS=1, IF(DEVICE_TRANSP_NDS<>0, DEVICE_TRANSP_NDS, 0), IF(' +
         'DEVICE_TRANSP_NO_NDS<>0, DEVICE_TRANSP_NO_NDS, 0)) AS TRANSP,  /' +
         '* '#1090#1088#1072#1085#1089#1087'. */'
+      
+        '  IF(:NDS=1, IF(m.FPRICE_NDS<>0, m.FPRICE_NDS, 0), IF(m.FPRICE_N' +
+        'O_NDS<>0, m.FPRICE_NO_NDS, 0)) AS PRICE, /* '#1057#1090#1086#1080#1084#1086#1089#1090#1100' */ '
       '  IFNULL(m.DEVICE_COUNT, 0) AS CNT_DONE, /* '#1056#1072#1089#1093#1086#1076' */'
       '  0 as DELETED,'
       '  d.ID AS data_estimate_id,'

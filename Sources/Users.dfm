@@ -1,7 +1,6 @@
 object fUsers: TfUsers
   Left = 0
   Top = 0
-  ActiveControl = dblklst2
   Caption = #1059#1095#1077#1090#1085#1099#1077' '#1079#1072#1087#1080#1089#1080' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081
   ClientHeight = 449
   ClientWidth = 589
@@ -48,32 +47,44 @@ object fUsers: TfUsers
         Images = DM.ilIcons_16x16
         ShowCaptions = True
         TabOrder = 0
-        object btn5: TToolButton
+        ExplicitLeft = -24
+        ExplicitTop = 3
+        object btnAddUser: TToolButton
           Left = 0
           Top = 0
           Caption = #1044#1086#1073#1072#1074#1080#1090#1100
           ImageIndex = 39
           Style = tbsTextButton
-          OnClick = btn5Click
+          OnClick = btnAddUserClick
         end
-        object btn6: TToolButton
+        object btnCopyUser: TToolButton
           Left = 86
           Top = 0
           Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
           ImageIndex = 35
+          OnClick = btnCopyUserClick
         end
-        object btn7: TToolButton
+        object btnEditUser: TToolButton
           Left = 172
           Top = 0
           Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
           ImageIndex = 44
-          OnClick = btn7Click
+          OnClick = btnEditUserClick
         end
-        object btn8: TToolButton
+        object btnCancel: TToolButton
           Left = 258
+          Top = 0
+          Caption = #1054#1090#1084#1077#1085#1072
+          ImageIndex = 36
+          Visible = False
+          OnClick = btnCancelClick
+        end
+        object btnDelUser: TToolButton
+          Left = 344
           Top = 0
           Caption = #1059#1076#1072#1083#1080#1090#1100
           ImageIndex = 38
+          OnClick = btnDelUserClick
         end
       end
       object pnl3: TPanel
@@ -94,18 +105,34 @@ object fUsers: TfUsers
           Caption = #1055#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1080':'
           ExplicitWidth = 76
         end
-        object dblklst2: TDBLookupListBox
+        object JvDBGrid1: TJvDBGrid
           Left = 1
           Top = 20
           Width = 183
           Height = 364
           Align = alClient
-          BevelKind = bkSoft
-          BorderStyle = bsNone
-          KeyField = 'USER_ID'
-          ListField = 'USER_NAME'
-          ListSource = dsUser
+          DataSource = dsUser
+          Options = [dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 0
+          TitleFont.Charset = DEFAULT_CHARSET
+          TitleFont.Color = clWindowText
+          TitleFont.Height = -11
+          TitleFont.Name = 'Tahoma'
+          TitleFont.Style = []
+          AutoSizeColumns = True
+          SelectColumnsDialogStrings.Caption = 'Select columns'
+          SelectColumnsDialogStrings.OK = '&OK'
+          SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+          EditControls = <>
+          RowsHeight = 17
+          TitleRowHeight = 17
+          Columns = <
+            item
+              Expanded = False
+              FieldName = 'USER_NAME'
+              Width = 166
+              Visible = True
+            end>
         end
       end
       object pnl4: TPanel
@@ -201,34 +228,6 @@ object fUsers: TfUsers
             TabOrder = 3
           end
         end
-        object tvDocuments: TJvDBTreeView
-          AlignWithMargins = True
-          Left = 4
-          Top = 136
-          Width = 383
-          Height = 245
-          DataSource = dsTreeData
-          MasterField = 'doc_id'
-          DetailField = 'parent_id'
-          IconField = 'doc_type'
-          ItemField = 'doc_name'
-          StartMasterValue = '0'
-          UseFilter = True
-          PersistentNode = True
-          DragMode = dmAutomatic
-          HideSelection = False
-          Indent = 19
-          Align = alClient
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          TabOrder = 1
-          ParentFont = False
-          RowSelect = True
-          Mirror = False
-        end
       end
     end
     object ts1: TTabSheet
@@ -258,18 +257,34 @@ object fUsers: TfUsers
           Caption = #1043#1088#1091#1087#1087#1099' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083#1077#1081':'
           ExplicitWidth = 122
         end
-        object dblklst1: TDBLookupListBox
+        object JvDBGrid2: TJvDBGrid
           Left = 1
           Top = 20
           Width = 183
           Height = 364
           Align = alClient
-          BevelKind = bkSoft
-          BorderStyle = bsNone
-          KeyField = 'USER_GROUP_ID'
-          ListField = 'USER_GROUP_NAME'
-          ListSource = dsUserGroup
+          DataSource = dsUserGroup
+          Options = [dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
           TabOrder = 0
+          TitleFont.Charset = DEFAULT_CHARSET
+          TitleFont.Color = clWindowText
+          TitleFont.Height = -11
+          TitleFont.Name = 'Tahoma'
+          TitleFont.Style = []
+          AutoSizeColumns = True
+          SelectColumnsDialogStrings.Caption = 'Select columns'
+          SelectColumnsDialogStrings.OK = '&OK'
+          SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
+          EditControls = <>
+          RowsHeight = 17
+          TitleRowHeight = 17
+          Columns = <
+            item
+              Expanded = False
+              FieldName = 'USER_GROUP_NAME'
+              Width = 166
+              Visible = True
+            end>
         end
       end
       object pnl2: TPanel
@@ -314,34 +329,6 @@ object fUsers: TfUsers
             TabOrder = 0
           end
         end
-        object JvDBTreeView1: TJvDBTreeView
-          AlignWithMargins = True
-          Left = 4
-          Top = 55
-          Width = 383
-          Height = 326
-          DataSource = dsTreeData
-          MasterField = 'doc_id'
-          DetailField = 'parent_id'
-          IconField = 'doc_type'
-          ItemField = 'doc_name'
-          StartMasterValue = '0'
-          UseFilter = True
-          PersistentNode = True
-          DragMode = dmAutomatic
-          HideSelection = False
-          Indent = 19
-          Align = alClient
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          TabOrder = 1
-          ParentFont = False
-          RowSelect = True
-          Mirror = False
-        end
       end
       object tlb3: TToolBar
         Left = 0
@@ -354,32 +341,42 @@ object fUsers: TfUsers
         Images = DM.ilIcons_16x16
         ShowCaptions = True
         TabOrder = 0
-        object btn2: TToolButton
+        object btnAddGroup: TToolButton
           Left = 0
           Top = 0
           Caption = #1044#1086#1073#1072#1074#1080#1090#1100
           ImageIndex = 39
           Style = tbsTextButton
-          OnClick = btn2Click
+          OnClick = btnAddGroupClick
         end
-        object btn1: TToolButton
+        object btnCopyGroup: TToolButton
           Left = 86
           Top = 0
           Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100
           ImageIndex = 35
+          OnClick = btnCopyGroupClick
         end
-        object btn3: TToolButton
+        object btnEditGroup: TToolButton
           Left = 172
           Top = 0
           Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100
           ImageIndex = 44
-          OnClick = btn3Click
+          OnClick = btnEditGroupClick
         end
-        object btn4: TToolButton
+        object btnCancelGr: TToolButton
           Left = 258
+          Top = 0
+          Caption = #1054#1090#1084#1077#1085#1072
+          ImageIndex = 36
+          Visible = False
+          OnClick = btnCancelGrClick
+        end
+        object btnDelGroup: TToolButton
+          Left = 344
           Top = 0
           Caption = #1059#1076#1072#1083#1080#1090#1100
           ImageIndex = 38
+          OnClick = btnDelGroupClick
         end
       end
     end
@@ -396,6 +393,11 @@ object fUsers: TfUsers
     Top = 272
   end
   object qrUserGroup: TFDQuery
+    AfterInsert = qrUserGroupAfterEdit
+    AfterEdit = qrUserGroupAfterEdit
+    AfterPost = qrUserGroupAfterPost
+    AfterCancel = qrUserGroupAfterPost
+    OnNewRecord = qrUserGroupAfterEdit
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -432,7 +434,9 @@ object fUsers: TfUsers
     AfterEdit = qrUserAfterEdit
     BeforePost = qrUserBeforePost
     AfterPost = qrUserAfterPost
+    AfterCancel = qrUserAfterPost
     AfterScroll = qrUserAfterScroll
+    OnNewRecord = qrUserAfterEdit
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
@@ -457,12 +461,12 @@ object fUsers: TfUsers
     SQL.Strings = (
       'SELECT * FROM USER')
     Left = 107
-    Top = 160
+    Top = 152
   end
   object dsUser: TDataSource
     DataSet = qrUser
     Left = 107
-    Top = 208
+    Top = 200
   end
   object qrTreeData: TFDQuery
     Connection = DM.Connect
@@ -472,10 +476,8 @@ object fUsers: TfUsers
     FetchOptions.Cache = [fiBlobs, fiMeta]
     SQL.Strings = (
       'SELECT * '
-      'FROM '
-      '  `doc` '
-      'WHERE `doc_id` > 100'
-      'ORDER BY `doc_name`')
+      'FROM task'
+      'ORDER BY TASK_NAME')
     Left = 233
     Top = 270
   end

@@ -253,10 +253,6 @@ object fCardObject: TfCardObject
       DataField = 'FULL_NAME'
       DataSource = dsMain
       TabOrder = 0
-      ExplicitLeft = 88
-      ExplicitTop = 24
-      ExplicitWidth = 185
-      ExplicitHeight = 89
     end
   end
   object GroupBoxShortDescription: TGroupBox
@@ -275,9 +271,6 @@ object fCardObject: TfCardObject
       DataField = 'name'
       DataSource = dsMain
       TabOrder = 0
-      ExplicitLeft = 72
-      ExplicitTop = 24
-      ExplicitWidth = 121
       ExplicitHeight = 21
     end
   end

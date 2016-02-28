@@ -21,8 +21,8 @@ type
     strngfldMainforeman_second_name: TStringField;
     qrMainNUMPP: TIntegerField;
     pnlSelect: TPanel;
-    btn1: TBitBtn;
-    btn2: TBitBtn;
+    btnCancel: TBitBtn;
+    btnSelect: TBitBtn;
     qrMainforeman_first_name: TStringField;
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -30,12 +30,11 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure qrMainCalcFields(DataSet: TDataSet);
     procedure FormShow(Sender: TObject);
-    procedure btn1Click(Sender: TObject);
-    procedure btn2Click(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
+    procedure btnSelectClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure qrMainNewRecord(DataSet: TDataSet);
-    procedure qrMainBeforeScroll(DataSet: TDataSet);
-    procedure qrMainAfterScroll(DataSet: TDataSet);
+    procedure qrMainNUMPPGetText(Sender: TField; var Text: string; DisplayText: Boolean);
   private
     { Private declarations }
   public
@@ -51,12 +50,12 @@ implementation
 
 uses Main, DataModule;
 
-procedure TfForemanList.btn1Click(Sender: TObject);
+procedure TfForemanList.btnCancelClick(Sender: TObject);
 begin
   ModalResult := mrCancel;
 end;
 
-procedure TfForemanList.btn2Click(Sender: TObject);
+procedure TfForemanList.btnSelectClick(Sender: TObject);
 begin
   OutValue := 0;
   if not qrMain.IsEmpty then
@@ -85,8 +84,6 @@ begin
   // Создаём кнопку от этого окна (на главной форме внизу)
   FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   CloseOpen(qrMain);
-  qrMain.Last;
-  qrMain.First;
 end;
 
 procedure TfForemanList.FormDestroy(Sender: TObject);
@@ -109,30 +106,24 @@ begin
   pnlSelect.Visible := FormKind in [kdSelect];
 end;
 
-procedure TfForemanList.qrMainAfterScroll(DataSet: TDataSet);
-begin
-//  qrMain.AutoCalcFields := True;
-end;
-
-procedure TfForemanList.qrMainBeforeScroll(DataSet: TDataSet);
-begin
-//  qrMain.AutoCalcFields := False;
-end;
-
 procedure TfForemanList.qrMainCalcFields(DataSet: TDataSet);
 begin
   qrMainNUMPP.Value := qrMain.RecNo;
   if qrMainNUMPP.Value = 0 then
     qrMainNUMPP.Value := 1;
-  {
-    if qrMain.Eof and (qrMainNUMPP.Value = 1) then
-    qrMainNUMPP.Value := qrMain.RecordCount; }
 end;
 
 procedure TfForemanList.qrMainNewRecord(DataSet: TDataSet);
 begin
   qrMainNUMPP.Value := qrMain.RecordCount + 1;
-  // Text := IntToStr(qrMain.RecNo);
+end;
+
+procedure TfForemanList.qrMainNUMPPGetText(Sender: TField; var Text: string; DisplayText: Boolean);
+begin
+  if qrMain.State in [dsBrowse] then
+    Text := IntToStr(qrMain.RecNo)
+  else
+    Text := IntToStr(qrMainNUMPP.Value);
 end;
 
 end.

@@ -123,16 +123,16 @@ object fForemanList: TfForemanList
     Font.Style = []
     ParentFont = False
     TabOrder = 2
-    object btn1: TBitBtn
+    object btnCancel: TBitBtn
       Left = 271
       Top = 4
       Width = 75
       Height = 25
       Caption = #1054#1090#1084#1077#1085#1072
       TabOrder = 1
-      OnClick = btn1Click
+      OnClick = btnCancelClick
     end
-    object btn2: TBitBtn
+    object btnSelect: TBitBtn
       Left = 190
       Top = 4
       Width = 75
@@ -145,13 +145,11 @@ object fForemanList: TfForemanList
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      OnClick = btn2Click
+      OnClick = btnSelectClick
     end
   end
   object qrMain: TFDQuery
     AutoCalcFields = False
-    BeforeScroll = qrMainBeforeScroll
-    AfterScroll = qrMainAfterScroll
     OnCalcFields = qrMainCalcFields
     OnNewRecord = qrMainNewRecord
     Connection = DM.Connect
@@ -187,6 +185,7 @@ object fForemanList: TfForemanList
     object qrMainNUMPP: TIntegerField
       FieldKind = fkCalculated
       FieldName = 'NUMPP'
+      OnGetText = qrMainNUMPPGetText
       Calculated = True
     end
     object qrMainforeman_first_name: TStringField

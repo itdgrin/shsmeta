@@ -927,6 +927,21 @@ begin
   qrMain.FieldByName('NAL_USN').Value := 0;
   qrMain.FieldByName('Fl_SPEC_SCH').Value := 0;
   qrMain.FieldByName('SPEC_SCH').Value := 0;
+
+  qrMain.FieldByName('K_ZP').Value := 1;
+  qrMain.FieldByName('K_OHR').Value := 1;
+  qrMain.FieldByName('K_PP').Value := 1;
+
+  qrMain.FieldByName('PER_WINTERPRICE').Value := 0;
+  qrMain.FieldByName('FL_DIFF_MAT').Value := 0;
+  qrMain.FieldByName('FL_DIFF_TRANSP').Value := 0;
+  qrMain.FieldByName('FL_DIFF_EMIM').Value := 0;
+  qrMain.FieldByName('FL_DIFF_OTHER').Value := 0;
+  qrMain.FieldByName('FL_DIFF_NAL').Value := 0;
+  qrMain.FieldByName('FL_DIFF_MAT_ZAK').Value := 0;
+  qrMain.FieldByName('FL_DIFF_NAL_USN').Value := 0;
+  qrMain.FieldByName('FL_DIFF_NDS').Value := 0;
+  qrMain.FieldByName('FL_DIFF_DEVICE_PODR_WITH_NAL').Value := 0;
 end;
 
 end.
