@@ -1896,24 +1896,29 @@ begin
             Continue;
           end;
 
-          if not AIsAct and
-             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA') then
+          if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA') then
           begin
-            j := 0;
-            case DM.qrDifferent.Fields[i].Value of
-              1: j := C_ID_SMRAT;
-              2: j := C_ID_SMMAT;
-              3: j := C_ID_SMMEC;
-              4: j := C_ID_SMDEV;
-              5: j := C_ID_SMDUM;
-              6, 7, 8, 9: j := C_ID_SMTR;
-            end;
+            if not AIsAct then
+            begin
+              j := 0;
+              case DM.qrDifferent.Fields[i].Value of
+                1: j := C_ID_SMRAT;
+                2: j := C_ID_SMMAT;
+                3: j := C_ID_SMMEC;
+                4: j := C_ID_SMDEV;
+                5: j := C_ID_SMDUM;
+                6, 7, 8, 9: j := C_ID_SMTR;
+              end;
 
-            if (j > 0) then
-              DM.qrDifferent1.ParamByName('ID_TABLES').Value :=
-                GetNewId(DM.qrDifferent.FieldByName('ID_TABLES').Value, j, IdConvert)
+              if (j > 0) then
+                DM.qrDifferent1.ParamByName('ID_TABLES').Value :=
+                  GetNewId(DM.qrDifferent.FieldByName('ID_TABLES').Value, j, IdConvert)
+              else
+                DM.qrDifferent1.ParamByName('ID_TABLES').Value := 0;
+            end
             else
-              DM.qrDifferent1.ParamByName('ID_TABLES').Value := 0;
+              DM.qrDifferent1.ParamByName('ID_TABLES').Value :=
+                DM.qrDifferent.FieldByName('ID_TABLES').Value;
           end;
 
           DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
@@ -2217,23 +2222,28 @@ begin
             Continue;
           end;
 
-          if not AIsAct and
-             (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA') then
+          if (UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'ID_TYPE_DATA') then
           begin
-            j := 0;
+            if AIsAct then
+            begin
+              j := 0;
 
-            case DM.qrDifferent.Fields[i].Value of
-              1: j := C_ID_SMRAT;
-              2: j := C_ID_SMMAT;
-              3: j := C_ID_SMMEC;
-              4: j := C_ID_SMDEV;
-              5: j := C_ID_SMDUM;
-              6, 7, 8, 9: j := C_ID_SMTR;
-            end;
+              case DM.qrDifferent.Fields[i].Value of
+                1: j := C_ID_SMRAT;
+                2: j := C_ID_SMMAT;
+                3: j := C_ID_SMMEC;
+                4: j := C_ID_SMDEV;
+                5: j := C_ID_SMDUM;
+                6, 7, 8, 9: j := C_ID_SMTR;
+              end;
 
-            if j > 0  then
+              if j > 0  then
+                DM.qrDifferent1.ParamByName('ID_OWNER').Value :=
+                  GetNewId(DM.qrDifferent.FieldByName('ID_OWNER').Value, j, IdConvert);
+            end
+            else
               DM.qrDifferent1.ParamByName('ID_OWNER').Value :=
-                GetNewId(DM.qrDifferent.FieldByName('ID_OWNER').Value, j, IdConvert);
+                DM.qrDifferent.FieldByName('ID_OWNER').Value;
           end;
 
           DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
