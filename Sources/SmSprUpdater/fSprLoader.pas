@@ -1542,8 +1542,116 @@ begin
 end;
 
 procedure TSprLoaderForm.actUpdTarifExecute(Sender: TObject);
+var ExlApp,
+    WorkSheet: OleVariant;
+    FData: OleVariant;
+    I, J, Rows: Integer;
+    AutoCommitValue: Boolean;
 begin
-  beep;
+  if Application.MessageBox(
+    PChar('Загрузить данные из ''' + edtUpdTarif.Text +
+      ''' в справочник тарифов на погрузочные и разгрузочные работы?' +
+      sLineBreak + 'Старые тарифы за ' + cbMonthTarif.Text + ' ' +
+      edtYearTarif.Value.ToString + ' будут удалены.'),
+    'Загрузка данных', MB_OKCANCEL + MB_ICONQUESTION) = mrCancel then
+    Exit;
+  ChackFileExsist(edtUpdTarif.Text);
+
+  CoInitialize(nil);
+  AutoCommitValue := DM.Read.Options.AutoCommit;
+  DM.Read.Options.AutoCommit := False;
+  try
+    Screen.Cursor := crHourGlass;
+    ExlApp := Unassigned;
+    try
+      ExlApp := CreateOleObject('Excel.Application');
+      ExlApp.Visible:=false;
+      ExlApp.DisplayAlerts := False;
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка инициализации Excel:' + e.Message);
+    end;
+
+    try
+      ExlApp.WorkBooks.Open(edtUpdTarif.Text);
+      WorkSheet := ExlApp.ActiveWorkbook.ActiveSheet;
+    except
+      on e: exception do
+        raise Exception.Create('Ошибка открытия Excel документа:' + e.Message);
+    end;
+
+   { Rows := WorkSheet.UsedRange.Rows.Count;
+
+    if Rows <> 53 then
+      raise Exception.Create('Неожиданное кол-во строк в справочнике.');
+    }
+
+    Rows := 53;
+    FData :=
+      WorkSheet.Range[WorkSheet.Cells[9, 1].Address,
+      WorkSheet.Cells[Rows, 14].Address].Value;
+
+    DM.Read.StartTransaction;
+    try
+      DM.qrDifferent.SQL.Text :=
+        'Delete from tariffworks where (YEAR = :YEAR) and (MONAT = :MONAT)';
+      DM.qrDifferent.ParamByName('YEAR').Value := edtYearTarif.Value;
+      DM.qrDifferent.ParamByName('MONAT').Value := cbMonthTarif.ItemIndex + 1;
+      DM.qrDifferent.ExecSQL;
+
+      DM.qrDifferent1.SQL.Text :=
+        'Insert into tariffworks ' +
+        '(`WORK_ID`, `YEAR`, `MONAT`, `TARIFF_1`, `TARIFF_2`, `TARIFF_3`, ' +
+        '`TARIFF_4`, `TARIFF_5`, `TARIFF_6`, `TARIFF_7`, `TARIFF_8`, ' +
+        '`TARIFF_9`, `TARIFF_10`, `TARIFF_11`, `TARIFF_12`) ' +
+        'values ' +
+        '(:WORK_ID, :YEAR, :MONAT, :TARIFF_1, :TARIFF_2, :TARIFF_3, ' +
+        ':TARIFF_4, :TARIFF_5, :TARIFF_6, :TARIFF_7, :TARIFF_8, ' +
+        ':TARIFF_9, :TARIFF_10, :TARIFF_11, :TARIFF_12)';
+      J := 0;
+      for I := 1 to Rows - 8 do
+      begin
+        //Получение кода просто подогнано под строчки в файле
+        if (VarToStr(FData[I,1]) = '12') or
+           (VarToStr(FData[I,1]) = '31') then
+          Continue;
+        Inc(J);
+
+        DM.qrDifferent1.ParamByName('WORK_ID').Value := J;
+        DM.qrDifferent1.ParamByName('YEAR').Value := edtYearTarif.Value;
+        DM.qrDifferent1.ParamByName('MONAT').Value := cbMonthTarif.ItemIndex + 1;
+        DM.qrDifferent1.ParamByName('TARIFF_1').Value := FData[I,3];
+        DM.qrDifferent1.ParamByName('TARIFF_2').Value := FData[I,4];
+        DM.qrDifferent1.ParamByName('TARIFF_3').Value := FData[I,5];
+        DM.qrDifferent1.ParamByName('TARIFF_4').Value := FData[I,6];
+        DM.qrDifferent1.ParamByName('TARIFF_5').Value := FData[I,7];
+        DM.qrDifferent1.ParamByName('TARIFF_6').Value := FData[I,8];
+        DM.qrDifferent1.ParamByName('TARIFF_7').Value := FData[I,9];
+        DM.qrDifferent1.ParamByName('TARIFF_8').Value := FData[I,10];
+        DM.qrDifferent1.ParamByName('TARIFF_9').Value := FData[I,11];
+        DM.qrDifferent1.ParamByName('TARIFF_10').Value := FData[I,12];
+        DM.qrDifferent1.ParamByName('TARIFF_11').Value := FData[I,13];
+        DM.qrDifferent1.ParamByName('TARIFF_12').Value := FData[I,14];
+        DM.qrDifferent1.ExecSQL;
+      end;
+      DM.Read.Commit;
+      ShowMessage('Загрузка успешно завершена.');
+    except
+      DM.Read.Rollback;
+      raise;
+    end;
+  finally
+    DM.Read.Options.AutoCommit := AutoCommitValue;
+    if not VarIsEmpty(ExlApp) then
+    begin
+      ExlApp.ActiveWorkbook.Close;
+      ExlApp.Quit;
+    end;
+    Screen.Cursor := crDefault;
+    WorkSheet := Unassigned;
+    ExlApp := Unassigned;
+    CoUninitialize;
+  end;
 end;
 
 procedure TSprLoaderForm.actUpdTransKoefExecute(Sender: TObject);
