@@ -4500,7 +4500,7 @@ begin
   end;
 end;
 
-//Групповое изменение процента транспорта для материалов сметы
+// Групповое изменение процента транспорта для материалов сметы
 procedure TFormCalculationEstimate.PMSetTransPercClick(Sender: TObject);
 var
   fTrPersSelect: TfTrPersSelect;
@@ -5198,7 +5198,7 @@ var
   PriceVAT, PriceNoVAT: string;
   Pt: Real;
   AutoCommitValue: Boolean;
-  Work_ID: integer;
+  Work_ID: Integer;
 begin
   if not CheckCursorInRate then
     Exit;
@@ -5646,137 +5646,124 @@ end;
 
 procedure TFormCalculationEstimate.DeleteRowFromSmeta();
 begin
-  if Act then
-  begin
-    with qrTemp do
-    begin
-      Active := False;
-      SQL.Clear;
-      SQL.Add('CALL DeleteDataFromAct(:IdTypeData, :Id);');
-      ParamByName('IdTypeData').Value := qrRatesExID_TYPE_DATA.AsInteger;
-      ParamByName('Id').Value := qrRatesExID_TABLES.AsInteger;
-      ExecSQL;
-    end;
-  end
-  else
-    case qrRatesExID_TYPE_DATA.AsInteger of
-      1: // Расценка
-        try
-          with qrTemp do
-          begin
-            Active := False;
-            SQL.Clear;
-            SQL.Add('CALL DeleteRate(:id);');
-            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
-            ExecSQL;
-          end;
-        except
-          on e: Exception do
-            MessageBox(0, PChar('При удалении расценки возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+  case qrRatesExID_TYPE_DATA.AsInteger of
+    1: // Расценка
+      try
+        with qrTemp do
+        begin
+          Active := False;
+          SQL.Clear;
+          SQL.Add('CALL DeleteRate(:id);');
+          ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
+          ExecSQL;
         end;
-      2: // Материал
-        try
-          with qrTemp do
-          begin
-            Active := False;
-            SQL.Clear;
-            SQL.Add('CALL DeleteMaterial(:id, :CalcMode);');
-            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
-            ParamByName('CalcMode').Value := G_CALCMODE;
-            ExecSQL;
-          end;
+      except
+        on e: Exception do
+          MessageBox(0, PChar('При удалении расценки возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
+            PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      end;
+    2: // Материал
+      try
+        with qrTemp do
+        begin
+          Active := False;
+          SQL.Clear;
+          SQL.Add('CALL DeleteMaterial(:id, :CalcMode);');
+          ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
+          ParamByName('CalcMode').Value := G_CALCMODE;
+          ExecSQL;
+        end;
 
-        except
-          on e: Exception do
-            MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      except
+        on e: Exception do
+          MessageBox(0, PChar('При удалении материала возникла ошибка:' + sLineBreak + sLineBreak +
+            e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      end;
+    3: // Механизм
+      try
+        with qrTemp do
+        begin
+          Active := False;
+          SQL.Clear;
+          SQL.Add('CALL DeleteMechanism(:id, :CalcMode);');
+          ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
+          ParamByName('CalcMode').Value := G_CALCMODE;
+          ExecSQL;
         end;
-      3: // Механизм
-        try
-          with qrTemp do
-          begin
-            Active := False;
-            SQL.Clear;
-            SQL.Add('CALL DeleteMechanism(:id, :CalcMode);');
-            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
-            ParamByName('CalcMode').Value := G_CALCMODE;
-            ExecSQL;
-          end;
 
-        except
-          on e: Exception do
-            MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      except
+        on e: Exception do
+          MessageBox(0, PChar('При удалении механизма возникла ошибка:' + sLineBreak + sLineBreak +
+            e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      end;
+    4: // Оборудование
+      try
+        with qrTemp do
+        begin
+          Active := False;
+          SQL.Clear;
+          SQL.Add('CALL DeleteDevice(:id);');
+          ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
+          ExecSQL;
         end;
-      4: // Оборудование
-        try
-          with qrTemp do
-          begin
-            Active := False;
-            SQL.Clear;
-            SQL.Add('CALL DeleteDevice(:id);');
-            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
-            ExecSQL;
-          end;
 
-        except
-          on e: Exception do
-            MessageBox(0, PChar('При удалении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      except
+        on e: Exception do
+          MessageBox(0, PChar('При удалении оборудования возникла ошибка:' + sLineBreak + sLineBreak +
+            e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      end;
+    5: // Свалка
+      try
+        with qrTemp do
+        begin
+          Active := False;
+          SQL.Clear;
+          SQL.Add('CALL DeleteDump(:id);');
+          ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
+          ExecSQL;
         end;
-      5: // Свалка
-        try
-          with qrTemp do
-          begin
-            Active := False;
-            SQL.Clear;
-            SQL.Add('CALL DeleteDump(:id);');
-            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
-            ExecSQL;
-          end;
-        except
-          on e: Exception do
-            MessageBox(0, PChar('При удалении свалки возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
-              PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      except
+        on e: Exception do
+          MessageBox(0, PChar('При удалении свалки возникла ошибка:' + sLineBreak + sLineBreak + e.Message),
+            PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      end;
+    6, 7, 8, 9: // Транспорт
+      try
+        with qrTemp do
+        begin
+          Active := False;
+          SQL.Clear;
+          SQL.Add('CALL DeleteTransp(:id);');
+          ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
+          ExecSQL;
         end;
-      6, 7, 8, 9: // Транспорт
-        try
-          with qrTemp do
-          begin
-            Active := False;
-            SQL.Clear;
-            SQL.Add('CALL DeleteTransp(:id);');
-            ParamByName('id').Value := qrRatesExID_TABLES.AsInteger;
-            ExecSQL;
-          end;
-        except
-          on e: Exception do
-            MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
-        end;
-      10, 11: // Пуск и регулировка
-        try
-          with qrTemp do
-          begin
-            Active := False;
-            SQL.Clear;
-            SQL.Add('DELETE FROM data_row_temp WHERE (ID = ' +
-              INTTOSTR(qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger) + ');');
-            ExecSQL;
+      except
+        on e: Exception do
+          MessageBox(0, PChar('При удалении транспорта возникла ошибка:' + sLineBreak + sLineBreak +
+            e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      end;
+    10, 11: // Пуск и регулировка
+      try
+        with qrTemp do
+        begin
+          Active := False;
+          SQL.Clear;
+          SQL.Add('DELETE FROM data_row_temp WHERE (ID = ' +
+            INTTOSTR(qrRatesExDATA_ESTIMATE_OR_ACT_ID.AsInteger) + ');');
+          ExecSQL;
 
-            SQL.Clear;
-            SQL.Add('CALL `UpdateNomManual`(:SM_ID, :NomManual, 1);');
-            ParamByName('SM_ID').Value := qrRatesExSM_ID.Value;
-            ParamByName('NomManual').Value := qrRatesExNOM_ROW_MANUAL.Value;
-            ExecSQL;
-          end;
-        except
-          on e: Exception do
-            MessageBox(0, PChar('При удалении пусконаладки возникла ошибка:' + sLineBreak + sLineBreak +
-              e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+          SQL.Clear;
+          SQL.Add('CALL `UpdateNomManual`(:SM_ID, :NomManual, 1);');
+          ParamByName('SM_ID').Value := qrRatesExSM_ID.Value;
+          ParamByName('NomManual').Value := qrRatesExNOM_ROW_MANUAL.Value;
+          ExecSQL;
         end;
-    end;
+      except
+        on e: Exception do
+          MessageBox(0, PChar('При удалении пусконаладки возникла ошибка:' + sLineBreak + sLineBreak +
+            e.Message), PChar(FMesCaption), MB_ICONERROR + MB_OK + mb_TaskModal);
+      end;
+  end;
 end;
 
 // Удаление чего-либо из сметы
@@ -5831,8 +5818,7 @@ begin
     Abort;
 
   PMCalcDevice.Visible := NDSEstimate;
-  PMCalcDevice.Enabled :=
-    (dbgrdDevices.Columns[dbgrdDevices.Col - 1].FieldName = 'FCOAST_NDS');
+  PMCalcDevice.Enabled := (dbgrdDevices.Columns[dbgrdDevices.Col - 1].FieldName = 'FCOAST_NDS');
 
   PMDevManPrice.Visible := (qrDevicesBASE.Value > 0);
   PMDevSprCard.Visible := (qrDevicesBASE.Value > 0);
@@ -6171,27 +6157,22 @@ begin
 end;
 
 function TFormCalculationEstimate.GetOHROPRId(const ANumRate: string): Integer;
-var mes: string;
-    COL1NAME, COL2NAME: string;
-    MAIS: Integer;
+var
+  mes: string;
+  COL1NAME, COL2NAME: string;
+  MAIS: Integer;
 begin
   Result := 1;
   try
     if COL1NAME = '' then
-      COL1NAME := FastSelectSQLOne
-        ('SELECT objstroj.COL1NAME FROM objstroj, objcards WHERE ' +
-         'objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID',
-        VarArrayOf([IdObject]));
+      COL1NAME := FastSelectSQLOne('SELECT objstroj.COL1NAME FROM objstroj, objcards WHERE ' +
+        'objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID', VarArrayOf([IdObject]));
     if COL2NAME = '' then
-      COL2NAME := FastSelectSQLOne
-        ('SELECT objstroj.COL2NAME FROM objstroj, objcards ' +
-         'WHERE objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID',
-        VarArrayOf([IdObject]));
+      COL2NAME := FastSelectSQLOne('SELECT objstroj.COL2NAME FROM objstroj, objcards ' +
+        'WHERE objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID', VarArrayOf([IdObject]));
     if MAIS = 0 then
-      MAIS := FastSelectSQLOne
-        ('SELECT IFNULL(smetasourcedata.`MAIS_ID`, objcards.`MAIS_ID`) FROM ' +
-         'smetasourcedata, objcards WHERE sm_id = :0 AND objcards.`obj_id` = ' +
-         'smetasourcedata.`OBJ_ID`',
+      MAIS := FastSelectSQLOne('SELECT IFNULL(smetasourcedata.`MAIS_ID`, objcards.`MAIS_ID`) FROM ' +
+        'smetasourcedata, objcards WHERE sm_id = :0 AND objcards.`obj_id` = ' + 'smetasourcedata.`OBJ_ID`',
         VarArrayOf([qrRatesExSM_ID.Value]));
     qrTemp.Active := False;
     qrTemp.SQL.Text := 'SELECT DISTINCT objworks.work_id as work_id, work_name as NAME,'#13 +
@@ -6224,8 +6205,7 @@ begin
     end
     else
     begin
-      Result := FastSelectSQLOne('SELECT def_work_id FROM round_setup LIMIT 1',
-        VarArrayOf([]));
+      Result := FastSelectSQLOne('SELECT def_work_id FROM round_setup LIMIT 1', VarArrayOf([]));
     end;
   except
     on e: Exception do
@@ -6236,13 +6216,14 @@ end;
 
 procedure TFormCalculationEstimate.FillingOHROPR(const vNumber: string);
 // Находим охр и опр по настройке
-var TmpId: Integer;
+var
+  TmpID: Integer;
 begin
   if qrRatesExWORK_ID.AsInteger = 0 then
   begin
-    TmpId := GetOHROPRId(vNumber);
-    if TmpId > 0 then
-      qrRatesExWORK_ID.AsInteger := TmpId;
+    TmpID := GetOHROPRId(vNumber);
+    if TmpID > 0 then
+      qrRatesExWORK_ID.AsInteger := TmpID;
   end;
 
 end;
@@ -7381,8 +7362,7 @@ begin
     // Подсветка полей стоимости
     if (Sender as TJvDBGrid).Name = 'dbgrdTransp' then
     begin
-      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or
-         (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
+      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
         Brush.Color := $00FBFEBC;
     end
     else if (Sender as TJvDBGrid).Name = 'dbgrdTransp' then
