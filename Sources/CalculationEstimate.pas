@@ -7019,7 +7019,7 @@ begin
       qrRatesEx.RecNo := RecNo;
     end;
 
-    CloseOpen(qrRatesEx);
+    CloseOpen(qrRatesEx, False);
 
     if ANewRow then
     begin
