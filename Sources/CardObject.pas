@@ -942,6 +942,8 @@ begin
   qrMain.FieldByName('FL_DIFF_NAL_USN').Value := 0;
   qrMain.FieldByName('FL_DIFF_NDS').Value := 0;
   qrMain.FieldByName('FL_DIFF_DEVICE_PODR_WITH_NAL').Value := 0;
+  qrMain.FieldByName('PER_DONE').Value := 100;
+  qrMain.FieldByName('PER_NPZ').Value := 0;
 end;
 
 end.

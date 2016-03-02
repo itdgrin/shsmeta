@@ -96,6 +96,9 @@ type
     JvDBSpinEdit7: TJvDBSpinEdit;
     JvDBSpinEdit8: TJvDBSpinEdit;
     jvdbspndtK_PP: TJvDBSpinEdit;
+    GridPanel25: TGridPanel;
+    lbl24: TLabel;
+    jvdbspndtK_PP1: TJvDBSpinEdit;
     procedure btn1Click(Sender: TObject);
     procedure dbchkAPPLY_WINTERPRISE_FLAGClick(Sender: TObject);
     procedure FormShow(Sender: TObject);

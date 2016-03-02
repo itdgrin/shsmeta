@@ -2,7 +2,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
   Left = 0
   Top = 0
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1088#1072#1089#1095#1077#1090#1072' '#1090#1077#1082#1091#1097#1077#1081' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
-  ClientHeight = 678
+  ClientHeight = 697
   ClientWidth = 412
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
   TextHeight = 13
   object pnl1: TPanel
     Left = 0
-    Top = 637
+    Top = 656
     Width = 412
     Height = 41
     Align = alBottom
@@ -30,6 +30,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Font.Style = []
     ParentFont = False
     TabOrder = 1
+    ExplicitTop = 637
     DesignSize = (
       412
       41)
@@ -70,7 +71,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Left = 0
     Top = 0
     Width = 412
-    Height = 637
+    Height = 656
     Align = alClient
     BevelInner = bvNone
     BevelOuter = bvNone
@@ -82,9 +83,10 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Font.Style = []
     ParentFont = False
     TabOrder = 0
+    ExplicitHeight = 637
     object GridPanel1: TGridPanel
       Left = 0
-      Top = 0
+      Top = 20
       Width = 412
       Height = 20
       Margins.Left = 10
@@ -122,7 +124,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           SizeStyle = ssAuto
         end>
-      TabOrder = 0
+      TabOrder = 1
+      ExplicitTop = 0
       DesignSize = (
         412
         20)
@@ -168,7 +171,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel2: TGridPanel
       Left = 0
-      Top = 20
+      Top = 40
       Width = 412
       Height = 20
       Align = alTop
@@ -202,7 +205,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 1
+      TabOrder = 2
+      ExplicitTop = 20
       DesignSize = (
         412
         20)
@@ -249,7 +253,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel3: TGridPanel
       Left = 0
-      Top = 81
+      Top = 101
       Width = 412
       Height = 20
       Align = alTop
@@ -283,7 +287,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 3
+      TabOrder = 4
+      ExplicitTop = 81
       DesignSize = (
         412
         20)
@@ -328,7 +333,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel4: TGridPanel
       Left = 0
-      Top = 101
+      Top = 121
       Width = 412
       Height = 20
       Align = alTop
@@ -362,7 +367,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 4
+      TabOrder = 5
+      ExplicitTop = 101
       DesignSize = (
         412
         20)
@@ -405,7 +411,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object pnl2: TPanel
       Left = 0
-      Top = 121
+      Top = 141
       Width = 412
       Height = 25
       Align = alTop
@@ -418,11 +424,12 @@ object fCardObjectAdditional: TfCardObjectAdditional
       Font.Style = [fsBold, fsItalic]
       ParentBackground = False
       ParentFont = False
-      TabOrder = 5
+      TabOrder = 6
+      ExplicitTop = 121
     end
     object GridPanel5: TGridPanel
       Left = 0
-      Top = 146
+      Top = 166
       Width = 412
       Height = 20
       Align = alTop
@@ -456,7 +463,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 6
+      TabOrder = 7
+      ExplicitTop = 146
       DesignSize = (
         412
         20)
@@ -495,12 +503,11 @@ object fCardObjectAdditional: TfCardObjectAdditional
         TabOrder = 0
         DataField = 'K_ZP'
         DataSource = fCardObject.dsMain
-        ExplicitLeft = 332
       end
     end
     object GridPanel6: TGridPanel
       Left = 0
-      Top = 186
+      Top = 206
       Width = 412
       Height = 20
       Align = alTop
@@ -534,7 +541,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 8
+      TabOrder = 9
+      ExplicitTop = 186
       DesignSize = (
         412
         20)
@@ -573,12 +581,11 @@ object fCardObjectAdditional: TfCardObjectAdditional
         TabOrder = 0
         DataField = 'K_PP'
         DataSource = fCardObject.dsMain
-        ExplicitLeft = 332
       end
     end
     object GridPanel7: TGridPanel
       Left = 0
-      Top = 166
+      Top = 186
       Width = 412
       Height = 20
       Align = alTop
@@ -612,7 +619,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 7
+      TabOrder = 8
+      ExplicitTop = 166
       DesignSize = (
         412
         20)
@@ -651,12 +659,11 @@ object fCardObjectAdditional: TfCardObjectAdditional
         TabOrder = 0
         DataField = 'K_OHR'
         DataSource = fCardObject.dsMain
-        ExplicitLeft = 332
       end
     end
     object pnl3: TPanel
       Left = 0
-      Top = 206
+      Top = 226
       Width = 412
       Height = 25
       Align = alTop
@@ -669,11 +676,12 @@ object fCardObjectAdditional: TfCardObjectAdditional
       Font.Style = [fsBold, fsItalic]
       ParentBackground = False
       ParentFont = False
-      TabOrder = 9
+      TabOrder = 10
+      ExplicitTop = 206
     end
     object GridPanel8: TGridPanel
       Left = 0
-      Top = 231
+      Top = 251
       Width = 412
       Height = 20
       Align = alTop
@@ -707,7 +715,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 10
+      TabOrder = 11
+      ExplicitTop = 231
       DesignSize = (
         412
         20)
@@ -754,7 +763,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel9: TGridPanel
       Left = 0
-      Top = 251
+      Top = 271
       Width = 412
       Height = 20
       Align = alTop
@@ -788,7 +797,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 11
+      TabOrder = 12
+      ExplicitTop = 251
       DesignSize = (
         412
         20)
@@ -835,7 +845,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel10: TGridPanel
       Left = 0
-      Top = 271
+      Top = 291
       Width = 412
       Height = 20
       Align = alTop
@@ -869,7 +879,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 12
+      TabOrder = 13
+      ExplicitTop = 271
       DesignSize = (
         412
         20)
@@ -915,7 +926,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel11: TGridPanel
       Left = 0
-      Top = 291
+      Top = 311
       Width = 412
       Height = 20
       Align = alTop
@@ -952,7 +963,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           SizeStyle = ssAuto
         end>
-      TabOrder = 13
+      TabOrder = 14
+      ExplicitTop = 291
       DesignSize = (
         412
         20)
@@ -998,7 +1010,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object pnl4: TPanel
       Left = 0
-      Top = 311
+      Top = 331
       Width = 412
       Height = 25
       Align = alTop
@@ -1011,11 +1023,12 @@ object fCardObjectAdditional: TfCardObjectAdditional
       Font.Style = [fsBold, fsItalic]
       ParentBackground = False
       ParentFont = False
-      TabOrder = 14
+      TabOrder = 15
+      ExplicitTop = 311
     end
     object pnl5: TPanel
       Left = 0
-      Top = 396
+      Top = 416
       Width = 412
       Height = 25
       Align = alTop
@@ -1028,11 +1041,12 @@ object fCardObjectAdditional: TfCardObjectAdditional
       Font.Style = [fsBold, fsItalic]
       ParentBackground = False
       ParentFont = False
-      TabOrder = 18
+      TabOrder = 19
+      ExplicitTop = 396
     end
     object GridPanel12: TGridPanel
       Left = 0
-      Top = 336
+      Top = 356
       Width = 412
       Height = 20
       Align = alTop
@@ -1066,7 +1080,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 15
+      TabOrder = 16
+      ExplicitTop = 336
       DesignSize = (
         412
         20)
@@ -1113,7 +1128,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel13: TGridPanel
       Left = 0
-      Top = 376
+      Top = 396
       Width = 412
       Height = 20
       Align = alTop
@@ -1147,7 +1162,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 17
+      TabOrder = 18
+      ExplicitTop = 376
       DesignSize = (
         412
         20)
@@ -1194,7 +1210,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel14: TGridPanel
       Left = 0
-      Top = 356
+      Top = 376
       Width = 412
       Height = 20
       Align = alTop
@@ -1228,7 +1244,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 16
+      TabOrder = 17
+      ExplicitTop = 356
       DesignSize = (
         412
         20)
@@ -1275,7 +1292,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel15: TGridPanel
       Left = 0
-      Top = 421
+      Top = 441
       Width = 412
       Height = 20
       Align = alTop
@@ -1309,7 +1326,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 19
+      TabOrder = 20
+      ExplicitTop = 421
       DesignSize = (
         412
         20)
@@ -1356,7 +1374,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel16: TGridPanel
       Left = 0
-      Top = 481
+      Top = 521
       Width = 412
       Height = 20
       Align = alTop
@@ -1390,7 +1408,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 22
+      TabOrder = 24
+      ExplicitTop = 481
       DesignSize = (
         412
         20)
@@ -1472,6 +1491,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 23
+      ExplicitTop = 480
       DesignSize = (
         412
         20)
@@ -1518,7 +1538,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel18: TGridPanel
       Left = 0
-      Top = 461
+      Top = 481
       Width = 412
       Height = 20
       Align = alTop
@@ -1552,7 +1572,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 21
+      TabOrder = 22
+      ExplicitTop = 461
       DesignSize = (
         412
         20)
@@ -1599,7 +1620,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel19: TGridPanel
       Left = 0
-      Top = 441
+      Top = 461
       Width = 412
       Height = 20
       Align = alTop
@@ -1633,7 +1654,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 20
+      TabOrder = 21
+      ExplicitTop = 441
       DesignSize = (
         412
         20)
@@ -1680,7 +1702,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object pnl6: TPanel
       Left = 0
-      Top = 521
+      Top = 541
       Width = 412
       Height = 34
       Align = alTop
@@ -1692,7 +1714,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
       Font.Style = [fsBold, fsItalic]
       ParentBackground = False
       ParentFont = False
-      TabOrder = 24
+      TabOrder = 25
+      ExplicitTop = 521
       object lbl23: TLabel
         AlignWithMargins = True
         Left = 4
@@ -1720,7 +1743,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel20: TGridPanel
       Left = 0
-      Top = 555
+      Top = 575
       Width = 412
       Height = 20
       Align = alTop
@@ -1754,7 +1777,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 25
+      TabOrder = 26
+      ExplicitTop = 555
       DesignSize = (
         412
         20)
@@ -1801,7 +1825,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel21: TGridPanel
       Left = 0
-      Top = 575
+      Top = 595
       Width = 412
       Height = 20
       Align = alTop
@@ -1835,7 +1859,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 26
+      TabOrder = 27
+      ExplicitTop = 575
       DesignSize = (
         412
         20)
@@ -1882,7 +1907,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel22: TGridPanel
       Left = 0
-      Top = 615
+      Top = 635
       Width = 412
       Height = 20
       Align = alTop
@@ -1916,7 +1941,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 28
+      TabOrder = 29
+      ExplicitTop = 615
       DesignSize = (
         412
         20)
@@ -1963,7 +1989,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel23: TGridPanel
       Left = 0
-      Top = 595
+      Top = 615
       Width = 412
       Height = 20
       Align = alTop
@@ -1997,7 +2023,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           Value = 100.000000000000000000
         end>
-      TabOrder = 27
+      TabOrder = 28
+      ExplicitTop = 595
       DesignSize = (
         412
         20)
@@ -2044,7 +2071,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
     end
     object GridPanel24: TGridPanel
       Left = 0
-      Top = 40
+      Top = 60
       Width = 412
       Height = 41
       Align = alTop
@@ -2081,7 +2108,8 @@ object fCardObjectAdditional: TfCardObjectAdditional
         item
           SizeStyle = ssAuto
         end>
-      TabOrder = 2
+      TabOrder = 3
+      ExplicitTop = 40
       object JvDBSpinEdit2: TJvDBSpinEdit
         AlignWithMargins = True
         Left = 339
@@ -2176,12 +2204,91 @@ object fCardObjectAdditional: TfCardObjectAdditional
         end
       end
     end
+    object GridPanel25: TGridPanel
+      Left = 0
+      Top = 0
+      Width = 412
+      Height = 20
+      Align = alTop
+      BevelOuter = bvNone
+      ColumnCollection = <
+        item
+          Value = 100.000000000000000000
+        end
+        item
+          SizeStyle = ssAbsolute
+          Value = 80.000000000000000000
+        end>
+      ControlCollection = <
+        item
+          Column = 0
+          Control = lbl24
+          Row = 0
+        end
+        item
+          Column = 1
+          Control = jvdbspndtK_PP1
+          Row = 0
+        end>
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      RowCollection = <
+        item
+          Value = 100.000000000000000000
+        end>
+      TabOrder = 0
+      ExplicitLeft = 3
+      ExplicitTop = -3
+      DesignSize = (
+        412
+        20)
+      object lbl24: TLabel
+        AlignWithMargins = True
+        Left = 7
+        Top = 3
+        Width = 322
+        Height = 14
+        Margins.Left = 7
+        Align = alClient
+        Caption = #1042#1099#1087#1086#1083#1085#1077#1085#1080#1077' '#1086#1090' '#1086#1073#1097#1077#1075#1086' '#1086#1073#1098#1105#1084#1072' '#1088#1072#1073#1086#1090':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ExplicitWidth = 195
+        ExplicitHeight = 13
+      end
+      object jvdbspndtK_PP1: TJvDBSpinEdit
+        Left = 339
+        Top = 0
+        Width = 65
+        Height = 20
+        MaxValue = 100.000000000000000000
+        ValueType = vtFloat
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        Anchors = []
+        ParentFont = False
+        TabOrder = 0
+        DataField = 'PER_DONE'
+        DataSource = fCardObject.dsMain
+      end
+    end
   end
   object FormStorage: TJvFormStorage
     AppStorage = FormMain.AppIni
     AppStoragePath = '%FORM_NAME%\'
     Options = [fpSize]
     StoredValues = <>
-    Left = 312
+    Left = 248
   end
 end
