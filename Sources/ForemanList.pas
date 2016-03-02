@@ -35,6 +35,7 @@ type
     procedure FormResize(Sender: TObject);
     procedure qrMainNewRecord(DataSet: TDataSet);
     procedure qrMainNUMPPGetText(Sender: TField; var Text: string; DisplayText: Boolean);
+    procedure dbnvgr1Click(Sender: TObject; Button: TNavigateBtn);
   private
     { Private declarations }
   public
@@ -61,6 +62,14 @@ begin
   if not qrMain.IsEmpty then
     OutValue := qrMain.FieldByName('foreman_id').AsInteger;
   ModalResult := mrOk;
+end;
+
+procedure TfForemanList.dbnvgr1Click(Sender: TObject; Button: TNavigateBtn);
+begin
+  case Button of
+    nbInsert:
+      qrMain.Append;
+  end;
 end;
 
 procedure TfForemanList.FormActivate(Sender: TObject);
@@ -116,6 +125,7 @@ end;
 procedure TfForemanList.qrMainNewRecord(DataSet: TDataSet);
 begin
   qrMainNUMPP.Value := qrMain.RecordCount + 1;
+  grMain.Repaint;
 end;
 
 procedure TfForemanList.qrMainNUMPPGetText(Sender: TField; var Text: string; DisplayText: Boolean);

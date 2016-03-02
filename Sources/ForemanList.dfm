@@ -109,6 +109,7 @@ object fForemanList: TfForemanList
     ShowHint = True
     TabOrder = 1
     TabStop = True
+    OnClick = dbnvgr1Click
   end
   object pnlSelect: TPanel
     Left = 0
@@ -155,8 +156,7 @@ object fForemanList: TfForemanList
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    FetchOptions.AssignedValues = [evRecordCountMode, evAutoFetchAll]
-    FetchOptions.RecordCountMode = cmTotal
+    FetchOptions.AssignedValues = [evAutoFetchAll]
     UpdateOptions.UpdateTableName = 'smeta.foreman'
     UpdateOptions.KeyFields = 'foreman_id'
     SQL.Strings = (

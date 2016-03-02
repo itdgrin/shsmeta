@@ -1859,12 +1859,12 @@ begin
             Continue;
           end;
 
-          //Пропускаем поле TREE_PATH, т.к. считается триггером
+          {//Пропускаем поле TREE_PATH, т.к. считается триггером
           if UpperCase(DM.qrDifferent.Fields[i].FieldName) = 'TREE_PATH' then
           begin
             Continue;
           end;
-
+          }
           DM.qrDifferent1.ParamByName(DM.qrDifferent.Fields[i].FieldName).Value :=
             DM.qrDifferent.Fields[i].Value;
         end;
