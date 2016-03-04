@@ -1163,10 +1163,6 @@ object fCalcResource: TfCalcResource
             end
             item
               Alignment = taRightJustify
-              FieldName = 'ZP_1'
-            end
-            item
-              Alignment = taRightJustify
               FieldName = 'ZP_2'
             end>
           DataSource = dsMechData
@@ -3332,7 +3328,7 @@ object fCalcResource: TfCalcResource
     ResourceOptions.MacroCreate = False
     ResourceOptions.DirectExecute = True
     Left = 212
-    Top = 317
+    Top = 312
   end
   object mtRS: TFDMemTable
     FieldDefs = <>

@@ -86,9 +86,9 @@ type
     cbbMonthBeginStroj: TComboBox;
     seYearBeginStroj: TSpinEdit;
     lbl4: TLabel;
-    dbseCountMonth: TJvDBSpinEdit;
     dbmmoFULL_NAME: TDBMemo;
     dbedtname: TDBEdit;
+    jvdbspndtSROK_STROJ: TJvDBSpinEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -944,6 +944,7 @@ begin
   qrMain.FieldByName('FL_DIFF_DEVICE_PODR_WITH_NAL').Value := 0;
   qrMain.FieldByName('PER_DONE').Value := 100;
   qrMain.FieldByName('PER_NPZ').Value := 0;
+  qrMain.FieldByName('SROK_STROJ').Value := 1;
 end;
 
 end.

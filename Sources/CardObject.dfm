@@ -673,12 +673,12 @@ object fCardObject: TfCardObject
       OnChange = cbbMonthBeginStrojChange
     end
   end
-  object dbseCountMonth: TJvDBSpinEdit
+  object jvdbspndtSROK_STROJ: TJvDBSpinEdit
     Left = 162
     Top = 194
     Width = 64
     Height = 21
-    MaxValue = 99999999.000000000000000000
+    MaxValue = 9999999.000000000000000000
     MinValue = 1.000000000000000000
     TabOrder = 7
     DataField = 'SROK_STROJ'

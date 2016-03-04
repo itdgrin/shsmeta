@@ -265,8 +265,8 @@ procedure TfContractPrice.qrMainAfterScroll(DataSet: TDataSet);
 begin
   btnCalc.Enabled := canEditRow and not dbchkFL_CONTRACT_PRICE1.Checked;
   if (btnShowResources.Tag = 1) and Assigned(fCalcResource) then
-    ShowCalcResource(qrMain.FieldByName('SM_ID').Value, fCalcResource.pgc.ActivePageIndex, Self,
-      False, False, True);
+    ShowCalcResource(qrMain.FieldByName('SM_ID').Value, fCalcResource.pgc.ActivePageIndex, Self, False,
+      False, True);
 end;
 
 procedure TfContractPrice.qrMainBeforePost(DataSet: TDataSet);
@@ -347,6 +347,14 @@ begin
   addCol(grMain, 'TOTAL', 'Всего', 80);
   // Создаем колонки по месяцам
   MONTH_FIELDS := '';
+  if qrOBJ.FieldByName('SROK_STROJ').AsInteger = 0 then
+  begin
+    Application.MessageBox
+      ('Указан неверный срок строительства (0)! Установите корректное значение в карточке объекта.',
+      PChar(Caption), MB_OK + MB_ICONSTOP + MB_TOPMOST);
+    Abort;
+    //raise Exception.Create('Error Message');
+  end;
   for i := 0 to qrOBJ.FieldByName('SROK_STROJ').AsInteger - 1 do
   begin
     tmpDate := IncMonth(qrOBJ.FieldByName('BEG_STROJ2').AsDateTime, i);
@@ -368,7 +376,16 @@ begin
 {$IFDEF DEBUG}
   // ShowMessage(qrMain.SQL.Text);
 {$ENDIF}
-  CloseOpen(qrMain);
+  try
+    CloseOpen(qrMain);
+  except
+    on e: Exception do
+    begin
+      Application.MessageBox(PChar('При открытии набода данных произошла ошибка:'#13 + e.Message),
+        PChar(Caption), MB_OK + MB_ICONSTOP + MB_TOPMOST);
+      Abort;
+    end;
+  end;
 end;
 
 end.

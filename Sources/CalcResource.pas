@@ -274,7 +274,6 @@ type
     FOldGridProc: TWndMethod;
     procedure GridProc(var Message: TMessage);
 
-    procedure CalcFooter;
     function CanEditField(Field: TField): Boolean;
   public
   end;
@@ -366,28 +365,6 @@ end;
 procedure TfCalcResource.btnShowTemplateClick(Sender: TObject);
 begin
   dmSmReport.showDocument(ExcelApp);
-end;
-
-procedure TfCalcResource.CalcFooter;
-begin
-  // В зависимости от вкладки
-  case pgc.ActivePageIndex of
-    // Расчет стоимости
-    0:
-      ;
-    // Расчет материалов
-    1:
-      Footer := CalcFooterSumm(qrMaterialData);
-    // Расчет механизмов
-    2:
-      Footer := CalcFooterSumm(qrMechData);
-    // Расчет оборудования
-    3:
-      Footer := CalcFooterSumm(qrDevices);
-    // Расчет з\п
-    4:
-      Footer := CalcFooterSumm(qrRates);
-  end;
 end;
 
 function TfCalcResource.CanEditField(Field: TField): Boolean;
@@ -1910,24 +1887,39 @@ end;
 
 procedure TfCalcResource.qrMaterialDataAfterOpen(DataSet: TDataSet);
 begin
-  DataSet.Tag := 1;
-  CalcFooter;
   case pgc.ActivePageIndex of
     // Расчет стоимости
     0:
-      ;
+      begin
+        Footer := Null;
+      end;
     // Расчет материалов
     1:
-      grMaterial.SelectedRows.Clear;
+      begin
+        grMaterial.SelectedRows.Clear;
+        Footer := CalcFooterSumm(qrMaterialData);
+        JvDBGridFooter1.ReCalc;
+      end;
     // Расчет механизмов
     2:
-      grMech.SelectedRows.Clear;
+      begin
+        grMech.SelectedRows.Clear;
+        Footer := CalcFooterSumm(qrMechData);
+        JvDBGridFooter2.ReCalc;
+      end;
     // Расчет оборудования
     3:
-      grDev.SelectedRows.Clear;
+      begin
+        grDev.SelectedRows.Clear;
+        Footer := CalcFooterSumm(qrDevices);
+        JvDBGridFooter3.ReCalc;
+      end;
     // Расчет з\п
     4:
-      ;
+      begin
+        Footer := CalcFooterSumm(qrRates);
+        JvDBGridFooter4.ReCalc;
+      end;
   end;
 end;
 
