@@ -110,7 +110,7 @@ procedure TfUniDict.FormCreate(Sender: TObject);
 begin
   inherited;
   // Создаём кнопку от этого окна (на главной форме внизу)
-  FormMain.CreateButtonOpenWindow(Caption, Caption, fUniDict, 1);
+  FormMain.CreateButtonOpenWindow(Caption, Caption, Self, 1);
   grUniDictParam.TitleArrow := False;
   CloseOpen(qrUniDictType);
   CloseOpen(qrUniDictTypeLook);

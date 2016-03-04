@@ -2034,14 +2034,7 @@ begin
 end;
 
 procedure TFormMain.N8Click(Sender: TObject);
-{ var
-  s: string; }
 begin
-  {
-    s := InputBox('—правочник ежемес€чных величин', '”кажите пароль:', '');
-    if s <> '1' then
-    Exit;
-  }
   if (not LicenseAssigned(fUniDict)) then
     fUniDict := TfUniDict.Create(Self);
   fUniDict.FormStyle := fsMDIChild;

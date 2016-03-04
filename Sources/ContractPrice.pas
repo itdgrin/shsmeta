@@ -76,7 +76,7 @@ type
     function canEditRow(): Boolean;
     function CanEditField(Field: TField): Boolean;
   public
-    { Public declarations }
+    flError: Boolean;
   end;
 
 var
@@ -352,6 +352,7 @@ begin
     Application.MessageBox
       ('Указан неверный срок строительства (0)! Установите корректное значение в карточке объекта.',
       PChar(Caption), MB_OK + MB_ICONSTOP + MB_TOPMOST);
+    flError := True;
     Abort;
     //raise Exception.Create('Error Message');
   end;
@@ -383,6 +384,7 @@ begin
     begin
       Application.MessageBox(PChar('При открытии набода данных произошла ошибка:'#13 + e.Message),
         PChar(Caption), MB_OK + MB_ICONSTOP + MB_TOPMOST);
+      flError := True;
       Abort;
     end;
   end;

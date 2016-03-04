@@ -1355,12 +1355,15 @@ begin
     Exit;
 
   CloseOtherTabs;
-  try
-    if (not Assigned(fContractPrice)) then
-      fContractPrice := TfContractPrice.Create(FormCalculationEstimate, VarArrayOf([IdObject, IdEstimate]));
-  except
+  if (not Assigned(fContractPrice)) then
+    fContractPrice := TfContractPrice.Create(FormCalculationEstimate, VarArrayOf([IdObject, IdEstimate]));
+
+  if fContractPrice.flError then
+  begin
+    FreeAndNil(fContractPrice);
     Abort;
   end;
+
   fContractPrice.Parent := FormCalculationEstimate;
   fContractPrice.Align := alClient;
   fContractPrice.BorderStyle := bsNone;
