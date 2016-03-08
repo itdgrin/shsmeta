@@ -107,7 +107,7 @@ var
   function getSummaryCalculationSum(SUM_FIELD, SM_ID_FIELD: string):string;
   begin
     // SUM_FIELD = IFNULL(ST_OHROPRF, ST_OHROPR)
-    // SM_ID_FIELD = sm.SM_ID
+    // SM_ID_FIELD = 'sm.SM_ID'
     Result := '(SELECT SUM(' + SUM_FIELD + ')'#13 +
       'FROM summary_calculation'#13 +
       'WHERE SM_ID IN (SELECT SM_ID FROM smetasourcedata WHERE DELETED=0 AND SM_TYPE=3 AND SM_ID=' + SM_ID_FIELD +
@@ -187,7 +187,7 @@ begin
 
       PTMFieldsEmpty := PTMFieldsEmpty +
         ', ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+' +
-        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)) * s.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_row, smetasourcedata' +
+        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)), 0.0)) FROM data_row, smetasourcedata' +
         ' where smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1 AND data_row.SM_ID=smetasourcedata.SM_ID AND EXTRACT(MONTH FROM FG_getSMOBJDate(smetasourcedata.SM_ID))='
         + IntToStr(month) + ' AND EXTRACT(YEAR FROM FG_getSMOBJDate(smetasourcedata.SM_ID))=' + IntToStr(year) + ' AND smetasourcedata.SOURCE_ID IN ('+
         'SELECT `smetasourcedata`.`SM_ID` '#13 +
@@ -203,7 +203,7 @@ begin
 
       PTMFields := PTMFields +
         ', ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+' +
-        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_row, smetasourcedata' +
+        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)), 0.0)) FROM data_row, smetasourcedata' +
         ' where smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1 AND data_row.SM_ID=smetasourcedata.SM_ID AND EXTRACT(MONTH FROM FG_getSMOBJDate(smetasourcedata.SM_ID))='
         + IntToStr(month) + ' AND EXTRACT(YEAR FROM FG_getSMOBJDate(smetasourcedata.SM_ID))=' + IntToStr(year) + ' AND smetasourcedata.ACT=1 AND smetasourcedata.SOURCE_ID = s2.SM_ID)' +
         ') AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
@@ -227,7 +227,7 @@ begin
         '  WHEN 10 THEN (SELECT SUM(da.`E1820_COUNT`) FROM `data_row` da, smetasourcedata WHERE' + allCondition + ')'#13 +
         '  WHEN 11 THEN (SELECT SUM(da.`E1820_COUNT`) FROM `data_row` da, smetasourcedata WHERE' + allCondition + ')'#13 +
         'END, '+
-        'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, da.`STOIM` + IFNULL(da.`OHROPR`, 0) + IFNULL(da.`PLAN_PRIB`, 0), da.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(da.`ZIM_UDOR`, 0) + IFNULL(da.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0)) ' +
+        'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, da.`STOIM` + IFNULL(da.`OHROPR`, 0) + IFNULL(da.`PLAN_PRIB`, 0), da.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(da.`ZIM_UDOR`, 0) + IFNULL(da.`ZP_ZIM_UDOR`, 0)), 0.0)) ' +
         'FROM `data_row` da, smetasourcedata WHERE' + allCondition + '))) AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
       DATAFieldsEmpty := DATAFieldsEmpty + ', (NULL) AS M' + IntToStr(month) + 'Y' + IntToStr(year) + ''#13;
 
@@ -290,7 +290,7 @@ begin
       '  WHEN 9 THEN tr.`TRANSP_COUNT`'#13 +
       '  WHEN 10 THEN d.`E1820_COUNT`'#13 +
       '  WHEN 11 THEN d.`E1820_COUNT`'#13 +
-      'END, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`STOIM` + IFNULL(d.`OHROPR`, 0) + IFNULL(d.`PLAN_PRIB`, 0), d.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(d.`ZIM_UDOR`, 0) + IFNULL(d.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      'END, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`STOIM` + IFNULL(d.`OHROPR`, 0) + IFNULL(d.`PLAN_PRIB`, 0), d.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(d.`ZIM_UDOR`, 0) + IFNULL(d.`ZP_ZIM_UDOR`, 0)), 0.0))) AS OBJ_COUNT,'#13 +
       // <--Необходимо
       // Выполнено-->
       'IF(:BY_COUNT=1,'#13 +
@@ -329,7 +329,7 @@ begin
       '  da.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1'#13 +
       '  AND da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND smetasourcedata.SOURCE_ID=d.SM_ID)'#13 +
       'END, '+
-      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, da.`STOIM` + IFNULL(da.`OHROPR`, 0) + IFNULL(da.`PLAN_PRIB`, 0), da.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(da.`ZIM_UDOR`, 0) + IFNULL(da.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0)) ' +
+      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, da.`STOIM` + IFNULL(da.`OHROPR`, 0) + IFNULL(da.`PLAN_PRIB`, 0), da.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(da.`ZIM_UDOR`, 0) + IFNULL(da.`ZP_ZIM_UDOR`, 0)), 0.0)) ' +
       'FROM `data_row` da, smetasourcedata WHERE da.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1'#13+
       'AND d.`ID_TABLES`=da.`ID_TABLES` AND d.`ID_TYPE_DATA`=da.`ID_TYPE_DATA` AND smetasourcedata.SOURCE_ID=d.SM_ID))) AS OBJ_COUNT_DONE,'#13 +
       // <--Выполнено
@@ -347,7 +347,7 @@ begin
       '  WHEN 9 THEN tr.`TRANSP_COUNT`'#13 +
       '  WHEN 10 THEN d.`E1820_COUNT`'#13 +
       '  WHEN 11 THEN d.`E1820_COUNT`'#13 +
-      'END, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`STOIM` + IFNULL(d.`OHROPR`, 0) + IFNULL(d.`PLAN_PRIB`, 0), d.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(d.`ZIM_UDOR`, 0) + IFNULL(d.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0)))-'#13 +
+      'END, ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`STOIM` + IFNULL(d.`OHROPR`, 0) + IFNULL(d.`PLAN_PRIB`, 0), d.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(d.`ZIM_UDOR`, 0) + IFNULL(d.`ZP_ZIM_UDOR`, 0)), 0.0)))-'#13 +
       'IFNULL(IF(:BY_COUNT=1,'#13 +
       'CASE d.`ID_TYPE_DATA`'#13 +
       '  WHEN 1 THEN (SELECT SUM(ca.`RATE_COUNT`) FROM `card_rate` ca, `data_row`, smetasourcedata WHERE'#13 +
@@ -384,7 +384,7 @@ begin
       '  da.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1'#13 +
       '  AND da.`ID_TYPE_DATA`=d.`ID_TYPE_DATA` AND da.`ID_TABLES`=d.`ID_TABLES` AND smetasourcedata.SOURCE_ID=d.SM_ID)'#13 +
       'END, '+
-      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, da.`STOIM` + IFNULL(da.`OHROPR`, 0) + IFNULL(da.`PLAN_PRIB`, 0), da.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(da.`ZIM_UDOR`, 0) + IFNULL(da.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0)) ' +
+      'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, da.`STOIM` + IFNULL(da.`OHROPR`, 0) + IFNULL(da.`PLAN_PRIB`, 0), da.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(da.`ZIM_UDOR`, 0) + IFNULL(da.`ZP_ZIM_UDOR`, 0)), 0.0)) ' +
       'FROM `data_row` da, smetasourcedata WHERE da.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1'#13+
       'AND d.`ID_TABLES`=da.`ID_TABLES` AND d.`ID_TYPE_DATA`=da.`ID_TYPE_DATA` AND smetasourcedata.SOURCE_ID=d.SM_ID))), 0) AS OBJ_COUNT_OUT,'#13 +
       // <--Осталось
@@ -430,7 +430,7 @@ begin
       'mat.`MAT_NAME` AS OBJ_NAME,'#13 +
       '/*Стоимость для заменяющих материалов достается пока неверно*/'#13 +
       'IF(:BY_COUNT=1, mat.`MAT_COUNT`, ' +
-      'ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`STOIM` + IFNULL(d.`OHROPR`, 0) + IFNULL(d.`PLAN_PRIB`, 0), d.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(d.`ZIM_UDOR`, 0) + IFNULL(d.`ZP_ZIM_UDOR`, 0)) * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      'ROUND(IF(:FL_INCL_OHROPR_PLPR=1, d.`STOIM` + IFNULL(d.`OHROPR`, 0) + IFNULL(d.`PLAN_PRIB`, 0), d.`STOIM`)+IF(:FL_INCL_WINTER=1, (IFNULL(d.`ZIM_UDOR`, 0) + IFNULL(d.`ZP_ZIM_UDOR`, 0)), 0.0))) AS OBJ_COUNT,'#13 +
       'NULL AS OBJ_COUNT_DONE,'#13 +
       'NULL AS OBJ_COUNT_OUT,'#13 +
       'mat.`MAT_UNIT` AS OBJ_UNIT,'#13 +
@@ -461,7 +461,7 @@ begin
       'ROUND(IF(:FL_INCL_OHROPR_PLPR=1, ' + getSummaryCalculationSum('IFNULL(ST_OHROPRF, ST_OHROPR)', 'sm.SM_ID') +
       ', ' + getSummaryCalculationSum('IFNULL(STOIMF, STOIM)', 'sm.SM_ID') + ')+IF(:FL_INCL_WINTER=1, (' +
       getSummaryCalculationSum('IFNULL(ZIM_UDORF, ZIM_UDOR) + IFNULL(ZP_ZIM_UDORF, ZP_ZIM_UDOR)', 'sm.SM_ID') +
-      ') * sm.`APPLY_WINTERPRISE_FLAG`, 0.0))) AS OBJ_COUNT,'#13 +
+      '), 0.0))) AS OBJ_COUNT,'#13 +
       'NULL AS OBJ_COUNT_DONE,'#13 +
       'NULL AS OBJ_COUNT_OUT,'#13 +
       'NULL AS OBJ_UNIT,(sm.`SM_TYPE` * -1) as ID_TYPE_DATA,'#13 +
@@ -514,7 +514,7 @@ begin
       ', ' + getSummaryCalculationSum('IFNULL(STOIMF, STOIM)', 's1.SM_ID') + ')+' +
       'IF(:FL_INCL_WINTER=1, (' +
       getSummaryCalculationSum('IFNULL(ZIM_UDORF, ZIM_UDOR) + IFNULL(ZP_ZIM_UDORF, ZP_ZIM_UDOR)', 's1.SM_ID') +
-      ') * s1.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM smetasourcedata s1 WHERE s1.SM_ID IN('+
+      '), 0.0)) FROM smetasourcedata s1 WHERE s1.SM_ID IN('+
       'SELECT `smetasourcedata`.`SM_ID` '#13 +
       'FROM `smetasourcedata` '#13 +
       'WHERE (`smetasourcedata`.`SM_ID` = s.SM_ID) OR '#13 +
@@ -525,7 +525,7 @@ begin
       '        WHERE `smetasourcedata`.`PARENT_ID` = s.SM_ID))'#13 +
       '))) AS PTM_COST,'#13 +
       '/*Выполнено*/ ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+' +
-      'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)) * s.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_row, smetasourcedata' +
+      'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)), 0.0)) FROM data_row, smetasourcedata' +
       ' where smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1 AND data_row.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.SOURCE_ID IN ('+
       'SELECT `smetasourcedata`.`SM_ID` '#13 +
       'FROM `smetasourcedata` '#13 +
@@ -539,7 +539,7 @@ begin
       'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, ' + getSummaryCalculationSum('IFNULL(ST_OHROPRF, ST_OHROPR)', 's1.SM_ID') +
       ', ' + getSummaryCalculationSum('IFNULL(STOIMF, STOIM)', 's1.SM_ID') + ')+' +
       'IF(:FL_INCL_WINTER=1, (' + getSummaryCalculationSum('IFNULL(ZIM_UDORF, ZIM_UDOR) + IFNULL(ZP_ZIM_UDORF, ZP_ZIM_UDOR)', 's1.SM_ID') +
-      ') * s1.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM smetasourcedata s1 WHERE s1.SM_ID IN ('+
+      '), 0.0)) FROM smetasourcedata s1 WHERE s1.SM_ID IN ('+
       'SELECT `smetasourcedata`.`SM_ID` '#13 +
       'FROM `smetasourcedata` '#13 +
       'WHERE (`smetasourcedata`.`SM_ID` = s.SM_ID) OR '#13 +
@@ -550,7 +550,7 @@ begin
       '        WHERE `smetasourcedata`.`PARENT_ID` = s.SM_ID))'#13 +
       '))' +
       '-IFNULL((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+' +
-      'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)) * s.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_row, smetasourcedata' +
+      'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)), 0.0)) FROM data_row, smetasourcedata' +
       ' where smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1 AND data_row.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.SOURCE_ID IN ('+
       'SELECT `smetasourcedata`.`SM_ID` '#13 +
       'FROM `smetasourcedata` '#13 +
@@ -571,9 +571,9 @@ begin
       'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, ' + getSummaryCalculationSum('IFNULL(ST_OHROPRF, ST_OHROPR)', 's1.SM_ID') +
       ', ' + getSummaryCalculationSum('IFNULL(STOIMF, STOIM)', 's1.SM_ID') + ')+' +
       'IF(:FL_INCL_WINTER=1, (' + getSummaryCalculationSum('IFNULL(ZIM_UDORF, ZIM_UDOR) + IFNULL(ZP_ZIM_UDORF, ZP_ZIM_UDOR)', 's1.SM_ID') +
-      ') * s1.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)) AS PTM_COST,'#13 +
+      '), 0.0)) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)) AS PTM_COST,'#13 +
       '/*Выполнено*/ ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+' +
-      'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)) * s.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_row, smetasourcedata' +
+      'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)), 0.0)) FROM data_row, smetasourcedata' +
       ' where smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1 AND data_row.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.SOURCE_ID IN ('+
       'SELECT `smetasourcedata`.`SM_ID` '#13 +
       'FROM `smetasourcedata` '#13 +
@@ -587,9 +587,9 @@ begin
       'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, '+getSummaryCalculationSum('IFNULL(ST_OHROPRF, ST_OHROPR)', 's1.SM_ID')+
       ', '+getSummaryCalculationSum('IFNULL(STOIMF, STOIM)', 's1.SM_ID')+')+' +
       'IF(:FL_INCL_WINTER=1, (' + getSummaryCalculationSum('IFNULL(ZIM_UDORF, ZIM_UDOR) + IFNULL(ZP_ZIM_UDORF, ZP_ZIM_UDOR)', 's1.SM_ID')+
-      ') * s1.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)' +
+      '), 0.0)) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)' +
       '-IFNULL((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+' +
-      'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)) * s.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_row, smetasourcedata' +
+      'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)), 0.0)) FROM data_row, smetasourcedata' +
       ' where smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1 AND data_row.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.SOURCE_ID IN ('+
       'SELECT `smetasourcedata`.`SM_ID` '#13 +
       'FROM `smetasourcedata` '#13 +
@@ -612,16 +612,16 @@ begin
       'ROUND(IF(:FL_INCL_OHROPR_PLPR=1, ' + getSummaryCalculationSum('IFNULL(ST_OHROPRF, ST_OHROPR)', 's2.SM_ID') +
       ', ' + getSummaryCalculationSum('IFNULL(STOIMF, STOIM)', 's2.SM_ID') +
       ')+IF(:FL_INCL_WINTER=1, (' + getSummaryCalculationSum('IFNULL(ZIM_UDORF, ZIM_UDOR) + IFNULL(ZP_ZIM_UDORF, ZP_ZIM_UDOR)', 's2.SM_ID') +
-      ') * s2.`APPLY_WINTERPRISE_FLAG`, 0.0)) AS PTM_COST,'#13 +
+      '), 0.0)) AS PTM_COST,'#13 +
       '/* ВЫПОЛНЕНО */'#13 +
-      'IFNULL(ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM`+IFNULL(data_row.`OHROPR`, 0)+IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_row.`ZIM_UDOR` + data_row.`ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
+      'IFNULL(ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM`+IFNULL(data_row.`OHROPR`, 0)+IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_row.`ZIM_UDOR` + data_row.`ZP_ZIM_UDOR`), 0.0))'+
         ' FROM data_row, smetasourcedata WHERE smetasourcedata.SM_ID=data_row.SM_ID AND smetasourcedata.SOURCE_ID = s2.SM_ID AND smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1)), 0) AS PTM_COST_DONE,'#13 +
       '/* ОСТАТОК */'#13 +
       'ROUND((IF(:FL_INCL_OHROPR_PLPR=1, ' + getSummaryCalculationSum('IFNULL(ST_OHROPRF, ST_OHROPR)', 's2.SM_ID') +
       ', ' + getSummaryCalculationSum('IFNULL(STOIMF, STOIM)', 's2.SM_ID') +
       ')+IF(:FL_INCL_WINTER=1, (' + getSummaryCalculationSum('IFNULL(ZIM_UDORF, ZIM_UDOR) + IFNULL(ZP_ZIM_UDORF, ZP_ZIM_UDOR)', 's2.SM_ID') +
-      ') * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
-        '-IFNULL((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_row.`ZIM_UDOR` + data_row.`ZP_ZIM_UDOR`) * s2.`APPLY_WINTERPRISE_FLAG`, 0.0))'+
+      '), 0.0))'+
+        '-IFNULL((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+IF(:FL_INCL_WINTER=1, (data_row.`ZIM_UDOR` + data_row.`ZP_ZIM_UDOR`), 0.0))'+
         ' FROM data_row, smetasourcedata WHERE smetasourcedata.SM_ID=data_row.SM_ID AND smetasourcedata.SOURCE_ID = s2.SM_ID AND smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1), 0)) AS PTM_COST_OUT'#13 +
       PTMFields +
       'FROM smetasourcedata s2'#13 +
@@ -657,7 +657,7 @@ begin
         'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, ' + getSummaryCalculationSum('IFNULL(ST_OHROPRF, ST_OHROPR)', 's1.SM_ID') +
         ', ' + getSummaryCalculationSum('IFNULL(STOIMF, STOIM)', 's1.SM_ID') + ')+' +
         'IF(:FL_INCL_WINTER=1, (' + getSummaryCalculationSum('IFNULL(ZIM_UDORF, ZIM_UDOR) + IFNULL(ZP_ZIM_UDORF, ZP_ZIM_UDOR)', 's1.SM_ID') +
-        ') * s1.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM smetasourcedata s1 WHERE s1.SM_ID IN('+
+        '), 0.0)) FROM smetasourcedata s1 WHERE s1.SM_ID IN('+
         'SELECT `smetasourcedata`.`SM_ID` '#13 +
         'FROM `smetasourcedata` '#13 +
         'WHERE (`smetasourcedata`.`SM_ID` = s.SM_ID) OR '#13 +
@@ -668,7 +668,7 @@ begin
         '        WHERE `smetasourcedata`.`PARENT_ID` = s.SM_ID))'#13 +
         '))) AS PTM_COST,'#13 +
         '/*Выполнено*/ ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+' +
-        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)) * s.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_row, smetasourcedata' +
+        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)), 0.0)) FROM data_row, smetasourcedata' +
         ' where smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1 AND data_row.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.SOURCE_ID IN ('+
         'SELECT `smetasourcedata`.`SM_ID` '#13 +
         'FROM `smetasourcedata` '#13 +
@@ -682,7 +682,7 @@ begin
         'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, ' + getSummaryCalculationSum('IFNULL(ST_OHROPRF, ST_OHROPR)', 's1.SM_ID') +
         ', ' + getSummaryCalculationSum('IFNULL(STOIMF, STOIM)', 's1.SM_ID') + ')+' +
         'IF(:FL_INCL_WINTER=1, (' + getSummaryCalculationSum('IFNULL(ZIM_UDORF, ZIM_UDOR) + IFNULL(ZP_ZIM_UDORF, ZP_ZIM_UDOR)', 's1.SM_ID') +
-        ') * s1.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM smetasourcedata s1 WHERE s1.SM_ID IN ('+
+        '), 0.0)) FROM smetasourcedata s1 WHERE s1.SM_ID IN ('+
         'SELECT `smetasourcedata`.`SM_ID` '#13 +
         'FROM `smetasourcedata` '#13 +
         'WHERE (`smetasourcedata`.`SM_ID` = s.SM_ID) OR '#13 +
@@ -693,7 +693,7 @@ begin
         '        WHERE `smetasourcedata`.`PARENT_ID` = s.SM_ID))'#13 +
         '))' +
         '-IFNULL((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+' +
-        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)) * s.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_row, smetasourcedata' +
+        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)), 0.0)) FROM data_row, smetasourcedata' +
         ' where smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1 AND data_row.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.SOURCE_ID IN ('+
         'SELECT `smetasourcedata`.`SM_ID` '#13 +
         'FROM `smetasourcedata` '#13 +
@@ -714,9 +714,9 @@ begin
         'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, ' + getSummaryCalculationSum('IFNULL(ST_OHROPRF, ST_OHROPR)', 's1.SM_ID') +
         ', ' + getSummaryCalculationSum('IFNULL(STOIMF, STOIM)', 's1.SM_ID') + ')+' +
         'IF(:FL_INCL_WINTER=1, (' + getSummaryCalculationSum('IFNULL(ZIM_UDORF, ZIM_UDOR) + IFNULL(ZP_ZIM_UDORF, ZP_ZIM_UDOR)', 's1.SM_ID') +
-        ') * s1.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)) AS PTM_COST,'#13 +
+        '), 0.0)) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)) AS PTM_COST,'#13 +
         '/*Выполнено*/ ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+' +
-        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)) * s.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_row, smetasourcedata' +
+        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)), 0.0)) FROM data_row, smetasourcedata' +
         ' where smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1 AND data_row.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.SOURCE_ID IN ('+
         'SELECT `smetasourcedata`.`SM_ID` '#13 +
         'FROM `smetasourcedata` '#13 +
@@ -730,9 +730,9 @@ begin
         'ROUND((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, ' + getSummaryCalculationSum('IFNULL(ST_OHROPRF, ST_OHROPR)', 's1.SM_ID') +
         ', ' + getSummaryCalculationSum('IFNULL(STOIMF, STOIM)', 's1.SM_ID') + ')+' +
         'IF(:FL_INCL_WINTER=1, (' + getSummaryCalculationSum('IFNULL(ZIM_UDORF, ZIM_UDOR) + IFNULL(ZP_ZIM_UDORF, ZP_ZIM_UDOR)', 's1.SM_ID') +
-        ') * s1.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)' +
+        '), 0.0)) FROM smetasourcedata s1 WHERE s1.PARENT_ID = s.SM_ID)' +
         '-IFNULL((SELECT SUM(IF(:FL_INCL_OHROPR_PLPR=1, data_row.`STOIM` + IFNULL(data_row.`OHROPR`, 0) + IFNULL(data_row.`PLAN_PRIB`, 0), data_row.`STOIM`)+' +
-        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)) * s.`APPLY_WINTERPRISE_FLAG`, 0.0)) FROM data_row, smetasourcedata' +
+        'IF(:FL_INCL_WINTER=1, (IFNULL(data_row.`ZIM_UDOR`, 0) + IFNULL(data_row.`ZP_ZIM_UDOR`, 0)), 0.0)) FROM data_row, smetasourcedata' +
         ' where smetasourcedata.DELETED=0 AND smetasourcedata.FL_USE=1 AND data_row.SM_ID=smetasourcedata.SM_ID AND smetasourcedata.SOURCE_ID IN ('+
         'SELECT `smetasourcedata`.`SM_ID` '#13 +
         'FROM `smetasourcedata` '#13 +

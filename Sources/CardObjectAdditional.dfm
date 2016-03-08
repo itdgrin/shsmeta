@@ -12,6 +12,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
@@ -30,11 +31,10 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    ExplicitTop = 637
     DesignSize = (
       412
       41)
-    object btn1: TBitBtn
+    object btnCancel: TBitBtn
       Left = 330
       Top = 8
       Width = 75
@@ -48,9 +48,9 @@ object fCardObjectAdditional: TfCardObjectAdditional
       Font.Style = []
       ParentFont = False
       TabOrder = 1
-      OnClick = btn1Click
+      OnClick = btnCancelClick
     end
-    object btn2: TBitBtn
+    object btnSave: TBitBtn
       Left = 249
       Top = 8
       Width = 75
@@ -64,7 +64,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      OnClick = btn1Click
+      OnClick = btnSaveClick
     end
   end
   object ScrollBox1: TScrollBox
@@ -83,7 +83,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Font.Style = []
     ParentFont = False
     TabOrder = 0
-    ExplicitHeight = 637
     object GridPanel1: TGridPanel
       Left = 0
       Top = 20
@@ -125,7 +124,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           SizeStyle = ssAuto
         end>
       TabOrder = 1
-      ExplicitTop = 0
       DesignSize = (
         412
         20)
@@ -166,7 +164,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ParentFont = False
         TabOrder = 0
         DataField = 'PER_TEMP_BUILD'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
       end
     end
     object GridPanel2: TGridPanel
@@ -206,7 +204,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 2
-      ExplicitTop = 20
       DesignSize = (
         412
         20)
@@ -237,7 +234,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_APPLY_WINTERPRICE'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -288,7 +285,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 4
-      ExplicitTop = 81
       DesignSize = (
         412
         20)
@@ -328,7 +324,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ParentFont = False
         TabOrder = 0
         DataField = 'PER_CONTRACTOR'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
       end
     end
     object GridPanel4: TGridPanel
@@ -368,7 +364,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 5
-      ExplicitTop = 101
       DesignSize = (
         412
         20)
@@ -406,7 +401,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ParentFont = False
         TabOrder = 0
         DataField = 'PER_NPZ'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
       end
     end
     object pnl2: TPanel
@@ -425,7 +420,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
       ParentBackground = False
       ParentFont = False
       TabOrder = 6
-      ExplicitTop = 121
     end
     object GridPanel5: TGridPanel
       Left = 0
@@ -464,7 +458,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 7
-      ExplicitTop = 146
       DesignSize = (
         412
         20)
@@ -502,7 +495,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ParentFont = False
         TabOrder = 0
         DataField = 'K_ZP'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
       end
     end
     object GridPanel6: TGridPanel
@@ -542,7 +535,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 9
-      ExplicitTop = 186
       DesignSize = (
         412
         20)
@@ -580,7 +572,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ParentFont = False
         TabOrder = 0
         DataField = 'K_PP'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
       end
     end
     object GridPanel7: TGridPanel
@@ -620,7 +612,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 8
-      ExplicitTop = 166
       DesignSize = (
         412
         20)
@@ -658,7 +649,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ParentFont = False
         TabOrder = 0
         DataField = 'K_OHR'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
       end
     end
     object pnl3: TPanel
@@ -677,7 +668,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
       ParentBackground = False
       ParentFont = False
       TabOrder = 10
-      ExplicitTop = 206
     end
     object GridPanel8: TGridPanel
       Left = 0
@@ -716,7 +706,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 11
-      ExplicitTop = 231
       DesignSize = (
         412
         20)
@@ -747,7 +736,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_CALC_ZEM_NAL'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -798,7 +787,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 12
-      ExplicitTop = 251
       DesignSize = (
         412
         20)
@@ -829,7 +817,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_CALC_VEDOMS_NAL'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -880,7 +868,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 13
-      ExplicitTop = 271
       DesignSize = (
         412
         20)
@@ -900,7 +887,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ParentFont = False
         TabOrder = 0
         DataField = 'NAL_USN'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
       end
       object dbchkFl_SPEC_SCH: TDBCheckBox
         AlignWithMargins = True
@@ -912,7 +899,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Align = alClient
         Caption = #1053#1072#1083#1086#1075' '#1087#1088#1080' '#1059#1057#1053', %:'
         DataField = 'Fl_NAL_USN'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -964,7 +951,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           SizeStyle = ssAuto
         end>
       TabOrder = 14
-      ExplicitTop = 291
       DesignSize = (
         412
         20)
@@ -984,7 +970,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ParentFont = False
         TabOrder = 0
         DataField = 'SPEC_SCH'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
       end
       object dbchkFL_CALC_VEDOMS_NAL2: TDBCheckBox
         AlignWithMargins = True
@@ -996,7 +982,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Align = alClient
         Caption = #1055#1077#1088#1077#1095#1080#1089#1083#1077#1085#1080#1103' '#1085#1072' '#1089#1087#1077#1094'.'#1089#1095#1077#1090', %:'
         DataField = 'Fl_SPEC_SCH'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -1024,7 +1010,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
       ParentBackground = False
       ParentFont = False
       TabOrder = 15
-      ExplicitTop = 311
     end
     object pnl5: TPanel
       Left = 0
@@ -1042,7 +1027,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
       ParentBackground = False
       ParentFont = False
       TabOrder = 19
-      ExplicitTop = 396
     end
     object GridPanel12: TGridPanel
       Left = 0
@@ -1081,7 +1065,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 16
-      ExplicitTop = 336
       DesignSize = (
         412
         20)
@@ -1112,7 +1095,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_CALC_TRAVEL'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -1124,6 +1107,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
+        ExplicitTop = -2
       end
     end
     object GridPanel13: TGridPanel
@@ -1163,7 +1147,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 18
-      ExplicitTop = 376
       DesignSize = (
         412
         20)
@@ -1194,7 +1177,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_CALC_TRAVEL_WORK'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -1245,7 +1228,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 17
-      ExplicitTop = 356
       DesignSize = (
         412
         20)
@@ -1276,7 +1258,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_CALC_WORKER_DEPARTMENT'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -1327,7 +1309,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 20
-      ExplicitTop = 421
       DesignSize = (
         412
         20)
@@ -1358,7 +1339,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_DIFF_MAT'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -1409,7 +1390,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 24
-      ExplicitTop = 481
       DesignSize = (
         412
         20)
@@ -1440,7 +1420,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_DIFF_NAL'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -1491,7 +1471,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 23
-      ExplicitTop = 480
       DesignSize = (
         412
         20)
@@ -1522,7 +1501,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_DIFF_OTHER'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -1573,7 +1552,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 22
-      ExplicitTop = 461
       DesignSize = (
         412
         20)
@@ -1604,7 +1582,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_DIFF_EMIM'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -1655,7 +1633,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 21
-      ExplicitTop = 441
       DesignSize = (
         412
         20)
@@ -1686,7 +1663,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_DIFF_TRANSP'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -1715,7 +1692,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
       ParentBackground = False
       ParentFont = False
       TabOrder = 25
-      ExplicitTop = 521
       object lbl23: TLabel
         AlignWithMargins = True
         Left = 4
@@ -1778,7 +1754,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 26
-      ExplicitTop = 555
       DesignSize = (
         412
         20)
@@ -1809,7 +1784,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_DIFF_MAT_ZAK'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -1860,7 +1835,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 27
-      ExplicitTop = 575
       DesignSize = (
         412
         20)
@@ -1891,7 +1865,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_DIFF_NAL_USN'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -1942,7 +1916,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 29
-      ExplicitTop = 615
       DesignSize = (
         412
         20)
@@ -1973,7 +1946,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_DIFF_DEVICE_PODR_WITH_NAL'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -2024,7 +1997,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 28
-      ExplicitTop = 595
       DesignSize = (
         412
         20)
@@ -2055,7 +2027,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         Anchors = []
         BiDiMode = bdLeftToRight
         DataField = 'FL_DIFF_NDS'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -2109,7 +2081,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           SizeStyle = ssAuto
         end>
       TabOrder = 3
-      ExplicitTop = 40
       object JvDBSpinEdit2: TJvDBSpinEdit
         AlignWithMargins = True
         Left = 339
@@ -2130,7 +2101,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ParentFont = False
         TabOrder = 1
         DataField = 'PER_WINTERPRICE'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
       end
       object pnl7: TPanel
         Left = 0
@@ -2157,7 +2128,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Anchors = []
           BevelOuter = bvNone
           DataField = 'WINTERPRICE_TYPE'
-          DataSource = fCardObject.dsMain
+          DataSource = dsMain
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -2241,8 +2212,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
           Value = 100.000000000000000000
         end>
       TabOrder = 0
-      ExplicitLeft = 3
-      ExplicitTop = -3
       DesignSize = (
         412
         20)
@@ -2280,7 +2249,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ParentFont = False
         TabOrder = 0
         DataField = 'PER_DONE'
-        DataSource = fCardObject.dsMain
+        DataSource = dsMain
       end
     end
   end
@@ -2290,5 +2259,50 @@ object fCardObjectAdditional: TfCardObjectAdditional
     Options = [fpSize]
     StoredValues = <>
     Left = 248
+  end
+  object qrMain: TFDQuery
+    AutoCalcFields = False
+    BeforeOpen = qrMainBeforeOpen
+    OnNewRecord = qrMainNewRecord
+    Connection = DM.Connect
+    Transaction = DM.Read
+    UpdateTransaction = DM.Write
+    UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvEUpdate, uvUpdateChngFields, uvUpdateMode, uvCountUpdatedRecords, uvCheckRequired, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
+    UpdateOptions.EnableDelete = False
+    UpdateOptions.CountUpdatedRecords = False
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.CheckReadOnly = False
+    UpdateOptions.CheckUpdatable = False
+    UpdateOptions.UpdateTableName = 'smeta.calc_setup'
+    UpdateOptions.KeyFields = 'CALC_SETUP_ID'
+    SQL.Strings = (
+      'SELECT *'
+      'FROM calc_setup'
+      
+        'WHERE (OBJ_ID=:OBJ_ID AND IFNULL(SM_ID, 0)=IFNULL(:SM_ID, 0)) OR' +
+        ' '
+      
+        '      (IFNULL(:OBJ_ID, 0)=0 AND IFNULL(SM_ID, 0)=IFNULL(:SM_ID, ' +
+        '0))')
+    Left = 17
+    Top = 5
+    ParamData = <
+      item
+        Name = 'OBJ_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 0
+      end
+      item
+        Name = 'SM_ID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object dsMain: TDataSource
+    DataSet = qrMain
+    Left = 56
+    Top = 5
   end
 end

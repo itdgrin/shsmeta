@@ -152,7 +152,7 @@ begin
 
   btnSave.Tag := 0;
 
-  //Глава сср выбирается только в объектной смете
+  // Глава сср выбирается только в объектной смете
   pnl1.Visible := TypeEstimate = 2;
   qrSSRChap.Active := TypeEstimate = 2;
   qrSSRSubChap.Active := TypeEstimate = 2;
@@ -336,8 +336,8 @@ procedure TfCardEstimate.btnSaveClick(Sender: TObject);
     qrMain.FieldByName('STAVKA_RAB').Value := qrTemp.FieldByName('STAVKA_RAB').Value;
     qrMain.FieldByName('K_LOW_OHROPR').Value := qrTemp.FieldByName('K_LOW_OHROPR').Value;
     qrMain.FieldByName('K_LOW_PLAN_PRIB').Value := qrTemp.FieldByName('K_LOW_PLAN_PRIB').Value;
-    qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value := qrTemp.FieldByName('APPLY_WINTERPRISE_FLAG').Value;
-    qrMain.FieldByName('WINTERPRICE_TYPE').Value := qrTemp.FieldByName('WINTERPRICE_TYPE').Value;
+    // qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value := qrTemp.FieldByName('APPLY_WINTERPRISE_FLAG').Value;
+    // qrMain.FieldByName('WINTERPRICE_TYPE').Value := qrTemp.FieldByName('WINTERPRICE_TYPE').Value;
 
     case aType of
       1:
@@ -367,7 +367,7 @@ var
   vYear, vMonth: Integer;
 
   VAT: Integer;
-  IdStavka, MAIS_ID, APPLY_WINTERPRISE_FLAG, WINTERPRICE_TYPE: Variant;
+  IdStavka, MAIS_ID: Variant;
   PercentTransport, PercentTransportEquipment: String;
   K40, K41, K31, K32, K33, K34, K35: String;
 
@@ -385,7 +385,7 @@ begin
     try
       Active := False;
       SQL.Clear;
-      SQL.Add('SELECT objcards.FL_APPLY_WINTERPRICE, objcards.WINTERPRICE_TYPE, objcards.MAIS_ID, state_nds, BEG_STROJ, objregion.percent_transport as "PercentTransport" FROM objcards, objstroj, objregion '
+      SQL.Add('SELECT objcards.MAIS_ID, state_nds, BEG_STROJ, objregion.percent_transport as "PercentTransport" FROM objcards, objstroj, objregion '
         + 'WHERE objcards.stroj_id = objstroj.stroj_id and objstroj.obj_region = objregion.obj_region_id and '
         + 'objcards.obj_id = ' + IntToStr(IdObject) + ';');
       Active := True;
@@ -393,8 +393,8 @@ begin
       PercentTransport := FieldByName('PercentTransport').AsString;
       ReplaceDecimal(PercentTransport, ',', '.');
       PercentTransportEquipment := '1';
-      APPLY_WINTERPRISE_FLAG := FieldByName('FL_APPLY_WINTERPRICE').Value;
-      WINTERPRICE_TYPE := FieldByName('WINTERPRICE_TYPE').Value;
+      // APPLY_WINTERPRISE_FLAG := FieldByName('FL_APPLY_WINTERPRICE').Value;
+      // WINTERPRICE_TYPE := FieldByName('WINTERPRICE_TYPE').Value;
 
       VAT := FieldByName('state_nds').AsInteger;
       // При создании сметы дата для расценок проставляетсся как у объекта
@@ -507,8 +507,8 @@ begin
         qrMain.FieldByName('coef_tr_obor').Value := 2;
         // индекс роста цен
         // qrMain.FieldByName('growth_index').Value := GetUniDictParamValue('GROWTH_INDEX', vMonth, vYear);
-        qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value := APPLY_WINTERPRISE_FLAG;
-        qrMain.FieldByName('WINTERPRICE_TYPE').Value := WINTERPRICE_TYPE;
+        // qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value := APPLY_WINTERPRISE_FLAG;
+        // qrMain.FieldByName('WINTERPRICE_TYPE').Value := WINTERPRICE_TYPE;
 
         obj_region := FastSelectSQLOne
           ('SELECT `objstroj`.`obj_region` FROM `objcards`, `objstroj` WHERE `objcards`.`stroj_id` = `objstroj`.`stroj_id` and `obj_id` = :0',
@@ -650,21 +650,14 @@ end;
 
 procedure TfCardEstimate.ComboBoxChange(Sender: TObject);
 begin
-  if SkeepEvent or
-     not CheckQrActiveEmpty(qrMain) or
-     not CheckQrActiveEmpty(qrParts) or
-     not CheckQrActiveEmpty(qrSections) or
-     not CheckQrActiveEmpty(qrTypesWorks) then
+  if SkeepEvent or not CheckQrActiveEmpty(qrMain) or not CheckQrActiveEmpty(qrParts) or
+    not CheckQrActiveEmpty(qrSections) or not CheckQrActiveEmpty(qrTypesWorks) then
     Exit;
   qrMain.Edit;
-  qrMain.FieldByName('SM_NUMBER').AsString :=
-    'Ж' + qrParts.FieldByName('CODE1').AsString +
-    qrSections.FieldByName('CODE1').AsString +
-    qrTypesWorks.FieldByName('CODE1').AsString;
-  qrMain.FieldByName('NAME').AsString :=
-    qrParts.FieldByName('NAME').AsString +
-    qrSections.FieldByName('NAME').AsString +
-    qrTypesWorks.FieldByName('NAME').AsString;
+  qrMain.FieldByName('SM_NUMBER').AsString := 'Ж' + qrParts.FieldByName('CODE1').AsString +
+    qrSections.FieldByName('CODE1').AsString + qrTypesWorks.FieldByName('CODE1').AsString;
+  qrMain.FieldByName('NAME').AsString := qrParts.FieldByName('NAME').AsString + qrSections.FieldByName('NAME')
+    .AsString + qrTypesWorks.FieldByName('NAME').AsString;
   // qrMain.CheckBrowseMode;
 end;
 
@@ -762,7 +755,7 @@ end;
 
 procedure TfCardEstimate.dbcbbCHAPTERClick(Sender: TObject);
 begin
-  qrMain.FieldByName('ROW_NUMBER').Value := Null;
+  qrMain.FieldByName('ROW_NUMBER').Value := NULL;
   qrMain.FieldByName('ROW_NUMBER').AsInteger := 1;
   cbbTypeCloseUp(chkAddChapterNumber);
 end;
@@ -773,7 +766,7 @@ begin
   if TypeEstimate = 2 then
   begin
     qrMain.FieldByName('CHAPTER').AsInteger := 2;
-    qrMain.FieldByName('ROW_NUMBER').Value := Null;
+    qrMain.FieldByName('ROW_NUMBER').Value := NULL;
     qrMain.FieldByName('ROW_NUMBER').AsInteger := 1;
   end;
 end;

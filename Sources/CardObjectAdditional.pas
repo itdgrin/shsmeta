@@ -6,12 +6,14 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Tools, DataModule, CardObject, Vcl.ExtCtrls, Vcl.DBCtrls,
   Vcl.StdCtrls, Vcl.Buttons, Vcl.Mask, JvExMask, JvToolEdit, JvDBControls, JvSpin, JvDBSpinEdit,
-  JvComponentBase, JvFormPlacement, JvExExtCtrls, JvExtComponent, JvDBRadioPanel;
+  JvComponentBase, JvFormPlacement, JvExExtCtrls, JvExtComponent, JvDBRadioPanel, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf,
+  FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
   TfCardObjectAdditional = class(TSmForm)
     pnl1: TPanel;
-    btn1: TBitBtn;
+    btnCancel: TBitBtn;
     ScrollBox1: TScrollBox;
     GridPanel1: TGridPanel;
     lbl1: TLabel;
@@ -92,24 +94,30 @@ type
     pnl8: TPanel;
     lbl22: TLabel;
     lbl23: TLabel;
-    btn2: TBitBtn;
+    btnSave: TBitBtn;
     JvDBSpinEdit7: TJvDBSpinEdit;
     JvDBSpinEdit8: TJvDBSpinEdit;
     jvdbspndtK_PP: TJvDBSpinEdit;
     GridPanel25: TGridPanel;
     lbl24: TLabel;
     jvdbspndtK_PP1: TJvDBSpinEdit;
-    procedure btn1Click(Sender: TObject);
+    qrMain: TFDQuery;
+    dsMain: TDataSource;
+    procedure btnCancelClick(Sender: TObject);
     procedure dbchkAPPLY_WINTERPRISE_FLAGClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure lbl2Click(Sender: TObject);
     procedure lbl1Click(Sender: TObject);
     procedure lbl4Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure qrMainNewRecord(DataSet: TDataSet);
+    procedure qrMainBeforeOpen(DataSet: TDataSet);
+    procedure btnSaveClick(Sender: TObject);
   private
-
+    OBJ_ID, SM_ID: Variant; // [0..1] InitParams->Create
   public
-    fCardObject: TfCardObject;
+    // fCardObject: TfCardObject;
   end;
 
 implementation
@@ -118,9 +126,39 @@ uses CardObjectContractorServices, SSR, Main;
 
 {$R *.dfm}
 
-procedure TfCardObjectAdditional.btn1Click(Sender: TObject);
+procedure TfCardObjectAdditional.btnCancelClick(Sender: TObject);
 begin
-  { TODO  ПРИМЕНИТЬ/ЗАКРЫТЬ обработка старых значений -oOwner -cCategory : ActionItem }
+  Close;
+end;
+
+procedure TfCardObjectAdditional.btnSaveClick(Sender: TObject);
+var
+  TREE_PATH: Variant;
+begin
+  if qrMain.State in [dsEdit, dsInsert] then
+    qrMain.Post;
+  if Application.MessageBox('Обновить настройки в зависимых актах/сметах?', PChar(Caption),
+    MB_YESNO + MB_ICONQUESTION + MB_TOPMOST) = IDYES then
+  begin
+    // Если редактируются настройки объекта
+    if VarIsNull(SM_ID) then
+    begin
+      // Удаляем все сметные/актные настройки
+      FastExecSQL('DELETE FROM calc_setup WHERE OBJ_ID=:0 AND SM_ID IS NOT NULL;', VarArrayOf([OBJ_ID]));
+    end
+    // Иначе, работаем со сметой
+    else
+    begin
+      // Удаляем по TREE_PATH все зависимые
+      TREE_PATH := FastSelectSQLOne('SELECT TREE_PATH FROM smetasourcedata WHERE SM_ID=:0',
+        VarArrayOf([SM_ID]));
+      FastExecSQL
+        ('DELETE FROM calc_setup WHERE OBJ_ID=:0 AND SM_ID IN (SELECT SM_ID FROM smetasourcedata WHERE OBJ_ID=:1 AND TREE_PATH LIKE CONCAT(:2, "%") AND TREE_PATH <> :3);',
+        VarArrayOf([OBJ_ID, OBJ_ID, TREE_PATH, TREE_PATH]));
+    end;
+    // Вызываем фиктивное обновление всех записей - дальше триггер все сделает
+    FastExecSQL('UPDATE smetasourcedata set sm_id=sm_id WHERE OBJ_ID=:0;', VarArrayOf([OBJ_ID]));
+  end;
   Close;
 end;
 
@@ -130,8 +168,17 @@ begin
   dbchkAPPLY_WINTERPRISE_FLAG.Top := GridPanel24.Top - 1;
 end;
 
+procedure TfCardObjectAdditional.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  if qrMain.State in [dsEdit, dsInsert] then
+    qrMain.Cancel;
+end;
+
 procedure TfCardObjectAdditional.FormCreate(Sender: TObject);
 begin
+  OBJ_ID := InitParams[0];
+  SM_ID := InitParams[1];
+  qrMain.Active := True;
   pnl2.Color := PS.BackgroundHead;
   pnl2.Repaint;
   pnl3.Color := PS.BackgroundHead;
@@ -174,17 +221,19 @@ begin
     if fSSR.ShowModal = mrOk then
     begin
       per := FastSelectSQLOne('select COEF_NORM from ssrdetail where ID=:0', VarArrayOf([fSSR.SprID]));
-      fCardObject.qrMain.Edit;
+      qrMain.Edit;
       case (Sender as TLabel).Tag of
         1:
           begin
             // TODO сохранить fSSR.SprID
-            fCardObject.qrMain.FieldByName('PER_WINTERPRICE').Value := per;
+            // бесполезно, т.к. может быть установлен руками
+            qrMain.FieldByName('PER_WINTERPRICE').Value := per;
           end;
         2:
           begin
             // TODO сохранить fSSR.SprID
-            fCardObject.qrMain.FieldByName('PER_TEMP_BUILD').Value := per;
+            // бесполезно, т.к. может быть установлен руками
+            qrMain.FieldByName('PER_TEMP_BUILD').Value := per;
           end;
       end;
     end;
@@ -198,11 +247,11 @@ procedure TfCardObjectAdditional.lbl2Click(Sender: TObject);
 var
   res: Variant;
 begin
-  res := EditContractorServices(fCardObject.qrMain.FieldByName('CONTRACTOR_SERV').AsInteger);
+  res := EditContractorServices( { fCardObject. } qrMain.FieldByName('CONTRACTOR_SERV').AsInteger);
   if not VarIsNull(res) then
   begin
-    fCardObject.qrMain.FieldByName('CONTRACTOR_SERV').Value := res[0];
-    fCardObject.qrMain.FieldByName('PER_CONTRACTOR').Value := res[1];
+    { fCardObject. } qrMain.FieldByName('CONTRACTOR_SERV').Value := res[0];
+    { fCardObject. } qrMain.FieldByName('PER_CONTRACTOR').Value := res[1];
   end;
 end;
 
@@ -210,12 +259,24 @@ procedure TfCardObjectAdditional.lbl4Click(Sender: TObject);
 var
   res: Variant;
 begin
-  res := EditContractorServices(fCardObject.qrMain.FieldByName('CONTRACTOR_SERV').AsInteger);
+  res := EditContractorServices( { fCardObject. } qrMain.FieldByName('CONTRACTOR_SERV').AsInteger);
   if not VarIsNull(res) then
   begin
-    fCardObject.qrMain.FieldByName('CONTRACTOR_SERV').Value := res[0];
-    fCardObject.qrMain.FieldByName('PER_CONTRACTOR').Value := res[1];
+    { fCardObject. } qrMain.FieldByName('CONTRACTOR_SERV').Value := res[0];
+    { fCardObject. } qrMain.FieldByName('PER_CONTRACTOR').Value := res[1];
   end;
+end;
+
+procedure TfCardObjectAdditional.qrMainBeforeOpen(DataSet: TDataSet);
+begin
+  qrMain.ParamByName('OBJ_ID').Value := OBJ_ID;
+  qrMain.ParamByName('SM_ID').Value := SM_ID;
+end;
+
+procedure TfCardObjectAdditional.qrMainNewRecord(DataSet: TDataSet);
+begin
+  qrMain.FieldByName('OBJ_ID').Value := OBJ_ID;
+  qrMain.FieldByName('SM_ID').Value := SM_ID;
 end;
 
 end.

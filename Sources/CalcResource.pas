@@ -199,6 +199,7 @@ type
     qrVarsf3: TStringField;
     pnlTop2: TPanel;
     btnShowTemplate: TBitBtn;
+    btnCalcSetup: TBitBtn;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -264,6 +265,7 @@ type
     procedure mEditClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnShowTemplateClick(Sender: TObject);
+    procedure btnCalcSetupClick(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -288,7 +290,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, ReplacementMatAndMech, CalculationEstimate, DataModule,
+uses Main, ReplacementMatAndMech, CalculationEstimate, DataModule, CardObjectAdditional,
   GlobsAndConst, TranspPersSelect, CalcResourceEdit, Waiting, SmReportData;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil;
@@ -360,6 +362,18 @@ begin
   if AOwner <> nil then
     fCalcResource.Width := AOwner.ClientWidth;
   fCalcResource.Show;
+end;
+
+procedure TfCalcResource.btnCalcSetupClick(Sender: TObject);
+var
+  fCardObjectAdditional: TfCardObjectAdditional;
+begin
+  fCardObjectAdditional := TfCardObjectAdditional.Create(Self, VarArrayOf([Null, IDEstimate]));
+  try
+    fCardObjectAdditional.ShowModal;
+  finally
+    FreeAndNil(fCardObjectAdditional);
+  end;
 end;
 
 procedure TfCalcResource.btnShowTemplateClick(Sender: TObject);
