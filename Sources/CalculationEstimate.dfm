@@ -2187,7 +2187,7 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-                Width = 50
+                Width = 64
                 Visible = True
               end
               item
@@ -2217,6 +2217,22 @@
               end
               item
                 Expanded = False
+                FieldName = 'DEVICE_TRANSP_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 90
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'DEVICE_TRANSP_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 90
+                Visible = True
+              end
+              item
+                Expanded = False
                 FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
@@ -2230,22 +2246,6 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1090#1086#1080#1084'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 90
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'DEVICE_TRANSP_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 90
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'DEVICE_TRANSP_NO_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 90
                 Visible = True
               end
@@ -2276,6 +2276,22 @@
               end
               item
                 Expanded = False
+                FieldName = 'VFTRANSP_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'VFTRANSP_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
                 FieldName = 'VFPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
@@ -2290,22 +2306,6 @@
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'VFTRANSP_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 70
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'VFTRANSP_NO_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 70
                 Visible = True
               end
               item

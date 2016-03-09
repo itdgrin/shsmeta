@@ -5505,7 +5505,7 @@ begin
             'LEFT JOIN units ON TMat.unit_id = units.unit_id ' + 'LEFT JOIN materialcoastg as TMatCoast ON ' +
             '(TMatCoast.material_id = TMatNorm.material_id) and ' + '(monat = ' + INTTOSTR(Month1) + ') and '
             + '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (TMatNorm.normativ_id = ' + INTTOSTR(ARateId) +
-            ') order by 1';
+            ') order by "MatCode", "MatName"';
           Active := True;
 
           Filtered := False;
@@ -5646,7 +5646,7 @@ begin
             'JOIN units ON mech.unit_id = units.unit_id ' + 'LEFT JOIN mechanizmcoastg as MechCoast ON ' +
             '(MechCoast.mechanizm_id = mechnorm.mechanizm_id) and ' + '(monat = ' + INTTOSTR(Month1) +
             ') and ' + '(year = ' + INTTOSTR(Year1) + ') ' + 'WHERE (mechnorm.normativ_id = ' +
-            INTTOSTR(ARateId) + ') order by 1');
+            INTTOSTR(ARateId) + ') order by "MechCode", "MechName"');
 
           Active := True;
           First;
@@ -6248,7 +6248,8 @@ begin
 
   qrMaterial.Active := False;
   // Открывает materials_temp
-  qrMaterial.SQL.Text := 'SELECT * FROM materials_temp ORDER BY SRTYPE, TITLE DESC, ID';
+  qrMaterial.SQL.Text :=
+    'SELECT * FROM materials_temp ORDER BY SRTYPE, TITLE DESC, MAT_CODE, MAT_NAME';
   qrMaterial.Active := True;
   i := 0;
   // Нумерация строк, внутри подгрупп
@@ -6349,7 +6350,8 @@ begin
 
   qrMechanizm.Active := False;
   // Открывает Mechanizms_temp
-  qrMechanizm.SQL.Text := 'SELECT * FROM mechanizms_temp ORDER BY SRTYPE, TITLE DESC, ID';
+  qrMechanizm.SQL.Text :=
+    'SELECT * FROM mechanizms_temp ORDER BY SRTYPE, TITLE DESC, MECH_CODE, MECH_NAME';
   qrMechanizm.Active := True;
   i := 0;
   // Нумерация строк, внутри подгрупп
