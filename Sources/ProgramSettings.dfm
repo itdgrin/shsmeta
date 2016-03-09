@@ -37,7 +37,7 @@ object fProgramSettings: TfProgramSettings
     Top = 8
     Width = 632
     Height = 351
-    ActivePage = tsTables
+    ActivePage = tsUpdate
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

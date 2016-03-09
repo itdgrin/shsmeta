@@ -47,7 +47,7 @@ type
     // Процедура стандартной отрисовки таблиц
     class procedure DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
-    constructor Create(AOwner: TComponent; const AInitParams: Variant); overload;
+    constructor Create(AOwner: TComponent; const AInitParams: Variant); reintroduce; overload;
     constructor Create(AOwner: TComponent); overload; override;
   end;
 
@@ -146,7 +146,8 @@ procedure SetGlob(const AParamName: String; const AValue: Variant;
 function GetGlob(const AParamName: String; const AGlobParamType: TGlobParamType = gptReportParam): Variant;
 function GetGlobDef(const AParamName: String; const ADefValue: Variant;
   const AGlobParamType: TGlobParamType = gptReportParam): Variant;
-
+//получчение нового айдишника для справочников
+function GetNewID(ATypeID: Integer): Variant;
 // Округления для расчетов в программе
 function SmRound(AValue: Extended): Extended;
 
@@ -154,6 +155,10 @@ implementation
 
 uses uSelectColumn;
 
+function GetNewID(ATypeID: Integer): Variant;
+begin
+  Result := FastSelectSQLOne('Select GetNewManualID(:0)', VarArrayOf([ATypeID]));
+end;
 // Заготовка пустышка
 function SmRound(AValue: Extended): Extended;
 begin

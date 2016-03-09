@@ -43,7 +43,7 @@ begin
       // Попытаться переименовать
       mrRetry:
         begin
-          AOBJ_NAME := f.OBJ_NAME;
+          AOBJ_NAME := Trim(f.OBJ_NAME);
           Result := 2;
         end;
     end;

@@ -11,12 +11,6 @@ uses
   JvDBGrid, Vcl.Mask, Vcl.DBCtrls;
 
 type
-  TSplitter = class(ExtCtrls.TSplitter)
-  public
-    procedure Paint(); override;
-  end;
-
-type
   TFrameRates = class(TSmetaFrame)
     PanelRates: TPanel;
     SplitterLeft: TSplitter;
@@ -196,13 +190,13 @@ type
     PageNumber, PageRowCount: Integer; // номер текущей страницы / кол-во записей на странице
     DataBase: Char; // Справочные или собственные данные
     AllowAddition: Boolean; // Разрешено/запрещено добавлять записи из фрейма
-    function GetNewID(ATypeID: Integer): Variant;
+    //Копирует расценку в собственную базу
+    procedure CopyRateToOwnBase(ANormID: Integer; ANormNum: string);
   public
     procedure ReceivingAll; override;
     procedure CheckCurPeriod; override;
     constructor Create(AOwner: TComponent; const vDataBase: Char; const vAllowAddition: Boolean;
       ASMSubType: Integer = 0); reintroduce;
-
   end;
 
 implementation
@@ -216,10 +210,108 @@ const
   // Название этого фрейма
   CaptionFrame = 'Фрейм «Расценки»';
 
-  { TSplitter }
-procedure TSplitter.Paint();
+procedure TFrameRates.CopyRateToOwnBase(ANormID: Integer; ANormNum: string);
+var
+  newID, newID1, res, tID: Variant;
+  AutoCommitValue, flOk: Boolean;
 begin
-  // inherited;
+  AutoCommitValue := dm.Read.Options.AutoCommit;
+  dm.Read.Options.AutoCommit := False;
+  try
+    try
+      // Проверяем на наличие такой же записи
+      //Закомментированно так как алгоритм не учитывает внушние ключи normativg
+      flOk := False;
+      while not flOk do
+      begin
+        tID := null;
+        tID := FastSelectSQLOne('SELECT NORMATIV_ID FROM normativg WHERE NORM_BASE=1 and Trim(NORM_NUM)=Trim(:0) LIMIT 1',
+          VarArrayOf([ANormNum]));
+        if not VarIsNull(tID) then
+        begin
+          res := ShowCopyToOwnDialog(ANormNum);
+
+          if VarIsNull(res) then
+            Exit;
+          if res = 1 then
+          begin
+            FastExecSQL('DELETE FROM normativg WHERE NORMATIV_ID = :1', VarArrayOf([tID]));
+            flOk := true;
+          end;
+        end
+        else
+          flOk := true;
+      end;
+
+      dm.Read.StartTransaction;
+      // Копируем расценку
+      newID := GetNewID(C_MANID_NORM);
+      FastExecSQL('INSERT INTO normativg(NORMATIV_ID, SORT_NUM, NORM_NUM, NORM_CAPTION, UNIT_ID, ' +
+        'NORM_ACTIVE, normativ_directory_id, NORM_BASE, NORM_TYPE, work_id, ' +
+        'ZNORMATIVS_ID, date_beginer)'#13 +
+        '(SELECT :0, null,:1,NORM_CAPTION,UNIT_ID,1,normativ_directory_id,1,' +
+        'NORM_TYPE,work_id,ZNORMATIVS_ID, :2 FROM normativg WHERE NORMATIV_ID = :3);',
+        VarArrayOf([newID, ANormNum, Now, ANormID]));
+
+      // Копируем материалы
+      newID1 := GetNewID(C_MANID_NORM_MAT);
+      DM.qrDifferent.Active := False;
+      DM.qrDifferent.SQL.Text := 'SELECT MATERIAL_ID, NORM_RAS ' +
+        'FROM materialnorm WHERE NORMATIV_ID=' + ANormID.ToString;
+      DM.qrDifferent.Active := true;
+      while not DM.qrDifferent.Eof do
+      begin
+        FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
+          'VALUES (:0,:1,:2,:3,1)', VarArrayOf([newID1, newID, DM.qrDifferent.Fields[0].Value,
+          DM.qrDifferent.Fields[1].Value]));
+        Inc(newID1);
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      // Копируем механизмы
+      newID1 := GetNewID(C_MANID_NORM_MECH);
+      DM.qrDifferent.Active := False;
+      DM.qrDifferent.SQL.Text := 'SELECT MECHANIZM_ID, NORM_RAS ' +
+        'FROM mechanizmnorm WHERE NORMATIV_ID=' + ANormID.ToString;
+      DM.qrDifferent.Active := true;
+      while not DM.qrDifferent.Eof do
+      begin
+        FastExecSQL('INSERT INTO mechanizmnorm (ID, NORMATIV_ID, MECHANIZM_ID, NORM_RAS, BASE) ' +
+          'VALUES (:0,:1,:2,:3,1)', VarArrayOf([newID1, newID, DM.qrDifferent.Fields[0].Value,
+          DM.qrDifferent.Fields[1].Value]));
+        Inc(newID1);
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      // Копируем затраты труда
+      newID1 := GetNewID(C_MANID_NORM_WORK);
+      DM.qrDifferent.Active := False;
+      DM.qrDifferent.SQL.Text := 'SELECT WORK_ID, NORMA FROM normativwork ' +
+        'WHERE NORMATIV_ID=' + ANormID.ToString;
+      DM.qrDifferent.Active := true;
+      while not DM.qrDifferent.Eof do
+      begin
+        FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' +
+          'VALUES (:0,:1,:2,:3,1)', VarArrayOf([newID1, newID, DM.qrDifferent.Fields[0].Value,
+          DM.qrDifferent.Fields[1].Value]));
+        Inc(newID1);
+        DM.qrDifferent.Next;
+      end;
+      DM.qrDifferent.Active := False;
+
+      dm.Read.Commit;
+      Application.MessageBox('Запись успешно скопирована!', 'Справочник расценок',
+        MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+    except
+      dm.Read.Rollback;
+      Application.MessageBox('Ошибка копирования записи!', 'Справочник расценок',
+        MB_OK + MB_ICONSTOP + MB_TOPMOST);
+    end;
+  finally
+    dm.Read.Options.AutoCommit := AutoCommitValue;
+  end;
 end;
 
 procedure TFrameRates.btnSelectCollectionClick(Sender: TObject);
@@ -474,115 +566,13 @@ begin
   FormCalculationEstimate.AddRate(qrNormativ.FieldByName('IdNormative').AsInteger);
 end;
 
-function TFrameRates.GetNewID(ATypeID: Integer): Variant;
-begin
-  Result := FastSelectSQLOne('Select GetNewManualID(:0)', VarArrayOf([ATypeID]));
-end;
-
 procedure TFrameRates.mCopyToOwnBaseClick(Sender: TObject);
-var
-  newID, newID1, res, tID: Variant;
-  AutoCommitValue, flOk: Boolean;
-  OBJ_NAME: string;
 begin
   if not CheckQrActiveEmpty(qrNormativ) then
     Exit;
-  AutoCommitValue := dm.Read.Options.AutoCommit;
-  dm.Read.Options.AutoCommit := False;
-  try
-    try
-      // Проверяем на наличие такой же записи
-      flOk := False;
-      OBJ_NAME := qrNormativ.FieldByName('NumberNormative').AsString;
-      while not flOk do
-      begin
-        tID := null;
-        tID := FastSelectSQLOne('SELECT NORMATIV_ID FROM normativg WHERE NORM_BASE=1 and NORM_NUM=:0 LIMIT 1',
-          VarArrayOf([OBJ_NAME]));
-        if not VarIsNull(tID) then
-        begin
-          res := ShowCopyToOwnDialog(OBJ_NAME);
 
-          if VarIsNull(res) then
-            Exit;
-          if res = 1 then
-          begin
-            FastExecSQL('DELETE FROM normativg WHERE NORMATIV_ID = :1', VarArrayOf([tID]));
-            flOk := true;
-          end;
-        end
-        else
-          flOk := true;
-      end;
-      dm.Read.StartTransaction;
-      // Копируем расценку
-      newID := GetNewID(C_MANID_NORM);
-      FastExecSQL('INSERT INTO normativg(NORMATIV_ID, SORT_NUM, NORM_NUM, NORM_CAPTION, UNIT_ID, ' +
-        'NORM_ACTIVE, normativ_directory_id, NORM_BASE, NORM_TYPE, work_id, ' +
-        'ZNORMATIVS_ID, date_beginer)'#13 +
-        '(SELECT :0, null,:1,NORM_CAPTION,UNIT_ID,1,normativ_directory_id,1,' +
-        'NORM_TYPE,work_id,ZNORMATIVS_ID, :2 FROM normativg WHERE NORMATIV_ID = :3);',
-        VarArrayOf([newID, OBJ_NAME, Now, qrNormativ.FieldByName('IdNormative').Value]));
-
-      // Копируем материалы
-      newID1 := GetNewID(C_MANID_NORM_MAT);
-      qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT MATERIAL_ID, NORM_RAS ' + 'FROM materialnorm WHERE NORMATIV_ID=' +
-        qrNormativ.FieldByName('IdNormative').AsString;
-      qrTemp.Active := true;
-      while not qrTemp.Eof do
-      begin
-        FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, NORM_RAS, BASE) ' +
-          'VALUES (:0,:1,:2,:3,1)', VarArrayOf([newID1, newID, qrTemp.Fields[0].Value,
-          qrTemp.Fields[1].Value]));
-        Inc(newID1);
-        qrTemp.Next;
-      end;
-      qrTemp.Active := False;
-
-      // Копируем механизмы
-      newID1 := GetNewID(C_MANID_NORM_MECH);
-      qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT MECHANIZM_ID, NORM_RAS ' + 'FROM mechanizmnorm WHERE NORMATIV_ID=' +
-        qrNormativ.FieldByName('IdNormative').AsString;
-      qrTemp.Active := true;
-      while not qrTemp.Eof do
-      begin
-        FastExecSQL('INSERT INTO mechanizmnorm (ID, NORMATIV_ID, MECHANIZM_ID, NORM_RAS, BASE) ' +
-          'VALUES (:0,:1,:2,:3,1)', VarArrayOf([newID1, newID, qrTemp.Fields[0].Value,
-          qrTemp.Fields[1].Value]));
-        Inc(newID1);
-        qrTemp.Next;
-      end;
-      qrTemp.Active := False;
-
-      // Копируем затраты труда
-      newID1 := GetNewID(C_MANID_NORM_WORK);
-      qrTemp.Active := False;
-      qrTemp.SQL.Text := 'SELECT WORK_ID, NORMA FROM normativwork ' + 'WHERE NORMATIV_ID=' +
-        qrNormativ.FieldByName('IdNormative').AsString;
-      qrTemp.Active := true;
-      while not qrTemp.Eof do
-      begin
-        FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' +
-          'VALUES (:0,:1,:2,:3,1)', VarArrayOf([newID1, newID, qrTemp.Fields[0].Value,
-          qrTemp.Fields[1].Value]));
-        Inc(newID1);
-        qrTemp.Next;
-      end;
-      qrTemp.Active := False;
-
-      dm.Read.Commit;
-      Application.MessageBox('Запись успешно скопирована!', 'Справочник расценок',
-        MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
-    except
-      dm.Read.Rollback;
-      Application.MessageBox('Ошибка копирования записи!', 'Справочник расценок',
-        MB_OK + MB_ICONSTOP + MB_TOPMOST);
-    end;
-  finally
-    dm.Read.Options.AutoCommit := AutoCommitValue;
-  end;
+  CopyRateToOwnBase(qrNormativ.FieldByName('IdNormative').AsInteger,
+    qrNormativ.FieldByName('NumberNormative').AsString);
 end;
 
 procedure TFrameRates.mEditClick(Sender: TObject);
@@ -604,7 +594,8 @@ var
   newID1: Variant;
 begin
   newID1 := GetNewID(C_MANID_NORM_WORK);
-  FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' + 'VALUE(:0,:1,:2,0,1)',
+  FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' +
+    'VALUE(:0,:1,:2,0,1)',
     VarArrayOf([newID1, qrNormativ.FieldByName('IdNormative').Value, (Sender as TComponent).Tag]));
   CloseOpen(qrNC);
 end;
