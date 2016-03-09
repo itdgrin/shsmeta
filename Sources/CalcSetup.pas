@@ -1,4 +1,4 @@
-unit CardObjectAdditional;
+unit CalcSetup;
 
 interface
 
@@ -11,7 +11,7 @@ uses
   FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
-  TfCardObjectAdditional = class(TSmForm)
+  TfCalcSetup = class(TSmForm)
     pnl1: TPanel;
     btnCancel: TBitBtn;
     ScrollBox1: TScrollBox;
@@ -114,7 +114,9 @@ type
     procedure qrMainNewRecord(DataSet: TDataSet);
     procedure qrMainBeforeOpen(DataSet: TDataSet);
     procedure btnSaveClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
+    // ћожно OBJ_ID не передавать, если нету под рукой
     OBJ_ID, SM_ID: Variant; // [0..1] InitParams->Create
   public
     // fCardObject: TfCardObject;
@@ -126,12 +128,12 @@ uses CardObjectContractorServices, SSR, Main;
 
 {$R *.dfm}
 
-procedure TfCardObjectAdditional.btnCancelClick(Sender: TObject);
+procedure TfCalcSetup.btnCancelClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TfCardObjectAdditional.btnSaveClick(Sender: TObject);
+procedure TfCalcSetup.btnSaveClick(Sender: TObject);
 var
   TREE_PATH: Variant;
 begin
@@ -162,22 +164,27 @@ begin
   Close;
 end;
 
-procedure TfCardObjectAdditional.dbchkAPPLY_WINTERPRISE_FLAGClick(Sender: TObject);
+procedure TfCalcSetup.dbchkAPPLY_WINTERPRISE_FLAGClick(Sender: TObject);
 begin
   GridPanel24.Visible := dbchkAPPLY_WINTERPRISE_FLAG.Checked;
   dbchkAPPLY_WINTERPRISE_FLAG.Top := GridPanel24.Top - 1;
 end;
 
-procedure TfCardObjectAdditional.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TfCalcSetup.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if qrMain.State in [dsEdit, dsInsert] then
     qrMain.Cancel;
+  Action := caFree;
 end;
 
-procedure TfCardObjectAdditional.FormCreate(Sender: TObject);
+procedure TfCalcSetup.FormCreate(Sender: TObject);
 begin
   OBJ_ID := InitParams[0];
   SM_ID := InitParams[1];
+  // ѕытаемс€ установить OBJ_ID, если не передан
+  if VarIsNull(OBJ_ID) and not VarIsNull(SM_ID) then
+    OBJ_ID := FastSelectSQLOne('SELECT OBJ_ID FROM smetasourcedata WHERE SM_ID=:0', VarArrayOf([SM_ID]));
+
   qrMain.Active := True;
   pnl2.Color := PS.BackgroundHead;
   pnl2.Repaint;
@@ -191,13 +198,18 @@ begin
   pnl6.Repaint;
 end;
 
-procedure TfCardObjectAdditional.FormShow(Sender: TObject);
+procedure TfCalcSetup.FormDestroy(Sender: TObject);
+begin
+  Self := nil;
+end;
+
+procedure TfCalcSetup.FormShow(Sender: TObject);
 begin
   GridPanel24.Visible := dbchkAPPLY_WINTERPRISE_FLAG.Checked;
   dbchkAPPLY_WINTERPRISE_FLAG.Top := GridPanel24.Top - 1;
 end;
 
-procedure TfCardObjectAdditional.lbl1Click(Sender: TObject);
+procedure TfCalcSetup.lbl1Click(Sender: TObject);
 var
   fSSR: TfSSR;
   TmpStr: string;
@@ -243,7 +255,7 @@ begin
   end;
 end;
 
-procedure TfCardObjectAdditional.lbl2Click(Sender: TObject);
+procedure TfCalcSetup.lbl2Click(Sender: TObject);
 var
   res: Variant;
 begin
@@ -255,7 +267,7 @@ begin
   end;
 end;
 
-procedure TfCardObjectAdditional.lbl4Click(Sender: TObject);
+procedure TfCalcSetup.lbl4Click(Sender: TObject);
 var
   res: Variant;
 begin
@@ -267,13 +279,13 @@ begin
   end;
 end;
 
-procedure TfCardObjectAdditional.qrMainBeforeOpen(DataSet: TDataSet);
+procedure TfCalcSetup.qrMainBeforeOpen(DataSet: TDataSet);
 begin
   qrMain.ParamByName('OBJ_ID').Value := OBJ_ID;
   qrMain.ParamByName('SM_ID').Value := SM_ID;
 end;
 
-procedure TfCardObjectAdditional.qrMainNewRecord(DataSet: TDataSet);
+procedure TfCalcSetup.qrMainNewRecord(DataSet: TDataSet);
 begin
   qrMain.FieldByName('OBJ_ID').Value := OBJ_ID;
   qrMain.FieldByName('SM_ID').Value := SM_ID;

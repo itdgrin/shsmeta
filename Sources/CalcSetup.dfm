@@ -1,4 +1,4 @@
-object fCardObjectAdditional: TfCardObjectAdditional
+object fCalcSetup: TfCalcSetup
   Left = 0
   Top = 0
   Caption = #1053#1072#1089#1090#1088#1086#1081#1082#1072' '#1088#1072#1089#1095#1077#1090#1072' '#1090#1077#1082#1091#1097#1077#1081' '#1089#1090#1086#1080#1084#1086#1089#1090#1080
@@ -14,6 +14,7 @@ object fCardObjectAdditional: TfCardObjectAdditional
   Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -1107,7 +1108,6 @@ object fCardObjectAdditional: TfCardObjectAdditional
         ValueChecked = '1'
         ValueUnchecked = '0'
         OnClick = dbchkAPPLY_WINTERPRISE_FLAGClick
-        ExplicitTop = -2
       end
     end
     object GridPanel13: TGridPanel

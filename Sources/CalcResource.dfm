@@ -46,6 +46,15 @@ object fCalcResource: TfCalcResource
       TabOrder = 1
       OnClick = btnCalcSetupClick
     end
+    object btnCalcSetupIndex: TBitBtn
+      Left = 263
+      Top = 6
+      Width = 98
+      Height = 25
+      Caption = #1048#1085#1076#1077#1082#1089' '#1088#1086#1089#1090#1072
+      TabOrder = 2
+      OnClick = btnCalcSetupIndexClick
+    end
   end
   object pnlTop: TPanel
     Left = 0

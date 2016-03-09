@@ -123,7 +123,7 @@ uses
   RC6 in 'RC6.pas',
   uSelectColumn in 'uSelectColumn.pas' {fSelectColumn},
   SerialKeyModule in 'SerialKeyModule.pas',
-  CardObjectAdditional in 'CardObjectAdditional.pas' {fCardObjectAdditional},
+  CalcSetup in 'CalcSetup.pas' {fCalcSetup},
   CalcResourceEdit in 'CalcResourceEdit.pas' {fCalcResourceEdit},
   fLicense in 'fLicense.pas' {LicenseForm},
   uMemoryLoader in 'uMemoryLoader.pas',
@@ -144,7 +144,8 @@ uses
   C3 in 'C3.pas' {fC3},
   TypeAct in 'TypeAct.pas' {fTypeAct},
   fReportSSRPI in 'fReportSSRPI.pas' {FormReportSSRPI},
-  fSprLoader in 'SmSprUpdater\fSprLoader.pas' {SprLoaderForm};
+  fSprLoader in 'SmSprUpdater\fSprLoader.pas' {SprLoaderForm},
+  CalcSetupIndex in 'CalcSetupIndex.pas' {fCalcSetupIndex};
 
 {$R *.res}
 var MHandle: THandle;

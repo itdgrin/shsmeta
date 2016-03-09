@@ -200,6 +200,7 @@ type
     pnlTop2: TPanel;
     btnShowTemplate: TBitBtn;
     btnCalcSetup: TBitBtn;
+    btnCalcSetupIndex: TBitBtn;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
     procedure pgcChange(Sender: TObject);
@@ -266,6 +267,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure btnShowTemplateClick(Sender: TObject);
     procedure btnCalcSetupClick(Sender: TObject);
+    procedure btnCalcSetupIndexClick(Sender: TObject);
   private
     Footer: Variant;
     IDEstimate: Integer;
@@ -290,7 +292,7 @@ implementation
 
 {$R *.dfm}
 
-uses Main, ReplacementMatAndMech, CalculationEstimate, DataModule, CardObjectAdditional,
+uses Main, ReplacementMatAndMech, CalculationEstimate, DataModule, CalcSetup, CalcSetupIndex,
   GlobsAndConst, TranspPersSelect, CalcResourceEdit, Waiting, SmReportData;
 
 procedure ShowCalcResource(const ID_ESTIMATE: Variant; const APage: Integer = 0; AOwner: TWinControl = nil;
@@ -366,13 +368,25 @@ end;
 
 procedure TfCalcResource.btnCalcSetupClick(Sender: TObject);
 var
-  fCardObjectAdditional: TfCardObjectAdditional;
+  fCalcSetup: TfCalcSetup;
 begin
-  fCardObjectAdditional := TfCardObjectAdditional.Create(Self, VarArrayOf([Null, IDEstimate]));
+  fCalcSetup := TfCalcSetup.Create(Self, VarArrayOf([Null, IDEstimate]));
   try
-    fCardObjectAdditional.ShowModal;
+    fCalcSetup.ShowModal;
   finally
-    FreeAndNil(fCardObjectAdditional);
+    FreeAndNil(fCalcSetup);
+  end;
+end;
+
+procedure TfCalcResource.btnCalcSetupIndexClick(Sender: TObject);
+var
+  fCalcSetupIndex: TfCalcSetupIndex;
+begin
+  fCalcSetupIndex := TfCalcSetupIndex.Create(Self, VarArrayOf([Null, IDEstimate]));
+  try
+    fCalcSetupIndex.ShowModal;
+  finally
+    FreeAndNil(fCalcSetupIndex);
   end;
 end;
 

@@ -138,7 +138,7 @@ uses
   SuppAgreement,
   GlobsAndConst,
   CalculationEstimate,
-  CardObjectAdditional;
+  CalcSetup;
 
 {$R *.dfm}
 
@@ -707,19 +707,13 @@ end;
 
 procedure TfCardObject.btnCardObjectAdditionalClick(Sender: TObject);
 var
-  fCardObjectAdditional: TfCardObjectAdditional;
+  fCalcSetup: TfCalcSetup;
 begin
-  fCardObjectAdditional := TfCardObjectAdditional.Create(Self, VarArrayOf([FIdObject, Null]));
+  fCalcSetup := TfCalcSetup.Create(Self, VarArrayOf([FIdObject, Null]));
   try
-    // fCardObjectAdditional.fCardObject := Self;
-    fCardObjectAdditional.ShowModal;
-    {
-    if fCardObjectAdditional.dbchkFL_CALC_VEDOMS_NAL2.Checked and
-      (VarIsNull(qrMain.FieldByName('SPEC_SCH').Value) or (qrMain.FieldByName('SPEC_SCH').Value = 0)) then
-      qrMain.FieldByName('SPEC_SCH').Value := 0;
-    }
+    fCalcSetup.ShowModal;
   finally
-    FreeAndNil(fCardObjectAdditional);
+    FreeAndNil(fCalcSetup);
   end;
 end;
 
