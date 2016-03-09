@@ -625,7 +625,7 @@
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
           OnDrawColumnCell = dbgrdRates12DrawColumnCell
-          OnEnter = dbgrdRatesEnter
+          OnEnter = grRatesExEnter
           OnExit = grRatesExExit
           OnKeyDown = dbgrdRatesKeyDown
           AutoAppend = False
@@ -1576,7 +1576,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdMechanizmDrawColumnCell
-            OnEnter = dbgrdRatesEnter
+            OnEnter = dbgrdEnter
             OnKeyDown = dbgrdMechanizmKeyDown
             AutoAppend = False
             AutoSort = False
@@ -1659,73 +1659,73 @@
               end
               item
                 Expanded = False
-                FieldName = 'COAST_NDS'
+                FieldName = 'FCOAST_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' ('#1057#1084') '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'COAST_NO_NDS'
+                FieldName = 'FCOAST_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'PRICE_NDS'
+                FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1057#1090#1086#1080#1084'. ('#1057#1084') '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'PRICE_NO_NDS'
+                FieldName = 'FPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1057#1090#1086#1080#1084'. ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'ZP_MACH_NDS'
+                FieldName = 'FZP_MACH_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057#1084') '#1089' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' '#1089' '#1053#1044#1057', p.'
                 Width = 75
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'ZP_MACH_NO_NDS'
+                FieldName = 'FZP_MACH_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 75
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'ZPPRICE_NDS'
+                FieldName = 'FZPPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1047#1055' '#1084#1072#1096'. ('#1057#1084') '#1089' '#1053#1044#1057', p.'
+                Title.Caption = #1047#1055' '#1084#1072#1096'. '#1089' '#1053#1044#1057', p.'
                 Width = 80
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'ZPPRICE_NO_NDS'
+                FieldName = 'FZPPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1047#1055' '#1084#1072#1096'. ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', p.'
+                Title.Caption = #1047#1055' '#1084#1072#1096'. '#1073#1077#1079' '#1053#1044#1057', p.'
                 Width = 80
                 Visible = True
               end
@@ -1740,70 +1740,70 @@
               end
               item
                 Expanded = False
-                FieldName = 'FCOAST_NDS'
+                FieldName = 'VFCOAST_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 75
+                Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FCOAST_NO_NDS'
+                FieldName = 'VFCOAST_NO_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 75
+                Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FPRICE_NDS'
+                FieldName = 'VFPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 85
+                Width = 80
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FPRICE_NO_NDS'
+                FieldName = 'VFPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 85
+                Width = 80
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FZP_MACH_NDS'
+                FieldName = 'VFZP_MACH_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', p.'
-                Width = 90
+                Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FZP_MACH_NO_NDS'
+                FieldName = 'VFZP_MACH_NO_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1086#1088#1084#1072' '#1047#1055' ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', p.'
-                Width = 90
+                Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FZPPRICE_NDS'
+                FieldName = 'VFZPPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1047#1055' '#1084#1072#1096'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', p.'
-                Width = 85
+                Width = 80
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FZPPRICE_NO_NDS'
+                FieldName = 'VFZPPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1047#1055' '#1084#1072#1096'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', p.'
-                Width = 85
+                Width = 80
                 Visible = True
               end
               item
@@ -1877,7 +1877,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdMaterialDrawColumnCell
-            OnEnter = dbgrdRatesEnter
+            OnEnter = dbgrdEnter
             OnKeyDown = dbgrdMaterialKeyDown
             AutoAppend = False
             AutoSort = False
@@ -1925,7 +1925,7 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1053#1086#1088#1084#1072' '#1088#1072#1089#1093#1086#1076#1072
-                Width = 50
+                Width = 42
                 Visible = True
               end
               item
@@ -1957,37 +1957,37 @@
               end
               item
                 Expanded = False
-                FieldName = 'COAST_NDS'
+                FieldName = 'FCOAST_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' ('#1057#1084') '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'COAST_NO_NDS'
+                FieldName = 'FCOAST_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'PRICE_NDS'
+                FieldName = 'FPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1057#1090#1086#1080#1084'. ('#1057#1084') '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'PRICE_NO_NDS'
+                FieldName = 'FPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1057#1090#1086#1080#1084'. ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 80
                 Visible = True
               end
@@ -2002,19 +2002,19 @@
               end
               item
                 Expanded = False
-                FieldName = 'TRANSP_NDS'
+                FieldName = 'FTRANSP_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057#1084') '#1089' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'TRANSP_NO_NDS'
+                FieldName = 'FTRANSP_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1057#1084') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
                 Width = 70
                 Visible = True
               end
@@ -2029,52 +2029,52 @@
               end
               item
                 Expanded = False
-                FieldName = 'FCOAST_NDS'
+                FieldName = 'VFCOAST_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 75
+                Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FCOAST_NO_NDS'
+                FieldName = 'VFCOAST_NO_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 75
+                Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FPRICE_NDS'
+                FieldName = 'VFPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 85
+                Width = 80
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FPRICE_NO_NDS'
+                FieldName = 'VFPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 85
+                Width = 80
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FTRANSP_NDS'
+                FieldName = 'VFTRANSP_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 85
+                Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FTRANSP_NO_NDS'
+                FieldName = 'VFTRANSP_NO_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 85
+                Width = 70
                 Visible = True
               end
               item
@@ -2136,7 +2136,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
-            OnEnter = dbgrdRatesEnter
+            OnEnter = dbgrdEnter
             OnKeyDown = dbgrdDevicesKeyDown
             AutoAppend = False
             AutoSort = False
@@ -2201,6 +2201,56 @@
               end
               item
                 Expanded = False
+                FieldName = 'FCOAST_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1062#1077#1085#1072' '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FCOAST_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FPRICE_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 90
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'FPRICE_NO_NDS'
+                ReadOnly = True
+                Title.Alignment = taCenter
+                Title.Caption = #1057#1090#1086#1080#1084'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 90
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'DEVICE_TRANSP_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 90
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'DEVICE_TRANSP_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 90
+                Visible = True
+              end
+              item
+                Expanded = False
                 FieldName = 'NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
@@ -2210,94 +2260,52 @@
               end
               item
                 Expanded = False
-                FieldName = 'COAST_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' '#1089' '#1053#1044#1057', '#1088'.'
-                Visible = False
-              end
-              item
-                Expanded = False
-                FieldName = 'COAST_NO_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1062#1077#1085#1072' '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Visible = False
-              end
-              item
-                Expanded = False
-                FieldName = 'TRANSP_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1089' '#1053#1044#1057', '#1088'.'
-                Visible = False
-              end
-              item
-                Expanded = False
-                FieldName = 'TRANSP_NO_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Visible = False
-              end
-              item
-                Expanded = False
-                FieldName = 'PRICE_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1057#1090#1086#1080#1084'. '#1089' '#1053#1044#1057', '#1088'.'
-                Visible = False
-              end
-              item
-                Expanded = False
-                FieldName = 'PRICE_NO_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1057#1090#1086#1080#1084'. '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Visible = False
-              end
-              item
-                Expanded = False
-                FieldName = 'FCOAST_NDS'
+                FieldName = 'VFCOAST_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 80
+                Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FCOAST_NO_NDS'
+                FieldName = 'VFCOAST_NO_NDS'
                 Title.Alignment = taCenter
                 Title.Caption = #1062#1077#1085#1072' ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 80
+                Width = 70
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'DEVICE_TRANSP_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 90
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'DEVICE_TRANSP_NO_NDS'
-                Title.Alignment = taCenter
-                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 90
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'FPRICE_NDS'
+                FieldName = 'VFPRICE_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
-                Width = 90
+                Width = 80
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'FPRICE_NO_NDS'
+                FieldName = 'VFPRICE_NO_NDS'
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1057#1090#1086#1080#1084'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
-                Width = 90
+                Width = 80
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'VFTRANSP_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1089' '#1053#1044#1057', '#1088'.'
+                Width = 70
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'VFTRANSP_NO_NDS'
+                Title.Alignment = taCenter
+                Title.Caption = #1058#1088#1072#1085#1089#1087'. ('#1092#1072#1082#1090') '#1073#1077#1079' '#1053#1044#1057', '#1088'.'
+                Width = 70
                 Visible = True
               end
               item
@@ -2360,7 +2368,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
-            OnEnter = dbgrdRatesEnter
+            OnEnter = dbgrdEnter
             OnKeyDown = dbgrdDumpKeyDown
             AutoAppend = False
             AutoSort = False
@@ -2473,7 +2481,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDescription1DrawColumnCell
-            OnEnter = dbgrdRatesEnter
+            OnEnter = dbgrdEnter
             AutoAppend = False
             AutoSort = False
             IniStorage = FormStorage
@@ -2521,7 +2529,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
-            OnEnter = dbgrdRatesEnter
+            OnEnter = dbgrdEnter
             OnKeyDown = dbgrdDumpKeyDown
             AutoAppend = False
             AutoSort = False
@@ -2661,7 +2669,7 @@
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = dbgrdDevicesDrawColumnCell
-            OnEnter = dbgrdRatesEnter
+            OnEnter = dbgrdEnter
             AutoAppend = False
             AutoSort = False
             IniStorage = FormStorage
@@ -3824,6 +3832,11 @@
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1072
       OnClick = PMMatSprCardClick
     end
+    object PMMatNormPrice: TMenuItem
+      Tag = 1
+      Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1085#1086#1088#1084#1072#1090#1080#1074#1085#1091#1102' '#1094#1077#1085#1091
+      OnClick = PMMatNormPriceClick
+    end
     object PMMatManPrice: TMenuItem
       Tag = 2
       Caption = #1062#1077#1085#1099' '#1087#1086' '#1085#1072#1082#1083#1072#1076#1085#1099#1084
@@ -3924,6 +3937,11 @@
       Tag = 3
       Caption = #1050#1072#1088#1090#1086#1095#1082#1072' '#1084#1077#1093#1072#1085#1080#1079#1084#1072
       OnClick = PMMatSprCardClick
+    end
+    object PMMechNormPrice: TMenuItem
+      Tag = 2
+      Caption = #1059#1089#1090#1072#1085#1086#1074#1080#1090#1100' '#1085#1086#1088#1084#1072#1090#1080#1074#1085#1091#1102' '#1094#1077#1085#1091
+      OnClick = PMMatNormPriceClick
     end
     object PMMechManPrice: TMenuItem
       Tag = 3
@@ -4069,18 +4087,20 @@
     SQL.Strings = (
       '/*'#1048#1089#1087#1086#1083#1100#1079#1091#1077#1090#1089#1103' '#1076#1083#1103' '#1086#1090#1083#1072#1076#1082#1080'*/'
       
-        'SELECT *, 0.0 as SCROLL FROM mechanizmcard_temp WHERE ((:Type = ' +
-        '0) and (ID = :IDValue)) or ((:Type = 1) and (ID_CARD_RATE_RATE =' +
-        ' :IDValue)) ORDER BY ID;')
+        'SELECT *, 0.0 as SCROLL FROM mechanizmcard WHERE ((:Type = 0) an' +
+        'd (ID = :IDValue)) or ((:Type = 1) and (ID_CARD_RATE = :IDValue)' +
+        ') ORDER BY ID;')
     Left = 616
     Top = 126
     ParamData = <
       item
         Name = 'TYPE'
+        DataType = ftBlob
         ParamType = ptInput
       end
       item
         Name = 'IDVALUE'
+        DataType = ftBlob
         ParamType = ptInput
       end>
     object qrMechanizmID: TFDAutoIncField
@@ -4182,30 +4202,6 @@
       OnChange = MechRowChange
       Precision = 24
     end
-    object qrMechanizmMECH_SUM_NO_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_SUM_NO_NDS'
-      Origin = 'MECH_SUM_NO_NDS'
-      Precision = 24
-    end
-    object qrMechanizmMECH_SUM_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_SUM_NDS'
-      Origin = 'MECH_SUM_NDS'
-      Precision = 24
-    end
-    object qrMechanizmMECH_ZPSUM_NO_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_ZPSUM_NO_NDS'
-      Origin = 'MECH_ZPSUM_NO_NDS'
-      Precision = 24
-    end
-    object qrMechanizmMECH_ZPSUM_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'MECH_ZPSUM_NDS'
-      Origin = 'MECH_ZPSUM_NDS'
-      Precision = 24
-    end
     object qrMechanizmCOAST_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'COAST_NO_NDS'
@@ -4232,30 +4228,6 @@
       FieldName = 'ZP_MACH_NDS'
       Origin = 'ZP_MACH_NDS'
       OnChange = MechRowChange
-      Precision = 24
-    end
-    object qrMechanizmPRICE_NO_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NO_NDS'
-      Origin = 'PRICE_NO_NDS'
-      Precision = 24
-    end
-    object qrMechanizmPRICE_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NDS'
-      Origin = 'PRICE_NDS'
-      Precision = 24
-    end
-    object qrMechanizmZPPRICE_NO_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'ZPPRICE_NO_NDS'
-      Origin = 'ZPPRICE_NO_NDS'
-      Precision = 24
-    end
-    object qrMechanizmZPPRICE_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'ZPPRICE_NDS'
-      Origin = 'ZPPRICE_NDS'
       Precision = 24
     end
     object qrMechanizmFCOAST_NO_NDS: TFMTBCDField
@@ -4341,6 +4313,58 @@
     object qrMechanizmBASE: TByteField
       FieldName = 'BASE'
     end
+    object qrMechanizmVFCOAST_NO_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFCOAST_NO_NDS'
+      Origin = 'VFCOAST_NO_NDS'
+      OnChange = MechRowChange
+      Precision = 24
+    end
+    object qrMechanizmVFCOAST_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFCOAST_NDS'
+      Origin = 'VFCOAST_NDS'
+      OnChange = MechRowChange
+      Precision = 24
+    end
+    object qrMechanizmVFPRICE_NO_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFPRICE_NO_NDS'
+      Origin = 'VFPRICE_NO_NDS'
+      Precision = 24
+    end
+    object qrMechanizmVFPRICE_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFPRICE_NDS'
+      Origin = 'VFPRICE_NDS'
+      Precision = 24
+    end
+    object qrMechanizmVFZP_MACH_NO_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFZP_MACH_NO_NDS'
+      Origin = 'VFZP_MACH_NO_NDS'
+      OnChange = MechRowChange
+      Precision = 24
+    end
+    object qrMechanizmVFZP_MACH_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFZP_MACH_NDS'
+      Origin = 'VFZP_MACH_NDS'
+      OnChange = MechRowChange
+      Precision = 24
+    end
+    object qrMechanizmVFZPPRICE_NO_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFZPPRICE_NO_NDS'
+      Origin = 'VFZPPRICE_NO_NDS'
+      Precision = 24
+    end
+    object qrMechanizmVFZPPRICE_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFZPPRICE_NDS'
+      Origin = 'VFZPPRICE_NDS'
+      Precision = 24
+    end
   end
   object dsMechanizm: TDataSource
     DataSet = qrMechanizm
@@ -4395,10 +4419,12 @@
     ParamData = <
       item
         Name = 'TYPE'
+        DataType = ftBlob
         ParamType = ptInput
       end
       item
         Name = 'IDVALUE'
+        DataType = ftBlob
         ParamType = ptInput
       end>
     object qrMaterialID: TIntegerField
@@ -4533,28 +4559,10 @@
       OnChange = MatRowChange
       Precision = 24
     end
-    object qrMaterialMAT_SUM_NDS: TFMTBCDField
+    object qrMaterialPROC_TRANSP: TFMTBCDField
       AutoGenerateValue = arDefault
-      FieldName = 'MAT_SUM_NDS'
-      Origin = 'MAT_SUM_NDS'
-      Precision = 24
-    end
-    object qrMaterialMAT_SUM_NO_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'MAT_SUM_NO_NDS'
-      Origin = 'MAT_SUM_NO_NDS'
-      Precision = 24
-    end
-    object qrMaterialMAT_TRANSP_NO_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'MAT_TRANSP_NO_NDS'
-      Origin = 'MAT_TRANSP_NO_NDS'
-      Precision = 24
-    end
-    object qrMaterialMAT_TRANSP_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'MAT_TRANSP_NDS'
-      Origin = 'MAT_TRANSP_NDS'
+      FieldName = 'PROC_TRANSP'
+      Origin = 'PROC_TRANSP'
       Precision = 24
     end
     object qrMaterialCOAST_NO_NDS: TFMTBCDField
@@ -4571,39 +4579,6 @@
       OnChange = MatRowChange
       Precision = 24
     end
-    object qrMaterialTRANSP_NO_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'TRANSP_NO_NDS'
-      Origin = 'TRANSP_NO_NDS'
-      OnChange = MatRowChange
-      Precision = 24
-    end
-    object qrMaterialPROC_TRANSP: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'PROC_TRANSP'
-      Origin = 'PROC_TRANSP'
-      OnChange = MatRowChange
-      Precision = 24
-    end
-    object qrMaterialTRANSP_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'TRANSP_NDS'
-      Origin = 'TRANSP_NDS'
-      OnChange = MatRowChange
-      Precision = 24
-    end
-    object qrMaterialPRICE_NO_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NO_NDS'
-      Origin = 'PRICE_NO_NDS'
-      Precision = 24
-    end
-    object qrMaterialPRICE_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'PRICE_NDS'
-      Origin = 'PRICE_NDS'
-      Precision = 24
-    end
     object qrMaterialFCOAST_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
       FieldName = 'FCOAST_NO_NDS'
@@ -4616,6 +4591,18 @@
       FieldName = 'FCOAST_NDS'
       Origin = 'FCOAST_NDS'
       OnChange = MatRowChange
+      Precision = 24
+    end
+    object qrMaterialFPRICE_NO_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NO_NDS'
+      Origin = 'FPRICE_NO_NDS'
+      Precision = 24
+    end
+    object qrMaterialFPRICE_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'FPRICE_NDS'
+      Origin = 'FPRICE_NDS'
       Precision = 24
     end
     object qrMaterialFTRANSP_NO_NDS: TFMTBCDField
@@ -4632,30 +4619,65 @@
       OnChange = MatRowChange
       Precision = 24
     end
-    object qrMaterialFPRICE_NO_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'FPRICE_NO_NDS'
-      Origin = 'FPRICE_NO_NDS'
-      Precision = 24
-    end
-    object qrMaterialFPRICE_NDS: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'FPRICE_NDS'
-      Origin = 'FPRICE_NDS'
-      Precision = 24
-    end
-    object qrMaterialKOEFMR: TFloatField
-      FieldName = 'KOEFMR'
-    end
     object qrMaterialFTRANSCOUNT: TFMTBCDField
       FieldName = 'FTRANSCOUNT'
       OnChange = MatRowChange
+    end
+    object qrMaterialKOEFMR: TFloatField
+      FieldName = 'KOEFMR'
     end
     object qrMaterialBASE: TByteField
       FieldName = 'BASE'
     end
     object qrMaterialMAT_TYPE: TIntegerField
       FieldName = 'MAT_TYPE'
+    end
+    object qrMaterialVFCOAST_NO_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFCOAST_NO_NDS'
+      Origin = 'VFCOAST_NO_NDS'
+      OnChange = MatRowChange
+      Precision = 24
+    end
+    object qrMaterialVFCOAST_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFCOAST_NDS'
+      Origin = 'VFCOAST_NDS'
+      OnChange = MatRowChange
+      Precision = 24
+    end
+    object qrMaterialVFPRICE_NO_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFPRICE_NO_NDS'
+      Origin = 'VFPRICE_NO_NDS'
+      Precision = 24
+    end
+    object qrMaterialVFPRICE_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFPRICE_NDS'
+      Origin = 'VFPRICE_NDS'
+      Precision = 24
+    end
+    object qrMaterialVFTRANSP_NO_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFTRANSP_NO_NDS'
+      Origin = 'VFTRANSP_NO_NDS'
+      OnChange = MatRowChange
+      Precision = 24
+    end
+    object qrMaterialVFTRANSP_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFTRANSP_NDS'
+      Origin = 'VFTRANSP_NDS'
+      OnChange = MatRowChange
+      Precision = 24
+    end
+    object qrMaterialVFTRANSCOUNT: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFTRANSCOUNT'
+      Origin = 'VFTRANSCOUNT'
+      OnChange = MatRowChange
+      Precision = 24
     end
   end
   object dsMaterial: TDataSource
@@ -4759,35 +4781,11 @@
       OnChange = DevRowChange
       Precision = 24
     end
-    object qrDevicesCOAST_NDS: TFMTBCDField
-      FieldName = 'COAST_NDS'
-      Precision = 24
-    end
-    object qrDevicesCOAST_NO_NDS: TFMTBCDField
-      FieldName = 'COAST_NO_NDS'
-      Precision = 24
-    end
     object qrDevicesNDS: TWordField
       AutoGenerateValue = arDefault
       FieldName = 'NDS'
       Origin = 'NDS'
       OnChange = DevRowChange
-    end
-    object qrDevicesTRANSP_NDS: TFMTBCDField
-      FieldName = 'TRANSP_NDS'
-      Precision = 24
-    end
-    object qrDevicesTRANSP_NO_NDS: TFMTBCDField
-      FieldName = 'TRANSP_NO_NDS'
-      Precision = 24
-    end
-    object qrDevicesPRICE_NDS: TFMTBCDField
-      FieldName = 'PRICE_NDS'
-      Precision = 24
-    end
-    object qrDevicesPRICE_NO_NDS: TFMTBCDField
-      FieldName = 'PRICE_NO_NDS'
-      Precision = 24
     end
     object qrDevicesFCOAST_NO_NDS: TFMTBCDField
       AutoGenerateValue = arDefault
@@ -4866,6 +4864,46 @@
     end
     object qrDevicesBASE: TByteField
       FieldName = 'BASE'
+    end
+    object qrDevicesVFCOAST_NO_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFCOAST_NO_NDS'
+      Origin = 'VFCOAST_NO_NDS'
+      OnChange = DevRowChange
+      Precision = 24
+    end
+    object qrDevicesVFCOAST_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFCOAST_NDS'
+      Origin = 'VFCOAST_NDS'
+      OnChange = DevRowChange
+      Precision = 24
+    end
+    object qrDevicesVFPRICE_NO_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFPRICE_NO_NDS'
+      Origin = 'VFPRICE_NO_NDS'
+      Precision = 24
+    end
+    object qrDevicesVFPRICE_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFPRICE_NDS'
+      Origin = 'VFPRICE_NDS'
+      Precision = 24
+    end
+    object qrDevicesVFTRANSP_NO_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFTRANSP_NO_NDS'
+      Origin = 'VFTRANSP_NO_NDS'
+      OnChange = DevRowChange
+      Precision = 24
+    end
+    object qrDevicesVFTRANSP_NDS: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'VFTRANSP_NDS'
+      Origin = 'VFTRANSP_NDS'
+      OnChange = DevRowChange
+      Precision = 24
     end
   end
   object dsDevices: TDataSource

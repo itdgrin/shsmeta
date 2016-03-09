@@ -375,18 +375,10 @@ type
     qrMechanizmMECH_ID: TIntegerField;
     qrMechanizmMECH_NORMA: TFMTBCDField;
     qrMechanizmMECH_COUNT: TFMTBCDField;
-    qrMechanizmMECH_SUM_NO_NDS: TFMTBCDField;
-    qrMechanizmMECH_SUM_NDS: TFMTBCDField;
-    qrMechanizmMECH_ZPSUM_NO_NDS: TFMTBCDField;
-    qrMechanizmMECH_ZPSUM_NDS: TFMTBCDField;
     qrMechanizmCOAST_NO_NDS: TFMTBCDField;
     qrMechanizmCOAST_NDS: TFMTBCDField;
     qrMechanizmZP_MACH_NO_NDS: TFMTBCDField;
     qrMechanizmZP_MACH_NDS: TFMTBCDField;
-    qrMechanizmPRICE_NO_NDS: TFMTBCDField;
-    qrMechanizmPRICE_NDS: TFMTBCDField;
-    qrMechanizmZPPRICE_NO_NDS: TFMTBCDField;
-    qrMechanizmZPPRICE_NDS: TFMTBCDField;
     qrMechanizmFCOAST_NO_NDS: TFMTBCDField;
     qrMechanizmFCOAST_NDS: TFMTBCDField;
     qrMechanizmFZP_MACH_NO_NDS: TFMTBCDField;
@@ -400,17 +392,8 @@ type
     qrMechanizmTERYDOZATR: TFMTBCDField;
     qrMaterialMAT_NORMA: TFMTBCDField;
     qrMaterialMAT_COUNT: TFMTBCDField;
-    qrMaterialMAT_SUM_NDS: TFMTBCDField;
-    qrMaterialMAT_SUM_NO_NDS: TFMTBCDField;
-    qrMaterialMAT_TRANSP_NO_NDS: TFMTBCDField;
-    qrMaterialMAT_TRANSP_NDS: TFMTBCDField;
     qrMaterialCOAST_NO_NDS: TFMTBCDField;
     qrMaterialCOAST_NDS: TFMTBCDField;
-    qrMaterialTRANSP_NO_NDS: TFMTBCDField;
-    qrMaterialPROC_TRANSP: TFMTBCDField;
-    qrMaterialTRANSP_NDS: TFMTBCDField;
-    qrMaterialPRICE_NO_NDS: TFMTBCDField;
-    qrMaterialPRICE_NDS: TFMTBCDField;
     qrMaterialFCOAST_NO_NDS: TFMTBCDField;
     qrMaterialFCOAST_NDS: TFMTBCDField;
     qrMaterialFTRANSP_NO_NDS: TFMTBCDField;
@@ -502,14 +485,32 @@ type
     lbl2: TLabel;
     edtActDate: TEdit;
     btnRS: TSpeedButton;
-    qrDevicesCOAST_NDS: TFMTBCDField;
-    qrDevicesCOAST_NO_NDS: TFMTBCDField;
-    qrDevicesPRICE_NDS: TFMTBCDField;
-    qrDevicesPRICE_NO_NDS: TFMTBCDField;
-    qrDevicesTRANSP_NDS: TFMTBCDField;
-    qrDevicesTRANSP_NO_NDS: TFMTBCDField;
     qrDevicesFTRANSP_NDS: TFMTBCDField;
     qrDevicesFTRANSP_NO_NDS: TFMTBCDField;
+    PMMatNormPrice: TMenuItem;
+    PMMechNormPrice: TMenuItem;
+    qrMaterialVFCOAST_NO_NDS: TFMTBCDField;
+    qrMaterialVFCOAST_NDS: TFMTBCDField;
+    qrMaterialVFPRICE_NO_NDS: TFMTBCDField;
+    qrMaterialVFPRICE_NDS: TFMTBCDField;
+    qrMaterialVFTRANSP_NO_NDS: TFMTBCDField;
+    qrMaterialVFTRANSP_NDS: TFMTBCDField;
+    qrMaterialVFTRANSCOUNT: TFMTBCDField;
+    qrMaterialPROC_TRANSP: TFMTBCDField;
+    qrMechanizmVFCOAST_NO_NDS: TFMTBCDField;
+    qrMechanizmVFCOAST_NDS: TFMTBCDField;
+    qrMechanizmVFPRICE_NO_NDS: TFMTBCDField;
+    qrMechanizmVFPRICE_NDS: TFMTBCDField;
+    qrMechanizmVFZP_MACH_NO_NDS: TFMTBCDField;
+    qrMechanizmVFZP_MACH_NDS: TFMTBCDField;
+    qrMechanizmVFZPPRICE_NO_NDS: TFMTBCDField;
+    qrMechanizmVFZPPRICE_NDS: TFMTBCDField;
+    qrDevicesVFCOAST_NO_NDS: TFMTBCDField;
+    qrDevicesVFCOAST_NDS: TFMTBCDField;
+    qrDevicesVFPRICE_NO_NDS: TFMTBCDField;
+    qrDevicesVFPRICE_NDS: TFMTBCDField;
+    qrDevicesVFTRANSP_NO_NDS: TFMTBCDField;
+    qrDevicesVFTRANSP_NDS: TFMTBCDField;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -644,7 +645,7 @@ type
     procedure dbgrdMaterialKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdDumpKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure dbgrdDevicesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure dbgrdRatesEnter(Sender: TObject);
+    procedure dbgrdEnter(Sender: TObject);
     procedure PMMatDeleteClick(Sender: TObject);
     procedure qrRatesWORK_IDChange(Sender: TField);
     procedure btn1Click(Sender: TObject);
@@ -710,6 +711,8 @@ type
     procedure PanelDataResize(Sender: TObject);
     procedure dsTypeDataDataChange(Sender: TObject; Field: TField);
     procedure btnRSClick(Sender: TObject);
+    procedure PMMatNormPriceClick(Sender: TObject);
+    procedure grRatesExEnter(Sender: TObject);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта на доп. работы');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -770,6 +773,11 @@ type
 
     FReplaceRowID: Integer; // ID строки сметы, которая будет заменяться
 
+    //Флаги что таблицы находся в режиме расширенного редактирования;
+    FMatInEditMode,
+    FMechInEditMode,
+    FDevInEditMode: Boolean;
+
     procedure GridProc(var Message: TMessage);
 
     // пересчитывает все относящееся к строке в таблице расценок
@@ -799,6 +807,8 @@ type
     procedure ReCalcRowDev; // Пересчет одного оборудование
     procedure SetDevEditMode; // включение режима расширенного редактирования оборудования
     procedure SetDevNoEditMode; // отключение режима расширенного редактирования оборудования
+    procedure SetNoEditMode;
+
     // Проверяет есть ли пуск и регулировка в текущей смете
     function CheckE1820(AType: Integer): Boolean;
     // Проверяет, что курсор стоит на смете (ПТМ)
@@ -907,6 +917,13 @@ procedure TSplitter.Paint();
 begin
   // inherited;
   FormCalculationEstimate.RepaintImagesForSplitters();
+end;
+
+procedure TFormCalculationEstimate.SetNoEditMode;
+begin
+  SetMatNoEditMode;
+  SetMechNoEditMode;
+  SetDevNoEditMode;
 end;
 
 function TFormCalculationEstimate.GetEditable: Boolean;
@@ -1950,8 +1967,10 @@ begin
     // Пересчет по строке оборудования
     try
       // Индивидуальное поведение для конкретных полей
-      if (Sender.FieldName = 'PROC_PODR') or (Sender.FieldName = 'PROC_ZAC') or
-        (Sender.FieldName = 'TRANSP_PROC_PODR') or (Sender.FieldName = 'TRANSP_PROC_ZAC') then
+      if (Sender.FieldName = 'PROC_PODR') or
+         (Sender.FieldName = 'PROC_ZAC') or
+         (Sender.FieldName = 'TRANSP_PROC_PODR') or
+         (Sender.FieldName = 'TRANSP_PROC_ZAC') then
       begin
         if Sender.Value > 100 then
           Sender.Value := 100;
@@ -1977,12 +1996,16 @@ begin
         qrDevicesFCOAST_NO_NDS.Value := NDSToNoNDS1(qrDevicesFCOAST_NDS.Value, qrDevicesNDS.Value);
         qrDevicesDEVICE_TRANSP_NO_NDS.Value := NDSToNoNDS1(qrDevicesDEVICE_TRANSP_NDS.Value,
           qrDevicesNDS.Value);
+        qrDevicesVFCOAST_NO_NDS.Value := NDSToNoNDS1(qrDevicesVFCOAST_NDS.Value, qrDevicesNDS.Value);
+        qrDevicesVFTRANSP_NO_NDS.Value := NDSToNoNDS1(qrDevicesVFTRANSP_NDS.Value, qrDevicesNDS.Value);
       end
       else
       begin
         qrDevicesFCOAST_NDS.Value := NoNDSToNDS1(qrDevicesFCOAST_NO_NDS.Value, qrDevicesNDS.Value);
         qrDevicesDEVICE_TRANSP_NDS.Value := NoNDSToNDS1(qrDevicesDEVICE_TRANSP_NO_NDS.Value,
           qrDevicesNDS.Value);
+        qrDevicesVFCOAST_NDS.Value := NoNDSToNDS1(qrDevicesVFCOAST_NO_NDS.Value, qrDevicesNDS.Value);
+        qrDevicesVFTRANSP_NDS.Value := NoNDSToNDS1(qrDevicesVFTRANSP_NO_NDS.Value, qrDevicesNDS.Value);
       end;
       // После изменения ячейки строка фиксируется
       qrDevices.Post;
@@ -2188,8 +2211,7 @@ end;
 
 // включение режима расширенного редактирования оборудования
 procedure TFormCalculationEstimate.SetDevEditMode;
-var
-  i: Integer;
+var I: Integer;
 begin
   for i := 0 to dbgrdDevices.Columns.Count - 1 do
     if (dbgrdDevices.Columns[i].FieldName.ToUpper = 'DEVICE_NAME') or
@@ -2198,13 +2220,15 @@ begin
 
   dbmmoRight.Color := $00AFFEFC;
   dbmmoRight.ReadOnly := False;
+
+  FDevInEditMode := True;
 end;
 
 procedure TFormCalculationEstimate.SetDevNoEditMode;
 var
   i: Integer;
 begin
-  if not dbmmoRight.ReadOnly then
+  if FDevInEditMode then
   begin
     for i := 0 to dbgrdDevices.Columns.Count - 1 do
       if (dbgrdDevices.Columns[i].FieldName.ToUpper = 'DEVICE_NAME') or
@@ -2213,6 +2237,8 @@ begin
 
     dbmmoRight.Color := clWindow;
     dbmmoRight.ReadOnly := True;
+
+    FDevInEditMode := False;
   end;
 end;
 
@@ -2228,14 +2254,18 @@ begin
     if (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_NAME') or
       (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_NORMA') or
       (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_COUNT') or
-      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'COAST_NDS') or
-      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or
+      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or
+      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS') or
+      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'FTRANSP_NDS') or
+      (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'FTRANSP_NO_NDS') or
       (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'PROC_TRANSP') or
       (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'NDS') then
       dbgrdMaterial.Columns[i].ReadOnly := False;
 
   dbmmoRight.Color := $00AFFEFC;
   dbmmoRight.ReadOnly := False;
+
+  FMatInEditMode := True;
 end;
 
 // отключение режима расширенного редактирования материалов
@@ -2243,20 +2273,24 @@ procedure TFormCalculationEstimate.SetMatNoEditMode;
 var
   i: Integer;
 begin
-  if not dbmmoRight.ReadOnly then
+  if FMatInEditMode then
   begin
     for i := 0 to dbgrdMaterial.Columns.Count - 1 do
       if (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_NAME') or
         (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_NORMA') or
         (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_COUNT') or
-        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'COAST_NDS') or
-        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or
+        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or
+        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS') or
+        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'FTRANSP_NDS') or
+        (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'FTRANSP_NO_NDS') or
         (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'PROC_TRANSP') or
         (dbgrdMaterial.Columns[i].FieldName.ToUpper = 'NDS') then
         dbgrdMaterial.Columns[i].ReadOnly := True;
 
     dbmmoRight.Color := clWindow;
     dbmmoRight.ReadOnly := True;
+
+    FMatInEditMode := False;
   end;
 end;
 
@@ -2310,7 +2344,6 @@ begin
   begin
     // Предыдущее рекно используется для определния направления движения по таблице
     dbgrdMaterial.Tag := qrMaterial.RecNo;
-
     // закрытие открытой на редактирование строки
     SetMatNoEditMode;
   end;
@@ -2342,7 +2375,8 @@ begin
 
       if (CField = 'MAT_NAME') then
       begin
-        qrTemp.SQL.Text := 'UPDATE materialcard_temp set ' + 'MAT_NAME=:MAT_NAME WHERE ID=:ID;';
+        qrTemp.SQL.Text := 'UPDATE materialcard_temp set ' +
+          'MAT_NAME=:MAT_NAME WHERE ID=:ID;';
         qrTemp.ParamByName('ID').Value := qrMaterialID.AsInteger;
         qrTemp.ParamByName('MAT_NAME').Value := CValue;
         qrTemp.ExecSQL;
@@ -2369,21 +2403,28 @@ begin
           qrMaterialTRANSP_PROC_PODR.Value := 100 - qrMaterialTRANSP_PROC_ZAC.Value;
       end;
 
-      if (Sender.FieldName = 'FTRANSP_NDS') or (Sender.FieldName = 'FTRANSP_NO_NDS') then
+      if (Sender.FieldName = 'FTRANSP_NDS') or
+         (Sender.FieldName = 'FTRANSP_NO_NDS') then
         qrMaterialFTRANSCOUNT.Value := qrMaterialMAT_COUNT.Value;
+
+      if (Sender.FieldName = 'VFTRANSP_NDS') or
+         (Sender.FieldName = 'VFTRANSP_NO_NDS') then
+        qrMaterialVFTRANSCOUNT.Value := qrMaterialMAT_COUNT.Value;
 
       // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
       if NDSEstimate then
       begin
-        qrMaterialCOAST_NO_NDS.Value := NDSToNoNDS1(qrMaterialCOAST_NDS.Value, qrMaterialNDS.Value);
         qrMaterialFCOAST_NO_NDS.Value := NDSToNoNDS1(qrMaterialFCOAST_NDS.Value, qrMaterialNDS.Value);
         qrMaterialFTRANSP_NO_NDS.Value := NDSToNoNDS1(qrMaterialFTRANSP_NDS.Value, qrMaterialNDS.Value);
+        qrMaterialVFCOAST_NO_NDS.Value := NDSToNoNDS1(qrMaterialVFCOAST_NDS.Value, qrMaterialNDS.Value);
+        qrMaterialVFTRANSP_NO_NDS.Value := NDSToNoNDS1(qrMaterialVFTRANSP_NDS.Value, qrMaterialNDS.Value);
       end
       else
       begin
-        qrMaterialCOAST_NDS.Value := NoNDSToNDS1(qrMaterialCOAST_NO_NDS.Value, qrMaterialNDS.Value);
         qrMaterialFCOAST_NDS.Value := NoNDSToNDS1(qrMaterialFCOAST_NO_NDS.Value, qrMaterialNDS.Value);
         qrMaterialFTRANSP_NDS.Value := NoNDSToNDS1(qrMaterialFTRANSP_NO_NDS.Value, qrMaterialNDS.Value);
+        qrMaterialVFCOAST_NDS.Value := NoNDSToNDS1(qrMaterialVFCOAST_NO_NDS.Value, qrMaterialNDS.Value);
+        qrMaterialVFTRANSP_NDS.Value := NoNDSToNDS1(qrMaterialVFTRANSP_NO_NDS.Value, qrMaterialNDS.Value);
       end;
 
       // После изменения ячейки фиксируется
@@ -2394,24 +2435,29 @@ begin
       begin
         Active := False;
         SQL.Clear;
-        SQL.Add('UPDATE materialcard_temp SET COAST_NO_NDS = :COAST_NO_NDS, ' +
-          'COAST_NDS = :COAST_NDS, FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
+        SQL.Add('UPDATE materialcard_temp SET FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
           'FCOAST_NDS = :FCOAST_NDS, FTRANSP_NO_NDS = :FTRANSP_NO_NDS, ' +
-          'FTRANSP_NDS = :FTRANSP_NDS, MAT_PROC_ZAC = :MAT_PROC_ZAC, ' +
+          'FTRANSP_NDS = :FTRANSP_NDS, VFCOAST_NO_NDS = :VFCOAST_NO_NDS, ' +
+          'VFCOAST_NDS = :VFCOAST_NDS, VFTRANSP_NO_NDS = :VFTRANSP_NO_NDS, ' +
+          'VFTRANSP_NDS = :VFTRANSP_NDS, MAT_PROC_ZAC = :MAT_PROC_ZAC, ' +
           'MAT_PROC_PODR = :MAT_PROC_PODR, TRANSP_PROC_ZAC = :TRANSP_PROC_ZAC, ' +
-          'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, FTRANSCOUNT = :FTRANSCOUNT, ' + CField + ' = :AA' + CField +
+          'TRANSP_PROC_PODR = :TRANSP_PROC_PODR, FTRANSCOUNT = :FTRANSCOUNT, ' +
+          'VFTRANSCOUNT = :VFTRANSCOUNT, ' + CField + ' = :AA' + CField +
           ' WHERE id = :id;');
-        ParamByName('COAST_NO_NDS').Value := qrMaterialCOAST_NO_NDS.AsVariant;
-        ParamByName('COAST_NDS').Value := qrMaterialCOAST_NDS.AsVariant;
         ParamByName('FCOAST_NO_NDS').Value := qrMaterialFCOAST_NO_NDS.AsVariant;
         ParamByName('FCOAST_NDS').Value := qrMaterialFCOAST_NDS.AsVariant;
         ParamByName('FTRANSP_NO_NDS').Value := qrMaterialFTRANSP_NO_NDS.AsVariant;
         ParamByName('FTRANSP_NDS').Value := qrMaterialFTRANSP_NDS.AsVariant;
+        ParamByName('VFCOAST_NO_NDS').Value := qrMaterialVFCOAST_NO_NDS.AsVariant;
+        ParamByName('VFCOAST_NDS').Value := qrMaterialVFCOAST_NDS.AsVariant;
+        ParamByName('VFTRANSP_NO_NDS').Value := qrMaterialVFTRANSP_NO_NDS.AsVariant;
+        ParamByName('VFTRANSP_NDS').Value := qrMaterialVFTRANSP_NDS.AsVariant;
         ParamByName('MAT_PROC_ZAC').Value := qrMaterialMAT_PROC_ZAC.Value;
         ParamByName('MAT_PROC_PODR').Value := qrMaterialMAT_PROC_PODR.Value;
         ParamByName('TRANSP_PROC_ZAC').Value := qrMaterialTRANSP_PROC_ZAC.Value;
         ParamByName('TRANSP_PROC_PODR').Value := qrMaterialTRANSP_PROC_PODR.Value;
         ParamByName('FTRANSCOUNT').Value := qrMaterialFTRANSCOUNT.AsVariant;
+        ParamByName('VFTRANSCOUNT').Value := qrMaterialVFTRANSCOUNT.AsVariant;
         ParamByName('AA' + CField).Value := CValue;
         ParamByName('id').Value := qrMaterialID.Value;
         ExecSQL;
@@ -2436,212 +2482,282 @@ end;
 
 procedure TFormCalculationEstimate.mCopyToOwnBaseClick(Sender: TObject);
 var
-  newID, res, tID: Variant;
+  newID, newID1, res, tID: Variant;
   AutoCommitValue, flOk: Boolean;
   OBJ_NAME: string;
+  TmpRec: TSprRecord;
+  MatId, MatType: Integer;
 begin
   AutoCommitValue := DM.Read.Options.AutoCommit;
   DM.Read.Options.AutoCommit := False;
   try
-    case qrRatesExID_TYPE_DATA.Value of
-      // Копирование расценки в собственную бд
-      1:
+    DM.Read.StartTransaction;
+    try
+      case qrRatesExID_TYPE_DATA.Value of
+        // Копирование расценки в собственную бд
+        1:
         begin
-          try
-            // Проверяем на наличие такой же записи
-            flOk := False;
-            OBJ_NAME := qrRatesExOBJ_CODE.AsString;
-            while not flOk do
-            begin
-              tID := Null;
-              tID := FastSelectSQLOne
-                ('SELECT NORMATIV_ID FROM normativg WHERE NORM_BASE=1 and NORM_NUM=:0 LIMIT 1',
-                VarArrayOf([OBJ_NAME]));
-              if not VarIsNull(tID) then
-              begin
-                res := ShowCopyToOwnDialog(OBJ_NAME);
-
-                if VarIsNull(res) then
-                  Exit;
-                if res = 1 then
-                begin
-                  FastExecSQL('DELETE FROM normativg WHERE NORMATIV_ID = :1', VarArrayOf([tID]));
-                  flOk := True;
-                end;
-              end
-              else
-                flOk := True;
-            end;
-            DM.Read.StartTransaction;
-            tID := FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:0',
-              VarArrayOf([qrRatesExID_TABLES.Value]));
-            // Копируем расценку
-            FastExecSQL
-              ('INSERT INTO normativg(SORT_NUM, NORM_NUM, NORM_CAPTION, UNIT_ID, NORM_ACTIVE,normativ_directory_id, NORM_BASE, NORM_TYPE, work_id, ZNORMATIVS_ID,date_beginer)'#13
-              + '(SELECT null,:2,:3,UNIT_ID,1,normativ_directory_id,1,NORM_TYPE,work_id,ZNORMATIVS_ID, :0 FROM normativg WHERE NORMATIV_ID = :1);',
-              VarArrayOf([OBJ_NAME, qrRatesExOBJ_NAME.Value, Now, tID]));
-            newID := FastSelectSQLOne('SELECT LAST_INSERT_ID()', VarArrayOf([]));
-            // Копируем материалы
-            FastExecSQL
-              ('INSERT INTO materialnorm (NORMATIV_ID, MATERIAL_ID, NORM_RAS) (SELECT :0, MAT_ID, MAT_NORMA FROM materialcard_temp WHERE ID_CARD_RATE=:1)',
-              VarArrayOf([newID, qrRatesExID_TABLES.Value]));
-            // Копируем механизмы
-            FastExecSQL
-              ('INSERT INTO mechanizmnorm (NORMATIV_ID, MECHANIZM_ID, NORM_RAS) (SELECT :0, MECH_ID, MECH_NORMA FROM mechanizmcard_temp WHERE ID_CARD_RATE=:1)',
-              VarArrayOf([newID, qrRatesExID_TABLES.Value]));
-            // Копируем затраты труда
-            FastExecSQL
-              ('INSERT INTO normativwork (NORMATIV_ID, WORK_ID, NORMA) (SELECT :0, WORK_ID, NORMA FROM normativwork WHERE NORMATIV_ID=:1)',
-              VarArrayOf([newID, tID]));
-
-            DM.Read.Commit;
-            Application.MessageBox('Запись успешно скопирована!', 'Справочник расценок',
-              MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
-          except
-            DM.Read.Rollback;
-            Application.MessageBox('Ошибка копирования записи!', 'Справочник расценок',
-              MB_OK + MB_ICONSTOP + MB_TOPMOST);
-          end;
-
-        end;
-      // Материал
-      2:
-        begin
-          try
-            // Проверяем на наличие такой же записи
-            flOk := False;
-            OBJ_NAME := qrRatesExOBJ_CODE.AsString;
-            while not flOk do
-            begin
-              tID := Null;
-              tID := FastSelectSQLOne('SELECT MATERIAL_ID FROM MATERIAL WHERE BASE=1 and MAT_CODE=:0 LIMIT 1',
-                VarArrayOf([OBJ_NAME]));
-              if not VarIsNull(tID) then
-              begin
-                res := ShowCopyToOwnDialog(OBJ_NAME);
-
-                if VarIsNull(res) then
-                  Exit;
-                if res = 1 then
-                begin
-                  FastExecSQL('DELETE FROM MATERIAL WHERE MATERIAL_ID = :1', VarArrayOf([tID]));
-                  flOk := True;
-                end;
-              end
-              else
-                flOk := True;
-            end;
-            DM.Read.StartTransaction;
-            tID := FastSelectSQLOne('SELECT MAT_ID FROM materialcard_temp WHERE ID=:0',
-              VarArrayOf([qrRatesExID_TABLES.Value]));
-
-            // Копируем
-            FastExecSQL
-              ('INSERT INTO MATERIAL(MAT_CODE, MAT_NAME, MAT_TYPE, UNIT_ID, BASE) (SELECT :0, :1, MAT_NAME, MAT_TYPE, UNIT_ID, 1 FROM MATERIAL WHERE MATERIAL_ID=:2)',
-              VarArrayOf([OBJ_NAME, qrRatesExOBJ_NAME.Value, tID]));
-
-            DM.Read.Commit;
-            Application.MessageBox('Запись успешно скопирована!', 'Справочник',
-              MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
-          except
-            DM.Read.Rollback;
-            Application.MessageBox('Ошибка копирования записи!', 'Справочник',
-              MB_OK + MB_ICONSTOP + MB_TOPMOST);
-          end;
-        end;
-      // Механизм
-      3:
-        begin
-          try
-            // Проверяем на наличие такой же записи
-            flOk := False;
-            OBJ_NAME := qrRatesExOBJ_CODE.AsString;
-            while not flOk do
-            begin
-              tID := Null;
-              tID := FastSelectSQLOne
-                ('SELECT MECHANIZM_ID FROM MECHANIZM WHERE BASE=1 and MECH_CODE=:0 LIMIT 1',
-                VarArrayOf([OBJ_NAME]));
-              if not VarIsNull(tID) then
-              begin
-                res := ShowCopyToOwnDialog(OBJ_NAME);
-
-                if VarIsNull(res) then
-                  Exit;
-                if res = 1 then
-                begin
-                  FastExecSQL('DELETE FROM MECHANIZM WHERE MECHANIZM_ID = :1', VarArrayOf([tID]));
-                  flOk := True;
-                end;
-              end
-              else
-                flOk := True;
-            end;
-            DM.Read.StartTransaction;
-            tID := FastSelectSQLOne('SELECT MECH_ID FROM mechanizmcard_temp WHERE ID=:0',
-              VarArrayOf([qrRatesExID_TABLES.Value]));
-
-            // Копируем
-            FastExecSQL
-              ('INSERT INTO MECHANIZM(MECH_CODE, MECH_NAME, UNIT_ID, DESCRIPTION, MECH_PH, TYPE_MEH_SMEN_HOUR, BASE) (SELECT :0, :1, UNIT_ID, DESCRIPTION, MECH_PH, TYPE_MEH_SMEN_HOUR, 1 FROM MECHANIZM WHERE MECHANIZM_ID=:2)',
-              VarArrayOf([OBJ_NAME, qrRatesExOBJ_NAME.Value, tID]));
-
-            DM.Read.Commit;
-            Application.MessageBox('Запись успешно скопирована!', 'Справочник',
-              MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
-          except
-            DM.Read.Rollback;
-            Application.MessageBox('Ошибка копирования записи!', 'Справочник',
-              MB_OK + MB_ICONSTOP + MB_TOPMOST);
-          end;
-        end;
-      // Оборудование
-      4:
-        begin
-          {
-            try
-            // Проверяем на наличие такой же записи
-            flOk := False;
-            OBJ_NAME := qrRatesExOBJ_CODE.Value;
-            while not flOk do
-            begin
+          OBJ_NAME := qrRatesExOBJ_CODE.AsString;
+          // Проверяем на наличие такой же записи
+         //Закомментированно так как алгоритм не учитывает внушние ключи normativg
+          flOk := False;
+          while not flOk do
+          begin
             tID := Null;
-            tID := FastSelectSQLOne('SELECT MATERIAL_ID FROM MATERIAL WHERE BASE=1 and MAT_CODE=:0 LIMIT 1',
-            VarArrayOf([OBJ_NAME]));
+            tID := FastSelectSQLOne
+              ('SELECT NORMATIV_ID FROM normativg WHERE NORM_BASE=1 and NORM_NUM=:0 LIMIT 1',
+              VarArrayOf([OBJ_NAME]));
             if not VarIsNull(tID) then
             begin
-            res := ShowCopyToOwnDialog(OBJ_NAME);
+              res := ShowCopyToOwnDialog(OBJ_NAME);
 
-            if VarIsNull(res) then
-            Exit;
-            if res = 1 then
-            begin
-            FastExecSQL('DELETE FROM MATERIAL WHERE MATERIAL_ID = :1', VarArrayOf([tID]));
-            flOk := True;
-            end;
+              if VarIsNull(res) then
+                Exit;
+              if res = 1 then
+              begin
+                FastExecSQL('DELETE FROM normativg WHERE NORMATIV_ID = :1', VarArrayOf([tID]));
+                flOk := True;
+              end;
             end
             else
-            flOk := True;
-            end;
-            DM.Read.StartTransaction;
-            tID := FastSelectSQLOne('SELECT MAT_ID FROM materialcard_temp WHERE ID=:0',
+              flOk := True;
+          end;
+
+          tID := FastSelectSQLOne('SELECT RATE_ID FROM card_rate_temp WHERE ID=:0',
             VarArrayOf([qrRatesExID_TABLES.Value]));
+          // Копируем расценку
+          newID := GetNewID(C_MANID_NORM);
+          FastExecSQL
+            ('INSERT INTO normativg(NORMATIV_ID,SORT_NUM, NORM_NUM, NORM_CAPTION, ' +
+              'UNIT_ID, NORM_ACTIVE,normativ_directory_id, NORM_BASE, NORM_TYPE, ' +
+              'work_id, ZNORMATIVS_ID,date_beginer)'#13
+            + '(SELECT :4, null,:2,:3,UNIT_ID,1,normativ_directory_id,1,NORM_TYPE,' +
+              'work_id,ZNORMATIVS_ID, :0 FROM normativg WHERE NORMATIV_ID = :1);',
+            VarArrayOf([newID, OBJ_NAME, qrRatesExOBJ_NAME.Value, Now, tID]));
 
-            // Копируем
-            FastExecSQL
-            ('INSERT INTO MATERIAL(MAT_CODE, MAT_NAME, MAT_TYPE, UNIT_ID, BASE) (SELECT :0, :1, MAT_NAME, MAT_TYPE, UNIT_ID, 1 FROM MATERIAL WHERE MATERIAL_ID=:2)',
-            VarArrayOf([OBJ_NAME, qrRatesExOBJ_NAME.Value, tID]));
+          // Копируем материалы
+          newID1 := GetNewID(C_MANID_NORM_MAT);
+          DM.qrDifferent.Active := False;
+          DM.qrDifferent.SQL.Text :=
+            'SELECT MAT_ID, MAT_NORMA FROM materialcard_temp WHERE ID_CARD_RATE=' +
+            qrRatesExID_TABLES.AsString;
+          DM.qrDifferent.Active := true;
+          while not DM.qrDifferent.Eof do
+          begin
+            FastExecSQL('INSERT INTO materialnorm (ID, NORMATIV_ID, MATERIAL_ID, ' +
+              'NORM_RAS, BASE) VALUES (:0,:1,:2,:3,1)',
+              VarArrayOf([newID1, newID, DM.qrDifferent.Fields[0].Value,
+              DM.qrDifferent.Fields[1].Value]));
+            Inc(newID1);
+            DM.qrDifferent.Next;
+          end;
+          DM.qrDifferent.Active := False;
 
-            DM.Read.Commit;
-            Application.MessageBox('Запись успешно скопирована!', 'Справочник',
-            MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
-            except
-            DM.Read.Rollback;
-            Application.MessageBox('Ошибка копирования записи!', 'Справочник',
-            MB_OK + MB_ICONSTOP + MB_TOPMOST);
-            end;
-          }
+          // Копируем механизмы
+          newID1 := GetNewID(C_MANID_NORM_MECH);
+          DM.qrDifferent.Active := False;
+          DM.qrDifferent.SQL.Text :=
+            'SELECT MECH_ID, MECH_NORMA FROM mechanizmcard_temp WHERE ID_CARD_RATE=' +
+            qrRatesExID_TABLES.AsString;
+          DM.qrDifferent.Active := true;
+          while not DM.qrDifferent.Eof do
+          begin
+            FastExecSQL('INSERT INTO mechanizmnorm (ID, NORMATIV_ID, MECHANIZM_ID, ' +
+              'NORM_RAS, BASE) VALUES (:0,:1,:2,:3,1)',
+              VarArrayOf([newID1, newID, DM.qrDifferent.Fields[0].Value,
+              DM.qrDifferent.Fields[1].Value]));
+            Inc(newID1);
+            DM.qrDifferent.Next;
+          end;
+          DM.qrDifferent.Active := False;
+
+          // Копируем затраты труда
+          newID1 := GetNewID(C_MANID_NORM_WORK);
+          DM.qrDifferent.Active := False;
+          DM.qrDifferent.SQL.Text :=
+            'SELECT WORK_ID, NORMA FROM normativwork WHERE NORMATIV_ID=' +
+            VarToStr(tID);
+          DM.qrDifferent.Active := true;
+          while not DM.qrDifferent.Eof do
+          begin
+            FastExecSQL('INSERT INTO normativwork (ID, NORMATIV_ID, WORK_ID, NORMA, BASE) ' +
+              'VALUES (:0,:1,:2,:3,1)',
+              VarArrayOf([newID1, newID, DM.qrDifferent.Fields[0].Value,
+              DM.qrDifferent.Fields[1].Value]));
+            Inc(newID1);
+            DM.qrDifferent.Next;
+          end;
+          DM.qrDifferent.Active := False;
         end;
+        // Материал
+        2:
+        begin
+          MatId := -1;
+          MatType := -1;
+          DM.qrDifferent.SQL.Text :=
+            'SELECT MAT_ID, MAT_TYPE FROM materialcard_temp WHERE ID=:ID';
+          DM.qrDifferent.ParamByName('ID').Value := qrRatesExID_TABLES.Value;
+          DM.qrDifferent.Active := True;
+          try
+            if not DM.qrDifferent.IsEmpty then
+            begin
+              MatId := DM.qrDifferent.Fields[0].AsInteger;
+              MatType := DM.qrDifferent.Fields[1].AsInteger;
+            end
+            else
+              raise Exception.Create('Материал не найден.');
+
+            if not(MatType in [1,2]) then
+              raise Exception.Create('Недопустимый тип материала.');
+          finally
+            DM.qrDifferent.Active := False;
+          end;
+          OBJ_NAME := Trim(qrRatesExOBJ_CODE.AsString);
+
+          // Проверяем на наличие такой же записи
+          flOk := False;
+          while not flOk do
+          begin
+            tID := Null;
+            tID := FastSelectSQLOne('SELECT MATERIAL_ID FROM MATERIAL WHERE BASE=1 and Trim(MAT_CODE)=Trim(:0) LIMIT 1',
+              VarArrayOf([OBJ_NAME]));
+            if not VarIsNull(tID) then
+            begin
+              res := ShowCopyToOwnDialog(OBJ_NAME);
+
+              if VarIsNull(res) then
+                Exit;
+              if res = 1 then
+              begin
+                FastExecSQL('DELETE FROM MATERIAL WHERE MATERIAL_ID = :1', VarArrayOf([tID]));
+                DelSprItem(tID, MatType - 1);
+                flOk := True;
+              end;
+            end
+            else
+              flOk := True;
+          end;
+
+          // Копируем
+          newID := GetNewID(C_MANID_MAT);
+          FastExecSQL
+            ('INSERT INTO MATERIAL (MATERIAL_ID, MAT_CODE, MAT_NAME, MAT_TYPE, ' +
+              'UNIT_ID, BASE) (SELECT :3, :0, :1, MAT_TYPE, UNIT_ID, 1 ' +
+              'FROM MATERIAL WHERE MATERIAL_ID=:2)',
+            VarArrayOf([newID, OBJ_NAME, qrRatesExOBJ_NAME.AsString, MatId]));
+
+          TmpRec.ID := newID;
+          TmpRec.Code := OBJ_NAME;
+          TmpRec.Name := qrRatesExOBJ_NAME.AsString;
+          TmpRec.Unt := Trim(qrRatesExOBJ_UNIT.AsString);
+          TmpRec.Manual := True;
+          //MatType - 1 = CMatIndex, CJBIIndex
+          SprControl.AddItem(MatType - 1, TmpRec);
+        end;
+        // Механизм
+        3:
+        begin
+          // Проверяем на наличие такой же записи
+          flOk := False;
+          OBJ_NAME := qrRatesExOBJ_CODE.AsString;
+          while not flOk do
+          begin
+            tID := Null;
+            tID := FastSelectSQLOne
+              ('SELECT MECHANIZM_ID FROM MECHANIZM WHERE BASE=1 and Trim(MECH_CODE)=Trim(:0) LIMIT 1',
+              VarArrayOf([OBJ_NAME]));
+            if not VarIsNull(tID) then
+            begin
+              res := ShowCopyToOwnDialog(OBJ_NAME);
+
+              if VarIsNull(res) then
+                Exit;
+              if res = 1 then
+              begin
+                FastExecSQL('DELETE FROM MECHANIZM WHERE MECHANIZM_ID = :1', VarArrayOf([tID]));
+                DelSprItem(tID, CMechIndex);
+                flOk := True;
+              end;
+            end
+            else
+              flOk := True;
+          end;
+
+          tID := FastSelectSQLOne('SELECT MECH_ID FROM mechanizmcard_temp WHERE ID=:0',
+            VarArrayOf([qrRatesExID_TABLES.Value]));
+          // Копируем
+          newID := GetNewID(C_MANID_MECH);
+          FastExecSQL
+            ('INSERT INTO MECHANIZM(MECHANIZM_ID, MECH_CODE, MECH_NAME, UNIT_ID, ' +
+            'DESCRIPTION, MECH_PH, TYPE_MEH_SMEN_HOUR, BASE) (SELECT :3, :0, :1, ' +
+            'UNIT_ID, DESCRIPTION, MECH_PH, TYPE_MEH_SMEN_HOUR, 1 ' +
+            'FROM MECHANIZM WHERE MECHANIZM_ID=:2)',
+            VarArrayOf([newID, OBJ_NAME, qrRatesExOBJ_NAME.Value, tID]));
+          TmpRec.ID := newID;
+          TmpRec.Code := OBJ_NAME;
+          TmpRec.Name := qrRatesExOBJ_NAME.AsString;
+          TmpRec.Unt := Trim(qrRatesExOBJ_UNIT.AsString);
+          TmpRec.Manual := True;
+          SprControl.AddItem(CMechIndex, TmpRec);
+        end;
+        // Оборудование
+        4:
+        begin
+          // Проверяем на наличие такой же записи
+          flOk := False;
+          OBJ_NAME := qrRatesExOBJ_CODE.AsString;
+          while not flOk do
+          begin
+            tID := Null;
+            tID := FastSelectSQLOne
+              ('SELECT DEVICE_ID FROM devices WHERE BASE=1 and Trim(DEVICE_CODE1)=Trim(:0) LIMIT 1',
+              VarArrayOf([OBJ_NAME]));
+            if not VarIsNull(tID) then
+            begin
+              res := ShowCopyToOwnDialog(OBJ_NAME);
+
+              if VarIsNull(res) then
+                Exit;
+              if res = 1 then
+              begin
+                FastExecSQL('DELETE FROM devices WHERE DEVICE_ID = :1', VarArrayOf([tID]));
+                DelSprItem(tID, CDevIndex);
+                flOk := True;
+              end;
+            end
+            else
+              flOk := True;
+          end;
+
+          tID := FastSelectSQLOne('SELECT DEVICE_ID FROM devicescard_temp WHERE ID=:0',
+            VarArrayOf([qrRatesExID_TABLES.Value]));
+          // Копируем
+          newID := GetNewID(C_MANID_DEV);
+          FastExecSQL
+            ('INSERT INTO devices (DEVICE_ID, DEVICE_CODE1, DEVICE_CODE2, NAME, ' +
+            'UNIT, BASE) (SELECT :3, :0, '''', :1, ' +
+            'UNIT, 1 FROM devices WHERE DEVICE_ID=:2)',
+            VarArrayOf([newID, OBJ_NAME, qrRatesExOBJ_NAME.Value, tID]));
+          TmpRec.ID := newID;
+          TmpRec.Code := OBJ_NAME;
+          TmpRec.Name := qrRatesExOBJ_NAME.AsString;
+          TmpRec.Unt := Trim(qrRatesExOBJ_UNIT.AsString);
+          TmpRec.Manual := True;
+          SprControl.AddItem(CDevIndex, TmpRec);
+        end
+        else raise Exception.Create('Операция не поддерживает данный тип данных.');
+      end;
+      DM.Read.Commit;
+      Application.MessageBox('Запись успешно скопирована!', 'Справочник',
+        MB_OK + MB_ICONINFORMATION + MB_TOPMOST);
+    except
+      on e: Exception do
+      begin
+        DM.Read.Rollback;
+        Application.MessageBox(PChar('Ошибка копирования записи!' + sLineBreak +
+          e.ClassName + ': ' + e.Message), 'Справочник',
+          MB_OK + MB_ICONSTOP + MB_TOPMOST);
+      end;
     end;
   finally
     DM.Read.Options.AutoCommit := AutoCommitValue;
@@ -2808,47 +2924,45 @@ begin
       // пересчитывается всегда, что-бы не писать кучу условий когда это актуально
       if NDSEstimate then
       begin
-        qrMechanizmCOAST_NO_NDS.Value := NDSToNoNDS1(qrMechanizmCOAST_NDS.Value, qrMechanizmNDS.Value);
         qrMechanizmFCOAST_NO_NDS.Value := NDSToNoNDS1(qrMechanizmFCOAST_NDS.Value, qrMechanizmNDS.Value);
-        qrMechanizmZP_MACH_NO_NDS.Value := NDSToNoNDS1(qrMechanizmZP_MACH_NDS.Value, qrMechanizmNDS.Value);
         qrMechanizmFZP_MACH_NO_NDS.Value := NDSToNoNDS1(qrMechanizmFZP_MACH_NDS.Value, qrMechanizmNDS.Value);
+        qrMechanizmVFCOAST_NO_NDS.Value := NDSToNoNDS1(qrMechanizmVFCOAST_NDS.Value, qrMechanizmNDS.Value);
+        qrMechanizmVFZP_MACH_NO_NDS.Value := NDSToNoNDS1(qrMechanizmVFZP_MACH_NDS.Value, qrMechanizmNDS.Value);
       end
       else
       begin
-        qrMechanizmCOAST_NDS.Value := NoNDSToNDS1(qrMechanizmCOAST_NO_NDS.Value, qrMechanizmNDS.Value);
         qrMechanizmFCOAST_NDS.Value := NoNDSToNDS1(qrMechanizmFCOAST_NO_NDS.Value, qrMechanizmNDS.Value);
-        qrMechanizmZP_MACH_NDS.Value := NoNDSToNDS1(qrMechanizmZP_MACH_NO_NDS.Value, qrMechanizmNDS.Value);
         qrMechanizmFZP_MACH_NDS.Value := NoNDSToNDS1(qrMechanizmFZP_MACH_NO_NDS.Value, qrMechanizmNDS.Value);
+        qrMechanizmVFCOAST_NDS.Value := NoNDSToNDS1(qrMechanizmVFCOAST_NO_NDS.Value, qrMechanizmNDS.Value);
+        qrMechanizmVFZP_MACH_NDS.Value := NoNDSToNDS1(qrMechanizmVFZP_MACH_NO_NDS.Value, qrMechanizmNDS.Value);
       end;
 
       // После изменения ячейки строка фиксируется
       qrMechanizm.Post;
 
       // Обновление в базе (так как датасет не связан с базой напрямую)
-      with qrTemp do
-      begin
-        Active := False;
-        SQL.Clear;
-        SQL.Add('UPDATE mechanizmcard_temp SET COAST_NO_NDS = :COAST_NO_NDS, ' +
-          'COAST_NDS = :COAST_NDS, FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
-          'FCOAST_NDS = :FCOAST_NDS, ZP_MACH_NO_NDS = :ZP_MACH_NO_NDS, ' +
-          'ZP_MACH_NDS = :ZP_MACH_NDS, FZP_MACH_NO_NDS = :FZP_MACH_NO_NDS, ' +
-          'FZP_MACH_NDS = :FZP_MACH_NDS, PROC_ZAC = :PROC_ZAC, ' + 'PROC_PODR = :PROC_PODR, ' + CField +
-          ' = :AA' + CField + ' WHERE id = :id;');
-        ParamByName('COAST_NO_NDS').Value := qrMechanizmCOAST_NO_NDS.AsVariant;
-        ParamByName('COAST_NDS').Value := qrMechanizmCOAST_NDS.AsVariant;
-        ParamByName('FCOAST_NO_NDS').Value := qrMechanizmFCOAST_NO_NDS.AsVariant;
-        ParamByName('FCOAST_NDS').Value := qrMechanizmFCOAST_NDS.AsVariant;
-        ParamByName('ZP_MACH_NO_NDS').Value := qrMechanizmZP_MACH_NO_NDS.AsVariant;
-        ParamByName('ZP_MACH_NDS').Value := qrMechanizmZP_MACH_NDS.AsVariant;
-        ParamByName('FZP_MACH_NO_NDS').Value := qrMechanizmFZP_MACH_NO_NDS.AsVariant;
-        ParamByName('FZP_MACH_NDS').Value := qrMechanizmFZP_MACH_NDS.AsVariant;
-        ParamByName('PROC_ZAC').Value := qrMechanizmPROC_ZAC.Value;
-        ParamByName('PROC_PODR').Value := qrMechanizmPROC_PODR.Value;
-        ParamByName('AA' + CField).Value := CValue;
-        ParamByName('id').Value := qrMechanizmID.Value;
-        ExecSQL;
-      end;
+      qrTemp.Active := False;
+      qrTemp.SQL.Clear;
+      qrTemp.SQL.Add('UPDATE mechanizmcard_temp SET FCOAST_NO_NDS = :FCOAST_NO_NDS, ' +
+        'FCOAST_NDS = :FCOAST_NDS, FZP_MACH_NO_NDS = :FZP_MACH_NO_NDS, ' +
+        'FZP_MACH_NDS = :FZP_MACH_NDS, VFCOAST_NO_NDS = :VFCOAST_NO_NDS, ' +
+        'VFCOAST_NDS = :VFCOAST_NDS, VFZP_MACH_NO_NDS = :VFZP_MACH_NO_NDS, ' +
+        'VFZP_MACH_NDS = :VFZP_MACH_NDS, PROC_ZAC = :PROC_ZAC, ' +
+        'PROC_PODR = :PROC_PODR, ' + CField +
+        ' = :AA' + CField + ' WHERE id = :id;');
+      qrTemp.ParamByName('FCOAST_NO_NDS').Value := qrMechanizmFCOAST_NO_NDS.AsVariant;
+      qrTemp.ParamByName('FCOAST_NDS').Value := qrMechanizmFCOAST_NDS.AsVariant;
+      qrTemp.ParamByName('FZP_MACH_NO_NDS').Value := qrMechanizmFZP_MACH_NO_NDS.AsVariant;
+      qrTemp.ParamByName('FZP_MACH_NDS').Value := qrMechanizmFZP_MACH_NDS.AsVariant;
+      qrTemp.ParamByName('VFCOAST_NO_NDS').Value := qrMechanizmVFCOAST_NO_NDS.AsVariant;
+      qrTemp.ParamByName('VFCOAST_NDS').Value := qrMechanizmVFCOAST_NDS.AsVariant;
+      qrTemp.ParamByName('VFZP_MACH_NO_NDS').Value := qrMechanizmVFZP_MACH_NO_NDS.AsVariant;
+      qrTemp.ParamByName('VFZP_MACH_NDS').Value := qrMechanizmVFZP_MACH_NDS.AsVariant;
+      qrTemp.ParamByName('PROC_ZAC').Value := qrMechanizmPROC_ZAC.Value;
+      qrTemp.ParamByName('PROC_PODR').Value := qrMechanizmPROC_PODR.Value;
+      qrTemp.ParamByName('AA' + CField).Value := CValue;
+      qrTemp.ParamByName('id').Value := qrMechanizmID.Value;
+      qrTemp.ExecSQL;
 
       // Пересчет по строке механизма
       ReCalcRowMech(CType);
@@ -2932,18 +3046,14 @@ begin
     qrMechanizm.Edit;
     qrMechanizmMECH_NORMA.Value := qrTemp.FieldByName('MECH_NORMA').AsBCD;
     qrMechanizmMECH_COUNT.Value := qrTemp.FieldByName('MECH_COUNT').AsBCD;
-    qrMechanizmPRICE_NO_NDS.Value := qrTemp.FieldByName('PRICE_NO_NDS').AsBCD;
-    qrMechanizmPRICE_NDS.Value := qrTemp.FieldByName('PRICE_NDS').AsBCD;
-    qrMechanizmZPPRICE_NO_NDS.Value := qrTemp.FieldByName('ZPPRICE_NO_NDS').AsBCD;
-    qrMechanizmZPPRICE_NDS.Value := qrTemp.FieldByName('ZPPRICE_NDS').AsBCD;
     qrMechanizmFPRICE_NO_NDS.Value := qrTemp.FieldByName('FPRICE_NO_NDS').AsBCD;
     qrMechanizmFPRICE_NDS.Value := qrTemp.FieldByName('FPRICE_NDS').AsBCD;
     qrMechanizmFZPPRICE_NO_NDS.Value := qrTemp.FieldByName('FZPPRICE_NO_NDS').AsBCD;
     qrMechanizmFZPPRICE_NDS.Value := qrTemp.FieldByName('FZPPRICE_NDS').AsBCD;
-    qrMechanizmMECH_SUM_NO_NDS.Value := qrTemp.FieldByName('MECH_SUM_NO_NDS').AsBCD;
-    qrMechanizmMECH_SUM_NDS.Value := qrTemp.FieldByName('MECH_SUM_NDS').AsBCD;
-    qrMechanizmMECH_ZPSUM_NO_NDS.Value := qrTemp.FieldByName('MECH_ZPSUM_NO_NDS').AsBCD;
-    qrMechanizmMECH_ZPSUM_NDS.Value := qrTemp.FieldByName('MECH_ZPSUM_NDS').AsBCD;
+    qrMechanizmVFPRICE_NO_NDS.Value := qrTemp.FieldByName('VFPRICE_NO_NDS').AsBCD;
+    qrMechanizmVFPRICE_NDS.Value := qrTemp.FieldByName('VFPRICE_NDS').AsBCD;
+    qrMechanizmVFZPPRICE_NO_NDS.Value := qrTemp.FieldByName('VFZPPRICE_NO_NDS').AsBCD;
+    qrMechanizmVFZPPRICE_NDS.Value := qrTemp.FieldByName('VFZPPRICE_NDS').AsBCD;
     qrMechanizmNORMATIV.Value := qrTemp.FieldByName('NORMATIV').AsBCD;
     qrMechanizmNORM_TRYD.Value := qrTemp.FieldByName('NORM_TRYD').AsBCD;
     qrMechanizmTERYDOZATR.Value := qrTemp.FieldByName('TERYDOZATR').AsBCD;
@@ -2983,20 +3093,17 @@ begin
     qrMaterial.Edit;
     qrMaterialMAT_NORMA.Value := qrTemp.FieldByName('MAT_NORMA').AsBCD;
     qrMaterialMAT_COUNT.Value := qrTemp.FieldByName('MAT_COUNT').AsBCD;
-    qrMaterialTRANSP_NO_NDS.Value := qrTemp.FieldByName('TRANSP_NO_NDS').AsBCD;
-    qrMaterialTRANSP_NDS.Value := qrTemp.FieldByName('TRANSP_NDS').AsBCD;
-    qrMaterialPRICE_NO_NDS.Value := qrTemp.FieldByName('PRICE_NO_NDS').AsBCD;
-    qrMaterialPRICE_NDS.Value := qrTemp.FieldByName('PRICE_NDS').AsBCD;
     qrMaterialFPRICE_NO_NDS.Value := qrTemp.FieldByName('FPRICE_NO_NDS').AsBCD;
     qrMaterialFPRICE_NDS.Value := qrTemp.FieldByName('FPRICE_NDS').AsBCD;
     qrMaterialFTRANSP_NO_NDS.Value := qrTemp.FieldByName('FTRANSP_NO_NDS').AsBCD;
     qrMaterialFTRANSP_NDS.Value := qrTemp.FieldByName('FTRANSP_NDS').AsBCD;
-    qrMaterialMAT_SUM_NO_NDS.Value := qrTemp.FieldByName('MAT_SUM_NO_NDS').AsBCD;
-    qrMaterialMAT_SUM_NDS.Value := qrTemp.FieldByName('MAT_SUM_NDS').AsBCD;
-    qrMaterialMAT_TRANSP_NO_NDS.Value := qrTemp.FieldByName('MAT_TRANSP_NO_NDS').AsBCD;
-    qrMaterialMAT_TRANSP_NDS.Value := qrTemp.FieldByName('MAT_TRANSP_NDS').AsBCD;
+    qrMaterialVFPRICE_NO_NDS.Value := qrTemp.FieldByName('VFPRICE_NO_NDS').AsBCD;
+    qrMaterialVFPRICE_NDS.Value := qrTemp.FieldByName('VFPRICE_NDS').AsBCD;
+    qrMaterialVFTRANSP_NO_NDS.Value := qrTemp.FieldByName('VFTRANSP_NO_NDS').AsBCD;
+    qrMaterialVFTRANSP_NDS.Value := qrTemp.FieldByName('VFTRANSP_NDS').AsBCD;
     qrMaterial.Post;
-    if (qrRatesExID_TYPE_DATA.Value = 2) and (qrRatesExID_TABLES.Value = qrMaterialID.Value) then
+    if (qrRatesExID_TYPE_DATA.Value = 2) and
+       (qrRatesExID_TABLES.Value = qrMaterialID.Value) then
     begin
       ev := qrRatesExOBJ_COUNT.OnChange;
       try
@@ -3030,6 +3137,8 @@ begin
     qrDevicesDEVICE_COUNT.Value := qrTemp.FieldByName('DEVICE_COUNT').AsBCD;
     qrDevicesFPRICE_NO_NDS.Value := qrTemp.FieldByName('FPRICE_NO_NDS').AsBCD;
     qrDevicesFPRICE_NDS.Value := qrTemp.FieldByName('FPRICE_NDS').AsBCD;
+    qrDevicesVFPRICE_NO_NDS.Value := qrTemp.FieldByName('VFPRICE_NO_NDS').AsBCD;
+    qrDevicesVFPRICE_NDS.Value := qrTemp.FieldByName('VFPRICE_NDS').AsBCD;
     qrDevicesDEVICE_SUM_NO_NDS.Value := qrTemp.FieldByName('DEVICE_SUM_NO_NDS').AsBCD;
     qrDevicesDEVICE_SUM_NDS.Value := qrTemp.FieldByName('DEVICE_SUM_NDS').AsBCD;
     qrDevices.Post;
@@ -3662,6 +3771,12 @@ begin
     AllowEdit := False;
 end;
 
+procedure TFormCalculationEstimate.grRatesExEnter(Sender: TObject);
+begin
+  SetNoEditMode;
+  dbgrdEnter(Sender);
+end;
+
 procedure TFormCalculationEstimate.grRatesExExit(Sender: TObject);
 begin
   (Sender as TJvDBGrid).DataSource.DataSet.CheckBrowseMode;
@@ -3796,14 +3911,32 @@ end;
 
 procedure TFormCalculationEstimate.PMCalcMatClick(Sender: TObject);
 begin
-  FCalculator.ShowCalculator(dbgrdMaterial, qrMaterialFCOAST_NDS.Value, qrMaterialMAT_COUNT.Value,
-    qrMaterialFPRICE_NDS.Value, qrMaterialNDS.Value, 'FCOAST_NDS');
+  if (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FCOAST_NDS') then
+    FCalculator.ShowCalculator(dbgrdMaterial, qrMaterialFCOAST_NDS.Value,
+      qrMaterialMAT_COUNT.Value,
+      qrMaterialFPRICE_NDS.Value,
+      qrMaterialNDS.Value, 'FCOAST_NDS');
+
+  if (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'VFCOAST_NDS') then
+    FCalculator.ShowCalculator(dbgrdMaterial, qrMaterialVFCOAST_NDS.Value,
+      qrMaterialMAT_COUNT.Value,
+      qrMaterialVFPRICE_NDS.Value,
+      qrMaterialNDS.Value, 'VFCOAST_NDS');
 end;
 
 procedure TFormCalculationEstimate.PMCalcMechClick(Sender: TObject);
 begin
-  FCalculator.ShowCalculator(dbgrdMechanizm, qrMechanizmFCOAST_NDS.Value, qrMechanizmMECH_COUNT.Value,
-    qrMechanizmFPRICE_NDS.Value, qrMechanizmNDS.Value, 'FCOAST_NDS');
+  if (dbgrdMechanizm.Columns[dbgrdMechanizm.Col - 1].FieldName = 'FCOAST_NDS') then
+    FCalculator.ShowCalculator(dbgrdMechanizm, qrMechanizmFCOAST_NDS.Value,
+      qrMechanizmMECH_COUNT.Value,
+      qrMechanizmFPRICE_NDS.Value,
+      qrMechanizmNDS.Value, 'FCOAST_NDS');
+
+  if (dbgrdMechanizm.Columns[dbgrdMechanizm.Col - 1].FieldName = 'VFCOAST_NDS') then
+    FCalculator.ShowCalculator(dbgrdMechanizm, qrMechanizmVFCOAST_NDS.Value,
+      qrMechanizmMECH_COUNT.Value,
+      qrMechanizmVFPRICE_NDS.Value,
+      qrMechanizmNDS.Value, 'VFCOAST_NDS');
 end;
 
 procedure TFormCalculationEstimate.PMCopyClick(Sender: TObject);
@@ -3999,6 +4132,35 @@ begin
     SetMatEditMode;
 end;
 
+procedure TFormCalculationEstimate.PMMatNormPriceClick(Sender: TObject);
+begin
+  if (Sender as TMenuItem).Tag = 1 then
+  begin
+    qrMaterial.Edit;
+    if NDSEstimate then
+      qrMaterialFCOAST_NDS.Value := qrMaterialCOAST_NDS.Value
+    else
+      qrMaterialFCOAST_NO_NDS.Value := qrMaterialCOAST_NO_NDS.Value;
+  end;
+
+  if (Sender as TMenuItem).Tag = 2 then
+  begin
+    qrMechanizm.Edit;
+    if NDSEstimate then
+    begin
+      qrMechanizmFZP_MACH_NDS.Value := qrMechanizmZP_MACH_NDS.Value;
+      qrMechanizm.Edit;
+      qrMechanizmFCOAST_NDS.Value := qrMechanizmCOAST_NDS.Value;
+    end
+    else
+    begin
+      qrMechanizmFZP_MACH_NO_NDS.Value := qrMechanizmZP_MACH_NO_NDS.Value;
+      qrMechanizm.Edit;
+      qrMechanizmFCOAST_NO_NDS.Value := qrMechanizmCOAST_NO_NDS.Value;
+    end;
+  end;
+end;
+
 procedure TFormCalculationEstimate.PMMatRestoreClick(Sender: TObject);
 begin
   try
@@ -4115,16 +4277,18 @@ begin
     if (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_NAME') or
       (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_NORMA') or
       (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_COUNT') or
-      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'COAST_NDS') or
-      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or
-      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'ZP_MACH_NDS') or
-      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'ZP_MACH_NO_NDS') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'FZP_MACH_NDS') or
+      (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
       (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'NORMATIV') or
       (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'NDS') then
       dbgrdMechanizm.Columns[i].ReadOnly := False;
 
   dbmmoRight.Color := $00AFFEFC;
   dbmmoRight.ReadOnly := False;
+
+  FMechInEditMode := True;
 end;
 
 // отключение режима расширенного редактирования механизма
@@ -4132,22 +4296,24 @@ procedure TFormCalculationEstimate.SetMechNoEditMode;
 var
   i: Integer;
 begin
-  if not dbmmoRight.ReadOnly then
+  if FMechInEditMode then
   begin
     for i := 0 to dbgrdMechanizm.Columns.Count - 1 do
       if (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_NAME') or
         (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_NORMA') or
         (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_COUNT') or
-        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'COAST_NDS') or
-        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or
-        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'ZP_MACH_NDS') or
-        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'ZP_MACH_NO_NDS') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'FZP_MACH_NDS') or
+        (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
         (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'NORMATIV') or
         (dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'NDS') then
         dbgrdMechanizm.Columns[i].ReadOnly := True;
 
     dbmmoRight.Color := clWindow;
     dbmmoRight.ReadOnly := True;
+
+    FMechInEditMode := False;
   end;
 end;
 
@@ -4976,14 +5142,37 @@ end;
 
 procedure TFormCalculationEstimate.PMUseTransForThisCountClick(Sender: TObject);
 begin
-  qrMaterial.Edit;
-  qrMaterialFTRANSCOUNT.Value := qrMaterialMAT_COUNT.Value;;
+  if (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NO_NDS') or
+     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS') then
+  begin
+    qrMaterial.Edit;
+    qrMaterialFTRANSCOUNT.Value := qrMaterialMAT_COUNT.Value;
+  end;
+
+  if (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'VFTRANSP_NO_NDS') or
+     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'VFTRANSP_NDS') then
+  begin
+    qrMaterial.Edit;
+    qrMaterialVFTRANSCOUNT.Value := qrMaterialMAT_COUNT.Value;
+  end;
 end;
 
 procedure TFormCalculationEstimate.PMUseTransPercClick(Sender: TObject);
 begin
   qrMaterial.Edit;
-  qrMaterialFTRANSCOUNT.Value := 0;
+  if (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NO_NDS') or
+     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS') then
+  begin
+    qrMaterial.Edit;
+    qrMaterialFTRANSCOUNT.Value := 0;
+  end;
+
+  if (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'VFTRANSP_NO_NDS') or
+     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'VFTRANSP_NDS') then
+  begin
+    qrMaterial.Edit;
+    qrMaterialVFTRANSCOUNT.Value := 0;
+  end;
 end;
 
 procedure TFormCalculationEstimate.pmPopup(Sender: TObject);
@@ -5065,14 +5254,32 @@ begin
   PMTransPerc.Visible := (dbgrdMaterial.Col > 0) and
     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'PROC_TRANSP');
 
-  PMUseTransPerc.Enabled := (not CheckMatReadOnly) and (qrMaterialFTRANSCOUNT.Value > 0);
   PMUseTransPerc.Visible := (dbgrdMaterial.Col > 0) and
     ((dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NO_NDS') or
-    (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS'));
-
-  PMUseTransForThisCount.Enabled := PMUseTransPerc.Enabled and
-    (qrMaterialFTRANSCOUNT.Value <> qrMaterialMAT_COUNT.Value);
+     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS') or
+     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'VFTRANSP_NO_NDS') or
+     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'VFTRANSP_NDS'));
   PMUseTransForThisCount.Visible := PMUseTransPerc.Visible;
+
+  if (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NO_NDS') or
+     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS') then
+  begin
+    PMUseTransPerc.Enabled :=
+      (not CheckMatReadOnly) and (qrMaterialFTRANSCOUNT.Value > 0);
+
+    PMUseTransForThisCount.Enabled := PMUseTransPerc.Enabled and
+      (qrMaterialFTRANSCOUNT.Value <> qrMaterialMAT_COUNT.Value);
+  end;
+
+  if (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'VFTRANSP_NO_NDS') or
+     (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'VFTRANSP_NDS') then
+  begin
+    PMUseTransPerc.Enabled :=
+      (not CheckMatReadOnly) and (qrMaterialVFTRANSCOUNT.Value > 0);
+
+    PMUseTransForThisCount.Enabled := PMUseTransPerc.Enabled and
+      (qrMaterialVFTRANSCOUNT.Value <> qrMaterialMAT_COUNT.Value);
+  end;
 
   PMMatFromRates.Enabled := (not CheckMatReadOnly) and (qrMaterialCONSIDERED.AsInteger = 1) and
     (qrRatesExID_TYPE_DATA.AsInteger = 1);
@@ -5097,12 +5304,16 @@ begin
   PMMatRestore.Enabled := qrMaterialDELETED.AsInteger = 1;
 
   PMCalcMat.Visible := NDSEstimate;
-  PMCalcMat.Enabled := (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FCOAST_NDS');
-  // or
-  // (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FTRANSP_NDS');
+  PMCalcMat.Enabled :=
+    (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'FCOAST_NDS')
+    or
+    (dbgrdMaterial.Columns[dbgrdMaterial.Col - 1].FieldName = 'VFCOAST_NDS');
 
   PMMatManPrice.Visible := (qrMaterialBASE.Value > 0);
   PMMatManPrice.Enabled := not CheckMatReadOnly;
+
+  PMMatNormPrice.Visible := (qrMaterialBASE.Value = 0);
+  PMMatNormPrice.Enabled := not CheckMatReadOnly;
 
   PMMatSprCard.Visible := (qrMaterialBASE.Value > 0);
   PMMatSprCard.Enabled := not CheckMatReadOnly;
@@ -5138,10 +5349,15 @@ begin
   PMMechRestore.Enabled := qrMechanizmDELETED.AsInteger = 1;
 
   PMCalcMech.Visible := NDSEstimate;
-  PMCalcMech.Enabled := (dbgrdMechanizm.Columns[dbgrdMechanizm.Col - 1].FieldName = 'FCOAST_NDS');
+  PMCalcMech.Enabled :=
+    (dbgrdMechanizm.Columns[dbgrdMechanizm.Col - 1].FieldName = 'FCOAST_NDS') or
+    (dbgrdMechanizm.Columns[dbgrdMechanizm.Col - 1].FieldName = 'VFCOAST_NDS');
 
   PMMechManPrice.Visible := (qrMechanizmBASE.Value > 0);
   PMMechManPrice.Enabled := not CheckMechReadOnly;
+
+  PMMechNormPrice.Visible := (qrMechanizmBASE.Value = 0);
+  PMMechNormPrice.Enabled := not CheckMechReadOnly;
 
   PMMechSprCard.Visible := (qrMechanizmBASE.Value > 0);
   PMMechSprCard.Enabled := not CheckMechReadOnly;
@@ -5323,10 +5539,11 @@ begin
 
             qrTemp1.SQL.Text := 'Insert into materialcard_temp (SM_ID, DATA_ROW_ID, ' +
               'ID, ID_CARD_RATE, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
-              'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
+              'COAST_NO_NDS, COAST_NDS, FCOAST_NO_NDS, FCOAST_NDS, ' +
+              'PROC_TRANSP, BASE, MAT_TYPE) values ' +
               '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :MAT_ID, :MAT_CODE, ' +
               ':MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, :COAST_NDS, ' +
-              ':PROC_TRANSP, :BASE, :MAT_TYPE)';
+              ':COAST_NO_NDS, :COAST_NDS, :PROC_TRANSP, :BASE, :MAT_TYPE)';
             qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
             qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
             qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -5370,10 +5587,11 @@ begin
             begin
               qrTemp1.SQL.Text := 'Insert into materialcard_temp ' + '(SM_ID, DATA_ROW_ID, ID, ID_CARD_RATE, '
                 + 'CONSIDERED, MAT_ID, MAT_CODE, MAT_NAME, MAT_NORMA, MAT_UNIT, ' +
-                'COAST_NO_NDS, COAST_NDS, PROC_TRANSP, BASE, MAT_TYPE) values ' +
+                'COAST_NO_NDS, COAST_NDS, FCOAST_NO_NDS, FCOAST_NDS, ' +
+                'PROC_TRANSP, BASE, MAT_TYPE) values ' +
                 '(:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, :CONSIDERED, :MAT_ID, ' +
                 ':MAT_CODE, :MAT_NAME, :MAT_NORMA, :MAT_UNIT, :COAST_NO_NDS, ' +
-                ':COAST_NDS, :PROC_TRANSP, :BASE, :MAT_TYPE)';
+                ':COAST_NDS, :COAST_NO_NDS, :COAST_NDS, :PROC_TRANSP, :BASE, :MAT_TYPE)';
               qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
               qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
               qrTemp1.ParamByName('ID').Value := MaxMId;
@@ -5448,8 +5666,10 @@ begin
               qrTemp1.SQL.Text := 'Insert into mechanizmcard_temp (SM_ID, DATA_ROW_ID, ' +
                 'ID, ID_CARD_RATE, MECH_ID, MECH_CODE, MECH_NAME, MECH_NORMA, ' +
                 'MECH_UNIT, COAST_NO_NDS, COAST_NDS, ZP_MACH_NO_NDS, ZP_MACH_NDS, ' +
+                'FCOAST_NO_NDS, FCOAST_NDS, FZP_MACH_NO_NDS, FZP_MACH_NDS, ' +
                 'NORMATIV, BASE) values (:SM_ID, :DATA_ROW_ID, :ID, :ID_CARD_RATE, ' +
                 ':MECH_ID, :MECH_CODE, :MECH_NAME, :MECH_NORMA, :MECH_UNIT, :COAST_NO_NDS, ' +
+                ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :COAST_NO_NDS, ' +
                 ':COAST_NDS, :ZP_MACH_NO_NDS, :ZP_MACH_NDS, :NORMATIV, :BASE)';
               qrTemp1.ParamByName('SM_ID').Value := qrRatesExSM_ID.AsInteger;
               qrTemp1.ParamByName('DATA_ROW_ID').Value := DataRowID;
@@ -5909,7 +6129,7 @@ begin
   PMEdit.Visible := (qrRatesExID_TYPE_DATA.AsInteger in [5, 6, 7, 8, 9]) and CheckCursorInRate;
   PMCopy.Visible := not Act;
   PMPaste.Visible := not Act;
-  mCopyToOwnBase.Visible := qrRatesExID_TYPE_DATA.Value in [1, 2, 3 { , 4 } ];
+  mCopyToOwnBase.Visible := qrRatesExID_TYPE_DATA.Value in [1, 2, 3, 4];
 
   pmMarkRow.Visible := qrRatesExID_TYPE_DATA.AsInteger > 0;
   pmMarkRow.Checked := qrRatesExMarkRow.Value > 0;
@@ -6171,16 +6391,13 @@ var
 begin
   Result := 1;
   try
-    if COL1NAME = '' then
-      COL1NAME := FastSelectSQLOne('SELECT objstroj.COL1NAME FROM objstroj, objcards WHERE ' +
-        'objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID', VarArrayOf([IdObject]));
-    if COL2NAME = '' then
-      COL2NAME := FastSelectSQLOne('SELECT objstroj.COL2NAME FROM objstroj, objcards ' +
-        'WHERE objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID', VarArrayOf([IdObject]));
-    if MAIS = 0 then
-      MAIS := FastSelectSQLOne('SELECT IFNULL(smetasourcedata.`MAIS_ID`, objcards.`MAIS_ID`) FROM ' +
-        'smetasourcedata, objcards WHERE sm_id = :0 AND objcards.`obj_id` = ' + 'smetasourcedata.`OBJ_ID`',
-        VarArrayOf([qrRatesExSM_ID.Value]));
+    COL1NAME := FastSelectSQLOne('SELECT objstroj.COL1NAME FROM objstroj, objcards WHERE ' +
+      'objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID', VarArrayOf([IdObject]));
+    COL2NAME := FastSelectSQLOne('SELECT objstroj.COL2NAME FROM objstroj, objcards ' +
+      'WHERE objcards.OBJ_ID=:0 and objcards.STROJ_ID=objstroj.STROJ_ID', VarArrayOf([IdObject]));
+    MAIS := FastSelectSQLOne('SELECT IFNULL(smetasourcedata.`MAIS_ID`, objcards.`MAIS_ID`) FROM ' +
+      'smetasourcedata, objcards WHERE sm_id = :0 AND objcards.`obj_id` = ' + 'smetasourcedata.`OBJ_ID`',
+      VarArrayOf([qrRatesExSM_ID.Value]));
     qrTemp.Active := False;
     qrTemp.SQL.Text := 'SELECT DISTINCT objworks.work_id as work_id, work_name as NAME,'#13 +
       'CONCAT(objdetailex.' + COL1NAME + ', "% / ", objdetailex.' + COL2NAME + ', "%") AS VALUE,'#13 +
@@ -6435,6 +6652,8 @@ begin
   dbmmoRight.ReadOnly := True;
   dbmmoRight.Color := clWindow;
 
+  SetNoEditMode;
+
   if VisibleRightTables = '1000000' then
   begin
     dbgrdMaterial.Align := alClient;
@@ -6604,16 +6823,21 @@ begin
     // в зависимости от ндс скрывает одни и показывает другие калонки
     for i := 0 to Columns.Count - 1 do
     begin
-      if (Columns[i].FieldName.ToUpper = 'COAST_NDS') or (Columns[i].FieldName.ToUpper = 'PRICE_NDS') or
-        (Columns[i].FieldName.ToUpper = 'TRANSP_NDS') or (Columns[i].FieldName.ToUpper = 'NDS') or
-        (Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or (Columns[i].FieldName.ToUpper = 'FPRICE_NDS') or
-        (Columns[i].FieldName.ToUpper = 'FTRANSP_NDS') then
+      if (Columns[i].FieldName.ToUpper = 'NDS') or
+         (Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FPRICE_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FTRANSP_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFCOAST_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFPRICE_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFTRANSP_NDS') then
         Columns[i].Visible := aNDS;
 
-      if (Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or (Columns[i].FieldName.ToUpper = 'PRICE_NO_NDS') or
-        (Columns[i].FieldName.ToUpper = 'TRANSP_NO_NDS') or (Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS')
-        or (Columns[i].FieldName.ToUpper = 'FPRICE_NO_NDS') or
-        (Columns[i].FieldName.ToUpper = 'FTRANSP_NO_NDS') then
+      if (Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FPRICE_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FTRANSP_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFCOAST_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFPRICE_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFTRANSP_NO_NDS') then
         Columns[i].Visible := not aNDS;
     end;
   end;
@@ -6625,18 +6849,25 @@ begin
       if (Columns[i].FieldName.ToUpper = 'MECH_UNIT') then
         Columns[i].Visible := False;
 
-      if (Columns[i].FieldName.ToUpper = 'COAST_NDS') or (Columns[i].FieldName.ToUpper = 'PRICE_NDS') or
-        (Columns[i].FieldName.ToUpper = 'ZP_MACH_NDS') or (Columns[i].FieldName.ToUpper = 'ZPPRICE_NDS') or
-        (Columns[i].FieldName.ToUpper = 'NDS') or (Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or
-        (Columns[i].FieldName.ToUpper = 'FPRICE_NDS') or (Columns[i].FieldName.ToUpper = 'FZP_MACH_NDS') or
-        (Columns[i].FieldName.ToUpper = 'FZPPRICE_NDS') then
+      if (Columns[i].FieldName.ToUpper = 'NDS') or
+         (Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FPRICE_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FZP_MACH_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FZPPRICE_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFCOAST_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFPRICE_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFZP_MACH_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFZPPRICE_NDS') then
         Columns[i].Visible := aNDS;
 
-      if (Columns[i].FieldName.ToUpper = 'COAST_NO_NDS') or (Columns[i].FieldName.ToUpper = 'PRICE_NO_NDS') or
-        (Columns[i].FieldName.ToUpper = 'ZP_MACH_NO_NDS') or (Columns[i].FieldName.ToUpper = 'ZPPRICE_NO_NDS')
-        or (Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS') or
-        (Columns[i].FieldName.ToUpper = 'FPRICE_NO_NDS') or (Columns[i].FieldName.ToUpper = 'FZP_MACH_NO_NDS')
-        or (Columns[i].FieldName.ToUpper = 'FZPPRICE_NO_NDS') then
+      if (Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FPRICE_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FZPPRICE_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFCOAST_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFPRICE_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFZP_MACH_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFZPPRICE_NO_NDS') then
         Columns[i].Visible := not aNDS;
     end;
   end;
@@ -6648,13 +6879,21 @@ begin
       if (Columns[i].FieldName.ToUpper = 'DEVICE_UNIT') then
         Columns[i].Visible := False;
 
-      if (Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or (Columns[i].FieldName.ToUpper = 'DEVICE_TRANSP_NDS')
-        or (Columns[i].FieldName.ToUpper = 'FPRICE_NDS') or (Columns[i].FieldName.ToUpper = 'NDS') then
+      if (Columns[i].FieldName.ToUpper = 'FCOAST_NDS') or
+         (Columns[i].FieldName.ToUpper = 'DEVICE_TRANSP_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FPRICE_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFCOAST_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFTRANSP_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFPRICE_NDS') or
+         (Columns[i].FieldName.ToUpper = 'NDS') then
         Columns[i].Visible := aNDS;
 
       if (Columns[i].FieldName.ToUpper = 'FCOAST_NO_NDS') or
-        (Columns[i].FieldName.ToUpper = 'DEVICE_TRANSP_NO_NDS') or
-        (Columns[i].FieldName.ToUpper = 'FPRICE_NO_NDS') then
+         (Columns[i].FieldName.ToUpper = 'DEVICE_TRANSP_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'FPRICE_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFCOAST_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFTRANSP_NO_NDS') or
+         (Columns[i].FieldName.ToUpper = 'VFPRICE_NO_NDS') then
         Columns[i].Visible := not aNDS;
     end;
   end;
@@ -7353,8 +7592,8 @@ end;
 procedure TFormCalculationEstimate.dbgrdDevicesDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
-  if ((Sender as TJvDBGrid).MaxColumnWidth > 0) and (Column.Width >= (Sender as TJvDBGrid).MaxColumnWidth)
-  then
+  if ((Sender as TJvDBGrid).MaxColumnWidth > 0) and
+     (Column.Width >= (Sender as TJvDBGrid).MaxColumnWidth) then
     Column.Width := (Sender as TJvDBGrid).MaxColumnWidth - 1;
 
   with (Sender as TJvDBGrid).Canvas do
@@ -7367,18 +7606,13 @@ begin
       Brush.Color := $00F0F0FF;
 
     // Подсветка полей стоимости
-    if (Sender as TJvDBGrid).Name = 'dbgrdTransp' then
-    begin
-      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
+    if (Column.FieldName.ToUpper = 'PRICE_NDS') or
+       (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or
+       (Column.FieldName.ToUpper = 'FPRICE_NDS') or
+       (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or
+       (Column.FieldName.ToUpper = 'VFPRICE_NDS') or
+       (Column.FieldName.ToUpper = 'VFPRICE_NO_NDS') then
         Brush.Color := $00FBFEBC;
-    end
-    else if (Sender as TJvDBGrid).Name = 'dbgrdTransp' then
-    begin
-      if Column.Index in [11, 12] then
-        Brush.Color := $00FBFEBC;
-    end
-    else if Column.Index in [9, 10] then
-      Brush.Color := $00FBFEBC;
 
     if Assigned(TMyDBGrid(Sender).DataLink) and
       ((Sender as TJvDBGrid).Row = TMyDBGrid(Sender).DataLink.ActiveRecord + 1) and
@@ -7391,19 +7625,14 @@ begin
     end;
 
     if (gdFocused in State) or // Ячейка в фокусе
-      (FCalculator.Visible and (gdSelected in State)) // Или на неё открыли калькулятор
+       (FCalculator.Visible and (gdSelected in State)) // Или на неё открыли калькулятор
     then
     begin
       Brush.Color := PS.BackgroundSelectCell;
       Font.Color := PS.FontSelectCell;
     end;
 
-    // FillRect(Rect);
     (Sender as TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
-    // if Column.Alignment = taRightJustify then
-    // TextRect(Rect, Rect.Right - 2 - TextWidth(Column.Field.DisplayText), Rect.Top + 2, Column.Field.DisplayText)
-    // else
-    // TextRect(Rect, Rect.Left + 2, Rect.Top + 2, Column.Field.DisplayText);
   end;
 end;
 
@@ -7422,26 +7651,23 @@ end;
 
 procedure TFormCalculationEstimate.dbgrdMaterialCanEditCell(Grid: TJvDBGrid; Field: TField;
   var AllowEdit: Boolean);
-var
-  i: Integer;
 begin
   AllowEdit := Editable;
   if not AllowEdit then
     Exit;
 
   // Перечень полей которые можно редактировать всегда
-  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
-    (Field.FieldName.ToUpper = 'FTRANSP_NDS') or (Field.FieldName.ToUpper = 'FTRANSP_NO_NDS') or
-    (Field.FieldName.ToUpper = 'MAT_PROC_PODR') or (Field.FieldName.ToUpper = 'MAT_PROC_ZAC') or
-    (Field.FieldName.ToUpper = 'TRANSP_PROC_PODR') or (Field.FieldName.ToUpper = 'TRANSP_PROC_ZAC') then
+  if (Field.FieldName.ToUpper = 'VFCOAST_NO_NDS') or
+     (Field.FieldName.ToUpper = 'VFCOAST_NDS') or
+     (Field.FieldName.ToUpper = 'VFTRANSP_NO_NDS') or
+     (Field.FieldName.ToUpper = 'VFTRANSP_NDS') or
+     (Field.FieldName.ToUpper = 'MAT_PROC_PODR') or
+     (Field.FieldName.ToUpper = 'MAT_PROC_ZAC') or
+     (Field.FieldName.ToUpper = 'TRANSP_PROC_PODR') or
+     (Field.FieldName.ToUpper = 'TRANSP_PROC_ZAC') then
     Exit;
-  // Просто одно из полей (норма), что-бы понять включен ли режим редактирования
-  for i := 0 to dbgrdMaterial.Columns.Count - 1 do
-    if dbgrdMaterial.Columns[i].FieldName.ToUpper = 'MAT_NORMA' then
-    begin
-      AllowEdit := not dbgrdMaterial.Columns[i].ReadOnly;
-      Break;
-    end;
+
+  AllowEdit := FMatInEditMode;
 end;
 
 procedure TFormCalculationEstimate.dbgrdMaterialDrawColumnCell(Sender: TObject; const Rect: TRect;
@@ -7465,31 +7691,19 @@ begin
       Brush.Color := $00F0F0FF;
 
     // Подсветка полей стоимости
-    if (Column.FieldName.ToUpper = 'PRICE_NDS') or (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or
-      (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
-    begin
-      // Та стоимость которая используется в расчете подсвечивается берюзовым
-      // другая серым
-      if (Column.FieldName.ToUpper = 'PRICE_NDS') or (Column.FieldName.ToUpper = 'PRICE_NO_NDS') then
-        if (qrMaterialFPRICE_NO_NDS.Value > 0) then
-          Brush.Color := $00DDDDDD
-        else
-          Brush.Color := $00FBFEBC;
-
-      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
-        if (qrMaterialFPRICE_NO_NDS.Value > 0) then
-          Brush.Color := $00FBFEBC
-        else
-          Brush.Color := $00DDDDDD;
-    end;
+    if (Column.FieldName.ToUpper = 'FPRICE_NDS') or
+       (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or
+       (Column.FieldName.ToUpper = 'VFPRICE_NDS') or
+       (Column.FieldName.ToUpper = 'VFPRICE_NO_NDS') then
+      Brush.Color := $00FBFEBC;
 
     // Подсветка красным пустых значений  норма, цена и %трансп
-    if ((Column.FieldName.ToUpper = 'MAT_NORMA') or (Column.FieldName.ToUpper = 'COAST_NDS') or
-      (Column.FieldName.ToUpper = 'COAST_NO_NDS') or (Column.FieldName.ToUpper = 'PROC_TRANSP')) and
-      (Column.Field.Value = 0) then
-    begin
+    if ((Column.FieldName.ToUpper = 'MAT_NORMA') or
+        (Column.FieldName.ToUpper = 'FCOAST_NDS') or
+        (Column.FieldName.ToUpper = 'FCOAST_NO_NDS') or
+        (Column.FieldName.ToUpper = 'PROC_TRANSP')) and
+       (Column.Field.Value = 0) then
       Brush.Color := $008080FF;
-    end;
 
     if Assigned(TMyDBGrid(dbgrdMaterial).DataLink) and
       (dbgrdMaterial.Row = TMyDBGrid(dbgrdMaterial).DataLink.ActiveRecord + 1) and
@@ -7502,7 +7716,8 @@ begin
     end;
 
     // Подсветка зеленым фактических транспортных расходов в режиме ручного ввода
-    if (Column.FieldName.ToUpper = 'FTRANSP_NDS') or (Column.FieldName.ToUpper = 'FTRANSP_NO_NDS') then
+    if (Column.FieldName.ToUpper = 'FTRANSP_NDS') or
+       (Column.FieldName.ToUpper = 'FTRANSP_NO_NDS') then
     begin
       if qrMaterialFTRANSCOUNT.Value > 0 then
       begin
@@ -7513,8 +7728,21 @@ begin
       end;
     end;
 
+    if (Column.FieldName.ToUpper = 'VFTRANSP_NDS') or
+       (Column.FieldName.ToUpper = 'VFTRANSP_NO_NDS') then
+    begin
+      if qrMaterialVFTRANSCOUNT.Value > 0 then
+      begin
+        Brush.Color := $0080FF80;
+        // Подсветка красным если значение вводилось для другого колва
+        if qrMaterialVFTRANSCOUNT.Value <> qrMaterialMAT_COUNT.Value then
+          Brush.Color := $008080FF;
+      end;
+    end;
+
     // Зачеркиваем вынесеные из расцеки материалы
-    if (qrMaterialFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1) then
+    if (qrMaterialFROM_RATE.Value = 1) and
+       (qrRatesExID_TYPE_DATA.Value = 1) then
     begin
       Font.Style := Font.Style + [fsStrikeOut];
       Brush.Color := $00DDDDDD;
@@ -7534,12 +7762,15 @@ begin
     end;
 
     // Подсветка замененного материяла (подсветка П-шки)
-    if (FIdReplasedMat > 0) and (qrMaterialID.Value = FIdReplasedMat) and (dbgrdMaterial = FLastEntegGrd) then
+    if (FIdReplasedMat > 0) and
+       (qrMaterialID.Value = FIdReplasedMat) and
+       (dbgrdMaterial = FLastEntegGrd) then
       Font.Style := Font.Style + [fsBold];
 
     // Подсветка замененяющего материала
-    if (FIdReplasingMat > 0) and (FIdReplasingMat = qrMaterialID_REPLACED.Value) and
-      (dbgrdMaterial = FLastEntegGrd) then
+    if (FIdReplasingMat > 0) and
+       (FIdReplasingMat = qrMaterialID_REPLACED.Value) and
+       (dbgrdMaterial = FLastEntegGrd) then
       Font.Style := Font.Style + [fsBold];
 
     Str := '';
@@ -7561,13 +7792,18 @@ begin
 
     // Не отображает кол-во и суммы для замененных или вынесеных
     if ((qrMaterialFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1)) or
-      (qrMaterialREPLACED.Value = 1) or (qrMaterialDELETED.Value = 1) then
+       (qrMaterialREPLACED.Value = 1) or
+       (qrMaterialDELETED.Value = 1) then
     begin
-      if (Column.FieldName.ToUpper = 'MAT_COUNT') or (Column.FieldName.ToUpper = 'PRICE_NDS') or
-        (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or (Column.FieldName.ToUpper = 'TRANSP_NDS') or
-        (Column.FieldName.ToUpper = 'TRANSP_NO_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NDS') or
-        (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or (Column.FieldName.ToUpper = 'FTRANSP_NDS') or
-        (Column.FieldName.ToUpper = 'FTRANSP_NO_NDS') then
+      if (Column.FieldName.ToUpper = 'MAT_COUNT') or
+         (Column.FieldName.ToUpper = 'FPRICE_NDS') or
+         (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or
+         (Column.FieldName.ToUpper = 'FTRANSP_NDS') or
+         (Column.FieldName.ToUpper = 'FTRANSP_NO_NDS') or
+         (Column.FieldName.ToUpper = 'VFPRICE_NDS') or
+         (Column.FieldName.ToUpper = 'VFPRICE_NO_NDS') or
+         (Column.FieldName.ToUpper = 'VFTRANSP_NDS') or
+         (Column.FieldName.ToUpper = 'VFTRANSP_NO_NDS') then
         Str := '';
     end;
 
@@ -7604,24 +7840,20 @@ end;
 
 procedure TFormCalculationEstimate.dbgrdMechanizmCanEditCell(Grid: TJvDBGrid; Field: TField;
   var AllowEdit: Boolean);
-var
-  i: Integer;
 begin
   AllowEdit := Editable;
   if not AllowEdit then
     Exit;
 
-  if (Field.FieldName.ToUpper = 'FCOAST_NDS') or (Field.FieldName.ToUpper = 'FCOAST_NO_NDS') or
-    (Field.FieldName.ToUpper = 'FZP_MACH_NDS') or (Field.FieldName.ToUpper = 'FZP_MACH_NO_NDS') or
-    (Field.FieldName.ToUpper = 'PROC_PODR') or (Field.FieldName.ToUpper = 'PROC_ZAC') then
+  if (Field.FieldName.ToUpper = 'VFCOAST_NO_NDS') or
+     (Field.FieldName.ToUpper = 'VFCOAST_NDS') or
+     (Field.FieldName.ToUpper = 'VFZP_MACH_NO_NDS') or
+     (Field.FieldName.ToUpper = 'VFZP_MACH_NDS') or
+     (Field.FieldName.ToUpper = 'PROC_PODR') or
+     (Field.FieldName.ToUpper = 'PROC_ZAC') then
     Exit;
 
-  for i := 0 to dbgrdMechanizm.Columns.Count - 1 do
-    if dbgrdMechanizm.Columns[i].FieldName.ToUpper = 'MECH_NORMA' then
-    begin
-      AllowEdit := not dbgrdMechanizm.Columns[i].ReadOnly;
-      Break;
-    end;
+  AllowEdit := FMechInEditMode;
 end;
 
 procedure TFormCalculationEstimate.dbgrdMechanizmDrawColumnCell(Sender: TObject; const Rect: TRect;
@@ -7642,45 +7874,22 @@ begin
     if Column.Index = 1 then
       Brush.Color := $00F0F0FF;
 
-    // Подсветка полей стоимости
-    if (Column.FieldName.ToUpper = 'PRICE_NDS') or (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or
-      (Column.FieldName.ToUpper = 'ZPPRICE_NDS') or (Column.FieldName.ToUpper = 'ZPPRICE_NO_NDS') or
-      (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or
-      (Column.FieldName.ToUpper = 'FZPPRICE_NDS') or (Column.FieldName.ToUpper = 'FZPPRICE_NO_NDS') then
-    begin
-      // Та стоимость которая используется в расчете подсвечивается берюзовым
-      // другая серым
-      if (Column.FieldName.ToUpper = 'PRICE_NDS') or (Column.FieldName.ToUpper = 'PRICE_NO_NDS') then
-        if (qrMechanizmFPRICE_NO_NDS.Value > 0) then
-          Brush.Color := $00DDDDDD
-        else
-          Brush.Color := $00FBFEBC;
-
-      if (Column.FieldName.ToUpper = 'FPRICE_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') then
-        if (qrMechanizmFPRICE_NO_NDS.Value > 0) then
-          Brush.Color := $00FBFEBC
-        else
-          Brush.Color := $00DDDDDD;
-
-      if (Column.FieldName.ToUpper = 'ZPPRICE_NDS') or (Column.FieldName.ToUpper = 'ZPPRICE_NO_NDS') then
-        if (qrMechanizmFZPPRICE_NO_NDS.Value > 0) then
-          Brush.Color := $00DDDDDD
-        else
-          Brush.Color := $00FBFEBC;
-
-      if (Column.FieldName.ToUpper = 'FZPPRICE_NDS') or (Column.FieldName.ToUpper = 'FZPPRICE_NO_NDS') then
-        if (qrMechanizmFZPPRICE_NO_NDS.Value > 0) then
-          Brush.Color := $00FBFEBC
-        else
-          Brush.Color := $00DDDDDD;
-    end;
+    if (Column.FieldName.ToUpper = 'FPRICE_NDS') or
+       (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or
+       (Column.FieldName.ToUpper = 'FZPPRICE_NDS') or
+       (Column.FieldName.ToUpper = 'FZPPRICE_NO_NDS') or
+       (Column.FieldName.ToUpper = 'VFPRICE_NDS') or
+       (Column.FieldName.ToUpper = 'VFPRICE_NO_NDS') or
+       (Column.FieldName.ToUpper = 'VFZPPRICE_NDS') or
+       (Column.FieldName.ToUpper = 'VFZPPRICE_NO_NDS') then
+      Brush.Color := $00FBFEBC;
 
     // Подсветка красным пустых значений
-    if ((Column.FieldName.ToUpper = 'MECH_NORMA') or (Column.FieldName.ToUpper = 'COAST_NDS') or
-      (Column.FieldName.ToUpper = 'COAST_NO_NDS')) and (Column.Field.Value = 0) then
-    begin
+    if ((Column.FieldName.ToUpper = 'MECH_NORMA') or
+        (Column.FieldName.ToUpper = 'FCOAST_NDS') or
+        (Column.FieldName.ToUpper = 'FCOAST_NO_NDS')) and
+       (Column.Field.Value = 0) then
       Brush.Color := $008080FF;
-    end;
 
     if Assigned(TMyDBGrid(dbgrdMechanizm).DataLink) and
       (dbgrdMechanizm.Row = TMyDBGrid(dbgrdMechanizm).DataLink.ActiveRecord + 1) and
@@ -7713,13 +7922,16 @@ begin
     end;
 
     // Подсветка замененного механизма
-    if (FIdReplasedMech > 0) and (qrMechanizmID.Value = FIdReplasedMech) and (dbgrdMechanizm = FLastEntegGrd)
+    if (FIdReplasedMech > 0) and
+       (qrMechanizmID.Value = FIdReplasedMech) and
+       (dbgrdMechanizm = FLastEntegGrd)
     then
       Font.Style := Font.Style + [fsBold];
 
     // Подсветка замененяющего механизма
-    if (FIdReplasingMech > 0) and (FIdReplasingMech = qrMechanizmID_REPLACED.Value) and
-      (dbgrdMechanizm = FLastEntegGrd) then
+    if (FIdReplasingMech > 0) and
+       (FIdReplasingMech = qrMechanizmID_REPLACED.Value) and
+       (dbgrdMechanizm = FLastEntegGrd) then
       Font.Style := Font.Style + [fsBold];
 
     Str := '';
@@ -7740,13 +7952,19 @@ begin
     end;
 
     if ((qrMechanizmFROM_RATE.Value = 1) and (qrRatesExID_TYPE_DATA.Value = 1)) or
-      (qrMechanizmREPLACED.Value = 1) or (qrMechanizmDELETED.Value = 1) then
+       (qrMechanizmREPLACED.Value = 1) or
+       (qrMechanizmDELETED.Value = 1) then
     begin
-      if (Column.FieldName.ToUpper = 'MECH_COUNT') or (Column.FieldName.ToUpper = 'PRICE_NDS') or
-        (Column.FieldName.ToUpper = 'PRICE_NO_NDS') or (Column.FieldName.ToUpper = 'ZPPRICE_NDS') or
-        (Column.FieldName.ToUpper = 'ZPPRICE_NO_NDS') or (Column.FieldName.ToUpper = 'FPRICE_NDS') or
-        (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or (Column.FieldName.ToUpper = 'FZPPRICE_NDS') or
-        (Column.FieldName.ToUpper = 'FZPPRICE_NO_NDS') or (Column.FieldName.ToUpper = 'TERYDOZATR') then
+      if (Column.FieldName.ToUpper = 'MECH_COUNT') or
+         (Column.FieldName.ToUpper = 'FPRICE_NDS') or
+         (Column.FieldName.ToUpper = 'FPRICE_NO_NDS') or
+         (Column.FieldName.ToUpper = 'FZPPRICE_NDS') or
+         (Column.FieldName.ToUpper = 'FZPPRICE_NO_NDS') or
+         (Column.FieldName.ToUpper = 'VFPRICE_NDS') or
+         (Column.FieldName.ToUpper = 'VFPRICE_NO_NDS') or
+         (Column.FieldName.ToUpper = 'VFZPPRICE_NDS') or
+         (Column.FieldName.ToUpper = 'VFZPPRICE_NO_NDS') or
+         (Column.FieldName.ToUpper = 'TERYDOZATR') then
         Str := '';
     end;
 
@@ -7865,7 +8083,7 @@ begin
   end;
 end;
 
-procedure TFormCalculationEstimate.dbgrdRatesEnter(Sender: TObject);
+procedure TFormCalculationEstimate.dbgrdEnter(Sender: TObject);
 begin
   FLastEntegGrd := TJvDBGrid(Sender);
 
@@ -7890,8 +8108,7 @@ end;
 
 procedure TFormCalculationEstimate.dbmmoEnter(Sender: TObject);
 begin
-  if not Editable then
-    (Sender as TDBMemo).ReadOnly := True;
+  (Sender as TDBMemo).ReadOnly := not Editable;
 end;
 
 procedure TFormCalculationEstimate.dbmmoCAPTIONExit(Sender: TObject);
