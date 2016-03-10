@@ -121,7 +121,6 @@ const SSRItems: array[0..12, 0..2] of string =
    ('90.20','—Ã≈“Õ¿ﬂ —“Œ»ÃŒ—“‹ ƒŒÀ≈¬Œ√Œ ”◊¿—“»ﬂ ¬ —“–Œ»“≈À‹—“¬≈ Œ¡⁄≈ “Œ¬ »À» »’ ◊¿—“≈… ¬—œŒÃŒ√¿“≈À‹ÕŒ√Œ œ–Œ»«¬Œƒ—“¬¿ » Õ¿«Õ¿◊≈Õ»ﬂ, œ–≈ƒÕ¿«Õ¿◊≈ÕÕ€’ ƒÀﬂ Œ¡—À”∆»¬¿Õ»ﬂ Õ≈— ŒÀ‹ »’ «¿ ¿«◊» Œ¬, «¿—“–Œ…Ÿ» Œ¬','0'),
    ('90.30','¬—≈√Œ   ”“¬≈–∆ƒ≈Õ»ﬁ','1'));
 
-
 procedure TFormReportSSR.btnObjInfoClick(Sender: TObject);
 var fCardObject: TfCardObject;
 begin
@@ -628,25 +627,26 @@ begin
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) CHAPTER, ' +
     '(Select IFNULL(ROW_NUMBER, 1) FROM smetasourcedata WHERE SM_ID = ' +
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) ROW_NUMBER, ' +
-    'Round(SUM(COALESCE(d.ZPF, d.ZP, 0))) ZP, ' +
-    'Round(SUM(COALESCE(d.ZP_PRF, d.ZP_PR, 0))) ZP_PR, ' +
-    'Round(SUM(COALESCE(d.EMiMF, d.EMiM, 0))) EMiM, ' +
-    'Round(SUM(COALESCE(d.ZP_MASHF, d.ZP_MASH, 0))) ZP_MASH, ' +
-    'Round(SUM(COALESCE(d.MRF, d.MR, 0))) MR, ' +
-    'Round(SUM(COALESCE(d.TRANSPF, d.TRANSP, 0))) TRANSP, ' +
-    'Round(SUM(COALESCE(d.OHROPRF, d.OHROPR, 0))) OHROPR, ' +
-    'Round(SUM(COALESCE(d.PLAN_PRIBF, d.PLAN_PRIB, 0))) PLAN_PRIB, ' +
-    'Round(SUM(COALESCE(d.MR_DEVICEF, d.MR_DEVICE, 0))) MR_DEVICE, ' +
-    'Round(SUM(COALESCE(d.TRANSP_DEVICEF, d.TRANSP_DEVICE, 0))) TRANSP_DEVICE, ' +
-    'Round(SUM(COALESCE(d.OTHERF, d.OTHER, 0))) OTHER, ' +
-    'Round(SUM(COALESCE(d.TRUDF, d.TRUD, 0))) TRUD ' +
+    'SUM(COALESCE(d.ZPF, d.ZP, 0)) ZP, ' +
+    'SUM(COALESCE(d.ZP_PRF, d.ZP_PR, 0)) ZP_PR, ' +
+    'SUM(COALESCE(d.EMiMF, d.EMiM, 0)) EMiM, ' +
+    'SUM(COALESCE(d.ZP_MASHF, d.ZP_MASH, 0)) ZP_MASH, ' +
+    'SUM(COALESCE(d.MRF, d.MR, 0)) MR, ' +
+    'SUM(COALESCE(d.TRANSPF, d.TRANSP, 0)) TRANSP, ' +
+    'SUM(COALESCE(d.OHROPRF, d.OHROPR, 0)) OHROPR, ' +
+    'SUM(COALESCE(d.PLAN_PRIBF, d.PLAN_PRIB, 0)) PLAN_PRIB, ' +
+    'SUM(COALESCE(d.MR_DEVICEF, d.MR_DEVICE, 0)) MR_DEVICE, ' +
+    'SUM(COALESCE(d.TRANSP_DEVICEF, d.TRANSP_DEVICE, 0)) TRANSP_DEVICE, ' +
+    'SUM(COALESCE(d.OTHERF, d.OTHER, 0)) OTHER, ' +
+    'SUM(COALESCE(d.TRUDF, d.TRUD, 0)) TRUD ' +
     'FROM smetasourcedata s, summary_calculation d ' +
     'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
           '(d.SM_ID = s.SM_ID) AND (s.ACT = 0) AND ' +
           '(s.SM_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
             '(PARENT_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
             '(PARENT_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
-            '(OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 0) AND (SM_TYPE = 2))))))) ' +
+            '(OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 0) AND (SM_TYPE = 2)))' +
+            ' and (IFNULL(SM_SUBTYPE, 0) <> 2))))) ' +
     'GROUP BY SM_ID ' +
     'UNION ALL ' +
     'Select (Select SM_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID) SM_ID, ' +
@@ -657,25 +657,26 @@ begin
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) CHAPTER, ' +
     '(Select IFNULL(ROW_NUMBER, 1) FROM smetasourcedata WHERE SM_ID = ' +
       '(Select PARENT_ID FROM smetasourcedata WHERE SM_ID = s.PARENT_ID)) ROW_NUMBER, ' +
-    'Round(SUM(COALESCE(d.ZPF, d.ZP, 0))) ZP, ' +
-    'Round(SUM(COALESCE(d.ZP_PRF, d.ZP_PR, 0))) ZP_PR, ' +
-    'Round(SUM(COALESCE(d.EMiMF, d.EMiM, 0))) EMiM, ' +
-    'Round(SUM(COALESCE(d.ZP_MASHF, d.ZP_MASH, 0))) ZP_MASH, ' +
-    'Round(SUM(COALESCE(d.MRF, d.MR, 0))) MR, ' +
-    'Round(SUM(COALESCE(d.TRANSPF, d.TRANSP, 0))) TRANSP, ' +
-    'Round(SUM(COALESCE(d.OHROPRF, d.OHROPR, 0))) OHROPR, ' +
-    'Round(SUM(COALESCE(d.PLAN_PRIBF, d.PLAN_PRIB, 0))) PLAN_PRIB, ' +
-    'Round(SUM(COALESCE(d.MR_DEVICEF, d.MR_DEVICE, 0))) MR_DEVICE, ' +
-    'Round(SUM(COALESCE(d.TRANSP_DEVICEF, d.TRANSP_DEVICE, 0))) TRANSP_DEVICE, ' +
-    'Round(SUM(COALESCE(d.OTHERF, d.OTHER, 0))) OTHER, ' +
-    'Round(SUM(COALESCE(d.TRUDF, d.TRUD, 0))) TRUD ' +
+    'SUM(COALESCE(d.ZPF, d.ZP, 0)) ZP, ' +
+    'SUM(COALESCE(d.ZP_PRF, d.ZP_PR, 0)) ZP_PR, ' +
+    'SUM(COALESCE(d.EMiMF, d.EMiM, 0)) EMiM, ' +
+    'SUM(COALESCE(d.ZP_MASHF, d.ZP_MASH, 0)) ZP_MASH, ' +
+    'SUM(COALESCE(d.MRF, d.MR, 0)) MR, ' +
+    'SUM(COALESCE(d.TRANSPF, d.TRANSP, 0)) TRANSP, ' +
+    'SUM(COALESCE(d.OHROPRF, d.OHROPR, 0)) OHROPR, ' +
+    'SUM(COALESCE(d.PLAN_PRIBF, d.PLAN_PRIB, 0)) PLAN_PRIB, ' +
+    'SUM(COALESCE(d.MR_DEVICEF, d.MR_DEVICE, 0)) MR_DEVICE, ' +
+    'SUM(COALESCE(d.TRANSP_DEVICEF, d.TRANSP_DEVICE, 0)) TRANSP_DEVICE, ' +
+    'SUM(COALESCE(d.OTHERF, d.OTHER, 0)) OTHER, ' +
+    'SUM(COALESCE(d.TRUDF, d.TRUD, 0)) TRUD ' +
     'FROM smetasourcedata s, summary_calculation d ' +
     'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
           '(d.SM_ID = s.SM_ID) AND (s.ACT = 0) AND ' +
           '(s.SM_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
-          '(PARENT_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
-          '(PARENT_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
-          '(OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 0) AND (SM_TYPE = 2))))))) ' +
+            '(PARENT_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
+            '((PARENT_ID in (Select SM_ID FROM smetasourcedata WHERE ' +
+            '(OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 0) AND (SM_TYPE = 2))))' +
+            ' and (IFNULL(SM_SUBTYPE, 0) <> 2))))) ' +
     'GROUP BY SM_ID';
 
   CaptStr := 'Select sc.CID, COALESCE(sc.SCID, 0) SCID, sc.CNAME, sm.SM_ID, ' +
