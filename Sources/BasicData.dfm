@@ -1,10 +1,10 @@
-object FormBasicData: TFormBasicData
+object fBasicData: TfBasicData
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1048#1089#1093#1086#1076#1085#1099#1077' '#1076#1072#1085#1085#1099#1077
-  ClientHeight = 612
+  ClientHeight = 542
   ClientWidth = 471
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,13 +12,15 @@ object FormBasicData: TFormBasicData
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   DesignSize = (
     471
-    612)
+    542)
   PixelsPerInch = 96
   TextHeight = 13
   object LabelPercentTransportEquipment: TLabel
@@ -164,12 +166,13 @@ object FormBasicData: TFormBasicData
   end
   object pnl3: TPanel
     Left = 0
-    Top = 571
+    Top = 501
     Width = 471
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
-    TabOrder = 22
+    TabOrder = 20
+    ExplicitTop = 571
     DesignSize = (
       471
       41)
@@ -187,7 +190,7 @@ object FormBasicData: TFormBasicData
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabOrder = 0
+      TabOrder = 1
       OnClick = btnSaveClick
     end
     object btnCancel: TButton
@@ -197,8 +200,25 @@ object FormBasicData: TFormBasicData
       Height = 25
       Anchors = [akRight, akBottom]
       Caption = #1054#1090#1084#1077#1085#1072
-      TabOrder = 1
+      TabOrder = 2
       OnClick = btnCancelClick
+    end
+    object btnCalcSetup: TBitBtn
+      Left = 6
+      Top = 8
+      Width = 208
+      Height = 25
+      Anchors = [akLeft, akBottom]
+      Caption = #1055#1088#1086#1095#1080#1077' '#1087#1072#1088#1072#1084#1077#1090#1088#1099' '#1088#1072#1089#1095#1077#1090#1072
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+      Visible = False
+      OnClick = btnCalcSetupClick
     end
   end
   object pnl1: TPanel
@@ -407,29 +427,31 @@ object FormBasicData: TFormBasicData
   object dbchkAPPLY_LOW_COEF_OHROPR_FLAG: TDBCheckBox
     AlignWithMargins = True
     Left = 3
-    Top = 530
+    Top = 460
     Width = 465
     Height = 17
     Align = alBottom
     Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100' '#1087#1086#1085#1080#1078#1072#1102#1097#1080#1077' '#1082#1086#1101#1092' '#1082' '#1054#1061#1056#1080#1054#1055#1056' '#1080' '#1087#1083#1072#1085'. '#1087#1088#1080#1073'.:'
     DataField = 'APPLY_LOW_COEF_OHROPR_FLAG'
     DataSource = dsSmeta
-    TabOrder = 20
+    TabOrder = 18
     ValueChecked = '1'
     ValueUnchecked = '0'
     OnClick = dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick
+    ExplicitTop = 530
   end
   object pnlLowCoef: TPanel
     AlignWithMargins = True
     Left = 3
-    Top = 550
+    Top = 480
     Width = 465
     Height = 21
     Margins.Top = 0
     Margins.Bottom = 0
     Align = alBottom
     BevelOuter = bvNone
-    TabOrder = 21
+    TabOrder = 19
+    ExplicitTop = 550
     object lbl6: TLabel
       Left = 0
       Top = 3
@@ -485,59 +507,16 @@ object FormBasicData: TFormBasicData
     ValueUnchecked = '0'
     OnClick = dbchkcoef_ordersClick
   end
-  object dbchkAPPLY_WINTERPRISE_FLAG: TDBCheckBox
-    AlignWithMargins = True
-    Left = 3
-    Top = 369
-    Width = 465
-    Height = 17
-    Align = alBottom
-    BiDiMode = bdLeftToRight
-    Caption = #1055#1088#1080#1084#1077#1085#1103#1090#1100' '#1079#1080#1084#1085#1077#1077' '#1091#1076#1086#1088#1086#1078#1072#1085#1080#1077
-    DataField = 'APPLY_WINTERPRISE_FLAG'
-    DataSource = dsSmeta
-    ParentBiDiMode = False
-    TabOrder = 17
-    ValueChecked = '1'
-    ValueUnchecked = '0'
-    OnClick = dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick
-  end
-  object dbrgrpCOEF_ORDERS: TDBRadioGroup
-    AlignWithMargins = True
-    Left = 3
-    Top = 389
-    Width = 465
-    Height = 43
-    Margins.Top = 0
-    Margins.Bottom = 0
-    Align = alBottom
-    Caption = #1053#1086#1088#1084#1072' '#1076#1086#1087#1086#1083#1085#1080#1090#1077#1083#1100#1085#1099#1093' '#1079#1080#1084#1085#1080#1093':'
-    Columns = 2
-    DataField = 'WINTERPRICE_TYPE'
-    DataSource = dsSmeta
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    Items.Strings = (
-      #1053#1044#1047' 1 ('#1087#1086' '#1074#1080#1076#1072#1084' '#1089#1090#1088#1086#1080#1090#1077#1083#1100#1089#1090#1074#1072')'
-      #1053#1044#1047' 2 ('#1087#1086' '#1074#1080#1076#1072#1084' '#1088#1072#1073#1086#1090')')
-    ParentFont = False
-    TabOrder = 18
-    Values.Strings = (
-      '0'
-      '1')
-  end
   object pnl2: TPanel
     AlignWithMargins = True
     Left = 3
-    Top = 435
+    Top = 365
     Width = 465
     Height = 89
     Align = alBottom
     BevelOuter = bvNone
-    TabOrder = 19
+    TabOrder = 17
+    ExplicitTop = 435
     object lbl8: TLabel
       AlignWithMargins = True
       Left = 3
@@ -709,11 +688,11 @@ object FormBasicData: TFormBasicData
   object dsDump: TDataSource
     DataSet = qrDump
     Left = 224
-    Top = 334
+    Top = 302
   end
   object pmTransport: TPopupMenu
-    Left = 80
-    Top = 4
+    Left = 240
+    Top = 100
     object PopupMenuPercentTransportCity: TMenuItem
       Tag = 1
       Caption = #1043#1086#1088#1086#1076
@@ -730,24 +709,24 @@ object FormBasicData: TFormBasicData
       OnClick = PopupMenuPercentTransportMinskClick
     end
   end
-  object DataSourceRegionDump: TDataSource
-    DataSet = ADOQueryRegionDump
-    Left = 104
-    Top = 351
+  object dsRegionDump: TDataSource
+    DataSet = qrRegionDump
+    Left = 312
+    Top = 335
   end
   object qrDump: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 257
-    Top = 335
+    Left = 185
+    Top = 303
   end
-  object ADOQueryRegionDump: TFDQuery
+  object qrRegionDump: TFDQuery
     Connection = DM.Connect
     Transaction = DM.Read
     UpdateTransaction = DM.Write
-    Left = 73
-    Top = 351
+    Left = 273
+    Top = 335
   end
   object qrTMP: TFDQuery
     Connection = DM.Connect
@@ -755,8 +734,8 @@ object FormBasicData: TFormBasicData
     UpdateTransaction = DM.Write
     FormatOptions.AssignedValues = [fvDefaultParamDataType]
     FormatOptions.DefaultParamDataType = ftBCD
-    Left = 201
-    Top = 34
+    Left = 241
+    Top = 50
   end
   object qrMAIS: TFDQuery
     AutoCalcFields = False
@@ -768,13 +747,13 @@ object FormBasicData: TFormBasicData
     SQL.Strings = (
       'SELECT * FROM mais'
       'ORDER BY onDate DESC')
-    Left = 73
-    Top = 296
+    Left = 105
+    Top = 272
   end
   object dsMAIS: TDataSource
     DataSet = qrMAIS
-    Left = 104
-    Top = 296
+    Left = 144
+    Top = 272
   end
   object qrSmeta: TFDQuery
     AutoCalcFields = False
@@ -792,14 +771,6 @@ object FormBasicData: TFormBasicData
       item
         SourceDataType = dtByteString
         TargetDataType = dtAnsiString
-      end
-      item
-        SourceDataType = dtBCD
-        TargetDataType = dtDouble
-      end
-      item
-        SourceDataType = dtBlob
-        TargetDataType = dtAnsiString
       end>
     FormatOptions.DefaultParamDataType = ftBCD
     UpdateOptions.AssignedValues = [uvEDelete, uvEInsert, uvCheckReadOnly, uvCheckUpdatable, uvUpdateNonBaseFields]
@@ -815,7 +786,7 @@ object FormBasicData: TFormBasicData
       
         'WHERE sm_id = :IdEstimate AND objcards.obj_id = smetasourcedata.' +
         'OBJ_ID')
-    Left = 1
+    Left = 321
     ParamData = <
       item
         Name = 'IDESTIMATE'
@@ -826,7 +797,7 @@ object FormBasicData: TFormBasicData
   end
   object dsSmeta: TDataSource
     DataSet = qrSmeta
-    Left = 40
+    Left = 376
   end
   object dsCoef: TDataSource
     DataSet = qrCoef
@@ -886,8 +857,8 @@ object FormBasicData: TFormBasicData
   end
   object pmCoef: TPopupMenu
     OnPopup = pmCoefPopup
-    Left = 40
-    Top = 505
+    Left = 72
+    Top = 401
     object mN1: TMenuItem
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
       OnClick = mN1Click

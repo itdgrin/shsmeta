@@ -2473,7 +2473,7 @@ end;
 
 procedure TFormCalculationEstimate.mBaseDataClick(Sender: TObject);
 begin
-  FormBasicData.ShowForm(IdObject, qrRatesExSM_ID.AsInteger);
+  fBasicData.ShowForm(IdObject, qrRatesExSM_ID.AsInteger);
   GetSourceData;
   GridRatesRowSellect;
   CloseOpen(qrRatesEx);
@@ -6158,7 +6158,7 @@ end;
 
 procedure TFormCalculationEstimate.EstimateBasicDataClick(Sender: TObject);
 begin
-  FormBasicData.ShowModal;
+  fBasicData.ShowModal;
 end;
 
 procedure TFormCalculationEstimate.LabelObjectClick(Sender: TObject);
@@ -6209,11 +6209,7 @@ end;
 
 procedure TFormCalculationEstimate.lblSourceDataClick(Sender: TObject);
 begin
-  {
-    if Act then
-    Exit;
-  }
-  FormBasicData.ShowForm(IdObject, IdEstimate);
+  fBasicData.ShowForm(IdObject, IdEstimate);
   GetSourceData;
   GridRatesRowSellect;
   CloseOpen(qrRatesEx);

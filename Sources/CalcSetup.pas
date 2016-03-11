@@ -114,7 +114,6 @@ type
     procedure qrMainNewRecord(DataSet: TDataSet);
     procedure qrMainBeforeOpen(DataSet: TDataSet);
     procedure btnSaveClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
   private
     // ћожно OBJ_ID не передавать, если нету под рукой
     OBJ_ID, SM_ID: Variant; // [0..1] InitParams->Create
@@ -196,11 +195,6 @@ begin
   pnl5.Repaint;
   pnl6.Color := PS.BackgroundHead;
   pnl6.Repaint;
-end;
-
-procedure TfCalcSetup.FormDestroy(Sender: TObject);
-begin
-  Self := nil;
 end;
 
 procedure TfCalcSetup.FormShow(Sender: TObject);

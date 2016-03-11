@@ -7,10 +7,10 @@ uses
   ExtCtrls, DB, DateUtils, DBCtrls, Menus, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Samples.Spin, System.UITypes, Vcl.Mask, Vcl.Grids,
-  Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.DBCGrids, Tools;
+  Vcl.DBGrids, JvExDBGrids, JvDBGrid, Vcl.DBCGrids, Tools, Vcl.Buttons;
 
 type
-  TFormBasicData = class(TSmForm)
+  TfBasicData = class(TSmForm)
     LabelPercentTransportEquipment: TLabel;
     LabelK31: TLabel;
     LabelK32: TLabel;
@@ -34,9 +34,9 @@ type
     PopupMenuPercentTransportCity: TMenuItem;
     PopupMenuPercentTransportVillage: TMenuItem;
     PopupMenuPercentTransportMinsk: TMenuItem;
-    DataSourceRegionDump: TDataSource;
+    dsRegionDump: TDataSource;
     qrDump: TFDQuery;
-    ADOQueryRegionDump: TFDQuery;
+    qrRegionDump: TFDQuery;
     qrTMP: TFDQuery;
     lbl1: TLabel;
     edtYear: TSpinEdit;
@@ -65,7 +65,6 @@ type
     lbl7: TLabel;
     dbedtK_LOW_PLAN_PRIB: TDBEdit;
     dbchkcoef_orders: TDBCheckBox;
-    dbchkAPPLY_WINTERPRISE_FLAG: TDBCheckBox;
     dsCoef: TDataSource;
     qrCoef: TFDQuery;
     pmCoef: TPopupMenu;
@@ -73,7 +72,6 @@ type
     mN2: TMenuItem;
     edtK: TEdit;
     lblK1: TLabel;
-    dbrgrpCOEF_ORDERS: TDBRadioGroup;
     pnl2: TPanel;
     lbl8: TLabel;
     grCoef: TJvDBGrid;
@@ -86,6 +84,7 @@ type
     dbedtK32: TDBEdit;
     dbedtK33: TDBEdit;
     dbedtK34: TDBEdit;
+    btnCalcSetup: TBitBtn;
 
     procedure FormShow(Sender: TObject);
 
@@ -108,6 +107,8 @@ type
     procedure dbchkcoef_ordersClick(Sender: TObject);
     procedure grCoefDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
       State: TGridDrawState);
+    procedure btnCalcSetupClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     // Устанавливаем флаг состояния (применять/ не применять) коэффициента по приказам
 
   private
@@ -122,15 +123,15 @@ type
   end;
 
 var
-  FormBasicData: TFormBasicData;
+  fBasicData: TfBasicData;
 
 implementation
 
-uses Main, DataModule, CalculationEstimate, Coef, GlobsAndConst;
+uses Main, DataModule, CalculationEstimate, Coef, GlobsAndConst, CalcSetup;
 
 {$R *.dfm}
 
-procedure TFormBasicData.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfBasicData.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var
   IdStavka: Integer;
 begin
@@ -159,7 +160,7 @@ begin
   CanClose := True;
 end;
 
-procedure TFormBasicData.FormCreate(Sender: TObject);
+procedure TfBasicData.FormCreate(Sender: TObject);
 begin
   inherited;
   flLoaded := False;
@@ -167,7 +168,15 @@ begin
   Top := FormMain.Top + (FormMain.Height - Height) div 2;
 end;
 
-procedure TFormBasicData.FormShow(Sender: TObject);
+procedure TfBasicData.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  case Key of
+    VK_F11:
+      btnCalcSetup.Visible := not btnCalcSetup.Visible;
+  end;
+end;
+
+procedure TfBasicData.FormShow(Sender: TObject);
 var
   IdStavka: String;
   REGION_ID: Variant;
@@ -265,7 +274,7 @@ begin
 
     // ----------------------------------------
 
-    with ADOQueryRegionDump, DBLookupComboBoxRegionDump do
+    with qrRegionDump, DBLookupComboBoxRegionDump do
     begin
       Active := False;
       SQL.Clear;
@@ -273,7 +282,7 @@ begin
       Active := True;
 
       First;
-      ListSource := DataSourceRegionDump;
+      ListSource := dsRegionDump;
       ListField := 'region_name';
       KeyField := 'region_id';
     end;
@@ -297,7 +306,7 @@ begin
   flLoaded := True;
 end;
 
-procedure TFormBasicData.grCoefDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
+procedure TfBasicData.grCoefDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer;
   Column: TColumn; State: TGridDrawState);
 begin
   with (Sender AS TJvDBGrid).Canvas do
@@ -324,13 +333,13 @@ begin
   (Sender AS TJvDBGrid).DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
-procedure TFormBasicData.mN1Click(Sender: TObject);
+procedure TfBasicData.mN1Click(Sender: TObject);
 begin
   qrCoef.CheckBrowseMode;
   qrCoef.Append;
 end;
 
-procedure TFormBasicData.mN2Click(Sender: TObject);
+procedure TfBasicData.mN2Click(Sender: TObject);
 var
   tableName: string;
 begin
@@ -359,12 +368,12 @@ begin
   end;
 end;
 
-procedure TFormBasicData.pmCoefPopup(Sender: TObject);
+procedure TfBasicData.pmCoefPopup(Sender: TObject);
 begin
   mN2.Enabled := CheckQrActiveEmpty(qrCoef);
 end;
 
-procedure TFormBasicData.ShowForm(const vIdObject, vIdEstimate: Integer);
+procedure TfBasicData.ShowForm(const vIdObject, vIdEstimate: Integer);
 begin
   IdObject := vIdObject;
   IdEstimate := vIdEstimate;
@@ -372,7 +381,7 @@ begin
   ShowModal;
 end;
 
-procedure TFormBasicData.PopupMenuPercentTransportMinskClick(Sender: TObject);
+procedure TfBasicData.PopupMenuPercentTransportMinskClick(Sender: TObject);
 begin
   with edtPercentTransport do
     case (Sender as TMenuItem).Tag of
@@ -385,7 +394,7 @@ begin
     end;
 end;
 
-procedure TFormBasicData.qrCoefBeforeOpen(DataSet: TDataSet);
+procedure TfBasicData.qrCoefBeforeOpen(DataSet: TDataSet);
 begin
   qrCoef.SQL.Text := StringReplace(qrCoef.SQL.Text, '`calculation_coef_temp`', '`calculation_coef`',
     [rfReplaceAll, rfIgnoreCase]);
@@ -394,7 +403,7 @@ begin
       [rfReplaceAll, rfIgnoreCase]);
 end;
 
-procedure TFormBasicData.qrCoefNewRecord(DataSet: TDataSet);
+procedure TfBasicData.qrCoefNewRecord(DataSet: TDataSet);
 var
   tableName: string;
   AutoCommitValue: Boolean;
@@ -513,28 +522,21 @@ begin
     qrCoef.Cancel;
 end;
 
-procedure TFormBasicData.qrSmetaAfterOpen(DataSet: TDataSet);
+procedure TfBasicData.qrSmetaAfterOpen(DataSet: TDataSet);
 var
-  pnlLowCoef_Visible, dbrgrpCOEF_ORDERS_Visible: Integer;
+  pnlLowCoef_Visible: Integer;
 begin
   pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
-  dbrgrpCOEF_ORDERS.Visible := dbchkAPPLY_WINTERPRISE_FLAG.Checked;
 
   if pnlLowCoef.Visible then
     pnlLowCoef_Visible := 0
   else
     pnlLowCoef_Visible := 1;
 
-  if dbrgrpCOEF_ORDERS.Visible then
-    dbrgrpCOEF_ORDERS_Visible := 0
-  else
-    dbrgrpCOEF_ORDERS_Visible := 1;
-
-  Height := 640 - pnlLowCoef.Height * pnlLowCoef_Visible - dbrgrpCOEF_ORDERS.Height *
-    dbrgrpCOEF_ORDERS_Visible;
+  Height := 570 - pnlLowCoef.Height * pnlLowCoef_Visible;
 end;
 
-procedure TFormBasicData.btnSaveClick(Sender: TObject);
+procedure TfBasicData.btnSaveClick(Sender: TObject);
 var
   IdStavka: Integer;
 begin
@@ -571,8 +573,8 @@ begin
       SQL.Add('UPDATE smetasourcedata SET stavka_id = :stavka_id, coef_tr_zatr = :coef_tr_zatr, coef_orders=:coef_orders, '
         + 'coef_tr_obor=:coef_tr_obor, /*k40=:k40,*/ k41=:k41, k31=:k31, k32=:k32, k33=:k33, k34=:k34, growth_index=:growth_index, '
         + 'K_LOW_OHROPR=:K_LOW_OHROPR, K_LOW_PLAN_PRIB=:K_LOW_PLAN_PRIB, APPLY_LOW_COEF_OHROPR_FLAG=:APPLY_LOW_COEF_OHROPR_FLAG, '
-        + 'nds=:nds, dump_id=:dump_id, kzp=:kzp, STAVKA_RAB=:STAVKA_RAB, MAIS_ID=:MAIS_ID, K35=:K35, APPLY_WINTERPRISE_FLAG=:APPLY_WINTERPRISE_FLAG, '
-        + 'WINTERPRICE_TYPE=:WINTERPRICE_TYPE ' + 'WHERE sm_id = :sm_id;');
+        + 'nds=:nds, dump_id=:dump_id, kzp=:kzp, STAVKA_RAB=:STAVKA_RAB, MAIS_ID=:MAIS_ID, K35=:K35 ' +
+        'WHERE sm_id = :sm_id;');
 
       ParamByName('stavka_id').Value := IdStavka;
       ParamByName('coef_tr_zatr').Value := edtPercentTransport.Text;
@@ -592,12 +594,9 @@ begin
       ParamByName('K_LOW_PLAN_PRIB').Value := qrSmeta.FieldByName('K_LOW_PLAN_PRIB').Value;
       ParamByName('APPLY_LOW_COEF_OHROPR_FLAG').AsInteger := qrSmeta.FieldByName('APPLY_LOW_COEF_OHROPR_FLAG')
         .AsInteger;
-      ParamByName('APPLY_WINTERPRISE_FLAG').AsInteger := qrSmeta.FieldByName('APPLY_WINTERPRISE_FLAG')
-        .AsInteger;
       ParamByName('MAIS_ID').Value := dblkcbbMAIS.KeyValue;
       ParamByName('growth_index').Value := 1; // yне актуально
       ParamByName('coef_orders').Value := qrSmeta.FieldByName('coef_orders').AsInteger;
-      ParamByName('WINTERPRICE_TYPE').Value := qrSmeta.FieldByName('WINTERPRICE_TYPE').AsInteger;
       ParamByName('sm_id').Value := IdEstimate;
       ExecSQL;
       // Обновляем все зависимые сметы до самого низкого уровня
@@ -620,12 +619,24 @@ begin
   end;
 end;
 
-procedure TFormBasicData.btnCancelClick(Sender: TObject);
+procedure TfBasicData.btnCalcSetupClick(Sender: TObject);
+var
+  fCalcSetup: TfCalcSetup;
+begin
+  fCalcSetup := TfCalcSetup.Create(Self, VarArrayOf([IdObject, IdEstimate]));
+  try
+    fCalcSetup.ShowModal;
+  finally
+    FreeAndNil(fCalcSetup);
+  end;
+end;
+
+procedure TfBasicData.btnCancelClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TFormBasicData.ComboBoxMonthORYearChange(Sender: TObject);
+procedure TfBasicData.ComboBoxMonthORYearChange(Sender: TObject);
 var
   vYear, vMonth: String;
   res: Variant;
@@ -720,28 +731,21 @@ begin
   }
 end;
 
-procedure TFormBasicData.dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
+procedure TfBasicData.dbchkAPPLY_LOW_COEF_OHROPR_FLAGClick(Sender: TObject);
 var
-  pnlLowCoef_Visible, dbrgrpCOEF_ORDERS_Visible: Integer;
+  pnlLowCoef_Visible: Integer;
 begin
   pnlLowCoef.Visible := dbchkAPPLY_LOW_COEF_OHROPR_FLAG.Checked;
-  dbrgrpCOEF_ORDERS.Visible := dbchkAPPLY_WINTERPRISE_FLAG.Checked;
 
   if pnlLowCoef.Visible then
     pnlLowCoef_Visible := 0
   else
     pnlLowCoef_Visible := 1;
 
-  if dbrgrpCOEF_ORDERS.Visible then
-    dbrgrpCOEF_ORDERS_Visible := 0
-  else
-    dbrgrpCOEF_ORDERS_Visible := 1;
-
-  Height := 640 - pnlLowCoef.Height * pnlLowCoef_Visible - dbrgrpCOEF_ORDERS.Height *
-    dbrgrpCOEF_ORDERS_Visible;
+  Height := 570 - pnlLowCoef.Height * pnlLowCoef_Visible;
 end;
 
-procedure TFormBasicData.dbchkcoef_ordersClick(Sender: TObject);
+procedure TfBasicData.dbchkcoef_ordersClick(Sender: TObject);
 { var
   tableName: String; }
 begin
@@ -826,12 +830,12 @@ begin
   }
 end;
 
-procedure TFormBasicData.dbedtEditRateWorkerEnter(Sender: TObject);
+procedure TfBasicData.dbedtEditRateWorkerEnter(Sender: TObject);
 begin
   qrSmeta.FieldByName('STAVKA_RAB').Value := dbedtEditRateWorker.Text;
 end;
 
-procedure TFormBasicData.DBLookupComboBoxRegionDumpClick(Sender: TObject);
+procedure TfBasicData.DBLookupComboBoxRegionDumpClick(Sender: TObject);
 begin
   with qrDump, dblkcbbDump do
   begin

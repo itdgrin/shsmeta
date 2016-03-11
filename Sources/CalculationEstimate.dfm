@@ -2187,7 +2187,6 @@
                 ReadOnly = True
                 Title.Alignment = taCenter
                 Title.Caption = #1045#1076'. '#1080#1079#1084'.'
-                Width = 64
                 Visible = True
               end
               item

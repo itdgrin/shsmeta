@@ -477,7 +477,7 @@ object fSmReportMain: TfSmReportMain
       '  SUM(IFNULL(d.NDSF, d.NDS)) AS NDS,'
       '  SUM(IFNULL(d.TOTAL_WORKF, d.TOTAL_WORK)) AS TOTAL_WORK,'
       '  SUM(IFNULL(d.STOIMF, d.STOIM)) AS STOIM'
-      'FROM `round_setup` rs, smetasourcedata s'
+      'FROM smetasourcedata s'
       'LEFT JOIN summary_calculation d ON d.SM_ID IN'
       '  (SELECT SM_ID'
       '   FROM smetasourcedata '

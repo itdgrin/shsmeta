@@ -11,23 +11,8 @@ uses
 
 type
   TfRoundSetup = class(TSmForm)
-    lbl1: TLabel;
-    JvDBSpinEdit1: TJvDBSpinEdit;
-    lbl2: TLabel;
-    JvDBSpinEdit2: TJvDBSpinEdit;
-    grp1: TGroupBox;
-    lbl3: TLabel;
-    JvDBSpinEdit3: TJvDBSpinEdit;
-    lbl4: TLabel;
-    JvDBSpinEdit4: TJvDBSpinEdit;
-    lbl5: TLabel;
-    JvDBSpinEdit5: TJvDBSpinEdit;
-    btn1: TBitBtn;
-    btn2: TBitBtn;
-    qrMainData: TFDQuery;
-    dsMainData: TDataSource;
-    lbl6: TLabel;
-    JvDBSpinEdit6: TJvDBSpinEdit;
+    btnCancel: TBitBtn;
+    btnSave: TBitBtn;
     grMainEx: TJvDBGrid;
     qrMainEx: TFDQuery;
     dsMainEx: TDataSource;
@@ -37,8 +22,9 @@ type
     qrRoundType: TFDQuery;
     qrMainExLOOK_TYPE: TStringField;
     qrMainExNAME: TStringField;
-    procedure btn1Click(Sender: TObject);
-    procedure btn2Click(Sender: TObject);
+    qrMainExCODE: TIntegerField;
+    procedure btnCancelClick(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
@@ -57,29 +43,28 @@ implementation
 
 uses Main, DataModule;
 
-procedure TfRoundSetup.btn1Click(Sender: TObject);
+procedure TfRoundSetup.btnCancelClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TfRoundSetup.btn2Click(Sender: TObject);
+procedure TfRoundSetup.btnSaveClick(Sender: TObject);
 begin
-  if qrMainData.State in [dsEdit, dsInsert] then
-    qrMainData.Post;
+  if qrMainEx.State in [dsEdit, dsInsert] then
+    qrMainEx.Post;
   Close;
 end;
 
 procedure TfRoundSetup.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  qrMainData.Cancel;
+  if qrMainEx.State in [dsEdit, dsInsert] then
+    qrMainEx.Cancel;
   Action := caFree;
 end;
 
 procedure TfRoundSetup.FormCreate(Sender: TObject);
 begin
-  inherited;
   CloseOpen(qrRoundType);
-  CloseOpen(qrMainData);
   CloseOpen(qrMainEx);
 end;
 

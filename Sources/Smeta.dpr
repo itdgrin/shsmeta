@@ -31,7 +31,7 @@ uses
   SummaryCalculationSettings in 'SummaryCalculationSettings.pas' {FormSummaryCalculationSettings},
   DataTransfer in 'DataTransfer.pas' {FormDataTransfer},
   CalculationSettings in 'CalculationSettings.pas' {FormCalculationSettings},
-  BasicData in 'BasicData.pas' {FormBasicData},
+  BasicData in 'BasicData.pas' {fBasicData},
   CardEstimate in 'CardEstimate.pas' {fCardEstimate},
   ObjectsAndEstimates in 'ObjectsAndEstimates.pas' {fObjectsAndEstimates},
   Transportation in 'Transportation.pas' {FormTransportation},
@@ -173,7 +173,7 @@ begin
   Application.CreateForm(TFormSignatureSSR, FormSignatureSSR);
   Application.CreateForm(TFormSummaryCalculationSettings, FormSummaryCalculationSettings);
   Application.CreateForm(TFormCalculationSettings, FormCalculationSettings);
-  Application.CreateForm(TFormBasicData, FormBasicData);
+  Application.CreateForm(TfBasicData, fBasicData);
   Application.CreateForm(TfCardEstimate, fCardEstimate);
   Application.CreateForm(TFormSaveEstimate, FormSaveEstimate);
   Application.CreateForm(TFormCardMaterial, FormCardMaterial);

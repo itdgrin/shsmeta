@@ -32,19 +32,21 @@ type
     btnSave: TBitBtn;
     lbl7: TLabel;
     dbedtINDEX_VAL: TDBEdit;
-    JvDBDatePickerEdit1: TJvDBDatePickerEdit;
     JvDBDateTimePicker1: TJvDBDateTimePicker;
-    JvDBDateEdit1: TJvDBDateEdit;
+    JvDBDateTimePicker2: TJvDBDateTimePicker;
+    JvDBDateTimePicker3: TJvDBDateTimePicker;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure qrMainBeforeOpen(DataSet: TDataSet);
     procedure qrMainNewRecord(DataSet: TDataSet);
     procedure btnCancelClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
+    procedure JvDBDateTimePicker3Change(Sender: TObject);
+    procedure dbedtINDEX_VAL_ENDChange(Sender: TObject);
   private
     // Можно OBJ_ID не передавать, если нету под рукой
     OBJ_ID, SM_ID: Variant; // [0..1] InitParams->Create
+    flSkip: Boolean;
   public
     { Public declarations }
   end;
@@ -93,6 +95,7 @@ end;
 
 procedure TfCalcSetupIndex.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  flSkip := True;
   if qrMain.State in [dsEdit, dsInsert] then
     qrMain.Cancel;
   Action := caFree;
@@ -109,9 +112,39 @@ begin
   qrMain.Active := True;
 end;
 
-procedure TfCalcSetupIndex.FormDestroy(Sender: TObject);
+procedure TfCalcSetupIndex.JvDBDateTimePicker3Change(Sender: TObject);
 begin
-  Self := nil;
+  if flSkip then
+    Exit;
+  flSkip := True;
+  qrMain.Edit;
+  // Перерасчет индекса на дату начала строительства
+  qrMain.FieldByName('INDEX_VAL_BEGIN').Value :=
+    FastSelectSQLOne('SELECT FN_getIndex(:0, DATE_ADD(:1, INTERVAL -1 MONTH), :2)',
+    VarArrayOf([qrMain.FieldByName('DATE_CREATE').Value, qrMain.FieldByName('DATE_BEGIN').Value,
+    qrMain.FieldByName('INDEX_TYPE_BEGIN').Value]));
+  // Перерасчет индекса на дату выполнения работ
+  qrMain.FieldByName('INDEX_VAL_END').Value := FastSelectSQLOne('SELECT FN_getIndex(:0, :1, :2)',
+    VarArrayOf([qrMain.FieldByName('DATE_BEGIN').Value, qrMain.FieldByName('DATE_END').Value,
+    qrMain.FieldByName('INDEX_TYPE_END').Value]));
+  // Индекс роста
+  qrMain.FieldByName('INDEX_VAL').Value := FastSelectSQLOne('SELECT FN_ROUND_TO(:0, :1)',
+    VarArrayOf([qrMain.FieldByName('INDEX_VAL_BEGIN').AsFloat * qrMain.FieldByName('INDEX_VAL_END').AsFloat,
+    'ИНДЕКС_РОСТА']));
+  flSkip := False;
+end;
+
+procedure TfCalcSetupIndex.dbedtINDEX_VAL_ENDChange(Sender: TObject);
+begin
+  if flSkip then
+    Exit;
+  flSkip := True;
+  qrMain.Edit;
+  // Индекс роста
+  qrMain.FieldByName('INDEX_VAL').Value := FastSelectSQLOne('SELECT FN_ROUND_TO(:0, :1)',
+    VarArrayOf([qrMain.FieldByName('INDEX_VAL_BEGIN').AsFloat * qrMain.FieldByName('INDEX_VAL_END').AsFloat,
+    'ИНДЕКС_РОСТА']));
+  flSkip := False;
 end;
 
 procedure TfCalcSetupIndex.qrMainBeforeOpen(DataSet: TDataSet);

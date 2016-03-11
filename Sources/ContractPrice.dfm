@@ -416,7 +416,7 @@ object fContractPrice: TfContractPrice
       '        WHERE PARENT_ID = s.SM_ID AND DELETED=0)))'
       '  )) AS TOTAL,'
       '#MONTH_FIELDS#'
-      'FROM `objcards` as o, round_setup rs, `smetasourcedata` as s'
+      'FROM `objcards` as o, `smetasourcedata` as s'
       'WHERE o.`OBJ_ID` = :OBJ_ID'
       
         '  AND ((o.`CONTRACT_PRICE_TYPE_ID` = 1) OR (o.`CONTRACT_PRICE_TY' +

@@ -14,7 +14,6 @@ object fCalcSetupIndex: TfCalcSetupIndex
   Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   DesignSize = (
     335
     234)
@@ -43,7 +42,7 @@ object fCalcSetupIndex: TfCalcSetupIndex
   end
   object lbl4: TLabel
     Left = 8
-    Top = 104
+    Top = 112
     Width = 85
     Height = 26
     Caption = #1056#1072#1089#1095#1077#1090' '#13#10#1087#1088#1086#1080#1079#1074#1086#1076#1080#1090#1100' '#1087#1086':'
@@ -81,6 +80,7 @@ object fCalcSetupIndex: TfCalcSetupIndex
     LookupDisplay = 'index_type_name'
     LookupSource = dsInd
     TabOrder = 3
+    OnChange = JvDBDateTimePicker3Change
   end
   object JvDBLookupCombo2: TJvDBLookupCombo
     Left = 224
@@ -94,6 +94,7 @@ object fCalcSetupIndex: TfCalcSetupIndex
     LookupDisplay = 'index_type_name'
     LookupSource = dsInd
     TabOrder = 4
+    OnChange = JvDBDateTimePicker3Change
   end
   object dbedtINDEX_VAL_BEGIN: TDBEdit
     Left = 115
@@ -103,6 +104,7 @@ object fCalcSetupIndex: TfCalcSetupIndex
     DataField = 'INDEX_VAL_BEGIN'
     DataSource = dsMain
     TabOrder = 5
+    OnChange = dbedtINDEX_VAL_ENDChange
   end
   object dbedtINDEX_VAL_END: TDBEdit
     Left = 224
@@ -112,6 +114,7 @@ object fCalcSetupIndex: TfCalcSetupIndex
     DataField = 'INDEX_VAL_END'
     DataSource = dsMain
     TabOrder = 6
+    OnChange = dbedtINDEX_VAL_ENDChange
   end
   object btnCancel: TBitBtn
     Left = 252
@@ -158,38 +161,49 @@ object fCalcSetupIndex: TfCalcSetupIndex
     DataSource = dsMain
     TabOrder = 7
   end
-  object JvDBDatePickerEdit1: TJvDBDatePickerEdit
-    Left = 224
-    Top = 53
-    Width = 103
-    Height = 21
-    AllowNoDate = True
-    DataField = 'DATE_END'
-    DataSource = dsMain
-    TabOrder = 2
-  end
   object JvDBDateTimePicker1: TJvDBDateTimePicker
     Left = 115
     Top = 53
     Width = 103
     Height = 21
-    Date = 42438.982447731480000000
+    Date = 0.023611111111111110
     Format = 'MMMM yyyy'
-    Time = 42438.982447731480000000
+    Time = 0.023611111111111110
+    DateFormat = dfLong
     TabOrder = 1
-    DropDownDate = 42438.000000000000000000
+    OnChange = JvDBDateTimePicker3Change
     DataField = 'DATE_BEGIN'
     DataSource = dsMain
   end
-  object JvDBDateEdit1: TJvDBDateEdit
+  object JvDBDateTimePicker2: TJvDBDateTimePicker
+    Left = 224
+    Top = 53
+    Width = 103
+    Height = 21
+    Date = 0.023611111111111110
+    Format = 'MMMM yyyy'
+    Time = 0.023611111111111110
+    DateFormat = dfLong
+    TabOrder = 2
+    OnChange = JvDBDateTimePicker3Change
+    DropDownDate = 42439.000000000000000000
+    DataField = 'DATE_END'
+    DataSource = dsMain
+  end
+  object JvDBDateTimePicker3: TJvDBDateTimePicker
     Left = 8
     Top = 53
-    Width = 101
+    Width = 103
     Height = 21
+    Date = 0.023611111111111110
+    Format = 'MMMM yyyy'
+    Time = 0.023611111111111110
+    DateFormat = dfLong
+    TabOrder = 0
+    OnChange = JvDBDateTimePicker3Change
+    DropDownDate = 42439.000000000000000000
     DataField = 'DATE_CREATE'
     DataSource = dsMain
-    ShowNullDate = False
-    TabOrder = 0
   end
   object qrMain: TFDQuery
     AutoCalcFields = False
@@ -215,8 +229,8 @@ object fCalcSetupIndex: TfCalcSetupIndex
       
         '      (IFNULL(:OBJ_ID, 0)=0 AND IFNULL(SM_ID, 0)=IFNULL(:SM_ID, ' +
         '0))')
-    Left = 48
-    Top = 16
+    Left = 40
+    Top = 136
     ParamData = <
       item
         Name = 'OBJ_ID'
@@ -233,16 +247,16 @@ object fCalcSetupIndex: TfCalcSetupIndex
   end
   object dsMain: TDataSource
     DataSet = qrMain
-    Left = 16
-    Top = 16
+    Left = 8
+    Top = 136
   end
   object FormStorage: TJvFormStorage
     AppStorage = FormMain.AppIni
     AppStoragePath = '%FORM_NAME%\'
     Options = [fpSize]
     StoredValues = <>
-    Left = 80
-    Top = 16
+    Left = 72
+    Top = 136
   end
   object qrInd: TFDQuery
     AutoCalcFields = False
@@ -260,12 +274,12 @@ object fCalcSetupIndex: TfCalcSetupIndex
     SQL.Strings = (
       'SELECT *'
       'FROM index_type')
-    Left = 48
-    Top = 64
+    Left = 40
+    Top = 184
   end
   object dsInd: TDataSource
     DataSet = qrInd
-    Left = 16
-    Top = 64
+    Left = 8
+    Top = 184
   end
 end

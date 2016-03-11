@@ -844,267 +844,263 @@ object frCalculationEstimateSummaryCalculations: TfrCalculationEstimateSummaryCa
       '  s.SM_NUMBER, '
       '  s.NAME AS SM_NAME, '
       
-        '  ROUND( SUM(IFNULL(d.ZPF, d.ZP * IF(o.FL_APPLY_INDEX, o.index_v' +
-        'alue, 1 ))), rs.round_RATE) AS ZP,'
+        '  SUM(IFNULL(d.ZPF, d.ZP * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ' ))) AS ZP,'
       
-        '  ROUND( SUM(IFNULL(d.EMiMF, d.EMiM * IF(o.FL_APPLY_INDEX, o.ind' +
-        'ex_value, 1) )), rs.round_RATE) AS EMiM,'
+        '  SUM(IFNULL(d.EMiMF, d.EMiM * IF(o.FL_APPLY_INDEX, o.index_valu' +
+        'e, 1) )) AS EMiM,'
       
-        '  ROUND( SUM(IFNULL(d.MRF, d.MR * IF(o.FL_APPLY_INDEX, o.index_v' +
-        'alue, 1) )), rs.round_RATE) AS MR,'
+        '  SUM(IFNULL(d.MRF, d.MR * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ') )) AS MR,'
       
-        '  ROUND( SUM(IFNULL(d.TRUDF, d.TRUD * IF(o.FL_APPLY_INDEX, o.ind' +
-        'ex_value, 1) )), rs.round_RATE) AS TRUD,'
+        '  SUM(IFNULL(d.TRUDF, d.TRUD * IF(o.FL_APPLY_INDEX, o.index_valu' +
+        'e, 1) )) AS TRUD,'
       
-        '  ROUND( SUM(IFNULL(d.TRUD_MASHF, d.TRUD_MASH * IF(o.FL_APPLY_IN' +
-        'DEX, o.index_value, 1) )), rs.round_RATE) AS TRUD_MASH,'
+        '  SUM(IFNULL(d.TRUD_MASHF, d.TRUD_MASH * IF(o.FL_APPLY_INDEX, o.' +
+        'index_value, 1) )) AS TRUD_MASH,'
       
-        '  ROUND( SUM(IFNULL(d.ZP_MASHF, d.ZP_MASH * IF(o.FL_APPLY_INDEX,' +
-        ' o.index_value, 1) )), rs.round_RATE) AS ZP_MASH,'
+        '  SUM(IFNULL(d.ZP_MASHF, d.ZP_MASH * IF(o.FL_APPLY_INDEX, o.inde' +
+        'x_value, 1) )) AS ZP_MASH,'
       
-        '  ROUND( SUM(IFNULL(d.TRANSPF, d.TRANSP * IF(o.FL_APPLY_INDEX, o' +
-        '.index_value, 1) )), rs.round_RATE) AS TRANSP,'
+        '  SUM(IFNULL(d.TRANSPF, d.TRANSP * IF(o.FL_APPLY_INDEX, o.index_' +
+        'value, 1) )) AS TRANSP,'
       
-        '  ROUND( SUM(IFNULL(d.STOIMF, d.STOIM * IF(o.FL_APPLY_INDEX, o.i' +
-        'ndex_value, 1) )), rs.round_RATE) AS STOIM,'
+        '  SUM(IFNULL(d.STOIMF, d.STOIM * IF(o.FL_APPLY_INDEX, o.index_va' +
+        'lue, 1) )) AS STOIM,'
       
-        '  ROUND( SUM(IFNULL(d.OHROPRF, d.OHROPR * IF(o.FL_APPLY_INDEX, o' +
-        '.index_value, 1) )), rs.round_RATE) AS OHROPR,'
+        '  SUM(IFNULL(d.OHROPRF, d.OHROPR * IF(o.FL_APPLY_INDEX, o.index_' +
+        'value, 1) )) AS OHROPR,'
       
-        '  ROUND( SUM(IFNULL(d.PLAN_PRIBF, d.PLAN_PRIB * IF(o.FL_APPLY_IN' +
-        'DEX, o.index_value, 1) )), rs.round_RATE) AS PLAN_PRIB,'
+        '  SUM(IFNULL(d.PLAN_PRIBF, d.PLAN_PRIB * IF(o.FL_APPLY_INDEX, o.' +
+        'index_value, 1) )) AS PLAN_PRIB,'
       
-        '  ROUND( SUM(IFNULL(d.ST_OHROPRF, d.ST_OHROPR * IF(o.FL_APPLY_IN' +
-        'DEX, o.index_value, 1) )), rs.round_RATE) AS ST_OHROPR,'
+        '  SUM(IFNULL(d.ST_OHROPRF, d.ST_OHROPR * IF(o.FL_APPLY_INDEX, o.' +
+        'index_value, 1) )) AS ST_OHROPR,'
       
-        '  ROUND( SUM(IFNULL(d.ZIM_UDORF, d.ZIM_UDOR * IF(o.FL_APPLY_INDE' +
-        'X, o.index_value, 1) )), rs.round_RATE) AS ZIM_UDOR,'
+        '  SUM(IFNULL(d.ZIM_UDORF, d.ZIM_UDOR * IF(o.FL_APPLY_INDEX, o.in' +
+        'dex_value, 1) )) AS ZIM_UDOR,'
       
-        '  ROUND( SUM(IFNULL(d.ZP_ZIM_UDORF, d.ZP_ZIM_UDOR * IF(o.FL_APPL' +
-        'Y_INDEX, o.index_value, 1) )), rs.round_RATE) AS ZP_ZIM_UDOR,'
+        '  SUM(IFNULL(d.ZP_ZIM_UDORF, d.ZP_ZIM_UDOR * IF(o.FL_APPLY_INDEX' +
+        ', o.index_value, 1) )) AS ZP_ZIM_UDOR,'
       
-        '  ROUND( SUM(IFNULL(d.MR_DEVICEF, d.MR_DEVICE * IF(o.FL_APPLY_IN' +
-        'DEX, o.index_value, 1) )), rs.round_RATE) AS MR_DEVICE,'
+        '  SUM(IFNULL(d.MR_DEVICEF, d.MR_DEVICE * IF(o.FL_APPLY_INDEX, o.' +
+        'index_value, 1) )) AS MR_DEVICE,'
       
-        '  ROUND( SUM(IFNULL(d.TRANSP_DEVICEF, d.TRANSP_DEVICE * IF(o.FL_' +
-        'APPLY_INDEX, o.index_value, 1) )), rs.round_RATE) AS TRANSP_DEVI' +
-        'CE,'
+        '  SUM(IFNULL(d.TRANSP_DEVICEF, d.TRANSP_DEVICE * IF(o.FL_APPLY_I' +
+        'NDEX, o.index_value, 1) )) AS TRANSP_DEVICE,'
       
-        '  ROUND( SUM(IFNULL(d.MR_DUMPF, d.MR_DUMP * IF(o.FL_APPLY_INDEX,' +
-        ' o.index_value, 1) )), rs.round_RATE) AS MR_DUMP,'
+        '  SUM(IFNULL(d.MR_DUMPF, d.MR_DUMP * IF(o.FL_APPLY_INDEX, o.inde' +
+        'x_value, 1) )) AS MR_DUMP,'
       
-        '  ROUND( SUM(IFNULL(d.DUMP_COUNTF, d.DUMP_COUNT * IF(o.FL_APPLY_' +
-        'INDEX, o.index_value, 1) )), rs.round_RATE) AS DUMP_COUNT,'
+        '  SUM(IFNULL(d.DUMP_COUNTF, d.DUMP_COUNT * IF(o.FL_APPLY_INDEX, ' +
+        'o.index_value, 1) )) AS DUMP_COUNT,'
       
-        '  ROUND( SUM(IFNULL(d.TEMP_RETF, d.TEMP_RET * IF(o.FL_APPLY_INDE' +
-        'X, o.index_value, 1) )), rs.round_RATE) AS TEMP_RET,'
+        '  SUM(IFNULL(d.TEMP_RETF, d.TEMP_RET * IF(o.FL_APPLY_INDEX, o.in' +
+        'dex_value, 1) )) AS TEMP_RET,'
       '  AVG(IFNULL(d.NormaAVGF, d.NormaAVG)) AS NormaAVG,'
       
-        '  ROUND( SUM(IFNULL(d.PR_352F, d.PR_352 * IF(o.FL_APPLY_INDEX, o' +
-        '.index_value, 1) )), rs.round_RATE) AS PR_352,'
+        '  SUM(IFNULL(d.PR_352F, d.PR_352 * IF(o.FL_APPLY_INDEX, o.index_' +
+        'value, 1) )) AS PR_352,'
       
-        '  ROUND( SUM(IFNULL(d.TRUD_ZIMF, d.TRUD_ZIM * IF(o.FL_APPLY_INDE' +
-        'X, o.index_value, 1) )), rs.round_RATE) AS TRUD_ZIM,'
+        '  SUM(IFNULL(d.TRUD_ZIMF, d.TRUD_ZIM * IF(o.FL_APPLY_INDEX, o.in' +
+        'dex_value, 1) )) AS TRUD_ZIM,'
       
-        '  ROUND( SUM(IFNULL(d.SOC_STRAHF, d.SOC_STRAH * IF(o.FL_APPLY_IN' +
-        'DEX, o.index_value, 1) )), rs.round_RATE) AS SOC_STRAH,'
+        '  SUM(IFNULL(d.SOC_STRAHF, d.SOC_STRAH * IF(o.FL_APPLY_INDEX, o.' +
+        'index_value, 1) )) AS SOC_STRAH,'
       
-        '  ROUND( SUM(IFNULL(d.ZEM_NALF, d.ZEM_NAL * IF(o.FL_APPLY_INDEX,' +
-        ' o.index_value, 1) )), rs.round_RATE) AS ZEM_NAL,'
+        '  SUM(IFNULL(d.ZEM_NALF, d.ZEM_NAL * IF(o.FL_APPLY_INDEX, o.inde' +
+        'x_value, 1) )) AS ZEM_NAL,'
       
-        '  ROUND( SUM(IFNULL(d.NDSF, d.NDS * IF(o.FL_APPLY_INDEX, o.index' +
-        '_value, 1) )), rs.round_RATE) AS NDS,'
+        '  SUM(IFNULL(d.NDSF, d.NDS * IF(o.FL_APPLY_INDEX, o.index_value,' +
+        ' 1) )) AS NDS,'
       
-        '  ROUND( SUM(IFNULL(d.DEBET_NALF, d.DEBET_NAL * IF(o.FL_APPLY_IN' +
-        'DEX, o.index_value, 1) )), rs.round_RATE) AS DEBET_NAL,'
+        '  SUM(IFNULL(d.DEBET_NALF, d.DEBET_NAL * IF(o.FL_APPLY_INDEX, o.' +
+        'index_value, 1) )) AS DEBET_NAL,'
       
-        '  ROUND( SUM(IFNULL(d.VEDOMS_NALF, d.VEDOMS_NAL * IF(o.FL_APPLY_' +
-        'INDEX, o.index_value, 1) )), rs.round_RATE) AS VEDOMS_NAL,'
+        '  SUM(IFNULL(d.VEDOMS_NALF, d.VEDOMS_NAL * IF(o.FL_APPLY_INDEX, ' +
+        'o.index_value, 1) )) AS VEDOMS_NAL,'
       
-        '  ROUND( SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR * IF(o.FL_APPLY_IN' +
-        'DEX, o.index_value, 1) )), rs.round_RATE) AS STOIM_SMR,'
+        '  SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR * IF(o.FL_APPLY_INDEX, o.' +
+        'index_value, 1) )) AS STOIM_SMR,'
       
-        '  ROUND( SUM(IFNULL(d.TEMP_BUILDF, d.TEMP_BUILD * IF(o.FL_APPLY_' +
-        'INDEX, o.index_value, 1) )), rs.round_RATE) AS TEMP_BUILD,'
+        '  SUM(IFNULL(d.TEMP_BUILDF, d.TEMP_BUILD * IF(o.FL_APPLY_INDEX, ' +
+        'o.index_value, 1) )) AS TEMP_BUILD,'
       
-        '  ROUND( SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR * IF(o.FL_APPLY_IN' +
-        'DEX, o.index_value, 1) )), rs.round_RATE) AS STOIM_SMR,'
+        '  SUM(IFNULL(d.STOIM_SMRF, d.STOIM_SMR * IF(o.FL_APPLY_INDEX, o.' +
+        'index_value, 1) )) AS STOIM_SMR,'
       
-        '  ROUND( SUM(IFNULL(d.GEN_PODRF, d.GEN_PODR * IF(o.FL_APPLY_INDE' +
-        'X, o.index_value, 1) )), rs.round_RATE) AS GEN_PODR, '
+        '  SUM(IFNULL(d.GEN_PODRF, d.GEN_PODR * IF(o.FL_APPLY_INDEX, o.in' +
+        'dex_value, 1) )) AS GEN_PODR, '
       
-        '  ROUND( SUM(IFNULL(d.ZP_PRF, d.ZP_PR * IF(o.FL_APPLY_INDEX, o.i' +
-        'ndex_value, 1) )), rs.round_RATE) AS ZP_PR,'
+        '  SUM(IFNULL(d.ZP_PRF, d.ZP_PR * IF(o.FL_APPLY_INDEX, o.index_va' +
+        'lue, 1) )) AS ZP_PR,'
       
-        '  ROUND( SUM(IFNULL(d.FZPF, d.FZP * IF(o.FL_APPLY_INDEX, o.index' +
-        '_value, 1) )), rs.round_RATE) AS FZP,'
+        '  SUM(IFNULL(d.FZPF, d.FZP * IF(o.FL_APPLY_INDEX, o.index_value,' +
+        ' 1) )) AS FZP,'
       
-        '  ROUND( SUM(IFNULL(d.TRAVELF, d.TRAVEL * IF(o.FL_APPLY_INDEX, o' +
-        '.index_value, 1) )), rs.round_RATE) AS TRAVEL,'
+        '  SUM(IFNULL(d.TRAVELF, d.TRAVEL * IF(o.FL_APPLY_INDEX, o.index_' +
+        'value, 1) )) AS TRAVEL,'
       
-        '  ROUND( SUM(IFNULL(d.TRAVEL_WORKF, d.TRAVEL_WORK * IF(o.FL_APPL' +
-        'Y_INDEX, o.index_value, 1) )), rs.round_RATE) AS TRAVEL_WORK,'
+        '  SUM(IFNULL(d.TRAVEL_WORKF, d.TRAVEL_WORK * IF(o.FL_APPLY_INDEX' +
+        ', o.index_value, 1) )) AS TRAVEL_WORK,'
       
-        '  ROUND( SUM(IFNULL(d.WORKER_DEPARTMENTF, d.WORKER_DEPARTMENT * ' +
-        'IF(o.FL_APPLY_INDEX, o.index_value, 1) )), rs.round_RATE) AS WOR' +
-        'KER_DEPARTMENT,'
+        '  SUM(IFNULL(d.WORKER_DEPARTMENTF, d.WORKER_DEPARTMENT * IF(o.FL' +
+        '_APPLY_INDEX, o.index_value, 1) )) AS WORKER_DEPARTMENT,'
       
         '  SUM(IFNULL(d.NORMATF, d.NORMAT * IF(o.FL_APPLY_INDEX, o.index_' +
         'value, 1) )) AS NORMAT,'
       '  AVG(IFNULL(d.SiF, d.Si)) AS Si,'
       
-        '  ROUND( SUM(IFNULL(d.MAT_ZAKF, d.MAT_ZAK * IF(o.FL_APPLY_INDEX,' +
-        ' o.index_value, 1) )), rs.round_RATE) AS MAT_ZAK,'
+        '  SUM(IFNULL(d.MAT_ZAKF, d.MAT_ZAK * IF(o.FL_APPLY_INDEX, o.inde' +
+        'x_value, 1) )) AS MAT_ZAK,'
       
-        '  ROUND( SUM(IFNULL(d.TRANSP_ZAKF, d.TRANSP_ZAK * IF(o.FL_APPLY_' +
-        'INDEX, o.index_value, 1) )), rs.round_RATE) AS TRANSP_ZAK,'
+        '  SUM(IFNULL(d.TRANSP_ZAKF, d.TRANSP_ZAK * IF(o.FL_APPLY_INDEX, ' +
+        'o.index_value, 1) )) AS TRANSP_ZAK,'
       
-        '  ROUND( SUM(IFNULL(d.MR_DEVICE_ZAKF, d.MR_DEVICE_ZAK * IF(o.FL_' +
-        'APPLY_INDEX, o.index_value, 1) )), rs.round_RATE) AS MR_DEVICE_Z' +
-        'AK,'
+        '  SUM(IFNULL(d.MR_DEVICE_ZAKF, d.MR_DEVICE_ZAK * IF(o.FL_APPLY_I' +
+        'NDEX, o.index_value, 1) )) AS MR_DEVICE_ZAK,'
       
-        '  ROUND( SUM(IFNULL(d.TRANSP_DEVICE_ZAKF, d.TRANSP_DEVICE_ZAK * ' +
-        'IF(o.FL_APPLY_INDEX, o.index_value, 1) )), rs.round_RATE) AS TRA' +
-        'NSP_DEVICE_ZAK,'
+        '  SUM(IFNULL(d.TRANSP_DEVICE_ZAKF, d.TRANSP_DEVICE_ZAK * IF(o.FL' +
+        '_APPLY_INDEX, o.index_value, 1) )) AS TRANSP_DEVICE_ZAK,'
       
-        '  ROUND( SUM(IFNULL(d.OTHERF, d.OTHER * IF(o.FL_APPLY_INDEX, o.i' +
-        'ndex_value, 1) )), rs.round_RATE) AS OTHER,'
+        '  SUM(IFNULL(d.OTHERF, d.OTHER * IF(o.FL_APPLY_INDEX, o.index_va' +
+        'lue, 1) )) AS OTHER,'
       
-        '  ROUND( SUM(IFNULL(d.TRANSP_DUMPF, d.TRANSP_DUMP * IF(o.FL_APPL' +
-        'Y_INDEX, o.index_value, 1) )), rs.round_RATE) AS TRANSP_DUMP,'
+        '  SUM(IFNULL(d.TRANSP_DUMPF, d.TRANSP_DUMP * IF(o.FL_APPLY_INDEX' +
+        ', o.index_value, 1) )) AS TRANSP_DUMP,'
       
-        '  ROUND( SUM(IFNULL(d.TRANSP_CARGOF, d.TRANSP_CARGO * IF(o.FL_AP' +
-        'PLY_INDEX, o.index_value, 1) )), rs.round_RATE) AS TRANSP_CARGO,'
+        '  SUM(IFNULL(d.TRANSP_CARGOF, d.TRANSP_CARGO * IF(o.FL_APPLY_IND' +
+        'EX, o.index_value, 1) )) AS TRANSP_CARGO,'
       ''
       
-        '  ROUND( SUM(IFNULL(d.TRANSP_CARGO * IF(o.FL_APPLY_INDEX, o.inde' +
-        'x_value, 1) , 0)), rs.round_RATE) AS TRANSP_CARGOF,'
+        '  SUM(IFNULL(d.TRANSP_CARGO * IF(o.FL_APPLY_INDEX, o.index_value' +
+        ', 1) , 0)) AS TRANSP_CARGOF,'
       
-        '  ROUND( SUM(IFNULL(d.TRANSP_DUMP * IF(o.FL_APPLY_INDEX, o.index' +
-        '_value, 1) , 0)), rs.round_RATE) AS TRANSP_DUMPF,'
+        '  SUM(IFNULL(d.TRANSP_DUMP * IF(o.FL_APPLY_INDEX, o.index_value,' +
+        ' 1) , 0)) AS TRANSP_DUMPF,'
       
-        '  ROUND( SUM(IFNULL(d.OTHER * IF(o.FL_APPLY_INDEX, o.index_value' +
-        ', 1) , 0)), rs.round_RATE) AS OTHERF,'
+        '  SUM(IFNULL(d.OTHER * IF(o.FL_APPLY_INDEX, o.index_value, 1) , ' +
+        '0)) AS OTHERF,'
       
-        '  ROUND( SUM(IFNULL(d.TRANSP_DEVICE_ZAK * IF(o.FL_APPLY_INDEX, o' +
-        '.index_value, 1) , 0)), rs.round_RATE) AS TRANSP_DEVICE_ZAKF,'
+        '  SUM(IFNULL(d.TRANSP_DEVICE_ZAK * IF(o.FL_APPLY_INDEX, o.index_' +
+        'value, 1) , 0)) AS TRANSP_DEVICE_ZAKF,'
       
-        '  ROUND( SUM(IFNULL(d.MR_DEVICE_ZAK * IF(o.FL_APPLY_INDEX, o.ind' +
-        'ex_value, 1) , 0)), rs.round_RATE) AS MR_DEVICE_ZAKF,'
+        '  SUM(IFNULL(d.MR_DEVICE_ZAK * IF(o.FL_APPLY_INDEX, o.index_valu' +
+        'e, 1) , 0)) AS MR_DEVICE_ZAKF,'
       
-        '  ROUND( SUM(IFNULL(d.TRANSP_ZAK * IF(o.FL_APPLY_INDEX, o.index_' +
-        'value, 1) , 0)), rs.round_RATE) AS TRANSP_ZAKF,'
+        '  SUM(IFNULL(d.TRANSP_ZAK * IF(o.FL_APPLY_INDEX, o.index_value, ' +
+        '1) , 0)) AS TRANSP_ZAKF,'
       
-        '  ROUND( SUM(IFNULL(d.MAT_ZAK * IF(o.FL_APPLY_INDEX, o.index_val' +
-        'ue, 1) , 0)), rs.round_RATE) AS MAT_ZAKF,'
+        '  SUM(IFNULL(d.MAT_ZAK * IF(o.FL_APPLY_INDEX, o.index_value, 1) ' +
+        ', 0)) AS MAT_ZAKF,'
       '  AVG(IFNULL(d.Si, 0)) AS SiF,'
       
         '  SUM(IFNULL(d.NORMAT * IF(o.FL_APPLY_INDEX, o.index_value, 1) ,' +
         ' 0)) AS NORMATF,'
       
-        '  ROUND( SUM(IFNULL(d.ZP * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
-        ') , 0)), rs.round_RATE) AS ZPF,'
+        '  SUM(IFNULL(d.ZP * IF(o.FL_APPLY_INDEX, o.index_value, 1) , 0))' +
+        ' AS ZPF,'
       
-        '  ROUND( SUM(IFNULL(d.EMiM * IF(o.FL_APPLY_INDEX, o.index_value,' +
-        ' 1) , 0)), rs.round_RATE) AS EMiMF,'
+        '  SUM(IFNULL(d.EMiM * IF(o.FL_APPLY_INDEX, o.index_value, 1) , 0' +
+        ')) AS EMiMF,'
       
-        '  ROUND( SUM(IFNULL(d.MR * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
-        ') , 0)), rs.round_RATE) AS MRF,'
+        '  SUM(IFNULL(d.MR * IF(o.FL_APPLY_INDEX, o.index_value, 1) , 0))' +
+        ' AS MRF,'
       
-        '  ROUND( SUM(IFNULL(d.TRUD * IF(o.FL_APPLY_INDEX, o.index_value,' +
-        ' 1) , 0)), rs.round_RATE) AS TRUDF,'
+        '  SUM(IFNULL(d.TRUD * IF(o.FL_APPLY_INDEX, o.index_value, 1) , 0' +
+        ')) AS TRUDF,'
       
-        '  ROUND( SUM(IFNULL(d.TRUD_MASH * IF(o.FL_APPLY_INDEX, o.index_v' +
-        'alue, 1) , 0)), rs.round_RATE) AS TRUD_MASHF,'
+        '  SUM(IFNULL(d.TRUD_MASH * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ') , 0)) AS TRUD_MASHF,'
       
-        '  ROUND( SUM(IFNULL(d.ZP_MASH * IF(o.FL_APPLY_INDEX, o.index_val' +
-        'ue, 1) , 0)), rs.round_RATE) AS ZP_MASHF,'
+        '  SUM(IFNULL(d.ZP_MASH * IF(o.FL_APPLY_INDEX, o.index_value, 1) ' +
+        ', 0)) AS ZP_MASHF,'
       
-        '  ROUND( SUM(IFNULL(d.TRANSP * IF(o.FL_APPLY_INDEX, o.index_valu' +
-        'e, 1) , 0)), rs.round_RATE) AS TRANSPF,'
+        '  SUM(IFNULL(d.TRANSP * IF(o.FL_APPLY_INDEX, o.index_value, 1) ,' +
+        ' 0)) AS TRANSPF,'
       
-        '  ROUND( SUM(IFNULL(d.STOIM * IF(o.FL_APPLY_INDEX, o.index_value' +
-        ', 1) , 0)), rs.round_RATE) AS STOIMF,'
+        '  SUM(IFNULL(d.STOIM * IF(o.FL_APPLY_INDEX, o.index_value, 1) , ' +
+        '0)) AS STOIMF,'
       
-        '  ROUND( SUM(IFNULL(d.OHROPR * IF(o.FL_APPLY_INDEX, o.index_valu' +
-        'e, 1) , 0)), rs.round_RATE) AS OHROPRF,'
+        '  SUM(IFNULL(d.OHROPR * IF(o.FL_APPLY_INDEX, o.index_value, 1) ,' +
+        ' 0)) AS OHROPRF,'
       
-        '  ROUND( SUM(IFNULL(d.PLAN_PRIB * IF(o.FL_APPLY_INDEX, o.index_v' +
-        'alue, 1) , 0)), rs.round_RATE) AS PLAN_PRIBF,'
+        '  SUM(IFNULL(d.PLAN_PRIB * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ') , 0)) AS PLAN_PRIBF,'
       
-        '  ROUND( SUM(IFNULL(d.ST_OHROPR * IF(o.FL_APPLY_INDEX, o.index_v' +
-        'alue, 1) , 0)), rs.round_RATE) AS ST_OHROPRF,'
+        '  SUM(IFNULL(d.ST_OHROPR * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ') , 0)) AS ST_OHROPRF,'
       
-        '  ROUND( SUM(IFNULL(d.ZIM_UDOR * IF(o.FL_APPLY_INDEX, o.index_va' +
-        'lue, 1) , 0)), rs.round_RATE) AS ZIM_UDORF,'
+        '  SUM(IFNULL(d.ZIM_UDOR * IF(o.FL_APPLY_INDEX, o.index_value, 1)' +
+        ' , 0)) AS ZIM_UDORF,'
       
-        '  ROUND( SUM(IFNULL(d.ZP_ZIM_UDOR * IF(o.FL_APPLY_INDEX, o.index' +
-        '_value, 1) , 0)), rs.round_RATE) AS ZP_ZIM_UDORF,'
+        '  SUM(IFNULL(d.ZP_ZIM_UDOR * IF(o.FL_APPLY_INDEX, o.index_value,' +
+        ' 1) , 0)) AS ZP_ZIM_UDORF,'
       
-        '  ROUND( SUM(IFNULL(d.MR_DEVICE * IF(o.FL_APPLY_INDEX, o.index_v' +
-        'alue, 1) , 0)), rs.round_RATE) AS MR_DEVICEF,'
+        '  SUM(IFNULL(d.MR_DEVICE * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ') , 0)) AS MR_DEVICEF,'
       
-        '  ROUND( SUM(IFNULL(d.TRANSP_DEVICE * IF(o.FL_APPLY_INDEX, o.ind' +
-        'ex_value, 1) , 0)), rs.round_RATE) AS TRANSP_DEVICEF,'
+        '  SUM(IFNULL(d.TRANSP_DEVICE * IF(o.FL_APPLY_INDEX, o.index_valu' +
+        'e, 1) , 0)) AS TRANSP_DEVICEF,'
       
-        '  ROUND( SUM(IFNULL(d.MR_DUMP * IF(o.FL_APPLY_INDEX, o.index_val' +
-        'ue, 1) , 0)), rs.round_RATE) AS MR_DUMPF,'
+        '  SUM(IFNULL(d.MR_DUMP * IF(o.FL_APPLY_INDEX, o.index_value, 1) ' +
+        ', 0)) AS MR_DUMPF,'
       
-        '  ROUND( SUM(IFNULL(d.DUMP_COUNT * IF(o.FL_APPLY_INDEX, o.index_' +
-        'value, 1) , 0)), rs.round_RATE) AS DUMP_COUNTF,'
+        '  SUM(IFNULL(d.DUMP_COUNT * IF(o.FL_APPLY_INDEX, o.index_value, ' +
+        '1) , 0)) AS DUMP_COUNTF,'
       
-        '  ROUND( SUM(IFNULL(d.TEMP_RET * IF(o.FL_APPLY_INDEX, o.index_va' +
-        'lue, 1) , 0)), rs.round_RATE) AS TEMP_RETF,'
+        '  SUM(IFNULL(d.TEMP_RET * IF(o.FL_APPLY_INDEX, o.index_value, 1)' +
+        ' , 0)) AS TEMP_RETF,'
       
-        '  ROUND( SUM(IFNULL(d.PR_352 * IF(o.FL_APPLY_INDEX, o.index_valu' +
-        'e, 1) , 0)), rs.round_RATE) AS PR_352F,'
+        '  SUM(IFNULL(d.PR_352 * IF(o.FL_APPLY_INDEX, o.index_value, 1) ,' +
+        ' 0)) AS PR_352F,'
       
-        '  ROUND( SUM(IFNULL(d.TRUD_ZIM * IF(o.FL_APPLY_INDEX, o.index_va' +
-        'lue, 1) , 0)), rs.round_RATE) AS TRUD_ZIMF,'
+        '  SUM(IFNULL(d.TRUD_ZIM * IF(o.FL_APPLY_INDEX, o.index_value, 1)' +
+        ' , 0)) AS TRUD_ZIMF,'
       
-        '  ROUND( SUM(IFNULL(d.SOC_STRAH * IF(o.FL_APPLY_INDEX, o.index_v' +
-        'alue, 1) , 0)), rs.round_RATE) AS SOC_STRAHF,'
+        '  SUM(IFNULL(d.SOC_STRAH * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ') , 0)) AS SOC_STRAHF,'
       
-        '  ROUND( SUM(IFNULL(d.ZEM_NAL * IF(o.FL_APPLY_INDEX, o.index_val' +
-        'ue, 1) , 0)), rs.round_RATE) AS ZEM_NALF,'
+        '  SUM(IFNULL(d.ZEM_NAL * IF(o.FL_APPLY_INDEX, o.index_value, 1) ' +
+        ', 0)) AS ZEM_NALF,'
       
-        '  ROUND( SUM(IFNULL(d.NDS * IF(o.FL_APPLY_INDEX, o.index_value, ' +
-        '1) , 0)), rs.round_RATE) AS NDSF,'
+        '  SUM(IFNULL(d.NDS * IF(o.FL_APPLY_INDEX, o.index_value, 1) , 0)' +
+        ') AS NDSF,'
       
-        '  ROUND( SUM(IFNULL(d.DEBET_NAL * IF(o.FL_APPLY_INDEX, o.index_v' +
-        'alue, 1) , 0)), rs.round_RATE) AS DEBET_NALF,'
+        '  SUM(IFNULL(d.DEBET_NAL * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ') , 0)) AS DEBET_NALF,'
       
-        '  ROUND( SUM(IFNULL(d.VEDOMS_NAL * IF(o.FL_APPLY_INDEX, o.index_' +
-        'value, 1) , 0)), rs.round_RATE) AS VEDOMS_NALF,'
+        '  SUM(IFNULL(d.VEDOMS_NAL * IF(o.FL_APPLY_INDEX, o.index_value, ' +
+        '1) , 0)) AS VEDOMS_NALF,'
       
-        '  ROUND( SUM(IFNULL(d.STOIM_SMR * IF(o.FL_APPLY_INDEX, o.index_v' +
-        'alue, 1) , 0)), rs.round_RATE) AS STOIM_SMRF,'
+        '  SUM(IFNULL(d.STOIM_SMR * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ') , 0)) AS STOIM_SMRF,'
       
-        '  ROUND( SUM(IFNULL(d.TEMP_BUILD * IF(o.FL_APPLY_INDEX, o.index_' +
-        'value, 1) , 0)), rs.round_RATE) AS TEMP_BUILDF,'
+        '  SUM(IFNULL(d.TEMP_BUILD * IF(o.FL_APPLY_INDEX, o.index_value, ' +
+        '1) , 0)) AS TEMP_BUILDF,'
       
-        '  ROUND( SUM(IFNULL(d.STOIM_SMR * IF(o.FL_APPLY_INDEX, o.index_v' +
-        'alue, 1) , 0)), rs.round_RATE) AS STOIM_SMRF,  '
+        '  SUM(IFNULL(d.STOIM_SMR * IF(o.FL_APPLY_INDEX, o.index_value, 1' +
+        ') , 0)) AS STOIM_SMRF,  '
       
-        '  ROUND( SUM(IFNULL(d.GEN_PODR * IF(o.FL_APPLY_INDEX, o.index_va' +
-        'lue, 1) , 0)), rs.round_RATE) AS GEN_PODRF,'
+        '  SUM(IFNULL(d.GEN_PODR * IF(o.FL_APPLY_INDEX, o.index_value, 1)' +
+        ' , 0)) AS GEN_PODRF,'
       
-        '  ROUND( SUM(IFNULL(d.ZP_PR * IF(o.FL_APPLY_INDEX, o.index_value' +
-        ', 1) , 0)), rs.round_RATE) AS ZP_PRF,'
+        '  SUM(IFNULL(d.ZP_PR * IF(o.FL_APPLY_INDEX, o.index_value, 1) , ' +
+        '0)) AS ZP_PRF,'
       
-        '  ROUND( SUM(IFNULL(d.FZP * IF(o.FL_APPLY_INDEX, o.index_value, ' +
-        '1) , 0)), rs.round_RATE) AS FZPF,'
+        '  SUM(IFNULL(d.FZP * IF(o.FL_APPLY_INDEX, o.index_value, 1) , 0)' +
+        ') AS FZPF,'
       
-        '  ROUND( SUM(IFNULL(d.TRAVEL * IF(o.FL_APPLY_INDEX, o.index_valu' +
-        'e, 1) , 0)), rs.round_RATE) AS TRAVELF,'
+        '  SUM(IFNULL(d.TRAVEL * IF(o.FL_APPLY_INDEX, o.index_value, 1) ,' +
+        ' 0)) AS TRAVELF,'
       
-        '  ROUND( SUM(IFNULL(d.TRAVEL_WORK * IF(o.FL_APPLY_INDEX, o.index' +
-        '_value, 1) , 0)), rs.round_RATE) AS TRAVEL_WORKF,'
+        '  SUM(IFNULL(d.TRAVEL_WORK * IF(o.FL_APPLY_INDEX, o.index_value,' +
+        ' 1) , 0)) AS TRAVEL_WORKF,'
       
-        '  ROUND( SUM(IFNULL(d.WORKER_DEPARTMENT * IF(o.FL_APPLY_INDEX, o' +
-        '.index_value, 1) , 0)), rs.round_RATE) AS WORKER_DEPARTMENTF'
+        '  SUM(IFNULL(d.WORKER_DEPARTMENT * IF(o.FL_APPLY_INDEX, o.index_' +
+        'value, 1) , 0)) AS WORKER_DEPARTMENTF'
       ''
-      'FROM sm_type, round_setup rs, objcards o, smetasourcedata s'
+      'FROM sm_type, objcards o, smetasourcedata s'
       'LEFT JOIN summary_calculation d ON d.SM_ID IN'
       '  (SELECT SM_ID'
       '   FROM smetasourcedata '

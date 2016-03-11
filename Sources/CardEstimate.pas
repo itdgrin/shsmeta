@@ -255,7 +255,7 @@ begin
   if ShowBasicData then
   begin
     if (ShowModal = mrOk) then
-      FormBasicData.ShowForm(IdObject, BaseIdEstimate);
+      fBasicData.ShowForm(IdObject, BaseIdEstimate);
   end
   else
   begin
@@ -546,9 +546,11 @@ begin
         qrMain.FieldByName('STAVKA_RAB').Value := qrTemp.FieldByName('STAVKA_RAB').Value;
         qrMain.FieldByName('K_LOW_OHROPR').Value := qrTemp.FieldByName('K_LOW_OHROPR').Value;
         qrMain.FieldByName('K_LOW_PLAN_PRIB').Value := qrTemp.FieldByName('K_LOW_PLAN_PRIB').Value;
+        {
         qrMain.FieldByName('APPLY_WINTERPRISE_FLAG').Value :=
           qrTemp.FieldByName('APPLY_WINTERPRISE_FLAG').Value;
         qrMain.FieldByName('WINTERPRICE_TYPE').Value := qrTemp.FieldByName('WINTERPRICE_TYPE').Value;
+        }
         qrMain.FieldByName('ACT').Value := qrTemp.FieldByName('ACT').Value;
         qrMain.FieldByName('TYPE_ACT').Value := qrTemp.FieldByName('TYPE_ACT').Value;
         if TypeEstimate = 3 then

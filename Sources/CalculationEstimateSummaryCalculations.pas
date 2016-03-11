@@ -183,7 +183,7 @@ begin
     end;
     qrObject.Edit;
     qrObject.FieldByName('index_value').Value :=
-      FastSelectSQLOne('SELECT ROUND(:x, round_INDEX) FROM round_setup LIMIT 1', VarArrayOf([index]));
+      FastSelectSQLOne('SELECT FN_ROUND_TO(:x, "»Õƒ≈ —")', VarArrayOf([index]));
   except
     qrObject.FieldByName('index_value').Value := 1;
   end;
@@ -200,7 +200,7 @@ var
   Key: Variant;
 begin
   Key := qrData.FieldByName('id_estimate').Value;
-  FormBasicData.ShowForm(qrData.FieldByName('OBJ_ID').AsInteger, qrData.FieldByName('id_estimate').AsInteger);
+  fBasicData.ShowForm(qrData.FieldByName('OBJ_ID').AsInteger, qrData.FieldByName('id_estimate').AsInteger);
   LoadData(VarArrayOf([SM_ID, qrData.FieldByName('OBJ_ID').AsInteger]));
   qrData.Locate('id_estimate', Key, []);
 end;

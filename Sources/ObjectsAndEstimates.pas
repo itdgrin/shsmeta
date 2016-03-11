@@ -1205,7 +1205,7 @@ end;
 procedure TfObjectsAndEstimates.PMEstimatesBasicDataClick(Sender: TObject);
 begin
   if (qrTreeData.FieldByName('SM_ID').AsInteger > 0) and (IdObject > 0) then
-    FormBasicData.ShowForm(IdObject, qrTreeData.FieldByName('SM_ID').AsInteger);
+    fBasicData.ShowForm(IdObject, qrTreeData.FieldByName('SM_ID').AsInteger);
 end;
 
 procedure TfObjectsAndEstimates.PMEstimatesDeleteClick(Sender: TObject);
