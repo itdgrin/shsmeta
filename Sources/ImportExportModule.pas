@@ -465,9 +465,6 @@ begin
       //загрузка объекта
       Node1 := MainNode.ChildNodes.FindNode('Data_object');
 
-      if Pos(',', VarToStr(Node1.ChildNodes.Nodes['PER_CONTRACTOR'].NodeValue)) > 0 then
-        raise Exception.Create('Запятая(,) неверный разделитель дробной части');
-
       Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
         GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
       GetStrAndExcec(Node1, 'objcards');
@@ -834,9 +831,11 @@ begin
 
     SmIdStr := '';
     //Выгрузка информации об сметах и актах
+    //Сперва сметы затем акты, сперва объектные, локальные, птм
     DM.qrDifferent.Active := False;
-    DM.qrDifferent.SQL.Text := 'Select * from smetasourcedata where (obj_id = ' +
-      IntToStr(AIdObject) + ') and (DELETED=0) order by SM_ID';
+    DM.qrDifferent.SQL.Text :=
+      'Select * from smetasourcedata where (obj_id = ' + AIdObject.ToString +
+        ') and (DELETED=0) order by ACT, FIELD(SM_TYPE, 2, 1, 3)';
     DM.qrDifferent.Active := True;
     if not DM.qrDifferent.IsEmpty then
     begin
