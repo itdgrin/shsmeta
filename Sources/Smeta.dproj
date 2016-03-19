@@ -572,6 +572,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
             <Form>fCalcSetupIndex</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="fEstRowFinder.pas">
+            <Form>FormEstRowFinder</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

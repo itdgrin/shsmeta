@@ -10,7 +10,9 @@ uses
   FireDAC.Comp.Client, Vcl.DBCtrls, CalculationEstimateSummaryCalculations,
   JvExDBGrids, JvDBGrid, JvDBUltimGrid, System.UITypes, System.Types, EditExpression, GlobsAndConst,
   FireDAC.UI.Intf, JvExComCtrls, JvDBTreeView, Generics.Collections, Tools, Generics.Defaults,
-  fFrameCalculator, Data.FmtBcd, dmReportU, JvComponentBase, JvFormPlacement, SprController;
+  fFrameCalculator, Data.FmtBcd, dmReportU, JvComponentBase, JvFormPlacement,
+  SprController,
+  fEstRowFinder;
 
 type
   TAutoRepRec = record
@@ -511,6 +513,8 @@ type
     qrDevicesVFPRICE_NDS: TFMTBCDField;
     qrDevicesVFTRANSP_NO_NDS: TFMTBCDField;
     qrDevicesVFTRANSP_NDS: TFMTBCDField;
+    pmFindRowInEstim: TMenuItem;
+    N15: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -713,6 +717,7 @@ type
     procedure btnRSClick(Sender: TObject);
     procedure PMMatNormPriceClick(Sender: TObject);
     procedure grRatesExEnter(Sender: TObject);
+    procedure pmFindRowInEstimClick(Sender: TObject);
   private const
     CaptionButton: array [1 .. 3] of string = ('Расчёт сметы', 'Расчёт акта', 'Расчёт акта на доп. работы');
     HintButton: array [1 .. 3] of string = ('Окно расчёта сметы', 'Окно расчёта акта',
@@ -777,6 +782,9 @@ type
     FMatInEditMode,
     FMechInEditMode,
     FDevInEditMode: Boolean;
+
+    //Форма поиска строки в смете;
+    FRowFinder: TFormEstRowFinder;
 
     procedure GridProc(var Message: TMessage);
 
@@ -1035,6 +1043,7 @@ end;
 procedure TFormCalculationEstimate.FormCreate(Sender: TObject);
 begin
   inherited;
+
   FOldGridProc := grRatesEx.WindowProc;
   grRatesEx.WindowProc := GridProc;
 
@@ -1138,6 +1147,9 @@ begin
   FCalculator := TCalculator.Create(Self);
   FCalculator.Parent := TWinControl(Self);
   FCalculator.Visible := False;
+
+  FRowFinder := TFormEstRowFinder.Create(Self);
+  FRowFinder.Act := Act;
 
   if not Act then
     FormMain.CreateButtonOpenWindow(CaptionButton[1], HintButton[1], Self, 1)
@@ -3332,14 +3344,16 @@ begin
     newID := 0;
 
     // Замена литинских на кирилические
-    if (NewCode[1] = 'Е') or (NewCode[1] = 'E') or (NewCode[1] = 'У') or (NewCode[1] = 'T') or
-      (NewCode[1] = 'Ц') or (NewCode[1] = 'W') or (NewCode[1] = '0') then // E кирилическая и латинская
+    if (NewCode[1] = 'Е') or
+       (NewCode[1] = 'E') or
+       (NewCode[1] = 'У') or
+       (NewCode[1] = 'T') or
+       (NewCode[1] = 'Ц') or
+       (NewCode[1] = 'W') or
+       (NewCode[1] = '0') then // E кирилическая и латинская
     begin
       if (NewCode[1] = 'E') or (NewCode[1] = 'T') or (NewCode[1] = 'У') then
         NewCode[1] := 'Е'; // E кирилическая
-      if NewCode[1] = 'W' then
-        NewCode[1] := 'Ц';
-
       if NewCode[1] = 'W' then
         NewCode[1] := 'Ц';
 
@@ -4911,7 +4925,11 @@ begin
         btnMechanisms.Enabled := True;
         btnDescription.Enabled := True;
 
-        if btnMaterials.Down or btnEquipments.Down or btnDump.Down or btnTransp.Down or btnStartup.Down then
+        if btnMaterials.Down or
+           btnEquipments.Down or
+           btnDump.Down or
+           btnTransp.Down or
+           btnStartup.Down then
         begin
           btnMaterials.Down := True;
           btnMaterialsClick(btnMaterials);
@@ -6071,6 +6089,37 @@ begin
     PMDumpEditClick(nil);
 end;
 
+procedure TFormCalculationEstimate.pmFindRowInEstimClick(Sender: TObject);
+var TempBookmark: TBookMark;
+begin
+  FRowFinder.EstimateID := FIdEstimate;
+  if FRowFinder.ShowModal = mrOk then
+  begin
+    qrRatesEx.DisableControls;
+    try
+      TempBookmark := grRatesEx.DataSource.DataSet.GetBookmark;
+      qrRatesEx.First;
+      while not qrRatesEx.Eof do
+      begin
+        if (qrRatesExDATA_ESTIMATE_OR_ACT_ID.Value = FRowFinder.DataID) then
+        begin
+          if FRowFinder.CurType = 2 then
+            btnMaterials.Down := True;
+          if FRowFinder.CurType = 3 then
+            btnMechanisms.Down := True;
+          Exit;
+        end;
+        qrRatesEx.Next;
+      end;
+      qrRatesEx.GotoBookmark(TempBookmark);
+    finally
+      if qrRatesEx.BookmarkValid(TempBookmark) then
+        qrRatesEx.FreeBookmark(TempBookmark);
+      qrRatesEx.EnableControls;
+    end;
+  end;
+end;
+
 procedure TFormCalculationEstimate.PMInsertRowClick(Sender: TObject);
 var
   SM_ID, TmpIterator: Integer;
@@ -6130,6 +6179,11 @@ begin
   PMCopy.Visible := not Act;
   PMPaste.Visible := not Act;
   mCopyToOwnBase.Visible := qrRatesExID_TYPE_DATA.Value in [1, 2, 3, 4];
+
+  if Act then
+    pmFindRowInEstim.Caption := 'Искать в акте'
+  else
+    pmFindRowInEstim.Caption := 'Искать в смете';
 
   pmMarkRow.Visible := qrRatesExID_TYPE_DATA.AsInteger > 0;
   pmMarkRow.Checked := qrRatesExMarkRow.Value > 0;

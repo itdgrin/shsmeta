@@ -145,7 +145,8 @@ uses
   TypeAct in 'TypeAct.pas' {fTypeAct},
   fReportSSRPI in 'fReportSSRPI.pas' {FormReportSSRPI},
   fSprLoader in 'SmSprUpdater\fSprLoader.pas' {SprLoaderForm},
-  CalcSetupIndex in 'CalcSetupIndex.pas' {fCalcSetupIndex};
+  CalcSetupIndex in 'CalcSetupIndex.pas' {fCalcSetupIndex},
+  fEstRowFinder in 'fEstRowFinder.pas' {FormEstRowFinder};
 
 {$R *.res}
 var MHandle: THandle;
