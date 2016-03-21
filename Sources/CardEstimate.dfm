@@ -628,8 +628,8 @@ object fCardEstimate: TfCardEstimate
   end
   object dsMain: TDataSource
     DataSet = qrMain
-    Left = 240
-    Top = 250
+    Left = 264
+    Top = 242
   end
   object FormStorage: TJvFormStorage
     AppStorage = FormMain.AppIni
@@ -653,11 +653,20 @@ object fCardEstimate: TfCardEstimate
         TargetDataType = dtAnsiString
       end>
     SQL.Strings = (
-      'SELECT `CID`, CONCAT("'#1043#1051#1040#1042#1040' ",`CID`, ". ", `CNAME`) AS chap_name'
+      
+        'SELECT ID, `CID`, CONCAT("'#1043#1051#1040#1042#1040' ",`CID`, ". ", `CNAME`) AS chap_' +
+        'name'
       'FROM `ssr_chapters`'
-      'WHERE `SCID` is null ORDER BY `CID`;')
+      'WHERE (`SCID` is Null) and '
+      '      ((DATES is Null) or (DATES >= :DATESM)) and '
+      '      ((DATEPO is Null) or (DATEPO <= :DATESM)) ORDER BY `CID`;')
     Left = 353
     Top = 18
+    ParamData = <
+      item
+        Name = 'DATESM'
+        ParamType = ptInput
+      end>
   end
   object dsSSRChap: TDataSource
     DataSet = qrSSRChap
@@ -679,10 +688,13 @@ object fCardEstimate: TfCardEstimate
       end>
     SQL.Strings = (
       
-        'SELECT `SCID`, IF(not(`SCID` is null), CONCAT(`SCID`, ". ", `CNA' +
-        'ME`), "") AS syb_name'
+        'SELECT ID, `SCID`, IF(not(`SCID` is null), CONCAT(`SCID`, ". ", ' +
+        '`CNAME`), "") AS syb_name'
       'FROM `ssr_chapters`'
-      'WHERE (`CID` = :CID) ORDER BY `SCID`;')
+      'WHERE (`CID` = :CID) and not(`SCID` is Null) and'
+      '      ((DATES is Null) or (DATES >= :DATESM)) and '
+      '      ((DATEPO is Null) or (DATEPO <= :DATESM)) '
+      'ORDER BY `SCID`;')
     Left = 481
     Top = 18
     ParamData = <
@@ -691,6 +703,10 @@ object fCardEstimate: TfCardEstimate
         DataType = ftInteger
         ParamType = ptInput
         Value = Null
+      end
+      item
+        Name = 'DATESM'
+        ParamType = ptInput
       end>
   end
   object dsSSRSubChap: TDataSource

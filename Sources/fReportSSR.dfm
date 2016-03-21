@@ -432,6 +432,10 @@ object FormReportSSR: TFormReportSSR
     object mtSSRItog: TSmallintField
       FieldName = 'Itog'
     end
+    object mtSSRCNUM: TStringField
+      FieldName = 'CNUM'
+      Visible = False
+    end
   end
   object dsSSR: TDataSource
     DataSet = mtSSR

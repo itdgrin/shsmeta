@@ -138,7 +138,7 @@ var XML : IXMLDocument;
       if As1 <> '' then As1 := As1 + ',';
       if As2 <> '' then As2 := As2 + ',';
 
-      As1 := As1 + ANode.ChildNodes.Nodes[i].NodeName;
+      As1 := As1 + '`' + ANode.ChildNodes.Nodes[i].NodeName + '`';
       As2 := As2 + ':' + ANode.ChildNodes.Nodes[i].NodeName;
     end;
 
@@ -462,6 +462,9 @@ begin
         end;
       end;
 
+      DM.qrDifferent.SQL.Text := 'SET @DISABLE_TRIGGERS := 1;';
+      DM.qrDifferent.ExecSQL;
+
       //загрузка объекта
       Node1 := MainNode.ChildNodes.FindNode('Data_object');
 
@@ -742,6 +745,24 @@ begin
           GetStrAndExcec(Node1, 'summary_calculation');
         end;
 
+      //загрузка Сalc_setup
+      Node2 := MainNode.ChildNodes.FindNode('Сalc_setup');
+      if Assigned(Node2) then
+        for j := 0 to Node2.ChildNodes.Count - 1 do
+        begin
+          Node1 := Node2.ChildNodes.Nodes[j];
+
+          Node1.ChildNodes.Nodes['CALC_SETUP_ID'].NodeValue := NULL;
+
+          Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['OBJ_ID'].NodeValue, C_ID_OBJ, IdConvert);
+
+          Node1.ChildNodes.Nodes['SM_ID'].NodeValue :=
+            GetNewId(Node1.ChildNodes.Nodes['SM_ID'].NodeValue, C_ID_SM, IdConvert);
+
+          GetStrAndExcec(Node1, 'calc_setup');
+        end;
+
       DM.qrDifferent.Transaction.Commit;
     except
       DM.qrDifferent.Transaction.Rollback;
@@ -751,6 +772,9 @@ begin
     FormatSettings.DecimalSeparator := ds;
     DM.qrDifferent.Transaction.Options.AutoCommit := AutoCommitValue;
     FreeAndNil(IgnoreRates);
+
+    DM.qrDifferent.SQL.Text := 'SET @DISABLE_TRIGGERS := NULL;';
+    DM.qrDifferent.ExecSQL;
 
     CoUninitialize;
   end;
@@ -1085,6 +1109,22 @@ begin
     begin
       Node1 := CurNode.AddChild('Summary_calculation');
       Node1.SetAttributeNS('Type', '', 'Суммации по смете (акту)');
+      while not DM.qrDifferent.Eof do
+      begin
+        Node2 := Node1.AddChild('Line');
+        RowToNode(Node2, DM.qrDifferent);
+        DM.qrDifferent.Next;
+      end;
+    end;
+
+    DM.qrDifferent.Active := False;
+    DM.qrDifferent.SQL.Text :=
+      'Select * from calc_setup where OBJ_ID = ' + AIdObject.ToString;
+    DM.qrDifferent.Active := True;
+    if not DM.qrDifferent.IsEmpty then
+    begin
+      Node1 := CurNode.AddChild('Сalc_setup');
+      Node1.SetAttributeNS('Type', '', 'Настройка расчетов');
       while not DM.qrDifferent.Eof do
       begin
         Node2 := Node1.AddChild('Line');

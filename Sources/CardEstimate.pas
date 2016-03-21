@@ -145,6 +145,7 @@ begin
 end;
 
 procedure TfCardEstimate.FormShow(Sender: TObject);
+var DateSm: Variant; //Дата составления сметной документации
 begin
   qrMain.Active := False;
   qrMain.ParamByName('SM_ID').AsInteger := IdEstimate;
@@ -153,6 +154,12 @@ begin
   btnSave.Tag := 0;
 
   // Глава сср выбирается только в объектной смете
+  DateSm :=
+    FastSelectSQLOne('Select BEG_STROJ from objcards where OBJ_ID = :0',
+      VarArrayOf([IdObject]));
+  //Для рагных дат может быть различный список глав
+  qrSSRChap.ParamByName('DATESM').Value := DateSm;
+  qrSSRSubChap.ParamByName('DATESM').Value := DateSm;
   pnl1.Visible := TypeEstimate = 2;
   qrSSRChap.Active := TypeEstimate = 2;
   qrSSRSubChap.Active := TypeEstimate = 2;
@@ -161,6 +168,19 @@ begin
     qrMain.Append
   else
     qrMain.Edit;
+
+  //Поля CHAPTER и ROW_NUMBER являются вспомогательными и зависят от CHAP_ID
+  //сортировка глав и строк может и измениться
+  if qrMain.FieldByName('CHAP_ID').AsInteger > 0 then
+  begin
+    qrMain.FieldByName('CHAPTER').Value :=
+      FastSelectSQLOne('SELECT `CID` FROM `ssr_chapters` WHERE ID = :0',
+      VarArrayOf([qrMain.FieldByName('CHAP_ID').Value]));
+    qrMain.FieldByName('ROW_NUMBER').Value :=
+      FastSelectSQLOne('SELECT COALESCE(`SCID`, 1) FROM `ssr_chapters` WHERE ID = :0',
+      VarArrayOf([qrMain.FieldByName('CHAP_ID').Value]));
+  end;
+
   // ----------------------------------------
   lblType.Visible := TypeEstimate = 1;
   cbbType.Visible := TypeEstimate = 1;
@@ -458,6 +478,8 @@ begin
   // -----------------------------------------
   try
     btnSave.Tag := 1;
+
+    qrMain.FieldByName('CHAP_ID').Value := qrSSRSubChap.FieldByName('ID').Value;
     if Editing then
     begin
       if qrMain.State in [dsEdit] then

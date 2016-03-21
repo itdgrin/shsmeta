@@ -118,14 +118,14 @@ type
   private
     FObjectID: Integer;
     FLine9013,
-    FLine82: TRepSSRLine;
+    FLine0802: TRepSSRLine;
     FChange: Boolean;
     FCalc: Integer;
     FResult: Double;
     procedure SetObjectID(AValue: Integer);
   public
     property Line9013: TRepSSRLine write FLine9013;
-    property Line82: TRepSSRLine write FLine82;
+    property Line0802: TRepSSRLine write FLine0802;
     property Result: Double read FResult;
     procedure CalcPIIndex();
   end;
@@ -287,7 +287,7 @@ begin
     try
       mtLine.Edit;
       mtLineTotalWithNal.Value := SmRound(FLine9013.Total);
-      mtLineVozvrat.Value := SmRound(FLine82.Total);
+      mtLineVozvrat.Value := SmRound(FLine0802.Total);
       mtLineDevWithNDS.Value := SmRound((FLine9013.Devices + FLine9013.Transp) *
         (1 + G_NDS/100));
       mtLineTotalIndex.Value := SmRound(mtLineTotalWithNal.Value - mtLineNoIndex.Value);

@@ -813,12 +813,13 @@ begin
              'Round(SUM(COALESCE(d.TOTAL_STATF, d.TOTAL_STAT, 0))) AS MonActsTotalStat ' +
         'FROM smetasourcedata s, summary_calculation d ' +
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID) AND ' +
-              '(s.ACT = 1) AND (FL_USE=1) AND ((s.TYPE_ACT = :TYPE_ACT1) or (s.TYPE_ACT = :TYPE_ACT2)) AND ' +
+              '(s.ACT = 1) AND (FL_USE=1) AND ' +
               '(s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
                 'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
                   'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
-                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND (FL_USE=1) AND ' +
-                  '(SM_TYPE = 2) AND ' +
+                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+                  '(FL_USE=1) AND (SM_TYPE = 2) AND ' +
+                  '((PERFOM_ID = :TYPE_ACT1) or (PERFOM_ID = :TYPE_ACT2)) AND ' +
                   '(DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd))))))) ' +
         'GROUP BY SSM_ID, SNAME';
 
@@ -846,12 +847,13 @@ begin
              'Round(SUM(COALESCE(d.TOTAL_STATF, d.TOTAL_STAT, 0))) AS MonActsTotalStat ' +
         'FROM smetasourcedata s, summary_calculation d ' +
         'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND (d.SM_ID = s.SM_ID) AND ' +
-              '(s.ACT = 1) AND (FL_USE=1) AND ((s.TYPE_ACT = :TYPE_ACT1) or (s.TYPE_ACT = :TYPE_ACT2)) AND ' +
+              '(s.ACT = 1) AND (FL_USE=1) AND ' +
               '(s.SM_ID in (Select SM_ID FROM smetasourcedata ' +
                 'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
                   'WHERE (PARENT_ID in (Select SM_ID FROM smetasourcedata ' +
-                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND (FL_USE=1) AND ' +
-                  '(SM_TYPE = 2) AND ' +
+                  'WHERE (OBJ_ID = :OBJ_ID) AND (DELETED = 0) AND (ACT = 1) AND ' +
+                  '(FL_USE=1) AND (SM_TYPE = 2) AND ' +
+                  '((PERFOM_ID = :TYPE_ACT1) or (PERFOM_ID = :TYPE_ACT2)) AND ' +
                   '(DATE BETWEEN :MonthActsDateBegin AND :MonthActsDateEnd)))))))';
  //*****************************************************************************
 
@@ -1452,6 +1454,7 @@ begin
         TmpCol.Title.Alignment := taCenter;
         TmpCol.Title.Caption := qrTemp1.FieldByName('SNAME').AsString;
         TmpCol.Width := 100;
+        J := qrTemp1.FieldByName('SSM_ID').AsInteger;
 
         mtRegActs.First;
         J := 0;
@@ -1540,7 +1543,7 @@ begin
           'MonActsCashBack, MonActsAdvOther, MonActsSTOIM, MonActsNalYpr, ' +
           'MonActsNDS, MonActsMatZakNDS, MonActsTotalStat ' +
 
-          'from (' + SelRightSm + ') sm, (' + SelActs + ') monacts';
+          'from (' + SelRightSm + ') sm, (' + SelSumActs + ') monacts';
         qrTemp1.ParamByName('OBJ_ID').Value := FObjectID;
         qrTemp1.ParamByName('CurPi').Value := FPICur;
         qrTemp1.ParamByName('MonthActsDateBegin').AsDate := CurManthDateBegin;
@@ -1638,6 +1641,7 @@ begin
         TmpCol.Title.Alignment := taCenter;
         TmpCol.Title.Caption := qrTemp1.FieldByName('SNAME').AsString;
         TmpCol.Width := 100;
+        J := qrTemp1.FieldByName('SSM_ID').AsInteger;
 
         mtRegActs.First;
         J := 0;
@@ -1726,7 +1730,7 @@ begin
           'MonActsCashBack, MonActsAdvOther, MonActsSTOIM, MonActsNalYpr, ' +
           'MonActsNDS, MonActsMatZakNDS, MonActsTotalStat ' +
 
-          'from (' + SelRightSm + ') sm, (' + SelActs + ') monacts';
+          'from (' + SelRightSm + ') sm, (' + SelSumActs + ') monacts';
         qrTemp1.ParamByName('OBJ_ID').Value := FObjectID;
         qrTemp1.ParamByName('CurPi').Value := FPICur;
         qrTemp1.ParamByName('MonthActsDateBegin').AsDate := CurManthDateBegin;

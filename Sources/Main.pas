@@ -2367,13 +2367,19 @@ end;
 
 procedure TFormMain.pmLoadSprClick(Sender: TObject);
 var SprLoaderForm: TSprLoaderForm;
+    s: string;
 begin
-  SprLoaderForm := TSprLoaderForm.Create(Self);
-  try
-    SprLoaderForm.ShowModal;
-  finally
-    FreeAndNil(SprLoaderForm);
-  end;
+  s := InputBox('Доступ', #31'Пароль:', '');
+  if s = 'SmetaUpdate' then
+  begin
+    SprLoaderForm := TSprLoaderForm.Create(Self);
+    try
+      SprLoaderForm.ShowModal;
+    finally
+      FreeAndNil(SprLoaderForm);
+    end;
+  end
+  else MessageBeep(MB_ICONHAND);
 end;
 
 procedure TFormMain.PMRestoreBackupClick(Sender: TObject);
