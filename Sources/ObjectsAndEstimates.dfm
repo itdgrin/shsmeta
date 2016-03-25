@@ -676,10 +676,6 @@ object fObjectsAndEstimates: TfObjectsAndEstimates
       ImageIndex = 65
       OnClick = mObjectAccessClick
     end
-    object pmSSRTest: TMenuItem
-      Caption = #1057#1057#1056' '#1090#1077#1089#1090
-      OnClick = pmSSRTestClick
-    end
   end
   object pmEstimates: TPopupMenu
     Images = DM.ilIcons_16x16

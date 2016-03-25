@@ -895,7 +895,8 @@ uses Main, DataModule, SignatureSSR, Waiting,
   TreeEstimate, ImportExportModule, CalcResource, CalcResourceFact, ForemanList,
   TranspPersSelect, CardObject, CopyToOwnDialog, SelectDialog,
   ManualPriceSelect, uSelectColumn, ContractPrice,
-  ManualSprItem, SmReportData;
+  ManualSprItem, SmReportData,
+  fReportSSR;
 {$R *.dfm}
 
 function NDSToNoNDS(AValue, aNDS: Currency): Currency;
@@ -1308,11 +1309,15 @@ begin
 end;
 
 procedure TFormCalculationEstimate.SpeedButtonSSRClick(Sender: TObject);
+var ReportSSR: TFormReportSSR;
 begin
   ShowNeedSaveDialog;
-  ShellExecute(Handle, nil, 'ssr.exe', PChar(INTTOSTR(FormCalculationEstimate.IdEstimate)),
-    PChar(GetCurrentDir + '\REPORTS\'), SW_maximIZE);
-  Exit;
+  ReportSSR := TFormReportSSR.Create(Self, IdObject);
+  try
+    ReportSSR.ShowModal;
+  finally
+    FreeAndNil(ReportSSR);
+  end;
 end;
 
 procedure TFormCalculationEstimate.btnStartupClick(Sender: TObject);

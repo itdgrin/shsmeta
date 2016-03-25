@@ -799,14 +799,16 @@ var XML : IXMLDocument;
     for i := 0 to AQ.Fields.Count - 1 do
     begin
       try
-        if (AQ.Fields[i].DataType in [ftFloat, ftCurrency, ftBCD, ftFMTBcd,
-          ftExtended, ftSingle]) then
-          ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
-            AQ.Fields[i].AsFloat
-        else if AQ.Fields[i].DataType = ftDate then
+        if not VarIsNull(AQ.Fields[i].Value) and
+           (AQ.Fields[i].DataType in [ftFloat, ftCurrency, ftBCD, ftFMTBcd,
+                                      ftExtended, ftSingle]) then
+          ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] := AQ.Fields[i].AsFloat
+        else if not VarIsNull(AQ.Fields[i].Value) and
+                (AQ.Fields[i].DataType = ftDate) then
           ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
             FormatDateTime('yy/mm/dd', AQ.Fields[i].AsDateTime)
-        else if AQ.Fields[i].DataType = ftString then
+        else if not VarIsNull(AQ.Fields[i].Value) and
+                (AQ.Fields[i].DataType = ftString) then
           ANode.ChildValues[AQ.Fields[i].FieldName.ToUpper] :=
             StripCharsInSet(AQ.Fields[i].AsString, [#0..#9,#11,#12,#14..#31,#127])
         else
