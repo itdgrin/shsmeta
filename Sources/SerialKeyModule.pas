@@ -370,17 +370,22 @@ begin
   TmpStream2 := TMemoryStream.Create;
   RC6Encryptor := TRC6Encryptor.Create(AKey);
   try
+    //Имя владельца
     SetLength(TmpBytes, 256);
     TmpStr := Copy(ASerialKeyInfo.UserName, 1, 128);
     Move(TmpStr[1], TmpBytes[0], Length(TmpStr) * SizeOf(Char));
     TmpStream1.Write(TmpBytes, Length(TmpBytes));
+    //UserKey в данный момент не используется, всегда забит нулями
     SetLength(TmpBytes, Length(ASerialKeyInfo.UserKey));
     Move(ASerialKeyInfo.UserKey[0], TmpBytes[0], Length(ASerialKeyInfo.UserKey));
     SetLength(TmpBytes, 16);
     TmpStream1.Write(TmpBytes, Length(TmpBytes));
+    //Период действия лицензии
     TmpStream1.Write(ASerialKeyInfo.DateBegin, SizeOf(ASerialKeyInfo.DateBegin));
     TmpStream1.Write(ASerialKeyInfo.DateEnd, SizeOf(ASerialKeyInfo.DateEnd));
+    //ID пользователя, для сервака
     TmpStream1.Write(ASerialKeyInfo.LocalID, SizeOf(ASerialKeyInfo.LocalID));
+    //dll
     AKeyDll.Position := 0;
     TmpStream1.CopyFrom(AKeyDll, AKeyDll.Size);
     RC6Encryptor.StreamEncrypt(TmpStream1, TmpStream2, True);
@@ -405,15 +410,21 @@ begin
     TmpStream1.LoadFromFile(AFileName);
     RC6Encryptor.StreamDecrypt(TmpStream1, TmpStream2, True);
     TmpStream2.Position := 0;
+    //Имя владельца
     SetLength(TmpBytes, 256);
     TmpStream2.Read(TmpBytes, 256);
     ASerialKeyInfo.UserName := String(PChar(TmpBytes));
+    //UserKey в данный момент не используется, всегда забит нулями
     SetLength(ASerialKeyInfo.UserKey, 16);
     TmpStream2.Read(ASerialKeyInfo.UserKey, 16);
+    //Период действия лицензии
     TmpStream2.Read(ASerialKeyInfo.DateBegin, SizeOf(ASerialKeyInfo.DateBegin));
     TmpStream2.Read(ASerialKeyInfo.DateEnd, SizeOf(ASerialKeyInfo.DateEnd));
-    if TmpStream1.Size > 130352 then //Для поддержку устаревшего варианта ключа
-      TmpStream1.Read(ASerialKeyInfo.LocalID, SizeOf(ASerialKeyInfo.LocalID));
+
+    //ID пользователя, для сервака
+    if TmpStream2.Size > 130336 then //Для поддержку устаревшего варианта ключа
+      TmpStream2.Read(ASerialKeyInfo.LocalID, SizeOf(ASerialKeyInfo.LocalID));
+
     if Assigned(AKeyDll) then
       AKeyDll.CopyFrom(TmpStream2, TmpStream2.Size - TmpStream2.Position);
   finally

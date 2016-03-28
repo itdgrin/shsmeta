@@ -452,7 +452,7 @@ begin
     I := Length(AArray);
     SetLength(AArray, Length(AArray) + 1);
     AArray[I].LineNom := '901203';
-    AArray[I].Pers := G_NDS/100;
+    AArray[I].Pers := G_NDS;
     AArray[I].Koef1 := 1;
     AArray[I].Koef2 := 1;
     AddNewKoef(AArray[I]);
@@ -646,8 +646,8 @@ begin
     'SUM(COALESCE(d.PLAN_PRIBF, d.PLAN_PRIB, 0)) PLAN_PRIB, ' +
     'SUM(COALESCE(d.MR_DEVICEF, d.MR_DEVICE, 0)) MR_DEVICE, ' +
     'SUM(COALESCE(d.TRANSP_DEVICEF, d.TRANSP_DEVICE, 0)) TRANSP_DEVICE, ' +
-    'SUM(COALESCE(d.OTHERF, d.OTHER, 0)) OTHER, ' +
-    'SUM(COALESCE(d.TRUDF, d.TRUD, 0)) TRUD ' +
+    'SUM(0) OTHER, ' +
+    'SUM(COALESCE(d.TRUDF, d.TRUD, 0) + COALESCE(d.TRUD_MASHF, d.TRUD_MASH, 0)) TRUD ' +
     'FROM smetasourcedata s, summary_calculation d ' +
     'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
           '(d.SM_ID = s.SM_ID) AND (s.ACT = 0) AND ' +
@@ -678,8 +678,8 @@ begin
     'SUM(COALESCE(d.PLAN_PRIBF, d.PLAN_PRIB, 0)) PLAN_PRIB, ' +
     'SUM(COALESCE(d.MR_DEVICEF, d.MR_DEVICE, 0)) MR_DEVICE, ' +
     'SUM(COALESCE(d.TRANSP_DEVICEF, d.TRANSP_DEVICE, 0)) TRANSP_DEVICE, ' +
-    'SUM(COALESCE(d.OTHERF, d.OTHER, 0)) OTHER, ' +
-    'SUM(COALESCE(d.TRUDF, d.TRUD, 0)) TRUD ' +
+    'SUM(0) OTHER, ' +
+    'SUM(COALESCE(d.TRUDF, d.TRUD, 0) + COALESCE(d.TRUD_MASHF, d.TRUD_MASH, 0)) TRUD ' +
     'FROM smetasourcedata s, summary_calculation d ' +
     'WHERE (s.DELETED = 0) AND (s.OBJ_ID = :OBJ_ID) AND ' +
           '(d.SM_ID = s.SM_ID) AND (s.ACT = 0) AND ' +
@@ -1197,6 +1197,12 @@ begin
             Line0901.EMiM := (Line0795.ZP - Line0795.ZP5 + Line0795.ZPMash) * KEmim * FKZim;
             Line0901.ZPMash := Line0901.EMiM * KEmimZp;
             Line0901.Mat := (Line0795.ZP - Line0795.ZP5 + Line0795.ZPMash) * KMr * FKZim;
+
+            Line0901.ZP := (Line0795.ZP - Line0795.ZP5 + Line0795.ZPMash) * 0.32500 * FKZim;
+            Line0901.EMiM := (Line0795.ZP - Line0795.ZP5 + Line0795.ZPMash) * 0.357 * FKZim;
+            Line0901.ZPMash := Line0901.EMiM * 0.08800;
+            Line0901.Mat := (Line0795.ZP - Line0795.ZP5 + Line0795.ZPMash) * 0.31800 * FKZim;
+
           end;
           CalcLineWithKoef(Line0901);
           AssignLineIfNoNull(Line0901);
@@ -1246,9 +1252,10 @@ begin
         if mtSSRCNum.AsString = '1002' then
         begin
           NullLine();
-          Line1002.Other := (Line0995.ZP - Line0995.ZP5 + Line0995.EMiM +
-            Line0995.Mat + Line0995.MatTransp + Line0995.OXROPR + Line0995.PlanPrib +
-            Line0995.Other);
+          Line1002.Other := (Line0995.ZP + Line0995.EMiM +
+            Line0995.Mat + Line0995.MatTransp + Line0995.OXROPR +
+            Line0995.PlanPrib);
+
           CalcLineWithKoef(Line1002);
           AssignLineIfNoNull(Line1002);
           SummToLine(TmpLine);
@@ -1260,7 +1267,7 @@ begin
           TmpLine1 := default(TRepSSRLine);
           TmpLine1.Other := (Line0895.ZP + Line0895.EMiM + Line0895.Mat +
             Line0895.MatTransp + Line0895.OXROPR + Line0895.PlanPrib +
-            Line0895.Other + Line0990.Total);
+            Line0901.Total + Line0902.Total + Line0903.Total);
           CalcLineWithKoef(TmpLine1);
           AssignLineIfNoNull(TmpLine1);
           SummToLine(TmpLine);
@@ -1287,7 +1294,7 @@ begin
     if mtSSR.BookmarkValid(Bookmark0802) then
     begin
       mtSSR.GotoBookmark(Bookmark0802);
-      Line0802.Mat := Line0801.Mat;
+      Line0802.Mat := Line0801.Mat + Line0801.ZP + Line0801.EMiM;
       CalcLineWithKoef(Line0802);
       AssignLineIfNoNull(Line0802);
       if mtSSR.BookmarkValid(Bookmark0996) then
@@ -1586,6 +1593,9 @@ begin
         else
           Brush.Color := $00DEE1E3;
       end;
+
+      if mtSSRSM_TYPE.Value = 2 then
+        Font.Style := Font.Style + [fsBold];
 
       // Строка в фокусе
       if (Assigned(TMyDBGrid((Sender AS TJvDBGrid)).DataLink) and

@@ -123,7 +123,6 @@
       Margins.Right = 1
       Margins.Bottom = 1
       Align = alLeft
-      GroupIndex = 1
       Caption = #1057#1057#1056
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack

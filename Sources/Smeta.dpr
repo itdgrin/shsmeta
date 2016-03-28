@@ -146,7 +146,8 @@ uses
   fReportSSRPI in 'fReportSSRPI.pas' {FormReportSSRPI},
   fSprLoader in 'SmSprUpdater\fSprLoader.pas' {SprLoaderForm},
   CalcSetupIndex in 'CalcSetupIndex.pas' {fCalcSetupIndex},
-  fEstRowFinder in 'fEstRowFinder.pas' {FormEstRowFinder};
+  fEstRowFinder in 'fEstRowFinder.pas' {FormEstRowFinder},
+  fCopyEstimRow in 'fCopyEstimRow.pas' {FormCopyEstimRow};
 
 {$R *.res}
 var MHandle: THandle;

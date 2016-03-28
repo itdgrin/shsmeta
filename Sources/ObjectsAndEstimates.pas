@@ -117,6 +117,7 @@ type
     btnReportC2B: TBitBtn;
     btnReport1: TBitBtn;
     btnReport2: TBitBtn;
+    N3: TMenuItem;
     procedure ResizeImagesForSplitters;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -186,6 +187,7 @@ type
     procedure btnReport1Click(Sender: TObject);
     procedure btnReport2Click(Sender: TObject);
     procedure btnReportC3Click(Sender: TObject);
+    procedure N3Click(Sender: TObject);
   private const
     CaptionButton = 'Объекты и сметы';
     HintButton = 'Окно объектов и смет';
@@ -210,7 +212,8 @@ uses
   CalculationEstimate, Waiting, BasicData, DrawingTables,
   KC6, CardAct, ImportExportModule, GlobsAndConst,
   UserAccess, SprController, SerialKeyModule,
-  fReportC2B, SmReportMain, fReportSSR, C3;
+  fReportC2B, SmReportMain, C3,
+  fCopyEstimRow;
 
 {$R *.dfm}
 
@@ -537,6 +540,17 @@ begin
   else
     qrTreeData.ParamByName('SHOW_DELETED').AsInteger := 0;
   CloseOpen(qrTreeData);
+end;
+
+procedure TfObjectsAndEstimates.N3Click(Sender: TObject);
+var FormCopy: TFormCopyEstimRow;
+begin
+  FormCopy := TFormCopyEstimRow.Create(Self);
+  try
+    FormCopy.ShowModal;
+  finally
+    FreeAndNil(FormCopy);
+  end;
 end;
 
 procedure TfObjectsAndEstimates.PMCopySmetaClick(Sender: TObject);
